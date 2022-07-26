@@ -11,6 +11,7 @@ import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T
 import org.json.JSONObject
 import org.wordpress.android.fluxc.model.SiteModel
+import java.util.Locale
 import java.util.UUID
 
 class AnalyticsTracker private constructor(private val context: Context) {
@@ -62,7 +63,7 @@ class AnalyticsTracker private constructor(private val context: Context) {
             return
         }
 
-        val eventName = stat.name.toLowerCase()
+        val eventName = stat.name.lowercase(Locale.getDefault())
 
         val user = username ?: getAnonID() ?: generateNewAnonID()
 
@@ -178,6 +179,8 @@ class AnalyticsTracker private constructor(private val context: Context) {
         const val KEY_SUBJECT = "subject"
         const val KEY_DATE_RANGE = "date_range"
         const val KEY_SOURCE = "source"
+        const val KEY_CUSTOM_FIELDS_COUNT = "custom_fields_count"
+        const val KEY_CUSTOM_FIELDS_SIZE = "custom_fields_size"
 
         const val KEY_SORT_ORDER = "order"
         const val VALUE_SORT_NAME_ASC = "name,ascending"
@@ -222,6 +225,15 @@ class AnalyticsTracker private constructor(private val context: Context) {
         const val ORDER_EDIT_SHIPPING_ADDRESS = "shipping_address"
         const val ORDER_EDIT_BILLING_ADDRESS = "billing_address"
 
+        const val KEY_HAS_MULTIPLE_SHIPPING_LINES = "has_multiple_shipping_lines"
+        const val KEY_HAS_MULTIPLE_FEE_LINES = "has_multiple_fee_lines"
+
+        enum class OrderNoteType(val value: String) {
+            CUSTOMER("customer"),
+            PRIVATE("private"),
+            SYSTEM("system")
+        }
+
         const val KEY_FEEDBACK_ACTION = "action"
         const val KEY_FEEDBACK_CONTEXT = "context"
         const val VALUE_FEEDBACK_GENERAL_CONTEXT = "general"
@@ -244,6 +256,7 @@ class AnalyticsTracker private constructor(private val context: Context) {
         const val VALUE_STATE_ON = "on"
         const val VALUE_STATE_OFF = "off"
 
+        const val VALUE_SIMPLE_PAYMENTS_FLOW = "simple_payment"
         const val VALUE_SIMPLE_PAYMENTS_FEEDBACK = "simple_payments"
         const val VALUE_SIMPLE_PAYMENTS_COLLECT_CARD = "card"
         const val VALUE_SIMPLE_PAYMENTS_COLLECT_CASH = "cash"
@@ -251,6 +264,8 @@ class AnalyticsTracker private constructor(private val context: Context) {
         const val VALUE_SIMPLE_PAYMENTS_SOURCE_AMOUNT = "amount"
         const val VALUE_SIMPLE_PAYMENTS_SOURCE_SUMMARY = "summary"
         const val VALUE_SIMPLE_PAYMENTS_SOURCE_PAYMENT_METHOD = "payment_method"
+
+        const val VALUE_ORDER_PAYMENTS_FLOW = "order_payment"
 
         // -- Downloadable Files
         const val KEY_DOWNLOADABLE_FILE_ACTION = "action"
@@ -296,6 +311,7 @@ class AnalyticsTracker private constructor(private val context: Context) {
         const val KEY_AMOUNT = "amount"
 
         const val KEY_PAYMENT_METHOD = "payment_method"
+        const val KEY_PAYMENT_GATEWAY = "payment_gateway"
 
         const val KEY_IS_JETPACK_CP_CONNECTED = "is_jetpack_cp_conntected"
         const val KEY_ACTIVE_JETPACK_CONNECTION_PLUGINS = "active_jetpack_connection_plugins"
@@ -328,7 +344,34 @@ class AnalyticsTracker private constructor(private val context: Context) {
         const val KEY_COUPON_ACTION_LOADED = "loaded"
         const val KEY_COUPON_ACTION_COPIED = "copied_code"
         const val KEY_COUPON_ACTION_SHARED = "shared_code"
+        const val KEY_COUPON_ACTION_EDITED = "tapped_edit"
         const val KEY_COUPON_ACTION_DELETED = "tapped_delete"
+        const val KEY_COUPON_DISCOUNT_TYPE_UPDATED = "discount_type_updated"
+        const val KEY_COUPON_CODE_UPDATED = "coupon_code_updated"
+        const val KEY_COUPON_AMOUNT_UPDATED = "amount_updated"
+        const val KEY_COUPON_DESCRIPTION_UPDATED = "description_updated"
+        const val KEY_COUPON_ALLOWED_PRODUCTS_OR_CATEGORIES_UPDATED = "allowed_products_or_categories_updated"
+        const val KEY_COUPON_EXPIRY_DATE_UPDATED = "expiry_date_updated"
+        const val KEY_COUPON_USAGE_RESTRICTIONS_UPDATED = "usage_restrictions_updated"
+
+        // -- Onboarding
+        const val VALUE_LOGIN_ONBOARDING_IS_FINAL_PAGE = "is_final_page"
+
+        // -- Jetpack Installation
+        const val VALUE_JETPACK_INSTALLATION_SOURCE_WEB = "web"
+        const val VALUE_JETPACK_INSTALLATION_SOURCE_NATIVE = "native"
+
+        // -- Upsell banner
+        const val KEY_BANNER_SOURCE = "source"
+        const val KEY_BANNER_PAYMENTS = "payment_methods"
+        const val KEY_BANNER_ORDER_LIST = "order_list"
+        const val KEY_BANNER_SETTINGS = "settings"
+        const val KEY_BANNER_CAMPAIGN_NAME = "campaign_name"
+        const val KEY_BANNER_UPSELL_CARD_READERS = "upsell_card_readers"
+        const val KEY_BANNER_REMIND_LATER = "remind_later"
+
+        // -- Experiments
+        const val KEY_SITE_CREDENTIALS_EXPERIMENT_VARIANT = "site_credentials_experiment_variant"
 
         var sendUsageStats: Boolean = true
             set(value) {

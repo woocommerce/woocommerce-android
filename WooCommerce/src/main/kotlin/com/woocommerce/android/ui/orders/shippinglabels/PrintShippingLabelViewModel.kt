@@ -24,7 +24,8 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import kotlinx.parcelize.Parcelize
 import java.io.File
-import java.util.*
+import java.util.Date
+import java.util.Locale
 import javax.inject.Inject
 
 @HiltViewModel
@@ -89,7 +90,7 @@ class PrintShippingLabelViewModel @Inject constructor(
             viewState = viewState.copy(isProgressDialogShown = true)
             launch {
                 val requestResult = repository.printShippingLabels(
-                    viewState.paperSize.name.toLowerCase(Locale.US), arguments.shippingLabelIds.toList()
+                    viewState.paperSize.name.lowercase(Locale.US), arguments.shippingLabelIds.toList()
                 )
 
                 viewState = viewState.copy(isProgressDialogShown = false)

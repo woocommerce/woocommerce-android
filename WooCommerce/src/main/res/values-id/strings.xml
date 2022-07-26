@@ -1,13 +1,108 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2022-06-02 09:54:04+0000
+Translation-Revision-Date: 2022-07-16 08:54:03+0000
 Plural-Forms: nplurals=2; plural=n > 1;
 Generator: GlotPress/2.4.0-alpha
 Language: id
 -->
 <resources>
+    <string name="tests_notification_new_order_message">Pesanan baru senilai $50 di Toko WooCommerce Anda</string>
+    <string name="tests_notification_new_order_title">Ada pesanan baru! 🎉</string>
+    <string name="lines_all_details">detail</string>
+    <string name="lines_incomplete_explanation">Untuk mengedit semua %1$s, cari pesanan tersebut di admin toko WooCommerce Anda</string>
+    <string name="lines_incomplete">%1$s belum lengkap</string>
+    <string name="support_system_status_report_share_label">Bagikan laporan status sistem</string>
+    <string name="support_system_status_report_copy_label">Salin laporan status sistem ke clipboard</string>
+    <string name="card_reader_connect_keep_searching_button">Terus Mencari</string>
+    <string name="card_reader_payment_description_v2">Pembayaran Langsung untuk Pesanan #%s di %s blog_id %s.</string>
+    <string name="card_reader_manage_payment_provider">Ubah Penyedia Pembayaran</string>
+    <string name="orderdetail_refunded_line_with_info">Dana dikembalikan: %1$s</string>
+    <string name="orderdetail_payment_summary_onhold_plain">Menunggu pembayaran</string>
+    <string name="install_wc_shipping_proceed_button">Lanjutkan Penginstalan</string>
+    <string name="install_wc_shipping_installation_info">Hal yang harus diketahui sebelum menginstal</string>
+    <string name="install_wc_shipping_preinstall_title">Instal ekstensi</string>
+    <string name="install_wc_shipping_extension_name">Pengiriman WooCommerce</string>
+    <string name="product_selector_clear_filters_button_title">Hapus Penyaring</string>
+    <string name="product_selector_empty_state">Tidak ada produk yang ditemukan</string>
+    <string name="product_selector_search_failed">Gagal mencari produk</string>
+    <string name="product_selector_loading_failed">Gagal memuat produk</string>
+    <string name="product_selector_search_hint">Mencari Produk</string>
+    <string name="product_selector_filter_button_title_default">Penyaring (%d)</string>
+    <string name="coupon_restrictions_allowed_emails_invalid">Beberapa alamat email tidak valid. Harap perbaiki alamat email.</string>
+    <string name="coupon_restrictions_allowed_emails_hint">Daftar email penagihan yang diizinkan untuk pencocokan saat pesanan dilakukan. Pisahkan alamat email dengan koma. Anda juga dapat menggunakan tanda bintang (*) untuk mencocokkan bagian-bagian dari email. Misalnya \"*@gmail.com\" akan cocok dengan semua alamat gmail.</string>
+    <string name="empty_message_with_filters">Maaf, tidak ada produk yang cocok dengan penyaring yang dipilih\"</string>
+    <string name="card_reader_onboarding_confirm_payment_method_button">Konfirmasi Metode Pembayaran</string>
+    <string name="card_reader_onboarding_choose_stripe_button">Stripe</string>
+    <string name="card_reader_onboarding_choose_wcpayment_button">Pembayaran WooCommerce</string>
+    <string name="card_reader_onboarding_choose_plugin_hint">Pembayaran Langsung dapat diproses melalui penyedia pembayaran berikut. Penyedia mana yang ingin Anda gunakan?</string>
+    <string name="card_reader_onboarding_choose_payment_provider">Pilih Penyedia Pembayaran Anda</string>
+    <string name="order_editing_locked_content_description">terkunci</string>
+    <string name="order_editing_non_editable_message">Untuk mengedit Detail Produk atau Pembayaran, ganti status ke Pembayaran Tertunda.</string>
+    <string name="order_editing_non_editable_title">Beberapa bagian dalam pesanan ini tidak dapat diedit</string>
+    <string name="order_creation_customer_search_hint">Cari pelanggan</string>
+    <string name="order_creation_customer_search_empty">Tidak ada pelanggan ditemukan</string>
+    <string name="install_wc_shipping_flow_onboarding_screen_not_now_button">Lain Kali</string>
+    <string name="install_wc_shipping_flow_onboarding_screen_add_extension_button">Tambahkan Ekstensi Ke Toko</string>
+    <string name="install_wc_shipping_flow_onboarding_screen_link">Apa itu WooCommerce Shipping?</string>
+    <string name="install_wc_shipping_flow_onboarding_screen_discounts_bullet_desc">Akses tarif diskon pengiriman. Saat ini tersedia dengan DHL dan USPS, dan akan segera hadir lebih banyak lagi!</string>
+    <string name="install_wc_shipping_flow_onboarding_screen_discounts_bullet_title">Tarif diskon</string>
+    <string name="install_wc_shipping_flow_onboarding_screen_print_bullet_desc">Buat pesanan, lalu cukup bayar, cetak, kemas, dan kirimkan.</string>
+    <string name="install_wc_shipping_flow_onboarding_screen_print_bullet_title">Cetak dari telepon Anda</string>
+    <string name="install_wc_shipping_flow_onboarding_screen_postage_bullet_desc">Tidak perlu repot menstok perangko.</string>
+    <string name="install_wc_shipping_flow_onboarding_screen_postage_bullet_title">Beli perangko jika perlu saja.</string>
+    <string name="install_wc_shipping_flow_onboarding_screen_subtitle">Hemat waktu dan uang</string>
+    <string name="install_wc_shipping_flow_onboarding_screen_title">Penuhi pesanan Anda dengan WooCommerce Shipping</string>
+    <string name="product_selector_arrow_content_description">Tampilkan detail</string>
+    <string name="product_selector_select_variation_label">Pilih variasi %s</string>
+    <string name="coupon_restrictions_exclude_categories">Kecualikan Kategori Produk</string>
+    <string name="coupon_restrictions_exclude_products">Kecualikan Produk</string>
+    <string name="coupon_restrictions_exclusions_section_title">Gunakan kupon ini pada</string>
+    <string name="coupon_restrictions_allowed_emails_placeholder">Tidak ada batasan</string>
+    <string name="coupon_restrictions_allowed_emails">Email yang diizinkan</string>
+    <string name="coupon_restrictions_limit_per_user_placeholder">Tak terbatas</string>
+    <string name="coupon_restrictions_amount_limit_placeholder">Semua Produk yang Memenuhi Syarat</string>
+    <string name="coupon_restrictions_limit_per_coupon_placeholder">Tak terbatas</string>
+    <string name="coupon_restrictions_minimum_maximum_spend_placeholder">Tidak ada</string>
+    <string name="coupon_edit_edit_products_title">Sunting Kategori Produk (%1$d)</string>
+    <string name="coupon_edit_select_categories_title">Pilih Kategori Produk</string>
+    <string name="variations_bulk_update_warning_message">Saat ini pembaruan massal didukung untuk maksimum 100 variasi.</string>
+    <string name="variations_bulk_update_warning_title">Melebihi batas pembaruan massal </string>
+    <string name="variations_bulk_update_regular_prices_dialog_title">Memperbarui harga normal</string>
+    <string name="variations_bulk_update_sale_prices_dialog_title">Memperbarui harga obral</string>
+    <string name="variations_bulk_update_sale_prices_success">Harga Obral Terbaru.</string>
+    <string name="variations_bulk_update_regular_prices_success">Harga Normal Terbaru.</string>
+    <string name="variations_bulk_update_error">Ada yang salah! Silakan coba lagi.</string>
+    <string name="variations_bulk_update_current_prices_mixed">Harga saat ini berbeda-beda</string>
+    <string name="variations_bulk_update_current_price">Harga saat ini adalah %s</string>
+    <string name="variations_bulk_update_price_info">Harga untuk %d variasi akan diperbarui</string>
+    <string name="variations_bulk_update_dialog_price_mixed">Campuran</string>
+    <string name="variations_bulk_update_dialog_price_none">Tidak ada</string>
+    <string name="variations_bulk_update_dialog_sale_price_label">Harga obral</string>
+    <string name="variations_bulk_update_dialog_regular_price_label">Harga normal</string>
+    <string name="variations_bulk_update_dialog_price_section_title">Harga</string>
+    <string name="variations_bulk_update_dialog_subtitle">Pilih nilai yang ingin diperbarui</string>
+    <string name="variations_bulk_update_dialog_title">Pembaruan massal</string>
+    <string name="variations_bulk_limit_exceeded_button_ok">Oke</string>
+    <string name="variation_list_menu_bulk_update">Pembaruan massal…</string>
+    <string name="variation_loading_dialog_title">Memuat variasi…</string>
+    <string name="product_category_selector_search_failed">Pencarian kategori produk gagal</string>
+    <string name="product_category_selector_loading_failed">Pemuatan kategori produk gagal</string>
+    <string name="product_category_selector_search_hint">Cari Kategori</string>
+    <string name="product_category_selector_clear_selection">Hapus pilihan</string>
+    <string name="product_category_selector_check_content_description">Klik untuk menghapus centang</string>
+    <string name="product_category_selector_select_button_title_one">Pilih 1 kategori</string>
+    <string name="product_category_selector_select_button_title_default">Pilih %1$d Kategori</string>
+    <string name="product_category_selector_empty_state">Kategori produk tidak ditemukan</string>
+    <string name="product_category_selector_title">Pilih kategori</string>
+    <string name="shipping_label_install_wc_shipping_banner_dismiss_button_description">Tutup banner untuk menginstal WC Shipping</string>
+    <string name="shipping_label_install_wc_shipping_banner_button">Dapatkan WooCommerce Shipping</string>
+    <string name="shipping_label_install_wc_shipping_banner_description">Cetak label dari ponsel dengan WooCommerce Shipping.</string>
+    <string name="shipping_label_install_wc_shipping_banner_title">Perlu label pengiriman?</string>
+    <string name="order_creation_change_product_quantity">Ubah jumlah produk dari %d menjadi %d</string>
+    <string name="variations_bulk_update_regular_price">Perbarui Harga Normal</string>
+    <string name="variations_bulk_update_sale_price">Perbarui Harga Obral</string>
     <string name="card_reader_onboarding_stripe_unsupported_in_country_header">Kami tidak mendukung ekstensi WooCommerce Stripe di %1$s</string>
-    <string name="product_selector_filter_button_title">Penyaring</string>
+    <string name="product_selector_filter_button_title_zero">Penyaring</string>
     <string name="product_selector_clear_button_title">Hapus Pilihan</string>
     <string name="product_selector_select_button_title_one">Pilih %d Produk</string>
     <string name="product_selector_select_button_title_default">Pilih %d Produk</string>
@@ -133,7 +228,6 @@ Language: id
     <string name="coupon_details_minimum_spend">Belanja minimum%s</string>
     <string name="coupon_details_heading">Ringkasan Kupon</string>
     <string name="coupon_list_view_coupon">Lihat ringkasan kupon</string>
-    <string name="coupon_list_wip_message_enabled">Kini Anda dapat melihat dan mengedit kupon dengan perangkat Anda!</string>
     <string name="coupon_list_wip_title">Lihat dan edit kupon</string>
     <string name="coupon_list_empty_heading">Tidak ada kupon ditemukan</string>
     <string name="coupon_list_item_label_included_and_excluded">%1s excl. %2s</string>
@@ -161,8 +255,6 @@ Language: id
     <string name="orderstatus_contentDesc_withStatus">Status pesanan: %s</string>
     <string name="no_sku">Tidak ada SKU</string>
     <string name="count">Jumlah: %s</string>
-    <string name="plus_one">Tambah satu</string>
-    <string name="minus_one">Kurang satu</string>
     <string name="more_menu_button_coupons">Kupon</string>
     <string name="dismiss_inbox_note">Tutup</string>
     <string name="login_error_xml_rpc_auth_error_communicating">Ada kendala saat berkomunikasi dengan situs. Kode error HTTP 401 dikembalikan.</string>
@@ -621,7 +713,6 @@ Language: id
     <string name="card_reader_refetching_order_failed">Terjadi error saat mengambil pesanan. Status pesanan pada aplikasi mungkin telah usang.</string>
     <string name="card_reader_payment_email_client_not_found">Tidak dapat mendeteksi aplikasi klien email Anda</string>
     <string name="card_reader_payment_receipt_email_subject">Tanda terima Anda dari %s</string>
-    <string name="card_reader_payment_description">Pembayaran Langsung di Tempat untuk Pesanan %s senilai %s</string>
     <string name="card_reader_payment_fetch_order_loading_payment_state">Menyegarkan pesanan</string>
     <string name="card_reader_payment_fetch_order_loading_header">Memperbarui status aplikasi</string>
     <string name="shipping_label_shipping_carrier_shipping_method_banner_message">Pelanggan Anda memilih %1$s</string>
@@ -1121,7 +1212,6 @@ Language: id
     <string name="orderdetail_product_multiple">Produk</string>
     <string name="orderdetail_product_lineitem_qty_and_price">%1$s x %2$s</string>
     <string name="orderdetail_orderstatus_name">%1$s %2$s</string>
-    <string name="orderdetail_orderstatus_date_and_ordernum">%1$s \u2022 #%2$s</string>
     <string name="product_type_external">Eksternal</string>
     <string name="product_type_simple">Sederhana</string>
     <string name="product_status_privately_published">Diterbitkan secara privat</string>

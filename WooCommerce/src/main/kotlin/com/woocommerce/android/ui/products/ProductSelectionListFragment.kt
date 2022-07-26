@@ -1,13 +1,16 @@
 package com.woocommerce.android.ui.products
 
 import android.os.Bundle
-import android.view.*
+import android.view.ActionMode
+import android.view.Menu
+import android.view.MenuInflater
+import android.view.MenuItem
 import android.view.MenuItem.OnActionExpandListener
+import android.view.View
 import androidx.appcompat.widget.SearchView
 import androidx.appcompat.widget.SearchView.OnQueryTextListener
 import androidx.core.view.isVisible
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.Observer
 import androidx.recyclerview.selection.SelectionPredicates
 import androidx.recyclerview.selection.SelectionTracker
 import androidx.recyclerview.selection.StorageStrategy
@@ -186,27 +189,21 @@ class ProductSelectionListFragment :
             }
         }
 
-        viewModel.productList.observe(
-            viewLifecycleOwner,
-            Observer {
-                showProductList(it)
-            }
-        )
+        viewModel.productList.observe(viewLifecycleOwner) {
+            showProductList(it)
+        }
 
-        viewModel.event.observe(
-            viewLifecycleOwner,
-            Observer { event ->
-                when (event) {
-                    is ShowSnackbar -> uiMessageResolver.showSnack(event.message)
-                    is ExitWithResult<*> -> {
-                        val key = viewModel.groupedProductListType.resultKey
-                        val productIds = (event.data as? List<Long>) ?: emptyList()
-                        navigateBackWithResult(key, productIds)
-                    }
-                    else -> event.isHandled = false
+        viewModel.event.observe(viewLifecycleOwner) { event ->
+            when (event) {
+                is ShowSnackbar -> uiMessageResolver.showSnack(event.message)
+                is ExitWithResult<*> -> {
+                    val key = viewModel.groupedProductListType.resultKey
+                    val productIds = (event.data as? List<*>) ?: emptyList<Long>()
+                    navigateBackWithResult(key, productIds)
                 }
+                else -> event.isHandled = false
             }
-        )
+        }
     }
 
     private fun showSkeleton(show: Boolean) {
@@ -252,12 +249,12 @@ class ProductSelectionListFragment :
         return true
     }
 
-    override fun onMenuItemActionExpand(item: MenuItem?): Boolean {
+    override fun onMenuItemActionExpand(item: MenuItem): Boolean {
         viewModel.onSearchOpened()
         return true
     }
 
-    override fun onMenuItemActionCollapse(item: MenuItem?): Boolean {
+    override fun onMenuItemActionCollapse(item: MenuItem): Boolean {
         viewModel.onSearchClosed()
         closeSearchView()
         return true

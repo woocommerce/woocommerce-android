@@ -7,7 +7,7 @@
                 "equalTo": "true"
             },
             "path": {
-                "matches": "/wc/v3/orders/(.*)"
+                "equalTo": "/wc/v3/orders/&_method=get"
             },
             "query": {
                 "matches": "(.*)include(.*)"
@@ -100,7 +100,7 @@
                 "fee_lines": [],
                 "coupon_lines": [],
                 "refunds": [],
-                "date_created_gmt": "{{#assign 'currentYear'}}{{now format='yyyy'}}{{/assign}}{{currentYear}}-10-31T13:13:57",
+                "date_created_gmt": "{{#assign 'currentYear'}}{{fnow format='yyyy'}}{{/assign}}{{currentYear}}-10-31T13:13:57",
                 "date_modified_gmt": "{{currentYear}}-10-31T13:13:57",
                 "date_paid_gmt": null
             }, {
@@ -188,12 +188,12 @@
                 "date_paid_gmt": null
             }, {
                 "id": 2787,
-                "status": "completed",
+                "status": "pending",
                 "currency": "USD",
                 "prices_include_tax": false,
                 "discount_total": "0.00",
                 "shipping_total": "0.00",
-                "total": "140.00",
+                "total": "50.00",
                 "total_tax": "0.00",
                 "order_key": "wc_order_17ufAqNauuOUR",
                 "billing": {
@@ -221,8 +221,8 @@
                     "country": "GB",
                     "phone": "078 1369 7987"
                 },
-                "payment_method": "cheque",
-                "payment_method_title": "Check payments",
+                "payment_method": "cod",
+                "payment_method_title": "Cash On Delivery",
                 "customer_note": "",
                 "number": "2787",
                 "meta_data": [{
@@ -237,9 +237,9 @@
                     "variation_id": 0,
                     "quantity": 1,
                     "tax_class": "",
-                    "subtotal": "110.00",
+                    "subtotal": "50.00",
                     "subtotal_tax": "0.00",
-                    "total": "110.00",
+                    "total": "50.00",
                     "total_tax": "0.00",
                     "taxes": [],
                     "meta_data": [],
@@ -1170,7 +1170,7 @@
                 "fee_lines": [],
                 "coupon_lines": [],
                 "refunds": [],
-                "date_created_gmt": "{{#assign 'currentYear'}}{{now format='yyyy'}}{{/assign}}{{currentYear}}-01-31T11:26:08",
+                "date_created_gmt": "{{#assign 'currentYear'}}{{fnow format='yyyy'}}{{/assign}}{{currentYear}}-01-31T11:26:08",
                 "date_modified_gmt": "{{currentYear}}-02-03T15:34:32",
                 "date_paid_gmt": "{{currentYear}}-01-28T11:26:54"
             }, {

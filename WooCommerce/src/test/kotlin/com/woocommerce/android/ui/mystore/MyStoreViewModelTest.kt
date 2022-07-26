@@ -2,6 +2,9 @@ package com.woocommerce.android.ui.mystore
 
 import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.AppPrefsWrapper
+import com.woocommerce.android.analytics.AnalyticsEvent
+import com.woocommerce.android.analytics.AnalyticsTracker
+import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.mystore.domain.GetStats
@@ -15,10 +18,17 @@ import kotlinx.coroutines.flow.flow
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Test
-import org.mockito.kotlin.*
+import org.mockito.kotlin.any
+import org.mockito.kotlin.mock
+import org.mockito.kotlin.never
+import org.mockito.kotlin.verify
+import org.mockito.kotlin.whenever
 import org.wordpress.android.fluxc.model.SiteModel
+import org.wordpress.android.fluxc.model.WCProductModel
+import org.wordpress.android.fluxc.model.leaderboards.WCTopPerformerProductModel
 import org.wordpress.android.fluxc.store.WCStatsStore.StatsGranularity
 import org.wordpress.android.fluxc.store.WooCommerceStore
+import java.math.BigDecimal
 import kotlin.test.assertTrue
 
 @ExperimentalCoroutinesApi
@@ -33,6 +43,7 @@ class MyStoreViewModelTest : BaseUnitTest() {
     private val selectedSite: SelectedSite = mock()
     private val appPrefsWrapper: AppPrefsWrapper = mock()
     private val usageTracksEventEmitter: MyStoreStatsUsageTracksEventEmitter = mock()
+    private val analyticsTrackerWrapper: AnalyticsTrackerWrapper = mock()
 
     private lateinit var sut: MyStoreViewModel
 
@@ -150,6 +161,17 @@ class MyStoreViewModelTest : BaseUnitTest() {
         }
 
     @Test
+    fun `Given network connection, When on swipe to refresh, Then analytics is tracked`() =
+        testBlocking {
+            whenViewModelIsCreated()
+            givenNetworkConnectivity(connected = true)
+
+            sut.onSwipeToRefresh()
+
+            verify(analyticsTrackerWrapper).track(AnalyticsEvent.DASHBOARD_PULLED_TO_REFRESH)
+        }
+
+    @Test
     fun `Given success loading revenue, When stats granularity changes, Then UI is updated with revenue stats`() =
         testBlocking {
             whenViewModelIsCreated()
@@ -163,6 +185,21 @@ class MyStoreViewModelTest : BaseUnitTest() {
                     null,
                     ANY_SELECTED_STATS_GRANULARITY
                 )
+            )
+        }
+
+    @Test
+    fun `Given success loading revenue, When stats granularity changes, Then analytics is tracked`() =
+        testBlocking {
+            whenViewModelIsCreated()
+            givenNetworkConnectivity(connected = true)
+            givenStatsLoadingResult(GetStats.LoadStatsResult.RevenueStatsSuccess(null))
+
+            sut.onStatsGranularityChanged(ANY_SELECTED_STATS_GRANULARITY)
+
+            verify(analyticsTrackerWrapper).track(
+                AnalyticsEvent.DASHBOARD_MAIN_STATS_LOADED,
+                mapOf(AnalyticsTracker.KEY_RANGE to "weeks")
             )
         }
 
@@ -278,6 +315,46 @@ class MyStoreViewModelTest : BaseUnitTest() {
         }
 
     @Test
+    fun `Given top performers load success, When clicked, Then analytics is tracked`() =
+        testBlocking {
+            val topPerformerModel = mock<WCTopPerformerProductModel> {
+                on(it.currency).thenReturn("USD")
+                on(it.product).thenReturn(WCProductModel())
+            }
+            givenCurrencyFormatter(BigDecimal("0.0"), "USD")
+            givenResourceProvider()
+            givenNetworkConnectivity(connected = true)
+            givenToPerformersResult(
+                GetTopPerformers.TopPerformersResult.TopPerformersSuccess(
+                    listOf(
+                        topPerformerModel
+                    )
+                )
+            )
+
+            whenViewModelIsCreated()
+            (sut.topPerformersState.value as MyStoreViewModel.TopPerformersViewState.Content)
+                .topPerformers[0].onClick.invoke(1L)
+
+            verify(analyticsTrackerWrapper).track(AnalyticsEvent.TOP_EARNER_PRODUCT_TAPPED)
+        }
+
+    @Test
+    fun `Given top performers load success, When stats granularity changes, Then analytics is tracked`() =
+        testBlocking {
+            whenViewModelIsCreated()
+            givenNetworkConnectivity(connected = true)
+            givenToPerformersResult(GetTopPerformers.TopPerformersResult.TopPerformersSuccess(emptyList()))
+
+            sut.onStatsGranularityChanged(ANY_SELECTED_STATS_GRANULARITY)
+
+            verify(analyticsTrackerWrapper).track(
+                AnalyticsEvent.DASHBOARD_TOP_PERFORMERS_LOADED,
+                mapOf(AnalyticsTracker.KEY_RANGE to "weeks")
+            )
+        }
+
+    @Test
     fun `Given top performers error, When stats granularity changes, Then UI is updated with top performers error`() =
         testBlocking {
             whenViewModelIsCreated()
@@ -320,6 +397,14 @@ class MyStoreViewModelTest : BaseUnitTest() {
         whenever(getTopPerformers.invoke(any(), any(), any())).thenReturn(flow { emit(result) })
     }
 
+    private fun givenCurrencyFormatter(amount: BigDecimal, currency: String) {
+        whenever(currencyFormatter.formatCurrency(amount, currency)).thenReturn("1.00")
+    }
+
+    private fun givenResourceProvider() {
+        whenever(resourceProvider.getString(any(), any())).thenReturn("")
+    }
+
     private fun givenStatsForGranularityCached(granularity: StatsGranularity) {
         sut.refreshStoreStats[granularity.ordinal] = false
         sut.refreshTopPerformerStats[granularity.ordinal] = false
@@ -341,7 +426,8 @@ class MyStoreViewModelTest : BaseUnitTest() {
             currencyFormatter,
             selectedSite,
             appPrefsWrapper,
-            usageTracksEventEmitter
+            usageTracksEventEmitter,
+            analyticsTrackerWrapper,
         )
     }
 

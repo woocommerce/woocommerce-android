@@ -31,6 +31,7 @@ so that's the baseline as defined in `major_100`.
     <dimen name="major_300">48dp</dimen>
     <dimen name="major_325">56dp</dimen>
     <dimen name="major_350">60dp</dimen>
+    <dimen name="major_400">96dp</dimen>
 
     <!-- Regular text dimensions (body, subtitles, caption, etc -->
     <dimen name="text_minor_60">10sp</dimen>
@@ -66,6 +67,7 @@ so that's the baseline as defined in `major_100`.
     <dimen name="button_height_major_100">36sp</dimen>
 
     <!-- Smaller image sizes (ex. icons) -->
+    <dimen name="image_minor_40">18dp</dimen>
     <dimen name="image_minor_50">24dp</dimen>
     <dimen name="image_minor_60">26dp</dimen>
     <dimen name="image_minor_100">40dp</dimen>
@@ -100,6 +102,7 @@ so that's the baseline as defined in `major_100`.
     <!-- Corner Radius -->
     <dimen name="corner_radius_small">2dp</dimen>
     <dimen name="corner_radius_medium">4dp</dimen>
+    <dimen name="corner_radius_large">8dp</dimen>
     <dimen name="corner_radius_round_button">20dp</dimen>
 
     <!-- Chart dimens -->

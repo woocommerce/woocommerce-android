@@ -3,11 +3,13 @@ package com.woocommerce.android.ui.products
 import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.initSavedStateHandle
 import com.woocommerce.android.viewmodel.BaseUnitTest
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.whenever
 
+@ExperimentalCoroutinesApi
 class ProductTypesBottomSheetViewModelTest : BaseUnitTest() {
     private lateinit var viewModel: ProductTypesBottomSheetViewModel
     private val appPrefs: AppPrefs = mock()

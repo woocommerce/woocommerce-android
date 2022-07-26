@@ -1,0 +1,4 @@
+9.6:
+Bu sürüm, ödenmemiş tüm siparişler için ödemeleri nakit, kart veya ödeme bağlantıları aracılığıyla tahsil etme seçeneğini içerir. Mağazada birden fazla uzantı yüklü olduğunda da tercih edilen bir ödeme ağ geçidini seçebilirsiniz.
+
+Ayrıca birkaç küçük iyileştirme daha yaptık. Harika geri bildirimleriniz için herkese tekrar teşekkür ederim. Devam edin!

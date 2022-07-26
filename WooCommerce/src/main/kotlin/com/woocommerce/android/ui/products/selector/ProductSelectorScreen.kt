@@ -17,6 +17,8 @@ import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.Divider
 import androidx.compose.material.MaterialTheme
@@ -38,11 +40,14 @@ import com.woocommerce.android.R.string
 import com.woocommerce.android.ui.compose.animations.SkeletonView
 import com.woocommerce.android.ui.compose.component.InfiniteListHandler
 import com.woocommerce.android.ui.compose.component.WCColoredButton
+import com.woocommerce.android.ui.compose.component.WCSearchField
 import com.woocommerce.android.ui.compose.component.WCTextButton
 import com.woocommerce.android.ui.products.ProductType.GROUPED
 import com.woocommerce.android.ui.products.ProductType.SIMPLE
 import com.woocommerce.android.ui.products.ProductType.VARIABLE
+import com.woocommerce.android.ui.products.selector.ProductSelectorViewModel.FilterState
 import com.woocommerce.android.ui.products.selector.ProductSelectorViewModel.LoadingState.APPENDING
+import com.woocommerce.android.ui.products.selector.ProductSelectorViewModel.LoadingState.IDLE
 import com.woocommerce.android.ui.products.selector.ProductSelectorViewModel.LoadingState.LOADING
 import com.woocommerce.android.ui.products.selector.ProductSelectorViewModel.ProductListItem
 import com.woocommerce.android.ui.products.selector.ProductSelectorViewModel.ViewState
@@ -53,15 +58,19 @@ import com.woocommerce.android.util.StringUtils
 
 @Composable
 fun ProductSelectorScreen(viewModel: ProductSelectorViewModel) {
-    val viewState by viewModel.viewSate.observeAsState(ViewState())
-
-    ProductSelectorScreen(
-        state = viewState,
-        onDoneButtonClick = viewModel::onDoneButtonClick,
-        onClearButtonClick = viewModel::onClearButtonClick,
-        onProductClick = viewModel::onProductClick,
-        onLoadMore = viewModel::onLoadMore
-    )
+    val viewState by viewModel.viewState.observeAsState()
+    viewState?.let {
+        ProductSelectorScreen(
+            state = it,
+            onDoneButtonClick = viewModel::onDoneButtonClick,
+            onClearButtonClick = viewModel::onClearButtonClick,
+            onFilterButtonClick = viewModel::onFilterButtonClick,
+            onProductClick = viewModel::onProductClick,
+            onLoadMore = viewModel::onLoadMore,
+            onSearchQueryChanged = viewModel::onSearchQueryChanged,
+            onClearFiltersButtonClick = viewModel::onClearFiltersButtonClick
+        )
+    }
 }
 
 @Composable
@@ -69,45 +78,94 @@ fun ProductSelectorScreen(
     state: ViewState,
     onDoneButtonClick: () -> Unit,
     onClearButtonClick: () -> Unit,
+    onFilterButtonClick: () -> Unit,
     onProductClick: (ProductListItem) -> Unit,
-    onLoadMore: () -> Unit
+    onLoadMore: () -> Unit,
+    onSearchQueryChanged: (String) -> Unit,
+    onClearFiltersButtonClick: () -> Unit
 ) {
-    when {
-        state.products.isNotEmpty() -> ProductList(
-            state = state,
-            onDoneButtonClick = onDoneButtonClick,
-            onClearButtonClick = onClearButtonClick,
-            onProductClick = onProductClick,
-            onLoadMore = onLoadMore
-        )
-        state.products.isEmpty() && state.loadingState == LOADING -> ProductListSkeleton()
-        else -> EmptyProductList()
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(MaterialTheme.colors.surface)
+    ) {
+        if (state.filterState.filterOptions.isEmpty()) {
+            WCSearchField(
+                value = state.searchQuery,
+                onValueChange = onSearchQueryChanged,
+                hint = stringResource(id = string.product_selector_search_hint),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(
+                        horizontal = dimensionResource(id = dimen.major_100),
+                        vertical = dimensionResource(id = dimen.minor_100)
+                    )
+            )
+        }
+
+        when {
+            state.products.isNotEmpty() -> ProductList(
+                state = state,
+                onDoneButtonClick = onDoneButtonClick,
+                onClearButtonClick = onClearButtonClick,
+                onFilterButtonClick = onFilterButtonClick,
+                onProductClick = onProductClick,
+                onLoadMore = onLoadMore
+            )
+            state.products.isEmpty() && state.loadingState == LOADING -> ProductListSkeleton()
+            else -> EmptyProductList(state, onClearFiltersButtonClick)
+        }
     }
 }
 
 @Composable
-private fun EmptyProductList() {
+private fun EmptyProductList(
+    state: ViewState,
+    onClearFiltersButtonClick: () -> Unit
+) {
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .padding(horizontal = dimensionResource(id = R.dimen.major_200)),
+            .verticalScroll(rememberScrollState())
+            .padding(
+                horizontal = dimensionResource(id = dimen.major_200),
+                vertical = dimensionResource(id = dimen.major_200)
+            ),
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
+        val message = if (state.searchQuery.isNotEmpty()) {
+            stringResource(id = string.empty_message_with_search, state.searchQuery)
+        } else if (state.filterState.filterOptions.isNotEmpty()) {
+            stringResource(id = string.empty_message_with_filters)
+        } else {
+            stringResource(id = string.product_selector_empty_state)
+        }
         Text(
-            text = stringResource(id = R.string.product_list_empty),
+            text = message,
             textAlign = TextAlign.Center,
             style = MaterialTheme.typography.h6,
             modifier = Modifier.padding(
-                start = dimensionResource(id = R.dimen.major_150),
-                end = dimensionResource(id = R.dimen.major_150)
+                start = dimensionResource(id = dimen.major_150),
+                end = dimensionResource(id = dimen.major_150)
             )
         )
-        Spacer(Modifier.size(dimensionResource(id = R.dimen.major_325)))
+        Spacer(Modifier.size(dimensionResource(id = dimen.major_325)))
         Image(
             painter = painterResource(id = R.drawable.img_empty_products),
             contentDescription = null,
         )
+
+        if (state.filterState.filterOptions.isNotEmpty()) {
+            Spacer(Modifier.size(dimensionResource(id = dimen.major_325)))
+            WCColoredButton(
+                onClick = onClearFiltersButtonClick,
+                text = stringResource(id = string.product_selector_clear_filters_button_title),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(dimensionResource(id = dimen.major_100)),
+            )
+        }
     }
 }
 
@@ -116,6 +174,7 @@ private fun ProductList(
     state: ViewState,
     onDoneButtonClick: () -> Unit,
     onClearButtonClick: () -> Unit,
+    onFilterButtonClick: () -> Unit,
     onProductClick: (ProductListItem) -> Unit,
     onLoadMore: () -> Unit,
 ) {
@@ -133,15 +192,19 @@ private fun ProductList(
             if (state.selectedItemsCount > 0) {
                 WCTextButton(
                     onClick = onClearButtonClick,
-                    text = stringResource(id = R.string.product_selector_clear_button_title),
+                    text = stringResource(id = string.product_selector_clear_button_title),
                     allCaps = false,
                     modifier = Modifier.align(Alignment.CenterStart)
                 )
             }
 
             WCTextButton(
-                onClick = { },
-                text = stringResource(id = R.string.product_selector_filter_button_title),
+                onClick = onFilterButtonClick,
+                text = StringUtils.getQuantityString(
+                    quantity = state.filterState.filterOptions.size,
+                    default = string.product_selector_filter_button_title_default,
+                    zero = string.product_selector_filter_button_title_zero
+                ),
                 allCaps = false,
                 modifier = Modifier.align(Alignment.CenterEnd)
             )
@@ -158,7 +221,7 @@ private fun ProductList(
                     imageUrl = product.imageUrl,
                     infoLine1 = product.stockAndPrice,
                     infoLine2 = product.sku?.let {
-                        stringResource(R.string.product_selector_sku_value, product.sku)
+                        stringResource(string.product_selector_sku_value, product.sku)
                     },
                     selectionState = product.selectionState,
                     isArrowVisible = product.type == VARIABLE && product.numVariations > 0,
@@ -168,9 +231,9 @@ private fun ProductList(
                     onProductClick(product)
                 }
                 Divider(
-                    modifier = Modifier.padding(start = dimensionResource(id = R.dimen.major_100)),
+                    modifier = Modifier.padding(start = dimensionResource(id = dimen.major_100)),
                     color = colorResource(id = R.color.divider_color),
-                    thickness = dimensionResource(id = R.dimen.minor_10)
+                    thickness = dimensionResource(id = dimen.minor_10)
                 )
             }
             if (state.loadingState == APPENDING) {
@@ -191,20 +254,20 @@ private fun ProductList(
 
         Divider(
             color = colorResource(id = R.color.divider_color),
-            thickness = dimensionResource(id = R.dimen.minor_10)
+            thickness = dimensionResource(id = dimen.minor_10)
         )
 
         WCColoredButton(
             onClick = onDoneButtonClick,
             text = StringUtils.getQuantityString(
                 quantity = state.selectedItemsCount,
-                default = R.string.product_selector_select_button_title_default,
-                one = R.string.product_selector_select_button_title_one,
-                zero = R.string.done
+                default = string.product_selector_select_button_title_default,
+                one = string.product_selector_select_button_title_one,
+                zero = string.done
             ),
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(dimensionResource(id = R.dimen.major_100))
+                .padding(dimensionResource(id = dimen.major_100))
         )
     }
 }
@@ -217,32 +280,32 @@ private fun ProductListSkeleton() {
         repeat(numberOfInboxSkeletonRows) {
             item {
                 Row(
-                    modifier = Modifier.padding(dimensionResource(id = R.dimen.major_100)),
-                    horizontalArrangement = Arrangement.spacedBy(dimensionResource(id = R.dimen.major_85))
+                    modifier = Modifier.padding(dimensionResource(id = dimen.major_100)),
+                    horizontalArrangement = Arrangement.spacedBy(dimensionResource(id = dimen.major_85))
                 ) {
                     SkeletonView(
-                        dimensionResource(id = R.dimen.skeleton_image_dimension),
-                        dimensionResource(id = R.dimen.skeleton_image_dimension)
+                        dimensionResource(id = dimen.skeleton_image_dimension),
+                        dimensionResource(id = dimen.skeleton_image_dimension)
                     )
 
                     Column(
-                        verticalArrangement = Arrangement.spacedBy(dimensionResource(id = R.dimen.minor_100))
+                        verticalArrangement = Arrangement.spacedBy(dimensionResource(id = dimen.minor_100))
                     ) {
                         SkeletonView(
-                            dimensionResource(id = R.dimen.skeleton_text_large_width),
-                            dimensionResource(id = R.dimen.major_200)
+                            dimensionResource(id = dimen.skeleton_text_large_width),
+                            dimensionResource(id = dimen.major_200)
                         )
                         SkeletonView(
-                            dimensionResource(id = R.dimen.skeleton_text_extra_large_width),
-                            dimensionResource(id = R.dimen.major_150)
+                            dimensionResource(id = dimen.skeleton_text_extra_large_width),
+                            dimensionResource(id = dimen.major_150)
                         )
                     }
                 }
                 Divider(
                     modifier = Modifier
-                        .offset(x = dimensionResource(id = R.dimen.major_100)),
+                        .offset(x = dimensionResource(id = dimen.major_100)),
                     color = colorResource(id = R.color.divider_color),
-                    thickness = dimensionResource(id = R.dimen.minor_10)
+                    thickness = dimensionResource(id = dimen.minor_10)
                 )
             }
         }
@@ -297,13 +360,35 @@ fun ProductListPreview() {
         )
     )
 
-    ProductList(state = ViewState(products = products, selectedItemsCount = 3), {}, {}, {}, {})
+    ProductList(
+        state = ViewState(
+            products = products,
+            selectedItemsCount = 3,
+            loadingState = IDLE,
+            filterState = FilterState(),
+            searchQuery = ""
+        ),
+        {},
+        {},
+        {},
+        {},
+        {}
+    )
 }
 
 @Preview
 @Composable
 fun ProductListEmptyPreview() {
-    EmptyProductList()
+    EmptyProductList(
+        ViewState(
+            products = emptyList(),
+            selectedItemsCount = 3,
+            loadingState = IDLE,
+            filterState = FilterState(),
+            searchQuery = ""
+        ),
+        {}
+    )
 }
 
 @Preview

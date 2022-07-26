@@ -5,7 +5,6 @@ import androidx.navigation.fragment.findNavController
 import com.woocommerce.android.NavGraphMainDirections
 import com.woocommerce.android.R
 import com.woocommerce.android.extensions.navigateSafely
-import com.woocommerce.android.ui.cardreader.onboarding.CardReaderFlowParam
 import com.woocommerce.android.ui.common.InfoScreenFragment.InfoScreenLinkAction.LearnMoreAboutShippingLabels
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.AddOrderNote
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.AddOrderShipmentTracking
@@ -14,9 +13,10 @@ import com.woocommerce.android.ui.orders.OrderNavigationTarget.IssueOrderRefund
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.PreviewReceipt
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.PrintShippingLabel
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.RefundShippingLabel
-import com.woocommerce.android.ui.orders.OrderNavigationTarget.StartCardReaderPaymentFlow
+import com.woocommerce.android.ui.orders.OrderNavigationTarget.StartPaymentFlow
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.StartShippingLabelCreationFlow
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.ViewCreateShippingLabelInfo
+import com.woocommerce.android.ui.orders.OrderNavigationTarget.ViewCustomFields
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.ViewOrderFulfillInfo
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.ViewOrderStatusSelector
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.ViewOrderedAddons
@@ -27,10 +27,12 @@ import com.woocommerce.android.ui.orders.OrderNavigationTarget.ViewRefundedProdu
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.ViewShipmentTrackingProviders
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.ViewShippingLabelFormatOptions
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.ViewShippingLabelPaperSizes
-import com.woocommerce.android.ui.orders.creation.OrderCreationViewModel
+import com.woocommerce.android.ui.orders.creation.OrderCreateEditViewModel
 import com.woocommerce.android.ui.orders.details.OrderDetailFragmentDirections
 import com.woocommerce.android.ui.orders.shippinglabels.PrintShippingLabelFragmentDirections
 import com.woocommerce.android.ui.orders.tracking.AddOrderShipmentTrackingFragmentDirections
+import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderFlowParam
+import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderFlowParam.PaymentOrRefund.Payment.PaymentType.ORDER
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -149,9 +151,9 @@ class OrderNavigator @Inject constructor() {
                     .actionOrderDetailFragmentToCreateShippingLabelFragment(target.orderId)
                 fragment.findNavController().navigateSafely(action)
             }
-            is StartCardReaderPaymentFlow -> {
+            is StartPaymentFlow -> {
                 val action = OrderDetailFragmentDirections.actionOrderDetailFragmentToCardReaderFlow(
-                    CardReaderFlowParam.PaymentOrRefund.Payment(target.orderId)
+                    CardReaderFlowParam.PaymentOrRefund.Payment(target.orderId, ORDER)
                 )
                 fragment.findNavController().navigateSafely(action)
             }
@@ -180,8 +182,12 @@ class OrderNavigator @Inject constructor() {
             is EditOrder -> {
                 OrderDetailFragmentDirections
                     .actionOrderDetailFragmentToOrderCreationFragment(
-                        OrderCreationViewModel.Mode.Edit(target.orderId)
+                        OrderCreateEditViewModel.Mode.Edit(target.orderId)
                     ).let { fragment.findNavController().navigateSafely(it) }
+            }
+            is ViewCustomFields -> {
+                val action = OrderDetailFragmentDirections.actionOrderDetailFragmentToCustomOrderFieldsFragment()
+                fragment.findNavController().navigateSafely(action)
             }
         }
     }

@@ -35,4 +35,9 @@ class SingleOrderScreen : Screen {
         Espresso.onView(withText(productName)).check(ViewAssertions.matches(isDisplayed()))
         return assertSingleOrderScreen()
     }
+
+    fun tapOnCollectPayment(): PaymentSelectionScreen {
+        clickOn(R.id.paymentInfo_collectCardPresentPaymentButton)
+        return PaymentSelectionScreen()
+    }
 }

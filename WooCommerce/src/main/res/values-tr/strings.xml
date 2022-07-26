@@ -1,13 +1,108 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2022-06-02 15:54:03+0000
+Translation-Revision-Date: 2022-07-14 08:54:17+0000
 Plural-Forms: nplurals=2; plural=(n > 1);
 Generator: GlotPress/2.4.0-alpha
 Language: tr
 -->
 <resources>
+    <string name="tests_notification_new_order_message">WooCommerce Mağazanızda 50 ABD doları tutarında yeni sipariş</string>
+    <string name="tests_notification_new_order_title">Yeni bir siparişiniz var! 🎉</string>
+    <string name="lines_all_details">ayrıntılar</string>
+    <string name="lines_incomplete_explanation">Tümünü (%1$s) düzenlemek için WooCommerce mağaza yöneticinizde siparişe göz atın</string>
+    <string name="lines_incomplete">%1$s eksik</string>
+    <string name="support_system_status_report_share_label">Sistem durum raporunu paylaş</string>
+    <string name="support_system_status_report_copy_label">Sistem durum raporunu panoya kopyala</string>
+    <string name="card_reader_connect_keep_searching_button">Aramaya Devam Et</string>
+    <string name="card_reader_payment_description_v2">%s blog_id %s, %s no\'lu Sipariş için Şahsen Ödeme.</string>
+    <string name="card_reader_manage_payment_provider">Ödeme Sağlayıcısını Değiştir</string>
+    <string name="orderdetail_refunded_line_with_info">Geri ödeme yapıldı: %1$s</string>
+    <string name="orderdetail_payment_summary_onhold_plain">Bekleyen ödeme</string>
+    <string name="install_wc_shipping_proceed_button">Kuruluma Devam Et</string>
+    <string name="install_wc_shipping_installation_info">Kurulumdan önce bilinmesi gerekenler</string>
+    <string name="install_wc_shipping_preinstall_title">Uzantı yükleyin</string>
+    <string name="install_wc_shipping_extension_name">WooCommerce Shipping</string>
+    <string name="product_selector_clear_filters_button_title">Filtreleri Temizle</string>
+    <string name="product_selector_empty_state">Ürün bulunamadı</string>
+    <string name="product_selector_search_failed">Ürün aranamadı</string>
+    <string name="product_selector_loading_failed">Ürünler yüklenemedi</string>
+    <string name="product_selector_search_hint">Ürün Ara</string>
+    <string name="product_selector_filter_button_title_default">Filtre (%d)</string>
+    <string name="coupon_restrictions_allowed_emails_invalid">Bazı e-posta adresleri geçersiz. Lütfen girilen e-postaları düzeltin.</string>
+    <string name="coupon_restrictions_allowed_emails_hint">Bir sipariş verildiğinde kontrol edilecek izin verilen faturalandırma e-postalarının listesi. E-posta adreslerini virgüllerle ayırın. E-posta adresinin parçaları için yıldız işareti (*) de kullanabilirsiniz. Örneğin \"*@gmail.com\" ifadesi, tüm Gmail adreslerini eşleştirir.</string>
+    <string name="empty_message_with_filters">Mallesef seçilen filtrelerle eşleşen ürün yok\"</string>
+    <string name="card_reader_onboarding_confirm_payment_method_button">Ödeme Yöntemini onaylayın</string>
+    <string name="card_reader_onboarding_choose_stripe_button">Stripe</string>
+    <string name="card_reader_onboarding_choose_wcpayment_button">WooCommerce Ödemeler</string>
+    <string name="card_reader_onboarding_choose_plugin_hint">Şahsen Ödemeler bu ödeme sağlayıcılarından herhangi biri aracılığıyla işlenebilir. Hangi sağlayıcıyı kullanmak istiyorsunuz?</string>
+    <string name="card_reader_onboarding_choose_payment_provider">Ödeme Sağlayıcınızı seçin </string>
+    <string name="order_editing_locked_content_description">kilitli</string>
+    <string name="order_editing_non_editable_message">Ürünleri veya Ödeme Ayrıntılarını düzenlemek için durumu Ödeme Bekliyor olarak değiştirin.</string>
+    <string name="order_editing_non_editable_title">Bu siparişin bazı bölümleri şu anda düzenlenemez</string>
+    <string name="order_creation_customer_search_hint">Müşterileri ara</string>
+    <string name="order_creation_customer_search_empty">Müşteri bulunamadı</string>
+    <string name="install_wc_shipping_flow_onboarding_screen_not_now_button">Şimdi değil</string>
+    <string name="install_wc_shipping_flow_onboarding_screen_add_extension_button">Mağazaya Uzantı Ekleyin</string>
+    <string name="install_wc_shipping_flow_onboarding_screen_link">WooCommerce Shipping nedir?</string>
+    <string name="install_wc_shipping_flow_onboarding_screen_discounts_bullet_desc">İndirimli gönderim ücretlerine erişin. Şu anda DHL ve USPS kullanılabilir, yakında daha fazlası da gelecek!</string>
+    <string name="install_wc_shipping_flow_onboarding_screen_discounts_bullet_title">İndirimli fiyatlar</string>
+    <string name="install_wc_shipping_flow_onboarding_screen_print_bullet_desc">Bir sipariş alın, ardından ödeme yapın, yazdırın, paketleyin ve gönderin.</string>
+    <string name="install_wc_shipping_flow_onboarding_screen_print_bullet_title">Telefonunuzla yazdırın</string>
+    <string name="install_wc_shipping_flow_onboarding_screen_postage_bullet_desc">O pul defterinin nereye gittiğini merak etmeye gerek yok.</string>
+    <string name="install_wc_shipping_flow_onboarding_screen_postage_bullet_title">İhtiyacınız olduğunda posta ücreti satın alın</string>
+    <string name="install_wc_shipping_flow_onboarding_screen_subtitle">Zamandan ve paradan tasarruf edin</string>
+    <string name="install_wc_shipping_flow_onboarding_screen_title">WooCommerce Shipping ile siparişlerinizi yerine getirin</string>
+    <string name="product_selector_arrow_content_description">Ayrıntıları göster</string>
+    <string name="product_selector_select_variation_label">Varyasyon seç: %s</string>
+    <string name="coupon_restrictions_exclude_categories">Ürün Kategorilerini Hariç Tut</string>
+    <string name="coupon_restrictions_exclude_products">Ürünleri Hariç Tut</string>
+    <string name="coupon_restrictions_exclusions_section_title">Bu kuponu şuraya uygula:</string>
+    <string name="coupon_restrictions_allowed_emails_placeholder">Kısıtlama yok</string>
+    <string name="coupon_restrictions_allowed_emails">İzin verilen e-postalar</string>
+    <string name="coupon_restrictions_limit_per_user_placeholder">Sınırsız</string>
+    <string name="coupon_restrictions_amount_limit_placeholder">Uygun Olanların Tümü</string>
+    <string name="coupon_restrictions_limit_per_coupon_placeholder">Sınırsız</string>
+    <string name="coupon_restrictions_minimum_maximum_spend_placeholder">Hiçbiri</string>
+    <string name="coupon_edit_edit_products_title">Ürün Kategorilerini Düzenle (%1$d)</string>
+    <string name="coupon_edit_select_categories_title">Ürün Kategorileri Seç</string>
+    <string name="variations_bulk_update_warning_message">Şu anda toplu güncelleme en fazla 100 varyasyon için desteklenmektedir.</string>
+    <string name="variations_bulk_update_warning_title">Toplu güncelleme sınırı aşıldı</string>
+    <string name="variations_bulk_update_regular_prices_dialog_title">Normal fiyatlar güncelleniyor</string>
+    <string name="variations_bulk_update_sale_prices_dialog_title">Satış fiyatları güncelleniyor</string>
+    <string name="variations_bulk_update_sale_prices_success">Satış Fiyatları Güncellendi.</string>
+    <string name="variations_bulk_update_regular_prices_success">Normal Fiyatlar Güncellendi.</string>
+    <string name="variations_bulk_update_error">Bir yanlışlık oldu! Lütfen tekrar deneyin.</string>
+    <string name="variations_bulk_update_current_prices_mixed">Geçerli fiyatlar karışık</string>
+    <string name="variations_bulk_update_current_price">Geçerli fiyat: %s</string>
+    <string name="variations_bulk_update_price_info">%d varyasyon için fiyat güncellenecek.</string>
+    <string name="variations_bulk_update_dialog_price_mixed">Karışık</string>
+    <string name="variations_bulk_update_dialog_price_none">Hiçbiri</string>
+    <string name="variations_bulk_update_dialog_sale_price_label">İndirimli satış fiyatı</string>
+    <string name="variations_bulk_update_dialog_regular_price_label">Normal fiyat</string>
+    <string name="variations_bulk_update_dialog_price_section_title">Fiyat</string>
+    <string name="variations_bulk_update_dialog_subtitle">Güncellenecek bir değer seçin</string>
+    <string name="variations_bulk_update_dialog_title">Toplu güncelleme</string>
+    <string name="variations_bulk_limit_exceeded_button_ok">Tamam</string>
+    <string name="variation_list_menu_bulk_update">Toplu güncelleme…</string>
+    <string name="variation_loading_dialog_title">Varyasyonlar getiriliyor…</string>
+    <string name="product_category_selector_search_failed">Ürün kategorileri bulunamadı</string>
+    <string name="product_category_selector_loading_failed">Ürün kategorileri yüklenemedi</string>
+    <string name="product_category_selector_search_hint">Kategorilerde Ara</string>
+    <string name="product_category_selector_clear_selection">Seçimi temizle</string>
+    <string name="product_category_selector_check_content_description">İşareti kaldırmak için tıklayın</string>
+    <string name="product_category_selector_select_button_title_one">1 kategori seç</string>
+    <string name="product_category_selector_select_button_title_default">%1$d Kategori Seç</string>
+    <string name="product_category_selector_empty_state">Ürün kategorisi bulunamadı</string>
+    <string name="product_category_selector_title">Kategorileri seçin</string>
+    <string name="shipping_label_install_wc_shipping_banner_dismiss_button_description">WC Shipping\'i yüklemek için reklam banner\'ını kapat</string>
+    <string name="shipping_label_install_wc_shipping_banner_button">WooCommerce Shipping\'i Edinin</string>
+    <string name="shipping_label_install_wc_shipping_banner_description">WooCommerce Shipping ile etiketleri telefonunuzdan yazdırın.</string>
+    <string name="shipping_label_install_wc_shipping_banner_title">Bir gönderim etiketine mi ihtiyacınız var?</string>
+    <string name="order_creation_change_product_quantity">%d olan ürün miktarını %d olarak değiştir</string>
+    <string name="variations_bulk_update_regular_price">Normal Fiyatı Güncelle</string>
+    <string name="variations_bulk_update_sale_price">Satış Fiyatını Güncelle</string>
     <string name="card_reader_onboarding_stripe_unsupported_in_country_header">%1$s için WooCommerce Stripe uzantısını desteklemiyoruz</string>
-    <string name="product_selector_filter_button_title">Filtre</string>
+    <string name="product_selector_filter_button_title_zero">Filtre</string>
     <string name="product_selector_clear_button_title">Seçimi Temizle</string>
     <string name="product_selector_select_button_title_one">%d Ürün Seç</string>
     <string name="product_selector_select_button_title_default">%d Ürün Seç</string>
@@ -133,7 +228,6 @@ Language: tr
     <string name="coupon_details_minimum_spend">Minimum harcama %s</string>
     <string name="coupon_details_heading">Kupon Özeti</string>
     <string name="coupon_list_view_coupon">Kupon özetini görüntüle</string>
-    <string name="coupon_list_wip_message_enabled">Kuponları cihazınızdan görüntüleyip düzenleyebilmeniz için çalışıyoruz!</string>
     <string name="coupon_list_wip_title">Kuponları görüntüle ve düzenle</string>
     <string name="coupon_list_empty_heading">Kupon bulunamadı</string>
     <string name="coupon_list_item_label_included_and_excluded">%2s hariç, %1s</string>
@@ -162,8 +256,6 @@ Language: tr
     <string name="orderstatus_contentDesc_withStatus">Sipariş durumu: %s</string>
     <string name="no_sku">SKU Yok</string>
     <string name="count">Sayı: %s</string>
-    <string name="plus_one">Artı bir</string>
-    <string name="minus_one">Eksi bir</string>
     <string name="more_menu_button_coupons">Kuponlar</string>
     <string name="dismiss_inbox_note">Kapat</string>
     <string name="login_error_xml_rpc_auth_error_communicating">Siteyle iletişimde bir sorun oluştu. Bir HTTP hata kodu 401 döndürüldü.</string>
@@ -622,7 +714,6 @@ Language: tr
     <string name="card_reader_refetching_order_failed">Sipariş alınırken hata oluştu Uygulamadaki sipariş durumu eski olabilir.</string>
     <string name="card_reader_payment_email_client_not_found">E-posta istemcisi uygulamanızı tespit edemiyoruz</string>
     <string name="card_reader_payment_receipt_email_subject">%s makbuzunuz</string>
-    <string name="card_reader_payment_description">%s siparişi (%s) için Şahsen Ödeme</string>
     <string name="card_reader_payment_fetch_order_loading_payment_state">Sipariş yenileniyor</string>
     <string name="card_reader_payment_fetch_order_loading_header">Uygulama durumu güncelleniyor</string>
     <string name="shipping_label_shipping_carrier_shipping_method_banner_message">Müşteriniz seçildi %1$s</string>
@@ -1122,7 +1213,6 @@ Language: tr
     <string name="orderdetail_product_multiple">Ürünler</string>
     <string name="orderdetail_product_lineitem_qty_and_price">%1$s x %2$s</string>
     <string name="orderdetail_orderstatus_name">%1$s %2$s</string>
-    <string name="orderdetail_orderstatus_date_and_ordernum">%1$s \u2022 #%2$s</string>
     <string name="product_type_external">Harici</string>
     <string name="product_type_simple">Basit</string>
     <string name="product_status_privately_published">Özel olarak yayınlanan</string>

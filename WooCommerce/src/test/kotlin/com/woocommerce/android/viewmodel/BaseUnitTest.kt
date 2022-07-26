@@ -11,17 +11,16 @@ import org.junit.Rule
 import org.junit.runner.RunWith
 import org.mockito.junit.MockitoJUnitRunner
 
+@ExperimentalCoroutinesApi
 @Suppress("UnnecessaryAbstractClass")
 @RunWith(MockitoJUnitRunner::class)
 abstract class BaseUnitTest(testDispatcher: TestDispatcher = UnconfinedTestDispatcher()) {
     @Rule @JvmField
     val rule = InstantTaskExecutorRule()
 
-    @ExperimentalCoroutinesApi
     @Rule @JvmField
     val coroutinesTestRule = CoroutineTestRule(testDispatcher)
 
-    @ExperimentalCoroutinesApi
     protected fun testBlocking(block: suspend TestScope.() -> Unit) =
         runTest(coroutinesTestRule.testDispatcher) {
             block()

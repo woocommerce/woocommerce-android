@@ -8,10 +8,10 @@
       },
       "path": {
         "matches": "/wc-analytics/reports/revenue/stats/(.*)"
-      },     
+      },
       "query": {
         "matches": "(.*)interval\":\"day(.*)"
-      },          
+      },
       "locale": {
           "matches": "(.*)"
       }
@@ -44,13 +44,13 @@
             // will always start today (imagine a month starting on 19 of Oct).
             // It's not realistic, but it ensures that the data will look the same at any time.
             //
-            // Alternatively, we would have to calculate the closest Sunday (week start) from the past/today 
+            // Alternatively, we would have to calculate the closest Sunday (week start) from the past/today
             // with a helper (that does not exist) and use it as a first day of week (and offset it for the other six days).
-            "interval": "{{#assign 'customformat'}}yyyy-MM-dd{{/assign}}{{now format=customformat}}",
-            "date_start": "{{now format=customformat}} 00:00:00",
-            "date_start_gmt": "{{now format=customformat}} 00:00:00",
-            "date_end": "{{now format=customformat}} 23:59:59",
-            "date_end_gmt": "{{now format=customformat}} 23:59:59",
+            "interval": "{{#assign 'customformat'}}yyyy-MM-dd{{/assign}}{{fnow format=customformat}}",
+            "date_start": "{{fnow format=customformat}} 00:00:00",
+            "date_start_gmt": "{{fnow format=customformat}} 00:00:00",
+            "date_end": "{{fnow format=customformat}} 23:59:59",
+            "date_end_gmt": "{{fnow format=customformat}} 23:59:59",
             "subtotals": {
               "orders_count": 2,
               "num_items_sold": 0,

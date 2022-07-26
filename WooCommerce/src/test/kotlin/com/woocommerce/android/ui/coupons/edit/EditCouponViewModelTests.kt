@@ -1,6 +1,8 @@
 package com.woocommerce.android.ui.coupons.edit
 
 import com.woocommerce.android.R
+import com.woocommerce.android.WooException
+import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.initSavedStateHandle
 import com.woocommerce.android.model.Coupon
 import com.woocommerce.android.model.UiString.UiStringRes
@@ -17,6 +19,7 @@ import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowUiStringSnackbar
 import com.woocommerce.android.viewmodel.ResourceProvider
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.flowOf
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
@@ -28,12 +31,16 @@ import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
+import org.wordpress.android.fluxc.network.BaseRequest.GenericErrorType.UNKNOWN
+import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooError
+import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooErrorType.TIMEOUT
 import java.math.BigDecimal
 import java.util.Date
 import java.util.concurrent.TimeUnit.DAYS
 
 private const val COUPON_ID = 1L
 
+@ExperimentalCoroutinesApi
 class EditCouponViewModelTests : BaseUnitTest() {
     private lateinit var viewModel: EditCouponViewModel
 
@@ -66,6 +73,8 @@ class EditCouponViewModelTests : BaseUnitTest() {
         gmtOffset = 0f
     )
 
+    private val analyticsTrackerWrapper: AnalyticsTrackerWrapper = mock()
+
     suspend fun setup(prepareMocks: suspend () -> Unit = {}) {
         prepareMocks()
 
@@ -75,7 +84,8 @@ class EditCouponViewModelTests : BaseUnitTest() {
             couponUtils = couponUtils,
             parameterRepository = mock {
                 on { getParameters(any(), any()) } doReturn siteParams
-            }
+            },
+            analyticsTrackerWrapper = analyticsTrackerWrapper
         )
     }
 
@@ -242,7 +252,9 @@ class EditCouponViewModelTests : BaseUnitTest() {
     @Test
     fun `when coupon is fails, then show an error snackbar`() = testBlocking {
         setup {
-            whenever(couponRepository.updateCoupon(any())).thenReturn(Result.failure(Exception()))
+            whenever(couponRepository.updateCoupon(any())).thenReturn(
+                Result.failure(WooException(WooError(TIMEOUT, UNKNOWN)))
+            )
         }
 
         viewModel.onSaveClick()

@@ -1,14 +1,23 @@
 package com.woocommerce.android.ui.orders
 
-import com.woocommerce.android.model.*
+import com.woocommerce.android.model.Address
+import com.woocommerce.android.model.Order
 import com.woocommerce.android.model.Order.Item
-import org.wordpress.android.fluxc.model.*
+import com.woocommerce.android.model.OrderNote
+import com.woocommerce.android.model.OrderShipmentTracking
+import com.woocommerce.android.model.Refund
+import com.woocommerce.android.model.ShippingLabel
+import com.woocommerce.android.model.toAppModel
+import org.wordpress.android.fluxc.model.LocalOrRemoteId
+import org.wordpress.android.fluxc.model.OrderEntity
+import org.wordpress.android.fluxc.model.WCOrderShipmentProviderModel
+import org.wordpress.android.fluxc.model.WCOrderShipmentTrackingModel
+import org.wordpress.android.fluxc.model.WCOrderStatusModel
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.CoreOrderStatus
 import org.wordpress.android.util.DateTimeUtils
 import java.math.BigDecimal
 import java.text.SimpleDateFormat
-import java.util.*
-import kotlin.collections.ArrayList
+import java.util.Date
 
 object OrderTestUtils {
     const val ORDER_ID = 1L
@@ -300,18 +309,19 @@ object OrderTestUtils {
 
     fun generateTestOrderItems(
         count: Int = 1,
-        productId: Long = -1
+        productId: Long = -1,
+        quantity: Float = 1F
     ): List<Item> {
         val list = mutableListOf<Item>()
         for (i in 1..count) {
             list.add(
-                Order.Item(
+                Item(
                     itemId = i.toLong(),
                     productId = productId.takeIf { it != -1L } ?: i.toLong(),
                     name = "A test",
                     price = BigDecimal("10"),
                     sku = "",
-                    quantity = 1f,
+                    quantity = quantity,
                     subtotal = BigDecimal("10"),
                     totalTax = BigDecimal.ZERO,
                     total = BigDecimal("10"),

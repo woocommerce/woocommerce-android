@@ -9,10 +9,14 @@ import android.content.SharedPreferences.Editor
 import androidx.preference.PreferenceManager
 import com.woocommerce.android.AppPrefs.CardReaderOnboardingStatus.CARD_READER_ONBOARDING_COMPLETED
 import com.woocommerce.android.AppPrefs.CardReaderOnboardingStatus.CARD_READER_ONBOARDING_NOT_COMPLETED
+import com.woocommerce.android.AppPrefs.CardReaderOnboardingStatus.valueOf
+import com.woocommerce.android.AppPrefs.DeletablePrefKey.CARD_READER_IS_PLUGIN_EXPLICITLY_SELECTED
 import com.woocommerce.android.AppPrefs.DeletablePrefKey.CARD_READER_ONBOARDING_COMPLETED_STATUS_V2
 import com.woocommerce.android.AppPrefs.DeletablePrefKey.CARD_READER_PREFERRED_PLUGIN
 import com.woocommerce.android.AppPrefs.DeletablePrefKey.CARD_READER_PREFERRED_PLUGIN_VERSION
 import com.woocommerce.android.AppPrefs.DeletablePrefKey.CARD_READER_STATEMENT_DESCRIPTOR
+import com.woocommerce.android.AppPrefs.DeletablePrefKey.CARD_READER_UPSELL_BANNER_DIALOG_DISMISSED_FOREVER
+import com.woocommerce.android.AppPrefs.DeletablePrefKey.CARD_READER_UPSELL_BANNER_DIALOG_DISMISSED_REMIND_ME_LATER
 import com.woocommerce.android.AppPrefs.DeletablePrefKey.DATABASE_DOWNGRADED
 import com.woocommerce.android.AppPrefs.DeletablePrefKey.IMAGE_OPTIMIZE_ENABLED
 import com.woocommerce.android.AppPrefs.DeletablePrefKey.IS_COUPONS_ENABLED
@@ -21,10 +25,11 @@ import com.woocommerce.android.AppPrefs.DeletablePrefKey.ORDER_FILTER_CUSTOM_DAT
 import com.woocommerce.android.AppPrefs.DeletablePrefKey.ORDER_FILTER_PREFIX
 import com.woocommerce.android.AppPrefs.DeletablePrefKey.PRODUCT_SORTING_PREFIX
 import com.woocommerce.android.AppPrefs.DeletablePrefKey.RECEIPT_PREFIX
+import com.woocommerce.android.AppPrefs.UndeletablePrefKey.ONBOARDING_CAROUSEL_DISPLAYED
 import com.woocommerce.android.extensions.orNullIfEmpty
 import com.woocommerce.android.tools.SelectedSite
-import com.woocommerce.android.ui.cardreader.onboarding.PersistentOnboardingData
-import com.woocommerce.android.ui.cardreader.onboarding.PluginType
+import com.woocommerce.android.ui.payments.cardreader.onboarding.PersistentOnboardingData
+import com.woocommerce.android.ui.payments.cardreader.onboarding.PluginType
 import com.woocommerce.android.ui.products.ProductType
 import com.woocommerce.android.util.PreferenceUtils
 import com.woocommerce.android.util.ThemeOption
@@ -71,6 +76,7 @@ object AppPrefs {
         USER_EMAIL,
         RECEIPT_PREFIX,
         CARD_READER_ONBOARDING_COMPLETED_STATUS_V2,
+        CARD_READER_IS_PLUGIN_EXPLICITLY_SELECTED,
         CARD_READER_PREFERRED_PLUGIN,
         CARD_READER_PREFERRED_PLUGIN_VERSION,
         CARD_READER_STATEMENT_DESCRIPTOR,
@@ -78,6 +84,10 @@ object AppPrefs {
         ORDER_FILTER_CUSTOM_DATE_RANGE_START,
         ORDER_FILTER_CUSTOM_DATE_RANGE_END,
         PRODUCT_SORTING_PREFIX,
+        PRE_LOGIN_NOTIFICATION_WORK_REQUEST,
+        PRE_LOGIN_NOTIFICATION_DISPLAYED,
+        CARD_READER_UPSELL_BANNER_DIALOG_DISMISSED_FOREVER,
+        CARD_READER_UPSELL_BANNER_DIALOG_DISMISSED_REMIND_ME_LATER,
     }
 
     /**
@@ -136,6 +146,8 @@ object AppPrefs {
 
         // Hide banner in order detail to install WC Shipping plugin
         WC_SHIPPING_BANNER_DISMISSED,
+
+        ONBOARDING_CAROUSEL_DISPLAYED
     }
 
     fun init(context: Context) {
@@ -239,6 +251,82 @@ object AppPrefs {
     fun removeSupportName() {
         remove(DeletablePrefKey.SUPPORT_NAME)
     }
+
+    /**
+     * Card Reader Upsell Banner
+     */
+    fun setCardReaderUpsellBannerDismissedForever(
+        isDismissed: Boolean,
+        localSiteId: Int,
+        remoteSiteId: Long,
+        selfHostedSiteId: Long
+    ) {
+        setBoolean(
+            getCardReaderUpsellDismissedForeverKey(
+                localSiteId,
+                remoteSiteId,
+                selfHostedSiteId
+            ),
+            isDismissed
+        )
+    }
+
+    fun isCardReaderUpsellBannerDismissedForever(
+        localSiteId: Int,
+        remoteSiteId: Long,
+        selfHostedSiteId: Long
+    ) = getBoolean(
+        getCardReaderUpsellDismissedForeverKey(
+            localSiteId,
+            remoteSiteId,
+            selfHostedSiteId
+        ),
+        false
+    )
+
+    fun setCardReaderUpsellBannerRemindMeLater(
+        lastDialogDismissedInMillis: Long,
+        localSiteId: Int,
+        remoteSiteId: Long,
+        selfHostedSiteId: Long
+    ) {
+        setLong(
+            getCardReaderUpsellDismissedRemindMeLaterKey(
+                localSiteId,
+                remoteSiteId,
+                selfHostedSiteId
+            ),
+            lastDialogDismissedInMillis
+        )
+    }
+
+    fun getCardReaderUpsellBannerLastDismissed(
+        localSiteId: Int,
+        remoteSiteId: Long,
+        selfHostedSiteId: Long
+    ) = getLong(
+        getCardReaderUpsellDismissedRemindMeLaterKey(
+            localSiteId,
+            remoteSiteId,
+            selfHostedSiteId
+        )
+    )
+
+    private fun getCardReaderUpsellDismissedForeverKey(
+        localSiteId: Int,
+        remoteSiteId: Long,
+        selfHostedSiteId: Long
+    ) = PrefKeyString(
+        "$CARD_READER_UPSELL_BANNER_DIALOG_DISMISSED_FOREVER:$localSiteId:$remoteSiteId:$selfHostedSiteId"
+    )
+
+    private fun getCardReaderUpsellDismissedRemindMeLaterKey(
+        localSiteId: Int,
+        remoteSiteId: Long,
+        selfHostedSiteId: Long
+    ) = PrefKeyString(
+        "$CARD_READER_UPSELL_BANNER_DIALOG_DISMISSED_REMIND_ME_LATER:$localSiteId:$remoteSiteId:$selfHostedSiteId"
+    )
 
     /**
      * Method to check if the v4 stats UI is supported.
@@ -452,7 +540,7 @@ object AppPrefs {
         remoteSiteId: Long,
         selfHostedSiteId: Long
     ): CardReaderOnboardingStatus {
-        return CardReaderOnboardingStatus.valueOf(
+        return valueOf(
             getString(
                 getCardReaderOnboardingStatusKey(
                     localSiteId,
@@ -474,6 +562,19 @@ object AppPrefs {
     }
 
     fun isCardReaderWelcomeDialogShown() = getBoolean(UndeletablePrefKey.CARD_READER_WELCOME_SHOWN, false)
+
+    fun isCardReaderPluginExplicitlySelected(
+        localSiteId: Int,
+        remoteSiteId: Long,
+        selfHostedSiteId: Long
+    ) = getBoolean(
+        getIsPluginExplicitlySelectedKey(
+            localSiteId,
+            remoteSiteId,
+            selfHostedSiteId
+        ),
+        false
+    )
 
     fun getCardReaderPreferredPlugin(
         localSiteId: Int,
@@ -534,11 +635,29 @@ object AppPrefs {
         }
     }
 
+    fun setIsCardReaderPluginExplicitlySelectedFlag(
+        localSiteId: Int,
+        remoteSiteId: Long,
+        selfHostedSiteId: Long,
+        isPluginExplicitlySelected: Boolean
+    ) {
+        setBoolean(
+            getIsPluginExplicitlySelectedKey(localSiteId, remoteSiteId, selfHostedSiteId),
+            isPluginExplicitlySelected
+        )
+    }
+
     private fun getCardReaderOnboardingStatusKey(
         localSiteId: Int,
         remoteSiteId: Long,
         selfHostedSiteId: Long
     ) = PrefKeyString("$CARD_READER_ONBOARDING_COMPLETED_STATUS_V2:$localSiteId:$remoteSiteId:$selfHostedSiteId")
+
+    private fun getIsPluginExplicitlySelectedKey(
+        localSiteId: Int,
+        remoteSiteId: Long,
+        selfHostedSiteId: Long
+    ) = PrefKeyString("$CARD_READER_IS_PLUGIN_EXPLICITLY_SELECTED:$localSiteId:$remoteSiteId:$selfHostedSiteId")
 
     private fun getCardReaderPreferredPluginKey(
         localSiteId: Int,
@@ -643,6 +762,26 @@ object AppPrefs {
             PrefKeyString("${UndeletablePrefKey.WC_SHIPPING_BANNER_DISMISSED}:$currentSiteId"),
             false
         )
+
+    fun getLocalNotificationWorkRequestId() = getString(DeletablePrefKey.PRE_LOGIN_NOTIFICATION_WORK_REQUEST)
+
+    fun setLocalNotificationWorkRequestId(workRequestId: String) {
+        setString(DeletablePrefKey.PRE_LOGIN_NOTIFICATION_WORK_REQUEST, workRequestId)
+    }
+
+    fun setPreLoginNotificationDisplayed(displayed: Boolean) {
+        setBoolean(DeletablePrefKey.PRE_LOGIN_NOTIFICATION_DISPLAYED, displayed)
+    }
+
+    fun isPreLoginNotificationBeenDisplayed(): Boolean =
+        getBoolean(DeletablePrefKey.PRE_LOGIN_NOTIFICATION_DISPLAYED, false)
+
+    fun setOnboardingCarouselDisplayed(displayed: Boolean) {
+        setBoolean(ONBOARDING_CAROUSEL_DISPLAYED, displayed)
+    }
+
+    fun hasOnboardingCarouselBeenDisplayed(): Boolean =
+        getBoolean(ONBOARDING_CAROUSEL_DISPLAYED, false)
 
     /**
      * Remove all user and site-related preferences.

@@ -33,22 +33,44 @@
         app:layout_constraintTop_toBottomOf="@+id/image_prologue"
         app:srcCompat="@drawable/img_prologue_bg" />
 
-    <androidx.viewpager2.widget.ViewPager2
-        android:id="@+id/viewPager"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        app:layout_constraintBottom_toTopOf="@+id/viewPagerIndicator"
+    <ImageView
+        android:id="@+id/imageView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:adjustViewBounds="true"
+        android:layout_marginTop="@dimen/major_400"
+        android:importantForAccessibility="no"
+        android:src="@drawable/img_prologue_reviews"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/image_prologue"
-        tools:background="@color/blue_dark" />
+        app:layout_constraintTop_toBottomOf="@id/image_prologue" />
 
-    <com.woocommerce.android.widgets.WCViewPagerIndicator
-        android:id="@+id/viewPagerIndicator"
+    <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/prologueTitle"
+        style="@style/Woo.TextView.Headline5"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:gravity="center"
+        android:textStyle="bold"
+        tools:layout_width="200dp"
+        android:layout_marginTop="@dimen/major_300"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/imageView"
+        app:layout_constraintBottom_toTopOf="@id/newToWooButton"
+        android:text="@string/lets_get_started" />
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/newToWooButton"
+        style="@style/Woo.Button.TextButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginBottom="@dimen/major_150"
-        app:layout_constraintBottom_toTopOf="@+id/button_login_store"
+        android:text="@string/login_prologue_new_to_woo"
+        android:textAllCaps="false"
+        app:layout_constraintTop_toBottomOf="@id/prologueTitle"
+        app:layout_constraintBottom_toTopOf="@id/button_login_store"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
 

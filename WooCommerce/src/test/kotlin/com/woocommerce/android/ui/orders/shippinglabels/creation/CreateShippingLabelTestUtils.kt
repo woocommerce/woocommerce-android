@@ -3,7 +3,7 @@ package com.woocommerce.android.ui.orders.shippinglabels.creation
 import com.woocommerce.android.model.*
 import com.woocommerce.android.model.ShippingLabelPackage.Item
 import java.math.BigDecimal
-import java.util.Date
+import java.util.GregorianCalendar
 
 object CreateShippingLabelTestUtils {
     val testCountry = Location(
@@ -66,7 +66,7 @@ object CreateShippingLabelTestUtils {
     }
 
     fun generatePaymentMethod(id: Int = 1, cardType: String = "visa"): PaymentMethod {
-        return PaymentMethod(id, "Jhon Doe", cardType, "1234", Date(2030, 11, 31))
+        return PaymentMethod(id, "Jhon Doe", cardType, "1234", GregorianCalendar(2030, 11, 31).time)
     }
 
     fun generateRate(packageId: String = "package1"): ShippingRate {

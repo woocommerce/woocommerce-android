@@ -1,35 +1,37 @@
 package com.woocommerce.android.screenshots
 
+import android.util.Log
 import androidx.compose.ui.test.junit4.createComposeRule
+import androidx.test.ext.junit.rules.ActivityScenarioRule
 import androidx.test.platform.app.InstrumentationRegistry
-import androidx.test.rule.ActivityTestRule
+import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.BuildConfig
 import com.woocommerce.android.helpers.InitializationRule
 import com.woocommerce.android.helpers.TestBase
+import com.woocommerce.android.push.WooNotificationBuilder
 import com.woocommerce.android.screenshots.login.WelcomeScreen
-import com.woocommerce.android.screenshots.moremenu.MoreMenuScreen
 import com.woocommerce.android.screenshots.mystore.MyStoreScreen
-import com.woocommerce.android.screenshots.orders.OrderListScreen
-import com.woocommerce.android.screenshots.orders.OrderSearchScreen
-import com.woocommerce.android.screenshots.orders.SingleOrderScreen
+import com.woocommerce.android.screenshots.notifications.NotificationsScreen
+import com.woocommerce.android.screenshots.orders.CardReaderPaymentScreen
+import com.woocommerce.android.screenshots.orders.OrderCreationScreen
 import com.woocommerce.android.screenshots.products.ProductListScreen
-import com.woocommerce.android.screenshots.products.SingleProductScreen
-import com.woocommerce.android.screenshots.reviews.ReviewsListScreen
-import com.woocommerce.android.screenshots.reviews.SingleReviewScreen
 import com.woocommerce.android.ui.main.MainActivity
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
 import org.junit.After
 import org.junit.Before
+import org.junit.Ignore
 import org.junit.Rule
 import org.junit.Test
 import tools.fastlane.screengrab.Screengrab
 import tools.fastlane.screengrab.UiAutomatorScreenshotStrategy
 import tools.fastlane.screengrab.cleanstatusbar.CleanStatusBar
 import tools.fastlane.screengrab.locale.LocaleTestRule
+import java.util.concurrent.TimeoutException
+import javax.inject.Inject
 
 @HiltAndroidTest
-class ScreenshotTest : TestBase() {
+class ScreenshotTest : TestBase(failOnUnmatchedWireMockRequests = false) {
     @get:Rule(order = 0)
     val rule = HiltAndroidRule(this)
 
@@ -40,14 +42,23 @@ class ScreenshotTest : TestBase() {
     val composeTestRule = createComposeRule()
 
     @get:Rule(order = 3)
-    var activityRule = ActivityTestRule(MainActivity::class.java)
-
-    @Rule @JvmField
     val localeTestRule = LocaleTestRule()
+
+    @get:Rule(order = 4)
+    var activityRule = ActivityScenarioRule(MainActivity::class.java)
+
+    @Inject lateinit var wooNotificationBuilder: WooNotificationBuilder
 
     @Before
     fun setUp() {
-        CleanStatusBar.enableWithDefaults()
+        try {
+            CleanStatusBar.enableWithDefaults()
+        } catch (e: RuntimeException) {
+            if (e.cause is TimeoutException) {
+                Log.w("ScreenshotTest", e)
+            } else throw e
+        }
+        rule.inject()
     }
 
     @After
@@ -55,6 +66,7 @@ class ScreenshotTest : TestBase() {
         CleanStatusBar.disable()
     }
 
+    @Ignore("Disabled because it fails in CI")
     @Test
     fun screenshots() {
         val testedTheme: String? = InstrumentationRegistry.getArguments().getString("theme")
@@ -78,41 +90,39 @@ class ScreenshotTest : TestBase() {
 
         // My Store
         MyStoreScreen()
-            .stats.switchToStatsDashboardWeekTab()
+            .stats.switchToStatsDashboardMonthTab()
             .thenTakeScreenshot<MyStoreScreen>("order-dashboard")
 
-        // Orders
+        // Create Orders
         TabNavComponent()
             .gotoOrdersScreen()
-            .thenTakeScreenshot<OrderListScreen>("order-list")
-            .selectOrder(7)
-            .thenTakeScreenshot<SingleOrderScreen>("order-detail")
+            .createFABTap()
+            .newOrderTap()
+            .thenTakeScreenshot<OrderCreationScreen>("add-order")
             .goBackToOrdersScreen()
-            .openSearchPane()
-            .thenTakeScreenshot<OrderSearchScreen>("order-search")
-            .cancel()
 
-        // More Menu
+        // Capture In-Person Payment
+        AppPrefs.setCardReaderWelcomeDialogShown() // Skip card reader welcome screen
+        AppPrefs.setShowCardReaderConnectedTutorial(false) // Skip card reader tutorial
         TabNavComponent()
-            .gotoMoreMenuScreen()
-            .thenTakeScreenshot<MoreMenuScreen>("more-menu")
+            .gotoOrdersScreen()
+            .selectOrder(2)
+            .tapOnCollectPayment()
+            .chooseCardPayment()
+            .thenTakeScreenshot<CardReaderPaymentScreen>("in-person-payments")
+            .goBackToPaymentSelection()
+            .goBackToOrderDetails()
+            .goBackToOrdersScreen()
 
-        // Reviews
-        TabNavComponent()
-            .gotoMoreMenuScreen()
-            .openReviewsListScreen(composeTestRule)
-            .thenTakeScreenshot<ReviewsListScreen>("review-list")
-            .selectReviewByIndex(4)
-            .thenTakeScreenshot<SingleReviewScreen>("review-details")
-            .goBackToReviewsScreen()
-            .goBackToMoreMenuScreen()
-
-        // Products
+        // Create Products
         TabNavComponent()
             .gotoProductsScreen()
-            .thenTakeScreenshot<ProductListScreen>("product-list")
-            .selectProductByName("Akoya Pearl shades")
-            .thenTakeScreenshot<SingleProductScreen>("product-details")
-            .goBackToProductsScreen()
+            .tapOnCreateProduct()
+            .thenTakeScreenshot<ProductListScreen>("add-product")
+            .goBackToProductList()
+
+        NotificationsScreen(wooNotificationBuilder)
+            .thenTakeScreenshot<NotificationsScreen>("push-notifications")
+            .goBackToApp()
     }
 }

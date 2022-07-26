@@ -2,6 +2,7 @@ package com.woocommerce.android.ui.coupons.details
 
 import com.woocommerce.android.R
 import com.woocommerce.android.WooException
+import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.initSavedStateHandle
 import com.woocommerce.android.model.Coupon
 import com.woocommerce.android.tools.SelectedSite
@@ -18,6 +19,7 @@ import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.viewmodel.ResourceProvider
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.test.advanceUntilIdle
@@ -40,6 +42,7 @@ import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooErrorType
 import org.wordpress.android.fluxc.store.WooCommerceStore
 import java.math.BigDecimal
 
+@ExperimentalCoroutinesApi
 class CouponDetailsViewModelTest : BaseUnitTest() {
     companion object {
         private const val COUPON_ID = 1L
@@ -54,7 +57,7 @@ class CouponDetailsViewModelTest : BaseUnitTest() {
             Result.success(Unit)
     }
     private val wooCommerceStore: WooCommerceStore = mock {
-        on { getSiteSettings(any()) } doReturn WCSettingsModel(0, "USD", LEFT, "", "", 2)
+        on { getSiteSettings(any()) } doReturn WCSettingsModel(0, "USD", LEFT, "", "", 2, couponsEnabled = false)
     }
     private val currencyFormatter: CurrencyFormatter = mock {
         on { formatCurrency(any<BigDecimal>(), any(), any()) } doAnswer { it.arguments[0].toString() }
@@ -68,6 +71,7 @@ class CouponDetailsViewModelTest : BaseUnitTest() {
         resourceProvider = resourceProvider
     )
     private lateinit var viewModel: CouponDetailsViewModel
+    private val analyticsTrackerWrapper: AnalyticsTrackerWrapper = mock()
 
     suspend fun setup(mockSetup: suspend () -> Unit = {}) {
         val selectedSite = mock<SelectedSite> {
@@ -79,7 +83,8 @@ class CouponDetailsViewModelTest : BaseUnitTest() {
             wooCommerceStore = wooCommerceStore,
             selectedSite = selectedSite,
             couponRepository = couponRepository,
-            couponUtils = couponUtils
+            couponUtils = couponUtils,
+            analyticsTrackerWrapper = analyticsTrackerWrapper
         )
     }
 

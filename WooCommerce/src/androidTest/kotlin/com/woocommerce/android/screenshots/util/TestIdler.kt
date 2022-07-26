@@ -2,7 +2,7 @@ package com.woocommerce.android.screenshots.util
 
 import androidx.test.espresso.IdlingResource
 import androidx.test.espresso.IdlingResource.ResourceCallback
-import junit.framework.Assert
+import org.junit.Assert
 
 abstract class TestIdler : IdlingResource {
     private var mResourceCallback: ResourceCallback? = null
@@ -33,6 +33,7 @@ abstract class TestIdler : IdlingResource {
         idleUntilReady(true)
     }
 
+    @Suppress("DEPRECATED_IDENTITY_EQUALS")
     open fun idleUntilReady(failIfUnsatisfied: Boolean) {
         var tries = 0
         while (!checkCondition() && ++tries < mNumberOfTries) {

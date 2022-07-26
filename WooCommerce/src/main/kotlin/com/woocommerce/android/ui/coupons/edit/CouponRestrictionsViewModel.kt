@@ -24,6 +24,7 @@ class CouponRestrictionsViewModel @Inject constructor(
 ) : ScopedViewModel(savedStateHandle) {
     private val navArgs: CouponRestrictionsFragmentArgs by savedState.navArgs()
 
+    @Suppress("USELESS_CAST")
     private val restrictionsDraft = savedStateHandle.getStateFlow(
         viewModelScope,
         // Casting below added to work around IDE bug of not recognizing the nested class type.
@@ -91,12 +92,17 @@ class CouponRestrictionsViewModel @Inject constructor(
     }
 
     fun onAllowedEmailsButtonClicked() {
-        triggerEvent(OpenAllowedEmailsEditor(restrictionsDraft.value.restrictedEmails))
+        triggerEvent(OpenAllowedEmailsEditor(restrictionsDraft.value.restrictedEmails.joinToString(", ")))
     }
 
-    fun onAllowedEmailsUpdated(allowedEmails: List<String>) {
+    fun onAllowedEmailsUpdated(allowedEmailsInput: String) {
+        val emails = if (allowedEmailsInput.isEmpty()) {
+            emptyList()
+        } else {
+            allowedEmailsInput.split(",").map { it.trim() }
+        }
         restrictionsDraft.update {
-            it.copy(restrictedEmails = allowedEmails)
+            it.copy(restrictedEmails = emails)
         }
     }
 
@@ -127,5 +133,5 @@ class CouponRestrictionsViewModel @Inject constructor(
         val showLimitUsageToXItems: Boolean
     )
 
-    data class OpenAllowedEmailsEditor(val allowedEmails: List<String>) : MultiLiveEvent.Event()
+    data class OpenAllowedEmailsEditor(val allowedEmails: String) : MultiLiveEvent.Event()
 }

@@ -1,8 +1,13 @@
 package com.woocommerce.android.viewmodel
 
 import android.content.Context
-import androidx.annotation.*
+import androidx.annotation.ArrayRes
+import androidx.annotation.ColorRes
+import androidx.annotation.DimenRes
+import androidx.annotation.RawRes
+import androidx.annotation.StringRes
 import androidx.core.content.ContextCompat
+import com.woocommerce.android.util.StringUtils
 import java.io.InputStream
 import javax.inject.Inject
 
@@ -32,4 +37,17 @@ class ResourceProvider @Inject constructor(private val context: Context) {
         val resources = context.resources
         return resources.openRawResource(rawId)
     }
+
+    fun getQuantityString(
+        quantity: Int,
+        @StringRes default: Int,
+        @StringRes zero: Int? = null,
+        @StringRes one: Int? = null
+    ) = StringUtils.getQuantityString(
+        context,
+        quantity,
+        default,
+        zero,
+        one,
+    )
 }

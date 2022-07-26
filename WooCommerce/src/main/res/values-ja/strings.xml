@@ -1,13 +1,108 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2022-06-02 11:54:04+0000
+Translation-Revision-Date: 2022-07-15 09:54:15+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: ja_JP
 -->
 <resources>
+    <string name="tests_notification_new_order_message">WooCommerce ストアに $50の新しい注文があります</string>
+    <string name="tests_notification_new_order_title">新しい注文があります。🎉</string>
+    <string name="lines_all_details">詳細</string>
+    <string name="lines_incomplete_explanation">すべての %1$s を編集するには、WooCommerce ストア管理で注文を閲覧します</string>
+    <string name="lines_incomplete">%1$s が未完了です</string>
+    <string name="support_system_status_report_share_label">システムステータスレポートを共有</string>
+    <string name="support_system_status_report_copy_label">システムステータスレポートをクリップボードにコピー</string>
+    <string name="card_reader_connect_keep_searching_button">検索を続行</string>
+    <string name="card_reader_payment_description_v2">%s blog_id %s への注文 #%sのオフラインでの支払い。</string>
+    <string name="card_reader_manage_payment_provider">決済サービス業者を変更</string>
+    <string name="orderdetail_refunded_line_with_info">返金済み: %1$s</string>
+    <string name="orderdetail_payment_summary_onhold_plain">支払い待ち</string>
+    <string name="install_wc_shipping_proceed_button">インストールを進める</string>
+    <string name="install_wc_shipping_installation_info">インストール前に</string>
+    <string name="install_wc_shipping_preinstall_title">拡張機能をインストール</string>
+    <string name="install_wc_shipping_extension_name">WooCommerce の送料</string>
+    <string name="product_selector_clear_filters_button_title">フィルターをクリア</string>
+    <string name="product_selector_empty_state">商品が見つかりません</string>
+    <string name="product_selector_search_failed">商品を検索できませんでした</string>
+    <string name="product_selector_loading_failed">商品を読み込めませんでした</string>
+    <string name="product_selector_search_hint">商品を検索</string>
+    <string name="product_selector_filter_button_title_default">フィルター (%d)</string>
+    <string name="coupon_restrictions_allowed_emails_invalid">一部のメールアドレスが無効です。 入力したメールアドレスを修正してください。</string>
+    <string name="coupon_restrictions_allowed_emails_hint">注文が行われたときの照合が許可されている請求先メールアドレスのリスト。 コンマでメールアドレスを区切ってください。 メールの一部を対応させるのにアスタリスク (*) を使用することもできます。 たとえば、「*@gmail.com」はすべての gmail アドレスに対応します。</string>
+    <string name="empty_message_with_filters">選択したフィルターに一致する商品はありません。</string>
+    <string name="card_reader_onboarding_confirm_payment_method_button">決済方法を確認</string>
+    <string name="card_reader_onboarding_choose_stripe_button">Stripe</string>
+    <string name="card_reader_onboarding_choose_wcpayment_button">WooCommerce Payments</string>
+    <string name="card_reader_onboarding_choose_plugin_hint">オフラインでの支払いはこのいずれかの決済サービス業者が処理できます。 どの決済サービス業者をご利用になりますか ?</string>
+    <string name="card_reader_onboarding_choose_payment_provider">決済サービス業者を選択</string>
+    <string name="order_editing_locked_content_description">ロック中</string>
+    <string name="order_editing_non_editable_message">「商品」または「支払いの詳細」を編集するには、ステータスを「支払い待ち」に変更します。</string>
+    <string name="order_editing_non_editable_title">この注文の一部は現在編集できません</string>
+    <string name="order_creation_customer_search_hint">お客様検索</string>
+    <string name="order_creation_customer_search_empty">お客様が見つかりません</string>
+    <string name="install_wc_shipping_flow_onboarding_screen_not_now_button">後で</string>
+    <string name="install_wc_shipping_flow_onboarding_screen_add_extension_button">ストアに拡張機能を追加</string>
+    <string name="install_wc_shipping_flow_onboarding_screen_link">WooCommerce Shipping とは</string>
+    <string name="install_wc_shipping_flow_onboarding_screen_discounts_bullet_desc">配送料金を割引価格でご利用いただけます。 現在は DHL と USPS で適用されますが、今後さらに追加される予定です。</string>
+    <string name="install_wc_shipping_flow_onboarding_screen_discounts_bullet_title">割引価格</string>
+    <string name="install_wc_shipping_flow_onboarding_screen_print_bullet_desc">注文を選んだら、支払いし、印刷、梱包、そして投函するだけです。</string>
+    <string name="install_wc_shipping_flow_onboarding_screen_print_bullet_title">スマートフォンから印刷</string>
+    <string name="install_wc_shipping_flow_onboarding_screen_postage_bullet_desc">切手がどこにいったのか探す必要はありません。</string>
+    <string name="install_wc_shipping_flow_onboarding_screen_postage_bullet_title">送料は必要なときに購入</string>
+    <string name="install_wc_shipping_flow_onboarding_screen_subtitle">時間とお金を節約</string>
+    <string name="install_wc_shipping_flow_onboarding_screen_title">WooCommerce Shipping で注文を処理</string>
+    <string name="product_selector_arrow_content_description">詳細を表示</string>
+    <string name="product_selector_select_variation_label">バリエーション %s を選択</string>
+    <string name="coupon_restrictions_exclude_categories">商品カテゴリーを除外</string>
+    <string name="coupon_restrictions_exclude_products">商品を除外</string>
+    <string name="coupon_restrictions_exclusions_section_title">このクーポンを次に適用:</string>
+    <string name="coupon_restrictions_allowed_emails_placeholder">制限なし</string>
+    <string name="coupon_restrictions_allowed_emails">許可されるメール</string>
+    <string name="coupon_restrictions_limit_per_user_placeholder">無制限</string>
+    <string name="coupon_restrictions_amount_limit_placeholder">すべてが対象</string>
+    <string name="coupon_restrictions_limit_per_coupon_placeholder">無制限</string>
+    <string name="coupon_restrictions_minimum_maximum_spend_placeholder">なし</string>
+    <string name="coupon_edit_edit_products_title">商品カテゴリー (%1$d件) を編集</string>
+    <string name="coupon_edit_select_categories_title">商品カテゴリーを選択</string>
+    <string name="variations_bulk_update_warning_message">現在、一括更新がサポートされているのは、最大100件のバリエーションです。</string>
+    <string name="variations_bulk_update_warning_title">一括更新の上限を超えました</string>
+    <string name="variations_bulk_update_regular_prices_dialog_title">通常価格を更新しています</string>
+    <string name="variations_bulk_update_sale_prices_dialog_title">販売価格を更新しています</string>
+    <string name="variations_bulk_update_sale_prices_success">販売価格を更新しました。</string>
+    <string name="variations_bulk_update_regular_prices_success">通常価格を更新しました。</string>
+    <string name="variations_bulk_update_error">エラーが発生しました。 もう一度お試しください。</string>
+    <string name="variations_bulk_update_current_prices_mixed">現在、さまざまな価格が混在しています</string>
+    <string name="variations_bulk_update_current_price">現在の価格は %sです。</string>
+    <string name="variations_bulk_update_price_info">%d件のバリエーションの価格が更新されます。</string>
+    <string name="variations_bulk_update_dialog_price_mixed">混合</string>
+    <string name="variations_bulk_update_dialog_price_none">なし</string>
+    <string name="variations_bulk_update_dialog_sale_price_label">セール価格</string>
+    <string name="variations_bulk_update_dialog_regular_price_label">標準価格</string>
+    <string name="variations_bulk_update_dialog_price_section_title">価格</string>
+    <string name="variations_bulk_update_dialog_subtitle">更新する値を選択</string>
+    <string name="variations_bulk_update_dialog_title">一括更新</string>
+    <string name="variations_bulk_limit_exceeded_button_ok">OK</string>
+    <string name="variation_list_menu_bulk_update">一括更新…</string>
+    <string name="variation_loading_dialog_title">バリエーションを取得しています…</string>
+    <string name="product_category_selector_search_failed">商品カテゴリーを検索できませんでした</string>
+    <string name="product_category_selector_loading_failed">商品カテゴリーを読み込めませんでした</string>
+    <string name="product_category_selector_search_hint">カテゴリーを検索</string>
+    <string name="product_category_selector_clear_selection">選択を解除</string>
+    <string name="product_category_selector_check_content_description">クリックしてチェックを外す</string>
+    <string name="product_category_selector_select_button_title_one">1件のカテゴリーを選択</string>
+    <string name="product_category_selector_select_button_title_default">%1$d件のカテゴリーを選択</string>
+    <string name="product_category_selector_empty_state">製品カテゴリーが見つかりませんでした</string>
+    <string name="product_category_selector_title">カテゴリーを選択</string>
+    <string name="shipping_label_install_wc_shipping_banner_dismiss_button_description">バナーを非表示にして WC Shipping をインストール</string>
+    <string name="shipping_label_install_wc_shipping_banner_button">WooCommerce Shipping を入手</string>
+    <string name="shipping_label_install_wc_shipping_banner_description">WooCommerce Shipping を使用してスマートフォンからラベルを印刷します。</string>
+    <string name="shipping_label_install_wc_shipping_banner_title">配送ラベルが必要な場合</string>
+    <string name="order_creation_change_product_quantity">商品数量を%dから%dに変更</string>
+    <string name="variations_bulk_update_regular_price">通常価格を更新</string>
+    <string name="variations_bulk_update_sale_price">販売価格を更新</string>
     <string name="card_reader_onboarding_stripe_unsupported_in_country_header">%1$s では WooCommerce Stripe 拡張機能がサポートされていません</string>
-    <string name="product_selector_filter_button_title">フィルター</string>
+    <string name="product_selector_filter_button_title_zero">フィルター</string>
     <string name="product_selector_clear_button_title">選択を解除</string>
     <string name="product_selector_select_button_title_one">%d件の商品を選択</string>
     <string name="product_selector_select_button_title_default">%d件の商品を選択</string>
@@ -133,7 +228,6 @@ Language: ja_JP
     <string name="coupon_details_minimum_spend">%sの利用最小額</string>
     <string name="coupon_details_heading">クーポンの概要</string>
     <string name="coupon_list_view_coupon">クーポンの概要を表示</string>
-    <string name="coupon_list_wip_message_enabled">デバイスからクーポンを表示、編集できる機能を開発中です !</string>
     <string name="coupon_list_wip_title">クーポンを表示して編集する</string>
     <string name="coupon_list_empty_heading">クーポンが見つかりません</string>
     <string name="coupon_list_item_label_included_and_excluded">%1s (%2s を除く)</string>
@@ -161,8 +255,6 @@ Language: ja_JP
     <string name="orderstatus_contentDesc_withStatus">注文ステータス: %s</string>
     <string name="no_sku">SKU なし</string>
     <string name="count">数量: %s</string>
-    <string name="plus_one">プラス1</string>
-    <string name="minus_one">マイナス1</string>
     <string name="more_menu_button_coupons">クーポン</string>
     <string name="dismiss_inbox_note">非表示</string>
     <string name="login_error_xml_rpc_auth_error_communicating">サイトとの通信中に問題が発生しました。 HTTP エラーコード401が返されました。</string>
@@ -621,7 +713,6 @@ Language: ja_JP
     <string name="card_reader_refetching_order_failed">注文を取得する際にエラーが発生しました。 アプリの注文状態が古い可能性があります。</string>
     <string name="card_reader_payment_email_client_not_found">メールクライアントアプリを検出できません</string>
     <string name="card_reader_payment_receipt_email_subject">%s のレシート</string>
-    <string name="card_reader_payment_description">%s への %s の注文のオフラインでの支払い</string>
     <string name="card_reader_payment_fetch_order_loading_payment_state">注文を更新する</string>
     <string name="card_reader_payment_fetch_order_loading_header">アプリの状態を更新する</string>
     <string name="shipping_label_shipping_carrier_shipping_method_banner_message">お客様が %1$s を選択しました</string>
@@ -1121,7 +1212,6 @@ Language: ja_JP
     <string name="orderdetail_product_multiple">商品</string>
     <string name="orderdetail_product_lineitem_qty_and_price">%1$s x %2$s</string>
     <string name="orderdetail_orderstatus_name">%1$s %2$s</string>
-    <string name="orderdetail_orderstatus_date_and_ordernum">%1$s \u2022 #%2$s</string>
     <string name="product_type_external">外部</string>
     <string name="product_type_simple">シンプル</string>
     <string name="product_status_privately_published">非公開</string>

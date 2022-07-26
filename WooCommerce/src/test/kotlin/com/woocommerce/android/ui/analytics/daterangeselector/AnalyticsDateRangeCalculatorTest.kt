@@ -3,14 +3,17 @@ package com.woocommerce.android.ui.analytics.daterangeselector
 import com.woocommerce.android.ui.analytics.daterangeselector.DateRange.SimpleDateRange
 import com.woocommerce.android.util.DateUtils
 import com.woocommerce.android.viewmodel.BaseUnitTest
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.junit.Test
 import org.mockito.kotlin.any
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.whenever
-import java.util.*
+import java.util.Calendar
+import java.util.Date
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 
+@ExperimentalCoroutinesApi
 class AnalyticsDateRangeCalculatorTest : BaseUnitTest() {
     private val dateUtils: DateUtils = mock()
     private val sut = AnalyticsDateRangeCalculator(dateUtils)

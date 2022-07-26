@@ -1,13 +1,108 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2022-06-02 17:54:04+0000
+Translation-Revision-Date: 2022-07-16 08:54:03+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: he_IL
 -->
 <resources>
+    <string name="tests_notification_new_order_message">הזמנה חדשה בסכום של 50 $ בחנות שלך ב-WooCommerce</string>
+    <string name="tests_notification_new_order_title">יש לך הזמנה חדשה! 🎉</string>
+    <string name="lines_all_details">הפרטים</string>
+    <string name="lines_incomplete_explanation">כדי לערוך את כל ⁦%1$s⁩ יש לעיין בהזמנה דרך אזור מנהל המערכת בחנות שלך ב-WooCommerce</string>
+    <string name="lines_incomplete">⁦%1$s⁩ לא הושלמו</string>
+    <string name="support_system_status_report_share_label">לשתף דוח מצב המערכת</string>
+    <string name="support_system_status_report_copy_label">להעתיק את דוח מצב המערכת ללוח</string>
+    <string name="card_reader_connect_keep_searching_button">להמשיך בחיפוש</string>
+    <string name="card_reader_payment_description_v2">תשלום באופן אישי על ההזמנה מס\' %s עבור %s blog_id %s.</string>
+    <string name="card_reader_manage_payment_provider">לשנות ספק תשלום</string>
+    <string name="orderdetail_refunded_line_with_info">הונפק החזר כספי של: ⁦%1$s⁩</string>
+    <string name="orderdetail_payment_summary_onhold_plain">ממתין לתשלום</string>
+    <string name="install_wc_shipping_proceed_button">להמשיך בהתקנה</string>
+    <string name="install_wc_shipping_installation_info">פרטים שחשוב לדעת לפני ההתקנה</string>
+    <string name="install_wc_shipping_preinstall_title">להתקין את ההרחבה</string>
+    <string name="install_wc_shipping_extension_name">WooCommerce Shipping</string>
+    <string name="product_selector_clear_filters_button_title">לנקות מסננים</string>
+    <string name="product_selector_empty_state">לא נמצאו מוצרים</string>
+    <string name="product_selector_search_failed">חיפוש המוצרים נכשל</string>
+    <string name="product_selector_loading_failed">טעינת המוצרים נכשלה</string>
+    <string name="product_selector_search_hint">חיפוש מוצרים</string>
+    <string name="product_selector_filter_button_title_default">מסנן (%d)</string>
+    <string name="coupon_restrictions_allowed_emails_invalid">חלק מכתובות האימייל לא תקינות. יש לתקן את כתובות האימייל שהזנת.</string>
+    <string name="coupon_restrictions_allowed_emails_hint">רשימת האימיילים המותרים לחיוב שיש לבדוק כאשר ההזמנה מתבצעת. יש להפריד בין כתובות אימייל באמצעות פסיקים. אפשר גם להשתמש בכוכבית (*) כדי להתאים חלקים של כתובת האימייל. לדוגמה הכתובת \"‎*@gmail.com\" תתאים לכל הכתובות בדומייין gmail.</string>
+    <string name="empty_message_with_filters">מצטערים, אין מוצרים שתואמים למסננים שנבחרו\"</string>
+    <string name="card_reader_onboarding_confirm_payment_method_button">לאשר את אמצעי התשלום</string>
+    <string name="card_reader_onboarding_choose_stripe_button">Stripe</string>
+    <string name="card_reader_onboarding_choose_wcpayment_button">WooCommerce Payments</string>
+    <string name="card_reader_onboarding_choose_plugin_hint">אפשר לעבד תשלומים באופן אישי באמצעות אחד מספקי התשלום האלו. באיזה ספק ברצונך להשתמש?</string>
+    <string name="card_reader_onboarding_choose_payment_provider">לבחור את ספק התשלום שלך</string>
+    <string name="order_editing_locked_content_description">נעול</string>
+    <string name="order_editing_non_editable_message">כדי לערוך פרטים של מוצרים או תשלומים, יש לשנות את הסטטוס ל\'בהמתנה לתשלום\'.</string>
+    <string name="order_editing_non_editable_title">חלקים בהזמנה הזאת לא ניתנים לעריכה כרגע</string>
+    <string name="order_creation_customer_search_hint">חיפוש לקוחות</string>
+    <string name="order_creation_customer_search_empty">לא נמצאו לקוחות</string>
+    <string name="install_wc_shipping_flow_onboarding_screen_not_now_button">לא עכשיו</string>
+    <string name="install_wc_shipping_flow_onboarding_screen_add_extension_button">להוסיף הרחבה לחנות</string>
+    <string name="install_wc_shipping_flow_onboarding_screen_link">מה זה WooCommerce Shipping?</string>
+    <string name="install_wc_shipping_flow_onboarding_screen_discounts_bullet_desc">גישה לתעריפי משלוח מוזלים. זמין כרגע עם DHL ו-USPS, ועוד אפשרויות יהיו זמינות בקרוב!</string>
+    <string name="install_wc_shipping_flow_onboarding_screen_discounts_bullet_title">תעריפים מוזלים</string>
+    <string name="install_wc_shipping_flow_onboarding_screen_print_bullet_desc">לאסוף הזמנה ולאחר מכן פשוט לשלם, להדפיס, לארוז ולשלוח בדואר.</string>
+    <string name="install_wc_shipping_flow_onboarding_screen_print_bullet_title">להדפיס מהטלפון שלך</string>
+    <string name="install_wc_shipping_flow_onboarding_screen_postage_bullet_desc">לא צריך לתהות לאן נעלם ספר הבולים.</string>
+    <string name="install_wc_shipping_flow_onboarding_screen_postage_bullet_title">לקנות דמי דואר בשעת הצורך</string>
+    <string name="install_wc_shipping_flow_onboarding_screen_subtitle">לחסוך זמן וכסף</string>
+    <string name="install_wc_shipping_flow_onboarding_screen_title">להשלים הזמנות בעזרת WooCommerce Shipping</string>
+    <string name="product_selector_arrow_content_description">להציג פרטים</string>
+    <string name="product_selector_select_variation_label">יש לבחור סוג %s</string>
+    <string name="coupon_restrictions_exclude_categories">להחריג קטגוריות מוצרים</string>
+    <string name="coupon_restrictions_exclude_products">להחריג מוצרים</string>
+    <string name="coupon_restrictions_exclusions_section_title">להחיל את הקופון על</string>
+    <string name="coupon_restrictions_allowed_emails_placeholder">ללא מגבלות</string>
+    <string name="coupon_restrictions_allowed_emails">אימיילים מורשים</string>
+    <string name="coupon_restrictions_limit_per_user_placeholder">ללא הגבלה</string>
+    <string name="coupon_restrictions_amount_limit_placeholder">כל הפריטים עומדים בדרישות</string>
+    <string name="coupon_restrictions_limit_per_coupon_placeholder">ללא הגבלה</string>
+    <string name="coupon_restrictions_minimum_maximum_spend_placeholder">ללא</string>
+    <string name="coupon_edit_edit_products_title">לערוך קטגוריות מוצרים (⁦%1$d⁩)</string>
+    <string name="coupon_edit_select_categories_title">לבחור קטגוריות מוצרים</string>
+    <string name="variations_bulk_update_warning_message">נכון לעכשיו, עדכון מספר פריטים במקביל נתמך עבור 100 סוגים לכל היותר.</string>
+    <string name="variations_bulk_update_warning_title">חרגת מההגבלה על עדכון מספר פריטים במקביל</string>
+    <string name="variations_bulk_update_regular_prices_dialog_title">מעדכנים את המחירים הרגילים</string>
+    <string name="variations_bulk_update_sale_prices_dialog_title">מעדכנים מחירי מבצע</string>
+    <string name="variations_bulk_update_sale_prices_success">מחירי המבצע עודכנו.</string>
+    <string name="variations_bulk_update_regular_prices_success">המחירים הרגילים עודכנו.</string>
+    <string name="variations_bulk_update_error">משהו השתבש. יש לנסות שוב.</string>
+    <string name="variations_bulk_update_current_prices_mixed">המחירים הנוכחיים כוללים ערכים משתנים</string>
+    <string name="variations_bulk_update_current_price">המחיר הנוכחי הוא %s</string>
+    <string name="variations_bulk_update_price_info">המחיר יעודכן עבור %d סוגים</string>
+    <string name="variations_bulk_update_dialog_price_mixed">משולב</string>
+    <string name="variations_bulk_update_dialog_price_none">ללא</string>
+    <string name="variations_bulk_update_dialog_sale_price_label">מחיר המבצע</string>
+    <string name="variations_bulk_update_dialog_regular_price_label">מחיר רגיל</string>
+    <string name="variations_bulk_update_dialog_price_section_title">מחיר</string>
+    <string name="variations_bulk_update_dialog_subtitle">יש לבחור ערך לעדכון</string>
+    <string name="variations_bulk_update_dialog_title">עדכון מספר פריטים במקביל</string>
+    <string name="variations_bulk_limit_exceeded_button_ok">אישור</string>
+    <string name="variation_list_menu_bulk_update">עדכון מספר פריטים במקביל…</string>
+    <string name="variation_loading_dialog_title">טוענים סוגים…</string>
+    <string name="product_category_selector_search_failed">החיפוש של קטגוריות המוצרים נכשל</string>
+    <string name="product_category_selector_loading_failed">הטעינה של קטגוריות המוצרים נכשלה</string>
+    <string name="product_category_selector_search_hint">חיפוש קטגוריות</string>
+    <string name="product_category_selector_clear_selection">ניקוי בחירה</string>
+    <string name="product_category_selector_check_content_description">יש ללחוץ כדי לבטל את הבחירה</string>
+    <string name="product_category_selector_select_button_title_one">לבחור קטגוריה אחת</string>
+    <string name="product_category_selector_select_button_title_default">לבחור ⁦%1$d⁩ קטגוריות</string>
+    <string name="product_category_selector_empty_state">לא נמצאו קטגוריות מוצרים</string>
+    <string name="product_category_selector_title">לבחור קטגוריות</string>
+    <string name="shipping_label_install_wc_shipping_banner_dismiss_button_description">יש לבטל את הבאנר כדי להתקין את WC Shipping</string>
+    <string name="shipping_label_install_wc_shipping_banner_button">לקבל את WooCommerce Shipping</string>
+    <string name="shipping_label_install_wc_shipping_banner_description">להדפיס תוויות מהטלפון שלך בעזרת WooCommerce Shipping.</string>
+    <string name="shipping_label_install_wc_shipping_banner_title">יש לך צורך בתווית משלוח?</string>
+    <string name="order_creation_change_product_quantity">לשנות את כמות המוצר מ-%d ל-%d</string>
+    <string name="variations_bulk_update_regular_price">לעדכן את המחיר הרגיל</string>
+    <string name="variations_bulk_update_sale_price">לעדכן את מחיר המבצע</string>
     <string name="card_reader_onboarding_stripe_unsupported_in_country_header">אנחנו לא תומכים בהרחבה WooCommerce Stripe בתוך ⁦%1$s⁩</string>
-    <string name="product_selector_filter_button_title">מסנן</string>
+    <string name="product_selector_filter_button_title_zero">מסנן</string>
     <string name="product_selector_clear_button_title">ניקוי בחירה</string>
     <string name="product_selector_select_button_title_one">יש לבחור מוצר %d</string>
     <string name="product_selector_select_button_title_default">יש לבחור %d מוצרים</string>
@@ -133,7 +228,6 @@ Language: he_IL
     <string name="coupon_details_minimum_spend">הוצאה מינימלית בגובה %s</string>
     <string name="coupon_details_heading">סיכום קופונים</string>
     <string name="coupon_list_view_coupon">הצגה של סיכום הקופון</string>
-    <string name="coupon_list_wip_message_enabled">אנחנו כרגע עובדים על אפשרות להציג ולערוך קופונים מהמכשיר שלך!</string>
     <string name="coupon_list_wip_title">להציג ולנהל קופונים</string>
     <string name="coupon_list_empty_heading">לא נמצאו קופונים</string>
     <string name="coupon_list_item_label_included_and_excluded">%1s לא כולל %2s</string>
@@ -161,8 +255,6 @@ Language: he_IL
     <string name="orderstatus_contentDesc_withStatus">סטטוס הזמנה: %s</string>
     <string name="no_sku">ללא SKU</string>
     <string name="count">ספירה: %s</string>
-    <string name="plus_one">עוד אחד</string>
-    <string name="minus_one">פחות אחד</string>
     <string name="more_menu_button_coupons">קופונים</string>
     <string name="dismiss_inbox_note">ביטול</string>
     <string name="login_error_xml_rpc_auth_error_communicating">הייתה בעיה בתקשורת עם האתר הזה. הוחזר קוד שגיאה של HTTP מסוג 401.</string>
@@ -621,7 +713,6 @@ Language: he_IL
     <string name="card_reader_refetching_order_failed">שגיאה בהבאת ההזמנה. ייתכן שמצב ההזמנה באפליקציה לא מעודכן.</string>
     <string name="card_reader_payment_email_client_not_found">לא ניתן לאתר את האפליקציה של שירות האימייל שלך</string>
     <string name="card_reader_payment_receipt_email_subject">הקבלה שלך מאת %s</string>
-    <string name="card_reader_payment_description">תשלום באופן אישי על ההזמנה %s עבור %s</string>
     <string name="card_reader_payment_fetch_order_loading_payment_state">מרענן את ההזמנה</string>
     <string name="card_reader_payment_fetch_order_loading_header">מעדכן את מצב האפליקציה</string>
     <string name="shipping_label_shipping_carrier_shipping_method_banner_message">הלקוח בחר את ⁦%1$s⁩</string>
@@ -886,7 +977,7 @@ Language: he_IL
     <string name="orderdetail_net">תשלום נטו</string>
     <string name="orderdetail_payment_paid_by_customer">שולם</string>
     <string name="login_jetpack_view_instructions_alt">למידע נוסף על חיבור אל Jetpack</string>
-    <string name="login_no_stores">לא מצאנו חנויות של WooCommerce שמקושרות לחשבון זה. עליך להתקין את התוסף החינמי של Jetpack ולהתחבר אליו בחנויות Woocommerce שלך כדי להשתמש באפליקציה הזאת.</string>
+    <string name="login_no_stores">לא מצאנו חנויות של WooCommerce שמקושרות לחשבון זה. עליך להתקין את התוסף החינמי של Jetpack ולהתחבר אליו בחנויות WooCommerce שלך כדי להשתמש באפליקציה הזאת.</string>
     <string name="edit">עריכה</string>
     <string name="product_images_validate_drag_and_drop">אימות</string>
     <string name="product_images_drag_and_drop_description">לגרור ולשחרר כדי לשנות את הסדר של התמונות</string>
@@ -1121,7 +1212,6 @@ Language: he_IL
     <string name="orderdetail_product_multiple">מוצרים</string>
     <string name="orderdetail_product_lineitem_qty_and_price">%1$s x %2$s</string>
     <string name="orderdetail_orderstatus_name">%1$s %2$s</string>
-    <string name="orderdetail_orderstatus_date_and_ordernum">%1$s \u2022 #%2$s</string>
     <string name="product_type_external">חיצוני</string>
     <string name="product_type_simple">פשוט</string>
     <string name="product_status_privately_published">פורסם כפרטי</string>
@@ -1737,7 +1827,7 @@ Language: he_IL
     <string name="share_store_dialog_title">שיתוף כתובת ה-URL של החנות שלך</string>
     <string name="share_store_button">שיתוף החנות שלך</string>
     <string name="wc_mark_all_read_success">כל הביקורות שמסומנות כ\'נקרא\'</string>
-    <string name="login_update_required_title">לעדכן את החנות ל-Woocommerce 3.5</string>
+    <string name="login_update_required_title">לעדכן את החנות ל-WooCommerce 3.5</string>
     <string name="login_verifying_site_error">אין אפשרות להתחבר אל %s</string>
     <string name="dismiss">סגור</string>
     <string name="wc_mark_all_read_error">שגיאה בעת סימון של הביקורות כ\'נקרא\'</string>
@@ -1787,7 +1877,7 @@ Language: he_IL
     <string name="logviewer_copied_to_clipboard">היומן הועתק ללוח</string>
     <string name="logviewer_activity_title">יומן אפליקציה</string>
     <string name="support_push_notification_message">הודעה חדשה מ\'עזרה ותמיכה\'</string>
-    <string name="support_push_notification_title">Woocommerce</string>
+    <string name="support_push_notification_title">WooCommerce</string>
     <string name="support_contact_email_not_set">לא הוגדר</string>
     <string name="support_contact_email">אימייל ליצירת קשר</string>
     <string name="support_application_log_detail">כלי מתקדם לבדיקת מצב האפליקציה</string>
@@ -2034,7 +2124,7 @@ Language: he_IL
     <string name="logging_in">נכנס</string>
     <string name="all">הכול</string>
     <string name="notification_channel_general_title">כללי</string>
-    <string name="app_name">Woocommerce</string>
+    <string name="app_name">WooCommerce</string>
     <string-array name="date_range_selectors">
         <item>‎@string/date_timeframe_today</item>
         <item>‎@string/date_timeframe_yesterday</item>

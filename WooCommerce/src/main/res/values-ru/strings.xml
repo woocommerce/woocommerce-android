@@ -1,13 +1,108 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2022-06-01 16:54:04+0000
+Translation-Revision-Date: 2022-07-14 10:54:03+0000
 Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);
 Generator: GlotPress/2.4.0-alpha
 Language: ru
 -->
 <resources>
+    <string name="tests_notification_new_order_message">Новый заказ на 50 долл. в магазине WooCommerce</string>
+    <string name="tests_notification_new_order_title">Поступил новый заказ! 🎉</string>
+    <string name="lines_all_details">сведения</string>
+    <string name="lines_incomplete_explanation">Чтобы изменить все %1$s, откройте заказ в разделе администрирования WooCommerce</string>
+    <string name="lines_incomplete">Неполные данные %1$s.</string>
+    <string name="support_system_status_report_share_label">Отправить отчёт о состоянии системы</string>
+    <string name="support_system_status_report_copy_label">Копировать отчёт о состоянии системы в буфер обмена</string>
+    <string name="card_reader_connect_keep_searching_button">Продолжить поиск</string>
+    <string name="card_reader_payment_description_v2">Оплата при получении, заказ № %s для %s blog_id %s.</string>
+    <string name="card_reader_manage_payment_provider">Изменение платёжного сервиса</string>
+    <string name="orderdetail_refunded_line_with_info">Возвращенные средства: %1$s</string>
+    <string name="orderdetail_payment_summary_onhold_plain">Ожидание платежа</string>
+    <string name="install_wc_shipping_proceed_button">Продолжить установку</string>
+    <string name="install_wc_shipping_installation_info">Подготовка к установке</string>
+    <string name="install_wc_shipping_preinstall_title">Установить расширение</string>
+    <string name="install_wc_shipping_extension_name">Доставка WooCommerce</string>
+    <string name="product_selector_clear_filters_button_title">Очистить фильтры</string>
+    <string name="product_selector_empty_state">Товары не найдены</string>
+    <string name="product_selector_search_failed">Не удалось найти товары</string>
+    <string name="product_selector_loading_failed">Не удалось загрузить товары</string>
+    <string name="product_selector_search_hint">Поиск по товарам</string>
+    <string name="product_selector_filter_button_title_default">Фильтр (%d)</string>
+    <string name="coupon_restrictions_allowed_emails_invalid">Некоторые адреса эл. почты недействительны. Исправьте введённые адреса эл. почты.</string>
+    <string name="coupon_restrictions_allowed_emails_hint">Список разрешённых адресов электронной почты для выставления счетов для сверки при оформлении заказа. Разделяйте адреса электронной почты запятыми. Также можно использовать маску (*) для сверки частей адресов. Так, запись \"*@gmail.com\" соответствует всем адресам gmail.</string>
+    <string name="empty_message_with_filters">К сожалению, нет товаров, соответствующих выбранным фильтрам.</string>
+    <string name="card_reader_onboarding_confirm_payment_method_button">Подтвердить способ оплаты</string>
+    <string name="card_reader_onboarding_choose_stripe_button">Stripe</string>
+    <string name="card_reader_onboarding_choose_wcpayment_button">Платежи WooCommerce</string>
+    <string name="card_reader_onboarding_choose_plugin_hint">Очные платежи можно обработать с помощью любого из этих платёжных сервисов. Какой сервис использовать?</string>
+    <string name="card_reader_onboarding_choose_payment_provider">Выберите платёжный сервис</string>
+    <string name="order_editing_locked_content_description">заблокирован</string>
+    <string name="order_editing_non_editable_message">Чтобы отредактировать сведения о товарах или оплате, измените статус на \"Ожидание оплаты\".</string>
+    <string name="order_editing_non_editable_title">В настоящий момент элементы этого заказа нельзя изменить</string>
+    <string name="order_creation_customer_search_hint">Найти клиентов</string>
+    <string name="order_creation_customer_search_empty">Клиенты не найдены</string>
+    <string name="install_wc_shipping_flow_onboarding_screen_not_now_button">Не сейчас</string>
+    <string name="install_wc_shipping_flow_onboarding_screen_add_extension_button">Добавить расширение в магазин</string>
+    <string name="install_wc_shipping_flow_onboarding_screen_link">Что такое WooCommerce Shipping?</string>
+    <string name="install_wc_shipping_flow_onboarding_screen_discounts_bullet_desc">Воспользуйтесь пониженными тарифами на доставку. Пока доступно для служб DHL и USPS, но список расширяется!</string>
+    <string name="install_wc_shipping_flow_onboarding_screen_discounts_bullet_title">Пониженные тарифы</string>
+    <string name="install_wc_shipping_flow_onboarding_screen_print_bullet_desc">Получите заказ, затем просто оплатите доставку, напечатайте этикетку, упакуйте и отправьте.</string>
+    <string name="install_wc_shipping_flow_onboarding_screen_print_bullet_title">Печатайте с телефона</string>
+    <string name="install_wc_shipping_flow_onboarding_screen_postage_bullet_desc">Не нужно гадать, куда делись почтовые марки.</string>
+    <string name="install_wc_shipping_flow_onboarding_screen_postage_bullet_title">Оплачивайте почтовые сборы по мере необходимости</string>
+    <string name="install_wc_shipping_flow_onboarding_screen_subtitle">Экономьте время и деньги</string>
+    <string name="install_wc_shipping_flow_onboarding_screen_title">Выполняйте заказы с помощью WooCommerce Shipping</string>
+    <string name="product_selector_arrow_content_description">Показать сведения</string>
+    <string name="product_selector_select_variation_label">Выбрать вариант %s</string>
+    <string name="coupon_restrictions_exclude_categories">Исключить товарные категории</string>
+    <string name="coupon_restrictions_exclude_products">Исключить товары</string>
+    <string name="coupon_restrictions_exclusions_section_title">Применить этот купон к</string>
+    <string name="coupon_restrictions_allowed_emails_placeholder">Нет ограничений</string>
+    <string name="coupon_restrictions_allowed_emails">Допустимые адреса эл. почты</string>
+    <string name="coupon_restrictions_limit_per_user_placeholder">Нет лимита</string>
+    <string name="coupon_restrictions_amount_limit_placeholder">Все подходящие</string>
+    <string name="coupon_restrictions_limit_per_coupon_placeholder">Нет лимита</string>
+    <string name="coupon_restrictions_minimum_maximum_spend_placeholder">Нет</string>
+    <string name="coupon_edit_edit_products_title">Редактировать товарные категории (%1$d)</string>
+    <string name="coupon_edit_select_categories_title">Выбрать товарные категории</string>
+    <string name="variations_bulk_update_warning_message">Пока пакетное обновление поддерживается не более чем для 100 вариантов.</string>
+    <string name="variations_bulk_update_warning_title">Превышен лимит пакетного обновления</string>
+    <string name="variations_bulk_update_regular_prices_dialog_title">Обновление обычных цен</string>
+    <string name="variations_bulk_update_sale_prices_dialog_title">Обновление акционных цен</string>
+    <string name="variations_bulk_update_sale_prices_success">Акционные цены обновлены.</string>
+    <string name="variations_bulk_update_regular_prices_success">Обычные цены обновлены.</string>
+    <string name="variations_bulk_update_error">Что-то пошло не так. Повторите попытку.</string>
+    <string name="variations_bulk_update_current_prices_mixed">Текущие цены отличаются друг от друга</string>
+    <string name="variations_bulk_update_current_price">Текущая цена: %s</string>
+    <string name="variations_bulk_update_price_info">Цена для вариантов (%d) будет обновлена</string>
+    <string name="variations_bulk_update_dialog_price_mixed">Отличающиеся</string>
+    <string name="variations_bulk_update_dialog_price_none">Нет</string>
+    <string name="variations_bulk_update_dialog_sale_price_label">Акционная цена</string>
+    <string name="variations_bulk_update_dialog_regular_price_label">Обычная цена</string>
+    <string name="variations_bulk_update_dialog_price_section_title">Цена</string>
+    <string name="variations_bulk_update_dialog_subtitle">Выберите значение для обновления</string>
+    <string name="variations_bulk_update_dialog_title">Пакетное обновление</string>
+    <string name="variations_bulk_limit_exceeded_button_ok">ОК</string>
+    <string name="variation_list_menu_bulk_update">Пакетное обновление…</string>
+    <string name="variation_loading_dialog_title">Получение вариантов…</string>
+    <string name="product_category_selector_search_failed">Не удалось найти товарные категории</string>
+    <string name="product_category_selector_loading_failed">Не удалось загрузить товарные категории</string>
+    <string name="product_category_selector_search_hint">Поиск категорий</string>
+    <string name="product_category_selector_clear_selection">Очистить выбор</string>
+    <string name="product_category_selector_check_content_description">Нажмите, чтобы снять флажок</string>
+    <string name="product_category_selector_select_button_title_one">Выбрать одну категорию</string>
+    <string name="product_category_selector_select_button_title_default">Выбрать категории (%1$d)</string>
+    <string name="product_category_selector_empty_state">Товарные категории не найдены</string>
+    <string name="product_category_selector_title">Выбрать категории</string>
+    <string name="shipping_label_install_wc_shipping_banner_dismiss_button_description">Скрыть баннер с предложением установить WC Shipping</string>
+    <string name="shipping_label_install_wc_shipping_banner_button">Установить WooCommerce Shipping</string>
+    <string name="shipping_label_install_wc_shipping_banner_description">Печатайте транспортные этикетки с телефона, используя WooCommerce Shipping.</string>
+    <string name="shipping_label_install_wc_shipping_banner_title">Нужна транспортная этикетка?</string>
+    <string name="order_creation_change_product_quantity">Измените количество товара с %d на %d</string>
+    <string name="variations_bulk_update_regular_price">Обновить обычную цену</string>
+    <string name="variations_bulk_update_sale_price">Обновить акционную цену</string>
     <string name="card_reader_onboarding_stripe_unsupported_in_country_header">Расширение WooCommerce Stripe не поддерживается в %1$s</string>
-    <string name="product_selector_filter_button_title">Фильтр</string>
+    <string name="product_selector_filter_button_title_zero">Фильтр</string>
     <string name="product_selector_clear_button_title">Очистить выбор</string>
     <string name="product_selector_select_button_title_one">Выбрать %d товар</string>
     <string name="product_selector_select_button_title_default">Выбрать товары (%d)</string>
@@ -133,7 +228,6 @@ Language: ru
     <string name="coupon_details_minimum_spend">Минимальный расход %s</string>
     <string name="coupon_details_heading">Сводка по купонам</string>
     <string name="coupon_list_view_coupon">Смотреть сводку по купонам</string>
-    <string name="coupon_list_wip_message_enabled">Мы разработали функцию, которая позволяет просматривать и редактировать купоны на вашем устройстве.</string>
     <string name="coupon_list_wip_title">Просмотр и редактирование купонов</string>
     <string name="coupon_list_empty_heading">Купоны не найдены</string>
     <string name="coupon_list_item_label_included_and_excluded">%1s без учёта %2s</string>
@@ -162,8 +256,6 @@ Language: ru
     <string name="orderstatus_contentDesc_withStatus">Статус заказа: %s</string>
     <string name="no_sku">Артикула нет</string>
     <string name="count">Счётчик: %s</string>
-    <string name="plus_one">Плюс один</string>
-    <string name="minus_one">Минус один</string>
     <string name="more_menu_button_coupons">Купоны</string>
     <string name="dismiss_inbox_note">Закрыть</string>
     <string name="login_error_xml_rpc_auth_error_communicating">Возникла проблема при подключении к сайту. Получен код ошибки HTTP 401.</string>
@@ -622,7 +714,6 @@ Language: ru
     <string name="card_reader_refetching_order_failed">Ошибка при загрузке заказа. Состояние заказа в приложении могло устареть.</string>
     <string name="card_reader_payment_email_client_not_found">Не удалось определить ваш почтовый клиент</string>
     <string name="card_reader_payment_receipt_email_subject">Ваша квитанция от %s</string>
-    <string name="card_reader_payment_description">Оплата при получении, заказ %s для %s</string>
     <string name="card_reader_payment_fetch_order_loading_payment_state">Обновление заказа</string>
     <string name="card_reader_payment_fetch_order_loading_header">Обновление состояния приложения</string>
     <string name="shipping_label_shipping_carrier_shipping_method_banner_message">Ваш клиент выбрал %1$s</string>
@@ -1122,7 +1213,6 @@ Language: ru
     <string name="orderdetail_product_multiple">Товары</string>
     <string name="orderdetail_product_lineitem_qty_and_price">%1$s x %2$s</string>
     <string name="orderdetail_orderstatus_name">%1$s %2$s</string>
-    <string name="orderdetail_orderstatus_date_and_ordernum">%1$s \u2022 #%2$s</string>
     <string name="product_type_external">Сторонний</string>
     <string name="product_type_simple">Обычный</string>
     <string name="product_status_privately_published">Опубликован как скрытый</string>

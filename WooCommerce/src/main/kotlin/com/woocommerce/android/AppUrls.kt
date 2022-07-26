@@ -33,6 +33,8 @@ object AppUrls {
 
     const val ORDER_CREATION_SURVEY = "https://automattic.survey.fm/woo-app-order-creation-production"
 
+    const val ADDONS_SURVEY = "https://automattic.survey.fm/woo-app-addons-production"
+
     const val COUPONS_SURVEY_DEBUG = "https://automattic.survey.fm/woo-app-coupon-management-testing"
 
     // Will be used later when the feature is fully launched.
@@ -62,4 +64,9 @@ object AppUrls {
     const val PLAY_STORE_APP_PREFIX = "http://play.google.com/store/apps/details?id="
 
     const val PLUGIN_MANAGEMENT_SUFFIX = "/wp-admin/plugins.php"
+
+    const val LOGIN_WITH_EMAIL_WHAT_IS_WORDPRESS_COM_ACCOUNT =
+        "https://woocommerce.com/document/what-is-a-wordpress-com-account/"
+
+    const val NEW_TO_WOO_DOC = "https://woocommerce.com/document/woocommerce-features"
 }

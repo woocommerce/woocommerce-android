@@ -2,6 +2,9 @@ package com.woocommerce.android.ui.orders
 
 import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.R.string
+import com.woocommerce.android.analytics.AnalyticsEvent
+import com.woocommerce.android.analytics.AnalyticsTracker
+import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.initSavedStateHandle
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.model.OrderShipmentTracking
@@ -30,6 +33,7 @@ import org.mockito.kotlin.spy
 import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
+import org.wordpress.android.fluxc.store.WCOrderStore
 import org.wordpress.android.fluxc.utils.DateUtils
 import java.math.BigDecimal
 import kotlin.test.assertNotNull
@@ -49,6 +53,7 @@ class OrderFullfillViewModelTest : BaseUnitTest() {
     private val selectedSite: SelectedSite = mock()
     private val repository: OrderDetailRepository = mock()
     private val resources: ResourceProvider = mock()
+    private val analyticsTrackerWrapper: AnalyticsTrackerWrapper = mock()
 
     private val savedState =
         OrderFulfillFragmentArgs(orderId = ORDER_ID).initSavedStateHandle()
@@ -78,7 +83,8 @@ class OrderFullfillViewModelTest : BaseUnitTest() {
                 appPrefsWrapper,
                 networkStatus,
                 resources,
-                repository
+                repository,
+                analyticsTrackerWrapper
             )
         )
 
@@ -266,6 +272,188 @@ class OrderFullfillViewModelTest : BaseUnitTest() {
 
         verify(repository, times(2)).getOrderShipmentTrackings(any())
         assertThat(orderShipmentTrackings).isEqualTo(addedShipmentTrackings)
+    }
+
+    @Test
+    fun `when new shipment tracking is added, then proper track event is triggered`() = testBlocking {
+        val shipmentTracking = OrderShipmentTracking(
+            trackingProvider = "testProvider",
+            trackingNumber = "123456",
+            dateShipped = DateUtils.getCurrentDateString()
+        )
+
+        doReturn(order).whenever(repository).getOrderById(any())
+
+        val addedShipmentTrackings = testOrderShipmentTrackings.toMutableList()
+        addedShipmentTrackings.add(shipmentTracking)
+        doReturn(testOrderShipmentTrackings).doReturn(addedShipmentTrackings)
+            .whenever(repository).getOrderShipmentTrackings(any())
+
+        viewModel.start()
+        viewModel.onNewShipmentTrackingAdded(shipmentTracking)
+
+        verify(analyticsTrackerWrapper).track(
+            AnalyticsEvent.ORDER_TRACKING_ADD,
+            mapOf(
+                AnalyticsTracker.KEY_ID to ORDER_ID,
+                AnalyticsTracker.KEY_STATUS to order.status,
+                AnalyticsTracker.KEY_CARRIER to shipmentTracking.trackingProvider
+            )
+        )
+    }
+
+    @Test
+    fun `given onOrderChanged error, when order tracking is deleted, then track event is triggered`() = testBlocking {
+        val shipmentTracking = OrderShipmentTracking(
+            trackingProvider = "testProvider",
+            trackingNumber = "123456",
+            dateShipped = DateUtils.getCurrentDateString()
+        )
+        val onOrderChanged = WCOrderStore.OnOrderChanged(
+            statusFilter = "",
+            canLoadMore = false,
+            causeOfChange = null,
+            orderError = WCOrderStore.OrderError(
+                type = WCOrderStore.OrderErrorType.GENERIC_ERROR,
+                message = "generic error"
+            )
+        )
+        doReturn(onOrderChanged).whenever(repository).deleteOrderShipmentTracking(any(), any())
+        val addedShipmentTrackings = testOrderShipmentTrackings.toMutableList()
+        addedShipmentTrackings.add(shipmentTracking)
+
+        viewModel.start()
+        viewModel.deleteOrderShipmentTracking(shipmentTracking)
+
+        verify(analyticsTrackerWrapper).track(
+            AnalyticsEvent.ORDER_TRACKING_DELETE_FAILED,
+            mapOf(
+                AnalyticsTracker.KEY_ERROR_CONTEXT to "OrderFulfillViewModel",
+                AnalyticsTracker.KEY_ERROR_TYPE to "GENERIC_ERROR",
+                AnalyticsTracker.KEY_ERROR_DESC to "generic error"
+            )
+        )
+    }
+
+    @Test
+    fun `given onOrderChanged success, when tracking is deleted, then track is triggered`() = testBlocking {
+        val shipmentTracking = OrderShipmentTracking(
+            trackingProvider = "testProvider",
+            trackingNumber = "123456",
+            dateShipped = DateUtils.getCurrentDateString()
+        )
+        val onOrderChanged = WCOrderStore.OnOrderChanged(
+            statusFilter = "",
+            canLoadMore = false,
+            causeOfChange = null,
+            orderError = null
+        )
+        doReturn(onOrderChanged).whenever(repository).deleteOrderShipmentTracking(any(), any())
+        val addedShipmentTrackings = testOrderShipmentTrackings.toMutableList()
+        addedShipmentTrackings.add(shipmentTracking)
+
+        viewModel.start()
+        viewModel.deleteOrderShipmentTracking(shipmentTracking)
+
+        verify(analyticsTrackerWrapper).track(AnalyticsEvent.ORDER_TRACKING_DELETE_SUCCESS)
+    }
+
+    @Test
+    fun `given onOrderChanged error, when order tracking is deleted, then proper event is triggered`() = testBlocking {
+        val shipmentTracking = OrderShipmentTracking(
+            trackingProvider = "testProvider",
+            trackingNumber = "123456",
+            dateShipped = DateUtils.getCurrentDateString()
+        )
+        val onOrderChanged = WCOrderStore.OnOrderChanged(
+            statusFilter = "",
+            canLoadMore = false,
+            causeOfChange = null,
+            orderError = WCOrderStore.OrderError(
+                type = WCOrderStore.OrderErrorType.GENERIC_ERROR,
+                message = "generic error"
+            )
+        )
+        doReturn(onOrderChanged).whenever(repository).deleteOrderShipmentTracking(any(), any())
+        val addedShipmentTrackings = testOrderShipmentTrackings.toMutableList()
+        addedShipmentTrackings.add(shipmentTracking)
+
+        viewModel.start()
+        viewModel.deleteOrderShipmentTracking(shipmentTracking)
+
+        assertThat(viewModel.event.value).isInstanceOf(ShowSnackbar::class.java)
+    }
+
+    @Test
+    fun `given onOrderChanged success, when tracking is deleted, then proper event is triggered`() = testBlocking {
+        val shipmentTracking = OrderShipmentTracking(
+            trackingProvider = "testProvider",
+            trackingNumber = "123456",
+            dateShipped = DateUtils.getCurrentDateString()
+        )
+        val onOrderChanged = WCOrderStore.OnOrderChanged(
+            statusFilter = "",
+            canLoadMore = false,
+            causeOfChange = null,
+            orderError = null
+        )
+        doReturn(onOrderChanged).whenever(repository).deleteOrderShipmentTracking(any(), any())
+        val addedShipmentTrackings = testOrderShipmentTrackings.toMutableList()
+        addedShipmentTrackings.add(shipmentTracking)
+
+        viewModel.start()
+        viewModel.deleteOrderShipmentTracking(shipmentTracking)
+
+        assertThat(viewModel.event.value).isInstanceOf(ShowSnackbar::class.java)
+    }
+
+    @Test
+    fun `given onOrderChanged error, when tracking is deleted, then event triggered with valid data`() = testBlocking {
+        val shipmentTracking = OrderShipmentTracking(
+            trackingProvider = "testProvider",
+            trackingNumber = "123456",
+            dateShipped = DateUtils.getCurrentDateString()
+        )
+        val onOrderChanged = WCOrderStore.OnOrderChanged(
+            statusFilter = "",
+            canLoadMore = false,
+            causeOfChange = null,
+            orderError = WCOrderStore.OrderError(
+                type = WCOrderStore.OrderErrorType.GENERIC_ERROR,
+                message = "generic error"
+            )
+        )
+        doReturn(onOrderChanged).whenever(repository).deleteOrderShipmentTracking(any(), any())
+        val addedShipmentTrackings = testOrderShipmentTrackings.toMutableList()
+        addedShipmentTrackings.add(shipmentTracking)
+
+        viewModel.start()
+        viewModel.deleteOrderShipmentTracking(shipmentTracking)
+
+        assertThat(viewModel.event.value).isEqualTo(ShowSnackbar(string.order_shipment_tracking_delete_error))
+    }
+
+    @Test
+    fun `given onOrderChanged success, when tracking is deleted,then event triggered with valid data`() = testBlocking {
+        val shipmentTracking = OrderShipmentTracking(
+            trackingProvider = "testProvider",
+            trackingNumber = "123456",
+            dateShipped = DateUtils.getCurrentDateString()
+        )
+        val onOrderChanged = WCOrderStore.OnOrderChanged(
+            statusFilter = "",
+            canLoadMore = false,
+            causeOfChange = null,
+            orderError = null
+        )
+        doReturn(onOrderChanged).whenever(repository).deleteOrderShipmentTracking(any(), any())
+        val addedShipmentTrackings = testOrderShipmentTrackings.toMutableList()
+        addedShipmentTrackings.add(shipmentTracking)
+
+        viewModel.start()
+        viewModel.deleteOrderShipmentTracking(shipmentTracking)
+
+        assertThat(viewModel.event.value).isEqualTo(ShowSnackbar(string.order_shipment_tracking_delete_success))
     }
 
     @Test

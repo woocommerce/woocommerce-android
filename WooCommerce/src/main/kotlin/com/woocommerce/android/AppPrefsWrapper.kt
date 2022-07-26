@@ -1,8 +1,8 @@
 package com.woocommerce.android
 
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener
-import com.woocommerce.android.ui.cardreader.onboarding.PersistentOnboardingData
-import com.woocommerce.android.ui.cardreader.onboarding.PluginType
+import com.woocommerce.android.ui.payments.cardreader.onboarding.PersistentOnboardingData
+import com.woocommerce.android.ui.payments.cardreader.onboarding.PluginType
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
@@ -26,6 +26,9 @@ class AppPrefsWrapper @Inject constructor() {
         AppPrefs.isCardReaderOnboardingCompleted(localSiteId, remoteSiteId, selfHostedSiteId)
 
     fun isCardReaderWelcomeDialogShown() = AppPrefs.isCardReaderWelcomeDialogShown()
+
+    fun isCardReaderPluginExplicitlySelected(localSiteId: Int, remoteSiteId: Long, selfHostedSiteId: Long) =
+        AppPrefs.isCardReaderPluginExplicitlySelected(localSiteId, remoteSiteId, selfHostedSiteId)
 
     fun getCardReaderPreferredPlugin(
         localSiteId: Int,
@@ -56,6 +59,20 @@ class AppPrefsWrapper @Inject constructor() {
             remoteSiteId,
             selfHostedSiteId,
             data,
+        )
+    }
+
+    fun setIsCardReaderPluginExplicitlySelectedFlag(
+        localSiteId: Int,
+        remoteSiteId: Long,
+        selfHostedSiteId: Long,
+        isPluginExplicitlySelected: Boolean = false
+    ) {
+        AppPrefs.setIsCardReaderPluginExplicitlySelectedFlag(
+            localSiteId,
+            remoteSiteId,
+            selfHostedSiteId,
+            isPluginExplicitlySelected
         )
     }
 
@@ -133,6 +150,68 @@ class AppPrefsWrapper @Inject constructor() {
     }
 
     fun getWcShippingBannerDismissed(currentSiteId: Int) = AppPrefs.getWcShippingBannerDismissed(currentSiteId)
+
+    fun getPreLoginNotificationWorkRequestId() = AppPrefs.getLocalNotificationWorkRequestId()
+
+    fun setPreLoginNotificationWorkRequestId(workRequestId: String) =
+        AppPrefs.setLocalNotificationWorkRequestId(workRequestId)
+
+    fun hasPreLoginNotificationBeenDisplayed() = AppPrefs.isPreLoginNotificationBeenDisplayed()
+
+    fun setPreLoginNotificationDisplayed(displayed: Boolean) =
+        AppPrefs.setPreLoginNotificationDisplayed(displayed)
+
+    fun setOnboardingCarouselDisplayed(displayed: Boolean) =
+        AppPrefs.setOnboardingCarouselDisplayed(displayed)
+
+    fun hasOnboardingCarouselBeenDisplayed(): Boolean = AppPrefs.hasOnboardingCarouselBeenDisplayed()
+
+    /**
+     * Card Reader Upsell
+     */
+    fun setCardReaderUpsellBannerDismissed(
+        isDismissed: Boolean,
+        localSiteId: Int,
+        remoteSiteId: Long,
+        selfHostedSiteId: Long
+    ) = AppPrefs.setCardReaderUpsellBannerDismissedForever(
+        isDismissed,
+        localSiteId,
+        remoteSiteId,
+        selfHostedSiteId
+    )
+
+    fun isCardReaderUpsellBannerDismissedForever(
+        localSiteId: Int,
+        remoteSiteId: Long,
+        selfHostedSiteId: Long
+    ) = AppPrefs.isCardReaderUpsellBannerDismissedForever(
+        localSiteId,
+        remoteSiteId,
+        selfHostedSiteId
+    )
+
+    fun setCardReaderUpsellBannerRemindMeLater(
+        lastDialogDismissedInMillis: Long,
+        localSiteId: Int,
+        remoteSiteId: Long,
+        selfHostedSiteId: Long
+    ) = AppPrefs.setCardReaderUpsellBannerRemindMeLater(
+        lastDialogDismissedInMillis,
+        localSiteId,
+        remoteSiteId,
+        selfHostedSiteId
+    )
+
+    fun getCardReaderUpsellBannerLastDismissed(
+        localSiteId: Int,
+        remoteSiteId: Long,
+        selfHostedSiteId: Long
+    ) = AppPrefs.getCardReaderUpsellBannerLastDismissed(
+        localSiteId,
+        remoteSiteId,
+        selfHostedSiteId
+    )
 
     /**
      * Observes changes to the preferences

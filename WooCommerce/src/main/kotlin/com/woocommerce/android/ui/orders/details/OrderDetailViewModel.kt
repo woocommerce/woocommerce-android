@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.orders.details
 
+import android.content.Context
 import android.os.Parcelable
 import androidx.annotation.StringRes
 import androidx.lifecycle.LiveData
@@ -12,6 +13,7 @@ import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsEvent.ORDER_DETAIL_CREATE_SHIPPING_LABEL_BUTTON_TAPPED
 import com.woocommerce.android.analytics.AnalyticsEvent.ORDER_DETAIL_FULFILL_ORDER_BUTTON_TAPPED
 import com.woocommerce.android.analytics.AnalyticsEvent.ORDER_DETAIL_PULLED_TO_REFRESH
+import com.woocommerce.android.analytics.AnalyticsEvent.ORDER_EDIT_BUTTON_TAPPED
 import com.woocommerce.android.analytics.AnalyticsEvent.ORDER_STATUS_CHANGE
 import com.woocommerce.android.analytics.AnalyticsEvent.ORDER_STATUS_CHANGE_FAILED
 import com.woocommerce.android.analytics.AnalyticsEvent.ORDER_STATUS_CHANGE_SUCCESS
@@ -24,8 +26,6 @@ import com.woocommerce.android.analytics.AnalyticsEvent.SHIPPING_LABEL_ORDER_IS_
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_FLOW_EDITING
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
-import com.woocommerce.android.annotations.OpenClassOnDebug
-import com.woocommerce.android.extensions.isNotEqualTo
 import com.woocommerce.android.extensions.whenNotNullNorEmpty
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.model.Order.OrderStatus
@@ -40,8 +40,6 @@ import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.ProductImageMap
 import com.woocommerce.android.tools.ProductImageMap.OnProductFetchedListener
 import com.woocommerce.android.tools.SelectedSite
-import com.woocommerce.android.ui.cardreader.CardReaderTracker
-import com.woocommerce.android.ui.cardreader.payment.CardReaderPaymentCollectibilityChecker
 import com.woocommerce.android.ui.orders.OrderNavigationTarget
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.AddOrderNote
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.AddOrderShipmentTracking
@@ -49,7 +47,7 @@ import com.woocommerce.android.ui.orders.OrderNavigationTarget.IssueOrderRefund
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.PreviewReceipt
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.PrintShippingLabel
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.RefundShippingLabel
-import com.woocommerce.android.ui.orders.OrderNavigationTarget.StartCardReaderPaymentFlow
+import com.woocommerce.android.ui.orders.OrderNavigationTarget.StartPaymentFlow
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.StartShippingLabelCreationFlow
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.ViewCreateShippingLabelInfo
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.ViewOrderFulfillInfo
@@ -58,9 +56,11 @@ import com.woocommerce.android.ui.orders.OrderNavigationTarget.ViewOrderedAddons
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.ViewPrintCustomsForm
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.ViewPrintingInstructions
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.ViewRefundedProducts
-import com.woocommerce.android.ui.orders.simplepayments.TakePaymentViewModel
+import com.woocommerce.android.ui.orders.details.customfields.CustomOrderFieldsHelper
+import com.woocommerce.android.ui.payments.cardreader.CardReaderTracker
+import com.woocommerce.android.ui.payments.cardreader.payment.CardReaderPaymentCollectibilityChecker
 import com.woocommerce.android.ui.products.addons.AddonRepository
-import com.woocommerce.android.ui.shipping.InstallWcShippingFlowViewModel
+import com.woocommerce.android.ui.shipping.InstallWCShippingViewModel
 import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T
@@ -74,17 +74,17 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 import kotlinx.parcelize.Parcelize
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.CoreOrderStatus
+import org.wordpress.android.fluxc.persistence.entity.OrderMetaDataEntity
 import org.wordpress.android.fluxc.store.WCOrderStore.OnOrderChanged
 import org.wordpress.android.fluxc.store.WCOrderStore.UpdateOrderResult.OptimisticUpdateResult
 import org.wordpress.android.fluxc.store.WCOrderStore.UpdateOrderResult.RemoteUpdateResult
-import org.wordpress.android.fluxc.utils.sumBy
 import javax.inject.Inject
 
-@OpenClassOnDebug
 @HiltViewModel
-final class OrderDetailViewModel @Inject constructor(
+class OrderDetailViewModel @Inject constructor(
     private val coroutineDispatchers: CoroutineDispatchers,
     savedState: SavedStateHandle,
     private val appPrefs: AppPrefs,
@@ -101,7 +101,7 @@ final class OrderDetailViewModel @Inject constructor(
 ) : ScopedViewModel(savedState), OnProductFetchedListener {
     private val navArgs: OrderDetailFragmentArgs by savedState.navArgs()
 
-    final var order: Order
+    var order: Order
         get() = requireNotNull(viewState.orderInfo?.order)
         set(value) {
             viewState = viewState.copy(
@@ -117,7 +117,7 @@ final class OrderDetailViewModel @Inject constructor(
     // and add the deleted tracking number back to the list
     private var deletedOrderShipmentTrackingSet = mutableSetOf<String>()
 
-    final val viewStateData = LiveDataDelegate(savedState, ViewState())
+    val viewStateData = LiveDataDelegate(savedState, ViewState())
     private var viewState by viewStateData
 
     private val _orderNotes = MutableLiveData<List<OrderNote>>()
@@ -146,17 +146,11 @@ final class OrderDetailViewModel @Inject constructor(
 
     fun start() {
         launch {
-            val orderInDb = orderDetailRepository.getOrderById(navArgs.orderId)
-            val needToFetch = orderInDb == null || checkIfFetchNeeded(orderInDb)
-            if (needToFetch) {
-                fetchOrder(true)
-            } else {
-                orderInDb?.let {
-                    order = orderInDb
-                    displayOrderDetails()
-                    fetchAndDisplayOrderDetails()
-                }
-            }
+            orderDetailRepository.getOrderById(navArgs.orderId)?.let {
+                order = it
+                displayOrderDetails()
+                fetchOrder(showSkeleton = false)
+            } ?: fetchOrder(showSkeleton = true)
         }
     }
 
@@ -172,6 +166,7 @@ final class OrderDetailViewModel @Inject constructor(
         updateOrderState()
         loadOrderNotes()
         displayProductAndShippingDetails()
+        checkOrderMetaData()
     }
 
     private suspend fun fetchOrder(showSkeleton: Boolean) {
@@ -200,10 +195,31 @@ final class OrderDetailViewModel @Inject constructor(
         }
     }
 
-    // if local order data and refunds are out of sync, it needs to be fetched
-    private fun checkIfFetchNeeded(order: Order?): Boolean {
-        val refunds = orderDetailRepository.getOrderRefunds(navArgs.orderId)
-        return order?.refundTotal.isNotEqualTo(refunds.sumBy { it.amount })
+    private fun checkOrderMetaData() {
+        launch {
+            viewState = viewState.copy(
+                isCustomFieldsButtonShown = orderDetailRepository.orderHasMetadata(navArgs.orderId)
+            )
+        }
+    }
+
+    /**
+     * User clicked the button to view custom fields
+     */
+    fun onCustomFieldsButtonClicked() {
+        AnalyticsTracker.track(AnalyticsEvent.ORDER_VIEW_CUSTOM_FIELDS_TAPPED)
+        triggerEvent(OrderNavigationTarget.ViewCustomFields)
+    }
+
+    /**
+     * User tapped an actionable custom field
+     */
+    fun onCustomFieldClicked(context: Context, value: String) {
+        CustomOrderFieldsHelper.handleMetadataValue(context, value)
+    }
+
+    fun getOrderMetadata(): List<OrderMetaDataEntity> = runBlocking {
+        orderDetailRepository.getOrderMetadata(navArgs.orderId)
     }
 
     fun onRefreshRequested() {
@@ -234,18 +250,20 @@ final class OrderDetailViewModel @Inject constructor(
         triggerEvent(IssueOrderRefund(remoteOrderId = order.id))
     }
 
-    fun onSharePaymentUrlClicked() {
-        trackerWrapper.track(AnalyticsEvent.ORDER_DETAIL_PAYMENT_LINK_SHARED)
-        triggerEvent(TakePaymentViewModel.SharePaymentUrl(selectedSite.get().name, order.paymentUrl))
-    }
-
     fun onEditClicked() {
+        trackerWrapper.track(
+            ORDER_EDIT_BUTTON_TAPPED,
+            mapOf(
+                AnalyticsTracker.KEY_HAS_MULTIPLE_FEE_LINES to (order.feesLines.size > 1),
+                AnalyticsTracker.KEY_HAS_MULTIPLE_SHIPPING_LINES to (order.shippingLines.size > 1)
+            )
+        )
         triggerEvent(OrderNavigationTarget.EditOrder(order.id))
     }
 
     fun onAcceptCardPresentPaymentClicked() {
         cardReaderTracker.trackCollectPaymentTapped()
-        triggerEvent(StartCardReaderPaymentFlow(orderId = order.id))
+        triggerEvent(StartPaymentFlow(orderId = order.id))
     }
 
     fun onSeeReceiptClicked() {
@@ -266,7 +284,7 @@ final class OrderDetailViewModel @Inject constructor(
     }
 
     fun onGetWcShippingClicked() {
-        triggerEvent(InstallWcShippingFlowViewModel.InstallWcShipping)
+        triggerEvent(InstallWCShippingViewModel.InstallWcShipping)
     }
 
     /**
@@ -457,11 +475,13 @@ final class OrderDetailViewModel @Inject constructor(
             launch {
                 orderDetailRepository.updateOrderStatus(order.id, newStatus)
                     .collect { result ->
+                        reloadOrderDetails()
                         when (result) {
-                            is OptimisticUpdateResult -> reloadOrderDetails()
+                            is OptimisticUpdateResult -> {
+                                // no-op. We reload order details in any case
+                            }
                             is RemoteUpdateResult -> {
                                 if (result.event.isError) {
-                                    reloadOrderDetails()
                                     triggerEvent(ShowSnackbar(string.order_error_update_general))
                                     trackerWrapper.track(
                                         ORDER_STATUS_CHANGE_FAILED,
@@ -517,7 +537,6 @@ final class OrderDetailViewModel @Inject constructor(
             toolbarTitle = resourceProvider.getString(
                 string.orderdetail_orderstatus_ordernum, order.number
             ),
-            isSharePaymentLinkVisible = order.paymentUrl.isNotEmpty() && order.status == Order.Status.Pending
         )
     }
 
@@ -708,11 +727,12 @@ final class OrderDetailViewModel @Inject constructor(
         val isProductListVisible: Boolean? = null,
         val areShippingLabelsVisible: Boolean? = null,
         val isProductListMenuVisible: Boolean? = null,
-        val isSharePaymentLinkVisible: Boolean? = null,
-        val wcShippingBannerVisible: Boolean? = null
+        val wcShippingBannerVisible: Boolean? = null,
+        val isCustomFieldsButtonShown: Boolean? = null
     ) : Parcelable {
         val isMarkOrderCompleteButtonVisible: Boolean?
-            get() = if (orderStatus != null) orderStatus.statusKey == CoreOrderStatus.PROCESSING.value else null
+            get() = if (orderStatus != null && (orderStatus.statusKey != CoreOrderStatus.COMPLETED.value))
+                orderInfo?.order?.isOrderPaid else false
 
         val isCreateShippingLabelBannerVisible: Boolean
             get() = isCreateShippingLabelButtonVisible == true && isProductListVisible == true

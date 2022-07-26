@@ -2,6 +2,8 @@ package com.woocommerce.android.ui.coupons
 
 import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.R
+import com.woocommerce.android.analytics.AnalyticsEvent
+import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.model.Coupon
 import com.woocommerce.android.util.CouponUtils
 import com.woocommerce.android.util.CurrencyFormatter
@@ -10,6 +12,7 @@ import com.woocommerce.android.util.runAndCaptureValues
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.ResourceProvider
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.test.advanceUntilIdle
@@ -23,11 +26,13 @@ import org.mockito.kotlin.doAnswer
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.doSuspendableAnswer
 import org.mockito.kotlin.mock
+import org.mockito.kotlin.never
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.store.WooCommerceStore
 
+@ExperimentalCoroutinesApi
 class CouponsListViewModelTests : BaseUnitTest() {
     private lateinit var viewModel: CouponListViewModel
 
@@ -45,6 +50,7 @@ class CouponsListViewModelTests : BaseUnitTest() {
         on { getString(any()) } doAnswer { it.arguments[0].toString() }
         on { getString(any(), anyVararg()) } doAnswer { it.arguments[0].toString() }
     }
+    private val analyticsTrackerWrapper: AnalyticsTrackerWrapper = mock()
     private val couponUtils = CouponUtils(
         currencyFormatter = currencyFormatter,
         resourceProvider = resourceProvider
@@ -59,7 +65,8 @@ class CouponsListViewModelTests : BaseUnitTest() {
             couponUtils = couponUtils,
             selectedSite = mock {
                 on { get() } doReturn SiteModel()
-            }
+            },
+            analyticsTrackerWrapper = analyticsTrackerWrapper
         )
     }
 
@@ -103,6 +110,24 @@ class CouponsListViewModelTests : BaseUnitTest() {
 
         val state = viewModel.couponsState.captureValues().last()
         assertThat(state.isSearchOpen).isTrue()
+    }
+
+    @Test
+    fun `when search is opened, then proper track event is triggered`() = testBlocking {
+        setup()
+
+        viewModel.onSearchStateChanged(true)
+
+        verify(analyticsTrackerWrapper).track(AnalyticsEvent.COUPONS_LIST_SEARCH_TAPPED)
+    }
+
+    @Test
+    fun `when search is NOT opened, then track event is NOT triggered`() = testBlocking {
+        setup()
+
+        viewModel.onSearchStateChanged(false)
+
+        verify(analyticsTrackerWrapper, never()).track(AnalyticsEvent.COUPONS_LIST_SEARCH_TAPPED)
     }
 
     @Test

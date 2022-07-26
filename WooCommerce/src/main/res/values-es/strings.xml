@@ -1,13 +1,108 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2022-06-03 11:54:16+0000
+Translation-Revision-Date: 2022-07-14 12:54:03+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: es
 -->
 <resources>
+    <string name="tests_notification_new_order_message">Nuevo pedido de 50 $ en tu tienda de WooCommerce</string>
+    <string name="tests_notification_new_order_title">Tienes un pedido nuevo 🎉</string>
+    <string name="lines_all_details">los detalles</string>
+    <string name="lines_incomplete_explanation">Para editar todos los %1$s, busca el pedido en la administración de tu tienda de WooCommerce</string>
+    <string name="lines_incomplete">%1$s están incompletos</string>
+    <string name="support_system_status_report_share_label">Compartir el informe de estado del sistema</string>
+    <string name="support_system_status_report_copy_label">Copiar el informe de estado del sistema al portapapeles</string>
+    <string name="card_reader_connect_keep_searching_button">Seguir buscando</string>
+    <string name="card_reader_payment_description_v2">Pago en persona del pedido n.º %s para %s blog_id %s.</string>
+    <string name="card_reader_manage_payment_provider">Cambiar proveedor de pagos</string>
+    <string name="orderdetail_refunded_line_with_info">Reembolsado: %1$s</string>
+    <string name="orderdetail_payment_summary_onhold_plain">Pago pendiente</string>
+    <string name="install_wc_shipping_proceed_button">Continuar con esta instalación</string>
+    <string name="install_wc_shipping_installation_info">Cosas que saber antes de la instalación</string>
+    <string name="install_wc_shipping_preinstall_title">Instalar extensión</string>
+    <string name="install_wc_shipping_extension_name">WooCommerce Envíos</string>
+    <string name="product_selector_clear_filters_button_title">Vaciar filtros</string>
+    <string name="product_selector_empty_state">No se han encontrado productos</string>
+    <string name="product_selector_search_failed">Se ha producido un error en la búsqueda de productos</string>
+    <string name="product_selector_loading_failed">Se ha producido un error en la carga de productos</string>
+    <string name="product_selector_search_hint">Buscar productos</string>
+    <string name="product_selector_filter_button_title_default">Filtro (%d)</string>
+    <string name="coupon_restrictions_allowed_emails_invalid">Algunas direcciones de correo electrónico no son válidas. Corrige las direcciones introducidas.</string>
+    <string name="coupon_restrictions_allowed_emails_hint">Lista de correos electrónicos de facturación permitidos que puedes consultar cuando se realiza un pedido. Separa las direcciones de correo electrónico con comas. También puedes utilizar un asterisco (*) para que coincidan partes de un correo electrónico. Por ejemplo, \"*@gmail.com\" coincidiría con todas las direcciones de Gmail.</string>
+    <string name="empty_message_with_filters">Lo sentimos, no hay productos que coincidan con los filtros seleccionados</string>
+    <string name="card_reader_onboarding_confirm_payment_method_button">Confirmar método de pago</string>
+    <string name="card_reader_onboarding_choose_stripe_button">Stripe</string>
+    <string name="card_reader_onboarding_choose_wcpayment_button">WooCommerce Payments</string>
+    <string name="card_reader_onboarding_choose_plugin_hint">Los pagos en persona se pueden procesar a través de cualquiera de estos proveedores de pago. ¿Qué proveedor te gustaría utilizar?</string>
+    <string name="card_reader_onboarding_choose_payment_provider">Elige tu proveedor de pagos</string>
+    <string name="order_editing_locked_content_description">bloqueado</string>
+    <string name="order_editing_non_editable_message">Para editar Productos o Datos de pago, cambia el estado a Pago pendiente.</string>
+    <string name="order_editing_non_editable_title">Hay partes de este pedido que no se pueden editar actualmente</string>
+    <string name="order_creation_customer_search_hint">Buscar clientes</string>
+    <string name="order_creation_customer_search_empty">No se han encontrado clientes</string>
+    <string name="install_wc_shipping_flow_onboarding_screen_not_now_button">No ahora</string>
+    <string name="install_wc_shipping_flow_onboarding_screen_add_extension_button">Añadir extensión a la tienda</string>
+    <string name="install_wc_shipping_flow_onboarding_screen_link">¿Qué es WooCommerce Shipping?</string>
+    <string name="install_wc_shipping_flow_onboarding_screen_discounts_bullet_desc">Accede a tarifas de envío con descuento. Actualmente está disponible con DHL y USPS, y pronto habrá más.</string>
+    <string name="install_wc_shipping_flow_onboarding_screen_discounts_bullet_title">Tarifas con descuento</string>
+    <string name="install_wc_shipping_flow_onboarding_screen_print_bullet_desc">Recoge un pedido; luego, solo tienes que pagar, imprimir, empaquetar y enviar.</string>
+    <string name="install_wc_shipping_flow_onboarding_screen_print_bullet_title">Imprime con tu teléfono</string>
+    <string name="install_wc_shipping_flow_onboarding_screen_postage_bullet_desc">No hace falta que busques tus sellos.</string>
+    <string name="install_wc_shipping_flow_onboarding_screen_postage_bullet_title">Compra franqueo cuando lo necesites</string>
+    <string name="install_wc_shipping_flow_onboarding_screen_subtitle">Ahorra tiempo y dinero</string>
+    <string name="install_wc_shipping_flow_onboarding_screen_title">Cumple con tus pedidos con WooCommerce Shipping</string>
+    <string name="product_selector_arrow_content_description">Mostrar los detalles</string>
+    <string name="product_selector_select_variation_label">Seleccionar variación %s</string>
+    <string name="coupon_restrictions_exclude_categories">Excluir categorías de productos</string>
+    <string name="coupon_restrictions_exclude_products">Excluir productos</string>
+    <string name="coupon_restrictions_exclusions_section_title">Aplicar este cupón para</string>
+    <string name="coupon_restrictions_allowed_emails_placeholder">Sin restricciones</string>
+    <string name="coupon_restrictions_allowed_emails">Correos electrónicos permitidos</string>
+    <string name="coupon_restrictions_limit_per_user_placeholder">Ilimitado</string>
+    <string name="coupon_restrictions_amount_limit_placeholder">Todos los artículos que cumplen los requisitos</string>
+    <string name="coupon_restrictions_limit_per_coupon_placeholder">Ilimitado</string>
+    <string name="coupon_restrictions_minimum_maximum_spend_placeholder">Ninguno</string>
+    <string name="coupon_edit_edit_products_title">Editar categorías de productos (%1$d)</string>
+    <string name="coupon_edit_select_categories_title">Elegir categorías de productos</string>
+    <string name="variations_bulk_update_warning_message">Actualmente, la actualización en lote es compatible con un máximo de 100 variaciones.</string>
+    <string name="variations_bulk_update_warning_title">Se ha superado el límite de actualización en lote</string>
+    <string name="variations_bulk_update_regular_prices_dialog_title">Actualizando precios normales</string>
+    <string name="variations_bulk_update_sale_prices_dialog_title">Actualizando precios rebajados</string>
+    <string name="variations_bulk_update_sale_prices_success">Los precios rebajados se han actualizado.</string>
+    <string name="variations_bulk_update_regular_prices_success">Los precios normales se han actualizado.</string>
+    <string name="variations_bulk_update_error">Se ha producido un error. Inténtalo de nuevo.</string>
+    <string name="variations_bulk_update_current_prices_mixed">Los precios actuales son mixtos</string>
+    <string name="variations_bulk_update_current_price">El precio actual es %s</string>
+    <string name="variations_bulk_update_price_info">El precio se actualizará para %d variaciones</string>
+    <string name="variations_bulk_update_dialog_price_mixed">Mixto</string>
+    <string name="variations_bulk_update_dialog_price_none">Ninguno</string>
+    <string name="variations_bulk_update_dialog_sale_price_label">Precio rebajado</string>
+    <string name="variations_bulk_update_dialog_regular_price_label">Precio normal</string>
+    <string name="variations_bulk_update_dialog_price_section_title">Precio</string>
+    <string name="variations_bulk_update_dialog_subtitle">Elige un valor para actualizar</string>
+    <string name="variations_bulk_update_dialog_title">Actualización en lote</string>
+    <string name="variations_bulk_limit_exceeded_button_ok">Aceptar</string>
+    <string name="variation_list_menu_bulk_update">Actualización en lote…</string>
+    <string name="variation_loading_dialog_title">Recuperando variaciones…</string>
+    <string name="product_category_selector_search_failed">Se ha producido un error en la búsqueda de categorías de productos</string>
+    <string name="product_category_selector_loading_failed">Se ha producido un error en la carga de categorías de productos</string>
+    <string name="product_category_selector_search_hint">Buscar categorías</string>
+    <string name="product_category_selector_clear_selection">Limpiar selección</string>
+    <string name="product_category_selector_check_content_description">Haz clic para desmarcar</string>
+    <string name="product_category_selector_select_button_title_one">Elige 1 categoría</string>
+    <string name="product_category_selector_select_button_title_default">Elegir %1$d categorías</string>
+    <string name="product_category_selector_empty_state">No se ha encontrado ninguna categoría de producto.</string>
+    <string name="product_category_selector_title">Elegir categorías</string>
+    <string name="shipping_label_install_wc_shipping_banner_dismiss_button_description">Descartar banner para instalar WC Shipping</string>
+    <string name="shipping_label_install_wc_shipping_banner_button">Obtener WooCommerce Shipping</string>
+    <string name="shipping_label_install_wc_shipping_banner_description">Imprime etiquetas desde tu teléfono con WooCommerce Shipping.</string>
+    <string name="shipping_label_install_wc_shipping_banner_title">¿Necesitas una etiqueta de envío?</string>
+    <string name="order_creation_change_product_quantity">Cambiar la cantidad de producto de %d a %d</string>
+    <string name="variations_bulk_update_regular_price">Actualizar precio normal</string>
+    <string name="variations_bulk_update_sale_price">Actualizar precio rebajado</string>
     <string name="card_reader_onboarding_stripe_unsupported_in_country_header">No admitimos la extensión WooCommerce Stripe en %1$s</string>
-    <string name="product_selector_filter_button_title">Filtro</string>
+    <string name="product_selector_filter_button_title_zero">Filtro</string>
     <string name="product_selector_clear_button_title">Limpiar selección</string>
     <string name="product_selector_select_button_title_one">Elegir %d producto</string>
     <string name="product_selector_select_button_title_default">Elegir %d productos</string>
@@ -133,7 +228,6 @@ Language: es
     <string name="coupon_details_minimum_spend">Gasto mínimo de %s</string>
     <string name="coupon_details_heading">Resumen del cupón</string>
     <string name="coupon_list_view_coupon">Ver el resumen del cupón</string>
-    <string name="coupon_list_wip_message_enabled">Estamos trabajando para que sea posible ver y editar cupones desde tu dispositivo.</string>
     <string name="coupon_list_wip_title">Ver y editar cupones</string>
     <string name="coupon_list_empty_heading">No se han encontrado cupones</string>
     <string name="coupon_list_item_label_included_and_excluded">%1s excepto %2s</string>
@@ -162,8 +256,6 @@ Language: es
     <string name="orderstatus_contentDesc_withStatus">Estado del pedido: %s</string>
     <string name="no_sku">Sin SKU</string>
     <string name="count">Recuento: %s</string>
-    <string name="plus_one">Más uno</string>
-    <string name="minus_one">Menos uno</string>
     <string name="more_menu_button_coupons">Cupones</string>
     <string name="dismiss_inbox_note">Descartar</string>
     <string name="login_error_xml_rpc_auth_error_communicating">Ha ocurrido un problema al comunicar con el sitio. Se ha devuelto un código de error HTTP 401.</string>
@@ -622,7 +714,6 @@ Language: es
     <string name="card_reader_refetching_order_failed">Error al recuperar el pedido. El estado del pedido en la aplicación podría estar desactualizado.</string>
     <string name="card_reader_payment_email_client_not_found">No se pudo detectar una aplicación cliente de correo electrónico</string>
     <string name="card_reader_payment_receipt_email_subject">Tu recibo de %s</string>
-    <string name="card_reader_payment_description">Pago en persona del pedido %s para %s</string>
     <string name="card_reader_payment_fetch_order_loading_payment_state">Actualizando pedido</string>
     <string name="card_reader_payment_fetch_order_loading_header">Actualizando estado en la aplicación</string>
     <string name="shipping_label_shipping_carrier_shipping_method_banner_message">Tu cliente ha seleccionado %1$s</string>
@@ -1122,7 +1213,6 @@ Language: es
     <string name="orderdetail_product_multiple">Productos</string>
     <string name="orderdetail_product_lineitem_qty_and_price">%1$s x %2$s</string>
     <string name="orderdetail_orderstatus_name">%1$s %2$s</string>
-    <string name="orderdetail_orderstatus_date_and_ordernum">%1$s \u2022 #%2$s</string>
     <string name="product_type_external">Externo</string>
     <string name="product_type_simple">Sencillo</string>
     <string name="product_status_privately_published">Publicado como privado</string>

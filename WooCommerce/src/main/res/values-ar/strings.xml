@@ -1,13 +1,108 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2022-06-02 13:54:04+0000
+Translation-Revision-Date: 2022-07-13 13:54:03+0000
 Plural-Forms: nplurals=6; plural=n==0 ? 0 : n==1 ? 1 : n==2 ? 2 : n%100>=3 && n%100<=10 ? 3 : n%100>=11 && n%100<=99 ? 4 : 5;
 Generator: GlotPress/2.4.0-alpha
 Language: ar
 -->
 <resources>
+    <string name="tests_notification_new_order_message">طلب جديد مقابل 50 دولارًا على متجر WooCommerce الخاص بك</string>
+    <string name="tests_notification_new_order_title">لديك طلب جديد! 🎉</string>
+    <string name="lines_all_details">التفاصيل</string>
+    <string name="lines_incomplete_explanation">لتحرير جميع ⁦%1$s⁩، قم بتصفح الطلب في مسؤول متجر WooCommerce الخاص بك</string>
+    <string name="lines_incomplete">⁦%1$s⁩ غير مكتملة</string>
+    <string name="support_system_status_report_share_label">مشاركة تقرير حالة النظام</string>
+    <string name="support_system_status_report_copy_label">نسخ تقرير حالة النظام إلى الحافظة</string>
+    <string name="card_reader_connect_keep_searching_button">الاستمرار في البحث</string>
+    <string name="card_reader_payment_description_v2">عملية دفع شخصية للطلب رقم %s لـ %s blog_id %s.</string>
+    <string name="card_reader_manage_payment_provider">تغيير مزوِّد الدفع</string>
+    <string name="orderdetail_refunded_line_with_info">تم رد المبالغ المدفوعة: ⁦%1$s⁩</string>
+    <string name="orderdetail_payment_summary_onhold_plain">بانتظار الدفع</string>
+    <string name="install_wc_shipping_proceed_button">متابعة التثبيت</string>
+    <string name="install_wc_shipping_installation_info">أشياء يجب معرفتها قبل التثبيت</string>
+    <string name="install_wc_shipping_preinstall_title">تثبيت إضافة</string>
+    <string name="install_wc_shipping_extension_name">الشحن عبر WooCommerce</string>
+    <string name="product_selector_clear_filters_button_title">مسح عوامل التصفية</string>
+    <string name="product_selector_empty_state">لم يتم العثور على أي منتجات</string>
+    <string name="product_selector_search_failed">فشل البحث عن منتجات</string>
+    <string name="product_selector_loading_failed">فشل تحميل المنتجات</string>
+    <string name="product_selector_search_hint">البحث عن منتجات</string>
+    <string name="product_selector_filter_button_title_default">عامل تصفية (%d)</string>
+    <string name="coupon_restrictions_allowed_emails_invalid">بعض من عناوين البريد الإلكتروني غير صالحة. يرجى إصلاح البريد الإلكتروني الذي تم إدخاله.</string>
+    <string name="coupon_restrictions_allowed_emails_hint">قائمة برسائل البريد الإلكتروني الخاصة بالفوترة المسموح بها للتحقُّق من موعد تقديم طلب. افصل بين عناوين البريد الإلكتروني بفواصل. يمكنك أيضًا استخدام علامة النجمة (*) لمطابقة أجزاء البريد الإلكتروني. على سبيل المثال، سيتطابق \"‎@gmail.com\" مع جميع عناوين gmail.</string>
+    <string name="empty_message_with_filters">عذرًا، لا توجد منتجات تتطابق مع عوامل التصفية المحدَّدة\"</string>
+    <string name="card_reader_onboarding_confirm_payment_method_button">تأكيد طريقة الدفع</string>
+    <string name="card_reader_onboarding_choose_stripe_button">Stripe</string>
+    <string name="card_reader_onboarding_choose_wcpayment_button">مدفوعات WooCommerce</string>
+    <string name="card_reader_onboarding_choose_plugin_hint">يمكن معالجة المدفوعات الشخصية من خلال أي من مزوِّدي الدفع هؤلاء. ما المزوِّد الذي ترغب في استخدامه؟</string>
+    <string name="card_reader_onboarding_choose_payment_provider">اختيار مزوِّد الدفع الخاص بك</string>
+    <string name="order_editing_locked_content_description">مؤمن</string>
+    <string name="order_editing_non_editable_message">لتحرير تفاصيل المنتجات أو الدفع، قم بتغيير الحالة إلى عملية دفع معلقة.</string>
+    <string name="order_editing_non_editable_title">لا يمكن تحرير أجزاء الطلب في الوقت الحالي</string>
+    <string name="order_creation_customer_search_hint">البحث في الزبائن</string>
+    <string name="order_creation_customer_search_empty">لم يتم العثور على أي عملاء</string>
+    <string name="install_wc_shipping_flow_onboarding_screen_not_now_button">ليس الآن</string>
+    <string name="install_wc_shipping_flow_onboarding_screen_add_extension_button">إضافة إضافة إلى المتجر</string>
+    <string name="install_wc_shipping_flow_onboarding_screen_link">ما المقصود بـ WooCommerce Shipping؟</string>
+    <string name="install_wc_shipping_flow_onboarding_screen_discounts_bullet_desc">يمكنك الوصول إلى أسعار الشحن المُخفَّضة. متاح حاليًا مع DHL وUSPS والمزيد يتوافر قريبًا!</string>
+    <string name="install_wc_shipping_flow_onboarding_screen_discounts_bullet_title">الأسعار المُخفَّضة</string>
+    <string name="install_wc_shipping_flow_onboarding_screen_print_bullet_desc">استلم طلبًا، ثم ما عليك سوى دفع مقابله وطباعته وتغليفه وإرساله.</string>
+    <string name="install_wc_shipping_flow_onboarding_screen_print_bullet_title">الطباعة من هاتفك</string>
+    <string name="install_wc_shipping_flow_onboarding_screen_postage_bullet_desc">لا داعي للتساؤل أين ذهب دفتر الطوابع هذا.</string>
+    <string name="install_wc_shipping_flow_onboarding_screen_postage_bullet_title">شراء طابع البريد عندما تحتاج إليه</string>
+    <string name="install_wc_shipping_flow_onboarding_screen_subtitle">توفير الوقت والمال</string>
+    <string name="install_wc_shipping_flow_onboarding_screen_title">شحن طلباتك باستخدام WooCommerce Shipping</string>
+    <string name="product_selector_arrow_content_description">عرض التفاصيل</string>
+    <string name="product_selector_select_variation_label">تحديد المجموعة %s</string>
+    <string name="coupon_restrictions_exclude_categories">استبعاد تصنيفات المنتج</string>
+    <string name="coupon_restrictions_exclude_products">استبعاد المنتجات</string>
+    <string name="coupon_restrictions_exclusions_section_title">تطبيق هذه القسيمة على</string>
+    <string name="coupon_restrictions_allowed_emails_placeholder">بدون قيود</string>
+    <string name="coupon_restrictions_allowed_emails">رسائل البريد الإلكتروني المسموح بها</string>
+    <string name="coupon_restrictions_limit_per_user_placeholder">غير محدود</string>
+    <string name="coupon_restrictions_amount_limit_placeholder">جميع العناصر مؤهلة</string>
+    <string name="coupon_restrictions_limit_per_coupon_placeholder">غير محدود</string>
+    <string name="coupon_restrictions_minimum_maximum_spend_placeholder">لا شيء</string>
+    <string name="coupon_edit_edit_products_title">تحرير تصنيفات المنتج (⁦%1$d⁩)</string>
+    <string name="coupon_edit_select_categories_title">تحديد تصنيفات المنتج</string>
+    <string name="variations_bulk_update_warning_message">التحديث المُجمَّع مدعوم في الوقت الحالي لـ 100 مجموعة كحد أقصى.</string>
+    <string name="variations_bulk_update_warning_title">تم تجاوز حد التحديث المُجمَّع</string>
+    <string name="variations_bulk_update_regular_prices_dialog_title">تحديث الأسعار العادية</string>
+    <string name="variations_bulk_update_sale_prices_dialog_title">تحديث أسعار البيع</string>
+    <string name="variations_bulk_update_sale_prices_success">أسعار البيع المُحدَّثة.</string>
+    <string name="variations_bulk_update_regular_prices_success">الأسعار العادية المُحدَّثة.</string>
+    <string name="variations_bulk_update_error">حدث خطأ. يرجى المحاولة مرة أخرى.</string>
+    <string name="variations_bulk_update_current_prices_mixed">الأسعار الحالية متفاوتة</string>
+    <string name="variations_bulk_update_current_price">يبلغ السعر الحالي %s</string>
+    <string name="variations_bulk_update_price_info">سيتم تحديث السعر لـ %d من المجموعات</string>
+    <string name="variations_bulk_update_dialog_price_mixed">مختلط</string>
+    <string name="variations_bulk_update_dialog_price_none">لا شيء</string>
+    <string name="variations_bulk_update_dialog_sale_price_label">سعر البيع</string>
+    <string name="variations_bulk_update_dialog_regular_price_label">السعر العادي</string>
+    <string name="variations_bulk_update_dialog_price_section_title">السعر</string>
+    <string name="variations_bulk_update_dialog_subtitle">اختيار قيمة لتحديثها</string>
+    <string name="variations_bulk_update_dialog_title">التحديث المُجمَّع</string>
+    <string name="variations_bulk_limit_exceeded_button_ok">موافق</string>
+    <string name="variation_list_menu_bulk_update">جارٍ التحديث المُجمَّع…</string>
+    <string name="variation_loading_dialog_title">جارٍ إحضار المجموعات…</string>
+    <string name="product_category_selector_search_failed">فشل البحث عن تصنيفات المنتج</string>
+    <string name="product_category_selector_loading_failed">فشل تحميل تصنيفات المنتج</string>
+    <string name="product_category_selector_search_hint">بحث في التصنيفات</string>
+    <string name="product_category_selector_clear_selection">مسح التحديد</string>
+    <string name="product_category_selector_check_content_description">النقر لإلغاء التحديد</string>
+    <string name="product_category_selector_select_button_title_one">تحديد 1 تصنيف</string>
+    <string name="product_category_selector_select_button_title_default">تحديد ⁦%1$d⁩ من التصنيفات</string>
+    <string name="product_category_selector_empty_state">لم يتم العثور على تصنيفات المنتج</string>
+    <string name="product_category_selector_title">تحديد التصنيفات</string>
+    <string name="shipping_label_install_wc_shipping_banner_dismiss_button_description">تجاهل الشعار لتثبيت WC Shipping</string>
+    <string name="shipping_label_install_wc_shipping_banner_button">الحصول على WooCommerce Shipping</string>
+    <string name="shipping_label_install_wc_shipping_banner_description">اطبع الملصقات من هاتفك باستخدام WooCommerce Shipping.</string>
+    <string name="shipping_label_install_wc_shipping_banner_title">هل تحتاج إلى ملصق شحن؟</string>
+    <string name="order_creation_change_product_quantity">تغيير كمية المنتج من %d إلى %d</string>
+    <string name="variations_bulk_update_regular_price">تحديث السعر العادي</string>
+    <string name="variations_bulk_update_sale_price">تحديث سعر البيع</string>
     <string name="card_reader_onboarding_stripe_unsupported_in_country_header">لا ندعم إضافة WooCommerce Stripe في ⁦%1$s⁩</string>
-    <string name="product_selector_filter_button_title">عامل تصفية</string>
+    <string name="product_selector_filter_button_title_zero">عامل تصفية</string>
     <string name="product_selector_clear_button_title">مسح التحديد</string>
     <string name="product_selector_select_button_title_one">تحديد %d منتج</string>
     <string name="product_selector_select_button_title_default">تحديد %d من المنتجات</string>
@@ -133,7 +228,6 @@ Language: ar
     <string name="coupon_details_minimum_spend">الحد الأدنى للإنفاق لـ %s</string>
     <string name="coupon_details_heading">ملخص القسيمة</string>
     <string name="coupon_list_view_coupon">عرض ملخص القسيمة</string>
-    <string name="coupon_list_wip_message_enabled">لقد كنا نعمل على إتاحة عرض القسائم وتحريرها من جهازك!</string>
     <string name="coupon_list_wip_title">عرض القسائم وتحريرها</string>
     <string name="coupon_list_empty_heading">لم يتم العثور على قسائم</string>
     <string name="coupon_list_item_label_included_and_excluded">%1s من دون %2s</string>
@@ -162,8 +256,6 @@ Language: ar
     <string name="orderstatus_contentDesc_withStatus">حالة الطلب: %s</string>
     <string name="no_sku">لا توجد وحدة SKU</string>
     <string name="count">العدد: %s</string>
-    <string name="plus_one">زائد واحد</string>
-    <string name="minus_one">ناقص واحد</string>
     <string name="more_menu_button_coupons">القسائم</string>
     <string name="dismiss_inbox_note">تجاهل</string>
     <string name="login_error_xml_rpc_auth_error_communicating">حدثت مشكلة في أثناء الاتصال بالموقع. تم إرجاع رمز خطأ HTTP رقم 401.</string>
@@ -622,7 +714,6 @@ Language: ar
     <string name="card_reader_refetching_order_failed">حدث خطأ في أثناء إحضار الطلب. قد تكون حالة الطلب الموجودة في التطبيق قديمة.</string>
     <string name="card_reader_payment_email_client_not_found">لا يمكن اكتشاف تطبيق عميل البريد الإلكتروني الخاص بك</string>
     <string name="card_reader_payment_receipt_email_subject">إيصالك من %s</string>
-    <string name="card_reader_payment_description">عملية دفع شخصية للطلب رقم %s مقابل %s</string>
     <string name="card_reader_payment_fetch_order_loading_payment_state">تحديث الطلب</string>
     <string name="card_reader_payment_fetch_order_loading_header">تحديث حالة التطبيق</string>
     <string name="shipping_label_shipping_carrier_shipping_method_banner_message">قام عميلك بتحديد ⁦%1$s⁩</string>
@@ -1122,7 +1213,6 @@ Language: ar
     <string name="orderdetail_product_multiple">المنتجات</string>
     <string name="orderdetail_product_lineitem_qty_and_price">%1$s x %2$s</string>
     <string name="orderdetail_orderstatus_name">%1$s %2$s</string>
-    <string name="orderdetail_orderstatus_date_and_ordernum">%1$s \u2022 #%2$s</string>
     <string name="product_type_external">خارجي</string>
     <string name="product_type_simple">بسيط</string>
     <string name="product_status_privately_published">تم النشر سرًا</string>

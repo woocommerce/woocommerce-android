@@ -6,7 +6,7 @@ import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.AppConstants
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsEvent
-import com.woocommerce.android.analytics.AnalyticsTracker
+import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.model.Coupon
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.util.CouponUtils
@@ -35,7 +35,8 @@ class CouponListViewModel @Inject constructor(
     private val wooCommerceStore: WooCommerceStore,
     private val selectedSite: SelectedSite,
     private val couponListHandler: CouponListHandler,
-    private val couponUtils: CouponUtils
+    private val couponUtils: CouponUtils,
+    private val analyticsTrackerWrapper: AnalyticsTrackerWrapper,
 ) : ScopedViewModel(savedState) {
     companion object {
         private const val LOADING_STATE_DELAY = 100L
@@ -104,7 +105,7 @@ class CouponListViewModel @Inject constructor(
 
     fun onSearchStateChanged(open: Boolean) {
         searchQuery.value = if (open) {
-            AnalyticsTracker.track(AnalyticsEvent.COUPONS_LIST_SEARCH_TAPPED)
+            analyticsTrackerWrapper.track(AnalyticsEvent.COUPONS_LIST_SEARCH_TAPPED)
             searchQuery.value.orEmpty()
         } else {
             null
@@ -145,19 +146,18 @@ class CouponListViewModel @Inject constructor(
                     if (it.isNullOrEmpty()) 0L else AppConstants.SEARCH_TYPING_DELAY_MS
                 }
                 .collectLatest { query ->
-                    try {
-                        couponListHandler.fetchCoupons(searchQuery = query)
-                            .onFailure {
-                                triggerEvent(
-                                    MultiLiveEvent.Event.ShowSnackbar(
-                                        if (query == null) R.string.coupon_list_loading_failed
-                                        else R.string.coupon_list_search_failed
-                                    )
+                    // Make sure the loading state is correctly set after debounce too
+                    loadingState.value = LoadingState.Loading
+                    couponListHandler.fetchCoupons(searchQuery = query)
+                        .onFailure {
+                            triggerEvent(
+                                MultiLiveEvent.Event.ShowSnackbar(
+                                    if (query == null) R.string.coupon_list_loading_failed
+                                    else R.string.coupon_list_search_failed
                                 )
-                            }
-                    } finally {
-                        loadingState.value = LoadingState.Idle
-                    }
+                            )
+                        }
+                    loadingState.value = LoadingState.Idle
                 }
         }
     }

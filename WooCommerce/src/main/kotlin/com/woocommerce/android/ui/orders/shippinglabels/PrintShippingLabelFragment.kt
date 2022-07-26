@@ -6,7 +6,6 @@ import android.view.View
 import androidx.annotation.StringRes
 import androidx.core.view.isVisible
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.Observer
 import androidx.navigation.fragment.navArgs
 import com.woocommerce.android.R
 import com.woocommerce.android.databinding.FragmentPrintShippingLabelBinding
@@ -84,7 +83,7 @@ class PrintShippingLabelFragment : BaseFragment(R.layout.fragment_print_shipping
             new.previewShippingLabel?.takeIfNotEqualTo(old?.previewShippingLabel) {
                 writeShippingLabelToFile(it)
             }
-            new.isLabelExpired?.takeIfNotEqualTo(old?.isLabelExpired) { isExpired ->
+            new.isLabelExpired.takeIfNotEqualTo(old?.isLabelExpired) { isExpired ->
                 binding.expirationWarningBanner.isVisible = isExpired
                 binding.shippingLabelPrintPaperSize.isEnabled = !isExpired
                 binding.shippingLabelPrintBtn.isEnabled = !isExpired
@@ -92,17 +91,14 @@ class PrintShippingLabelFragment : BaseFragment(R.layout.fragment_print_shipping
             new.tempFile?.takeIfNotEqualTo(old?.tempFile) { openShippingLabelPreview(it) }
         }
 
-        viewModel.event.observe(
-            viewLifecycleOwner,
-            Observer { event ->
-                when (event) {
-                    is ShowSnackbar -> displayError(event.message)
-                    is OrderNavigationTarget -> navigator.navigate(this, event)
-                    is ExitWithResult<*> -> navigateBackAndNotifyOrderDetails()
-                    else -> event.isHandled = false
-                }
+        viewModel.event.observe(viewLifecycleOwner) { event ->
+            when (event) {
+                is ShowSnackbar -> displayError(event.message)
+                is OrderNavigationTarget -> navigator.navigate(this, event)
+                is ExitWithResult<*> -> navigateBackAndNotifyOrderDetails()
+                else -> event.isHandled = false
             }
-        )
+        }
     }
 
     private fun setupResultHandlers(viewModel: PrintShippingLabelViewModel) {

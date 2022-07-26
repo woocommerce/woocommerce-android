@@ -13,14 +13,12 @@ import com.woocommerce.android.cardreader.internal.connection.actions.DiscoverRe
 import com.woocommerce.android.cardreader.internal.connection.actions.DiscoverReadersAction.DiscoverReadersStatus.Success
 import com.woocommerce.android.cardreader.internal.sendAndLog
 import com.woocommerce.android.cardreader.internal.wrappers.TerminalWrapper
-import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
 
 private const val DISCOVERY_TIMEOUT_IN_SECONDS = 60
 
-@ExperimentalCoroutinesApi
 internal class DiscoverReadersAction(
     private val terminal: TerminalWrapper,
     private val logWrapper: LogWrapper,

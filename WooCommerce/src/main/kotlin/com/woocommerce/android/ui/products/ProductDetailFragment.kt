@@ -469,7 +469,7 @@ class ProductDetailFragment :
     }
 
     override fun onGalleryImageClicked(image: Image) {
-        viewModel.onImageClicked(image)
+        viewModel.onImageClicked()
     }
 
     override fun onGalleryAddImageClicked() {

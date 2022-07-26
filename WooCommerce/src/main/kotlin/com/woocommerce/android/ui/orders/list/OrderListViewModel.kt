@@ -1,27 +1,39 @@
+@file:Suppress("DEPRECATION")
+
 package com.woocommerce.android.ui.orders.list
 
 import android.os.Parcelable
 import androidx.annotation.StringRes
 import androidx.annotation.VisibleForTesting
-import androidx.lifecycle.*
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleOwner
+import androidx.lifecycle.LifecycleRegistry
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MediatorLiveData
+import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.SavedStateHandle
 import androidx.paging.PagedList
-import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_CUSTOM_FIELDS_COUNT
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_CUSTOM_FIELDS_SIZE
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_ID
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_STATUS
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_TOTAL_DURATION
-import com.woocommerce.android.annotations.OpenClassOnDebug
 import com.woocommerce.android.extensions.NotificationReceivedEvent
 import com.woocommerce.android.model.RequestResult.SUCCESS
 import com.woocommerce.android.network.ConnectionChangeReceiver.ConnectionChangeEvent
 import com.woocommerce.android.push.NotificationChannelType
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.ui.orders.details.OrderDetailRepository
 import com.woocommerce.android.ui.orders.filters.domain.GetSelectedOrderFiltersCount
 import com.woocommerce.android.ui.orders.filters.domain.GetWCOrderListDescriptorWithFilters
+import com.woocommerce.android.ui.orders.list.OrderListViewModel.OrderListEvent.OpenPurchaseCardReaderLink
 import com.woocommerce.android.ui.orders.list.OrderListViewModel.OrderListEvent.ShowErrorSnack
 import com.woocommerce.android.ui.orders.list.OrderListViewModel.OrderListEvent.ShowOrderFilters
+import com.woocommerce.android.ui.payments.banner.BannerDisplayEligibilityChecker
 import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.util.ThrottleLiveData
 import com.woocommerce.android.util.WooLog
@@ -33,6 +45,7 @@ import com.woocommerce.android.widgets.WCEmptyView.EmptyViewType
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import kotlinx.parcelize.Parcelize
+import okio.utf8Size
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode.MAIN
@@ -51,13 +64,13 @@ import javax.inject.Inject
 private const val EMPTY_VIEW_THROTTLE = 250L
 typealias PagedOrdersList = PagedList<OrderListItemUIType>
 
-@OpenClassOnDebug
 @Suppress("LeakingThis")
 @HiltViewModel
 class OrderListViewModel @Inject constructor(
     savedState: SavedStateHandle,
     private val dispatchers: CoroutineDispatchers,
-    protected val orderListRepository: OrderListRepository,
+    private val orderListRepository: OrderListRepository,
+    private val orderDetailRepository: OrderDetailRepository,
     private val orderStore: WCOrderStore,
     private val listStore: ListStore,
     private val networkStatus: NetworkStatus,
@@ -65,9 +78,9 @@ class OrderListViewModel @Inject constructor(
     private val selectedSite: SelectedSite,
     private val fetcher: WCOrderFetcher,
     private val resourceProvider: ResourceProvider,
-    private val appPrefsWrapper: AppPrefsWrapper,
     private val getWCOrderListDescriptorWithFilters: GetWCOrderListDescriptorWithFilters,
     private val getSelectedOrderFiltersCount: GetSelectedOrderFiltersCount,
+    private val bannerDisplayEligibilityChecker: BannerDisplayEligibilityChecker,
 ) : ScopedViewModel(savedState), LifecycleOwner {
     protected val lifecycleRegistry: LifecycleRegistry by lazy {
         LifecycleRegistry(this)
@@ -110,6 +123,9 @@ class OrderListViewModel @Inject constructor(
     }
     val emptyViewType: LiveData<EmptyViewType?> = _emptyViewType
 
+    val shouldShowUpsellCardReaderDismissDialog: MutableLiveData<Boolean> = MutableLiveData(false)
+    val isEligibleForInPersonPayments: MutableLiveData<Boolean> = MutableLiveData(false)
+
     var isSearching = false
     var searchQuery = ""
 
@@ -128,6 +144,7 @@ class OrderListViewModel @Inject constructor(
             _emptyViewType.postValue(EmptyViewType.ORDER_LIST_LOADING)
             if (selectedSite.exists()) {
                 loadOrders()
+                isEligibleForInPersonPayments()
             } else {
                 WooLog.w(
                     WooLog.T.ORDERS,
@@ -136,6 +153,10 @@ class OrderListViewModel @Inject constructor(
                 )
             }
         }
+    }
+
+    private suspend fun isEligibleForInPersonPayments() {
+        isEligibleForInPersonPayments.value = bannerDisplayEligibilityChecker.isEligibleForInPersonPayments()
     }
 
     fun loadOrders() {
@@ -153,9 +174,26 @@ class OrderListViewModel @Inject constructor(
      * processing list will always use the same [processingPagedListWrapper].
      */
     fun submitSearchOrFilter(searchQuery: String) {
-        val listDescriptor = WCOrderListDescriptor(selectedSite.get(), searchQuery = searchQuery)
+        val listDescriptor = WCOrderListDescriptor(
+            selectedSite.get(),
+            searchQuery = sanitizeSearchQuery(searchQuery)
+        )
         val pagedListWrapper = listStore.getList(listDescriptor, dataSource, lifecycle)
         activatePagedListWrapper(pagedListWrapper, isFirstInit = true)
+    }
+
+    /**
+     * Removes the `#` from the start of the search keyword, if present.
+     *
+     *  This allows searching for an order with `#123` and getting the results for order `123`.
+     *  See https://github.com/woocommerce/woocommerce-android/issues/2621
+     *
+     */
+    private fun sanitizeSearchQuery(searchQuery: String): String {
+        if (searchQuery.startsWith("#")) {
+            return searchQuery.drop(1)
+        }
+        return searchQuery
     }
 
     /**
@@ -174,6 +212,7 @@ class OrderListViewModel @Inject constructor(
             showOfflineSnack()
         }
     }
+
     /**
      * Fetch payment gateways so they are available for order refunds later
      */
@@ -202,6 +241,34 @@ class OrderListViewModel @Inject constructor(
                 }
             }
         }
+    }
+
+    /**
+     * Track user clicked to open an order and the status of that order, along with some
+     * data about the order custom fields
+     */
+    fun trackOrderClickEvent(orderId: Long, orderStatus: String) = launch {
+        val (customFieldsCount, customFieldsSize) =
+            orderDetailRepository.getOrderMetadata(orderId)
+                .map { it.value.utf8Size() }
+                .let {
+                    Pair(
+                        // amount of custom fields in the order
+                        it.size,
+                        // total size in bytes of all custom fields in the order
+                        if (it.isEmpty()) 0 else it.reduce(Long::plus)
+                    )
+                }
+
+        AnalyticsTracker.track(
+            AnalyticsEvent.ORDER_OPEN,
+            mapOf(
+                KEY_ID to orderId,
+                KEY_STATUS to orderStatus,
+                KEY_CUSTOM_FIELDS_COUNT to customFieldsCount,
+                KEY_CUSTOM_FIELDS_SIZE to customFieldsSize
+            )
+        )
     }
 
     /**
@@ -320,7 +387,7 @@ class OrderListViewModel @Inject constructor(
         super.onCleared()
     }
 
-    @Suppress("unused")
+    @Suppress("unused", "DEPRECATION")
     @Subscribe(threadMode = MAIN)
     fun onOrderChanged(event: OnOrderChanged) {
         when (event.causeOfChange) {
@@ -388,19 +455,46 @@ class OrderListViewModel @Inject constructor(
         loadOrders()
     }
 
-    fun isCardReaderOnboardingCompleted(): Boolean {
-        return selectedSite.getIfExists()?.let {
-            appPrefsWrapper.isCardReaderOnboardingCompleted(
-                localSiteId = it.id,
-                remoteSiteId = it.siteId,
-                selfHostedSiteId = it.selfHostedSiteId
+    fun onCtaClicked(source: String) {
+        launch {
+            triggerEvent(
+                OpenPurchaseCardReaderLink(bannerDisplayEligibilityChecker.getPurchaseCardReaderUrl(source))
             )
-        } ?: false
+        }
+    }
+
+    fun onDismissClicked() {
+        shouldShowUpsellCardReaderDismissDialog.value = true
+        triggerEvent(OrderListEvent.DismissCardReaderUpsellBanner)
+    }
+
+    fun onRemindLaterClicked(currentTimeInMillis: Long, source: String) {
+        shouldShowUpsellCardReaderDismissDialog.value = false
+        bannerDisplayEligibilityChecker.onRemindLaterClicked(currentTimeInMillis, source)
+        triggerEvent(OrderListEvent.DismissCardReaderUpsellBannerViaRemindMeLater)
+    }
+
+    fun onDontShowAgainClicked(source: String) {
+        shouldShowUpsellCardReaderDismissDialog.value = false
+        bannerDisplayEligibilityChecker.onDontShowAgainClicked(source)
+        triggerEvent(OrderListEvent.DismissCardReaderUpsellBannerViaDontShowAgain)
+    }
+
+    fun onBannerAlertDismiss() {
+        shouldShowUpsellCardReaderDismissDialog.value = false
+    }
+
+    fun canShowCardReaderUpsellBanner(currentTimeInMillis: Long, source: String): Boolean {
+        return bannerDisplayEligibilityChecker.canShowCardReaderUpsellBanner(currentTimeInMillis, source)
     }
 
     sealed class OrderListEvent : Event() {
         data class ShowErrorSnack(@StringRes val messageRes: Int) : OrderListEvent()
         object ShowOrderFilters : OrderListEvent()
+        object DismissCardReaderUpsellBanner : OrderListEvent()
+        object DismissCardReaderUpsellBannerViaRemindMeLater : OrderListEvent()
+        object DismissCardReaderUpsellBannerViaDontShowAgain : OrderListEvent()
+        data class OpenPurchaseCardReaderLink(val url: String) : OrderListEvent()
     }
 
     @Parcelize

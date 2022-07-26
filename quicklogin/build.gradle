@@ -13,6 +13,7 @@ repositories {
             includeGroup "org.wordpress.wellsql"
             includeGroup "org.wordpress.mediapicker"
             includeGroup "com.automattic"
+            includeGroup "com.automattic.tracks"
         }
     }
     maven {
@@ -46,11 +47,11 @@ repositories {
 }
 
 android {
-    compileSdkVersion 31
+    compileSdkVersion gradle.ext.compileSdkVersion
 
     defaultConfig {
-        minSdkVersion 21
-        targetSdkVersion 31
+        minSdkVersion gradle.ext.minSdkVersion
+        targetSdkVersion gradle.ext.targetSdkVersion
 
         missingDimensionStrategy 'buildType', 'wasabi'
 
@@ -65,9 +66,6 @@ android {
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
-    }
-    kotlinOptions {
-        jvmTarget = '1.8'
     }
 
     targetProjectPath ':WooCommerce'

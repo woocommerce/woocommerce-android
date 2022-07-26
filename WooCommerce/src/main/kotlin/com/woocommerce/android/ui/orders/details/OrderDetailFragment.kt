@@ -1,6 +1,5 @@
 package com.woocommerce.android.ui.orders.details
 
-import android.content.Intent
 import android.graphics.Color
 import android.os.Bundle
 import android.view.Menu
@@ -47,7 +46,6 @@ import com.woocommerce.android.model.ShippingLabel
 import com.woocommerce.android.tools.ProductImageMap
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
-import com.woocommerce.android.ui.cardreader.payment.CardReaderPaymentDialogFragment
 import com.woocommerce.android.ui.feedback.SurveyType
 import com.woocommerce.android.ui.main.MainNavigationRouter
 import com.woocommerce.android.ui.orders.OrderNavigationTarget
@@ -61,10 +59,10 @@ import com.woocommerce.android.ui.orders.fulfill.OrderFulfillViewModel
 import com.woocommerce.android.ui.orders.notes.AddOrderNoteFragment
 import com.woocommerce.android.ui.orders.shippinglabels.PrintShippingLabelFragment
 import com.woocommerce.android.ui.orders.shippinglabels.ShippingLabelRefundFragment
-import com.woocommerce.android.ui.orders.simplepayments.TakePaymentViewModel
 import com.woocommerce.android.ui.orders.tracking.AddOrderShipmentTrackingFragment
-import com.woocommerce.android.ui.refunds.RefundSummaryFragment
-import com.woocommerce.android.ui.shipping.InstallWcShippingFlowViewModel
+import com.woocommerce.android.ui.payments.cardreader.payment.CardReaderPaymentDialogFragment
+import com.woocommerce.android.ui.payments.refunds.RefundSummaryFragment
+import com.woocommerce.android.ui.shipping.InstallWCShippingViewModel
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.util.DateUtils
 import com.woocommerce.android.util.FeatureFlag
@@ -95,7 +93,6 @@ class OrderDetailFragment : BaseFragment(R.layout.fragment_order_detail), OrderP
 
     private val skeletonView = SkeletonView()
     private var undoSnackbar: Snackbar? = null
-    private var menuSharePaymentLink: MenuItem? = null
 
     private var screenTitle = ""
         set(value) {
@@ -149,6 +146,9 @@ class OrderDetailFragment : BaseFragment(R.layout.fragment_order_detail), OrderP
             scrollUpChild = binding.scrollView
             setOnRefreshListener { viewModel.onRefreshRequested() }
         }
+        binding.customFieldsButton.setOnClickListener {
+            viewModel.onCustomFieldsButtonClicked()
+        }
 
         ViewCompat.setTransitionName(
             binding.scrollView,
@@ -164,17 +164,12 @@ class OrderDetailFragment : BaseFragment(R.layout.fragment_order_detail), OrderP
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         super.onCreateOptionsMenu(menu, inflater)
         inflater.inflate(R.menu.menu_order_detail, menu)
-        menuSharePaymentLink = menu.findItem(R.id.menu_share_payment_link)
         val menuEditOrder = menu.findItem(R.id.menu_edit_order)
         menuEditOrder.isVisible = FeatureFlag.UNIFIED_ORDER_EDITING.isEnabled()
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
-            R.id.menu_share_payment_link -> {
-                viewModel.onSharePaymentUrlClicked()
-                true
-            }
             R.id.menu_edit_order -> {
                 viewModel.onEditClicked()
                 true
@@ -216,9 +211,6 @@ class OrderDetailFragment : BaseFragment(R.layout.fragment_order_detail), OrderP
             new.isProductListVisible?.takeIfNotEqualTo(old?.isProductListVisible) {
                 binding.orderDetailProductList.isVisible = it
             }
-            new.isSharePaymentLinkVisible?.takeIfNotEqualTo(old?.isSharePaymentLinkVisible) {
-                menuSharePaymentLink?.isVisible = new.isSharePaymentLinkVisible
-            }
             new.toolbarTitle?.takeIfNotEqualTo(old?.toolbarTitle) { screenTitle = it }
             new.isOrderDetailSkeletonShown?.takeIfNotEqualTo(old?.isOrderDetailSkeletonShown) { showSkeleton(it) }
             new.isShipmentTrackingAvailable?.takeIfNotEqualTo(old?.isShipmentTrackingAvailable) {
@@ -230,6 +222,9 @@ class OrderDetailFragment : BaseFragment(R.layout.fragment_order_detail), OrderP
             new.refreshedProductId?.takeIfNotEqualTo(old?.refreshedProductId) { refreshProduct(it) }
             new.wcShippingBannerVisible?.takeIfNotEqualTo(old?.wcShippingBannerVisible) {
                 showInstallWcShippingBanner(it)
+            }
+            new.isCustomFieldsButtonShown?.takeIfNotEqualTo(old?.isCustomFieldsButtonShown) {
+                binding.customFieldsCard.isVisible = it
             }
         }
 
@@ -262,10 +257,7 @@ class OrderDetailFragment : BaseFragment(R.layout.fragment_order_detail), OrderP
                     displayUndoSnackbar(event.message, event.undoAction, event.dismissAction)
                 }
                 is OrderNavigationTarget -> navigator.navigate(this, event)
-                is TakePaymentViewModel.SharePaymentUrl -> {
-                    sharePaymentUrl(event.storeName, event.paymentUrl)
-                }
-                is InstallWcShippingFlowViewModel.InstallWcShipping -> navigateToInstallWcShippingFlow()
+                is InstallWCShippingViewModel.InstallWcShipping -> navigateToInstallWcShippingFlow()
                 else -> event.isHandled = false
             }
         }
@@ -338,7 +330,7 @@ class OrderDetailFragment : BaseFragment(R.layout.fragment_order_detail), OrderP
         isReceiptButtonsVisible: Boolean
     ) {
         binding.orderDetailOrderStatus.updateOrder(order)
-        binding.orderDetailShippingMethodNotice.isVisible = order.multiShippingLinesAvailable
+        binding.orderDetailShippingMethodNotice.isVisible = order.hasMultipleShippingLines
         binding.orderDetailCustomerInfo.updateCustomerInfo(
             order = order,
             isVirtualOrder = viewModel.hasVirtualProductsOnly(),
@@ -393,17 +385,6 @@ class OrderDetailFragment : BaseFragment(R.layout.fragment_order_detail), OrderP
             true -> skeletonView.show(binding.orderDetailContainer, R.layout.skeleton_order_detail, delayed = true)
             false -> skeletonView.hide()
         }
-    }
-
-    private fun sharePaymentUrl(storeName: String, paymentUrl: String) {
-        val subject = getString(R.string.simple_payments_share_payment_dialog_title, storeName)
-        val shareIntent = Intent().apply {
-            action = Intent.ACTION_SEND
-            putExtra(Intent.EXTRA_TEXT, paymentUrl)
-            putExtra(Intent.EXTRA_SUBJECT, subject)
-            type = "text/plain"
-        }
-        startActivity(Intent.createChooser(shareIntent, storeName))
     }
 
     private fun refreshProduct(remoteProductId: Long) {

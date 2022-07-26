@@ -5,7 +5,6 @@ import android.view.View
 import androidx.annotation.CallSuper
 import androidx.annotation.LayoutRes
 import androidx.hilt.navigation.fragment.hiltNavGraphViewModels
-import androidx.lifecycle.Observer
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
@@ -38,28 +37,25 @@ abstract class BaseProductFragment : BaseFragment, BackPressListener {
     }
 
     private fun setupObservers(viewModel: ProductDetailViewModel) {
-        viewModel.event.observe(
-            viewLifecycleOwner,
-            Observer { event ->
-                when (event) {
-                    is ShowSnackbar -> uiMessageResolver.showSnack(event.message)
-                    is Exit -> requireActivity().onBackPressed()
-                    is ShowDialog -> WooDialog.showDialog(
-                        requireActivity(),
-                        event.positiveBtnAction,
-                        event.negativeBtnAction,
-                        event.neutralBtnAction,
-                        titleId = event.titleId,
-                        messageId = event.messageId,
-                        positiveButtonId = event.positiveButtonId,
-                        negativeButtonId = event.negativeButtonId,
-                        neutralButtonId = event.neutralButtonId
-                    )
-                    is ProductNavigationTarget -> navigator.navigate(this, event)
-                    else -> event.isHandled = false
-                }
+        viewModel.event.observe(viewLifecycleOwner) { event ->
+            when (event) {
+                is ShowSnackbar -> uiMessageResolver.showSnack(event.message)
+                is Exit -> requireActivity().onBackPressed()
+                is ShowDialog -> WooDialog.showDialog(
+                    requireActivity(),
+                    event.positiveBtnAction,
+                    event.negativeBtnAction,
+                    event.neutralBtnAction,
+                    titleId = event.titleId,
+                    messageId = event.messageId,
+                    positiveButtonId = event.positiveButtonId,
+                    negativeButtonId = event.negativeButtonId,
+                    neutralButtonId = event.neutralButtonId
+                )
+                is ProductNavigationTarget -> navigator.navigate(this, event)
+                else -> event.isHandled = false
             }
-        )
+        }
     }
 
     @CallSuper

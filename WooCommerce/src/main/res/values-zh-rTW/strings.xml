@@ -1,13 +1,108 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2022-06-02 09:54:04+0000
+Translation-Revision-Date: 2022-07-16 08:54:03+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: zh_TW
 -->
 <resources>
+    <string name="tests_notification_new_order_message">你的 WooCommerce 商店有一筆 $50 的新訂單</string>
+    <string name="tests_notification_new_order_title">你有新訂單！🎉</string>
+    <string name="lines_all_details">詳細資訊</string>
+    <string name="lines_incomplete_explanation">若要編輯所有%1$s，請在你的 WooCommerce 商店管理員中瀏覽訂單</string>
+    <string name="lines_incomplete">%1$s不齊全</string>
+    <string name="support_system_status_report_share_label">分享系統狀態報告</string>
+    <string name="support_system_status_report_copy_label">將系統狀態報告複製到剪貼簿</string>
+    <string name="card_reader_connect_keep_searching_button">繼續搜尋</string>
+    <string name="card_reader_payment_description_v2">為 %s blog_id %s 的訂單 #%s 親自收款。</string>
+    <string name="card_reader_manage_payment_provider">變更付款供應商</string>
+    <string name="orderdetail_refunded_line_with_info">已退款：%1$s</string>
+    <string name="orderdetail_payment_summary_onhold_plain">正在等待付款</string>
+    <string name="install_wc_shipping_proceed_button">繼續安裝</string>
+    <string name="install_wc_shipping_installation_info">安裝前的須知事項</string>
+    <string name="install_wc_shipping_preinstall_title">安裝擴充功能</string>
+    <string name="install_wc_shipping_extension_name">WooCommerce Shipping</string>
+    <string name="product_selector_clear_filters_button_title">清除篩選條件</string>
+    <string name="product_selector_empty_state">找不到商品</string>
+    <string name="product_selector_search_failed">搜尋商品失敗</string>
+    <string name="product_selector_loading_failed">載入商品失敗</string>
+    <string name="product_selector_search_hint">搜尋商品</string>
+    <string name="product_selector_filter_button_title_default">篩選 (%d)</string>
+    <string name="coupon_restrictions_allowed_emails_invalid">部分電子郵件地址無效。 請修正輸入的電子郵件地址。</string>
+    <string name="coupon_restrictions_allowed_emails_hint">下訂單時用於比對的允許帳單電子郵件清單。 請用逗號分隔電子郵件地址。 你可以使用星號 (*) 來比對電子郵件地址的其中一部分。 例如使用「*@gmail.com」比對所有 Gmail 地址。</string>
+    <string name="empty_message_with_filters">很抱歉，沒有商品符合所選篩選條件」</string>
+    <string name="card_reader_onboarding_confirm_payment_method_button">確認付款方式</string>
+    <string name="card_reader_onboarding_choose_stripe_button">Stripe</string>
+    <string name="card_reader_onboarding_choose_wcpayment_button">WooCommerce Payments</string>
+    <string name="card_reader_onboarding_choose_plugin_hint">親自收款業務可透過這些付款服務供應商處理。 你想使用哪個供應商？</string>
+    <string name="card_reader_onboarding_choose_payment_provider">選擇你的付款服務供應商</string>
+    <string name="order_editing_locked_content_description">已鎖定</string>
+    <string name="order_editing_non_editable_message">若要編輯商品或付款詳細資料，請將狀態變更為「等待付款中」。</string>
+    <string name="order_editing_non_editable_title">此訂單有部分項目目前無法編輯</string>
+    <string name="order_creation_customer_search_hint">搜尋顧客</string>
+    <string name="order_creation_customer_search_empty">找不到顧客</string>
+    <string name="install_wc_shipping_flow_onboarding_screen_not_now_button">現在不要</string>
+    <string name="install_wc_shipping_flow_onboarding_screen_add_extension_button">新增擴充功能到商店</string>
+    <string name="install_wc_shipping_flow_onboarding_screen_link">什麼是 WooCommerce Shipping？</string>
+    <string name="install_wc_shipping_flow_onboarding_screen_discounts_bullet_desc">取得折扣運費。 目前適用於 DHL 和 USPS，未來還會擴及更多服務！</string>
+    <string name="install_wc_shipping_flow_onboarding_screen_discounts_bullet_title">折扣費率</string>
+    <string name="install_wc_shipping_flow_onboarding_screen_print_bullet_desc">挑選訂單，然後付款、列印、包裝並寄出。</string>
+    <string name="install_wc_shipping_flow_onboarding_screen_print_bullet_title">透過手機列印</string>
+    <string name="install_wc_shipping_flow_onboarding_screen_postage_bullet_desc">不必思考自己把郵票簿放到哪裡去了。</string>
+    <string name="install_wc_shipping_flow_onboarding_screen_postage_bullet_title">在需要時購買郵票</string>
+    <string name="install_wc_shipping_flow_onboarding_screen_subtitle">節省時間和金錢</string>
+    <string name="install_wc_shipping_flow_onboarding_screen_title">透過 WooCommerce Shipping 完成你的訂單</string>
+    <string name="product_selector_arrow_content_description">顯示詳細資訊</string>
+    <string name="product_selector_select_variation_label">選取款式 %s</string>
+    <string name="coupon_restrictions_exclude_categories">排除商品類別</string>
+    <string name="coupon_restrictions_exclude_products">排除商品</string>
+    <string name="coupon_restrictions_exclusions_section_title">將此優惠券套用至</string>
+    <string name="coupon_restrictions_allowed_emails_placeholder">無限制</string>
+    <string name="coupon_restrictions_allowed_emails">允許的電子郵件</string>
+    <string name="coupon_restrictions_limit_per_user_placeholder">無限制</string>
+    <string name="coupon_restrictions_amount_limit_placeholder">所有符合條件的商品</string>
+    <string name="coupon_restrictions_limit_per_coupon_placeholder">無限制</string>
+    <string name="coupon_restrictions_minimum_maximum_spend_placeholder">無</string>
+    <string name="coupon_edit_edit_products_title">編輯商品類別 (%1$d)</string>
+    <string name="coupon_edit_select_categories_title">選取商品類別</string>
+    <string name="variations_bulk_update_warning_message">目前批次更新最多支援 100 個款式。</string>
+    <string name="variations_bulk_update_warning_title">已達批次更新上限</string>
+    <string name="variations_bulk_update_regular_prices_dialog_title">正在更新原價</string>
+    <string name="variations_bulk_update_sale_prices_dialog_title">正在更新折扣價</string>
+    <string name="variations_bulk_update_sale_prices_success">已更新折扣價。</string>
+    <string name="variations_bulk_update_regular_prices_success">已更新原價。</string>
+    <string name="variations_bulk_update_error">發生某種錯誤。 請再試一次。</string>
+    <string name="variations_bulk_update_current_prices_mixed">目前價格不一</string>
+    <string name="variations_bulk_update_current_price">目前價格為 %s</string>
+    <string name="variations_bulk_update_price_info">%d 個款式的價格將會更新。</string>
+    <string name="variations_bulk_update_dialog_price_mixed">混合</string>
+    <string name="variations_bulk_update_dialog_price_none">無</string>
+    <string name="variations_bulk_update_dialog_sale_price_label">折扣價</string>
+    <string name="variations_bulk_update_dialog_regular_price_label">原價</string>
+    <string name="variations_bulk_update_dialog_price_section_title">價格</string>
+    <string name="variations_bulk_update_dialog_subtitle">選擇要更新的值</string>
+    <string name="variations_bulk_update_dialog_title">批次更新</string>
+    <string name="variations_bulk_limit_exceeded_button_ok">確定</string>
+    <string name="variation_list_menu_bulk_update">批次更新…</string>
+    <string name="variation_loading_dialog_title">正在擷取款式…</string>
+    <string name="product_category_selector_search_failed">搜尋商品類別失敗</string>
+    <string name="product_category_selector_loading_failed">載入商品類別失敗</string>
+    <string name="product_category_selector_search_hint">搜尋類別</string>
+    <string name="product_category_selector_clear_selection">清除選取項目</string>
+    <string name="product_category_selector_check_content_description">按一下取消勾選</string>
+    <string name="product_category_selector_select_button_title_one">選取 1 個類別</string>
+    <string name="product_category_selector_select_button_title_default">選取 %1$d 個類別</string>
+    <string name="product_category_selector_empty_state">沒有找到商品類別</string>
+    <string name="product_category_selector_title">選取類別</string>
+    <string name="shipping_label_install_wc_shipping_banner_dismiss_button_description">關閉橫幅以安裝 WC Shipping</string>
+    <string name="shipping_label_install_wc_shipping_banner_button">下載 WooCommerce Shipping</string>
+    <string name="shipping_label_install_wc_shipping_banner_description">從安裝 WooCommerce Shipping 的手機列印標籤。</string>
+    <string name="shipping_label_install_wc_shipping_banner_title">需要運送標籤嗎？</string>
+    <string name="order_creation_change_product_quantity">將商品數量從 %d 變更為 %d</string>
+    <string name="variations_bulk_update_regular_price">更新原價</string>
+    <string name="variations_bulk_update_sale_price">更新折扣價</string>
     <string name="card_reader_onboarding_stripe_unsupported_in_country_header">我們未在 %1$s 支援 WooCommerce Stripe 擴充功能</string>
-    <string name="product_selector_filter_button_title">篩選</string>
+    <string name="product_selector_filter_button_title_zero">篩選</string>
     <string name="product_selector_clear_button_title">清除選取項目</string>
     <string name="product_selector_select_button_title_one">選擇 %d 個產品</string>
     <string name="product_selector_select_button_title_default">選擇 %d 個產品</string>
@@ -133,7 +228,6 @@ Language: zh_TW
     <string name="coupon_details_minimum_spend">%s 最低消費</string>
     <string name="coupon_details_heading">優惠券摘要</string>
     <string name="coupon_list_view_coupon">檢視折價券摘要</string>
-    <string name="coupon_list_wip_message_enabled">我們一直努力讓你可以在裝置上查看並編輯優惠券！</string>
     <string name="coupon_list_wip_title">檢視並編輯優惠券</string>
     <string name="coupon_list_empty_heading">找不到折價券</string>
     <string name="coupon_list_item_label_included_and_excluded">%1s (不包括 %2s)</string>
@@ -161,8 +255,6 @@ Language: zh_TW
     <string name="orderstatus_contentDesc_withStatus">訂單狀態： %s</string>
     <string name="no_sku">無貨號</string>
     <string name="count">數量：%s</string>
-    <string name="plus_one">增加一個</string>
-    <string name="minus_one">減少一個</string>
     <string name="more_menu_button_coupons">優惠券</string>
     <string name="dismiss_inbox_note">關閉</string>
     <string name="login_error_xml_rpc_auth_error_communicating">與網站通訊時發生問題。 已傳回 HTTP 錯誤代碼 401。</string>
@@ -621,7 +713,6 @@ Language: zh_TW
     <string name="card_reader_refetching_order_failed">擷取訂單時發生錯誤。 應用程式中的訂單狀態可能已過期。</string>
     <string name="card_reader_payment_email_client_not_found">無法偵測電子郵件用戶端應用程式</string>
     <string name="card_reader_payment_receipt_email_subject">你的 %s 收據</string>
-    <string name="card_reader_payment_description">為%s的訂單%s親自付款</string>
     <string name="card_reader_payment_fetch_order_loading_payment_state">正在重新整理訂單</string>
     <string name="card_reader_payment_fetch_order_loading_header">正在更新應用程式狀態</string>
     <string name="shipping_label_shipping_carrier_shipping_method_banner_message">顧客已選取 %1$s</string>
@@ -1121,7 +1212,6 @@ Language: zh_TW
     <string name="orderdetail_product_multiple">產品</string>
     <string name="orderdetail_product_lineitem_qty_and_price">%1$s x %2$s</string>
     <string name="orderdetail_orderstatus_name">%1$s %2$s</string>
-    <string name="orderdetail_orderstatus_date_and_ordernum">%1$s \u2022 #%2$s</string>
     <string name="product_type_external">外部</string>
     <string name="product_type_simple">簡單</string>
     <string name="product_status_privately_published">已私密發表</string>
