@@ -1573,6 +1573,7 @@ class ProductDetailViewModel @Inject constructor(
                 productDraft = null
             )
             loadRemoteProduct(product.remoteId)
+            checkLinkedProductPromo()
         } else {
             triggerEvent(ShowSnackbar(R.string.product_detail_update_product_error))
         }
@@ -1594,7 +1595,7 @@ class ProductDetailViewModel @Inject constructor(
             viewState = viewState.copy(
                 productDraft = null
             )
-            checkedLinkedProductPromo()
+            checkLinkedProductPromo()
             loadRemoteProduct(newProductRemoteId)
             triggerEvent(RefreshMenu)
         }
@@ -1602,7 +1603,10 @@ class ProductDetailViewModel @Inject constructor(
         return result
     }
 
-    private fun checkedLinkedProductPromo() {
+    /**
+     * Show the upsell/cross-sell promo if it hasn't already been shown
+     */
+    private fun checkLinkedProductPromo() {
         if (prefs.hasPromoBannerShown(PromoBannerType.LINKED_PRODUCTS).not()) {
             triggerEvent(ShowLinkedProductPromoBanner)
         }

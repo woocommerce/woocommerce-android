@@ -37,6 +37,7 @@ import com.woocommerce.android.model.Product
 import com.woocommerce.android.model.Product.Image
 import com.woocommerce.android.ui.aztec.AztecEditorFragment
 import com.woocommerce.android.ui.aztec.AztecEditorFragment.Companion.ARG_AZTEC_EDITOR_TEXT
+import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.ui.dialog.WooDialog
 import com.woocommerce.android.ui.main.AppBarStatus
 import com.woocommerce.android.ui.products.ProductDetailViewModel.HideImageUploadErrorSnackbar
@@ -467,12 +468,14 @@ class ProductDetailFragment :
             binding.promoComposable.isVisible = show
             if (show && binding.promoComposable.hasComposition.not()) {
                 binding.promoComposable.setContent {
-                    PromoBanner(
-                        bannerType = PromoBannerType.LINKED_PRODUCTS,
-                        onCtaClick = { },
-                        onDismissClick = { },
-                        source = ""
-                    )
+                    WooThemeWithBackground {
+                        PromoBanner(
+                            bannerType = PromoBannerType.LINKED_PRODUCTS,
+                            onCtaClick = { },
+                            onDismissClick = { },
+                            source = ""
+                        )
+                    }
                 }
             }
         }
