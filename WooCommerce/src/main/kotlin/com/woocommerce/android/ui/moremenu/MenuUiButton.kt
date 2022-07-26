@@ -13,6 +13,7 @@ data class MenuUiButton(
 )
 
 enum class MenuButtonType {
+    VIEW_PAYMENTS,
     VIEW_ADMIN,
     VIEW_STORE,
     COUPONS,

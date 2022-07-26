@@ -17,6 +17,7 @@ import com.woocommerce.android.ui.moremenu.MenuButtonType.COUPONS
 import com.woocommerce.android.ui.moremenu.MenuButtonType.INBOX
 import com.woocommerce.android.ui.moremenu.MenuButtonType.PRODUCT_REVIEWS
 import com.woocommerce.android.ui.moremenu.MenuButtonType.VIEW_ADMIN
+import com.woocommerce.android.ui.moremenu.MenuButtonType.VIEW_PAYMENTS
 import com.woocommerce.android.ui.moremenu.MenuButtonType.VIEW_STORE
 import com.woocommerce.android.ui.moremenu.domain.MoreMenuRepository
 import com.woocommerce.android.viewmodel.MultiLiveEvent
@@ -58,6 +59,12 @@ class MoreMenuViewModel @Inject constructor(
 
     private suspend fun generateMenuButtons(unseenReviewsCount: Int, isCouponsEnabled: Boolean): List<MenuUiButton> =
         listOf(
+            MenuUiButton(
+                type = VIEW_PAYMENTS,
+                text = R.string.more_menu_button_payments,
+                icon = R.drawable.ic_more_menu_payments,
+                onClick = ::onPaymentsButtonClick
+            ),
             MenuUiButton(
                 type = VIEW_ADMIN,
                 text = R.string.more_menu_button_woo_admin,
@@ -116,6 +123,10 @@ class MoreMenuViewModel @Inject constructor(
         triggerEvent(MoreMenuEvent.StartSitePickerEvent)
     }
 
+    private fun onPaymentsButtonClick() {
+        triggerEvent(MoreMenuEvent.ViewPayments)
+    }
+
     private fun onViewAdminButtonClick() {
         trackMoreMenuOptionSelected(VALUE_MORE_MENU_ADMIN_MENU)
         triggerEvent(MoreMenuEvent.ViewAdminEvent(selectedSite.get().adminUrl))
@@ -158,6 +169,7 @@ class MoreMenuViewModel @Inject constructor(
     sealed class MoreMenuEvent : MultiLiveEvent.Event() {
         object NavigateToSettingsEvent : MoreMenuEvent()
         object StartSitePickerEvent : MoreMenuEvent()
+        object ViewPayments : MoreMenuEvent()
         data class ViewAdminEvent(val url: String) : MoreMenuEvent()
         data class ViewStoreEvent(val url: String) : MoreMenuEvent()
         object ViewReviewsEvent : MoreMenuEvent()
