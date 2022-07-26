@@ -292,7 +292,9 @@ class ProductDetailViewModel @Inject constructor(
         // TODO remove
         launch {
             delay(1000L)
-            checkLinkedProductPromo()
+            withContext(dispatchers.main) {
+                checkLinkedProductPromo()
+            }
         }
     }
 
@@ -1575,11 +1577,13 @@ class ProductDetailViewModel @Inject constructor(
             } else {
                 triggerEvent(ShowSnackbar(successMsg))
             }
+
+            checkLinkedProductPromo()
+
             viewState = viewState.copy(
                 productDraft = null
             )
             loadRemoteProduct(product.remoteId)
-            checkLinkedProductPromo()
         } else {
             triggerEvent(ShowSnackbar(R.string.product_detail_update_product_error))
         }

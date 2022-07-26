@@ -466,13 +466,14 @@ class ProductDetailFragment :
 
     private fun showLinkedProductPromoBanner() {
         if (binding.promoComposableContainer.isVisible.not()) {
-            WooAnimUtils.scaleIn(binding.promoComposableContainer)
             if (binding.promoComposable.hasComposition.not()) {
                 binding.promoComposable.setContent {
                     WooThemeWithBackground {
                         PromoBanner(
                             bannerType = PromoBannerType.LINKED_PRODUCTS,
-                            onCtaClick = { },
+                            onCtaClick = {
+                                WooAnimUtils.scaleOut(binding.promoComposableContainer)
+                            },
                             onDismissClick = {
                                 WooAnimUtils.scaleOut(binding.promoComposableContainer)
                             },
@@ -481,6 +482,7 @@ class ProductDetailFragment :
                     }
                 }
             }
+            WooAnimUtils.scaleIn(binding.promoComposableContainer, WooAnimUtils.Duration.MEDIUM)
         }
     }
 
