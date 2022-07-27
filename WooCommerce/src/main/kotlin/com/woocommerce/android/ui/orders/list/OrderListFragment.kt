@@ -20,6 +20,7 @@ import androidx.core.view.isVisible
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import androidx.paging.PagedList
+import androidx.recyclerview.widget.ItemTouchHelper
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.transition.MaterialFadeThrough
 import com.woocommerce.android.AppConstants
@@ -194,6 +195,13 @@ class OrderListFragment :
         }
         binding.orderFiltersCard.setClickListener { viewModel.onFiltersButtonTapped() }
         initCreateOrderFAB(binding.createOrderButton)
+        initSwipeBehaviour()
+    }
+
+    private fun initSwipeBehaviour() {
+        val swipeToComplete = SwipeToComplete(requireContext(), this)
+        val swipeHelper = ItemTouchHelper(swipeToComplete)
+        swipeHelper.attachToRecyclerView(binding.orderListView.ordersList)
     }
 
     override fun onViewStateRestored(savedInstanceState: Bundle?) {
