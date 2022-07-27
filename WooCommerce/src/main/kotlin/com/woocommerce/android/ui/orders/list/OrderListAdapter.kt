@@ -14,6 +14,7 @@ import com.woocommerce.android.BuildConfig
 import com.woocommerce.android.R
 import com.woocommerce.android.databinding.OrderListHeaderBinding
 import com.woocommerce.android.databinding.OrderListItemBinding
+import com.woocommerce.android.model.Order
 import com.woocommerce.android.model.TimeGroup
 import com.woocommerce.android.model.toOrderStatus
 import com.woocommerce.android.ui.orders.OrderStatusTag
@@ -128,7 +129,9 @@ class OrderListAdapter(
     }
 
     private inner class OrderItemUIViewHolder(val viewBinding: OrderListItemBinding) :
-        RecyclerView.ViewHolder(viewBinding.root) {
+        RecyclerView.ViewHolder(viewBinding.root), SwipeToComplete.SwipeAbleViewHolder {
+        private var isNotCompleted = true
+        private var orderId = -1L
         fun onBind(orderItemUI: OrderListItemUI) {
             // Grab the current context from the underlying view
             val ctx = this.itemView.context
@@ -153,6 +156,10 @@ class OrderListAdapter(
                     orderItemUI.orderId
                 )
             )
+
+            val status = Order.Status.fromValue(orderItemUI.status)
+            orderId = orderItemUI.orderId
+            isNotCompleted = status != Order.Status.Completed
 
             this.itemView.setOnClickListener {
                 listener.openOrderDetail(
@@ -182,6 +189,9 @@ class OrderListAdapter(
                 label = status
             }
         }
+
+        override fun isSwipeAble(): Boolean = isNotCompleted
+        override fun getSwipedItemId(): Long = orderId
     }
 
     private class LoadingViewHolder(view: View) : RecyclerView.ViewHolder(view)
