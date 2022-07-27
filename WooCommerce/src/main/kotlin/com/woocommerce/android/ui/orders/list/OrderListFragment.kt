@@ -68,7 +68,8 @@ class OrderListFragment :
     TopLevelFragment(R.layout.fragment_order_list),
     OnQueryTextListener,
     OnActionExpandListener,
-    OrderListListener {
+    OrderListListener,
+    SwipeToComplete.OnSwipeListener {
     companion object {
         const val TAG: String = "OrderListFragment"
         const val STATE_KEY_SEARCH_QUERY = "search-query"
@@ -640,5 +641,9 @@ class OrderListFragment :
             SIMPLE_PAYMENTS_AND_ORDER_CREATION,
             state
         ).registerItself()
+    }
+
+    override fun onSwiped(itemId: Long) {
+        uiMessageResolver.showSnack("Order $itemId Swiped")
     }
 }
