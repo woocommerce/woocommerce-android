@@ -36,6 +36,7 @@ import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.ui.orders.list.OrderListViewModel
+import com.woocommerce.android.ui.orders.list.OrderListViewModel.UpsellCardReaderBannerState
 import com.woocommerce.android.ui.payments.SelectPaymentMethodViewModel
 import com.woocommerce.android.ui.payments.SelectPaymentMethodViewModel.TakePaymentViewState.Success
 import com.woocommerce.android.ui.prefs.MainSettingsContract
@@ -69,12 +70,11 @@ fun OrderListScreenBanner(
     subtitle: String,
     ctaLabel: String,
 ) {
-    val isEligibleForInPersonPayments by viewModel.isEligibleForInPersonPayments.observeAsState(false)
+    val upsellCardReaderBannerState by viewModel.upsellCardReaderBannerState.observeAsState(
+        UpsellCardReaderBannerState()
+    )
 
-    if (
-        isEligibleForInPersonPayments &&
-        viewModel.canShowCardReaderUpsellBanner(System.currentTimeMillis(), AnalyticsTracker.KEY_BANNER_ORDER_LIST)
-    ) {
+    if (upsellCardReaderBannerState.shouldShowUpsellCardReaderBanner) {
         Banner(
             onCtaClick = viewModel::onCtaClicked,
             onDismissClick = viewModel::onDismissClicked,

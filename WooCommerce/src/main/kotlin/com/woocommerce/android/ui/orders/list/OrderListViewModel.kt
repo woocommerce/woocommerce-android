@@ -16,6 +16,7 @@ import androidx.paging.PagedList
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_BANNER_ORDER_LIST
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_CUSTOM_FIELDS_COUNT
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_CUSTOM_FIELDS_SIZE
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_ID
@@ -123,8 +124,9 @@ class OrderListViewModel @Inject constructor(
     }
     val emptyViewType: LiveData<EmptyViewType?> = _emptyViewType
 
-    val shouldShowUpsellCardReaderDismissDialog: MutableLiveData<Boolean> = MutableLiveData(false)
-    val isEligibleForInPersonPayments: MutableLiveData<Boolean> = MutableLiveData(false)
+    val upsellCardReaderBannerState: MutableLiveData<UpsellCardReaderBannerState> = MutableLiveData(
+        UpsellCardReaderBannerState()
+    )
 
     var isSearching = false
     var searchQuery = ""
@@ -144,7 +146,7 @@ class OrderListViewModel @Inject constructor(
             _emptyViewType.postValue(EmptyViewType.ORDER_LIST_LOADING)
             if (selectedSite.exists()) {
                 loadOrders()
-                isEligibleForInPersonPayments()
+                updateUpsellCardReaderBannerDisplayState()
             } else {
                 WooLog.w(
                     WooLog.T.ORDERS,
@@ -155,8 +157,19 @@ class OrderListViewModel @Inject constructor(
         }
     }
 
-    private suspend fun isEligibleForInPersonPayments() {
-        isEligibleForInPersonPayments.value = bannerDisplayEligibilityChecker.isEligibleForInPersonPayments()
+    data class UpsellCardReaderBannerState(
+        val shouldShowUpsellCardReaderBanner: Boolean = true,
+        val shouldShowUpsellCardReaderBannerDismissDialog: Boolean = false
+    )
+
+    private suspend fun updateUpsellCardReaderBannerDisplayState() {
+        upsellCardReaderBannerState.value =
+            UpsellCardReaderBannerState(
+                shouldShowUpsellCardReaderBanner = bannerDisplayEligibilityChecker.isEligibleForInPersonPayments() &&
+                    bannerDisplayEligibilityChecker.canShowCardReaderUpsellBanner(
+                        System.currentTimeMillis(), KEY_BANNER_ORDER_LIST
+                    )
+            )
     }
 
     fun loadOrders() {
@@ -464,28 +477,35 @@ class OrderListViewModel @Inject constructor(
     }
 
     fun onDismissClicked() {
-        shouldShowUpsellCardReaderDismissDialog.value = true
+        upsellCardReaderBannerState.value = UpsellCardReaderBannerState(
+            shouldShowUpsellCardReaderBanner = true,
+            shouldShowUpsellCardReaderBannerDismissDialog = true
+        )
         triggerEvent(OrderListEvent.DismissCardReaderUpsellBanner)
     }
 
     fun onRemindLaterClicked(currentTimeInMillis: Long, source: String) {
-        shouldShowUpsellCardReaderDismissDialog.value = false
+        upsellCardReaderBannerState.value = UpsellCardReaderBannerState(
+            shouldShowUpsellCardReaderBanner = false,
+            shouldShowUpsellCardReaderBannerDismissDialog = false
+        )
         bannerDisplayEligibilityChecker.onRemindLaterClicked(currentTimeInMillis, source)
         triggerEvent(OrderListEvent.DismissCardReaderUpsellBannerViaRemindMeLater)
     }
 
     fun onDontShowAgainClicked(source: String) {
-        shouldShowUpsellCardReaderDismissDialog.value = false
+        upsellCardReaderBannerState.value = UpsellCardReaderBannerState(
+            shouldShowUpsellCardReaderBanner = false,
+            shouldShowUpsellCardReaderBannerDismissDialog = false
+        )
         bannerDisplayEligibilityChecker.onDontShowAgainClicked(source)
         triggerEvent(OrderListEvent.DismissCardReaderUpsellBannerViaDontShowAgain)
     }
 
     fun onBannerAlertDismiss() {
-        shouldShowUpsellCardReaderDismissDialog.value = false
-    }
-
-    fun canShowCardReaderUpsellBanner(currentTimeInMillis: Long, source: String): Boolean {
-        return bannerDisplayEligibilityChecker.canShowCardReaderUpsellBanner(currentTimeInMillis, source)
+        upsellCardReaderBannerState.value = UpsellCardReaderBannerState(
+            shouldShowUpsellCardReaderBannerDismissDialog = false
+        )
     }
 
     sealed class OrderListEvent : Event() {

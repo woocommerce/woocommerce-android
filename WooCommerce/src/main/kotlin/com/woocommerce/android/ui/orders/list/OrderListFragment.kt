@@ -153,17 +153,6 @@ class OrderListFragment :
         _binding = FragmentOrderListBinding.inflate(inflater, container, false)
 
         val view = binding.root
-        if (viewModel.shouldShowUpsellCardReaderDismissDialog.value == true) {
-            applyBannerDismissDialogComposeUI()
-        }
-        val isLandscape = DisplayUtils.isLandscape(view.context)
-        /**
-         * We are hiding the upsell card reader banner in the landscape mode since it becomes impossible for
-         * the merchants to scroll the order list. More info here: pdfdoF-12d-p2
-         */
-        if (!isLandscape) {
-            applyBannerComposeUI()
-        }
         return view
     }
 
@@ -193,11 +182,6 @@ class OrderListFragment :
         }
         binding.orderFiltersCard.setClickListener { viewModel.onFiltersButtonTapped() }
         initCreateOrderFAB(binding.createOrderButton)
-    }
-
-    override fun onViewStateRestored(savedInstanceState: Bundle?) {
-        super.onViewStateRestored(savedInstanceState)
-        displaySimplePaymentsWIPCard(true)
     }
 
     override fun onResume() {
@@ -323,6 +307,28 @@ class OrderListFragment :
 
         viewModel.pagedListData.observe(viewLifecycleOwner) {
             updatePagedListData(it)
+        }
+
+        viewModel.upsellCardReaderBannerState.observe(viewLifecycleOwner) { upsellCardReaderBannerState ->
+            when {
+                upsellCardReaderBannerState.shouldShowUpsellCardReaderBannerDismissDialog -> {
+                    applyBannerDismissDialogComposeUI()
+                }
+                upsellCardReaderBannerState.shouldShowUpsellCardReaderBanner -> {
+                    val isLandscape = DisplayUtils.isLandscape(view?.context)
+                    /**
+                     * We are hiding the upsell card reader banner in the landscape mode since it becomes impossible for
+                     * the merchants to scroll the order list. More info here: pdfdoF-12d-p2
+                     */
+                    if (!isLandscape) {
+                        displaySimplePaymentsWIPCard(false)
+                        applyBannerComposeUI()
+                    } else {
+                        displaySimplePaymentsWIPCard(true)
+                    }
+                }
+                else -> displaySimplePaymentsWIPCard(true)
+            }
         }
 
         viewModel.event.observe(viewLifecycleOwner) { event ->

@@ -3,6 +3,7 @@ package com.woocommerce.android.ui.orders
 import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.AppUrls
 import com.woocommerce.android.R
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_BANNER_ORDER_LIST
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_BANNER_PAYMENTS
 import com.woocommerce.android.extensions.NotificationReceivedEvent
 import com.woocommerce.android.extensions.takeIfNotEqualTo
@@ -39,7 +40,10 @@ import kotlinx.coroutines.test.runTest
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Test
+import org.mockito.ArgumentMatchers.anyLong
+import org.mockito.ArgumentMatchers.anyString
 import org.mockito.kotlin.any
+import org.mockito.kotlin.argumentCaptor
 import org.mockito.kotlin.clearInvocations
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.mock
@@ -491,37 +495,60 @@ class OrderListViewModelTest : BaseUnitTest() {
     fun `given card reader banner has dismissed, then update dialogShow state to true`() {
         viewModel.onDismissClicked()
 
-        assertThat(viewModel.shouldShowUpsellCardReaderDismissDialog.value).isTrue
+        assertThat(viewModel.upsellCardReaderBannerState.value?.shouldShowUpsellCardReaderBannerDismissDialog).isTrue
     }
 
     @Test
     fun `given card reader banner has dismissed via remind later, then update dialogShow state to false`() {
         viewModel.onRemindLaterClicked(0L, KEY_BANNER_PAYMENTS)
 
-        assertThat(viewModel.shouldShowUpsellCardReaderDismissDialog.value).isFalse
+        assertThat(viewModel.upsellCardReaderBannerState.value?.shouldShowUpsellCardReaderBannerDismissDialog).isFalse
     }
 
     @Test
     fun `given card reader banner has dismissed via don't show again, then update dialogShow state to false`() {
         viewModel.onDontShowAgainClicked(KEY_BANNER_PAYMENTS)
 
-        assertThat(viewModel.shouldShowUpsellCardReaderDismissDialog.value).isFalse
+        assertThat(viewModel.upsellCardReaderBannerState.value?.shouldShowUpsellCardReaderBannerDismissDialog).isFalse
+    }
+
+    @Test
+    fun `given banner has dismissed, when the dismiss dialog is being shown, then don't dismiss the banner yet`() {
+        viewModel.onDismissClicked()
+
+        assertThat(viewModel.upsellCardReaderBannerState.value?.shouldShowUpsellCardReaderBanner).isTrue
+    }
+
+    @Test
+    fun `given card reader banner has dismissed via remind later, then dismiss the banner`() {
+        viewModel.onRemindLaterClicked(0L, KEY_BANNER_PAYMENTS)
+
+        assertThat(viewModel.upsellCardReaderBannerState.value?.shouldShowUpsellCardReaderBanner).isFalse
+    }
+
+    @Test
+    fun `given card reader banner has dismissed via don't show again, then dismiss the banner`() {
+        viewModel.onDontShowAgainClicked(KEY_BANNER_PAYMENTS)
+
+        assertThat(viewModel.upsellCardReaderBannerState.value?.shouldShowUpsellCardReaderBanner).isFalse
     }
 
     @Test
     fun `given view model init, then update dialogShow state to false`() {
-        assertThat(viewModel.shouldShowUpsellCardReaderDismissDialog.value).isFalse
+        assertThat(viewModel.upsellCardReaderBannerState.value?.shouldShowUpsellCardReaderBannerDismissDialog).isFalse
     }
 
     @Test
-    fun `given store not eligible for IPP, then isEligibleForInPersonPayments is false`() {
+    fun `given store not eligible for IPP, when view model init, then banner not displayed`() {
         runTest {
             whenever(bannerDisplayEligibilityChecker.isEligibleForInPersonPayments()).thenReturn(false)
             whenever(selectedSite.exists()).thenReturn(true)
+            doReturn(RequestResult.SUCCESS).whenever(orderListRepository).fetchPaymentGateways()
+            doReturn(RequestResult.SUCCESS).whenever(orderListRepository).fetchOrderStatusOptionsFromApi()
 
             setup()
 
-            assertThat(viewModel.isEligibleForInPersonPayments.value).isFalse
+            assertThat(viewModel.upsellCardReaderBannerState.value?.shouldShowUpsellCardReaderBanner).isFalse
         }
     }
 
@@ -529,11 +556,17 @@ class OrderListViewModelTest : BaseUnitTest() {
     fun `given store eligible for IPP, then isEligibleForInPersonPayments is true`() {
         runTest {
             whenever(bannerDisplayEligibilityChecker.isEligibleForInPersonPayments()).thenReturn(true)
+            whenever(
+                bannerDisplayEligibilityChecker.canShowCardReaderUpsellBanner(
+                    anyLong(),
+                    anyString()
+                )
+            ).thenReturn(true)
             whenever(selectedSite.exists()).thenReturn(true)
 
             setup()
 
-            assertThat(viewModel.isEligibleForInPersonPayments.value).isTrue
+            assertThat(viewModel.upsellCardReaderBannerState.value?.shouldShowUpsellCardReaderBanner).isTrue
         }
     }
 
@@ -541,7 +574,24 @@ class OrderListViewModelTest : BaseUnitTest() {
     fun `when alert dialog dismissed by pressing back, then shouldShowUpsellCardReaderDismissDialog set to false`() {
         viewModel.onBannerAlertDismiss()
 
-        assertThat(viewModel.shouldShowUpsellCardReaderDismissDialog.value).isFalse
+        assertThat(viewModel.upsellCardReaderBannerState.value?.shouldShowUpsellCardReaderBannerDismissDialog).isFalse
+    }
+
+    @Test
+    fun `given store eligible for IPP, when view model init, then proper track key is passed`() {
+        runTest {
+            whenever(bannerDisplayEligibilityChecker.isEligibleForInPersonPayments()).thenReturn(true)
+            whenever(selectedSite.exists()).thenReturn(true)
+            val captor = argumentCaptor<String>()
+
+            setup()
+
+            verify(bannerDisplayEligibilityChecker).canShowCardReaderUpsellBanner(
+                anyLong(),
+                captor.capture()
+            )
+            assertThat(captor.firstValue).isEqualTo(KEY_BANNER_ORDER_LIST)
+        }
     }
     //endregion
 

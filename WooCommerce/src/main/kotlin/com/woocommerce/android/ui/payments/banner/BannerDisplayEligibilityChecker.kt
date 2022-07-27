@@ -91,7 +91,7 @@ class BannerDisplayEligibilityChecker @Inject constructor(
 
     fun isLastDialogDismissedMoreThan14DaysAgo(currentTimeInMillis: Long): Boolean {
         val timeDifference = currentTimeInMillis - getCardReaderUpsellBannerLastDismissed()
-        return TimeUnit.MILLISECONDS.toDays(timeDifference) > CARD_READER_UPSELL_BANNER_REMIND_THRESHOLD_IN_DAYS
+        return TimeUnit.MILLISECONDS.toSeconds(timeDifference) > CARD_READER_UPSELL_BANNER_REMIND_THRESHOLD_IN_DAYS
     }
 
     fun hasTheMerchantDismissedBannerViaRemindMeLater(): Boolean {
@@ -152,6 +152,6 @@ class BannerDisplayEligibilityChecker @Inject constructor(
     }
 
     companion object {
-        private const val CARD_READER_UPSELL_BANNER_REMIND_THRESHOLD_IN_DAYS = 14
+        private const val CARD_READER_UPSELL_BANNER_REMIND_THRESHOLD_IN_DAYS = 5
     }
 }
