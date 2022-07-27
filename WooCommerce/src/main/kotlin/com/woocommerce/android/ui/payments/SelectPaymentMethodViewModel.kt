@@ -88,11 +88,11 @@ class SelectPaymentMethodViewModel @Inject constructor(
                             isPaymentCollectableWithCardReader = isPaymentCollectableWithCardReader,
                             shouldShowCardReaderUpsellBanner =
                             (
-                                canShowCardReaderUpsellBanner(
-                                    System.currentTimeMillis(),
-                                    AnalyticsTracker.KEY_BANNER_PAYMENTS
-                                ) &&
-                                    isPaymentCollectableWithCardReader
+                                isPaymentCollectableWithCardReader &&
+                                    canShowCardReaderUpsellBanner(
+                                        System.currentTimeMillis(),
+                                        AnalyticsTracker.KEY_BANNER_PAYMENTS
+                                    )
                                 )
                         )
                     }

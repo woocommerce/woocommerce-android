@@ -23,6 +23,7 @@ import com.woocommerce.android.ui.orders.list.OrderListViewModel.OrderListEvent.
 import com.woocommerce.android.ui.orders.list.OrderListViewModel.OrderListEvent.DismissCardReaderUpsellBannerViaRemindMeLater
 import com.woocommerce.android.ui.orders.list.OrderListViewModel.OrderListEvent.OpenPurchaseCardReaderLink
 import com.woocommerce.android.ui.orders.list.OrderListViewModel.OrderListEvent.ShowErrorSnack
+import com.woocommerce.android.ui.orders.list.OrderListViewModel.UpsellCardReaderBannerState
 import com.woocommerce.android.ui.payments.banner.BannerDisplayEligibilityChecker
 import com.woocommerce.android.util.getOrAwaitValue
 import com.woocommerce.android.util.observeForTesting
@@ -539,21 +540,18 @@ class OrderListViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `given store not eligible for IPP, when view model init, then banner not displayed`() {
+    fun `given store not eligible for IPP, when banner state init, then banner not displayed`() {
         runTest {
             whenever(bannerDisplayEligibilityChecker.isEligibleForInPersonPayments()).thenReturn(false)
-            whenever(selectedSite.exists()).thenReturn(true)
-            doReturn(RequestResult.SUCCESS).whenever(orderListRepository).fetchPaymentGateways()
-            doReturn(RequestResult.SUCCESS).whenever(orderListRepository).fetchOrderStatusOptionsFromApi()
 
-            setup()
+            viewModel.initUpsellCardReaderBanner()
 
             assertThat(viewModel.upsellCardReaderBannerState.value?.shouldShowUpsellCardReaderBanner).isFalse
         }
     }
 
     @Test
-    fun `given store eligible for IPP, then isEligibleForInPersonPayments is true`() {
+    fun `given store eligible for IPP, when banner state init, then isEligibleForInPersonPayments is true`() {
         runTest {
             whenever(bannerDisplayEligibilityChecker.isEligibleForInPersonPayments()).thenReturn(true)
             whenever(
@@ -562,9 +560,8 @@ class OrderListViewModelTest : BaseUnitTest() {
                     anyString()
                 )
             ).thenReturn(true)
-            whenever(selectedSite.exists()).thenReturn(true)
 
-            setup()
+            viewModel.initUpsellCardReaderBanner()
 
             assertThat(viewModel.upsellCardReaderBannerState.value?.shouldShowUpsellCardReaderBanner).isTrue
         }
@@ -578,19 +575,62 @@ class OrderListViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `given store eligible for IPP, when view model init, then proper track key is passed`() {
+    fun `when alert dialog dismissed by pressing back, then banner is still displayed`() {
+        viewModel.onBannerAlertDismiss()
+
+        assertThat(viewModel.upsellCardReaderBannerState.value?.shouldShowUpsellCardReaderBanner).isTrue
+    }
+
+    @Test
+    fun `given store eligible for IPP, when banner state init, then proper track key is passed`() {
         runTest {
             whenever(bannerDisplayEligibilityChecker.isEligibleForInPersonPayments()).thenReturn(true)
-            whenever(selectedSite.exists()).thenReturn(true)
             val captor = argumentCaptor<String>()
 
-            setup()
+            viewModel.initUpsellCardReaderBanner()
 
             verify(bannerDisplayEligibilityChecker).canShowCardReaderUpsellBanner(
                 anyLong(),
                 captor.capture()
             )
             assertThat(captor.firstValue).isEqualTo(KEY_BANNER_ORDER_LIST)
+        }
+    }
+
+    @Test
+    fun `given dismiss dialog visible, when device being rotated, then ensure to restore the dismiss dialog state `() {
+        runTest {
+            viewModel.onDismissClicked()
+            viewModel.initUpsellCardReaderBanner()
+
+            assertThat(viewModel.upsellCardReaderBannerState.value).isEqualTo(
+                UpsellCardReaderBannerState(
+                    shouldShowUpsellCardReaderBanner = true,
+                    shouldShowUpsellCardReaderBannerDismissDialog = true
+                )
+            )
+        }
+    }
+
+    @Test
+    fun `given dismiss dialog not visible, when device being rotated, then don't restore the dismiss dialog state `() {
+        runTest {
+            whenever(bannerDisplayEligibilityChecker.isEligibleForInPersonPayments()).thenReturn(true)
+            whenever(
+                bannerDisplayEligibilityChecker.canShowCardReaderUpsellBanner(
+                    anyLong(),
+                    anyString()
+                )
+            ).thenReturn(true)
+
+            viewModel.initUpsellCardReaderBanner()
+
+            assertThat(viewModel.upsellCardReaderBannerState.value).isEqualTo(
+                UpsellCardReaderBannerState(
+                    shouldShowUpsellCardReaderBanner = true,
+                    shouldShowUpsellCardReaderBannerDismissDialog = false
+                )
+            )
         }
     }
     //endregion

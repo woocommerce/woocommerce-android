@@ -76,9 +76,14 @@ class OrderListFragment :
         const val FILTER_CHANGE_NOTICE_KEY = "filters_changed_notice"
     }
 
-    @Inject internal lateinit var uiMessageResolver: UIMessageResolver
-    @Inject internal lateinit var selectedSite: SelectedSite
-    @Inject internal lateinit var currencyFormatter: CurrencyFormatter
+    @Inject
+    internal lateinit var uiMessageResolver: UIMessageResolver
+
+    @Inject
+    internal lateinit var selectedSite: SelectedSite
+
+    @Inject
+    internal lateinit var currencyFormatter: CurrencyFormatter
 
     private val viewModel: OrderListViewModel by viewModels()
 
@@ -182,6 +187,7 @@ class OrderListFragment :
         }
         binding.orderFiltersCard.setClickListener { viewModel.onFiltersButtonTapped() }
         initCreateOrderFAB(binding.createOrderButton)
+        viewModel.initUpsellCardReaderBanner()
     }
 
     override fun onResume() {
@@ -285,6 +291,24 @@ class OrderListFragment :
         binding.orderListView.scrollToTop()
     }
 
+    private fun displayBanner() {
+        val isLandscape = DisplayUtils.isLandscape(view?.context)
+        /**
+         * We are hiding the upsell card reader banner in the landscape mode since it becomes impossible for
+         * the merchants to scroll the order list. More info here: pdfdoF-12d-p2
+         */
+        /**
+         * We are hiding the upsell card reader banner in the landscape mode since it becomes impossible for
+         * the merchants to scroll the order list. More info here: pdfdoF-12d-p2
+         */
+        if (!isLandscape) {
+            displaySimplePaymentsWIPCard(false)
+            applyBannerComposeUI()
+        } else {
+            displaySimplePaymentsWIPCard(true)
+        }
+    }
+
     @Suppress("LongMethod", "ComplexMethod")
     private fun initObservers() {
         // setup observers
@@ -311,23 +335,20 @@ class OrderListFragment :
 
         viewModel.upsellCardReaderBannerState.observe(viewLifecycleOwner) { upsellCardReaderBannerState ->
             when {
+                upsellCardReaderBannerState.shouldShowUpsellCardReaderBanner &&
+                    upsellCardReaderBannerState.shouldShowUpsellCardReaderBannerDismissDialog -> {
+                    displayBanner()
+                    applyBannerDismissDialogComposeUI()
+                }
                 upsellCardReaderBannerState.shouldShowUpsellCardReaderBannerDismissDialog -> {
                     applyBannerDismissDialogComposeUI()
                 }
                 upsellCardReaderBannerState.shouldShowUpsellCardReaderBanner -> {
-                    val isLandscape = DisplayUtils.isLandscape(view?.context)
-                    /**
-                     * We are hiding the upsell card reader banner in the landscape mode since it becomes impossible for
-                     * the merchants to scroll the order list. More info here: pdfdoF-12d-p2
-                     */
-                    if (!isLandscape) {
-                        displaySimplePaymentsWIPCard(false)
-                        applyBannerComposeUI()
-                    } else {
-                        displaySimplePaymentsWIPCard(true)
-                    }
+                    displayBanner()
                 }
-                else -> displaySimplePaymentsWIPCard(true)
+                else -> {
+                    displaySimplePaymentsWIPCard(true)
+                }
             }
         }
 

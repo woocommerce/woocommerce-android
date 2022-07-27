@@ -146,7 +146,6 @@ class OrderListViewModel @Inject constructor(
             _emptyViewType.postValue(EmptyViewType.ORDER_LIST_LOADING)
             if (selectedSite.exists()) {
                 loadOrders()
-                updateUpsellCardReaderBannerDisplayState()
             } else {
                 WooLog.w(
                     WooLog.T.ORDERS,
@@ -157,19 +156,36 @@ class OrderListViewModel @Inject constructor(
         }
     }
 
+    fun initUpsellCardReaderBanner() {
+        launch {
+            initUpsellCardReaderBannerDisplayState()
+        }
+    }
+
     data class UpsellCardReaderBannerState(
-        val shouldShowUpsellCardReaderBanner: Boolean = true,
+        val shouldShowUpsellCardReaderBanner: Boolean = false,
         val shouldShowUpsellCardReaderBannerDismissDialog: Boolean = false
     )
 
-    private suspend fun updateUpsellCardReaderBannerDisplayState() {
-        upsellCardReaderBannerState.value =
-            UpsellCardReaderBannerState(
-                shouldShowUpsellCardReaderBanner = bannerDisplayEligibilityChecker.isEligibleForInPersonPayments() &&
-                    bannerDisplayEligibilityChecker.canShowCardReaderUpsellBanner(
-                        System.currentTimeMillis(), KEY_BANNER_ORDER_LIST
-                    )
+    private suspend fun initUpsellCardReaderBannerDisplayState() {
+        /**
+         * When the shouldShowUpsellCardReaderBannerDismissDialog flag is true during the initial state.
+         * It means that the device is being rotated and we need to restore the dismiss dialog state. */
+        if (upsellCardReaderBannerState.value?.shouldShowUpsellCardReaderBannerDismissDialog == true) {
+            upsellCardReaderBannerState.value = UpsellCardReaderBannerState(
+                shouldShowUpsellCardReaderBanner = true,
+                shouldShowUpsellCardReaderBannerDismissDialog = true
             )
+        } else {
+            upsellCardReaderBannerState.value =
+                UpsellCardReaderBannerState(
+                    shouldShowUpsellCardReaderBanner =
+                    bannerDisplayEligibilityChecker.isEligibleForInPersonPayments() &&
+                        bannerDisplayEligibilityChecker.canShowCardReaderUpsellBanner(
+                            System.currentTimeMillis(), KEY_BANNER_ORDER_LIST
+                        )
+                )
+        }
     }
 
     fun loadOrders() {
@@ -504,6 +520,7 @@ class OrderListViewModel @Inject constructor(
 
     fun onBannerAlertDismiss() {
         upsellCardReaderBannerState.value = UpsellCardReaderBannerState(
+            shouldShowUpsellCardReaderBanner = true,
             shouldShowUpsellCardReaderBannerDismissDialog = false
         )
     }
