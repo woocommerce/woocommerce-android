@@ -106,7 +106,7 @@ private fun MoreMenuItems(state: MoreMenuViewState) {
             MoreMenuButton(
                 text = item.text,
                 iconDrawable = item.icon,
-                badgeCount = item.badgeCount,
+                badgeState = item.badgeState,
                 onClick = item.onClick
             )
         }
@@ -243,7 +243,7 @@ private fun MoreMenuUserAvatar(avatarUrl: String) {
 private fun MoreMenuButton(
     @StringRes text: Int,
     @DrawableRes iconDrawable: Int,
-    badgeCount: Int,
+    badgeState: BadgeState?,
     onClick: () -> Unit,
 ) {
     Button(
@@ -256,7 +256,7 @@ private fun MoreMenuButton(
         shape = RoundedCornerShape(dimensionResource(id = R.dimen.major_75))
     ) {
         Box(Modifier.fillMaxSize()) {
-            MoreMenuBadge(badgeCount = badgeCount)
+            MoreMenuBadge(badgeState = badgeState)
             Column(
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.Center,
@@ -289,22 +289,22 @@ private fun MoreMenuButton(
 }
 
 @Composable
-fun MoreMenuBadge(badgeCount: Int) {
-    if (badgeCount > 0) {
+fun MoreMenuBadge(badgeState: BadgeState?) {
+    if (badgeState != null) {
         Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.End
         ) {
             Box(
                 modifier = Modifier
-                    .size(dimensionResource(id = R.dimen.major_150))
+                    .size(dimensionResource(id = badgeState.badgeSize))
                     .clip(CircleShape)
-                    .background(MaterialTheme.colors.primary)
+                    .background(colorResource(id = badgeState.backgroundColor))
             ) {
                 Text(
-                    text = badgeCount.toString(),
-                    fontSize = 13.sp,
-                    color = colorResource(id = color.color_on_surface_inverted),
+                    text = badgeState.textState.text,
+                    fontSize = dimensionResource(id = badgeState.textState.fontSize).value.sp,
+                    color = colorResource(id = badgeState.textColor),
                     modifier = Modifier.align(Alignment.Center)
                 )
             }
@@ -322,11 +322,27 @@ fun MoreMenuBadge(badgeCount: Int) {
 private fun MoreMenuPreview() {
     val state = MoreMenuViewState(
         moreMenuItems = listOf(
-            MenuUiButton(string.more_menu_button_payments, drawable.ic_more_menu_payments),
+            MenuUiButton(
+                string.more_menu_button_payments, drawable.ic_more_menu_payments,
+                BadgeState(
+                    badgeSize = R.dimen.major_85,
+                    backgroundColor = color.color_secondary,
+                    textColor = color.color_on_surface_inverted,
+                    textState = TextState("", R.dimen.text_minor_80),
+                )
+            ),
             MenuUiButton(string.more_menu_button_wс_admin, drawable.ic_more_menu_wp_admin),
             MenuUiButton(string.more_menu_button_store, drawable.ic_more_menu_store),
             MenuUiButton(string.more_menu_button_coupons, drawable.ic_more_menu_coupons),
-            MenuUiButton(string.more_menu_button_reviews, drawable.ic_more_menu_reviews, 3)
+            MenuUiButton(
+                string.more_menu_button_reviews, drawable.ic_more_menu_reviews,
+                BadgeState(
+                    badgeSize = R.dimen.major_150,
+                    backgroundColor = color.color_primary,
+                    textColor = color.color_on_surface_inverted,
+                    textState = TextState("3", R.dimen.text_minor_80),
+                )
+            )
         ),
         siteName = "Example Site",
         siteUrl = "woocommerce.com",
