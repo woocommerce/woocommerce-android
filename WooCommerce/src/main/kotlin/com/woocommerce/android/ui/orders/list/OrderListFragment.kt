@@ -228,7 +228,7 @@ class OrderListFragment :
         }
     }
 
-    private fun applyBannerDismissDialogComposeUI() {
+    private fun displayBannerDismissDialog() {
         binding.upsellCardReaderComposeView.upsellCardReaderDismissView.apply {
             // Dispose of the Composition when the view's LifecycleOwner is destroyed
             setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
@@ -338,10 +338,10 @@ class OrderListFragment :
                 upsellCardReaderBannerState.shouldShowUpsellCardReaderBanner &&
                     upsellCardReaderBannerState.shouldShowUpsellCardReaderBannerDismissDialog -> {
                     displayBanner()
-                    applyBannerDismissDialogComposeUI()
+                    displayBannerDismissDialog()
                 }
                 upsellCardReaderBannerState.shouldShowUpsellCardReaderBannerDismissDialog -> {
-                    applyBannerDismissDialogComposeUI()
+                    displayBannerDismissDialog()
                 }
                 upsellCardReaderBannerState.shouldShowUpsellCardReaderBanner -> {
                     displayBanner()
@@ -360,7 +360,7 @@ class OrderListFragment :
                 }
                 is ShowOrderFilters -> showOrderFilters()
                 DismissCardReaderUpsellBanner -> {
-                    applyBannerDismissDialogComposeUI()
+                    displayBannerDismissDialog()
                 }
                 DismissCardReaderUpsellBannerViaRemindMeLater -> {
                     binding.upsellCardReaderComposeView.upsellCardReaderBannerView.visibility = View.GONE
