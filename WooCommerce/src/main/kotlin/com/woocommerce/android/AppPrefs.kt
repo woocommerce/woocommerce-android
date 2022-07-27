@@ -23,6 +23,7 @@ import com.woocommerce.android.AppPrefs.DeletablePrefKey.ORDER_FILTER_CUSTOM_DAT
 import com.woocommerce.android.AppPrefs.DeletablePrefKey.ORDER_FILTER_PREFIX
 import com.woocommerce.android.AppPrefs.DeletablePrefKey.PRODUCT_SORTING_PREFIX
 import com.woocommerce.android.AppPrefs.DeletablePrefKey.RECEIPT_PREFIX
+import com.woocommerce.android.AppPrefs.UndeletablePrefKey.USER_CLICKED_ON_PAYMENTS_MORE_SCREEN
 import com.woocommerce.android.extensions.orNullIfEmpty
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.payments.cardreader.onboarding.PersistentOnboardingData
@@ -143,6 +144,8 @@ object AppPrefs {
         WC_SHIPPING_BANNER_DISMISSED,
 
         USER_SEEN_NEW_FEATURE_MORE_SCREEN,
+
+        USER_CLICKED_ON_PAYMENTS_MORE_SCREEN,
     }
 
     fun init(context: Context) {
@@ -700,6 +703,13 @@ object AppPrefs {
 
     fun setUserSeenNewFeatureOnMoreScreen() {
         setBoolean(UndeletablePrefKey.USER_SEEN_NEW_FEATURE_MORE_SCREEN, true)
+    }
+
+    fun isPaymentsIconWasClickedOnMoreScreen(): Boolean =
+        getBoolean(UndeletablePrefKey.USER_CLICKED_ON_PAYMENTS_MORE_SCREEN, false)
+
+    fun setPaymentsIconWasClickedOnMoreScreen() {
+        setBoolean(UndeletablePrefKey.USER_CLICKED_ON_PAYMENTS_MORE_SCREEN, true)
     }
 
     /**
