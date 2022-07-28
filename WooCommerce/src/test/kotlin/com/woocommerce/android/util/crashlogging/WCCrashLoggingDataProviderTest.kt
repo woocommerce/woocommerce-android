@@ -1,5 +1,6 @@
 package com.woocommerce.android.util.crashlogging
 
+import com.automattic.android.tracks.crashlogging.CrashLoggingUser
 import com.automattic.android.tracks.crashlogging.EventLevel.FATAL
 import com.automattic.android.tracks.crashlogging.EventLevel.INFO
 import com.woocommerce.android.AppPrefs
@@ -10,6 +11,12 @@ import com.woocommerce.android.util.crashlogging.WCCrashLoggingDataProvider.Comp
 import com.woocommerce.android.util.crashlogging.WCCrashLoggingDataProvider.Companion.SITE_ID_KEY
 import com.woocommerce.android.util.crashlogging.WCCrashLoggingDataProvider.Companion.SITE_URL_KEY
 import com.woocommerce.android.util.locale.LocaleProvider
+import com.woocommerce.android.viewmodel.BaseUnitTest
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.flow.single
+import kotlinx.coroutines.test.TestScope
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.SoftAssertions
 import org.junit.Before
@@ -23,13 +30,15 @@ import org.mockito.kotlin.never
 import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
+import org.wordpress.android.fluxc.Dispatcher
 import org.wordpress.android.fluxc.model.AccountModel
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.store.AccountStore
 import java.util.Locale
 
+@OptIn(ExperimentalCoroutinesApi::class)
 @RunWith(MockitoJUnitRunner::class)
-class WCCrashLoggingDataProviderTest {
+class WCCrashLoggingDataProviderTest : BaseUnitTest() {
     lateinit var sut: WCCrashLoggingDataProvider
 
     private val localeProvider: LocaleProvider = mock()
@@ -51,7 +60,9 @@ class WCCrashLoggingDataProviderTest {
             appPrefs = appPrefs,
             enqueueSendingEncryptedLogs = enqueueSendingEncryptedLogs,
             uuidGenerator = uuidGenerator,
-            buildConfig = buildConfig
+            buildConfig = buildConfig,
+            appScope = TestScope(coroutinesTestRule.testDispatcher),
+            dispatcher = Dispatcher()
         )
     }
 
@@ -60,10 +71,11 @@ class WCCrashLoggingDataProviderTest {
     }
 
     @Test
-    fun `should provide site id and site url in apps context if selected site exists`() {
-        whenever(selectedSite.getIfExists()).thenReturn(TEST_SITE_MODEL)
+    fun `should provide site id and site url in apps context if selected site exists`() = testBlocking {
+        whenever(selectedSite.observe()).thenReturn(flowOf(TEST_SITE_MODEL))
+        reinitialize()
 
-        val appContext = sut.applicationContextProvider()
+        val appContext = sut.applicationContextProvider.single()
 
         assertThat(appContext).containsAllEntriesOf(
             mapOf(
@@ -74,10 +86,11 @@ class WCCrashLoggingDataProviderTest {
     }
 
     @Test
-    fun `should provide empty apps context if selected site does not exist`() {
-        whenever(selectedSite.getIfExists()).thenReturn(null)
+    fun `should provide empty apps context if selected site does not exist`() = testBlocking {
+        whenever(selectedSite.observe()).thenReturn(flowOf(null))
+        reinitialize()
 
-        val appContext = sut.applicationContextProvider()
+        val appContext = sut.applicationContextProvider.first()
 
         assertThat(appContext).isEmpty()
     }
@@ -106,25 +119,35 @@ class WCCrashLoggingDataProviderTest {
     }
 
     @Test
-    fun `should provide correctly mapped user if user exists`() {
+    fun `should provide correctly mapped user if user exists`() = testBlocking {
         whenever(accountStore.account).thenReturn(TEST_ACCOUNT)
+        reinitialize()
 
-        val user = sut.userProvider()
+        val user = sut.user.first()
 
-        SoftAssertions().apply {
-            assertThat(user?.username).isEqualTo(TEST_ACCOUNT.userName)
-            assertThat(user?.email).isEqualTo(TEST_ACCOUNT.email)
-            assertThat(user?.userID).isEqualTo(TEST_ACCOUNT.userId.toString())
-        }.assertAll()
+        softlyAssertUser(user)
     }
 
     @Test
-    fun `should not provide user if user does not exist`() {
+    fun `should not provide user if user does not exist`() = testBlocking {
         whenever(accountStore.account).thenReturn(null)
+        reinitialize()
 
-        val user = sut.userProvider()
+        val user = sut.user.first()
 
         assertThat(user).isNull()
+    }
+
+    @Test
+    fun `should provide updated user if user changed`() = testBlocking {
+        whenever(accountStore.account).thenReturn(null)
+        reinitialize()
+
+        whenever(accountStore.account).thenReturn(TEST_ACCOUNT)
+        sut.onAccountChanged(AccountStore.OnAccountChanged())
+        val user = sut.user.first()
+
+        softlyAssertUser(user)
     }
 
     @Test
@@ -186,6 +209,14 @@ class WCCrashLoggingDataProviderTest {
         reinitialize()
 
         assertThat(sut.releaseName).isEqualTo(DEBUG_RELEASE_NAME)
+    }
+
+    private fun softlyAssertUser(user: CrashLoggingUser?) {
+        SoftAssertions().apply {
+            assertThat(user?.username).isEqualTo(TEST_ACCOUNT.userName)
+            assertThat(user?.email).isEqualTo(TEST_ACCOUNT.email)
+            assertThat(user?.userID).isEqualTo(TEST_ACCOUNT.userId.toString())
+        }.assertAll()
     }
 
     companion object {
