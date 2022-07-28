@@ -131,7 +131,7 @@ class OrderListAdapter(
     private inner class OrderItemUIViewHolder(val viewBinding: OrderListItemBinding) :
         RecyclerView.ViewHolder(viewBinding.root), SwipeToComplete.SwipeAbleViewHolder {
         private var isNotCompleted = true
-        private var orderId = -1L
+        private var orderId = SwipeToComplete.SwipeAbleViewHolder.EMPTY_SWIPED_ID
         fun onBind(orderItemUI: OrderListItemUI) {
             // Grab the current context from the underlying view
             val ctx = this.itemView.context

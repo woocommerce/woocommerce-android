@@ -188,6 +188,10 @@ class SwipeToComplete(
     }
 
     interface SwipeAbleViewHolder {
+        companion object {
+            const val EMPTY_SWIPED_ID = -1L
+        }
+
         fun isSwipeAble(): Boolean
         fun getSwipedItemId(): Long
     }
