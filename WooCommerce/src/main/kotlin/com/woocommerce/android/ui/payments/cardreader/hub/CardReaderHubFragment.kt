@@ -64,6 +64,11 @@ class CardReaderHubFragment : BaseFragment(R.layout.fragment_card_reader_hub) {
                         )
                     )
                 }
+                is CardReaderHubViewModel.CardReaderHubEvents.NavigateToPaymentCollectionScreen -> {
+                    findNavController().navigate(
+                        CardReaderHubFragmentDirections.actionCardReaderHubFragmentToSimplePayments()
+                    )
+                }
                 else -> event.isHandled = false
             }
         }

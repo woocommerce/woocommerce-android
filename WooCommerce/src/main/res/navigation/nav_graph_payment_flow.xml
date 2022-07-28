@@ -103,6 +103,13 @@
             app:destination="@id/cardReaderOnboardingFragment"
             app:popUpTo="@+id/cardReaderHubFragment"
             app:popUpToInclusive="true"/>
+        <action
+            android:id="@+id/action_cardReaderHubFragment_to_simplePayments"
+            app:destination="@id/simplePaymentsDialog"
+            app:enterAnim="@anim/activity_fade_in"
+            app:exitAnim="@null"
+            app:popEnterAnim="@null"
+            app:popExitAnim="@anim/activity_fade_out" />
     </fragment>
     <fragment
         android:id="@+id/cardReaderDetailFragment"
@@ -208,4 +215,49 @@
         android:id="@+id/cardReaderManualsFragment"
         android:name="com.woocommerce.android.ui.payments.cardreader.manuals.CardReaderManualsFragment"
         android:label="CardReaderManualsFragment" />
+
+    <dialog
+        android:id="@+id/simplePaymentsDialog"
+        android:name="com.woocommerce.android.ui.payments.simplepayments.SimplePaymentsDialog"
+        android:label="SimplePaymentsDialog">
+        <action
+            android:id="@+id/action_simplePaymentDialog_to_simplePaymentFragment"
+            app:destination="@+id/simplePaymentsFragment"
+            app:enterAnim="@anim/default_enter_anim"
+            app:exitAnim="@anim/default_exit_anim"
+            app:popEnterAnim="@anim/default_pop_enter_anim"
+            app:popExitAnim="@anim/default_pop_exit_anim" />
+    </dialog>
+    <fragment
+        android:id="@+id/simplePaymentsFragment"
+        android:name="com.woocommerce.android.ui.payments.simplepayments.SimplePaymentsFragment"
+        android:label="SimplePaymentsFragment">
+        <argument
+            android:name="order"
+            app:argType="com.woocommerce.android.model.Order"
+            app:nullable="false" />
+        <action
+            android:id="@+id/action_simplePaymentsFragment_to_simplePaymentsCustomerNoteFragment"
+            app:destination="@id/simplePaymentsCustomerNoteFragment"
+            app:enterAnim="@anim/default_enter_anim"
+            app:exitAnim="@anim/default_exit_anim"
+            app:popEnterAnim="@anim/default_pop_enter_anim"
+            app:popExitAnim="@anim/default_pop_exit_anim" />
+        <action
+            android:id="@+id/action_simplePaymentsFragment_to_paymentFlow"
+            app:destination="@id/selectPaymentMethodFragment"
+            app:enterAnim="@anim/default_enter_anim"
+            app:exitAnim="@anim/default_exit_anim"
+            app:popEnterAnim="@anim/default_pop_enter_anim"
+            app:popExitAnim="@anim/default_pop_exit_anim" />
+    </fragment>
+    <fragment
+        android:id="@+id/simplePaymentsCustomerNoteFragment"
+        android:name="com.woocommerce.android.ui.payments.simplepayments.SimplePaymentsCustomerNoteFragment"
+        android:label="SimplePaymentsCustomerNoteFragment">
+        <argument
+            android:name="customerNote"
+            android:defaultValue='""'
+            app:argType="string" />
+    </fragment>
 </navigation>

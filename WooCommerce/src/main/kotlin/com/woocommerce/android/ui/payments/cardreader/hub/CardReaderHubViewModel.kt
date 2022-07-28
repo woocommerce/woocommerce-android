@@ -33,6 +33,11 @@ class CardReaderHubViewModel @Inject constructor(
 
     private val cardReaderHubListWhenSinglePluginInstalled = mutableListOf(
         CardReaderHubListItemViewState(
+            icon = R.drawable.ic_gridicons_money_on_surface,
+            label = UiString.UiStringRes(R.string.card_reader_collect_payment),
+            onItemClicked = ::onCollectPaymentClicked
+        ),
+        CardReaderHubListItemViewState(
             icon = R.drawable.ic_shopping_cart,
             label = UiString.UiStringRes(R.string.card_reader_purchase_card_reader),
             onItemClicked = ::onPurchaseCardReaderClicked
@@ -96,6 +101,10 @@ class CardReaderHubViewModel @Inject constructor(
 
     val viewStateData: LiveData<CardReaderHubViewState> = viewState
 
+    private fun onCollectPaymentClicked() {
+        triggerEvent(CardReaderHubEvents.NavigateToPaymentCollectionScreen)
+    }
+
     private fun onManageCardReaderClicked() {
         triggerEvent(CardReaderHubEvents.NavigateToCardReaderDetail(arguments.cardReaderFlowParam))
     }
@@ -131,6 +140,7 @@ class CardReaderHubViewModel @Inject constructor(
     sealed class CardReaderHubEvents : MultiLiveEvent.Event() {
         data class NavigateToCardReaderDetail(val cardReaderFlowParam: CardReaderFlowParam) : CardReaderHubEvents()
         data class NavigateToPurchaseCardReaderFlow(val url: String) : CardReaderHubEvents()
+        object NavigateToPaymentCollectionScreen : CardReaderHubEvents()
         object NavigateToCardReaderManualsScreen : CardReaderHubEvents()
         object NavigateToCardReaderOnboardingScreen : CardReaderHubEvents()
     }
