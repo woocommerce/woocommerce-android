@@ -161,6 +161,10 @@ class AppPrefsWrapper @Inject constructor() {
     fun setPreLoginNotificationDisplayed(displayed: Boolean) =
         AppPrefs.setPreLoginNotificationDisplayed(displayed)
 
+    fun isUserSeenNewFeatureOnMoreScreen() = AppPrefs.isUserSeenNewFeatureOnMoreScreen()
+
+    fun setUserSeenNewFeatureOnMoreScreen() = AppPrefs.setUserSeenNewFeatureOnMoreScreen()
+
     /**
      * Observes changes to the preferences
      */

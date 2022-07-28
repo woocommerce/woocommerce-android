@@ -16,7 +16,8 @@ import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.main.MainActivityViewModel.MoreMenuBadgeState.Hidden
 import com.woocommerce.android.ui.main.MainActivityViewModel.MoreMenuBadgeState.NewFeature
 import com.woocommerce.android.ui.main.MainActivityViewModel.MoreMenuBadgeState.UnseenReviews
-import com.woocommerce.android.ui.moremenu.MoreMenuNewFeatureProvider
+import com.woocommerce.android.ui.moremenu.MoreMenuNewFeature
+import com.woocommerce.android.ui.moremenu.MoreMenuNewFeatureHandler
 import com.woocommerce.android.ui.whatsnew.FeatureAnnouncementRepository
 import com.woocommerce.android.util.BuildConfigWrapper
 import com.woocommerce.android.util.WooLog
@@ -24,7 +25,7 @@ import com.woocommerce.android.util.WooLog.T
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.launch
 import org.wordpress.android.fluxc.store.SiteStore
 import javax.inject.Inject
@@ -39,7 +40,7 @@ class MainActivityViewModel @Inject constructor(
     private val buildConfigWrapper: BuildConfigWrapper,
     private val prefs: AppPrefs,
     private val analyticsTrackerWrapper: AnalyticsTrackerWrapper,
-    private val moreMenuNewFeatureProvider: MoreMenuNewFeatureProvider,
+    moreMenuNewFeatureHandler: MoreMenuNewFeatureHandler,
     unseenReviewsCountHandler: UnseenReviewsCountHandler,
 ) : ScopedViewModel(savedState) {
     init {
@@ -50,10 +51,12 @@ class MainActivityViewModel @Inject constructor(
 
     val startDestination = if (selectedSite.exists()) R.id.dashboard else R.id.sitePickerFragment
 
-    val moreMenuBadgeState = unseenReviewsCountHandler
-        .observeUnseenCount()
-        .map { determineMenuBadgeState(it) }
-        .asLiveData()
+    val moreMenuBadgeState = combine(
+        unseenReviewsCountHandler.observeUnseenCount(),
+        moreMenuNewFeatureHandler.moreMenuNewFeaturesAvailable,
+    ) { reviewsCount, features ->
+        determineMenuBadgeState(reviewsCount, features)
+    }.asLiveData()
 
     fun removeOrderNotifications() {
         notificationHandler.removeNotificationsOfTypeFromSystemsBar(
@@ -119,8 +122,8 @@ class MainActivityViewModel @Inject constructor(
         }
     }
 
-    private fun determineMenuBadgeState(count: Int) =
-        if (moreMenuNewFeatureProvider.provideNewFeatures().isNotEmpty()) NewFeature
+    private fun determineMenuBadgeState(count: Int, features: List<MoreMenuNewFeature>) =
+        if (features.isNotEmpty()) NewFeature
         else if (count > 0) UnseenReviews(count) else Hidden
 
     fun showFeatureAnnouncementIfNeeded() {
