@@ -65,7 +65,6 @@ import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.navArgs
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.collectLatest
@@ -290,13 +289,6 @@ class ProductDetailViewModel @Inject constructor(
             initializeStoredProductAfterRestoration()
         }
         observeImageUploadEvents()
-        // TODO remove
-        launch {
-            delay(1000L)
-            withContext(dispatchers.main) {
-                checkLinkedProductPromo()
-            }
-        }
     }
 
     private fun initializeViewState() {
@@ -1628,6 +1620,7 @@ class ProductDetailViewModel @Inject constructor(
     }
 
     fun onLinkedProductPromoClicked() {
+        // TODO analytics
         triggerEvent(ProductNavigationTarget.ViewLinkedProducts(getRemoteProductId()))
     }
 
