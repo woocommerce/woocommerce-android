@@ -7,6 +7,7 @@ import com.automattic.android.tracks.crashlogging.CrashLoggingDataProvider
 import com.automattic.android.tracks.crashlogging.CrashLoggingProvider
 import com.goterl.lazysodium.utils.Key
 import com.woocommerce.android.BuildConfig
+import com.woocommerce.android.di.AppCoroutineScope
 import com.woocommerce.android.util.locale.ContextBasedLocaleProvider
 import com.woocommerce.android.util.locale.LocaleProvider
 import dagger.Binds
@@ -14,6 +15,7 @@ import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
+import kotlinx.coroutines.CoroutineScope
 import org.wordpress.android.fluxc.logging.FluxCCrashLogger
 import org.wordpress.android.fluxc.model.encryptedlogging.EncryptedLoggingKey
 import javax.inject.Singleton
@@ -24,8 +26,12 @@ abstract class CrashLoggingModule {
     companion object {
         @Provides
         @Singleton
-        fun provideCrashLogging(context: Context, crashLoggingDataProvider: CrashLoggingDataProvider): CrashLogging {
-            return CrashLoggingProvider.createInstance(context, crashLoggingDataProvider)
+        fun provideCrashLogging(
+            context: Context,
+            crashLoggingDataProvider: CrashLoggingDataProvider,
+            @AppCoroutineScope appScope: CoroutineScope
+        ): CrashLogging {
+            return CrashLoggingProvider.createInstance(context, crashLoggingDataProvider, appScope)
         }
 
         @Provides
