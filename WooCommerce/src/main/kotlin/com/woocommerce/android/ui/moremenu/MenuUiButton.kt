@@ -18,6 +18,7 @@ data class BadgeState(
     @ColorRes val backgroundColor: Int,
     @ColorRes val textColor: Int,
     val textState: TextState,
+    val animateAppearance: Boolean = false,
 )
 
 data class TextState(val text: String, @DimenRes val fontSize: Int)

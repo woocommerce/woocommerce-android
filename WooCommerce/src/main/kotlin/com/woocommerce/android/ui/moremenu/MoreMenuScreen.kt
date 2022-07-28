@@ -306,7 +306,7 @@ fun MoreMenuBadge(badgeState: BadgeState?) {
         ) {
             Spacer(modifier = Modifier.weight(1f))
             val visible = remember {
-                MutableTransitionState(false).apply { targetState = true }
+                MutableTransitionState(badgeState.animateAppearance.not()).apply { targetState = true }
             }
             AnimatedVisibility(
                 visibleState = visible,
@@ -352,6 +352,7 @@ private fun MoreMenuPreview() {
                     backgroundColor = color.color_secondary,
                     textColor = color.color_on_surface_inverted,
                     textState = TextState("", R.dimen.text_minor_80),
+                    animateAppearance = true
                 )
             ),
             MenuUiButton(string.more_menu_button_wс_admin, drawable.ic_more_menu_wp_admin),
@@ -363,6 +364,7 @@ private fun MoreMenuPreview() {
                     backgroundColor = color.color_primary,
                     textColor = color.color_on_surface_inverted,
                     textState = TextState("3", R.dimen.text_minor_80),
+                    animateAppearance = false
                 )
             ),
             MenuUiButton(string.more_menu_button_coupons, drawable.ic_more_menu_coupons),

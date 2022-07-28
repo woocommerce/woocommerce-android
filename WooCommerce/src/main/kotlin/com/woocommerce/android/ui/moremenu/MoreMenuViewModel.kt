@@ -3,8 +3,6 @@ package com.woocommerce.android.ui.moremenu
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
 import com.woocommerce.android.R
-import com.woocommerce.android.R.color
-import com.woocommerce.android.R.dimen
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_OPTION
@@ -102,10 +100,11 @@ class MoreMenuViewModel @Inject constructor(
 
     private fun buildPaymentsBadgeState(paymentsFeatureWasClicked: Boolean) =
         if (!paymentsFeatureWasClicked) BadgeState(
-            badgeSize = dimen.major_85,
-            backgroundColor = color.color_secondary,
-            textColor = color.color_on_surface_inverted,
-            textState = TextState("", dimen.text_minor_80),
+            badgeSize = R.dimen.major_85,
+            backgroundColor = R.color.color_secondary,
+            textColor = R.color.color_on_surface_inverted,
+            textState = TextState("", R.dimen.text_minor_80),
+            animateAppearance = true,
         ) else null
 
     private fun buildUnseenReviewsBadgeState(unseenReviewsCount: Int) =
