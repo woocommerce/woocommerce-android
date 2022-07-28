@@ -9,7 +9,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
-import com.woocommerce.android.AppPrefs
+import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
@@ -104,7 +104,7 @@ class ProductDetailViewModel @Inject constructor(
     private val mediaFilesRepository: MediaFilesRepository,
     private val variationRepository: VariationRepository,
     private val mediaFileUploadHandler: MediaFileUploadHandler,
-    private val prefs: AppPrefs,
+    private val appPrefsWrapper: AppPrefsWrapper,
     private val addonRepository: AddonRepository,
 ) : ScopedViewModel(savedState) {
     companion object {
@@ -307,9 +307,9 @@ class ProductDetailViewModel @Inject constructor(
     }
 
     private fun createDefaultProductForAddFlow(): Product {
-        val preferredSavedType = prefs.getSelectedProductType()
+        val preferredSavedType = appPrefsWrapper.getSelectedProductType()
         val defaultProductType = ProductType.fromString(preferredSavedType)
-        val isProductVirtual = prefs.isSelectedProductVirtual()
+        val isProductVirtual = appPrefsWrapper.isSelectedProductVirtual()
         return ProductHelper.getDefaultNewProduct(defaultProductType, isProductVirtual)
     }
 
@@ -1612,10 +1612,10 @@ class ProductDetailViewModel @Inject constructor(
      */
     private fun checkLinkedProductPromo() {
         if (FeatureFlag.LINKED_PRODUCTS_PROMO.isEnabled() &&
-            prefs.isPromoBannerShown(PromoBannerType.LINKED_PRODUCTS).not() &&
+            appPrefsWrapper.isPromoBannerShown(PromoBannerType.LINKED_PRODUCTS).not() &&
             viewState.productDraft?.hasLinkedProducts() == false
         ) {
-            AppPrefs.setPromoBannerShown(PromoBannerType.LINKED_PRODUCTS, true)
+            appPrefsWrapper.setPromoBannerShown(PromoBannerType.LINKED_PRODUCTS, true)
             triggerEvent(ShowLinkedProductPromoBanner)
         }
     }
