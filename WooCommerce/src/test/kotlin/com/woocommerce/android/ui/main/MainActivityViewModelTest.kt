@@ -13,6 +13,9 @@ import com.woocommerce.android.push.NotificationTestUtils
 import com.woocommerce.android.push.UnseenReviewsCountHandler
 import com.woocommerce.android.push.WooNotificationType
 import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.ui.main.MainActivityViewModel.MoreMenuBadgeState.Hidden
+import com.woocommerce.android.ui.main.MainActivityViewModel.MoreMenuBadgeState.NewFeature
+import com.woocommerce.android.ui.main.MainActivityViewModel.MoreMenuBadgeState.UnseenReviews
 import com.woocommerce.android.ui.main.MainActivityViewModel.RestartActivityForNotification
 import com.woocommerce.android.ui.main.MainActivityViewModel.ShowFeatureAnnouncement
 import com.woocommerce.android.ui.main.MainActivityViewModel.ViewMyStoreStats
@@ -21,11 +24,14 @@ import com.woocommerce.android.ui.main.MainActivityViewModel.ViewOrderList
 import com.woocommerce.android.ui.main.MainActivityViewModel.ViewReviewDetail
 import com.woocommerce.android.ui.main.MainActivityViewModel.ViewReviewList
 import com.woocommerce.android.ui.main.MainActivityViewModel.ViewZendeskTickets
+import com.woocommerce.android.ui.moremenu.MoreMenuNewFeature.Payments
+import com.woocommerce.android.ui.moremenu.MoreMenuNewFeatureProvider
 import com.woocommerce.android.ui.whatsnew.FeatureAnnouncementRepository
 import com.woocommerce.android.util.BuildConfigWrapper
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.flowOf
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Test
@@ -99,8 +105,9 @@ class MainActivityViewModelTest : BaseUnitTest() {
     private val featureAnnouncementRepository: FeatureAnnouncementRepository = mock()
     private val buildConfigWrapper: BuildConfigWrapper = mock()
     private val prefs: AppPrefs = mock()
+    private val moreMenuNewFeatureProvider: MoreMenuNewFeatureProvider = mock()
     private val unseenReviewsCountHandler: UnseenReviewsCountHandler = mock {
-        on { observeUnseenCount() } doReturn MutableStateFlow(0)
+        on { observeUnseenCount() } doReturn MutableStateFlow(1)
     }
 
     private val testAnnouncement = FeatureAnnouncement(
@@ -135,19 +142,7 @@ class MainActivityViewModelTest : BaseUnitTest() {
 
     @Before
     fun setup() {
-        viewModel = spy(
-            MainActivityViewModel(
-                savedStateHandle,
-                siteStore,
-                selectedSite,
-                notificationMessageHandler,
-                featureAnnouncementRepository,
-                buildConfigWrapper,
-                prefs,
-                analyticsTrackerWrapper,
-                unseenReviewsCountHandler
-            )
-        )
+        createViewModel()
 
         clearInvocations(
             viewModel,
@@ -369,4 +364,81 @@ class MainActivityViewModelTest : BaseUnitTest() {
                 )
             )
         }
+
+    @Test
+    fun `given zero unseen reviews and no new features, when listening badge state, then hidden returned`() =
+        testBlocking {
+            // GIVEN
+            whenever(unseenReviewsCountHandler.observeUnseenCount()).thenReturn(flowOf(0))
+            whenever(moreMenuNewFeatureProvider.provideNewFeatures()).thenReturn(emptyList())
+            createViewModel()
+
+            // WHEN
+            viewModel.moreMenuBadgeState.observeForever { }
+
+            // THEN
+            assertThat(viewModel.moreMenuBadgeState.value).isEqualTo(Hidden)
+        }
+
+    @Test
+    fun `given unseen reviews and no new features, when listening badge state, then unseen reviews returned`() =
+        testBlocking {
+            // GIVEN
+            whenever(unseenReviewsCountHandler.observeUnseenCount()).thenReturn(flowOf(1))
+            whenever(moreMenuNewFeatureProvider.provideNewFeatures()).thenReturn(emptyList())
+            createViewModel()
+
+            // WHEN
+            viewModel.moreMenuBadgeState.observeForever {}
+
+            // THEN
+            assertThat(viewModel.moreMenuBadgeState.value).isEqualTo(UnseenReviews(1))
+        }
+
+    @Test
+    fun `given unseen reviews and new features, when listening badge state, then new feature returned`() =
+        testBlocking {
+            // GIVEN
+            whenever(unseenReviewsCountHandler.observeUnseenCount()).thenReturn(flowOf(1))
+            whenever(moreMenuNewFeatureProvider.provideNewFeatures()).thenReturn(listOf(Payments))
+            createViewModel()
+
+            // WHEN
+            viewModel.moreMenuBadgeState.observeForever { }
+
+            // THEN
+            assertThat(viewModel.moreMenuBadgeState.value).isEqualTo(NewFeature)
+        }
+
+    @Test
+    fun `given zero unseen reviews and new features, when listening badge state, then new feature returned`() =
+        testBlocking {
+            // GIVEN
+            whenever(unseenReviewsCountHandler.observeUnseenCount()).thenReturn(flowOf(0))
+            whenever(moreMenuNewFeatureProvider.provideNewFeatures()).thenReturn(listOf(Payments))
+            createViewModel()
+
+            // WHEN
+            viewModel.moreMenuBadgeState.observeForever { }
+
+            // THEN
+            assertThat(viewModel.moreMenuBadgeState.value).isEqualTo(NewFeature)
+        }
+
+    private fun createViewModel() {
+        viewModel = spy(
+            MainActivityViewModel(
+                savedStateHandle,
+                siteStore,
+                selectedSite,
+                notificationMessageHandler,
+                featureAnnouncementRepository,
+                buildConfigWrapper,
+                prefs,
+                analyticsTrackerWrapper,
+                moreMenuNewFeatureProvider,
+                unseenReviewsCountHandler,
+            )
+        )
+    }
 }
