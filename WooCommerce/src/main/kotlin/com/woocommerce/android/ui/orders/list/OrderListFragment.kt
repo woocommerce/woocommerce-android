@@ -57,6 +57,7 @@ import com.woocommerce.android.ui.payments.banner.OrderListBannerDismissDialog
 import com.woocommerce.android.ui.payments.banner.OrderListScreenBanner
 import com.woocommerce.android.util.ChromeCustomTabUtils
 import com.woocommerce.android.util.CurrencyFormatter
+import com.woocommerce.android.widgets.ScrollChildSwipeRefreshLayout
 import com.woocommerce.android.widgets.WCEmptyView.EmptyViewType
 import dagger.hilt.android.AndroidEntryPoint
 import org.wordpress.android.util.DisplayUtils
@@ -153,20 +154,7 @@ class OrderListFragment :
         _binding = FragmentOrderListBinding.inflate(inflater, container, false)
 
         val view = binding.root
-        if (viewModel.shouldShowUpsellCardReaderDismissDialog.value == true) {
-            applyBannerDismissDialogComposeUI()
-        }
-        val isLandscape = DisplayUtils.isLandscape(view.context)
-        /**
-         * We are hiding the upsell card reader banner in the landscape mode since it becomes impossible for
-         * the merchants to scroll the order list. More info here: pdfdoF-12d-p2
-         */
-        if (!isLandscape) {
-            applyBannerComposeUI()
-        }
-        if (viewModel.shouldDisplaySimplePaymentsWIPCard() || isLandscape) {
-            displaySimplePaymentsWIPCard(true)
-        }
+        bannerDisplayLogic(view)
         return view
     }
 
@@ -217,6 +205,23 @@ class OrderListFragment :
         searchMenuItem = null
         super.onDestroyView()
         _binding = null
+    }
+
+    private fun bannerDisplayLogic(view: ScrollChildSwipeRefreshLayout) {
+        if (viewModel.shouldShowUpsellCardReaderDismissDialog.value == true) {
+            applyBannerDismissDialogComposeUI()
+        }
+        val isLandscape = DisplayUtils.isLandscape(view.context)
+        /**
+         * We are hiding the upsell card reader banner in the landscape mode since it becomes impossible for
+         * the merchants to scroll the order list. More info here: pdfdoF-12d-p2
+         */
+        if (!isLandscape) {
+            applyBannerComposeUI()
+        }
+        if (viewModel.shouldDisplaySimplePaymentsWIPCard() || isLandscape) {
+            displaySimplePaymentsWIPCard(true)
+        }
     }
 
     private fun applyBannerComposeUI() {
