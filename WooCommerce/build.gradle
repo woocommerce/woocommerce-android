@@ -13,6 +13,15 @@ plugins {
     id 'com.google.gms.google-services'
 }
 
+sentry {
+    tracingInstrumentation {
+        enabled = false
+    }
+    autoInstallation {
+        enabled = false
+    }
+}
+
 repositories {
     maven {
         url 'https://a8c-libs.s3.amazonaws.com/android'
@@ -206,7 +215,7 @@ dependencies {
     implementation("com.automattic.tracks:experimentation:trunk-f25f5b5e77df8313f19d47d07e7411256d18df79") {
         exclude group: "org.wordpress", module: "fluxc"
     }
-    implementation 'com.automattic:Automattic-Tracks-Android:2.2.0'
+    implementation 'com.automattic:Automattic-Tracks-Android:137-69c6661d55324b059ee275f4dcdbb6fb5301a6cb'
 
     implementation("${gradle.ext.fluxCBinaryPath}:$fluxCVersion") {
         exclude group: "com.android.support"
