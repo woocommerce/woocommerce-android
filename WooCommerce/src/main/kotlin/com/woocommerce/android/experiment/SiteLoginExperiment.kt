@@ -36,10 +36,6 @@ class SiteLoginExperiment @Inject constructor(
         }
     }
 
-    fun trackSuccess() {
-        experimentTracker.log(ExperimentTracker.LOGIN_SUCCESSFUL_EVENT)
-    }
-
     enum class SiteLoginVariant {
         EMAIL_LOGIN,
         SITE_CREDENTIALS_LOGIN

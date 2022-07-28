@@ -1,6 +1,6 @@
 package com.woocommerce.android.config
 
-import com.woocommerce.android.experiment.PrologueVariant
+import com.woocommerce.android.experiment.PrologueExperiment.PrologueVariant
 import com.woocommerce.android.experiment.SiteLoginExperiment.SiteLoginVariant
 import kotlinx.coroutines.flow.Flow
 

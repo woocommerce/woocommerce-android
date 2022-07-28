@@ -23,6 +23,7 @@ import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_SOURCE
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_JETPACK_INSTALLATION_SOURCE_WEB
 import com.woocommerce.android.analytics.ExperimentTracker
 import com.woocommerce.android.databinding.ActivityLoginBinding
+import com.woocommerce.android.experiment.PrologueExperiment
 import com.woocommerce.android.experiment.SiteLoginExperiment
 import com.woocommerce.android.support.HelpActivity
 import com.woocommerce.android.support.HelpActivity.Origin
@@ -121,7 +122,9 @@ class LoginActivity :
     @Inject internal lateinit var appPrefsWrapper: AppPrefsWrapper
     @Inject internal lateinit var dispatcher: Dispatcher
     @Inject internal lateinit var loginNotificationScheduler: LoginNotificationScheduler
+
     @Inject internal lateinit var siteLoginExperiment: SiteLoginExperiment
+    @Inject internal lateinit var prologueExperiment: PrologueExperiment
 
     private var loginMode: LoginMode? = null
     private var isSiteOnWPcom: Boolean? = null
@@ -199,8 +202,6 @@ class LoginActivity :
             .replace(R.id.fragment_container, fragment, LoginPrologueCarouselFragment.TAG)
             .addToBackStack(LoginPrologueCarouselFragment.TAG)
             .commitAllowingStateLoss()
-
-        experimentTracker.log(ExperimentTracker.PROLOGUE_CAROUSEL_DISPLAYED_EVENT)
     }
 
     private fun showPrologue() {
@@ -334,7 +335,7 @@ class LoginActivity :
     }
 
     private fun showMainActivityAndFinish() {
-        siteLoginExperiment.trackSuccess()
+        experimentTracker.log(ExperimentTracker.LOGIN_SUCCESSFUL_EVENT)
         loginNotificationScheduler.onLoginSuccess()
 
         val intent = Intent(this, MainActivity::class.java)
@@ -847,10 +848,8 @@ class LoginActivity :
         intent.extras?.getString(KEY_LOGIN_HELP_NOTIFICATION)
 
     override fun onCarouselFinished() {
-        if (true) {
-            showPrologueSurveyFragment()
-        } else {
-            showPrologueFragment()
+        lifecycleScope.launchWhenStarted {
+            prologueExperiment.run(::showPrologueFragment, ::showPrologueSurveyFragment)
         }
     }
 

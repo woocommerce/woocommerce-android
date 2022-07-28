@@ -6,7 +6,7 @@ import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringPreferencesKey
 import com.woocommerce.android.datastore.DataStoreQualifier
 import com.woocommerce.android.datastore.DataStoreType
-import com.woocommerce.android.experiment.PrologueVariant
+import com.woocommerce.android.experiment.PrologueExperiment.PrologueVariant
 import com.woocommerce.android.experiment.SiteLoginExperiment.SiteLoginVariant
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
@@ -23,7 +23,8 @@ class DataStoreRemoteConfigRepository @Inject constructor(
     override fun observePrologueVariant(): Flow<PrologueVariant> {
         return dataStore.data.map { preferences ->
             PrologueVariant.valueOf(
-                preferences[stringPreferencesKey(PROLOGUE_VARIANT_KEY)] ?: PrologueVariant.CONTROL.value
+                preferences[stringPreferencesKey(PROLOGUE_VARIANT_KEY)]
+                    ?: PrologueVariant.CONTROL.toString()
             )
         }
     }
