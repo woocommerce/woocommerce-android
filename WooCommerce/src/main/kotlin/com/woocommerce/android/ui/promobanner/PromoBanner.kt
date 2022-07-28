@@ -34,7 +34,6 @@ fun PromoBanner(
     onDismissClick: () -> Unit,
     source: String
 ) {
-    // TODO nbradbury AppPrefs.setPromoBannerShown(bannerType, true)
     Card(
         modifier = Modifier.fillMaxWidth()
     ) {

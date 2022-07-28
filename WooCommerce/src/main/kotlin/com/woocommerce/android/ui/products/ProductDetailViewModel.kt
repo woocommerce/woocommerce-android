@@ -1615,6 +1615,7 @@ class ProductDetailViewModel @Inject constructor(
             prefs.isPromoBannerShown(PromoBannerType.LINKED_PRODUCTS).not() &&
             viewState.productDraft?.hasLinkedProducts() == false
         ) {
+            AppPrefs.setPromoBannerShown(PromoBannerType.LINKED_PRODUCTS, true)
             triggerEvent(ShowLinkedProductPromoBanner)
         }
     }
