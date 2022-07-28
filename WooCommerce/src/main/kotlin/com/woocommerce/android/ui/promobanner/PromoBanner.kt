@@ -38,7 +38,9 @@ fun PromoBanner(
         modifier = Modifier.fillMaxWidth()
     ) {
         Row(
-            modifier = Modifier.fillMaxWidth(),
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(top = dimensionResource(id = R.dimen.major_100)),
             horizontalArrangement = Arrangement.End
         ) {
             IconButton(
@@ -56,7 +58,7 @@ fun PromoBanner(
                 .fillMaxWidth()
                 .padding(
                     start = dimensionResource(id = R.dimen.major_100),
-                    top = dimensionResource(id = R.dimen.major_200)
+                    top = dimensionResource(id = R.dimen.major_100)
                 ),
             verticalAlignment = Alignment.Bottom,
             horizontalArrangement = Arrangement.SpaceBetween
