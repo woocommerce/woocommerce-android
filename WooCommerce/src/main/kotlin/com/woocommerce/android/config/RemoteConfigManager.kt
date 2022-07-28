@@ -42,10 +42,12 @@ class RemoteConfigManager @Inject constructor(
     fun getRemoteConfigValues() {
         remoteConfig.fetchAndActivate()
             .addOnSuccessListener {
-                val variant = remoteConfig.getString("prologue_variant")
+                val prologueVariant = remoteConfig.getString("prologue_variant")
+                val siteLoginVariant = remoteConfig.getString("site_credentials_emphasis")
 
                 scope.launch {
-                    repository.updatePrologueVariantValue(variant)
+                    repository.updatePrologueVariantValue(prologueVariant)
+                    repository.updateSiteLoginVariantValue(siteLoginVariant)
                 }
             }
             .addOnFailureListener {

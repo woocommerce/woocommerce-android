@@ -1,11 +1,23 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2022-06-30 11:54:03+0000
+Translation-Revision-Date: 2022-07-16 08:54:03+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: zh_TW
 -->
 <resources>
+    <string name="tests_notification_new_order_message">你的 WooCommerce 商店有一筆 $50 的新訂單</string>
+    <string name="tests_notification_new_order_title">你有新訂單！🎉</string>
+    <string name="lines_all_details">詳細資訊</string>
+    <string name="lines_incomplete_explanation">若要編輯所有%1$s，請在你的 WooCommerce 商店管理員中瀏覽訂單</string>
+    <string name="lines_incomplete">%1$s不齊全</string>
+    <string name="support_system_status_report_share_label">分享系統狀態報告</string>
+    <string name="support_system_status_report_copy_label">將系統狀態報告複製到剪貼簿</string>
+    <string name="card_reader_connect_keep_searching_button">繼續搜尋</string>
+    <string name="card_reader_payment_description_v2">為 %s blog_id %s 的訂單 #%s 親自收款。</string>
+    <string name="card_reader_manage_payment_provider">變更付款供應商</string>
+    <string name="orderdetail_refunded_line_with_info">已退款：%1$s</string>
+    <string name="orderdetail_payment_summary_onhold_plain">正在等待付款</string>
     <string name="install_wc_shipping_proceed_button">繼續安裝</string>
     <string name="install_wc_shipping_installation_info">安裝前的須知事項</string>
     <string name="install_wc_shipping_preinstall_title">安裝擴充功能</string>
@@ -216,7 +228,6 @@ Language: zh_TW
     <string name="coupon_details_minimum_spend">%s 最低消費</string>
     <string name="coupon_details_heading">優惠券摘要</string>
     <string name="coupon_list_view_coupon">檢視折價券摘要</string>
-    <string name="coupon_list_wip_message_enabled">我們一直努力讓你可以在裝置上檢視優惠券！</string>
     <string name="coupon_list_wip_title">檢視並編輯優惠券</string>
     <string name="coupon_list_empty_heading">找不到折價券</string>
     <string name="coupon_list_item_label_included_and_excluded">%1s (不包括 %2s)</string>
@@ -702,7 +713,6 @@ Language: zh_TW
     <string name="card_reader_refetching_order_failed">擷取訂單時發生錯誤。 應用程式中的訂單狀態可能已過期。</string>
     <string name="card_reader_payment_email_client_not_found">無法偵測電子郵件用戶端應用程式</string>
     <string name="card_reader_payment_receipt_email_subject">你的 %s 收據</string>
-    <string name="card_reader_payment_description">為%s的訂單%s親自付款</string>
     <string name="card_reader_payment_fetch_order_loading_payment_state">正在重新整理訂單</string>
     <string name="card_reader_payment_fetch_order_loading_header">正在更新應用程式狀態</string>
     <string name="shipping_label_shipping_carrier_shipping_method_banner_message">顧客已選取 %1$s</string>

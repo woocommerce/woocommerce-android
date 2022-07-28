@@ -357,6 +357,22 @@ class AnalyticsTracker private constructor(private val context: Context) {
         // -- Onboarding
         const val VALUE_LOGIN_ONBOARDING_IS_FINAL_PAGE = "is_final_page"
 
+        // -- Jetpack Installation
+        const val VALUE_JETPACK_INSTALLATION_SOURCE_WEB = "web"
+        const val VALUE_JETPACK_INSTALLATION_SOURCE_NATIVE = "native"
+
+        // -- Upsell banner
+        const val KEY_BANNER_SOURCE = "source"
+        const val KEY_BANNER_PAYMENTS = "payment_methods"
+        const val KEY_BANNER_ORDER_LIST = "order_list"
+        const val KEY_BANNER_SETTINGS = "settings"
+        const val KEY_BANNER_CAMPAIGN_NAME = "campaign_name"
+        const val KEY_BANNER_UPSELL_CARD_READERS = "upsell_card_readers"
+        const val KEY_BANNER_REMIND_LATER = "remind_later"
+
+        // -- Experiments
+        const val KEY_SITE_CREDENTIALS_EXPERIMENT_VARIANT = "site_credentials_experiment_variant"
+
         var sendUsageStats: Boolean = true
             set(value) {
                 if (value != field) {

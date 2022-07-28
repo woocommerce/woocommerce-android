@@ -1,0 +1,4 @@
+9.6:
+Questo rilascio include l'opzione per ricevere pagamenti per tutti gli ordini non pagati tramite contanti, carta o link di pagamento. Puoi anche selezionare un gateway di pagamento preferito quando vengono installate più estensioni nel negozio.
+
+Abbiamo anche apportato altri miglioramenti minori. Grazie a tutti ancora per il meraviglioso feedback. Continuate a inviarlo.

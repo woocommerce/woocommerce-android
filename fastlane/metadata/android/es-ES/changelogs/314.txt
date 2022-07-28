@@ -1,0 +1,4 @@
+9.6:
+Esta versión incluye la opción de recibir los pagos de los pedidos pendientes en efectivo, tarjeta o enlaces de pago. Además, si tienes varias extensiones instaladas en la tienda, puedes elegir la pasarela de pago que prefieras.
+
+También hemos introducido otras mejoras más pequeñas. Gracias de nuevo por tus increíbles comentarios. ¡Sigue así!

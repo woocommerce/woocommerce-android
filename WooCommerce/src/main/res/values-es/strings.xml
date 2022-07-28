@@ -1,11 +1,23 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2022-06-30 15:54:03+0000
+Translation-Revision-Date: 2022-07-14 12:54:03+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: es
 -->
 <resources>
+    <string name="tests_notification_new_order_message">Nuevo pedido de 50 $ en tu tienda de WooCommerce</string>
+    <string name="tests_notification_new_order_title">Tienes un pedido nuevo 🎉</string>
+    <string name="lines_all_details">los detalles</string>
+    <string name="lines_incomplete_explanation">Para editar todos los %1$s, busca el pedido en la administración de tu tienda de WooCommerce</string>
+    <string name="lines_incomplete">%1$s están incompletos</string>
+    <string name="support_system_status_report_share_label">Compartir el informe de estado del sistema</string>
+    <string name="support_system_status_report_copy_label">Copiar el informe de estado del sistema al portapapeles</string>
+    <string name="card_reader_connect_keep_searching_button">Seguir buscando</string>
+    <string name="card_reader_payment_description_v2">Pago en persona del pedido n.º %s para %s blog_id %s.</string>
+    <string name="card_reader_manage_payment_provider">Cambiar proveedor de pagos</string>
+    <string name="orderdetail_refunded_line_with_info">Reembolsado: %1$s</string>
+    <string name="orderdetail_payment_summary_onhold_plain">Pago pendiente</string>
     <string name="install_wc_shipping_proceed_button">Continuar con esta instalación</string>
     <string name="install_wc_shipping_installation_info">Cosas que saber antes de la instalación</string>
     <string name="install_wc_shipping_preinstall_title">Instalar extensión</string>
@@ -216,7 +228,6 @@ Language: es
     <string name="coupon_details_minimum_spend">Gasto mínimo de %s</string>
     <string name="coupon_details_heading">Resumen del cupón</string>
     <string name="coupon_list_view_coupon">Ver el resumen del cupón</string>
-    <string name="coupon_list_wip_message_enabled">Hemos estado trabajando para que puedas visualizar cupones en tu dispositivo.</string>
     <string name="coupon_list_wip_title">Ver y editar cupones</string>
     <string name="coupon_list_empty_heading">No se han encontrado cupones</string>
     <string name="coupon_list_item_label_included_and_excluded">%1s excepto %2s</string>
@@ -703,7 +714,6 @@ Language: es
     <string name="card_reader_refetching_order_failed">Error al recuperar el pedido. El estado del pedido en la aplicación podría estar desactualizado.</string>
     <string name="card_reader_payment_email_client_not_found">No se pudo detectar una aplicación cliente de correo electrónico</string>
     <string name="card_reader_payment_receipt_email_subject">Tu recibo de %s</string>
-    <string name="card_reader_payment_description">Pago en persona del pedido %s para %s</string>
     <string name="card_reader_payment_fetch_order_loading_payment_state">Actualizando pedido</string>
     <string name="card_reader_payment_fetch_order_loading_header">Actualizando estado en la aplicación</string>
     <string name="shipping_label_shipping_carrier_shipping_method_banner_message">Tu cliente ha seleccionado %1$s</string>
