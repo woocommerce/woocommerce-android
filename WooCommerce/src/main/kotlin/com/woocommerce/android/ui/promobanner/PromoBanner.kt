@@ -19,8 +19,9 @@ fun PromoBanner(
         onDismissClick = onDismissClick,
         title = stringResource(id = bannerType.titleRes),
         subtitle = stringResource(id = bannerType.messageRes),
-        ctaLabel = stringResource(R.string.try_it_now),
-        source = ""
+        ctaLabel = stringResource(R.string.set_up_now),
+        source = "",
+        chipLabel = stringResource(id = R.string.tip)
     )
 }
 

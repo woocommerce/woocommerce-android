@@ -117,6 +117,7 @@ fun Banner(
     subtitle: String,
     ctaLabel: String,
     source: String,
+    chipLabel: String = stringResource(id = R.string.card_reader_upsell_card_reader_banner_new)
 ) {
     Card(
         modifier = Modifier.fillMaxWidth()
@@ -170,7 +171,7 @@ fun Banner(
                     contentAlignment = Alignment.Center
                 ) {
                     Text(
-                        text = stringResource(id = R.string.card_reader_upsell_card_reader_banner_new),
+                        text = chipLabel,
                         color = colorResource(id = R.color.woo_purple_60),
                         style = MaterialTheme.typography.caption,
                         fontWeight = FontWeight.Bold,
