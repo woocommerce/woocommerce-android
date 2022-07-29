@@ -13,11 +13,6 @@ import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_MORE_M
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_MORE_MENU_VIEW_STORE
 import com.woocommerce.android.push.UnseenReviewsCountHandler
 import com.woocommerce.android.tools.SelectedSite
-import com.woocommerce.android.ui.moremenu.MenuButtonType.COUPONS
-import com.woocommerce.android.ui.moremenu.MenuButtonType.INBOX
-import com.woocommerce.android.ui.moremenu.MenuButtonType.PRODUCT_REVIEWS
-import com.woocommerce.android.ui.moremenu.MenuButtonType.VIEW_ADMIN
-import com.woocommerce.android.ui.moremenu.MenuButtonType.VIEW_STORE
 import com.woocommerce.android.ui.moremenu.domain.MoreMenuRepository
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.ScopedViewModel
@@ -56,36 +51,36 @@ class MoreMenuViewModel @Inject constructor(
         moreMenuNewFeatureHandler.markNewFeatureAsSeen()
     }
 
-    private suspend fun generateMenuButtons(unseenReviewsCount: Int, isCouponsEnabled: Boolean): List<MenuUiButton> =
+    private suspend fun generateMenuButtons(unseenReviewsCount: Int, isCouponsEnabled: Boolean) =
         listOf(
             MenuUiButton(
-                type = VIEW_ADMIN,
-                text = R.string.more_menu_button_woo_admin,
+                text = R.string.more_menu_button_payments,
+                icon = R.drawable.ic_more_menu_payments,
+                onClick = ::onPaymentsButtonClick
+            ),
+            MenuUiButton(
+                text = R.string.more_menu_button_wс_admin,
                 icon = R.drawable.ic_more_menu_wp_admin,
                 onClick = ::onViewAdminButtonClick
             ),
             MenuUiButton(
-                type = VIEW_STORE,
                 text = R.string.more_menu_button_store,
                 icon = R.drawable.ic_more_menu_store,
                 onClick = ::onViewStoreButtonClick
             ),
             MenuUiButton(
-                type = COUPONS,
                 text = R.string.more_menu_button_coupons,
                 icon = R.drawable.ic_more_menu_coupons,
                 isEnabled = isCouponsEnabled,
                 onClick = ::onCouponsButtonClick
             ),
             MenuUiButton(
-                type = PRODUCT_REVIEWS,
                 text = R.string.more_menu_button_reviews,
                 icon = R.drawable.ic_more_menu_reviews,
                 badgeCount = unseenReviewsCount,
                 onClick = ::onReviewsButtonClick
             ),
             MenuUiButton(
-                type = INBOX,
                 text = R.string.more_menu_button_inbox,
                 icon = R.drawable.ic_more_menu_inbox,
                 isEnabled = moreMenuRepository.isInboxEnabled(),
@@ -114,6 +109,10 @@ class MoreMenuViewModel @Inject constructor(
             AnalyticsEvent.HUB_MENU_SWITCH_STORE_TAPPED
         )
         triggerEvent(MoreMenuEvent.StartSitePickerEvent)
+    }
+
+    private fun onPaymentsButtonClick() {
+        triggerEvent(MoreMenuEvent.ViewPayments)
     }
 
     private fun onViewAdminButtonClick() {
@@ -158,6 +157,7 @@ class MoreMenuViewModel @Inject constructor(
     sealed class MoreMenuEvent : MultiLiveEvent.Event() {
         object NavigateToSettingsEvent : MoreMenuEvent()
         object StartSitePickerEvent : MoreMenuEvent()
+        object ViewPayments : MoreMenuEvent()
         data class ViewAdminEvent(val url: String) : MoreMenuEvent()
         data class ViewStoreEvent(val url: String) : MoreMenuEvent()
         object ViewReviewsEvent : MoreMenuEvent()
