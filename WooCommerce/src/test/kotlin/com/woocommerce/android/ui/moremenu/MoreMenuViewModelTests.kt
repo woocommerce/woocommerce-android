@@ -102,7 +102,7 @@ class MoreMenuViewModelTests : BaseUnitTest() {
     }
 
     @Test
-    fun `given user clicked payments, when building state, then badge is displayed`() = testBlocking {
+    fun `given user clicked payments, when building state, then badge is not displayed`() = testBlocking {
         // GIVEN
         val prefsChanges = MutableSharedFlow<Boolean>()
         setup {
@@ -111,9 +111,9 @@ class MoreMenuViewModelTests : BaseUnitTest() {
 
         // WHEN
         val states = viewModel.moreMenuViewState.captureValues()
-        prefsChanges.emit(false)
+        prefsChanges.emit(true)
 
         // THEN
-        assertThat(states.last().moreMenuItems.first().badgeState).isNotNull
+        assertThat(states.last().moreMenuItems.first().badgeState).isNull()
     }
 }
