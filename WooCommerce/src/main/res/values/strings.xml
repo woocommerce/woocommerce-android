@@ -1865,9 +1865,11 @@
     <!-- Feature tooltips -->
     <string name="tooltip_site_switcher">Tap to switch stores</string>
 
-    <!-- Promo dialogs -->
+    <!-- Promo dialogs and banners -->
     <string name="promo_btn_got_it">Got it</string>
     <string name="promo_btn_try_it">Try it now</string>
+    <string name="promo_linked_products_banner_title">Boost your sales with linked products</string>
+    <string name="promo_linked_products_banner_message">Give your customers helpful and relevant product recommendations by adding upsells and cross-sells</string>
 
     <!-- Product status -->
     <string name="product_status_published">Published</string>
