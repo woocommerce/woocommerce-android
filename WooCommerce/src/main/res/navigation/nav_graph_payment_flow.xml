@@ -25,8 +25,8 @@
             app:popUpTo="@+id/selectPaymentMethodFragment"
             app:popUpToInclusive="true" />
         <action
-            android:id="@+id/action_selectPaymentMethodFragment_to_orderList"
-            app:popUpTo="@+id/orders"
+            android:id="@+id/action_selectPaymentMethodFragment_to_cardReaderHubFragment"
+            app:popUpTo="@+id/cardReaderHubFragment"
             app:popUpToInclusive="false" />
     </fragment>
 

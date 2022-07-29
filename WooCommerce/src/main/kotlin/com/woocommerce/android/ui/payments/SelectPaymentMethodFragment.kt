@@ -115,7 +115,8 @@ class SelectPaymentMethodFragment : BaseFragment(R.layout.fragment_take_payment)
                     ).show()
                 }
                 is Exit -> {
-                    val action = SelectPaymentMethodFragmentDirections.actionSelectPaymentMethodFragmentToOrderList()
+                    val action =
+                        SelectPaymentMethodFragmentDirections.actionSelectPaymentMethodFragmentToCardReaderHubFragment()
                     findNavController().navigateSafely(action)
                 }
                 is SharePaymentUrl -> {
