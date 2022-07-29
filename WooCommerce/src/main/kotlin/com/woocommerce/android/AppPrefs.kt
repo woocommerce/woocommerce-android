@@ -15,6 +15,8 @@ import com.woocommerce.android.AppPrefs.DeletablePrefKey.CARD_READER_ONBOARDING_
 import com.woocommerce.android.AppPrefs.DeletablePrefKey.CARD_READER_PREFERRED_PLUGIN
 import com.woocommerce.android.AppPrefs.DeletablePrefKey.CARD_READER_PREFERRED_PLUGIN_VERSION
 import com.woocommerce.android.AppPrefs.DeletablePrefKey.CARD_READER_STATEMENT_DESCRIPTOR
+import com.woocommerce.android.AppPrefs.DeletablePrefKey.CARD_READER_UPSELL_BANNER_DIALOG_DISMISSED_FOREVER
+import com.woocommerce.android.AppPrefs.DeletablePrefKey.CARD_READER_UPSELL_BANNER_DIALOG_DISMISSED_REMIND_ME_LATER
 import com.woocommerce.android.AppPrefs.DeletablePrefKey.DATABASE_DOWNGRADED
 import com.woocommerce.android.AppPrefs.DeletablePrefKey.IMAGE_OPTIMIZE_ENABLED
 import com.woocommerce.android.AppPrefs.DeletablePrefKey.IS_COUPONS_ENABLED
@@ -23,11 +25,13 @@ import com.woocommerce.android.AppPrefs.DeletablePrefKey.ORDER_FILTER_CUSTOM_DAT
 import com.woocommerce.android.AppPrefs.DeletablePrefKey.ORDER_FILTER_PREFIX
 import com.woocommerce.android.AppPrefs.DeletablePrefKey.PRODUCT_SORTING_PREFIX
 import com.woocommerce.android.AppPrefs.DeletablePrefKey.RECEIPT_PREFIX
+import com.woocommerce.android.AppPrefs.UndeletablePrefKey.ONBOARDING_CAROUSEL_DISPLAYED
 import com.woocommerce.android.extensions.orNullIfEmpty
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.payments.cardreader.onboarding.PersistentOnboardingData
 import com.woocommerce.android.ui.payments.cardreader.onboarding.PluginType
 import com.woocommerce.android.ui.products.ProductType
+import com.woocommerce.android.ui.promobanner.PromoBannerType
 import com.woocommerce.android.util.PreferenceUtils
 import com.woocommerce.android.util.ThemeOption
 import com.woocommerce.android.util.ThemeOption.DEFAULT
@@ -82,7 +86,9 @@ object AppPrefs {
         ORDER_FILTER_CUSTOM_DATE_RANGE_END,
         PRODUCT_SORTING_PREFIX,
         PRE_LOGIN_NOTIFICATION_WORK_REQUEST,
-        PRE_LOGIN_NOTIFICATION_DISPLAYED
+        PRE_LOGIN_NOTIFICATION_DISPLAYED,
+        CARD_READER_UPSELL_BANNER_DIALOG_DISMISSED_FOREVER,
+        CARD_READER_UPSELL_BANNER_DIALOG_DISMISSED_REMIND_ME_LATER,
     }
 
     /**
@@ -141,6 +147,8 @@ object AppPrefs {
 
         // Hide banner in order detail to install WC Shipping plugin
         WC_SHIPPING_BANNER_DISMISSED,
+
+        ONBOARDING_CAROUSEL_DISPLAYED,
 
         USER_SEEN_NEW_FEATURE_MORE_SCREEN,
     }
@@ -248,6 +256,82 @@ object AppPrefs {
     }
 
     /**
+     * Card Reader Upsell Banner
+     */
+    fun setCardReaderUpsellBannerDismissedForever(
+        isDismissed: Boolean,
+        localSiteId: Int,
+        remoteSiteId: Long,
+        selfHostedSiteId: Long
+    ) {
+        setBoolean(
+            getCardReaderUpsellDismissedForeverKey(
+                localSiteId,
+                remoteSiteId,
+                selfHostedSiteId
+            ),
+            isDismissed
+        )
+    }
+
+    fun isCardReaderUpsellBannerDismissedForever(
+        localSiteId: Int,
+        remoteSiteId: Long,
+        selfHostedSiteId: Long
+    ) = getBoolean(
+        getCardReaderUpsellDismissedForeverKey(
+            localSiteId,
+            remoteSiteId,
+            selfHostedSiteId
+        ),
+        false
+    )
+
+    fun setCardReaderUpsellBannerRemindMeLater(
+        lastDialogDismissedInMillis: Long,
+        localSiteId: Int,
+        remoteSiteId: Long,
+        selfHostedSiteId: Long
+    ) {
+        setLong(
+            getCardReaderUpsellDismissedRemindMeLaterKey(
+                localSiteId,
+                remoteSiteId,
+                selfHostedSiteId
+            ),
+            lastDialogDismissedInMillis
+        )
+    }
+
+    fun getCardReaderUpsellBannerLastDismissed(
+        localSiteId: Int,
+        remoteSiteId: Long,
+        selfHostedSiteId: Long
+    ) = getLong(
+        getCardReaderUpsellDismissedRemindMeLaterKey(
+            localSiteId,
+            remoteSiteId,
+            selfHostedSiteId
+        )
+    )
+
+    private fun getCardReaderUpsellDismissedForeverKey(
+        localSiteId: Int,
+        remoteSiteId: Long,
+        selfHostedSiteId: Long
+    ) = PrefKeyString(
+        "$CARD_READER_UPSELL_BANNER_DIALOG_DISMISSED_FOREVER:$localSiteId:$remoteSiteId:$selfHostedSiteId"
+    )
+
+    private fun getCardReaderUpsellDismissedRemindMeLaterKey(
+        localSiteId: Int,
+        remoteSiteId: Long,
+        selfHostedSiteId: Long
+    ) = PrefKeyString(
+        "$CARD_READER_UPSELL_BANNER_DIALOG_DISMISSED_REMIND_ME_LATER:$localSiteId:$remoteSiteId:$selfHostedSiteId"
+    )
+
+    /**
      * Method to check if the v4 stats UI is supported.
      */
 
@@ -274,6 +358,17 @@ object AppPrefs {
 
     private fun getReceiptKey(localSiteId: Int, remoteSiteId: Long, selfHostedSiteId: Long, orderId: Long) =
         PrefKeyString("$RECEIPT_PREFIX:$localSiteId:$remoteSiteId:$selfHostedSiteId:$orderId")
+
+    private fun getPromoBannerKey(bannerType: PromoBannerType) =
+        PrefKeyString("PROMO_BANNER_SHOWN_${bannerType.name}")
+
+    fun isPromoBannerShown(bannerType: PromoBannerType): Boolean {
+        return getBoolean(getPromoBannerKey(bannerType), false)
+    }
+
+    fun setPromoBannerShown(bannerType: PromoBannerType, shown: Boolean) {
+        setBoolean(getPromoBannerKey(bannerType), shown)
+    }
 
     fun setLastConnectedCardReaderId(readerId: String) =
         setString(UndeletablePrefKey.LAST_CONNECTED_CARD_READER_ID, readerId)
@@ -694,6 +789,13 @@ object AppPrefs {
 
     fun isPreLoginNotificationBeenDisplayed(): Boolean =
         getBoolean(DeletablePrefKey.PRE_LOGIN_NOTIFICATION_DISPLAYED, false)
+
+    fun setOnboardingCarouselDisplayed(displayed: Boolean) {
+        setBoolean(ONBOARDING_CAROUSEL_DISPLAYED, displayed)
+    }
+
+    fun hasOnboardingCarouselBeenDisplayed(): Boolean =
+        getBoolean(ONBOARDING_CAROUSEL_DISPLAYED, false)
 
     fun isUserSeenNewFeatureOnMoreScreen(): Boolean =
         getBoolean(UndeletablePrefKey.USER_SEEN_NEW_FEATURE_MORE_SCREEN, false)

@@ -16,6 +16,7 @@ import com.woocommerce.android.model.OrderMapper
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.payments.SelectPaymentMethodViewModel.TakePaymentViewState.Loading
+import com.woocommerce.android.ui.payments.banner.BannerDisplayEligibilityChecker
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderFlowParam.CardReadersHub
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderFlowParam.PaymentOrRefund
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderFlowParam.PaymentOrRefund.Payment
@@ -49,8 +50,10 @@ class SelectPaymentMethodViewModel @Inject constructor(
     private val orderMapper: OrderMapper,
     private val analyticsTrackerWrapper: AnalyticsTrackerWrapper,
     private val cardPaymentCollectibilityChecker: CardReaderPaymentCollectibilityChecker,
+    private val bannerDisplayEligibilityChecker: BannerDisplayEligibilityChecker,
 ) : ScopedViewModel(savedState) {
     private val navArgs: SelectPaymentMethodFragmentArgs by savedState.navArgs()
+    val shouldShowUpsellCardReaderDismissDialog: MutableLiveData<Boolean> = MutableLiveData(false)
 
     private val viewState = MutableLiveData<TakePaymentViewState>(Loading)
     val viewStateData: LiveData<TakePaymentViewState> = viewState
@@ -78,10 +81,19 @@ class SelectPaymentMethodViewModel @Inject constructor(
                         }
                         val currencyCode = wooCommerceStore.getSiteSettings(selectedSite.get())?.currencyCode ?: ""
                         orderTotal = currencyFormatter.formatCurrency(order.total, currencyCode)
+                        val isPaymentCollectableWithCardReader = cardPaymentCollectibilityChecker.isCollectable(order)
                         viewState.value = TakePaymentViewState.Success(
                             paymentUrl = order.paymentUrl,
                             orderTotal = currencyFormatter.formatCurrency(order.total, currencyCode),
-                            isPaymentCollectableWithCardReader = cardPaymentCollectibilityChecker.isCollectable(order)
+                            isPaymentCollectableWithCardReader = isPaymentCollectableWithCardReader,
+                            shouldShowCardReaderUpsellBanner =
+                            (
+                                canShowCardReaderUpsellBanner(
+                                    System.currentTimeMillis(),
+                                    AnalyticsTracker.KEY_BANNER_PAYMENTS
+                                ) &&
+                                    isPaymentCollectableWithCardReader
+                                )
                         )
                     }
                     is Refund -> triggerEvent(NavigateToCardReaderRefundFlow(param))
@@ -260,14 +272,53 @@ class SelectPaymentMethodViewModel @Inject constructor(
             ORDER -> AnalyticsTracker.VALUE_ORDER_PAYMENTS_FLOW
         }
 
+    fun onCtaClicked(source: String) {
+        launch {
+            triggerEvent(
+                OpenPurchaseCardReaderLink(bannerDisplayEligibilityChecker.getPurchaseCardReaderUrl(source))
+            )
+        }
+    }
+
+    fun onDismissClicked() {
+        shouldShowUpsellCardReaderDismissDialog.value = true
+        triggerEvent(DismissCardReaderUpsellBanner)
+    }
+
+    fun onRemindLaterClicked(currentTimeInMillis: Long, source: String) {
+        shouldShowUpsellCardReaderDismissDialog.value = false
+        bannerDisplayEligibilityChecker.onRemindLaterClicked(currentTimeInMillis, source)
+        triggerEvent(DismissCardReaderUpsellBannerViaRemindMeLater)
+    }
+
+    fun onDontShowAgainClicked(source: String) {
+        shouldShowUpsellCardReaderDismissDialog.value = false
+        bannerDisplayEligibilityChecker.onDontShowAgainClicked(source)
+        triggerEvent(DismissCardReaderUpsellBannerViaDontShowAgain)
+    }
+
+    fun onBannerAlertDismiss() {
+        shouldShowUpsellCardReaderDismissDialog.value = false
+    }
+
+    private fun canShowCardReaderUpsellBanner(currentTimeInMillis: Long, source: String): Boolean {
+        return bannerDisplayEligibilityChecker.canShowCardReaderUpsellBanner(currentTimeInMillis, source)
+    }
+
     sealed class TakePaymentViewState {
         object Loading : TakePaymentViewState()
         data class Success(
             val paymentUrl: String,
             val orderTotal: String,
             val isPaymentCollectableWithCardReader: Boolean,
+            val shouldShowCardReaderUpsellBanner: Boolean
         ) : TakePaymentViewState()
     }
+
+    object DismissCardReaderUpsellBanner : MultiLiveEvent.Event()
+    object DismissCardReaderUpsellBannerViaRemindMeLater : MultiLiveEvent.Event()
+    object DismissCardReaderUpsellBannerViaDontShowAgain : MultiLiveEvent.Event()
+    data class OpenPurchaseCardReaderLink(val url: String) : MultiLiveEvent.Event()
 
     data class SharePaymentUrl(
         val storeName: String,

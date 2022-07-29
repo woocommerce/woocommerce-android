@@ -527,4 +527,59 @@ class AppPrefsTest {
 
         assertThat(AppPrefs.isUserSeenNewFeatureOnMoreScreen()).isTrue
     }
+
+    @Test
+    fun givenUpsellCardReaderBannerDismissedForeverThenReturnTrue() {
+        AppPrefs.setCardReaderUpsellBannerDismissedForever(
+            isDismissed = true,
+            localSiteId = 0,
+            remoteSiteId = 0L,
+            selfHostedSiteId = 0L,
+        )
+
+        assertThat(
+            AppPrefs.isCardReaderUpsellBannerDismissedForever(
+                localSiteId = 0,
+                remoteSiteId = 0L,
+                selfHostedSiteId = 0L,
+            )
+        ).isTrue
+    }
+
+    @Test
+    fun givenUpsellCardReaderBannerNotDismissedForeverThenReturnFalse() {
+        AppPrefs.setCardReaderUpsellBannerDismissedForever(
+            isDismissed = false,
+            localSiteId = 0,
+            remoteSiteId = 0L,
+            selfHostedSiteId = 0L,
+        )
+
+        assertThat(
+            AppPrefs.isCardReaderUpsellBannerDismissedForever(
+                localSiteId = 0,
+                remoteSiteId = 0L,
+                selfHostedSiteId = 0L,
+            )
+        ).isFalse
+    }
+
+    @Test
+    fun givenUpsellCardReaderBannerRemindMeLaterSetThenReturnTimeInMillis() {
+        val lastDismissedDialogTimeInMillis = 123456789L
+        AppPrefs.setCardReaderUpsellBannerRemindMeLater(
+            lastDialogDismissedInMillis = lastDismissedDialogTimeInMillis,
+            localSiteId = 0,
+            remoteSiteId = 0L,
+            selfHostedSiteId = 0L,
+        )
+
+        assertThat(
+            AppPrefs.getCardReaderUpsellBannerLastDismissed(
+                localSiteId = 0,
+                remoteSiteId = 0L,
+                selfHostedSiteId = 0L,
+            )
+        ).isEqualTo(lastDismissedDialogTimeInMillis)
+    }
 }

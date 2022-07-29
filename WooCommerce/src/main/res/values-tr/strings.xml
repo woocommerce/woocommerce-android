@@ -1,11 +1,23 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2022-06-30 17:54:03+0000
+Translation-Revision-Date: 2022-07-14 08:54:17+0000
 Plural-Forms: nplurals=2; plural=(n > 1);
 Generator: GlotPress/2.4.0-alpha
 Language: tr
 -->
 <resources>
+    <string name="tests_notification_new_order_message">WooCommerce Mağazanızda 50 ABD doları tutarında yeni sipariş</string>
+    <string name="tests_notification_new_order_title">Yeni bir siparişiniz var! 🎉</string>
+    <string name="lines_all_details">ayrıntılar</string>
+    <string name="lines_incomplete_explanation">Tümünü (%1$s) düzenlemek için WooCommerce mağaza yöneticinizde siparişe göz atın</string>
+    <string name="lines_incomplete">%1$s eksik</string>
+    <string name="support_system_status_report_share_label">Sistem durum raporunu paylaş</string>
+    <string name="support_system_status_report_copy_label">Sistem durum raporunu panoya kopyala</string>
+    <string name="card_reader_connect_keep_searching_button">Aramaya Devam Et</string>
+    <string name="card_reader_payment_description_v2">%s blog_id %s, %s no\'lu Sipariş için Şahsen Ödeme.</string>
+    <string name="card_reader_manage_payment_provider">Ödeme Sağlayıcısını Değiştir</string>
+    <string name="orderdetail_refunded_line_with_info">Geri ödeme yapıldı: %1$s</string>
+    <string name="orderdetail_payment_summary_onhold_plain">Bekleyen ödeme</string>
     <string name="install_wc_shipping_proceed_button">Kuruluma Devam Et</string>
     <string name="install_wc_shipping_installation_info">Kurulumdan önce bilinmesi gerekenler</string>
     <string name="install_wc_shipping_preinstall_title">Uzantı yükleyin</string>
@@ -216,7 +228,6 @@ Language: tr
     <string name="coupon_details_minimum_spend">Minimum harcama %s</string>
     <string name="coupon_details_heading">Kupon Özeti</string>
     <string name="coupon_list_view_coupon">Kupon özetini görüntüle</string>
-    <string name="coupon_list_wip_message_enabled">Kuponları cihazınızdan görüntüleyebilmeniz için çalışıyoruz!</string>
     <string name="coupon_list_wip_title">Kuponları görüntüle ve düzenle</string>
     <string name="coupon_list_empty_heading">Kupon bulunamadı</string>
     <string name="coupon_list_item_label_included_and_excluded">%2s hariç, %1s</string>
@@ -703,7 +714,6 @@ Language: tr
     <string name="card_reader_refetching_order_failed">Sipariş alınırken hata oluştu Uygulamadaki sipariş durumu eski olabilir.</string>
     <string name="card_reader_payment_email_client_not_found">E-posta istemcisi uygulamanızı tespit edemiyoruz</string>
     <string name="card_reader_payment_receipt_email_subject">%s makbuzunuz</string>
-    <string name="card_reader_payment_description">%s siparişi (%s) için Şahsen Ödeme</string>
     <string name="card_reader_payment_fetch_order_loading_payment_state">Sipariş yenileniyor</string>
     <string name="card_reader_payment_fetch_order_loading_header">Uygulama durumu güncelleniyor</string>
     <string name="shipping_label_shipping_carrier_shipping_method_banner_message">Müşteriniz seçildi %1$s</string>

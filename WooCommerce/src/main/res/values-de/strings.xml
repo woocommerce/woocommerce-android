@@ -1,11 +1,23 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2022-06-30 09:54:03+0000
+Translation-Revision-Date: 2022-07-13 09:54:22+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: de
 -->
 <resources>
+    <string name="tests_notification_new_order_message">Neue Bestellung in Höhe von 50 US-Dollar in deinem WooCommerce-Shop</string>
+    <string name="tests_notification_new_order_title">Du hast eine neue Bestellung! 🎉</string>
+    <string name="lines_all_details">Details</string>
+    <string name="lines_incomplete_explanation">Wenn du alle %1$s bearbeiten willst, suche die Bestellung in deiner WooCommerce-Shop-Administration</string>
+    <string name="lines_incomplete">Die %1$s sind unvollständig</string>
+    <string name="support_system_status_report_share_label">Bericht zum Systemstatus teilen</string>
+    <string name="support_system_status_report_copy_label">Bericht zum Systemstatus in die Zwischenablage kopieren</string>
+    <string name="card_reader_connect_keep_searching_button">Weiter suchen</string>
+    <string name="card_reader_payment_description_v2">Persönliche Zahlung für Bestellung #%s für %s blog_id %s.</string>
+    <string name="card_reader_manage_payment_provider">Zahlungsanbieter ändern</string>
+    <string name="orderdetail_refunded_line_with_info">Rückerstattet: %1$s</string>
+    <string name="orderdetail_payment_summary_onhold_plain">Warten auf Zahlung</string>
     <string name="install_wc_shipping_proceed_button">Mit Installation fortfahren</string>
     <string name="install_wc_shipping_installation_info">Was du vor der Installation wissen solltest</string>
     <string name="install_wc_shipping_preinstall_title">Erweiterung installieren</string>
@@ -216,7 +228,6 @@ Language: de
     <string name="coupon_details_minimum_spend">Mindestbestellwert: %s</string>
     <string name="coupon_details_heading">Gutscheinübersicht</string>
     <string name="coupon_list_view_coupon">Gutscheinübersicht anzeigen</string>
-    <string name="coupon_list_wip_message_enabled">Wir haben daran gearbeitet, das Anzeigen von Gutscheinen auf deinem Gerät zu ermöglichen!</string>
     <string name="coupon_list_wip_title">Gutscheine anzeigen und bearbeiten</string>
     <string name="coupon_list_empty_heading">Keine Gutscheine gefunden</string>
     <string name="coupon_list_item_label_included_and_excluded">%1s außer %2s</string>
@@ -703,7 +714,6 @@ Language: de
     <string name="card_reader_refetching_order_failed">Fehler beim Abrufen der Bestellung Der Bestellstatus in der App ist eventuell nicht aktuell.</string>
     <string name="card_reader_payment_email_client_not_found">E-Mail-Client-App wird nicht erkannt.</string>
     <string name="card_reader_payment_receipt_email_subject">Dein Beleg vom %s</string>
-    <string name="card_reader_payment_description">Persönliche Zahlung für Bestellung %s für %s</string>
     <string name="card_reader_payment_fetch_order_loading_payment_state">Bestellung aktualisieren</string>
     <string name="card_reader_payment_fetch_order_loading_header">App-Status aktualisieren</string>
     <string name="shipping_label_shipping_carrier_shipping_method_banner_message">Dein Kunde hat %1$s ausgewählt</string>

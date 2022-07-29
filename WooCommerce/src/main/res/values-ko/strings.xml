@@ -1,11 +1,23 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2022-06-30 13:54:04+0000
+Translation-Revision-Date: 2022-07-14 16:54:03+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: ko_KR
 -->
 <resources>
+    <string name="tests_notification_new_order_message">우커머스 스토어의 새 주문 $50</string>
+    <string name="tests_notification_new_order_title">새 주문이 있습니다! 🎉</string>
+    <string name="lines_all_details">상세 정보</string>
+    <string name="lines_incomplete_explanation">모든 %1$s을(를) 편집하려면 우커머스 스토어 관리자에서 주문을 찾아보세요.</string>
+    <string name="lines_incomplete">%1$s이(가) 완전하지 않습니다.</string>
+    <string name="support_system_status_report_share_label">시스템 상태 보고서 공유</string>
+    <string name="support_system_status_report_copy_label">클립보드에 시스템 상태 보고서 복사</string>
+    <string name="card_reader_connect_keep_searching_button">계속 검색</string>
+    <string name="card_reader_payment_description_v2">%s blog_id %s에 대한 주문 #%s 대면 결제.</string>
+    <string name="card_reader_manage_payment_provider">결제 제공업체 변경</string>
+    <string name="orderdetail_refunded_line_with_info">환불됨: %1$s</string>
+    <string name="orderdetail_payment_summary_onhold_plain">결제 대기 중</string>
     <string name="install_wc_shipping_proceed_button">설치 진행</string>
     <string name="install_wc_shipping_installation_info">설치하기 전에 알아야 할 사항</string>
     <string name="install_wc_shipping_preinstall_title">확장 기능 설치</string>
@@ -216,7 +228,6 @@ Language: ko_KR
     <string name="coupon_details_minimum_spend">%s의 최소 지출</string>
     <string name="coupon_details_heading">쿠폰 요약</string>
     <string name="coupon_list_view_coupon">쿠폰 요약 보기</string>
-    <string name="coupon_list_wip_message_enabled">기기에서 쿠폰을 볼 수 있도록 작업하고 있습니다!</string>
     <string name="coupon_list_wip_title">쿠폰 보기 및 편집</string>
     <string name="coupon_list_empty_heading">쿠폰 없음</string>
     <string name="coupon_list_item_label_included_and_excluded">%1s(%2s 제외)</string>
@@ -703,7 +714,6 @@ Language: ko_KR
     <string name="card_reader_refetching_order_failed">주문을 가져오는 중 오류가 발생했습니다. 앱의 주문 상태가 기한이 지났을 수 있습니다.</string>
     <string name="card_reader_payment_email_client_not_found">이메일 클라이언트 앱을 감지할 수 없습니다.</string>
     <string name="card_reader_payment_receipt_email_subject">%s에서 받은 영수증</string>
-    <string name="card_reader_payment_description">%s에 대한 주문 %s 직접 결제</string>
     <string name="card_reader_payment_fetch_order_loading_payment_state">주문 새로 고치기</string>
     <string name="card_reader_payment_fetch_order_loading_header">앱 상태 업데이트하기</string>
     <string name="shipping_label_shipping_carrier_shipping_method_banner_message">고객이 %1$s을(를) 선택함</string>
