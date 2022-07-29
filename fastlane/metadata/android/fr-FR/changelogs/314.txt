@@ -1,0 +1,4 @@
+9.6 :
+Cette version vous permet d’encaisser les paiements de toutes les commandes impayées en espèces, par carte ou via des liens de paiement. Vous pouvez également sélectionner votre passerelle de paiement préférée lorsque plusieurs extensions sont installées dans votre boutique. 
+
+Nous avons également apporté quelques corrections mineures. Une fois encore, merci à tous pour vos précieux commentaires ! Continuez à nous les envoyer !

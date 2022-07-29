@@ -1,3 +1,4 @@
-This release includes the option to collect payments for all unpaid orders via cash, card or payment links. You can also select a preferred payment gateway when multiple extensions are installed on the store.
+We’re thrilled to announce that it’s now possible to edit an order from the app. You can edit or remove products, fees, shipping and change product quantity. You can also search for customers when editing or creating an order.
 
-We’ve also made a few other minor improvements. Thank you all again for your amazing feedback. Keep it coming!
+We’ve also made some changes to display custom fields for an order and several improvements to our payments and login flow, including the option to install Jetpack directly from the app.
+

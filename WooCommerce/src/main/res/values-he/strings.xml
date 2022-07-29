@@ -1,11 +1,23 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2022-06-30 13:54:04+0000
+Translation-Revision-Date: 2022-07-16 08:54:03+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: he_IL
 -->
 <resources>
+    <string name="tests_notification_new_order_message">הזמנה חדשה בסכום של 50 $ בחנות שלך ב-WooCommerce</string>
+    <string name="tests_notification_new_order_title">יש לך הזמנה חדשה! 🎉</string>
+    <string name="lines_all_details">הפרטים</string>
+    <string name="lines_incomplete_explanation">כדי לערוך את כל ⁦%1$s⁩ יש לעיין בהזמנה דרך אזור מנהל המערכת בחנות שלך ב-WooCommerce</string>
+    <string name="lines_incomplete">⁦%1$s⁩ לא הושלמו</string>
+    <string name="support_system_status_report_share_label">לשתף דוח מצב המערכת</string>
+    <string name="support_system_status_report_copy_label">להעתיק את דוח מצב המערכת ללוח</string>
+    <string name="card_reader_connect_keep_searching_button">להמשיך בחיפוש</string>
+    <string name="card_reader_payment_description_v2">תשלום באופן אישי על ההזמנה מס\' %s עבור %s blog_id %s.</string>
+    <string name="card_reader_manage_payment_provider">לשנות ספק תשלום</string>
+    <string name="orderdetail_refunded_line_with_info">הונפק החזר כספי של: ⁦%1$s⁩</string>
+    <string name="orderdetail_payment_summary_onhold_plain">ממתין לתשלום</string>
     <string name="install_wc_shipping_proceed_button">להמשיך בהתקנה</string>
     <string name="install_wc_shipping_installation_info">פרטים שחשוב לדעת לפני ההתקנה</string>
     <string name="install_wc_shipping_preinstall_title">להתקין את ההרחבה</string>
@@ -216,7 +228,6 @@ Language: he_IL
     <string name="coupon_details_minimum_spend">הוצאה מינימלית בגובה %s</string>
     <string name="coupon_details_heading">סיכום קופונים</string>
     <string name="coupon_list_view_coupon">הצגה של סיכום הקופון</string>
-    <string name="coupon_list_wip_message_enabled">אנחנו כרגע עובדים על אפשרות להציג קופונים במכשיר שלך!</string>
     <string name="coupon_list_wip_title">להציג ולנהל קופונים</string>
     <string name="coupon_list_empty_heading">לא נמצאו קופונים</string>
     <string name="coupon_list_item_label_included_and_excluded">%1s לא כולל %2s</string>
@@ -702,7 +713,6 @@ Language: he_IL
     <string name="card_reader_refetching_order_failed">שגיאה בהבאת ההזמנה. ייתכן שמצב ההזמנה באפליקציה לא מעודכן.</string>
     <string name="card_reader_payment_email_client_not_found">לא ניתן לאתר את האפליקציה של שירות האימייל שלך</string>
     <string name="card_reader_payment_receipt_email_subject">הקבלה שלך מאת %s</string>
-    <string name="card_reader_payment_description">תשלום באופן אישי על ההזמנה %s עבור %s</string>
     <string name="card_reader_payment_fetch_order_loading_payment_state">מרענן את ההזמנה</string>
     <string name="card_reader_payment_fetch_order_loading_header">מעדכן את מצב האפליקציה</string>
     <string name="shipping_label_shipping_carrier_shipping_method_banner_message">הלקוח בחר את ⁦%1$s⁩</string>

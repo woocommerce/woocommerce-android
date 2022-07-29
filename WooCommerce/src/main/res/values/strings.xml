@@ -198,7 +198,7 @@
     <string name="login_configure_link">Read the %sconfiguration instructions%s.</string>
 
     <string name="login_prologue_label_analytics">Track sales and high performing products</string>
-    <string name="login_prologue_label_orders">Manage your store orders on the go</string>
+    <string name="login_prologue_label_orders">Manage and edit orders on the go</string>
     <string name="login_prologue_label_products">Edit and add new products from anywhere</string>
     <string name="login_prologue_new_to_woo">New to WooCommerce</string>
     <string name="login_prologue_label_analytics_subtitle">We know it\'s essential to your business</string>
@@ -235,6 +235,7 @@
     <string name="login_jetpack_what_is_description">Jetpack is a free WordPress plugin that connects your store with the tools needed to give you the best mobile experience, including push notifications and stats</string>
     <string name="login_jetpack_installed_sign_in">Already have Jetpack? %1$s</string>
     <string name="login_jetpack_not_found">Jetpack not found. Please try again</string>
+    <string name="login_jetpack_install">Install Jetpack</string>
     <string name="login_sign_in">Sign in</string>
     <string name="login_need_help_finding_email">Need help finding the connected email?</string>
     <string name="login_email_help_title">What email do I use to sign in?</string>
@@ -929,6 +930,20 @@
     <string name="order_shipment_tracking_custom_provider_section_name">Custom Carrier</string>
     <string name="order_shipment_tracking_progress_title">Adding tracking</string>
     <string name="order_shipment_tracking_progress_message">Please wait</string>
+
+    <!--
+            Card Reader Upsell Banner
+        -->
+
+    <string name="card_reader_upsell_card_reader_banner_dismiss">Dismiss</string>
+    <string name="card_reader_upsell_card_reader_banner_new">NEW</string>
+    <string name="card_reader_upsell_card_reader_banner_title">Accept payments easily</string>
+    <string name="card_reader_upsell_card_reader_banner_description">Start selling in person in under 20 minutes with our card reader.</string>
+    <string name="card_reader_upsell_card_reader_banner_cta">Purchase Card Reader</string>
+    <string name="card_reader_upsell_card_reader_banner_payments">In-Person Payments</string>
+    <string name="card_reader_upsell_card_reader_banner_dismiss_dialog_description">No worries! You can always get started with In-Person Payments in Settings.</string>
+    <string name="card_reader_upsell_card_reader_banner_remind_me_later">REMIND ME LATER</string>
+    <string name="card_reader_upsell_card_reader_banner_dont_show_again">DON\'T SHOW AGAIN</string>
 
     <!--
             Card Reader Hub
@@ -1851,9 +1866,11 @@
     <!-- Feature tooltips -->
     <string name="tooltip_site_switcher">Tap to switch stores</string>
 
-    <!-- Promo dialogs -->
+    <!-- Promo dialogs and banners -->
     <string name="promo_btn_got_it">Got it</string>
     <string name="promo_btn_try_it">Try it now</string>
+    <string name="promo_linked_products_banner_title">Boost your sales with linked products</string>
+    <string name="promo_linked_products_banner_message">Give your customers helpful and relevant product recommendations by adding upsells and cross-sells</string>
 
     <!-- Product status -->
     <string name="product_status_published">Published</string>
@@ -2108,9 +2125,11 @@
     <string name="install_wc_shipping_extension_name">WooCommerce Shipping</string>
 
     <!-- Login local notifications -->
-    <string name="login_local_notification_no_interaction_title">Trouble login in?</string>
-    <string name="login_local_notification_no_interaction_description">If you are experiencing issues login into your store from the app, please contact support so we can help you.</string>
-
+    <string name="login_help_notification_default_title">Problems with logging in?</string>
+    <string name="login_help_notification_no_interaction_default_description">Get some help!</string>
+    <string name="login_help_notification_site_error_description">Try login with your WordPress.com account</string>
+    <string name="login_help_notification_contact_support_button">Contact support</string>
+    <string name="login_help_notification_wordpress_login_button">Login with WordPress.com</string>
 
     <!-- Other -->
     <string name="error_loading_image">Unable to load image</string>

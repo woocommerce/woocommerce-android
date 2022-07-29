@@ -366,7 +366,7 @@ class MainActivityViewModelTest : BaseUnitTest() {
         }
 
     @Test
-    fun `given zero unseen reviews and new features, when listening badge state, then hidden returned`() =
+    fun `given zero unseen reviews and no new features, when listening badge state, then hidden returned`() =
         testBlocking {
             // GIVEN
             whenever(unseenReviewsCountHandler.observeUnseenCount()).thenReturn(flowOf(0))
@@ -405,6 +405,21 @@ class MainActivityViewModelTest : BaseUnitTest() {
             whenever(moreMenuNewFeatureHandler.moreMenuNewFeaturesAvailable).thenReturn(
                 MutableStateFlow(listOf(Payments))
             )
+            createViewModel()
+
+            // WHEN
+            viewModel.moreMenuBadgeState.observeForever { }
+
+            // THEN
+            assertThat(viewModel.moreMenuBadgeState.value).isEqualTo(NewFeature)
+        }
+
+    @Test
+    fun `given zero unseen reviews and new features, when listening badge state, then new feature returned`() =
+        testBlocking {
+            // GIVEN
+            whenever(unseenReviewsCountHandler.observeUnseenCount()).thenReturn(flowOf(0))
+            whenever(moreMenuNewFeatureProvider.provideNewFeatures()).thenReturn(listOf(Payments))
             createViewModel()
 
             // WHEN

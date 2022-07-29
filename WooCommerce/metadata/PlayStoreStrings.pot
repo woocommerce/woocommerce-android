@@ -11,21 +11,21 @@ msgstr ""
 "Project-Id-Version: Release Notes & Play Store Descriptions\n"
 
 #. translators: Release notes for this version to be displayed in the Play Store. Limit to 500 characters including spaces and commas!
+msgctxt "release_note_097"
+msgid ""
+"9.7:\n"
+"We’re thrilled to announce that it’s now possible to edit an order from the app. You can edit or remove products, fees, shipping and change product quantity. You can also search for customers when editing or creating an order.\n"
+"\n"
+"We’ve also made some changes to display custom fields for an order and several improvements to our payments and login flow, including the option to install Jetpack directly from the app.\n"
+"\n"
+msgstr ""
+
 msgctxt "release_note_096"
 msgid ""
 "9.6:\n"
 "This release includes the option to collect payments for all unpaid orders via cash, card or payment links. You can also select a preferred payment gateway when multiple extensions are installed on the store.\n"
 "\n"
 "We’ve also made a few other minor improvements. Thank you all again for your amazing feedback. Keep it coming!\n"
-msgstr ""
-
-msgctxt "release_note_095"
-msgid ""
-"9.5:\n"
-"We keep adding new functionality to our experimental Coupon Management feature! This release includes editing and deleting coupons along with several improvements on viewing. Turn this feature on for early access in the More tab, Settings, Beta Features.\n"
-"\n"
-"We also fixed a bug that was making it hard for some of you to search orders. Thanks to everyone who reported this! Your feedback is vital to us!\n"
-"\n"
 msgstr ""
 
 #. translators: Short description of the app to be displayed in the Play Store. Limit to 80 characters including spaces and commas!

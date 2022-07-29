@@ -75,8 +75,10 @@ class MoreMenuViewModelTests : BaseUnitTest() {
 
     @Test
     fun `when on view resumed, then new feature handler marks new feature as seen`() = testBlocking {
-        // WHEN
+        // GIVEN
         setup { }
+
+        // WHEN
         viewModel.onViewResumed()
 
         // THEN
