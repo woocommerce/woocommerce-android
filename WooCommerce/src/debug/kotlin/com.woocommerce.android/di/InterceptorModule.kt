@@ -11,9 +11,9 @@ import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
 import dagger.multibindings.IntoSet
-import javax.inject.Named
 import okhttp3.Interceptor
 import okhttp3.Request
+import javax.inject.Named
 
 @InstallIn(SingletonComponent::class)
 @Module

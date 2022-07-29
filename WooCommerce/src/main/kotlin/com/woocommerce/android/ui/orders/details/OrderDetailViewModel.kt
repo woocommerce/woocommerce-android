@@ -63,7 +63,6 @@ import com.woocommerce.android.ui.payments.cardreader.payment.CardReaderPaymentC
 import com.woocommerce.android.ui.products.addons.AddonRepository
 import com.woocommerce.android.ui.shipping.InstallWCShippingViewModel
 import com.woocommerce.android.util.CoroutineDispatchers
-import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T
 import com.woocommerce.android.viewmodel.LiveDataDelegate
@@ -203,12 +202,10 @@ class OrderDetailViewModel @Inject constructor(
     }
 
     private fun checkOrderMetaData() {
-        if (FeatureFlag.ORDER_METADATA.isEnabled()) {
-            launch {
-                viewState = viewState.copy(
-                    isCustomFieldsButtonShown = orderDetailRepository.orderHasMetadata(navArgs.orderId)
-                )
-            }
+        launch {
+            viewState = viewState.copy(
+                isCustomFieldsButtonShown = orderDetailRepository.orderHasMetadata(navArgs.orderId)
+            )
         }
     }
 

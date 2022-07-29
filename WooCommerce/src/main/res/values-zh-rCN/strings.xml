@@ -1,11 +1,23 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2022-06-30 09:54:14+0000
+Translation-Revision-Date: 2022-07-14 12:54:03+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: zh_CN
 -->
 <resources>
+    <string name="tests_notification_new_order_message">您的 WooCommerce 商店有 50 美元的新订单</string>
+    <string name="tests_notification_new_order_title">您有一个新订单！🎉</string>
+    <string name="lines_all_details">详情</string>
+    <string name="lines_incomplete_explanation">要编辑所有%1$s，请在您的 WooCommerce 商店管理中浏览订单</string>
+    <string name="lines_incomplete">%1$s不完整</string>
+    <string name="support_system_status_report_share_label">共享系统状态报告</string>
+    <string name="support_system_status_report_copy_label">将系统状态报告复制到剪贴板</string>
+    <string name="card_reader_connect_keep_searching_button">继续搜索</string>
+    <string name="card_reader_payment_description_v2">为 %s blog_id %s 的订单 #%s 面对面付款。</string>
+    <string name="card_reader_manage_payment_provider">更改付款提供商</string>
+    <string name="orderdetail_refunded_line_with_info">已退款：%1$s</string>
+    <string name="orderdetail_payment_summary_onhold_plain">等待付款</string>
     <string name="install_wc_shipping_proceed_button">继续安装</string>
     <string name="install_wc_shipping_installation_info">安装前须知</string>
     <string name="install_wc_shipping_preinstall_title">安装扩展程序</string>
@@ -216,7 +228,6 @@ Language: zh_CN
     <string name="coupon_details_minimum_spend">最低花费金额：%s</string>
     <string name="coupon_details_heading">优惠券汇总</string>
     <string name="coupon_list_view_coupon">查看优惠券汇总</string>
-    <string name="coupon_list_wip_message_enabled">我们一直致力于不断改进，让您能够从设备上也可以查看优惠券！</string>
     <string name="coupon_list_wip_title">查看并编辑优惠券</string>
     <string name="coupon_list_empty_heading">没有找到优惠券</string>
     <string name="coupon_list_item_label_included_and_excluded">%1s，不包括 %2s</string>
@@ -703,7 +714,6 @@ Language: zh_CN
     <string name="card_reader_refetching_order_failed">抓取订单时出错。 应用程序中的订单状态可能已过时。</string>
     <string name="card_reader_payment_email_client_not_found">未侦测到您的电子邮件客户端应用</string>
     <string name="card_reader_payment_receipt_email_subject">来自 %s 的收据</string>
-    <string name="card_reader_payment_description">对 %s 的订单 %s 面对面付款</string>
     <string name="card_reader_payment_fetch_order_loading_payment_state">刷新订单</string>
     <string name="card_reader_payment_fetch_order_loading_header">更新应用程序状态</string>
     <string name="shipping_label_shipping_carrier_shipping_method_banner_message">您选定的客户 %1$s</string>

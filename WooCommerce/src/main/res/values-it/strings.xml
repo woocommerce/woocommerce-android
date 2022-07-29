@@ -1,11 +1,23 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2022-07-04 09:54:12+0000
+Translation-Revision-Date: 2022-07-14 08:54:17+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: it
 -->
 <resources>
+    <string name="tests_notification_new_order_message">Nuovo ordine pari a $ 50 nel tuo negozio WooCommerce</string>
+    <string name="tests_notification_new_order_title">Hai un nuovo ordine. 🎉</string>
+    <string name="lines_all_details">i dettagli</string>
+    <string name="lines_incomplete_explanation">Per modificare ogni %1$s, esplora l\'ordine nell\'amministrazione del tuo negozio WooCommerce.</string>
+    <string name="lines_incomplete">%1$s non sono completi</string>
+    <string name="support_system_status_report_share_label">Condividi rapporto dello stato del sistema</string>
+    <string name="support_system_status_report_copy_label">Copia il rapporto dello stato del sistema negli appunti</string>
+    <string name="card_reader_connect_keep_searching_button">Continua a cercare</string>
+    <string name="card_reader_payment_description_v2">Pagamento di persona per l\'ordine #%s per %s blog_id %s.</string>
+    <string name="card_reader_manage_payment_provider">Cambia fornitore dei pagamenti</string>
+    <string name="orderdetail_refunded_line_with_info">Rimborsato: %1$s</string>
+    <string name="orderdetail_payment_summary_onhold_plain">In attesa di pagamento</string>
     <string name="install_wc_shipping_proceed_button">Procedere con l\'installazione</string>
     <string name="install_wc_shipping_installation_info">Cosa da sapere prima dell\'installazione</string>
     <string name="install_wc_shipping_preinstall_title">Installa estensione</string>
@@ -156,7 +168,6 @@ Language: it
     <string name="coupon_details_minimum_spend">Spesa minima di %s</string>
     <string name="coupon_details_heading">Riepilogo codice promozionale</string>
     <string name="coupon_list_view_coupon">Visualizza riepilogo codice promozionale</string>
-    <string name="coupon_list_wip_message_enabled">Abbiamo lavorato per rendere possibile la visualizzazione dei coupon sul tuo dispositivo!</string>
     <string name="coupon_list_wip_title">Visualizza e modifica i codici promozionali</string>
     <string name="coupon_list_empty_heading">Non è stato trovato alcun codice promozionale</string>
     <string name="coupon_list_item_label_included_and_excluded">%1s senza %2s</string>
@@ -643,7 +654,6 @@ Language: it
     <string name="card_reader_refetching_order_failed">Errore durante il recupero dell\'ordine. Lo stato nell\'ordine dell\'app potrebbe essere obsoleto.</string>
     <string name="card_reader_payment_email_client_not_found">Impossibile rilevare il client e-mail della tua app</string>
     <string name="card_reader_payment_receipt_email_subject">La tua ricevuta da %s</string>
-    <string name="card_reader_payment_description">Pagamento di persona per l\'ordine %s per %s</string>
     <string name="card_reader_payment_fetch_order_loading_payment_state">Aggiornamento dell\'ordine</string>
     <string name="card_reader_payment_fetch_order_loading_header">Aggiornamento dello stato dell\'app</string>
     <string name="shipping_label_shipping_carrier_shipping_method_banner_message">Il cliente ha scelto %1$s</string>

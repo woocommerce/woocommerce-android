@@ -8,12 +8,12 @@ import com.automattic.android.tracks.crashlogging.performance.TransactionId
 import com.automattic.android.tracks.crashlogging.performance.TransactionOperation
 import com.automattic.android.tracks.crashlogging.performance.TransactionStatus
 import dagger.hilt.android.scopes.ViewModelScoped
-import javax.inject.Inject
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
 @ViewModelScoped
 class OrderTransactionValidator @Inject constructor(

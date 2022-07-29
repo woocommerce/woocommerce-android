@@ -29,11 +29,11 @@ abstract class CrashLoggingModule {
         @Provides
         @Singleton
         fun provideCrashLogging(
-            application: Application,
+            context: Application,
             crashLoggingDataProvider: CrashLoggingDataProvider,
-            @AppCoroutineScope appScope: CoroutineScope,
+            @AppCoroutineScope appScope: CoroutineScope
         ): CrashLogging {
-            return CrashLoggingProvider.createInstance(application, crashLoggingDataProvider, appScope)
+            return CrashLoggingProvider.createInstance(context, crashLoggingDataProvider, appScope)
         }
 
         @Provides

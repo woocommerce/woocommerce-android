@@ -5,15 +5,13 @@ import com.automattic.android.tracks.crashlogging.CrashLoggingUser
 import com.automattic.android.tracks.crashlogging.EventLevel
 import com.automattic.android.tracks.crashlogging.ExtraKnownKey
 import com.automattic.android.tracks.crashlogging.PerformanceMonitoringConfig
+import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.BuildConfig
 import com.woocommerce.android.di.AppCoroutineScope
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.util.BuildConfigWrapper
 import com.woocommerce.android.util.locale.LocaleProvider
-import java.util.Locale
-import javax.inject.Inject
-import javax.inject.Singleton
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -25,13 +23,16 @@ import org.wordpress.android.fluxc.Dispatcher
 import org.wordpress.android.fluxc.model.AccountModel
 import org.wordpress.android.fluxc.store.AccountStore
 import org.wordpress.android.util.AppLog
+import java.util.Locale
+import javax.inject.Inject
+import javax.inject.Singleton
 
 @Singleton
 class WCCrashLoggingDataProvider @Inject constructor(
     private val localeProvider: LocaleProvider,
     private val accountStore: AccountStore,
     private val selectedSite: SelectedSite,
-    private val appPrefs: AppPrefsWrapper,
+    private val appPrefs: AppPrefs,
     private val enqueueSendingEncryptedLogs: EnqueueSendingEncryptedLogs,
     private val uuidGenerator: UuidGenerator,
     private val dispatcher: Dispatcher,

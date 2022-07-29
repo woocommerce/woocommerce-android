@@ -1,11 +1,23 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2022-06-30 11:54:03+0000
+Translation-Revision-Date: 2022-07-14 14:54:03+0000
 Plural-Forms: nplurals=2; plural=n > 1;
 Generator: GlotPress/2.4.0-alpha
 Language: fr
 -->
 <resources>
+    <string name="tests_notification_new_order_message">Nouvelle commande de 50 $ auprès de votre boutique WooCommerce</string>
+    <string name="tests_notification_new_order_title">Une nouvelle commande a été passée sur votre site ! 🎉</string>
+    <string name="lines_all_details">les détails</string>
+    <string name="lines_incomplete_explanation">Pour modifier tous %1$s, parcourez la commande dans la section Administration de votre boutique WooCommerce</string>
+    <string name="lines_incomplete">%1$s sont incomplets/incomplètes.</string>
+    <string name="support_system_status_report_share_label">Partager le rapport sur l’état du système</string>
+    <string name="support_system_status_report_copy_label">Copier le rapport sur l’état du système dans le presse-papiers</string>
+    <string name="card_reader_connect_keep_searching_button">Continuer la recherche</string>
+    <string name="card_reader_payment_description_v2">Paiement en personne de la commande n° %s pour %s blog_id %s.</string>
+    <string name="card_reader_manage_payment_provider">Changer de fournisseur de paiement</string>
+    <string name="orderdetail_refunded_line_with_info">Remboursés : %1$s</string>
+    <string name="orderdetail_payment_summary_onhold_plain">Paiement en attente</string>
     <string name="install_wc_shipping_proceed_button">Poursuivre l’installation</string>
     <string name="install_wc_shipping_installation_info">Informations préalables à l’installation</string>
     <string name="install_wc_shipping_preinstall_title">Installer l’extension</string>
@@ -216,7 +228,6 @@ Language: fr
     <string name="coupon_details_minimum_spend">Dépense minimale de %s</string>
     <string name="coupon_details_heading">Résumé du code promo</string>
     <string name="coupon_list_view_coupon">Voir le résumé du code promo</string>
-    <string name="coupon_list_wip_message_enabled">Il sera bientôt possible d’afficher les codes promo sur votre appareil.</string>
     <string name="coupon_list_wip_title">Afficher et modifier les codes promo</string>
     <string name="coupon_list_empty_heading">Aucun code promo trouvé</string>
     <string name="coupon_list_item_label_included_and_excluded">%1s sauf %2s</string>
@@ -703,7 +714,6 @@ Language: fr
     <string name="card_reader_refetching_order_failed">Erreur lors de l’extraction de la commande. L’état de la commande dans l’application est peut-être obsolète.</string>
     <string name="card_reader_payment_email_client_not_found">Aucune application de messagerie détectée</string>
     <string name="card_reader_payment_receipt_email_subject">Votre reçu de %s</string>
-    <string name="card_reader_payment_description">Paiement en personne de la commande %s pour %s</string>
     <string name="card_reader_payment_fetch_order_loading_payment_state">Actualisation de la commande</string>
     <string name="card_reader_payment_fetch_order_loading_header">Mise à jour de l’état de l’application</string>
     <string name="shipping_label_shipping_carrier_shipping_method_banner_message">Votre client a sélectionné %1$s</string>

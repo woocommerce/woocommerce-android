@@ -12,6 +12,15 @@
 
         <View style="@style/Woo.Divider" />
 
+        <include
+            android:id="@+id/upsellCardReaderComposeView"
+            layout="@layout/fragment_card_reader_upsell_banner"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"/>
+
+        <View style="@style/Woo.Divider"
+            android:background="@color/woo_black_90_alpha_020"/>
+
         <!--
             Help & support
         -->

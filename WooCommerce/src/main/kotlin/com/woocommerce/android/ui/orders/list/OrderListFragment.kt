@@ -3,13 +3,17 @@ package com.woocommerce.android.ui.orders.list
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
+import android.view.LayoutInflater
 import android.view.Menu
 import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.MenuItem.OnActionExpandListener
 import android.view.View
+import android.view.ViewGroup
 import androidx.appcompat.widget.SearchView
 import androidx.appcompat.widget.SearchView.OnQueryTextListener
+import androidx.compose.ui.platform.ViewCompositionStrategy
+import androidx.compose.ui.res.stringResource
 import androidx.core.view.ViewGroupCompat
 import androidx.core.view.doOnPreDraw
 import androidx.core.view.isVisible
@@ -37,14 +41,20 @@ import com.woocommerce.android.model.FeatureFeedbackSettings.FeedbackState
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.base.TopLevelFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
+import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.ui.feedback.SurveyType
 import com.woocommerce.android.ui.main.MainActivity
 import com.woocommerce.android.ui.main.MainNavigationRouter
 import com.woocommerce.android.ui.orders.creation.OrderCreateEditViewModel
 import com.woocommerce.android.ui.orders.list.OrderCreationBottomSheetFragment.Companion.KEY_ORDER_CREATION_ACTION_RESULT
 import com.woocommerce.android.ui.orders.list.OrderCreationBottomSheetFragment.OrderCreationAction
+import com.woocommerce.android.ui.orders.list.OrderListViewModel.OrderListEvent.DismissCardReaderUpsellBanner
+import com.woocommerce.android.ui.orders.list.OrderListViewModel.OrderListEvent.DismissCardReaderUpsellBannerViaDontShowAgain
+import com.woocommerce.android.ui.orders.list.OrderListViewModel.OrderListEvent.DismissCardReaderUpsellBannerViaRemindMeLater
 import com.woocommerce.android.ui.orders.list.OrderListViewModel.OrderListEvent.ShowErrorSnack
 import com.woocommerce.android.ui.orders.list.OrderListViewModel.OrderListEvent.ShowOrderFilters
+import com.woocommerce.android.ui.payments.banner.OrderListBannerDismissDialog
+import com.woocommerce.android.ui.payments.banner.OrderListScreenBanner
 import com.woocommerce.android.util.ChromeCustomTabUtils
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.widgets.WCEmptyView.EmptyViewType
@@ -134,13 +144,35 @@ class OrderListFragment :
         super.onPrepareOptionsMenu(menu)
     }
 
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View {
+        setHasOptionsMenu(true)
+        _binding = FragmentOrderListBinding.inflate(inflater, container, false)
+
+        val view = binding.root
+        if (viewModel.shouldShowUpsellCardReaderDismissDialog.value == true) {
+            applyBannerDismissDialogComposeUI()
+        }
+        val isLandscape = DisplayUtils.isLandscape(view.context)
+        /**
+         * We are hiding the upsell card reader banner in the landscape mode since it becomes impossible for
+         * the merchants to scroll the order list. More info here: pdfdoF-12d-p2
+         */
+        if (!isLandscape) {
+            applyBannerComposeUI()
+        }
+        return view
+    }
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         postponeEnterTransition()
 
         setHasOptionsMenu(true)
 
-        _binding = FragmentOrderListBinding.bind(view)
         view.doOnPreDraw { startPostponedEnterTransition() }
 
         binding.orderListView.init(currencyFormatter = currencyFormatter, orderListListener = this)
@@ -187,6 +219,35 @@ class OrderListFragment :
         searchMenuItem = null
         super.onDestroyView()
         _binding = null
+    }
+
+    private fun applyBannerComposeUI() {
+        binding.upsellCardReaderComposeView.upsellCardReaderBannerView.apply {
+            // Dispose of the Composition when the view's LifecycleOwner is destroyed
+            setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
+            setContent {
+                WooThemeWithBackground {
+                    OrderListScreenBanner(
+                        viewModel = viewModel,
+                        title = stringResource(id = R.string.card_reader_upsell_card_reader_banner_title),
+                        subtitle = stringResource(id = R.string.card_reader_upsell_card_reader_banner_description),
+                        ctaLabel = stringResource(id = R.string.card_reader_upsell_card_reader_banner_cta)
+                    )
+                }
+            }
+        }
+    }
+
+    private fun applyBannerDismissDialogComposeUI() {
+        binding.upsellCardReaderComposeView.upsellCardReaderDismissView.apply {
+            // Dispose of the Composition when the view's LifecycleOwner is destroyed
+            setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
+            setContent {
+                WooThemeWithBackground {
+                    OrderListBannerDismissDialog(viewModel)
+                }
+            }
+        }
     }
 
     /**
@@ -240,7 +301,7 @@ class OrderListFragment :
         binding.orderListView.scrollToTop()
     }
 
-    @Suppress("LongMethod")
+    @Suppress("LongMethod", "ComplexMethod")
     private fun initObservers() {
         // setup observers
         viewModel.orderStatusOptions.observe(viewLifecycleOwner) {
@@ -271,6 +332,20 @@ class OrderListFragment :
                     binding.orderRefreshLayout.isRefreshing = false
                 }
                 is ShowOrderFilters -> showOrderFilters()
+                DismissCardReaderUpsellBanner -> {
+                    applyBannerDismissDialogComposeUI()
+                }
+                DismissCardReaderUpsellBannerViaRemindMeLater -> {
+                    binding.upsellCardReaderComposeView.upsellCardReaderBannerView.visibility = View.GONE
+                    binding.upsellCardReaderComposeView.upsellCardReaderDismissView.visibility = View.GONE
+                }
+                DismissCardReaderUpsellBannerViaDontShowAgain -> {
+                    binding.upsellCardReaderComposeView.upsellCardReaderBannerView.visibility = View.GONE
+                    binding.upsellCardReaderComposeView.upsellCardReaderDismissView.visibility = View.GONE
+                }
+                is OrderListViewModel.OrderListEvent.OpenPurchaseCardReaderLink -> {
+                    ChromeCustomTabUtils.launchUrl(requireContext(), event.url)
+                }
                 else -> event.isHandled = false
             }
         }
