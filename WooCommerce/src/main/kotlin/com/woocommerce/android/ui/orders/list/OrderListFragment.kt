@@ -164,6 +164,9 @@ class OrderListFragment :
         if (!isLandscape) {
             applyBannerComposeUI()
         }
+        if (viewModel.shouldDisplaySimplePaymentsWIPCard() || isLandscape) {
+            displaySimplePaymentsWIPCard(true)
+        }
         return view
     }
 
@@ -193,11 +196,6 @@ class OrderListFragment :
         }
         binding.orderFiltersCard.setClickListener { viewModel.onFiltersButtonTapped() }
         initCreateOrderFAB(binding.createOrderButton)
-    }
-
-    override fun onViewStateRestored(savedInstanceState: Bundle?) {
-        super.onViewStateRestored(savedInstanceState)
-        displaySimplePaymentsWIPCard(true)
     }
 
     override fun onResume() {
