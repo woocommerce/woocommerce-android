@@ -268,7 +268,7 @@ class LoginActivity :
         } else {
             supportFragmentManager.findFragmentByTag(LoginEmailFragment.TAG)
         }
-        return if (fragment == null) null else fragment as LoginEmailFragment
+        return if (fragment == null) null else fragment as WooLoginEmailFragment
     }
 
     private fun getLoginViaSiteAddressFragment(): LoginSiteAddressFragment? =
@@ -736,7 +736,7 @@ class LoginActivity :
             // Show the layout that includes the option to login with site credentials.
             val loginEmailFragment = getLoginEmailFragment(
                 siteCredsLayout = true
-            ) ?: LoginEmailFragment.newInstance(siteAddress, true)
+            ) ?: WooLoginEmailFragment.newInstance(siteAddress, true)
             slideInFragment(loginEmailFragment as Fragment, true, LoginEmailFragment.TAG_SITE_CREDS_LAYOUT)
         } else {
             val loginEmailFragment = getLoginEmailFragment(
