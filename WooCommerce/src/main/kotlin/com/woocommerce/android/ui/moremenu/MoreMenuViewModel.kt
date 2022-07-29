@@ -56,6 +56,12 @@ class MoreMenuViewModel @Inject constructor(
             MenuUiButton(
                 text = R.string.more_menu_button_payments,
                 icon = R.drawable.ic_more_menu_payments,
+                badgeState = BadgeState(
+                    badgeSize = R.dimen.major_85,
+                    backgroundColor = R.color.color_secondary,
+                    textColor = R.color.color_on_surface_inverted,
+                    textState = TextState("", R.dimen.text_minor_80),
+                ),
                 onClick = ::onPaymentsButtonClick
             ),
             MenuUiButton(
@@ -77,7 +83,7 @@ class MoreMenuViewModel @Inject constructor(
             MenuUiButton(
                 text = R.string.more_menu_button_reviews,
                 icon = R.drawable.ic_more_menu_reviews,
-                badgeCount = unseenReviewsCount,
+                badgeState = buildUnseenReviewsBadgeState(unseenReviewsCount),
                 onClick = ::onReviewsButtonClick
             ),
             MenuUiButton(
@@ -87,6 +93,14 @@ class MoreMenuViewModel @Inject constructor(
                 onClick = ::onInboxButtonClick
             )
         )
+
+    private fun buildUnseenReviewsBadgeState(unseenReviewsCount: Int) =
+        if (unseenReviewsCount > 0) BadgeState(
+            badgeSize = R.dimen.major_150,
+            backgroundColor = R.color.color_primary,
+            textColor = R.color.color_on_surface_inverted,
+            textState = TextState(unseenReviewsCount.toString(), R.dimen.text_minor_80),
+        ) else null
 
     private fun SiteModel.getSelectedSiteName(): String =
         if (!displayName.isNullOrBlank()) {
