@@ -46,11 +46,6 @@ class WooLoginEmailFragment : LoginEmailFragment() {
         rootView.findViewById<Button>(R.id.login_what_is_wordpress).setOnClickListener {
             whatIsWordPressLinkClickListener.onWhatIsWordPressLinkClicked()
         }
-
-        // Follow LoginEmailFragment's behavior to only show this button if not on "Site Credentials" layout.
-        if (optionalSiteCredsLayout) {
-            rootView.findViewById<Button>(R.id.continue_tos).hide()
-        }
     }
 
     override fun onAttach(context: Context) {
