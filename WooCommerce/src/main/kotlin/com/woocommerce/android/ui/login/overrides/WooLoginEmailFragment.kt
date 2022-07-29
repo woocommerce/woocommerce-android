@@ -6,7 +6,6 @@ import android.view.ViewGroup
 import android.widget.Button
 import androidx.annotation.LayoutRes
 import com.woocommerce.android.R
-import com.woocommerce.android.extensions.hide
 import org.wordpress.android.login.LoginEmailFragment
 
 class WooLoginEmailFragment : LoginEmailFragment() {
