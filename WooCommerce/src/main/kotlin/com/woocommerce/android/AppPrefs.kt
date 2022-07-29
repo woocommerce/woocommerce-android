@@ -151,6 +151,8 @@ object AppPrefs {
         ONBOARDING_CAROUSEL_DISPLAYED,
 
         USER_SEEN_NEW_FEATURE_MORE_SCREEN,
+
+        USER_CLICKED_ON_PAYMENTS_MORE_SCREEN,
     }
 
     fun init(context: Context) {
@@ -802,6 +804,13 @@ object AppPrefs {
 
     fun setUserSeenNewFeatureOnMoreScreen() {
         setBoolean(UndeletablePrefKey.USER_SEEN_NEW_FEATURE_MORE_SCREEN, true)
+    }
+
+    fun isPaymentsIconWasClickedOnMoreScreen(): Boolean =
+        getBoolean(UndeletablePrefKey.USER_CLICKED_ON_PAYMENTS_MORE_SCREEN, false)
+
+    fun setPaymentsIconWasClickedOnMoreScreen() {
+        setBoolean(UndeletablePrefKey.USER_CLICKED_ON_PAYMENTS_MORE_SCREEN, true)
     }
 
     /**

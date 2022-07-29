@@ -41,7 +41,9 @@ class MoreMenuViewModelTests : BaseUnitTest() {
             avatarUrl = "avatar"
         }
     }
-    private val moreMenuNewFeatureHandler: MoreMenuNewFeatureHandler = mock()
+    private val moreMenuNewFeatureHandler: MoreMenuNewFeatureHandler = mock {
+        on { moreMenuPaymentsFeatureWasClicked }.thenReturn(flowOf(true))
+    }
 
     private lateinit var viewModel: MoreMenuViewModel
 
@@ -81,5 +83,37 @@ class MoreMenuViewModelTests : BaseUnitTest() {
 
         // THEN
         verify(moreMenuNewFeatureHandler).markNewFeatureAsSeen()
+    }
+
+    @Test
+    fun `given user never clicked payments, when building state, then badge displayed`() = testBlocking {
+        // GIVEN
+        val prefsChanges = MutableSharedFlow<Boolean>()
+        setup {
+            whenever(moreMenuNewFeatureHandler.moreMenuPaymentsFeatureWasClicked).thenReturn(prefsChanges)
+        }
+
+        // WHEN
+        val states = viewModel.moreMenuViewState.captureValues()
+        prefsChanges.emit(false)
+
+        // THEN
+        assertThat(states.last().moreMenuItems.first().badgeState).isNotNull
+    }
+
+    @Test
+    fun `given user clicked payments, when building state, then badge is not displayed`() = testBlocking {
+        // GIVEN
+        val prefsChanges = MutableSharedFlow<Boolean>()
+        setup {
+            whenever(moreMenuNewFeatureHandler.moreMenuPaymentsFeatureWasClicked).thenReturn(prefsChanges)
+        }
+
+        // WHEN
+        val states = viewModel.moreMenuViewState.captureValues()
+        prefsChanges.emit(true)
+
+        // THEN
+        assertThat(states.last().moreMenuItems.first().badgeState).isNull()
     }
 }

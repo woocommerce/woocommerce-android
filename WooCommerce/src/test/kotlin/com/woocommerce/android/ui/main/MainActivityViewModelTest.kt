@@ -419,7 +419,9 @@ class MainActivityViewModelTest : BaseUnitTest() {
         testBlocking {
             // GIVEN
             whenever(unseenReviewsCountHandler.observeUnseenCount()).thenReturn(flowOf(0))
-            whenever(moreMenuNewFeatureProvider.provideNewFeatures()).thenReturn(listOf(Payments))
+            whenever(moreMenuNewFeatureHandler.moreMenuNewFeaturesAvailable).thenReturn(
+                MutableStateFlow(listOf(Payments))
+            )
             createViewModel()
 
             // WHEN
