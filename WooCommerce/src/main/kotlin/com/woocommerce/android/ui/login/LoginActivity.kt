@@ -99,16 +99,21 @@ class LoginActivity :
         private const val KEY_UNIFIED_TRACKER_SOURCE = "KEY_UNIFIED_TRACKER_SOURCE"
         private const val KEY_UNIFIED_TRACKER_FLOW = "KEY_UNIFIED_TRACKER_FLOW"
         private const val KEY_LOGIN_HELP_NOTIFICATION = "KEY_LOGIN_HELP_NOTIFICATION"
+        private const val KEY_LOGIN_HELP_NOTIFICATION_SITE_ADDRESS = "KEY_LOGIN_HELP_NOTIFICATION_SITE_ADDRESS"
 
         fun createIntent(
             context: Context,
-            notificationType: LoginHelpNotificationType
+            notificationType: LoginHelpNotificationType,
+            siteAddress: String? = null
         ): Intent {
             val intent = Intent(context, LoginActivity::class.java)
             intent.apply {
                 flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK or
                     Intent.FLAG_ACTIVITY_CLEAR_TASK
                 putExtra(KEY_LOGIN_HELP_NOTIFICATION, notificationType.toString())
+                siteAddress?.let {
+                    putExtra(KEY_LOGIN_HELP_NOTIFICATION_SITE_ADDRESS, siteAddress)
+                }
             }
             return intent
         }
@@ -140,6 +145,7 @@ class LoginActivity :
         binding = ActivityLoginBinding.inflate(layoutInflater)
         setContentView(binding.root)
         val loginHelpNotification = getLoginHelpNotification()
+        val siteAddress = getLoginHelpNotificationSiteAddress()
 
         if (hasJetpackConnectedIntent()) {
             AnalyticsTracker.track(
@@ -150,7 +156,7 @@ class LoginActivity :
         } else if (hasMagicLinkLoginIntent()) {
             getAuthTokenFromIntent()?.let { showMagicLinkInterceptFragment(it) }
         } else if (!loginHelpNotification.isNullOrBlank()) {
-            processLoginHelpNotification(loginHelpNotification)
+            processLoginHelpNotification(loginHelpNotification, siteAddress)
         } else if (savedInstanceState == null) {
             loginAnalyticsListener.trackLoginAccessed()
 
@@ -163,10 +169,10 @@ class LoginActivity :
         }
     }
 
-    private fun processLoginHelpNotification(loginHelpNotification: String) {
+    private fun processLoginHelpNotification(loginHelpNotification: String, siteAddress: String?) {
         when (loginHelpNotification) {
             LOGIN_SITE_ADDRESS_ERROR.toString() -> startLoginViaWPCom()
-            LOGIN_INCORRECT_WPCOM_EMAIL.toString() -> loginViaSiteCredentials(inputSiteAddress = null)
+            LOGIN_INCORRECT_WPCOM_EMAIL.toString() -> loginViaSiteCredentials(siteAddress)
         }
         NotificationManagerCompat.from(this).cancel(
             LOGIN_HELP_NOTIFICATION_TAG,
@@ -845,6 +851,9 @@ class LoginActivity :
 
     private fun getLoginHelpNotification(): String? =
         intent.extras?.getString(KEY_LOGIN_HELP_NOTIFICATION)
+
+    private fun getLoginHelpNotificationSiteAddress(): String? =
+        intent.extras?.getString(KEY_LOGIN_HELP_NOTIFICATION_SITE_ADDRESS)
 
     override fun onCarouselFinished() {
         showPrologueFragment()
