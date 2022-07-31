@@ -164,7 +164,7 @@ class LoginActivity :
     }
 
     private fun processLoginHelpNotification(loginHelpNotification: String) {
-        when(loginHelpNotification) {
+        when (loginHelpNotification) {
             LOGIN_SITE_ADDRESS_ERROR.toString() -> startLoginViaWPCom()
             LOGIN_INCORRECT_WPCOM_EMAIL.toString() -> loginViaSiteCredentials(inputSiteAddress = null)
         }
