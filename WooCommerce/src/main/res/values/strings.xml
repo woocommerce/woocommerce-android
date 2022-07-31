@@ -2130,6 +2130,7 @@
     <string name="login_help_notification_incorrect_wpcom_email_description">Log in with your site credentials</string>
     <string name="login_help_notification_contact_support_button">Contact support</string>
     <string name="login_help_notification_wordpress_login_button">Log in with WordPress.com</string>
+    <string name="login_help_notification_site_credentials_login_button">Log in with Site Credentials</string>
 
     <!-- Other -->
     <string name="error_loading_image">Unable to load image</string>

@@ -39,6 +39,8 @@ import com.woocommerce.android.ui.login.localnotifications.LoginNotificationSche
 import com.woocommerce.android.ui.login.localnotifications.LoginNotificationScheduler.Companion.LOGIN_HELP_NOTIFICATION_ID
 import com.woocommerce.android.ui.login.localnotifications.LoginNotificationScheduler.Companion.LOGIN_HELP_NOTIFICATION_TAG
 import com.woocommerce.android.ui.login.localnotifications.LoginNotificationScheduler.LoginHelpNotificationType
+import com.woocommerce.android.ui.login.localnotifications.LoginNotificationScheduler.LoginHelpNotificationType.LOGIN_INCORRECT_WPCOM_EMAIL
+import com.woocommerce.android.ui.login.localnotifications.LoginNotificationScheduler.LoginHelpNotificationType.LOGIN_SITE_ADDRESS_ERROR
 import com.woocommerce.android.ui.login.overrides.WooLoginEmailFragment
 import com.woocommerce.android.ui.login.overrides.WooLoginSiteAddressFragment
 import com.woocommerce.android.ui.main.MainActivity
@@ -162,7 +164,10 @@ class LoginActivity :
     }
 
     private fun processLoginHelpNotification(loginHelpNotification: String) {
-        startLoginViaWPCom()
+        when(loginHelpNotification) {
+            LOGIN_SITE_ADDRESS_ERROR.toString() -> startLoginViaWPCom()
+            LOGIN_INCORRECT_WPCOM_EMAIL.toString() -> loginViaSiteCredentials(inputSiteAddress = null)
+        }
         NotificationManagerCompat.from(this).cancel(
             LOGIN_HELP_NOTIFICATION_TAG,
             LOGIN_HELP_NOTIFICATION_ID
@@ -767,7 +772,7 @@ class LoginActivity :
     }
 
     override fun gotUnregisteredEmail(email: String?) {
-        loginNotificationScheduler.scheduleNotification(LoginHelpNotificationType.LOGIN_INCORRECT_WPCOM_EMAIL)
+        loginNotificationScheduler.scheduleNotification(LOGIN_INCORRECT_WPCOM_EMAIL)
 
         // Show the 'No WordPress.com account found' screen
         val fragment = LoginNoWPcomAccountFoundFragment.newInstance(email)
@@ -826,7 +831,7 @@ class LoginActivity :
                 shouldAddToBackStack = true,
                 tag = LoginSiteCheckErrorFragment.TAG
             )
-            loginNotificationScheduler.scheduleNotification(LoginHelpNotificationType.LOGIN_SITE_ADDRESS_ERROR)
+            loginNotificationScheduler.scheduleNotification(LOGIN_SITE_ADDRESS_ERROR)
         } else {
             // Just in case we use this method for a different scenario in the future
             TODO("Handle a new error scenario")
