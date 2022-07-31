@@ -767,6 +767,8 @@ class LoginActivity :
     }
 
     override fun gotUnregisteredEmail(email: String?) {
+        loginNotificationScheduler.scheduleNotification(LoginHelpNotificationType.LOGIN_INCORRECT_WPCOM_EMAIL)
+
         // Show the 'No WordPress.com account found' screen
         val fragment = LoginNoWPcomAccountFoundFragment.newInstance(email)
         slideInFragment(
