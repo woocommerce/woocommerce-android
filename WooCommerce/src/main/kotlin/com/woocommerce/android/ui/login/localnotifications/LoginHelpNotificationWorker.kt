@@ -51,10 +51,6 @@ class LoginHelpNotificationWorker @AssistedInject constructor(
         return Result.success()
     }
 
-    private fun incorrectWPComEmailNotification() {
-        TODO("Not yet implemented")
-    }
-
     private fun defaultLoginSupportNotification() {
         wooNotificationBuilder.buildAndDisplayLoginHelpNotification(
             notificationLocalId = LOGIN_HELP_NOTIFICATION_ID,
@@ -80,6 +76,19 @@ class LoginHelpNotificationWorker @AssistedInject constructor(
         )
     }
 
+    private fun incorrectWPComEmailNotification() {
+        wooNotificationBuilder.buildAndDisplayLoginHelpNotification(
+            notificationLocalId = LOGIN_HELP_NOTIFICATION_ID,
+            appContext.getString(R.string.notification_channel_pre_login_id),
+            notification = buildLoginNotification(
+                title = R.string.login_help_notification_default_title,
+                description = R.string.login_help_notification_incorrect_wpcom_email_description
+            ),
+            notificationTappedIntent = buildOpenLoginWithSiteCredentialsIntent(),
+            actions = getActionsForSiteAddressErrorNotification()
+        )
+    }
+
     private fun buildLoginNotification(
         @StringRes title: Int,
         @StringRes description: Int
@@ -100,6 +109,9 @@ class LoginHelpNotificationWorker @AssistedInject constructor(
 
     private fun buildOpenLoginWithEmailScreenIntent(): Intent =
         LoginActivity.createIntent(appContext, LOGIN_SITE_ADDRESS_ERROR)
+
+    private fun buildOpenLoginWithSiteCredentialsIntent(): Intent =
+        LoginActivity.createIntent(appContext, LOGIN_INCORRECT_WPCOM_EMAIL)
 
     private fun getActionsForSiteAddressErrorNotification(): List<Pair<String, Intent>> =
         listOf(
