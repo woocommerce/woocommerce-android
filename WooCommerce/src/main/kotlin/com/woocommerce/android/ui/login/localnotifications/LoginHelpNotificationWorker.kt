@@ -20,8 +20,8 @@ import com.woocommerce.android.ui.login.localnotifications.LoginNotificationSche
 import com.woocommerce.android.ui.login.localnotifications.LoginNotificationScheduler.Companion.LOGIN_NOTIFICATION_TYPE_KEY
 import com.woocommerce.android.ui.login.localnotifications.LoginNotificationScheduler.LoginHelpNotificationType
 import com.woocommerce.android.ui.login.localnotifications.LoginNotificationScheduler.LoginHelpNotificationType.DEFAULT_HELP
-import com.woocommerce.android.ui.login.localnotifications.LoginNotificationScheduler.LoginHelpNotificationType.LOGIN_SITE_ADDRESS_ERROR
 import com.woocommerce.android.ui.login.localnotifications.LoginNotificationScheduler.LoginHelpNotificationType.LOGIN_INCORRECT_WPCOM_EMAIL
+import com.woocommerce.android.ui.login.localnotifications.LoginNotificationScheduler.LoginHelpNotificationType.LOGIN_SITE_ADDRESS_ERROR
 import com.woocommerce.android.viewmodel.ResourceProvider
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
@@ -85,7 +85,7 @@ class LoginHelpNotificationWorker @AssistedInject constructor(
                 description = R.string.login_help_notification_incorrect_wpcom_email_description
             ),
             notificationTappedIntent = buildOpenLoginWithSiteCredentialsIntent(),
-            actions = getActionsForSiteAddressErrorNotification()
+            actions = getActionsForIncorrectWPComEmailNotification()
         )
     }
 
@@ -118,6 +118,14 @@ class LoginHelpNotificationWorker @AssistedInject constructor(
             resourceProvider.getString(R.string.login_help_notification_wordpress_login_button)
                 to buildOpenLoginWithEmailScreenIntent(),
             resourceProvider.getString(R.string.login_help_notification_contact_support_button)
+                to buildOpenSupportScreenIntent(),
+        )
+
+    private fun getActionsForIncorrectWPComEmailNotification(): List<Pair<String, Intent>> =
+        listOf(
+            resourceProvider.getString(R.string.login_help_notification_wordpress_login_button)
+                to buildOpenLoginWithSiteCredentialsIntent(),
+            resourceProvider.getString(R.string.login_help_notification_site_credentials_login_button)
                 to buildOpenSupportScreenIntent(),
         )
 }
