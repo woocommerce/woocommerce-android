@@ -86,7 +86,7 @@ class OrderListViewModel @Inject constructor(
     private val getSelectedOrderFiltersCount: GetSelectedOrderFiltersCount,
     private val bannerDisplayEligibilityChecker: BannerDisplayEligibilityChecker,
 ) : ScopedViewModel(savedState), LifecycleOwner {
-    protected val lifecycleRegistry: LifecycleRegistry by lazy {
+    private val lifecycleRegistry: LifecycleRegistry by lazy {
         LifecycleRegistry(this)
     }
 
@@ -99,7 +99,7 @@ class OrderListViewModel @Inject constructor(
         OrderListItemDataSource(dispatcher, orderStore, networkStatus, fetcher, resourceProvider)
     }
 
-    final val viewStateLiveData = LiveDataDelegate(savedState, ViewState(filterCount = getSelectedOrderFiltersCount()))
+    val viewStateLiveData = LiveDataDelegate(savedState, ViewState(filterCount = getSelectedOrderFiltersCount()))
     internal var viewState by viewStateLiveData
 
     private val _pagedListData = MediatorLiveData<PagedOrdersList>()
