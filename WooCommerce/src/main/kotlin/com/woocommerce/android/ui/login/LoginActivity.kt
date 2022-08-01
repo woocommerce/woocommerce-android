@@ -408,7 +408,7 @@ class LoginActivity :
     }
 
     private fun showPrologueSurveyFragment() {
-        val prologueSurveyFragment = getPrologueFragment() ?: LoginPrologueSurveyFragment()
+        val prologueSurveyFragment = getPrologueSurveyFragment() ?: LoginPrologueSurveyFragment()
         slideInFragment(prologueSurveyFragment, true, LoginPrologueSurveyFragment.TAG)
     }
 
