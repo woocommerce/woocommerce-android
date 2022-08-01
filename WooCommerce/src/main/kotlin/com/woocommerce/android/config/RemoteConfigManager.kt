@@ -44,10 +44,12 @@ class RemoteConfigManager @Inject constructor(
             .addOnSuccessListener {
                 val prologueVariant = remoteConfig.getString("prologue_variant")
                 val siteLoginVariant = remoteConfig.getString("site_credentials_emphasis")
+                val sentScreenVariant = remoteConfig.getString("magic_link_sent_screen_variant")
 
                 scope.launch {
                     repository.updatePrologueVariantValue(prologueVariant)
                     repository.updateSiteLoginVariantValue(siteLoginVariant)
+                    repository.updateMagicLinkSentScreenVariantValue(sentScreenVariant)
                 }
             }
             .addOnFailureListener {

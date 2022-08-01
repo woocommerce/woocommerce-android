@@ -6,6 +6,7 @@ import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringPreferencesKey
 import com.woocommerce.android.datastore.DataStoreQualifier
 import com.woocommerce.android.datastore.DataStoreType
+import com.woocommerce.android.experiment.MagicLinkSentScreenExperiment.MagicLinkSentScreenVariant
 import com.woocommerce.android.experiment.PrologueExperiment.PrologueVariant
 import com.woocommerce.android.experiment.SiteLoginExperiment.SiteLoginVariant
 import kotlinx.coroutines.flow.Flow
@@ -18,6 +19,7 @@ class DataStoreRemoteConfigRepository @Inject constructor(
     companion object {
         const val PROLOGUE_VARIANT_KEY = "prologue_variant_key"
         const val SITE_CREDENTIALS_EXPERIMENT_VARIANT_KEY = "site_credentials_experiment_variant_key"
+        const val MAGIC_LINK_SENT_EXPERIMENT_VARIANT_KEY = "magic_link_sent_experiment_variant_key"
     }
 
     override fun observePrologueVariant(): Flow<PrologueVariant> {
@@ -47,6 +49,21 @@ class DataStoreRemoteConfigRepository @Inject constructor(
     override suspend fun updateSiteLoginVariantValue(variantValue: String) {
         dataStore.edit { trackerPreferences ->
             trackerPreferences[stringPreferencesKey(SITE_CREDENTIALS_EXPERIMENT_VARIANT_KEY)] = variantValue.uppercase()
+        }
+    }
+
+    override fun observeMagicLinkSentScreenVariant(): Flow<MagicLinkSentScreenVariant> {
+        return dataStore.data.map { preferences ->
+            MagicLinkSentScreenVariant.valueOf(
+                preferences[stringPreferencesKey(MAGIC_LINK_SENT_EXPERIMENT_VARIANT_KEY)]
+                    ?: MagicLinkSentScreenVariant.CONTROL.toString()
+            )
+        }
+    }
+
+    override suspend fun updateMagicLinkSentScreenVariantValue(variantValue: String) {
+        dataStore.edit { trackerPreferences ->
+            trackerPreferences[stringPreferencesKey(MAGIC_LINK_SENT_EXPERIMENT_VARIANT_KEY)] = variantValue.uppercase()
         }
     }
 }

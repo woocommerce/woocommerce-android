@@ -8,4 +8,8 @@
         <key>site_credentials_emphasis</key>
         <value>site_credentials_login</value>
     </entry>
+    <entry>
+        <key>magic_link_sent_screen_variant</key>
+        <value>control</value>
+    </entry>
 </defaultsMap>
