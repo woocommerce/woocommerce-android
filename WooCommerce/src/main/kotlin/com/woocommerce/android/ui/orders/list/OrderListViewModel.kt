@@ -62,6 +62,7 @@ import org.wordpress.android.fluxc.store.WCOrderFetcher
 import org.wordpress.android.fluxc.store.WCOrderStore
 import org.wordpress.android.fluxc.store.WCOrderStore.OnOrderChanged
 import org.wordpress.android.fluxc.store.WCOrderStore.OnOrderSummariesFetched
+import org.wordpress.android.mediapicker.util.filter
 import javax.inject.Inject
 
 private const val EMPTY_VIEW_THROTTLE = 250L
@@ -130,6 +131,7 @@ class OrderListViewModel @Inject constructor(
     val isEligibleForInPersonPayments: MutableLiveData<Boolean> = MutableLiveData(false)
 
     var isSearching = false
+    private var dismissListErrors = false
     var searchQuery = ""
 
     init {
@@ -305,10 +307,10 @@ class OrderListViewModel @Inject constructor(
             _isLoadingMore.value = it
         }
 
-        pagedListWrapper.listError.observe(this) {
-            it?.let {
-                triggerEvent(ShowErrorSnack(R.string.orderlist_error_fetch_generic))
-            }
+        pagedListWrapper.listError.filter { error ->
+            !dismissListErrors && error != null
+        }.observe(this) {
+            triggerEvent(ShowErrorSnack(R.string.orderlist_error_fetch_generic))
         }
         this.activePagedListWrapper = pagedListWrapper
 
