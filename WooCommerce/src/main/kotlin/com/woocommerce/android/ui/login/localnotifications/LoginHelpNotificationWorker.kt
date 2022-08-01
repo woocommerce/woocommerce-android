@@ -22,8 +22,6 @@ import com.woocommerce.android.ui.login.localnotifications.LoginNotificationSche
 import com.woocommerce.android.ui.login.localnotifications.LoginNotificationScheduler.LoginHelpNotificationType.DEFAULT_HELP
 import com.woocommerce.android.ui.login.localnotifications.LoginNotificationScheduler.LoginHelpNotificationType.LOGIN_INCORRECT_WPCOM_EMAIL
 import com.woocommerce.android.ui.login.localnotifications.LoginNotificationScheduler.LoginHelpNotificationType.LOGIN_SITE_ADDRESS_ERROR
-import com.woocommerce.android.util.WooLog.T.NOTIFS
-import com.woocommerce.android.util.WooLogWrapper
 import com.woocommerce.android.viewmodel.ResourceProvider
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
@@ -34,8 +32,7 @@ class LoginHelpNotificationWorker @AssistedInject constructor(
     @Assisted workerParams: WorkerParameters,
     private val wooNotificationBuilder: WooNotificationBuilder,
     private val resourceProvider: ResourceProvider,
-    private val prefsWrapper: AppPrefsWrapper,
-    private val wooLogWrapper: WooLogWrapper
+    private val prefsWrapper: AppPrefsWrapper
 ) : Worker(appContext, workerParams) {
     override fun doWork(): Result {
         val notificationType = LoginHelpNotificationType.fromString(
@@ -91,10 +88,7 @@ class LoginHelpNotificationWorker @AssistedInject constructor(
                 notificationTappedIntent = buildOpenLoginWithSiteCredentialsIntent(siteAddress),
                 actions = getActionsForIncorrectWPComEmailNotification(siteAddress)
             )
-        } ?: wooLogWrapper.e(
-            NOTIFS,
-            "Can't create local notification for incorrect WPCom email: site address is missing"
-        )
+        } ?: defaultLoginSupportNotification()
     }
 
     private fun buildLoginNotification(
