@@ -319,6 +319,7 @@
     <string name="orderlist_simple_payments_menu">Simple payment</string>
     <string name="order_card_transition_name">order_card_%1$s</string>
     <string name="order_card_detail_transition_name">order_card_detail</string>
+    <string name="orderlist_mark_completed">Mark\ncompleted</string>
     <!--
          Simple Payments
     -->

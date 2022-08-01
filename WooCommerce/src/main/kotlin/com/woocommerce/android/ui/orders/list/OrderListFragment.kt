@@ -20,6 +20,7 @@ import androidx.core.view.isVisible
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import androidx.paging.PagedList
+import androidx.recyclerview.widget.ItemTouchHelper
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.transition.MaterialFadeThrough
 import com.woocommerce.android.AppConstants
@@ -68,7 +69,8 @@ class OrderListFragment :
     TopLevelFragment(R.layout.fragment_order_list),
     OnQueryTextListener,
     OnActionExpandListener,
-    OrderListListener {
+    OrderListListener,
+    SwipeToComplete.OnSwipeListener {
     companion object {
         const val TAG: String = "OrderListFragment"
         const val STATE_KEY_SEARCH_QUERY = "search-query"
@@ -193,6 +195,13 @@ class OrderListFragment :
         }
         binding.orderFiltersCard.setClickListener { viewModel.onFiltersButtonTapped() }
         initCreateOrderFAB(binding.createOrderButton)
+        initSwipeBehaviour()
+    }
+
+    private fun initSwipeBehaviour() {
+        val swipeToComplete = SwipeToComplete(requireContext(), this)
+        val swipeHelper = ItemTouchHelper(swipeToComplete)
+        swipeHelper.attachToRecyclerView(binding.orderListView.ordersList)
     }
 
     override fun onViewStateRestored(savedInstanceState: Bundle?) {
@@ -640,5 +649,9 @@ class OrderListFragment :
             SIMPLE_PAYMENTS_AND_ORDER_CREATION,
             state
         ).registerItself()
+    }
+
+    override fun onSwiped(itemId: Long) {
+        uiMessageResolver.showSnack("Order $itemId Swiped")
     }
 }
