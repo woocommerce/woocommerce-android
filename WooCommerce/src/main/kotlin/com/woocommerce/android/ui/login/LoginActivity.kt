@@ -248,7 +248,7 @@ class LoginActivity :
         )
         fragmentTransaction.replace(R.id.fragment_container, fragment, tag)
         if (shouldAddToBackStack) {
-            fragmentTransaction.addToBackStack(null)
+            fragmentTransaction.addToBackStack(tag)
         }
         fragmentTransaction.commitAllowingStateLoss()
     }
