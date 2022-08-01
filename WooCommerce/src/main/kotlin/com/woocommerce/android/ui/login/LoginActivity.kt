@@ -239,14 +239,21 @@ class LoginActivity :
         return Intent.ACTION_VIEW == action && uri.toString() == JETPACK_CONNECTED_REDIRECT_URL
     }
 
-    private fun slideInFragment(fragment: Fragment, shouldAddToBackStack: Boolean, tag: String) {
+    private fun changeFragment(
+        fragment: Fragment,
+        shouldAddToBackStack: Boolean,
+        tag: String,
+        animate: Boolean = true
+    ) {
         val fragmentTransaction = supportFragmentManager.beginTransaction()
-        fragmentTransaction.setCustomAnimations(
-            R.anim.default_enter_anim,
-            R.anim.default_exit_anim,
-            R.anim.default_pop_enter_anim,
-            R.anim.default_pop_exit_anim
-        )
+        if (animate) {
+            fragmentTransaction.setCustomAnimations(
+                R.anim.default_enter_anim,
+                R.anim.default_exit_anim,
+                R.anim.default_pop_enter_anim,
+                R.anim.default_pop_exit_anim
+            )
+        }
         fragmentTransaction.replace(R.id.fragment_container, fragment, tag)
         if (shouldAddToBackStack) {
             fragmentTransaction.addToBackStack(null)
@@ -349,7 +356,7 @@ class LoginActivity :
         val loginUsernamePasswordFragment = LoginUsernamePasswordFragment.newInstance(
             "wordpress.com", "wordpress.com", username, password, true
         )
-        slideInFragment(loginUsernamePasswordFragment, true, LoginUsernamePasswordFragment.TAG)
+        changeFragment(loginUsernamePasswordFragment, true, LoginUsernamePasswordFragment.TAG)
     }
 
     private fun startLoginViaWPCom() {
@@ -379,7 +386,7 @@ class LoginActivity :
     private fun showEmailPasswordScreen(email: String?, verifyEmail: Boolean, allowMagicLink: Boolean) {
         val loginEmailPasswordFragment = LoginEmailPasswordFragment
             .newInstance(email, null, null, null, false, allowMagicLink, verifyEmail)
-        slideInFragment(loginEmailPasswordFragment, true, LoginEmailPasswordFragment.TAG)
+        changeFragment(loginEmailPasswordFragment, true, LoginEmailPasswordFragment.TAG)
     }
 
     private fun showMagicLinkRequestScreen(
@@ -393,23 +400,23 @@ class LoginActivity :
             .newInstance(
                 email, scheme, false, null, verifyEmail, allowPassword, forceRequestAtStart
             )
-        slideInFragment(loginMagicLinkRequestFragment, true, LoginMagicLinkRequestFragment.TAG)
+        changeFragment(loginMagicLinkRequestFragment, true, LoginMagicLinkRequestFragment.TAG, false)
     }
 
     override fun loginViaSiteAddress() {
         unifiedLoginTracker.setFlowAndStep(LOGIN_SITE_ADDRESS, ENTER_SITE_ADDRESS)
         val loginSiteAddressFragment = getLoginViaSiteAddressFragment() ?: WooLoginSiteAddressFragment()
-        slideInFragment(loginSiteAddressFragment, true, LoginSiteAddressFragment.TAG)
+        changeFragment(loginSiteAddressFragment, true, LoginSiteAddressFragment.TAG)
     }
 
     private fun showPrologueFragment() {
         val prologueFragment = getPrologueFragment() ?: LoginPrologueFragment()
-        slideInFragment(prologueFragment, true, LoginPrologueFragment.TAG)
+        changeFragment(prologueFragment, true, LoginPrologueFragment.TAG)
     }
 
     private fun showPrologueSurveyFragment() {
         val prologueSurveyFragment = getPrologueSurveyFragment() ?: LoginPrologueSurveyFragment()
-        slideInFragment(prologueSurveyFragment, true, LoginPrologueSurveyFragment.TAG)
+        changeFragment(prologueSurveyFragment, true, LoginPrologueSurveyFragment.TAG)
     }
 
     override fun loginViaSocialAccount(
@@ -422,7 +429,7 @@ class LoginActivity :
             email, null, idToken,
             service, isPasswordRequired
         )
-        slideInFragment(loginEmailPasswordFragment, true, LoginEmailPasswordFragment.TAG)
+        changeFragment(loginEmailPasswordFragment, true, LoginEmailPasswordFragment.TAG)
     }
 
     override fun loggedInViaSocialAccount(oldSitesIds: ArrayList<Int>, doLoginUpdate: Boolean) {
@@ -451,7 +458,7 @@ class LoginActivity :
     override fun usePasswordInstead(email: String?) {
         loginAnalyticsListener.trackLoginMagicLinkExited()
         val loginEmailPasswordFragment = LoginEmailPasswordFragment.newInstance(email, null, null, null, false)
-        slideInFragment(loginEmailPasswordFragment, true, LoginEmailPasswordFragment.TAG)
+        changeFragment(loginEmailPasswordFragment, true, LoginEmailPasswordFragment.TAG)
     }
 
     override fun forgotPassword(url: String?) {
@@ -461,7 +468,7 @@ class LoginActivity :
 
     override fun needs2fa(email: String?, password: String?) {
         val login2FaFragment = Login2FaFragment.newInstance(email, password)
-        slideInFragment(login2FaFragment, true, Login2FaFragment.TAG)
+        changeFragment(login2FaFragment, true, Login2FaFragment.TAG)
     }
 
     override fun needs2faSocial(
@@ -476,13 +483,13 @@ class LoginActivity :
             email, userId,
             nonceAuthenticator, nonceBackup, nonceSms
         )
-        slideInFragment(login2FaFragment, true, Login2FaFragment.TAG)
+        changeFragment(login2FaFragment, true, Login2FaFragment.TAG)
     }
 
     override fun needs2faSocialConnect(email: String?, password: String?, idToken: String?, service: String?) {
         loginAnalyticsListener.trackLoginSocial2faNeeded()
         val login2FaFragment = Login2FaFragment.newInstanceSocialConnect(email, password, idToken, service)
-        slideInFragment(login2FaFragment, true, Login2FaFragment.TAG)
+        changeFragment(login2FaFragment, true, Login2FaFragment.TAG)
     }
 
     override fun loggedInViaPassword(oldSitesIds: ArrayList<Int>) {
@@ -552,7 +559,7 @@ class LoginActivity :
         val loginUsernamePasswordFragment = LoginUsernamePasswordFragment.newInstance(
             inputSiteAddress, endpointAddress, null, null, false
         )
-        slideInFragment(loginUsernamePasswordFragment, true, LoginUsernamePasswordFragment.TAG)
+        changeFragment(loginUsernamePasswordFragment, true, LoginUsernamePasswordFragment.TAG)
     }
 
     override fun handleSslCertificateError(
@@ -637,7 +644,7 @@ class LoginActivity :
             siteAddress, endpointAddress, username, password, userAvatarUrl,
             checkJetpackAvailability
         )
-        slideInFragment(
+        changeFragment(
             fragment = jetpackReqFragment as Fragment,
             shouldAddToBackStack = true,
             tag = LoginJetpackRequiredFragment.TAG
@@ -655,7 +662,7 @@ class LoginActivity :
         val discoveryErrorFragment = LoginDiscoveryErrorFragment.newInstance(
             siteAddress, endpointAddress, username, password, userAvatarUrl, errorMessage
         )
-        slideInFragment(
+        changeFragment(
             fragment = discoveryErrorFragment as Fragment,
             shouldAddToBackStack = true,
             tag = LoginJetpackRequiredFragment.TAG
@@ -747,12 +754,12 @@ class LoginActivity :
             val loginEmailFragment = getLoginEmailFragment(
                 siteCredsLayout = true
             ) ?: LoginEmailFragment.newInstance(siteAddress, true)
-            slideInFragment(loginEmailFragment as Fragment, true, LoginEmailFragment.TAG_SITE_CREDS_LAYOUT)
+            changeFragment(loginEmailFragment as Fragment, true, LoginEmailFragment.TAG_SITE_CREDS_LAYOUT)
         } else {
             val loginEmailFragment = getLoginEmailFragment(
                 siteCredsLayout = false
             ) ?: WooLoginEmailFragment()
-            slideInFragment(loginEmailFragment as Fragment, true, LoginEmailFragment.TAG)
+            changeFragment(loginEmailFragment as Fragment, true, LoginEmailFragment.TAG)
         }
     }
 
@@ -765,7 +772,7 @@ class LoginActivity :
         val loginUsernamePasswordFragment = LoginUsernamePasswordFragment.newInstance(
             siteAddress, endpointAddress, inputUsername, inputPassword, false
         )
-        slideInFragment(loginUsernamePasswordFragment, true, LoginUsernamePasswordFragment.TAG)
+        changeFragment(loginUsernamePasswordFragment, true, LoginUsernamePasswordFragment.TAG)
     }
 
     override fun startJetpackInstall(siteAddress: String?) {
@@ -778,7 +785,7 @@ class LoginActivity :
     override fun gotUnregisteredEmail(email: String?) {
         // Show the 'No WordPress.com account found' screen
         val fragment = LoginNoWPcomAccountFoundFragment.newInstance(email)
-        slideInFragment(
+        changeFragment(
             fragment = fragment as Fragment,
             shouldAddToBackStack = true,
             tag = LoginNoWPcomAccountFoundFragment.TAG
@@ -828,7 +835,7 @@ class LoginActivity :
 
             // show the "not WordPress error" screen
             val genericErrorFragment = LoginSiteCheckErrorFragment.newInstance(siteAddressClean, errorMessage)
-            slideInFragment(
+            changeFragment(
                 fragment = genericErrorFragment,
                 shouldAddToBackStack = true,
                 tag = LoginSiteCheckErrorFragment.TAG
