@@ -506,7 +506,6 @@ class OrderListViewModel @Inject constructor(
             status = gestureSource.newStatus,
             onOptimisticSuccess = {
                 updateOrderDisplayedStatus(gestureSource.orderPosition, gestureSource.newStatus)
-                triggerEvent(OrderListEvent.NotifyOrderChanged(gestureSource.orderPosition))
                 triggerEvent(
                     Event.ShowUndoSnackbar(
                         message = resourceProvider.getString(
