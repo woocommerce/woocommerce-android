@@ -681,6 +681,6 @@ class OrderListFragment :
     }
 
     override fun onSwiped(itemId: Long) {
-        uiMessageResolver.showSnack("Order $itemId Swiped")
+        viewModel.onSwipeToComplete(itemId)
     }
 }
