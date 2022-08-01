@@ -29,6 +29,7 @@ import com.woocommerce.android.network.ConnectionChangeReceiver.ConnectionChange
 import com.woocommerce.android.push.NotificationChannelType
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.ui.orders.OrderStatusUpdateSource
 import com.woocommerce.android.ui.orders.details.OrderDetailRepository
 import com.woocommerce.android.ui.orders.filters.domain.GetSelectedOrderFiltersCount
 import com.woocommerce.android.ui.orders.filters.domain.GetWCOrderListDescriptorWithFilters
@@ -56,7 +57,6 @@ import org.wordpress.android.fluxc.action.WCOrderAction.UPDATE_ORDER_STATUS
 import org.wordpress.android.fluxc.model.WCOrderListDescriptor
 import org.wordpress.android.fluxc.model.WCOrderStatusModel
 import org.wordpress.android.fluxc.model.list.PagedListWrapper
-import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.CoreOrderStatus
 import org.wordpress.android.fluxc.store.ListStore
 import org.wordpress.android.fluxc.store.WCOrderFetcher
 import org.wordpress.android.fluxc.store.WCOrderStore
@@ -499,26 +499,21 @@ class OrderListViewModel @Inject constructor(
         triggerEvent(OrderListEvent.NotifyOrderChanged(position))
     }
 
-    fun onSwipeToComplete(orderId: Long) {
+    fun onSwipeStatusUpdate(gestureSource: OrderStatusUpdateSource.SwipeGesture) {
         dismissListErrors = true
-        val pagedList = _pagedListData.value ?: return
-        // Find order in list
-        val pos = pagedList.indexOfFirst { listItem ->
-            (listItem as? OrderListItemUIType.OrderListItemUI)?.orderId == orderId
-        }
-        val order = (pagedList[pos] as OrderListItemUIType.OrderListItemUI)
-        val oldStatus = order.status
-
         optimisticUpdateOrderStatus(
-            orderId = orderId,
-            status = CoreOrderStatus.COMPLETED.value,
+            orderId = gestureSource.orderId,
+            status = gestureSource.newStatus,
             onOptimisticSuccess = {
-                updateOrderDisplayedStatus(pos, CoreOrderStatus.COMPLETED.value)
-                triggerEvent(OrderListEvent.NotifyOrderChanged(pos))
+                updateOrderDisplayedStatus(gestureSource.orderPosition, gestureSource.newStatus)
+                triggerEvent(OrderListEvent.NotifyOrderChanged(gestureSource.orderPosition))
                 triggerEvent(
                     Event.ShowUndoSnackbar(
-                        message = resourceProvider.getString(R.string.orderlist_mark_completed_success, orderId),
-                        undoAction = { undoSwipeStatusUpdate(orderId, oldStatus, pos) },
+                        message = resourceProvider.getString(
+                            R.string.orderlist_mark_completed_success,
+                            gestureSource.orderId
+                        ),
+                        undoAction = { undoSwipeStatusUpdate(gestureSource) },
                         dismissAction = object : Snackbar.Callback() {
                             override fun onDismissed(transientBottomBar: Snackbar?, event: Int) {
                                 super.onDismissed(transientBottomBar, event)
@@ -531,39 +526,37 @@ class OrderListViewModel @Inject constructor(
                 )
             },
             onFail = {
-                triggerEvent(OrderListEvent.NotifyOrderChanged(pos))
+                triggerEvent(OrderListEvent.NotifyOrderChanged(gestureSource.orderPosition))
                 triggerEvent(
                     OrderListEvent.ShowRetryErrorSnack(
                         message = resourceProvider.getString(
                             R.string.orderlist_updating_order_error,
-                            orderId
+                            gestureSource.orderId
                         ),
-                        retry = {
-                            onSwipeToComplete(orderId)
-                        }
+                        retry = { onSwipeStatusUpdate(gestureSource) }
                     )
                 )
             }
         )
     }
 
-    private fun undoSwipeStatusUpdate(orderId: Long, oldStatus: String, orderPosition: Int) {
+    private fun undoSwipeStatusUpdate(gestureSource: OrderStatusUpdateSource.SwipeGesture) {
         dismissListErrors = true
         optimisticUpdateOrderStatus(
-            orderId = orderId,
-            status = oldStatus,
+            orderId = gestureSource.orderId,
+            status = gestureSource.oldStatus,
             onOptimisticSuccess = {
-                updateOrderDisplayedStatus(orderPosition, oldStatus)
+                updateOrderDisplayedStatus(gestureSource.orderPosition, gestureSource.oldStatus)
             },
             onFail = {
-                triggerEvent(OrderListEvent.NotifyOrderChanged(orderPosition))
+                triggerEvent(OrderListEvent.NotifyOrderChanged(gestureSource.orderPosition))
                 triggerEvent(
                     OrderListEvent.ShowRetryErrorSnack(
                         message = resourceProvider.getString(
                             R.string.orderlist_updating_order_error,
-                            orderId
+                            gestureSource.orderId
                         ),
-                        retry = { undoSwipeStatusUpdate(orderId, oldStatus, orderPosition) }
+                        retry = { undoSwipeStatusUpdate(gestureSource) }
                     )
                 )
             },

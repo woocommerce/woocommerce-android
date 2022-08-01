@@ -14,6 +14,7 @@ import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.RecyclerView
 import com.woocommerce.android.R
+import com.woocommerce.android.ui.orders.OrderStatusUpdateSource
 import kotlin.math.roundToInt
 
 class SwipeToComplete(
@@ -25,6 +26,7 @@ class SwipeToComplete(
 ) {
     companion object {
         private const val NO_SWIPE_ABLE_SCREEN_PERCENT = 0.10
+        const val OLD_STATUS = "old_status"
     }
 
     private val displayMetrics = context.resources.displayMetrics
@@ -53,12 +55,22 @@ class SwipeToComplete(
     }
 
     override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
+        val pos = viewHolder.absoluteAdapterPosition
         val isSwipeAble = (viewHolder as SwipeAbleViewHolder).isSwipeAble()
         if (isSwipeAble) {
-            val id = viewHolder.getSwipedItemId()
-            listener.onSwiped(id)
+            val orderId = viewHolder.getSwipedItemId()
+            val oldStatus = viewHolder.getSwipedExtras()[OLD_STATUS] ?: run {
+                // don't perform swipe if old status is null
+                viewHolder.bindingAdapter?.notifyItemChanged(pos)
+                return
+            }
+            val gestureSource = OrderStatusUpdateSource.SwipeGesture(
+                orderId = orderId,
+                oldStatus = oldStatus,
+                orderPosition = pos
+            )
+            listener.onSwiped(gestureSource)
         } else {
-            val pos = viewHolder.absoluteAdapterPosition
             viewHolder.bindingAdapter?.notifyItemChanged(pos)
         }
     }
@@ -195,10 +207,11 @@ class SwipeToComplete(
 
         fun isSwipeAble(): Boolean
         fun getSwipedItemId(): Long
+        fun getSwipedExtras(): Map<String, String>
     }
 
     interface OnSwipeListener {
-        fun onSwiped(itemId: Long)
+        fun onSwiped(gestureSource: OrderStatusUpdateSource.SwipeGesture)
     }
 
     private val Int.dp

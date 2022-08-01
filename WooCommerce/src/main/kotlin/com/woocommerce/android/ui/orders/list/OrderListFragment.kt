@@ -47,6 +47,7 @@ import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.ui.feedback.SurveyType
 import com.woocommerce.android.ui.main.MainActivity
 import com.woocommerce.android.ui.main.MainNavigationRouter
+import com.woocommerce.android.ui.orders.OrderStatusUpdateSource
 import com.woocommerce.android.ui.orders.creation.OrderCreateEditViewModel
 import com.woocommerce.android.ui.orders.list.OrderCreationBottomSheetFragment.Companion.KEY_ORDER_CREATION_ACTION_RESULT
 import com.woocommerce.android.ui.orders.list.OrderCreationBottomSheetFragment.OrderCreationAction
@@ -680,7 +681,7 @@ class OrderListFragment :
         ).registerItself()
     }
 
-    override fun onSwiped(itemId: Long) {
-        viewModel.onSwipeToComplete(itemId)
+    override fun onSwiped(gestureSource: OrderStatusUpdateSource.SwipeGesture) {
+        viewModel.onSwipeStatusUpdate(gestureSource)
     }
 }
