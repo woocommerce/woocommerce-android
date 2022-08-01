@@ -113,8 +113,8 @@ class OrderCreateEditFormFragment : BaseFragment(R.layout.fragment_order_create_
         }
     }
 
-    override fun onStop() {
-        super.onStop()
+    override fun onPause() {
+        super.onPause()
         progressDialog?.dismiss()
         orderUpdateFailureSnackBar?.dismiss()
     }
