@@ -131,9 +131,9 @@ class LoginHelpNotificationWorker @AssistedInject constructor(
 
     private fun getActionsForIncorrectWPComEmailNotification(siteAddress: String): List<Pair<String, Intent>> =
         listOf(
-            resourceProvider.getString(R.string.login_help_notification_wordpress_login_button)
-                to buildOpenLoginWithSiteCredentialsIntent(siteAddress),
             resourceProvider.getString(R.string.login_help_notification_site_credentials_login_button)
+                to buildOpenLoginWithSiteCredentialsIntent(siteAddress),
+            resourceProvider.getString(R.string.login_help_notification_contact_support_button)
                 to buildOpenSupportScreenIntent(),
         )
 }
