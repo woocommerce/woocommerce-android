@@ -91,7 +91,10 @@ class LoginHelpNotificationWorker @AssistedInject constructor(
                 notificationTappedIntent = buildOpenLoginWithSiteCredentialsIntent(siteAddress),
                 actions = getActionsForIncorrectWPComEmailNotification(siteAddress)
             )
-        } ?: wooLogWrapper.e(NOTIFS, "Can't create local notification for incorrect WPCom email: site address is missing")
+        } ?: wooLogWrapper.e(
+            NOTIFS,
+            "Can't create local notification for incorrect WPCom email: site address is missing"
+        )
     }
 
     private fun buildLoginNotification(
