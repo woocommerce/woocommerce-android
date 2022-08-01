@@ -53,12 +53,13 @@ class SwipeToComplete(
     }
 
     override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
-        val pos = viewHolder.absoluteAdapterPosition
-        viewHolder.bindingAdapter?.notifyItemChanged(pos)
         val isSwipeAble = (viewHolder as SwipeAbleViewHolder).isSwipeAble()
         if (isSwipeAble) {
             val id = viewHolder.getSwipedItemId()
             listener.onSwiped(id)
+        } else {
+            val pos = viewHolder.absoluteAdapterPosition
+            viewHolder.bindingAdapter?.notifyItemChanged(pos)
         }
     }
 
