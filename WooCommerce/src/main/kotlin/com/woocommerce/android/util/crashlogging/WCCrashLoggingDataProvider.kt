@@ -6,7 +6,6 @@ import com.automattic.android.tracks.crashlogging.EventLevel
 import com.automattic.android.tracks.crashlogging.ExtraKnownKey
 import com.automattic.android.tracks.crashlogging.PerformanceMonitoringConfig
 import com.woocommerce.android.AppPrefs
-import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.BuildConfig
 import com.woocommerce.android.di.AppCoroutineScope
 import com.woocommerce.android.tools.SelectedSite
@@ -22,7 +21,7 @@ import org.greenrobot.eventbus.ThreadMode
 import org.wordpress.android.fluxc.Dispatcher
 import org.wordpress.android.fluxc.model.AccountModel
 import org.wordpress.android.fluxc.store.AccountStore
-import org.wordpress.android.util.AppLog
+import org.wordpress.android.fluxc.store.AccountStore.OnAccountChanged
 import java.util.Locale
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -31,15 +30,14 @@ import javax.inject.Singleton
 class WCCrashLoggingDataProvider @Inject constructor(
     private val localeProvider: LocaleProvider,
     private val accountStore: AccountStore,
-    private val selectedSite: SelectedSite,
     private val appPrefs: AppPrefs,
     private val enqueueSendingEncryptedLogs: EnqueueSendingEncryptedLogs,
     private val uuidGenerator: UuidGenerator,
-    private val dispatcher: Dispatcher,
     @AppCoroutineScope private val appScope: CoroutineScope,
     buildConfig: BuildConfigWrapper,
+    selectedSite: SelectedSite,
+    dispatcher: Dispatcher,
 ) : CrashLoggingDataProvider {
-
     init {
         dispatcher.register(this)
     }
@@ -48,7 +46,7 @@ class WCCrashLoggingDataProvider @Inject constructor(
 
     @Suppress("unused")
     @Subscribe(threadMode = ThreadMode.MAIN)
-    fun onAccountChanged(event: AccountStore.OnAccountChanged) {
+    fun onAccountChanged(event: OnAccountChanged) {
         appScope.launch {
             crashLoggingUser.emit(accountStore.account.toCrashLoggingUser())
         }

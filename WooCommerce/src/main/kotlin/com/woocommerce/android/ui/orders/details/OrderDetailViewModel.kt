@@ -99,11 +99,11 @@ class OrderDetailViewModel @Inject constructor(
     private val cardReaderTracker: CardReaderTracker,
     private val trackerWrapper: AnalyticsTrackerWrapper,
     private val shippingLabelOnboardingRepository: ShippingLabelOnboardingRepository,
-    private val orderTransactionValidator: OrderTransactionValidator,
+    private val orderDetailsTransactionLauncher: OrderDetailsTransactionLauncher,
 ) : ScopedViewModel(savedState), OnProductFetchedListener {
     private val navArgs: OrderDetailFragmentArgs by savedState.navArgs()
 
-    val performanceObserver: LifecycleObserver = orderTransactionValidator
+    val performanceObserver: LifecycleObserver = orderDetailsTransactionLauncher
 
     var order: Order
         get() = requireNotNull(viewState.orderInfo?.order)
@@ -142,7 +142,7 @@ class OrderDetailViewModel @Inject constructor(
     override fun onCleared() {
         super.onCleared()
         productImageMap.unsubscribeFromOnProductFetchedEvents(this)
-        orderTransactionValidator.clear()
+        orderDetailsTransactionLauncher.clear()
     }
 
     init {
@@ -180,7 +180,7 @@ class OrderDetailViewModel @Inject constructor(
                 isOrderDetailSkeletonShown = showSkeleton
             )
             val fetchedOrder = orderDetailRepository.fetchOrderById(navArgs.orderId)
-            orderTransactionValidator.onOrderFetched()
+            orderDetailsTransactionLauncher.onOrderFetched()
             if (fetchedOrder != null) {
                 order = fetchedOrder
                 fetchAndDisplayOrderDetails()
@@ -560,7 +560,7 @@ class OrderDetailViewModel @Inject constructor(
                 triggerEvent(ShowSnackbar(string.order_error_fetch_notes_generic))
             }
             // fetch order notes from the local db and hide the skeleton view
-            orderTransactionValidator.onNotesFetched()
+            orderDetailsTransactionLauncher.onNotesFetched()
             _orderNotes.value = orderDetailRepository.getOrderNotes(navArgs.orderId)
         }
     }
@@ -596,7 +596,7 @@ class OrderDetailViewModel @Inject constructor(
         if (shippingLabelOnboardingRepository.isShippingPluginReady) {
             orderDetailRepository.fetchSLCreationEligibility(order.id)
         }
-        orderTransactionValidator.onPackageCreationEligibleFetched()
+        orderDetailsTransactionLauncher.onPackageCreationEligibleFetched()
     }
 
     private fun loadShipmentTracking(shippingLabels: ListInfo<ShippingLabel>): ListInfo<OrderShipmentTracking> {
@@ -610,18 +610,18 @@ class OrderDetailViewModel @Inject constructor(
 
     private fun fetchOrderRefundsAsync() = async {
         orderDetailRepository.fetchOrderRefunds(navArgs.orderId)
-        orderTransactionValidator.onRefundsFetched()
+        orderDetailsTransactionLauncher.onRefundsFetched()
     }
 
     private fun fetchShipmentTrackingAsync() = async {
         val result = orderDetailRepository.fetchOrderShipmentTrackingList(navArgs.orderId)
         appPrefs.setTrackingExtensionAvailable(result == SUCCESS)
-        orderTransactionValidator.onShipmentTrackingFetched()
+        orderDetailsTransactionLauncher.onShipmentTrackingFetched()
     }
 
     private fun fetchOrderShippingLabelsAsync() = async {
         orderDetailRepository.fetchOrderShippingLabels(navArgs.orderId)
-        orderTransactionValidator.onShippingLabelFetched()
+        orderDetailsTransactionLauncher.onShippingLabelFetched()
     }
 
     private fun loadOrderShippingLabels(): ListInfo<ShippingLabel> {

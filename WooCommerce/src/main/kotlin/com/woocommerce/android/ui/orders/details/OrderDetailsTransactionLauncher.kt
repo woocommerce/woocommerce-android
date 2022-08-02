@@ -16,10 +16,9 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @ViewModelScoped
-class OrderTransactionValidator @Inject constructor(
+class OrderDetailsTransactionLauncher @Inject constructor(
     private val performanceTransactionRepository: PerformanceTransactionRepository
 ) : LifecycleEventObserver {
-
     private companion object {
         const val TRANSACTION_NAME = "OrderDetails"
     }

@@ -17,10 +17,10 @@ import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
-import javax.inject.Singleton
 import kotlinx.coroutines.CoroutineScope
 import org.wordpress.android.fluxc.logging.FluxCCrashLogger
 import org.wordpress.android.fluxc.model.encryptedlogging.EncryptedLoggingKey
+import javax.inject.Singleton
 
 @InstallIn(SingletonComponent::class)
 @Module
