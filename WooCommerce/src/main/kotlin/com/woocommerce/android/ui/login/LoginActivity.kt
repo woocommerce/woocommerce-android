@@ -56,9 +56,9 @@ import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode.MAIN
 import org.wordpress.android.fluxc.Dispatcher
 import org.wordpress.android.fluxc.network.MemorizingTrustManager
-import org.wordpress.android.fluxc.store.AccountStore
 import org.wordpress.android.fluxc.store.AccountStore.AuthEmailPayloadScheme.WOOCOMMERCE
 import org.wordpress.android.fluxc.store.AccountStore.AuthOptionsErrorType.UNKNOWN_USER
+import org.wordpress.android.fluxc.store.AccountStore.OnAuthOptionsFetched
 import org.wordpress.android.fluxc.store.SiteStore
 import org.wordpress.android.fluxc.store.SiteStore.ConnectSiteInfoPayload
 import org.wordpress.android.fluxc.store.SiteStore.OnConnectSiteInfoChecked
@@ -869,7 +869,7 @@ class LoginActivity :
 
     @SuppressWarnings("unused")
     @Subscribe(threadMode = MAIN)
-    fun onAuthOptionsFetched(event: AccountStore.OnAuthOptionsFetched) {
+    fun onAuthOptionsFetched(event: OnAuthOptionsFetched) {
         if (event.error?.type == UNKNOWN_USER) {
             loginNotificationScheduler.scheduleNotification(LOGIN_INCORRECT_WPCOM_EMAIL)
         }
