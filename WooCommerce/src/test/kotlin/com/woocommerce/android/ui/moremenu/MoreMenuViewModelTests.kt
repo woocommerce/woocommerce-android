@@ -157,20 +157,20 @@ class MoreMenuViewModelTests : BaseUnitTest() {
         val states = viewModel.moreMenuViewState.captureValues()
 
         // THEN
-        val paymentsButton = states.last().moreMenuItems.first { it.text == R.string.more_menu_button_reviews }
-        assertThat(paymentsButton.icon).isEqualTo(R.drawable.ic_more_menu_reviews)
-        assertThat(paymentsButton.badgeState?.textColor).isEqualTo(
+        val reviewsButton = states.last().moreMenuItems.first { it.text == R.string.more_menu_button_reviews }
+        assertThat(reviewsButton.icon).isEqualTo(R.drawable.ic_more_menu_reviews)
+        assertThat(reviewsButton.badgeState?.textColor).isEqualTo(
             R.color.color_on_surface_inverted
         )
-        assertThat(paymentsButton.badgeState?.badgeSize).isEqualTo(
+        assertThat(reviewsButton.badgeState?.badgeSize).isEqualTo(
             R.dimen.major_150
         )
-        assertThat(paymentsButton.badgeState?.backgroundColor).isEqualTo(
+        assertThat(reviewsButton.badgeState?.backgroundColor).isEqualTo(
             R.color.color_primary
         )
-        assertThat(paymentsButton.badgeState?.animateAppearance).isEqualTo(false)
-        assertThat(paymentsButton.badgeState?.textState?.text).isEqualTo("1")
-        assertThat(paymentsButton.badgeState?.textState?.fontSize)
+        assertThat(reviewsButton.badgeState?.animateAppearance).isEqualTo(false)
+        assertThat(reviewsButton.badgeState?.textState?.text).isEqualTo("1")
+        assertThat(reviewsButton.badgeState?.textState?.fontSize)
             .isEqualTo(R.dimen.text_minor_80)
     }
 }
