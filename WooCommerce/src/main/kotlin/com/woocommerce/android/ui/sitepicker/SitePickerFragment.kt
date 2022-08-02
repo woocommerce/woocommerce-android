@@ -9,17 +9,23 @@ import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.woocommerce.android.AppUrls
+import com.woocommerce.android.NavGraphMainDirections
 import com.woocommerce.android.R
 import com.woocommerce.android.databinding.FragmentSitePickerBinding
+import com.woocommerce.android.extensions.handleNotice
+import com.woocommerce.android.extensions.handleResult
 import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.support.HelpActivity
 import com.woocommerce.android.ui.base.BaseFragment
+import com.woocommerce.android.ui.common.wpcomwebview.WPComWebViewFragment
 import com.woocommerce.android.ui.login.LoginActivity
 import com.woocommerce.android.ui.login.LoginEmailHelpDialogFragment
 import com.woocommerce.android.ui.login.LoginWhatIsJetpackDialogFragment
+import com.woocommerce.android.ui.main.AppBarStatus
 import com.woocommerce.android.ui.main.MainActivity
 import com.woocommerce.android.ui.sitepicker.SitePickerViewModel.SitePickerEvent.NavigateToEmailHelpDialogEvent
 import com.woocommerce.android.ui.sitepicker.SitePickerViewModel.SitePickerEvent.NavigateToMainActivityEvent
+import com.woocommerce.android.ui.sitepicker.SitePickerViewModel.SitePickerEvent.NavigateToWPComWebView
 import com.woocommerce.android.ui.sitepicker.SitePickerViewModel.SitePickerEvent.NavigationToHelpFragmentEvent
 import com.woocommerce.android.ui.sitepicker.SitePickerViewModel.SitePickerEvent.NavigationToLearnMoreAboutJetpackEvent
 import com.woocommerce.android.ui.sitepicker.SitePickerViewModel.SitePickerEvent.NavigationToWhatIsJetpackFragmentEvent
@@ -46,6 +52,9 @@ class SitePickerFragment : BaseFragment(R.layout.fragment_site_picker), LoginEma
     private var skeletonView = SkeletonView()
     private var progressDialog: CustomProgressDialog? = null
 
+    override val activityAppBarStatus: AppBarStatus
+        get() = if (viewModel.shouldShowToolbar) AppBarStatus.Visible() else AppBarStatus.Hidden
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
@@ -53,6 +62,7 @@ class SitePickerFragment : BaseFragment(R.layout.fragment_site_picker), LoginEma
 
         setupViews()
         setupObservers(viewModel)
+        handleResults()
     }
 
     override fun onDestroyView() {
@@ -80,13 +90,13 @@ class SitePickerFragment : BaseFragment(R.layout.fragment_site_picker), LoginEma
             new.sitePickerLabelText?.takeIfNotEqualTo(old?.sitePickerLabelText) {
                 binding.siteListLabel.text = it
             }
-            new.isToolbarVisible.takeIfNotEqualTo(old?.isToolbarVisible) {
-                if (it) {
-                    (activity as? MainActivity)?.supportActionBar?.show()
-                } else {
-                    (activity as? MainActivity)?.supportActionBar?.hide()
-                }
-            }
+//            new.isToolbarVisible.takeIfNotEqualTo(old?.isToolbarVisible) {
+//                if (it) {
+//                    (activity as? MainActivity)?.supportActionBar?.show()
+//                } else {
+//                    (activity as? MainActivity)?.supportActionBar?.hide()
+//                }
+//            }
             new.isHelpBtnVisible.takeIfNotEqualTo(old?.isHelpBtnVisible) {
                 binding.buttonHelp.isVisible = it
             }
@@ -144,10 +154,17 @@ class SitePickerFragment : BaseFragment(R.layout.fragment_site_picker), LoginEma
                 is NavigationToWhatIsJetpackFragmentEvent -> navigateToWhatIsJetpackScreen()
                 is NavigationToLearnMoreAboutJetpackEvent -> navigateToLearnMoreAboutJetpackScreen()
                 is NavigateToEmailHelpDialogEvent -> navigateToNeedHelpFindingEmailScreen()
+                is NavigateToWPComWebView -> navigateToWPComWebView(event)
                 is Logout -> onLogout()
                 is Exit -> findNavController().navigateUp()
                 else -> event.isHandled = false
             }
+        }
+    }
+
+    private fun handleResults() {
+        handleNotice(WPComWebViewFragment.WEBVIEW_RESULT) {
+            viewModel.onWooInstalled()
         }
     }
 
@@ -177,7 +194,7 @@ class SitePickerFragment : BaseFragment(R.layout.fragment_site_picker), LoginEma
 
     private fun updateWooNotFoundView() {
         binding.loginEpilogueButtonBar.buttonPrimary.setOnClickListener {
-            viewModel.onViewConnectedStoresButtonClick()
+            viewModel.onInstallWooClicked()
         }
         binding.noStoresView.clickSecondaryAction {
             viewModel.onRefreshButtonClick()
@@ -234,6 +251,15 @@ class SitePickerFragment : BaseFragment(R.layout.fragment_site_picker), LoginEma
         LoginEmailHelpDialogFragment.newInstance(this).also {
             it.show(parentFragmentManager, LoginEmailHelpDialogFragment.TAG)
         }
+    }
+
+    private fun navigateToWPComWebView(event: NavigateToWPComWebView) {
+        findNavController().navigate(
+            NavGraphMainDirections.actionGlobalWPComWebViewFragment(
+                urlToLoad = event.url,
+                urlToTriggerExit = event.validationUrl
+            )
+        )
     }
 
     private fun onLogout() {
