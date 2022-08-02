@@ -397,13 +397,21 @@ class SitePickerViewModel @Inject constructor(
         )
         // Fetch site
         val result = repository.fetchWooCommerceSite(site)
+            .recoverCatching {
+                // Retry once on errors
+                repository.fetchWooCommerceSite(site)
+                    .getOrThrow()
+            }
         sitePickerViewState = sitePickerViewState.copy(isSkeletonViewVisible = false)
 
         result.fold(onSuccess = {
             // Continue login
             displaySites(repository.getWooCommerceSites())
         }, onFailure = {
-            TODO()
+            triggerEvent(ShowSnackbar(string.site_picker_error))
+            // This would lead to the [WooNotFoundState] again
+            // The chance of getting this state is small, because of the retry mechanism above
+            displaySites(repository.getWooCommerceSites())
         })
     }
 

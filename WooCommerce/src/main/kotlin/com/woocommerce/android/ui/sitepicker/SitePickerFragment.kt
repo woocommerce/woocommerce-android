@@ -13,10 +13,10 @@ import com.woocommerce.android.NavGraphMainDirections
 import com.woocommerce.android.R
 import com.woocommerce.android.databinding.FragmentSitePickerBinding
 import com.woocommerce.android.extensions.handleNotice
-import com.woocommerce.android.extensions.handleResult
 import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.support.HelpActivity
 import com.woocommerce.android.ui.base.BaseFragment
+import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.common.wpcomwebview.WPComWebViewFragment
 import com.woocommerce.android.ui.login.LoginActivity
 import com.woocommerce.android.ui.login.LoginEmailHelpDialogFragment
@@ -37,10 +37,12 @@ import com.woocommerce.android.ui.sitepicker.SitePickerViewModel.SitePickerState
 import com.woocommerce.android.util.ChromeCustomTabUtils
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Logout
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.widgets.CustomProgressDialog
 import com.woocommerce.android.widgets.SkeletonView
 import dagger.hilt.android.AndroidEntryPoint
 import org.wordpress.android.login.LoginMode
+import javax.inject.Inject
 
 @AndroidEntryPoint
 class SitePickerFragment : BaseFragment(R.layout.fragment_site_picker), LoginEmailHelpDialogFragment.Listener {
@@ -48,6 +50,7 @@ class SitePickerFragment : BaseFragment(R.layout.fragment_site_picker), LoginEma
     private val binding get() = _binding!!
 
     private val viewModel: SitePickerViewModel by viewModels()
+    @Inject lateinit var uiMessageResolver: UIMessageResolver
 
     private var skeletonView = SkeletonView()
     private var progressDialog: CustomProgressDialog? = null
@@ -155,6 +158,7 @@ class SitePickerFragment : BaseFragment(R.layout.fragment_site_picker), LoginEma
                 is NavigationToLearnMoreAboutJetpackEvent -> navigateToLearnMoreAboutJetpackScreen()
                 is NavigateToEmailHelpDialogEvent -> navigateToNeedHelpFindingEmailScreen()
                 is NavigateToWPComWebView -> navigateToWPComWebView(event)
+                is ShowSnackbar -> uiMessageResolver.showSnack(event.message)
                 is Logout -> onLogout()
                 is Exit -> findNavController().navigateUp()
                 else -> event.isHandled = false
