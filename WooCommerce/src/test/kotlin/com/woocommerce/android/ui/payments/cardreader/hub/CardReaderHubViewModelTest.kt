@@ -52,6 +52,14 @@ class CardReaderHubViewModelTest : BaseUnitTest() {
     }
 
     @Test
+    fun `when screen shown, then collect payments row present`() {
+        assertThat((viewModel.viewStateData.value as CardReaderHubViewModel.CardReaderHubViewState.Content).rows)
+            .anyMatch {
+                it.label == UiString.UiStringRes(R.string.card_reader_collect_payment)
+            }
+    }
+
+    @Test
     fun `when screen shown, then manage card reader row present`() {
         assertThat((viewModel.viewStateData.value as CardReaderHubViewModel.CardReaderHubViewState.Content).rows)
             .anyMatch {
@@ -76,6 +84,14 @@ class CardReaderHubViewModelTest : BaseUnitTest() {
     }
 
     @Test
+    fun `when screen shown, then collect payment row icon is present`() {
+        assertThat((viewModel.viewStateData.value as CardReaderHubViewModel.CardReaderHubViewState.Content).rows)
+            .anyMatch {
+                it.icon == R.drawable.ic_gridicons_money_on_surface
+            }
+    }
+
+    @Test
     fun `when screen shown, then purchase card reader row icon is present`() {
         assertThat((viewModel.viewStateData.value as CardReaderHubViewModel.CardReaderHubViewState.Content).rows)
             .anyMatch {
@@ -89,6 +105,19 @@ class CardReaderHubViewModelTest : BaseUnitTest() {
             .anyMatch {
                 it.icon == R.drawable.ic_card_reader_manual
             }
+    }
+
+    @Test
+    fun `when user clicks on collect payment, then app navigates to card reader detail screen`() {
+        (viewModel.viewStateData.value as CardReaderHubViewModel.CardReaderHubViewState.Content).rows
+            .find {
+                it.label == UiString.UiStringRes(R.string.card_reader_collect_payment)
+            }!!.onItemClicked.invoke()
+
+        assertThat(viewModel.event.value)
+            .isEqualTo(
+                CardReaderHubViewModel.CardReaderHubEvents.NavigateToPaymentCollectionScreen
+            )
     }
 
     @Test
