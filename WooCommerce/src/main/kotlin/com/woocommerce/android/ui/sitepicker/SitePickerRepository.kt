@@ -49,8 +49,8 @@ class SitePickerRepository @Inject constructor(
             when {
                 it.isError -> {
                     WooLog.e(
-                        WooLog.T.SITE_PICKER, "Fetching site ${siteModel.siteId} failed" +
-                            "Error: ${it.error.type} ${it.error.message}"
+                        WooLog.T.SITE_PICKER,
+                        "Fetching site ${siteModel.siteId} failed, Error: ${it.error.type} ${it.error.message}"
                     )
                     Result.failure(WooException(it.error))
                 }
