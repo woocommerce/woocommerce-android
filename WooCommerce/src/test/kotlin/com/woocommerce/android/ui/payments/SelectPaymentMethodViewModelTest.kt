@@ -9,6 +9,8 @@ import com.woocommerce.android.model.Order
 import com.woocommerce.android.model.OrderMapper
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.ui.payments.SelectPaymentMethodViewModel.NavigateBackToHub
+import com.woocommerce.android.ui.payments.SelectPaymentMethodViewModel.NavigateBackToOrderList
 import com.woocommerce.android.ui.payments.SelectPaymentMethodViewModel.NavigateToCardReaderHubFlow
 import com.woocommerce.android.ui.payments.SelectPaymentMethodViewModel.NavigateToCardReaderRefundFlow
 import com.woocommerce.android.ui.payments.SelectPaymentMethodViewModel.TakePaymentViewState.Loading
@@ -26,6 +28,7 @@ import com.woocommerce.android.viewmodel.BaseUnitTest
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowDialog
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.test.advanceUntilIdle
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 import org.mockito.kotlin.any
@@ -394,6 +397,36 @@ class SelectPaymentMethodViewModelTest : BaseUnitTest() {
                     AnalyticsTracker.KEY_FLOW to AnalyticsTracker.VALUE_ORDER_PAYMENTS_FLOW,
                 )
             )
+        }
+
+    @Test
+    fun `given order payment flow, when on reader payment complete, then exit to order list`() =
+        testBlocking {
+            // GIVEN
+            whenever(orderEntity.status).thenReturn(CoreOrderStatus.COMPLETED.value)
+            val viewModel = initViewModel(Payment(1L, ORDER))
+
+            // WHEN
+            viewModel.onCardReaderPaymentCompleted()
+            advanceUntilIdle()
+
+            // THEN
+            assertThat(viewModel.event.value).isEqualTo(NavigateBackToOrderList)
+        }
+
+    @Test
+    fun `given simple payment flow, when on reader payment complete, then exit to hub`() =
+        testBlocking {
+            // GIVEN
+            whenever(orderEntity.status).thenReturn(CoreOrderStatus.COMPLETED.value)
+            val viewModel = initViewModel(Payment(1L, SIMPLE))
+
+            // WHEN
+            viewModel.onCardReaderPaymentCompleted()
+            advanceUntilIdle()
+
+            // THEN
+            assertThat(viewModel.event.value).isEqualTo(NavigateBackToHub(CardReadersHub))
         }
 
     @Test
