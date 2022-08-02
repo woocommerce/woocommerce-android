@@ -72,6 +72,7 @@ class LoginNotificationScheduler @Inject constructor(
                 when (string) {
                     LOGIN_SITE_ADDRESS_ERROR.typeName -> LOGIN_SITE_ADDRESS_ERROR
                     DEFAULT_HELP.typeName -> DEFAULT_HELP
+                    LOGIN_INCORRECT_WPCOM_EMAIL.typeName -> LOGIN_INCORRECT_WPCOM_EMAIL
                     else -> DEFAULT_HELP
                 }
         }
