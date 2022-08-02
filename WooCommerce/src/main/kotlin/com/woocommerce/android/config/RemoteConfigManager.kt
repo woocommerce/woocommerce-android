@@ -44,10 +44,13 @@ class RemoteConfigManager @Inject constructor(
             .addOnSuccessListener {
                 val prologueVariant = remoteConfig.getString("prologue_variant")
                 val siteLoginVariant = remoteConfig.getString("site_credentials_emphasis")
+                val performanceMonitoringSampleRate =
+                    remoteConfig.getDouble("wc_android_performance_monitoring_sample_rate")
 
                 scope.launch {
                     repository.updatePrologueVariantValue(prologueVariant)
                     repository.updateSiteLoginVariantValue(siteLoginVariant)
+                    repository.updatePerformanceMonitoringSampleRate(performanceMonitoringSampleRate)
                 }
             }
             .addOnFailureListener {

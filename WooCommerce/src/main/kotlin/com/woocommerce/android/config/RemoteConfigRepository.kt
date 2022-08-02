@@ -10,4 +10,7 @@ interface RemoteConfigRepository {
 
     fun observeSiteLoginVariant(): Flow<SiteLoginVariant>
     suspend fun updateSiteLoginVariantValue(variantValue: String)
+
+    fun observePerformanceMonitoringSampleRate(): Flow<Double>
+    suspend fun updatePerformanceMonitoringSampleRate(performanceMonitoringSampleRate: Double)
 }
