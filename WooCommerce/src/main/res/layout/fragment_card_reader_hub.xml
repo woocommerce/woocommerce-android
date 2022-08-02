@@ -1,8 +1,49 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.recyclerview.widget.RecyclerView xmlns:android="http://schemas.android.com/apk/res/android"
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/cardReaderHubRv"
     android:layout_width="match_parent"
-    android:background="@color/color_surface"
     android:layout_height="match_parent"
-    tools:listitem="@layout/card_reader_hub_list_item" />
+    android:orientation="vertical">
+
+    <com.google.android.material.progressindicator.LinearProgressIndicator
+        android:id="@+id/cardReaderHubLoading"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:indeterminate="true"
+        tools:visibility="visible" />
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/cardReaderHubRv"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/color_surface"
+        tools:listitem="@layout/card_reader_hub_list_item" />
+
+    <Space
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1" />
+
+    <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/cardReaderHubOnboardingFailedTv"
+        style="@style/Woo.TextView.Caption"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="0dp"
+        android:layout_marginTop="@dimen/major_100"
+        android:layout_marginEnd="0dp"
+        android:elevation="@dimen/minor_10"
+        android:outlineProvider="bounds"
+        android:layout_marginBottom="@dimen/minor_100"
+        android:background="@color/color_surface"
+        android:drawableStart="@drawable/ic_info_outline_20dp"
+        android:drawablePadding="@dimen/major_100"
+        android:foreground="?attr/selectableItemBackground"
+        android:padding="@dimen/major_100"
+        tools:text="@string/card_reader_onboarding_not_finished"
+        android:textColor="@color/color_on_surface"
+        app:drawableTint="@color/color_on_surface"
+        tools:visibility="visible" />
+</LinearLayout>

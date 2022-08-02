@@ -1,7 +1,9 @@
 package com.woocommerce.android.ui.payments.cardreader.hub
 
 import android.os.Bundle
+import android.text.method.LinkMovementMethod
 import android.view.View
+import androidx.core.view.isVisible
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.DividerItemDecoration
@@ -14,6 +16,7 @@ import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderFlowParam
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboardingParams
 import com.woocommerce.android.util.ChromeCustomTabUtils
+import com.woocommerce.android.util.UiHelpers
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -77,6 +80,11 @@ class CardReaderHubFragment : BaseFragment(R.layout.fragment_card_reader_hub) {
     private fun observeViewState(binding: FragmentCardReaderHubBinding) {
         viewModel.viewStateData.observe(viewLifecycleOwner) { state ->
             (binding.cardReaderHubRv.adapter as CardReaderHubAdapter).setItems(state.rows)
+            with(binding.cardReaderHubOnboardingFailedTv) {
+                movementMethod = LinkMovementMethod.getInstance()
+                UiHelpers.setTextOrHide(this, state.errorText)
+            }
+            binding.cardReaderHubLoading.isVisible = state.isLoading
         }
     }
 

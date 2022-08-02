@@ -19,5 +19,6 @@ class CardReaderHubAdapter : RecyclerView.Adapter<CardReaderHubViewHolder>() {
     fun setItems(rows: List<CardReaderHubViewModel.CardReaderHubListItemViewState>) {
         items.clear()
         items.addAll(rows)
+        notifyDataSetChanged()
     }
 }

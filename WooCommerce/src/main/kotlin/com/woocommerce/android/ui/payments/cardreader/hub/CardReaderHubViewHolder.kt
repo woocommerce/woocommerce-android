@@ -17,8 +17,15 @@ sealed class CardReaderHubViewHolder(val parent: ViewGroup, @LayoutRes layout: I
         override fun onBind(uiState: CardReaderHubViewModel.CardReaderHubListItemViewState) {
             binding.cardReaderHubListItemLabelTv.text = UiHelpers.getTextOfUiString(itemView.context, uiState.label)
             binding.cardReaderMenuIcon.setImageResource(uiState.icon)
-            binding.root.setOnClickListener {
-                uiState.onItemClicked.invoke()
+
+            if (uiState.isEnabled) {
+                binding.root.setOnClickListener { uiState.onItemClicked.invoke() }
+                binding.cardReaderMenuIcon.alpha = 1.0f
+                binding.cardReaderHubListItemLabelTv.alpha = 1.0f
+            } else {
+                binding.root.setOnClickListener(null)
+                binding.cardReaderMenuIcon.alpha = 0.5f
+                binding.cardReaderHubListItemLabelTv.alpha = 0.5f
             }
         }
     }
