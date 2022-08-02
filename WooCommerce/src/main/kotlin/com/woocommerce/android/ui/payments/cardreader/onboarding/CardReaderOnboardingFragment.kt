@@ -60,7 +60,6 @@ class CardReaderOnboardingFragment : BaseFragment(R.layout.fragment_card_reader_
                         CardReaderOnboardingFragmentDirections
                             .actionCardReaderOnboardingFragmentToCardReaderHubFragment(
                                 event.cardReaderFlowParam,
-                                event.storeCountryCode
                             )
                     )
                 }

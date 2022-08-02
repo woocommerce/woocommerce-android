@@ -15,10 +15,13 @@ import com.woocommerce.android.ui.payments.cardreader.InPersonPaymentsCanadaFeat
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderFlowParam
 import com.woocommerce.android.ui.payments.cardreader.onboarding.PluginType.STRIPE_EXTENSION_GATEWAY
 import com.woocommerce.android.ui.payments.cardreader.onboarding.PluginType.WOOCOMMERCE_PAYMENTS
+import com.woocommerce.android.util.WooLog
+import com.woocommerce.android.util.WooLog.T.CARD_READER
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.navArgs
 import dagger.hilt.android.lifecycle.HiltViewModel
+import org.wordpress.android.fluxc.store.WooCommerceStore
 import javax.inject.Inject
 
 @HiltViewModel
@@ -28,6 +31,7 @@ class CardReaderHubViewModel @Inject constructor(
     private val appPrefsWrapper: AppPrefsWrapper,
     private val selectedSite: SelectedSite,
     private val analyticsTrackerWrapper: AnalyticsTrackerWrapper,
+    private val wooStore: WooCommerceStore,
 ) : ScopedViewModel(savedState) {
     private val arguments: CardReaderHubFragmentArgs by savedState.navArgs()
 
@@ -65,8 +69,10 @@ class CardReaderHubViewModel @Inject constructor(
 
     private val cardReaderPurchaseUrl: String by lazy {
         if (inPersonPaymentsCanadaFeatureFlag.isEnabled()) {
-            // todo fix the URL when decided
-            "${AppUrls.WOOCOMMERCE_PURCHASE_CARD_READER_IN_COUNTRY}${arguments.storeCountryCode}"
+            val storeCountryCode = wooStore.getStoreCountryCode(selectedSite.get()) ?: null.also {
+                WooLog.e(CARD_READER, "Store's country code not found.")
+            }
+            "${AppUrls.WOOCOMMERCE_PURCHASE_CARD_READER_IN_COUNTRY}$storeCountryCode"
         } else {
             val preferredPlugin = appPrefsWrapper.getCardReaderPreferredPlugin(
                 selectedSite.get().id,

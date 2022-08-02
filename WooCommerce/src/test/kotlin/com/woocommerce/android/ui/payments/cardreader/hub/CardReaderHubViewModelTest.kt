@@ -25,6 +25,7 @@ import org.mockito.kotlin.mock
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import org.wordpress.android.fluxc.model.SiteModel
+import org.wordpress.android.fluxc.store.WooCommerceStore
 
 @ExperimentalCoroutinesApi
 class CardReaderHubViewModelTest : BaseUnitTest() {
@@ -38,11 +39,9 @@ class CardReaderHubViewModelTest : BaseUnitTest() {
         on(it.get()).thenReturn(SiteModel())
     }
     private val analyticsTrackerWrapper: AnalyticsTrackerWrapper = mock()
-
-    private val countryCode = "US"
+    private val wooStore: WooCommerceStore = mock()
 
     private val savedState = CardReaderHubFragmentArgs(
-        storeCountryCode = countryCode,
         cardReaderFlowParam = CardReaderFlowParam.CardReadersHub,
     ).initSavedStateHandle()
 
@@ -155,6 +154,7 @@ class CardReaderHubViewModelTest : BaseUnitTest() {
     @Test
     fun `given ipp canada enabled, when user clicks on purchase card reader, then app opens external webview`() {
         whenever(inPersonPaymentsCanadaFeatureFlag.isEnabled()).thenReturn(true)
+        whenever(wooStore.getStoreCountryCode(any())).thenReturn("US")
 
         (viewModel.viewStateData.value as CardReaderHubViewModel.CardReaderHubViewState.Content).rows
             .find {
@@ -164,7 +164,7 @@ class CardReaderHubViewModelTest : BaseUnitTest() {
         assertThat(viewModel.event.value)
             .isEqualTo(
                 CardReaderHubViewModel.CardReaderHubEvents.NavigateToPurchaseCardReaderFlow(
-                    "${AppUrls.WOOCOMMERCE_PURCHASE_CARD_READER_IN_COUNTRY}$countryCode"
+                    "${AppUrls.WOOCOMMERCE_PURCHASE_CARD_READER_IN_COUNTRY}US"
                 )
             )
     }
@@ -363,7 +363,8 @@ class CardReaderHubViewModelTest : BaseUnitTest() {
             inPersonPaymentsCanadaFeatureFlag,
             appPrefsWrapper,
             selectedSite,
-            analyticsTrackerWrapper
+            analyticsTrackerWrapper,
+            wooStore,
         )
     }
 }
