@@ -44,7 +44,7 @@ class WCCrashLoggingDataProvider @Inject constructor(
         dispatcher.register(this)
     }
 
-    private val crashLoggingUser = MutableStateFlow(accountStore.account.toCrashLoggingUser())
+    private val crashLoggingUser = MutableStateFlow(accountStore.account?.toCrashLoggingUser())
 
     @Suppress("unused")
     @Subscribe(threadMode = ThreadMode.MAIN)
@@ -57,7 +57,6 @@ class WCCrashLoggingDataProvider @Inject constructor(
     override val applicationContextProvider: Flow<Map<String, String>> = selectedSite
         .observe()
         .map { site ->
-            AppLog.w(AppLog.T.API, "FoobarTest")
             site?.let {
                 mapOf(
                     SITE_ID_KEY to site.siteId.toString(),
@@ -83,11 +82,10 @@ class WCCrashLoggingDataProvider @Inject constructor(
 
     override val sentryDSN: String = BuildConfig.SENTRY_DSN
 
-    override val user: Flow<CrashLoggingUser> = crashLoggingUser
+    override val user: Flow<CrashLoggingUser?> = crashLoggingUser
 
     override fun crashLoggingEnabled(): Boolean {
-//        return appPrefs.isCrashReportingEnabled()
-        return true
+        return appPrefs.isCrashReportingEnabled()
     }
 
     override fun extraKnownKeys(): List<ExtraKnownKey> {
