@@ -1,9 +1,9 @@
 package com.woocommerce.android.ui.sitepicker
 
 import com.woocommerce.android.AppConstants
+import com.woocommerce.android.WooException
 import com.woocommerce.android.util.ContinuationWrapper
 import com.woocommerce.android.util.WooLog
-import com.woocommerce.android.util.WooLog.T.SITE_PICKER
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
 import org.wordpress.android.fluxc.Dispatcher
@@ -24,7 +24,7 @@ class SitePickerRepository @Inject constructor(
     private val accountStore: AccountStore,
     private val wooCommerceStore: WooCommerceStore
 ) {
-    private var continuationLogout = ContinuationWrapper<Boolean>(SITE_PICKER)
+    private var continuationLogout = ContinuationWrapper<Boolean>(WooLog.T.SITE_PICKER)
 
     init {
         dispatcher.register(this)
@@ -44,7 +44,20 @@ class SitePickerRepository @Inject constructor(
 
     suspend fun fetchWooCommerceSites() = wooCommerceStore.fetchWooCommerceSites()
 
-    suspend fun fetchWooCommerceSite(siteModel: SiteModel) = wooCommerceStore.fetchWooCommerceSite(siteModel)
+    suspend fun fetchWooCommerceSite(siteModel: SiteModel): Result<SiteModel> {
+        return wooCommerceStore.fetchWooCommerceSite(siteModel).let {
+            when {
+                it.isError -> {
+                    WooLog.e(
+                        WooLog.T.SITE_PICKER, "Fetching site ${siteModel.siteId} failed" +
+                            "Error: ${it.error.type} ${it.error.message}"
+                    )
+                    Result.failure(WooException(it.error))
+                }
+                else -> Result.success(it.model!!)
+            }
+        }
+    }
 
     suspend fun fetchSiteSettings(site: SiteModel) = wooCommerceStore.fetchSiteGeneralSettings(site)
 
@@ -69,7 +82,7 @@ class SitePickerRepository @Inject constructor(
         if (event.causeOfChange == AccountAction.SIGN_OUT) {
             if (event.isError) {
                 WooLog.e(
-                    SITE_PICKER,
+                    WooLog.T.SITE_PICKER,
                     "Account error [type = ${event.causeOfChange}] : " +
                         "${event.error.type} > ${event.error.message}"
                 )
