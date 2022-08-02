@@ -289,6 +289,7 @@ class ProductDetailViewModel @Inject constructor(
             initializeStoredProductAfterRestoration()
         }
         observeImageUploadEvents()
+        AnalyticsTracker.track(AnalyticsEvent.PRODUCT_DETAIL_LOADED)
     }
 
     private fun initializeViewState() {
