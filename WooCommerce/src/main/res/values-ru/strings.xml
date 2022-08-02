@@ -1,11 +1,23 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2022-06-30 09:54:03+0000
+Translation-Revision-Date: 2022-07-14 10:54:03+0000
 Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);
 Generator: GlotPress/2.4.0-alpha
 Language: ru
 -->
 <resources>
+    <string name="tests_notification_new_order_message">Новый заказ на 50 долл. в магазине WooCommerce</string>
+    <string name="tests_notification_new_order_title">Поступил новый заказ! 🎉</string>
+    <string name="lines_all_details">сведения</string>
+    <string name="lines_incomplete_explanation">Чтобы изменить все %1$s, откройте заказ в разделе администрирования WooCommerce</string>
+    <string name="lines_incomplete">Неполные данные %1$s.</string>
+    <string name="support_system_status_report_share_label">Отправить отчёт о состоянии системы</string>
+    <string name="support_system_status_report_copy_label">Копировать отчёт о состоянии системы в буфер обмена</string>
+    <string name="card_reader_connect_keep_searching_button">Продолжить поиск</string>
+    <string name="card_reader_payment_description_v2">Оплата при получении, заказ № %s для %s blog_id %s.</string>
+    <string name="card_reader_manage_payment_provider">Изменение платёжного сервиса</string>
+    <string name="orderdetail_refunded_line_with_info">Возвращенные средства: %1$s</string>
+    <string name="orderdetail_payment_summary_onhold_plain">Ожидание платежа</string>
     <string name="install_wc_shipping_proceed_button">Продолжить установку</string>
     <string name="install_wc_shipping_installation_info">Подготовка к установке</string>
     <string name="install_wc_shipping_preinstall_title">Установить расширение</string>
@@ -216,7 +228,6 @@ Language: ru
     <string name="coupon_details_minimum_spend">Минимальный расход %s</string>
     <string name="coupon_details_heading">Сводка по купонам</string>
     <string name="coupon_list_view_coupon">Смотреть сводку по купонам</string>
-    <string name="coupon_list_wip_message_enabled">Мы разработали функцию, которая позволяет просматривать купоны на вашем устройстве.</string>
     <string name="coupon_list_wip_title">Просмотр и редактирование купонов</string>
     <string name="coupon_list_empty_heading">Купоны не найдены</string>
     <string name="coupon_list_item_label_included_and_excluded">%1s без учёта %2s</string>
@@ -703,7 +714,6 @@ Language: ru
     <string name="card_reader_refetching_order_failed">Ошибка при загрузке заказа. Состояние заказа в приложении могло устареть.</string>
     <string name="card_reader_payment_email_client_not_found">Не удалось определить ваш почтовый клиент</string>
     <string name="card_reader_payment_receipt_email_subject">Ваша квитанция от %s</string>
-    <string name="card_reader_payment_description">Оплата при получении, заказ %s для %s</string>
     <string name="card_reader_payment_fetch_order_loading_payment_state">Обновление заказа</string>
     <string name="card_reader_payment_fetch_order_loading_header">Обновление состояния приложения</string>
     <string name="shipping_label_shipping_carrier_shipping_method_banner_message">Ваш клиент выбрал %1$s</string>

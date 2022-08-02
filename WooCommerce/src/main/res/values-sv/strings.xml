@@ -1,11 +1,23 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2022-06-30 11:54:05+0000
+Translation-Revision-Date: 2022-07-14 14:54:02+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: sv_SE
 -->
 <resources>
+    <string name="tests_notification_new_order_message">Ny beställning för 50 USD i din WooCommerce-butik</string>
+    <string name="tests_notification_new_order_title">Du har en ny beställning! 🎉</string>
+    <string name="lines_all_details">detaljerna</string>
+    <string name="lines_incomplete_explanation">Redigera alla %1$s genom att gå igenom beställningen i din WooCommerce-butiksadmin</string>
+    <string name="lines_incomplete">%1$s är ofullständiga</string>
+    <string name="support_system_status_report_share_label">Dela systemstatusrapport</string>
+    <string name="support_system_status_report_copy_label">Kopiera systemstatusrapport till urklipp</string>
+    <string name="card_reader_connect_keep_searching_button">Fortsätt söka</string>
+    <string name="card_reader_payment_description_v2">Personlig betalning för beställning nr. %s för %s blog_id %s.</string>
+    <string name="card_reader_manage_payment_provider">Ändra betalningsleverantör</string>
+    <string name="orderdetail_refunded_line_with_info">Återbetalat: %1$s</string>
+    <string name="orderdetail_payment_summary_onhold_plain">Inväntar betalning</string>
     <string name="install_wc_shipping_proceed_button">Fortsätt med installation</string>
     <string name="install_wc_shipping_installation_info">Saker du bör veta innan du installerar</string>
     <string name="install_wc_shipping_preinstall_title">Installera utökning</string>
@@ -216,7 +228,7 @@ Language: sv_SE
     <string name="coupon_details_minimum_spend">Minsta beställningsbelopp på %s</string>
     <string name="coupon_details_heading">Rabattkodssammanfattning</string>
     <string name="coupon_list_view_coupon">Visa rabattkodssammanfattning</string>
-    <string name="coupon_list_wip_message_enabled">Vi har arbetat med att göra det möjligt att visa rabattkoder på din enhet!</string>
+    <string name="coupon_list_wip_message_enabled">Vi har arbetat med att göra det möjligt att visa och redigera rabattkoder från din enhet!</string>
     <string name="coupon_list_wip_title">Visa och redigera rabattkoder</string>
     <string name="coupon_list_empty_heading">Inga rabattkoder hittades</string>
     <string name="coupon_list_item_label_included_and_excluded">%1s exkl. %2s</string>
@@ -703,7 +715,6 @@ Language: sv_SE
     <string name="card_reader_refetching_order_failed">Det gick inte att hämta beställningen. Beställningens status i appen kan vara föråldrad.</string>
     <string name="card_reader_payment_email_client_not_found">Lyckas inte hitta ditt e-postprogram</string>
     <string name="card_reader_payment_receipt_email_subject">Ditt kvitto från %s</string>
-    <string name="card_reader_payment_description">Personlig betalning för beställning %s för %s</string>
     <string name="card_reader_payment_fetch_order_loading_payment_state">Uppdaterar beställning</string>
     <string name="card_reader_payment_fetch_order_loading_header">Uppdaterar appstatusen</string>
     <string name="shipping_label_shipping_carrier_shipping_method_banner_message">Din kund valde %1$s</string>

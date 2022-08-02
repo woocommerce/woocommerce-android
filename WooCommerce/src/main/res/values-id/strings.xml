@@ -1,11 +1,23 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2022-06-30 09:54:03+0000
+Translation-Revision-Date: 2022-07-16 08:54:03+0000
 Plural-Forms: nplurals=2; plural=n > 1;
 Generator: GlotPress/2.4.0-alpha
 Language: id
 -->
 <resources>
+    <string name="tests_notification_new_order_message">Pesanan baru senilai $50 di Toko WooCommerce Anda</string>
+    <string name="tests_notification_new_order_title">Ada pesanan baru! 🎉</string>
+    <string name="lines_all_details">detail</string>
+    <string name="lines_incomplete_explanation">Untuk mengedit semua %1$s, cari pesanan tersebut di admin toko WooCommerce Anda</string>
+    <string name="lines_incomplete">%1$s belum lengkap</string>
+    <string name="support_system_status_report_share_label">Bagikan laporan status sistem</string>
+    <string name="support_system_status_report_copy_label">Salin laporan status sistem ke clipboard</string>
+    <string name="card_reader_connect_keep_searching_button">Terus Mencari</string>
+    <string name="card_reader_payment_description_v2">Pembayaran Langsung untuk Pesanan #%s di %s blog_id %s.</string>
+    <string name="card_reader_manage_payment_provider">Ubah Penyedia Pembayaran</string>
+    <string name="orderdetail_refunded_line_with_info">Dana dikembalikan: %1$s</string>
+    <string name="orderdetail_payment_summary_onhold_plain">Menunggu pembayaran</string>
     <string name="install_wc_shipping_proceed_button">Lanjutkan Penginstalan</string>
     <string name="install_wc_shipping_installation_info">Hal yang harus diketahui sebelum menginstal</string>
     <string name="install_wc_shipping_preinstall_title">Instal ekstensi</string>
@@ -216,7 +228,6 @@ Language: id
     <string name="coupon_details_minimum_spend">Belanja minimum%s</string>
     <string name="coupon_details_heading">Ringkasan Kupon</string>
     <string name="coupon_list_view_coupon">Lihat ringkasan kupon</string>
-    <string name="coupon_list_wip_message_enabled">Kini Anda dapat melihat dan mengedit kupon di perangkat Anda!</string>
     <string name="coupon_list_wip_title">Lihat dan edit kupon</string>
     <string name="coupon_list_empty_heading">Tidak ada kupon ditemukan</string>
     <string name="coupon_list_item_label_included_and_excluded">%1s excl. %2s</string>
@@ -702,7 +713,6 @@ Language: id
     <string name="card_reader_refetching_order_failed">Terjadi error saat mengambil pesanan. Status pesanan pada aplikasi mungkin telah usang.</string>
     <string name="card_reader_payment_email_client_not_found">Tidak dapat mendeteksi aplikasi klien email Anda</string>
     <string name="card_reader_payment_receipt_email_subject">Tanda terima Anda dari %s</string>
-    <string name="card_reader_payment_description">Pembayaran Langsung di Tempat untuk Pesanan %s senilai %s</string>
     <string name="card_reader_payment_fetch_order_loading_payment_state">Menyegarkan pesanan</string>
     <string name="card_reader_payment_fetch_order_loading_header">Memperbarui status aplikasi</string>
     <string name="shipping_label_shipping_carrier_shipping_method_banner_message">Pelanggan Anda memilih %1$s</string>

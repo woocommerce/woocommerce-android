@@ -178,12 +178,12 @@ class OrderCreateEditProductSelectionFragment :
         registerSearchListeners()
     }
 
-    override fun onMenuItemActionExpand(item: MenuItem?): Boolean {
+    override fun onMenuItemActionExpand(item: MenuItem): Boolean {
         productListViewModel.onSearchOpened()
         return true
     }
 
-    override fun onMenuItemActionCollapse(item: MenuItem?): Boolean {
+    override fun onMenuItemActionCollapse(item: MenuItem): Boolean {
         productListViewModel.onSearchClosed()
         removeSearchListener()
         updateActivityTitle()
