@@ -6,6 +6,13 @@ import android.graphics.Bitmap
 import android.graphics.drawable.Drawable
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.EnterTransition
+import androidx.compose.animation.ExperimentalAnimationApi
+import androidx.compose.animation.core.MutableTransitionState
+import androidx.compose.animation.core.TweenSpec
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.scaleIn
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -22,6 +29,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.GridCells.Fixed
 import androidx.compose.foundation.lazy.LazyVerticalGrid
 import androidx.compose.foundation.lazy.itemsIndexed
@@ -41,6 +49,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.platform.LocalContext
@@ -293,23 +302,37 @@ fun MoreMenuBadge(badgeState: BadgeState?) {
     if (badgeState != null) {
         Row(
             modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.End
+            verticalAlignment = Alignment.CenterVertically
         ) {
-            Box(
-                modifier = Modifier
-                    .size(dimensionResource(id = badgeState.badgeSize))
-                    .clip(CircleShape)
-                    .background(colorResource(id = badgeState.backgroundColor))
+            Spacer(modifier = Modifier.weight(1f))
+            val visible = remember {
+                MutableTransitionState(badgeState.animateAppearance.not()).apply { targetState = true }
+            }
+            AnimatedVisibility(
+                visibleState = visible,
+                enter = BadgeEnterAnimation()
             ) {
+                val backgroundColor = colorResource(id = badgeState.backgroundColor)
                 Text(
                     text = badgeState.textState.text,
                     fontSize = dimensionResource(id = badgeState.textState.fontSize).value.sp,
                     color = colorResource(id = badgeState.textColor),
-                    modifier = Modifier.align(Alignment.Center)
+                    textAlign = TextAlign.Center,
+                    modifier = Modifier
+                        .size(dimensionResource(id = badgeState.badgeSize))
+                        .drawBehind { drawCircle(color = backgroundColor) }
+                        .wrapContentHeight()
                 )
             }
         }
     }
+}
+
+@OptIn(ExperimentalAnimationApi::class)
+@Composable
+private fun BadgeEnterAnimation(): EnterTransition {
+    val animationSpec = TweenSpec<Float>(durationMillis = 400, delay = 200)
+    return scaleIn(animationSpec = animationSpec) + fadeIn(animationSpec = animationSpec)
 }
 
 @ExperimentalFoundationApi
@@ -329,11 +352,11 @@ private fun MoreMenuPreview() {
                     backgroundColor = color.color_secondary,
                     textColor = color.color_on_surface_inverted,
                     textState = TextState("", R.dimen.text_minor_80),
+                    animateAppearance = true
                 )
             ),
             MenuUiButton(string.more_menu_button_wс_admin, drawable.ic_more_menu_wp_admin),
             MenuUiButton(string.more_menu_button_store, drawable.ic_more_menu_store),
-            MenuUiButton(string.more_menu_button_coupons, drawable.ic_more_menu_coupons),
             MenuUiButton(
                 string.more_menu_button_reviews, drawable.ic_more_menu_reviews,
                 BadgeState(
@@ -341,8 +364,10 @@ private fun MoreMenuPreview() {
                     backgroundColor = color.color_primary,
                     textColor = color.color_on_surface_inverted,
                     textState = TextState("3", R.dimen.text_minor_80),
+                    animateAppearance = false
                 )
-            )
+            ),
+            MenuUiButton(string.more_menu_button_coupons, drawable.ic_more_menu_coupons),
         ),
         siteName = "Example Site",
         siteUrl = "woocommerce.com",

@@ -1,6 +1,7 @@
 package com.woocommerce.android.ui.moremenu
 
 import androidx.lifecycle.SavedStateHandle
+import com.woocommerce.android.R
 import com.woocommerce.android.push.UnseenReviewsCountHandler
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.moremenu.domain.MoreMenuRepository
@@ -115,5 +116,63 @@ class MoreMenuViewModelTests : BaseUnitTest() {
 
         // THEN
         assertThat(states.last().moreMenuItems.first().badgeState).isNull()
+    }
+
+    @Test
+    fun `when building state, then payments icon displayed`() = testBlocking {
+        // GIVEN
+        val prefsChanges = MutableSharedFlow<Boolean>()
+        setup {
+            whenever(moreMenuNewFeatureHandler.moreMenuPaymentsFeatureWasClicked).thenReturn(prefsChanges)
+        }
+
+        // WHEN
+        val states = viewModel.moreMenuViewState.captureValues()
+        prefsChanges.emit(false)
+
+        // THEN
+        val paymentsButton = states.last().moreMenuItems.first { it.text == R.string.more_menu_button_payments }
+        assertThat(paymentsButton.icon).isEqualTo(R.drawable.ic_more_menu_payments)
+        assertThat(paymentsButton.badgeState?.textColor).isEqualTo(
+            R.color.color_on_surface_inverted
+        )
+        assertThat(paymentsButton.badgeState?.badgeSize).isEqualTo(
+            R.dimen.major_85
+        )
+        assertThat(paymentsButton.badgeState?.backgroundColor).isEqualTo(
+            R.color.color_secondary
+        )
+        assertThat(paymentsButton.badgeState?.animateAppearance).isEqualTo(true)
+        assertThat(paymentsButton.badgeState?.textState?.text).isEqualTo("")
+        assertThat(paymentsButton.badgeState?.textState?.fontSize)
+            .isEqualTo(R.dimen.text_minor_80)
+    }
+
+    @Test
+    fun `when building state, then reviews icon displayed`() = testBlocking {
+        // GIVEN
+        setup {
+            whenever(unseenReviewsCountHandler.observeUnseenCount()).thenReturn(flowOf(1))
+        }
+
+        // WHEN
+        val states = viewModel.moreMenuViewState.captureValues()
+
+        // THEN
+        val reviewsButton = states.last().moreMenuItems.first { it.text == R.string.more_menu_button_reviews }
+        assertThat(reviewsButton.icon).isEqualTo(R.drawable.ic_more_menu_reviews)
+        assertThat(reviewsButton.badgeState?.textColor).isEqualTo(
+            R.color.color_on_surface_inverted
+        )
+        assertThat(reviewsButton.badgeState?.badgeSize).isEqualTo(
+            R.dimen.major_150
+        )
+        assertThat(reviewsButton.badgeState?.backgroundColor).isEqualTo(
+            R.color.color_primary
+        )
+        assertThat(reviewsButton.badgeState?.animateAppearance).isEqualTo(false)
+        assertThat(reviewsButton.badgeState?.textState?.text).isEqualTo("1")
+        assertThat(reviewsButton.badgeState?.textState?.fontSize)
+            .isEqualTo(R.dimen.text_minor_80)
     }
 }
