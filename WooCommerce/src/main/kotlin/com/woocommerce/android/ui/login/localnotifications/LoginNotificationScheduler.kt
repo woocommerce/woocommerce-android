@@ -42,7 +42,7 @@ class LoginNotificationScheduler @Inject constructor(
             val workRequest: WorkRequest =
                 OneTimeWorkRequestBuilder<LoginHelpNotificationWorker>()
                     .setInputData(notificationData)
-                    .setInitialDelay(NOTIFICATION_TEST_DELAY_IN_HOURS, TimeUnit.HOURS)
+                    .setInitialDelay(5, TimeUnit.SECONDS)
                     .build()
 
             prefsWrapper.setPreLoginNotificationWorkRequestId(workRequest.id.toString())
