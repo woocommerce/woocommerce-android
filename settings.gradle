@@ -24,14 +24,11 @@ pluginManagement {
         id 'org.jetbrains.kotlin.kapt' version gradle.ext.kotlinVersion
         id 'org.jetbrains.kotlin.plugin.parcelize' version gradle.ext.kotlinVersion
         id 'se.bjurr.violations.violation-comments-to-github-gradle-plugin' version '1.69.0'
+        id 'com.google.dagger.hilt.android' version gradle.ext.daggerVersion
     }
 
     resolutionStrategy {
         eachPlugin {
-            if (requested.id.id == 'dagger.hilt.android.plugin') {
-                useModule("com.google.dagger:hilt-android-gradle-plugin:$gradle.ext.daggerVersion")
-            }
-
             // TODO: Remove this as soon as fetchstyle starts supporting Plugin Marker Artifacts
             if (requested.id.id == "com.automattic.android.fetchstyle") {
                 useModule("com.automattic.android:fetchstyle:1.1")
@@ -83,6 +80,12 @@ gradle.ext.mediaPickerDomainBinaryPath = "org.wordpress.mediapicker:domain"
 gradle.ext.mediaPickerSourceDeviceBinaryPath = "org.wordpress.mediapicker:source-device"
 gradle.ext.mediaPickerSourceGifBinaryPath = "org.wordpress.mediapicker:source-gif"
 gradle.ext.mediaPickerSourceWordPressBinaryPath = "org.wordpress.mediapicker:source-wordpress"
+
+gradle.ext {
+    compileSdkVersion = 33
+    targetSdkVersion = 31
+    minSdkVersion = 21
+}
 
 def localBuilds = new File('local-builds.gradle')
 if (localBuilds.exists()) {

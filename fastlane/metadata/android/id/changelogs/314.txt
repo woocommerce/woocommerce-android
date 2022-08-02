@@ -1,0 +1,4 @@
+9.6:
+Rilis ini mencakup pilihan untuk menerima pembayaran untuk semua pesanan yang belum dibayar melalui tunai, kartu, atau tautan pembayaran. Jika beberapa ekstensi diinstal di toko, Anda juga dapat memilih gateway pembayaran yang diutamakan.
+
+Kami juga telah membuat peningkatan minor lainnya. Sekali lagi, terima kasih atas feedback Anda. Terus kirimkan feedback Anda!

@@ -1,5 +1,0 @@
-9.5:
-Seguimos añadiendo nuevas funcionalidades a nuestra función experimental Gestión de cupones. Esta versión incluye la edición y eliminación de cupones, así como varias mejoras en la visualización. Para obtener acceso anticipado, activa esta función en la pestaña Más, Ajustes, Funciones beta.
-
-También hemos corregido un error que dificultaba la búsqueda de pedidos a algunos usuarios. Gracias a todos los que nos habéis informado de este problema. Valoramos mucho tu opinión.
-

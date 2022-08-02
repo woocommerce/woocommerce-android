@@ -1,5 +1,6 @@
 package com.woocommerce.android.datastore
 
 enum class DataStoreType {
-    TRACKER
+    TRACKER,
+    REMOTE_CONFIG
 }

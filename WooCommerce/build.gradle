@@ -6,7 +6,7 @@ plugins {
     id 'org.jetbrains.kotlin.android'
     id 'org.jetbrains.kotlin.kapt'
     id 'org.jetbrains.kotlin.plugin.parcelize'
-    id 'dagger.hilt.android.plugin'
+    id 'com.google.dagger.hilt.android'
     id 'se.bjurr.violations.violation-comments-to-github-gradle-plugin'
     id 'io.sentry.android.gradle'
     id 'androidx.navigation.safeargs.kotlin'
@@ -56,7 +56,7 @@ repositories {
 }
 
 android {
-    compileSdkVersion 31
+    compileSdkVersion gradle.ext.compileSdkVersion
 
     defaultConfig {
         applicationId "com.woocommerce.android"
@@ -64,15 +64,15 @@ android {
         if (project.hasProperty("versionName")) {
             versionName project.property("versionName")
         } else {
-            versionName "9.6-rc-2"
+            versionName "9.7-rc-1"
         }
-        versionCode 313
+        versionCode 315
 
-        minSdkVersion 21
+        minSdkVersion gradle.ext.minSdkVersion
         // Update targetSdkVersion only after reviewing all the OS changes (developer.android.com/about/versions/[ENTER_ANDROID_VERSION]/migration)
         // and thoroughly testing the app. Consider publishing a p2 post to inform the team about the upcoming change.
         // P.S. Update the targetSdkVersion in all the modules, otherwise static analysis tools won't give you a heads-up about potential issues.
-        targetSdkVersion 31
+        targetSdkVersion gradle.ext.targetSdkVersion
 
         vectorDrawables.useSupportLibrary = true
 
@@ -171,7 +171,11 @@ dependencies {
         exclude group: "com.google.guava", module: "guava"
     }
 
-    implementation 'com.google.firebase:firebase-messaging-ktx:23.0.5'
+    implementation platform('com.google.firebase:firebase-bom:30.3.0')
+    implementation 'com.google.firebase:firebase-messaging-ktx'
+    implementation 'com.google.firebase:firebase-config-ktx'
+    implementation 'com.google.firebase:firebase-analytics-ktx'
+
     implementation 'com.google.android.gms:play-services-auth:20.2.0'
 
     // Support library
