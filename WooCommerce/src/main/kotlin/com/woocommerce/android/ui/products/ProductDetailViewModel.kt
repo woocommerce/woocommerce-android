@@ -13,6 +13,7 @@ import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_HAS_LINKED_PRODUCTS
 import com.woocommerce.android.extensions.addNewItem
 import com.woocommerce.android.extensions.clearList
 import com.woocommerce.android.extensions.containsItem
@@ -289,7 +290,11 @@ class ProductDetailViewModel @Inject constructor(
             initializeStoredProductAfterRestoration()
         }
         observeImageUploadEvents()
-        AnalyticsTracker.track(AnalyticsEvent.PRODUCT_DETAIL_LOADED)
+
+        val properties = viewState.productDraft?.let {
+            mapOf(KEY_HAS_LINKED_PRODUCTS to it.hasLinkedProducts())
+        } ?: emptyMap()
+        AnalyticsTracker.track(AnalyticsEvent.PRODUCT_DETAIL_LOADED, properties)
     }
 
     private fun initializeViewState() {
