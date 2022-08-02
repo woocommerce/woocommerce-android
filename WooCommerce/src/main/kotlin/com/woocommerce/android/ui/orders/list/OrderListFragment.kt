@@ -390,6 +390,10 @@ class OrderListFragment :
             }
         }
 
+        viewModel.glanceFirstSwipeAbleItem.observe(viewLifecycleOwner) {
+            glanceFirstSwipeAbleListItem()
+        }
+
         viewModel.emptyViewType.observe(viewLifecycleOwner) {
             it?.let { emptyViewType ->
                 when (emptyViewType) {

@@ -13,6 +13,8 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
+import androidx.lifecycle.asFlow
+import androidx.lifecycle.asLiveData
 import androidx.paging.PagedList
 import com.google.android.material.snackbar.Snackbar
 import com.woocommerce.android.R
@@ -46,6 +48,11 @@ import com.woocommerce.android.viewmodel.ResourceProvider
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.widgets.WCEmptyView.EmptyViewType
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.filter
+import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.launch
 import kotlinx.parcelize.Parcelize
 import okio.utf8Size
@@ -68,6 +75,7 @@ import javax.inject.Inject
 private const val EMPTY_VIEW_THROTTLE = 250L
 typealias PagedOrdersList = PagedList<OrderListItemUIType>
 
+@OptIn(ExperimentalCoroutinesApi::class)
 @Suppress("LeakingThis")
 @HiltViewModel
 class OrderListViewModel @Inject constructor(
@@ -86,6 +94,11 @@ class OrderListViewModel @Inject constructor(
     private val getSelectedOrderFiltersCount: GetSelectedOrderFiltersCount,
     private val bannerDisplayEligibilityChecker: BannerDisplayEligibilityChecker,
 ) : ScopedViewModel(savedState), LifecycleOwner {
+    companion object {
+        const val SHOULD_GLANCE_SWIPE_ABLE_ITEM = "should_glance_swipe_able_item"
+        const val DEBOUNCE_GLANCE_DURATION = 500L
+    }
+
     private val lifecycleRegistry: LifecycleRegistry by lazy {
         LifecycleRegistry(this)
     }
@@ -133,6 +146,23 @@ class OrderListViewModel @Inject constructor(
     var isSearching = false
     private var dismissListErrors = false
     var searchQuery = ""
+
+    private var shouldGlanceFirstSwipeAbleItem: Boolean = savedState.get<Boolean>(SHOULD_GLANCE_SWIPE_ABLE_ITEM) ?: true
+
+    val glanceFirstSwipeAbleItem = pagedListData
+        .asFlow()
+        .filter {
+            shouldGlanceFirstSwipeAbleItem
+        }
+        .flatMapLatest {
+        val debouncedChanges = flow {
+            delay(DEBOUNCE_GLANCE_DURATION)
+            shouldGlanceFirstSwipeAbleItem = false
+            savedState.set(SHOULD_GLANCE_SWIPE_ABLE_ITEM, false)
+            emit(Unit)
+        }
+        debouncedChanges
+    }.asLiveData()
 
     init {
         lifecycleRegistry.currentState = Lifecycle.State.CREATED
