@@ -3,6 +3,7 @@ package com.woocommerce.android.util.crashlogging
 import com.automattic.android.tracks.crashlogging.CrashLoggingUser
 import com.automattic.android.tracks.crashlogging.EventLevel.FATAL
 import com.automattic.android.tracks.crashlogging.EventLevel.INFO
+import com.automattic.android.tracks.crashlogging.PerformanceMonitoringConfig
 import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.util.BuildConfigWrapper
@@ -50,6 +51,9 @@ class WCCrashLoggingDataProviderTest : BaseUnitTest() {
     private val buildConfig: BuildConfigWrapper = mock {
         on { versionName } doReturn "test version name"
     }
+    private val specifyPerformanceMonitoringConfig: SpecifyPerformanceMonitoringConfig = mock {
+        on { invoke() } doReturn PerformanceMonitoringConfig.Enabled(1.0)
+    }
 
     @Before
     fun setUp() {
@@ -62,7 +66,8 @@ class WCCrashLoggingDataProviderTest : BaseUnitTest() {
             uuidGenerator = uuidGenerator,
             buildConfig = buildConfig,
             appScope = TestScope(coroutinesTestRule.testDispatcher),
-            dispatcher = Dispatcher()
+            dispatcher = Dispatcher(),
+            specifyPerformanceMonitoringConfig = specifyPerformanceMonitoringConfig
         )
     }
 

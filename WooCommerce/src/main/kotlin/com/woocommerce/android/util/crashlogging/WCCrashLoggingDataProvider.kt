@@ -4,7 +4,6 @@ import com.automattic.android.tracks.crashlogging.CrashLoggingDataProvider
 import com.automattic.android.tracks.crashlogging.CrashLoggingUser
 import com.automattic.android.tracks.crashlogging.EventLevel
 import com.automattic.android.tracks.crashlogging.ExtraKnownKey
-import com.automattic.android.tracks.crashlogging.PerformanceMonitoringConfig
 import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.BuildConfig
 import com.woocommerce.android.di.AppCoroutineScope
@@ -34,6 +33,7 @@ class WCCrashLoggingDataProvider @Inject constructor(
     private val enqueueSendingEncryptedLogs: EnqueueSendingEncryptedLogs,
     private val uuidGenerator: UuidGenerator,
     @AppCoroutineScope private val appScope: CoroutineScope,
+    specifyPerformanceMonitoringConfig: SpecifyPerformanceMonitoringConfig,
     buildConfig: BuildConfigWrapper,
     selectedSite: SelectedSite,
     dispatcher: Dispatcher,
@@ -70,7 +70,7 @@ class WCCrashLoggingDataProvider @Inject constructor(
     override val locale: Locale?
         get() = localeProvider.provideLocale()
 
-    override val performanceMonitoringConfig = PerformanceMonitoringConfig.Enabled(1.0)
+    override val performanceMonitoringConfig = specifyPerformanceMonitoringConfig()
 
     override val releaseName: String = if (buildConfig.debug) {
         DEBUG_RELEASE_NAME
