@@ -6,7 +6,7 @@ plugins {
     id 'org.jetbrains.kotlin.android'
     id 'org.jetbrains.kotlin.kapt'
     id 'org.jetbrains.kotlin.plugin.parcelize'
-    id 'dagger.hilt.android.plugin'
+    id 'com.google.dagger.hilt.android'
     id 'se.bjurr.violations.violation-comments-to-github-gradle-plugin'
     id 'io.sentry.android.gradle'
     id 'androidx.navigation.safeargs.kotlin'

@@ -53,6 +53,7 @@
     <string name="keep_changes">Keep changes</string>
     <string name="learn_more">Learn more</string>
     <string name="try_it_now">Try it now</string>
+    <string name="set_up_now">Set up now</string>
     <string name="offline_message">Offline \u2014 using cached data</string>
     <string name="offline_error">Your network is unavailable. Check your data or wifi connection.</string>
     <string name="product">Product</string>
@@ -145,6 +146,7 @@
     <string name="copy" tools:override="true">Copy</string>
     <string name="variations_bulk_update_sale_price">Update Sale Price</string>
     <string name="variations_bulk_update_regular_price">Update Regular Price</string>
+    <string name="tip">Tip</string>
 
     <!--
         Date/Time Labels
