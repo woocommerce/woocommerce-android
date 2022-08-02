@@ -226,7 +226,6 @@ class SwipeToComplete(
         ).roundToInt()
 }
 
-
 fun RecyclerView.glanceSwipeAbleItem(
     index: Int,
     direction: Int,

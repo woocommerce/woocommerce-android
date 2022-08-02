@@ -155,14 +155,14 @@ class OrderListViewModel @Inject constructor(
             shouldGlanceFirstSwipeAbleItem
         }
         .flatMapLatest {
-        val debouncedChanges = flow {
-            delay(DEBOUNCE_GLANCE_DURATION)
-            shouldGlanceFirstSwipeAbleItem = false
-            savedState.set(SHOULD_GLANCE_SWIPE_ABLE_ITEM, false)
-            emit(Unit)
-        }
-        debouncedChanges
-    }.asLiveData()
+            val debouncedChanges = flow {
+                delay(DEBOUNCE_GLANCE_DURATION)
+                shouldGlanceFirstSwipeAbleItem = false
+                savedState.set(SHOULD_GLANCE_SWIPE_ABLE_ITEM, false)
+                emit(Unit)
+            }
+            debouncedChanges
+        }.asLiveData()
 
     init {
         lifecycleRegistry.currentState = Lifecycle.State.CREATED
