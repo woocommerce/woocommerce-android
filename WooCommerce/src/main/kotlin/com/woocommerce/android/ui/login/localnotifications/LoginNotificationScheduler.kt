@@ -18,7 +18,7 @@ class LoginNotificationScheduler @Inject constructor(
 ) {
     companion object {
         const val LOGIN_NOTIFICATION_TYPE_KEY = "Notification-type"
-        const val NOTIFICATION_TEST_DELAY_IN_HOURS = 24L
+        const val NOTIFICATION_TEST_DELAY_IN_HOURS = 5L
         const val LOGIN_HELP_NOTIFICATION_ID = 987612345
         const val LOGIN_HELP_NOTIFICATION_TAG = "login-help-notification"
     }
@@ -42,7 +42,7 @@ class LoginNotificationScheduler @Inject constructor(
             val workRequest: WorkRequest =
                 OneTimeWorkRequestBuilder<LoginHelpNotificationWorker>()
                     .setInputData(notificationData)
-                    .setInitialDelay(5, TimeUnit.SECONDS)
+                    .setInitialDelay(NOTIFICATION_TEST_DELAY_IN_HOURS, TimeUnit.SECONDS)
                     .build()
 
             prefsWrapper.setPreLoginNotificationWorkRequestId(workRequest.id.toString())
