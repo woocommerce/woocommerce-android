@@ -7,43 +7,43 @@ import okhttp3.HttpUrl
 import okhttp3.Request
 
 object WooRequestFormatter : RequestFormatter {
-
     override fun formatRequestUrl(request: Request): FormattedUrl {
+        return request.url
+            .newBuilder()
+            .removePrivateParametersForRestApi(request)
+            .replaceBlogId(request)
+            .build()
+            .toString()
+            .let {
+                Uri.decode(it)
+            }
+            .replaceOrderId()
+    }
 
-        val newUrl = request.url.newBuilder().query(null)
-
-        removePrivateParameters(request, newUrl)
-        removeBlogId(request, newUrl)
-        makeApiHostnameShorter(request, newUrl)
-
-        val decodedUri = Uri.decode(newUrl.build().toString())
-        return decodedUri.replace(
+    private fun String.replaceOrderId(): String {
+        return replace(
             Regex("/orders/[\\S]*?/"), "/orders/<order_id>/"
         )
     }
 
-    private fun removePrivateParameters(request: Request, newUrl: HttpUrl.Builder) {
+    private fun HttpUrl.Builder.removePrivateParametersForRestApi(request: Request): HttpUrl.Builder {
         if (request.url.pathSegments.contains("rest-api")) {
+            this.query(null)
             request.url.queryParameterNames.forEach {
                 if (it == "_method" || it == "path") {
-                    newUrl.addQueryParameter(it, request.url.queryParameter(it))
+                    this.addQueryParameter(it, request.url.queryParameter(it))
                 }
             }
         }
+        return this
     }
 
-    private fun makeApiHostnameShorter(request: Request, newUrl: HttpUrl.Builder) {
-        if (request.url.host == "public-api.wordpress.com") {
-            newUrl.host("wp_api")
-        }
-    }
-
-    private fun removeBlogId(request: Request, newUrl: HttpUrl.Builder) {
+    private fun HttpUrl.Builder.replaceBlogId(request: Request): HttpUrl.Builder {
         request.url.pathSegments.forEachIndexed { index, pathSegment ->
-            if (pathSegment.matches(Regex("\\d{6,9}\$"))) {
-                newUrl.setPathSegment(index, "<blog_id>")
+            if (pathSegment.matches(Regex("\\d{6,10}\$"))) {
+                this.setPathSegment(index, "<blog_id>")
             }
         }
+        return this
     }
-
 }
