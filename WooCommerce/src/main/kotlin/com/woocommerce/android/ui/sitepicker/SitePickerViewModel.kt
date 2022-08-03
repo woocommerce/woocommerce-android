@@ -193,7 +193,7 @@ class SitePickerViewModel @Inject constructor(
             }
             !site.hasWooCommerce -> {
                 // Show not woo store message view.
-                loadWooNotFoundView(url)
+                loadWooNotFoundView(site)
             }
             else -> {
                 // We have a pre-validation woo store. Attempt to just
@@ -240,20 +240,23 @@ class SitePickerViewModel @Inject constructor(
         )
     }
 
-    private fun loadWooNotFoundView(url: String) {
+    private fun loadWooNotFoundView(site: SiteModel) {
         analyticsTrackerWrapper.track(
             AnalyticsEvent.SITE_PICKER_AUTO_LOGIN_ERROR_NOT_WOO_STORE,
             mapOf(
-                AnalyticsTracker.KEY_URL to url,
+                AnalyticsTracker.KEY_URL to site.url,
                 AnalyticsTracker.KEY_HAS_CONNECTED_STORES to sitePickerViewState.hasConnectedStores
             )
         )
         trackLoginEvent(currentStep = UnifiedLoginTracker.Step.NOT_WOO_STORE)
+        // Make sure installation is enabled only for selfhosted and atomic sites
+        // TODO remove this when we handle non-atomic sites
+        val isWooInstallationEnabled = site.isJetpackConnected
         sitePickerViewState = sitePickerViewState.copy(
             isNoStoresViewVisible = true,
-            isPrimaryBtnVisible = true,
+            isPrimaryBtnVisible = isWooInstallationEnabled,
             primaryBtnText = resourceProvider.getString(string.login_install_woo),
-            noStoresLabelText = resourceProvider.getString(string.login_not_woo_store, url),
+            noStoresLabelText = resourceProvider.getString(string.login_not_woo_store, site.url),
             noStoresBtnText = resourceProvider.getString(string.login_view_connected_stores),
             currentSitePickerState = SitePickerState.WooNotFoundState
         )
