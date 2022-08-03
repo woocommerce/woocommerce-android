@@ -142,8 +142,6 @@ class OrderListViewModel @Inject constructor(
     private var dismissListErrors = false
     var searchQuery = ""
 
-    private var shouldGlanceFirstSwipeAbleItem: Boolean = savedState.get<Boolean>(SHOULD_GLANCE_SWIPE_ABLE_ITEM) ?: true
-
     init {
         lifecycleRegistry.currentState = Lifecycle.State.CREATED
         lifecycleRegistry.currentState = Lifecycle.State.STARTED
@@ -174,12 +172,11 @@ class OrderListViewModel @Inject constructor(
 
     private fun shouldGlanceFirstSwipeAbleItem() {
         isFetchingFirstPage.observe(this) { isFetching ->
-            if (!isFetching && shouldGlanceFirstSwipeAbleItem) {
+            if (!isFetching && InAppLifecycleMemory.shouldGlanceFirstSwipeAbleItem) {
                 launch {
                     // Wait for the list to be draw
                     delay(DEBOUNCE_GLANCE_DURATION)
-                    shouldGlanceFirstSwipeAbleItem = false
-                    savedState[SHOULD_GLANCE_SWIPE_ABLE_ITEM] = false
+                    InAppLifecycleMemory.shouldGlanceFirstSwipeAbleItem = false
                     triggerEvent(OrderListEvent.GlanceFirstSwipeAbleItem)
                 }
             }
@@ -631,4 +628,8 @@ class OrderListViewModel @Inject constructor(
         val arePaymentGatewaysFetched: Boolean = false,
         val filterCount: Int = 0
     ) : Parcelable
+}
+
+object InAppLifecycleMemory {
+    var shouldGlanceFirstSwipeAbleItem = true
 }
