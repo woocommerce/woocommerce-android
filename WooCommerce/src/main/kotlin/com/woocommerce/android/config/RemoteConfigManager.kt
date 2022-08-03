@@ -46,8 +46,6 @@ class RemoteConfigManager @Inject constructor(
                 val siteLoginVariant = remoteConfig.getString("site_credentials_emphasis")
 
                 scope.launch {
-                    repository.updatePrologueVariantValue(prologueVariant)
-                    repository.updateSiteLoginVariantValue(siteLoginVariant)
                 }
             }
             .addOnFailureListener {
