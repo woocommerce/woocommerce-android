@@ -9,7 +9,6 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import kotlinx.coroutines.withTimeout
 import javax.inject.Inject
 
@@ -19,29 +18,30 @@ class WaitingTimeTracker @Inject constructor(
     private val currentTimeInMillis: () -> Long = System::currentTimeMillis,
     private val waitingTimeout: Long = 10000L
 ) {
-    var state: MutableStateFlow<State> = MutableStateFlow(State.Idle)
+    private val stateFlow: MutableStateFlow<State> = MutableStateFlow(State.Idle)
+    val currentState: State get() = stateFlow.value
 
     suspend fun onWaitingStarted() {
-        state.update { State.Waiting(currentTimeInMillis()) }
+        stateFlow.update { State.Waiting(currentTimeInMillis()) }
         appCoroutineScope.launch(dispatchers.computation) {
 
             withTimeout(waitingTimeout) {
-                state.collectLatest {
+                stateFlow.collectLatest {
                     if (it is Done) {
-                        state.update { State.Idle }
+                        stateFlow.update { State.Idle }
                         cancel()
                         // publish waiting time
                     }
                 }
             }
 
-            state.update { State.Idle }
+            stateFlow.update { State.Idle }
         }
 
     }
 
     suspend fun onWaitingEnded() {
-        state.emit(Done(currentTimeInMillis()))
+        stateFlow.emit(Done(currentTimeInMillis()))
     }
 
     sealed class State(val creationTimestamp: Long) {

@@ -1,5 +1,7 @@
 package com.woocommerce.android.analytics
 
+import com.woocommerce.android.analytics.WaitingTimeTracker.State.Idle
+import com.woocommerce.android.analytics.WaitingTimeTracker.State.Waiting
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.runBlocking
@@ -24,10 +26,10 @@ class WaitingTimeTrackerTest: BaseUnitTest() {
 
     @Test
     fun `WaitingTimeTracker should handle states correctly`() = runBlocking {
-        assertTrue(sut.state.value is WaitingTimeTracker.State.Idle)
+        assertTrue(sut.currentState is Idle)
         sut.onWaitingStarted()
-        assertTrue(sut.state.value is WaitingTimeTracker.State.Waiting)
+        assertTrue(sut.currentState is Waiting)
         sut.onWaitingEnded()
-        assertTrue(sut.state.value is WaitingTimeTracker.State.Idle)
+        assertTrue(sut.currentState is Idle)
     }
 }
