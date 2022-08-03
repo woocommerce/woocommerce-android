@@ -30,7 +30,7 @@ class FirebaseRemoteConfigRepositoryTests : BaseUnitTest() {
 
         @Suppress("UNCHECKED_CAST")
         whenever(remoteConfig.setDefaultsAsync(any<Map<String, Any>>()))
-            .thenReturn(StaticTask(Unit) as Task<Void>)
+            .thenReturn(StaticTask(null))
 
         repository = FirebaseRemoteConfigRepository(
             remoteConfig = remoteConfig,
