@@ -28,7 +28,7 @@ class WaitingTimeTracker(
     @Inject constructor(
         @AppCoroutineScope appCoroutineScope: CoroutineScope,
         dispatchers: CoroutineDispatchers
-    ) : this(appCoroutineScope, dispatchers, System::currentTimeMillis, 10000L)
+    ) : this(appCoroutineScope, dispatchers, System::currentTimeMillis, DEFAULT_WAITING_TIMEOUT)
 
     private val stateFlow: MutableStateFlow<State> = MutableStateFlow(Idle)
     val currentState: State get() = stateFlow.value
@@ -59,9 +59,10 @@ class WaitingTimeTracker(
             withTimeout(waitingTimeout) {
                 stateFlow.collectLatest {
                     if (it is Done) {
-                        onWaitingTimeAvailable(
-                            it.creationTimestamp - waitingStartedTimestamp
-                        )
+                        val waitingTimeElapsed = it.creationTimestamp - waitingStartedTimestamp
+                        if (waitingTimeElapsed in 1..waitingTimeout) {
+                            onWaitingTimeAvailable(waitingTimeElapsed)
+                        }
                         cancel()
                     }
                 }
@@ -78,5 +79,9 @@ class WaitingTimeTracker(
         object Idle : State(0L)
         class Waiting(creationTimestamp: Long) : State(creationTimestamp)
         class Done(creationTimestamp: Long) : State(creationTimestamp)
+    }
+
+    companion object {
+        const val DEFAULT_WAITING_TIMEOUT = 30000L
     }
 }
