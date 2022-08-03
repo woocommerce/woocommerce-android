@@ -45,6 +45,7 @@ class SitePickerViewModel @Inject constructor(
         private const val WOOCOMMERCE_INSTALLATION_URL = "https://wordpress.com/plugins/woocommerce/"
         private const val WOOCOMMERCE_INSTALLATION_DONE_URL = "marketplace/thank-you/woocommerce"
     }
+
     private val navArgs: SitePickerFragmentArgs by savedState.navArgs()
 
     val sitePickerViewStateData = LiveDataDelegate(savedState, SitePickerViewState())
@@ -397,6 +398,12 @@ class SitePickerViewModel @Inject constructor(
         )
         // Fetch site
         val result = repository.fetchWooCommerceSite(site)
+            .mapCatching { updatedSite ->
+                if (!updatedSite.hasWooCommerce) {
+                    // Force a retry if the woocommerce_is_active is not updated yet
+                    throw Exception()
+                } else updatedSite
+            }
             .recoverCatching {
                 // Retry once on errors
                 repository.fetchWooCommerceSite(site)
