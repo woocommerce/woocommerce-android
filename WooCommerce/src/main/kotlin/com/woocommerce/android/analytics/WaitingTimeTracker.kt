@@ -1,27 +1,42 @@
 package com.woocommerce.android.analytics
 
 import com.woocommerce.android.analytics.WaitingTimeTracker.State.Done
+import com.woocommerce.android.di.AppCoroutineScope
+import com.woocommerce.android.util.CoroutineDispatchers
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.cancel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import kotlinx.coroutines.withTimeout
+import javax.inject.Inject
 
-class WaitingTimeTracker(
+class WaitingTimeTracker @Inject constructor(
+    @AppCoroutineScope private val appCoroutineScope: CoroutineScope,
+    private val dispatchers: CoroutineDispatchers,
     private val currentTimeInMillis: () -> Long = System::currentTimeMillis,
     private val waitingTimeout: Long = 10000L
 ) {
-    private var state: MutableStateFlow<State> = MutableStateFlow(State.Idle)
+    var state: MutableStateFlow<State> = MutableStateFlow(State.Idle)
 
     suspend fun onWaitingStarted() {
-        withTimeout(waitingTimeout) {
-            state.update { State.Waiting(currentTimeInMillis()) }
-            state.collectLatest {
-                if (it is Done) {
-                    // publish waiting time
+        state.update { State.Waiting(currentTimeInMillis()) }
+        appCoroutineScope.launch(dispatchers.computation) {
+
+            withTimeout(waitingTimeout) {
+                state.collectLatest {
+                    if (it is Done) {
+                        state.update { State.Idle }
+                        cancel()
+                        // publish waiting time
+                    }
                 }
             }
+
+            state.update { State.Idle }
         }
-        state.update { State.Idle }
 
     }
 
@@ -29,7 +44,7 @@ class WaitingTimeTracker(
         state.emit(Done(currentTimeInMillis()))
     }
 
-    private sealed class State(val creationTimestamp: Long) {
+    sealed class State(val creationTimestamp: Long) {
         object Idle : State(0L)
         class Waiting(creationTimestamp: Long) : State(creationTimestamp)
         class Done(creationTimestamp: Long) : State(creationTimestamp)
