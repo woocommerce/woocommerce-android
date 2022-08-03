@@ -50,6 +50,7 @@ class LoginHelpNotificationWorker @AssistedInject constructor(
             mapOf(AnalyticsTracker.KEY_TYPE to notificationType.toString())
         )
         prefsWrapper.setPreLoginNotificationDisplayed(displayed = true)
+        prefsWrapper.setPreLoginNotificationDisplayedType(notificationType.toString())
         return Result.success()
     }
 
