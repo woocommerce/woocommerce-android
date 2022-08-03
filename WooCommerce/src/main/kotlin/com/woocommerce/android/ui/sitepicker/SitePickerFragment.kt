@@ -201,7 +201,7 @@ class SitePickerFragment : BaseFragment(R.layout.fragment_site_picker), LoginEma
             viewModel.onInstallWooClicked()
         }
         binding.noStoresView.clickSecondaryAction {
-            viewModel.onRefreshButtonClick()
+            viewModel.onViewConnectedStoresButtonClick()
         }
     }
 
