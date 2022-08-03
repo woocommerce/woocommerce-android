@@ -1,0 +1,3 @@
+# Adding `mobile-ui-testing-squad` as codeowners for UI tests related folders
+
+/WooCommerce/src/androidTest/ @woocommerce/mobile-ui-testing-squad
