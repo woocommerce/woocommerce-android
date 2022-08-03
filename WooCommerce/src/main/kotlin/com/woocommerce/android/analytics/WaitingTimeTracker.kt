@@ -35,14 +35,14 @@ class WaitingTimeTracker(
 
     private var waitingJob: Job? = null
 
-    fun onWaitingStarted(onWaitingTimeAvailable: (Long) -> Unit = {}) {
+    fun onWaitingStarted(trackEvent: AnalyticsEvent) {
         if (currentState is Waiting) return
 
         waitingJob?.cancel()
         stateFlow.update { Waiting(currentTimeInMillis()) }
 
         waitingJob = appCoroutineScope.launch(dispatchers.computation) {
-            waitForDoneState(onWaitingTimeAvailable, currentState.creationTimestamp)
+            waitForDoneState(trackEvent, currentState.creationTimestamp)
                 .exceptionOrNull()
                 ?.let {
                     stateFlow.update { Idle }
@@ -53,7 +53,7 @@ class WaitingTimeTracker(
     }
 
     private suspend fun waitForDoneState(
-        onWaitingTimeAvailable: (Long) -> Unit,
+        trackEvent: AnalyticsEvent,
         waitingStartedTimestamp: Long
     ) = runCatching {
             withTimeout(waitingTimeout) {
@@ -61,13 +61,22 @@ class WaitingTimeTracker(
                     if (it is Done) {
                         val waitingTimeElapsed = it.creationTimestamp - waitingStartedTimestamp
                         if (waitingTimeElapsed in 1..waitingTimeout) {
-                            onWaitingTimeAvailable(waitingTimeElapsed)
+                            sendWaitingTimeToTracks(trackEvent, waitingTimeElapsed)
                         }
                         cancel()
                     }
                 }
             }
         }
+
+    private fun sendWaitingTimeToTracks(
+        trackEvent: AnalyticsEvent,
+        waitingTimeElapsed: Long
+    ) {
+        AnalyticsTracker.track(trackEvent, mapOf(
+            AnalyticsTracker.KEY_WAITING_TIME to waitingTimeElapsed
+        ))
+    }
 
     suspend fun onWaitingEnded() {
         if (currentState is Waiting) {
