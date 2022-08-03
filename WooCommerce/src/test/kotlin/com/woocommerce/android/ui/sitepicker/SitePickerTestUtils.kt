@@ -36,7 +36,6 @@ object SitePickerTestUtils {
     val userModel = WCUserModel()
 
     fun getDefaultLoginViewState(defaultViewState: SitePickerViewModel.SitePickerViewState) = defaultViewState.copy(
-        isToolbarVisible = false,
         isHelpBtnVisible = true,
         isSecondaryBtnVisible = true,
         isPrimaryBtnVisible = true
@@ -44,7 +43,6 @@ object SitePickerTestUtils {
 
     fun getDefaultSwitchStoreViewState(defaultViewState: SitePickerViewModel.SitePickerViewState) =
         defaultViewState.copy(
-            isToolbarVisible = true,
             isHelpBtnVisible = false,
             isSecondaryBtnVisible = false,
             isPrimaryBtnVisible = true

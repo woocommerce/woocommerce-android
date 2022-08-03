@@ -1,6 +1,7 @@
 package com.woocommerce.android.ui.sitepicker
 
 import androidx.lifecycle.SavedStateHandle
+import com.google.gson.Gson
 import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsEvent
@@ -11,6 +12,7 @@ import com.woocommerce.android.initSavedStateHandle
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.common.UserEligibilityFetcher
 import com.woocommerce.android.ui.login.UnifiedLoginTracker
+import com.woocommerce.android.ui.sitepicker.SitePickerViewModel.SitePickerEvent
 import com.woocommerce.android.ui.sitepicker.SitePickerViewModel.SitePickerEvent.NavigateToEmailHelpDialogEvent
 import com.woocommerce.android.ui.sitepicker.SitePickerViewModel.SitePickerEvent.NavigateToMainActivityEvent
 import com.woocommerce.android.ui.sitepicker.SitePickerViewModel.SitePickerEvent.NavigationToHelpFragmentEvent
@@ -21,6 +23,7 @@ import com.woocommerce.android.ui.sitepicker.SitePickerViewModel.SitePickerState
 import com.woocommerce.android.ui.sitepicker.SitePickerViewModel.SitePickerState.NoStoreState
 import com.woocommerce.android.ui.sitepicker.SitePickerViewModel.SitePickerState.StoreListState
 import com.woocommerce.android.ui.sitepicker.SitePickerViewModel.SitePickerState.WooNotFoundState
+import com.woocommerce.android.util.captureValues
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Logout
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
@@ -508,5 +511,75 @@ class SitePickerViewModelTest : BaseUnitTest() {
         assertThat(sitePickerData?.isNoStoresViewVisible).isFalse
         assertThat(sitePickerData?.primaryBtnText).isEqualTo(resourceProvider.getString(R.string.continue_button))
         assertThat(sitePickerData?.currentSitePickerState).isEqualTo(StoreListState)
+    }
+
+    @Test
+    fun `when install woo is tapped, then open a webview to trigger installation`() = testBlocking {
+        val expectedSite = expectedSiteList[1].apply { hasWooCommerce = false }
+        givenThatUserLoggedInFromEnteringSiteAddress(expectedSite)
+        givenTheScreenIsFromLogin(true)
+
+        whenSitesAreFetched()
+        whenViewModelIsCreated()
+        viewModel.onInstallWooClicked()
+
+        val event = viewModel.event.captureValues().last()
+        assertThat(event).isInstanceOf(SitePickerEvent.NavigateToWPComWebView::class.java)
+    }
+
+    @Test
+    fun `when woo installation completes, then continue login`() = testBlocking {
+        val expectedSite = expectedSiteList[1].apply { hasWooCommerce = false }
+        givenThatUserLoggedInFromEnteringSiteAddress(expectedSite)
+        givenTheScreenIsFromLogin(true)
+        whenSitesAreFetched()
+        whenever(repository.fetchWooCommerceSite(expectedSite))
+            .thenReturn(Result.success(expectedSite.apply { hasWooCommerce = true }))
+
+        whenViewModelIsCreated()
+        viewModel.onWooInstalled()
+
+        val sites = viewModel.sites.captureValues().last()
+        assertThat(sites[1].isSelected).isTrue
+        assertThat(sites[1].site.url).isEqualTo(SitePickerTestUtils.loginSiteAddress)
+    }
+
+    @Test
+    fun `given woo installation finishes, when fetching site fails, then retry`() = testBlocking {
+        val expectedSite = expectedSiteList[1].apply { hasWooCommerce = false }
+        givenThatUserLoggedInFromEnteringSiteAddress(expectedSite)
+        givenTheScreenIsFromLogin(true)
+        whenSitesAreFetched()
+        whenever(repository.fetchWooCommerceSite(expectedSite))
+            .thenReturn(Result.failure(Exception()))
+            .thenReturn(Result.success(expectedSite.apply { hasWooCommerce = true }))
+
+        whenViewModelIsCreated()
+        viewModel.onWooInstalled()
+
+        verify(repository, times(2)).fetchWooCommerceSite(expectedSite)
+    }
+
+    @Test
+    fun `given woo installation finishes, when fetched site doesn't have woo, then retry`() = testBlocking {
+        fun SiteModel.clone(): SiteModel {
+            // A quick way for supporting cloning SiteModel without changing SiteModel class itself
+            val gson = Gson()
+            val json = gson.toJson(this)
+            return gson.fromJson(json, SiteModel::class.java)
+        }
+
+        val expectedSite = expectedSiteList[1].apply { hasWooCommerce = false }
+        givenThatUserLoggedInFromEnteringSiteAddress(expectedSite)
+        givenTheScreenIsFromLogin(true)
+        whenSitesAreFetched()
+        whenever(repository.fetchWooCommerceSite(expectedSite))
+            .thenReturn(Result.success(expectedSite.clone()))
+            .thenReturn(Result.success(expectedSite.clone().apply { hasWooCommerce = true }))
+
+        whenViewModelIsCreated()
+        viewModel.onWooInstalled()
+
+        verify(repository, times(2)).fetchWooCommerceSite(expectedSite)
     }
 }
