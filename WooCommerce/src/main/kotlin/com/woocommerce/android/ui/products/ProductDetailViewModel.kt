@@ -184,6 +184,8 @@ class ProductDetailViewModel @Inject constructor(
     private val _productDetailCards = MutableLiveData<List<ProductPropertyCard>>()
     val productDetailCards: LiveData<List<ProductPropertyCard>> = _productDetailCards
 
+    private var hasTrackedProductDetailLoaded = false
+
     private val cardBuilder by lazy {
         ProductDetailCardBuilder(this, resources, currencyFormatter, parameters, addonRepository, variationRepository)
     }
@@ -290,11 +292,6 @@ class ProductDetailViewModel @Inject constructor(
             initializeStoredProductAfterRestoration()
         }
         observeImageUploadEvents()
-
-        val properties = viewState.productDraft?.let {
-            mapOf(KEY_HAS_LINKED_PRODUCTS to it.hasLinkedProducts())
-        } ?: emptyMap()
-        AnalyticsTracker.track(AnalyticsEvent.PRODUCT_DETAIL_LOADED, properties)
     }
 
     private fun initializeViewState() {
@@ -310,6 +307,7 @@ class ProductDetailViewModel @Inject constructor(
             productDraft = defaultProduct
         )
         updateProductState(defaultProduct)
+        trackProductDetailLoaded()
     }
 
     private fun createDefaultProductForAddFlow(): Product {
@@ -1085,6 +1083,22 @@ class ProductDetailViewModel @Inject constructor(
                 fetchProduct(remoteProductId)
             }
             viewState = viewState.copy(isSkeletonShown = false)
+            trackProductDetailLoaded()
+        }
+    }
+
+    /**
+     * Called when an existing product has been loaded or a new product is being added
+     */
+    private fun trackProductDetailLoaded() {
+        if (hasTrackedProductDetailLoaded.not()) {
+            storedProduct.value?.let {
+                val properties = mapOf(KEY_HAS_LINKED_PRODUCTS to it.hasLinkedProducts())
+                AnalyticsTracker.track(AnalyticsEvent.PRODUCT_DETAIL_LOADED, properties)
+            } ?: run {
+                AnalyticsTracker.track(AnalyticsEvent.PRODUCT_DETAIL_LOADED)
+            }
+            hasTrackedProductDetailLoaded = true
         }
     }
 
