@@ -39,8 +39,9 @@ import com.woocommerce.android.ui.login.localnotifications.LoginNotificationSche
 import com.woocommerce.android.ui.login.localnotifications.LoginNotificationScheduler.Companion.LOGIN_HELP_NOTIFICATION_ID
 import com.woocommerce.android.ui.login.localnotifications.LoginNotificationScheduler.Companion.LOGIN_HELP_NOTIFICATION_TAG
 import com.woocommerce.android.ui.login.localnotifications.LoginNotificationScheduler.LoginHelpNotificationType
-import com.woocommerce.android.ui.login.localnotifications.LoginNotificationScheduler.LoginHelpNotificationType.LOGIN_INCORRECT_WPCOM_EMAIL
+import com.woocommerce.android.ui.login.localnotifications.LoginNotificationScheduler.LoginHelpNotificationType.LOGIN_SITE_ADDRESS_EMAIL_ERROR
 import com.woocommerce.android.ui.login.localnotifications.LoginNotificationScheduler.LoginHelpNotificationType.LOGIN_SITE_ADDRESS_ERROR
+import com.woocommerce.android.ui.login.localnotifications.LoginNotificationScheduler.LoginHelpNotificationType.LOGIN_WPCOM_EMAIL_ERROR
 import com.woocommerce.android.ui.login.overrides.WooLoginEmailFragment
 import com.woocommerce.android.ui.login.overrides.WooLoginSiteAddressFragment
 import com.woocommerce.android.ui.main.MainActivity
@@ -174,7 +175,7 @@ class LoginActivity :
     private fun processLoginHelpNotification(loginHelpNotification: String, siteAddress: String?) {
         when (loginHelpNotification) {
             LOGIN_SITE_ADDRESS_ERROR.toString() -> startLoginViaWPCom()
-            LOGIN_INCORRECT_WPCOM_EMAIL.toString() -> loginViaSiteCredentials(siteAddress)
+            LOGIN_SITE_ADDRESS_EMAIL_ERROR.toString() -> loginViaSiteCredentials(siteAddress)
         }
         NotificationManagerCompat.from(this).cancel(
             LOGIN_HELP_NOTIFICATION_TAG,
@@ -780,7 +781,7 @@ class LoginActivity :
     }
 
     override fun gotUnregisteredEmail(email: String?) {
-        loginNotificationScheduler.scheduleNotification(LOGIN_INCORRECT_WPCOM_EMAIL)
+        loginNotificationScheduler.scheduleNotification(LOGIN_WPCOM_EMAIL_ERROR)
 
         // Show the 'No WordPress.com account found' screen
         val fragment = LoginNoWPcomAccountFoundFragment.newInstance(email)
@@ -871,7 +872,7 @@ class LoginActivity :
     @Subscribe(threadMode = MAIN)
     fun onAuthOptionsFetched(event: OnAuthOptionsFetched) {
         if (event.error?.type == UNKNOWN_USER) {
-            loginNotificationScheduler.scheduleNotification(LOGIN_INCORRECT_WPCOM_EMAIL)
+            loginNotificationScheduler.scheduleNotification(LOGIN_SITE_ADDRESS_EMAIL_ERROR)
         }
     }
 }

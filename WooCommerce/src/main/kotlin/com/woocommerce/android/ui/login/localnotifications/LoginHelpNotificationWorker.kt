@@ -20,8 +20,9 @@ import com.woocommerce.android.ui.login.localnotifications.LoginNotificationSche
 import com.woocommerce.android.ui.login.localnotifications.LoginNotificationScheduler.Companion.LOGIN_NOTIFICATION_TYPE_KEY
 import com.woocommerce.android.ui.login.localnotifications.LoginNotificationScheduler.LoginHelpNotificationType
 import com.woocommerce.android.ui.login.localnotifications.LoginNotificationScheduler.LoginHelpNotificationType.DEFAULT_HELP
-import com.woocommerce.android.ui.login.localnotifications.LoginNotificationScheduler.LoginHelpNotificationType.LOGIN_INCORRECT_WPCOM_EMAIL
+import com.woocommerce.android.ui.login.localnotifications.LoginNotificationScheduler.LoginHelpNotificationType.LOGIN_SITE_ADDRESS_EMAIL_ERROR
 import com.woocommerce.android.ui.login.localnotifications.LoginNotificationScheduler.LoginHelpNotificationType.LOGIN_SITE_ADDRESS_ERROR
+import com.woocommerce.android.ui.login.localnotifications.LoginNotificationScheduler.LoginHelpNotificationType.LOGIN_WPCOM_EMAIL_ERROR
 import com.woocommerce.android.viewmodel.ResourceProvider
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
@@ -41,7 +42,8 @@ class LoginHelpNotificationWorker @AssistedInject constructor(
         when (notificationType) {
             DEFAULT_HELP -> defaultLoginSupportNotification()
             LOGIN_SITE_ADDRESS_ERROR -> siteAddressErrorNotification()
-            LOGIN_INCORRECT_WPCOM_EMAIL -> incorrectWPComEmailNotification(prefsWrapper.getLoginSiteAddress())
+            LOGIN_SITE_ADDRESS_EMAIL_ERROR,
+            LOGIN_WPCOM_EMAIL_ERROR -> incorrectWPComEmailNotification(prefsWrapper.getLoginSiteAddress())
         }
         AnalyticsTracker.track(
             LOGIN_LOCAL_NOTIFICATION_DISPLAYED,
@@ -113,7 +115,7 @@ class LoginHelpNotificationWorker @AssistedInject constructor(
         LoginActivity.createIntent(appContext, LOGIN_SITE_ADDRESS_ERROR)
 
     private fun buildOpenLoginWithSiteCredentialsIntent(siteAddress: String): Intent =
-        LoginActivity.createIntent(appContext, LOGIN_INCORRECT_WPCOM_EMAIL, siteAddress)
+        LoginActivity.createIntent(appContext, LOGIN_SITE_ADDRESS_EMAIL_ERROR, siteAddress)
 
     private fun getActionsForSiteAddressErrorNotification(): List<Pair<String, Intent>> =
         listOf(

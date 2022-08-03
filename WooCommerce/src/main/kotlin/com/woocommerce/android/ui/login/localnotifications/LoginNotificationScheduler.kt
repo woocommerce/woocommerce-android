@@ -60,7 +60,8 @@ class LoginNotificationScheduler @Inject constructor(
 
     enum class LoginHelpNotificationType(private val typeName: String) {
         LOGIN_SITE_ADDRESS_ERROR("site_address_error"),
-        LOGIN_INCORRECT_WPCOM_EMAIL("incorrect_wpcom_email"),
+        LOGIN_WPCOM_EMAIL_ERROR("wpcom_email_error"),
+        LOGIN_SITE_ADDRESS_EMAIL_ERROR("site_address_email_error"),
         DEFAULT_HELP("default_support");
 
         override fun toString(): String {
@@ -72,7 +73,8 @@ class LoginNotificationScheduler @Inject constructor(
                 when (string) {
                     LOGIN_SITE_ADDRESS_ERROR.typeName -> LOGIN_SITE_ADDRESS_ERROR
                     DEFAULT_HELP.typeName -> DEFAULT_HELP
-                    LOGIN_INCORRECT_WPCOM_EMAIL.typeName -> LOGIN_INCORRECT_WPCOM_EMAIL
+                    LOGIN_SITE_ADDRESS_EMAIL_ERROR.typeName -> LOGIN_SITE_ADDRESS_EMAIL_ERROR
+                    LOGIN_WPCOM_EMAIL_ERROR.typeName -> LOGIN_WPCOM_EMAIL_ERROR
                     else -> DEFAULT_HELP
                 }
         }
