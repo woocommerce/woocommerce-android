@@ -1,10 +1,10 @@
 package com.woocommerce.android.config
 
+import com.automattic.android.tracks.crashlogging.CrashLogging
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.remoteconfig.FirebaseRemoteConfig
 import com.google.firebase.remoteconfig.ktx.remoteConfig
 import com.google.firebase.remoteconfig.ktx.remoteConfigSettings
-import com.woocommerce.android.R
 import com.woocommerce.android.experiment.PrologueVariant
 import com.woocommerce.android.experiment.SiteLoginExperiment.SiteLoginVariant
 import com.woocommerce.android.util.PackageUtils
@@ -12,8 +12,10 @@ import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.map
 import javax.inject.Inject
+import javax.inject.Provider
 import javax.inject.Singleton
 
 @Singleton
@@ -33,6 +35,8 @@ class FirebaseRemoteConfigRepository @Inject constructor() : RemoteConfigReposit
 
     private val remoteConfig: FirebaseRemoteConfig = Firebase.remoteConfig
     private val changesTrigger = MutableSharedFlow<Unit>(replay = 1)
+
+    @Inject lateinit var crashLogging: Provider<CrashLogging>
 
     private val defaultValues by lazy {
         mapOf(
@@ -66,10 +70,18 @@ class FirebaseRemoteConfigRepository @Inject constructor() : RemoteConfigReposit
     override fun observePrologueVariant(): Flow<PrologueVariant> =
         observeStringRemoteValue(PROLOGUE_VARIANT_KEY)
             .map { PrologueVariant.valueOf(it.uppercase()) }
+            .catch {
+                crashLogging.get().recordException(it)
+                emit(PrologueVariant.valueOf(defaultValues[PROLOGUE_VARIANT_KEY]!!))
+            }
 
     override fun observeSiteLoginVariant(): Flow<SiteLoginVariant> =
         observeStringRemoteValue(SITE_CREDENTIALS_EXPERIMENT_VARIANT_KEY)
             .map { SiteLoginVariant.valueOf(it.uppercase()) }
+            .catch {
+                crashLogging.get().recordException(it)
+                emit(SiteLoginVariant.valueOf(defaultValues[SITE_CREDENTIALS_EXPERIMENT_VARIANT_KEY]!!))
+            }
 
     private fun observeStringRemoteValue(key: String) = changesTrigger
         .map { remoteConfig.getString(key) }
