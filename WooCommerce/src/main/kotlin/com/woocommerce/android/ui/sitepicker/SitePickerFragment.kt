@@ -11,6 +11,8 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.woocommerce.android.AppUrls
 import com.woocommerce.android.NavGraphMainDirections
 import com.woocommerce.android.R
+import com.woocommerce.android.analytics.AnalyticsEvent
+import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.databinding.FragmentSitePickerBinding
 import com.woocommerce.android.extensions.handleNotice
 import com.woocommerce.android.extensions.takeIfNotEqualTo
@@ -168,7 +170,11 @@ class SitePickerFragment : BaseFragment(R.layout.fragment_site_picker), LoginEma
 
     private fun handleResults() {
         handleNotice(WPComWebViewFragment.WEBVIEW_RESULT) {
+            AnalyticsTracker.track(AnalyticsEvent.LOGIN_WOOCOMMERCE_SETUP_COMPLETED)
             viewModel.onWooInstalled()
+        }
+        handleNotice(WPComWebViewFragment.WEBVIEW_DISMISSED) {
+            AnalyticsTracker.track(AnalyticsEvent.LOGIN_WOOCOMMERCE_SETUP_DISMISSED)
         }
     }
 
@@ -198,6 +204,7 @@ class SitePickerFragment : BaseFragment(R.layout.fragment_site_picker), LoginEma
 
     private fun updateWooNotFoundView() {
         binding.loginEpilogueButtonBar.buttonPrimary.setOnClickListener {
+            AnalyticsTracker.track(AnalyticsEvent.LOGIN_WOOCOMMERCE_SETUP_BUTTON_TAPPED)
             viewModel.onInstallWooClicked()
         }
         binding.noStoresView.clickSecondaryAction {

@@ -641,6 +641,11 @@ enum class AnalyticsEvent(val siteless: Boolean = false) {
     LOGIN_ONBOARDING_NEXT_BUTTON_TAPPED,
     LOGIN_ONBOARDING_SKIP_BUTTON_TAPPED,
 
+    // Woo Installation
+    LOGIN_WOOCOMMERCE_SETUP_BUTTON_TAPPED,
+    LOGIN_WOOCOMMERCE_SETUP_DISMISSED,
+    LOGIN_WOOCOMMERCE_SETUP_COMPLETED,
+
     // Login help scheduled notifications
     LOGIN_LOCAL_NOTIFICATION_DISPLAYED(siteless = true),
     LOGIN_LOCAL_NOTIFICATION_TAPPED(siteless = true),
