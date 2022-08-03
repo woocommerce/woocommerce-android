@@ -25,7 +25,8 @@ class WaitingTimeTracker(
      * Injected constructor as secondary to allow default values for the parameters
      * without causing building issues with Hilt
      */
-    @Inject constructor(
+    @Inject
+    constructor(
         @AppCoroutineScope appCoroutineScope: CoroutineScope,
         dispatchers: CoroutineDispatchers
     ) : this(appCoroutineScope, dispatchers, System::currentTimeMillis, DEFAULT_WAITING_TIMEOUT)
@@ -49,33 +50,33 @@ class WaitingTimeTracker(
                     waitingJob = null
                 }
         }
-
     }
 
     private suspend fun waitForDoneState(
         trackEvent: AnalyticsEvent,
         waitingStartedTimestamp: Long
     ) = runCatching {
-            withTimeout(waitingTimeout) {
-                stateFlow.collectLatest {
-                    if (it is Done) {
-                        val waitingTimeElapsed = it.creationTimestamp - waitingStartedTimestamp
-                        if (waitingTimeElapsed in 1..waitingTimeout) {
-                            sendWaitingTimeToTracks(trackEvent, waitingTimeElapsed)
-                        }
-                        cancel()
+        withTimeout(waitingTimeout) {
+            stateFlow.collectLatest {
+                if (it is Done) {
+                    val waitingTimeElapsed = it.creationTimestamp - waitingStartedTimestamp
+                    if (waitingTimeElapsed in 1..waitingTimeout) {
+                        sendWaitingTimeToTracks(trackEvent, waitingTimeElapsed)
                     }
+                    cancel()
                 }
             }
         }
+    }
 
     private fun sendWaitingTimeToTracks(
         trackEvent: AnalyticsEvent,
         waitingTimeElapsed: Long
     ) {
-        AnalyticsTracker.track(trackEvent, mapOf(
-            AnalyticsTracker.KEY_WAITING_TIME to waitingTimeElapsed
-        ))
+        AnalyticsTracker.track(
+            trackEvent,
+            mapOf(AnalyticsTracker.KEY_WAITING_TIME to waitingTimeElapsed)
+        )
     }
 
     suspend fun onWaitingEnded() {

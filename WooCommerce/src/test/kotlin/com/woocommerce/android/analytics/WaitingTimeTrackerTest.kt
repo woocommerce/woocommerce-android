@@ -4,31 +4,29 @@ import com.woocommerce.android.analytics.WaitingTimeTracker.State.Idle
 import com.woocommerce.android.analytics.WaitingTimeTracker.State.Waiting
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.test.TestScope
-import org.junit.Assert.*
+import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
+import org.mockito.kotlin.mock
 
 @OptIn(ExperimentalCoroutinesApi::class)
-class WaitingTimeTrackerTest: BaseUnitTest() {
+class WaitingTimeTrackerTest : BaseUnitTest() {
     lateinit var sut: WaitingTimeTracker
 
     @Before
     fun setUp() {
-        sut = WaitingTimeTracker(
-            appCoroutineScope = TestScope(coroutinesTestRule.testDispatcher),
-            dispatchers = coroutinesTestRule.testDispatchers,
-            currentTimeInMillis = { 100 },
-            waitingTimeout = 10L
+        createSut(
+            customTimeInMillis = { 100 },
+            customWaitingTimeout = 10L
         )
     }
 
     @Test
     fun `When starting and ending the waiting process, then handle all states correctly`() = runBlocking {
         assertTrue(sut.currentState is Idle)
-        sut.onWaitingStarted()
+        sut.onWaitingStarted(mock())
         assertTrue(sut.currentState is Waiting)
         sut.onWaitingEnded()
         assertTrue(sut.currentState is Idle)
@@ -39,5 +37,17 @@ class WaitingTimeTrackerTest: BaseUnitTest() {
         assertTrue(sut.currentState is Idle)
         sut.onWaitingEnded()
         assertTrue(sut.currentState is Idle)
+    }
+
+    private fun createSut(
+        customTimeInMillis: () -> Long,
+        customWaitingTimeout: Long
+    ) {
+        sut = WaitingTimeTracker(
+            appCoroutineScope = TestScope(coroutinesTestRule.testDispatcher),
+            dispatchers = coroutinesTestRule.testDispatchers,
+            currentTimeInMillis = customTimeInMillis,
+            waitingTimeout = customWaitingTimeout
+        )
     }
 }
