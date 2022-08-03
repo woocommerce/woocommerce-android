@@ -68,4 +68,19 @@ class WooRequestFormatterTest {
             "https://public-api.wordpress.com/orders/<order_id>/&_method=get"
         )
     }
+
+    @Test
+    fun shouldReplaceLabelIdWithPlaceholder() {
+        val result = sut.formatRequestUrl(
+            Request.Builder()
+                .url(
+                    "https://public-api.wordpress.com/label/123456/&_method=get"
+                )
+                .build()
+        )
+
+        assertThat(result).isEqualTo(
+            "https://public-api.wordpress.com/label/<label_id>/&_method=get"
+        )
+    }
 }

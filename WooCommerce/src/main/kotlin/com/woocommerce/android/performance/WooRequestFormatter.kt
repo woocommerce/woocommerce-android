@@ -18,11 +18,18 @@ object WooRequestFormatter : RequestFormatter {
                 Uri.decode(it)
             }
             .replaceOrderId()
+            .replaceLabelId()
     }
 
     private fun String.replaceOrderId(): String {
         return replace(
             Regex("/orders/[\\S]*?/"), "/orders/<order_id>/"
+        )
+    }
+
+    private fun String.replaceLabelId(): String {
+        return replace(
+            Regex("/label/[\\S]*?/"), "/label/<label_id>/"
         )
     }
 
