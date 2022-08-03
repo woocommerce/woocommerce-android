@@ -29,6 +29,7 @@ import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Logout
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.viewmodel.ResourceProvider
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.test.advanceUntilIdle
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Test
@@ -552,23 +553,17 @@ class SitePickerViewModelTest : BaseUnitTest() {
         whenSitesAreFetched()
         whenever(repository.fetchWooCommerceSite(expectedSite))
             .thenReturn(Result.failure(Exception()))
-            .thenReturn(Result.success(expectedSite.apply { hasWooCommerce = true }))
+            .thenReturn(Result.success(expectedSite.clone().apply { hasWooCommerce = true }))
 
         whenViewModelIsCreated()
         viewModel.onWooInstalled()
+        advanceUntilIdle()
 
         verify(repository, times(2)).fetchWooCommerceSite(expectedSite)
     }
 
     @Test
     fun `given woo installation finishes, when fetched site doesn't have woo, then retry`() = testBlocking {
-        fun SiteModel.clone(): SiteModel {
-            // A quick way for supporting cloning SiteModel without changing SiteModel class itself
-            val gson = Gson()
-            val json = gson.toJson(this)
-            return gson.fromJson(json, SiteModel::class.java)
-        }
-
         val expectedSite = expectedSiteList[1].apply { hasWooCommerce = false }
         givenThatUserLoggedInFromEnteringSiteAddress(expectedSite)
         givenTheScreenIsFromLogin(true)
@@ -579,7 +574,15 @@ class SitePickerViewModelTest : BaseUnitTest() {
 
         whenViewModelIsCreated()
         viewModel.onWooInstalled()
+        advanceUntilIdle()
 
         verify(repository, times(2)).fetchWooCommerceSite(expectedSite)
+    }
+
+    private fun SiteModel.clone(): SiteModel {
+        // A quick way for supporting cloning SiteModel without changing SiteModel class itself
+        val gson = Gson()
+        val json = gson.toJson(this)
+        return gson.fromJson(json, SiteModel::class.java)
     }
 }

@@ -15,6 +15,7 @@ import com.woocommerce.android.ui.common.UserEligibilityFetcher
 import com.woocommerce.android.ui.login.UnifiedLoginTracker
 import com.woocommerce.android.ui.sitepicker.SitePickerViewModel.SitePickerEvent.NavigateToWPComWebView
 import com.woocommerce.android.util.FeatureFlag
+import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.viewmodel.LiveDataDelegate
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
@@ -24,10 +25,12 @@ import com.woocommerce.android.viewmodel.ResourceProvider
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.navArgs
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.parcelize.Parcelize
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.store.WooCommerceStore
+import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
 @HiltViewModel
@@ -387,39 +390,59 @@ class SitePickerViewModel @Inject constructor(
         }
     }
 
-    fun onWooInstalled() = launch {
-        val site = loginSiteAddress?.let { repository.getSiteBySiteUrl(it) } ?: return@launch
+    fun onWooInstalled() {
+        suspend fun fetchSite(site: SiteModel, retries: Int = 0): Result<SiteModel> {
+            delay(retries * TimeUnit.SECONDS.toMillis(2))
+            val result = repository.fetchWooCommerceSite(site)
 
-        sitePickerViewState = sitePickerViewState.copy(
-            isSkeletonViewVisible = true,
-            isSecondaryBtnVisible = true,
-            primaryBtnText = resourceProvider.getString(string.continue_button),
-            isNoStoresViewVisible = false
-        )
-        // Fetch site
-        val result = repository.fetchWooCommerceSite(site)
-            .mapCatching { updatedSite ->
-                if (!updatedSite.hasWooCommerce) {
+            val maxNumberOfRetries = 2
+            if (retries == maxNumberOfRetries) return result
+
+            val updatedSite = result.getOrNull()
+            return when {
+                updatedSite == null -> {
+                    WooLog.w(
+                        WooLog.T.SITE_PICKER,
+                        "Fetching site failed after Woo installation, error: ${result.exceptionOrNull()}"
+                    )
+                    fetchSite(site, retries = retries + 1)
+                }
+                !updatedSite.hasWooCommerce -> {
                     // Force a retry if the woocommerce_is_active is not updated yet
-                    throw Exception()
-                } else updatedSite
+                    WooLog.d(WooLog.T.SITE_PICKER, "Fetched site has woocommerce_is_active false, retry")
+                    fetchSite(site, retries = retries + 1)
+                }
+                else -> {
+                    WooLog.d(WooLog.T.SITE_PICKER, "Site fetched successfully")
+                    result
+                }
             }
-            .recoverCatching {
-                // Retry once on errors
-                repository.fetchWooCommerceSite(site)
-                    .getOrThrow()
-            }
-        sitePickerViewState = sitePickerViewState.copy(isSkeletonViewVisible = false)
+        }
+        launch {
+            val site = loginSiteAddress?.let { repository.getSiteBySiteUrl(it) } ?: return@launch
 
-        result.fold(onSuccess = {
-            // Continue login
-            displaySites(repository.getWooCommerceSites())
-        }, onFailure = {
-            triggerEvent(ShowSnackbar(string.site_picker_error))
-            // This would lead to the [WooNotFoundState] again
-            // The chance of getting this state is small, because of the retry mechanism above
-            displaySites(repository.getWooCommerceSites())
-        })
+            sitePickerViewState = sitePickerViewState.copy(
+                isSkeletonViewVisible = true,
+                isSecondaryBtnVisible = true,
+                primaryBtnText = resourceProvider.getString(string.continue_button),
+                isNoStoresViewVisible = false
+            )
+
+            WooLog.d(WooLog.T.SITE_PICKER, "Woo is installed, fetch the site ${site.siteId}")
+            // Fetch site
+            val result = fetchSite(site)
+            sitePickerViewState = sitePickerViewState.copy(isSkeletonViewVisible = false)
+
+            result.fold(onSuccess = {
+                // Continue login
+                displaySites(repository.getWooCommerceSites())
+            }, onFailure = {
+                triggerEvent(ShowSnackbar(string.site_picker_error))
+                // This would lead to the [WooNotFoundState] again
+                // The chance of getting this state is small, because of the retry mechanism above
+                displaySites(repository.getWooCommerceSites())
+            })
+        }
     }
 
     private fun trackLoginEvent(
