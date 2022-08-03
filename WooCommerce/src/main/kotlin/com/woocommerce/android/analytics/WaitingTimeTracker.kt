@@ -4,14 +4,16 @@ import com.woocommerce.android.util.CoroutineDispatchers
 import kotlinx.coroutines.withTimeoutOrNull
 import javax.inject.Inject
 
-class WaitingTimeTracker @Inject constructor(
-    private val dispatchers: CoroutineDispatchers,
-    private val currentTimeInMillis: () -> Long,
+class WaitingTimeTracker(
+    private val currentTimeInMillis: () -> Long = System::currentTimeMillis,
     private val waitingTimeout: Long = 10000L
 ) {
     private var state: State = State.Idle
 
-    fun onWaitingStarted() {
+    suspend fun onWaitingStarted() {
+        withTimeoutOrNull(waitingTimeout) {
+            state = State.Waiting(currentTimeInMillis())
+        }
     }
 
     fun onWaitingEnded() {
