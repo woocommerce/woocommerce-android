@@ -44,10 +44,20 @@ class LoginPrologueCarouselFragment : Fragment(R.layout.fragment_login_prologue_
         val adapter = LoginPrologueAdapter(this)
 
         binding.buttonSkip.setOnClickListener {
-            prologueCarouselListener?.onCarouselFinished()
-            analyticsTrackerWrapper.track(LOGIN_ONBOARDING_SKIP_BUTTON_TAPPED)
+            if (binding.viewPager.currentItem == adapter.itemCount - 1) {
+                prologueCarouselListener?.onCarouselFinished()
+                analyticsTrackerWrapper.track(
+                    LOGIN_ONBOARDING_NEXT_BUTTON_TAPPED,
+                    mapOf(Pair(AnalyticsTracker.VALUE_LOGIN_ONBOARDING_IS_FINAL_PAGE, true))
+                )
 
-            appPrefsWrapper.setOnboardingCarouselDisplayed(true)
+                appPrefsWrapper.setOnboardingCarouselDisplayed(true)
+            } else {
+                prologueCarouselListener?.onCarouselFinished()
+                analyticsTrackerWrapper.track(LOGIN_ONBOARDING_SKIP_BUTTON_TAPPED)
+
+                appPrefsWrapper.setOnboardingCarouselDisplayed(true)
+            }
         }
 
         setupViewPager(binding, adapter)
@@ -66,13 +76,9 @@ class LoginPrologueCarouselFragment : Fragment(R.layout.fragment_login_prologue_
         binding.viewPager.registerOnPageChangeCallback(object : OnPageChangeCallback() {
             override fun onPageSelected(position: Int) {
                 if (position == adapter.itemCount - 1) {
-                    prologueCarouselListener?.onCarouselFinished()
-                    analyticsTrackerWrapper.track(
-                        LOGIN_ONBOARDING_NEXT_BUTTON_TAPPED,
-                        mapOf(Pair(AnalyticsTracker.VALUE_LOGIN_ONBOARDING_IS_FINAL_PAGE, true))
-                    )
-
-                    appPrefsWrapper.setOnboardingCarouselDisplayed(true)
+                    binding.buttonSkip.setText(R.string.next)
+                } else {
+                    binding.buttonSkip.setText(R.string.skip)
                 }
             }
         })
