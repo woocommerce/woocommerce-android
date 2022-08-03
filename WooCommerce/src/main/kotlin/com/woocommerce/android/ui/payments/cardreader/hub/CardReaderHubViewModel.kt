@@ -15,7 +15,8 @@ import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.payments.cardreader.InPersonPaymentsCanadaFeatureFlag
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderFlowParam
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboardingChecker
-import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboardingState
+import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboardingState.ChoosePaymentGatewayProvider
+import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboardingState.OnboardingCompleted
 import com.woocommerce.android.ui.payments.cardreader.onboarding.PluginType.STRIPE_EXTENSION_GATEWAY
 import com.woocommerce.android.ui.payments.cardreader.onboarding.PluginType.WOOCOMMERCE_PAYMENTS
 import com.woocommerce.android.util.WooLog
@@ -51,7 +52,8 @@ class CardReaderHubViewModel @Inject constructor(
     init {
         launch {
             viewState.value = when (cardReaderChecker.getOnboardingState()) {
-                is CardReaderOnboardingState.OnboardingCompleted -> createOnboardingCompleteState()
+                is OnboardingCompleted -> createOnboardingCompleteState(isCardReaderPluginExplicitlySelected())
+                is ChoosePaymentGatewayProvider -> createOnboardingCompleteState(true)
                 else -> createOnboardingFailedState()
             }
         }
@@ -111,14 +113,8 @@ class CardReaderHubViewModel @Inject constructor(
             ),
         )
 
-    private fun createOnboardingCompleteState() = CardReaderHubViewState(
-        rows = if (
-            appPrefsWrapper.isCardReaderPluginExplicitlySelected(
-                localSiteId = selectedSite.get().id,
-                remoteSiteId = selectedSite.get().siteId,
-                selfHostedSiteId = selectedSite.get().selfHostedSiteId,
-            )
-        ) {
+    private fun createOnboardingCompleteState(showMultiplePluginsChoice: Boolean) = CardReaderHubViewState(
+        rows = if (showMultiplePluginsChoice) {
             createHubListWhenSinglePluginInstalled(isOnboardingComplete = true).toMutableList() +
                 additionalItemWhenMultiplePluginsInstalled
         } else {
@@ -171,6 +167,13 @@ class CardReaderHubViewModel @Inject constructor(
             false
         )
     }
+
+    private fun isCardReaderPluginExplicitlySelected() =
+        appPrefsWrapper.isCardReaderPluginExplicitlySelected(
+            localSiteId = selectedSite.get().id,
+            remoteSiteId = selectedSite.get().siteId,
+            selfHostedSiteId = selectedSite.get().selfHostedSiteId,
+        )
 
     sealed class CardReaderHubEvents : MultiLiveEvent.Event() {
         data class NavigateToCardReaderDetail(val cardReaderFlowParam: CardReaderFlowParam) : CardReaderHubEvents()
