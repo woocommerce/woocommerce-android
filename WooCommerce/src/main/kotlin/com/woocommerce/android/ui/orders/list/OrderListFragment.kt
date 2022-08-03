@@ -114,6 +114,7 @@ class OrderListFragment :
             ?: FeedbackState.UNANSWERED
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        lifecycle.addObserver(viewModel.performanceObserver)
         super.onCreate(savedInstanceState)
 
         savedInstanceState?.let { bundle ->

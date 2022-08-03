@@ -114,6 +114,7 @@ class OrderListViewModelTest : BaseUnitTest() {
             getWCOrderListDescriptorWithFilters = getWCOrderListDescriptorWithFilters,
             getSelectedOrderFiltersCount = getSelectedOrderFiltersCount,
             bannerDisplayEligibilityChecker = bannerDisplayEligibilityChecker,
+            orderListTransactionLauncher = mock()
         )
     }
 
