@@ -25,10 +25,17 @@ class WaitingTimeTrackerTest: BaseUnitTest() {
     }
 
     @Test
-    fun `WaitingTimeTracker should handle states correctly`() = runBlocking {
+    fun `When starting and ending the waiting process, then handle all states correctly`() = runBlocking {
         assertTrue(sut.currentState is Idle)
         sut.onWaitingStarted()
         assertTrue(sut.currentState is Waiting)
+        sut.onWaitingEnded()
+        assertTrue(sut.currentState is Idle)
+    }
+
+    @Test
+    fun `When ending the waiting without starting it, then do nothing`() = runBlocking {
+        assertTrue(sut.currentState is Idle)
         sut.onWaitingEnded()
         assertTrue(sut.currentState is Idle)
     }
