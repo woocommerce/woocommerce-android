@@ -18,11 +18,6 @@ import com.google.android.material.snackbar.Snackbar
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
-import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_CUSTOM_FIELDS_COUNT
-import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_CUSTOM_FIELDS_SIZE
-import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_ID
-import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_STATUS
-import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_TOTAL_DURATION
 import com.woocommerce.android.extensions.NotificationReceivedEvent
 import com.woocommerce.android.model.RequestResult.SUCCESS
 import com.woocommerce.android.network.ConnectionChangeReceiver.ConnectionChangeEvent
@@ -287,10 +282,10 @@ class OrderListViewModel @Inject constructor(
         AnalyticsTracker.track(
             AnalyticsEvent.ORDER_OPEN,
             mapOf(
-                KEY_ID to orderId,
-                KEY_STATUS to orderStatus,
-                KEY_CUSTOM_FIELDS_COUNT to customFieldsCount,
-                KEY_CUSTOM_FIELDS_SIZE to customFieldsSize
+                AnalyticsTracker.KEY_ID to orderId,
+                AnalyticsTracker.KEY_STATUS to orderStatus,
+                AnalyticsTracker.KEY_CUSTOM_FIELDS_COUNT to customFieldsCount,
+                AnalyticsTracker.KEY_CUSTOM_FIELDS_SIZE to customFieldsSize
             )
         )
     }
@@ -464,8 +459,8 @@ class OrderListViewModel @Inject constructor(
         AnalyticsTracker.track(
             AnalyticsEvent.ORDERS_LIST_LOADED,
             mapOf(
-                KEY_TOTAL_DURATION to totalDurationInSeconds,
-                KEY_STATUS to event.listDescriptor.statusFilter
+                AnalyticsTracker.KEY_TOTAL_DURATION to totalDurationInSeconds,
+                AnalyticsTracker.KEY_STATUS to event.listDescriptor.statusFilter
             )
         )
     }
