@@ -59,16 +59,6 @@ class CardReaderHubViewModel @Inject constructor(
         }
     }
 
-    private val additionalItemWhenMultiplePluginsInstalled by lazy {
-        mutableListOf(
-            CardReaderHubListItemViewState(
-                icon = R.drawable.ic_payment_provider,
-                label = UiStringRes(R.string.card_reader_manage_payment_provider),
-                onItemClicked = ::onCardReaderPaymentProviderClicked
-            )
-        )
-    }
-
     private val cardReaderPurchaseUrl: String by lazy {
         if (inPersonPaymentsCanadaFeatureFlag.isEnabled()) {
             val storeCountryCode = wooStore.getStoreCountryCode(selectedSite.get()) ?: null.also {
@@ -113,10 +103,17 @@ class CardReaderHubViewModel @Inject constructor(
             ),
         )
 
+    private fun createAdditionalItemWhenMultiplePluginsInstalled() =
+        CardReaderHubListItemViewState(
+            icon = R.drawable.ic_payment_provider,
+            label = UiStringRes(R.string.card_reader_manage_payment_provider),
+            onItemClicked = ::onCardReaderPaymentProviderClicked
+        )
+
     private fun createOnboardingCompleteState(showMultiplePluginsChoice: Boolean) = CardReaderHubViewState(
         rows = if (showMultiplePluginsChoice) {
             createHubListWhenSinglePluginInstalled(isOnboardingComplete = true).toMutableList() +
-                additionalItemWhenMultiplePluginsInstalled
+                createAdditionalItemWhenMultiplePluginsInstalled()
         } else {
             createHubListWhenSinglePluginInstalled(isOnboardingComplete = true)
         },
