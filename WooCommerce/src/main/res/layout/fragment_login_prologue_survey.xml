@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:animateLayoutChanges="true"
@@ -28,104 +27,106 @@
         android:layout_height="wrap_content"
         android:textStyle="bold"
         android:layout_marginTop="@dimen/major_300"
-        android:layout_marginStart="@dimen/major_100"
-        android:layout_marginEnd="@dimen/major_100"
+        android:layout_marginHorizontal="@dimen/major_100"
         app:layout_constraintTop_toTopOf="parent"
         android:text="@string/login_prologue_survey_title" />
 
-    <com.woocommerce.android.widgets.WCToggleOutlinedButton
-        android:id="@+id/survey_button_exploring"
-        style="@style/Woo.Button.Outlined"
+    <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="@dimen/major_350"
-        android:layout_marginTop="@dimen/major_400"
-        android:layout_marginStart="@dimen/major_100"
-        android:layout_marginEnd="@dimen/major_100"
-        android:textColor="@color/color_on_secondary"
-        android:text="@string/login_prologue_survey_button_exploring"
-        android:textAllCaps="false"
-        android:backgroundTint="@drawable/survey_button_selector"
-        app:layout_constraintTop_toBottomOf="@id/survey_title" />
+        android:layout_height="0"
+        android:layout_margin="@dimen/major_100"
+        app:layout_constraintTop_toBottomOf="@id/survey_title"
+        app:layout_constraintBottom_toTopOf="@id/survey_button_next">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:orientation="vertical">
+
+            <com.woocommerce.android.widgets.WCToggleOutlinedButton
+                android:id="@+id/survey_button_exploring"
+                style="@style/Woo.Button.Outlined"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/major_350"
+                android:textColor="@color/color_on_secondary"
+                android:text="@string/login_prologue_survey_button_exploring"
+                android:textAllCaps="false"
+                android:backgroundTint="@drawable/survey_button_selector" />
 
 
-    <com.woocommerce.android.widgets.WCToggleOutlinedButton
-        android:id="@+id/survey_button_free_plugin"
-        style="@style/Woo.Button.Outlined"
-        android:layout_width="match_parent"
-        android:layout_height="@dimen/major_350"
-        android:layout_marginTop="@dimen/minor_100"
-        android:layout_marginStart="@dimen/major_100"
-        android:layout_marginEnd="@dimen/major_100"
-        android:textColor="@color/color_on_secondary"
-        android:text="@string/login_prologue_survey_button_free_plugin"
-        android:textAllCaps="false"
-        android:backgroundTint="@drawable/survey_button_selector"
-        app:layout_constraintTop_toBottomOf="@id/survey_button_exploring" />
+            <com.woocommerce.android.widgets.WCToggleOutlinedButton
+                android:id="@+id/survey_button_free_plugin"
+                style="@style/Woo.Button.Outlined"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/major_350"
+                android:layout_marginTop="@dimen/minor_100"
+                android:textColor="@color/color_on_secondary"
+                android:text="@string/login_prologue_survey_button_free_plugin"
+                android:textAllCaps="false"
+                android:backgroundTint="@drawable/survey_button_selector" />
 
-    <com.woocommerce.android.widgets.WCToggleOutlinedButton
-        android:id="@+id/survey_button_set_up_store"
-        style="@style/Woo.Button.Outlined"
-        android:layout_width="match_parent"
-        android:layout_height="@dimen/major_350"
-        android:layout_marginTop="@dimen/minor_100"
-        android:layout_marginStart="@dimen/major_100"
-        android:layout_marginEnd="@dimen/major_100"
-        android:textColor="@color/color_on_secondary"
-        android:text="@string/login_prologue_survey_button_set_up_store"
-        android:textAllCaps="false"
-        android:backgroundTint="@drawable/survey_button_selector"
-        app:layout_constraintTop_toBottomOf="@id/survey_button_free_plugin" />
+            <com.woocommerce.android.widgets.WCToggleOutlinedButton
+                android:id="@+id/survey_button_set_up_store"
+                style="@style/Woo.Button.Outlined"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/major_350"
+                android:layout_marginTop="@dimen/minor_100"
+                android:textColor="@color/color_on_secondary"
+                android:text="@string/login_prologue_survey_button_set_up_store"
+                android:textAllCaps="false"
+                android:backgroundTint="@drawable/survey_button_selector" />
 
-    <com.woocommerce.android.widgets.WCToggleOutlinedButton
-        android:id="@+id/survey_button_multiple_stores"
-        style="@style/Woo.Button.Outlined"
-        android:layout_width="match_parent"
-        android:layout_height="@dimen/major_350"
-        android:layout_marginTop="@dimen/minor_100"
-        android:layout_marginStart="@dimen/major_100"
-        android:layout_marginEnd="@dimen/major_100"
-        android:textColor="@color/color_on_secondary"
-        android:text="@string/login_prologue_survey_button_multiple_stores"
-        android:textAllCaps="false"
-        android:backgroundTint="@drawable/survey_button_selector"
-        app:layout_constraintTop_toBottomOf="@id/survey_button_set_up_store" />
+            <com.woocommerce.android.widgets.WCToggleOutlinedButton
+                android:id="@+id/survey_button_multiple_stores"
+                style="@style/Woo.Button.Outlined"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/major_350"
+                android:layout_marginTop="@dimen/minor_100"
+                android:textColor="@color/color_on_secondary"
+                android:text="@string/login_prologue_survey_button_multiple_stores"
+                android:textAllCaps="false"
+                android:backgroundTint="@drawable/survey_button_selector" />
 
-    <com.woocommerce.android.widgets.WCToggleOutlinedButton
-        android:id="@+id/survey_button_features_available"
-        style="@style/Woo.Button.Outlined"
-        android:layout_width="match_parent"
-        android:layout_height="@dimen/major_350"
-        android:layout_marginTop="@dimen/minor_100"
-        android:layout_marginStart="@dimen/major_100"
-        android:layout_marginEnd="@dimen/major_100"
-        android:textColor="@color/color_on_secondary"
-        android:text="@string/login_prologue_survey_button_features_available"
-        android:textAllCaps="false"
-        android:backgroundTint="@drawable/survey_button_selector"
-        app:layout_constraintTop_toBottomOf="@id/survey_button_multiple_stores" />
+            <com.woocommerce.android.widgets.WCToggleOutlinedButton
+                android:id="@+id/survey_button_features_available"
+                style="@style/Woo.Button.Outlined"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/major_350"
+                android:layout_marginTop="@dimen/minor_100"
+                android:textColor="@color/color_on_secondary"
+                android:text="@string/login_prologue_survey_button_features_available"
+                android:textAllCaps="false"
+                android:backgroundTint="@drawable/survey_button_selector"/>
+
+        </LinearLayout>
+
+    </ScrollView>
 
     <com.google.android.material.button.MaterialButton
         android:id="@+id/survey_button_next"
         style="@style/Woo.Button.Colored"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginStart="@dimen/major_100"
-        android:layout_marginEnd="@dimen/major_100"
-        android:text="@string/next"
         android:enabled="false"
+        android:text="@string/next"
         android:textAllCaps="false"
-        app:layout_constraintBottom_toTopOf="@id/survey_button_skip" />
+        android:layout_marginBottom="@dimen/minor_100"
+        android:layout_marginHorizontal="@dimen/major_100"
+        app:layout_constraintBottom_toTopOf="@+id/survey_button_skip"
+    />
 
     <com.google.android.material.button.MaterialButton
         android:id="@+id/survey_button_skip"
         style="@style/Woo.Button.Colored.White"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginStart="@dimen/major_100"
-        android:layout_marginEnd="@dimen/major_100"
         android:layout_marginBottom="@dimen/major_150"
+        android:layout_marginHorizontal="@dimen/major_100"
         android:text="@string/skip"
         android:textAllCaps="false"
-        app:layout_constraintBottom_toBottomOf="parent" />
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
