@@ -15,18 +15,27 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withTimeout
 import javax.inject.Inject
 
-class WaitingTimeTracker @Inject constructor(
+class WaitingTimeTracker(
     @AppCoroutineScope private val appCoroutineScope: CoroutineScope,
     private val dispatchers: CoroutineDispatchers,
-    private val currentTimeInMillis: () -> Long = System::currentTimeMillis,
-    private val waitingTimeout: Long = 10000L
+    private val currentTimeInMillis: () -> Long,
+    private val waitingTimeout: Long
 ) {
+    /***
+     * Injected constructor as secondary to allow default values for the parameters
+     * without causing building issues with Hilt
+     */
+    @Inject constructor(
+        @AppCoroutineScope appCoroutineScope: CoroutineScope,
+        dispatchers: CoroutineDispatchers
+    ) : this(appCoroutineScope, dispatchers, System::currentTimeMillis, 10000L)
+
     private val stateFlow: MutableStateFlow<State> = MutableStateFlow(Idle)
     val currentState: State get() = stateFlow.value
 
     private var waitingJob: Job? = null
 
-    suspend fun onWaitingStarted() {
+    fun onWaitingStarted() {
         if (currentState is Waiting) return
 
         waitingJob?.cancel()
