@@ -2,12 +2,17 @@ package com.woocommerce.android.ui.payments.cardreader.hub
 
 import android.os.Bundle
 import android.text.method.LinkMovementMethod
+import android.view.Gravity
 import android.view.View
-import androidx.core.view.isVisible
+import android.view.ViewGroup
+import androidx.core.view.isInvisible
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.transition.Slide
+import androidx.transition.TransitionManager
+import com.google.android.material.textview.MaterialTextView
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.databinding.FragmentCardReaderHubBinding
@@ -18,6 +23,8 @@ import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboa
 import com.woocommerce.android.util.ChromeCustomTabUtils
 import com.woocommerce.android.util.UiHelpers
 import dagger.hilt.android.AndroidEntryPoint
+
+private const val APPEARANCE_ANIMATION_DURATION_MS = 600L
 
 @AndroidEntryPoint
 class CardReaderHubFragment : BaseFragment(R.layout.fragment_card_reader_hub) {
@@ -80,12 +87,23 @@ class CardReaderHubFragment : BaseFragment(R.layout.fragment_card_reader_hub) {
     private fun observeViewState(binding: FragmentCardReaderHubBinding) {
         viewModel.viewStateData.observe(viewLifecycleOwner) { state ->
             (binding.cardReaderHubRv.adapter as CardReaderHubAdapter).setItems(state.rows)
+            binding.cardReaderHubLoading.isInvisible = !state.isLoading
             with(binding.cardReaderHubOnboardingFailedTv) {
                 movementMethod = LinkMovementMethod.getInstance()
+                if (state.errorText != null) {
+                    animateErrorAppearance()
+                }
                 UiHelpers.setTextOrHide(this, state.errorText)
             }
-            binding.cardReaderHubLoading.isVisible = state.isLoading
         }
+    }
+
+    private fun MaterialTextView.animateErrorAppearance() {
+        val slide = Slide(Gravity.BOTTOM).apply {
+            duration = APPEARANCE_ANIMATION_DURATION_MS
+            addTarget(this@animateErrorAppearance)
+        }
+        TransitionManager.beginDelayedTransition(parent as ViewGroup, slide)
     }
 
     override fun onResume() {
