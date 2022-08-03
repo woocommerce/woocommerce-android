@@ -7,9 +7,10 @@ import com.automattic.android.tracks.crashlogging.performance.PerformanceTransac
 import com.automattic.android.tracks.crashlogging.performance.TransactionId
 import com.automattic.android.tracks.crashlogging.performance.TransactionOperation
 import com.automattic.android.tracks.crashlogging.performance.TransactionStatus
+import com.woocommerce.android.util.CoroutineDispatchers
 import dagger.hilt.android.scopes.ViewModelScoped
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
@@ -17,7 +18,8 @@ import javax.inject.Inject
 
 @ViewModelScoped
 class OrderDetailsTransactionLauncher @Inject constructor(
-    private val performanceTransactionRepository: PerformanceTransactionRepository
+    private val performanceTransactionRepository: PerformanceTransactionRepository,
+    private val dispatchers: CoroutineDispatchers,
 ) : LifecycleEventObserver {
     private companion object {
         const val TRANSACTION_NAME = "OrderDetails"
@@ -25,7 +27,7 @@ class OrderDetailsTransactionLauncher @Inject constructor(
 
     private var performanceTransactionId: TransactionId? = null
     private val conditionsToSatisfy = MutableStateFlow(Conditions.values().toList())
-    private val validatorScope = CoroutineScope(SupervisorJob())
+    private val validatorScope = CoroutineScope(dispatchers.main + Job())
 
     init {
         validatorScope.launch {
@@ -39,7 +41,7 @@ class OrderDetailsTransactionLauncher @Inject constructor(
         }
     }
 
-    enum class Conditions {
+    private enum class Conditions {
         ORDER_FETCHED,
         SHIPPING_LABEL_FETCHED,
         NOTES_FETCHED,
@@ -78,6 +80,9 @@ class OrderDetailsTransactionLauncher @Inject constructor(
                 performanceTransactionId?.let {
                     performanceTransactionRepository.finishTransaction(it, TransactionStatus.ABORTED)
                 }
+            }
+            else -> {
+                // no-op
             }
         }
     }
