@@ -41,22 +41,25 @@ class WaitingTimeTracker(
         waitingJob?.cancel()
         stateFlow.update { Waiting(currentTimeInMillis()) }
         waitingJob = appCoroutineScope.launch(dispatchers.computation) {
-
-            withTimeout(waitingTimeout) {
-                stateFlow.collectLatest {
-                    if (it is Done) {
-                        stateFlow.update { Idle }
-                        waitingJob = null
-                        cancel()
-                        // publish waiting time
-                    }
+            waitForDoneState()
+                .exceptionOrNull()
+                ?.let {
+                    stateFlow.update { Idle }
+                    waitingJob = null
                 }
-            }
-
-            stateFlow.update { Idle }
-            waitingJob = null
         }
 
+    }
+
+    private suspend fun waitForDoneState() = runCatching {
+        withTimeout(waitingTimeout) {
+            stateFlow.collectLatest {
+                if (it is Done) {
+                    // publish waiting time
+                    cancel()
+                }
+            }
+        }
     }
 
     suspend fun onWaitingEnded() {
