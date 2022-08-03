@@ -499,7 +499,7 @@ class OrderListViewModel @Inject constructor(
         triggerEvent(OrderListEvent.NotifyOrderChanged(position))
     }
 
-    fun onSwipeStatusUpdate(gestureSource: OrderStatusUpdateSource.SwipeGesture) {
+    fun onSwipeStatusUpdate(gestureSource: OrderStatusUpdateSource.SwipeToCompleteGesture) {
         dismissListErrors = true
         optimisticUpdateOrderStatus(
             orderId = gestureSource.orderId,
@@ -539,7 +539,7 @@ class OrderListViewModel @Inject constructor(
         )
     }
 
-    private fun undoSwipeStatusUpdate(gestureSource: OrderStatusUpdateSource.SwipeGesture) {
+    private fun undoSwipeStatusUpdate(gestureSource: OrderStatusUpdateSource.SwipeToCompleteGesture) {
         dismissListErrors = true
         optimisticUpdateOrderStatus(
             orderId = gestureSource.orderId,

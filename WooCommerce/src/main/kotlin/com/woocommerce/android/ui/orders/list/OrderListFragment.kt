@@ -681,7 +681,7 @@ class OrderListFragment :
         ).registerItself()
     }
 
-    override fun onSwiped(gestureSource: OrderStatusUpdateSource.SwipeGesture) {
+    override fun onSwiped(gestureSource: OrderStatusUpdateSource.SwipeToCompleteGesture) {
         viewModel.onSwipeStatusUpdate(gestureSource)
     }
 }

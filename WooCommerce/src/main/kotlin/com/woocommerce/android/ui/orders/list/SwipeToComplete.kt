@@ -64,7 +64,7 @@ class SwipeToComplete(
                 viewHolder.bindingAdapter?.notifyItemChanged(pos)
                 return
             }
-            val gestureSource = OrderStatusUpdateSource.SwipeGesture(
+            val gestureSource = OrderStatusUpdateSource.SwipeToCompleteGesture(
                 orderId = orderId,
                 oldStatus = oldStatus,
                 orderPosition = pos
@@ -211,7 +211,7 @@ class SwipeToComplete(
     }
 
     interface OnSwipeListener {
-        fun onSwiped(gestureSource: OrderStatusUpdateSource.SwipeGesture)
+        fun onSwiped(gestureSource: OrderStatusUpdateSource.SwipeToCompleteGesture)
     }
 
     private val Int.dp
