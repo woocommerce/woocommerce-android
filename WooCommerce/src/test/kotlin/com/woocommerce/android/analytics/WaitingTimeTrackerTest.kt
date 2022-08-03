@@ -4,6 +4,7 @@ import com.woocommerce.android.analytics.WaitingTimeTracker.State.Idle
 import com.woocommerce.android.analytics.WaitingTimeTracker.State.Waiting
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.test.TestScope
 import org.junit.Assert.*
@@ -20,7 +21,7 @@ class WaitingTimeTrackerTest: BaseUnitTest() {
             appCoroutineScope = TestScope(coroutinesTestRule.testDispatcher),
             dispatchers = coroutinesTestRule.testDispatchers,
             currentTimeInMillis = { 100 },
-            waitingTimeout = 100000L
+            waitingTimeout = 10L
         )
     }
 
