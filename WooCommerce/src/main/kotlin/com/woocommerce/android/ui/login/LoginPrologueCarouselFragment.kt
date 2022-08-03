@@ -4,6 +4,8 @@ import android.content.Context
 import android.os.Bundle
 import android.view.View
 import androidx.fragment.app.Fragment
+import androidx.viewpager2.widget.ViewPager2
+import androidx.viewpager2.widget.ViewPager2.OnPageChangeCallback
 import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsEvent.LOGIN_ONBOARDING_NEXT_BUTTON_TAPPED
@@ -41,24 +43,6 @@ class LoginPrologueCarouselFragment : Fragment(R.layout.fragment_login_prologue_
         val binding = FragmentLoginPrologueCarouselBinding.bind(view)
         val adapter = LoginPrologueAdapter(this)
 
-        binding.buttonNext.setOnClickListener {
-            if (binding.viewPager.currentItem == adapter.itemCount - 1) {
-                prologueCarouselListener?.onCarouselFinished()
-                analyticsTrackerWrapper.track(
-                    LOGIN_ONBOARDING_NEXT_BUTTON_TAPPED,
-                    mapOf(Pair(AnalyticsTracker.VALUE_LOGIN_ONBOARDING_IS_FINAL_PAGE, true))
-                )
-
-                appPrefsWrapper.setOnboardingCarouselDisplayed(true)
-            } else {
-                binding.viewPager.setCurrentItem(binding.viewPager.currentItem + 1, true)
-                analyticsTrackerWrapper.track(
-                    LOGIN_ONBOARDING_NEXT_BUTTON_TAPPED,
-                    mapOf(Pair(AnalyticsTracker.VALUE_LOGIN_ONBOARDING_IS_FINAL_PAGE, false))
-                )
-            }
-        }
-
         binding.buttonSkip.setOnClickListener {
             prologueCarouselListener?.onCarouselFinished()
             analyticsTrackerWrapper.track(LOGIN_ONBOARDING_SKIP_BUTTON_TAPPED)
@@ -66,13 +50,34 @@ class LoginPrologueCarouselFragment : Fragment(R.layout.fragment_login_prologue_
             appPrefsWrapper.setOnboardingCarouselDisplayed(true)
         }
 
-        binding.viewPager.adapter = adapter
-        binding.viewPagerIndicator.setupFromViewPager(binding.viewPager)
+        setupViewPager(binding, adapter)
 
         if (savedInstanceState == null) {
             unifiedLoginTracker.track(Flow.PROLOGUE, Step.PROLOGUE_CAROUSEL)
             analyticsTrackerWrapper.track(LOGIN_ONBOARDING_SHOWN)
         }
+    }
+
+    private fun setupViewPager(
+        binding: FragmentLoginPrologueCarouselBinding,
+        adapter: LoginPrologueAdapter
+    ) {
+        binding.viewPager.adapter = adapter
+        binding.viewPager.registerOnPageChangeCallback(object : OnPageChangeCallback() {
+            override fun onPageSelected(position: Int) {
+                if (position == adapter.itemCount - 1) {
+                    prologueCarouselListener?.onCarouselFinished()
+                    analyticsTrackerWrapper.track(
+                        LOGIN_ONBOARDING_NEXT_BUTTON_TAPPED,
+                        mapOf(Pair(AnalyticsTracker.VALUE_LOGIN_ONBOARDING_IS_FINAL_PAGE, true))
+                    )
+
+                    appPrefsWrapper.setOnboardingCarouselDisplayed(true)
+                }
+            }
+        })
+
+        binding.viewPagerIndicator.setupFromViewPager(binding.viewPager)
     }
 
     override fun onResume() {
