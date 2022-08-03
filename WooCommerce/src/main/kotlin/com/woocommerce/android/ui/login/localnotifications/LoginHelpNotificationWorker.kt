@@ -53,7 +53,7 @@ class LoginHelpNotificationWorker @AssistedInject constructor(
         return Result.success()
     }
 
-    private fun defaultLoginSupportNotification() {
+    private fun defaultLoginSupportNotification(notificationType: LoginHelpNotificationType = DEFAULT_HELP) {
         wooNotificationBuilder.buildAndDisplayLoginHelpNotification(
             notificationLocalId = LOGIN_HELP_NOTIFICATION_ID,
             appContext.getString(R.string.notification_channel_pre_login_id),
@@ -61,7 +61,7 @@ class LoginHelpNotificationWorker @AssistedInject constructor(
                 title = R.string.login_help_notification_default_title,
                 description = R.string.login_help_notification_no_interaction_default_description
             ),
-            notificationTappedIntent = buildOpenSupportScreenIntent()
+            notificationTappedIntent = buildOpenSupportScreenIntent(notificationType)
         )
     }
 
@@ -87,10 +87,16 @@ class LoginHelpNotificationWorker @AssistedInject constructor(
                     title = R.string.login_help_notification_default_title,
                     description = R.string.login_help_notification_incorrect_wpcom_email_description
                 ),
-                notificationTappedIntent = buildOpenLoginWithSiteCredentialsIntent(siteAddress),
-                actions = getActionsForIncorrectWPComEmailNotification(siteAddress)
+                notificationTappedIntent = buildOpenLoginWithSiteCredentialsIntent(
+                    siteAddress,
+                    LOGIN_SITE_ADDRESS_EMAIL_ERROR
+                ),
+                actions = getActionsForIncorrectWPComEmailNotification(
+                    siteAddress,
+                    LOGIN_SITE_ADDRESS_EMAIL_ERROR
+                )
             )
-        } ?: defaultLoginSupportNotification()
+        } ?: defaultLoginSupportNotification(LOGIN_WPCOM_EMAIL_ERROR)
     }
 
     private fun buildLoginNotification(
@@ -108,28 +114,37 @@ class LoginHelpNotificationWorker @AssistedInject constructor(
         channelType = NotificationChannelType.PRE_LOGIN
     )
 
-    private fun buildOpenSupportScreenIntent(): Intent =
-        HelpActivity.createIntent(appContext, HelpActivity.Origin.LOGIN_HELP_NOTIFICATION, null)
+    private fun buildOpenSupportScreenIntent(notificationType: LoginHelpNotificationType): Intent =
+        HelpActivity.createIntent(
+            appContext,
+            HelpActivity.Origin.LOGIN_HELP_NOTIFICATION,
+            arrayListOf(notificationType.toString())
+        )
 
     private fun buildOpenLoginWithEmailScreenIntent(): Intent =
         LoginActivity.createIntent(appContext, LOGIN_SITE_ADDRESS_ERROR)
 
-    private fun buildOpenLoginWithSiteCredentialsIntent(siteAddress: String): Intent =
-        LoginActivity.createIntent(appContext, LOGIN_SITE_ADDRESS_EMAIL_ERROR, siteAddress)
+    private fun buildOpenLoginWithSiteCredentialsIntent(
+        siteAddress: String,
+        notificationType: LoginHelpNotificationType
+    ): Intent = LoginActivity.createIntent(appContext, notificationType, siteAddress)
 
     private fun getActionsForSiteAddressErrorNotification(): List<Pair<String, Intent>> =
         listOf(
             resourceProvider.getString(R.string.login_help_notification_wordpress_login_button)
                 to buildOpenLoginWithEmailScreenIntent(),
             resourceProvider.getString(R.string.login_help_notification_contact_support_button)
-                to buildOpenSupportScreenIntent(),
+                to buildOpenSupportScreenIntent(LOGIN_SITE_ADDRESS_EMAIL_ERROR),
         )
 
-    private fun getActionsForIncorrectWPComEmailNotification(siteAddress: String): List<Pair<String, Intent>> =
+    private fun getActionsForIncorrectWPComEmailNotification(
+        siteAddress: String,
+        notificationType: LoginHelpNotificationType
+    ): List<Pair<String, Intent>> =
         listOf(
             resourceProvider.getString(R.string.login_help_notification_site_credentials_login_button)
-                to buildOpenLoginWithSiteCredentialsIntent(siteAddress),
+                to buildOpenLoginWithSiteCredentialsIntent(siteAddress, LOGIN_SITE_ADDRESS_EMAIL_ERROR),
             resourceProvider.getString(R.string.login_help_notification_contact_support_button)
-                to buildOpenSupportScreenIntent(),
+                to buildOpenSupportScreenIntent(notificationType),
         )
 }

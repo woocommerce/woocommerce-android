@@ -36,7 +36,7 @@ class LoginNotificationScheduler @Inject constructor(
     }
 
     fun scheduleNotification(notificationType: LoginHelpNotificationType) {
-        if (!prefsWrapper.hasPreLoginNotificationBeenDisplayed()) {
+//        if (!prefsWrapper.hasPreLoginNotificationBeenDisplayed()) {
             cancelCurrentNotificationWorkRequest()
             val notificationData = workDataOf(
                 LOGIN_NOTIFICATION_TYPE_KEY to notificationType.toString()
@@ -53,7 +53,7 @@ class LoginNotificationScheduler @Inject constructor(
                 mapOf(AnalyticsTracker.KEY_TYPE to notificationType.toString())
             )
             workManager.enqueue(workRequest)
-        }
+//        }
     }
 
     private fun cancelCurrentNotificationWorkRequest() {
