@@ -23,7 +23,7 @@ class ExperimentationModule {
         @AppCoroutineScope appCoroutineScope: CoroutineScope,
     ) = ExPlat(
         platform = ExperimentStore.Platform.WOOCOMMERCE_ANDROID,
-        experiments = setOf(object: Experiment {
+        experiments = setOf(object : Experiment {
             override val identifier: String = "woocommerceandroid_explat_aa_test_202208"
         }),
         experimentStore = experimentStore,
