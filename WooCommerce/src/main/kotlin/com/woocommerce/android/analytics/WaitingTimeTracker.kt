@@ -1,6 +1,7 @@
 package com.woocommerce.android.analytics
 
 class WaitingTimeTracker(
+    private val currentTimeInMillis: () -> Long
 ) {
     private var state: State = State.Idle(0L)
 
