@@ -206,10 +206,11 @@
 
     <string name="login_prologue_survey_title">What brings you to WooCommerce?</string>
     <string name="login_prologue_survey_button_exploring">Just exploring</string>
-    <string name="login_prologue_survey_button_free_plugin">Free WordPress plugin</string>
-    <string name="login_prologue_survey_button_set_up_store">Set up a store for my physical shop</string>
-    <string name="login_prologue_survey_button_multiple_stores">Manage multiple stores</string>
-    <string name="login_prologue_survey_button_features_available">Features available</string>
+    <string name="login_prologue_survey_button_set_up_store">Trying to set up a store</string>
+    <string name="login_prologue_survey_button_check_analytics">Check my analytics</string>
+    <string name="login_prologue_survey_button_edit_products">Create or update my products</string>
+    <string name="login_prologue_survey_button_manage_orders">Manage my orders</string>
+    <string name="login_prologue_survey_button_switch_stores">Switch between multiple stores</string>
 
     <string name="login_pick_store">Select store to connect</string>
     <string name="login_connected_store">Connected store</string>
