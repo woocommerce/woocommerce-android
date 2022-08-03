@@ -21,8 +21,8 @@ import javax.inject.Singleton
 @Singleton
 class FirebaseRemoteConfigRepository @Inject constructor() : RemoteConfigRepository {
     companion object {
-        const val PROLOGUE_VARIANT_KEY = "prologue_variant"
-        const val SITE_CREDENTIALS_EXPERIMENT_VARIANT_KEY = "site_credentials_emphasis"
+        private const val PROLOGUE_VARIANT_KEY = "prologue_variant"
+        private const val SITE_CREDENTIALS_EXPERIMENT_VARIANT_KEY = "site_credentials_emphasis"
         private const val DEBUG_INTERVAL = 10L
         private const val RELEASE_INTERVAL = 31200L
     }
