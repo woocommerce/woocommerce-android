@@ -68,6 +68,7 @@ import org.wordpress.android.mediapicker.util.filter
 import javax.inject.Inject
 
 private const val EMPTY_VIEW_THROTTLE = 250L
+private const val DEBOUNCE_GLANCE_DURATION = 500L
 typealias PagedOrdersList = PagedList<OrderListItemUIType>
 
 @OptIn(ExperimentalCoroutinesApi::class)
@@ -89,11 +90,6 @@ class OrderListViewModel @Inject constructor(
     private val getSelectedOrderFiltersCount: GetSelectedOrderFiltersCount,
     private val bannerDisplayEligibilityChecker: BannerDisplayEligibilityChecker,
 ) : ScopedViewModel(savedState), LifecycleOwner {
-    companion object {
-        const val SHOULD_GLANCE_SWIPE_ABLE_ITEM = "should_glance_swipe_able_item"
-        const val DEBOUNCE_GLANCE_DURATION = 500L
-    }
-
     private val lifecycleRegistry: LifecycleRegistry by lazy {
         LifecycleRegistry(this)
     }
