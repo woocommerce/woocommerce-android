@@ -7,6 +7,8 @@ import androidx.work.WorkManager
 import androidx.work.WorkRequest
 import androidx.work.workDataOf
 import com.woocommerce.android.AppPrefsWrapper
+import com.woocommerce.android.analytics.AnalyticsEvent
+import com.woocommerce.android.analytics.AnalyticsTracker
 import dagger.hilt.android.qualifiers.ApplicationContext
 import java.util.UUID
 import java.util.concurrent.TimeUnit
@@ -46,6 +48,10 @@ class LoginNotificationScheduler @Inject constructor(
                     .build()
 
             prefsWrapper.setPreLoginNotificationWorkRequestId(workRequest.id.toString())
+            AnalyticsTracker.track(
+                AnalyticsEvent.LOGIN_LOCAL_NOTIFICATION_SCHEDULED,
+                mapOf(AnalyticsTracker.KEY_TYPE to notificationType.toString())
+            )
             workManager.enqueue(workRequest)
         }
     }
