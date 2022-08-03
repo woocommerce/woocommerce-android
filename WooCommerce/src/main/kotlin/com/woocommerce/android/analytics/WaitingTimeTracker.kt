@@ -3,7 +3,7 @@ package com.woocommerce.android.analytics
 class WaitingTimeTracker(
     private val currentTimeInMillis: () -> Long
 ) {
-    private var state: State = State.Idle(0L)
+    private var state: State = State.Idle
 
     fun onWaitingStarted() {
 
@@ -14,7 +14,7 @@ class WaitingTimeTracker(
     }
 
     private sealed class State(val creationTimestamp: Long) {
-        class Idle(creationTimestamp: Long) : State(creationTimestamp)
+        object Idle : State(0L)
         class Waiting(creationTimestamp: Long) : State(creationTimestamp)
         class Done(creationTimestamp: Long) : State(creationTimestamp)
     }
