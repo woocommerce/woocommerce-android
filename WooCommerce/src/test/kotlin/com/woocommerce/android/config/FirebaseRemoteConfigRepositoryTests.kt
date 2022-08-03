@@ -13,6 +13,7 @@ import com.woocommerce.android.util.runAndCaptureValues
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
+import org.mockito.kotlin.any
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
@@ -26,6 +27,10 @@ class FirebaseRemoteConfigRepositoryTests : BaseUnitTest() {
 
     suspend fun setup(prepareMocks: suspend () -> Unit = {}) {
         prepareMocks()
+
+        @Suppress("UNCHECKED_CAST")
+        whenever(remoteConfig.setDefaultsAsync(any<Map<String, Any>>()))
+            .thenReturn(StaticTask(Unit) as Task<Void>)
 
         repository = FirebaseRemoteConfigRepository(
             remoteConfig = remoteConfig,

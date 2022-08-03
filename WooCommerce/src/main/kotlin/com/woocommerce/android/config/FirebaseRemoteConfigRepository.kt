@@ -53,8 +53,10 @@ class FirebaseRemoteConfigRepository @Inject constructor(
                 }
             )
             setDefaultsAsync(defaultValues)
+                .addOnSuccessListener {
+                    changesTrigger.tryEmit(Unit)
+                }
         }
-        changesTrigger.tryEmit(Unit)
     }
 
     override fun fetchRemoteConfig() {
