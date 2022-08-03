@@ -520,6 +520,17 @@ class OrderListViewModel @Inject constructor(
 
     fun onSwipeStatusUpdate(gestureSource: OrderStatusUpdateSource.SwipeGesture) {
         dismissListErrors = true
+
+        AnalyticsTracker.track(
+            AnalyticsEvent.ORDER_STATUS_CHANGE,
+            mapOf(
+                AnalyticsTracker.KEY_ID to gestureSource.orderId,
+                AnalyticsTracker.KEY_FROM to gestureSource.oldStatus,
+                AnalyticsTracker.KEY_TO to gestureSource.newStatus,
+                AnalyticsTracker.KEY_FLOW to AnalyticsTracker.VALUE_FLOW_LIST
+            )
+        )
+
         optimisticUpdateOrderStatus(
             orderId = gestureSource.orderId,
             status = gestureSource.newStatus,
