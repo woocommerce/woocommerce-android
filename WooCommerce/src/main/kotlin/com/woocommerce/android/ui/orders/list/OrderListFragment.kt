@@ -386,12 +386,11 @@ class OrderListFragment :
                     }
                     binding.orderRefreshLayout.isRefreshing = false
                 }
+                is OrderListViewModel.OrderListEvent.GlanceFirstSwipeAbleItem -> {
+                    glanceFirstSwipeAbleListItem()
+                }
                 else -> event.isHandled = false
             }
-        }
-
-        viewModel.glanceFirstSwipeAbleItem.observe(viewLifecycleOwner) {
-            glanceFirstSwipeAbleListItem()
         }
 
         viewModel.emptyViewType.observe(viewLifecycleOwner) {

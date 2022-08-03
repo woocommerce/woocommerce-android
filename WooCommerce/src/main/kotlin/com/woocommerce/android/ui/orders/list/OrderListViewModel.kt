@@ -13,8 +13,6 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
-import androidx.lifecycle.asFlow
-import androidx.lifecycle.asLiveData
 import androidx.paging.PagedList
 import com.google.android.material.snackbar.Snackbar
 import com.woocommerce.android.R
@@ -50,9 +48,6 @@ import com.woocommerce.android.widgets.WCEmptyView.EmptyViewType
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.filter
-import kotlinx.coroutines.flow.flatMapLatest
-import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.launch
 import kotlinx.parcelize.Parcelize
 import okio.utf8Size
@@ -149,21 +144,6 @@ class OrderListViewModel @Inject constructor(
 
     private var shouldGlanceFirstSwipeAbleItem: Boolean = savedState.get<Boolean>(SHOULD_GLANCE_SWIPE_ABLE_ITEM) ?: true
 
-    val glanceFirstSwipeAbleItem = pagedListData
-        .asFlow()
-        .filter {
-            shouldGlanceFirstSwipeAbleItem
-        }
-        .flatMapLatest {
-            val debouncedChanges = flow {
-                delay(DEBOUNCE_GLANCE_DURATION)
-                shouldGlanceFirstSwipeAbleItem = false
-                savedState.set(SHOULD_GLANCE_SWIPE_ABLE_ITEM, false)
-                emit(Unit)
-            }
-            debouncedChanges
-        }.asLiveData()
-
     init {
         lifecycleRegistry.currentState = Lifecycle.State.CREATED
         lifecycleRegistry.currentState = Lifecycle.State.STARTED
@@ -186,6 +166,22 @@ class OrderListViewModel @Inject constructor(
                     "Order list can't fetch site plugins, no selected site " +
                         "- siteId ${selectedSite.getSelectedSiteId()}$"
                 )
+            }
+        }
+
+        shouldGlanceFirstSwipeAbleItem()
+    }
+
+    private fun shouldGlanceFirstSwipeAbleItem() {
+        isFetchingFirstPage.observe(this) { isFetching ->
+            if (!isFetching && shouldGlanceFirstSwipeAbleItem) {
+                launch {
+                    // Wait for the list to be draw
+                    delay(DEBOUNCE_GLANCE_DURATION)
+                    shouldGlanceFirstSwipeAbleItem = false
+                    savedState[SHOULD_GLANCE_SWIPE_ABLE_ITEM] = false
+                    triggerEvent(OrderListEvent.GlanceFirstSwipeAbleItem)
+                }
             }
         }
     }
@@ -626,6 +622,7 @@ class OrderListViewModel @Inject constructor(
         ) : OrderListEvent()
 
         data class NotifyOrderChanged(val position: Int) : OrderListEvent()
+        object GlanceFirstSwipeAbleItem : OrderListEvent()
     }
 
     @Parcelize
