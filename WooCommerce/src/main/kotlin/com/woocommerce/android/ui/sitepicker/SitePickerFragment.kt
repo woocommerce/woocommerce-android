@@ -95,13 +95,6 @@ class SitePickerFragment : BaseFragment(R.layout.fragment_site_picker), LoginEma
             new.sitePickerLabelText?.takeIfNotEqualTo(old?.sitePickerLabelText) {
                 binding.siteListLabel.text = it
             }
-//            new.isToolbarVisible.takeIfNotEqualTo(old?.isToolbarVisible) {
-//                if (it) {
-//                    (activity as? MainActivity)?.supportActionBar?.show()
-//                } else {
-//                    (activity as? MainActivity)?.supportActionBar?.hide()
-//                }
-//            }
             new.isHelpBtnVisible.takeIfNotEqualTo(old?.isHelpBtnVisible) {
                 binding.buttonHelp.isVisible = it
             }
