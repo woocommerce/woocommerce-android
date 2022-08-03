@@ -1,12 +1,17 @@
 package com.woocommerce.android.analytics
 
-class WaitingTimeTracker(
-    private val currentTimeInMillis: () -> Long
+import com.woocommerce.android.util.CoroutineDispatchers
+import kotlinx.coroutines.withTimeoutOrNull
+import javax.inject.Inject
+
+class WaitingTimeTracker @Inject constructor(
+    private val dispatchers: CoroutineDispatchers,
+    private val currentTimeInMillis: () -> Long,
+    private val waitingTimeout: Long = 10000L
 ) {
     private var state: State = State.Idle
 
     fun onWaitingStarted() {
-
     }
 
     fun onWaitingEnded() {
