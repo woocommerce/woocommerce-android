@@ -34,6 +34,13 @@ class FirebaseRemoteConfigRepository @Inject constructor() : RemoteConfigReposit
     private val remoteConfig: FirebaseRemoteConfig = Firebase.remoteConfig
     private val changesTrigger = MutableSharedFlow<Unit>(replay = 1)
 
+    private val defaultValues by lazy {
+        mapOf(
+            PROLOGUE_VARIANT_KEY to PrologueVariant.CONTROL.name,
+            SITE_CREDENTIALS_EXPERIMENT_VARIANT_KEY to SiteLoginVariant.EMAIL_LOGIN.name
+        )
+    }
+
     init {
         Firebase.remoteConfig.apply {
             setConfigSettingsAsync(
@@ -41,7 +48,7 @@ class FirebaseRemoteConfigRepository @Inject constructor() : RemoteConfigReposit
                     minimumFetchIntervalInSeconds = this@FirebaseRemoteConfigRepository.minimumFetchIntervalInSeconds
                 }
             )
-            setDefaultsAsync(R.xml.remote_config_values)
+            setDefaultsAsync(defaultValues)
         }
         changesTrigger.tryEmit(Unit)
     }
