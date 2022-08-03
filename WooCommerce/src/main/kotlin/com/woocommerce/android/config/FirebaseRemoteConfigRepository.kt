@@ -1,9 +1,8 @@
 package com.woocommerce.android.config
 
+import androidx.annotation.VisibleForTesting
 import com.automattic.android.tracks.crashlogging.CrashLogging
-import com.google.firebase.ktx.Firebase
 import com.google.firebase.remoteconfig.FirebaseRemoteConfig
-import com.google.firebase.remoteconfig.ktx.remoteConfig
 import com.google.firebase.remoteconfig.ktx.remoteConfigSettings
 import com.woocommerce.android.experiment.PrologueVariant
 import com.woocommerce.android.experiment.SiteLoginExperiment.SiteLoginVariant
@@ -19,9 +18,13 @@ import javax.inject.Provider
 import javax.inject.Singleton
 
 @Singleton
-class FirebaseRemoteConfigRepository @Inject constructor() : RemoteConfigRepository {
+class FirebaseRemoteConfigRepository @Inject constructor(
+    private val remoteConfig: FirebaseRemoteConfig,
+    private val crashLogging: Provider<CrashLogging>
+) : RemoteConfigRepository {
     companion object {
-        private const val PROLOGUE_VARIANT_KEY = "prologue_variant"
+        @VisibleForTesting
+        const val PROLOGUE_VARIANT_KEY = "prologue_variant"
         private const val SITE_CREDENTIALS_EXPERIMENT_VARIANT_KEY = "site_credentials_emphasis"
         private const val DEBUG_INTERVAL = 10L
         private const val RELEASE_INTERVAL = 31200L
@@ -33,10 +36,7 @@ class FirebaseRemoteConfigRepository @Inject constructor() : RemoteConfigReposit
         else
             RELEASE_INTERVAL // 12 hours
 
-    private val remoteConfig: FirebaseRemoteConfig = Firebase.remoteConfig
     private val changesTrigger = MutableSharedFlow<Unit>(replay = 1)
-
-    @Inject lateinit var crashLogging: Provider<CrashLogging>
 
     private val defaultValues by lazy {
         mapOf(
@@ -46,7 +46,7 @@ class FirebaseRemoteConfigRepository @Inject constructor() : RemoteConfigReposit
     }
 
     init {
-        Firebase.remoteConfig.apply {
+        remoteConfig.apply {
             setConfigSettingsAsync(
                 remoteConfigSettings {
                     minimumFetchIntervalInSeconds = this@FirebaseRemoteConfigRepository.minimumFetchIntervalInSeconds
@@ -60,6 +60,7 @@ class FirebaseRemoteConfigRepository @Inject constructor() : RemoteConfigReposit
     override fun fetchRemoteConfig() {
         remoteConfig.fetchAndActivate()
             .addOnSuccessListener { hasChanges ->
+                WooLog.d(T.UTILS, "Remote config fetched successfully, hasChanges: $hasChanges")
                 if (hasChanges) changesTrigger.tryEmit(Unit)
             }
             .addOnFailureListener {
