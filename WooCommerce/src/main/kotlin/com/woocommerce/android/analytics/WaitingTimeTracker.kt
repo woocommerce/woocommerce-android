@@ -1,6 +1,8 @@
 package com.woocommerce.android.analytics
 
 import com.woocommerce.android.analytics.WaitingTimeTracker.State.Done
+import com.woocommerce.android.analytics.WaitingTimeTracker.State.Idle
+import com.woocommerce.android.analytics.WaitingTimeTracker.State.Waiting
 import com.woocommerce.android.di.AppCoroutineScope
 import com.woocommerce.android.util.CoroutineDispatchers
 import kotlinx.coroutines.CoroutineScope
@@ -18,30 +20,32 @@ class WaitingTimeTracker @Inject constructor(
     private val currentTimeInMillis: () -> Long = System::currentTimeMillis,
     private val waitingTimeout: Long = 10000L
 ) {
-    private val stateFlow: MutableStateFlow<State> = MutableStateFlow(State.Idle)
+    private val stateFlow: MutableStateFlow<State> = MutableStateFlow(Idle)
     val currentState: State get() = stateFlow.value
 
     suspend fun onWaitingStarted() {
-        stateFlow.update { State.Waiting(currentTimeInMillis()) }
+        stateFlow.update { Waiting(currentTimeInMillis()) }
         appCoroutineScope.launch(dispatchers.computation) {
 
             withTimeout(waitingTimeout) {
                 stateFlow.collectLatest {
                     if (it is Done) {
-                        stateFlow.update { State.Idle }
+                        stateFlow.update { Idle }
                         cancel()
                         // publish waiting time
                     }
                 }
             }
 
-            stateFlow.update { State.Idle }
+            stateFlow.update { Idle }
         }
 
     }
 
     suspend fun onWaitingEnded() {
-        stateFlow.emit(Done(currentTimeInMillis()))
+        if (currentState is Waiting) {
+            stateFlow.emit(Done(currentTimeInMillis()))
+        }
     }
 
     sealed class State(val creationTimestamp: Long) {
