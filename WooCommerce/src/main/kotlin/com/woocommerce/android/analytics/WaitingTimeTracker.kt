@@ -6,6 +6,7 @@ import com.woocommerce.android.analytics.WaitingTimeTracker.State.Waiting
 import com.woocommerce.android.di.AppCoroutineScope
 import com.woocommerce.android.util.CoroutineDispatchers
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.collectLatest
@@ -23,14 +24,20 @@ class WaitingTimeTracker @Inject constructor(
     private val stateFlow: MutableStateFlow<State> = MutableStateFlow(Idle)
     val currentState: State get() = stateFlow.value
 
+    private var waitingJob: Job? = null
+
     suspend fun onWaitingStarted() {
+        if (currentState is Waiting) return
+
+        waitingJob?.cancel()
         stateFlow.update { Waiting(currentTimeInMillis()) }
-        appCoroutineScope.launch(dispatchers.computation) {
+        waitingJob = appCoroutineScope.launch(dispatchers.computation) {
 
             withTimeout(waitingTimeout) {
                 stateFlow.collectLatest {
                     if (it is Done) {
                         stateFlow.update { Idle }
+                        waitingJob = null
                         cancel()
                         // publish waiting time
                     }
@@ -38,6 +45,7 @@ class WaitingTimeTracker @Inject constructor(
             }
 
             stateFlow.update { Idle }
+            waitingJob = null
         }
 
     }
