@@ -87,16 +87,9 @@ class FirebaseRemoteConfigRepository @Inject constructor(
                 emit(SiteLoginVariant.valueOf(defaultValues[SITE_CREDENTIALS_EXPERIMENT_VARIANT_KEY]!!))
             }
 
-    override fun observePerformanceMonitoringSampleRate(): Flow<Double> =
-        observeDoubleRemoteValue(PERFORMANCE_MONITORING_SAMPLE_RATE_KEY)
-            .catch {
-                crashLogging.get().recordException(it)
-                emit(0.0)
-            }
+    override fun getPerformanceMonitoringSampleRate(): Double =
+        remoteConfig.getDouble(PERFORMANCE_MONITORING_SAMPLE_RATE_KEY)
 
     private fun observeStringRemoteValue(key: String) = changesTrigger
         .map { remoteConfig.getString(key) }
-
-    private fun observeDoubleRemoteValue(key: String) = changesTrigger
-        .map { remoteConfig.getDouble(key) }
 }
