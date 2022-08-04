@@ -11,6 +11,7 @@ import org.junit.Test
 import org.mockito.kotlin.any
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.mock
+import org.mockito.kotlin.never
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.verifyNoInteractions
 
@@ -61,5 +62,20 @@ class OrderDetailsTransactionLauncherTest : BaseUnitTest() {
         sut.onPackageCreationEligibleFetched()
 
         verify(performanceTransactionRepository).finishTransaction(transactionId, TransactionStatus.SUCCESSFUL)
+    }
+
+    @Test
+    fun `should not allow to successfully finish transaction after abort`() {
+        sut.onStateChanged(mock(), Lifecycle.Event.ON_CREATE)
+        sut.onStateChanged(mock(), Lifecycle.Event.ON_DESTROY)
+
+        sut.onOrderFetched()
+        sut.onShippingLabelFetched()
+        sut.onNotesFetched()
+        sut.onRefundsFetched()
+        sut.onShipmentTrackingFetched()
+        sut.onPackageCreationEligibleFetched()
+
+        verify(performanceTransactionRepository, never()).finishTransaction(transactionId, TransactionStatus.SUCCESSFUL)
     }
 }

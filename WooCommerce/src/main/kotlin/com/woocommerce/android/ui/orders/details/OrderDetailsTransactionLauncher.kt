@@ -19,7 +19,7 @@ import javax.inject.Inject
 @ViewModelScoped
 class OrderDetailsTransactionLauncher @Inject constructor(
     private val performanceTransactionRepository: PerformanceTransactionRepository,
-    private val dispatchers: CoroutineDispatchers,
+    dispatchers: CoroutineDispatchers,
 ) : LifecycleEventObserver {
     private companion object {
         const val TRANSACTION_NAME = "OrderDetails"
@@ -80,6 +80,7 @@ class OrderDetailsTransactionLauncher @Inject constructor(
                 performanceTransactionId?.let {
                     performanceTransactionRepository.finishTransaction(it, TransactionStatus.ABORTED)
                 }
+                performanceTransactionId = null
             }
             else -> {
                 // no-op
