@@ -155,7 +155,8 @@ class OrderDetailViewModelTest : BaseUnitTest() {
                 paymentCollectibilityChecker,
                 cardReaderTracker,
                 analyticsTraWrapper,
-                shippingLabelOnboardingRepository
+                shippingLabelOnboardingRepository,
+                mock()
             )
         )
 

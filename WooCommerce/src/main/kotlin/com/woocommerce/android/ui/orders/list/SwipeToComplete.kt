@@ -68,7 +68,7 @@ class SwipeToComplete(
                 viewHolder.bindingAdapter?.notifyItemChanged(pos)
                 return
             }
-            val gestureSource = OrderStatusUpdateSource.SwipeGesture(
+            val gestureSource = OrderStatusUpdateSource.SwipeToCompleteGesture(
                 orderId = orderId,
                 oldStatus = oldStatus,
                 orderPosition = pos
@@ -215,7 +215,7 @@ class SwipeToComplete(
     }
 
     interface OnSwipeListener {
-        fun onSwiped(gestureSource: OrderStatusUpdateSource.SwipeGesture)
+        fun onSwiped(gestureSource: OrderStatusUpdateSource.SwipeToCompleteGesture)
     }
 
     private val Int.dp
@@ -226,6 +226,12 @@ class SwipeToComplete(
         ).roundToInt()
 }
 
+/**
+ *  Glance animation built using three main MotionEvent.
+ *  MotionEvent.ACTION_DOWN -> to simulate the list item is pressed
+ *  MotionEvent. ACTION_MOVE -> to simulate the list item is been dragging (ACTION_DOWN + ACTION_MOVE)
+ *  MotionEvent.ACTION_UP -> to simulate the list item is released, so it can return to its start position
+ */
 fun RecyclerView.glanceSwipeAbleItem(
     index: Int,
     direction: Int,
@@ -233,14 +239,16 @@ fun RecyclerView.glanceSwipeAbleItem(
     distance: Int
 ) {
     val childView = this.getChildAt(index) ?: return
-    val displayMetrics = this.context.resources.displayMetrics
-    val screenHeight = displayMetrics.heightPixels
 
     val x = childView.width / 2F
-    val viewPos = IntArray(2)
+    val listCoordinates = IntArray(2)
+    val viewCoordinates = IntArray(2)
 
-    childView.getLocationInWindow(viewPos)
-    val y = viewPos[1] - (screenHeight - height) * 1F
+    childView.getLocationInWindow(viewCoordinates)
+    this.getLocationInWindow(listCoordinates)
+    // Position the y coordinate relative to the list position (viewCoordinates[1] - listCoordinates[1])
+    // and then in the middle of the list item by dividing the list item height by 2 (childView.height / 2F)
+    val y = (viewCoordinates[1] - listCoordinates[1]) + (childView.height / 2F)
     val downTime = SystemClock.uptimeMillis()
     this.dispatchTouchEvent(
         MotionEvent.obtain(

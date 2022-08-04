@@ -7,12 +7,14 @@ import android.view.View
 import androidx.annotation.StringRes
 import androidx.annotation.VisibleForTesting
 import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleObserver
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.LifecycleRegistry
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
+import androidx.lifecycle.map
 import androidx.paging.PagedList
 import com.google.android.material.snackbar.Snackbar
 import com.woocommerce.android.R
@@ -63,7 +65,8 @@ import org.wordpress.android.mediapicker.util.filter
 import javax.inject.Inject
 
 private const val EMPTY_VIEW_THROTTLE = 250L
-private const val DEBOUNCE_GLANCE_DURATION = 500L
+// Small delay before triggering the glance animation event
+private const val DELAY_GLANCE_DURATION = 500L
 typealias PagedOrdersList = PagedList<OrderListItemUIType>
 
 @OptIn(ExperimentalCoroutinesApi::class)
@@ -84,10 +87,13 @@ class OrderListViewModel @Inject constructor(
     private val getWCOrderListDescriptorWithFilters: GetWCOrderListDescriptorWithFilters,
     private val getSelectedOrderFiltersCount: GetSelectedOrderFiltersCount,
     private val bannerDisplayEligibilityChecker: BannerDisplayEligibilityChecker,
+    private val orderListTransactionLauncher: OrderListTransactionLauncher
 ) : ScopedViewModel(savedState), LifecycleOwner {
     private val lifecycleRegistry: LifecycleRegistry by lazy {
         LifecycleRegistry(this)
     }
+
+    val performanceObserver: LifecycleObserver = orderListTransactionLauncher
 
     override fun getLifecycle(): Lifecycle = lifecycleRegistry
 
@@ -108,7 +114,12 @@ class OrderListViewModel @Inject constructor(
     val isLoadingMore: LiveData<Boolean> = _isLoadingMore
 
     private val _isFetchingFirstPage = MediatorLiveData<Boolean>()
-    val isFetchingFirstPage: LiveData<Boolean> = _isFetchingFirstPage
+    val isFetchingFirstPage: LiveData<Boolean> = _isFetchingFirstPage.map {
+        if (it == false) {
+            orderListTransactionLauncher.onListFetched()
+        }
+        it
+    }
 
     private val _orderStatusOptions = MutableLiveData<Map<String, WCOrderStatusModel>>()
     val orderStatusOptions: LiveData<Map<String, WCOrderStatusModel>> = _orderStatusOptions
@@ -166,7 +177,7 @@ class OrderListViewModel @Inject constructor(
             if (!isFetching && InAppLifecycleMemory.shouldGlanceFirstSwipeAbleItem) {
                 launch {
                     // Wait for the list to be draw
-                    delay(DEBOUNCE_GLANCE_DURATION)
+                    delay(DELAY_GLANCE_DURATION)
                     InAppLifecycleMemory.shouldGlanceFirstSwipeAbleItem = false
                     triggerEvent(OrderListEvent.GlanceFirstSwipeAbleItem)
                 }
@@ -403,6 +414,7 @@ class OrderListViewModel @Inject constructor(
         EventBus.getDefault().unregister(this)
         dispatcher.unregister(this)
         orderListRepository.onCleanup()
+        orderListTransactionLauncher.clear()
         super.onCleared()
     }
 
@@ -507,13 +519,17 @@ class OrderListViewModel @Inject constructor(
         return bannerDisplayEligibilityChecker.canShowCardReaderUpsellBanner(currentTimeInMillis, source)
     }
 
+    fun shouldDisplaySimplePaymentsWIPCard(): Boolean {
+        return !canShowCardReaderUpsellBanner(System.currentTimeMillis(), KEY_BANNER_ORDER_LIST)
+    }
+
     private fun updateOrderDisplayedStatus(position: Int, status: String) {
         val pagedList = _pagedListData.value ?: return
         (pagedList[position] as OrderListItemUIType.OrderListItemUI).status = status
         triggerEvent(OrderListEvent.NotifyOrderChanged(position))
     }
 
-    fun onSwipeStatusUpdate(gestureSource: OrderStatusUpdateSource.SwipeGesture) {
+    fun onSwipeStatusUpdate(gestureSource: OrderStatusUpdateSource.SwipeToCompleteGesture) {
         dismissListErrors = true
 
         AnalyticsTracker.track(
@@ -529,42 +545,48 @@ class OrderListViewModel @Inject constructor(
         optimisticUpdateOrderStatus(
             orderId = gestureSource.orderId,
             status = gestureSource.newStatus,
-            onOptimisticSuccess = {
-                updateOrderDisplayedStatus(gestureSource.orderPosition, gestureSource.newStatus)
-                triggerEvent(
-                    Event.ShowUndoSnackbar(
-                        message = resourceProvider.getString(
-                            R.string.orderlist_mark_completed_success,
-                            gestureSource.orderId
-                        ),
-                        undoAction = { undoSwipeStatusUpdate(gestureSource) },
-                        dismissAction = object : Snackbar.Callback() {
-                            override fun onDismissed(transientBottomBar: Snackbar?, event: Int) {
-                                super.onDismissed(transientBottomBar, event)
-                                if (event != DISMISS_EVENT_ACTION && event != DISMISS_EVENT_CONSECUTIVE) {
-                                    dismissListErrors = false
-                                }
-                            }
-                        }
-                    )
-                )
-            },
-            onFail = {
-                triggerEvent(OrderListEvent.NotifyOrderChanged(gestureSource.orderPosition))
-                triggerEvent(
-                    OrderListEvent.ShowRetryErrorSnack(
-                        message = resourceProvider.getString(
-                            R.string.orderlist_updating_order_error,
-                            gestureSource.orderId
-                        ),
-                        retry = { onSwipeStatusUpdate(gestureSource) }
-                    )
-                )
-            }
+            onOptimisticSuccess = { swipeStatusUpdateOptimisticSuccess(gestureSource) },
+            onFail = { swipeStatusUpdateFails(gestureSource) }
         )
     }
 
-    private fun undoSwipeStatusUpdate(gestureSource: OrderStatusUpdateSource.SwipeGesture) {
+    private fun swipeStatusUpdateOptimisticSuccess(gestureSource: OrderStatusUpdateSource.SwipeToCompleteGesture) {
+        val dismissAction = object : Snackbar.Callback() {
+            override fun onDismissed(transientBottomBar: Snackbar?, event: Int) {
+                super.onDismissed(transientBottomBar, event)
+                if (event != DISMISS_EVENT_ACTION && event != DISMISS_EVENT_CONSECUTIVE) {
+                    dismissListErrors = false
+                }
+            }
+        }
+
+        updateOrderDisplayedStatus(gestureSource.orderPosition, gestureSource.newStatus)
+        triggerEvent(
+            Event.ShowUndoSnackbar(
+                message = resourceProvider.getString(
+                    R.string.orderlist_mark_completed_success,
+                    gestureSource.orderId
+                ),
+                undoAction = { undoSwipeStatusUpdate(gestureSource) },
+                dismissAction = dismissAction
+            )
+        )
+    }
+
+    private fun swipeStatusUpdateFails(gestureSource: OrderStatusUpdateSource.SwipeToCompleteGesture) {
+        triggerEvent(OrderListEvent.NotifyOrderChanged(gestureSource.orderPosition))
+        triggerEvent(
+            OrderListEvent.ShowRetryErrorSnack(
+                message = resourceProvider.getString(
+                    R.string.orderlist_updating_order_error,
+                    gestureSource.orderId
+                ),
+                retry = { onSwipeStatusUpdate(gestureSource) }
+            )
+        )
+    }
+
+    private fun undoSwipeStatusUpdate(gestureSource: OrderStatusUpdateSource.SwipeToCompleteGesture) {
         dismissListErrors = true
         optimisticUpdateOrderStatus(
             orderId = gestureSource.orderId,

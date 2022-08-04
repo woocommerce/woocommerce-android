@@ -5,10 +5,9 @@ plugins {
     id 'com.automattic.android.fetchstyle'
     id 'io.gitlab.arturbosch.detekt'
     id 'io.github.wzieba.tracks.plugin'
-    id 'io.sentry.android.gradle'
     id 'com.android.application' apply false
     id 'org.jetbrains.kotlin.android' apply false
-    id 'dagger.hilt.android.plugin' apply false
+    id 'com.google.dagger.hilt.android' apply false
     id 'com.google.gms.google-services' apply false
 }
 
@@ -94,7 +93,7 @@ tasks.register("installGitHooks", Copy) {
 }
 
 ext {
-    fluxCVersion = '2475-c5a52cccff5bafd2dfa4c5bb2c51f9ba8f68b8a0'
+    fluxCVersion = 'trunk-912bfc93b83c86edd0409beea16e5decb69d8314'
     glideVersion = '4.13.2'
     coilVersion = '2.1.0'
     constraintLayoutVersion = '1.2.0'
