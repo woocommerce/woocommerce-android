@@ -33,7 +33,7 @@ class LoginPrologueSurveyFragment : Fragment(R.layout.fragment_login_prologue_su
     }
 
     interface PrologueSurveyListener {
-        fun onCarouselFinished()
+        fun onSurveyFinished()
     }
 
     @Inject lateinit var unifiedLoginTracker: UnifiedLoginTracker
@@ -60,11 +60,11 @@ class LoginPrologueSurveyFragment : Fragment(R.layout.fragment_login_prologue_su
                 mapOf(Pair(KEY_OPTION, option))
             )
 
-            prologueSurveyListener?.onCarouselFinished()
+            prologueSurveyListener?.onSurveyFinished()
         }
 
         binding.surveyButtonSkip.setOnClickListener {
-            prologueSurveyListener?.onCarouselFinished()
+            prologueSurveyListener?.onSurveyFinished()
         }
 
         binding.surveyButton1.setOnClickListener {
