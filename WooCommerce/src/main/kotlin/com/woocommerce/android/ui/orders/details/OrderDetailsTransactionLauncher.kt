@@ -37,7 +37,6 @@ class OrderDetailsTransactionLauncher @Inject constructor(
         validatorScope.launch {
             conditionsToSatisfy.collect { toSatisfy ->
                 if (toSatisfy.isEmpty()) {
-
                     waitingTime?.let {
                         AnalyticsTracker.track(
                             AnalyticsEvent.ORDER_OPEN,
