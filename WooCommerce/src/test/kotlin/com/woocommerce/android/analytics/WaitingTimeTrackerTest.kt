@@ -51,7 +51,7 @@ class WaitingTimeTrackerTest : BaseUnitTest() {
             createSut(
                 customTimeInMillis = {
                     timeInMillisCallCounter++
-                    if (timeInMillisCallCounter == 1)  1
+                    if (timeInMillisCallCounter == 1) 1
                     else 2
                 },
                 customWaitingTimeout = 10L
@@ -64,7 +64,7 @@ class WaitingTimeTrackerTest : BaseUnitTest() {
             sut.onWaitingStarted(mock())
             assertTrue(sut.currentState is Waiting)
             assertEquals(sut.currentState.creationTimestamp, 2)
-    }
+        }
 
     @Test
     fun `When ending the waiting without starting it, then do nothing`() = testBlocking {
