@@ -9,11 +9,11 @@ class WaitingTimeTracker(
     private val Long.elapsedWaitingTime
         get() = (currentTimeInMillis() - this).toDouble() / IN_SECONDS
 
-    fun onWaitingStarted() {
+    fun start() {
         waitingStartTimestamp = currentTimeInMillis()
     }
 
-    fun onWaitingEnded() = waitingStartTimestamp?.elapsedWaitingTime?.let {
+    fun end() = waitingStartTimestamp?.elapsedWaitingTime?.let {
         AnalyticsTracker.track(
             trackEvent,
             mapOf(AnalyticsTracker.KEY_WAITING_TIME to it)
@@ -21,7 +21,7 @@ class WaitingTimeTracker(
         waitingStartTimestamp = null
     }
 
-    fun onWaitingAborted() {
+    fun abort() {
         waitingStartTimestamp = null
     }
 
