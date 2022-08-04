@@ -504,38 +504,44 @@ class OrderListViewModel @Inject constructor(
         optimisticUpdateOrderStatus(
             orderId = gestureSource.orderId,
             status = gestureSource.newStatus,
-            onOptimisticSuccess = {
-                updateOrderDisplayedStatus(gestureSource.orderPosition, gestureSource.newStatus)
-                triggerEvent(
-                    Event.ShowUndoSnackbar(
-                        message = resourceProvider.getString(
-                            R.string.orderlist_mark_completed_success,
-                            gestureSource.orderId
-                        ),
-                        undoAction = { undoSwipeStatusUpdate(gestureSource) },
-                        dismissAction = object : Snackbar.Callback() {
-                            override fun onDismissed(transientBottomBar: Snackbar?, event: Int) {
-                                super.onDismissed(transientBottomBar, event)
-                                if (event != DISMISS_EVENT_ACTION && event != DISMISS_EVENT_CONSECUTIVE) {
-                                    dismissListErrors = false
-                                }
-                            }
-                        }
-                    )
-                )
-            },
-            onFail = {
-                triggerEvent(OrderListEvent.NotifyOrderChanged(gestureSource.orderPosition))
-                triggerEvent(
-                    OrderListEvent.ShowRetryErrorSnack(
-                        message = resourceProvider.getString(
-                            R.string.orderlist_updating_order_error,
-                            gestureSource.orderId
-                        ),
-                        retry = { onSwipeStatusUpdate(gestureSource) }
-                    )
-                )
+            onOptimisticSuccess = { swipeStatusUpdateOptimisticSuccess(gestureSource) },
+            onFail = { swipeStatusUpdateFails(gestureSource) }
+        )
+    }
+
+    private fun swipeStatusUpdateOptimisticSuccess(gestureSource: OrderStatusUpdateSource.SwipeToCompleteGesture) {
+        val dismissAction = object : Snackbar.Callback() {
+            override fun onDismissed(transientBottomBar: Snackbar?, event: Int) {
+                super.onDismissed(transientBottomBar, event)
+                if (event != DISMISS_EVENT_ACTION && event != DISMISS_EVENT_CONSECUTIVE) {
+                    dismissListErrors = false
+                }
             }
+        }
+
+        updateOrderDisplayedStatus(gestureSource.orderPosition, gestureSource.newStatus)
+        triggerEvent(
+            Event.ShowUndoSnackbar(
+                message = resourceProvider.getString(
+                    R.string.orderlist_mark_completed_success,
+                    gestureSource.orderId
+                ),
+                undoAction = { undoSwipeStatusUpdate(gestureSource) },
+                dismissAction = dismissAction
+            )
+        )
+    }
+
+    private fun swipeStatusUpdateFails(gestureSource: OrderStatusUpdateSource.SwipeToCompleteGesture) {
+        triggerEvent(OrderListEvent.NotifyOrderChanged(gestureSource.orderPosition))
+        triggerEvent(
+            OrderListEvent.ShowRetryErrorSnack(
+                message = resourceProvider.getString(
+                    R.string.orderlist_updating_order_error,
+                    gestureSource.orderId
+                ),
+                retry = { onSwipeStatusUpdate(gestureSource) }
+            )
         )
     }
 
