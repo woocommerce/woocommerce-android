@@ -39,6 +39,8 @@ import kotlinx.coroutines.test.runTest
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Test
+import org.mockito.ArgumentMatchers.anyLong
+import org.mockito.ArgumentMatchers.anyString
 import org.mockito.kotlin.any
 import org.mockito.kotlin.clearInvocations
 import org.mockito.kotlin.doReturn
@@ -114,6 +116,7 @@ class OrderListViewModelTest : BaseUnitTest() {
             getWCOrderListDescriptorWithFilters = getWCOrderListDescriptorWithFilters,
             getSelectedOrderFiltersCount = getSelectedOrderFiltersCount,
             bannerDisplayEligibilityChecker = bannerDisplayEligibilityChecker,
+            orderListTransactionLauncher = mock()
         )
     }
 
@@ -542,6 +545,38 @@ class OrderListViewModelTest : BaseUnitTest() {
         viewModel.onBannerAlertDismiss()
 
         assertThat(viewModel.shouldShowUpsellCardReaderDismissDialog.value).isFalse
+    }
+
+    @Test
+    fun `when upsell card reader banner is displayed, then don't display feedback banner`() {
+        runTest {
+            whenever(
+                bannerDisplayEligibilityChecker.canShowCardReaderUpsellBanner(
+                    anyLong(),
+                    anyString()
+                )
+            ).thenReturn(true)
+
+            val shouldDisplaySimplePaymentsWIPCard = viewModel.shouldDisplaySimplePaymentsWIPCard()
+
+            assertFalse(shouldDisplaySimplePaymentsWIPCard)
+        }
+    }
+
+    @Test
+    fun `when upsell card reader banner is not displayed, then display feedback banner`() {
+        runTest {
+            whenever(
+                bannerDisplayEligibilityChecker.canShowCardReaderUpsellBanner(
+                    anyLong(),
+                    anyString()
+                )
+            ).thenReturn(false)
+
+            val shouldDisplaySimplePaymentsWIPCard = viewModel.shouldDisplaySimplePaymentsWIPCard()
+
+            assertTrue(shouldDisplaySimplePaymentsWIPCard)
+        }
     }
     //endregion
 

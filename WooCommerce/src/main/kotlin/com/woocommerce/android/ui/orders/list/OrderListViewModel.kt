@@ -6,16 +6,19 @@ import android.os.Parcelable
 import androidx.annotation.StringRes
 import androidx.annotation.VisibleForTesting
 import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleObserver
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.LifecycleRegistry
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
+import androidx.lifecycle.map
 import androidx.paging.PagedList
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_BANNER_ORDER_LIST
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_CUSTOM_FIELDS_COUNT
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_CUSTOM_FIELDS_SIZE
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_ID
@@ -81,10 +84,13 @@ class OrderListViewModel @Inject constructor(
     private val getWCOrderListDescriptorWithFilters: GetWCOrderListDescriptorWithFilters,
     private val getSelectedOrderFiltersCount: GetSelectedOrderFiltersCount,
     private val bannerDisplayEligibilityChecker: BannerDisplayEligibilityChecker,
+    private val orderListTransactionLauncher: OrderListTransactionLauncher
 ) : ScopedViewModel(savedState), LifecycleOwner {
     protected val lifecycleRegistry: LifecycleRegistry by lazy {
         LifecycleRegistry(this)
     }
+
+    val performanceObserver: LifecycleObserver = orderListTransactionLauncher
 
     override fun getLifecycle(): Lifecycle = lifecycleRegistry
 
@@ -105,7 +111,12 @@ class OrderListViewModel @Inject constructor(
     val isLoadingMore: LiveData<Boolean> = _isLoadingMore
 
     private val _isFetchingFirstPage = MediatorLiveData<Boolean>()
-    val isFetchingFirstPage: LiveData<Boolean> = _isFetchingFirstPage
+    val isFetchingFirstPage: LiveData<Boolean> = _isFetchingFirstPage.map {
+        if (it == false) {
+            orderListTransactionLauncher.onListFetched()
+        }
+        it
+    }
 
     private val _orderStatusOptions = MutableLiveData<Map<String, WCOrderStatusModel>>()
     val orderStatusOptions: LiveData<Map<String, WCOrderStatusModel>> = _orderStatusOptions
@@ -384,6 +395,7 @@ class OrderListViewModel @Inject constructor(
         EventBus.getDefault().unregister(this)
         dispatcher.unregister(this)
         orderListRepository.onCleanup()
+        orderListTransactionLauncher.clear()
         super.onCleared()
     }
 
@@ -486,6 +498,10 @@ class OrderListViewModel @Inject constructor(
 
     fun canShowCardReaderUpsellBanner(currentTimeInMillis: Long, source: String): Boolean {
         return bannerDisplayEligibilityChecker.canShowCardReaderUpsellBanner(currentTimeInMillis, source)
+    }
+
+    fun shouldDisplaySimplePaymentsWIPCard(): Boolean {
+        return !canShowCardReaderUpsellBanner(System.currentTimeMillis(), KEY_BANNER_ORDER_LIST)
     }
 
     sealed class OrderListEvent : Event() {

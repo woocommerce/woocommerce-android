@@ -1,7 +1,7 @@
 package com.woocommerce.android.ui.products
 
 import androidx.lifecycle.SavedStateHandle
-import com.woocommerce.android.AppPrefs
+import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.R
 import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.initSavedStateHandle
@@ -108,7 +108,7 @@ class ProductDetailViewModelTest : BaseUnitTest() {
         on(it.getParameters(any(), any<SavedStateHandle>())).thenReturn(siteParams)
     }
 
-    private val prefs: AppPrefs = mock()
+    private val prefsWrapper: AppPrefsWrapper = mock()
     private val productUtils = ProductUtils()
 
     private val product = ProductTestUtils.generateProduct(PRODUCT_REMOTE_ID)
@@ -238,7 +238,7 @@ class ProductDetailViewModelTest : BaseUnitTest() {
                 mediaFilesRepository,
                 variationRepository,
                 mediaFileUploadHandler,
-                prefs,
+                prefsWrapper,
                 addonRepository,
             )
         )
