@@ -1,15 +1,19 @@
 package com.woocommerce.android.ui.orders.list
 
+import android.animation.ValueAnimator
 import android.content.Context
 import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.Paint
 import android.graphics.Rect
 import android.os.Build
+import android.os.SystemClock
 import android.text.Layout
 import android.text.StaticLayout
 import android.text.TextPaint
 import android.util.TypedValue
+import android.view.MotionEvent
+import androidx.core.animation.doOnEnd
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.RecyclerView
@@ -220,4 +224,73 @@ class SwipeToComplete(
             toFloat(),
             context.resources.displayMetrics
         ).roundToInt()
+}
+
+/**
+ *  Glance animation built using three main MotionEvent.
+ *  MotionEvent.ACTION_DOWN -> to simulate the list item is pressed
+ *  MotionEvent. ACTION_MOVE -> to simulate the list item is been dragging (ACTION_DOWN + ACTION_MOVE)
+ *  MotionEvent.ACTION_UP -> to simulate the list item is released, so it can return to its start position
+ */
+fun RecyclerView.glanceSwipeAbleItem(
+    index: Int,
+    direction: Int,
+    time: Long,
+    distance: Int
+) {
+    val childView = this.getChildAt(index) ?: return
+
+    val x = childView.width / 2F
+    val listCoordinates = IntArray(2)
+    val viewCoordinates = IntArray(2)
+
+    childView.getLocationInWindow(viewCoordinates)
+    this.getLocationInWindow(listCoordinates)
+    // Position the y coordinate relative to the list position (viewCoordinates[1] - listCoordinates[1])
+    // and then in the middle of the list item by dividing the list item height by 2 (childView.height / 2F)
+    val y = (viewCoordinates[1] - listCoordinates[1]) + (childView.height / 2F)
+    val downTime = SystemClock.uptimeMillis()
+    this.dispatchTouchEvent(
+        MotionEvent.obtain(
+            downTime,
+            downTime,
+            MotionEvent.ACTION_DOWN,
+            x,
+            y,
+            0
+        )
+    )
+    ValueAnimator.ofInt(0, distance).apply {
+        doOnEnd {
+            this@glanceSwipeAbleItem.dispatchTouchEvent(
+                MotionEvent.obtain(
+                    downTime,
+                    downTime,
+                    MotionEvent.ACTION_UP,
+                    x,
+                    y,
+                    0
+                )
+            )
+        }
+        duration = time
+        addUpdateListener {
+            val dX = it.animatedValue as Int
+            val mX = when (direction) {
+                ItemTouchHelper.END -> x + dX
+                ItemTouchHelper.START -> x - dX
+                else -> 0F
+            }
+            this@glanceSwipeAbleItem.dispatchTouchEvent(
+                MotionEvent.obtain(
+                    downTime,
+                    SystemClock.uptimeMillis(),
+                    MotionEvent.ACTION_MOVE,
+                    mX,
+                    y,
+                    0
+                )
+            )
+        }
+    }.start()
 }

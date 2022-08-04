@@ -49,6 +49,8 @@ import com.woocommerce.android.viewmodel.ResourceProvider
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.widgets.WCEmptyView.EmptyViewType
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.parcelize.Parcelize
 import okio.utf8Size
@@ -69,8 +71,11 @@ import org.wordpress.android.mediapicker.util.filter
 import javax.inject.Inject
 
 private const val EMPTY_VIEW_THROTTLE = 250L
+// Small delay before triggering the glance animation event
+private const val DELAY_GLANCE_DURATION = 500L
 typealias PagedOrdersList = PagedList<OrderListItemUIType>
 
+@OptIn(ExperimentalCoroutinesApi::class)
 @Suppress("LeakingThis")
 @HiltViewModel
 class OrderListViewModel @Inject constructor(
@@ -167,6 +172,21 @@ class OrderListViewModel @Inject constructor(
                     "Order list can't fetch site plugins, no selected site " +
                         "- siteId ${selectedSite.getSelectedSiteId()}$"
                 )
+            }
+        }
+
+        shouldGlanceFirstSwipeAbleItem()
+    }
+
+    private fun shouldGlanceFirstSwipeAbleItem() {
+        isFetchingFirstPage.observe(this) { isFetching ->
+            if (!isFetching && InAppLifecycleMemory.shouldGlanceFirstSwipeAbleItem) {
+                launch {
+                    // Wait for the list to be draw
+                    delay(DELAY_GLANCE_DURATION)
+                    InAppLifecycleMemory.shouldGlanceFirstSwipeAbleItem = false
+                    triggerEvent(OrderListEvent.GlanceFirstSwipeAbleItem)
+                }
             }
         }
     }
@@ -618,6 +638,7 @@ class OrderListViewModel @Inject constructor(
         ) : OrderListEvent()
 
         data class NotifyOrderChanged(val position: Int) : OrderListEvent()
+        object GlanceFirstSwipeAbleItem : OrderListEvent()
     }
 
     @Parcelize
@@ -626,4 +647,8 @@ class OrderListViewModel @Inject constructor(
         val arePaymentGatewaysFetched: Boolean = false,
         val filterCount: Int = 0
     ) : Parcelable
+}
+
+object InAppLifecycleMemory {
+    var shouldGlanceFirstSwipeAbleItem = true
 }

@@ -80,6 +80,7 @@ class OrderListFragment :
         const val STATE_KEY_SEARCH_QUERY = "search-query"
         const val STATE_KEY_IS_SEARCHING = "is_searching"
         const val FILTER_CHANGE_NOTICE_KEY = "filters_changed_notice"
+        const val SWIPE_GLANCE_ANIMATION_DURATION_MILLIS = 300L
     }
 
     @Inject internal lateinit var uiMessageResolver: UIMessageResolver
@@ -393,6 +394,9 @@ class OrderListFragment :
                     }
                     binding.orderRefreshLayout.isRefreshing = false
                 }
+                is OrderListViewModel.OrderListEvent.GlanceFirstSwipeAbleItem -> {
+                    glanceFirstSwipeAbleListItem()
+                }
                 else -> event.isHandled = false
             }
         }
@@ -691,5 +695,25 @@ class OrderListFragment :
 
     override fun onSwiped(gestureSource: OrderStatusUpdateSource.SwipeToCompleteGesture) {
         viewModel.onSwipeStatusUpdate(gestureSource)
+    }
+
+    private fun glanceFirstSwipeAbleListItem() {
+        val recyclerView = binding.orderListView.ordersList
+        val distance = resources.getDimensionPixelSize(R.dimen.swipeable_glance_distance)
+        // Iterate only on visible swipeable orders
+        for (i in 0 until recyclerView.childCount) {
+            val childView = recyclerView.getChildAt(i)
+            val viewHolder =
+                (recyclerView.getChildViewHolder(childView) as? SwipeToComplete.SwipeAbleViewHolder) ?: continue
+            if (viewHolder.isSwipeAble()) {
+                recyclerView.glanceSwipeAbleItem(
+                    index = i,
+                    direction = ItemTouchHelper.START,
+                    time = SWIPE_GLANCE_ANIMATION_DURATION_MILLIS,
+                    distance = distance
+                )
+                return
+            }
+        }
     }
 }
