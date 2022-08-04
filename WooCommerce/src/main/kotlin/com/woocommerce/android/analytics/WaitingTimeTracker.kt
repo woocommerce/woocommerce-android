@@ -31,8 +31,8 @@ class WaitingTimeTracker(
         dispatchers: CoroutineDispatchers
     ) : this(appCoroutineScope, dispatchers, System::currentTimeMillis, DEFAULT_WAITING_TIMEOUT)
 
-    private val stateFlow: MutableStateFlow<State> = MutableStateFlow(Idle)
-    val currentState: State get() = stateFlow.value
+    private val _currentState: MutableStateFlow<State> = MutableStateFlow(Idle)
+    val currentState: State get() = _currentState.value
 
     private var waitingJob: Job? = null
 
@@ -44,13 +44,13 @@ class WaitingTimeTracker(
         if (currentState is Waiting) return
 
         waitingJob?.cancel()
-        stateFlow.update { Waiting(currentTimeInMillis()) }
+        _currentState.update { Waiting(currentTimeInMillis()) }
 
         waitingJob = appCoroutineScope.launch(dispatchers.computation) {
             waitForDoneState(trackEvent, currentState.creationTimestamp)
                 .exceptionOrNull()
                 ?.let {
-                    stateFlow.update { Idle }
+                    _currentState.update { Idle }
                     waitingJob = null
                 }
         }
@@ -62,7 +62,7 @@ class WaitingTimeTracker(
      */
     suspend fun onWaitingEnded() {
         if (currentState is Waiting) {
-            stateFlow.emit(Done(currentTimeInMillis()))
+            _currentState.emit(Done(currentTimeInMillis()))
         }
     }
 
@@ -74,13 +74,15 @@ class WaitingTimeTracker(
      * Since only possible results for this job is to expire or be canceled,
      * the operation is wrapped it under a failure result, so the caller can
      * be notified that the waiting cycle ended.
+     *
+     * Will only submit the elapsed time if it's higher than zero and lower than the expected waiting timeout.
      */
     private suspend fun waitForDoneState(
         trackEvent: AnalyticsEvent,
         waitingStartedTimestamp: Long
     ) = runCatching {
         withTimeout(waitingTimeout) {
-            stateFlow.collectLatest {
+            _currentState.collectLatest {
                 if (it is Done) {
                     val waitingTimeElapsed = it.creationTimestamp - waitingStartedTimestamp
                     if (waitingTimeElapsed in 1..waitingTimeout) {
@@ -96,9 +98,11 @@ class WaitingTimeTracker(
         trackEvent: AnalyticsEvent,
         waitingTimeElapsed: Long
     ) {
+        val waitingTimeElapsedInSeconds = waitingTimeElapsed.toDouble() / 1000
+
         AnalyticsTracker.track(
             trackEvent,
-            mapOf(AnalyticsTracker.KEY_WAITING_TIME to waitingTimeElapsed)
+            mapOf(AnalyticsTracker.KEY_WAITING_TIME to waitingTimeElapsedInSeconds)
         )
     }
 
