@@ -68,7 +68,8 @@ import org.wordpress.android.mediapicker.util.filter
 import javax.inject.Inject
 
 private const val EMPTY_VIEW_THROTTLE = 250L
-private const val DEBOUNCE_GLANCE_DURATION = 500L
+// Small delay before triggering the glance animation event
+private const val DELAY_GLANCE_DURATION = 500L
 typealias PagedOrdersList = PagedList<OrderListItemUIType>
 
 @OptIn(ExperimentalCoroutinesApi::class)
@@ -171,7 +172,7 @@ class OrderListViewModel @Inject constructor(
             if (!isFetching && InAppLifecycleMemory.shouldGlanceFirstSwipeAbleItem) {
                 launch {
                     // Wait for the list to be draw
-                    delay(DEBOUNCE_GLANCE_DURATION)
+                    delay(DELAY_GLANCE_DURATION)
                     InAppLifecycleMemory.shouldGlanceFirstSwipeAbleItem = false
                     triggerEvent(OrderListEvent.GlanceFirstSwipeAbleItem)
                 }
