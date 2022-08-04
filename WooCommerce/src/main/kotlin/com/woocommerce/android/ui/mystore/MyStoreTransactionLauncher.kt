@@ -7,6 +7,8 @@ import com.automattic.android.tracks.crashlogging.performance.PerformanceTransac
 import com.automattic.android.tracks.crashlogging.performance.TransactionId
 import com.automattic.android.tracks.crashlogging.performance.TransactionOperation
 import com.automattic.android.tracks.crashlogging.performance.TransactionStatus
+import com.woocommerce.android.analytics.AnalyticsEvent.DASHBOARD_WAITING_TIME_LOADED
+import com.woocommerce.android.analytics.WaitingTimeTracker
 import com.woocommerce.android.util.CoroutineDispatchers
 import dagger.hilt.android.scopes.ViewModelScoped
 import kotlinx.coroutines.CoroutineScope
@@ -28,6 +30,7 @@ class MyStoreTransactionLauncher @Inject constructor(
     private var performanceTransactionId: TransactionId? = null
     private val conditionsToSatisfy = MutableStateFlow(Conditions.values().toList())
     private val validatorScope = CoroutineScope(dispatchers.main + Job())
+    private val waitingTimeTracker = WaitingTimeTracker(DASHBOARD_WAITING_TIME_LOADED)
 
     init {
         validatorScope.launch {
@@ -36,6 +39,7 @@ class MyStoreTransactionLauncher @Inject constructor(
                     performanceTransactionId?.let {
                         performanceTransactionRepository.finishTransaction(it, TransactionStatus.SUCCESSFUL)
                     }
+                    waitingTimeTracker.end()
                 }
             }
         }
@@ -63,12 +67,14 @@ class MyStoreTransactionLauncher @Inject constructor(
             Lifecycle.Event.ON_CREATE -> {
                 performanceTransactionId =
                     performanceTransactionRepository.startTransaction(TRANSACTION_NAME, TransactionOperation.UI_LOAD)
+                waitingTimeTracker.start()
             }
             Lifecycle.Event.ON_STOP -> {
                 performanceTransactionId?.let {
                     performanceTransactionRepository.finishTransaction(it, TransactionStatus.ABORTED)
                 }
                 performanceTransactionId = null
+                waitingTimeTracker.abort()
             }
             else -> {
                 // no-op
