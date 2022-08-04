@@ -640,6 +640,8 @@ enum class AnalyticsEvent(val siteless: Boolean = false) {
     LOGIN_ONBOARDING_SHOWN,
     LOGIN_ONBOARDING_NEXT_BUTTON_TAPPED,
     LOGIN_ONBOARDING_SKIP_BUTTON_TAPPED,
+    LOGIN_ONBOARDING_SURVEY_SUBMITTED,
+    LOGIN_ONBOARDING_SURVEY_SHOWN,
 
     // Login help scheduled notifications
     LOGIN_LOCAL_NOTIFICATION_DISPLAYED(siteless = true),

@@ -48,24 +48,13 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginBottom="@dimen/major_150"
-        app:layout_constraintBottom_toTopOf="@id/button_next"
+        app:layout_constraintBottom_toTopOf="@id/button_skip"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
 
     <com.google.android.material.button.MaterialButton
-        android:id="@+id/button_next"
-        style="@style/Woo.Button.Colored"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="@dimen/major_100"
-        android:layout_marginEnd="@dimen/major_100"
-        android:text="@string/next"
-        android:textAllCaps="false"
-        app:layout_constraintBottom_toTopOf="@id/button_skip" />
-
-    <com.google.android.material.button.MaterialButton
         android:id="@+id/button_skip"
-        style="@style/Woo.Button.Colored.White"
+        style="@style/Woo.Button.TextButton"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginStart="@dimen/major_100"
