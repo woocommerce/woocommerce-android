@@ -7,6 +7,8 @@ import com.automattic.android.tracks.crashlogging.performance.PerformanceTransac
 import com.automattic.android.tracks.crashlogging.performance.TransactionId
 import com.automattic.android.tracks.crashlogging.performance.TransactionOperation
 import com.automattic.android.tracks.crashlogging.performance.TransactionStatus
+import com.woocommerce.android.analytics.AnalyticsEvent
+import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.util.CoroutineDispatchers
 import dagger.hilt.android.scopes.ViewModelScoped
 import kotlinx.coroutines.CoroutineScope
@@ -29,10 +31,20 @@ class OrderDetailsTransactionLauncher @Inject constructor(
     private val conditionsToSatisfy = MutableStateFlow(Conditions.values().toList())
     private val validatorScope = CoroutineScope(dispatchers.main + Job())
 
+    private var waitingTime: Long? = null
+
     init {
         validatorScope.launch {
             conditionsToSatisfy.collect { toSatisfy ->
                 if (toSatisfy.isEmpty()) {
+
+                    waitingTime?.let {
+                        AnalyticsTracker.track(
+                            AnalyticsEvent.ORDER_OPEN,
+                            mapOf(AnalyticsTracker.KEY_WAITING_TIME to it)
+                        )
+                    }
+
                     performanceTransactionId?.let {
                         performanceTransactionRepository.finishTransaction(it, TransactionStatus.SUCCESSFUL)
                     }
@@ -75,11 +87,13 @@ class OrderDetailsTransactionLauncher @Inject constructor(
             Lifecycle.Event.ON_CREATE -> {
                 performanceTransactionId =
                     performanceTransactionRepository.startTransaction(TRANSACTION_NAME, TransactionOperation.UI_LOAD)
+                waitingTime = System.currentTimeMillis() // add provider of it to constructor
             }
             Lifecycle.Event.ON_DESTROY -> {
                 performanceTransactionId?.let {
                     performanceTransactionRepository.finishTransaction(it, TransactionStatus.ABORTED)
                 }
+                waitingTime = null // or model it to sealed class like "ABORTED" or "CANCELED"
             }
             else -> {
                 // no-op
