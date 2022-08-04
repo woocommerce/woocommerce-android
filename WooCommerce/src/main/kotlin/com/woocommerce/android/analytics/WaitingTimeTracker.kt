@@ -16,20 +16,11 @@ import kotlinx.coroutines.withTimeout
 import javax.inject.Inject
 
 class WaitingTimeTracker(
-    @AppCoroutineScope private val appCoroutineScope: CoroutineScope,
+    private val coroutineScope: CoroutineScope,
     private val dispatchers: CoroutineDispatchers,
-    private val currentTimeInMillis: () -> Long,
-    private val waitingTimeout: Long
+    private val currentTimeInMillis: () -> Long = System::currentTimeMillis,
+    private val waitingTimeout: Long = DEFAULT_WAITING_TIMEOUT
 ) {
-    /***
-     * Injected constructor as secondary to allow default values for the parameters
-     * without causing building issues with Hilt
-     */
-    @Inject
-    constructor(
-        @AppCoroutineScope appCoroutineScope: CoroutineScope,
-        dispatchers: CoroutineDispatchers
-    ) : this(appCoroutineScope, dispatchers, System::currentTimeMillis, DEFAULT_WAITING_TIMEOUT)
 
     private val _currentState: MutableStateFlow<State> = MutableStateFlow(Idle)
     val currentState: State get() = _currentState.value
@@ -44,7 +35,7 @@ class WaitingTimeTracker(
         waitingJob?.cancel()
         _currentState.update { Waiting(currentTimeInMillis()) }
 
-        waitingJob = appCoroutineScope.launch(dispatchers.computation) {
+        waitingJob = coroutineScope.launch(dispatchers.computation) {
             waitForDoneState(trackEvent, currentState.creationTimestamp)
                 .exceptionOrNull()
                 ?.let {
