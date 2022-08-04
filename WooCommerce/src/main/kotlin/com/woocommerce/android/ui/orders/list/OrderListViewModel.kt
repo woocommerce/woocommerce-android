@@ -18,6 +18,7 @@ import androidx.paging.PagedList
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_BANNER_ORDER_LIST
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_CUSTOM_FIELDS_COUNT
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_CUSTOM_FIELDS_SIZE
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_ID
@@ -497,6 +498,10 @@ class OrderListViewModel @Inject constructor(
 
     fun canShowCardReaderUpsellBanner(currentTimeInMillis: Long, source: String): Boolean {
         return bannerDisplayEligibilityChecker.canShowCardReaderUpsellBanner(currentTimeInMillis, source)
+    }
+
+    fun shouldDisplaySimplePaymentsWIPCard(): Boolean {
+        return !canShowCardReaderUpsellBanner(System.currentTimeMillis(), KEY_BANNER_ORDER_LIST)
     }
 
     sealed class OrderListEvent : Event() {
