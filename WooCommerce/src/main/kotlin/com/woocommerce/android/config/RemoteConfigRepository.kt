@@ -5,9 +5,8 @@ import com.woocommerce.android.experiment.SiteLoginExperiment.SiteLoginVariant
 import kotlinx.coroutines.flow.Flow
 
 interface RemoteConfigRepository {
+    fun fetchRemoteConfig()
     fun observePrologueVariant(): Flow<PrologueVariant>
-    suspend fun updatePrologueVariantValue(variantValue: String)
-
     fun observeSiteLoginVariant(): Flow<SiteLoginVariant>
-    suspend fun updateSiteLoginVariantValue(variantValue: String)
+    fun getPerformanceMonitoringSampleRate(): Double
 }
