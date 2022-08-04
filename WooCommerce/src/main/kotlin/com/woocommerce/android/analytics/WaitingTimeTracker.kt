@@ -36,6 +36,10 @@ class WaitingTimeTracker(
 
     private var waitingJob: Job? = null
 
+    /***
+     * Trigger a new waiting job if it is not already running,
+     * and returns the current state to `Idle` after the waiting expires
+     */
     suspend fun onWaitingStarted(trackEvent: AnalyticsEvent) {
         if (currentState is Waiting) return
 
@@ -52,12 +56,25 @@ class WaitingTimeTracker(
         }
     }
 
+    /***
+     * Emits to the current state `Done` if it is already waiting
+     * to collect it
+     */
     suspend fun onWaitingEnded() {
         if (currentState is Waiting) {
             stateFlow.emit(Done(currentTimeInMillis()))
         }
     }
 
+    /***
+     * Start observing the state flow until the timeout expires,
+     * if the `Done` state is emitted, then handle it and immediately cancel
+     * the waiting job.
+     *
+     * Since only possible results for this job is to expire or be canceled,
+     * the operation is wrapped it under a failure result, so the caller can
+     * be notified that the waiting cycle ended.
+     */
     private suspend fun waitForDoneState(
         trackEvent: AnalyticsEvent,
         waitingStartedTimestamp: Long
