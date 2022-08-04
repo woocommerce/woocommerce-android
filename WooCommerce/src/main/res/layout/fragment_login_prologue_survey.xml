@@ -48,7 +48,7 @@
                 style="@style/Woo.Button.Outlined"
                 android:layout_width="match_parent"
                 android:layout_height="@dimen/major_350"
-                android:textColor="@color/color_on_secondary"
+                android:textColor="@color/survey_button_text_selector"
                 android:text="@string/login_prologue_survey_button_exploring"
                 android:textAllCaps="false"
                 android:backgroundTint="@drawable/survey_button_selector" />
@@ -60,7 +60,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="@dimen/major_350"
                 android:layout_marginTop="@dimen/minor_100"
-                android:textColor="@color/color_on_secondary"
+                android:textColor="@color/survey_button_text_selector"
                 android:text="@string/login_prologue_survey_button_set_up_store"
                 android:textAllCaps="false"
                 android:backgroundTint="@drawable/survey_button_selector" />
@@ -71,7 +71,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="@dimen/major_350"
                 android:layout_marginTop="@dimen/minor_100"
-                android:textColor="@color/color_on_secondary"
+                android:textColor="@color/survey_button_text_selector"
                 android:text="@string/login_prologue_survey_button_check_analytics"
                 android:textAllCaps="false"
                 android:backgroundTint="@drawable/survey_button_selector" />
@@ -82,7 +82,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="@dimen/major_350"
                 android:layout_marginTop="@dimen/minor_100"
-                android:textColor="@color/color_on_secondary"
+                android:textColor="@color/survey_button_text_selector"
                 android:text="@string/login_prologue_survey_button_edit_products"
                 android:textAllCaps="false"
                 android:backgroundTint="@drawable/survey_button_selector" />
@@ -93,7 +93,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="@dimen/major_350"
                 android:layout_marginTop="@dimen/minor_100"
-                android:textColor="@color/color_on_secondary"
+                android:textColor="@color/survey_button_text_selector"
                 android:text="@string/login_prologue_survey_button_manage_orders"
                 android:textAllCaps="false"
                 android:backgroundTint="@drawable/survey_button_selector"/>
@@ -104,7 +104,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="@dimen/major_350"
                 android:layout_marginTop="@dimen/minor_100"
-                android:textColor="@color/color_on_secondary"
+                android:textColor="@color/survey_button_text_selector"
                 android:text="@string/login_prologue_survey_button_switch_stores"
                 android:textAllCaps="false"
                 android:backgroundTint="@drawable/survey_button_selector"/>
