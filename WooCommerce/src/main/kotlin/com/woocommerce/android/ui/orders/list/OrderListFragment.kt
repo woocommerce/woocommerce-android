@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.orders.list
 
+import android.content.Context
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
@@ -125,6 +126,7 @@ class OrderListFragment :
             ?: FeedbackState.UNANSWERED
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        lifecycle.addObserver(viewModel.performanceObserver)
         super.onCreate(savedInstanceState)
 
         savedInstanceState?.let { bundle ->
@@ -163,19 +165,7 @@ class OrderListFragment :
         setHasOptionsMenu(true)
         _binding = FragmentOrderListBinding.inflate(inflater, container, false)
 
-        val view = binding.root
-        if (viewModel.shouldShowUpsellCardReaderDismissDialog.value == true) {
-            applyBannerDismissDialogComposeUI()
-        }
-        val isLandscape = DisplayUtils.isLandscape(view.context)
-        /**
-         * We are hiding the upsell card reader banner in the landscape mode since it becomes impossible for
-         * the merchants to scroll the order list. More info here: pdfdoF-12d-p2
-         */
-        if (!isLandscape) {
-            applyBannerComposeUI()
-        }
-        return view
+        return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -213,11 +203,6 @@ class OrderListFragment :
         swipeHelper.attachToRecyclerView(binding.orderListView.ordersList)
     }
 
-    override fun onViewStateRestored(savedInstanceState: Bundle?) {
-        super.onViewStateRestored(savedInstanceState)
-        displaySimplePaymentsWIPCard(true)
-    }
-
     override fun onResume() {
         super.onResume()
         AnalyticsTracker.trackViewShown(this)
@@ -239,9 +224,31 @@ class OrderListFragment :
         _binding = null
     }
 
+    private fun bannerDisplayViewLogic(context: Context, ordersListSize: Int) {
+        if (ordersListSize <= 0) {
+            binding.upsellCardReaderComposeView.upsellCardReaderBannerView.visibility = View.GONE
+        } else {
+            if (viewModel.shouldShowUpsellCardReaderDismissDialog.value == true) {
+                applyBannerDismissDialogComposeUI()
+            }
+            val isLandscape = DisplayUtils.isLandscape(context)
+            /**
+             * We are hiding the upsell card reader banner in the landscape mode since it becomes impossible for
+             * the merchants to scroll the order list. More info here: pdfdoF-12d-p2
+             */
+            if (!isLandscape) {
+                applyBannerComposeUI()
+            }
+            if (viewModel.shouldDisplaySimplePaymentsWIPCard() || isLandscape) {
+                displaySimplePaymentsWIPCard(true)
+            }
+        }
+    }
+
     private fun applyBannerComposeUI() {
         binding.upsellCardReaderComposeView.upsellCardReaderBannerView.apply {
             // Dispose of the Composition when the view's LifecycleOwner is destroyed
+            visibility = View.VISIBLE
             setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
             setContent {
                 WooThemeWithBackground {
@@ -340,6 +347,7 @@ class OrderListFragment :
         }
 
         viewModel.pagedListData.observe(viewLifecycleOwner) {
+            bannerDisplayViewLogic(binding.root.context, it.size)
             updatePagedListData(it)
         }
 

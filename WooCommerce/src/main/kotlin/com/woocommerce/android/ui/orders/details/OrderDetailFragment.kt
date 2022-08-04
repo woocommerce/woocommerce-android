@@ -115,6 +115,7 @@ class OrderDetailFragment : BaseFragment(R.layout.fragment_order_detail), OrderP
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        lifecycle.addObserver(viewModel.performanceObserver)
         super.onCreate(savedInstanceState)
         val transitionDuration = resources.getInteger(R.integer.default_fragment_transition).toLong()
         val backgroundColor = ContextCompat.getColor(requireContext(), R.color.default_window_background)
