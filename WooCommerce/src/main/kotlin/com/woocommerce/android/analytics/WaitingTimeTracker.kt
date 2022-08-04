@@ -36,7 +36,7 @@ class WaitingTimeTracker(
 
     private var waitingJob: Job? = null
 
-    fun onWaitingStarted(trackEvent: AnalyticsEvent) {
+    suspend fun onWaitingStarted(trackEvent: AnalyticsEvent) {
         if (currentState is Waiting) return
 
         waitingJob?.cancel()
@@ -49,6 +49,12 @@ class WaitingTimeTracker(
                     stateFlow.update { Idle }
                     waitingJob = null
                 }
+        }
+    }
+
+    suspend fun onWaitingEnded() {
+        if (currentState is Waiting) {
+            stateFlow.emit(Done(currentTimeInMillis()))
         }
     }
 
@@ -77,12 +83,6 @@ class WaitingTimeTracker(
             trackEvent,
             mapOf(AnalyticsTracker.KEY_WAITING_TIME to waitingTimeElapsed)
         )
-    }
-
-    suspend fun onWaitingEnded() {
-        if (currentState is Waiting) {
-            stateFlow.emit(Done(currentTimeInMillis()))
-        }
     }
 
     sealed class State(val creationTimestamp: Long) {
