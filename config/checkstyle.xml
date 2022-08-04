@@ -10,18 +10,6 @@
 
     <!-- Miscellaneous other checks.                   -->
     <!-- See http://checkstyle.sf.net/config_misc.html -->
-    <module name="RegexpMultiline">
-      <property name="format"
-                value="(\n|\r\n)[\t ]*(\n|\r\n)[\t ]*\}"/>
-      <property name="message" value="Empty line not allowed before brace"/>
-    </module>
-
-    <module name="RegexpMultiline">
-      <property name="format"
-                value="\{[\t ]*(\n|\r\n)[\t ]*(\n|\r\n)"/>
-      <property name="message" value="Empty line not allowed after brace"/>
-    </module>
-
     <module name="RegexpSingleline">
         <property name="format" value="[^\S\r\n]@[\S]*(\([{]?\&quot;.*\&quot;[}]?\)++|\([^\&quot;]*\)++)[^ \t]"/>
         <property name="message" value="In-line annotations must be followed by one whitespace"/>
