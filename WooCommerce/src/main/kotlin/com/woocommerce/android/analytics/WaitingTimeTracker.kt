@@ -98,7 +98,7 @@ class WaitingTimeTracker(
         trackEvent: AnalyticsEvent,
         waitingTimeElapsed: Long
     ) {
-        val waitingTimeElapsedInSeconds = waitingTimeElapsed.toDouble() / 1000
+        val waitingTimeElapsedInSeconds = waitingTimeElapsed.toDouble() / IN_SECONDS
 
         AnalyticsTracker.track(
             trackEvent,
@@ -114,5 +114,6 @@ class WaitingTimeTracker(
 
     companion object {
         const val DEFAULT_WAITING_TIMEOUT = 30000L
+        const val IN_SECONDS = 1000
     }
 }
