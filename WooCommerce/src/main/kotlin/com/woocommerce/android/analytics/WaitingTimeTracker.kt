@@ -1,108 +1,31 @@
 package com.woocommerce.android.analytics
 
-import com.woocommerce.android.analytics.WaitingTimeTracker.State.Done
-import com.woocommerce.android.analytics.WaitingTimeTracker.State.Idle
-import com.woocommerce.android.analytics.WaitingTimeTracker.State.Waiting
-import com.woocommerce.android.di.AppCoroutineScope
-import com.woocommerce.android.util.CoroutineDispatchers
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.cancel
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.collectLatest
-import kotlinx.coroutines.flow.update
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withTimeout
-import javax.inject.Inject
-
 class WaitingTimeTracker(
-    private val coroutineScope: CoroutineScope,
-    private val dispatchers: CoroutineDispatchers,
-    private val currentTimeInMillis: () -> Long = System::currentTimeMillis,
-    private val waitingTimeout: Long = DEFAULT_WAITING_TIMEOUT
+    private val trackEvent: AnalyticsEvent,
+    private val currentTimeInMillis: () -> Long = System::currentTimeMillis
 ) {
+    private var waitingStartTimestamp: Long? = null
 
-    private val _currentState: MutableStateFlow<State> = MutableStateFlow(Idle)
-    val currentState: State get() = _currentState.value
+    private val Long.elapsedWaitingTime
+        get() = (currentTimeInMillis() - this).toDouble() / IN_SECONDS
 
-    private var waitingJob: Job? = null
-
-    /***
-     * Trigger a new waiting job cancelling the previous one if it's still running,
-     * and returns the current state to `Idle` after the waiting expires
-     */
-    suspend fun onWaitingStarted(trackEvent: AnalyticsEvent) {
-        waitingJob?.cancel()
-        _currentState.update { Waiting(currentTimeInMillis()) }
-
-        waitingJob = coroutineScope.launch(dispatchers.computation) {
-            waitForDoneState(trackEvent, currentState.creationTimestamp)
-                .exceptionOrNull()
-                ?.let {
-                    _currentState.update { Idle }
-                    waitingJob = null
-                }
-        }
+    fun onWaitingStarted() {
+        waitingStartTimestamp = currentTimeInMillis()
     }
 
-    /***
-     * Emits to the current state `Done` if it is already waiting
-     * to collect it
-     */
-    suspend fun onWaitingEnded() {
-        if (currentState is Waiting) {
-            _currentState.emit(Done(currentTimeInMillis()))
-        }
-    }
-
-    /***
-     * Start observing the state flow until the timeout expires,
-     * if the `Done` state is emitted, then handle it and immediately cancel
-     * the waiting job.
-     *
-     * Since only possible results for this job is to expire or be canceled,
-     * the operation is wrapped it under a failure result, so the caller can
-     * be notified that the waiting cycle ended.
-     *
-     * Will only submit the elapsed time if it's higher than zero and lower than the expected waiting timeout.
-     */
-    private suspend fun waitForDoneState(
-        trackEvent: AnalyticsEvent,
-        waitingStartedTimestamp: Long
-    ) = runCatching {
-        withTimeout(waitingTimeout) {
-            _currentState.collectLatest {
-                if (it is Done) {
-                    val waitingTimeElapsed = it.creationTimestamp - waitingStartedTimestamp
-                    if (waitingTimeElapsed in 1..waitingTimeout) {
-                        sendWaitingTimeToTracks(trackEvent, waitingTimeElapsed)
-                    }
-                    cancel()
-                }
-            }
-        }
-    }
-
-    private fun sendWaitingTimeToTracks(
-        trackEvent: AnalyticsEvent,
-        waitingTimeElapsed: Long
-    ) {
-        val waitingTimeElapsedInSeconds = waitingTimeElapsed.toDouble() / IN_SECONDS
-
+    fun onWaitingEnded() = waitingStartTimestamp?.elapsedWaitingTime?.let {
         AnalyticsTracker.track(
             trackEvent,
-            mapOf(AnalyticsTracker.KEY_WAITING_TIME to waitingTimeElapsedInSeconds)
+            mapOf(AnalyticsTracker.KEY_WAITING_TIME to it)
         )
+        waitingStartTimestamp = null
     }
 
-    sealed class State(val creationTimestamp: Long) {
-        object Idle : State(0L)
-        class Waiting(creationTimestamp: Long) : State(creationTimestamp)
-        class Done(creationTimestamp: Long) : State(creationTimestamp)
+    fun onWaitingAborted() {
+        waitingStartTimestamp = null
     }
 
     companion object {
-        const val DEFAULT_WAITING_TIMEOUT = 30000L
         const val IN_SECONDS = 1000
     }
 }
