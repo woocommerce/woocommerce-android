@@ -4,7 +4,7 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 
 class CardReaderHubAdapter : RecyclerView.Adapter<CardReaderHubViewHolder>() {
-    private val items = ArrayList<CardReaderHubViewModel.CardReaderHubListItemViewState>()
+    private val items = ArrayList<CardReaderHubViewModel.CardReaderHubViewState.ListItem>()
 
     override fun getItemCount() = items.size
 
@@ -16,7 +16,7 @@ class CardReaderHubAdapter : RecyclerView.Adapter<CardReaderHubViewHolder>() {
         holder.onBind(items[position])
     }
 
-    fun setItems(rows: List<CardReaderHubViewModel.CardReaderHubListItemViewState>) {
+    fun setItems(rows: List<CardReaderHubViewModel.CardReaderHubViewState.ListItem>) {
         items.clear()
         items.addAll(rows)
         notifyDataSetChanged()

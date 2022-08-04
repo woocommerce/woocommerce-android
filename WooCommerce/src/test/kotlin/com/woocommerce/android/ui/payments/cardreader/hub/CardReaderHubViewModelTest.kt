@@ -116,7 +116,7 @@ class CardReaderHubViewModelTest : BaseUnitTest() {
     fun `when user clicks on collect payment, then app navigates to card reader detail screen`() {
         (viewModel.viewStateData.value)?.rows?.find {
             it.label == UiString.UiStringRes(R.string.card_reader_collect_payment)
-        }!!.onItemClicked.invoke()
+        }!!.onClick.invoke()
 
         assertThat(viewModel.event.value)
             .isEqualTo(
@@ -128,7 +128,7 @@ class CardReaderHubViewModelTest : BaseUnitTest() {
     fun `when user clicks on manage card reader, then app navigates to card reader detail screen`() {
         (viewModel.viewStateData.value)?.rows?.find {
             it.label == UiString.UiStringRes(R.string.card_reader_manage_card_reader)
-        }!!.onItemClicked.invoke()
+        }!!.onClick.invoke()
 
         assertThat(viewModel.event.value)
             .isEqualTo(
@@ -144,7 +144,7 @@ class CardReaderHubViewModelTest : BaseUnitTest() {
 
         (viewModel.viewStateData.value)?.rows?.find {
             it.label == UiString.UiStringRes(R.string.card_reader_purchase_card_reader)
-        }!!.onItemClicked.invoke()
+        }!!.onClick.invoke()
 
         assertThat(viewModel.event.value)
             .isEqualTo(
@@ -161,7 +161,7 @@ class CardReaderHubViewModelTest : BaseUnitTest() {
 
         (viewModel.viewStateData.value)?.rows?.find {
             it.label == UiString.UiStringRes(R.string.card_reader_purchase_card_reader)
-        }!!.onItemClicked.invoke()
+        }!!.onClick.invoke()
 
         assertThat(viewModel.event.value)
             .isEqualTo(
@@ -175,7 +175,7 @@ class CardReaderHubViewModelTest : BaseUnitTest() {
     fun `when user clicks on purchase card reader, then app opens external webview with in-person-payments link`() {
         (viewModel.viewStateData.value)?.rows?.find {
             it.label == UiString.UiStringRes(R.string.card_reader_purchase_card_reader)
-        }!!.onItemClicked.invoke()
+        }!!.onClick.invoke()
 
         assertThat(
             (viewModel.event.value as CardReaderHubViewModel.CardReaderHubEvents.NavigateToPurchaseCardReaderFlow).url
@@ -189,7 +189,7 @@ class CardReaderHubViewModelTest : BaseUnitTest() {
 
         (viewModel.viewStateData.value)?.rows?.find {
             it.label == UiString.UiStringRes(R.string.card_reader_purchase_card_reader)
-        }!!.onItemClicked.invoke()
+        }!!.onClick.invoke()
 
         assertThat(
             (viewModel.event.value as CardReaderHubViewModel.CardReaderHubEvents.NavigateToPurchaseCardReaderFlow).url
@@ -203,7 +203,7 @@ class CardReaderHubViewModelTest : BaseUnitTest() {
 
         (viewModel.viewStateData.value)?.rows?.find {
             it.label == UiString.UiStringRes(R.string.card_reader_purchase_card_reader)
-        }!!.onItemClicked.invoke()
+        }!!.onClick.invoke()
 
         assertThat(
             (viewModel.event.value as CardReaderHubViewModel.CardReaderHubEvents.NavigateToPurchaseCardReaderFlow).url
@@ -223,7 +223,7 @@ class CardReaderHubViewModelTest : BaseUnitTest() {
     fun `when user clicks on manuals row, then app navigates to manuals screen`() {
         (viewModel.viewStateData.value)?.rows?.find {
             it.label == UiString.UiStringRes(R.string.settings_card_reader_manuals)
-        }!!.onItemClicked.invoke()
+        }!!.onClick.invoke()
 
         assertThat(viewModel.event.value)
             .isEqualTo(
@@ -283,7 +283,7 @@ class CardReaderHubViewModelTest : BaseUnitTest() {
         initViewModel()
         (viewModel.viewStateData.value)?.rows?.find {
             it.label == UiString.UiStringRes(R.string.card_reader_manage_payment_provider)
-        }!!.onItemClicked.invoke()
+        }!!.onClick.invoke()
 
         assertThat(viewModel.event.value).isEqualTo(
             CardReaderHubViewModel.CardReaderHubEvents.NavigateToCardReaderOnboardingScreen
@@ -304,7 +304,7 @@ class CardReaderHubViewModelTest : BaseUnitTest() {
         initViewModel()
         (viewModel.viewStateData.value)?.rows?.find {
             it.label == UiString.UiStringRes(R.string.card_reader_manage_payment_provider)
-        }!!.onItemClicked.invoke()
+        }!!.onClick.invoke()
 
         verify(appPrefsWrapper).setIsCardReaderPluginExplicitlySelectedFlag(
             anyInt(),
@@ -328,7 +328,7 @@ class CardReaderHubViewModelTest : BaseUnitTest() {
         initViewModel()
         (viewModel.viewStateData.value)?.rows?.find {
             it.label == UiString.UiStringRes(R.string.card_reader_manage_payment_provider)
-        }!!.onItemClicked.invoke()
+        }!!.onClick.invoke()
 
         verify(analyticsTrackerWrapper).track(AnalyticsEvent.SETTINGS_CARD_PRESENT_SELECT_PAYMENT_GATEWAY_TAPPED)
     }
@@ -376,7 +376,7 @@ class CardReaderHubViewModelTest : BaseUnitTest() {
 
             initViewModel()
 
-            assertThat(viewModel.viewStateData.value?.errorText).isEqualTo(
+            assertThat(viewModel.viewStateData.value?.onboardingErrorAction).isEqualTo(
                 UiString.UiStringRes(R.string.card_reader_onboarding_not_finished, containsHtml = true)
             )
         }
@@ -390,7 +390,7 @@ class CardReaderHubViewModelTest : BaseUnitTest() {
 
             initViewModel()
 
-            assertThat(viewModel.viewStateData.value?.errorText).isNull()
+            assertThat(viewModel.viewStateData.value?.onboardingErrorAction).isNull()
         }
 
     @Test

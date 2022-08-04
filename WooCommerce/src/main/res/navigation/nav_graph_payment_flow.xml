@@ -78,7 +78,8 @@
         <action
             android:id="@+id/action_cardReaderOnboardingFragment_to_cardReaderHubFragment"
             app:destination="@id/cardReaderHubFragment"
-            app:popUpTo="@+id/mainSettingsFragment"
+            app:launchSingleTop="true"
+            app:popUpTo="@+id/cardReaderHubFragment"
             app:popUpToInclusive="false" />
         <action
             android:id="@+id/action_cardReaderOnboardingFragment_to_cardReaderConnectDialogFragment"
@@ -102,9 +103,7 @@
             app:destination="@id/cardReaderManualsFragment" />
         <action
             android:id="@+id/action_cardReaderHubFragment_to_cardReaderOnboardingFragment"
-            app:destination="@id/cardReaderOnboardingFragment"
-            app:popUpTo="@+id/cardReaderHubFragment"
-            app:popUpToInclusive="true"/>
+            app:destination="@id/cardReaderOnboardingFragment" />
         <action
             android:id="@+id/action_cardReaderHubFragment_to_simplePayments"
             app:destination="@id/simplePaymentsDialog"
