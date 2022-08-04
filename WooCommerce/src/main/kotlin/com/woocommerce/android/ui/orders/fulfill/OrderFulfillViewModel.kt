@@ -20,8 +20,8 @@ import com.woocommerce.android.model.OrderShipmentTracking
 import com.woocommerce.android.model.getNonRefundedProducts
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.AddOrderShipmentTracking
+import com.woocommerce.android.ui.orders.OrderStatusUpdateSource
 import com.woocommerce.android.ui.orders.details.OrderDetailRepository
-import com.woocommerce.android.ui.orders.details.OrderDetailViewModel
 import com.woocommerce.android.viewmodel.LiveDataDelegate
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
@@ -122,7 +122,7 @@ class OrderFulfillViewModel @Inject constructor(
         if (networkStatus.isConnected()) {
             triggerEvent(
                 ExitWithResult(
-                    data = OrderDetailViewModel.OrderStatusUpdateSource.FullFillScreen(oldStatus = order.status.value),
+                    data = OrderStatusUpdateSource.FullFillScreen(oldStatus = order.status.value),
                     key = KEY_ORDER_FULFILL_RESULT
                 )
             )

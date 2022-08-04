@@ -132,6 +132,7 @@ class OrderListAdapter(
         RecyclerView.ViewHolder(viewBinding.root), SwipeToComplete.SwipeAbleViewHolder {
         private var isNotCompleted = true
         private var orderId = SwipeToComplete.SwipeAbleViewHolder.EMPTY_SWIPED_ID
+        private val extras = HashMap<String, String>()
         fun onBind(orderItemUI: OrderListItemUI) {
             // Grab the current context from the underlying view
             val ctx = this.itemView.context
@@ -156,10 +157,12 @@ class OrderListAdapter(
                     orderItemUI.orderId
                 )
             )
-
+            extras.clear()
             val status = Order.Status.fromValue(orderItemUI.status)
+
             orderId = orderItemUI.orderId
             isNotCompleted = status != Order.Status.Completed
+            extras[SwipeToComplete.OLD_STATUS] = orderItemUI.status
 
             this.itemView.setOnClickListener {
                 listener.openOrderDetail(
@@ -192,6 +195,7 @@ class OrderListAdapter(
 
         override fun isSwipeAble(): Boolean = isNotCompleted
         override fun getSwipedItemId(): Long = orderId
+        override fun getSwipedExtras(): Map<String, String> = extras
     }
 
     private class LoadingViewHolder(view: View) : RecyclerView.ViewHolder(view)

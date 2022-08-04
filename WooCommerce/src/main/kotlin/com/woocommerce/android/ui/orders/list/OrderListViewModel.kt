@@ -3,6 +3,7 @@
 package com.woocommerce.android.ui.orders.list
 
 import android.os.Parcelable
+import android.view.View
 import androidx.annotation.StringRes
 import androidx.annotation.VisibleForTesting
 import androidx.lifecycle.Lifecycle
@@ -15,6 +16,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.map
 import androidx.paging.PagedList
+import com.google.android.material.snackbar.Snackbar
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
@@ -30,6 +32,7 @@ import com.woocommerce.android.network.ConnectionChangeReceiver.ConnectionChange
 import com.woocommerce.android.push.NotificationChannelType
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.ui.orders.OrderStatusUpdateSource
 import com.woocommerce.android.ui.orders.details.OrderDetailRepository
 import com.woocommerce.android.ui.orders.filters.domain.GetSelectedOrderFiltersCount
 import com.woocommerce.android.ui.orders.filters.domain.GetWCOrderListDescriptorWithFilters
@@ -62,6 +65,7 @@ import org.wordpress.android.fluxc.store.WCOrderFetcher
 import org.wordpress.android.fluxc.store.WCOrderStore
 import org.wordpress.android.fluxc.store.WCOrderStore.OnOrderChanged
 import org.wordpress.android.fluxc.store.WCOrderStore.OnOrderSummariesFetched
+import org.wordpress.android.mediapicker.util.filter
 import javax.inject.Inject
 
 private const val EMPTY_VIEW_THROTTLE = 250L
@@ -86,7 +90,7 @@ class OrderListViewModel @Inject constructor(
     private val bannerDisplayEligibilityChecker: BannerDisplayEligibilityChecker,
     private val orderListTransactionLauncher: OrderListTransactionLauncher
 ) : ScopedViewModel(savedState), LifecycleOwner {
-    protected val lifecycleRegistry: LifecycleRegistry by lazy {
+    private val lifecycleRegistry: LifecycleRegistry by lazy {
         LifecycleRegistry(this)
     }
 
@@ -101,7 +105,7 @@ class OrderListViewModel @Inject constructor(
         OrderListItemDataSource(dispatcher, orderStore, networkStatus, fetcher, resourceProvider)
     }
 
-    final val viewStateLiveData = LiveDataDelegate(savedState, ViewState(filterCount = getSelectedOrderFiltersCount()))
+    val viewStateLiveData = LiveDataDelegate(savedState, ViewState(filterCount = getSelectedOrderFiltersCount()))
     internal var viewState by viewStateLiveData
 
     private val _pagedListData = MediatorLiveData<PagedOrdersList>()
@@ -138,6 +142,7 @@ class OrderListViewModel @Inject constructor(
     val isEligibleForInPersonPayments: MutableLiveData<Boolean> = MutableLiveData(false)
 
     var isSearching = false
+    private var dismissListErrors = false
     var searchQuery = ""
 
     init {
@@ -313,10 +318,10 @@ class OrderListViewModel @Inject constructor(
             _isLoadingMore.value = it
         }
 
-        pagedListWrapper.listError.observe(this) {
-            it?.let {
-                triggerEvent(ShowErrorSnack(R.string.orderlist_error_fetch_generic))
-            }
+        pagedListWrapper.listError.filter { error ->
+            !dismissListErrors && error != null
+        }.observe(this) {
+            triggerEvent(ShowErrorSnack(R.string.orderlist_error_fetch_generic))
         }
         this.activePagedListWrapper = pagedListWrapper
 
@@ -504,6 +509,102 @@ class OrderListViewModel @Inject constructor(
         return !canShowCardReaderUpsellBanner(System.currentTimeMillis(), KEY_BANNER_ORDER_LIST)
     }
 
+    private fun updateOrderDisplayedStatus(position: Int, status: String) {
+        val pagedList = _pagedListData.value ?: return
+        (pagedList[position] as OrderListItemUIType.OrderListItemUI).status = status
+        triggerEvent(OrderListEvent.NotifyOrderChanged(position))
+    }
+
+    fun onSwipeStatusUpdate(gestureSource: OrderStatusUpdateSource.SwipeToCompleteGesture) {
+        dismissListErrors = true
+        optimisticUpdateOrderStatus(
+            orderId = gestureSource.orderId,
+            status = gestureSource.newStatus,
+            onOptimisticSuccess = { swipeStatusUpdateOptimisticSuccess(gestureSource) },
+            onFail = { swipeStatusUpdateFails(gestureSource) }
+        )
+    }
+
+    private fun swipeStatusUpdateOptimisticSuccess(gestureSource: OrderStatusUpdateSource.SwipeToCompleteGesture) {
+        val dismissAction = object : Snackbar.Callback() {
+            override fun onDismissed(transientBottomBar: Snackbar?, event: Int) {
+                super.onDismissed(transientBottomBar, event)
+                if (event != DISMISS_EVENT_ACTION && event != DISMISS_EVENT_CONSECUTIVE) {
+                    dismissListErrors = false
+                }
+            }
+        }
+
+        updateOrderDisplayedStatus(gestureSource.orderPosition, gestureSource.newStatus)
+        triggerEvent(
+            Event.ShowUndoSnackbar(
+                message = resourceProvider.getString(
+                    R.string.orderlist_mark_completed_success,
+                    gestureSource.orderId
+                ),
+                undoAction = { undoSwipeStatusUpdate(gestureSource) },
+                dismissAction = dismissAction
+            )
+        )
+    }
+
+    private fun swipeStatusUpdateFails(gestureSource: OrderStatusUpdateSource.SwipeToCompleteGesture) {
+        triggerEvent(OrderListEvent.NotifyOrderChanged(gestureSource.orderPosition))
+        triggerEvent(
+            OrderListEvent.ShowRetryErrorSnack(
+                message = resourceProvider.getString(
+                    R.string.orderlist_updating_order_error,
+                    gestureSource.orderId
+                ),
+                retry = { onSwipeStatusUpdate(gestureSource) }
+            )
+        )
+    }
+
+    private fun undoSwipeStatusUpdate(gestureSource: OrderStatusUpdateSource.SwipeToCompleteGesture) {
+        dismissListErrors = true
+        optimisticUpdateOrderStatus(
+            orderId = gestureSource.orderId,
+            status = gestureSource.oldStatus,
+            onOptimisticSuccess = {
+                updateOrderDisplayedStatus(gestureSource.orderPosition, gestureSource.oldStatus)
+            },
+            onFail = {
+                triggerEvent(OrderListEvent.NotifyOrderChanged(gestureSource.orderPosition))
+                triggerEvent(
+                    OrderListEvent.ShowRetryErrorSnack(
+                        message = resourceProvider.getString(
+                            R.string.orderlist_updating_order_error,
+                            gestureSource.orderId
+                        ),
+                        retry = { undoSwipeStatusUpdate(gestureSource) }
+                    )
+                )
+            },
+            onSuccess = {
+                dismissListErrors = false
+            }
+        )
+    }
+
+    private fun optimisticUpdateOrderStatus(
+        orderId: Long,
+        status: String,
+        onOptimisticSuccess: () -> Unit = {},
+        onFail: () -> Unit = {},
+        onSuccess: () -> Unit = {}
+    ) {
+        launch {
+            orderDetailRepository.updateOrderStatus(orderId, status).collect { result ->
+                when {
+                    result is WCOrderStore.UpdateOrderResult.OptimisticUpdateResult -> onOptimisticSuccess()
+                    result is WCOrderStore.UpdateOrderResult.RemoteUpdateResult && result.event.isError -> onFail()
+                    result is WCOrderStore.UpdateOrderResult.RemoteUpdateResult && !result.event.isError -> onSuccess()
+                }
+            }
+        }
+    }
+
     sealed class OrderListEvent : Event() {
         data class ShowErrorSnack(@StringRes val messageRes: Int) : OrderListEvent()
         object ShowOrderFilters : OrderListEvent()
@@ -511,6 +612,12 @@ class OrderListViewModel @Inject constructor(
         object DismissCardReaderUpsellBannerViaRemindMeLater : OrderListEvent()
         object DismissCardReaderUpsellBannerViaDontShowAgain : OrderListEvent()
         data class OpenPurchaseCardReaderLink(val url: String) : OrderListEvent()
+        data class ShowRetryErrorSnack(
+            val message: String,
+            val retry: View.OnClickListener
+        ) : OrderListEvent()
+
+        data class NotifyOrderChanged(val position: Int) : OrderListEvent()
     }
 
     @Parcelize

@@ -23,6 +23,7 @@ import androidx.navigation.fragment.findNavController
 import androidx.paging.PagedList
 import androidx.recyclerview.widget.ItemTouchHelper
 import com.google.android.material.floatingactionbutton.FloatingActionButton
+import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.transition.MaterialFadeThrough
 import com.woocommerce.android.AppConstants
 import com.woocommerce.android.AppUrls
@@ -47,6 +48,7 @@ import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.ui.feedback.SurveyType
 import com.woocommerce.android.ui.main.MainActivity
 import com.woocommerce.android.ui.main.MainNavigationRouter
+import com.woocommerce.android.ui.orders.OrderStatusUpdateSource
 import com.woocommerce.android.ui.orders.creation.OrderCreateEditViewModel
 import com.woocommerce.android.ui.orders.list.OrderCreationBottomSheetFragment.Companion.KEY_ORDER_CREATION_ACTION_RESULT
 import com.woocommerce.android.ui.orders.list.OrderCreationBottomSheetFragment.OrderCreationAction
@@ -59,6 +61,7 @@ import com.woocommerce.android.ui.payments.banner.OrderListBannerDismissDialog
 import com.woocommerce.android.ui.payments.banner.OrderListScreenBanner
 import com.woocommerce.android.util.ChromeCustomTabUtils
 import com.woocommerce.android.util.CurrencyFormatter
+import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.widgets.WCEmptyView.EmptyViewType
 import dagger.hilt.android.AndroidEntryPoint
 import org.wordpress.android.util.DisplayUtils
@@ -84,6 +87,12 @@ class OrderListFragment :
     @Inject internal lateinit var currencyFormatter: CurrencyFormatter
 
     private val viewModel: OrderListViewModel by viewModels()
+    private var snackBar: Snackbar? = null
+
+    override fun onStop() {
+        snackBar?.dismiss()
+        super.onStop()
+    }
 
     // Alias for interacting with [viewModel.isSearching] so the value is always identical
     // to the real value on the UI side.
@@ -362,6 +371,27 @@ class OrderListFragment :
                 }
                 is OrderListViewModel.OrderListEvent.OpenPurchaseCardReaderLink -> {
                     ChromeCustomTabUtils.launchUrl(requireContext(), event.url)
+                }
+                is OrderListViewModel.OrderListEvent.NotifyOrderChanged -> {
+                    binding.orderListView.ordersList.adapter?.notifyItemChanged(event.position)
+                }
+                is MultiLiveEvent.Event.ShowUndoSnackbar -> {
+                    snackBar = uiMessageResolver.getUndoSnack(
+                        message = event.message,
+                        actionListener = event.undoAction
+                    ).also {
+                        it.addCallback(event.dismissAction)
+                        it.show()
+                    }
+                }
+                is OrderListViewModel.OrderListEvent.ShowRetryErrorSnack -> {
+                    snackBar = uiMessageResolver.getRetrySnack(
+                        message = event.message,
+                        actionListener = event.retry
+                    ).also {
+                        it.show()
+                    }
+                    binding.orderRefreshLayout.isRefreshing = false
                 }
                 else -> event.isHandled = false
             }
@@ -659,7 +689,7 @@ class OrderListFragment :
         ).registerItself()
     }
 
-    override fun onSwiped(itemId: Long) {
-        uiMessageResolver.showSnack("Order $itemId Swiped")
+    override fun onSwiped(gestureSource: OrderStatusUpdateSource.SwipeToCompleteGesture) {
+        viewModel.onSwipeStatusUpdate(gestureSource)
     }
 }

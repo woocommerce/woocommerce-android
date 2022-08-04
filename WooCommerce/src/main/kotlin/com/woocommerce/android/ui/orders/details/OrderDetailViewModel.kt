@@ -57,6 +57,7 @@ import com.woocommerce.android.ui.orders.OrderNavigationTarget.ViewOrderedAddons
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.ViewPrintCustomsForm
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.ViewPrintingInstructions
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.ViewRefundedProducts
+import com.woocommerce.android.ui.orders.OrderStatusUpdateSource
 import com.woocommerce.android.ui.orders.details.customfields.CustomOrderFieldsHelper
 import com.woocommerce.android.ui.payments.cardreader.CardReaderTracker
 import com.woocommerce.android.ui.payments.cardreader.payment.CardReaderPaymentCollectibilityChecker
@@ -396,8 +397,8 @@ class OrderDetailViewModel @Inject constructor(
         )
 
         val snackbarMessage = when (updateSource) {
-            is OrderStatusUpdateSource.Dialog -> string.order_status_updated
             is OrderStatusUpdateSource.FullFillScreen -> string.order_fulfill_completed
+            else -> string.order_status_updated
         }
 
         triggerEvent(
@@ -755,20 +756,6 @@ class OrderDetailViewModel @Inject constructor(
         val isPaymentCollectableWithCardReader: Boolean = false,
         val isReceiptButtonsVisible: Boolean = false
     ) : Parcelable
-
-    sealed class OrderStatusUpdateSource(open val oldStatus: String, open val newStatus: String) : Parcelable {
-        @Parcelize
-        data class FullFillScreen(override val oldStatus: String) : OrderStatusUpdateSource(
-            oldStatus = oldStatus,
-            newStatus = CoreOrderStatus.COMPLETED.value
-        )
-
-        @Parcelize
-        data class Dialog(
-            override val oldStatus: String,
-            override val newStatus: String
-        ) : OrderStatusUpdateSource(oldStatus, newStatus)
-    }
 
     data class ListInfo<T>(val isVisible: Boolean = true, val list: List<T> = emptyList())
 }
