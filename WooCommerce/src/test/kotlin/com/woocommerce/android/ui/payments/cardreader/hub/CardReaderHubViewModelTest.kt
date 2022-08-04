@@ -211,6 +211,22 @@ class CardReaderHubViewModelTest : BaseUnitTest() {
     }
 
     @Test
+    fun `given onboarding check error, when user clicks on text, then onboarding shown`() = testBlocking {
+        whenever(cardReaderChecker.getOnboardingState()).thenReturn(
+            mock<CardReaderOnboardingState.GenericError>()
+        )
+
+        initViewModel()
+
+        viewModel.viewStateData.value?.onboardingErrorAction!!.onClick.invoke()
+
+        assertThat(viewModel.event.value)
+            .isEqualTo(
+                CardReaderHubViewModel.CardReaderHubEvents.NavigateToCardReaderOnboardingScreen
+            )
+    }
+
+    @Test
     fun ` when screen shown, then manuals row is displayed`() {
         assertThat((viewModel.viewStateData.value)?.rows)
             .anyMatch {
@@ -376,7 +392,7 @@ class CardReaderHubViewModelTest : BaseUnitTest() {
 
             initViewModel()
 
-            assertThat(viewModel.viewStateData.value?.onboardingErrorAction).isEqualTo(
+            assertThat(viewModel.viewStateData.value?.onboardingErrorAction?.text).isEqualTo(
                 UiString.UiStringRes(R.string.card_reader_onboarding_not_finished, containsHtml = true)
             )
         }
