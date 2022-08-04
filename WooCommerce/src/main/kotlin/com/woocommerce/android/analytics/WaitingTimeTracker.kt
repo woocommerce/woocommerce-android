@@ -37,12 +37,10 @@ class WaitingTimeTracker(
     private var waitingJob: Job? = null
 
     /***
-     * Trigger a new waiting job if it is not already running,
+     * Trigger a new waiting job cancelling the previous one if it's still running,
      * and returns the current state to `Idle` after the waiting expires
      */
     suspend fun onWaitingStarted(trackEvent: AnalyticsEvent) {
-        if (currentState is Waiting) return
-
         waitingJob?.cancel()
         _currentState.update { Waiting(currentTimeInMillis()) }
 
