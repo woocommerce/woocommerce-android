@@ -6,7 +6,7 @@ import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.CoreOrderStatus
 
 sealed class OrderStatusUpdateSource(open val oldStatus: String, open val newStatus: String) : Parcelable {
     @Parcelize
-    data class SwipeGesture(
+    data class SwipeToCompleteGesture(
         val orderId: Long,
         val orderPosition: Int,
         override val oldStatus: String
