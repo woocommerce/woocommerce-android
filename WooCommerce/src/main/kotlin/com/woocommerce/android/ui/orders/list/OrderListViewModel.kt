@@ -237,7 +237,6 @@ class OrderListViewModel @Inject constructor(
                 }
             }
         }
-        orderListTransactionLauncher.onPaymentGatewayFetched()
     }
 
     /**
@@ -251,7 +250,6 @@ class OrderListViewModel @Inject constructor(
                 else -> { /* do nothing */
                 }
             }
-            orderListTransactionLauncher.onOrderReportsFetched()
         }
     }
 

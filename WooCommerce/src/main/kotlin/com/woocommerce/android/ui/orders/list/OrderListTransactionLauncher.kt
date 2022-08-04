@@ -8,8 +8,6 @@ import com.automattic.android.tracks.crashlogging.performance.TransactionId
 import com.automattic.android.tracks.crashlogging.performance.TransactionOperation
 import com.automattic.android.tracks.crashlogging.performance.TransactionStatus
 import com.woocommerce.android.ui.orders.list.OrderListTransactionLauncher.Conditions.FIRST_LIST_FETCHED
-import com.woocommerce.android.ui.orders.list.OrderListTransactionLauncher.Conditions.ORDER_REPORTS_FETCHED
-import com.woocommerce.android.ui.orders.list.OrderListTransactionLauncher.Conditions.PAYMENT_GATEWAY_FETCHED
 import com.woocommerce.android.util.CoroutineDispatchers
 import dagger.hilt.android.scopes.ViewModelScoped
 import kotlinx.coroutines.CoroutineScope
@@ -46,15 +44,9 @@ class OrderListTransactionLauncher @Inject constructor(
 
     private enum class Conditions {
         FIRST_LIST_FETCHED,
-        PAYMENT_GATEWAY_FETCHED,
-        ORDER_REPORTS_FETCHED,
     }
 
     fun onListFetched() = satisfyCondition(FIRST_LIST_FETCHED)
-
-    fun onPaymentGatewayFetched() = satisfyCondition(PAYMENT_GATEWAY_FETCHED)
-
-    fun onOrderReportsFetched() = satisfyCondition(ORDER_REPORTS_FETCHED)
 
     fun clear() {
         validatorScope.cancel()
