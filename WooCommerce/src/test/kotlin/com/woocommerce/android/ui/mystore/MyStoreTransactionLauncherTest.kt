@@ -1,4 +1,4 @@
-package com.woocommerce.android.ui.orders.list
+package com.woocommerce.android.ui.mystore
 
 import androidx.lifecycle.Lifecycle
 import com.automattic.android.tracks.crashlogging.performance.PerformanceTransactionRepository
@@ -13,15 +13,16 @@ import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.never
 import org.mockito.kotlin.verify
+import org.mockito.kotlin.verifyNoInteractions
 
 @OptIn(ExperimentalCoroutinesApi::class)
-class OrderListTransactionLauncherTest : BaseUnitTest() {
+class MyStoreTransactionLauncherTest : BaseUnitTest() {
     val transactionId = TransactionId("testTransactionId")
     val performanceTransactionRepository: PerformanceTransactionRepository = mock {
         on { startTransaction(any(), any()) } doReturn transactionId
     }
 
-    private val sut = OrderListTransactionLauncher(
+    private val sut = MyStoreTransactionLauncher(
         performanceTransactionRepository,
         coroutinesTestRule.testDispatchers
     )
@@ -30,7 +31,7 @@ class OrderListTransactionLauncherTest : BaseUnitTest() {
     fun `should start transaction on create`() {
         sut.onStateChanged(mock(), Lifecycle.Event.ON_CREATE)
 
-        verify(performanceTransactionRepository).startTransaction("OrderList", TransactionOperation.UI_LOAD)
+        verify(performanceTransactionRepository).startTransaction("MyStore", TransactionOperation.UI_LOAD)
     }
 
     @Test
@@ -45,9 +46,17 @@ class OrderListTransactionLauncherTest : BaseUnitTest() {
     fun `should successfully finish transaction if list fetch condition is met`() {
         sut.onStateChanged(mock(), Lifecycle.Event.ON_CREATE)
 
-        sut.onListFetched()
+        sut.onStoreStatisticsFetched()
+        sut.onTopPerformersFetched()
 
         verify(performanceTransactionRepository).finishTransaction(transactionId, TransactionStatus.SUCCESSFUL)
+    }
+
+    @Test
+    fun `should not finish transaction if not all conditions are met`() {
+        sut.onStoreStatisticsFetched()
+
+        verifyNoInteractions(performanceTransactionRepository)
     }
 
     @Test
@@ -55,7 +64,8 @@ class OrderListTransactionLauncherTest : BaseUnitTest() {
         sut.onStateChanged(mock(), Lifecycle.Event.ON_CREATE)
         sut.onStateChanged(mock(), Lifecycle.Event.ON_STOP)
 
-        sut.onListFetched()
+        sut.onStoreStatisticsFetched()
+        sut.onTopPerformersFetched()
 
         verify(performanceTransactionRepository, never()).finishTransaction(transactionId, TransactionStatus.SUCCESSFUL)
     }
