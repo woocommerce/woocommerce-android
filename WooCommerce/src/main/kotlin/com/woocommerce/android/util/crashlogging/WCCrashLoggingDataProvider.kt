@@ -33,9 +33,10 @@ class WCCrashLoggingDataProvider @Inject constructor(
     private val enqueueSendingEncryptedLogs: EnqueueSendingEncryptedLogs,
     private val uuidGenerator: UuidGenerator,
     @AppCoroutineScope private val appScope: CoroutineScope,
-    dispatcher: Dispatcher,
-    selectedSite: SelectedSite,
+    specifyPerformanceMonitoringConfig: SpecifyPerformanceMonitoringConfig,
     buildConfig: BuildConfigWrapper,
+    selectedSite: SelectedSite,
+    dispatcher: Dispatcher,
 ) : CrashLoggingDataProvider {
     init {
         dispatcher.register(this)
@@ -68,6 +69,8 @@ class WCCrashLoggingDataProvider @Inject constructor(
 
     override val locale: Locale?
         get() = localeProvider.provideLocale()
+
+    override val performanceMonitoringConfig = specifyPerformanceMonitoringConfig()
 
     override val releaseName: String = if (buildConfig.debug) {
         DEBUG_RELEASE_NAME

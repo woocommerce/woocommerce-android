@@ -3,6 +3,7 @@ package com.woocommerce.android.ui.orders.details
 import android.content.Context
 import android.os.Parcelable
 import androidx.annotation.StringRes
+import androidx.lifecycle.LifecycleObserver
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
@@ -98,8 +99,11 @@ class OrderDetailViewModel @Inject constructor(
     private val cardReaderTracker: CardReaderTracker,
     private val trackerWrapper: AnalyticsTrackerWrapper,
     private val shippingLabelOnboardingRepository: ShippingLabelOnboardingRepository,
+    private val orderDetailsTransactionLauncher: OrderDetailsTransactionLauncher,
 ) : ScopedViewModel(savedState), OnProductFetchedListener {
     private val navArgs: OrderDetailFragmentArgs by savedState.navArgs()
+
+    val performanceObserver: LifecycleObserver = orderDetailsTransactionLauncher
 
     var order: Order
         get() = requireNotNull(viewState.orderInfo?.order)
@@ -138,6 +142,7 @@ class OrderDetailViewModel @Inject constructor(
     override fun onCleared() {
         super.onCleared()
         productImageMap.unsubscribeFromOnProductFetchedEvents(this)
+        orderDetailsTransactionLauncher.clear()
     }
 
     init {
@@ -175,6 +180,7 @@ class OrderDetailViewModel @Inject constructor(
                 isOrderDetailSkeletonShown = showSkeleton
             )
             val fetchedOrder = orderDetailRepository.fetchOrderById(navArgs.orderId)
+            orderDetailsTransactionLauncher.onOrderFetched()
             if (fetchedOrder != null) {
                 order = fetchedOrder
                 fetchAndDisplayOrderDetails()
@@ -554,6 +560,7 @@ class OrderDetailViewModel @Inject constructor(
                 triggerEvent(ShowSnackbar(string.order_error_fetch_notes_generic))
             }
             // fetch order notes from the local db and hide the skeleton view
+            orderDetailsTransactionLauncher.onNotesFetched()
             _orderNotes.value = orderDetailRepository.getOrderNotes(navArgs.orderId)
         }
     }
@@ -589,6 +596,7 @@ class OrderDetailViewModel @Inject constructor(
         if (shippingLabelOnboardingRepository.isShippingPluginReady) {
             orderDetailRepository.fetchSLCreationEligibility(order.id)
         }
+        orderDetailsTransactionLauncher.onPackageCreationEligibleFetched()
     }
 
     private fun loadShipmentTracking(shippingLabels: ListInfo<ShippingLabel>): ListInfo<OrderShipmentTracking> {
@@ -602,15 +610,18 @@ class OrderDetailViewModel @Inject constructor(
 
     private fun fetchOrderRefundsAsync() = async {
         orderDetailRepository.fetchOrderRefunds(navArgs.orderId)
+        orderDetailsTransactionLauncher.onRefundsFetched()
     }
 
     private fun fetchShipmentTrackingAsync() = async {
         val result = orderDetailRepository.fetchOrderShipmentTrackingList(navArgs.orderId)
         appPrefs.setTrackingExtensionAvailable(result == SUCCESS)
+        orderDetailsTransactionLauncher.onShipmentTrackingFetched()
     }
 
     private fun fetchOrderShippingLabelsAsync() = async {
         orderDetailRepository.fetchOrderShippingLabels(navArgs.orderId)
+        orderDetailsTransactionLauncher.onShippingLabelFetched()
     }
 
     private fun loadOrderShippingLabels(): ListInfo<ShippingLabel> {

@@ -26,6 +26,7 @@ class FirebaseRemoteConfigRepository @Inject constructor(
         @VisibleForTesting
         const val PROLOGUE_VARIANT_KEY = "prologue_variant"
         private const val SITE_CREDENTIALS_EXPERIMENT_VARIANT_KEY = "site_credentials_emphasis"
+        private const val PERFORMANCE_MONITORING_SAMPLE_RATE_KEY = "wc_android_performance_monitoring_sample_rate"
         private const val DEBUG_INTERVAL = 10L
         private const val RELEASE_INTERVAL = 31200L
     }
@@ -41,7 +42,7 @@ class FirebaseRemoteConfigRepository @Inject constructor(
     private val defaultValues by lazy {
         mapOf(
             PROLOGUE_VARIANT_KEY to PrologueVariant.CONTROL.name,
-            SITE_CREDENTIALS_EXPERIMENT_VARIANT_KEY to SiteLoginVariant.EMAIL_LOGIN.name
+            SITE_CREDENTIALS_EXPERIMENT_VARIANT_KEY to SiteLoginVariant.EMAIL_LOGIN.name,
         )
     }
 
@@ -85,6 +86,9 @@ class FirebaseRemoteConfigRepository @Inject constructor(
                 crashLogging.get().recordException(it)
                 emit(SiteLoginVariant.valueOf(defaultValues[SITE_CREDENTIALS_EXPERIMENT_VARIANT_KEY]!!))
             }
+
+    override fun getPerformanceMonitoringSampleRate(): Double =
+        remoteConfig.getDouble(PERFORMANCE_MONITORING_SAMPLE_RATE_KEY)
 
     private fun observeStringRemoteValue(key: String) = changesTrigger
         .map { remoteConfig.getString(key) }

@@ -1,10 +1,12 @@
 package com.woocommerce.android.util.crashlogging
 
-import android.content.Context
+import android.app.Application
 import android.util.Base64
 import com.automattic.android.tracks.crashlogging.CrashLogging
 import com.automattic.android.tracks.crashlogging.CrashLoggingDataProvider
 import com.automattic.android.tracks.crashlogging.CrashLoggingProvider
+import com.automattic.android.tracks.crashlogging.performance.PerformanceMonitoringRepositoryProvider
+import com.automattic.android.tracks.crashlogging.performance.PerformanceTransactionRepository
 import com.goterl.lazysodium.utils.Key
 import com.woocommerce.android.BuildConfig
 import com.woocommerce.android.di.AppCoroutineScope
@@ -27,7 +29,7 @@ abstract class CrashLoggingModule {
         @Provides
         @Singleton
         fun provideCrashLogging(
-            context: Context,
+            context: Application,
             crashLoggingDataProvider: CrashLoggingDataProvider,
             @AppCoroutineScope appScope: CoroutineScope
         ): CrashLogging {
@@ -42,6 +44,12 @@ abstract class CrashLoggingModule {
         @Provides
         fun provideFluxCCrashLogger(crashLogging: CrashLogging): FluxCCrashLogger {
             return FluxCCrashLoggerImpl(crashLogging)
+        }
+
+        @Provides
+        @Singleton
+        fun providePerformanceTransactionRepository(): PerformanceTransactionRepository {
+            return PerformanceMonitoringRepositoryProvider.createInstance()
         }
     }
 

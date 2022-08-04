@@ -15,7 +15,8 @@ plugins {
 
 sentry {
     tracingInstrumentation {
-        enabled = false
+        enabled = true
+        features = [io.sentry.android.gradle.extensions.InstrumentationFeature.DATABASE]
     }
     autoInstallation {
         enabled = false
@@ -215,7 +216,7 @@ dependencies {
     implementation("com.automattic.tracks:experimentation:trunk-f25f5b5e77df8313f19d47d07e7411256d18df79") {
         exclude group: "org.wordpress", module: "fluxc"
     }
-    implementation 'com.automattic:Automattic-Tracks-Android:trunk-f762190d54ff471d1b004fd336acc066101787e7'
+    implementation 'com.automattic:Automattic-Tracks-Android:trunk-95d0743430d709a8ee1fdc128e726056cfd6bb09'
 
     implementation("${gradle.ext.fluxCBinaryPath}:$fluxCVersion") {
         exclude group: "com.android.support"

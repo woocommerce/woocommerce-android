@@ -13,8 +13,10 @@ import javax.inject.Named
 
 @InstallIn(SingletonComponent::class)
 @Module
-class InterceptorModule {
-    @Provides @IntoSet @Named("network-interceptors")
+class DebugInterceptorModule {
+    @Provides
+    @IntoSet
+    @Named("network-interceptors")
     fun provideNetworkInterceptor(): Interceptor = FlipperOkhttpInterceptor(
         AndroidFlipperClient.getInstanceIfInitialized()?.getPlugin(NetworkFlipperPlugin.ID)
     )

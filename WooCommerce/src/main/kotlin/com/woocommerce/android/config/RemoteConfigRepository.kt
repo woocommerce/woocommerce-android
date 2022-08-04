@@ -8,4 +8,5 @@ interface RemoteConfigRepository {
     fun fetchRemoteConfig()
     fun observePrologueVariant(): Flow<PrologueVariant>
     fun observeSiteLoginVariant(): Flow<SiteLoginVariant>
+    fun getPerformanceMonitoringSampleRate(): Double
 }
