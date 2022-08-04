@@ -10,6 +10,7 @@ import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
 import org.mockito.kotlin.mock
+import kotlin.test.assertEquals
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class WaitingTimeTrackerTest : BaseUnitTest() {
@@ -42,6 +43,28 @@ class WaitingTimeTrackerTest : BaseUnitTest() {
             delay(100)
             assertTrue(sut.currentState is Idle)
         }
+
+    @Test
+    fun `When starting a new waiting process on top of a running one, discard the previous`() =
+        testBlocking {
+            var timeInMillisCallCounter = 0
+            createSut(
+                customTimeInMillis = {
+                    timeInMillisCallCounter++
+                    if (timeInMillisCallCounter == 1)  1
+                    else 2
+                },
+                customWaitingTimeout = 10L
+            )
+
+            sut.onWaitingStarted(mock())
+            assertTrue(sut.currentState is Waiting)
+            assertEquals(sut.currentState.creationTimestamp, 1)
+
+            sut.onWaitingStarted(mock())
+            assertTrue(sut.currentState is Waiting)
+            assertEquals(sut.currentState.creationTimestamp, 2)
+    }
 
     @Test
     fun `When ending the waiting without starting it, then do nothing`() = testBlocking {
