@@ -520,7 +520,7 @@ class OrderListViewModel @Inject constructor(
     }
 
     fun shouldDisplaySimplePaymentsWIPCard(): Boolean {
-        return !canShowCardReaderUpsellBanner(System.currentTimeMillis(), KEY_BANNER_ORDER_LIST)
+        return !canShowCardReaderUpsellBanner(System.currentTimeMillis(), AnalyticsTracker.KEY_BANNER_ORDER_LIST)
     }
 
     private fun updateOrderDisplayedStatus(position: Int, status: String) {
