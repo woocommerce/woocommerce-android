@@ -646,6 +646,11 @@ enum class AnalyticsEvent(val siteless: Boolean = false) {
     LOGIN_ONBOARDING_SURVEY_SUBMITTED,
     LOGIN_ONBOARDING_SURVEY_SHOWN,
 
+    // Woo Installation
+    LOGIN_WOOCOMMERCE_SETUP_BUTTON_TAPPED,
+    LOGIN_WOOCOMMERCE_SETUP_DISMISSED,
+    LOGIN_WOOCOMMERCE_SETUP_COMPLETED,
+
     // Login help scheduled notifications
     LOGIN_LOCAL_NOTIFICATION_SCHEDULED(siteless = true),
     LOGIN_LOCAL_NOTIFICATION_DISPLAYED(siteless = true),
