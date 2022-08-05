@@ -46,6 +46,7 @@ import com.woocommerce.android.ui.login.localnotifications.LoginNotificationSche
 import com.woocommerce.android.ui.login.localnotifications.LoginNotificationScheduler.LoginHelpNotificationType.LOGIN_SITE_ADDRESS_ERROR
 import com.woocommerce.android.ui.login.localnotifications.LoginNotificationScheduler.LoginHelpNotificationType.LOGIN_WPCOM_EMAIL_ERROR
 import com.woocommerce.android.ui.login.overrides.WooLoginEmailFragment
+import com.woocommerce.android.ui.login.overrides.WooLoginEmailPasswordFragment
 import com.woocommerce.android.ui.login.overrides.WooLoginSiteAddressFragment
 import com.woocommerce.android.ui.main.MainActivity
 import com.woocommerce.android.util.ActivityUtils
@@ -394,9 +395,9 @@ class LoginActivity :
     }
 
     private fun showEmailPasswordScreen(email: String?, verifyEmail: Boolean, allowMagicLink: Boolean) {
-        val loginEmailPasswordFragment = LoginEmailPasswordFragment
-            .newInstance(email, null, null, null, false, allowMagicLink, verifyEmail)
-        changeFragment(loginEmailPasswordFragment, true, LoginEmailPasswordFragment.TAG)
+        val loginEmailPasswordFragment = WooLoginEmailPasswordFragment
+            .newInstance(email, null, null, null, false, verifyEmail)
+        changeFragment(loginEmailPasswordFragment, true, WooLoginEmailPasswordFragment.TAG)
     }
 
     private fun showMagicLinkRequestScreen(
