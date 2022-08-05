@@ -87,6 +87,7 @@ object AppPrefs {
         PRODUCT_SORTING_PREFIX,
         PRE_LOGIN_NOTIFICATION_WORK_REQUEST,
         PRE_LOGIN_NOTIFICATION_DISPLAYED,
+        PRE_LOGIN_NOTIFICATION_DISPLAYED_TYPE,
         CARD_READER_UPSELL_BANNER_DIALOG_DISMISSED_FOREVER,
         CARD_READER_UPSELL_BANNER_DIALOG_DISMISSED_REMIND_ME_LATER,
     }
@@ -779,6 +780,12 @@ object AppPrefs {
 
     fun setLocalNotificationWorkRequestId(workRequestId: String) {
         setString(DeletablePrefKey.PRE_LOGIN_NOTIFICATION_WORK_REQUEST, workRequestId)
+    }
+
+    fun getPreLoginNotificationDisplayedType() = getString(DeletablePrefKey.PRE_LOGIN_NOTIFICATION_DISPLAYED_TYPE)
+
+    fun setPreLoginNotificationDisplayedType(notificationType: String) {
+        setString(DeletablePrefKey.PRE_LOGIN_NOTIFICATION_DISPLAYED_TYPE, notificationType)
     }
 
     fun setPreLoginNotificationDisplayed(displayed: Boolean) {
