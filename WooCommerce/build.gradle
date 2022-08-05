@@ -419,7 +419,6 @@ tasks.register("violationCommentsToGitHub", ViolationCommentsToGitHubTask) {
 {{violation.message}}
 """
     violations = [
-            ["CHECKSTYLE", ".", ".*/build/.*/checkstyle/.*\\.xml\$", "CheckStyle"],
             ["CHECKSTYLE", ".", ".*/build/.*/detekt/.*\\.xml\$", "Detekt"]
     ]
 }

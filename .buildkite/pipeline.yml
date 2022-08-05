@@ -5,15 +5,6 @@ common_params:
     - automattic/bash-cache#2.5.0
 
 steps:
-  - label: "checkstyle"
-    command: |
-      echo "--- 🧹 Linting"
-      cp -v gradle.properties-example gradle.properties
-      ./gradlew checkstyle
-    plugins: *common_plugins
-    artifact_paths:
-      - "**/build/reports/checkstyle/checkstyle.*"
-
   - label: "detekt"
     command: |
       echo "--- 🧹 Linting"
