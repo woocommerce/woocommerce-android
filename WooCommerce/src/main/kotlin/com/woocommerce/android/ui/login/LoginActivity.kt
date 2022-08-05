@@ -42,7 +42,9 @@ import com.woocommerce.android.ui.login.localnotifications.LoginNotificationSche
 import com.woocommerce.android.ui.login.localnotifications.LoginNotificationScheduler.LoginHelpNotificationType.LOGIN_SITE_ADDRESS_EMAIL_ERROR
 import com.woocommerce.android.ui.login.localnotifications.LoginNotificationScheduler.LoginHelpNotificationType.LOGIN_SITE_ADDRESS_ERROR
 import com.woocommerce.android.ui.login.localnotifications.LoginNotificationScheduler.LoginHelpNotificationType.LOGIN_WPCOM_EMAIL_ERROR
+import com.woocommerce.android.ui.login.localnotifications.LoginNotificationScheduler.LoginHelpNotificationType.LOGIN_WPCOM_PASSWORD_ERROR
 import com.woocommerce.android.ui.login.overrides.WooLoginEmailFragment
+import com.woocommerce.android.ui.login.overrides.WooLoginEmailPasswordFragment
 import com.woocommerce.android.ui.login.overrides.WooLoginSiteAddressFragment
 import com.woocommerce.android.ui.main.MainActivity
 import com.woocommerce.android.util.ActivityUtils
@@ -91,7 +93,8 @@ class LoginActivity :
     HasAndroidInjector,
     LoginNoJetpackListener,
     LoginEmailHelpDialogFragment.Listener,
-    WooLoginEmailFragment.Listener {
+    WooLoginEmailFragment.Listener,
+    WooLoginEmailPasswordFragment.Listener {
     companion object {
         private const val FORGOT_PASSWORD_URL_SUFFIX = "wp-login.php?action=lostpassword"
         private const val MAGIC_LOGIN = "magic-login"
@@ -378,7 +381,7 @@ class LoginActivity :
     }
 
     private fun showEmailPasswordScreen(email: String?, verifyEmail: Boolean, allowMagicLink: Boolean) {
-        val loginEmailPasswordFragment = LoginEmailPasswordFragment
+        val loginEmailPasswordFragment = WooLoginEmailPasswordFragment
             .newInstance(email, null, null, null, false, allowMagicLink, verifyEmail)
         slideInFragment(loginEmailPasswordFragment, true, LoginEmailPasswordFragment.TAG)
     }
@@ -414,7 +417,7 @@ class LoginActivity :
         service: String?,
         isPasswordRequired: Boolean
     ) {
-        val loginEmailPasswordFragment = LoginEmailPasswordFragment.newInstance(
+        val loginEmailPasswordFragment = WooLoginEmailPasswordFragment.newInstance(
             email, null, idToken,
             service, isPasswordRequired
         )
@@ -446,7 +449,7 @@ class LoginActivity :
 
     override fun usePasswordInstead(email: String?) {
         loginAnalyticsListener.trackLoginMagicLinkExited()
-        val loginEmailPasswordFragment = LoginEmailPasswordFragment.newInstance(email, null, null, null, false)
+        val loginEmailPasswordFragment = WooLoginEmailPasswordFragment.newInstance(email, null, null, null, false)
         slideInFragment(loginEmailPasswordFragment, true, LoginEmailPasswordFragment.TAG)
     }
 
@@ -846,6 +849,10 @@ class LoginActivity :
 
     override fun onCarouselFinished() {
         showPrologueFragment()
+    }
+
+    override fun onPasswordError() {
+        loginNotificationScheduler.scheduleNotification(LOGIN_WPCOM_PASSWORD_ERROR)
     }
 
     @SuppressWarnings("unused")

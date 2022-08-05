@@ -22,7 +22,9 @@ import com.woocommerce.android.ui.login.localnotifications.LoginNotificationSche
 import com.woocommerce.android.ui.login.localnotifications.LoginNotificationScheduler.LoginHelpNotificationType.DEFAULT_HELP
 import com.woocommerce.android.ui.login.localnotifications.LoginNotificationScheduler.LoginHelpNotificationType.LOGIN_SITE_ADDRESS_EMAIL_ERROR
 import com.woocommerce.android.ui.login.localnotifications.LoginNotificationScheduler.LoginHelpNotificationType.LOGIN_SITE_ADDRESS_ERROR
+import com.woocommerce.android.ui.login.localnotifications.LoginNotificationScheduler.LoginHelpNotificationType.LOGIN_SITE_ADDRESS_PASSWORD_ERROR
 import com.woocommerce.android.ui.login.localnotifications.LoginNotificationScheduler.LoginHelpNotificationType.LOGIN_WPCOM_EMAIL_ERROR
+import com.woocommerce.android.ui.login.localnotifications.LoginNotificationScheduler.LoginHelpNotificationType.LOGIN_WPCOM_PASSWORD_ERROR
 import com.woocommerce.android.viewmodel.ResourceProvider
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
@@ -40,10 +42,12 @@ class LoginHelpNotificationWorker @AssistedInject constructor(
             inputData.getString(LOGIN_NOTIFICATION_TYPE_KEY)
         )
         when (notificationType) {
-            DEFAULT_HELP -> defaultLoginSupportNotification()
             LOGIN_SITE_ADDRESS_ERROR -> siteAddressErrorNotification()
             LOGIN_SITE_ADDRESS_EMAIL_ERROR,
             LOGIN_WPCOM_EMAIL_ERROR -> invalidEmailErrorNotification(notificationType)
+            LOGIN_SITE_ADDRESS_PASSWORD_ERROR,
+            LOGIN_WPCOM_PASSWORD_ERROR -> invalidPasswordErrorNotification(notificationType)
+            DEFAULT_HELP -> defaultLoginSupportNotification()
         }
         AnalyticsTracker.track(
             LOGIN_LOCAL_NOTIFICATION_DISPLAYED,
@@ -84,6 +88,12 @@ class LoginHelpNotificationWorker @AssistedInject constructor(
     }
 
     private fun invalidEmailErrorNotification(notificationType: LoginHelpNotificationType) {
+        defaultLoginSupportNotification(
+            notificationType, getActionsForInvalidEmailErrorNotification(notificationType)
+        )
+    }
+
+    private fun invalidPasswordErrorNotification(notificationType: LoginHelpNotificationType) {
         defaultLoginSupportNotification(
             notificationType, getActionsForInvalidEmailErrorNotification(notificationType)
         )
