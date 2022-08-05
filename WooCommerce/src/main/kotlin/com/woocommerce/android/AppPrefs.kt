@@ -31,6 +31,7 @@ import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.payments.cardreader.onboarding.PersistentOnboardingData
 import com.woocommerce.android.ui.payments.cardreader.onboarding.PluginType
 import com.woocommerce.android.ui.products.ProductType
+import com.woocommerce.android.ui.promobanner.PromoBannerType
 import com.woocommerce.android.util.PreferenceUtils
 import com.woocommerce.android.util.ThemeOption
 import com.woocommerce.android.util.ThemeOption.DEFAULT
@@ -86,6 +87,7 @@ object AppPrefs {
         PRODUCT_SORTING_PREFIX,
         PRE_LOGIN_NOTIFICATION_WORK_REQUEST,
         PRE_LOGIN_NOTIFICATION_DISPLAYED,
+        PRE_LOGIN_NOTIFICATION_DISPLAYED_TYPE,
         CARD_READER_UPSELL_BANNER_DIALOG_DISMISSED_FOREVER,
         CARD_READER_UPSELL_BANNER_DIALOG_DISMISSED_REMIND_ME_LATER,
     }
@@ -355,6 +357,17 @@ object AppPrefs {
 
     private fun getReceiptKey(localSiteId: Int, remoteSiteId: Long, selfHostedSiteId: Long, orderId: Long) =
         PrefKeyString("$RECEIPT_PREFIX:$localSiteId:$remoteSiteId:$selfHostedSiteId:$orderId")
+
+    private fun getPromoBannerKey(bannerType: PromoBannerType) =
+        PrefKeyString("PROMO_BANNER_SHOWN_${bannerType.name}")
+
+    fun isPromoBannerShown(bannerType: PromoBannerType): Boolean {
+        return getBoolean(getPromoBannerKey(bannerType), false)
+    }
+
+    fun setPromoBannerShown(bannerType: PromoBannerType, shown: Boolean) {
+        setBoolean(getPromoBannerKey(bannerType), shown)
+    }
 
     fun setLastConnectedCardReaderId(readerId: String) =
         setString(UndeletablePrefKey.LAST_CONNECTED_CARD_READER_ID, readerId)
@@ -767,6 +780,12 @@ object AppPrefs {
 
     fun setLocalNotificationWorkRequestId(workRequestId: String) {
         setString(DeletablePrefKey.PRE_LOGIN_NOTIFICATION_WORK_REQUEST, workRequestId)
+    }
+
+    fun getPreLoginNotificationDisplayedType() = getString(DeletablePrefKey.PRE_LOGIN_NOTIFICATION_DISPLAYED_TYPE)
+
+    fun setPreLoginNotificationDisplayedType(notificationType: String) {
+        setString(DeletablePrefKey.PRE_LOGIN_NOTIFICATION_DISPLAYED_TYPE, notificationType)
     }
 
     fun setPreLoginNotificationDisplayed(displayed: Boolean) {

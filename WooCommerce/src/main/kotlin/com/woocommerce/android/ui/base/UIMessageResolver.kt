@@ -149,6 +149,24 @@ interface UIMessageResolver {
     }
 
     /**
+     * Create and return a snackbar displaying the provided message and a RETRY button.
+     *
+     * @param [message] The message string
+     * @param [actionListener] Listener to handle the retry button click event
+     */
+    fun getRetrySnack(
+        message: String,
+        actionListener: View.OnClickListener
+    ): Snackbar {
+        return getIndefiniteSnackbarWithAction(
+            snackbarRoot,
+            message,
+            snackbarRoot.context.getString(R.string.retry),
+            actionListener
+        )
+    }
+
+    /**
      * Create and return a snackbar with the provided message.
      *
      * @param [stringResId] The string resource id of the base message

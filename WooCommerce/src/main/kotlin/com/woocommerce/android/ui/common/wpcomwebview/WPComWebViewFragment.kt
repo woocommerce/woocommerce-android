@@ -11,6 +11,7 @@ import com.woocommerce.android.R
 import com.woocommerce.android.databinding.FragmentWpcomWebviewBinding
 import com.woocommerce.android.extensions.navigateBackWithNotice
 import com.woocommerce.android.ui.base.BaseFragment
+import com.woocommerce.android.ui.main.MainActivity.Companion.BackPressListener
 import com.woocommerce.android.util.WooLog
 import dagger.hilt.android.AndroidEntryPoint
 import org.wordpress.android.fluxc.network.UserAgent
@@ -30,9 +31,10 @@ private const val WPCOM_LOGIN_URL = "https://wordpress.com/wp-login.php"
  * urlToTriggerExit: optional URL or part of URL to trigger exit with notice when loaded.
  */
 @AndroidEntryPoint
-class WPComWebViewFragment : BaseFragment(R.layout.fragment_wpcom_webview), UrlInterceptor {
+class WPComWebViewFragment : BaseFragment(R.layout.fragment_wpcom_webview), UrlInterceptor, BackPressListener {
     companion object {
         const val WEBVIEW_RESULT = "webview-result"
+        const val WEBVIEW_DISMISSED = "webview-dismissed"
     }
 
     private val webViewClient by lazy { WPComWebViewClient(this) }
@@ -97,5 +99,10 @@ class WPComWebViewFragment : BaseFragment(R.layout.fragment_wpcom_webview), UrlI
             WooLog.e(WooLog.T.UTILS, e)
         }
         return ""
+    }
+
+    override fun onRequestAllowBackPress(): Boolean {
+        navigateBackWithNotice(WEBVIEW_DISMISSED)
+        return false
     }
 }

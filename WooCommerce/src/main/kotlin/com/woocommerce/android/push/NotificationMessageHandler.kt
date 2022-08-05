@@ -4,7 +4,7 @@ import android.content.Context
 import android.os.Build
 import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.R
-import com.woocommerce.android.analytics.AnalyticsEvent
+import com.woocommerce.android.analytics.AnalyticsEvent.LOGIN_LOCAL_NOTIFICATION_DISMISSED
 import com.woocommerce.android.analytics.AnalyticsEvent.PUSH_NOTIFICATION_RECEIVED
 import com.woocommerce.android.analytics.AnalyticsEvent.PUSH_NOTIFICATION_TAPPED
 import com.woocommerce.android.analytics.AnalyticsTracker
@@ -65,8 +65,16 @@ class NotificationMessageHandler @Inject constructor(
     fun onNotificationDismissed(localPushId: Int) {
         removeNotificationByPushIdFromSystemsBar(localPushId)
         if (localPushId == LOGIN_HELP_NOTIFICATION_ID) {
-            AnalyticsTracker.track(AnalyticsEvent.LOGIN_LOCAL_NOTIFICATION_DISMISSED)
+            onLocalNotificationDismissed()
         }
+    }
+
+    private fun onLocalNotificationDismissed() {
+        val notificationTypeName = appPrefsWrapper.getPreLoginNotificationDisplayedType()
+        AnalyticsTracker.track(
+            stat = LOGIN_LOCAL_NOTIFICATION_DISMISSED,
+            properties = mapOf(AnalyticsTracker.KEY_TYPE to notificationTypeName)
+        )
     }
 
     @Suppress("ReturnCount", "ComplexMethod")

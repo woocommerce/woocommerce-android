@@ -20,7 +20,11 @@ class WelcomeScreen : Screen {
 
             Thread.sleep(1000)
 
-            return WelcomeScreen()
+            return if (isElementDisplayed(CarouselScreen.SKIP_BUTTON)) {
+                CarouselScreen().skip()
+            } else {
+                WelcomeScreen()
+            }
         }
     }
 

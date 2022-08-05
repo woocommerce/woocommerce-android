@@ -25,7 +25,6 @@ import com.woocommerce.android.ui.orders.details.OrderDetailFragmentArgs
 import com.woocommerce.android.ui.orders.details.OrderDetailRepository
 import com.woocommerce.android.ui.orders.details.OrderDetailViewModel
 import com.woocommerce.android.ui.orders.details.OrderDetailViewModel.OrderInfo
-import com.woocommerce.android.ui.orders.details.OrderDetailViewModel.OrderStatusUpdateSource
 import com.woocommerce.android.ui.orders.details.OrderDetailViewModel.ViewState
 import com.woocommerce.android.ui.orders.details.ShippingLabelOnboardingRepository
 import com.woocommerce.android.ui.payments.cardreader.CardReaderTracker
@@ -156,7 +155,8 @@ class OrderDetailViewModelTest : BaseUnitTest() {
                 paymentCollectibilityChecker,
                 cardReaderTracker,
                 analyticsTraWrapper,
-                shippingLabelOnboardingRepository
+                shippingLabelOnboardingRepository,
+                mock()
             )
         )
 

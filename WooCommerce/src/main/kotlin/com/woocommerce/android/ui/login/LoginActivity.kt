@@ -23,6 +23,7 @@ import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_SOURCE
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_JETPACK_INSTALLATION_SOURCE_WEB
 import com.woocommerce.android.analytics.ExperimentTracker
 import com.woocommerce.android.databinding.ActivityLoginBinding
+import com.woocommerce.android.experiment.PrologueExperiment
 import com.woocommerce.android.experiment.SiteLoginExperiment
 import com.woocommerce.android.support.HelpActivity
 import com.woocommerce.android.support.HelpActivity.Origin
@@ -30,6 +31,7 @@ import com.woocommerce.android.support.ZendeskExtraTags
 import com.woocommerce.android.support.ZendeskHelper
 import com.woocommerce.android.ui.login.LoginPrologueCarouselFragment.PrologueCarouselListener
 import com.woocommerce.android.ui.login.LoginPrologueFragment.PrologueFinishedListener
+import com.woocommerce.android.ui.login.LoginPrologueSurveyFragment.PrologueSurveyListener
 import com.woocommerce.android.ui.login.UnifiedLoginTracker.Click
 import com.woocommerce.android.ui.login.UnifiedLoginTracker.Flow
 import com.woocommerce.android.ui.login.UnifiedLoginTracker.Flow.LOGIN_SITE_ADDRESS
@@ -39,6 +41,9 @@ import com.woocommerce.android.ui.login.localnotifications.LoginNotificationSche
 import com.woocommerce.android.ui.login.localnotifications.LoginNotificationScheduler.Companion.LOGIN_HELP_NOTIFICATION_ID
 import com.woocommerce.android.ui.login.localnotifications.LoginNotificationScheduler.Companion.LOGIN_HELP_NOTIFICATION_TAG
 import com.woocommerce.android.ui.login.localnotifications.LoginNotificationScheduler.LoginHelpNotificationType
+import com.woocommerce.android.ui.login.localnotifications.LoginNotificationScheduler.LoginHelpNotificationType.LOGIN_SITE_ADDRESS_EMAIL_ERROR
+import com.woocommerce.android.ui.login.localnotifications.LoginNotificationScheduler.LoginHelpNotificationType.LOGIN_SITE_ADDRESS_ERROR
+import com.woocommerce.android.ui.login.localnotifications.LoginNotificationScheduler.LoginHelpNotificationType.LOGIN_WPCOM_EMAIL_ERROR
 import com.woocommerce.android.ui.login.overrides.WooLoginEmailFragment
 import com.woocommerce.android.ui.login.overrides.WooLoginSiteAddressFragment
 import com.woocommerce.android.ui.main.MainActivity
@@ -55,6 +60,8 @@ import org.greenrobot.eventbus.ThreadMode.MAIN
 import org.wordpress.android.fluxc.Dispatcher
 import org.wordpress.android.fluxc.network.MemorizingTrustManager
 import org.wordpress.android.fluxc.store.AccountStore.AuthEmailPayloadScheme.WOOCOMMERCE
+import org.wordpress.android.fluxc.store.AccountStore.AuthOptionsErrorType.UNKNOWN_USER
+import org.wordpress.android.fluxc.store.AccountStore.OnAuthOptionsFetched
 import org.wordpress.android.fluxc.store.SiteStore
 import org.wordpress.android.fluxc.store.SiteStore.ConnectSiteInfoPayload
 import org.wordpress.android.fluxc.store.SiteStore.OnConnectSiteInfoChecked
@@ -86,7 +93,8 @@ class LoginActivity :
     HasAndroidInjector,
     LoginNoJetpackListener,
     LoginEmailHelpDialogFragment.Listener,
-    WooLoginEmailFragment.Listener {
+    WooLoginEmailFragment.Listener,
+    PrologueSurveyListener {
     companion object {
         private const val FORGOT_PASSWORD_URL_SUFFIX = "wp-login.php?action=lostpassword"
         private const val MAGIC_LOGIN = "magic-login"
@@ -100,7 +108,7 @@ class LoginActivity :
 
         fun createIntent(
             context: Context,
-            notificationType: LoginHelpNotificationType
+            notificationType: LoginHelpNotificationType,
         ): Intent {
             val intent = Intent(context, LoginActivity::class.java)
             intent.apply {
@@ -121,7 +129,9 @@ class LoginActivity :
     @Inject internal lateinit var appPrefsWrapper: AppPrefsWrapper
     @Inject internal lateinit var dispatcher: Dispatcher
     @Inject internal lateinit var loginNotificationScheduler: LoginNotificationScheduler
+
     @Inject internal lateinit var siteLoginExperiment: SiteLoginExperiment
+    @Inject internal lateinit var prologueExperiment: PrologueExperiment
 
     private var loginMode: LoginMode? = null
     private var isSiteOnWPcom: Boolean? = null
@@ -199,8 +209,6 @@ class LoginActivity :
             .replace(R.id.fragment_container, fragment, LoginPrologueCarouselFragment.TAG)
             .addToBackStack(LoginPrologueCarouselFragment.TAG)
             .commitAllowingStateLoss()
-
-        experimentTracker.log(ExperimentTracker.PROLOGUE_CAROUSEL_DISPLAYED_EVENT)
     }
 
     private fun showPrologue() {
@@ -248,7 +256,7 @@ class LoginActivity :
         )
         fragmentTransaction.replace(R.id.fragment_container, fragment, tag)
         if (shouldAddToBackStack) {
-            fragmentTransaction.addToBackStack(null)
+            fragmentTransaction.addToBackStack(tag)
         }
         fragmentTransaction.commitAllowingStateLoss()
     }
@@ -276,6 +284,9 @@ class LoginActivity :
 
     private fun getPrologueFragment(): LoginPrologueFragment? =
         supportFragmentManager.findFragmentByTag(LoginPrologueFragment.TAG) as? LoginPrologueFragment
+
+    private fun getPrologueSurveyFragment(): LoginPrologueSurveyFragment? =
+        supportFragmentManager.findFragmentByTag(LoginPrologueSurveyFragment.TAG) as? LoginPrologueSurveyFragment
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         if (item.itemId == android.R.id.home) {
@@ -331,7 +342,7 @@ class LoginActivity :
     }
 
     private fun showMainActivityAndFinish() {
-        siteLoginExperiment.trackSuccess()
+        experimentTracker.log(ExperimentTracker.LOGIN_SUCCESSFUL_EVENT)
         loginNotificationScheduler.onLoginSuccess()
 
         val intent = Intent(this, MainActivity::class.java)
@@ -401,6 +412,11 @@ class LoginActivity :
     private fun showPrologueFragment() {
         val prologueFragment = getPrologueFragment() ?: LoginPrologueFragment()
         slideInFragment(prologueFragment, true, LoginPrologueFragment.TAG)
+    }
+
+    private fun showPrologueSurveyFragment() {
+        val prologueSurveyFragment = getPrologueSurveyFragment() ?: LoginPrologueSurveyFragment()
+        slideInFragment(prologueSurveyFragment, true, LoginPrologueSurveyFragment.TAG)
     }
 
     override fun loginViaSocialAccount(
@@ -724,7 +740,8 @@ class LoginActivity :
         AnalyticsTracker.track(AnalyticsEvent.LOGIN_BY_EMAIL_HELP_FINDING_CONNECTED_EMAIL_LINK_TAPPED)
         unifiedLoginTracker.trackClick(Click.HELP_FINDING_CONNECTED_EMAIL)
 
-        LoginEmailHelpDialogFragment().show(supportFragmentManager, LoginEmailHelpDialogFragment.TAG)
+        LoginEmailHelpDialogFragment.newInstance(this)
+            .show(supportFragmentManager, LoginEmailHelpDialogFragment.TAG)
     }
 
     override fun onEmailNeedMoreHelpClicked() {
@@ -823,7 +840,7 @@ class LoginActivity :
                 shouldAddToBackStack = true,
                 tag = LoginSiteCheckErrorFragment.TAG
             )
-            loginNotificationScheduler.scheduleNotification(LoginHelpNotificationType.LOGIN_SITE_ADDRESS_ERROR)
+            loginNotificationScheduler.scheduleNotification(LOGIN_SITE_ADDRESS_ERROR)
         } else {
             // Just in case we use this method for a different scenario in the future
             TODO("Handle a new error scenario")
@@ -839,6 +856,12 @@ class LoginActivity :
         intent.extras?.getString(KEY_LOGIN_HELP_NOTIFICATION)
 
     override fun onCarouselFinished() {
+        lifecycleScope.launchWhenStarted {
+            prologueExperiment.run(::showPrologueFragment, ::showPrologueSurveyFragment)
+        }
+    }
+
+    override fun onSurveyFinished() {
         showPrologueFragment()
     }
 
@@ -846,5 +869,17 @@ class LoginActivity :
     @Subscribe(threadMode = MAIN)
     fun onFetchedConnectSiteInfo(event: OnConnectSiteInfoChecked) {
         isSiteOnWPcom = event.info.isWPCom
+    }
+
+    @SuppressWarnings("unused")
+    @Subscribe(threadMode = MAIN)
+    fun onAuthOptionsFetched(event: OnAuthOptionsFetched) {
+        if (event.error?.type == UNKNOWN_USER) {
+            val notificationType = when {
+                !appPrefsWrapper.getLoginSiteAddress().isNullOrBlank() -> LOGIN_SITE_ADDRESS_EMAIL_ERROR
+                else -> LOGIN_WPCOM_EMAIL_ERROR
+            }
+            loginNotificationScheduler.scheduleNotification(notificationType)
+        }
     }
 }

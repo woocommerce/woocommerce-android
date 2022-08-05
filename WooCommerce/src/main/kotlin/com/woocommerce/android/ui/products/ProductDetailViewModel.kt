@@ -9,10 +9,11 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
-import com.woocommerce.android.AppPrefs
+import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_HAS_LINKED_PRODUCTS
 import com.woocommerce.android.extensions.addNewItem
 import com.woocommerce.android.extensions.clearList
 import com.woocommerce.android.extensions.containsItem
@@ -47,8 +48,10 @@ import com.woocommerce.android.ui.products.settings.ProductCatalogVisibility
 import com.woocommerce.android.ui.products.settings.ProductVisibility
 import com.woocommerce.android.ui.products.tags.ProductTagsRepository
 import com.woocommerce.android.ui.products.variations.VariationRepository
+import com.woocommerce.android.ui.promobanner.PromoBannerType
 import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.util.CurrencyFormatter
+import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.viewmodel.LiveDataDelegate
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
@@ -102,7 +105,7 @@ class ProductDetailViewModel @Inject constructor(
     private val mediaFilesRepository: MediaFilesRepository,
     private val variationRepository: VariationRepository,
     private val mediaFileUploadHandler: MediaFileUploadHandler,
-    private val prefs: AppPrefs,
+    private val appPrefsWrapper: AppPrefsWrapper,
     private val addonRepository: AddonRepository,
 ) : ScopedViewModel(savedState) {
     companion object {
@@ -180,6 +183,8 @@ class ProductDetailViewModel @Inject constructor(
 
     private val _productDetailCards = MutableLiveData<List<ProductPropertyCard>>()
     val productDetailCards: LiveData<List<ProductPropertyCard>> = _productDetailCards
+
+    private var hasTrackedProductDetailLoaded = false
 
     private val cardBuilder by lazy {
         ProductDetailCardBuilder(this, resources, currencyFormatter, parameters, addonRepository, variationRepository)
@@ -302,12 +307,13 @@ class ProductDetailViewModel @Inject constructor(
             productDraft = defaultProduct
         )
         updateProductState(defaultProduct)
+        trackProductDetailLoaded()
     }
 
     private fun createDefaultProductForAddFlow(): Product {
-        val preferredSavedType = prefs.getSelectedProductType()
+        val preferredSavedType = appPrefsWrapper.getSelectedProductType()
         val defaultProductType = ProductType.fromString(preferredSavedType)
-        val isProductVirtual = prefs.isSelectedProductVirtual()
+        val isProductVirtual = appPrefsWrapper.isSelectedProductVirtual()
         return ProductHelper.getDefaultNewProduct(defaultProductType, isProductVirtual)
     }
 
@@ -1077,6 +1083,22 @@ class ProductDetailViewModel @Inject constructor(
                 fetchProduct(remoteProductId)
             }
             viewState = viewState.copy(isSkeletonShown = false)
+            trackProductDetailLoaded()
+        }
+    }
+
+    /**
+     * Called when an existing product has been loaded or a new product is being added
+     */
+    private fun trackProductDetailLoaded() {
+        if (hasTrackedProductDetailLoaded.not()) {
+            storedProduct.value?.let {
+                val properties = mapOf(KEY_HAS_LINKED_PRODUCTS to it.hasLinkedProducts())
+                AnalyticsTracker.track(AnalyticsEvent.PRODUCT_DETAIL_LOADED, properties)
+            } ?: run {
+                AnalyticsTracker.track(AnalyticsEvent.PRODUCT_DETAIL_LOADED)
+            }
+            hasTrackedProductDetailLoaded = true
         }
     }
 
@@ -1568,6 +1590,9 @@ class ProductDetailViewModel @Inject constructor(
             } else {
                 triggerEvent(ShowSnackbar(successMsg))
             }
+
+            checkLinkedProductPromo()
+
             viewState = viewState.copy(
                 productDraft = null
             )
@@ -1590,6 +1615,7 @@ class ProductDetailViewModel @Inject constructor(
         val result = productRepository.addProduct(product)
         val (isSuccess, newProductRemoteId) = result
         if (isSuccess) {
+            checkLinkedProductPromo()
             viewState = viewState.copy(
                 productDraft = null
             )
@@ -1598,6 +1624,25 @@ class ProductDetailViewModel @Inject constructor(
         }
 
         return result
+    }
+
+    /**
+     * Show the upsell/cross-sell promo if it hasn't already been shown and the product
+     * doesn't already have linked products
+     */
+    private fun checkLinkedProductPromo() {
+        if (FeatureFlag.LINKED_PRODUCTS_PROMO.isEnabled() &&
+            appPrefsWrapper.isPromoBannerShown(PromoBannerType.LINKED_PRODUCTS).not() &&
+            viewState.productDraft?.hasLinkedProducts() == false
+        ) {
+            appPrefsWrapper.setPromoBannerShown(PromoBannerType.LINKED_PRODUCTS, true)
+            triggerEvent(ShowLinkedProductPromoBanner)
+        }
+    }
+
+    fun onLinkedProductPromoClicked() {
+        // TODO analytics
+        triggerEvent(ProductNavigationTarget.ViewLinkedProducts(getRemoteProductId()))
     }
 
     /**
@@ -2085,6 +2130,8 @@ class ProductDetailViewModel @Inject constructor(
 
     object HideImageUploadErrorSnackbar : Event()
 
+    object ShowLinkedProductPromoBanner : Event()
+
     /**
      * [productDraft] is used for the UI. Any updates to the fields in the UI would update this model.
      * [storedProduct.value] is the [Product] model that is fetched from the API and available in the local db.
@@ -2107,7 +2154,7 @@ class ProductDetailViewModel @Inject constructor(
         val showBottomSheetButton: Boolean? = null,
         val isConfirmingTrash: Boolean = false,
         val isUploadingDownloadableFile: Boolean? = null,
-        val isVariationListEmpty: Boolean? = null
+        val isVariationListEmpty: Boolean? = null,
     ) : Parcelable {
         val isPasswordChanged: Boolean
             get() = storedPassword != draftPassword
@@ -2135,7 +2182,8 @@ class ProductDetailViewModel @Inject constructor(
         val isRefreshing: Boolean? = null,
         val isEmptyViewVisible: Boolean? = null,
         val isProgressDialogShown: Boolean? = null,
-        val currentFilter: String = ""
+        val currentFilter: String = "",
+        val isLinkedProductPromoShown: Boolean? = null
     ) : Parcelable
 
     @Parcelize

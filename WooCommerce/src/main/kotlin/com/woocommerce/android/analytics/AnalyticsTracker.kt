@@ -148,6 +148,7 @@ class AnalyticsTracker private constructor(private val context: Context) {
         const val KEY_ORDER_ID = "order_id"
         const val KEY_PRODUCT_ID = "product_id"
         const val KEY_PRODUCT_COUNT = "product_count"
+        const val KEY_HAS_LINKED_PRODUCTS = "has_linked_products"
         const val KEY_IS_LOADING_MORE = "is_loading_more"
         const val KEY_IS_WPCOM_STORE = "is_wpcom_store"
         const val KEY_NAME = "name"
@@ -181,6 +182,7 @@ class AnalyticsTracker private constructor(private val context: Context) {
         const val KEY_SOURCE = "source"
         const val KEY_CUSTOM_FIELDS_COUNT = "custom_fields_count"
         const val KEY_CUSTOM_FIELDS_SIZE = "custom_fields_size"
+        const val KEY_WAITING_TIME = "waiting_time"
 
         const val KEY_SORT_ORDER = "order"
         const val VALUE_SORT_NAME_ASC = "name,ascending"
@@ -220,6 +222,7 @@ class AnalyticsTracker private constructor(private val context: Context) {
         const val KEY_HAS_SHIPPING_METHOD = "has_shipping_method"
         const val VALUE_FLOW_CREATION = "creation"
         const val VALUE_FLOW_EDITING = "editing"
+        const val VALUE_FLOW_LIST = "list"
 
         const val ORDER_EDIT_CUSTOMER_NOTE = "customer_note"
         const val ORDER_EDIT_SHIPPING_ADDRESS = "shipping_address"
@@ -371,7 +374,7 @@ class AnalyticsTracker private constructor(private val context: Context) {
         const val KEY_BANNER_REMIND_LATER = "remind_later"
 
         // -- Experiments
-        const val KEY_SITE_CREDENTIALS_EXPERIMENT_VARIANT = "site_credentials_experiment_variant"
+        const val KEY_EXPERIMENT_VARIANT = "experiment_variant"
 
         var sendUsageStats: Boolean = true
             set(value) {

@@ -130,4 +130,7 @@ so that's the baseline as defined in `major_100`.
     <!-- More Menu dimens -->
     <dimen name="more_menu_button_height">190dp</dimen>
 
+    <!-- Order List -->
+    <dimen name="swipeable_glance_distance">16dp</dimen>
+
 </resources>

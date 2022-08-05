@@ -51,7 +51,7 @@ import com.woocommerce.android.ui.main.MainNavigationRouter
 import com.woocommerce.android.ui.orders.OrderNavigationTarget
 import com.woocommerce.android.ui.orders.OrderNavigator
 import com.woocommerce.android.ui.orders.OrderProductActionListener
-import com.woocommerce.android.ui.orders.details.OrderDetailViewModel.OrderStatusUpdateSource
+import com.woocommerce.android.ui.orders.OrderStatusUpdateSource
 import com.woocommerce.android.ui.orders.details.adapter.OrderDetailShippingLabelsAdapter.OnShippingLabelClickListener
 import com.woocommerce.android.ui.orders.details.editing.OrderEditingViewModel
 import com.woocommerce.android.ui.orders.details.views.OrderDetailOrderStatusView.Mode
@@ -115,6 +115,7 @@ class OrderDetailFragment : BaseFragment(R.layout.fragment_order_detail), OrderP
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        lifecycle.addObserver(viewModel.performanceObserver)
         super.onCreate(savedInstanceState)
         val transitionDuration = resources.getInteger(R.integer.default_fragment_transition).toLong()
         val backgroundColor = ContextCompat.getColor(requireContext(), R.color.default_window_background)

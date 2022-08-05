@@ -5,10 +5,9 @@ plugins {
     id 'com.automattic.android.fetchstyle'
     id 'io.gitlab.arturbosch.detekt'
     id 'io.github.wzieba.tracks.plugin'
-    id 'io.sentry.android.gradle'
     id 'com.android.application' apply false
     id 'org.jetbrains.kotlin.android' apply false
-    id 'dagger.hilt.android.plugin' apply false
+    id 'com.google.dagger.hilt.android' apply false
     id 'com.google.gms.google-services' apply false
 }
 
@@ -19,23 +18,11 @@ tracks {
 }
 
 allprojects {
-    apply plugin: 'checkstyle'
     apply plugin: 'io.gitlab.arturbosch.detekt'
 
     repositories {
         google()
         mavenCentral()
-    }
-
-    task checkstyle(type: Checkstyle) {
-        source 'src'
-
-        classpath = files()
-    }
-
-    checkstyle {
-        toolVersion = '8.3'
-        configFile file("${project.rootDir}/config/checkstyle.xml")
     }
 
     tasks.withType(KotlinCompile).all {
@@ -94,7 +81,7 @@ tasks.register("installGitHooks", Copy) {
 }
 
 ext {
-    fluxCVersion = '1.48.0'
+    fluxCVersion = 'trunk-912bfc93b83c86edd0409beea16e5decb69d8314'
     glideVersion = '4.13.2'
     coilVersion = '2.1.0'
     constraintLayoutVersion = '1.2.0'

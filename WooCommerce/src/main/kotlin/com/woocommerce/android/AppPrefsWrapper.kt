@@ -3,6 +3,7 @@ package com.woocommerce.android
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener
 import com.woocommerce.android.ui.payments.cardreader.onboarding.PersistentOnboardingData
 import com.woocommerce.android.ui.payments.cardreader.onboarding.PluginType
+import com.woocommerce.android.ui.promobanner.PromoBannerType
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
@@ -158,6 +159,11 @@ class AppPrefsWrapper @Inject constructor() {
 
     fun hasPreLoginNotificationBeenDisplayed() = AppPrefs.isPreLoginNotificationBeenDisplayed()
 
+    fun setPreLoginNotificationDisplayedType(notificationType: String) =
+        AppPrefs.setPreLoginNotificationDisplayedType(notificationType)
+
+    fun getPreLoginNotificationDisplayedType() = AppPrefs.getPreLoginNotificationDisplayedType()
+
     fun setPreLoginNotificationDisplayed(displayed: Boolean) =
         AppPrefs.setPreLoginNotificationDisplayed(displayed)
 
@@ -212,6 +218,16 @@ class AppPrefsWrapper @Inject constructor() {
         remoteSiteId,
         selfHostedSiteId
     )
+
+    fun getSelectedProductType() = AppPrefs.getSelectedProductType()
+
+    fun isSelectedProductVirtual() = AppPrefs.isSelectedProductVirtual()
+
+    fun isPromoBannerShown(bannerType: PromoBannerType) = AppPrefs.isPromoBannerShown(bannerType)
+
+    fun setPromoBannerShown(bannerType: PromoBannerType, shown: Boolean) {
+        AppPrefs.setPromoBannerShown(bannerType, shown)
+    }
 
     /**
      * Observes changes to the preferences
