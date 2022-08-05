@@ -1,4 +1,0 @@
-9.6:
-Den här versionen inkluderar möjligheten att ta betalt för alla obetalda beställningar via kontanter, kort eller betalningslänkar. Du kan även välja en föredragen betalnings-gateway när det finns flera utökningar installerade på butiken.
-
-Vi har även utfört vissa mindre förbättringar. Tack ännu en gång för all fantastisk feedback. Fortsätt skicka in den!

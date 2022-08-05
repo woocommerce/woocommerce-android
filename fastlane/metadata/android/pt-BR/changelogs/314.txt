@@ -1,4 +1,0 @@
-9.6:
-Esta versão inclui a opção de receber os pagamentos de todos os pedidos não pagos em dinheiro, cartão ou links de pagamento. Você também pode selecionar o gateway de pagamento que quiser quando várias extensões estão instaladas na loja.
-
-Além disso, fizemos algumas outras pequenas melhorias. Obrigado a todos pelos incríveis feedbacks. Continuem mandando!

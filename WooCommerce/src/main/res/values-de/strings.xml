@@ -1,11 +1,38 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2022-07-13 09:54:22+0000
+Translation-Revision-Date: 2022-08-05 15:59:14+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: de
 -->
 <resources>
+    <string name="lets_get_started">Es kann losgehen!</string>
+    <string name="login_help_notification_wordpress_login_button">Mit WordPress.com anmelden</string>
+    <string name="login_help_notification_contact_support_button">Support kontaktieren</string>
+    <string name="login_help_notification_site_error_description">Versuche, dich mit deinem WordPress.com-Konto anzumelden</string>
+    <string name="login_help_notification_no_interaction_default_description">Erhalte Hilfe!</string>
+    <string name="login_help_notification_default_title">Hast du Probleme bei der Anmeldung?</string>
+    <string name="product_search_sku">Artikelnummer</string>
+    <string name="product_search_all">Alle Produkte</string>
+    <string name="card_reader_upsell_card_reader_banner_dont_show_again">NICHT ERNEUT ANZEIGEN</string>
+    <string name="card_reader_upsell_card_reader_banner_remind_me_later">SPÄTER DARAN ERINNERN</string>
+    <string name="card_reader_upsell_card_reader_banner_dismiss_dialog_description">Kein Problem. Du kannst persönliche Zahlungen jederzeit in den Einstellungen aktivieren.</string>
+    <string name="card_reader_upsell_card_reader_banner_payments">Persönliche Zahlungen</string>
+    <string name="card_reader_upsell_card_reader_banner_cta">Kartenlesegerät kaufen</string>
+    <string name="card_reader_upsell_card_reader_banner_description">Empfange Zahlungen mit einem Kartenlesegerät.</string>
+    <string name="card_reader_upsell_card_reader_banner_title">Zahlungen problemlos empfangen</string>
+    <string name="card_reader_upsell_card_reader_banner_new">NEU</string>
+    <string name="card_reader_upsell_card_reader_banner_dismiss">Schließen</string>
+    <string name="orderdetail_view_custom_fields">Eigene Felder anzeigen</string>
+    <string name="orderdetail_custom_fields">Eigene Felder</string>
+    <string name="order_sync_failed">Änderungen konnten nicht gespeichert werden</string>
+    <string name="existing_order_cash_dlg_message">Dadurch wird diese Bestellung als bezahlt markiert, wenn du eine Zahlung außerhalb von WooCommerce erhalten hast</string>
+    <string name="login_jetpack_install">Jetpack installieren</string>
+    <string name="login_prologue_label_products_subtitle">Wir ermöglichen dir die problemlose Verarbeitung</string>
+    <string name="login_prologue_label_orders_subtitle">Du kannst sie leicht und einfach verwalten</string>
+    <string name="login_prologue_label_analytics_subtitle">Wir wissen, dass dies wichtig für dein Geschäft ist</string>
+    <string name="login_prologue_new_to_woo">Neu bei WooCommerce</string>
+    <string name="notification_channel_pre_login_title">Erinnerungen – Problembehandlung bei der Anmeldung</string>
     <string name="tests_notification_new_order_message">Neue Bestellung in Höhe von 50 US-Dollar in deinem WooCommerce-Shop</string>
     <string name="tests_notification_new_order_title">Du hast eine neue Bestellung! 🎉</string>
     <string name="lines_all_details">Details</string>
@@ -228,6 +255,7 @@ Language: de
     <string name="coupon_details_minimum_spend">Mindestbestellwert: %s</string>
     <string name="coupon_details_heading">Gutscheinübersicht</string>
     <string name="coupon_list_view_coupon">Gutscheinübersicht anzeigen</string>
+    <string name="coupon_list_wip_message_enabled">Wir haben daran gearbeitet, das Anzeigen und Bearbeiten von Gutscheinen von deinem Gerät aus zu ermöglichen!</string>
     <string name="coupon_list_wip_title">Gutscheine anzeigen und bearbeiten</string>
     <string name="coupon_list_empty_heading">Keine Gutscheine gefunden</string>
     <string name="coupon_list_item_label_included_and_excluded">%1s außer %2s</string>
@@ -297,7 +325,6 @@ Language: de
     <string name="card_reader_onboarding_both_plugins_activated_hint_store_owner">Persönliche Zahlungen funktionieren nur, wenn eines der folgenden Plugins aktiviert ist. Bitte setze dich mit einem Website-Administrator in Verbindung, um eines dieser Plugins zu deaktivieren und fortzufahren:</string>
     <string name="card_reader_onboarding_both_plugins_activated_hint_admin">Persönliche Zahlungen funktionieren nur, wenn eines der folgenden Plugins aktiviert ist. Deaktiviere eines der folgenden Plugins, um fortzufahren:</string>
     <string name="card_reader_onboarding_both_plugins_activated_header">In Konflikt stehende Zahlungsplugins entdeckt</string>
-    <string name="order_creation_price_calculation_failed">Aktualisierung des Preises nicht möglich</string>
     <string name="order_creation_payment_tax">Steuern</string>
     <string name="exclusive_or">oder</string>
     <string name="settings_install_jetpack">Jetpack installieren</string>
@@ -789,9 +816,8 @@ Language: de
     <string name="user_role_access_error_retry">Du hast nicht die richtige Benutzerrolle</string>
     <string name="user_role_access_error_link">Weitere Informationen zu Rollen und Berechtigungen</string>
     <string name="user_role_access_error_msg">Diese App unterstützt nur die Benutzerrollen Administrator und Store-Manager Wenn du deine Rolle upgraden willst, wende dich bitte an deinen Store-Besitzer</string>
-    <string name="login_prologue_label_reviews">Produktbewertungen überwachen und genehmigen</string>
     <string name="login_prologue_label_products">Neue Produkte von überall aus bearbeiten und hinzufügen</string>
-    <string name="login_prologue_label_orders">Bestellungen auch unterwegs verwalten</string>
+    <string name="login_prologue_label_orders">Verwalte und bearbeite Bestellungen auch unterwegs</string>
     <string name="login_prologue_label_analytics">Umsätze und erfolgreiche Produkte nachverfolgen</string>
     <string name="skip">Überspringen</string>
     <string name="product_type_external_title">Externes Produkt</string>
