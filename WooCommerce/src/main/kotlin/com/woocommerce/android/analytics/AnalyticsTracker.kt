@@ -182,6 +182,7 @@ class AnalyticsTracker private constructor(private val context: Context) {
         const val KEY_SOURCE = "source"
         const val KEY_CUSTOM_FIELDS_COUNT = "custom_fields_count"
         const val KEY_CUSTOM_FIELDS_SIZE = "custom_fields_size"
+        const val KEY_WAITING_TIME = "waiting_time"
 
         const val KEY_SORT_ORDER = "order"
         const val VALUE_SORT_NAME_ASC = "name,ascending"
