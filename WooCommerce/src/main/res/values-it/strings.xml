@@ -1,11 +1,38 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2022-07-14 08:54:17+0000
+Translation-Revision-Date: 2022-08-05 15:56:31+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: it
 -->
 <resources>
+    <string name="lets_get_started">Iniziamo!</string>
+    <string name="login_help_notification_wordpress_login_button">Accedi con WordPress.com</string>
+    <string name="login_help_notification_contact_support_button">Contatta il supporto</string>
+    <string name="login_help_notification_site_error_description">Prova ad accedere con il tuo account WordPress.com</string>
+    <string name="login_help_notification_no_interaction_default_description">Ricevi aiuto!</string>
+    <string name="login_help_notification_default_title">Problemi con l\'accesso?</string>
+    <string name="product_search_sku">COD</string>
+    <string name="product_search_all">Tutti i prodotti</string>
+    <string name="card_reader_upsell_card_reader_banner_dont_show_again">NON MOSTRARE PIÙ</string>
+    <string name="card_reader_upsell_card_reader_banner_remind_me_later">RICORDAMELO PIÙ TARDI</string>
+    <string name="card_reader_upsell_card_reader_banner_dismiss_dialog_description">Non preoccuparti. Puoi sempre iniziare con i Pagamenti di persona nelle Impostazioni.</string>
+    <string name="card_reader_upsell_card_reader_banner_payments">Pagamenti di persona</string>
+    <string name="card_reader_upsell_card_reader_banner_cta">Lettore carte di acquisto</string>
+    <string name="card_reader_upsell_card_reader_banner_description">Preparati ad accettare pagamenti con il lettore di carte.</string>
+    <string name="card_reader_upsell_card_reader_banner_title">Accetta pagamenti facilmente</string>
+    <string name="card_reader_upsell_card_reader_banner_new">NOVITÀ</string>
+    <string name="card_reader_upsell_card_reader_banner_dismiss">Ignora</string>
+    <string name="orderdetail_view_custom_fields">Visualizza campi personalizzati</string>
+    <string name="orderdetail_custom_fields">Campi personalizzati</string>
+    <string name="order_sync_failed">Impossibile salvare le modifiche</string>
+    <string name="existing_order_cash_dlg_message">Questa azione contrassegnerà l\'ordine come pagato se hai ricevuto il pagamento al di fuori di WooCommerce</string>
+    <string name="login_jetpack_install">Installa Jetpack</string>
+    <string name="login_prologue_label_products_subtitle">Ti consentiamo di elaborarli senza sforzo</string>
+    <string name="login_prologue_label_orders_subtitle">Puoi gestirli rapidamente e facilmente</string>
+    <string name="login_prologue_label_analytics_subtitle">Sappiamo che è essenziale per la tua attività</string>
+    <string name="login_prologue_new_to_woo">Prima volta in WooCommerce</string>
+    <string name="notification_channel_pre_login_title">Promemoria per la risoluzione dei problemi di accesso</string>
     <string name="tests_notification_new_order_message">Nuovo ordine pari a $ 50 nel tuo negozio WooCommerce</string>
     <string name="tests_notification_new_order_title">Hai un nuovo ordine. 🎉</string>
     <string name="lines_all_details">i dettagli</string>
@@ -41,6 +68,66 @@ Language: it
     <string name="order_editing_non_editable_title">Le parti di questo ordine non sono al momento modificabili</string>
     <string name="order_creation_customer_search_hint">Cerca clienti</string>
     <string name="order_creation_customer_search_empty">Nessun cliente trovato</string>
+    <string name="install_wc_shipping_flow_onboarding_screen_not_now_button">Non ora</string>
+    <string name="install_wc_shipping_flow_onboarding_screen_add_extension_button">Aggiungi estensione al negozio</string>
+    <string name="install_wc_shipping_flow_onboarding_screen_link">Cos\'è WooCommerce Shipping?</string>
+    <string name="install_wc_shipping_flow_onboarding_screen_discounts_bullet_desc">Accedi a tariffe di spedizione scontate. Attualmente disponibile con DHL e USPS, con altri in arrivo!</string>
+    <string name="install_wc_shipping_flow_onboarding_screen_discounts_bullet_title">Tariffe scontate</string>
+    <string name="install_wc_shipping_flow_onboarding_screen_print_bullet_desc">Ricevi un ordine, quindi paga, stampa, imballa e spedisci.</string>
+    <string name="install_wc_shipping_flow_onboarding_screen_print_bullet_title">Stampa dal telefono</string>
+    <string name="install_wc_shipping_flow_onboarding_screen_postage_bullet_desc">Non dovrai metterti alla ricerca di un francobollo.</string>
+    <string name="install_wc_shipping_flow_onboarding_screen_postage_bullet_title">Acquista la spedizione quando ne hai bisogno</string>
+    <string name="install_wc_shipping_flow_onboarding_screen_subtitle">Risparmia tempo e denaro</string>
+    <string name="install_wc_shipping_flow_onboarding_screen_title">Completa i tuoi ordini con WooCommerce Shipping</string>
+    <string name="product_selector_arrow_content_description">Mostra dettagli</string>
+    <string name="product_selector_select_variation_label">Seleziona variante %s</string>
+    <string name="coupon_restrictions_exclude_categories">Escludi categorie del prodotto</string>
+    <string name="coupon_restrictions_exclude_products">Escludi prodotti</string>
+    <string name="coupon_restrictions_exclusions_section_title">Applica questo codice promozionale a</string>
+    <string name="coupon_restrictions_allowed_emails_placeholder">Nessuna restrizione</string>
+    <string name="coupon_restrictions_allowed_emails">E-mail consentite</string>
+    <string name="coupon_restrictions_limit_per_user_placeholder">Illimitato</string>
+    <string name="coupon_restrictions_amount_limit_placeholder">Tutti gli elementi adatti</string>
+    <string name="coupon_restrictions_limit_per_coupon_placeholder">Illimitato</string>
+    <string name="coupon_restrictions_minimum_maximum_spend_placeholder">Nessuno</string>
+    <string name="coupon_edit_edit_products_title">Modifica le categorie del prodotto (%1$d)</string>
+    <string name="coupon_edit_select_categories_title">Seleziona categorie del prodotto</string>
+    <string name="variations_bulk_update_warning_message">Attualmente l\'aggiornamento in blocco è supportato per un massimo di 100 varianti.</string>
+    <string name="variations_bulk_update_warning_title">Limite di aggiornamento in blocco superato</string>
+    <string name="variations_bulk_update_regular_prices_dialog_title">Aggiorna al prezzo standard</string>
+    <string name="variations_bulk_update_sale_prices_dialog_title">Aggiornamento prezzi di vendita</string>
+    <string name="variations_bulk_update_sale_prices_success">Prezzi di vendita aggiornati.</string>
+    <string name="variations_bulk_update_regular_prices_success">Prezzi standard aggiornati.</string>
+    <string name="variations_bulk_update_error">Si è verificato un problema. Riprova.</string>
+    <string name="variations_bulk_update_current_prices_mixed">I prezzi attuali sono misti</string>
+    <string name="variations_bulk_update_current_price">Il prezzo attuale è %s</string>
+    <string name="variations_bulk_update_price_info">Il prezzo verrà aggiornato per %d varianti</string>
+    <string name="variations_bulk_update_dialog_price_mixed">Misto</string>
+    <string name="variations_bulk_update_dialog_price_none">Nessuno</string>
+    <string name="variations_bulk_update_dialog_sale_price_label">Prezzo di vendita</string>
+    <string name="variations_bulk_update_dialog_regular_price_label">Prezzo standard</string>
+    <string name="variations_bulk_update_dialog_price_section_title">Prezzo</string>
+    <string name="variations_bulk_update_dialog_subtitle">Scegli un valore da aggiornare</string>
+    <string name="variations_bulk_update_dialog_title">Aggiornamento in blocco</string>
+    <string name="variations_bulk_limit_exceeded_button_ok">OK</string>
+    <string name="variation_list_menu_bulk_update">Aggiornamento in blocco…</string>
+    <string name="variation_loading_dialog_title">Recupero delle varianti in corso…</string>
+    <string name="product_category_selector_search_failed">Ricerca delle categorie di prodotti non riuscita</string>
+    <string name="product_category_selector_loading_failed">Caricamento delle categorie di prodotti non riuscito</string>
+    <string name="product_category_selector_search_hint">Cerca categorie</string>
+    <string name="product_category_selector_clear_selection">Annulla la selezione</string>
+    <string name="product_category_selector_check_content_description">Fai clic per deselezionare</string>
+    <string name="product_category_selector_select_button_title_one">Seleziona 1 categoria</string>
+    <string name="product_category_selector_select_button_title_default">Seleziona %1$d categorie</string>
+    <string name="product_category_selector_empty_state">Nessuna categoria del prodotto trovata</string>
+    <string name="product_category_selector_title">Seleziona categorie</string>
+    <string name="shipping_label_install_wc_shipping_banner_dismiss_button_description">Ignora il banner per installare WC Shipping</string>
+    <string name="shipping_label_install_wc_shipping_banner_button">Ottieni WooCommerce Shipping</string>
+    <string name="shipping_label_install_wc_shipping_banner_description">Stampa etichette dal tuo telefono con WooCommerce Shipping.</string>
+    <string name="shipping_label_install_wc_shipping_banner_title">Hai bisogno di un\'etichetta di spedizione?</string>
+    <string name="order_creation_change_product_quantity">Cambia la quantità di prodotto da %d a %d</string>
+    <string name="variations_bulk_update_regular_price">Aggiorna al prezzo standard</string>
+    <string name="variations_bulk_update_sale_price">Aggiorna prezzo di vendita</string>
     <string name="card_reader_onboarding_stripe_unsupported_in_country_header">Non supportiamo l\'estensione WooCommerce Stripe in %1$s</string>
     <string name="product_selector_filter_button_title_zero">Filtro</string>
     <string name="product_selector_clear_button_title">Cancella la selezione</string>
@@ -168,6 +255,7 @@ Language: it
     <string name="coupon_details_minimum_spend">Spesa minima di %s</string>
     <string name="coupon_details_heading">Riepilogo codice promozionale</string>
     <string name="coupon_list_view_coupon">Visualizza riepilogo codice promozionale</string>
+    <string name="coupon_list_wip_message_enabled">Abbiamo lavorato per rendere possibile la visualizzazione e la modifica dei coupon sul tuo dispositivo!</string>
     <string name="coupon_list_wip_title">Visualizza e modifica i codici promozionali</string>
     <string name="coupon_list_empty_heading">Non è stato trovato alcun codice promozionale</string>
     <string name="coupon_list_item_label_included_and_excluded">%1s senza %2s</string>
@@ -237,7 +325,6 @@ Language: it
     <string name="card_reader_onboarding_both_plugins_activated_hint_store_owner">I pagamenti di persona funzioneranno solo con uno dei seguenti plugin attivato. Per continuare, contatta un amministratore del sito per disattivare uno di questi plugin:</string>
     <string name="card_reader_onboarding_both_plugins_activated_hint_admin">I pagamenti di persona funzioneranno solo con uno dei seguenti plugin attivato. Per continuare disattiva uno di questi plugin:</string>
     <string name="card_reader_onboarding_both_plugins_activated_header">Conflitto con i plugin di pagamento rilevato</string>
-    <string name="order_creation_price_calculation_failed">Impossibile aggiornare i prezzi</string>
     <string name="order_creation_payment_tax">Imposte</string>
     <string name="exclusive_or">oppure</string>
     <string name="settings_install_jetpack">Installa Jetpack</string>
@@ -729,10 +816,9 @@ Language: it
     <string name="user_role_access_error_retry">Non disponi del ruolo utente corretto</string>
     <string name="user_role_access_error_link">Scopri di più sui ruoli e sulle autorizzazioni</string>
     <string name="user_role_access_error_msg">Quest\'app supporta solo i ruoli utente di Amministratore e Gestore negozio. Contatta il proprietario del negozio per aggiornare il tuo ruolo.</string>
-    <string name="login_prologue_label_reviews">Monitora e approva le recensioni dei prodotti</string>
     <string name="login_prologue_label_products">Modifica e aggiungi nuovi prodotti da qualsiasi luogo</string>
-    <string name="login_prologue_label_orders">Gestisci gli ordini del negozio in movimento</string>
-    <string name="login_prologue_label_analytics">Tieni traccia delle vendite e dei prodotti ad alte prestazioni</string>
+    <string name="login_prologue_label_orders">Gestisci e modifica gli ordini in movimento</string>
+    <string name="login_prologue_label_analytics">Tieni traccia delle vendite e dei prodotti che performano meglio</string>
     <string name="skip">Salta</string>
     <string name="product_type_external_title">Prodotto esterno</string>
     <string name="product_type_grouped_title">Prodotto raggruppato</string>
@@ -1149,7 +1235,7 @@ Language: it
     <string name="product_sale_date_to">Fino al giorno %1$s</string>
     <string name="product_wip_message_m2">Abbiamo aggiunto più funzionalità di modifica ai prodotti! Ora puoi aggiornare immagini, vedere anteprime e condividere i prodotti.</string>
     <string name="product_wip_title">Nuove opzioni di modifica disponibili</string>
-    <string name="product_limited_editing_title">Funzionalità di editing limitate ora disponibili</string>
+    <string name="product_limited_editing_title">Modifica limitata disponibile </string>
     <string name="orderdetail_product_multiple">Prodotti</string>
     <string name="orderdetail_product_lineitem_qty_and_price">%1$s x %2$s</string>
     <string name="orderdetail_orderstatus_name">%1$s %2$s</string>

@@ -1,11 +1,38 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2022-07-16 08:54:03+0000
+Translation-Revision-Date: 2022-08-05 15:58:40+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: nl
 -->
 <resources>
+    <string name="lets_get_started">Laten we beginnen</string>
+    <string name="login_help_notification_wordpress_login_button">Inloggen met WordPress.com</string>
+    <string name="login_help_notification_contact_support_button">Neem contact op met support</string>
+    <string name="login_help_notification_site_error_description">Probeer in te loggen met je WordPress.com account</string>
+    <string name="login_help_notification_no_interaction_default_description">Vraag om hulp!</string>
+    <string name="login_help_notification_default_title">Heb je problemen met inloggen?</string>
+    <string name="product_search_sku">SKU</string>
+    <string name="product_search_all">Alle producten</string>
+    <string name="card_reader_upsell_card_reader_banner_dont_show_again">NIET OPNIEUW TONEN</string>
+    <string name="card_reader_upsell_card_reader_banner_remind_me_later">HERINNER MIJ HIER LATER AAN</string>
+    <string name="card_reader_upsell_card_reader_banner_dismiss_dialog_description">Maak je geen zorgen! Je kunt altijd aan de slag gaan met fysieke betalingen in Instellingen.</string>
+    <string name="card_reader_upsell_card_reader_banner_payments">Fysieke betalingen</string>
+    <string name="card_reader_upsell_card_reader_banner_cta">Kaartlezer aanschaffen</string>
+    <string name="card_reader_upsell_card_reader_banner_description">Neem betalingen aan met een kaartlezer.</string>
+    <string name="card_reader_upsell_card_reader_banner_title">Eenvoudig betalingen aannemen</string>
+    <string name="card_reader_upsell_card_reader_banner_new">NIEUW</string>
+    <string name="card_reader_upsell_card_reader_banner_dismiss">Afwijzen</string>
+    <string name="orderdetail_view_custom_fields">Aangepaste velden bekijken</string>
+    <string name="orderdetail_custom_fields">Aangepaste velden</string>
+    <string name="order_sync_failed">Opslaan van wijzigingen mislukt</string>
+    <string name="existing_order_cash_dlg_message">Hiermee wordt deze bestelling gemarkeerd als betaald als je de betaling van een andere partij dan WooCommerce hebt ontvangen</string>
+    <string name="login_jetpack_install">Jetpack installeren</string>
+    <string name="login_prologue_label_products_subtitle">Wij maken het mogelijk om ze eenvoudig te verwerken</string>
+    <string name="login_prologue_label_orders_subtitle">Je kunt ze snel en eenvoudig beheren</string>
+    <string name="login_prologue_label_analytics_subtitle">We weten dat dit essentieel is voor je bedrijf</string>
+    <string name="login_prologue_new_to_woo">Nieuw bij WooCommerce</string>
+    <string name="notification_channel_pre_login_title">Herinneringen probleemoplossing inloggen</string>
     <string name="tests_notification_new_order_message">Nieuwe bestelling van $ 50 in je WooCommerce-winkel</string>
     <string name="tests_notification_new_order_title">Je hebt een nieuwe bestelling!</string>
     <string name="lines_all_details">gegevens</string>
@@ -228,6 +255,7 @@ Language: nl
     <string name="coupon_details_minimum_spend">Minimale besteding van %s</string>
     <string name="coupon_details_heading">Couponoverzicht</string>
     <string name="coupon_list_view_coupon">Couponoverzicht weergeven</string>
+    <string name="coupon_list_wip_message_enabled">We hebben hard gewerkt zodat jij coupons vanuit je apparaat kunt bekijken en bewerken!</string>
     <string name="coupon_list_wip_title">Coupons bekijken en bewerken</string>
     <string name="coupon_list_empty_heading">Geen coupons gevonden</string>
     <string name="coupon_list_item_label_included_and_excluded">%1s excl. %2s</string>
@@ -297,7 +325,6 @@ Language: nl
     <string name="card_reader_onboarding_both_plugins_activated_hint_store_owner">Fysieke betalingen werken alleen als een van de volgende plugins is geactiveerd. Om verder te gaan, neem contact op met een sitebeheerder om een van deze plugins te deactiveren:</string>
     <string name="card_reader_onboarding_both_plugins_activated_hint_admin">Fysieke betalingen werken alleen als een van de volgende plugins is geactiveerd. Deactiveer een van deze plugins om verder te gaan:</string>
     <string name="card_reader_onboarding_both_plugins_activated_header">Tegenstrijdige plugins voor betalingen gedetecteerd</string>
-    <string name="order_creation_price_calculation_failed">Kon prijzen niet bijwerken</string>
     <string name="order_creation_payment_tax">Belastingen</string>
     <string name="exclusive_or">of</string>
     <string name="settings_install_jetpack">Jetpack installeren</string>
@@ -789,9 +816,8 @@ Language: nl
     <string name="user_role_access_error_retry">Je hebt niet de juiste gebruikersrol</string>
     <string name="user_role_access_error_link">Meer informatie over rollen en machtigingen</string>
     <string name="user_role_access_error_msg">Deze app ondersteunt alleen de gebruikersrollen Beheerder en Winkelmanager. Neem contact op met je winkeleigenaar voor het upgraden van je rol.</string>
-    <string name="login_prologue_label_reviews">Volg en keur je productbeoordelingen goed</string>
     <string name="login_prologue_label_products">Bewerk en voeg nieuwe producten toe ongeacht waar je bent</string>
-    <string name="login_prologue_label_orders">Beheer je winkelbestellingen onderweg</string>
+    <string name="login_prologue_label_orders">Beheer en bewerk bestellingen onderweg</string>
     <string name="login_prologue_label_analytics">Volg verkoopcijfers en goedpresterende producten</string>
     <string name="skip">Overslaan</string>
     <string name="product_type_external_title">Extern product</string>

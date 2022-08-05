@@ -1,11 +1,38 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2022-07-14 14:54:02+0000
+Translation-Revision-Date: 2022-07-27 15:54:03+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: sv_SE
 -->
 <resources>
+    <string name="lets_get_started">Då sätter vi igång!</string>
+    <string name="login_help_notification_wordpress_login_button">Logga in med WordPress.com</string>
+    <string name="login_help_notification_contact_support_button">Kontakta supporten</string>
+    <string name="login_help_notification_site_error_description">Prova logga in med ditt WordPress.com-konto</string>
+    <string name="login_help_notification_no_interaction_default_description">Skaffa lite hjälp!</string>
+    <string name="login_help_notification_default_title">Har du problem med att logga in?</string>
+    <string name="product_search_sku">Artikelnr</string>
+    <string name="product_search_all">Alla produkter</string>
+    <string name="card_reader_upsell_card_reader_banner_dont_show_again">VISA INTE IGEN</string>
+    <string name="card_reader_upsell_card_reader_banner_remind_me_later">PÅMINN MIG SENARE</string>
+    <string name="card_reader_upsell_card_reader_banner_dismiss_dialog_description">Inga problem! Du kan alltid komma igång med In-Person Payments via Inställningar.</string>
+    <string name="card_reader_upsell_card_reader_banner_payments">Personliga betalningar</string>
+    <string name="card_reader_upsell_card_reader_banner_cta">Köp kortläsare</string>
+    <string name="card_reader_upsell_card_reader_banner_description">Gör dig redo att ta emot betalningar med kortläsare.</string>
+    <string name="card_reader_upsell_card_reader_banner_title">Ta emot betalningar enkelt</string>
+    <string name="card_reader_upsell_card_reader_banner_new">NYTT</string>
+    <string name="card_reader_upsell_card_reader_banner_dismiss">Avfärda</string>
+    <string name="orderdetail_view_custom_fields">Visa anpassade fält</string>
+    <string name="orderdetail_custom_fields">Anpassade fält</string>
+    <string name="order_sync_failed">Det gick inte att spara ändringar</string>
+    <string name="existing_order_cash_dlg_message">Detta kommer att markera denna beställning som betald om du fått betalning utanför WooCommerce</string>
+    <string name="login_jetpack_install">Installera Jetpack</string>
+    <string name="login_prologue_label_products_subtitle">Vi gör det möjligt för dig att bearbeta betalningar på ett enkelt och smidigt sätt</string>
+    <string name="login_prologue_label_orders_subtitle">Du kan hantera dem snabbt och enkelt</string>
+    <string name="login_prologue_label_analytics_subtitle">Vi vet att det är viktigt för ditt företag</string>
+    <string name="login_prologue_new_to_woo">Är WooCommerce nytt för dig?</string>
+    <string name="notification_channel_pre_login_title">Påminnelser om felsökning vid inloggning</string>
     <string name="tests_notification_new_order_message">Ny beställning för 50 USD i din WooCommerce-butik</string>
     <string name="tests_notification_new_order_title">Du har en ny beställning! 🎉</string>
     <string name="lines_all_details">detaljerna</string>
@@ -298,7 +325,6 @@ Language: sv_SE
     <string name="card_reader_onboarding_both_plugins_activated_hint_store_owner">Personliga betalningar fungerar endast med ett av följande tillägg aktiverat. Kontakta en webbplatsadministratör för att inaktivera ett av dessa tillägg och fortsätta:</string>
     <string name="card_reader_onboarding_both_plugins_activated_hint_admin">Personliga betalningar fungerar endast med ett av följande tillägg aktiverat. Inaktivera ett av dessa tillägg för att fortsätta.</string>
     <string name="card_reader_onboarding_both_plugins_activated_header">Konflikt mellan betalningstillägg upptäckt</string>
-    <string name="order_creation_price_calculation_failed">Kunde inte uppdatera priser</string>
     <string name="order_creation_payment_tax">Momsen</string>
     <string name="exclusive_or">eller</string>
     <string name="settings_install_jetpack">Installera Jetpack</string>
@@ -790,9 +816,8 @@ Language: sv_SE
     <string name="user_role_access_error_retry">Du har inte den korrekta användarrollen</string>
     <string name="user_role_access_error_link">Lär dig mer om roller och behörigheter</string>
     <string name="user_role_access_error_msg">Den här appen har endast stöd för användarrollerna Administratör och Butikschef. Kontakta butiksägaren för att uppgradera din roll.</string>
-    <string name="login_prologue_label_reviews">Övervaka och godkänn dina produktrecensioner</string>
     <string name="login_prologue_label_products">Redigera och lägg till nya produkter var som helst</string>
-    <string name="login_prologue_label_orders">Hantera dina butiksbeställningar i farten </string>
+    <string name="login_prologue_label_orders">Hantera och redigera beställningar i farten </string>
     <string name="login_prologue_label_analytics">Spåra försäljning och högpresterande produkter</string>
     <string name="skip">Hoppa över</string>
     <string name="product_type_external_title">Extern produkt</string>
