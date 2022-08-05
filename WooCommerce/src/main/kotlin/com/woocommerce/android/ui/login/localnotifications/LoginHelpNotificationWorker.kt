@@ -94,8 +94,15 @@ class LoginHelpNotificationWorker @AssistedInject constructor(
     }
 
     private fun invalidPasswordErrorNotification(notificationType: LoginHelpNotificationType) {
-        defaultLoginSupportNotification(
-            notificationType, getActionsForInvalidEmailErrorNotification(notificationType)
+        wooNotificationBuilder.buildAndDisplayLoginHelpNotification(
+            notificationLocalId = LOGIN_HELP_NOTIFICATION_ID,
+            appContext.getString(R.string.notification_channel_pre_login_id),
+            notification = buildLoginNotification(
+                title = R.string.login_help_notification_invalid_password_title,
+                description = R.string.login_help_notification_no_interaction_default_description
+            ),
+            notificationTappedIntent = buildOpenSupportScreenIntent(notificationType),
+            actions = getActionsForInvalidPasswordErrorNotification(notificationType)
         )
     }
 
@@ -136,6 +143,16 @@ class LoginHelpNotificationWorker @AssistedInject constructor(
         notificationType: LoginHelpNotificationType
     ): List<Pair<String, Intent>> =
         listOf(
+            resourceProvider.getString(R.string.login_help_notification_contact_support_button)
+                to buildOpenSupportScreenIntent(notificationType),
+        )
+
+    private fun getActionsForInvalidPasswordErrorNotification(
+        notificationType: LoginHelpNotificationType
+    ): List<Pair<String, Intent>> =
+        listOf(
+            resourceProvider.getString(R.string.login_help_notification_invalid_password_get_magic_link_button)
+                to buildOpenSupportScreenIntent(notificationType),
             resourceProvider.getString(R.string.login_help_notification_contact_support_button)
                 to buildOpenSupportScreenIntent(notificationType),
         )
