@@ -18,23 +18,11 @@ tracks {
 }
 
 allprojects {
-    apply plugin: 'checkstyle'
     apply plugin: 'io.gitlab.arturbosch.detekt'
 
     repositories {
         google()
         mavenCentral()
-    }
-
-    task checkstyle(type: Checkstyle) {
-        source 'src'
-
-        classpath = files()
-    }
-
-    checkstyle {
-        toolVersion = '8.3'
-        configFile file("${project.rootDir}/config/checkstyle.xml")
     }
 
     tasks.withType(KotlinCompile).all {
