@@ -2136,9 +2136,10 @@
     <!-- Login local notifications -->
     <string name="login_help_notification_default_title">Problems with logging in?</string>
     <string name="login_help_notification_no_interaction_default_description">Get some help!</string>
-    <string name="login_help_notification_site_error_description">Try login with your WordPress.com account</string>
+    <string name="login_help_notification_site_error_description">Log in with your WordPress.com account</string>
+    <string name="login_help_notification_incorrect_wpcom_email_description">Log in with your site credentials</string>
     <string name="login_help_notification_contact_support_button">Contact support</string>
-    <string name="login_help_notification_wordpress_login_button">Login with WordPress.com</string>
+    <string name="login_help_notification_wordpress_login_button">Log in with WordPress.com</string>
 
     <!-- Other -->
     <string name="error_loading_image">Unable to load image</string>

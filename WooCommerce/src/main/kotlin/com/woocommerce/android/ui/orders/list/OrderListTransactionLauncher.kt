@@ -1,4 +1,4 @@
-package com.woocommerce.android.ui.orders.details
+package com.woocommerce.android.ui.orders.list
 
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
@@ -7,8 +7,9 @@ import com.automattic.android.tracks.crashlogging.performance.PerformanceTransac
 import com.automattic.android.tracks.crashlogging.performance.TransactionId
 import com.automattic.android.tracks.crashlogging.performance.TransactionOperation
 import com.automattic.android.tracks.crashlogging.performance.TransactionStatus
-import com.woocommerce.android.analytics.AnalyticsEvent.ORDER_DETAIL_WAITING_TIME_LOADED
+import com.woocommerce.android.analytics.AnalyticsEvent.ORDER_LIST_WAITING_TIME_LOADED
 import com.woocommerce.android.analytics.WaitingTimeTracker
+import com.woocommerce.android.ui.orders.list.OrderListTransactionLauncher.Conditions.FIRST_LIST_FETCHED
 import com.woocommerce.android.util.CoroutineDispatchers
 import dagger.hilt.android.scopes.ViewModelScoped
 import kotlinx.coroutines.CoroutineScope
@@ -19,18 +20,18 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @ViewModelScoped
-class OrderDetailsTransactionLauncher @Inject constructor(
+class OrderListTransactionLauncher @Inject constructor(
     private val performanceTransactionRepository: PerformanceTransactionRepository,
     dispatchers: CoroutineDispatchers,
 ) : LifecycleEventObserver {
     private companion object {
-        const val TRANSACTION_NAME = "OrderDetails"
+        const val TRANSACTION_NAME = "OrderList"
     }
 
     private var performanceTransactionId: TransactionId? = null
     private val conditionsToSatisfy = MutableStateFlow(Conditions.values().toList())
     private val validatorScope = CoroutineScope(dispatchers.main + Job())
-    private val waitingTimeTracker = WaitingTimeTracker(ORDER_DETAIL_WAITING_TIME_LOADED)
+    private val waitingTimeTracker = WaitingTimeTracker(ORDER_LIST_WAITING_TIME_LOADED)
 
     init {
         validatorScope.launch {
@@ -46,25 +47,10 @@ class OrderDetailsTransactionLauncher @Inject constructor(
     }
 
     private enum class Conditions {
-        ORDER_FETCHED,
-        SHIPPING_LABEL_FETCHED,
-        NOTES_FETCHED,
-        REFUNDS_FETCHED,
-        SHIPMENT_TRACKINGS_FETCHED,
-        PACKAGE_CREATION_ELIGIBLE_FETCHED
+        FIRST_LIST_FETCHED,
     }
 
-    fun onOrderFetched() = satisfyCondition(Conditions.ORDER_FETCHED)
-
-    fun onShippingLabelFetched() = satisfyCondition(Conditions.SHIPPING_LABEL_FETCHED)
-
-    fun onNotesFetched() = satisfyCondition(Conditions.NOTES_FETCHED)
-
-    fun onRefundsFetched() = satisfyCondition(Conditions.REFUNDS_FETCHED)
-
-    fun onShipmentTrackingFetched() = satisfyCondition(Conditions.SHIPMENT_TRACKINGS_FETCHED)
-
-    fun onPackageCreationEligibleFetched() = satisfyCondition(Conditions.PACKAGE_CREATION_ELIGIBLE_FETCHED)
+    fun onListFetched() = satisfyCondition(FIRST_LIST_FETCHED)
 
     fun clear() {
         validatorScope.cancel()
@@ -81,7 +67,7 @@ class OrderDetailsTransactionLauncher @Inject constructor(
                     performanceTransactionRepository.startTransaction(TRANSACTION_NAME, TransactionOperation.UI_LOAD)
                 waitingTimeTracker.start()
             }
-            Lifecycle.Event.ON_DESTROY -> {
+            Lifecycle.Event.ON_STOP -> {
                 performanceTransactionId?.let {
                     performanceTransactionRepository.finishTransaction(it, TransactionStatus.ABORTED)
                 }

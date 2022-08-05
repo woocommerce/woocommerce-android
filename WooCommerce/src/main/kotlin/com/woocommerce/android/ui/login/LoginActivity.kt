@@ -41,6 +41,9 @@ import com.woocommerce.android.ui.login.localnotifications.LoginNotificationSche
 import com.woocommerce.android.ui.login.localnotifications.LoginNotificationScheduler.Companion.LOGIN_HELP_NOTIFICATION_ID
 import com.woocommerce.android.ui.login.localnotifications.LoginNotificationScheduler.Companion.LOGIN_HELP_NOTIFICATION_TAG
 import com.woocommerce.android.ui.login.localnotifications.LoginNotificationScheduler.LoginHelpNotificationType
+import com.woocommerce.android.ui.login.localnotifications.LoginNotificationScheduler.LoginHelpNotificationType.LOGIN_SITE_ADDRESS_EMAIL_ERROR
+import com.woocommerce.android.ui.login.localnotifications.LoginNotificationScheduler.LoginHelpNotificationType.LOGIN_SITE_ADDRESS_ERROR
+import com.woocommerce.android.ui.login.localnotifications.LoginNotificationScheduler.LoginHelpNotificationType.LOGIN_WPCOM_EMAIL_ERROR
 import com.woocommerce.android.ui.login.overrides.WooLoginEmailFragment
 import com.woocommerce.android.ui.login.overrides.WooLoginSiteAddressFragment
 import com.woocommerce.android.ui.main.MainActivity
@@ -57,6 +60,8 @@ import org.greenrobot.eventbus.ThreadMode.MAIN
 import org.wordpress.android.fluxc.Dispatcher
 import org.wordpress.android.fluxc.network.MemorizingTrustManager
 import org.wordpress.android.fluxc.store.AccountStore.AuthEmailPayloadScheme.WOOCOMMERCE
+import org.wordpress.android.fluxc.store.AccountStore.AuthOptionsErrorType.UNKNOWN_USER
+import org.wordpress.android.fluxc.store.AccountStore.OnAuthOptionsFetched
 import org.wordpress.android.fluxc.store.SiteStore
 import org.wordpress.android.fluxc.store.SiteStore.ConnectSiteInfoPayload
 import org.wordpress.android.fluxc.store.SiteStore.OnConnectSiteInfoChecked
@@ -103,7 +108,7 @@ class LoginActivity :
 
         fun createIntent(
             context: Context,
-            notificationType: LoginHelpNotificationType
+            notificationType: LoginHelpNotificationType,
         ): Intent {
             val intent = Intent(context, LoginActivity::class.java)
             intent.apply {
@@ -835,7 +840,7 @@ class LoginActivity :
                 shouldAddToBackStack = true,
                 tag = LoginSiteCheckErrorFragment.TAG
             )
-            loginNotificationScheduler.scheduleNotification(LoginHelpNotificationType.LOGIN_SITE_ADDRESS_ERROR)
+            loginNotificationScheduler.scheduleNotification(LOGIN_SITE_ADDRESS_ERROR)
         } else {
             // Just in case we use this method for a different scenario in the future
             TODO("Handle a new error scenario")
@@ -856,13 +861,25 @@ class LoginActivity :
         }
     }
 
+    override fun onSurveyFinished() {
+        showPrologueFragment()
+    }
+
     @SuppressWarnings("unused")
     @Subscribe(threadMode = MAIN)
     fun onFetchedConnectSiteInfo(event: OnConnectSiteInfoChecked) {
         isSiteOnWPcom = event.info.isWPCom
     }
 
-    override fun onSurveyFinished() {
-        showPrologueFragment()
+    @SuppressWarnings("unused")
+    @Subscribe(threadMode = MAIN)
+    fun onAuthOptionsFetched(event: OnAuthOptionsFetched) {
+        if (event.error?.type == UNKNOWN_USER) {
+            val notificationType = when {
+                !appPrefsWrapper.getLoginSiteAddress().isNullOrBlank() -> LOGIN_SITE_ADDRESS_EMAIL_ERROR
+                else -> LOGIN_WPCOM_EMAIL_ERROR
+            }
+            loginNotificationScheduler.scheduleNotification(notificationType)
+        }
     }
 }
