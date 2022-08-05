@@ -9,8 +9,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
-import androidx.compose.ui.platform.ViewCompositionStrategy
-import androidx.compose.ui.res.stringResource
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
@@ -35,9 +33,6 @@ import com.woocommerce.android.extensions.show
 import com.woocommerce.android.model.FeatureAnnouncement
 import com.woocommerce.android.support.HelpActivity
 import com.woocommerce.android.support.HelpActivity.Origin
-import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
-import com.woocommerce.android.ui.payments.banner.SettingsBannerDismissDialog
-import com.woocommerce.android.ui.payments.banner.SettingsScreenBanner
 import com.woocommerce.android.util.AnalyticsUtils
 import com.woocommerce.android.util.AppThemeUtils
 import com.woocommerce.android.util.ChromeCustomTabUtils
@@ -80,7 +75,6 @@ class MainSettingsFragment : Fragment(R.layout.fragment_settings_main), MainSett
         _binding = FragmentSettingsMainBinding.inflate(inflater, container, false)
 
         val view = binding.root
-        applyBannerComposeUI()
         return view
     }
 
@@ -246,24 +240,6 @@ class MainSettingsFragment : Fragment(R.layout.fragment_settings_main), MainSett
         }
     }
 
-    override fun dismissUpsellCardReaderBanner() {
-        applyBannerDismissDialogComposeUI()
-    }
-
-    override fun dismissUpsellCardReaderBannerViaBack() {
-        binding.upsellCardReaderComposeView.upsellCardReaderDismissView.visibility = View.GONE
-    }
-
-    override fun dismissUpsellCardReaderBannerViaRemindLater() {
-        binding.upsellCardReaderComposeView.upsellCardReaderBannerView.visibility = View.GONE
-        binding.upsellCardReaderComposeView.upsellCardReaderDismissView.visibility = View.GONE
-    }
-
-    override fun dismissUpsellCardReaderBannerViaDontShowAgain() {
-        binding.upsellCardReaderComposeView.upsellCardReaderBannerView.visibility = View.GONE
-        binding.upsellCardReaderComposeView.upsellCardReaderDismissView.visibility = View.GONE
-    }
-
     override fun openPurchaseCardReaderLink(url: String) {
         ChromeCustomTabUtils.launchUrl(requireContext(), url)
     }
@@ -285,35 +261,6 @@ class MainSettingsFragment : Fragment(R.layout.fragment_settings_main), MainSett
                         announcement
                     )
                 )
-        }
-    }
-
-    private fun applyBannerComposeUI() {
-        binding.upsellCardReaderComposeView.upsellCardReaderBannerView.apply {
-            // Dispose of the Composition when the view's LifecycleOwner is destroyed
-            setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
-            setContent {
-                WooThemeWithBackground {
-                    SettingsScreenBanner(
-                        presenter = presenter,
-                        title = stringResource(id = R.string.card_reader_upsell_card_reader_banner_title),
-                        subtitle = stringResource(id = R.string.card_reader_upsell_card_reader_banner_description),
-                        ctaLabel = stringResource(id = R.string.card_reader_upsell_card_reader_banner_cta)
-                    )
-                }
-            }
-        }
-    }
-
-    private fun applyBannerDismissDialogComposeUI() {
-        binding.upsellCardReaderComposeView.upsellCardReaderDismissView.apply {
-            // Dispose of the Composition when the view's LifecycleOwner is destroyed
-            setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
-            setContent {
-                WooThemeWithBackground {
-                    SettingsBannerDismissDialog(presenter)
-                }
-            }
         }
     }
 
