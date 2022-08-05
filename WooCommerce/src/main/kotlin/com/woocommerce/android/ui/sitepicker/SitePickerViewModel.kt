@@ -426,8 +426,8 @@ class SitePickerViewModel @Inject constructor(
 
             sitePickerViewState = sitePickerViewState.copy(
                 isSkeletonViewVisible = true,
+                isPrimaryBtnVisible = false,
                 isSecondaryBtnVisible = true,
-                primaryBtnText = resourceProvider.getString(string.continue_button),
                 isNoStoresViewVisible = false
             )
 
@@ -436,15 +436,18 @@ class SitePickerViewModel @Inject constructor(
             val result = fetchSite(site)
             sitePickerViewState = sitePickerViewState.copy(isSkeletonViewVisible = false)
 
-            result.fold(onSuccess = {
-                // Continue login
-                displaySites(repository.getWooCommerceSites())
-            }, onFailure = {
-                triggerEvent(ShowSnackbar(string.site_picker_error))
-                // This would lead to the [WooNotFoundState] again
-                // The chance of getting this state is small, because of the retry mechanism above
-                displaySites(repository.getWooCommerceSites())
-            })
+            result.fold(
+                onSuccess = {
+                    // Continue login
+                    displaySites(repository.getWooCommerceSites())
+                },
+                onFailure = {
+                    triggerEvent(ShowSnackbar(string.site_picker_error))
+                    // This would lead to the [WooNotFoundState] again
+                    // The chance of getting this state is small, because of the retry mechanism above
+                    displaySites(repository.getWooCommerceSites())
+                }
+            )
         }
     }
 
