@@ -290,10 +290,12 @@ class SitePickerViewModelTest : BaseUnitTest() {
     @Test
     fun `given that the site address entered during login does not have Woo, no woo error screen is displayed`() =
         testBlocking {
-            givenThatUserLoggedInFromEnteringSiteAddress(expectedSiteList[1].apply {
-                hasWooCommerce = false
-                setIsJetpackConnected(true)
-            })
+            givenThatUserLoggedInFromEnteringSiteAddress(
+                expectedSiteList[1].apply {
+                    hasWooCommerce = false
+                    setIsJetpackConnected(true)
+                }
+            )
             whenSitesAreFetched()
             whenViewModelIsCreated()
 

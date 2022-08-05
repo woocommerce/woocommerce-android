@@ -45,11 +45,11 @@ object SitePickerTestUtils {
         defaultViewState: SitePickerViewModel.SitePickerViewState,
         resourceProvider: ResourceProvider
     ) = defaultViewState.copy(
-            toolbarTitle = resourceProvider.getString(R.string.site_picker_title),
-            isHelpBtnVisible = false,
-            isSecondaryBtnVisible = false,
-            isPrimaryBtnVisible = true
-        )
+        toolbarTitle = resourceProvider.getString(R.string.site_picker_title),
+        isHelpBtnVisible = false,
+        isSecondaryBtnVisible = false,
+        isPrimaryBtnVisible = true
+    )
 
     fun getEmptyViewState(
         defaultViewState: SitePickerViewModel.SitePickerViewState,
