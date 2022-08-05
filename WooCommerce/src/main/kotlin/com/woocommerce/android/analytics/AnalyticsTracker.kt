@@ -373,7 +373,7 @@ class AnalyticsTracker private constructor(private val context: Context) {
         const val KEY_BANNER_REMIND_LATER = "remind_later"
 
         // -- Experiments
-        const val KEY_SITE_CREDENTIALS_EXPERIMENT_VARIANT = "site_credentials_experiment_variant"
+        const val KEY_EXPERIMENT_VARIANT = "experiment_variant"
 
         var sendUsageStats: Boolean = true
             set(value) {
