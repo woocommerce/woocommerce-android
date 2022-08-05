@@ -159,6 +159,11 @@ class AppPrefsWrapper @Inject constructor() {
 
     fun hasPreLoginNotificationBeenDisplayed() = AppPrefs.isPreLoginNotificationBeenDisplayed()
 
+    fun setPreLoginNotificationDisplayedType(notificationType: String) =
+        AppPrefs.setPreLoginNotificationDisplayedType(notificationType)
+
+    fun getPreLoginNotificationDisplayedType() = AppPrefs.getPreLoginNotificationDisplayedType()
+
     fun setPreLoginNotificationDisplayed(displayed: Boolean) =
         AppPrefs.setPreLoginNotificationDisplayed(displayed)
 

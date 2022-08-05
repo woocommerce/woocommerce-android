@@ -1,6 +1,7 @@
 package com.woocommerce.android.ui.mystore
 
 import androidx.annotation.VisibleForTesting
+import androidx.lifecycle.LifecycleObserver
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
@@ -68,12 +69,15 @@ class MyStoreViewModel @Inject constructor(
     private val appPrefsWrapper: AppPrefsWrapper,
     private val usageTracksEventEmitter: MyStoreStatsUsageTracksEventEmitter,
     private val analyticsTrackerWrapper: AnalyticsTrackerWrapper,
+    private val myStoreTransactionLauncher: MyStoreTransactionLauncher
 ) : ScopedViewModel(savedState) {
     private companion object {
         const val NUM_TOP_PERFORMERS = 5
         const val DAYS_TO_REDISPLAY_JP_BENEFITS_BANNER = 5
         const val ACTIVE_STATS_GRANULARITY_KEY = "active_stats_granularity_key"
     }
+
+    val performanceObserver: LifecycleObserver = myStoreTransactionLauncher
 
     private var _revenueStatsState = MutableLiveData<RevenueStatsViewState>()
     val revenueStatsState: LiveData<RevenueStatsViewState> = _revenueStatsState
@@ -176,6 +180,7 @@ class MyStoreViewModel @Inject constructor(
                     IsJetPackCPEnabled -> onJetPackCpConnected()
                     is HasOrders -> _hasOrders.value = if (it.hasOrder) OrderState.AtLeastOne else OrderState.Empty
                 }
+                myStoreTransactionLauncher.onStoreStatisticsFetched()
             }
     }
 
@@ -256,6 +261,7 @@ class MyStoreViewModel @Inject constructor(
                     }
                     TopPerformersError -> _topPerformersState.value = TopPerformersViewState.Error
                 }
+                myStoreTransactionLauncher.onTopPerformersFetched()
             }
     }
 

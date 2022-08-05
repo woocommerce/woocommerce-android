@@ -8,6 +8,7 @@ import com.google.android.gms.tasks.OnSuccessListener
 import com.google.android.gms.tasks.Task
 import com.google.firebase.remoteconfig.FirebaseRemoteConfig
 import com.woocommerce.android.config.FirebaseRemoteConfigRepository.Companion.PROLOGUE_VARIANT_KEY
+import com.woocommerce.android.experiment.PrologueExperiment.PrologueVariant
 import com.woocommerce.android.util.runAndCaptureValues
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import org.assertj.core.api.Assertions.assertThat

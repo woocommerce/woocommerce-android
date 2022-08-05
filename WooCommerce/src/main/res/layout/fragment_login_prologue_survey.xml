@@ -121,17 +121,16 @@
         android:enabled="false"
         android:text="@string/next"
         android:textAllCaps="false"
-        android:layout_marginBottom="@dimen/minor_100"
         android:layout_marginHorizontal="@dimen/major_100"
         app:layout_constraintBottom_toTopOf="@+id/survey_button_skip"
     />
 
     <com.google.android.material.button.MaterialButton
         android:id="@+id/survey_button_skip"
-        style="@style/Woo.Button.Colored.White"
+        style="@style/Woo.Button.TextButton"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="@dimen/major_150"
+        android:layout_marginBottom="@dimen/major_100"
         android:layout_marginHorizontal="@dimen/major_100"
         android:text="@string/skip"
         android:textAllCaps="false"

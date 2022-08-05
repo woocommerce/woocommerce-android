@@ -7,6 +7,8 @@ import androidx.work.WorkManager
 import androidx.work.WorkRequest
 import androidx.work.workDataOf
 import com.woocommerce.android.AppPrefsWrapper
+import com.woocommerce.android.analytics.AnalyticsEvent
+import com.woocommerce.android.analytics.AnalyticsTracker
 import dagger.hilt.android.qualifiers.ApplicationContext
 import java.util.UUID
 import java.util.concurrent.TimeUnit
@@ -46,6 +48,10 @@ class LoginNotificationScheduler @Inject constructor(
                     .build()
 
             prefsWrapper.setPreLoginNotificationWorkRequestId(workRequest.id.toString())
+            AnalyticsTracker.track(
+                AnalyticsEvent.LOGIN_LOCAL_NOTIFICATION_SCHEDULED,
+                mapOf(AnalyticsTracker.KEY_TYPE to notificationType.toString())
+            )
             workManager.enqueue(workRequest)
         }
     }
@@ -60,6 +66,8 @@ class LoginNotificationScheduler @Inject constructor(
 
     enum class LoginHelpNotificationType(private val typeName: String) {
         LOGIN_SITE_ADDRESS_ERROR("site_address_error"),
+        LOGIN_WPCOM_EMAIL_ERROR("wpcom_email_error"),
+        LOGIN_SITE_ADDRESS_EMAIL_ERROR("site_address_email_error"),
         DEFAULT_HELP("default_support");
 
         override fun toString(): String {
@@ -71,6 +79,8 @@ class LoginNotificationScheduler @Inject constructor(
                 when (string) {
                     LOGIN_SITE_ADDRESS_ERROR.typeName -> LOGIN_SITE_ADDRESS_ERROR
                     DEFAULT_HELP.typeName -> DEFAULT_HELP
+                    LOGIN_SITE_ADDRESS_EMAIL_ERROR.typeName -> LOGIN_SITE_ADDRESS_EMAIL_ERROR
+                    LOGIN_WPCOM_EMAIL_ERROR.typeName -> LOGIN_WPCOM_EMAIL_ERROR
                     else -> DEFAULT_HELP
                 }
         }

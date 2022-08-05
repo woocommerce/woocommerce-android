@@ -11,7 +11,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerHorizontal="true"
-        android:layout_marginTop="@dimen/major_150"
+        android:layout_marginTop="@dimen/major_100"
         android:layout_marginBottom="@dimen/image_major_72"
         android:importantForAccessibility="no"
         app:layout_constraintEnd_toEndOf="parent"
@@ -55,16 +55,31 @@
         app:layout_constraintStart_toStartOf="parent" />
 
     <com.google.android.material.button.MaterialButton
+        android:id="@+id/button_next"
+        style="@style/Woo.Button.Colored"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/major_100"
+        android:layout_marginEnd="@dimen/minor_100"
+        android:layout_marginBottom="@dimen/major_100"
+        android:text="@string/next"
+        android:textAllCaps="false"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@id/button_skip"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <com.google.android.material.button.MaterialButton
         android:id="@+id/button_skip"
         style="@style/Woo.Button.TextButton"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/minor_100"
+        android:layout_marginEnd="@dimen/major_100"
         android:layout_marginBottom="@dimen/major_100"
         android:text="@string/skip"
         android:textAllCaps="false"
-        app:layout_constraintWidth_percent="0.5"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
+        app:layout_constraintStart_toEndOf="@id/button_next" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

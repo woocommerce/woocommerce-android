@@ -4,7 +4,6 @@ import android.content.Context
 import android.os.Bundle
 import android.view.View
 import androidx.fragment.app.Fragment
-import androidx.viewpager2.widget.ViewPager2.OnPageChangeCallback
 import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsEvent.LOGIN_ONBOARDING_NEXT_BUTTON_TAPPED
@@ -43,6 +42,13 @@ class LoginPrologueCarouselFragment : Fragment(R.layout.fragment_login_prologue_
         val adapter = LoginPrologueAdapter(this)
 
         binding.buttonSkip.setOnClickListener {
+            prologueCarouselListener?.onCarouselFinished()
+            analyticsTrackerWrapper.track(LOGIN_ONBOARDING_SKIP_BUTTON_TAPPED)
+
+            appPrefsWrapper.setOnboardingCarouselDisplayed(true)
+        }
+
+        binding.buttonNext.setOnClickListener {
             if (binding.viewPager.currentItem == adapter.itemCount - 1) {
                 prologueCarouselListener?.onCarouselFinished()
                 analyticsTrackerWrapper.track(
@@ -52,37 +58,21 @@ class LoginPrologueCarouselFragment : Fragment(R.layout.fragment_login_prologue_
 
                 appPrefsWrapper.setOnboardingCarouselDisplayed(true)
             } else {
-                prologueCarouselListener?.onCarouselFinished()
-                analyticsTrackerWrapper.track(LOGIN_ONBOARDING_SKIP_BUTTON_TAPPED)
-
-                appPrefsWrapper.setOnboardingCarouselDisplayed(true)
+                binding.viewPager.setCurrentItem(binding.viewPager.currentItem + 1, true)
+                analyticsTrackerWrapper.track(
+                    LOGIN_ONBOARDING_NEXT_BUTTON_TAPPED,
+                    mapOf(Pair(AnalyticsTracker.VALUE_LOGIN_ONBOARDING_IS_FINAL_PAGE, false))
+                )
             }
         }
 
-        setupViewPager(binding, adapter)
+        binding.viewPager.adapter = adapter
+        binding.viewPagerIndicator.setupFromViewPager(binding.viewPager)
 
         if (savedInstanceState == null) {
             unifiedLoginTracker.track(Flow.PROLOGUE, Step.PROLOGUE_CAROUSEL)
             analyticsTrackerWrapper.track(LOGIN_ONBOARDING_SHOWN)
         }
-    }
-
-    private fun setupViewPager(
-        binding: FragmentLoginPrologueCarouselBinding,
-        adapter: LoginPrologueAdapter
-    ) {
-        binding.viewPager.adapter = adapter
-        binding.viewPager.registerOnPageChangeCallback(object : OnPageChangeCallback() {
-            override fun onPageSelected(position: Int) {
-                if (position == adapter.itemCount - 1) {
-                    binding.buttonSkip.setText(R.string.next)
-                } else {
-                    binding.buttonSkip.setText(R.string.skip)
-                }
-            }
-        })
-
-        binding.viewPagerIndicator.setupFromViewPager(binding.viewPager)
     }
 
     override fun onResume() {
