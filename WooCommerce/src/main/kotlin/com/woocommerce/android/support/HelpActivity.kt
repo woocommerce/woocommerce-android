@@ -17,7 +17,6 @@ import com.woocommerce.android.extensions.show
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.login.localnotifications.LoginNotificationScheduler.Companion.LOGIN_HELP_NOTIFICATION_ID
 import com.woocommerce.android.ui.login.localnotifications.LoginNotificationScheduler.Companion.LOGIN_HELP_NOTIFICATION_TAG
-import com.woocommerce.android.ui.login.localnotifications.LoginNotificationScheduler.LoginHelpNotificationType.LOGIN_SITE_ADDRESS_ERROR
 import com.woocommerce.android.util.ChromeCustomTabUtils
 import com.woocommerce.android.util.PackageUtils
 import dagger.hilt.android.AndroidEntryPoint
@@ -81,7 +80,7 @@ class HelpActivity : AppCompatActivity() {
         }
 
         if (originFromExtras == Origin.LOGIN_HELP_NOTIFICATION) {
-            handleOpenedFromLoginHelpNotification()
+            handleOpenedFromLoginHelpNotification(extraTagsFromExtras?.first())
         }
     }
 
@@ -186,11 +185,11 @@ class HelpActivity : AppCompatActivity() {
         startActivity(Intent(this, SSRActivity::class.java))
     }
 
-    private fun handleOpenedFromLoginHelpNotification() {
+    private fun handleOpenedFromLoginHelpNotification(notificationTypeName: String?) {
         NotificationManagerCompat.from(this).cancel(LOGIN_HELP_NOTIFICATION_TAG, LOGIN_HELP_NOTIFICATION_ID)
         AnalyticsTracker.track(
             AnalyticsEvent.LOGIN_LOCAL_NOTIFICATION_TAPPED,
-            mapOf(AnalyticsTracker.KEY_TYPE to LOGIN_SITE_ADDRESS_ERROR.name)
+            mapOf(AnalyticsTracker.KEY_TYPE to notificationTypeName)
         )
     }
 

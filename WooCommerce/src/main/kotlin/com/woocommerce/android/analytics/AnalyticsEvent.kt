@@ -130,6 +130,7 @@ enum class AnalyticsEvent(val siteless: Boolean = false) {
     DASHBOARD_NEW_STATS_REVERTED_BANNER_LEARN_MORE_TAPPED,
     DASHBOARD_NEW_STATS_AVAILABILITY_BANNER_CANCEL_TAPPED,
     DASHBOARD_NEW_STATS_AVAILABILITY_BANNER_TRY_TAPPED,
+    DASHBOARD_WAITING_TIME_LOADED,
     USED_ANALYTICS,
 
     // -- Orders List
@@ -140,6 +141,7 @@ enum class AnalyticsEvent(val siteless: Boolean = false) {
     ORDERS_LIST_PULLED_TO_REFRESH,
     ORDERS_LIST_MENU_SEARCH_TAPPED,
     ORDERS_LIST_VIEW_FILTER_OPTIONS_TAPPED,
+    ORDER_LIST_WAITING_TIME_LOADED,
 
     // -- Order filter by status dialog
     FILTER_ORDERS_BY_STATUS_DIALOG_APPLY_FILTER_BUTTON_TAPPED,
@@ -188,6 +190,7 @@ enum class AnalyticsEvent(val siteless: Boolean = false) {
     ORDER_DETAIL_ISSUE_REFUND_BUTTON_TAPPED,
     ORDER_DETAIL_VIEW_REFUND_DETAILS_BUTTON_TAPPED,
     ORDER_DETAIL_CREATE_SHIPPING_LABEL_BUTTON_TAPPED,
+    ORDER_DETAIL_WAITING_TIME_LOADED,
     ORDER_VIEW_CUSTOM_FIELDS_TAPPED,
 
     // - Order detail editing
@@ -647,6 +650,7 @@ enum class AnalyticsEvent(val siteless: Boolean = false) {
     LOGIN_WOOCOMMERCE_SETUP_COMPLETED,
 
     // Login help scheduled notifications
+    LOGIN_LOCAL_NOTIFICATION_SCHEDULED(siteless = true),
     LOGIN_LOCAL_NOTIFICATION_DISPLAYED(siteless = true),
     LOGIN_LOCAL_NOTIFICATION_TAPPED(siteless = true),
     LOGIN_LOCAL_NOTIFICATION_DISMISSED(siteless = true),

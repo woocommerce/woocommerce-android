@@ -2,6 +2,7 @@
 9.8
 -----
 - [*] Login: add ability to install Woo for sites that don't have during login with address flow [https://github.com/woocommerce/woocommerce-android/pull/7090]
+- [**] Users will now receive notifications with help info and actions 24h after running into some issue during login [https://github.com/woocommerce/woocommerce-android/pull/7072]
 
 9.7
 -----
