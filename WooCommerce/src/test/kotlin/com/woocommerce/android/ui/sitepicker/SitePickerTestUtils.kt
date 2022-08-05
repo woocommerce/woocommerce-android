@@ -41,8 +41,11 @@ object SitePickerTestUtils {
         isPrimaryBtnVisible = true
     )
 
-    fun getDefaultSwitchStoreViewState(defaultViewState: SitePickerViewModel.SitePickerViewState) =
-        defaultViewState.copy(
+    fun getDefaultSwitchStoreViewState(
+        defaultViewState: SitePickerViewModel.SitePickerViewState,
+        resourceProvider: ResourceProvider
+    ) = defaultViewState.copy(
+            toolbarTitle = resourceProvider.getString(R.string.site_picker_title),
             isHelpBtnVisible = false,
             isSecondaryBtnVisible = false,
             isPrimaryBtnVisible = true

@@ -35,6 +35,7 @@ import org.junit.Before
 import org.junit.Test
 import org.mockito.kotlin.any
 import org.mockito.kotlin.atLeastOnce
+import org.mockito.kotlin.doAnswer
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
@@ -47,7 +48,10 @@ import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooResult
 
 @ExperimentalCoroutinesApi
 class SitePickerViewModelTest : BaseUnitTest() {
-    private val resourceProvider: ResourceProvider = mock()
+    private val resourceProvider: ResourceProvider = mock {
+        on { getString(any()) } doAnswer { invocationOnMock -> invocationOnMock.arguments[0].toString() }
+        on { getString(any(), any()) } doAnswer { invocationOnMock -> invocationOnMock.arguments[0].toString() }
+    }
     private val selectedSite: SelectedSite = mock()
     private val appPrefsWrapper: AppPrefsWrapper = mock()
     private val analyticsTrackerWrapper: AnalyticsTrackerWrapper = mock()
@@ -150,7 +154,7 @@ class SitePickerViewModelTest : BaseUnitTest() {
         viewModel.sitePickerViewStateData.observeForever { _, new -> sitePickerData = new }
 
         assertThat(sitePickerData).isEqualTo(
-            SitePickerTestUtils.getDefaultSwitchStoreViewState(defaultSitePickerViewState)
+            SitePickerTestUtils.getDefaultSwitchStoreViewState(defaultSitePickerViewState, resourceProvider)
         )
     }
 
@@ -286,7 +290,10 @@ class SitePickerViewModelTest : BaseUnitTest() {
     @Test
     fun `given that the site address entered during login does not have Woo, no woo error screen is displayed`() =
         testBlocking {
-            givenThatUserLoggedInFromEnteringSiteAddress(expectedSiteList[1].apply { hasWooCommerce = false })
+            givenThatUserLoggedInFromEnteringSiteAddress(expectedSiteList[1].apply {
+                hasWooCommerce = false
+                setIsJetpackConnected(true)
+            })
             whenSitesAreFetched()
             whenViewModelIsCreated()
 
@@ -306,13 +313,13 @@ class SitePickerViewModelTest : BaseUnitTest() {
             assertThat(sitePickerData?.isNoStoresViewVisible).isEqualTo(true)
             assertThat(sitePickerData?.isPrimaryBtnVisible).isEqualTo(true)
             assertThat(sitePickerData?.primaryBtnText).isEqualTo(
-                resourceProvider.getString(R.string.login_view_connected_stores)
+                resourceProvider.getString(R.string.login_install_woo)
             )
             assertThat(sitePickerData?.noStoresLabelText).isEqualTo(
                 resourceProvider.getString(R.string.login_not_woo_store, url)
             )
             assertThat(sitePickerData?.noStoresBtnText).isEqualTo(
-                resourceProvider.getString(R.string.login_need_help_finding_email)
+                resourceProvider.getString(R.string.login_view_connected_stores)
             )
             assertThat(sitePickerData?.currentSitePickerState).isEqualTo(WooNotFoundState)
         }
