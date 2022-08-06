@@ -408,8 +408,7 @@ class LoginActivity :
 
         val automaticMagicLinkLogin = {
             dispatchMagicLinkRequest(email)
-            val wooLoginEmailPasswordFragment = WooLoginEmailPasswordFragment
-                .newInstance(email, null, null, null, false, verifyEmail)
+            val wooLoginEmailPasswordFragment = WooLoginEmailPasswordFragment.newInstance(email, verifyEmail)
             changeFragment(wooLoginEmailPasswordFragment, true, WooLoginEmailPasswordFragment.TAG)
         }
 
