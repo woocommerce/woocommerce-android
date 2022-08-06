@@ -26,7 +26,7 @@ class MagicLinkSentScreenExperiment @Inject constructor(
         // track the variant used
         analyticsTrackerWrapper.track(
             AnalyticsEvent.MAGIC_LINK_SENT_SCREEN_EXPERIMENT,
-            mapOf(Pair(AnalyticsTracker.KEY_EXPERIMENT_VARIANT, sentScreenVariant))
+            mapOf(Pair(AnalyticsTracker.KEY_EXPERIMENT_VARIANT, sentScreenVariant.name))
         )
 
         when (sentScreenVariant) {

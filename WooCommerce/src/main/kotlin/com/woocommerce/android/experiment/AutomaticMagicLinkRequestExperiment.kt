@@ -26,7 +26,7 @@ class AutomaticMagicLinkRequestExperiment @Inject constructor(
         // track the variant used
         analyticsTrackerWrapper.track(
             AnalyticsEvent.AUTOMATIC_MAGIC_LINK_REQUEST_EXPERIMENT,
-            mapOf(Pair(AnalyticsTracker.KEY_EXPERIMENT_VARIANT, magicLinkRequestVariant))
+            mapOf(Pair(AnalyticsTracker.KEY_EXPERIMENT_VARIANT, magicLinkRequestVariant.name))
         )
 
         when (magicLinkRequestVariant) {

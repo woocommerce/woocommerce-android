@@ -23,7 +23,7 @@ class PrologueExperiment @Inject constructor(
         // track the variant used
         analyticsTrackerWrapper.track(
             AnalyticsEvent.PROLOGUE_EXPERIMENT,
-            mapOf(Pair(AnalyticsTracker.KEY_EXPERIMENT_VARIANT, prologueVariant))
+            mapOf(Pair(AnalyticsTracker.KEY_EXPERIMENT_VARIANT, prologueVariant.name))
         )
 
         when (prologueVariant) {
