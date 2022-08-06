@@ -48,7 +48,7 @@ class FirebaseRemoteConfigRepository @Inject constructor(
             PROLOGUE_VARIANT_KEY to PrologueVariant.CONTROL.name,
             SITE_CREDENTIALS_EXPERIMENT_VARIANT_KEY to SiteLoginVariant.EMAIL_LOGIN.name,
             MAGIC_LINK_SENT_EXPERIMENT_VARIANT_KEY to MagicLinkSentScreenVariant.CONTROL.name,
-            AUTOMATIC_MAGIC_LINK_VARIANT_KEY to AutomaticMagicLinkRequestVariant.AUTOMATIC.name,
+            AUTOMATIC_MAGIC_LINK_VARIANT_KEY to AutomaticMagicLinkRequestVariant.CONTROL.name,
         )
     }
 
