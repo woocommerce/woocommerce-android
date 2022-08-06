@@ -60,7 +60,9 @@ import dagger.hilt.android.AndroidEntryPoint
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode.MAIN
 import org.wordpress.android.fluxc.Dispatcher
+import org.wordpress.android.fluxc.generated.AuthenticationActionBuilder
 import org.wordpress.android.fluxc.network.MemorizingTrustManager
+import org.wordpress.android.fluxc.store.AccountStore.AuthEmailPayload
 import org.wordpress.android.fluxc.store.AccountStore.AuthEmailPayloadScheme.WOOCOMMERCE
 import org.wordpress.android.fluxc.store.AccountStore.AuthOptionsErrorType.UNKNOWN_USER
 import org.wordpress.android.fluxc.store.AccountStore.OnAuthOptionsFetched
@@ -81,6 +83,7 @@ import org.wordpress.android.login.LoginMagicLinkSentImprovedFragment
 import org.wordpress.android.login.LoginMode
 import org.wordpress.android.login.LoginSiteAddressFragment
 import org.wordpress.android.login.LoginUsernamePasswordFragment
+import org.wordpress.android.util.NetworkUtils
 import org.wordpress.android.util.ToastUtils
 import javax.inject.Inject
 import kotlin.text.RegexOption.IGNORE_CASE
@@ -395,6 +398,7 @@ class LoginActivity :
     }
 
     private fun showEmailPasswordScreen(email: String?, verifyEmail: Boolean, allowMagicLink: Boolean) {
+        dispatchMagicLinkRequest(email)
         val loginEmailPasswordFragment = WooLoginEmailPasswordFragment
             .newInstance(email, null, null, null, false, verifyEmail)
         changeFragment(loginEmailPasswordFragment, true, WooLoginEmailPasswordFragment.TAG)
@@ -885,6 +889,14 @@ class LoginActivity :
 
     override fun onSurveyFinished() {
         showPrologueFragment()
+    }
+
+    private fun dispatchMagicLinkRequest(email: String?) {
+        if (NetworkUtils.checkConnection(this)) {
+            val authEmailPayload = AuthEmailPayload(email, false, null, null, WOOCOMMERCE)
+            dispatcher.dispatch(AuthenticationActionBuilder.newSendAuthEmailAction(authEmailPayload))
+            loginAnalyticsListener.trackMagicLinkRequested()
+        }
     }
 
     @SuppressWarnings("unused")
