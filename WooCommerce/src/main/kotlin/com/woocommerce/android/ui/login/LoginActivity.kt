@@ -23,6 +23,7 @@ import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_SOURCE
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_JETPACK_INSTALLATION_SOURCE_WEB
 import com.woocommerce.android.analytics.ExperimentTracker
 import com.woocommerce.android.databinding.ActivityLoginBinding
+import com.woocommerce.android.experiment.AutomaticMagicLinkRequestExperiment
 import com.woocommerce.android.experiment.MagicLinkSentScreenExperiment
 import com.woocommerce.android.experiment.PrologueExperiment
 import com.woocommerce.android.experiment.SiteLoginExperiment
@@ -46,6 +47,7 @@ import com.woocommerce.android.ui.login.localnotifications.LoginNotificationSche
 import com.woocommerce.android.ui.login.localnotifications.LoginNotificationScheduler.LoginHelpNotificationType.LOGIN_SITE_ADDRESS_ERROR
 import com.woocommerce.android.ui.login.localnotifications.LoginNotificationScheduler.LoginHelpNotificationType.LOGIN_WPCOM_EMAIL_ERROR
 import com.woocommerce.android.ui.login.overrides.WooLoginEmailFragment
+import com.woocommerce.android.ui.login.overrides.WooLoginEmailPasswordFragment
 import com.woocommerce.android.ui.login.overrides.WooLoginSiteAddressFragment
 import com.woocommerce.android.ui.main.MainActivity
 import com.woocommerce.android.util.ActivityUtils
@@ -59,7 +61,9 @@ import dagger.hilt.android.AndroidEntryPoint
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode.MAIN
 import org.wordpress.android.fluxc.Dispatcher
+import org.wordpress.android.fluxc.generated.AuthenticationActionBuilder
 import org.wordpress.android.fluxc.network.MemorizingTrustManager
+import org.wordpress.android.fluxc.store.AccountStore.AuthEmailPayload
 import org.wordpress.android.fluxc.store.AccountStore.AuthEmailPayloadScheme.WOOCOMMERCE
 import org.wordpress.android.fluxc.store.AccountStore.AuthOptionsErrorType.UNKNOWN_USER
 import org.wordpress.android.fluxc.store.AccountStore.OnAuthOptionsFetched
@@ -80,6 +84,7 @@ import org.wordpress.android.login.LoginMagicLinkSentImprovedFragment
 import org.wordpress.android.login.LoginMode
 import org.wordpress.android.login.LoginSiteAddressFragment
 import org.wordpress.android.login.LoginUsernamePasswordFragment
+import org.wordpress.android.util.NetworkUtils
 import org.wordpress.android.util.ToastUtils
 import javax.inject.Inject
 import kotlin.text.RegexOption.IGNORE_CASE
@@ -136,6 +141,7 @@ class LoginActivity :
     @Inject internal lateinit var siteLoginExperiment: SiteLoginExperiment
     @Inject internal lateinit var prologueExperiment: PrologueExperiment
     @Inject internal lateinit var sentScreenExperiment: MagicLinkSentScreenExperiment
+    @Inject internal lateinit var automaticMagicLinkRequestExperiment: AutomaticMagicLinkRequestExperiment
 
     private var loginMode: LoginMode? = null
     private var isSiteOnWPcom: Boolean? = null
@@ -395,9 +401,21 @@ class LoginActivity :
     }
 
     private fun showEmailPasswordScreen(email: String?, verifyEmail: Boolean, allowMagicLink: Boolean) {
-        val loginEmailPasswordFragment = LoginEmailPasswordFragment
-            .newInstance(email, null, null, null, false, allowMagicLink, verifyEmail)
-        changeFragment(loginEmailPasswordFragment, true, LoginEmailPasswordFragment.TAG)
+        val originalLogin = {
+            val loginEmailPasswordFragment = LoginEmailPasswordFragment
+                .newInstance(email, null, null, null, false, allowMagicLink, verifyEmail)
+            changeFragment(loginEmailPasswordFragment, true, LoginEmailPasswordFragment.TAG)
+        }
+
+        val automaticMagicLinkLogin = {
+            dispatchMagicLinkRequest(email)
+            val wooLoginEmailPasswordFragment = WooLoginEmailPasswordFragment.newInstance(email, verifyEmail)
+            changeFragment(wooLoginEmailPasswordFragment, true, WooLoginEmailPasswordFragment.TAG)
+        }
+
+        lifecycleScope.launchWhenStarted {
+            automaticMagicLinkRequestExperiment.run(originalLogin, automaticMagicLinkLogin)
+        }
     }
 
     private fun showMagicLinkRequestScreen(
@@ -885,6 +903,14 @@ class LoginActivity :
 
     override fun onSurveyFinished() {
         showPrologueFragment()
+    }
+
+    private fun dispatchMagicLinkRequest(email: String?) {
+        if (NetworkUtils.checkConnection(this)) {
+            val authEmailPayload = AuthEmailPayload(email, false, null, null, WOOCOMMERCE)
+            dispatcher.dispatch(AuthenticationActionBuilder.newSendAuthEmailAction(authEmailPayload))
+            loginAnalyticsListener.trackMagicLinkRequested()
+        }
     }
 
     @SuppressWarnings("unused")

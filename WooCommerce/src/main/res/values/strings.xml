@@ -2479,6 +2479,7 @@
 
     <string name="login_site_address">Site address</string>
 
+    <string name="login_magic_link_auto_sent">We just sent you a magic link to your e-mail address. Please tap the link in the email to log in.</string>
 
     <string name="email_not_registered_wpcom">Hmm, we can\'t find a WordPress.com account connected to this email address.</string>
     <string name="login_magic_links_label">We\'ll email you a link that\'ll log you in instantly, no password needed.</string>
