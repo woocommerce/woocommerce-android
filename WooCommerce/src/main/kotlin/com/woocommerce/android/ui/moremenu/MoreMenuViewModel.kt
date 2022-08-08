@@ -17,6 +17,7 @@ import com.woocommerce.android.ui.moremenu.domain.MoreMenuRepository
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.filterNotNull
 import org.wordpress.android.fluxc.model.SiteModel
@@ -33,18 +34,22 @@ class MoreMenuViewModel @Inject constructor(
     private val moreMenuNewFeatureHandler: MoreMenuNewFeatureHandler,
     unseenReviewsCountHandler: UnseenReviewsCountHandler
 ) : ScopedViewModel(savedState) {
+    private val paymentClickAnimationFlow = MutableStateFlow(false)
+
     val moreMenuViewState =
         combine(
             unseenReviewsCountHandler.observeUnseenCount(),
             selectedSite.observe().filterNotNull(),
             moreMenuRepository.observeCouponBetaSwitch(),
-            moreMenuNewFeatureHandler.moreMenuPaymentsFeatureWasClicked
-        ) { count, selectedSite, isCouponsEnabled, paymentsFeatureWasClicked ->
+            moreMenuNewFeatureHandler.moreMenuPaymentsFeatureWasClicked,
+            paymentClickAnimationFlow,
+        ) { count, selectedSite, isCouponsEnabled, paymentsFeatureWasClicked, paymentClickAnimation ->
             MoreMenuViewState(
                 moreMenuItems = generateMenuButtons(
                     unseenReviewsCount = count,
                     isCouponsEnabled = isCouponsEnabled,
-                    paymentsFeatureWasClicked = paymentsFeatureWasClicked
+                    paymentsFeatureWasClicked = paymentsFeatureWasClicked,
+                    paymentClickAnimation = paymentClickAnimation
                 ),
                 siteName = selectedSite.getSelectedSiteName(),
                 siteUrl = selectedSite.getSelectedSiteAbsoluteUrl(),
@@ -59,44 +64,45 @@ class MoreMenuViewModel @Inject constructor(
     private suspend fun generateMenuButtons(
         unseenReviewsCount: Int,
         isCouponsEnabled: Boolean,
-        paymentsFeatureWasClicked: Boolean
-    ) =
-        listOf(
-            MenuUiButton(
-                text = R.string.more_menu_button_payments,
-                icon = R.drawable.ic_more_menu_payments,
-                badgeState = buildPaymentsBadgeState(paymentsFeatureWasClicked),
-                onClick = ::onPaymentsButtonClick
-            ),
-            MenuUiButton(
-                text = R.string.more_menu_button_wс_admin,
-                icon = R.drawable.ic_more_menu_wp_admin,
-                onClick = ::onViewAdminButtonClick
-            ),
-            MenuUiButton(
-                text = R.string.more_menu_button_store,
-                icon = R.drawable.ic_more_menu_store,
-                onClick = ::onViewStoreButtonClick
-            ),
-            MenuUiButton(
-                text = R.string.more_menu_button_coupons,
-                icon = R.drawable.ic_more_menu_coupons,
-                isEnabled = isCouponsEnabled,
-                onClick = ::onCouponsButtonClick
-            ),
-            MenuUiButton(
-                text = R.string.more_menu_button_reviews,
-                icon = R.drawable.ic_more_menu_reviews,
-                badgeState = buildUnseenReviewsBadgeState(unseenReviewsCount),
-                onClick = ::onReviewsButtonClick
-            ),
-            MenuUiButton(
-                text = R.string.more_menu_button_inbox,
-                icon = R.drawable.ic_more_menu_inbox,
-                isEnabled = moreMenuRepository.isInboxEnabled(),
-                onClick = ::onInboxButtonClick
-            )
+        paymentsFeatureWasClicked: Boolean,
+        paymentClickAnimation: Boolean
+    ) = listOf(
+        MenuUiButton(
+            text = R.string.more_menu_button_payments,
+            icon = R.drawable.ic_more_menu_payments,
+            badgeState = buildPaymentsBadgeState(paymentsFeatureWasClicked),
+            onClick = ::onPaymentsButtonClick,
+            animateAppearance = paymentClickAnimation
+        ),
+        MenuUiButton(
+            text = R.string.more_menu_button_wс_admin,
+            icon = R.drawable.ic_more_menu_wp_admin,
+            onClick = ::onViewAdminButtonClick
+        ),
+        MenuUiButton(
+            text = R.string.more_menu_button_store,
+            icon = R.drawable.ic_more_menu_store,
+            onClick = ::onViewStoreButtonClick
+        ),
+        MenuUiButton(
+            text = R.string.more_menu_button_coupons,
+            icon = R.drawable.ic_more_menu_coupons,
+            isEnabled = isCouponsEnabled,
+            onClick = ::onCouponsButtonClick
+        ),
+        MenuUiButton(
+            text = R.string.more_menu_button_reviews,
+            icon = R.drawable.ic_more_menu_reviews,
+            badgeState = buildUnseenReviewsBadgeState(unseenReviewsCount),
+            onClick = ::onReviewsButtonClick
+        ),
+        MenuUiButton(
+            text = R.string.more_menu_button_inbox,
+            icon = R.drawable.ic_more_menu_inbox,
+            isEnabled = moreMenuRepository.isInboxEnabled(),
+            onClick = ::onInboxButtonClick
         )
+    )
 
     private fun buildPaymentsBadgeState(paymentsFeatureWasClicked: Boolean) =
         if (!paymentsFeatureWasClicked) BadgeState(
@@ -136,6 +142,10 @@ class MoreMenuViewModel @Inject constructor(
             AnalyticsEvent.HUB_MENU_SWITCH_STORE_TAPPED
         )
         triggerEvent(MoreMenuEvent.StartSitePickerEvent)
+    }
+
+    fun onPlayPaymentsAnimation() {
+        paymentClickAnimationFlow.value = true
     }
 
     private fun onPaymentsButtonClick() {

@@ -17,6 +17,7 @@ import androidx.activity.viewModels
 import androidx.annotation.StringRes
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.appcompat.widget.Toolbar
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.core.content.ContextCompat
 import androidx.core.view.isVisible
@@ -24,6 +25,7 @@ import androidx.core.view.updateLayoutParams
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.FragmentManager.FragmentLifecycleCallbacks
+import androidx.fragment.app.FragmentOnAttachListener
 import androidx.navigation.NavController
 import androidx.navigation.NavDestination
 import androidx.navigation.fragment.FragmentNavigatorExtras
@@ -70,6 +72,7 @@ import com.woocommerce.android.ui.main.MainActivityViewModel.ViewOrderList
 import com.woocommerce.android.ui.main.MainActivityViewModel.ViewReviewDetail
 import com.woocommerce.android.ui.main.MainActivityViewModel.ViewReviewList
 import com.woocommerce.android.ui.main.MainActivityViewModel.ViewZendeskTickets
+import com.woocommerce.android.ui.moremenu.MoreMenuFragment
 import com.woocommerce.android.ui.moremenu.MoreMenuFragmentDirections
 import com.woocommerce.android.ui.orders.list.OrderListFragmentDirections
 import com.woocommerce.android.ui.prefs.AppSettingsActivity
@@ -83,6 +86,7 @@ import dagger.hilt.android.AndroidEntryPoint
 import org.wordpress.android.login.LoginAnalyticsListener
 import org.wordpress.android.login.LoginMode
 import org.wordpress.android.util.NetworkUtils
+import org.wordpress.android.util.ToastUtils
 import javax.inject.Inject
 import kotlin.math.abs
 
@@ -815,6 +819,21 @@ class MainActivity :
             selectedProductCategoryName = productCategoryName
         )
         navController.navigateSafely(action)
+    }
+
+    @OptIn(ExperimentalFoundationApi::class)
+    override fun showMoreMenu() {
+        binding.bottomNav.currentPosition = MORE
+        binding.bottomNav.active(MORE.position)
+        supportFragmentManager.primaryNavigationFragment!!.childFragmentManager
+            .addFragmentOnAttachListener(object : FragmentOnAttachListener {
+                override fun onAttachFragment(fragmentManager: FragmentManager, fragment: Fragment) {
+                    if (fragment is MoreMenuFragment) {
+                        fragment.playSimplePaymentsInOrdersClicked()
+                        fragmentManager.removeFragmentOnAttachListener(this)
+                    }
+                }
+            })
     }
 
     override fun showOrderDetail(

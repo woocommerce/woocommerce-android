@@ -10,6 +10,7 @@ data class MenuUiButton(
     @DrawableRes val icon: Int,
     val badgeState: BadgeState? = null,
     val isEnabled: Boolean = true,
+    val animateAppearance: Boolean = false,
     val onClick: () -> Unit = {},
 )
 

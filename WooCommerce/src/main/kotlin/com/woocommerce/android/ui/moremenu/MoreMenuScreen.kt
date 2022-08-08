@@ -4,8 +4,6 @@ import android.content.res.Configuration.UI_MODE_NIGHT_NO
 import android.content.res.Configuration.UI_MODE_NIGHT_YES
 import android.graphics.Bitmap
 import android.graphics.drawable.Drawable
-import androidx.annotation.DrawableRes
-import androidx.annotation.StringRes
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.EnterTransition
 import androidx.compose.animation.ExperimentalAnimationApi
@@ -15,8 +13,12 @@ import androidx.compose.animation.fadeIn
 import androidx.compose.animation.scaleIn
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.LocalIndication
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.indication
+import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.interaction.PressInteraction
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -46,12 +48,15 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.drawBehind
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.asImageBitmap
+import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.dimensionResource
@@ -71,6 +76,8 @@ import com.woocommerce.android.R.color
 import com.woocommerce.android.R.drawable
 import com.woocommerce.android.R.string
 import com.woocommerce.android.ui.moremenu.MoreMenuViewModel.MoreMenuViewState
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
 @ExperimentalFoundationApi
 @Composable
@@ -112,12 +119,7 @@ private fun MoreMenuItems(state: MoreMenuViewState) {
         itemsIndexed(
             state.moreMenuItems.filter { it.isEnabled }
         ) { _, item ->
-            MoreMenuButton(
-                text = item.text,
-                iconDrawable = item.icon,
-                badgeState = item.badgeState,
-                onClick = item.onClick
-            )
+            MoreMenuButton(item)
         }
     }
 }
@@ -249,23 +251,38 @@ private fun MoreMenuUserAvatar(avatarUrl: String) {
 }
 
 @Composable
-private fun MoreMenuButton(
-    @StringRes text: Int,
-    @DrawableRes iconDrawable: Int,
-    badgeState: BadgeState?,
-    onClick: () -> Unit,
-) {
+private fun MoreMenuButton(button: MenuUiButton, ) {
+    val interactionSource = remember { MutableInteractionSource() }
+    val coroutineScope = rememberCoroutineScope()
+
     Button(
-        onClick = onClick,
+        onClick = button.onClick,
         contentPadding = PaddingValues(dimensionResource(id = R.dimen.major_75)),
         colors = ButtonDefaults.buttonColors(
             backgroundColor = colorResource(id = color.more_menu_button_background)
         ),
-        modifier = Modifier.height(dimensionResource(id = R.dimen.more_menu_button_height)),
-        shape = RoundedCornerShape(dimensionResource(id = R.dimen.major_75))
+        modifier = Modifier
+            .height(dimensionResource(id = R.dimen.more_menu_button_height))
+            .clip(RoundedCornerShape(dimensionResource(id = R.dimen.major_75)))
+            .onGloballyPositioned {
+                if (button.animateAppearance) {
+                    coroutineScope.launch {
+                        val press = PressInteraction.Press(Offset(it.size.width / 2F, it.size.height / 2F))
+                        repeat(3) {
+                            delay(100)
+                            interactionSource.emit(press)
+                            delay(130)
+                            interactionSource.emit(PressInteraction.Release(press))
+                        }
+                    }
+                }
+            }
+            .indication(interactionSource, LocalIndication.current),
     ) {
-        Box(Modifier.fillMaxSize()) {
-            MoreMenuBadge(badgeState = badgeState)
+        Box(
+            Modifier.fillMaxSize()
+        ) {
+            MoreMenuBadge(badgeState = button.badgeState)
             Column(
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.Center,
@@ -279,8 +296,8 @@ private fun MoreMenuButton(
                         .background(colorResource(id = color.more_menu_button_icon_background))
                 ) {
                     Image(
-                        painter = painterResource(id = iconDrawable),
-                        contentDescription = stringResource(id = text),
+                        painter = painterResource(id = button.icon),
+                        contentDescription = stringResource(id = button.text),
                         modifier = Modifier
                             .size(dimensionResource(id = R.dimen.major_150))
                             .align(Alignment.Center)
@@ -288,7 +305,7 @@ private fun MoreMenuButton(
                 }
                 Spacer(Modifier.size(ButtonDefaults.IconSpacing))
                 Text(
-                    text = stringResource(id = text),
+                    text = stringResource(id = button.text),
                     fontSize = 13.sp,
                     textAlign = TextAlign.Center,
                 )
@@ -346,14 +363,16 @@ private fun MoreMenuPreview() {
     val state = MoreMenuViewState(
         moreMenuItems = listOf(
             MenuUiButton(
-                string.more_menu_button_payments, drawable.ic_more_menu_payments,
+                string.more_menu_button_payments,
+                drawable.ic_more_menu_payments,
                 BadgeState(
                     badgeSize = R.dimen.major_85,
                     backgroundColor = color.color_secondary,
                     textColor = color.color_on_surface_inverted,
                     textState = TextState("", R.dimen.text_minor_80),
                     animateAppearance = true
-                )
+                ),
+                animateAppearance = true
             ),
             MenuUiButton(string.more_menu_button_wс_admin, drawable.ic_more_menu_wp_admin),
             MenuUiButton(string.more_menu_button_store, drawable.ic_more_menu_store),
