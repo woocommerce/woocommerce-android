@@ -16,6 +16,12 @@ import com.woocommerce.android.push.WooNotificationBuilder
 import com.woocommerce.android.push.WooNotificationType
 import com.woocommerce.android.support.HelpActivity
 import com.woocommerce.android.ui.login.LoginActivity
+import com.woocommerce.android.ui.login.localnotifications.LoginHelpNotificationType.DEFAULT_HELP
+import com.woocommerce.android.ui.login.localnotifications.LoginHelpNotificationType.LOGIN_SITE_ADDRESS_EMAIL_ERROR
+import com.woocommerce.android.ui.login.localnotifications.LoginHelpNotificationType.LOGIN_SITE_ADDRESS_ERROR
+import com.woocommerce.android.ui.login.localnotifications.LoginHelpNotificationType.LOGIN_SITE_ADDRESS_PASSWORD_ERROR
+import com.woocommerce.android.ui.login.localnotifications.LoginHelpNotificationType.LOGIN_WPCOM_EMAIL_ERROR
+import com.woocommerce.android.ui.login.localnotifications.LoginHelpNotificationType.LOGIN_WPCOM_PASSWORD_ERROR
 import com.woocommerce.android.ui.login.localnotifications.LoginNotificationScheduler.Companion.LOGIN_HELP_NOTIFICATION_ID
 import com.woocommerce.android.ui.login.localnotifications.LoginNotificationScheduler.Companion.LOGIN_NOTIFICATION_TYPE_KEY
 import com.woocommerce.android.viewmodel.ResourceProvider
@@ -35,12 +41,12 @@ class LoginHelpNotificationWorker @AssistedInject constructor(
             inputData.getString(LOGIN_NOTIFICATION_TYPE_KEY)
         )
         when (notificationType) {
-            LoginHelpNotificationType.LOGIN_SITE_ADDRESS_ERROR -> siteAddressErrorNotification()
-            LoginHelpNotificationType.LOGIN_SITE_ADDRESS_EMAIL_ERROR,
-            LoginHelpNotificationType.LOGIN_WPCOM_EMAIL_ERROR -> invalidEmailErrorNotification(notificationType)
-            LoginHelpNotificationType.LOGIN_SITE_ADDRESS_PASSWORD_ERROR,
-            LoginHelpNotificationType.LOGIN_WPCOM_PASSWORD_ERROR -> invalidPasswordErrorNotification(notificationType)
-            LoginHelpNotificationType.DEFAULT_HELP -> defaultLoginSupportNotification()
+            LOGIN_SITE_ADDRESS_ERROR -> siteAddressErrorNotification()
+            LOGIN_SITE_ADDRESS_EMAIL_ERROR,
+            LOGIN_WPCOM_EMAIL_ERROR -> invalidEmailErrorNotification(notificationType)
+            LOGIN_SITE_ADDRESS_PASSWORD_ERROR,
+            LOGIN_WPCOM_PASSWORD_ERROR -> invalidPasswordErrorNotification(notificationType)
+            DEFAULT_HELP -> defaultLoginSupportNotification()
         }
         AnalyticsTracker.track(
             LOGIN_LOCAL_NOTIFICATION_DISPLAYED,
@@ -52,7 +58,7 @@ class LoginHelpNotificationWorker @AssistedInject constructor(
     }
 
     private fun defaultLoginSupportNotification(
-        notificationType: LoginHelpNotificationType = LoginHelpNotificationType.DEFAULT_HELP,
+        notificationType: LoginHelpNotificationType = DEFAULT_HELP,
         actions: List<Pair<String, Intent>> = emptyList()
     ) {
         wooNotificationBuilder.buildAndDisplayLoginHelpNotification(
@@ -122,7 +128,7 @@ class LoginHelpNotificationWorker @AssistedInject constructor(
         )
 
     private fun buildOpenLoginWithEmailScreenIntent(): Intent =
-        LoginActivity.createIntent(appContext, LoginHelpNotificationType.LOGIN_SITE_ADDRESS_ERROR)
+        LoginActivity.createIntent(appContext, LOGIN_SITE_ADDRESS_ERROR)
 
     private fun buildGetLinkByEmailIntent(notificationType: LoginHelpNotificationType): Intent =
         LoginActivity.createIntent(appContext, notificationType)
@@ -132,7 +138,7 @@ class LoginHelpNotificationWorker @AssistedInject constructor(
             resourceProvider.getString(R.string.login_help_notification_wordpress_login_button)
                 to buildOpenLoginWithEmailScreenIntent(),
             resourceProvider.getString(R.string.login_help_notification_contact_support_button)
-                to buildOpenSupportScreenIntent(LoginHelpNotificationType.LOGIN_SITE_ADDRESS_EMAIL_ERROR),
+                to buildOpenSupportScreenIntent(LOGIN_SITE_ADDRESS_EMAIL_ERROR),
         )
 
     private fun getActionsForInvalidEmailErrorNotification(

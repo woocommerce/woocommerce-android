@@ -54,8 +54,6 @@ import dagger.android.AndroidInjector
 import dagger.android.DispatchingAndroidInjector
 import dagger.android.HasAndroidInjector
 import dagger.hilt.android.AndroidEntryPoint
-import javax.inject.Inject
-import kotlin.text.RegexOption.IGNORE_CASE
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode.MAIN
 import org.wordpress.android.fluxc.Dispatcher
@@ -80,6 +78,8 @@ import org.wordpress.android.login.LoginMode
 import org.wordpress.android.login.LoginSiteAddressFragment
 import org.wordpress.android.login.LoginUsernamePasswordFragment
 import org.wordpress.android.util.ToastUtils
+import javax.inject.Inject
+import kotlin.text.RegexOption.IGNORE_CASE
 
 @Suppress("SameParameterValue")
 @AndroidEntryPoint
