@@ -1,4 +1,1 @@
-- [**] Orders: Now you can quickly mark an order as completed by swiping it to the left! [https://github.com/woocommerce/woocommerce-android/pull/7114]
-- [*] Login: add ability to install Woo for sites that don't have during login with address flow [https://github.com/woocommerce/woocommerce-android/pull/7090]
-- [**] Users will now receive notifications with help info and actions 24h after running into some issue during login [https://github.com/woocommerce/woocommerce-android/pull/7072]
-
+For this release, we focused on polishing a few things around your login experience, including the option to install WooCommerce plugin directly from the app. We are working on some pretty cool stuff for you all! Keep your feedback rolling in; it helps us figure out what to work on next. 💜
