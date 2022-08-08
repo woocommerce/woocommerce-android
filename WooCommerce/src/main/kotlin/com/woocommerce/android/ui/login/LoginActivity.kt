@@ -23,7 +23,9 @@ import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_SOURCE
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_JETPACK_INSTALLATION_SOURCE_WEB
 import com.woocommerce.android.analytics.ExperimentTracker
 import com.woocommerce.android.databinding.ActivityLoginBinding
-import com.woocommerce.android.experiment.AutomaticMagicLinkRequestExperiment
+import com.woocommerce.android.experiment.MagicLinkRequestExperiment
+import com.woocommerce.android.experiment.MagicLinkRequestExperiment.MagicLinkRequestVariant.AUTOMATIC
+import com.woocommerce.android.experiment.MagicLinkRequestExperiment.MagicLinkRequestVariant.ENHANCED
 import com.woocommerce.android.experiment.MagicLinkSentScreenExperiment
 import com.woocommerce.android.experiment.PrologueExperiment
 import com.woocommerce.android.experiment.SiteLoginExperiment
@@ -141,7 +143,7 @@ class LoginActivity :
     @Inject internal lateinit var siteLoginExperiment: SiteLoginExperiment
     @Inject internal lateinit var prologueExperiment: PrologueExperiment
     @Inject internal lateinit var sentScreenExperiment: MagicLinkSentScreenExperiment
-    @Inject internal lateinit var automaticMagicLinkRequestExperiment: AutomaticMagicLinkRequestExperiment
+    @Inject internal lateinit var magicLinkRequestExperiment: MagicLinkRequestExperiment
 
     private var loginMode: LoginMode? = null
     private var isSiteOnWPcom: Boolean? = null
@@ -409,12 +411,17 @@ class LoginActivity :
 
         val automaticMagicLinkLogin = {
             dispatchMagicLinkRequest(email)
-            val wooLoginEmailPasswordFragment = WooLoginEmailPasswordFragment.newInstance(email, verifyEmail)
+            val wooLoginEmailPasswordFragment = WooLoginEmailPasswordFragment.newInstance(email, verifyEmail, AUTOMATIC)
+            changeFragment(wooLoginEmailPasswordFragment, true, WooLoginEmailPasswordFragment.TAG)
+        }
+
+        val enhancedMagicLinkLogin = {
+            val wooLoginEmailPasswordFragment = WooLoginEmailPasswordFragment.newInstance(email, verifyEmail, ENHANCED)
             changeFragment(wooLoginEmailPasswordFragment, true, WooLoginEmailPasswordFragment.TAG)
         }
 
         lifecycleScope.launchWhenStarted {
-            automaticMagicLinkRequestExperiment.run(originalLogin, automaticMagicLinkLogin)
+            magicLinkRequestExperiment.run(originalLogin, automaticMagicLinkLogin, enhancedMagicLinkLogin)
         }
     }
 
