@@ -56,10 +56,10 @@ class GroupedProductListViewModel @Inject constructor(
     init {
         if (_productList.value == null) {
             loadProducts()
-            productListViewState = productListViewState.copy(
-                isEmptyViewShown = true
-            )
         }
+        productListViewState = productListViewState.copy(
+            isEmptyViewShown = navArgs.productIds.isEmpty()
+        )
     }
 
     fun getKeyForGroupedProductListType() = groupedProductListType.resultKey
