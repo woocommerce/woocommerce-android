@@ -38,6 +38,7 @@ import org.junit.Test
 import org.mockito.kotlin.any
 import org.mockito.kotlin.atLeastOnce
 import org.mockito.kotlin.doAnswer
+import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
@@ -50,6 +51,8 @@ import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooResult
 
 @ExperimentalCoroutinesApi
 class SitePickerViewModelTest : BaseUnitTest() {
+    private val expectedSiteList = SitePickerTestUtils.generateStores()
+
     private val resourceProvider: ResourceProvider = mock {
         on { getString(any()) } doAnswer { invocationOnMock -> invocationOnMock.arguments[0].toString() }
         on { getString(any(), any()) } doAnswer { invocationOnMock -> invocationOnMock.arguments[0].toString() }
@@ -58,7 +61,9 @@ class SitePickerViewModelTest : BaseUnitTest() {
     private val appPrefsWrapper: AppPrefsWrapper = mock()
     private val analyticsTrackerWrapper: AnalyticsTrackerWrapper = mock()
     private val userEligibilityFetcher: UserEligibilityFetcher = mock()
-    private val repository: SitePickerRepository = mock()
+    private val repository: SitePickerRepository = mock {
+        onBlocking { getSites() } doReturn expectedSiteList.toMutableList()
+    }
     private val unifiedLoginTracker: UnifiedLoginTracker = mock()
 
     private lateinit var viewModel: SitePickerViewModel
@@ -117,8 +122,6 @@ class SitePickerViewModelTest : BaseUnitTest() {
         }
     }
 
-    private val expectedSiteList = SitePickerTestUtils.generateStores()
-
     private val defaultSitePickerViewState = SitePickerViewModel.SitePickerViewState(
         userInfo = SitePickerTestUtils.userInfo,
         primaryBtnText = resourceProvider.getString(R.string.continue_button),
@@ -129,7 +132,6 @@ class SitePickerViewModelTest : BaseUnitTest() {
     @Before
     fun setup() {
         whenever(repository.getUserAccount()).thenReturn(SitePickerTestUtils.account)
-        whenever(repository.getSites()).thenReturn(expectedSiteList.toMutableList())
         givenTheScreenIsFromLogin(true)
     }
 
@@ -171,7 +173,6 @@ class SitePickerViewModelTest : BaseUnitTest() {
             val sites = items?.filterIsInstance<WooSiteUiModel>()
 
             verify(repository, times(1)).fetchWooCommerceSites()
-            verify(repository, times(1)).getSites()
             verify(analyticsTrackerWrapper, times(1)).track(
                 AnalyticsEvent.SITE_PICKER_STORES_SHOWN,
                 mapOf(AnalyticsTracker.KEY_NUMBER_OF_STORES to sites?.size)
