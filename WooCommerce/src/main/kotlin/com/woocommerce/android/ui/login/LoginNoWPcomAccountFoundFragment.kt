@@ -9,8 +9,10 @@ import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import androidx.fragment.app.Fragment
+import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.R
 import com.woocommerce.android.databinding.FragmentLoginNoWpcomAccountFoundBinding
+import com.woocommerce.android.extensions.hide
 import com.woocommerce.android.ui.login.UnifiedLoginTracker.Click
 import com.woocommerce.android.ui.login.UnifiedLoginTracker.Step
 import com.zendesk.util.StringUtils
@@ -36,6 +38,7 @@ class LoginNoWPcomAccountFoundFragment : Fragment(R.layout.fragment_login_no_wpc
     private var loginListener: LoginListener? = null
     private var emailAddress: String? = null
 
+    @Inject internal lateinit var appPrefsWrapper: AppPrefsWrapper
     @Inject internal lateinit var unifiedLoginTracker: UnifiedLoginTracker
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -62,12 +65,17 @@ class LoginNoWPcomAccountFoundFragment : Fragment(R.layout.fragment_login_no_wpc
 
         binding.noWpAccountMsg.text = getString(R.string.login_no_wpcom_account_found, emailAddress)
 
-        with(btnBinding.buttonPrimary) {
-            text = getString(R.string.login_store_address)
-            setOnClickListener {
-                unifiedLoginTracker.trackClick(Click.LOGIN_WITH_SITE_ADDRESS)
+        if (!appPrefsWrapper.getLoginSiteAddress().isNullOrBlank()) {
+            btnBinding.buttonPrimary.hide()
+        }
+        else {
+            with(btnBinding.buttonPrimary) {
+                text = getString(R.string.login_store_address)
+                setOnClickListener {
+                    unifiedLoginTracker.trackClick(Click.LOGIN_WITH_SITE_ADDRESS)
 
-                loginListener?.loginViaSiteAddress()
+                    loginListener?.loginViaSiteAddress()
+                }
             }
         }
 
