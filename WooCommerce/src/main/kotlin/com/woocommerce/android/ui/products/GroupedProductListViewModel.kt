@@ -67,7 +67,6 @@ class GroupedProductListViewModel @Inject constructor(
     fun onProductsAdded(selectedProductIds: List<Long>) {
         // ignore already added products
         val uniqueSelectedProductIds = selectedProductIds.minus(this.selectedProductIds)
-        // TODO handle linked products
         productListViewState = productListViewState.copy(
             selectedProductIds = this.selectedProductIds + uniqueSelectedProductIds
         )
@@ -76,7 +75,6 @@ class GroupedProductListViewModel @Inject constructor(
     }
 
     fun onProductDeleted(product: Product) {
-        // TODO handle linked products
         productListViewState = productListViewState.copy(
             selectedProductIds = selectedProductIds - product.remoteId
         )
@@ -88,6 +86,10 @@ class GroupedProductListViewModel @Inject constructor(
         _productList.value = if (selectedProductIds.isNotEmpty()) {
             groupedProductListRepository.getProductList(selectedProductIds)
         } else emptyList()
+
+        productListViewState = productListViewState.copy(
+            isEmptyViewShown = _productList.value?.isEmpty() ?: true
+        )
     }
 
     fun onAddProductButtonClicked() {
