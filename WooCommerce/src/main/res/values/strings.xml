@@ -206,6 +206,14 @@
     <string name="login_prologue_label_orders_subtitle">You can manage them quickly and easily</string>
     <string name="login_prologue_label_products_subtitle">We enable you to process them effortlessly</string>
 
+    <string name="login_prologue_survey_title">What brings you to WooCommerce?</string>
+    <string name="login_prologue_survey_button_exploring">Just exploring</string>
+    <string name="login_prologue_survey_button_set_up_store">Trying to set up a store</string>
+    <string name="login_prologue_survey_button_check_analytics">Check my analytics</string>
+    <string name="login_prologue_survey_button_edit_products">Create or update my products</string>
+    <string name="login_prologue_survey_button_manage_orders">Manage my orders</string>
+    <string name="login_prologue_survey_button_switch_stores">Switch between multiple stores</string>
+
     <string name="login_pick_store">Select store to connect</string>
     <string name="login_connected_store">Connected store</string>
     <string name="login_verifying_site">Verifying site…</string>
@@ -219,7 +227,8 @@
     <string name="login_not_connected_to_account">It looks like %1$s is connected to a different WordPress.com account.</string>
     <string name="login_try_another_account">Log in with another account</string>
     <string name="login_try_another_store">Try another store</string>
-    <string name="login_not_woo_store">It looks like %1$s is not a WooCommerce site. Install the WooCommerce plugin on your site and then refresh the app.</string>
+    <string name="login_not_woo_store">It looks like %1$s is not a WooCommerce site.</string>
+    <string name="login_install_woo">Install WooCommerce</string>
     <string name="login_not_connected_jetpack">To use this app for %1$s you\'ll need to have the Jetpack plugin setup and connected to this account. \n\nOnce setup, refresh the app</string>
     <string name="login_no_jetpack">To use this app for %1$s you\'ll need to have the Jetpack plugin setup and connected to a WordPress.com account</string>
     <string name="login_not_wordpress_site_v2">We were not able to detect a WordPress site at the address you entered. Please make sure WordPress is installed and that you are running the latest available version.</string>
@@ -321,6 +330,9 @@
     <string name="orderlist_simple_payments_menu">Simple payment</string>
     <string name="order_card_transition_name">order_card_%1$s</string>
     <string name="order_card_detail_transition_name">order_card_detail</string>
+    <string name="orderlist_mark_completed">Mark\ncompleted</string>
+    <string name="orderlist_mark_completed_success">Order #%1$d marked as completed</string>
+    <string name="orderlist_updating_order_error">Error updating Order #%1$d</string>
     <!--
          Simple Payments
     -->
@@ -2446,7 +2458,7 @@
     <string name="login_text_otp_another">Text me another code instead</string>
 
     <string name="login_magic_links_sent_label">Check your email on this device and tap the link in the email you received from WordPress.com.</string>
-    <string name="magic_link_not_seeing_email_message">Not seeing the email? Check your Spam or Junk Mail folder.</string>
+    <string name="magic_link_not_seeing_email_message">Not seeing the email?\nCheck your Spam or Junk Mail folder.</string>
     <string name="connect_more">Connect another site</string>
     <string name="connect_site">Connect a site</string>
     <string name="login_done">Done</string>
@@ -2469,6 +2481,8 @@
 
     <string name="login_site_address">Site address</string>
 
+    <string name="login_magic_link_auto_sent">We just sent you a magic link to your e-mail address. Please tap the link in the email to log in.</string>
+    <string name="login_magic_link_button">Log in with magic link</string>
 
     <string name="email_not_registered_wpcom">Hmm, we can\'t find a WordPress.com account connected to this email address.</string>
     <string name="login_magic_links_label">We\'ll email you a link that\'ll log you in instantly, no password needed.</string>

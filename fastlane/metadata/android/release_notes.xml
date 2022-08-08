@@ -1,102 +1,119 @@
 <ar>
-9.6:
-يتضمن هذا الإصدار خيار تحصيل المدفوعات لجميع الطلبات التي لم يتم دفعها عن طريق الدفع النقدي أو بطاقة أو روابط الدفع. يمكنك كذلك تحديد بوابة دفع مُفضَّلة عند تثبيت عدة إضافات على المتجر.
+9.7:
+يسرنا الإعلان إنه أصبح من الممكن الآن تحرير طلب من التطبيق. يمكنك تحرير المنتجات والرسوم والشحن أو إزالتها، بالإضافة إلى تغيير كمية المنتج. يمكنك كذلك البحث عن العملاء عند تحرير طلب أو إنشائه.
 
-لقد أجرينا كذلك القليل من التحسينات الطفيفة الأخرى. شكرًا لكم جميعًا مرة أخرى على ملحوظاتكم الرائعة. استمروا!
+ لقد أجرينا كذلك بعض التغييرات لعرض الحقول المخصصة الخاصة بطلب ما، بالإضافة إلى العديد من التحسينات على مدفوعاتنا وعلى عملية تدفق تسجيل الدخول الخاصة بنا، بما في ذلك خيار تثبيت Jetpack مباشرةً من التطبيق.
+
 </ar>
 <de-DE>
-9.6:
-Diese Version enthält die Möglichkeit, für alle unbezahlten Bestellungen Zahlungen in bar, per Karte oder per Zahlungslink zu empfangen. Du kannst auch ein bevorzugtes Zahlungs-Gateway auswählen, wenn mehrere Erweiterungen im Shop installiert sind.
+9.7:
+Tolle Neuigkeiten: Ab sofort ist es möglich, eine Bestellung von der App aus zu bearbeiten. Du kannst Produkte, Gebühren und Versand bearbeiten und entfernen und die Anzahl der Produkte ändern. Außerdem kannst du nach Kunden suchen, wenn du eine Bestellung bearbeitest oder erstellst.
 
-Wir haben außerdem noch ein paar andere Optimierungen vorgenommen. Danke an alle für euer hervorragendes Feedback. Weiter so!
+Zudem haben wir einige Änderungen an der Anzeige von benutzerdefinierten Feldern für eine Bestellung und mehrere Verbesserungen am Zahlungs- und Anmeldevorgang vorgenommen, wie z. B. die Option, Jetpack direkt aus der App zu installieren.
+
 </de-DE>
 <es-ES>
-9.6:
-Esta versión incluye la opción de recibir los pagos de los pedidos pendientes en efectivo, tarjeta o enlaces de pago. Además, si tienes varias extensiones instaladas en la tienda, puedes elegir la pasarela de pago que prefieras.
+9.7:
+Es un placer anunciar que ya puedes editar un pedido desde la aplicación. Puedes modificar o eliminar productos, tarifas o envíos y cambiar la cantidad de productos. También puedes buscar clientes cuando edites o crees un pedido.
 
-También hemos introducido otras mejoras más pequeñas. Gracias de nuevo por tus increíbles comentarios. ¡Sigue así!
+Además, hemos realizado algunos cambios para mostrar campos personalizados de un pedido y varias mejoras en el proceso de pagos y de inicio de sesión, incluida la opción de instalar Jetpack directamente desde la aplicación.
+
 </es-ES>
 <fr-FR>
-9.6 :
-Cette version vous permet d’encaisser les paiements de toutes les commandes impayées en espèces, par carte ou via des liens de paiement. Vous pouvez également sélectionner votre passerelle de paiement préférée lorsque plusieurs extensions sont installées dans votre boutique. 
+9.7 :
+Nous sommes ravis d’annoncer qu’il est désormais possible de modifier une commande depuis l’application. Vous pouvez modifier ou retirer des produits, des frais ou des livraisons, ainsi que modifier la quantité de produits. Vous pouvez également rechercher des clients lorsque vous modifiez ou créez une commande.
 
-Nous avons également apporté quelques corrections mineures. Une fois encore, merci à tous pour vos précieux commentaires ! Continuez à nous les envoyer !
+Nous avons également apporté quelques modifications au niveau de l’affichage de champs personnalisés lors d’une commande ainsi que plusieurs améliorations à notre flux de paiement et de connexion, notamment la possibilité d’installer Jetpack directement depuis l’application.
+
 </fr-FR>
 <iw-IL>
-9.6:
-בגרסה הזאת הוספנו אפשרות לגביית תשלומים עבור כל ההזמנות שלא שולמו במזומן, באמצעות כרטיס או דרך קישורים לתשלום. אפשר גם לבחור שער תשלום מועדף אם מותקנות מספר הרחבות בחנות.
+9.7:
+אנחנו מתרגשים להודיע שכעת אפשר לערוך הזמנה ישירות מהאפליקציה. אפשר לערוך או להסיר מוצרים, עמלות ומשלוחים ולשנות את הכמות של המוצר. אפשר גם לחפש לקוחות כאשר עורכים או יוצרים הזמנה.
 
-הוספנו גם כמה שיפורים קטנים אחרים. אנחנו שוב רוצים להודות לכולם על המשוב החשוב. תמיד נשמח לשמוע מה דעתכם!
+בנוסף, הוספנו שינויים גם לתצוגה של שדות מותאמים בהזמנות וכמה שיפורים לתהליך התשלום וההתחברות, כולל אפשרות להתקין את Jetpack ישירות מהאפליקציה.
+
 </iw-IL>
 <id>
-9.6:
-Rilis ini mencakup pilihan untuk menerima pembayaran untuk semua pesanan yang belum dibayar melalui tunai, kartu, atau tautan pembayaran. Jika beberapa ekstensi diinstal di toko, Anda juga dapat memilih gateway pembayaran yang diutamakan.
+9.7:
+Kami senang dapat memberitahukan bahwa sekarang Anda dapat menyunting pesanan dari aplikasi. Anda dapat menyunting atau menghapus produk, biaya, pengiriman, serta mengubah jumlah produk. Anda juga dapat mencari pelanggan saat menyunting atau membuat pesanan.
 
-Kami juga telah membuat peningkatan minor lainnya. Sekali lagi, terima kasih atas feedback Anda. Terus kirimkan feedback Anda!
+Kami juga melakukan perubahan untuk menampilkan kolom khusus untuk pesanan, serta peningkatan untuk alur pembayaran dan login, termasuk pilihan untuk menginstal Jetpack langsung dari aplikasi.
+
 </id>
 <it-IT>
-9.6:
-Questo rilascio include l'opzione per ricevere pagamenti per tutti gli ordini non pagati tramite contanti, carta o link di pagamento. Puoi anche selezionare un gateway di pagamento preferito quando vengono installate più estensioni nel negozio.
+9,7:
+Siamo entusiasti di annunciare che ora è possibile modificare un ordine dall'app. Puoi modificare o rimuovere prodotti, tariffe, spedizione e modificare le quantità dei prodotti. Puoi anche cercare clienti durante la modifica o la creazione di un ordine.
 
-Abbiamo anche apportato altri miglioramenti minori. Grazie a tutti ancora per il meraviglioso feedback. Continuate a inviarlo.
+Abbiamo anche apportato alcune modifiche per visualizzare i campi personalizzati per un ordine e diversi miglioramenti ai nostri pagamenti e al flusso di accesso, inclusa l'opzione di installare Jetpack direttamente dall'app.
+
 </it-IT>
 <ja-JP>
-9.6:
-このリリースには、すべての未払い注文に対する支払いを現金、カード、支払いリンク経由で受け取るオプションが含まれています。 複数の拡張機能がストアにインストールされている場合は、希望の決済方法を選択することもできます。
+9.7:
+この度、アプリから注文の編集が可能になりましたのでお知らせします。商品、手数料、配送料の編集と削除、商品の数量変更が可能です。 注文の編集または作成時に顧客を検索することもできます。
 
-いくつかの細かな改善も行っています。 皆さまからのフィードバックが改善の励みになります。 今後ともよろしくお願いいたします。
+また、注文のカスタムフィールドを表示するように変更したほか、支払いやログインのフローをいくつか改善し、アプリから直接 Jetpack をインストールするオプションも追加しました。
+
 </ja-JP>
 <ko-KR>
-9.6:
-이 릴리스에는 현금, 카드 또는 결제 링크를 통한 모든 미결제 주문에 대한 결제를 수령하는 옵션이 있습니다. 스토어에 여러 확장 기능이 있으면 선호하는 결제 게이트웨이를 선택할 수도 있습니다.
+9.7:
+기쁜 소식을 알려드립니다. 이제 앱에서 주문을 편집할 수 있습니다. 상품, 수수료, 배송을 편집하거나 제거하고 상품 수량을 변경할 수 있습니다. 주문을 편집하거나 생성할 때 고객을 검색할 수도 있습니다.
 
-다른 몇 가지도 소소하게 개선했습니다. 놀라운 피드백을 제공해 주셔서 정말로 감사합니다. 계속 보내주세요!
+또한 주문에 대한 사용자 정의 필드 표시를 약간 변경하고 앱에서 직접 젯팩을 설치하는 옵션을 포함하여 결제 및 로그인 흐름을 몇 가지 개선했습니다.
+
 </ko-KR>
 <nl-NL>
-9.6:
-Met deze versie kun je betalingen met cash, betaalkaart of betaallinks innen voor alle onbetaalde bestellingen. Daarnaast kun je een favoriete betaalgateway selecteren als je meerdere extensies voor je winkel hebt geïnstalleerd.
+9.7:
+We zijn erg blij te kunnen vertellen dat het nu mogelijk is om een bestelling via de app te bewerken. Je kan producten, kosten en verzending bewerken of verwijderen en de producthoeveelheid wijzigen. Je kan ook naar klanten zoeken wanneer je een bestelling aanmaakt of bewerkt.
 
-We hebben tevens enkele kleine verbeteringen doorgevoerd. Wederom bedankt voor jullie geweldige feedback. Blijf zo doorgaan!
+We hebben tevens wat wijzigingen aangebracht om aangepaste velden van een bestelling weer te geven. Ook hebben we de betalings- en login-workflow verbeterd, zodat je nu de optie hebt om Jetpack direct vanuit de app te installeren.
+
 </nl-NL>
 <pt-BR>
-9.6:
-Esta versão inclui a opção de receber os pagamentos de todos os pedidos não pagos em dinheiro, cartão ou links de pagamento. Você também pode selecionar o gateway de pagamento que quiser quando várias extensões estão instaladas na loja.
+9.7:
+Estamos muito felizes em anunciar que agora é possível editar um pedido no aplicativo. Você pode editar ou remover produtos, taxas e frete e alterar a quantidade de produtos. Você também pode pesquisar clientes ao alterar ou criar um pedido.
 
-Além disso, fizemos algumas outras pequenas melhorias. Obrigado a todos pelos incríveis feedbacks. Continuem mandando!
+Também fizemos algumas mudanças na exibição dos campos personalizados de um pedido, além de várias melhorias no nosso sistema de pagamento e no processo de login, incluindo a opção de instalar o Jetpack pelo aplicativo.
+
 </pt-BR>
 <ru-RU>
-9.6:
-В этой версии добавлена возможность получения платежей за неоплаченные заказы наличными средствами, картой или посредством ссылок для оплаты. Кроме того, можно выбрать предпочтительный платёжный сервис, если для магазина установлено несколько расширений.
+9.7:
+Рады сообщить, что теперь вы можете редактировать заказы в приложении. Меняйте или удаляйте продукты, управляйте платежами, доставкой и изменяйте количество продуктов, как вам нужно. Вы также можете выполнять поиск клиентов при редактировании или создании заказа.
 
-Мы также внесли некоторые незначительные усовершенствования. Благодарим вас за невероятные отзывы. Они очень важны для нас!
+Кроме того, мы внесли некоторые изменения с целью отображения пользовательских полей для заказа, а также улучшили операции с платежами и процедуру входа, включая опцию установки Jetpack прямо в приложении.
+
 </ru-RU>
 <sv-SE>
-9.6:
-Den här versionen inkluderar möjligheten att ta betalt för alla obetalda beställningar via kontanter, kort eller betalningslänkar. Du kan även välja en föredragen betalnings-gateway när det finns flera utökningar installerade på butiken.
+9.7:
+Vi är glada att kunna meddela att det nu är möjligt att redigera en beställning direkt från appen. Du kan redigera eller ta bort produkter, avgifter, frakt samt ändra produktkvantitet. Du kan också söka efter kunder när du redigerar eller skapar en beställning.
 
-Vi har även utfört vissa mindre förbättringar. Tack ännu en gång för all fantastisk feedback. Fortsätt skicka in den!
+Vi har även gjort några ändringar som gör det möjligt att visa anpassade fält för en beställning samt flertalet förbättringar av vårt betalnings- och inloggningsflöde, inklusive möjligheten att installera Jetpack direkt från appen.
+
 </sv-SE>
 <tr-TR>
-9.6:
-Bu sürüm, ödenmemiş tüm siparişler için ödemeleri nakit, kart veya ödeme bağlantıları aracılığıyla tahsil etme seçeneğini içerir. Mağazada birden fazla uzantı yüklü olduğunda da tercih edilen bir ödeme ağ geçidini seçebilirsiniz.
+9.7:
+Artık uygulamadan bir siparişi düzenlemenin mümkün olduğunu duyurmaktan heyecan duyuyoruz. Ürünleri, ücretleri, gönderim bilgilerini düzenleyebilir veya kaldırabilir ve ürün miktarını değiştirebilirsiniz. Bir siparişi düzenlerken veya oluştururken de müşteri arayabilirsiniz.
 
-Ayrıca birkaç küçük iyileştirme daha yaptık. Harika geri bildirimleriniz için herkese tekrar teşekkür ederim. Devam edin!
+Ayrıca bir sipariş için özel alanları görüntüleme konusunda bazı değişiklikler yaptık ve Jetpack'i doğrudan uygulamadan yükleme seçeneği de dahil olmak üzere ödeme ve oturum açma akışımızda çeşitli iyileştirmeler yaptık.
+
 </tr-TR>
 <zh-CN>
-9.6：
-此版本包括选择通过现金、银行卡或付款链接向所有未付款订单收款。 当商店安装了多个扩展时，您也可以选择推荐的付款网关。
+9.7：
+我们激动地宣布，现在可以通过应用程序编辑订单了。您可以编辑或移除产品、费用、配送方式，以及更改产品数量。 您还可以在编辑或创建订单时搜索客户。
 
-我们还做了其他一些细微改进。 再次感谢您宝贵的反馈。 请继续提供反馈！
+我们还更改了订单的自定义字段，并改进了我们的付款和登录流程，包括直接从应用程序安装 Jetpack。
+
 </zh-CN>
 <zh-TW>
-9.6：
-此版本包含收款選項，可讓你透過現金、信用卡或付款連結收取所有未付款訂單的費用。 如果商店安裝多個擴充功能，你也可以選擇偏好的付款閘道。
+9.7：
+很高興在此宣布，我們已實現從應用程式編輯訂單的功能。你可以編輯或移除產品、費用、運送方式以及變更產品數量。 你也可以在編輯或建立訂單時搜尋顧客。
 
-我們也完成了幾項微幅改善作業。 再次感謝你提供寶貴的意見回饋， 未來請繼續多多指教！
+我們也做出了一些變更，讓訂單可以顯示自訂欄位，並為付款和登入流程進行了數種改善，包括直接從應用程式安裝 Jetpack 的選項。
+
 </zh-TW>
 <en-US>
-9.6:
-This release includes the option to collect payments for all unpaid orders via cash, card or payment links. You can also select a preferred payment gateway when multiple extensions are installed on the store.
+9.7:
+We’re thrilled to announce that it’s now possible to edit an order from the app. You can edit or remove products, fees, shipping and change product quantity. You can also search for customers when editing or creating an order.
 
-We’ve also made a few other minor improvements. Thank you all again for your amazing feedback. Keep it coming!
+We’ve also made some changes to display custom fields for an order and several improvements to our payments and login flow, including the option to install Jetpack directly from the app.
+
 </en-US>

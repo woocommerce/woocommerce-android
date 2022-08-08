@@ -1,11 +1,38 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2022-07-14 12:54:03+0000
+Translation-Revision-Date: 2022-08-05 15:59:32+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: es
 -->
 <resources>
+    <string name="lets_get_started">¡Empecemos!</string>
+    <string name="login_help_notification_wordpress_login_button">Inicia sesión en WordPress.com</string>
+    <string name="login_help_notification_contact_support_button">Ponte en contacto con el servicio de soporte</string>
+    <string name="login_help_notification_site_error_description">Intenta iniciar sesión con tu cuenta de WordPress.com</string>
+    <string name="login_help_notification_no_interaction_default_description">Obtén un poco de ayuda.</string>
+    <string name="login_help_notification_default_title">¿Tienes problemas para iniciar sesión?</string>
+    <string name="product_search_sku">SKU</string>
+    <string name="product_search_all">Todos los productos</string>
+    <string name="card_reader_upsell_card_reader_banner_dont_show_again">NO MOSTRAR DE NUEVO</string>
+    <string name="card_reader_upsell_card_reader_banner_remind_me_later">RECUÉRDAMELO MÁS TARDE</string>
+    <string name="card_reader_upsell_card_reader_banner_dismiss_dialog_description">No te preocupes: Siempre puedes ir a Ajustes y empezar con Pagos en Persona.</string>
+    <string name="card_reader_upsell_card_reader_banner_payments">Pagos en Persona</string>
+    <string name="card_reader_upsell_card_reader_banner_cta">Comprar lector de tarjetas</string>
+    <string name="card_reader_upsell_card_reader_banner_description">Prepárate para aceptar pagos con el lector de tarjetas.</string>
+    <string name="card_reader_upsell_card_reader_banner_title">Acepta pagos de forma rápida</string>
+    <string name="card_reader_upsell_card_reader_banner_new">NOVEDAD</string>
+    <string name="card_reader_upsell_card_reader_banner_dismiss">Descartar</string>
+    <string name="orderdetail_view_custom_fields">Ver campos personalizados</string>
+    <string name="orderdetail_custom_fields">Campos personalizados</string>
+    <string name="order_sync_failed">No se pueden guardar los cambios</string>
+    <string name="existing_order_cash_dlg_message">Si has recibido el pago fuera de WooCommerce, esta acción marcará el pedido como pagado.</string>
+    <string name="login_jetpack_install">Instalar Jetpack</string>
+    <string name="login_prologue_label_products_subtitle">Puedes procesarlos sin esfuerzo</string>
+    <string name="login_prologue_label_orders_subtitle">Puedes gestionarlos de forma rápida y sencilla</string>
+    <string name="login_prologue_label_analytics_subtitle">Sabemos que es fundamental para tu negocio</string>
+    <string name="login_prologue_new_to_woo">Nuevo en WooCommerce</string>
+    <string name="notification_channel_pre_login_title">Recordatorios de solución de problemas para iniciar sesión</string>
     <string name="tests_notification_new_order_message">Nuevo pedido de 50 $ en tu tienda de WooCommerce</string>
     <string name="tests_notification_new_order_title">Tienes un pedido nuevo 🎉</string>
     <string name="lines_all_details">los detalles</string>
@@ -228,6 +255,7 @@ Language: es
     <string name="coupon_details_minimum_spend">Gasto mínimo de %s</string>
     <string name="coupon_details_heading">Resumen del cupón</string>
     <string name="coupon_list_view_coupon">Ver el resumen del cupón</string>
+    <string name="coupon_list_wip_message_enabled">¡Hemos estado trabajando para que puedas ver y editar los cupones desde tu dispositivo!</string>
     <string name="coupon_list_wip_title">Ver y editar cupones</string>
     <string name="coupon_list_empty_heading">No se han encontrado cupones</string>
     <string name="coupon_list_item_label_included_and_excluded">%1s excepto %2s</string>
@@ -297,7 +325,6 @@ Language: es
     <string name="card_reader_onboarding_both_plugins_activated_hint_store_owner">Los Pagos en Persona solo funcionarán si uno de los siguientes plugins está activado. Para continuar, ponte en contacto con un administrador del sitio y desactiva uno de estos plugins:</string>
     <string name="card_reader_onboarding_both_plugins_activated_hint_admin">Los Pagos en Persona solo funcionarán si uno de los siguientes plugins está activado. Para continuar, desactiva uno de estos plugins:</string>
     <string name="card_reader_onboarding_both_plugins_activated_header">Se han detectado plugins de pago conflictivos.</string>
-    <string name="order_creation_price_calculation_failed">No se ha podido actualizar el precio.</string>
     <string name="order_creation_payment_tax">Impuestos</string>
     <string name="exclusive_or">o</string>
     <string name="settings_install_jetpack">Instalar Jetpack</string>
@@ -789,10 +816,9 @@ Language: es
     <string name="user_role_access_error_retry">No tienes el rol de usuario correcto</string>
     <string name="user_role_access_error_link">Aprende más sobre los roles y los permisos</string>
     <string name="user_role_access_error_msg">Esta aplicación solo es compatible con los roles de usuario de administrador y gestor de tienda. Contacta con el propietario de la tienda para actualizar tu rol.</string>
-    <string name="login_prologue_label_reviews">Supervisa y aprueba los comentarios de tus productos</string>
     <string name="login_prologue_label_products">Edita y añade nuevos productos desde cualquier lugar</string>
-    <string name="login_prologue_label_orders">Gestiona tus pedidos de la tienda sobre la marcha</string>
-    <string name="login_prologue_label_analytics">Monitoriza las ventas y los productos más vendidos</string>
+    <string name="login_prologue_label_orders">Gestiona y edita pedidos sobre la marcha</string>
+    <string name="login_prologue_label_analytics">Llevar un control de las ventas y los productos más vendidos</string>
     <string name="skip">Omitir</string>
     <string name="product_type_external_title">Producto externo</string>
     <string name="product_type_grouped_title">Producto agrupado</string>

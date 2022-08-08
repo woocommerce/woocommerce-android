@@ -1,11 +1,38 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2022-07-14 16:54:03+0000
+Translation-Revision-Date: 2022-08-05 15:57:51+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: ko_KR
 -->
 <resources>
+    <string name="lets_get_started">시작해 보세요!</string>
+    <string name="login_help_notification_wordpress_login_button">워드프레스닷컴으로 로그인</string>
+    <string name="login_help_notification_contact_support_button">지원 문의</string>
+    <string name="login_help_notification_site_error_description">워드프레스닷컴 계정으로 로그인 시도</string>
+    <string name="login_help_notification_no_interaction_default_description">조금 도움을 받으세요!</string>
+    <string name="login_help_notification_default_title">로그인에 문제가 있나요?</string>
+    <string name="product_search_sku">SKU</string>
+    <string name="product_search_all">모든 상품</string>
+    <string name="card_reader_upsell_card_reader_banner_dont_show_again">다시 보지 않음</string>
+    <string name="card_reader_upsell_card_reader_banner_remind_me_later">나중에 다시 알림</string>
+    <string name="card_reader_upsell_card_reader_banner_dismiss_dialog_description">걱정하지 마세요! 언제든지 설정에서 대면 결제를 시작하실 수 있습니다.</string>
+    <string name="card_reader_upsell_card_reader_banner_payments">대면 결제</string>
+    <string name="card_reader_upsell_card_reader_banner_cta">카드 리더 구매</string>
+    <string name="card_reader_upsell_card_reader_banner_description">카드 리더로 결제를 수락할 준비를 하세요.</string>
+    <string name="card_reader_upsell_card_reader_banner_title">쉽게 결제 수락</string>
+    <string name="card_reader_upsell_card_reader_banner_new">신규</string>
+    <string name="card_reader_upsell_card_reader_banner_dismiss">해제</string>
+    <string name="orderdetail_view_custom_fields">사용자 정의 필드 보기</string>
+    <string name="orderdetail_custom_fields">사용자 정의 필드</string>
+    <string name="order_sync_failed">변경 사항을 저장할 수 없음</string>
+    <string name="existing_order_cash_dlg_message">그러면 우커머스 외부에서 결제받은 경우 결제됨으로 표시됩니다.</string>
+    <string name="login_jetpack_install">젯팩 설치</string>
+    <string name="login_prologue_label_products_subtitle">손쉽게 처리하실 수 있습니다.</string>
+    <string name="login_prologue_label_orders_subtitle">빠르고 쉽게 관리할 수 있습니다.</string>
+    <string name="login_prologue_label_analytics_subtitle">비즈니스에 꼭 필요합니다.</string>
+    <string name="login_prologue_new_to_woo">우커머스 신규 이용</string>
+    <string name="notification_channel_pre_login_title">로그인 문제 해결 알림</string>
     <string name="tests_notification_new_order_message">우커머스 스토어의 새 주문 $50</string>
     <string name="tests_notification_new_order_title">새 주문이 있습니다! 🎉</string>
     <string name="lines_all_details">상세 정보</string>
@@ -228,6 +255,7 @@ Language: ko_KR
     <string name="coupon_details_minimum_spend">%s의 최소 지출</string>
     <string name="coupon_details_heading">쿠폰 요약</string>
     <string name="coupon_list_view_coupon">쿠폰 요약 보기</string>
+    <string name="coupon_list_wip_message_enabled">기기에서 쿠폰을 보고 편집할 수 있도록 작업하고 있습니다.</string>
     <string name="coupon_list_wip_title">쿠폰 보기 및 편집</string>
     <string name="coupon_list_empty_heading">쿠폰 없음</string>
     <string name="coupon_list_item_label_included_and_excluded">%1s(%2s 제외)</string>
@@ -297,7 +325,6 @@ Language: ko_KR
     <string name="card_reader_onboarding_both_plugins_activated_hint_store_owner">활성화된 다음 플러그인 중 하나만 직접 결제와 연동합니다. 계속하려면 사이트 관리자에게 문의하여 다음과 같은 플러그인 중 하나를 비활성화하세요.</string>
     <string name="card_reader_onboarding_both_plugins_activated_hint_admin">활성화된 다음 플러그인 중 하나만 직접 결제와 연동합니다. 계속하려면 다음과 같은 플러그인 중 하나를 비활성화하세요.</string>
     <string name="card_reader_onboarding_both_plugins_activated_header">충돌하는 결제 플러그인 감지됨</string>
-    <string name="order_creation_price_calculation_failed">가격을 업데이트할 수 없음</string>
     <string name="order_creation_payment_tax">세금</string>
     <string name="exclusive_or">또는</string>
     <string name="settings_install_jetpack">젯팩 설치</string>
@@ -789,10 +816,9 @@ Language: ko_KR
     <string name="user_role_access_error_retry">올바른 사용자 역할이 없음</string>
     <string name="user_role_access_error_link">역할 및 권한에 대해 더 알아보기</string>
     <string name="user_role_access_error_msg">이 앱에서는 관리자와 상점 관리자만 사용자 역할로 지원됩니다.  역할을 업그레이드하려면 스토어 소유자에게 문의하세요.</string>
-    <string name="login_prologue_label_reviews">제품 리뷰 모니터링 및 승인</string>
     <string name="login_prologue_label_products">어디서나 새 제품 편집 및 추가</string>
-    <string name="login_prologue_label_orders">이동 중 스토어 주문 관리</string>
-    <string name="login_prologue_label_analytics">판매 및 고성과 제품 추적</string>
+    <string name="login_prologue_label_orders">항상 주문 관리 및 편집</string>
+    <string name="login_prologue_label_analytics">판매 및 고성과 상품 추적</string>
     <string name="skip">건너뛰기</string>
     <string name="product_type_external_title">외부 제품</string>
     <string name="product_type_grouped_title">묶음 제품</string>

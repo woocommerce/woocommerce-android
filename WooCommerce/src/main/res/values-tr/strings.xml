@@ -1,11 +1,38 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2022-07-14 08:54:17+0000
+Translation-Revision-Date: 2022-08-05 16:02:24+0000
 Plural-Forms: nplurals=2; plural=(n > 1);
 Generator: GlotPress/2.4.0-alpha
 Language: tr
 -->
 <resources>
+    <string name="lets_get_started">Başlayalım</string>
+    <string name="login_help_notification_wordpress_login_button">WordPress.com ile oturum açın</string>
+    <string name="login_help_notification_contact_support_button">Desteğe daşvurun</string>
+    <string name="login_help_notification_site_error_description">WordPress.com hesabınızla oturum açmayı deneyin</string>
+    <string name="login_help_notification_no_interaction_default_description">Yardım alın!</string>
+    <string name="login_help_notification_default_title">Oturum açarken sorun mu yaşıyorsunuz?</string>
+    <string name="product_search_sku">SKU</string>
+    <string name="product_search_all">Tüm ürünler</string>
+    <string name="card_reader_upsell_card_reader_banner_dont_show_again">TEKRAR GÖSTERME</string>
+    <string name="card_reader_upsell_card_reader_banner_remind_me_later">DAHA SONRA HATIRLAT</string>
+    <string name="card_reader_upsell_card_reader_banner_dismiss_dialog_description">Endişe etmeyin: İstediğiniz zaman Şahsen Ödemeleri Ayarlar bölümünden kullanmaya başlayabilirsiniz.</string>
+    <string name="card_reader_upsell_card_reader_banner_payments">Şahsen Ödemeler</string>
+    <string name="card_reader_upsell_card_reader_banner_cta">Kart Okuyucu Satın Alın</string>
+    <string name="card_reader_upsell_card_reader_banner_description">Kart okuyucu ile ödeme kabul etmeye hazır olun.</string>
+    <string name="card_reader_upsell_card_reader_banner_title">Ödemeleri kolayca kabul edin</string>
+    <string name="card_reader_upsell_card_reader_banner_new">YENİ</string>
+    <string name="card_reader_upsell_card_reader_banner_dismiss">Kapat</string>
+    <string name="orderdetail_view_custom_fields">Özel alanları görüntüle</string>
+    <string name="orderdetail_custom_fields">Özel alanlar</string>
+    <string name="order_sync_failed">Değişiklikler kaydedilemiyor</string>
+    <string name="existing_order_cash_dlg_message">WooCommerce dışından ödeme aldıysanız, bu sipariş ödendi olarak işaretlenir</string>
+    <string name="login_jetpack_install">Jetpack\'i yükleyin </string>
+    <string name="login_prologue_label_products_subtitle">Bunları zahmetsizce işlemenizi sağlıyoruz</string>
+    <string name="login_prologue_label_orders_subtitle">Bunları hızlı ve kolay bir şekilde yönetebilirsiniz</string>
+    <string name="login_prologue_label_analytics_subtitle">İşiniz için gerekli olduğunu biliyoruz</string>
+    <string name="login_prologue_new_to_woo">WooCommerce\'ü yeni kullanmaya mı başladınız?</string>
+    <string name="notification_channel_pre_login_title">Oturum açma ile ilgili sorun giderme hatırlatıcıları</string>
     <string name="tests_notification_new_order_message">WooCommerce Mağazanızda 50 ABD doları tutarında yeni sipariş</string>
     <string name="tests_notification_new_order_title">Yeni bir siparişiniz var! 🎉</string>
     <string name="lines_all_details">ayrıntılar</string>
@@ -228,6 +255,7 @@ Language: tr
     <string name="coupon_details_minimum_spend">Minimum harcama %s</string>
     <string name="coupon_details_heading">Kupon Özeti</string>
     <string name="coupon_list_view_coupon">Kupon özetini görüntüle</string>
+    <string name="coupon_list_wip_message_enabled">Kuponları cihazınızdan görüntüleyip düzenleyebilmeniz için çalışıyoruz!</string>
     <string name="coupon_list_wip_title">Kuponları görüntüle ve düzenle</string>
     <string name="coupon_list_empty_heading">Kupon bulunamadı</string>
     <string name="coupon_list_item_label_included_and_excluded">%2s hariç, %1s</string>
@@ -297,7 +325,6 @@ Language: tr
     <string name="card_reader_onboarding_both_plugins_activated_hint_store_owner">Şahsen Ödemeler yalnızca aşağıdaki eklentilerden biri etkinleştirildiğinde çalışır. Devam etmek üzere bu eklentilerden birini devre dışı bırakması için lütfen bir site yöneticisiyle iletişime geçin:</string>
     <string name="card_reader_onboarding_both_plugins_activated_hint_admin">Şahsen Ödemeler yalnızca aşağıdaki eklentilerden biri etkinleştirildiğinde çalışır. Devam etmek için lütfen bu eklentilerden birini devre dışı bırakın:</string>
     <string name="card_reader_onboarding_both_plugins_activated_header">Çakışan ödeme eklentileri algılandı</string>
-    <string name="order_creation_price_calculation_failed">Fiyatlandırma güncellenemedi</string>
     <string name="order_creation_payment_tax">Vergiler</string>
     <string name="exclusive_or">veya</string>
     <string name="settings_install_jetpack">Jetpack\'i Kur</string>
@@ -789,9 +816,8 @@ Language: tr
     <string name="user_role_access_error_retry">Doğru kullanıcı rolüne sahip değilsiniz</string>
     <string name="user_role_access_error_link">Roller ve izinler hakkında daha fazla bilgi edinin</string>
     <string name="user_role_access_error_msg">Bu uygulama yalnızca Yönetici ve Mağaza Yöneticisi kullanıcı rollerini destekler. Rolünüzü yükseltmek için lütfen mağazanızın sahibiyle iletişime geçin.</string>
-    <string name="login_prologue_label_reviews">Ürün incelemelerinizi izleyin ve onaylayın</string>
     <string name="login_prologue_label_products">Her yerden yeni ürünler ekleyin ve düzenleyin</string>
-    <string name="login_prologue_label_orders">Mağaza siparişlerinizi hareket halindeyken yönetin</string>
+    <string name="login_prologue_label_orders">Hareket halindeyken siparişleri yönetin ve düzenleyin</string>
     <string name="login_prologue_label_analytics">Satışları ve yüksek performanslı ürünleri takip edin</string>
     <string name="skip">Atla</string>
     <string name="product_type_external_title">Harici ürün</string>
