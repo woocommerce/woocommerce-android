@@ -6,7 +6,6 @@ import androidx.navigation.fragment.findNavController
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
-import com.woocommerce.android.analytics.AnalyticsTracker.Companion.ConnectedProductsListAction
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_LINKED_PRODUCTS_ACTION
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.LinkedProductsAction
 import com.woocommerce.android.databinding.FragmentLinkedProductsBinding
@@ -118,36 +117,16 @@ class LinkedProductsFragment : BaseProductFragment(R.layout.fragment_linked_prod
 
     private fun showGroupedProductFragment(groupedProductType: GroupedProductListType) {
         val productIds = when (groupedProductType) {
-            UPSELLS -> viewModel.getProduct().productDraft?.upsellProductIds
-            else -> viewModel.getProduct().productDraft?.crossSellProductIds
+            UPSELLS -> viewModel.getProduct().productDraft?.upsellProductIds ?: emptyList()
+            else -> viewModel.getProduct().productDraft?.crossSellProductIds ?: emptyList()
         }
 
-        // go straight to the "add products" screen if the list is empty, otherwise show the grouped
-        // products screen
-        if (productIds.isNullOrEmpty()) {
-            AnalyticsTracker.track(
-                AnalyticsEvent.CONNECTED_PRODUCTS_LIST,
-                mapOf(
-                    AnalyticsTracker.KEY_CONNECTED_PRODUCTS_LIST_CONTEXT to groupedProductType.statContext.value,
-                    AnalyticsTracker.KEY_CONNECTED_PRODUCTS_LIST_ACTION to ConnectedProductsListAction.ADD_TAPPED.value
-                )
+        findNavController().navigateSafely(
+            GroupedProductListFragmentDirections.actionGlobalGroupedProductListFragment(
+                remoteProductId = viewModel.getRemoteProductId(),
+                productIds = productIds.toLongArray(),
+                groupedProductListType = groupedProductType
             )
-            findNavController().navigateSafely(
-                ProductDetailFragmentDirections
-                    .actionGlobalProductSelectionListFragment(
-                        remoteProductId = viewModel.getRemoteProductId(),
-                        groupedProductListType = groupedProductType,
-                        excludedProductIds = longArrayOf()
-                    )
-            )
-        } else {
-            findNavController().navigateSafely(
-                GroupedProductListFragmentDirections.actionGlobalGroupedProductListFragment(
-                    remoteProductId = viewModel.getRemoteProductId(),
-                    productIds = productIds.toLongArray(),
-                    groupedProductListType = groupedProductType
-                )
-            )
-        }
+        )
     }
 }
