@@ -67,8 +67,7 @@ class LoginNoWPcomAccountFoundFragment : Fragment(R.layout.fragment_login_no_wpc
 
         if (!appPrefsWrapper.getLoginSiteAddress().isNullOrBlank()) {
             btnBinding.buttonPrimary.hide()
-        }
-        else {
+        } else {
             with(btnBinding.buttonPrimary) {
                 text = getString(R.string.login_store_address)
                 setOnClickListener {
