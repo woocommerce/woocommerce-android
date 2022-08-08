@@ -58,7 +58,8 @@ class GroupedProductListViewModel @Inject constructor(
             loadProducts()
         }
         productListViewState = productListViewState.copy(
-            isEmptyViewShown = navArgs.productIds.isEmpty()
+            isEmptyViewShown = navArgs.productIds.isEmpty() &&
+                selectedProductIds.isEmpty()
         )
     }
 
