@@ -6,6 +6,7 @@ import androidx.navigation.fragment.findNavController
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.ConnectedProductsListAction
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_LINKED_PRODUCTS_ACTION
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.LinkedProductsAction
 import com.woocommerce.android.databinding.FragmentLinkedProductsBinding
@@ -120,6 +121,14 @@ class LinkedProductsFragment : BaseProductFragment(R.layout.fragment_linked_prod
             UPSELLS -> viewModel.getProduct().productDraft?.upsellProductIds
             else -> viewModel.getProduct().productDraft?.crossSellProductIds
         }
+
+        AnalyticsTracker.track(
+            AnalyticsEvent.CONNECTED_PRODUCTS_LIST,
+            mapOf(
+                AnalyticsTracker.KEY_CONNECTED_PRODUCTS_LIST_CONTEXT to groupedProductType.statContext.value,
+                AnalyticsTracker.KEY_CONNECTED_PRODUCTS_LIST_ACTION to ConnectedProductsListAction.ADD_TAPPED.value
+            )
+        )
 
         // go straight to the "add products" screen if the list is empty, otherwise show the grouped
         // products screen
