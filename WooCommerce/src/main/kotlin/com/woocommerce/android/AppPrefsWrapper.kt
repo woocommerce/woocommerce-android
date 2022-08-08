@@ -4,10 +4,10 @@ import android.content.SharedPreferences.OnSharedPreferenceChangeListener
 import com.woocommerce.android.ui.payments.cardreader.onboarding.PersistentOnboardingData
 import com.woocommerce.android.ui.payments.cardreader.onboarding.PluginType
 import com.woocommerce.android.ui.promobanner.PromoBannerType
+import javax.inject.Inject
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
-import javax.inject.Inject
 
 class AppPrefsWrapper @Inject constructor() {
     var isCouponsEnabled: Boolean by AppPrefs::isCouponsEnabled
@@ -166,6 +166,11 @@ class AppPrefsWrapper @Inject constructor() {
 
     fun setPreLoginNotificationDisplayed(displayed: Boolean) =
         AppPrefs.setPreLoginNotificationDisplayed(displayed)
+
+    fun setLoginEmail(email: String) =
+        AppPrefs.setLoginEmail(email)
+
+    fun getLoginEmail() = AppPrefs.getLoginEmail()
 
     fun setOnboardingCarouselDisplayed(displayed: Boolean) =
         AppPrefs.setOnboardingCarouselDisplayed(displayed)

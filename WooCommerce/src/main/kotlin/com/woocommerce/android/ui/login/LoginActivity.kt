@@ -351,7 +351,7 @@ class LoginActivity :
     override fun gotWpcomEmail(email: String?, verifyEmail: Boolean, authOptions: AuthOptions?) {
         val isMagicLinkEnabled =
             getLoginMode() != LoginMode.WPCOM_LOGIN_DEEPLINK && getLoginMode() != LoginMode.SHARE_INTENT
-
+        email?.let { appPrefsWrapper.setLoginEmail(it) }
         if (authOptions != null) {
             if (authOptions.isPasswordless) {
                 showMagicLinkRequestScreen(email, verifyEmail, allowPassword = false, forceRequestAtStart = true)
