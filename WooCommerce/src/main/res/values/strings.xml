@@ -215,6 +215,7 @@
     <string name="login_prologue_survey_button_switch_stores">Switch between multiple stores</string>
 
     <string name="login_pick_store">Select store to connect</string>
+    <string name="login_non_woo_stores_label">Other sites</string>
     <string name="login_connected_store">Connected store</string>
     <string name="login_verifying_site">Verifying site…</string>
     <string name="login_verifying_site_error">Cannot connect to %s</string>

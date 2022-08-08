@@ -24,7 +24,7 @@ import com.woocommerce.android.ui.sitepicker.SitePickerViewModel.SitePickerState
 import com.woocommerce.android.ui.sitepicker.SitePickerViewModel.SitePickerState.StoreListState
 import com.woocommerce.android.ui.sitepicker.SitePickerViewModel.SitePickerState.WooNotFoundState
 import com.woocommerce.android.ui.sitepicker.SitePickerViewModel.SitesListItem
-import com.woocommerce.android.ui.sitepicker.SitePickerViewModel.SitesListItem.SiteUiModel
+import com.woocommerce.android.ui.sitepicker.SitePickerViewModel.SitesListItem.WooSiteUiModel
 import com.woocommerce.android.util.captureValues
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Logout
@@ -97,7 +97,7 @@ class SitePickerViewModelTest : BaseUnitTest() {
         when {
             returnsEmpty -> {
                 whenever(repository.fetchWooCommerceSites()).thenReturn(WooResult(mutableListOf()))
-                whenever(repository.getWooCommerceSites()).thenReturn(mutableListOf())
+                whenever(repository.getSites()).thenReturn(mutableListOf())
             }
             returnsError -> {
                 whenever(repository.fetchWooCommerceSites()).thenReturn(
@@ -109,7 +109,7 @@ class SitePickerViewModelTest : BaseUnitTest() {
                         )
                     )
                 )
-                whenever(repository.getWooCommerceSites()).thenReturn(mutableListOf())
+                whenever(repository.getSites()).thenReturn(mutableListOf())
             }
             else -> {
                 whenever(repository.fetchWooCommerceSites()).thenReturn(WooResult(expectedSiteList))
@@ -129,7 +129,7 @@ class SitePickerViewModelTest : BaseUnitTest() {
     @Before
     fun setup() {
         whenever(repository.getUserAccount()).thenReturn(SitePickerTestUtils.account)
-        whenever(repository.getWooCommerceSites()).thenReturn(expectedSiteList.toMutableList())
+        whenever(repository.getSites()).thenReturn(expectedSiteList.toMutableList())
         givenTheScreenIsFromLogin(true)
     }
 
@@ -168,10 +168,10 @@ class SitePickerViewModelTest : BaseUnitTest() {
             var items: List<SitesListItem>? = null
             viewModel.sites.observeForever { items = it }
 
-            val sites = items?.filterIsInstance<SiteUiModel>()
+            val sites = items?.filterIsInstance<WooSiteUiModel>()
 
             verify(repository, times(1)).fetchWooCommerceSites()
-            verify(repository, times(1)).getWooCommerceSites()
+            verify(repository, times(1)).getSites()
             verify(analyticsTrackerWrapper, times(1)).track(
                 AnalyticsEvent.SITE_PICKER_STORES_SHOWN,
                 mapOf(AnalyticsTracker.KEY_NUMBER_OF_STORES to sites?.size)
@@ -196,7 +196,7 @@ class SitePickerViewModelTest : BaseUnitTest() {
         }
 
         verify(repository, times(1)).fetchWooCommerceSites()
-        verify(repository, times(1)).getWooCommerceSites()
+        verify(repository, times(1)).getSites()
 
         assertThat(snackbar).isEqualTo(ShowSnackbar(R.string.site_picker_error))
         assertThat(sites).isNull()
@@ -253,7 +253,7 @@ class SitePickerViewModelTest : BaseUnitTest() {
 
         verify(appPrefsWrapper, atLeastOnce()).getLoginSiteAddress()
         verify(repository, atLeastOnce()).getSiteBySiteUrl(any())
-        val sites = items?.filterIsInstance<SiteUiModel>()
+        val sites = items?.filterIsInstance<WooSiteUiModel>()
         assertThat(sites?.get(1)?.isSelected).isTrue
         assertThat(sites?.get(1)?.site?.url).isEqualTo(SitePickerTestUtils.loginSiteAddress)
     }
@@ -554,7 +554,7 @@ class SitePickerViewModelTest : BaseUnitTest() {
         whenViewModelIsCreated()
         viewModel.onWooInstalled()
 
-        val sites = viewModel.sites.captureValues().last().filterIsInstance<SiteUiModel>()
+        val sites = viewModel.sites.captureValues().last().filterIsInstance<WooSiteUiModel>()
         assertThat(sites[1].isSelected).isTrue
         assertThat(sites[1].site.url).isEqualTo(SitePickerTestUtils.loginSiteAddress)
     }

@@ -4,6 +4,8 @@ import com.woocommerce.android.AppConstants
 import com.woocommerce.android.WooException
 import com.woocommerce.android.util.ContinuationWrapper
 import com.woocommerce.android.util.WooLog
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
 import org.wordpress.android.fluxc.Dispatcher
@@ -34,7 +36,7 @@ class SitePickerRepository @Inject constructor(
         dispatcher.unregister(this)
     }
 
-    fun getWooCommerceSites() = wooCommerceStore.getWooCommerceSites()
+    suspend fun getSites() = withContext(Dispatchers.IO) { siteStore.sites }
 
     fun getSiteBySiteUrl(url: String) = SiteUtils.getSiteByMatchingUrl(siteStore, url)
 

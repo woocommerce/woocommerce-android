@@ -79,7 +79,7 @@ class SitePickerFragment : BaseFragment(R.layout.fragment_site_picker), LoginEma
         binding.buttonHelp.setOnClickListener { viewModel.onHelpButtonClick() }
         binding.sitesRecycler.apply {
             layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
-            adapter = SitePickerAdapter(viewModel::onSiteSelected)
+            adapter = SitePickerAdapter(viewModel::onSiteSelected, viewModel::onNonWooSiteSelected)
         }
         binding.loginEpilogueButtonBar.buttonSecondary.setOnClickListener {
             viewModel.onTryAnotherAccountButtonClick()

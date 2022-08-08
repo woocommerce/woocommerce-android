@@ -17,16 +17,19 @@ import com.woocommerce.android.databinding.SitePickerItemBinding
 import com.woocommerce.android.extensions.getSiteName
 import com.woocommerce.android.ui.sitepicker.SitePickerViewModel.SitesListItem
 import com.woocommerce.android.ui.sitepicker.SitePickerViewModel.SitesListItem.Header
-import com.woocommerce.android.ui.sitepicker.SitePickerViewModel.SitesListItem.SiteUiModel
+import com.woocommerce.android.ui.sitepicker.SitePickerViewModel.SitesListItem.NonWooSiteUiModel
+import com.woocommerce.android.ui.sitepicker.SitePickerViewModel.SitesListItem.WooSiteUiModel
 import com.woocommerce.android.util.StringUtils
 import org.wordpress.android.fluxc.model.SiteModel
 
 class SitePickerAdapter(
-    private val onSiteSelected: (SiteModel) -> Unit
+    private val onSiteSelected: (SiteModel) -> Unit,
+    private val onNonWooSiteSelected: (SiteModel) -> Unit
 ) : ListAdapter<SitesListItem, RecyclerView.ViewHolder>(SiteUIModelDiffCallback) {
     companion object {
         private const val HEADER_TYPE = 0
-        private const val SITE_TYPE = 1
+        private const val WOO_SITE_TYPE = 1
+        private const val NON_WOO_SITE_TYPE = 2
     }
 
     init {
@@ -36,14 +39,16 @@ class SitePickerAdapter(
     override fun getItemId(position: Int): Long {
         return when (val item = getItem(position)) {
             is Header -> item.label.toLong()
-            is SiteUiModel -> item.site.siteId
+            is WooSiteUiModel -> item.site.siteId
+            is NonWooSiteUiModel -> item.site.siteId
         }
     }
 
     override fun getItemViewType(position: Int): Int {
         return when (getItem(position)) {
             is Header -> HEADER_TYPE
-            is SiteUiModel -> SITE_TYPE
+            is WooSiteUiModel -> WOO_SITE_TYPE
+            is NonWooSiteUiModel -> NON_WOO_SITE_TYPE
         }
     }
 
@@ -58,7 +63,14 @@ class SitePickerAdapter(
                     }
                 }
             )
-            SITE_TYPE -> SiteViewHolder(
+            WOO_SITE_TYPE -> WooSiteViewHolder(
+                SitePickerItemBinding.inflate(
+                    LayoutInflater.from(parent.context),
+                    parent,
+                    false
+                )
+            )
+            NON_WOO_SITE_TYPE -> NonWooSiteViewHolder(
                 SitePickerItemBinding.inflate(
                     LayoutInflater.from(parent.context),
                     parent,
@@ -72,7 +84,8 @@ class SitePickerAdapter(
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         when (val item = getItem(position)) {
             is Header -> (holder as HeaderViewHolder).bind(item.label)
-            is SiteUiModel -> (holder as SiteViewHolder).bind(item)
+            is WooSiteUiModel -> (holder as WooSiteViewHolder).bind(item)
+            is NonWooSiteUiModel -> (holder as NonWooSiteViewHolder).bind(item)
         }
     }
 
@@ -82,13 +95,13 @@ class SitePickerAdapter(
         }
     }
 
-    private inner class SiteViewHolder(val viewBinding: SitePickerItemBinding) :
+    private inner class WooSiteViewHolder(val viewBinding: SitePickerItemBinding) :
         RecyclerView.ViewHolder(viewBinding.root) {
         init {
             viewBinding.radio.isClickable = false
         }
 
-        fun bind(siteUiModel: SiteUiModel) {
+        fun bind(siteUiModel: WooSiteUiModel) {
             viewBinding.radio.isVisible = itemCount > 1
             viewBinding.radio.isChecked = siteUiModel.isSelected
             viewBinding.textSiteName.text = siteUiModel.site.getSiteName()
@@ -100,13 +113,31 @@ class SitePickerAdapter(
         }
     }
 
+    private inner class NonWooSiteViewHolder(val viewBinding: SitePickerItemBinding) :
+        RecyclerView.ViewHolder(viewBinding.root) {
+        init {
+            viewBinding.radio.isClickable = false
+        }
+
+        fun bind(siteUiModel: NonWooSiteUiModel) {
+            viewBinding.radio.isVisible = false
+            viewBinding.textSiteName.text = siteUiModel.site.getSiteName()
+            viewBinding.textSiteDomain.text = StringUtils.getSiteDomainAndPath(siteUiModel.site)
+
+            viewBinding.root.setOnClickListener {
+                onNonWooSiteSelected.invoke(siteUiModel.site)
+            }
+        }
+    }
+
     object SiteUIModelDiffCallback : DiffUtil.ItemCallback<SitesListItem>() {
         override fun areItemsTheSame(
             oldItem: SitesListItem,
             newItem: SitesListItem
-        ): Boolean {
-            return if (oldItem is SiteUiModel && newItem is SiteUiModel) oldItem.site.siteId == newItem.site.siteId
-            else oldItem == newItem
+        ): Boolean = when {
+            oldItem is WooSiteUiModel && newItem is WooSiteUiModel -> oldItem.site.siteId == newItem.site.siteId
+            oldItem is NonWooSiteUiModel && newItem is NonWooSiteUiModel -> oldItem.site.siteId == newItem.site.siteId
+            else -> oldItem == newItem
         }
 
         override fun areContentsTheSame(
