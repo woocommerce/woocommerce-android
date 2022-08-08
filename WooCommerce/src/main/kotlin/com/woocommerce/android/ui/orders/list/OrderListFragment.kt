@@ -31,7 +31,7 @@ import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.databinding.FragmentOrderListBinding
-import com.woocommerce.android.extensions.handleDialogResult
+import com.woocommerce.android.extensions.handleDialogNotice
 import com.woocommerce.android.extensions.handleResult
 import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.extensions.pinFabAboveBottomNavigationBar
@@ -48,7 +48,6 @@ import com.woocommerce.android.ui.main.MainActivity
 import com.woocommerce.android.ui.main.MainNavigationRouter
 import com.woocommerce.android.ui.orders.creation.OrderCreateEditViewModel
 import com.woocommerce.android.ui.orders.list.OrderCreationBottomSheetFragment.Companion.KEY_ORDER_CREATION_ACTION_RESULT
-import com.woocommerce.android.ui.orders.list.OrderCreationBottomSheetFragment.OrderCreationAction
 import com.woocommerce.android.ui.orders.list.OrderListViewModel.OrderListEvent.DismissCardReaderUpsellBanner
 import com.woocommerce.android.ui.orders.list.OrderListViewModel.OrderListEvent.DismissCardReaderUpsellBannerViaDontShowAgain
 import com.woocommerce.android.ui.orders.list.OrderListViewModel.OrderListEvent.DismissCardReaderUpsellBannerViaRemindMeLater
@@ -77,9 +76,12 @@ class OrderListFragment :
         const val FILTER_CHANGE_NOTICE_KEY = "filters_changed_notice"
     }
 
-    @Inject internal lateinit var uiMessageResolver: UIMessageResolver
-    @Inject internal lateinit var selectedSite: SelectedSite
-    @Inject internal lateinit var currencyFormatter: CurrencyFormatter
+    @Inject
+    internal lateinit var uiMessageResolver: UIMessageResolver
+    @Inject
+    internal lateinit var selectedSite: SelectedSite
+    @Inject
+    internal lateinit var currencyFormatter: CurrencyFormatter
 
     private val viewModel: OrderListViewModel by viewModels()
 
@@ -394,24 +396,15 @@ class OrderListFragment :
         handleResult<String>(FILTER_CHANGE_NOTICE_KEY) {
             viewModel.loadOrders()
         }
-        handleDialogResult<OrderCreationAction>(KEY_ORDER_CREATION_ACTION_RESULT, R.id.orders) {
+        handleDialogNotice<Unit>(KEY_ORDER_CREATION_ACTION_RESULT, R.id.orders) {
             binding.orderListView.post {
-                when (it) {
-                    OrderCreationAction.CREATE_ORDER -> openOrderCreationFragment()
-                    OrderCreationAction.SIMPLE_PAYMENT -> showSimplePaymentsDialog()
-                }
+                openOrderCreationFragment()
             }
         }
     }
 
     private fun showOrderFilters() {
         findNavController().navigateSafely(R.id.action_orderListFragment_to_orderFilterListFragment)
-    }
-
-    private fun showSimplePaymentsDialog() {
-        AnalyticsTracker.track(AnalyticsEvent.SIMPLE_PAYMENTS_FLOW_STARTED)
-        // Temporary flow to teach merchants about placement of the Payments feature
-        (requireActivity() as MainNavigationRouter).showMoreMenu()
     }
 
     private fun showOrderCreationBottomSheet() {

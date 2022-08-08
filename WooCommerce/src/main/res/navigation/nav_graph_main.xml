@@ -354,7 +354,23 @@
     <dialog
         android:id="@+id/orderCreationBottomSheetFragment"
         android:name="com.woocommerce.android.ui.orders.list.OrderCreationBottomSheetFragment"
+        tools:layout="@layout/dialog_order_creation_bottom_sheet" >
+        <action
+            android:id="@+id/action_orderCreationBottomSheetFragment_to_simplePaymentsMovedBottomSheetFragment"
+            app:destination="@id/simplePaymentsMovedBottomSheetFragment"
+            app:enterAnim="@anim/activity_fade_in"
+            app:exitAnim="@null"
+            app:popEnterAnim="@null"
+            app:popExitAnim="@anim/activity_fade_out" />
+    </dialog>
+    <dialog
+        android:id="@+id/simplePaymentsMovedBottomSheetFragment"
+        android:name="com.woocommerce.android.ui.orders.list.SimplePaymentsMovedBottomSheetFragment"
         tools:layout="@layout/dialog_order_creation_bottom_sheet" />
+    <dialog
+        android:id="@+id/simplePaymentsMovedButtonSheetFragment"
+        android:name="com.woocommerce.android.ui.orders.list.SimplePaymentsMovedBottomSheetFragment"
+        tools:layout="@layout/dialog_simple_payments_moved_bottom_sheet" />
     <activity
         android:id="@+id/appSettingsActivity"
         android:name="com.woocommerce.android.ui.prefs.AppSettingsActivity"
