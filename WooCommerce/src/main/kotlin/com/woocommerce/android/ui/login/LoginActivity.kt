@@ -549,7 +549,7 @@ class LoginActivity :
                 if (isSiteOnWPcom != true) {
                     siteLoginExperiment.run(inputSiteAddress, ::showEmailLoginScreen, ::loginViaSiteCredentials)
                 } else {
-                    showEmailLoginScreen(inputSiteAddress)
+                    showEmailLoginScreen()
                 }
             } else {
                 // Let user log in via site credentials first before showing Jetpack missing screen.
