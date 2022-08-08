@@ -23,6 +23,8 @@ import com.woocommerce.android.ui.sitepicker.SitePickerViewModel.SitePickerState
 import com.woocommerce.android.ui.sitepicker.SitePickerViewModel.SitePickerState.NoStoreState
 import com.woocommerce.android.ui.sitepicker.SitePickerViewModel.SitePickerState.StoreListState
 import com.woocommerce.android.ui.sitepicker.SitePickerViewModel.SitePickerState.WooNotFoundState
+import com.woocommerce.android.ui.sitepicker.SitePickerViewModel.SitesListItem
+import com.woocommerce.android.ui.sitepicker.SitePickerViewModel.SitesListItem.SiteUiModel
 import com.woocommerce.android.util.captureValues
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Logout
@@ -119,7 +121,6 @@ class SitePickerViewModelTest : BaseUnitTest() {
 
     private val defaultSitePickerViewState = SitePickerViewModel.SitePickerViewState(
         userInfo = SitePickerTestUtils.userInfo,
-        sitePickerLabelText = resourceProvider.getString(R.string.site_picker_label),
         primaryBtnText = resourceProvider.getString(R.string.continue_button),
         secondaryBtnText = resourceProvider.getString(R.string.login_try_another_account),
         hasConnectedStores = expectedSiteList.isNotEmpty()
@@ -164,8 +165,10 @@ class SitePickerViewModelTest : BaseUnitTest() {
             whenSitesAreFetched()
             whenViewModelIsCreated()
 
-            var sites: List<SitePickerViewModel.SiteUiModel>? = null
-            viewModel.sites.observeForever { sites = it }
+            var items: List<SitesListItem>? = null
+            viewModel.sites.observeForever { items = it }
+
+            val sites = items?.filterIsInstance<SiteUiModel>()
 
             verify(repository, times(1)).fetchWooCommerceSites()
             verify(repository, times(1)).getWooCommerceSites()
@@ -174,8 +177,9 @@ class SitePickerViewModelTest : BaseUnitTest() {
                 mapOf(AnalyticsTracker.KEY_NUMBER_OF_STORES to sites?.size)
             )
 
-            assertThat(sites).isNotEmpty
-            assertThat(sites?.get(0)?.isSelected).isTrue()
+            assertThat(items).isNotEmpty
+            assertThat(items?.first()).isEqualTo(SitesListItem.Header(R.string.login_pick_store))
+            assertThat(sites?.first()?.isSelected).isTrue()
         }
 
     @Test
@@ -183,7 +187,7 @@ class SitePickerViewModelTest : BaseUnitTest() {
         whenSitesAreFetched(returnsError = true)
         whenViewModelIsCreated()
 
-        var sites: List<SitePickerViewModel.SiteUiModel>? = null
+        var sites: List<SitesListItem>? = null
         viewModel.sites.observeForever { sites = it }
 
         var snackbar: ShowSnackbar? = null
@@ -210,8 +214,8 @@ class SitePickerViewModelTest : BaseUnitTest() {
             var sitePickerData: SitePickerViewModel.SitePickerViewState? = null
             viewModel.sitePickerViewStateData.observeForever { _, new -> sitePickerData = new }
 
-            var sites: List<SitePickerViewModel.SiteUiModel>? = null
-            viewModel.sites.observeForever { sites = it }
+            var items: List<SitesListItem>? = null
+            viewModel.sites.observeForever { items = it }
 
             assertThat(sitePickerData?.isNoStoresViewVisible).isEqualTo(
                 expectedSitePickerViewState.isNoStoresViewVisible
@@ -220,7 +224,7 @@ class SitePickerViewModelTest : BaseUnitTest() {
             assertThat(sitePickerData?.noStoresLabelText).isEqualTo(expectedSitePickerViewState.noStoresLabelText)
             assertThat(sitePickerData?.noStoresBtnText).isEqualTo(expectedSitePickerViewState.noStoresBtnText)
             assertThat(sitePickerData?.currentSitePickerState).isEqualTo(NoStoreState)
-            assertThat(sites).isNull()
+            assertThat(items).isNull()
         }
 
     @Test
@@ -244,11 +248,12 @@ class SitePickerViewModelTest : BaseUnitTest() {
         whenSitesAreFetched()
         whenViewModelIsCreated()
 
-        var sites: List<SitePickerViewModel.SiteUiModel>? = null
-        viewModel.sites.observeForever { sites = it }
+        var items: List<SitesListItem>? = null
+        viewModel.sites.observeForever { items = it }
 
         verify(appPrefsWrapper, atLeastOnce()).getLoginSiteAddress()
         verify(repository, atLeastOnce()).getSiteBySiteUrl(any())
+        val sites = items?.filterIsInstance<SiteUiModel>()
         assertThat(sites?.get(1)?.isSelected).isTrue
         assertThat(sites?.get(1)?.site?.url).isEqualTo(SitePickerTestUtils.loginSiteAddress)
     }
@@ -549,7 +554,7 @@ class SitePickerViewModelTest : BaseUnitTest() {
         whenViewModelIsCreated()
         viewModel.onWooInstalled()
 
-        val sites = viewModel.sites.captureValues().last()
+        val sites = viewModel.sites.captureValues().last().filterIsInstance<SiteUiModel>()
         assertThat(sites[1].isSelected).isTrue
         assertThat(sites[1].site.url).isEqualTo(SitePickerTestUtils.loginSiteAddress)
     }
