@@ -450,7 +450,7 @@ class LoginActivity :
         service: String?,
         isPasswordRequired: Boolean
     ) {
-        val loginEmailPasswordFragment = WooLoginEmailPasswordFragment.newInstance(
+        val loginEmailPasswordFragment = LoginEmailPasswordFragment.newInstance(
             email, null, idToken,
             service, isPasswordRequired
         )
