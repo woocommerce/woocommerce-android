@@ -89,7 +89,8 @@ import org.wordpress.android.util.ToastUtils
 import javax.inject.Inject
 import kotlin.text.RegexOption.IGNORE_CASE
 
-@Suppress("SameParameterValue")
+// TODO Extract logic out of LoginActivity to reduce size
+@Suppress("SameParameterValue", "LargeClass")
 @AndroidEntryPoint
 class LoginActivity :
     AppCompatActivity(),
