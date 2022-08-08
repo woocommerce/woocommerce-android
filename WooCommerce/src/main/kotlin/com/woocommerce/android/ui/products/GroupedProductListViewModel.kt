@@ -56,6 +56,9 @@ class GroupedProductListViewModel @Inject constructor(
     init {
         if (_productList.value == null) {
             loadProducts()
+            productListViewState = productListViewState.copy(
+                isEmptyViewShown = true
+            )
         }
     }
 
@@ -140,7 +143,8 @@ class GroupedProductListViewModel @Inject constructor(
 
         productListViewState = productListViewState.copy(
             isSkeletonShown = false,
-            isLoadingMore = false
+            isLoadingMore = false,
+            isEmptyViewShown = _productList.value?.isEmpty() ?: true
         )
     }
 
@@ -158,7 +162,8 @@ class GroupedProductListViewModel @Inject constructor(
     data class GroupedProductListViewState(
         val selectedProductIds: List<Long>,
         val isSkeletonShown: Boolean? = null,
-        val isLoadingMore: Boolean? = null
+        val isLoadingMore: Boolean? = null,
+        val isEmptyViewShown: Boolean? = null
     ) : Parcelable {
         val isAddProductButtonVisible: Boolean
             get() = isSkeletonShown == false
