@@ -1,11 +1,38 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2022-07-16 08:54:03+0000
+Translation-Revision-Date: 2022-08-05 16:05:01+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: zh_TW
 -->
 <resources>
+    <string name="lets_get_started">讓我們開始吧！</string>
+    <string name="login_help_notification_wordpress_login_button">登入 WordPress.com</string>
+    <string name="login_help_notification_contact_support_button">聯絡支援團隊</string>
+    <string name="login_help_notification_site_error_description">請嘗試使用 WordPress.com 帳號登入</string>
+    <string name="login_help_notification_no_interaction_default_description">立即取得協助！</string>
+    <string name="login_help_notification_default_title">登入遇到問題嗎？</string>
+    <string name="product_search_sku">貨號</string>
+    <string name="product_search_all">所有商品</string>
+    <string name="card_reader_upsell_card_reader_banner_dont_show_again">不要再顯示</string>
+    <string name="card_reader_upsell_card_reader_banner_remind_me_later">稍後再提醒我</string>
+    <string name="card_reader_upsell_card_reader_banner_dismiss_dialog_description">別擔心！ 你可以隨時在設定中開始使用「親自收款」功能。</string>
+    <string name="card_reader_upsell_card_reader_banner_payments">親自收款</string>
+    <string name="card_reader_upsell_card_reader_banner_cta">購買讀卡機</string>
+    <string name="card_reader_upsell_card_reader_banner_description">準備好使用讀卡機接受付款。</string>
+    <string name="card_reader_upsell_card_reader_banner_title">輕鬆接受付款</string>
+    <string name="card_reader_upsell_card_reader_banner_new">新功能</string>
+    <string name="card_reader_upsell_card_reader_banner_dismiss">關閉</string>
+    <string name="orderdetail_view_custom_fields">檢視自訂欄位</string>
+    <string name="orderdetail_custom_fields">自訂欄位</string>
+    <string name="order_sync_failed">無法儲存變更</string>
+    <string name="existing_order_cash_dlg_message">如果你從 WooCommerce 以外的來源收到款項，系統會將此訂單標示為已付款</string>
+    <string name="login_jetpack_install">安裝 Jetpack</string>
+    <string name="login_prologue_label_products_subtitle">讓我們協助你輕鬆處理這些訂單</string>
+    <string name="login_prologue_label_orders_subtitle">你可以快速輕鬆管理這些訂單</string>
+    <string name="login_prologue_label_analytics_subtitle">我們知道這對你的業務相當重要</string>
+    <string name="login_prologue_new_to_woo">第一次使用 WooCommerce</string>
+    <string name="notification_channel_pre_login_title">登入疑難排解提醒</string>
     <string name="tests_notification_new_order_message">你的 WooCommerce 商店有一筆 $50 的新訂單</string>
     <string name="tests_notification_new_order_title">你有新訂單！🎉</string>
     <string name="lines_all_details">詳細資訊</string>
@@ -228,9 +255,11 @@ Language: zh_TW
     <string name="coupon_details_minimum_spend">%s 最低消費</string>
     <string name="coupon_details_heading">優惠券摘要</string>
     <string name="coupon_list_view_coupon">檢視折價券摘要</string>
+    <string name="coupon_list_wip_message_enabled">我們一直努力讓你可以在裝置上查看並編輯優惠券！</string>
     <string name="coupon_list_wip_title">檢視並編輯優惠券</string>
     <string name="coupon_list_empty_heading">找不到折價券</string>
     <string name="coupon_list_item_label_included_and_excluded">%1s (不包括 %2s)</string>
+    <string name="coupon_list_item_label_products_and_categories">%1s 與 %2s</string>
     <string name="coupon_list_item_label_everything">全部</string>
     <string name="coupon_list_item_label_expired">已到期</string>
     <string name="coupon_list_item_label_active">使用中</string>
@@ -296,7 +325,6 @@ Language: zh_TW
     <string name="card_reader_onboarding_both_plugins_activated_hint_store_owner">啟用下列其中一個外掛程式後，才可使用親自收款功能。 若要繼續，請聯絡網站管理員以停用其中一個外掛程式：</string>
     <string name="card_reader_onboarding_both_plugins_activated_hint_admin">啟用下列其中一個外掛程式後，才可使用親自收款功能。 若要繼續，請停用其中一個外掛程式：</string>
     <string name="card_reader_onboarding_both_plugins_activated_header">已偵測到衝突的付款外掛程式</string>
-    <string name="order_creation_price_calculation_failed">無法更新價格</string>
     <string name="order_creation_payment_tax">稅金</string>
     <string name="exclusive_or">或</string>
     <string name="settings_install_jetpack">安裝 Jetpack</string>
@@ -788,9 +816,8 @@ Language: zh_TW
     <string name="user_role_access_error_retry">你沒有正確的使用者角色</string>
     <string name="user_role_access_error_link">瞭解更多有關角色和權限的資訊</string>
     <string name="user_role_access_error_msg">此應用程式只支援「管理員」和「商店經理」使用者角色。 請聯絡商店擁有者以升級你的角色。</string>
-    <string name="login_prologue_label_reviews">監控和核准你的產品評論</string>
     <string name="login_prologue_label_products">從任何地方編輯和新增新產品</string>
-    <string name="login_prologue_label_orders">隨時管理你的商店訂單</string>
+    <string name="login_prologue_label_orders">隨時隨地管理及編輯訂單</string>
     <string name="login_prologue_label_analytics">追蹤銷售額和高銷售額商品</string>
     <string name="skip">略過</string>
     <string name="product_type_external_title">外部商品</string>

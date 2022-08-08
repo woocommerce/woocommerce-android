@@ -1,11 +1,38 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2022-07-13 13:54:03+0000
+Translation-Revision-Date: 2022-08-05 16:04:38+0000
 Plural-Forms: nplurals=6; plural=n==0 ? 0 : n==1 ? 1 : n==2 ? 2 : n%100>=3 && n%100<=10 ? 3 : n%100>=11 && n%100<=99 ? 4 : 5;
 Generator: GlotPress/2.4.0-alpha
 Language: ar
 -->
 <resources>
+    <string name="lets_get_started">لنبدأ!</string>
+    <string name="login_help_notification_wordpress_login_button">تسجيل الدخول باستخدام ووردبريس.كوم</string>
+    <string name="login_help_notification_contact_support_button">الاتصال بالدعم</string>
+    <string name="login_help_notification_site_error_description">محاولة تسجيل الدخول باستخدام حسابك على ووردبريس.كوم</string>
+    <string name="login_help_notification_no_interaction_default_description">احصل على بعض المساعدة!</string>
+    <string name="login_help_notification_default_title">هل تواجه مشكلات في تسجيل الدخول؟</string>
+    <string name="product_search_sku">وحدة SKU النمطية</string>
+    <string name="product_search_all">جميع المنتجات</string>
+    <string name="card_reader_upsell_card_reader_banner_dont_show_again">عدم العرض مرة أخرى</string>
+    <string name="card_reader_upsell_card_reader_banner_remind_me_later">تذكيري لاحقًا</string>
+    <string name="card_reader_upsell_card_reader_banner_dismiss_dialog_description">لا داعي للقلق! يمكنك دومًا البدء باستخدام المدفوعات الشخصية في الإعدادات.</string>
+    <string name="card_reader_upsell_card_reader_banner_payments">المدفوعات الشخصية</string>
+    <string name="card_reader_upsell_card_reader_banner_cta">شراء قارئ البطاقة</string>
+    <string name="card_reader_upsell_card_reader_banner_description">استعد لقبول المدفوعات باستخدام قارئ بطاقة.</string>
+    <string name="card_reader_upsell_card_reader_banner_title">قبول المدفوعات بسهولة</string>
+    <string name="card_reader_upsell_card_reader_banner_new">جديد</string>
+    <string name="card_reader_upsell_card_reader_banner_dismiss">تجاهُل</string>
+    <string name="orderdetail_view_custom_fields">عرض حقول مخصصة</string>
+    <string name="orderdetail_custom_fields">حقول مخصصة</string>
+    <string name="order_sync_failed">يتعذر حفظ التغييرات</string>
+    <string name="existing_order_cash_dlg_message">سيقوم هذا بوضع علامة على هذا الطلب بأنه مدفوع إذا تلقيت عملية الدفع خارج WooCommerce</string>
+    <string name="login_jetpack_install">تثبيت Jetpack</string>
+    <string name="login_prologue_label_products_subtitle">نتيح لك معالجتها من دون مجهود</string>
+    <string name="login_prologue_label_orders_subtitle">يمكنك إدارتها بسرعة وسهولة</string>
+    <string name="login_prologue_label_analytics_subtitle">نعلم أنه ضروري لعملك التجاري</string>
+    <string name="login_prologue_new_to_woo">جديد على WooCommerce</string>
+    <string name="notification_channel_pre_login_title">تذكيرات حل مشكلات تسجيل الدخول</string>
     <string name="tests_notification_new_order_message">طلب جديد مقابل 50 دولارًا على متجر WooCommerce الخاص بك</string>
     <string name="tests_notification_new_order_title">لديك طلب جديد! 🎉</string>
     <string name="lines_all_details">التفاصيل</string>
@@ -228,6 +255,7 @@ Language: ar
     <string name="coupon_details_minimum_spend">الحد الأدنى للإنفاق لـ %s</string>
     <string name="coupon_details_heading">ملخص القسيمة</string>
     <string name="coupon_list_view_coupon">عرض ملخص القسيمة</string>
+    <string name="coupon_list_wip_message_enabled">لقد كنا نعمل على إتاحة عرض القسائم وتحريرها من جهازك!</string>
     <string name="coupon_list_wip_title">عرض القسائم وتحريرها</string>
     <string name="coupon_list_empty_heading">لم يتم العثور على قسائم</string>
     <string name="coupon_list_item_label_included_and_excluded">%1s من دون %2s</string>
@@ -297,7 +325,6 @@ Language: ar
     <string name="card_reader_onboarding_both_plugins_activated_hint_store_owner">لن تعمل المدفوعات الشخصية سوى مع تفعيل إحدى الإضافات الآتية. يرجى الاتصال بمسؤول الموقع لتعطيل إحدى هذه الإضافات للمتابعة:</string>
     <string name="card_reader_onboarding_both_plugins_activated_hint_admin">لن تعمل المدفوعات الشخصية سوى مع تفعيل إحدى الإضافات الآتية. يرجى تعطيل إحدى هذه الإضافات للمتابعة:</string>
     <string name="card_reader_onboarding_both_plugins_activated_header">تم اكتشاف إضافات دفع متعارضة</string>
-    <string name="order_creation_price_calculation_failed">يتعذر تحديث الأسعار</string>
     <string name="order_creation_payment_tax">الضرائب</string>
     <string name="exclusive_or">أو</string>
     <string name="settings_install_jetpack">تثبيت Jetpack</string>
@@ -789,10 +816,9 @@ Language: ar
     <string name="user_role_access_error_retry">ليست لديك رتبة العضو الصحيحة</string>
     <string name="user_role_access_error_link">معرفة المزيد حول الرُتب والصلاحيات</string>
     <string name="user_role_access_error_msg">يدعم هذا التطبيق رُتب أعضاء المسؤول ومدير المتجر فقط. يرجى الاتصال بمالك مخزنك لترقية رتبتك.</string>
-    <string name="login_prologue_label_reviews">مراقبة مراجعات منتجك والموافقة عليها</string>
     <string name="login_prologue_label_products">تحرير منتجات جديدة وإضافتها من أي مكان</string>
-    <string name="login_prologue_label_orders">إدارة طلبات مخزنك في أثناء التنقل</string>
-    <string name="login_prologue_label_analytics">تعقُّب المبيعات والمنتجات عالية الأداء</string>
+    <string name="login_prologue_label_orders">إدارة الطلبات وتحريرها في أثناء التنقل</string>
+    <string name="login_prologue_label_analytics">تتبُّع المبيعات والمنتجات عالية الأداء</string>
     <string name="skip">تخطي</string>
     <string name="product_type_external_title">منتج خارجي</string>
     <string name="product_type_grouped_title">منتج مجمع</string>

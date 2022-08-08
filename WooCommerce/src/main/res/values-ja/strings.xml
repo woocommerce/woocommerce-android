@@ -1,11 +1,38 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2022-07-15 09:54:15+0000
+Translation-Revision-Date: 2022-08-05 16:03:45+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: ja_JP
 -->
 <resources>
+    <string name="lets_get_started">ここからスタート。</string>
+    <string name="login_help_notification_wordpress_login_button">WordPress.com にログイン</string>
+    <string name="login_help_notification_contact_support_button">サポートに問い合わせる</string>
+    <string name="login_help_notification_site_error_description">WordPress.com アカウントでログインしてみてください</string>
+    <string name="login_help_notification_no_interaction_default_description">サポートを利用する</string>
+    <string name="login_help_notification_default_title">ログインで問題がある場合</string>
+    <string name="product_search_sku">SKU</string>
+    <string name="product_search_all">すべての商品</string>
+    <string name="card_reader_upsell_card_reader_banner_dont_show_again">今後表示しない</string>
+    <string name="card_reader_upsell_card_reader_banner_remind_me_later">後で再通知</string>
+    <string name="card_reader_upsell_card_reader_banner_dismiss_dialog_description">今がチャンスです ! オフラインでの支払いはいつでも設定から開始できます。</string>
+    <string name="card_reader_upsell_card_reader_banner_payments">オフラインでの支払い</string>
+    <string name="card_reader_upsell_card_reader_banner_cta">カードリーダーを購入</string>
+    <string name="card_reader_upsell_card_reader_banner_description">カードリーダーで支払いを受け取れるようにしてください。</string>
+    <string name="card_reader_upsell_card_reader_banner_title">簡単に支払いを受け取る</string>
+    <string name="card_reader_upsell_card_reader_banner_new">新規</string>
+    <string name="card_reader_upsell_card_reader_banner_dismiss">非表示</string>
+    <string name="orderdetail_view_custom_fields">カスタムフィールドを表示</string>
+    <string name="orderdetail_custom_fields">カスタムフィールド</string>
+    <string name="order_sync_failed">変更内容を保存できません</string>
+    <string name="existing_order_cash_dlg_message">WooCommerce 以外で支払いを受け取った場合、この注文は支払い済みとしてマークされます</string>
+    <string name="login_jetpack_install">Jetpack をインストール</string>
+    <string name="login_prologue_label_products_subtitle">手間をかけずに処理できるようになりました</string>
+    <string name="login_prologue_label_orders_subtitle">スピーディかつ簡単に管理できます</string>
+    <string name="login_prologue_label_analytics_subtitle">ビジネスに欠かせないものであることはわかっています</string>
+    <string name="login_prologue_new_to_woo">初めて WooCommerce をお使いになる場合</string>
+    <string name="notification_channel_pre_login_title">ログインのトラブルシューティングに関するリマインダー</string>
     <string name="tests_notification_new_order_message">WooCommerce ストアに $50の新しい注文があります</string>
     <string name="tests_notification_new_order_title">新しい注文があります。🎉</string>
     <string name="lines_all_details">詳細</string>
@@ -228,9 +255,11 @@ Language: ja_JP
     <string name="coupon_details_minimum_spend">%sの利用最小額</string>
     <string name="coupon_details_heading">クーポンの概要</string>
     <string name="coupon_list_view_coupon">クーポンの概要を表示</string>
+    <string name="coupon_list_wip_message_enabled">デバイスからクーポンを表示、編集できる機能を開発中です !</string>
     <string name="coupon_list_wip_title">クーポンを表示して編集する</string>
     <string name="coupon_list_empty_heading">クーポンが見つかりません</string>
     <string name="coupon_list_item_label_included_and_excluded">%1s (%2s を除く)</string>
+    <string name="coupon_list_item_label_products_and_categories">%1s、%2s</string>
     <string name="coupon_list_item_label_everything">すべて</string>
     <string name="coupon_list_item_label_expired">期限切れ</string>
     <string name="coupon_list_item_label_active">有効</string>
@@ -296,7 +325,6 @@ Language: ja_JP
     <string name="card_reader_onboarding_both_plugins_activated_hint_store_owner">「オフラインでの支払い」は、次のプラグインのいずれかが有効化済みの場合にのみ機能します。 続行するには、サイト管理者に連絡して、次のプラグインのいずれかを無効化してください。</string>
     <string name="card_reader_onboarding_both_plugins_activated_hint_admin">「オフラインでの支払い」は、次のプラグインのいずれかが有効化済みの場合にのみ機能します。 続行するには、次のプラグインのいずれかを無効化してください。</string>
     <string name="card_reader_onboarding_both_plugins_activated_header">支払いプラグインが複数検出されました</string>
-    <string name="order_creation_price_calculation_failed">価格を更新できませんでした</string>
     <string name="order_creation_payment_tax">税金</string>
     <string name="exclusive_or">または</string>
     <string name="settings_install_jetpack">Jetpack をインストール</string>
@@ -788,9 +816,8 @@ Language: ja_JP
     <string name="user_role_access_error_retry">ユーザー権限グループが正しくありません</string>
     <string name="user_role_access_error_link">権限グループと権限の詳細</string>
     <string name="user_role_access_error_msg">このアプリでサポートされているユーザー権限グループは、管理者とショップマネージャーのみです。 自分の権限グループを更新するには、ストア所有者に連絡してください。</string>
-    <string name="login_prologue_label_reviews">商品レビューを監視、承認</string>
     <string name="login_prologue_label_products">どこからでも新しい商品を編集、追加</string>
-    <string name="login_prologue_label_orders">外出先でもストアを管理</string>
+    <string name="login_prologue_label_orders">外出先でも注文を管理・編集</string>
     <string name="login_prologue_label_analytics">セールスと売れ行きが好調な商品を追跡する</string>
     <string name="skip">スキップ</string>
     <string name="product_type_external_title">外部商品</string>

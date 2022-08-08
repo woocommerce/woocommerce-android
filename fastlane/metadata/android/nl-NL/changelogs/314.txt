@@ -1,4 +1,0 @@
-9.6:
-Met deze versie kun je betalingen met cash, betaalkaart of betaallinks innen voor alle onbetaalde bestellingen. Daarnaast kun je een favoriete betaalgateway selecteren als je meerdere extensies voor je winkel hebt geïnstalleerd.
-
-We hebben tevens enkele kleine verbeteringen doorgevoerd. Wederom bedankt voor jullie geweldige feedback. Blijf zo doorgaan!
