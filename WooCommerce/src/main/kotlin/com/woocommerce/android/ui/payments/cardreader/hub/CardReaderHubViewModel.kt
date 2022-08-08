@@ -48,7 +48,7 @@ class CardReaderHubViewModel @Inject constructor(
         )
     )
 
-    init {
+    fun onViewVisible() {
         launch {
             viewState.value = when (cardReaderChecker.getOnboardingState()) {
                 is OnboardingCompleted -> createOnboardingCompleteState()

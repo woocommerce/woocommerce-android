@@ -466,5 +466,6 @@ class CardReaderHubViewModelTest : BaseUnitTest() {
             wooStore,
             cardReaderChecker,
         )
+        viewModel.onViewVisible()
     }
 }

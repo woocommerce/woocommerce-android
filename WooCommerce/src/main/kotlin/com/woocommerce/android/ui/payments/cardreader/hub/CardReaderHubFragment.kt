@@ -109,5 +109,7 @@ class CardReaderHubFragment : BaseFragment(R.layout.fragment_card_reader_hub) {
     override fun onResume() {
         super.onResume()
         AnalyticsTracker.trackViewShown(this)
+
+        viewModel.onViewVisible()
     }
 }
