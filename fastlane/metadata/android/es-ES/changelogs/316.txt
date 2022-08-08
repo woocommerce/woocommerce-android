@@ -1,0 +1,5 @@
+9.7:
+Es un placer anunciar que ya puedes editar un pedido desde la aplicación. Puedes modificar o eliminar productos, tarifas o envíos y cambiar la cantidad de productos. También puedes buscar clientes cuando edites o crees un pedido.
+
+Además, hemos realizado algunos cambios para mostrar campos personalizados de un pedido y varias mejoras en el proceso de pagos y de inicio de sesión, incluida la opción de instalar Jetpack directamente desde la aplicación.
+

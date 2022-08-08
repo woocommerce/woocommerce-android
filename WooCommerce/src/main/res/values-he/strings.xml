@@ -1,11 +1,38 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2022-07-16 08:54:03+0000
+Translation-Revision-Date: 2022-08-05 16:04:19+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: he_IL
 -->
 <resources>
+    <string name="lets_get_started">אפשר להתחיל עכשיו!</string>
+    <string name="login_help_notification_wordpress_login_button">להתחבר באמצעות WordPress.com</string>
+    <string name="login_help_notification_contact_support_button">לפנות לתמיכה</string>
+    <string name="login_help_notification_site_error_description">כדאי לנסות להתחבר עם החשבון שלך ב-WordPress.com</string>
+    <string name="login_help_notification_no_interaction_default_description">אפשר לפנות אלינו לעזרה!</string>
+    <string name="login_help_notification_default_title">נתקלת בבעיה במהלך ההתחברות?</string>
+    <string name="product_search_sku">SKU</string>
+    <string name="product_search_all">כל המוצרים</string>
+    <string name="card_reader_upsell_card_reader_banner_dont_show_again">לא להציג שוב</string>
+    <string name="card_reader_upsell_card_reader_banner_remind_me_later">הזכירו לי מאוחר יותר</string>
+    <string name="card_reader_upsell_card_reader_banner_dismiss_dialog_description">אל דאגה! תמיד אפשר להתחיל לבצע תשלומים באופן אישי דרך \'הגדרות\'.</string>
+    <string name="card_reader_upsell_card_reader_banner_payments">תשלומים באופן אישי</string>
+    <string name="card_reader_upsell_card_reader_banner_cta">לרכוש קורא כרטיסים</string>
+    <string name="card_reader_upsell_card_reader_banner_description">עוד מעט תהיה לך אפשרות לגבות תשלומים באמצעות קורא כרטיסים.</string>
+    <string name="card_reader_upsell_card_reader_banner_title">לקבל תשלומים בקלות</string>
+    <string name="card_reader_upsell_card_reader_banner_new">חדש</string>
+    <string name="card_reader_upsell_card_reader_banner_dismiss">ביטול</string>
+    <string name="orderdetail_view_custom_fields">להציג שדות מותאמים</string>
+    <string name="orderdetail_custom_fields">שדות מותאמים</string>
+    <string name="order_sync_failed">אין אפשרות לשמור את השינויים</string>
+    <string name="existing_order_cash_dlg_message">הפעולה הזאת תסמן את ההזמנה בתור \'שולמה\' אם קיבלת תשלום מחוץ ל-WooCommerce</string>
+    <string name="login_jetpack_install">להתקין את Jetpack</string>
+    <string name="login_prologue_label_products_subtitle">אנחנו מאפשרים לך לעבד תשלומים ללא מאמץ</string>
+    <string name="login_prologue_label_orders_subtitle">אפשר לנסות את התשלומים בצורה מהירה ונוחה</string>
+    <string name="login_prologue_label_analytics_subtitle">אנחנו יודעים שהאפשרות הזאת חיונית לעסק שלך</string>
+    <string name="login_prologue_new_to_woo">פעם ראשונה ב-WooCommerce</string>
+    <string name="notification_channel_pre_login_title">תזכורות לגבי פתרון בעיות במהלך ההתחברות</string>
     <string name="tests_notification_new_order_message">הזמנה חדשה בסכום של 50 $ בחנות שלך ב-WooCommerce</string>
     <string name="tests_notification_new_order_title">יש לך הזמנה חדשה! 🎉</string>
     <string name="lines_all_details">הפרטים</string>
@@ -228,9 +255,11 @@ Language: he_IL
     <string name="coupon_details_minimum_spend">הוצאה מינימלית בגובה %s</string>
     <string name="coupon_details_heading">סיכום קופונים</string>
     <string name="coupon_list_view_coupon">הצגה של סיכום הקופון</string>
+    <string name="coupon_list_wip_message_enabled">אנחנו כרגע עובדים על אפשרות להציג ולערוך קופונים מהמכשיר שלך!</string>
     <string name="coupon_list_wip_title">להציג ולנהל קופונים</string>
     <string name="coupon_list_empty_heading">לא נמצאו קופונים</string>
     <string name="coupon_list_item_label_included_and_excluded">%1s לא כולל %2s</string>
+    <string name="coupon_list_item_label_products_and_categories">%1s ו-%2s.</string>
     <string name="coupon_list_item_label_everything">הכול</string>
     <string name="coupon_list_item_label_expired">פג תוקף</string>
     <string name="coupon_list_item_label_active">פעיל</string>
@@ -296,7 +325,6 @@ Language: he_IL
     <string name="card_reader_onboarding_both_plugins_activated_hint_store_owner">אפשרות התשלומים באופן אישי תעבוד רק כשאחד מהתוספים הבאים מופעל. יש ליצור קשר עם מנהל האתר כדי לכבות את אחד מהתוספים האלו על מנת להמשיך:</string>
     <string name="card_reader_onboarding_both_plugins_activated_hint_admin">אפשרות התשלומים באופן אישי תעבוד רק כשאחד מהתוספים הבאים מופעל. יש לכבות את אחד מהתוספים האלו כדי להמשיך:</string>
     <string name="card_reader_onboarding_both_plugins_activated_header">תוספי תשלומים מתנגשים זוהו</string>
-    <string name="order_creation_price_calculation_failed">לא ניתן לעדכן את המחירים</string>
     <string name="order_creation_payment_tax">מיסים</string>
     <string name="exclusive_or">או</string>
     <string name="settings_install_jetpack">להתקין את Jetpack</string>
@@ -788,10 +816,9 @@ Language: he_IL
     <string name="user_role_access_error_retry">לא הוקצה לך תפקיד המשתמש המתאים</string>
     <string name="user_role_access_error_link">למידע נוסף על תפקידים והרשאות</string>
     <string name="user_role_access_error_msg">האפליקציה הזאת תומכת רק בתפקידי משתמש של \'מנהל מערכת\' ו\'מנהל חנות\'. יש ליצור קשר עם בעלי החנות כדי לשדרג את התפקיד שלך.</string>
-    <string name="login_prologue_label_reviews">לעקוב אחר ביקורות על מוצרים ולאשר אותן</string>
     <string name="login_prologue_label_products">לערוך ולהוסיף מוצרים חדשים מכל מקום</string>
-    <string name="login_prologue_label_orders">לנהל את ההזמנות בחנות שלך מכל מקום</string>
-    <string name="login_prologue_label_analytics">לעקוב אחרי מכירות מוצרים ואחרי מוצרים עם ביצועים מובילים</string>
+    <string name="login_prologue_label_orders">לנהל ולערוך הזמנות מכל מקום</string>
+    <string name="login_prologue_label_analytics">לעקוב אחר מכירות ומוצרים עם ביצועים גבוהים</string>
     <string name="skip">לדלג</string>
     <string name="product_type_external_title">מוצר חיצוני</string>
     <string name="product_type_grouped_title">קבוצת מוצרים</string>

@@ -18,23 +18,11 @@ tracks {
 }
 
 allprojects {
-    apply plugin: 'checkstyle'
     apply plugin: 'io.gitlab.arturbosch.detekt'
 
     repositories {
         google()
         mavenCentral()
-    }
-
-    task checkstyle(type: Checkstyle) {
-        source 'src'
-
-        classpath = files()
-    }
-
-    checkstyle {
-        toolVersion = '8.3'
-        configFile file("${project.rootDir}/config/checkstyle.xml")
     }
 
     tasks.withType(KotlinCompile).all {
@@ -93,7 +81,7 @@ tasks.register("installGitHooks", Copy) {
 }
 
 ext {
-    fluxCVersion = 'trunk-5bce27afc6c377d404c088f683451609263b71f3'
+    fluxCVersion = 'trunk-912bfc93b83c86edd0409beea16e5decb69d8314'
     glideVersion = '4.13.2'
     coilVersion = '2.1.0'
     constraintLayoutVersion = '1.2.0'
@@ -111,7 +99,7 @@ ext {
     hiltJetpackVersion = '1.0.0'
     wordPressUtilsVersion = '2.6.0'
     mediapickerVersion = '0.1.0'
-    wordPressLoginVersion = '88-ac95b262b7376e10450c46cbd0da3def3fafb54d'
+    wordPressLoginVersion = 'trunk-6a266aab5797332005246cbe2f53d70a2e3319ab'
     aboutAutomatticVersion = '0.0.6'
     workManagerVersion = '2.7.1'
 
