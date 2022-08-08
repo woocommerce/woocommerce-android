@@ -122,30 +122,32 @@ class LinkedProductsFragment : BaseProductFragment(R.layout.fragment_linked_prod
             else -> viewModel.getProduct().productDraft?.crossSellProductIds
         }
 
-        AnalyticsTracker.track(
-            AnalyticsEvent.CONNECTED_PRODUCTS_LIST,
-            mapOf(
-                AnalyticsTracker.KEY_CONNECTED_PRODUCTS_LIST_CONTEXT to groupedProductType.statContext.value,
-                AnalyticsTracker.KEY_CONNECTED_PRODUCTS_LIST_ACTION to ConnectedProductsListAction.ADD_TAPPED.value
-            )
-        )
-
         // go straight to the "add products" screen if the list is empty, otherwise show the grouped
         // products screen
-        val action = if (productIds.isNullOrEmpty()) {
-            ProductDetailFragmentDirections
-                .actionGlobalProductSelectionListFragment(
-                    remoteProductId = viewModel.getRemoteProductId(),
-                    groupedProductListType = groupedProductType,
-                    excludedProductIds = longArrayOf()
+        if (productIds.isNullOrEmpty()) {
+            AnalyticsTracker.track(
+                AnalyticsEvent.CONNECTED_PRODUCTS_LIST,
+                mapOf(
+                    AnalyticsTracker.KEY_CONNECTED_PRODUCTS_LIST_CONTEXT to groupedProductType.statContext.value,
+                    AnalyticsTracker.KEY_CONNECTED_PRODUCTS_LIST_ACTION to ConnectedProductsListAction.ADD_TAPPED.value
                 )
+            )
+            findNavController().navigateSafely(
+                ProductDetailFragmentDirections
+                    .actionGlobalProductSelectionListFragment(
+                        remoteProductId = viewModel.getRemoteProductId(),
+                        groupedProductListType = groupedProductType,
+                        excludedProductIds = longArrayOf()
+                    )
+            )
         } else {
-            GroupedProductListFragmentDirections.actionGlobalGroupedProductListFragment(
-                remoteProductId = viewModel.getRemoteProductId(),
-                productIds = productIds.toLongArray(),
-                groupedProductListType = groupedProductType
+            findNavController().navigateSafely(
+                GroupedProductListFragmentDirections.actionGlobalGroupedProductListFragment(
+                    remoteProductId = viewModel.getRemoteProductId(),
+                    productIds = productIds.toLongArray(),
+                    groupedProductListType = groupedProductType
+                )
             )
         }
-        findNavController().navigateSafely(action)
     }
 }
