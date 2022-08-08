@@ -251,7 +251,7 @@ private fun MoreMenuUserAvatar(avatarUrl: String) {
 }
 
 @Composable
-private fun MoreMenuButton(button: MenuUiButton, ) {
+private fun MoreMenuButton(button: MenuUiButton) {
     val interactionSource = remember { MutableInteractionSource() }
     val coroutineScope = rememberCoroutineScope()
 
