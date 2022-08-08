@@ -57,7 +57,7 @@ class LoginNotificationScheduler @Inject constructor(
         }
     }
 
-    fun onPasswordError() {
+    fun onPasswordLoginError() {
         val notificationType = when {
             !prefsWrapper.getLoginSiteAddress()
                 .isNullOrBlank() -> LoginHelpNotificationType.LOGIN_SITE_ADDRESS_EMAIL_ERROR

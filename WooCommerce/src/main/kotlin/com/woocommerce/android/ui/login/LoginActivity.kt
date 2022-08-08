@@ -870,7 +870,7 @@ class LoginActivity :
     @Subscribe(threadMode = MAIN)
     fun onAuthOptionsFetched(event: OnAuthOptionsFetched) {
         if (event.error?.type == UNKNOWN_USER) {
-            loginNotificationScheduler.onPasswordError()
+            loginNotificationScheduler.onPasswordLoginError()
         }
     }
 }
