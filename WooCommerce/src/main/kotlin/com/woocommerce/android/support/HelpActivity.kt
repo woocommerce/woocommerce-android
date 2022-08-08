@@ -6,7 +6,6 @@ import android.os.Bundle
 import android.view.MenuItem
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
-import androidx.core.app.NotificationManagerCompat
 import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.AppUrls
 import com.woocommerce.android.R
@@ -15,15 +14,14 @@ import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.databinding.ActivityHelpBinding
 import com.woocommerce.android.extensions.show
 import com.woocommerce.android.tools.SelectedSite
-import com.woocommerce.android.ui.login.localnotifications.LoginNotificationScheduler.Companion.LOGIN_HELP_NOTIFICATION_ID
-import com.woocommerce.android.ui.login.localnotifications.LoginNotificationScheduler.Companion.LOGIN_HELP_NOTIFICATION_TAG
+import com.woocommerce.android.ui.login.localnotifications.LoginNotificationScheduler
 import com.woocommerce.android.util.ChromeCustomTabUtils
 import com.woocommerce.android.util.PackageUtils
 import dagger.hilt.android.AndroidEntryPoint
+import javax.inject.Inject
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.store.AccountStore
 import org.wordpress.android.fluxc.store.SiteStore
-import javax.inject.Inject
 
 @AndroidEntryPoint
 class HelpActivity : AppCompatActivity() {
@@ -32,6 +30,7 @@ class HelpActivity : AppCompatActivity() {
     @Inject lateinit var supportHelper: SupportHelper
     @Inject lateinit var zendeskHelper: ZendeskHelper
     @Inject lateinit var selectedSite: SelectedSite
+    @Inject lateinit var loginNotificationScheduler: LoginNotificationScheduler
 
     private lateinit var binding: ActivityHelpBinding
 
@@ -80,7 +79,7 @@ class HelpActivity : AppCompatActivity() {
         }
 
         if (originFromExtras == Origin.LOGIN_HELP_NOTIFICATION) {
-            handleOpenedFromLoginHelpNotification(extraTagsFromExtras?.first())
+            loginNotificationScheduler.onNotificationTapped(extraTagsFromExtras?.first())
         }
     }
 
@@ -183,14 +182,6 @@ class HelpActivity : AppCompatActivity() {
 
     private fun showSSR() {
         startActivity(Intent(this, SSRActivity::class.java))
-    }
-
-    private fun handleOpenedFromLoginHelpNotification(notificationTypeName: String?) {
-        NotificationManagerCompat.from(this).cancel(LOGIN_HELP_NOTIFICATION_TAG, LOGIN_HELP_NOTIFICATION_ID)
-        AnalyticsTracker.track(
-            AnalyticsEvent.LOGIN_LOCAL_NOTIFICATION_TAPPED,
-            mapOf(AnalyticsTracker.KEY_TYPE to notificationTypeName)
-        )
     }
 
     enum class Origin(private val stringValue: String) {

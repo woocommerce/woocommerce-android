@@ -7,7 +7,6 @@ import android.net.Uri
 import android.os.Bundle
 import android.view.MenuItem
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.app.NotificationManagerCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import com.google.android.material.snackbar.BaseTransientBottomBar
@@ -35,14 +34,14 @@ import com.woocommerce.android.ui.login.UnifiedLoginTracker.Flow
 import com.woocommerce.android.ui.login.UnifiedLoginTracker.Flow.LOGIN_SITE_ADDRESS
 import com.woocommerce.android.ui.login.UnifiedLoginTracker.Source
 import com.woocommerce.android.ui.login.UnifiedLoginTracker.Step.ENTER_SITE_ADDRESS
+import com.woocommerce.android.ui.login.localnotifications.LoginHelpNotificationType
+import com.woocommerce.android.ui.login.localnotifications.LoginHelpNotificationType.DEFAULT_HELP
+import com.woocommerce.android.ui.login.localnotifications.LoginHelpNotificationType.LOGIN_SITE_ADDRESS_EMAIL_ERROR
+import com.woocommerce.android.ui.login.localnotifications.LoginHelpNotificationType.LOGIN_SITE_ADDRESS_ERROR
+import com.woocommerce.android.ui.login.localnotifications.LoginHelpNotificationType.LOGIN_SITE_ADDRESS_PASSWORD_ERROR
+import com.woocommerce.android.ui.login.localnotifications.LoginHelpNotificationType.LOGIN_WPCOM_EMAIL_ERROR
+import com.woocommerce.android.ui.login.localnotifications.LoginHelpNotificationType.LOGIN_WPCOM_PASSWORD_ERROR
 import com.woocommerce.android.ui.login.localnotifications.LoginNotificationScheduler
-import com.woocommerce.android.ui.login.localnotifications.LoginNotificationScheduler.Companion.LOGIN_HELP_NOTIFICATION_ID
-import com.woocommerce.android.ui.login.localnotifications.LoginNotificationScheduler.Companion.LOGIN_HELP_NOTIFICATION_TAG
-import com.woocommerce.android.ui.login.localnotifications.LoginNotificationScheduler.LoginHelpNotificationType
-import com.woocommerce.android.ui.login.localnotifications.LoginNotificationScheduler.LoginHelpNotificationType.LOGIN_SITE_ADDRESS_EMAIL_ERROR
-import com.woocommerce.android.ui.login.localnotifications.LoginNotificationScheduler.LoginHelpNotificationType.LOGIN_SITE_ADDRESS_ERROR
-import com.woocommerce.android.ui.login.localnotifications.LoginNotificationScheduler.LoginHelpNotificationType.LOGIN_WPCOM_EMAIL_ERROR
-import com.woocommerce.android.ui.login.localnotifications.LoginNotificationScheduler.LoginHelpNotificationType.LOGIN_WPCOM_PASSWORD_ERROR
 import com.woocommerce.android.ui.login.overrides.WooLoginEmailFragment
 import com.woocommerce.android.ui.login.overrides.WooLoginEmailPasswordFragment
 import com.woocommerce.android.ui.login.overrides.WooLoginSiteAddressFragment
@@ -55,6 +54,8 @@ import dagger.android.AndroidInjector
 import dagger.android.DispatchingAndroidInjector
 import dagger.android.HasAndroidInjector
 import dagger.hilt.android.AndroidEntryPoint
+import javax.inject.Inject
+import kotlin.text.RegexOption.IGNORE_CASE
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode.MAIN
 import org.wordpress.android.fluxc.Dispatcher
@@ -79,8 +80,6 @@ import org.wordpress.android.login.LoginMode
 import org.wordpress.android.login.LoginSiteAddressFragment
 import org.wordpress.android.login.LoginUsernamePasswordFragment
 import org.wordpress.android.util.ToastUtils
-import javax.inject.Inject
-import kotlin.text.RegexOption.IGNORE_CASE
 
 @Suppress("SameParameterValue")
 @AndroidEntryPoint
@@ -167,18 +166,6 @@ class LoginActivity :
             unifiedLoginTracker.setSource(ss.getString(KEY_UNIFIED_TRACKER_SOURCE, Source.DEFAULT.value))
             unifiedLoginTracker.setFlow(ss.getString(KEY_UNIFIED_TRACKER_FLOW))
         }
-    }
-
-    private fun processLoginHelpNotification(loginHelpNotification: String) {
-        startLoginViaWPCom()
-        NotificationManagerCompat.from(this).cancel(
-            LOGIN_HELP_NOTIFICATION_TAG,
-            LOGIN_HELP_NOTIFICATION_ID
-        )
-        AnalyticsTracker.track(
-            AnalyticsEvent.LOGIN_LOCAL_NOTIFICATION_TAPPED,
-            mapOf(AnalyticsTracker.KEY_TYPE to loginHelpNotification)
-        )
     }
 
     override fun onResume() {
@@ -852,7 +839,25 @@ class LoginActivity :
     }
 
     override fun onPasswordError() {
-        loginNotificationScheduler.scheduleNotification(LOGIN_WPCOM_PASSWORD_ERROR)
+        val notificationType = when {
+            !appPrefsWrapper.getLoginSiteAddress()
+                .isNullOrBlank() -> LOGIN_SITE_ADDRESS_PASSWORD_ERROR
+            else -> LOGIN_WPCOM_PASSWORD_ERROR
+        }
+        loginNotificationScheduler.scheduleNotification(notificationType)
+    }
+
+    private fun processLoginHelpNotification(loginHelpNotification: String) {
+        when (LoginHelpNotificationType.fromString(loginHelpNotification)) {
+            LOGIN_SITE_ADDRESS_ERROR -> startLoginViaWPCom()
+            LOGIN_SITE_ADDRESS_PASSWORD_ERROR,
+            LOGIN_WPCOM_PASSWORD_ERROR -> useMagicLinkInstead(appPrefsWrapper.getLoginEmail(), verifyEmail = false)
+            LOGIN_WPCOM_EMAIL_ERROR,
+            LOGIN_SITE_ADDRESS_EMAIL_ERROR,
+            DEFAULT_HELP ->
+                WooLog.e(WooLog.T.NOTIFICATIONS, "Invalid notification type to be handled by LoginActivity")
+        }
+        loginNotificationScheduler.onNotificationTapped(loginHelpNotification)
     }
 
     @SuppressWarnings("unused")
@@ -865,11 +870,7 @@ class LoginActivity :
     @Subscribe(threadMode = MAIN)
     fun onAuthOptionsFetched(event: OnAuthOptionsFetched) {
         if (event.error?.type == UNKNOWN_USER) {
-            val notificationType = when {
-                !appPrefsWrapper.getLoginSiteAddress().isNullOrBlank() -> LOGIN_SITE_ADDRESS_EMAIL_ERROR
-                else -> LOGIN_WPCOM_EMAIL_ERROR
-            }
-            loginNotificationScheduler.scheduleNotification(notificationType)
+            loginNotificationScheduler.onPasswordError()
         }
     }
 }

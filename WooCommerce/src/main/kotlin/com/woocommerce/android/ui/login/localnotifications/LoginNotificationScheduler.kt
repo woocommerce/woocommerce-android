@@ -44,7 +44,8 @@ class LoginNotificationScheduler @Inject constructor(
             val workRequest: WorkRequest =
                 OneTimeWorkRequestBuilder<LoginHelpNotificationWorker>()
                     .setInputData(notificationData)
-                    .setInitialDelay(NOTIFICATION_TEST_DELAY_IN_HOURS, TimeUnit.HOURS)
+                    .setInitialDelay(5L, TimeUnit.SECONDS) // TODO REMOVE AFTER TESTS
+//                    .setInitialDelay(NOTIFICATION_TEST_DELAY_IN_HOURS, TimeUnit.HOURS)
                     .build()
 
             prefsWrapper.setPreLoginNotificationWorkRequestId(workRequest.id.toString())
@@ -56,36 +57,31 @@ class LoginNotificationScheduler @Inject constructor(
         }
     }
 
+    fun onPasswordError() {
+        val notificationType = when {
+            !prefsWrapper.getLoginSiteAddress()
+                .isNullOrBlank() -> LoginHelpNotificationType.LOGIN_SITE_ADDRESS_EMAIL_ERROR
+            else -> LoginHelpNotificationType.LOGIN_WPCOM_EMAIL_ERROR
+        }
+        scheduleNotification(notificationType)
+    }
+
+    fun onNotificationTapped(loginHelpNotification: String?) {
+        NotificationManagerCompat.from(appContext).cancel(
+            LOGIN_HELP_NOTIFICATION_TAG,
+            LOGIN_HELP_NOTIFICATION_ID
+        )
+        AnalyticsTracker.track(
+            AnalyticsEvent.LOGIN_LOCAL_NOTIFICATION_TAPPED,
+            mapOf(AnalyticsTracker.KEY_TYPE to loginHelpNotification)
+        )
+    }
+
     private fun cancelCurrentNotificationWorkRequest() {
         val currentWorkRequestId = prefsWrapper.getPreLoginNotificationWorkRequestId()
         if (currentWorkRequestId.isNotEmpty()) {
             workManager.cancelWorkById(UUID.fromString(currentWorkRequestId))
             prefsWrapper.setPreLoginNotificationWorkRequestId("")
-        }
-    }
-
-    enum class LoginHelpNotificationType(private val typeName: String) {
-        LOGIN_SITE_ADDRESS_ERROR("site_address_error"),
-        LOGIN_WPCOM_EMAIL_ERROR("wpcom_email_error"),
-        LOGIN_SITE_ADDRESS_EMAIL_ERROR("site_address_email_error"),
-        LOGIN_SITE_ADDRESS_PASSWORD_ERROR("site_address_wpcom_password_error"),
-        LOGIN_WPCOM_PASSWORD_ERROR("wpcom_password_error"),
-        DEFAULT_HELP("default_support");
-
-        override fun toString(): String {
-            return typeName
-        }
-
-        companion object {
-            fun fromString(string: String?): LoginHelpNotificationType =
-                when (string) {
-                    LOGIN_SITE_ADDRESS_ERROR.typeName -> LOGIN_SITE_ADDRESS_ERROR
-                    LOGIN_SITE_ADDRESS_EMAIL_ERROR.typeName -> LOGIN_SITE_ADDRESS_EMAIL_ERROR
-                    LOGIN_SITE_ADDRESS_PASSWORD_ERROR.typeName -> LOGIN_SITE_ADDRESS_PASSWORD_ERROR
-                    LOGIN_WPCOM_EMAIL_ERROR.typeName -> LOGIN_WPCOM_EMAIL_ERROR
-                    LOGIN_WPCOM_PASSWORD_ERROR.typeName -> LOGIN_WPCOM_PASSWORD_ERROR
-                    else -> DEFAULT_HELP
-                }
         }
     }
 }
