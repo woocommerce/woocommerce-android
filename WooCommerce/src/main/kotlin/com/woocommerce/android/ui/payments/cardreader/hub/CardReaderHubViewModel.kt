@@ -15,7 +15,6 @@ import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.payments.cardreader.InPersonPaymentsCanadaFeatureFlag
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderFlowParam
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboardingChecker
-import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboardingState.ChoosePaymentGatewayProvider
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboardingState.OnboardingCompleted
 import com.woocommerce.android.ui.payments.cardreader.onboarding.PluginType.STRIPE_EXTENSION_GATEWAY
 import com.woocommerce.android.ui.payments.cardreader.onboarding.PluginType.WOOCOMMERCE_PAYMENTS
@@ -52,8 +51,7 @@ class CardReaderHubViewModel @Inject constructor(
     init {
         launch {
             viewState.value = when (cardReaderChecker.getOnboardingState()) {
-                is OnboardingCompleted -> createOnboardingCompleteState(isCardReaderPluginExplicitlySelected())
-                is ChoosePaymentGatewayProvider -> createOnboardingCompleteState(true)
+                is OnboardingCompleted -> createOnboardingCompleteState()
                 else -> createOnboardingFailedState()
             }
         }
@@ -110,8 +108,8 @@ class CardReaderHubViewModel @Inject constructor(
             onItemClicked = ::onCardReaderPaymentProviderClicked
         )
 
-    private fun createOnboardingCompleteState(showMultiplePluginsChoice: Boolean) = CardReaderHubViewState(
-        rows = if (showMultiplePluginsChoice) {
+    private fun createOnboardingCompleteState() = CardReaderHubViewState(
+        rows = if (isCardReaderPluginExplicitlySelected()) {
             createHubListWhenSinglePluginInstalled(isOnboardingComplete = true).toMutableList() +
                 createAdditionalItemWhenMultiplePluginsInstalled()
         } else {

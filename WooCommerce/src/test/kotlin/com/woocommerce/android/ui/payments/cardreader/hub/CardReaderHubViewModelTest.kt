@@ -353,7 +353,7 @@ class CardReaderHubViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `given multiple plugins installed but not selected, when view model init, then show payment provider row`() =
+    fun `given multiple plugins installed but not selected, when view model init, then error`() =
         testBlocking {
             whenever(cardReaderChecker.getOnboardingState()).thenReturn(
                 mock<CardReaderOnboardingState.ChoosePaymentGatewayProvider>()
@@ -361,10 +361,9 @@ class CardReaderHubViewModelTest : BaseUnitTest() {
 
             initViewModel()
 
-            assertThat((viewModel.viewStateData.value)?.rows)
-                .anyMatch {
-                    it.label == UiString.UiStringRes(R.string.card_reader_manage_payment_provider)
-                }
+            assertThat(viewModel.viewStateData.value?.errorText).isEqualTo(
+                UiString.UiStringRes(R.string.card_reader_onboarding_not_finished, containsHtml = true)
+            )
         }
 
     @Test
