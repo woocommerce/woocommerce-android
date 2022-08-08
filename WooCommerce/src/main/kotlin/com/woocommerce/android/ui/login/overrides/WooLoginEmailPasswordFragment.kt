@@ -7,9 +7,12 @@ import android.widget.Button
 import androidx.annotation.LayoutRes
 import com.bumptech.glide.Registry.MissingComponentException
 import com.woocommerce.android.R
+import com.woocommerce.android.analytics.AnalyticsEvent.LOGIN_MAGIC_LINK_OPEN_EMAIL_CLIENT_CLICKED
+import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import dagger.android.support.AndroidSupportInjection
 import org.wordpress.android.login.LoginEmailPasswordFragment
 import org.wordpress.android.login.LoginListener
+import javax.inject.Inject
 
 class WooLoginEmailPasswordFragment : LoginEmailPasswordFragment() {
     companion object {
@@ -35,6 +38,7 @@ class WooLoginEmailPasswordFragment : LoginEmailPasswordFragment() {
         }
     }
 
+    @Inject lateinit var analyticsTrackerWrapper: AnalyticsTrackerWrapper
     private var loginListener: LoginListener? = null
 
     override fun onAttach(context: Context) {
@@ -61,6 +65,7 @@ class WooLoginEmailPasswordFragment : LoginEmailPasswordFragment() {
         super.setupContent(rootView)
 
         rootView?.findViewById<Button>(R.id.button_login_open_email_client)?.setOnClickListener {
+            analyticsTrackerWrapper.track(LOGIN_MAGIC_LINK_OPEN_EMAIL_CLIENT_CLICKED)
             loginListener?.openEmailClient(true)
         }
     }
