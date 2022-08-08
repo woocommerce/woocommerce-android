@@ -1,10 +1,12 @@
 package com.woocommerce.android.ui.sitepicker
 
 import android.os.Parcelable
+import androidx.annotation.StringRes
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.AppPrefsWrapper
+import com.woocommerce.android.R
 import com.woocommerce.android.R.string
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
@@ -14,6 +16,8 @@ import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.common.UserEligibilityFetcher
 import com.woocommerce.android.ui.login.UnifiedLoginTracker
 import com.woocommerce.android.ui.sitepicker.SitePickerViewModel.SitePickerEvent.NavigateToWPComWebView
+import com.woocommerce.android.ui.sitepicker.SitePickerViewModel.SitesListItem.Header
+import com.woocommerce.android.ui.sitepicker.SitePickerViewModel.SitesListItem.SiteUiModel
 import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.viewmodel.LiveDataDelegate
@@ -54,8 +58,8 @@ class SitePickerViewModel @Inject constructor(
     val sitePickerViewStateData = LiveDataDelegate(savedState, SitePickerViewState())
     private var sitePickerViewState by sitePickerViewStateData
 
-    private val _sites = MutableLiveData<List<SiteUiModel>>()
-    val sites: LiveData<List<SiteUiModel>> = _sites
+    private val _sites = MutableLiveData<List<SitesListItem>>()
+    val sites: LiveData<List<SitesListItem>> = _sites
 
     private val loginSiteAddress = appPrefsWrapper.getLoginSiteAddress()
 
@@ -79,7 +83,6 @@ class SitePickerViewModel @Inject constructor(
     private fun updateSiteViewDetails() {
         sitePickerViewState = sitePickerViewState.copy(
             userInfo = getUserInfo(),
-            sitePickerLabelText = resourceProvider.getString(string.site_picker_label),
             primaryBtnText = resourceProvider.getString(string.continue_button),
             secondaryBtnText = resourceProvider.getString(string.login_try_another_account),
             currentSitePickerState = SitePickerState.StoreListState
@@ -167,12 +170,14 @@ class SitePickerViewModel @Inject constructor(
     private fun displaySites(sites: List<SiteModel>) {
         sitePickerViewState = sitePickerViewState.copy(hasConnectedStores = sites.isNotEmpty())
         val selectedSite = selectedSite.getIfExists() ?: sites[0]
-        _sites.value = sites.map {
-            SiteUiModel(
-                site = it,
-                isSelected = selectedSite.id == it.id
-            )
-        }
+        val wooSites = sites.filter { it.hasWooCommerce }
+            .map {
+                SiteUiModel(
+                    site = it,
+                    isSelected = selectedSite.id == it.id
+                )
+            }
+        _sites.value = listOf(Header(R.string.login_pick_store)) + wooSites
         loginSiteAddress?.let { processLoginSiteAddress(it) }
     }
 
@@ -268,7 +273,10 @@ class SitePickerViewModel @Inject constructor(
 
     fun onSiteSelected(siteModel: SiteModel) {
         val updatedSites = _sites.value?.map {
-            it.copy(isSelected = it.site.id == siteModel.id)
+            when (it) {
+                is Header -> it
+                is SiteUiModel -> it.copy(isSelected = it.site.id == siteModel.id)
+            }
         }
         updatedSites?.let { _sites.value = it }
     }
@@ -324,7 +332,8 @@ class SitePickerViewModel @Inject constructor(
     }
 
     fun onContinueButtonClick(isAutoLogin: Boolean = false) {
-        _sites.value?.first { it.isSelected }
+        _sites.value?.first { (it is SiteUiModel) && it.isSelected }
+            ?.let { it as SiteUiModel }
             ?.let {
                 // the current site is selected again so do nothing
                 if (it.site.id == selectedSite.getIfExists()?.id) {
@@ -473,7 +482,6 @@ class SitePickerViewModel @Inject constructor(
         val userInfo: UserInfo? = null,
         val toolbarTitle: String? = null,
         val hasConnectedStores: Boolean? = null,
-        val sitePickerLabelText: String? = null,
         val primaryBtnText: String? = null,
         val secondaryBtnText: String? = null,
         val isNoStoresViewVisible: Boolean = false,
@@ -490,11 +498,16 @@ class SitePickerViewModel @Inject constructor(
     @Parcelize
     data class UserInfo(val displayName: String, val username: String, val userAvatarUrl: String) : Parcelable
 
-    @Parcelize
-    data class SiteUiModel(
-        val site: SiteModel,
-        val isSelected: Boolean
-    ) : Parcelable
+    sealed interface SitesListItem : Parcelable {
+        @Parcelize
+        data class Header(@StringRes val label: Int) : SitesListItem
+
+        @Parcelize
+        data class SiteUiModel(
+            val site: SiteModel,
+            val isSelected: Boolean
+        ) : SitesListItem
+    }
 
     sealed class SitePickerEvent : MultiLiveEvent.Event() {
         object ShowWooUpgradeDialogEvent : SitePickerEvent()
