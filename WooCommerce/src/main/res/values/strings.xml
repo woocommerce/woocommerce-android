@@ -355,8 +355,8 @@
     <string name="orderlist_bottom_sheet_create_order_description">Create a new manual order</string>
     <string name="orderlist_bottom_sheet_simple_payment_action">Simple payment</string>
     <string name="orderlist_bottom_sheet_simple_payment_description">Create an order with minimal information</string>
-    <string name="orderlist_bottom_sheet_simple_payments_moved_title">In-person payments in More tab</string>
-    <string name="orderlist_bottom_sheet_simple_payments_moved_description">Now you can quickly access the In-person payments via the Menu tab</string>
+    <string name="orderlist_bottom_sheet_simple_payments_moved_title">Payments from the Menu tab</string>
+    <string name="orderlist_bottom_sheet_simple_payments_moved_description">Now you can quickly access In-Person Payments and other features with ease</string>
     <string name="orderlist_bottom_sheet_simple_payments_moved_button">Got it!</string>
     <string name="order_creation_fragment_title">New order</string>
     <string name="order_creation_status_edit_content_description">Edit order status</string>
@@ -953,6 +953,7 @@
     <!--
             Card Reader Hub
         -->
+    <string name="payments_hub_title">Payments</string>
     <string name="card_reader_manage_card_reader">Manage Card Reader</string>
     <string name="card_reader_purchase_card_reader">Order Card Reader</string>
     <string name="card_reader_manage_payment_provider">Change Payment Provider</string>
