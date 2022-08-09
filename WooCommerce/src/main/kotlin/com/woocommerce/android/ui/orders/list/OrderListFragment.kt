@@ -31,7 +31,7 @@ import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.databinding.FragmentOrderListBinding
-import com.woocommerce.android.extensions.handleDialogNotice
+import com.woocommerce.android.extensions.handleDialogResult
 import com.woocommerce.android.extensions.handleResult
 import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.extensions.pinFabAboveBottomNavigationBar
@@ -48,6 +48,7 @@ import com.woocommerce.android.ui.main.MainActivity
 import com.woocommerce.android.ui.main.MainNavigationRouter
 import com.woocommerce.android.ui.orders.creation.OrderCreateEditViewModel
 import com.woocommerce.android.ui.orders.list.OrderCreationBottomSheetFragment.Companion.KEY_ORDER_CREATION_ACTION_RESULT
+import com.woocommerce.android.ui.orders.list.OrderCreationBottomSheetFragment.OrderCreationAction
 import com.woocommerce.android.ui.orders.list.OrderListViewModel.OrderListEvent.DismissCardReaderUpsellBanner
 import com.woocommerce.android.ui.orders.list.OrderListViewModel.OrderListEvent.DismissCardReaderUpsellBannerViaDontShowAgain
 import com.woocommerce.android.ui.orders.list.OrderListViewModel.OrderListEvent.DismissCardReaderUpsellBannerViaRemindMeLater
@@ -396,15 +397,24 @@ class OrderListFragment :
         handleResult<String>(FILTER_CHANGE_NOTICE_KEY) {
             viewModel.loadOrders()
         }
-        handleDialogNotice<Unit>(KEY_ORDER_CREATION_ACTION_RESULT, R.id.orders) {
+        handleDialogResult<OrderCreationAction>(KEY_ORDER_CREATION_ACTION_RESULT, R.id.orders) {
             binding.orderListView.post {
-                openOrderCreationFragment()
+                when (it) {
+                    OrderCreationAction.CREATE_ORDER -> openOrderCreationFragment()
+                    OrderCreationAction.SIMPLE_PAYMENT -> showSimplePaymentsDialog()
+                }
             }
         }
     }
 
     private fun showOrderFilters() {
         findNavController().navigateSafely(R.id.action_orderListFragment_to_orderFilterListFragment)
+    }
+
+    private fun showSimplePaymentsDialog() {
+        AnalyticsTracker.track(AnalyticsEvent.SIMPLE_PAYMENTS_FLOW_STARTED)
+        // Temporary flow to teach merchants about placement of the Payments feature
+        (requireActivity() as MainNavigationRouter).showMoreMenu()
     }
 
     private fun showOrderCreationBottomSheet() {

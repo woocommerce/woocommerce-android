@@ -6,8 +6,9 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.navigation.fragment.findNavController
 import com.woocommerce.android.databinding.DialogOrderCreationBottomSheetBinding
-import com.woocommerce.android.extensions.navigateBackWithNotice
+import com.woocommerce.android.extensions.navigateBackWithResult
 import com.woocommerce.android.extensions.navigateSafely
+import com.woocommerce.android.ui.orders.list.OrderCreationBottomSheetFragment.OrderCreationAction.CREATE_ORDER
 import com.woocommerce.android.widgets.WCBottomSheetDialogFragment
 
 class OrderCreationBottomSheetFragment : WCBottomSheetDialogFragment() {
@@ -25,7 +26,7 @@ class OrderCreationBottomSheetFragment : WCBottomSheetDialogFragment() {
         val binding = DialogOrderCreationBottomSheetBinding.bind(view)
 
         binding.orderCreationButton.setOnClickListener {
-            navigateBackWithNotice(KEY_ORDER_CREATION_ACTION_RESULT)
+            navigateBackWithResult(KEY_ORDER_CREATION_ACTION_RESULT, CREATE_ORDER)
         }
 
         binding.simplePaymentButton.setOnClickListener {
@@ -33,5 +34,10 @@ class OrderCreationBottomSheetFragment : WCBottomSheetDialogFragment() {
                 .actionOrderCreationBottomSheetFragmentToSimplePaymentsMovedBottomSheetFragment()
                 .let { findNavController().navigateSafely(it) }
         }
+    }
+
+    enum class OrderCreationAction {
+        CREATE_ORDER,
+        SIMPLE_PAYMENT
     }
 }
