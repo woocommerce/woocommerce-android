@@ -394,19 +394,35 @@ class LoginActivity :
     private fun showEmailPasswordScreen(email: String?, verifyEmail: Boolean, allowMagicLink: Boolean) {
         val originalLogin = {
             val loginEmailPasswordFragment = WooLoginEmailPasswordFragment
-                .newInstance(email, null, null, null, false, allowMagicLink, verifyEmail)
+                .newInstance(
+                    email,
+                    allowMagicLink = allowMagicLink,
+                    verifyMagicLinkEmail = verifyEmail
+                )
             changeFragment(loginEmailPasswordFragment, true, LoginEmailPasswordFragment.TAG)
         }
 
         val automaticMagicLinkLogin = {
             dispatchMagicLinkRequest(email)
-            val wooLoginEmailPasswordFragment = WooLoginEmailPasswordFragment.newInstance(email, verifyEmail, AUTOMATIC)
-            changeFragment(wooLoginEmailPasswordFragment, true, WooLoginEmailPasswordFragment.TAG)
+            val wooLoginEmailPasswordFragment = WooLoginEmailPasswordFragment
+                .newInstance(
+                    email,
+                    allowMagicLink = allowMagicLink,
+                    verifyMagicLinkEmail = verifyEmail,
+                    variant = AUTOMATIC
+                )
+            changeFragment(wooLoginEmailPasswordFragment, true, LoginEmailPasswordFragment.TAG)
         }
 
         val enhancedMagicLinkLogin = {
-            val wooLoginEmailPasswordFragment = WooLoginEmailPasswordFragment.newInstance(email, verifyEmail, ENHANCED)
-            changeFragment(wooLoginEmailPasswordFragment, true, WooLoginEmailPasswordFragment.TAG)
+            val wooLoginEmailPasswordFragment = WooLoginEmailPasswordFragment
+                .newInstance(
+                    email,
+                    allowMagicLink = allowMagicLink,
+                    verifyMagicLinkEmail = verifyEmail,
+                    variant = ENHANCED
+                )
+            changeFragment(wooLoginEmailPasswordFragment, true, LoginEmailPasswordFragment.TAG)
         }
 
         lifecycleScope.launchWhenStarted {
@@ -450,9 +466,11 @@ class LoginActivity :
         service: String?,
         isPasswordRequired: Boolean
     ) {
-        val loginEmailPasswordFragment = LoginEmailPasswordFragment.newInstance(
-            email, null, idToken,
-            service, isPasswordRequired
+        val loginEmailPasswordFragment = WooLoginEmailPasswordFragment.newInstance(
+            emailAddress = email,
+            idToken = idToken,
+            service = service,
+            isSocialLogin = isPasswordRequired
         )
         changeFragment(loginEmailPasswordFragment, true, LoginEmailPasswordFragment.TAG)
     }
@@ -493,7 +511,7 @@ class LoginActivity :
 
     override fun usePasswordInstead(email: String?) {
         loginAnalyticsListener.trackLoginMagicLinkExited()
-        val loginEmailPasswordFragment = WooLoginEmailPasswordFragment.newInstance(email, null, null, null, false)
+        val loginEmailPasswordFragment = WooLoginEmailPasswordFragment.newInstance(email)
         changeFragment(loginEmailPasswordFragment, true, LoginEmailPasswordFragment.TAG)
     }
 

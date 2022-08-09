@@ -21,25 +21,28 @@ import org.wordpress.android.login.LoginWpcomService
 
 class WooLoginEmailPasswordFragment : LoginEmailPasswordFragment() {
     companion object {
-        const val TAG = "woo_login_email_password_fragment_tag"
-
-        private const val ARG_EMAIL_ADDRESS = "ARG_EMAIL_ADDRESS"
-        private const val ARG_SOCIAL_LOGIN = "ARG_SOCIAL_LOGIN"
-        private const val ARG_ALLOW_MAGIC_LINK = "ARG_ALLOW_MAGIC_LINK"
-        private const val ARG_VERIFY_MAGIC_LINK_EMAIL = "ARG_VERIFY_MAGIC_LINK_EMAIL"
         private const val ARG_VARIANT = "ARG_VARIANT"
 
+        @Suppress("LongParameterList")
         fun newInstance(
             emailAddress: String?,
-            verifyEmail: Boolean,
-            variant: MagicLinkRequestVariant
+            password: String? = null,
+            idToken: String? = null,
+            service: String? = null,
+            isSocialLogin: Boolean = false,
+            allowMagicLink: Boolean = false,
+            verifyMagicLinkEmail: Boolean = false,
+            variant: MagicLinkRequestVariant = CONTROL
         ): WooLoginEmailPasswordFragment {
             val fragment = WooLoginEmailPasswordFragment()
             val args = Bundle()
             args.putString(ARG_EMAIL_ADDRESS, emailAddress)
-            args.putBoolean(ARG_SOCIAL_LOGIN, false)
-            args.putBoolean(ARG_ALLOW_MAGIC_LINK, false)
-            args.putBoolean(ARG_VERIFY_MAGIC_LINK_EMAIL, verifyEmail)
+            args.putString(ARG_PASSWORD, password)
+            args.putString(ARG_SOCIAL_ID_TOKEN, idToken)
+            args.putString(ARG_SOCIAL_SERVICE, service)
+            args.putBoolean(ARG_SOCIAL_LOGIN, isSocialLogin)
+            args.putBoolean(ARG_ALLOW_MAGIC_LINK, allowMagicLink)
+            args.putBoolean(ARG_VERIFY_MAGIC_LINK_EMAIL, verifyMagicLinkEmail)
             args.putString(ARG_VARIANT, variant.name)
             fragment.arguments = args
             return fragment
@@ -51,7 +54,6 @@ class WooLoginEmailPasswordFragment : LoginEmailPasswordFragment() {
     }
 
     private lateinit var onPassWordErrorListener: Listener
-
     private var loginListener: LoginListener? = null
     private var variant: MagicLinkRequestVariant = CONTROL
     private var email: String? = null
@@ -74,6 +76,7 @@ class WooLoginEmailPasswordFragment : LoginEmailPasswordFragment() {
         } else {
             throw MissingComponentException("$context must implement LoginListener")
         }
+
         if (activity is Listener) {
             onPassWordErrorListener = activity as Listener
         }
