@@ -12,16 +12,16 @@ private const val DISABLED_BUTTON_ALPHA = 0.5f
 
 sealed class CardReaderHubViewHolder(val parent: ViewGroup, @LayoutRes layout: Int) :
     RecyclerView.ViewHolder(LayoutInflater.from(parent.context).inflate(layout, parent, false)) {
-    abstract fun onBind(uiState: CardReaderHubViewModel.CardReaderHubListItemViewState)
+    abstract fun onBind(uiState: CardReaderHubViewModel.CardReaderHubViewState.ListItem)
 
     class RowViewHolder(parent: ViewGroup) : CardReaderHubViewHolder(parent, R.layout.card_reader_hub_list_item) {
         var binding: CardReaderHubListItemBinding = CardReaderHubListItemBinding.bind(itemView)
-        override fun onBind(uiState: CardReaderHubViewModel.CardReaderHubListItemViewState) {
+        override fun onBind(uiState: CardReaderHubViewModel.CardReaderHubViewState.ListItem) {
             binding.cardReaderHubListItemLabelTv.text = UiHelpers.getTextOfUiString(itemView.context, uiState.label)
             binding.cardReaderMenuIcon.setImageResource(uiState.icon)
 
             if (uiState.isEnabled) {
-                binding.root.setOnClickListener { uiState.onItemClicked.invoke() }
+                binding.root.setOnClickListener { uiState.onClick.invoke() }
                 binding.cardReaderMenuIcon.alpha = 1.0f
                 binding.cardReaderHubListItemLabelTv.alpha = 1.0f
             } else {

@@ -90,10 +90,12 @@ class CardReaderHubFragment : BaseFragment(R.layout.fragment_card_reader_hub) {
             binding.cardReaderHubLoading.isInvisible = !state.isLoading
             with(binding.cardReaderHubOnboardingFailedTv) {
                 movementMethod = LinkMovementMethod.getInstance()
-                if (state.errorText != null) {
+                val onboardingErrorAction = state.onboardingErrorAction
+                if (onboardingErrorAction != null) {
                     animateErrorAppearance()
+                    setOnClickListener { onboardingErrorAction.onClick() }
                 }
-                UiHelpers.setTextOrHide(this, state.errorText)
+                UiHelpers.setTextOrHide(this, onboardingErrorAction?.text)
             }
         }
     }

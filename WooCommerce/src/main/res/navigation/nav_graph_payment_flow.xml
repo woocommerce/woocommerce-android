@@ -78,7 +78,8 @@
         <action
             android:id="@+id/action_cardReaderOnboardingFragment_to_cardReaderHubFragment"
             app:destination="@id/cardReaderHubFragment"
-            app:popUpTo="@+id/mainSettingsFragment"
+            app:launchSingleTop="true"
+            app:popUpTo="@+id/cardReaderHubFragment"
             app:popUpToInclusive="false" />
         <action
             android:id="@+id/action_cardReaderOnboardingFragment_to_cardReaderConnectDialogFragment"
