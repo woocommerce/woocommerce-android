@@ -12,37 +12,49 @@ import com.woocommerce.android.R
 import com.woocommerce.android.experiment.MagicLinkRequestExperiment.MagicLinkRequestVariant
 import com.woocommerce.android.experiment.MagicLinkRequestExperiment.MagicLinkRequestVariant.AUTOMATIC
 import com.woocommerce.android.experiment.MagicLinkRequestExperiment.MagicLinkRequestVariant.CONTROL
+import com.woocommerce.android.experiment.MagicLinkRequestExperiment.MagicLinkRequestVariant.ENHANCED
 import dagger.android.support.AndroidSupportInjection
+import org.greenrobot.eventbus.Subscribe
+import org.greenrobot.eventbus.ThreadMode
 import org.wordpress.android.login.LoginEmailPasswordFragment
 import org.wordpress.android.login.LoginListener
+import org.wordpress.android.login.LoginWpcomService
 
 class WooLoginEmailPasswordFragment : LoginEmailPasswordFragment() {
     companion object {
-        const val TAG = "woo_login_email_password_fragment_tag"
-
-        private const val ARG_EMAIL_ADDRESS = "ARG_EMAIL_ADDRESS"
-        private const val ARG_SOCIAL_LOGIN = "ARG_SOCIAL_LOGIN"
-        private const val ARG_ALLOW_MAGIC_LINK = "ARG_ALLOW_MAGIC_LINK"
-        private const val ARG_VERIFY_MAGIC_LINK_EMAIL = "ARG_VERIFY_MAGIC_LINK_EMAIL"
         private const val ARG_VARIANT = "ARG_VARIANT"
 
+        @Suppress("LongParameterList")
         fun newInstance(
             emailAddress: String?,
-            verifyEmail: Boolean,
-            variant: MagicLinkRequestVariant
+            password: String? = null,
+            idToken: String? = null,
+            service: String? = null,
+            isSocialLogin: Boolean = false,
+            allowMagicLink: Boolean = false,
+            verifyMagicLinkEmail: Boolean = false,
+            variant: MagicLinkRequestVariant = CONTROL
         ): WooLoginEmailPasswordFragment {
             val fragment = WooLoginEmailPasswordFragment()
             val args = Bundle()
             args.putString(ARG_EMAIL_ADDRESS, emailAddress)
-            args.putBoolean(ARG_SOCIAL_LOGIN, false)
-            args.putBoolean(ARG_ALLOW_MAGIC_LINK, false)
-            args.putBoolean(ARG_VERIFY_MAGIC_LINK_EMAIL, verifyEmail)
+            args.putString(ARG_PASSWORD, password)
+            args.putString(ARG_SOCIAL_ID_TOKEN, idToken)
+            args.putString(ARG_SOCIAL_SERVICE, service)
+            args.putBoolean(ARG_SOCIAL_LOGIN, isSocialLogin)
+            args.putBoolean(ARG_ALLOW_MAGIC_LINK, allowMagicLink)
+            args.putBoolean(ARG_VERIFY_MAGIC_LINK_EMAIL, verifyMagicLinkEmail)
             args.putString(ARG_VARIANT, variant.name)
             fragment.arguments = args
             return fragment
         }
     }
 
+    interface Listener {
+        fun onPasswordError()
+    }
+
+    private lateinit var onPassWordErrorListener: Listener
     private var loginListener: LoginListener? = null
     private var variant: MagicLinkRequestVariant = CONTROL
     private var email: String? = null
@@ -65,6 +77,10 @@ class WooLoginEmailPasswordFragment : LoginEmailPasswordFragment() {
         } else {
             throw MissingComponentException("$context must implement LoginListener")
         }
+
+        if (activity is Listener) {
+            onPassWordErrorListener = activity as Listener
+        }
     }
 
     override fun onDetach() {
@@ -73,25 +89,43 @@ class WooLoginEmailPasswordFragment : LoginEmailPasswordFragment() {
     }
 
     @LayoutRes
-    override fun getContentLayout(): Int {
-        return R.layout.fragment_login_email_password
-    }
+    override fun getContentLayout(): Int =
+        when (variant) {
+            CONTROL -> super.getContentLayout()
+            ENHANCED,
+            AUTOMATIC -> R.layout.fragment_login_email_password
+        }
 
     override fun setupContent(rootView: ViewGroup?) {
         super.setupContent(rootView)
+        when (variant) {
+            ENHANCED -> addRequestMagicLinkButton(rootView)
+            AUTOMATIC -> addOpenEmailClientButton(rootView)
+            CONTROL -> {}
+        }
+    }
 
-        if (variant == AUTOMATIC) {
-            rootView?.findViewById<Button>(R.id.button_login_open_email_client)?.setOnClickListener {
-                loginListener?.openEmailClient(true)
+    private fun addRequestMagicLinkButton(rootView: ViewGroup?) {
+        rootView?.findViewById<View>(R.id.magic_link_message)?.isVisible = false
+        rootView?.findViewById<Button>(R.id.bottom_button_magic_link)?.apply {
+            isVisible = true
+            setOnClickListener {
+                loginListener?.useMagicLinkInstead(email, false)
             }
-        } else {
-            rootView?.findViewById<View>(R.id.magic_link_message)?.isVisible = false
-            rootView?.findViewById<Button>(R.id.bottom_button_magic_link)?.apply {
-                isVisible = true
-                setOnClickListener {
-                    loginListener?.useMagicLinkInstead(email, false)
-                }
-            }
+        }
+    }
+
+    private fun addOpenEmailClientButton(rootView: ViewGroup?) {
+        rootView?.findViewById<Button>(R.id.button_login_open_email_client)?.setOnClickListener {
+            loginListener?.openEmailClient(true)
+        }
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN, sticky = true)
+    override fun onLoginStateUpdated(loginState: LoginWpcomService.LoginState) {
+        super.onLoginStateUpdated(loginState)
+        if (loginState.step == LoginWpcomService.LoginStep.FAILURE_EMAIL_WRONG_PASSWORD) {
+            onPassWordErrorListener.onPasswordError()
         }
     }
 }

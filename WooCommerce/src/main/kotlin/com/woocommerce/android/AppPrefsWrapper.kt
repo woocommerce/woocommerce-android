@@ -167,6 +167,11 @@ class AppPrefsWrapper @Inject constructor() {
     fun setPreLoginNotificationDisplayed(displayed: Boolean) =
         AppPrefs.setPreLoginNotificationDisplayed(displayed)
 
+    fun setLoginEmail(email: String) =
+        AppPrefs.setLoginEmail(email)
+
+    fun getLoginEmail() = AppPrefs.getLoginEmail()
+
     fun setOnboardingCarouselDisplayed(displayed: Boolean) =
         AppPrefs.setOnboardingCarouselDisplayed(displayed)
 
