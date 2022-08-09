@@ -120,7 +120,6 @@ fun Banner(
 ) {
     Card(
         modifier = Modifier.fillMaxWidth(),
-        backgroundColor = colorResource(id = R.color.color_surface_elevated)
     ) {
         Row(
             modifier = Modifier
