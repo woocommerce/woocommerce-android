@@ -12,6 +12,7 @@ import androidx.fragment.app.Fragment
 import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.R
 import com.woocommerce.android.databinding.FragmentLoginNoWpcomAccountFoundBinding
+import com.woocommerce.android.databinding.ViewLoginEpilogueButtonBarBinding
 import com.woocommerce.android.extensions.hide
 import com.woocommerce.android.ui.login.UnifiedLoginTracker.Click
 import com.woocommerce.android.ui.login.UnifiedLoginTracker.Step
@@ -65,9 +66,16 @@ class LoginNoWPcomAccountFoundFragment : Fragment(R.layout.fragment_login_no_wpc
 
         binding.noWpAccountMsg.text = getString(R.string.login_no_wpcom_account_found, emailAddress)
 
-        if (!appPrefsWrapper.getLoginSiteAddress().isNullOrBlank()) {
-            btnBinding.buttonPrimary.hide()
-        } else {
+        setupButtons(btnBinding, appPrefsWrapper.getLoginSiteAddress().isNullOrBlank())
+
+        binding.btnFindConnectedEmail.setOnClickListener {
+            loginListener?.showHelpFindingConnectedEmail()
+        }
+    }
+
+    private fun setupButtons(btnBinding: ViewLoginEpilogueButtonBarBinding, showEnterStoreAddressButton: Boolean) {
+        // Only show "Enter Store Address" button if not coming from the "Enter store address" login flow.
+        if (showEnterStoreAddressButton) {
             with(btnBinding.buttonPrimary) {
                 text = getString(R.string.login_store_address)
                 setOnClickListener {
@@ -76,20 +84,26 @@ class LoginNoWPcomAccountFoundFragment : Fragment(R.layout.fragment_login_no_wpc
                     loginListener?.loginViaSiteAddress()
                 }
             }
-        }
 
-        with(btnBinding.buttonSecondary) {
-            visibility = View.VISIBLE
-            text = getString(R.string.login_try_another_account)
-            setOnClickListener {
-                unifiedLoginTracker.trackClick(Click.TRY_ANOTHER_ACCOUNT)
+            with(btnBinding.buttonSecondary) {
+                visibility = View.VISIBLE
+                text = getString(R.string.login_try_another_account)
+                setOnClickListener {
+                    unifiedLoginTracker.trackClick(Click.TRY_ANOTHER_ACCOUNT)
 
-                loginListener?.startOver()
+                    loginListener?.startOver()
+                }
             }
-        }
+        } else {
+            with(btnBinding.buttonPrimary) {
+                text = getString(R.string.login_try_another_account)
+                setOnClickListener {
+                    unifiedLoginTracker.trackClick(Click.TRY_ANOTHER_ACCOUNT)
 
-        binding.btnFindConnectedEmail.setOnClickListener {
-            loginListener?.showHelpFindingConnectedEmail()
+                    loginListener?.startOver()
+                }
+            }
+            btnBinding.buttonSecondary.hide()
         }
     }
 
