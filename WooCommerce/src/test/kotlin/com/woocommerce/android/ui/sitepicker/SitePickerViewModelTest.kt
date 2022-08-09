@@ -24,6 +24,7 @@ import com.woocommerce.android.ui.sitepicker.SitePickerViewModel.SitePickerState
 import com.woocommerce.android.ui.sitepicker.SitePickerViewModel.SitePickerState.StoreListState
 import com.woocommerce.android.ui.sitepicker.SitePickerViewModel.SitePickerState.WooNotFoundState
 import com.woocommerce.android.ui.sitepicker.SitePickerViewModel.SitesListItem
+import com.woocommerce.android.ui.sitepicker.SitePickerViewModel.SitesListItem.NonWooSiteUiModel
 import com.woocommerce.android.ui.sitepicker.SitePickerViewModel.SitesListItem.WooSiteUiModel
 import com.woocommerce.android.util.captureValues
 import com.woocommerce.android.viewmodel.BaseUnitTest
@@ -32,6 +33,7 @@ import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.viewmodel.ResourceProvider
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.advanceUntilIdle
+import org.assertj.core.api.Assert
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Test
@@ -181,6 +183,35 @@ class SitePickerViewModelTest : BaseUnitTest() {
             assertThat(items).isNotEmpty
             assertThat(items?.first()).isEqualTo(SitesListItem.Header(R.string.login_pick_store))
             assertThat(sites?.first()?.isSelected).isTrue()
+        }
+
+    @Test
+    fun `given some sites don't have woo, when stores fetch succeeds, then show sites in separate sections`() =
+        testBlocking {
+            fun MutableList<SitesListItem>.assertThenRemoveFirstItem(
+                assertion: Assert<*, *>.() -> Unit
+            ): MutableList<SitesListItem> {
+                assertThat(first()).assertion()
+                removeFirst()
+                return this
+            }
+
+            val expectedSites = expectedSiteList.mapIndexed { index, siteModel ->
+                if (index < 2) siteModel.apply { hasWooCommerce = false } else siteModel
+            }
+            whenever(repository.fetchWooCommerceSites()).thenReturn(WooResult(expectedSites))
+            whenViewModelIsCreated()
+
+            val items = viewModel.sites.captureValues().last().toMutableList()
+
+            items.assertThenRemoveFirstItem { isEqualTo(SitesListItem.Header(R.string.login_pick_store)) }
+            repeat(expectedSites.count { it.hasWooCommerce }) {
+                items.assertThenRemoveFirstItem { isInstanceOf(WooSiteUiModel::class.java) }
+            }
+            items.assertThenRemoveFirstItem { isEqualTo(SitesListItem.Header(R.string.login_non_woo_stores_label)) }
+            repeat(expectedSites.count { !it.hasWooCommerce }) {
+                items.assertThenRemoveFirstItem { isInstanceOf(NonWooSiteUiModel::class.java) }
+            }
         }
 
     @Test
