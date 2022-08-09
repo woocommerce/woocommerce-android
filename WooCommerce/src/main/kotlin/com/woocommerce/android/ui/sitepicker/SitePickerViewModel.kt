@@ -178,9 +178,17 @@ class SitePickerViewModel @Inject constructor(
                     isSelected = selectedSite.id == it.id
                 )
             }
-
         val nonWooSites = filteredSites.filter { !it.hasWooCommerce }
             .map { NonWooSiteUiModel(it) }
+
+        if (_sites.value == null) {
+            // Track events only on the first call
+            trackLoginEvent(currentStep = UnifiedLoginTracker.Step.SITE_LIST)
+            analyticsTrackerWrapper.track(
+                AnalyticsEvent.SITE_PICKER_STORES_SHOWN,
+                mapOf(AnalyticsTracker.KEY_NUMBER_OF_STORES to wooSites.size)
+            )
+        }
 
         _sites.value = buildList {
             if (wooSites.isNotEmpty()) {
@@ -193,12 +201,6 @@ class SitePickerViewModel @Inject constructor(
             }
         }
         loginSiteAddress?.let { processLoginSiteAddress(it) }
-
-        trackLoginEvent(currentStep = UnifiedLoginTracker.Step.SITE_LIST)
-        analyticsTrackerWrapper.track(
-            AnalyticsEvent.SITE_PICKER_STORES_SHOWN,
-            mapOf(AnalyticsTracker.KEY_NUMBER_OF_STORES to wooSites.size)
-        )
     }
 
     /**
