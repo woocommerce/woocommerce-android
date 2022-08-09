@@ -99,6 +99,7 @@ class SitePickerAdapter(
         RecyclerView.ViewHolder(viewBinding.root) {
         init {
             viewBinding.radio.isClickable = false
+            viewBinding.warningIcon.isVisible = false
         }
 
         fun bind(siteUiModel: WooSiteUiModel) {
@@ -116,11 +117,11 @@ class SitePickerAdapter(
     private inner class NonWooSiteViewHolder(val viewBinding: SitePickerItemBinding) :
         RecyclerView.ViewHolder(viewBinding.root) {
         init {
-            viewBinding.radio.isClickable = false
+            viewBinding.radio.isVisible = false
+            viewBinding.warningIcon.isVisible = true
         }
 
         fun bind(siteUiModel: NonWooSiteUiModel) {
-            viewBinding.radio.isVisible = false
             viewBinding.textSiteName.text = siteUiModel.site.getSiteName()
             viewBinding.textSiteDomain.text = StringUtils.getSiteDomainAndPath(siteUiModel.site)
 
