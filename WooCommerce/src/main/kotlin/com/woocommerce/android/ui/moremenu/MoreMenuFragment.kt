@@ -8,7 +8,6 @@ import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import com.woocommerce.android.R
 import com.woocommerce.android.extensions.navigateSafely
@@ -74,12 +73,6 @@ class MoreMenuFragment : TopLevelFragment() {
         super.onResume()
 
         viewModel.onViewResumed()
-    }
-
-    fun playSimplePaymentsInOrdersClicked() {
-        lifecycleScope.launchWhenCreated {
-            viewModel.onPlayPaymentsAnimation()
-        }
     }
 
     private fun setupObservers() {

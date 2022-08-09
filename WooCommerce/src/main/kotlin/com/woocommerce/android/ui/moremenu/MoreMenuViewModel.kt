@@ -17,7 +17,6 @@ import com.woocommerce.android.ui.moremenu.domain.MoreMenuRepository
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.filterNotNull
 import org.wordpress.android.fluxc.model.SiteModel
@@ -34,22 +33,18 @@ class MoreMenuViewModel @Inject constructor(
     private val moreMenuNewFeatureHandler: MoreMenuNewFeatureHandler,
     unseenReviewsCountHandler: UnseenReviewsCountHandler
 ) : ScopedViewModel(savedState) {
-    private val paymentClickAnimationFlow = MutableStateFlow(false)
-
     val moreMenuViewState =
         combine(
             unseenReviewsCountHandler.observeUnseenCount(),
             selectedSite.observe().filterNotNull(),
             moreMenuRepository.observeCouponBetaSwitch(),
             moreMenuNewFeatureHandler.moreMenuPaymentsFeatureWasClicked,
-            paymentClickAnimationFlow,
-        ) { count, selectedSite, isCouponsEnabled, paymentsFeatureWasClicked, paymentClickAnimation ->
+        ) { count, selectedSite, isCouponsEnabled, paymentsFeatureWasClicked ->
             MoreMenuViewState(
                 moreMenuItems = generateMenuButtons(
                     unseenReviewsCount = count,
                     isCouponsEnabled = isCouponsEnabled,
                     paymentsFeatureWasClicked = paymentsFeatureWasClicked,
-                    paymentClickAnimation = paymentClickAnimation
                 ),
                 siteName = selectedSite.getSelectedSiteName(),
                 siteUrl = selectedSite.getSelectedSiteAbsoluteUrl(),
@@ -65,14 +60,12 @@ class MoreMenuViewModel @Inject constructor(
         unseenReviewsCount: Int,
         isCouponsEnabled: Boolean,
         paymentsFeatureWasClicked: Boolean,
-        paymentClickAnimation: Boolean
     ) = listOf(
         MenuUiButton(
             text = R.string.more_menu_button_payments,
             icon = R.drawable.ic_more_menu_payments,
             badgeState = buildPaymentsBadgeState(paymentsFeatureWasClicked),
             onClick = ::onPaymentsButtonClick,
-            animateAppearance = paymentClickAnimation
         ),
         MenuUiButton(
             text = R.string.more_menu_button_wс_admin,
@@ -142,10 +135,6 @@ class MoreMenuViewModel @Inject constructor(
             AnalyticsEvent.HUB_MENU_SWITCH_STORE_TAPPED
         )
         triggerEvent(MoreMenuEvent.StartSitePickerEvent)
-    }
-
-    fun onPlayPaymentsAnimation() {
-        paymentClickAnimationFlow.value = true
     }
 
     private fun onPaymentsButtonClick() {

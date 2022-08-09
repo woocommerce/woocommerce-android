@@ -25,7 +25,6 @@ import androidx.core.view.updateLayoutParams
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.FragmentManager.FragmentLifecycleCallbacks
-import androidx.fragment.app.FragmentOnAttachListener
 import androidx.navigation.NavController
 import androidx.navigation.NavDestination
 import androidx.navigation.fragment.FragmentNavigatorExtras
@@ -72,7 +71,6 @@ import com.woocommerce.android.ui.main.MainActivityViewModel.ViewOrderList
 import com.woocommerce.android.ui.main.MainActivityViewModel.ViewReviewDetail
 import com.woocommerce.android.ui.main.MainActivityViewModel.ViewReviewList
 import com.woocommerce.android.ui.main.MainActivityViewModel.ViewZendeskTickets
-import com.woocommerce.android.ui.moremenu.MoreMenuFragment
 import com.woocommerce.android.ui.moremenu.MoreMenuFragmentDirections
 import com.woocommerce.android.ui.orders.list.OrderListFragmentDirections
 import com.woocommerce.android.ui.prefs.AppSettingsActivity
@@ -824,15 +822,6 @@ class MainActivity :
     override fun showMoreMenu() {
         binding.bottomNav.currentPosition = MORE
         binding.bottomNav.active(MORE.position)
-        supportFragmentManager.primaryNavigationFragment!!.childFragmentManager
-            .addFragmentOnAttachListener(object : FragmentOnAttachListener {
-                override fun onAttachFragment(fragmentManager: FragmentManager, fragment: Fragment) {
-                    if (fragment is MoreMenuFragment) {
-                        fragment.playSimplePaymentsInOrdersClicked()
-                        fragmentManager.removeFragmentOnAttachListener(this)
-                    }
-                }
-            })
     }
 
     override fun showOrderDetail(
