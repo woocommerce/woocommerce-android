@@ -77,12 +77,9 @@ class OrderListFragment :
         const val FILTER_CHANGE_NOTICE_KEY = "filters_changed_notice"
     }
 
-    @Inject
-    internal lateinit var uiMessageResolver: UIMessageResolver
-    @Inject
-    internal lateinit var selectedSite: SelectedSite
-    @Inject
-    internal lateinit var currencyFormatter: CurrencyFormatter
+    @Inject internal lateinit var uiMessageResolver: UIMessageResolver
+    @Inject internal lateinit var selectedSite: SelectedSite
+    @Inject internal lateinit var currencyFormatter: CurrencyFormatter
 
     private val viewModel: OrderListViewModel by viewModels()
 
