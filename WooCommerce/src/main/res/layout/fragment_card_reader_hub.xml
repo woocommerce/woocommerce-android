@@ -26,6 +26,7 @@
         android:layout_height="0dp"
         android:layout_weight="1" />
 
+    <!-- android:textColorHighlight="#00FFFFFF": Workaround for a bug https://stackoverflow.com/a/70394538/632516 -->
     <com.google.android.material.textview.MaterialTextView
         android:id="@+id/cardReaderHubOnboardingFailedTv"
         style="@style/Woo.TextView.Caption"
@@ -42,7 +43,8 @@
         android:foreground="?attr/selectableItemBackground"
         android:outlineProvider="bounds"
         android:padding="@dimen/major_100"
-        android:textColor="@color/color_on_surface"
+        android:textColor="@color/color_on_surface_high"
+        android:textColorHighlight="#00FFFFFF"
         app:drawableTint="@color/color_on_surface"
         tools:text="@string/card_reader_onboarding_not_finished" />
 </LinearLayout>
