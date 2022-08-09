@@ -38,7 +38,6 @@ import com.woocommerce.android.support.HelpActivity.Origin
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.ui.payments.banner.SettingsBannerDismissDialog
 import com.woocommerce.android.ui.payments.banner.SettingsScreenBanner
-import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderFlowParam
 import com.woocommerce.android.util.AnalyticsUtils
 import com.woocommerce.android.util.AppThemeUtils
 import com.woocommerce.android.util.ChromeCustomTabUtils
@@ -131,12 +130,6 @@ class MainSettingsFragment : Fragment(R.layout.fragment_settings_main), MainSett
         }
 
         updateStoreSettings()
-        binding.optionCardReaderPayments.setOnClickListener {
-            val action = MainSettingsFragmentDirections.actionMainSettingsFragmentToCardReaderFlow(
-                CardReaderFlowParam.CardReadersHub
-            )
-            findNavController().navigateSafely(action)
-        }
 
         binding.optionHelpAndSupport.setOnClickListener {
             AnalyticsTracker.track(AnalyticsEvent.MAIN_MENU_CONTACT_SUPPORT_TAPPED)
@@ -240,6 +233,7 @@ class MainSettingsFragment : Fragment(R.layout.fragment_settings_main), MainSett
 
     override fun handleJetpackInstallOption(isJetpackCPSite: Boolean) {
         if (isJetpackCPSite) {
+            binding.storeSettingsContainer.visibility = View.VISIBLE
             binding.optionInstallJetpack.visibility = View.VISIBLE
             binding.optionInstallJetpack.setOnClickListener {
                 findNavController().navigateSafely(
@@ -247,7 +241,8 @@ class MainSettingsFragment : Fragment(R.layout.fragment_settings_main), MainSett
                 )
             }
         } else {
-            binding.optionInstallJetpack.visibility = View.GONE
+            // Hide the whole container because jetpack is the only option there
+            binding.storeSettingsContainer.visibility = View.GONE
         }
     }
 
