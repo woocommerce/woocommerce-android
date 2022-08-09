@@ -8,6 +8,8 @@ import com.woocommerce.android.R
 import com.woocommerce.android.databinding.CardReaderHubListItemBinding
 import com.woocommerce.android.util.UiHelpers
 
+private const val DISABLED_BUTTON_ALPHA = 0.5f
+
 sealed class CardReaderHubViewHolder(val parent: ViewGroup, @LayoutRes layout: Int) :
     RecyclerView.ViewHolder(LayoutInflater.from(parent.context).inflate(layout, parent, false)) {
     abstract fun onBind(uiState: CardReaderHubViewModel.CardReaderHubListItemViewState)
@@ -17,8 +19,15 @@ sealed class CardReaderHubViewHolder(val parent: ViewGroup, @LayoutRes layout: I
         override fun onBind(uiState: CardReaderHubViewModel.CardReaderHubListItemViewState) {
             binding.cardReaderHubListItemLabelTv.text = UiHelpers.getTextOfUiString(itemView.context, uiState.label)
             binding.cardReaderMenuIcon.setImageResource(uiState.icon)
-            binding.root.setOnClickListener {
-                uiState.onItemClicked.invoke()
+
+            if (uiState.isEnabled) {
+                binding.root.setOnClickListener { uiState.onItemClicked.invoke() }
+                binding.cardReaderMenuIcon.alpha = 1.0f
+                binding.cardReaderHubListItemLabelTv.alpha = 1.0f
+            } else {
+                binding.root.setOnClickListener(null)
+                binding.cardReaderMenuIcon.alpha = DISABLED_BUTTON_ALPHA
+                binding.cardReaderHubListItemLabelTv.alpha = DISABLED_BUTTON_ALPHA
             }
         }
     }

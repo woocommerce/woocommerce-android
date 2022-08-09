@@ -10,9 +10,12 @@ import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.model.UiString
+import com.woocommerce.android.model.UiString.UiStringRes
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.payments.cardreader.InPersonPaymentsCanadaFeatureFlag
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderFlowParam
+import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboardingChecker
+import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboardingState.OnboardingCompleted
 import com.woocommerce.android.ui.payments.cardreader.onboarding.PluginType.STRIPE_EXTENSION_GATEWAY
 import com.woocommerce.android.ui.payments.cardreader.onboarding.PluginType.WOOCOMMERCE_PAYMENTS
 import com.woocommerce.android.util.WooLog
@@ -21,6 +24,7 @@ import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.navArgs
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.launch
 import org.wordpress.android.fluxc.store.WooCommerceStore
 import javax.inject.Inject
 
@@ -32,40 +36,26 @@ class CardReaderHubViewModel @Inject constructor(
     private val selectedSite: SelectedSite,
     private val analyticsTrackerWrapper: AnalyticsTrackerWrapper,
     private val wooStore: WooCommerceStore,
+    private val cardReaderChecker: CardReaderOnboardingChecker,
 ) : ScopedViewModel(savedState) {
     private val arguments: CardReaderHubFragmentArgs by savedState.navArgs()
 
-    private val cardReaderHubListWhenSinglePluginInstalled = mutableListOf(
-        CardReaderHubListItemViewState(
-            icon = R.drawable.ic_gridicons_money_on_surface,
-            label = UiString.UiStringRes(R.string.card_reader_collect_payment),
-            onItemClicked = ::onCollectPaymentClicked
-        ),
-        CardReaderHubListItemViewState(
-            icon = R.drawable.ic_shopping_cart,
-            label = UiString.UiStringRes(R.string.card_reader_purchase_card_reader),
-            onItemClicked = ::onPurchaseCardReaderClicked
-        ),
-        CardReaderHubListItemViewState(
-            icon = R.drawable.ic_manage_card_reader,
-            label = UiString.UiStringRes(R.string.card_reader_manage_card_reader),
-            onItemClicked = ::onManageCardReaderClicked
-        ),
-        CardReaderHubListItemViewState(
-            icon = R.drawable.ic_card_reader_manual,
-            label = UiString.UiStringRes(R.string.settings_card_reader_manuals),
-            onItemClicked = ::onCardReaderManualsClicked
+    private val viewState = MutableLiveData(
+        CardReaderHubViewState(
+            rows = createHubListWhenSinglePluginInstalled(isOnboardingComplete = false),
+            isLoading = true,
+            errorText = null
         )
     )
 
-    private val cardReaderHubListWhenMultiplePluginsInstalled = cardReaderHubListWhenSinglePluginInstalled +
-        mutableListOf(
-            CardReaderHubListItemViewState(
-                icon = R.drawable.ic_payment_provider,
-                label = UiString.UiStringRes(R.string.card_reader_manage_payment_provider),
-                onItemClicked = ::onCardReaderPaymentProviderClicked
-            )
-        )
+    fun onViewVisible() {
+        launch {
+            viewState.value = when (cardReaderChecker.getOnboardingState()) {
+                is OnboardingCompleted -> createOnboardingCompleteState()
+                else -> createOnboardingFailedState()
+            }
+        }
+    }
 
     private val cardReaderPurchaseUrl: String by lazy {
         if (inPersonPaymentsCanadaFeatureFlag.isEnabled()) {
@@ -86,24 +76,54 @@ class CardReaderHubViewModel @Inject constructor(
         }
     }
 
-    private val viewState = MutableLiveData<CardReaderHubViewState>(
-        createInitialState()
+    private fun createHubListWhenSinglePluginInstalled(isOnboardingComplete: Boolean) =
+        listOf(
+            CardReaderHubListItemViewState(
+                icon = R.drawable.ic_gridicons_money_on_surface,
+                label = UiStringRes(R.string.card_reader_collect_payment),
+                onItemClicked = ::onCollectPaymentClicked
+            ),
+            CardReaderHubListItemViewState(
+                icon = R.drawable.ic_shopping_cart,
+                label = UiStringRes(R.string.card_reader_purchase_card_reader),
+                onItemClicked = ::onPurchaseCardReaderClicked
+            ),
+            CardReaderHubListItemViewState(
+                icon = R.drawable.ic_card_reader_manual,
+                label = UiStringRes(R.string.settings_card_reader_manuals),
+                onItemClicked = ::onCardReaderManualsClicked
+            ),
+            CardReaderHubListItemViewState(
+                icon = R.drawable.ic_manage_card_reader,
+                label = UiStringRes(R.string.card_reader_manage_card_reader),
+                isEnabled = isOnboardingComplete,
+                onItemClicked = ::onManageCardReaderClicked
+            ),
+        )
+
+    private fun createAdditionalItemWhenMultiplePluginsInstalled() =
+        CardReaderHubListItemViewState(
+            icon = R.drawable.ic_payment_provider,
+            label = UiStringRes(R.string.card_reader_manage_payment_provider),
+            onItemClicked = ::onCardReaderPaymentProviderClicked
+        )
+
+    private fun createOnboardingCompleteState() = CardReaderHubViewState(
+        rows = if (isCardReaderPluginExplicitlySelected()) {
+            createHubListWhenSinglePluginInstalled(isOnboardingComplete = true).toMutableList() +
+                createAdditionalItemWhenMultiplePluginsInstalled()
+        } else {
+            createHubListWhenSinglePluginInstalled(isOnboardingComplete = true)
+        },
+        isLoading = false,
+        errorText = null,
     )
 
-    private fun createInitialState(): CardReaderHubViewState.Content {
-        val site = selectedSite.get()
-        return if (
-            appPrefsWrapper.isCardReaderPluginExplicitlySelected(
-                localSiteId = site.id,
-                remoteSiteId = site.siteId,
-                selfHostedSiteId = site.selfHostedSiteId,
-            )
-        ) {
-            CardReaderHubViewState.Content(cardReaderHubListWhenMultiplePluginsInstalled)
-        } else {
-            CardReaderHubViewState.Content(cardReaderHubListWhenSinglePluginInstalled)
-        }
-    }
+    private fun createOnboardingFailedState() = CardReaderHubViewState(
+        rows = createHubListWhenSinglePluginInstalled(isOnboardingComplete = false),
+        isLoading = false,
+        errorText = UiStringRes(R.string.card_reader_onboarding_not_finished, containsHtml = true)
+    )
 
     val viewStateData: LiveData<CardReaderHubViewState> = viewState
 
@@ -143,6 +163,13 @@ class CardReaderHubViewModel @Inject constructor(
         )
     }
 
+    private fun isCardReaderPluginExplicitlySelected() =
+        appPrefsWrapper.isCardReaderPluginExplicitlySelected(
+            localSiteId = selectedSite.get().id,
+            remoteSiteId = selectedSite.get().siteId,
+            selfHostedSiteId = selectedSite.get().selfHostedSiteId,
+        )
+
     sealed class CardReaderHubEvents : MultiLiveEvent.Event() {
         data class NavigateToCardReaderDetail(val cardReaderFlowParam: CardReaderFlowParam) : CardReaderHubEvents()
         data class NavigateToPurchaseCardReaderFlow(val url: String) : CardReaderHubEvents()
@@ -151,15 +178,16 @@ class CardReaderHubViewModel @Inject constructor(
         object NavigateToCardReaderOnboardingScreen : CardReaderHubEvents()
     }
 
-    sealed class CardReaderHubViewState {
-        abstract val rows: List<CardReaderHubListItemViewState>
-
-        data class Content(override val rows: List<CardReaderHubListItemViewState>) : CardReaderHubViewState()
-    }
+    data class CardReaderHubViewState(
+        val rows: List<CardReaderHubListItemViewState>,
+        val isLoading: Boolean,
+        val errorText: UiString?,
+    )
 
     data class CardReaderHubListItemViewState(
         @DrawableRes val icon: Int,
         val label: UiString,
+        val isEnabled: Boolean = true,
         val onItemClicked: () -> Unit
     )
 }
