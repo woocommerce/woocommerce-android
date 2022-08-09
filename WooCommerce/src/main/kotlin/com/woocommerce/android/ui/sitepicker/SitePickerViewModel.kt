@@ -37,6 +37,7 @@ import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.store.WooCommerceStore
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
+import kotlin.text.RegexOption.IGNORE_CASE
 
 @HiltViewModel
 class SitePickerViewModel @Inject constructor(
@@ -62,7 +63,9 @@ class SitePickerViewModel @Inject constructor(
     private val _sites = MutableLiveData<List<SitesListItem>>()
     val sites: LiveData<List<SitesListItem>> = _sites
 
-    private val loginSiteAddress = appPrefsWrapper.getLoginSiteAddress()
+    private var loginSiteAddress: String?
+        get() = savedState.get("key") ?: appPrefsWrapper.getLoginSiteAddress()
+        set(value) = savedState.set("key", value)
 
     val shouldShowToolbar: Boolean
         get() = !navArgs.openedFromLogin
@@ -184,7 +187,7 @@ class SitePickerViewModel @Inject constructor(
                 add(Header(R.string.login_pick_store))
                 addAll(wooSites)
             }
-            if (nonWooSites.isNotEmpty()) {
+            if (navArgs.openedFromLogin && nonWooSites.isNotEmpty()) {
                 add(Header(R.string.login_non_woo_stores_label))
                 addAll(nonWooSites)
             }
@@ -298,9 +301,13 @@ class SitePickerViewModel @Inject constructor(
         updatedSites?.let { _sites.value = it }
     }
 
-    @Suppress("UnusedPrivateMember")
     fun onNonWooSiteSelected(siteModel: SiteModel) {
-        // TODO
+        // Strip protocol from site's URL
+        val protocolRegex = Regex("^(http[s]?://)", IGNORE_CASE)
+        val cleanedUrl = siteModel.url.replaceFirst(protocolRegex, "")
+
+        loginSiteAddress = cleanedUrl
+        loadWooNotFoundView(siteModel)
     }
 
     fun onViewConnectedStoresButtonClick() {
