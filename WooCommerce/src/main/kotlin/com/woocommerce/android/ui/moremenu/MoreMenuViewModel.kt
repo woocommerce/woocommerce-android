@@ -101,7 +101,7 @@ class MoreMenuViewModel @Inject constructor(
 
     private fun buildPaymentsBadgeState(paymentsFeatureWasClicked: Boolean) =
         if (!paymentsFeatureWasClicked) BadgeState(
-            badgeSize = R.dimen.major_85,
+            badgeSize = R.dimen.major_110,
             backgroundColor = R.color.color_secondary,
             textColor = R.color.color_on_surface_inverted,
             textState = TextState("", R.dimen.text_minor_80),

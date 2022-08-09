@@ -101,7 +101,7 @@ fun MoreMenuScreen(
 @Composable
 private fun MoreMenuItems(state: MoreMenuViewState) {
     LazyVerticalGrid(
-        cells = Fixed(3),
+        cells = Fixed(2),
         contentPadding = PaddingValues(
             horizontal = dimensionResource(id = R.dimen.major_100),
             vertical = dimensionResource(id = R.dimen.major_100)
@@ -282,7 +282,7 @@ private fun MoreMenuButton(
                         painter = painterResource(id = iconDrawable),
                         contentDescription = stringResource(id = text),
                         modifier = Modifier
-                            .size(dimensionResource(id = R.dimen.major_150))
+                            .size(dimensionResource(id = R.dimen.major_200))
                             .align(Alignment.Center)
                     )
                 }
@@ -348,7 +348,7 @@ private fun MoreMenuPreview() {
             MenuUiButton(
                 string.more_menu_button_payments, drawable.ic_more_menu_payments,
                 BadgeState(
-                    badgeSize = R.dimen.major_85,
+                    badgeSize = R.dimen.major_110,
                     backgroundColor = color.color_secondary,
                     textColor = color.color_on_surface_inverted,
                     textState = TextState("", R.dimen.text_minor_80),
