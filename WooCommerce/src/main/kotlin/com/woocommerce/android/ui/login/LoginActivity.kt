@@ -407,7 +407,6 @@ class LoginActivity :
             val wooLoginEmailPasswordFragment = WooLoginEmailPasswordFragment
                 .newInstance(
                     email,
-                    allowMagicLink = allowMagicLink,
                     verifyMagicLinkEmail = verifyEmail,
                     variant = AUTOMATIC
                 )
@@ -418,7 +417,6 @@ class LoginActivity :
             val wooLoginEmailPasswordFragment = WooLoginEmailPasswordFragment
                 .newInstance(
                     email,
-                    allowMagicLink = allowMagicLink,
                     verifyMagicLinkEmail = verifyEmail,
                     variant = ENHANCED
                 )
