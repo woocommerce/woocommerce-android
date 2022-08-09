@@ -9,6 +9,8 @@ import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_OPTION
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_MORE_MENU_ADMIN_MENU
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_MORE_MENU_COUPONS
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_MORE_MENU_INBOX
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_MORE_MENU_PAYMENTS
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_MORE_MENU_PAYMENTS_BADGE_VISIBLE
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_MORE_MENU_REVIEWS
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_MORE_MENU_VIEW_STORE
 import com.woocommerce.android.push.UnseenReviewsCountHandler
@@ -138,6 +140,10 @@ class MoreMenuViewModel @Inject constructor(
     }
 
     private fun onPaymentsButtonClick() {
+        trackMoreMenuOptionSelected(
+            VALUE_MORE_MENU_PAYMENTS,
+            mapOf(VALUE_MORE_MENU_PAYMENTS_BADGE_VISIBLE to isPaymentBadgeVisible().toString())
+        )
         moreMenuNewFeatureHandler.markPaymentsIconAsClicked()
         triggerEvent(MoreMenuEvent.ViewPayments)
     }
@@ -167,12 +173,20 @@ class MoreMenuViewModel @Inject constructor(
         triggerEvent(MoreMenuEvent.ViewInboxEvent)
     }
 
-    private fun trackMoreMenuOptionSelected(selectedOption: String) {
+    private fun trackMoreMenuOptionSelected(
+        selectedOption: String,
+        extraOptions: Map<String, String> = emptyMap()
+    ) {
         AnalyticsTracker.track(
             AnalyticsEvent.HUB_MENU_OPTION_TAPPED,
-            mapOf(KEY_OPTION to selectedOption)
+            mapOf(KEY_OPTION to selectedOption) + extraOptions
         )
     }
+
+    private fun isPaymentBadgeVisible() = moreMenuViewState.value
+        ?.moreMenuItems
+        ?.find { it.text == R.string.more_menu_button_payments }
+        ?.badgeState != null
 
     data class MoreMenuViewState(
         val moreMenuItems: List<MenuUiButton> = emptyList(),
