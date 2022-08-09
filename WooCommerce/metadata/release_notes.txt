@@ -1,4 +1,1 @@
-We’re thrilled to announce that it’s now possible to edit an order from the app. You can edit or remove products, fees, shipping and change product quantity. You can also search for customers when editing or creating an order.
-
-We’ve also made some changes to display custom fields for an order and several improvements to our payments and login flow, including the option to install Jetpack directly from the app.
-
+For this release, we focused on polishing a few things around your login experience, including the option to install WooCommerce plugin directly from the app. We are working on some pretty cool stuff for you all! Keep your feedback rolling in; it helps us figure out what to work on next. 💜
