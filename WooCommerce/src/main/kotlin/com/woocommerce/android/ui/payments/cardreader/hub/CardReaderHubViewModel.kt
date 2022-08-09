@@ -135,33 +135,38 @@ class CardReaderHubViewModel @Inject constructor(
     val viewStateData: LiveData<CardReaderHubViewState> = viewState
 
     private fun onCollectPaymentClicked() {
+        trackEvent(AnalyticsEvent.PAYMENTS_HUB_COLLECT_PAYMENT_TAPPED)
         triggerEvent(CardReaderHubEvents.NavigateToPaymentCollectionScreen)
     }
 
     private fun onManageCardReaderClicked() {
+        trackEvent(AnalyticsEvent.PAYMENTS_HUB_MANAGE_CARD_READERS_TAPPED)
         triggerEvent(CardReaderHubEvents.NavigateToCardReaderDetail(arguments.cardReaderFlowParam))
     }
 
     private fun onPurchaseCardReaderClicked() {
+        trackEvent(AnalyticsEvent.PAYMENTS_HUB_ORDER_CARD_READER_TAPPED)
         triggerEvent(CardReaderHubEvents.NavigateToPurchaseCardReaderFlow(cardReaderPurchaseUrl))
     }
 
     private fun onCardReaderManualsClicked() {
+        trackEvent(AnalyticsEvent.PAYMENTS_HUB_CARD_READER_MANUALS_TAPPED)
         triggerEvent(CardReaderHubEvents.NavigateToCardReaderManualsScreen)
     }
 
     private fun onCardReaderPaymentProviderClicked() {
-        trackPaymentProviderClickedEvent()
+        trackEvent(AnalyticsEvent.SETTINGS_CARD_PRESENT_SELECT_PAYMENT_GATEWAY_TAPPED)
         clearPluginExplicitlySelectedFlag()
         triggerEvent(CardReaderHubEvents.NavigateToCardReaderOnboardingScreen)
     }
 
     private fun onOnboardingErrorClicked() {
+        trackEvent(AnalyticsEvent.PAYMENTS_HUB_ONBOARDING_ERROR_TAPPED)
         triggerEvent(CardReaderHubEvents.NavigateToCardReaderOnboardingScreen)
     }
 
-    private fun trackPaymentProviderClickedEvent() {
-        analyticsTrackerWrapper.track(AnalyticsEvent.SETTINGS_CARD_PRESENT_SELECT_PAYMENT_GATEWAY_TAPPED)
+    private fun trackEvent(event: AnalyticsEvent) {
+        analyticsTrackerWrapper.track(event)
     }
 
     private fun clearPluginExplicitlySelectedFlag() {
