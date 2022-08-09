@@ -379,6 +379,9 @@ class LoginActivity :
     }
 
     private fun startLoginViaWPCom() {
+        // Clean previously saved site address, e.g: if merchants return from a store address flow.
+        AppPrefs.removeLoginSiteAddress()
+
         unifiedLoginTracker.setFlow(Flow.WORDPRESS_COM.value)
         showEmailLoginScreen()
     }
