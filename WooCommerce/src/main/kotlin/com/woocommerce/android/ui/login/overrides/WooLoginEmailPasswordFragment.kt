@@ -12,6 +12,7 @@ import com.woocommerce.android.R
 import com.woocommerce.android.experiment.MagicLinkRequestExperiment.MagicLinkRequestVariant
 import com.woocommerce.android.experiment.MagicLinkRequestExperiment.MagicLinkRequestVariant.AUTOMATIC
 import com.woocommerce.android.experiment.MagicLinkRequestExperiment.MagicLinkRequestVariant.CONTROL
+import com.woocommerce.android.experiment.MagicLinkRequestExperiment.MagicLinkRequestVariant.ENHANCED
 import dagger.android.support.AndroidSupportInjection
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
@@ -88,25 +89,35 @@ class WooLoginEmailPasswordFragment : LoginEmailPasswordFragment() {
     }
 
     @LayoutRes
-    override fun getContentLayout(): Int {
-        return R.layout.fragment_login_email_password
-    }
+    override fun getContentLayout(): Int =
+        when (variant) {
+            CONTROL -> super.getContentLayout()
+            ENHANCED,
+            AUTOMATIC -> R.layout.fragment_login_email_password
+        }
 
     override fun setupContent(rootView: ViewGroup?) {
         super.setupContent(rootView)
+        when (variant) {
+            ENHANCED -> addRequestMagicLinkButton(rootView)
+            AUTOMATIC -> addOpenEmailClientButton(rootView)
+            CONTROL -> {}
+        }
+    }
 
-        if (variant == AUTOMATIC) {
-            rootView?.findViewById<Button>(R.id.button_login_open_email_client)?.setOnClickListener {
-                loginListener?.openEmailClient(true)
+    private fun addRequestMagicLinkButton(rootView: ViewGroup?) {
+        rootView?.findViewById<View>(R.id.magic_link_message)?.isVisible = false
+        rootView?.findViewById<Button>(R.id.bottom_button_magic_link)?.apply {
+            isVisible = true
+            setOnClickListener {
+                loginListener?.useMagicLinkInstead(email, false)
             }
-        } else {
-            rootView?.findViewById<View>(R.id.magic_link_message)?.isVisible = false
-            rootView?.findViewById<Button>(R.id.bottom_button_magic_link)?.apply {
-                isVisible = true
-                setOnClickListener {
-                    loginListener?.useMagicLinkInstead(email, false)
-                }
-            }
+        }
+    }
+
+    private fun addOpenEmailClientButton(rootView: ViewGroup?) {
+        rootView?.findViewById<Button>(R.id.button_login_open_email_client)?.setOnClickListener {
+            loginListener?.openEmailClient(true)
         }
     }
 
