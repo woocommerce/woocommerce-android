@@ -24,6 +24,8 @@ import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.ui.dialog.WooDialog
 import com.woocommerce.android.ui.main.MainActivity.Companion.BackPressListener
+import com.woocommerce.android.ui.payments.SelectPaymentMethodViewModel.NavigateBackToHub
+import com.woocommerce.android.ui.payments.SelectPaymentMethodViewModel.NavigateBackToOrderList
 import com.woocommerce.android.ui.payments.SelectPaymentMethodViewModel.NavigateToCardReaderHubFlow
 import com.woocommerce.android.ui.payments.SelectPaymentMethodViewModel.NavigateToCardReaderPaymentFlow
 import com.woocommerce.android.ui.payments.SelectPaymentMethodViewModel.NavigateToCardReaderRefundFlow
@@ -35,7 +37,6 @@ import com.woocommerce.android.ui.payments.banner.PaymentsScreenBannerDismissDia
 import com.woocommerce.android.ui.payments.cardreader.connect.CardReaderConnectDialogFragment
 import com.woocommerce.android.ui.payments.cardreader.payment.CardReaderPaymentDialogFragment
 import com.woocommerce.android.util.ChromeCustomTabUtils
-import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowDialog
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import dagger.hilt.android.AndroidEntryPoint
@@ -167,11 +168,6 @@ class SelectPaymentMethodFragment : BaseFragment(R.layout.fragment_take_payment)
                         BaseTransientBottomBar.LENGTH_LONG
                     ).show()
                 }
-                is Exit -> {
-                    val action =
-                        SelectPaymentMethodFragmentDirections.actionSelectPaymentMethodFragmentToCardReaderHubFragment()
-                    findNavController().navigateSafely(action)
-                }
                 is SharePaymentUrl -> {
                     sharePaymentUrl(event.storeName, event.paymentUrl)
                 }
@@ -195,6 +191,17 @@ class SelectPaymentMethodFragment : BaseFragment(R.layout.fragment_take_payment)
                             event.cardReaderFlowParam
                         )
                     findNavController().navigate(action)
+                }
+                is NavigateBackToOrderList -> {
+                    val action = SelectPaymentMethodFragmentDirections.actionSelectPaymentMethodFragmentToOrderList()
+                    findNavController().navigateSafely(action)
+                }
+                is NavigateBackToHub -> {
+                    val action = SelectPaymentMethodFragmentDirections
+                        .actionSelectPaymentMethodFragmentToCardReaderHubFragment(
+                            event.cardReaderFlowParam
+                        )
+                    findNavController().navigateSafely(action)
                 }
                 SelectPaymentMethodViewModel.DismissCardReaderUpsellBanner -> {
                     applyBannerDismissDialogComposeUI()

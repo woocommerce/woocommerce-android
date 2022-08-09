@@ -15,18 +15,24 @@
             android:id="@+id/action_selectPaymentMethodFragment_to_cardReaderPaymentFlow"
             app:destination="@id/cardReaderStatusCheckerDialogFragment" />
         <action
-            android:id="@+id/action_selectPaymentMethodFragment_to_cardReaderHubFlow"
-            app:destination="@id/cardReaderStatusCheckerDialogFragment"
-            app:popUpTo="@+id/selectPaymentMethodFragment"
-            app:popUpToInclusive="true" />
-        <action
             android:id="@+id/action_selectPaymentMethodFragment_to_cardReaderRefundFlow"
             app:destination="@id/cardReaderStatusCheckerDialogFragment"
             app:popUpTo="@+id/selectPaymentMethodFragment"
             app:popUpToInclusive="true" />
         <action
+            android:id="@+id/action_selectPaymentMethodFragment_to_cardReaderHubFlow"
+            app:destination="@id/cardReaderHubFragment"
+            app:popUpTo="@+id/selectPaymentMethodFragment"
+            app:popUpToInclusive="true" />
+        <action
             android:id="@+id/action_selectPaymentMethodFragment_to_cardReaderHubFragment"
+            app:destination="@id/cardReaderHubFragment"
+            app:launchSingleTop="true"
             app:popUpTo="@+id/cardReaderHubFragment"
+            app:popUpToInclusive="false" />
+        <action
+            android:id="@+id/action_selectPaymentMethodFragment_to_orderList"
+            app:popUpTo="@+id/orders"
             app:popUpToInclusive="false" />
     </fragment>
 
@@ -87,10 +93,6 @@
         <argument
             android:name="cardReaderFlowParam"
             app:argType="com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderFlowParam"
-            app:nullable="false" />
-        <argument
-            android:name="storeCountryCode"
-            app:argType="string"
             app:nullable="false" />
         <action
             android:id="@+id/action_cardReaderHubFragment_to_cardReaderDetailFragment"
