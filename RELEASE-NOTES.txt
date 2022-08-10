@@ -1,7 +1,7 @@
 *** PLEASE FOLLOW THIS FORMAT: [<priority indicator, more stars = higher priority>] <description> [<PR URL>]
 9.9
 -----
-
+- [**] In-Person Payments: In-Person Payments has moved from the settings to the menu screen. The Simple Payments feature is part of the payments hub screen [https://github.com/woocommerce/woocommerce-android/pull/7150]
 
 9.8
 -----
