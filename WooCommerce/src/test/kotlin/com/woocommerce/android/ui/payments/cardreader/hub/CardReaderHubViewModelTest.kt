@@ -428,7 +428,7 @@ class CardReaderHubViewModelTest : BaseUnitTest() {
 
             initViewModel()
 
-            assertThat(viewModel.viewStateData.value?.errorText).isEqualTo(
+            assertThat(viewModel.viewStateData.value?.onboardingErrorAction?.text).isEqualTo(
                 UiString.UiStringRes(R.string.card_reader_onboarding_not_finished, containsHtml = true)
             )
         }
@@ -521,6 +521,28 @@ class CardReaderHubViewModelTest : BaseUnitTest() {
                     it.label == UiString.UiStringRes(R.string.settings_card_reader_manuals)
                 }?.isEnabled
             ).isTrue()
+        }
+
+    @Test
+    fun `given onboarding status changed to competed, when screen shown again, then onboarding error hidden`() =
+        testBlocking {
+            whenever(cardReaderChecker.getOnboardingState()).thenReturn(
+                mock<CardReaderOnboardingState.GenericError>()
+            )
+
+            initViewModel()
+
+            assertThat(viewModel.viewStateData.value?.onboardingErrorAction?.text).isEqualTo(
+                UiString.UiStringRes(R.string.card_reader_onboarding_not_finished, containsHtml = true)
+            )
+
+            whenever(cardReaderChecker.getOnboardingState()).thenReturn(
+                mock<CardReaderOnboardingState.OnboardingCompleted>()
+            )
+
+            viewModel.onViewVisible()
+
+            assertThat(viewModel.viewStateData.value?.onboardingErrorAction?.text).isNull()
         }
 
     private fun initViewModel() {
