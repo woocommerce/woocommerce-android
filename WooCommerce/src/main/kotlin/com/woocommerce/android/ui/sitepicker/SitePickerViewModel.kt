@@ -105,7 +105,7 @@ class SitePickerViewModel @Inject constructor(
 
     private suspend fun fetchSitesFromApi(showSkeleton: Boolean) {
         sitePickerViewState = sitePickerViewState.copy(
-            isSkeletonViewVisible = showSkeleton, isPrimaryBtnVisible = !showSkeleton
+            isSkeletonViewVisible = showSkeleton
         )
 
         val startTime = System.currentTimeMillis()
@@ -113,7 +113,7 @@ class SitePickerViewModel @Inject constructor(
         val duration = System.currentTimeMillis() - startTime
 
         sitePickerViewState = sitePickerViewState.copy(
-            isSkeletonViewVisible = false, isPrimaryBtnVisible = true, isProgressDiaLogVisible = false
+            isSkeletonViewVisible = false, isProgressDiaLogVisible = false
         )
         when {
             result.isError -> triggerEvent(ShowSnackbar(string.site_picker_error))
@@ -169,17 +169,9 @@ class SitePickerViewModel @Inject constructor(
             return
         }
 
-        sitePickerViewState = sitePickerViewState.copy(hasConnectedStores = filteredSites.isNotEmpty())
-        val selectedSite = selectedSite.getIfExists() ?: sites[0]
         val wooSites = filteredSites.filter { it.hasWooCommerce }
-            .map {
-                WooSiteUiModel(
-                    site = it,
-                    isSelected = selectedSite.id == it.id
-                )
-            }
         val nonWooSites = filteredSites.filter { !it.hasWooCommerce }
-            .map { NonWooSiteUiModel(it) }
+        val selectedSite = selectedSite.getIfExists() ?: wooSites.getOrNull(0)
 
         if (_sites.value == null) {
             // Track events only on the first call
@@ -196,13 +188,24 @@ class SitePickerViewModel @Inject constructor(
         _sites.value = buildList {
             if (wooSites.isNotEmpty()) {
                 add(Header(R.string.login_pick_store))
-                addAll(wooSites)
+                addAll(
+                    wooSites.map {
+                        WooSiteUiModel(
+                            site = it,
+                            isSelected = selectedSite?.id == it.id
+                        )
+                    }
+                )
             }
             if (navArgs.openedFromLogin && nonWooSites.isNotEmpty()) {
                 add(Header(R.string.login_non_woo_stores_label))
-                addAll(nonWooSites)
+                addAll(nonWooSites.map { NonWooSiteUiModel(it) })
             }
         }
+        sitePickerViewState = sitePickerViewState.copy(
+            hasConnectedStores = filteredSites.isNotEmpty(),
+            isPrimaryBtnVisible = wooSites.isNotEmpty()
+        )
         loginSiteAddress?.let { processLoginSiteAddress(it) }
     }
 
@@ -326,6 +329,7 @@ class SitePickerViewModel @Inject constructor(
         trackLoginEvent(clickEvent = UnifiedLoginTracker.Click.VIEW_CONNECTED_STORES)
         sitePickerViewState = sitePickerViewState.copy(
             isNoStoresViewVisible = false,
+            isPrimaryBtnVisible = sites.value!!.any { it is WooSiteUiModel },
             primaryBtnText = resourceProvider.getString(string.continue_button),
             currentSitePickerState = SitePickerState.StoreListState
         )
