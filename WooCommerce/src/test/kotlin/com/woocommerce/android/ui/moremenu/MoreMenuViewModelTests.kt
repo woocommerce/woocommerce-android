@@ -137,7 +137,7 @@ class MoreMenuViewModelTests : BaseUnitTest() {
             R.color.color_on_surface_inverted
         )
         assertThat(paymentsButton.badgeState?.badgeSize).isEqualTo(
-            R.dimen.major_85
+            R.dimen.major_110
         )
         assertThat(paymentsButton.badgeState?.backgroundColor).isEqualTo(
             R.color.color_secondary
