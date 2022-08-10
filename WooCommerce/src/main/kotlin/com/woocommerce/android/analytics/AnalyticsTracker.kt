@@ -153,6 +153,7 @@ class AnalyticsTracker private constructor(private val context: Context) {
         const val KEY_IS_WPCOM_STORE = "is_wpcom_store"
         const val KEY_NAME = "name"
         const val KEY_NUMBER_OF_STORES = "number_of_stores"
+        const val KEY_NUMBER_OF_NON_WOO_SITES = "number_of_non_woo_sites"
         const val KEY_PARENT_ID = "parent_id"
         const val KEY_RANGE = "range"
         const val KEY_RESULT = "result"

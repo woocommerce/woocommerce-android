@@ -186,7 +186,10 @@ class SitePickerViewModel @Inject constructor(
             trackLoginEvent(currentStep = UnifiedLoginTracker.Step.SITE_LIST)
             analyticsTrackerWrapper.track(
                 AnalyticsEvent.SITE_PICKER_STORES_SHOWN,
-                mapOf(AnalyticsTracker.KEY_NUMBER_OF_STORES to wooSites.size)
+                mapOf(
+                    AnalyticsTracker.KEY_NUMBER_OF_STORES to wooSites.size,
+                    AnalyticsTracker.KEY_NUMBER_OF_NON_WOO_SITES to nonWooSites.size
+                )
             )
         }
 

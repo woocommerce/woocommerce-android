@@ -177,7 +177,10 @@ class SitePickerViewModelTest : BaseUnitTest() {
             verify(repository, times(1)).fetchWooCommerceSites()
             verify(analyticsTrackerWrapper, times(1)).track(
                 AnalyticsEvent.SITE_PICKER_STORES_SHOWN,
-                mapOf(AnalyticsTracker.KEY_NUMBER_OF_STORES to sites?.size)
+                mapOf(
+                    AnalyticsTracker.KEY_NUMBER_OF_STORES to sites?.size,
+                    AnalyticsTracker.KEY_NUMBER_OF_NON_WOO_SITES to 0
+                )
             )
 
             assertThat(items).isNotEmpty
@@ -203,6 +206,14 @@ class SitePickerViewModelTest : BaseUnitTest() {
             whenViewModelIsCreated()
 
             val items = viewModel.sites.captureValues().last().toMutableList()
+
+            verify(analyticsTrackerWrapper, times(1)).track(
+                AnalyticsEvent.SITE_PICKER_STORES_SHOWN,
+                mapOf(
+                    AnalyticsTracker.KEY_NUMBER_OF_STORES to items.count { it is WooSiteUiModel },
+                    AnalyticsTracker.KEY_NUMBER_OF_NON_WOO_SITES to items.count { it is NonWooSiteUiModel }
+                )
+            )
 
             items.assertThenRemoveFirstItem { isEqualTo(SitesListItem.Header(R.string.login_pick_store)) }
             repeat(expectedSites.count { it.hasWooCommerce }) {
