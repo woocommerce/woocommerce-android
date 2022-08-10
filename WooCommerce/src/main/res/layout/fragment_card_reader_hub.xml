@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
@@ -11,20 +11,23 @@
         android:id="@+id/cardReaderHubLoading"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:indeterminate="true" />
+        android:indeterminate="true"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/cardReaderHubRv"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="@color/color_surface"
+        android:layout_height="0dp"
+        android:layout_marginBottom="@dimen/minor_100"
+        app:layout_constraintBottom_toTopOf="@id/cardReaderHubOnboardingFailedTv"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/cardReaderHubLoading"
+        app:layout_constraintVertical_chainStyle="spread_inside"
         tools:itemCount="5"
         tools:listitem="@layout/card_reader_hub_list_item" />
-
-    <Space
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1" />
 
     <!-- android:textColorHighlight="#00FFFFFF": Workaround for a bug https://stackoverflow.com/a/70394538/632516 -->
     <com.google.android.material.textview.MaterialTextView
@@ -33,7 +36,6 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginStart="0dp"
-        android:layout_marginTop="@dimen/major_100"
         android:layout_marginEnd="0dp"
         android:layout_marginBottom="@dimen/minor_100"
         android:background="@color/color_surface"
@@ -46,5 +48,10 @@
         android:textColor="@color/color_on_surface_high"
         android:textColorHighlight="#00FFFFFF"
         app:drawableTint="@color/color_on_surface"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/cardReaderHubRv"
+        app:layout_constraintVertical_chainStyle="spread_inside"
         tools:text="@string/card_reader_onboarding_not_finished" />
-</LinearLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>
