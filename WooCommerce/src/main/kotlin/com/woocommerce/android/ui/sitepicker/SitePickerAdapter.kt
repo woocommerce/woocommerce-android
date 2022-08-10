@@ -39,7 +39,7 @@ class SitePickerAdapter(
     }
 
     override fun submitList(list: List<SitesListItem>?) {
-        hasMultipleStores = (list?.count { it is WooSiteUiModel } ?: 0) > 1
+        hasMultipleStores = (list?.count { it is WooSiteUiModel || it is NonWooSiteUiModel } ?: 0) > 1
         super.submitList(list)
     }
 
