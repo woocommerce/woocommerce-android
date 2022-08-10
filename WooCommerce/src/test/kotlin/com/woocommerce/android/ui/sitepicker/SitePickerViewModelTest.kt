@@ -27,6 +27,7 @@ import com.woocommerce.android.ui.sitepicker.SitePickerViewModel.SitesListItem
 import com.woocommerce.android.ui.sitepicker.SitePickerViewModel.SitesListItem.NonWooSiteUiModel
 import com.woocommerce.android.ui.sitepicker.SitePickerViewModel.SitesListItem.WooSiteUiModel
 import com.woocommerce.android.util.captureValues
+import com.woocommerce.android.util.runAndCaptureValues
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Logout
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
@@ -437,6 +438,30 @@ class SitePickerViewModelTest : BaseUnitTest() {
 
             assertThat(view).isEqualTo(ShowWooUpgradeDialogEvent)
             assertThat(isProgressShown).containsExactly(false, true, false)
+        }
+
+    @Test
+    fun `given list of sites is shown, when a non-woo site is tapped, then show the Woo not found error`() =
+        testBlocking {
+            val expectedSites = expectedSiteList.mapIndexed { index, siteModel ->
+                if (index == 0) siteModel.apply {
+                    hasWooCommerce = false
+                    url = SitePickerTestUtils.loginSiteAddress
+                } else siteModel
+            }
+            whenever(repository.fetchWooCommerceSites()).thenReturn(WooResult(expectedSites))
+            whenever(repository.getSiteBySiteUrl(expectedSites[0].url)).thenReturn(expectedSites[0])
+            whenViewModelIsCreated()
+
+            val sitePickerState = viewModel.sitePickerViewStateData.liveData.runAndCaptureValues {
+                viewModel.onNonWooSiteSelected(expectedSites[0])
+            }.last()
+
+            assertThat(sitePickerState.currentSitePickerState).isEqualTo(WooNotFoundState)
+            verify(analyticsTrackerWrapper).track(
+                stat = AnalyticsEvent.SITE_PICKER_NON_WOO_SITE_TAPPED,
+                properties = mapOf(AnalyticsTracker.KEY_URL to expectedSites[0].url)
+            )
         }
 
     @Test
