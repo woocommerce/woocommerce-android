@@ -309,7 +309,9 @@ class SitePickerViewModel @Inject constructor(
     fun onNonWooSiteSelected(siteModel: SiteModel) {
         analyticsTrackerWrapper.track(
             stat = AnalyticsEvent.SITE_PICKER_NON_WOO_SITE_TAPPED,
-            properties = mapOf(AnalyticsTracker.KEY_URL to siteModel.url)
+            properties = mapOf(
+                AnalyticsTracker.KEY_IS_NON_ATOMIC to (!siteModel.isJetpackConnected && !siteModel.isJetpackCPConnected)
+            )
         )
         // Strip protocol from site's URL
         val protocolRegex = Regex("^(http[s]?://)", IGNORE_CASE)

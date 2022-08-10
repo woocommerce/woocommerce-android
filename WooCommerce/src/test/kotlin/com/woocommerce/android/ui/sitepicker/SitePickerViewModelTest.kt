@@ -447,6 +447,7 @@ class SitePickerViewModelTest : BaseUnitTest() {
                 if (index == 0) siteModel.apply {
                     hasWooCommerce = false
                     url = SitePickerTestUtils.loginSiteAddress
+                    setIsJetpackConnected(true)
                 } else siteModel
             }
             whenever(repository.fetchWooCommerceSites()).thenReturn(WooResult(expectedSites))
@@ -460,7 +461,7 @@ class SitePickerViewModelTest : BaseUnitTest() {
             assertThat(sitePickerState.currentSitePickerState).isEqualTo(WooNotFoundState)
             verify(analyticsTrackerWrapper).track(
                 stat = AnalyticsEvent.SITE_PICKER_NON_WOO_SITE_TAPPED,
-                properties = mapOf(AnalyticsTracker.KEY_URL to expectedSites[0].url)
+                properties = mapOf(AnalyticsTracker.KEY_IS_NON_ATOMIC to false)
             )
         }
 
