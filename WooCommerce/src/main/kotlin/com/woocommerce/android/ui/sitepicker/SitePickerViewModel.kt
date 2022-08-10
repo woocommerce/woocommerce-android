@@ -307,6 +307,10 @@ class SitePickerViewModel @Inject constructor(
     }
 
     fun onNonWooSiteSelected(siteModel: SiteModel) {
+        analyticsTrackerWrapper.track(
+            stat = AnalyticsEvent.SITE_PICKER_NON_WOO_SITE_TAPPED,
+            properties = mapOf(AnalyticsTracker.KEY_URL to siteModel.url)
+        )
         // Strip protocol from site's URL
         val protocolRegex = Regex("^(http[s]?://)", IGNORE_CASE)
         val cleanedUrl = siteModel.url.replaceFirst(protocolRegex, "")
