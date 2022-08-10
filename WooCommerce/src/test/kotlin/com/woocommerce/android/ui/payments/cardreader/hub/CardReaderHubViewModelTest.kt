@@ -113,7 +113,7 @@ class CardReaderHubViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `when user clicks on collect payment, then app navigates to card reader detail screen`() {
+    fun `when user clicks on collect payment, then app navigates to payment collection screen`() {
         (viewModel.viewStateData.value)?.rows?.find {
             it.label == UiString.UiStringRes(R.string.card_reader_collect_payment)
         }!!.onClick.invoke()
@@ -122,6 +122,15 @@ class CardReaderHubViewModelTest : BaseUnitTest() {
             .isEqualTo(
                 CardReaderHubViewModel.CardReaderHubEvents.NavigateToPaymentCollectionScreen
             )
+    }
+
+    @Test
+    fun `when user clicks on collect payment, then collect payment event tracked`() {
+        (viewModel.viewStateData.value)?.rows?.find {
+            it.label == UiString.UiStringRes(R.string.card_reader_collect_payment)
+        }!!.onClick.invoke()
+
+        verify(analyticsTrackerWrapper).track(AnalyticsEvent.PAYMENTS_HUB_COLLECT_PAYMENT_TAPPED)
     }
 
     @Test
@@ -136,6 +145,15 @@ class CardReaderHubViewModelTest : BaseUnitTest() {
                     CardReaderFlowParam.CardReadersHub
                 )
             )
+    }
+
+    @Test
+    fun `when user clicks on manage card reader, then manage card readers event tracked`() {
+        (viewModel.viewStateData.value)?.rows?.find {
+            it.label == UiString.UiStringRes(R.string.card_reader_manage_card_reader)
+        }!!.onClick.invoke()
+
+        verify(analyticsTrackerWrapper).track(AnalyticsEvent.PAYMENTS_HUB_MANAGE_CARD_READERS_TAPPED)
     }
 
     @Test
@@ -169,6 +187,17 @@ class CardReaderHubViewModelTest : BaseUnitTest() {
                     "${AppUrls.WOOCOMMERCE_PURCHASE_CARD_READER_IN_COUNTRY}US"
                 )
             )
+    }
+
+    @Test
+    fun `when user clicks on purchase card reader, then orders card reader event tracked`() {
+        whenever(inPersonPaymentsCanadaFeatureFlag.isEnabled()).thenReturn(false)
+
+        (viewModel.viewStateData.value)?.rows?.find {
+            it.label == UiString.UiStringRes(R.string.card_reader_purchase_card_reader)
+        }!!.onClick.invoke()
+
+        verify(analyticsTrackerWrapper).track(AnalyticsEvent.PAYMENTS_HUB_ORDER_CARD_READER_TAPPED)
     }
 
     @Test
@@ -227,6 +256,19 @@ class CardReaderHubViewModelTest : BaseUnitTest() {
     }
 
     @Test
+    fun `given onboarding check error, when user clicks on text, then payments hub tapped tracked`() = testBlocking {
+        whenever(cardReaderChecker.getOnboardingState()).thenReturn(
+            mock<CardReaderOnboardingState.GenericError>()
+        )
+
+        initViewModel()
+
+        viewModel.viewStateData.value?.onboardingErrorAction!!.onClick.invoke()
+
+        verify(analyticsTrackerWrapper).track(AnalyticsEvent.PAYMENTS_HUB_ONBOARDING_ERROR_TAPPED)
+    }
+
+    @Test
     fun ` when screen shown, then manuals row is displayed`() {
         assertThat((viewModel.viewStateData.value)?.rows)
             .anyMatch {
@@ -245,6 +287,15 @@ class CardReaderHubViewModelTest : BaseUnitTest() {
             .isEqualTo(
                 CardReaderHubViewModel.CardReaderHubEvents.NavigateToCardReaderManualsScreen
             )
+    }
+
+    @Test
+    fun `when user clicks on manuals row, then click on manuals tracked`() {
+        (viewModel.viewStateData.value)?.rows?.find {
+            it.label == UiString.UiStringRes(R.string.settings_card_reader_manuals)
+        }!!.onClick.invoke()
+
+        verify(analyticsTrackerWrapper).track(AnalyticsEvent.PAYMENTS_HUB_CARD_READER_MANUALS_TAPPED)
     }
 
     @Test
@@ -377,7 +428,7 @@ class CardReaderHubViewModelTest : BaseUnitTest() {
 
             initViewModel()
 
-            assertThat(viewModel.viewStateData.value?.errorText).isEqualTo(
+            assertThat(viewModel.viewStateData.value?.onboardingErrorAction?.text).isEqualTo(
                 UiString.UiStringRes(R.string.card_reader_onboarding_not_finished, containsHtml = true)
             )
         }
@@ -470,6 +521,28 @@ class CardReaderHubViewModelTest : BaseUnitTest() {
                     it.label == UiString.UiStringRes(R.string.settings_card_reader_manuals)
                 }?.isEnabled
             ).isTrue()
+        }
+
+    @Test
+    fun `given onboarding status changed to competed, when screen shown again, then onboarding error hidden`() =
+        testBlocking {
+            whenever(cardReaderChecker.getOnboardingState()).thenReturn(
+                mock<CardReaderOnboardingState.GenericError>()
+            )
+
+            initViewModel()
+
+            assertThat(viewModel.viewStateData.value?.onboardingErrorAction?.text).isEqualTo(
+                UiString.UiStringRes(R.string.card_reader_onboarding_not_finished, containsHtml = true)
+            )
+
+            whenever(cardReaderChecker.getOnboardingState()).thenReturn(
+                mock<CardReaderOnboardingState.OnboardingCompleted>()
+            )
+
+            viewModel.onViewVisible()
+
+            assertThat(viewModel.viewStateData.value?.onboardingErrorAction?.text).isNull()
         }
 
     private fun initViewModel() {
