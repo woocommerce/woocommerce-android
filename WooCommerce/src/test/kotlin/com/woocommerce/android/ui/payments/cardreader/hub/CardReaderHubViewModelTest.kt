@@ -256,6 +256,19 @@ class CardReaderHubViewModelTest : BaseUnitTest() {
     }
 
     @Test
+    fun `given onboarding check error, when user clicks on text, then payments hub tapped tracked`() = testBlocking {
+        whenever(cardReaderChecker.getOnboardingState()).thenReturn(
+            mock<CardReaderOnboardingState.GenericError>()
+        )
+
+        initViewModel()
+
+        viewModel.viewStateData.value?.onboardingErrorAction!!.onClick.invoke()
+
+        verify(analyticsTrackerWrapper).track(AnalyticsEvent.PAYMENTS_HUB_ONBOARDING_ERROR_TAPPED)
+    }
+
+    @Test
     fun ` when screen shown, then manuals row is displayed`() {
         assertThat((viewModel.viewStateData.value)?.rows)
             .anyMatch {
