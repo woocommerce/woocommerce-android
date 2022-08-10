@@ -17,6 +17,7 @@ import androidx.activity.viewModels
 import androidx.annotation.StringRes
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.appcompat.widget.Toolbar
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.core.content.ContextCompat
 import androidx.core.view.isVisible
@@ -815,6 +816,12 @@ class MainActivity :
             selectedProductCategoryName = productCategoryName
         )
         navController.navigateSafely(action)
+    }
+
+    @OptIn(ExperimentalFoundationApi::class)
+    override fun showMoreMenu() {
+        binding.bottomNav.currentPosition = MORE
+        binding.bottomNav.active(MORE.position)
     }
 
     override fun showOrderDetail(

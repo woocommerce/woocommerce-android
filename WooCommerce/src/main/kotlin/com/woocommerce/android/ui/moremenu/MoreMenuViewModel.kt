@@ -38,13 +38,13 @@ class MoreMenuViewModel @Inject constructor(
             unseenReviewsCountHandler.observeUnseenCount(),
             selectedSite.observe().filterNotNull(),
             moreMenuRepository.observeCouponBetaSwitch(),
-            moreMenuNewFeatureHandler.moreMenuPaymentsFeatureWasClicked
+            moreMenuNewFeatureHandler.moreMenuPaymentsFeatureWasClicked,
         ) { count, selectedSite, isCouponsEnabled, paymentsFeatureWasClicked ->
             MoreMenuViewState(
                 moreMenuItems = generateMenuButtons(
                     unseenReviewsCount = count,
                     isCouponsEnabled = isCouponsEnabled,
-                    paymentsFeatureWasClicked = paymentsFeatureWasClicked
+                    paymentsFeatureWasClicked = paymentsFeatureWasClicked,
                 ),
                 siteName = selectedSite.getSelectedSiteName(),
                 siteUrl = selectedSite.getSelectedSiteAbsoluteUrl(),
@@ -59,44 +59,43 @@ class MoreMenuViewModel @Inject constructor(
     private suspend fun generateMenuButtons(
         unseenReviewsCount: Int,
         isCouponsEnabled: Boolean,
-        paymentsFeatureWasClicked: Boolean
-    ) =
-        listOf(
-            MenuUiButton(
-                text = R.string.more_menu_button_payments,
-                icon = R.drawable.ic_more_menu_payments,
-                badgeState = buildPaymentsBadgeState(paymentsFeatureWasClicked),
-                onClick = ::onPaymentsButtonClick
-            ),
-            MenuUiButton(
-                text = R.string.more_menu_button_wс_admin,
-                icon = R.drawable.ic_more_menu_wp_admin,
-                onClick = ::onViewAdminButtonClick
-            ),
-            MenuUiButton(
-                text = R.string.more_menu_button_store,
-                icon = R.drawable.ic_more_menu_store,
-                onClick = ::onViewStoreButtonClick
-            ),
-            MenuUiButton(
-                text = R.string.more_menu_button_coupons,
-                icon = R.drawable.ic_more_menu_coupons,
-                isEnabled = isCouponsEnabled,
-                onClick = ::onCouponsButtonClick
-            ),
-            MenuUiButton(
-                text = R.string.more_menu_button_reviews,
-                icon = R.drawable.ic_more_menu_reviews,
-                badgeState = buildUnseenReviewsBadgeState(unseenReviewsCount),
-                onClick = ::onReviewsButtonClick
-            ),
-            MenuUiButton(
-                text = R.string.more_menu_button_inbox,
-                icon = R.drawable.ic_more_menu_inbox,
-                isEnabled = moreMenuRepository.isInboxEnabled(),
-                onClick = ::onInboxButtonClick
-            )
+        paymentsFeatureWasClicked: Boolean,
+    ) = listOf(
+        MenuUiButton(
+            text = R.string.more_menu_button_payments,
+            icon = R.drawable.ic_more_menu_payments,
+            badgeState = buildPaymentsBadgeState(paymentsFeatureWasClicked),
+            onClick = ::onPaymentsButtonClick,
+        ),
+        MenuUiButton(
+            text = R.string.more_menu_button_wс_admin,
+            icon = R.drawable.ic_more_menu_wp_admin,
+            onClick = ::onViewAdminButtonClick
+        ),
+        MenuUiButton(
+            text = R.string.more_menu_button_store,
+            icon = R.drawable.ic_more_menu_store,
+            onClick = ::onViewStoreButtonClick
+        ),
+        MenuUiButton(
+            text = R.string.more_menu_button_coupons,
+            icon = R.drawable.ic_more_menu_coupons,
+            isEnabled = isCouponsEnabled,
+            onClick = ::onCouponsButtonClick
+        ),
+        MenuUiButton(
+            text = R.string.more_menu_button_reviews,
+            icon = R.drawable.ic_more_menu_reviews,
+            badgeState = buildUnseenReviewsBadgeState(unseenReviewsCount),
+            onClick = ::onReviewsButtonClick
+        ),
+        MenuUiButton(
+            text = R.string.more_menu_button_inbox,
+            icon = R.drawable.ic_more_menu_inbox,
+            isEnabled = moreMenuRepository.isInboxEnabled(),
+            onClick = ::onInboxButtonClick
         )
+    )
 
     private fun buildPaymentsBadgeState(paymentsFeatureWasClicked: Boolean) =
         if (!paymentsFeatureWasClicked) BadgeState(
