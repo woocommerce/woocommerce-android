@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.payments.banner
 
+import android.content.res.Configuration
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -62,18 +63,20 @@ fun BannerDismissDialog(
 ) {
     if (showDialog) {
         AlertDialog(
+            backgroundColor = colorResource(id = R.color.color_surface_elevated),
             onDismissRequest = onDismissClick,
             title = {
                 Text(
                     text = title,
                     style = MaterialTheme.typography.h6,
+                    color = colorResource(id = R.color.color_on_surface)
                 )
             },
             text = {
                 Text(
                     text = description,
                     style = MaterialTheme.typography.subtitle1,
-                    color = colorResource(id = R.color.woo_black_90)
+                    color = colorResource(id = R.color.color_on_surface)
                 )
             },
             buttons = {
@@ -95,7 +98,7 @@ fun BannerDismissDialog(
                     ) {
                         Text(
                             text = stringResource(id = R.string.card_reader_upsell_card_reader_banner_remind_me_later),
-                            color = colorResource(id = R.color.woo_purple_60),
+                            color = colorResource(id = R.color.color_secondary),
                             style = MaterialTheme.typography.subtitle2,
                             fontWeight = FontWeight.Bold,
                         )
@@ -113,7 +116,7 @@ fun BannerDismissDialog(
                     ) {
                         Text(
                             text = stringResource(id = R.string.card_reader_upsell_card_reader_banner_dont_show_again),
-                            color = colorResource(id = R.color.woo_purple_60),
+                            color = colorResource(id = R.color.color_secondary),
                             style = MaterialTheme.typography.subtitle2,
                             fontWeight = FontWeight.Bold,
                         )
@@ -124,7 +127,8 @@ fun BannerDismissDialog(
     }
 }
 
-@Preview
+@Preview(name = "Light mode")
+@Preview(name = "Dark mode", uiMode = Configuration.UI_MODE_NIGHT_YES)
 @Composable
 fun BannerDismissDialogPreview() {
     BannerDismissDialog(

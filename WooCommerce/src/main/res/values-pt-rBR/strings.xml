@@ -1,11 +1,38 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2022-07-13 15:54:03+0000
+Translation-Revision-Date: 2022-08-05 16:03:05+0000
 Plural-Forms: nplurals=2; plural=(n > 1);
 Generator: GlotPress/2.4.0-alpha
 Language: pt_BR
 -->
 <resources>
+    <string name="lets_get_started">Vamos começar!</string>
+    <string name="login_help_notification_wordpress_login_button">Fazer login com o WordPress.com</string>
+    <string name="login_help_notification_contact_support_button">Falar com o suporte</string>
+    <string name="login_help_notification_site_error_description">Tente fazer login com a sua conta do WordPress.com</string>
+    <string name="login_help_notification_no_interaction_default_description">Peça ajuda!</string>
+    <string name="login_help_notification_default_title">Com problemas para fazer login?</string>
+    <string name="product_search_sku">SKU</string>
+    <string name="product_search_all">Todos os produtos</string>
+    <string name="card_reader_upsell_card_reader_banner_dont_show_again">NÃO MOSTRAR NOVAMENTE</string>
+    <string name="card_reader_upsell_card_reader_banner_remind_me_later">LEMBRE-ME DEPOIS</string>
+    <string name="card_reader_upsell_card_reader_banner_dismiss_dialog_description">Não se preocupe! Você pode começar a usar os pagamentos presenciais quando quiser em Configurações.</string>
+    <string name="card_reader_upsell_card_reader_banner_payments">Pagamentos presenciais</string>
+    <string name="card_reader_upsell_card_reader_banner_cta">Comprar leitor de cartão</string>
+    <string name="card_reader_upsell_card_reader_banner_description">Prepare-se para aceitar pagamentos com um leitor de cartão.</string>
+    <string name="card_reader_upsell_card_reader_banner_title">Aceite pagamentos com facilidade</string>
+    <string name="card_reader_upsell_card_reader_banner_new">NOVO</string>
+    <string name="card_reader_upsell_card_reader_banner_dismiss">Ignorar</string>
+    <string name="orderdetail_view_custom_fields">Visualizar campos personalizados</string>
+    <string name="orderdetail_custom_fields">Campos personalizados</string>
+    <string name="order_sync_failed">Não é possível salvar as mudanças</string>
+    <string name="existing_order_cash_dlg_message">Isso marcará o pedido como pago se você tiver recebido o pagamento fora do WooCommerce</string>
+    <string name="login_jetpack_install">Instalar Jetpack</string>
+    <string name="login_prologue_label_products_subtitle">Nós simplificamos o processamento</string>
+    <string name="login_prologue_label_orders_subtitle">Você pode gerenciar com rapidez e facilidade</string>
+    <string name="login_prologue_label_analytics_subtitle">Sabemos que isso é essencial para o seu negócio</string>
+    <string name="login_prologue_new_to_woo">Chegando agora no WooCommerce?</string>
+    <string name="notification_channel_pre_login_title">Lembretes de solução de problemas de login</string>
     <string name="tests_notification_new_order_message">Novo pedido de US$ 50 em Sua Loja do WooCommerce</string>
     <string name="tests_notification_new_order_title">Você recebeu um novo pedido! 🎉</string>
     <string name="lines_all_details">as informações</string>
@@ -228,9 +255,11 @@ Language: pt_BR
     <string name="coupon_details_minimum_spend">Gasto mínimo de %s</string>
     <string name="coupon_details_heading">Resumo do cupom</string>
     <string name="coupon_list_view_coupon">Visualizar resumo do cupom</string>
+    <string name="coupon_list_wip_message_enabled">Trabalhamos para que seja possível visualizar e editar cupons do seu dispositivo!</string>
     <string name="coupon_list_wip_title">Visualizar e editar cupons</string>
     <string name="coupon_list_empty_heading">Nenhum cupom encontrado</string>
     <string name="coupon_list_item_label_included_and_excluded">%1s sem %2s</string>
+    <string name="coupon_list_item_label_products_and_categories">%1s e %2s</string>
     <string name="coupon_list_item_label_everything">tudo</string>
     <string name="coupon_list_item_label_expired">Expirado</string>
     <string name="coupon_list_item_label_active">Ativo</string>
@@ -296,7 +325,6 @@ Language: pt_BR
     <string name="card_reader_onboarding_both_plugins_activated_hint_store_owner">Os pagamentos presenciais só vão funcionar com um dos seguintes plugins ativados. Entre em contato com um administrador do site para desativar um destes plugins para continuar:</string>
     <string name="card_reader_onboarding_both_plugins_activated_hint_admin">Os pagamentos presenciais só vão funcionar com um dos seguintes plugins ativados. Desative um destes plugins para continuar:</string>
     <string name="card_reader_onboarding_both_plugins_activated_header">Conflito de plugins de pagamento detectado</string>
-    <string name="order_creation_price_calculation_failed">Não foi possível atualizar o preço</string>
     <string name="order_creation_payment_tax">Impostos</string>
     <string name="exclusive_or">ou</string>
     <string name="settings_install_jetpack">Instalar Jetpack</string>
@@ -788,10 +816,9 @@ Language: pt_BR
     <string name="user_role_access_error_retry">Você não tem a função de usuário correta</string>
     <string name="user_role_access_error_link">Saiba mais sobre funções e permissões</string>
     <string name="user_role_access_error_msg">Este app só é compatível com as funções de usuários administrador e gerente de loja. Entre em contato com o proprietário da loja para fazer upgrade da sua função.</string>
-    <string name="login_prologue_label_reviews">Monitore e aprove avaliações dos seus produtos</string>
     <string name="login_prologue_label_products">Edite e adicione novos produtos de onde estiver</string>
-    <string name="login_prologue_label_orders">Gerencie os pedidos da sua loja em qualquer lugar</string>
-    <string name="login_prologue_label_analytics">Rastreie vendas e produtos com alto desempenho</string>
+    <string name="login_prologue_label_orders">Gerencie e edite seus pedidos de qualquer lugar</string>
+    <string name="login_prologue_label_analytics">Monitore vendas e produtos de alto desempenho</string>
     <string name="skip">Pular</string>
     <string name="product_type_external_title">Produto externo</string>
     <string name="product_type_grouped_title">Grupo de produto</string>
@@ -944,6 +971,7 @@ Language: pt_BR
     <string name="shipping_label_edit_data_loading_error">Não foi possível carregar os dados de endereço</string>
     <string name="shipping_label_edit_address_use_address_as_is">Usar o endereço conforme inserido</string>
     <string name="shipping_label_edit_address_country">País</string>
+    <string name="shipping_label_edit_address_zip">CEP</string>
     <string name="shipping_label_edit_address_state">Estado</string>
     <string name="shipping_label_edit_address_city">Cidade</string>
     <string name="shipping_label_edit_address_phone">Telefone</string>

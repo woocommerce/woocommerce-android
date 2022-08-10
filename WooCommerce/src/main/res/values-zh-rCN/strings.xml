@@ -1,11 +1,38 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2022-07-14 12:54:03+0000
+Translation-Revision-Date: 2022-08-05 15:59:55+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: zh_CN
 -->
 <resources>
+    <string name="lets_get_started">开始体验吧！</string>
+    <string name="login_help_notification_wordpress_login_button">使用 WordPress.com 账户登录</string>
+    <string name="login_help_notification_contact_support_button">联系支持人员</string>
+    <string name="login_help_notification_site_error_description">尝试用您的 WordPress.com 账户登录</string>
+    <string name="login_help_notification_no_interaction_default_description">获取帮助！</string>
+    <string name="login_help_notification_default_title">登录遇到问题？</string>
+    <string name="product_search_sku">SKU</string>
+    <string name="product_search_all">全部产品</string>
+    <string name="card_reader_upsell_card_reader_banner_dont_show_again">不再显示</string>
+    <string name="card_reader_upsell_card_reader_banner_remind_me_later">稍后提醒我</string>
+    <string name="card_reader_upsell_card_reader_banner_dismiss_dialog_description">不必担心！ 开始体验前，您始终可以先设置面对面付款。</string>
+    <string name="card_reader_upsell_card_reader_banner_payments">现场付款</string>
+    <string name="card_reader_upsell_card_reader_banner_cta">购买读卡器</string>
+    <string name="card_reader_upsell_card_reader_banner_description">请准备好使用读卡器接受付款。</string>
+    <string name="card_reader_upsell_card_reader_banner_title">轻松接受付款</string>
+    <string name="card_reader_upsell_card_reader_banner_new">新建</string>
+    <string name="card_reader_upsell_card_reader_banner_dismiss">忽略</string>
+    <string name="orderdetail_view_custom_fields">查看自定义字段</string>
+    <string name="orderdetail_custom_fields">自定义字段</string>
+    <string name="order_sync_failed">无法保存更改</string>
+    <string name="existing_order_cash_dlg_message">如果您在 WooCommerce 之外收取了付款，则系统会将此订单标记为已付款</string>
+    <string name="login_jetpack_install">安装 Jetpack</string>
+    <string name="login_prologue_label_products_subtitle">我们帮您毫不费力地处理它们</string>
+    <string name="login_prologue_label_orders_subtitle">您可轻松快速地管理它们</string>
+    <string name="login_prologue_label_analytics_subtitle">我们知道这对您的业务至关重要</string>
+    <string name="login_prologue_new_to_woo">首次使用 WooCommerce</string>
+    <string name="notification_channel_pre_login_title">登录故障排查提示</string>
     <string name="tests_notification_new_order_message">您的 WooCommerce 商店有 50 美元的新订单</string>
     <string name="tests_notification_new_order_title">您有一个新订单！🎉</string>
     <string name="lines_all_details">详情</string>
@@ -228,6 +255,7 @@ Language: zh_CN
     <string name="coupon_details_minimum_spend">最低花费金额：%s</string>
     <string name="coupon_details_heading">优惠券汇总</string>
     <string name="coupon_list_view_coupon">查看优惠券汇总</string>
+    <string name="coupon_list_wip_message_enabled">我们一直致力于不断改进，让您能够从设备上也可以查看并编辑优惠券！</string>
     <string name="coupon_list_wip_title">查看并编辑优惠券</string>
     <string name="coupon_list_empty_heading">没有找到优惠券</string>
     <string name="coupon_list_item_label_included_and_excluded">%1s，不包括 %2s</string>
@@ -297,7 +325,6 @@ Language: zh_CN
     <string name="card_reader_onboarding_both_plugins_activated_hint_store_owner">必须启用下面其中一个插件，才能进行现场付款。 请联系站点管理员，禁用下面其中一个插件，然后再继续：</string>
     <string name="card_reader_onboarding_both_plugins_activated_hint_admin">必须启用下面其中一个插件，才能进行现场付款。 请禁用下面其中一个插件，然后再继续：</string>
     <string name="card_reader_onboarding_both_plugins_activated_header">检测到存在冲突的付款插件</string>
-    <string name="order_creation_price_calculation_failed">无法更新定价</string>
     <string name="order_creation_payment_tax">税费</string>
     <string name="exclusive_or">或</string>
     <string name="settings_install_jetpack">安装 Jetpack</string>
@@ -789,10 +816,9 @@ Language: zh_CN
     <string name="user_role_access_error_retry">您的用户角色不正确</string>
     <string name="user_role_access_error_link">了解更多关于角色和权限的信息</string>
     <string name="user_role_access_error_msg">此应用程序仅支持管理员和商店经理用户角色。 请联系商店所有者，升级角色。</string>
-    <string name="login_prologue_label_reviews">监控和批准您的产品评价</string>
     <string name="login_prologue_label_products">从任何地方编辑和添加新产品</string>
-    <string name="login_prologue_label_orders">随时随地管理您的商店订单</string>
-    <string name="login_prologue_label_analytics">跟踪销售数据和高绩效产品</string>
+    <string name="login_prologue_label_orders">随时随地管理和编辑订单</string>
+    <string name="login_prologue_label_analytics">跟踪销售额和高绩效产品</string>
     <string name="skip">跳过</string>
     <string name="product_type_external_title">外部产品</string>
     <string name="product_type_grouped_title">成组产品</string>

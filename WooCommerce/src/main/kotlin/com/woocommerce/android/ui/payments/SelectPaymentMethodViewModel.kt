@@ -33,6 +33,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import org.wordpress.android.fluxc.model.WCOrderStatusModel
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.CoreOrderStatus
 import org.wordpress.android.fluxc.store.WCOrderStore
 import org.wordpress.android.fluxc.store.WooCommerceStore
@@ -237,7 +238,9 @@ class SelectPaymentMethodViewModel @Inject constructor(
     private suspend fun updateOrderStatus(statusKey: String) {
         val statusModel = withContext(dispatchers.io) {
             orderStore.getOrderStatusForSiteAndKey(selectedSite.get(), statusKey)
-                ?: error("Couldn't find a status with key $statusKey")
+                ?: WCOrderStatusModel(statusKey = statusKey).apply {
+                    label = statusKey
+                }
         }
 
         orderStore.updateOrderStatus(

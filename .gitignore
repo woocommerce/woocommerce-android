@@ -42,8 +42,6 @@ local.properties
 /.idea/codeStyles/
 # Enforce plugins
 /.idea/externalDependencies.xml
-# Checkstyle configuration
-/.idea/checkstyle-idea.xml
 /.idea/codeStyleSettings.xml
 
 # IntelliJ/Android Studio exceptions

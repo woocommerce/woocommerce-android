@@ -145,8 +145,9 @@ class UnifiedLoginTracker
     }
 
     enum class Step(val value: String) {
-        PROLOGUE_CAROUSEL("prologue"),
-        PROLOGUE("prologue_carousel"),
+        PROLOGUE_CAROUSEL("prologue_carousel"),
+        PROLOGUE_SURVEY("prologue_survey"),
+        PROLOGUE("prologue"),
         START("start"),
         MAGIC_LINK_REQUESTED("magic_link_requested"),
         ENTER_SITE_ADDRESS("enter_site_address"),

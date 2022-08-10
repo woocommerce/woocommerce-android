@@ -96,7 +96,7 @@ fun Banner(
     chipLabel: String = stringResource(id = R.string.card_reader_upsell_card_reader_banner_new)
 ) {
     Card(
-        modifier = Modifier.fillMaxWidth()
+        modifier = Modifier.fillMaxWidth(),
     ) {
         Row(
             modifier = Modifier

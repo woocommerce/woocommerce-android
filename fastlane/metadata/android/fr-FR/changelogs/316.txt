@@ -1,0 +1,5 @@
+9.7 :
+Nous sommes ravis d’annoncer qu’il est désormais possible de modifier une commande depuis l’application. Vous pouvez modifier ou retirer des produits, des frais ou des livraisons, ainsi que modifier la quantité de produits. Vous pouvez également rechercher des clients lorsque vous modifiez ou créez une commande.
+
+Nous avons également apporté quelques modifications au niveau de l’affichage de champs personnalisés lors d’une commande ainsi que plusieurs améliorations à notre flux de paiement et de connexion, notamment la possibilité d’installer Jetpack directement depuis l’application.
+

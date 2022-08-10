@@ -159,8 +159,18 @@ class AppPrefsWrapper @Inject constructor() {
 
     fun hasPreLoginNotificationBeenDisplayed() = AppPrefs.isPreLoginNotificationBeenDisplayed()
 
+    fun setPreLoginNotificationDisplayedType(notificationType: String) =
+        AppPrefs.setPreLoginNotificationDisplayedType(notificationType)
+
+    fun getPreLoginNotificationDisplayedType() = AppPrefs.getPreLoginNotificationDisplayedType()
+
     fun setPreLoginNotificationDisplayed(displayed: Boolean) =
         AppPrefs.setPreLoginNotificationDisplayed(displayed)
+
+    fun setLoginEmail(email: String) =
+        AppPrefs.setLoginEmail(email)
+
+    fun getLoginEmail() = AppPrefs.getLoginEmail()
 
     fun isUserSeenNewFeatureOnMoreScreen() = AppPrefs.isUserSeenNewFeatureOnMoreScreen()
 

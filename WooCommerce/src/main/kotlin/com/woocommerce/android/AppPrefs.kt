@@ -87,6 +87,8 @@ object AppPrefs {
         PRODUCT_SORTING_PREFIX,
         PRE_LOGIN_NOTIFICATION_WORK_REQUEST,
         PRE_LOGIN_NOTIFICATION_DISPLAYED,
+        PRE_LOGIN_NOTIFICATION_DISPLAYED_TYPE,
+        LOGIN_EMAIL,
         CARD_READER_UPSELL_BANNER_DIALOG_DISMISSED_FOREVER,
         CARD_READER_UPSELL_BANNER_DIALOG_DISMISSED_REMIND_ME_LATER,
     }
@@ -785,12 +787,24 @@ object AppPrefs {
         setString(DeletablePrefKey.PRE_LOGIN_NOTIFICATION_WORK_REQUEST, workRequestId)
     }
 
+    fun getPreLoginNotificationDisplayedType() = getString(DeletablePrefKey.PRE_LOGIN_NOTIFICATION_DISPLAYED_TYPE)
+
+    fun setPreLoginNotificationDisplayedType(notificationType: String) {
+        setString(DeletablePrefKey.PRE_LOGIN_NOTIFICATION_DISPLAYED_TYPE, notificationType)
+    }
+
     fun setPreLoginNotificationDisplayed(displayed: Boolean) {
         setBoolean(DeletablePrefKey.PRE_LOGIN_NOTIFICATION_DISPLAYED, displayed)
     }
 
     fun isPreLoginNotificationBeenDisplayed(): Boolean =
         getBoolean(DeletablePrefKey.PRE_LOGIN_NOTIFICATION_DISPLAYED, false)
+
+    fun getLoginEmail() = getString(DeletablePrefKey.LOGIN_EMAIL)
+
+    fun setLoginEmail(email: String) {
+        setString(DeletablePrefKey.LOGIN_EMAIL, email)
+    }
 
     fun setOnboardingCarouselDisplayed(displayed: Boolean) {
         setBoolean(ONBOARDING_CAROUSEL_DISPLAYED, displayed)

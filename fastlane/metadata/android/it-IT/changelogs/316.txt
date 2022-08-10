@@ -1,0 +1,5 @@
+9,7:
+Siamo entusiasti di annunciare che ora è possibile modificare un ordine dall'app. Puoi modificare o rimuovere prodotti, tariffe, spedizione e modificare le quantità dei prodotti. Puoi anche cercare clienti durante la modifica o la creazione di un ordine.
+
+Abbiamo anche apportato alcune modifiche per visualizzare i campi personalizzati per un ordine e diversi miglioramenti ai nostri pagamenti e al flusso di accesso, inclusa l'opzione di installare Jetpack direttamente dall'app.
+
