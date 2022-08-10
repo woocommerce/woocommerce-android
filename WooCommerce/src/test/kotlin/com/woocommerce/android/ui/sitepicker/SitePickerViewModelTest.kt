@@ -451,7 +451,6 @@ class SitePickerViewModelTest : BaseUnitTest() {
                 } else siteModel
             }
             whenever(repository.fetchWooCommerceSites()).thenReturn(WooResult(expectedSites))
-            whenever(repository.getSiteBySiteUrl(expectedSites[0].url)).thenReturn(expectedSites[0])
             whenViewModelIsCreated()
 
             val sitePickerState = viewModel.sitePickerViewStateData.liveData.runAndCaptureValues {
