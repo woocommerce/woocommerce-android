@@ -32,14 +32,14 @@ class SitePickerAdapter(
         private const val NON_WOO_SITE_TYPE = 2
     }
 
-    private var hasMultipleStores: Boolean = false
+    private var hasMultipleSites: Boolean = false
 
     init {
         setHasStableIds(true)
     }
 
     override fun submitList(list: List<SitesListItem>?) {
-        hasMultipleStores = (list?.count { it is WooSiteUiModel || it is NonWooSiteUiModel } ?: 0) > 1
+        hasMultipleSites = (list?.count { it is WooSiteUiModel || it is NonWooSiteUiModel } ?: 0) > 1
         super.submitList(list)
     }
 
@@ -110,7 +110,7 @@ class SitePickerAdapter(
         }
 
         fun bind(siteUiModel: WooSiteUiModel) {
-            viewBinding.radio.isVisible = hasMultipleStores
+            viewBinding.radio.isVisible = hasMultipleSites
             viewBinding.radio.isChecked = siteUiModel.isSelected
             viewBinding.textSiteName.text = siteUiModel.site.getSiteName()
             viewBinding.textSiteDomain.text = StringUtils.getSiteDomainAndPath(siteUiModel.site)
