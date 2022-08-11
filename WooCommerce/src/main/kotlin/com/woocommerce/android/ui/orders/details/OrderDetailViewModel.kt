@@ -183,8 +183,6 @@ class OrderDetailViewModel @Inject constructor(
                 fetchSLCreationEligibilityAsync()
             )
 
-            orderDetailsTransactionLauncher.onOrderFetched()
-
             displayOrderDetails()
 
             viewState = viewState.copy(
@@ -553,6 +551,7 @@ class OrderDetailViewModel @Inject constructor(
 
     private fun fetchOrderAsync() = async {
         val fetchedOrder = orderDetailRepository.fetchOrderById(navArgs.orderId)
+        orderDetailsTransactionLauncher.onOrderFetched()
         if (fetchedOrder != null) {
             order = fetchedOrder
         } else {
