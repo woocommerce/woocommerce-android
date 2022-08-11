@@ -161,8 +161,14 @@
 
         <provider
             android:name="androidx.startup.InitializationProvider"
-            tools:node="remove"
-            android:authorities="${applicationId}.androidx-startup" />
+            tools:node="merge"
+            android:exported="false"
+            android:authorities="${applicationId}.androidx-startup">
+            <meta-data
+                android:name="androidx.work.WorkManagerInitializer"
+                android:value="androidx.startup"
+                tools:node="remove" />
+        </provider>
     </application>
 
 </manifest>

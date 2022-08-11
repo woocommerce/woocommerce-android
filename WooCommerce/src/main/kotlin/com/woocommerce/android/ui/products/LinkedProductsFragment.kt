@@ -117,26 +117,16 @@ class LinkedProductsFragment : BaseProductFragment(R.layout.fragment_linked_prod
 
     private fun showGroupedProductFragment(groupedProductType: GroupedProductListType) {
         val productIds = when (groupedProductType) {
-            UPSELLS -> viewModel.getProduct().productDraft?.upsellProductIds
-            else -> viewModel.getProduct().productDraft?.crossSellProductIds
+            UPSELLS -> viewModel.getProduct().productDraft?.upsellProductIds ?: emptyList()
+            else -> viewModel.getProduct().productDraft?.crossSellProductIds ?: emptyList()
         }
 
-        // go straight to the "add products" screen if the list is empty, otherwise show the grouped
-        // products screen
-        val action = if (productIds.isNullOrEmpty()) {
-            ProductDetailFragmentDirections
-                .actionGlobalProductSelectionListFragment(
-                    remoteProductId = viewModel.getRemoteProductId(),
-                    groupedProductListType = groupedProductType,
-                    excludedProductIds = longArrayOf()
-                )
-        } else {
+        findNavController().navigateSafely(
             GroupedProductListFragmentDirections.actionGlobalGroupedProductListFragment(
                 remoteProductId = viewModel.getRemoteProductId(),
                 productIds = productIds.toLongArray(),
                 groupedProductListType = groupedProductType
             )
-        }
-        findNavController().navigateSafely(action)
+        )
     }
 }
