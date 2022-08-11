@@ -33,16 +33,20 @@ import org.mockito.kotlin.never
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import org.wordpress.android.fluxc.model.SiteModel
+import org.wordpress.android.fluxc.model.gateways.WCGatewayModel
 import org.wordpress.android.fluxc.model.payments.inperson.WCPaymentAccountResult
 import org.wordpress.android.fluxc.model.plugin.SitePluginModel
 import org.wordpress.android.fluxc.network.BaseRequest
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooError
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooErrorType
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooResult
+import org.wordpress.android.fluxc.store.WCGatewayStore
 import org.wordpress.android.fluxc.store.WCInPersonPaymentsStore
 import org.wordpress.android.fluxc.store.WCInPersonPaymentsStore.InPersonPaymentsPluginType.STRIPE
 import org.wordpress.android.fluxc.store.WCInPersonPaymentsStore.InPersonPaymentsPluginType.WOOCOMMERCE_PAYMENTS
 import org.wordpress.android.fluxc.store.WooCommerceStore
+import kotlin.test.assertFalse
+import kotlin.test.assertTrue
 
 @ExperimentalCoroutinesApi
 class CardReaderOnboardingCheckerTest : BaseUnitTest() {
@@ -51,6 +55,7 @@ class CardReaderOnboardingCheckerTest : BaseUnitTest() {
     private val selectedSite: SelectedSite = mock()
     private val wooStore: WooCommerceStore = mock()
     private val wcInPersonPaymentsStore: WCInPersonPaymentsStore = mock()
+    private val wcGatewayStore: WCGatewayStore = mock()
     private val networkStatus: NetworkStatus = mock()
     private val appPrefsWrapper: AppPrefsWrapper = mock()
     private val cardReaderTrackingInfoKeeper: CardReaderTrackingInfoKeeper = mock()
@@ -70,6 +75,7 @@ class CardReaderOnboardingCheckerTest : BaseUnitTest() {
             appPrefsWrapper,
             wooStore,
             wcInPersonPaymentsStore,
+            wcGatewayStore,
             coroutinesTestRule.testDispatchers,
             networkStatus,
             cardReaderTrackingInfoKeeper,
@@ -1347,6 +1353,82 @@ class CardReaderOnboardingCheckerTest : BaseUnitTest() {
         }
 
     //endregion
+
+    @Test
+    fun `when cod enabled, then return true`() = testBlocking {
+        whenever(wcGatewayStore.fetchAllGateways(selectedSite.get())).thenReturn(
+            WooResult(
+                model = listOf(
+                    WCGatewayModel(
+                        id = "cod",
+                        title = "",
+                        description = "",
+                        order = 0,
+                        isEnabled = true,
+                        methodTitle = "",
+                        methodDescription = "",
+                        features = listOf()
+                    )
+                )
+            )
+        )
+
+        assertTrue(checker.isCashOnDeliveryEnabled())
+    }
+
+    @Test
+    fun `when cod disabled, then return false`() = testBlocking {
+        whenever(wcGatewayStore.fetchAllGateways(selectedSite.get())).thenReturn(
+            WooResult(
+                model = listOf(
+                    WCGatewayModel(
+                        id = "cod",
+                        title = "",
+                        description = "",
+                        order = 0,
+                        isEnabled = false,
+                        methodTitle = "",
+                        methodDescription = "",
+                        features = listOf()
+                    )
+                )
+            )
+        )
+
+        assertFalse(checker.isCashOnDeliveryEnabled())
+    }
+
+    @Test
+    fun `when cod not present, then return false`() = testBlocking {
+        whenever(wcGatewayStore.fetchAllGateways(selectedSite.get())).thenReturn(
+            WooResult(
+                model = listOf(
+                    WCGatewayModel(
+                        id = "cheque",
+                        title = "",
+                        description = "",
+                        order = 0,
+                        isEnabled = false,
+                        methodTitle = "",
+                        methodDescription = "",
+                        features = listOf()
+                    ),
+                    WCGatewayModel(
+                        id = "bacs",
+                        title = "",
+                        description = "",
+                        order = 0,
+                        isEnabled = false,
+                        methodTitle = "",
+                        methodDescription = "",
+                        features = listOf()
+                    )
+                )
+            )
+        )
+
+        assertFalse(checker.isCashOnDeliveryEnabled())
+    }
 
     private fun buildPaymentAccountResult(
         status: WCPaymentAccountResult.WCPaymentAccountStatus = WCPaymentAccountResult.WCPaymentAccountStatus.COMPLETE,
