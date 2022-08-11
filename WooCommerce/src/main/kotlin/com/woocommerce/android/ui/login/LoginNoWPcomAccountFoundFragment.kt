@@ -24,7 +24,7 @@ import javax.inject.Inject
 @AndroidEntryPoint
 class LoginNoWPcomAccountFoundFragment : Fragment(R.layout.fragment_login_no_wpcom_account_found) {
     interface Listener {
-        fun onWhatIsWordPressLinkClicked()
+        fun onWhatIsWordPressLinkNoWpcomAccountScreenClicked()
     }
 
     companion object {
@@ -74,7 +74,7 @@ class LoginNoWPcomAccountFoundFragment : Fragment(R.layout.fragment_login_no_wpc
         setupButtons(btnBinding, appPrefsWrapper.getLoginSiteAddress().isNullOrBlank())
 
         binding.btnLoginWhatIsWordpress.setOnClickListener {
-            whatIsWordPressLinkClickListener.onWhatIsWordPressLinkClicked()
+            whatIsWordPressLinkClickListener.onWhatIsWordPressLinkNoWpcomAccountScreenClicked()
         }
         binding.btnFindConnectedEmail.setOnClickListener {
             loginListener?.showHelpFindingConnectedEmail()
