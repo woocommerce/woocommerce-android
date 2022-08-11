@@ -302,7 +302,7 @@ platform :android do
     # Wrap up
     removebranchprotection(repository:GHHELPER_REPO, branch: "release/#{version["name"]}")
     setfrozentag(repository:GHHELPER_REPO, milestone: version["name"], freeze: false)
-    create_new_milestone(repository:GHHELPER_REPO)
+    create_new_milestone(repository:GHHELPER_REPO, need_appstore_submission: true, milestone_duration:7, number_of_days_from_code_freeze_to_release: 10)
     close_milestone(repository:GHHELPER_REPO, milestone: version["name"])
 
     trigger_release_build(branch_to_build: "release/#{version["name"]}")
