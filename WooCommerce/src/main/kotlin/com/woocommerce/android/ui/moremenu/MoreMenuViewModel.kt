@@ -9,15 +9,12 @@ import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_OPTION
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_MORE_MENU_ADMIN_MENU
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_MORE_MENU_COUPONS
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_MORE_MENU_INBOX
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_MORE_MENU_PAYMENTS
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_MORE_MENU_PAYMENTS_BADGE_VISIBLE
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_MORE_MENU_REVIEWS
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_MORE_MENU_VIEW_STORE
 import com.woocommerce.android.push.UnseenReviewsCountHandler
 import com.woocommerce.android.tools.SelectedSite
-import com.woocommerce.android.ui.moremenu.MenuButtonType.COUPONS
-import com.woocommerce.android.ui.moremenu.MenuButtonType.INBOX
-import com.woocommerce.android.ui.moremenu.MenuButtonType.PRODUCT_REVIEWS
-import com.woocommerce.android.ui.moremenu.MenuButtonType.VIEW_ADMIN
-import com.woocommerce.android.ui.moremenu.MenuButtonType.VIEW_STORE
 import com.woocommerce.android.ui.moremenu.domain.MoreMenuRepository
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.ScopedViewModel
@@ -35,58 +32,89 @@ class MoreMenuViewModel @Inject constructor(
     accountStore: AccountStore,
     private val selectedSite: SelectedSite,
     private val moreMenuRepository: MoreMenuRepository,
+    private val moreMenuNewFeatureHandler: MoreMenuNewFeatureHandler,
     unseenReviewsCountHandler: UnseenReviewsCountHandler
 ) : ScopedViewModel(savedState) {
     val moreMenuViewState =
         combine(
             unseenReviewsCountHandler.observeUnseenCount(),
             selectedSite.observe().filterNotNull(),
-            moreMenuRepository.observeCouponBetaSwitch()
-        ) { count, selectedSite, isCouponsEnabled ->
+            moreMenuRepository.observeCouponBetaSwitch(),
+            moreMenuNewFeatureHandler.moreMenuPaymentsFeatureWasClicked,
+        ) { count, selectedSite, isCouponsEnabled, paymentsFeatureWasClicked ->
             MoreMenuViewState(
-                moreMenuItems = generateMenuButtons(unseenReviewsCount = count, isCouponsEnabled = isCouponsEnabled),
+                moreMenuItems = generateMenuButtons(
+                    unseenReviewsCount = count,
+                    isCouponsEnabled = isCouponsEnabled,
+                    paymentsFeatureWasClicked = paymentsFeatureWasClicked,
+                ),
                 siteName = selectedSite.getSelectedSiteName(),
                 siteUrl = selectedSite.getSelectedSiteAbsoluteUrl(),
                 userAvatarUrl = accountStore.account.avatarUrl
             )
         }.asLiveData()
 
-    private suspend fun generateMenuButtons(unseenReviewsCount: Int, isCouponsEnabled: Boolean): List<MenuUiButton> =
-        listOf(
-            MenuUiButton(
-                type = VIEW_ADMIN,
-                text = R.string.more_menu_button_woo_admin,
-                icon = R.drawable.ic_more_menu_wp_admin,
-                onClick = ::onViewAdminButtonClick
-            ),
-            MenuUiButton(
-                type = VIEW_STORE,
-                text = R.string.more_menu_button_store,
-                icon = R.drawable.ic_more_menu_store,
-                onClick = ::onViewStoreButtonClick
-            ),
-            MenuUiButton(
-                type = COUPONS,
-                text = R.string.more_menu_button_coupons,
-                icon = R.drawable.ic_more_menu_coupons,
-                isEnabled = isCouponsEnabled,
-                onClick = ::onCouponsButtonClick
-            ),
-            MenuUiButton(
-                type = PRODUCT_REVIEWS,
-                text = R.string.more_menu_button_reviews,
-                icon = R.drawable.ic_more_menu_reviews,
-                badgeCount = unseenReviewsCount,
-                onClick = ::onReviewsButtonClick
-            ),
-            MenuUiButton(
-                type = INBOX,
-                text = R.string.more_menu_button_inbox,
-                icon = R.drawable.ic_more_menu_inbox,
-                isEnabled = moreMenuRepository.isInboxEnabled(),
-                onClick = ::onInboxButtonClick
-            )
+    fun onViewResumed() {
+        moreMenuNewFeatureHandler.markNewFeatureAsSeen()
+    }
+
+    private suspend fun generateMenuButtons(
+        unseenReviewsCount: Int,
+        isCouponsEnabled: Boolean,
+        paymentsFeatureWasClicked: Boolean,
+    ) = listOf(
+        MenuUiButton(
+            text = R.string.more_menu_button_payments,
+            icon = R.drawable.ic_more_menu_payments,
+            badgeState = buildPaymentsBadgeState(paymentsFeatureWasClicked),
+            onClick = ::onPaymentsButtonClick,
+        ),
+        MenuUiButton(
+            text = R.string.more_menu_button_wс_admin,
+            icon = R.drawable.ic_more_menu_wp_admin,
+            onClick = ::onViewAdminButtonClick
+        ),
+        MenuUiButton(
+            text = R.string.more_menu_button_store,
+            icon = R.drawable.ic_more_menu_store,
+            onClick = ::onViewStoreButtonClick
+        ),
+        MenuUiButton(
+            text = R.string.more_menu_button_coupons,
+            icon = R.drawable.ic_more_menu_coupons,
+            isEnabled = isCouponsEnabled,
+            onClick = ::onCouponsButtonClick
+        ),
+        MenuUiButton(
+            text = R.string.more_menu_button_reviews,
+            icon = R.drawable.ic_more_menu_reviews,
+            badgeState = buildUnseenReviewsBadgeState(unseenReviewsCount),
+            onClick = ::onReviewsButtonClick
+        ),
+        MenuUiButton(
+            text = R.string.more_menu_button_inbox,
+            icon = R.drawable.ic_more_menu_inbox,
+            isEnabled = moreMenuRepository.isInboxEnabled(),
+            onClick = ::onInboxButtonClick
         )
+    )
+
+    private fun buildPaymentsBadgeState(paymentsFeatureWasClicked: Boolean) =
+        if (!paymentsFeatureWasClicked) BadgeState(
+            badgeSize = R.dimen.major_110,
+            backgroundColor = R.color.color_secondary,
+            textColor = R.color.color_on_surface_inverted,
+            textState = TextState("", R.dimen.text_minor_80),
+            animateAppearance = true,
+        ) else null
+
+    private fun buildUnseenReviewsBadgeState(unseenReviewsCount: Int) =
+        if (unseenReviewsCount > 0) BadgeState(
+            badgeSize = R.dimen.major_150,
+            backgroundColor = R.color.color_primary,
+            textColor = R.color.color_on_surface_inverted,
+            textState = TextState(unseenReviewsCount.toString(), R.dimen.text_minor_80),
+        ) else null
 
     private fun SiteModel.getSelectedSiteName(): String =
         if (!displayName.isNullOrBlank()) {
@@ -109,6 +137,15 @@ class MoreMenuViewModel @Inject constructor(
             AnalyticsEvent.HUB_MENU_SWITCH_STORE_TAPPED
         )
         triggerEvent(MoreMenuEvent.StartSitePickerEvent)
+    }
+
+    private fun onPaymentsButtonClick() {
+        trackMoreMenuOptionSelected(
+            VALUE_MORE_MENU_PAYMENTS,
+            mapOf(VALUE_MORE_MENU_PAYMENTS_BADGE_VISIBLE to isPaymentBadgeVisible().toString())
+        )
+        moreMenuNewFeatureHandler.markPaymentsIconAsClicked()
+        triggerEvent(MoreMenuEvent.ViewPayments)
     }
 
     private fun onViewAdminButtonClick() {
@@ -136,12 +173,20 @@ class MoreMenuViewModel @Inject constructor(
         triggerEvent(MoreMenuEvent.ViewInboxEvent)
     }
 
-    private fun trackMoreMenuOptionSelected(selectedOption: String) {
+    private fun trackMoreMenuOptionSelected(
+        selectedOption: String,
+        extraOptions: Map<String, String> = emptyMap()
+    ) {
         AnalyticsTracker.track(
             AnalyticsEvent.HUB_MENU_OPTION_TAPPED,
-            mapOf(KEY_OPTION to selectedOption)
+            mapOf(KEY_OPTION to selectedOption) + extraOptions
         )
     }
+
+    private fun isPaymentBadgeVisible() = moreMenuViewState.value
+        ?.moreMenuItems
+        ?.find { it.text == R.string.more_menu_button_payments }
+        ?.badgeState != null
 
     data class MoreMenuViewState(
         val moreMenuItems: List<MenuUiButton> = emptyList(),
@@ -153,6 +198,7 @@ class MoreMenuViewModel @Inject constructor(
     sealed class MoreMenuEvent : MultiLiveEvent.Event() {
         object NavigateToSettingsEvent : MoreMenuEvent()
         object StartSitePickerEvent : MoreMenuEvent()
+        object ViewPayments : MoreMenuEvent()
         data class ViewAdminEvent(val url: String) : MoreMenuEvent()
         data class ViewStoreEvent(val url: String) : MoreMenuEvent()
         object ViewReviewsEvent : MoreMenuEvent()

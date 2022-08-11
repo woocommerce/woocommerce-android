@@ -18,6 +18,7 @@ import com.woocommerce.android.ui.main.MainActivity.Companion.BackPressListener
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.widgets.SkeletonView
+import com.woocommerce.android.widgets.WCEmptyView
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
@@ -71,6 +72,9 @@ class GroupedProductListFragment : BaseFragment(R.layout.fragment_grouped_produc
             new.isAddProductButtonVisible.takeIfNotEqualTo(old?.isAddProductButtonVisible) {
                 showAddProductButton(it)
             }
+            new.isEmptyViewShown?.takeIfNotEqualTo(old?.isEmptyViewShown) {
+                showEmptyView(it)
+            }
         }
 
         viewModel.event.observe(viewLifecycleOwner) { event ->
@@ -115,6 +119,14 @@ class GroupedProductListFragment : BaseFragment(R.layout.fragment_grouped_produc
                 skeletonView.show(binding.productsRecycler, R.layout.skeleton_product_list, delayed = true)
             }
             false -> skeletonView.hide()
+        }
+    }
+
+    private fun showEmptyView(show: Boolean) {
+        if (show) {
+            binding.emptyView.show(WCEmptyView.EmptyViewType.GROUPED_PRODUCT_LIST)
+        } else {
+            binding.emptyView.hide()
         }
     }
 

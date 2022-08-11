@@ -105,7 +105,8 @@ class LoginActivity :
     LoginEmailHelpDialogFragment.Listener,
     WooLoginEmailFragment.Listener,
     PrologueSurveyListener,
-    WooLoginEmailPasswordFragment.Listener {
+    WooLoginEmailPasswordFragment.Listener,
+    LoginNoWPcomAccountFoundFragment.Listener {
     companion object {
         private const val FORGOT_PASSWORD_URL_SUFFIX = "wp-login.php?action=lostpassword"
         private const val MAGIC_LOGIN = "magic-login"
@@ -905,6 +906,11 @@ class LoginActivity :
     override fun onWhatIsWordPressLinkClicked() {
         ChromeCustomTabUtils.launchUrl(this, LOGIN_WITH_EMAIL_WHAT_IS_WORDPRESS_COM_ACCOUNT)
         unifiedLoginTracker.trackClick(Click.WHAT_IS_WORDPRESS_COM)
+    }
+
+    override fun onWhatIsWordPressLinkNoWpcomAccountScreenClicked() {
+        ChromeCustomTabUtils.launchUrl(this, LOGIN_WITH_EMAIL_WHAT_IS_WORDPRESS_COM_ACCOUNT)
+        unifiedLoginTracker.trackClick(Click.WHAT_IS_WORDPRESS_COM_ON_INVALID_EMAIL_SCREEN)
     }
 
     private fun getLoginHelpNotification(): String? =

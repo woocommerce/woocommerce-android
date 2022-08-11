@@ -1,4 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
+
+<!-- android:textColorHighlight="#00FFFFFF": Workaround for a bug https://stackoverflow.com/a/70394538/632516 -->
 <com.google.android.material.textview.MaterialTextView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/learnMore"
@@ -7,6 +9,7 @@
     android:layout_height="wrap_content"
     android:background="?attr/selectableItemBackground"
     android:drawableStart="@drawable/ic_info_outline_20dp"
+    android:textColorHighlight="#00FFFFFF"
     android:drawablePadding="@dimen/major_100"
     android:padding="@dimen/major_100"
     android:layout_marginStart="0dp"
