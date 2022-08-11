@@ -187,6 +187,8 @@ class OrderDetailViewModelTest : BaseUnitTest() {
 
         doReturn(nonRefundedOrder).whenever(orderDetailRepository).getOrderById(any())
 
+        doReturn(true).whenever(orderDetailRepository).fetchOrderNotes(any())
+
         doReturn(testOrderNotes).whenever(orderDetailRepository).getOrderNotes(any())
 
         doReturn(testOrderShipmentTrackings).whenever(orderDetailRepository).getOrderShipmentTrackings(any())
@@ -358,7 +360,9 @@ class OrderDetailViewModelTest : BaseUnitTest() {
 
             val order = order.copy(items = items)
             doReturn(order).whenever(orderDetailRepository).getOrderById(any())
-
+            doReturn(true).whenever(orderDetailRepository).fetchOrderNotes(any())
+            doReturn(false).whenever(addonsRepository).containsAddonsFrom(any())
+            doReturn(ids.size).whenever(orderDetailRepository).getProductCountForOrder(any())
             viewModel.start()
 
             verify(orderDetailRepository, never()).fetchProductsByRemoteIds(ids)
@@ -629,6 +633,9 @@ class OrderDetailViewModelTest : BaseUnitTest() {
     @Test
     fun `Shows and hides order detail skeleton correctly`() =
         testBlocking {
+            doReturn(order).whenever(orderDetailRepository).fetchOrderById(any())
+            doReturn(true).whenever(orderDetailRepository).fetchOrderNotes(any())
+            doReturn(false).whenever(addonsRepository).containsAddonsFrom(any())
             doReturn(null).whenever(orderDetailRepository).getOrderById(any())
 
             val isSkeletonShown = ArrayList<Boolean>()
