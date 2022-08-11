@@ -51,8 +51,21 @@
                 app:layout_constraintVertical_bias="0.48000002" />
 
             <com.google.android.material.button.MaterialButton
+                android:id="@+id/btn_login_what_is_wordpress"
+                style="@style/Widget.LoginFlow.Button.Tertiary"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/minor_100"
+                android:layout_marginStart="@dimen/major_100"
+                android:layout_marginEnd="@dimen/major_100"
+                android:text="@string/what_is_wordpress_link"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/no_wp_account_msg" />
+
+            <com.google.android.material.button.MaterialButton
                 android:id="@+id/btn_find_connected_email"
-                style="@style/Woo.Button.TextButton.Secondary"
+                style="@style/Widget.LoginFlow.Button.Tertiary"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/minor_100"
@@ -63,7 +76,7 @@
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/no_wp_account_msg"
+                app:layout_constraintTop_toBottomOf="@+id/btn_login_what_is_wordpress"
                 app:layout_constraintVertical_bias="0.0" />
         </androidx.constraintlayout.widget.ConstraintLayout>
     </ScrollView>
