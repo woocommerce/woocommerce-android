@@ -212,7 +212,7 @@ class SelectPaymentMethodViewModel @Inject constructor(
                     )
                 )
                 delay(DELAY_MS)
-                triggerEvent(MultiLiveEvent.Event.Exit)
+                exitFlow()
             } else {
                 analyticsTrackerWrapper.track(
                     AnalyticsEvent.PAYMENTS_FLOW_FAILED,
@@ -249,9 +249,7 @@ class SelectPaymentMethodViewModel @Inject constructor(
             statusModel
         ).collect { result ->
             when (result) {
-                is WCOrderStore.UpdateOrderResult.OptimisticUpdateResult -> {
-                    triggerEvent(MultiLiveEvent.Event.Exit)
-                }
+                is WCOrderStore.UpdateOrderResult.OptimisticUpdateResult -> exitFlow()
                 is WCOrderStore.UpdateOrderResult.RemoteUpdateResult -> {
                     if (result.event.isError) {
                         triggerEvent(MultiLiveEvent.Event.ShowSnackbar(R.string.order_error_update_general))
@@ -267,6 +265,15 @@ class SelectPaymentMethodViewModel @Inject constructor(
                 }
             }
         }
+    }
+
+    private fun exitFlow() {
+        triggerEvent(
+            when (cardReaderPaymentFlowParam.paymentType) {
+                SIMPLE -> NavigateBackToHub(CardReadersHub)
+                ORDER -> NavigateBackToOrderList
+            }
+        )
     }
 
     private fun Payment.toAnalyticsFlowParams() =
@@ -339,6 +346,12 @@ class SelectPaymentMethodViewModel @Inject constructor(
     data class NavigateToCardReaderRefundFlow(
         val cardReaderFlowParam: Refund
     ) : MultiLiveEvent.Event()
+
+    data class NavigateBackToHub(
+        val cardReaderFlowParam: CardReadersHub
+    ) : MultiLiveEvent.Event()
+
+    object NavigateBackToOrderList : MultiLiveEvent.Event()
 
     companion object {
         private const val DELAY_MS = 1L

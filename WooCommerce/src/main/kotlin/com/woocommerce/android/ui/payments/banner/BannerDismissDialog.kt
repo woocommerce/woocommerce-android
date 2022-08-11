@@ -22,7 +22,6 @@ import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.ui.orders.list.OrderListViewModel
 import com.woocommerce.android.ui.payments.SelectPaymentMethodViewModel
-import com.woocommerce.android.ui.prefs.MainSettingsContract
 
 @Composable
 fun PaymentsScreenBannerDismissDialog(viewModel: SelectPaymentMethodViewModel) {
@@ -45,18 +44,6 @@ fun OrderListBannerDismissDialog(viewModel: OrderListViewModel) {
         onDismissClick = viewModel::onBannerAlertDismiss,
         showDialog,
         AnalyticsTracker.KEY_BANNER_ORDER_LIST
-    )
-}
-
-@Composable
-fun SettingsBannerDismissDialog(presenter: MainSettingsContract.Presenter) {
-    val showDialog by presenter.shouldShowUpsellCardReaderDismissDialog.observeAsState(true)
-    BannerDismissDialog(
-        onRemindLaterClick = presenter::onRemindLaterClicked,
-        onDontShowAgainClick = presenter::onDontShowAgainClicked,
-        onDismissClick = presenter::onBannerAlertDismiss,
-        showDialog,
-        AnalyticsTracker.KEY_BANNER_SETTINGS
     )
 }
 

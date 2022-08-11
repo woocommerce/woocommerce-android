@@ -38,7 +38,6 @@ import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.ui.orders.list.OrderListViewModel
 import com.woocommerce.android.ui.payments.SelectPaymentMethodViewModel
 import com.woocommerce.android.ui.payments.SelectPaymentMethodViewModel.TakePaymentViewState.Success
-import com.woocommerce.android.ui.prefs.MainSettingsContract
 
 @Composable
 fun PaymentsScreenBanner(
@@ -82,29 +81,6 @@ fun OrderListScreenBanner(
             subtitle = subtitle,
             ctaLabel = ctaLabel,
             source = AnalyticsTracker.KEY_BANNER_ORDER_LIST
-        )
-    }
-}
-
-@Composable
-fun SettingsScreenBanner(
-    presenter: MainSettingsContract.Presenter,
-    title: String,
-    subtitle: String,
-    ctaLabel: String,
-) {
-    val isEligibleForInPersonPayments by presenter.isEligibleForInPersonPayments.observeAsState(false)
-    if (
-        isEligibleForInPersonPayments &&
-        presenter.canShowCardReaderUpsellBanner(System.currentTimeMillis(), AnalyticsTracker.KEY_BANNER_SETTINGS)
-    ) {
-        Banner(
-            onCtaClick = presenter::onCtaClicked,
-            onDismissClick = presenter::onDismissClicked,
-            title = title,
-            subtitle = subtitle,
-            ctaLabel = ctaLabel,
-            source = AnalyticsTracker.KEY_BANNER_SETTINGS
         )
     }
 }

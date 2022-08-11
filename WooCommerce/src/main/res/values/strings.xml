@@ -89,6 +89,7 @@
     <string name="review_notifications">Reviews</string>
     <string name="more_menu">Menu</string>
     <string name="more_menu_button_woo_admin">WooCommerce Admin</string>
+    <string name="more_menu_button_wс_admin">WC Admin</string>
     <string name="more_menu_button_payments">Payments</string>
     <string name="more_menu_button_analytics">Analytics</string>
     <string name="more_menu_button_inbox">Inbox</string>
@@ -366,6 +367,9 @@
     <string name="orderlist_bottom_sheet_create_order_description">Create a new manual order</string>
     <string name="orderlist_bottom_sheet_simple_payment_action">Simple payment</string>
     <string name="orderlist_bottom_sheet_simple_payment_description">Create an order with minimal information</string>
+    <string name="orderlist_bottom_sheet_simple_payments_moved_title">Payments from the Menu tab</string>
+    <string name="orderlist_bottom_sheet_simple_payments_moved_description">Now you can quickly access In-Person Payments and other features with ease</string>
+    <string name="orderlist_bottom_sheet_simple_payments_moved_button">Got it!</string>
     <string name="order_creation_fragment_title">New order</string>
     <string name="order_creation_status_edit_content_description">Edit order status</string>
     <string name="order_creation_customer">Customer</string>
@@ -961,6 +965,7 @@
     <!--
             Card Reader Hub
         -->
+    <string name="payments_hub_title">Payments</string>
     <string name="card_reader_manage_card_reader">Manage Card Reader</string>
     <string name="card_reader_purchase_card_reader">Order Card Reader</string>
     <string name="card_reader_manage_payment_provider">Change Payment Provider</string>
@@ -968,6 +973,7 @@
     <string name="card_reader_m2_manual_card_reader" translatable="false">Stripe M2</string>
     <string name="card_reader_wisepad_3_manual_card_reader" translatable="false">WisePad 3</string>
     <string name="card_reader_icon_content_description">Card Reader Image</string>
+    <string name="card_reader_onboarding_not_finished">We’ve noticed that you have not yet finished In-Person Payments setup. &lt;b&gt;&lt;a href=\'\'&gt;Continue setup&lt;/a&gt;&lt;/b&gt;</string>
 
     <!--
             Card Reader Interac refund

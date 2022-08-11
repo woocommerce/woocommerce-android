@@ -47,6 +47,8 @@ interface MainNavigationRouter {
         productCategoryName: String?
     )
 
+    fun showMoreMenu()
+
     fun showFeedbackSurvey()
     fun showSettingsScreen()
 }

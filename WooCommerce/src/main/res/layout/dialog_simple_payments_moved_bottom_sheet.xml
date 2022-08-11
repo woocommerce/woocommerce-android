@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/order_creation_button"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:padding="@dimen/major_100">
+
+    <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/simplePaymentsMovedTitleTv"
+        style="@style/Woo.TextView.Headline6"
+        android:layout_width="0dp"
+        android:layout_marginStart="0dp"
+        android:layout_marginEnd="0dp"
+        android:layout_height="wrap_content"
+        android:text="@string/orderlist_bottom_sheet_simple_payments_moved_title"
+        android:textColor="@color/color_on_surface_high_selector"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/simplePaymentsMovedDescriptionTv"
+        style="@style/Woo.TextView.Body2"
+        android:layout_width="0dp"
+        android:layout_marginStart="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/major_100"
+        android:text="@string/orderlist_bottom_sheet_simple_payments_moved_description"
+        android:textColor="@color/color_surface_variant"
+        android:layout_marginEnd="@dimen/major_100"
+        app:layout_constraintEnd_toStartOf="@id/simplePaymentsMovedIconIv"
+        app:layout_constraintHorizontal_chainStyle="spread"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/simplePaymentsMovedTitleTv" />
+
+    <ImageView
+        android:id="@+id/simplePaymentsMovedIconIv"
+        android:layout_width="@dimen/major_200"
+        android:layout_height="@dimen/major_200"
+        android:src="@drawable/ic_more_menu_payments"
+        app:layout_constraintBottom_toBottomOf="@id/simplePaymentsMovedDescriptionTv"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_chainStyle="spread"
+        app:layout_constraintTop_toTopOf="@id/simplePaymentsMovedDescriptionTv" />
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/simplePaymentsMovedBtn"
+        style="@style/Woo.Button.Outlined"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/major_100"
+        android:text="@string/orderlist_bottom_sheet_simple_payments_moved_button"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/simplePaymentsMovedDescriptionTv" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>
+
+

@@ -9,7 +9,7 @@
     <include app:graph="@navigation/nav_graph_products" />
     <include app:graph="@navigation/nav_graph_product_filters" />
     <include app:graph="@navigation/nav_graph_order_creations" />
-    <include app:graph="@navigation/nav_graph_simple_payments" />
+    <include app:graph="@navigation/nav_graph_payment_flow" />
     <include app:graph="@navigation/nav_graph_jetpack_install" />
     <include app:graph="@navigation/nav_graph_coupons" />
 
@@ -41,13 +41,6 @@
         <action
             android:id="@+id/action_orderListFragment_to_orderFilterListFragment"
             app:destination="@id/nav_graph_order_filters"
-            app:enterAnim="@anim/activity_fade_in"
-            app:exitAnim="@null"
-            app:popEnterAnim="@null"
-            app:popExitAnim="@anim/activity_fade_out" />
-        <action
-            android:id="@+id/action_orderListFragment_to_simplePayments"
-            app:destination="@id/nav_graph_simple_payments"
             app:enterAnim="@anim/activity_fade_in"
             app:exitAnim="@null"
             app:popEnterAnim="@null"
@@ -177,6 +170,14 @@
         <action
             android:id="@+id/action_moreMenu_to_couponListFragment"
             app:destination="@id/nav_graph_coupons" />
+        <action
+            android:id="@+id/action_moreMenu_to_paymentFlow"
+            app:destination="@id/paymentFlow" >
+            <argument
+                android:name="cardReaderFlowParam"
+                app:argType="com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderFlowParam"
+                app:nullable="false" />
+        </action>
     </fragment>
     <fragment
         android:id="@+id/feedbackSurveyFragment"
@@ -353,7 +354,23 @@
     <dialog
         android:id="@+id/orderCreationBottomSheetFragment"
         android:name="com.woocommerce.android.ui.orders.list.OrderCreationBottomSheetFragment"
+        tools:layout="@layout/dialog_order_creation_bottom_sheet" >
+        <action
+            android:id="@+id/action_orderCreationBottomSheetFragment_to_simplePaymentsMovedBottomSheetFragment"
+            app:destination="@id/simplePaymentsMovedBottomSheetFragment"
+            app:enterAnim="@anim/activity_fade_in"
+            app:exitAnim="@null"
+            app:popEnterAnim="@null"
+            app:popExitAnim="@anim/activity_fade_out" />
+    </dialog>
+    <dialog
+        android:id="@+id/simplePaymentsMovedBottomSheetFragment"
+        android:name="com.woocommerce.android.ui.orders.list.SimplePaymentsMovedBottomSheetFragment"
         tools:layout="@layout/dialog_order_creation_bottom_sheet" />
+    <dialog
+        android:id="@+id/simplePaymentsMovedButtonSheetFragment"
+        android:name="com.woocommerce.android.ui.orders.list.SimplePaymentsMovedBottomSheetFragment"
+        tools:layout="@layout/dialog_simple_payments_moved_bottom_sheet" />
     <activity
         android:id="@+id/appSettingsActivity"
         android:name="com.woocommerce.android.ui.prefs.AppSettingsActivity"
