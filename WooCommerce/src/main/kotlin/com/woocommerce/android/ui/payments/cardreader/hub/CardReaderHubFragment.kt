@@ -70,7 +70,10 @@ class CardReaderHubFragment : BaseFragment(R.layout.fragment_card_reader_hub) {
                 is CardReaderHubViewModel.CardReaderHubEvents.NavigateToCardReaderOnboardingScreen -> {
                     findNavController().navigate(
                         CardReaderHubFragmentDirections.actionCardReaderHubFragmentToCardReaderOnboardingFragment(
-                            CardReaderOnboardingParams.Check(CardReaderFlowParam.CardReadersHub)
+                            CardReaderOnboardingParams.Failed(
+                                cardReaderFlowParam = CardReaderFlowParam.CardReadersHub,
+                                onboardingState = event.onboardingState
+                            )
                         )
                     )
                 }

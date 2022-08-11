@@ -241,8 +241,9 @@ class CardReaderHubViewModelTest : BaseUnitTest() {
 
     @Test
     fun `given onboarding check error, when user clicks on text, then onboarding shown`() = testBlocking {
+        val genericError = mock<CardReaderOnboardingState.GenericError>()
         whenever(cardReaderChecker.getOnboardingState()).thenReturn(
-            mock<CardReaderOnboardingState.GenericError>()
+            genericError
         )
 
         initViewModel()
@@ -251,7 +252,9 @@ class CardReaderHubViewModelTest : BaseUnitTest() {
 
         assertThat(viewModel.event.value)
             .isEqualTo(
-                CardReaderHubViewModel.CardReaderHubEvents.NavigateToCardReaderOnboardingScreen
+                CardReaderHubViewModel.CardReaderHubEvents.NavigateToCardReaderOnboardingScreen(
+                    genericError
+                )
             )
     }
 
@@ -353,7 +356,9 @@ class CardReaderHubViewModelTest : BaseUnitTest() {
         }!!.onClick.invoke()
 
         assertThat(viewModel.event.value).isEqualTo(
-            CardReaderHubViewModel.CardReaderHubEvents.NavigateToCardReaderOnboardingScreen
+            CardReaderHubViewModel.CardReaderHubEvents.NavigateToCardReaderOnboardingScreen(
+                CardReaderOnboardingState.ChoosePaymentGatewayProvider
+            )
         )
     }
 

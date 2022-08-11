@@ -17,6 +17,7 @@ import com.woocommerce.android.ui.payments.cardreader.hub.CardReaderHubViewModel
 import com.woocommerce.android.ui.payments.cardreader.hub.CardReaderHubViewModel.CardReaderHubViewState.OnboardingErrorAction
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderFlowParam
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboardingChecker
+import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboardingState
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboardingState.OnboardingCompleted
 import com.woocommerce.android.ui.payments.cardreader.onboarding.PluginType.STRIPE_EXTENSION_GATEWAY
 import com.woocommerce.android.ui.payments.cardreader.onboarding.PluginType.WOOCOMMERCE_PAYMENTS
@@ -52,9 +53,9 @@ class CardReaderHubViewModel @Inject constructor(
 
     fun onViewVisible() {
         launch {
-            viewState.value = when (cardReaderChecker.getOnboardingState()) {
+            viewState.value = when (val state = cardReaderChecker.getOnboardingState()) {
                 is OnboardingCompleted -> createOnboardingCompleteState()
-                else -> createOnboardingFailedState()
+                else -> createOnboardingFailedState(state)
             }
         }
     }
@@ -121,12 +122,12 @@ class CardReaderHubViewModel @Inject constructor(
         onboardingErrorAction = null,
     )
 
-    private fun createOnboardingFailedState() = CardReaderHubViewState(
+    private fun createOnboardingFailedState(state: CardReaderOnboardingState) = CardReaderHubViewState(
         rows = createHubListWhenSinglePluginInstalled(isOnboardingComplete = false),
         isLoading = false,
         onboardingErrorAction = OnboardingErrorAction(
             text = UiStringRes(R.string.card_reader_onboarding_not_finished, containsHtml = true),
-            onClick = ::onOnboardingErrorClicked
+            onClick = { onOnboardingErrorClicked(state) }
         )
     )
 
@@ -155,12 +156,14 @@ class CardReaderHubViewModel @Inject constructor(
     private fun onCardReaderPaymentProviderClicked() {
         trackEvent(AnalyticsEvent.SETTINGS_CARD_PRESENT_SELECT_PAYMENT_GATEWAY_TAPPED)
         clearPluginExplicitlySelectedFlag()
-        triggerEvent(CardReaderHubEvents.NavigateToCardReaderOnboardingScreen)
+        triggerEvent(CardReaderHubEvents.NavigateToCardReaderOnboardingScreen(
+            CardReaderOnboardingState.ChoosePaymentGatewayProvider
+        ))
     }
 
-    private fun onOnboardingErrorClicked() {
+    private fun onOnboardingErrorClicked(state: CardReaderOnboardingState) {
         trackEvent(AnalyticsEvent.PAYMENTS_HUB_ONBOARDING_ERROR_TAPPED)
-        triggerEvent(CardReaderHubEvents.NavigateToCardReaderOnboardingScreen)
+        triggerEvent(CardReaderHubEvents.NavigateToCardReaderOnboardingScreen(state))
     }
 
     private fun trackEvent(event: AnalyticsEvent) {
@@ -189,7 +192,9 @@ class CardReaderHubViewModel @Inject constructor(
         data class NavigateToPurchaseCardReaderFlow(val url: String) : CardReaderHubEvents()
         object NavigateToPaymentCollectionScreen : CardReaderHubEvents()
         object NavigateToCardReaderManualsScreen : CardReaderHubEvents()
-        object NavigateToCardReaderOnboardingScreen : CardReaderHubEvents()
+        data class NavigateToCardReaderOnboardingScreen(
+            val onboardingState: CardReaderOnboardingState
+        ) : CardReaderHubEvents()
     }
 
     data class CardReaderHubViewState(
