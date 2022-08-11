@@ -142,6 +142,7 @@ class CardReaderTracker @Inject constructor(
             is CardReaderOnboardingState.NoConnectionError -> "no_connection_error"
             CardReaderOnboardingState.ChoosePaymentGatewayProvider ->
                 "multiple_payment_providers_conflict"
+            CardReaderOnboardingState.CashOnDeliveryDisabled -> TODO()
         }
 
     private fun getPluginNameReasonPrefix(pluginType: PluginType): String {

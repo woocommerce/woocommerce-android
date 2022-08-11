@@ -217,6 +217,7 @@ class CardReaderOnboardingViewModel @Inject constructor(
                     ::onLearnMoreClicked
                 )
             ChoosePaymentGatewayProvider -> updateUiWithSelectPaymentPlugin()
+            CardReaderOnboardingState.CashOnDeliveryDisabled -> TODO()
         }.exhaustive
     }
 

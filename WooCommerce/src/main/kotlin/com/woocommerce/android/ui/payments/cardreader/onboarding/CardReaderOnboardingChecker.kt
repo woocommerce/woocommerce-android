@@ -15,6 +15,7 @@ import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.payments.cardreader.CardReaderCountryConfigProvider
 import com.woocommerce.android.ui.payments.cardreader.CardReaderTrackingInfoKeeper
+import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboardingState.CashOnDeliveryDisabled
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboardingState.ChoosePaymentGatewayProvider
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboardingState.GenericError
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboardingState.NoConnectionError
@@ -192,6 +193,8 @@ class CardReaderOnboardingChecker @Inject constructor(
         )
         if (isStripeAccountRejected(paymentAccount)) return StripeAccountRejected(preferredPlugin.type)
         if (isInUndefinedState(paymentAccount)) return GenericError
+
+        if (!isCashOnDeliveryEnabled()) return CashOnDeliveryDisabled
 
         return OnboardingCompleted(
             preferredPlugin.type,
@@ -523,6 +526,12 @@ sealed class CardReaderOnboardingState(
      */
     @Parcelize
     object NoConnectionError : CardReaderOnboardingState()
+
+    /**
+     * Payment type Cash on Delivery is disabled on the store.
+     */
+    @Parcelize
+    object CashOnDeliveryDisabled : CardReaderOnboardingState()
 }
 
 sealed class PreferredPluginResult {
