@@ -127,6 +127,7 @@ class LoginActivity :
                 flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK or
                     Intent.FLAG_ACTIVITY_CLEAR_TASK
                 putExtra(KEY_LOGIN_HELP_NOTIFICATION, notificationType.toString())
+                LoginMode.WOO_LOGIN_MODE.putInto(this)
             }
             return intent
         }
