@@ -200,12 +200,10 @@ class OrderDetailViewModel @Inject constructor(
         }
     }
 
-    private fun checkOrderMetaData() {
-        launch {
-            viewState = viewState.copy(
-                isCustomFieldsButtonShown = orderDetailRepository.orderHasMetadata(navArgs.orderId)
-            )
-        }
+    private suspend fun checkOrderMetaData() {
+        viewState = viewState.copy(
+            isCustomFieldsButtonShown = orderDetailRepository.orderHasMetadata(navArgs.orderId)
+        )
     }
 
     /**
