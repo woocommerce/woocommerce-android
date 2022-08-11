@@ -156,9 +156,11 @@ class CardReaderHubViewModel @Inject constructor(
     private fun onCardReaderPaymentProviderClicked() {
         trackEvent(AnalyticsEvent.SETTINGS_CARD_PRESENT_SELECT_PAYMENT_GATEWAY_TAPPED)
         clearPluginExplicitlySelectedFlag()
-        triggerEvent(CardReaderHubEvents.NavigateToCardReaderOnboardingScreen(
-            CardReaderOnboardingState.ChoosePaymentGatewayProvider
-        ))
+        triggerEvent(
+            CardReaderHubEvents.NavigateToCardReaderOnboardingScreen(
+                CardReaderOnboardingState.ChoosePaymentGatewayProvider
+            )
+        )
     }
 
     private fun onOnboardingErrorClicked(state: CardReaderOnboardingState) {
