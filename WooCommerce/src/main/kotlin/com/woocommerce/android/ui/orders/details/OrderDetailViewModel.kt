@@ -193,7 +193,6 @@ class OrderDetailViewModel @Inject constructor(
             )
         } else {
             triggerEvent(ShowSnackbar(string.offline_error))
-            viewState = viewState.copy(isOrderDetailSkeletonShown = false)
             viewState = viewState.copy(
                 isOrderDetailSkeletonShown = false,
                 isRefreshing = false
