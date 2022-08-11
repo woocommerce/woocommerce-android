@@ -2,6 +2,7 @@
 9.9
 -----
 - [**] Login: Users running into invalid password errors during login will receive a support/help notification after 24h from the error with email magic link option [https://github.com/woocommerce/woocommerce-android/issues/6989]
+- [**] Login: Various improvements on the screen shown after entering an invalid WordPress.com email. [https://github.com/woocommerce/woocommerce-android/issues/7121]
 
 9.8
 -----
