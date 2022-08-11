@@ -1,14 +1,13 @@
 *** PLEASE FOLLOW THIS FORMAT: [<priority indicator, more stars = higher priority>] <description> [<PR URL>]
 9.9
 -----
-
+- [**] Login: User's running into invalid password issues during login will receive a support/help notification after 24h with email magic link option [https://github.com/woocommerce/woocommerce-android/issues/6989]
 
 9.8
 -----
 - [**] Orders: Now you can quickly mark an order as completed by swiping it to the left! [https://github.com/woocommerce/woocommerce-android/pull/7114]
 - [*] Login: add ability to install Woo for sites that don't have during login with address flow [https://github.com/woocommerce/woocommerce-android/pull/7090]
 - [**] Users will now receive notifications with help info and actions 24h after running into some issue during login [https://github.com/woocommerce/woocommerce-android/pull/7072]
-- [**] Login: User's running into issues during login, like invalid site address, invalid email, invalid password will receive a help/support notification after 24h [https://github.com/woocommerce/woocommerce-android/issues/6989]
 
 9.7
 -----
