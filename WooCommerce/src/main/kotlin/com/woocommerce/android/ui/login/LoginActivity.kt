@@ -105,9 +105,8 @@ class LoginActivity :
     LoginEmailHelpDialogFragment.Listener,
     WooLoginEmailFragment.Listener,
     PrologueSurveyListener,
-    WooLoginEmailPasswordFragment.Listener {
-    LoginNoWPcomAccountFoundFragment.Listener,
-    PrologueSurveyListener {
+    WooLoginEmailPasswordFragment.Listener,
+    LoginNoWPcomAccountFoundFragment.Listener {
     companion object {
         private const val FORGOT_PASSWORD_URL_SUFFIX = "wp-login.php?action=lostpassword"
         private const val MAGIC_LOGIN = "magic-login"
