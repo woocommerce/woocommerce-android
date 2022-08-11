@@ -34,20 +34,6 @@
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintTop_toTopOf="parent" />
 
-                <com.google.android.material.textview.MaterialTextView
-                    android:id="@+id/site_list_label"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_margin="@dimen/major_100"
-                    android:text="@string/login_pick_store"
-                    android:textAllCaps="true"
-                    android:textAppearance="@style/TextAppearance.Woo.Subtitle2"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/login_user_info"
-                    app:layout_constraintVertical_bias="0.03" />
-
                 <androidx.recyclerview.widget.RecyclerView
                     android:id="@+id/sites_recycler"
                     android:layout_width="match_parent"
@@ -56,8 +42,7 @@
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/site_list_label"
-                    app:layout_constraintVertical_bias="0.1"
+                    app:layout_constraintTop_toBottomOf="@+id/login_user_info"
                     tools:itemCount="3"
                     tools:listitem="@layout/site_picker_item" />
 
@@ -91,7 +76,7 @@
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@+id/login_user_info"
-                    tools:visibility="visible" />
+                    tools:visibility="gone" />
 
             </androidx.constraintlayout.widget.ConstraintLayout>
         </FrameLayout>
