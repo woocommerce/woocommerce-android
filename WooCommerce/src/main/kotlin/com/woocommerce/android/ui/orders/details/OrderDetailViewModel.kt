@@ -160,14 +160,6 @@ class OrderDetailViewModel @Inject constructor(
         }
     }
 
-    private suspend fun fetchAndDisplayOrderDetails() {
-        fetchOrderNotes()
-        fetchProductAndShippingDetails()
-        launch {
-            displayOrderDetails()
-        }
-    }
-
     private suspend fun displayOrderDetails() {
         updateOrderState()
         loadOrderNotes()
@@ -180,14 +172,21 @@ class OrderDetailViewModel @Inject constructor(
             viewState = viewState.copy(
                 isOrderDetailSkeletonShown = showSkeleton
             )
-            val fetchedOrder = orderDetailRepository.fetchOrderById(navArgs.orderId)
+
+            awaitAll(
+                fetchOrderAsync(),
+                fetchOrderNotesAsync(),
+                fetchOrderShippingLabelsAsync(),
+                fetchShipmentTrackingAsync(),
+                fetchOrderRefundsAsync(),
+                fetchOrderProductsAsync(),
+                fetchSLCreationEligibilityAsync()
+            )
+
             orderDetailsTransactionLauncher.onOrderFetched()
-            if (fetchedOrder != null) {
-                order = fetchedOrder
-                fetchAndDisplayOrderDetails()
-            } else {
-                triggerEvent(ShowSnackbar(string.order_error_fetch_generic))
-            }
+
+            displayOrderDetails()
+
             viewState = viewState.copy(
                 isOrderDetailSkeletonShown = false,
                 isRefreshing = false
@@ -555,15 +554,21 @@ class OrderDetailViewModel @Inject constructor(
         }
     }
 
-    private fun fetchOrderNotes() {
-        launch {
-            if (!orderDetailRepository.fetchOrderNotes(navArgs.orderId)) {
-                triggerEvent(ShowSnackbar(string.order_error_fetch_notes_generic))
-            }
-            // fetch order notes from the local db and hide the skeleton view
-            orderDetailsTransactionLauncher.onNotesFetched()
-            _orderNotes.value = orderDetailRepository.getOrderNotes(navArgs.orderId)
+    private fun fetchOrderAsync() = async {
+        val fetchedOrder = orderDetailRepository.fetchOrderById(navArgs.orderId)
+        if (fetchedOrder != null) {
+            order = fetchedOrder
+        } else {
+            triggerEvent(ShowSnackbar(string.order_error_fetch_generic))
         }
+    }
+
+    private fun fetchOrderNotesAsync() = async {
+        if (!orderDetailRepository.fetchOrderNotes(navArgs.orderId)) {
+            triggerEvent(ShowSnackbar(string.order_error_fetch_notes_generic))
+        }
+        // fetch order notes from the local db and hide the skeleton view
+        orderDetailsTransactionLauncher.onNotesFetched()
     }
 
     private fun loadOrderRefunds(): ListInfo<Refund> {
@@ -632,16 +637,6 @@ class OrderDetailViewModel @Inject constructor(
                 return ListInfo(list = it)
             }
         return ListInfo(isVisible = false)
-    }
-
-    private suspend fun fetchProductAndShippingDetails() {
-        awaitAll(
-            fetchOrderShippingLabelsAsync(),
-            fetchShipmentTrackingAsync(),
-            fetchOrderRefundsAsync(),
-            fetchOrderProductsAsync(),
-            fetchSLCreationEligibilityAsync()
-        )
     }
 
     private fun displayProductAndShippingDetails() {
