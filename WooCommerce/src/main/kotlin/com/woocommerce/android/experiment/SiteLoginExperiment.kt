@@ -27,17 +27,13 @@ class SiteLoginExperiment @Inject constructor(
         // track the variant used
         analyticsTrackerWrapper.track(
             AnalyticsEvent.LOGIN_SITE_CREDENTIALS_EXPERIMENT,
-            mapOf(Pair(AnalyticsTracker.KEY_SITE_CREDENTIALS_EXPERIMENT_VARIANT, loginVariant))
+            mapOf(Pair(AnalyticsTracker.KEY_EXPERIMENT_VARIANT, loginVariant.name))
         )
 
         when (loginVariant) {
             EMAIL_LOGIN -> loginViaEmail(siteAddress)
             SITE_CREDENTIALS_LOGIN -> loginViaSiteCredentials(siteAddress)
         }
-    }
-
-    fun trackSuccess() {
-        experimentTracker.log(ExperimentTracker.LOGIN_SUCCESSFUL_EVENT)
     }
 
     enum class SiteLoginVariant {

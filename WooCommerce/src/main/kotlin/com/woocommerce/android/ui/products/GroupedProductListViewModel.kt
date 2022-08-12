@@ -57,6 +57,10 @@ class GroupedProductListViewModel @Inject constructor(
         if (_productList.value == null) {
             loadProducts()
         }
+        productListViewState = productListViewState.copy(
+            isEmptyViewShown = navArgs.productIds.isEmpty() &&
+                selectedProductIds.isEmpty()
+        )
     }
 
     fun getKeyForGroupedProductListType() = groupedProductListType.resultKey
@@ -64,7 +68,6 @@ class GroupedProductListViewModel @Inject constructor(
     fun onProductsAdded(selectedProductIds: List<Long>) {
         // ignore already added products
         val uniqueSelectedProductIds = selectedProductIds.minus(this.selectedProductIds)
-        // TODO handle linked products
         productListViewState = productListViewState.copy(
             selectedProductIds = this.selectedProductIds + uniqueSelectedProductIds
         )
@@ -73,7 +76,6 @@ class GroupedProductListViewModel @Inject constructor(
     }
 
     fun onProductDeleted(product: Product) {
-        // TODO handle linked products
         productListViewState = productListViewState.copy(
             selectedProductIds = selectedProductIds - product.remoteId
         )
@@ -85,6 +87,10 @@ class GroupedProductListViewModel @Inject constructor(
         _productList.value = if (selectedProductIds.isNotEmpty()) {
             groupedProductListRepository.getProductList(selectedProductIds)
         } else emptyList()
+
+        productListViewState = productListViewState.copy(
+            isEmptyViewShown = _productList.value?.isEmpty() ?: true
+        )
     }
 
     fun onAddProductButtonClicked() {
@@ -140,7 +146,8 @@ class GroupedProductListViewModel @Inject constructor(
 
         productListViewState = productListViewState.copy(
             isSkeletonShown = false,
-            isLoadingMore = false
+            isLoadingMore = false,
+            isEmptyViewShown = _productList.value?.isEmpty() ?: true
         )
     }
 
@@ -158,7 +165,8 @@ class GroupedProductListViewModel @Inject constructor(
     data class GroupedProductListViewState(
         val selectedProductIds: List<Long>,
         val isSkeletonShown: Boolean? = null,
-        val isLoadingMore: Boolean? = null
+        val isLoadingMore: Boolean? = null,
+        val isEmptyViewShown: Boolean? = null
     ) : Parcelable {
         val isAddProductButtonVisible: Boolean
             get() = isSkeletonShown == false

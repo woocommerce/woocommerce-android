@@ -3,6 +3,7 @@ package com.woocommerce.android.ui.orders.details
 import android.content.Context
 import android.os.Parcelable
 import androidx.annotation.StringRes
+import androidx.lifecycle.LifecycleObserver
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
@@ -56,6 +57,7 @@ import com.woocommerce.android.ui.orders.OrderNavigationTarget.ViewOrderedAddons
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.ViewPrintCustomsForm
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.ViewPrintingInstructions
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.ViewRefundedProducts
+import com.woocommerce.android.ui.orders.OrderStatusUpdateSource
 import com.woocommerce.android.ui.orders.details.customfields.CustomOrderFieldsHelper
 import com.woocommerce.android.ui.payments.cardreader.CardReaderTracker
 import com.woocommerce.android.ui.payments.cardreader.payment.CardReaderPaymentCollectibilityChecker
@@ -98,8 +100,11 @@ class OrderDetailViewModel @Inject constructor(
     private val cardReaderTracker: CardReaderTracker,
     private val trackerWrapper: AnalyticsTrackerWrapper,
     private val shippingLabelOnboardingRepository: ShippingLabelOnboardingRepository,
+    private val orderDetailsTransactionLauncher: OrderDetailsTransactionLauncher,
 ) : ScopedViewModel(savedState), OnProductFetchedListener {
     private val navArgs: OrderDetailFragmentArgs by savedState.navArgs()
+
+    val performanceObserver: LifecycleObserver = orderDetailsTransactionLauncher
 
     var order: Order
         get() = requireNotNull(viewState.orderInfo?.order)
@@ -138,6 +143,7 @@ class OrderDetailViewModel @Inject constructor(
     override fun onCleared() {
         super.onCleared()
         productImageMap.unsubscribeFromOnProductFetchedEvents(this)
+        orderDetailsTransactionLauncher.clear()
     }
 
     init {
@@ -154,14 +160,6 @@ class OrderDetailViewModel @Inject constructor(
         }
     }
 
-    private suspend fun fetchAndDisplayOrderDetails() {
-        fetchOrderNotes()
-        fetchProductAndShippingDetails()
-        launch {
-            displayOrderDetails()
-        }
-    }
-
     private suspend fun displayOrderDetails() {
         updateOrderState()
         loadOrderNotes()
@@ -174,20 +172,25 @@ class OrderDetailViewModel @Inject constructor(
             viewState = viewState.copy(
                 isOrderDetailSkeletonShown = showSkeleton
             )
-            val fetchedOrder = orderDetailRepository.fetchOrderById(navArgs.orderId)
-            if (fetchedOrder != null) {
-                order = fetchedOrder
-                fetchAndDisplayOrderDetails()
-            } else {
-                triggerEvent(ShowSnackbar(string.order_error_fetch_generic))
-            }
+
+            awaitAll(
+                fetchOrderAsync(),
+                fetchOrderNotesAsync(),
+                fetchOrderShippingLabelsAsync(),
+                fetchShipmentTrackingAsync(),
+                fetchOrderRefundsAsync(),
+                fetchOrderProductsAsync(),
+                fetchSLCreationEligibilityAsync()
+            )
+
+            displayOrderDetails()
+
             viewState = viewState.copy(
                 isOrderDetailSkeletonShown = false,
                 isRefreshing = false
             )
         } else {
             triggerEvent(ShowSnackbar(string.offline_error))
-            viewState = viewState.copy(isOrderDetailSkeletonShown = false)
             viewState = viewState.copy(
                 isOrderDetailSkeletonShown = false,
                 isRefreshing = false
@@ -195,12 +198,10 @@ class OrderDetailViewModel @Inject constructor(
         }
     }
 
-    private fun checkOrderMetaData() {
-        launch {
-            viewState = viewState.copy(
-                isCustomFieldsButtonShown = orderDetailRepository.orderHasMetadata(navArgs.orderId)
-            )
-        }
+    private suspend fun checkOrderMetaData() {
+        viewState = viewState.copy(
+            isCustomFieldsButtonShown = orderDetailRepository.orderHasMetadata(navArgs.orderId)
+        )
     }
 
     /**
@@ -390,8 +391,8 @@ class OrderDetailViewModel @Inject constructor(
         )
 
         val snackbarMessage = when (updateSource) {
-            is OrderStatusUpdateSource.Dialog -> string.order_status_updated
             is OrderStatusUpdateSource.FullFillScreen -> string.order_fulfill_completed
+            else -> string.order_status_updated
         }
 
         triggerEvent(
@@ -548,14 +549,21 @@ class OrderDetailViewModel @Inject constructor(
         }
     }
 
-    private fun fetchOrderNotes() {
-        launch {
-            if (!orderDetailRepository.fetchOrderNotes(navArgs.orderId)) {
-                triggerEvent(ShowSnackbar(string.order_error_fetch_notes_generic))
-            }
-            // fetch order notes from the local db and hide the skeleton view
-            _orderNotes.value = orderDetailRepository.getOrderNotes(navArgs.orderId)
+    private fun fetchOrderAsync() = async {
+        val fetchedOrder = orderDetailRepository.fetchOrderById(navArgs.orderId)
+        orderDetailsTransactionLauncher.onOrderFetched()
+        if (fetchedOrder != null) {
+            order = fetchedOrder
+        } else {
+            triggerEvent(ShowSnackbar(string.order_error_fetch_generic))
         }
+    }
+
+    private fun fetchOrderNotesAsync() = async {
+        if (!orderDetailRepository.fetchOrderNotes(navArgs.orderId)) {
+            triggerEvent(ShowSnackbar(string.order_error_fetch_notes_generic))
+        }
+        orderDetailsTransactionLauncher.onNotesFetched()
     }
 
     private fun loadOrderRefunds(): ListInfo<Refund> {
@@ -589,6 +597,7 @@ class OrderDetailViewModel @Inject constructor(
         if (shippingLabelOnboardingRepository.isShippingPluginReady) {
             orderDetailRepository.fetchSLCreationEligibility(order.id)
         }
+        orderDetailsTransactionLauncher.onPackageCreationEligibleFetched()
     }
 
     private fun loadShipmentTracking(shippingLabels: ListInfo<ShippingLabel>): ListInfo<OrderShipmentTracking> {
@@ -602,15 +611,18 @@ class OrderDetailViewModel @Inject constructor(
 
     private fun fetchOrderRefundsAsync() = async {
         orderDetailRepository.fetchOrderRefunds(navArgs.orderId)
+        orderDetailsTransactionLauncher.onRefundsFetched()
     }
 
     private fun fetchShipmentTrackingAsync() = async {
         val result = orderDetailRepository.fetchOrderShipmentTrackingList(navArgs.orderId)
         appPrefs.setTrackingExtensionAvailable(result == SUCCESS)
+        orderDetailsTransactionLauncher.onShipmentTrackingFetched()
     }
 
     private fun fetchOrderShippingLabelsAsync() = async {
         orderDetailRepository.fetchOrderShippingLabels(navArgs.orderId)
+        orderDetailsTransactionLauncher.onShippingLabelFetched()
     }
 
     private fun loadOrderShippingLabels(): ListInfo<ShippingLabel> {
@@ -620,16 +632,6 @@ class OrderDetailViewModel @Inject constructor(
                 return ListInfo(list = it)
             }
         return ListInfo(isVisible = false)
-    }
-
-    private suspend fun fetchProductAndShippingDetails() {
-        awaitAll(
-            fetchOrderShippingLabelsAsync(),
-            fetchShipmentTrackingAsync(),
-            fetchOrderRefundsAsync(),
-            fetchOrderProductsAsync(),
-            fetchSLCreationEligibilityAsync()
-        )
     }
 
     private fun displayProductAndShippingDetails() {
@@ -744,20 +746,6 @@ class OrderDetailViewModel @Inject constructor(
         val isPaymentCollectableWithCardReader: Boolean = false,
         val isReceiptButtonsVisible: Boolean = false
     ) : Parcelable
-
-    sealed class OrderStatusUpdateSource(open val oldStatus: String, open val newStatus: String) : Parcelable {
-        @Parcelize
-        data class FullFillScreen(override val oldStatus: String) : OrderStatusUpdateSource(
-            oldStatus = oldStatus,
-            newStatus = CoreOrderStatus.COMPLETED.value
-        )
-
-        @Parcelize
-        data class Dialog(
-            override val oldStatus: String,
-            override val newStatus: String
-        ) : OrderStatusUpdateSource(oldStatus, newStatus)
-    }
 
     data class ListInfo<T>(val isVisible: Boolean = true, val list: List<T> = emptyList())
 }

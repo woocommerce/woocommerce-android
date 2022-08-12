@@ -16,11 +16,14 @@ import com.woocommerce.android.push.WooNotificationBuilder
 import com.woocommerce.android.push.WooNotificationType
 import com.woocommerce.android.support.HelpActivity
 import com.woocommerce.android.ui.login.LoginActivity
+import com.woocommerce.android.ui.login.localnotifications.LoginHelpNotificationType.DEFAULT_HELP
+import com.woocommerce.android.ui.login.localnotifications.LoginHelpNotificationType.LOGIN_SITE_ADDRESS_EMAIL_ERROR
+import com.woocommerce.android.ui.login.localnotifications.LoginHelpNotificationType.LOGIN_SITE_ADDRESS_ERROR
+import com.woocommerce.android.ui.login.localnotifications.LoginHelpNotificationType.LOGIN_SITE_ADDRESS_PASSWORD_ERROR
+import com.woocommerce.android.ui.login.localnotifications.LoginHelpNotificationType.LOGIN_WPCOM_EMAIL_ERROR
+import com.woocommerce.android.ui.login.localnotifications.LoginHelpNotificationType.LOGIN_WPCOM_PASSWORD_ERROR
 import com.woocommerce.android.ui.login.localnotifications.LoginNotificationScheduler.Companion.LOGIN_HELP_NOTIFICATION_ID
 import com.woocommerce.android.ui.login.localnotifications.LoginNotificationScheduler.Companion.LOGIN_NOTIFICATION_TYPE_KEY
-import com.woocommerce.android.ui.login.localnotifications.LoginNotificationScheduler.LoginHelpNotificationType
-import com.woocommerce.android.ui.login.localnotifications.LoginNotificationScheduler.LoginHelpNotificationType.DEFAULT_HELP
-import com.woocommerce.android.ui.login.localnotifications.LoginNotificationScheduler.LoginHelpNotificationType.LOGIN_SITE_ADDRESS_ERROR
 import com.woocommerce.android.viewmodel.ResourceProvider
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
@@ -38,18 +41,26 @@ class LoginHelpNotificationWorker @AssistedInject constructor(
             inputData.getString(LOGIN_NOTIFICATION_TYPE_KEY)
         )
         when (notificationType) {
+            LOGIN_SITE_ADDRESS_ERROR -> siteAddressErrorNotification(notificationType)
+            LOGIN_SITE_ADDRESS_EMAIL_ERROR,
+            LOGIN_WPCOM_EMAIL_ERROR -> invalidEmailErrorNotification(notificationType)
+            LOGIN_SITE_ADDRESS_PASSWORD_ERROR,
+            LOGIN_WPCOM_PASSWORD_ERROR -> invalidPasswordErrorNotification(notificationType)
             DEFAULT_HELP -> defaultLoginSupportNotification()
-            LOGIN_SITE_ADDRESS_ERROR -> siteAddressErrorNotification()
         }
         AnalyticsTracker.track(
             LOGIN_LOCAL_NOTIFICATION_DISPLAYED,
             mapOf(AnalyticsTracker.KEY_TYPE to notificationType.toString())
         )
         prefsWrapper.setPreLoginNotificationDisplayed(displayed = true)
+        prefsWrapper.setPreLoginNotificationDisplayedType(notificationType.toString())
         return Result.success()
     }
 
-    private fun defaultLoginSupportNotification() {
+    private fun defaultLoginSupportNotification(
+        notificationType: LoginHelpNotificationType = DEFAULT_HELP,
+        actions: List<Pair<String, Intent>> = emptyList()
+    ) {
         wooNotificationBuilder.buildAndDisplayLoginHelpNotification(
             notificationLocalId = LOGIN_HELP_NOTIFICATION_ID,
             appContext.getString(R.string.notification_channel_pre_login_id),
@@ -57,11 +68,12 @@ class LoginHelpNotificationWorker @AssistedInject constructor(
                 title = R.string.login_help_notification_default_title,
                 description = R.string.login_help_notification_no_interaction_default_description
             ),
-            notificationTappedIntent = buildOpenSupportScreenIntent()
+            notificationTappedIntent = buildOpenSupportScreenIntent(notificationType),
+            actions = actions
         )
     }
 
-    private fun siteAddressErrorNotification() {
+    private fun siteAddressErrorNotification(notificationType: LoginHelpNotificationType) {
         wooNotificationBuilder.buildAndDisplayLoginHelpNotification(
             notificationLocalId = LOGIN_HELP_NOTIFICATION_ID,
             appContext.getString(R.string.notification_channel_pre_login_id),
@@ -69,8 +81,27 @@ class LoginHelpNotificationWorker @AssistedInject constructor(
                 title = R.string.login_help_notification_default_title,
                 description = R.string.login_help_notification_site_error_description
             ),
-            notificationTappedIntent = buildOpenLoginWithEmailScreenIntent(),
-            actions = getActionsForSiteAddressErrorNotification()
+            notificationTappedIntent = buildOpenLoginFlowForNotificationType(notificationType),
+            actions = getActionsForSiteAddressErrorNotification(notificationType)
+        )
+    }
+
+    private fun invalidEmailErrorNotification(notificationType: LoginHelpNotificationType) {
+        defaultLoginSupportNotification(
+            notificationType, getActionsForInvalidEmailErrorNotification(notificationType)
+        )
+    }
+
+    private fun invalidPasswordErrorNotification(notificationType: LoginHelpNotificationType) {
+        wooNotificationBuilder.buildAndDisplayLoginHelpNotification(
+            notificationLocalId = LOGIN_HELP_NOTIFICATION_ID,
+            appContext.getString(R.string.notification_channel_pre_login_id),
+            notification = buildLoginNotification(
+                title = R.string.login_help_notification_invalid_password_title,
+                description = R.string.login_help_notification_no_interaction_default_description
+            ),
+            notificationTappedIntent = buildOpenSupportScreenIntent(notificationType),
+            actions = getActionsForInvalidPasswordErrorNotification(notificationType)
         )
     }
 
@@ -89,17 +120,48 @@ class LoginHelpNotificationWorker @AssistedInject constructor(
         channelType = NotificationChannelType.PRE_LOGIN
     )
 
-    private fun buildOpenSupportScreenIntent(): Intent =
-        HelpActivity.createIntent(appContext, HelpActivity.Origin.LOGIN_HELP_NOTIFICATION, null)
+    private fun buildOpenSupportScreenIntent(notificationType: LoginHelpNotificationType): Intent =
+        HelpActivity.createIntent(
+            appContext,
+            HelpActivity.Origin.LOGIN_HELP_NOTIFICATION,
+            arrayListOf(notificationType.toString())
+        )
 
-    private fun buildOpenLoginWithEmailScreenIntent(): Intent =
-        LoginActivity.createIntent(appContext, LOGIN_SITE_ADDRESS_ERROR)
+    private fun buildOpenLoginFlowForNotificationType(notificationType: LoginHelpNotificationType): Intent =
+        LoginActivity.createIntent(appContext, notificationType)
 
-    private fun getActionsForSiteAddressErrorNotification(): List<Pair<String, Intent>> =
+    private fun getActionsForSiteAddressErrorNotification(
+        notificationType: LoginHelpNotificationType
+    ): List<Pair<String, Intent>> =
         listOf(
             resourceProvider.getString(R.string.login_help_notification_wordpress_login_button)
-                to buildOpenLoginWithEmailScreenIntent(),
+                to buildOpenLoginFlowForNotificationType(notificationType),
             resourceProvider.getString(R.string.login_help_notification_contact_support_button)
-                to buildOpenSupportScreenIntent(),
+                to buildOpenSupportScreenIntent(notificationType),
         )
+
+    private fun getActionsForInvalidEmailErrorNotification(
+        notificationType: LoginHelpNotificationType
+    ): List<Pair<String, Intent>> =
+        listOf(
+            resourceProvider.getString(R.string.login_help_notification_contact_support_button)
+                to buildOpenSupportScreenIntent(notificationType),
+        )
+
+    private fun getActionsForInvalidPasswordErrorNotification(
+        notificationType: LoginHelpNotificationType
+    ): List<Pair<String, Intent>> {
+        val actionsList = mutableListOf(
+            resourceProvider.getString(R.string.login_help_notification_contact_support_button)
+                to buildOpenSupportScreenIntent(notificationType)
+        )
+        if (prefsWrapper.getLoginEmail().isNotBlank()) {
+            actionsList.add(
+                index = 0,
+                element = resourceProvider.getString(R.string.login_help_notification_get_link_by_email_button)
+                    to buildOpenLoginFlowForNotificationType(notificationType),
+            )
+        }
+        return actionsList
+    }
 }

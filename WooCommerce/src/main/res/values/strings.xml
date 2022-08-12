@@ -89,6 +89,7 @@
     <string name="review_notifications">Reviews</string>
     <string name="more_menu">Menu</string>
     <string name="more_menu_button_woo_admin">WooCommerce Admin</string>
+    <string name="more_menu_button_wс_admin">WC Admin</string>
     <string name="more_menu_button_payments">Payments</string>
     <string name="more_menu_button_analytics">Analytics</string>
     <string name="more_menu_button_inbox">Inbox</string>
@@ -196,6 +197,7 @@
     <string name="login_jetpack_required">This app requires Jetpack to connect to your store.</string>
     <string name="login_wpcom">Continue with WordPress.com</string>
     <string name="login_store_address">Enter your store address</string>
+    <string name="login_with_store_address">Log in with your store address</string>
     <string name="login_configure_link">Read the %sconfiguration instructions%s.</string>
 
     <string name="login_prologue_label_analytics">Track sales and high performing products</string>
@@ -206,7 +208,16 @@
     <string name="login_prologue_label_orders_subtitle">You can manage them quickly and easily</string>
     <string name="login_prologue_label_products_subtitle">We enable you to process them effortlessly</string>
 
+    <string name="login_prologue_survey_title">What brings you to WooCommerce?</string>
+    <string name="login_prologue_survey_button_exploring">Just exploring</string>
+    <string name="login_prologue_survey_button_set_up_store">Trying to set up a store</string>
+    <string name="login_prologue_survey_button_check_analytics">Check my analytics</string>
+    <string name="login_prologue_survey_button_edit_products">Create or update my products</string>
+    <string name="login_prologue_survey_button_manage_orders">Manage my orders</string>
+    <string name="login_prologue_survey_button_switch_stores">Switch between multiple stores</string>
+
     <string name="login_pick_store">Select store to connect</string>
+    <string name="login_non_woo_stores_label">Other sites</string>
     <string name="login_connected_store">Connected store</string>
     <string name="login_verifying_site">Verifying site…</string>
     <string name="login_verifying_site_error">Cannot connect to %s</string>
@@ -219,7 +230,8 @@
     <string name="login_not_connected_to_account">It looks like %1$s is connected to a different WordPress.com account.</string>
     <string name="login_try_another_account">Log in with another account</string>
     <string name="login_try_another_store">Try another store</string>
-    <string name="login_not_woo_store">It looks like %1$s is not a WooCommerce site. Install the WooCommerce plugin on your site and then refresh the app.</string>
+    <string name="login_not_woo_store">It looks like %1$s is not a WooCommerce site.</string>
+    <string name="login_install_woo">Install WooCommerce</string>
     <string name="login_not_connected_jetpack">To use this app for %1$s you\'ll need to have the Jetpack plugin setup and connected to this account. \n\nOnce setup, refresh the app</string>
     <string name="login_no_jetpack">To use this app for %1$s you\'ll need to have the Jetpack plugin setup and connected to a WordPress.com account</string>
     <string name="login_not_wordpress_site_v2">We were not able to detect a WordPress site at the address you entered. Please make sure WordPress is installed and that you are running the latest available version.</string>
@@ -238,7 +250,7 @@
     <string name="login_jetpack_not_found">Jetpack not found. Please try again</string>
     <string name="login_jetpack_install">Install Jetpack</string>
     <string name="login_sign_in">Sign in</string>
-    <string name="login_need_help_finding_email">Need help finding the connected email?</string>
+    <string name="login_need_help_finding_email"><u>Need help finding the required email?</u></string>
     <string name="login_email_help_title">What email do I use to sign in?</string>
     <string name="login_email_help_desc">In your site admin you can find the email you used to connect to WordPress.com from the %1$sJetpack Dashboard%2$s under %3$sConnections &gt; Account connection%4$s</string>
     <string name="login_discovery_error_title">Connection error</string>
@@ -246,7 +258,7 @@
     <string name="login_with_wordpress">Sign in with WordPress.com</string>
     <string name="login_troubleshooting_tips">Read our troubleshooting tips</string>
     <string name="login_discovery_error_option_select">Select an option</string>
-    <string name="login_no_wpcom_account_found">It looks like %1$s isn\'t associated with a WordPress.com account.</string>
+    <string name="login_no_wpcom_account_found">The email %1$s isn\'t used with a WordPress.com account.</string>
     <string name="user_role_access_error_msg">This app supports only Administrator and Shop Manager user roles. Please contact your store owner to upgrade your role.</string>
     <string name="user_role_access_error_link">Learn more about roles and permissions</string>
     <string name="user_role_access_error_retry">You don\'t have the correct user role</string>
@@ -321,6 +333,9 @@
     <string name="orderlist_simple_payments_menu">Simple payment</string>
     <string name="order_card_transition_name">order_card_%1$s</string>
     <string name="order_card_detail_transition_name">order_card_detail</string>
+    <string name="orderlist_mark_completed">Mark\ncompleted</string>
+    <string name="orderlist_mark_completed_success">Order #%1$d marked as completed</string>
+    <string name="orderlist_updating_order_error">Error updating Order #%1$d</string>
     <!--
          Simple Payments
     -->
@@ -354,6 +369,9 @@
     <string name="orderlist_bottom_sheet_create_order_description">Create a new manual order</string>
     <string name="orderlist_bottom_sheet_simple_payment_action">Simple payment</string>
     <string name="orderlist_bottom_sheet_simple_payment_description">Create an order with minimal information</string>
+    <string name="orderlist_bottom_sheet_simple_payments_moved_title">Payments from the Menu tab</string>
+    <string name="orderlist_bottom_sheet_simple_payments_moved_description">Now you can quickly access In-Person Payments and other features with ease</string>
+    <string name="orderlist_bottom_sheet_simple_payments_moved_button">Got it!</string>
     <string name="order_creation_fragment_title">New order</string>
     <string name="order_creation_status_edit_content_description">Edit order status</string>
     <string name="order_creation_customer">Customer</string>
@@ -949,6 +967,7 @@
     <!--
             Card Reader Hub
         -->
+    <string name="payments_hub_title">Payments</string>
     <string name="card_reader_manage_card_reader">Manage Card Reader</string>
     <string name="card_reader_purchase_card_reader">Order Card Reader</string>
     <string name="card_reader_manage_payment_provider">Change Payment Provider</string>
@@ -956,6 +975,7 @@
     <string name="card_reader_m2_manual_card_reader" translatable="false">Stripe M2</string>
     <string name="card_reader_wisepad_3_manual_card_reader" translatable="false">WisePad 3</string>
     <string name="card_reader_icon_content_description">Card Reader Image</string>
+    <string name="card_reader_onboarding_not_finished">We’ve noticed that you have not yet finished In-Person Payments setup. &lt;b&gt;&lt;a href=\'\'&gt;Continue setup&lt;/a&gt;&lt;/b&gt;</string>
 
     <!--
             Card Reader Interac refund
@@ -1724,7 +1744,7 @@
     <string name="login_promo_text_notifications">Your notifications travel with you — see comments and likes as they happen.</string>
     <string name="login_promo_text_jetpack">Manage your Jetpack-powered site on the go — you\'ve got WordPress in your pocket.</string>
     <string name="next">Next</string>
-    <string name="open_mail">Open mail</string>
+    <string name="open_mail">Open Mail</string>
     <string name="alternatively">Alternatively:</string>
     <string name="enter_site_address_instead">Log in by entering your site address.</string>
     <string name="enter_username_instead">Log in with your username.</string>
@@ -2128,9 +2148,12 @@
     <!-- Login local notifications -->
     <string name="login_help_notification_default_title">Problems with logging in?</string>
     <string name="login_help_notification_no_interaction_default_description">Get some help!</string>
-    <string name="login_help_notification_site_error_description">Try login with your WordPress.com account</string>
+    <string name="login_help_notification_site_error_description">Log in with your WordPress.com account</string>
+    <string name="login_help_notification_incorrect_wpcom_email_description">Log in with your site credentials</string>
     <string name="login_help_notification_contact_support_button">Contact support</string>
-    <string name="login_help_notification_wordpress_login_button">Login with WordPress.com</string>
+    <string name="login_help_notification_wordpress_login_button">Log in with WordPress.com</string>
+    <string name="login_help_notification_invalid_password_title">Can\'t remember your password?</string>
+    <string name="login_help_notification_get_link_by_email_button">Get a login link by email</string>
 
     <!-- Other -->
     <string name="error_loading_image">Unable to load image</string>
@@ -2466,6 +2489,8 @@
 
     <string name="login_site_address">Site address</string>
 
+    <string name="login_magic_link_auto_sent">We just sent you a magic link to your e-mail address. Please tap the link in the email to log in.</string>
+    <string name="login_magic_link_button">Log in with magic link</string>
 
     <string name="email_not_registered_wpcom">Hmm, we can\'t find a WordPress.com account connected to this email address.</string>
     <string name="login_magic_links_label">We\'ll email you a link that\'ll log you in instantly, no password needed.</string>
@@ -2546,4 +2571,7 @@
     <string name="lines_all_details">the details</string>
     <string name="tests_notification_new_order_title">You have a new order! 🎉</string>
     <string name="tests_notification_new_order_message">New order for $50 on Your WooCommerce Store</string>
+    <string name="or_use_password">Use password to sign in</string>
+    <string name="login_magic_links_sent_label_short">Check your email on this device!</string>
+    <string name="login_magic_links_email_sent">We just sent a magic link to</string>
 </resources>

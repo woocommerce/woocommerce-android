@@ -26,6 +26,7 @@ import com.woocommerce.android.ui.payments.banner.BannerDisplayEligibilityChecke
 import com.woocommerce.android.util.getOrAwaitValue
 import com.woocommerce.android.util.observeForTesting
 import com.woocommerce.android.viewmodel.BaseUnitTest
+import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.ResourceProvider
 import com.woocommerce.android.widgets.WCEmptyView.EmptyViewType.NETWORK_ERROR
 import com.woocommerce.android.widgets.WCEmptyView.EmptyViewType.NETWORK_OFFLINE
@@ -34,6 +35,9 @@ import com.woocommerce.android.widgets.WCEmptyView.EmptyViewType.ORDER_LIST_LOAD
 import com.woocommerce.android.widgets.WCEmptyView.EmptyViewType.SEARCH_RESULTS
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.InternalCoroutinesApi
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.test.advanceTimeBy
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runTest
 import org.assertj.core.api.Assertions.assertThat
@@ -53,6 +57,7 @@ import org.wordpress.android.fluxc.Dispatcher
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.model.WCOrderListDescriptor
 import org.wordpress.android.fluxc.model.list.PagedListWrapper
+import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.CoreOrderStatus
 import org.wordpress.android.fluxc.store.ListStore
 import org.wordpress.android.fluxc.store.WCOrderFetcher
 import org.wordpress.android.fluxc.store.WCOrderStore
@@ -116,6 +121,7 @@ class OrderListViewModelTest : BaseUnitTest() {
             getWCOrderListDescriptorWithFilters = getWCOrderListDescriptorWithFilters,
             getSelectedOrderFiltersCount = getSelectedOrderFiltersCount,
             bannerDisplayEligibilityChecker = bannerDisplayEligibilityChecker,
+            orderListTransactionLauncher = mock()
         )
     }
 
@@ -578,6 +584,74 @@ class OrderListViewModelTest : BaseUnitTest() {
         }
     }
     //endregion
+
+    @Test
+    fun `when the order is swiped then the status is changed optimistically`() = testBlocking {
+        // Given that updateOrderStatus will success
+        val order = OrderTestUtils.generateOrder()
+        val position = 1
+        val gesture = OrderStatusUpdateSource.SwipeToCompleteGesture(order.orderId, position, order.status)
+        val result = WCOrderStore.OnOrderChanged()
+
+        val updateFlow = flow {
+            emit(WCOrderStore.UpdateOrderResult.OptimisticUpdateResult(WCOrderStore.OnOrderChanged()))
+            delay(1_000)
+            emit(WCOrderStore.UpdateOrderResult.RemoteUpdateResult(result))
+        }
+
+        whenever(resourceProvider.getString(R.string.orderlist_mark_completed_success, order.orderId))
+            .thenReturn("Order #${order.orderId} marked as completed")
+        whenever(orderDetailRepository.updateOrderStatus(order.orderId, CoreOrderStatus.COMPLETED.value))
+            .thenReturn(updateFlow)
+
+        // When the order is swiped
+        viewModel.onSwipeStatusUpdate(gesture)
+
+        // Then the order status is changed optimistically
+        val optimisticChangeEvent = viewModel.event.getOrAwaitValue()
+        assertTrue(optimisticChangeEvent is MultiLiveEvent.Event.ShowUndoSnackbar)
+
+        advanceTimeBy(1_001)
+
+        // Then when the order status changed nothing happens because it was already handled optimistically
+        val resultEvent = viewModel.event.getOrAwaitValue()
+        assertEquals(optimisticChangeEvent, resultEvent)
+    }
+
+    @Test
+    fun `when the order is swiped but the change fails, then a retry message is shown`() = testBlocking {
+        // Given that updateOrderStatus will fail
+        val order = OrderTestUtils.generateOrder()
+        val position = 1
+        val gesture = OrderStatusUpdateSource.SwipeToCompleteGesture(order.orderId, position, order.status)
+        val result = WCOrderStore.OnOrderChanged(orderError = WCOrderStore.OrderError())
+
+        val updateFlow = flow {
+            emit(WCOrderStore.UpdateOrderResult.OptimisticUpdateResult(WCOrderStore.OnOrderChanged()))
+            delay(1_000)
+            emit(WCOrderStore.UpdateOrderResult.RemoteUpdateResult(result))
+        }
+
+        whenever(resourceProvider.getString(R.string.orderlist_mark_completed_success, order.orderId))
+            .thenReturn("Order #${order.orderId} marked as completed")
+        whenever(resourceProvider.getString(R.string.orderlist_updating_order_error, order.orderId))
+            .thenReturn("Error updating Order #${order.orderId}")
+        whenever(orderDetailRepository.updateOrderStatus(order.orderId, CoreOrderStatus.COMPLETED.value))
+            .thenReturn(updateFlow)
+
+        // When the order is swiped
+        viewModel.onSwipeStatusUpdate(gesture)
+
+        // Then the order status is changed optimistically
+        val optimisticChangeEvent = viewModel.event.getOrAwaitValue()
+        assertTrue(optimisticChangeEvent is MultiLiveEvent.Event.ShowUndoSnackbar)
+
+        advanceTimeBy(1_001)
+
+        // Then when the order status change fails, the retry message is shown
+        val resultEvent = viewModel.event.getOrAwaitValue()
+        assertTrue(resultEvent is OrderListViewModel.OrderListEvent.ShowRetryErrorSnack)
+    }
 
     private companion object {
         const val ANY_SEARCH_QUERY = "search query"

@@ -1,11 +1,38 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2022-07-14 10:54:03+0000
+Translation-Revision-Date: 2022-08-05 15:59:44+0000
 Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);
 Generator: GlotPress/2.4.0-alpha
 Language: ru
 -->
 <resources>
+    <string name="lets_get_started">Приступим!</string>
+    <string name="login_help_notification_wordpress_login_button">Войти на WordPress.com</string>
+    <string name="login_help_notification_contact_support_button">Связаться со службой поддержки</string>
+    <string name="login_help_notification_site_error_description">Попробуйте войти в учетную запись WordPress.com</string>
+    <string name="login_help_notification_no_interaction_default_description">Обратитесь за помощью!</string>
+    <string name="login_help_notification_default_title">Возникли проблемы со входом?</string>
+    <string name="product_search_sku">Артикул</string>
+    <string name="product_search_all">Все товары</string>
+    <string name="card_reader_upsell_card_reader_banner_dont_show_again">БОЛЬШЕ НЕ ПОКАЗЫВАТЬ</string>
+    <string name="card_reader_upsell_card_reader_banner_remind_me_later">НАПОМНИТЬ ПОЗЖЕ</string>
+    <string name="card_reader_upsell_card_reader_banner_dismiss_dialog_description">Не стоит волноваться! Включить очные платежи можно в настройках в любой момент.</string>
+    <string name="card_reader_upsell_card_reader_banner_payments">Очные платежи</string>
+    <string name="card_reader_upsell_card_reader_banner_cta">Купить устройство считывания карт</string>
+    <string name="card_reader_upsell_card_reader_banner_description">Скоро вы сможете принимать оплату с помощью устройств считывания карт.</string>
+    <string name="card_reader_upsell_card_reader_banner_title">Принимайте платежи легко</string>
+    <string name="card_reader_upsell_card_reader_banner_new">НОВИНКА</string>
+    <string name="card_reader_upsell_card_reader_banner_dismiss">Закрыть</string>
+    <string name="orderdetail_view_custom_fields">Просмотр произвольных полей</string>
+    <string name="orderdetail_custom_fields">Произвольные поля</string>
+    <string name="order_sync_failed">Не удалось сохранить изменения</string>
+    <string name="existing_order_cash_dlg_message">Заказ будет отмечен как оплаченный, если вы получили платеж не через WooCommerce</string>
+    <string name="login_jetpack_install">Установить Jetpack</string>
+    <string name="login_prologue_label_products_subtitle">Мы поможем выполнять обработку без лишних усилий</string>
+    <string name="login_prologue_label_orders_subtitle">Простое и быстрое управление.</string>
+    <string name="login_prologue_label_analytics_subtitle">Знаем, что это важно для бизнеса</string>
+    <string name="login_prologue_new_to_woo">Недавно на WooCommerce</string>
+    <string name="notification_channel_pre_login_title">Напоминания об устранении неполадок во входом</string>
     <string name="tests_notification_new_order_message">Новый заказ на 50 долл. в магазине WooCommerce</string>
     <string name="tests_notification_new_order_title">Поступил новый заказ! 🎉</string>
     <string name="lines_all_details">сведения</string>
@@ -228,6 +255,7 @@ Language: ru
     <string name="coupon_details_minimum_spend">Минимальный расход %s</string>
     <string name="coupon_details_heading">Сводка по купонам</string>
     <string name="coupon_list_view_coupon">Смотреть сводку по купонам</string>
+    <string name="coupon_list_wip_message_enabled">Мы разработали функцию, которая позволяет просматривать и редактировать купоны на вашем устройстве.</string>
     <string name="coupon_list_wip_title">Просмотр и редактирование купонов</string>
     <string name="coupon_list_empty_heading">Купоны не найдены</string>
     <string name="coupon_list_item_label_included_and_excluded">%1s без учёта %2s</string>
@@ -297,7 +325,6 @@ Language: ru
     <string name="card_reader_onboarding_both_plugins_activated_hint_store_owner">Очные платежи будут работать только с одним из следующих активированных плагинов. Для продолжения обратитесь к администратору сайта, чтобы деактивировать один из следующих плагинов:</string>
     <string name="card_reader_onboarding_both_plugins_activated_hint_admin">Очные платежи будут работать только с одним из следующих активированных плагинов. Для продолжения деактивируйте один из следующих плагинов:</string>
     <string name="card_reader_onboarding_both_plugins_activated_header">Обнаружены конфликтующие плагины оплаты</string>
-    <string name="order_creation_price_calculation_failed">Не удалось обновить цены</string>
     <string name="order_creation_payment_tax">Налоги</string>
     <string name="exclusive_or">или</string>
     <string name="settings_install_jetpack">Установить Jetpack</string>
@@ -789,10 +816,9 @@ Language: ru
     <string name="user_role_access_error_retry">Неверная роль пользователя</string>
     <string name="user_role_access_error_link">Подробнее о ролях и разрешениях</string>
     <string name="user_role_access_error_msg">Это приложение поддерживает только роли администратора и менеджера магазина. Свяжитесь с владельцем магазина для изменения роли.</string>
-    <string name="login_prologue_label_reviews">Отслеживайте и одобряйте обзоры своих товаров</string>
     <string name="login_prologue_label_products">Добавляйте новые товары и редактируйте существующие откуда угодно</string>
-    <string name="login_prologue_label_orders">Управляйте заказами на ходу</string>
-    <string name="login_prologue_label_analytics">Отслеживайте продажи и высокодоходные товары</string>
+    <string name="login_prologue_label_orders">Управляйте заказами и редактируйте их на ходу</string>
+    <string name="login_prologue_label_analytics">Отслеживайте продажи и узнавайте, какие товары пользуются спросом</string>
     <string name="skip">Пропустить</string>
     <string name="product_type_external_title">Внешний товар</string>
     <string name="product_type_grouped_title">Сгруппированный товар</string>

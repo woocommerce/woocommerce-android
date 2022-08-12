@@ -1,7 +1,9 @@
 package com.woocommerce.android
 
 import androidx.test.platform.app.InstrumentationRegistry
-import com.woocommerce.android.AppPrefs.CardReaderOnboardingStatus.*
+import com.woocommerce.android.AppPrefs.CardReaderOnboardingStatus.CARD_READER_ONBOARDING_COMPLETED
+import com.woocommerce.android.AppPrefs.CardReaderOnboardingStatus.CARD_READER_ONBOARDING_NOT_COMPLETED
+import com.woocommerce.android.AppPrefs.CardReaderOnboardingStatus.CARD_READER_ONBOARDING_PENDING
 import com.woocommerce.android.ui.payments.cardreader.onboarding.PersistentOnboardingData
 import com.woocommerce.android.ui.payments.cardreader.onboarding.PluginType
 import org.assertj.core.api.Assertions.assertThat
@@ -517,6 +519,20 @@ class AppPrefsTest {
                 selfHostedSiteId = 0L,
             )
         ).isTrue
+    }
+
+    @Test
+    fun givenSetUserSeenNewFeatureOnMoreScreenThenReturnsTrue() {
+        AppPrefs.setUserSeenNewFeatureOnMoreScreen()
+
+        assertThat(AppPrefs.isUserSeenNewFeatureOnMoreScreen()).isTrue
+    }
+
+    @Test
+    fun givenSetPaymentsIconWasClickedOnMoreScreenThenReturnsTrue() {
+        AppPrefs.setPaymentsIconWasClickedOnMoreScreen()
+
+        assertThat(AppPrefs.isPaymentsIconWasClickedOnMoreScreen()).isTrue
     }
 
     @Test

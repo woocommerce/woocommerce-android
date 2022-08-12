@@ -1,11 +1,38 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2022-07-16 08:54:03+0000
+Translation-Revision-Date: 2022-08-05 16:00:52+0000
 Plural-Forms: nplurals=2; plural=n > 1;
 Generator: GlotPress/2.4.0-alpha
 Language: id
 -->
 <resources>
+    <string name="lets_get_started">Mari kita mulai!</string>
+    <string name="login_help_notification_wordpress_login_button">Login dengan WordPress.com</string>
+    <string name="login_help_notification_contact_support_button">Hubungi dukungan</string>
+    <string name="login_help_notification_site_error_description">Coba login dengan akun WordPress.com Anda</string>
+    <string name="login_help_notification_no_interaction_default_description">Minta bantuan!</string>
+    <string name="login_help_notification_default_title">Mengalami masalah terkait login?</string>
+    <string name="product_search_sku">SKU</string>
+    <string name="product_search_all">Semua produk</string>
+    <string name="card_reader_upsell_card_reader_banner_dont_show_again">JANGAN TAMPILKAN LAGI</string>
+    <string name="card_reader_upsell_card_reader_banner_remind_me_later">INGATKAN SAYA NANTI</string>
+    <string name="card_reader_upsell_card_reader_banner_dismiss_dialog_description">Jangan khawatir! Anda bisa memulai Pembayaran Langsung kapan saja di Pengaturan. </string>
+    <string name="card_reader_upsell_card_reader_banner_payments">Pembayaran Langsung</string>
+    <string name="card_reader_upsell_card_reader_banner_cta">Beli Pembaca Kartu</string>
+    <string name="card_reader_upsell_card_reader_banner_description">Bersiaplah menerima pembayaran menggunakan pembaca kartu.</string>
+    <string name="card_reader_upsell_card_reader_banner_title">Terima pembayaran dengan mudah</string>
+    <string name="card_reader_upsell_card_reader_banner_new">Baru</string>
+    <string name="card_reader_upsell_card_reader_banner_dismiss">Tutup</string>
+    <string name="orderdetail_view_custom_fields">Lihat kolom khusus</string>
+    <string name="orderdetail_custom_fields">Kolom khusus</string>
+    <string name="order_sync_failed">Tidak dapat menyimpan perubahan</string>
+    <string name="existing_order_cash_dlg_message">Pesanan akan ditandai sebagai dibayar jika Anda telah menerima pembayaran tanpa melalui WooCommerce</string>
+    <string name="login_jetpack_install">Instal Jetpack</string>
+    <string name="login_prologue_label_products_subtitle">Kami membuat Anda bisa memprosesnya dengan mudah</string>
+    <string name="login_prologue_label_orders_subtitle">Anda dapat mengelolanya dengan cepat dan mudah</string>
+    <string name="login_prologue_label_analytics_subtitle">Kami tahu bahwa hal ini penting untuk kelangsungan bisnis Anda</string>
+    <string name="login_prologue_new_to_woo">Baru menggunakan WooCommerce</string>
+    <string name="notification_channel_pre_login_title">Pengingat pemecahan masalah login</string>
     <string name="tests_notification_new_order_message">Pesanan baru senilai $50 di Toko WooCommerce Anda</string>
     <string name="tests_notification_new_order_title">Ada pesanan baru! 🎉</string>
     <string name="lines_all_details">detail</string>
@@ -228,9 +255,11 @@ Language: id
     <string name="coupon_details_minimum_spend">Belanja minimum%s</string>
     <string name="coupon_details_heading">Ringkasan Kupon</string>
     <string name="coupon_list_view_coupon">Lihat ringkasan kupon</string>
+    <string name="coupon_list_wip_message_enabled">Kini Anda dapat melihat dan mengedit kupon dengan perangkat Anda!</string>
     <string name="coupon_list_wip_title">Lihat dan edit kupon</string>
     <string name="coupon_list_empty_heading">Tidak ada kupon ditemukan</string>
     <string name="coupon_list_item_label_included_and_excluded">%1s excl. %2s</string>
+    <string name="coupon_list_item_label_products_and_categories">%1s dan %2s</string>
     <string name="coupon_list_item_label_everything">semua</string>
     <string name="coupon_list_item_label_expired">Kedaluwarsa </string>
     <string name="coupon_list_item_label_active">Aktif</string>
@@ -296,7 +325,6 @@ Language: id
     <string name="card_reader_onboarding_both_plugins_activated_hint_store_owner">Pembayaran Langsung hanya akan berfungsi jika salah satu plugin berikut diaktifkan. Hubungi administrator situs untuk menonaktifkan salah satu plugin berikut untuk melanjutkan:</string>
     <string name="card_reader_onboarding_both_plugins_activated_hint_admin">Pembayaran Langsung hanya akan berfungsi jika salah satu plugin berikut diaktifkan. Harap nonaktifkan salah satu plugin berikut untuk melanjutkan:</string>
     <string name="card_reader_onboarding_both_plugins_activated_header">Konflik plugin pembayaran terdeteksi</string>
-    <string name="order_creation_price_calculation_failed">Tidak dapat memperbarui harga</string>
     <string name="order_creation_payment_tax">Pajak</string>
     <string name="exclusive_or">atau</string>
     <string name="settings_install_jetpack">Menginstal Jetpack</string>
@@ -788,9 +816,8 @@ Language: id
     <string name="user_role_access_error_retry">Peran pengguna Anda salah</string>
     <string name="user_role_access_error_link">Pelajari lebih lanjut tentang peran dan izin</string>
     <string name="user_role_access_error_msg">Aplikasi ini hanya mendukung peran pengguna Administrator dan Manajer Toko. Harap hubungi pemilik toko Anda untuk mengupgrade peran Anda.</string>
-    <string name="login_prologue_label_reviews">Pantau dan setujui ulasan produk Anda</string>
     <string name="login_prologue_label_products">Edit dan tambahkan produk baru dari mana saja</string>
-    <string name="login_prologue_label_orders">Kelola pesanan toko Anda dari mana saja</string>
+    <string name="login_prologue_label_orders">Kelola dan sunting pesanan dari mana saja</string>
     <string name="login_prologue_label_analytics">Lacak penjualan dan produk dengan performa tinggi</string>
     <string name="skip">Lewati</string>
     <string name="product_type_external_title">Produk eksternal</string>

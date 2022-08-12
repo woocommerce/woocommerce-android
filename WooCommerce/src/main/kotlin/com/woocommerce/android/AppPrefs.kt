@@ -87,6 +87,8 @@ object AppPrefs {
         PRODUCT_SORTING_PREFIX,
         PRE_LOGIN_NOTIFICATION_WORK_REQUEST,
         PRE_LOGIN_NOTIFICATION_DISPLAYED,
+        PRE_LOGIN_NOTIFICATION_DISPLAYED_TYPE,
+        LOGIN_EMAIL,
         CARD_READER_UPSELL_BANNER_DIALOG_DISMISSED_FOREVER,
         CARD_READER_UPSELL_BANNER_DIALOG_DISMISSED_REMIND_ME_LATER,
     }
@@ -148,7 +150,11 @@ object AppPrefs {
         // Hide banner in order detail to install WC Shipping plugin
         WC_SHIPPING_BANNER_DISMISSED,
 
-        ONBOARDING_CAROUSEL_DISPLAYED
+        ONBOARDING_CAROUSEL_DISPLAYED,
+
+        USER_SEEN_NEW_FEATURE_MORE_SCREEN,
+
+        USER_CLICKED_ON_PAYMENTS_MORE_SCREEN,
     }
 
     fun init(context: Context) {
@@ -781,6 +787,12 @@ object AppPrefs {
         setString(DeletablePrefKey.PRE_LOGIN_NOTIFICATION_WORK_REQUEST, workRequestId)
     }
 
+    fun getPreLoginNotificationDisplayedType() = getString(DeletablePrefKey.PRE_LOGIN_NOTIFICATION_DISPLAYED_TYPE)
+
+    fun setPreLoginNotificationDisplayedType(notificationType: String) {
+        setString(DeletablePrefKey.PRE_LOGIN_NOTIFICATION_DISPLAYED_TYPE, notificationType)
+    }
+
     fun setPreLoginNotificationDisplayed(displayed: Boolean) {
         setBoolean(DeletablePrefKey.PRE_LOGIN_NOTIFICATION_DISPLAYED, displayed)
     }
@@ -788,12 +800,32 @@ object AppPrefs {
     fun isPreLoginNotificationBeenDisplayed(): Boolean =
         getBoolean(DeletablePrefKey.PRE_LOGIN_NOTIFICATION_DISPLAYED, false)
 
+    fun getLoginEmail() = getString(DeletablePrefKey.LOGIN_EMAIL)
+
+    fun setLoginEmail(email: String) {
+        setString(DeletablePrefKey.LOGIN_EMAIL, email)
+    }
+
     fun setOnboardingCarouselDisplayed(displayed: Boolean) {
         setBoolean(ONBOARDING_CAROUSEL_DISPLAYED, displayed)
     }
 
     fun hasOnboardingCarouselBeenDisplayed(): Boolean =
         getBoolean(ONBOARDING_CAROUSEL_DISPLAYED, false)
+
+    fun isUserSeenNewFeatureOnMoreScreen(): Boolean =
+        getBoolean(UndeletablePrefKey.USER_SEEN_NEW_FEATURE_MORE_SCREEN, false)
+
+    fun setUserSeenNewFeatureOnMoreScreen() {
+        setBoolean(UndeletablePrefKey.USER_SEEN_NEW_FEATURE_MORE_SCREEN, true)
+    }
+
+    fun isPaymentsIconWasClickedOnMoreScreen(): Boolean =
+        getBoolean(UndeletablePrefKey.USER_CLICKED_ON_PAYMENTS_MORE_SCREEN, false)
+
+    fun setPaymentsIconWasClickedOnMoreScreen() {
+        setBoolean(UndeletablePrefKey.USER_CLICKED_ON_PAYMENTS_MORE_SCREEN, true)
+    }
 
     /**
      * Remove all user and site-related preferences.
