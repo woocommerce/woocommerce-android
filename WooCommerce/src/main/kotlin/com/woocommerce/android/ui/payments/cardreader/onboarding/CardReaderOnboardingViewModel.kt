@@ -232,7 +232,7 @@ class CardReaderOnboardingViewModel @Inject constructor(
     }
 
     private fun onEnableCashOnDeliveryClicked() {
-
+        TODO("Not implemented enable cash on delivery button click logic")
     }
 
     private fun updateUiWithSelectPaymentPlugin() {
