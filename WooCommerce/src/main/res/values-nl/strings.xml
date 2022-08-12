@@ -1,15 +1,38 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2022-08-05 15:58:40+0000
+Translation-Revision-Date: 2022-08-10 18:54:03+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: nl
 -->
 <resources>
+    <string name="login_magic_links_email_sent">We hebben zojuist een link verstuurd naar</string>
+    <string name="login_magic_links_sent_label_short">Controleer je e-mail op dit apparaat!</string>
+    <string name="or_use_password">Gebruik je wachtwoord om je aan te melden</string>
+    <string name="login_magic_link_button">Log in met de magische link</string>
+    <string name="login_magic_link_auto_sent">We hebben je per e-mail een magische link toegestuurd. Tik op de link in de e-mail om in te loggen.</string>
+    <string name="login_help_notification_incorrect_wpcom_email_description">Inloggen met je site-inloggegevens</string>
+    <string name="promo_linked_products_banner_message">Bied je klanten waardevolle en relevante productaanbevelingen door upsells en cross-sells toe te voegen</string>
+    <string name="promo_linked_products_banner_title">Boost je sales met gekoppelde producten</string>
+    <string name="card_reader_upsell_card_reader_banner_description">Begin met fysieke betalingen in minder dan 20 minuten met onze kaartlezer.</string>
+    <string name="orderlist_updating_order_error">Fout tijdens bijwerken van bestelnr.%1$d</string>
+    <string name="orderlist_mark_completed_success">Bestelling #%1$d is gemarkeerd als voltooid</string>
+    <string name="orderlist_mark_completed">Markeren\nvoltooid</string>
+    <string name="login_install_woo">WooCommerce installeren</string>
+    <string name="login_not_woo_store">Het lijkt erop dat %1$s geen WooCommerce-site is.</string>
+    <string name="login_prologue_survey_button_switch_stores">Schakelen tussen meerdere winkels</string>
+    <string name="login_prologue_survey_button_manage_orders">Mijn bestellingen beheren</string>
+    <string name="login_prologue_survey_button_edit_products">Mijn producten aanmaken of bijwerken</string>
+    <string name="login_prologue_survey_button_check_analytics">Controleer mijn analyse</string>
+    <string name="login_prologue_survey_button_set_up_store">Een winkel proberen aan te maken</string>
+    <string name="login_prologue_survey_button_exploring">Gewoon aan het rondkijken</string>
+    <string name="login_prologue_survey_title">Waarom heb je gekozen voor WooCommerce?</string>
+    <string name="tip">Tip</string>
+    <string name="set_up_now">Nu instellen</string>
     <string name="lets_get_started">Laten we beginnen</string>
     <string name="login_help_notification_wordpress_login_button">Inloggen met WordPress.com</string>
     <string name="login_help_notification_contact_support_button">Neem contact op met support</string>
-    <string name="login_help_notification_site_error_description">Probeer in te loggen met je WordPress.com account</string>
+    <string name="login_help_notification_site_error_description">Log in met je WordPress.com account</string>
     <string name="login_help_notification_no_interaction_default_description">Vraag om hulp!</string>
     <string name="login_help_notification_default_title">Heb je problemen met inloggen?</string>
     <string name="product_search_sku">SKU</string>
@@ -19,7 +42,6 @@ Language: nl
     <string name="card_reader_upsell_card_reader_banner_dismiss_dialog_description">Maak je geen zorgen! Je kunt altijd aan de slag gaan met fysieke betalingen in Instellingen.</string>
     <string name="card_reader_upsell_card_reader_banner_payments">Fysieke betalingen</string>
     <string name="card_reader_upsell_card_reader_banner_cta">Kaartlezer aanschaffen</string>
-    <string name="card_reader_upsell_card_reader_banner_description">Neem betalingen aan met een kaartlezer.</string>
     <string name="card_reader_upsell_card_reader_banner_title">Eenvoudig betalingen aannemen</string>
     <string name="card_reader_upsell_card_reader_banner_new">NIEUW</string>
     <string name="card_reader_upsell_card_reader_banner_dismiss">Afwijzen</string>
@@ -1777,7 +1799,6 @@ Language: nl
     <string name="login_jetpack_what_is_description">Jetpack is een gratis WordPress-plugin die aan je winkel wordt gekoppeld en je de tools voor de beste mobiele ervaring biedt, waaronder pushmeldingen en statistieken</string>
     <string name="login_jetpack_what_is">Wat is Jetpack?</string>
     <string name="login_view_connected_stores">Aangesloten winkels bekijken</string>
-    <string name="login_not_woo_store">Het lijkt erop dat %1$s geen WooCommerce-site is. Installeer de WooCommerce-plugin op je site en ververs vervolgens de app.</string>
     <string name="login_not_connected_to_account">Het lijkt erop dat %1$s is verbonden met een ander WordPress.com-account.</string>
     <string name="keep_editing">Doorgaan met bewerken</string>
     <string name="notification_wpcom_username_needed">Log in met je gebruikersnaam en wachtwoord.</string>

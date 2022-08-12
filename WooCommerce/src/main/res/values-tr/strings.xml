@@ -1,15 +1,38 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2022-08-05 16:02:24+0000
+Translation-Revision-Date: 2022-08-10 18:54:03+0000
 Plural-Forms: nplurals=2; plural=(n > 1);
 Generator: GlotPress/2.4.0-alpha
 Language: tr
 -->
 <resources>
+    <string name="login_magic_links_email_sent">Az önce size sihirli bir bağlantı gönderdik</string>
+    <string name="login_magic_links_sent_label_short">Bu cihazda e-postanızı kontrol edin!</string>
+    <string name="or_use_password">Oturum açmak için şifreyi kullanın</string>
+    <string name="login_magic_link_button">Sihirli bağlantı ile oturum açın</string>
+    <string name="login_magic_link_auto_sent">Az önce e-posta adresinize sihirli bir bağlantı gönderdik. Oturum açmak için lütfen e-postadaki bağlantıya dokunun.</string>
+    <string name="login_help_notification_incorrect_wpcom_email_description">Site kimlik bilginizle oturum açın</string>
+    <string name="promo_linked_products_banner_message">Ek satışlar ve çapraz satışlar ekleyerek müşterilerinize yararlı ve alakalı ürün önerileri sunun</string>
+    <string name="promo_linked_products_banner_title">Bağlantılı ürünlerle satışlarınızı artırın</string>
+    <string name="card_reader_upsell_card_reader_banner_description">Kart okuyucumuzla 20 dakikadan kısa bir sürede yüz yüze satış yapmaya başlayın.</string>
+    <string name="orderlist_updating_order_error">%1$d numaralı sipariş güncellenirken hata oluştu</string>
+    <string name="orderlist_mark_completed_success">%1$d numaralı sipariş tamamlandı olarak işaretlendi</string>
+    <string name="orderlist_mark_completed">İşaretle\ntamamlandı</string>
+    <string name="login_install_woo">WooCommerce\'i yükle</string>
+    <string name="login_not_woo_store">Görünüşe göre %1$s bir WooCommerce sitesi değil.</string>
+    <string name="login_prologue_survey_button_switch_stores">Birden çok mağaza arasında geçiş yapın</string>
+    <string name="login_prologue_survey_button_manage_orders">Siparişlerimi yönetiyorum</string>
+    <string name="login_prologue_survey_button_edit_products">Ürünlerimi oluşturuyor veya güncelliyorum</string>
+    <string name="login_prologue_survey_button_check_analytics">Analizlerimi kontrol ediyorum</string>
+    <string name="login_prologue_survey_button_set_up_store">Mağaza açmaya çalışıyorum</string>
+    <string name="login_prologue_survey_button_exploring">Sadece araştırıyorum</string>
+    <string name="login_prologue_survey_title">Sizi WooCommerce\'e getiren nedir?</string>
+    <string name="tip">İpucu</string>
+    <string name="set_up_now">Şimdi Ayarla</string>
     <string name="lets_get_started">Başlayalım</string>
     <string name="login_help_notification_wordpress_login_button">WordPress.com ile oturum açın</string>
     <string name="login_help_notification_contact_support_button">Desteğe daşvurun</string>
-    <string name="login_help_notification_site_error_description">WordPress.com hesabınızla oturum açmayı deneyin</string>
+    <string name="login_help_notification_site_error_description">WordPress.com hesabınızla oturum açın</string>
     <string name="login_help_notification_no_interaction_default_description">Yardım alın!</string>
     <string name="login_help_notification_default_title">Oturum açarken sorun mu yaşıyorsunuz?</string>
     <string name="product_search_sku">SKU</string>
@@ -19,7 +42,6 @@ Language: tr
     <string name="card_reader_upsell_card_reader_banner_dismiss_dialog_description">Endişe etmeyin: İstediğiniz zaman Şahsen Ödemeleri Ayarlar bölümünden kullanmaya başlayabilirsiniz.</string>
     <string name="card_reader_upsell_card_reader_banner_payments">Şahsen Ödemeler</string>
     <string name="card_reader_upsell_card_reader_banner_cta">Kart Okuyucu Satın Alın</string>
-    <string name="card_reader_upsell_card_reader_banner_description">Kart okuyucu ile ödeme kabul etmeye hazır olun.</string>
     <string name="card_reader_upsell_card_reader_banner_title">Ödemeleri kolayca kabul edin</string>
     <string name="card_reader_upsell_card_reader_banner_new">YENİ</string>
     <string name="card_reader_upsell_card_reader_banner_dismiss">Kapat</string>
@@ -1777,7 +1799,6 @@ Language: tr
     <string name="login_jetpack_what_is_description">Jetpack, size en iyi mobil deneyimi sunmak için anında bildirimler ve istatistikler dahil olmak üzere gerekli araçlarla sizi mağazaya bağlayan ücretsiz bir WordPress eklentisidir.</string>
     <string name="login_jetpack_what_is">Jetpack nedir?</string>
     <string name="login_view_connected_stores">Bağlanılan mağazaları görüntüle</string>
-    <string name="login_not_woo_store">Görünüşe göre %1$s bir WooCommerce sitesi değil. Sitenize WooCommerce eklentisini yükleyin ve devam etmek için bu uygulamayı yenileyin.</string>
     <string name="login_not_connected_to_account">Görünüşe göre %1$s başka bir WordPress.com hesabına bağlı.</string>
     <string name="keep_editing">Düzenlemeye devam et</string>
     <string name="notification_wpcom_username_needed">Lütfen kullanıcı adınız ve şifrenizle oturum açın.</string>

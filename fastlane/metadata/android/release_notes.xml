@@ -1,119 +1,68 @@
 <ar>
-9.7:
-يسرنا الإعلان إنه أصبح من الممكن الآن تحرير طلب من التطبيق. يمكنك تحرير المنتجات والرسوم والشحن أو إزالتها، بالإضافة إلى تغيير كمية المنتج. يمكنك كذلك البحث عن العملاء عند تحرير طلب أو إنشائه.
-
- لقد أجرينا كذلك بعض التغييرات لعرض الحقول المخصصة الخاصة بطلب ما، بالإضافة إلى العديد من التحسينات على مدفوعاتنا وعلى عملية تدفق تسجيل الدخول الخاصة بنا، بما في ذلك خيار تثبيت Jetpack مباشرةً من التطبيق.
-
+9.8:
+بالنسبة إلى هذا الإصدار، لقد ركزنا على تمييز بعض الأشياء حول تجربة تسجيل الدخول الخاصة بك، بما في ذلك خيار تثبيت إضافة WooCommerce مباشرةً من التطبيق. نعمل على تنفيذ بعض الأشياء الرائعة لكم جميعًا! حافظ على تدفق ملاحظاتك؛ حيث إنها تساعدنا على تحديد ما يجب العمل عليه فيما بعد. 💜
 </ar>
 <de-DE>
-9.7:
-Tolle Neuigkeiten: Ab sofort ist es möglich, eine Bestellung von der App aus zu bearbeiten. Du kannst Produkte, Gebühren und Versand bearbeiten und entfernen und die Anzahl der Produkte ändern. Außerdem kannst du nach Kunden suchen, wenn du eine Bestellung bearbeitest oder erstellst.
-
-Zudem haben wir einige Änderungen an der Anzeige von benutzerdefinierten Feldern für eine Bestellung und mehrere Verbesserungen am Zahlungs- und Anmeldevorgang vorgenommen, wie z. B. die Option, Jetpack direkt aus der App zu installieren.
-
+9.8:
+Bei dieser Version haben wir einige Verbesserungen bezüglich der Anmeldung eingeführt, darunter die Option, das WooCommerce-Plugin direkt über die App zu installieren. Wir arbeiten an ein paar tollen Neuerungen, die euch bestimmt gefallen werden! Sendet uns weiterhin Feedback! So finden wir heraus, was wir als Nächstes optimieren können. 💜
 </de-DE>
 <es-ES>
-9.7:
-Es un placer anunciar que ya puedes editar un pedido desde la aplicación. Puedes modificar o eliminar productos, tarifas o envíos y cambiar la cantidad de productos. También puedes buscar clientes cuando edites o crees un pedido.
-
-Además, hemos realizado algunos cambios para mostrar campos personalizados de un pedido y varias mejoras en el proceso de pagos y de inicio de sesión, incluida la opción de instalar Jetpack directamente desde la aplicación.
-
+9,8:
+En esta versión, nos hemos centrado en pulir algunos aspectos de la experiencia de acceso, ya que hemos incluido la opción de que puedas instalar el plugin de WooCommerce directamente desde la aplicación. Estamos trabajando en cosas muy interesantes para todos vosotros. Sigue compartiendo tus opiniones, ya que nos ayudarán a averiguar en qué debemos trabajar. 💜
 </es-ES>
 <fr-FR>
-9.7 :
-Nous sommes ravis d’annoncer qu’il est désormais possible de modifier une commande depuis l’application. Vous pouvez modifier ou retirer des produits, des frais ou des livraisons, ainsi que modifier la quantité de produits. Vous pouvez également rechercher des clients lorsque vous modifiez ou créez une commande.
-
-Nous avons également apporté quelques modifications au niveau de l’affichage de champs personnalisés lors d’une commande ainsi que plusieurs améliorations à notre flux de paiement et de connexion, notamment la possibilité d’installer Jetpack directement depuis l’application.
-
+9.8 :
+Pour cette version, nous nous sommes concentrés sur l'amélioration de plusieurs points liés à votre expérience de connexion, tels que la possibilité d'installer l'extension WooCommerce directement depuis l'application. Nous travaillons en ce moment sur de chouettes nouveautés pour tous ! Continuez à nous faire part de vos commentaires ; ils nous aident à nous améliorer. 💜
 </fr-FR>
 <iw-IL>
-9.7:
-אנחנו מתרגשים להודיע שכעת אפשר לערוך הזמנה ישירות מהאפליקציה. אפשר לערוך או להסיר מוצרים, עמלות ומשלוחים ולשנות את הכמות של המוצר. אפשר גם לחפש לקוחות כאשר עורכים או יוצרים הזמנה.
-
-בנוסף, הוספנו שינויים גם לתצוגה של שדות מותאמים בהזמנות וכמה שיפורים לתהליך התשלום וההתחברות, כולל אפשרות להתקין את Jetpack ישירות מהאפליקציה.
-
+9.8:
+בגרסה הזאת התמקדנו בשיפור כמה דברים בחוויית ההתחברות, כולל אפשרות להתקין את התוסף של WooCommerce ישירות מהאפליקציה. אנחנו עובדים על עוד כמה דברים מגניבים בשביל כל המשתמשים! נשמח להמשיך לקבל משוב, זה עוזר לנו להבין על מה כדאי לנו לעבוד בשלב הבא. 💜
 </iw-IL>
 <id>
-9.7:
-Kami senang dapat memberitahukan bahwa sekarang Anda dapat menyunting pesanan dari aplikasi. Anda dapat menyunting atau menghapus produk, biaya, pengiriman, serta mengubah jumlah produk. Anda juga dapat mencari pelanggan saat menyunting atau membuat pesanan.
-
-Kami juga melakukan perubahan untuk menampilkan kolom khusus untuk pesanan, serta peningkatan untuk alur pembayaran dan login, termasuk pilihan untuk menginstal Jetpack langsung dari aplikasi.
-
+9.8:
+Untuk rilis kali ini, kami berfokus memoles hal-hal seputar pengalaman login Anda, termasuk pilihan untuk menginstal plugin WooCommerce langsung dari aplikasi. Kami sedang mengerjakan proyek menarik untuk Anda semua! Terus kirimkan feedback Anda untuk memberi tahu kami apa yang harus ditingkatkan selanjutnya. 💜
 </id>
 <it-IT>
-9,7:
-Siamo entusiasti di annunciare che ora è possibile modificare un ordine dall'app. Puoi modificare o rimuovere prodotti, tariffe, spedizione e modificare le quantità dei prodotti. Puoi anche cercare clienti durante la modifica o la creazione di un ordine.
-
-Abbiamo anche apportato alcune modifiche per visualizzare i campi personalizzati per un ordine e diversi miglioramenti ai nostri pagamenti e al flusso di accesso, inclusa l'opzione di installare Jetpack direttamente dall'app.
-
+9.8:
+Per questa versione, ci siamo concentrati sul perfezionamento di alcuni aspetti della tua esperienza di accesso, inclusa l'opzione di installare il plug-in WooCommerce direttamente dall'app. Stiamo lavorando ad alcune cose davvero interessanti per tutti voi! Continua a inviarci il tuo feedback; ci aiuta a capire su cosa lavorare in futuro. 💜
 </it-IT>
 <ja-JP>
-9.7:
-この度、アプリから注文の編集が可能になりましたのでお知らせします。商品、手数料、配送料の編集と削除、商品の数量変更が可能です。 注文の編集または作成時に顧客を検索することもできます。
-
-また、注文のカスタムフィールドを表示するように変更したほか、支払いやログインのフローをいくつか改善し、アプリから直接 Jetpack をインストールするオプションも追加しました。
-
+9.8:
+今回のリリースでは、アプリから直接 WooCommerce プラグインをインストールするオプションなど、ログインの操作性に関わる機能をいくつか改善することに注力しました。皆さんに魅力的なサービスを提供できるよう努めています。 引き続きフィードバックをお待ちしております。いただいたご意見は、今後の製品改善に役立たせていただきます。💜
 </ja-JP>
 <ko-KR>
-9.7:
-기쁜 소식을 알려드립니다. 이제 앱에서 주문을 편집할 수 있습니다. 상품, 수수료, 배송을 편집하거나 제거하고 상품 수량을 변경할 수 있습니다. 주문을 편집하거나 생성할 때 고객을 검색할 수도 있습니다.
-
-또한 주문에 대한 사용자 정의 필드 표시를 약간 변경하고 앱에서 직접 젯팩을 설치하는 옵션을 포함하여 결제 및 로그인 흐름을 몇 가지 개선했습니다.
-
+9.8:
+이 릴리스에서는 앱에서 직접 우커머스 플러그인을 설치하는 옵션을 포함하여 몇 가지 로그인 환경 관련 사항을 집중적으로 다듬었습니다. 여러분 모두를 위해 아주 멋진 일을 하고 있습니다! 피드백을 계속 보내주세요. 다음에 작업할 내용을 파악하는 데 도움이 됩니다. 💜
 </ko-KR>
 <nl-NL>
-9.7:
-We zijn erg blij te kunnen vertellen dat het nu mogelijk is om een bestelling via de app te bewerken. Je kan producten, kosten en verzending bewerken of verwijderen en de producthoeveelheid wijzigen. Je kan ook naar klanten zoeken wanneer je een bestelling aanmaakt of bewerkt.
-
-We hebben tevens wat wijzigingen aangebracht om aangepaste velden van een bestelling weer te geven. Ook hebben we de betalings- en login-workflow verbeterd, zodat je nu de optie hebt om Jetpack direct vanuit de app te installeren.
-
+9.8:
+In deze versie hebben we je inlog-ervaring iets soepeler gemaakt. Zo heb je nu de mogelijkheid om de WooCommerce-plugin rechtstreeks vanuit de app te installeren. We werken aan toffe dingen voor jullie! Blijf komen met jullie feedback; dat helpt ons kiezen waar we aan moeten werken.
 </nl-NL>
 <pt-BR>
-9.7:
-Estamos muito felizes em anunciar que agora é possível editar um pedido no aplicativo. Você pode editar ou remover produtos, taxas e frete e alterar a quantidade de produtos. Você também pode pesquisar clientes ao alterar ou criar um pedido.
-
-Também fizemos algumas mudanças na exibição dos campos personalizados de um pedido, além de várias melhorias no nosso sistema de pagamento e no processo de login, incluindo a opção de instalar o Jetpack pelo aplicativo.
-
+9.8:
+Para esta versão, nosso foco é aprimorar sua experiência de login, incluindo a opção de instalar o plugin WooCommerce diretamente pelo aplicativo. Estamos trabalhando em iniciativas bem legais para todos vocês! Continue dando feedback, ele nos ajuda a saber no que trabalhar em seguida. 💜
 </pt-BR>
 <ru-RU>
-9.7:
-Рады сообщить, что теперь вы можете редактировать заказы в приложении. Меняйте или удаляйте продукты, управляйте платежами, доставкой и изменяйте количество продуктов, как вам нужно. Вы также можете выполнять поиск клиентов при редактировании или создании заказа.
-
-Кроме того, мы внесли некоторые изменения с целью отображения пользовательских полей для заказа, а также улучшили операции с платежами и процедуру входа, включая опцию установки Jetpack прямо в приложении.
-
+9.8:
+В этом выпуске мы усовершенствовали некоторые аспекты входа в систему, в том числе добавили возможность устанавливать плагин WooCommerce напрямую в приложении. Мы работаем еще над несколькими классными функциями! Оставляйте свои отзывы, они помогают нам выявлять области для дальнейшего улучшения. 💜
 </ru-RU>
 <sv-SE>
-9.7:
-Vi är glada att kunna meddela att det nu är möjligt att redigera en beställning direkt från appen. Du kan redigera eller ta bort produkter, avgifter, frakt samt ändra produktkvantitet. Du kan också söka efter kunder när du redigerar eller skapar en beställning.
-
-Vi har även gjort några ändringar som gör det möjligt att visa anpassade fält för en beställning samt flertalet förbättringar av vårt betalnings- och inloggningsflöde, inklusive möjligheten att installera Jetpack direkt från appen.
-
+9.8:
+Med den här versionen har vi fokuserat på att förfina ett par saker med inloggningsupplevelsen, inklusive möjligheten att installera WooCommerce-tillägget direkt från appen. Vi har några riktigt häftiga saker på gång för er. Fortsätt att lämna feedback. Det hjälper oss att lista ut vad vi ska hitta på härnäst. 💜
 </sv-SE>
 <tr-TR>
-9.7:
-Artık uygulamadan bir siparişi düzenlemenin mümkün olduğunu duyurmaktan heyecan duyuyoruz. Ürünleri, ücretleri, gönderim bilgilerini düzenleyebilir veya kaldırabilir ve ürün miktarını değiştirebilirsiniz. Bir siparişi düzenlerken veya oluştururken de müşteri arayabilirsiniz.
-
-Ayrıca bir sipariş için özel alanları görüntüleme konusunda bazı değişiklikler yaptık ve Jetpack'i doğrudan uygulamadan yükleme seçeneği de dahil olmak üzere ödeme ve oturum açma akışımızda çeşitli iyileştirmeler yaptık.
-
+9.8:
+Bu sürümle, WooCommerce eklentisini doğrudan uygulamadan yükleme seçeneği de dahil olmak üzere, oturum açma deneyiminizle ilgili birkaç noktayı iyileştirmeye odaklandık. Hepiniz için çok güzel şeyler üzerinde çalışıyoruz! Geri bildirimleriniz devam etsin; üzerinde çalışacağımız sıradaki özelliği bulmamıza yardımcı oluyor. 💜
 </tr-TR>
 <zh-CN>
-9.7：
-我们激动地宣布，现在可以通过应用程序编辑订单了。您可以编辑或移除产品、费用、配送方式，以及更改产品数量。 您还可以在编辑或创建订单时搜索客户。
-
-我们还更改了订单的自定义字段，并改进了我们的付款和登录流程，包括直接从应用程序安装 Jetpack。
-
+9.8：
+在此版本中，我们着重改善了您的登录体验，包括添加了直接从应用程序中安装 WooCommerce 插件的选项。我们始终致力于为大家提供一些很酷的内容！ 请随时提供您的反馈，为我们接下来的工作提供灵感。💜
 </zh-CN>
 <zh-TW>
-9.7：
-很高興在此宣布，我們已實現從應用程式編輯訂單的功能。你可以編輯或移除產品、費用、運送方式以及變更產品數量。 你也可以在編輯或建立訂單時搜尋顧客。
-
-我們也做出了一些變更，讓訂單可以顯示自訂欄位，並為付款和登入流程進行了數種改善，包括直接從應用程式安裝 Jetpack 的選項。
-
+9.8：
+在此版本中，我們著重於完善幾項與登入體驗相關的功能，包括直接從應用程式安裝 WooCommerce 外掛程式的選項。我們正在為各位開發一些非常酷的功能！ 歡迎提供意見回饋；這有助於我們找到接下來努力的方向。💜
 </zh-TW>
 <en-US>
-9.7:
-We’re thrilled to announce that it’s now possible to edit an order from the app. You can edit or remove products, fees, shipping and change product quantity. You can also search for customers when editing or creating an order.
-
-We’ve also made some changes to display custom fields for an order and several improvements to our payments and login flow, including the option to install Jetpack directly from the app.
-
+9.8:
+For this release, we focused on polishing a few things around your login experience, including the option to install WooCommerce plugin directly from the app. We are working on some pretty cool stuff for you all! Keep your feedback rolling in; it helps us figure out what to work on next. 💜
 </en-US>
