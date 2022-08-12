@@ -11,6 +11,7 @@ import androidx.navigation.fragment.findNavController
 import com.woocommerce.android.NavGraphMainDirections
 import com.woocommerce.android.R
 import com.woocommerce.android.databinding.FragmentCardReaderOnboardingBinding
+import com.woocommerce.android.databinding.FragmentCardReaderOnboardingCodDisabledBinding
 import com.woocommerce.android.databinding.FragmentCardReaderOnboardingGenericErrorBinding
 import com.woocommerce.android.databinding.FragmentCardReaderOnboardingLoadingBinding
 import com.woocommerce.android.databinding.FragmentCardReaderOnboardingNetworkErrorBinding
@@ -108,7 +109,29 @@ class CardReaderOnboardingFragment : BaseFragment(R.layout.fragment_card_reader_
                 showStripeExtensionErrorState(layout, state)
             is CardReaderOnboardingViewModel.OnboardingViewState.SelectPaymentPluginState ->
                 showPaymentPluginSelectionState(layout, state)
+            is CardReaderOnboardingViewModel.OnboardingViewState.CashOnDeliveryDisabledState ->
+                showCashOnDeliveryDisabledState(layout, state)
         }.exhaustive
+    }
+
+    private fun showCashOnDeliveryDisabledState(
+        view: View,
+        state: CardReaderOnboardingViewModel.OnboardingViewState.CashOnDeliveryDisabledState
+    ) {
+        val binding = FragmentCardReaderOnboardingCodDisabledBinding.bind(view)
+        UiHelpers.setTextOrHide(binding.textHeader, state.headerLabel)
+        UiHelpers.setTextOrHide(binding.textLabel, state.cashOnDeliveryHintLabel)
+        UiHelpers.setTextOrHide(binding.skipCashOnDelivery, state.skipCashOnDeliveryButtonLabel)
+        UiHelpers.setTextOrHide(binding.enableCashOnDelivery, state.enableCashOnDeliveryButtonLabel)
+        UiHelpers.setTextOrHide(binding.learnMoreContainer.learnMore, state.learnMoreLabel)
+        binding.illustration.setImageResource(state.cardIllustration)
+
+        binding.skipCashOnDelivery.setOnClickListener {
+            state.onSkipCashOnDeliveryClicked.invoke()
+        }
+        binding.learnMoreContainer.learnMore.setOnClickListener {
+            state.onLearnMoreActionClicked.invoke()
+        }
     }
 
     private fun showPaymentPluginSelectionState(

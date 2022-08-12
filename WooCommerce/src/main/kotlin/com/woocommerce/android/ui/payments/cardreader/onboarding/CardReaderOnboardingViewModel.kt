@@ -33,6 +33,7 @@ import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboa
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboardingState.WcpayNotActivated
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboardingState.WcpayNotInstalled
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboardingViewModel.OnboardingEvent.NavigateToUrlInGenericWebView
+import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboardingViewModel.OnboardingViewState.CashOnDeliveryDisabledState
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboardingViewModel.OnboardingViewState.GenericErrorState
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboardingViewModel.OnboardingViewState.NoConnectionErrorState
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboardingViewModel.OnboardingViewState.StripeAcountError.PluginInTestModeWithLiveAccountState
@@ -217,8 +218,21 @@ class CardReaderOnboardingViewModel @Inject constructor(
                     ::onLearnMoreClicked
                 )
             ChoosePaymentGatewayProvider -> updateUiWithSelectPaymentPlugin()
-            CardReaderOnboardingState.CashOnDeliveryDisabled -> TODO()
+            is CardReaderOnboardingState.CashOnDeliveryDisabled ->
+                viewState.value = CashOnDeliveryDisabledState(
+                    { (::onSkipCashOnDeliveryClicked)(state.countryCode) },
+                    ::onEnableCashOnDeliveryClicked,
+                    ::onLearnMoreClicked
+                )
         }.exhaustive
+    }
+
+    private fun onSkipCashOnDeliveryClicked(countryCode: String) {
+        continueFlow(countryCode)
+    }
+
+    private fun onEnableCashOnDeliveryClicked() {
+
     }
 
     private fun updateUiWithSelectPaymentPlugin() {
@@ -321,6 +335,30 @@ class CardReaderOnboardingViewModel @Inject constructor(
             val selectStripeButtonLabel = UiString.UiStringRes(R.string.card_reader_onboarding_choose_stripe_button)
             val confirmPaymentMethodButtonLabel = UiString
                 .UiStringRes(R.string.card_reader_onboarding_confirm_payment_method_button)
+        }
+
+        data class CashOnDeliveryDisabledState(
+            val onSkipCashOnDeliveryClicked: (() -> Unit),
+            val onEnableCashOnDeliveryClicked: (() -> Unit),
+            val onLearnMoreActionClicked: (() -> Unit)
+        ) : OnboardingViewState(R.layout.fragment_card_reader_onboarding_cod_disabled) {
+            val cardIllustration = R.drawable.ic_credit_card_give
+            val headerLabel = UiString.UiStringRes(
+                R.string.card_reader_onboarding_cash_on_delivery_disabled_error_header
+            )
+            val cashOnDeliveryHintLabel = UiString.UiStringRes(
+                R.string.card_reader_onboarding_cash_on_delivery_disabled_error_hint
+            )
+            val skipCashOnDeliveryButtonLabel = UiString.UiStringRes(
+                R.string.skip
+            )
+            val enableCashOnDeliveryButtonLabel = UiString.UiStringRes(
+                R.string.card_reader_onboarding_cash_on_delivery_disabled_button
+            )
+            val learnMoreLabel = UiString.UiStringRes(
+                stringRes = R.string.card_reader_onboarding_country_not_supported_learn_more,
+                containsHtml = true
+            )
         }
 
         class NoConnectionErrorState(

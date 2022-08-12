@@ -10,6 +10,7 @@ import com.woocommerce.android.model.UiString
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.payments.cardreader.CardReaderTracker
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderFlowParam.PaymentOrRefund.Payment.PaymentType.ORDER
+import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboardingState.CashOnDeliveryDisabled
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboardingState.ChoosePaymentGatewayProvider
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboardingState.GenericError
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboardingState.NoConnectionError
@@ -27,6 +28,7 @@ import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboa
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboardingState.WcpayNotInstalled
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboardingViewModel.OnboardingEvent
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboardingViewModel.OnboardingViewState
+import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboardingViewModel.OnboardingViewState.CashOnDeliveryDisabledState
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboardingViewModel.OnboardingViewState.GenericErrorState
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboardingViewModel.OnboardingViewState.LoadingState
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboardingViewModel.OnboardingViewState.NoConnectionErrorState
@@ -955,6 +957,110 @@ class CardReaderOnboardingViewModelTest : BaseUnitTest() {
             assertThat(viewModel.viewStateData.value).isInstanceOf(
                 StripeExtensionError.StripeExtensionUnsupportedVersionState::class.java
             )
+        }
+
+    @Test
+    fun `given cash on delivery disabled, when init, then cash on delivery disabled onboarding state is shown`() =
+        testBlocking {
+            val viewModel = createVM(
+                CardReaderOnboardingFragmentArgs(
+                    CardReaderOnboardingParams.Failed(
+                        cardReaderFlowParam = mock(),
+                        onboardingState = CashOnDeliveryDisabled(
+                            countryCode = "US",
+                            preferredPlugin = WOOCOMMERCE_PAYMENTS
+                        ),
+                    )
+                ).initSavedStateHandle()
+            )
+
+            assertThat(viewModel.viewStateData.value).isInstanceOf(
+                CashOnDeliveryDisabledState::class.java
+            )
+        }
+
+    @Test
+    fun `given cash on delivery disabled, when init, then cash on delivery disabled tracking state is called`() =
+        testBlocking {
+            createVM(
+                CardReaderOnboardingFragmentArgs(
+                    CardReaderOnboardingParams.Failed(
+                        cardReaderFlowParam = mock(),
+                        onboardingState = CashOnDeliveryDisabled(
+                            countryCode = "US",
+                            preferredPlugin = WOOCOMMERCE_PAYMENTS
+                        ),
+                    )
+                ).initSavedStateHandle()
+            )
+
+            verify(tracker).trackOnboardingState(
+                CashOnDeliveryDisabled(
+                    countryCode = countryCode,
+                    preferredPlugin = WOOCOMMERCE_PAYMENTS
+                )
+            )
+        }
+
+    @Test
+    fun `given cash on delivery, when skip button clicked, then continues to connection`() =
+        testBlocking {
+            whenever(onboardingChecker.getOnboardingState())
+                .thenReturn(
+                    CashOnDeliveryDisabled(
+                        countryCode = countryCode,
+                        preferredPlugin = WOOCOMMERCE_PAYMENTS
+                    )
+                )
+            val viewModel = createVM(
+                CardReaderOnboardingFragmentArgs(
+                    cardReaderOnboardingParam = CardReaderOnboardingParams.Check(
+                        CardReaderFlowParam.PaymentOrRefund.Payment(1L, ORDER)
+                    )
+                ).initSavedStateHandle()
+            )
+
+            (viewModel.viewStateData.value as CashOnDeliveryDisabledState).onSkipCashOnDeliveryClicked.invoke()
+
+            assertThat(viewModel.event.value)
+                .isInstanceOf(OnboardingEvent.ContinueToConnection::class.java)
+        }
+
+    @Test
+    fun `given cash on delivery, when skip button clicked, then continues to hub`() =
+        testBlocking {
+            whenever(onboardingChecker.getOnboardingState())
+                .thenReturn(
+                    CashOnDeliveryDisabled(
+                        countryCode = countryCode,
+                        preferredPlugin = WOOCOMMERCE_PAYMENTS
+                    )
+                )
+            val viewModel = createVM()
+
+            (viewModel.viewStateData.value as CashOnDeliveryDisabledState).onSkipCashOnDeliveryClicked.invoke()
+
+            assertThat(viewModel.event.value)
+                .isInstanceOf(OnboardingEvent.ContinueToHub::class.java)
+        }
+
+    @Test
+    fun `given cash on delivery, when learn more clicked, then app shows learn more section`() =
+        testBlocking {
+            whenever(onboardingChecker.getOnboardingState())
+                .thenReturn(
+                    CashOnDeliveryDisabled(
+                        countryCode = countryCode,
+                        preferredPlugin = WOOCOMMERCE_PAYMENTS
+                    )
+                )
+            val viewModel = createVM()
+
+            (viewModel.viewStateData.value as CashOnDeliveryDisabledState)
+                .onLearnMoreActionClicked.invoke()
+
+            val event = viewModel.event.value as OnboardingEvent.NavigateToUrlInGenericWebView
+            assertThat(event.url).isEqualTo(AppUrls.WOOCOMMERCE_LEARN_MORE_ABOUT_PAYMENTS)
         }
 
     @Test
