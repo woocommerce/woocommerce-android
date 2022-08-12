@@ -197,6 +197,7 @@
     <string name="login_jetpack_required">This app requires Jetpack to connect to your store.</string>
     <string name="login_wpcom">Continue with WordPress.com</string>
     <string name="login_store_address">Enter your store address</string>
+    <string name="login_with_store_address">Log in with your store address</string>
     <string name="login_configure_link">Read the %sconfiguration instructions%s.</string>
 
     <string name="login_prologue_label_analytics">Track sales and high performing products</string>
@@ -249,7 +250,7 @@
     <string name="login_jetpack_not_found">Jetpack not found. Please try again</string>
     <string name="login_jetpack_install">Install Jetpack</string>
     <string name="login_sign_in">Sign in</string>
-    <string name="login_need_help_finding_email"><u>Need help finding the connected email?</u></string>
+    <string name="login_need_help_finding_email"><u>Need help finding the required email?</u></string>
     <string name="login_email_help_title">What email do I use to sign in?</string>
     <string name="login_email_help_desc">In your site admin you can find the email you used to connect to WordPress.com from the %1$sJetpack Dashboard%2$s under %3$sConnections &gt; Account connection%4$s</string>
     <string name="login_discovery_error_title">Connection error</string>
@@ -257,7 +258,7 @@
     <string name="login_with_wordpress">Sign in with WordPress.com</string>
     <string name="login_troubleshooting_tips">Read our troubleshooting tips</string>
     <string name="login_discovery_error_option_select">Select an option</string>
-    <string name="login_no_wpcom_account_found">It looks like %1$s isn\'t associated with a WordPress.com account.</string>
+    <string name="login_no_wpcom_account_found">The email %1$s isn\'t used with a WordPress.com account.</string>
     <string name="user_role_access_error_msg">This app supports only Administrator and Shop Manager user roles. Please contact your store owner to upgrade your role.</string>
     <string name="user_role_access_error_link">Learn more about roles and permissions</string>
     <string name="user_role_access_error_retry">You don\'t have the correct user role</string>

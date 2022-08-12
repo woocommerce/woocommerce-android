@@ -85,7 +85,7 @@ class LoginNoWPcomAccountFoundFragment : Fragment(R.layout.fragment_login_no_wpc
         // Only show "Enter Store Address" button if not coming from the "Enter store address" login flow.
         if (showEnterStoreAddressButton) {
             with(btnBinding.buttonPrimary) {
-                text = getString(R.string.login_store_address)
+                text = getString(R.string.login_with_store_address)
                 setOnClickListener {
                     unifiedLoginTracker.trackClick(Click.LOGIN_WITH_SITE_ADDRESS)
 
