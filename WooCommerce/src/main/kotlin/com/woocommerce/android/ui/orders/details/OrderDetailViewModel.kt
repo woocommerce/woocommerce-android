@@ -563,7 +563,6 @@ class OrderDetailViewModel @Inject constructor(
         if (!orderDetailRepository.fetchOrderNotes(navArgs.orderId)) {
             triggerEvent(ShowSnackbar(string.order_error_fetch_notes_generic))
         }
-        // fetch order notes from the local db and hide the skeleton view
         orderDetailsTransactionLauncher.onNotesFetched()
     }
 
