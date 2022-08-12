@@ -1465,20 +1465,6 @@ class CardReaderOnboardingCheckerTest : BaseUnitTest() {
         assertThat(result).isInstanceOf(CardReaderOnboardingState.CashOnDeliveryDisabled::class.java)
     }
 
-    @Test
-    fun `given user coming from choose payment gateway screen, when cod disabled, then don't ask to enable cod`() =
-        testBlocking {
-            whenever(wooStore.fetchSitePlugins(site)).thenReturn(WooResult(listOf()))
-            whenever(wooStore.getSitePlugin(site, WooCommerceStore.WooPlugin.WOO_STRIPE_GATEWAY))
-                .thenReturn(null)
-            whenever(wooStore.getSitePlugin(site, WooCommerceStore.WooPlugin.WOO_PAYMENTS))
-                .thenReturn(buildWCPayPluginInfo(isActive = true))
-
-            val result = checker.getOnboardingState(PluginType.WOOCOMMERCE_PAYMENTS)
-
-            assertThat(result).isNotInstanceOf(CardReaderOnboardingState.CashOnDeliveryDisabled::class.java)
-        }
-
     private fun buildPaymentAccountResult(
         status: WCPaymentAccountResult.WCPaymentAccountStatus = WCPaymentAccountResult.WCPaymentAccountStatus.COMPLETE,
         hasPendingRequirements: Boolean = false,

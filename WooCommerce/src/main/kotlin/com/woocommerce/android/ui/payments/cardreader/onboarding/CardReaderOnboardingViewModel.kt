@@ -361,7 +361,7 @@ class CardReaderOnboardingViewModel @Inject constructor(
             val shouldShowProgress: Boolean = false,
             val cashOnDeliveryEnabledSuccessfully: Boolean = false
         ) : OnboardingViewState(R.layout.fragment_card_reader_onboarding_cod_disabled) {
-            val cardIllustration = R.drawable.ic_credit_card_give
+            val cardIllustration = R.drawable.img_products_error
             val headerLabel = UiString.UiStringRes(
                 R.string.card_reader_onboarding_cash_on_delivery_disabled_error_header
             )
