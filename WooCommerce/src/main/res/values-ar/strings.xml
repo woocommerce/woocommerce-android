@@ -1,15 +1,38 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2022-08-05 16:04:38+0000
+Translation-Revision-Date: 2022-08-10 18:54:03+0000
 Plural-Forms: nplurals=6; plural=n==0 ? 0 : n==1 ? 1 : n==2 ? 2 : n%100>=3 && n%100<=10 ? 3 : n%100>=11 && n%100<=99 ? 4 : 5;
 Generator: GlotPress/2.4.0-alpha
 Language: ar
 -->
 <resources>
+    <string name="login_magic_links_email_sent">أرسلنا رابطًا سحريًا للتو إلى</string>
+    <string name="login_magic_links_sent_label_short">تحقَّق من بريدك الإلكتروني على هذا الجهاز!</string>
+    <string name="or_use_password">استخدام كلمة المرور لتسجيل الدخول</string>
+    <string name="login_magic_link_button">تسجيل الدخول باستخدام رابط سحري</string>
+    <string name="login_magic_link_auto_sent">أرسلنا إليك للتو رابطًا سحريًا إلى عنوان بريدك الإلكتروني. يرجى الضغط على الرابط الموجود في رسالة البريد الإلكتروني لتسجيل الدخول.</string>
+    <string name="login_help_notification_incorrect_wpcom_email_description">تسجيل الدخول باستخدام بيانات اعتماد موقعك</string>
+    <string name="promo_linked_products_banner_message">امنح عملائك توصيات مفيدة وذات صلة بالمنتج عن طريق إضافة عمليات الارتقاء بالصفقة وعمليات البيع العابر.</string>
+    <string name="promo_linked_products_banner_title">تعزيز مبيعاتك باستخدام المنتجات المرتبطة</string>
+    <string name="card_reader_upsell_card_reader_banner_description">ابدأ البيع بشكل شخصي في غضون 20 دقيقة باستخدام قارئ البطاقة الخاص بنا.</string>
+    <string name="orderlist_updating_order_error">خطأ في أثناء تحديث الطلب رقم ⁦%1$d⁩</string>
+    <string name="orderlist_mark_completed_success">تم وضع علامة على الطلب رقم ⁦%1$d⁩ بأنه مكتمل</string>
+    <string name="orderlist_mark_completed">وضع عليه بأنه\nمكتمل</string>
+    <string name="login_install_woo">تثبيت WooCommerce</string>
+    <string name="login_not_woo_store">يبدو أنَّ ⁦%1$s⁩ ليس موقع WooCommerce.</string>
+    <string name="login_prologue_survey_button_switch_stores">التبديل بين متاجر متعددة</string>
+    <string name="login_prologue_survey_button_manage_orders">إدارة طلباتي</string>
+    <string name="login_prologue_survey_button_edit_products">إنشاء منتجاتي أو تحديثها</string>
+    <string name="login_prologue_survey_button_check_analytics">التحقُّق من تحليلاتي</string>
+    <string name="login_prologue_survey_button_set_up_store">محاولة إعداد متجر</string>
+    <string name="login_prologue_survey_button_exploring">استكشف فحسب</string>
+    <string name="login_prologue_survey_title">ما الذي أتى بك إلى تطبيق WooCommerce؟</string>
+    <string name="tip">نصيحة</string>
+    <string name="set_up_now">إعداد الآن</string>
     <string name="lets_get_started">لنبدأ!</string>
     <string name="login_help_notification_wordpress_login_button">تسجيل الدخول باستخدام ووردبريس.كوم</string>
     <string name="login_help_notification_contact_support_button">الاتصال بالدعم</string>
-    <string name="login_help_notification_site_error_description">محاولة تسجيل الدخول باستخدام حسابك على ووردبريس.كوم</string>
+    <string name="login_help_notification_site_error_description">تسجيل الدخول باستخدام حسابك على ووردبريس.كوم</string>
     <string name="login_help_notification_no_interaction_default_description">احصل على بعض المساعدة!</string>
     <string name="login_help_notification_default_title">هل تواجه مشكلات في تسجيل الدخول؟</string>
     <string name="product_search_sku">وحدة SKU النمطية</string>
@@ -19,7 +42,6 @@ Language: ar
     <string name="card_reader_upsell_card_reader_banner_dismiss_dialog_description">لا داعي للقلق! يمكنك دومًا البدء باستخدام المدفوعات الشخصية في الإعدادات.</string>
     <string name="card_reader_upsell_card_reader_banner_payments">المدفوعات الشخصية</string>
     <string name="card_reader_upsell_card_reader_banner_cta">شراء قارئ البطاقة</string>
-    <string name="card_reader_upsell_card_reader_banner_description">استعد لقبول المدفوعات باستخدام قارئ بطاقة.</string>
     <string name="card_reader_upsell_card_reader_banner_title">قبول المدفوعات بسهولة</string>
     <string name="card_reader_upsell_card_reader_banner_new">جديد</string>
     <string name="card_reader_upsell_card_reader_banner_dismiss">تجاهُل</string>
@@ -1777,7 +1799,6 @@ Language: ar
     <string name="login_jetpack_what_is_description">Jetpack هو إضافة مجانية على وردبرس تربط متجرك بالأدوات اللازمة لمنحك أفضل تجربة على الهاتف المحمول، بما في ذلك تنبيهات الدفع والإحصاءات.</string>
     <string name="login_jetpack_what_is">ما المقصود بـ Jetpack؟</string>
     <string name="login_view_connected_stores">عرض المتاجر المتصلة</string>
-    <string name="login_not_woo_store">يبدو أنَّ ⁦%1$s⁩ ليس موقع WooCommerce. قم بتثبيت إضافة WooCommerce على موقعك ثم قم بتحديث التطبيق.</string>
     <string name="login_not_connected_to_account">يبدو أنَّ %1$s متصل بحساب وردبرس.كوم مختلف.</string>
     <string name="keep_editing">متابعة التحرير</string>
     <string name="notification_wpcom_username_needed">يرجى تسجيل الدخول باستخدام اسم المستخدم الخاص بك وكلمة مرورك.</string>

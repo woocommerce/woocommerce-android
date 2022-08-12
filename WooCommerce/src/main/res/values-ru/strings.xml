@@ -1,15 +1,38 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2022-08-05 15:59:44+0000
+Translation-Revision-Date: 2022-08-11 11:54:16+0000
 Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);
 Generator: GlotPress/2.4.0-alpha
 Language: ru
 -->
 <resources>
+    <string name="login_magic_links_email_sent">Только что мы отправили специальную ссылку на</string>
+    <string name="login_magic_links_sent_label_short">Проверьте почту с этого устройства!</string>
+    <string name="or_use_password">Войти с паролем</string>
+    <string name="login_magic_link_button">Вход по специальной ссылке</string>
+    <string name="login_magic_link_auto_sent">На вашу электронную почту отправлено письмо со специальной ссылкой. Перейдите по ней, чтобы войти.</string>
+    <string name="login_help_notification_incorrect_wpcom_email_description">Войти с учетными данными сайта</string>
+    <string name="promo_linked_products_banner_message">Сделайте рекомендации полезными и актуальными: добавьте продукты для дополнительных и сопутствующих продаж.</string>
+    <string name="promo_linked_products_banner_title">Добавьте связанные продукты, чтобы повысить продажи</string>
+    <string name="card_reader_upsell_card_reader_banner_description">Начните принимать платежи с помощью нашего терминала. Обучение работе с ним займет не больше 20 минут.</string>
+    <string name="orderlist_updating_order_error">Ошибка обновления заказа № %1$d</string>
+    <string name="orderlist_mark_completed_success">Заказ № %1$d отмечен как выполненный</string>
+    <string name="orderlist_mark_completed">Отметить как\nзавершена</string>
+    <string name="login_install_woo">Установить WooCommerce</string>
+    <string name="login_not_woo_store">Похоже, %1$s не является сайтом WooCommerce.</string>
+    <string name="login_prologue_survey_button_switch_stores">Работать с несколькими магазинами</string>
+    <string name="login_prologue_survey_button_manage_orders">Управлять заказами</string>
+    <string name="login_prologue_survey_button_edit_products">Создавать и обновлять продукты</string>
+    <string name="login_prologue_survey_button_check_analytics">Смотреть аналитику</string>
+    <string name="login_prologue_survey_button_set_up_store">Настраивать магазин</string>
+    <string name="login_prologue_survey_button_exploring">Просто изучать функционал</string>
+    <string name="login_prologue_survey_title">Что вы планируете делать в приложении WooCommerce?</string>
+    <string name="tip">Совет</string>
+    <string name="set_up_now">Настроить</string>
     <string name="lets_get_started">Приступим!</string>
     <string name="login_help_notification_wordpress_login_button">Войти на WordPress.com</string>
     <string name="login_help_notification_contact_support_button">Связаться со службой поддержки</string>
-    <string name="login_help_notification_site_error_description">Попробуйте войти в учетную запись WordPress.com</string>
+    <string name="login_help_notification_site_error_description">Войти с помощью учетной записи WordPress.com</string>
     <string name="login_help_notification_no_interaction_default_description">Обратитесь за помощью!</string>
     <string name="login_help_notification_default_title">Возникли проблемы со входом?</string>
     <string name="product_search_sku">Артикул</string>
@@ -19,7 +42,6 @@ Language: ru
     <string name="card_reader_upsell_card_reader_banner_dismiss_dialog_description">Не стоит волноваться! Включить очные платежи можно в настройках в любой момент.</string>
     <string name="card_reader_upsell_card_reader_banner_payments">Очные платежи</string>
     <string name="card_reader_upsell_card_reader_banner_cta">Купить устройство считывания карт</string>
-    <string name="card_reader_upsell_card_reader_banner_description">Скоро вы сможете принимать оплату с помощью устройств считывания карт.</string>
     <string name="card_reader_upsell_card_reader_banner_title">Принимайте платежи легко</string>
     <string name="card_reader_upsell_card_reader_banner_new">НОВИНКА</string>
     <string name="card_reader_upsell_card_reader_banner_dismiss">Закрыть</string>
@@ -1777,7 +1799,6 @@ Language: ru
     <string name="login_jetpack_what_is_description">Jetpack — это бесплатный плагин WordPress с дополнительными инструментами, которые обеспечивают удобное управление магазином с мобильных устройств и доступ к расширенным возможностям, например push-уведомлениям и статистике.</string>
     <string name="login_jetpack_what_is">Что такое Jetpack?</string>
     <string name="login_view_connected_stores">Открыть список подключенных магазинов</string>
-    <string name="login_not_woo_store">Похоже, %1$s не является сайтом WooCommerce. Установите плагин WooCommerce на свой сайт и перезагрузите приложение.</string>
     <string name="login_not_connected_to_account">Похоже, что %1$s подключен к другой учетной записи WordPress.com.</string>
     <string name="keep_editing">Продолжить редактирование</string>
     <string name="notification_wpcom_username_needed">Please log in with your username and password.</string>

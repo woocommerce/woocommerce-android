@@ -1,15 +1,38 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2022-08-05 15:59:55+0000
+Translation-Revision-Date: 2022-08-11 09:54:03+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: zh_CN
 -->
 <resources>
+    <string name="login_magic_links_email_sent">我们刚刚发送了一个神奇的链接至</string>
+    <string name="login_magic_links_sent_label_short">检查此设备上的电子邮件地址！</string>
+    <string name="or_use_password">使用密码登录</string>
+    <string name="login_magic_link_button">通过神奇链接登录</string>
+    <string name="login_magic_link_auto_sent">我们刚刚向您的电子邮件地址发送了一个神奇的链接。 请轻点电子邮件中的链接进行登录。</string>
+    <string name="login_help_notification_incorrect_wpcom_email_description">使用您的站点凭据登录</string>
+    <string name="promo_linked_products_banner_message">通过添加追加销售和交叉销售，为客户提供有用且相关的产品建议</string>
+    <string name="promo_linked_products_banner_title">借助链接的产品提高您的销售额</string>
+    <string name="card_reader_upsell_card_reader_banner_description">借助我们的读卡器在 20 分钟内开始面对面销售。</string>
+    <string name="orderlist_updating_order_error">更新订单 #%1$d 时出错</string>
+    <string name="orderlist_mark_completed_success">订单 #%1$d 已标为“已完成”</string>
+    <string name="orderlist_mark_completed">标记\n已完成</string>
+    <string name="login_install_woo">安装 WooCommerce</string>
+    <string name="login_not_woo_store">%1$s 似乎不是 WooCommerce 站点。</string>
+    <string name="login_prologue_survey_button_switch_stores">在多家商店之间切换</string>
+    <string name="login_prologue_survey_button_manage_orders">管理我的订单</string>
+    <string name="login_prologue_survey_button_edit_products">创建或更新我的产品</string>
+    <string name="login_prologue_survey_button_check_analytics">检查我的分析数据</string>
+    <string name="login_prologue_survey_button_set_up_store">尝试设置商店</string>
+    <string name="login_prologue_survey_button_exploring">继续探索</string>
+    <string name="login_prologue_survey_title">您通过什么渠道了解到的 WooCommerce？</string>
+    <string name="tip">提示</string>
+    <string name="set_up_now">立即设置</string>
     <string name="lets_get_started">开始体验吧！</string>
     <string name="login_help_notification_wordpress_login_button">使用 WordPress.com 账户登录</string>
     <string name="login_help_notification_contact_support_button">联系支持人员</string>
-    <string name="login_help_notification_site_error_description">尝试用您的 WordPress.com 账户登录</string>
+    <string name="login_help_notification_site_error_description">使用您的 WordPress.com 账户登录</string>
     <string name="login_help_notification_no_interaction_default_description">获取帮助！</string>
     <string name="login_help_notification_default_title">登录遇到问题？</string>
     <string name="product_search_sku">SKU</string>
@@ -19,7 +42,6 @@ Language: zh_CN
     <string name="card_reader_upsell_card_reader_banner_dismiss_dialog_description">不必担心！ 开始体验前，您始终可以先设置面对面付款。</string>
     <string name="card_reader_upsell_card_reader_banner_payments">现场付款</string>
     <string name="card_reader_upsell_card_reader_banner_cta">购买读卡器</string>
-    <string name="card_reader_upsell_card_reader_banner_description">请准备好使用读卡器接受付款。</string>
     <string name="card_reader_upsell_card_reader_banner_title">轻松接受付款</string>
     <string name="card_reader_upsell_card_reader_banner_new">新建</string>
     <string name="card_reader_upsell_card_reader_banner_dismiss">忽略</string>
@@ -1777,7 +1799,6 @@ Language: zh_CN
     <string name="login_jetpack_what_is_description">Jetpack 是一款免费的 WordPress 插件，可以将您的商店与所需的工具连接起来，为您提供最佳的移动体验，包括推送通知和统计数据</string>
     <string name="login_jetpack_what_is">Jetpack 是什么？</string>
     <string name="login_view_connected_stores">查看连接的商店</string>
-    <string name="login_not_woo_store">%1$s 似乎不是 WooCommerce 站点。 在您的站点上安装 WooCommerce 插件，然后刷新此应用程序。</string>
     <string name="login_not_connected_to_account">%1$s 似乎连接了其他 WordPress.com 帐户。</string>
     <string name="keep_editing">继续编辑</string>
     <string name="notification_wpcom_username_needed">请使用您的用户名和密码登录。</string>
