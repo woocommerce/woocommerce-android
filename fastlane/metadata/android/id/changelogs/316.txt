@@ -1,5 +1,0 @@
-9.7:
-Kami senang dapat memberitahukan bahwa sekarang Anda dapat menyunting pesanan dari aplikasi. Anda dapat menyunting atau menghapus produk, biaya, pengiriman, serta mengubah jumlah produk. Anda juga dapat mencari pelanggan saat menyunting atau membuat pesanan.
-
-Kami juga melakukan perubahan untuk menampilkan kolom khusus untuk pesanan, serta peningkatan untuk alur pembayaran dan login, termasuk pilihan untuk menginstal Jetpack langsung dari aplikasi.
-

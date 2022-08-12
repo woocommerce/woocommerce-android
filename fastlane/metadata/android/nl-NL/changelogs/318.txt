@@ -1,0 +1,2 @@
+9.8:
+In deze versie hebben we je inlog-ervaring iets soepeler gemaakt. Zo heb je nu de mogelijkheid om de WooCommerce-plugin rechtstreeks vanuit de app te installeren. We werken aan toffe dingen voor jullie! Blijf komen met jullie feedback; dat helpt ons kiezen waar we aan moeten werken.

@@ -1,5 +1,0 @@
-9.7:
-Artık uygulamadan bir siparişi düzenlemenin mümkün olduğunu duyurmaktan heyecan duyuyoruz. Ürünleri, ücretleri, gönderim bilgilerini düzenleyebilir veya kaldırabilir ve ürün miktarını değiştirebilirsiniz. Bir siparişi düzenlerken veya oluştururken de müşteri arayabilirsiniz.
-
-Ayrıca bir sipariş için özel alanları görüntüleme konusunda bazı değişiklikler yaptık ve Jetpack'i doğrudan uygulamadan yükleme seçeneği de dahil olmak üzere ödeme ve oturum açma akışımızda çeşitli iyileştirmeler yaptık.
-

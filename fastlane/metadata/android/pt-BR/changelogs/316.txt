@@ -1,5 +1,0 @@
-9.7:
-Estamos muito felizes em anunciar que agora é possível editar um pedido no aplicativo. Você pode editar ou remover produtos, taxas e frete e alterar a quantidade de produtos. Você também pode pesquisar clientes ao alterar ou criar um pedido.
-
-Também fizemos algumas mudanças na exibição dos campos personalizados de um pedido, além de várias melhorias no nosso sistema de pagamento e no processo de login, incluindo a opção de instalar o Jetpack pelo aplicativo.
-
