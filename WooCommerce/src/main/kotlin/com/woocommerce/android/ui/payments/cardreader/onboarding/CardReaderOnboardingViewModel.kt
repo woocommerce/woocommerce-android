@@ -1,5 +1,7 @@
 package com.woocommerce.android.ui.payments.cardreader.onboarding
 
+import android.os.Handler
+import android.os.Looper
 import androidx.annotation.DrawableRes
 import androidx.annotation.LayoutRes
 import androidx.lifecycle.LiveData
@@ -232,7 +234,22 @@ class CardReaderOnboardingViewModel @Inject constructor(
     }
 
     private fun onEnableCashOnDeliveryClicked() {
-        TODO("Not implemented enable cash on delivery button click logic")
+//        TODO("Not implemented enable cash on delivery button click logic")
+        viewState.value = CashOnDeliveryDisabledState(
+            { (::onSkipCashOnDeliveryClicked)("US") },
+            ::onEnableCashOnDeliveryClicked,
+            ::onLearnMoreClicked,
+            shouldShowProgress = true
+        )
+        Handler(Looper.getMainLooper()).postDelayed({
+            viewState.value = CashOnDeliveryDisabledState(
+                { (::onSkipCashOnDeliveryClicked)("US") },
+                ::onEnableCashOnDeliveryClicked,
+                ::onLearnMoreClicked,
+                shouldShowProgress = false,
+                cashOnDeliveryEnabledSuccessfully = true
+            )
+        }, 2000)
     }
 
     private fun updateUiWithSelectPaymentPlugin() {
@@ -340,7 +357,9 @@ class CardReaderOnboardingViewModel @Inject constructor(
         data class CashOnDeliveryDisabledState(
             val onSkipCashOnDeliveryClicked: (() -> Unit),
             val onEnableCashOnDeliveryClicked: (() -> Unit),
-            val onLearnMoreActionClicked: (() -> Unit)
+            val onLearnMoreActionClicked: (() -> Unit),
+            val shouldShowProgress: Boolean = false,
+            val cashOnDeliveryEnabledSuccessfully: Boolean = false
         ) : OnboardingViewState(R.layout.fragment_card_reader_onboarding_cod_disabled) {
             val cardIllustration = R.drawable.ic_credit_card_give
             val headerLabel = UiString.UiStringRes(

@@ -6,6 +6,7 @@ import android.os.Parcelable
 import android.view.LayoutInflater
 import android.view.View
 import androidx.core.content.ContextCompat
+import androidx.core.view.get
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import com.woocommerce.android.NavGraphMainDirections
@@ -21,6 +22,7 @@ import com.woocommerce.android.databinding.FragmentCardReaderOnboardingUnsupport
 import com.woocommerce.android.databinding.FragmentCardReaderOnboardingWcpayBinding
 import com.woocommerce.android.extensions.exhaustive
 import com.woocommerce.android.extensions.startHelpActivity
+import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.support.HelpActivity
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.util.ChromeCustomTabUtils
@@ -89,29 +91,37 @@ class CardReaderOnboardingFragment : BaseFragment(R.layout.fragment_card_reader_
         binding: FragmentCardReaderOnboardingBinding,
         state: CardReaderOnboardingViewModel.OnboardingViewState
     ) {
-        binding.container.removeAllViews()
-        val layout = LayoutInflater.from(requireActivity()).inflate(state.layoutRes, binding.container, false)
-        binding.container.addView(layout)
-        when (state) {
-            is CardReaderOnboardingViewModel.OnboardingViewState.GenericErrorState ->
-                showGenericErrorState(layout, state)
-            is CardReaderOnboardingViewModel.OnboardingViewState.NoConnectionErrorState ->
-                showNetworkErrorState(layout, state)
-            is CardReaderOnboardingViewModel.OnboardingViewState.LoadingState ->
-                showLoadingState(layout, state)
-            is CardReaderOnboardingViewModel.OnboardingViewState.UnsupportedErrorState ->
-                showCountryNotSupportedState(layout, state)
-            is CardReaderOnboardingViewModel.OnboardingViewState.WCPayError ->
-                showWCPayErrorState(layout, state)
-            is CardReaderOnboardingViewModel.OnboardingViewState.StripeAcountError ->
-                showStripeAccountError(layout, state)
-            is CardReaderOnboardingViewModel.OnboardingViewState.StripeExtensionError ->
-                showStripeExtensionErrorState(layout, state)
-            is CardReaderOnboardingViewModel.OnboardingViewState.SelectPaymentPluginState ->
-                showPaymentPluginSelectionState(layout, state)
-            is CardReaderOnboardingViewModel.OnboardingViewState.CashOnDeliveryDisabledState ->
-                showCashOnDeliveryDisabledState(layout, state)
-        }.exhaustive
+
+        if (
+            state is CardReaderOnboardingViewModel.OnboardingViewState.CashOnDeliveryDisabledState &&
+            (state.shouldShowProgress || state.cashOnDeliveryEnabledSuccessfully)
+        ) {
+            showCashOnDeliveryDisabledState(binding.container[0], state)
+        } else {
+            binding.container.removeAllViews()
+            val layout = LayoutInflater.from(requireActivity()).inflate(state.layoutRes, binding.container, false)
+            binding.container.addView(layout)
+            when (state) {
+                is CardReaderOnboardingViewModel.OnboardingViewState.GenericErrorState ->
+                    showGenericErrorState(layout, state)
+                is CardReaderOnboardingViewModel.OnboardingViewState.NoConnectionErrorState ->
+                    showNetworkErrorState(layout, state)
+                is CardReaderOnboardingViewModel.OnboardingViewState.LoadingState ->
+                    showLoadingState(layout, state)
+                is CardReaderOnboardingViewModel.OnboardingViewState.UnsupportedErrorState ->
+                    showCountryNotSupportedState(layout, state)
+                is CardReaderOnboardingViewModel.OnboardingViewState.WCPayError ->
+                    showWCPayErrorState(layout, state)
+                is CardReaderOnboardingViewModel.OnboardingViewState.StripeAcountError ->
+                    showStripeAccountError(layout, state)
+                is CardReaderOnboardingViewModel.OnboardingViewState.StripeExtensionError ->
+                    showStripeExtensionErrorState(layout, state)
+                is CardReaderOnboardingViewModel.OnboardingViewState.SelectPaymentPluginState ->
+                    showPaymentPluginSelectionState(layout, state)
+                is CardReaderOnboardingViewModel.OnboardingViewState.CashOnDeliveryDisabledState ->
+                    showCashOnDeliveryDisabledState(layout, state)
+            }.exhaustive
+        }
     }
 
     private fun showCashOnDeliveryDisabledState(
@@ -126,8 +136,27 @@ class CardReaderOnboardingFragment : BaseFragment(R.layout.fragment_card_reader_
         UiHelpers.setTextOrHide(binding.learnMoreContainer.learnMore, state.learnMoreLabel)
         binding.illustration.setImageResource(state.cardIllustration)
 
+        if (state.shouldShowProgress) {
+            binding.enableCashOnDelivery.isEnabled = false
+            binding.progressBar.visibility = View.VISIBLE
+            binding.enableCashOnDelivery.text = ""
+        } else {
+            binding.enableCashOnDelivery.isEnabled = true
+            binding.progressBar.visibility = View.GONE
+            if (state.cashOnDeliveryEnabledSuccessfully) {
+                binding.enableCashOnDelivery.text = "Enabled COD Successfully!"
+            } else {
+                binding.enableCashOnDelivery.text = getString(
+                    R.string.card_reader_onboarding_cash_on_delivery_disabled_button
+                )
+            }
+        }
+
         binding.skipCashOnDelivery.setOnClickListener {
             state.onSkipCashOnDeliveryClicked.invoke()
+        }
+        binding.enableCashOnDelivery.setOnClickListener {
+            state.onEnableCashOnDeliveryClicked.invoke()
         }
         binding.learnMoreContainer.learnMore.setOnClickListener {
             state.onLearnMoreActionClicked.invoke()
