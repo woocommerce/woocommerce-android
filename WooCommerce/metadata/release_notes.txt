@@ -1,1 +1,5 @@
-For this release, we focused on polishing a few things around your login experience, including the option to install WooCommerce plugin directly from the app. We are working on some pretty cool stuff for you all! Keep your feedback rolling in; it helps us figure out what to work on next. 💜
+- [**] Login: list non-woo sites in the site picker during login to allow installing Woo [https://github.com/woocommerce/woocommerce-android/pull/7148]
+- [**] In-Person Payments and Simple Payments have been moved to a new Payments section [https://github.com/woocommerce/woocommerce-android/pull/7150]
+- [**] Login: Users running into invalid password errors during login will receive a support/help notification after 24h from the error with email magic link option [https://github.com/woocommerce/woocommerce-android/issues/6989]
+- [**] Login: Various improvements on the screen shown after entering an invalid WordPress.com email. [https://github.com/woocommerce/woocommerce-android/issues/7121]
+
