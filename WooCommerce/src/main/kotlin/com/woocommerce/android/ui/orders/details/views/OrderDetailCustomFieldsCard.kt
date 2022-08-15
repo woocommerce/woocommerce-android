@@ -14,4 +14,7 @@ class OrderDetailCustomFieldsCard @JvmOverloads constructor(
     init {
         View.inflate(context, R.layout.order_detail_custom_fields_card, this)
     }
+
+    val customFieldsButton: View
+        get() = findViewById(R.id.customFieldsButton)
 }
