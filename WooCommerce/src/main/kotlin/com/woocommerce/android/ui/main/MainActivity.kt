@@ -645,15 +645,13 @@ class MainActivity :
         }
         AnalyticsTracker.track(stat)
 
-        // if we're at the root scroll the active fragment to the top, otherwise clear the nav backstack
+        // if we're at the root scroll the active fragment to the top
         if (isAtNavigationRoot()) {
             // If the fragment's view is not yet created, do nothing
             if (getActiveTopLevelFragment()?.view != null) {
                 getActiveTopLevelFragment()?.scrollToTop()
                 expandToolbar(expand = true, animate = true)
             }
-        } else {
-            navController.navigate(binding.bottomNav.currentPosition.id)
         }
     }
     // endregion
