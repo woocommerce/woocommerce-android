@@ -36,7 +36,9 @@ import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowUndoSnackbar
 import com.woocommerce.android.viewmodel.ResourceProvider
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.test.advanceTimeBy
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Test
@@ -47,6 +49,7 @@ import org.mockito.kotlin.atLeastOnce
 import org.mockito.kotlin.clearInvocations
 import org.mockito.kotlin.doAnswer
 import org.mockito.kotlin.doReturn
+import org.mockito.kotlin.doSuspendableAnswer
 import org.mockito.kotlin.eq
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.never
@@ -1446,5 +1449,39 @@ class OrderDetailViewModelTest : BaseUnitTest() {
                     AnalyticsTracker.KEY_HAS_MULTIPLE_SHIPPING_LINES to (order.shippingLines.size > 1)
                 )
             )
+        }
+
+    @Test
+    fun `wait until all ongoing fetch request complete before fetching data again`() =
+        testBlocking {
+            // Given a work delay of 1s
+            val mockWorkingDelay = 1_000L
+            doReturn(order).whenever(orderDetailRepository).getOrderById(any())
+            whenever(orderDetailRepository.fetchOrderById(any())).doSuspendableAnswer {
+                delay(mockWorkingDelay)
+                order
+            }
+            doReturn(true).whenever(orderDetailRepository).fetchOrderNotes(any())
+            doReturn(true).whenever(addonsRepository).containsAddonsFrom(any())
+
+            // When a fetch request is submitted while a fetch request is in progress
+            viewModel.run {
+                start()
+                onRefreshRequested()
+            }
+
+            // Then verify data is fetched only once
+            verify(orderDetailRepository, times(1)).fetchOrderById(any())
+            verify(orderDetailRepository, times(1)).fetchOrderNotes(any())
+
+            // Given the fetch request is completed
+            advanceTimeBy(mockWorkingDelay + 1L)
+
+            // When another fetch request is submitted
+            viewModel.onRefreshRequested()
+
+            // Then data is fetched again
+            verify(orderDetailRepository, times(2)).fetchOrderById(any())
+            verify(orderDetailRepository, times(2)).fetchOrderNotes(any())
         }
 }
