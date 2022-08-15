@@ -140,6 +140,8 @@ class OrderDetailViewModel @Inject constructor(
     private val _shippingLabels = MutableLiveData<List<ShippingLabel>>()
     val shippingLabels: LiveData<List<ShippingLabel>> = _shippingLabels
 
+    private var isFetchingData = false
+
     override fun onCleared() {
         super.onCleared()
         productImageMap.unsubscribeFromOnProductFetchedEvents(this)
@@ -168,11 +170,15 @@ class OrderDetailViewModel @Inject constructor(
     }
 
     private suspend fun fetchOrder(showSkeleton: Boolean) {
+        // Prevent re-fetch data when a fetching request is ongoing
+        if (isFetchingData) return
+
         if (networkStatus.isConnected()) {
             viewState = viewState.copy(
                 isOrderDetailSkeletonShown = showSkeleton
             )
 
+            isFetchingData = true
             awaitAll(
                 fetchOrderAsync(),
                 fetchOrderNotesAsync(),
@@ -182,9 +188,9 @@ class OrderDetailViewModel @Inject constructor(
                 fetchOrderProductsAsync(),
                 fetchSLCreationEligibilityAsync()
             )
+            isFetchingData = false
 
             displayOrderDetails()
-
             viewState = viewState.copy(
                 isOrderDetailSkeletonShown = false,
                 isRefreshing = false
