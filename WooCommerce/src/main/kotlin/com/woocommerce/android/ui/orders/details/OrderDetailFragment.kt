@@ -147,7 +147,7 @@ class OrderDetailFragment : BaseFragment(R.layout.fragment_order_detail), OrderP
             scrollUpChild = binding.scrollView
             setOnRefreshListener { viewModel.onRefreshRequested() }
         }
-        binding.customFieldsButton.setOnClickListener {
+        binding.customFieldsCard.customFieldsButton.setOnClickListener {
             viewModel.onCustomFieldsButtonClicked()
         }
 
