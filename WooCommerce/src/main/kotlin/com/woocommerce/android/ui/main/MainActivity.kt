@@ -646,15 +646,15 @@ class MainActivity :
         }
         AnalyticsTracker.track(stat)
 
-        // if we're at the root scroll the active fragment to the top, otherwise clear the nav backstack
+        // if we're at the root scroll the active fragment to the top
+        // TODO bring back clearing the backstack when the navgraphs are fixed to support multiple backstacks:
+        // https://github.com/woocommerce/woocommerce-android/issues/7183
         if (isAtNavigationRoot()) {
             // If the fragment's view is not yet created, do nothing
             if (getActiveTopLevelFragment()?.view != null) {
                 getActiveTopLevelFragment()?.scrollToTop()
                 expandToolbar(expand = true, animate = true)
             }
-        } else {
-            navController.navigate(binding.bottomNav.currentPosition.id)
         }
     }
     // endregion
