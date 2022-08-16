@@ -221,7 +221,7 @@ class CardReaderOnboardingViewModel @Inject constructor(
             is CardReaderOnboardingState.CashOnDeliveryDisabled ->
                 viewState.value = CashOnDeliveryDisabledState(
                     { (::onSkipCashOnDeliveryClicked)(state.countryCode) },
-                    ::onEnableCashOnDeliveryClicked,
+                    { (::onEnableCashOnDeliveryClicked)(state.countryCode) },
                     ::onLearnMoreClicked
                 )
         }.exhaustive
@@ -231,11 +231,11 @@ class CardReaderOnboardingViewModel @Inject constructor(
         continueFlow(countryCode)
     }
 
-    private fun onEnableCashOnDeliveryClicked() {
+    private fun onEnableCashOnDeliveryClicked(countryCode: String) {
 //        TODO("Not implemented enable cash on delivery button click logic")
         viewState.value = CashOnDeliveryDisabledState(
-            { (::onSkipCashOnDeliveryClicked)("US") },
-            ::onEnableCashOnDeliveryClicked,
+            { (::onSkipCashOnDeliveryClicked)(countryCode) },
+            { (::onEnableCashOnDeliveryClicked)(countryCode) },
             ::onLearnMoreClicked,
             shouldShowProgress = true
         )
