@@ -62,10 +62,10 @@ class LoginJetpackRequiredFragment : Fragment(R.layout.fragment_login_jetpack_re
         binding.jetpackRequiredMsg.text = getString(R.string.login_jetpack_required_text, siteAddress.orEmpty())
 
         with(btnBinding.buttonPrimary) {
-            text = getString(R.string.login_jetpack_view_instructions)
+            text = getString(R.string.login_jetpack_install)
             setOnClickListener {
-                AnalyticsTracker.track(AnalyticsEvent.LOGIN_JETPACK_REQUIRED_VIEW_INSTRUCTIONS_BUTTON_TAPPED)
-                jetpackLoginListener?.showJetpackInstructions()
+                AnalyticsTracker.track(AnalyticsEvent.LOGIN_JETPACK_SETUP_BUTTON_TAPPED)
+                jetpackLoginListener?.startJetpackInstall(siteAddress)
             }
         }
 
