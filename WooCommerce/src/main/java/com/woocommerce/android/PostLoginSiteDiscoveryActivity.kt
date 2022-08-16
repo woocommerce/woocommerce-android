@@ -43,7 +43,7 @@ class PostLoginSiteDiscoveryActivity : AppCompatActivity(), LoginListener, Login
         setContentView(binding.root)
         if (hasJetpackConnectedIntent()) {
             val siteAddress = intent.data!!.getQueryParameter(JETPACK_CONNECTED_REDIRECT_URL_QUERY)!!
-            // Save the site address to be able to continue login from the MainActivity
+            // Save the site address to be able to continue login from the Site Picker
             AppPrefs.setLoginSiteAddress(siteAddress)
             showMainActivityAndFinish()
         } else {
@@ -211,7 +211,8 @@ class PostLoginSiteDiscoveryActivity : AppCompatActivity(), LoginListener, Login
         val siteAddressClean = siteAddress.replaceFirst(protocolRegex, "")
 
         if (hasJetpack) {
-            // Save site address to continue login in MainActivity
+            // This most probably means an account mismatch
+            // Save the address to allow the site picker to continue the flow
             AppPrefs.setLoginSiteAddress(siteAddressClean)
             showMainActivityAndFinish()
         } else {
