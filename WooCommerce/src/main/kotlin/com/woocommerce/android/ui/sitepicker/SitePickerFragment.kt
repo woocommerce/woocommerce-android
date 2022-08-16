@@ -10,7 +10,7 @@ import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.woocommerce.android.AppUrls
 import com.woocommerce.android.NavGraphMainDirections
-import com.woocommerce.android.PostLoginSiteDiscoveryActivity
+import com.woocommerce.android.ui.sitediscovery.PostLoginSiteDiscoveryActivity
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker

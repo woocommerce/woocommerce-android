@@ -1,4 +1,4 @@
-package com.woocommerce.android
+package com.woocommerce.android.ui.sitediscovery
 
 import android.content.Intent
 import android.net.Uri
@@ -6,8 +6,15 @@ import android.os.Bundle
 import android.view.MenuItem
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
+import com.woocommerce.android.AppPrefs
+import com.woocommerce.android.AppUrls
+import com.woocommerce.android.R.anim
+import com.woocommerce.android.R.string
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.databinding.ActivityLoginBinding
+import com.woocommerce.android.support.HelpActivity
+import com.woocommerce.android.support.HelpActivity.Origin
+import com.woocommerce.android.support.ZendeskExtraTags
 import com.woocommerce.android.ui.common.wpcomwebview.WPComWebViewFragment
 import com.woocommerce.android.ui.common.wpcomwebview.WPComWebViewFragmentArgs
 import com.woocommerce.android.ui.login.LoginActivity
@@ -18,6 +25,7 @@ import com.woocommerce.android.ui.login.LoginWhatIsJetpackDialogFragment
 import com.woocommerce.android.ui.login.overrides.WooLoginSiteAddressFragment
 import com.woocommerce.android.ui.main.MainActivity
 import com.woocommerce.android.util.ChromeCustomTabUtils
+import com.woocommerce.android.util.WooLog
 import dagger.hilt.android.AndroidEntryPoint
 import org.wordpress.android.fluxc.network.MemorizingTrustManager
 import org.wordpress.android.fluxc.store.SiteStore
@@ -102,12 +110,130 @@ class PostLoginSiteDiscoveryActivity : AppCompatActivity(), LoginListener, Login
         }
     }
 
-    override fun gotWpcomEmail(email: String?, verifyEmail: Boolean, authOptions: AuthOptions?) {
-        TODO("Not yet implemented")
+    override fun loginViaSiteAddress() {
+        val loginSiteAddressFragment = supportFragmentManager.findFragmentByTag(LoginSiteAddressFragment.TAG)
+            as? WooLoginSiteAddressFragment
+            ?: WooLoginSiteAddressFragment()
+        changeFragment(loginSiteAddressFragment, true, LoginSiteAddressFragment.TAG)
     }
 
-    override fun gotUnregisteredEmail(email: String?) {
-        TODO("Not yet implemented")
+    override fun gotConnectedSiteInfo(siteAddress: String, redirectUrl: String?, hasJetpack: Boolean) {
+        val protocolRegex = Regex("^(http[s]?://)", IGNORE_CASE)
+        val siteAddressClean = siteAddress.replaceFirst(protocolRegex, "")
+
+        if (hasJetpack) {
+            // This most probably means an account mismatch
+            // Save the address to allow the site picker to continue the flow
+            AppPrefs.setLoginSiteAddress(siteAddressClean)
+            showMainActivityAndFinish()
+        } else {
+            val jetpackReqFragment = LoginJetpackRequiredFragment.newInstance(siteAddress)
+            changeFragment(
+                fragment = jetpackReqFragment as Fragment,
+                shouldAddToBackStack = true,
+                tag = LoginJetpackRequiredFragment.TAG
+            )
+        }
+    }
+
+    override fun handleSiteAddressError(siteInfo: ConnectSiteInfoPayload) {
+        if (!siteInfo.isWordPress) {
+            // The url entered is not a WordPress site.
+            val protocolRegex = Regex("^(http[s]?://)", IGNORE_CASE)
+            val siteAddressClean = siteInfo.url.replaceFirst(protocolRegex, "")
+            val errorMessage = getString(string.login_not_wordpress_site_v2)
+
+            // hide the keyboard
+            org.wordpress.android.util.ActivityUtils.hideKeyboard(this)
+
+            // show the "not WordPress error" screen
+            val genericErrorFragment = LoginSiteCheckErrorFragment.newInstance(siteAddressClean, errorMessage)
+            changeFragment(
+                fragment = genericErrorFragment,
+                shouldAddToBackStack = true,
+                tag = LoginSiteCheckErrorFragment.TAG
+            )
+        }
+    }
+
+    override fun helpNoJetpackScreen(
+        siteAddress: String?,
+        endpointAddress: String?,
+        username: String?,
+        password: String?,
+        userAvatarUrl: String?,
+        checkJetpackAvailability: Boolean?
+    ) {
+        siteAddress?.let {
+            val jetpackReqFragment = LoginJetpackRequiredFragment.newInstance(siteAddress)
+            changeFragment(
+                fragment = jetpackReqFragment as Fragment,
+                shouldAddToBackStack = true,
+                tag = LoginJetpackRequiredFragment.TAG
+            )
+        }
+    }
+
+    private fun changeFragment(
+        fragment: Fragment,
+        shouldAddToBackStack: Boolean,
+        tag: String,
+        animate: Boolean = true
+    ) {
+        val fragmentTransaction = supportFragmentManager.beginTransaction()
+        if (animate) {
+            fragmentTransaction.setCustomAnimations(
+                anim.default_enter_anim,
+                anim.default_exit_anim,
+                anim.default_pop_enter_anim,
+                anim.default_pop_exit_anim
+            )
+        }
+        fragmentTransaction.replace(binding.fragmentContainer.id, fragment, tag)
+        if (shouldAddToBackStack) {
+            fragmentTransaction.addToBackStack(tag)
+        }
+        fragmentTransaction.commitAllowingStateLoss()
+    }
+
+    override fun handleSslCertificateError(
+        memorizingTrustManager: MemorizingTrustManager?,
+        callback: SelfSignedSSLCallback?
+    ) {
+        WooLog.e(WooLog.T.LOGIN, "Self-signed SSL certificate detected - can't proceed with the login.")
+    }
+
+    override fun helpSiteAddress(url: String?) {
+        val extraSupportTags = arrayListOf(ZendeskExtraTags.connectingJetpack)
+        startActivity(HelpActivity.createIntent(this, Origin.LOGIN_SITE_ADDRESS, extraSupportTags))
+    }
+
+    override fun startJetpackInstall(siteAddress: String?) {
+        siteAddress?.let { address ->
+            // Pass the site address in the redirect URL to retrieve it after installation
+            val redirectUrl = "$JETPACK_CONNECTED_REDIRECT_URL?$JETPACK_CONNECTED_REDIRECT_URL_QUERY=$siteAddress"
+            val url = "$JETPACK_CONNECT_URL?" +
+                "url=$address" +
+                "&mobile_redirect=$redirectUrl" +
+                "&from=mobile"
+
+            val wpComWebViewFragment = WPComWebViewFragment().apply {
+                arguments = WPComWebViewFragmentArgs(url).toBundle()
+            }
+            changeFragment(wpComWebViewFragment, true, tag = "Tag")
+        }
+    }
+
+    override fun showJetpackInstructions() {
+        ChromeCustomTabUtils.launchUrl(this, AppUrls.JETPACK_INSTRUCTIONS)
+    }
+
+    override fun showJetpackTroubleshootingTips() {
+        ChromeCustomTabUtils.launchUrl(this, AppUrls.JETPACK_TROUBLESHOOTING)
+    }
+
+    override fun showWhatIsJetpackDialog() {
+        LoginWhatIsJetpackDialogFragment().show(supportFragmentManager, LoginWhatIsJetpackDialogFragment.TAG)
     }
 
     override fun gotUnregisteredSocialAccount(
@@ -120,11 +246,16 @@ class PostLoginSiteDiscoveryActivity : AppCompatActivity(), LoginListener, Login
         TODO("Not yet implemented")
     }
 
-    override fun loginViaSiteAddress() {
-        val loginSiteAddressFragment = supportFragmentManager.findFragmentByTag(LoginSiteAddressFragment.TAG)
-            as? WooLoginSiteAddressFragment
-            ?: WooLoginSiteAddressFragment()
-        changeFragment(loginSiteAddressFragment, true, LoginSiteAddressFragment.TAG)
+    override fun alreadyLoggedInWpcom(oldSitesIds: java.util.ArrayList<Int>?) {
+        TODO("Not yet implemented")
+    }
+
+    override fun gotWpcomEmail(email: String?, verifyEmail: Boolean, authOptions: AuthOptions?) {
+        TODO("Not yet implemented")
+    }
+
+    override fun gotUnregisteredEmail(email: String?) {
+        TODO("Not yet implemented")
     }
 
     override fun loginViaSocialAccount(
@@ -222,70 +353,16 @@ class PostLoginSiteDiscoveryActivity : AppCompatActivity(), LoginListener, Login
         TODO("Not yet implemented")
     }
 
-    override fun alreadyLoggedInWpcom(oldSitesIds: ArrayList<Int>?) {
-        TODO("Not yet implemented")
-    }
-
     override fun gotWpcomSiteInfo(siteAddress: String?) {
         TODO("Not yet implemented")
-    }
-
-    override fun gotConnectedSiteInfo(siteAddress: String, redirectUrl: String?, hasJetpack: Boolean) {
-        val protocolRegex = Regex("^(http[s]?://)", IGNORE_CASE)
-        val siteAddressClean = siteAddress.replaceFirst(protocolRegex, "")
-
-        if (hasJetpack) {
-            // This most probably means an account mismatch
-            // Save the address to allow the site picker to continue the flow
-            AppPrefs.setLoginSiteAddress(siteAddressClean)
-            showMainActivityAndFinish()
-        } else {
-            val jetpackReqFragment = LoginJetpackRequiredFragment.newInstance(siteAddress)
-            changeFragment(
-                fragment = jetpackReqFragment as Fragment,
-                shouldAddToBackStack = true,
-                tag = LoginJetpackRequiredFragment.TAG
-            )
-        }
     }
 
     override fun gotXmlRpcEndpoint(inputSiteAddress: String?, endpointAddress: String?) {
         TODO("Not yet implemented")
     }
 
-    override fun handleSslCertificateError(
-        memorizingTrustManager: MemorizingTrustManager?,
-        callback: SelfSignedSSLCallback?
-    ) {
-        TODO("Not yet implemented")
-    }
-
-    override fun helpSiteAddress(url: String?) {
-        TODO("Not yet implemented")
-    }
-
     override fun helpFindingSiteAddress(username: String?, siteStore: SiteStore?) {
         TODO("Not yet implemented")
-    }
-
-    override fun handleSiteAddressError(siteInfo: ConnectSiteInfoPayload) {
-        if (!siteInfo.isWordPress) {
-            // The url entered is not a WordPress site.
-            val protocolRegex = Regex("^(http[s]?://)", IGNORE_CASE)
-            val siteAddressClean = siteInfo.url.replaceFirst(protocolRegex, "")
-            val errorMessage = getString(R.string.login_not_wordpress_site_v2)
-
-            // hide the keyboard
-            org.wordpress.android.util.ActivityUtils.hideKeyboard(this)
-
-            // show the "not WordPress error" screen
-            val genericErrorFragment = LoginSiteCheckErrorFragment.newInstance(siteAddressClean, errorMessage)
-            changeFragment(
-                fragment = genericErrorFragment,
-                shouldAddToBackStack = true,
-                tag = LoginSiteCheckErrorFragment.TAG
-            )
-        }
     }
 
     override fun saveCredentialsInSmartLock(
@@ -303,24 +380,6 @@ class PostLoginSiteDiscoveryActivity : AppCompatActivity(), LoginListener, Login
 
     override fun helpUsernamePassword(url: String?, username: String?, isWpcom: Boolean) {
         TODO("Not yet implemented")
-    }
-
-    override fun helpNoJetpackScreen(
-        siteAddress: String?,
-        endpointAddress: String?,
-        username: String?,
-        password: String?,
-        userAvatarUrl: String?,
-        checkJetpackAvailability: Boolean?
-    ) {
-        siteAddress?.let {
-            val jetpackReqFragment = LoginJetpackRequiredFragment.newInstance(siteAddress)
-            changeFragment(
-                fragment = jetpackReqFragment as Fragment,
-                shouldAddToBackStack = true,
-                tag = LoginJetpackRequiredFragment.TAG
-            )
-        }
     }
 
     override fun helpHandleDiscoveryError(
@@ -372,18 +431,6 @@ class PostLoginSiteDiscoveryActivity : AppCompatActivity(), LoginListener, Login
         TODO("Not yet implemented")
     }
 
-    override fun showJetpackInstructions() {
-        ChromeCustomTabUtils.launchUrl(this, AppUrls.JETPACK_INSTRUCTIONS)
-    }
-
-    override fun showJetpackTroubleshootingTips() {
-        ChromeCustomTabUtils.launchUrl(this, AppUrls.JETPACK_TROUBLESHOOTING)
-    }
-
-    override fun showWhatIsJetpackDialog() {
-        LoginWhatIsJetpackDialogFragment().show(supportFragmentManager, LoginWhatIsJetpackDialogFragment.TAG)
-    }
-
     override fun showEmailLoginScreen(siteAddress: String?) {
         TODO("Not yet implemented")
     }
@@ -395,43 +442,5 @@ class PostLoginSiteDiscoveryActivity : AppCompatActivity(), LoginListener, Login
         inputPassword: String?
     ) {
         TODO("Not yet implemented")
-    }
-
-    override fun startJetpackInstall(siteAddress: String?) {
-        siteAddress?.let { address ->
-            // Pass the site address in the redirect URL to retrieve it after installation
-            val redirectUrl = "$JETPACK_CONNECTED_REDIRECT_URL?$JETPACK_CONNECTED_REDIRECT_URL_QUERY=$siteAddress"
-            val url = "$JETPACK_CONNECT_URL?" +
-                "url=$address" +
-                "&mobile_redirect=$redirectUrl" +
-                "&from=mobile"
-
-            val wpComWebViewFragment = WPComWebViewFragment().apply {
-                arguments = WPComWebViewFragmentArgs(url).toBundle()
-            }
-            changeFragment(wpComWebViewFragment, true, tag = "Tag")
-        }
-    }
-
-    private fun changeFragment(
-        fragment: Fragment,
-        shouldAddToBackStack: Boolean,
-        tag: String,
-        animate: Boolean = true
-    ) {
-        val fragmentTransaction = supportFragmentManager.beginTransaction()
-        if (animate) {
-            fragmentTransaction.setCustomAnimations(
-                R.anim.default_enter_anim,
-                R.anim.default_exit_anim,
-                R.anim.default_pop_enter_anim,
-                R.anim.default_pop_exit_anim
-            )
-        }
-        fragmentTransaction.replace(binding.fragmentContainer.id, fragment, tag)
-        if (shouldAddToBackStack) {
-            fragmentTransaction.addToBackStack(tag)
-        }
-        fragmentTransaction.commitAllowingStateLoss()
     }
 }
