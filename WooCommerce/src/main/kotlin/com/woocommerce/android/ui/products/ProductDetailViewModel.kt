@@ -14,6 +14,7 @@ import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_HAS_LINKED_PRODUCTS
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.SOURCE_PRODUCT_DETAIL
 import com.woocommerce.android.extensions.addNewItem
 import com.woocommerce.android.extensions.clearList
 import com.woocommerce.android.extensions.containsItem
@@ -1636,12 +1637,36 @@ class ProductDetailViewModel @Inject constructor(
             viewState.productDraft?.hasLinkedProducts() == false
         ) {
             appPrefsWrapper.setPromoBannerShown(PromoBannerType.LINKED_PRODUCTS, true)
+            AnalyticsTracker.track(
+                AnalyticsEvent.FEATURE_CARD_SHOWN,
+                mapOf(
+                    AnalyticsTracker.KEY_BANNER_SOURCE to SOURCE_PRODUCT_DETAIL,
+                    AnalyticsTracker.KEY_BANNER_CAMPAIGN_NAME to AnalyticsTracker.KEY_BANNER_LINKED_PRODUCTS_PROMO
+                )
+            )
             triggerEvent(ShowLinkedProductPromoBanner)
         }
     }
 
     fun onLinkedProductPromoClicked() {
-        // TODO analytics
+        AnalyticsTracker.track(
+            AnalyticsEvent.FEATURE_CARD_CTA_TAPPED,
+            mapOf(
+                AnalyticsTracker.KEY_BANNER_SOURCE to SOURCE_PRODUCT_DETAIL,
+                AnalyticsTracker.KEY_BANNER_CAMPAIGN_NAME to AnalyticsTracker.KEY_BANNER_LINKED_PRODUCTS_PROMO
+            )
+        )
+        triggerEvent(ProductNavigationTarget.ViewLinkedProducts(getRemoteProductId()))
+    }
+
+    fun onLinkedProductPromoDismissed() {
+        AnalyticsTracker.track(
+            AnalyticsEvent.FEATURE_CARD_DISMISSED,
+            mapOf(
+                AnalyticsTracker.KEY_BANNER_SOURCE to SOURCE_PRODUCT_DETAIL,
+                AnalyticsTracker.KEY_BANNER_CAMPAIGN_NAME to AnalyticsTracker.KEY_BANNER_LINKED_PRODUCTS_PROMO
+            )
+        )
         triggerEvent(ProductNavigationTarget.ViewLinkedProducts(getRemoteProductId()))
     }
 
