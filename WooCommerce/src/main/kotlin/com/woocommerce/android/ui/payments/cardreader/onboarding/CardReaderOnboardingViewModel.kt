@@ -1,7 +1,5 @@
 package com.woocommerce.android.ui.payments.cardreader.onboarding
 
-import android.os.Handler
-import android.os.Looper
 import androidx.annotation.DrawableRes
 import androidx.annotation.LayoutRes
 import androidx.lifecycle.LiveData
@@ -241,15 +239,6 @@ class CardReaderOnboardingViewModel @Inject constructor(
             ::onLearnMoreClicked,
             shouldShowProgress = true
         )
-        Handler(Looper.getMainLooper()).postDelayed({
-            viewState.value = CashOnDeliveryDisabledState(
-                { (::onSkipCashOnDeliveryClicked)("US") },
-                ::onEnableCashOnDeliveryClicked,
-                ::onLearnMoreClicked,
-                shouldShowProgress = false,
-                cashOnDeliveryEnabledSuccessfully = true
-            )
-        }, 2000)
     }
 
     private fun updateUiWithSelectPaymentPlugin() {
