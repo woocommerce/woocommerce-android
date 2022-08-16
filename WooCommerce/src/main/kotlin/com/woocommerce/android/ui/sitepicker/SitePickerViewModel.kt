@@ -242,7 +242,7 @@ class SitePickerViewModel @Inject constructor(
         sitePickerViewState = sitePickerViewState.copy(
             isNoStoresViewVisible = true,
             isPrimaryBtnVisible = true,
-            primaryBtnText = resourceProvider.getString(string.login_jetpack_view_instructions_alt),
+            primaryBtnText = resourceProvider.getString(string.login_site_picker_enter_site_address),
             noStoresLabelText = resourceProvider.getString(string.login_no_stores),
             noStoresBtnText = resourceProvider.getString(string.login_jetpack_what_is),
             currentSitePickerState = SitePickerState.NoStoreState
