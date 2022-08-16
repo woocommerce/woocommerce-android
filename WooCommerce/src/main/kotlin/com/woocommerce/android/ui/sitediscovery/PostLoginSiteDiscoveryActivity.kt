@@ -22,7 +22,6 @@ import com.woocommerce.android.ui.login.LoginJetpackRequiredFragment
 import com.woocommerce.android.ui.login.LoginNoJetpackListener
 import com.woocommerce.android.ui.login.LoginSiteCheckErrorFragment
 import com.woocommerce.android.ui.login.LoginWhatIsJetpackDialogFragment
-import com.woocommerce.android.ui.login.overrides.WooLoginSiteAddressFragment
 import com.woocommerce.android.ui.main.MainActivity
 import com.woocommerce.android.util.ChromeCustomTabUtils
 import com.woocommerce.android.util.WooLog
@@ -112,8 +111,8 @@ class PostLoginSiteDiscoveryActivity : AppCompatActivity(), LoginListener, Login
 
     override fun loginViaSiteAddress() {
         val loginSiteAddressFragment = supportFragmentManager.findFragmentByTag(LoginSiteAddressFragment.TAG)
-            as? WooLoginSiteAddressFragment
-            ?: WooLoginSiteAddressFragment()
+            as? PostLoginSitedAddressFragment
+            ?: PostLoginSitedAddressFragment()
         changeFragment(loginSiteAddressFragment, true, LoginSiteAddressFragment.TAG)
     }
 
@@ -171,6 +170,17 @@ class PostLoginSiteDiscoveryActivity : AppCompatActivity(), LoginListener, Login
                 shouldAddToBackStack = true,
                 tag = LoginJetpackRequiredFragment.TAG
             )
+        }
+    }
+
+    /**
+     * This is called when we get a WPCom site without Jetpack (a non-atomic site)
+     * We will save the site address then forward to the site picker to show the account mismatch error
+     */
+    override fun gotWpcomSiteInfo(siteAddress: String?) {
+        siteAddress?.let {
+            AppPrefs.setLoginSiteAddress(it)
+            showMainActivityAndFinish()
         }
     }
 
@@ -350,10 +360,6 @@ class PostLoginSiteDiscoveryActivity : AppCompatActivity(), LoginListener, Login
     }
 
     override fun helpEmailPasswordScreen(email: String?) {
-        TODO("Not yet implemented")
-    }
-
-    override fun gotWpcomSiteInfo(siteAddress: String?) {
         TODO("Not yet implemented")
     }
 
