@@ -1,6 +1,8 @@
 package com.woocommerce.android.ui.common.wpcomwebview
 
 import android.annotation.SuppressLint
+import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
 import android.view.View
 import android.webkit.WebChromeClient
@@ -40,9 +42,11 @@ class WPComWebViewFragment : BaseFragment(R.layout.fragment_wpcom_webview), UrlI
     private val webViewClient by lazy { WPComWebViewClient(this) }
     private val navArgs: WPComWebViewFragmentArgs by navArgs()
 
-    @Inject lateinit var accountStore: AccountStore
+    @Inject
+    lateinit var accountStore: AccountStore
 
-    @Inject lateinit var userAgent: UserAgent
+    @Inject
+    lateinit var userAgent: UserAgent
 
     @SuppressLint("SetJavaScriptEnabled")
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -75,9 +79,18 @@ class WPComWebViewFragment : BaseFragment(R.layout.fragment_wpcom_webview), UrlI
     }
 
     override fun onLoadUrl(url: String) {
-        navArgs.urlToTriggerExit?.let {
-            if (isAdded && url.contains(it)) {
+        if (!isAdded) return
+        if (navArgs.urlToTriggerExit != null) {
+            if (url.contains(navArgs.urlToTriggerExit!!)) {
                 navigateBackWithNotice(WEBVIEW_RESULT)
+            }
+        } else {
+            if (url.startsWith("woocommerce://")) {
+                Intent(Intent.ACTION_VIEW).apply {
+                    data = Uri.parse(url)
+                }.let {
+                    startActivity(it)
+                }
             }
         }
     }

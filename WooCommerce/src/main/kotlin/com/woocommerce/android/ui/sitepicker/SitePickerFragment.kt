@@ -10,6 +10,7 @@ import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.woocommerce.android.AppUrls
 import com.woocommerce.android.NavGraphMainDirections
+import com.woocommerce.android.PostLoginSiteDiscoveryActivity
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
@@ -52,7 +53,8 @@ class SitePickerFragment : BaseFragment(R.layout.fragment_site_picker), LoginEma
     private val binding get() = _binding!!
 
     private val viewModel: SitePickerViewModel by viewModels()
-    @Inject lateinit var uiMessageResolver: UIMessageResolver
+    @Inject
+    lateinit var uiMessageResolver: UIMessageResolver
 
     private var skeletonView = SkeletonView()
     private var progressDialog: CustomProgressDialog? = null
@@ -175,7 +177,7 @@ class SitePickerFragment : BaseFragment(R.layout.fragment_site_picker), LoginEma
 
     private fun updateNoStoresView() {
         binding.loginEpilogueButtonBar.buttonPrimary.setOnClickListener {
-            viewModel.onLearnMoreAboutJetpackButtonClick()
+            startActivity(Intent(requireActivity(), PostLoginSiteDiscoveryActivity::class.java))
         }
         binding.noStoresView.clickSecondaryAction {
             viewModel.onWhatIsJetpackButtonClick()

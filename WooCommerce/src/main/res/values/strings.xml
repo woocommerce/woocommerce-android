@@ -263,6 +263,7 @@
     <string name="user_role_access_error_link">Learn more about roles and permissions</string>
     <string name="user_role_access_error_retry">You don\'t have the correct user role</string>
     <string name="user_access_verifying">Verifying role…</string>
+    <string name="login_site_picker_enter_site_address">Enter a site address</string>
     <!--
         My Store View
     -->
