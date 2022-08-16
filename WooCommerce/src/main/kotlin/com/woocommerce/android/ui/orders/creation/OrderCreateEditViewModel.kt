@@ -411,7 +411,7 @@ class OrderCreateEditViewModel @Inject constructor(
     }
 
     private fun trackCreateOrderButtonClick() {
-        AnalyticsTracker.track(
+        tracker.track(
             ORDER_CREATE_BUTTON_TAPPED,
             mapOf(
                 KEY_STATUS to _orderDraft.value.status,
