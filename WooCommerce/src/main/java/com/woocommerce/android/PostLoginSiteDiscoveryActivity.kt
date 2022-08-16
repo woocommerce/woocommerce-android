@@ -3,8 +3,10 @@ package com.woocommerce.android
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
+import android.view.MenuItem
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
+import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.databinding.ActivityLoginBinding
 import com.woocommerce.android.ui.common.wpcomwebview.WPComWebViewFragment
 import com.woocommerce.android.ui.common.wpcomwebview.WPComWebViewFragmentArgs
@@ -77,6 +79,27 @@ class PostLoginSiteDiscoveryActivity : AppCompatActivity(), LoginListener, Login
                 LoginMode.WOO_LOGIN_MODE.putInto(this)
             }
         startActivity(intent)
+    }
+
+    @Suppress("DEPRECATION")
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        if (item.itemId == android.R.id.home) {
+            onBackPressed()
+            return true
+        }
+
+        return false
+    }
+
+    @Suppress("DEPRECATION")
+    override fun onBackPressed() {
+        AnalyticsTracker.trackBackPressed(this)
+
+        if (supportFragmentManager.backStackEntryCount == 1) {
+            finish()
+        } else {
+            super.onBackPressed()
+        }
     }
 
     override fun gotWpcomEmail(email: String?, verifyEmail: Boolean, authOptions: AuthOptions?) {
