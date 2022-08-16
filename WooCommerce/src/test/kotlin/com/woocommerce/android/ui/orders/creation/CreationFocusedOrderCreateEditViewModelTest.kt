@@ -1,6 +1,8 @@
 package com.woocommerce.android.ui.orders.creation
 
 import com.woocommerce.android.R
+import com.woocommerce.android.analytics.AnalyticsEvent
+import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_FLOW_CREATION
 import com.woocommerce.android.model.Address
 import com.woocommerce.android.model.Order
@@ -835,5 +837,24 @@ class CreationFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTes
             lastReceivedState = it
         }
         assertThat(lastReceivedState?.isEditable).isEqualTo(true)
+    }
+
+    @Test
+    fun `when create button tapped, send track event`() {
+        initMocksForAnalyticsWithOrder(defaultOrderValue)
+        createSut()
+
+        sut.onCreateOrderClicked(defaultOrderValue)
+
+        verify(tracker).track(
+            AnalyticsEvent.ORDER_CREATE_BUTTON_TAPPED,
+            mapOf(
+                AnalyticsTracker.KEY_STATUS to defaultOrderValue.status,
+                AnalyticsTracker.KEY_PRODUCT_COUNT to sut.products.value?.count(),
+                AnalyticsTracker.KEY_HAS_CUSTOMER_DETAILS to defaultOrderValue.billingAddress.hasInfo(),
+                AnalyticsTracker.KEY_HAS_FEES to defaultOrderValue.feesLines.isNotEmpty(),
+                AnalyticsTracker.KEY_HAS_SHIPPING_METHOD to defaultOrderValue.shippingLines.isNotEmpty()
+            )
+        )
     }
 }
