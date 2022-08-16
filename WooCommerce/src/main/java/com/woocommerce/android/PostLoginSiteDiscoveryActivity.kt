@@ -273,7 +273,14 @@ class PostLoginSiteDiscoveryActivity : AppCompatActivity(), LoginListener, Login
         userAvatarUrl: String?,
         checkJetpackAvailability: Boolean?
     ) {
-        TODO("Not yet implemented")
+        siteAddress?.let {
+            val jetpackReqFragment = LoginJetpackRequiredFragment.newInstance(siteAddress)
+            changeFragment(
+                fragment = jetpackReqFragment as Fragment,
+                shouldAddToBackStack = true,
+                tag = LoginJetpackRequiredFragment.TAG
+            )
+        }
     }
 
     override fun helpHandleDiscoveryError(
