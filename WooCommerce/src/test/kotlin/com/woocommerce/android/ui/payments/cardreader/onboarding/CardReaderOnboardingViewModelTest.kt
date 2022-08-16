@@ -49,6 +49,8 @@ import org.mockito.kotlin.never
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import org.wordpress.android.fluxc.model.SiteModel
+import kotlin.test.assertFalse
+import kotlin.test.assertTrue
 
 @ExperimentalCoroutinesApi
 class CardReaderOnboardingViewModelTest : BaseUnitTest() {
@@ -1047,6 +1049,49 @@ class CardReaderOnboardingViewModelTest : BaseUnitTest() {
 
             assertThat(viewModel.event.value)
                 .isInstanceOf(OnboardingEvent.ContinueToHub::class.java)
+        }
+
+    @Test
+    fun `given cash on delivery enabled clicked, then show progress`() =
+        testBlocking {
+            whenever(onboardingChecker.getOnboardingState())
+                .thenReturn(
+                    CashOnDeliveryDisabled(
+                        countryCode = countryCode,
+                        preferredPlugin = WOOCOMMERCE_PAYMENTS,
+                        version = pluginVersion
+                    )
+                )
+            val viewModel = createVM(
+                CardReaderOnboardingFragmentArgs(
+                    cardReaderOnboardingParam = CardReaderOnboardingParams.Check(
+                        CardReaderFlowParam.PaymentOrRefund.Payment(1L, ORDER)
+                    )
+                ).initSavedStateHandle()
+            )
+
+            (viewModel.viewStateData.value as CashOnDeliveryDisabledState).onEnableCashOnDeliveryClicked.invoke()
+
+            assertTrue((viewModel.viewStateData.value as CashOnDeliveryDisabledState).shouldShowProgress)
+        }
+
+    @Test
+    fun `given cash on delivery disabled state, then don't show progress`() =
+        testBlocking {
+            val viewModel = createVM(
+                CardReaderOnboardingFragmentArgs(
+                    CardReaderOnboardingParams.Failed(
+                        cardReaderFlowParam = mock(),
+                        onboardingState = CashOnDeliveryDisabled(
+                            countryCode = countryCode,
+                            preferredPlugin = WOOCOMMERCE_PAYMENTS,
+                            version = pluginVersion
+                        ),
+                    )
+                ).initSavedStateHandle()
+            )
+
+            assertFalse((viewModel.viewStateData.value as CashOnDeliveryDisabledState).shouldShowProgress)
         }
 
     @Test
