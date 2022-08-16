@@ -179,7 +179,6 @@ class OrderDetailViewModel @Inject constructor(
                 fetchOrderShippingLabelsAsync(),
                 fetchShipmentTrackingAsync(),
                 fetchOrderRefundsAsync(),
-                fetchOrderProductsAsync(),
                 fetchSLCreationEligibilityAsync()
             )
 
@@ -554,6 +553,7 @@ class OrderDetailViewModel @Inject constructor(
         orderDetailsTransactionLauncher.onOrderFetched()
         if (fetchedOrder != null) {
             order = fetchedOrder
+            fetchOrderProducts()
         } else {
             triggerEvent(ShowSnackbar(string.order_error_fetch_generic))
         }
@@ -585,7 +585,7 @@ class OrderDetailViewModel @Inject constructor(
     }
 
     // the database might be missing certain products, so we need to fetch the ones we don't have
-    private fun fetchOrderProductsAsync() = async {
+    private suspend fun fetchOrderProducts() {
         val productIds = order.getProductIds()
         val numLocalProducts = orderDetailRepository.getProductCountForOrder(productIds)
         if (numLocalProducts != order.items.size) {
