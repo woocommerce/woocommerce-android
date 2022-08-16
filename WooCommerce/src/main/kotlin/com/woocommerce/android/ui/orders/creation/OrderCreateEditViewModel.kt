@@ -317,9 +317,9 @@ class OrderCreateEditViewModel @Inject constructor(
     }
 
     fun onCreateOrderClicked(order: Order) {
-        trackCreateOrderButtonClick()
         when (mode) {
             Mode.Creation -> viewModelScope.launch {
+                trackCreateOrderButtonClick()
                 viewState = viewState.copy(isProgressDialogShown = true)
                 orderCreateEditRepository.placeOrder(order).fold(
                     onSuccess = {
