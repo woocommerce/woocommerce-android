@@ -232,7 +232,7 @@ class CardReaderOnboardingViewModel @Inject constructor(
     }
 
     private fun onEnableCashOnDeliveryClicked(countryCode: String) {
-//        TODO("Not implemented enable cash on delivery button click logic")
+        // TODO("Not implemented enable cash on delivery button click logic")
         viewState.value = CashOnDeliveryDisabledState(
             { (::onSkipCashOnDeliveryClicked)(countryCode) },
             { (::onEnableCashOnDeliveryClicked)(countryCode) },
