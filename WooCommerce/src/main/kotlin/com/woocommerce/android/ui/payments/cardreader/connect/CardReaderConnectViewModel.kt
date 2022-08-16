@@ -24,6 +24,7 @@ import com.woocommerce.android.model.UiString.UiStringRes
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.payments.cardreader.CardReaderTracker
 import com.woocommerce.android.ui.payments.cardreader.CardReaderTrackingInfoKeeper
+import com.woocommerce.android.ui.payments.cardreader.LearnMoreUrlProvider
 import com.woocommerce.android.ui.payments.cardreader.connect.CardReaderConnectEvent.CheckBluetoothEnabled
 import com.woocommerce.android.ui.payments.cardreader.connect.CardReaderConnectEvent.CheckBluetoothPermissionsGiven
 import com.woocommerce.android.ui.payments.cardreader.connect.CardReaderConnectEvent.CheckLocationEnabled
@@ -77,6 +78,7 @@ class CardReaderConnectViewModel @Inject constructor(
     private val selectedSite: SelectedSite,
     private val cardReaderManager: CardReaderManager,
     private val cardReaderTrackingInfoKeeper: CardReaderTrackingInfoKeeper,
+    private val learnMoreUrlProvider: LearnMoreUrlProvider,
 ) : ScopedViewModel(savedState) {
     private val arguments: CardReaderConnectDialogFragmentArgs by savedState.navArgs()
 
@@ -437,6 +439,11 @@ class CardReaderConnectViewModel @Inject constructor(
     private fun onCancelClicked() {
         WooLog.e(WooLog.T.CARD_READER, "Connection flow interrupted by the user.")
         exitFlow(connected = false)
+    }
+
+    private fun onLearnMoreClicked() {
+        tracker.trackLearnMoreConnectionClicked()
+        triggerEvent(OpenGenericWebView(learnMoreUrlProvider.providerLearnMoreUrl()))
     }
 
     private fun onReaderConnected(cardReader: CardReader) {

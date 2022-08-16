@@ -16,6 +16,7 @@ import com.woocommerce.android.model.UiString.UiStringText
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.payments.cardreader.CardReaderTracker
 import com.woocommerce.android.ui.payments.cardreader.CardReaderTrackingInfoKeeper
+import com.woocommerce.android.ui.payments.cardreader.LearnMoreUrlProvider
 import com.woocommerce.android.ui.payments.cardreader.connect.CardReaderConnectEvent.CheckBluetoothEnabled
 import com.woocommerce.android.ui.payments.cardreader.connect.CardReaderConnectEvent.CheckBluetoothPermissionsGiven
 import com.woocommerce.android.ui.payments.cardreader.connect.CardReaderConnectEvent.CheckLocationEnabled
@@ -95,6 +96,7 @@ class CardReaderConnectViewModelTest : BaseUnitTest() {
         on { get() }.thenReturn(siteModel)
     }
     private val cardReaderTrackingInfoKeeper: CardReaderTrackingInfoKeeper = mock()
+    private val learnMoreUrlProvider: LearnMoreUrlProvider = mock()
     private val locationId = "location_id"
 
     @Before
@@ -1392,6 +1394,7 @@ class CardReaderConnectViewModelTest : BaseUnitTest() {
             selectedSite,
             cardReaderManager,
             cardReaderTrackingInfoKeeper,
+            learnMoreUrlProvider,
         )
     }
 
