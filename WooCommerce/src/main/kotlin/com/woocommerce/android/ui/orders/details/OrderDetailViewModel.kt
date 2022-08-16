@@ -595,13 +595,13 @@ class OrderDetailViewModel @Inject constructor(
 
     private fun fetchSLCreationEligibilityAsync() = async {
         if (shippingLabelOnboardingRepository.isShippingPluginReady) {
-            orderDetailRepository.fetchSLCreationEligibility(order.id)
+            orderDetailRepository.fetchSLCreationEligibility(navArgs.orderId)
         }
         orderDetailsTransactionLauncher.onPackageCreationEligibleFetched()
     }
 
     private fun loadShipmentTracking(shippingLabels: ListInfo<ShippingLabel>): ListInfo<OrderShipmentTracking> {
-        val trackingList = orderDetailRepository.getOrderShipmentTrackings(order.id)
+        val trackingList = orderDetailRepository.getOrderShipmentTrackings(navArgs.orderId)
         return if (!appPrefs.isTrackingExtensionAvailable() || shippingLabels.isVisible || hasVirtualProductsOnly()) {
             ListInfo(isVisible = false)
         } else {
