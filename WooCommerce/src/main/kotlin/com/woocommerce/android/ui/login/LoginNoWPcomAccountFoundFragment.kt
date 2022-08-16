@@ -23,6 +23,10 @@ import javax.inject.Inject
 
 @AndroidEntryPoint
 class LoginNoWPcomAccountFoundFragment : Fragment(R.layout.fragment_login_no_wpcom_account_found) {
+    interface Listener {
+        fun onWhatIsWordPressLinkNoWpcomAccountScreenClicked()
+    }
+
     companion object {
         const val TAG = "LoginNoWPcomAccountFoundFragment"
         const val ARG_EMAIL_ADDRESS = "email_address"
@@ -41,6 +45,7 @@ class LoginNoWPcomAccountFoundFragment : Fragment(R.layout.fragment_login_no_wpc
 
     @Inject internal lateinit var appPrefsWrapper: AppPrefsWrapper
     @Inject internal lateinit var unifiedLoginTracker: UnifiedLoginTracker
+    private lateinit var whatIsWordPressLinkClickListener: Listener
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -68,6 +73,9 @@ class LoginNoWPcomAccountFoundFragment : Fragment(R.layout.fragment_login_no_wpc
 
         setupButtons(btnBinding, appPrefsWrapper.getLoginSiteAddress().isNullOrBlank())
 
+        binding.btnLoginWhatIsWordpress.setOnClickListener {
+            whatIsWordPressLinkClickListener.onWhatIsWordPressLinkNoWpcomAccountScreenClicked()
+        }
         binding.btnFindConnectedEmail.setOnClickListener {
             loginListener?.showHelpFindingConnectedEmail()
         }
@@ -77,7 +85,7 @@ class LoginNoWPcomAccountFoundFragment : Fragment(R.layout.fragment_login_no_wpc
         // Only show "Enter Store Address" button if not coming from the "Enter store address" login flow.
         if (showEnterStoreAddressButton) {
             with(btnBinding.buttonPrimary) {
-                text = getString(R.string.login_store_address)
+                text = getString(R.string.login_with_store_address)
                 setOnClickListener {
                     unifiedLoginTracker.trackClick(Click.LOGIN_WITH_SITE_ADDRESS)
 
@@ -127,6 +135,10 @@ class LoginNoWPcomAccountFoundFragment : Fragment(R.layout.fragment_login_no_wpc
 
         // this will throw if parent activity doesn't implement the login listener interface
         loginListener = context as? LoginListener
+
+        if (activity is Listener) {
+            whatIsWordPressLinkClickListener = activity as Listener
+        }
     }
 
     override fun onDetach() {
