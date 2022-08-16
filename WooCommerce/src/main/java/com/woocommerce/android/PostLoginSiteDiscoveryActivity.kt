@@ -11,6 +11,7 @@ import com.woocommerce.android.ui.common.wpcomwebview.WPComWebViewFragmentArgs
 import com.woocommerce.android.ui.login.LoginActivity
 import com.woocommerce.android.ui.login.LoginJetpackRequiredFragment
 import com.woocommerce.android.ui.login.LoginNoJetpackListener
+import com.woocommerce.android.ui.login.LoginSiteCheckErrorFragment
 import com.woocommerce.android.ui.login.LoginWhatIsJetpackDialogFragment
 import com.woocommerce.android.ui.login.overrides.WooLoginSiteAddressFragment
 import com.woocommerce.android.ui.main.MainActivity
@@ -244,8 +245,24 @@ class PostLoginSiteDiscoveryActivity : AppCompatActivity(), LoginListener, Login
         TODO("Not yet implemented")
     }
 
-    override fun handleSiteAddressError(siteInfo: ConnectSiteInfoPayload?) {
-        TODO("Not yet implemented")
+    override fun handleSiteAddressError(siteInfo: ConnectSiteInfoPayload) {
+        if (!siteInfo.isWordPress) {
+            // The url entered is not a WordPress site.
+            val protocolRegex = Regex("^(http[s]?://)", IGNORE_CASE)
+            val siteAddressClean = siteInfo.url.replaceFirst(protocolRegex, "")
+            val errorMessage = getString(R.string.login_not_wordpress_site_v2)
+
+            // hide the keyboard
+            org.wordpress.android.util.ActivityUtils.hideKeyboard(this)
+
+            // show the "not WordPress error" screen
+            val genericErrorFragment = LoginSiteCheckErrorFragment.newInstance(siteAddressClean, errorMessage)
+            changeFragment(
+                fragment = genericErrorFragment,
+                shouldAddToBackStack = true,
+                tag = LoginSiteCheckErrorFragment.TAG
+            )
+        }
     }
 
     override fun saveCredentialsInSmartLock(
