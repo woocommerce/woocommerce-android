@@ -1,0 +1,2 @@
+9,8:
+En esta versión, nos hemos centrado en pulir algunos aspectos de la experiencia de acceso, ya que hemos incluido la opción de que puedas instalar el plugin de WooCommerce directamente desde la aplicación. Estamos trabajando en cosas muy interesantes para todos vosotros. Sigue compartiendo tus opiniones, ya que nos ayudarán a averiguar en qué debemos trabajar. 💜

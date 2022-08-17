@@ -1,5 +1,0 @@
-9.7:
-Vi är glada att kunna meddela att det nu är möjligt att redigera en beställning direkt från appen. Du kan redigera eller ta bort produkter, avgifter, frakt samt ändra produktkvantitet. Du kan också söka efter kunder när du redigerar eller skapar en beställning.
-
-Vi har även gjort några ändringar som gör det möjligt att visa anpassade fält för en beställning samt flertalet förbättringar av vårt betalnings- och inloggningsflöde, inklusive möjligheten att installera Jetpack direkt från appen.
-

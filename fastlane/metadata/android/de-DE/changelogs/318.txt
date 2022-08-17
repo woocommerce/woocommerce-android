@@ -1,0 +1,2 @@
+9.8:
+Bei dieser Version haben wir einige Verbesserungen bezüglich der Anmeldung eingeführt, darunter die Option, das WooCommerce-Plugin direkt über die App zu installieren. Wir arbeiten an ein paar tollen Neuerungen, die euch bestimmt gefallen werden! Sendet uns weiterhin Feedback! So finden wir heraus, was wir als Nächstes optimieren können. 💜

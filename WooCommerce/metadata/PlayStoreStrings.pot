@@ -11,19 +11,16 @@ msgstr ""
 "Project-Id-Version: Release Notes & Play Store Descriptions\n"
 
 #. translators: Release notes for this version to be displayed in the Play Store. Limit to 500 characters including spaces and commas!
+msgctxt "release_note_099"
+msgid ""
+"9.9:\n"
+"This release has a few improvements to your login experience, including the option to install WooCommerce from the app. We also have a new Payments section in the app. Head over to the More menu to start using Payments!\n"
+msgstr ""
+
 msgctxt "release_note_098"
 msgid ""
 "9.8:\n"
 "For this release, we focused on polishing a few things around your login experience, including the option to install WooCommerce plugin directly from the app. We are working on some pretty cool stuff for you all! Keep your feedback rolling in; it helps us figure out what to work on next. 💜\n"
-msgstr ""
-
-msgctxt "release_note_097"
-msgid ""
-"9.7:\n"
-"We’re thrilled to announce that it’s now possible to edit an order from the app. You can edit or remove products, fees, shipping and change product quantity. You can also search for customers when editing or creating an order.\n"
-"\n"
-"We’ve also made some changes to display custom fields for an order and several improvements to our payments and login flow, including the option to install Jetpack directly from the app.\n"
-"\n"
 msgstr ""
 
 #. translators: Short description of the app to be displayed in the Play Store. Limit to 80 characters including spaces and commas!

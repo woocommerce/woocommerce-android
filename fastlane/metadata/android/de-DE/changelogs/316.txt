@@ -1,5 +1,0 @@
-9.7:
-Tolle Neuigkeiten: Ab sofort ist es möglich, eine Bestellung von der App aus zu bearbeiten. Du kannst Produkte, Gebühren und Versand bearbeiten und entfernen und die Anzahl der Produkte ändern. Außerdem kannst du nach Kunden suchen, wenn du eine Bestellung bearbeitest oder erstellst.
-
-Zudem haben wir einige Änderungen an der Anzeige von benutzerdefinierten Feldern für eine Bestellung und mehrere Verbesserungen am Zahlungs- und Anmeldevorgang vorgenommen, wie z. B. die Option, Jetpack direkt aus der App zu installieren.
-

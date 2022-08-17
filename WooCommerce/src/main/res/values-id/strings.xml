@@ -1,15 +1,38 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2022-08-05 16:00:52+0000
+Translation-Revision-Date: 2022-08-10 18:54:03+0000
 Plural-Forms: nplurals=2; plural=n > 1;
 Generator: GlotPress/2.4.0-alpha
 Language: id
 -->
 <resources>
+    <string name="login_magic_links_email_sent">Kami baru saja mengirimkan tautan ajaib ke </string>
+    <string name="login_magic_links_sent_label_short">Periksa email Anda di perangkat ini!</string>
+    <string name="or_use_password">Gunakan kata sandi untuk login</string>
+    <string name="login_magic_link_button">Login dengan tautan ajaib</string>
+    <string name="login_magic_link_auto_sent">Kami baru saja mengirimkan tautan ajaib ke alamat email Anda. Ketuk tautan di email tersebut untuk login.</string>
+    <string name="login_help_notification_incorrect_wpcom_email_description">Login dengan kredensial situs Anda</string>
+    <string name="promo_linked_products_banner_message">Berikan rekomendasi produk yang membantu dan relevan bagi pelanggan Anda dengan menambahkan upsell dan cross-sell</string>
+    <string name="promo_linked_products_banner_title">Tingkatkan penjualan Anda dengan produk tertaut</string>
+    <string name="card_reader_upsell_card_reader_banner_description">Mulai berjualan secara langsung dalam waktu kurang dari 20 menit dengan pembaca kartu kami.</string>
+    <string name="orderlist_updating_order_error">Error saat memperbarui Pesanan #%1$d</string>
+    <string name="orderlist_mark_completed_success">Pesanan #%1$d ditandai selesai</string>
+    <string name="orderlist_mark_completed">Tandai\nselesai</string>
+    <string name="login_install_woo">Instal WooCommerce</string>
+    <string name="login_not_woo_store">Tampaknya %1$s bukan situs WooCommerce.</string>
+    <string name="login_prologue_survey_button_switch_stores">Beralih dari satu toko ke toko lain</string>
+    <string name="login_prologue_survey_button_manage_orders">Mengelola pesanan saya</string>
+    <string name="login_prologue_survey_button_edit_products">Membuat atau memperbarui produk saya</string>
+    <string name="login_prologue_survey_button_check_analytics">Memeriksa analitik saya</string>
+    <string name="login_prologue_survey_button_set_up_store">Mencoba untuk menyiapkan toko</string>
+    <string name="login_prologue_survey_button_exploring">Hanya menjelajahi</string>
+    <string name="login_prologue_survey_title">Apa yang mendorong Anda membuka WooCommerce?</string>
+    <string name="tip">Tips</string>
+    <string name="set_up_now">Siapkan sekarang</string>
     <string name="lets_get_started">Mari kita mulai!</string>
     <string name="login_help_notification_wordpress_login_button">Login dengan WordPress.com</string>
     <string name="login_help_notification_contact_support_button">Hubungi dukungan</string>
-    <string name="login_help_notification_site_error_description">Coba login dengan akun WordPress.com Anda</string>
+    <string name="login_help_notification_site_error_description">Login dengan akun WordPress.com Anda</string>
     <string name="login_help_notification_no_interaction_default_description">Minta bantuan!</string>
     <string name="login_help_notification_default_title">Mengalami masalah terkait login?</string>
     <string name="product_search_sku">SKU</string>
@@ -19,7 +42,6 @@ Language: id
     <string name="card_reader_upsell_card_reader_banner_dismiss_dialog_description">Jangan khawatir! Anda bisa memulai Pembayaran Langsung kapan saja di Pengaturan. </string>
     <string name="card_reader_upsell_card_reader_banner_payments">Pembayaran Langsung</string>
     <string name="card_reader_upsell_card_reader_banner_cta">Beli Pembaca Kartu</string>
-    <string name="card_reader_upsell_card_reader_banner_description">Bersiaplah menerima pembayaran menggunakan pembaca kartu.</string>
     <string name="card_reader_upsell_card_reader_banner_title">Terima pembayaran dengan mudah</string>
     <string name="card_reader_upsell_card_reader_banner_new">Baru</string>
     <string name="card_reader_upsell_card_reader_banner_dismiss">Tutup</string>
@@ -1777,7 +1799,6 @@ Language: id
     <string name="login_jetpack_what_is_description">Jetpack merupakan plugin WordPress gratis yang menghubungkan toko Anda dengan peralatan yang diperlukan agar dapat memberikan pengalaman seluler terbaik, mencakup pemberitahuan push dan statistik</string>
     <string name="login_jetpack_what_is">Apa itu Jetpack?</string>
     <string name="login_view_connected_stores">Lihat toko terhubung</string>
-    <string name="login_not_woo_store">Tampaknya %1$s bukan situs WooCommerce. Instal plugin WooCommerce di situs Anda, lalu segarkan aplikasi.</string>
     <string name="login_not_connected_to_account">Sepertinya %1$s tidak terhubung ke akun WordPress.com lainnya.</string>
     <string name="keep_editing">Lanjutkan menyunting</string>
     <string name="notification_wpcom_username_needed">Silakan login dengan nama pengguna dan kata sandi Anda.</string>

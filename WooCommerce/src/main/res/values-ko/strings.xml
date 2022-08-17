@@ -1,15 +1,38 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2022-08-05 15:57:51+0000
+Translation-Revision-Date: 2022-08-12 09:54:15+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: ko_KR
 -->
 <resources>
+    <string name="login_magic_links_email_sent">방금 다음으로 매직 링크를 보내드렸습니다.</string>
+    <string name="login_magic_links_sent_label_short">이 기기에서 이메일을 확인하세요!</string>
+    <string name="or_use_password">로그인 비밀번호 사용</string>
+    <string name="login_magic_link_button">매직 링크로 로그인</string>
+    <string name="login_magic_link_auto_sent">방금 이메일 주소로 매직 링크를 보내드렸습니다. 이메일에 있는 링크를 눌러 로그인하세요.</string>
+    <string name="login_help_notification_incorrect_wpcom_email_description">사이트 자격 증명으로 로그인</string>
+    <string name="promo_linked_products_banner_message">상향 판매와 교차 판매를 추가하여 고객에게 도움이 되는 관련 상품 추천 제공</string>
+    <string name="promo_linked_products_banner_title">링크가 설정된 상품으로 판매 증진</string>
+    <string name="card_reader_upsell_card_reader_banner_description">카드 리더로 20분 안에 대면 판매를 시작하세요.</string>
+    <string name="orderlist_updating_order_error">주문 #%1$d 업데이트 중 오류 발생</string>
+    <string name="orderlist_mark_completed_success">주문 #%1$d이(가) 완료됨으로 표시됨</string>
+    <string name="orderlist_mark_completed">표시\n완료됨</string>
+    <string name="login_install_woo">우커머스 설치</string>
+    <string name="login_not_woo_store">%1$s은(는) 우커머스 사이트가 아닌 것 같습니다.</string>
+    <string name="login_prologue_survey_button_switch_stores">여러 스토어 간 전환</string>
+    <string name="login_prologue_survey_button_manage_orders">내 주문 관리</string>
+    <string name="login_prologue_survey_button_edit_products">내 상품 생성 또는 업데이트</string>
+    <string name="login_prologue_survey_button_check_analytics">내 분석 확인</string>
+    <string name="login_prologue_survey_button_set_up_store">스토어 설정 시도하기</string>
+    <string name="login_prologue_survey_button_exploring">그냥 둘러보기</string>
+    <string name="login_prologue_survey_title">무슨 일로 우커머스에 오셨나요?</string>
+    <string name="tip">팁</string>
+    <string name="set_up_now">지금 설정</string>
     <string name="lets_get_started">시작해 보세요!</string>
     <string name="login_help_notification_wordpress_login_button">워드프레스닷컴으로 로그인</string>
     <string name="login_help_notification_contact_support_button">지원 문의</string>
-    <string name="login_help_notification_site_error_description">워드프레스닷컴 계정으로 로그인 시도</string>
+    <string name="login_help_notification_site_error_description">워드프레스닷컴 계정으로 로그인</string>
     <string name="login_help_notification_no_interaction_default_description">조금 도움을 받으세요!</string>
     <string name="login_help_notification_default_title">로그인에 문제가 있나요?</string>
     <string name="product_search_sku">SKU</string>
@@ -19,7 +42,6 @@ Language: ko_KR
     <string name="card_reader_upsell_card_reader_banner_dismiss_dialog_description">걱정하지 마세요! 언제든지 설정에서 대면 결제를 시작하실 수 있습니다.</string>
     <string name="card_reader_upsell_card_reader_banner_payments">대면 결제</string>
     <string name="card_reader_upsell_card_reader_banner_cta">카드 리더 구매</string>
-    <string name="card_reader_upsell_card_reader_banner_description">카드 리더로 결제를 수락할 준비를 하세요.</string>
     <string name="card_reader_upsell_card_reader_banner_title">쉽게 결제 수락</string>
     <string name="card_reader_upsell_card_reader_banner_new">신규</string>
     <string name="card_reader_upsell_card_reader_banner_dismiss">해제</string>
@@ -1777,7 +1799,6 @@ Language: ko_KR
     <string name="login_jetpack_what_is_description">Jetpack은 스토어를 최고의 모바일 환경을 제공하는 데 필요한 푸시 알림, 통계 등의 도구와 연결하는 무료 워드프레스 플러그인입니다.</string>
     <string name="login_jetpack_what_is">Jetpack이란 무엇인가요?</string>
     <string name="login_view_connected_stores">연결된 스토어 보기</string>
-    <string name="login_not_woo_store">%1$s은(는) WooCommerce 사이트가 아닌 것 같습니다. 사이트에 WooCommerce 플러그인을 설치한 다음 이 앱을 새로 고치세요.</string>
     <string name="login_not_connected_to_account">%1$s이(가) 다른 워드프레스닷컴 계정에 연결되어 있는 것 같습니다.</string>
     <string name="keep_editing">계속 편집하기</string>
     <string name="notification_wpcom_username_needed">사용자 이름과 비밀번호를 사용하여 로그인하세요.</string>

@@ -1,15 +1,38 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2022-07-27 15:54:03+0000
+Translation-Revision-Date: 2022-08-11 11:59:17+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: sv_SE
 -->
 <resources>
+    <string name="login_magic_links_email_sent">Vi har precis skickat en magisk länk till</string>
+    <string name="login_magic_links_sent_label_short">Kontrollera din e-post på denna enhet!</string>
+    <string name="or_use_password">Använd lösenord för att logga in</string>
+    <string name="login_magic_link_button">Logga in med magisk länk</string>
+    <string name="login_magic_link_auto_sent">Vi har precis skickat en magisk länk till din e-postadress. Tryck på länken i e-postmeddelandet för att logga in.</string>
+    <string name="login_help_notification_incorrect_wpcom_email_description">Logga in med dina webbplatsuppgifter</string>
+    <string name="promo_linked_products_banner_message">Ge dina kunder användbara och relevanta produktrekommendationer genom att lägga till merförsäljning och korsförsäljning</string>
+    <string name="promo_linked_products_banner_title">Öka din försäljning med länkade produkter</string>
+    <string name="card_reader_upsell_card_reader_banner_description">Börja sälja personligen på under 20 minuter med vår kortläsare.</string>
+    <string name="orderlist_updating_order_error">Det gick inte att uppdatera beställning #%1$d</string>
+    <string name="orderlist_mark_completed_success">Beställning #%1$d har markerats som slutförd</string>
+    <string name="orderlist_mark_completed">Markera\nslutförd</string>
+    <string name="login_install_woo">Installera WooCommerce</string>
+    <string name="login_not_woo_store">Det verkar som att %1$s inte är en WooCommerce-webbplats.</string>
+    <string name="login_prologue_survey_button_switch_stores">Växla mellan flera butiker</string>
+    <string name="login_prologue_survey_button_manage_orders">Hantera mina beställningar</string>
+    <string name="login_prologue_survey_button_edit_products">Skapa eller uppdatera mina produkter</string>
+    <string name="login_prologue_survey_button_check_analytics">Kolla min analys</string>
+    <string name="login_prologue_survey_button_set_up_store">Försöker ställa in en butik</string>
+    <string name="login_prologue_survey_button_exploring">Utforskar bara</string>
+    <string name="login_prologue_survey_title">Vad för dig till WooCommerce?</string>
+    <string name="tip">Tips</string>
+    <string name="set_up_now">Ställ in nu</string>
     <string name="lets_get_started">Då sätter vi igång!</string>
     <string name="login_help_notification_wordpress_login_button">Logga in med WordPress.com</string>
     <string name="login_help_notification_contact_support_button">Kontakta supporten</string>
-    <string name="login_help_notification_site_error_description">Prova logga in med ditt WordPress.com-konto</string>
+    <string name="login_help_notification_site_error_description">Logga in med ditt WordPress.com-konto</string>
     <string name="login_help_notification_no_interaction_default_description">Skaffa lite hjälp!</string>
     <string name="login_help_notification_default_title">Har du problem med att logga in?</string>
     <string name="product_search_sku">Artikelnr</string>
@@ -19,7 +42,6 @@ Language: sv_SE
     <string name="card_reader_upsell_card_reader_banner_dismiss_dialog_description">Inga problem! Du kan alltid komma igång med In-Person Payments via Inställningar.</string>
     <string name="card_reader_upsell_card_reader_banner_payments">Personliga betalningar</string>
     <string name="card_reader_upsell_card_reader_banner_cta">Köp kortläsare</string>
-    <string name="card_reader_upsell_card_reader_banner_description">Gör dig redo att ta emot betalningar med kortläsare.</string>
     <string name="card_reader_upsell_card_reader_banner_title">Ta emot betalningar enkelt</string>
     <string name="card_reader_upsell_card_reader_banner_new">NYTT</string>
     <string name="card_reader_upsell_card_reader_banner_dismiss">Avfärda</string>
@@ -1777,7 +1799,6 @@ Language: sv_SE
     <string name="login_jetpack_what_is_description">Jetpack är ett kostnadsfritt tillägg i WordPress som ansluter din butik till de verktyg som behövs för att ge den bästa möjliga mobilupplevelsen, inklusive pushmeddelanden och statistik</string>
     <string name="login_jetpack_what_is">Vad är Jetpack?</string>
     <string name="login_view_connected_stores">Visa anslutna butiker</string>
-    <string name="login_not_woo_store">Det ser ut som att %1$s inte är en WooCommerce-webbplats. Installera WooCommerce-tillägget på din webbplats och starta sedan om appen.</string>
     <string name="login_not_connected_to_account">Det ser ut som att %1$s är ansluten till ett annat WordPress.com-konto.</string>
     <string name="keep_editing">Fortsätt redigera</string>
     <string name="notification_wpcom_username_needed">Logga in med ditt användarnamn och lösenord.</string>

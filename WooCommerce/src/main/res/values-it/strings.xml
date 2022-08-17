@@ -1,15 +1,38 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2022-08-05 15:56:31+0000
+Translation-Revision-Date: 2022-08-10 18:54:03+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: it
 -->
 <resources>
+    <string name="login_magic_links_email_sent">Abbiamo appena inviato un link magico a</string>
+    <string name="login_magic_links_sent_label_short">Controlla la tua e-mail su questo dispositivo!</string>
+    <string name="or_use_password">Usa la password per accedere</string>
+    <string name="login_magic_link_button">Accedi con il link magico</string>
+    <string name="login_magic_link_auto_sent">Ti abbiamo appena inviato un link magico al tuo indirizzo e-mail. Tocca il link nell\'e-mail per accedere.</string>
+    <string name="login_help_notification_incorrect_wpcom_email_description">Accedi con le credenziali del sito</string>
+    <string name="promo_linked_products_banner_message">Offri ai tuoi clienti consigli utili e pertinenti sui prodotti sommando upsell e cross-sell</string>
+    <string name="promo_linked_products_banner_title">Aumenta le tue vendite con i prodotti collegati</string>
+    <string name="card_reader_upsell_card_reader_banner_description">Inizia a vendere di persona in meno di 20 minuti con il nostro lettore di carte.</string>
+    <string name="orderlist_updating_order_error">Errore durante l\'aggiornamento dell\'ordine #%1$d</string>
+    <string name="orderlist_mark_completed_success">Ordine #%1$d contrassegnato come completo</string>
+    <string name="orderlist_mark_completed">Contrassegna\ncompletato</string>
+    <string name="login_install_woo">Installa WooCommerce</string>
+    <string name="login_not_woo_store">%1$s non è un sito WooCommerce.</string>
+    <string name="login_prologue_survey_button_switch_stores">Passa a un negozio all\'altro</string>
+    <string name="login_prologue_survey_button_manage_orders">Gestisci i miei ordini</string>
+    <string name="login_prologue_survey_button_edit_products">Crea o aggiorna i miei prodotti</string>
+    <string name="login_prologue_survey_button_check_analytics">Controlla le mie analisi</string>
+    <string name="login_prologue_survey_button_set_up_store">Tentativo di configurazione di un negozio</string>
+    <string name="login_prologue_survey_button_exploring">Sto solo dando un\'occhiata</string>
+    <string name="login_prologue_survey_title">Cosa ti porta in WooCommerce?</string>
+    <string name="tip">Suggerimento</string>
+    <string name="set_up_now">Configura ora</string>
     <string name="lets_get_started">Iniziamo!</string>
     <string name="login_help_notification_wordpress_login_button">Accedi con WordPress.com</string>
     <string name="login_help_notification_contact_support_button">Contatta il supporto</string>
-    <string name="login_help_notification_site_error_description">Prova ad accedere con il tuo account WordPress.com</string>
+    <string name="login_help_notification_site_error_description">Accedi con il tuo account WordPress.com</string>
     <string name="login_help_notification_no_interaction_default_description">Ricevi aiuto!</string>
     <string name="login_help_notification_default_title">Problemi con l\'accesso?</string>
     <string name="product_search_sku">COD</string>
@@ -19,7 +42,6 @@ Language: it
     <string name="card_reader_upsell_card_reader_banner_dismiss_dialog_description">Non preoccuparti. Puoi sempre iniziare con i Pagamenti di persona nelle Impostazioni.</string>
     <string name="card_reader_upsell_card_reader_banner_payments">Pagamenti di persona</string>
     <string name="card_reader_upsell_card_reader_banner_cta">Lettore carte di acquisto</string>
-    <string name="card_reader_upsell_card_reader_banner_description">Preparati ad accettare pagamenti con il lettore di carte.</string>
     <string name="card_reader_upsell_card_reader_banner_title">Accetta pagamenti facilmente</string>
     <string name="card_reader_upsell_card_reader_banner_new">NOVITÀ</string>
     <string name="card_reader_upsell_card_reader_banner_dismiss">Ignora</string>
@@ -1777,7 +1799,6 @@ Language: it
     <string name="login_jetpack_what_is_description">Jetpack è un plugin WordPress gratuito che collega il tuo negozio con gli strumenti necessari per assicurarti la migliore esperienza mobile, incluse le notifiche push e le statistiche</string>
     <string name="login_jetpack_what_is">Che cos\'è Jetpack?</string>
     <string name="login_view_connected_stores">Visualizza i negozi collegati</string>
-    <string name="login_not_woo_store">%1$s non è un sito WooCommerce. Installa il plugin WooCommerce sul tuo sito, quindi aggiorna l\'app.</string>
     <string name="login_not_connected_to_account">%1$s è collegato a un altro account WordPress.com.</string>
     <string name="keep_editing">Continua a modificare</string>
     <string name="notification_wpcom_username_needed">Accedi con i tuoi nome utente e password.</string>

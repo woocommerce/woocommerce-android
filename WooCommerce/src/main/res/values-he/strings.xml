@@ -1,15 +1,38 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2022-08-05 16:04:19+0000
+Translation-Revision-Date: 2022-08-11 15:54:03+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: he_IL
 -->
 <resources>
+    <string name="login_magic_links_email_sent">שלחנו כעת קישור ישיר אל</string>
+    <string name="login_magic_links_sent_label_short">יש לבדוק את תיבת האימייל במכשיר זה!</string>
+    <string name="or_use_password">להשתמש בסיסמה כדי להתחבר</string>
+    <string name="login_magic_link_button">להתחבר באמצעות קישור ישיר</string>
+    <string name="login_magic_link_auto_sent">שלחנו כעת קישור ישיר אל כתובת האימייל שלך. יש להקיש על הקישור באימייל כדי להתחבר.</string>
+    <string name="login_help_notification_incorrect_wpcom_email_description">להתחבר עם פרטי הכניסה שלך לאתר</string>
+    <string name="promo_linked_products_banner_message">לספק ללקוחות המלצות מועילות ורלוונטיות למוצרים על ידי הוספה של שדרוגים ומוצרים משלימים</string>
+    <string name="promo_linked_products_banner_title">לשפר את המכירות עם מוצרים מקושרים</string>
+    <string name="card_reader_upsell_card_reader_banner_description">להתחיל למכור מוצרים באופן אישי במהירות עם קורא הכרטיסים שלנו. תהליך ההתחברות אורך פחות מ-20 דקות.</string>
+    <string name="orderlist_updating_order_error">שגיאה בעדכון של הזמנה מס\' ⁦%1$d⁩</string>
+    <string name="orderlist_mark_completed_success">הזמנה מס\' ⁦%1$d⁩ סומנה כ\'הושלמה\'</string>
+    <string name="orderlist_mark_completed">לסמן\nהושלמה</string>
+    <string name="login_install_woo">להתקין את WooCommerce</string>
+    <string name="login_not_woo_store">נראה שהאתר ⁦%1$s⁩ אינו אתר של WooCommerce.</string>
+    <string name="login_prologue_survey_button_switch_stores">להחליף בין מספר חנויות</string>
+    <string name="login_prologue_survey_button_manage_orders">לנהל את ההזמנות שלי</string>
+    <string name="login_prologue_survey_button_edit_products">ליצור או לעדכן את המוצרים שלי</string>
+    <string name="login_prologue_survey_button_check_analytics">לבדוק את הנתונים האנליטיים שלי</string>
+    <string name="login_prologue_survey_button_set_up_store">מנסה להקים חנות</string>
+    <string name="login_prologue_survey_button_exploring">אני רק רוצה לעיין</string>
+    <string name="login_prologue_survey_title">למה הגעת אל WooCommerce?</string>
+    <string name="tip">עצה</string>
+    <string name="set_up_now">להגדיר כעת</string>
     <string name="lets_get_started">אפשר להתחיל עכשיו!</string>
     <string name="login_help_notification_wordpress_login_button">להתחבר באמצעות WordPress.com</string>
     <string name="login_help_notification_contact_support_button">לפנות לתמיכה</string>
-    <string name="login_help_notification_site_error_description">כדאי לנסות להתחבר עם החשבון שלך ב-WordPress.com</string>
+    <string name="login_help_notification_site_error_description">להתחבר עם החשבון שלך ב-WordPress.com</string>
     <string name="login_help_notification_no_interaction_default_description">אפשר לפנות אלינו לעזרה!</string>
     <string name="login_help_notification_default_title">נתקלת בבעיה במהלך ההתחברות?</string>
     <string name="product_search_sku">SKU</string>
@@ -19,7 +42,6 @@ Language: he_IL
     <string name="card_reader_upsell_card_reader_banner_dismiss_dialog_description">אל דאגה! תמיד אפשר להתחיל לבצע תשלומים באופן אישי דרך \'הגדרות\'.</string>
     <string name="card_reader_upsell_card_reader_banner_payments">תשלומים באופן אישי</string>
     <string name="card_reader_upsell_card_reader_banner_cta">לרכוש קורא כרטיסים</string>
-    <string name="card_reader_upsell_card_reader_banner_description">עוד מעט תהיה לך אפשרות לגבות תשלומים באמצעות קורא כרטיסים.</string>
     <string name="card_reader_upsell_card_reader_banner_title">לקבל תשלומים בקלות</string>
     <string name="card_reader_upsell_card_reader_banner_new">חדש</string>
     <string name="card_reader_upsell_card_reader_banner_dismiss">ביטול</string>
@@ -1777,7 +1799,6 @@ Language: he_IL
     <string name="login_jetpack_what_is_description">Jetpack הוא תוסף חינמי ב-WordPress שמתחבר לחנות שלך עם כלים שיאפשרו לך ליהנות מהחוויה הטובה ביותר בנייד, כולל הודעות דחיפה ונתונים סטטיסטיים</string>
     <string name="login_jetpack_what_is">מה זה Jetpack?</string>
     <string name="login_view_connected_stores">להצגת החנויות המחוברות</string>
-    <string name="login_not_woo_store">נראה שהאתר ⁦%1$s⁩ אינו אתר של WooCommerce. יש להתקין את התוסף של WooCommerce באתר שלך ולאחר מכן לרענן את האפליקציה.</string>
     <string name="login_not_connected_to_account">נראה ששם המשתמש %1$s מחובר לחשבון אחר ב-WordPress.com.</string>
     <string name="keep_editing">המשך עריכה</string>
     <string name="notification_wpcom_username_needed">עליך להיכנס באמצעות שם המשתמש והסיסמה שלך.</string>

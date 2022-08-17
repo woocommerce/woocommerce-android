@@ -13,6 +13,7 @@ import com.woocommerce.android.model.Notification
 import com.woocommerce.android.model.isOrderNotification
 import com.woocommerce.android.model.toAppModel
 import com.woocommerce.android.support.ZendeskHelper
+import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.login.localnotifications.LoginNotificationScheduler.Companion.LOGIN_HELP_NOTIFICATION_ID
 import com.woocommerce.android.util.NotificationsParser
 import com.woocommerce.android.util.WooLog.T.NOTIFS
@@ -44,7 +45,8 @@ class NotificationMessageHandler @Inject constructor(
     private val notificationBuilder: WooNotificationBuilder,
     private val analyticsTracker: NotificationAnalyticsTracker,
     private val zendeskHelper: ZendeskHelper,
-    private val notificationsParser: NotificationsParser
+    private val notificationsParser: NotificationsParser,
+    private val selectedSite: SelectedSite,
 ) {
     companion object {
         private const val KEY_PUSH_TYPE_ZENDESK = "zendesk"
@@ -81,6 +83,11 @@ class NotificationMessageHandler @Inject constructor(
     fun onNewMessageReceived(messageData: Map<String, String>, appContext: Context) {
         if (!accountStore.hasAccessToken()) {
             wooLogWrapper.e(NOTIFS, "User is not logged in!")
+            return
+        }
+
+        if (!selectedSite.exists()) {
+            wooLogWrapper.e(NOTIFS, "User has no site selected!")
             return
         }
 
