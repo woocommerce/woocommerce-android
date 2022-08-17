@@ -1060,6 +1060,24 @@ class CardReaderOnboardingViewModelTest : BaseUnitTest() {
         }
 
     @Test
+    fun `given cash on delivery disabled screen, when skip button clicked, then store decision in app prefs`() =
+        testBlocking {
+            whenever(onboardingChecker.getOnboardingState())
+                .thenReturn(
+                    CashOnDeliveryDisabled(
+                        countryCode = countryCode,
+                        preferredPlugin = WOOCOMMERCE_PAYMENTS,
+                        version = pluginVersion
+                    )
+                )
+            val viewModel = createVM()
+
+            (viewModel.viewStateData.value as CashOnDeliveryDisabledState).onSkipCashOnDeliveryClicked.invoke()
+
+            verify(appPrefsWrapper).setCashOnDeliveryDisabledStateSkipped(true)
+        }
+
+    @Test
     fun `given cash on delivery enabled clicked, then show progress`() =
         testBlocking {
             whenever(onboardingChecker.getOnboardingState())
