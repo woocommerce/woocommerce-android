@@ -6,7 +6,6 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.map
 import com.woocommerce.android.AppConstants
-import com.woocommerce.android.R
 import com.woocommerce.android.extensions.differsFrom
 import com.woocommerce.android.model.Product
 import com.woocommerce.android.ui.orders.creation.navigation.OrderCreateEditNavigationTarget.ShowProductVariations
