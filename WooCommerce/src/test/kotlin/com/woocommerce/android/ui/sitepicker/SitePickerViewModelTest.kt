@@ -17,7 +17,7 @@ import com.woocommerce.android.ui.sitepicker.SitePickerViewModel.SitePickerEvent
 import com.woocommerce.android.ui.sitepicker.SitePickerViewModel.SitePickerEvent.NavigateToMainActivityEvent
 import com.woocommerce.android.ui.sitepicker.SitePickerViewModel.SitePickerEvent.NavigationToHelpFragmentEvent
 import com.woocommerce.android.ui.sitepicker.SitePickerViewModel.SitePickerEvent.NavigationToLearnMoreAboutJetpackEvent
-import com.woocommerce.android.ui.sitepicker.SitePickerViewModel.SitePickerEvent.NavigationToWhatIsJetpackFragmentEvent
+import com.woocommerce.android.ui.sitepicker.SitePickerViewModel.SitePickerEvent.NavigateToNewToWooEvent
 import com.woocommerce.android.ui.sitepicker.SitePickerViewModel.SitePickerEvent.ShowWooUpgradeDialogEvent
 import com.woocommerce.android.ui.sitepicker.SitePickerViewModel.SitePickerState.AccountMismatchState
 import com.woocommerce.android.ui.sitepicker.SitePickerViewModel.SitePickerState.NoStoreState
@@ -543,17 +543,17 @@ class SitePickerViewModelTest : BaseUnitTest() {
         givenTheScreenIsFromLogin(true)
         whenViewModelIsCreated()
 
-        var view: NavigationToWhatIsJetpackFragmentEvent? = null
+        var view: NavigateToNewToWooEvent? = null
         viewModel.event.observeForever {
-            if (it is NavigationToWhatIsJetpackFragmentEvent) view = it
+            if (it is NavigateToNewToWooEvent) view = it
         }
 
-        viewModel.onWhatIsJetpackButtonClick()
+        viewModel.onNewToWooClick()
 
         verify(analyticsTrackerWrapper, times(1)).track(
             AnalyticsEvent.LOGIN_JETPACK_REQUIRED_WHAT_IS_JETPACK_LINK_TAPPED
         )
-        assertThat(view).isEqualTo(NavigationToWhatIsJetpackFragmentEvent)
+        assertThat(view).isEqualTo(NavigateToNewToWooEvent)
     }
 
     @Test

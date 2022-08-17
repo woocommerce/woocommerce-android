@@ -22,16 +22,15 @@ import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.common.wpcomwebview.WPComWebViewFragment
 import com.woocommerce.android.ui.login.LoginActivity
 import com.woocommerce.android.ui.login.LoginEmailHelpDialogFragment
-import com.woocommerce.android.ui.login.LoginWhatIsJetpackDialogFragment
 import com.woocommerce.android.ui.main.AppBarStatus
 import com.woocommerce.android.ui.main.MainActivity
 import com.woocommerce.android.ui.sitediscovery.PostLoginSiteDiscoveryActivity
 import com.woocommerce.android.ui.sitepicker.SitePickerViewModel.SitePickerEvent.NavigateToEmailHelpDialogEvent
 import com.woocommerce.android.ui.sitepicker.SitePickerViewModel.SitePickerEvent.NavigateToMainActivityEvent
+import com.woocommerce.android.ui.sitepicker.SitePickerViewModel.SitePickerEvent.NavigateToNewToWooEvent
 import com.woocommerce.android.ui.sitepicker.SitePickerViewModel.SitePickerEvent.NavigateToWPComWebView
 import com.woocommerce.android.ui.sitepicker.SitePickerViewModel.SitePickerEvent.NavigationToHelpFragmentEvent
 import com.woocommerce.android.ui.sitepicker.SitePickerViewModel.SitePickerEvent.NavigationToLearnMoreAboutJetpackEvent
-import com.woocommerce.android.ui.sitepicker.SitePickerViewModel.SitePickerEvent.NavigationToWhatIsJetpackFragmentEvent
 import com.woocommerce.android.ui.sitepicker.SitePickerViewModel.SitePickerEvent.ShowWooUpgradeDialogEvent
 import com.woocommerce.android.ui.sitepicker.SitePickerViewModel.SitePickerState.AccountMismatchState
 import com.woocommerce.android.ui.sitepicker.SitePickerViewModel.SitePickerState.NoStoreState
@@ -147,7 +146,7 @@ class SitePickerFragment : BaseFragment(R.layout.fragment_site_picker), LoginEma
                 is NavigateToMainActivityEvent -> (activity as? MainActivity)?.handleSitePickerResult()
                 is ShowWooUpgradeDialogEvent -> showWooUpgradeDialog()
                 is NavigationToHelpFragmentEvent -> navigateToHelpScreen()
-                is NavigationToWhatIsJetpackFragmentEvent -> navigateToWhatIsJetpackScreen()
+                is NavigateToNewToWooEvent -> navigateToNewToWooScreen()
                 is NavigationToLearnMoreAboutJetpackEvent -> navigateToLearnMoreAboutJetpackScreen()
                 is NavigateToEmailHelpDialogEvent -> navigateToNeedHelpFindingEmailScreen()
                 is NavigateToWPComWebView -> navigateToWPComWebView(event)
@@ -180,7 +179,7 @@ class SitePickerFragment : BaseFragment(R.layout.fragment_site_picker), LoginEma
             startActivity(Intent(requireActivity(), PostLoginSiteDiscoveryActivity::class.java))
         }
         binding.noStoresView.clickSecondaryAction {
-            viewModel.onWhatIsJetpackButtonClick()
+            viewModel.onNewToWooClick()
         }
     }
 
@@ -237,8 +236,8 @@ class SitePickerFragment : BaseFragment(R.layout.fragment_site_picker), LoginEma
         }
     }
 
-    private fun navigateToWhatIsJetpackScreen() {
-        LoginWhatIsJetpackDialogFragment().show(parentFragmentManager, LoginWhatIsJetpackDialogFragment.TAG)
+    private fun navigateToNewToWooScreen() {
+        ChromeCustomTabUtils.launchUrl(requireContext(), AppUrls.NEW_TO_WOO_DOC)
     }
 
     private fun navigateToLearnMoreAboutJetpackScreen() {
