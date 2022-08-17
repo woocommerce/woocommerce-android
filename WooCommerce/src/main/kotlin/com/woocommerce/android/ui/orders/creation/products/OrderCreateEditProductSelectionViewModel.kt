@@ -6,6 +6,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.map
 import com.woocommerce.android.AppConstants
+import com.woocommerce.android.R
 import com.woocommerce.android.extensions.differsFrom
 import com.woocommerce.android.model.Product
 import com.woocommerce.android.ui.orders.creation.navigation.OrderCreateEditNavigationTarget.ShowProductVariations
@@ -80,11 +81,14 @@ class OrderCreateEditProductSelectionViewModel @Inject constructor(
     }
 
     fun onProductSelected(productId: Long) {
-        val product = productList.value!!.first { it.remoteId == productId }
-        if (product.numVariations == 0) {
-            triggerEvent(AddProduct(productId))
-        } else {
-            triggerEvent(ShowProductVariations(productId))
+        productList.value!!.firstOrNull { it.remoteId == productId }?.let { product ->
+            if (product.numVariations == 0) {
+                triggerEvent(AddProduct(productId))
+            } else {
+                triggerEvent(ShowProductVariations(productId))
+            }
+        } ?: run {
+            triggerEvent(ProductNotFound)
         }
     }
 
@@ -155,4 +159,6 @@ class OrderCreateEditProductSelectionViewModel @Inject constructor(
     ) : Parcelable
 
     data class AddProduct(val productId: Long) : MultiLiveEvent.Event()
+
+    object ProductNotFound : MultiLiveEvent.Event()
 }
