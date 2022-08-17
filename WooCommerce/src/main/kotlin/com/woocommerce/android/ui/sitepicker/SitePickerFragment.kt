@@ -240,7 +240,8 @@ class SitePickerFragment : BaseFragment(R.layout.fragment_site_picker), LoginEma
     }
 
     private fun navigateToAddressScreen() {
-        TODO()
+        findNavController()
+            .navigate(SitePickerFragmentDirections.actionSitePickerFragmentToSitePickerSiteDiscoveryFragment())
     }
 
     private fun navigateToHelpScreen() {
