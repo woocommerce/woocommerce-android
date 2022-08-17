@@ -4,12 +4,13 @@ import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
 import android.view.MenuItem
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
+import com.automattic.android.tracks.crashlogging.CrashLogging
 import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.AppUrls
-import com.woocommerce.android.R.anim
-import com.woocommerce.android.R.string
+import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.databinding.ActivityLoginBinding
 import com.woocommerce.android.support.HelpActivity
@@ -34,6 +35,7 @@ import org.wordpress.android.login.LoginListener
 import org.wordpress.android.login.LoginListener.SelfSignedSSLCallback
 import org.wordpress.android.login.LoginMode
 import org.wordpress.android.login.LoginSiteAddressFragment
+import javax.inject.Inject
 import kotlin.text.RegexOption.IGNORE_CASE
 
 @AndroidEntryPoint
@@ -47,6 +49,8 @@ class PostLoginSiteDiscoveryActivity : AppCompatActivity(), LoginListener, Login
     private val binding by lazy {
         ActivityLoginBinding.inflate(layoutInflater)
     }
+
+    @Inject lateinit var crashLogging: CrashLogging
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -140,7 +144,7 @@ class PostLoginSiteDiscoveryActivity : AppCompatActivity(), LoginListener, Login
             // The url entered is not a WordPress site.
             val protocolRegex = Regex("^(http[s]?://)", IGNORE_CASE)
             val siteAddressClean = siteInfo.url.replaceFirst(protocolRegex, "")
-            val errorMessage = getString(string.login_not_wordpress_site_v2)
+            val errorMessage = getString(R.string.login_not_wordpress_site_v2)
 
             // hide the keyboard
             org.wordpress.android.util.ActivityUtils.hideKeyboard(this)
@@ -193,10 +197,10 @@ class PostLoginSiteDiscoveryActivity : AppCompatActivity(), LoginListener, Login
         val fragmentTransaction = supportFragmentManager.beginTransaction()
         if (animate) {
             fragmentTransaction.setCustomAnimations(
-                anim.default_enter_anim,
-                anim.default_exit_anim,
-                anim.default_pop_enter_anim,
-                anim.default_pop_exit_anim
+                R.anim.default_enter_anim,
+                R.anim.default_exit_anim,
+                R.anim.default_pop_enter_anim,
+                R.anim.default_pop_exit_anim
             )
         }
         fragmentTransaction.replace(binding.fragmentContainer.id, fragment, tag)
@@ -253,19 +257,23 @@ class PostLoginSiteDiscoveryActivity : AppCompatActivity(), LoginListener, Login
         photoUrl: String?,
         service: String?
     ) {
-        TODO("Not yet implemented")
+        crashLogging.recordException(IllegalStateException("Unhandled state in PostLoginSiteDiscoveryActivity"))
+        Toast.makeText(this, R.string.site_discovery_postlogin_failure, Toast.LENGTH_LONG).show()
     }
 
     override fun alreadyLoggedInWpcom(oldSitesIds: java.util.ArrayList<Int>?) {
-        TODO("Not yet implemented")
+        crashLogging.recordException(IllegalStateException("Unhandled state in PostLoginSiteDiscoveryActivity"))
+        Toast.makeText(this, R.string.site_discovery_postlogin_failure, Toast.LENGTH_LONG).show()
     }
 
     override fun gotWpcomEmail(email: String?, verifyEmail: Boolean, authOptions: AuthOptions?) {
-        TODO("Not yet implemented")
+        crashLogging.recordException(IllegalStateException("Unhandled state in PostLoginSiteDiscoveryActivity"))
+        Toast.makeText(this, R.string.site_discovery_postlogin_failure, Toast.LENGTH_LONG).show()
     }
 
     override fun gotUnregisteredEmail(email: String?) {
-        TODO("Not yet implemented")
+        crashLogging.recordException(IllegalStateException("Unhandled state in PostLoginSiteDiscoveryActivity"))
+        Toast.makeText(this, R.string.site_discovery_postlogin_failure, Toast.LENGTH_LONG).show()
     }
 
     override fun loginViaSocialAccount(
@@ -274,71 +282,88 @@ class PostLoginSiteDiscoveryActivity : AppCompatActivity(), LoginListener, Login
         service: String?,
         isPasswordRequired: Boolean
     ) {
-        TODO("Not yet implemented")
+        crashLogging.recordException(IllegalStateException("Unhandled state in PostLoginSiteDiscoveryActivity"))
+        Toast.makeText(this, R.string.site_discovery_postlogin_failure, Toast.LENGTH_LONG).show()
     }
 
     override fun loggedInViaSocialAccount(oldSiteIds: ArrayList<Int>?, doLoginUpdate: Boolean) {
-        TODO("Not yet implemented")
+        crashLogging.recordException(IllegalStateException("Unhandled state in PostLoginSiteDiscoveryActivity"))
+        Toast.makeText(this, R.string.site_discovery_postlogin_failure, Toast.LENGTH_LONG).show()
     }
 
     override fun loginViaWpcomUsernameInstead() {
-        TODO("Not yet implemented")
+        crashLogging.recordException(IllegalStateException("Unhandled state in PostLoginSiteDiscoveryActivity"))
+        Toast.makeText(this, R.string.site_discovery_postlogin_failure, Toast.LENGTH_LONG).show()
     }
 
     override fun loginViaSiteCredentials(inputSiteAddress: String?) {
-        TODO("Not yet implemented")
+        crashLogging.recordException(IllegalStateException("Unhandled state in PostLoginSiteDiscoveryActivity"))
+        Toast.makeText(this, R.string.site_discovery_postlogin_failure, Toast.LENGTH_LONG).show()
     }
 
     override fun helpEmailScreen(email: String?) {
-        TODO("Not yet implemented")
+        crashLogging.recordException(IllegalStateException("Unhandled state in PostLoginSiteDiscoveryActivity"))
+        Toast.makeText(this, R.string.site_discovery_postlogin_failure, Toast.LENGTH_LONG).show()
     }
 
     override fun helpSocialEmailScreen(email: String?) {
-        TODO("Not yet implemented")
+        crashLogging.recordException(IllegalStateException("Unhandled state in PostLoginSiteDiscoveryActivity"))
+        Toast.makeText(this, R.string.site_discovery_postlogin_failure, Toast.LENGTH_LONG).show()
     }
 
     override fun addGoogleLoginFragment(isSignupFromLoginEnabled: Boolean) {
-        TODO("Not yet implemented")
+        crashLogging.recordException(IllegalStateException("Unhandled state in PostLoginSiteDiscoveryActivity"))
+        Toast.makeText(this, R.string.site_discovery_postlogin_failure, Toast.LENGTH_LONG).show()
     }
 
     override fun showHelpFindingConnectedEmail() {
-        TODO("Not yet implemented")
+        crashLogging.recordException(IllegalStateException("Unhandled state in PostLoginSiteDiscoveryActivity"))
+        Toast.makeText(this, R.string.site_discovery_postlogin_failure, Toast.LENGTH_LONG).show()
     }
 
     override fun onTermsOfServiceClicked() {
-        TODO("Not yet implemented")
+        crashLogging.recordException(IllegalStateException("Unhandled state in PostLoginSiteDiscoveryActivity"))
+        Toast.makeText(this, R.string.site_discovery_postlogin_failure, Toast.LENGTH_LONG).show()
     }
 
     override fun showMagicLinkSentScreen(email: String?, allowPassword: Boolean) {
-        TODO("Not yet implemented")
+        crashLogging.recordException(IllegalStateException("Unhandled state in PostLoginSiteDiscoveryActivity"))
+        Toast.makeText(this, R.string.site_discovery_postlogin_failure, Toast.LENGTH_LONG).show()
     }
 
     override fun usePasswordInstead(email: String?) {
-        TODO("Not yet implemented")
+        crashLogging.recordException(IllegalStateException("Unhandled state in PostLoginSiteDiscoveryActivity"))
+        Toast.makeText(this, R.string.site_discovery_postlogin_failure, Toast.LENGTH_LONG).show()
     }
 
     override fun helpMagicLinkRequest(email: String?) {
-        TODO("Not yet implemented")
+        crashLogging.recordException(IllegalStateException("Unhandled state in PostLoginSiteDiscoveryActivity"))
+        Toast.makeText(this, R.string.site_discovery_postlogin_failure, Toast.LENGTH_LONG).show()
     }
 
     override fun openEmailClient(isLogin: Boolean) {
-        TODO("Not yet implemented")
+        crashLogging.recordException(IllegalStateException("Unhandled state in PostLoginSiteDiscoveryActivity"))
+        Toast.makeText(this, R.string.site_discovery_postlogin_failure, Toast.LENGTH_LONG).show()
     }
 
     override fun helpMagicLinkSent(email: String?) {
-        TODO("Not yet implemented")
+        crashLogging.recordException(IllegalStateException("Unhandled state in PostLoginSiteDiscoveryActivity"))
+        Toast.makeText(this, R.string.site_discovery_postlogin_failure, Toast.LENGTH_LONG).show()
     }
 
     override fun forgotPassword(url: String?) {
-        TODO("Not yet implemented")
+        crashLogging.recordException(IllegalStateException("Unhandled state in PostLoginSiteDiscoveryActivity"))
+        Toast.makeText(this, R.string.site_discovery_postlogin_failure, Toast.LENGTH_LONG).show()
     }
 
     override fun useMagicLinkInstead(email: String?, verifyEmail: Boolean) {
-        TODO("Not yet implemented")
+        crashLogging.recordException(IllegalStateException("Unhandled state in PostLoginSiteDiscoveryActivity"))
+        Toast.makeText(this, R.string.site_discovery_postlogin_failure, Toast.LENGTH_LONG).show()
     }
 
     override fun needs2fa(email: String?, password: String?) {
-        TODO("Not yet implemented")
+        crashLogging.recordException(IllegalStateException("Unhandled state in PostLoginSiteDiscoveryActivity"))
+        Toast.makeText(this, R.string.site_discovery_postlogin_failure, Toast.LENGTH_LONG).show()
     }
 
     override fun needs2faSocial(
@@ -348,27 +373,33 @@ class PostLoginSiteDiscoveryActivity : AppCompatActivity(), LoginListener, Login
         nonceBackup: String?,
         nonceSms: String?
     ) {
-        TODO("Not yet implemented")
+        crashLogging.recordException(IllegalStateException("Unhandled state in PostLoginSiteDiscoveryActivity"))
+        Toast.makeText(this, R.string.site_discovery_postlogin_failure, Toast.LENGTH_LONG).show()
     }
 
     override fun needs2faSocialConnect(email: String?, password: String?, idToken: String?, service: String?) {
-        TODO("Not yet implemented")
+        crashLogging.recordException(IllegalStateException("Unhandled state in PostLoginSiteDiscoveryActivity"))
+        Toast.makeText(this, R.string.site_discovery_postlogin_failure, Toast.LENGTH_LONG).show()
     }
 
     override fun loggedInViaPassword(oldSitesIds: ArrayList<Int>?) {
-        TODO("Not yet implemented")
+        crashLogging.recordException(IllegalStateException("Unhandled state in PostLoginSiteDiscoveryActivity"))
+        Toast.makeText(this, R.string.site_discovery_postlogin_failure, Toast.LENGTH_LONG).show()
     }
 
     override fun helpEmailPasswordScreen(email: String?) {
-        TODO("Not yet implemented")
+        crashLogging.recordException(IllegalStateException("Unhandled state in PostLoginSiteDiscoveryActivity"))
+        Toast.makeText(this, R.string.site_discovery_postlogin_failure, Toast.LENGTH_LONG).show()
     }
 
     override fun gotXmlRpcEndpoint(inputSiteAddress: String?, endpointAddress: String?) {
-        TODO("Not yet implemented")
+        crashLogging.recordException(IllegalStateException("Unhandled state in PostLoginSiteDiscoveryActivity"))
+        Toast.makeText(this, R.string.site_discovery_postlogin_failure, Toast.LENGTH_LONG).show()
     }
 
     override fun helpFindingSiteAddress(username: String?, siteStore: SiteStore?) {
-        TODO("Not yet implemented")
+        crashLogging.recordException(IllegalStateException("Unhandled state in PostLoginSiteDiscoveryActivity"))
+        Toast.makeText(this, R.string.site_discovery_postlogin_failure, Toast.LENGTH_LONG).show()
     }
 
     override fun saveCredentialsInSmartLock(
@@ -377,15 +408,18 @@ class PostLoginSiteDiscoveryActivity : AppCompatActivity(), LoginListener, Login
         displayName: String,
         profilePicture: Uri?
     ) {
-        TODO("Not yet implemented")
+        crashLogging.recordException(IllegalStateException("Unhandled state in PostLoginSiteDiscoveryActivity"))
+        Toast.makeText(this, R.string.site_discovery_postlogin_failure, Toast.LENGTH_LONG).show()
     }
 
     override fun loggedInViaUsernamePassword(oldSitesIds: ArrayList<Int>?) {
-        TODO("Not yet implemented")
+        crashLogging.recordException(IllegalStateException("Unhandled state in PostLoginSiteDiscoveryActivity"))
+        Toast.makeText(this, R.string.site_discovery_postlogin_failure, Toast.LENGTH_LONG).show()
     }
 
     override fun helpUsernamePassword(url: String?, username: String?, isWpcom: Boolean) {
-        TODO("Not yet implemented")
+        crashLogging.recordException(IllegalStateException("Unhandled state in PostLoginSiteDiscoveryActivity"))
+        Toast.makeText(this, R.string.site_discovery_postlogin_failure, Toast.LENGTH_LONG).show()
     }
 
     override fun helpHandleDiscoveryError(
@@ -396,31 +430,38 @@ class PostLoginSiteDiscoveryActivity : AppCompatActivity(), LoginListener, Login
         userAvatarUrl: String?,
         errorMessage: Int
     ) {
-        TODO("Not yet implemented")
+        crashLogging.recordException(IllegalStateException("Unhandled state in PostLoginSiteDiscoveryActivity"))
+        Toast.makeText(this, R.string.site_discovery_postlogin_failure, Toast.LENGTH_LONG).show()
     }
 
     override fun help2FaScreen(email: String?) {
-        TODO("Not yet implemented")
+        crashLogging.recordException(IllegalStateException("Unhandled state in PostLoginSiteDiscoveryActivity"))
+        Toast.makeText(this, R.string.site_discovery_postlogin_failure, Toast.LENGTH_LONG).show()
     }
 
     override fun startPostLoginServices() {
-        TODO("Not yet implemented")
+        crashLogging.recordException(IllegalStateException("Unhandled state in PostLoginSiteDiscoveryActivity"))
+        Toast.makeText(this, R.string.site_discovery_postlogin_failure, Toast.LENGTH_LONG).show()
     }
 
     override fun helpSignupEmailScreen(email: String?) {
-        TODO("Not yet implemented")
+        crashLogging.recordException(IllegalStateException("Unhandled state in PostLoginSiteDiscoveryActivity"))
+        Toast.makeText(this, R.string.site_discovery_postlogin_failure, Toast.LENGTH_LONG).show()
     }
 
     override fun helpSignupMagicLinkScreen(email: String?) {
-        TODO("Not yet implemented")
+        crashLogging.recordException(IllegalStateException("Unhandled state in PostLoginSiteDiscoveryActivity"))
+        Toast.makeText(this, R.string.site_discovery_postlogin_failure, Toast.LENGTH_LONG).show()
     }
 
     override fun helpSignupConfirmationScreen(email: String?) {
-        TODO("Not yet implemented")
+        crashLogging.recordException(IllegalStateException("Unhandled state in PostLoginSiteDiscoveryActivity"))
+        Toast.makeText(this, R.string.site_discovery_postlogin_failure, Toast.LENGTH_LONG).show()
     }
 
     override fun showSignupMagicLink(email: String?) {
-        TODO("Not yet implemented")
+        crashLogging.recordException(IllegalStateException("Unhandled state in PostLoginSiteDiscoveryActivity"))
+        Toast.makeText(this, R.string.site_discovery_postlogin_failure, Toast.LENGTH_LONG).show()
     }
 
     override fun showSignupSocial(
@@ -430,15 +471,18 @@ class PostLoginSiteDiscoveryActivity : AppCompatActivity(), LoginListener, Login
         photoUrl: String?,
         service: String?
     ) {
-        TODO("Not yet implemented")
+        crashLogging.recordException(IllegalStateException("Unhandled state in PostLoginSiteDiscoveryActivity"))
+        Toast.makeText(this, R.string.site_discovery_postlogin_failure, Toast.LENGTH_LONG).show()
     }
 
     override fun showSignupToLoginMessage() {
-        TODO("Not yet implemented")
+        crashLogging.recordException(IllegalStateException("Unhandled state in PostLoginSiteDiscoveryActivity"))
+        Toast.makeText(this, R.string.site_discovery_postlogin_failure, Toast.LENGTH_LONG).show()
     }
 
     override fun showEmailLoginScreen(siteAddress: String?) {
-        TODO("Not yet implemented")
+        crashLogging.recordException(IllegalStateException("Unhandled state in PostLoginSiteDiscoveryActivity"))
+        Toast.makeText(this, R.string.site_discovery_postlogin_failure, Toast.LENGTH_LONG).show()
     }
 
     override fun showUsernamePasswordScreen(
@@ -447,6 +491,7 @@ class PostLoginSiteDiscoveryActivity : AppCompatActivity(), LoginListener, Login
         inputUsername: String?,
         inputPassword: String?
     ) {
-        TODO("Not yet implemented")
+        crashLogging.recordException(IllegalStateException("Unhandled state in PostLoginSiteDiscoveryActivity"))
+        Toast.makeText(this, R.string.site_discovery_postlogin_failure, Toast.LENGTH_LONG).show()
     }
 }
