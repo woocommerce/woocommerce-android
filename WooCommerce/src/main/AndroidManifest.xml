@@ -65,7 +65,8 @@
 
         <activity
             android:name=".ui.sitediscovery.PostLoginSiteDiscoveryActivity"
-            android:exported="true">
+            android:exported="true"
+            android:windowSoftInputMode="adjustResize">
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
 
