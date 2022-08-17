@@ -1218,9 +1218,9 @@
     <string name="card_reader_onboarding_generic_error_header">Unable to verify In-Person Payments for this store</string>
     <string name="card_reader_onboarding_generic_error_hint">We\'re sorry, we were unable to verify In-Person Payments for this store</string>
 
-    <string name="card_reader_onboarding_cash_on_delivery_disabled_error_header">Finish cash on delivery setup on your store admin</string>
-    <string name="card_reader_onboarding_cash_on_delivery_disabled_error_hint">You\'re almost there! Please finish setting up cash-on-delivery to start accepting in-person payments.</string>
-    <string name="card_reader_onboarding_cash_on_delivery_disabled_button">Enable cash on delivery</string>
+    <string name="card_reader_onboarding_cash_on_delivery_disabled_error_header">Add Pay in Person to your checkout</string>
+    <string name="card_reader_onboarding_cash_on_delivery_disabled_error_hint">A "Pay in Person" option on your checkout lets you accept card or cash payments on collection or delivery.</string>
+    <string name="card_reader_onboarding_cash_on_delivery_disabled_button">Enable Pay in Person</string>
     <string name="card_reader_onboarding_cash_on_delivery_enable_failure">Failed to enable cash on delivery. Please try again later.</string>
 
     <!--
