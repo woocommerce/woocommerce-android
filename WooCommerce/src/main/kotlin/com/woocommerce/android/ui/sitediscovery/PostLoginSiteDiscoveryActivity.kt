@@ -59,6 +59,10 @@ class PostLoginSiteDiscoveryActivity : AppCompatActivity(), LoginListener, Login
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(binding.root)
+        if (savedInstanceState != null) {
+            // The FragmentManager will restore the last fragment
+            return
+        }
         if (hasJetpackConnectedIntent()) {
             val siteAddress = intent.data!!.getQueryParameter(JETPACK_CONNECTED_REDIRECT_URL_QUERY)!!
             // Save the site address to be able to continue login from the Site Picker
