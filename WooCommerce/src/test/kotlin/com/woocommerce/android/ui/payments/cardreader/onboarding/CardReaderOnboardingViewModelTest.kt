@@ -49,6 +49,13 @@ import org.mockito.kotlin.never
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import org.wordpress.android.fluxc.model.SiteModel
+import org.wordpress.android.fluxc.model.gateways.WCGatewayModel
+import org.wordpress.android.fluxc.network.BaseRequest
+import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooError
+import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooErrorType
+import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooResult
+import org.wordpress.android.fluxc.network.rest.wpcom.wc.gateways.GatewayRestClient
+import org.wordpress.android.fluxc.store.WCGatewayStore
 import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 
@@ -61,6 +68,7 @@ class CardReaderOnboardingViewModelTest : BaseUnitTest() {
     }
     private val appPrefsWrapper: AppPrefsWrapper = mock()
     private val cardReaderManager: CardReaderManager = mock()
+    private val gatewayStore: WCGatewayStore = mock()
     private val countryCode = "US"
     private val pluginVersion = "4.0.0"
 
@@ -1115,6 +1123,90 @@ class CardReaderOnboardingViewModelTest : BaseUnitTest() {
         }
 
     @Test
+    fun `given cash on delivery enable success, when enable cod clicked, then success state is displayed`() =
+        testBlocking {
+            whenever(onboardingChecker.getOnboardingState())
+                .thenReturn(
+                    CashOnDeliveryDisabled(
+                        countryCode = countryCode,
+                        preferredPlugin = WOOCOMMERCE_PAYMENTS,
+                        version = pluginVersion
+                    )
+                )
+            whenever(
+                gatewayStore.updatePaymentGateway(
+                    site = selectedSite.get(),
+                    gatewayId = GatewayRestClient.GatewayId.CASH_ON_DELIVERY,
+                    enabled = true,
+                    title = "Pay in Person"
+                )
+            ).thenReturn(
+                WooResult(
+                    model = WCGatewayModel(
+                        id = "",
+                        title = "",
+                        description = "",
+                        order = 0,
+                        isEnabled = true,
+                        methodTitle = "",
+                        methodDescription = "",
+                        features = emptyList()
+                    )
+                )
+            )
+            val viewModel = createVM()
+
+            (viewModel.viewStateData.value as CashOnDeliveryDisabledState)
+                .onEnableCashOnDeliveryClicked.invoke()
+
+            assertTrue(
+                (viewModel.viewStateData.value as CashOnDeliveryDisabledState).cashOnDeliveryEnabledSuccessfully!!
+            )
+            assertFalse(
+                (viewModel.viewStateData.value as CashOnDeliveryDisabledState).shouldShowProgress!!
+            )
+        }
+
+    @Test
+    fun `given cash on delivery enable failure, when enable cod clicked, then failure state is displayed`() =
+        testBlocking {
+            whenever(onboardingChecker.getOnboardingState())
+                .thenReturn(
+                    CashOnDeliveryDisabled(
+                        countryCode = countryCode,
+                        preferredPlugin = WOOCOMMERCE_PAYMENTS,
+                        version = pluginVersion
+                    )
+                )
+            whenever(
+                gatewayStore.updatePaymentGateway(
+                    site = selectedSite.get(),
+                    gatewayId = GatewayRestClient.GatewayId.CASH_ON_DELIVERY,
+                    enabled = true,
+                    title = "Pay in Person"
+                )
+            ).thenReturn(
+                WooResult(
+                    error = WooError(
+                        type = WooErrorType.GENERIC_ERROR,
+                        original = BaseRequest.GenericErrorType.NETWORK_ERROR
+                    )
+                )
+            )
+            val viewModel = createVM()
+
+            (viewModel.viewStateData.value as CashOnDeliveryDisabledState)
+                .onEnableCashOnDeliveryClicked.invoke()
+
+            assertFalse(
+                (viewModel.viewStateData.value as CashOnDeliveryDisabledState).cashOnDeliveryEnabledSuccessfully!!
+            )
+            assertFalse(
+                (viewModel.viewStateData.value as CashOnDeliveryDisabledState).shouldShowProgress
+            )
+        }
+
+    @Test
     fun `when cash on delivery disabled state, then confirm header shown`() =
         testBlocking {
             whenever(onboardingChecker.getOnboardingState()).thenReturn(
@@ -1915,6 +2007,7 @@ class CardReaderOnboardingViewModelTest : BaseUnitTest() {
             tracker,
             selectedSite,
             appPrefsWrapper,
-            cardReaderManager
+            cardReaderManager,
+            gatewayStore
         )
 }
