@@ -1008,7 +1008,7 @@ class CardReaderOnboardingViewModelTest : BaseUnitTest() {
         }
 
     @Test
-    fun `given cash on delivery, when skip button clicked, then continues to connection`() =
+    fun `given cash on delivery disabled screen, when skip button clicked, then continues to connection`() =
         testBlocking {
             whenever(onboardingChecker.getOnboardingState())
                 .thenReturn(
@@ -1033,7 +1033,7 @@ class CardReaderOnboardingViewModelTest : BaseUnitTest() {
         }
 
     @Test
-    fun `given cash on delivery, when skip button clicked, then continues to hub`() =
+    fun `given cash on delivery disabled screen, when skip button clicked, then continues to hub`() =
         testBlocking {
             whenever(onboardingChecker.getOnboardingState())
                 .thenReturn(
