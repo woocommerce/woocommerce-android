@@ -1,7 +1,7 @@
 *** PLEASE FOLLOW THIS FORMAT: [<priority indicator, more stars = higher priority>] <description> [<PR URL>]
 10.0
 -----
-
+- [**] Login: Add ability to enter site address manually after signing in if the account is not connected to any stores [https://github.com/woocommerce/woocommerce-android/pull/7216]
 
 9.9
 -----
