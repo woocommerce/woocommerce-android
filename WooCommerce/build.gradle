@@ -74,7 +74,7 @@ android {
         if (project.hasProperty("versionName")) {
             versionName project.property("versionName")
         } else {
-            versionName "9.9-rc-1"
+            versionName "9.9-rc-2"
         }
         versionCode 319
 
