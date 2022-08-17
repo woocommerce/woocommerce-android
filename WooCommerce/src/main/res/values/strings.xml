@@ -1221,6 +1221,7 @@
     <string name="card_reader_onboarding_cash_on_delivery_disabled_error_header">Finish cash on delivery setup on your store admin</string>
     <string name="card_reader_onboarding_cash_on_delivery_disabled_error_hint">You\'re almost there! Please finish setting up cash-on-delivery to start accepting in-person payments.</string>
     <string name="card_reader_onboarding_cash_on_delivery_disabled_button">Enable cash on delivery</string>
+    <string name="card_reader_onboarding_cash_on_delivery_enable_failure">Failed to enable cash on delivery. Please try again later.</string>
 
     <!--
         Card reader tutorial
