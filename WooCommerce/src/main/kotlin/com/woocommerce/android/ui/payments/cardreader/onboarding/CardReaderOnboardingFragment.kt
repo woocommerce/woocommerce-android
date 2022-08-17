@@ -6,11 +6,13 @@ import android.os.Parcelable
 import android.view.LayoutInflater
 import android.view.View
 import androidx.core.content.ContextCompat
+import androidx.core.view.get
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import com.woocommerce.android.NavGraphMainDirections
 import com.woocommerce.android.R
 import com.woocommerce.android.databinding.FragmentCardReaderOnboardingBinding
+import com.woocommerce.android.databinding.FragmentCardReaderOnboardingCodDisabledBinding
 import com.woocommerce.android.databinding.FragmentCardReaderOnboardingGenericErrorBinding
 import com.woocommerce.android.databinding.FragmentCardReaderOnboardingLoadingBinding
 import com.woocommerce.android.databinding.FragmentCardReaderOnboardingNetworkErrorBinding
@@ -87,9 +89,23 @@ class CardReaderOnboardingFragment : BaseFragment(R.layout.fragment_card_reader_
         binding: FragmentCardReaderOnboardingBinding,
         state: CardReaderOnboardingViewModel.OnboardingViewState
     ) {
-        binding.container.removeAllViews()
-        val layout = LayoutInflater.from(requireActivity()).inflate(state.layoutRes, binding.container, false)
-        binding.container.addView(layout)
+
+        val layout = if (binding.container.tag != state.layoutRes) {
+            binding.container.removeAllViews()
+            val layout = LayoutInflater.from(requireActivity()).inflate(state.layoutRes, binding.container, false)
+            binding.container.addView(layout)
+            layout
+        } else {
+            binding.container[0]
+        }
+        binding.container.tag = state.layoutRes
+        displayOnboardingState(layout, state)
+    }
+
+    private fun displayOnboardingState(
+        layout: View,
+        state: CardReaderOnboardingViewModel.OnboardingViewState,
+    ) {
         when (state) {
             is CardReaderOnboardingViewModel.OnboardingViewState.GenericErrorState ->
                 showGenericErrorState(layout, state)
@@ -107,7 +123,44 @@ class CardReaderOnboardingFragment : BaseFragment(R.layout.fragment_card_reader_
                 showStripeExtensionErrorState(layout, state)
             is CardReaderOnboardingViewModel.OnboardingViewState.SelectPaymentPluginState ->
                 showPaymentPluginSelectionState(layout, state)
+            is CardReaderOnboardingViewModel.OnboardingViewState.CashOnDeliveryDisabledState ->
+                showCashOnDeliveryDisabledState(layout, state)
         }.exhaustive
+    }
+
+    private fun showCashOnDeliveryDisabledState(
+        view: View,
+        state: CardReaderOnboardingViewModel.OnboardingViewState.CashOnDeliveryDisabledState
+    ) {
+        val binding = FragmentCardReaderOnboardingCodDisabledBinding.bind(view)
+        UiHelpers.setTextOrHide(binding.textHeader, state.headerLabel)
+        UiHelpers.setTextOrHide(binding.textLabel, state.cashOnDeliveryHintLabel)
+        UiHelpers.setTextOrHide(binding.skipCashOnDelivery, state.skipCashOnDeliveryButtonLabel)
+        UiHelpers.setTextOrHide(binding.enableCashOnDelivery, state.enableCashOnDeliveryButtonLabel)
+        UiHelpers.setTextOrHide(binding.learnMoreContainer.learnMore, state.learnMoreLabel)
+        UiHelpers.setImageOrHideInLandscape(binding.illustration, state.cardIllustration)
+
+        if (state.shouldShowProgress) {
+            binding.enableCashOnDelivery.isEnabled = false
+            binding.progressBar.visibility = View.VISIBLE
+            binding.enableCashOnDelivery.text = ""
+        } else {
+            binding.enableCashOnDelivery.isEnabled = true
+            binding.progressBar.visibility = View.GONE
+            if (state.cashOnDeliveryEnabledSuccessfully) {
+                state.onSkipCashOnDeliveryClicked.invoke()
+            }
+        }
+
+        binding.skipCashOnDelivery.setOnClickListener {
+            state.onSkipCashOnDeliveryClicked.invoke()
+        }
+        binding.enableCashOnDelivery.setOnClickListener {
+            state.onEnableCashOnDeliveryClicked.invoke()
+        }
+        binding.learnMoreContainer.learnMore.setOnClickListener {
+            state.onLearnMoreActionClicked.invoke()
+        }
     }
 
     private fun showPaymentPluginSelectionState(
