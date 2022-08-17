@@ -38,6 +38,10 @@ import org.wordpress.android.login.LoginSiteAddressFragment
 import javax.inject.Inject
 import kotlin.text.RegexOption.IGNORE_CASE
 
+/**
+ * The goal of this Activity is to reuse the site discovery from the Login library, but since the login is tied
+ * to the [LoginListener], we need to implement all functions even though we need just a small subset of them.
+ */
 @AndroidEntryPoint
 class PostLoginSiteDiscoveryActivity : AppCompatActivity(), LoginListener, LoginNoJetpackListener {
     companion object {
@@ -231,6 +235,7 @@ class PostLoginSiteDiscoveryActivity : AppCompatActivity(), LoginListener, Login
                 "&mobile_redirect=$redirectUrl" +
                 "&from=mobile"
 
+            // Use the WPComWebView to reduce chances of account mismatch after signing in
             val wpComWebViewFragment = WPComWebViewFragment().apply {
                 arguments = WPComWebViewFragmentArgs(url).toBundle()
             }
