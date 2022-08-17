@@ -1,15 +1,38 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2022-08-05 16:03:45+0000
+Translation-Revision-Date: 2022-08-10 18:54:03+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: ja_JP
 -->
 <resources>
+    <string name="login_magic_links_email_sent">マジックリンクを次のアドレスに送信しました: </string>
+    <string name="login_magic_links_sent_label_short">この端末でメールアドレスを確認してください。</string>
+    <string name="or_use_password">パスワードを使用してログイン</string>
+    <string name="login_magic_link_button">マジックリンクでログイン</string>
+    <string name="login_magic_link_auto_sent">マジックリンクをメールアドレスに送信しました。 ログインするには、メールに記載されているリンクをタップしてください。</string>
+    <string name="login_help_notification_incorrect_wpcom_email_description">サイトのログイン情報でログイン</string>
+    <string name="promo_linked_products_banner_message">アップセルとクロスセルを追加して、顧客に有益で関連性の高い商品のおすすめを提案します</string>
+    <string name="promo_linked_products_banner_title">リンク付き商品で売り上げを伸ばす</string>
+    <string name="card_reader_upsell_card_reader_banner_description">カードリーダーを使用すれば、20分で直接販売を開始できます。</string>
+    <string name="orderlist_updating_order_error">注文番号%1$dの更新中にエラーが発生しました</string>
+    <string name="orderlist_mark_completed_success">注文番号%1$dが完了としてマークされました</string>
+    <string name="orderlist_mark_completed">マーク\n完了</string>
+    <string name="login_install_woo">WooCommerce をインストール</string>
+    <string name="login_not_woo_store">%1$s は WooCommerce サイトではないようです。</string>
+    <string name="login_prologue_survey_button_switch_stores">複数のストアを切り替える</string>
+    <string name="login_prologue_survey_button_manage_orders">注文を管理する</string>
+    <string name="login_prologue_survey_button_edit_products">商品を作成または更新する</string>
+    <string name="login_prologue_survey_button_check_analytics">アナリティクスを確認する</string>
+    <string name="login_prologue_survey_button_set_up_store">ストアを立ち上げようとしています</string>
+    <string name="login_prologue_survey_button_exploring">探っています</string>
+    <string name="login_prologue_survey_title">WooCommerce を使うのはなぜですか ?</string>
+    <string name="tip">ヒント</string>
+    <string name="set_up_now">今すぐ設定</string>
     <string name="lets_get_started">ここからスタート。</string>
     <string name="login_help_notification_wordpress_login_button">WordPress.com にログイン</string>
     <string name="login_help_notification_contact_support_button">サポートに問い合わせる</string>
-    <string name="login_help_notification_site_error_description">WordPress.com アカウントでログインしてみてください</string>
+    <string name="login_help_notification_site_error_description">WordPress.com アカウントでログイン</string>
     <string name="login_help_notification_no_interaction_default_description">サポートを利用する</string>
     <string name="login_help_notification_default_title">ログインで問題がある場合</string>
     <string name="product_search_sku">SKU</string>
@@ -19,7 +42,6 @@ Language: ja_JP
     <string name="card_reader_upsell_card_reader_banner_dismiss_dialog_description">今がチャンスです ! オフラインでの支払いはいつでも設定から開始できます。</string>
     <string name="card_reader_upsell_card_reader_banner_payments">オフラインでの支払い</string>
     <string name="card_reader_upsell_card_reader_banner_cta">カードリーダーを購入</string>
-    <string name="card_reader_upsell_card_reader_banner_description">カードリーダーで支払いを受け取れるようにしてください。</string>
     <string name="card_reader_upsell_card_reader_banner_title">簡単に支払いを受け取る</string>
     <string name="card_reader_upsell_card_reader_banner_new">新規</string>
     <string name="card_reader_upsell_card_reader_banner_dismiss">非表示</string>
@@ -1777,7 +1799,6 @@ Language: ja_JP
     <string name="login_jetpack_what_is_description">Jetpack は WordPress の無料のプラグインであり、ストアをモバイルでの最適な操作に必要なツール (プッシュ通知および統計を含む) と接続します。</string>
     <string name="login_jetpack_what_is">Jetpack とは ?</string>
     <string name="login_view_connected_stores">連携ストアを表示</string>
-    <string name="login_not_woo_store">%1$s は WooCommerce サイトではないようです。 サイトに WooCommerce プラグインをインストールし、アプリを再読み込みしてください。</string>
     <string name="login_not_connected_to_account">%1$s は別の WordPress.com アカウントと関連付けられているようです。</string>
     <string name="keep_editing">編集を続行</string>
     <string name="notification_wpcom_username_needed">ユーザー名とパスワードでログインしてください。</string>

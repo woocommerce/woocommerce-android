@@ -1,5 +1,0 @@
-9.7:
-We zijn erg blij te kunnen vertellen dat het nu mogelijk is om een bestelling via de app te bewerken. Je kan producten, kosten en verzending bewerken of verwijderen en de producthoeveelheid wijzigen. Je kan ook naar klanten zoeken wanneer je een bestelling aanmaakt of bewerkt.
-
-We hebben tevens wat wijzigingen aangebracht om aangepaste velden van een bestelling weer te geven. Ook hebben we de betalings- en login-workflow verbeterd, zodat je nu de optie hebt om Jetpack direct vanuit de app te installeren.
-

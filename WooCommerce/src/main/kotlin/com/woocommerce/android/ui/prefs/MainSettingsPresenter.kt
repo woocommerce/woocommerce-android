@@ -26,7 +26,6 @@ class MainSettingsPresenter @Inject constructor(
 
     private var jetpackMonitoringJob: Job? = null
 
-    override val shouldShowUpsellCardReaderDismissDialog: MutableLiveData<Boolean> = MutableLiveData(false)
     override val isEligibleForInPersonPayments: MutableLiveData<Boolean> = MutableLiveData(false)
 
     override fun takeView(view: MainSettingsContract.View) {
@@ -81,28 +80,6 @@ class MainSettingsPresenter @Inject constructor(
                 bannerDisplayEligibilityChecker.getPurchaseCardReaderUrl(source)
             )
         }
-    }
-
-    override fun onDismissClicked() {
-        shouldShowUpsellCardReaderDismissDialog.value = true
-        appSettingsFragmentView?.dismissUpsellCardReaderBanner()
-    }
-
-    override fun onRemindLaterClicked(currentTimeInMillis: Long, source: String) {
-        shouldShowUpsellCardReaderDismissDialog.value = false
-        bannerDisplayEligibilityChecker.onRemindLaterClicked(currentTimeInMillis, source)
-        appSettingsFragmentView?.dismissUpsellCardReaderBannerViaRemindLater()
-    }
-
-    override fun onDontShowAgainClicked(source: String) {
-        shouldShowUpsellCardReaderDismissDialog.value = false
-        bannerDisplayEligibilityChecker.onDontShowAgainClicked(source)
-        appSettingsFragmentView?.dismissUpsellCardReaderBannerViaDontShowAgain()
-    }
-
-    override fun onBannerAlertDismiss() {
-        shouldShowUpsellCardReaderDismissDialog.value = false
-        appSettingsFragmentView?.dismissUpsellCardReaderBannerViaBack()
     }
 
     override fun canShowCardReaderUpsellBanner(currentTimeInMillis: Long, source: String): Boolean {

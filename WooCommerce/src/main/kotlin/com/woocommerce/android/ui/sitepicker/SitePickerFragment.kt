@@ -79,7 +79,7 @@ class SitePickerFragment : BaseFragment(R.layout.fragment_site_picker), LoginEma
         binding.buttonHelp.setOnClickListener { viewModel.onHelpButtonClick() }
         binding.sitesRecycler.apply {
             layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
-            adapter = SitePickerAdapter(viewModel::onSiteSelected)
+            adapter = SitePickerAdapter(viewModel::onSiteSelected, viewModel::onNonWooSiteSelected)
         }
         binding.loginEpilogueButtonBar.buttonSecondary.setOnClickListener {
             viewModel.onTryAnotherAccountButtonClick()
@@ -92,9 +92,6 @@ class SitePickerFragment : BaseFragment(R.layout.fragment_site_picker), LoginEma
             new.userInfo?.takeIfNotEqualTo(old?.userInfo) {
                 updateUserInfoView(it)
             }
-            new.sitePickerLabelText?.takeIfNotEqualTo(old?.sitePickerLabelText) {
-                binding.siteListLabel.text = it
-            }
             new.isHelpBtnVisible.takeIfNotEqualTo(old?.isHelpBtnVisible) {
                 binding.buttonHelp.isVisible = it
             }
@@ -106,7 +103,6 @@ class SitePickerFragment : BaseFragment(R.layout.fragment_site_picker), LoginEma
             }
             new.isNoStoresViewVisible.takeIfNotEqualTo(old?.isNoStoresViewVisible) {
                 binding.sitesRecycler.isVisible = !it
-                binding.siteListLabel.isVisible = !it
                 binding.noStoresView.isVisible = it
             }
             new.toolbarTitle?.takeIfNotEqualTo(old?.toolbarTitle) {

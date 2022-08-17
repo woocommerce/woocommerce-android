@@ -1,15 +1,38 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2022-08-05 16:05:01+0000
+Translation-Revision-Date: 2022-08-11 09:54:03+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: zh_TW
 -->
 <resources>
+    <string name="login_magic_links_email_sent">我們剛將神奇連結傳送至：</string>
+    <string name="login_magic_links_sent_label_short">在此裝置查看你的電子郵件！</string>
+    <string name="or_use_password">使用密碼登入</string>
+    <string name="login_magic_link_button">使用神奇連結登入</string>
+    <string name="login_magic_link_auto_sent">我們剛將神奇連結傳送至你的電子郵件地址。 請點選電子郵件中的連結登入。</string>
+    <string name="login_help_notification_incorrect_wpcom_email_description">請使用你的網站憑證登入</string>
+    <string name="promo_linked_products_banner_message">加入追加銷售和交叉銷售，為顧客提供實用且相關的產品建議</string>
+    <string name="promo_linked_products_banner_title">透過連結的產品提高銷售額</string>
+    <string name="card_reader_upsell_card_reader_banner_description">只要不到 20 分鐘，即可開始使用我們的讀卡機親自銷售。</string>
+    <string name="orderlist_updating_order_error">更新訂單 (編號：%1$d) 時發生錯誤</string>
+    <string name="orderlist_mark_completed_success">訂單 (編號 %1$d) 已標記為完成</string>
+    <string name="orderlist_mark_completed">標記為\n完成</string>
+    <string name="login_install_woo">安裝 WooCommerce</string>
+    <string name="login_not_woo_store">%1$s 似乎不是 WooCommerce 網站。</string>
+    <string name="login_prologue_survey_button_switch_stores">在多家商店間切換</string>
+    <string name="login_prologue_survey_button_manage_orders">管理我的訂單</string>
+    <string name="login_prologue_survey_button_edit_products">建立或更新我的商品</string>
+    <string name="login_prologue_survey_button_check_analytics">查看我的分析</string>
+    <string name="login_prologue_survey_button_set_up_store">正在嘗試設定商店</string>
+    <string name="login_prologue_survey_button_exploring">單純探索</string>
+    <string name="login_prologue_survey_title">你為什麼使用 WooCommerce？</string>
+    <string name="tip">秘訣</string>
+    <string name="set_up_now">立即設定</string>
     <string name="lets_get_started">讓我們開始吧！</string>
     <string name="login_help_notification_wordpress_login_button">登入 WordPress.com</string>
     <string name="login_help_notification_contact_support_button">聯絡支援團隊</string>
-    <string name="login_help_notification_site_error_description">請嘗試使用 WordPress.com 帳號登入</string>
+    <string name="login_help_notification_site_error_description">使用你的 WordPress.com 帳號登入</string>
     <string name="login_help_notification_no_interaction_default_description">立即取得協助！</string>
     <string name="login_help_notification_default_title">登入遇到問題嗎？</string>
     <string name="product_search_sku">貨號</string>
@@ -19,7 +42,6 @@ Language: zh_TW
     <string name="card_reader_upsell_card_reader_banner_dismiss_dialog_description">別擔心！ 你可以隨時在設定中開始使用「親自收款」功能。</string>
     <string name="card_reader_upsell_card_reader_banner_payments">親自收款</string>
     <string name="card_reader_upsell_card_reader_banner_cta">購買讀卡機</string>
-    <string name="card_reader_upsell_card_reader_banner_description">準備好使用讀卡機接受付款。</string>
     <string name="card_reader_upsell_card_reader_banner_title">輕鬆接受付款</string>
     <string name="card_reader_upsell_card_reader_banner_new">新功能</string>
     <string name="card_reader_upsell_card_reader_banner_dismiss">關閉</string>
@@ -1777,7 +1799,6 @@ Language: zh_TW
     <string name="login_jetpack_what_is_description">Jetpack 是一款免費的 WordPress 外掛程式，能夠透過所需工具連結你的商店，為你提供最佳行動裝置體驗，包含推播通知和統計資料</string>
     <string name="login_jetpack_what_is">什麼是 Jetpack？</string>
     <string name="login_view_connected_stores">檢視連結的商店</string>
-    <string name="login_not_woo_store">%1$s 似乎不是 WooCommerce 網站。 請在你的網站上安裝 WooCommerce 外掛程式，然後重新整理應用程式。</string>
     <string name="login_not_connected_to_account">%1$s 似乎已經連結至不同的 WordPress.com 帳號。</string>
     <string name="keep_editing">繼續編輯</string>
     <string name="notification_wpcom_username_needed">請透過你的使用者名稱和密碼登入。</string>

@@ -454,7 +454,8 @@ class OrderListFragment :
 
     private fun showSimplePaymentsDialog() {
         AnalyticsTracker.track(AnalyticsEvent.SIMPLE_PAYMENTS_FLOW_STARTED)
-        findNavController().navigateSafely(R.id.action_orderListFragment_to_simplePayments)
+        // Temporary flow to teach merchants about placement of the Payments feature
+        (requireActivity() as MainNavigationRouter).showMoreMenu()
     }
 
     private fun showOrderCreationBottomSheet() {
