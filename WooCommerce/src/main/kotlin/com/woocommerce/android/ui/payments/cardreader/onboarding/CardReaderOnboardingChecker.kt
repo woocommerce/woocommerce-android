@@ -195,7 +195,10 @@ class CardReaderOnboardingChecker @Inject constructor(
         if (isStripeAccountRejected(paymentAccount)) return StripeAccountRejected(preferredPlugin.type)
         if (isInUndefinedState(paymentAccount)) return GenericError
 
-        if (!isCashOnDeliveryEnabled()) return CashOnDeliveryDisabled(
+        if (
+            !appPrefsWrapper.isCashOnDeliveryDisabledStateSkipped() &&
+            !isCashOnDeliveryEnabled()
+        ) return CashOnDeliveryDisabled(
             requireNotNull(countryCode),
             preferredPlugin.type,
             preferredPlugin.info?.version
