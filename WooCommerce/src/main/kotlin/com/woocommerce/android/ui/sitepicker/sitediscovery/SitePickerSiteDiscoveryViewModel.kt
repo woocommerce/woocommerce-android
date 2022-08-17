@@ -1,6 +1,8 @@
 package com.woocommerce.android.ui.sitepicker.sitediscovery
 
+import android.util.Patterns
 import androidx.annotation.StringRes
+import androidx.core.util.PatternsCompat
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
@@ -38,6 +40,7 @@ class SitePickerSiteDiscoveryViewModel @Inject constructor(
         return combine(isLoadingFlow, inlineErrorFlow) { isLoading, error ->
             ViewState.AddressInputState(
                 siteAddress = address,
+                isAddressValid = PatternsCompat.WEB_URL.matcher(address).matches(),
                 isLoading = isLoading,
                 inlineErrorMessage = error
             )
@@ -58,6 +61,7 @@ class SitePickerSiteDiscoveryViewModel @Inject constructor(
 
         data class AddressInputState(
             override val siteAddress: String,
+            val isAddressValid: Boolean,
             val isLoading: Boolean,
             @StringRes val inlineErrorMessage: Int = 0
         ) : ViewState()

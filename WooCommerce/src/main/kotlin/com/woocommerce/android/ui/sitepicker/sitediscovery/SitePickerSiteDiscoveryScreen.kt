@@ -66,13 +66,18 @@ private fun AddressInputView(
             onValueChange = onAddressChanged,
             label = stringResource(id = R.string.login_site_address),
             isError = state.inlineErrorMessage != 0,
-            helperText = state.inlineErrorMessage.takeIf { it != 0 }?.let { stringResource(id = it) }
+            helperText = state.inlineErrorMessage.takeIf { it != 0 }?.let { stringResource(id = it) },
+            maxLines = 1
         )
         WCTextButton(onClick = { /*TODO*/ }) {
             Text(text = stringResource(id = R.string.login_find_your_site_adress))
         }
         Spacer(modifier = Modifier.weight(1f))
-        WCColoredButton(onClick = { /*TODO*/ }, modifier = Modifier.fillMaxWidth()) {
+        WCColoredButton(
+            onClick = { /*TODO*/ },
+            enabled = state.isAddressValid,
+            modifier = Modifier.fillMaxWidth()
+        ) {
             Text(text = stringResource(id = R.string.continue_button))
         }
     }
@@ -108,7 +113,7 @@ private fun Toolbar() {
 private fun AddressInputViewPreview() {
     WooThemeWithBackground {
         AddressInputView(
-            state = AddressInputState("", false),
+            state = AddressInputState("", isAddressValid = true, isLoading = false),
             onAddressChanged = {}
         )
     }
