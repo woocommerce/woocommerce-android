@@ -362,6 +362,7 @@ class OrderDetailViewModelTest : BaseUnitTest() {
             val ids = items.map { it.productId }
 
             val order = order.copy(items = items)
+            doReturn(order).whenever(orderDetailRepository).fetchOrderById(any())
             doReturn(order).whenever(orderDetailRepository).getOrderById(any())
             doReturn(true).whenever(orderDetailRepository).fetchOrderNotes(any())
             doReturn(false).whenever(addonsRepository).containsAddonsFrom(any())
