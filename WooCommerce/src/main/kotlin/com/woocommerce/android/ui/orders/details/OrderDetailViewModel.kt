@@ -160,6 +160,8 @@ class OrderDetailViewModel @Inject constructor(
         }
     }
 
+    fun hasOrder() = viewState.orderInfo?.order != null
+
     private suspend fun displayOrderDetails() {
         updateOrderState()
         loadOrderNotes()
