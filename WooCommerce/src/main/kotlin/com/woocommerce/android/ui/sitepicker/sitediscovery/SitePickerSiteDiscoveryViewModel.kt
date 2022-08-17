@@ -1,11 +1,11 @@
 package com.woocommerce.android.ui.sitepicker.sitediscovery
 
-import android.util.Patterns
 import androidx.annotation.StringRes
 import androidx.core.util.PatternsCompat
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
+import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.getStateFlow
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -22,8 +22,6 @@ class SitePickerSiteDiscoveryViewModel @Inject constructor(
 ) : ScopedViewModel(savedStateHandle) {
     private val siteAddressFlow = savedStateHandle.getStateFlow(viewModelScope, "")
     private val stepFlow = savedStateHandle.getStateFlow(viewModelScope, Step.AddressInput)
-
-    private val isLoadingFlow = MutableStateFlow(false)
     private val inlineErrorFlow = savedStateHandle.getStateFlow(viewModelScope, 0)
 
     val viewState = combine(siteAddressFlow, stepFlow) { address, step ->
@@ -37,19 +35,35 @@ class SitePickerSiteDiscoveryViewModel @Inject constructor(
     }.asLiveData()
 
     private fun prepareAddressViewState(address: String): Flow<ViewState.AddressInputState> {
-        return combine(isLoadingFlow, inlineErrorFlow) { isLoading, error ->
+        val isLoadingFlow = MutableStateFlow(false)
+        val isAddressSiteHelpShownFlow = MutableStateFlow(false)
+
+        return combine(
+            isLoadingFlow,
+            isAddressSiteHelpShownFlow,
+            inlineErrorFlow
+        ) { isLoading, displayLoadingDialog, error ->
             ViewState.AddressInputState(
                 siteAddress = address,
                 isAddressValid = PatternsCompat.WEB_URL.matcher(address).matches(),
                 isLoading = isLoading,
-                inlineErrorMessage = error
+                isAddressSiteHelpShown = displayLoadingDialog,
+                inlineErrorMessage = error,
+                onAddressChanged = { address ->
+                    inlineErrorFlow.value = 0
+                    siteAddressFlow.value = address
+                },
+                onShowSiteAddressTapped = { isAddressSiteHelpShownFlow.value = true },
+                onSiteAddressHelpDismissed = { isAddressSiteHelpShownFlow.value = false },
+                onMoreHelpTapped = {
+                    isAddressSiteHelpShownFlow.value = false
+                    triggerEvent(CreateZendeskTicket)
+                },
+                onContinueTapped = {
+                    isLoadingFlow.value = true
+                }
             )
         }
-    }
-
-    fun onAddressChanged(address: String) {
-        inlineErrorFlow.value = 0
-        siteAddressFlow.value = address
     }
 
     private enum class Step {
@@ -63,7 +77,13 @@ class SitePickerSiteDiscoveryViewModel @Inject constructor(
             override val siteAddress: String,
             val isAddressValid: Boolean,
             val isLoading: Boolean,
-            @StringRes val inlineErrorMessage: Int = 0
+            val isAddressSiteHelpShown: Boolean,
+            @StringRes val inlineErrorMessage: Int = 0,
+            val onAddressChanged: (String) -> Unit,
+            val onShowSiteAddressTapped: () -> Unit,
+            val onSiteAddressHelpDismissed: () -> Unit,
+            val onMoreHelpTapped: () -> Unit,
+            val onContinueTapped: () -> Unit
         ) : ViewState()
 
         data class ErrorState(
@@ -75,4 +95,6 @@ class SitePickerSiteDiscoveryViewModel @Inject constructor(
             val secondaryButtonAction: () -> Unit
         ) : ViewState()
     }
+
+    object CreateZendeskTicket : MultiLiveEvent.Event()
 }

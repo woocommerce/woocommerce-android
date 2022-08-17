@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.sitepicker.sitediscovery
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -18,12 +19,16 @@ import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.window.Dialog
 import com.woocommerce.android.R
+import com.woocommerce.android.ui.compose.component.DialogButtonsRowLayout
+import com.woocommerce.android.ui.compose.component.ProgressDialog
 import com.woocommerce.android.ui.compose.component.WCColoredButton
 import com.woocommerce.android.ui.compose.component.WCOutlinedTextField
 import com.woocommerce.android.ui.compose.component.WCTextButton
@@ -38,7 +43,6 @@ fun SitePickerSiteDiscoveryScreen(viewModel: SitePickerSiteDiscoveryViewModel) {
             when (viewState) {
                 is AddressInputState -> AddressInputView(
                     viewState,
-                    viewModel::onAddressChanged,
                     Modifier.padding(paddingValues)
                 )
                 is ErrorState -> TODO()
@@ -50,7 +54,6 @@ fun SitePickerSiteDiscoveryScreen(viewModel: SitePickerSiteDiscoveryViewModel) {
 @Composable
 private fun AddressInputView(
     state: AddressInputState,
-    onAddressChanged: (String) -> Unit,
     modifier: Modifier = Modifier
 ) {
     Column(
@@ -63,22 +66,67 @@ private fun AddressInputView(
         Text(text = stringResource(id = R.string.enter_site_address))
         WCOutlinedTextField(
             value = state.siteAddress,
-            onValueChange = onAddressChanged,
+            onValueChange = state.onAddressChanged,
             label = stringResource(id = R.string.login_site_address),
             isError = state.inlineErrorMessage != 0,
             helperText = state.inlineErrorMessage.takeIf { it != 0 }?.let { stringResource(id = it) },
             maxLines = 1
         )
-        WCTextButton(onClick = { /*TODO*/ }) {
+        WCTextButton(onClick = state.onShowSiteAddressTapped) {
             Text(text = stringResource(id = R.string.login_find_your_site_adress))
         }
         Spacer(modifier = Modifier.weight(1f))
         WCColoredButton(
-            onClick = { /*TODO*/ },
+            onClick = state.onContinueTapped,
             enabled = state.isAddressValid,
             modifier = Modifier.fillMaxWidth()
         ) {
             Text(text = stringResource(id = R.string.continue_button))
+        }
+
+        if (state.isAddressSiteHelpShown) {
+            SiteAddressHelpDialog(state.onSiteAddressHelpDismissed, state.onMoreHelpTapped)
+        }
+
+        if (state.isLoading) {
+            ProgressDialog(title = "", subtitle = stringResource(id = R.string.login_checking_site_address))
+        }
+    }
+}
+
+@Composable
+fun SiteAddressHelpDialog(
+    onDismissed: () -> Unit,
+    onMoreHelpTapped: () -> Unit
+) {
+    Dialog(onDismissRequest = onDismissed) {
+        Column(
+            modifier = Modifier
+                .background(MaterialTheme.colors.surface, MaterialTheme.shapes.medium)
+                .padding(dimensionResource(id = R.dimen.major_100)),
+            verticalArrangement = Arrangement.spacedBy(dimensionResource(id = R.dimen.major_100))
+        ) {
+            Text(text = stringResource(id = R.string.login_site_address_help_content))
+            Image(
+                painter = painterResource(id = R.drawable.login_site_address_help),
+                contentDescription = null,
+                contentScale = ContentScale.Fit,
+                modifier = Modifier.fillMaxWidth()
+            )
+
+            DialogButtonsRowLayout(
+                confirmButton = {
+                    WCTextButton(onClick = onDismissed) {
+                        Text(text = stringResource(id = android.R.string.ok))
+                    }
+                },
+                dismissButton = {},
+                neutralButton = {
+                    WCTextButton(onClick = onMoreHelpTapped) {
+                        Text(text = stringResource(id = R.string.login_site_address_more_help))
+                    }
+                }
+            )
         }
     }
 }
@@ -113,8 +161,18 @@ private fun Toolbar() {
 private fun AddressInputViewPreview() {
     WooThemeWithBackground {
         AddressInputView(
-            state = AddressInputState("", isAddressValid = true, isLoading = false),
-            onAddressChanged = {}
+            state = AddressInputState(
+                siteAddress = "",
+                isAddressValid = true,
+                isAddressSiteHelpShown = false,
+                isLoading = false,
+                inlineErrorMessage = 0,
+                onAddressChanged = {},
+                onShowSiteAddressTapped = {},
+                onContinueTapped = {},
+                onSiteAddressHelpDismissed = {},
+                onMoreHelpTapped = {}
+            )
         )
     }
 }
