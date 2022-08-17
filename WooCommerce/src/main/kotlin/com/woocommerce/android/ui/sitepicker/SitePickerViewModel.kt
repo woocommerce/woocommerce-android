@@ -242,9 +242,9 @@ class SitePickerViewModel @Inject constructor(
         sitePickerViewState = sitePickerViewState.copy(
             isNoStoresViewVisible = true,
             isPrimaryBtnVisible = true,
-            primaryBtnText = resourceProvider.getString(string.login_jetpack_view_instructions_alt),
+            primaryBtnText = resourceProvider.getString(string.login_site_picker_enter_site_address),
             noStoresLabelText = resourceProvider.getString(string.login_no_stores),
-            noStoresBtnText = resourceProvider.getString(string.login_jetpack_what_is),
+            noStoresBtnText = resourceProvider.getString(string.login_site_picker_new_to_woo),
             currentSitePickerState = SitePickerState.NoStoreState
         )
     }
@@ -347,14 +347,14 @@ class SitePickerViewModel @Inject constructor(
         launch { fetchSitesFromApi(showSkeleton = false) }
     }
 
-    fun onWhatIsJetpackButtonClick() {
-        analyticsTrackerWrapper.track(AnalyticsEvent.LOGIN_JETPACK_REQUIRED_WHAT_IS_JETPACK_LINK_TAPPED)
-        triggerEvent(SitePickerEvent.NavigationToWhatIsJetpackFragmentEvent)
+    fun onNewToWooClick() {
+        // TODO track event
+        triggerEvent(SitePickerEvent.NavigateToNewToWooEvent)
     }
 
-    fun onLearnMoreAboutJetpackButtonClick() {
-        analyticsTrackerWrapper.track(AnalyticsEvent.LOGIN_JETPACK_REQUIRED_VIEW_INSTRUCTIONS_BUTTON_TAPPED)
-        triggerEvent(SitePickerEvent.NavigationToLearnMoreAboutJetpackEvent)
+    fun onEnterSiteAddressClick() {
+        // TODO track event
+        triggerEvent(SitePickerEvent.NavigateToSiteAddressEvent)
     }
 
     fun onTryAnotherAccountButtonClick() {
@@ -563,8 +563,8 @@ class SitePickerViewModel @Inject constructor(
         object NavigateToMainActivityEvent : SitePickerEvent()
         object NavigateToEmailHelpDialogEvent : SitePickerEvent()
         object NavigationToHelpFragmentEvent : SitePickerEvent()
-        object NavigationToWhatIsJetpackFragmentEvent : SitePickerEvent()
-        object NavigationToLearnMoreAboutJetpackEvent : SitePickerEvent()
+        object NavigateToNewToWooEvent : SitePickerEvent()
+        object NavigateToSiteAddressEvent : SitePickerEvent()
         data class NavigateToWPComWebView(val url: String, val validationUrl: String) : SitePickerEvent()
     }
 
