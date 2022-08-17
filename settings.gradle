@@ -3,7 +3,7 @@ pluginManagement {
     gradle.ext.daggerVersion = '2.42'
     gradle.ext.detektVersion = '1.19.0'
     gradle.ext.kotlinVersion = '1.6.10'
-    gradle.ext.navigationVersion = '2.4.1'
+    gradle.ext.navigationVersion = '2.5.1'
 
     repositories {
         gradlePluginPortal()

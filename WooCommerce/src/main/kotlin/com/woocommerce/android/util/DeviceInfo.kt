@@ -2,11 +2,12 @@ package com.woocommerce.android.util
 
 import android.content.res.Resources
 import android.os.Build
+import android.os.Build.VERSION
 import androidx.core.os.ConfigurationCompat
 
 object DeviceInfo {
     val OS: String
-        get() = android.os.Build.VERSION.RELEASE
+        get() = VERSION.RELEASE
     val name: String
         get() {
             val manufacturer = Build.MANUFACTURER
@@ -21,7 +22,7 @@ object DeviceInfo {
         get() {
             val locale = ConfigurationCompat.getLocales(Resources.getSystem().configuration)
             if (locale.isEmpty.not()) {
-                return locale[0].displayLanguage
+                return locale[0]!!.displayLanguage
             }
             return null
         }
