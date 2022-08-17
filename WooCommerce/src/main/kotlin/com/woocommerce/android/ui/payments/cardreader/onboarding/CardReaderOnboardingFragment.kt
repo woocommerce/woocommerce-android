@@ -29,6 +29,7 @@ import com.woocommerce.android.util.UiHelpers
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.parcelize.Parcelize
+import org.wordpress.android.util.ToastUtils
 import java.math.BigDecimal
 
 @AndroidEntryPoint
@@ -147,8 +148,15 @@ class CardReaderOnboardingFragment : BaseFragment(R.layout.fragment_card_reader_
         } else {
             binding.enableCashOnDelivery.isEnabled = true
             binding.progressBar.visibility = View.GONE
-            if (state.cashOnDeliveryEnabledSuccessfully) {
-                state.onSkipCashOnDeliveryClicked.invoke()
+            when (state.cashOnDeliveryEnabledSuccessfully) {
+                true -> state.onSkipCashOnDeliveryClicked.invoke()
+                false -> {
+                    ToastUtils.showToast(
+                        requireContext(),
+                        R.string.card_reader_onboarding_cash_on_delivery_enable_failure
+                    )
+                }
+                null -> {}
             }
         }
 
