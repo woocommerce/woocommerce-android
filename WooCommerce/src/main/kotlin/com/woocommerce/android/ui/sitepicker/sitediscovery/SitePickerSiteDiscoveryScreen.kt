@@ -1,5 +1,8 @@
 package com.woocommerce.android.ui.sitepicker.sitediscovery
 
+import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.ExperimentalAnimationApi
+import androidx.compose.animation.core.updateTransition
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -42,6 +45,7 @@ import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.ui.sitepicker.sitediscovery.SitePickerSiteDiscoveryViewModel.ViewState.AddressInputState
 import com.woocommerce.android.ui.sitepicker.sitediscovery.SitePickerSiteDiscoveryViewModel.ViewState.ErrorState
 
+@OptIn(ExperimentalAnimationApi::class)
 @Composable
 fun SitePickerSiteDiscoveryScreen(viewModel: SitePickerSiteDiscoveryViewModel) {
     viewModel.viewState.observeAsState().value?.let { viewState ->
@@ -51,15 +55,20 @@ fun SitePickerSiteDiscoveryScreen(viewModel: SitePickerSiteDiscoveryViewModel) {
                 onBackButtonClick = viewModel::onBackButtonClick
             )
         }) { paddingValues ->
-            when (viewState) {
-                is AddressInputState -> AddressInputView(
-                    viewState,
-                    Modifier.padding(paddingValues)
-                )
-                is ErrorState -> ErrorView(
-                    viewState,
-                    Modifier.padding(paddingValues)
-                )
+            val transition = updateTransition(viewState, label = "ViewStateTransition")
+            transition.AnimatedContent(
+                contentKey = { viewState::class.java },
+            ) { targetState ->
+                when (targetState) {
+                    is AddressInputState -> AddressInputView(
+                        targetState,
+                        Modifier.padding(paddingValues)
+                    )
+                    is ErrorState -> ErrorView(
+                        targetState,
+                        Modifier.padding(paddingValues)
+                    )
+                }
             }
         }
     }
