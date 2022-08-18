@@ -103,7 +103,13 @@ class SitePickerSiteDiscoveryViewModel @Inject constructor(
         },
         secondaryButtonText = resourceProvider.getString(R.string.login_try_another_account),
         secondaryButtonAction = {
-            triggerEvent(LoginWithAnotherAccount)
+            launch {
+                sitePickRepository.logout().let {
+                    if (it && sitePickRepository.isUserLoggedIn()) {
+                        triggerEvent(Logout)
+                    }
+                }
+            }
         }
     )
 
