@@ -7,7 +7,10 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
 import androidx.compose.material.MaterialTheme
@@ -18,11 +21,13 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
@@ -30,6 +35,7 @@ import com.woocommerce.android.R
 import com.woocommerce.android.ui.compose.component.DialogButtonsRowLayout
 import com.woocommerce.android.ui.compose.component.ProgressDialog
 import com.woocommerce.android.ui.compose.component.WCColoredButton
+import com.woocommerce.android.ui.compose.component.WCOutlinedButton
 import com.woocommerce.android.ui.compose.component.WCOutlinedTextField
 import com.woocommerce.android.ui.compose.component.WCTextButton
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
@@ -50,7 +56,10 @@ fun SitePickerSiteDiscoveryScreen(viewModel: SitePickerSiteDiscoveryViewModel) {
                     viewState,
                     Modifier.padding(paddingValues)
                 )
-                is ErrorState -> TODO()
+                is ErrorState -> ErrorView(
+                    viewState,
+                    Modifier.padding(paddingValues)
+                )
             }
         }
     }
@@ -132,6 +141,39 @@ fun SiteAddressHelpDialog(
                     }
                 }
             )
+        }
+    }
+}
+
+@Composable
+fun ErrorView(viewState: ErrorState, modifier: Modifier = Modifier) {
+    Column(
+        modifier = modifier
+            .fillMaxHeight()
+            .background(color = MaterialTheme.colors.surface)
+            .padding(dimensionResource(id = R.dimen.major_100))
+    ) {
+        Column(
+            modifier = Modifier
+                .weight(1f)
+                .verticalScroll(rememberScrollState()),
+            verticalArrangement = Arrangement.spacedBy(
+                space = dimensionResource(id = R.dimen.major_100),
+                alignment = Alignment.CenterVertically
+            ),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Image(painter = painterResource(id = viewState.imageResourceId), contentDescription = null)
+            Text(text = viewState.message, textAlign = TextAlign.Center)
+        }
+
+        Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.major_100)))
+
+        WCColoredButton(onClick = viewState.primaryButtonAction, modifier = Modifier.fillMaxWidth()) {
+            Text(text = viewState.primaryButtonText)
+        }
+        WCOutlinedButton(onClick = viewState.secondaryButtonAction, modifier = Modifier.fillMaxWidth()) {
+            Text(text = viewState.secondaryButtonText)
         }
     }
 }

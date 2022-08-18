@@ -144,6 +144,7 @@ class SitePickerSiteDiscoveryViewModel @Inject constructor(
         data class ErrorState(
             override val siteAddress: String,
             val message: String,
+            @DrawableRes val imageResourceId: Int,
             val primaryButtonText: String,
             val primaryButtonAction: () -> Unit,
             val secondaryButtonText: String,
