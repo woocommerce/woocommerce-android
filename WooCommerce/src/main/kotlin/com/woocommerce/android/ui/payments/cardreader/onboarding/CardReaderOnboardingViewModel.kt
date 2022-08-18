@@ -223,9 +223,11 @@ class CardReaderOnboardingViewModel @Inject constructor(
             ChoosePaymentGatewayProvider -> updateUiWithSelectPaymentPlugin()
             is CardReaderOnboardingState.CashOnDeliveryDisabled ->
                 viewState.value = CashOnDeliveryDisabledState(
-                    { (::onSkipCashOnDeliveryClicked)(state.countryCode) },
-                    { (::onEnableCashOnDeliveryClicked)(state.countryCode) },
-                    ::onLearnMoreClicked
+                    onSkipCashOnDeliveryClicked = { (::onSkipCashOnDeliveryClicked)(state.countryCode) },
+                    onCashOnDeliveryEnabledSuccessfully =
+                    { (::onCashOnDeliveryEnabledSuccessfully)(state.countryCode) },
+                    onEnableCashOnDeliveryClicked = { (::onEnableCashOnDeliveryClicked)(state.countryCode) },
+                    onLearnMoreActionClicked = ::onLearnMoreClicked
                 )
         }.exhaustive
     }
@@ -235,11 +237,16 @@ class CardReaderOnboardingViewModel @Inject constructor(
         continueFlow(countryCode)
     }
 
+    private fun onCashOnDeliveryEnabledSuccessfully(countryCode: String) {
+        continueFlow(countryCode)
+    }
+
     private fun onEnableCashOnDeliveryClicked(countryCode: String) {
         viewState.value = CashOnDeliveryDisabledState(
-            { (::onSkipCashOnDeliveryClicked)(countryCode) },
-            { (::onEnableCashOnDeliveryClicked)(countryCode) },
-            ::onLearnMoreClicked,
+            onSkipCashOnDeliveryClicked = { (::onSkipCashOnDeliveryClicked)(countryCode) },
+            onCashOnDeliveryEnabledSuccessfully = { (::onCashOnDeliveryEnabledSuccessfully)(countryCode) },
+            onEnableCashOnDeliveryClicked = { (::onEnableCashOnDeliveryClicked)(countryCode) },
+            onLearnMoreActionClicked = ::onLearnMoreClicked,
             shouldShowProgress = true
         )
         launch {
@@ -247,14 +254,16 @@ class CardReaderOnboardingViewModel @Inject constructor(
                 site = selectedSite.get(),
                 gatewayId = GatewayRestClient.GatewayId.CASH_ON_DELIVERY,
                 enabled = true,
-                title = "Pay in Person"
+                title = "Pay in Person",
+                description = "Pay by card or another accepted payment method",
             )
             result.model?.let {
                 viewState.postValue(
                     CashOnDeliveryDisabledState(
-                        { (::onSkipCashOnDeliveryClicked)(countryCode) },
-                        { (::onEnableCashOnDeliveryClicked)(countryCode) },
-                        ::onLearnMoreClicked,
+                        onSkipCashOnDeliveryClicked = { (::onSkipCashOnDeliveryClicked)(countryCode) },
+                        onCashOnDeliveryEnabledSuccessfully = { (::onCashOnDeliveryEnabledSuccessfully)(countryCode) },
+                        onEnableCashOnDeliveryClicked = { (::onEnableCashOnDeliveryClicked)(countryCode) },
+                        onLearnMoreActionClicked = ::onLearnMoreClicked,
                         shouldShowProgress = false,
                         cashOnDeliveryEnabledSuccessfully = true
                     )
@@ -262,9 +271,10 @@ class CardReaderOnboardingViewModel @Inject constructor(
             } ?: run {
                 viewState.postValue(
                     CashOnDeliveryDisabledState(
-                        { (::onSkipCashOnDeliveryClicked)(countryCode) },
-                        { (::onEnableCashOnDeliveryClicked)(countryCode) },
-                        ::onLearnMoreClicked,
+                        onSkipCashOnDeliveryClicked = { (::onSkipCashOnDeliveryClicked)(countryCode) },
+                        onCashOnDeliveryEnabledSuccessfully = { (::onCashOnDeliveryEnabledSuccessfully)(countryCode) },
+                        onEnableCashOnDeliveryClicked = { (::onEnableCashOnDeliveryClicked)(countryCode) },
+                        onLearnMoreActionClicked = ::onLearnMoreClicked,
                         shouldShowProgress = false,
                         cashOnDeliveryEnabledSuccessfully = false
                     )
@@ -377,6 +387,7 @@ class CardReaderOnboardingViewModel @Inject constructor(
 
         data class CashOnDeliveryDisabledState(
             val onSkipCashOnDeliveryClicked: (() -> Unit),
+            val onCashOnDeliveryEnabledSuccessfully: (() -> Unit),
             val onEnableCashOnDeliveryClicked: (() -> Unit),
             val onLearnMoreActionClicked: (() -> Unit),
             val shouldShowProgress: Boolean = false,
