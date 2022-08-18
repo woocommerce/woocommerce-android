@@ -90,6 +90,12 @@ class AppPrefsWrapper @Inject constructor() {
         selfHostedSiteId: Long
     ) = AppPrefs.getCardReaderStatementDescriptor(localSiteId, remoteSiteId, selfHostedSiteId)
 
+    fun isCashOnDeliveryDisabledStateSkipped() = AppPrefs.isCashOnDeliveryDisabledStateSkipped()
+
+    fun setCashOnDeliveryDisabledStateSkipped(isSkipped: Boolean) = AppPrefs.setCashOnDeliveryDisabledStateSkipped(
+        isSkipped
+    )
+
     fun setLastConnectedCardReaderId(readerId: String) = AppPrefs.setLastConnectedCardReaderId(readerId)
 
     fun getLastConnectedCardReaderId() = AppPrefs.getLastConnectedCardReaderId()

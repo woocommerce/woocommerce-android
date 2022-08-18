@@ -231,6 +231,7 @@ class CardReaderOnboardingViewModel @Inject constructor(
     }
 
     private fun onSkipCashOnDeliveryClicked(countryCode: String) {
+        appPrefsWrapper.setCashOnDeliveryDisabledStateSkipped(true)
         continueFlow(countryCode)
     }
 

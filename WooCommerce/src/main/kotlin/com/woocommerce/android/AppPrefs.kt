@@ -91,6 +91,7 @@ object AppPrefs {
         LOGIN_EMAIL,
         CARD_READER_UPSELL_BANNER_DIALOG_DISMISSED_FOREVER,
         CARD_READER_UPSELL_BANNER_DIALOG_DISMISSED_REMIND_ME_LATER,
+        CARD_READER_DO_NOT_SHOW_CASH_ON_DELIVERY_DISABLED_ONBOARDING_STATE,
     }
 
     /**
@@ -551,6 +552,20 @@ object AppPrefs {
 
     fun setUnifiedLoginLastFlow(flow: String) {
         setString(DeletablePrefKey.UNIFIED_LOGIN_LAST_ACTIVE_FLOW, flow)
+    }
+
+    fun isCashOnDeliveryDisabledStateSkipped(): Boolean {
+        return getBoolean(
+            DeletablePrefKey.CARD_READER_DO_NOT_SHOW_CASH_ON_DELIVERY_DISABLED_ONBOARDING_STATE,
+            false
+        )
+    }
+
+    fun setCashOnDeliveryDisabledStateSkipped(isSkipped: Boolean) {
+        setBoolean(
+            DeletablePrefKey.CARD_READER_DO_NOT_SHOW_CASH_ON_DELIVERY_DISABLED_ONBOARDING_STATE,
+            isSkipped
+        )
     }
 
     fun getCardReaderOnboardingStatus(
