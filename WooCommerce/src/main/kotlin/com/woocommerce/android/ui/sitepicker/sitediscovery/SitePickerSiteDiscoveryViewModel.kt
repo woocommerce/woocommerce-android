@@ -1,13 +1,16 @@
 package com.woocommerce.android.ui.sitepicker.sitediscovery
 
+import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
 import androidx.core.util.PatternsCompat
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
+import com.woocommerce.android.R
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
+import com.woocommerce.android.viewmodel.ResourceProvider
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.getStateFlow
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -18,14 +21,14 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.emitAll
 import kotlinx.coroutines.flow.transformLatest
 import kotlinx.coroutines.launch
-import org.wordpress.android.login.R
 import javax.inject.Inject
 import kotlin.text.RegexOption.IGNORE_CASE
 
 @HiltViewModel
 class SitePickerSiteDiscoveryViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
-    private val fetchSiteInfo: FetchSiteInfo
+    private val fetchSiteInfo: FetchSiteInfo,
+    private val resourceProvider: ResourceProvider
 ) : ScopedViewModel(savedStateHandle) {
     companion object {
         private const val FETCHED_URL_KEY = "fetched_url"
@@ -40,10 +43,10 @@ class SitePickerSiteDiscoveryViewModel @Inject constructor(
         set(value) = savedState.set(FETCHED_URL_KEY, value)
 
     @OptIn(ExperimentalCoroutinesApi::class)
-    val viewState = stepFlow.transformLatest<Step, ViewState> { step ->
+    val viewState = stepFlow.transformLatest { step ->
         when (step) {
             Step.AddressInput -> emitAll(prepareAddressViewState())
-            Step.JetpackUnavailable -> TODO()
+            Step.JetpackUnavailable -> emit(prepareJetpackUnavailableState())
             Step.NotWordpress -> TODO()
         }
     }.asLiveData()
@@ -84,6 +87,20 @@ class SitePickerSiteDiscoveryViewModel @Inject constructor(
             )
         }
     }
+
+    private fun prepareJetpackUnavailableState() = ViewState.ErrorState(
+        siteAddress = siteAddressFlow.value,
+        message = resourceProvider.getString(R.string.login_jetpack_required_text, siteAddressFlow.value),
+        imageResourceId = R.drawable.img_login_jetpack_required,
+        primaryButtonText = resourceProvider.getString(R.string.login_jetpack_install),
+        primaryButtonAction = {
+            triggerEvent(StartJetpackInstallation)
+        },
+        secondaryButtonText = resourceProvider.getString(R.string.login_try_another_account),
+        secondaryButtonAction = {
+            triggerEvent(LoginWithAnotherAccount)
+        }
+    )
 
     private suspend fun startSiteDiscovery() {
         fetchSiteInfo(siteAddressFlow.value).fold(
@@ -154,4 +171,6 @@ class SitePickerSiteDiscoveryViewModel @Inject constructor(
 
     object CreateZendeskTicket : MultiLiveEvent.Event()
     object NavigateToHelpScreen : MultiLiveEvent.Event()
+    object StartJetpackInstallation : MultiLiveEvent.Event()
+    object LoginWithAnotherAccount : MultiLiveEvent.Event()
 }
