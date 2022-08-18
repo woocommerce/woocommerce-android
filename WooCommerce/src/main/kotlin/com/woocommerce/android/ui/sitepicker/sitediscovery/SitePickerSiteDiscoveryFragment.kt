@@ -91,7 +91,8 @@ class SitePickerSiteDiscoveryFragment : BaseFragment() {
         findNavController().navigate(
             NavGraphMainDirections.actionGlobalWPComWebViewFragment(
                 urlToLoad = url,
-                urlToTriggerExit = JETPACK_CONNECTED_REDIRECT_URL
+                urlToTriggerExit = JETPACK_CONNECTED_REDIRECT_URL,
+                urlComparisonMode = WPComWebViewFragment.UrlComparisonMode.EQUALITY
             )
         )
     }
