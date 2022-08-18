@@ -79,11 +79,6 @@ class SitePickerViewModel @Inject constructor(
         loadAndDisplaySites()
     }
 
-    override fun onCleared() {
-        super.onCleared()
-        repository.onCleanup()
-    }
-
     private fun updateSiteViewDetails() {
         sitePickerViewState = sitePickerViewState.copy(
             userInfo = getUserInfo(),
