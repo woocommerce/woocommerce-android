@@ -1,7 +1,6 @@
 package com.woocommerce.android.ui.products
 
 import androidx.lifecycle.SavedStateHandle
-import com.automattic.android.experimentation.ExPlat
 import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.R
 import com.woocommerce.android.initSavedStateHandle
@@ -77,7 +76,6 @@ class ProductDetailViewModel_AddFlowTest : BaseUnitTest() {
         on { it.observeSuccessfulUploads(any()) } doReturn emptyFlow()
     }
 
-    private val explat: ExPlat = mock()
 
     private var savedState: SavedStateHandle =
         ProductDetailFragmentArgs(remoteProductId = PRODUCT_REMOTE_ID, isAddProduct = true).initSavedStateHandle()
@@ -177,7 +175,7 @@ class ProductDetailViewModel_AddFlowTest : BaseUnitTest() {
                 mediaFileUploadHandler,
                 prefs,
                 addonRepository,
-                explat
+                experimentStore = mock()
             )
         )
 

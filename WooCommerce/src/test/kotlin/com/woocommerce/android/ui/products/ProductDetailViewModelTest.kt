@@ -1,7 +1,6 @@
 package com.woocommerce.android.ui.products
 
 import androidx.lifecycle.SavedStateHandle
-import com.automattic.android.experimentation.ExPlat
 import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.R
 import com.woocommerce.android.extensions.takeIfNotEqualTo
@@ -111,7 +110,6 @@ class ProductDetailViewModelTest : BaseUnitTest() {
 
     private val prefsWrapper: AppPrefsWrapper = mock()
     private val productUtils = ProductUtils()
-    private val explat: ExPlat = mock()
 
     private val product = ProductTestUtils.generateProduct(PRODUCT_REMOTE_ID)
     private val productWithTagsAndCategories = ProductTestUtils.generateProductWithTagsAndCategories(PRODUCT_REMOTE_ID)
@@ -242,7 +240,7 @@ class ProductDetailViewModelTest : BaseUnitTest() {
                 mediaFileUploadHandler,
                 prefsWrapper,
                 addonRepository,
-                explat
+                experimentStore = mock()
             )
         )
 
