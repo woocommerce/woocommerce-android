@@ -9,6 +9,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
+import com.woocommerce.android.AppInitializer
 import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsEvent
@@ -1631,7 +1632,7 @@ class ProductDetailViewModel @Inject constructor(
      * doesn't already have linked products
      */
     private fun checkLinkedProductPromo() {
-        if (FeatureFlag.LINKED_PRODUCTS_PROMO.isEnabled() &&
+        if (AppInitializer.AB_TEST_LINKED_PRODUCTS_PROMO_ENABLED &&
             appPrefsWrapper.isPromoBannerShown(PromoBannerType.LINKED_PRODUCTS).not() &&
             viewState.productDraft?.hasLinkedProducts() == false
         ) {

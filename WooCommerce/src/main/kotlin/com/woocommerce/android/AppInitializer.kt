@@ -15,6 +15,8 @@ import com.google.android.gms.common.GoogleApiAvailability
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.di.AppCoroutineScope
+import com.woocommerce.android.di.ExperimentationModule.Companion.AA_TEST_202208
+import com.woocommerce.android.di.ExperimentationModule.Companion.AB_TEST_LINKED_PRODUCTS_PROMO
 import com.woocommerce.android.network.ConnectionChangeReceiver
 import com.woocommerce.android.push.RegisterDevice
 import com.woocommerce.android.push.RegisterDevice.Mode.IF_NEEDED
@@ -50,6 +52,7 @@ import org.wordpress.android.fluxc.action.AccountAction
 import org.wordpress.android.fluxc.generated.AccountActionBuilder
 import org.wordpress.android.fluxc.logging.FluxCCrashLogger
 import org.wordpress.android.fluxc.logging.FluxCCrashLoggerProvider
+import org.wordpress.android.fluxc.model.experiments.Variation
 import org.wordpress.android.fluxc.network.rest.wpcom.WPComGsonRequest.OnJetpackTimeoutError
 import org.wordpress.android.fluxc.store.AccountStore
 import org.wordpress.android.fluxc.store.AccountStore.OnAccountChanged
@@ -63,6 +66,7 @@ import javax.inject.Singleton
 class AppInitializer @Inject constructor() : ApplicationLifecycleListener {
     companion object {
         private const val SECONDS_BETWEEN_SITE_UPDATE = 60 * 60 // 1 hour
+        var AB_TEST_LINKED_PRODUCTS_PROMO_ENABLED = false
     }
 
     @Inject lateinit var crashLogging: CrashLogging
@@ -121,11 +125,13 @@ class AppInitializer @Inject constructor() : ApplicationLifecycleListener {
         FeedbackPrefs.init(application)
 
         explat.getVariation(
-            object : Experiment {
-                override val identifier = "woocommerceandroid_explat_aa_test_202208"
-            },
+            AA_TEST_202208,
             true
         )
+        AB_TEST_LINKED_PRODUCTS_PROMO_ENABLED = explat.getVariation(
+            AB_TEST_LINKED_PRODUCTS_PROMO,
+            true
+        ).name == "treatment"
 
         // Apply Theme
         AppThemeUtils.setAppTheme()
