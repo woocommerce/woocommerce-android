@@ -88,7 +88,9 @@ import kotlinx.parcelize.Parcelize
 import org.wordpress.android.fluxc.model.experiments.Variation
 import org.wordpress.android.fluxc.store.WCProductStore.ProductErrorType
 import java.math.BigDecimal
-import java.util.*
+import java.util.Collections
+import java.util.Date
+import java.util.Locale
 import javax.inject.Inject
 
 @HiltViewModel
