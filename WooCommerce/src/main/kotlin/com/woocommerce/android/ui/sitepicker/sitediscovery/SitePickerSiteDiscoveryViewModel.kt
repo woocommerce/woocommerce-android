@@ -95,7 +95,8 @@ class SitePickerSiteDiscoveryViewModel @Inject constructor(
                 when {
                     !it.exists -> inlineErrorFlow.value = R.string.invalid_site_url_message
                     !it.isWordPress -> stepFlow.value = Step.NotWordpress
-                    !it.hasJetpack || !it.isJetpackConnected -> stepFlow.value = Step.JetpackUnavailable
+                    !it.isWPCom && (!it.hasJetpack || !it.isJetpackConnected) ->
+                        stepFlow.value = Step.JetpackUnavailable
                     else -> navigateBackToSitePicker()
                 }
             },
