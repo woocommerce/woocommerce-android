@@ -6,24 +6,39 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.viewmodel.MultiLiveEvent
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.getStateFlow
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.emitAll
 import kotlinx.coroutines.flow.transformLatest
+import kotlinx.coroutines.launch
+import org.wordpress.android.login.R
 import javax.inject.Inject
+import kotlin.text.RegexOption.IGNORE_CASE
 
 @HiltViewModel
 class SitePickerSiteDiscoveryViewModel @Inject constructor(
-    savedStateHandle: SavedStateHandle
+    savedStateHandle: SavedStateHandle,
+    private val fetchSiteInfo: FetchSiteInfo
 ) : ScopedViewModel(savedStateHandle) {
+    companion object {
+        private const val FETCHED_URL_KEY = "fetched_url"
+    }
+
     private val siteAddressFlow = savedStateHandle.getStateFlow(viewModelScope, "")
     private val stepFlow = savedStateHandle.getStateFlow(viewModelScope, Step.AddressInput)
     private val inlineErrorFlow = savedStateHandle.getStateFlow(viewModelScope, 0)
 
+    private var fetchedSiteUrl
+        get() = savedState.get<String>(FETCHED_URL_KEY)
+        set(value) = savedState.set(FETCHED_URL_KEY, value)
+
+    @OptIn(ExperimentalCoroutinesApi::class)
     val viewState = combine(siteAddressFlow, stepFlow) { address, step ->
         Pair(address, step)
     }.transformLatest<Pair<String, Step>, ViewState> { (address, step) ->
@@ -60,9 +75,40 @@ class SitePickerSiteDiscoveryViewModel @Inject constructor(
                     triggerEvent(CreateZendeskTicket)
                 },
                 onContinueTapped = {
-                    isLoadingFlow.value = true
+                    launch {
+                        isLoadingFlow.value = true
+                        startSiteDiscovery()
+                        isLoadingFlow.value = false
+                    }
                 }
             )
+        }
+    }
+
+    private suspend fun startSiteDiscovery() {
+        fetchSiteInfo(siteAddressFlow.value).fold(
+            onSuccess = {
+                val siteAddress = (it.urlAfterRedirects ?: it.url)
+                // Remove protocol prefix
+                val protocolRegex = Regex("^(http[s]?://)", IGNORE_CASE)
+                fetchedSiteUrl = siteAddress.replaceFirst(protocolRegex, "")
+                when {
+                    !it.exists -> inlineErrorFlow.value = R.string.invalid_site_url_message
+                    !it.isWordPress -> stepFlow.value = Step.NotWordpress
+                    !it.hasJetpack || !it.isJetpackConnected -> stepFlow.value = Step.JetpackUnavailable
+                    else -> navigateBackToSitePicker()
+                }
+            },
+            onFailure = {
+                inlineErrorFlow.value = R.string.invalid_site_url_message
+            }
+        )
+    }
+
+    private fun navigateBackToSitePicker() {
+        fetchedSiteUrl.let { url ->
+            requireNotNull(url)
+            triggerEvent(ExitWithResult(url))
         }
     }
 

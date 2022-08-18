@@ -504,6 +504,11 @@ class SitePickerViewModel @Inject constructor(
         }
     }
 
+    fun onSiteAddressReceived(siteAddress: String) {
+        loginSiteAddress = siteAddress
+        launch { fetchSitesFromApi(showSkeleton = true) }
+    }
+
     private fun trackLoginEvent(
         currentFlow: UnifiedLoginTracker.Flow? = null,
         currentStep: UnifiedLoginTracker.Step? = null,
