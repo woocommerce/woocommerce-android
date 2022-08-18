@@ -974,6 +974,30 @@ class CardReaderConnectViewModelTest : BaseUnitTest() {
         }
 
     @Test
+    fun `given app in scanning state, when user clicks on learn more, then OpenGenericWebView emitted`() =
+        testBlocking {
+            init(scanState = SCANNING)
+            val url = "https://www.example.com"
+            whenever(learnMoreUrlProvider.providerLearnMoreUrl()).thenReturn(url)
+
+            (viewModel.viewStateData.value as ScanningState).onLearnMoreClicked.invoke()
+
+            assertThat(viewModel.event.value).isEqualTo(OpenGenericWebView(url))
+        }
+
+    @Test
+    fun `given app in scanning state, when user clicks on learn more, then event tracked`() =
+        testBlocking {
+            init(scanState = SCANNING)
+            val url = "https://www.example.com"
+            whenever(learnMoreUrlProvider.providerLearnMoreUrl()).thenReturn(url)
+
+            (viewModel.viewStateData.value as ScanningState).onLearnMoreClicked.invoke()
+
+            verify(tracker).trackLearnMoreConnectionClicked()
+        }
+
+    @Test
     fun `given app in reader found state, when user clicks on keep searching, then scanning state emitted`() =
         testBlocking {
             init(scanState = READER_FOUND)
