@@ -76,7 +76,6 @@ class ProductDetailViewModel_AddFlowTest : BaseUnitTest() {
         on { it.observeSuccessfulUploads(any()) } doReturn emptyFlow()
     }
 
-
     private var savedState: SavedStateHandle =
         ProductDetailFragmentArgs(remoteProductId = PRODUCT_REMOTE_ID, isAddProduct = true).initSavedStateHandle()
 
