@@ -1636,12 +1636,37 @@ class ProductDetailViewModel @Inject constructor(
             viewState.productDraft?.hasLinkedProducts() == false
         ) {
             appPrefsWrapper.setPromoBannerShown(PromoBannerType.LINKED_PRODUCTS, true)
+            AnalyticsTracker.track(
+                AnalyticsEvent.FEATURE_CARD_SHOWN,
+                mapOf(
+                    AnalyticsTracker.KEY_BANNER_SOURCE to AnalyticsTracker.SOURCE_PRODUCT_DETAIL,
+                    AnalyticsTracker.KEY_BANNER_CAMPAIGN_NAME to AnalyticsTracker.KEY_BANNER_LINKED_PRODUCTS_PROMO
+                )
+            )
             triggerEvent(ShowLinkedProductPromoBanner)
         }
     }
 
     fun onLinkedProductPromoClicked() {
-        // TODO analytics
+        AnalyticsTracker.track(
+            AnalyticsEvent.FEATURE_CARD_CTA_TAPPED,
+            mapOf(
+                AnalyticsTracker.KEY_BANNER_SOURCE to AnalyticsTracker.SOURCE_PRODUCT_DETAIL,
+                AnalyticsTracker.KEY_BANNER_CAMPAIGN_NAME to AnalyticsTracker.KEY_BANNER_LINKED_PRODUCTS_PROMO
+            )
+        )
+        triggerEvent(ProductNavigationTarget.ViewLinkedProducts(getRemoteProductId()))
+    }
+
+    fun onLinkedProductPromoDismissed() {
+        AnalyticsTracker.track(
+            AnalyticsEvent.FEATURE_CARD_DISMISSED,
+            mapOf(
+                AnalyticsTracker.KEY_BANNER_SOURCE to AnalyticsTracker.SOURCE_PRODUCT_DETAIL,
+                AnalyticsTracker.KEY_BANNER_CAMPAIGN_NAME to AnalyticsTracker.KEY_BANNER_LINKED_PRODUCTS_PROMO,
+                AnalyticsTracker.KEY_BANNER_REMIND_LATER to false
+            )
+        )
         triggerEvent(ProductNavigationTarget.ViewLinkedProducts(getRemoteProductId()))
     }
 

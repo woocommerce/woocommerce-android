@@ -480,6 +480,7 @@ class ProductDetailFragment :
                             },
                             onDismissClick = {
                                 WooAnimUtils.scaleOut(binding.promoComposableContainer)
+                                viewModel.onLinkedProductPromoDismissed()
                             }
                         )
                     }
