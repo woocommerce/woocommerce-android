@@ -97,7 +97,12 @@ class CardReaderConnectViewModel @Inject constructor(
     override val event: LiveData<Event> = _event
 
     // The app shouldn't store the state as connection flow gets canceled when the vm dies
-    private val viewState = MutableLiveData<CardReaderConnectViewState>(ScanningState(::onCancelClicked))
+    private val viewState = MutableLiveData<CardReaderConnectViewState>(
+        ScanningState(
+            ::onCancelClicked,
+            ::onLearnMoreClicked
+        )
+    )
     private var requiredUpdateStarted: Boolean = false
     private var connectionStarted: Boolean = false
 
@@ -108,7 +113,7 @@ class CardReaderConnectViewModel @Inject constructor(
     }
 
     private fun startFlow() {
-        viewState.value = ScanningState(::onCancelClicked)
+        viewState.value = ScanningState(::onCancelClicked, ::onLearnMoreClicked)
         triggerEvent(CheckLocationPermissions(::onCheckLocationPermissionsResult))
     }
 
@@ -138,6 +143,7 @@ class CardReaderConnectViewModel @Inject constructor(
     private fun onLocationPermissionRationaleConfirmed() {
         triggerEvent(RequestLocationPermissions(::onRequestLocationPermissionsResult))
     }
+
     private fun onRequestLocationPermissionsResult(granted: Boolean) {
         if (granted) {
             onLocationPermissionsVerified()
@@ -285,7 +291,7 @@ class CardReaderConnectViewModel @Inject constructor(
         when (discoveryEvent) {
             Started -> {
                 if (viewState.value !is ScanningState) {
-                    viewState.value = ScanningState(::onCancelClicked)
+                    viewState.value = ScanningState(::onCancelClicked, ::onLearnMoreClicked)
                 }
             }
             is ReadersFound -> {
@@ -324,7 +330,7 @@ class CardReaderConnectViewModel @Inject constructor(
             connectToReader(lastKnownReader)
         } else {
             viewState.value = when {
-                availableReaders.isEmpty() -> ScanningState(::onCancelClicked)
+                availableReaders.isEmpty() -> ScanningState(::onCancelClicked, ::onLearnMoreClicked)
                 availableReaders.size == 1 -> buildSingleReaderFoundState(availableReaders[0])
                 availableReaders.size > 1 -> buildMultipleReadersFoundState(availableReaders)
                 else -> throw IllegalStateException("Unreachable code")
@@ -433,7 +439,7 @@ class CardReaderConnectViewModel @Inject constructor(
     }
 
     private fun onKeepSearchingClicked() {
-        viewState.value = ScanningState(::onCancelClicked)
+        viewState.value = ScanningState(::onCancelClicked, ::onLearnMoreClicked)
     }
 
     private fun onCancelClicked() {
