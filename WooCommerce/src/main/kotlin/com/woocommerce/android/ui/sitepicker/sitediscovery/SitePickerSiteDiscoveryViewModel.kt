@@ -49,7 +49,7 @@ class SitePickerSiteDiscoveryViewModel @Inject constructor(
         when (step) {
             Step.AddressInput -> emitAll(prepareAddressViewState())
             Step.JetpackUnavailable -> emit(prepareJetpackUnavailableState())
-            Step.NotWordpress -> TODO()
+            Step.NotWordpress -> emit(prepareNotWordpressSiteState())
         }
     }.asLiveData()
 
@@ -102,15 +102,19 @@ class SitePickerSiteDiscoveryViewModel @Inject constructor(
             }
         },
         secondaryButtonText = resourceProvider.getString(R.string.login_try_another_account),
-        secondaryButtonAction = {
-            launch {
-                sitePickRepository.logout().let {
-                    if (it && sitePickRepository.isUserLoggedIn()) {
-                        triggerEvent(Logout)
-                    }
-                }
-            }
-        }
+        secondaryButtonAction = ::logout
+    )
+
+    private fun prepareNotWordpressSiteState() = ViewState.ErrorState(
+        siteAddress = siteAddressFlow.value,
+        message = resourceProvider.getString(R.string.login_not_wordpress_site_v2),
+        imageResourceId = R.drawable.img_woo_no_stores,
+        primaryButtonText = resourceProvider.getString(R.string.login_try_another_store),
+        primaryButtonAction = {
+            stepFlow.value = Step.AddressInput
+        },
+        secondaryButtonText = resourceProvider.getString(R.string.login_try_another_account),
+        secondaryButtonAction = ::logout
     )
 
     private suspend fun startSiteDiscovery() {
@@ -150,6 +154,16 @@ class SitePickerSiteDiscoveryViewModel @Inject constructor(
         fetchedSiteUrl.let { url ->
             requireNotNull(url)
             triggerEvent(ExitWithResult(url))
+        }
+    }
+
+    private fun logout() {
+        launch {
+            sitePickRepository.logout().let {
+                if (it && sitePickRepository.isUserLoggedIn()) {
+                    triggerEvent(Logout)
+                }
+            }
         }
     }
 
