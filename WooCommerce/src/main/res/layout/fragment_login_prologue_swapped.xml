@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/color_surface">
+
+    <ImageView
+        android:id="@+id/image_prologue"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="@dimen/image_major_64"
+        android:layout_marginBottom="@dimen/image_major_72"
+        android:importantForAccessibility="no"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/img_woo_logo" />
+
+    <ImageView
+        android:id="@+id/image_prologue_bg"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/major_350"
+        android:adjustViewBounds="true"
+        android:importantForAccessibility="no"
+        android:scaleType="fitXY"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/image_prologue"
+        app:srcCompat="@drawable/img_prologue_bg" />
+
+    <ImageView
+        android:id="@+id/imageView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:adjustViewBounds="true"
+        android:layout_marginTop="@dimen/major_400"
+        android:importantForAccessibility="no"
+        android:src="@drawable/img_prologue_reviews"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/image_prologue" />
+
+    <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/prologueTitle"
+        style="@style/Woo.TextView.Headline5"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:gravity="center"
+        android:textStyle="bold"
+        tools:layout_width="200dp"
+        android:layout_marginTop="@dimen/major_300"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/imageView"
+        app:layout_constraintBottom_toTopOf="@id/newToWooButton"
+        android:text="@string/lets_get_started" />
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/newToWooButton"
+        style="@style/Woo.Button.TextButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="@dimen/major_150"
+        android:text="@string/login_prologue_new_to_woo"
+        android:textAllCaps="false"
+        app:layout_constraintTop_toBottomOf="@id/prologueTitle"
+        app:layout_constraintBottom_toTopOf="@id/button_login_wpcom"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/button_login_wpcom"
+        style="@style/Woo.Button.Colored"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/major_100"
+        android:layout_marginEnd="@dimen/major_100"
+        android:text="@string/login_wpcom"
+        android:textAllCaps="false"
+        app:layout_constraintBottom_toTopOf="@id/button_login_store" />
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/button_login_store"
+        style="@style/Woo.Button.Colored.White"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/major_100"
+        android:layout_marginEnd="@dimen/major_100"
+        android:layout_marginBottom="@dimen/major_150"
+        android:text="@string/login_store_address"
+        android:textAllCaps="false"
+        app:layout_constraintBottom_toBottomOf="parent" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>
