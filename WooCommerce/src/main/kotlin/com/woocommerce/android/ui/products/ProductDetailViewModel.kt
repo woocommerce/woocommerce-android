@@ -107,13 +107,12 @@ class ProductDetailViewModel @Inject constructor(
     private val mediaFileUploadHandler: MediaFileUploadHandler,
     private val appPrefsWrapper: AppPrefsWrapper,
     private val addonRepository: AddonRepository,
+    private val explat: ExPlat
 ) : ScopedViewModel(savedState) {
     companion object {
         private const val KEY_PRODUCT_PARAMETERS = "key_product_parameters"
         const val DEFAULT_ADD_NEW_PRODUCT_ID: Long = 0L
     }
-
-    @Inject lateinit var explat: ExPlat
 
     private val navArgs: ProductDetailFragmentArgs by savedState.navArgs()
 
