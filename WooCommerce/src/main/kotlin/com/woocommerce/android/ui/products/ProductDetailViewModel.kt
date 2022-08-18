@@ -9,7 +9,6 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
-import com.automattic.android.experimentation.ExPlat
 import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsEvent
@@ -86,6 +85,7 @@ import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.withContext
 import kotlinx.parcelize.Parcelize
 import org.wordpress.android.fluxc.model.experiments.Variation
+import org.wordpress.android.fluxc.store.ExperimentStore
 import org.wordpress.android.fluxc.store.WCProductStore.ProductErrorType
 import java.math.BigDecimal
 import java.util.Collections
@@ -109,7 +109,7 @@ class ProductDetailViewModel @Inject constructor(
     private val mediaFileUploadHandler: MediaFileUploadHandler,
     private val appPrefsWrapper: AppPrefsWrapper,
     private val addonRepository: AddonRepository,
-    private val explat: ExPlat
+    private val experimentStore: ExperimentStore
 ) : ScopedViewModel(savedState) {
     companion object {
         private const val KEY_PRODUCT_PARAMETERS = "key_product_parameters"
@@ -291,10 +291,12 @@ class ProductDetailViewModel @Inject constructor(
     }
 
     fun start() {
-        abTestLinkProductsPromoIsTreatment = explat.getVariation(
-            ExperimentationModule.AB_TEST_LINKED_PRODUCTS_PROMO,
-            true
-        ) is Variation.Treatment
+        experimentStore.getCachedAssignments()
+            ?.variations
+            ?.get(ExperimentationModule.AB_TEST_LINKED_PRODUCTS_PROMO.identifier)
+            ?.let {
+                abTestLinkProductsPromoIsTreatment = it is Variation.Treatment
+            }
 
         val isRestoredFromSavedState = viewState.productDraft != null
         if (!isRestoredFromSavedState) {

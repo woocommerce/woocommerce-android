@@ -14,8 +14,6 @@ import com.google.android.gms.common.GoogleApiAvailability
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.di.AppCoroutineScope
-import com.woocommerce.android.di.ExperimentationModule.Companion.AA_TEST_202208
-import com.woocommerce.android.di.ExperimentationModule.Companion.AB_TEST_LINKED_PRODUCTS_PROMO
 import com.woocommerce.android.network.ConnectionChangeReceiver
 import com.woocommerce.android.push.RegisterDevice
 import com.woocommerce.android.push.RegisterDevice.Mode.IF_NEEDED
@@ -121,8 +119,6 @@ class AppInitializer @Inject constructor() : ApplicationLifecycleListener {
 
         FeedbackPrefs.init(application)
 
-        initExPlat()
-
         // Apply Theme
         AppThemeUtils.setAppTheme()
 
@@ -161,17 +157,6 @@ class AppInitializer @Inject constructor() : ApplicationLifecycleListener {
         appCoroutineScope.launch {
             siteObserver.observeAndUpdateSelectedSiteData()
         }
-    }
-
-    private fun initExPlat() {
-        explat.getVariation(
-            AA_TEST_202208,
-            true
-        )
-        explat.getVariation(
-            AB_TEST_LINKED_PRODUCTS_PROMO,
-            true
-        )
     }
 
     @Suppress("DEPRECATION")
