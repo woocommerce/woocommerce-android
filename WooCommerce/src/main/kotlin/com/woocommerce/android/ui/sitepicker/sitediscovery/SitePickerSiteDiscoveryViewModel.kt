@@ -17,6 +17,7 @@ import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.getStateFlow
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.FlowCollector
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -103,6 +104,7 @@ class SitePickerSiteDiscoveryViewModel @Inject constructor(
             emitAll(viewStateFlow)
         }
 
+        @OptIn(FlowPreview::class)
         suspend fun handleAddressValidationError() {
             addressValidationFlow.zip(siteAddressFlow) { isValid, address -> Pair(isValid, address) }
                 .filter { (_, address) -> address.isNotEmpty() }
