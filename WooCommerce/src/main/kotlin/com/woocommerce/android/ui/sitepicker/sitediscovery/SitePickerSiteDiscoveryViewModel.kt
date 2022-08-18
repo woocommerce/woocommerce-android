@@ -7,9 +7,11 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.R
+import com.woocommerce.android.ui.sitepicker.SitePickerRepository
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Logout
 import com.woocommerce.android.viewmodel.ResourceProvider
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.getStateFlow
@@ -27,7 +29,7 @@ import kotlin.text.RegexOption.IGNORE_CASE
 @HiltViewModel
 class SitePickerSiteDiscoveryViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
-    private val fetchSiteInfo: FetchSiteInfo,
+    private val sitePickRepository: SitePickerRepository,
     private val resourceProvider: ResourceProvider
 ) : ScopedViewModel(savedStateHandle) {
     companion object {
@@ -106,7 +108,7 @@ class SitePickerSiteDiscoveryViewModel @Inject constructor(
     )
 
     private suspend fun startSiteDiscovery() {
-        fetchSiteInfo(siteAddressFlow.value).fold(
+        sitePickRepository.fetchSiteInfo(siteAddressFlow.value).fold(
             onSuccess = {
                 val siteAddress = (it.urlAfterRedirects ?: it.url)
                 // Remove protocol prefix
@@ -179,5 +181,4 @@ class SitePickerSiteDiscoveryViewModel @Inject constructor(
     object CreateZendeskTicket : MultiLiveEvent.Event()
     object NavigateToHelpScreen : MultiLiveEvent.Event()
     data class StartJetpackInstallation(val siteAddress: String) : MultiLiveEvent.Event()
-    object LoginWithAnotherAccount : MultiLiveEvent.Event()
 }
