@@ -6,6 +6,8 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.content.SharedPreferences
 import android.content.SharedPreferences.Editor
+import android.content.pm.PackageManager
+import android.os.Build
 import androidx.preference.PreferenceManager
 import com.woocommerce.android.AppPrefs.CardReaderOnboardingStatus.CARD_READER_ONBOARDING_COMPLETED
 import com.woocommerce.android.AppPrefs.CardReaderOnboardingStatus.CARD_READER_ONBOARDING_NOT_COMPLETED
@@ -33,6 +35,7 @@ import com.woocommerce.android.ui.payments.cardreader.onboarding.PluginType
 import com.woocommerce.android.ui.products.ProductType
 import com.woocommerce.android.ui.promobanner.PromoBannerType
 import com.woocommerce.android.util.PreferenceUtils
+import com.woocommerce.android.util.SystemVersionUtils
 import com.woocommerce.android.util.ThemeOption
 import com.woocommerce.android.util.ThemeOption.DEFAULT
 import com.woocommerce.android.util.WooLog
@@ -168,11 +171,19 @@ object AppPrefs {
      */
     val installationDate: Date?
         get() = try {
-            context
-                .packageManager
-                .getPackageInfo(context.packageName, 0)
-                .firstInstallTime
-                .let { Date(it) }
+            if(SystemVersionUtils.isAtLeastT()) {
+                context
+                    .packageManager
+                    .getPackageInfo(context.packageName, PackageManager.PackageInfoFlags.of(0))
+                    .firstInstallTime
+                    .let { Date(it) }
+            }else {
+                context
+                    .packageManager
+                    .getPackageInfo(context.packageName, 0)
+                    .firstInstallTime
+                    .let { Date(it) }
+            }
         } catch (ex: Throwable) {
             relativeInstallationDate
         }

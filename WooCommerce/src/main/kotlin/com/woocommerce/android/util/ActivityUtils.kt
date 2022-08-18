@@ -25,7 +25,11 @@ object ActivityUtils {
         val intent = Intent(Intent.ACTION_MAIN)
         intent.addCategory(Intent.CATEGORY_APP_EMAIL)
         val packageManager = context.packageManager
-        val emailApps = packageManager.queryIntentActivities(intent, PackageManager.MATCH_DEFAULT_ONLY)
+        val emailApps = if(SystemVersionUtils.isAtLeastT()) {
+            packageManager.queryIntentActivities(intent, PackageManager.ResolveInfoFlags.of(PackageManager.MATCH_DEFAULT_ONLY.toLong()))
+        }else{
+            packageManager.queryIntentActivities(intent, PackageManager.MATCH_DEFAULT_ONLY)
+        }
 
         return !emailApps.isEmpty()
     }
@@ -53,7 +57,11 @@ object ActivityUtils {
         } catch (se: SecurityException) {
             WooLog.e(T.UTILS, "Error opening url in default browser. Url: $url", se)
 
-            val infos = context.packageManager.queryIntentActivities(intent, 0)
+            val infos = if(SystemVersionUtils.isAtLeastT()) {
+                context.packageManager.queryIntentActivities(intent, PackageManager.ResolveInfoFlags.of(0))
+            }else{
+                context.packageManager.queryIntentActivities(intent, 0)
+            }
             if (infos.size == 1) {
                 // there's only one handler and apparently it caused the exception so, just inform and bail
                 WooLog.d(T.UTILS, "Only one url handler found so, bailing.")

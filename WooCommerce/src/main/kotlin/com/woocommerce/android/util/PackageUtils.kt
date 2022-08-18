@@ -3,6 +3,7 @@ package com.woocommerce.android.util
 import android.content.Context
 import android.content.pm.PackageInfo
 import android.content.pm.PackageManager
+import android.os.Build
 import androidx.core.content.pm.PackageInfoCompat
 import com.woocommerce.android.BuildConfig
 import java.util.Locale
@@ -37,7 +38,11 @@ object PackageUtils {
     private fun getPackageInfo(context: Context): PackageInfo? {
         return try {
             val manager = context.packageManager
-            manager.getPackageInfo(context.packageName, 0)
+            if(SystemVersionUtils.isAtLeastT()) {
+                manager.getPackageInfo(context.packageName, PackageManager.PackageInfoFlags.of(0L))
+            }else{
+                manager.getPackageInfo(context.packageName, 0)
+            }
         } catch (e: PackageManager.NameNotFoundException) {
             null
         }
