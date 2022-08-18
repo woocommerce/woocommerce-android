@@ -17,11 +17,17 @@ import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.getStateFlow
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.flow.FlowCollector
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.emitAll
+import kotlinx.coroutines.flow.filter
+import kotlinx.coroutines.flow.filterNot
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.transformLatest
+import kotlinx.coroutines.flow.zip
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 import kotlin.text.RegexOption.IGNORE_CASE
@@ -34,6 +40,7 @@ class SitePickerSiteDiscoveryViewModel @Inject constructor(
 ) : ScopedViewModel(savedStateHandle) {
     companion object {
         private const val FETCHED_URL_KEY = "fetched_url"
+        private const val ADDRESS_VALIDATION_DEBOUNCE_DELAY_MS = 1000L
     }
 
     private val siteAddressFlow = savedStateHandle.getStateFlow(viewModelScope, "")
@@ -47,75 +54,103 @@ class SitePickerSiteDiscoveryViewModel @Inject constructor(
     @OptIn(ExperimentalCoroutinesApi::class)
     val viewState = stepFlow.transformLatest { step ->
         when (step) {
-            Step.AddressInput -> emitAll(prepareAddressViewState())
-            Step.JetpackUnavailable -> emit(prepareJetpackUnavailableState())
-            Step.NotWordpress -> emit(prepareNotWordpressSiteState())
+            Step.AddressInput -> prepareAddressViewState()
+            Step.JetpackUnavailable -> prepareJetpackUnavailableState()
+            Step.NotWordpress -> prepareNotWordpressSiteState()
         }
     }.asLiveData()
 
-    private fun prepareAddressViewState(): Flow<ViewState.AddressInputState> {
+    private suspend fun FlowCollector<ViewState>.prepareAddressViewState() {
         val isLoadingFlow = MutableStateFlow(false)
         val isAddressSiteHelpShownFlow = MutableStateFlow(false)
+        val addressValidationFlow = siteAddressFlow.map {
+            PatternsCompat.WEB_URL.matcher(it).matches()
+        }
 
-        return combine(
-            siteAddressFlow,
-            isLoadingFlow,
-            isAddressSiteHelpShownFlow,
-            inlineErrorFlow
-        ) { address, isLoading, displayLoadingDialog, error ->
-            ViewState.AddressInputState(
-                siteAddress = address,
-                isAddressValid = PatternsCompat.WEB_URL.matcher(address).matches(),
-                isLoading = isLoading,
-                isAddressSiteHelpShown = displayLoadingDialog,
-                inlineErrorMessage = error,
-                onAddressChanged = {
-                    inlineErrorFlow.value = 0
-                    siteAddressFlow.value = it
-                },
-                onShowSiteAddressTapped = { isAddressSiteHelpShownFlow.value = true },
-                onSiteAddressHelpDismissed = { isAddressSiteHelpShownFlow.value = false },
-                onMoreHelpTapped = {
-                    isAddressSiteHelpShownFlow.value = false
-                    triggerEvent(CreateZendeskTicket)
-                },
-                onContinueTapped = {
-                    launch {
-                        isLoadingFlow.value = true
-                        startSiteDiscovery()
-                        isLoadingFlow.value = false
+        suspend fun emitViewState() {
+            val viewStateFlow = combine(
+                siteAddressFlow,
+                addressValidationFlow,
+                isLoadingFlow,
+                isAddressSiteHelpShownFlow,
+                inlineErrorFlow
+            ) { address, isAddressValid, isLoading, displayLoadingDialog, error ->
+                ViewState.AddressInputState(
+                    siteAddress = address,
+                    isAddressValid = isAddressValid,
+                    isLoading = isLoading,
+                    isAddressSiteHelpShown = displayLoadingDialog,
+                    inlineErrorMessage = error,
+                    onAddressChanged = {
+                        inlineErrorFlow.value = 0
+                        siteAddressFlow.value = it
+                    },
+                    onShowSiteAddressTapped = { isAddressSiteHelpShownFlow.value = true },
+                    onSiteAddressHelpDismissed = { isAddressSiteHelpShownFlow.value = false },
+                    onMoreHelpTapped = {
+                        isAddressSiteHelpShownFlow.value = false
+                        triggerEvent(CreateZendeskTicket)
+                    },
+                    onContinueTapped = {
+                        launch {
+                            isLoadingFlow.value = true
+                            startSiteDiscovery()
+                            isLoadingFlow.value = false
+                        }
                     }
-                }
-            )
+                )
+            }
+            emitAll(viewStateFlow)
+        }
+
+        suspend fun handleAddressValidationError() {
+            addressValidationFlow.zip(siteAddressFlow) { isValid, address -> Pair(isValid, address) }
+                .filter { (_, address) -> address.isNotEmpty() }
+                .debounce(ADDRESS_VALIDATION_DEBOUNCE_DELAY_MS)
+                .filterNot { (isValid, _) -> isValid }
+                .collect { inlineErrorFlow.value = R.string.invalid_site_url_message }
+        }
+
+        coroutineScope {
+            launch { emitViewState() }
+            launch { handleAddressValidationError() }
         }
     }
 
-    private fun prepareJetpackUnavailableState() = ViewState.ErrorState(
-        siteAddress = siteAddressFlow.value,
-        message = resourceProvider.getString(R.string.login_jetpack_required_text, siteAddressFlow.value),
-        imageResourceId = R.drawable.img_login_jetpack_required,
-        primaryButtonText = resourceProvider.getString(R.string.login_jetpack_install),
-        primaryButtonAction = {
-            fetchedSiteUrl.let { url ->
-                requireNotNull(url)
-                triggerEvent(StartJetpackInstallation(url))
-            }
-        },
-        secondaryButtonText = resourceProvider.getString(R.string.login_try_another_account),
-        secondaryButtonAction = ::logout
-    )
+    private suspend fun FlowCollector<ViewState>.prepareJetpackUnavailableState() {
+        emit(
+            ViewState.ErrorState(
+                siteAddress = siteAddressFlow.value,
+                message = resourceProvider.getString(R.string.login_jetpack_required_text, siteAddressFlow.value),
+                imageResourceId = R.drawable.img_login_jetpack_required,
+                primaryButtonText = resourceProvider.getString(R.string.login_jetpack_install),
+                primaryButtonAction = {
+                    fetchedSiteUrl.let { url ->
+                        requireNotNull(url)
+                        triggerEvent(StartJetpackInstallation(url))
+                    }
+                },
+                secondaryButtonText = resourceProvider.getString(R.string.login_try_another_account),
+                secondaryButtonAction = ::logout
+            )
+        )
+    }
 
-    private fun prepareNotWordpressSiteState() = ViewState.ErrorState(
-        siteAddress = siteAddressFlow.value,
-        message = resourceProvider.getString(R.string.login_not_wordpress_site_v2),
-        imageResourceId = R.drawable.img_woo_no_stores,
-        primaryButtonText = resourceProvider.getString(R.string.login_try_another_store),
-        primaryButtonAction = {
-            stepFlow.value = Step.AddressInput
-        },
-        secondaryButtonText = resourceProvider.getString(R.string.login_try_another_account),
-        secondaryButtonAction = ::logout
-    )
+    private suspend fun FlowCollector<ViewState>.prepareNotWordpressSiteState() {
+        emit(
+            ViewState.ErrorState(
+                siteAddress = siteAddressFlow.value,
+                message = resourceProvider.getString(R.string.login_not_wordpress_site_v2),
+                imageResourceId = R.drawable.img_woo_no_stores,
+                primaryButtonText = resourceProvider.getString(R.string.login_try_another_store),
+                primaryButtonAction = {
+                    stepFlow.value = Step.AddressInput
+                },
+                secondaryButtonText = resourceProvider.getString(R.string.login_try_another_account),
+                secondaryButtonAction = ::logout
+            )
+        )
+    }
 
     private suspend fun startSiteDiscovery() {
         sitePickRepository.fetchSiteInfo(siteAddressFlow.value).fold(
