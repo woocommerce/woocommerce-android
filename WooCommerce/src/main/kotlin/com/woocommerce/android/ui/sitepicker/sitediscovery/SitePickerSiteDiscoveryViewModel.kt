@@ -40,34 +40,33 @@ class SitePickerSiteDiscoveryViewModel @Inject constructor(
         set(value) = savedState.set(FETCHED_URL_KEY, value)
 
     @OptIn(ExperimentalCoroutinesApi::class)
-    val viewState = combine(siteAddressFlow, stepFlow) { address, step ->
-        Pair(address, step)
-    }.transformLatest<Pair<String, Step>, ViewState> { (address, step) ->
+    val viewState = stepFlow.transformLatest<Step, ViewState> { step ->
         when (step) {
-            Step.AddressInput -> emitAll(prepareAddressViewState(address))
+            Step.AddressInput -> emitAll(prepareAddressViewState())
             Step.JetpackUnavailable -> TODO()
             Step.NotWordpress -> TODO()
         }
     }.asLiveData()
 
-    private fun prepareAddressViewState(address: String): Flow<ViewState.AddressInputState> {
+    private fun prepareAddressViewState(): Flow<ViewState.AddressInputState> {
         val isLoadingFlow = MutableStateFlow(false)
         val isAddressSiteHelpShownFlow = MutableStateFlow(false)
 
         return combine(
+            siteAddressFlow,
             isLoadingFlow,
             isAddressSiteHelpShownFlow,
             inlineErrorFlow
-        ) { isLoading, displayLoadingDialog, error ->
+        ) { address, isLoading, displayLoadingDialog, error ->
             ViewState.AddressInputState(
                 siteAddress = address,
                 isAddressValid = PatternsCompat.WEB_URL.matcher(address).matches(),
                 isLoading = isLoading,
                 isAddressSiteHelpShown = displayLoadingDialog,
                 inlineErrorMessage = error,
-                onAddressChanged = { address ->
+                onAddressChanged = {
                     inlineErrorFlow.value = 0
-                    siteAddressFlow.value = address
+                    siteAddressFlow.value = it
                 },
                 onShowSiteAddressTapped = { isAddressSiteHelpShownFlow.value = true },
                 onSiteAddressHelpDismissed = { isAddressSiteHelpShownFlow.value = false },
