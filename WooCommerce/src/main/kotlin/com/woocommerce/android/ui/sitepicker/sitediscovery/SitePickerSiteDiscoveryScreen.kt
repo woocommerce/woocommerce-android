@@ -39,7 +39,12 @@ import com.woocommerce.android.ui.sitepicker.sitediscovery.SitePickerSiteDiscove
 @Composable
 fun SitePickerSiteDiscoveryScreen(viewModel: SitePickerSiteDiscoveryViewModel) {
     viewModel.viewState.observeAsState().value?.let { viewState ->
-        Scaffold(topBar = { Toolbar() }) { paddingValues ->
+        Scaffold(topBar = {
+            Toolbar(
+                onHelpButtonClick = viewModel::onHelpButtonClick,
+                onBackButtonClick = viewModel::onBackButtonClick
+            )
+        }) { paddingValues ->
             when (viewState) {
                 is AddressInputState -> AddressInputView(
                     viewState,
@@ -132,12 +137,16 @@ fun SiteAddressHelpDialog(
 }
 
 @Composable
-private fun Toolbar() {
+private fun Toolbar(
+    onHelpButtonClick: () -> Unit,
+    onBackButtonClick: () -> Unit,
+    modifier: Modifier = Modifier
+) {
     TopAppBar(
         backgroundColor = MaterialTheme.colors.surface,
         title = { Text(stringResource(id = R.string.login_site_picker_enter_site_address)) },
         navigationIcon = {
-            IconButton(onClick = { /*TODO*/ }) {
+            IconButton(onClick = onBackButtonClick) {
                 Icon(
                     Icons.Filled.ArrowBack,
                     contentDescription = stringResource(id = R.string.back)
@@ -145,14 +154,15 @@ private fun Toolbar() {
             }
         },
         actions = {
-            IconButton(onClick = { /*TODO*/ }) {
+            IconButton(onClick = onHelpButtonClick) {
                 Icon(
                     painter = painterResource(id = R.drawable.ic_help_24dp),
                     contentDescription = stringResource(id = R.string.help)
                 )
             }
         },
-        elevation = 0.dp
+        elevation = 0.dp,
+        modifier = modifier
     )
 }
 

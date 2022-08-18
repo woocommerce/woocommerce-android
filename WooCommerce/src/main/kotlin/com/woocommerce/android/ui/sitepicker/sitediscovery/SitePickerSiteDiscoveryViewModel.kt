@@ -6,6 +6,7 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.viewmodel.MultiLiveEvent
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.getStateFlow
@@ -106,6 +107,14 @@ class SitePickerSiteDiscoveryViewModel @Inject constructor(
         )
     }
 
+    fun onBackButtonClick() {
+        triggerEvent(Exit)
+    }
+
+    fun onHelpButtonClick() {
+        triggerEvent(NavigateToHelpScreen)
+    }
+
     private fun navigateBackToSitePicker() {
         fetchedSiteUrl.let { url ->
             requireNotNull(url)
@@ -144,4 +153,5 @@ class SitePickerSiteDiscoveryViewModel @Inject constructor(
     }
 
     object CreateZendeskTicket : MultiLiveEvent.Event()
+    object NavigateToHelpScreen : MultiLiveEvent.Event()
 }
