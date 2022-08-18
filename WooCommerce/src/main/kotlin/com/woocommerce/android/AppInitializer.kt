@@ -129,7 +129,7 @@ class AppInitializer @Inject constructor() : ApplicationLifecycleListener {
         explat.getVariation(
             AB_TEST_LINKED_PRODUCTS_PROMO,
             true
-        ) is Variation.Treatment
+        )
 
         // Apply Theme
         AppThemeUtils.setAppTheme()
