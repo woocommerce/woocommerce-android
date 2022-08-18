@@ -51,7 +51,6 @@ import org.wordpress.android.fluxc.action.AccountAction
 import org.wordpress.android.fluxc.generated.AccountActionBuilder
 import org.wordpress.android.fluxc.logging.FluxCCrashLogger
 import org.wordpress.android.fluxc.logging.FluxCCrashLoggerProvider
-import org.wordpress.android.fluxc.model.experiments.Variation
 import org.wordpress.android.fluxc.network.rest.wpcom.WPComGsonRequest.OnJetpackTimeoutError
 import org.wordpress.android.fluxc.store.AccountStore
 import org.wordpress.android.fluxc.store.AccountStore.OnAccountChanged
@@ -122,14 +121,7 @@ class AppInitializer @Inject constructor() : ApplicationLifecycleListener {
 
         FeedbackPrefs.init(application)
 
-        explat.getVariation(
-            AA_TEST_202208,
-            true
-        )
-        explat.getVariation(
-            AB_TEST_LINKED_PRODUCTS_PROMO,
-            true
-        )
+        initExPlat()
 
         // Apply Theme
         AppThemeUtils.setAppTheme()
@@ -169,6 +161,17 @@ class AppInitializer @Inject constructor() : ApplicationLifecycleListener {
         appCoroutineScope.launch {
             siteObserver.observeAndUpdateSelectedSiteData()
         }
+    }
+
+    private fun initExPlat() {
+        explat.getVariation(
+            AA_TEST_202208,
+            true
+        )
+        explat.getVariation(
+            AB_TEST_LINKED_PRODUCTS_PROMO,
+            true
+        )
     }
 
     @Suppress("DEPRECATION")
