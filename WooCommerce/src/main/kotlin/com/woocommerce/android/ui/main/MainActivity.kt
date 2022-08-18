@@ -436,6 +436,7 @@ class MainActivity :
     }
 
     private fun hideToolbar() {
+        if (binding.collapsingToolbar.layoutParams.height == 0) return
         restoreToolbarHeight = binding.collapsingToolbar.layoutParams.height
         binding.collapsingToolbar.updateLayoutParams { height = 0 }
     }
