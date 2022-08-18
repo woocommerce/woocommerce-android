@@ -8,15 +8,19 @@ import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
+import com.woocommerce.android.NavGraphMainDirections
+import com.woocommerce.android.extensions.handleNotice
 import com.woocommerce.android.extensions.navigateBackWithResult
 import com.woocommerce.android.support.HelpActivity
 import com.woocommerce.android.support.HelpActivity.Origin
 import com.woocommerce.android.support.ZendeskHelper
 import com.woocommerce.android.ui.base.BaseFragment
+import com.woocommerce.android.ui.common.wpcomwebview.WPComWebViewFragment
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.ui.main.AppBarStatus
 import com.woocommerce.android.ui.sitepicker.sitediscovery.SitePickerSiteDiscoveryViewModel.CreateZendeskTicket
 import com.woocommerce.android.ui.sitepicker.sitediscovery.SitePickerSiteDiscoveryViewModel.NavigateToHelpScreen
+import com.woocommerce.android.ui.sitepicker.sitediscovery.SitePickerSiteDiscoveryViewModel.StartJetpackInstallation
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
 import dagger.hilt.android.AndroidEntryPoint
@@ -26,6 +30,8 @@ import javax.inject.Inject
 class SitePickerSiteDiscoveryFragment : BaseFragment() {
     companion object {
         const val SITE_PICKER_SITE_ADDRESS_RESULT = "site-url"
+        private const val JETPACK_CONNECT_URL = "https://wordpress.com/jetpack/connect"
+        private const val JETPACK_CONNECTED_REDIRECT_URL = "woocommerce://jetpack-connected"
     }
 
     private val viewModel: SitePickerSiteDiscoveryViewModel by viewModels()
@@ -51,6 +57,7 @@ class SitePickerSiteDiscoveryFragment : BaseFragment() {
         super.onViewCreated(view, savedInstanceState)
 
         setupObservers()
+        setupResultHandlers()
     }
 
     private fun setupObservers() {
@@ -62,9 +69,30 @@ class SitePickerSiteDiscoveryFragment : BaseFragment() {
                 is NavigateToHelpScreen -> {
                     startActivity(HelpActivity.createIntent(requireContext(), Origin.LOGIN_SITE_ADDRESS, null))
                 }
+                is StartJetpackInstallation -> startJetpackInstallation(event.siteAddress)
                 is ExitWithResult<*> -> navigateBackWithResult(SITE_PICKER_SITE_ADDRESS_RESULT, event.data)
                 is Exit -> findNavController().navigateUp()
             }
         }
+    }
+
+    private fun setupResultHandlers() {
+        handleNotice(WPComWebViewFragment.WEBVIEW_RESULT) {
+            viewModel.onJetpackInstalled()
+        }
+    }
+
+    private fun startJetpackInstallation(siteAddress: String) {
+        val url = "$JETPACK_CONNECT_URL?" +
+            "url=$siteAddress" +
+            "&mobile_redirect=$JETPACK_CONNECTED_REDIRECT_URL" +
+            "&from=mobile"
+
+        findNavController().navigate(
+            NavGraphMainDirections.actionGlobalWPComWebViewFragment(
+                urlToLoad = url,
+                urlToTriggerExit = JETPACK_CONNECTED_REDIRECT_URL
+            )
+        )
     }
 }

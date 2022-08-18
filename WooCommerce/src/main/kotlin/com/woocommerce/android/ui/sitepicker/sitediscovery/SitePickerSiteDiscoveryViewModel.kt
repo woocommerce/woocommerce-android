@@ -94,7 +94,10 @@ class SitePickerSiteDiscoveryViewModel @Inject constructor(
         imageResourceId = R.drawable.img_login_jetpack_required,
         primaryButtonText = resourceProvider.getString(R.string.login_jetpack_install),
         primaryButtonAction = {
-            triggerEvent(StartJetpackInstallation)
+            fetchedSiteUrl.let { url ->
+                requireNotNull(url)
+                triggerEvent(StartJetpackInstallation(url))
+            }
         },
         secondaryButtonText = resourceProvider.getString(R.string.login_try_another_account),
         secondaryButtonAction = {
@@ -129,6 +132,10 @@ class SitePickerSiteDiscoveryViewModel @Inject constructor(
 
     fun onHelpButtonClick() {
         triggerEvent(NavigateToHelpScreen)
+    }
+
+    fun onJetpackInstalled() {
+        navigateBackToSitePicker()
     }
 
     private fun navigateBackToSitePicker() {
@@ -171,6 +178,6 @@ class SitePickerSiteDiscoveryViewModel @Inject constructor(
 
     object CreateZendeskTicket : MultiLiveEvent.Event()
     object NavigateToHelpScreen : MultiLiveEvent.Event()
-    object StartJetpackInstallation : MultiLiveEvent.Event()
+    data class StartJetpackInstallation(val siteAddress: String) : MultiLiveEvent.Event()
     object LoginWithAnotherAccount : MultiLiveEvent.Event()
 }
