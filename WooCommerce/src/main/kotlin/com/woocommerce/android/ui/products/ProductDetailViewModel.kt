@@ -9,12 +9,13 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
-import com.woocommerce.android.AppInitializer
+import com.automattic.android.experimentation.ExPlat
 import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_HAS_LINKED_PRODUCTS
+import com.woocommerce.android.di.ExperimentationModule
 import com.woocommerce.android.extensions.addNewItem
 import com.woocommerce.android.extensions.clearList
 import com.woocommerce.android.extensions.containsItem
@@ -52,7 +53,6 @@ import com.woocommerce.android.ui.products.variations.VariationRepository
 import com.woocommerce.android.ui.promobanner.PromoBannerType
 import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.util.CurrencyFormatter
-import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.viewmodel.LiveDataDelegate
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
@@ -85,11 +85,10 @@ import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.withContext
 import kotlinx.parcelize.Parcelize
+import org.wordpress.android.fluxc.model.experiments.Variation
 import org.wordpress.android.fluxc.store.WCProductStore.ProductErrorType
 import java.math.BigDecimal
-import java.util.Collections
-import java.util.Date
-import java.util.Locale
+import java.util.*
 import javax.inject.Inject
 
 @HiltViewModel
@@ -113,6 +112,8 @@ class ProductDetailViewModel @Inject constructor(
         private const val KEY_PRODUCT_PARAMETERS = "key_product_parameters"
         const val DEFAULT_ADD_NEW_PRODUCT_ID: Long = 0L
     }
+
+    @Inject lateinit var explat: ExPlat
 
     private val navArgs: ProductDetailFragmentArgs by savedState.navArgs()
 
@@ -142,6 +143,9 @@ class ProductDetailViewModel @Inject constructor(
     private val draftChanges = MutableStateFlow<Product?>(null)
 
     private val storedProduct = MutableStateFlow<Product?>(null)
+
+    // A/B test to determine whether to show the linked products promo
+    private var abTestLinkProductsPromoIsTreatment = false
 
     // view state for the product categories screen
     val productCategoriesViewStateData = LiveDataDelegate(savedState, ProductCategoriesViewState())
@@ -286,6 +290,11 @@ class ProductDetailViewModel @Inject constructor(
     }
 
     fun start() {
+        abTestLinkProductsPromoIsTreatment = explat.getVariation(
+            ExperimentationModule.AB_TEST_LINKED_PRODUCTS_PROMO,
+            true
+        ) is Variation.Treatment
+
         val isRestoredFromSavedState = viewState.productDraft != null
         if (!isRestoredFromSavedState) {
             initializeViewState()
@@ -1632,7 +1641,7 @@ class ProductDetailViewModel @Inject constructor(
      * doesn't already have linked products
      */
     private fun checkLinkedProductPromo() {
-        if (AppInitializer.AB_TEST_LINKED_PRODUCTS_PROMO_ENABLED &&
+        if (abTestLinkProductsPromoIsTreatment &&
             appPrefsWrapper.isPromoBannerShown(PromoBannerType.LINKED_PRODUCTS).not() &&
             viewState.productDraft?.hasLinkedProducts() == false
         ) {

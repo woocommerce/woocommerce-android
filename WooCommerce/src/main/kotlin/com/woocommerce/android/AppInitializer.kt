@@ -8,7 +8,6 @@ import android.net.ConnectivityManager
 import androidx.lifecycle.Lifecycle.State.STARTED
 import androidx.lifecycle.ProcessLifecycleOwner
 import com.automattic.android.experimentation.ExPlat
-import com.automattic.android.experimentation.Experiment
 import com.automattic.android.tracks.crashlogging.CrashLogging
 import com.google.android.gms.common.ConnectionResult
 import com.google.android.gms.common.GoogleApiAvailability
@@ -66,7 +65,6 @@ import javax.inject.Singleton
 class AppInitializer @Inject constructor() : ApplicationLifecycleListener {
     companion object {
         private const val SECONDS_BETWEEN_SITE_UPDATE = 60 * 60 // 1 hour
-        var AB_TEST_LINKED_PRODUCTS_PROMO_ENABLED = false
     }
 
     @Inject lateinit var crashLogging: CrashLogging
@@ -128,10 +126,10 @@ class AppInitializer @Inject constructor() : ApplicationLifecycleListener {
             AA_TEST_202208,
             true
         )
-        AB_TEST_LINKED_PRODUCTS_PROMO_ENABLED = explat.getVariation(
+        explat.getVariation(
             AB_TEST_LINKED_PRODUCTS_PROMO,
             true
-        ).name == "treatment"
+        ) is Variation.Treatment
 
         // Apply Theme
         AppThemeUtils.setAppTheme()
