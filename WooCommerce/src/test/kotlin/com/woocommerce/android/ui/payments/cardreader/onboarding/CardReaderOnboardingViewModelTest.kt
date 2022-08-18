@@ -1078,6 +1078,68 @@ class CardReaderOnboardingViewModelTest : BaseUnitTest() {
         }
 
     @Test
+    fun `given enable cash on delivery clicked, when success, then continue to connection`() =
+        testBlocking {
+            whenever(onboardingChecker.getOnboardingState())
+                .thenReturn(
+                    CashOnDeliveryDisabled(
+                        countryCode = countryCode,
+                        preferredPlugin = WOOCOMMERCE_PAYMENTS,
+                        version = pluginVersion
+                    )
+                )
+            val viewModel = createVM(
+                CardReaderOnboardingFragmentArgs(
+                    cardReaderOnboardingParam = CardReaderOnboardingParams.Check(
+                        CardReaderFlowParam.PaymentOrRefund.Payment(1L, ORDER)
+                    )
+                ).initSavedStateHandle()
+            )
+
+            (viewModel.viewStateData.value as CashOnDeliveryDisabledState).onCashOnDeliveryEnabledSuccessfully.invoke()
+
+            assertThat(viewModel.event.value)
+                .isInstanceOf(OnboardingEvent.ContinueToConnection::class.java)
+        }
+
+    @Test
+    fun `given enable cash on delivery clicked, when success, then continue to hub`() =
+        testBlocking {
+            whenever(onboardingChecker.getOnboardingState())
+                .thenReturn(
+                    CashOnDeliveryDisabled(
+                        countryCode = countryCode,
+                        preferredPlugin = WOOCOMMERCE_PAYMENTS,
+                        version = pluginVersion
+                    )
+                )
+            val viewModel = createVM()
+
+            (viewModel.viewStateData.value as CashOnDeliveryDisabledState).onCashOnDeliveryEnabledSuccessfully.invoke()
+
+            assertThat(viewModel.event.value)
+                .isInstanceOf(OnboardingEvent.ContinueToHub::class.java)
+        }
+
+    @Test
+    fun `given enable cash on delivery clicked, when success, then don't store anything in prefs`() =
+        testBlocking {
+            whenever(onboardingChecker.getOnboardingState())
+                .thenReturn(
+                    CashOnDeliveryDisabled(
+                        countryCode = countryCode,
+                        preferredPlugin = WOOCOMMERCE_PAYMENTS,
+                        version = pluginVersion
+                    )
+                )
+            val viewModel = createVM()
+
+            (viewModel.viewStateData.value as CashOnDeliveryDisabledState).onCashOnDeliveryEnabledSuccessfully.invoke()
+
+            verify(appPrefsWrapper, never()).setCashOnDeliveryDisabledStateSkipped(true)
+        }
+
+    @Test
     fun `given cash on delivery enabled clicked, then show progress`() =
         testBlocking {
             whenever(onboardingChecker.getOnboardingState())
@@ -1156,7 +1218,8 @@ class CardReaderOnboardingViewModelTest : BaseUnitTest() {
                     site = selectedSite.get(),
                     gatewayId = GatewayRestClient.GatewayId.CASH_ON_DELIVERY,
                     enabled = true,
-                    title = "Pay in Person"
+                    title = "Pay in Person",
+                    description = "Pay by card or another accepted payment method"
                 )
             ).thenReturn(
                 WooResult(
@@ -1181,7 +1244,7 @@ class CardReaderOnboardingViewModelTest : BaseUnitTest() {
                 (viewModel.viewStateData.value as CashOnDeliveryDisabledState).cashOnDeliveryEnabledSuccessfully!!
             )
             assertFalse(
-                (viewModel.viewStateData.value as CashOnDeliveryDisabledState).shouldShowProgress!!
+                (viewModel.viewStateData.value as CashOnDeliveryDisabledState).shouldShowProgress
             )
         }
 
@@ -1201,7 +1264,8 @@ class CardReaderOnboardingViewModelTest : BaseUnitTest() {
                     site = selectedSite.get(),
                     gatewayId = GatewayRestClient.GatewayId.CASH_ON_DELIVERY,
                     enabled = true,
-                    title = "Pay in Person"
+                    title = "Pay in Person",
+                    description = "Pay by card or another accepted payment method"
                 )
             ).thenReturn(
                 WooResult(

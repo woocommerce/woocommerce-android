@@ -149,7 +149,7 @@ class CardReaderOnboardingFragment : BaseFragment(R.layout.fragment_card_reader_
             binding.enableCashOnDelivery.isEnabled = true
             binding.progressBar.visibility = View.GONE
             when (state.cashOnDeliveryEnabledSuccessfully) {
-                true -> state.onSkipCashOnDeliveryClicked.invoke()
+                true -> state.onCashOnDeliveryEnabledSuccessfully.invoke()
                 false -> {
                     ToastUtils.showToast(
                         requireContext(),
