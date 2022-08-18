@@ -7,6 +7,8 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.R
+import com.woocommerce.android.analytics.AnalyticsEvent
+import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.ui.sitepicker.SitePickerRepository
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
@@ -37,7 +39,8 @@ import kotlin.text.RegexOption.IGNORE_CASE
 class SitePickerSiteDiscoveryViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
     private val sitePickRepository: SitePickerRepository,
-    private val resourceProvider: ResourceProvider
+    private val resourceProvider: ResourceProvider,
+    private val analyticsTracker: AnalyticsTrackerWrapper
 ) : ScopedViewModel(savedStateHandle) {
     companion object {
         private const val FETCHED_URL_KEY = "fetched_url"
@@ -161,6 +164,16 @@ class SitePickerSiteDiscoveryViewModel @Inject constructor(
                 // Remove protocol prefix
                 val protocolRegex = Regex("^(http[s]?://)", IGNORE_CASE)
                 fetchedSiteUrl = siteAddress.replaceFirst(protocolRegex, "")
+
+                analyticsTracker.track(
+                    stat = AnalyticsEvent.SITE_PICKER_SITE_DISCOVERY,
+                    properties = mapOf(
+                        "has_wordpress" to it.isWordPress,
+                        "is_wpcom" to it.isWPCom,
+                        "has_valid_jetpack" to (it.isJetpackActive && it.isJetpackConnected)
+                    )
+                )
+
                 when {
                     !it.exists -> inlineErrorFlow.value = R.string.invalid_site_url_message
                     !it.isWordPress -> stepFlow.value = Step.NotWordpress
