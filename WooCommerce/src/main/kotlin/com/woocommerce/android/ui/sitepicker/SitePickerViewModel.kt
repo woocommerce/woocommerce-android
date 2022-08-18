@@ -348,12 +348,12 @@ class SitePickerViewModel @Inject constructor(
     }
 
     fun onNewToWooClick() {
-        // TODO track event
+        analyticsTrackerWrapper.track(AnalyticsEvent.SITE_PICKER_NEW_TO_WOO_TAPPED)
         triggerEvent(SitePickerEvent.NavigateToNewToWooEvent)
     }
 
     fun onEnterSiteAddressClick() {
-        // TODO track event
+        analyticsTrackerWrapper.track(AnalyticsEvent.SITE_PICKER_ENTER_SITE_ADDRESS_TAPPED)
         triggerEvent(SitePickerEvent.NavigateToSiteAddressEvent)
     }
 
