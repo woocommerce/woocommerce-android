@@ -140,6 +140,8 @@ class OrderDetailViewModel @Inject constructor(
     private val _shippingLabels = MutableLiveData<List<ShippingLabel>>()
     val shippingLabels: LiveData<List<ShippingLabel>> = _shippingLabels
 
+    private var isFetchingData = false
+
     override fun onCleared() {
         super.onCleared()
         productImageMap.unsubscribeFromOnProductFetchedEvents(this)
@@ -160,6 +162,8 @@ class OrderDetailViewModel @Inject constructor(
         }
     }
 
+    fun hasOrder() = viewState.orderInfo?.order != null
+
     private suspend fun displayOrderDetails() {
         updateOrderState()
         loadOrderNotes()
@@ -168,23 +172,26 @@ class OrderDetailViewModel @Inject constructor(
     }
 
     private suspend fun fetchOrder(showSkeleton: Boolean) {
+        // Prevent re-fetch data when a fetching request is ongoing
+        if (isFetchingData) return
+
         if (networkStatus.isConnected()) {
             viewState = viewState.copy(
                 isOrderDetailSkeletonShown = showSkeleton
             )
 
+            isFetchingData = true
             awaitAll(
                 fetchOrderAsync(),
                 fetchOrderNotesAsync(),
                 fetchOrderShippingLabelsAsync(),
                 fetchShipmentTrackingAsync(),
                 fetchOrderRefundsAsync(),
-                fetchOrderProductsAsync(),
                 fetchSLCreationEligibilityAsync()
             )
+            isFetchingData = false
 
             displayOrderDetails()
-
             viewState = viewState.copy(
                 isOrderDetailSkeletonShown = false,
                 isRefreshing = false
@@ -554,6 +561,7 @@ class OrderDetailViewModel @Inject constructor(
         orderDetailsTransactionLauncher.onOrderFetched()
         if (fetchedOrder != null) {
             order = fetchedOrder
+            fetchOrderProducts()
         } else {
             triggerEvent(ShowSnackbar(string.order_error_fetch_generic))
         }
@@ -585,7 +593,7 @@ class OrderDetailViewModel @Inject constructor(
     }
 
     // the database might be missing certain products, so we need to fetch the ones we don't have
-    private fun fetchOrderProductsAsync() = async {
+    private suspend fun fetchOrderProducts() {
         val productIds = order.getProductIds()
         val numLocalProducts = orderDetailRepository.getProductCountForOrder(productIds)
         if (numLocalProducts != order.items.size) {
@@ -595,13 +603,13 @@ class OrderDetailViewModel @Inject constructor(
 
     private fun fetchSLCreationEligibilityAsync() = async {
         if (shippingLabelOnboardingRepository.isShippingPluginReady) {
-            orderDetailRepository.fetchSLCreationEligibility(order.id)
+            orderDetailRepository.fetchSLCreationEligibility(navArgs.orderId)
         }
         orderDetailsTransactionLauncher.onPackageCreationEligibleFetched()
     }
 
     private fun loadShipmentTracking(shippingLabels: ListInfo<ShippingLabel>): ListInfo<OrderShipmentTracking> {
-        val trackingList = orderDetailRepository.getOrderShipmentTrackings(order.id)
+        val trackingList = orderDetailRepository.getOrderShipmentTrackings(navArgs.orderId)
         return if (!appPrefs.isTrackingExtensionAvailable() || shippingLabels.isVisible || hasVirtualProductsOnly()) {
             ListInfo(isVisible = false)
         } else {

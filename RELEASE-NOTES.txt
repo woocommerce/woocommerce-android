@@ -1,7 +1,7 @@
 *** PLEASE FOLLOW THIS FORMAT: [<priority indicator, more stars = higher priority>] <description> [<PR URL>]
 10.0
 -----
-
+- [*] In-Person Payments: learn more button was added connection dialog [https://github.com/woocommerce/woocommerce-android/pull/7193]
 
 9.9
 -----

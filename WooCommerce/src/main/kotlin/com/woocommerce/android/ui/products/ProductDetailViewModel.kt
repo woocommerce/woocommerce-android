@@ -14,6 +14,7 @@ import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_HAS_LINKED_PRODUCTS
+import com.woocommerce.android.di.ExperimentationModule
 import com.woocommerce.android.extensions.addNewItem
 import com.woocommerce.android.extensions.clearList
 import com.woocommerce.android.extensions.containsItem
@@ -51,7 +52,6 @@ import com.woocommerce.android.ui.products.variations.VariationRepository
 import com.woocommerce.android.ui.promobanner.PromoBannerType
 import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.util.CurrencyFormatter
-import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.viewmodel.LiveDataDelegate
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
@@ -84,6 +84,8 @@ import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.withContext
 import kotlinx.parcelize.Parcelize
+import org.wordpress.android.fluxc.model.experiments.Variation
+import org.wordpress.android.fluxc.store.ExperimentStore
 import org.wordpress.android.fluxc.store.WCProductStore.ProductErrorType
 import java.math.BigDecimal
 import java.util.Collections
@@ -107,6 +109,7 @@ class ProductDetailViewModel @Inject constructor(
     private val mediaFileUploadHandler: MediaFileUploadHandler,
     private val appPrefsWrapper: AppPrefsWrapper,
     private val addonRepository: AddonRepository,
+    private val experimentStore: ExperimentStore
 ) : ScopedViewModel(savedState) {
     companion object {
         private const val KEY_PRODUCT_PARAMETERS = "key_product_parameters"
@@ -141,6 +144,9 @@ class ProductDetailViewModel @Inject constructor(
     private val draftChanges = MutableStateFlow<Product?>(null)
 
     private val storedProduct = MutableStateFlow<Product?>(null)
+
+    // A/B test to determine whether to show the linked products promo
+    private var abTestLinkProductsPromoIsTreatment = false
 
     // view state for the product categories screen
     val productCategoriesViewStateData = LiveDataDelegate(savedState, ProductCategoriesViewState())
@@ -285,6 +291,13 @@ class ProductDetailViewModel @Inject constructor(
     }
 
     fun start() {
+        experimentStore.getCachedAssignments()
+            ?.variations
+            ?.get(ExperimentationModule.AB_TEST_LINKED_PRODUCTS_PROMO.identifier)
+            ?.let {
+                abTestLinkProductsPromoIsTreatment = it is Variation.Treatment
+            }
+
         val isRestoredFromSavedState = viewState.productDraft != null
         if (!isRestoredFromSavedState) {
             initializeViewState()
@@ -1631,17 +1644,42 @@ class ProductDetailViewModel @Inject constructor(
      * doesn't already have linked products
      */
     private fun checkLinkedProductPromo() {
-        if (FeatureFlag.LINKED_PRODUCTS_PROMO.isEnabled() &&
+        if (abTestLinkProductsPromoIsTreatment &&
             appPrefsWrapper.isPromoBannerShown(PromoBannerType.LINKED_PRODUCTS).not() &&
             viewState.productDraft?.hasLinkedProducts() == false
         ) {
             appPrefsWrapper.setPromoBannerShown(PromoBannerType.LINKED_PRODUCTS, true)
+            AnalyticsTracker.track(
+                AnalyticsEvent.FEATURE_CARD_SHOWN,
+                mapOf(
+                    AnalyticsTracker.KEY_BANNER_SOURCE to AnalyticsTracker.SOURCE_PRODUCT_DETAIL,
+                    AnalyticsTracker.KEY_BANNER_CAMPAIGN_NAME to AnalyticsTracker.KEY_BANNER_LINKED_PRODUCTS_PROMO
+                )
+            )
             triggerEvent(ShowLinkedProductPromoBanner)
         }
     }
 
     fun onLinkedProductPromoClicked() {
-        // TODO analytics
+        AnalyticsTracker.track(
+            AnalyticsEvent.FEATURE_CARD_CTA_TAPPED,
+            mapOf(
+                AnalyticsTracker.KEY_BANNER_SOURCE to AnalyticsTracker.SOURCE_PRODUCT_DETAIL,
+                AnalyticsTracker.KEY_BANNER_CAMPAIGN_NAME to AnalyticsTracker.KEY_BANNER_LINKED_PRODUCTS_PROMO
+            )
+        )
+        triggerEvent(ProductNavigationTarget.ViewLinkedProducts(getRemoteProductId()))
+    }
+
+    fun onLinkedProductPromoDismissed() {
+        AnalyticsTracker.track(
+            AnalyticsEvent.FEATURE_CARD_DISMISSED,
+            mapOf(
+                AnalyticsTracker.KEY_BANNER_SOURCE to AnalyticsTracker.SOURCE_PRODUCT_DETAIL,
+                AnalyticsTracker.KEY_BANNER_CAMPAIGN_NAME to AnalyticsTracker.KEY_BANNER_LINKED_PRODUCTS_PROMO,
+                AnalyticsTracker.KEY_BANNER_REMIND_LATER to false
+            )
+        )
         triggerEvent(ProductNavigationTarget.ViewLinkedProducts(getRemoteProductId()))
     }
 
