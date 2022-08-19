@@ -16,6 +16,7 @@ import com.woocommerce.android.model.UiString.UiStringText
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.payments.cardreader.CardReaderTracker
 import com.woocommerce.android.ui.payments.cardreader.CardReaderTrackingInfoKeeper
+import com.woocommerce.android.ui.payments.cardreader.LearnMoreUrlProvider
 import com.woocommerce.android.ui.payments.cardreader.connect.CardReaderConnectEvent.CheckBluetoothEnabled
 import com.woocommerce.android.ui.payments.cardreader.connect.CardReaderConnectEvent.CheckBluetoothPermissionsGiven
 import com.woocommerce.android.ui.payments.cardreader.connect.CardReaderConnectEvent.CheckLocationEnabled
@@ -95,6 +96,7 @@ class CardReaderConnectViewModelTest : BaseUnitTest() {
         on { get() }.thenReturn(siteModel)
     }
     private val cardReaderTrackingInfoKeeper: CardReaderTrackingInfoKeeper = mock()
+    private val learnMoreUrlProvider: LearnMoreUrlProvider = mock()
     private val locationId = "location_id"
 
     @Before
@@ -972,6 +974,43 @@ class CardReaderConnectViewModelTest : BaseUnitTest() {
         }
 
     @Test
+    fun `when the app in scanning state, then learn more is visible`() =
+        testBlocking {
+            init(scanState = SCANNING)
+
+            assertThat((viewModel.viewStateData.value as ScanningState).learnMoreLabel).isEqualTo(
+                UiStringRes(
+                    R.string.card_reader_connect_learn_more,
+                    containsHtml = true,
+                )
+            )
+        }
+
+    @Test
+    fun `given app in scanning state, when user clicks on learn more, then OpenGenericWebView emitted`() =
+        testBlocking {
+            init(scanState = SCANNING)
+            val url = "https://www.example.com"
+            whenever(learnMoreUrlProvider.providerLearnMoreUrl()).thenReturn(url)
+
+            (viewModel.viewStateData.value as ScanningState).onLearnMoreClicked.invoke()
+
+            assertThat(viewModel.event.value).isEqualTo(OpenGenericWebView(url))
+        }
+
+    @Test
+    fun `given app in scanning state, when user clicks on learn more, then event tracked`() =
+        testBlocking {
+            init(scanState = SCANNING)
+            val url = "https://www.example.com"
+            whenever(learnMoreUrlProvider.providerLearnMoreUrl()).thenReturn(url)
+
+            (viewModel.viewStateData.value as ScanningState).onLearnMoreClicked.invoke()
+
+            verify(tracker).trackLearnMoreConnectionClicked()
+        }
+
+    @Test
     fun `given app in reader found state, when user clicks on keep searching, then scanning state emitted`() =
         testBlocking {
             init(scanState = READER_FOUND)
@@ -1392,6 +1431,7 @@ class CardReaderConnectViewModelTest : BaseUnitTest() {
             selectedSite,
             cardReaderManager,
             cardReaderTrackingInfoKeeper,
+            learnMoreUrlProvider,
         )
     }
 

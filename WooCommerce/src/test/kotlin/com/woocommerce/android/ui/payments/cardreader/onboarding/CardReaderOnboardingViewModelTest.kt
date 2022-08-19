@@ -7,8 +7,8 @@ import com.woocommerce.android.R
 import com.woocommerce.android.cardreader.CardReaderManager
 import com.woocommerce.android.initSavedStateHandle
 import com.woocommerce.android.model.UiString
-import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.payments.cardreader.CardReaderTracker
+import com.woocommerce.android.ui.payments.cardreader.LearnMoreUrlProvider
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderFlowParam.PaymentOrRefund.Payment.PaymentType.ORDER
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboardingState.ChoosePaymentGatewayProvider
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboardingState.GenericError
@@ -41,19 +41,17 @@ import com.woocommerce.android.viewmodel.BaseUnitTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
-import org.mockito.kotlin.any
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.never
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
-import org.wordpress.android.fluxc.model.SiteModel
 
 @ExperimentalCoroutinesApi
 class CardReaderOnboardingViewModelTest : BaseUnitTest() {
     private val onboardingChecker: CardReaderOnboardingChecker = mock()
     private val tracker: CardReaderTracker = mock()
-    private val selectedSite: SelectedSite = mock {
-        on(it.get()).thenReturn(SiteModel())
+    private val learnMoreUrlProvider: LearnMoreUrlProvider = mock {
+        on { providerLearnMoreUrl() }.thenReturn(AppUrls.WOOCOMMERCE_LEARN_MORE_ABOUT_PAYMENTS)
     }
     private val appPrefsWrapper: AppPrefsWrapper = mock()
     private val cardReaderManager: CardReaderManager = mock()
@@ -103,7 +101,7 @@ class CardReaderOnboardingViewModelTest : BaseUnitTest() {
     fun `when store country not supported, then country not supported state shown`() =
         testBlocking {
             whenever(onboardingChecker.getOnboardingState())
-                .thenReturn(CardReaderOnboardingState.StoreCountryNotSupported(""))
+                .thenReturn(StoreCountryNotSupported(""))
 
             val viewModel = createVM()
 
@@ -117,7 +115,7 @@ class CardReaderOnboardingViewModelTest : BaseUnitTest() {
                 CardReaderOnboardingFragmentArgs(
                     CardReaderOnboardingParams.Failed(
                         cardReaderFlowParam = mock(),
-                        onboardingState = CardReaderOnboardingState.StoreCountryNotSupported(""),
+                        onboardingState = StoreCountryNotSupported(""),
                     )
                 ).initSavedStateHandle()
             )
@@ -132,12 +130,12 @@ class CardReaderOnboardingViewModelTest : BaseUnitTest() {
                 CardReaderOnboardingFragmentArgs(
                     CardReaderOnboardingParams.Failed(
                         cardReaderFlowParam = mock(),
-                        onboardingState = CardReaderOnboardingState.StoreCountryNotSupported(""),
+                        onboardingState = StoreCountryNotSupported(""),
                     )
                 ).initSavedStateHandle()
             )
 
-            verify(tracker).trackOnboardingState(CardReaderOnboardingState.StoreCountryNotSupported(""))
+            verify(tracker).trackOnboardingState(StoreCountryNotSupported(""))
         }
 
     @Test
@@ -470,7 +468,7 @@ class CardReaderOnboardingViewModelTest : BaseUnitTest() {
                 CardReaderOnboardingFragmentArgs(
                     CardReaderOnboardingParams.Failed(
                         cardReaderFlowParam = mock(),
-                        onboardingState = CardReaderOnboardingState.StoreCountryNotSupported(""),
+                        onboardingState = StoreCountryNotSupported(""),
                     )
                 ).initSavedStateHandle()
             )
@@ -729,12 +727,11 @@ class CardReaderOnboardingViewModelTest : BaseUnitTest() {
         }
 
     @Test
-    fun `given preferred plugin Stripe, when learn more clicked, then app navigates to Stripe docs`() =
+    fun `given learn more provider returns Stripe, when learn more clicked, then app navigates to Stripe docs`() =
         testBlocking {
             whenever(onboardingChecker.getOnboardingState())
                 .thenReturn(StoreCountryNotSupported(""))
-            whenever(appPrefsWrapper.getCardReaderPreferredPlugin(any(), any(), any()))
-                .thenReturn(STRIPE_EXTENSION_GATEWAY)
+            whenever(learnMoreUrlProvider.providerLearnMoreUrl()).thenReturn(AppUrls.STRIPE_LEARN_MORE_ABOUT_PAYMENTS)
 
             val viewModel = createVM()
 
@@ -745,28 +742,12 @@ class CardReaderOnboardingViewModelTest : BaseUnitTest() {
         }
 
     @Test
-    fun `given preferred plugin WCPay, when learn more clicked, then app navigates to wcpay docs`() =
+    fun `given learn more provider returns WCPay, when learn more clicked, then app navigates to wcpay docs`() =
         testBlocking {
             whenever(onboardingChecker.getOnboardingState())
                 .thenReturn(StoreCountryNotSupported(""))
-            whenever(appPrefsWrapper.getCardReaderPreferredPlugin(any(), any(), any()))
-                .thenReturn(WOOCOMMERCE_PAYMENTS)
-
-            val viewModel = createVM()
-
-            (viewModel.viewStateData.value as UnsupportedErrorState.Country).onLearnMoreActionClicked.invoke()
-
-            val event = viewModel.event.value as OnboardingEvent.NavigateToUrlInGenericWebView
-            assertThat(event.url).isEqualTo(AppUrls.WOOCOMMERCE_LEARN_MORE_ABOUT_PAYMENTS)
-        }
-
-    @Test
-    fun `given preferred plugin null, when learn more clicked, then app navigates to wcpay docs`() =
-        testBlocking {
-            whenever(onboardingChecker.getOnboardingState())
-                .thenReturn(StoreCountryNotSupported(""))
-            whenever(appPrefsWrapper.getCardReaderPreferredPlugin(any(), any(), any()))
-                .thenReturn(null)
+            whenever(learnMoreUrlProvider.providerLearnMoreUrl())
+                .thenReturn(AppUrls.WOOCOMMERCE_LEARN_MORE_ABOUT_PAYMENTS)
 
             val viewModel = createVM()
 
@@ -1568,8 +1549,8 @@ class CardReaderOnboardingViewModelTest : BaseUnitTest() {
             savedState,
             onboardingChecker,
             tracker,
-            selectedSite,
+            learnMoreUrlProvider,
             appPrefsWrapper,
-            cardReaderManager
+            cardReaderManager,
         )
 }
