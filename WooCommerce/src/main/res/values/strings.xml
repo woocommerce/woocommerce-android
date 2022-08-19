@@ -2577,4 +2577,5 @@
     <string name="or_use_password">Use password to sign in</string>
     <string name="login_magic_links_sent_label_short">Check your email on this device!</string>
     <string name="login_magic_links_email_sent">We just sent a magic link to</string>
+    <string name="login_site_picker_try_another_address">Try another address</string>
 </resources>
