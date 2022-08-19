@@ -35,6 +35,7 @@ import com.woocommerce.android.model.OrderShipmentTracking
 import com.woocommerce.android.model.Refund
 import com.woocommerce.android.model.RequestResult.SUCCESS
 import com.woocommerce.android.model.ShippingLabel
+import com.woocommerce.android.model.WooPlugin
 import com.woocommerce.android.model.getNonRefundedProducts
 import com.woocommerce.android.model.loadProducts
 import com.woocommerce.android.tools.NetworkStatus
@@ -83,6 +84,7 @@ import org.wordpress.android.fluxc.persistence.entity.OrderMetaDataEntity
 import org.wordpress.android.fluxc.store.WCOrderStore.OnOrderChanged
 import org.wordpress.android.fluxc.store.WCOrderStore.UpdateOrderResult.OptimisticUpdateResult
 import org.wordpress.android.fluxc.store.WCOrderStore.UpdateOrderResult.RemoteUpdateResult
+import org.wordpress.android.fluxc.store.WooCommerceStore
 import javax.inject.Inject
 
 @HiltViewModel
@@ -148,8 +150,13 @@ class OrderDetailViewModel @Inject constructor(
         orderDetailsTransactionLauncher.clear()
     }
 
+    private var pluginsInformation: Map<String, WooPlugin> = HashMap()
+
     init {
         productImageMap.subscribeToOnProductFetchedEvents(this)
+        launch {
+            pluginsInformation = orderDetailRepository.getOrderDetailsPluginsInfo()
+        }
     }
 
     fun start() {
@@ -623,12 +630,20 @@ class OrderDetailViewModel @Inject constructor(
     }
 
     private fun fetchShipmentTrackingAsync() = async {
+        pluginsInformation[WooCommerceStore.WooPlugin.WOO_SHIPMENT_TRACKING.pluginName]?.let { plugin ->
+            // Fetch data only when the plugin is installed and active
+            if (!plugin.isInstalled || !plugin.isActive) return@async
+        }
         val result = orderDetailRepository.fetchOrderShipmentTrackingList(navArgs.orderId)
         appPrefs.setTrackingExtensionAvailable(result == SUCCESS)
         orderDetailsTransactionLauncher.onShipmentTrackingFetched()
     }
 
     private fun fetchOrderShippingLabelsAsync() = async {
+        pluginsInformation[WooCommerceStore.WooPlugin.WOO_SERVICES.pluginName]?.let { plugin ->
+            // Fetch data only when the plugin is installed and active
+            if (!plugin.isInstalled || !plugin.isActive) return@async
+        }
         orderDetailRepository.fetchOrderShippingLabels(navArgs.orderId)
         orderDetailsTransactionLauncher.onShippingLabelFetched()
     }
