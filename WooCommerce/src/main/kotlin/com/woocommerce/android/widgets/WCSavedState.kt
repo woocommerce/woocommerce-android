@@ -24,18 +24,18 @@ class WCSavedState : BaseSavedState {
      * the super(source, loader) method won't work on older APIs - thus the app will crash.
      */
     constructor(source: Parcel, loader: ClassLoader?, superState: Parcelable?) : super(superState) {
-        savedState = source.readParcelable(loader)
+        savedState = source.readParcelable(loader, Parcelable::class.java)
     }
 
     constructor(source: Parcel) : super(source) {
-        savedState = source.readParcelable(this::class.java.classLoader)
+        savedState = source.readParcelable(this::class.java.classLoader, Parcelable::class.java)
     }
 
     @RequiresApi(VERSION_CODES.N)
     constructor(source: Parcel, loader: ClassLoader?) : super(source, loader) {
         savedState = loader?.let {
-            source.readParcelable<Parcelable>(it)
-        } ?: source.readParcelable<Parcelable>(this::class.java.classLoader)
+            source.readParcelable(it, Parcelable::class.java)
+        } ?: source.readParcelable(this::class.java.classLoader, Parcelable::class.java)
     }
 
     override fun writeToParcel(out: Parcel, flags: Int) {
@@ -51,7 +51,7 @@ class WCSavedState : BaseSavedState {
                 return if (VERSION.SDK_INT >= VERSION_CODES.N) {
                     WCSavedState(source, loader)
                 } else {
-                    WCSavedState(source, loader, source.readParcelable<Parcelable>(loader))
+                    WCSavedState(source, loader, source.readParcelable(loader, Parcelable::class.java))
                 }
             }
 
