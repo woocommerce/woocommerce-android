@@ -1,7 +1,7 @@
 *** PLEASE FOLLOW THIS FORMAT: [<priority indicator, more stars = higher priority>] <description> [<PR URL>]
 10.0
 -----
-
+ - [**] In-Person Payments: Show a new cash on delivery disabled onboarding error screen during IPP onboarding if the store has cash on delivery disabled. Give merchants an option to enable cash on delivery on the same screen.
 
 9.9
 -----
