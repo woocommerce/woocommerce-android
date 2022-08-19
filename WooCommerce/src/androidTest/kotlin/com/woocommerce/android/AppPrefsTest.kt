@@ -589,4 +589,18 @@ class AppPrefsTest {
             )
         ).isEqualTo(lastDismissedDialogTimeInMillis)
     }
+
+    @Test
+    fun givenCashOnDeliveryDisabledStateSkippedThenReturnSkippedAsTrue() {
+        AppPrefs.setCashOnDeliveryDisabledStateSkipped(true)
+
+        assertThat(AppPrefs.isCashOnDeliveryDisabledStateSkipped()).isTrue
+    }
+
+    @Test
+    fun givenCashOnDeliveryDisabledStateNotSkippedThenReturnSkippedAsFalse() {
+        AppPrefs.setCashOnDeliveryDisabledStateSkipped(false)
+
+        assertThat(AppPrefs.isCashOnDeliveryDisabledStateSkipped()).isFalse
+    }
 }

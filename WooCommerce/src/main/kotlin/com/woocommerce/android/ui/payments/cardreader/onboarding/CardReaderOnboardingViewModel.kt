@@ -32,6 +32,7 @@ import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboa
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboardingState.WcpayNotActivated
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboardingState.WcpayNotInstalled
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboardingViewModel.OnboardingEvent.NavigateToUrlInGenericWebView
+import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboardingViewModel.OnboardingViewState.CashOnDeliveryDisabledState
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboardingViewModel.OnboardingViewState.GenericErrorState
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboardingViewModel.OnboardingViewState.NoConnectionErrorState
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboardingViewModel.OnboardingViewState.StripeAcountError.PluginInTestModeWithLiveAccountState
@@ -58,6 +59,8 @@ import com.woocommerce.android.viewmodel.SingleLiveEvent
 import com.woocommerce.android.viewmodel.navArgs
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
+import org.wordpress.android.fluxc.network.rest.wpcom.wc.gateways.GatewayRestClient
+import org.wordpress.android.fluxc.store.WCGatewayStore
 import java.util.Date
 import java.util.Locale
 import javax.inject.Inject
@@ -72,6 +75,7 @@ class CardReaderOnboardingViewModel @Inject constructor(
     private val learnMoreUrlProvider: LearnMoreUrlProvider,
     private val appPrefsWrapper: AppPrefsWrapper,
     private val cardReaderManager: CardReaderManager,
+    private val gatewayStore: WCGatewayStore,
 ) : ScopedViewModel(savedState) {
     private val arguments: CardReaderOnboardingFragmentArgs by savedState.navArgs()
 
@@ -216,7 +220,66 @@ class CardReaderOnboardingViewModel @Inject constructor(
                     ::onLearnMoreClicked
                 )
             ChoosePaymentGatewayProvider -> updateUiWithSelectPaymentPlugin()
+            is CardReaderOnboardingState.CashOnDeliveryDisabled ->
+                viewState.value = CashOnDeliveryDisabledState(
+                    onSkipCashOnDeliveryClicked = { (::onSkipCashOnDeliveryClicked)(state.countryCode) },
+                    onCashOnDeliveryEnabledSuccessfully =
+                    { (::onCashOnDeliveryEnabledSuccessfully)(state.countryCode) },
+                    onEnableCashOnDeliveryClicked = { (::onEnableCashOnDeliveryClicked)(state.countryCode) },
+                    onLearnMoreActionClicked = ::onLearnMoreClicked
+                )
         }.exhaustive
+    }
+
+    private fun onSkipCashOnDeliveryClicked(countryCode: String) {
+        appPrefsWrapper.setCashOnDeliveryDisabledStateSkipped(true)
+        continueFlow(countryCode)
+    }
+
+    private fun onCashOnDeliveryEnabledSuccessfully(countryCode: String) {
+        continueFlow(countryCode)
+    }
+
+    private fun onEnableCashOnDeliveryClicked(countryCode: String) {
+        viewState.value = CashOnDeliveryDisabledState(
+            onSkipCashOnDeliveryClicked = { (::onSkipCashOnDeliveryClicked)(countryCode) },
+            onCashOnDeliveryEnabledSuccessfully = { (::onCashOnDeliveryEnabledSuccessfully)(countryCode) },
+            onEnableCashOnDeliveryClicked = { (::onEnableCashOnDeliveryClicked)(countryCode) },
+            onLearnMoreActionClicked = ::onLearnMoreClicked,
+            shouldShowProgress = true
+        )
+        launch {
+            val result = gatewayStore.updatePaymentGateway(
+                site = selectedSite.get(),
+                gatewayId = GatewayRestClient.GatewayId.CASH_ON_DELIVERY,
+                enabled = true,
+                title = "Pay in Person",
+                description = "Pay by card or another accepted payment method",
+            )
+            result.model?.let {
+                viewState.postValue(
+                    CashOnDeliveryDisabledState(
+                        onSkipCashOnDeliveryClicked = { (::onSkipCashOnDeliveryClicked)(countryCode) },
+                        onCashOnDeliveryEnabledSuccessfully = { (::onCashOnDeliveryEnabledSuccessfully)(countryCode) },
+                        onEnableCashOnDeliveryClicked = { (::onEnableCashOnDeliveryClicked)(countryCode) },
+                        onLearnMoreActionClicked = ::onLearnMoreClicked,
+                        shouldShowProgress = false,
+                        cashOnDeliveryEnabledSuccessfully = true
+                    )
+                )
+            } ?: run {
+                viewState.postValue(
+                    CashOnDeliveryDisabledState(
+                        onSkipCashOnDeliveryClicked = { (::onSkipCashOnDeliveryClicked)(countryCode) },
+                        onCashOnDeliveryEnabledSuccessfully = { (::onCashOnDeliveryEnabledSuccessfully)(countryCode) },
+                        onEnableCashOnDeliveryClicked = { (::onEnableCashOnDeliveryClicked)(countryCode) },
+                        onLearnMoreActionClicked = ::onLearnMoreClicked,
+                        shouldShowProgress = false,
+                        cashOnDeliveryEnabledSuccessfully = false
+                    )
+                )
+            }
+        }
     }
 
     private fun updateUiWithSelectPaymentPlugin() {
@@ -310,6 +373,33 @@ class CardReaderOnboardingViewModel @Inject constructor(
             val selectStripeButtonLabel = UiString.UiStringRes(R.string.card_reader_onboarding_choose_stripe_button)
             val confirmPaymentMethodButtonLabel = UiString
                 .UiStringRes(R.string.card_reader_onboarding_confirm_payment_method_button)
+        }
+
+        data class CashOnDeliveryDisabledState(
+            val onSkipCashOnDeliveryClicked: (() -> Unit),
+            val onCashOnDeliveryEnabledSuccessfully: (() -> Unit),
+            val onEnableCashOnDeliveryClicked: (() -> Unit),
+            val onLearnMoreActionClicked: (() -> Unit),
+            val shouldShowProgress: Boolean = false,
+            val cashOnDeliveryEnabledSuccessfully: Boolean? = null
+        ) : OnboardingViewState(R.layout.fragment_card_reader_onboarding_cod_disabled) {
+            val cardIllustration = R.drawable.img_products_error
+            val headerLabel = UiString.UiStringRes(
+                R.string.card_reader_onboarding_cash_on_delivery_disabled_error_header
+            )
+            val cashOnDeliveryHintLabel = UiString.UiStringRes(
+                R.string.card_reader_onboarding_cash_on_delivery_disabled_error_hint
+            )
+            val skipCashOnDeliveryButtonLabel = UiString.UiStringRes(
+                R.string.skip
+            )
+            val enableCashOnDeliveryButtonLabel = UiString.UiStringRes(
+                R.string.card_reader_onboarding_cash_on_delivery_disabled_button
+            )
+            val learnMoreLabel = UiString.UiStringRes(
+                stringRes = R.string.card_reader_onboarding_country_not_supported_learn_more,
+                containsHtml = true
+            )
         }
 
         class NoConnectionErrorState(
