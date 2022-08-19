@@ -224,17 +224,46 @@ class CardReaderOnboardingViewModel @Inject constructor(
             ChoosePaymentGatewayProvider -> updateUiWithSelectPaymentPlugin()
             is CardReaderOnboardingState.CashOnDeliveryDisabled ->
                 viewState.value = CashOnDeliveryDisabledState(
-                    onSkipCashOnDeliveryClicked = { (::onSkipCashOnDeliveryClicked)(state.countryCode) },
+                    onSkipCashOnDeliveryClicked = {
+                        (::onSkipCashOnDeliveryClicked)(
+                            state.countryCode,
+                            state.preferredPlugin,
+                            state.version
+                        )
+                    },
                     onCashOnDeliveryEnabledSuccessfully =
                     { (::onCashOnDeliveryEnabledSuccessfully)(state.countryCode) },
-                    onEnableCashOnDeliveryClicked = { (::onEnableCashOnDeliveryClicked)(state.countryCode) },
+                    onEnableCashOnDeliveryClicked = {
+                        (::onEnableCashOnDeliveryClicked)(
+                            state.countryCode,
+                            state.preferredPlugin,
+                            state.version
+                        )
+                    },
                     onLearnMoreActionClicked = ::onLearnMoreClicked
                 )
         }.exhaustive
     }
 
-    private fun onSkipCashOnDeliveryClicked(countryCode: String) {
-        appPrefsWrapper.setCashOnDeliveryDisabledStateSkipped(true)
+    private fun onSkipCashOnDeliveryClicked(
+        countryCode: String,
+        preferredPlugin: PluginType,
+        version: String? = null
+    ) {
+        val site = selectedSite.get()
+        appPrefsWrapper.setCashOnDeliveryDisabledStateSkipped(
+            localSiteId = site.id,
+            remoteSiteId = site.siteId,
+            selfHostedSiteId = site.selfHostedSiteId,
+            true
+        )
+        cardReaderTracker.trackOnboardingSkippedState(
+            CardReaderOnboardingState.CashOnDeliveryDisabled(
+                countryCode,
+                preferredPlugin,
+                version
+            )
+        )
         continueFlow(countryCode)
     }
 
@@ -242,11 +271,35 @@ class CardReaderOnboardingViewModel @Inject constructor(
         continueFlow(countryCode)
     }
 
-    private fun onEnableCashOnDeliveryClicked(countryCode: String) {
+    @Suppress("LongMethod")
+    private fun onEnableCashOnDeliveryClicked(
+        countryCode: String,
+        preferredPlugin: PluginType,
+        version: String? = null
+    ) {
+        cardReaderTracker.trackOnboardingCtaTappedState(
+            CardReaderOnboardingState.CashOnDeliveryDisabled(
+                countryCode,
+                preferredPlugin,
+                version
+            )
+        )
         viewState.value = CashOnDeliveryDisabledState(
-            onSkipCashOnDeliveryClicked = { (::onSkipCashOnDeliveryClicked)(countryCode) },
+            onSkipCashOnDeliveryClicked = {
+                (::onSkipCashOnDeliveryClicked)(
+                    countryCode,
+                    preferredPlugin,
+                    version
+                )
+            },
             onCashOnDeliveryEnabledSuccessfully = { (::onCashOnDeliveryEnabledSuccessfully)(countryCode) },
-            onEnableCashOnDeliveryClicked = { (::onEnableCashOnDeliveryClicked)(countryCode) },
+            onEnableCashOnDeliveryClicked = {
+                (::onEnableCashOnDeliveryClicked)(
+                    countryCode,
+                    preferredPlugin,
+                    version
+                )
+            },
             onLearnMoreActionClicked = ::onLearnMoreClicked,
             shouldShowProgress = true
         )
@@ -259,22 +312,50 @@ class CardReaderOnboardingViewModel @Inject constructor(
                 description = "Pay by card or another accepted payment method",
             )
             result.model?.let {
+                cardReaderTracker.trackCashOnDeliveryEnabledSuccess()
                 viewState.postValue(
                     CashOnDeliveryDisabledState(
-                        onSkipCashOnDeliveryClicked = { (::onSkipCashOnDeliveryClicked)(countryCode) },
+                        onSkipCashOnDeliveryClicked = {
+                            (::onSkipCashOnDeliveryClicked)(
+                                countryCode,
+                                preferredPlugin,
+                                version
+                            )
+                        },
                         onCashOnDeliveryEnabledSuccessfully = { (::onCashOnDeliveryEnabledSuccessfully)(countryCode) },
-                        onEnableCashOnDeliveryClicked = { (::onEnableCashOnDeliveryClicked)(countryCode) },
+                        onEnableCashOnDeliveryClicked = {
+                            (::onEnableCashOnDeliveryClicked)(
+                                countryCode,
+                                preferredPlugin,
+                                version
+                            )
+                        },
                         onLearnMoreActionClicked = ::onLearnMoreClicked,
                         shouldShowProgress = false,
                         cashOnDeliveryEnabledSuccessfully = true
                     )
                 )
             } ?: run {
+                cardReaderTracker.trackCashOnDeliveryEnabledFailure(
+                    result.error.message
+                )
                 viewState.postValue(
                     CashOnDeliveryDisabledState(
-                        onSkipCashOnDeliveryClicked = { (::onSkipCashOnDeliveryClicked)(countryCode) },
+                        onSkipCashOnDeliveryClicked = {
+                            (::onSkipCashOnDeliveryClicked)(
+                                countryCode,
+                                preferredPlugin,
+                                version
+                            )
+                        },
                         onCashOnDeliveryEnabledSuccessfully = { (::onCashOnDeliveryEnabledSuccessfully)(countryCode) },
-                        onEnableCashOnDeliveryClicked = { (::onEnableCashOnDeliveryClicked)(countryCode) },
+                        onEnableCashOnDeliveryClicked = {
+                            (::onEnableCashOnDeliveryClicked)(
+                                countryCode,
+                                preferredPlugin,
+                                version
+                            )
+                        },
                         onLearnMoreActionClicked = ::onLearnMoreClicked,
                         shouldShowProgress = false,
                         cashOnDeliveryEnabledSuccessfully = false

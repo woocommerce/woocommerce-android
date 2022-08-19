@@ -5,8 +5,10 @@ import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsEvent.CARD_PRESENT_COLLECT_PAYMENT_CANCELLED
 import com.woocommerce.android.analytics.AnalyticsEvent.CARD_PRESENT_COLLECT_PAYMENT_FAILED
 import com.woocommerce.android.analytics.AnalyticsEvent.CARD_PRESENT_COLLECT_PAYMENT_SUCCESS
+import com.woocommerce.android.analytics.AnalyticsEvent.CARD_PRESENT_ONBOARDING_CTA_TAPPED
 import com.woocommerce.android.analytics.AnalyticsEvent.CARD_PRESENT_ONBOARDING_LEARN_MORE_TAPPED
 import com.woocommerce.android.analytics.AnalyticsEvent.CARD_PRESENT_ONBOARDING_NOT_COMPLETED
+import com.woocommerce.android.analytics.AnalyticsEvent.CARD_PRESENT_ONBOARDING_STEP_SKIPPED
 import com.woocommerce.android.analytics.AnalyticsEvent.CARD_READER_AUTO_CONNECTION_STARTED
 import com.woocommerce.android.analytics.AnalyticsEvent.CARD_READER_DISCOVERY_FAILED
 import com.woocommerce.android.analytics.AnalyticsEvent.CARD_READER_DISCOVERY_READER_DISCOVERED
@@ -14,6 +16,8 @@ import com.woocommerce.android.analytics.AnalyticsEvent.CARD_READER_LOCATION_FAI
 import com.woocommerce.android.analytics.AnalyticsEvent.CARD_READER_LOCATION_SUCCESS
 import com.woocommerce.android.analytics.AnalyticsEvent.CARD_READER_SOFTWARE_UPDATE_FAILED
 import com.woocommerce.android.analytics.AnalyticsEvent.CARD_READER_SOFTWARE_UPDATE_STARTED
+import com.woocommerce.android.analytics.AnalyticsEvent.ENABLE_CASH_ON_DELIVERY_FAILED
+import com.woocommerce.android.analytics.AnalyticsEvent.ENABLE_CASH_ON_DELIVERY_SUCCESS
 import com.woocommerce.android.analytics.AnalyticsEvent.PAYMENTS_FLOW_ORDER_COLLECT_PAYMENT_TAPPED
 import com.woocommerce.android.analytics.AnalyticsEvent.RECEIPT_EMAIL_TAPPED
 import com.woocommerce.android.analytics.AnalyticsEvent.RECEIPT_PRINT_CANCELED
@@ -112,6 +116,84 @@ class CardReaderTrackerTest : BaseUnitTest() {
             verify(trackerWrapper).track(
                 eq(AnalyticsEvent.CARD_PRESENT_PAYMENT_GATEWAY_SELECTED),
                 check { assertThat(it[AnalyticsTracker.KEY_PAYMENT_GATEWAY]).isEqualTo("woocommerce-stripe-gateway") }
+            )
+        }
+
+    @Test
+    fun `given cod disabled state, when skip is tapped, then CARD_PRESENT_ONBOARDING_STEP_SKIPPED tracked`() =
+        testBlocking {
+            cardReaderTracker.trackOnboardingSkippedState(
+                CardReaderOnboardingState.CashOnDeliveryDisabled(
+                    countryCode = "US",
+                    preferredPlugin = WOOCOMMERCE_PAYMENTS,
+                    version = "4.0.0"
+                )
+            )
+
+            verify(trackerWrapper).track(
+                eq(CARD_PRESENT_ONBOARDING_STEP_SKIPPED),
+                check {
+                    assertThat(it["reason"]).isEqualTo("cash_on_delivery_disabled")
+                    assertThat(it["remind_later"]).isEqualTo(false)
+                }
+            )
+        }
+
+    @Test
+    fun `given cod disabled state, when enable cod is tapped, then CARD_PRESENT_ONBOARDING_CTA_TAPPED tracked`() =
+        testBlocking {
+            cardReaderTracker.trackOnboardingCtaTappedState(
+                CardReaderOnboardingState.CashOnDeliveryDisabled(
+                    countryCode = "US",
+                    preferredPlugin = WOOCOMMERCE_PAYMENTS,
+                    version = "4.0.0"
+                )
+            )
+
+            verify(trackerWrapper).track(
+                eq(CARD_PRESENT_ONBOARDING_CTA_TAPPED),
+                check { assertThat(it["reason"]).isEqualTo("cash_on_delivery_disabled") }
+            )
+        }
+
+    @Test
+    fun `given enable cod is tapped, when success, then ENABLE_CASH_ON_DELIVERY_SUCCESS tracked`() =
+        testBlocking {
+            cardReaderTracker.trackCashOnDeliveryEnabledSuccess()
+
+            verify(trackerWrapper).track(eq(ENABLE_CASH_ON_DELIVERY_SUCCESS), any())
+        }
+
+    @Test
+    fun `given enable cod is tapped, when failure, then ENABLE_CASH_ON_DELIVERY_FAILED tracked`() =
+        testBlocking {
+            cardReaderTracker.trackCashOnDeliveryEnabledFailure(
+                "COD failed. Please try again later."
+            )
+
+            verify(trackerWrapper).track(
+                stat = eq(ENABLE_CASH_ON_DELIVERY_FAILED),
+                properties = any(),
+                errorType = any(),
+                errorContext = eq(null),
+                errorDescription = eq("COD failed. Please try again later.")
+            )
+        }
+
+    @Test
+    fun `when onboarding state cod disabled, then reason=cash_on_delivery tracked`() =
+        testBlocking {
+            cardReaderTracker.trackOnboardingState(
+                CardReaderOnboardingState.CashOnDeliveryDisabled(
+                    countryCode = "US",
+                    preferredPlugin = WOOCOMMERCE_PAYMENTS,
+                    version = "4.0.0"
+                )
+            )
+
+            verify(trackerWrapper).track(
+                eq(CARD_PRESENT_ONBOARDING_NOT_COMPLETED),
+                check { assertThat(it["reason"]).isEqualTo("cash_on_delivery_disabled") }
             )
         }
 

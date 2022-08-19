@@ -196,7 +196,7 @@ class CardReaderOnboardingChecker @Inject constructor(
         if (isInUndefinedState(paymentAccount)) return GenericError
 
         if (
-            !appPrefsWrapper.isCashOnDeliveryDisabledStateSkipped() &&
+            !isCashOnDeliveryDisabledStateSkipped() &&
             !isCashOnDeliveryEnabled()
         ) return CashOnDeliveryDisabled(
             requireNotNull(countryCode),
@@ -208,6 +208,15 @@ class CardReaderOnboardingChecker @Inject constructor(
             preferredPlugin.type,
             preferredPlugin.info?.version,
             requireNotNull(countryCode)
+        )
+    }
+
+    private fun isCashOnDeliveryDisabledStateSkipped(): Boolean {
+        val site = selectedSite.get()
+        return appPrefsWrapper.isCashOnDeliveryDisabledStateSkipped(
+            localSiteId = site.id,
+            remoteSiteId = site.siteId,
+            selfHostedSiteId = site.selfHostedSiteId,
         )
     }
 

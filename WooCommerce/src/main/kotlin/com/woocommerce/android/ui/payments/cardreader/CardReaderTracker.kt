@@ -10,8 +10,10 @@ import com.woocommerce.android.analytics.AnalyticsEvent.CARD_PRESENT_COLLECT_PAY
 import com.woocommerce.android.analytics.AnalyticsEvent.CARD_PRESENT_COLLECT_PAYMENT_FAILED
 import com.woocommerce.android.analytics.AnalyticsEvent.CARD_PRESENT_COLLECT_PAYMENT_SUCCESS
 import com.woocommerce.android.analytics.AnalyticsEvent.CARD_PRESENT_CONNECTION_LEARN_MORE_TAPPED
+import com.woocommerce.android.analytics.AnalyticsEvent.CARD_PRESENT_ONBOARDING_CTA_TAPPED
 import com.woocommerce.android.analytics.AnalyticsEvent.CARD_PRESENT_ONBOARDING_LEARN_MORE_TAPPED
 import com.woocommerce.android.analytics.AnalyticsEvent.CARD_PRESENT_ONBOARDING_NOT_COMPLETED
+import com.woocommerce.android.analytics.AnalyticsEvent.CARD_PRESENT_ONBOARDING_STEP_SKIPPED
 import com.woocommerce.android.analytics.AnalyticsEvent.CARD_READER_AUTO_CONNECTION_STARTED
 import com.woocommerce.android.analytics.AnalyticsEvent.CARD_READER_CONNECTION_FAILED
 import com.woocommerce.android.analytics.AnalyticsEvent.CARD_READER_CONNECTION_SUCCESS
@@ -26,6 +28,8 @@ import com.woocommerce.android.analytics.AnalyticsEvent.CARD_READER_LOCATION_SUC
 import com.woocommerce.android.analytics.AnalyticsEvent.CARD_READER_SOFTWARE_UPDATE_FAILED
 import com.woocommerce.android.analytics.AnalyticsEvent.CARD_READER_SOFTWARE_UPDATE_STARTED
 import com.woocommerce.android.analytics.AnalyticsEvent.CARD_READER_SOFTWARE_UPDATE_SUCCESS
+import com.woocommerce.android.analytics.AnalyticsEvent.ENABLE_CASH_ON_DELIVERY_FAILED
+import com.woocommerce.android.analytics.AnalyticsEvent.ENABLE_CASH_ON_DELIVERY_SUCCESS
 import com.woocommerce.android.analytics.AnalyticsEvent.PAYMENTS_FLOW_ORDER_COLLECT_PAYMENT_TAPPED
 import com.woocommerce.android.analytics.AnalyticsEvent.RECEIPT_EMAIL_FAILED
 import com.woocommerce.android.analytics.AnalyticsEvent.RECEIPT_EMAIL_TAPPED
@@ -161,6 +165,40 @@ class CardReaderTracker @Inject constructor(
         getOnboardingNotCompletedReason(state)?.let {
             track(CARD_PRESENT_ONBOARDING_NOT_COMPLETED, mutableMapOf("reason" to it))
         }
+    }
+
+    fun trackOnboardingSkippedState(state: CardReaderOnboardingState) {
+        getOnboardingNotCompletedReason(state)?.let {
+            track(
+                CARD_PRESENT_ONBOARDING_STEP_SKIPPED,
+                mutableMapOf(
+                    "reason" to it,
+                    "remind_later" to false
+                )
+            )
+        }
+    }
+
+    fun trackOnboardingCtaTappedState(state: CardReaderOnboardingState) {
+        getOnboardingNotCompletedReason(state)?.let {
+            track(
+                CARD_PRESENT_ONBOARDING_CTA_TAPPED,
+                mutableMapOf(
+                    "reason" to it,
+                )
+            )
+        }
+    }
+
+    fun trackCashOnDeliveryEnabledSuccess() {
+        track(ENABLE_CASH_ON_DELIVERY_SUCCESS)
+    }
+
+    fun trackCashOnDeliveryEnabledFailure(errorMessage: String?) {
+        track(
+            ENABLE_CASH_ON_DELIVERY_FAILED,
+            errorDescription = errorMessage
+        )
     }
 
     fun trackPaymentGatewaySelected(pluginType: PluginType) {
