@@ -12,6 +12,7 @@ import com.woocommerce.android.ui.payments.cardreader.InPersonPaymentsCanadaFeat
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderFlowParam
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboardingChecker
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboardingState
+import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboardingState.StripeAccountPendingRequirement
 import com.woocommerce.android.ui.payments.cardreader.onboarding.PluginType.STRIPE_EXTENSION_GATEWAY
 import com.woocommerce.android.ui.payments.cardreader.onboarding.PluginType.WOOCOMMERCE_PAYMENTS
 import com.woocommerce.android.viewmodel.BaseUnitTest
@@ -548,6 +549,84 @@ class CardReaderHubViewModelTest : BaseUnitTest() {
             viewModel.onViewVisible()
 
             assertThat(viewModel.viewStateData.value?.onboardingErrorAction?.text).isNull()
+        }
+
+    @Test
+    fun `given pending requirements status, when screen shown, then onboarding error visible`() =
+        testBlocking {
+            whenever(cardReaderChecker.getOnboardingState()).thenReturn(
+                mock<StripeAccountPendingRequirement>()
+            )
+
+            initViewModel()
+
+            assertThat(viewModel.viewStateData.value?.onboardingErrorAction?.text).isEqualTo(
+                UiString.UiStringRes(R.string.card_reader_onboarding_with_pending_requirements, containsHtml = true)
+            )
+        }
+
+    @Test
+    fun `given pending requirements status, when screen shown, then collect payment row is enabled`() =
+        testBlocking {
+            whenever(cardReaderChecker.getOnboardingState()).thenReturn(
+                mock<StripeAccountPendingRequirement>()
+            )
+
+            initViewModel()
+
+            assertThat(
+                viewModel.viewStateData.value?.rows?.find {
+                    it.label == UiString.UiStringRes(R.string.card_reader_collect_payment)
+                }?.isEnabled
+            ).isTrue()
+        }
+
+    @Test
+    fun `given pending requirements status, when screen shown, then order card reader row is enabled`() =
+        testBlocking {
+            whenever(cardReaderChecker.getOnboardingState()).thenReturn(
+                mock<StripeAccountPendingRequirement>()
+            )
+
+            initViewModel()
+
+            assertThat(
+                viewModel.viewStateData.value?.rows?.find {
+                    it.label == UiString.UiStringRes(R.string.card_reader_purchase_card_reader)
+                }?.isEnabled
+            ).isTrue()
+        }
+
+    @Test
+    fun `given pending requirements status, when screen shown, then card reader manuals is enabled`() =
+        testBlocking {
+            whenever(cardReaderChecker.getOnboardingState()).thenReturn(
+                mock<StripeAccountPendingRequirement>()
+            )
+
+            initViewModel()
+
+            assertThat(
+                viewModel.viewStateData.value?.rows?.find {
+                    it.label == UiString.UiStringRes(R.string.settings_card_reader_manuals)
+                }?.isEnabled
+            ).isTrue()
+        }
+
+    @Test
+    fun `given pending requirements status, when screen shown, then manage card reader is enabled`() =
+        testBlocking {
+            whenever(cardReaderChecker.getOnboardingState()).thenReturn(
+                mock<StripeAccountPendingRequirement>()
+            )
+
+            initViewModel()
+
+            assertThat(
+                viewModel.viewStateData.value?.rows?.find {
+                    it.label == UiString.UiStringRes(R.string.card_reader_manage_card_reader)
+                }?.isEnabled
+            ).isTrue()
         }
 
     private fun initViewModel() {
