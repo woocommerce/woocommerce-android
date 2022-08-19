@@ -2199,6 +2199,7 @@ class CardReaderOnboardingViewModelTest : BaseUnitTest() {
             onboardingChecker,
             tracker,
             learnMoreUrlProvider,
+            selectedSite,
             appPrefsWrapper,
             cardReaderManager,
             gatewayStore

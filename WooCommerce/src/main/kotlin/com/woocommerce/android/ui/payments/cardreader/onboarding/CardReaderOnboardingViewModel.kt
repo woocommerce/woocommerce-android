@@ -11,6 +11,7 @@ import com.woocommerce.android.cardreader.CardReaderManager
 import com.woocommerce.android.extensions.exhaustive
 import com.woocommerce.android.extensions.formatToMMMMdd
 import com.woocommerce.android.model.UiString
+import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.payments.cardreader.CardReaderTracker
 import com.woocommerce.android.ui.payments.cardreader.LearnMoreUrlProvider
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboardingParams.Check
@@ -73,6 +74,7 @@ class CardReaderOnboardingViewModel @Inject constructor(
     private val cardReaderChecker: CardReaderOnboardingChecker,
     private val cardReaderTracker: CardReaderTracker,
     private val learnMoreUrlProvider: LearnMoreUrlProvider,
+    private val selectedSite: SelectedSite,
     private val appPrefsWrapper: AppPrefsWrapper,
     private val cardReaderManager: CardReaderManager,
     private val gatewayStore: WCGatewayStore,
