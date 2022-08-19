@@ -133,7 +133,7 @@ class SitePickerFragment : BaseFragment(R.layout.fragment_site_picker), LoginEma
                 when (it) {
                     StoreListState -> updateStoreListView()
                     NoStoreState -> updateNoStoresView()
-                    AccountMismatchState -> updateAccountMismatchView()
+                    AccountMismatchState -> updateAccountMismatchView(new.hasConnectedStores == true)
                     WooNotFoundState -> updateWooNotFoundView()
                 }
             }
@@ -188,9 +188,13 @@ class SitePickerFragment : BaseFragment(R.layout.fragment_site_picker), LoginEma
         }
     }
 
-    private fun updateAccountMismatchView() {
+    private fun updateAccountMismatchView(hasConnectedStores: Boolean) {
         binding.loginEpilogueButtonBar.buttonPrimary.setOnClickListener {
-            viewModel.onViewConnectedStoresButtonClick()
+            if (hasConnectedStores) {
+                viewModel.onViewConnectedStoresButtonClick()
+            } else {
+                viewModel.onEnterSiteAddressClick()
+            }
         }
         binding.noStoresView.clickSecondaryAction {
             viewModel.onNeedHelpFindingEmailButtonClick()
