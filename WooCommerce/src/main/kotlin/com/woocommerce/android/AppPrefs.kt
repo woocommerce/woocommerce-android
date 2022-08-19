@@ -43,6 +43,7 @@ import java.util.Date
 
 // Guaranteed to hold a reference to the application context, which is safe
 @SuppressLint("StaticFieldLeak")
+@SuppressWarnings("LargeClass")
 object AppPrefs {
     interface PrefKey
 
@@ -695,7 +696,8 @@ object AppPrefs {
         remoteSiteId: Long,
         selfHostedSiteId: Long
     ) = PrefKeyString(
-        "$CARD_READER_DO_NOT_SHOW_CASH_ON_DELIVERY_DISABLED_ONBOARDING_STATE:$localSiteId:$remoteSiteId:$selfHostedSiteId"
+        "$CARD_READER_DO_NOT_SHOW_CASH_ON_DELIVERY_DISABLED_ONBOARDING_STATE:" +
+            "$localSiteId:$remoteSiteId:$selfHostedSiteId"
     )
 
     private fun getCardReaderOnboardingStatusKey(
