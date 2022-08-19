@@ -1,0 +1,2 @@
+9.9:
+Rilis ini berisi beberapa peningkatan untuk pengalaman login Anda, termasuk pilihan untuk menginstal WooCommerce dari aplikasi. Kami juga menambahkan bagian Pembayaran baru di aplikasi. Lihat menu Lainnya untuk mulai menggunakan Pembayaran!

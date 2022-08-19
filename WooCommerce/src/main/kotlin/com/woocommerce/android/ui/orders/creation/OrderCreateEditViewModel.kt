@@ -317,9 +317,9 @@ class OrderCreateEditViewModel @Inject constructor(
     }
 
     fun onCreateOrderClicked(order: Order) {
-        trackCreateOrderButtonClick()
         when (mode) {
             Mode.Creation -> viewModelScope.launch {
+                trackCreateOrderButtonClick()
                 viewState = viewState.copy(isProgressDialogShown = true)
                 orderCreateEditRepository.placeOrder(order).fold(
                     onSuccess = {
@@ -411,7 +411,7 @@ class OrderCreateEditViewModel @Inject constructor(
     }
 
     private fun trackCreateOrderButtonClick() {
-        AnalyticsTracker.track(
+        tracker.track(
             ORDER_CREATE_BUTTON_TAPPED,
             mapOf(
                 KEY_STATUS to _orderDraft.value.status,

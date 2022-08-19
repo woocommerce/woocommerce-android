@@ -1,11 +1,22 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2022-08-11 09:54:03+0000
+Translation-Revision-Date: 2022-08-18 11:54:04+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: zh_CN
 -->
 <resources>
+    <string name="login_help_notification_get_link_by_email_button">通过电子邮件获取登录链接</string>
+    <string name="login_help_notification_invalid_password_title">忘记密码？</string>
+    <string name="card_reader_onboarding_not_finished">我们注意到您尚未完成“现场付款”设置。 &lt;b&gt;&lt;a href=\'\'&gt;继续设置&lt;/a&gt;&lt;/b&gt;</string>
+    <string name="payments_hub_title">付款</string>
+    <string name="orderlist_bottom_sheet_simple_payments_moved_button">知道了！</string>
+    <string name="orderlist_bottom_sheet_simple_payments_moved_description">现在您可轻松快速地使用“现场付款”和其他功能</string>
+    <string name="orderlist_bottom_sheet_simple_payments_moved_title">“菜单”选项卡中的“付款”</string>
+    <string name="login_no_wpcom_account_found">电子邮件 %1$s 未与 WordPress.com 账户结合使用。</string>
+    <string name="login_non_woo_stores_label">其他站点</string>
+    <string name="login_with_store_address">使用商店地址登录</string>
+    <string name="more_menu_button_w___admin">WC Admin</string>
     <string name="login_magic_links_email_sent">我们刚刚发送了一个神奇的链接至</string>
     <string name="login_magic_links_sent_label_short">检查此设备上的电子邮件地址！</string>
     <string name="or_use_password">使用密码登录</string>
@@ -1115,7 +1126,6 @@ Language: zh_CN
     <string name="product_publish_draft_dialog_title">正在保存草稿</string>
     <string name="product_status_trashed">已放进回收站</string>
     <string name="product_detail_save_as_draft">保存为草稿</string>
-    <string name="login_no_wpcom_account_found">%1$s 似乎未与 WordPress.com 帐户关联。</string>
     <string name="signup_confirmation_title">注册确认</string>
     <string name="reset_your_password">重置密码</string>
     <string name="enter_your_site_address">输入您的站点地址</string>
@@ -1795,7 +1805,6 @@ Language: zh_CN
     <string name="orderdetail_track_shipment">跟踪配送</string>
     <string name="login_email_help_desc">进行站点管理时，您可以从 %1$sJetpack 控制面板%2$s中找到用于连接 WordPress.com 的电子邮件，具体位于%3$s连接 &gt; 帐户连接%4$s下面</string>
     <string name="login_email_help_title">我用什么电子邮件登录？</string>
-    <string name="login_need_help_finding_email">需要帮助查找连接的电子邮件？</string>
     <string name="login_jetpack_what_is_description">Jetpack 是一款免费的 WordPress 插件，可以将您的商店与所需的工具连接起来，为您提供最佳的移动体验，包括推送通知和统计数据</string>
     <string name="login_jetpack_what_is">Jetpack 是什么？</string>
     <string name="login_view_connected_stores">查看连接的商店</string>

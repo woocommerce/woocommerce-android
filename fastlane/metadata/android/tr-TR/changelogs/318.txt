@@ -1,2 +1,0 @@
-9.8:
-Bu sürümle, WooCommerce eklentisini doğrudan uygulamadan yükleme seçeneği de dahil olmak üzere, oturum açma deneyiminizle ilgili birkaç noktayı iyileştirmeye odaklandık. Hepiniz için çok güzel şeyler üzerinde çalışıyoruz! Geri bildirimleriniz devam etsin; üzerinde çalışacağımız sıradaki özelliği bulmamıza yardımcı oluyor. 💜
