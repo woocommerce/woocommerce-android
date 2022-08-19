@@ -974,6 +974,19 @@ class CardReaderConnectViewModelTest : BaseUnitTest() {
         }
 
     @Test
+    fun `when the app in scanning state, then learn more is visible`() =
+        testBlocking {
+            init(scanState = SCANNING)
+
+            assertThat((viewModel.viewStateData.value as ScanningState).learnMoreLabel).isEqualTo(
+                UiStringRes(
+                    R.string.card_reader_connect_learn_more,
+                    containsHtml = true,
+                )
+            )
+        }
+
+    @Test
     fun `given app in scanning state, when user clicks on learn more, then OpenGenericWebView emitted`() =
         testBlocking {
             init(scanState = SCANNING)
