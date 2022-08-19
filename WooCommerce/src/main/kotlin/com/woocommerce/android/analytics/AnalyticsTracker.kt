@@ -377,6 +377,9 @@ class AnalyticsTracker private constructor(private val context: Context) {
         const val KEY_BANNER_CAMPAIGN_NAME = "campaign_name"
         const val KEY_BANNER_UPSELL_CARD_READERS = "upsell_card_readers"
         const val KEY_BANNER_REMIND_LATER = "remind_later"
+        const val KEY_BANNER_LINKED_PRODUCTS_PROMO = "linked_products_promo"
+
+        const val SOURCE_PRODUCT_DETAIL = "product_detail"
 
         // -- Experiments
         const val KEY_EXPERIMENT_VARIANT = "experiment_variant"

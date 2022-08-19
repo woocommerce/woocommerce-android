@@ -1102,6 +1102,7 @@
     <string name="card_reader_connect_open_bluetooth_settings">Turn on bluetooth</string>
     <string name="card_reader_connect_missing_bluetooth_permissions_header">Missing required nearby devices permission</string>
     <string name="card_reader_connect_missing_bluetooth_permission_button">Open settings</string>
+    <string name="card_reader_connect_learn_more">&lt;a href=\'\'&gt;Learn more&lt;/a&gt; about In-Person Payments</string>
 
     <!--
         Card Reader Detail

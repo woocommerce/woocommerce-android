@@ -9,6 +9,7 @@ import com.woocommerce.android.analytics.AnalyticsEvent.CARD_PRESENT_COLLECT_INT
 import com.woocommerce.android.analytics.AnalyticsEvent.CARD_PRESENT_COLLECT_PAYMENT_CANCELLED
 import com.woocommerce.android.analytics.AnalyticsEvent.CARD_PRESENT_COLLECT_PAYMENT_FAILED
 import com.woocommerce.android.analytics.AnalyticsEvent.CARD_PRESENT_COLLECT_PAYMENT_SUCCESS
+import com.woocommerce.android.analytics.AnalyticsEvent.CARD_PRESENT_CONNECTION_LEARN_MORE_TAPPED
 import com.woocommerce.android.analytics.AnalyticsEvent.CARD_PRESENT_ONBOARDING_CTA_TAPPED
 import com.woocommerce.android.analytics.AnalyticsEvent.CARD_PRESENT_ONBOARDING_LEARN_MORE_TAPPED
 import com.woocommerce.android.analytics.AnalyticsEvent.CARD_PRESENT_ONBOARDING_NOT_COMPLETED
@@ -375,6 +376,10 @@ class CardReaderTracker @Inject constructor(
             CARD_PRESENT_COLLECT_INTERAC_REFUND_CANCELLED,
             errorDescription = "User manually cancelled the payment during state $currentRefundState"
         )
+    }
+
+    fun trackLearnMoreConnectionClicked() {
+        track(CARD_PRESENT_CONNECTION_LEARN_MORE_TAPPED)
     }
 
     companion object {
