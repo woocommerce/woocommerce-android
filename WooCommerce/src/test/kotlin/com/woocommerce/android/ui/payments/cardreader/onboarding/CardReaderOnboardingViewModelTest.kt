@@ -44,6 +44,8 @@ import com.woocommerce.android.viewmodel.BaseUnitTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
+import org.mockito.ArgumentMatchers
+import org.mockito.kotlin.eq
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.never
 import org.mockito.kotlin.verify
@@ -1060,7 +1062,12 @@ class CardReaderOnboardingViewModelTest : BaseUnitTest() {
 
             (viewModel.viewStateData.value as CashOnDeliveryDisabledState).onSkipCashOnDeliveryClicked.invoke()
 
-            verify(appPrefsWrapper).setCashOnDeliveryDisabledStateSkipped(true)
+            verify(appPrefsWrapper).setCashOnDeliveryDisabledStateSkipped(
+                ArgumentMatchers.anyInt(),
+                ArgumentMatchers.anyLong(),
+                ArgumentMatchers.anyLong(),
+                eq(true)
+            )
         }
 
     @Test
@@ -1122,7 +1129,12 @@ class CardReaderOnboardingViewModelTest : BaseUnitTest() {
 
             (viewModel.viewStateData.value as CashOnDeliveryDisabledState).onCashOnDeliveryEnabledSuccessfully.invoke()
 
-            verify(appPrefsWrapper, never()).setCashOnDeliveryDisabledStateSkipped(true)
+            verify(appPrefsWrapper, never()).setCashOnDeliveryDisabledStateSkipped(
+                ArgumentMatchers.anyInt(),
+                ArgumentMatchers.anyLong(),
+                ArgumentMatchers.anyLong(),
+                eq(true)
+            )
         }
 
     @Test

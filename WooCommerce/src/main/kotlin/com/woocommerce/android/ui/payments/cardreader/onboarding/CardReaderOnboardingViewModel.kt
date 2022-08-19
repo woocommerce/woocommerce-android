@@ -250,7 +250,13 @@ class CardReaderOnboardingViewModel @Inject constructor(
         preferredPlugin: PluginType,
         version: String? = null
     ) {
-        appPrefsWrapper.setCashOnDeliveryDisabledStateSkipped(true)
+        val site = selectedSite.get()
+        appPrefsWrapper.setCashOnDeliveryDisabledStateSkipped(
+            localSiteId = site.id,
+            remoteSiteId = site.siteId,
+            selfHostedSiteId = site.selfHostedSiteId,
+            true
+        )
         cardReaderTracker.trackOnboardingSkippedState(
             CardReaderOnboardingState.CashOnDeliveryDisabled(
                 countryCode,

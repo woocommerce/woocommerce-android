@@ -1472,7 +1472,13 @@ class CardReaderOnboardingCheckerTest : BaseUnitTest() {
             .thenReturn(null)
         whenever(wooStore.getSitePlugin(site, WooCommerceStore.WooPlugin.WOO_PAYMENTS))
             .thenReturn(buildWCPayPluginInfo(isActive = true))
-        whenever(appPrefsWrapper.isCashOnDeliveryDisabledStateSkipped()).thenReturn(true)
+        whenever(
+            appPrefsWrapper.isCashOnDeliveryDisabledStateSkipped(
+                anyInt(),
+                anyLong(),
+                anyLong(),
+            )
+        ).thenReturn(true)
 
         val result = checker.getOnboardingState()
 
@@ -1486,7 +1492,13 @@ class CardReaderOnboardingCheckerTest : BaseUnitTest() {
             .thenReturn(null)
         whenever(wooStore.getSitePlugin(site, WooCommerceStore.WooPlugin.WOO_PAYMENTS))
             .thenReturn(buildWCPayPluginInfo(isActive = true))
-        whenever(appPrefsWrapper.isCashOnDeliveryDisabledStateSkipped()).thenReturn(false)
+        whenever(
+            appPrefsWrapper.isCashOnDeliveryDisabledStateSkipped(
+                anyInt(),
+                anyLong(),
+                anyLong(),
+            )
+        ).thenReturn(false)
         whenever(wcGatewayStore.fetchAllGateways(selectedSite.get())).thenReturn(
             WooResult(
                 model = listOf(

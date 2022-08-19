@@ -592,15 +592,37 @@ class AppPrefsTest {
 
     @Test
     fun givenCashOnDeliveryDisabledStateSkippedThenReturnSkippedAsTrue() {
-        AppPrefs.setCashOnDeliveryDisabledStateSkipped(true)
+        AppPrefs.setCashOnDeliveryDisabledStateSkipped(
+            localSiteId = 0,
+            remoteSiteId = 0L,
+            selfHostedSiteId = 0L,
+            true
+        )
 
-        assertThat(AppPrefs.isCashOnDeliveryDisabledStateSkipped()).isTrue
+        assertThat(
+            AppPrefs.isCashOnDeliveryDisabledStateSkipped(
+                localSiteId = 0,
+                remoteSiteId = 0L,
+                selfHostedSiteId = 0L,
+            )
+        ).isTrue
     }
 
     @Test
     fun givenCashOnDeliveryDisabledStateNotSkippedThenReturnSkippedAsFalse() {
-        AppPrefs.setCashOnDeliveryDisabledStateSkipped(false)
+        AppPrefs.setCashOnDeliveryDisabledStateSkipped(
+            localSiteId = 0,
+            remoteSiteId = 0L,
+            selfHostedSiteId = 0L,
+            false
+        )
 
-        assertThat(AppPrefs.isCashOnDeliveryDisabledStateSkipped()).isFalse
+        assertThat(
+            AppPrefs.isCashOnDeliveryDisabledStateSkipped(
+                localSiteId = 0,
+                remoteSiteId = 0L,
+                selfHostedSiteId = 0L,
+            )
+        ).isFalse
     }
 }

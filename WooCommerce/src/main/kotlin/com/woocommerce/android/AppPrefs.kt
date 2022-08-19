@@ -10,6 +10,7 @@ import androidx.preference.PreferenceManager
 import com.woocommerce.android.AppPrefs.CardReaderOnboardingStatus.CARD_READER_ONBOARDING_COMPLETED
 import com.woocommerce.android.AppPrefs.CardReaderOnboardingStatus.CARD_READER_ONBOARDING_NOT_COMPLETED
 import com.woocommerce.android.AppPrefs.CardReaderOnboardingStatus.valueOf
+import com.woocommerce.android.AppPrefs.DeletablePrefKey.CARD_READER_DO_NOT_SHOW_CASH_ON_DELIVERY_DISABLED_ONBOARDING_STATE
 import com.woocommerce.android.AppPrefs.DeletablePrefKey.CARD_READER_IS_PLUGIN_EXPLICITLY_SELECTED
 import com.woocommerce.android.AppPrefs.DeletablePrefKey.CARD_READER_ONBOARDING_COMPLETED_STATUS_V2
 import com.woocommerce.android.AppPrefs.DeletablePrefKey.CARD_READER_PREFERRED_PLUGIN
@@ -554,16 +555,25 @@ object AppPrefs {
         setString(DeletablePrefKey.UNIFIED_LOGIN_LAST_ACTIVE_FLOW, flow)
     }
 
-    fun isCashOnDeliveryDisabledStateSkipped(): Boolean {
+    fun isCashOnDeliveryDisabledStateSkipped(
+        localSiteId: Int,
+        remoteSiteId: Long,
+        selfHostedSiteId: Long,
+    ): Boolean {
         return getBoolean(
-            DeletablePrefKey.CARD_READER_DO_NOT_SHOW_CASH_ON_DELIVERY_DISABLED_ONBOARDING_STATE,
+            getCashOnDeliveryDisabledStateSkippedStatusKey(localSiteId, remoteSiteId, selfHostedSiteId),
             false
         )
     }
 
-    fun setCashOnDeliveryDisabledStateSkipped(isSkipped: Boolean) {
+    fun setCashOnDeliveryDisabledStateSkipped(
+        localSiteId: Int,
+        remoteSiteId: Long,
+        selfHostedSiteId: Long,
+        isSkipped: Boolean
+    ) {
         setBoolean(
-            DeletablePrefKey.CARD_READER_DO_NOT_SHOW_CASH_ON_DELIVERY_DISABLED_ONBOARDING_STATE,
+            getCashOnDeliveryDisabledStateSkippedStatusKey(localSiteId, remoteSiteId, selfHostedSiteId),
             isSkipped
         )
     }
@@ -679,6 +689,14 @@ object AppPrefs {
             isPluginExplicitlySelected
         )
     }
+
+    private fun getCashOnDeliveryDisabledStateSkippedStatusKey(
+        localSiteId: Int,
+        remoteSiteId: Long,
+        selfHostedSiteId: Long
+    ) = PrefKeyString(
+        "$CARD_READER_DO_NOT_SHOW_CASH_ON_DELIVERY_DISABLED_ONBOARDING_STATE:$localSiteId:$remoteSiteId:$selfHostedSiteId"
+    )
 
     private fun getCardReaderOnboardingStatusKey(
         localSiteId: Int,
