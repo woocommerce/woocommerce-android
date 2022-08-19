@@ -79,6 +79,11 @@ class SitePickerViewModel @Inject constructor(
         loadAndDisplaySites()
     }
 
+    override fun onCleared() {
+        super.onCleared()
+        repository.onCleanup()
+    }
+
     private fun updateSiteViewDetails() {
         sitePickerViewState = sitePickerViewState.copy(
             userInfo = getUserInfo(),
@@ -260,11 +265,8 @@ class SitePickerViewModel @Inject constructor(
         trackLoginEvent(currentStep = UnifiedLoginTracker.Step.WRONG_WP_ACCOUNT)
         sitePickerViewState = sitePickerViewState.copy(
             isNoStoresViewVisible = true,
-            isPrimaryBtnVisible = sitePickerViewState.hasConnectedStores == true || !loginSiteAddress.isNullOrEmpty(),
-            primaryBtnText = resourceProvider.getString(
-                if (sitePickerViewState.hasConnectedStores == true) string.login_view_connected_stores
-                else string.login_site_picker_try_another_address
-            ),
+            isPrimaryBtnVisible = sitePickerViewState.hasConnectedStores == true,
+            primaryBtnText = resourceProvider.getString(string.login_view_connected_stores),
             noStoresLabelText = resourceProvider.getString(string.login_not_connected_to_account, url),
             noStoresBtnText = resourceProvider.getString(string.login_need_help_finding_email),
             currentSitePickerState = SitePickerState.AccountMismatchState

@@ -296,10 +296,6 @@
             android:defaultValue="@null"
             app:argType="string"
             app:nullable="true" />
-        <argument
-            android:name="urlComparisonMode"
-            android:defaultValue="PARTIAL"
-            app:argType="com.woocommerce.android.ui.common.wpcomwebview.WPComWebViewFragment$UrlComparisonMode" />
     </fragment>
     <action
         android:id="@+id/action_global_WPComWebViewFragment"
