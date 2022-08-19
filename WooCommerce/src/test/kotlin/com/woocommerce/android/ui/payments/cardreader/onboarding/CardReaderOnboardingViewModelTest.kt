@@ -7,9 +7,11 @@ import com.woocommerce.android.R
 import com.woocommerce.android.cardreader.CardReaderManager
 import com.woocommerce.android.initSavedStateHandle
 import com.woocommerce.android.model.UiString
+import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.payments.cardreader.CardReaderTracker
 import com.woocommerce.android.ui.payments.cardreader.LearnMoreUrlProvider
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderFlowParam.PaymentOrRefund.Payment.PaymentType.ORDER
+import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboardingState.CashOnDeliveryDisabled
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboardingState.ChoosePaymentGatewayProvider
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboardingState.GenericError
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboardingState.NoConnectionError
@@ -27,6 +29,7 @@ import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboa
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboardingState.WcpayNotInstalled
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboardingViewModel.OnboardingEvent
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboardingViewModel.OnboardingViewState
+import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboardingViewModel.OnboardingViewState.CashOnDeliveryDisabledState
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboardingViewModel.OnboardingViewState.GenericErrorState
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboardingViewModel.OnboardingViewState.LoadingState
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboardingViewModel.OnboardingViewState.NoConnectionErrorState
@@ -41,20 +44,36 @@ import com.woocommerce.android.viewmodel.BaseUnitTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
+import org.mockito.ArgumentMatchers
+import org.mockito.kotlin.eq
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.never
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
+import org.wordpress.android.fluxc.model.SiteModel
+import org.wordpress.android.fluxc.model.gateways.WCGatewayModel
+import org.wordpress.android.fluxc.network.BaseRequest
+import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooError
+import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooErrorType
+import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooResult
+import org.wordpress.android.fluxc.network.rest.wpcom.wc.gateways.GatewayRestClient
+import org.wordpress.android.fluxc.store.WCGatewayStore
+import kotlin.test.assertFalse
+import kotlin.test.assertTrue
 
 @ExperimentalCoroutinesApi
 class CardReaderOnboardingViewModelTest : BaseUnitTest() {
     private val onboardingChecker: CardReaderOnboardingChecker = mock()
     private val tracker: CardReaderTracker = mock()
+    private val selectedSite: SelectedSite = mock {
+        on(it.get()).thenReturn(SiteModel())
+    }
     private val learnMoreUrlProvider: LearnMoreUrlProvider = mock {
         on { providerLearnMoreUrl() }.thenReturn(AppUrls.WOOCOMMERCE_LEARN_MORE_ABOUT_PAYMENTS)
     }
     private val appPrefsWrapper: AppPrefsWrapper = mock()
     private val cardReaderManager: CardReaderManager = mock()
+    private val gatewayStore: WCGatewayStore = mock()
     private val countryCode = "US"
     private val pluginVersion = "4.0.0"
 
@@ -939,6 +958,523 @@ class CardReaderOnboardingViewModelTest : BaseUnitTest() {
         }
 
     @Test
+    fun `given cash on delivery disabled, when init, then cash on delivery disabled onboarding state is shown`() =
+        testBlocking {
+            val viewModel = createVM(
+                CardReaderOnboardingFragmentArgs(
+                    CardReaderOnboardingParams.Failed(
+                        cardReaderFlowParam = mock(),
+                        onboardingState = CashOnDeliveryDisabled(
+                            countryCode = countryCode,
+                            preferredPlugin = WOOCOMMERCE_PAYMENTS,
+                            version = pluginVersion
+                        )
+                    )
+                ).initSavedStateHandle()
+            )
+
+            assertThat(viewModel.viewStateData.value).isInstanceOf(
+                CashOnDeliveryDisabledState::class.java
+            )
+        }
+
+    @Test
+    fun `given cash on delivery disabled, when init, then cash on delivery disabled tracking state is called`() =
+        testBlocking {
+            createVM(
+                CardReaderOnboardingFragmentArgs(
+                    CardReaderOnboardingParams.Failed(
+                        cardReaderFlowParam = mock(),
+                        onboardingState = CashOnDeliveryDisabled(
+                            countryCode = countryCode,
+                            preferredPlugin = WOOCOMMERCE_PAYMENTS,
+                            version = pluginVersion
+                        ),
+                    )
+                ).initSavedStateHandle()
+            )
+
+            verify(tracker).trackOnboardingState(
+                CashOnDeliveryDisabled(
+                    countryCode = countryCode,
+                    preferredPlugin = WOOCOMMERCE_PAYMENTS,
+                    version = pluginVersion
+                )
+            )
+        }
+
+    @Test
+    fun `given cash on delivery disabled screen, when skip button clicked, then continues to connection`() =
+        testBlocking {
+            whenever(onboardingChecker.getOnboardingState())
+                .thenReturn(
+                    CashOnDeliveryDisabled(
+                        countryCode = countryCode,
+                        preferredPlugin = WOOCOMMERCE_PAYMENTS,
+                        version = pluginVersion
+                    )
+                )
+            val viewModel = createVM(
+                CardReaderOnboardingFragmentArgs(
+                    cardReaderOnboardingParam = CardReaderOnboardingParams.Check(
+                        CardReaderFlowParam.PaymentOrRefund.Payment(1L, ORDER)
+                    )
+                ).initSavedStateHandle()
+            )
+
+            (viewModel.viewStateData.value as CashOnDeliveryDisabledState).onSkipCashOnDeliveryClicked.invoke()
+
+            assertThat(viewModel.event.value)
+                .isInstanceOf(OnboardingEvent.ContinueToConnection::class.java)
+        }
+
+    @Test
+    fun `given cash on delivery disabled screen, when skip button clicked, then continues to hub`() =
+        testBlocking {
+            whenever(onboardingChecker.getOnboardingState())
+                .thenReturn(
+                    CashOnDeliveryDisabled(
+                        countryCode = countryCode,
+                        preferredPlugin = WOOCOMMERCE_PAYMENTS,
+                        version = pluginVersion
+                    )
+                )
+            val viewModel = createVM()
+
+            (viewModel.viewStateData.value as CashOnDeliveryDisabledState).onSkipCashOnDeliveryClicked.invoke()
+
+            assertThat(viewModel.event.value)
+                .isInstanceOf(OnboardingEvent.ContinueToHub::class.java)
+        }
+
+    @Test
+    fun `given cash on delivery disabled screen, when skip button clicked, then store decision in app prefs`() =
+        testBlocking {
+            whenever(onboardingChecker.getOnboardingState())
+                .thenReturn(
+                    CashOnDeliveryDisabled(
+                        countryCode = countryCode,
+                        preferredPlugin = WOOCOMMERCE_PAYMENTS,
+                        version = pluginVersion
+                    )
+                )
+            val viewModel = createVM()
+
+            (viewModel.viewStateData.value as CashOnDeliveryDisabledState).onSkipCashOnDeliveryClicked.invoke()
+
+            verify(appPrefsWrapper).setCashOnDeliveryDisabledStateSkipped(
+                ArgumentMatchers.anyInt(),
+                ArgumentMatchers.anyLong(),
+                ArgumentMatchers.anyLong(),
+                eq(true)
+            )
+        }
+
+    @Test
+    fun `given enable cash on delivery clicked, when success, then continue to connection`() =
+        testBlocking {
+            whenever(onboardingChecker.getOnboardingState())
+                .thenReturn(
+                    CashOnDeliveryDisabled(
+                        countryCode = countryCode,
+                        preferredPlugin = WOOCOMMERCE_PAYMENTS,
+                        version = pluginVersion
+                    )
+                )
+            val viewModel = createVM(
+                CardReaderOnboardingFragmentArgs(
+                    cardReaderOnboardingParam = CardReaderOnboardingParams.Check(
+                        CardReaderFlowParam.PaymentOrRefund.Payment(1L, ORDER)
+                    )
+                ).initSavedStateHandle()
+            )
+
+            (viewModel.viewStateData.value as CashOnDeliveryDisabledState).onCashOnDeliveryEnabledSuccessfully.invoke()
+
+            assertThat(viewModel.event.value)
+                .isInstanceOf(OnboardingEvent.ContinueToConnection::class.java)
+        }
+
+    @Test
+    fun `given enable cash on delivery clicked, when success, then continue to hub`() =
+        testBlocking {
+            whenever(onboardingChecker.getOnboardingState())
+                .thenReturn(
+                    CashOnDeliveryDisabled(
+                        countryCode = countryCode,
+                        preferredPlugin = WOOCOMMERCE_PAYMENTS,
+                        version = pluginVersion
+                    )
+                )
+            val viewModel = createVM()
+
+            (viewModel.viewStateData.value as CashOnDeliveryDisabledState).onCashOnDeliveryEnabledSuccessfully.invoke()
+
+            assertThat(viewModel.event.value)
+                .isInstanceOf(OnboardingEvent.ContinueToHub::class.java)
+        }
+
+    @Test
+    fun `given enable cash on delivery clicked, when success, then don't store anything in prefs`() =
+        testBlocking {
+            whenever(onboardingChecker.getOnboardingState())
+                .thenReturn(
+                    CashOnDeliveryDisabled(
+                        countryCode = countryCode,
+                        preferredPlugin = WOOCOMMERCE_PAYMENTS,
+                        version = pluginVersion
+                    )
+                )
+            val viewModel = createVM()
+
+            (viewModel.viewStateData.value as CashOnDeliveryDisabledState).onCashOnDeliveryEnabledSuccessfully.invoke()
+
+            verify(appPrefsWrapper, never()).setCashOnDeliveryDisabledStateSkipped(
+                ArgumentMatchers.anyInt(),
+                ArgumentMatchers.anyLong(),
+                ArgumentMatchers.anyLong(),
+                eq(true)
+            )
+        }
+
+    @Test
+    fun `given cash on delivery enabled clicked, then show progress`() =
+        testBlocking {
+            whenever(onboardingChecker.getOnboardingState())
+                .thenReturn(
+                    CashOnDeliveryDisabled(
+                        countryCode = countryCode,
+                        preferredPlugin = WOOCOMMERCE_PAYMENTS,
+                        version = pluginVersion
+                    )
+                )
+            val viewModel = createVM(
+                CardReaderOnboardingFragmentArgs(
+                    cardReaderOnboardingParam = CardReaderOnboardingParams.Check(
+                        CardReaderFlowParam.PaymentOrRefund.Payment(1L, ORDER)
+                    )
+                ).initSavedStateHandle()
+            )
+
+            (viewModel.viewStateData.value as CashOnDeliveryDisabledState).onEnableCashOnDeliveryClicked.invoke()
+
+            assertTrue((viewModel.viewStateData.value as CashOnDeliveryDisabledState).shouldShowProgress)
+        }
+
+    @Test
+    fun `given cash on delivery disabled state, then don't show progress`() =
+        testBlocking {
+            val viewModel = createVM(
+                CardReaderOnboardingFragmentArgs(
+                    CardReaderOnboardingParams.Failed(
+                        cardReaderFlowParam = mock(),
+                        onboardingState = CashOnDeliveryDisabled(
+                            countryCode = countryCode,
+                            preferredPlugin = WOOCOMMERCE_PAYMENTS,
+                            version = pluginVersion
+                        ),
+                    )
+                ).initSavedStateHandle()
+            )
+
+            assertFalse((viewModel.viewStateData.value as CashOnDeliveryDisabledState).shouldShowProgress)
+        }
+
+    @Test
+    fun `given cash on delivery, when learn more clicked, then app shows learn more section`() =
+        testBlocking {
+            whenever(onboardingChecker.getOnboardingState())
+                .thenReturn(
+                    CashOnDeliveryDisabled(
+                        countryCode = countryCode,
+                        preferredPlugin = WOOCOMMERCE_PAYMENTS,
+                        version = pluginVersion
+                    )
+                )
+            val viewModel = createVM()
+
+            (viewModel.viewStateData.value as CashOnDeliveryDisabledState)
+                .onLearnMoreActionClicked.invoke()
+
+            val event = viewModel.event.value as OnboardingEvent.NavigateToUrlInGenericWebView
+            assertThat(event.url).isEqualTo(AppUrls.WOOCOMMERCE_LEARN_MORE_ABOUT_PAYMENTS)
+        }
+
+    @Test
+    fun `given cash on delivery enable success, when enable cod clicked, then success state is displayed`() =
+        testBlocking {
+            whenever(onboardingChecker.getOnboardingState())
+                .thenReturn(
+                    CashOnDeliveryDisabled(
+                        countryCode = countryCode,
+                        preferredPlugin = WOOCOMMERCE_PAYMENTS,
+                        version = pluginVersion
+                    )
+                )
+            whenever(
+                gatewayStore.updatePaymentGateway(
+                    site = selectedSite.get(),
+                    gatewayId = GatewayRestClient.GatewayId.CASH_ON_DELIVERY,
+                    enabled = true,
+                    title = "Pay in Person",
+                    description = "Pay by card or another accepted payment method"
+                )
+            ).thenReturn(
+                WooResult(
+                    model = WCGatewayModel(
+                        id = "",
+                        title = "",
+                        description = "",
+                        order = 0,
+                        isEnabled = true,
+                        methodTitle = "",
+                        methodDescription = "",
+                        features = emptyList()
+                    )
+                )
+            )
+            val viewModel = createVM()
+
+            (viewModel.viewStateData.value as CashOnDeliveryDisabledState)
+                .onEnableCashOnDeliveryClicked.invoke()
+
+            assertTrue(
+                (viewModel.viewStateData.value as CashOnDeliveryDisabledState).cashOnDeliveryEnabledSuccessfully!!
+            )
+            assertFalse(
+                (viewModel.viewStateData.value as CashOnDeliveryDisabledState).shouldShowProgress
+            )
+        }
+
+    @Test
+    fun `given cash on delivery enable failure, when enable cod clicked, then failure state is displayed`() =
+        testBlocking {
+            whenever(onboardingChecker.getOnboardingState())
+                .thenReturn(
+                    CashOnDeliveryDisabled(
+                        countryCode = countryCode,
+                        preferredPlugin = WOOCOMMERCE_PAYMENTS,
+                        version = pluginVersion
+                    )
+                )
+            whenever(
+                gatewayStore.updatePaymentGateway(
+                    site = selectedSite.get(),
+                    gatewayId = GatewayRestClient.GatewayId.CASH_ON_DELIVERY,
+                    enabled = true,
+                    title = "Pay in Person",
+                    description = "Pay by card or another accepted payment method"
+                )
+            ).thenReturn(
+                WooResult(
+                    error = WooError(
+                        type = WooErrorType.GENERIC_ERROR,
+                        original = BaseRequest.GenericErrorType.NETWORK_ERROR
+                    )
+                )
+            )
+            val viewModel = createVM()
+
+            (viewModel.viewStateData.value as CashOnDeliveryDisabledState)
+                .onEnableCashOnDeliveryClicked.invoke()
+
+            assertFalse(
+                (viewModel.viewStateData.value as CashOnDeliveryDisabledState).cashOnDeliveryEnabledSuccessfully!!
+            )
+            assertFalse(
+                (viewModel.viewStateData.value as CashOnDeliveryDisabledState).shouldShowProgress
+            )
+        }
+
+    @Test
+    fun `when cash on delivery disabled state, then confirm header shown`() =
+        testBlocking {
+            whenever(onboardingChecker.getOnboardingState()).thenReturn(
+                CashOnDeliveryDisabled(
+                    countryCode = countryCode,
+                    preferredPlugin = WOOCOMMERCE_PAYMENTS,
+                    version = pluginVersion
+                )
+            )
+
+            val viewModel = createVM()
+
+            val viewStateData = viewModel.viewStateData.value as CashOnDeliveryDisabledState
+            assertThat(viewStateData.headerLabel).isNotNull()
+        }
+
+    @Test
+    fun `when cash on delivery disabled state, then confirm header label correct`() =
+        testBlocking {
+            whenever(onboardingChecker.getOnboardingState()).thenReturn(
+                CashOnDeliveryDisabled(
+                    countryCode = countryCode,
+                    preferredPlugin = WOOCOMMERCE_PAYMENTS,
+                    version = pluginVersion
+                )
+            )
+
+            val viewModel = createVM()
+
+            val viewStateData = viewModel.viewStateData.value as CashOnDeliveryDisabledState
+            assertThat(viewStateData.headerLabel).isEqualTo(
+                UiString.UiStringRes(
+                    R.string.card_reader_onboarding_cash_on_delivery_disabled_error_header
+                )
+            )
+        }
+
+    @Test
+    fun `when cash on delivery disabled state, then confirm hint shown`() =
+        testBlocking {
+            whenever(onboardingChecker.getOnboardingState()).thenReturn(
+                CashOnDeliveryDisabled(
+                    countryCode = countryCode,
+                    preferredPlugin = WOOCOMMERCE_PAYMENTS,
+                    version = pluginVersion
+                )
+            )
+
+            val viewModel = createVM()
+
+            val viewStateData = viewModel.viewStateData.value as CashOnDeliveryDisabledState
+            assertThat(viewStateData.cashOnDeliveryHintLabel).isNotNull()
+        }
+
+    @Test
+    fun `when cash on delivery disabled state, then confirm hint label correct`() =
+        testBlocking {
+            whenever(onboardingChecker.getOnboardingState()).thenReturn(
+                CashOnDeliveryDisabled(
+                    countryCode = countryCode,
+                    preferredPlugin = WOOCOMMERCE_PAYMENTS,
+                    version = pluginVersion
+                )
+            )
+
+            val viewModel = createVM()
+
+            val viewStateData = viewModel.viewStateData.value as CashOnDeliveryDisabledState
+            assertThat(viewStateData.cashOnDeliveryHintLabel).isEqualTo(
+                UiString.UiStringRes(
+                    R.string.card_reader_onboarding_cash_on_delivery_disabled_error_hint
+                )
+            )
+        }
+
+    @Test
+    fun `when cash on delivery disabled state, then illustration shown`() =
+        testBlocking {
+            whenever(onboardingChecker.getOnboardingState()).thenReturn(
+                CashOnDeliveryDisabled(
+                    countryCode = countryCode,
+                    preferredPlugin = WOOCOMMERCE_PAYMENTS,
+                    version = pluginVersion
+                )
+            )
+
+            val viewModel = createVM()
+
+            val viewStateData = viewModel.viewStateData.value as CashOnDeliveryDisabledState
+            assertThat(viewStateData.cardIllustration).isNotNull()
+        }
+
+    @Test
+    fun `when cash on delivery disabled state, then correct illustration shown`() =
+        testBlocking {
+            whenever(onboardingChecker.getOnboardingState()).thenReturn(
+                CashOnDeliveryDisabled(
+                    countryCode = countryCode,
+                    preferredPlugin = WOOCOMMERCE_PAYMENTS,
+                    version = pluginVersion
+                )
+            )
+
+            val viewModel = createVM()
+
+            val viewStateData = viewModel.viewStateData.value as CashOnDeliveryDisabledState
+            assertThat(viewStateData.cardIllustration).isEqualTo(
+                R.drawable.img_products_error
+            )
+        }
+
+    @Test
+    fun `when cash on delivery disabled state, then skip button shown`() =
+        testBlocking {
+            whenever(onboardingChecker.getOnboardingState()).thenReturn(
+                CashOnDeliveryDisabled(
+                    countryCode = countryCode,
+                    preferredPlugin = WOOCOMMERCE_PAYMENTS,
+                    version = pluginVersion
+                )
+            )
+
+            val viewModel = createVM()
+
+            val viewStateData = viewModel.viewStateData.value as CashOnDeliveryDisabledState
+            assertThat(viewStateData.skipCashOnDeliveryButtonLabel).isNotNull()
+        }
+
+    @Test
+    fun `when cash on delivery disabled state, then skip button label is correct`() =
+        testBlocking {
+            whenever(onboardingChecker.getOnboardingState()).thenReturn(
+                CashOnDeliveryDisabled(
+                    countryCode = countryCode,
+                    preferredPlugin = WOOCOMMERCE_PAYMENTS,
+                    version = pluginVersion
+                )
+            )
+
+            val viewModel = createVM()
+
+            val viewStateData = viewModel.viewStateData.value as CashOnDeliveryDisabledState
+            assertThat(viewStateData.skipCashOnDeliveryButtonLabel).isEqualTo(
+                UiString.UiStringRes(
+                    R.string.skip
+                )
+            )
+        }
+
+    @Test
+    fun `when cash on delivery disabled state, then enable cod button shown`() =
+        testBlocking {
+            whenever(onboardingChecker.getOnboardingState()).thenReturn(
+                CashOnDeliveryDisabled(
+                    countryCode = countryCode,
+                    preferredPlugin = WOOCOMMERCE_PAYMENTS,
+                    version = pluginVersion
+                )
+            )
+
+            val viewModel = createVM()
+
+            val viewStateData = viewModel.viewStateData.value as CashOnDeliveryDisabledState
+            assertThat(viewStateData.enableCashOnDeliveryButtonLabel).isNotNull()
+        }
+
+    @Test
+    fun `when cash on delivery disabled state, then enable cod button label correct`() =
+        testBlocking {
+            whenever(onboardingChecker.getOnboardingState()).thenReturn(
+                CashOnDeliveryDisabled(
+                    countryCode = countryCode,
+                    preferredPlugin = WOOCOMMERCE_PAYMENTS,
+                    version = pluginVersion
+                )
+            )
+
+            val viewModel = createVM()
+
+            val viewStateData = viewModel.viewStateData.value as CashOnDeliveryDisabledState
+            assertThat(viewStateData.enableCashOnDeliveryButtonLabel).isEqualTo(
+                UiString.UiStringRes(
+                    R.string.card_reader_onboarding_cash_on_delivery_disabled_button
+                )
+            )
+        }
+
+    @Test
     fun `when stripe extension outdated, then correct labels and illustrations shown`() =
         testBlocking {
             whenever(onboardingChecker.getOnboardingState()).thenReturn(
@@ -1490,6 +2026,131 @@ class CardReaderOnboardingViewModelTest : BaseUnitTest() {
 
     // Tracking Begin
     @Test
+    fun `given cod disabled screen, when skip button clicked, then track event`() =
+        testBlocking {
+            whenever(onboardingChecker.getOnboardingState())
+                .thenReturn(
+                    CashOnDeliveryDisabled(
+                        countryCode = countryCode,
+                        preferredPlugin = WOOCOMMERCE_PAYMENTS,
+                        version = pluginVersion
+                    )
+                )
+            val viewModel = createVM()
+
+            (viewModel.viewStateData.value as CashOnDeliveryDisabledState).onSkipCashOnDeliveryClicked.invoke()
+
+            verify(tracker).trackOnboardingSkippedState(
+                CashOnDeliveryDisabled(
+                    countryCode = countryCode,
+                    preferredPlugin = WOOCOMMERCE_PAYMENTS,
+                    version = pluginVersion
+                )
+            )
+        }
+
+    @Test
+    fun `given cod disabled screen, when enable cod button clicked, then track event`() =
+        testBlocking {
+            whenever(onboardingChecker.getOnboardingState())
+                .thenReturn(
+                    CashOnDeliveryDisabled(
+                        countryCode = countryCode,
+                        preferredPlugin = WOOCOMMERCE_PAYMENTS,
+                        version = pluginVersion
+                    )
+                )
+            val viewModel = createVM()
+
+            (viewModel.viewStateData.value as CashOnDeliveryDisabledState).onEnableCashOnDeliveryClicked.invoke()
+
+            verify(tracker).trackOnboardingCtaTappedState(
+                CashOnDeliveryDisabled(
+                    countryCode = countryCode,
+                    preferredPlugin = WOOCOMMERCE_PAYMENTS,
+                    version = pluginVersion
+                )
+            )
+        }
+
+    @Test
+    fun `given cod enable tapped, when success, then track success event`() =
+        testBlocking {
+            whenever(onboardingChecker.getOnboardingState())
+                .thenReturn(
+                    CashOnDeliveryDisabled(
+                        countryCode = countryCode,
+                        preferredPlugin = WOOCOMMERCE_PAYMENTS,
+                        version = pluginVersion
+                    )
+                )
+            whenever(
+                gatewayStore.updatePaymentGateway(
+                    site = selectedSite.get(),
+                    gatewayId = GatewayRestClient.GatewayId.CASH_ON_DELIVERY,
+                    enabled = true,
+                    title = "Pay in Person",
+                    description = "Pay by card or another accepted payment method"
+                )
+            ).thenReturn(
+                WooResult(
+                    model = WCGatewayModel(
+                        id = "",
+                        title = "",
+                        description = "",
+                        order = 0,
+                        isEnabled = true,
+                        methodTitle = "",
+                        methodDescription = "",
+                        features = emptyList()
+                    )
+                )
+            )
+            val viewModel = createVM()
+
+            (viewModel.viewStateData.value as CashOnDeliveryDisabledState).onEnableCashOnDeliveryClicked.invoke()
+
+            verify(tracker).trackCashOnDeliveryEnabledSuccess()
+        }
+
+    @Test
+    fun `given cod enable tapped, when failure, then track failure event`() =
+        testBlocking {
+            whenever(onboardingChecker.getOnboardingState())
+                .thenReturn(
+                    CashOnDeliveryDisabled(
+                        countryCode = countryCode,
+                        preferredPlugin = WOOCOMMERCE_PAYMENTS,
+                        version = pluginVersion
+                    )
+                )
+            whenever(
+                gatewayStore.updatePaymentGateway(
+                    site = selectedSite.get(),
+                    gatewayId = GatewayRestClient.GatewayId.CASH_ON_DELIVERY,
+                    enabled = true,
+                    title = "Pay in Person",
+                    description = "Pay by card or another accepted payment method"
+                )
+            ).thenReturn(
+                WooResult(
+                    error = WooError(
+                        type = WooErrorType.GENERIC_ERROR,
+                        original = BaseRequest.GenericErrorType.NETWORK_ERROR,
+                        message = "Enabling COD failed. Please try again later"
+                    )
+                )
+            )
+            val viewModel = createVM()
+
+            (viewModel.viewStateData.value as CashOnDeliveryDisabledState).onEnableCashOnDeliveryClicked.invoke()
+
+            verify(tracker).trackCashOnDeliveryEnabledFailure(
+                "Enabling COD failed. Please try again later"
+            )
+        }
+
+    @Test
     fun `given multiple gateway, when user selects wcpay, then track selected gateway`() =
         testBlocking {
             whenever(onboardingChecker.getOnboardingState())
@@ -1550,7 +2211,9 @@ class CardReaderOnboardingViewModelTest : BaseUnitTest() {
             onboardingChecker,
             tracker,
             learnMoreUrlProvider,
+            selectedSite,
             appPrefsWrapper,
             cardReaderManager,
+            gatewayStore
         )
 }

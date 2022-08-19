@@ -277,7 +277,13 @@ enum class AnalyticsEvent(val siteless: Boolean = false) {
     // -- Card Present Payments - onboarding
     CARD_PRESENT_ONBOARDING_LEARN_MORE_TAPPED,
     CARD_PRESENT_ONBOARDING_NOT_COMPLETED,
+    CARD_PRESENT_ONBOARDING_STEP_SKIPPED,
+    CARD_PRESENT_ONBOARDING_CTA_TAPPED,
     CARD_PRESENT_PAYMENT_GATEWAY_SELECTED,
+
+    // -- Cash on Delivery - onboarding
+    ENABLE_CASH_ON_DELIVERY_SUCCESS,
+    ENABLE_CASH_ON_DELIVERY_FAILED,
 
     // -- Card Present Payments - collection
     CARD_PRESENT_COLLECT_PAYMENT_FAILED,
