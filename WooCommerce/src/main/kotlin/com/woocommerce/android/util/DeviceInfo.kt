@@ -2,12 +2,11 @@ package com.woocommerce.android.util
 
 import android.content.res.Resources
 import android.os.Build
-import android.os.Build.VERSION
 import androidx.core.os.ConfigurationCompat
 
 object DeviceInfo {
     val OS: String
-        get() = VERSION.RELEASE
+        get() = Build.VERSION.RELEASE
     val name: String
         get() {
             val manufacturer = Build.MANUFACTURER
