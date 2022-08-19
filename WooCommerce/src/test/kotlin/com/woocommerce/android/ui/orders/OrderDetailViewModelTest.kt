@@ -81,7 +81,9 @@ class OrderDetailViewModelTest : BaseUnitTest() {
     private val editor = mock<SharedPreferences.Editor>()
     private val preferences = mock<SharedPreferences> { whenever(it.edit()).thenReturn(editor) }
     private val selectedSite: SelectedSite = mock()
-    private val orderDetailRepository: OrderDetailRepository = mock()
+    private val orderDetailRepository: OrderDetailRepository = mock {
+        onBlocking { getOrderDetailsPluginsInfo() } doReturn HashMap()
+    }
     private val addonsRepository: AddonRepository = mock()
     private val cardReaderTracker: CardReaderTracker = mock()
     private val analyticsTraWrapper: AnalyticsTrackerWrapper = mock()
