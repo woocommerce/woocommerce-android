@@ -7,11 +7,13 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
+import com.automattic.android.experimentation.ExPlat
 import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
+import com.woocommerce.android.di.ExperimentationModule
 import com.woocommerce.android.network.ConnectionChangeReceiver
 import com.woocommerce.android.network.ConnectionChangeReceiver.ConnectionChangeEvent
 import com.woocommerce.android.tools.NetworkStatus
@@ -69,7 +71,8 @@ class MyStoreViewModel @Inject constructor(
     private val appPrefsWrapper: AppPrefsWrapper,
     private val usageTracksEventEmitter: MyStoreStatsUsageTracksEventEmitter,
     private val analyticsTrackerWrapper: AnalyticsTrackerWrapper,
-    private val myStoreTransactionLauncher: MyStoreTransactionLauncher
+    private val myStoreTransactionLauncher: MyStoreTransactionLauncher,
+    private val explat: ExPlat
 ) : ScopedViewModel(savedState) {
     private companion object {
         const val NUM_TOP_PERFORMERS = 5
@@ -104,6 +107,7 @@ class MyStoreViewModel @Inject constructor(
 
     init {
         ConnectionChangeReceiver.getEventBus().register(this)
+        initExPlat()
         viewModelScope.launch {
             combine(
                 _activeStatsGranularity,
@@ -319,6 +323,17 @@ class MyStoreViewModel @Inject constructor(
             totalSpend,
             wooCommerceStore.getSiteSettings(selectedSite.get())?.currencyCode ?: currency
         )
+
+    private fun initExPlat() {
+        explat.getVariation(
+            ExperimentationModule.AA_TEST_202208,
+            true
+        )
+        explat.getVariation(
+            ExperimentationModule.AB_TEST_LINKED_PRODUCTS_PROMO,
+            true
+        )
+    }
 
     private fun String.toImageUrl() =
         PhotonUtils.getPhotonImageUrl(

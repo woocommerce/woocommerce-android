@@ -9,6 +9,7 @@ import android.content.Intent
 import android.graphics.drawable.AnimatedVectorDrawable
 import android.os.Bundle
 import android.provider.Settings
+import android.text.method.LinkMovementMethod
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -94,6 +95,7 @@ class CardReaderConnectDialogFragment : DialogFragment(R.layout.card_reader_conn
         val binding = CardReaderConnectDialogBinding.bind(view)
         initMultipleReadersFoundRecyclerView(binding)
         initObservers(binding)
+        setupViews(binding)
     }
 
     private fun initMultipleReadersFoundRecyclerView(binding: CardReaderConnectDialogBinding) {
@@ -157,6 +159,8 @@ class CardReaderConnectDialogFragment : DialogFragment(R.layout.card_reader_conn
         UiHelpers.setTextOrHide(binding.primaryActionBtn, viewState.primaryActionLabel)
         UiHelpers.setTextOrHide(binding.secondaryActionBtn, viewState.secondaryActionLabel)
         UiHelpers.setTextOrHide(binding.tertiaryActionBtn, viewState.tertiaryActionLabel)
+        UiHelpers.setTextOrHide(binding.learnMoreTv, viewState.learnMoreLabel)
+
         binding.primaryActionBtn.setOnClickListener {
             viewState.onPrimaryActionClicked?.invoke()
         }
@@ -165,6 +169,9 @@ class CardReaderConnectDialogFragment : DialogFragment(R.layout.card_reader_conn
         }
         binding.tertiaryActionBtn.setOnClickListener {
             viewState.onTertiaryActionClicked?.invoke()
+        }
+        binding.learnMoreTv.setOnClickListener {
+            viewState.onLearnMoreClicked?.invoke()
         }
 
         with(binding.illustration.layoutParams as ViewGroup.MarginLayoutParams) {
@@ -273,6 +280,10 @@ class CardReaderConnectDialogFragment : DialogFragment(R.layout.card_reader_conn
         } catch (e: ActivityNotFoundException) {
             WooLog.e(WooLog.T.CARD_READER, "Location settings activity not found.")
         }
+    }
+
+    private fun setupViews(binding: CardReaderConnectDialogBinding) {
+        binding.learnMoreTv.movementMethod = LinkMovementMethod.getInstance()
     }
 
     override fun onResume() {

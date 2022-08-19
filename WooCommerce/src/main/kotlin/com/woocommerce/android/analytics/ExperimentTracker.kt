@@ -8,6 +8,7 @@ interface ExperimentTracker {
         const val SITE_CREDENTIALS_EXPERIMENT_ELIGIBLE_EVENT = "site_credentials_experiment_eligible"
         const val MAGIC_LINK_SENT_EXPERIMENT_ELIGIBLE_EVENT = "magic_link_sent_experiment_eligible"
         const val MAGIC_LINK_EXPERIMENT_ELIGIBLE_EVENT = "magic_link_experiment_eligible"
+        const val LOGIN_BUTTON_SWAP_EXPERIMENT_ELIGIBLE_EVENT = "login_swap_experiment_eligible"
         const val LOGIN_SUCCESSFUL_EVENT = "login_successful"
     }
 

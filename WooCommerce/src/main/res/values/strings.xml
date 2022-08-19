@@ -1105,6 +1105,7 @@
     <string name="card_reader_connect_open_bluetooth_settings">Turn on bluetooth</string>
     <string name="card_reader_connect_missing_bluetooth_permissions_header">Missing required nearby devices permission</string>
     <string name="card_reader_connect_missing_bluetooth_permission_button">Open settings</string>
+    <string name="card_reader_connect_learn_more">&lt;a href=\'\'&gt;Learn more&lt;/a&gt; about In-Person Payments</string>
 
     <!--
         Card Reader Detail
@@ -1220,6 +1221,11 @@
 
     <string name="card_reader_onboarding_generic_error_header">Unable to verify In-Person Payments for this store</string>
     <string name="card_reader_onboarding_generic_error_hint">We\'re sorry, we were unable to verify In-Person Payments for this store</string>
+
+    <string name="card_reader_onboarding_cash_on_delivery_disabled_error_header">Add Pay in Person to your checkout</string>
+    <string name="card_reader_onboarding_cash_on_delivery_disabled_error_hint">A "Pay in Person" option on your checkout lets you accept card or cash payments on collection or delivery.</string>
+    <string name="card_reader_onboarding_cash_on_delivery_disabled_button">Enable Pay in Person</string>
+    <string name="card_reader_onboarding_cash_on_delivery_enable_failure">Failed to enable cash on delivery. Please try again later.</string>
 
     <!--
         Card reader tutorial
