@@ -1,4 +1,9 @@
 *** PLEASE FOLLOW THIS FORMAT: [<priority indicator, more stars = higher priority>] <description> [<PR URL>]
+10.1
+-----
+- [*] In-Person Payments: Fixed a bug when Stripe pending requirements make it impossible to manage card readers [https://github.com/woocommerce/woocommerce-android/pull/7233]
+
+
 10.0
 -----
 
