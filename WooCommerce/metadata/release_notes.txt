@@ -1,4 +1,3 @@
- - [**] Login: Add ability to enter site address manually after signing in if the account is not connected to any stores [https://github.com/woocommerce/woocommerce-android/pull/7225]
- - [**] In-Person Payments: Show a new "Pay in Person" screen during IPP onboarding if the store has cash on delivery disabled. Give merchants an option to enable "Pay in Person" on the same screen.
-- [*] In-Person Payments: learn more button was added connection dialog [https://github.com/woocommerce/woocommerce-android/pull/7193]
+We’ve made various enhancements to get your business started. It’s now easier to set up your store when logging in. And you can now enable paying in person right in the app!
+Lastly, we’ve made some tweaks to improve performance. But we’re not done. Keep an eye out for more enhancements in the future. Please keep sending your feedback! We read every one of them!
 
