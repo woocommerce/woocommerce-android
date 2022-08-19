@@ -6,7 +6,6 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.AppPrefsWrapper
-import com.woocommerce.android.AppUrls
 import com.woocommerce.android.R
 import com.woocommerce.android.cardreader.CardReaderManager
 import com.woocommerce.android.extensions.exhaustive
@@ -14,6 +13,7 @@ import com.woocommerce.android.extensions.formatToMMMMdd
 import com.woocommerce.android.model.UiString
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.payments.cardreader.CardReaderTracker
+import com.woocommerce.android.ui.payments.cardreader.LearnMoreUrlProvider
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboardingParams.Check
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboardingParams.Failed
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboardingState.ChoosePaymentGatewayProvider
@@ -73,6 +73,7 @@ class CardReaderOnboardingViewModel @Inject constructor(
     savedState: SavedStateHandle,
     private val cardReaderChecker: CardReaderOnboardingChecker,
     private val cardReaderTracker: CardReaderTracker,
+    private val learnMoreUrlProvider: LearnMoreUrlProvider,
     private val selectedSite: SelectedSite,
     private val appPrefsWrapper: AppPrefsWrapper,
     private val cardReaderManager: CardReaderManager,
@@ -249,7 +250,13 @@ class CardReaderOnboardingViewModel @Inject constructor(
         preferredPlugin: PluginType,
         version: String? = null
     ) {
-        appPrefsWrapper.setCashOnDeliveryDisabledStateSkipped(true)
+        val site = selectedSite.get()
+        appPrefsWrapper.setCashOnDeliveryDisabledStateSkipped(
+            localSiteId = site.id,
+            remoteSiteId = site.siteId,
+            selfHostedSiteId = site.selfHostedSiteId,
+            true
+        )
         cardReaderTracker.trackOnboardingSkippedState(
             CardReaderOnboardingState.CashOnDeliveryDisabled(
                 countryCode,
@@ -376,16 +383,7 @@ class CardReaderOnboardingViewModel @Inject constructor(
 
     private fun onLearnMoreClicked() {
         cardReaderTracker.trackOnboardingLearnMoreTapped()
-        val preferredPlugin = appPrefsWrapper.getCardReaderPreferredPlugin(
-            selectedSite.get().id,
-            selectedSite.get().siteId,
-            selectedSite.get().selfHostedSiteId
-        )
-        val learnMoreUrl = when (preferredPlugin) {
-            STRIPE_EXTENSION_GATEWAY -> AppUrls.STRIPE_LEARN_MORE_ABOUT_PAYMENTS
-            WOOCOMMERCE_PAYMENTS, null -> AppUrls.WOOCOMMERCE_LEARN_MORE_ABOUT_PAYMENTS
-        }
-        triggerEvent(NavigateToUrlInGenericWebView(learnMoreUrl))
+        triggerEvent(NavigateToUrlInGenericWebView(learnMoreUrlProvider.providerLearnMoreUrl()))
     }
 
     private fun onSkipPendingRequirementsClicked(storeCountryCode: String) {

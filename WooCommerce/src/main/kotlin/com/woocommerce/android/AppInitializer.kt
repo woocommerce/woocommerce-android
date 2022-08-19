@@ -8,7 +8,6 @@ import android.net.ConnectivityManager
 import androidx.lifecycle.Lifecycle.State.STARTED
 import androidx.lifecycle.ProcessLifecycleOwner
 import com.automattic.android.experimentation.ExPlat
-import com.automattic.android.experimentation.Experiment
 import com.automattic.android.tracks.crashlogging.CrashLogging
 import com.google.android.gms.common.ConnectionResult
 import com.google.android.gms.common.GoogleApiAvailability
@@ -119,13 +118,6 @@ class AppInitializer @Inject constructor() : ApplicationLifecycleListener {
         this.application = application
 
         FeedbackPrefs.init(application)
-
-        explat.getVariation(
-            object : Experiment {
-                override val identifier = "woocommerceandroid_explat_aa_test_202208"
-            },
-            true
-        )
 
         // Apply Theme
         AppThemeUtils.setAppTheme()
