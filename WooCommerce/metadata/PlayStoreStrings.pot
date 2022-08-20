@@ -11,16 +11,18 @@ msgstr ""
 "Project-Id-Version: Release Notes & Play Store Descriptions\n"
 
 #. translators: Release notes for this version to be displayed in the Play Store. Limit to 500 characters including spaces and commas!
+msgctxt "release_note_100"
+msgid ""
+"10.0:\n"
+"We’ve made various enhancements to get your business started. It’s now easier to set up your store when logging in. And you can now enable paying in person right in the app!\n"
+"Lastly, we’ve made some tweaks to improve performance. But we’re not done. Keep an eye out for more enhancements in the future. Please keep sending your feedback! We read every one of them!\n"
+"\n"
+msgstr ""
+
 msgctxt "release_note_099"
 msgid ""
 "9.9:\n"
 "This release has a few improvements to your login experience, including the option to install WooCommerce from the app. We also have a new Payments section in the app. Head over to the More menu to start using Payments!\n"
-msgstr ""
-
-msgctxt "release_note_098"
-msgid ""
-"9.8:\n"
-"For this release, we focused on polishing a few things around your login experience, including the option to install WooCommerce plugin directly from the app. We are working on some pretty cool stuff for you all! Keep your feedback rolling in; it helps us figure out what to work on next. 💜\n"
 msgstr ""
 
 #. translators: Short description of the app to be displayed in the Play Store. Limit to 80 characters including spaces and commas!
