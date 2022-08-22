@@ -566,6 +566,7 @@ enum class AnalyticsEvent(val siteless: Boolean = false) {
     REVIEWS_LIST_SHARE_YOUR_STORE_BUTTON_TAPPED,
 
     // -- Product Review Detail
+    REVIEW_OPEN,
     REVIEW_LOADED,
     REVIEW_LOAD_FAILED,
     REVIEW_PRODUCT_LOADED,
