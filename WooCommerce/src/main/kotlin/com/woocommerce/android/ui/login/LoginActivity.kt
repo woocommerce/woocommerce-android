@@ -161,10 +161,9 @@ class LoginActivity :
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        onBackPressedDispatcher.addCallback(object : OnBackPressedCallback(true) {
+        onBackPressedDispatcher.addCallback(this, object : OnBackPressedCallback(true) {
             override fun handleOnBackPressed() {
-                AnalyticsTracker.trackBackPressed(this)
-                super@LoginActivity
+                handleBackPress()
             }
         })
 
@@ -193,6 +192,16 @@ class LoginActivity :
         savedInstanceState?.let { ss ->
             unifiedLoginTracker.setSource(ss.getString(KEY_UNIFIED_TRACKER_SOURCE, Source.DEFAULT.value))
             unifiedLoginTracker.setFlow(ss.getString(KEY_UNIFIED_TRACKER_FLOW))
+        }
+    }
+
+    private fun handleBackPress() {
+        AnalyticsTracker.trackBackPressed(this)
+
+        if (supportFragmentManager.backStackEntryCount == 1) {
+            finish()
+        } else {
+            supportFragmentManager.popBackStack()
         }
     }
 
@@ -315,16 +324,6 @@ class LoginActivity :
         }
 
         return false
-    }
-
-    override fun onBackPressed() {
-        AnalyticsTracker.trackBackPressed(this)
-
-        if (supportFragmentManager.backStackEntryCount == 1) {
-            finish()
-        } else {
-            super.onBackPressed()
-        }
     }
 
     override fun getLoginMode(): LoginMode {
