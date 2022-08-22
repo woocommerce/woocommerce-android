@@ -951,22 +951,17 @@ class LoginActivity :
         loginNotificationScheduler.scheduleNotification(notificationType)
     }
 
-        override fun onQrCodeLoginClicked() {
+    override fun onQrCodeLoginClicked() {
         val fragment =
             supportFragmentManager.findFragmentByTag(QrCodeScanningFragment.TAG) as? QrCodeScanningFragment
                 ?: QrCodeScanningFragment()
         fragment.setOnBarCodeScanner { rawValue ->
-//        val intent = Intent(this, MagicLinkInterceptActivity::class.java)
-//            intent.action = Intent.ACTION_VIEW
-//            intent.data = Uri.parse(rawValue)
-//            startActivity(intent)
-
             val intent = Intent(Intent.ACTION_VIEW, Uri.parse(rawValue))
             intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK or
                 Intent.FLAG_ACTIVITY_CLEAR_TASK
             startActivity(intent)
         }
-        slideInFragment(fragment, true, QrCodeScanningFragment.TAG)
+        changeFragment(fragment, shouldAddToBackStack = true, tag = QrCodeScanningFragment.TAG)
     }
 
     private fun processLoginHelpNotification(loginHelpNotification: String) {
