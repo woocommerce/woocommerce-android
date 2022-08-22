@@ -515,7 +515,7 @@ fun WCProductModel.toAppModel(): Product {
         downloadExpiry = this.downloadExpiry,
         purchaseNote = this.purchaseNote,
         numVariations = this.getNumVariations(),
-        images = this.getImageList().map {
+        images = this.getImageListOrEmpty().map {
             Product.Image(
                 it.id,
                 it.name,

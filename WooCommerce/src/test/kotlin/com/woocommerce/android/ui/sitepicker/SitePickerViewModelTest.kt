@@ -15,9 +15,9 @@ import com.woocommerce.android.ui.login.UnifiedLoginTracker
 import com.woocommerce.android.ui.sitepicker.SitePickerViewModel.SitePickerEvent
 import com.woocommerce.android.ui.sitepicker.SitePickerViewModel.SitePickerEvent.NavigateToEmailHelpDialogEvent
 import com.woocommerce.android.ui.sitepicker.SitePickerViewModel.SitePickerEvent.NavigateToMainActivityEvent
+import com.woocommerce.android.ui.sitepicker.SitePickerViewModel.SitePickerEvent.NavigateToNewToWooEvent
+import com.woocommerce.android.ui.sitepicker.SitePickerViewModel.SitePickerEvent.NavigateToSiteAddressEvent
 import com.woocommerce.android.ui.sitepicker.SitePickerViewModel.SitePickerEvent.NavigationToHelpFragmentEvent
-import com.woocommerce.android.ui.sitepicker.SitePickerViewModel.SitePickerEvent.NavigationToLearnMoreAboutJetpackEvent
-import com.woocommerce.android.ui.sitepicker.SitePickerViewModel.SitePickerEvent.NavigationToWhatIsJetpackFragmentEvent
 import com.woocommerce.android.ui.sitepicker.SitePickerViewModel.SitePickerEvent.ShowWooUpgradeDialogEvent
 import com.woocommerce.android.ui.sitepicker.SitePickerViewModel.SitePickerState.AccountMismatchState
 import com.woocommerce.android.ui.sitepicker.SitePickerViewModel.SitePickerState.NoStoreState
@@ -500,22 +500,23 @@ class SitePickerViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `given user is logging in, when learn more about Jetpack is clicked, learn more is displayed`() = testBlocking {
-        givenTheScreenIsFromLogin(true)
-        whenViewModelIsCreated()
+    fun `given there are no sites, when enter site address is tapped, then navigate to site discovery screen`() =
+        testBlocking {
+            givenTheScreenIsFromLogin(true)
+            whenViewModelIsCreated()
 
-        var view: NavigationToLearnMoreAboutJetpackEvent? = null
-        viewModel.event.observeForever {
-            if (it is NavigationToLearnMoreAboutJetpackEvent) view = it
+            var view: NavigateToSiteAddressEvent? = null
+            viewModel.event.observeForever {
+                if (it is NavigateToSiteAddressEvent) view = it
+            }
+
+            viewModel.onEnterSiteAddressClick()
+
+            verify(analyticsTrackerWrapper, times(1)).track(
+                AnalyticsEvent.SITE_PICKER_ENTER_SITE_ADDRESS_TAPPED
+            )
+            assertThat(view).isEqualTo(NavigateToSiteAddressEvent)
         }
-
-        viewModel.onLearnMoreAboutJetpackButtonClick()
-
-        verify(analyticsTrackerWrapper, times(1)).track(
-            AnalyticsEvent.LOGIN_JETPACK_REQUIRED_VIEW_INSTRUCTIONS_BUTTON_TAPPED
-        )
-        assertThat(view).isEqualTo(NavigationToLearnMoreAboutJetpackEvent)
-    }
 
     @Test
     fun `given user is logging in, when refresh button is clicked, refresh the screen`() =
@@ -539,21 +540,21 @@ class SitePickerViewModelTest : BaseUnitTest() {
         }
 
     @Test
-    fun `given user is logging in, when what is Jetpack is clicked, Jetpack screen is displayed`() = testBlocking {
+    fun `given user is logging in, when new to woo clicked, then open browser with the docs`() = testBlocking {
         givenTheScreenIsFromLogin(true)
         whenViewModelIsCreated()
 
-        var view: NavigationToWhatIsJetpackFragmentEvent? = null
+        var view: NavigateToNewToWooEvent? = null
         viewModel.event.observeForever {
-            if (it is NavigationToWhatIsJetpackFragmentEvent) view = it
+            if (it is NavigateToNewToWooEvent) view = it
         }
 
-        viewModel.onWhatIsJetpackButtonClick()
+        viewModel.onNewToWooClick()
 
         verify(analyticsTrackerWrapper, times(1)).track(
-            AnalyticsEvent.LOGIN_JETPACK_REQUIRED_WHAT_IS_JETPACK_LINK_TAPPED
+            AnalyticsEvent.SITE_PICKER_NEW_TO_WOO_TAPPED
         )
-        assertThat(view).isEqualTo(NavigationToWhatIsJetpackFragmentEvent)
+        assertThat(view).isEqualTo(NavigateToNewToWooEvent)
     }
 
     @Test

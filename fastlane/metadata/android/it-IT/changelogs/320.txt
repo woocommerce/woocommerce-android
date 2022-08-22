@@ -1,0 +1,2 @@
+9.9:
+Questa versione apporta alcuni miglioramenti alla tua esperienza di accesso, inclusa l'opzione di installare WooCommerce dall'app. Abbiamo anche una nuova sezione Pagamenti nell'app. Vai al menu Altro per iniziare a utilizzare Pagamenti!

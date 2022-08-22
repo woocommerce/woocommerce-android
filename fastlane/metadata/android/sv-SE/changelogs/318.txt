@@ -1,2 +1,0 @@
-9.8:
-Med den här versionen har vi fokuserat på att förfina ett par saker med inloggningsupplevelsen, inklusive möjligheten att installera WooCommerce-tillägget direkt från appen. Vi har några riktigt häftiga saker på gång för er. Fortsätt att lämna feedback. Det hjälper oss att lista ut vad vi ska hitta på härnäst. 💜

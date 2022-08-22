@@ -118,6 +118,9 @@ enum class AnalyticsEvent(val siteless: Boolean = false) {
     SITE_PICKER_NOT_WOO_STORE_REFRESH_APP_LINK_TAPPED(siteless = true),
     SITE_PICKER_NOT_CONNECTED_JETPACK_REFRESH_APP_LINK_TAPPED(siteless = true),
     SITE_PICKER_NON_WOO_SITE_TAPPED(siteless = true),
+    SITE_PICKER_NEW_TO_WOO_TAPPED(siteless = true),
+    SITE_PICKER_ENTER_SITE_ADDRESS_TAPPED(siteless = true),
+    SITE_PICKER_SITE_DISCOVERY(siteless = true),
 
     // -- Dashboard
     DASHBOARD_PULLED_TO_REFRESH,
@@ -277,7 +280,13 @@ enum class AnalyticsEvent(val siteless: Boolean = false) {
     // -- Card Present Payments - onboarding
     CARD_PRESENT_ONBOARDING_LEARN_MORE_TAPPED,
     CARD_PRESENT_ONBOARDING_NOT_COMPLETED,
+    CARD_PRESENT_ONBOARDING_STEP_SKIPPED,
+    CARD_PRESENT_ONBOARDING_CTA_TAPPED,
     CARD_PRESENT_PAYMENT_GATEWAY_SELECTED,
+
+    // -- Cash on Delivery - onboarding
+    ENABLE_CASH_ON_DELIVERY_SUCCESS,
+    ENABLE_CASH_ON_DELIVERY_FAILED,
 
     // -- Card Present Payments - collection
     CARD_PRESENT_COLLECT_PAYMENT_FAILED,
@@ -300,6 +309,7 @@ enum class AnalyticsEvent(val siteless: Boolean = false) {
     CARD_READER_CONNECTION_SUCCESS,
     CARD_READER_DISCONNECT_TAPPED,
     CARD_READER_AUTO_CONNECTION_STARTED,
+    CARD_PRESENT_CONNECTION_LEARN_MORE_TAPPED,
 
     // -- Card Reader - software update
     CARD_READER_SOFTWARE_UPDATE_STARTED,

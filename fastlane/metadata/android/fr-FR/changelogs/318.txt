@@ -1,2 +1,0 @@
-9.8 :
-Pour cette version, nous nous sommes concentrés sur l'amélioration de plusieurs points liés à votre expérience de connexion, tels que la possibilité d'installer l'extension WooCommerce directement depuis l'application. Nous travaillons en ce moment sur de chouettes nouveautés pour tous ! Continuez à nous faire part de vos commentaires ; ils nous aident à nous améliorer. 💜

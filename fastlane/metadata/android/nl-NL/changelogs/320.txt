@@ -1,0 +1,2 @@
+9.9:
+Deze versie bevat een paar verbeteringen van je loginervaring, waaronder de optie om WooCommerce rechtstreeks vanuit de app te installeren. De app bevat ook een nieuw gedeelte Betalingen. Ga naar het menu Meer om te beginnen met Betalingen!
