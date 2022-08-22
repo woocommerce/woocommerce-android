@@ -5,15 +5,6 @@ common_params:
     - automattic/bash-cache#2.5.0
 
 steps:
-  - label: "checkstyle"
-    command: |
-      echo "--- 🧹 Linting"
-      cp -v gradle.properties-example gradle.properties
-      ./gradlew checkstyle
-    plugins: *common_plugins
-    artifact_paths:
-      - "**/build/reports/checkstyle/checkstyle.*"
-
   - label: "detekt"
     command: |
       echo "--- 🧹 Linting"
@@ -48,6 +39,18 @@ steps:
       ./gradlew jacocoTestReport
       .buildkite/commands/upload-code-coverage.sh
     plugins: *common_plugins
+
+  - label: "Instrumented tests"
+    command: |
+      echo "--- :rubygems: Setting up Gems"
+      install_gems
+      echo "--- :closed_lock_with_key: Installing Secrets"
+      bundle exec fastlane run configure_apply
+      echo "--- 🧪 Testing"
+      bundle exec fastlane build_and_instrumented_test
+    plugins: *common_plugins
+    artifact_paths:
+      - "**/build/instrumented-tests/**/*"
 
   - label: "Ensure Screenshot Tests Build"
     command: |

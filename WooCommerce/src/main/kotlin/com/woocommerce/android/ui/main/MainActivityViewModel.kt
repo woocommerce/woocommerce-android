@@ -13,6 +13,11 @@ import com.woocommerce.android.push.NotificationChannelType
 import com.woocommerce.android.push.NotificationMessageHandler
 import com.woocommerce.android.push.UnseenReviewsCountHandler
 import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.ui.main.MainActivityViewModel.MoreMenuBadgeState.Hidden
+import com.woocommerce.android.ui.main.MainActivityViewModel.MoreMenuBadgeState.NewFeature
+import com.woocommerce.android.ui.main.MainActivityViewModel.MoreMenuBadgeState.UnseenReviews
+import com.woocommerce.android.ui.moremenu.MoreMenuNewFeature
+import com.woocommerce.android.ui.moremenu.MoreMenuNewFeatureHandler
 import com.woocommerce.android.ui.whatsnew.FeatureAnnouncementRepository
 import com.woocommerce.android.util.BuildConfigWrapper
 import com.woocommerce.android.util.WooLog
@@ -20,6 +25,7 @@ import com.woocommerce.android.util.WooLog.T
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.launch
 import org.wordpress.android.fluxc.store.SiteStore
 import javax.inject.Inject
@@ -34,7 +40,8 @@ class MainActivityViewModel @Inject constructor(
     private val buildConfigWrapper: BuildConfigWrapper,
     private val prefs: AppPrefs,
     private val analyticsTrackerWrapper: AnalyticsTrackerWrapper,
-    unseenReviewsCountHandler: UnseenReviewsCountHandler
+    moreMenuNewFeatureHandler: MoreMenuNewFeatureHandler,
+    unseenReviewsCountHandler: UnseenReviewsCountHandler,
 ) : ScopedViewModel(savedState) {
     init {
         launch {
@@ -44,7 +51,12 @@ class MainActivityViewModel @Inject constructor(
 
     val startDestination = if (selectedSite.exists()) R.id.dashboard else R.id.sitePickerFragment
 
-    val unseenReviewsCount = unseenReviewsCountHandler.observeUnseenCount().asLiveData()
+    val moreMenuBadgeState = combine(
+        unseenReviewsCountHandler.observeUnseenCount(),
+        moreMenuNewFeatureHandler.moreMenuNewFeaturesAvailable,
+    ) { reviewsCount, features ->
+        determineMenuBadgeState(reviewsCount, features)
+    }.asLiveData()
 
     fun removeOrderNotifications() {
         notificationHandler.removeNotificationsOfTypeFromSystemsBar(
@@ -110,6 +122,10 @@ class MainActivityViewModel @Inject constructor(
         }
     }
 
+    private fun determineMenuBadgeState(count: Int, features: List<MoreMenuNewFeature>) =
+        if (features.isNotEmpty()) NewFeature
+        else if (count > 0) UnseenReviews(count) else Hidden
+
     fun showFeatureAnnouncementIfNeeded() {
         launch {
             val cachedAnnouncement = featureAnnouncementRepository.getLatestFeatureAnnouncement(fromCache = true)
@@ -143,4 +159,10 @@ class MainActivityViewModel @Inject constructor(
     data class ShowFeatureAnnouncement(val announcement: FeatureAnnouncement) : Event()
     data class ViewReviewDetail(val uniqueId: Long) : Event()
     data class ViewOrderDetail(val uniqueId: Long, val remoteNoteId: Long) : Event()
+
+    sealed class MoreMenuBadgeState {
+        data class UnseenReviews(val count: Int) : MoreMenuBadgeState()
+        object NewFeature : MoreMenuBadgeState()
+        object Hidden : MoreMenuBadgeState()
+    }
 }

@@ -1,11 +1,83 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2022-06-30 11:54:05+0000
+Translation-Revision-Date: 2022-08-18 11:54:04+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: sv_SE
 -->
 <resources>
+    <string name="login_help_notification_get_link_by_email_button">Få en inloggningslänk via e-post</string>
+    <string name="login_help_notification_invalid_password_title">Kommer du inte ihåg ditt lösenord?</string>
+    <string name="card_reader_onboarding_not_finished">We’ve noticed that you have not yet finished In-Person Payments setup. &lt;b&gt;&lt;a href=\'\'&gt;Fortsätt installationen&lt;/a&gt;&lt;/b&gt;</string>
+    <string name="payments_hub_title">Betalningar</string>
+    <string name="orderlist_bottom_sheet_simple_payments_moved_button">Jag förstår!</string>
+    <string name="orderlist_bottom_sheet_simple_payments_moved_description">Now you can quickly access In-Person Payments and other features with ease</string>
+    <string name="orderlist_bottom_sheet_simple_payments_moved_title">Betalningar från menyfliken</string>
+    <string name="login_no_wpcom_account_found">E-posten %1$s används inte med ett WordPress.com-konto.</string>
+    <string name="login_non_woo_stores_label">Andra webbplatser</string>
+    <string name="login_with_store_address">Logga in med din butiksadress</string>
+    <string name="more_menu_button_w___admin">WC-admin</string>
+    <string name="login_magic_links_email_sent">Vi har precis skickat en magisk länk till</string>
+    <string name="login_magic_links_sent_label_short">Kontrollera din e-post på denna enhet!</string>
+    <string name="or_use_password">Använd lösenord för att logga in</string>
+    <string name="login_magic_link_button">Logga in med magisk länk</string>
+    <string name="login_magic_link_auto_sent">Vi har precis skickat en magisk länk till din e-postadress. Tryck på länken i e-postmeddelandet för att logga in.</string>
+    <string name="login_help_notification_incorrect_wpcom_email_description">Logga in med dina webbplatsuppgifter</string>
+    <string name="promo_linked_products_banner_message">Ge dina kunder användbara och relevanta produktrekommendationer genom att lägga till merförsäljning och korsförsäljning</string>
+    <string name="promo_linked_products_banner_title">Öka din försäljning med länkade produkter</string>
+    <string name="card_reader_upsell_card_reader_banner_description">Börja sälja personligen på under 20 minuter med vår kortläsare.</string>
+    <string name="orderlist_updating_order_error">Det gick inte att uppdatera beställning #%1$d</string>
+    <string name="orderlist_mark_completed_success">Beställning #%1$d har markerats som slutförd</string>
+    <string name="orderlist_mark_completed">Markera\nslutförd</string>
+    <string name="login_install_woo">Installera WooCommerce</string>
+    <string name="login_not_woo_store">Det verkar som att %1$s inte är en WooCommerce-webbplats.</string>
+    <string name="login_prologue_survey_button_switch_stores">Växla mellan flera olika butiker</string>
+    <string name="login_prologue_survey_button_manage_orders">Hantera mina beställningar</string>
+    <string name="login_prologue_survey_button_edit_products">Skapa eller uppdatera mina produkter</string>
+    <string name="login_prologue_survey_button_check_analytics">Kolla min analys</string>
+    <string name="login_prologue_survey_button_set_up_store">Försöker skapa en butik</string>
+    <string name="login_prologue_survey_button_exploring">Utforskar bara</string>
+    <string name="login_prologue_survey_title">Vad för dig till WooCommerce?</string>
+    <string name="tip">Tips</string>
+    <string name="set_up_now">Ställ in nu</string>
+    <string name="lets_get_started">Då sätter vi igång!</string>
+    <string name="login_help_notification_wordpress_login_button">Logga in med WordPress.com</string>
+    <string name="login_help_notification_contact_support_button">Kontakta supporten</string>
+    <string name="login_help_notification_site_error_description">Logga in med ditt WordPress.com-konto</string>
+    <string name="login_help_notification_no_interaction_default_description">Skaffa lite hjälp!</string>
+    <string name="login_help_notification_default_title">Har du problem med att logga in?</string>
+    <string name="product_search_sku">Artikelnr</string>
+    <string name="product_search_all">Alla produkter</string>
+    <string name="card_reader_upsell_card_reader_banner_dont_show_again">VISA INTE IGEN</string>
+    <string name="card_reader_upsell_card_reader_banner_remind_me_later">PÅMINN MIG SENARE</string>
+    <string name="card_reader_upsell_card_reader_banner_dismiss_dialog_description">Inga problem! Du kan alltid komma igång med In-Person Payments via Inställningar.</string>
+    <string name="card_reader_upsell_card_reader_banner_payments">Personliga betalningar</string>
+    <string name="card_reader_upsell_card_reader_banner_cta">Köp kortläsare</string>
+    <string name="card_reader_upsell_card_reader_banner_title">Ta emot betalningar enkelt</string>
+    <string name="card_reader_upsell_card_reader_banner_new">NYTT</string>
+    <string name="card_reader_upsell_card_reader_banner_dismiss">Avfärda</string>
+    <string name="orderdetail_view_custom_fields">Visa anpassade fält</string>
+    <string name="orderdetail_custom_fields">Anpassade fält</string>
+    <string name="order_sync_failed">Det gick inte att spara ändringar</string>
+    <string name="existing_order_cash_dlg_message">Detta kommer att markera denna beställning som betald om du fått betalning utanför WooCommerce</string>
+    <string name="login_jetpack_install">Installera Jetpack</string>
+    <string name="login_prologue_label_products_subtitle">Vi gör det möjligt för dig att bearbeta betalningar på ett enkelt och smidigt sätt</string>
+    <string name="login_prologue_label_orders_subtitle">Du kan hantera dem snabbt och enkelt</string>
+    <string name="login_prologue_label_analytics_subtitle">Vi vet att det är viktigt för ditt företag</string>
+    <string name="login_prologue_new_to_woo">Är WooCommerce nytt för dig?</string>
+    <string name="notification_channel_pre_login_title">Påminnelser om felsökning vid inloggning</string>
+    <string name="tests_notification_new_order_message">Ny beställning för 50 USD i din WooCommerce-butik</string>
+    <string name="tests_notification_new_order_title">Du har en ny beställning! 🎉</string>
+    <string name="lines_all_details">detaljerna</string>
+    <string name="lines_incomplete_explanation">Redigera alla %1$s genom att gå igenom beställningen i din WooCommerce-butiksadmin</string>
+    <string name="lines_incomplete">%1$s är ofullständiga</string>
+    <string name="support_system_status_report_share_label">Dela systemstatusrapport</string>
+    <string name="support_system_status_report_copy_label">Kopiera systemstatusrapport till urklipp</string>
+    <string name="card_reader_connect_keep_searching_button">Fortsätt söka</string>
+    <string name="card_reader_payment_description_v2">Personlig betalning för beställning nr. %s för %s blog_id %s.</string>
+    <string name="card_reader_manage_payment_provider">Ändra betalningsleverantör</string>
+    <string name="orderdetail_refunded_line_with_info">Återbetalat: %1$s</string>
+    <string name="orderdetail_payment_summary_onhold_plain">Inväntar betalning</string>
     <string name="install_wc_shipping_proceed_button">Fortsätt med installation</string>
     <string name="install_wc_shipping_installation_info">Saker du bör veta innan du installerar</string>
     <string name="install_wc_shipping_preinstall_title">Installera utökning</string>
@@ -216,7 +288,7 @@ Language: sv_SE
     <string name="coupon_details_minimum_spend">Minsta beställningsbelopp på %s</string>
     <string name="coupon_details_heading">Rabattkodssammanfattning</string>
     <string name="coupon_list_view_coupon">Visa rabattkodssammanfattning</string>
-    <string name="coupon_list_wip_message_enabled">Vi har arbetat med att göra det möjligt att visa rabattkoder på din enhet!</string>
+    <string name="coupon_list_wip_message_enabled">Vi har arbetat med att göra det möjligt att visa och redigera rabattkoder från din enhet!</string>
     <string name="coupon_list_wip_title">Visa och redigera rabattkoder</string>
     <string name="coupon_list_empty_heading">Inga rabattkoder hittades</string>
     <string name="coupon_list_item_label_included_and_excluded">%1s exkl. %2s</string>
@@ -286,7 +358,6 @@ Language: sv_SE
     <string name="card_reader_onboarding_both_plugins_activated_hint_store_owner">Personliga betalningar fungerar endast med ett av följande tillägg aktiverat. Kontakta en webbplatsadministratör för att inaktivera ett av dessa tillägg och fortsätta:</string>
     <string name="card_reader_onboarding_both_plugins_activated_hint_admin">Personliga betalningar fungerar endast med ett av följande tillägg aktiverat. Inaktivera ett av dessa tillägg för att fortsätta.</string>
     <string name="card_reader_onboarding_both_plugins_activated_header">Konflikt mellan betalningstillägg upptäckt</string>
-    <string name="order_creation_price_calculation_failed">Kunde inte uppdatera priser</string>
     <string name="order_creation_payment_tax">Momsen</string>
     <string name="exclusive_or">eller</string>
     <string name="settings_install_jetpack">Installera Jetpack</string>
@@ -703,7 +774,6 @@ Language: sv_SE
     <string name="card_reader_refetching_order_failed">Det gick inte att hämta beställningen. Beställningens status i appen kan vara föråldrad.</string>
     <string name="card_reader_payment_email_client_not_found">Lyckas inte hitta ditt e-postprogram</string>
     <string name="card_reader_payment_receipt_email_subject">Ditt kvitto från %s</string>
-    <string name="card_reader_payment_description">Personlig betalning för beställning %s för %s</string>
     <string name="card_reader_payment_fetch_order_loading_payment_state">Uppdaterar beställning</string>
     <string name="card_reader_payment_fetch_order_loading_header">Uppdaterar appstatusen</string>
     <string name="shipping_label_shipping_carrier_shipping_method_banner_message">Din kund valde %1$s</string>
@@ -779,9 +849,8 @@ Language: sv_SE
     <string name="user_role_access_error_retry">Du har inte den korrekta användarrollen</string>
     <string name="user_role_access_error_link">Lär dig mer om roller och behörigheter</string>
     <string name="user_role_access_error_msg">Den här appen har endast stöd för användarrollerna Administratör och Butikschef. Kontakta butiksägaren för att uppgradera din roll.</string>
-    <string name="login_prologue_label_reviews">Övervaka och godkänn dina produktrecensioner</string>
     <string name="login_prologue_label_products">Redigera och lägg till nya produkter var som helst</string>
-    <string name="login_prologue_label_orders">Hantera dina butiksbeställningar i farten </string>
+    <string name="login_prologue_label_orders">Hantera och redigera beställningar i farten </string>
     <string name="login_prologue_label_analytics">Spåra försäljning och högpresterande produkter</string>
     <string name="skip">Hoppa över</string>
     <string name="product_type_external_title">Extern produkt</string>
@@ -1057,7 +1126,6 @@ Language: sv_SE
     <string name="product_publish_draft_dialog_title">Sparar utkast</string>
     <string name="product_status_trashed">I papperskorgen</string>
     <string name="product_detail_save_as_draft">Spara som utkast</string>
-    <string name="login_no_wpcom_account_found">Det verkar som att %1$s inte har associerats med något WordPress.com-konto.</string>
     <string name="signup_confirmation_title">Bekräftelse av registrering</string>
     <string name="reset_your_password">Återställ ditt lösenord</string>
     <string name="enter_your_site_address">Ange din webbplatsadress</string>
@@ -1737,11 +1805,9 @@ Language: sv_SE
     <string name="orderdetail_track_shipment">Spåra försändelse</string>
     <string name="login_email_help_desc">Du kan hitta e-postadressen som du använder för att ansluta till WordPress.com från din webbplatsadminsitration på %1$sJetpack Dashboard%2$s under %3$sAnslutningar &gt; Kontoanslutning%4$s</string>
     <string name="login_email_help_title">Vilken e-postadress ska jag använda för att logga in?</string>
-    <string name="login_need_help_finding_email">Behöver du hjälp med att hitta den anslutna e-postadressen?</string>
     <string name="login_jetpack_what_is_description">Jetpack är ett kostnadsfritt tillägg i WordPress som ansluter din butik till de verktyg som behövs för att ge den bästa möjliga mobilupplevelsen, inklusive pushmeddelanden och statistik</string>
     <string name="login_jetpack_what_is">Vad är Jetpack?</string>
     <string name="login_view_connected_stores">Visa anslutna butiker</string>
-    <string name="login_not_woo_store">Det ser ut som att %1$s inte är en WooCommerce-webbplats. Installera WooCommerce-tillägget på din webbplats och starta sedan om appen.</string>
     <string name="login_not_connected_to_account">Det ser ut som att %1$s är ansluten till ett annat WordPress.com-konto.</string>
     <string name="keep_editing">Fortsätt redigera</string>
     <string name="notification_wpcom_username_needed">Logga in med ditt användarnamn och lösenord.</string>

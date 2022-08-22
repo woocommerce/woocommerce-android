@@ -1,20 +1,40 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     style="@style/Woo.ListItem"
     android:layout_width="match_parent"
     android:layout_height="wrap_content">
 
+    <androidx.appcompat.widget.AppCompatImageView
+        android:id="@+id/warning_icon"
+        android:layout_width="@dimen/min_tap_target"
+        android:layout_height="@dimen/min_tap_target"
+        android:paddingStart="@dimen/minor_75"
+        android:paddingEnd="@dimen/major_110"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/ic_gridicons_notice"
+        app:tint="@color/woo_yellow_30"
+        tools:ignore="RtlSymmetry" />
+
     <com.google.android.material.radiobutton.MaterialRadioButton
         android:id="@+id/radio"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:minWidth="@dimen/min_tap_target"
         android:text=""
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
+
+    <androidx.constraintlayout.widget.Barrier
+        android:id="@+id/title_barrier"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:barrierDirection="end"
+        app:constraint_referenced_ids="radio, warning_icon" />
 
     <com.google.android.material.textview.MaterialTextView
         android:id="@+id/text_site_name"
@@ -27,7 +47,7 @@
         android:layout_marginStart="@dimen/minor_100"
         app:layout_constraintBottom_toTopOf="@+id/text_site_domain"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/radio"
+        app:layout_constraintStart_toEndOf="@+id/title_barrier"
         app:layout_constraintTop_toTopOf="parent"
         tools:text="Woo Test Shop" />
 

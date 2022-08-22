@@ -17,6 +17,7 @@ import androidx.activity.viewModels
 import androidx.annotation.StringRes
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.appcompat.widget.Toolbar
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.core.content.ContextCompat
 import androidx.core.view.isVisible
@@ -41,6 +42,7 @@ import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.databinding.ActivityMainBinding
 import com.woocommerce.android.extensions.active
 import com.woocommerce.android.extensions.collapse
+import com.woocommerce.android.extensions.exhaustive
 import com.woocommerce.android.extensions.expand
 import com.woocommerce.android.extensions.hide
 import com.woocommerce.android.extensions.navigateSafely
@@ -58,6 +60,9 @@ import com.woocommerce.android.ui.main.BottomNavigationPosition.MORE
 import com.woocommerce.android.ui.main.BottomNavigationPosition.MY_STORE
 import com.woocommerce.android.ui.main.BottomNavigationPosition.ORDERS
 import com.woocommerce.android.ui.main.BottomNavigationPosition.PRODUCTS
+import com.woocommerce.android.ui.main.MainActivityViewModel.MoreMenuBadgeState.Hidden
+import com.woocommerce.android.ui.main.MainActivityViewModel.MoreMenuBadgeState.NewFeature
+import com.woocommerce.android.ui.main.MainActivityViewModel.MoreMenuBadgeState.UnseenReviews
 import com.woocommerce.android.ui.main.MainActivityViewModel.RestartActivityForNotification
 import com.woocommerce.android.ui.main.MainActivityViewModel.ShowFeatureAnnouncement
 import com.woocommerce.android.ui.main.MainActivityViewModel.ViewMyStoreStats
@@ -431,6 +436,7 @@ class MainActivity :
     }
 
     private fun hideToolbar() {
+        if (binding.collapsingToolbar.layoutParams.height == 0) return
         restoreToolbarHeight = binding.collapsingToolbar.layoutParams.height
         binding.collapsingToolbar.updateLayoutParams { height = 0 }
     }
@@ -616,10 +622,6 @@ class MainActivity :
         binding.bottomNav.setOrderBadgeCount(0)
     }
 
-    private fun showMoreMenuBadge(count: Int) {
-        binding.bottomNav.showMoreMenuBadge(count)
-    }
-
     override fun onNavItemSelected(navPos: BottomNavigationPosition) {
         val stat = when (navPos) {
             MY_STORE -> AnalyticsEvent.MAIN_TAB_DASHBOARD_SELECTED
@@ -645,15 +647,15 @@ class MainActivity :
         }
         AnalyticsTracker.track(stat)
 
-        // if we're at the root scroll the active fragment to the top, otherwise clear the nav backstack
+        // if we're at the root scroll the active fragment to the top
+        // TODO bring back clearing the backstack when the navgraphs are fixed to support multiple backstacks:
+        // https://github.com/woocommerce/woocommerce-android/issues/7183
         if (isAtNavigationRoot()) {
             // If the fragment's view is not yet created, do nothing
             if (getActiveTopLevelFragment()?.view != null) {
                 getActiveTopLevelFragment()?.scrollToTop()
                 expandToolbar(expand = true, animate = true)
             }
-        } else {
-            navController.navigate(binding.bottomNav.currentPosition.id)
         }
     }
     // endregion
@@ -716,8 +718,12 @@ class MainActivity :
             }
         }
 
-        viewModel.unseenReviewsCount.observe(this) { count ->
-            showMoreMenuBadge(count)
+        viewModel.moreMenuBadgeState.observe(this) { moreMenuBadgeState ->
+            when (moreMenuBadgeState) {
+                is UnseenReviews -> binding.bottomNav.showMoreMenuUnseenReviewsBadge(moreMenuBadgeState.count)
+                NewFeature -> binding.bottomNav.showMoreMenuNewFeatureBadge()
+                Hidden -> binding.bottomNav.hideMoreMenuBadge()
+            }.exhaustive
         }
     }
 
@@ -811,6 +817,12 @@ class MainActivity :
             selectedProductCategoryName = productCategoryName
         )
         navController.navigateSafely(action)
+    }
+
+    @OptIn(ExperimentalFoundationApi::class)
+    override fun showMoreMenu() {
+        binding.bottomNav.currentPosition = MORE
+        binding.bottomNav.active(MORE.position)
     }
 
     override fun showOrderDetail(

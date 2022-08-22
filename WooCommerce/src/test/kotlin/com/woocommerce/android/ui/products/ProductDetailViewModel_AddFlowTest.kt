@@ -1,7 +1,7 @@
 package com.woocommerce.android.ui.products
 
 import androidx.lifecycle.SavedStateHandle
-import com.woocommerce.android.AppPrefs
+import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.R
 import com.woocommerce.android.initSavedStateHandle
 import com.woocommerce.android.media.MediaFilesRepository
@@ -91,7 +91,7 @@ class ProductDetailViewModel_AddFlowTest : BaseUnitTest() {
         on(it.getParameters(any(), any<SavedStateHandle>())).thenReturn(siteParams)
     }
 
-    private val prefs: AppPrefs = mock {
+    private val prefs: AppPrefsWrapper = mock {
         on(it.getSelectedProductType()).then { "simple" }
     }
     private val addonRepository: AddonRepository = mock {
@@ -174,6 +174,7 @@ class ProductDetailViewModel_AddFlowTest : BaseUnitTest() {
                 mediaFileUploadHandler,
                 prefs,
                 addonRepository,
+                experimentStore = mock()
             )
         )
 

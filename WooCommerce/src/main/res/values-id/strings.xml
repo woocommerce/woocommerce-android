@@ -1,11 +1,83 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2022-06-30 09:54:03+0000
+Translation-Revision-Date: 2022-08-16 12:54:03+0000
 Plural-Forms: nplurals=2; plural=n > 1;
 Generator: GlotPress/2.4.0-alpha
 Language: id
 -->
 <resources>
+    <string name="login_help_notification_get_link_by_email_button">Dapatkan tautan untuk login melalui email</string>
+    <string name="login_help_notification_invalid_password_title">Lupa kata sandi Anda?</string>
+    <string name="card_reader_onboarding_not_finished">Kami mendapati bahwa Anda belum menyelesaikan penyiapan Pembayaran Langsung. &lt;b&gt;&lt;a href=\'\'&gt;Lanjutkan penyiapan&lt;/a&gt;&lt;/b&gt;</string>
+    <string name="payments_hub_title">Pembayaran</string>
+    <string name="orderlist_bottom_sheet_simple_payments_moved_button">Mantap!</string>
+    <string name="orderlist_bottom_sheet_simple_payments_moved_description">Sekarang, Anda dapat mengakses Pembayaran Langsung dan fitur-fitur lain dengan cepat dan mudah</string>
+    <string name="orderlist_bottom_sheet_simple_payments_moved_title">Pembayaran dari tab Menu</string>
+    <string name="login_no_wpcom_account_found">Email %1$s tidak digunakan dengan akun WordPress.com.</string>
+    <string name="login_non_woo_stores_label">Situs lain</string>
+    <string name="login_with_store_address">Login dengan alamat toko Anda</string>
+    <string name="more_menu_button_w___admin">Admin WC</string>
+    <string name="login_magic_links_email_sent">Kami baru saja mengirimkan tautan ajaib ke </string>
+    <string name="login_magic_links_sent_label_short">Periksa email Anda di perangkat ini!</string>
+    <string name="or_use_password">Gunakan kata sandi untuk login</string>
+    <string name="login_magic_link_button">Login dengan tautan ajaib</string>
+    <string name="login_magic_link_auto_sent">Kami baru saja mengirimkan tautan ajaib ke alamat email Anda. Ketuk tautan di email tersebut untuk login.</string>
+    <string name="login_help_notification_incorrect_wpcom_email_description">Login dengan kredensial situs Anda</string>
+    <string name="promo_linked_products_banner_message">Berikan rekomendasi produk yang membantu dan relevan bagi pelanggan Anda dengan menambahkan upsell dan cross-sell</string>
+    <string name="promo_linked_products_banner_title">Tingkatkan penjualan Anda dengan produk tertaut</string>
+    <string name="card_reader_upsell_card_reader_banner_description">Mulai berjualan secara langsung dalam waktu kurang dari 20 menit dengan pembaca kartu kami.</string>
+    <string name="orderlist_updating_order_error">Error saat memperbarui Pesanan #%1$d</string>
+    <string name="orderlist_mark_completed_success">Pesanan #%1$d ditandai selesai</string>
+    <string name="orderlist_mark_completed">Tandai\nselesai</string>
+    <string name="login_install_woo">Instal WooCommerce</string>
+    <string name="login_not_woo_store">Tampaknya %1$s bukan situs WooCommerce.</string>
+    <string name="login_prologue_survey_button_switch_stores">Beralih dari satu toko ke toko lain</string>
+    <string name="login_prologue_survey_button_manage_orders">Mengelola pesanan saya</string>
+    <string name="login_prologue_survey_button_edit_products">Membuat atau memperbarui produk saya</string>
+    <string name="login_prologue_survey_button_check_analytics">Memeriksa analitik saya</string>
+    <string name="login_prologue_survey_button_set_up_store">Mencoba untuk menyiapkan toko</string>
+    <string name="login_prologue_survey_button_exploring">Hanya menjelajahi</string>
+    <string name="login_prologue_survey_title">Apa yang mendorong Anda membuka WooCommerce?</string>
+    <string name="tip">Tips</string>
+    <string name="set_up_now">Siapkan sekarang</string>
+    <string name="lets_get_started">Mari kita mulai!</string>
+    <string name="login_help_notification_wordpress_login_button">Login dengan WordPress.com</string>
+    <string name="login_help_notification_contact_support_button">Hubungi dukungan</string>
+    <string name="login_help_notification_site_error_description">Login dengan akun WordPress.com Anda</string>
+    <string name="login_help_notification_no_interaction_default_description">Minta bantuan!</string>
+    <string name="login_help_notification_default_title">Mengalami masalah terkait login?</string>
+    <string name="product_search_sku">SKU</string>
+    <string name="product_search_all">Semua produk</string>
+    <string name="card_reader_upsell_card_reader_banner_dont_show_again">JANGAN TAMPILKAN LAGI</string>
+    <string name="card_reader_upsell_card_reader_banner_remind_me_later">INGATKAN SAYA NANTI</string>
+    <string name="card_reader_upsell_card_reader_banner_dismiss_dialog_description">Jangan khawatir! Anda bisa memulai Pembayaran Langsung kapan saja di Pengaturan. </string>
+    <string name="card_reader_upsell_card_reader_banner_payments">Pembayaran Langsung</string>
+    <string name="card_reader_upsell_card_reader_banner_cta">Beli Pembaca Kartu</string>
+    <string name="card_reader_upsell_card_reader_banner_title">Terima pembayaran dengan mudah</string>
+    <string name="card_reader_upsell_card_reader_banner_new">Baru</string>
+    <string name="card_reader_upsell_card_reader_banner_dismiss">Tutup</string>
+    <string name="orderdetail_view_custom_fields">Lihat kolom khusus</string>
+    <string name="orderdetail_custom_fields">Kolom khusus</string>
+    <string name="order_sync_failed">Tidak dapat menyimpan perubahan</string>
+    <string name="existing_order_cash_dlg_message">Pesanan akan ditandai sebagai dibayar jika Anda telah menerima pembayaran tanpa melalui WooCommerce</string>
+    <string name="login_jetpack_install">Instal Jetpack</string>
+    <string name="login_prologue_label_products_subtitle">Kami membuat Anda bisa memprosesnya dengan mudah</string>
+    <string name="login_prologue_label_orders_subtitle">Anda dapat mengelolanya dengan cepat dan mudah</string>
+    <string name="login_prologue_label_analytics_subtitle">Kami tahu bahwa hal ini penting untuk kelangsungan bisnis Anda</string>
+    <string name="login_prologue_new_to_woo">Baru menggunakan WooCommerce</string>
+    <string name="notification_channel_pre_login_title">Pengingat pemecahan masalah login</string>
+    <string name="tests_notification_new_order_message">Pesanan baru senilai $50 di Toko WooCommerce Anda</string>
+    <string name="tests_notification_new_order_title">Ada pesanan baru! 🎉</string>
+    <string name="lines_all_details">detail</string>
+    <string name="lines_incomplete_explanation">Untuk mengedit semua %1$s, cari pesanan tersebut di admin toko WooCommerce Anda</string>
+    <string name="lines_incomplete">%1$s belum lengkap</string>
+    <string name="support_system_status_report_share_label">Bagikan laporan status sistem</string>
+    <string name="support_system_status_report_copy_label">Salin laporan status sistem ke clipboard</string>
+    <string name="card_reader_connect_keep_searching_button">Terus Mencari</string>
+    <string name="card_reader_payment_description_v2">Pembayaran Langsung untuk Pesanan #%s di %s blog_id %s.</string>
+    <string name="card_reader_manage_payment_provider">Ubah Penyedia Pembayaran</string>
+    <string name="orderdetail_refunded_line_with_info">Dana dikembalikan: %1$s</string>
+    <string name="orderdetail_payment_summary_onhold_plain">Menunggu pembayaran</string>
     <string name="install_wc_shipping_proceed_button">Lanjutkan Penginstalan</string>
     <string name="install_wc_shipping_installation_info">Hal yang harus diketahui sebelum menginstal</string>
     <string name="install_wc_shipping_preinstall_title">Instal ekstensi</string>
@@ -216,10 +288,11 @@ Language: id
     <string name="coupon_details_minimum_spend">Belanja minimum%s</string>
     <string name="coupon_details_heading">Ringkasan Kupon</string>
     <string name="coupon_list_view_coupon">Lihat ringkasan kupon</string>
-    <string name="coupon_list_wip_message_enabled">Kini Anda dapat melihat dan mengedit kupon di perangkat Anda!</string>
+    <string name="coupon_list_wip_message_enabled">Kini Anda dapat melihat dan mengedit kupon dengan perangkat Anda!</string>
     <string name="coupon_list_wip_title">Lihat dan edit kupon</string>
     <string name="coupon_list_empty_heading">Tidak ada kupon ditemukan</string>
     <string name="coupon_list_item_label_included_and_excluded">%1s excl. %2s</string>
+    <string name="coupon_list_item_label_products_and_categories">%1s dan %2s</string>
     <string name="coupon_list_item_label_everything">semua</string>
     <string name="coupon_list_item_label_expired">Kedaluwarsa </string>
     <string name="coupon_list_item_label_active">Aktif</string>
@@ -285,7 +358,6 @@ Language: id
     <string name="card_reader_onboarding_both_plugins_activated_hint_store_owner">Pembayaran Langsung hanya akan berfungsi jika salah satu plugin berikut diaktifkan. Hubungi administrator situs untuk menonaktifkan salah satu plugin berikut untuk melanjutkan:</string>
     <string name="card_reader_onboarding_both_plugins_activated_hint_admin">Pembayaran Langsung hanya akan berfungsi jika salah satu plugin berikut diaktifkan. Harap nonaktifkan salah satu plugin berikut untuk melanjutkan:</string>
     <string name="card_reader_onboarding_both_plugins_activated_header">Konflik plugin pembayaran terdeteksi</string>
-    <string name="order_creation_price_calculation_failed">Tidak dapat memperbarui harga</string>
     <string name="order_creation_payment_tax">Pajak</string>
     <string name="exclusive_or">atau</string>
     <string name="settings_install_jetpack">Menginstal Jetpack</string>
@@ -702,7 +774,6 @@ Language: id
     <string name="card_reader_refetching_order_failed">Terjadi error saat mengambil pesanan. Status pesanan pada aplikasi mungkin telah usang.</string>
     <string name="card_reader_payment_email_client_not_found">Tidak dapat mendeteksi aplikasi klien email Anda</string>
     <string name="card_reader_payment_receipt_email_subject">Tanda terima Anda dari %s</string>
-    <string name="card_reader_payment_description">Pembayaran Langsung di Tempat untuk Pesanan %s senilai %s</string>
     <string name="card_reader_payment_fetch_order_loading_payment_state">Menyegarkan pesanan</string>
     <string name="card_reader_payment_fetch_order_loading_header">Memperbarui status aplikasi</string>
     <string name="shipping_label_shipping_carrier_shipping_method_banner_message">Pelanggan Anda memilih %1$s</string>
@@ -778,9 +849,8 @@ Language: id
     <string name="user_role_access_error_retry">Peran pengguna Anda salah</string>
     <string name="user_role_access_error_link">Pelajari lebih lanjut tentang peran dan izin</string>
     <string name="user_role_access_error_msg">Aplikasi ini hanya mendukung peran pengguna Administrator dan Manajer Toko. Harap hubungi pemilik toko Anda untuk mengupgrade peran Anda.</string>
-    <string name="login_prologue_label_reviews">Pantau dan setujui ulasan produk Anda</string>
     <string name="login_prologue_label_products">Edit dan tambahkan produk baru dari mana saja</string>
-    <string name="login_prologue_label_orders">Kelola pesanan toko Anda dari mana saja</string>
+    <string name="login_prologue_label_orders">Kelola dan sunting pesanan dari mana saja</string>
     <string name="login_prologue_label_analytics">Lacak penjualan dan produk dengan performa tinggi</string>
     <string name="skip">Lewati</string>
     <string name="product_type_external_title">Produk eksternal</string>
@@ -1056,7 +1126,6 @@ Language: id
     <string name="product_publish_draft_dialog_title">Menyimpan draf</string>
     <string name="product_status_trashed">Dibuang</string>
     <string name="product_detail_save_as_draft">Simpan sebagai draf</string>
-    <string name="login_no_wpcom_account_found">Sepertinya %1$s tidak terhubung dengan akun WordPress.com.</string>
     <string name="signup_confirmation_title">Konfirmasi pendaftaran</string>
     <string name="reset_your_password">Reset kata sandi</string>
     <string name="enter_your_site_address">Masukkan alamat situs Anda</string>
@@ -1736,11 +1805,9 @@ Language: id
     <string name="orderdetail_track_shipment">Lacak pengiriman</string>
     <string name="login_email_help_desc">Di admin situs, Anda bisa menemukan email yang Anda gunakan untuk terhubung ke WordPress.com dari %1$sDasbor Jetpack%2$s di bagian %3$sKoneksi &gt; Koneksi akun%4$s</string>
     <string name="login_email_help_title">Email apa yang saya gunakan untuk masuk?</string>
-    <string name="login_need_help_finding_email">Perlu bantuan untuk menemukan email yang terhubung?</string>
     <string name="login_jetpack_what_is_description">Jetpack merupakan plugin WordPress gratis yang menghubungkan toko Anda dengan peralatan yang diperlukan agar dapat memberikan pengalaman seluler terbaik, mencakup pemberitahuan push dan statistik</string>
     <string name="login_jetpack_what_is">Apa itu Jetpack?</string>
     <string name="login_view_connected_stores">Lihat toko terhubung</string>
-    <string name="login_not_woo_store">Tampaknya %1$s bukan situs WooCommerce. Instal plugin WooCommerce di situs Anda, lalu segarkan aplikasi.</string>
     <string name="login_not_connected_to_account">Sepertinya %1$s tidak terhubung ke akun WordPress.com lainnya.</string>
     <string name="keep_editing">Lanjutkan menyunting</string>
     <string name="notification_wpcom_username_needed">Silakan login dengan nama pengguna dan kata sandi Anda.</string>

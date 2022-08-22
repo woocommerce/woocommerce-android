@@ -6,11 +6,21 @@ plugins {
     id 'org.jetbrains.kotlin.android'
     id 'org.jetbrains.kotlin.kapt'
     id 'org.jetbrains.kotlin.plugin.parcelize'
-    id 'dagger.hilt.android.plugin'
+    id 'com.google.dagger.hilt.android'
     id 'se.bjurr.violations.violation-comments-to-github-gradle-plugin'
     id 'io.sentry.android.gradle'
     id 'androidx.navigation.safeargs.kotlin'
     id 'com.google.gms.google-services'
+}
+
+sentry {
+    tracingInstrumentation {
+        enabled = true
+        features = [io.sentry.android.gradle.extensions.InstrumentationFeature.DATABASE]
+    }
+    autoInstallation {
+        enabled = false
+    }
 }
 
 repositories {
@@ -56,7 +66,7 @@ repositories {
 }
 
 android {
-    compileSdkVersion 31
+    compileSdkVersion gradle.ext.compileSdkVersion
 
     defaultConfig {
         applicationId "com.woocommerce.android"
@@ -64,15 +74,15 @@ android {
         if (project.hasProperty("versionName")) {
             versionName project.property("versionName")
         } else {
-            versionName "9.5"
+            versionName "10.0-rc-1"
         }
-        versionCode 311
+        versionCode 321
 
-        minSdkVersion 21
+        minSdkVersion gradle.ext.minSdkVersion
         // Update targetSdkVersion only after reviewing all the OS changes (developer.android.com/about/versions/[ENTER_ANDROID_VERSION]/migration)
         // and thoroughly testing the app. Consider publishing a p2 post to inform the team about the upcoming change.
         // P.S. Update the targetSdkVersion in all the modules, otherwise static analysis tools won't give you a heads-up about potential issues.
-        targetSdkVersion 31
+        targetSdkVersion gradle.ext.targetSdkVersion
 
         vectorDrawables.useSupportLibrary = true
 
@@ -98,13 +108,6 @@ android {
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
-    }
-
-    kotlinOptions {
-        jvmTarget = "1.8"
-        freeCompilerArgs += [
-                "-Xopt-in=kotlin.RequiresOptIn"
-        ]
     }
 
     composeOptions {
@@ -178,7 +181,11 @@ dependencies {
         exclude group: "com.google.guava", module: "guava"
     }
 
-    implementation 'com.google.firebase:firebase-messaging-ktx:23.0.5'
+    implementation platform('com.google.firebase:firebase-bom:30.3.0')
+    implementation 'com.google.firebase:firebase-messaging-ktx'
+    implementation 'com.google.firebase:firebase-config-ktx'
+    implementation 'com.google.firebase:firebase-analytics-ktx'
+
     implementation 'com.google.android.gms:play-services-auth:20.2.0'
 
     // Support library
@@ -200,6 +207,8 @@ dependencies {
     implementation "androidx.navigation:navigation-ui-ktx:$gradle.ext.navigationVersion"
     api "androidx.navigation:navigation-dynamic-features-fragment:$gradle.ext.navigationVersion"
 
+    implementation "androidx.work:work-runtime-ktx:$workManagerVersion"
+
     implementation("org.wordpress:utils:$wordPressUtilsVersion") {
         exclude group: "com.mcxiaoke.volley"
         exclude group: "com.android.support"
@@ -208,7 +217,7 @@ dependencies {
     implementation("com.automattic.tracks:experimentation:trunk-f25f5b5e77df8313f19d47d07e7411256d18df79") {
         exclude group: "org.wordpress", module: "fluxc"
     }
-    implementation 'com.automattic:Automattic-Tracks-Android:2.2.0'
+    implementation 'com.automattic:Automattic-Tracks-Android:trunk-95d0743430d709a8ee1fdc128e726056cfd6bb09'
 
     implementation("${gradle.ext.fluxCBinaryPath}:$fluxCVersion") {
         exclude group: "com.android.support"
@@ -247,6 +256,10 @@ dependencies {
     // Dagger
     implementation "com.google.dagger:hilt-android:$gradle.ext.daggerVersion"
     implementation "androidx.hilt:hilt-navigation-fragment:$hiltJetpackVersion"
+    implementation "androidx.hilt:hilt-common:$hiltJetpackVersion"
+    implementation "androidx.hilt:hilt-work:$hiltJetpackVersion"
+
+    kapt"androidx.hilt:hilt-compiler:$hiltJetpackVersion"
     kapt "com.google.dagger:hilt-compiler:$gradle.ext.daggerVersion"
     implementation "com.google.dagger:dagger-android-support:$gradle.ext.daggerVersion"
     kapt "com.google.dagger:dagger-android-processor:$gradle.ext.daggerVersion"
@@ -408,7 +421,6 @@ tasks.register("violationCommentsToGitHub", ViolationCommentsToGitHubTask) {
 {{violation.message}}
 """
     violations = [
-            ["CHECKSTYLE", ".", ".*/build/.*/checkstyle/.*\\.xml\$", "CheckStyle"],
             ["CHECKSTYLE", ".", ".*/build/.*/detekt/.*\\.xml\$", "Detekt"]
     ]
 }

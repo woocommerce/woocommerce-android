@@ -20,10 +20,10 @@
     "response": {
         "status": 200,
         "jsonBody": {
-            "date": "{{#assign 'currentYear'}}{{now format='yyyy'}}{{/assign}}{{currentYear}}-10-01",
+            "date": "{{#assign 'currentYear'}}{{fnow format='yyyy'}}{{/assign}}{{currentYear}}-10-01",
             "unit": "month",
             "fields": [
-                "period", 
+                "period",
                 "visitors"
             ],
             "data": [

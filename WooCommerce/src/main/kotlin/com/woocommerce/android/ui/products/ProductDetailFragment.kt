@@ -37,11 +37,13 @@ import com.woocommerce.android.model.Product
 import com.woocommerce.android.model.Product.Image
 import com.woocommerce.android.ui.aztec.AztecEditorFragment
 import com.woocommerce.android.ui.aztec.AztecEditorFragment.Companion.ARG_AZTEC_EDITOR_TEXT
+import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.ui.dialog.WooDialog
 import com.woocommerce.android.ui.main.AppBarStatus
 import com.woocommerce.android.ui.products.ProductDetailViewModel.HideImageUploadErrorSnackbar
 import com.woocommerce.android.ui.products.ProductDetailViewModel.MenuButtonsState
 import com.woocommerce.android.ui.products.ProductDetailViewModel.RefreshMenu
+import com.woocommerce.android.ui.products.ProductDetailViewModel.ShowLinkedProductPromoBanner
 import com.woocommerce.android.ui.products.ProductInventoryViewModel.InventoryData
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductDetailBottomSheet
 import com.woocommerce.android.ui.products.ProductPricingViewModel.PricingData
@@ -52,7 +54,10 @@ import com.woocommerce.android.ui.products.models.ProductPropertyCard
 import com.woocommerce.android.ui.products.reviews.ProductReviewsFragment
 import com.woocommerce.android.ui.products.variations.VariationListFragment
 import com.woocommerce.android.ui.products.variations.VariationListViewModel.VariationListData
+import com.woocommerce.android.ui.promobanner.PromoBanner
+import com.woocommerce.android.ui.promobanner.PromoBannerType
 import com.woocommerce.android.util.ChromeCustomTabUtils
+import com.woocommerce.android.util.WooAnimUtils
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.LaunchUrlInChromeTab
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowActionSnackbar
@@ -285,6 +290,8 @@ class ProductDetailFragment :
                 }
                 is ShowActionSnackbar -> displayProductImageUploadErrorSnackBar(event.message, event.action)
                 is HideImageUploadErrorSnackbar -> imageUploadErrorsSnackbar?.dismiss()
+                is ShowLinkedProductPromoBanner -> showLinkedProductPromoBanner()
+
                 else -> event.isHandled = false
             }
         }
@@ -294,6 +301,9 @@ class ProductDetailFragment :
         }
     }
 
+    /**
+     *  Triggered when the view modal updates or creates an order that doesn't already have linked products
+     */
     private fun showProductDetails(product: Product) {
         productName = updateProductNameFromDetails(product)
         productId = product.remoteId
@@ -455,6 +465,29 @@ class ProductDetailFragment :
         val recyclerViewState = binding.cardsRecyclerView.layoutManager?.onSaveInstanceState()
         adapter.update(cards)
         binding.cardsRecyclerView.layoutManager?.onRestoreInstanceState(recyclerViewState)
+    }
+
+    private fun showLinkedProductPromoBanner() {
+        if (binding.promoComposableContainer.isVisible.not()) {
+            if (binding.promoComposable.hasComposition.not()) {
+                binding.promoComposable.setContent {
+                    WooThemeWithBackground {
+                        PromoBanner(
+                            bannerType = PromoBannerType.LINKED_PRODUCTS,
+                            onCtaClick = {
+                                WooAnimUtils.scaleOut(binding.promoComposableContainer)
+                                viewModel.onLinkedProductPromoClicked()
+                            },
+                            onDismissClick = {
+                                WooAnimUtils.scaleOut(binding.promoComposableContainer)
+                                viewModel.onLinkedProductPromoDismissed()
+                            }
+                        )
+                    }
+                }
+            }
+            WooAnimUtils.scaleIn(binding.promoComposableContainer, WooAnimUtils.Duration.MEDIUM)
+        }
     }
 
     override fun onSaveInstanceState(outState: Bundle) {

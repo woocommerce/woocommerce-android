@@ -1,11 +1,83 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2022-06-30 09:54:04+0000
+Translation-Revision-Date: 2022-08-17 09:54:03+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: ja_JP
 -->
 <resources>
+    <string name="login_help_notification_get_link_by_email_button">ログインリンクをメールで取得</string>
+    <string name="login_help_notification_invalid_password_title">パスワードを忘れた場合</string>
+    <string name="card_reader_onboarding_not_finished">「オフラインでの支払い」の設定が完了していないようです。 &lt;b&gt;&lt;a href=\'\'&gt;セットアップを続行&lt;/a&gt;&lt;/b&gt;</string>
+    <string name="payments_hub_title">支払い</string>
+    <string name="orderlist_bottom_sheet_simple_payments_moved_button">分かりました。</string>
+    <string name="orderlist_bottom_sheet_simple_payments_moved_description">「オフラインでの支払い」やその他の機能に簡単に素早くアクセスできるようになりました</string>
+    <string name="orderlist_bottom_sheet_simple_payments_moved_title">「メニュー」タブの「支払い」</string>
+    <string name="login_no_wpcom_account_found">メールアドレス %1$s は WordPress.com アカウントで使用されていません。</string>
+    <string name="login_non_woo_stores_label">その他のサイト</string>
+    <string name="login_with_store_address">ストアアドレスでログイン</string>
+    <string name="more_menu_button_w___admin">WC Admin</string>
+    <string name="login_magic_links_email_sent">マジックリンクを次のアドレスに送信しました: </string>
+    <string name="login_magic_links_sent_label_short">この端末でメールアドレスを確認してください。</string>
+    <string name="or_use_password">パスワードを使用してログイン</string>
+    <string name="login_magic_link_button">マジックリンクでログイン</string>
+    <string name="login_magic_link_auto_sent">マジックリンクをメールアドレスに送信しました。 ログインするには、メールに記載されているリンクをタップしてください。</string>
+    <string name="login_help_notification_incorrect_wpcom_email_description">サイトのログイン情報でログイン</string>
+    <string name="promo_linked_products_banner_message">アップセルとクロスセルを追加して、顧客に有益で関連性の高い商品のおすすめを提案します</string>
+    <string name="promo_linked_products_banner_title">リンク付き商品で売り上げを伸ばす</string>
+    <string name="card_reader_upsell_card_reader_banner_description">カードリーダーを使用すれば、20分で直接販売を開始できます。</string>
+    <string name="orderlist_updating_order_error">注文番号%1$dの更新中にエラーが発生しました</string>
+    <string name="orderlist_mark_completed_success">注文番号%1$dが完了としてマークされました</string>
+    <string name="orderlist_mark_completed">マーク\n完了</string>
+    <string name="login_install_woo">WooCommerce をインストール</string>
+    <string name="login_not_woo_store">%1$s は WooCommerce サイトではないようです。</string>
+    <string name="login_prologue_survey_button_switch_stores">複数のストアを切り替える</string>
+    <string name="login_prologue_survey_button_manage_orders">注文を管理する</string>
+    <string name="login_prologue_survey_button_edit_products">商品を作成または更新する</string>
+    <string name="login_prologue_survey_button_check_analytics">アナリティクスを確認する</string>
+    <string name="login_prologue_survey_button_set_up_store">ストアを立ち上げようとしています</string>
+    <string name="login_prologue_survey_button_exploring">探っています</string>
+    <string name="login_prologue_survey_title">WooCommerce を使うのはなぜですか ?</string>
+    <string name="tip">ヒント</string>
+    <string name="set_up_now">今すぐ設定</string>
+    <string name="lets_get_started">ここからスタート。</string>
+    <string name="login_help_notification_wordpress_login_button">WordPress.com にログイン</string>
+    <string name="login_help_notification_contact_support_button">サポートに問い合わせる</string>
+    <string name="login_help_notification_site_error_description">WordPress.com アカウントでログイン</string>
+    <string name="login_help_notification_no_interaction_default_description">サポートを利用する</string>
+    <string name="login_help_notification_default_title">ログインで問題がある場合</string>
+    <string name="product_search_sku">SKU</string>
+    <string name="product_search_all">すべての商品</string>
+    <string name="card_reader_upsell_card_reader_banner_dont_show_again">今後表示しない</string>
+    <string name="card_reader_upsell_card_reader_banner_remind_me_later">後で再通知</string>
+    <string name="card_reader_upsell_card_reader_banner_dismiss_dialog_description">今がチャンスです ! オフラインでの支払いはいつでも設定から開始できます。</string>
+    <string name="card_reader_upsell_card_reader_banner_payments">オフラインでの支払い</string>
+    <string name="card_reader_upsell_card_reader_banner_cta">カードリーダーを購入</string>
+    <string name="card_reader_upsell_card_reader_banner_title">簡単に支払いを受け取る</string>
+    <string name="card_reader_upsell_card_reader_banner_new">新規</string>
+    <string name="card_reader_upsell_card_reader_banner_dismiss">非表示</string>
+    <string name="orderdetail_view_custom_fields">カスタムフィールドを表示</string>
+    <string name="orderdetail_custom_fields">カスタムフィールド</string>
+    <string name="order_sync_failed">変更内容を保存できません</string>
+    <string name="existing_order_cash_dlg_message">WooCommerce 以外で支払いを受け取った場合、この注文は支払い済みとしてマークされます</string>
+    <string name="login_jetpack_install">Jetpack をインストール</string>
+    <string name="login_prologue_label_products_subtitle">手間をかけずに処理できるようになりました</string>
+    <string name="login_prologue_label_orders_subtitle">スピーディかつ簡単に管理できます</string>
+    <string name="login_prologue_label_analytics_subtitle">ビジネスに欠かせないものであることはわかっています</string>
+    <string name="login_prologue_new_to_woo">初めて WooCommerce をお使いになる場合</string>
+    <string name="notification_channel_pre_login_title">ログインのトラブルシューティングに関するリマインダー</string>
+    <string name="tests_notification_new_order_message">WooCommerce ストアに $50の新しい注文があります</string>
+    <string name="tests_notification_new_order_title">新しい注文があります。🎉</string>
+    <string name="lines_all_details">詳細</string>
+    <string name="lines_incomplete_explanation">すべての %1$s を編集するには、WooCommerce ストア管理で注文を閲覧します</string>
+    <string name="lines_incomplete">%1$s が未完了です</string>
+    <string name="support_system_status_report_share_label">システムステータスレポートを共有</string>
+    <string name="support_system_status_report_copy_label">システムステータスレポートをクリップボードにコピー</string>
+    <string name="card_reader_connect_keep_searching_button">検索を続行</string>
+    <string name="card_reader_payment_description_v2">%s blog_id %s への注文 #%sのオフラインでの支払い。</string>
+    <string name="card_reader_manage_payment_provider">決済サービス業者を変更</string>
+    <string name="orderdetail_refunded_line_with_info">返金済み: %1$s</string>
+    <string name="orderdetail_payment_summary_onhold_plain">支払い待ち</string>
     <string name="install_wc_shipping_proceed_button">インストールを進める</string>
     <string name="install_wc_shipping_installation_info">インストール前に</string>
     <string name="install_wc_shipping_preinstall_title">拡張機能をインストール</string>
@@ -216,10 +288,11 @@ Language: ja_JP
     <string name="coupon_details_minimum_spend">%sの利用最小額</string>
     <string name="coupon_details_heading">クーポンの概要</string>
     <string name="coupon_list_view_coupon">クーポンの概要を表示</string>
-    <string name="coupon_list_wip_message_enabled">デバイスでクーポンを表示できる機能を開発中です !</string>
+    <string name="coupon_list_wip_message_enabled">デバイスからクーポンを表示、編集できる機能を開発中です !</string>
     <string name="coupon_list_wip_title">クーポンを表示して編集する</string>
     <string name="coupon_list_empty_heading">クーポンが見つかりません</string>
     <string name="coupon_list_item_label_included_and_excluded">%1s (%2s を除く)</string>
+    <string name="coupon_list_item_label_products_and_categories">%1s、%2s</string>
     <string name="coupon_list_item_label_everything">すべて</string>
     <string name="coupon_list_item_label_expired">期限切れ</string>
     <string name="coupon_list_item_label_active">有効</string>
@@ -285,7 +358,6 @@ Language: ja_JP
     <string name="card_reader_onboarding_both_plugins_activated_hint_store_owner">「オフラインでの支払い」は、次のプラグインのいずれかが有効化済みの場合にのみ機能します。 続行するには、サイト管理者に連絡して、次のプラグインのいずれかを無効化してください。</string>
     <string name="card_reader_onboarding_both_plugins_activated_hint_admin">「オフラインでの支払い」は、次のプラグインのいずれかが有効化済みの場合にのみ機能します。 続行するには、次のプラグインのいずれかを無効化してください。</string>
     <string name="card_reader_onboarding_both_plugins_activated_header">支払いプラグインが複数検出されました</string>
-    <string name="order_creation_price_calculation_failed">価格を更新できませんでした</string>
     <string name="order_creation_payment_tax">税金</string>
     <string name="exclusive_or">または</string>
     <string name="settings_install_jetpack">Jetpack をインストール</string>
@@ -702,7 +774,6 @@ Language: ja_JP
     <string name="card_reader_refetching_order_failed">注文を取得する際にエラーが発生しました。 アプリの注文状態が古い可能性があります。</string>
     <string name="card_reader_payment_email_client_not_found">メールクライアントアプリを検出できません</string>
     <string name="card_reader_payment_receipt_email_subject">%s のレシート</string>
-    <string name="card_reader_payment_description">%s への %s の注文のオフラインでの支払い</string>
     <string name="card_reader_payment_fetch_order_loading_payment_state">注文を更新する</string>
     <string name="card_reader_payment_fetch_order_loading_header">アプリの状態を更新する</string>
     <string name="shipping_label_shipping_carrier_shipping_method_banner_message">お客様が %1$s を選択しました</string>
@@ -778,9 +849,8 @@ Language: ja_JP
     <string name="user_role_access_error_retry">ユーザー権限グループが正しくありません</string>
     <string name="user_role_access_error_link">権限グループと権限の詳細</string>
     <string name="user_role_access_error_msg">このアプリでサポートされているユーザー権限グループは、管理者とショップマネージャーのみです。 自分の権限グループを更新するには、ストア所有者に連絡してください。</string>
-    <string name="login_prologue_label_reviews">商品レビューを監視、承認</string>
     <string name="login_prologue_label_products">どこからでも新しい商品を編集、追加</string>
-    <string name="login_prologue_label_orders">外出先でもストアを管理</string>
+    <string name="login_prologue_label_orders">外出先でも注文を管理・編集</string>
     <string name="login_prologue_label_analytics">セールスと売れ行きが好調な商品を追跡する</string>
     <string name="skip">スキップ</string>
     <string name="product_type_external_title">外部商品</string>
@@ -1056,7 +1126,6 @@ Language: ja_JP
     <string name="product_publish_draft_dialog_title">下書きを保存しています</string>
     <string name="product_status_trashed">ゴミ箱移動済み</string>
     <string name="product_detail_save_as_draft">下書きとして保存</string>
-    <string name="login_no_wpcom_account_found">%1$s は WordPress.com アカウントと関連付けられていないようです。</string>
     <string name="signup_confirmation_title">登録の確認</string>
     <string name="reset_your_password">パスワードをリセット</string>
     <string name="enter_your_site_address">サイトアドレスを入力</string>
@@ -1736,11 +1805,9 @@ Language: ja_JP
     <string name="orderdetail_track_shipment">配送状況を追跡</string>
     <string name="login_email_help_desc">サイトの管理では、WordPress.com への接続に使用するメールアドレスは %1$sJetpack のダッシュボード%2$sの%3$s「接続 → アカウントの接続」%4$sで確認できます</string>
     <string name="login_email_help_title">サインインにはどのメールアドレスを使用すればよいですか ?</string>
-    <string name="login_need_help_finding_email">関連付けられているメールアドレスをお忘れですか ?</string>
     <string name="login_jetpack_what_is_description">Jetpack は WordPress の無料のプラグインであり、ストアをモバイルでの最適な操作に必要なツール (プッシュ通知および統計を含む) と接続します。</string>
     <string name="login_jetpack_what_is">Jetpack とは ?</string>
     <string name="login_view_connected_stores">連携ストアを表示</string>
-    <string name="login_not_woo_store">%1$s は WooCommerce サイトではないようです。 サイトに WooCommerce プラグインをインストールし、アプリを再読み込みしてください。</string>
     <string name="login_not_connected_to_account">%1$s は別の WordPress.com アカウントと関連付けられているようです。</string>
     <string name="keep_editing">編集を続行</string>
     <string name="notification_wpcom_username_needed">ユーザー名とパスワードでログインしてください。</string>

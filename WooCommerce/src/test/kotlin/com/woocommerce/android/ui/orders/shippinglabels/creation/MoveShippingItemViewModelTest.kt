@@ -4,10 +4,12 @@ import com.woocommerce.android.initSavedStateHandle
 import com.woocommerce.android.model.ShippingLabelPackage
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import com.woocommerce.android.viewmodel.MultiLiveEvent
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 import java.math.BigDecimal
 
+@ExperimentalCoroutinesApi
 class MoveShippingItemViewModelTest : BaseUnitTest() {
     lateinit var viewModel: MoveShippingItemViewModel
 

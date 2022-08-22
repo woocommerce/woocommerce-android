@@ -1,6 +1,3 @@
-We keep adding new functionality to our experimental Coupon Management feature! This release includes editing and deleting coupons along with several improvements on viewing. Turn this feature on for early access in the More tab, Settings, Beta Features.
-
-We also fixed a bug that was making it hard for some of you to search orders. Thanks to everyone who reported this! Your feedback is vital to us!'
-
-[***] In-Person Payments: Enabled ability to choose a payment gateway when multiple payment gateway is installed on a site for all! (https://github.com/woocommerce/woocommerce-android/pull/6887)
+We’ve made various enhancements to get your business started. It’s now easier to set up your store when logging in. And you can now enable paying in person right in the app!
+Lastly, we’ve made some tweaks to improve performance. But we’re not done. Keep an eye out for more enhancements in the future. Please keep sending your feedback! We read every one of them!
 

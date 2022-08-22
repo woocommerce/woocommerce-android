@@ -5,7 +5,9 @@ import android.os.Bundle
 import android.text.Spannable
 import android.text.SpannableString
 import android.text.method.LinkMovementMethod
+import android.view.LayoutInflater
 import android.view.View
+import android.view.ViewGroup
 import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
@@ -31,7 +33,6 @@ import com.woocommerce.android.extensions.show
 import com.woocommerce.android.model.FeatureAnnouncement
 import com.woocommerce.android.support.HelpActivity
 import com.woocommerce.android.support.HelpActivity.Origin
-import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderFlowParam
 import com.woocommerce.android.util.AnalyticsUtils
 import com.woocommerce.android.util.AppThemeUtils
 import com.woocommerce.android.util.ChromeCustomTabUtils
@@ -64,6 +65,18 @@ class MainSettingsFragment : Fragment(R.layout.fragment_settings_main), MainSett
     }
 
     private lateinit var settingsListener: AppSettingsListener
+
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View {
+        setHasOptionsMenu(true)
+        _binding = FragmentSettingsMainBinding.inflate(inflater, container, false)
+
+        val view = binding.root
+        return view
+    }
 
     @Suppress("ForbiddenComment", "LongMethod")
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -111,12 +124,6 @@ class MainSettingsFragment : Fragment(R.layout.fragment_settings_main), MainSett
         }
 
         updateStoreSettings()
-        binding.optionCardReaderPayments.setOnClickListener {
-            val action = MainSettingsFragmentDirections.actionMainSettingsFragmentToCardReaderFlow(
-                CardReaderFlowParam.CardReadersHub
-            )
-            findNavController().navigateSafely(action)
-        }
 
         binding.optionHelpAndSupport.setOnClickListener {
             AnalyticsTracker.track(AnalyticsEvent.MAIN_MENU_CONTACT_SUPPORT_TAPPED)
@@ -220,6 +227,7 @@ class MainSettingsFragment : Fragment(R.layout.fragment_settings_main), MainSett
 
     override fun handleJetpackInstallOption(isJetpackCPSite: Boolean) {
         if (isJetpackCPSite) {
+            binding.storeSettingsContainer.visibility = View.VISIBLE
             binding.optionInstallJetpack.visibility = View.VISIBLE
             binding.optionInstallJetpack.setOnClickListener {
                 findNavController().navigateSafely(
@@ -227,8 +235,13 @@ class MainSettingsFragment : Fragment(R.layout.fragment_settings_main), MainSett
                 )
             }
         } else {
-            binding.optionInstallJetpack.visibility = View.GONE
+            // Hide the whole container because jetpack is the only option there
+            binding.storeSettingsContainer.visibility = View.GONE
         }
+    }
+
+    override fun openPurchaseCardReaderLink(url: String) {
+        ChromeCustomTabUtils.launchUrl(requireContext(), url)
     }
 
     override fun showLatestAnnouncementOption(announcement: FeatureAnnouncement) {

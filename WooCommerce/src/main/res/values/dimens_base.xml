@@ -31,6 +31,7 @@ so that's the baseline as defined in `major_100`.
     <dimen name="major_300">48dp</dimen>
     <dimen name="major_325">56dp</dimen>
     <dimen name="major_350">60dp</dimen>
+    <dimen name="major_400">96dp</dimen>
 
     <!-- Regular text dimensions (body, subtitles, caption, etc -->
     <dimen name="text_minor_60">10sp</dimen>
@@ -128,5 +129,8 @@ so that's the baseline as defined in `major_100`.
 
     <!-- More Menu dimens -->
     <dimen name="more_menu_button_height">190dp</dimen>
+
+    <!-- Order List -->
+    <dimen name="swipeable_glance_distance">16dp</dimen>
 
 </resources>

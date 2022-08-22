@@ -51,7 +51,7 @@ import com.woocommerce.android.ui.main.MainNavigationRouter
 import com.woocommerce.android.ui.orders.OrderNavigationTarget
 import com.woocommerce.android.ui.orders.OrderNavigator
 import com.woocommerce.android.ui.orders.OrderProductActionListener
-import com.woocommerce.android.ui.orders.details.OrderDetailViewModel.OrderStatusUpdateSource
+import com.woocommerce.android.ui.orders.OrderStatusUpdateSource
 import com.woocommerce.android.ui.orders.details.adapter.OrderDetailShippingLabelsAdapter.OnShippingLabelClickListener
 import com.woocommerce.android.ui.orders.details.editing.OrderEditingViewModel
 import com.woocommerce.android.ui.orders.details.views.OrderDetailOrderStatusView.Mode
@@ -115,6 +115,7 @@ class OrderDetailFragment : BaseFragment(R.layout.fragment_order_detail), OrderP
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        lifecycle.addObserver(viewModel.performanceObserver)
         super.onCreate(savedInstanceState)
         val transitionDuration = resources.getInteger(R.integer.default_fragment_transition).toLong()
         val backgroundColor = ContextCompat.getColor(requireContext(), R.color.default_window_background)
@@ -146,6 +147,9 @@ class OrderDetailFragment : BaseFragment(R.layout.fragment_order_detail), OrderP
             scrollUpChild = binding.scrollView
             setOnRefreshListener { viewModel.onRefreshRequested() }
         }
+        binding.customFieldsCard.customFieldsButton.setOnClickListener {
+            viewModel.onCustomFieldsButtonClicked()
+        }
 
         ViewCompat.setTransitionName(
             binding.scrollView,
@@ -163,6 +167,13 @@ class OrderDetailFragment : BaseFragment(R.layout.fragment_order_detail), OrderP
         inflater.inflate(R.menu.menu_order_detail, menu)
         val menuEditOrder = menu.findItem(R.id.menu_edit_order)
         menuEditOrder.isVisible = FeatureFlag.UNIFIED_ORDER_EDITING.isEnabled()
+    }
+
+    override fun onPrepareOptionsMenu(menu: Menu) {
+        super.onPrepareOptionsMenu(menu)
+        menu.findItem(R.id.menu_edit_order)?.let {
+            it.isEnabled = viewModel.hasOrder()
+        }
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
@@ -191,6 +202,7 @@ class OrderDetailFragment : BaseFragment(R.layout.fragment_order_detail), OrderP
         viewModel.viewStateData.observe(viewLifecycleOwner) { old, new ->
             new.orderInfo?.takeIfNotEqualTo(old?.orderInfo) {
                 showOrderDetail(it.order!!, it.isPaymentCollectableWithCardReader, it.isReceiptButtonsVisible)
+                requireActivity().invalidateOptionsMenu()
             }
             new.orderStatus?.takeIfNotEqualTo(old?.orderStatus) { showOrderStatus(it) }
             new.isMarkOrderCompleteButtonVisible?.takeIfNotEqualTo(old?.isMarkOrderCompleteButtonVisible) {
@@ -219,6 +231,9 @@ class OrderDetailFragment : BaseFragment(R.layout.fragment_order_detail), OrderP
             new.refreshedProductId?.takeIfNotEqualTo(old?.refreshedProductId) { refreshProduct(it) }
             new.wcShippingBannerVisible?.takeIfNotEqualTo(old?.wcShippingBannerVisible) {
                 showInstallWcShippingBanner(it)
+            }
+            new.isCustomFieldsButtonShown?.takeIfNotEqualTo(old?.isCustomFieldsButtonShown) {
+                binding.customFieldsCard.isVisible = it
             }
         }
 

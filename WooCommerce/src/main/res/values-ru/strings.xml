@@ -1,11 +1,83 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2022-06-30 09:54:03+0000
+Translation-Revision-Date: 2022-08-18 11:54:04+0000
 Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);
 Generator: GlotPress/2.4.0-alpha
 Language: ru
 -->
 <resources>
+    <string name="login_help_notification_get_link_by_email_button">Получить ссылку на вход по эл. почте</string>
+    <string name="login_help_notification_invalid_password_title">Забыли пароль?</string>
+    <string name="card_reader_onboarding_not_finished">Мы заметили, что вы ещё не завершили настройку очных платежей. &lt;b&gt;&lt;a href=\'\'&gt;Продолжить настройку&lt;/a&gt;&lt;/b&gt;</string>
+    <string name="payments_hub_title">Платежи</string>
+    <string name="orderlist_bottom_sheet_simple_payments_moved_button">Понятно!</string>
+    <string name="orderlist_bottom_sheet_simple_payments_moved_description">Теперь можно быстро и просто получать доступ к очным платежам и другим функциям</string>
+    <string name="orderlist_bottom_sheet_simple_payments_moved_title">Платежи из вкладки меню</string>
+    <string name="login_no_wpcom_account_found">Адрес эл. почты %1$s не используется с учётной записью WordPress.com.</string>
+    <string name="login_non_woo_stores_label">Другие сайты</string>
+    <string name="login_with_store_address">Войти с помощью адреса магазина</string>
+    <string name="more_menu_button_w___admin">WC Admin</string>
+    <string name="login_magic_links_email_sent">Только что мы отправили специальную ссылку на</string>
+    <string name="login_magic_links_sent_label_short">Проверьте почту с этого устройства!</string>
+    <string name="or_use_password">Войти с паролем</string>
+    <string name="login_magic_link_button">Вход по специальной ссылке</string>
+    <string name="login_magic_link_auto_sent">На вашу электронную почту отправлено письмо со специальной ссылкой. Перейдите по ней, чтобы войти.</string>
+    <string name="login_help_notification_incorrect_wpcom_email_description">Войти с учетными данными сайта</string>
+    <string name="promo_linked_products_banner_message">Сделайте рекомендации полезными и актуальными: добавьте продукты для дополнительных и сопутствующих продаж.</string>
+    <string name="promo_linked_products_banner_title">Добавьте связанные продукты, чтобы повысить продажи</string>
+    <string name="card_reader_upsell_card_reader_banner_description">Начните принимать платежи с помощью нашего терминала. Обучение работе с ним займет не больше 20 минут.</string>
+    <string name="orderlist_updating_order_error">Ошибка обновления заказа № %1$d</string>
+    <string name="orderlist_mark_completed_success">Заказ № %1$d отмечен как выполненный</string>
+    <string name="orderlist_mark_completed">Отметить как\nзавершена</string>
+    <string name="login_install_woo">Установить WooCommerce</string>
+    <string name="login_not_woo_store">Похоже, %1$s не является сайтом WooCommerce.</string>
+    <string name="login_prologue_survey_button_switch_stores">Работать с несколькими магазинами</string>
+    <string name="login_prologue_survey_button_manage_orders">Управлять заказами</string>
+    <string name="login_prologue_survey_button_edit_products">Создавать и обновлять продукты</string>
+    <string name="login_prologue_survey_button_check_analytics">Смотреть аналитику</string>
+    <string name="login_prologue_survey_button_set_up_store">Настраивать магазин</string>
+    <string name="login_prologue_survey_button_exploring">Просто изучать функционал</string>
+    <string name="login_prologue_survey_title">Что вы планируете делать в приложении WooCommerce?</string>
+    <string name="tip">Совет</string>
+    <string name="set_up_now">Настроить</string>
+    <string name="lets_get_started">Приступим!</string>
+    <string name="login_help_notification_wordpress_login_button">Войти на WordPress.com</string>
+    <string name="login_help_notification_contact_support_button">Связаться со службой поддержки</string>
+    <string name="login_help_notification_site_error_description">Войти с помощью учетной записи WordPress.com</string>
+    <string name="login_help_notification_no_interaction_default_description">Обратитесь за помощью!</string>
+    <string name="login_help_notification_default_title">Возникли проблемы со входом?</string>
+    <string name="product_search_sku">Артикул</string>
+    <string name="product_search_all">Все товары</string>
+    <string name="card_reader_upsell_card_reader_banner_dont_show_again">БОЛЬШЕ НЕ ПОКАЗЫВАТЬ</string>
+    <string name="card_reader_upsell_card_reader_banner_remind_me_later">НАПОМНИТЬ ПОЗЖЕ</string>
+    <string name="card_reader_upsell_card_reader_banner_dismiss_dialog_description">Не стоит волноваться! Включить очные платежи можно в настройках в любой момент.</string>
+    <string name="card_reader_upsell_card_reader_banner_payments">Очные платежи</string>
+    <string name="card_reader_upsell_card_reader_banner_cta">Купить устройство считывания карт</string>
+    <string name="card_reader_upsell_card_reader_banner_title">Принимайте платежи легко</string>
+    <string name="card_reader_upsell_card_reader_banner_new">НОВИНКА</string>
+    <string name="card_reader_upsell_card_reader_banner_dismiss">Закрыть</string>
+    <string name="orderdetail_view_custom_fields">Просмотр произвольных полей</string>
+    <string name="orderdetail_custom_fields">Произвольные поля</string>
+    <string name="order_sync_failed">Не удалось сохранить изменения</string>
+    <string name="existing_order_cash_dlg_message">Заказ будет отмечен как оплаченный, если вы получили платеж не через WooCommerce</string>
+    <string name="login_jetpack_install">Установить Jetpack</string>
+    <string name="login_prologue_label_products_subtitle">Мы поможем выполнять обработку без лишних усилий</string>
+    <string name="login_prologue_label_orders_subtitle">Простое и быстрое управление.</string>
+    <string name="login_prologue_label_analytics_subtitle">Знаем, что это важно для бизнеса</string>
+    <string name="login_prologue_new_to_woo">Недавно на WooCommerce</string>
+    <string name="notification_channel_pre_login_title">Напоминания об устранении неполадок во входом</string>
+    <string name="tests_notification_new_order_message">Новый заказ на 50 долл. в магазине WooCommerce</string>
+    <string name="tests_notification_new_order_title">Поступил новый заказ! 🎉</string>
+    <string name="lines_all_details">сведения</string>
+    <string name="lines_incomplete_explanation">Чтобы изменить все %1$s, откройте заказ в разделе администрирования WooCommerce</string>
+    <string name="lines_incomplete">Неполные данные %1$s.</string>
+    <string name="support_system_status_report_share_label">Отправить отчёт о состоянии системы</string>
+    <string name="support_system_status_report_copy_label">Копировать отчёт о состоянии системы в буфер обмена</string>
+    <string name="card_reader_connect_keep_searching_button">Продолжить поиск</string>
+    <string name="card_reader_payment_description_v2">Оплата при получении, заказ № %s для %s blog_id %s.</string>
+    <string name="card_reader_manage_payment_provider">Изменение платёжного сервиса</string>
+    <string name="orderdetail_refunded_line_with_info">Возвращенные средства: %1$s</string>
+    <string name="orderdetail_payment_summary_onhold_plain">Ожидание платежа</string>
     <string name="install_wc_shipping_proceed_button">Продолжить установку</string>
     <string name="install_wc_shipping_installation_info">Подготовка к установке</string>
     <string name="install_wc_shipping_preinstall_title">Установить расширение</string>
@@ -216,7 +288,7 @@ Language: ru
     <string name="coupon_details_minimum_spend">Минимальный расход %s</string>
     <string name="coupon_details_heading">Сводка по купонам</string>
     <string name="coupon_list_view_coupon">Смотреть сводку по купонам</string>
-    <string name="coupon_list_wip_message_enabled">Мы разработали функцию, которая позволяет просматривать купоны на вашем устройстве.</string>
+    <string name="coupon_list_wip_message_enabled">Мы разработали функцию, которая позволяет просматривать и редактировать купоны на вашем устройстве.</string>
     <string name="coupon_list_wip_title">Просмотр и редактирование купонов</string>
     <string name="coupon_list_empty_heading">Купоны не найдены</string>
     <string name="coupon_list_item_label_included_and_excluded">%1s без учёта %2s</string>
@@ -286,7 +358,6 @@ Language: ru
     <string name="card_reader_onboarding_both_plugins_activated_hint_store_owner">Очные платежи будут работать только с одним из следующих активированных плагинов. Для продолжения обратитесь к администратору сайта, чтобы деактивировать один из следующих плагинов:</string>
     <string name="card_reader_onboarding_both_plugins_activated_hint_admin">Очные платежи будут работать только с одним из следующих активированных плагинов. Для продолжения деактивируйте один из следующих плагинов:</string>
     <string name="card_reader_onboarding_both_plugins_activated_header">Обнаружены конфликтующие плагины оплаты</string>
-    <string name="order_creation_price_calculation_failed">Не удалось обновить цены</string>
     <string name="order_creation_payment_tax">Налоги</string>
     <string name="exclusive_or">или</string>
     <string name="settings_install_jetpack">Установить Jetpack</string>
@@ -703,7 +774,6 @@ Language: ru
     <string name="card_reader_refetching_order_failed">Ошибка при загрузке заказа. Состояние заказа в приложении могло устареть.</string>
     <string name="card_reader_payment_email_client_not_found">Не удалось определить ваш почтовый клиент</string>
     <string name="card_reader_payment_receipt_email_subject">Ваша квитанция от %s</string>
-    <string name="card_reader_payment_description">Оплата при получении, заказ %s для %s</string>
     <string name="card_reader_payment_fetch_order_loading_payment_state">Обновление заказа</string>
     <string name="card_reader_payment_fetch_order_loading_header">Обновление состояния приложения</string>
     <string name="shipping_label_shipping_carrier_shipping_method_banner_message">Ваш клиент выбрал %1$s</string>
@@ -779,10 +849,9 @@ Language: ru
     <string name="user_role_access_error_retry">Неверная роль пользователя</string>
     <string name="user_role_access_error_link">Подробнее о ролях и разрешениях</string>
     <string name="user_role_access_error_msg">Это приложение поддерживает только роли администратора и менеджера магазина. Свяжитесь с владельцем магазина для изменения роли.</string>
-    <string name="login_prologue_label_reviews">Отслеживайте и одобряйте обзоры своих товаров</string>
     <string name="login_prologue_label_products">Добавляйте новые товары и редактируйте существующие откуда угодно</string>
-    <string name="login_prologue_label_orders">Управляйте заказами на ходу</string>
-    <string name="login_prologue_label_analytics">Отслеживайте продажи и высокодоходные товары</string>
+    <string name="login_prologue_label_orders">Управляйте заказами и редактируйте их на ходу</string>
+    <string name="login_prologue_label_analytics">Отслеживайте продажи и узнавайте, какие товары пользуются спросом</string>
     <string name="skip">Пропустить</string>
     <string name="product_type_external_title">Внешний товар</string>
     <string name="product_type_grouped_title">Сгруппированный товар</string>
@@ -1057,7 +1126,6 @@ Language: ru
     <string name="product_publish_draft_dialog_title">Сохранение черновика</string>
     <string name="product_status_trashed">Удалено</string>
     <string name="product_detail_save_as_draft">Сохранить как черновик</string>
-    <string name="login_no_wpcom_account_found">Кажется, %1$s не связан с учетной записью WordPress.com.</string>
     <string name="signup_confirmation_title">Подтверждение регистрации</string>
     <string name="reset_your_password">Сбросить пароль</string>
     <string name="enter_your_site_address">Введите адрес вашего сайта</string>
@@ -1737,11 +1805,9 @@ Language: ru
     <string name="orderdetail_track_shipment">Отследить посылку</string>
     <string name="login_email_help_desc">Чтобы узнать, какой адрес эл. почты вы использовали для подключения к WordPress.com, в режиме управления сайтом в %1$sконсоли Jetpack%2$s перейдите в %3$sПодключения &gt; Подключение учетных записей%4$s</string>
     <string name="login_email_help_title">Какой адрес эл. почты я использую для входа?</string>
-    <string name="login_need_help_finding_email">Не можете вспомнить адрес эл. почты, указанный при регистрации?</string>
     <string name="login_jetpack_what_is_description">Jetpack — это бесплатный плагин WordPress с дополнительными инструментами, которые обеспечивают удобное управление магазином с мобильных устройств и доступ к расширенным возможностям, например push-уведомлениям и статистике.</string>
     <string name="login_jetpack_what_is">Что такое Jetpack?</string>
     <string name="login_view_connected_stores">Открыть список подключенных магазинов</string>
-    <string name="login_not_woo_store">Похоже, %1$s не является сайтом WooCommerce. Установите плагин WooCommerce на свой сайт и перезагрузите приложение.</string>
     <string name="login_not_connected_to_account">Похоже, что %1$s подключен к другой учетной записи WordPress.com.</string>
     <string name="keep_editing">Продолжить редактирование</string>
     <string name="notification_wpcom_username_needed">Please log in with your username and password.</string>

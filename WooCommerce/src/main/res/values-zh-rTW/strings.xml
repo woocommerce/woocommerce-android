@@ -1,11 +1,83 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2022-06-30 11:54:03+0000
+Translation-Revision-Date: 2022-08-16 09:54:24+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: zh_TW
 -->
 <resources>
+    <string name="login_help_notification_get_link_by_email_button">透過電子郵件取得登入連結</string>
+    <string name="login_help_notification_invalid_password_title">忘記密碼了嗎？</string>
+    <string name="card_reader_onboarding_not_finished">我們注意到你尚未完成「親自收款」設定。 &lt;b&gt;&lt;a href=\'\'&gt;繼續設定&lt;/a&gt;&lt;/b&gt;</string>
+    <string name="payments_hub_title">付款</string>
+    <string name="orderlist_bottom_sheet_simple_payments_moved_button">瞭解！</string>
+    <string name="orderlist_bottom_sheet_simple_payments_moved_description">你現在可以快速輕鬆存取「親自收款」和其他功能</string>
+    <string name="orderlist_bottom_sheet_simple_payments_moved_title">從「選單」分頁使用付款功能</string>
+    <string name="login_no_wpcom_account_found">電子郵件 %1$s 並未用於 WordPress.com 帳號。</string>
+    <string name="login_non_woo_stores_label">其他網站</string>
+    <string name="login_with_store_address">使用你的商店地址登入</string>
+    <string name="more_menu_button_w___admin">WC 管理員</string>
+    <string name="login_magic_links_email_sent">我們剛將神奇連結傳送至：</string>
+    <string name="login_magic_links_sent_label_short">在此裝置查看你的電子郵件！</string>
+    <string name="or_use_password">使用密碼登入</string>
+    <string name="login_magic_link_button">使用神奇連結登入</string>
+    <string name="login_magic_link_auto_sent">我們剛將神奇連結傳送至你的電子郵件地址。 請點選電子郵件中的連結登入。</string>
+    <string name="login_help_notification_incorrect_wpcom_email_description">請使用你的網站憑證登入</string>
+    <string name="promo_linked_products_banner_message">加入追加銷售和交叉銷售，為顧客提供實用且相關的產品建議</string>
+    <string name="promo_linked_products_banner_title">透過連結的產品提高銷售額</string>
+    <string name="card_reader_upsell_card_reader_banner_description">只要不到 20 分鐘，即可開始使用我們的讀卡機親自銷售。</string>
+    <string name="orderlist_updating_order_error">更新訂單 (編號：%1$d) 時發生錯誤</string>
+    <string name="orderlist_mark_completed_success">訂單 (編號 %1$d) 已標記為完成</string>
+    <string name="orderlist_mark_completed">標記為\n完成</string>
+    <string name="login_install_woo">安裝 WooCommerce</string>
+    <string name="login_not_woo_store">%1$s 似乎不是 WooCommerce 網站。</string>
+    <string name="login_prologue_survey_button_switch_stores">在多家商店間切換</string>
+    <string name="login_prologue_survey_button_manage_orders">管理我的訂單</string>
+    <string name="login_prologue_survey_button_edit_products">建立或更新我的商品</string>
+    <string name="login_prologue_survey_button_check_analytics">查看我的分析</string>
+    <string name="login_prologue_survey_button_set_up_store">正在嘗試設定商店</string>
+    <string name="login_prologue_survey_button_exploring">單純探索</string>
+    <string name="login_prologue_survey_title">你為什麼使用 WooCommerce？</string>
+    <string name="tip">秘訣</string>
+    <string name="set_up_now">立即設定</string>
+    <string name="lets_get_started">讓我們開始吧！</string>
+    <string name="login_help_notification_wordpress_login_button">登入 WordPress.com</string>
+    <string name="login_help_notification_contact_support_button">聯絡支援團隊</string>
+    <string name="login_help_notification_site_error_description">使用你的 WordPress.com 帳號登入</string>
+    <string name="login_help_notification_no_interaction_default_description">立即取得協助！</string>
+    <string name="login_help_notification_default_title">登入遇到問題嗎？</string>
+    <string name="product_search_sku">貨號</string>
+    <string name="product_search_all">所有商品</string>
+    <string name="card_reader_upsell_card_reader_banner_dont_show_again">不要再顯示</string>
+    <string name="card_reader_upsell_card_reader_banner_remind_me_later">稍後再提醒我</string>
+    <string name="card_reader_upsell_card_reader_banner_dismiss_dialog_description">別擔心！ 你可以隨時在設定中開始使用「親自收款」功能。</string>
+    <string name="card_reader_upsell_card_reader_banner_payments">親自收款</string>
+    <string name="card_reader_upsell_card_reader_banner_cta">購買讀卡機</string>
+    <string name="card_reader_upsell_card_reader_banner_title">輕鬆接受付款</string>
+    <string name="card_reader_upsell_card_reader_banner_new">新功能</string>
+    <string name="card_reader_upsell_card_reader_banner_dismiss">關閉</string>
+    <string name="orderdetail_view_custom_fields">檢視自訂欄位</string>
+    <string name="orderdetail_custom_fields">自訂欄位</string>
+    <string name="order_sync_failed">無法儲存變更</string>
+    <string name="existing_order_cash_dlg_message">如果你從 WooCommerce 以外的來源收到款項，系統會將此訂單標示為已付款</string>
+    <string name="login_jetpack_install">安裝 Jetpack</string>
+    <string name="login_prologue_label_products_subtitle">讓我們協助你輕鬆處理這些訂單</string>
+    <string name="login_prologue_label_orders_subtitle">你可以快速輕鬆管理這些訂單</string>
+    <string name="login_prologue_label_analytics_subtitle">我們知道這對你的業務相當重要</string>
+    <string name="login_prologue_new_to_woo">第一次使用 WooCommerce</string>
+    <string name="notification_channel_pre_login_title">登入疑難排解提醒</string>
+    <string name="tests_notification_new_order_message">你的 WooCommerce 商店有一筆 $50 的新訂單</string>
+    <string name="tests_notification_new_order_title">你有新訂單！🎉</string>
+    <string name="lines_all_details">詳細資訊</string>
+    <string name="lines_incomplete_explanation">若要編輯所有%1$s，請在你的 WooCommerce 商店管理員中瀏覽訂單</string>
+    <string name="lines_incomplete">%1$s不齊全</string>
+    <string name="support_system_status_report_share_label">分享系統狀態報告</string>
+    <string name="support_system_status_report_copy_label">將系統狀態報告複製到剪貼簿</string>
+    <string name="card_reader_connect_keep_searching_button">繼續搜尋</string>
+    <string name="card_reader_payment_description_v2">為 %s blog_id %s 的訂單 #%s 親自收款。</string>
+    <string name="card_reader_manage_payment_provider">變更付款供應商</string>
+    <string name="orderdetail_refunded_line_with_info">已退款：%1$s</string>
+    <string name="orderdetail_payment_summary_onhold_plain">正在等待付款</string>
     <string name="install_wc_shipping_proceed_button">繼續安裝</string>
     <string name="install_wc_shipping_installation_info">安裝前的須知事項</string>
     <string name="install_wc_shipping_preinstall_title">安裝擴充功能</string>
@@ -216,10 +288,11 @@ Language: zh_TW
     <string name="coupon_details_minimum_spend">%s 最低消費</string>
     <string name="coupon_details_heading">優惠券摘要</string>
     <string name="coupon_list_view_coupon">檢視折價券摘要</string>
-    <string name="coupon_list_wip_message_enabled">我們一直努力讓你可以在裝置上檢視優惠券！</string>
+    <string name="coupon_list_wip_message_enabled">我們一直努力讓你可以在裝置上查看並編輯優惠券！</string>
     <string name="coupon_list_wip_title">檢視並編輯優惠券</string>
     <string name="coupon_list_empty_heading">找不到折價券</string>
     <string name="coupon_list_item_label_included_and_excluded">%1s (不包括 %2s)</string>
+    <string name="coupon_list_item_label_products_and_categories">%1s 與 %2s</string>
     <string name="coupon_list_item_label_everything">全部</string>
     <string name="coupon_list_item_label_expired">已到期</string>
     <string name="coupon_list_item_label_active">使用中</string>
@@ -285,7 +358,6 @@ Language: zh_TW
     <string name="card_reader_onboarding_both_plugins_activated_hint_store_owner">啟用下列其中一個外掛程式後，才可使用親自收款功能。 若要繼續，請聯絡網站管理員以停用其中一個外掛程式：</string>
     <string name="card_reader_onboarding_both_plugins_activated_hint_admin">啟用下列其中一個外掛程式後，才可使用親自收款功能。 若要繼續，請停用其中一個外掛程式：</string>
     <string name="card_reader_onboarding_both_plugins_activated_header">已偵測到衝突的付款外掛程式</string>
-    <string name="order_creation_price_calculation_failed">無法更新價格</string>
     <string name="order_creation_payment_tax">稅金</string>
     <string name="exclusive_or">或</string>
     <string name="settings_install_jetpack">安裝 Jetpack</string>
@@ -702,7 +774,6 @@ Language: zh_TW
     <string name="card_reader_refetching_order_failed">擷取訂單時發生錯誤。 應用程式中的訂單狀態可能已過期。</string>
     <string name="card_reader_payment_email_client_not_found">無法偵測電子郵件用戶端應用程式</string>
     <string name="card_reader_payment_receipt_email_subject">你的 %s 收據</string>
-    <string name="card_reader_payment_description">為%s的訂單%s親自付款</string>
     <string name="card_reader_payment_fetch_order_loading_payment_state">正在重新整理訂單</string>
     <string name="card_reader_payment_fetch_order_loading_header">正在更新應用程式狀態</string>
     <string name="shipping_label_shipping_carrier_shipping_method_banner_message">顧客已選取 %1$s</string>
@@ -778,9 +849,8 @@ Language: zh_TW
     <string name="user_role_access_error_retry">你沒有正確的使用者角色</string>
     <string name="user_role_access_error_link">瞭解更多有關角色和權限的資訊</string>
     <string name="user_role_access_error_msg">此應用程式只支援「管理員」和「商店經理」使用者角色。 請聯絡商店擁有者以升級你的角色。</string>
-    <string name="login_prologue_label_reviews">監控和核准你的產品評論</string>
     <string name="login_prologue_label_products">從任何地方編輯和新增新產品</string>
-    <string name="login_prologue_label_orders">隨時管理你的商店訂單</string>
+    <string name="login_prologue_label_orders">隨時隨地管理及編輯訂單</string>
     <string name="login_prologue_label_analytics">追蹤銷售額和高銷售額商品</string>
     <string name="skip">略過</string>
     <string name="product_type_external_title">外部商品</string>
@@ -1056,7 +1126,6 @@ Language: zh_TW
     <string name="product_publish_draft_dialog_title">正在儲存草稿</string>
     <string name="product_status_trashed">已移至垃圾桶</string>
     <string name="product_detail_save_as_draft">儲存為草稿</string>
-    <string name="login_no_wpcom_account_found">%1$s 似乎與 WordPress.com 帳號無關聯。</string>
     <string name="signup_confirmation_title">註冊確認</string>
     <string name="reset_your_password">重設密碼</string>
     <string name="enter_your_site_address">請輸入你的網站位址</string>
@@ -1736,11 +1805,9 @@ Language: zh_TW
     <string name="orderdetail_track_shipment">追蹤貨件</string>
     <string name="login_email_help_desc">你可以在網站管理中透過%3$s連結 &gt; 帳號連結%4$s下方的 %1$sJetpack 儀表板%2$s找到用來連結至 WordPress.com 的電子郵件</string>
     <string name="login_email_help_title">我該使用什麼電子郵件登入？</string>
-    <string name="login_need_help_finding_email">需要協助找出連結的電子郵件嗎？</string>
     <string name="login_jetpack_what_is_description">Jetpack 是一款免費的 WordPress 外掛程式，能夠透過所需工具連結你的商店，為你提供最佳行動裝置體驗，包含推播通知和統計資料</string>
     <string name="login_jetpack_what_is">什麼是 Jetpack？</string>
     <string name="login_view_connected_stores">檢視連結的商店</string>
-    <string name="login_not_woo_store">%1$s 似乎不是 WooCommerce 網站。 請在你的網站上安裝 WooCommerce 外掛程式，然後重新整理應用程式。</string>
     <string name="login_not_connected_to_account">%1$s 似乎已經連結至不同的 WordPress.com 帳號。</string>
     <string name="keep_editing">繼續編輯</string>
     <string name="notification_wpcom_username_needed">請透過你的使用者名稱和密碼登入。</string>

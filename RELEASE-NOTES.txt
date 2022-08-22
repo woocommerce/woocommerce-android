@@ -1,10 +1,46 @@
 *** PLEASE FOLLOW THIS FORMAT: [<priority indicator, more stars = higher priority>] <description> [<PR URL>]
+10.1
+-----
+
+
+10.0
+-----
+ - [**] Login: Add ability to enter site address manually after signing in if the account is not connected to any stores [https://github.com/woocommerce/woocommerce-android/pull/7225]
+ - [**] In-Person Payments: Show a new "Pay in Person" screen during IPP onboarding if the store has cash on delivery disabled. Give merchants an option to enable "Pay in Person" on the same screen.
+- [*] In-Person Payments: learn more button was added connection dialog [https://github.com/woocommerce/woocommerce-android/pull/7193]
+
+9.9
+-----
+- [**] Login: list non-woo sites in the site picker during login to allow installing Woo [https://github.com/woocommerce/woocommerce-android/pull/7148]
+- [**] In-Person Payments and Simple Payments have been moved to a new Payments section [https://github.com/woocommerce/woocommerce-android/pull/7150]
+- [**] Login: Users running into invalid password errors during login will receive a support/help notification after 24h from the error with email magic link option [https://github.com/woocommerce/woocommerce-android/issues/6989]
+- [**] Login: Various improvements on the screen shown after entering an invalid WordPress.com email. [https://github.com/woocommerce/woocommerce-android/issues/7121]
+
+9.8
+-----
+- [**] Orders: Now you can quickly mark an order as completed by swiping it to the left! [https://github.com/woocommerce/woocommerce-android/pull/7114]
+- [*] Login: add ability to install Woo for sites that don't have during login with address flow [https://github.com/woocommerce/woocommerce-android/pull/7090]
+- [**] Users will now receive notifications with help info and actions 24h after running into some issue during login [https://github.com/woocommerce/woocommerce-android/pull/7072]
+
+9.7
+-----
+- [***] The product list now enables searching by SKU
+- [*] Login: Improved login flow when a WordPress site exists but has no Jetpack plugin installed. [https://github.com/woocommerce/woocommerce-android/pull/6910/]
+- [***] In-Person Payments: Display Upsell Card reader banner in the Payment, Order List, and Settings screen for the stores set up in the US and Canada [https://github.com/woocommerce/woocommerce-android/pull/6984]
+- [***] Order detail now enables viewing custom fields (metadata) for the order [https://github.com/woocommerce/woocommerce-android/pull/6993]
+- [***] Orders: Orders can now be edited within the app. [https://github.com/woocommerce/woocommerce-android/pull/6987]
+- [**] You can now search customers when creating or editing an order. [https://github.com/woocommerce/woocommerce-android/pull/6999]
+- [*] Fixed a bug that resulted in not showing ongoing image uploads in product details. [https://github.com/woocommerce/woocommerce-android/pull/6964]
+- [*] Login: Jetpack setup flow is now accessible from the Login with Store Address flow. [https://github.com/woocommerce/woocommerce-android/pull/7015]
+
 9.6
 -----
 - [*] New "What is WordPress.com?" link in login with email screen, to provide better context of why WordPress.com account is needed during login [https://github.com/woocommerce/woocommerce-android/pull/6891]
+- [*] Login: Improved login flow when a WordPress site exists but has no Jetpack plugin installed. [https://github.com/woocommerce/woocommerce-android/pull/6910/]
 - [**] Order Details: All unpaid orders have a Collect Payment button, which shows a payment method selection screen. Choices are Cash, Card, and Payment Link. [https://github.com/woocommerce/woocommerce-android/pull/6861]
 - [**] In-Person Payments: Support for selecting preferred payment gateway when multiple extensions are installed on the store. [https://github.com/woocommerce/woocommerce-android/pull/6887]
 - [*] In-Person Payments: Update phrasing of IPP description [https://github.com/woocommerce/woocommerce-android/pull/6867]
+- [*] Login: add a "new to woocommerce" button to the prologue [https://github.com/woocommerce/woocommerce-android/pull/6947]
 
 9.5
 -----

@@ -1,6 +1,7 @@
 package com.woocommerce.android.model
 
 import android.os.Parcelable
+import com.woocommerce.android.extensions.sumByBigDecimal
 import com.woocommerce.android.extensions.sumByFloat
 import com.woocommerce.android.model.Order.OrderStatus
 import com.woocommerce.android.ui.products.ProductHelper
@@ -27,7 +28,6 @@ data class Order(
     val shippingTotal: BigDecimal,
     val discountTotal: BigDecimal,
     val refundTotal: BigDecimal,
-    val feesTotal: BigDecimal,
     val currency: String,
     val orderKey: String,
     val customerNote: String,
@@ -66,6 +66,9 @@ data class Order(
 
     val hasMultipleFeeLines: Boolean
         get() = feesLines.size > 1
+
+    @IgnoredOnParcel
+    val feesTotal = feesLines.sumByBigDecimal(FeeLine::total)
 
     @Parcelize
     data class ShippingMethod(
@@ -313,7 +316,6 @@ data class Order(
                 shippingTotal = BigDecimal(0),
                 discountTotal = BigDecimal(0),
                 refundTotal = BigDecimal(0),
-                feesTotal = BigDecimal(0),
                 currency = "",
                 orderKey = "",
                 customerNote = "",

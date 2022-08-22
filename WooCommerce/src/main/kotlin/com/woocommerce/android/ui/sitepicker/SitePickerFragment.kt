@@ -9,32 +9,44 @@ import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.woocommerce.android.AppUrls
+import com.woocommerce.android.NavGraphMainDirections
 import com.woocommerce.android.R
+import com.woocommerce.android.analytics.AnalyticsEvent
+import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.databinding.FragmentSitePickerBinding
+import com.woocommerce.android.extensions.handleNotice
+import com.woocommerce.android.extensions.handleResult
+import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.support.HelpActivity
 import com.woocommerce.android.ui.base.BaseFragment
+import com.woocommerce.android.ui.base.UIMessageResolver
+import com.woocommerce.android.ui.common.wpcomwebview.WPComWebViewFragment
 import com.woocommerce.android.ui.login.LoginActivity
 import com.woocommerce.android.ui.login.LoginEmailHelpDialogFragment
-import com.woocommerce.android.ui.login.LoginWhatIsJetpackDialogFragment
+import com.woocommerce.android.ui.main.AppBarStatus
 import com.woocommerce.android.ui.main.MainActivity
 import com.woocommerce.android.ui.sitepicker.SitePickerViewModel.SitePickerEvent.NavigateToEmailHelpDialogEvent
 import com.woocommerce.android.ui.sitepicker.SitePickerViewModel.SitePickerEvent.NavigateToMainActivityEvent
+import com.woocommerce.android.ui.sitepicker.SitePickerViewModel.SitePickerEvent.NavigateToNewToWooEvent
+import com.woocommerce.android.ui.sitepicker.SitePickerViewModel.SitePickerEvent.NavigateToSiteAddressEvent
+import com.woocommerce.android.ui.sitepicker.SitePickerViewModel.SitePickerEvent.NavigateToWPComWebView
 import com.woocommerce.android.ui.sitepicker.SitePickerViewModel.SitePickerEvent.NavigationToHelpFragmentEvent
-import com.woocommerce.android.ui.sitepicker.SitePickerViewModel.SitePickerEvent.NavigationToLearnMoreAboutJetpackEvent
-import com.woocommerce.android.ui.sitepicker.SitePickerViewModel.SitePickerEvent.NavigationToWhatIsJetpackFragmentEvent
 import com.woocommerce.android.ui.sitepicker.SitePickerViewModel.SitePickerEvent.ShowWooUpgradeDialogEvent
 import com.woocommerce.android.ui.sitepicker.SitePickerViewModel.SitePickerState.AccountMismatchState
 import com.woocommerce.android.ui.sitepicker.SitePickerViewModel.SitePickerState.NoStoreState
 import com.woocommerce.android.ui.sitepicker.SitePickerViewModel.SitePickerState.StoreListState
 import com.woocommerce.android.ui.sitepicker.SitePickerViewModel.SitePickerState.WooNotFoundState
+import com.woocommerce.android.ui.sitepicker.sitediscovery.SitePickerSiteDiscoveryFragment
 import com.woocommerce.android.util.ChromeCustomTabUtils
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Logout
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.widgets.CustomProgressDialog
 import com.woocommerce.android.widgets.SkeletonView
 import dagger.hilt.android.AndroidEntryPoint
 import org.wordpress.android.login.LoginMode
+import javax.inject.Inject
 
 @AndroidEntryPoint
 class SitePickerFragment : BaseFragment(R.layout.fragment_site_picker), LoginEmailHelpDialogFragment.Listener {
@@ -42,9 +54,14 @@ class SitePickerFragment : BaseFragment(R.layout.fragment_site_picker), LoginEma
     private val binding get() = _binding!!
 
     private val viewModel: SitePickerViewModel by viewModels()
+    @Inject
+    lateinit var uiMessageResolver: UIMessageResolver
 
     private var skeletonView = SkeletonView()
     private var progressDialog: CustomProgressDialog? = null
+
+    override val activityAppBarStatus: AppBarStatus
+        get() = if (viewModel.shouldShowToolbar) AppBarStatus.Visible() else AppBarStatus.Hidden
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -53,6 +70,7 @@ class SitePickerFragment : BaseFragment(R.layout.fragment_site_picker), LoginEma
 
         setupViews()
         setupObservers(viewModel)
+        handleResults()
     }
 
     override fun onDestroyView() {
@@ -64,7 +82,7 @@ class SitePickerFragment : BaseFragment(R.layout.fragment_site_picker), LoginEma
         binding.buttonHelp.setOnClickListener { viewModel.onHelpButtonClick() }
         binding.sitesRecycler.apply {
             layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
-            adapter = SitePickerAdapter(viewModel::onSiteSelected)
+            adapter = SitePickerAdapter(viewModel::onSiteSelected, viewModel::onNonWooSiteSelected)
         }
         binding.loginEpilogueButtonBar.buttonSecondary.setOnClickListener {
             viewModel.onTryAnotherAccountButtonClick()
@@ -77,16 +95,6 @@ class SitePickerFragment : BaseFragment(R.layout.fragment_site_picker), LoginEma
             new.userInfo?.takeIfNotEqualTo(old?.userInfo) {
                 updateUserInfoView(it)
             }
-            new.sitePickerLabelText?.takeIfNotEqualTo(old?.sitePickerLabelText) {
-                binding.siteListLabel.text = it
-            }
-            new.isToolbarVisible.takeIfNotEqualTo(old?.isToolbarVisible) {
-                if (it) {
-                    (activity as? MainActivity)?.supportActionBar?.show()
-                } else {
-                    (activity as? MainActivity)?.supportActionBar?.hide()
-                }
-            }
             new.isHelpBtnVisible.takeIfNotEqualTo(old?.isHelpBtnVisible) {
                 binding.buttonHelp.isVisible = it
             }
@@ -98,7 +106,6 @@ class SitePickerFragment : BaseFragment(R.layout.fragment_site_picker), LoginEma
             }
             new.isNoStoresViewVisible.takeIfNotEqualTo(old?.isNoStoresViewVisible) {
                 binding.sitesRecycler.isVisible = !it
-                binding.siteListLabel.isVisible = !it
                 binding.noStoresView.isVisible = it
             }
             new.toolbarTitle?.takeIfNotEqualTo(old?.toolbarTitle) {
@@ -126,7 +133,7 @@ class SitePickerFragment : BaseFragment(R.layout.fragment_site_picker), LoginEma
                 when (it) {
                     StoreListState -> updateStoreListView()
                     NoStoreState -> updateNoStoresView()
-                    AccountMismatchState -> updateAccountMismatchView()
+                    AccountMismatchState -> updateAccountMismatchView(new.hasConnectedStores == true)
                     WooNotFoundState -> updateWooNotFoundView()
                 }
             }
@@ -141,13 +148,28 @@ class SitePickerFragment : BaseFragment(R.layout.fragment_site_picker), LoginEma
                 is NavigateToMainActivityEvent -> (activity as? MainActivity)?.handleSitePickerResult()
                 is ShowWooUpgradeDialogEvent -> showWooUpgradeDialog()
                 is NavigationToHelpFragmentEvent -> navigateToHelpScreen()
-                is NavigationToWhatIsJetpackFragmentEvent -> navigateToWhatIsJetpackScreen()
-                is NavigationToLearnMoreAboutJetpackEvent -> navigateToLearnMoreAboutJetpackScreen()
+                is NavigateToNewToWooEvent -> navigateToNewToWooScreen()
+                is NavigateToSiteAddressEvent -> navigateToAddressScreen()
                 is NavigateToEmailHelpDialogEvent -> navigateToNeedHelpFindingEmailScreen()
+                is NavigateToWPComWebView -> navigateToWPComWebView(event)
+                is ShowSnackbar -> uiMessageResolver.showSnack(event.message)
                 is Logout -> onLogout()
                 is Exit -> findNavController().navigateUp()
                 else -> event.isHandled = false
             }
+        }
+    }
+
+    private fun handleResults() {
+        handleNotice(WPComWebViewFragment.WEBVIEW_RESULT) {
+            AnalyticsTracker.track(AnalyticsEvent.LOGIN_WOOCOMMERCE_SETUP_COMPLETED)
+            viewModel.onWooInstalled()
+        }
+        handleNotice(WPComWebViewFragment.WEBVIEW_DISMISSED) {
+            AnalyticsTracker.track(AnalyticsEvent.LOGIN_WOOCOMMERCE_SETUP_DISMISSED)
+        }
+        handleResult<String>(SitePickerSiteDiscoveryFragment.SITE_PICKER_SITE_ADDRESS_RESULT) {
+            viewModel.onSiteAddressReceived(it)
         }
     }
 
@@ -159,16 +181,20 @@ class SitePickerFragment : BaseFragment(R.layout.fragment_site_picker), LoginEma
 
     private fun updateNoStoresView() {
         binding.loginEpilogueButtonBar.buttonPrimary.setOnClickListener {
-            viewModel.onLearnMoreAboutJetpackButtonClick()
+            viewModel.onEnterSiteAddressClick()
         }
         binding.noStoresView.clickSecondaryAction {
-            viewModel.onWhatIsJetpackButtonClick()
+            viewModel.onNewToWooClick()
         }
     }
 
-    private fun updateAccountMismatchView() {
+    private fun updateAccountMismatchView(hasConnectedStores: Boolean) {
         binding.loginEpilogueButtonBar.buttonPrimary.setOnClickListener {
-            viewModel.onViewConnectedStoresButtonClick()
+            if (hasConnectedStores) {
+                viewModel.onViewConnectedStoresButtonClick()
+            } else {
+                viewModel.onEnterSiteAddressClick()
+            }
         }
         binding.noStoresView.clickSecondaryAction {
             viewModel.onNeedHelpFindingEmailButtonClick()
@@ -177,10 +203,11 @@ class SitePickerFragment : BaseFragment(R.layout.fragment_site_picker), LoginEma
 
     private fun updateWooNotFoundView() {
         binding.loginEpilogueButtonBar.buttonPrimary.setOnClickListener {
-            viewModel.onViewConnectedStoresButtonClick()
+            AnalyticsTracker.track(AnalyticsEvent.LOGIN_WOOCOMMERCE_SETUP_BUTTON_TAPPED)
+            viewModel.onInstallWooClicked()
         }
         binding.noStoresView.clickSecondaryAction {
-            viewModel.onRefreshButtonClick()
+            viewModel.onViewConnectedStoresButtonClick()
         }
     }
 
@@ -218,12 +245,13 @@ class SitePickerFragment : BaseFragment(R.layout.fragment_site_picker), LoginEma
         }
     }
 
-    private fun navigateToWhatIsJetpackScreen() {
-        LoginWhatIsJetpackDialogFragment().show(parentFragmentManager, LoginWhatIsJetpackDialogFragment.TAG)
+    private fun navigateToNewToWooScreen() {
+        ChromeCustomTabUtils.launchUrl(requireContext(), AppUrls.NEW_TO_WOO_DOC)
     }
 
-    private fun navigateToLearnMoreAboutJetpackScreen() {
-        ChromeCustomTabUtils.launchUrl(requireContext(), AppUrls.JETPACK_INSTRUCTIONS)
+    private fun navigateToAddressScreen() {
+        findNavController()
+            .navigateSafely(SitePickerFragmentDirections.actionSitePickerFragmentToSitePickerSiteDiscoveryFragment())
     }
 
     private fun navigateToHelpScreen() {
@@ -234,6 +262,15 @@ class SitePickerFragment : BaseFragment(R.layout.fragment_site_picker), LoginEma
         LoginEmailHelpDialogFragment.newInstance(this).also {
             it.show(parentFragmentManager, LoginEmailHelpDialogFragment.TAG)
         }
+    }
+
+    private fun navigateToWPComWebView(event: NavigateToWPComWebView) {
+        findNavController().navigate(
+            NavGraphMainDirections.actionGlobalWPComWebViewFragment(
+                urlToLoad = event.url,
+                urlToTriggerExit = event.validationUrl
+            )
+        )
     }
 
     private fun onLogout() {

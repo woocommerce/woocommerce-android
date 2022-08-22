@@ -36,19 +36,20 @@ object SitePickerTestUtils {
     val userModel = WCUserModel()
 
     fun getDefaultLoginViewState(defaultViewState: SitePickerViewModel.SitePickerViewState) = defaultViewState.copy(
-        isToolbarVisible = false,
         isHelpBtnVisible = true,
         isSecondaryBtnVisible = true,
         isPrimaryBtnVisible = true
     )
 
-    fun getDefaultSwitchStoreViewState(defaultViewState: SitePickerViewModel.SitePickerViewState) =
-        defaultViewState.copy(
-            isToolbarVisible = true,
-            isHelpBtnVisible = false,
-            isSecondaryBtnVisible = false,
-            isPrimaryBtnVisible = true
-        )
+    fun getDefaultSwitchStoreViewState(
+        defaultViewState: SitePickerViewModel.SitePickerViewState,
+        resourceProvider: ResourceProvider
+    ) = defaultViewState.copy(
+        toolbarTitle = resourceProvider.getString(R.string.site_picker_title),
+        isHelpBtnVisible = false,
+        isSecondaryBtnVisible = false,
+        isPrimaryBtnVisible = true
+    )
 
     fun getEmptyViewState(
         defaultViewState: SitePickerViewModel.SitePickerViewState,
@@ -56,9 +57,9 @@ object SitePickerTestUtils {
     ) = defaultViewState.copy(
         isNoStoresViewVisible = true,
         isPrimaryBtnVisible = true,
-        primaryBtnText = resourceProvider.getString(R.string.login_jetpack_view_instructions_alt),
+        primaryBtnText = resourceProvider.getString(R.string.login_site_picker_enter_site_address),
         noStoresLabelText = resourceProvider.getString(R.string.login_no_stores),
-        noStoresBtnText = resourceProvider.getString(R.string.login_jetpack_what_is)
+        noStoresBtnText = resourceProvider.getString(R.string.login_site_picker_new_to_woo)
     )
 
     fun generateStores(totalCount: Int = 5): List<SiteModel> {

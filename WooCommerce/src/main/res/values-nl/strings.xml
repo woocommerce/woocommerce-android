@@ -1,11 +1,83 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2022-07-04 09:54:03+0000
+Translation-Revision-Date: 2022-08-18 13:54:03+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: nl
 -->
 <resources>
+    <string name="login_help_notification_get_link_by_email_button">Krijg een inloglink via e-mail</string>
+    <string name="login_help_notification_invalid_password_title">Kun je je wachtwoord niet onthouden?</string>
+    <string name="card_reader_onboarding_not_finished">We zien dat je het instellen van Fysieke betalingen nog niet hebt afgerond. &lt;b&gt;&lt;a href=\'\'&gt;Ga door met instellen.&lt;/a&gt;&lt;/b&gt;</string>
+    <string name="payments_hub_title">Betalingen</string>
+    <string name="orderlist_bottom_sheet_simple_payments_moved_button">Begrepen!</string>
+    <string name="orderlist_bottom_sheet_simple_payments_moved_description">Nu heb je snel toegang tot Fysieke betalingen en andere functies</string>
+    <string name="orderlist_bottom_sheet_simple_payments_moved_title">Betalingen van het tabblad Menu</string>
+    <string name="login_no_wpcom_account_found">De e-mail %1$s wordt niet gebruikt met een WordPress.com-account.</string>
+    <string name="login_non_woo_stores_label">Andere sites</string>
+    <string name="login_with_store_address">Log in met je winkeladres</string>
+    <string name="more_menu_button_w___admin">WC Admin</string>
+    <string name="login_magic_links_email_sent">We hebben zojuist een link verstuurd naar</string>
+    <string name="login_magic_links_sent_label_short">Controleer je e-mail op dit apparaat!</string>
+    <string name="or_use_password">Gebruik je wachtwoord om je aan te melden</string>
+    <string name="login_magic_link_button">Log in met de magische link</string>
+    <string name="login_magic_link_auto_sent">We hebben je per e-mail een magische link toegestuurd. Tik op de link in de e-mail om in te loggen.</string>
+    <string name="login_help_notification_incorrect_wpcom_email_description">Inloggen met je site-inloggegevens</string>
+    <string name="promo_linked_products_banner_message">Bied je klanten waardevolle en relevante productaanbevelingen door upsells en cross-sells toe te voegen</string>
+    <string name="promo_linked_products_banner_title">Boost je sales met gekoppelde producten</string>
+    <string name="card_reader_upsell_card_reader_banner_description">Begin met fysieke betalingen in minder dan 20 minuten met onze kaartlezer.</string>
+    <string name="orderlist_updating_order_error">Fout tijdens bijwerken van bestelnr.%1$d</string>
+    <string name="orderlist_mark_completed_success">Bestelling #%1$d is gemarkeerd als voltooid</string>
+    <string name="orderlist_mark_completed">Markeren\nvoltooid</string>
+    <string name="login_install_woo">WooCommerce installeren</string>
+    <string name="login_not_woo_store">Het lijkt erop dat %1$s geen WooCommerce-site is.</string>
+    <string name="login_prologue_survey_button_switch_stores">Schakelen tussen meerdere winkels</string>
+    <string name="login_prologue_survey_button_manage_orders">Mijn bestellingen beheren</string>
+    <string name="login_prologue_survey_button_edit_products">Mijn producten aanmaken of bijwerken</string>
+    <string name="login_prologue_survey_button_check_analytics">Controleer mijn analyse</string>
+    <string name="login_prologue_survey_button_set_up_store">Een winkel proberen aan te maken</string>
+    <string name="login_prologue_survey_button_exploring">Gewoon aan het rondkijken</string>
+    <string name="login_prologue_survey_title">Waarom heb je gekozen voor WooCommerce?</string>
+    <string name="tip">Tip</string>
+    <string name="set_up_now">Nu instellen</string>
+    <string name="lets_get_started">Laten we beginnen</string>
+    <string name="login_help_notification_wordpress_login_button">Inloggen met WordPress.com</string>
+    <string name="login_help_notification_contact_support_button">Neem contact op met support</string>
+    <string name="login_help_notification_site_error_description">Log in met je WordPress.com account</string>
+    <string name="login_help_notification_no_interaction_default_description">Vraag om hulp!</string>
+    <string name="login_help_notification_default_title">Heb je problemen met inloggen?</string>
+    <string name="product_search_sku">SKU</string>
+    <string name="product_search_all">Alle producten</string>
+    <string name="card_reader_upsell_card_reader_banner_dont_show_again">NIET OPNIEUW TONEN</string>
+    <string name="card_reader_upsell_card_reader_banner_remind_me_later">HERINNER MIJ HIER LATER AAN</string>
+    <string name="card_reader_upsell_card_reader_banner_dismiss_dialog_description">Maak je geen zorgen! Je kunt altijd aan de slag gaan met fysieke betalingen in Instellingen.</string>
+    <string name="card_reader_upsell_card_reader_banner_payments">Fysieke betalingen</string>
+    <string name="card_reader_upsell_card_reader_banner_cta">Kaartlezer aanschaffen</string>
+    <string name="card_reader_upsell_card_reader_banner_title">Eenvoudig betalingen aannemen</string>
+    <string name="card_reader_upsell_card_reader_banner_new">NIEUW</string>
+    <string name="card_reader_upsell_card_reader_banner_dismiss">Afwijzen</string>
+    <string name="orderdetail_view_custom_fields">Aangepaste velden bekijken</string>
+    <string name="orderdetail_custom_fields">Aangepaste velden</string>
+    <string name="order_sync_failed">Opslaan van wijzigingen mislukt</string>
+    <string name="existing_order_cash_dlg_message">Hiermee wordt deze bestelling gemarkeerd als betaald als je de betaling van een andere partij dan WooCommerce hebt ontvangen</string>
+    <string name="login_jetpack_install">Jetpack installeren</string>
+    <string name="login_prologue_label_products_subtitle">Wij maken het mogelijk om ze eenvoudig te verwerken</string>
+    <string name="login_prologue_label_orders_subtitle">Je kunt ze snel en eenvoudig beheren</string>
+    <string name="login_prologue_label_analytics_subtitle">We weten dat dit essentieel is voor je bedrijf</string>
+    <string name="login_prologue_new_to_woo">Nieuw bij WooCommerce</string>
+    <string name="notification_channel_pre_login_title">Herinneringen probleemoplossing inloggen</string>
+    <string name="tests_notification_new_order_message">Nieuwe bestelling van $ 50 in je WooCommerce-winkel</string>
+    <string name="tests_notification_new_order_title">Je hebt een nieuwe bestelling!</string>
+    <string name="lines_all_details">gegevens</string>
+    <string name="lines_incomplete_explanation">Om alle %1$s te bewerken, zoek je naar de bestelling in de beheerdersomgeving van je WooCommerce-winkel</string>
+    <string name="lines_incomplete">%1$s zijn onvolledig</string>
+    <string name="support_system_status_report_share_label">Systeemstatusrapport delen</string>
+    <string name="support_system_status_report_copy_label">Systeemstatusrapport kopiëren naar klembord</string>
+    <string name="card_reader_connect_keep_searching_button">Verder zoeken</string>
+    <string name="card_reader_payment_description_v2">Fysieke betaling voor bestelnr. %s voor %s blog_id %s.</string>
+    <string name="card_reader_manage_payment_provider">Betaalverwerker wijzigen</string>
+    <string name="orderdetail_refunded_line_with_info">Terugbetaald: %1$s</string>
+    <string name="orderdetail_payment_summary_onhold_plain">Openstaande betaling</string>
     <string name="install_wc_shipping_proceed_button">Ga verder met installatie</string>
     <string name="install_wc_shipping_installation_info">Onthoud deze dingen voordat je begint met installeren</string>
     <string name="install_wc_shipping_preinstall_title">Extensie installeren</string>
@@ -216,7 +288,7 @@ Language: nl
     <string name="coupon_details_minimum_spend">Minimale besteding van %s</string>
     <string name="coupon_details_heading">Couponoverzicht</string>
     <string name="coupon_list_view_coupon">Couponoverzicht weergeven</string>
-    <string name="coupon_list_wip_message_enabled">We hebben hard gewerkt zodat jij coupons vanaf je apparaat kunt bekijken!</string>
+    <string name="coupon_list_wip_message_enabled">We hebben hard gewerkt zodat jij coupons vanuit je apparaat kunt bekijken en bewerken!</string>
     <string name="coupon_list_wip_title">Coupons bekijken en bewerken</string>
     <string name="coupon_list_empty_heading">Geen coupons gevonden</string>
     <string name="coupon_list_item_label_included_and_excluded">%1s excl. %2s</string>
@@ -286,7 +358,6 @@ Language: nl
     <string name="card_reader_onboarding_both_plugins_activated_hint_store_owner">Fysieke betalingen werken alleen als een van de volgende plugins is geactiveerd. Om verder te gaan, neem contact op met een sitebeheerder om een van deze plugins te deactiveren:</string>
     <string name="card_reader_onboarding_both_plugins_activated_hint_admin">Fysieke betalingen werken alleen als een van de volgende plugins is geactiveerd. Deactiveer een van deze plugins om verder te gaan:</string>
     <string name="card_reader_onboarding_both_plugins_activated_header">Tegenstrijdige plugins voor betalingen gedetecteerd</string>
-    <string name="order_creation_price_calculation_failed">Kon prijzen niet bijwerken</string>
     <string name="order_creation_payment_tax">Belastingen</string>
     <string name="exclusive_or">of</string>
     <string name="settings_install_jetpack">Jetpack installeren</string>
@@ -703,7 +774,6 @@ Language: nl
     <string name="card_reader_refetching_order_failed">Fout bij ophalen bestelling. De bestellingsstatus in de app kan verouderd zijn.</string>
     <string name="card_reader_payment_email_client_not_found">Detectie van mailclient-app mislukt</string>
     <string name="card_reader_payment_receipt_email_subject">Je kwitantie van %s</string>
-    <string name="card_reader_payment_description">Fysieke betaling voor bestelling %s voor %s</string>
     <string name="card_reader_payment_fetch_order_loading_payment_state">Bestelling aan het vernieuwen…</string>
     <string name="card_reader_payment_fetch_order_loading_header">Status in de app aan het bijwerken…</string>
     <string name="shipping_label_shipping_carrier_shipping_method_banner_message">Je klant heeft het volgende geselecteerd %1$s</string>
@@ -779,9 +849,8 @@ Language: nl
     <string name="user_role_access_error_retry">Je hebt niet de juiste gebruikersrol</string>
     <string name="user_role_access_error_link">Meer informatie over rollen en machtigingen</string>
     <string name="user_role_access_error_msg">Deze app ondersteunt alleen de gebruikersrollen Beheerder en Winkelmanager. Neem contact op met je winkeleigenaar voor het upgraden van je rol.</string>
-    <string name="login_prologue_label_reviews">Volg en keur je productbeoordelingen goed</string>
     <string name="login_prologue_label_products">Bewerk en voeg nieuwe producten toe ongeacht waar je bent</string>
-    <string name="login_prologue_label_orders">Beheer je winkelbestellingen onderweg</string>
+    <string name="login_prologue_label_orders">Beheer en bewerk bestellingen onderweg</string>
     <string name="login_prologue_label_analytics">Volg verkoopcijfers en goedpresterende producten</string>
     <string name="skip">Overslaan</string>
     <string name="product_type_external_title">Extern product</string>
@@ -1057,7 +1126,6 @@ Language: nl
     <string name="product_publish_draft_dialog_title">Concept wordt opgeslagen</string>
     <string name="product_status_trashed">Naar prullenbak verplaatst</string>
     <string name="product_detail_save_as_draft">Opslaan als concept</string>
-    <string name="login_no_wpcom_account_found">Het lijkt erop dat %1$s niet is gekoppeld aan een WordPress.com-account.</string>
     <string name="signup_confirmation_title">Inschrijfbevestiging</string>
     <string name="reset_your_password">Stel je wachtwoord opnieuw in</string>
     <string name="enter_your_site_address">Voer je site adres in</string>
@@ -1737,11 +1805,9 @@ Language: nl
     <string name="orderdetail_track_shipment">Verzending tracken</string>
     <string name="login_email_help_desc">In je sitebeheer kun je de e-mail vinden die je gebruikt hebt om verbinding te maken met WordPress.com via het %1$sJetpack-dashboard%2$s onder %3$sVerbindingen &gt; Accountverbinding%4$s</string>
     <string name="login_email_help_title">Welke e-mail moet ik gebruiken om me aan te melden?</string>
-    <string name="login_need_help_finding_email">Heb je hulp nodig bij het vinden van de gekoppelde e-mail?</string>
     <string name="login_jetpack_what_is_description">Jetpack is een gratis WordPress-plugin die aan je winkel wordt gekoppeld en je de tools voor de beste mobiele ervaring biedt, waaronder pushmeldingen en statistieken</string>
     <string name="login_jetpack_what_is">Wat is Jetpack?</string>
     <string name="login_view_connected_stores">Aangesloten winkels bekijken</string>
-    <string name="login_not_woo_store">Het lijkt erop dat %1$s geen WooCommerce-site is. Installeer de WooCommerce-plugin op je site en ververs vervolgens de app.</string>
     <string name="login_not_connected_to_account">Het lijkt erop dat %1$s is verbonden met een ander WordPress.com-account.</string>
     <string name="keep_editing">Doorgaan met bewerken</string>
     <string name="notification_wpcom_username_needed">Log in met je gebruikersnaam en wachtwoord.</string>

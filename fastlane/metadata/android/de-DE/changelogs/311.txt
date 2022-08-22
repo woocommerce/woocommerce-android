@@ -1,5 +1,0 @@
-9.5:
-Wir fügen weiterhin neue Funktionen zu unserer experimentellen Gutscheinmanagement-Funktion hinzu!  Diese Version enthält Optionen zum Bearbeiten und Löschen von Gutscheinen sowie mehrere Verbesserungen bei der Anzeige. Aktiviere diese Funktion über den Tab „Mehr“ > „Einstellungen“ > „Betafunktionen“, um frühzeitigen Zugriff zu erhalten.
-
-Darüber hinaus haben wir ein Problem behoben, das die Suche nach Bestellungen teilweise erschwert hat. Vielen Dank an alle, die dieses Problem gemeldet haben! Euer Feedback ist enorm wichtig für uns!
-

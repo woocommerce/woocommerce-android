@@ -1,13 +1,13 @@
 import io.github.wzieba.tracks.plugin.TracksExtension
+import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
     id 'com.automattic.android.fetchstyle'
     id 'io.gitlab.arturbosch.detekt'
     id 'io.github.wzieba.tracks.plugin'
-    id 'io.sentry.android.gradle'
     id 'com.android.application' apply false
     id 'org.jetbrains.kotlin.android' apply false
-    id 'dagger.hilt.android.plugin' apply false
+    id 'com.google.dagger.hilt.android' apply false
     id 'com.google.gms.google-services' apply false
 }
 
@@ -18,7 +18,6 @@ tracks {
 }
 
 allprojects {
-    apply plugin: 'checkstyle'
     apply plugin: 'io.gitlab.arturbosch.detekt'
 
     repositories {
@@ -26,15 +25,15 @@ allprojects {
         mavenCentral()
     }
 
-    task checkstyle(type: Checkstyle) {
-        source 'src'
-
-        classpath = files()
-    }
-
-    checkstyle {
-        toolVersion = '8.3'
-        configFile file("${project.rootDir}/config/checkstyle.xml")
+    tasks.withType(KotlinCompile).all {
+        kotlinOptions {
+            jvmTarget = JavaVersion.VERSION_1_8
+            // TODO fix all the warnings and change to true before end of 2022
+            allWarningsAsErrors = false
+            freeCompilerArgs += [
+                    "-Xopt-in=kotlin.RequiresOptIn"
+            ]
+        }
     }
 }
 
@@ -82,7 +81,7 @@ tasks.register("installGitHooks", Copy) {
 }
 
 ext {
-    fluxCVersion = '2463-2f38b2c9f738fd28c0a820039a43c41ffca2f692'
+    fluxCVersion = '1.50.0'
     glideVersion = '4.13.2'
     coilVersion = '2.1.0'
     constraintLayoutVersion = '1.2.0'
@@ -92,16 +91,17 @@ ext {
     coroutinesVersion = '1.6.1'
     lifecycleVersion = '2.4.1'
     aztecVersion = 'v1.3.45'
-    flipperVersion = '0.152.0'
+    flipperVersion = '0.154.0'
     stateMachineVersion = '0.2.0'
     coreKtxVersion = '1.7.0'
-    appCompatVersion = '1.4.1'
+    appCompatVersion = '1.4.2'
     materialVersion = '1.6.1'
     hiltJetpackVersion = '1.0.0'
     wordPressUtilsVersion = '2.6.0'
     mediapickerVersion = '0.1.0'
-    wordPressLoginVersion = '0.15.0'
+    wordPressLoginVersion = '0.18.0'
     aboutAutomatticVersion = '0.0.6'
+    workManagerVersion = '2.7.1'
 
     // Compose and its module versions need to be consistent with each other (for example 'compose-theme-adapter')
     composeVersion = "1.1.1"

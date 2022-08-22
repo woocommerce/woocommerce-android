@@ -3,6 +3,7 @@ package com.woocommerce.android
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener
 import com.woocommerce.android.ui.payments.cardreader.onboarding.PersistentOnboardingData
 import com.woocommerce.android.ui.payments.cardreader.onboarding.PluginType
+import com.woocommerce.android.ui.promobanner.PromoBannerType
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
@@ -89,6 +90,24 @@ class AppPrefsWrapper @Inject constructor() {
         selfHostedSiteId: Long
     ) = AppPrefs.getCardReaderStatementDescriptor(localSiteId, remoteSiteId, selfHostedSiteId)
 
+    fun isCashOnDeliveryDisabledStateSkipped(
+        localSiteId: Int,
+        remoteSiteId: Long,
+        selfHostedSiteId: Long
+    ) = AppPrefs.isCashOnDeliveryDisabledStateSkipped(localSiteId, remoteSiteId, selfHostedSiteId)
+
+    fun setCashOnDeliveryDisabledStateSkipped(
+        localSiteId: Int,
+        remoteSiteId: Long,
+        selfHostedSiteId: Long,
+        isSkipped: Boolean
+    ) = AppPrefs.setCashOnDeliveryDisabledStateSkipped(
+        localSiteId,
+        remoteSiteId,
+        selfHostedSiteId,
+        isSkipped
+    )
+
     fun setLastConnectedCardReaderId(readerId: String) = AppPrefs.setLastConnectedCardReaderId(readerId)
 
     fun getLastConnectedCardReaderId() = AppPrefs.getLastConnectedCardReaderId()
@@ -150,6 +169,96 @@ class AppPrefsWrapper @Inject constructor() {
     }
 
     fun getWcShippingBannerDismissed(currentSiteId: Int) = AppPrefs.getWcShippingBannerDismissed(currentSiteId)
+
+    fun getPreLoginNotificationWorkRequestId() = AppPrefs.getLocalNotificationWorkRequestId()
+
+    fun setPreLoginNotificationWorkRequestId(workRequestId: String) =
+        AppPrefs.setLocalNotificationWorkRequestId(workRequestId)
+
+    fun hasPreLoginNotificationBeenDisplayed() = AppPrefs.isPreLoginNotificationBeenDisplayed()
+
+    fun setPreLoginNotificationDisplayedType(notificationType: String) =
+        AppPrefs.setPreLoginNotificationDisplayedType(notificationType)
+
+    fun getPreLoginNotificationDisplayedType() = AppPrefs.getPreLoginNotificationDisplayedType()
+
+    fun setPreLoginNotificationDisplayed(displayed: Boolean) =
+        AppPrefs.setPreLoginNotificationDisplayed(displayed)
+
+    fun setLoginEmail(email: String) =
+        AppPrefs.setLoginEmail(email)
+
+    fun getLoginEmail() = AppPrefs.getLoginEmail()
+
+    fun isUserSeenNewFeatureOnMoreScreen() = AppPrefs.isUserSeenNewFeatureOnMoreScreen()
+
+    fun setUserSeenNewFeatureOnMoreScreen() = AppPrefs.setUserSeenNewFeatureOnMoreScreen()
+
+    fun isPaymentsIconWasClickedOnMoreScreen() = AppPrefs.isPaymentsIconWasClickedOnMoreScreen()
+
+    fun setPaymentsIconWasClickedOnMoreScreen() = AppPrefs.setPaymentsIconWasClickedOnMoreScreen()
+
+    fun setOnboardingCarouselDisplayed(displayed: Boolean) =
+        AppPrefs.setOnboardingCarouselDisplayed(displayed)
+
+    fun hasOnboardingCarouselBeenDisplayed(): Boolean = AppPrefs.hasOnboardingCarouselBeenDisplayed()
+
+    /**
+     * Card Reader Upsell
+     */
+    fun setCardReaderUpsellBannerDismissed(
+        isDismissed: Boolean,
+        localSiteId: Int,
+        remoteSiteId: Long,
+        selfHostedSiteId: Long
+    ) = AppPrefs.setCardReaderUpsellBannerDismissedForever(
+        isDismissed,
+        localSiteId,
+        remoteSiteId,
+        selfHostedSiteId
+    )
+
+    fun isCardReaderUpsellBannerDismissedForever(
+        localSiteId: Int,
+        remoteSiteId: Long,
+        selfHostedSiteId: Long
+    ) = AppPrefs.isCardReaderUpsellBannerDismissedForever(
+        localSiteId,
+        remoteSiteId,
+        selfHostedSiteId
+    )
+
+    fun setCardReaderUpsellBannerRemindMeLater(
+        lastDialogDismissedInMillis: Long,
+        localSiteId: Int,
+        remoteSiteId: Long,
+        selfHostedSiteId: Long
+    ) = AppPrefs.setCardReaderUpsellBannerRemindMeLater(
+        lastDialogDismissedInMillis,
+        localSiteId,
+        remoteSiteId,
+        selfHostedSiteId
+    )
+
+    fun getCardReaderUpsellBannerLastDismissed(
+        localSiteId: Int,
+        remoteSiteId: Long,
+        selfHostedSiteId: Long
+    ) = AppPrefs.getCardReaderUpsellBannerLastDismissed(
+        localSiteId,
+        remoteSiteId,
+        selfHostedSiteId
+    )
+
+    fun getSelectedProductType() = AppPrefs.getSelectedProductType()
+
+    fun isSelectedProductVirtual() = AppPrefs.isSelectedProductVirtual()
+
+    fun isPromoBannerShown(bannerType: PromoBannerType) = AppPrefs.isPromoBannerShown(bannerType)
+
+    fun setPromoBannerShown(bannerType: PromoBannerType, shown: Boolean) {
+        AppPrefs.setPromoBannerShown(bannerType, shown)
+    }
 
     /**
      * Observes changes to the preferences

@@ -148,10 +148,12 @@ class AnalyticsTracker private constructor(private val context: Context) {
         const val KEY_ORDER_ID = "order_id"
         const val KEY_PRODUCT_ID = "product_id"
         const val KEY_PRODUCT_COUNT = "product_count"
+        const val KEY_HAS_LINKED_PRODUCTS = "has_linked_products"
         const val KEY_IS_LOADING_MORE = "is_loading_more"
         const val KEY_IS_WPCOM_STORE = "is_wpcom_store"
         const val KEY_NAME = "name"
         const val KEY_NUMBER_OF_STORES = "number_of_stores"
+        const val KEY_NUMBER_OF_NON_WOO_SITES = "number_of_non_woo_sites"
         const val KEY_PARENT_ID = "parent_id"
         const val KEY_RANGE = "range"
         const val KEY_RESULT = "result"
@@ -179,6 +181,10 @@ class AnalyticsTracker private constructor(private val context: Context) {
         const val KEY_SUBJECT = "subject"
         const val KEY_DATE_RANGE = "date_range"
         const val KEY_SOURCE = "source"
+        const val KEY_CUSTOM_FIELDS_COUNT = "custom_fields_count"
+        const val KEY_CUSTOM_FIELDS_SIZE = "custom_fields_size"
+        const val KEY_WAITING_TIME = "waiting_time"
+        const val KEY_IS_NON_ATOMIC = "is_non_atomic"
 
         const val KEY_SORT_ORDER = "order"
         const val VALUE_SORT_NAME_ASC = "name,ascending"
@@ -218,10 +224,20 @@ class AnalyticsTracker private constructor(private val context: Context) {
         const val KEY_HAS_SHIPPING_METHOD = "has_shipping_method"
         const val VALUE_FLOW_CREATION = "creation"
         const val VALUE_FLOW_EDITING = "editing"
+        const val VALUE_FLOW_LIST = "list"
 
         const val ORDER_EDIT_CUSTOMER_NOTE = "customer_note"
         const val ORDER_EDIT_SHIPPING_ADDRESS = "shipping_address"
         const val ORDER_EDIT_BILLING_ADDRESS = "billing_address"
+
+        const val KEY_HAS_MULTIPLE_SHIPPING_LINES = "has_multiple_shipping_lines"
+        const val KEY_HAS_MULTIPLE_FEE_LINES = "has_multiple_fee_lines"
+
+        enum class OrderNoteType(val value: String) {
+            CUSTOMER("customer"),
+            PRIVATE("private"),
+            SYSTEM("system")
+        }
 
         const val KEY_FEEDBACK_ACTION = "action"
         const val KEY_FEEDBACK_CONTEXT = "context"
@@ -321,6 +337,9 @@ class AnalyticsTracker private constructor(private val context: Context) {
         const val VALUE_MORE_MENU_REVIEWS = "reviews"
         const val VALUE_MORE_MENU_INBOX = "inbox"
         const val VALUE_MORE_MENU_COUPONS = "coupons"
+        const val VALUE_MORE_MENU_PAYMENTS = "payments"
+
+        const val VALUE_MORE_MENU_PAYMENTS_BADGE_VISIBLE = "badge_visible"
 
         // -- Inbox note actions
         const val KEY_INBOX_NOTE_ACTION = "action"
@@ -342,6 +361,28 @@ class AnalyticsTracker private constructor(private val context: Context) {
         const val KEY_COUPON_ALLOWED_PRODUCTS_OR_CATEGORIES_UPDATED = "allowed_products_or_categories_updated"
         const val KEY_COUPON_EXPIRY_DATE_UPDATED = "expiry_date_updated"
         const val KEY_COUPON_USAGE_RESTRICTIONS_UPDATED = "usage_restrictions_updated"
+
+        // -- Onboarding
+        const val VALUE_LOGIN_ONBOARDING_IS_FINAL_PAGE = "is_final_page"
+
+        // -- Jetpack Installation
+        const val VALUE_JETPACK_INSTALLATION_SOURCE_WEB = "web"
+        const val VALUE_JETPACK_INSTALLATION_SOURCE_NATIVE = "native"
+
+        // -- Upsell banner
+        const val KEY_BANNER_SOURCE = "source"
+        const val KEY_BANNER_PAYMENTS = "payment_methods"
+        const val KEY_BANNER_ORDER_LIST = "order_list"
+        const val KEY_BANNER_SETTINGS = "settings"
+        const val KEY_BANNER_CAMPAIGN_NAME = "campaign_name"
+        const val KEY_BANNER_UPSELL_CARD_READERS = "upsell_card_readers"
+        const val KEY_BANNER_REMIND_LATER = "remind_later"
+        const val KEY_BANNER_LINKED_PRODUCTS_PROMO = "linked_products_promo"
+
+        const val SOURCE_PRODUCT_DETAIL = "product_detail"
+
+        // -- Experiments
+        const val KEY_EXPERIMENT_VARIANT = "experiment_variant"
 
         var sendUsageStats: Boolean = true
             set(value) {

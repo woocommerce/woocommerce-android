@@ -82,12 +82,19 @@ class ProductListViewModel @Inject constructor(
 
     fun isSearching() = viewState.isSearchActive == true
 
+    fun isSkuSearch() = isSearching() && viewState.isSkuSearch
+
     private fun isLoading() = viewState.isLoading == true
 
     fun getSearchQuery() = viewState.query
 
-    fun onSearchQueryChanged(query: String) {
-        viewState = viewState.copy(query = query, isEmptyViewVisible = false)
+    fun onSearchQueryChanged(
+        query: String,
+    ) {
+        viewState = viewState.copy(
+            query = query,
+            isEmptyViewVisible = false
+        )
 
         if (query.length > 2) {
             onSearchRequested()
@@ -193,6 +200,15 @@ class ProductListViewModel @Inject constructor(
         loadProducts(loadMore = true)
     }
 
+    fun onSearchTypeChanged(isSkuSearch: Boolean) {
+        viewState = viewState.copy(isSkuSearch = isSkuSearch)
+        viewState.query?.let { query ->
+            if (query.length > 2) {
+                onSearchRequested()
+            }
+        }
+    }
+
     fun onSearchRequested() {
         AnalyticsTracker.track(
             AnalyticsEvent.PRODUCT_LIST_SEARCHED,
@@ -216,7 +232,8 @@ class ProductListViewModel @Inject constructor(
         )
     }
 
-    final fun loadProducts(
+    @Suppress("LongMethod")
+    fun loadProducts(
         loadMore: Boolean = false,
         scrollToTop: Boolean = false,
         isRefreshing: Boolean = false
@@ -247,7 +264,11 @@ class ProductListViewModel @Inject constructor(
                         displaySortAndFilterCard = false,
                         isAddProductButtonVisible = false
                     )
-                    fetchProductList(viewState.query, loadMore = loadMore)
+                    fetchProductList(
+                        viewState.query,
+                        isSkuSearch = viewState.isSkuSearch,
+                        loadMore = loadMore
+                    )
                 }
             }
         } else {
@@ -347,8 +368,10 @@ class ProductListViewModel @Inject constructor(
         }
     }
 
+    @Suppress("NestedBlockDepth")
     private suspend fun fetchProductList(
         searchQuery: String? = null,
+        isSkuSearch: Boolean = false,
         loadMore: Boolean = false,
         scrollToTop: Boolean = false
     ) {
@@ -361,13 +384,19 @@ class ProductListViewModel @Inject constructor(
                 _productList.value = products
             }
         } else if (searchQuery?.isNotEmpty() == true) {
-            productRepository.searchProductList(searchQuery, loadMore)?.let { fetchedProducts ->
+            productRepository.searchProductList(
+                searchQuery = searchQuery,
+                isSkuSearch = isSkuSearch,
+                loadMore = loadMore
+            )?.let { products ->
                 // make sure the search query hasn't changed while the fetch was processing
-                if (searchQuery == productRepository.lastSearchQuery) {
+                if (searchQuery == productRepository.lastSearchQuery &&
+                    isSkuSearch == productRepository.lastIsSkuSearch
+                ) {
                     if (loadMore) {
-                        _productList.value = _productList.value.orEmpty() + fetchedProducts
+                        _productList.value = _productList.value.orEmpty() + products
                     } else {
-                        _productList.value = fetchedProducts
+                        _productList.value = products
                     }
                 } else {
                     WooLog.d(WooLog.T.PRODUCTS, "Search query changed")
@@ -432,6 +461,7 @@ class ProductListViewModel @Inject constructor(
         val canLoadMore: Boolean? = null,
         val isRefreshing: Boolean? = null,
         val query: String? = null,
+        val isSkuSearch: Boolean = false,
         val filterCount: Int? = null,
         val isSearchActive: Boolean? = null,
         val isEmptyViewVisible: Boolean? = null,

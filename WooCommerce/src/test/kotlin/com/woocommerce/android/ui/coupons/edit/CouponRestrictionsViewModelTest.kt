@@ -4,9 +4,11 @@ import com.woocommerce.android.initSavedStateHandle
 import com.woocommerce.android.ui.coupons.CouponTestUtils
 import com.woocommerce.android.util.captureValues
 import com.woocommerce.android.viewmodel.BaseUnitTest
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 
+@ExperimentalCoroutinesApi
 class CouponRestrictionsViewModelTest : BaseUnitTest() {
     private lateinit var viewModel: CouponRestrictionsViewModel
     private var storedRestrictions = CouponTestUtils.generateCouponRestrictions()

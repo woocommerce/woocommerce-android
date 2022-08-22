@@ -14,6 +14,7 @@ import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.databinding.ActivityHelpBinding
 import com.woocommerce.android.extensions.show
 import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.ui.login.localnotifications.LoginNotificationScheduler
 import com.woocommerce.android.util.ChromeCustomTabUtils
 import com.woocommerce.android.util.PackageUtils
 import dagger.hilt.android.AndroidEntryPoint
@@ -29,6 +30,7 @@ class HelpActivity : AppCompatActivity() {
     @Inject lateinit var supportHelper: SupportHelper
     @Inject lateinit var zendeskHelper: ZendeskHelper
     @Inject lateinit var selectedSite: SelectedSite
+    @Inject lateinit var loginNotificationScheduler: LoginNotificationScheduler
 
     private lateinit var binding: ActivityHelpBinding
 
@@ -74,6 +76,10 @@ class HelpActivity : AppCompatActivity() {
          */
         if (savedInstanceState == null && originFromExtras == Origin.ZENDESK_NOTIFICATION) {
             showZendeskTickets()
+        }
+
+        if (originFromExtras == Origin.LOGIN_HELP_NOTIFICATION) {
+            loginNotificationScheduler.onNotificationTapped(extraTagsFromExtras?.first())
         }
     }
 
@@ -197,7 +203,8 @@ class HelpActivity : AppCompatActivity() {
         LOGIN_CONNECTED_EMAIL_HELP("origin:login-connected-email-help"),
         SIGNUP_EMAIL("origin:signup-email"),
         SIGNUP_MAGIC_LINK("origin:signup-magic-link"),
-        JETPACK_INSTALLATION("origin:jetpack-installation");
+        JETPACK_INSTALLATION("origin:jetpack-installation"),
+        LOGIN_HELP_NOTIFICATION("origin:login-local-notification");
 
         override fun toString(): String {
             return stringValue

@@ -1,11 +1,83 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2022-06-30 11:54:03+0000
+Translation-Revision-Date: 2022-08-18 21:54:08+0000
 Plural-Forms: nplurals=2; plural=n > 1;
 Generator: GlotPress/2.4.0-alpha
 Language: fr
 -->
 <resources>
+    <string name="login_help_notification_get_link_by_email_button">Obtenir un lien de connexion par e-mail</string>
+    <string name="login_help_notification_invalid_password_title">Vous avez oublié votre mot de passe ?</string>
+    <string name="card_reader_onboarding_not_finished">Nous avons remarqué que vous n’avez pas encore terminé la configuration des paiements en personne. &lt;b&gt;&lt;a href=\'\'&gt;Poursuivre la configuration&lt;/a&gt;&lt;/b&gt;</string>
+    <string name="payments_hub_title">Paiements</string>
+    <string name="orderlist_bottom_sheet_simple_payments_moved_button">OK !</string>
+    <string name="orderlist_bottom_sheet_simple_payments_moved_description">Vous pouvez désormais accéder rapidement aux paiements en personne et à d’autres fonctionnalités en toute simplicité.</string>
+    <string name="orderlist_bottom_sheet_simple_payments_moved_title">Paiements à partir de l’onglet Menu</string>
+    <string name="login_no_wpcom_account_found">L’adresse e-mail %1$s n’est pas associée à un compte WordPress.com.</string>
+    <string name="login_non_woo_stores_label">Autres sites</string>
+    <string name="login_with_store_address">Connectez-vous avec l’adresse de votre boutique</string>
+    <string name="more_menu_button_w___admin">WC Admin</string>
+    <string name="login_magic_links_email_sent">Nous venons d\'envoyer un lien magique à </string>
+    <string name="login_magic_links_sent_label_short">Consultez votre messagerie sur cet appareil !</string>
+    <string name="or_use_password">Utilisez le mot de passe pour la connexion</string>
+    <string name="login_magic_link_button">Connectez-vous à l\'aide d\'un lien magique</string>
+    <string name="login_magic_link_auto_sent">Nous venons d\'envoyer un lien magique à votre adresse e-mail. Sélectionnez le lien dans l\'adresse e-mail pour vous connecter.</string>
+    <string name="login_help_notification_incorrect_wpcom_email_description">Connectez-vous avec vos identifiants au site</string>
+    <string name="promo_linked_products_banner_message">Proposez à vos clients des recommandations de produits utiles et pertinentes en ajoutant des produits suggérés et des ventes croisées</string>
+    <string name="promo_linked_products_banner_title">Dynamisez vos ventes avec des produits associés</string>
+    <string name="card_reader_upsell_card_reader_banner_description">Commencez à vendre en personne en moins de vingt minutes grâce à notre lecteur de carte.</string>
+    <string name="orderlist_updating_order_error">Erreur lors de la mise à jour de la commande n°%1$d</string>
+    <string name="orderlist_mark_completed_success">Commande n°%1$d marquée comme terminée</string>
+    <string name="orderlist_mark_completed">Marquer\nterminé</string>
+    <string name="login_install_woo">Installer WooCommerce</string>
+    <string name="login_not_woo_store">Il semblerait que %1$s ne soit pas un site WooCommerce.</string>
+    <string name="login_prologue_survey_button_switch_stores">Passer d\'une boutique à l\'autre</string>
+    <string name="login_prologue_survey_button_manage_orders">Gérer mes commandes</string>
+    <string name="login_prologue_survey_button_edit_products">Créer ou mettre à jour mes produits</string>
+    <string name="login_prologue_survey_button_check_analytics">Vérifier mes analyses</string>
+    <string name="login_prologue_survey_button_set_up_store">Tentative de configuration d\'une boutique</string>
+    <string name="login_prologue_survey_button_exploring">Une simple navigation</string>
+    <string name="login_prologue_survey_title">En quoi WooCommerce peut vous être utile ?</string>
+    <string name="tip">Conseil</string>
+    <string name="set_up_now">Configurer maintenant</string>
+    <string name="lets_get_started">C’est parti !</string>
+    <string name="login_help_notification_wordpress_login_button">Connectez-vous avec WordPress.com</string>
+    <string name="login_help_notification_contact_support_button">Contacter l’assistance</string>
+    <string name="login_help_notification_site_error_description">Connectez-vous avec votre compte WordPress.com</string>
+    <string name="login_help_notification_no_interaction_default_description">Obtenez de l’assistance !</string>
+    <string name="login_help_notification_default_title">Vous n’arrivez pas à vous connecter ?</string>
+    <string name="product_search_sku">UGS</string>
+    <string name="product_search_all">Tous les produits</string>
+    <string name="card_reader_upsell_card_reader_banner_dont_show_again">NE PLUS AFFICHER</string>
+    <string name="card_reader_upsell_card_reader_banner_remind_me_later">ME RAPPELER ULTÉRIEUREMENT</string>
+    <string name="card_reader_upsell_card_reader_banner_dismiss_dialog_description">Aucune inquiétude ! Vous pouvez toujours autoriser les paiements en personne dans vos réglages.</string>
+    <string name="card_reader_upsell_card_reader_banner_payments">Paiements en personne</string>
+    <string name="card_reader_upsell_card_reader_banner_cta">Lecteur de carte d’achat</string>
+    <string name="card_reader_upsell_card_reader_banner_title">Accepter les paiements facilement</string>
+    <string name="card_reader_upsell_card_reader_banner_new">NOUVEAU</string>
+    <string name="card_reader_upsell_card_reader_banner_dismiss">Ignorer</string>
+    <string name="orderdetail_view_custom_fields">Afficher les champs personnalisés</string>
+    <string name="orderdetail_custom_fields">Champs personnalisés</string>
+    <string name="order_sync_failed">Impossible d’enregistrer les modifications</string>
+    <string name="existing_order_cash_dlg_message">Cette action marquera votre commande comme payée si vous avez reçu le paiement en dehors de WooCommerce</string>
+    <string name="login_jetpack_install"> Installer Jetpack </string>
+    <string name="login_prologue_label_products_subtitle">Nous vous permettons de les traiter en toute simplicité</string>
+    <string name="login_prologue_label_orders_subtitle">Vous pouvez les gérer rapidement et facilement </string>
+    <string name="login_prologue_label_analytics_subtitle">Nous savons à quel point c’est crucial pour votre entreprise</string>
+    <string name="login_prologue_new_to_woo">Vous débutez sur WooCommerce ?</string>
+    <string name="notification_channel_pre_login_title">Rappels à propos des problèmes de connexion</string>
+    <string name="tests_notification_new_order_message">Nouvelle commande de 50 $ auprès de votre boutique WooCommerce</string>
+    <string name="tests_notification_new_order_title">Une nouvelle commande a été passée sur votre site ! 🎉</string>
+    <string name="lines_all_details">les détails</string>
+    <string name="lines_incomplete_explanation">Pour modifier tous %1$s, parcourez la commande dans la section Administration de votre boutique WooCommerce</string>
+    <string name="lines_incomplete">%1$s sont incomplets/incomplètes.</string>
+    <string name="support_system_status_report_share_label">Partager le rapport sur l’état du système</string>
+    <string name="support_system_status_report_copy_label">Copier le rapport sur l’état du système dans le presse-papiers</string>
+    <string name="card_reader_connect_keep_searching_button">Continuer la recherche</string>
+    <string name="card_reader_payment_description_v2">Paiement en personne de la commande n° %s pour %s blog_id %s.</string>
+    <string name="card_reader_manage_payment_provider">Changer de fournisseur de paiement</string>
+    <string name="orderdetail_refunded_line_with_info">Remboursés : %1$s</string>
+    <string name="orderdetail_payment_summary_onhold_plain">Paiement en attente</string>
     <string name="install_wc_shipping_proceed_button">Poursuivre l’installation</string>
     <string name="install_wc_shipping_installation_info">Informations préalables à l’installation</string>
     <string name="install_wc_shipping_preinstall_title">Installer l’extension</string>
@@ -216,7 +288,7 @@ Language: fr
     <string name="coupon_details_minimum_spend">Dépense minimale de %s</string>
     <string name="coupon_details_heading">Résumé du code promo</string>
     <string name="coupon_list_view_coupon">Voir le résumé du code promo</string>
-    <string name="coupon_list_wip_message_enabled">Il sera bientôt possible d’afficher les codes promo sur votre appareil.</string>
+    <string name="coupon_list_wip_message_enabled">Il sera bientôt possible d’afficher et de modifier les codes promo depuis votre appareil.</string>
     <string name="coupon_list_wip_title">Afficher et modifier les codes promo</string>
     <string name="coupon_list_empty_heading">Aucun code promo trouvé</string>
     <string name="coupon_list_item_label_included_and_excluded">%1s sauf %2s</string>
@@ -286,7 +358,6 @@ Language: fr
     <string name="card_reader_onboarding_both_plugins_activated_hint_store_owner">Les paiements en personne ne fonctionnent que si l’une des extensions suivantes est activée. Veuillez demander à un administrateur du site de désactiver l’une des extensions suivantes afin de pouvoir continuer :</string>
     <string name="card_reader_onboarding_both_plugins_activated_hint_admin">Les paiements en personne ne fonctionnent que si l’une des extensions suivantes est activée. Veuillez désactiver l’une de ces extensions pour pouvoir continuer :</string>
     <string name="card_reader_onboarding_both_plugins_activated_header">Nous avons détecté des extensions de paiement en conflit</string>
-    <string name="order_creation_price_calculation_failed">Impossible de changer le prix</string>
     <string name="order_creation_payment_tax">Taxes</string>
     <string name="exclusive_or">ou</string>
     <string name="settings_install_jetpack">Configurer Jetpack</string>
@@ -703,7 +774,6 @@ Language: fr
     <string name="card_reader_refetching_order_failed">Erreur lors de l’extraction de la commande. L’état de la commande dans l’application est peut-être obsolète.</string>
     <string name="card_reader_payment_email_client_not_found">Aucune application de messagerie détectée</string>
     <string name="card_reader_payment_receipt_email_subject">Votre reçu de %s</string>
-    <string name="card_reader_payment_description">Paiement en personne de la commande %s pour %s</string>
     <string name="card_reader_payment_fetch_order_loading_payment_state">Actualisation de la commande</string>
     <string name="card_reader_payment_fetch_order_loading_header">Mise à jour de l’état de l’application</string>
     <string name="shipping_label_shipping_carrier_shipping_method_banner_message">Votre client a sélectionné %1$s</string>
@@ -779,9 +849,8 @@ Language: fr
     <string name="user_role_access_error_retry">Vous n’avez pas le bon rôle utilisateur</string>
     <string name="user_role_access_error_link">Plus d’infos sur les rôles et les autorisations</string>
     <string name="user_role_access_error_msg">Cette application ne prend en charge que les rôles utilisateurs Administrateur et Gérant de boutique. Veuillez contacter le gérant de votre boutique pour mettre à niveau votre rôle.</string>
-    <string name="login_prologue_label_reviews">Surveillez et approuvez les avis sur vos produits</string>
     <string name="login_prologue_label_products">Modifiez et ajoutez de nouveaux produits où que vous soyez</string>
-    <string name="login_prologue_label_orders">Gérez les commandes de votre boutique à la volée</string>
+    <string name="login_prologue_label_orders">Gérez et modifiez vos commandes à la volée</string>
     <string name="login_prologue_label_analytics">Suivez les ventes et les produits hautement performants</string>
     <string name="skip">Passer</string>
     <string name="product_type_external_title">Produit externe</string>
@@ -1057,7 +1126,6 @@ Language: fr
     <string name="product_publish_draft_dialog_title">Enregistrement du brouillon</string>
     <string name="product_status_trashed">À la corbeille</string>
     <string name="product_detail_save_as_draft">Enregistrer comme brouillon</string>
-    <string name="login_no_wpcom_account_found">Il semble que %1$s ne soit pas associé à un compte WordPress.com.</string>
     <string name="signup_confirmation_title">Confirmation de l’inscription</string>
     <string name="reset_your_password">Réinitialiser votre mot de passe</string>
     <string name="enter_your_site_address">Saisir l’adresse de votre site</string>
@@ -1737,11 +1805,9 @@ Language: fr
     <string name="orderdetail_track_shipment">Suivre l\'expédition</string>
     <string name="login_email_help_desc">Dans l\'administration de votre site, vous trouverez l\'adresse e-mail utilisée pour vous connecter à WordPress.com à partir du %1$sTableau de bord de Jetpack%2$s sous %3$sConnexions &gt; Connexion du compte%4$s</string>
     <string name="login_email_help_title">Quelle adresse e-mail dois-je utiliser pour me connecter ?</string>
-    <string name="login_need_help_finding_email">Besoin d\'aide pour trouver l\'adresse e-mail de connexion ?</string>
     <string name="login_jetpack_what_is_description">Jetpack est une extension WordPress gratuite qui connecte votre boutique aux outils dont vous avez besoin pour vous offrir une expérience optimale, dont les notifications push et les statistiques</string>
     <string name="login_jetpack_what_is">Qu\'est-ce que Jetpack ?</string>
     <string name="login_view_connected_stores">Voir les boutiques connectées</string>
-    <string name="login_not_woo_store">Il semblerait que %1$s ne soit pas un site WooCommerce. Installez l’extension WooCommerce sur votre site, puis actualisez l’application.</string>
     <string name="login_not_connected_to_account">Il semblerait que %1$s soit connecté à un autre compte WordPress.com.</string>
     <string name="keep_editing">Continuer à écrire</string>
     <string name="notification_wpcom_username_needed">Veuillez vous connecter avec votre nom d\'utilisateur et votre mot de passe.</string>

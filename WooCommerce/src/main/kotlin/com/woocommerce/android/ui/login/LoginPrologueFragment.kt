@@ -3,8 +3,10 @@ package com.woocommerce.android.ui.login
 import android.content.Context
 import android.os.Bundle
 import android.view.View
+import androidx.annotation.LayoutRes
 import androidx.fragment.app.Fragment
 import com.woocommerce.android.R
+import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.databinding.FragmentLoginPrologueBinding
 import com.woocommerce.android.ui.login.UnifiedLoginTracker.Flow
@@ -13,19 +15,18 @@ import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
 @AndroidEntryPoint
-class LoginPrologueFragment : Fragment(R.layout.fragment_login_prologue) {
+open class LoginPrologueFragment(@LayoutRes layout: Int) : Fragment(layout) {
     companion object {
         const val TAG = "login-prologue-fragment"
-
-        fun newInstance(): LoginPrologueFragment {
-            return LoginPrologueFragment()
-        }
     }
 
     interface PrologueFinishedListener {
         fun onPrimaryButtonClicked()
         fun onSecondaryButtonClicked()
+        fun onNewToWooButtonClicked()
     }
+
+    constructor() : this(R.layout.fragment_login_prologue)
 
     @Inject lateinit var unifiedLoginTracker: UnifiedLoginTracker
     private var prologueFinishedListener: PrologueFinishedListener? = null
@@ -43,8 +44,10 @@ class LoginPrologueFragment : Fragment(R.layout.fragment_login_prologue) {
             prologueFinishedListener?.onSecondaryButtonClicked()
         }
 
-        binding.viewPager.adapter = LoginPrologueAdapter(this)
-        binding.viewPagerIndicator.setupFromViewPager(binding.viewPager)
+        binding.newToWooButton.setOnClickListener {
+            AnalyticsTracker.track(AnalyticsEvent.LOGIN_NEW_TO_WOO_BUTTON_TAPPED)
+            prologueFinishedListener?.onNewToWooButtonClicked()
+        }
 
         if (savedInstanceState == null) {
             unifiedLoginTracker.track(Flow.PROLOGUE, Step.PROLOGUE)

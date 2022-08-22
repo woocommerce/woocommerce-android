@@ -1,11 +1,83 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2022-06-30 13:54:04+0000
+Translation-Revision-Date: 2022-08-18 15:54:04+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: he_IL
 -->
 <resources>
+    <string name="login_help_notification_get_link_by_email_button">אפשר לקבל קישור להתחברות באימייל</string>
+    <string name="login_help_notification_invalid_password_title">אין לך מושג מה הסיסמה שלך?</string>
+    <string name="card_reader_onboarding_not_finished">שמנו לב שעדיין לא השלמת את ההגדרה של \'תשלומים באופן אישי\'. &lt;b&gt;&lt;a href=\'\'&gt;להמשיך להתקנה&lt;/a&gt;&lt;/b&gt;</string>
+    <string name="payments_hub_title">תשלומים</string>
+    <string name="orderlist_bottom_sheet_simple_payments_moved_button">הבנתי!</string>
+    <string name="orderlist_bottom_sheet_simple_payments_moved_description">כעת אפשר לגשת בקלות ובמהירות ל\'תשלומים באופן אישי\' ולאפשרויות נוספות</string>
+    <string name="orderlist_bottom_sheet_simple_payments_moved_title">תשלומים מהלשונית \'תפריט\'</string>
+    <string name="login_no_wpcom_account_found">כתובת האימייל ⁦%1$s⁩ מקושרת לחשבון ב-WordPress.com.</string>
+    <string name="login_non_woo_stores_label">אתרים אחרים</string>
+    <string name="login_with_store_address">להתחבר עם הכתובת של החנות</string>
+    <string name="more_menu_button_w___admin">מנהל מערכת של WC</string>
+    <string name="login_magic_links_email_sent">שלחנו כעת קישור ישיר אל</string>
+    <string name="login_magic_links_sent_label_short">יש לבדוק את תיבת האימייל במכשיר זה!</string>
+    <string name="or_use_password">להשתמש בסיסמה כדי להתחבר</string>
+    <string name="login_magic_link_button">להתחבר באמצעות קישור ישיר</string>
+    <string name="login_magic_link_auto_sent">שלחנו כעת קישור ישיר אל כתובת האימייל שלך. יש להקיש על הקישור באימייל כדי להתחבר.</string>
+    <string name="login_help_notification_incorrect_wpcom_email_description">להתחבר עם פרטי הכניסה שלך לאתר</string>
+    <string name="promo_linked_products_banner_message">לספק ללקוחות המלצות מועילות ורלוונטיות למוצרים על ידי הוספה של שדרוגים ומוצרים משלימים</string>
+    <string name="promo_linked_products_banner_title">לשפר את המכירות עם מוצרים מקושרים</string>
+    <string name="card_reader_upsell_card_reader_banner_description">להתחיל למכור מוצרים באופן אישי במהירות עם קורא הכרטיסים שלנו. תהליך ההתחברות אורך פחות מ-20 דקות.</string>
+    <string name="orderlist_updating_order_error">שגיאה בעדכון של הזמנה מס\' ⁦%1$d⁩</string>
+    <string name="orderlist_mark_completed_success">הזמנה מס\' ⁦%1$d⁩ סומנה כ\'הושלמה\'</string>
+    <string name="orderlist_mark_completed">לסמן\nהושלמה</string>
+    <string name="login_install_woo">להתקין את WooCommerce</string>
+    <string name="login_not_woo_store">נראה שהאתר ⁦%1$s⁩ אינו אתר של WooCommerce.</string>
+    <string name="login_prologue_survey_button_switch_stores">להחליף בין מספר חנויות</string>
+    <string name="login_prologue_survey_button_manage_orders">לנהל את ההזמנות שלי</string>
+    <string name="login_prologue_survey_button_edit_products">ליצור או לעדכן את המוצרים שלי</string>
+    <string name="login_prologue_survey_button_check_analytics">לבדוק את הנתונים האנליטיים שלי</string>
+    <string name="login_prologue_survey_button_set_up_store">מנסה להקים חנות</string>
+    <string name="login_prologue_survey_button_exploring">אני רק רוצה לעיין</string>
+    <string name="login_prologue_survey_title">למה הגעת אל WooCommerce?</string>
+    <string name="tip">עצה</string>
+    <string name="set_up_now">להגדיר כעת</string>
+    <string name="lets_get_started">אפשר להתחיל עכשיו!</string>
+    <string name="login_help_notification_wordpress_login_button">להתחבר באמצעות WordPress.com</string>
+    <string name="login_help_notification_contact_support_button">לפנות לתמיכה</string>
+    <string name="login_help_notification_site_error_description">להתחבר עם החשבון שלך ב-WordPress.com</string>
+    <string name="login_help_notification_no_interaction_default_description">אפשר לפנות אלינו לעזרה!</string>
+    <string name="login_help_notification_default_title">נתקלת בבעיה במהלך ההתחברות?</string>
+    <string name="product_search_sku">SKU</string>
+    <string name="product_search_all">כל המוצרים</string>
+    <string name="card_reader_upsell_card_reader_banner_dont_show_again">לא להציג שוב</string>
+    <string name="card_reader_upsell_card_reader_banner_remind_me_later">הזכירו לי מאוחר יותר</string>
+    <string name="card_reader_upsell_card_reader_banner_dismiss_dialog_description">אל דאגה! תמיד אפשר להתחיל לבצע תשלומים באופן אישי דרך \'הגדרות\'.</string>
+    <string name="card_reader_upsell_card_reader_banner_payments">תשלומים באופן אישי</string>
+    <string name="card_reader_upsell_card_reader_banner_cta">לרכוש קורא כרטיסים</string>
+    <string name="card_reader_upsell_card_reader_banner_title">לקבל תשלומים בקלות</string>
+    <string name="card_reader_upsell_card_reader_banner_new">חדש</string>
+    <string name="card_reader_upsell_card_reader_banner_dismiss">ביטול</string>
+    <string name="orderdetail_view_custom_fields">להציג שדות מותאמים</string>
+    <string name="orderdetail_custom_fields">שדות מותאמים</string>
+    <string name="order_sync_failed">אין אפשרות לשמור את השינויים</string>
+    <string name="existing_order_cash_dlg_message">הפעולה הזאת תסמן את ההזמנה בתור \'שולמה\' אם קיבלת תשלום מחוץ ל-WooCommerce</string>
+    <string name="login_jetpack_install">להתקין את Jetpack</string>
+    <string name="login_prologue_label_products_subtitle">אנחנו מאפשרים לך לעבד תשלומים ללא מאמץ</string>
+    <string name="login_prologue_label_orders_subtitle">אפשר לנסות את התשלומים בצורה מהירה ונוחה</string>
+    <string name="login_prologue_label_analytics_subtitle">אנחנו יודעים שהאפשרות הזאת חיונית לעסק שלך</string>
+    <string name="login_prologue_new_to_woo">פעם ראשונה ב-WooCommerce</string>
+    <string name="notification_channel_pre_login_title">תזכורות לגבי פתרון בעיות במהלך ההתחברות</string>
+    <string name="tests_notification_new_order_message">הזמנה חדשה בסכום של 50 $ בחנות שלך ב-WooCommerce</string>
+    <string name="tests_notification_new_order_title">יש לך הזמנה חדשה! 🎉</string>
+    <string name="lines_all_details">הפרטים</string>
+    <string name="lines_incomplete_explanation">כדי לערוך את כל ⁦%1$s⁩ יש לעיין בהזמנה דרך אזור מנהל המערכת בחנות שלך ב-WooCommerce</string>
+    <string name="lines_incomplete">⁦%1$s⁩ לא הושלמו</string>
+    <string name="support_system_status_report_share_label">לשתף דוח מצב המערכת</string>
+    <string name="support_system_status_report_copy_label">להעתיק את דוח מצב המערכת ללוח</string>
+    <string name="card_reader_connect_keep_searching_button">להמשיך בחיפוש</string>
+    <string name="card_reader_payment_description_v2">תשלום באופן אישי על ההזמנה מס\' %s עבור %s blog_id %s.</string>
+    <string name="card_reader_manage_payment_provider">לשנות ספק תשלום</string>
+    <string name="orderdetail_refunded_line_with_info">הונפק החזר כספי של: ⁦%1$s⁩</string>
+    <string name="orderdetail_payment_summary_onhold_plain">ממתין לתשלום</string>
     <string name="install_wc_shipping_proceed_button">להמשיך בהתקנה</string>
     <string name="install_wc_shipping_installation_info">פרטים שחשוב לדעת לפני ההתקנה</string>
     <string name="install_wc_shipping_preinstall_title">להתקין את ההרחבה</string>
@@ -216,10 +288,11 @@ Language: he_IL
     <string name="coupon_details_minimum_spend">הוצאה מינימלית בגובה %s</string>
     <string name="coupon_details_heading">סיכום קופונים</string>
     <string name="coupon_list_view_coupon">הצגה של סיכום הקופון</string>
-    <string name="coupon_list_wip_message_enabled">אנחנו כרגע עובדים על אפשרות להציג קופונים במכשיר שלך!</string>
+    <string name="coupon_list_wip_message_enabled">אנחנו כרגע עובדים על אפשרות להציג ולערוך קופונים מהמכשיר שלך!</string>
     <string name="coupon_list_wip_title">להציג ולנהל קופונים</string>
     <string name="coupon_list_empty_heading">לא נמצאו קופונים</string>
     <string name="coupon_list_item_label_included_and_excluded">%1s לא כולל %2s</string>
+    <string name="coupon_list_item_label_products_and_categories">%1s ו-%2s.</string>
     <string name="coupon_list_item_label_everything">הכול</string>
     <string name="coupon_list_item_label_expired">פג תוקף</string>
     <string name="coupon_list_item_label_active">פעיל</string>
@@ -285,7 +358,6 @@ Language: he_IL
     <string name="card_reader_onboarding_both_plugins_activated_hint_store_owner">אפשרות התשלומים באופן אישי תעבוד רק כשאחד מהתוספים הבאים מופעל. יש ליצור קשר עם מנהל האתר כדי לכבות את אחד מהתוספים האלו על מנת להמשיך:</string>
     <string name="card_reader_onboarding_both_plugins_activated_hint_admin">אפשרות התשלומים באופן אישי תעבוד רק כשאחד מהתוספים הבאים מופעל. יש לכבות את אחד מהתוספים האלו כדי להמשיך:</string>
     <string name="card_reader_onboarding_both_plugins_activated_header">תוספי תשלומים מתנגשים זוהו</string>
-    <string name="order_creation_price_calculation_failed">לא ניתן לעדכן את המחירים</string>
     <string name="order_creation_payment_tax">מיסים</string>
     <string name="exclusive_or">או</string>
     <string name="settings_install_jetpack">להתקין את Jetpack</string>
@@ -702,7 +774,6 @@ Language: he_IL
     <string name="card_reader_refetching_order_failed">שגיאה בהבאת ההזמנה. ייתכן שמצב ההזמנה באפליקציה לא מעודכן.</string>
     <string name="card_reader_payment_email_client_not_found">לא ניתן לאתר את האפליקציה של שירות האימייל שלך</string>
     <string name="card_reader_payment_receipt_email_subject">הקבלה שלך מאת %s</string>
-    <string name="card_reader_payment_description">תשלום באופן אישי על ההזמנה %s עבור %s</string>
     <string name="card_reader_payment_fetch_order_loading_payment_state">מרענן את ההזמנה</string>
     <string name="card_reader_payment_fetch_order_loading_header">מעדכן את מצב האפליקציה</string>
     <string name="shipping_label_shipping_carrier_shipping_method_banner_message">הלקוח בחר את ⁦%1$s⁩</string>
@@ -778,10 +849,9 @@ Language: he_IL
     <string name="user_role_access_error_retry">לא הוקצה לך תפקיד המשתמש המתאים</string>
     <string name="user_role_access_error_link">למידע נוסף על תפקידים והרשאות</string>
     <string name="user_role_access_error_msg">האפליקציה הזאת תומכת רק בתפקידי משתמש של \'מנהל מערכת\' ו\'מנהל חנות\'. יש ליצור קשר עם בעלי החנות כדי לשדרג את התפקיד שלך.</string>
-    <string name="login_prologue_label_reviews">לעקוב אחר ביקורות על מוצרים ולאשר אותן</string>
     <string name="login_prologue_label_products">לערוך ולהוסיף מוצרים חדשים מכל מקום</string>
-    <string name="login_prologue_label_orders">לנהל את ההזמנות בחנות שלך מכל מקום</string>
-    <string name="login_prologue_label_analytics">לעקוב אחרי מכירות מוצרים ואחרי מוצרים עם ביצועים מובילים</string>
+    <string name="login_prologue_label_orders">לנהל ולערוך הזמנות מכל מקום</string>
+    <string name="login_prologue_label_analytics">לעקוב אחר מכירות ומוצרים עם ביצועים גבוהים</string>
     <string name="skip">לדלג</string>
     <string name="product_type_external_title">מוצר חיצוני</string>
     <string name="product_type_grouped_title">קבוצת מוצרים</string>
@@ -1056,7 +1126,6 @@ Language: he_IL
     <string name="product_publish_draft_dialog_title">שומר טיוטה</string>
     <string name="product_status_trashed">הועבר לפח</string>
     <string name="product_detail_save_as_draft">לשמור כטיוטה</string>
-    <string name="login_no_wpcom_account_found">נראה ש-⁦%1$s⁩ לא משויך עם חשבון ב-WordPress.com.</string>
     <string name="signup_confirmation_title">אישור הרשמה</string>
     <string name="reset_your_password">לאפס את הסיסמה שלך</string>
     <string name="enter_your_site_address">להזין את כתובת האתר שלך</string>
@@ -1736,11 +1805,9 @@ Language: he_IL
     <string name="orderdetail_track_shipment">מעקב אחר משלוח</string>
     <string name="login_email_help_desc">במנהל המערכת של האתר שלך אפשר למצור את כתובת האימייל שבה השתמשת כדי להתחבר אל WordPress.com %1$sמלוח הבקרה של Jetpack%2$s במקטע %3$sחיבורים &gt; חיבור החשבון%4$s</string>
     <string name="login_email_help_title">באיזה אימייל השתמשי כדי להתחבר?</string>
-    <string name="login_need_help_finding_email">נדרשת לך עזרה עם האימייל להתחברות?</string>
     <string name="login_jetpack_what_is_description">Jetpack הוא תוסף חינמי ב-WordPress שמתחבר לחנות שלך עם כלים שיאפשרו לך ליהנות מהחוויה הטובה ביותר בנייד, כולל הודעות דחיפה ונתונים סטטיסטיים</string>
     <string name="login_jetpack_what_is">מה זה Jetpack?</string>
     <string name="login_view_connected_stores">להצגת החנויות המחוברות</string>
-    <string name="login_not_woo_store">נראה שהאתר ⁦%1$s⁩ אינו אתר של WooCommerce. יש להתקין את התוסף של WooCommerce באתר שלך ולאחר מכן לרענן את האפליקציה.</string>
     <string name="login_not_connected_to_account">נראה ששם המשתמש %1$s מחובר לחשבון אחר ב-WordPress.com.</string>
     <string name="keep_editing">המשך עריכה</string>
     <string name="notification_wpcom_username_needed">עליך להיכנס באמצעות שם המשתמש והסיסמה שלך.</string>

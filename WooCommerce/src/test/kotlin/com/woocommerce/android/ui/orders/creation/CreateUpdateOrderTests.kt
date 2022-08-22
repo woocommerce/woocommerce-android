@@ -27,7 +27,7 @@ import java.math.BigDecimal
 
 @ExperimentalCoroutinesApi
 class CreateUpdateOrderTests : BaseUnitTest() {
-    private val orderCreationRepository = mock<OrderCreationRepository> {
+    private val orderCreateEditRepository = mock<OrderCreateEditRepository> {
         onBlocking { createOrUpdateDraft(any()) } doAnswer InlineClassesAnswer {
             val order = it.arguments.first() as Order
             Result.success(order.copy(total = order.total + BigDecimal.TEN))
@@ -39,7 +39,7 @@ class CreateUpdateOrderTests : BaseUnitTest() {
 
     private val sut: CreateUpdateOrder = CreateUpdateOrder(
         dispatchers = coroutinesTestRule.testDispatchers,
-        orderCreationRepository = orderCreationRepository
+        orderCreateEditRepository = orderCreateEditRepository
     )
 
     @Test
@@ -57,7 +57,7 @@ class CreateUpdateOrderTests : BaseUnitTest() {
         assertThat(updateStatuses[2]).isInstanceOf(OrderUpdateStatus.Succeeded::class.java)
         with(updateStatuses[2] as OrderUpdateStatus.Succeeded) {
             assertThat(order)
-                .isEqualTo(orderCreationRepository.createOrUpdateDraft(orderDraftChanges.value).getOrThrow())
+                .isEqualTo(orderCreateEditRepository.createOrUpdateDraft(orderDraftChanges.value).getOrThrow())
         }
 
         job.cancel()
@@ -65,7 +65,7 @@ class CreateUpdateOrderTests : BaseUnitTest() {
 
     @Test
     fun `when the update fails, then notify the observer`() = testBlocking {
-        whenever(orderCreationRepository.createOrUpdateDraft(any())).doReturn(Result.failure(Exception()))
+        whenever(orderCreateEditRepository.createOrUpdateDraft(any())).doReturn(Result.failure(Exception()))
         val updateStatuses = mutableListOf<OrderUpdateStatus>()
         val job = sut(orderDraftChanges, retryTrigger)
             .onEach { updateStatuses.add(it) }
@@ -90,16 +90,16 @@ class CreateUpdateOrderTests : BaseUnitTest() {
             draft.copy(items = OrderTestUtils.generateTestOrderItems())
         }
 
-        verify(orderCreationRepository, never()).createOrUpdateDraft(any())
+        verify(orderCreateEditRepository, never()).createOrUpdateDraft(any())
         advanceTimeAndRun(CreateUpdateOrder.DEBOUNCE_DURATION_MS)
-        verify(orderCreationRepository, times(1)).createOrUpdateDraft(any())
+        verify(orderCreateEditRepository, times(1)).createOrUpdateDraft(any())
 
         job.cancel()
     }
 
     @Test
     fun `when retrying, then launch a new request`() = testBlocking {
-        whenever(orderCreationRepository.createOrUpdateDraft(any()))
+        whenever(orderCreateEditRepository.createOrUpdateDraft(any()))
             .thenReturn(Result.failure(Exception()))
             .thenAnswer(
                 InlineClassesAnswer {

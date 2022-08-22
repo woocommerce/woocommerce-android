@@ -16,6 +16,7 @@ import com.woocommerce.android.model.OrderMapper
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.payments.SelectPaymentMethodViewModel.TakePaymentViewState.Loading
+import com.woocommerce.android.ui.payments.banner.BannerDisplayEligibilityChecker
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderFlowParam.CardReadersHub
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderFlowParam.PaymentOrRefund
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderFlowParam.PaymentOrRefund.Payment
@@ -32,6 +33,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import org.wordpress.android.fluxc.model.WCOrderStatusModel
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.CoreOrderStatus
 import org.wordpress.android.fluxc.store.WCOrderStore
 import org.wordpress.android.fluxc.store.WooCommerceStore
@@ -49,8 +51,10 @@ class SelectPaymentMethodViewModel @Inject constructor(
     private val orderMapper: OrderMapper,
     private val analyticsTrackerWrapper: AnalyticsTrackerWrapper,
     private val cardPaymentCollectibilityChecker: CardReaderPaymentCollectibilityChecker,
+    private val bannerDisplayEligibilityChecker: BannerDisplayEligibilityChecker,
 ) : ScopedViewModel(savedState) {
     private val navArgs: SelectPaymentMethodFragmentArgs by savedState.navArgs()
+    val shouldShowUpsellCardReaderDismissDialog: MutableLiveData<Boolean> = MutableLiveData(false)
 
     private val viewState = MutableLiveData<TakePaymentViewState>(Loading)
     val viewStateData: LiveData<TakePaymentViewState> = viewState
@@ -78,10 +82,19 @@ class SelectPaymentMethodViewModel @Inject constructor(
                         }
                         val currencyCode = wooCommerceStore.getSiteSettings(selectedSite.get())?.currencyCode ?: ""
                         orderTotal = currencyFormatter.formatCurrency(order.total, currencyCode)
+                        val isPaymentCollectableWithCardReader = cardPaymentCollectibilityChecker.isCollectable(order)
                         viewState.value = TakePaymentViewState.Success(
                             paymentUrl = order.paymentUrl,
                             orderTotal = currencyFormatter.formatCurrency(order.total, currencyCode),
-                            isPaymentCollectableWithCardReader = cardPaymentCollectibilityChecker.isCollectable(order)
+                            isPaymentCollectableWithCardReader = isPaymentCollectableWithCardReader,
+                            shouldShowCardReaderUpsellBanner =
+                            (
+                                canShowCardReaderUpsellBanner(
+                                    System.currentTimeMillis(),
+                                    AnalyticsTracker.KEY_BANNER_PAYMENTS
+                                ) &&
+                                    isPaymentCollectableWithCardReader
+                                )
                         )
                     }
                     is Refund -> triggerEvent(NavigateToCardReaderRefundFlow(param))
@@ -98,10 +111,14 @@ class SelectPaymentMethodViewModel @Inject constructor(
                 cardReaderPaymentFlowParam.toAnalyticsFlowParams(),
             )
         )
+        val messageIdForPaymentType = when (cardReaderPaymentFlowParam.paymentType) {
+            SIMPLE -> R.string.simple_payments_cash_dlg_message
+            ORDER -> R.string.existing_order_cash_dlg_message
+        }
         triggerEvent(
             MultiLiveEvent.Event.ShowDialog(
                 titleId = R.string.simple_payments_cash_dlg_title,
-                messageId = R.string.simple_payments_cash_dlg_message,
+                messageId = messageIdForPaymentType,
                 positiveButtonId = R.string.simple_payments_cash_dlg_button,
                 positiveBtnAction = { _, _ ->
                     onCashPaymentConfirmed()
@@ -195,7 +212,7 @@ class SelectPaymentMethodViewModel @Inject constructor(
                     )
                 )
                 delay(DELAY_MS)
-                triggerEvent(MultiLiveEvent.Event.Exit)
+                exitFlow()
             } else {
                 analyticsTrackerWrapper.track(
                     AnalyticsEvent.PAYMENTS_FLOW_FAILED,
@@ -221,7 +238,9 @@ class SelectPaymentMethodViewModel @Inject constructor(
     private suspend fun updateOrderStatus(statusKey: String) {
         val statusModel = withContext(dispatchers.io) {
             orderStore.getOrderStatusForSiteAndKey(selectedSite.get(), statusKey)
-                ?: error("Couldn't find a status with key $statusKey")
+                ?: WCOrderStatusModel(statusKey = statusKey).apply {
+                    label = statusKey
+                }
         }
 
         orderStore.updateOrderStatus(
@@ -230,9 +249,7 @@ class SelectPaymentMethodViewModel @Inject constructor(
             statusModel
         ).collect { result ->
             when (result) {
-                is WCOrderStore.UpdateOrderResult.OptimisticUpdateResult -> {
-                    triggerEvent(MultiLiveEvent.Event.Exit)
-                }
+                is WCOrderStore.UpdateOrderResult.OptimisticUpdateResult -> exitFlow()
                 is WCOrderStore.UpdateOrderResult.RemoteUpdateResult -> {
                     if (result.event.isError) {
                         triggerEvent(MultiLiveEvent.Event.ShowSnackbar(R.string.order_error_update_general))
@@ -250,11 +267,53 @@ class SelectPaymentMethodViewModel @Inject constructor(
         }
     }
 
+    private fun exitFlow() {
+        triggerEvent(
+            when (cardReaderPaymentFlowParam.paymentType) {
+                SIMPLE -> NavigateBackToHub(CardReadersHub)
+                ORDER -> NavigateBackToOrderList
+            }
+        )
+    }
+
     private fun Payment.toAnalyticsFlowParams() =
         AnalyticsTracker.KEY_FLOW to when (paymentType) {
             SIMPLE -> AnalyticsTracker.VALUE_SIMPLE_PAYMENTS_FLOW
             ORDER -> AnalyticsTracker.VALUE_ORDER_PAYMENTS_FLOW
         }
+
+    fun onCtaClicked(source: String) {
+        launch {
+            triggerEvent(
+                OpenPurchaseCardReaderLink(bannerDisplayEligibilityChecker.getPurchaseCardReaderUrl(source))
+            )
+        }
+    }
+
+    fun onDismissClicked() {
+        shouldShowUpsellCardReaderDismissDialog.value = true
+        triggerEvent(DismissCardReaderUpsellBanner)
+    }
+
+    fun onRemindLaterClicked(currentTimeInMillis: Long, source: String) {
+        shouldShowUpsellCardReaderDismissDialog.value = false
+        bannerDisplayEligibilityChecker.onRemindLaterClicked(currentTimeInMillis, source)
+        triggerEvent(DismissCardReaderUpsellBannerViaRemindMeLater)
+    }
+
+    fun onDontShowAgainClicked(source: String) {
+        shouldShowUpsellCardReaderDismissDialog.value = false
+        bannerDisplayEligibilityChecker.onDontShowAgainClicked(source)
+        triggerEvent(DismissCardReaderUpsellBannerViaDontShowAgain)
+    }
+
+    fun onBannerAlertDismiss() {
+        shouldShowUpsellCardReaderDismissDialog.value = false
+    }
+
+    private fun canShowCardReaderUpsellBanner(currentTimeInMillis: Long, source: String): Boolean {
+        return bannerDisplayEligibilityChecker.canShowCardReaderUpsellBanner(currentTimeInMillis, source)
+    }
 
     sealed class TakePaymentViewState {
         object Loading : TakePaymentViewState()
@@ -262,8 +321,14 @@ class SelectPaymentMethodViewModel @Inject constructor(
             val paymentUrl: String,
             val orderTotal: String,
             val isPaymentCollectableWithCardReader: Boolean,
+            val shouldShowCardReaderUpsellBanner: Boolean
         ) : TakePaymentViewState()
     }
+
+    object DismissCardReaderUpsellBanner : MultiLiveEvent.Event()
+    object DismissCardReaderUpsellBannerViaRemindMeLater : MultiLiveEvent.Event()
+    object DismissCardReaderUpsellBannerViaDontShowAgain : MultiLiveEvent.Event()
+    data class OpenPurchaseCardReaderLink(val url: String) : MultiLiveEvent.Event()
 
     data class SharePaymentUrl(
         val storeName: String,
@@ -281,6 +346,12 @@ class SelectPaymentMethodViewModel @Inject constructor(
     data class NavigateToCardReaderRefundFlow(
         val cardReaderFlowParam: Refund
     ) : MultiLiveEvent.Event()
+
+    data class NavigateBackToHub(
+        val cardReaderFlowParam: CardReadersHub
+    ) : MultiLiveEvent.Event()
+
+    object NavigateBackToOrderList : MultiLiveEvent.Event()
 
     companion object {
         private const val DELAY_MS = 1L

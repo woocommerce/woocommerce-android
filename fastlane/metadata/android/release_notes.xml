@@ -1,119 +1,68 @@
 <ar>
-9.5:
-نواصل إضافة وظائف جديدة إلى ميزة إدارة القسائم التجريبية الخاصة بنا! يتضمن هذا الإصدار تحرير القسائم وحذفها إلى جانب العديد من التحسينات على طريقة العرض. قم بتشغيل هذه الميزة للوصول المبكر إلى علامة تبويب المزيد والإعدادات والميزات التجريبية.
-
-قمنا كذلك بإصلاح خطأ كان يُصعب على بعض منكم البحث عن طلبات. شكرًا إلى كل شخص قام بالإبلاغ عن هذا! ملاحظاتك مهمة جدًا بالنسبة إلينا!
-
+9.9:
+يحتوي هذا الإصدار على بعض التحسينات على تجربة تسجيل الدخول لديك، بما في ذلك تثبيت WooCommerce من التطبيق. لدينا كذلك قسم مدفوعات جديد في التطبيق. توجَّه مباشرةً إلى قائمة المزيد لبدء استخدام المدفوعات!
 </ar>
 <de-DE>
-9.5:
-Wir fügen weiterhin neue Funktionen zu unserer experimentellen Gutscheinmanagement-Funktion hinzu!  Diese Version enthält Optionen zum Bearbeiten und Löschen von Gutscheinen sowie mehrere Verbesserungen bei der Anzeige. Aktiviere diese Funktion über den Tab „Mehr“ > „Einstellungen“ > „Betafunktionen“, um frühzeitigen Zugriff zu erhalten.
-
-Darüber hinaus haben wir ein Problem behoben, das die Suche nach Bestellungen teilweise erschwert hat. Vielen Dank an alle, die dieses Problem gemeldet haben! Euer Feedback ist enorm wichtig für uns!
-
+9.9:
+Bei dieser Version gibt es einige Verbesserungen bei deinem Anmeldeprozess, einschließlich der Option, WooCommerce über die App zu installieren. Außerdem gibt es in der App einen neuen Abschnitt „Zahlungen“. Gehe zum Menü „Mehr“, um „Zahlungen“ zu nutzen!
 </de-DE>
 <es-ES>
-9.5:
-Seguimos añadiendo nuevas funcionalidades a nuestra función experimental Gestión de cupones. Esta versión incluye la edición y eliminación de cupones, así como varias mejoras en la visualización. Para obtener acceso anticipado, activa esta función en la pestaña Más, Ajustes, Funciones beta.
-
-También hemos corregido un error que dificultaba la búsqueda de pedidos a algunos usuarios. Gracias a todos los que nos habéis informado de este problema. Valoramos mucho tu opinión.
-
+9.9:
+Esta versión tiene algunas mejoras en la experiencia de inicio de sesión, como la opción de instalar WooCommerce desde la aplicación. También tenemos una sección nueva de Pagos en la aplicación. Dirígete al menú Más para empezar a usar Pagos.
 </es-ES>
 <fr-FR>
-9.5 :
-Nous ajoutons continuellement de nouvelles fonctions à notre fonctionnalité expérimentale de gestion des codes promo ! Cette version comprend la modification et la suppression de codes promo ainsi que plusieurs améliorations de l’affichage. Activez cette fonctionnalité sous l’onglet Plus > Réglages > Fonctionnalités bêta pour bénéficier d’un accès en avant-première.
-
-Nous avons également corrigé un bug qui gênait la recherche des commandes chez certains utilisateurs. Merci aux internautes qui nous ont signalé le problème ! Votre avis compte beaucoup à nos yeux !
-
+9.9+
+This release has a few improvements to your login experience, including the option to install WooCommerce from the app. We also have a new Payments section in the app. Head over to the More menu to start using Payments!
 </fr-FR>
 <iw-IL>
-9.5:
-אנחנו ממשיכים להוסיף פונקציונליות לאפשרות 'ניהול קופונים' הניסיונית שלנו! בגרסה הזאת הוספנו עריכה ומחיקה של קופונים לצד כמה שיפורים בצפייה. כדי לקבל גישה מוקדמת, ניתן להפעיל את האפשרות הזאת בלשונית 'עוד' > 'הגדרות' > 'אפשרויות בטא'.
-
-בנוסף, תיקנו באג שסיבך את חיפוש ההזמנות אצל משתמשים מסוימים. תודה לכל מי שדיווח על הבאג הזה! המשוב שלכם חשוב לנו!
-
+9.9:
+בגרסה הזאת הוספנו כמה שיפורים לחוויית ההתחברות, כולל אפשרות להתקין את WooCommerce מהאפליקציה. בנוסף, יש מקטע 'תשלומים' חדש באפליקציה. כדאי לעבור לתפריט 'עוד' ולהתחיל להשתמש ב'תשלומים'!
 </iw-IL>
 <id>
-9.5:
-Kami terus menambahkan fungsi baru untuk fitur uji coba Pengelolaan Kupon! Rilis ini mencakup pengeditan dan penghapusan kupon dan beberapa perbaikan pada pratinjau. Untuk mendapatkan akses dini, aktifkan fitur ini di tab Lainnya, Pengaturan, Fitur Beta.
-
-Kami juga memperbaiki bug yang membuat Anda kesulitan mencari pesanan. Terima kasih untuk semua yang telah melaporkan bug ini! Feedback Anda sangat penting bagi kami!
-
+9.9:
+Rilis ini berisi beberapa peningkatan untuk pengalaman login Anda, termasuk pilihan untuk menginstal WooCommerce dari aplikasi. Kami juga menambahkan bagian Pembayaran baru di aplikasi. Lihat menu Lainnya untuk mulai menggunakan Pembayaran!
 </id>
 <it-IT>
-9.5:
-Continuiamo ad aggiungere nuove funzionalità alla nostra funzionalità sperimentale di gestione dei codici promozionali! Questa versione include la modifica e l'eliminazione dei codici promozionali insieme a numerosi miglioramenti alla visualizzazione. Attiva questa funzionalità per l'accesso anticipato nella scheda Altro, Impostazioni, Funzionalità sperimentali.
-
-Abbiamo anche risolto un bug che rendeva difficile per alcuni utenti la ricerca degli ordini. Grazie a tutti coloro che hanno segnalato questo problema. Il tuo feedback è di vitale importanza per noi.
-
+9.9:
+Questa versione apporta alcuni miglioramenti alla tua esperienza di accesso, inclusa l'opzione di installare WooCommerce dall'app. Abbiamo anche una nuova sezione Pagamenti nell'app. Vai al menu Altro per iniziare a utilizzare Pagamenti!
 </it-IT>
 <ja-JP>
-9.5:
-試験的なクーポン管理機能に新しい機能を継続的に追加しています。 このリリースでは、クーポンの編集と削除に加え、表示の改善を行いました。 この機能をオンにして「詳細」タブ、「設定」、「ベータ版の機能」をいち早く利用しましょう。
-
-一部のユーザーの注文検索を困難にするバグの修正も行いました。 ご報告いただいた皆さま、ありがとうございました。 皆さまからのフィードバックは、当社にとって不可欠です。
-
+9.9:
+このリリースでは、アプリから WooCommerce をインストールするオプションなど、ログイン操作がいくつか改善されました。また、アプリ内に新しい「支払い」セクションが追加されました。「支払い」は「その他」メニューから利用できます。
 </ja-JP>
 <ko-KR>
-9.5:
-실험적인 쿠폰 관리 기능에 새로운 기능을 계속 추가하고 있습니다! 이 릴리스에는 쿠폰 편집 및 삭제와 함께 여러 가지 보기 개선 사항이 포함됩니다. 이 기능을 사용하면 자세히 탭, 설정, 베타 기능에 앞서 접근할 수 있습니다.
-
-가끔 주문이 잘 검색되지 않던 버그도 수정했습니다. 이 버그를 신고해 주신 모든 분께 감사합니다! 여러분의 피드백은 필수불가결합니다!
-
+9.9:
+이 릴리스에서는 앱에서 우커머스를 설치하는 옵션을 포함하여 로그인 환경이 몇 가지 개선되었습니다. 앱에 새 결제 섹션도 있습니다. 더 보기 메뉴로 이동하여 결제 사용을 시작하세요!
 </ko-KR>
 <nl-NL>
-9.5:
-We blijven nieuwe functionaliteit toevoegen aan onze experimentele functie Couponbeheer! Deze release omvat het bewerken en verwijderen van coupons en verschillende verbeteringen voor de weergave. Schakel deze functie in voor vroege toegang in het tabblad Meer, Instellingen, Bèta-functies.
-
-Daarnaast hebben we een bug verholpen waardoor het voor een aantal mensen lastig was om bestellingen te doorzoeken. Bedankt dat jullie deze bugs hebben gemeld. Jullie feedback is essentieel voor ons!
-
+9.9:
+Deze versie bevat een paar verbeteringen van je loginervaring, waaronder de optie om WooCommerce rechtstreeks vanuit de app te installeren. De app bevat ook een nieuw gedeelte Betalingen. Ga naar het menu Meer om te beginnen met Betalingen!
 </nl-NL>
 <pt-BR>
-9.5:
-Estamos sempre adicionando novos recursos à nossa funcionalidade experimental de gerenciamento de cupons. Esta versão inclui opções de edição e exclusão de cupons, além de diversas melhorias na visualização. Ative esta funcionalidade na guia Mais > Configurações > Funcionalidades Beta para receber acesso antecipado.
-
-Solucionamos um bug que estava dificultando a pesquisa de pedidos para alguns de vocês. Agradecemos a todos que relataram esse erro. O feedback de vocês é essencial para nós.
-
+9.9:
+Esta versão tem algumas melhorias na sua experiência de login, incluindo a opção de instalar o WooCommerce a partir do aplicativo. Também temos uma nova seção de Pagamentos, no aplicativo vá até o menu Mais para começar a usar-los.
 </pt-BR>
 <ru-RU>
-9.5:
-Мы по-прежнему добавляем новый функционал в экспериментальную функцию управления купонами! В этой версии добавлено редактирование и удаление купонов, а также улучшены некоторые возможности просмотра. Чтобы получить ранний доступ, активируйте функцию на вкладке "Дополнительно" > "Настройки" > "Бета-функции".
-
-Также исправлена ошибка, из-за которой некоторые пользователи не могли искать заказы. Благодарим всех, кто сообщил нам об этой ошибке! Ваши отзывы очень важны!
-
+9.9:
+В этом выпуске улучшена процедура входа, а также добавлена возможность установки WooCommerce из приложения. Кроме того, в приложении появился новый раздел "Платежи". Перейдите в меню "Ещё", чтобы начать использовать функцию платежей.
 </ru-RU>
 <sv-SE>
-9.5:
-Vi fortsätter att lägga till ny funktionalitet till vår experimentella funktion för rabattkodshantering. Den här versionen inkluderar redigering och borttagning av rabattkoder samt flertalet visningsförbättringar. Aktivera den här funktionen via fliken Mer, Inställningar, Betafunktioner för att få tidig åtkomst.
-
-Vi har också åtgärdat ett fel som gjorde det svårt för vissa av er att söka efter beställningar. Tack till alla som har rapporterat det här felet. Er feedback är jätteviktig för oss.
-
+9.9+
+This release has a few improvements to your login experience, including the option to install WooCommerce from the app. We also have a new Payments section in the app. Head over to the More menu to start using Payments!
 </sv-SE>
 <tr-TR>
-9.5:
-Deneysel Kupon Yönetimi özelliğimize yeni işlevler eklemeye devam ediyoruz! Bu sürümde, kuponların düzenlenmesi, silinmesi ve ayrıca görüntülemeyle ilgili çeşitli iyileştirmeler yapılmıştır. Erken erişim için, Diğer sekmesi, Ayarlar, Beta Özellikleri bölümünden bu özelliği etkinleştirin.
-
-Ayrıca bazen sipariş aramayı zorlaştıran bir hatayı da düzelttik. Bu hatayı bildiren herkese teşekkürler! Görüşleriniz bizim için çok önemli!
-
+9.9:
+Bu sürümde, WooCommerce'i uygulamadan yükleme seçeneği de dahil olmak üzere, oturum açma deneyiminizde bazı iyileştirmeler yapıldı. Ayrıca uygulamada yeni bir Ödemeler bölümümüz de var. Ödemeleri kullanmaya başlamak için Daha Fazla menüsüne gidin!
 </tr-TR>
 <zh-CN>
-9.5：
-我们不断为测试版优惠券管理功能添加新功能。 此版本包括编辑和删除优惠券以及关于查看的几项改进。 在“更多”选项卡、“设置”和“测试版功能”中开启此功能，抢先体验。
-
-我们还修复了一个导致部分用户难以搜索订单的错误。 感谢向我们反馈此错误的所有人！ 您的反馈对我们很重要！
-
+9.9：
+此版本包含了对登录体验所做的一些改进，包括从应用程序中安装 WooCommerce 的选项。应用程序中还包含新的“付款”部分。前往“更多”菜单，开始使用“付款”！
 </zh-CN>
 <zh-TW>
-9.5：
-我們持續在實驗性「優惠券管理」功能中增添新功能！ 此版本包含了編輯和刪除優惠券功能以及一些檢視功能的改善。 開啟此功能即可搶先在「更多」分頁、「設定」及測試版功能中使用。
-
-我們也修正了會導致部分使用者難以搜尋訂單的錯誤。 感謝回報此問題的所有人！ 你的意見反應對我們至關重要！
-
+9.9：
+此版本已對登入體驗進行一些改善，包含從應用程式安裝 WooCommerce 的選項。我們也在應用程式中加入全新「付款」區段，前往「更多」選單即可開始使用付款功能！
 </zh-TW>
 <en-US>
-9.5:
-We keep adding new functionality to our experimental Coupon Management feature! This release includes editing and deleting coupons along with several improvements on viewing. Turn this feature on for early access in the More tab, Settings, Beta Features.
-
-We also fixed a bug that was making it hard for some of you to search orders. Thanks to everyone who reported this! Your feedback is vital to us!
-
+9.9:
+This release has a few improvements to your login experience, including the option to install WooCommerce from the app. We also have a new Payments section in the app. Head over to the More menu to start using Payments!
 </en-US>

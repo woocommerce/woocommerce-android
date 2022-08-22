@@ -52,10 +52,11 @@ class ProductListFragment :
     ProductSortAndFilterListener,
     OnLoadMoreListener,
     OnQueryTextListener,
-    OnActionExpandListener {
+    OnActionExpandListener,
+    WCProductSearchTabView.ProductSearchTypeChangedListener {
     companion object {
         val TAG: String = ProductListFragment::class.java.simpleName
-        val PRODUCT_FILTER_RESULT_KEY = "product_filter_result"
+        const val PRODUCT_FILTER_RESULT_KEY = "product_filter_result"
     }
 
     @Inject lateinit var uiMessageResolver: UIMessageResolver
@@ -116,7 +117,10 @@ class ProductListFragment :
 
         initAddProductFab(binding.addProductButton)
 
-        if (!viewModel.isSearching()) {
+        if (viewModel.isSearching()) {
+            binding.productsSearchTabView.isVisible = true
+            binding.productsSearchTabView.show(this, viewModel.isSkuSearch())
+        } else {
             viewModel.reloadProductsFromDb(excludeProductId = pendingTrashProductId)
         }
     }
@@ -134,6 +138,7 @@ class ProductListFragment :
         disableSearchListeners()
         searchView = null
         _productAdapter = null
+        binding.productsSearchTabView.hide()
         super.onDestroyView()
         _binding = null
     }
@@ -240,16 +245,22 @@ class ProductListFragment :
         return true
     }
 
-    override fun onMenuItemActionExpand(item: MenuItem?): Boolean {
+    override fun onProductSearchTypeChanged(isSkuSearch: Boolean) {
+        viewModel.onSearchTypeChanged(isSkuSearch)
+    }
+
+    override fun onMenuItemActionExpand(item: MenuItem): Boolean {
         viewModel.onSearchOpened()
         onSearchViewActiveChanged(isActive = true)
+        binding.productsSearchTabView.show(this)
         return true
     }
 
-    override fun onMenuItemActionCollapse(item: MenuItem?): Boolean {
+    override fun onMenuItemActionCollapse(item: MenuItem): Boolean {
         viewModel.onSearchClosed()
         closeSearchView()
         onSearchViewActiveChanged(isActive = false)
+        binding.productsSearchTabView.hide()
         return true
     }
 

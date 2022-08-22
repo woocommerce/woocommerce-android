@@ -2,14 +2,15 @@
 <navigation xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/nav_graph_main">
+    android:id="@+id/nav_graph_main"
+    app:startDestination="@id/sitePickerSiteDiscoveryFragment">
 
     <include app:graph="@navigation/nav_graph_orders" />
     <include app:graph="@navigation/nav_graph_order_filters" />
     <include app:graph="@navigation/nav_graph_products" />
     <include app:graph="@navigation/nav_graph_product_filters" />
     <include app:graph="@navigation/nav_graph_order_creations" />
-    <include app:graph="@navigation/nav_graph_simple_payments" />
+    <include app:graph="@navigation/nav_graph_payment_flow" />
     <include app:graph="@navigation/nav_graph_jetpack_install" />
     <include app:graph="@navigation/nav_graph_coupons" />
 
@@ -46,13 +47,6 @@
             app:popEnterAnim="@null"
             app:popExitAnim="@anim/activity_fade_out" />
         <action
-            android:id="@+id/action_orderListFragment_to_simplePayments"
-            app:destination="@id/nav_graph_simple_payments"
-            app:enterAnim="@anim/activity_fade_in"
-            app:exitAnim="@null"
-            app:popEnterAnim="@null"
-            app:popExitAnim="@anim/activity_fade_out" />
-        <action
             android:id="@+id/action_orderListFragment_to_orderCreationBottomSheet"
             app:destination="@id/orderCreationBottomSheetFragment"
             app:enterAnim="@anim/activity_fade_in"
@@ -68,7 +62,7 @@
             app:popExitAnim="@anim/activity_fade_out" >
             <argument
                 android:name="mode"
-                app:argType="com.woocommerce.android.ui.orders.creation.OrderCreationViewModel$Mode" />
+                app:argType="com.woocommerce.android.ui.orders.creation.OrderCreateEditViewModel$Mode" />
         </action>
     </fragment>
     <fragment
@@ -177,6 +171,14 @@
         <action
             android:id="@+id/action_moreMenu_to_couponListFragment"
             app:destination="@id/nav_graph_coupons" />
+        <action
+            android:id="@+id/action_moreMenu_to_paymentFlow"
+            app:destination="@id/paymentFlow" >
+            <argument
+                android:name="cardReaderFlowParam"
+                app:argType="com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderFlowParam"
+                app:nullable="false" />
+        </action>
     </fragment>
     <fragment
         android:id="@+id/feedbackSurveyFragment"
@@ -294,6 +296,10 @@
             android:defaultValue="@null"
             app:argType="string"
             app:nullable="true" />
+        <argument
+            android:name="urlComparisonMode"
+            android:defaultValue="PARTIAL"
+            app:argType="com.woocommerce.android.ui.common.wpcomwebview.WPComWebViewFragment$UrlComparisonMode" />
     </fragment>
     <action
         android:id="@+id/action_global_WPComWebViewFragment"
@@ -353,7 +359,23 @@
     <dialog
         android:id="@+id/orderCreationBottomSheetFragment"
         android:name="com.woocommerce.android.ui.orders.list.OrderCreationBottomSheetFragment"
+        tools:layout="@layout/dialog_order_creation_bottom_sheet" >
+        <action
+            android:id="@+id/action_orderCreationBottomSheetFragment_to_simplePaymentsMovedBottomSheetFragment"
+            app:destination="@id/simplePaymentsMovedBottomSheetFragment"
+            app:enterAnim="@anim/activity_fade_in"
+            app:exitAnim="@null"
+            app:popEnterAnim="@null"
+            app:popExitAnim="@anim/activity_fade_out" />
+    </dialog>
+    <dialog
+        android:id="@+id/simplePaymentsMovedBottomSheetFragment"
+        android:name="com.woocommerce.android.ui.orders.list.SimplePaymentsMovedBottomSheetFragment"
         tools:layout="@layout/dialog_order_creation_bottom_sheet" />
+    <dialog
+        android:id="@+id/simplePaymentsMovedButtonSheetFragment"
+        android:name="com.woocommerce.android.ui.orders.list.SimplePaymentsMovedBottomSheetFragment"
+        tools:layout="@layout/dialog_simple_payments_moved_bottom_sheet" />
     <activity
         android:id="@+id/appSettingsActivity"
         android:name="com.woocommerce.android.ui.prefs.AppSettingsActivity"
@@ -371,6 +393,9 @@
             android:name="openedFromLogin"
             android:defaultValue="true"
             app:argType="boolean" />
+        <action
+            android:id="@+id/action_sitePickerFragment_to_sitePickerSiteDiscoveryFragment"
+            app:destination="@id/sitePickerSiteDiscoveryFragment" />
     </fragment>
     <fragment
         android:id="@+id/simpleTextEditorFragment"
@@ -394,4 +419,8 @@
     <action
         android:id="@+id/action_global_simpleTextEditorFragment"
         app:destination="@id/simpleTextEditorFragment" />
+    <fragment
+        android:id="@+id/sitePickerSiteDiscoveryFragment"
+        android:name="com.woocommerce.android.ui.sitepicker.sitediscovery.SitePickerSiteDiscoveryFragment"
+        android:label="SitePickerSiteDiscoveryFragment" />
 </navigation>
