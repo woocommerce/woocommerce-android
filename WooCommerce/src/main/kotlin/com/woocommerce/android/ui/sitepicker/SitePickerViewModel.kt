@@ -34,6 +34,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.parcelize.Parcelize
 import org.wordpress.android.fluxc.model.SiteModel
+import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooErrorType
 import org.wordpress.android.fluxc.store.WooCommerceStore
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
@@ -406,12 +407,14 @@ class SitePickerViewModel @Inject constructor(
                     when {
                         siteVerificationResult.isError -> {
                             sitePickerViewState = sitePickerViewState.copy(isProgressDiaLogVisible = false)
-                            triggerEvent(
-                                ShowSnackbar(
+                            val event = when (siteVerificationResult.error.type) {
+                                WooErrorType.TIMEOUT -> SitePickerEvent.JetpackTimeoutError
+                                else -> ShowSnackbar(
                                     message = string.login_verifying_site_error,
                                     args = arrayOf(it.site.getSiteName())
                                 )
-                            )
+                            }
+                            triggerEvent(event)
                         }
                         siteVerificationResult.model?.apiVersion == WooCommerceStore.WOO_API_NAMESPACE_V3 -> {
                             selectedSite.set(it.site)
@@ -568,6 +571,7 @@ class SitePickerViewModel @Inject constructor(
         object NavigationToHelpFragmentEvent : SitePickerEvent()
         object NavigateToNewToWooEvent : SitePickerEvent()
         object NavigateToSiteAddressEvent : SitePickerEvent()
+        object JetpackTimeoutError : SitePickerEvent()
         data class NavigateToWPComWebView(val url: String, val validationUrl: String) : SitePickerEvent()
     }
 
