@@ -1,11 +1,22 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2022-08-11 11:59:17+0000
+Translation-Revision-Date: 2022-08-18 11:54:04+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: sv_SE
 -->
 <resources>
+    <string name="login_help_notification_get_link_by_email_button">Få en inloggningslänk via e-post</string>
+    <string name="login_help_notification_invalid_password_title">Kommer du inte ihåg ditt lösenord?</string>
+    <string name="card_reader_onboarding_not_finished">We’ve noticed that you have not yet finished In-Person Payments setup. &lt;b&gt;&lt;a href=\'\'&gt;Fortsätt installationen&lt;/a&gt;&lt;/b&gt;</string>
+    <string name="payments_hub_title">Betalningar</string>
+    <string name="orderlist_bottom_sheet_simple_payments_moved_button">Jag förstår!</string>
+    <string name="orderlist_bottom_sheet_simple_payments_moved_description">Now you can quickly access In-Person Payments and other features with ease</string>
+    <string name="orderlist_bottom_sheet_simple_payments_moved_title">Betalningar från menyfliken</string>
+    <string name="login_no_wpcom_account_found">E-posten %1$s används inte med ett WordPress.com-konto.</string>
+    <string name="login_non_woo_stores_label">Andra webbplatser</string>
+    <string name="login_with_store_address">Logga in med din butiksadress</string>
+    <string name="more_menu_button_w___admin">WC-admin</string>
     <string name="login_magic_links_email_sent">Vi har precis skickat en magisk länk till</string>
     <string name="login_magic_links_sent_label_short">Kontrollera din e-post på denna enhet!</string>
     <string name="or_use_password">Använd lösenord för att logga in</string>
@@ -20,11 +31,11 @@ Language: sv_SE
     <string name="orderlist_mark_completed">Markera\nslutförd</string>
     <string name="login_install_woo">Installera WooCommerce</string>
     <string name="login_not_woo_store">Det verkar som att %1$s inte är en WooCommerce-webbplats.</string>
-    <string name="login_prologue_survey_button_switch_stores">Växla mellan flera butiker</string>
+    <string name="login_prologue_survey_button_switch_stores">Växla mellan flera olika butiker</string>
     <string name="login_prologue_survey_button_manage_orders">Hantera mina beställningar</string>
     <string name="login_prologue_survey_button_edit_products">Skapa eller uppdatera mina produkter</string>
     <string name="login_prologue_survey_button_check_analytics">Kolla min analys</string>
-    <string name="login_prologue_survey_button_set_up_store">Försöker ställa in en butik</string>
+    <string name="login_prologue_survey_button_set_up_store">Försöker skapa en butik</string>
     <string name="login_prologue_survey_button_exploring">Utforskar bara</string>
     <string name="login_prologue_survey_title">Vad för dig till WooCommerce?</string>
     <string name="tip">Tips</string>
@@ -1115,7 +1126,6 @@ Language: sv_SE
     <string name="product_publish_draft_dialog_title">Sparar utkast</string>
     <string name="product_status_trashed">I papperskorgen</string>
     <string name="product_detail_save_as_draft">Spara som utkast</string>
-    <string name="login_no_wpcom_account_found">Det verkar som att %1$s inte har associerats med något WordPress.com-konto.</string>
     <string name="signup_confirmation_title">Bekräftelse av registrering</string>
     <string name="reset_your_password">Återställ ditt lösenord</string>
     <string name="enter_your_site_address">Ange din webbplatsadress</string>
@@ -1795,7 +1805,6 @@ Language: sv_SE
     <string name="orderdetail_track_shipment">Spåra försändelse</string>
     <string name="login_email_help_desc">Du kan hitta e-postadressen som du använder för att ansluta till WordPress.com från din webbplatsadminsitration på %1$sJetpack Dashboard%2$s under %3$sAnslutningar &gt; Kontoanslutning%4$s</string>
     <string name="login_email_help_title">Vilken e-postadress ska jag använda för att logga in?</string>
-    <string name="login_need_help_finding_email">Behöver du hjälp med att hitta den anslutna e-postadressen?</string>
     <string name="login_jetpack_what_is_description">Jetpack är ett kostnadsfritt tillägg i WordPress som ansluter din butik till de verktyg som behövs för att ge den bästa möjliga mobilupplevelsen, inklusive pushmeddelanden och statistik</string>
     <string name="login_jetpack_what_is">Vad är Jetpack?</string>
     <string name="login_view_connected_stores">Visa anslutna butiker</string>

@@ -226,7 +226,7 @@
     <string name="login_avatar_content_description">Your profile photo</string>
     <string name="login_nostores_content_description">No WooCommerce stores</string>
     <string name="login_with_a_different_account">Login with a different account</string>
-    <string name="login_no_stores">We didn\'t find WooCommerce stores connected to this account. You\'ll need to install and connect the free Jetpack plugin on your WooCommerce stores to use this app.</string>
+    <string name="login_no_stores">We didn\'t find WooCommerce stores connected to this account.</string>
     <string name="login_not_connected_to_account">It looks like %1$s is connected to a different WordPress.com account.</string>
     <string name="login_try_another_account">Log in with another account</string>
     <string name="login_try_another_store">Try another store</string>
@@ -263,6 +263,9 @@
     <string name="user_role_access_error_link">Learn more about roles and permissions</string>
     <string name="user_role_access_error_retry">You don\'t have the correct user role</string>
     <string name="user_access_verifying">Verifying role…</string>
+    <string name="login_site_picker_enter_site_address">Enter a site address</string>
+    <string name="site_discovery_postlogin_failure">A failure occurred, please contact support</string>
+    <string name="login_site_picker_new_to_woo">New to WooCommerce</string>
     <!--
         My Store View
     -->
@@ -2580,4 +2583,5 @@
     <string name="or_use_password">Use password to sign in</string>
     <string name="login_magic_links_sent_label_short">Check your email on this device!</string>
     <string name="login_magic_links_email_sent">We just sent a magic link to</string>
+    <string name="login_site_picker_try_another_address">Try another address</string>
 </resources>

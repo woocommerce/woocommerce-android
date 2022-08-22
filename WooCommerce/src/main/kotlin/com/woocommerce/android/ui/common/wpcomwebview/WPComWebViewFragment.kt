@@ -11,6 +11,8 @@ import com.woocommerce.android.R
 import com.woocommerce.android.databinding.FragmentWpcomWebviewBinding
 import com.woocommerce.android.extensions.navigateBackWithNotice
 import com.woocommerce.android.ui.base.BaseFragment
+import com.woocommerce.android.ui.common.wpcomwebview.WPComWebViewFragment.UrlComparisonMode.EQUALITY
+import com.woocommerce.android.ui.common.wpcomwebview.WPComWebViewFragment.UrlComparisonMode.PARTIAL
 import com.woocommerce.android.ui.main.MainActivity.Companion.BackPressListener
 import com.woocommerce.android.util.WooLog
 import dagger.hilt.android.AndroidEntryPoint
@@ -75,14 +77,17 @@ class WPComWebViewFragment : BaseFragment(R.layout.fragment_wpcom_webview), UrlI
     }
 
     override fun onLoadUrl(url: String) {
-        navArgs.urlToTriggerExit?.let {
-            if (isAdded && url.contains(it)) {
-                navigateBackWithNotice(WEBVIEW_RESULT)
-            }
+        fun String.matchesUrl(url: String) = when (navArgs.urlComparisonMode) {
+            PARTIAL -> url.contains(this, ignoreCase = true)
+            EQUALITY -> equals(url, ignoreCase = true)
+        }
+
+        if (isAdded && navArgs.urlToTriggerExit?.matchesUrl(url) == true) {
+            navigateBackWithNotice(WEBVIEW_RESULT)
         }
     }
 
-    fun getAuthenticationPostData(urlToLoad: String, username: String, token: String): String {
+    private fun getAuthenticationPostData(urlToLoad: String, username: String, token: String): String {
         val utf8 = StandardCharsets.UTF_8.name()
         try {
             var postData = String.format(
@@ -104,5 +109,9 @@ class WPComWebViewFragment : BaseFragment(R.layout.fragment_wpcom_webview), UrlI
     override fun onRequestAllowBackPress(): Boolean {
         navigateBackWithNotice(WEBVIEW_DISMISSED)
         return false
+    }
+
+    enum class UrlComparisonMode {
+        PARTIAL, EQUALITY
     }
 }

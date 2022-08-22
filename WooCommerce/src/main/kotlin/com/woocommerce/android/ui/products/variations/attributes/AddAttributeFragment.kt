@@ -16,6 +16,7 @@ import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.databinding.FragmentAddAttributeBinding
 import com.woocommerce.android.extensions.navigateSafely
+import com.woocommerce.android.extensions.parcelable
 import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.model.ProductAttribute
 import com.woocommerce.android.model.ProductGlobalAttribute
@@ -102,7 +103,7 @@ class AddAttributeFragment : BaseProductFragment(R.layout.fragment_add_attribute
         val layoutManager = LinearLayoutManager(activity, RecyclerView.VERTICAL, false)
         this.layoutManager = layoutManager
 
-        savedInstanceState?.getParcelable<Parcelable>(LIST_STATE_KEY)?.let {
+        savedInstanceState?.parcelable<Parcelable>(LIST_STATE_KEY)?.let {
             layoutManager.onRestoreInstanceState(it)
         }
 

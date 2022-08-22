@@ -21,6 +21,7 @@ import com.google.android.material.textfield.TextInputLayout
 import com.woocommerce.android.R
 import com.woocommerce.android.extensions.isEqualTo
 import com.woocommerce.android.extensions.isNotEqualTo
+import com.woocommerce.android.extensions.parcelable
 import com.woocommerce.android.ui.products.ParameterRepository
 import com.woocommerce.android.ui.products.models.CurrencyFormattingParameters
 import com.woocommerce.android.widgets.WCMaterialOutlinedCurrencyEditTextView.EditTextLayoutMode.FILL
@@ -166,7 +167,7 @@ class WCMaterialOutlinedCurrencyEditTextView @JvmOverloads constructor(
     }
 
     override fun onRestoreInstanceState(state: Parcelable?) {
-        val bundle = (state as? Bundle)?.getParcelable<WCSavedState>(KEY_SUPER_STATE)?.let {
+        val bundle = (state as? Bundle)?.parcelable<WCSavedState>(KEY_SUPER_STATE)?.let {
             restoreViewState(it)
         } ?: state
         super.onRestoreInstanceState(bundle)
