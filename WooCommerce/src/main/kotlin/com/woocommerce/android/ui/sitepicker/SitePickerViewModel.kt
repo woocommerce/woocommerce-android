@@ -358,7 +358,7 @@ class SitePickerViewModel @Inject constructor(
     fun onTryAnotherAccountButtonClick() {
         trackLoginEvent(clickEvent = UnifiedLoginTracker.Click.TRY_ANOTHER_ACCOUNT)
         launch {
-            repository.logout()?.let {
+            repository.logout().let {
                 if (!repository.isUserLoggedIn()) {
                     appPrefsWrapper.removeLoginSiteAddress()
                     triggerEvent(Logout)
