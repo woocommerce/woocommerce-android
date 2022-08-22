@@ -180,7 +180,7 @@ class VariationListFragment :
                 is ShowBulkUpdateAttrPicker -> openBulkUpdateView(event.variationsToUpdate)
                 is ShowBulkUpdateLimitExceededWarning -> showBulkUpdateLimitExceededWarning()
                 is ExitWithResult<*> -> navigateBackWithResult(KEY_VARIATION_LIST_RESULT, event.data)
-                is Exit -> activity?.onBackPressed()
+                is Exit -> activity?.onBackPressedDispatcher?.onBackPressed()
             }
         }
     }

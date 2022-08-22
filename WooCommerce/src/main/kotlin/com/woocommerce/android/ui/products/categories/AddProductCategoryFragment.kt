@@ -119,7 +119,7 @@ class AddProductCategoryFragment : BaseFragment(R.layout.fragment_add_product_ca
         viewModel.event.observe(viewLifecycleOwner) { event ->
             when (event) {
                 is ShowSnackbar -> uiMessageResolver.showSnack(event.message)
-                is Exit -> requireActivity().onBackPressed()
+                is Exit -> requireActivity().onBackPressedDispatcher.onBackPressed()
                 is ShowDialog -> event.showDialog()
                 is ExitWithResult<*> -> navigateBackWithResult(ARG_ADDED_CATEGORY, event.data)
                 else -> event.isHandled = false
