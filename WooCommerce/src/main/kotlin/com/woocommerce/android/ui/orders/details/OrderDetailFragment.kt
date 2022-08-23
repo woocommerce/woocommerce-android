@@ -147,7 +147,7 @@ class OrderDetailFragment : BaseFragment(R.layout.fragment_order_detail), OrderP
             scrollUpChild = binding.scrollView
             setOnRefreshListener { viewModel.onRefreshRequested() }
         }
-        binding.customFieldsButton.setOnClickListener {
+        binding.customFieldsCard.customFieldsButton.setOnClickListener {
             viewModel.onCustomFieldsButtonClicked()
         }
 
@@ -167,6 +167,13 @@ class OrderDetailFragment : BaseFragment(R.layout.fragment_order_detail), OrderP
         inflater.inflate(R.menu.menu_order_detail, menu)
         val menuEditOrder = menu.findItem(R.id.menu_edit_order)
         menuEditOrder.isVisible = FeatureFlag.UNIFIED_ORDER_EDITING.isEnabled()
+    }
+
+    override fun onPrepareOptionsMenu(menu: Menu) {
+        super.onPrepareOptionsMenu(menu)
+        menu.findItem(R.id.menu_edit_order)?.let {
+            it.isEnabled = viewModel.hasOrder()
+        }
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
@@ -195,6 +202,7 @@ class OrderDetailFragment : BaseFragment(R.layout.fragment_order_detail), OrderP
         viewModel.viewStateData.observe(viewLifecycleOwner) { old, new ->
             new.orderInfo?.takeIfNotEqualTo(old?.orderInfo) {
                 showOrderDetail(it.order!!, it.isPaymentCollectableWithCardReader, it.isReceiptButtonsVisible)
+                requireActivity().invalidateOptionsMenu()
             }
             new.orderStatus?.takeIfNotEqualTo(old?.orderStatus) { showOrderStatus(it) }
             new.isMarkOrderCompleteButtonVisible?.takeIfNotEqualTo(old?.isMarkOrderCompleteButtonVisible) {

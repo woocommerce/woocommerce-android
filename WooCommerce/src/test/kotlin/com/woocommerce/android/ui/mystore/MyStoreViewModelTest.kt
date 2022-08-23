@@ -428,7 +428,8 @@ class MyStoreViewModelTest : BaseUnitTest() {
             appPrefsWrapper,
             usageTracksEventEmitter,
             analyticsTrackerWrapper,
-            mock()
+            myStoreTransactionLauncher = mock(),
+            explat = mock()
         )
     }
 

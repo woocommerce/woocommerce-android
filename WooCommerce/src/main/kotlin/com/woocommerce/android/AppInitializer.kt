@@ -7,6 +7,7 @@ import android.content.IntentFilter
 import android.net.ConnectivityManager
 import androidx.lifecycle.Lifecycle.State.STARTED
 import androidx.lifecycle.ProcessLifecycleOwner
+import com.automattic.android.experimentation.ExPlat
 import com.automattic.android.tracks.crashlogging.CrashLogging
 import com.google.android.gms.common.ConnectionResult
 import com.google.android.gms.common.GoogleApiAvailability
@@ -83,6 +84,8 @@ class AppInitializer @Inject constructor() : ApplicationLifecycleListener {
     @Inject lateinit var siteObserver: SiteObserver
     @Inject lateinit var wooLog: WooLogWrapper
     @Inject lateinit var registerDevice: RegisterDevice
+
+    @Inject lateinit var explat: ExPlat
 
     // Listens for changes in device connectivity
     @Inject lateinit var connectionReceiver: ConnectionChangeReceiver

@@ -22,6 +22,7 @@ import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_SOURCE
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_JETPACK_INSTALLATION_SOURCE_WEB
 import com.woocommerce.android.analytics.ExperimentTracker
 import com.woocommerce.android.databinding.ActivityLoginBinding
+import com.woocommerce.android.experiment.LoginButtonSwapExperiment
 import com.woocommerce.android.experiment.MagicLinkRequestExperiment
 import com.woocommerce.android.experiment.MagicLinkRequestExperiment.MagicLinkRequestVariant.AUTOMATIC
 import com.woocommerce.android.experiment.MagicLinkRequestExperiment.MagicLinkRequestVariant.ENHANCED
@@ -147,6 +148,7 @@ class LoginActivity :
     @Inject internal lateinit var prologueExperiment: PrologueExperiment
     @Inject internal lateinit var sentScreenExperiment: MagicLinkSentScreenExperiment
     @Inject internal lateinit var magicLinkRequestExperiment: MagicLinkRequestExperiment
+    @Inject internal lateinit var loginButtonSwapExperiment: LoginButtonSwapExperiment
 
     private var loginMode: LoginMode? = null
     private var isSiteOnWPcom: Boolean? = null
@@ -237,7 +239,7 @@ class LoginActivity :
     private fun showMagicLinkInterceptFragment(authToken: String) {
         val fragment = MagicLinkInterceptFragment.newInstance(authToken)
         supportFragmentManager.beginTransaction()
-            .replace(R.id.fragment_container, fragment, LoginPrologueFragment.TAG)
+            .replace(R.id.fragment_container, fragment, MagicLinkInterceptFragment.TAG)
             .addToBackStack(null)
             .commitAllowingStateLoss()
     }
@@ -453,8 +455,12 @@ class LoginActivity :
         changeFragment(loginSiteAddressFragment, true, LoginSiteAddressFragment.TAG)
     }
 
-    private fun showPrologueFragment() {
-        val prologueFragment = getPrologueFragment() ?: LoginPrologueFragment()
+    private fun showPrologueFragment() = lifecycleScope.launchWhenStarted {
+        val createOriginalFragment = { LoginPrologueFragment() }
+        val createSwappedFragment = { LoginPrologueSwappedFragment() }
+        val loginFragment = loginButtonSwapExperiment.run(createOriginalFragment, createSwappedFragment)
+
+        val prologueFragment = getPrologueFragment() ?: loginFragment
         changeFragment(prologueFragment, true, LoginPrologueFragment.TAG)
     }
 

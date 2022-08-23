@@ -74,7 +74,7 @@ android {
         if (project.hasProperty("versionName")) {
             versionName project.property("versionName")
         } else {
-            versionName "9.9.1"
+            versionName "10.0-rc-1"
         }
         versionCode 322
 

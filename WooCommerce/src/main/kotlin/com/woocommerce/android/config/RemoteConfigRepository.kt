@@ -1,5 +1,6 @@
 package com.woocommerce.android.config
 
+import com.woocommerce.android.experiment.LoginButtonSwapExperiment.LoginButtonSwapVariant
 import com.woocommerce.android.experiment.MagicLinkRequestExperiment.MagicLinkRequestVariant
 import com.woocommerce.android.experiment.MagicLinkSentScreenExperiment.MagicLinkSentScreenVariant
 import com.woocommerce.android.experiment.PrologueExperiment.PrologueVariant
@@ -12,5 +13,6 @@ interface RemoteConfigRepository {
     fun observeSiteLoginVariant(): Flow<SiteLoginVariant>
     fun observeMagicLinkSentScreenVariant(): Flow<MagicLinkSentScreenVariant>
     fun observeMagicLinkRequestVariant(): Flow<MagicLinkRequestVariant>
+    fun observeLoginButtonsSwapVariant(): Flow<LoginButtonSwapVariant>
     fun getPerformanceMonitoringSampleRate(): Double
 }

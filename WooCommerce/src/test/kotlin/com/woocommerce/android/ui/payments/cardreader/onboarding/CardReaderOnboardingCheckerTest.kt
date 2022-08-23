@@ -33,12 +33,14 @@ import org.mockito.kotlin.never
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import org.wordpress.android.fluxc.model.SiteModel
+import org.wordpress.android.fluxc.model.gateways.WCGatewayModel
 import org.wordpress.android.fluxc.model.payments.inperson.WCPaymentAccountResult
 import org.wordpress.android.fluxc.model.plugin.SitePluginModel
 import org.wordpress.android.fluxc.network.BaseRequest
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooError
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooErrorType
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooResult
+import org.wordpress.android.fluxc.store.WCGatewayStore
 import org.wordpress.android.fluxc.store.WCInPersonPaymentsStore
 import org.wordpress.android.fluxc.store.WCInPersonPaymentsStore.InPersonPaymentsPluginType.STRIPE
 import org.wordpress.android.fluxc.store.WCInPersonPaymentsStore.InPersonPaymentsPluginType.WOOCOMMERCE_PAYMENTS
@@ -51,6 +53,7 @@ class CardReaderOnboardingCheckerTest : BaseUnitTest() {
     private val selectedSite: SelectedSite = mock()
     private val wooStore: WooCommerceStore = mock()
     private val wcInPersonPaymentsStore: WCInPersonPaymentsStore = mock()
+    private val wcGatewayStore: WCGatewayStore = mock()
     private val networkStatus: NetworkStatus = mock()
     private val appPrefsWrapper: AppPrefsWrapper = mock()
     private val cardReaderTrackingInfoKeeper: CardReaderTrackingInfoKeeper = mock()
@@ -70,6 +73,7 @@ class CardReaderOnboardingCheckerTest : BaseUnitTest() {
             appPrefsWrapper,
             wooStore,
             wcInPersonPaymentsStore,
+            wcGatewayStore,
             coroutinesTestRule.testDispatchers,
             networkStatus,
             cardReaderTrackingInfoKeeper,
@@ -91,6 +95,22 @@ class CardReaderOnboardingCheckerTest : BaseUnitTest() {
             .thenReturn(CardReaderConfigForUSA)
         whenever(cardReaderCountryConfigProvider.provideCountryConfigFor("CA"))
             .thenReturn(CardReaderConfigForCanada)
+        whenever(wcGatewayStore.fetchAllGateways(selectedSite.get())).thenReturn(
+            WooResult(
+                model = listOf(
+                    WCGatewayModel(
+                        id = "cod",
+                        title = "",
+                        description = "",
+                        order = 0,
+                        isEnabled = true,
+                        methodTitle = "",
+                        methodDescription = "",
+                        features = listOf()
+                    )
+                )
+            )
+        )
     }
 
     @Test
@@ -1347,6 +1367,169 @@ class CardReaderOnboardingCheckerTest : BaseUnitTest() {
         }
 
     //endregion
+
+    @Test
+    fun `when cod enabled, then onboarding state doesn't ask to enable cod`() = testBlocking {
+        whenever(wooStore.fetchSitePlugins(site)).thenReturn(WooResult(listOf()))
+        whenever(wooStore.getSitePlugin(site, WooCommerceStore.WooPlugin.WOO_STRIPE_GATEWAY))
+            .thenReturn(null)
+        whenever(wooStore.getSitePlugin(site, WooCommerceStore.WooPlugin.WOO_PAYMENTS))
+            .thenReturn(buildWCPayPluginInfo(isActive = true))
+        whenever(wcGatewayStore.fetchAllGateways(selectedSite.get())).thenReturn(
+            WooResult(
+                model = listOf(
+                    WCGatewayModel(
+                        id = "cod",
+                        title = "",
+                        description = "",
+                        order = 0,
+                        isEnabled = true,
+                        methodTitle = "",
+                        methodDescription = "",
+                        features = listOf()
+                    )
+                )
+            )
+        )
+
+        val result = checker.getOnboardingState()
+
+        assertThat(result).isNotInstanceOf(CardReaderOnboardingState.CashOnDeliveryDisabled::class.java)
+    }
+
+    @Test
+    fun `when cod disabled, then onboarding state is CashOnDeliveryDisabled`() = testBlocking {
+        whenever(wooStore.fetchSitePlugins(site)).thenReturn(WooResult(listOf()))
+        whenever(wooStore.getSitePlugin(site, WooCommerceStore.WooPlugin.WOO_STRIPE_GATEWAY))
+            .thenReturn(null)
+        whenever(wooStore.getSitePlugin(site, WooCommerceStore.WooPlugin.WOO_PAYMENTS))
+            .thenReturn(buildWCPayPluginInfo(isActive = true))
+        whenever(wcGatewayStore.fetchAllGateways(selectedSite.get())).thenReturn(
+            WooResult(
+                model = listOf(
+                    WCGatewayModel(
+                        id = "cod",
+                        title = "",
+                        description = "",
+                        order = 0,
+                        isEnabled = false,
+                        methodTitle = "",
+                        methodDescription = "",
+                        features = listOf()
+                    )
+                )
+            )
+        )
+
+        val result = checker.getOnboardingState()
+
+        assertThat(result).isInstanceOf(CardReaderOnboardingState.CashOnDeliveryDisabled::class.java)
+    }
+
+    @Test
+    fun `when cod not present, then onboarding state is CashOnDeliveryDisabled`() = testBlocking {
+        whenever(wooStore.fetchSitePlugins(site)).thenReturn(WooResult(listOf()))
+        whenever(wooStore.getSitePlugin(site, WooCommerceStore.WooPlugin.WOO_STRIPE_GATEWAY))
+            .thenReturn(null)
+        whenever(wooStore.getSitePlugin(site, WooCommerceStore.WooPlugin.WOO_PAYMENTS))
+            .thenReturn(buildWCPayPluginInfo(isActive = true))
+        whenever(wcGatewayStore.fetchAllGateways(selectedSite.get())).thenReturn(
+            WooResult(
+                model = listOf(
+                    WCGatewayModel(
+                        id = "cheque",
+                        title = "",
+                        description = "",
+                        order = 0,
+                        isEnabled = false,
+                        methodTitle = "",
+                        methodDescription = "",
+                        features = listOf()
+                    ),
+                    WCGatewayModel(
+                        id = "bacs",
+                        title = "",
+                        description = "",
+                        order = 0,
+                        isEnabled = false,
+                        methodTitle = "",
+                        methodDescription = "",
+                        features = listOf()
+                    )
+                )
+            )
+        )
+
+        val result = checker.getOnboardingState()
+
+        assertThat(result).isInstanceOf(CardReaderOnboardingState.CashOnDeliveryDisabled::class.java)
+    }
+
+    @Test
+    fun `given cod disabled state, when cod disabled skipped, then don't show CashOnDeliveryDisabled`() = testBlocking {
+        whenever(wooStore.fetchSitePlugins(site)).thenReturn(WooResult(listOf()))
+        whenever(wooStore.getSitePlugin(site, WooCommerceStore.WooPlugin.WOO_STRIPE_GATEWAY))
+            .thenReturn(null)
+        whenever(wooStore.getSitePlugin(site, WooCommerceStore.WooPlugin.WOO_PAYMENTS))
+            .thenReturn(buildWCPayPluginInfo(isActive = true))
+        whenever(
+            appPrefsWrapper.isCashOnDeliveryDisabledStateSkipped(
+                anyInt(),
+                anyLong(),
+                anyLong(),
+            )
+        ).thenReturn(true)
+
+        val result = checker.getOnboardingState()
+
+        assertThat(result).isNotInstanceOf(CardReaderOnboardingState.CashOnDeliveryDisabled::class.java)
+    }
+
+    @Test
+    fun `given cod disabled state, when cod disabled not skipped, then show CashOnDeliveryDisabled`() = testBlocking {
+        whenever(wooStore.fetchSitePlugins(site)).thenReturn(WooResult(listOf()))
+        whenever(wooStore.getSitePlugin(site, WooCommerceStore.WooPlugin.WOO_STRIPE_GATEWAY))
+            .thenReturn(null)
+        whenever(wooStore.getSitePlugin(site, WooCommerceStore.WooPlugin.WOO_PAYMENTS))
+            .thenReturn(buildWCPayPluginInfo(isActive = true))
+        whenever(
+            appPrefsWrapper.isCashOnDeliveryDisabledStateSkipped(
+                anyInt(),
+                anyLong(),
+                anyLong(),
+            )
+        ).thenReturn(false)
+        whenever(wcGatewayStore.fetchAllGateways(selectedSite.get())).thenReturn(
+            WooResult(
+                model = listOf(
+                    WCGatewayModel(
+                        id = "cheque",
+                        title = "",
+                        description = "",
+                        order = 0,
+                        isEnabled = false,
+                        methodTitle = "",
+                        methodDescription = "",
+                        features = listOf()
+                    ),
+                    WCGatewayModel(
+                        id = "bacs",
+                        title = "",
+                        description = "",
+                        order = 0,
+                        isEnabled = false,
+                        methodTitle = "",
+                        methodDescription = "",
+                        features = listOf()
+                    )
+                )
+            )
+        )
+
+        val result = checker.getOnboardingState()
+
+        assertThat(result).isInstanceOf(CardReaderOnboardingState.CashOnDeliveryDisabled::class.java)
+    }
 
     private fun buildPaymentAccountResult(
         status: WCPaymentAccountResult.WCPaymentAccountStatus = WCPaymentAccountResult.WCPaymentAccountStatus.COMPLETE,

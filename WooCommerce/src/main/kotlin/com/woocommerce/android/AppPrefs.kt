@@ -10,6 +10,7 @@ import androidx.preference.PreferenceManager
 import com.woocommerce.android.AppPrefs.CardReaderOnboardingStatus.CARD_READER_ONBOARDING_COMPLETED
 import com.woocommerce.android.AppPrefs.CardReaderOnboardingStatus.CARD_READER_ONBOARDING_NOT_COMPLETED
 import com.woocommerce.android.AppPrefs.CardReaderOnboardingStatus.valueOf
+import com.woocommerce.android.AppPrefs.DeletablePrefKey.CARD_READER_DO_NOT_SHOW_CASH_ON_DELIVERY_DISABLED_ONBOARDING_STATE
 import com.woocommerce.android.AppPrefs.DeletablePrefKey.CARD_READER_IS_PLUGIN_EXPLICITLY_SELECTED
 import com.woocommerce.android.AppPrefs.DeletablePrefKey.CARD_READER_ONBOARDING_COMPLETED_STATUS_V2
 import com.woocommerce.android.AppPrefs.DeletablePrefKey.CARD_READER_PREFERRED_PLUGIN
@@ -42,6 +43,7 @@ import java.util.Date
 
 // Guaranteed to hold a reference to the application context, which is safe
 @SuppressLint("StaticFieldLeak")
+@SuppressWarnings("LargeClass")
 object AppPrefs {
     interface PrefKey
 
@@ -91,6 +93,7 @@ object AppPrefs {
         LOGIN_EMAIL,
         CARD_READER_UPSELL_BANNER_DIALOG_DISMISSED_FOREVER,
         CARD_READER_UPSELL_BANNER_DIALOG_DISMISSED_REMIND_ME_LATER,
+        CARD_READER_DO_NOT_SHOW_CASH_ON_DELIVERY_DISABLED_ONBOARDING_STATE,
     }
 
     /**
@@ -553,6 +556,29 @@ object AppPrefs {
         setString(DeletablePrefKey.UNIFIED_LOGIN_LAST_ACTIVE_FLOW, flow)
     }
 
+    fun isCashOnDeliveryDisabledStateSkipped(
+        localSiteId: Int,
+        remoteSiteId: Long,
+        selfHostedSiteId: Long,
+    ): Boolean {
+        return getBoolean(
+            getCashOnDeliveryDisabledStateSkippedStatusKey(localSiteId, remoteSiteId, selfHostedSiteId),
+            false
+        )
+    }
+
+    fun setCashOnDeliveryDisabledStateSkipped(
+        localSiteId: Int,
+        remoteSiteId: Long,
+        selfHostedSiteId: Long,
+        isSkipped: Boolean
+    ) {
+        setBoolean(
+            getCashOnDeliveryDisabledStateSkippedStatusKey(localSiteId, remoteSiteId, selfHostedSiteId),
+            isSkipped
+        )
+    }
+
     fun getCardReaderOnboardingStatus(
         localSiteId: Int,
         remoteSiteId: Long,
@@ -664,6 +690,15 @@ object AppPrefs {
             isPluginExplicitlySelected
         )
     }
+
+    private fun getCashOnDeliveryDisabledStateSkippedStatusKey(
+        localSiteId: Int,
+        remoteSiteId: Long,
+        selfHostedSiteId: Long
+    ) = PrefKeyString(
+        "$CARD_READER_DO_NOT_SHOW_CASH_ON_DELIVERY_DISABLED_ONBOARDING_STATE:" +
+            "$localSiteId:$remoteSiteId:$selfHostedSiteId"
+    )
 
     private fun getCardReaderOnboardingStatusKey(
         localSiteId: Int,
