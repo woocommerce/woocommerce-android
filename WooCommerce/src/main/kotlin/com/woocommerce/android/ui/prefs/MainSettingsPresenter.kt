@@ -83,6 +83,10 @@ class MainSettingsPresenter @Inject constructor(
     }
 
     override fun canShowCardReaderUpsellBanner(currentTimeInMillis: Long, source: String): Boolean {
-        return bannerDisplayEligibilityChecker.canShowCardReaderUpsellBanner(currentTimeInMillis, source)
+        return bannerDisplayEligibilityChecker.canShowCardReaderUpsellBanner(
+            currentTimeInMillis,
+            source,
+            true
+        )
     }
 }

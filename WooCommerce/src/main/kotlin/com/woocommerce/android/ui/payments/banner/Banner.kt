@@ -72,7 +72,11 @@ fun OrderListScreenBanner(
 
     if (
         isEligibleForInPersonPayments &&
-        viewModel.canShowCardReaderUpsellBanner(System.currentTimeMillis(), AnalyticsTracker.KEY_BANNER_ORDER_LIST)
+        viewModel.canShowCardReaderUpsellBanner(
+            System.currentTimeMillis(),
+            AnalyticsTracker.KEY_BANNER_ORDER_LIST,
+            true
+        )
     ) {
         Banner(
             onCtaClick = viewModel::onCtaClicked,

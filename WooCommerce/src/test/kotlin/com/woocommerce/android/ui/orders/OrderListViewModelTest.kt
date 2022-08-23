@@ -43,6 +43,7 @@ import kotlinx.coroutines.test.runTest
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Test
+import org.mockito.ArgumentMatchers.anyBoolean
 import org.mockito.ArgumentMatchers.anyLong
 import org.mockito.ArgumentMatchers.anyString
 import org.mockito.kotlin.any
@@ -558,7 +559,8 @@ class OrderListViewModelTest : BaseUnitTest() {
             whenever(
                 bannerDisplayEligibilityChecker.canShowCardReaderUpsellBanner(
                     anyLong(),
-                    anyString()
+                    anyString(),
+                    anyBoolean()
                 )
             ).thenReturn(true)
 
@@ -574,7 +576,8 @@ class OrderListViewModelTest : BaseUnitTest() {
             whenever(
                 bannerDisplayEligibilityChecker.canShowCardReaderUpsellBanner(
                     anyLong(),
-                    anyString()
+                    anyString(),
+                    anyBoolean()
                 )
             ).thenReturn(false)
 

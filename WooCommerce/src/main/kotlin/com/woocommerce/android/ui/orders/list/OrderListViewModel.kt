@@ -515,12 +515,24 @@ class OrderListViewModel @Inject constructor(
         shouldShowUpsellCardReaderDismissDialog.value = false
     }
 
-    fun canShowCardReaderUpsellBanner(currentTimeInMillis: Long, source: String): Boolean {
-        return bannerDisplayEligibilityChecker.canShowCardReaderUpsellBanner(currentTimeInMillis, source)
+    fun canShowCardReaderUpsellBanner(
+        currentTimeInMillis: Long,
+        source: String,
+        shouldTrackEvent: Boolean
+    ): Boolean {
+        return bannerDisplayEligibilityChecker.canShowCardReaderUpsellBanner(
+            currentTimeInMillis,
+            source,
+            shouldTrackEvent
+        )
     }
 
     fun shouldDisplaySimplePaymentsWIPCard(): Boolean {
-        return !canShowCardReaderUpsellBanner(System.currentTimeMillis(), AnalyticsTracker.KEY_BANNER_ORDER_LIST)
+        return !canShowCardReaderUpsellBanner(
+            System.currentTimeMillis(),
+            AnalyticsTracker.KEY_BANNER_ORDER_LIST,
+            false
+        )
     }
 
     private fun updateOrderDisplayedStatus(position: Int, status: String) {

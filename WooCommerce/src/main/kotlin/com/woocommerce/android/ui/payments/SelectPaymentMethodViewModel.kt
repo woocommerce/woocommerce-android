@@ -312,7 +312,11 @@ class SelectPaymentMethodViewModel @Inject constructor(
     }
 
     private fun canShowCardReaderUpsellBanner(currentTimeInMillis: Long, source: String): Boolean {
-        return bannerDisplayEligibilityChecker.canShowCardReaderUpsellBanner(currentTimeInMillis, source)
+        return bannerDisplayEligibilityChecker.canShowCardReaderUpsellBanner(
+            currentTimeInMillis,
+            source,
+            true
+        )
     }
 
     sealed class TakePaymentViewState {

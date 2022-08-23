@@ -98,7 +98,11 @@ class BannerDisplayEligibilityChecker @Inject constructor(
         return getCardReaderUpsellBannerLastDismissed() != 0L
     }
 
-    fun canShowCardReaderUpsellBanner(currentTimeInMillis: Long, source: String): Boolean {
+    fun canShowCardReaderUpsellBanner(
+        currentTimeInMillis: Long,
+        source: String,
+        shouldTrackEvent: Boolean
+    ): Boolean {
         return (
             !isCardReaderUpsellBannerDismissedForever() &&
                 (
@@ -106,7 +110,7 @@ class BannerDisplayEligibilityChecker @Inject constructor(
                         isLastDialogDismissedMoreThan14DaysAgo(currentTimeInMillis)
                     )
             ).also { trackable ->
-            if (trackable) {
+            if (trackable && shouldTrackEvent) {
                 analyticsTrackerWrapper.track(
                     AnalyticsEvent.FEATURE_CARD_SHOWN,
                     mapOf(
