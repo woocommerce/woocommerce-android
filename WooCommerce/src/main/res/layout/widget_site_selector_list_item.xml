@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="?attr/colorSurface">
+
+    <FrameLayout
+        android:id="@+id/widget_site_image_frame"
+        android:layout_width="@dimen/image_minor_100"
+        android:layout_height="@dimen/image_minor_100"
+        android:layout_margin="@dimen/major_100"
+        android:background="@drawable/picture_frame"
+        android:padding="1dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintVertical_bias="0.50">
+
+        <ImageView
+            android:id="@+id/widget_site_image"
+            android:layout_width="@dimen/image_minor_100"
+            android:layout_height="@dimen/image_minor_100"
+            android:layout_gravity="center"
+            android:background="@drawable/picture_corners"
+            android:contentDescription="@string/stats_widget_site_selection_content_description"
+            android:scaleType="centerCrop"
+            tools:src="@drawable/ic_product" />
+    </FrameLayout>
+
+    <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/widget_site_name"
+        style="@style/Woo.ListItem.Subtitle"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:includeFontPadding="false"
+        android:layout_marginBottom="@dimen/minor_00"
+        android:maxLines="1"
+        android:ellipsize="end"
+        app:layout_constraintBottom_toTopOf="@+id/widget_site_url"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/widget_site_image_frame"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:text="My Woo site"
+        tools:visibility="visible"/>
+
+    <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/widget_site_url"
+        style="@style/Woo.ListItem.Body"
+        android:layout_width="0dp"
+        android:maxLines="1"
+        android:ellipsize="end"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/minor_00"
+        android:layout_marginBottom="@dimen/major_100"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/widget_site_image_frame"
+        app:layout_constraintTop_toBottomOf="@+id/widget_site_name"
+        tools:text="awootestshop.mystagingwebsite.com" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

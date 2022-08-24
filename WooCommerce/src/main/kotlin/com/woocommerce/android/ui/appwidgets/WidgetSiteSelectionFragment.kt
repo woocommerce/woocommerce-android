@@ -12,6 +12,8 @@ import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
+import com.woocommerce.android.databinding.FragmentOrderListBinding
+import com.woocommerce.android.databinding.FragmentWidgetSiteSelectorBinding
 import com.woocommerce.android.di.GlideApp
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.appwidgets.WidgetSiteSelectionAdapter.OnWidgetSiteSelectedListener
@@ -21,14 +23,14 @@ import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.ViewModelFactory
 import com.woocommerce.android.widgets.AlignedDividerDecoration
 import dagger.android.support.AndroidSupportInjection
-import kotlinx.android.synthetic.main.fragment_widget_site_selector.*
 import javax.inject.Inject
 
 class WidgetSiteSelectionFragment : BaseFragment(), OnWidgetSiteSelectedListener {
-    @Inject lateinit var viewModelFactory: ViewModelFactory
-
     private val viewModel: TodayWidgetConfigureViewModel
         by navGraphViewModels(R.id.nav_graph_today_widget) { viewModelFactory }
+
+    private var _binding: FragmentWidgetSiteSelectorBinding? = null
+    private val binding get() = _binding!!
 
     override fun onAttach(context: Context) {
         AndroidSupportInjection.inject(this)
@@ -38,7 +40,8 @@ class WidgetSiteSelectionFragment : BaseFragment(), OnWidgetSiteSelectedListener
     override fun getFragmentTitle() = getString(R.string.stats_today_widget_configure_store_hint)
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        return inflater.inflate(R.layout.fragment_widget_site_selector, container, false)
+        _binding = FragmentWidgetSiteSelectorBinding.inflate(inflater, container, false)
+        return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -50,7 +53,7 @@ class WidgetSiteSelectionFragment : BaseFragment(), OnWidgetSiteSelectedListener
         super.onActivityCreated(savedInstanceState)
 
         val activity = requireActivity()
-        with(sites_recycler) {
+        with(binding.sitesRecycler) {
             layoutManager = LinearLayoutManager(activity)
             adapter = WidgetSiteSelectionAdapter(
                 requireContext(), GlideApp.with(activity), this@WidgetSiteSelectionFragment
@@ -70,7 +73,7 @@ class WidgetSiteSelectionFragment : BaseFragment(), OnWidgetSiteSelectedListener
 
     private fun setupObservers(viewModel: TodayWidgetConfigureViewModel) {
         viewModel.sites.observe(viewLifecycleOwner, Observer {
-            (sites_recycler.adapter as? WidgetSiteSelectionAdapter)?.update(it)
+            (binding.sitesRecycler.adapter as? WidgetSiteSelectionAdapter)?.update(it)
         })
         viewModel.event.observe(viewLifecycleOwner, Observer { event ->
             when (event) {

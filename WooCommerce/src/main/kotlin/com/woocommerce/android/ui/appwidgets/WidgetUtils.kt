@@ -9,8 +9,8 @@ import android.view.View
 import android.widget.RemoteViews
 import com.woocommerce.android.R
 import com.woocommerce.android.extensions.putColorMode
+import com.woocommerce.android.ui.appwidgets.stats.StatsWidget.Companion.SITE_ID_KEY
 import com.woocommerce.android.ui.main.MainActivity
-import com.woocommerce.android.ui.widgets.stats.StatsWidget.Companion.SITE_ID_KEY
 import com.woocommerce.android.viewmodel.ResourceProvider
 import java.util.Date
 import javax.inject.Inject
