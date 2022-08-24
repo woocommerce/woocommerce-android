@@ -30,8 +30,10 @@ import com.woocommerce.android.viewmodel.ResourceProvider
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.navArgs
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import kotlinx.parcelize.Parcelize
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.store.WooCommerceStore
@@ -355,6 +357,12 @@ class SitePickerViewModel @Inject constructor(
         triggerEvent(SitePickerEvent.NavigateToSiteAddressEvent)
     }
 
+    fun onCreateSite() {
+        triggerEvent(
+            NavigateToWPComWebView("https://wordpress.com/start", "notice=purchase-success")
+        )
+    }
+
     fun onTryAnotherAccountButtonClick() {
         trackLoginEvent(clickEvent = UnifiedLoginTracker.Click.TRY_ANOTHER_ACCOUNT)
         launch {
@@ -441,6 +449,14 @@ class SitePickerViewModel @Inject constructor(
                     validationUrl = WOOCOMMERCE_INSTALLATION_DONE_URL
                 )
             )
+        }
+    }
+
+    fun onSiteCreated(url: String) {
+        launch {
+            repository.fetchWooCommerceSites(true)
+            loginSiteAddress = url
+            onInstallWooClicked()
         }
     }
 
