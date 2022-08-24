@@ -13,7 +13,6 @@ import com.woocommerce.android.model.UiString
 import com.woocommerce.android.model.UiString.UiStringRes
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.payments.cardreader.InPersonPaymentsCanadaFeatureFlag
-import com.woocommerce.android.ui.payments.cardreader.hub.CardReaderHubViewModel.CardReaderHubViewState.ListItem
 import com.woocommerce.android.ui.payments.cardreader.hub.CardReaderHubViewModel.CardReaderHubViewState.OnboardingErrorAction
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderFlowParam
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboardingChecker
@@ -83,31 +82,36 @@ class CardReaderHubViewModel @Inject constructor(
 
     private fun createHubListWhenSinglePluginInstalled(isOnboardingComplete: Boolean) =
         listOf(
-            ListItem(
+            CardReaderHubViewState.ListItem.NonTogglableListItem(
                 icon = R.drawable.ic_gridicons_money_on_surface,
                 label = UiStringRes(R.string.card_reader_collect_payment),
                 onClick = ::onCollectPaymentClicked
             ),
-            ListItem(
+            CardReaderHubViewState.ListItem.NonTogglableListItem(
                 icon = R.drawable.ic_shopping_cart,
                 label = UiStringRes(R.string.card_reader_purchase_card_reader),
                 onClick = ::onPurchaseCardReaderClicked
             ),
-            ListItem(
+            CardReaderHubViewState.ListItem.NonTogglableListItem(
                 icon = R.drawable.ic_card_reader_manual,
                 label = UiStringRes(R.string.settings_card_reader_manuals),
                 onClick = ::onCardReaderManualsClicked
             ),
-            ListItem(
+            CardReaderHubViewState.ListItem.NonTogglableListItem(
                 icon = R.drawable.ic_manage_card_reader,
                 label = UiStringRes(R.string.card_reader_manage_card_reader),
                 isEnabled = isOnboardingComplete,
                 onClick = ::onManageCardReaderClicked
             ),
+            CardReaderHubViewState.ListItem.TogglableListItem(
+                icon = R.drawable.ic_manage_card_reader,
+                label = UiStringRes(R.string.card_reader_enable_pay_in_person),
+                onClick = ::onCashOnDeliveryToggled
+            )
         )
 
     private fun createAdditionalItemWhenMultiplePluginsInstalled() =
-        ListItem(
+        CardReaderHubViewState.ListItem.NonTogglableListItem(
             icon = R.drawable.ic_payment_provider,
             label = UiStringRes(R.string.card_reader_manage_payment_provider),
             onClick = ::onCardReaderPaymentProviderClicked
@@ -173,6 +177,10 @@ class CardReaderHubViewModel @Inject constructor(
         )
     }
 
+    private fun onCashOnDeliveryToggled() {
+
+    }
+
     private fun onOnboardingErrorClicked(state: CardReaderOnboardingState) {
         trackEvent(AnalyticsEvent.PAYMENTS_HUB_ONBOARDING_ERROR_TAPPED)
         triggerEvent(CardReaderHubEvents.NavigateToCardReaderOnboardingScreen(state))
@@ -214,12 +222,21 @@ class CardReaderHubViewModel @Inject constructor(
         val isLoading: Boolean,
         val onboardingErrorAction: OnboardingErrorAction?,
     ) {
-        data class ListItem(
-            @DrawableRes val icon: Int,
-            val label: UiString,
-            val isEnabled: Boolean = true,
-            val onClick: () -> Unit
-        )
+        sealed class ListItem {
+            data class NonTogglableListItem(
+                @DrawableRes val icon: Int,
+                val label: UiString,
+                val isEnabled: Boolean = true,
+                val onClick: () -> Unit
+            ) : ListItem()
+
+            data class TogglableListItem(
+                @DrawableRes val icon: Int,
+                val label: UiString,
+                val isEnabled: Boolean = true,
+                val onClick: () -> Unit
+            ) : ListItem()
+        }
 
         data class OnboardingErrorAction(
             val text: UiString?,
