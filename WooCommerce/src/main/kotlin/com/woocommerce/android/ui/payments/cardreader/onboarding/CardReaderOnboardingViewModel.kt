@@ -61,6 +61,7 @@ import com.woocommerce.android.viewmodel.navArgs
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.gateways.GatewayRestClient
+import org.wordpress.android.fluxc.store.Settings
 import org.wordpress.android.fluxc.store.WCGatewayStore
 import java.util.Date
 import java.util.Locale
@@ -310,6 +311,7 @@ class CardReaderOnboardingViewModel @Inject constructor(
                 enabled = true,
                 title = "Pay in Person",
                 description = "Pay by card or another accepted payment method",
+                settings = Settings(instructions = "Pay by card or another accepted payment method"),
             )
             result.model?.let {
                 cardReaderTracker.trackCashOnDeliveryEnabledSuccess()
