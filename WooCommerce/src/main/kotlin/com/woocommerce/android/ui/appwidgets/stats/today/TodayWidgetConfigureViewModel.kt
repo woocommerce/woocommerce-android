@@ -2,13 +2,17 @@ package com.woocommerce.android.ui.widgets.stats.today
 
 import android.os.Parcelable
 import android.text.TextUtils
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleOwner
+import androidx.lifecycle.LifecycleRegistry
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import com.squareup.inject.assisted.Assisted
+import androidx.lifecycle.SavedStateHandle
 import com.squareup.inject.assisted.AssistedInject
 import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.R.string
 import com.woocommerce.android.di.ViewModelAssistedFactory
+import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.widgets.WidgetColorMode
 import com.woocommerce.android.ui.widgets.stats.today.TodayWidgetConfigureViewModel.TodayWidgetNavigationTarget.ViewWidgetColorSelectionList
 import com.woocommerce.android.ui.widgets.stats.today.TodayWidgetConfigureViewModel.TodayWidgetNavigationTarget.ViewWidgetSiteSelectionList
@@ -19,23 +23,30 @@ import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.viewmodel.ResourceProvider
-import com.woocommerce.android.viewmodel.SavedStateWithArgs
 import com.woocommerce.android.viewmodel.ScopedViewModel
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.android.parcel.Parcelize
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.store.AccountStore
 import org.wordpress.android.fluxc.store.SiteStore
 import org.wordpress.android.fluxc.store.WooCommerceStore
+import javax.inject.Inject
 
-class TodayWidgetConfigureViewModel @AssistedInject constructor(
-    @Assisted savedState: SavedStateWithArgs,
+@HiltViewModel
+class TodayWidgetConfigureViewModel @Inject constructor(
+    savedState: SavedStateHandle,
+    private val selectedSite: SelectedSite,
     private val siteStore: SiteStore,
     private val accountStore: AccountStore,
     private val wooCommerceStore: WooCommerceStore,
     private val appPrefsWrapper: AppPrefsWrapper,
     private val resourceProvider: ResourceProvider,
-    dispatchers: CoroutineDispatchers
-) : ScopedViewModel(savedState, dispatchers) {
+) : ScopedViewModel(savedState), LifecycleOwner {
+    private val lifecycleRegistry: LifecycleRegistry by lazy {
+        LifecycleRegistry(this)
+    }
+    override fun getLifecycle(): Lifecycle = lifecycleRegistry
+
     private var appWidgetId: Int = -1
 
     private val mutableSites = MutableLiveData<List<SiteUiModel>>()
@@ -46,7 +57,7 @@ class TodayWidgetConfigureViewModel @AssistedInject constructor(
 
     fun start(appWidgetId: Int) {
         this.appWidgetId = appWidgetId
-        val siteId = appPrefsWrapper.getAppWidgetSiteId(appWidgetId)
+        val siteId = selectedSite.getSelectedSiteId().toLong()
         if (siteId > -1) {
             siteStore.getSiteBySiteId(siteId)?.let { updateSelectedSite(toSiteUiModel(it)) }
         }
@@ -128,7 +139,4 @@ class TodayWidgetConfigureViewModel @AssistedInject constructor(
         val buttonEnabled: Boolean
             get() = selectedSiteUiModel?.title != null
     }
-
-    @AssistedInject.Factory
-    interface Factory : ViewModelAssistedFactory<TodayWidgetConfigureViewModel>
 }
