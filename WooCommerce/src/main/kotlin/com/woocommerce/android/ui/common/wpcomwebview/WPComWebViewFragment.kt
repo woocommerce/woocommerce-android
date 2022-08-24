@@ -10,6 +10,7 @@ import androidx.navigation.fragment.navArgs
 import com.woocommerce.android.R
 import com.woocommerce.android.databinding.FragmentWpcomWebviewBinding
 import com.woocommerce.android.extensions.navigateBackWithNotice
+import com.woocommerce.android.extensions.navigateBackWithResult
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.common.wpcomwebview.WPComWebViewFragment.UrlComparisonMode.EQUALITY
 import com.woocommerce.android.ui.common.wpcomwebview.WPComWebViewFragment.UrlComparisonMode.PARTIAL
@@ -36,6 +37,7 @@ private const val WPCOM_LOGIN_URL = "https://wordpress.com/wp-login.php"
 class WPComWebViewFragment : BaseFragment(R.layout.fragment_wpcom_webview), UrlInterceptor, BackPressListener {
     companion object {
         const val WEBVIEW_RESULT = "webview-result"
+        const val WEBVIEW_RESULT_WITH_URL = "webview-result-with-url"
         const val WEBVIEW_DISMISSED = "webview-dismissed"
     }
 
@@ -82,8 +84,17 @@ class WPComWebViewFragment : BaseFragment(R.layout.fragment_wpcom_webview), UrlI
             EQUALITY -> equals(url, ignoreCase = true)
         }
 
+        val slug = "siteSlug="
+        val range = "$slug.+&".toRegex().find(url)?.range
+        val start = (range?.first ?: 0) + slug.length
+        val end = (range?.last ?: 0)
+
         if (isAdded && navArgs.urlToTriggerExit?.matchesUrl(url) == true) {
-            navigateBackWithNotice(WEBVIEW_RESULT)
+            if (range == null) {
+                navigateBackWithNotice(WEBVIEW_RESULT)
+            } else {
+                navigateBackWithResult(WEBVIEW_RESULT_WITH_URL, url.substring(start, end))
+            }
         }
     }
 
