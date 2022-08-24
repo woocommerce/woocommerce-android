@@ -58,7 +58,7 @@
     </style>
 
     <style name="Woo.StatsWidgetSubtitle.Light">
-        <item name="android:textColor">@color/woo_black_alpha_038</item>
+        <item name="android:textColor">@color/woo_black_90_alpha_038</item>
     </style>
 
     <style name="Woo.StatsWidgetSubtitle.Dark">
@@ -83,7 +83,7 @@
     </style>
 
     <style name="Woo.StatsWidgetErrorMessage.Light">
-        <item name="android:textColor">@color/woo_black_alpha_087</item>
+        <item name="android:textColor">@color/woo_black_90_alpha_087</item>
     </style>
 
     <style name="Woo.StatsWidgetErrorMessage.Dark">
@@ -115,7 +115,7 @@
     </style>
 
     <style name="Woo.StatsWidgetListItemKey.Light">
-        <item name="android:textColor">@color/woo_black_alpha_087</item>
+        <item name="android:textColor">@color/woo_black_90_alpha_087</item>
     </style>
 
     <style name="Woo.StatsWidgetListItemKey.Dark">
