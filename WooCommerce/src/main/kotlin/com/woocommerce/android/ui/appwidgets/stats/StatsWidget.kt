@@ -1,12 +1,11 @@
-package com.woocommerce.android.ui.widgets.stats
+package com.woocommerce.android.ui.appwidgets.stats
 
 import android.appwidget.AppWidgetManager
 import android.appwidget.AppWidgetProvider
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
-import com.woocommerce.android.WooCommerce
-import com.woocommerce.android.ui.widgets.WidgetUpdater
+import com.woocommerce.android.ui.appwidgets.WidgetUpdater
 
 /**
  * Abstract class that defines the basic methods to programmatically interface with the App Widget,

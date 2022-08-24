@@ -4,7 +4,7 @@ import android.content.SharedPreferences.OnSharedPreferenceChangeListener
 import com.woocommerce.android.ui.payments.cardreader.onboarding.PersistentOnboardingData
 import com.woocommerce.android.ui.payments.cardreader.onboarding.PluginType
 import com.woocommerce.android.ui.promobanner.PromoBannerType
-import com.woocommerce.android.ui.widgets.WidgetColorMode
+import com.woocommerce.android.ui.appwidgets.WidgetColorMode
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
@@ -260,6 +260,8 @@ class AppPrefsWrapper @Inject constructor() {
     fun setPromoBannerShown(bannerType: PromoBannerType, shown: Boolean) {
         AppPrefs.setPromoBannerShown(bannerType, shown)
     }
+
+    fun isV4StatsSupported() = AppPrefs.isV4StatsSupported()
 
     /**
      * Widget settings

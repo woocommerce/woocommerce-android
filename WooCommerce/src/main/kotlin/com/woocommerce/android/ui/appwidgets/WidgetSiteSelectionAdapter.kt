@@ -9,8 +9,8 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.woocommerce.android.R
 import com.woocommerce.android.di.GlideRequests
-import com.woocommerce.android.ui.widgets.WidgetSiteSelectionAdapter.WidgetSiteSelectionViewHolder
-import com.woocommerce.android.ui.widgets.stats.today.TodayWidgetConfigureViewModel.SiteUiModel
+import com.woocommerce.android.ui.appwidgets.WidgetSiteSelectionAdapter.WidgetSiteSelectionViewHolder
+import com.woocommerce.android.ui.appwidgets.stats.today.TodayWidgetConfigureViewModel.SiteUiModel
 import kotlinx.android.synthetic.main.widget_site_selector_list_item.view.*
 import org.wordpress.android.util.PhotonUtils
 

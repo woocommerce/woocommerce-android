@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RadioGroup xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/data_types"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:descendantFocusability="beforeDescendants"
+    android:paddingEnd="@dimen/margin_extra_medium_large"
+    android:paddingStart="@dimen/margin_extra_medium_large"
+    android:paddingTop="@dimen/margin_extra_large"
+    android:scrollbars="vertical">
+
+    <com.google.android.material.radiobutton.MaterialRadioButton
+        android:id="@+id/stats_widget_light_color"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/margin_extra_extra_large"
+        android:checked="true"
+        android:paddingEnd="@dimen/major_150"
+        android:paddingStart="@dimen/major_150"
+        android:text="@string/settings_app_theme_option_light" />
+
+    <com.google.android.material.radiobutton.MaterialRadioButton
+        android:id="@+id/stats_widget_dark_color"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/margin_extra_extra_large"
+        android:paddingEnd="@dimen/major_150"
+        android:paddingStart="@dimen/major_150"
+        android:text="@string/settings_app_theme_option_dark" />
+</RadioGroup>

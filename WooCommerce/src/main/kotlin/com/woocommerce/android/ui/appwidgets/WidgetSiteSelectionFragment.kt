@@ -14,9 +14,9 @@ import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.di.GlideApp
 import com.woocommerce.android.ui.base.BaseFragment
-import com.woocommerce.android.ui.widgets.WidgetSiteSelectionAdapter.OnWidgetSiteSelectedListener
-import com.woocommerce.android.ui.widgets.stats.today.TodayWidgetConfigureViewModel
-import com.woocommerce.android.ui.widgets.stats.today.TodayWidgetConfigureViewModel.SiteUiModel
+import com.woocommerce.android.ui.appwidgets.WidgetSiteSelectionAdapter.OnWidgetSiteSelectedListener
+import com.woocommerce.android.ui.appwidgets.stats.today.TodayWidgetConfigureViewModel
+import com.woocommerce.android.ui.appwidgets.stats.today.TodayWidgetConfigureViewModel.SiteUiModel
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.ViewModelFactory
 import com.woocommerce.android.widgets.AlignedDividerDecoration

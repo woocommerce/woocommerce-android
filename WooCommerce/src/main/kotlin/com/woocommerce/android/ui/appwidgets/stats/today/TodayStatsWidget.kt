@@ -1,7 +1,7 @@
-package com.woocommerce.android.ui.widgets.stats.today
+package com.woocommerce.android.ui.appwidgets.stats.today
 
-import com.woocommerce.android.ui.widgets.WidgetUpdater
-import com.woocommerce.android.ui.widgets.stats.StatsWidget
+import com.woocommerce.android.ui.appwidgets.WidgetUpdater
+import com.woocommerce.android.ui.appwidgets.stats.StatsWidget
 import javax.inject.Inject
 
 class TodayStatsWidget : StatsWidget() {

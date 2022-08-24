@@ -5,20 +5,16 @@ import android.content.Context
 import android.os.Bundle
 import android.widget.RadioGroup
 import androidx.fragment.app.DialogFragment
-import androidx.navigation.navGraphViewModels
+import androidx.fragment.app.viewModels
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.appwidgets.stats.today.TodayWidgetConfigureViewModel
-import com.woocommerce.android.ui.widgets.stats.today.TodayWidgetConfigureViewModel
-import com.woocommerce.android.viewmodel.ViewModelFactory
 import dagger.android.support.AndroidSupportInjection
-import javax.inject.Inject
 
 class WidgetColorSelectionFragment : DialogFragment() {
-    @Inject lateinit var viewModelFactory: ViewModelFactory
+    private val viewModel: TodayWidgetConfigureViewModel by viewModels()
 
-    private val viewModel: TodayWidgetConfigureViewModel
-        by navGraphViewModels(R.id.nav_graph_today_widget) { viewModelFactory }
+    // TODO? by navGraphViewModels(R.id.nav_graph_today_widget) { viewModelFactory }
 
     override fun onAttach(context: Context) {
         AndroidSupportInjection.inject(this)

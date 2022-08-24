@@ -4,7 +4,7 @@ import android.appwidget.AppWidgetManager
 import android.content.ComponentName
 import android.content.Context
 import com.woocommerce.android.AppPrefsWrapper
-import com.woocommerce.android.ui.widgets.stats.today.TodayWidgetUpdater
+import com.woocommerce.android.ui.appwidgets.stats.today.TodayWidgetUpdater
 import javax.inject.Inject
 
 /**

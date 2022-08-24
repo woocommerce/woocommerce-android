@@ -1,4 +1,4 @@
-package com.woocommerce.android.ui.widgets.stats.today
+package com.woocommerce.android.ui.appwidgets.stats.today
 
 import android.appwidget.AppWidgetManager
 import android.content.ComponentName
@@ -9,9 +9,9 @@ import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.R
 import com.woocommerce.android.extensions.getTitle
 import com.woocommerce.android.tools.NetworkStatus
-import com.woocommerce.android.ui.widgets.WidgetColorMode
-import com.woocommerce.android.ui.widgets.WidgetUpdater
-import com.woocommerce.android.ui.widgets.WidgetUtils
+import com.woocommerce.android.ui.appwidgets.WidgetColorMode
+import com.woocommerce.android.ui.appwidgets.WidgetUpdater
+import com.woocommerce.android.ui.appwidgets.WidgetUtils
 import com.woocommerce.android.viewmodel.ResourceProvider
 import org.wordpress.android.fluxc.store.AccountStore
 import org.wordpress.android.fluxc.store.SiteStore
@@ -42,7 +42,7 @@ class TodayWidgetUpdater
 
         val networkAvailable = networkStatus.isConnected()
         val hasAccessToken = accountStore.hasAccessToken()
-        val isUsingV4Api = appPrefsWrapper.isUsingV4Api
+        val isUsingV4Api = appPrefsWrapper.isV4StatsSupported()
 
         val views = RemoteViews(context.packageName, widgetUtils.getLayout(colorMode))
 
