@@ -1,4 +1,4 @@
-package com.woocommerce.android.ui.widgets
+package com.woocommerce.android.ui.appwidgets
 
 import android.app.Dialog
 import android.content.Context
@@ -8,6 +8,7 @@ import androidx.fragment.app.DialogFragment
 import androidx.navigation.navGraphViewModels
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.woocommerce.android.R
+import com.woocommerce.android.ui.appwidgets.stats.today.TodayWidgetConfigureViewModel
 import com.woocommerce.android.ui.widgets.stats.today.TodayWidgetConfigureViewModel
 import com.woocommerce.android.viewmodel.ViewModelFactory
 import dagger.android.support.AndroidSupportInjection
@@ -25,7 +26,7 @@ class WidgetColorSelectionFragment : DialogFragment() {
     }
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
-        val alertDialogBuilder = MaterialAlertDialogBuilder(activity)
+        val alertDialogBuilder = MaterialAlertDialogBuilder(requireActivity())
         val view = requireActivity().layoutInflater.inflate(R.layout.dialog_widget_color_selector, null) as RadioGroup
         view.check(viewModel.getSelectedColor().toViewId())
         view.setOnCheckedChangeListener { _, checkedId ->

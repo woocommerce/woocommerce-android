@@ -1,4 +1,4 @@
-package com.woocommerce.android.ui.widgets
+package com.woocommerce.android.ui.appwidgets
 
 import com.woocommerce.android.di.ActivityScope
 import com.woocommerce.android.di.FragmentScope

@@ -1,4 +1,4 @@
-package com.woocommerce.android.ui.widgets
+package com.woocommerce.android.ui.appwidgets
 
 import androidx.annotation.StringRes
 import com.woocommerce.android.R

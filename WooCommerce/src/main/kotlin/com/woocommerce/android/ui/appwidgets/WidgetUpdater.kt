@@ -1,4 +1,4 @@
-package com.woocommerce.android.ui.widgets
+package com.woocommerce.android.ui.appwidgets
 
 import android.appwidget.AppWidgetManager
 import android.content.ComponentName

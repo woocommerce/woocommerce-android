@@ -1,4 +1,4 @@
-package com.woocommerce.android.ui.widgets.stats.today
+package com.woocommerce.android.ui.appwidgets.stats.today
 
 import android.os.Parcelable
 import android.text.TextUtils
@@ -8,15 +8,12 @@ import androidx.lifecycle.LifecycleRegistry
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
-import com.squareup.inject.assisted.AssistedInject
 import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.R.string
-import com.woocommerce.android.di.ViewModelAssistedFactory
 import com.woocommerce.android.tools.SelectedSite
-import com.woocommerce.android.ui.widgets.WidgetColorMode
-import com.woocommerce.android.ui.widgets.stats.today.TodayWidgetConfigureViewModel.TodayWidgetNavigationTarget.ViewWidgetColorSelectionList
-import com.woocommerce.android.ui.widgets.stats.today.TodayWidgetConfigureViewModel.TodayWidgetNavigationTarget.ViewWidgetSiteSelectionList
-import com.woocommerce.android.util.CoroutineDispatchers
+import com.woocommerce.android.ui.appwidgets.WidgetColorMode
+import com.woocommerce.android.ui.appwidgets.stats.today.TodayWidgetConfigureViewModel.TodayWidgetNavigationTarget.ViewWidgetColorSelectionList
+import com.woocommerce.android.ui.appwidgets.stats.today.TodayWidgetConfigureViewModel.TodayWidgetNavigationTarget.ViewWidgetSiteSelectionList
 import com.woocommerce.android.util.StringUtils
 import com.woocommerce.android.viewmodel.LiveDataDelegate
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
