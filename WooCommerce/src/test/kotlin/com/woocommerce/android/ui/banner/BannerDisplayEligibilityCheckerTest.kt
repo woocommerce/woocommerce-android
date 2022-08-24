@@ -167,11 +167,7 @@ class BannerDisplayEligibilityCheckerTest : BaseUnitTest() {
             )
         ).thenReturn(0L)
 
-        val canShowBanner = bannerDisplayEligibilityChecker.canShowCardReaderUpsellBanner(
-            0L,
-            KEY_BANNER_PAYMENTS,
-            true
-        )
+        val canShowBanner = bannerDisplayEligibilityChecker.canShowCardReaderUpsellBanner(0L)
 
         assertThat(canShowBanner).isTrue
     }
@@ -186,11 +182,7 @@ class BannerDisplayEligibilityCheckerTest : BaseUnitTest() {
             )
         ).thenReturn(true)
 
-        val canShowBanner = bannerDisplayEligibilityChecker.canShowCardReaderUpsellBanner(
-            0L,
-            KEY_BANNER_PAYMENTS,
-            true
-        )
+        val canShowBanner = bannerDisplayEligibilityChecker.canShowCardReaderUpsellBanner(0L)
 
         assertThat(canShowBanner).isFalse
     }
@@ -215,11 +207,7 @@ class BannerDisplayEligibilityCheckerTest : BaseUnitTest() {
             )
         ).thenReturn(lastDialogDismissedInMillis)
 
-        val canShowBanner = bannerDisplayEligibilityChecker.canShowCardReaderUpsellBanner(
-            currentTimeInMillis,
-            KEY_BANNER_PAYMENTS,
-            true
-        )
+        val canShowBanner = bannerDisplayEligibilityChecker.canShowCardReaderUpsellBanner(currentTimeInMillis)
 
         assertThat(canShowBanner).isFalse
     }
@@ -244,11 +232,7 @@ class BannerDisplayEligibilityCheckerTest : BaseUnitTest() {
             )
         ).thenReturn(lastDialogDismissedInMillis)
 
-        val canShowBanner = bannerDisplayEligibilityChecker.canShowCardReaderUpsellBanner(
-            currentTimeInMillis,
-            KEY_BANNER_PAYMENTS,
-            true
-        )
+        val canShowBanner = bannerDisplayEligibilityChecker.canShowCardReaderUpsellBanner(currentTimeInMillis)
 
         assertThat(canShowBanner).isTrue
     }
@@ -371,11 +355,7 @@ class BannerDisplayEligibilityCheckerTest : BaseUnitTest() {
             )
         ).thenReturn(12345L)
 
-        bannerDisplayEligibilityChecker.canShowCardReaderUpsellBanner(
-            0L,
-            KEY_BANNER_PAYMENTS,
-            true
-        )
+        bannerDisplayEligibilityChecker.canShowCardReaderUpsellBanner(0L)
 
         // Then
         verify(analyticsTrackerWrapper, never()).track(
@@ -390,11 +370,7 @@ class BannerDisplayEligibilityCheckerTest : BaseUnitTest() {
     @Test
     fun `given upsell banner from payments, when banner is shown, then track proper event`() {
         // WHEN
-        bannerDisplayEligibilityChecker.canShowCardReaderUpsellBanner(
-            0L,
-            KEY_BANNER_PAYMENTS,
-            true
-        )
+        bannerDisplayEligibilityChecker.canShowCardReaderUpsellBanner(0L)
 
         // Then
         verify(analyticsTrackerWrapper).track(
@@ -409,11 +385,7 @@ class BannerDisplayEligibilityCheckerTest : BaseUnitTest() {
     @Test
     fun `given upsell banner from order list, when banner is shown, then track proper event`() {
         // WHEN
-        bannerDisplayEligibilityChecker.canShowCardReaderUpsellBanner(
-            0L,
-            KEY_BANNER_ORDER_LIST,
-            true
-        )
+        bannerDisplayEligibilityChecker.canShowCardReaderUpsellBanner(0L)
 
         // Then
         verify(analyticsTrackerWrapper).track(
@@ -428,11 +400,7 @@ class BannerDisplayEligibilityCheckerTest : BaseUnitTest() {
     @Test
     fun `given upsell banner from order list, when shouldTrackEvent is false, then do not track event`() {
         // WHEN
-        bannerDisplayEligibilityChecker.canShowCardReaderUpsellBanner(
-            0L,
-            KEY_BANNER_ORDER_LIST,
-            false
-        )
+        bannerDisplayEligibilityChecker.canShowCardReaderUpsellBanner(0L)
 
         // Then
         verify(analyticsTrackerWrapper, never()).track(
@@ -447,11 +415,7 @@ class BannerDisplayEligibilityCheckerTest : BaseUnitTest() {
     @Test
     fun `given upsell banner from settings, when banner is shown, then track proper event`() {
         // WHEN
-        bannerDisplayEligibilityChecker.canShowCardReaderUpsellBanner(
-            0L,
-            KEY_BANNER_SETTINGS,
-            true
-        )
+        bannerDisplayEligibilityChecker.canShowCardReaderUpsellBanner(0L)
 
         // Then
         verify(analyticsTrackerWrapper).track(

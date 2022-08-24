@@ -14,11 +14,11 @@ import android.view.ViewGroup
 import androidx.appcompat.widget.SearchView
 import androidx.appcompat.widget.SearchView.OnQueryTextListener
 import androidx.compose.ui.platform.ViewCompositionStrategy
-import androidx.compose.ui.res.stringResource
 import androidx.core.view.ViewGroupCompat
 import androidx.core.view.doOnPreDraw
 import androidx.core.view.isVisible
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.paging.PagedList
 import androidx.recyclerview.widget.ItemTouchHelper
@@ -57,13 +57,15 @@ import com.woocommerce.android.ui.orders.list.OrderListViewModel.OrderListEvent.
 import com.woocommerce.android.ui.orders.list.OrderListViewModel.OrderListEvent.DismissCardReaderUpsellBannerViaRemindMeLater
 import com.woocommerce.android.ui.orders.list.OrderListViewModel.OrderListEvent.ShowErrorSnack
 import com.woocommerce.android.ui.orders.list.OrderListViewModel.OrderListEvent.ShowOrderFilters
+import com.woocommerce.android.ui.payments.banner.Banner
+import com.woocommerce.android.ui.payments.banner.BannerState
 import com.woocommerce.android.ui.payments.banner.OrderListBannerDismissDialog
-import com.woocommerce.android.ui.payments.banner.OrderListScreenBanner
 import com.woocommerce.android.util.ChromeCustomTabUtils
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.widgets.WCEmptyView.EmptyViewType
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.launch
 import org.wordpress.android.util.DisplayUtils
 import javax.inject.Inject
 import org.wordpress.android.util.ActivityUtils as WPActivityUtils
@@ -196,6 +198,9 @@ class OrderListFragment :
         binding.orderFiltersCard.setClickListener { viewModel.onFiltersButtonTapped() }
         initCreateOrderFAB(binding.createOrderButton)
         initSwipeBehaviour()
+        lifecycleScope.launch {
+            viewModel.updateBannerState()
+        }
     }
 
     private fun initSwipeBehaviour() {
@@ -225,8 +230,12 @@ class OrderListFragment :
         _binding = null
     }
 
-    private fun bannerDisplayViewLogic(context: Context, ordersListSize: Int) {
-        if (ordersListSize <= 0) {
+    private fun bannerDisplayViewLogic(
+        context: Context,
+        shouldDisplayBanner: Boolean,
+        bannerState: BannerState
+    ) {
+        if (!shouldDisplayBanner) {
             binding.upsellCardReaderComposeView.upsellCardReaderBannerView.visibility = View.GONE
         } else {
             if (viewModel.shouldShowUpsellCardReaderDismissDialog.value == true) {
@@ -238,7 +247,7 @@ class OrderListFragment :
              * the merchants to scroll the order list. More info here: pdfdoF-12d-p2
              */
             if (!isLandscape) {
-                applyBannerComposeUI()
+                applyBannerComposeUI(bannerState)
             }
             if (viewModel.shouldDisplaySimplePaymentsWIPCard() || isLandscape) {
                 displaySimplePaymentsWIPCard(true)
@@ -246,19 +255,14 @@ class OrderListFragment :
         }
     }
 
-    private fun applyBannerComposeUI() {
+    private fun applyBannerComposeUI(state: BannerState) {
         binding.upsellCardReaderComposeView.upsellCardReaderBannerView.apply {
             // Dispose of the Composition when the view's LifecycleOwner is destroyed
             visibility = View.VISIBLE
             setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
             setContent {
                 WooThemeWithBackground {
-                    OrderListScreenBanner(
-                        viewModel = viewModel,
-                        title = stringResource(id = R.string.card_reader_upsell_card_reader_banner_title),
-                        subtitle = stringResource(id = R.string.card_reader_upsell_card_reader_banner_description),
-                        ctaLabel = stringResource(id = R.string.card_reader_upsell_card_reader_banner_cta)
-                    )
+                    Banner(bannerState = state)
                 }
             }
         }
@@ -348,8 +352,22 @@ class OrderListFragment :
         }
 
         viewModel.pagedListData.observe(viewLifecycleOwner) {
-            bannerDisplayViewLogic(binding.root.context, it.size)
+            viewModel.bannerState.value?.let { state ->
+                bannerDisplayViewLogic(
+                    binding.root.context,
+                    it.size > 0,
+                    state
+                )
+            }
             updatePagedListData(it)
+        }
+
+        viewModel.bannerState.observe(viewLifecycleOwner) { state ->
+            bannerDisplayViewLogic(
+                binding.root.context,
+                true,
+                state
+            )
         }
 
         viewModel.event.observe(viewLifecycleOwner) { event ->

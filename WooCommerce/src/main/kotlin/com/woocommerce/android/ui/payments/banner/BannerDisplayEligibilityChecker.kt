@@ -98,28 +98,14 @@ class BannerDisplayEligibilityChecker @Inject constructor(
         return getCardReaderUpsellBannerLastDismissed() != 0L
     }
 
-    fun canShowCardReaderUpsellBanner(
-        currentTimeInMillis: Long,
-        source: String,
-        shouldTrackEvent: Boolean
-    ): Boolean {
+    fun canShowCardReaderUpsellBanner(currentTimeInMillis: Long): Boolean {
         return (
             !isCardReaderUpsellBannerDismissedForever() &&
                 (
                     !hasTheMerchantDismissedBannerViaRemindMeLater() ||
                         isLastDialogDismissedMoreThan14DaysAgo(currentTimeInMillis)
                     )
-            ).also { trackable ->
-            if (trackable && shouldTrackEvent) {
-                analyticsTrackerWrapper.track(
-                    AnalyticsEvent.FEATURE_CARD_SHOWN,
-                    mapOf(
-                        AnalyticsTracker.KEY_BANNER_SOURCE to source,
-                        AnalyticsTracker.KEY_BANNER_CAMPAIGN_NAME to AnalyticsTracker.KEY_BANNER_UPSELL_CARD_READERS
-                    )
-                )
-            }
-        }
+            )
     }
 
     suspend fun isEligibleForInPersonPayments(): Boolean {

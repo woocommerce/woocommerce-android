@@ -26,13 +26,8 @@ class MainSettingsPresenter @Inject constructor(
 
     private var jetpackMonitoringJob: Job? = null
 
-    override val isEligibleForInPersonPayments: MutableLiveData<Boolean> = MutableLiveData(false)
-
     override fun takeView(view: MainSettingsContract.View) {
         appSettingsFragmentView = view
-        coroutineScope.launch {
-            isEligibleForInPersonPayments.value = bannerDisplayEligibilityChecker.isEligibleForInPersonPayments()
-        }
     }
 
     override fun dropView() {
@@ -72,21 +67,5 @@ class MainSettingsPresenter @Inject constructor(
                     .collect { setupJetpackInstallOption() }
             }
         }
-    }
-
-    override fun onCtaClicked(source: String) {
-        coroutineScope.launch {
-            appSettingsFragmentView?.openPurchaseCardReaderLink(
-                bannerDisplayEligibilityChecker.getPurchaseCardReaderUrl(source)
-            )
-        }
-    }
-
-    override fun canShowCardReaderUpsellBanner(currentTimeInMillis: Long, source: String): Boolean {
-        return bannerDisplayEligibilityChecker.canShowCardReaderUpsellBanner(
-            currentTimeInMillis,
-            source,
-            true
-        )
     }
 }
