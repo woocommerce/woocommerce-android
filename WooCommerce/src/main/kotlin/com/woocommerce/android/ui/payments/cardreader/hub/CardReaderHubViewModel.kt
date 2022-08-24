@@ -19,6 +19,7 @@ import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderFlowP
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboardingChecker
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboardingState
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboardingState.OnboardingCompleted
+import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboardingState.StripeAccountPendingRequirement
 import com.woocommerce.android.ui.payments.cardreader.onboarding.PluginType.STRIPE_EXTENSION_GATEWAY
 import com.woocommerce.android.ui.payments.cardreader.onboarding.PluginType.WOOCOMMERCE_PAYMENTS
 import com.woocommerce.android.util.WooLog
@@ -55,6 +56,7 @@ class CardReaderHubViewModel @Inject constructor(
         launch {
             viewState.value = when (val state = cardReaderChecker.getOnboardingState()) {
                 is OnboardingCompleted -> createOnboardingCompleteState()
+                is StripeAccountPendingRequirement -> createOnboardingWithPendingRequirementsState(state)
                 else -> createOnboardingFailedState(state)
             }
         }
@@ -121,6 +123,14 @@ class CardReaderHubViewModel @Inject constructor(
         isLoading = false,
         onboardingErrorAction = null,
     )
+
+    private fun createOnboardingWithPendingRequirementsState(state: CardReaderOnboardingState) =
+        createOnboardingCompleteState().copy(
+            onboardingErrorAction = OnboardingErrorAction(
+                text = UiStringRes(R.string.card_reader_onboarding_with_pending_requirements, containsHtml = true),
+                onClick = { onOnboardingErrorClicked(state) }
+            )
+        )
 
     private fun createOnboardingFailedState(state: CardReaderOnboardingState) = CardReaderHubViewState(
         rows = createHubListWhenSinglePluginInstalled(isOnboardingComplete = false),
