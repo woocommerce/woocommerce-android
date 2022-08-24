@@ -1,7 +1,6 @@
-package com.woocommerce.android.ui.widgets.stats.today
+package com.woocommerce.android.ui.appwidgets.stats.today
 
 import com.woocommerce.android.AppPrefs
-import com.woocommerce.android.annotations.OpenClassOnDebug
 import com.woocommerce.android.model.RequestResult
 import com.woocommerce.android.model.RequestResult.ERROR
 import com.woocommerce.android.model.RequestResult.NO_ACTION_NEEDED
@@ -35,7 +34,6 @@ import javax.inject.Inject
 import kotlin.coroutines.Continuation
 import kotlin.coroutines.resume
 
-@OpenClassOnDebug
 class TodayWidgetListViewRepository @Inject constructor(
     private val dispatcher: Dispatcher,
     private val accountStore: AccountStore, // required to verify if user is logged in
@@ -124,8 +122,8 @@ class TodayWidgetListViewRepository @Inject constructor(
             suspendCoroutineWithTimeout<Boolean>(ACTION_TIMEOUT) {
                 continuationFetchTodayVisitors = it
 
-                val statsPayload = FetchRevenueStatsPayload(site, StatsGranularity.DAYS, forced = true)
-                dispatcher.dispatch(WCStatsActionBuilder.newFetchRevenueStatsAction(statsPayload))
+                val statsPayload = WCStatsStore.FetchVisitorStatsPayload(site, StatsGranularity.DAYS, forced = true)
+                dispatcher.dispatch(WCStatsActionBuilder.newFetchVisitorStatsAction(statsPayload))
             } ?: false // request timed out
         } catch (e: CancellationException) {
             WooLog.e(DASHBOARD, "Exception encountered while fetching visitor stats", e)
