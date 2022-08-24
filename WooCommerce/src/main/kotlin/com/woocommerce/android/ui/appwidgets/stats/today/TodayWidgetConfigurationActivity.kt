@@ -4,12 +4,11 @@ import android.os.Bundle
 import android.view.MenuItem
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
-import com.woocommerce.android.R
+import com.woocommerce.android.databinding.ActivityTodayWidgetConfigureBinding
 import dagger.android.AndroidInjection
 import dagger.android.AndroidInjector
 import dagger.android.DispatchingAndroidInjector
 import dagger.android.HasAndroidInjector
-import kotlinx.android.synthetic.main.activity_today_widget_configure.*
 import javax.inject.Inject
 
 class TodayWidgetConfigurationActivity : AppCompatActivity(), HasAndroidInjector {
@@ -19,9 +18,10 @@ class TodayWidgetConfigurationActivity : AppCompatActivity(), HasAndroidInjector
         AndroidInjection.inject(this)
         super.onCreate(savedInstanceState)
 
-        setContentView(R.layout.activity_today_widget_configure)
+        val binding = ActivityTodayWidgetConfigureBinding.inflate(layoutInflater)
+        setContentView(binding.root)
 
-        setSupportActionBar(toolbar as Toolbar)
+        setSupportActionBar(binding.toolbar.toolbar as Toolbar)
         supportActionBar?.let {
             it.setHomeButtonEnabled(true)
             it.setDisplayHomeAsUpEnabled(true)
