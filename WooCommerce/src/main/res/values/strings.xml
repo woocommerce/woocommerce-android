@@ -2585,4 +2585,8 @@
     <string name="login_magic_links_sent_label_short">Check your email on this device!</string>
     <string name="login_magic_links_email_sent">We just sent a magic link to</string>
     <string name="login_site_picker_try_another_address">Try another address</string>
+
+    <!-- Site creation -->
+    <string name="media_accessing_progress">Accessing content of a private site</string>
+    <string name="create_new_store">Create a new store</string>
 </resources>

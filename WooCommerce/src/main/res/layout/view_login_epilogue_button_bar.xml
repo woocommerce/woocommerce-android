@@ -29,4 +29,13 @@
         android:text="@string/login_view_connected_stores"
         android:textAllCaps="false"
         tools:visibility="visible"/>
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/button_tertiary"
+        style="@style/Woo.Button.Outlined"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/create_new_store"
+        android:textAllCaps="false"
+        tools:visibility="visible"/>
 </LinearLayout>
