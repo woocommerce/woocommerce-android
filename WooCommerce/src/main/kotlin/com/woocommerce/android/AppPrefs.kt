@@ -38,8 +38,7 @@ import com.woocommerce.android.util.ThemeOption
 import com.woocommerce.android.util.ThemeOption.DEFAULT
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T
-import java.util.Calendar
-import java.util.Date
+import java.util.*
 
 // Guaranteed to hold a reference to the application context, which is safe
 @SuppressLint("StaticFieldLeak")
@@ -94,6 +93,10 @@ object AppPrefs {
         CARD_READER_UPSELL_BANNER_DIALOG_DISMISSED_FOREVER,
         CARD_READER_UPSELL_BANNER_DIALOG_DISMISSED_REMIND_ME_LATER,
         CARD_READER_DO_NOT_SHOW_CASH_ON_DELIVERY_DISABLED_ONBOARDING_STATE,
+
+        // Widget settings
+        STATS_WIDGET_SELECTED_SITE_ID,
+        STATS_WIDGET_COLOR_MODE
     }
 
     /**
@@ -900,23 +903,42 @@ object AppPrefs {
     }
 
     private fun getInt(key: PrefKey, default: Int = 0) =
-        PreferenceUtils.getInt(getPreferences(), key.toString(), default)
+        getInt(key.toString(), default)
+
+    private fun getInt(keyName: String, default: Int = 0) =
+        PreferenceUtils.getInt(getPreferences(), keyName, default)
 
     private fun setInt(key: PrefKey, value: Int) =
-        PreferenceUtils.setInt(getPreferences(), key.toString(), value)
+        setInt(key.toString(), value)
+
+    private fun setInt(keyName: String, value: Int) =
+        PreferenceUtils.setInt(getPreferences(), keyName, value)
 
     private fun getLong(key: PrefKey, default: Long = 0L) =
-        PreferenceUtils.getLong(getPreferences(), key.toString(), default)
+        getLong(key.toString(), default)
+
+    private fun getLong(keyName: String, default: Long = 0L) =
+        PreferenceUtils.getLong(getPreferences(), keyName, default)
 
     private fun setLong(key: PrefKey, value: Long) =
-        PreferenceUtils.setLong(getPreferences(), key.toString(), value)
+        setLong(key.toString(), value)
+
+    private fun setLong(keyName: String, value: Long) =
+        PreferenceUtils.setLong(getPreferences(), keyName, value)
 
     private fun getString(key: PrefKey, defaultValue: String = ""): String {
-        return PreferenceUtils.getString(getPreferences(), key.toString(), defaultValue) ?: defaultValue
+        return getString(key.toString(), defaultValue)
+    }
+
+    private fun getString(keyName: String, defaultValue: String = ""): String {
+        return PreferenceUtils.getString(getPreferences(), keyName, defaultValue) ?: defaultValue
     }
 
     private fun setString(key: PrefKey, value: String) =
-        PreferenceUtils.setString(getPreferences(), key.toString(), value)
+       setString(key.toString(), value)
+
+    private fun setString(keyName: String, value: String) =
+        PreferenceUtils.setString(getPreferences(), keyName, value)
 
     fun getBoolean(key: PrefKey, default: Boolean) =
         PreferenceUtils.getBoolean(getPreferences(), key.toString(), default)
@@ -927,7 +949,11 @@ object AppPrefs {
     fun getPreferences() = PreferenceManager.getDefaultSharedPreferences(context)
 
     private fun remove(key: PrefKey) {
-        getPreferences().edit().remove(key.toString()).apply()
+        remove(key.toString())
+    }
+
+    private fun remove(keyName: String) {
+        getPreferences().edit().remove(keyName).apply()
     }
 
     fun exists(key: PrefKey) = getPreferences().contains(key.toString())
@@ -966,9 +992,47 @@ object AppPrefs {
         }
     }
 
+    /**
+     * Widget settings
+     */
+    fun setStatsWidgetSelectedSiteId(siteId: Long, appWidgetId: Int) {
+        setLong(getSiteIdWidgetKey(appWidgetId), siteId)
+    }
+
+    fun getStatsWidgetSelectedSiteId(appWidgetId: Int): Long {
+        return getLong(getSiteIdWidgetKey(appWidgetId), -1)
+    }
+
+    fun removeStatsWidgetSelectedSiteId(appWidgetId: Int) {
+        remove(getSiteIdWidgetKey(appWidgetId))
+    }
+
+    private fun getSiteIdWidgetKey(appWidgetId: Int): String {
+        return DeletablePrefKey.STATS_WIDGET_SELECTED_SITE_ID.name + appWidgetId
+    }
+
+    fun setStatsWidgetColorModeId(colorModeId: Int, appWidgetId: Int) {
+        setInt(getColorModeIdWidgetKey(appWidgetId), colorModeId)
+    }
+
+    fun getStatsWidgetColorModeId(appWidgetId: Int): Int {
+        return getInt(getColorModeIdWidgetKey(appWidgetId), -1)
+    }
+
+    fun removeStatsWidgetColorModeId(appWidgetId: Int) {
+        remove(getColorModeIdWidgetKey(appWidgetId))
+    }
+
+    private fun getColorModeIdWidgetKey(appWidgetId: Int): String {
+        return DeletablePrefKey.STATS_WIDGET_COLOR_MODE.name + appWidgetId
+    }
+
     enum class CardReaderOnboardingStatus {
         CARD_READER_ONBOARDING_COMPLETED,
         CARD_READER_ONBOARDING_PENDING,
         CARD_READER_ONBOARDING_NOT_COMPLETED,
     }
+
+    const val LIGHT_MODE_ID = 0
+    const val DARK_MODE_ID = 1
 }
