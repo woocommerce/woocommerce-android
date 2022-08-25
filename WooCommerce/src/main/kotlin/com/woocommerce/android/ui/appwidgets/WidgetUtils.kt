@@ -67,7 +67,7 @@ class WidgetUtils
                 context,
                 0,
                 Intent(),
-                PendingIntent.FLAG_UPDATE_CURRENT
+                PENDING_INTENT_FLAGS
             )
         )
         views.setViewVisibility(R.id.widget_content, View.GONE)
@@ -93,7 +93,7 @@ class WidgetUtils
             context,
             getRandomId(),
             intent,
-            PendingIntent.FLAG_UPDATE_CURRENT
+            PENDING_INTENT_FLAGS
         )
     }
 
@@ -110,7 +110,7 @@ class WidgetUtils
             context,
             Random(appWidgetId).nextInt(),
             intentSync,
-            PendingIntent.FLAG_UPDATE_CURRENT
+            PENDING_INTENT_FLAGS
         )
     }
 
@@ -121,11 +121,15 @@ class WidgetUtils
             context,
             getRandomId(),
             intent,
-            PendingIntent.FLAG_UPDATE_CURRENT
+            PENDING_INTENT_FLAGS
         )
     }
 
     private fun getRandomId(): Int {
         return Random(Date().time).nextInt()
+    }
+
+    companion object {
+        private const val PENDING_INTENT_FLAGS = PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
     }
 }
