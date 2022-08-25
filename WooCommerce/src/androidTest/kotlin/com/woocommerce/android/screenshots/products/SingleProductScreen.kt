@@ -20,6 +20,7 @@ class SingleProductScreen : Screen {
     fun goBackToProductsScreen(): ProductListScreen {
         pressBack()
         waitForElementToBeDisplayed(R.id.productsRecycler)
+        Thread.sleep(5000)
         return ProductListScreen()
     }
 
