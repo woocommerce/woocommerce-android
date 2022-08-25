@@ -1,4 +1,4 @@
-package com.woocommerce.android.ui.widgets.stats.today
+package com.woocommerce.android.ui.appwidgets.stats.today
 
 import android.view.ViewGroup
 import com.woocommerce.android.R

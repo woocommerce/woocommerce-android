@@ -1,4 +1,4 @@
-package com.woocommerce.android.ui.widgets.stats.today
+package com.woocommerce.android.ui.appwidgets.stats.today
 
 import android.app.Activity
 import android.appwidget.AppWidgetManager
@@ -27,12 +27,10 @@ import kotlinx.android.synthetic.main.fragment_today_widget_configure.*
 import javax.inject.Inject
 
 class TodayWidgetConfigureFragment : BaseFragment() {
-    @Inject lateinit var viewModelFactory: ViewModelFactory
     @Inject lateinit var uiMessageResolver: UIMessageResolver
     @Inject lateinit var todayWidgetUpdater: TodayWidgetUpdater
 
-    private val viewModel: TodayWidgetConfigureViewModel by
-    navGraphViewModels(R.id.nav_graph_today_widget) { viewModelFactory }
+    private val viewModel: TodayWidgetConfigureViewModel by navGraphViewModels(R.id.nav_graph_today_widget)
 
     override fun onAttach(context: Context) {
         AndroidSupportInjection.inject(this)

@@ -103,8 +103,8 @@ class TodayWidgetListViewRepository @Inject constructor(
             suspendCoroutineWithTimeout<Boolean>(ACTION_TIMEOUT) {
                 continuationFetchTodayRevenue = it
 
-                val visitsPayload = FetchNewVisitorStatsPayload(site, StatsGranularity.DAYS, true)
-                dispatcher.dispatch(WCStatsActionBuilder.newFetchNewVisitorStatsAction(visitsPayload))
+                val payload = FetchRevenueStatsPayload(site, StatsGranularity.DAYS, forced = true)
+                dispatcher.dispatch(WCStatsActionBuilder.newFetchRevenueStatsPayload(payload))
             } ?: false // request timed out
         } catch (e: CancellationException) {
             WooLog.e(DASHBOARD, "Exception encountered while fetching visitor stats", e)
@@ -122,8 +122,8 @@ class TodayWidgetListViewRepository @Inject constructor(
             suspendCoroutineWithTimeout<Boolean>(ACTION_TIMEOUT) {
                 continuationFetchTodayVisitors = it
 
-                val statsPayload = WCStatsStore.FetchVisitorStatsPayload(site, StatsGranularity.DAYS, forced = true)
-                dispatcher.dispatch(WCStatsActionBuilder.newFetchVisitorStatsAction(statsPayload))
+                val payload = FetchNewVisitorStatsPayload(site, StatsGranularity.DAYS, forced = true)
+                dispatcher.dispatch(WCStatsActionBuilder.newFetchNewVisitorStatsAction(payload))
             } ?: false // request timed out
         } catch (e: CancellationException) {
             WooLog.e(DASHBOARD, "Exception encountered while fetching visitor stats", e)

@@ -5,29 +5,25 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.lifecycle.Observer
+import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.navGraphViewModels
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
-import com.woocommerce.android.databinding.FragmentOrderListBinding
 import com.woocommerce.android.databinding.FragmentWidgetSiteSelectorBinding
 import com.woocommerce.android.di.GlideApp
-import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.appwidgets.WidgetSiteSelectionAdapter.OnWidgetSiteSelectedListener
 import com.woocommerce.android.ui.appwidgets.stats.today.TodayWidgetConfigureViewModel
 import com.woocommerce.android.ui.appwidgets.stats.today.TodayWidgetConfigureViewModel.SiteUiModel
+import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
-import com.woocommerce.android.viewmodel.ViewModelFactory
 import com.woocommerce.android.widgets.AlignedDividerDecoration
 import dagger.android.support.AndroidSupportInjection
-import javax.inject.Inject
 
 class WidgetSiteSelectionFragment : BaseFragment(), OnWidgetSiteSelectedListener {
-    private val viewModel: TodayWidgetConfigureViewModel
-        by navGraphViewModels(R.id.nav_graph_today_widget) { viewModelFactory }
+    private val viewModel: TodayWidgetConfigureViewModel by navGraphViewModels(R.id.nav_graph_today_widget)
 
     private var _binding: FragmentWidgetSiteSelectorBinding? = null
     private val binding get() = _binding!!
@@ -39,7 +35,7 @@ class WidgetSiteSelectionFragment : BaseFragment(), OnWidgetSiteSelectedListener
 
     override fun getFragmentTitle() = getString(R.string.stats_today_widget_configure_store_hint)
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         _binding = FragmentWidgetSiteSelectorBinding.inflate(inflater, container, false)
         return binding.root
     }
@@ -72,15 +68,15 @@ class WidgetSiteSelectionFragment : BaseFragment(), OnWidgetSiteSelectedListener
     }
 
     private fun setupObservers(viewModel: TodayWidgetConfigureViewModel) {
-        viewModel.sites.observe(viewLifecycleOwner, Observer {
-            (binding.sitesRecycler.adapter as? WidgetSiteSelectionAdapter)?.update(it)
-        })
-        viewModel.event.observe(viewLifecycleOwner, Observer { event ->
+        viewModel.sites.observe(viewLifecycleOwner) { event ->
+            (binding.sitesRecycler.adapter as? WidgetSiteSelectionAdapter)?.update(event)
+        }
+        viewModel.event.observe(viewLifecycleOwner) { event ->
             when (event) {
                 is Exit -> findNavController().navigateUp()
                 else -> event.isHandled = false
             }
-        })
+        }
         viewModel.loadSites()
     }
 

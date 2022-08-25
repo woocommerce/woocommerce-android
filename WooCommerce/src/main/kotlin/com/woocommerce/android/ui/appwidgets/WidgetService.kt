@@ -3,7 +3,7 @@ package com.woocommerce.android.ui.appwidgets
 import android.content.Intent
 import android.widget.RemoteViewsService
 import android.widget.RemoteViewsService.RemoteViewsFactory
-import com.woocommerce.android.ui.widgets.stats.today.TodayWidgetListProvider
+import com.woocommerce.android.ui.appwidgets.stats.today.TodayWidgetListProvider
 
 /**
  * The service to be connected to a remote adapter to request RemoteViews.

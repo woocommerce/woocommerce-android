@@ -1,13 +1,12 @@
 package com.woocommerce.android.ui.appwidgets
 
 import android.content.Context
-import android.view.LayoutInflater
-import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.woocommerce.android.R
+import com.woocommerce.android.databinding.WidgetSiteSelectorListItemBinding
 import com.woocommerce.android.di.GlideRequests
 import com.woocommerce.android.ui.appwidgets.WidgetSiteSelectionAdapter.WidgetSiteSelectionViewHolder
 import com.woocommerce.android.ui.appwidgets.stats.today.TodayWidgetConfigureViewModel.SiteUiModel
@@ -27,7 +26,7 @@ class WidgetSiteSelectionAdapter(
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): WidgetSiteSelectionViewHolder {
         return WidgetSiteSelectionViewHolder(
-            LayoutInflater.from(context).inflate(R.layout.widget_site_selector_list_item, parent, false)
+            WidgetSiteSelectorListItemBinding.bind(parent)
         )
     }
 
@@ -43,7 +42,7 @@ class WidgetSiteSelectionAdapter(
         site.iconUrl?.let {
             val imageUrl = PhotonUtils.getPhotonImageUrl(it, imageSize, imageSize)
             glideRequest.load(imageUrl)
-                .placeholder(R.drawable.ic_product)
+                .placeholder(R.drawable.ic_gridicons_globe)
                 .into(holder.imageView)
         } ?: holder.imageView.setImageResource(R.drawable.ic_gridicons_globe)
 
@@ -58,9 +57,10 @@ class WidgetSiteSelectionAdapter(
         notifyDataSetChanged()
     }
 
-    class WidgetSiteSelectionViewHolder(view: View) : RecyclerView.ViewHolder(view) {
-        val imageView: ImageView = view.widget_site_image
-        val txtSiteName: TextView = view.widget_site_name
-        val txtSiteDomain: TextView = view.widget_site_url
+    class WidgetSiteSelectionViewHolder(viewBinding: WidgetSiteSelectorListItemBinding) :
+        RecyclerView.ViewHolder(viewBinding.root) {
+        val imageView: ImageView = viewBinding.widgetSiteImage
+        val txtSiteName: TextView = viewBinding.widgetSiteName
+        val txtSiteDomain: TextView = viewBinding.widgetSiteUrl
     }
 }
