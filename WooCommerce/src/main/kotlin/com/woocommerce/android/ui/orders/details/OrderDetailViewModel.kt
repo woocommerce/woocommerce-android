@@ -630,20 +630,26 @@ class OrderDetailViewModel @Inject constructor(
     }
 
     private fun fetchShipmentTrackingAsync() = async {
-        pluginsInformation[WooCommerceStore.WooPlugin.WOO_SHIPMENT_TRACKING.pluginName]?.let { plugin ->
-            // Fetch data only when the plugin is installed and active
-            if (!plugin.isInstalled || !plugin.isActive) return@async
-        }
+        pluginsInformation[WooCommerceStore.WooPlugin.WOO_SHIPMENT_TRACKING.pluginName]
+            ?.takeIf { plugin ->
+                !plugin.isInstalled || !plugin.isActive
+            }?.let {
+                // Fetch data only when the plugin is installed and active
+                return@async
+            }
         val result = orderDetailRepository.fetchOrderShipmentTrackingList(navArgs.orderId)
         appPrefs.setTrackingExtensionAvailable(result == SUCCESS)
         orderDetailsTransactionLauncher.onShipmentTrackingFetched()
     }
 
     private fun fetchOrderShippingLabelsAsync() = async {
-        pluginsInformation[WooCommerceStore.WooPlugin.WOO_SERVICES.pluginName]?.let { plugin ->
-            // Fetch data only when the plugin is installed and active
-            if (!plugin.isInstalled || !plugin.isActive) return@async
-        }
+        pluginsInformation[WooCommerceStore.WooPlugin.WOO_SERVICES.pluginName]
+            ?.takeIf { plugin ->
+                !plugin.isInstalled || !plugin.isActive
+            }?.let {
+                // Fetch data only when the plugin is installed and active
+                return@async
+            }
         orderDetailRepository.fetchOrderShippingLabels(navArgs.orderId)
         orderDetailsTransactionLauncher.onShippingLabelFetched()
     }
