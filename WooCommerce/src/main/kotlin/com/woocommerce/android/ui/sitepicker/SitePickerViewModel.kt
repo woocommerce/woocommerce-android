@@ -23,6 +23,7 @@ import com.woocommerce.android.ui.sitepicker.SitePickerViewModel.SitesListItem.W
 import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.viewmodel.LiveDataDelegate
+import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Logout
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowDialog
@@ -592,7 +593,7 @@ class SitePickerViewModel @Inject constructor(
         ) : SitesListItem
     }
 
-    sealed class SitePickerEvent : Event() {
+    sealed class SitePickerEvent : MultiLiveEvent.Event() {
         object ShowWooUpgradeDialogEvent : SitePickerEvent()
         object NavigateToMainActivityEvent : SitePickerEvent()
         object NavigateToEmailHelpDialogEvent : SitePickerEvent()
