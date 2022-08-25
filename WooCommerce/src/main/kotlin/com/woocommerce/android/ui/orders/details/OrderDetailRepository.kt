@@ -7,8 +7,18 @@ import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_FEEDBACK_ACTION
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_API_FAILED
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_API_SUCCESS
-import com.woocommerce.android.model.*
+import com.woocommerce.android.model.Order
 import com.woocommerce.android.model.Order.OrderStatus
+import com.woocommerce.android.model.OrderMapper
+import com.woocommerce.android.model.OrderNote
+import com.woocommerce.android.model.OrderShipmentTracking
+import com.woocommerce.android.model.Refund
+import com.woocommerce.android.model.RequestResult
+import com.woocommerce.android.model.ShippingLabel
+import com.woocommerce.android.model.ShippingLabelMapper
+import com.woocommerce.android.model.WooPlugin
+import com.woocommerce.android.model.toAppModel
+import com.woocommerce.android.model.toOrderStatus
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.util.WooLog
@@ -221,6 +231,34 @@ class OrderDetailRepository @Inject constructor(
     fun getWooServicesPluginInfo(): WooPlugin {
         val info = wooCommerceStore.getSitePlugin(selectedSite.get(), WooCommerceStore.WooPlugin.WOO_SERVICES)
         return WooPlugin(info != null, info?.isActive ?: false, info?.version)
+    }
+
+    suspend fun getOrderDetailsPluginsInfo(): Map<String, WooPlugin> {
+        // Add WOO_CORE to the list to make sure if there is data in the plugins table
+        val plugins = listOf(
+            WooCommerceStore.WooPlugin.WOO_CORE,
+            WooCommerceStore.WooPlugin.WOO_SERVICES,
+            WooCommerceStore.WooPlugin.WOO_SHIPMENT_TRACKING
+        )
+
+        val result = HashMap<String, WooPlugin>()
+        val information = wooCommerceStore.getSitePlugins(selectedSite.get(), plugins).associateBy { it.name }
+
+        if (information.isEmpty()) {
+            AnalyticsTracker.track(AnalyticsEvent.PLUGINS_NOT_SYNCED_YET)
+            // return earlier, no plugins info in the database
+            return result
+        }
+
+        plugins.associateByTo(
+            destination = result,
+            keySelector = { plugin -> plugin.pluginName },
+            valueTransform = { plugin ->
+                val info = information[plugin.pluginName]
+                WooPlugin(info != null, info?.isActive ?: false, info?.version)
+            }
+        )
+        return result
     }
 
     fun getStoreCountryCode(): String? {
