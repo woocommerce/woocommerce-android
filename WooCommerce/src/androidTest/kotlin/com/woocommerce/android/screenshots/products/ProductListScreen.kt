@@ -22,6 +22,7 @@ class ProductListScreen : Screen {
 
     fun selectProductByName(productName: String): SingleProductScreen {
         selectListItem(productName, LIST_VIEW)
+        waitForElementToBeDisplayed(R.id.productDetail_root)
         return SingleProductScreen()
     }
 
