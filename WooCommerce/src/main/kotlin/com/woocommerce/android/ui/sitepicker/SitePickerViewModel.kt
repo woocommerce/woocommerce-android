@@ -23,8 +23,10 @@ import com.woocommerce.android.ui.sitepicker.SitePickerViewModel.SitesListItem.W
 import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.viewmodel.LiveDataDelegate
-import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
-import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.*
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Logout
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowDialog
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.viewmodel.ResourceProvider
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.navArgs
@@ -34,6 +36,8 @@ import kotlinx.coroutines.launch
 import kotlinx.parcelize.Parcelize
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooErrorType
+import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooResult
+import org.wordpress.android.fluxc.network.rest.wpcom.wc.system.WCApiVersionResponse
 import org.wordpress.android.fluxc.store.WooCommerceStore
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
@@ -404,17 +408,7 @@ class SitePickerViewModel @Inject constructor(
                 launch {
                     val siteVerificationResult = repository.verifySiteWooAPIVersion(it.site)
                     when {
-                        siteVerificationResult.isError -> {
-                            sitePickerViewState = sitePickerViewState.copy(isProgressDiaLogVisible = false)
-                            val event = when (siteVerificationResult.error.type) {
-                                WooErrorType.TIMEOUT -> showJetpackTimeoutDialog()
-                                else -> ShowSnackbar(
-                                    message = string.login_verifying_site_error,
-                                    args = arrayOf(it.site.getSiteName())
-                                )
-                            }
-                            triggerEvent(event)
-                        }
+                        siteVerificationResult.isError -> onSiteVerificationError(siteVerificationResult, it)
                         siteVerificationResult.model?.apiVersion == WooCommerceStore.WOO_API_NAMESPACE_V3 -> {
                             selectedSite.set(it.site)
                             userEligibilityFetcher.fetchUserInfo()?.let { userModel ->
@@ -435,12 +429,35 @@ class SitePickerViewModel @Inject constructor(
             }
     }
 
-    private fun showJetpackTimeoutDialog() = ShowDialog(
+    private fun onSiteVerificationError(
+        siteVerificationResult: WooResult<WCApiVersionResponse>,
+        it: WooSiteUiModel
+    ) {
+        sitePickerViewState = sitePickerViewState.copy(isProgressDiaLogVisible = false)
+        val event = when (siteVerificationResult.error.type) {
+            WooErrorType.TIMEOUT -> {
+                analyticsTrackerWrapper.track(
+                    stat = AnalyticsEvent.SITE_PICKER_JETPACK_TIMEOUT_ERROR_SHOWN
+                )
+                getJetpackTimeoutDialogEvent()
+            }
+            else -> ShowSnackbar(
+                message = string.login_verifying_site_error,
+                args = arrayOf(it.site.getSiteName())
+            )
+        }
+        triggerEvent(event)
+    }
+
+    private fun getJetpackTimeoutDialogEvent() = ShowDialog(
         titleId = string.login_verifying_site_jetpack_timeout_error_title,
         messageId = string.login_verifying_site_jetpack_timeout_error_description,
         positiveButtonId = string.support_contact,
         negativeButtonId = string.cancel,
         positiveBtnAction = { dialog, _ ->
+            analyticsTrackerWrapper.track(
+                stat = AnalyticsEvent.SITE_PICKER_JETPACK_TIMEOUT_CONTACT_SUPPORT_CLICKED,
+            )
             triggerEvent(SitePickerEvent.NavigateToHelpFragmentEvent(HelpActivity.Origin.SITE_PICKER_JETPACK_TIMEOUT))
             dialog.dismiss()
         },
