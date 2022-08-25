@@ -7,7 +7,7 @@ import javax.inject.Inject
 class TodayStatsWidget
 @Inject constructor(
     private val todayWidgetUpdater: TodayWidgetUpdater
-): StatsWidget() {
+) : StatsWidget() {
     override val widgetUpdater: WidgetUpdater
         get() = todayWidgetUpdater
 }

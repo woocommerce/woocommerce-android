@@ -2,7 +2,6 @@ package com.woocommerce.android.ui.appwidgets.stats.today
 
 import android.app.Activity
 import android.appwidget.AppWidgetManager
-import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -21,9 +20,10 @@ import com.woocommerce.android.ui.appwidgets.stats.today.TodayWidgetConfigureVie
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
-import dagger.android.support.AndroidSupportInjection
+import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
+@AndroidEntryPoint
 class TodayWidgetConfigureFragment : BaseFragment() {
     @Inject lateinit var uiMessageResolver: UIMessageResolver
     @Inject lateinit var todayWidgetUpdater: TodayWidgetUpdater
@@ -32,11 +32,6 @@ class TodayWidgetConfigureFragment : BaseFragment() {
     private val binding get() = _binding!!
 
     private val viewModel: TodayWidgetConfigureViewModel by navGraphViewModels(R.id.nav_graph_today_widget)
-
-    override fun onAttach(context: Context) {
-        AndroidSupportInjection.inject(this)
-        super.onAttach(context)
-    }
 
     override fun getFragmentTitle() = getString(R.string.stats_today_widget_configure_title)
 

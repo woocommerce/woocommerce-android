@@ -1,6 +1,5 @@
 package com.woocommerce.android.ui.appwidgets
 
-import android.content.Context
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -19,18 +18,14 @@ import com.woocommerce.android.ui.appwidgets.stats.today.TodayWidgetConfigureVie
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.widgets.AlignedDividerDecoration
-import dagger.android.support.AndroidSupportInjection
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class WidgetSiteSelectionFragment : BaseFragment(), OnWidgetSiteSelectedListener {
     private val viewModel: TodayWidgetConfigureViewModel by navGraphViewModels(R.id.nav_graph_today_widget)
 
     private var _binding: FragmentWidgetSiteSelectorBinding? = null
     private val binding get() = _binding!!
-
-    override fun onAttach(context: Context) {
-        AndroidSupportInjection.inject(this)
-        super.onAttach(context)
-    }
 
     override fun getFragmentTitle() = getString(R.string.stats_today_widget_configure_store_hint)
 

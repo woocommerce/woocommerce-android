@@ -10,7 +10,9 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.appwidgets.stats.today.TodayWidgetConfigureViewModel
 import dagger.android.support.AndroidSupportInjection
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class WidgetColorSelectionFragment : DialogFragment() {
     private val viewModel: TodayWidgetConfigureViewModel by navGraphViewModels(R.id.nav_graph_today_widget)
 

@@ -1,25 +1,30 @@
 package com.woocommerce.android.ui.appwidgets.stats.today
 
 import androidx.annotation.LayoutRes
+import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.R
 import com.woocommerce.android.R.string
 import com.woocommerce.android.ui.appwidgets.WidgetColorMode
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.viewmodel.ResourceProvider
+import com.woocommerce.android.viewmodel.ScopedViewModel
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.runBlocking
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.model.WCRevenueStatsModel
 import org.wordpress.android.fluxc.store.SiteStore
 import javax.inject.Inject
 
+@HiltViewModel
 class TodayWidgetListViewModel @Inject constructor(
+    savedState: SavedStateHandle,
     private val siteStore: SiteStore,
     private val resourceProvider: ResourceProvider,
     private val currencyFormatter: CurrencyFormatter,
     private val repository: TodayWidgetListViewRepository,
     private val appPrefsWrapper: AppPrefsWrapper
-) {
+) : ScopedViewModel(savedState) {
     private var siteId: Int? = null
     private var colorMode: WidgetColorMode = WidgetColorMode.LIGHT
     private var appWidgetId: Int? = null
