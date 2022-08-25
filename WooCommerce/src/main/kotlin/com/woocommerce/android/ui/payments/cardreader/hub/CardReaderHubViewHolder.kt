@@ -5,6 +5,7 @@ import android.view.ViewGroup
 import androidx.annotation.LayoutRes
 import androidx.recyclerview.widget.RecyclerView
 import com.woocommerce.android.R
+import com.woocommerce.android.databinding.CardReaderHubHeaderBinding
 import com.woocommerce.android.databinding.CardReaderHubListItemBinding
 import com.woocommerce.android.databinding.CardReaderHubToggelableItemBinding
 import com.woocommerce.android.util.UiHelpers
@@ -18,7 +19,7 @@ sealed class CardReaderHubViewHolder(val parent: ViewGroup, @LayoutRes layout: I
     class RowViewHolder(parent: ViewGroup) : CardReaderHubViewHolder(parent, R.layout.card_reader_hub_list_item) {
         var binding: CardReaderHubListItemBinding = CardReaderHubListItemBinding.bind(itemView)
         override fun onBind(uiState: CardReaderHubViewModel.CardReaderHubViewState.ListItem) {
-            uiState as CardReaderHubViewModel.CardReaderHubViewState.ListItem.NonTogglableListItem
+            uiState as CardReaderHubViewModel.CardReaderHubViewState.ListItem.NonToggleableListItem
             binding.cardReaderHubListItemLabelTv.text = UiHelpers.getTextOfUiString(itemView.context, uiState.label)
             binding.cardReaderMenuIcon.setImageResource(uiState.icon)
 
@@ -34,16 +35,26 @@ sealed class CardReaderHubViewHolder(val parent: ViewGroup, @LayoutRes layout: I
         }
     }
 
-    class ToggelableViewHolder(parent: ViewGroup) :
+    class ToggleableViewHolder(parent: ViewGroup) :
         CardReaderHubViewHolder(parent, R.layout.card_reader_hub_toggelable_item) {
         var binding: CardReaderHubToggelableItemBinding = CardReaderHubToggelableItemBinding.bind(itemView)
         override fun onBind(uiState: CardReaderHubViewModel.CardReaderHubViewState.ListItem) {
-            uiState as CardReaderHubViewModel.CardReaderHubViewState.ListItem.TogglableListItem
+            uiState as CardReaderHubViewModel.CardReaderHubViewState.ListItem.ToggleableListItem
             binding.cardReaderHubListItemLabelTv.text = UiHelpers.getTextOfUiString(itemView.context, uiState.label)
             binding.cardReaderMenuIcon.setImageResource(uiState.icon)
 
-            binding.cardReaderHubListItemDescriptionTv.text = "Pay in Person lets you accept card or cash payments on collection or delivery"
+            binding.cardReaderHubListItemDescriptionTv.text = UiHelpers.getTextOfUiString(
+                itemView.context, uiState.description
+            )
         }
+    }
 
+    class HeaderViewHolder(parent: ViewGroup) :
+        CardReaderHubViewHolder(parent, R.layout.card_reader_hub_header) {
+        var binding: CardReaderHubHeaderBinding = CardReaderHubHeaderBinding.bind(itemView)
+        override fun onBind(uiState: CardReaderHubViewModel.CardReaderHubViewState.ListItem) {
+            uiState as CardReaderHubViewModel.CardReaderHubViewState.ListItem.HeaderItem
+            binding.cardReaderHubHeaderTv.text = UiHelpers.getTextOfUiString(itemView.context, uiState.label)
+        }
     }
 }

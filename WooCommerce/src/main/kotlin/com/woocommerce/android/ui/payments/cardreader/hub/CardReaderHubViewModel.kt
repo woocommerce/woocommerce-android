@@ -82,47 +82,68 @@ class CardReaderHubViewModel @Inject constructor(
 
     private fun createHubListWhenSinglePluginInstalled(isOnboardingComplete: Boolean) =
         listOf(
-            CardReaderHubViewState.ListItem.NonTogglableListItem(
+            CardReaderHubViewState.ListItem.HeaderItem(
+                label = UiStringRes(R.string.card_reader_payment_options_header),
+                index = 0
+            ),
+            CardReaderHubViewState.ListItem.NonToggleableListItem(
                 icon = R.drawable.ic_gridicons_money_on_surface,
                 label = UiStringRes(R.string.card_reader_collect_payment),
+                index = 1,
                 onClick = ::onCollectPaymentClicked
             ),
-            CardReaderHubViewState.ListItem.NonTogglableListItem(
+            CardReaderHubViewState.ListItem.ToggleableListItem(
+                icon = R.drawable.ic_manage_card_reader,
+                label = UiStringRes(R.string.card_reader_enable_pay_in_person),
+                description = UiStringRes(R.string.card_reader_enable_pay_in_person_description),
+                index = 2,
+                onClick = ::onCashOnDeliveryToggled
+            ),
+            CardReaderHubViewState.ListItem.HeaderItem(
+                label = UiStringRes(R.string.card_reader_card_readers_header),
+                index = 4,
+            ),
+            CardReaderHubViewState.ListItem.NonToggleableListItem(
                 icon = R.drawable.ic_shopping_cart,
                 label = UiStringRes(R.string.card_reader_purchase_card_reader),
+                index = 5,
                 onClick = ::onPurchaseCardReaderClicked
             ),
-            CardReaderHubViewState.ListItem.NonTogglableListItem(
-                icon = R.drawable.ic_card_reader_manual,
-                label = UiStringRes(R.string.settings_card_reader_manuals),
-                onClick = ::onCardReaderManualsClicked
-            ),
-            CardReaderHubViewState.ListItem.NonTogglableListItem(
+            CardReaderHubViewState.ListItem.NonToggleableListItem(
                 icon = R.drawable.ic_manage_card_reader,
                 label = UiStringRes(R.string.card_reader_manage_card_reader),
                 isEnabled = isOnboardingComplete,
+                index = 6,
                 onClick = ::onManageCardReaderClicked
             ),
-            CardReaderHubViewState.ListItem.TogglableListItem(
-                icon = R.drawable.ic_manage_card_reader,
-                label = UiStringRes(R.string.card_reader_enable_pay_in_person),
-                onClick = ::onCashOnDeliveryToggled
+            CardReaderHubViewState.ListItem.NonToggleableListItem(
+                icon = R.drawable.ic_card_reader_manual,
+                label = UiStringRes(R.string.settings_card_reader_manuals),
+                index = 7,
+                onClick = ::onCardReaderManualsClicked
             )
         )
 
     private fun createAdditionalItemWhenMultiplePluginsInstalled() =
-        CardReaderHubViewState.ListItem.NonTogglableListItem(
+        CardReaderHubViewState.ListItem.NonToggleableListItem(
             icon = R.drawable.ic_payment_provider,
             label = UiStringRes(R.string.card_reader_manage_payment_provider),
+            index = 3,
             onClick = ::onCardReaderPaymentProviderClicked
         )
 
     private fun createOnboardingCompleteState() = CardReaderHubViewState(
         rows = if (isCardReaderPluginExplicitlySelected()) {
-            createHubListWhenSinglePluginInstalled(isOnboardingComplete = true).toMutableList() +
-                createAdditionalItemWhenMultiplePluginsInstalled()
+            (
+                createHubListWhenSinglePluginInstalled(isOnboardingComplete = true).toMutableList() +
+                    createAdditionalItemWhenMultiplePluginsInstalled()
+                ).sortedBy {
+                it.index
+            }
         } else {
-            createHubListWhenSinglePluginInstalled(isOnboardingComplete = true)
+            createHubListWhenSinglePluginInstalled(isOnboardingComplete = true).sortedBy {
+                it.index
+            }
         },
         isLoading = false,
         onboardingErrorAction = null,
@@ -178,7 +199,6 @@ class CardReaderHubViewModel @Inject constructor(
     }
 
     private fun onCashOnDeliveryToggled() {
-
     }
 
     private fun onOnboardingErrorClicked(state: CardReaderOnboardingState) {
@@ -223,18 +243,33 @@ class CardReaderHubViewModel @Inject constructor(
         val onboardingErrorAction: OnboardingErrorAction?,
     ) {
         sealed class ListItem {
-            data class NonTogglableListItem(
-                @DrawableRes val icon: Int,
-                val label: UiString,
+            abstract val label: UiString
+            abstract val icon: Int?
+            abstract val onClick: (() -> Unit)?
+            abstract val index: Int
+
+            data class NonToggleableListItem(
+                @DrawableRes override val icon: Int,
+                override val label: UiString,
                 val isEnabled: Boolean = true,
-                val onClick: () -> Unit
+                override val index: Int,
+                override val onClick: () -> Unit
             ) : ListItem()
 
-            data class TogglableListItem(
-                @DrawableRes val icon: Int,
-                val label: UiString,
+            data class ToggleableListItem(
+                @DrawableRes override val icon: Int,
+                override val label: UiString,
+                val description: UiString,
                 val isEnabled: Boolean = true,
-                val onClick: () -> Unit
+                override val index: Int,
+                override val onClick: () -> Unit
+            ) : ListItem()
+
+            data class HeaderItem(
+                @DrawableRes override val icon: Int? = null,
+                override val label: UiString,
+                override val index: Int,
+                override val onClick: (() -> Unit)? = null
             ) : ListItem()
         }
 

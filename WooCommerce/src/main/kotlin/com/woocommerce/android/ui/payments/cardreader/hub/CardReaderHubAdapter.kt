@@ -9,17 +9,34 @@ class CardReaderHubAdapter : RecyclerView.Adapter<CardReaderHubViewHolder>() {
     override fun getItemCount() = items.size
 
     override fun getItemViewType(position: Int): Int {
-        if (items[position] is CardReaderHubViewModel.CardReaderHubViewState.ListItem.TogglableListItem) {
-            return VIEW_TYPE_TOGGELABLE
+        return when (items[position]) {
+            is CardReaderHubViewModel.CardReaderHubViewState.ListItem.ToggleableListItem -> {
+                VIEW_TYPE_TOGGELABLE
+            }
+            is CardReaderHubViewModel.CardReaderHubViewState.ListItem.NonToggleableListItem -> {
+                VIEW_TYPE_NON_TOGGELABLE
+            }
+            is CardReaderHubViewModel.CardReaderHubViewState.ListItem.HeaderItem -> {
+                VIEW_TYPE_HEADER
+            }
         }
-        return VIEW_TYPE_NON_TOGGELABLE
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): CardReaderHubViewHolder {
-        if (viewType == VIEW_TYPE_NON_TOGGELABLE) {
-            return CardReaderHubViewHolder.RowViewHolder(parent)
+        return when (viewType) {
+            VIEW_TYPE_TOGGELABLE -> {
+                CardReaderHubViewHolder.ToggleableViewHolder(parent)
+            }
+            VIEW_TYPE_NON_TOGGELABLE -> {
+                CardReaderHubViewHolder.RowViewHolder(parent)
+            }
+            VIEW_TYPE_HEADER -> {
+                CardReaderHubViewHolder.HeaderViewHolder(parent)
+            }
+            else -> {
+                throw IllegalStateException("Unknown section")
+            }
         }
-        return CardReaderHubViewHolder.ToggelableViewHolder(parent)
     }
 
     override fun onBindViewHolder(holder: CardReaderHubViewHolder, position: Int) {
@@ -35,5 +52,6 @@ class CardReaderHubAdapter : RecyclerView.Adapter<CardReaderHubViewHolder>() {
     companion object {
         const val VIEW_TYPE_TOGGELABLE = 1
         const val VIEW_TYPE_NON_TOGGELABLE = 2
+        const val VIEW_TYPE_HEADER = 0
     }
 }
