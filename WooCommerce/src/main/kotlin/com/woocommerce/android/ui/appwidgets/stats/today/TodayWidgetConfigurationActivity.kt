@@ -5,17 +5,9 @@ import android.view.MenuItem
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import com.woocommerce.android.databinding.ActivityTodayWidgetConfigureBinding
-import dagger.android.AndroidInjection
-import dagger.android.AndroidInjector
-import dagger.android.DispatchingAndroidInjector
-import dagger.android.HasAndroidInjector
-import javax.inject.Inject
 
-class TodayWidgetConfigurationActivity : AppCompatActivity(), HasAndroidInjector {
-    @Inject lateinit var androidInjector: DispatchingAndroidInjector<Any>
-
+class TodayWidgetConfigurationActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
-        AndroidInjection.inject(this)
         super.onCreate(savedInstanceState)
 
         val binding = ActivityTodayWidgetConfigureBinding.inflate(layoutInflater)
@@ -30,11 +22,9 @@ class TodayWidgetConfigurationActivity : AppCompatActivity(), HasAndroidInjector
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         if (item.itemId == android.R.id.home) {
-            onBackPressed()
+            onBackPressedDispatcher.onBackPressed()
             return true
         }
         return super.onOptionsItemSelected(item)
     }
-
-    override fun androidInjector(): AndroidInjector<Any> = androidInjector
 }
