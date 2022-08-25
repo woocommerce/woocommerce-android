@@ -17,6 +17,7 @@ abstract class StatsWidget : AppWidgetProvider() {
     companion object {
         const val SITE_ID_KEY = "site_id_key"
     }
+
     abstract val widgetUpdater: WidgetUpdater
 
     override fun onReceive(context: Context, intent: Intent?) {

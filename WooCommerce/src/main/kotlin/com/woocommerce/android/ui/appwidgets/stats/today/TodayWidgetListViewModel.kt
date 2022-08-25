@@ -4,7 +4,7 @@ import androidx.annotation.LayoutRes
 import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.R
 import com.woocommerce.android.R.string
-import com.woocommerce.android.ui.widgets.WidgetColorMode
+import com.woocommerce.android.ui.appwidgets.WidgetColorMode
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.viewmodel.ResourceProvider
 import kotlinx.coroutines.runBlocking
@@ -61,7 +61,7 @@ class TodayWidgetListViewModel @Inject constructor(
 
         // The v4 stats API is only available if user has the WC-Admin plugin or uses a WooCommerce version >= 4.0.
         // If v4 stats is not available, an error message is displayed in the widget
-        if (!appPrefsWrapper.isUsingV4Api) {
+        if (!appPrefsWrapper.isV4StatsSupported()) {
             appWidgetId?.let { onError(it) }
             return
         }
@@ -88,8 +88,14 @@ class TodayWidgetListViewModel @Inject constructor(
             WidgetColorMode.DARK -> R.layout.stats_widget_list_item_dark
             WidgetColorMode.LIGHT -> R.layout.stats_widget_list_item_light
         }
-        val grossRevenue = revenueStats?.getTotal()?.totalSales ?: 0.0
-        val orderCount = revenueStats?.getTotal()?.ordersCount ?: 0
+
+        var grossRevenue = 0.0
+        var orderCount = 0
+        revenueStats?.parseTotal()?.let { total ->
+            grossRevenue = total.totalSales ?: 0.0
+            orderCount = total.ordersCount ?: 0
+        }
+
         val localSiteId = site.siteId.toInt()
 
         val formatCurrencyForDisplay = currencyFormatter::formatCurrencyRounded

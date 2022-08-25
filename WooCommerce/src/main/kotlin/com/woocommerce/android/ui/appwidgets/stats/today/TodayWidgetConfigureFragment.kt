@@ -9,26 +9,27 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.app.AppCompatActivity
-import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.navGraphViewModels
 import com.woocommerce.android.R
+import com.woocommerce.android.databinding.FragmentTodayWidgetConfigureBinding
 import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.extensions.takeIfNotEqualTo
+import com.woocommerce.android.ui.appwidgets.stats.today.TodayWidgetConfigureViewModel.TodayWidgetNavigationTarget.ViewWidgetColorSelectionList
+import com.woocommerce.android.ui.appwidgets.stats.today.TodayWidgetConfigureViewModel.TodayWidgetNavigationTarget.ViewWidgetSiteSelectionList
+import com.woocommerce.android.ui.appwidgets.stats.today.TodayWidgetConfigureViewModel.WidgetAdded
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
-import com.woocommerce.android.ui.widgets.stats.today.TodayWidgetConfigureViewModel.TodayWidgetNavigationTarget.ViewWidgetColorSelectionList
-import com.woocommerce.android.ui.widgets.stats.today.TodayWidgetConfigureViewModel.TodayWidgetNavigationTarget.ViewWidgetSiteSelectionList
-import com.woocommerce.android.ui.widgets.stats.today.TodayWidgetConfigureViewModel.WidgetAdded
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
-import com.woocommerce.android.viewmodel.ViewModelFactory
 import dagger.android.support.AndroidSupportInjection
-import kotlinx.android.synthetic.main.fragment_today_widget_configure.*
 import javax.inject.Inject
 
 class TodayWidgetConfigureFragment : BaseFragment() {
     @Inject lateinit var uiMessageResolver: UIMessageResolver
     @Inject lateinit var todayWidgetUpdater: TodayWidgetUpdater
+
+    private var _binding: FragmentTodayWidgetConfigureBinding? = null
+    private val binding get() = _binding!!
 
     private val viewModel: TodayWidgetConfigureViewModel by navGraphViewModels(R.id.nav_graph_today_widget)
 
@@ -39,8 +40,9 @@ class TodayWidgetConfigureFragment : BaseFragment() {
 
     override fun getFragmentTitle() = getString(R.string.stats_today_widget_configure_title)
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        return inflater.inflate(R.layout.fragment_today_widget_configure, container, false)
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
+        _binding = FragmentTodayWidgetConfigureBinding.inflate(inflater, container, false)
+        return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -48,6 +50,12 @@ class TodayWidgetConfigureFragment : BaseFragment() {
         setupObservers(viewModel)
     }
 
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
+    }
+
+    @Deprecated("Deprecated in Java")
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
 
@@ -65,25 +73,25 @@ class TodayWidgetConfigureFragment : BaseFragment() {
 
         viewModel.start(appWidgetId)
 
-        today_widget_site_picker.setClickListener { viewModel.onSiteSpinnerSelected() }
-        today_widget_color_picker.setClickListener { viewModel.onColorSpinnerSelected() }
-        btn_add_widget.setOnClickListener { viewModel.addWidget() }
+        binding.todayWidgetSitePicker.setClickListener { viewModel.onSiteSpinnerSelected() }
+        binding.todayWidgetColorPicker.setClickListener { viewModel.onColorSpinnerSelected() }
+        binding.btnAddWidget.setOnClickListener { viewModel.addWidget() }
     }
 
     private fun setupObservers(viewModel: TodayWidgetConfigureViewModel) {
         viewModel.todayWidgetConfigureViewStateData.observe(viewLifecycleOwner) { old, new ->
             new.selectedSiteUiModel.takeIfNotEqualTo(old?.selectedSiteUiModel) {
-                it?.title?.let { title -> today_widget_site_picker.setText(title) }
+                it?.title?.let { title -> binding.todayWidgetSitePicker.setText(title) }
             }
             new.selectedWidgetColorCode.takeIfNotEqualTo(old?.selectedWidgetColorCode) {
-                today_widget_color_picker.setText(getString(it.label))
+                binding.todayWidgetColorPicker.setText(getString(it.label))
             }
             new.buttonEnabled.takeIfNotEqualTo(old?.buttonEnabled) {
-                btn_add_widget.isEnabled = it
+                binding.btnAddWidget.isEnabled = it
             }
         }
 
-        viewModel.event.observe(viewLifecycleOwner, Observer { event ->
+        viewModel.event.observe(viewLifecycleOwner) { event ->
             when (event) {
                 is ShowSnackbar -> uiMessageResolver.showSnack(event.message)
                 is ViewWidgetSiteSelectionList -> {
@@ -106,6 +114,6 @@ class TodayWidgetConfigureFragment : BaseFragment() {
                 }
                 else -> event.isHandled = false
             }
-        })
+        }
     }
 }

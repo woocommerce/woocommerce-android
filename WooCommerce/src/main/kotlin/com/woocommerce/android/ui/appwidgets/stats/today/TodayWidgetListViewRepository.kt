@@ -1,6 +1,5 @@
 package com.woocommerce.android.ui.appwidgets.stats.today
 
-import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.model.RequestResult
 import com.woocommerce.android.model.RequestResult.ERROR
 import com.woocommerce.android.model.RequestResult.NO_ACTION_NEEDED
@@ -16,7 +15,6 @@ import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
 import org.wordpress.android.fluxc.Dispatcher
 import org.wordpress.android.fluxc.action.WCStatsAction.FETCH_NEW_VISITOR_STATS
-import org.wordpress.android.fluxc.action.WCStatsAction.FETCH_REVENUE_STATS
 import org.wordpress.android.fluxc.generated.WCStatsActionBuilder
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.model.WCRevenueStatsModel
@@ -26,7 +24,6 @@ import org.wordpress.android.fluxc.store.WCStatsStore.FetchNewVisitorStatsPayloa
 import org.wordpress.android.fluxc.store.WCStatsStore.FetchRevenueStatsPayload
 import org.wordpress.android.fluxc.store.WCStatsStore.OnWCRevenueStatsChanged
 import org.wordpress.android.fluxc.store.WCStatsStore.OnWCStatsChanged
-import org.wordpress.android.fluxc.store.WCStatsStore.OrderStatsErrorType.PLUGIN_NOT_ACTIVE
 import org.wordpress.android.fluxc.store.WCStatsStore.StatsGranularity
 import org.wordpress.android.fluxc.store.WooCommerceStore
 import org.wordpress.android.fluxc.utils.DateUtils
@@ -104,7 +101,7 @@ class TodayWidgetListViewRepository @Inject constructor(
                 continuationFetchTodayRevenue = it
 
                 val payload = FetchRevenueStatsPayload(site, StatsGranularity.DAYS, forced = true)
-                dispatcher.dispatch(WCStatsActionBuilder.newFetchRevenueStatsPayload(payload))
+                // TODO dispatcher.dispatch(WCStatsActionBuilder.newFetchRevenueStatsPayload(payload))
             } ?: false // request timed out
         } catch (e: CancellationException) {
             WooLog.e(DASHBOARD, "Exception encountered while fetching visitor stats", e)
@@ -158,17 +155,18 @@ class TodayWidgetListViewRepository @Inject constructor(
     @Suppress("unused")
     @Subscribe(threadMode = ThreadMode.MAIN)
     fun onWCRevenueStatsChanged(event: OnWCRevenueStatsChanged) {
-        if (event.causeOfChange == FETCH_REVENUE_STATS) {
+        // TODO
+        /*if (event.causeOfChange == FETCH_REVENUE_STATS) {
             if (event.isError) {
                 if (event.error.type == PLUGIN_NOT_ACTIVE) {
-                    AppPrefs.setIsUsingV4Api(false)
+                    AppPrefs.setV4StatsSupported(false)
                 }
                 continuationFetchTodayRevenue?.resume(false)
             } else {
                 continuationFetchTodayRevenue?.resume(true)
             }
             continuationFetchTodayRevenue = null
-        }
+        }*/
     }
 
     @Suppress("unused")

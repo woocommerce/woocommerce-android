@@ -13,7 +13,7 @@ import com.woocommerce.android.ui.appwidgets.stats.today.TodayWidgetConfigureVie
 import org.wordpress.android.util.PhotonUtils
 
 class WidgetSiteSelectionAdapter(
-    private val context: Context,
+    context: Context,
     private val glideRequest: GlideRequests,
     private val listener: OnWidgetSiteSelectedListener
 ) : RecyclerView.Adapter<WidgetSiteSelectionViewHolder>() {
@@ -24,15 +24,10 @@ class WidgetSiteSelectionAdapter(
         fun onSiteSelected(site: SiteUiModel)
     }
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): WidgetSiteSelectionViewHolder {
-        return WidgetSiteSelectionViewHolder(
-            WidgetSiteSelectorListItemBinding.bind(parent)
-        )
-    }
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) =
+        WidgetSiteSelectionViewHolder(WidgetSiteSelectorListItemBinding.bind(parent))
 
-    override fun getItemCount(): Int {
-        return sites.size
-    }
+    override fun getItemCount() = sites.size
 
     override fun onBindViewHolder(holder: WidgetSiteSelectionViewHolder, position: Int) {
         val site = sites[position]
