@@ -21,7 +21,7 @@ import org.junit.Rule
 import org.junit.Test
 
 @HiltAndroidTest
-class ProductsUITest : TestBase() {
+class ProductsUITest : TestBase(failOnUnmatchedWireMockRequests = false) {
     @get:Rule(order = 0)
     val rule = HiltAndroidRule(this)
 
