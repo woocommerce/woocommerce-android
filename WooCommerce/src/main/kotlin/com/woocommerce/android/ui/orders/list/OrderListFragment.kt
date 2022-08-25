@@ -464,7 +464,7 @@ class OrderListFragment :
     }
 
     private fun openOrderCreationFragment() {
-        AnalyticsTracker.track(AnalyticsEvent.ORDER_ADD_NEW)
+        AnalyticsTracker.track(AnalyticsEvent.ORDERS_ADD_NEW)
         findNavController().navigateSafely(
             OrderListFragmentDirections.actionOrderListFragmentToOrderCreationFragment(
                 OrderCreateEditViewModel.Mode.Creation

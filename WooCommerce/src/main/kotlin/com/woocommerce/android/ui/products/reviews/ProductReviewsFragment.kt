@@ -157,6 +157,7 @@ class ProductReviewsFragment :
     }
 
     override fun onReviewClick(review: ProductReview, sharedView: View?) {
+        AnalyticsTracker.track(AnalyticsEvent.REVIEW_OPEN)
         (activity as? MainNavigationRouter)?.showReviewDetail(
             review.remoteId,
             launchedFromNotification = false
