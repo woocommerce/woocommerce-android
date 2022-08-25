@@ -36,11 +36,10 @@
             android:authorities="${applicationId}.leakcanary-installer"
             android:exported="false" />
 
+        <!-- For now the stats widget is only available in debug builds -->
         <service
             android:name=".ui.appwidgets.WidgetService"
             android:permission="android.permission.BIND_REMOTEVIEWS" />
-
-        <!-- For now the stats widget is only available in debug builds -->
         <meta-data
             android:name="com.google.android.actions"
             android:resource="@xml/stats_today_widget_info" />
