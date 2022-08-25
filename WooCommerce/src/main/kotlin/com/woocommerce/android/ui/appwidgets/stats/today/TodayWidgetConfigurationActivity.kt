@@ -5,9 +5,7 @@ import android.view.MenuItem
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import com.woocommerce.android.databinding.ActivityTodayWidgetConfigureBinding
-import dagger.hilt.android.AndroidEntryPoint
 
-@AndroidEntryPoint
 class TodayWidgetConfigurationActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

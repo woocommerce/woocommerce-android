@@ -108,15 +108,6 @@
             android:name="org.wordpress.android.mediapicker.ui.MediaPickerActivity"
             android:theme="@style/Theme.Woo.DayNight" />
 
-        <activity
-            android:name=".ui.appwidgets.stats.today.TodayWidgetConfigurationActivity"
-            android:exported="false"
-            android:theme="@style/Theme.Woo.DayNight">
-            <intent-filter>
-                <action android:name="android.appwidget.action.APPWIDGET_CONFIGURE" />
-            </intent-filter>
-        </activity>
-
         <!-- Services -->
         <service
             android:name=".push.FCMMessageService"

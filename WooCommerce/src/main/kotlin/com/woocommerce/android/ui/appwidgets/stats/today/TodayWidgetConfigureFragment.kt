@@ -62,7 +62,7 @@ class TodayWidgetConfigureFragment : BaseFragment() {
         ) ?: AppWidgetManager.INVALID_APPWIDGET_ID
 
         if (appWidgetId == AppWidgetManager.INVALID_APPWIDGET_ID) {
-            activity.finish()
+            finishActivityWithResult(Activity.RESULT_CANCELED, appWidgetId)
             return
         }
 
@@ -100,15 +100,18 @@ class TodayWidgetConfigureFragment : BaseFragment() {
                     )
                 }
                 is WidgetAdded -> {
-                    // TODO: add tracking event for widget added
                     todayWidgetUpdater.updateAppWidget(requireContext(), event.appWidgetId)
-                    val resultValue = Intent()
-                    resultValue.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, event.appWidgetId)
-                    activity?.setResult(Activity.RESULT_OK, resultValue)
-                    activity?.finish()
+                    finishActivityWithResult(Activity.RESULT_OK, event.appWidgetId)
                 }
                 else -> event.isHandled = false
             }
         }
+    }
+
+    private fun finishActivityWithResult(resultCode: Int, appWidgetId: Int) {
+        val resultValue = Intent()
+        resultValue.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, appWidgetId)
+        activity?.setResult(resultCode, resultValue)
+        activity?.finish()
     }
 }
