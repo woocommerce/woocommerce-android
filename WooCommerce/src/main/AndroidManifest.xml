@@ -27,9 +27,7 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.Woo.DayNight">
-        <meta-data
-            android:name="com.google.android.actions"
-            android:resource="@xml/stats_today_widget_info" />
+
         <!-- TODO: we eventually want to drop support for Apache, but for now it's used by FluxC -->
         <uses-library
             android:name="org.apache.http.legacy"
@@ -143,22 +141,6 @@
         <service
             android:name=".media.ProductImagesService"
             android:exported="false" />
-        <service
-            android:name=".ui.appwidgets.WidgetService"
-            android:permission="android.permission.BIND_REMOTEVIEWS" />
-
-        <receiver
-            android:name=".ui.appwidgets.stats.today.TodayStatsWidget"
-            android:exported="false"
-            android:label="@string/today">
-            <intent-filter>
-                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
-            </intent-filter>
-
-            <meta-data
-                android:name="android.appwidget.provider"
-                android:resource="@xml/stats_today_widget_info" />
-        </receiver>
 
         <!-- Provider for exposing file URIs on Android 7+ (required for camera) -->
         <provider
