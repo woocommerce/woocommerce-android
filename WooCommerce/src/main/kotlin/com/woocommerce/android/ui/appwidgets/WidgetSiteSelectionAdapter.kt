@@ -31,15 +31,7 @@ class WidgetSiteSelectionAdapter(
 
     override fun onBindViewHolder(holder: WidgetSiteSelectionViewHolder, position: Int) {
         val site = sites[position]
-        holder.txtSiteName.text = site.title
-        holder.txtSiteDomain.text = site.url
-
-        site.iconUrl?.let {
-            val imageUrl = PhotonUtils.getPhotonImageUrl(it, imageSize, imageSize)
-            glideRequest.load(imageUrl)
-                .placeholder(R.drawable.ic_gridicons_globe)
-                .into(holder.imageView)
-        } ?: holder.imageView.setImageResource(R.drawable.ic_gridicons_globe)
+        holder.bind(site)
 
         holder.itemView.setOnClickListener {
             listener.onSiteSelected(site)
@@ -52,10 +44,18 @@ class WidgetSiteSelectionAdapter(
         notifyDataSetChanged()
     }
 
-    class WidgetSiteSelectionViewHolder(viewBinding: WidgetSiteSelectorListItemBinding) :
+    inner class WidgetSiteSelectionViewHolder(val viewBinding: WidgetSiteSelectorListItemBinding) :
         RecyclerView.ViewHolder(viewBinding.root) {
-        val imageView: ImageView = viewBinding.widgetSiteImage
-        val txtSiteName: TextView = viewBinding.widgetSiteName
-        val txtSiteDomain: TextView = viewBinding.widgetSiteUrl
+        fun bind(site: SiteUiModel) {
+            viewBinding.widgetSiteName.text = site.title
+            viewBinding.widgetSiteUrl.text = site.url
+
+            site.iconUrl?.let {
+                val imageUrl = PhotonUtils.getPhotonImageUrl(it, imageSize, imageSize)
+                glideRequest.load(imageUrl)
+                    .placeholder(R.drawable.ic_gridicons_globe)
+                    .into(viewBinding.widgetSiteImage)
+            } ?: viewBinding.widgetSiteImage.setImageResource(R.drawable.ic_gridicons_globe)
+        }
     }
 }

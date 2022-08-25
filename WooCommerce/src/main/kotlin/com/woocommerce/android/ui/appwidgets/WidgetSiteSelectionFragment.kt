@@ -42,16 +42,6 @@ class WidgetSiteSelectionFragment : BaseFragment(), OnWidgetSiteSelectedListener
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         setupObservers(viewModel)
-    }
-
-    override fun onDestroyView() {
-        super.onDestroyView()
-        _binding = null
-    }
-
-    @Deprecated("Deprecated in Java")
-    override fun onActivityCreated(savedInstanceState: Bundle?) {
-        super.onActivityCreated(savedInstanceState)
 
         val activity = requireActivity()
         with(binding.sitesRecycler) {
@@ -65,6 +55,11 @@ class WidgetSiteSelectionFragment : BaseFragment(), OnWidgetSiteSelectedListener
                 )
             )
         }
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
     }
 
     override fun onResume() {
