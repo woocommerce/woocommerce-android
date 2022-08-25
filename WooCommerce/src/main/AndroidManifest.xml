@@ -36,14 +36,6 @@
             android:required="false" />
 
         <activity
-            android:name=".ui.widgets.stats.today.TodayWidgetConfigurationActivity"
-            android:exported="false"
-            android:theme="@style/Theme.Woo.DayNight">
-            <intent-filter>
-                <action android:name="android.appwidget.action.APPWIDGET_CONFIGURE" />
-            </intent-filter>
-        </activity>
-        <activity
             android:name=".ui.main.MainActivity"
             android:exported="true"
             android:theme="@style/Theme.Woo.Splash"
@@ -116,7 +108,18 @@
             android:theme="@style/Theme.Woo.DayNight.Zendesk" />
         <activity
             android:name="org.wordpress.android.mediapicker.ui.MediaPickerActivity"
-            android:theme="@style/Theme.Woo.DayNight" /> <!-- Services -->
+            android:theme="@style/Theme.Woo.DayNight" />
+
+        <activity
+            android:name=".ui.appwidgets.stats.today.TodayWidgetConfigurationActivity"
+            android:exported="false"
+            android:theme="@style/Theme.Woo.DayNight">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_CONFIGURE" />
+            </intent-filter>
+        </activity>
+
+        <!-- Services -->
         <service
             android:name=".push.FCMMessageService"
             android:exported="false">
@@ -141,11 +144,11 @@
             android:name=".media.ProductImagesService"
             android:exported="false" />
         <service
-            android:name=".ui.widgets.WidgetService"
+            android:name=".ui.appwidgets.WidgetService"
             android:permission="android.permission.BIND_REMOTEVIEWS" />
 
         <receiver
-            android:name=".ui.widgets.stats.today.TodayStatsWidget"
+            android:name=".ui.appwidgets.stats.today.TodayStatsWidget"
             android:exported="false"
             android:label="@string/today">
             <intent-filter>
