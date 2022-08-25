@@ -9,15 +9,16 @@ import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.initSavedStateHandle
+import com.woocommerce.android.support.HelpActivity
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.common.UserEligibilityFetcher
 import com.woocommerce.android.ui.login.UnifiedLoginTracker
 import com.woocommerce.android.ui.sitepicker.SitePickerViewModel.SitePickerEvent
 import com.woocommerce.android.ui.sitepicker.SitePickerViewModel.SitePickerEvent.NavigateToEmailHelpDialogEvent
+import com.woocommerce.android.ui.sitepicker.SitePickerViewModel.SitePickerEvent.NavigateToHelpFragmentEvent
 import com.woocommerce.android.ui.sitepicker.SitePickerViewModel.SitePickerEvent.NavigateToMainActivityEvent
 import com.woocommerce.android.ui.sitepicker.SitePickerViewModel.SitePickerEvent.NavigateToNewToWooEvent
 import com.woocommerce.android.ui.sitepicker.SitePickerViewModel.SitePickerEvent.NavigateToSiteAddressEvent
-import com.woocommerce.android.ui.sitepicker.SitePickerViewModel.SitePickerEvent.NavigationToHelpFragmentEvent
 import com.woocommerce.android.ui.sitepicker.SitePickerViewModel.SitePickerEvent.ShowWooUpgradeDialogEvent
 import com.woocommerce.android.ui.sitepicker.SitePickerViewModel.SitePickerState.AccountMismatchState
 import com.woocommerce.android.ui.sitepicker.SitePickerViewModel.SitePickerState.NoStoreState
@@ -469,15 +470,15 @@ class SitePickerViewModelTest : BaseUnitTest() {
         givenTheScreenIsFromLogin(true)
         whenViewModelIsCreated()
 
-        var view: NavigationToHelpFragmentEvent? = null
+        var view: NavigateToHelpFragmentEvent? = null
         viewModel.event.observeForever {
-            if (it is NavigationToHelpFragmentEvent) view = it
+            if (it is NavigateToHelpFragmentEvent) view = it
         }
 
         viewModel.onHelpButtonClick()
 
         verify(analyticsTrackerWrapper, times(1)).track(AnalyticsEvent.SITE_PICKER_HELP_BUTTON_TAPPED)
-        assertThat(view).isEqualTo(NavigationToHelpFragmentEvent)
+        assertThat(view).isEqualTo(NavigateToHelpFragmentEvent(HelpActivity.Origin.LOGIN_EPILOGUE))
     }
 
     @Test

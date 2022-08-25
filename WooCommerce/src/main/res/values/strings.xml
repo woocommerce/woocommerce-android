@@ -221,6 +221,8 @@
     <string name="login_connected_store">Connected store</string>
     <string name="login_verifying_site">Verifying site…</string>
     <string name="login_verifying_site_error">Cannot connect to %s</string>
+    <string name="login_verifying_site_jetpack_timeout_error_title">Connection Error</string>
+    <string name="login_verifying_site_jetpack_timeout_error_description">We were unable to connect to your store %s due to Jetpack error</string>
     <string name="login_update_required_title">Update Store to WooCommerce 3.5</string>
     <string name="login_update_required_desc">This store uses an older version of WooCommerce. Please upgrade your store to WooCommerce 3.5 or greater to use it with this app.</string>
     <string name="login_avatar_content_description">Your profile photo</string>
