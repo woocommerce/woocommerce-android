@@ -2,8 +2,6 @@ package com.woocommerce.android.ui.appwidgets
 
 import android.content.Context
 import android.view.ViewGroup
-import android.widget.ImageView
-import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.woocommerce.android.R
 import com.woocommerce.android.databinding.WidgetSiteSelectorListItemBinding
@@ -30,12 +28,7 @@ class WidgetSiteSelectionAdapter(
     override fun getItemCount() = sites.size
 
     override fun onBindViewHolder(holder: WidgetSiteSelectionViewHolder, position: Int) {
-        val site = sites[position]
-        holder.bind(site)
-
-        holder.itemView.setOnClickListener {
-            listener.onSiteSelected(site)
-        }
+        holder.bind(sites[position])
     }
 
     fun update(updatedSites: List<SiteUiModel>) {
@@ -56,6 +49,10 @@ class WidgetSiteSelectionAdapter(
                     .placeholder(R.drawable.ic_gridicons_globe)
                     .into(viewBinding.widgetSiteImage)
             } ?: viewBinding.widgetSiteImage.setImageResource(R.drawable.ic_gridicons_globe)
+
+            itemView.setOnClickListener {
+                listener.onSiteSelected(site)
+            }
         }
     }
 }

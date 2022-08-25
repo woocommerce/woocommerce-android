@@ -4,7 +4,8 @@ import com.woocommerce.android.ui.appwidgets.WidgetUpdater
 import com.woocommerce.android.ui.appwidgets.stats.StatsWidget
 import javax.inject.Inject
 
-class TodayStatsWidget @Inject constructor(
+class TodayStatsWidget
+@Inject constructor(
     private val todayWidgetUpdater: TodayWidgetUpdater
 ): StatsWidget() {
     override val widgetUpdater: WidgetUpdater
