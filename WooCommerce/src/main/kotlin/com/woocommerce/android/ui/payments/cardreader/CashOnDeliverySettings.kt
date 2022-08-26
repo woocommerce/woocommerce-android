@@ -5,6 +5,7 @@ import dagger.Reusable
 import org.wordpress.android.fluxc.model.gateways.WCGatewayModel
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooResult
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.gateways.GatewayRestClient
+import org.wordpress.android.fluxc.store.Settings
 import org.wordpress.android.fluxc.store.WCGatewayStore
 import javax.inject.Inject
 
@@ -20,6 +21,9 @@ class CashOnDeliverySettings @Inject constructor(
             enabled = shouldEnable,
             title = "Pay in Person",
             description = "Pay by card or another accepted payment method",
+            settings = Settings(
+                instructions = "Pay by card or another accepted payment method"
+            )
         )
     }
 
