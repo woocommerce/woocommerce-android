@@ -15,7 +15,6 @@ class MainPresenterTest : BaseUnitTest() {
     private val store: WooCommerceStore = mock()
     private val mainPresenterSettingsContractView: MainSettingsContract.View = mock()
     private val accountStore: AccountStore = mock()
-    private val bannerDisplayEligibilityChecker: BannerDisplayEligibilityChecker = mock()
 
     private lateinit var mainSettingsPresenter: MainSettingsPresenter
 
