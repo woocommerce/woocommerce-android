@@ -93,7 +93,7 @@ ext {
     aztecVersion = 'v1.3.45'
     flipperVersion = '0.154.0'
     stateMachineVersion = '0.2.0'
-    coreKtxVersion = '1.7.0'
+    coreKtxVersion = '1.8.0'
     appCompatVersion = '1.4.2'
     materialVersion = '1.6.1'
     hiltJetpackVersion = '1.0.0'
