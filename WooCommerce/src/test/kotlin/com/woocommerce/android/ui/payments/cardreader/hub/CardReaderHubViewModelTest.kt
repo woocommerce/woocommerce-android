@@ -675,6 +675,27 @@ class CardReaderHubViewModelTest : BaseUnitTest() {
     }
 
     @Test
+    fun `when screen shown, then cod row present with correct icon`() =
+        testBlocking {
+            assertThat((viewModel.viewStateData.value)?.rows)
+                .anyMatch {
+                    it.icon == R.drawable.ic_manage_card_reader
+                }
+        }
+
+    @Test
+    fun `when screen shown, then cash on delivery row present with correct description`() {
+        assertThat(
+            (
+                viewModel.viewStateData.value?.rows?.find {
+                    it.label == UiString.UiStringRes(R.string.card_reader_enable_pay_in_person)
+                }
+                    as ToggleableListItem
+                ).description
+        ).isEqualTo(UiString.UiStringRes(R.string.card_reader_enable_pay_in_person_description))
+    }
+
+    @Test
     fun `when screen shown, then cash on delivery is disabled`() {
         assertThat(
             (
