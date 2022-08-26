@@ -46,11 +46,13 @@ class SingleProductScreen : Screen {
 
         scrollToListItem(
             "Product type",
-            Espresso.onView(Matchers.allOf(
-                ViewMatchers.withId(R.id.propertiesRecyclerView),
-                ViewMatchers.hasDescendant(ViewMatchers.withText("Product type"))
+            Espresso.onView(
+                Matchers.allOf(
+                    ViewMatchers.withId(R.id.propertiesRecyclerView),
+                    ViewMatchers.hasDescendant(ViewMatchers.withText("Product type"))
+                )
             )
-            ))
+        )
 
         assertTextNameValuePair("Product type", product.type)
 
