@@ -30,8 +30,15 @@
         }
     },
     "response": {
-        "status": 200,
-        "jsonBody": {}
+        "status": 401,
+        "jsonBody": {
+            "code": "oauth2_invalid_token",
+            "message": "The OAuth2 token is invalid.",
+            "data": {
+                "status": 401
+            }
+        }
     }
 >>>>>>> 5cd54d063a (Account for the adjusted product details card inProducts list...)
 }
+    
