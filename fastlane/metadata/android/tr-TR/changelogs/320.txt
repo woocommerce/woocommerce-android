@@ -1,2 +1,0 @@
-9.9:
-Bu sürümde, WooCommerce'i uygulamadan yükleme seçeneği de dahil olmak üzere, oturum açma deneyiminizde bazı iyileştirmeler yapıldı. Ayrıca uygulamada yeni bir Ödemeler bölümümüz de var. Ödemeleri kullanmaya başlamak için Daha Fazla menüsüne gidin!
