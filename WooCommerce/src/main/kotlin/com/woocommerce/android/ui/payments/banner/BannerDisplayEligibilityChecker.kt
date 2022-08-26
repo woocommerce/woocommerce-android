@@ -71,7 +71,7 @@ class BannerDisplayEligibilityChecker @Inject constructor(
         )
     }
 
-    fun isCardReaderUpsellBannerDismissedForever(): Boolean {
+    private fun isCardReaderUpsellBannerDismissedForever(): Boolean {
         val site = selectedSite.get()
         return appPrefsWrapper.isCardReaderUpsellBannerDismissedForever(
             localSiteId = site.id,
