@@ -38,7 +38,8 @@ import com.woocommerce.android.util.ThemeOption
 import com.woocommerce.android.util.ThemeOption.DEFAULT
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T
-import java.util.*
+import java.util.Calendar
+import java.util.Date
 
 // Guaranteed to hold a reference to the application context, which is safe
 @SuppressLint("StaticFieldLeak")
@@ -935,7 +936,7 @@ object AppPrefs {
     }
 
     private fun setString(key: PrefKey, value: String) =
-       setString(key.toString(), value)
+        setString(key.toString(), value)
 
     private fun setString(keyName: String, value: String) =
         PreferenceUtils.setString(getPreferences(), keyName, value)

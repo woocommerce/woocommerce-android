@@ -34,7 +34,7 @@ import kotlin.coroutines.resume
 class TodayWidgetListViewRepository @Inject constructor(
     private val dispatcher: Dispatcher,
     private val accountStore: AccountStore, // required to verify if user is logged in
-    private val statsStore: WCStatsStore,   // required to fetch stats data
+    private val statsStore: WCStatsStore, // required to fetch stats data
     private val wooCommerceStore: WooCommerceStore // required to fetch site currency settings
 ) {
     companion object {

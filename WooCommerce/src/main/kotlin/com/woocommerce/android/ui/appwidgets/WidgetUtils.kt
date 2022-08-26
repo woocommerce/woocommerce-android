@@ -29,6 +29,7 @@ class WidgetUtils
         }
     }
 
+    @Suppress("LongParameterList")
     fun showList(
         appWidgetManager: AppWidgetManager,
         views: RemoteViews,
@@ -52,6 +53,7 @@ class WidgetUtils
         appWidgetManager.updateAppWidget(appWidgetId, views)
     }
 
+    @Suppress("LongParameterList")
     fun showError(
         appWidgetManager: AppWidgetManager,
         views: RemoteViews,
@@ -81,12 +83,13 @@ class WidgetUtils
         appWidgetManager.updateAppWidget(appWidgetId, views)
     }
 
+    @Suppress("UnusedPrivateMember")
     fun getPendingSelfIntent(
         context: Context,
         localSiteId: Int
     ): PendingIntent {
         val intent = Intent(context, MainActivity::class.java)
-        // TODO: pass the localSiteId to the activity in order to auto login the
+        // TODO pass the localSiteId to the activity in order to auto login the
         // user to the widget's site id
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
         return PendingIntent.getActivity(

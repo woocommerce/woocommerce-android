@@ -38,6 +38,7 @@ class TodayWidgetListViewModel @Inject constructor(
         this.appWidgetId = appWidgetId
     }
 
+    @Suppress("ReturnCount")
     fun onDataSetChanged(onError: (appWidgetId: Int) -> Unit) {
         // currently the stats widget data can only be fetched if the user is logged in. If user is not
         // logged in, display an error message in the widget

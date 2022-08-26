@@ -52,11 +52,12 @@ class TodayWidgetListProvider(val context: Context, intent: Intent) : RemoteView
         }
     }
 
+    @Suppress("EmptyFunctionBlock")
+    override fun onDestroy() { }
+
     override fun hasStableIds(): Boolean = true
 
     override fun getViewTypeCount(): Int = 1
-
-    override fun onDestroy() { }
 
     override fun getCount(): Int {
         return viewModel.data.size

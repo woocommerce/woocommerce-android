@@ -1,10 +1,10 @@
 package com.woocommerce.android
 
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener
+import com.woocommerce.android.ui.appwidgets.WidgetColorMode
 import com.woocommerce.android.ui.payments.cardreader.onboarding.PersistentOnboardingData
 import com.woocommerce.android.ui.payments.cardreader.onboarding.PluginType
 import com.woocommerce.android.ui.promobanner.PromoBannerType
-import com.woocommerce.android.ui.appwidgets.WidgetColorMode
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow

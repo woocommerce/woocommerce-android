@@ -13,7 +13,6 @@ import com.woocommerce.android.ui.appwidgets.WidgetColorMode
 import com.woocommerce.android.ui.appwidgets.WidgetUpdater
 import com.woocommerce.android.ui.appwidgets.WidgetUtils
 import com.woocommerce.android.viewmodel.ResourceProvider
-import dagger.hilt.android.AndroidEntryPoint
 import org.wordpress.android.fluxc.store.AccountStore
 import org.wordpress.android.fluxc.store.SiteStore
 import javax.inject.Inject
@@ -93,7 +92,6 @@ class TodayWidgetUpdater
     override fun componentName(context: Context) = ComponentName(context, TodayStatsWidget::class.java)
 
     override fun delete(appWidgetId: Int) {
-        // TODO: add tracking here when widget is deleted
         appPrefsWrapper.removeAppWidgetColorModeId(appWidgetId)
         appPrefsWrapper.removeAppWidgetSiteId(appWidgetId)
     }
