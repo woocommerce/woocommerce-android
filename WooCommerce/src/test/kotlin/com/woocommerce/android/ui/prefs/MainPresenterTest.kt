@@ -27,7 +27,6 @@ class MainPresenterTest : BaseUnitTest() {
             store,
             mock(),
             mock(),
-            bannerDisplayEligibilityChecker,
         )
         mainSettingsPresenter.takeView(mainPresenterSettingsContractView)
     }
