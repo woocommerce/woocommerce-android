@@ -42,10 +42,17 @@ sealed class CardReaderHubViewHolder(val parent: ViewGroup, @LayoutRes layout: I
             uiState as CardReaderHubViewModel.CardReaderHubViewState.ListItem.ToggleableListItem
             binding.cardReaderHubListItemLabelTv.text = UiHelpers.getTextOfUiString(itemView.context, uiState.label)
             binding.cardReaderMenuIcon.setImageResource(uiState.icon)
-
             binding.cardReaderHubListItemDescriptionTv.text = UiHelpers.getTextOfUiString(
                 itemView.context, uiState.description
             )
+            binding.cardReaderHubSwitch.setOnCheckedChangeListener(null)
+            binding.cardReaderHubSwitch.isChecked = uiState.isChecked
+            binding.cardReaderHubSwitch.isClickable = uiState.isEnabled
+            binding.cardReaderHubSwitch.setOnCheckedChangeListener { _, isChecked ->
+                if (binding.cardReaderHubSwitch.isClickable) {
+                    uiState.onToggled(isChecked)
+                }
+            }
         }
     }
 

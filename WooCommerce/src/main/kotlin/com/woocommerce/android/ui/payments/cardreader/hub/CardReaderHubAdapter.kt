@@ -1,22 +1,24 @@
 package com.woocommerce.android.ui.payments.cardreader.hub
 
 import android.view.ViewGroup
-import androidx.recyclerview.widget.RecyclerView
+import androidx.recyclerview.widget.DiffUtil
+import androidx.recyclerview.widget.ListAdapter
+import com.woocommerce.android.ui.payments.cardreader.hub.CardReaderHubViewModel.CardReaderHubViewState.ListItem.HeaderItem
+import com.woocommerce.android.ui.payments.cardreader.hub.CardReaderHubViewModel.CardReaderHubViewState.ListItem.NonToggleableListItem
+import com.woocommerce.android.ui.payments.cardreader.hub.CardReaderHubViewModel.CardReaderHubViewState.ListItem.ToggleableListItem
 
-class CardReaderHubAdapter : RecyclerView.Adapter<CardReaderHubViewHolder>() {
-    private val items = ArrayList<CardReaderHubViewModel.CardReaderHubViewState.ListItem>()
-
-    override fun getItemCount() = items.size
+class CardReaderHubAdapter :
+    ListAdapter<CardReaderHubViewModel.CardReaderHubViewState.ListItem, CardReaderHubViewHolder>(ListItemDiffCallback) {
 
     override fun getItemViewType(position: Int): Int {
-        return when (items[position]) {
-            is CardReaderHubViewModel.CardReaderHubViewState.ListItem.ToggleableListItem -> {
+        return when (getItem(position)) {
+            is ToggleableListItem -> {
                 VIEW_TYPE_TOGGELABLE
             }
-            is CardReaderHubViewModel.CardReaderHubViewState.ListItem.NonToggleableListItem -> {
+            is NonToggleableListItem -> {
                 VIEW_TYPE_NON_TOGGELABLE
             }
-            is CardReaderHubViewModel.CardReaderHubViewState.ListItem.HeaderItem -> {
+            is HeaderItem -> {
                 VIEW_TYPE_HEADER
             }
         }
@@ -40,13 +42,36 @@ class CardReaderHubAdapter : RecyclerView.Adapter<CardReaderHubViewHolder>() {
     }
 
     override fun onBindViewHolder(holder: CardReaderHubViewHolder, position: Int) {
-        holder.onBind(items[position])
+        holder.onBind(getItem(position))
     }
 
     fun setItems(rows: List<CardReaderHubViewModel.CardReaderHubViewState.ListItem>) {
-        items.clear()
-        items.addAll(rows)
-        notifyDataSetChanged()
+        submitList(rows)
+    }
+
+    object ListItemDiffCallback : DiffUtil.ItemCallback<CardReaderHubViewModel.CardReaderHubViewState.ListItem>() {
+        override fun areItemsTheSame(
+            oldItem: CardReaderHubViewModel.CardReaderHubViewState.ListItem,
+            newItem: CardReaderHubViewModel.CardReaderHubViewState.ListItem
+        ): Boolean {
+            if (oldItem is HeaderItem && newItem is HeaderItem) {
+                return oldItem.label == newItem.label
+            }
+            if (oldItem is ToggleableListItem && newItem is ToggleableListItem) {
+                return oldItem.label == newItem.label
+            }
+            if (oldItem is NonToggleableListItem && newItem is NonToggleableListItem) {
+                return (oldItem.label == newItem.label && oldItem.isEnabled == newItem.isEnabled)
+            }
+            return false
+        }
+
+        override fun areContentsTheSame(
+            oldItem: CardReaderHubViewModel.CardReaderHubViewState.ListItem,
+            newItem: CardReaderHubViewModel.CardReaderHubViewState.ListItem
+        ): Boolean {
+            return oldItem == newItem && (oldItem.isEnabled == newItem.isEnabled)
+        }
     }
 
     companion object {
