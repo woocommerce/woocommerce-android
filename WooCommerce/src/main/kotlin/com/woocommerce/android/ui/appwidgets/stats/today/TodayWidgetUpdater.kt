@@ -13,6 +13,7 @@ import com.woocommerce.android.ui.appwidgets.WidgetColorMode
 import com.woocommerce.android.ui.appwidgets.WidgetUpdater
 import com.woocommerce.android.ui.appwidgets.WidgetUtils
 import com.woocommerce.android.viewmodel.ResourceProvider
+import dagger.hilt.android.AndroidEntryPoint
 import org.wordpress.android.fluxc.store.AccountStore
 import org.wordpress.android.fluxc.store.SiteStore
 import javax.inject.Inject

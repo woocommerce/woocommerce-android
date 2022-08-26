@@ -4,6 +4,7 @@ import android.content.Intent
 import android.widget.RemoteViewsService
 import android.widget.RemoteViewsService.RemoteViewsFactory
 import com.woocommerce.android.ui.appwidgets.stats.today.TodayWidgetListProvider
+import dagger.hilt.android.AndroidEntryPoint
 
 /**
  * The service to be connected to a remote adapter to request RemoteViews.
@@ -13,6 +14,7 @@ import com.woocommerce.android.ui.appwidgets.stats.today.TodayWidgetListProvider
  *
  * Currently only used by [TodayWidgetListProvider] for displaying current day stats
  */
+@AndroidEntryPoint
 class WidgetService : RemoteViewsService() {
     override fun onGetViewFactory(intent: Intent): RemoteViewsFactory {
         return TodayWidgetListProvider(
