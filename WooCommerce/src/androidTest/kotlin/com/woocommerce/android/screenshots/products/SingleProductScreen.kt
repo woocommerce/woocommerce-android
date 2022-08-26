@@ -50,7 +50,7 @@ class SingleProductScreen : Screen {
                 ViewMatchers.withId(R.id.propertiesRecyclerView),
                 ViewMatchers.hasDescendant(ViewMatchers.withText("Product type"))
             )
-        ))
+            ))
 
         assertTextNameValuePair("Product type", product.type)
 
