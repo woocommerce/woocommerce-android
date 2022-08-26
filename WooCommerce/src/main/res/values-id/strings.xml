@@ -1,11 +1,20 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2022-08-16 12:54:03+0000
+Translation-Revision-Date: 2022-08-23 11:54:03+0000
 Plural-Forms: nplurals=2; plural=n > 1;
 Generator: GlotPress/2.4.0-alpha
 Language: id
 -->
 <resources>
+    <string name="login_site_picker_try_another_address">Coba alamat lainnya</string>
+    <string name="card_reader_onboarding_cash_on_delivery_enable_failure">Gagal mengaktifkan bayar di tempat. Silakan coba lagi nanti.</string>
+    <string name="card_reader_onboarding_cash_on_delivery_disabled_button">Aktifkan Pembayaran Langsung</string>
+    <string name="card_reader_onboarding_cash_on_delivery_disabled_error_hint">Dengan pilihan \"Pembayaran Langsung\" saat checkout, Anda dapat menerima pembayaran kartu atau tunai saat pengambilan atau penerimaan barang.</string>
+    <string name="card_reader_onboarding_cash_on_delivery_disabled_error_header">Tambahkan Pembayaran Langsung pada proses checkout Anda</string>
+    <string name="card_reader_connect_learn_more">&lt;a href=\'\'&gt;Pelajari selengkapnya&lt;/a&gt; tentang Pembayaran Langsung</string>
+    <string name="login_site_picker_new_to_woo">Baru menggunakan WooCommerce</string>
+    <string name="site_discovery_postlogin_failure">Terjadi kegagalan, silakan hubungi dukungan</string>
+    <string name="login_site_picker_enter_site_address">Masukkan alamat situs</string>
     <string name="login_help_notification_get_link_by_email_button">Dapatkan tautan untuk login melalui email</string>
     <string name="login_help_notification_invalid_password_title">Lupa kata sandi Anda?</string>
     <string name="card_reader_onboarding_not_finished">Kami mendapati bahwa Anda belum menyelesaikan penyiapan Pembayaran Langsung. &lt;b&gt;&lt;a href=\'\'&gt;Lanjutkan penyiapan&lt;/a&gt;&lt;/b&gt;</string>
@@ -1037,7 +1046,6 @@ Language: id
     <string name="orderdetail_net">Pembayaran Bersih</string>
     <string name="orderdetail_payment_paid_by_customer">Berbayar</string>
     <string name="login_jetpack_view_instructions_alt">Pelajari selengkapnya tentang cara menghubungkan Jetpack</string>
-    <string name="login_no_stores">Kami tidak menemukan toko WooCommerce yang terhubung ke akun ini. Anda perlu menginstal dan menghubungkan plugin gratis Jetpack dengan toko WooCommerce Anda untuk menggunakan aplikasi ini.</string>
     <string name="edit">Sunting</string>
     <string name="product_images_validate_drag_and_drop">Validasi</string>
     <string name="product_images_drag_and_drop_description">Tarik dan lepas untuk mengurutkan foto</string>
@@ -2129,6 +2137,7 @@ Language: id
     <string name="dashboard_stats_granularity_months">Bulan</string>
     <string name="dashboard_stats_granularity_weeks">Minggu</string>
     <string name="dashboard_stats_granularity_days">Hari</string>
+    <string name="login_no_stores">Kami tidak menemukan toko WooCommerce yang terhubung ke akun ini.</string>
     <string name="login_with_a_different_account">Login dengan akun lain</string>
     <string name="login_nostores_content_description">Tidak ada toko WooCommerce</string>
     <string name="login_avatar_content_description">Foto profil Anda</string>

@@ -1,11 +1,20 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2022-08-18 11:54:04+0000
+Translation-Revision-Date: 2022-08-23 11:54:03+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: sv_SE
 -->
 <resources>
+    <string name="login_site_picker_try_another_address">Försök med en annan adress</string>
+    <string name="card_reader_onboarding_cash_on_delivery_enable_failure">Det gick inte att aktivera Postförskott. Försök igen senare.</string>
+    <string name="card_reader_onboarding_cash_on_delivery_disabled_button">Aktivera Betala personligen</string>
+    <string name="card_reader_onboarding_cash_on_delivery_disabled_error_hint">Alternativet \"Betala personligen\" i kassan gör det möjligt att ta emot kortbetalningar eller kontanta betalningar vid upphämtning eller leverans.</string>
+    <string name="card_reader_onboarding_cash_on_delivery_disabled_error_header">Lägg till Betala personligen i din kassa</string>
+    <string name="card_reader_connect_learn_more">&lt;a href=\'\'&gt;Läs mer&lt;/a&gt; om Personliga betalningar</string>
+    <string name="login_site_picker_new_to_woo">Är WooCommerce nytt för dig?</string>
+    <string name="site_discovery_postlogin_failure">Ett fel uppstod, kontakta support</string>
+    <string name="login_site_picker_enter_site_address">Ange en webbplatsadress</string>
     <string name="login_help_notification_get_link_by_email_button">Få en inloggningslänk via e-post</string>
     <string name="login_help_notification_invalid_password_title">Kommer du inte ihåg ditt lösenord?</string>
     <string name="card_reader_onboarding_not_finished">We’ve noticed that you have not yet finished In-Person Payments setup. &lt;b&gt;&lt;a href=\'\'&gt;Fortsätt installationen&lt;/a&gt;&lt;/b&gt;</string>
@@ -1037,7 +1046,6 @@ Language: sv_SE
     <string name="orderdetail_net">Nettobetalning</string>
     <string name="orderdetail_payment_paid_by_customer">Betald</string>
     <string name="login_jetpack_view_instructions_alt">Läs mer om att ansluta Jetpack</string>
-    <string name="login_no_stores">Vi kunde inte hitta några WooCommerce-butiker anslutna till det här kontot. Du måste installera och ansluta gratistillägget Jetpack på dina WooCommerce-butiker för att använda den här appen.</string>
     <string name="edit">Redigera</string>
     <string name="product_images_validate_drag_and_drop">Validera</string>
     <string name="product_images_drag_and_drop_description">Dra och släpp för att ändra ordning på foton</string>
@@ -2129,6 +2137,7 @@ Language: sv_SE
     <string name="dashboard_stats_granularity_months">Månader</string>
     <string name="dashboard_stats_granularity_weeks">Veckor</string>
     <string name="dashboard_stats_granularity_days">Dagar</string>
+    <string name="login_no_stores">Vi hittade inga WooCommerce-butiker anslutna till detta konto.</string>
     <string name="login_with_a_different_account">Logga in med ett annat konto</string>
     <string name="login_nostores_content_description">Inga WooCommerce-butiker</string>
     <string name="login_avatar_content_description">Ditt profilfoto</string>

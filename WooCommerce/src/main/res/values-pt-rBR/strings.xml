@@ -1,11 +1,20 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2022-08-17 20:54:03+0000
+Translation-Revision-Date: 2022-08-22 20:54:03+0000
 Plural-Forms: nplurals=2; plural=(n > 1);
 Generator: GlotPress/2.4.0-alpha
 Language: pt_BR
 -->
 <resources>
+    <string name="login_site_picker_try_another_address">Tentar outro endereço</string>
+    <string name="card_reader_onboarding_cash_on_delivery_enable_failure">Falha ao ativar o pagamento na entrega. Tente novamente mais tarde.</string>
+    <string name="card_reader_onboarding_cash_on_delivery_disabled_button">Ativar pagamento presencial</string>
+    <string name="card_reader_onboarding_cash_on_delivery_disabled_error_hint">A opção de pagamento presencial no seu checkout permite que você aceite pagamentos com cartão ou dinheiro na retirada ou entrega.</string>
+    <string name="card_reader_onboarding_cash_on_delivery_disabled_error_header">Adicione o pagamento presencial ao seu checkout</string>
+    <string name="card_reader_connect_learn_more">&lt;a href=\'\'&gt;Saiba mais&lt;/a&gt; sobre os pagamentos presenciais.</string>
+    <string name="login_site_picker_new_to_woo">Chegando agora no WooCommerce?</string>
+    <string name="site_discovery_postlogin_failure">Ocorreu uma falha. Entre em contato com o suporte.</string>
+    <string name="login_site_picker_enter_site_address">Digite um endereço de site</string>
     <string name="login_help_notification_get_link_by_email_button">Receba um link de login por e-mail</string>
     <string name="login_help_notification_invalid_password_title">Esqueceu sua senha?</string>
     <string name="card_reader_onboarding_not_finished">Notamos que você ainda não concluiu a configuração dos pagamentos presenciais. &lt;b&gt;&lt;a href=\'\'&gt;Continuar configuração&lt;/a&gt;&lt;/b&gt;</string>
@@ -1037,7 +1046,6 @@ Language: pt_BR
     <string name="orderdetail_net">Pagamento líquido</string>
     <string name="orderdetail_payment_paid_by_customer">Pagamento realizado</string>
     <string name="login_jetpack_view_instructions_alt">Saiba mais sobre como conectar o Jetpack</string>
-    <string name="login_no_stores">Não há lojas do WooCommerce conectadas a esta conta. Você precisará instalar e conectar o plugin gratuito do Jetpack às suas lojas do WooCommerce para usar esse aplicativo.</string>
     <string name="edit">Editar</string>
     <string name="product_images_validate_drag_and_drop">Validar</string>
     <string name="product_images_drag_and_drop_description">Arrastar e soltar para reorganizar as fotos</string>
@@ -2129,6 +2137,7 @@ Language: pt_BR
     <string name="dashboard_stats_granularity_months">Meses</string>
     <string name="dashboard_stats_granularity_weeks">Semanas</string>
     <string name="dashboard_stats_granularity_days">Dias</string>
+    <string name="login_no_stores">Não encontramos lojas do WooCommerce conectadas a esta conta.</string>
     <string name="login_with_a_different_account">Fazer login com uma conta diferente</string>
     <string name="login_nostores_content_description">Não há lojas WooCommerce</string>
     <string name="login_avatar_content_description">Sua foto de perfil</string>
