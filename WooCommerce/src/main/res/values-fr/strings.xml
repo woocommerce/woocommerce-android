@@ -1,11 +1,20 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2022-08-18 21:54:08+0000
+Translation-Revision-Date: 2022-08-23 15:54:03+0000
 Plural-Forms: nplurals=2; plural=n > 1;
 Generator: GlotPress/2.4.0-alpha
 Language: fr
 -->
 <resources>
+    <string name="login_site_picker_try_another_address">Essayer une autre adresse</string>
+    <string name="card_reader_onboarding_cash_on_delivery_enable_failure">Échec de l’activation du paiement à la livraison. Veuillez réessayer ultérieurement.</string>
+    <string name="card_reader_onboarding_cash_on_delivery_disabled_button">Activer Payer en personne</string>
+    <string name="card_reader_onboarding_cash_on_delivery_disabled_error_hint">L’option « Payer en personne » sur votre page de validation de commande vous permet d’accepter les paiements par carte ou en espèces lors de la collecte ou de la livraison.</string>
+    <string name="card_reader_onboarding_cash_on_delivery_disabled_error_header">Ajouter Payer en personne à votre page de validation de commande</string>
+    <string name="card_reader_connect_learn_more">&lt;a href=\'\'&gt;En savoir plus&lt;/a&gt; sur les paiements en personne</string>
+    <string name="login_site_picker_new_to_woo">Vous débutez sur WooCommerce ?</string>
+    <string name="site_discovery_postlogin_failure">Une erreur s’est produite, veuillez contacter l’assistance</string>
+    <string name="login_site_picker_enter_site_address">Entrer l’adresse d’un site</string>
     <string name="login_help_notification_get_link_by_email_button">Obtenir un lien de connexion par e-mail</string>
     <string name="login_help_notification_invalid_password_title">Vous avez oublié votre mot de passe ?</string>
     <string name="card_reader_onboarding_not_finished">Nous avons remarqué que vous n’avez pas encore terminé la configuration des paiements en personne. &lt;b&gt;&lt;a href=\'\'&gt;Poursuivre la configuration&lt;/a&gt;&lt;/b&gt;</string>
@@ -1037,7 +1046,6 @@ Language: fr
     <string name="orderdetail_net">Paiement net</string>
     <string name="orderdetail_payment_paid_by_customer">Payé</string>
     <string name="login_jetpack_view_instructions_alt">En savoir plus sur la connexion à Jetpack</string>
-    <string name="login_no_stores">Boutiques WooCommerce connectées à ce compte introuvables. Vous devrez installer et connecter une extension Jetpack gratuite sur votre boutique WooCommerce pour utiliser cette application.</string>
     <string name="edit">Modifier</string>
     <string name="product_images_validate_drag_and_drop">Valider</string>
     <string name="product_images_drag_and_drop_description">Glisser-déposer pour réorganiser les photos</string>
@@ -2129,6 +2137,7 @@ Language: fr
     <string name="dashboard_stats_granularity_months">Mois</string>
     <string name="dashboard_stats_granularity_weeks">Semaines</string>
     <string name="dashboard_stats_granularity_days">Jours</string>
+    <string name="login_no_stores">Boutiques WooCommerce connectées à ce compte introuvables.</string>
     <string name="login_with_a_different_account">Se connecter avec un compte différent</string>
     <string name="login_nostores_content_description">Aucune boutique WooCommerce</string>
     <string name="login_avatar_content_description">Votre photo de profil</string>

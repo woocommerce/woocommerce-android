@@ -1,68 +1,102 @@
 <ar>
-9.9:
-يحتوي هذا الإصدار على بعض التحسينات على تجربة تسجيل الدخول لديك، بما في ذلك تثبيت WooCommerce من التطبيق. لدينا كذلك قسم مدفوعات جديد في التطبيق. توجَّه مباشرةً إلى قائمة المزيد لبدء استخدام المدفوعات!
+10.0:
+لقد أجرينا عدة تحسينات لبدء عملك التجاري. أصبح الآن من السهل إعداد متجرك عند تسجيل الدخول. وبإمكانك الآن تمكين خيار الدفع بشكل شخصي مباشرةً في التطبيق!
+وأخيرًا، لقد أجرينا بعض التعديلات على الأداء. لكننا لم ننتهِ بعد. ترقب المزيد من التحسينات في المستقبل. يرجى الاستمرار في إرسال ملاحظاتك! حيث إننا نقرأها كلها!
+
 </ar>
 <de-DE>
-9.9:
-Bei dieser Version gibt es einige Verbesserungen bei deinem Anmeldeprozess, einschließlich der Option, WooCommerce über die App zu installieren. Außerdem gibt es in der App einen neuen Abschnitt „Zahlungen“. Gehe zum Menü „Mehr“, um „Zahlungen“ zu nutzen!
+10.0:
+Wir haben einige Verbesserungen vorgenommen, damit du mit deinem Unternehmen durchstarten kannst. Es ist jetzt einfacher, deinen Shop einzurichten, wenn du dich anmeldest. Und du kannst jetzt die persönliche Zahlung direkt in der App aktivieren!
+Außerdem haben wir ein paar raffinierte Änderungen vorgenommen, um die Performance zu verbessern. Aber das war noch nicht alles. Halte Ausschau nach kommenden weiteren Verbesserungen. Sende uns bitte weiterhin dein Feedback! Wir lesen alle Einsendungen.
+
 </de-DE>
 <es-ES>
-9.9:
-Esta versión tiene algunas mejoras en la experiencia de inicio de sesión, como la opción de instalar WooCommerce desde la aplicación. También tenemos una sección nueva de Pagos en la aplicación. Dirígete al menú Más para empezar a usar Pagos.
+10.0:
+Hemos hecho varias mejoras para poner en marcha tu negocio. Actualmente, es más fácil configurar tu tienda al iniciar sesión. Y ahora puedes activar el pago en persona directamente en la aplicación.
+Por último, hemos hecho algunos ajustes para mejorar el rendimiento. Pero hay más. No te pierdas las mejoras que están por venir. Sigue enviándonos tus comentarios. Los leemos todos.
+
 </es-ES>
 <fr-FR>
-9.9+
-This release has a few improvements to your login experience, including the option to install WooCommerce from the app. We also have a new Payments section in the app. Head over to the More menu to start using Payments!
+10.0 :
+Nous avons apporté diverses améliorations pour vous aider à lancer votre entreprise. Il est désormais plus simple de configurer votre boutique lorsque vous vous connectez. Et vous pouvez maintenant activer le paiement en personne directement dans l’application !
+Pour terminer, nous avons effectué quelques ajustements pour améliorer les performances. Mais nous n’en avons pas terminé. Attendez-vous à d’autres améliorations à l’avenir. Continuez de nous donner votre avis ! Nous les lisons tous !
+
 </fr-FR>
 <iw-IL>
-9.9:
-בגרסה הזאת הוספנו כמה שיפורים לחוויית ההתחברות, כולל אפשרות להתקין את WooCommerce מהאפליקציה. בנוסף, יש מקטע 'תשלומים' חדש באפליקציה. כדאי לעבור לתפריט 'עוד' ולהתחיל להשתמש ב'תשלומים'!
+10.0:
+הוספנו כמה שיפורים כדי לאפשר לך ליצור את העסק. כעת קל יותר להגדיר את החנות במהלך ההתחברות. ואפשר עכשיו להפעיל תשלומים באופן אישי ישירות מהאפליקציה!
+אחרון חביב, ביצענו כמה שינויים כדי לשפר את הביצועים. אבל עוד לא סיימנו. כדאי לשים לב לשיפורים הנוספים שנשיק בעתיד. נשמח להמשיך לקבל משוב! אנחנו קוראים כל משוב שאנחנו מקבלים!
+
 </iw-IL>
 <id>
-9.9:
-Rilis ini berisi beberapa peningkatan untuk pengalaman login Anda, termasuk pilihan untuk menginstal WooCommerce dari aplikasi. Kami juga menambahkan bagian Pembayaran baru di aplikasi. Lihat menu Lainnya untuk mulai menggunakan Pembayaran!
+10.0:
+Kami telah membuat berbagai peningkatan untuk membantu Anda memulai bisnis. Menyiapkan toko Anda ketika login kini lebih mudah. Dan, kini Anda dapat mengaktifkan pembayaran langsung lewat aplikasi!
+Terakhir, kami mengutak-atik performa supaya lebih baik. Namun, kami belum selesai. Nantikan peningkatan lainnya di masa mendatang. Terus kirimkan feedback Anda kepada kami! Kami membaca semuanya!
+
 </id>
 <it-IT>
-9.9:
-Questa versione apporta alcuni miglioramenti alla tua esperienza di accesso, inclusa l'opzione di installare WooCommerce dall'app. Abbiamo anche una nuova sezione Pagamenti nell'app. Vai al menu Altro per iniziare a utilizzare Pagamenti!
+10.0
+Abbiamo apportato varie ottimizzazioni per aiutarti ad avviare la tua attività. Ora è più facile configurare il tuo negozio all'accesso. E ora puoi abilitare i pagamenti di persona nell'app!
+Infine, abbiamo effettuato alcune piccole modifiche per migliorare le prestazioni. Ma non è tutto. Introdurremo altre ottimizzazioni in futuro. Continua a inviarci il tuo feedback. Li leggiamo uno a uno.
+
 </it-IT>
 <ja-JP>
-9.9:
-このリリースでは、アプリから WooCommerce をインストールするオプションなど、ログイン操作がいくつか改善されました。また、アプリ内に新しい「支払い」セクションが追加されました。「支払い」は「その他」メニューから利用できます。
+10.0:
+ビジネスを開始しやすくするためのさまざまな機能を強化しました。 ログイン時のストアのセットアップが簡単になりました。 アプリで直接支払いを有効にできるようになりました。
+さらに、パフォーマンスの微調整も行いました。 これで終わりではありません。 今後の改善点にもご注目ください。 引き続き皆さまのご意見をお待ちしております。 よろしくお願いいたします。
+
 </ja-JP>
 <ko-KR>
-9.9:
-이 릴리스에서는 앱에서 우커머스를 설치하는 옵션을 포함하여 로그인 환경이 몇 가지 개선되었습니다. 앱에 새 결제 섹션도 있습니다. 더 보기 메뉴로 이동하여 결제 사용을 시작하세요!
+10.0:
+비즈니스를 시작하는 기능을 다양하게 개선했습니다. 이제는 로그인할 때 스토어를 설정할 수 있습니다. 그러나 이제는 앱에서 바로 대면 결제를 활성화할 수 있습니다.
+마지막으로, 성능이 개선되도록 몇 가지를 조정했습니다. 그러나 아직 끝나지 않았습니다. 앞으로 더 많은 개선 사항을 기대해 주세요. 피드백을 계속 보내주세요! 하나하나 읽어보고 있습니다!
+
 </ko-KR>
 <nl-NL>
-9.9:
-Deze versie bevat een paar verbeteringen van je loginervaring, waaronder de optie om WooCommerce rechtstreeks vanuit de app te installeren. De app bevat ook een nieuw gedeelte Betalingen. Ga naar het menu Meer om te beginnen met Betalingen!
+$ 10.0
+We’ve made various enhancements to get your business started. It’s now easier to set up your store when logging in. And you can now enable paying in person right in the app!
+Lastly, we’ve made some tweaks to improve performance. But we’re not done. Keep an eye out for more enhancements in the future. Please keep sending your feedback! We read every one of them!
+
 </nl-NL>
 <pt-BR>
-9.9:
-Esta versão tem algumas melhorias na sua experiência de login, incluindo a opção de instalar o WooCommerce a partir do aplicativo. Também temos uma nova seção de Pagamentos, no aplicativo vá até o menu Mais para começar a usar-los.
+10.0:
+Nós fizemos várias melhorias para você dar início ao seu negócio. Agora ficou mais fácil configurar a sua loja desde o login. E você pode ativar o pagamento presencial direto do aplicativo!
+Por fim, fizemos alguns ajustes para melhorar o desempenho. E não para por aí. Fique de olho para mais melhorias no futuro. Continue enviando seu feedback! Nós lemos cada um deles.
+
 </pt-BR>
 <ru-RU>
-9.9:
-В этом выпуске улучшена процедура входа, а также добавлена возможность установки WooCommerce из приложения. Кроме того, в приложении появился новый раздел "Платежи". Перейдите в меню "Ещё", чтобы начать использовать функцию платежей.
+10.0:
+Мы внесли улучшения, которые помогут вам запустить свой бизнес. Стало проще настроить магазин при входе в систему. И теперь можно включить приём очных платежей непосредственно в приложении.
+Наконец, мы повысили производительность. Но это ещё не всё. Следите за новостями, планируются другие улучшения. Продолжайте отправлять нам отзывы! Мы всё читаем.
+
 </ru-RU>
 <sv-SE>
-9.9+
-This release has a few improvements to your login experience, including the option to install WooCommerce from the app. We also have a new Payments section in the app. Head over to the More menu to start using Payments!
+10.0:
+Vi har gjort diverse förbättringar för när du vill komma igång med ditt företag. Det är nu enklare att konfigurera din butik när du loggar in. Du kan nu dessutom aktivera personliga betalningar direkt i appen.
+Slutligen har vi även gjort några justeringar för att förbättra prestandan. Men vi är inte klara. Håll utkik efter fler förbättringar framöver. Fortsätt att skicka feedback. Vi läser allt.
+
 </sv-SE>
 <tr-TR>
-9.9:
-Bu sürümde, WooCommerce'i uygulamadan yükleme seçeneği de dahil olmak üzere, oturum açma deneyiminizde bazı iyileştirmeler yapıldı. Ayrıca uygulamada yeni bir Ödemeler bölümümüz de var. Ödemeleri kullanmaya başlamak için Daha Fazla menüsüne gidin!
+10.0:
+İşinizi yürütmeye başlamanız için çeşitli geliştirmeler yaptık. Oturum açarken mağazanızı kurmak artık daha kolay. Ve artık doğrudan uygulama içinden şahsen ödemeyi etkinleştirebilirsiniz!
+Son olarak, performansı iyileştiren bazı ince ayarlar yaptık. Ama işimiz daha bitmedi. Gelecekteki geliştirmelerimiz için bizi takip edin. Lütfen geri bildirimlerinizi göndermeye devam edin! Her birini okuyoruz!
+
 </tr-TR>
 <zh-CN>
-9.9：
-此版本包含了对登录体验所做的一些改进，包括从应用程序中安装 WooCommerce 的选项。应用程序中还包含新的“付款”部分。前往“更多”菜单，开始使用“付款”！
+10.0：
+我们做了很多改进来帮您开展业务。 现在，您可以在登录时更轻松地设置商店。 并且，您可在应用程序中启用现场付款！
+最后，我们做了一些调整来改善性能。 但是我们还不够完善。 请关注未来推出的更多改进。 请继续发送您的反馈意见！ 我们会阅读每一条反馈！
+
 </zh-CN>
 <zh-TW>
-9.9：
-此版本已對登入體驗進行一些改善，包含從應用程式安裝 WooCommerce 的選項。我們也在應用程式中加入全新「付款」區段，前往「更多」選單即可開始使用付款功能！
+10.0：
+我們進行了各種改善以協助你開始業務往來。 現在登入後設定商店變得更簡單了。 你現在還可以直接在應用程式中啟用親自收款功能！
+最後，我們進行了些許調整來改善網站效能。 但還沒結束。 不妨持續關注之後更多的改善功能。 請持續提供意見回饋給我們！ 我們會讀過每一則留言！
+
 </zh-TW>
 <en-US>
-9.9:
-This release has a few improvements to your login experience, including the option to install WooCommerce from the app. We also have a new Payments section in the app. Head over to the More menu to start using Payments!
+10.0:
+We’ve made various enhancements to get your business started. It’s now easier to set up your store when logging in. And you can now enable paying in person right in the app!
+Lastly, we’ve made some tweaks to improve performance. But we’re not done. Keep an eye out for more enhancements in the future. Please keep sending your feedback! We read every one of them!
+
 </en-US>
