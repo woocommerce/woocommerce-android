@@ -1,11 +1,20 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2022-08-18 11:54:04+0000
+Translation-Revision-Date: 2022-08-23 11:54:04+0000
 Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);
 Generator: GlotPress/2.4.0-alpha
 Language: ru
 -->
 <resources>
+    <string name="login_site_picker_try_another_address">Используйте другой адрес</string>
+    <string name="card_reader_onboarding_cash_on_delivery_enable_failure">Не удалось включить наложенный платёж. Повторите попытку позже.</string>
+    <string name="card_reader_onboarding_cash_on_delivery_disabled_button">Включить опцию «Очная оплата»</string>
+    <string name="card_reader_onboarding_cash_on_delivery_disabled_error_hint">Опция «Очная оплата» позволяет вам принимать плату наличными и кредитными картами при получении товара покупателем.</string>
+    <string name="card_reader_onboarding_cash_on_delivery_disabled_error_header">Добавьте опцию «Очная оплата» для оформления заказа</string>
+    <string name="card_reader_connect_learn_more">&lt;a href=\'\'&gt;Подробности&lt;/a&gt; об очных платежах</string>
+    <string name="login_site_picker_new_to_woo">Недавно на WooCommerce</string>
+    <string name="site_discovery_postlogin_failure">Произошла ошибка, обратитесь в службу поддержки</string>
+    <string name="login_site_picker_enter_site_address">Введите адрес сайта</string>
     <string name="login_help_notification_get_link_by_email_button">Получить ссылку на вход по эл. почте</string>
     <string name="login_help_notification_invalid_password_title">Забыли пароль?</string>
     <string name="card_reader_onboarding_not_finished">Мы заметили, что вы ещё не завершили настройку очных платежей. &lt;b&gt;&lt;a href=\'\'&gt;Продолжить настройку&lt;/a&gt;&lt;/b&gt;</string>
@@ -1037,7 +1046,6 @@ Language: ru
     <string name="orderdetail_net">Чистая выплата</string>
     <string name="orderdetail_payment_paid_by_customer">Платно</string>
     <string name="login_jetpack_view_instructions_alt">Дополнительные сведения о подключении Jetpack</string>
-    <string name="login_no_stores">Нам не удалось найти магазины WooCommerce, подключенные к этой учётной записи. Чтобы использовать это приложение, нужно установить и подключить бесплатный плагин Jetpack в магазинах WooCommerce.</string>
     <string name="edit">Правка</string>
     <string name="product_images_validate_drag_and_drop">Подтвердить</string>
     <string name="product_images_drag_and_drop_description">Перетащите фотографии, чтобы изменить их порядок</string>
@@ -2129,6 +2137,7 @@ Language: ru
     <string name="dashboard_stats_granularity_months">Мес.</string>
     <string name="dashboard_stats_granularity_weeks">Нед.</string>
     <string name="dashboard_stats_granularity_days">Дн.</string>
+    <string name="login_no_stores">Мы не нашли магазины WooCommerce, подключённые к этой учётной записи.</string>
     <string name="login_with_a_different_account">Войти под другой учётной записью</string>
     <string name="login_nostores_content_description">Нет магазинов WooCommerce</string>
     <string name="login_avatar_content_description">Фотография в вашем профиле</string>
