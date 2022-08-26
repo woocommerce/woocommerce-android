@@ -745,6 +745,7 @@ platform :android do
       version: 28,
       test_apk_path: File.join(apk_dir, 'androidTest', 'vanilla', 'debug', 'WooCommerce-vanilla-debug-androidTest.apk'),
       apk_path: File.join(apk_dir, 'vanilla', 'debug', 'WooCommerce-vanilla-debug.apk'),
+      test_targets: 'notPackage com.woocommerce.android.screenshots',
       results_output_dir: File.join(PROJECT_ROOT_FOLDER, 'build', 'instrumented-tests')
      )
   end
