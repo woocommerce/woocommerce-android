@@ -6,7 +6,8 @@ import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
 @AndroidEntryPoint
-class TodayStatsWidget @Inject constructor(private val todayWidgetUpdater: TodayWidgetUpdater) : StatsWidget() {
+class TodayStatsWidget() : StatsWidget() {
+    @Inject lateinit var todayWidgetUpdater: TodayWidgetUpdater
     override val widgetUpdater: WidgetUpdater
         get() = todayWidgetUpdater
 }
