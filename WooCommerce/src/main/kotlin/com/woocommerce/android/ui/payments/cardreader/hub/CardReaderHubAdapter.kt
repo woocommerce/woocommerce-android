@@ -49,6 +49,7 @@ class CardReaderHubAdapter :
         submitList(rows)
     }
 
+    @Suppress("ReturnCount")
     object ListItemDiffCallback : DiffUtil.ItemCallback<CardReaderHubViewModel.CardReaderHubViewState.ListItem>() {
         override fun areItemsTheSame(
             oldItem: CardReaderHubViewModel.CardReaderHubViewState.ListItem,
