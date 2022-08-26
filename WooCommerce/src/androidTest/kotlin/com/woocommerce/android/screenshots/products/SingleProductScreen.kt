@@ -43,17 +43,6 @@ class SingleProductScreen : Screen {
         // Name-Value pairs:
         assertTextNameValuePair("Price", product.price)
         assertTextNameValuePair("Inventory", "Stock status: ${product.stockStatus}")
-
-        scrollToListItem(
-            "Product type",
-            Espresso.onView(
-                Matchers.allOf(
-                    ViewMatchers.withId(R.id.propertiesRecyclerView),
-                    ViewMatchers.hasDescendant(ViewMatchers.withText("Product type"))
-                )
-            )
-        )
-
         assertTextNameValuePair("Product type", product.type)
 
         // Rating is shown only if the rating is larger than zero (more than zero reviews):
@@ -89,7 +78,18 @@ class SingleProductScreen : Screen {
     }
 
     // Checks that label and actual value are siblings in view hierarchy:
-    fun assertTextNameValuePair(nameText: String, valueText: String?) {
+    private fun assertTextNameValuePair(nameText: String, valueText: String?) {
+        // Scroll the object into visible area
+        scrollToListItem(
+            nameText,
+            Espresso.onView(
+                Matchers.allOf(
+                    ViewMatchers.withId(R.id.propertiesRecyclerView),
+                    ViewMatchers.hasDescendant(ViewMatchers.withText(nameText))
+                )
+            )
+        )
+
         Espresso.onView(
             Matchers.allOf(
                 ViewMatchers.withChild(
