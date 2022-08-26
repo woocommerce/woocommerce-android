@@ -15,6 +15,7 @@ import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.payments.cardreader.CardReaderCountryConfigProvider
 import com.woocommerce.android.ui.payments.cardreader.CardReaderTrackingInfoKeeper
+import com.woocommerce.android.ui.payments.cardreader.CashOnDeliverySettings
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboardingState.CashOnDeliveryDisabled
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboardingState.ChoosePaymentGatewayProvider
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboardingState.GenericError
@@ -71,11 +72,11 @@ class CardReaderOnboardingChecker @Inject constructor(
     private val appPrefsWrapper: AppPrefsWrapper,
     private val wooStore: WooCommerceStore,
     private val inPersonPaymentsStore: WCInPersonPaymentsStore,
-    private val wcGatewayStore: WCGatewayStore,
     private val dispatchers: CoroutineDispatchers,
     private val networkStatus: NetworkStatus,
     private val cardReaderTrackingInfoKeeper: CardReaderTrackingInfoKeeper,
     private val cardReaderCountryConfigProvider: CardReaderCountryConfigProvider,
+    private val cashOnDeliverySettings: CashOnDeliverySettings,
 ) {
     suspend fun getOnboardingState(pluginType: PluginType? = null): CardReaderOnboardingState {
         if (!networkStatus.isConnected()) return NoConnectionError
@@ -197,7 +198,7 @@ class CardReaderOnboardingChecker @Inject constructor(
 
         if (
             !isCashOnDeliveryDisabledStateSkipped() &&
-            !isCashOnDeliveryEnabled()
+            !cashOnDeliverySettings.isCashOnDeliveryEnabled()
         ) return CashOnDeliveryDisabled(
             requireNotNull(countryCode),
             preferredPlugin.type,
@@ -218,13 +219,6 @@ class CardReaderOnboardingChecker @Inject constructor(
             remoteSiteId = site.siteId,
             selfHostedSiteId = site.selfHostedSiteId,
         )
-    }
-
-    private suspend fun isCashOnDeliveryEnabled(): Boolean {
-        val gateways = wcGatewayStore.fetchAllGateways(selectedSite.get()).model
-        return gateways?.firstOrNull { wcGatewayModel ->
-            wcGatewayModel.id.equals("cod", ignoreCase = true)
-        }?.isEnabled ?: false
     }
 
     private fun isUserComingFromChoosePaymentGatewayScreen(userSelectedPlugin: PluginType?): Boolean {

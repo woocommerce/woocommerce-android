@@ -8,8 +8,12 @@ import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.initSavedStateHandle
 import com.woocommerce.android.model.UiString
 import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.ui.payments.cardreader.CardReaderTracker
+import com.woocommerce.android.ui.payments.cardreader.CashOnDeliverySettings
 import com.woocommerce.android.ui.payments.cardreader.InPersonPaymentsCanadaFeatureFlag
+import com.woocommerce.android.ui.payments.cardreader.hub.CardReaderHubViewModel.CardReaderHubViewState
 import com.woocommerce.android.ui.payments.cardreader.hub.CardReaderHubViewModel.CardReaderHubViewState.ListItem.NonToggleableListItem
+import com.woocommerce.android.ui.payments.cardreader.hub.CardReaderHubViewModel.CardReaderHubViewState.ListItem.ToggleableListItem
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderFlowParam
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboardingChecker
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboardingState
@@ -30,6 +34,11 @@ import org.mockito.kotlin.mock
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import org.wordpress.android.fluxc.model.SiteModel
+import org.wordpress.android.fluxc.model.gateways.WCGatewayModel
+import org.wordpress.android.fluxc.network.BaseRequest
+import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooError
+import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooErrorType
+import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooResult
 import org.wordpress.android.fluxc.store.WooCommerceStore
 
 @ExperimentalCoroutinesApi
@@ -48,6 +57,8 @@ class CardReaderHubViewModelTest : BaseUnitTest() {
     private val cardReaderChecker: CardReaderOnboardingChecker = mock {
         onBlocking { getOnboardingState() } doReturn mock<CardReaderOnboardingState.OnboardingCompleted>()
     }
+    private val cashOnDeliverySettings: CashOnDeliverySettings = mock()
+    private val cardReaderTracker: CardReaderTracker = mock()
 
     private val savedState = CardReaderHubFragmentArgs(
         cardReaderFlowParam = CardReaderFlowParam.CardReadersHub,
@@ -654,6 +665,240 @@ class CardReaderHubViewModelTest : BaseUnitTest() {
             ).isTrue()
         }
 
+    // region cash on delivery
+    @Test
+    fun `when screen shown, then cash on delivery row present`() {
+        assertThat((viewModel.viewStateData.value)?.rows)
+            .anyMatch {
+                it.label == UiString.UiStringRes(R.string.card_reader_enable_pay_in_person)
+            }
+    }
+
+    @Test
+    fun `when screen shown, then cash on delivery is disabled`() {
+        assertThat(
+            (
+                viewModel.viewStateData.value?.rows?.find {
+                    it.label == UiString.UiStringRes(R.string.card_reader_enable_pay_in_person)
+                }
+                    as ToggleableListItem
+                ).isChecked
+        ).isFalse
+    }
+
+    @Test
+    fun `when screen shown, then cash on delivery is allowed to toggle`() {
+        assertThat(
+            (
+                viewModel.viewStateData.value?.rows?.find {
+                    it.label == UiString.UiStringRes(R.string.card_reader_enable_pay_in_person)
+                }
+                    as ToggleableListItem
+                ).isEnabled
+        ).isTrue
+    }
+
+    @Test
+    fun `given cash on delivery enabled, when screen shown, then cash on delivery state is enabled`() =
+        testBlocking {
+            whenever(cashOnDeliverySettings.isCashOnDeliveryEnabled()).thenReturn(true)
+
+            initViewModel()
+
+            assertThat(
+                (
+                    viewModel.viewStateData.value?.rows?.find {
+                        it.label == UiString.UiStringRes(R.string.card_reader_enable_pay_in_person)
+                    }
+                        as ToggleableListItem
+                    ).isChecked
+            ).isTrue()
+        }
+
+    @Test
+    fun `given cash on delivery disabled, when screen shown, then cash on delivery state is disabled`() =
+        testBlocking {
+            whenever(cashOnDeliverySettings.isCashOnDeliveryEnabled()).thenReturn(false)
+
+            initViewModel()
+
+            assertThat(
+                (
+                    viewModel.viewStateData.value?.rows?.find {
+                        it.label == UiString.UiStringRes(R.string.card_reader_enable_pay_in_person)
+                    }
+                        as ToggleableListItem
+                    ).isChecked
+            ).isFalse
+        }
+
+    @Test
+    fun `given cash on delivery api in progress, when cod toggled, then cash on delivery state not allowed to click`() =
+        testBlocking {
+            // GIVEN
+            whenever(
+                cashOnDeliverySettings.toggleCashOnDeliveryOption(true)
+            ).thenReturn(
+                getSuccessWooResult()
+            )
+            val receivedViewStates = mutableListOf<CardReaderHubViewState>()
+            viewModel.viewStateData.observeForever {
+                receivedViewStates.add(it)
+            }
+
+            // WHEN
+            (
+                viewModel.viewStateData.value?.rows?.find {
+                    it.label == UiString.UiStringRes(R.string.card_reader_enable_pay_in_person)
+                }
+                    as ToggleableListItem
+                ).onToggled.invoke(true)
+
+            // THEN
+            assertThat(
+                (
+                    receivedViewStates[1].rows.find {
+                        it.label == UiString.UiStringRes(R.string.card_reader_enable_pay_in_person)
+                    }
+                        as ToggleableListItem
+                    ).isEnabled
+            ).isFalse
+        }
+
+    @Test
+    fun `given cash on delivery api success, when cod toggled, then cash on delivery state is allowed to click`() =
+        testBlocking {
+            // GIVEN
+            whenever(
+                cashOnDeliverySettings.toggleCashOnDeliveryOption(true)
+            ).thenReturn(
+                getSuccessWooResult()
+            )
+            val receivedViewStates = mutableListOf<CardReaderHubViewState>()
+            viewModel.viewStateData.observeForever {
+                receivedViewStates.add(it)
+            }
+
+            // WHEN
+            (
+                viewModel.viewStateData.value?.rows?.find {
+                    it.label == UiString.UiStringRes(R.string.card_reader_enable_pay_in_person)
+                }
+                    as ToggleableListItem
+                ).onToggled.invoke(true)
+
+            // THEN
+            assertThat(
+                (
+                    receivedViewStates[2].rows.find {
+                        it.label == UiString.UiStringRes(R.string.card_reader_enable_pay_in_person)
+                    }
+                        as ToggleableListItem
+                    ).isEnabled
+            ).isTrue
+        }
+
+    @Test
+    fun `given cash on delivery api failure, when cod toggled, then cash on delivery state is allowed to click`() =
+        testBlocking {
+            // GIVEN
+            whenever(
+                cashOnDeliverySettings.toggleCashOnDeliveryOption(true)
+            ).thenReturn(
+                getFailureWooResult()
+            )
+            val receivedViewStates = mutableListOf<CardReaderHubViewState>()
+            viewModel.viewStateData.observeForever {
+                receivedViewStates.add(it)
+            }
+
+            // WHEN
+            (
+                viewModel.viewStateData.value?.rows?.find {
+                    it.label == UiString.UiStringRes(R.string.card_reader_enable_pay_in_person)
+                }
+                    as ToggleableListItem
+                ).onToggled.invoke(true)
+
+            // THEN
+            assertThat(
+                (
+                    receivedViewStates[2].rows.find {
+                        it.label == UiString.UiStringRes(R.string.card_reader_enable_pay_in_person)
+                    }
+                        as ToggleableListItem
+                    ).isEnabled
+            ).isTrue
+        }
+
+    @Test
+    fun `given cash on delivery api success, when cod toggled, then track cod success event`() =
+        testBlocking {
+            // GIVEN
+            whenever(
+                cashOnDeliverySettings.toggleCashOnDeliveryOption(true)
+            ).thenReturn(
+                getSuccessWooResult()
+            )
+
+            // WHEN
+            (
+                viewModel.viewStateData.value?.rows?.find {
+                    it.label == UiString.UiStringRes(R.string.card_reader_enable_pay_in_person)
+                }
+                    as ToggleableListItem
+                ).onToggled.invoke(true)
+
+            // THEN
+            verify(cardReaderTracker).trackCashOnDeliveryEnabledSuccess()
+        }
+
+    @Test
+    fun `given cash on delivery api failure, when cod toggled, then track cod failure event`() =
+        testBlocking {
+            // GIVEN
+            whenever(
+                cashOnDeliverySettings.toggleCashOnDeliveryOption(true)
+            ).thenReturn(
+                getFailureWooResult()
+            )
+
+            // WHEN
+            (
+                viewModel.viewStateData.value?.rows?.find {
+                    it.label == UiString.UiStringRes(R.string.card_reader_enable_pay_in_person)
+                }
+                    as ToggleableListItem
+                ).onToggled.invoke(true)
+
+            // THEN
+            verify(cardReaderTracker).trackCashOnDeliveryEnabledFailure(
+                "Enabling COD failed. Please try again later"
+            )
+        }
+    // endregion
+
+    private fun getSuccessWooResult() = WooResult(
+        model = WCGatewayModel(
+            id = "",
+            title = "",
+            description = "",
+            order = 0,
+            isEnabled = true,
+            methodTitle = "",
+            methodDescription = "",
+            features = emptyList()
+        )
+    )
+
+    private fun getFailureWooResult() = WooResult<WCGatewayModel>(
+        error = WooError(
+            type = WooErrorType.GENERIC_ERROR,
+            original = BaseRequest.GenericErrorType.NETWORK_ERROR,
+            message = "Enabling COD failed. Please try again later"
+        )
+    )
+
     private fun initViewModel() {
         viewModel = CardReaderHubViewModel(
             savedState,
@@ -663,6 +908,8 @@ class CardReaderHubViewModelTest : BaseUnitTest() {
             analyticsTrackerWrapper,
             wooStore,
             cardReaderChecker,
+            cashOnDeliverySettings,
+            cardReaderTracker
         )
         viewModel.onViewVisible()
     }
