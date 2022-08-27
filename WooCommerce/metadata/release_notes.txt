@@ -1,2 +1,2 @@
-- [*] In-Person Payments: Fixed a bug when Stripe pending requirements make it impossible to manage card readers [https://github.com/woocommerce/woocommerce-android/pull/7233]
+Even though this release doesn’t have any new features, we still put a lot of love into it, including fixing an issue where you might be unnecessarily blocked from taking payments. Please continue to send us feedback – we are listening!
 
