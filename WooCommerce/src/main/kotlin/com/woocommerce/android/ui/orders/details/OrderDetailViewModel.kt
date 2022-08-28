@@ -580,7 +580,7 @@ class OrderDetailViewModel @Inject constructor(
     private fun validateShippingAddress() {
         if (order.shippingAddress == Address.EMPTY) return
         launch {
-            addressValidator.validate(order.shippingAddress)
+            addressValidator.validate(order.id, order.shippingAddress)
         }
     }
 
