@@ -226,7 +226,6 @@ class CardReaderHubViewModel @Inject constructor(
     }
 
     val viewStateData: LiveData<CardReaderHubViewState> = viewState
-    val cashOnDeliveryStateData: LiveData<ToggleableListItem> = cashOnDeliveryState
 
     private fun onCollectPaymentClicked() {
         trackEvent(AnalyticsEvent.PAYMENTS_HUB_COLLECT_PAYMENT_TAPPED)
