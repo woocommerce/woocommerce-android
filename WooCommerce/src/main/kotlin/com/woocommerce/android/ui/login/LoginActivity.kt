@@ -29,7 +29,6 @@ import com.woocommerce.android.experiment.MagicLinkRequestExperiment.MagicLinkRe
 import com.woocommerce.android.experiment.MagicLinkRequestExperiment.MagicLinkRequestVariant.ENHANCED
 import com.woocommerce.android.experiment.MagicLinkSentScreenExperiment
 import com.woocommerce.android.experiment.PrologueExperiment
-import com.woocommerce.android.experiment.SiteLoginExperiment
 import com.woocommerce.android.support.HelpActivity
 import com.woocommerce.android.support.HelpActivity.Origin
 import com.woocommerce.android.support.ZendeskExtraTags
@@ -145,7 +144,6 @@ class LoginActivity :
     @Inject internal lateinit var dispatcher: Dispatcher
     @Inject internal lateinit var loginNotificationScheduler: LoginNotificationScheduler
 
-    @Inject internal lateinit var siteLoginExperiment: SiteLoginExperiment
     @Inject internal lateinit var prologueExperiment: PrologueExperiment
     @Inject internal lateinit var sentScreenExperiment: MagicLinkSentScreenExperiment
     @Inject internal lateinit var magicLinkRequestExperiment: MagicLinkRequestExperiment
@@ -593,18 +591,15 @@ class LoginActivity :
         val siteAddressClean = inputSiteAddress.replaceFirst(protocolRegex, "")
         AppPrefs.setLoginSiteAddress(siteAddressClean)
 
-        lifecycleScope.launchWhenStarted {
-            if (hasJetpack) {
-                // if a site is self-hosted, we show either email login screen or site credentials login screen
-                if (isSiteOnWPcom != true) {
-                    siteLoginExperiment.run(inputSiteAddress, ::showEmailLoginScreen, ::loginViaSiteCredentials)
-                } else {
-                    showEmailLoginScreen()
-                }
-            } else {
-                // Let user log in via site credentials first before showing Jetpack missing screen.
+        if (hasJetpack) {
+            if (isSiteOnWPcom != true) {
                 loginViaSiteCredentials(inputSiteAddress)
+            } else {
+                showEmailLoginScreen()
             }
+        } else {
+            // Let user log in via site credentials first before showing Jetpack missing screen.
+            loginViaSiteCredentials(inputSiteAddress)
         }
     }
 
