@@ -31,6 +31,7 @@ import com.woocommerce.android.util.captureValues
 import com.woocommerce.android.util.runAndCaptureValues
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Logout
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowDialog
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.viewmodel.ResourceProvider
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -662,6 +663,35 @@ class SitePickerViewModelTest : BaseUnitTest() {
 
         verify(repository, times(2)).fetchWooCommerceSite(expectedSite)
     }
+
+    @Test
+    fun `given site verification returns timeout error, when clicking continue button, timeout dialog is displayed`() =
+        testBlocking {
+            whenever(repository.verifySiteWooAPIVersion(any())).thenReturn(
+                WooResult(SitePickerTestUtils.timeoutErrorApiVerificationResponse)
+            )
+            whenSitesAreFetched()
+            whenViewModelIsCreated()
+
+            val isProgressShown = ArrayList<Boolean>()
+            viewModel.sitePickerViewStateData.observeForever { old, new ->
+                new.isProgressDiaLogVisible.takeIfNotEqualTo(old?.isProgressDiaLogVisible) { isProgressShown.add(it) }
+            }
+
+            var view: ShowDialog? = null
+            viewModel.event.observeForever {
+                if (it is ShowDialog) view = it
+            }
+
+            val selectedSiteModel = expectedSiteList[1]
+
+            viewModel.onSiteSelected(selectedSiteModel)
+            viewModel.onContinueButtonClick()
+
+            verify(repository, times(1)).verifySiteWooAPIVersion(any())
+            assertThat(view).isInstanceOf(ShowDialog::class.java)
+            assertThat(isProgressShown).containsExactly(false, true, false)
+        }
 
     private fun SiteModel.clone(): SiteModel {
         // A quick way for supporting cloning SiteModel without changing SiteModel class itself
