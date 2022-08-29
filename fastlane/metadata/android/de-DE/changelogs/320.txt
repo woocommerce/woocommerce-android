@@ -1,2 +1,0 @@
-9.9:
-Bei dieser Version gibt es einige Verbesserungen bei deinem Anmeldeprozess, einschließlich der Option, WooCommerce über die App zu installieren. Außerdem gibt es in der App einen neuen Abschnitt „Zahlungen“. Gehe zum Menü „Mehr“, um „Zahlungen“ zu nutzen!

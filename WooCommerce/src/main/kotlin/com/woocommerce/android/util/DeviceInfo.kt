@@ -21,7 +21,7 @@ object DeviceInfo {
         get() {
             val locale = ConfigurationCompat.getLocales(Resources.getSystem().configuration)
             if (locale.isEmpty.not()) {
-                return locale[0].displayLanguage
+                return locale[0]?.displayLanguage
             }
             return null
         }

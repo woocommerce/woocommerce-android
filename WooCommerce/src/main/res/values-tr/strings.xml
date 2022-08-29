@@ -1,11 +1,20 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2022-08-17 13:54:03+0000
+Translation-Revision-Date: 2022-08-24 12:54:03+0000
 Plural-Forms: nplurals=2; plural=(n > 1);
 Generator: GlotPress/2.4.0-alpha
 Language: tr
 -->
 <resources>
+    <string name="login_site_picker_try_another_address">Başka bir adres deneyin</string>
+    <string name="card_reader_onboarding_cash_on_delivery_enable_failure">Teslimatta nakit ödeme etkinleştirilemedi. Lütfen daha sonra tekrar deneyin.</string>
+    <string name="card_reader_onboarding_cash_on_delivery_disabled_button">Şahsen Ödemeyi Etkinleştir</string>
+    <string name="card_reader_onboarding_cash_on_delivery_disabled_error_hint">Ödeme sayfanızdaki \"Şahsen Öde\" seçeneği, tahsilat veya teslimatta kart veya nakit ödemeleri kabul etmenizi sağlar.</string>
+    <string name="card_reader_onboarding_cash_on_delivery_disabled_error_header">Ödeme sayfanıza Şahsen Ödeme yöntemini ekleyin</string>
+    <string name="card_reader_connect_learn_more">Şahsen Ödemeler hakkında &lt;a href=\'\'&gt;daha fazla bilgi edinin&lt;/a&gt;</string>
+    <string name="login_site_picker_new_to_woo">WooCommerce\'ü yeni kullanmaya mı başladınız?</string>
+    <string name="site_discovery_postlogin_failure">Bir hata oluştu, lütfen desteğe başvurun</string>
+    <string name="login_site_picker_enter_site_address">Bir site adresi girin</string>
     <string name="login_help_notification_get_link_by_email_button">E-posta ile bir oturum açma bağlantısı alın</string>
     <string name="login_help_notification_invalid_password_title">Şifrenizi hatırlamıyor musunuz?</string>
     <string name="card_reader_onboarding_not_finished">Şahsen Ödeme kurulumunu henüz tamamlamadığınızı fark ettik. &lt;b&gt;&lt;a href=\'\'&gt;Kuruluma devam et&lt;/a&gt;&lt;/b&gt;</string>
@@ -1037,7 +1046,6 @@ Language: tr
     <string name="orderdetail_net">Net ödeme</string>
     <string name="orderdetail_payment_paid_by_customer">Ödendi</string>
     <string name="login_jetpack_view_instructions_alt">Jetpack\'i bağlama hakkında daha fazla bilgi edinin</string>
-    <string name="login_no_stores">Bu hesaba bağlı WooCommerce mağazası bulamadık. Bu uygulamayı kullanmak için WooCommerce mağazalarınıza ücretsiz Jetpack eklentisini kurmanız ve bağlamanız gerekir.</string>
     <string name="edit">Düzenle</string>
     <string name="product_images_validate_drag_and_drop">Doğrula</string>
     <string name="product_images_drag_and_drop_description">Fotoğrafların sıralamasını değiştirmek için sürükle bırak</string>
@@ -2129,6 +2137,7 @@ Language: tr
     <string name="dashboard_stats_granularity_months">Ay</string>
     <string name="dashboard_stats_granularity_weeks">Hafta</string>
     <string name="dashboard_stats_granularity_days">Gün</string>
+    <string name="login_no_stores">Bu hesaba bağlı WooCommerce mağazası bulamadık.</string>
     <string name="login_with_a_different_account">Farklı bir hesap ile giriş yapın</string>
     <string name="login_nostores_content_description">WooCommerce mağazası bulunmuyor</string>
     <string name="login_avatar_content_description">Profil fotoğrafınız</string>

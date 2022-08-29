@@ -1,11 +1,20 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2022-08-17 09:54:03+0000
+Translation-Revision-Date: 2022-08-25 09:54:03+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: ja_JP
 -->
 <resources>
+    <string name="login_site_picker_try_another_address">別のアドレスを試す</string>
+    <string name="card_reader_onboarding_cash_on_delivery_enable_failure">代金引換を有効にできませんでした。 後でやり直してください。</string>
+    <string name="card_reader_onboarding_cash_on_delivery_disabled_button">直接支払いを有効化</string>
+    <string name="card_reader_onboarding_cash_on_delivery_disabled_error_hint">購入手続きの「直接支払い」オプションでは、集荷または配送時にカードまたは現金での支払いを受けることができます。</string>
+    <string name="card_reader_onboarding_cash_on_delivery_disabled_error_header">購入手続きに直接支払いを追加</string>
+    <string name="card_reader_connect_learn_more">直接支払いについて&lt;a href=\'\'&gt;詳しく読む&lt;/a&gt;。</string>
+    <string name="login_site_picker_new_to_woo">初めて WooCommerce をお使いになる場合</string>
+    <string name="site_discovery_postlogin_failure">エラーが生じました。サポートにお問い合わせください</string>
+    <string name="login_site_picker_enter_site_address">サイトアドレスを入力</string>
     <string name="login_help_notification_get_link_by_email_button">ログインリンクをメールで取得</string>
     <string name="login_help_notification_invalid_password_title">パスワードを忘れた場合</string>
     <string name="card_reader_onboarding_not_finished">「オフラインでの支払い」の設定が完了していないようです。 &lt;b&gt;&lt;a href=\'\'&gt;セットアップを続行&lt;/a&gt;&lt;/b&gt;</string>
@@ -1037,7 +1046,6 @@ Language: ja_JP
     <string name="orderdetail_net">支払額 (正味)</string>
     <string name="orderdetail_payment_paid_by_customer">支払済み</string>
     <string name="login_jetpack_view_instructions_alt">Jetpack の連携について詳しく読む</string>
-    <string name="login_no_stores">このアカウントに連携している WooCommerce ストアが見つかりません このアプリを使用するには、無料の Jetpack プラグインを WooCommerce ストアにインストールして連携させる必要があります。</string>
     <string name="edit">編集</string>
     <string name="product_images_validate_drag_and_drop">認証</string>
     <string name="product_images_drag_and_drop_description">写真の順序を変更するにはドラッグ &amp; ドロップしてください</string>
@@ -2129,6 +2137,7 @@ Language: ja_JP
     <string name="dashboard_stats_granularity_months">月</string>
     <string name="dashboard_stats_granularity_weeks">週</string>
     <string name="dashboard_stats_granularity_days">日</string>
+    <string name="login_no_stores">このアカウントに連携している WooCommerce ストアが見つかりません</string>
     <string name="login_with_a_different_account">別のアカウントでログインします</string>
     <string name="login_nostores_content_description">WooCommerce ストアがありません</string>
     <string name="login_avatar_content_description">自分のプロフィール写真</string>

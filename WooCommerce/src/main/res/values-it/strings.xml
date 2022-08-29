@@ -1,11 +1,20 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2022-08-16 09:54:22+0000
+Translation-Revision-Date: 2022-08-23 15:54:03+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: it
 -->
 <resources>
+    <string name="login_site_picker_try_another_address">Prova con un altro indirizzo</string>
+    <string name="card_reader_onboarding_cash_on_delivery_enable_failure">Non è stato possibile abilitare il pagamento alla consegna. Riprova più tardi.</string>
+    <string name="card_reader_onboarding_cash_on_delivery_disabled_button">Abilita Paga di persona</string>
+    <string name="card_reader_onboarding_cash_on_delivery_disabled_error_hint">L\'opzione \"Paga di persona\" al momento del pagamento ti consente di accettare pagamenti tramite carte di credito o contanti alla consegna.</string>
+    <string name="card_reader_onboarding_cash_on_delivery_disabled_error_header">Aggiungi Paga di persona al pagamento</string>
+    <string name="card_reader_connect_learn_more">&lt;a href=\'\'&gt;Altre informazioni&lt;/a&gt; sui Pagamenti di persona</string>
+    <string name="login_site_picker_new_to_woo">Prima volta in WooCommerce</string>
+    <string name="site_discovery_postlogin_failure">Si è verificato un errore, contatta il supporto</string>
+    <string name="login_site_picker_enter_site_address">Inserisci un indirizzo del sito</string>
     <string name="login_help_notification_get_link_by_email_button">Richiedi un link di accesso via e-mail</string>
     <string name="login_help_notification_invalid_password_title">Non ricordi la password?</string>
     <string name="card_reader_onboarding_not_finished">Abbiamo notato che non hai ancora completato la configurazione dei Pagamenti di persona. &lt;b&gt;&lt;a href=\'\'&gt;Continua con la configurazione&lt;/a&gt;&lt;/b&gt;</string>
@@ -1037,7 +1046,6 @@ Language: it
     <string name="orderdetail_net">Importo di pagamento netto</string>
     <string name="orderdetail_payment_paid_by_customer">Pagato</string>
     <string name="login_jetpack_view_instructions_alt">Scopri di più su come connettere Jetpack</string>
-    <string name="login_no_stores">Non abbiamo trovato negozi WooCommerce connessi a questo account. Per usare quest\'app, dovrai installare e connettere il plugin Jetpack gratuito sui tuoi negozi WooCommerce.</string>
     <string name="edit">Modifica</string>
     <string name="product_images_validate_drag_and_drop">Convalida</string>
     <string name="product_images_drag_and_drop_description">Trascina e rilascia per riordinare le foto</string>
@@ -2129,6 +2137,7 @@ Language: it
     <string name="dashboard_stats_granularity_months">Mesi</string>
     <string name="dashboard_stats_granularity_weeks">Settimane</string>
     <string name="dashboard_stats_granularity_days">Giorni</string>
+    <string name="login_no_stores">Non abbiamo trovato negozi WooCommerce connessi a questo account.</string>
     <string name="login_with_a_different_account">Accedi con un account diverso</string>
     <string name="login_nostores_content_description">Nessun negozio WooCommerce</string>
     <string name="login_avatar_content_description">Foto del profilo</string>

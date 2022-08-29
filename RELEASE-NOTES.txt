@@ -3,6 +3,7 @@
 -----
 -[**] In-Person Payments: Added Pay in Person toggle option in the Payments(Menu -> Payments) screen. Merchants can enable or disable "Pay in Person" from the app [https://github.com/woocommerce/woocommerce-android/pull/7280]
 
+
 10.1
 -----
 - [*] In-Person Payments: Fixed a bug when Stripe pending requirements make it impossible to manage card readers [https://github.com/woocommerce/woocommerce-android/pull/7233]
