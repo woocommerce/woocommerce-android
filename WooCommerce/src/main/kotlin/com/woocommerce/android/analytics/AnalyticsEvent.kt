@@ -205,9 +205,10 @@ enum class AnalyticsEvent(val siteless: Boolean = false) {
     ORDER_DETAIL_EDIT_FLOW_FAILED,
     ORDER_DETAIL_EDIT_FLOW_CANCELED,
     ORDER_EDIT_BUTTON_TAPPED,
+    PLUGINS_NOT_SYNCED_YET,
 
     // -- Order Creation
-    ORDER_ADD_NEW,
+    ORDERS_ADD_NEW,
     ORDER_PRODUCT_ADD,
     ORDER_CUSTOMER_ADD,
     ORDER_FEE_ADD,
@@ -568,6 +569,7 @@ enum class AnalyticsEvent(val siteless: Boolean = false) {
     REVIEWS_LIST_SHARE_YOUR_STORE_BUTTON_TAPPED,
 
     // -- Product Review Detail
+    REVIEW_OPEN,
     REVIEW_LOADED,
     REVIEW_LOAD_FAILED,
     REVIEW_PRODUCT_LOADED,

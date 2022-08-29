@@ -31,6 +31,7 @@ import com.woocommerce.android.extensions.handleNotice
 import com.woocommerce.android.extensions.handleResult
 import com.woocommerce.android.extensions.hide
 import com.woocommerce.android.extensions.navigateBackWithResult
+import com.woocommerce.android.extensions.parcelable
 import com.woocommerce.android.extensions.show
 import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.model.Product
@@ -165,7 +166,7 @@ class ProductDetailFragment :
         val layoutManager = LinearLayoutManager(activity, RecyclerView.VERTICAL, false)
         this.layoutManager = layoutManager
 
-        savedInstanceState?.getParcelable<Parcelable>(LIST_STATE_KEY)?.let {
+        savedInstanceState?.parcelable<Parcelable>(LIST_STATE_KEY)?.let {
             layoutManager.onRestoreInstanceState(it)
         }
         binding.cardsRecyclerView.layoutManager = layoutManager

@@ -21,6 +21,7 @@ import com.woocommerce.android.ui.orders.creation.OrderCreateEditViewModel
 import com.woocommerce.android.ui.orders.creation.navigation.OrderCreateEditNavigationTarget.ShowProductVariations
 import com.woocommerce.android.ui.orders.creation.navigation.OrderCreateEditNavigator
 import com.woocommerce.android.ui.orders.creation.products.OrderCreateEditProductSelectionViewModel.AddProduct
+import com.woocommerce.android.ui.orders.creation.products.OrderCreateEditProductSelectionViewModel.ProductNotFound
 import com.woocommerce.android.ui.orders.creation.products.OrderCreateEditProductSelectionViewModel.ViewState
 import com.woocommerce.android.ui.products.OnLoadMoreListener
 import com.woocommerce.android.ui.products.ProductListAdapter
@@ -29,6 +30,7 @@ import com.woocommerce.android.widgets.SkeletonView
 import com.woocommerce.android.widgets.WCEmptyView
 import dagger.hilt.android.AndroidEntryPoint
 import org.wordpress.android.util.ActivityUtils
+import org.wordpress.android.util.ToastUtils
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -76,6 +78,10 @@ class OrderCreateEditProductSelectionFragment :
                     findNavController().navigateUp()
                 }
                 is ShowProductVariations -> OrderCreateEditNavigator.navigate(this, event)
+                is ProductNotFound -> ToastUtils.showToast(
+                    requireActivity(),
+                    R.string.product_detail_fetch_product_invalid_id_error
+                )
             }
         }
     }

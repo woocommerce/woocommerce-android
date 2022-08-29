@@ -2,6 +2,10 @@
 Contains editorialized release notes. Raw release notes should go into `RELEASE-NOTES.txt`.
 -->
 
+## 10.1
+
+Even though this release doesn’t have any new features, we still put a lot of love into it, including fixing an issue where you might be unnecessarily blocked from taking payments. Please continue to send us feedback – we are listening!
+
 ## 10.0
 
 We’ve made various enhancements to get your business started. It’s now easier to set up your store when logging in. And you can now enable paying in person right in the app!

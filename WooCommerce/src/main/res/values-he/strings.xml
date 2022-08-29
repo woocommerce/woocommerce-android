@@ -1,11 +1,20 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2022-08-18 15:54:04+0000
+Translation-Revision-Date: 2022-08-23 13:54:04+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: he_IL
 -->
 <resources>
+    <string name="login_site_picker_try_another_address">יש לנסות כתובת אחרת</string>
+    <string name="card_reader_onboarding_cash_on_delivery_enable_failure">נכשלה הפעלת האפשרות לתשלום במזומן במהלך המסירה. יש לנסות שוב מאוחר יותר.</string>
+    <string name="card_reader_onboarding_cash_on_delivery_disabled_button">להפעיל \'תשלום באופן אישי\'</string>
+    <string name="card_reader_onboarding_cash_on_delivery_disabled_error_hint">האפשרות \'תשלום באופן אישי\' בקופה מאפשר לך לקבל תשלומים בכרטיס אשראי או במזומן במעמד האיסוף או המסירה.</string>
+    <string name="card_reader_onboarding_cash_on_delivery_disabled_error_header">להוסיף \'תשלום באופן אישי\' בקופה</string>
+    <string name="card_reader_connect_learn_more">&lt;a href=\'\'&gt;למידע נוסף&lt;/a&gt; בנושא \'תשלומים באופן אישי\'</string>
+    <string name="login_site_picker_new_to_woo">פעם ראשונה ב-WooCommerce</string>
+    <string name="site_discovery_postlogin_failure">הפעולה נכשלה, יש לפנות לתמיכה</string>
+    <string name="login_site_picker_enter_site_address">להזין כתובת אתר</string>
     <string name="login_help_notification_get_link_by_email_button">אפשר לקבל קישור להתחברות באימייל</string>
     <string name="login_help_notification_invalid_password_title">אין לך מושג מה הסיסמה שלך?</string>
     <string name="card_reader_onboarding_not_finished">שמנו לב שעדיין לא השלמת את ההגדרה של \'תשלומים באופן אישי\'. &lt;b&gt;&lt;a href=\'\'&gt;להמשיך להתקנה&lt;/a&gt;&lt;/b&gt;</string>
@@ -1037,7 +1046,6 @@ Language: he_IL
     <string name="orderdetail_net">תשלום נטו</string>
     <string name="orderdetail_payment_paid_by_customer">שולם</string>
     <string name="login_jetpack_view_instructions_alt">למידע נוסף על חיבור אל Jetpack</string>
-    <string name="login_no_stores">לא מצאנו חנויות של WooCommerce שמקושרות לחשבון זה. עליך להתקין את התוסף החינמי של Jetpack ולהתחבר אליו בחנויות WooCommerce שלך כדי להשתמש באפליקציה הזאת.</string>
     <string name="edit">עריכה</string>
     <string name="product_images_validate_drag_and_drop">אימות</string>
     <string name="product_images_drag_and_drop_description">לגרור ולשחרר כדי לשנות את הסדר של התמונות</string>
@@ -2129,6 +2137,7 @@ Language: he_IL
     <string name="dashboard_stats_granularity_months">חודשים</string>
     <string name="dashboard_stats_granularity_weeks">שבועות</string>
     <string name="dashboard_stats_granularity_days">ימים</string>
+    <string name="login_no_stores">לא מצאנו חנויות של WooCommerce שמקושרות לחשבון זה.</string>
     <string name="login_with_a_different_account">יש להתחבר באמצעות חשבון שונה</string>
     <string name="login_nostores_content_description">אין חנויות WooCommerce</string>
     <string name="login_avatar_content_description">תמונת הפרופיל שלך</string>

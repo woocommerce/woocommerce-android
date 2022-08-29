@@ -26,6 +26,7 @@ import com.woocommerce.android.di.GlideApp
 import com.woocommerce.android.extensions.handleResult
 import com.woocommerce.android.extensions.navigateBackWithResult
 import com.woocommerce.android.extensions.navigateSafely
+import com.woocommerce.android.extensions.parcelable
 import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.model.Product
 import com.woocommerce.android.model.ProductVariation
@@ -109,7 +110,7 @@ class VariationListFragment :
         val layoutManager = LinearLayoutManager(activity, RecyclerView.VERTICAL, false)
         this.layoutManager = layoutManager
 
-        savedInstanceState?.getParcelable<Parcelable>(LIST_STATE_KEY)?.let {
+        savedInstanceState?.parcelable<Parcelable>(LIST_STATE_KEY)?.let {
             layoutManager.onRestoreInstanceState(it)
         }
 
@@ -179,7 +180,7 @@ class VariationListFragment :
                 is ShowBulkUpdateAttrPicker -> openBulkUpdateView(event.variationsToUpdate)
                 is ShowBulkUpdateLimitExceededWarning -> showBulkUpdateLimitExceededWarning()
                 is ExitWithResult<*> -> navigateBackWithResult(KEY_VARIATION_LIST_RESULT, event.data)
-                is Exit -> activity?.onBackPressed()
+                is Exit -> activity?.onBackPressedDispatcher?.onBackPressed()
             }
         }
     }
