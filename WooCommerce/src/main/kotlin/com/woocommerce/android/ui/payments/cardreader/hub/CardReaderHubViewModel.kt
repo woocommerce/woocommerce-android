@@ -78,14 +78,9 @@ class CardReaderHubViewModel @Inject constructor(
     private suspend fun checkAndUpdateCashOnDeliveryOptionState() {
         val isCashOnDeliveryEnabled = cashOnDeliveryToggler.isCashOnDeliveryEnabled()
         updateCashOnDeliveryOptionState(
-            ToggleableListItem(
-                icon = R.drawable.ic_manage_card_reader,
-                label = UiStringRes(R.string.card_reader_enable_pay_in_person),
-                description = UiStringRes(R.string.card_reader_enable_pay_in_person_description),
-                index = 2,
-                isChecked = isCashOnDeliveryEnabled,
-                onToggled = { (::onCashOnDeliveryToggled)(it) }
-            )
+            cashOnDeliveryState.value?.copy(
+                isChecked = isCashOnDeliveryEnabled
+            )!!
         )
     }
 
