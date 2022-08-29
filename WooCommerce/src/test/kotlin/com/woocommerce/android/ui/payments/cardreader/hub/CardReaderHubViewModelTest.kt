@@ -853,6 +853,72 @@ class CardReaderHubViewModelTest : BaseUnitTest() {
         }
 
     @Test
+    fun `given cash on delivery api success, when cod toggled, then isChecked is set to correct value`() =
+        testBlocking {
+            // GIVEN
+            whenever(
+                cashOnDeliverySettings.toggleCashOnDeliveryOption(true)
+            ).thenReturn(
+                getSuccessWooResult()
+            )
+            val receivedViewStates = mutableListOf<CardReaderHubViewState>()
+            viewModel.viewStateData.observeForever {
+                receivedViewStates.add(it)
+            }
+
+            // WHEN
+            (
+                viewModel.viewStateData.value?.rows?.find {
+                    it.label == UiString.UiStringRes(R.string.card_reader_enable_pay_in_person)
+                }
+                    as ToggleableListItem
+                ).onToggled.invoke(true)
+
+            // THEN
+            assertThat(
+                (
+                    receivedViewStates[2].rows.find {
+                        it.label == UiString.UiStringRes(R.string.card_reader_enable_pay_in_person)
+                    }
+                        as ToggleableListItem
+                    ).isChecked
+            ).isTrue
+        }
+
+    @Test
+    fun `given cash on delivery api failure, when cod toggled, then isChecked is reverted back to old value`() =
+        testBlocking {
+            // GIVEN
+            whenever(
+                cashOnDeliverySettings.toggleCashOnDeliveryOption(true)
+            ).thenReturn(
+                getFailureWooResult()
+            )
+            val receivedViewStates = mutableListOf<CardReaderHubViewState>()
+            viewModel.viewStateData.observeForever {
+                receivedViewStates.add(it)
+            }
+
+            // WHEN
+            (
+                viewModel.viewStateData.value?.rows?.find {
+                    it.label == UiString.UiStringRes(R.string.card_reader_enable_pay_in_person)
+                }
+                    as ToggleableListItem
+                ).onToggled.invoke(true)
+
+            // THEN
+            assertThat(
+                (
+                    receivedViewStates[2].rows.find {
+                        it.label == UiString.UiStringRes(R.string.card_reader_enable_pay_in_person)
+                    }
+                        as ToggleableListItem
+                    ).isChecked
+            ).isFalse
+        }
+
+    @Test
     fun `given cash on delivery api success, when cod toggled, then track cod success event`() =
         testBlocking {
             // GIVEN
