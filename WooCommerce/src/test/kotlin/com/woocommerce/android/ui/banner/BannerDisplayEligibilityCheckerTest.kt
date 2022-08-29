@@ -368,36 +368,6 @@ class BannerDisplayEligibilityCheckerTest : BaseUnitTest() {
     }
 
     @Test
-    fun `given upsell banner from payments, when banner is shown, then track proper event`() {
-        // WHEN
-        bannerDisplayEligibilityChecker.canShowCardReaderUpsellBanner(0L)
-
-        // Then
-        verify(analyticsTrackerWrapper).track(
-            AnalyticsEvent.FEATURE_CARD_SHOWN,
-            mapOf(
-                AnalyticsTracker.KEY_BANNER_SOURCE to KEY_BANNER_PAYMENTS,
-                AnalyticsTracker.KEY_BANNER_CAMPAIGN_NAME to AnalyticsTracker.KEY_BANNER_UPSELL_CARD_READERS
-            )
-        )
-    }
-
-    @Test
-    fun `given upsell banner from order list, when banner is shown, then track proper event`() {
-        // WHEN
-        bannerDisplayEligibilityChecker.canShowCardReaderUpsellBanner(0L)
-
-        // Then
-        verify(analyticsTrackerWrapper).track(
-            AnalyticsEvent.FEATURE_CARD_SHOWN,
-            mapOf(
-                AnalyticsTracker.KEY_BANNER_SOURCE to KEY_BANNER_ORDER_LIST,
-                AnalyticsTracker.KEY_BANNER_CAMPAIGN_NAME to AnalyticsTracker.KEY_BANNER_UPSELL_CARD_READERS
-            )
-        )
-    }
-
-    @Test
     fun `given upsell banner from order list, when shouldTrackEvent is false, then do not track event`() {
         // WHEN
         bannerDisplayEligibilityChecker.canShowCardReaderUpsellBanner(0L)
@@ -407,21 +377,6 @@ class BannerDisplayEligibilityCheckerTest : BaseUnitTest() {
             AnalyticsEvent.FEATURE_CARD_SHOWN,
             mapOf(
                 AnalyticsTracker.KEY_BANNER_SOURCE to KEY_BANNER_ORDER_LIST,
-                AnalyticsTracker.KEY_BANNER_CAMPAIGN_NAME to AnalyticsTracker.KEY_BANNER_UPSELL_CARD_READERS
-            )
-        )
-    }
-
-    @Test
-    fun `given upsell banner from settings, when banner is shown, then track proper event`() {
-        // WHEN
-        bannerDisplayEligibilityChecker.canShowCardReaderUpsellBanner(0L)
-
-        // Then
-        verify(analyticsTrackerWrapper).track(
-            AnalyticsEvent.FEATURE_CARD_SHOWN,
-            mapOf(
-                AnalyticsTracker.KEY_BANNER_SOURCE to KEY_BANNER_SETTINGS,
                 AnalyticsTracker.KEY_BANNER_CAMPAIGN_NAME to AnalyticsTracker.KEY_BANNER_UPSELL_CARD_READERS
             )
         )
