@@ -752,7 +752,13 @@ class CardReaderOnboardingViewModelTest : BaseUnitTest() {
         testBlocking {
             whenever(onboardingChecker.getOnboardingState())
                 .thenReturn(StoreCountryNotSupported(""))
-            whenever(learnMoreUrlProvider.provideLearnMoreUrlFor(IN_PERSON_PAYMENTS)).thenReturn(AppUrls.STRIPE_LEARN_MORE_ABOUT_PAYMENTS)
+            whenever(
+                learnMoreUrlProvider.provideLearnMoreUrlFor(
+                    IN_PERSON_PAYMENTS
+                )
+            ).thenReturn(
+                AppUrls.STRIPE_LEARN_MORE_ABOUT_PAYMENTS
+            )
 
             val viewModel = createVM()
 
