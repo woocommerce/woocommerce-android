@@ -665,7 +665,7 @@ class SitePickerViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `given site verification returns timeout error, when clicking continue button, timeout dialog is displayed`() =
+    fun `given site verification returns timeout error, when verifying site, timeout dialog is displayed`() =
         testBlocking {
             whenever(repository.verifySiteWooAPIVersion(any())).thenReturn(
                 WooResult(SitePickerTestUtils.timeoutErrorApiVerificationResponse)
