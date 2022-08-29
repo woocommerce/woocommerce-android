@@ -13,15 +13,30 @@ class LearnMoreUrlProvider @Inject constructor(
     private val selectedSite: SelectedSite,
     private val appPrefsWrapper: AppPrefsWrapper,
 ) {
-    fun providerLearnMoreUrl(): String {
+    fun provideLearnMoreUrlFor(learnMoreUrl: LearnMoreUrl): String {
         val preferredPlugin = appPrefsWrapper.getCardReaderPreferredPlugin(
             selectedSite.get().id,
             selectedSite.get().siteId,
             selectedSite.get().selfHostedSiteId
         )
-        return when (preferredPlugin) {
-            STRIPE_EXTENSION_GATEWAY -> AppUrls.STRIPE_LEARN_MORE_ABOUT_PAYMENTS
-            WOOCOMMERCE_PAYMENTS, null -> AppUrls.WOOCOMMERCE_LEARN_MORE_ABOUT_PAYMENTS
+        return when (learnMoreUrl) {
+            LearnMoreUrl.IN_PERSON_PAYMENTS -> {
+                when (preferredPlugin) {
+                    STRIPE_EXTENSION_GATEWAY -> AppUrls.STRIPE_LEARN_MORE_ABOUT_PAYMENTS
+                    WOOCOMMERCE_PAYMENTS, null -> AppUrls.WOOCOMMERCE_LEARN_MORE_ABOUT_PAYMENTS
+                }
+            }
+            LearnMoreUrl.CASH_ON_DELIVERY -> {
+                when (preferredPlugin) {
+                    STRIPE_EXTENSION_GATEWAY -> AppUrls.STRIPE_LEARN_MORE_ABOUT_PAYMENTS_CASH_ON_DELIVERY
+                    WOOCOMMERCE_PAYMENTS, null -> AppUrls.WOOCOMMERCE_LEARN_MORE_ABOUT_PAYMENTS_CASH_ON_DELIVERY
+                }
+            }
         }
+    }
+
+    enum class LearnMoreUrl {
+        IN_PERSON_PAYMENTS,
+        CASH_ON_DELIVERY
     }
 }

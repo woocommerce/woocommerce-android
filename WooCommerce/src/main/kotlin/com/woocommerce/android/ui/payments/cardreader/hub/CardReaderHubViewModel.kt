@@ -15,6 +15,8 @@ import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.payments.cardreader.CardReaderTracker
 import com.woocommerce.android.ui.payments.cardreader.CashOnDeliverySettings
 import com.woocommerce.android.ui.payments.cardreader.InPersonPaymentsCanadaFeatureFlag
+import com.woocommerce.android.ui.payments.cardreader.LearnMoreUrlProvider
+import com.woocommerce.android.ui.payments.cardreader.LearnMoreUrlProvider.LearnMoreUrl.CASH_ON_DELIVERY
 import com.woocommerce.android.ui.payments.cardreader.hub.CardReaderHubViewModel.CardReaderHubViewState.ListItem.NonToggleableListItem
 import com.woocommerce.android.ui.payments.cardreader.hub.CardReaderHubViewModel.CardReaderHubViewState.ListItem.ToggleableListItem
 import com.woocommerce.android.ui.payments.cardreader.hub.CardReaderHubViewModel.CardReaderHubViewState.OnboardingErrorAction
@@ -45,6 +47,7 @@ class CardReaderHubViewModel @Inject constructor(
     private val wooStore: WooCommerceStore,
     private val cardReaderChecker: CardReaderOnboardingChecker,
     private val cashOnDeliveryToggler: CashOnDeliverySettings,
+    private val learnMoreUrlProvider: LearnMoreUrlProvider,
     private val cardReaderTracker: CardReaderTracker,
 ) : ScopedViewModel(savedState) {
     private val arguments: CardReaderHubFragmentArgs by savedState.navArgs()
@@ -53,12 +56,26 @@ class CardReaderHubViewModel @Inject constructor(
         ToggleableListItem(
             icon = R.drawable.ic_manage_card_reader,
             label = UiStringRes(R.string.card_reader_enable_pay_in_person),
-            description = UiStringRes(R.string.card_reader_enable_pay_in_person_description),
+            description = UiStringRes(
+                R.string.card_reader_enable_pay_in_person_description,
+                containsHtml = true
+            ),
             index = 2,
             isChecked = false,
-            onToggled = { (::onCashOnDeliveryToggled)(it) }
+            onToggled = { (::onCashOnDeliveryToggled)(it) },
+            onLearnMoreClicked = ::onLearnMoreClicked
         )
     )
+
+    private fun onLearnMoreClicked() {
+        triggerEvent(
+            CardReaderHubEvents.OpenGenericWebView(
+                learnMoreUrlProvider.provideLearnMoreUrlFor(
+                    CASH_ON_DELIVERY
+                )
+            )
+        )
+    }
 
     private val viewState = MutableLiveData(
         CardReaderHubViewState(
@@ -68,8 +85,8 @@ class CardReaderHubViewModel @Inject constructor(
                     cashOnDeliveryItem = cashOnDeliveryState.value!!
                 )
                 ).sortedBy {
-                it.index
-            },
+                    it.index
+                },
             isLoading = true,
             onboardingErrorAction = null
         )
@@ -187,8 +204,8 @@ class CardReaderHubViewModel @Inject constructor(
                     createHubListWhenSinglePluginInstalled(true, cashOnDeliveryState.value!!) +
                         createAdditionalItemWhenMultiplePluginsInstalled()
                     ).sortedBy {
-                    it.index
-                }
+                        it.index
+                    }
             } else {
                 createHubListWhenSinglePluginInstalled(true, cashOnDeliveryState.value!!)
             },
@@ -210,8 +227,8 @@ class CardReaderHubViewModel @Inject constructor(
             rows = (
                 createHubListWhenSinglePluginInstalled(false, cashOnDeliveryState.value!!)
                 ).sortedBy {
-                it.index
-            },
+                    it.index
+                },
             isLoading = false,
             onboardingErrorAction = OnboardingErrorAction(
                 text = UiStringRes(R.string.card_reader_onboarding_not_finished, containsHtml = true),
@@ -308,6 +325,8 @@ class CardReaderHubViewModel @Inject constructor(
         data class NavigateToCardReaderOnboardingScreen(
             val onboardingState: CardReaderOnboardingState
         ) : CardReaderHubEvents()
+
+        data class OpenGenericWebView(val url: String) : CardReaderHubEvents()
     }
 
     data class CardReaderHubViewState(
@@ -338,7 +357,8 @@ class CardReaderHubViewModel @Inject constructor(
                 val isChecked: Boolean,
                 override val index: Int,
                 override val onClick: (() -> Unit)? = null,
-                val onToggled: (Boolean) -> Unit
+                val onToggled: (Boolean) -> Unit,
+                val onLearnMoreClicked: () -> Unit
             ) : ListItem()
 
             data class HeaderItem(
