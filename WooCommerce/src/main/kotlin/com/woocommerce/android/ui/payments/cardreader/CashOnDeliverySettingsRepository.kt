@@ -10,7 +10,7 @@ import org.wordpress.android.fluxc.store.WCGatewayStore
 import javax.inject.Inject
 
 @Reusable
-class CashOnDeliverySettings @Inject constructor(
+class CashOnDeliverySettingsRepository @Inject constructor(
     private val gatewayStore: WCGatewayStore,
     private val selectedSite: SelectedSite,
 ) {

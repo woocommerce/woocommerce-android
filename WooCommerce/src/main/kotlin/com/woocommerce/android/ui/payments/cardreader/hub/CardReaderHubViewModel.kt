@@ -13,10 +13,11 @@ import com.woocommerce.android.model.UiString
 import com.woocommerce.android.model.UiString.UiStringRes
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.payments.cardreader.CardReaderTracker
-import com.woocommerce.android.ui.payments.cardreader.CashOnDeliverySettings
+import com.woocommerce.android.ui.payments.cardreader.CashOnDeliverySettingsRepository
 import com.woocommerce.android.ui.payments.cardreader.InPersonPaymentsCanadaFeatureFlag
 import com.woocommerce.android.ui.payments.cardreader.LearnMoreUrlProvider
 import com.woocommerce.android.ui.payments.cardreader.LearnMoreUrlProvider.LearnMoreUrl.CASH_ON_DELIVERY
+import com.woocommerce.android.ui.payments.cardreader.hub.CardReaderHubViewModel.CardReaderHubEvents.ShowToastString
 import com.woocommerce.android.ui.payments.cardreader.hub.CardReaderHubViewModel.CardReaderHubViewState.ListItem.NonToggleableListItem
 import com.woocommerce.android.ui.payments.cardreader.hub.CardReaderHubViewModel.CardReaderHubViewState.ListItem.ToggleableListItem
 import com.woocommerce.android.ui.payments.cardreader.hub.CardReaderHubViewModel.CardReaderHubViewState.OnboardingErrorAction
@@ -46,7 +47,7 @@ class CardReaderHubViewModel @Inject constructor(
     private val analyticsTrackerWrapper: AnalyticsTrackerWrapper,
     private val wooStore: WooCommerceStore,
     private val cardReaderChecker: CardReaderOnboardingChecker,
-    private val cashOnDeliveryToggler: CashOnDeliverySettings,
+    private val cashOnDeliveryToggler: CashOnDeliverySettingsRepository,
     private val learnMoreUrlProvider: LearnMoreUrlProvider,
     private val cardReaderTracker: CardReaderTracker,
 ) : ScopedViewModel(savedState) {
@@ -275,18 +276,25 @@ class CardReaderHubViewModel @Inject constructor(
                 cashOnDeliveryState.value?.copy(isEnabled = false, isChecked = isChecked)!!
             )
             val result = cashOnDeliveryToggler.toggleCashOnDeliveryOption(isChecked)
-            result.model?.let {
+            if (!result.isError) {
                 cardReaderTracker.trackCashOnDeliveryEnabledSuccess()
                 updateCashOnDeliveryOptionState(
                     cashOnDeliveryState.value?.copy(isEnabled = true, isChecked = isChecked)!!
                 )
-            } ?: run {
+            } else {
                 cardReaderTracker.trackCashOnDeliveryEnabledFailure(
                     result.error.message
                 )
                 updateCashOnDeliveryOptionState(
                     cashOnDeliveryState.value?.copy(isEnabled = true, isChecked = !isChecked)!!
                 )
+                if (result.error.message.isNullOrEmpty()) {
+                    triggerEvent(ShowToastString("Something went wrong, Please try again later."))
+                } else {
+                    triggerEvent(
+                        ShowToastString(result.error.message!!)
+                    )
+                }
             }
         }
     }
@@ -327,6 +335,7 @@ class CardReaderHubViewModel @Inject constructor(
         ) : CardReaderHubEvents()
 
         data class OpenGenericWebView(val url: String) : CardReaderHubEvents()
+        data class ShowToastString(val message: String) : CardReaderHubEvents()
     }
 
     data class CardReaderHubViewState(

@@ -12,7 +12,7 @@ import com.woocommerce.android.util.UiHelpers
 
 private const val DISABLED_BUTTON_ALPHA = 0.5f
 
-sealed class CardReaderHubViewHolder(val parent: ViewGroup, @LayoutRes layout: Int) :
+abstract class CardReaderHubViewHolder(val parent: ViewGroup, @LayoutRes layout: Int) :
     RecyclerView.ViewHolder(LayoutInflater.from(parent.context).inflate(layout, parent, false)) {
     abstract fun onBind(uiState: CardReaderHubViewModel.CardReaderHubViewState.ListItem)
 
@@ -53,6 +53,9 @@ sealed class CardReaderHubViewHolder(val parent: ViewGroup, @LayoutRes layout: I
             }
             binding.cardReaderHubListItemDescriptionTv.setOnClickListener {
                 uiState.onLearnMoreClicked()
+            }
+            binding.root.setOnClickListener {
+                binding.cardReaderHubSwitch.isChecked = !uiState.isChecked
             }
         }
     }
