@@ -14,12 +14,12 @@ import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooErrorType
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooResult
 import org.wordpress.android.fluxc.store.WCGatewayStore
 
-class CashOnDeliverySettingsTest {
+class CashOnDeliverySettingsRepositoryTest {
     private val selectedSite: SelectedSite = mock {
         on(it.get()).thenReturn(SiteModel())
     }
     private val gatewayStore: WCGatewayStore = mock()
-    private val cashOnDeliverySettings = CashOnDeliverySettings(
+    private val cashOnDeliverySettingsRepository = CashOnDeliverySettingsRepository(
         gatewayStore, selectedSite
     )
 
@@ -29,7 +29,7 @@ class CashOnDeliverySettingsTest {
             whenever(gatewayStore.fetchAllGateways(selectedSite.get())).thenReturn(
                 getSuccessWooResult("cod", true)
             )
-            assertThat(cashOnDeliverySettings.isCashOnDeliveryEnabled()).isTrue
+            assertThat(cashOnDeliverySettingsRepository.isCashOnDeliveryEnabled()).isTrue
         }
     }
 
@@ -39,7 +39,7 @@ class CashOnDeliverySettingsTest {
             whenever(gatewayStore.fetchAllGateways(selectedSite.get())).thenReturn(
                 getSuccessWooResult("cod", false)
             )
-            assertThat(cashOnDeliverySettings.isCashOnDeliveryEnabled()).isFalse
+            assertThat(cashOnDeliverySettingsRepository.isCashOnDeliveryEnabled()).isFalse
         }
     }
 
@@ -49,7 +49,7 @@ class CashOnDeliverySettingsTest {
             whenever(gatewayStore.fetchAllGateways(selectedSite.get())).thenReturn(
                 getSuccessWooResult("cheque", true)
             )
-            assertThat(cashOnDeliverySettings.isCashOnDeliveryEnabled()).isFalse
+            assertThat(cashOnDeliverySettingsRepository.isCashOnDeliveryEnabled()).isFalse
         }
     }
 
@@ -57,7 +57,7 @@ class CashOnDeliverySettingsTest {
     fun `when api result is error, then return false when queried for cod status`() {
         runTest {
             whenever(gatewayStore.fetchAllGateways(selectedSite.get())).thenReturn(getFailureWooResult())
-            assertThat(cashOnDeliverySettings.isCashOnDeliveryEnabled()).isFalse
+            assertThat(cashOnDeliverySettingsRepository.isCashOnDeliveryEnabled()).isFalse
         }
     }
 

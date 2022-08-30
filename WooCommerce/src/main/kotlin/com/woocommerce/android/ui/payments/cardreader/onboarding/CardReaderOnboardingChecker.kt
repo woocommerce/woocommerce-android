@@ -15,7 +15,7 @@ import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.payments.cardreader.CardReaderCountryConfigProvider
 import com.woocommerce.android.ui.payments.cardreader.CardReaderTrackingInfoKeeper
-import com.woocommerce.android.ui.payments.cardreader.CashOnDeliverySettings
+import com.woocommerce.android.ui.payments.cardreader.CashOnDeliverySettingsRepository
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboardingState.CashOnDeliveryDisabled
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboardingState.ChoosePaymentGatewayProvider
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboardingState.GenericError
@@ -75,7 +75,7 @@ class CardReaderOnboardingChecker @Inject constructor(
     private val networkStatus: NetworkStatus,
     private val cardReaderTrackingInfoKeeper: CardReaderTrackingInfoKeeper,
     private val cardReaderCountryConfigProvider: CardReaderCountryConfigProvider,
-    private val cashOnDeliverySettings: CashOnDeliverySettings,
+    private val cashOnDeliverySettingsRepository: CashOnDeliverySettingsRepository,
 ) {
     suspend fun getOnboardingState(pluginType: PluginType? = null): CardReaderOnboardingState {
         if (!networkStatus.isConnected()) return NoConnectionError
@@ -197,7 +197,7 @@ class CardReaderOnboardingChecker @Inject constructor(
 
         if (
             !isCashOnDeliveryDisabledStateSkipped() &&
-            !cashOnDeliverySettings.isCashOnDeliveryEnabled()
+            !cashOnDeliverySettingsRepository.isCashOnDeliveryEnabled()
         ) return CashOnDeliveryDisabled(
             requireNotNull(countryCode),
             preferredPlugin.type,
