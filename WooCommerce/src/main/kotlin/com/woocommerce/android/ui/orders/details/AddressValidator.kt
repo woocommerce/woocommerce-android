@@ -79,7 +79,7 @@ class AddressValidator @Inject constructor(
 
         with(address) {
             // The name or the company name should not be empty
-            if (firstName.isEmpty() && lastName.isEmpty() || company.isEmpty()) {
+            if (firstName.isEmpty() && lastName.isEmpty() && company.isEmpty()) {
                 errors.add(EMPTY_NAME_ERROR)
             }
             if (address1.isEmpty()) {
