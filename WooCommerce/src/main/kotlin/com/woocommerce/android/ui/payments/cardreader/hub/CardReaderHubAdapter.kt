@@ -36,7 +36,7 @@ class CardReaderHubAdapter :
                 CardReaderHubViewHolder.HeaderViewHolder(parent)
             }
             else -> {
-                throw IllegalStateException("Unknown section")
+                throw error("Unknown section")
             }
         }
     }
