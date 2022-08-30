@@ -92,7 +92,7 @@ class AddressValidatorTest : BaseUnitTest() {
         verify(shippingLabelAddressValidator, never()).validateAddress(
             address = address,
             type = ShippingLabelAddressValidator.AddressType.DESTINATION,
-            requiresPhoneNumber = true
+            requiresPhoneNumber = false
         )
     }
 
@@ -119,7 +119,7 @@ class AddressValidatorTest : BaseUnitTest() {
         verify(shippingLabelAddressValidator, never()).validateAddress(
             address = address,
             type = ShippingLabelAddressValidator.AddressType.DESTINATION,
-            requiresPhoneNumber = true
+            requiresPhoneNumber = false
         )
     }
 
@@ -146,7 +146,7 @@ class AddressValidatorTest : BaseUnitTest() {
         verify(shippingLabelAddressValidator, never()).validateAddress(
             address = address,
             type = ShippingLabelAddressValidator.AddressType.DESTINATION,
-            requiresPhoneNumber = true
+            requiresPhoneNumber = false
         )
     }
 
@@ -173,7 +173,7 @@ class AddressValidatorTest : BaseUnitTest() {
         verify(shippingLabelAddressValidator, never()).validateAddress(
             address = address,
             type = ShippingLabelAddressValidator.AddressType.DESTINATION,
-            requiresPhoneNumber = true
+            requiresPhoneNumber = false
         )
     }
 
@@ -200,7 +200,7 @@ class AddressValidatorTest : BaseUnitTest() {
         verify(shippingLabelAddressValidator, never()).validateAddress(
             address = address,
             type = ShippingLabelAddressValidator.AddressType.DESTINATION,
-            requiresPhoneNumber = true
+            requiresPhoneNumber = false
         )
     }
 
@@ -227,34 +227,7 @@ class AddressValidatorTest : BaseUnitTest() {
         verify(shippingLabelAddressValidator, never()).validateAddress(
             address = address,
             type = ShippingLabelAddressValidator.AddressType.DESTINATION,
-            requiresPhoneNumber = true
-        )
-    }
-
-    @Test
-    fun `When the address has no phone, INVALID_PHONE_ERROR is registered`() = testBlocking {
-        // Given phone is empty
-        val address = defaultAddress.copy(
-            phone = ""
-        )
-
-        // When the address is validated
-        addressValidator.validate(defaultOrderId, address)
-
-        // Then the INVALID_PHONE_ERROR is tracked
-        verify(trackerWrapper).track(
-            AnalyticsEvent.ORDER_ADDRESS_VALIDATION_ERROR,
-            mapOf(
-                AnalyticsTracker.KEY_ERROR_MESSAGE to INVALID_PHONE_ERROR,
-                AnalyticsTracker.KEY_VALIDATION_SCENARIO to AnalyticsTracker.VALUE_VALIDATION_SCENARIO_LOCAL,
-                AnalyticsTracker.KEY_ORDER_ID to defaultOrderId
-            )
-        )
-        // Then the address remote validation never happens
-        verify(shippingLabelAddressValidator, never()).validateAddress(
-            address = address,
-            type = ShippingLabelAddressValidator.AddressType.DESTINATION,
-            requiresPhoneNumber = true
+            requiresPhoneNumber = false
         )
     }
 
@@ -283,7 +256,7 @@ class AddressValidatorTest : BaseUnitTest() {
         verify(shippingLabelAddressValidator, never()).validateAddress(
             address = address,
             type = ShippingLabelAddressValidator.AddressType.DESTINATION,
-            requiresPhoneNumber = true
+            requiresPhoneNumber = false
         )
     }
 
@@ -303,7 +276,7 @@ class AddressValidatorTest : BaseUnitTest() {
         verify(shippingLabelAddressValidator, never()).validateAddress(
             address = defaultAddress,
             type = ShippingLabelAddressValidator.AddressType.DESTINATION,
-            requiresPhoneNumber = true
+            requiresPhoneNumber = false
         )
     }
 
@@ -323,7 +296,7 @@ class AddressValidatorTest : BaseUnitTest() {
         verify(shippingLabelAddressValidator, never()).validateAddress(
             address = defaultAddress,
             type = ShippingLabelAddressValidator.AddressType.DESTINATION,
-            requiresPhoneNumber = true
+            requiresPhoneNumber = false
         )
     }
 
@@ -337,7 +310,7 @@ class AddressValidatorTest : BaseUnitTest() {
             shippingLabelAddressValidator.validateAddress(
                 address = defaultAddress,
                 type = ShippingLabelAddressValidator.AddressType.DESTINATION,
-                requiresPhoneNumber = true
+                requiresPhoneNumber = false
             )
         ).thenReturn(ShippingLabelAddressValidator.ValidationResult.NameMissing)
 
@@ -365,7 +338,7 @@ class AddressValidatorTest : BaseUnitTest() {
             shippingLabelAddressValidator.validateAddress(
                 address = defaultAddress,
                 type = ShippingLabelAddressValidator.AddressType.DESTINATION,
-                requiresPhoneNumber = true
+                requiresPhoneNumber = false
             )
         ).thenReturn(ShippingLabelAddressValidator.ValidationResult.PhoneInvalid)
 
@@ -394,7 +367,7 @@ class AddressValidatorTest : BaseUnitTest() {
             shippingLabelAddressValidator.validateAddress(
                 address = defaultAddress,
                 type = ShippingLabelAddressValidator.AddressType.DESTINATION,
-                requiresPhoneNumber = true
+                requiresPhoneNumber = false
             )
         ).thenReturn(ShippingLabelAddressValidator.ValidationResult.Invalid(message))
 
@@ -423,7 +396,7 @@ class AddressValidatorTest : BaseUnitTest() {
             shippingLabelAddressValidator.validateAddress(
                 address = defaultAddress,
                 type = ShippingLabelAddressValidator.AddressType.DESTINATION,
-                requiresPhoneNumber = true
+                requiresPhoneNumber = false
             )
         ).thenReturn(ShippingLabelAddressValidator.ValidationResult.NotFound(message))
 
@@ -451,7 +424,7 @@ class AddressValidatorTest : BaseUnitTest() {
             shippingLabelAddressValidator.validateAddress(
                 address = defaultAddress,
                 type = ShippingLabelAddressValidator.AddressType.DESTINATION,
-                requiresPhoneNumber = true
+                requiresPhoneNumber = false
             )
         ).thenReturn(ShippingLabelAddressValidator.ValidationResult.Error(WooErrorType.GENERIC_ERROR))
 
@@ -479,7 +452,7 @@ class AddressValidatorTest : BaseUnitTest() {
             shippingLabelAddressValidator.validateAddress(
                 address = defaultAddress,
                 type = ShippingLabelAddressValidator.AddressType.DESTINATION,
-                requiresPhoneNumber = true
+                requiresPhoneNumber = false
             )
         ).thenReturn(
             ShippingLabelAddressValidator.ValidationResult.SuggestedChanges(
@@ -505,7 +478,7 @@ class AddressValidatorTest : BaseUnitTest() {
             shippingLabelAddressValidator.validateAddress(
                 address = defaultAddress,
                 type = ShippingLabelAddressValidator.AddressType.DESTINATION,
-                requiresPhoneNumber = true
+                requiresPhoneNumber = false
             )
         ).thenReturn(ShippingLabelAddressValidator.ValidationResult.Valid)
 
