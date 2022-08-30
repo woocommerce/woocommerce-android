@@ -1,11 +1,20 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2022-08-18 09:54:03+0000
+Translation-Revision-Date: 2022-08-23 11:54:03+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: de
 -->
 <resources>
+    <string name="login_site_picker_try_another_address">Andere Adresse versuchen</string>
+    <string name="card_reader_onboarding_cash_on_delivery_enable_failure">Bezahlung per Nachnahme konnte nicht aktiviert werden. Versuch es später noch einmal.</string>
+    <string name="card_reader_onboarding_cash_on_delivery_disabled_button">„Persönliche Zahlung“ aktivieren</string>
+    <string name="card_reader_onboarding_cash_on_delivery_disabled_error_hint">Mit der Bezahloption „Persönliche Zahlung“ kannst du Karten- oder Barzahlung bei Abholung oder Lieferung akzeptieren.</string>
+    <string name="card_reader_onboarding_cash_on_delivery_disabled_error_header">„Persönliche Zahlung“ als Bezahloption hinzufügen</string>
+    <string name="card_reader_connect_learn_more">&lt;a href=\'\'&gt;Weitere Informationen&lt;/a&gt; zu „Persönliche Zahlungen“</string>
+    <string name="login_site_picker_new_to_woo">Neu bei WooCommerce</string>
+    <string name="site_discovery_postlogin_failure">Es ist ein Fehler aufgetreten, kontaktiere bitte den Support</string>
+    <string name="login_site_picker_enter_site_address">Website-Adresse eingeben</string>
     <string name="login_help_notification_get_link_by_email_button">Fordere einen Anmeldelink per E-Mail an</string>
     <string name="login_help_notification_invalid_password_title">Hast du dein Passwort vergessen?</string>
     <string name="card_reader_onboarding_not_finished">Wir haben festgestellt, dass du die Einrichtung von Persönliche Zahlungen noch nicht abgeschlossen hast. &lt;b&gt;&lt;a href=\'\'&gt;Mit der Einrichtung fortfahren&lt;/a&gt;&lt;/b&gt;</string>
@@ -1037,7 +1046,6 @@ Language: de
     <string name="orderdetail_net">Nettozahlung</string>
     <string name="orderdetail_payment_paid_by_customer">Bezahlt</string>
     <string name="login_jetpack_view_instructions_alt">Weitere Informationen zum Verbinden von Jetpack</string>
-    <string name="login_no_stores">Wir konnten keine WooCommerce-Shops finden, die mit diesem Konto verknüpft sind. Du musst in deinen WooCommerce-Shops das kostenlose Jetpack-Plugin installieren und verbinden, um diese App zu verwenden.</string>
     <string name="edit">Bearbeiten</string>
     <string name="product_images_validate_drag_and_drop">Bestätigen</string>
     <string name="product_images_drag_and_drop_description">Nutze Drag-and-Drop zum Umsortieren der Fotos</string>
@@ -2129,6 +2137,7 @@ Language: de
     <string name="dashboard_stats_granularity_months">Monate</string>
     <string name="dashboard_stats_granularity_weeks">Wochen</string>
     <string name="dashboard_stats_granularity_days">Tage</string>
+    <string name="login_no_stores">Wir konnten keine WooCommerce-Shops finden, die mit diesem Konto verknüpft sind.</string>
     <string name="login_with_a_different_account">Mit einem anderen Konto anmelden</string>
     <string name="login_nostores_content_description">Keine WooCommerce-Shops</string>
     <string name="login_avatar_content_description">Dein Profilfoto</string>

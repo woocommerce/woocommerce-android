@@ -26,8 +26,6 @@ class SingleOrderScreen : Screen {
             .check(ViewAssertions.matches(isDisplayed()))
         Espresso.onView(withId(R.id.paymentInfo_total))
             .check(ViewAssertions.matches(isDisplayed()))
-        Espresso.onView(withId(R.id.orderDetail_customerInfo))
-            .check(ViewAssertions.matches(isDisplayed()))
         return this
     }
 

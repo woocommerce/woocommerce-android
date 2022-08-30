@@ -22,10 +22,6 @@ class TodayWidgetListProvider(val context: Context, intent: Intent) : RemoteView
     private val siteId: Int = intent.getIntExtra(SITE_ID_KEY, 0)
     private val appWidgetId = intent.getIntExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, -1)
 
-    init {
-        // TODO (context.applicationContext as WooCommerce).component.inject(this)
-    }
-
     override fun onCreate() {
         viewModel.start(siteId, colorMode, appWidgetId)
     }
