@@ -37,7 +37,7 @@ class AddressValidator @Inject constructor(
                 val validationResult = shippingLabelAddressValidator.validateAddress(
                     address = address,
                     type = ShippingLabelAddressValidator.AddressType.DESTINATION,
-                    requiresPhoneNumber = true
+                    requiresPhoneNumber = false
                 )
 
                 val message = when (validationResult) {
@@ -96,9 +96,6 @@ class AddressValidator @Inject constructor(
             }
             if (country == Location.EMPTY) {
                 errors.add(EMPTY_COUNTRY_ERROR)
-            }
-            if (phone.isEmpty()) {
-                errors.add(INVALID_PHONE_ERROR)
             }
         }
 
