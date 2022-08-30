@@ -4,8 +4,8 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.hilt.navigation.fragment.hiltNavGraphViewModels
 import androidx.navigation.fragment.findNavController
-import androidx.navigation.navGraphViewModels
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.woocommerce.android.R
@@ -22,7 +22,7 @@ import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class WidgetSiteSelectionFragment : BaseFragment(), OnWidgetSiteSelectedListener {
-    private val viewModel: TodayWidgetConfigureViewModel by navGraphViewModels(R.id.nav_graph_today_widget)
+    private val viewModel: TodayWidgetConfigureViewModel by hiltNavGraphViewModels(R.id.nav_graph_today_widget)
 
     private var _binding: FragmentWidgetSiteSelectorBinding? = null
     private val binding get() = _binding!!

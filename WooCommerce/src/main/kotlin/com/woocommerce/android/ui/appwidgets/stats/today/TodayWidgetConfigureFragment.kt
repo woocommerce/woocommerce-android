@@ -8,6 +8,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.app.AppCompatActivity
+import androidx.hilt.navigation.fragment.hiltNavGraphViewModels
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.navGraphViewModels
 import com.woocommerce.android.R
@@ -32,7 +33,7 @@ class TodayWidgetConfigureFragment : BaseFragment() {
     private var _binding: FragmentTodayWidgetConfigureBinding? = null
     private val binding get() = _binding!!
 
-    private val viewModel: TodayWidgetConfigureViewModel by navGraphViewModels(R.id.nav_graph_today_widget)
+    private val viewModel: TodayWidgetConfigureViewModel by hiltNavGraphViewModels(R.id.nav_graph_today_widget)
 
     override fun getFragmentTitle() = getString(R.string.stats_today_widget_configure_title)
 
