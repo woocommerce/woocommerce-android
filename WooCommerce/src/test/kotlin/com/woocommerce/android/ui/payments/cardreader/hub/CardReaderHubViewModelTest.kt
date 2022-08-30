@@ -11,6 +11,7 @@ import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.payments.cardreader.CardReaderTracker
 import com.woocommerce.android.ui.payments.cardreader.CashOnDeliverySettingsRepository
 import com.woocommerce.android.ui.payments.cardreader.InPersonPaymentsCanadaFeatureFlag
+import com.woocommerce.android.ui.payments.cardreader.hub.CardReaderHubViewModel.CardReaderHubEvents.ShowToastString
 import com.woocommerce.android.ui.payments.cardreader.hub.CardReaderHubViewModel.CardReaderHubViewState
 import com.woocommerce.android.ui.payments.cardreader.hub.CardReaderHubViewModel.CardReaderHubViewState.ListItem.NonToggleableListItem
 import com.woocommerce.android.ui.payments.cardreader.hub.CardReaderHubViewModel.CardReaderHubViewState.ListItem.ToggleableListItem
@@ -963,6 +964,106 @@ class CardReaderHubViewModelTest : BaseUnitTest() {
                 "Enabling COD failed. Please try again later"
             )
         }
+
+    @Test
+    fun `given cash on delivery api failure, when cod toggled, then show toast event is triggered`() =
+        testBlocking {
+            // GIVEN
+            whenever(
+                cashOnDeliverySettingsRepository.toggleCashOnDeliveryOption(true)
+            ).thenReturn(
+                getFailureWooResult()
+            )
+
+            // WHEN
+            (
+                viewModel.viewStateData.value?.rows?.find {
+                    it.label == UiString.UiStringRes(R.string.card_reader_enable_pay_in_person)
+                }
+                    as ToggleableListItem
+                ).onToggled.invoke(true)
+
+            // THEN
+            assertThat(viewModel.event.value).isInstanceOf(ShowToastString::class.java)
+        }
+
+    @Test
+    fun `given cash on delivery api failure, when cod toggled, then show toast event with correct message is fired`() =
+        testBlocking {
+            // GIVEN
+            whenever(
+                cashOnDeliverySettingsRepository.toggleCashOnDeliveryOption(true)
+            ).thenReturn(
+                getFailureWooResult()
+            )
+
+            // WHEN
+            (
+                viewModel.viewStateData.value?.rows?.find {
+                    it.label == UiString.UiStringRes(R.string.card_reader_enable_pay_in_person)
+                }
+                    as ToggleableListItem
+                ).onToggled.invoke(true)
+
+            // THEN
+            assertThat(viewModel.event.value).isEqualTo(
+                ShowToastString(
+                    "Enabling COD failed. Please try again later"
+                )
+            )
+        }
+
+    @Test
+    fun `given cod api failure with null message, when cod toggled, then toast event with default message is fired`() =
+        testBlocking {
+            // GIVEN
+            whenever(
+                cashOnDeliverySettingsRepository.toggleCashOnDeliveryOption(true)
+            ).thenReturn(
+                getFailureWooResult(message = null)
+            )
+
+            // WHEN
+            (
+                viewModel.viewStateData.value?.rows?.find {
+                    it.label == UiString.UiStringRes(R.string.card_reader_enable_pay_in_person)
+                }
+                    as ToggleableListItem
+                ).onToggled.invoke(true)
+
+            // THEN
+            assertThat(viewModel.event.value).isEqualTo(
+                ShowToastString(
+                    "Something went wrong, Please try again later."
+                )
+            )
+        }
+
+    @Test
+    fun `given cod api failure with empty message, when cod toggled, then toast event with default message is fired`() =
+        testBlocking {
+            // GIVEN
+            whenever(
+                cashOnDeliverySettingsRepository.toggleCashOnDeliveryOption(true)
+            ).thenReturn(
+                getFailureWooResult(message = "")
+            )
+
+            // WHEN
+            (
+                viewModel.viewStateData.value?.rows?.find {
+                    it.label == UiString.UiStringRes(R.string.card_reader_enable_pay_in_person)
+                }
+                    as ToggleableListItem
+                ).onToggled.invoke(true)
+
+            // THEN
+            assertThat(viewModel.event.value).isEqualTo(
+                ShowToastString(
+                    "Something went wrong, Please try again later."
+                )
+            )
+        }
     // endregion
 
     private fun getSuccessWooResult() = WooResult(
@@ -978,11 +1079,13 @@ class CardReaderHubViewModelTest : BaseUnitTest() {
         )
     )
 
-    private fun getFailureWooResult() = WooResult<WCGatewayModel>(
+    private fun getFailureWooResult(
+        message: String? = "Enabling COD failed. Please try again later"
+    ) = WooResult<WCGatewayModel>(
         error = WooError(
             type = WooErrorType.GENERIC_ERROR,
             original = BaseRequest.GenericErrorType.NETWORK_ERROR,
-            message = "Enabling COD failed. Please try again later"
+            message = message
         )
     )
 

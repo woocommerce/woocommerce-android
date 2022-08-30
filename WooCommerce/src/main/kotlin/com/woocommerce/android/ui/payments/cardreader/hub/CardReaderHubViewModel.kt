@@ -15,6 +15,7 @@ import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.payments.cardreader.CardReaderTracker
 import com.woocommerce.android.ui.payments.cardreader.CashOnDeliverySettingsRepository
 import com.woocommerce.android.ui.payments.cardreader.InPersonPaymentsCanadaFeatureFlag
+import com.woocommerce.android.ui.payments.cardreader.hub.CardReaderHubViewModel.CardReaderHubEvents.ShowToastString
 import com.woocommerce.android.ui.payments.cardreader.hub.CardReaderHubViewModel.CardReaderHubViewState.ListItem.NonToggleableListItem
 import com.woocommerce.android.ui.payments.cardreader.hub.CardReaderHubViewModel.CardReaderHubViewState.ListItem.ToggleableListItem
 import com.woocommerce.android.ui.payments.cardreader.hub.CardReaderHubViewModel.CardReaderHubViewState.OnboardingErrorAction
@@ -270,6 +271,13 @@ class CardReaderHubViewModel @Inject constructor(
                 updateCashOnDeliveryOptionState(
                     cashOnDeliveryState.value?.copy(isEnabled = true, isChecked = !isChecked)!!
                 )
+                if (result.error.message.isNullOrEmpty()) {
+                    triggerEvent(ShowToastString("Something went wrong, Please try again later."))
+                } else {
+                    triggerEvent(
+                        ShowToastString(result.error.message!!)
+                    )
+                }
             }
         }
     }
@@ -308,6 +316,7 @@ class CardReaderHubViewModel @Inject constructor(
         data class NavigateToCardReaderOnboardingScreen(
             val onboardingState: CardReaderOnboardingState
         ) : CardReaderHubEvents()
+        data class ShowToastString(val message: String) : CardReaderHubEvents()
     }
 
     data class CardReaderHubViewState(
