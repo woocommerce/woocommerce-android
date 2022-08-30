@@ -47,7 +47,7 @@ class CardReaderHubViewModel @Inject constructor(
     private val analyticsTrackerWrapper: AnalyticsTrackerWrapper,
     private val wooStore: WooCommerceStore,
     private val cardReaderChecker: CardReaderOnboardingChecker,
-    private val cashOnDeliveryToggler: CashOnDeliverySettingsRepository,
+    private val cashOnDeliverySettingsRepository: CashOnDeliverySettingsRepository,
     private val learnMoreUrlProvider: LearnMoreUrlProvider,
     private val cardReaderTracker: CardReaderTracker,
 ) : ScopedViewModel(savedState) {
@@ -94,7 +94,7 @@ class CardReaderHubViewModel @Inject constructor(
     )
 
     private suspend fun checkAndUpdateCashOnDeliveryOptionState() {
-        val isCashOnDeliveryEnabled = cashOnDeliveryToggler.isCashOnDeliveryEnabled()
+        val isCashOnDeliveryEnabled = cashOnDeliverySettingsRepository.isCashOnDeliveryEnabled()
         updateCashOnDeliveryOptionState(
             cashOnDeliveryState.value?.copy(
                 isChecked = isCashOnDeliveryEnabled
@@ -275,7 +275,7 @@ class CardReaderHubViewModel @Inject constructor(
             updateCashOnDeliveryOptionState(
                 cashOnDeliveryState.value?.copy(isEnabled = false, isChecked = isChecked)!!
             )
-            val result = cashOnDeliveryToggler.toggleCashOnDeliveryOption(isChecked)
+            val result = cashOnDeliverySettingsRepository.toggleCashOnDeliveryOption(isChecked)
             if (!result.isError) {
                 cardReaderTracker.trackCashOnDeliveryEnabledSuccess()
                 updateCashOnDeliveryOptionState(
