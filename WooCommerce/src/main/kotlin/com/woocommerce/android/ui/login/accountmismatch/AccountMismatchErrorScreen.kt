@@ -2,6 +2,7 @@ package com.woocommerce.android.ui.login.accountmismatch
 
 import android.content.res.Configuration
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -49,9 +50,9 @@ fun AccountMismatchErrorScreen(viewModel: AccountMismatchErrorViewModel) {
         Scaffold(topBar = {
             TopAppBar(
                 backgroundColor = MaterialTheme.colors.surface,
-                title = { Text(stringResource(id = R.string.login_site_picker_enter_site_address)) },
+                title = { },
                 actions = {
-                    IconButton(onClick = { TODO() }) {
+                    IconButton(onClick = viewModel::onHelpButtonClick) {
                         Icon(
                             painter = painterResource(id = R.drawable.ic_help_24dp),
                             contentDescription = stringResource(id = R.string.help)
@@ -70,6 +71,7 @@ fun AccountMismatchErrorScreen(viewModel: AccountMismatchErrorViewModel) {
 fun AccountMismatchErrorScreen(viewState: AccountMismatchErrorViewModel.ViewState, modifier: Modifier = Modifier) {
     Column(
         modifier = modifier
+            .background(MaterialTheme.colors.surface)
             .fillMaxSize()
             .padding(dimensionResource(id = R.dimen.major_100)),
         verticalArrangement = Arrangement.spacedBy(dimensionResource(id = R.dimen.major_100)),
