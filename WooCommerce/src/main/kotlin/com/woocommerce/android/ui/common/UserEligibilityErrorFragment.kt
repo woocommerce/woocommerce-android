@@ -7,8 +7,12 @@ import android.view.Menu
 import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
+import androidx.core.view.MenuHost
+import androidx.core.view.MenuProvider
 import androidx.core.view.isVisible
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.Lifecycle.State
 import androidx.navigation.fragment.findNavController
 import com.woocommerce.android.AppUrls
 import com.woocommerce.android.R
@@ -19,6 +23,7 @@ import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.model.User
 import com.woocommerce.android.support.HelpActivity
 import com.woocommerce.android.support.HelpActivity.Origin
+import com.woocommerce.android.support.HelpActivity.Origin.USER_ELIGIBILITY_ERROR
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.login.LoginActivity
@@ -48,27 +53,32 @@ class UserEligibilityErrorFragment : BaseFragment(layout.fragment_user_eligibili
         super.onViewCreated(view, savedInstanceState)
         _binding = FragmentUserEligibilityErrorBinding.bind(view)
 
-        setHasOptionsMenu(true)
+        setupMenu()
         setupView()
         setupObservers(viewModel)
     }
 
-    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
-        super.onCreateOptionsMenu(menu, inflater)
-        inflater.inflate(R.menu.menu_login, menu)
-    }
+    private fun setupMenu() {
+        requireActivity().addMenuProvider(object : MenuProvider {
+            override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
+                menuInflater.inflate(R.menu.menu_login, menu)
+            }
 
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        if (item.itemId == R.id.help) {
-            startActivity(
-                HelpActivity.createIntent(
-                    requireActivity(), Origin.USER_ELIGIBILITY_ERROR, arrayListOf(binding.textUserRoles.text.toString())
-                )
-            )
-            return true
-        }
+            override fun onMenuItemSelected(item: MenuItem): Boolean {
+                if (item.itemId == R.id.help) {
+                    startActivity(
+                        HelpActivity.createIntent(
+                            requireActivity(),
+                            USER_ELIGIBILITY_ERROR,
+                            arrayListOf(binding.textUserRoles.text.toString())
+                        )
+                    )
+                    return true
+                }
 
-        return false
+                return false
+            }
+        }, viewLifecycleOwner, State.RESUMED)
     }
 
     private fun setupView() {
