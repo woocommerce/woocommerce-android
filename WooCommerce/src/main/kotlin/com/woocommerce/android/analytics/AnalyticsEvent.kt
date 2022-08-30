@@ -680,7 +680,6 @@ enum class AnalyticsEvent(val siteless: Boolean = false) {
     LOGIN_LOCAL_NOTIFICATION_DISMISSED(siteless = true),
 
     // Experiments (A/B test variants)
-    LOGIN_SITE_CREDENTIALS_EXPERIMENT,
     PROLOGUE_EXPERIMENT,
     MAGIC_LINK_SENT_SCREEN_EXPERIMENT,
     MAGIC_LINK_REQUEST_EXPERIMENT,
