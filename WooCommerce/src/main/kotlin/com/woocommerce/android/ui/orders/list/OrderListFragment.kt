@@ -198,8 +198,11 @@ class OrderListFragment :
         binding.orderFiltersCard.setClickListener { viewModel.onFiltersButtonTapped() }
         initCreateOrderFAB(binding.createOrderButton)
         initSwipeBehaviour()
-        lifecycleScope.launch {
-            viewModel.updateBannerState()
+        val isLandscape = DisplayUtils.isLandscape(context)
+        if (!isLandscape) {
+            lifecycleScope.launch {
+                viewModel.updateBannerState()
+            }
         }
     }
 
