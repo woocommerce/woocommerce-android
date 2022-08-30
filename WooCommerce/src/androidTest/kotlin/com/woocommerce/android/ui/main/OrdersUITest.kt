@@ -10,9 +10,12 @@ import com.woocommerce.android.helpers.TestBase
 import com.woocommerce.android.screenshots.TabNavComponent
 import com.woocommerce.android.screenshots.login.WelcomeScreen
 import com.woocommerce.android.screenshots.orders.OrderListScreen
-import com.woocommerce.android.screenshots.orders.OrderSelectProductScreen
+import com.woocommerce.android.screenshots.util.MocksReader
+import com.woocommerce.android.screenshots.util.OrderData
+import com.woocommerce.android.screenshots.util.iterator
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
+import org.json.JSONObject
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -45,17 +48,30 @@ class OrdersUITest : TestBase() {
 
     @Test
     fun createOrderTest() {
-        val productName = OrderSelectProductScreen.SIMPLE_PRODUCT_NAME
-        OrderListScreen()
-            .createFABTap()
-            .newOrderTap()
-            .assertNewOrderScreen()
-            .addProductTap()
-            .assertOrderSelectProductScreen()
-            .selectProduct(productName)
-            .assertNewOrderScreenWithProduct(productName)
-            .createOrder()
-            .assertSingleOrderScreenWithProduct(productName)
-            .goBackToOrdersScreen()
+        val ordersJSONArray = MocksReader().readOrderToArray()
+
+        for (orderJSON in ordersJSONArray.iterator()) {
+            val orderData = mapJSONToOrder(orderJSON)
+
+            OrderListScreen()
+                .createFABTap()
+                .newOrderTap()
+                .assertNewOrderScreen()
+                .addProductTap()
+                .assertOrderSelectProductScreen()
+                .selectProduct(orderData.productName)
+                .assertNewOrderScreenWithProduct(orderData.productName)
+                .createOrder()
+                .assertSingleOrderScreenWithProduct(orderData)
+        }
+    }
+
+    private fun mapJSONToOrder(orderJSON: JSONObject): OrderData {
+        return OrderData(
+            id = orderJSON.getInt("id"),
+            productName = orderJSON.getJSONArray("line_items").getJSONObject(0).getString("name"),
+            statusRaw = orderJSON.getString("status"),
+            totalRaw = orderJSON.getString("total")
+        )
     }
 }

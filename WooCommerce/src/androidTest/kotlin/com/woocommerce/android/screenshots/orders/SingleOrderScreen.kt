@@ -2,9 +2,12 @@ package com.woocommerce.android.screenshots.orders
 
 import androidx.test.espresso.Espresso
 import androidx.test.espresso.assertion.ViewAssertions
+import androidx.test.espresso.matcher.ViewMatchers
 import androidx.test.espresso.matcher.ViewMatchers.*
 import com.woocommerce.android.R
+import com.woocommerce.android.screenshots.util.OrderData
 import com.woocommerce.android.screenshots.util.Screen
+import org.hamcrest.Matchers
 
 class SingleOrderScreen : Screen {
     companion object {
@@ -18,20 +21,24 @@ class SingleOrderScreen : Screen {
         return OrderListScreen()
     }
 
-    fun assertSingleOrderScreen(): SingleOrderScreen {
-        Espresso.onView(withId(R.id.toolbar))
-            .check(ViewAssertions.matches(hasDescendant(withSubstring("#"))))
-            .check(ViewAssertions.matches(isDisplayed()))
-        Espresso.onView(withId(ORDER_NUMBER_LABEL))
-            .check(ViewAssertions.matches(isDisplayed()))
-        Espresso.onView(withId(R.id.paymentInfo_total))
-            .check(ViewAssertions.matches(isDisplayed()))
-        return this
+    private fun assertIdAndTextDisplayed(id: Int, text: String?) {
+        Espresso.onView(
+            Matchers.allOf(
+                ViewMatchers.withId(id), ViewMatchers.withText(text)
+            )
+        ).check(ViewAssertions.matches(ViewMatchers.isDisplayed()))
     }
 
-    fun assertSingleOrderScreenWithProduct(productName: String): SingleOrderScreen {
-        Espresso.onView(withText(productName)).check(ViewAssertions.matches(isDisplayed()))
-        return assertSingleOrderScreen()
+    fun assertSingleOrderScreenWithProduct(order: OrderData): SingleOrderScreen {
+        Espresso.onView(withId(R.id.toolbar))
+            .check(ViewAssertions.matches(hasDescendant(withSubstring("#" + order.id))))
+            .check(ViewAssertions.matches(isDisplayed()))
+
+        Espresso.onView(withText(order.productName)).check(ViewAssertions.matches(isDisplayed()))
+        this.assertIdAndTextDisplayed(R.id.orderStatus_orderTags, order.status)
+        this.assertIdAndTextDisplayed(R.id.paymentInfo_total, order.total)
+
+        return this
     }
 
     fun tapOnCollectPayment(): PaymentSelectionScreen {
