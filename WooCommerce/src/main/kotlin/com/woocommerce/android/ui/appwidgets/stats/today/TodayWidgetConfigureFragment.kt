@@ -18,14 +18,15 @@ import com.woocommerce.android.ui.appwidgets.stats.today.TodayWidgetConfigureVie
 import com.woocommerce.android.ui.appwidgets.stats.today.TodayWidgetConfigureViewModel.TodayWidgetNavigationTarget.ViewWidgetSiteSelectionList
 import com.woocommerce.android.ui.appwidgets.stats.today.TodayWidgetConfigureViewModel.WidgetAdded
 import com.woocommerce.android.ui.base.BaseFragment
-import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
 @AndroidEntryPoint
 class TodayWidgetConfigureFragment : BaseFragment() {
-    @Inject lateinit var uiMessageResolver: UIMessageResolver
+    private val uiMessageResolver by lazy {
+        TodayWidgetUIMessageResolver(requireActivity() as TodayWidgetConfigurationActivity)
+    }
     @Inject lateinit var todayWidgetUpdater: TodayWidgetUpdater
 
     private var _binding: FragmentTodayWidgetConfigureBinding? = null
