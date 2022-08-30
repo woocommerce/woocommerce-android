@@ -34,7 +34,7 @@ class StatsRepository @Inject constructor(
 
         //Minimum supported version to use /wc-analytics/leaderboards/products instead of slower endpoint
         // /wc-analytics/leaderboards. More info https://github.com/woocommerce/woocommerce-android/issues/6688
-        private const val PRODUCT_ONLY_LEATHER_BOARD_MIN_WC_VERSION = "6.7.0"
+        private const val PRODUCT_ONLY_LEADERBOARD_MIN_WC_VERSION = "6.7.0"
     }
 
     suspend fun fetchRevenueStats(
@@ -90,7 +90,7 @@ class StatsRepository @Inject constructor(
                 site = selectedSite.get(),
                 unit = granularity,
                 quantity = quantity,
-                addProductsPath = supportsProductOnlyLeatherBoardEndpoint()
+                addProductsPath = supportsProductOnlyLeaderboardEndpoint()
             )
             false -> wcLeaderboardsStore.fetchCachedProductLeaderboards(
                 site = selectedSite.get(),
@@ -129,10 +129,10 @@ class StatsRepository @Inject constructor(
         }
     }
 
-    private fun supportsProductOnlyLeatherBoardEndpoint(): Boolean {
+    private fun supportsProductOnlyLeaderboardEndpoint(): Boolean {
         val currentWooCoreVersion =
             wooCommerceStore.getSitePlugin(selectedSite.get(), WOO_CORE)?.version ?: "0.0"
-        return currentWooCoreVersion.semverCompareTo(PRODUCT_ONLY_LEATHER_BOARD_MIN_WC_VERSION) >= 0
+        return currentWooCoreVersion.semverCompareTo(PRODUCT_ONLY_LEADERBOARD_MIN_WC_VERSION) >= 0
     }
 
     data class StatsException(val error: OrderStatsError?) : Exception()
