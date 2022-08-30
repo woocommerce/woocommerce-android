@@ -121,6 +121,8 @@ enum class AnalyticsEvent(val siteless: Boolean = false) {
     SITE_PICKER_NEW_TO_WOO_TAPPED(siteless = true),
     SITE_PICKER_ENTER_SITE_ADDRESS_TAPPED(siteless = true),
     SITE_PICKER_SITE_DISCOVERY(siteless = true),
+    SITE_PICKER_JETPACK_TIMEOUT_ERROR_SHOWN(siteless = true),
+    SITE_PICKER_JETPACK_TIMEOUT_CONTACT_SUPPORT_CLICKED(siteless = true),
 
     // -- Dashboard
     DASHBOARD_PULLED_TO_REFRESH,
@@ -679,7 +681,6 @@ enum class AnalyticsEvent(val siteless: Boolean = false) {
     LOGIN_LOCAL_NOTIFICATION_DISMISSED(siteless = true),
 
     // Experiments (A/B test variants)
-    LOGIN_SITE_CREDENTIALS_EXPERIMENT,
     PROLOGUE_EXPERIMENT,
     MAGIC_LINK_SENT_SCREEN_EXPERIMENT,
     MAGIC_LINK_REQUEST_EXPERIMENT,
