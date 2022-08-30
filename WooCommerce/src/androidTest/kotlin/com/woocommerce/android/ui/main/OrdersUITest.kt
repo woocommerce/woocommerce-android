@@ -63,6 +63,7 @@ class OrdersUITest : TestBase() {
                 .assertNewOrderScreenWithProduct(orderData.productName)
                 .createOrder()
                 .assertSingleOrderScreenWithProduct(orderData)
+                .goBackToOrdersScreen()
         }
     }
 
