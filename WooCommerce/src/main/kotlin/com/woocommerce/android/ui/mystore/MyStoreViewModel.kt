@@ -119,12 +119,6 @@ class MyStoreViewModel @Inject constructor(
                 coroutineScope {
                     launch { loadStoreStats(granularity) }
                     launch { loadTopPerformersStats(granularity) }
-                    launch {
-                        appPrefsWrapper.setActiveStatsGranularity(
-                            selectedSite.getSelectedSiteId(),
-                            granularity.name
-                        )
-                    }
                 }
             }
         }
@@ -149,6 +143,9 @@ class MyStoreViewModel @Inject constructor(
         usageTracksEventEmitter.interacted()
         _activeStatsGranularity.update { granularity }
         savedState[ACTIVE_STATS_GRANULARITY_KEY] = granularity
+        launch {
+            appPrefsWrapper.setActiveStatsGranularity(selectedSite.getSelectedSiteId(), granularity.name)
+        }
     }
 
     fun onSwipeToRefresh() {
