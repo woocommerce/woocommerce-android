@@ -96,8 +96,9 @@ class MyStoreViewModel @Inject constructor(
 
     private val refreshTrigger = MutableSharedFlow<Unit>(extraBufferCapacity = 1)
     private var _activeStatsGranularity = MutableStateFlow(
-        savedState.get<StatsGranularity>(ACTIVE_STATS_GRANULARITY_KEY) ?: StatsGranularity.DAYS
+        savedState.get<StatsGranularity>(ACTIVE_STATS_GRANULARITY_KEY) ?: getSelectedStatsGranularityIfAny()
     )
+
     val activeStatsGranularity = _activeStatsGranularity.asLiveData()
 
     @VisibleForTesting val refreshStoreStats = BooleanArray(StatsGranularity.values().size) { true }
@@ -118,6 +119,12 @@ class MyStoreViewModel @Inject constructor(
                 coroutineScope {
                     launch { loadStoreStats(granularity) }
                     launch { loadTopPerformersStats(granularity) }
+                    launch {
+                        appPrefsWrapper.setActiveStatsGranularity(
+                            selectedSite.getSelectedSiteId(),
+                            granularity.name
+                        )
+                    }
                 }
             }
         }
@@ -341,6 +348,12 @@ class MyStoreViewModel @Inject constructor(
             resourceProvider.getDimensionPixelSize(R.dimen.image_minor_100),
             0
         )
+
+    private fun getSelectedStatsGranularityIfAny(): StatsGranularity {
+        val previouslySelectedGranularity = appPrefsWrapper.getActiveStatsGranularity(selectedSite.getSelectedSiteId())
+        return runCatching { StatsGranularity.valueOf(previouslySelectedGranularity.uppercase()) }
+            .getOrElse { StatsGranularity.DAYS }
+    }
 
     sealed class RevenueStatsViewState {
         object Loading : RevenueStatsViewState()
