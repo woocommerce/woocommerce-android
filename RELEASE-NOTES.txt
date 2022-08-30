@@ -3,6 +3,7 @@
 -----
 -[**] In-Person Payments: Added Pay in Person toggle option in the Payments (Menu -> Payments) screen. Merchants can enable or disable "Pay in Person" from the app [https://github.com/woocommerce/woocommerce-android/pull/7280]
 
+- [*] SitePicker: Reduces Jetpack timeout loading times and shows new error dialog  [https://github.com/woocommerce/woocommerce-android/pull/7271
 
 10.1
 -----
