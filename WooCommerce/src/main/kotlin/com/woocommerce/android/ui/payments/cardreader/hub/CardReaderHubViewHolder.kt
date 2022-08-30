@@ -53,6 +53,9 @@ abstract class CardReaderHubViewHolder(val parent: ViewGroup, @LayoutRes layout:
                     uiState.onToggled(isChecked)
                 }
             }
+            binding.root.setOnClickListener {
+                binding.cardReaderHubSwitch.isChecked = !uiState.isChecked
+            }
         }
     }
 
