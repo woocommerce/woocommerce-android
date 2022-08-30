@@ -20,7 +20,6 @@ import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
 import org.junit.After
 import org.junit.Before
-import org.junit.Ignore
 import org.junit.Rule
 import org.junit.Test
 import tools.fastlane.screengrab.Screengrab
@@ -66,7 +65,6 @@ class ScreenshotTest : TestBase(failOnUnmatchedWireMockRequests = false) {
         CleanStatusBar.disable()
     }
 
-    @Ignore("Disabled because it fails in CI")
     @Test
     fun screenshots() {
         val testedTheme: String? = InstrumentationRegistry.getArguments().getString("theme")
