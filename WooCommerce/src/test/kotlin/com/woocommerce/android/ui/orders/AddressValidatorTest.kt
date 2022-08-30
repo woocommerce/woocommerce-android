@@ -488,4 +488,77 @@ class AddressValidatorTest : BaseUnitTest() {
         // Then no error is tracked
         verify(trackerWrapper, never()).track(any(), any())
     }
+
+    @Test
+    fun `When the address has no company name but has user name, no error is registered`() = testBlocking {
+        // Given company name is empty
+        val address = defaultAddress.copy(
+            company = ""
+        )
+        val pluginInfo = WooPlugin(isActive = true, isInstalled = true, version = null)
+        whenever(orderDetailRepository.getWooServicesPluginInfo()).thenReturn(pluginInfo)
+
+        whenever(
+            shippingLabelAddressValidator.validateAddress(
+                address = address,
+                type = ShippingLabelAddressValidator.AddressType.DESTINATION,
+                requiresPhoneNumber = false
+            )
+        ).thenReturn(ShippingLabelAddressValidator.ValidationResult.Valid)
+
+        // When the address is validated
+        addressValidator.validate(defaultOrderId, address)
+
+        // Then no error is tracked
+        verify(trackerWrapper, never()).track(any(), any())
+    }
+
+    @Test
+    fun `When the address has no user name but has company name, no error is registered`() = testBlocking {
+        // Given name is empty
+        val address = defaultAddress.copy(
+            firstName = "",
+            lastName = ""
+        )
+        val pluginInfo = WooPlugin(isActive = true, isInstalled = true, version = null)
+        whenever(orderDetailRepository.getWooServicesPluginInfo()).thenReturn(pluginInfo)
+
+        whenever(
+            shippingLabelAddressValidator.validateAddress(
+                address = address,
+                type = ShippingLabelAddressValidator.AddressType.DESTINATION,
+                requiresPhoneNumber = false
+            )
+        ).thenReturn(ShippingLabelAddressValidator.ValidationResult.Valid)
+
+        // When the address is validated
+        addressValidator.validate(defaultOrderId, address)
+
+        // Then no error is tracked
+        verify(trackerWrapper, never()).track(any(), any())
+    }
+
+    @Test
+    fun `When the address has no phone, no error is registered`() = testBlocking {
+        // Given the phone is empty
+        val address = defaultAddress.copy(
+            phone = ""
+        )
+        val pluginInfo = WooPlugin(isActive = true, isInstalled = true, version = null)
+        whenever(orderDetailRepository.getWooServicesPluginInfo()).thenReturn(pluginInfo)
+
+        whenever(
+            shippingLabelAddressValidator.validateAddress(
+                address = address,
+                type = ShippingLabelAddressValidator.AddressType.DESTINATION,
+                requiresPhoneNumber = false
+            )
+        ).thenReturn(ShippingLabelAddressValidator.ValidationResult.Valid)
+
+        // When the address is validated
+        addressValidator.validate(defaultOrderId, address)
+
+        // Then no error is tracked
+        verify(trackerWrapper, never()).track(any(), any())
+    }
 }
