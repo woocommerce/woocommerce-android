@@ -243,7 +243,7 @@ class AddressValidatorTest : BaseUnitTest() {
         addressValidator.validate(defaultOrderId, address)
 
         // Then the EMPTY_CITY_ERROR is tracked
-        val message = listOf(EMPTY_CITY_ERROR, EMPTY_POSTCODE_ERROR).joinToString(",")
+        val message = listOf(EMPTY_CITY_ERROR, EMPTY_POSTCODE_ERROR).joinToString(", ")
         verify(trackerWrapper).track(
             AnalyticsEvent.ORDER_ADDRESS_VALIDATION_ERROR,
             mapOf(
