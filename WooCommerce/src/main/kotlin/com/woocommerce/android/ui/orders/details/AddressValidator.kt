@@ -103,7 +103,7 @@ class AddressValidator @Inject constructor(
             analyticsTrackerWrapper.track(
                 AnalyticsEvent.ORDER_ADDRESS_VALIDATION_ERROR,
                 mapOf(
-                    AnalyticsTracker.KEY_ERROR_MESSAGE to errors.joinToString(","),
+                    AnalyticsTracker.KEY_ERROR_MESSAGE to errors.joinToString(", "),
                     AnalyticsTracker.KEY_VALIDATION_SCENARIO to AnalyticsTracker.VALUE_VALIDATION_SCENARIO_LOCAL,
                     AnalyticsTracker.KEY_ORDER_ID to orderId
                 )
