@@ -245,6 +245,7 @@ class ReviewListFragment :
     override fun getItemTypeAtPosition(position: Int) = reviewsAdapter.getItemTypeAtRecyclerPosition(position)
 
     override fun onReviewClick(review: ProductReview, sharedView: View?) {
+        AnalyticsTracker.track(AnalyticsEvent.REVIEW_OPEN)
         (activity as? MainNavigationRouter)?.let { router ->
             if (sharedView == null) {
                 router.showReviewDetail(

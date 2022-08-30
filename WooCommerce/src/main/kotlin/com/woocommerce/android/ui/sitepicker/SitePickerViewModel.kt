@@ -12,6 +12,7 @@ import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.extensions.getSiteName
+import com.woocommerce.android.support.HelpActivity
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.common.UserEligibilityFetcher
 import com.woocommerce.android.ui.login.UnifiedLoginTracker
@@ -25,6 +26,7 @@ import com.woocommerce.android.viewmodel.LiveDataDelegate
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Logout
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowDialog
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.viewmodel.ResourceProvider
 import com.woocommerce.android.viewmodel.ScopedViewModel
@@ -34,6 +36,9 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.parcelize.Parcelize
 import org.wordpress.android.fluxc.model.SiteModel
+import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooErrorType
+import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooResult
+import org.wordpress.android.fluxc.network.rest.wpcom.wc.system.WCApiVersionResponse
 import org.wordpress.android.fluxc.store.WooCommerceStore
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
@@ -358,7 +363,7 @@ class SitePickerViewModel @Inject constructor(
     fun onTryAnotherAccountButtonClick() {
         trackLoginEvent(clickEvent = UnifiedLoginTracker.Click.TRY_ANOTHER_ACCOUNT)
         launch {
-            repository.logout()?.let {
+            repository.logout().let {
                 if (!repository.isUserLoggedIn()) {
                     appPrefsWrapper.removeLoginSiteAddress()
                     triggerEvent(Logout)
@@ -370,7 +375,7 @@ class SitePickerViewModel @Inject constructor(
     fun onHelpButtonClick() {
         analyticsTrackerWrapper.track(AnalyticsEvent.SITE_PICKER_HELP_BUTTON_TAPPED)
         trackLoginEvent(clickEvent = UnifiedLoginTracker.Click.SHOW_HELP)
-        triggerEvent(SitePickerEvent.NavigationToHelpFragmentEvent)
+        triggerEvent(SitePickerEvent.NavigateToHelpFragmentEvent(HelpActivity.Origin.LOGIN_EPILOGUE))
     }
 
     fun onContinueButtonClick(isAutoLogin: Boolean = false) {
@@ -404,15 +409,7 @@ class SitePickerViewModel @Inject constructor(
                 launch {
                     val siteVerificationResult = repository.verifySiteWooAPIVersion(it.site)
                     when {
-                        siteVerificationResult.isError -> {
-                            sitePickerViewState = sitePickerViewState.copy(isProgressDiaLogVisible = false)
-                            triggerEvent(
-                                ShowSnackbar(
-                                    message = string.login_verifying_site_error,
-                                    args = arrayOf(it.site.getSiteName())
-                                )
-                            )
-                        }
+                        siteVerificationResult.isError -> onSiteVerificationError(siteVerificationResult, it)
                         siteVerificationResult.model?.apiVersion == WooCommerceStore.WOO_API_NAMESPACE_V3 -> {
                             selectedSite.set(it.site)
                             userEligibilityFetcher.fetchUserInfo()?.let { userModel ->
@@ -432,6 +429,41 @@ class SitePickerViewModel @Inject constructor(
                 }
             }
     }
+
+    private fun onSiteVerificationError(
+        siteVerificationResult: WooResult<WCApiVersionResponse>,
+        it: WooSiteUiModel
+    ) {
+        sitePickerViewState = sitePickerViewState.copy(isProgressDiaLogVisible = false)
+        val event = when (siteVerificationResult.error.type) {
+            WooErrorType.TIMEOUT -> {
+                analyticsTrackerWrapper.track(
+                    stat = AnalyticsEvent.SITE_PICKER_JETPACK_TIMEOUT_ERROR_SHOWN
+                )
+                getJetpackTimeoutDialogEvent()
+            }
+            else -> ShowSnackbar(
+                message = string.login_verifying_site_error,
+                args = arrayOf(it.site.getSiteName())
+            )
+        }
+        triggerEvent(event)
+    }
+
+    private fun getJetpackTimeoutDialogEvent() = ShowDialog(
+        titleId = string.login_verifying_site_jetpack_timeout_error_title,
+        messageId = string.login_verifying_site_jetpack_timeout_error_description,
+        positiveButtonId = string.support_contact,
+        negativeButtonId = string.cancel,
+        positiveBtnAction = { dialog, _ ->
+            analyticsTrackerWrapper.track(
+                stat = AnalyticsEvent.SITE_PICKER_JETPACK_TIMEOUT_CONTACT_SUPPORT_CLICKED,
+            )
+            triggerEvent(SitePickerEvent.NavigateToHelpFragmentEvent(HelpActivity.Origin.SITE_PICKER_JETPACK_TIMEOUT))
+            dialog.dismiss()
+        },
+        negativeBtnAction = { dialog, _ -> dialog.dismiss() }
+    )
 
     fun onInstallWooClicked() {
         loginSiteAddress?.let {
@@ -565,9 +597,9 @@ class SitePickerViewModel @Inject constructor(
         object ShowWooUpgradeDialogEvent : SitePickerEvent()
         object NavigateToMainActivityEvent : SitePickerEvent()
         object NavigateToEmailHelpDialogEvent : SitePickerEvent()
-        object NavigationToHelpFragmentEvent : SitePickerEvent()
         object NavigateToNewToWooEvent : SitePickerEvent()
         object NavigateToSiteAddressEvent : SitePickerEvent()
+        data class NavigateToHelpFragmentEvent(val origin: HelpActivity.Origin) : SitePickerEvent()
         data class NavigateToWPComWebView(val url: String, val validationUrl: String) : SitePickerEvent()
     }
 

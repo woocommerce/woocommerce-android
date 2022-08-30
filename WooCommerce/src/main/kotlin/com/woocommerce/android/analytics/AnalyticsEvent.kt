@@ -121,6 +121,8 @@ enum class AnalyticsEvent(val siteless: Boolean = false) {
     SITE_PICKER_NEW_TO_WOO_TAPPED(siteless = true),
     SITE_PICKER_ENTER_SITE_ADDRESS_TAPPED(siteless = true),
     SITE_PICKER_SITE_DISCOVERY(siteless = true),
+    SITE_PICKER_JETPACK_TIMEOUT_ERROR_SHOWN(siteless = true),
+    SITE_PICKER_JETPACK_TIMEOUT_CONTACT_SUPPORT_CLICKED(siteless = true),
 
     // -- Dashboard
     DASHBOARD_PULLED_TO_REFRESH,
@@ -203,9 +205,10 @@ enum class AnalyticsEvent(val siteless: Boolean = false) {
     ORDER_DETAIL_EDIT_FLOW_FAILED,
     ORDER_DETAIL_EDIT_FLOW_CANCELED,
     ORDER_EDIT_BUTTON_TAPPED,
+    PLUGINS_NOT_SYNCED_YET,
 
     // -- Order Creation
-    ORDER_ADD_NEW,
+    ORDERS_ADD_NEW,
     ORDER_PRODUCT_ADD,
     ORDER_CUSTOMER_ADD,
     ORDER_FEE_ADD,
@@ -566,6 +569,7 @@ enum class AnalyticsEvent(val siteless: Boolean = false) {
     REVIEWS_LIST_SHARE_YOUR_STORE_BUTTON_TAPPED,
 
     // -- Product Review Detail
+    REVIEW_OPEN,
     REVIEW_LOADED,
     REVIEW_LOAD_FAILED,
     REVIEW_PRODUCT_LOADED,

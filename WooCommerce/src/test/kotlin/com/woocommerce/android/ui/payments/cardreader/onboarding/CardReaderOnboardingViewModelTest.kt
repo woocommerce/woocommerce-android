@@ -57,6 +57,7 @@ import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooError
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooErrorType
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooResult
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.gateways.GatewayRestClient
+import org.wordpress.android.fluxc.store.Settings
 import org.wordpress.android.fluxc.store.WCGatewayStore
 import kotlin.test.assertFalse
 import kotlin.test.assertTrue
@@ -1217,7 +1218,10 @@ class CardReaderOnboardingViewModelTest : BaseUnitTest() {
                     gatewayId = GatewayRestClient.GatewayId.CASH_ON_DELIVERY,
                     enabled = true,
                     title = "Pay in Person",
-                    description = "Pay by card or another accepted payment method"
+                    description = "Pay by card or another accepted payment method",
+                    settings = Settings(
+                        instructions = "Pay by card or another accepted payment method"
+                    )
                 )
             ).thenReturn(
                 WooResult(
@@ -1263,7 +1267,10 @@ class CardReaderOnboardingViewModelTest : BaseUnitTest() {
                     gatewayId = GatewayRestClient.GatewayId.CASH_ON_DELIVERY,
                     enabled = true,
                     title = "Pay in Person",
-                    description = "Pay by card or another accepted payment method"
+                    description = "Pay by card or another accepted payment method",
+                    settings = Settings(
+                        instructions = "Pay by card or another accepted payment method"
+                    )
                 )
             ).thenReturn(
                 WooResult(
@@ -2090,7 +2097,10 @@ class CardReaderOnboardingViewModelTest : BaseUnitTest() {
                     gatewayId = GatewayRestClient.GatewayId.CASH_ON_DELIVERY,
                     enabled = true,
                     title = "Pay in Person",
-                    description = "Pay by card or another accepted payment method"
+                    description = "Pay by card or another accepted payment method",
+                    settings = Settings(
+                        instructions = "Pay by card or another accepted payment method"
+                    )
                 )
             ).thenReturn(
                 WooResult(
@@ -2130,7 +2140,10 @@ class CardReaderOnboardingViewModelTest : BaseUnitTest() {
                     gatewayId = GatewayRestClient.GatewayId.CASH_ON_DELIVERY,
                     enabled = true,
                     title = "Pay in Person",
-                    description = "Pay by card or another accepted payment method"
+                    description = "Pay by card or another accepted payment method",
+                    settings = Settings(
+                        instructions = "Pay by card or another accepted payment method"
+                    )
                 )
             ).thenReturn(
                 WooResult(

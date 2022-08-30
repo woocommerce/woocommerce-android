@@ -1,12 +1,16 @@
 *** PLEASE FOLLOW THIS FORMAT: [<priority indicator, more stars = higher priority>] <description> [<PR URL>]
+10.2
+-----
+- [*] SitePicker: Reduces Jetpack timeout loading times and shows new error dialog  [https://github.com/woocommerce/woocommerce-android/pull/7271
+
 10.1
 -----
-
+- [*] In-Person Payments: Fixed a bug when Stripe pending requirements make it impossible to manage card readers [https://github.com/woocommerce/woocommerce-android/pull/7233]
 
 10.0
 -----
- - [**] Login: Add ability to enter site address manually after signing in if the account is not connected to any stores [https://github.com/woocommerce/woocommerce-android/pull/7225]
- - [**] In-Person Payments: Show a new "Pay in Person" screen during IPP onboarding if the store has cash on delivery disabled. Give merchants an option to enable "Pay in Person" on the same screen.
+- [**] Login: Add ability to enter site address manually after signing in if the account is not connected to any stores [https://github.com/woocommerce/woocommerce-android/pull/7225]
+- [**] In-Person Payments: Show a new "Pay in Person" screen during IPP onboarding if the store has cash on delivery disabled. Give merchants an option to enable "Pay in Person" on the same screen.
 - [*] In-Person Payments: learn more button was added connection dialog [https://github.com/woocommerce/woocommerce-android/pull/7193]
 
 9.9
