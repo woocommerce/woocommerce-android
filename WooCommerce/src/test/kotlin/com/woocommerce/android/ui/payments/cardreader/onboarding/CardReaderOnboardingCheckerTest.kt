@@ -76,7 +76,7 @@ class CardReaderOnboardingCheckerTest : BaseUnitTest() {
             networkStatus,
             cardReaderTrackingInfoKeeper,
             cardReaderCountryConfigProvider,
-            cashOnDeliverySettings = cashOnDeliverySettingsRepository
+            cashOnDeliverySettingsRepository
         )
         whenever(networkStatus.isConnected()).thenReturn(true)
         whenever(selectedSite.get()).thenReturn(site)

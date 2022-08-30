@@ -258,12 +258,12 @@ class CardReaderHubViewModel @Inject constructor(
                 cashOnDeliveryState.value?.copy(isEnabled = false, isChecked = isChecked)!!
             )
             val result = cashOnDeliveryToggler.toggleCashOnDeliveryOption(isChecked)
-            result.model?.let {
+            if (!result.isError) {
                 cardReaderTracker.trackCashOnDeliveryEnabledSuccess()
                 updateCashOnDeliveryOptionState(
                     cashOnDeliveryState.value?.copy(isEnabled = true, isChecked = isChecked)!!
                 )
-            } ?: run {
+            } else {
                 cardReaderTracker.trackCashOnDeliveryEnabledFailure(
                     result.error.message
                 )
