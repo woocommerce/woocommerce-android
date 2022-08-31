@@ -15,3 +15,8 @@ fun PackageManager.intentActivities(intent: Intent, flag: Int): List<ResolveInfo
     SystemVersionUtils.isAtLeastT() -> queryIntentActivities(intent, PackageManager.ResolveInfoFlags.of(flag.toLong()))
     else -> @Suppress("DEPRECATION") queryIntentActivities(intent, flag)
 }
+
+fun PackageManager.service(intent: Intent, flag: Int): ResolveInfo? = when {
+    SystemVersionUtils.isAtLeastT() -> resolveService(intent, PackageManager.ResolveInfoFlags.of(flag.toLong()))
+    else -> @Suppress("DEPRECATION") resolveService(intent, flag)
+}

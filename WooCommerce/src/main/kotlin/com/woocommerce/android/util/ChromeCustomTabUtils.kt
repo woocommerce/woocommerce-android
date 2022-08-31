@@ -16,6 +16,7 @@ import androidx.browser.customtabs.CustomTabsSession
 import androidx.core.content.ContextCompat
 import com.woocommerce.android.R
 import com.woocommerce.android.extensions.intentActivities
+import com.woocommerce.android.extensions.service
 import org.wordpress.android.util.ToastUtils
 
 /**
@@ -132,7 +133,7 @@ object ChromeCustomTabUtils {
             val serviceIntent = Intent()
             serviceIntent.action = ACTION_CUSTOM_TABS_CONNECTION
             serviceIntent.setPackage(info.activityInfo.packageName)
-            if (pm.resolveService(serviceIntent, 0) != null) {
+            if (pm.service(serviceIntent, 0) != null) {
                 canUseCustomTabs = true
                 return true
             }
