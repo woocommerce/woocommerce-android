@@ -198,7 +198,8 @@ class OrderDetailViewModel @Inject constructor(
             )
             isFetchingData = false
 
-            displayOrderDetails()
+            if (hasOrder()) displayOrderDetails()
+
             viewState = viewState.copy(
                 isOrderDetailSkeletonShown = false,
                 isRefreshing = false
