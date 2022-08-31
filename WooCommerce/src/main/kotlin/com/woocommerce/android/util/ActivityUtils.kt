@@ -10,6 +10,7 @@ import android.content.pm.PackageManager
 import android.net.Uri
 import androidx.core.content.FileProvider
 import com.woocommerce.android.R
+import com.woocommerce.android.extensions.queryIntentActivity
 import com.woocommerce.android.model.UiString
 import com.woocommerce.android.util.WooLog.T
 import org.wordpress.android.util.ToastUtils
@@ -24,13 +25,7 @@ object ActivityUtils {
 
         val intent = Intent(Intent.ACTION_MAIN)
         intent.addCategory(Intent.CATEGORY_APP_EMAIL)
-        val packageManager = context.packageManager
-        val emailApps = if(SystemVersionUtils.isAtLeastT()) {
-            packageManager.queryIntentActivities(intent, PackageManager.ResolveInfoFlags.of(PackageManager.MATCH_DEFAULT_ONLY.toLong()))
-        }else{
-            packageManager.queryIntentActivities(intent, PackageManager.MATCH_DEFAULT_ONLY)
-        }
-
+        val emailApps = context.packageManager.queryIntentActivity(intent, PackageManager.MATCH_DEFAULT_ONLY)
         return !emailApps.isEmpty()
     }
 
@@ -57,11 +52,8 @@ object ActivityUtils {
         } catch (se: SecurityException) {
             WooLog.e(T.UTILS, "Error opening url in default browser. Url: $url", se)
 
-            val infos = if(SystemVersionUtils.isAtLeastT()) {
-                context.packageManager.queryIntentActivities(intent, PackageManager.ResolveInfoFlags.of(0))
-            }else{
-                context.packageManager.queryIntentActivities(intent, 0)
-            }
+            val infos = context.packageManager.queryIntentActivity(intent, 0)
+
             if (infos.size == 1) {
                 // there's only one handler and apparently it caused the exception so, just inform and bail
                 WooLog.d(T.UTILS, "Only one url handler found so, bailing.")
