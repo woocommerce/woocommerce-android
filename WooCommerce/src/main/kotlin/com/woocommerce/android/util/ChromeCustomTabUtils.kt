@@ -15,6 +15,7 @@ import androidx.browser.customtabs.CustomTabsServiceConnection
 import androidx.browser.customtabs.CustomTabsSession
 import androidx.core.content.ContextCompat
 import com.woocommerce.android.R
+import com.woocommerce.android.extensions.queryIntentActivity
 import org.wordpress.android.util.ToastUtils
 
 /**
@@ -126,7 +127,7 @@ object ChromeCustomTabUtils {
 
         val pm = context.packageManager
         val activityIntent = Intent(Intent.ACTION_VIEW, Uri.parse("http://www.example.com"))
-        val resolvedActivityList = pm.queryIntentActivities(activityIntent, 0)
+        val resolvedActivityList = pm.queryIntentActivity(activityIntent, 0)
         for (info in resolvedActivityList) {
             val serviceIntent = Intent()
             serviceIntent.action = ACTION_CUSTOM_TABS_CONNECTION
