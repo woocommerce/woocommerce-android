@@ -15,6 +15,7 @@ import com.woocommerce.android.extensions.getSiteName
 import com.woocommerce.android.support.HelpActivity
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.common.UserEligibilityFetcher
+import com.woocommerce.android.ui.login.AccountRepository
 import com.woocommerce.android.ui.login.UnifiedLoginTracker
 import com.woocommerce.android.ui.sitepicker.SitePickerViewModel.SitePickerEvent.NavigateToAccountMismatchScreen
 import com.woocommerce.android.ui.sitepicker.SitePickerViewModel.SitePickerEvent.NavigateToWPComWebView
@@ -50,6 +51,7 @@ class SitePickerViewModel @Inject constructor(
     savedState: SavedStateHandle,
     private val selectedSite: SelectedSite,
     private val repository: SitePickerRepository,
+    private val accountRepository: AccountRepository,
     private val resourceProvider: ResourceProvider,
     private val appPrefsWrapper: AppPrefsWrapper,
     private val unifiedLoginTracker: UnifiedLoginTracker,
@@ -289,7 +291,7 @@ class SitePickerViewModel @Inject constructor(
         )
     }
 
-    private fun getUserInfo() = repository.getUserAccount().let {
+    private fun getUserInfo() = accountRepository.getUserAccount().let {
         UserInfo(displayName = it.displayName, username = it.userName ?: "", userAvatarUrl = it.avatarUrl)
     }
 
@@ -354,8 +356,8 @@ class SitePickerViewModel @Inject constructor(
     fun onTryAnotherAccountButtonClick() {
         trackLoginEvent(clickEvent = UnifiedLoginTracker.Click.TRY_ANOTHER_ACCOUNT)
         launch {
-            repository.logout().let {
-                if (!repository.isUserLoggedIn()) {
+            accountRepository.logout().let {
+                if (it) {
                     appPrefsWrapper.removeLoginSiteAddress()
                     triggerEvent(Logout)
                 }
