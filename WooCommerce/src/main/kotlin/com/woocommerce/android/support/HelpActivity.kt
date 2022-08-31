@@ -15,6 +15,8 @@ import com.woocommerce.android.databinding.ActivityHelpBinding
 import com.woocommerce.android.extensions.show
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.login.localnotifications.LoginNotificationScheduler
+import com.woocommerce.android.ui.login.UnifiedLoginTracker.Flow
+import com.woocommerce.android.ui.login.UnifiedLoginTracker.Step
 import com.woocommerce.android.util.ChromeCustomTabUtils
 import com.woocommerce.android.util.PackageUtils
 import dagger.hilt.android.AndroidEntryPoint
@@ -224,7 +226,9 @@ class HelpActivity : AppCompatActivity() {
         fun createIntent(
             context: Context,
             origin: Origin,
-            extraSupportTags: List<String>?
+            extraSupportTags: List<String>?,
+            step: Step? = null,
+            flow: Flow? = null
         ): Intent {
             val intent = Intent(context, HelpActivity::class.java)
             intent.putExtra(ORIGIN_KEY, origin)

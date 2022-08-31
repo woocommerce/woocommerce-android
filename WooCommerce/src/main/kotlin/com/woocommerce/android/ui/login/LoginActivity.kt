@@ -41,6 +41,7 @@ import com.woocommerce.android.ui.login.UnifiedLoginTracker.Click
 import com.woocommerce.android.ui.login.UnifiedLoginTracker.Flow
 import com.woocommerce.android.ui.login.UnifiedLoginTracker.Flow.LOGIN_SITE_ADDRESS
 import com.woocommerce.android.ui.login.UnifiedLoginTracker.Source
+import com.woocommerce.android.ui.login.UnifiedLoginTracker.Step
 import com.woocommerce.android.ui.login.UnifiedLoginTracker.Step.ENTER_SITE_ADDRESS
 import com.woocommerce.android.ui.login.localnotifications.LoginHelpNotificationType
 import com.woocommerce.android.ui.login.localnotifications.LoginHelpNotificationType.DEFAULT_HELP
@@ -642,7 +643,7 @@ class LoginActivity :
         // TODO: Support self-signed SSL sites and show dialog (only needed when XML-RPC support is added)
     }
 
-    private fun viewHelpAndSupport(origin: Origin) {
+    private fun viewHelpAndSupport(origin: Origin, flow: Flow? = null, step: Step? = null) {
         val extraSupportTags = arrayListOf(ZendeskExtraTags.connectingJetpack)
         startActivity(HelpActivity.createIntent(this, origin, extraSupportTags))
     }
