@@ -13,7 +13,6 @@ import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.orders.OrderTestUtils
 import com.woocommerce.android.ui.orders.details.OrderDetailRepository
-import com.woocommerce.android.ui.payments.cardreader.InPersonPaymentsCanadaFeatureFlag
 import com.woocommerce.android.ui.payments.refunds.IssueRefundViewModel.RefundByItemsViewState
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.viewmodel.BaseUnitTest
@@ -59,7 +58,6 @@ class IssueRefundViewModelTest : BaseUnitTest() {
     private val gatewayStore: WCGatewayStore = mock()
     private val refundStore: WCRefundStore = mock()
     private val currencyFormatter: CurrencyFormatter = mock()
-    private val inPersonPaymentsCanadaFeatureFlag: InPersonPaymentsCanadaFeatureFlag = mock()
     private val analyticsTrackerWrapper: AnalyticsTrackerWrapper = mock()
     private val resourceProvider: ResourceProvider = mock {
         on(it.getString(R.string.multiple_shipping)).thenAnswer { "Multiple shipping lines" }
@@ -82,7 +80,7 @@ class IssueRefundViewModelTest : BaseUnitTest() {
 
     @Before
     fun setup() {
-        whenever(inPersonPaymentsCanadaFeatureFlag.isEnabled()).thenReturn(true)
+        initViewModel()
     }
 
     private fun initViewModel() {
@@ -103,7 +101,6 @@ class IssueRefundViewModelTest : BaseUnitTest() {
             refundStore,
             paymentChargeRepository,
             orderMapper,
-            inPersonPaymentsCanadaFeatureFlag,
             analyticsTrackerWrapper,
         )
     }
@@ -504,7 +501,7 @@ class IssueRefundViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `given IPP canada feature flag is disabled, when refund confirmed, then do not trigger card reader screen`() {
+    fun `when refund confirmed, then do not trigger card reader screen`() {
         testBlocking {
             val chargeId = "charge_id"
             val cardBrand = "visa"
@@ -513,7 +510,6 @@ class IssueRefundViewModelTest : BaseUnitTest() {
                 paymentMethod = "cod",
                 metaData = "[{\"key\"=\"_charge_id\", \"value\"=\"$chargeId\"}]"
             )
-            whenever(inPersonPaymentsCanadaFeatureFlag.isEnabled()).thenReturn(false)
             whenever(networkStatus.isConnected()).thenReturn(true)
             whenever(orderStore.getOrderByIdAndSite(any(), any())).thenReturn(orderWithMultipleShipping)
             whenever(paymentChargeRepository.fetchCardDataUsedForOrderPayment(chargeId)).thenReturn(
