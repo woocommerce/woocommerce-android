@@ -80,6 +80,7 @@ fun AccountMismatchErrorScreen(viewState: AccountMismatchErrorViewModel.ViewStat
             viewState = viewState,
             modifier = Modifier
                 .weight(1f)
+                .fillMaxWidth()
                 .verticalScroll(rememberScrollState())
         )
 
@@ -167,26 +168,26 @@ private fun ButtonBar(
     secondaryButtonClick: () -> Unit,
     modifier: Modifier
 ) {
+    @Composable
+    fun Buttons(modifier: Modifier) {
+        WCColoredButton(onClick = primaryButtonClick, modifier = modifier) {
+            Text(text = primaryButtonText)
+        }
+        WCOutlinedButton(onClick = secondaryButtonClick, modifier = modifier) {
+            Text(text = secondaryButtonText)
+        }
+    }
+
     val configuration = LocalConfiguration.current
     when (configuration.orientation) {
         Configuration.ORIENTATION_LANDSCAPE -> Row(
             modifier = modifier,
             horizontalArrangement = Arrangement.spacedBy(dimensionResource(id = R.dimen.major_100))
         ) {
-            WCColoredButton(onClick = primaryButtonClick, modifier = Modifier.weight(1f)) {
-                Text(text = primaryButtonText)
-            }
-            WCOutlinedButton(onClick = secondaryButtonClick, modifier = Modifier.weight(1f)) {
-                Text(text = secondaryButtonText)
-            }
+            Buttons(modifier = Modifier.weight(1f))
         }
         else -> Column(modifier = modifier) {
-            WCColoredButton(onClick = primaryButtonClick, modifier = Modifier.fillMaxWidth()) {
-                Text(text = primaryButtonText)
-            }
-            WCOutlinedButton(onClick = secondaryButtonClick, modifier = Modifier.fillMaxWidth()) {
-                Text(text = secondaryButtonText)
-            }
+            Buttons(modifier = Modifier.fillMaxWidth())
         }
     }
 }
