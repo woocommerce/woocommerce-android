@@ -10,7 +10,6 @@ import android.view.ViewGroup
 import androidx.appcompat.app.AppCompatActivity
 import androidx.hilt.navigation.fragment.hiltNavGraphViewModels
 import androidx.navigation.fragment.findNavController
-import androidx.navigation.navGraphViewModels
 import com.woocommerce.android.R
 import com.woocommerce.android.databinding.FragmentTodayWidgetConfigureBinding
 import com.woocommerce.android.extensions.navigateSafely
