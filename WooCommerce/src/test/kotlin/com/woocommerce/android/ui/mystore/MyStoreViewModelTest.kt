@@ -34,7 +34,7 @@ import kotlin.test.assertTrue
 
 @ExperimentalCoroutinesApi
 class MyStoreViewModelTest : BaseUnitTest() {
-    private val savedState: SavedStateHandle = mock()
+    private val savedState = SavedStateHandle()
     private val networkStatus: NetworkStatus = mock()
     private val resourceProvider: ResourceProvider = mock()
     private val wooCommerceStore: WooCommerceStore = mock()
