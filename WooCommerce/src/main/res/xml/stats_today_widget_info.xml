@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <appwidget-provider xmlns:android="http://schemas.android.com/apk/res/android"
-    android:configure="com.woocommerce.android.ui.appwidgets.stats.today.TodayWidgetConfigurationActivity"
     android:initialKeyguardLayout="@layout/stats_widget_list_light"
     android:initialLayout="@layout/stats_widget_list_light"
     android:minWidth="@dimen/stats_widget_min_width"
