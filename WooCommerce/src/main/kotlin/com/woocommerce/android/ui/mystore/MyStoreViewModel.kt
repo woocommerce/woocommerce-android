@@ -33,11 +33,11 @@ import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.ResourceProvider
 import com.woocommerce.android.viewmodel.ScopedViewModel
+import com.woocommerce.android.viewmodel.getStateFlow
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.MutableSharedFlow
-import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.filter
@@ -77,7 +77,6 @@ class MyStoreViewModel @Inject constructor(
     private companion object {
         const val NUM_TOP_PERFORMERS = 5
         const val DAYS_TO_REDISPLAY_JP_BENEFITS_BANNER = 5
-        const val ACTIVE_STATS_GRANULARITY_KEY = "active_stats_granularity_key"
     }
 
     val performanceObserver: LifecycleObserver = myStoreTransactionLauncher
@@ -95,9 +94,8 @@ class MyStoreViewModel @Inject constructor(
     val hasOrders: LiveData<OrderState> = _hasOrders
 
     private val refreshTrigger = MutableSharedFlow<Unit>(extraBufferCapacity = 1)
-    private var _activeStatsGranularity = MutableStateFlow(
-        savedState.get<StatsGranularity>(ACTIVE_STATS_GRANULARITY_KEY) ?: StatsGranularity.DAYS
-    )
+
+    private val _activeStatsGranularity = savedState.getStateFlow(viewModelScope, getSelectedStatsGranularityIfAny())
     val activeStatsGranularity = _activeStatsGranularity.asLiveData()
 
     @VisibleForTesting val refreshStoreStats = BooleanArray(StatsGranularity.values().size) { true }
@@ -141,7 +139,9 @@ class MyStoreViewModel @Inject constructor(
     fun onStatsGranularityChanged(granularity: StatsGranularity) {
         usageTracksEventEmitter.interacted()
         _activeStatsGranularity.update { granularity }
-        savedState[ACTIVE_STATS_GRANULARITY_KEY] = granularity
+        launch {
+            appPrefsWrapper.setActiveStatsGranularity(selectedSite.getSelectedSiteId(), granularity.name)
+        }
     }
 
     fun onSwipeToRefresh() {
@@ -341,6 +341,12 @@ class MyStoreViewModel @Inject constructor(
             resourceProvider.getDimensionPixelSize(R.dimen.image_minor_100),
             0
         )
+
+    private fun getSelectedStatsGranularityIfAny(): StatsGranularity {
+        val previouslySelectedGranularity = appPrefsWrapper.getActiveStatsGranularity(selectedSite.getSelectedSiteId())
+        return runCatching { StatsGranularity.valueOf(previouslySelectedGranularity.uppercase()) }
+            .getOrElse { StatsGranularity.DAYS }
+    }
 
     sealed class RevenueStatsViewState {
         object Loading : RevenueStatsViewState()
