@@ -11,6 +11,7 @@ import com.woocommerce.android.AppUrls
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_HELP_CONTENT_URL
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_SOURCE_FLOW
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_SOURCE_STEP
 import com.woocommerce.android.databinding.ActivityHelpBinding
@@ -46,8 +47,8 @@ class HelpActivity : AppCompatActivity() {
         intent.extras?.getStringArrayList(EXTRA_TAGS_KEY)
     }
 
-    private val loginStepFromExtras by lazy { intent.extras?.getString(LOGIN_STEP_KEY) }
-    private val loginFlowFromExtras by lazy { intent.extras?.getString(LOGIN_FLOW_KEY) }
+    private val loginStepFromExtras by lazy { intent.extras?.get(LOGIN_STEP_KEY) as Step? }
+    private val loginFlowFromExtras by lazy { intent.extras?.get(LOGIN_FLOW_KEY) as Flow? }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -182,12 +183,16 @@ class HelpActivity : AppCompatActivity() {
         zendeskHelper.showAllTickets(this, originFromExtras, selectedSiteOrNull(), extraTagsFromExtras)
     }
 
-    private fun showLoginHelpCenter(loginStepFromExtras: String, loginFlowFromExtras: String) {
+    private fun showLoginHelpCenter(loginStepFromExtras: Step, loginFlowFromExtras: Flow) {
+        val helpCenterUrl = AppUrls.LOGIN_HELP_CENTER_URLS[loginStepFromExtras] ?: AppUrls.LOGIN_HELP_CENTER_MAIN_URL
+        ChromeCustomTabUtils.launchUrl(this, helpCenterUrl)
+
         AnalyticsTracker.track(
             stat = AnalyticsEvent.SUPPORT_HELP_CENTER_VIEWED,
             properties = mapOf(
                 KEY_SOURCE_FLOW to loginFlowFromExtras,
-                KEY_SOURCE_STEP to loginStepFromExtras
+                KEY_SOURCE_STEP to loginStepFromExtras,
+                KEY_HELP_CONTENT_URL to helpCenterUrl
             )
         )
     }

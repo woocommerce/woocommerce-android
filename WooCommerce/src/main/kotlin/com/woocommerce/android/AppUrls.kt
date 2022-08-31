@@ -72,6 +72,7 @@ object AppUrls {
 
     const val NEW_TO_WOO_DOC = "https://woocommerce.com/document/woocommerce-features"
 
+    const val LOGIN_HELP_CENTER_MAIN_URL = "https://woocommerce.com/document/android-ios-apps-login-help-faq/"
     val LOGIN_HELP_CENTER_URLS = mapOf(
         ENTER_EMAIL_ADDRESS to "https://woocommerce.com/document/android-ios-apps-login-help-faq/#enter-store-address"
     )
