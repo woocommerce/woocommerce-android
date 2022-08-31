@@ -915,16 +915,10 @@ object AppPrefs {
     }
 
     private fun getInt(key: PrefKey, default: Int = 0) =
-        getInt(key.toString(), default)
-
-    private fun getInt(keyName: String, default: Int = 0) =
-        PreferenceUtils.getInt(getPreferences(), keyName, default)
+        PreferenceUtils.getInt(getPreferences(), key.toString(), default)
 
     private fun setInt(key: PrefKey, value: Int) =
-        setInt(key.toString(), value)
-
-    private fun setInt(keyName: String, value: Int) =
-        PreferenceUtils.setInt(getPreferences(), keyName, value)
+        PreferenceUtils.setInt(getPreferences(), key.toString(), value)
 
     private fun getLong(key: PrefKey, default: Long = 0L) =
         getLong(key.toString(), default)
@@ -1021,22 +1015,6 @@ object AppPrefs {
 
     private fun getSiteIdWidgetKey(appWidgetId: Int): String {
         return DeletablePrefKey.STATS_WIDGET_SELECTED_SITE_ID.name + appWidgetId
-    }
-
-    fun setStatsWidgetColorModeId(colorModeId: Int, appWidgetId: Int) {
-        setInt(getColorModeIdWidgetKey(appWidgetId), colorModeId)
-    }
-
-    fun getStatsWidgetColorModeId(appWidgetId: Int): Int {
-        return getInt(getColorModeIdWidgetKey(appWidgetId), -1)
-    }
-
-    fun removeStatsWidgetColorModeId(appWidgetId: Int) {
-        remove(getColorModeIdWidgetKey(appWidgetId))
-    }
-
-    private fun getColorModeIdWidgetKey(appWidgetId: Int): String {
-        return DeletablePrefKey.STATS_WIDGET_COLOR_MODE.name + appWidgetId
     }
 
     enum class CardReaderOnboardingStatus {

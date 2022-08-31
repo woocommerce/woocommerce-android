@@ -5,7 +5,6 @@ import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.R
 import com.woocommerce.android.R.string
-import com.woocommerce.android.ui.appwidgets.WidgetColorMode
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.viewmodel.ResourceProvider
 import com.woocommerce.android.viewmodel.ScopedViewModel
@@ -26,15 +25,13 @@ class TodayWidgetListViewModel @Inject constructor(
     private val appPrefsWrapper: AppPrefsWrapper
 ) : ScopedViewModel(savedState) {
     private var siteId: Int? = null
-    private var colorMode: WidgetColorMode = WidgetColorMode.LIGHT
     private var appWidgetId: Int? = null
 
     private val mutableData = mutableListOf<TodayWidgetListItem>()
     val data: List<TodayWidgetListItem> = mutableData
 
-    fun start(siteId: Int, colorMode: WidgetColorMode, appWidgetId: Int) {
+    fun start(siteId: Int, appWidgetId: Int) {
         this.siteId = siteId
-        this.colorMode = colorMode
         this.appWidgetId = appWidgetId
     }
 
@@ -90,10 +87,7 @@ class TodayWidgetListViewModel @Inject constructor(
         currencyCode: String?,
         site: SiteModel
     ): List<TodayWidgetListItem> {
-        val layout = when (colorMode) {
-            WidgetColorMode.DARK -> R.layout.stats_widget_list_item_dark
-            WidgetColorMode.LIGHT -> R.layout.stats_widget_list_item_light
-        }
+        val layout = R.layout.stats_widget_list_item
 
         var grossRevenue = 0.0
         var orderCount = 0

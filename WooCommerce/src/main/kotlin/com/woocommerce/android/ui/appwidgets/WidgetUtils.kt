@@ -8,7 +8,6 @@ import android.net.Uri
 import android.view.View
 import android.widget.RemoteViews
 import com.woocommerce.android.R
-import com.woocommerce.android.extensions.putColorMode
 import com.woocommerce.android.ui.appwidgets.stats.StatsWidget.Companion.SITE_ID_KEY
 import com.woocommerce.android.ui.main.MainActivity
 import com.woocommerce.android.viewmodel.ResourceProvider
@@ -25,7 +24,7 @@ class WidgetUtils
     fun getLayout(colorMode: WidgetColorMode): Int {
         return when (colorMode) {
             WidgetColorMode.DARK -> R.layout.stats_widget_list_dark
-            WidgetColorMode.LIGHT -> R.layout.stats_widget_list_light
+            WidgetColorMode.LIGHT -> R.layout.stats_widget_list
         }
     }
 

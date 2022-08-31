@@ -1,7 +1,6 @@
 package com.woocommerce.android
 
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener
-import com.woocommerce.android.ui.appwidgets.WidgetColorMode
 import com.woocommerce.android.ui.payments.cardreader.onboarding.PersistentOnboardingData
 import com.woocommerce.android.ui.payments.cardreader.onboarding.PluginType
 import com.woocommerce.android.ui.promobanner.PromoBannerType
@@ -276,24 +275,6 @@ class AppPrefsWrapper @Inject constructor() {
     fun getAppWidgetSiteId(appWidgetId: Int) = AppPrefs.getStatsWidgetSelectedSiteId(appWidgetId)
     fun setAppWidgetSiteId(siteId: Long, appWidgetId: Int) = AppPrefs.setStatsWidgetSelectedSiteId(siteId, appWidgetId)
     fun removeAppWidgetSiteId(appWidgetId: Int) = AppPrefs.removeStatsWidgetSelectedSiteId(appWidgetId)
-
-    fun getAppWidgetColor(appWidgetId: Int): WidgetColorMode? {
-        return when (AppPrefs.getStatsWidgetColorModeId(appWidgetId)) {
-            AppPrefs.LIGHT_MODE_ID -> WidgetColorMode.LIGHT
-            AppPrefs.DARK_MODE_ID -> WidgetColorMode.DARK
-            else -> null
-        }
-    }
-
-    fun setAppWidgetColor(colorMode: WidgetColorMode, appWidgetId: Int) {
-        val colorModeId = when (colorMode) {
-            WidgetColorMode.LIGHT -> AppPrefs.LIGHT_MODE_ID
-            WidgetColorMode.DARK -> AppPrefs.DARK_MODE_ID
-        }
-        AppPrefs.setStatsWidgetColorModeId(colorModeId, appWidgetId)
-    }
-
-    fun removeAppWidgetColorModeId(appWidgetId: Int) = AppPrefs.removeStatsWidgetColorModeId(appWidgetId)
 
     /**
      * Observes changes to the preferences
