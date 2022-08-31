@@ -173,9 +173,12 @@ object AppPrefs {
      */
     val installationDate: Date?
         get() = try {
-            context.packageManager.packageInfo(context.packageName, 0).firstInstallTime.let {
-                Date(it)
-            }
+            context
+                .packageManager
+                .packageInfo(context.packageName, 0)
+                .firstInstallTime.let {
+                    Date(it)
+                }
         } catch (ex: Throwable) {
             relativeInstallationDate
         }

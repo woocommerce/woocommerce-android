@@ -11,7 +11,7 @@ fun PackageManager.packageInfo(packageName: String, flags: Int): PackageInfo = w
     else -> @Suppress("DEPRECATION") getPackageInfo(packageName, flags)
 }
 
-fun PackageManager.queryIntentActivity(intent: Intent, flag: Int): List<ResolveInfo> = when {
+fun PackageManager.intentActivities(intent: Intent, flag: Int): List<ResolveInfo> = when {
     SystemVersionUtils.isAtLeastT() -> queryIntentActivities(intent, PackageManager.ResolveInfoFlags.of(flag.toLong()))
     else -> @Suppress("DEPRECATION") queryIntentActivities(intent, flag)
 }
