@@ -7,12 +7,11 @@ import com.woocommerce.android.cardreader.internal.config.CardReaderConfigForUns
 import javax.inject.Inject
 
 class CardReaderCountryConfigProvider @Inject constructor(
-    private val canadaFeatureFlag: InPersonPaymentsCanadaFeatureFlag,
     private val cardReaderConfigFactory: CardReaderConfigFactory,
 ) {
     fun provideCountryConfigFor(countryCode: String?): CardReaderConfig {
         val config = cardReaderConfigFactory.getCardReaderConfigFor(countryCode)
-        return if (config is CardReaderConfigForCanada && !canadaFeatureFlag.isEnabled()) {
+        return if (config is CardReaderConfigForCanada) {
             CardReaderConfigForUnsupportedCountry
         } else {
             config
