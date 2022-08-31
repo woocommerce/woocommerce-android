@@ -63,10 +63,10 @@ class CardReaderHubViewModel @Inject constructor(
     }
 
     private val cardReaderPurchaseUrl: String by lazy {
-        if (inPersonPaymentsCanadaFeatureFlag.isEnabled()) {
-            val storeCountryCode = wooStore.getStoreCountryCode(selectedSite.get()) ?: null.also {
-                WooLog.e(CARD_READER, "Store's country code not found.")
-            }
+        val storeCountryCode = wooStore.getStoreCountryCode(selectedSite.get()) ?: null.also {
+            WooLog.e(CARD_READER, "Store's country code not found.")
+        }
+        if (storeCountryCode == "CA") {
             "${AppUrls.WOOCOMMERCE_PURCHASE_CARD_READER_IN_COUNTRY}$storeCountryCode"
         } else {
             val preferredPlugin = appPrefsWrapper.getCardReaderPreferredPlugin(
