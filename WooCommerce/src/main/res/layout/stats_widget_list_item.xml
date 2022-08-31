@@ -9,14 +9,14 @@
 
     <TextView
         android:id="@+id/list_item_title"
-        style="@style/Woo.StatsWidgetListItemKey.Light"
+        style="@style/Woo.StatsWidgetListItemKey"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         tools:text="@string/dashboard_stats_visitors" />
 
     <TextView
         android:id="@+id/list_item_value"
-        style="@style/Woo.StatsWidgetListItemValue.Light"
+        style="@style/Woo.StatsWidgetListItemValue"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         tools:text="20,345" />
