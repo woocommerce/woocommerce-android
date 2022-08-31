@@ -8,7 +8,6 @@ import com.woocommerce.android.experiment.LoginButtonSwapExperiment.LoginButtonS
 import com.woocommerce.android.experiment.MagicLinkRequestExperiment.MagicLinkRequestVariant
 import com.woocommerce.android.experiment.MagicLinkSentScreenExperiment.MagicLinkSentScreenVariant
 import com.woocommerce.android.experiment.PrologueExperiment.PrologueVariant
-import com.woocommerce.android.experiment.SiteLoginExperiment.SiteLoginVariant
 import com.woocommerce.android.util.PackageUtils
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T
@@ -28,7 +27,6 @@ class FirebaseRemoteConfigRepository @Inject constructor(
     companion object {
         @VisibleForTesting
         const val PROLOGUE_VARIANT_KEY = "prologue_variant"
-        private const val SITE_CREDENTIALS_EXPERIMENT_VARIANT_KEY = "site_credentials_emphasis"
         private const val MAGIC_LINK_SENT_EXPERIMENT_VARIANT_KEY = "magic_link_sent_experiment_variant"
         private const val MAGIC_LINK_REQUEST_VARIANT_KEY = "magic_link_experiment_variant"
         private const val LOGIN_BUTTON_SWAP_VARIANT_KEY = "login_button_swap_variant"
@@ -48,7 +46,6 @@ class FirebaseRemoteConfigRepository @Inject constructor(
     private val defaultValues by lazy {
         mapOf(
             PROLOGUE_VARIANT_KEY to PrologueVariant.CONTROL.name,
-            SITE_CREDENTIALS_EXPERIMENT_VARIANT_KEY to SiteLoginVariant.EMAIL_LOGIN.name,
             MAGIC_LINK_SENT_EXPERIMENT_VARIANT_KEY to MagicLinkSentScreenVariant.CONTROL.name,
             MAGIC_LINK_REQUEST_VARIANT_KEY to MagicLinkRequestVariant.CONTROL.name,
             LOGIN_BUTTON_SWAP_VARIANT_KEY to LoginButtonSwapVariant.CONTROL.name
@@ -86,14 +83,6 @@ class FirebaseRemoteConfigRepository @Inject constructor(
             .catch {
                 crashLogging.get().recordException(it)
                 emit(PrologueVariant.valueOf(defaultValues[PROLOGUE_VARIANT_KEY]!!))
-            }
-
-    override fun observeSiteLoginVariant(): Flow<SiteLoginVariant> =
-        observeStringRemoteValue(SITE_CREDENTIALS_EXPERIMENT_VARIANT_KEY)
-            .map { SiteLoginVariant.valueOf(it.uppercase()) }
-            .catch {
-                crashLogging.get().recordException(it)
-                emit(SiteLoginVariant.valueOf(defaultValues[SITE_CREDENTIALS_EXPERIMENT_VARIANT_KEY]!!))
             }
 
     override fun observeMagicLinkSentScreenVariant(): Flow<MagicLinkSentScreenVariant> =
