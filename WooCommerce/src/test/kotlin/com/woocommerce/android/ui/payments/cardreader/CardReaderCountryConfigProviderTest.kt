@@ -30,19 +30,6 @@ class CardReaderCountryConfigProviderTest {
     }
 
     @Test
-    fun `given CA and factory returns canada, when config provide, then unsupported returned`() {
-        // GIVEN
-        val countryCode = "CA"
-        whenever(cardReaderConfigFactory.getCardReaderConfigFor(countryCode)).thenReturn(CardReaderConfigForCanada)
-
-        // WHEN
-        val config = cardReaderCountryConfigProvider.provideCountryConfigFor(countryCode)
-
-        // THEN
-        assertThat(config).isInstanceOf(CardReaderConfigForUnsupportedCountry::class.java)
-    }
-
-    @Test
     fun `given US and factory returns USA, when config provide, then USA returned`() {
         // GIVEN
         val countryCode = "US"
