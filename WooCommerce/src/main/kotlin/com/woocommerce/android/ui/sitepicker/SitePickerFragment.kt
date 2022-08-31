@@ -26,6 +26,7 @@ import com.woocommerce.android.ui.login.LoginActivity
 import com.woocommerce.android.ui.login.LoginEmailHelpDialogFragment
 import com.woocommerce.android.ui.main.AppBarStatus
 import com.woocommerce.android.ui.main.MainActivity
+import com.woocommerce.android.ui.sitepicker.SitePickerViewModel.SitePickerEvent.NavigateToAccountMismatchScreen
 import com.woocommerce.android.ui.sitepicker.SitePickerViewModel.SitePickerEvent.NavigateToEmailHelpDialogEvent
 import com.woocommerce.android.ui.sitepicker.SitePickerViewModel.SitePickerEvent.NavigateToHelpFragmentEvent
 import com.woocommerce.android.ui.sitepicker.SitePickerViewModel.SitePickerEvent.NavigateToMainActivityEvent
@@ -154,6 +155,7 @@ class SitePickerFragment : BaseFragment(R.layout.fragment_site_picker), LoginEma
                 is NavigateToSiteAddressEvent -> navigateToAddressScreen()
                 is NavigateToEmailHelpDialogEvent -> navigateToNeedHelpFindingEmailScreen()
                 is NavigateToWPComWebView -> navigateToWPComWebView(event)
+                is NavigateToAccountMismatchScreen -> navigateToAccountMismatchScreen(event.hasConnectedStores)
                 is ShowSnackbar -> uiMessageResolver.showSnack(event.message)
                 is ShowDialog -> event.showDialog()
                 is Logout -> onLogout()
@@ -273,6 +275,12 @@ class SitePickerFragment : BaseFragment(R.layout.fragment_site_picker), LoginEma
                 urlToLoad = event.url,
                 urlToTriggerExit = event.validationUrl
             )
+        )
+    }
+
+    private fun navigateToAccountMismatchScreen(hasConnectedStores: Boolean) {
+        findNavController().navigateSafely(
+            SitePickerFragmentDirections.actionSitePickerFragmentToAccountMismatchErrorFragment(hasConnectedStores)
         )
     }
 

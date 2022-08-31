@@ -16,6 +16,7 @@ import com.woocommerce.android.support.HelpActivity
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.common.UserEligibilityFetcher
 import com.woocommerce.android.ui.login.UnifiedLoginTracker
+import com.woocommerce.android.ui.sitepicker.SitePickerViewModel.SitePickerEvent.NavigateToAccountMismatchScreen
 import com.woocommerce.android.ui.sitepicker.SitePickerViewModel.SitePickerEvent.NavigateToWPComWebView
 import com.woocommerce.android.ui.sitepicker.SitePickerViewModel.SitesListItem.Header
 import com.woocommerce.android.ui.sitepicker.SitePickerViewModel.SitesListItem.NonWooSiteUiModel
@@ -263,17 +264,7 @@ class SitePickerViewModel @Inject constructor(
             )
         )
         trackLoginEvent(currentStep = UnifiedLoginTracker.Step.WRONG_WP_ACCOUNT)
-        sitePickerViewState = sitePickerViewState.copy(
-            isNoStoresViewVisible = true,
-            isPrimaryBtnVisible = sitePickerViewState.hasConnectedStores == true || !loginSiteAddress.isNullOrEmpty(),
-            primaryBtnText = resourceProvider.getString(
-                if (sitePickerViewState.hasConnectedStores == true) string.login_view_connected_stores
-                else string.login_site_picker_try_another_address
-            ),
-            noStoresLabelText = resourceProvider.getString(string.login_not_connected_to_account, url),
-            noStoresBtnText = resourceProvider.getString(string.login_need_help_finding_email),
-            currentSitePickerState = SitePickerState.AccountMismatchState
-        )
+        triggerEvent(NavigateToAccountMismatchScreen(sitePickerViewState.hasConnectedStores ?: false))
     }
 
     private fun loadWooNotFoundView(site: SiteModel) {
@@ -601,6 +592,7 @@ class SitePickerViewModel @Inject constructor(
         object NavigateToSiteAddressEvent : SitePickerEvent()
         data class NavigateToHelpFragmentEvent(val origin: HelpActivity.Origin) : SitePickerEvent()
         data class NavigateToWPComWebView(val url: String, val validationUrl: String) : SitePickerEvent()
+        data class NavigateToAccountMismatchScreen(val hasConnectedStores: Boolean) : SitePickerEvent()
     }
 
     enum class SitePickerState {
