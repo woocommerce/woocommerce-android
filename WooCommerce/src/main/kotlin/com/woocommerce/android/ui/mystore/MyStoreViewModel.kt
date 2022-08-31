@@ -77,7 +77,6 @@ class MyStoreViewModel @Inject constructor(
     private companion object {
         const val NUM_TOP_PERFORMERS = 5
         const val DAYS_TO_REDISPLAY_JP_BENEFITS_BANNER = 5
-        const val ACTIVE_STATS_GRANULARITY_KEY = "active_stats_granularity_key"
     }
 
     val performanceObserver: LifecycleObserver = myStoreTransactionLauncher
