@@ -6,8 +6,6 @@ import android.content.Intent
 import android.widget.RemoteViews
 import android.widget.RemoteViewsService.RemoteViewsFactory
 import com.woocommerce.android.R
-import com.woocommerce.android.extensions.getColorMode
-import com.woocommerce.android.ui.appwidgets.WidgetColorMode
 import com.woocommerce.android.ui.appwidgets.stats.StatsWidget.Companion.SITE_ID_KEY
 import javax.inject.Inject
 
@@ -18,12 +16,11 @@ class TodayWidgetListProvider(val context: Context, intent: Intent) : RemoteView
     @Inject lateinit var viewModel: TodayWidgetListViewModel
     @Inject lateinit var widgetUpdater: TodayWidgetUpdater
 
-    private val colorMode: WidgetColorMode = intent.getColorMode()
     private val siteId: Int = intent.getIntExtra(SITE_ID_KEY, 0)
     private val appWidgetId = intent.getIntExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, -1)
 
     override fun onCreate() {
-        viewModel.start(siteId, colorMode, appWidgetId)
+        viewModel.start(siteId, appWidgetId)
     }
 
     /**

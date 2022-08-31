@@ -21,20 +21,12 @@ import kotlin.random.Random
  */
 class WidgetUtils
 @Inject constructor() {
-    fun getLayout(colorMode: WidgetColorMode): Int {
-        return when (colorMode) {
-            WidgetColorMode.DARK -> R.layout.stats_widget_list_dark
-            WidgetColorMode.LIGHT -> R.layout.stats_widget_list
-        }
-    }
-
     @Suppress("LongParameterList")
     fun showList(
         appWidgetManager: AppWidgetManager,
         views: RemoteViews,
         context: Context,
         appWidgetId: Int,
-        colorMode: WidgetColorMode,
         siteId: Int
     ) {
         views.setPendingIntentTemplate(R.id.widget_content, getPendingTemplate(context))
@@ -43,7 +35,6 @@ class WidgetUtils
 
         val listIntent = Intent(context, WidgetService::class.java)
         listIntent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, appWidgetId)
-        listIntent.putColorMode(colorMode)
         listIntent.putExtra(SITE_ID_KEY, siteId)
         listIntent.data = Uri.parse(listIntent.toUri(Intent.URI_INTENT_SCHEME))
 

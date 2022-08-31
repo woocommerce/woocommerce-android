@@ -9,7 +9,6 @@ import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.R
 import com.woocommerce.android.extensions.getTitle
 import com.woocommerce.android.tools.NetworkStatus
-import com.woocommerce.android.ui.appwidgets.WidgetColorMode
 import com.woocommerce.android.ui.appwidgets.WidgetUpdater
 import com.woocommerce.android.ui.appwidgets.WidgetUtils
 import com.woocommerce.android.viewmodel.ResourceProvider
@@ -36,7 +35,6 @@ class TodayWidgetUpdater
     ) {
         val widgetManager = appWidgetManager ?: AppWidgetManager.getInstance(context)
 
-        val colorMode = appPrefsWrapper.getAppWidgetColor(appWidgetId) ?: WidgetColorMode.LIGHT
         val siteId = appPrefsWrapper.getAppWidgetSiteId(appWidgetId)
         val siteModel = siteStore.getSiteBySiteId(siteId)
 
@@ -44,7 +42,7 @@ class TodayWidgetUpdater
         val hasAccessToken = accountStore.hasAccessToken()
         val isUsingV4Api = appPrefsWrapper.isV4StatsSupported()
 
-        val views = RemoteViews(context.packageName, widgetUtils.getLayout(colorMode))
+        val views = RemoteViews(context.packageName, R.layout.stats_widget_list)
 
         if (networkAvailable && hasAccessToken && siteModel != null) {
             views.setTextViewText(R.id.widget_title, siteModel.getTitle(context))
@@ -61,7 +59,6 @@ class TodayWidgetUpdater
                 views,
                 context,
                 appWidgetId,
-                colorMode,
                 siteModel.id
             )
         } else {
@@ -92,7 +89,6 @@ class TodayWidgetUpdater
     override fun componentName(context: Context) = ComponentName(context, TodayStatsWidget::class.java)
 
     override fun delete(appWidgetId: Int) {
-        appPrefsWrapper.removeAppWidgetColorModeId(appWidgetId)
         appPrefsWrapper.removeAppWidgetSiteId(appWidgetId)
     }
 }
