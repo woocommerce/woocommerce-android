@@ -6,6 +6,7 @@ import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
 import android.view.MenuItem
+import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
@@ -22,12 +23,12 @@ import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_SOURCE
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_JETPACK_INSTALLATION_SOURCE_WEB
 import com.woocommerce.android.analytics.ExperimentTracker
 import com.woocommerce.android.databinding.ActivityLoginBinding
+import com.woocommerce.android.experiment.LoginButtonSwapExperiment
 import com.woocommerce.android.experiment.MagicLinkRequestExperiment
 import com.woocommerce.android.experiment.MagicLinkRequestExperiment.MagicLinkRequestVariant.AUTOMATIC
 import com.woocommerce.android.experiment.MagicLinkRequestExperiment.MagicLinkRequestVariant.ENHANCED
 import com.woocommerce.android.experiment.MagicLinkSentScreenExperiment
 import com.woocommerce.android.experiment.PrologueExperiment
-import com.woocommerce.android.experiment.SiteLoginExperiment
 import com.woocommerce.android.support.HelpActivity
 import com.woocommerce.android.support.HelpActivity.Origin
 import com.woocommerce.android.support.ZendeskExtraTags
@@ -143,10 +144,10 @@ class LoginActivity :
     @Inject internal lateinit var dispatcher: Dispatcher
     @Inject internal lateinit var loginNotificationScheduler: LoginNotificationScheduler
 
-    @Inject internal lateinit var siteLoginExperiment: SiteLoginExperiment
     @Inject internal lateinit var prologueExperiment: PrologueExperiment
     @Inject internal lateinit var sentScreenExperiment: MagicLinkSentScreenExperiment
     @Inject internal lateinit var magicLinkRequestExperiment: MagicLinkRequestExperiment
+    @Inject internal lateinit var loginButtonSwapExperiment: LoginButtonSwapExperiment
 
     private var loginMode: LoginMode? = null
     private var isSiteOnWPcom: Boolean? = null
@@ -157,6 +158,14 @@ class LoginActivity :
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        onBackPressedDispatcher.addCallback(
+            this,
+            object : OnBackPressedCallback(true) {
+                override fun handleOnBackPressed() {
+                    handleBackPress()
+                }
+            }
+        )
 
         dispatcher.register(this)
 
@@ -183,6 +192,16 @@ class LoginActivity :
         savedInstanceState?.let { ss ->
             unifiedLoginTracker.setSource(ss.getString(KEY_UNIFIED_TRACKER_SOURCE, Source.DEFAULT.value))
             unifiedLoginTracker.setFlow(ss.getString(KEY_UNIFIED_TRACKER_FLOW))
+        }
+    }
+
+    private fun handleBackPress() {
+        AnalyticsTracker.trackBackPressed(this)
+
+        if (supportFragmentManager.backStackEntryCount == 1) {
+            finish()
+        } else {
+            supportFragmentManager.popBackStack()
         }
     }
 
@@ -237,7 +256,7 @@ class LoginActivity :
     private fun showMagicLinkInterceptFragment(authToken: String) {
         val fragment = MagicLinkInterceptFragment.newInstance(authToken)
         supportFragmentManager.beginTransaction()
-            .replace(R.id.fragment_container, fragment, LoginPrologueFragment.TAG)
+            .replace(R.id.fragment_container, fragment, MagicLinkInterceptFragment.TAG)
             .addToBackStack(null)
             .commitAllowingStateLoss()
     }
@@ -300,21 +319,11 @@ class LoginActivity :
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         if (item.itemId == android.R.id.home) {
-            onBackPressed()
+            onBackPressedDispatcher.onBackPressed()
             return true
         }
 
         return false
-    }
-
-    override fun onBackPressed() {
-        AnalyticsTracker.trackBackPressed(this)
-
-        if (supportFragmentManager.backStackEntryCount == 1) {
-            finish()
-        } else {
-            super.onBackPressed()
-        }
     }
 
     override fun getLoginMode(): LoginMode {
@@ -453,8 +462,12 @@ class LoginActivity :
         changeFragment(loginSiteAddressFragment, true, LoginSiteAddressFragment.TAG)
     }
 
-    private fun showPrologueFragment() {
-        val prologueFragment = getPrologueFragment() ?: LoginPrologueFragment()
+    private fun showPrologueFragment() = lifecycleScope.launchWhenStarted {
+        val createOriginalFragment = { LoginPrologueFragment() }
+        val createSwappedFragment = { LoginPrologueSwappedFragment() }
+        val loginFragment = loginButtonSwapExperiment.run(createOriginalFragment, createSwappedFragment)
+
+        val prologueFragment = getPrologueFragment() ?: loginFragment
         changeFragment(prologueFragment, true, LoginPrologueFragment.TAG)
     }
 
@@ -578,18 +591,15 @@ class LoginActivity :
         val siteAddressClean = inputSiteAddress.replaceFirst(protocolRegex, "")
         AppPrefs.setLoginSiteAddress(siteAddressClean)
 
-        lifecycleScope.launchWhenStarted {
-            if (hasJetpack) {
-                // if a site is self-hosted, we show either email login screen or site credentials login screen
-                if (isSiteOnWPcom != true) {
-                    siteLoginExperiment.run(inputSiteAddress, ::showEmailLoginScreen, ::loginViaSiteCredentials)
-                } else {
-                    showEmailLoginScreen()
-                }
-            } else {
-                // Let user log in via site credentials first before showing Jetpack missing screen.
+        if (hasJetpack) {
+            if (isSiteOnWPcom != true) {
                 loginViaSiteCredentials(inputSiteAddress)
+            } else {
+                showEmailLoginScreen()
             }
+        } else {
+            // Let user log in via site credentials first before showing Jetpack missing screen.
+            loginViaSiteCredentials(inputSiteAddress)
         }
     }
 

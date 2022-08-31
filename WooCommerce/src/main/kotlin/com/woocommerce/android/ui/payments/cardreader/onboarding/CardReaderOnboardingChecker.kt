@@ -15,6 +15,7 @@ import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.payments.cardreader.CardReaderCountryConfigProvider
 import com.woocommerce.android.ui.payments.cardreader.CardReaderTrackingInfoKeeper
+import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboardingState.CashOnDeliveryDisabled
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboardingState.ChoosePaymentGatewayProvider
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboardingState.GenericError
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboardingState.NoConnectionError
@@ -47,6 +48,7 @@ import org.wordpress.android.fluxc.model.payments.inperson.WCPaymentAccountResul
 import org.wordpress.android.fluxc.model.payments.inperson.WCPaymentAccountResult.WCPaymentAccountStatus.RESTRICTED
 import org.wordpress.android.fluxc.model.payments.inperson.WCPaymentAccountResult.WCPaymentAccountStatus.RESTRICTED_SOON
 import org.wordpress.android.fluxc.model.plugin.SitePluginModel
+import org.wordpress.android.fluxc.store.WCGatewayStore
 import org.wordpress.android.fluxc.store.WCInPersonPaymentsStore
 import org.wordpress.android.fluxc.store.WCInPersonPaymentsStore.InPersonPaymentsPluginType
 import org.wordpress.android.fluxc.store.WooCommerceStore
@@ -69,6 +71,7 @@ class CardReaderOnboardingChecker @Inject constructor(
     private val appPrefsWrapper: AppPrefsWrapper,
     private val wooStore: WooCommerceStore,
     private val inPersonPaymentsStore: WCInPersonPaymentsStore,
+    private val wcGatewayStore: WCGatewayStore,
     private val dispatchers: CoroutineDispatchers,
     private val networkStatus: NetworkStatus,
     private val cardReaderTrackingInfoKeeper: CardReaderTrackingInfoKeeper,
@@ -81,6 +84,7 @@ class CardReaderOnboardingChecker @Inject constructor(
             .also {
                 val (status, version) = when (it) {
                     is OnboardingCompleted -> CARD_READER_ONBOARDING_COMPLETED to it.version
+                    is CashOnDeliveryDisabled -> CARD_READER_ONBOARDING_PENDING to it.version
                     is StripeAccountPendingRequirement -> CARD_READER_ONBOARDING_PENDING to it.version
                     else -> {
                         updatePluginExplicitlySelectedFlag(false)
@@ -191,11 +195,36 @@ class CardReaderOnboardingChecker @Inject constructor(
         if (isStripeAccountRejected(paymentAccount)) return StripeAccountRejected(preferredPlugin.type)
         if (isInUndefinedState(paymentAccount)) return GenericError
 
+        if (
+            !isCashOnDeliveryDisabledStateSkipped() &&
+            !isCashOnDeliveryEnabled()
+        ) return CashOnDeliveryDisabled(
+            requireNotNull(countryCode),
+            preferredPlugin.type,
+            preferredPlugin.info?.version
+        )
+
         return OnboardingCompleted(
             preferredPlugin.type,
             preferredPlugin.info?.version,
             requireNotNull(countryCode)
         )
+    }
+
+    private fun isCashOnDeliveryDisabledStateSkipped(): Boolean {
+        val site = selectedSite.get()
+        return appPrefsWrapper.isCashOnDeliveryDisabledStateSkipped(
+            localSiteId = site.id,
+            remoteSiteId = site.siteId,
+            selfHostedSiteId = site.selfHostedSiteId,
+        )
+    }
+
+    private suspend fun isCashOnDeliveryEnabled(): Boolean {
+        val gateways = wcGatewayStore.fetchAllGateways(selectedSite.get()).model
+        return gateways?.firstOrNull { wcGatewayModel ->
+            wcGatewayModel.id.equals("cod", ignoreCase = true)
+        }?.isEnabled ?: false
     }
 
     private fun isUserComingFromChoosePaymentGatewayScreen(userSelectedPlugin: PluginType?): Boolean {
@@ -514,6 +543,16 @@ sealed class CardReaderOnboardingState(
      */
     @Parcelize
     object NoConnectionError : CardReaderOnboardingState()
+
+    /**
+     * Payment type Cash on Delivery is disabled on the store.
+     */
+    @Parcelize
+    data class CashOnDeliveryDisabled(
+        val countryCode: String,
+        override val preferredPlugin: PluginType,
+        val version: String?,
+    ) : CardReaderOnboardingState()
 }
 
 sealed class PreferredPluginResult {

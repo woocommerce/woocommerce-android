@@ -1,11 +1,31 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2022-08-12 09:54:15+0000
+Translation-Revision-Date: 2022-08-23 13:54:04+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: ko_KR
 -->
 <resources>
+    <string name="login_site_picker_try_another_address">다른 주소 시도</string>
+    <string name="card_reader_onboarding_cash_on_delivery_enable_failure">배송 시 현금을 활성화하지 못했습니다. 나중에 다시 시도하세요.</string>
+    <string name="card_reader_onboarding_cash_on_delivery_disabled_button">대면 결제 활성화</string>
+    <string name="card_reader_onboarding_cash_on_delivery_disabled_error_hint">계산에 \"대면 결제\" 옵션이 있으면 계산 또는 배송 시 카드 또는 현금 결제를 수락할 수 있습니다.</string>
+    <string name="card_reader_onboarding_cash_on_delivery_disabled_error_header">계산에 대면 결제 추가</string>
+    <string name="card_reader_connect_learn_more">대면 결제 &lt;a href=\'\'&gt;더 알아보기&lt;/a&gt;</string>
+    <string name="login_site_picker_new_to_woo">우커머스 신규 이용</string>
+    <string name="site_discovery_postlogin_failure">실패가 발생했습니다. 지원을 문의하세요.</string>
+    <string name="login_site_picker_enter_site_address">사이트 주소 입력</string>
+    <string name="login_help_notification_get_link_by_email_button">이메일로 로그인 링크 받기</string>
+    <string name="login_help_notification_invalid_password_title">비밀번호가 기억나지 않나요?</string>
+    <string name="card_reader_onboarding_not_finished">아직 대면 결제 설정을 완료하지 않으신 것 같습니다. &lt;b&gt;&lt;a href=\'\'&gt;설정 계속&lt;/a&gt;&lt;/b&gt;</string>
+    <string name="payments_hub_title">결제</string>
+    <string name="orderlist_bottom_sheet_simple_payments_moved_button">알겠어요!</string>
+    <string name="orderlist_bottom_sheet_simple_payments_moved_description">이제 빠르고 쉽게 대면 결제와 기타 기능에 접근하실 수 있습니다.</string>
+    <string name="orderlist_bottom_sheet_simple_payments_moved_title">메뉴 탭의 결제</string>
+    <string name="login_no_wpcom_account_found">%1$s 이메일은 워드프레스닷컴 계정에서 사용되지 않습니다.</string>
+    <string name="login_non_woo_stores_label">기타 사이트</string>
+    <string name="login_with_store_address">스토어 주소로 로그인</string>
+    <string name="more_menu_button_w___admin">WC 관리자</string>
     <string name="login_magic_links_email_sent">방금 다음으로 매직 링크를 보내드렸습니다.</string>
     <string name="login_magic_links_sent_label_short">이 기기에서 이메일을 확인하세요!</string>
     <string name="or_use_password">로그인 비밀번호 사용</string>
@@ -1026,7 +1046,6 @@ Language: ko_KR
     <string name="orderdetail_net">순 결제</string>
     <string name="orderdetail_payment_paid_by_customer">유료</string>
     <string name="login_jetpack_view_instructions_alt">Jetpack 연결에 대해 자세히 알아보기</string>
-    <string name="login_no_stores">이 계정에 연결된 WooCommerce 스토어를 찾을 수 없습니다. 이 앱을 사용하려면 WooCommerce 스토어에 무료 Jetpack 플러그인을 설치하고 연결해야 합니다.</string>
     <string name="edit">편집</string>
     <string name="product_images_validate_drag_and_drop">확인</string>
     <string name="product_images_drag_and_drop_description">끌어 놓아서 사진 순서 변경</string>
@@ -1115,7 +1134,6 @@ Language: ko_KR
     <string name="product_publish_draft_dialog_title">임시글 저장</string>
     <string name="product_status_trashed">삭제됨</string>
     <string name="product_detail_save_as_draft">임시글로 저장</string>
-    <string name="login_no_wpcom_account_found">%1$s이(가) 워드프레스닷컴 계정에 연결되지 않은 것으로 보입니다.</string>
     <string name="signup_confirmation_title">등록 확인</string>
     <string name="reset_your_password">비밀번호 재설정하기</string>
     <string name="enter_your_site_address">연결할 사이트 주소 입력하기</string>
@@ -1795,7 +1813,6 @@ Language: ko_KR
     <string name="orderdetail_track_shipment">배송 추적</string>
     <string name="login_email_help_desc">사이트 관리에서 %1$sJetpack 대시보드%2$s(%3$s연결 &gt; 계정 연결%4$s)에서 워드프레스닷컴에 연결하는 데 사용한 이메일을 찾을 수 있습니다.</string>
     <string name="login_email_help_title">로그인할 때 어떤 이메일을 사용하나요?</string>
-    <string name="login_need_help_finding_email">연결된 이메일을 찾는 데 도움이 필요하신가요?</string>
     <string name="login_jetpack_what_is_description">Jetpack은 스토어를 최고의 모바일 환경을 제공하는 데 필요한 푸시 알림, 통계 등의 도구와 연결하는 무료 워드프레스 플러그인입니다.</string>
     <string name="login_jetpack_what_is">Jetpack이란 무엇인가요?</string>
     <string name="login_view_connected_stores">연결된 스토어 보기</string>
@@ -2120,6 +2137,7 @@ Language: ko_KR
     <string name="dashboard_stats_granularity_months">개월</string>
     <string name="dashboard_stats_granularity_weeks">주</string>
     <string name="dashboard_stats_granularity_days">일</string>
+    <string name="login_no_stores">이 계정에 연결된 우커머스 스토어를 찾을 수 없습니다.</string>
     <string name="login_with_a_different_account">다른 계정으로 로그인</string>
     <string name="login_nostores_content_description">우커머스 스토어 없음</string>
     <string name="login_avatar_content_description">프로필 사진</string>

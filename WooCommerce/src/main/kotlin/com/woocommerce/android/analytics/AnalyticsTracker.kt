@@ -142,6 +142,7 @@ class AnalyticsTracker private constructor(private val context: Context) {
         const val KEY_ERROR_CONTEXT = "error_context"
         const val KEY_ERROR_DESC = "error_description"
         const val KEY_ERROR_TYPE = "error_type"
+        const val KEY_ERROR_MESSAGE = "error_message"
         const val KEY_FROM = "from"
         const val KEY_HAS_UNFULFILLED_ORDERS = "has_unfulfilled_orders"
         const val KEY_ID = "id"
@@ -238,6 +239,10 @@ class AnalyticsTracker private constructor(private val context: Context) {
             PRIVATE("private"),
             SYSTEM("system")
         }
+
+        const val KEY_VALIDATION_SCENARIO = "validation_scenario"
+        const val VALUE_VALIDATION_SCENARIO_LOCAL = "local"
+        const val VALUE_VALIDATION_SCENARIO_REMOTE = "remote"
 
         const val KEY_FEEDBACK_ACTION = "action"
         const val KEY_FEEDBACK_CONTEXT = "context"
@@ -377,6 +382,9 @@ class AnalyticsTracker private constructor(private val context: Context) {
         const val KEY_BANNER_CAMPAIGN_NAME = "campaign_name"
         const val KEY_BANNER_UPSELL_CARD_READERS = "upsell_card_readers"
         const val KEY_BANNER_REMIND_LATER = "remind_later"
+        const val KEY_BANNER_LINKED_PRODUCTS_PROMO = "linked_products_promo"
+
+        const val SOURCE_PRODUCT_DETAIL = "product_detail"
 
         // -- Experiments
         const val KEY_EXPERIMENT_VARIANT = "experiment_variant"

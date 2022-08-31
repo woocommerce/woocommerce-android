@@ -19,6 +19,7 @@ class SingleProductScreen : Screen {
 
     fun goBackToProductsScreen(): ProductListScreen {
         pressBack()
+        waitForElementToBeDisplayed(R.id.productsRecycler)
         return ProductListScreen()
     }
 
@@ -77,7 +78,18 @@ class SingleProductScreen : Screen {
     }
 
     // Checks that label and actual value are siblings in view hierarchy:
-    fun assertTextNameValuePair(nameText: String, valueText: String?) {
+    private fun assertTextNameValuePair(nameText: String, valueText: String?) {
+        // Scroll the object into visible area
+        scrollToListItem(
+            nameText,
+            Espresso.onView(
+                Matchers.allOf(
+                    ViewMatchers.withId(R.id.propertiesRecyclerView),
+                    ViewMatchers.hasDescendant(ViewMatchers.withText(nameText))
+                )
+            )
+        )
+
         Espresso.onView(
             Matchers.allOf(
                 ViewMatchers.withChild(

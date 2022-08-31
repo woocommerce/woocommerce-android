@@ -118,6 +118,11 @@ enum class AnalyticsEvent(val siteless: Boolean = false) {
     SITE_PICKER_NOT_WOO_STORE_REFRESH_APP_LINK_TAPPED(siteless = true),
     SITE_PICKER_NOT_CONNECTED_JETPACK_REFRESH_APP_LINK_TAPPED(siteless = true),
     SITE_PICKER_NON_WOO_SITE_TAPPED(siteless = true),
+    SITE_PICKER_NEW_TO_WOO_TAPPED(siteless = true),
+    SITE_PICKER_ENTER_SITE_ADDRESS_TAPPED(siteless = true),
+    SITE_PICKER_SITE_DISCOVERY(siteless = true),
+    SITE_PICKER_JETPACK_TIMEOUT_ERROR_SHOWN(siteless = true),
+    SITE_PICKER_JETPACK_TIMEOUT_CONTACT_SUPPORT_CLICKED(siteless = true),
 
     // -- Dashboard
     DASHBOARD_PULLED_TO_REFRESH,
@@ -193,6 +198,7 @@ enum class AnalyticsEvent(val siteless: Boolean = false) {
     ORDER_DETAIL_CREATE_SHIPPING_LABEL_BUTTON_TAPPED,
     ORDER_DETAIL_WAITING_TIME_LOADED,
     ORDER_VIEW_CUSTOM_FIELDS_TAPPED,
+    ORDER_ADDRESS_VALIDATION_ERROR,
 
     // - Order detail editing
     ORDER_DETAIL_EDIT_FLOW_STARTED,
@@ -200,9 +206,10 @@ enum class AnalyticsEvent(val siteless: Boolean = false) {
     ORDER_DETAIL_EDIT_FLOW_FAILED,
     ORDER_DETAIL_EDIT_FLOW_CANCELED,
     ORDER_EDIT_BUTTON_TAPPED,
+    PLUGINS_NOT_SYNCED_YET,
 
     // -- Order Creation
-    ORDER_ADD_NEW,
+    ORDERS_ADD_NEW,
     ORDER_PRODUCT_ADD,
     ORDER_CUSTOMER_ADD,
     ORDER_FEE_ADD,
@@ -277,7 +284,13 @@ enum class AnalyticsEvent(val siteless: Boolean = false) {
     // -- Card Present Payments - onboarding
     CARD_PRESENT_ONBOARDING_LEARN_MORE_TAPPED,
     CARD_PRESENT_ONBOARDING_NOT_COMPLETED,
+    CARD_PRESENT_ONBOARDING_STEP_SKIPPED,
+    CARD_PRESENT_ONBOARDING_CTA_TAPPED,
     CARD_PRESENT_PAYMENT_GATEWAY_SELECTED,
+
+    // -- Cash on Delivery - onboarding
+    ENABLE_CASH_ON_DELIVERY_SUCCESS,
+    ENABLE_CASH_ON_DELIVERY_FAILED,
 
     // -- Card Present Payments - collection
     CARD_PRESENT_COLLECT_PAYMENT_FAILED,
@@ -300,6 +313,7 @@ enum class AnalyticsEvent(val siteless: Boolean = false) {
     CARD_READER_CONNECTION_SUCCESS,
     CARD_READER_DISCONNECT_TAPPED,
     CARD_READER_AUTO_CONNECTION_STARTED,
+    CARD_PRESENT_CONNECTION_LEARN_MORE_TAPPED,
 
     // -- Card Reader - software update
     CARD_READER_SOFTWARE_UPDATE_STARTED,
@@ -556,6 +570,7 @@ enum class AnalyticsEvent(val siteless: Boolean = false) {
     REVIEWS_LIST_SHARE_YOUR_STORE_BUTTON_TAPPED,
 
     // -- Product Review Detail
+    REVIEW_OPEN,
     REVIEW_LOADED,
     REVIEW_LOAD_FAILED,
     REVIEW_PRODUCT_LOADED,
@@ -666,8 +681,8 @@ enum class AnalyticsEvent(val siteless: Boolean = false) {
     LOGIN_LOCAL_NOTIFICATION_DISMISSED(siteless = true),
 
     // Experiments (A/B test variants)
-    LOGIN_SITE_CREDENTIALS_EXPERIMENT,
     PROLOGUE_EXPERIMENT,
     MAGIC_LINK_SENT_SCREEN_EXPERIMENT,
-    MAGIC_LINK_REQUEST_EXPERIMENT
+    MAGIC_LINK_REQUEST_EXPERIMENT,
+    LOGIN_BUTTON_SWAP_EXPERIMENT
 }

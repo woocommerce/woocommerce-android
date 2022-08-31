@@ -1,11 +1,31 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2022-08-10 18:54:03+0000
+Translation-Revision-Date: 2022-08-23 15:54:03+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: it
 -->
 <resources>
+    <string name="login_site_picker_try_another_address">Prova con un altro indirizzo</string>
+    <string name="card_reader_onboarding_cash_on_delivery_enable_failure">Non è stato possibile abilitare il pagamento alla consegna. Riprova più tardi.</string>
+    <string name="card_reader_onboarding_cash_on_delivery_disabled_button">Abilita Paga di persona</string>
+    <string name="card_reader_onboarding_cash_on_delivery_disabled_error_hint">L\'opzione \"Paga di persona\" al momento del pagamento ti consente di accettare pagamenti tramite carte di credito o contanti alla consegna.</string>
+    <string name="card_reader_onboarding_cash_on_delivery_disabled_error_header">Aggiungi Paga di persona al pagamento</string>
+    <string name="card_reader_connect_learn_more">&lt;a href=\'\'&gt;Altre informazioni&lt;/a&gt; sui Pagamenti di persona</string>
+    <string name="login_site_picker_new_to_woo">Prima volta in WooCommerce</string>
+    <string name="site_discovery_postlogin_failure">Si è verificato un errore, contatta il supporto</string>
+    <string name="login_site_picker_enter_site_address">Inserisci un indirizzo del sito</string>
+    <string name="login_help_notification_get_link_by_email_button">Richiedi un link di accesso via e-mail</string>
+    <string name="login_help_notification_invalid_password_title">Non ricordi la password?</string>
+    <string name="card_reader_onboarding_not_finished">Abbiamo notato che non hai ancora completato la configurazione dei Pagamenti di persona. &lt;b&gt;&lt;a href=\'\'&gt;Continua con la configurazione&lt;/a&gt;&lt;/b&gt;</string>
+    <string name="payments_hub_title">Pagamenti</string>
+    <string name="orderlist_bottom_sheet_simple_payments_moved_button">OK!</string>
+    <string name="orderlist_bottom_sheet_simple_payments_moved_description">Ora puoi accedere rapidamente e con facilità ai Pagamenti di persona e ad altre funzionalità</string>
+    <string name="orderlist_bottom_sheet_simple_payments_moved_title">Pagamenti dalla scheda Menu</string>
+    <string name="login_no_wpcom_account_found">L\'e-mail %1$s non è utilizzata con un account WordPress.com.</string>
+    <string name="login_non_woo_stores_label">Altri siti</string>
+    <string name="login_with_store_address">Accesso con l\'indirizzo del negozio</string>
+    <string name="more_menu_button_w___admin">WC Admin</string>
     <string name="login_magic_links_email_sent">Abbiamo appena inviato un link magico a</string>
     <string name="login_magic_links_sent_label_short">Controlla la tua e-mail su questo dispositivo!</string>
     <string name="or_use_password">Usa la password per accedere</string>
@@ -1026,7 +1046,6 @@ Language: it
     <string name="orderdetail_net">Importo di pagamento netto</string>
     <string name="orderdetail_payment_paid_by_customer">Pagato</string>
     <string name="login_jetpack_view_instructions_alt">Scopri di più su come connettere Jetpack</string>
-    <string name="login_no_stores">Non abbiamo trovato negozi WooCommerce connessi a questo account. Per usare quest\'app, dovrai installare e connettere il plugin Jetpack gratuito sui tuoi negozi WooCommerce.</string>
     <string name="edit">Modifica</string>
     <string name="product_images_validate_drag_and_drop">Convalida</string>
     <string name="product_images_drag_and_drop_description">Trascina e rilascia per riordinare le foto</string>
@@ -1115,7 +1134,6 @@ Language: it
     <string name="product_publish_draft_dialog_title">Salvataggio bozza</string>
     <string name="product_status_trashed">Spostata nel cestino</string>
     <string name="product_detail_save_as_draft">Salva come bozza</string>
-    <string name="login_no_wpcom_account_found">Sembra che %1$s non sia associato a un account WordPress.com.</string>
     <string name="signup_confirmation_title">Conferma dell\'iscrizione</string>
     <string name="reset_your_password">Reimposta la password</string>
     <string name="enter_your_site_address">Inserisci l\'indirizzo del tuo sito</string>
@@ -1795,7 +1813,6 @@ Language: it
     <string name="orderdetail_track_shipment">Traccia spedizione</string>
     <string name="login_email_help_desc">Nell\'amministrazione del sito puoi trovare l\'e-mail che hai usato per collegarti a WordPress.com dalla %1$sBacheca di Jetpack%2$s sotto %3$sConnessioni &gt; Connessione dell\'account%4$s</string>
     <string name="login_email_help_title">Quale e-mail uso per accedere?</string>
-    <string name="login_need_help_finding_email">Ti serve aiuto per trovare l\'e-mail collegata?</string>
     <string name="login_jetpack_what_is_description">Jetpack è un plugin WordPress gratuito che collega il tuo negozio con gli strumenti necessari per assicurarti la migliore esperienza mobile, incluse le notifiche push e le statistiche</string>
     <string name="login_jetpack_what_is">Che cos\'è Jetpack?</string>
     <string name="login_view_connected_stores">Visualizza i negozi collegati</string>
@@ -2120,6 +2137,7 @@ Language: it
     <string name="dashboard_stats_granularity_months">Mesi</string>
     <string name="dashboard_stats_granularity_weeks">Settimane</string>
     <string name="dashboard_stats_granularity_days">Giorni</string>
+    <string name="login_no_stores">Non abbiamo trovato negozi WooCommerce connessi a questo account.</string>
     <string name="login_with_a_different_account">Accedi con un account diverso</string>
     <string name="login_nostores_content_description">Nessun negozio WooCommerce</string>
     <string name="login_avatar_content_description">Foto del profilo</string>

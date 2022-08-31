@@ -1,11 +1,31 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2022-08-10 18:54:03+0000
+Translation-Revision-Date: 2022-08-26 09:54:03+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: nl
 -->
 <resources>
+    <string name="login_site_picker_try_another_address">Probeer een ander adres</string>
+    <string name="card_reader_onboarding_cash_on_delivery_enable_failure">Contant betalen bij ontvangst inschakelen mislukt. Probeer later opnieuw.</string>
+    <string name="card_reader_onboarding_cash_on_delivery_disabled_button">Fysieke betalingen inschakelen.</string>
+    <string name="card_reader_onboarding_cash_on_delivery_disabled_error_hint">Met een optie voor ‘Fysieke betalingen’ in je online kassa kan je contante of kaartbetalingen accepteren bij ophalen of ontvangst.</string>
+    <string name="card_reader_onboarding_cash_on_delivery_disabled_error_header">Voeg fysieke betalingen toe aan je online kassa</string>
+    <string name="card_reader_connect_learn_more">&lt;a href=\'\'&gt;Meer informatie&lt;/a&gt; over fysieke betalingen</string>
+    <string name="login_site_picker_new_to_woo">Nieuw bij WooCommerce</string>
+    <string name="site_discovery_postlogin_failure">Er is een probleem opgetreden, neem contact op met de klantenservice</string>
+    <string name="login_site_picker_enter_site_address">Voer een site-adres in</string>
+    <string name="login_help_notification_get_link_by_email_button">Krijg een inloglink via e-mail</string>
+    <string name="login_help_notification_invalid_password_title">Kun je je wachtwoord niet onthouden?</string>
+    <string name="card_reader_onboarding_not_finished">We zien dat je het instellen van Fysieke betalingen nog niet hebt afgerond. &lt;b&gt;&lt;a href=\'\'&gt;Ga door met instellen.&lt;/a&gt;&lt;/b&gt;</string>
+    <string name="payments_hub_title">Betalingen</string>
+    <string name="orderlist_bottom_sheet_simple_payments_moved_button">Begrepen!</string>
+    <string name="orderlist_bottom_sheet_simple_payments_moved_description">Nu heb je snel toegang tot Fysieke betalingen en andere functies</string>
+    <string name="orderlist_bottom_sheet_simple_payments_moved_title">Betalingen van het tabblad Menu</string>
+    <string name="login_no_wpcom_account_found">De e-mail %1$s wordt niet gebruikt met een WordPress.com-account.</string>
+    <string name="login_non_woo_stores_label">Andere sites</string>
+    <string name="login_with_store_address">Log in met je winkeladres</string>
+    <string name="more_menu_button_w___admin">WC Admin</string>
     <string name="login_magic_links_email_sent">We hebben zojuist een link verstuurd naar</string>
     <string name="login_magic_links_sent_label_short">Controleer je e-mail op dit apparaat!</string>
     <string name="or_use_password">Gebruik je wachtwoord om je aan te melden</string>
@@ -1026,7 +1046,6 @@ Language: nl
     <string name="orderdetail_net">Netto betaling</string>
     <string name="orderdetail_payment_paid_by_customer">Betaald</string>
     <string name="login_jetpack_view_instructions_alt">Meer informatie over Jetpack verbinden</string>
-    <string name="login_no_stores">We konden geen WooCommerce-winkels vinden die aan dit account zijn gekoppeld. Je moet de gratis Jetpack-plugin installeren en koppelen aan je WooCommerce-winkels om deze app te gebruiken.</string>
     <string name="edit">Bewerken</string>
     <string name="product_images_validate_drag_and_drop">Valideren</string>
     <string name="product_images_drag_and_drop_description">Slepen om foto\'s opnieuw te ordenen</string>
@@ -1115,7 +1134,6 @@ Language: nl
     <string name="product_publish_draft_dialog_title">Concept wordt opgeslagen</string>
     <string name="product_status_trashed">Naar prullenbak verplaatst</string>
     <string name="product_detail_save_as_draft">Opslaan als concept</string>
-    <string name="login_no_wpcom_account_found">Het lijkt erop dat %1$s niet is gekoppeld aan een WordPress.com-account.</string>
     <string name="signup_confirmation_title">Inschrijfbevestiging</string>
     <string name="reset_your_password">Stel je wachtwoord opnieuw in</string>
     <string name="enter_your_site_address">Voer je site adres in</string>
@@ -1795,7 +1813,6 @@ Language: nl
     <string name="orderdetail_track_shipment">Verzending tracken</string>
     <string name="login_email_help_desc">In je sitebeheer kun je de e-mail vinden die je gebruikt hebt om verbinding te maken met WordPress.com via het %1$sJetpack-dashboard%2$s onder %3$sVerbindingen &gt; Accountverbinding%4$s</string>
     <string name="login_email_help_title">Welke e-mail moet ik gebruiken om me aan te melden?</string>
-    <string name="login_need_help_finding_email">Heb je hulp nodig bij het vinden van de gekoppelde e-mail?</string>
     <string name="login_jetpack_what_is_description">Jetpack is een gratis WordPress-plugin die aan je winkel wordt gekoppeld en je de tools voor de beste mobiele ervaring biedt, waaronder pushmeldingen en statistieken</string>
     <string name="login_jetpack_what_is">Wat is Jetpack?</string>
     <string name="login_view_connected_stores">Aangesloten winkels bekijken</string>
@@ -2120,6 +2137,7 @@ Language: nl
     <string name="dashboard_stats_granularity_months">Maanden</string>
     <string name="dashboard_stats_granularity_weeks">Weken</string>
     <string name="dashboard_stats_granularity_days">Dagen</string>
+    <string name="login_no_stores">We konden geen WooCommerce-winkels vinden die aan dit account zijn gekoppeld.</string>
     <string name="login_with_a_different_account">Log in met een ander account</string>
     <string name="login_nostores_content_description">Geen WooCommerce-winkels</string>
     <string name="login_avatar_content_description">Je profielfoto</string>

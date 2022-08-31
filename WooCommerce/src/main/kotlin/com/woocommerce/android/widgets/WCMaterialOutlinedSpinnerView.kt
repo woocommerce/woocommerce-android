@@ -15,6 +15,7 @@ import com.google.android.material.textfield.TextInputLayout
 import com.woocommerce.android.R
 import com.woocommerce.android.R.style
 import com.woocommerce.android.databinding.ViewMaterialOutlinedSpinnerBinding
+import com.woocommerce.android.extensions.parcelable
 import com.woocommerce.android.extensions.setHtmlText
 
 /**
@@ -84,7 +85,7 @@ class WCMaterialOutlinedSpinnerView @JvmOverloads constructor(
         }
     }
 
-    override fun onSaveInstanceState(): Parcelable? {
+    override fun onSaveInstanceState(): Parcelable {
         val bundle = Bundle()
         binding.spinnerEditText.onSaveInstanceState()?.let {
             bundle.putParcelable(KEY_SUPER_STATE, WCSavedState(super.onSaveInstanceState(), it))
@@ -93,7 +94,7 @@ class WCMaterialOutlinedSpinnerView @JvmOverloads constructor(
     }
 
     override fun onRestoreInstanceState(state: Parcelable?) {
-        val bundle = (state as? Bundle)?.getParcelable<WCSavedState>(KEY_SUPER_STATE)?.let {
+        val bundle = (state as? Bundle)?.parcelable<WCSavedState>(KEY_SUPER_STATE)?.let {
             restoreViewState(it)
         } ?: state
         super.onRestoreInstanceState(bundle)

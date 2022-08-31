@@ -3,6 +3,7 @@ package com.woocommerce.android.ui.login
 import android.content.Context
 import android.os.Bundle
 import android.view.View
+import androidx.annotation.LayoutRes
 import androidx.fragment.app.Fragment
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsEvent
@@ -14,13 +15,9 @@ import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
 @AndroidEntryPoint
-class LoginPrologueFragment : Fragment(R.layout.fragment_login_prologue) {
+open class LoginPrologueFragment(@LayoutRes layout: Int) : Fragment(layout) {
     companion object {
         const val TAG = "login-prologue-fragment"
-
-        fun newInstance(): LoginPrologueFragment {
-            return LoginPrologueFragment()
-        }
     }
 
     interface PrologueFinishedListener {
@@ -28,6 +25,8 @@ class LoginPrologueFragment : Fragment(R.layout.fragment_login_prologue) {
         fun onSecondaryButtonClicked()
         fun onNewToWooButtonClicked()
     }
+
+    constructor() : this(R.layout.fragment_login_prologue)
 
     @Inject lateinit var unifiedLoginTracker: UnifiedLoginTracker
     private var prologueFinishedListener: PrologueFinishedListener? = null

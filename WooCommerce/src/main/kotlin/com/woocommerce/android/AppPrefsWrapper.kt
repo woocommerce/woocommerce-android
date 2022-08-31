@@ -90,6 +90,24 @@ class AppPrefsWrapper @Inject constructor() {
         selfHostedSiteId: Long
     ) = AppPrefs.getCardReaderStatementDescriptor(localSiteId, remoteSiteId, selfHostedSiteId)
 
+    fun isCashOnDeliveryDisabledStateSkipped(
+        localSiteId: Int,
+        remoteSiteId: Long,
+        selfHostedSiteId: Long
+    ) = AppPrefs.isCashOnDeliveryDisabledStateSkipped(localSiteId, remoteSiteId, selfHostedSiteId)
+
+    fun setCashOnDeliveryDisabledStateSkipped(
+        localSiteId: Int,
+        remoteSiteId: Long,
+        selfHostedSiteId: Long,
+        isSkipped: Boolean
+    ) = AppPrefs.setCashOnDeliveryDisabledStateSkipped(
+        localSiteId,
+        remoteSiteId,
+        selfHostedSiteId,
+        isSkipped
+    )
+
     fun setLastConnectedCardReaderId(readerId: String) = AppPrefs.setLastConnectedCardReaderId(readerId)
 
     fun getLastConnectedCardReaderId() = AppPrefs.getLastConnectedCardReaderId()
@@ -184,6 +202,13 @@ class AppPrefsWrapper @Inject constructor() {
         AppPrefs.setOnboardingCarouselDisplayed(displayed)
 
     fun hasOnboardingCarouselBeenDisplayed(): Boolean = AppPrefs.hasOnboardingCarouselBeenDisplayed()
+
+    fun setActiveStatsGranularity(currentSiteId: Int, statsGranularity: String) {
+        AppPrefs.setActiveStatsGranularity(currentSiteId, statsGranularity)
+    }
+
+    fun getActiveStatsGranularity(currentSiteId: Int) =
+        AppPrefs.getActiveStatsGranularity(currentSiteId)
 
     /**
      * Card Reader Upsell

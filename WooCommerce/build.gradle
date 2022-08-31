@@ -74,9 +74,9 @@ android {
         if (project.hasProperty("versionName")) {
             versionName project.property("versionName")
         } else {
-            versionName "9.9-rc-1"
+            versionName "10.1-rc-1"
         }
-        versionCode 319
+        versionCode 325
 
         minSdkVersion gradle.ext.minSdkVersion
         // Update targetSdkVersion only after reviewing all the OS changes (developer.android.com/about/versions/[ENTER_ANDROID_VERSION]/migration)
@@ -216,7 +216,7 @@ dependencies {
     implementation("com.automattic.tracks:experimentation:trunk-f25f5b5e77df8313f19d47d07e7411256d18df79") {
         exclude group: "org.wordpress", module: "fluxc"
     }
-    implementation 'com.automattic:Automattic-Tracks-Android:trunk-95d0743430d709a8ee1fdc128e726056cfd6bb09'
+    implementation 'com.automattic:Automattic-Tracks-Android:trunk-9c862fc2d53bc8e914216eb192b727427c71e71e'
 
     implementation("${gradle.ext.fluxCBinaryPath}:$fluxCVersion") {
         exclude group: "com.android.support"
@@ -322,8 +322,8 @@ dependencies {
     }
 
     // ViewModel and LiveData
-    implementation "androidx.fragment:fragment-ktx:1.4.1"
-    implementation "androidx.activity:activity-ktx:1.4.0"
+    implementation "androidx.fragment:fragment-ktx:1.5.2"
+    implementation "androidx.activity:activity-ktx:1.5.1"
     implementation "androidx.lifecycle:lifecycle-viewmodel-savedstate:$lifecycleVersion"
     implementation "androidx.lifecycle:lifecycle-livedata-ktx:$lifecycleVersion"
     implementation "androidx.lifecycle:lifecycle-process:$lifecycleVersion"

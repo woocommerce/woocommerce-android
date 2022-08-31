@@ -81,6 +81,10 @@ class HelpActivity : AppCompatActivity() {
         if (originFromExtras == Origin.LOGIN_HELP_NOTIFICATION) {
             loginNotificationScheduler.onNotificationTapped(extraTagsFromExtras?.first())
         }
+
+        if (originFromExtras == Origin.SITE_PICKER_JETPACK_TIMEOUT) {
+            createNewZendeskTicket(TicketType.General)
+        }
     }
 
     override fun onResume() {
@@ -101,7 +105,7 @@ class HelpActivity : AppCompatActivity() {
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         if (item.itemId == android.R.id.home) {
-            onBackPressed()
+            onBackPressedDispatcher.onBackPressed()
             return true
         }
         return super.onOptionsItemSelected(item)
@@ -204,7 +208,8 @@ class HelpActivity : AppCompatActivity() {
         SIGNUP_EMAIL("origin:signup-email"),
         SIGNUP_MAGIC_LINK("origin:signup-magic-link"),
         JETPACK_INSTALLATION("origin:jetpack-installation"),
-        LOGIN_HELP_NOTIFICATION("origin:login-local-notification");
+        LOGIN_HELP_NOTIFICATION("origin:login-local-notification"),
+        SITE_PICKER_JETPACK_TIMEOUT("origin:site-picker-jetpack-error");
 
         override fun toString(): String {
             return stringValue

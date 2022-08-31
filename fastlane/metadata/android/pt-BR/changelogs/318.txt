@@ -1,2 +1,0 @@
-9.8:
-Para esta versão, nosso foco é aprimorar sua experiência de login, incluindo a opção de instalar o plugin WooCommerce diretamente pelo aplicativo. Estamos trabalhando em iniciativas bem legais para todos vocês! Continue dando feedback, ele nos ajuda a saber no que trabalhar em seguida. 💜

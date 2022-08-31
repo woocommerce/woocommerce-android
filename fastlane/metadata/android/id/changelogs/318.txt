@@ -1,2 +1,0 @@
-9.8:
-Untuk rilis kali ini, kami berfokus memoles hal-hal seputar pengalaman login Anda, termasuk pilihan untuk menginstal plugin WooCommerce langsung dari aplikasi. Kami sedang mengerjakan proyek menarik untuk Anda semua! Terus kirimkan feedback Anda untuk memberi tahu kami apa yang harus ditingkatkan selanjutnya. 💜

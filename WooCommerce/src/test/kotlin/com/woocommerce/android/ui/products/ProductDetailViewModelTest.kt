@@ -240,6 +240,7 @@ class ProductDetailViewModelTest : BaseUnitTest() {
                 mediaFileUploadHandler,
                 prefsWrapper,
                 addonRepository,
+                experimentStore = mock()
             )
         )
 

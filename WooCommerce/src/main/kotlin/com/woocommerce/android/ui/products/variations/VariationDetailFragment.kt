@@ -21,6 +21,7 @@ import com.woocommerce.android.databinding.FragmentVariationDetailBinding
 import com.woocommerce.android.extensions.handleResult
 import com.woocommerce.android.extensions.hide
 import com.woocommerce.android.extensions.navigateBackWithResult
+import com.woocommerce.android.extensions.parcelable
 import com.woocommerce.android.extensions.show
 import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.model.Product.Image
@@ -141,7 +142,7 @@ class VariationDetailFragment :
         val layoutManager = LinearLayoutManager(activity, RecyclerView.VERTICAL, false)
         this.layoutManager = layoutManager
 
-        savedInstanceState?.getParcelable<Parcelable>(LIST_STATE_KEY)?.let {
+        savedInstanceState?.parcelable<Parcelable>(LIST_STATE_KEY)?.let {
             layoutManager.onRestoreInstanceState(it)
         }
         binding.cardsRecyclerView.layoutManager = layoutManager
@@ -247,7 +248,7 @@ class VariationDetailFragment :
                 }
                 is ExitWithResult<*> -> navigateBackWithResult(KEY_VARIATION_DETAILS_RESULT, event.data)
                 is ShowDialog -> event.showDialog()
-                is Exit -> requireActivity().onBackPressed()
+                is Exit -> requireActivity().onBackPressedDispatcher.onBackPressed()
                 else -> event.isHandled = false
             }
         }

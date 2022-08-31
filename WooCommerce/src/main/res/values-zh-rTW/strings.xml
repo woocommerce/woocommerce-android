@@ -1,11 +1,31 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2022-08-11 09:54:03+0000
+Translation-Revision-Date: 2022-08-23 09:54:03+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: zh_TW
 -->
 <resources>
+    <string name="login_site_picker_try_another_address">嘗試其他地址</string>
+    <string name="card_reader_onboarding_cash_on_delivery_enable_failure">無法啟用貨到付款。 請稍後再試一次。</string>
+    <string name="card_reader_onboarding_cash_on_delivery_disabled_button">啟用親自收款</string>
+    <string name="card_reader_onboarding_cash_on_delivery_disabled_error_hint">結帳畫面的「親自收款」選項可讓你在收貨或貨到時接受卡片或現金付款。</string>
+    <string name="card_reader_onboarding_cash_on_delivery_disabled_error_header">將「親自收款」功能新增至結帳畫面</string>
+    <string name="card_reader_connect_learn_more">&lt;a href=\'\'&gt;深入瞭解&lt;/a&gt;親自收款功能</string>
+    <string name="login_site_picker_new_to_woo">第一次使用 WooCommerce</string>
+    <string name="site_discovery_postlogin_failure">發生錯誤，請聯絡支援團隊</string>
+    <string name="login_site_picker_enter_site_address">輸入網站位址</string>
+    <string name="login_help_notification_get_link_by_email_button">透過電子郵件取得登入連結</string>
+    <string name="login_help_notification_invalid_password_title">忘記密碼了嗎？</string>
+    <string name="card_reader_onboarding_not_finished">我們注意到你尚未完成「親自收款」設定。 &lt;b&gt;&lt;a href=\'\'&gt;繼續設定&lt;/a&gt;&lt;/b&gt;</string>
+    <string name="payments_hub_title">付款</string>
+    <string name="orderlist_bottom_sheet_simple_payments_moved_button">瞭解！</string>
+    <string name="orderlist_bottom_sheet_simple_payments_moved_description">你現在可以快速輕鬆存取「親自收款」和其他功能</string>
+    <string name="orderlist_bottom_sheet_simple_payments_moved_title">從「選單」分頁使用付款功能</string>
+    <string name="login_no_wpcom_account_found">電子郵件 %1$s 並未用於 WordPress.com 帳號。</string>
+    <string name="login_non_woo_stores_label">其他網站</string>
+    <string name="login_with_store_address">使用你的商店地址登入</string>
+    <string name="more_menu_button_w___admin">WC 管理員</string>
     <string name="login_magic_links_email_sent">我們剛將神奇連結傳送至：</string>
     <string name="login_magic_links_sent_label_short">在此裝置查看你的電子郵件！</string>
     <string name="or_use_password">使用密碼登入</string>
@@ -1026,7 +1046,6 @@ Language: zh_TW
     <string name="orderdetail_net">付款淨額</string>
     <string name="orderdetail_payment_paid_by_customer">已付款</string>
     <string name="login_jetpack_view_instructions_alt">深入瞭解如何連結 Jetpack</string>
-    <string name="login_no_stores">找不到與此帳號連結的 WooCommerce 商店。 你需要在 WooCommerce 商店安裝並連結免費的 Jetpack 外掛程式，才能使用此應用程式。</string>
     <string name="edit">編輯</string>
     <string name="product_images_validate_drag_and_drop">驗證</string>
     <string name="product_images_drag_and_drop_description">拖曳相片來重新排序</string>
@@ -1115,7 +1134,6 @@ Language: zh_TW
     <string name="product_publish_draft_dialog_title">正在儲存草稿</string>
     <string name="product_status_trashed">已移至垃圾桶</string>
     <string name="product_detail_save_as_draft">儲存為草稿</string>
-    <string name="login_no_wpcom_account_found">%1$s 似乎與 WordPress.com 帳號無關聯。</string>
     <string name="signup_confirmation_title">註冊確認</string>
     <string name="reset_your_password">重設密碼</string>
     <string name="enter_your_site_address">請輸入你的網站位址</string>
@@ -1795,7 +1813,6 @@ Language: zh_TW
     <string name="orderdetail_track_shipment">追蹤貨件</string>
     <string name="login_email_help_desc">你可以在網站管理中透過%3$s連結 &gt; 帳號連結%4$s下方的 %1$sJetpack 儀表板%2$s找到用來連結至 WordPress.com 的電子郵件</string>
     <string name="login_email_help_title">我該使用什麼電子郵件登入？</string>
-    <string name="login_need_help_finding_email">需要協助找出連結的電子郵件嗎？</string>
     <string name="login_jetpack_what_is_description">Jetpack 是一款免費的 WordPress 外掛程式，能夠透過所需工具連結你的商店，為你提供最佳行動裝置體驗，包含推播通知和統計資料</string>
     <string name="login_jetpack_what_is">什麼是 Jetpack？</string>
     <string name="login_view_connected_stores">檢視連結的商店</string>
@@ -2120,6 +2137,7 @@ Language: zh_TW
     <string name="dashboard_stats_granularity_months">月</string>
     <string name="dashboard_stats_granularity_weeks">週</string>
     <string name="dashboard_stats_granularity_days">天</string>
+    <string name="login_no_stores">找不到與此帳號連結的 WooCommerce 商店。</string>
     <string name="login_with_a_different_account">使用不同的帳號登入</string>
     <string name="login_nostores_content_description">無 WooCommerce 商店</string>
     <string name="login_avatar_content_description">你的個人檔案照片</string>
