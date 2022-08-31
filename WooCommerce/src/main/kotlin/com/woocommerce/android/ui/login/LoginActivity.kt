@@ -592,11 +592,7 @@ class LoginActivity :
         AppPrefs.setLoginSiteAddress(siteAddressClean)
 
         if (hasJetpack) {
-            if (isSiteOnWPcom != true) {
-                loginViaSiteCredentials(inputSiteAddress)
-            } else {
-                showEmailLoginScreen()
-            }
+            showEmailLoginScreen()
         } else {
             // Let user log in via site credentials first before showing Jetpack missing screen.
             loginViaSiteCredentials(inputSiteAddress)
