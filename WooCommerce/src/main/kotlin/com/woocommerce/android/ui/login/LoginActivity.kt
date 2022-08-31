@@ -72,7 +72,6 @@ import org.wordpress.android.fluxc.store.AccountStore.AuthOptionsErrorType.UNKNO
 import org.wordpress.android.fluxc.store.AccountStore.OnAuthOptionsFetched
 import org.wordpress.android.fluxc.store.SiteStore
 import org.wordpress.android.fluxc.store.SiteStore.ConnectSiteInfoPayload
-import org.wordpress.android.fluxc.store.SiteStore.OnConnectSiteInfoChecked
 import org.wordpress.android.login.AuthOptions
 import org.wordpress.android.login.GoogleFragment.GoogleListener
 import org.wordpress.android.login.Login2FaFragment
@@ -150,8 +149,6 @@ class LoginActivity :
     @Inject internal lateinit var loginButtonSwapExperiment: LoginButtonSwapExperiment
 
     private var loginMode: LoginMode? = null
-    private var isSiteOnWPcom: Boolean? = null
-
     private lateinit var binding: ActivityLoginBinding
 
     override fun androidInjector(): AndroidInjector<Any> = androidInjector
@@ -592,11 +589,7 @@ class LoginActivity :
         AppPrefs.setLoginSiteAddress(siteAddressClean)
 
         if (hasJetpack) {
-            if (isSiteOnWPcom != true) {
-                loginViaSiteCredentials(inputSiteAddress)
-            } else {
-                showEmailLoginScreen()
-            }
+            showEmailLoginScreen()
         } else {
             // Let user log in via site credentials first before showing Jetpack missing screen.
             loginViaSiteCredentials(inputSiteAddress)
@@ -965,12 +958,6 @@ class LoginActivity :
                 WooLog.e(WooLog.T.NOTIFICATIONS, "Invalid notification type to be handled by LoginActivity")
         }
         loginNotificationScheduler.onNotificationTapped(loginHelpNotification)
-    }
-
-    @SuppressWarnings("unused")
-    @Subscribe(threadMode = MAIN)
-    fun onFetchedConnectSiteInfo(event: OnConnectSiteInfoChecked) {
-        isSiteOnWPcom = event.info.isWPCom
     }
 
     @SuppressWarnings("unused")

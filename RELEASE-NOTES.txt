@@ -3,6 +3,7 @@
 -----
 - [*] SitePicker: Reduces Jetpack timeout loading times and shows new error dialog  [https://github.com/woocommerce/woocommerce-android/pull/7271
 - [*] My store stats: Save selected stats granularity in My store tab between app session and site switching [https://github.com/woocommerce/woocommerce-android/pull/7304
+- [*] [Internal] extract the account mismatch error to a standalone screen [https://github.com/woocommerce/woocommerce-android/pull/7311]
 
 10.1
 -----
