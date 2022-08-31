@@ -32,7 +32,7 @@ class StatsRepository @Inject constructor(
     companion object {
         private val TAG = StatsRepository::class.java
 
-        //Minimum supported version to use /wc-analytics/leaderboards/products instead of slower endpoint
+        // Minimum supported version to use /wc-analytics/leaderboards/products instead of slower endpoint
         // /wc-analytics/leaderboards. More info https://github.com/woocommerce/woocommerce-android/issues/6688
         private const val PRODUCT_ONLY_LEADERBOARD_MIN_WC_VERSION = "6.7.0"
     }
