@@ -34,7 +34,6 @@ import com.woocommerce.android.ui.sitepicker.SitePickerViewModel.SitePickerEvent
 import com.woocommerce.android.ui.sitepicker.SitePickerViewModel.SitePickerEvent.NavigateToSiteAddressEvent
 import com.woocommerce.android.ui.sitepicker.SitePickerViewModel.SitePickerEvent.NavigateToWPComWebView
 import com.woocommerce.android.ui.sitepicker.SitePickerViewModel.SitePickerEvent.ShowWooUpgradeDialogEvent
-import com.woocommerce.android.ui.sitepicker.SitePickerViewModel.SitePickerState.AccountMismatchState
 import com.woocommerce.android.ui.sitepicker.SitePickerViewModel.SitePickerState.NoStoreState
 import com.woocommerce.android.ui.sitepicker.SitePickerViewModel.SitePickerState.StoreListState
 import com.woocommerce.android.ui.sitepicker.SitePickerViewModel.SitePickerState.WooNotFoundState
@@ -136,7 +135,6 @@ class SitePickerFragment : BaseFragment(R.layout.fragment_site_picker), LoginEma
                 when (it) {
                     StoreListState -> updateStoreListView()
                     NoStoreState -> updateNoStoresView()
-                    AccountMismatchState -> updateAccountMismatchView(new.hasConnectedStores == true)
                     WooNotFoundState -> updateWooNotFoundView()
                 }
             }
@@ -190,19 +188,6 @@ class SitePickerFragment : BaseFragment(R.layout.fragment_site_picker), LoginEma
         }
         binding.noStoresView.clickSecondaryAction {
             viewModel.onNewToWooClick()
-        }
-    }
-
-    private fun updateAccountMismatchView(hasConnectedStores: Boolean) {
-        binding.loginEpilogueButtonBar.buttonPrimary.setOnClickListener {
-            if (hasConnectedStores) {
-                viewModel.onViewConnectedStoresButtonClick()
-            } else {
-                viewModel.onEnterSiteAddressClick()
-            }
-        }
-        binding.noStoresView.clickSecondaryAction {
-            viewModel.onNeedHelpFindingEmailButtonClick()
         }
     }
 

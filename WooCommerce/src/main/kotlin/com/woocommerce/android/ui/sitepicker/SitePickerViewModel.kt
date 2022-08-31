@@ -168,7 +168,7 @@ class SitePickerViewModel @Inject constructor(
         }
 
         if (filteredSites.isEmpty()) {
-            loginSiteAddress?.let { loadAccountMismatchView(it) } ?: loadNoStoreView()
+            loginSiteAddress?.let { showAccountMismatchScreen(it) } ?: loadNoStoreView()
             return
         }
 
@@ -225,7 +225,7 @@ class SitePickerViewModel @Inject constructor(
         when {
             site == null -> {
                 // The url doesn't match any sites for this account.
-                loadAccountMismatchView(url)
+                showAccountMismatchScreen(url)
             }
             !site.hasWooCommerce -> {
                 // Show not woo store message view.
@@ -257,7 +257,7 @@ class SitePickerViewModel @Inject constructor(
      * to a site that is not connected to the account the user logged
      * in with.
      */
-    private fun loadAccountMismatchView(url: String) {
+    private fun showAccountMismatchScreen(url: String) {
         analyticsTrackerWrapper.track(
             AnalyticsEvent.SITE_PICKER_AUTO_LOGIN_ERROR_NOT_CONNECTED_TO_USER,
             mapOf(
@@ -600,6 +600,6 @@ class SitePickerViewModel @Inject constructor(
     }
 
     enum class SitePickerState {
-        StoreListState, NoStoreState, AccountMismatchState, WooNotFoundState
+        StoreListState, NoStoreState, WooNotFoundState
     }
 }
