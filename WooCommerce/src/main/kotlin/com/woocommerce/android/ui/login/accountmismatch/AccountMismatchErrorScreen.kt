@@ -191,7 +191,6 @@ private fun ButtonBar(
     }
 }
 
-
 @Preview
 @Composable
 private fun AccountMismatchPreview() {
