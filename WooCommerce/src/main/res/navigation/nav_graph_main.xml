@@ -59,7 +59,7 @@
             app:enterAnim="@anim/activity_fade_in"
             app:exitAnim="@null"
             app:popEnterAnim="@null"
-            app:popExitAnim="@anim/activity_fade_out" >
+            app:popExitAnim="@anim/activity_fade_out">
             <argument
                 android:name="mode"
                 app:argType="com.woocommerce.android.ui.orders.creation.OrderCreateEditViewModel$Mode" />
@@ -173,7 +173,7 @@
             app:destination="@id/nav_graph_coupons" />
         <action
             android:id="@+id/action_moreMenu_to_paymentFlow"
-            app:destination="@id/paymentFlow" >
+            app:destination="@id/paymentFlow">
             <argument
                 android:name="cardReaderFlowParam"
                 app:argType="com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderFlowParam"
@@ -359,7 +359,7 @@
     <dialog
         android:id="@+id/orderCreationBottomSheetFragment"
         android:name="com.woocommerce.android.ui.orders.list.OrderCreationBottomSheetFragment"
-        tools:layout="@layout/dialog_order_creation_bottom_sheet" >
+        tools:layout="@layout/dialog_order_creation_bottom_sheet">
         <action
             android:id="@+id/action_orderCreationBottomSheetFragment_to_simplePaymentsMovedBottomSheetFragment"
             app:destination="@id/simplePaymentsMovedBottomSheetFragment"
@@ -396,6 +396,13 @@
         <action
             android:id="@+id/action_sitePickerFragment_to_sitePickerSiteDiscoveryFragment"
             app:destination="@id/sitePickerSiteDiscoveryFragment" />
+        <action
+            android:id="@+id/action_sitePickerFragment_to_accountMismatchErrorFragment"
+            app:destination="@id/accountMismatchErrorFragment"
+            app:enterAnim="@anim/activity_fade_in"
+            app:exitAnim="@null"
+            app:popEnterAnim="@null"
+            app:popExitAnim="@anim/activity_fade_out" />
     </fragment>
     <fragment
         android:id="@+id/simpleTextEditorFragment"
@@ -423,4 +430,16 @@
         android:id="@+id/sitePickerSiteDiscoveryFragment"
         android:name="com.woocommerce.android.ui.sitepicker.sitediscovery.SitePickerSiteDiscoveryFragment"
         android:label="SitePickerSiteDiscoveryFragment" />
+    <fragment
+        android:id="@+id/accountMismatchErrorFragment"
+        android:name="com.woocommerce.android.ui.login.accountmismatch.AccountMismatchErrorFragment"
+        android:label="AccountMismatchErrorFragment">
+        <argument
+            android:name="hasConnectedStores"
+            app:argType="boolean" />
+        <action
+            android:id="@+id/action_accountMismatchErrorFragment_to_sitePickerSiteDiscoveryFragment"
+            app:destination="@id/sitePickerSiteDiscoveryFragment"
+            app:popUpTo="@id/sitePickerFragment" />
+    </fragment>
 </navigation>

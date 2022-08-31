@@ -15,7 +15,9 @@ import com.woocommerce.android.extensions.getSiteName
 import com.woocommerce.android.support.HelpActivity
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.common.UserEligibilityFetcher
+import com.woocommerce.android.ui.login.AccountRepository
 import com.woocommerce.android.ui.login.UnifiedLoginTracker
+import com.woocommerce.android.ui.sitepicker.SitePickerViewModel.SitePickerEvent.NavigateToAccountMismatchScreen
 import com.woocommerce.android.ui.sitepicker.SitePickerViewModel.SitePickerEvent.NavigateToWPComWebView
 import com.woocommerce.android.ui.sitepicker.SitePickerViewModel.SitesListItem.Header
 import com.woocommerce.android.ui.sitepicker.SitePickerViewModel.SitesListItem.NonWooSiteUiModel
@@ -49,6 +51,7 @@ class SitePickerViewModel @Inject constructor(
     savedState: SavedStateHandle,
     private val selectedSite: SelectedSite,
     private val repository: SitePickerRepository,
+    private val accountRepository: AccountRepository,
     private val resourceProvider: ResourceProvider,
     private val appPrefsWrapper: AppPrefsWrapper,
     private val unifiedLoginTracker: UnifiedLoginTracker,
@@ -165,7 +168,7 @@ class SitePickerViewModel @Inject constructor(
         }
 
         if (filteredSites.isEmpty()) {
-            loginSiteAddress?.let { loadAccountMismatchView(it) } ?: loadNoStoreView()
+            loginSiteAddress?.let { showAccountMismatchScreen(it) } ?: loadNoStoreView()
             return
         }
 
@@ -222,7 +225,7 @@ class SitePickerViewModel @Inject constructor(
         when {
             site == null -> {
                 // The url doesn't match any sites for this account.
-                loadAccountMismatchView(url)
+                showAccountMismatchScreen(url)
             }
             !site.hasWooCommerce -> {
                 // Show not woo store message view.
@@ -254,7 +257,7 @@ class SitePickerViewModel @Inject constructor(
      * to a site that is not connected to the account the user logged
      * in with.
      */
-    private fun loadAccountMismatchView(url: String) {
+    private fun showAccountMismatchScreen(url: String) {
         analyticsTrackerWrapper.track(
             AnalyticsEvent.SITE_PICKER_AUTO_LOGIN_ERROR_NOT_CONNECTED_TO_USER,
             mapOf(
@@ -263,17 +266,9 @@ class SitePickerViewModel @Inject constructor(
             )
         )
         trackLoginEvent(currentStep = UnifiedLoginTracker.Step.WRONG_WP_ACCOUNT)
-        sitePickerViewState = sitePickerViewState.copy(
-            isNoStoresViewVisible = true,
-            isPrimaryBtnVisible = sitePickerViewState.hasConnectedStores == true || !loginSiteAddress.isNullOrEmpty(),
-            primaryBtnText = resourceProvider.getString(
-                if (sitePickerViewState.hasConnectedStores == true) string.login_view_connected_stores
-                else string.login_site_picker_try_another_address
-            ),
-            noStoresLabelText = resourceProvider.getString(string.login_not_connected_to_account, url),
-            noStoresBtnText = resourceProvider.getString(string.login_need_help_finding_email),
-            currentSitePickerState = SitePickerState.AccountMismatchState
-        )
+        if (event.value !is NavigateToAccountMismatchScreen) {
+            triggerEvent(NavigateToAccountMismatchScreen(sitePickerViewState.hasConnectedStores ?: false))
+        }
     }
 
     private fun loadWooNotFoundView(site: SiteModel) {
@@ -298,7 +293,7 @@ class SitePickerViewModel @Inject constructor(
         )
     }
 
-    private fun getUserInfo() = repository.getUserAccount().let {
+    private fun getUserInfo() = accountRepository.getUserAccount().let {
         UserInfo(displayName = it.displayName, username = it.userName ?: "", userAvatarUrl = it.avatarUrl)
     }
 
@@ -363,8 +358,8 @@ class SitePickerViewModel @Inject constructor(
     fun onTryAnotherAccountButtonClick() {
         trackLoginEvent(clickEvent = UnifiedLoginTracker.Click.TRY_ANOTHER_ACCOUNT)
         launch {
-            repository.logout().let {
-                if (!repository.isUserLoggedIn()) {
+            accountRepository.logout().let {
+                if (it) {
                     appPrefsWrapper.removeLoginSiteAddress()
                     triggerEvent(Logout)
                 }
@@ -601,9 +596,10 @@ class SitePickerViewModel @Inject constructor(
         object NavigateToSiteAddressEvent : SitePickerEvent()
         data class NavigateToHelpFragmentEvent(val origin: HelpActivity.Origin) : SitePickerEvent()
         data class NavigateToWPComWebView(val url: String, val validationUrl: String) : SitePickerEvent()
+        data class NavigateToAccountMismatchScreen(val hasConnectedStores: Boolean) : SitePickerEvent()
     }
 
     enum class SitePickerState {
-        StoreListState, NoStoreState, AccountMismatchState, WooNotFoundState
+        StoreListState, NoStoreState, WooNotFoundState
     }
 }
