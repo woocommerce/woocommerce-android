@@ -54,7 +54,6 @@ class AccountMismatchErrorViewModel @Inject constructor(
     }.asLiveData()
 
     private fun showConnectedStores() {
-        appPrefsWrapper.removeLoginSiteAddress()
         triggerEvent(Exit)
     }
 

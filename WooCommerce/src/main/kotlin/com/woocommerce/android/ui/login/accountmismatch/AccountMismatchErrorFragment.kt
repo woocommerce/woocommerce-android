@@ -20,6 +20,7 @@ import com.woocommerce.android.ui.login.accountmismatch.AccountMismatchErrorView
 import com.woocommerce.android.ui.login.accountmismatch.AccountMismatchErrorViewModel.NavigateToHelpScreen
 import com.woocommerce.android.ui.login.accountmismatch.AccountMismatchErrorViewModel.NavigateToSiteAddressEvent
 import com.woocommerce.android.ui.main.AppBarStatus
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Logout
 import dagger.hilt.android.AndroidEntryPoint
 import org.wordpress.android.login.LoginMode
@@ -70,6 +71,7 @@ class AccountMismatchErrorFragment : BaseFragment(), Listener {
                         .actionAccountMismatchErrorFragmentToSitePickerSiteDiscoveryFragment()
                 )
                 is Logout -> onLogout()
+                is Exit -> findNavController().navigateUp()
             }
         }
     }

@@ -266,7 +266,9 @@ class SitePickerViewModel @Inject constructor(
             )
         )
         trackLoginEvent(currentStep = UnifiedLoginTracker.Step.WRONG_WP_ACCOUNT)
-        triggerEvent(NavigateToAccountMismatchScreen(sitePickerViewState.hasConnectedStores ?: false))
+        if (event.value !is NavigateToAccountMismatchScreen) {
+            triggerEvent(NavigateToAccountMismatchScreen(sitePickerViewState.hasConnectedStores ?: false))
+        }
     }
 
     private fun loadWooNotFoundView(site: SiteModel) {
