@@ -1,5 +1,7 @@
 package com.woocommerce.android
 
+import com.woocommerce.android.ui.login.UnifiedLoginTracker.Step.ENTER_EMAIL_ADDRESS
+
 object AppUrls {
     const val APP_HELP_CENTER = "https://docs.woocommerce.com/document/android/"
     const val APP_FEATURE_REQUEST = "http://ideas.woocommerce.com/forums/133476-woocommerce?category_id=84283"
@@ -69,4 +71,8 @@ object AppUrls {
         "https://woocommerce.com/document/what-is-a-wordpress-com-account/"
 
     const val NEW_TO_WOO_DOC = "https://woocommerce.com/document/woocommerce-features"
+
+    val LOGIN_HELP_CENTER_URLS = mapOf(
+        ENTER_EMAIL_ADDRESS to "https://woocommerce.com/document/android-ios-apps-login-help-faq/#enter-store-address"
+    )
 }
