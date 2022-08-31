@@ -633,7 +633,6 @@ class OrderDetailViewModelTest : BaseUnitTest() {
         whenever(orderDetailRepository.fetchOrderById(ORDER_ID)).thenReturn(null)
         whenever(orderDetailRepository.getOrderById(ORDER_ID)).thenReturn(null)
         doReturn(true).whenever(orderDetailRepository).fetchOrderNotes(any())
-        doReturn(true).whenever(addonsRepository).containsAddonsFrom(any())
 
         var snackbar: ShowSnackbar? = null
         viewModel.event.observeForever {
