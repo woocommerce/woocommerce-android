@@ -94,7 +94,7 @@ object AppPrefs {
         CARD_READER_UPSELL_BANNER_DIALOG_DISMISSED_FOREVER,
         CARD_READER_UPSELL_BANNER_DIALOG_DISMISSED_REMIND_ME_LATER,
         CARD_READER_DO_NOT_SHOW_CASH_ON_DELIVERY_DISABLED_ONBOARDING_STATE,
-
+        ACTIVE_STATS_GRANULARITY,
         // Widget settings
         STATS_WIDGET_SELECTED_SITE_ID,
         STATS_WIDGET_COLOR_MODE
@@ -865,6 +865,17 @@ object AppPrefs {
     fun setPaymentsIconWasClickedOnMoreScreen() {
         setBoolean(UndeletablePrefKey.USER_CLICKED_ON_PAYMENTS_MORE_SCREEN, true)
     }
+
+    fun setActiveStatsGranularity(currentSiteId: Int, activeStatsGranularity: String) {
+        setString(getActiveStatsGranularityFilterKey(currentSiteId), activeStatsGranularity)
+    }
+
+    fun getActiveStatsGranularity(currentSiteId: Int) = getString(
+        getActiveStatsGranularityFilterKey(currentSiteId)
+    )
+
+    private fun getActiveStatsGranularityFilterKey(currentSiteId: Int) =
+        PrefKeyString("${DeletablePrefKey.ACTIVE_STATS_GRANULARITY}:$currentSiteId")
 
     /**
      * Remove all user and site-related preferences.
