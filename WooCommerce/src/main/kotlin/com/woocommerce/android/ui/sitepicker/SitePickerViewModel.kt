@@ -11,6 +11,8 @@ import com.woocommerce.android.R.string
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
+import com.woocommerce.android.analytics.ExperimentTracker
+import com.woocommerce.android.experiment.JetpackTimeoutExperiment
 import com.woocommerce.android.extensions.getSiteName
 import com.woocommerce.android.support.HelpActivity
 import com.woocommerce.android.tools.SelectedSite
@@ -53,7 +55,9 @@ class SitePickerViewModel @Inject constructor(
     private val appPrefsWrapper: AppPrefsWrapper,
     private val unifiedLoginTracker: UnifiedLoginTracker,
     private val analyticsTrackerWrapper: AnalyticsTrackerWrapper,
-    private val userEligibilityFetcher: UserEligibilityFetcher
+    private val userEligibilityFetcher: UserEligibilityFetcher,
+    private val experimentTracker: ExperimentTracker,
+    private val jetpackTimeoutExperiment: JetpackTimeoutExperiment,
 ) : ScopedViewModel(savedState) {
     companion object {
         private const val WOOCOMMERCE_INSTALLATION_URL = "https://wordpress.com/plugins/woocommerce/"
@@ -407,10 +411,18 @@ class SitePickerViewModel @Inject constructor(
 
                 sitePickerViewState = sitePickerViewState.copy(isProgressDiaLogVisible = true)
                 launch {
-                    val siteVerificationResult = repository.verifySiteWooAPIVersion(it.site)
+
+                    // A/B experiment to test what Jetpack timeout policy is more effective for site verification
+
+                    val siteVerificationResult = repository.verifySiteWooAPIVersion(
+                        it.site,
+                        overrideRetryPolicy = jetpackTimeoutExperiment.run()
+                    )
+
                     when {
                         siteVerificationResult.isError -> onSiteVerificationError(siteVerificationResult, it)
                         siteVerificationResult.model?.apiVersion == WooCommerceStore.WOO_API_NAMESPACE_V3 -> {
+                            experimentTracker.log(ExperimentTracker.SITE_VERIFICATION_SUCCESSFUL_EVENT)
                             selectedSite.set(it.site)
                             userEligibilityFetcher.fetchUserInfo()?.let { userModel ->
                                 sitePickerViewState = sitePickerViewState.copy(isProgressDiaLogVisible = false)

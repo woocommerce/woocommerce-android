@@ -61,7 +61,8 @@ class SitePickerRepository @Inject constructor(
 
     suspend fun fetchSiteProductSettings(site: SiteModel) = wooCommerceStore.fetchSiteProductSettings(site)
 
-    suspend fun verifySiteWooAPIVersion(site: SiteModel) = wooCommerceStore.fetchSupportedApiVersion(site)
+    suspend fun verifySiteWooAPIVersion(site: SiteModel, overrideRetryPolicy: Boolean) =
+        wooCommerceStore.fetchSupportedApiVersion(site, overrideRetryPolicy)
 
     suspend fun logout(): Boolean = suspendCancellableCoroutine { continuation ->
         val listener = object : Any() {
