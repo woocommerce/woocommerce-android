@@ -11,10 +11,12 @@ import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.support.HelpActivity
-import com.woocommerce.android.support.HelpActivity.Origin
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.ui.login.LoginActivity
+import com.woocommerce.android.ui.login.LoginEmailHelpDialogFragment
+import com.woocommerce.android.ui.login.LoginEmailHelpDialogFragment.Listener
+import com.woocommerce.android.ui.login.accountmismatch.AccountMismatchErrorViewModel.NavigateToEmailHelpDialogEvent
 import com.woocommerce.android.ui.login.accountmismatch.AccountMismatchErrorViewModel.NavigateToHelpScreen
 import com.woocommerce.android.ui.login.accountmismatch.AccountMismatchErrorViewModel.NavigateToSiteAddressEvent
 import com.woocommerce.android.ui.main.AppBarStatus
@@ -23,7 +25,7 @@ import dagger.hilt.android.AndroidEntryPoint
 import org.wordpress.android.login.LoginMode
 
 @AndroidEntryPoint
-class AccountMismatchErrorFragment : BaseFragment() {
+class AccountMismatchErrorFragment : BaseFragment(), Listener {
     private val viewModel: AccountMismatchErrorViewModel by viewModels()
 
     override val activityAppBarStatus: AppBarStatus
@@ -50,7 +52,18 @@ class AccountMismatchErrorFragment : BaseFragment() {
         viewModel.event.observe(viewLifecycleOwner) { event ->
             when (event) {
                 is NavigateToHelpScreen -> {
-                    startActivity(HelpActivity.createIntent(requireContext(), Origin.LOGIN_SITE_ADDRESS, null))
+                    startActivity(
+                        HelpActivity.createIntent(
+                            context = requireContext(),
+                            origin = HelpActivity.Origin.LOGIN_SITE_ADDRESS,
+                            extraSupportTags = null
+                        )
+                    )
+                }
+                is NavigateToEmailHelpDialogEvent -> {
+                    LoginEmailHelpDialogFragment.newInstance(this).also {
+                        it.show(parentFragmentManager, LoginEmailHelpDialogFragment.TAG)
+                    }
                 }
                 is NavigateToSiteAddressEvent -> findNavController().navigateSafely(
                     AccountMismatchErrorFragmentDirections
@@ -67,5 +80,15 @@ class AccountMismatchErrorFragment : BaseFragment() {
             LoginMode.WOO_LOGIN_MODE.putInto(this)
         }
         startActivity(intent)
+    }
+
+    override fun onEmailNeedMoreHelpClicked() {
+        startActivity(
+            HelpActivity.createIntent(
+                context = requireContext(),
+                origin = HelpActivity.Origin.LOGIN_CONNECTED_EMAIL_HELP,
+                extraSupportTags = null
+            )
+        )
     }
 }

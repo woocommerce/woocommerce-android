@@ -6,6 +6,7 @@ import androidx.lifecycle.asLiveData
 import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.login.AccountRepository
+import com.woocommerce.android.ui.sitepicker.SitePickerViewModel.SitePickerEvent
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Logout
@@ -71,7 +72,7 @@ class AccountMismatchErrorViewModel @Inject constructor(
     }
 
     private fun helpFindingEmail() {
-        TODO("Not yet implemented")
+        triggerEvent(NavigateToEmailHelpDialogEvent)
     }
 
     fun onHelpButtonClick() {
@@ -93,4 +94,5 @@ class AccountMismatchErrorViewModel @Inject constructor(
 
     object NavigateToHelpScreen : MultiLiveEvent.Event()
     object NavigateToSiteAddressEvent : MultiLiveEvent.Event()
+    object NavigateToEmailHelpDialogEvent : MultiLiveEvent.Event()
 }
