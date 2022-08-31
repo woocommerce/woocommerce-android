@@ -11,12 +11,14 @@ import com.woocommerce.android.AppUrls
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_SOURCE_FLOW
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_SOURCE_STEP
 import com.woocommerce.android.databinding.ActivityHelpBinding
 import com.woocommerce.android.extensions.show
 import com.woocommerce.android.tools.SelectedSite
-import com.woocommerce.android.ui.login.localnotifications.LoginNotificationScheduler
 import com.woocommerce.android.ui.login.UnifiedLoginTracker.Flow
 import com.woocommerce.android.ui.login.UnifiedLoginTracker.Step
+import com.woocommerce.android.ui.login.localnotifications.LoginNotificationScheduler
 import com.woocommerce.android.util.ChromeCustomTabUtils
 import com.woocommerce.android.util.PackageUtils
 import dagger.hilt.android.AndroidEntryPoint
@@ -44,6 +46,9 @@ class HelpActivity : AppCompatActivity() {
         intent.extras?.getStringArrayList(EXTRA_TAGS_KEY)
     }
 
+    private val loginStepFromExtras by lazy { intent.extras?.getString(LOGIN_STEP_KEY) }
+    private val loginFlowFromExtras by lazy { intent.extras?.getString(LOGIN_FLOW_KEY) }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -57,7 +62,13 @@ class HelpActivity : AppCompatActivity() {
         binding.contactContainer.setOnClickListener { createNewZendeskTicket(TicketType.General) }
         binding.identityContainer.setOnClickListener { showIdentityDialog(TicketType.General) }
         binding.myTicketsContainer.setOnClickListener { showZendeskTickets() }
-        binding.faqContainer.setOnClickListener { showZendeskFaq() }
+        binding.faqContainer.setOnClickListener {
+            if (loginStepFromExtras != null && loginFlowFromExtras != null) {
+                showLoginHelpCenter(loginStepFromExtras!!, loginFlowFromExtras!!)
+            } else {
+                showZendeskFaq()
+            }
+        }
         binding.appLogContainer.setOnClickListener { showApplicationLog() }
         if (userIsLoggedIn() && selectedSite.exists()) {
             binding.ssrContainer.show()
@@ -171,6 +182,16 @@ class HelpActivity : AppCompatActivity() {
         zendeskHelper.showAllTickets(this, originFromExtras, selectedSiteOrNull(), extraTagsFromExtras)
     }
 
+    private fun showLoginHelpCenter(loginStepFromExtras: String, loginFlowFromExtras: String) {
+        AnalyticsTracker.track(
+            stat = AnalyticsEvent.SUPPORT_HELP_CENTER_VIEWED,
+            properties = mapOf(
+                KEY_SOURCE_FLOW to loginFlowFromExtras,
+                KEY_SOURCE_STEP to loginStepFromExtras
+            )
+        )
+    }
+
     private fun showZendeskFaq() {
         AnalyticsTracker.track(AnalyticsEvent.SUPPORT_HELP_CENTER_VIEWED)
         ChromeCustomTabUtils.launchUrl(this, AppUrls.APP_HELP_CENTER)
@@ -221,6 +242,8 @@ class HelpActivity : AppCompatActivity() {
     companion object {
         private const val ORIGIN_KEY = "ORIGIN_KEY"
         private const val EXTRA_TAGS_KEY = "EXTRA_TAGS_KEY"
+        private const val LOGIN_STEP_KEY = "LOGIN_STEP_KEY"
+        private const val LOGIN_FLOW_KEY = "LOGIN_FLOW_KEY"
 
         @JvmStatic
         fun createIntent(
@@ -235,6 +258,10 @@ class HelpActivity : AppCompatActivity() {
             if (extraSupportTags != null && extraSupportTags.isNotEmpty()) {
                 intent.putStringArrayListExtra(EXTRA_TAGS_KEY, extraSupportTags as ArrayList<String>?)
             }
+
+            if (step != null) intent.putExtra(LOGIN_STEP_KEY, step)
+            if (flow != null) intent.putExtra(LOGIN_FLOW_KEY, flow)
+
             return intent
         }
     }
