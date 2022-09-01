@@ -14,7 +14,6 @@ import com.woocommerce.android.model.UiString.UiStringRes
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.payments.cardreader.CardReaderTracker
 import com.woocommerce.android.ui.payments.cardreader.CashOnDeliverySettingsRepository
-import com.woocommerce.android.ui.payments.cardreader.InPersonPaymentsCanadaFeatureFlag
 import com.woocommerce.android.ui.payments.cardreader.LearnMoreUrlProvider
 import com.woocommerce.android.ui.payments.cardreader.LearnMoreUrlProvider.LearnMoreUrlType.CASH_ON_DELIVERY
 import com.woocommerce.android.ui.payments.cardreader.hub.CardReaderHubViewModel.CardReaderHubEvents.ShowToastString
@@ -26,8 +25,6 @@ import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboa
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboardingState
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboardingState.OnboardingCompleted
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboardingState.StripeAccountPendingRequirement
-import com.woocommerce.android.ui.payments.cardreader.onboarding.PluginType.STRIPE_EXTENSION_GATEWAY
-import com.woocommerce.android.ui.payments.cardreader.onboarding.PluginType.WOOCOMMERCE_PAYMENTS
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T.CARD_READER
 import com.woocommerce.android.viewmodel.MultiLiveEvent
@@ -41,7 +38,6 @@ import javax.inject.Inject
 @HiltViewModel
 class CardReaderHubViewModel @Inject constructor(
     savedState: SavedStateHandle,
-    private val inPersonPaymentsCanadaFeatureFlag: InPersonPaymentsCanadaFeatureFlag,
     private val appPrefsWrapper: AppPrefsWrapper,
     private val selectedSite: SelectedSite,
     private val analyticsTrackerWrapper: AnalyticsTrackerWrapper,
@@ -54,7 +50,7 @@ class CardReaderHubViewModel @Inject constructor(
     private val arguments: CardReaderHubFragmentArgs by savedState.navArgs()
 
     private val cashOnDeliveryState = MutableLiveData(
-        ToggleableListItem(
+        CardReaderHubViewState.ListItem.ToggleableListItem(
             icon = R.drawable.ic_gridicons_credit_card,
             label = UiStringRes(R.string.card_reader_enable_pay_in_person),
             description = UiStringRes(
@@ -85,9 +81,7 @@ class CardReaderHubViewModel @Inject constructor(
                     isOnboardingComplete = false,
                     cashOnDeliveryItem = cashOnDeliveryState.value!!
                 )
-                ).sortedBy {
-                it.index
-            },
+                ).sortedBy { it.index },
             isLoading = true,
             onboardingErrorAction = null
         )
@@ -116,34 +110,22 @@ class CardReaderHubViewModel @Inject constructor(
     }
 
     private val cardReaderPurchaseUrl: String by lazy {
-        if (inPersonPaymentsCanadaFeatureFlag.isEnabled()) {
-            val storeCountryCode = wooStore.getStoreCountryCode(selectedSite.get()) ?: null.also {
-                WooLog.e(CARD_READER, "Store's country code not found.")
-            }
-            "${AppUrls.WOOCOMMERCE_PURCHASE_CARD_READER_IN_COUNTRY}$storeCountryCode"
-        } else {
-            val preferredPlugin = appPrefsWrapper.getCardReaderPreferredPlugin(
-                selectedSite.get().id,
-                selectedSite.get().siteId,
-                selectedSite.get().selfHostedSiteId
-            )
-            when (preferredPlugin) {
-                STRIPE_EXTENSION_GATEWAY -> AppUrls.STRIPE_M2_PURCHASE_CARD_READER
-                WOOCOMMERCE_PAYMENTS, null -> AppUrls.WOOCOMMERCE_M2_PURCHASE_CARD_READER
-            }
+        val storeCountryCode = wooStore.getStoreCountryCode(selectedSite.get()) ?: null.also {
+            WooLog.e(CARD_READER, "Store's country code not found.")
         }
+        "${AppUrls.WOOCOMMERCE_PURCHASE_CARD_READER_IN_COUNTRY}$storeCountryCode"
     }
 
     private fun createHubListWhenSinglePluginInstalled(
         isOnboardingComplete: Boolean,
-        cashOnDeliveryItem: ToggleableListItem
+        cashOnDeliveryItem: CardReaderHubViewState.ListItem.ToggleableListItem
     ) =
         listOf(
             CardReaderHubViewState.ListItem.HeaderItem(
                 label = UiStringRes(R.string.card_reader_payment_options_header),
                 index = 0
             ),
-            NonToggleableListItem(
+            CardReaderHubViewState.ListItem.NonToggleableListItem(
                 icon = R.drawable.ic_gridicons_money_on_surface,
                 label = UiStringRes(R.string.card_reader_collect_payment),
                 index = 1,
@@ -154,7 +136,7 @@ class CardReaderHubViewModel @Inject constructor(
                 label = UiStringRes(R.string.card_reader_card_readers_header),
                 index = 4,
             ),
-            NonToggleableListItem(
+            CardReaderHubViewState.ListItem.NonToggleableListItem(
                 icon = R.drawable.ic_shopping_cart,
                 label = UiStringRes(R.string.card_reader_purchase_card_reader),
                 index = 5,
@@ -204,9 +186,7 @@ class CardReaderHubViewModel @Inject constructor(
                 (
                     createHubListWhenSinglePluginInstalled(true, cashOnDeliveryState.value!!) +
                         createAdditionalItemWhenMultiplePluginsInstalled()
-                    ).sortedBy {
-                    it.index
-                }
+                    ).sortedBy { it.index }
             } else {
                 createHubListWhenSinglePluginInstalled(true, cashOnDeliveryState.value!!)
             },
@@ -227,9 +207,7 @@ class CardReaderHubViewModel @Inject constructor(
         return CardReaderHubViewState(
             rows = (
                 createHubListWhenSinglePluginInstalled(false, cashOnDeliveryState.value!!)
-                ).sortedBy {
-                it.index
-            },
+                ).sortedBy { it.index },
             isLoading = false,
             onboardingErrorAction = OnboardingErrorAction(
                 text = UiStringRes(R.string.card_reader_onboarding_not_finished, containsHtml = true),
