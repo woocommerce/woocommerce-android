@@ -12,7 +12,7 @@
         <item name="android:focusable">true</item>
         <item name="android:paddingStart">@dimen/minor_100</item>
         <item name="android:paddingEnd">@dimen/minor_100</item>
-        <item name="android:background">@drawable/bg_rounded_box</item>
+        <item name="android:background">@color/default_window_background</item>
     </style>
 
     <style name="Woo.StatsWidgetSiteIcon">
