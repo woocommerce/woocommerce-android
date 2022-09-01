@@ -46,10 +46,10 @@ abstract class CardReaderHubViewHolder(val parent: ViewGroup, @LayoutRes layout:
                 itemView.context, uiState.description
             )
             binding.cardReaderHubSwitch.setOnCheckedChangeListener(null)
-            binding.cardReaderHubSwitch.isChecked = uiState.isChecked
+            binding.cardReaderHubSwitch.isEnabled = uiState.isEnabled
             binding.cardReaderHubSwitch.isClickable = uiState.isEnabled
             binding.cardReaderHubSwitch.setOnCheckedChangeListener { _, isChecked ->
-                if (binding.cardReaderHubSwitch.isClickable) {
+                if (uiState.isEnabled) {
                     uiState.onToggled(isChecked)
                 }
             }
