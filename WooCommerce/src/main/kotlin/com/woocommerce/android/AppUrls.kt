@@ -1,5 +1,6 @@
 package com.woocommerce.android
 
+import com.woocommerce.android.support.HelpActivity.Origin.JETPACK_REQUIRED
 import com.woocommerce.android.support.HelpActivity.Origin.LOGIN_EMAIL
 import com.woocommerce.android.support.HelpActivity.Origin.LOGIN_SITE_ADDRESS
 import com.woocommerce.android.support.HelpActivity.Origin.LOGIN_USERNAME_PASSWORD
@@ -76,6 +77,7 @@ object AppUrls {
 
     private const val LOGIN_HELP_CENTER = "https://woocommerce.com/document/android-ios-apps-login-help-faq/"
     val LOGIN_HELP_CENTER_URLS = mapOf(
+        JETPACK_REQUIRED to "$LOGIN_HELP_CENTER#jetpack-required",
         LOGIN_EMAIL to "$LOGIN_HELP_CENTER#enter-wordpress-com-email-address-login-using-store-address-flow",
         LOGIN_SITE_ADDRESS to "$LOGIN_HELP_CENTER#enter-store-address",
         LOGIN_USERNAME_PASSWORD to "$LOGIN_HELP_CENTER#enter-store-credentials",
