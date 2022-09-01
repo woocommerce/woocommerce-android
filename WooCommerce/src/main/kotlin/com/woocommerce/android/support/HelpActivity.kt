@@ -245,8 +245,8 @@ class HelpActivity : AppCompatActivity() {
     companion object {
         private const val ORIGIN_KEY = "ORIGIN_KEY"
         private const val EXTRA_TAGS_KEY = "EXTRA_TAGS_KEY"
-        private const val LOGIN_STEP_KEY = "LOGIN_STEP_KEY"
         private const val LOGIN_FLOW_KEY = "LOGIN_FLOW_KEY"
+        private const val LOGIN_STEP_KEY = "LOGIN_STEP_KEY"
 
         @JvmStatic
         fun createIntent(
