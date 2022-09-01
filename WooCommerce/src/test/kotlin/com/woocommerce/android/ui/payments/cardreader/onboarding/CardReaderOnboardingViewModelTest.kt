@@ -10,6 +10,7 @@ import com.woocommerce.android.model.UiString
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.payments.cardreader.CardReaderTracker
 import com.woocommerce.android.ui.payments.cardreader.LearnMoreUrlProvider
+import com.woocommerce.android.ui.payments.cardreader.LearnMoreUrlProvider.LearnMoreUrlType.IN_PERSON_PAYMENTS
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderFlowParam.PaymentOrRefund.Payment.PaymentType.ORDER
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboardingState.CashOnDeliveryDisabled
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboardingState.ChoosePaymentGatewayProvider
@@ -70,7 +71,7 @@ class CardReaderOnboardingViewModelTest : BaseUnitTest() {
         on(it.get()).thenReturn(SiteModel())
     }
     private val learnMoreUrlProvider: LearnMoreUrlProvider = mock {
-        on { providerLearnMoreUrl() }.thenReturn(AppUrls.WOOCOMMERCE_LEARN_MORE_ABOUT_PAYMENTS)
+        on { provideLearnMoreUrlFor(IN_PERSON_PAYMENTS) }.thenReturn(AppUrls.WOOCOMMERCE_LEARN_MORE_ABOUT_PAYMENTS)
     }
     private val appPrefsWrapper: AppPrefsWrapper = mock()
     private val cardReaderManager: CardReaderManager = mock()
@@ -751,7 +752,13 @@ class CardReaderOnboardingViewModelTest : BaseUnitTest() {
         testBlocking {
             whenever(onboardingChecker.getOnboardingState())
                 .thenReturn(StoreCountryNotSupported(""))
-            whenever(learnMoreUrlProvider.providerLearnMoreUrl()).thenReturn(AppUrls.STRIPE_LEARN_MORE_ABOUT_PAYMENTS)
+            whenever(
+                learnMoreUrlProvider.provideLearnMoreUrlFor(
+                    IN_PERSON_PAYMENTS
+                )
+            ).thenReturn(
+                AppUrls.STRIPE_LEARN_MORE_ABOUT_PAYMENTS
+            )
 
             val viewModel = createVM()
 
@@ -766,7 +773,7 @@ class CardReaderOnboardingViewModelTest : BaseUnitTest() {
         testBlocking {
             whenever(onboardingChecker.getOnboardingState())
                 .thenReturn(StoreCountryNotSupported(""))
-            whenever(learnMoreUrlProvider.providerLearnMoreUrl())
+            whenever(learnMoreUrlProvider.provideLearnMoreUrlFor(IN_PERSON_PAYMENTS))
                 .thenReturn(AppUrls.WOOCOMMERCE_LEARN_MORE_ABOUT_PAYMENTS)
 
             val viewModel = createVM()

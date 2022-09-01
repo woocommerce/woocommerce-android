@@ -12,15 +12,16 @@ import com.woocommerce.android.initSavedStateHandle
 import com.woocommerce.android.support.HelpActivity
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.common.UserEligibilityFetcher
+import com.woocommerce.android.ui.login.AccountRepository
 import com.woocommerce.android.ui.login.UnifiedLoginTracker
 import com.woocommerce.android.ui.sitepicker.SitePickerViewModel.SitePickerEvent
+import com.woocommerce.android.ui.sitepicker.SitePickerViewModel.SitePickerEvent.NavigateToAccountMismatchScreen
 import com.woocommerce.android.ui.sitepicker.SitePickerViewModel.SitePickerEvent.NavigateToEmailHelpDialogEvent
 import com.woocommerce.android.ui.sitepicker.SitePickerViewModel.SitePickerEvent.NavigateToHelpFragmentEvent
 import com.woocommerce.android.ui.sitepicker.SitePickerViewModel.SitePickerEvent.NavigateToMainActivityEvent
 import com.woocommerce.android.ui.sitepicker.SitePickerViewModel.SitePickerEvent.NavigateToNewToWooEvent
 import com.woocommerce.android.ui.sitepicker.SitePickerViewModel.SitePickerEvent.NavigateToSiteAddressEvent
 import com.woocommerce.android.ui.sitepicker.SitePickerViewModel.SitePickerEvent.ShowWooUpgradeDialogEvent
-import com.woocommerce.android.ui.sitepicker.SitePickerViewModel.SitePickerState.AccountMismatchState
 import com.woocommerce.android.ui.sitepicker.SitePickerViewModel.SitePickerState.NoStoreState
 import com.woocommerce.android.ui.sitepicker.SitePickerViewModel.SitePickerState.StoreListState
 import com.woocommerce.android.ui.sitepicker.SitePickerViewModel.SitePickerState.WooNotFoundState
@@ -69,6 +70,7 @@ class SitePickerViewModelTest : BaseUnitTest() {
     private val repository: SitePickerRepository = mock {
         onBlocking { getSites() } doReturn expectedSiteList.toMutableList()
     }
+    private val accountRepository: AccountRepository = mock()
     private val unifiedLoginTracker: UnifiedLoginTracker = mock()
 
     private lateinit var viewModel: SitePickerViewModel
@@ -79,6 +81,7 @@ class SitePickerViewModelTest : BaseUnitTest() {
             savedState = savedState,
             selectedSite = selectedSite,
             repository = repository,
+            accountRepository = accountRepository,
             resourceProvider = resourceProvider,
             appPrefsWrapper = appPrefsWrapper,
             analyticsTrackerWrapper = analyticsTrackerWrapper,
@@ -136,7 +139,7 @@ class SitePickerViewModelTest : BaseUnitTest() {
 
     @Before
     fun setup() {
-        whenever(repository.getUserAccount()).thenReturn(SitePickerTestUtils.account)
+        whenever(accountRepository.getUserAccount()).thenReturn(SitePickerTestUtils.account)
         givenTheScreenIsFromLogin(true)
     }
 
@@ -312,8 +315,6 @@ class SitePickerViewModelTest : BaseUnitTest() {
             whenViewModelIsCreated()
 
             val url = SitePickerTestUtils.loginSiteAddress
-            var sitePickerData: SitePickerViewModel.SitePickerViewState? = null
-            viewModel.sitePickerViewStateData.observeForever { _, new -> sitePickerData = new }
 
             verify(repository, atLeastOnce()).getSiteBySiteUrl(any())
             verify(analyticsTrackerWrapper, atLeastOnce()).track(
@@ -324,18 +325,7 @@ class SitePickerViewModelTest : BaseUnitTest() {
                 )
             )
 
-            assertThat(sitePickerData?.isNoStoresViewVisible).isEqualTo(true)
-            assertThat(sitePickerData?.isPrimaryBtnVisible).isEqualTo(true)
-            assertThat(sitePickerData?.primaryBtnText).isEqualTo(
-                resourceProvider.getString(R.string.login_view_connected_stores)
-            )
-            assertThat(sitePickerData?.noStoresLabelText).isEqualTo(
-                resourceProvider.getString(R.string.login_not_connected_to_account, url)
-            )
-            assertThat(sitePickerData?.noStoresBtnText).isEqualTo(
-                resourceProvider.getString(R.string.login_need_help_finding_email)
-            )
-            assertThat(sitePickerData?.currentSitePickerState).isEqualTo(AccountMismatchState)
+            assertThat(viewModel.event.value).isEqualTo(NavigateToAccountMismatchScreen(true))
         }
 
     @Test
@@ -484,8 +474,7 @@ class SitePickerViewModelTest : BaseUnitTest() {
 
     @Test
     fun `given user is logging in, then when try another account is clicked, logout is initiated`() = testBlocking {
-        whenever(repository.logout()).thenReturn(true)
-        whenever(repository.isUserLoggedIn()).thenReturn(false)
+        whenever(accountRepository.logout()).thenReturn(true)
         givenTheScreenIsFromLogin(true)
         whenViewModelIsCreated()
 
@@ -496,8 +485,7 @@ class SitePickerViewModelTest : BaseUnitTest() {
 
         viewModel.onTryAnotherAccountButtonClick()
 
-        verify(repository, times(1)).logout()
-        verify(repository, times(1)).isUserLoggedIn()
+        verify(accountRepository, times(1)).logout()
         assertThat(view).isEqualTo(Logout)
     }
 

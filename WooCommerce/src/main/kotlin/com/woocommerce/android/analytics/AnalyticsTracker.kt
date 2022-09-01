@@ -389,6 +389,11 @@ class AnalyticsTracker private constructor(private val context: Context) {
         // -- Experiments
         const val KEY_EXPERIMENT_VARIANT = "experiment_variant"
 
+        // -- Help Center
+        const val KEY_SOURCE_FLOW = "source_flow"
+        const val KEY_SOURCE_STEP = "source_step"
+        const val KEY_HELP_CONTENT_URL = "help_content_url"
+
         var sendUsageStats: Boolean = true
             set(value) {
                 if (value != field) {
