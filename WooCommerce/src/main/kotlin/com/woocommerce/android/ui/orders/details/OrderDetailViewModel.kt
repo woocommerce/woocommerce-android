@@ -168,7 +168,8 @@ class OrderDetailViewModel @Inject constructor(
                 displayOrderDetails()
                 fetchOrder(showSkeleton = false)
             } ?: fetchOrder(showSkeleton = true)
-            validateShippingAddress()
+
+            if (hasOrder()) validateShippingAddress()
         }
     }
 
