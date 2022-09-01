@@ -181,8 +181,8 @@ class HelpActivity : AppCompatActivity() {
         zendeskHelper.showAllTickets(this, originFromExtras, selectedSiteOrNull(), extraTagsFromExtras)
     }
 
-    private fun showLoginHelpCenter(originFromExtras: Origin, loginFlow: String, loginStep: String) {
-        val helpCenterUrl = AppUrls.LOGIN_HELP_CENTER_URLS[originFromExtras] ?: AppUrls.LOGIN_HELP_CENTER_MAIN_URL
+    private fun showLoginHelpCenter(origin: Origin, loginFlow: String, loginStep: String) {
+        val helpCenterUrl = AppUrls.LOGIN_HELP_CENTER_URLS[origin] ?: AppUrls.APP_HELP_CENTER
         AnalyticsTracker.track(
             stat = AnalyticsEvent.SUPPORT_HELP_CENTER_VIEWED,
             properties = mapOf(
