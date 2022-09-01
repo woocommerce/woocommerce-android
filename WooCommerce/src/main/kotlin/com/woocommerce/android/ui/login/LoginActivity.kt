@@ -72,6 +72,7 @@ import org.wordpress.android.fluxc.store.AccountStore.AuthOptionsErrorType.UNKNO
 import org.wordpress.android.fluxc.store.AccountStore.OnAuthOptionsFetched
 import org.wordpress.android.fluxc.store.SiteStore
 import org.wordpress.android.fluxc.store.SiteStore.ConnectSiteInfoPayload
+import org.wordpress.android.fluxc.store.SiteStore.OnConnectSiteInfoChecked
 import org.wordpress.android.login.AuthOptions
 import org.wordpress.android.login.GoogleFragment.GoogleListener
 import org.wordpress.android.login.Login2FaFragment
@@ -150,6 +151,8 @@ class LoginActivity :
 
     private var loginMode: LoginMode? = null
     private lateinit var binding: ActivityLoginBinding
+
+    private var isWPComSite: Boolean? = null
 
     override fun androidInjector(): AndroidInjector<Any> = androidInjector
 
@@ -589,7 +592,7 @@ class LoginActivity :
         AppPrefs.setLoginSiteAddress(siteAddressClean)
 
         if (hasJetpack) {
-            showEmailLoginScreen()
+            showEmailLoginScreen(inputSiteAddress.takeIf { isWPComSite != true })
         } else {
             // Let user log in via site credentials first before showing Jetpack missing screen.
             loginViaSiteCredentials(inputSiteAddress)
@@ -966,5 +969,11 @@ class LoginActivity :
         if (event.error?.type == UNKNOWN_USER) {
             loginNotificationScheduler.onPasswordLoginError()
         }
+    }
+
+    @SuppressWarnings("unused")
+    @Subscribe(threadMode = MAIN)
+    fun onFetchedConnectSiteInfo(event: OnConnectSiteInfoChecked) {
+        isWPComSite = event.info.isWPCom
     }
 }
