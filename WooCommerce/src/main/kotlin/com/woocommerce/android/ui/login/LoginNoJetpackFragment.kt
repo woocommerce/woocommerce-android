@@ -186,7 +186,7 @@ class LoginNoJetpackFragment : Fragment(layout.fragment_login_no_jetpack) {
         with(binding.buttonHelp) {
             setOnClickListener {
                 AnalyticsTracker.track(AnalyticsEvent.LOGIN_NO_JETPACK_MENU_HELP_TAPPED)
-                loginListener?.helpSiteAddress(siteAddress)
+                jetpackLoginListener?.helpJetpackRequired(siteAddress)
             }
         }
 

@@ -654,6 +654,10 @@ class LoginActivity :
         viewHelpAndSupport(Origin.LOGIN_SITE_ADDRESS)
     }
 
+    override fun helpJetpackRequired(siteAddress: String?) {
+        viewHelpAndSupport(Origin.JETPACK_REQUIRED)
+    }
+
     override fun helpFindingSiteAddress(username: String?, siteStore: SiteStore?) {
         unifiedLoginTracker.trackClick(Click.HELP_FINDING_SITE_ADDRESS)
         zendeskHelper.createNewTicket(this, Origin.LOGIN_SITE_ADDRESS, null)

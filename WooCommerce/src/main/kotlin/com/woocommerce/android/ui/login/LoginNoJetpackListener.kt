@@ -12,4 +12,5 @@ interface LoginNoJetpackListener {
         inputPassword: String?
     )
     fun startJetpackInstall(siteAddress: String? = null)
+    fun helpJetpackRequired(siteAddress: String?)
 }
