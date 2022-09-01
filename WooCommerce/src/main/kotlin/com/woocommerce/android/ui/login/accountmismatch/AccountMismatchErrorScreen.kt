@@ -85,7 +85,7 @@ fun AccountMismatchErrorScreen(viewState: AccountMismatchErrorViewModel.ViewStat
         )
 
         ButtonBar(
-            primaryButtonText = stringResource(id = viewState.primaryButtonText),
+            primaryButtonText = viewState.primaryButtonText?.let { stringResource(id = it) },
             primaryButtonClick = viewState.primaryButtonAction,
             secondaryButtonText = stringResource(id = viewState.secondaryButtonText),
             secondaryButtonClick = viewState.secondaryButtonAction,
@@ -162,7 +162,7 @@ private fun UserInfo(avatarUrl: String, displayName: String, username: String, m
 
 @Composable
 private fun ButtonBar(
-    primaryButtonText: String,
+    primaryButtonText: String?,
     primaryButtonClick: () -> Unit,
     secondaryButtonText: String,
     secondaryButtonClick: () -> Unit,
@@ -170,9 +170,12 @@ private fun ButtonBar(
 ) {
     @Composable
     fun Buttons(modifier: Modifier) {
-        WCColoredButton(onClick = primaryButtonClick, modifier = modifier) {
-            Text(text = primaryButtonText)
+        primaryButtonText?.let {
+            WCColoredButton(onClick = primaryButtonClick, modifier = modifier) {
+                Text(text = primaryButtonText)
+            }
         }
+
         WCOutlinedButton(onClick = secondaryButtonClick, modifier = modifier) {
             Text(text = secondaryButtonText)
         }

@@ -6,6 +6,9 @@ import androidx.lifecycle.asLiveData
 import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.login.AccountRepository
+import com.woocommerce.android.ui.login.accountmismatch.AccountMismatchErrorViewModel.AccountMismatchPrimaryButton.ENTER_NEW_SITE_ADDRESS
+import com.woocommerce.android.ui.login.accountmismatch.AccountMismatchErrorViewModel.AccountMismatchPrimaryButton.NONE
+import com.woocommerce.android.ui.login.accountmismatch.AccountMismatchErrorViewModel.AccountMismatchPrimaryButton.SHOW_SITE_PICKER
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Logout
@@ -32,16 +35,16 @@ class AccountMismatchErrorViewModel @Inject constructor(
                 avatarUrl = userInfo?.avatarUrl.orEmpty(),
                 username = userInfo?.userName.orEmpty(),
                 displayName = userInfo?.displayName.orEmpty(),
-                primaryButtonText = if (navArgs.hasConnectedStores) {
-                    R.string.login_view_connected_stores
-                } else {
-                    R.string.login_site_picker_try_another_address
+                primaryButtonText = when (navArgs.primaryButton) {
+                    SHOW_SITE_PICKER -> R.string.login_view_connected_stores
+                    ENTER_NEW_SITE_ADDRESS -> R.string.login_site_picker_try_another_address
+                    NONE -> null
                 },
                 primaryButtonAction = {
-                    if (navArgs.hasConnectedStores) {
-                        showConnectedStores()
-                    } else {
-                        navigateToSiteAddressScreen()
+                    when (navArgs.primaryButton) {
+                        SHOW_SITE_PICKER -> showConnectedStores()
+                        ENTER_NEW_SITE_ADDRESS -> navigateToSiteAddressScreen()
+                        NONE -> error("NONE as primary button shouldn't trigger the callback")
                     }
                 },
                 secondaryButtonText = R.string.login_try_another_account,
@@ -82,7 +85,7 @@ class AccountMismatchErrorViewModel @Inject constructor(
         val avatarUrl: String,
         val displayName: String,
         val username: String,
-        @StringRes val primaryButtonText: Int,
+        @StringRes val primaryButtonText: Int?,
         val primaryButtonAction: () -> Unit,
         @StringRes val secondaryButtonText: Int,
         val secondaryButtonAction: () -> Unit,
@@ -93,4 +96,8 @@ class AccountMismatchErrorViewModel @Inject constructor(
     object NavigateToHelpScreen : MultiLiveEvent.Event()
     object NavigateToSiteAddressEvent : MultiLiveEvent.Event()
     object NavigateToEmailHelpDialogEvent : MultiLiveEvent.Event()
+
+    enum class AccountMismatchPrimaryButton {
+        SHOW_SITE_PICKER, ENTER_NEW_SITE_ADDRESS, NONE
+    }
 }
