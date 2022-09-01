@@ -2,6 +2,7 @@
 10.2
 -----
 - [*] SitePicker: Reduces Jetpack timeout loading times and shows new error dialog  [https://github.com/woocommerce/woocommerce-android/pull/7271
+- [*] Login: "Help Center" option now show specific login-related help page if opened from certain login steps [https://github.com/woocommerce/woocommerce-android/pull/7319]
 
 10.1
 -----
