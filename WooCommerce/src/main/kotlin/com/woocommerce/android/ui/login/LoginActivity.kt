@@ -152,7 +152,7 @@ class LoginActivity :
     private var loginMode: LoginMode? = null
     private lateinit var binding: ActivityLoginBinding
 
-    private var isWPComSite: Boolean? = null
+    private var connectSiteInfo: ConnectSiteInfoPayload? = null
 
     override fun androidInjector(): AndroidInjector<Any> = androidInjector
 
@@ -592,7 +592,7 @@ class LoginActivity :
         AppPrefs.setLoginSiteAddress(siteAddressClean)
 
         if (hasJetpack) {
-            showEmailLoginScreen(inputSiteAddress.takeIf { isWPComSite != true })
+            showEmailLoginScreen(inputSiteAddress.takeIf { connectSiteInfo?.isWPCom != true })
         } else {
             // Let user log in via site credentials first before showing Jetpack missing screen.
             loginViaSiteCredentials(inputSiteAddress)
@@ -974,6 +974,10 @@ class LoginActivity :
     @SuppressWarnings("unused")
     @Subscribe(threadMode = MAIN)
     fun onFetchedConnectSiteInfo(event: OnConnectSiteInfoChecked) {
-        isWPComSite = event.info.isWPCom
+        if (event.isError) {
+            connectSiteInfo = null
+        } else {
+            connectSiteInfo = event.info
+        }
     }
 }
