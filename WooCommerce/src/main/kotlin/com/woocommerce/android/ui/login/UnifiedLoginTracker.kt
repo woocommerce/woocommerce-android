@@ -26,13 +26,22 @@ class UnifiedLoginTracker
     var currentStep: Step? = null
         private set
 
+    // Saves the previous step before going to the Help step.
+    // Used to offer specific login help page section depending on which login step
+    var previousStepBeforeHelpStep: Step? = null
+        private set
+
     @JvmOverloads
     fun track(
         flow: Flow? = currentFlow,
         step: Step
     ) {
         currentFlow = flow
+        if (step == Step.HELP) {
+            previousStepBeforeHelpStep = currentStep
+        }
         currentStep = step
+
         if (currentFlow != null && currentStep != null) {
             analyticsTracker.track(
                 stat = AnalyticsEvent.UNIFIED_LOGIN_STEP,
