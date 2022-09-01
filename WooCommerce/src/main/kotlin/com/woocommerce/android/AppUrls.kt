@@ -1,5 +1,7 @@
 package com.woocommerce.android
 
+import com.woocommerce.android.support.HelpActivity.Origin.LOGIN_SITE_ADDRESS
+
 object AppUrls {
     const val APP_HELP_CENTER = "https://docs.woocommerce.com/document/android/"
     const val APP_FEATURE_REQUEST = "http://ideas.woocommerce.com/forums/133476-woocommerce?category_id=84283"
@@ -75,4 +77,9 @@ object AppUrls {
         "https://woocommerce.com/document/what-is-a-wordpress-com-account/"
 
     const val NEW_TO_WOO_DOC = "https://woocommerce.com/document/woocommerce-features"
+
+    const val LOGIN_HELP_CENTER_MAIN_URL = "https://woocommerce.com/document/android-ios-apps-login-help-faq/"
+    val LOGIN_HELP_CENTER_URLS = mapOf(
+        LOGIN_SITE_ADDRESS to "$LOGIN_HELP_CENTER_MAIN_URL#enter-store-address"
+    )
 }
