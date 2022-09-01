@@ -10,7 +10,7 @@
 
     <TextView
         android:id="@+id/widget_error_message"
-        style="@style/Woo.StatsWidgetErrorMessage.Light"
+        style="@style/Woo.StatsWidgetErrorMessage"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="@string/stats_widget_error_no_data" />

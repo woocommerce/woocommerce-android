@@ -12,15 +12,7 @@
         <item name="android:focusable">true</item>
         <item name="android:paddingStart">@dimen/minor_100</item>
         <item name="android:paddingEnd">@dimen/minor_100</item>
-        <item name="android:background">?android:attr/selectableItemBackground</item>
-    </style>
-
-    <style name="Woo.StatsWidgetHeader.Light">
-        <item name="android:background">@drawable/bg_rectangle_black_4_top_radius_4dp</item>
-    </style>
-
-    <style name="Woo.StatsWidgetHeader.Dark">
-        <item name="android:background">@drawable/bg_rectangle_black_90_top_radius_4dp</item>
+        <item name="android:background">@drawable/bg_rounded_box</item>
     </style>
 
     <style name="Woo.StatsWidgetSiteIcon">
@@ -34,6 +26,7 @@
         <item name="fontFamily">@font/roboto</item>
         <item name="android:fontFamily">@font/roboto</item>
         <item name="android:textSize">@dimen/text_minor_125</item>
+        <item name="android:textColor">@color/color_on_surface_high</item>
         <item name="android:textStyle">normal</item>
         <item name="android:gravity">center_vertical</item>
         <item name="android:maxLines">1</item>
@@ -41,28 +34,13 @@
         <item name="android:paddingEnd">@dimen/minor_75</item>
     </style>
 
-    <style name="Woo.StatsWidgetTitle.Light">
-        <item name="android:textColor">@color/woo_black</item>
-    </style>
-
-    <style name="Woo.StatsWidgetTitle.Dark">
-        <item name="android:textColor">@color/woo_white_alpha_087</item>
-    </style>
-
     <style name="Woo.StatsWidgetSubtitle" parent="TextAppearance.AppCompat.Body2">
         <item name="fontFamily">@font/roboto</item>
         <item name="android:fontFamily">@font/roboto</item>
         <item name="android:textSize">@dimen/text_minor_80</item>
+        <item name="android:textColor">@color/color_on_surface_disabled</item>
         <item name="android:textStyle">normal</item>
         <item name="android:gravity">center_vertical</item>
-    </style>
-
-    <style name="Woo.StatsWidgetSubtitle.Light">
-        <item name="android:textColor">@color/woo_black_90_alpha_038</item>
-    </style>
-
-    <style name="Woo.StatsWidgetSubtitle.Dark">
-        <item name="android:textColor">@color/woo_white_alpha_060</item>
     </style>
 
     <style name="Woo.StatsWidgetError">
@@ -76,18 +54,11 @@
 
     <style name="Woo.StatsWidgetErrorMessage" parent="TextAppearance.AppCompat.Body1">
         <item name="android:textSize">@dimen/text_minor_100</item>
+        <item name="android:textColor">@color/color_on_surface_high</item>
         <item name="android:layout_gravity">center</item>
         <item name="android:gravity">center</item>
         <item name="android:layout_marginTop">@dimen/major_100</item>
         <item name="android:layout_marginBottom">@dimen/major_100</item>
-    </style>
-
-    <style name="Woo.StatsWidgetErrorMessage.Light">
-        <item name="android:textColor">@color/woo_black_90_alpha_087</item>
-    </style>
-
-    <style name="Woo.StatsWidgetErrorMessage.Dark">
-        <item name="android:textColor">@color/woo_white_alpha_060</item>
     </style>
 
     <style name="Woo.StatsWidgetRetryButton" parent="TextAppearance.AppCompat.Body1">

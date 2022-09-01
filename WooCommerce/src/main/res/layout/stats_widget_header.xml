@@ -3,7 +3,7 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/widget_title_container"
-    style="@style/Woo.StatsWidgetHeader.Light"
+    style="@style/Woo.StatsWidgetHeader"
     android:layout_width="match_parent"
     android:minHeight="@dimen/stats_widget_header_height"
     android:layout_height="@dimen/stats_widget_header_height"
@@ -28,14 +28,14 @@
 
         <TextView
             android:id="@+id/widget_title"
-            style="@style/Woo.StatsWidgetTitle.Light"
+            style="@style/Woo.StatsWidgetTitle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             tools:text="@string/my_store"/>
 
         <TextView
             android:id="@+id/widget_type"
-            style="@style/Woo.StatsWidgetSubtitle.Light"
+            style="@style/Woo.StatsWidgetSubtitle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/today"
