@@ -643,17 +643,16 @@ class LoginActivity :
         // TODO: Support self-signed SSL sites and show dialog (only needed when XML-RPC support is added)
     }
 
-    private fun viewHelpAndSupport(origin: Origin, flow: Flow? = null, step: Step? = null) {
+    private fun viewHelpAndSupport(origin: Origin) {
         val extraSupportTags = arrayListOf(ZendeskExtraTags.connectingJetpack)
+        val flow = unifiedLoginTracker.getFlow()
+        val step = unifiedLoginTracker.previousStepBeforeHelpStep
+
         startActivity(HelpActivity.createIntent(this, origin, extraSupportTags, flow?.value, step?.value))
     }
 
     override fun helpSiteAddress(url: String?) {
-        viewHelpAndSupport(
-            origin = Origin.LOGIN_SITE_ADDRESS,
-            flow = unifiedLoginTracker.getFlow(),
-            step = unifiedLoginTracker.previousStepBeforeHelpStep
-        )
+        viewHelpAndSupport(origin = Origin.LOGIN_SITE_ADDRESS)
     }
 
     override fun helpFindingSiteAddress(username: String?, siteStore: SiteStore?) {
