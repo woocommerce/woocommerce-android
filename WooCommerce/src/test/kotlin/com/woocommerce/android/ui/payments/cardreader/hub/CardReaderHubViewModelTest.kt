@@ -680,7 +680,7 @@ class CardReaderHubViewModelTest : BaseUnitTest() {
         testBlocking {
             assertThat((viewModel.viewStateData.value)?.rows)
                 .anyMatch {
-                    it.icon == R.drawable.ic_manage_card_reader
+                    it.icon == R.drawable.ic_gridicons_credit_card
                 }
         }
 
