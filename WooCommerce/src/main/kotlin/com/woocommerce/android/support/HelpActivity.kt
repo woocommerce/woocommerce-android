@@ -183,8 +183,6 @@ class HelpActivity : AppCompatActivity() {
 
     private fun showLoginHelpCenter(originFromExtras: Origin, loginStepFromExtras: String, loginFlowFromExtras: String) {
         val helpCenterUrl = AppUrls.LOGIN_HELP_CENTER_URLS[originFromExtras] ?: AppUrls.LOGIN_HELP_CENTER_MAIN_URL
-        ChromeCustomTabUtils.launchUrl(this, helpCenterUrl)
-
         AnalyticsTracker.track(
             stat = AnalyticsEvent.SUPPORT_HELP_CENTER_VIEWED,
             properties = mapOf(
@@ -193,6 +191,8 @@ class HelpActivity : AppCompatActivity() {
                 KEY_HELP_CONTENT_URL to helpCenterUrl
             )
         )
+
+        ChromeCustomTabUtils.launchUrl(this, helpCenterUrl)
     }
 
     private fun showZendeskFaq() {
