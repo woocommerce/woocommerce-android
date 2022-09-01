@@ -16,9 +16,9 @@ class GetTopPerformers @Inject constructor(
     private val coroutineDispatchers: CoroutineDispatchers,
 ) {
     suspend operator fun invoke(
-        forceRefresh: Boolean,
         granularity: WCStatsStore.StatsGranularity,
-        topPerformersCount: Int
+        topPerformersCount: Int,
+        forceRefresh: Boolean = false,
     ): Flow<TopPerformersResult> =
         statsRepository.fetchProductLeaderboards(forceRefresh, granularity, topPerformersCount)
             .transform { result ->
