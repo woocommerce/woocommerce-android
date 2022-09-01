@@ -59,11 +59,11 @@ class HelpActivity : AppCompatActivity() {
         binding.identityContainer.setOnClickListener { showIdentityDialog(TicketType.General) }
         binding.myTicketsContainer.setOnClickListener { showZendeskTickets() }
         binding.faqContainer.setOnClickListener {
-            val step = intent.extras?.getString(LOGIN_STEP_KEY)
-            val flow = intent.extras?.getString(LOGIN_FLOW_KEY)
+            val loginFlow = intent.extras?.getString(LOGIN_FLOW_KEY)
+            val loginStep = intent.extras?.getString(LOGIN_STEP_KEY)
 
-            if (step != null && flow != null) {
-                showLoginHelpCenter(originFromExtras, step, flow)
+            if (loginFlow != null && loginStep != null) {
+                showLoginHelpCenter(originFromExtras, loginFlow, loginStep)
             } else {
                 showZendeskFaq()
             }
@@ -181,13 +181,13 @@ class HelpActivity : AppCompatActivity() {
         zendeskHelper.showAllTickets(this, originFromExtras, selectedSiteOrNull(), extraTagsFromExtras)
     }
 
-    private fun showLoginHelpCenter(originFromExtras: Origin, loginStepFromExtras: String, loginFlowFromExtras: String) {
+    private fun showLoginHelpCenter(originFromExtras: Origin, loginFlow: String, loginStep: String) {
         val helpCenterUrl = AppUrls.LOGIN_HELP_CENTER_URLS[originFromExtras] ?: AppUrls.LOGIN_HELP_CENTER_MAIN_URL
         AnalyticsTracker.track(
             stat = AnalyticsEvent.SUPPORT_HELP_CENTER_VIEWED,
             properties = mapOf(
-                KEY_SOURCE_FLOW to loginFlowFromExtras,
-                KEY_SOURCE_STEP to loginStepFromExtras,
+                KEY_SOURCE_FLOW to loginFlow,
+                KEY_SOURCE_STEP to loginStep,
                 KEY_HELP_CONTENT_URL to helpCenterUrl
             )
         )
@@ -253,8 +253,8 @@ class HelpActivity : AppCompatActivity() {
             context: Context,
             origin: Origin,
             extraSupportTags: List<String>?,
-            step: String? = null,
-            flow: String? = null
+            loginFlow: String? = null,
+            loginStep: String? = null
         ): Intent {
             val intent = Intent(context, HelpActivity::class.java)
             intent.putExtra(ORIGIN_KEY, origin)
@@ -262,8 +262,8 @@ class HelpActivity : AppCompatActivity() {
                 intent.putStringArrayListExtra(EXTRA_TAGS_KEY, extraSupportTags as ArrayList<String>?)
             }
 
-            if (step != null) intent.putExtra(LOGIN_STEP_KEY, step)
-            if (flow != null) intent.putExtra(LOGIN_FLOW_KEY, flow)
+            if (loginFlow != null) intent.putExtra(LOGIN_FLOW_KEY, loginFlow)
+            if (loginStep != null) intent.putExtra(LOGIN_STEP_KEY, loginStep)
 
             return intent
         }
