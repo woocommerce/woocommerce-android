@@ -32,6 +32,7 @@ import com.woocommerce.android.widgets.WooClickableSpan
 import dagger.hilt.android.AndroidEntryPoint
 import org.wordpress.android.login.LoginListener
 import org.wordpress.android.login.LoginMode
+import javax.inject.Inject
 
 @AndroidEntryPoint
 class LoginNoJetpackFragment : Fragment(layout.fragment_login_no_jetpack) {
@@ -65,6 +66,8 @@ class LoginNoJetpackFragment : Fragment(layout.fragment_login_no_jetpack) {
             return fragment
         }
     }
+
+    @Inject internal lateinit var unifiedLoginTracker: UnifiedLoginTracker
 
     private var loginListener: LoginListener? = null
     private var jetpackLoginListener: LoginNoJetpackListener? = null
@@ -209,6 +212,8 @@ class LoginNoJetpackFragment : Fragment(layout.fragment_login_no_jetpack) {
 
     override fun onResume() {
         super.onResume()
+        unifiedLoginTracker.setStep(UnifiedLoginTracker.Step.JETPACK_NOT_CONNECTED)
+
         AnalyticsTracker.trackViewShown(this)
         AnalyticsTracker.track(AnalyticsEvent.LOGIN_NO_JETPACK_SCREEN_VIEWED)
 

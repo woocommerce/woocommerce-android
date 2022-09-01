@@ -236,7 +236,7 @@ class HelpActivity : AppCompatActivity() {
         JETPACK_INSTALLATION("origin:jetpack-installation"),
         LOGIN_HELP_NOTIFICATION("origin:login-local-notification"),
         SITE_PICKER_JETPACK_TIMEOUT("origin:site-picker-jetpack-error"),
-        JETPACK_REQUIRED("origin:jetpack-missing");
+        JETPACK_REQUIRED("origin:jetpack-required");
 
         override fun toString(): String {
             return stringValue
