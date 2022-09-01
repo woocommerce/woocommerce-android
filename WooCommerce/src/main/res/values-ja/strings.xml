@@ -1816,7 +1816,7 @@ Language: ja_JP
     <string name="login_jetpack_what_is_description">Jetpack は WordPress の無料のプラグインであり、ストアをモバイルでの最適な操作に必要なツール (プッシュ通知および統計を含む) と接続します。</string>
     <string name="login_jetpack_what_is">Jetpack とは ?</string>
     <string name="login_view_connected_stores">連携ストアを表示</string>
-    <string name="login_not_connected_to_account">%1$s は別の WordPress.com アカウントと関連付けられているようです。</string>
+    <string name="login_wpcom_account_mismatch">%1$s は別の WordPress.com アカウントと関連付けられているようです。</string>
     <string name="keep_editing">編集を続行</string>
     <string name="notification_wpcom_username_needed">ユーザー名とパスワードでログインしてください。</string>
     <string name="error_user_username_instead_of_email">メールアドレスではなく WordPress.com ユーザー名を使用してログインしてください。</string>

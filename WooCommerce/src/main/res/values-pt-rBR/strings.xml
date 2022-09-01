@@ -1816,7 +1816,7 @@ Language: pt_BR
     <string name="login_jetpack_what_is_description">O Jetpack é um plugin gratuito do WordPress que conecta sua loja às ferramentas necessárias para proporcionar a você a melhor experiência em dispositivos móveis, incluindo notificações push e estatísticas</string>
     <string name="login_jetpack_what_is">O que é o Jetpack?</string>
     <string name="login_view_connected_stores">Visualizar lojas conectadas</string>
-    <string name="login_not_connected_to_account">Parece que %1$s está conectado(a) a uma conta diferente do WordPress.com.</string>
+    <string name="login_wpcom_account_mismatch">Parece que %1$s está conectado(a) a uma conta diferente do WordPress.com.</string>
     <string name="keep_editing">Continuar editando</string>
     <string name="notification_wpcom_username_needed">Faça login com seu nome de usuário e senha.</string>
     <string name="error_user_username_instead_of_email">Faça login com seu nome de usuário do WordPress.com em vez do endereço de e-mail.</string>

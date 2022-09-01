@@ -1816,7 +1816,7 @@ Language: tr
     <string name="login_jetpack_what_is_description">Jetpack, size en iyi mobil deneyimi sunmak için anında bildirimler ve istatistikler dahil olmak üzere gerekli araçlarla sizi mağazaya bağlayan ücretsiz bir WordPress eklentisidir.</string>
     <string name="login_jetpack_what_is">Jetpack nedir?</string>
     <string name="login_view_connected_stores">Bağlanılan mağazaları görüntüle</string>
-    <string name="login_not_connected_to_account">Görünüşe göre %1$s başka bir WordPress.com hesabına bağlı.</string>
+    <string name="login_wpcom_account_mismatch">Görünüşe göre %1$s başka bir WordPress.com hesabına bağlı.</string>
     <string name="keep_editing">Düzenlemeye devam et</string>
     <string name="notification_wpcom_username_needed">Lütfen kullanıcı adınız ve şifrenizle oturum açın.</string>
     <string name="error_user_username_instead_of_email">E-posta adresiniz yerine lütfen WordPress.com kullanıcı adınızla oturum açın.</string>

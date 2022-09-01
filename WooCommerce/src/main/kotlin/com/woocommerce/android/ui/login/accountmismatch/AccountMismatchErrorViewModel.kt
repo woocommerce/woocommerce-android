@@ -12,6 +12,7 @@ import com.woocommerce.android.ui.login.accountmismatch.AccountMismatchErrorView
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Logout
+import com.woocommerce.android.viewmodel.ResourceProvider
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.navArgs
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -23,15 +24,23 @@ import javax.inject.Inject
 class AccountMismatchErrorViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
     private val accountRepository: AccountRepository,
-    private val appPrefsWrapper: AppPrefsWrapper
+    private val appPrefsWrapper: AppPrefsWrapper,
+    private val resourceProvider: ResourceProvider
 ) : ScopedViewModel(savedStateHandle) {
     private val navArgs: AccountMismatchErrorFragmentArgs by savedStateHandle.navArgs()
     val viewState = flow {
         val userInfo = accountRepository.getUserAccount()
+        val siteUrl = appPrefsWrapper.getLoginSiteAddress()!!
 
         emit(
             ViewState(
-                siteUrl = appPrefsWrapper.getLoginSiteAddress()!!,
+                message = if (accountRepository.isUserLoggedIn()) {
+                    // When the user is already connected using WPCom account, show account mismatch error
+                    resourceProvider.getString(R.string.login_wpcom_account_mismatch, siteUrl)
+                } else {
+                    // Explain that account is not connected to Jetpack
+                    resourceProvider.getString(R.string.login_jetpack_not_connected, siteUrl)
+                },
                 avatarUrl = userInfo?.avatarUrl.orEmpty(),
                 username = userInfo?.userName.orEmpty(),
                 displayName = userInfo?.displayName.orEmpty(),
@@ -81,10 +90,10 @@ class AccountMismatchErrorViewModel @Inject constructor(
     }
 
     data class ViewState(
-        val siteUrl: String,
         val avatarUrl: String,
         val displayName: String,
         val username: String,
+        val message: String,
         @StringRes val primaryButtonText: Int?,
         val primaryButtonAction: () -> Unit,
         @StringRes val secondaryButtonText: Int,

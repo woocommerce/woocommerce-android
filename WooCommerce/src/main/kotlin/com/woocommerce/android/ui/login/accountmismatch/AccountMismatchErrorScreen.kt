@@ -118,7 +118,7 @@ private fun MainContent(
                 .weight(1f, fill = false)
         )
         Text(
-            text = stringResource(id = R.string.login_not_connected_to_account, viewState.siteUrl),
+            text = viewState.message,
             textAlign = TextAlign.Center
         )
         Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.major_100)))
@@ -201,10 +201,10 @@ private fun AccountMismatchPreview() {
     WooThemeWithBackground {
         AccountMismatchErrorScreen(
             viewState = AccountMismatchErrorViewModel.ViewState(
-                siteUrl = "url",
                 displayName = "displayname",
                 username = "username",
                 avatarUrl = "",
+                message = stringResource(id = R.string.login_wpcom_account_mismatch, "url"),
                 primaryButtonText = R.string.continue_button,
                 primaryButtonAction = {},
                 secondaryButtonText = R.string.continue_button,

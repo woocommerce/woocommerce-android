@@ -1816,7 +1816,7 @@ Language: nl
     <string name="login_jetpack_what_is_description">Jetpack is een gratis WordPress-plugin die aan je winkel wordt gekoppeld en je de tools voor de beste mobiele ervaring biedt, waaronder pushmeldingen en statistieken</string>
     <string name="login_jetpack_what_is">Wat is Jetpack?</string>
     <string name="login_view_connected_stores">Aangesloten winkels bekijken</string>
-    <string name="login_not_connected_to_account">Het lijkt erop dat %1$s is verbonden met een ander WordPress.com-account.</string>
+    <string name="login_wpcom_account_mismatch">Het lijkt erop dat %1$s is verbonden met een ander WordPress.com-account.</string>
     <string name="keep_editing">Doorgaan met bewerken</string>
     <string name="notification_wpcom_username_needed">Log in met je gebruikersnaam en wachtwoord.</string>
     <string name="error_user_username_instead_of_email">Log in met je WordPress.com-gebruikersnaam in plaats van met je e-mailadres.</string>
