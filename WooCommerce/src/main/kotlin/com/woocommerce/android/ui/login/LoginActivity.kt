@@ -649,7 +649,12 @@ class LoginActivity :
     }
 
     override fun helpSiteAddress(url: String?) {
-        viewHelpAndSupport(Origin.LOGIN_SITE_ADDRESS)
+        viewHelpAndSupport(
+            origin = Origin.LOGIN_SITE_ADDRESS,
+            flow = unifiedLoginTracker.getFlow(),
+            step = unifiedLoginTracker.previousStepBeforeHelpStep
+        )
+
     }
 
     override fun helpFindingSiteAddress(username: String?, siteStore: SiteStore?) {
