@@ -27,7 +27,7 @@ class UnifiedLoginTracker
         private set
 
     // Saves the previous step before going to the Help step.
-    // Used to offer specific login help page section depending on which login step
+    // Used for tracking purposes on the Login Help Center feature.
     var previousStepBeforeHelpStep: Step? = null
         private set
 
