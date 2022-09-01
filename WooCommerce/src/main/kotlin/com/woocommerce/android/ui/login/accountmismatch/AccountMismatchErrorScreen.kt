@@ -120,8 +120,10 @@ private fun MainContent(
             textAlign = TextAlign.Center
         )
         Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.major_100)))
-        WCTextButton(onClick = viewState.inlineButtonAction) {
-            Text(text = stringResource(id = viewState.inlineButtonText))
+        viewState.inlineButtonText?.let { buttonText ->
+            WCTextButton(onClick = viewState.inlineButtonAction) {
+                Text(text = stringResource(id = buttonText))
+            }
         }
     }
 }

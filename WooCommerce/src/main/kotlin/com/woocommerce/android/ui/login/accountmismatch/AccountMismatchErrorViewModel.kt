@@ -61,7 +61,8 @@ class AccountMismatchErrorViewModel @Inject constructor(
                 },
                 secondaryButtonText = R.string.login_try_another_account,
                 secondaryButtonAction = { loginWithDifferentAccount() },
-                inlineButtonText = R.string.login_need_help_finding_email,
+                inlineButtonText = if (accountRepository.isUserLoggedIn()) R.string.login_need_help_finding_email
+                else null,
                 inlineButtonAction = { helpFindingEmail() }
             )
         )
@@ -105,7 +106,7 @@ class AccountMismatchErrorViewModel @Inject constructor(
         val primaryButtonAction: () -> Unit,
         @StringRes val secondaryButtonText: Int,
         val secondaryButtonAction: () -> Unit,
-        @StringRes val inlineButtonText: Int,
+        @StringRes val inlineButtonText: Int?,
         val inlineButtonAction: () -> Unit
     )
 
