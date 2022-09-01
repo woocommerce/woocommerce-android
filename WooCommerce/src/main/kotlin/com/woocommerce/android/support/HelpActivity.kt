@@ -235,7 +235,8 @@ class HelpActivity : AppCompatActivity() {
         SIGNUP_MAGIC_LINK("origin:signup-magic-link"),
         JETPACK_INSTALLATION("origin:jetpack-installation"),
         LOGIN_HELP_NOTIFICATION("origin:login-local-notification"),
-        SITE_PICKER_JETPACK_TIMEOUT("origin:site-picker-jetpack-error");
+        SITE_PICKER_JETPACK_TIMEOUT("origin:site-picker-jetpack-error"),
+        JETPACK_REQUIRED("origin:jetpack-missing");
 
         override fun toString(): String {
             return stringValue
