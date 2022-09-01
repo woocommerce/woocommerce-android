@@ -23,6 +23,7 @@ import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboa
 import com.woocommerce.android.util.ChromeCustomTabUtils
 import com.woocommerce.android.util.UiHelpers
 import dagger.hilt.android.AndroidEntryPoint
+import org.wordpress.android.util.ToastUtils
 
 private const val APPEARANCE_ANIMATION_DURATION_MS = 600L
 
@@ -81,6 +82,12 @@ class CardReaderHubFragment : BaseFragment(R.layout.fragment_card_reader_hub) {
                     findNavController().navigate(
                         CardReaderHubFragmentDirections.actionCardReaderHubFragmentToSimplePayments()
                     )
+                }
+                is CardReaderHubViewModel.CardReaderHubEvents.OpenGenericWebView -> {
+                    ChromeCustomTabUtils.launchUrl(requireContext(), event.url)
+                }
+                is CardReaderHubViewModel.CardReaderHubEvents.ShowToastString -> {
+                    ToastUtils.showToast(context, event.message)
                 }
                 else -> event.isHandled = false
             }

@@ -1,8 +1,12 @@
 *** PLEASE FOLLOW THIS FORMAT: [<priority indicator, more stars = higher priority>] <description> [<PR URL>]
 10.2
 -----
+-[**] In-Person Payments: Added Pay in Person toggle option in the Payments (Menu -> Payments) screen. Merchants can enable or disable "Pay in Person" from the app [https://github.com/woocommerce/woocommerce-android/pull/7280]
+
 - [*] SitePicker: Reduces Jetpack timeout loading times and shows new error dialog  [https://github.com/woocommerce/woocommerce-android/pull/7271
 - [*] Login: "Help Center" option now show specific login-related help page if opened from certain login steps [https://github.com/woocommerce/woocommerce-android/pull/7319]
+- [*] My store stats: Save selected stats granularity in My store tab between app session and site switching [https://github.com/woocommerce/woocommerce-android/pull/7304
+- [*] [Internal] extract the account mismatch error to a standalone screen [https://github.com/woocommerce/woocommerce-android/pull/7311]
 
 10.1
 -----
