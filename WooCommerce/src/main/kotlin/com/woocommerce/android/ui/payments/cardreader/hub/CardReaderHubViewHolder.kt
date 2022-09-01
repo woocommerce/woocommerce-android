@@ -44,10 +44,10 @@ abstract class CardReaderHubViewHolder(val parent: ViewGroup, @LayoutRes layout:
             binding.cardReaderMenuIcon.setImageResource(uiState.icon)
             UiHelpers.setTextOrHide(binding.cardReaderHubListItemDescriptionTv, uiState.description)
             binding.cardReaderHubSwitch.setOnCheckedChangeListener(null)
-            binding.cardReaderHubSwitch.isChecked = uiState.isChecked
+            binding.cardReaderHubSwitch.isEnabled = uiState.isEnabled
             binding.cardReaderHubSwitch.isClickable = uiState.isEnabled
             binding.cardReaderHubSwitch.setOnCheckedChangeListener { _, isChecked ->
-                if (binding.cardReaderHubSwitch.isClickable) {
+                if (uiState.isEnabled) {
                     uiState.onToggled(isChecked)
                 }
             }
