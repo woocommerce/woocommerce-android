@@ -14,6 +14,7 @@ import com.woocommerce.android.model.UiString
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.payments.cardreader.CardReaderTracker
 import com.woocommerce.android.ui.payments.cardreader.LearnMoreUrlProvider
+import com.woocommerce.android.ui.payments.cardreader.LearnMoreUrlProvider.LearnMoreUrlType.IN_PERSON_PAYMENTS
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboardingParams.Check
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboardingParams.Failed
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboardingState.ChoosePaymentGatewayProvider
@@ -385,7 +386,7 @@ class CardReaderOnboardingViewModel @Inject constructor(
 
     private fun onLearnMoreClicked() {
         cardReaderTracker.trackOnboardingLearnMoreTapped()
-        triggerEvent(NavigateToUrlInGenericWebView(learnMoreUrlProvider.providerLearnMoreUrl()))
+        triggerEvent(NavigateToUrlInGenericWebView(learnMoreUrlProvider.provideLearnMoreUrlFor(IN_PERSON_PAYMENTS)))
     }
 
     private fun onSkipPendingRequirementsClicked(storeCountryCode: String) {

@@ -11,6 +11,9 @@ import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.payments.cardreader.CardReaderTracker
 import com.woocommerce.android.ui.payments.cardreader.CashOnDeliverySettingsRepository
 import com.woocommerce.android.ui.payments.cardreader.InPersonPaymentsCanadaFeatureFlag
+import com.woocommerce.android.ui.payments.cardreader.LearnMoreUrlProvider
+import com.woocommerce.android.ui.payments.cardreader.LearnMoreUrlProvider.LearnMoreUrlType.CASH_ON_DELIVERY
+import com.woocommerce.android.ui.payments.cardreader.hub.CardReaderHubViewModel.CardReaderHubEvents.OpenGenericWebView
 import com.woocommerce.android.ui.payments.cardreader.hub.CardReaderHubViewModel.CardReaderHubEvents.ShowToastString
 import com.woocommerce.android.ui.payments.cardreader.hub.CardReaderHubViewModel.CardReaderHubViewState
 import com.woocommerce.android.ui.payments.cardreader.hub.CardReaderHubViewModel.CardReaderHubViewState.ListItem.NonToggleableListItem
@@ -59,6 +62,7 @@ class CardReaderHubViewModelTest : BaseUnitTest() {
         onBlocking { getOnboardingState() } doReturn mock<CardReaderOnboardingState.OnboardingCompleted>()
     }
     private val cashOnDeliverySettingsRepository: CashOnDeliverySettingsRepository = mock()
+    private val learnMoreUrlProvider: LearnMoreUrlProvider = mock()
     private val cardReaderTracker: CardReaderTracker = mock()
 
     private val savedState = CardReaderHubFragmentArgs(
@@ -693,7 +697,12 @@ class CardReaderHubViewModelTest : BaseUnitTest() {
                 }
                     as ToggleableListItem
                 ).description
-        ).isEqualTo(UiString.UiStringRes(R.string.card_reader_enable_pay_in_person_description))
+        ).isEqualTo(
+            UiString.UiStringRes(
+                R.string.card_reader_enable_pay_in_person_description,
+                containsHtml = true
+            )
+        )
     }
 
     @Test
@@ -1064,6 +1073,44 @@ class CardReaderHubViewModelTest : BaseUnitTest() {
                 )
             )
         }
+
+    @Test
+    fun `when cash on delivery learn more clicked, then trigger proper event`() =
+        testBlocking {
+            // WHEN
+            whenever(learnMoreUrlProvider.provideLearnMoreUrlFor(CASH_ON_DELIVERY)).thenReturn(
+                AppUrls.WOOCOMMERCE_LEARN_MORE_ABOUT_PAYMENTS_CASH_ON_DELIVERY
+            )
+            (
+                viewModel.viewStateData.value?.rows?.find {
+                    it.label == UiString.UiStringRes(R.string.card_reader_enable_pay_in_person)
+                }
+                    as ToggleableListItem
+                ).onLearnMoreClicked.invoke()
+
+            // THEN
+            assertThat(viewModel.event.value).isInstanceOf(OpenGenericWebView::class.java)
+        }
+
+    @Test
+    fun `when cash on delivery learn more clicked, then trigger proper event with correct url`() =
+        testBlocking {
+            // WHEN
+            whenever(learnMoreUrlProvider.provideLearnMoreUrlFor(CASH_ON_DELIVERY)).thenReturn(
+                AppUrls.WOOCOMMERCE_LEARN_MORE_ABOUT_PAYMENTS_CASH_ON_DELIVERY
+            )
+            (
+                viewModel.viewStateData.value?.rows?.find {
+                    it.label == UiString.UiStringRes(R.string.card_reader_enable_pay_in_person)
+                }
+                    as ToggleableListItem
+                ).onLearnMoreClicked.invoke()
+
+            // THEN
+            assertThat(viewModel.event.value).isEqualTo(
+                OpenGenericWebView(AppUrls.WOOCOMMERCE_LEARN_MORE_ABOUT_PAYMENTS_CASH_ON_DELIVERY)
+            )
+        }
     // endregion
 
     private fun getSuccessWooResult() = WooResult(
@@ -1099,6 +1146,7 @@ class CardReaderHubViewModelTest : BaseUnitTest() {
             wooStore,
             cardReaderChecker,
             cashOnDeliverySettingsRepository,
+            learnMoreUrlProvider,
             cardReaderTracker
         )
         viewModel.onViewVisible()
