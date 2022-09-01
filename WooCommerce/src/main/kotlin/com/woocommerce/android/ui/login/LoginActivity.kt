@@ -654,7 +654,6 @@ class LoginActivity :
             flow = unifiedLoginTracker.getFlow(),
             step = unifiedLoginTracker.previousStepBeforeHelpStep
         )
-
     }
 
     override fun helpFindingSiteAddress(username: String?, siteStore: SiteStore?) {
