@@ -69,8 +69,8 @@ class CardReaderHubViewModel @Inject constructor(
                     cashOnDeliveryItem = cashOnDeliveryState.value!!
                 )
                 ).sortedBy {
-                    it.index
-                },
+                it.index
+            },
             isLoading = true,
             onboardingErrorAction = null
         )
@@ -188,8 +188,8 @@ class CardReaderHubViewModel @Inject constructor(
                     createHubListWhenSinglePluginInstalled(true, cashOnDeliveryState.value!!) +
                         createAdditionalItemWhenMultiplePluginsInstalled()
                     ).sortedBy {
-                        it.index
-                    }
+                    it.index
+                }
             } else {
                 createHubListWhenSinglePluginInstalled(true, cashOnDeliveryState.value!!)
             },
@@ -211,8 +211,8 @@ class CardReaderHubViewModel @Inject constructor(
             rows = (
                 createHubListWhenSinglePluginInstalled(false, cashOnDeliveryState.value!!)
                 ).sortedBy {
-                    it.index
-                },
+                it.index
+            },
             isLoading = false,
             onboardingErrorAction = OnboardingErrorAction(
                 text = UiStringRes(R.string.card_reader_onboarding_not_finished, containsHtml = true),
