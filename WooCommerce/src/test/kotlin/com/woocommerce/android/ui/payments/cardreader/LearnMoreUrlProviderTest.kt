@@ -3,8 +3,8 @@ package com.woocommerce.android.ui.payments.cardreader
 import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.AppUrls
 import com.woocommerce.android.tools.SelectedSite
-import com.woocommerce.android.ui.payments.cardreader.LearnMoreUrlProvider.LearnMoreUrl.CASH_ON_DELIVERY
-import com.woocommerce.android.ui.payments.cardreader.LearnMoreUrlProvider.LearnMoreUrl.IN_PERSON_PAYMENTS
+import com.woocommerce.android.ui.payments.cardreader.LearnMoreUrlProvider.LearnMoreUrlType.CASH_ON_DELIVERY
+import com.woocommerce.android.ui.payments.cardreader.LearnMoreUrlProvider.LearnMoreUrlType.IN_PERSON_PAYMENTS
 import com.woocommerce.android.ui.payments.cardreader.onboarding.PluginType.STRIPE_EXTENSION_GATEWAY
 import com.woocommerce.android.ui.payments.cardreader.onboarding.PluginType.WOOCOMMERCE_PAYMENTS
 import org.assertj.core.api.Assertions.assertThat
