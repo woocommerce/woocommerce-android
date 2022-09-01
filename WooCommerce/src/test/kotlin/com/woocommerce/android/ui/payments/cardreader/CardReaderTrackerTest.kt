@@ -25,9 +25,13 @@ import com.woocommerce.android.analytics.AnalyticsEvent.RECEIPT_PRINT_FAILED
 import com.woocommerce.android.analytics.AnalyticsEvent.RECEIPT_PRINT_SUCCESS
 import com.woocommerce.android.analytics.AnalyticsEvent.RECEIPT_PRINT_TAPPED
 import com.woocommerce.android.analytics.AnalyticsTracker
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_CASH_ON_DELIVERY_SOURCE
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.cardreader.connection.event.SoftwareUpdateStatus.Failed
 import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.ui.payments.cardreader.hub.CardReaderHubViewModel
+import com.woocommerce.android.ui.payments.cardreader.hub.CardReaderHubViewModel.CashOnDeliverySource.ONBOARDING
+import com.woocommerce.android.ui.payments.cardreader.hub.CardReaderHubViewModel.CashOnDeliverySource.PAYMENTS_HUB
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboardingState
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboardingState.ChoosePaymentGatewayProvider
 import com.woocommerce.android.ui.payments.cardreader.onboarding.PluginType.STRIPE_EXTENSION_GATEWAY
@@ -159,15 +163,48 @@ class CardReaderTrackerTest : BaseUnitTest() {
     @Test
     fun `given enable cod is tapped, when success, then ENABLE_CASH_ON_DELIVERY_SUCCESS tracked`() =
         testBlocking {
-            cardReaderTracker.trackCashOnDeliveryEnabledSuccess()
+            cardReaderTracker.trackCashOnDeliveryEnabledSuccess(
+                ONBOARDING
+            )
 
             verify(trackerWrapper).track(eq(ENABLE_CASH_ON_DELIVERY_SUCCESS), any())
+        }
+
+    @Test
+    fun `given enable cod is tapped from onboarding, when success, then proper source is tracked`() =
+        testBlocking {
+            cardReaderTracker.trackCashOnDeliveryEnabledSuccess(
+                ONBOARDING
+            )
+            val captor = argumentCaptor<Map<String, String>>()
+
+            verify(trackerWrapper).track(
+                eq(ENABLE_CASH_ON_DELIVERY_SUCCESS),
+                captor.capture()
+            )
+            assertThat(captor.firstValue[KEY_CASH_ON_DELIVERY_SOURCE]).isEqualTo(ONBOARDING.toString())
+        }
+
+    @Test
+    fun `given enable cod is tapped from payments hub, when success, then then proper source is tracked`() =
+        testBlocking {
+            cardReaderTracker.trackCashOnDeliveryEnabledSuccess(
+                PAYMENTS_HUB
+            )
+            val captor = argumentCaptor<Map<String, String>>()
+
+            verify(trackerWrapper).track(
+                eq(ENABLE_CASH_ON_DELIVERY_SUCCESS),
+                captor.capture()
+            )
+            assertThat(captor.firstValue[KEY_CASH_ON_DELIVERY_SOURCE]).isEqualTo(PAYMENTS_HUB.toString())
         }
 
     @Test
     fun `given enable cod is tapped, when failure, then ENABLE_CASH_ON_DELIVERY_FAILED tracked`() =
         testBlocking {
             cardReaderTracker.trackCashOnDeliveryEnabledFailure(
+                ONBOARDING,
                 "COD failed. Please try again later."
             )
 
