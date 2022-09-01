@@ -29,11 +29,18 @@ class AccountMismatchErrorViewModel @Inject constructor(
 ) : ScopedViewModel(savedStateHandle) {
     private val navArgs: AccountMismatchErrorFragmentArgs by savedStateHandle.navArgs()
     val viewState = flow {
-        val userInfo = accountRepository.getUserAccount()
+        val userAccount = accountRepository.getUserAccount()
         val siteUrl = appPrefsWrapper.getLoginSiteAddress()!!
 
         emit(
             ViewState(
+                userInfo = userAccount?.let {
+                    UserInfo(
+                        avatarUrl = it.avatarUrl.orEmpty(),
+                        username = it.userName,
+                        displayName = it.displayName.orEmpty()
+                    )
+                },
                 message = if (accountRepository.isUserLoggedIn()) {
                     // When the user is already connected using WPCom account, show account mismatch error
                     resourceProvider.getString(R.string.login_wpcom_account_mismatch, siteUrl)
@@ -41,9 +48,6 @@ class AccountMismatchErrorViewModel @Inject constructor(
                     // Explain that account is not connected to Jetpack
                     resourceProvider.getString(R.string.login_jetpack_not_connected, siteUrl)
                 },
-                avatarUrl = userInfo?.avatarUrl.orEmpty(),
-                username = userInfo?.userName.orEmpty(),
-                displayName = userInfo?.displayName.orEmpty(),
                 primaryButtonText = when (navArgs.primaryButton) {
                     SHOW_SITE_PICKER -> R.string.login_view_connected_stores
                     ENTER_NEW_SITE_ADDRESS -> R.string.login_site_picker_try_another_address
@@ -90,9 +94,7 @@ class AccountMismatchErrorViewModel @Inject constructor(
     }
 
     data class ViewState(
-        val avatarUrl: String,
-        val displayName: String,
-        val username: String,
+        val userInfo: UserInfo?,
         val message: String,
         @StringRes val primaryButtonText: Int?,
         val primaryButtonAction: () -> Unit,
@@ -100,6 +102,12 @@ class AccountMismatchErrorViewModel @Inject constructor(
         val secondaryButtonAction: () -> Unit,
         @StringRes val inlineButtonText: Int,
         val inlineButtonAction: () -> Unit
+    )
+
+    data class UserInfo(
+        val avatarUrl: String,
+        val displayName: String,
+        val username: String
     )
 
     object NavigateToHelpScreen : MultiLiveEvent.Event()

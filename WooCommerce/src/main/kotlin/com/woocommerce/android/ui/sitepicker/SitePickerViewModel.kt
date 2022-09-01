@@ -293,7 +293,7 @@ class SitePickerViewModel @Inject constructor(
         )
     }
 
-    private fun getUserInfo() = accountRepository.getUserAccount().let {
+    private fun getUserInfo() = accountRepository.getUserAccount()?.let {
         UserInfo(displayName = it.displayName, username = it.userName ?: "", userAvatarUrl = it.avatarUrl)
     }
 

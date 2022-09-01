@@ -104,11 +104,9 @@ private fun MainContent(
         verticalArrangement = Arrangement.Center,
         modifier = modifier
     ) {
-        UserInfo(
-            avatarUrl = viewState.avatarUrl,
-            displayName = viewState.displayName,
-            username = viewState.username
-        )
+        viewState.userInfo?.let {
+            UserInfo(it)
+        }
 
         Image(
             painter = painterResource(id = R.drawable.img_woo_no_stores),
@@ -129,14 +127,14 @@ private fun MainContent(
 }
 
 @Composable
-private fun UserInfo(avatarUrl: String, displayName: String, username: String, modifier: Modifier = Modifier) {
+private fun UserInfo(userInfo: AccountMismatchErrorViewModel.UserInfo, modifier: Modifier = Modifier) {
     Column(
         modifier = modifier,
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
         AsyncImage(
             model = Builder(LocalContext.current)
-                .data(avatarUrl)
+                .data(userInfo.avatarUrl)
                 .crossfade(true)
                 .build(),
             placeholder = painterResource(R.drawable.img_gravatar_placeholder),
@@ -149,12 +147,12 @@ private fun UserInfo(avatarUrl: String, displayName: String, username: String, m
         )
 
         Text(
-            text = displayName,
+            text = userInfo.displayName,
             style = MaterialTheme.typography.h5,
             color = colorResource(id = R.color.color_on_surface_high)
         )
         Text(
-            text = username,
+            text = userInfo.username,
             style = MaterialTheme.typography.body1
         )
     }
@@ -201,9 +199,11 @@ private fun AccountMismatchPreview() {
     WooThemeWithBackground {
         AccountMismatchErrorScreen(
             viewState = AccountMismatchErrorViewModel.ViewState(
-                displayName = "displayname",
-                username = "username",
-                avatarUrl = "",
+                userInfo = AccountMismatchErrorViewModel.UserInfo(
+                    displayName = "displayname",
+                    username = "username",
+                    avatarUrl = ""
+                ),
                 message = stringResource(id = R.string.login_wpcom_account_mismatch, "url"),
                 primaryButtonText = R.string.continue_button,
                 primaryButtonAction = {},
