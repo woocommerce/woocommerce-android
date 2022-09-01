@@ -55,7 +55,7 @@ class CardReaderHubViewModel @Inject constructor(
 
     private val cashOnDeliveryState = MutableLiveData(
         ToggleableListItem(
-            icon = R.drawable.ic_manage_card_reader,
+            icon = R.drawable.ic_gridicons_credit_card,
             label = UiStringRes(R.string.card_reader_enable_pay_in_person),
             description = UiStringRes(
                 R.string.card_reader_enable_pay_in_person_description,
