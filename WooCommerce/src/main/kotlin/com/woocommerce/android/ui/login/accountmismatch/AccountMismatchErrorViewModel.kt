@@ -11,7 +11,6 @@ import com.woocommerce.android.ui.login.accountmismatch.AccountMismatchErrorView
 import com.woocommerce.android.ui.login.accountmismatch.AccountMismatchErrorViewModel.AccountMismatchPrimaryButton.SHOW_SITE_PICKER
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
-import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Logout
 import com.woocommerce.android.viewmodel.ResourceProvider
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.navArgs
@@ -61,7 +60,7 @@ class AccountMismatchErrorViewModel @Inject constructor(
                     }
                 },
                 secondaryButtonText = R.string.login_try_another_account,
-                secondaryButtonAction = { logout() },
+                secondaryButtonAction = { loginWithDifferentAccount() },
                 inlineButtonText = R.string.login_need_help_finding_email,
                 inlineButtonAction = { helpFindingEmail() }
             )
@@ -76,11 +75,17 @@ class AccountMismatchErrorViewModel @Inject constructor(
         triggerEvent(NavigateToSiteAddressEvent)
     }
 
-    private fun logout() = launch {
-        accountRepository.logout().let {
-            if (it) {
-                appPrefsWrapper.removeLoginSiteAddress()
-                triggerEvent(Logout)
+    private fun loginWithDifferentAccount() {
+        if (!accountRepository.isUserLoggedIn()) {
+            triggerEvent(NavigateToLoginScreen)
+        } else {
+            launch {
+                accountRepository.logout().let {
+                    if (it) {
+                        appPrefsWrapper.removeLoginSiteAddress()
+                        triggerEvent(NavigateToLoginScreen)
+                    }
+                }
             }
         }
     }
@@ -113,6 +118,7 @@ class AccountMismatchErrorViewModel @Inject constructor(
     object NavigateToHelpScreen : MultiLiveEvent.Event()
     object NavigateToSiteAddressEvent : MultiLiveEvent.Event()
     object NavigateToEmailHelpDialogEvent : MultiLiveEvent.Event()
+    object NavigateToLoginScreen : MultiLiveEvent.Event()
 
     enum class AccountMismatchPrimaryButton {
         SHOW_SITE_PICKER, ENTER_NEW_SITE_ADDRESS, NONE
