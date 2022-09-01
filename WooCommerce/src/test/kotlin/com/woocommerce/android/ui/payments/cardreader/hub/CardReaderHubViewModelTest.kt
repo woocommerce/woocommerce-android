@@ -12,7 +12,6 @@ import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderFlowP
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboardingChecker
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboardingState
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboardingState.StripeAccountPendingRequirement
-import com.woocommerce.android.ui.payments.cardreader.onboarding.PluginType.STRIPE_EXTENSION_GATEWAY
 import com.woocommerce.android.ui.payments.cardreader.onboarding.PluginType.WOOCOMMERCE_PAYMENTS
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -157,6 +156,7 @@ class CardReaderHubViewModelTest : BaseUnitTest() {
 
     @Test
     fun `when user clicks on purchase card reader, then app opens external webview`() {
+        val storeCountryCode = wooStore.getStoreCountryCode(selectedSite.get())
         (viewModel.viewStateData.value)?.rows?.find {
             it.label == UiString.UiStringRes(R.string.card_reader_purchase_card_reader)
         }!!.onClick.invoke()
@@ -164,7 +164,7 @@ class CardReaderHubViewModelTest : BaseUnitTest() {
         assertThat(viewModel.event.value)
             .isEqualTo(
                 CardReaderHubViewModel.CardReaderHubEvents.NavigateToPurchaseCardReaderFlow(
-                    AppUrls.WOOCOMMERCE_M2_PURCHASE_CARD_READER
+                    "${AppUrls.WOOCOMMERCE_PURCHASE_CARD_READER_IN_COUNTRY}$storeCountryCode"
                 )
             )
     }
@@ -181,41 +181,14 @@ class CardReaderHubViewModelTest : BaseUnitTest() {
 
     @Test
     fun `when user clicks on purchase card reader, then app opens external webview with in-person-payments link`() {
+        val storeCountryCode = wooStore.getStoreCountryCode(selectedSite.get())
         (viewModel.viewStateData.value)?.rows?.find {
             it.label == UiString.UiStringRes(R.string.card_reader_purchase_card_reader)
         }!!.onClick.invoke()
 
         assertThat(
             (viewModel.event.value as CardReaderHubViewModel.CardReaderHubEvents.NavigateToPurchaseCardReaderFlow).url
-        ).isEqualTo(AppUrls.WOOCOMMERCE_M2_PURCHASE_CARD_READER)
-    }
-
-    @Test
-    fun `given wcpay active, when user clicks on purchase card reader, then woo purchase link shown`() {
-        whenever(appPrefsWrapper.getCardReaderPreferredPlugin(any(), any(), any()))
-            .thenReturn(WOOCOMMERCE_PAYMENTS)
-
-        (viewModel.viewStateData.value)?.rows?.find {
-            it.label == UiString.UiStringRes(R.string.card_reader_purchase_card_reader)
-        }!!.onClick.invoke()
-
-        assertThat(
-            (viewModel.event.value as CardReaderHubViewModel.CardReaderHubEvents.NavigateToPurchaseCardReaderFlow).url
-        ).isEqualTo(AppUrls.WOOCOMMERCE_M2_PURCHASE_CARD_READER)
-    }
-
-    @Test
-    fun `given stripe active, when user clicks on purchase card reader, then stripe purchase link shown`() {
-        whenever(appPrefsWrapper.getCardReaderPreferredPlugin(any(), any(), any()))
-            .thenReturn(STRIPE_EXTENSION_GATEWAY)
-
-        (viewModel.viewStateData.value)?.rows?.find {
-            it.label == UiString.UiStringRes(R.string.card_reader_purchase_card_reader)
-        }!!.onClick.invoke()
-
-        assertThat(
-            (viewModel.event.value as CardReaderHubViewModel.CardReaderHubEvents.NavigateToPurchaseCardReaderFlow).url
-        ).isEqualTo(AppUrls.STRIPE_M2_PURCHASE_CARD_READER)
+        ).isEqualTo("${AppUrls.WOOCOMMERCE_PURCHASE_CARD_READER_IN_COUNTRY}$storeCountryCode")
     }
 
     @Test

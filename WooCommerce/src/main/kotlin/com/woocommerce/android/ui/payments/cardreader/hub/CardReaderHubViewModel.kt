@@ -13,14 +13,11 @@ import com.woocommerce.android.model.UiString
 import com.woocommerce.android.model.UiString.UiStringRes
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.payments.cardreader.hub.CardReaderHubViewModel.CardReaderHubViewState.ListItem
-import com.woocommerce.android.ui.payments.cardreader.hub.CardReaderHubViewModel.CardReaderHubViewState.OnboardingErrorAction
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderFlowParam
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboardingChecker
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboardingState
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboardingState.OnboardingCompleted
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboardingState.StripeAccountPendingRequirement
-import com.woocommerce.android.ui.payments.cardreader.onboarding.PluginType.STRIPE_EXTENSION_GATEWAY
-import com.woocommerce.android.ui.payments.cardreader.onboarding.PluginType.WOOCOMMERCE_PAYMENTS
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T.CARD_READER
 import com.woocommerce.android.viewmodel.MultiLiveEvent
@@ -64,19 +61,7 @@ class CardReaderHubViewModel @Inject constructor(
         val storeCountryCode = wooStore.getStoreCountryCode(selectedSite.get()) ?: null.also {
             WooLog.e(CARD_READER, "Store's country code not found.")
         }
-        if (storeCountryCode == "CA") {
-            "${AppUrls.WOOCOMMERCE_PURCHASE_CARD_READER_IN_COUNTRY}$storeCountryCode"
-        } else {
-            val preferredPlugin = appPrefsWrapper.getCardReaderPreferredPlugin(
-                selectedSite.get().id,
-                selectedSite.get().siteId,
-                selectedSite.get().selfHostedSiteId
-            )
-            when (preferredPlugin) {
-                STRIPE_EXTENSION_GATEWAY -> AppUrls.STRIPE_M2_PURCHASE_CARD_READER
-                WOOCOMMERCE_PAYMENTS, null -> AppUrls.WOOCOMMERCE_M2_PURCHASE_CARD_READER
-            }
-        }
+        "${AppUrls.WOOCOMMERCE_PURCHASE_CARD_READER_IN_COUNTRY}$storeCountryCode"
     }
 
     private fun createHubListWhenSinglePluginInstalled(isOnboardingComplete: Boolean) =
@@ -124,7 +109,7 @@ class CardReaderHubViewModel @Inject constructor(
 
     private fun createOnboardingWithPendingRequirementsState(state: CardReaderOnboardingState) =
         createOnboardingCompleteState().copy(
-            onboardingErrorAction = OnboardingErrorAction(
+            onboardingErrorAction = CardReaderHubViewState.OnboardingErrorAction(
                 text = UiStringRes(R.string.card_reader_onboarding_with_pending_requirements, containsHtml = true),
                 onClick = { onOnboardingErrorClicked(state) }
             )
@@ -133,7 +118,7 @@ class CardReaderHubViewModel @Inject constructor(
     private fun createOnboardingFailedState(state: CardReaderOnboardingState) = CardReaderHubViewState(
         rows = createHubListWhenSinglePluginInstalled(isOnboardingComplete = false),
         isLoading = false,
-        onboardingErrorAction = OnboardingErrorAction(
+        onboardingErrorAction = CardReaderHubViewState.OnboardingErrorAction(
             text = UiStringRes(R.string.card_reader_onboarding_not_finished, containsHtml = true),
             onClick = { onOnboardingErrorClicked(state) }
         )
