@@ -1,7 +1,6 @@
 package com.woocommerce.android
 
-import com.woocommerce.android.support.HelpActivity.Origin.LOGIN_EMAIL
-import com.woocommerce.android.support.HelpActivity.Origin.LOGIN_SITE_ADDRESS
+import com.woocommerce.android.support.HelpActivity.Origin.*
 
 object AppUrls {
     const val APP_HELP_CENTER = "https://docs.woocommerce.com/document/android/"
@@ -73,9 +72,10 @@ object AppUrls {
 
     const val NEW_TO_WOO_DOC = "https://woocommerce.com/document/woocommerce-features"
 
-    private const val LOGIN_HELP_CENTER_MAIN_URL = "https://woocommerce.com/document/android-ios-apps-login-help-faq/"
+    private const val LOGIN_HELP_CENTER = "https://woocommerce.com/document/android-ios-apps-login-help-faq/"
     val LOGIN_HELP_CENTER_URLS = mapOf(
-        LOGIN_SITE_ADDRESS to "$LOGIN_HELP_CENTER_MAIN_URL#enter-store-address",
-        LOGIN_EMAIL to "$LOGIN_HELP_CENTER_MAIN_URL#enter-wordpress-com-email-address-login-using-store-address-flow"
+        LOGIN_SITE_ADDRESS to "$LOGIN_HELP_CENTER#enter-store-address",
+        LOGIN_EMAIL to "$LOGIN_HELP_CENTER#enter-wordpress-com-email-address-login-using-store-address-flow",
+        LOGIN_USERNAME_PASSWORD to "$LOGIN_HELP_CENTER#enter-store-credentials"
     )
 }
