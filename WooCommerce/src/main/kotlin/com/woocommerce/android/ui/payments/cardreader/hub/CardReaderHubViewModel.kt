@@ -404,7 +404,7 @@ class CardReaderHubViewModel @Inject constructor(
     }
 
     enum class CashOnDeliverySource(source: String) {
-        ONBOARDING("onboarding"),
-        PAYMENTS_HUB("payments_hub")
+        ONBOARDING(source = "onboarding"),
+        PAYMENTS_HUB(source = "payments_hub")
     }
 }

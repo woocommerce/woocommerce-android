@@ -29,7 +29,6 @@ import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_CASH_ON_
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.cardreader.connection.event.SoftwareUpdateStatus.Failed
 import com.woocommerce.android.tools.SelectedSite
-import com.woocommerce.android.ui.payments.cardreader.hub.CardReaderHubViewModel
 import com.woocommerce.android.ui.payments.cardreader.hub.CardReaderHubViewModel.CashOnDeliverySource.ONBOARDING
 import com.woocommerce.android.ui.payments.cardreader.hub.CardReaderHubViewModel.CashOnDeliverySource.PAYMENTS_HUB
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboardingState
