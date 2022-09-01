@@ -21,6 +21,7 @@ import com.woocommerce.android.ui.payments.cardreader.hub.CardReaderHubViewModel
 import com.woocommerce.android.ui.payments.cardreader.hub.CardReaderHubViewModel.CardReaderHubViewState.ListItem.NonToggleableListItem
 import com.woocommerce.android.ui.payments.cardreader.hub.CardReaderHubViewModel.CardReaderHubViewState.ListItem.ToggleableListItem
 import com.woocommerce.android.ui.payments.cardreader.hub.CardReaderHubViewModel.CardReaderHubViewState.OnboardingErrorAction
+import com.woocommerce.android.ui.payments.cardreader.hub.CardReaderHubViewModel.CashOnDeliverySource.PAYMENTS_HUB
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderFlowParam
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboardingChecker
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboardingState
@@ -69,6 +70,7 @@ class CardReaderHubViewModel @Inject constructor(
     )
 
     private fun onLearnMoreClicked() {
+        cardReaderTracker.trackCashOnDeliveryLearnMoreTapped()
         triggerEvent(
             CardReaderHubEvents.OpenGenericWebView(
                 learnMoreUrlProvider.provideLearnMoreUrlFor(
@@ -271,20 +273,36 @@ class CardReaderHubViewModel @Inject constructor(
     }
 
     private fun onCashOnDeliveryToggled(isChecked: Boolean) {
+        cardReaderTracker.trackCashOnDeliveryToggled(isChecked)
         launch {
             updateCashOnDeliveryOptionState(
                 cashOnDeliveryState.value?.copy(isEnabled = false, isChecked = isChecked)!!
             )
             val result = cashOnDeliverySettingsRepository.toggleCashOnDeliveryOption(isChecked)
             if (!result.isError) {
-                cardReaderTracker.trackCashOnDeliveryEnabledSuccess()
+                if (isChecked) {
+                    cardReaderTracker.trackCashOnDeliveryEnabledSuccess(
+                        PAYMENTS_HUB
+                    )
+                } else {
+                    cardReaderTracker.trackCashOnDeliveryDisabledSuccess(
+                        PAYMENTS_HUB
+                    )
+                }
                 updateCashOnDeliveryOptionState(
                     cashOnDeliveryState.value?.copy(isEnabled = true, isChecked = isChecked)!!
                 )
             } else {
-                cardReaderTracker.trackCashOnDeliveryEnabledFailure(
-                    result.error.message
-                )
+                if (isChecked) {
+                    cardReaderTracker.trackCashOnDeliveryEnabledFailure(
+                        PAYMENTS_HUB,
+                        result.error.message
+                    )
+                } else {
+                    cardReaderTracker.trackCashOnDeliveryDisabledFailure(
+                        PAYMENTS_HUB
+                    )
+                }
                 updateCashOnDeliveryOptionState(
                     cashOnDeliveryState.value?.copy(isEnabled = true, isChecked = !isChecked)!!
                 )
@@ -383,5 +401,10 @@ class CardReaderHubViewModel @Inject constructor(
             val text: UiString?,
             val onClick: () -> Unit,
         )
+    }
+
+    enum class CashOnDeliverySource(source: String) {
+        ONBOARDING("onboarding"),
+        PAYMENTS_HUB("payments_hub")
     }
 }
