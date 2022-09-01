@@ -10,6 +10,7 @@ import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.withTimeoutOrNull
 import org.wordpress.android.fluxc.model.WCRevenueStatsModel
 import org.wordpress.android.fluxc.model.leaderboards.WCTopPerformerProductModel
+import org.wordpress.android.fluxc.store.NotificationStore
 import org.wordpress.android.fluxc.store.WCLeaderboardsStore
 import org.wordpress.android.fluxc.store.WCOrderStore
 import org.wordpress.android.fluxc.store.WCStatsStore
@@ -28,6 +29,7 @@ class StatsRepository @Inject constructor(
     private val wcOrderStore: WCOrderStore,
     private val wcLeaderboardsStore: WCLeaderboardsStore,
     private val wooCommerceStore: WooCommerceStore,
+    private val notificationStore: NotificationStore
 ) {
     companion object {
         private val TAG = StatsRepository::class.java
@@ -92,10 +94,12 @@ class StatsRepository @Inject constructor(
                 quantity = quantity,
                 addProductsPath = supportsProductOnlyLeaderboardEndpoint()
             )
-            false -> wcLeaderboardsStore.fetchCachedProductLeaderboards(
-                site = selectedSite.get(),
-                unit = granularity
-            )
+            false ->
+                // TODO: Check if data has been invalidated, is so fetch data from API
+                wcLeaderboardsStore.fetchCachedProductLeaderboards(
+                    site = selectedSite.get(),
+                    unit = granularity
+                )
         }.let { result ->
             val model = result.model
             if (result.isError || model == null) {

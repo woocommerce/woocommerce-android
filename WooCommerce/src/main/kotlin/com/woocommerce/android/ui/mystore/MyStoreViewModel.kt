@@ -93,13 +93,12 @@ class MyStoreViewModel @Inject constructor(
     private var _hasOrders = MutableLiveData<OrderState>()
     val hasOrders: LiveData<OrderState> = _hasOrders
 
-    private val refreshTrigger = MutableSharedFlow<Unit>(extraBufferCapacity = 1)
+    private val forceRefreshTrigger = MutableSharedFlow<Boolean>(extraBufferCapacity = 1)
 
     private val _activeStatsGranularity = savedState.getStateFlow(viewModelScope, getSelectedStatsGranularityIfAny())
     val activeStatsGranularity = _activeStatsGranularity.asLiveData()
 
     @VisibleForTesting val refreshStoreStats = BooleanArray(StatsGranularity.values().size) { true }
-    @VisibleForTesting val refreshTopPerformerStats = BooleanArray(StatsGranularity.values().size) { true }
 
     private var jetpackMonitoringJob: Job? = null
 
@@ -109,13 +108,13 @@ class MyStoreViewModel @Inject constructor(
         viewModelScope.launch {
             combine(
                 _activeStatsGranularity,
-                refreshTrigger.onStart { emit(Unit) }
-            ) { granularity, _ ->
-                granularity
-            }.collectLatest { granularity ->
+                forceRefreshTrigger.onStart { emit(false) }
+            ) { granularity, forceRefresh ->
+                granularity to forceRefresh
+            }.collectLatest { (granularity, forceRefresh) ->
                 coroutineScope {
                     launch { loadStoreStats(granularity) }
-                    launch { loadTopPerformersStats(granularity) }
+                    launch { loadTopPerformersStats(granularity, forceRefresh) }
                 }
             }
         }
@@ -130,9 +129,7 @@ class MyStoreViewModel @Inject constructor(
     @Subscribe(threadMode = ThreadMode.MAIN)
     fun onEventMainThread(event: ConnectionChangeEvent) {
         if (event.isConnected) {
-            if (refreshStoreStats.any { it } || refreshTopPerformerStats.any { it }) {
-                refreshTrigger.tryEmit(Unit)
-            }
+            forceRefreshTrigger.tryEmit(true)
         }
     }
 
@@ -147,8 +144,12 @@ class MyStoreViewModel @Inject constructor(
     fun onSwipeToRefresh() {
         usageTracksEventEmitter.interacted()
         analyticsTrackerWrapper.track(AnalyticsEvent.DASHBOARD_PULLED_TO_REFRESH)
-        resetForceRefresh()
-        refreshTrigger.tryEmit(Unit)
+        forceRefreshTrigger.tryEmit(true)
+
+        // TODO remove refreshStoreStats
+        refreshStoreStats.forEachIndexed { index, _ ->
+            refreshStoreStats[index] = true
+        }
     }
 
     fun getSelectedSiteName(): String =
@@ -236,20 +237,15 @@ class MyStoreViewModel @Inject constructor(
         }
     }
 
-    private suspend fun loadTopPerformersStats(granularity: StatsGranularity) {
+    private suspend fun loadTopPerformersStats(granularity: StatsGranularity, forceRefresh: Boolean) {
         if (!networkStatus.isConnected()) {
-            refreshTopPerformerStats[granularity.ordinal] = true
             _topPerformersState.value = TopPerformersViewState.Content(emptyList(), granularity)
             return
         }
 
-        val forceRefresh = refreshTopPerformerStats[granularity.ordinal]
-        if (forceRefresh) {
-            refreshTopPerformerStats[granularity.ordinal] = false
-        }
-
         _topPerformersState.value = TopPerformersViewState.Loading
-        getTopPerformers(forceRefresh, granularity, NUM_TOP_PERFORMERS)
+
+        getTopPerformers(granularity, NUM_TOP_PERFORMERS, forceRefresh)
             .collect {
                 when (it) {
                     is TopPerformersSuccess -> {
@@ -267,15 +263,6 @@ class MyStoreViewModel @Inject constructor(
                 }
                 myStoreTransactionLauncher.onTopPerformersFetched()
             }
-    }
-
-    private fun resetForceRefresh() {
-        refreshTopPerformerStats.forEachIndexed { index, _ ->
-            refreshTopPerformerStats[index] = true
-        }
-        refreshStoreStats.forEachIndexed { index, _ ->
-            refreshStoreStats[index] = true
-        }
     }
 
     private fun onTopPerformerSelected(productId: Long) {
