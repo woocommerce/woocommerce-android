@@ -169,7 +169,7 @@ class OrderDetailViewModel @Inject constructor(
                 fetchOrder(showSkeleton = false)
             } ?: fetchOrder(showSkeleton = true)
 
-            if (hasOrder()) validateShippingAddress()
+            validateShippingAddress()
         }
     }
 
@@ -579,7 +579,7 @@ class OrderDetailViewModel @Inject constructor(
     }
 
     private fun validateShippingAddress() {
-        if (order.shippingAddress == Address.EMPTY) return
+        if (hasOrder().not() || order.shippingAddress == Address.EMPTY) return
         launch {
             addressValidator.validate(order.id, order.shippingAddress)
         }
