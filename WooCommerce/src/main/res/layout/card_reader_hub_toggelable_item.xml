@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@color/color_surface"
+    android:foreground="?attr/selectableItemBackground">
+
+    <androidx.appcompat.widget.AppCompatImageView
+        android:id="@+id/cardReaderMenuIcon"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="0.5dp"
+        android:padding="@dimen/major_85"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/ic_manage_card_reader" />
+
+        <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/cardReaderHubListItemLabelTv"
+            style="@style/Widget.Woo.Settings.OptionValue"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingStart="@dimen/major_100"
+            android:paddingEnd="@dimen/major_100"
+            app:layout_constraintStart_toEndOf="@id/cardReaderMenuIcon"
+            app:layout_constraintTop_toTopOf="parent"
+            android:textColor="@color/color_on_surface"
+            tools:text="Manage card reader" />
+
+        <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/cardReaderHubListItemDescriptionTv"
+            android:layout_width="@dimen/minor_00"
+            android:layout_height="wrap_content"
+            android:paddingStart="@dimen/major_100"
+            android:paddingEnd="@dimen/major_100"
+            android:paddingBottom="@dimen/minor_100"
+            android:background="?attr/selectableItemBackground"
+            app:layout_constraintTop_toBottomOf="@id/cardReaderHubListItemLabelTv"
+            app:layout_constraintStart_toStartOf="@id/cardReaderHubListItemLabelTv"
+            app:layout_constraintEnd_toStartOf="@id/cardReaderHubSwitch"
+            android:textColor="@color/color_surface_variant"
+            tools:text="Pay in Person lets you accept card or cash payments on collection or delivery" />
+
+    <androidx.appcompat.widget.SwitchCompat
+        android:id="@+id/cardReaderHubSwitch"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:paddingStart="@dimen/major_100"
+        android:paddingEnd="@dimen/major_100"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        android:textColor="@color/color_on_surface"
+        />
+</androidx.constraintlayout.widget.ConstraintLayout>
