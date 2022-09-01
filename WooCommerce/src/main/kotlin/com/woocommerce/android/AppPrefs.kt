@@ -1021,7 +1021,4 @@ object AppPrefs {
         CARD_READER_ONBOARDING_PENDING,
         CARD_READER_ONBOARDING_NOT_COMPLETED,
     }
-
-    const val LIGHT_MODE_ID = 0
-    const val DARK_MODE_ID = 1
 }
