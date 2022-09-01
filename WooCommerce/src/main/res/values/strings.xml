@@ -974,6 +974,8 @@
         -->
     <string name="payments_hub_title">Payments</string>
     <string name="card_reader_manage_card_reader">Manage Card Reader</string>
+    <string name="card_reader_enable_pay_in_person">Pay in Person</string>
+    <string name="card_reader_enable_pay_in_person_description">Pay in Person lets you accept card or cash payments on collection or delivery</string>
     <string name="card_reader_purchase_card_reader">Order Card Reader</string>
     <string name="card_reader_manage_payment_provider">Change Payment Provider</string>
     <string name="card_reader_bbpos_manual_card_reader" translatable="false">BBPOS Chipper™ 2X BT</string>
@@ -1023,6 +1025,8 @@
     <string name="card_reader_payment_fetch_order_loading_payment_state">Refreshing order</string>
 
     <string name="card_reader_collect_payment">Collect payment</string>
+    <string name="card_reader_payment_options_header">PAYMENT OPTIONS</string>
+    <string name="card_reader_card_readers_header">CARD READERS</string>
     <string name="card_reader_payment_collect_payment_header" translatable="false">@string/card_reader_collect_payment</string>
     <string name="card_reader_payment_processing_payment_header" translatable="false">@string/card_reader_collect_payment</string>
     <string name="card_reader_payment_capturing_payment_header" translatable="false">@string/card_reader_collect_payment</string>

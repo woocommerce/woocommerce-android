@@ -12,8 +12,12 @@ import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.model.UiString
 import com.woocommerce.android.model.UiString.UiStringRes
 import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.ui.payments.cardreader.CardReaderTracker
+import com.woocommerce.android.ui.payments.cardreader.CashOnDeliverySettingsRepository
 import com.woocommerce.android.ui.payments.cardreader.InPersonPaymentsCanadaFeatureFlag
-import com.woocommerce.android.ui.payments.cardreader.hub.CardReaderHubViewModel.CardReaderHubViewState.ListItem
+import com.woocommerce.android.ui.payments.cardreader.hub.CardReaderHubViewModel.CardReaderHubEvents.ShowToastString
+import com.woocommerce.android.ui.payments.cardreader.hub.CardReaderHubViewModel.CardReaderHubViewState.ListItem.NonToggleableListItem
+import com.woocommerce.android.ui.payments.cardreader.hub.CardReaderHubViewModel.CardReaderHubViewState.ListItem.ToggleableListItem
 import com.woocommerce.android.ui.payments.cardreader.hub.CardReaderHubViewModel.CardReaderHubViewState.OnboardingErrorAction
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderFlowParam
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboardingChecker
@@ -41,18 +45,50 @@ class CardReaderHubViewModel @Inject constructor(
     private val analyticsTrackerWrapper: AnalyticsTrackerWrapper,
     private val wooStore: WooCommerceStore,
     private val cardReaderChecker: CardReaderOnboardingChecker,
+    private val cashOnDeliveryToggler: CashOnDeliverySettingsRepository,
+    private val cardReaderTracker: CardReaderTracker,
 ) : ScopedViewModel(savedState) {
     private val arguments: CardReaderHubFragmentArgs by savedState.navArgs()
 
+    private val cashOnDeliveryState = MutableLiveData(
+        ToggleableListItem(
+            icon = R.drawable.ic_gridicons_credit_card,
+            label = UiStringRes(R.string.card_reader_enable_pay_in_person),
+            description = UiStringRes(R.string.card_reader_enable_pay_in_person_description),
+            index = 2,
+            isChecked = false,
+            onToggled = { (::onCashOnDeliveryToggled)(it) }
+        )
+    )
+
     private val viewState = MutableLiveData(
         CardReaderHubViewState(
-            rows = createHubListWhenSinglePluginInstalled(isOnboardingComplete = false),
+            rows = (
+                createHubListWhenSinglePluginInstalled(
+                    isOnboardingComplete = false,
+                    cashOnDeliveryItem = cashOnDeliveryState.value!!
+                )
+                ).sortedBy {
+                it.index
+            },
             isLoading = true,
             onboardingErrorAction = null
         )
     )
 
+    private suspend fun checkAndUpdateCashOnDeliveryOptionState() {
+        val isCashOnDeliveryEnabled = cashOnDeliveryToggler.isCashOnDeliveryEnabled()
+        updateCashOnDeliveryOptionState(
+            cashOnDeliveryState.value?.copy(
+                isChecked = isCashOnDeliveryEnabled
+            )!!
+        )
+    }
+
     fun onViewVisible() {
+        launch {
+            checkAndUpdateCashOnDeliveryOptionState()
+        }
         launch {
             viewState.value = when (val state = cardReaderChecker.getOnboardingState()) {
                 is OnboardingCompleted -> createOnboardingCompleteState()
@@ -81,48 +117,86 @@ class CardReaderHubViewModel @Inject constructor(
         }
     }
 
-    private fun createHubListWhenSinglePluginInstalled(isOnboardingComplete: Boolean) =
+    private fun createHubListWhenSinglePluginInstalled(
+        isOnboardingComplete: Boolean,
+        cashOnDeliveryItem: ToggleableListItem
+    ) =
         listOf(
-            ListItem(
+            CardReaderHubViewState.ListItem.HeaderItem(
+                label = UiStringRes(R.string.card_reader_payment_options_header),
+                index = 0
+            ),
+            NonToggleableListItem(
                 icon = R.drawable.ic_gridicons_money_on_surface,
                 label = UiStringRes(R.string.card_reader_collect_payment),
+                index = 1,
                 onClick = ::onCollectPaymentClicked
             ),
-            ListItem(
+            cashOnDeliveryItem,
+            CardReaderHubViewState.ListItem.HeaderItem(
+                label = UiStringRes(R.string.card_reader_card_readers_header),
+                index = 4,
+            ),
+            NonToggleableListItem(
                 icon = R.drawable.ic_shopping_cart,
                 label = UiStringRes(R.string.card_reader_purchase_card_reader),
+                index = 5,
                 onClick = ::onPurchaseCardReaderClicked
             ),
-            ListItem(
-                icon = R.drawable.ic_card_reader_manual,
-                label = UiStringRes(R.string.settings_card_reader_manuals),
-                onClick = ::onCardReaderManualsClicked
-            ),
-            ListItem(
+            NonToggleableListItem(
                 icon = R.drawable.ic_manage_card_reader,
                 label = UiStringRes(R.string.card_reader_manage_card_reader),
                 isEnabled = isOnboardingComplete,
+                index = 6,
                 onClick = ::onManageCardReaderClicked
             ),
+            NonToggleableListItem(
+                icon = R.drawable.ic_card_reader_manual,
+                label = UiStringRes(R.string.settings_card_reader_manuals),
+                index = 7,
+                onClick = ::onCardReaderManualsClicked
+            )
         )
 
     private fun createAdditionalItemWhenMultiplePluginsInstalled() =
-        ListItem(
+        NonToggleableListItem(
             icon = R.drawable.ic_payment_provider,
             label = UiStringRes(R.string.card_reader_manage_payment_provider),
+            index = 3,
             onClick = ::onCardReaderPaymentProviderClicked
         )
 
-    private fun createOnboardingCompleteState() = CardReaderHubViewState(
-        rows = if (isCardReaderPluginExplicitlySelected()) {
-            createHubListWhenSinglePluginInstalled(isOnboardingComplete = true).toMutableList() +
-                createAdditionalItemWhenMultiplePluginsInstalled()
-        } else {
-            createHubListWhenSinglePluginInstalled(isOnboardingComplete = true)
-        },
-        isLoading = false,
-        onboardingErrorAction = null,
-    )
+    private fun updateCashOnDeliveryOptionState(toggleableListItem: ToggleableListItem) {
+        cashOnDeliveryState.value = toggleableListItem
+        viewState.value = viewState.value?.copy(
+            rows = (getNonTogggleableItems()!! + toggleableListItem).sortedBy {
+                it.index
+            }
+        )
+    }
+
+    private fun getNonTogggleableItems(): List<CardReaderHubViewState.ListItem>? {
+        return viewState.value?.rows?.filter {
+            it !is ToggleableListItem
+        }
+    }
+
+    private fun createOnboardingCompleteState(): CardReaderHubViewState {
+        return CardReaderHubViewState(
+            rows = if (isCardReaderPluginExplicitlySelected()) {
+                (
+                    createHubListWhenSinglePluginInstalled(true, cashOnDeliveryState.value!!) +
+                        createAdditionalItemWhenMultiplePluginsInstalled()
+                    ).sortedBy {
+                    it.index
+                }
+            } else {
+                createHubListWhenSinglePluginInstalled(true, cashOnDeliveryState.value!!)
+            },
+            isLoading = false,
+            onboardingErrorAction = null,
+        )
+    }
 
     private fun createOnboardingWithPendingRequirementsState(state: CardReaderOnboardingState) =
         createOnboardingCompleteState().copy(
@@ -132,14 +206,20 @@ class CardReaderHubViewModel @Inject constructor(
             )
         )
 
-    private fun createOnboardingFailedState(state: CardReaderOnboardingState) = CardReaderHubViewState(
-        rows = createHubListWhenSinglePluginInstalled(isOnboardingComplete = false),
-        isLoading = false,
-        onboardingErrorAction = OnboardingErrorAction(
-            text = UiStringRes(R.string.card_reader_onboarding_not_finished, containsHtml = true),
-            onClick = { onOnboardingErrorClicked(state) }
+    private fun createOnboardingFailedState(state: CardReaderOnboardingState): CardReaderHubViewState {
+        return CardReaderHubViewState(
+            rows = (
+                createHubListWhenSinglePluginInstalled(false, cashOnDeliveryState.value!!)
+                ).sortedBy {
+                it.index
+            },
+            isLoading = false,
+            onboardingErrorAction = OnboardingErrorAction(
+                text = UiStringRes(R.string.card_reader_onboarding_not_finished, containsHtml = true),
+                onClick = { onOnboardingErrorClicked(state) }
+            )
         )
-    )
+    }
 
     val viewStateData: LiveData<CardReaderHubViewState> = viewState
 
@@ -171,6 +251,35 @@ class CardReaderHubViewModel @Inject constructor(
                 CardReaderOnboardingState.ChoosePaymentGatewayProvider
             )
         )
+    }
+
+    private fun onCashOnDeliveryToggled(isChecked: Boolean) {
+        launch {
+            updateCashOnDeliveryOptionState(
+                cashOnDeliveryState.value?.copy(isEnabled = false, isChecked = isChecked)!!
+            )
+            val result = cashOnDeliveryToggler.toggleCashOnDeliveryOption(isChecked)
+            if (!result.isError) {
+                cardReaderTracker.trackCashOnDeliveryEnabledSuccess()
+                updateCashOnDeliveryOptionState(
+                    cashOnDeliveryState.value?.copy(isEnabled = true, isChecked = isChecked)!!
+                )
+            } else {
+                cardReaderTracker.trackCashOnDeliveryEnabledFailure(
+                    result.error.message
+                )
+                updateCashOnDeliveryOptionState(
+                    cashOnDeliveryState.value?.copy(isEnabled = true, isChecked = !isChecked)!!
+                )
+                if (result.error.message.isNullOrEmpty()) {
+                    triggerEvent(ShowToastString("Something went wrong, Please try again later."))
+                } else {
+                    triggerEvent(
+                        ShowToastString(result.error.message!!)
+                    )
+                }
+            }
+        }
     }
 
     private fun onOnboardingErrorClicked(state: CardReaderOnboardingState) {
@@ -207,6 +316,8 @@ class CardReaderHubViewModel @Inject constructor(
         data class NavigateToCardReaderOnboardingScreen(
             val onboardingState: CardReaderOnboardingState
         ) : CardReaderHubEvents()
+
+        data class ShowToastString(val message: String) : CardReaderHubEvents()
     }
 
     data class CardReaderHubViewState(
@@ -214,12 +325,40 @@ class CardReaderHubViewModel @Inject constructor(
         val isLoading: Boolean,
         val onboardingErrorAction: OnboardingErrorAction?,
     ) {
-        data class ListItem(
-            @DrawableRes val icon: Int,
-            val label: UiString,
-            val isEnabled: Boolean = true,
-            val onClick: () -> Unit
-        )
+        sealed class ListItem {
+            abstract val label: UiString
+            abstract val icon: Int?
+            abstract val onClick: (() -> Unit)?
+            abstract val index: Int
+            abstract var isEnabled: Boolean
+
+            data class NonToggleableListItem(
+                @DrawableRes override val icon: Int,
+                override val label: UiString,
+                override var isEnabled: Boolean = true,
+                override val index: Int,
+                override val onClick: () -> Unit
+            ) : ListItem()
+
+            data class ToggleableListItem(
+                @DrawableRes override val icon: Int,
+                override val label: UiString,
+                val description: UiString,
+                override var isEnabled: Boolean = true,
+                val isChecked: Boolean,
+                override val index: Int,
+                override val onClick: (() -> Unit)? = null,
+                val onToggled: (Boolean) -> Unit
+            ) : ListItem()
+
+            data class HeaderItem(
+                @DrawableRes override val icon: Int? = null,
+                override val label: UiString,
+                override val index: Int,
+                override var isEnabled: Boolean = false,
+                override val onClick: (() -> Unit)? = null
+            ) : ListItem()
+        }
 
         data class OnboardingErrorAction(
             val text: UiString?,
