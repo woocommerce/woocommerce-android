@@ -1,6 +1,6 @@
 package com.woocommerce.android
 
-import com.woocommerce.android.ui.login.UnifiedLoginTracker.Step.ENTER_SITE_ADDRESS
+import com.woocommerce.android.support.HelpActivity.Origin.LOGIN_SITE_ADDRESS
 
 object AppUrls {
     const val APP_HELP_CENTER = "https://docs.woocommerce.com/document/android/"
@@ -74,6 +74,6 @@ object AppUrls {
 
     const val LOGIN_HELP_CENTER_MAIN_URL = "https://woocommerce.com/document/android-ios-apps-login-help-faq/"
     val LOGIN_HELP_CENTER_URLS = mapOf(
-        ENTER_SITE_ADDRESS to "https://woocommerce.com/document/android-ios-apps-login-help-faq/#enter-store-address"
+        LOGIN_SITE_ADDRESS to "https://woocommerce.com/document/android-ios-apps-login-help-faq/#enter-store-address"
     )
 }

@@ -65,7 +65,7 @@ class HelpActivity : AppCompatActivity() {
         binding.myTicketsContainer.setOnClickListener { showZendeskTickets() }
         binding.faqContainer.setOnClickListener {
             if (loginStepFromExtras != null && loginFlowFromExtras != null) {
-                showLoginHelpCenter(loginStepFromExtras!!, loginFlowFromExtras!!)
+                showLoginHelpCenter(originFromExtras, loginStepFromExtras!!, loginFlowFromExtras!!)
             } else {
                 showZendeskFaq()
             }
@@ -183,8 +183,8 @@ class HelpActivity : AppCompatActivity() {
         zendeskHelper.showAllTickets(this, originFromExtras, selectedSiteOrNull(), extraTagsFromExtras)
     }
 
-    private fun showLoginHelpCenter(loginStepFromExtras: Step, loginFlowFromExtras: Flow) {
-        val helpCenterUrl = AppUrls.LOGIN_HELP_CENTER_URLS[loginStepFromExtras] ?: AppUrls.LOGIN_HELP_CENTER_MAIN_URL
+    private fun showLoginHelpCenter(originFromExtras: Origin, loginStepFromExtras: Step, loginFlowFromExtras: Flow) {
+        val helpCenterUrl = AppUrls.LOGIN_HELP_CENTER_URLS[originFromExtras] ?: AppUrls.LOGIN_HELP_CENTER_MAIN_URL
         ChromeCustomTabUtils.launchUrl(this, helpCenterUrl)
 
         AnalyticsTracker.track(
