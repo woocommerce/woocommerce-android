@@ -381,6 +381,10 @@ class AnalyticsTracker private constructor(private val context: Context) {
 
         const val SOURCE_PRODUCT_DETAIL = "product_detail"
 
+        // -- Cash on Delivery
+        const val KEY_IS_ENABLED = "is_enabled"
+        const val KEY_CASH_ON_DELIVERY_SOURCE = "source"
+
         // -- Experiments
         const val KEY_EXPERIMENT_VARIANT = "experiment_variant"
 
