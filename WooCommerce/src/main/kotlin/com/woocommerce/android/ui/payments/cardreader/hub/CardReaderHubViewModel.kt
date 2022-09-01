@@ -49,7 +49,7 @@ class CardReaderHubViewModel @Inject constructor(
     private val arguments: CardReaderHubFragmentArgs by savedState.navArgs()
 
     private val cashOnDeliveryState = MutableLiveData(
-        CardReaderHubViewState.ListItem.ToggleableListItem(
+        ToggleableListItem(
             icon = R.drawable.ic_gridicons_credit_card,
             label = UiStringRes(R.string.card_reader_enable_pay_in_person),
             description = UiStringRes(
