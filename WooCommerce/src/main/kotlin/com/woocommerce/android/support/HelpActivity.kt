@@ -17,8 +17,6 @@ import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_SOURCE_S
 import com.woocommerce.android.databinding.ActivityHelpBinding
 import com.woocommerce.android.extensions.show
 import com.woocommerce.android.tools.SelectedSite
-import com.woocommerce.android.ui.login.UnifiedLoginTracker.Flow
-import com.woocommerce.android.ui.login.UnifiedLoginTracker.Step
 import com.woocommerce.android.ui.login.localnotifications.LoginNotificationScheduler
 import com.woocommerce.android.util.ChromeCustomTabUtils
 import com.woocommerce.android.util.PackageUtils
@@ -47,9 +45,6 @@ class HelpActivity : AppCompatActivity() {
         intent.extras?.getStringArrayList(EXTRA_TAGS_KEY)
     }
 
-    private val loginStepFromExtras by lazy { intent.extras?.get(LOGIN_STEP_KEY) as Step? }
-    private val loginFlowFromExtras by lazy { intent.extras?.get(LOGIN_FLOW_KEY) as Flow? }
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -64,8 +59,11 @@ class HelpActivity : AppCompatActivity() {
         binding.identityContainer.setOnClickListener { showIdentityDialog(TicketType.General) }
         binding.myTicketsContainer.setOnClickListener { showZendeskTickets() }
         binding.faqContainer.setOnClickListener {
-            if (loginStepFromExtras != null && loginFlowFromExtras != null) {
-                showLoginHelpCenter(originFromExtras, loginStepFromExtras!!, loginFlowFromExtras!!)
+            val step = intent.extras?.getString(LOGIN_STEP_KEY)
+            val flow = intent.extras?.getString(LOGIN_FLOW_KEY)
+
+            if (step != null && flow != null) {
+                showLoginHelpCenter(originFromExtras, step, flow)
             } else {
                 showZendeskFaq()
             }
@@ -183,7 +181,7 @@ class HelpActivity : AppCompatActivity() {
         zendeskHelper.showAllTickets(this, originFromExtras, selectedSiteOrNull(), extraTagsFromExtras)
     }
 
-    private fun showLoginHelpCenter(originFromExtras: Origin, loginStepFromExtras: Step, loginFlowFromExtras: Flow) {
+    private fun showLoginHelpCenter(originFromExtras: Origin, loginStepFromExtras: String, loginFlowFromExtras: String) {
         val helpCenterUrl = AppUrls.LOGIN_HELP_CENTER_URLS[originFromExtras] ?: AppUrls.LOGIN_HELP_CENTER_MAIN_URL
         ChromeCustomTabUtils.launchUrl(this, helpCenterUrl)
 
@@ -255,8 +253,8 @@ class HelpActivity : AppCompatActivity() {
             context: Context,
             origin: Origin,
             extraSupportTags: List<String>?,
-            step: Step? = null,
-            flow: Flow? = null
+            step: String? = null,
+            flow: String? = null
         ): Intent {
             val intent = Intent(context, HelpActivity::class.java)
             intent.putExtra(ORIGIN_KEY, origin)

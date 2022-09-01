@@ -645,7 +645,7 @@ class LoginActivity :
 
     private fun viewHelpAndSupport(origin: Origin, flow: Flow? = null, step: Step? = null) {
         val extraSupportTags = arrayListOf(ZendeskExtraTags.connectingJetpack)
-        startActivity(HelpActivity.createIntent(this, origin, extraSupportTags, step, flow))
+        startActivity(HelpActivity.createIntent(this, origin, extraSupportTags, step?.value, flow?.value))
     }
 
     override fun helpSiteAddress(url: String?) {
