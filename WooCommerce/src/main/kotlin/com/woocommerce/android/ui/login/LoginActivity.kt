@@ -652,7 +652,7 @@ class LoginActivity :
     }
 
     override fun helpSiteAddress(url: String?) {
-        viewHelpAndSupport(origin = Origin.LOGIN_SITE_ADDRESS)
+        viewHelpAndSupport(Origin.LOGIN_SITE_ADDRESS)
     }
 
     override fun helpFindingSiteAddress(username: String?, siteStore: SiteStore?) {
