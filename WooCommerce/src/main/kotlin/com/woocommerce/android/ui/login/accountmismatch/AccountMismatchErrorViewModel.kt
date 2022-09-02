@@ -34,6 +34,10 @@ class AccountMismatchErrorViewModel @Inject constructor(
     private val resourceProvider: ResourceProvider,
     private val userAgent: UserAgent
 ) : ScopedViewModel(savedStateHandle) {
+    companion object {
+        private const val JETPACK_PLANS_URL = "wordpress.com/jetpack/connect/plans"
+    }
+
     private val navArgs: AccountMismatchErrorFragmentArgs by savedStateHandle.navArgs()
     private val userAccount = accountRepository.getUserAccount()
     private val siteUrl = appPrefsWrapper.getLoginSiteAddress()!!
@@ -91,7 +95,7 @@ class AccountMismatchErrorViewModel @Inject constructor(
 
     private fun prepareJetpackConnectionState(connectionUrl: String) = ViewState.JetpackWebViewState(
         connectionUrl = connectionUrl,
-        siteUrl = siteUrl,
+        successConnectionUrls = listOf(siteUrl, JETPACK_PLANS_URL),
         userAgent = userAgent.userAgent,
         onDismiss = {
             step.value = Step.Idle
@@ -163,7 +167,7 @@ class AccountMismatchErrorViewModel @Inject constructor(
 
         data class JetpackWebViewState(
             val connectionUrl: String,
-            val siteUrl: String,
+            val successConnectionUrls: List<String>,
             val userAgent: String,
             val onDismiss: () -> Unit,
             val onConnected: () -> Unit
