@@ -15,7 +15,8 @@ enum class FeatureFlag {
     WC_SHIPPING_BANNER,
     UNIFIED_ORDER_EDITING,
     ORDER_CREATION_CUSTOMER_SEARCH,
-    PRE_LOGIN_NOTIFICATIONS;
+    PRE_LOGIN_NOTIFICATIONS,
+    LOGIN_JETPACK_CONNECTION;
 
     fun isEnabled(context: Context? = null): Boolean {
         return when (this) {
@@ -30,7 +31,8 @@ enum class FeatureFlag {
             ANALYTICS_HUB,
             MORE_MENU_INBOX,
             WC_SHIPPING_BANNER,
-            PRE_LOGIN_NOTIFICATIONS -> PackageUtils.isDebugBuild()
+            PRE_LOGIN_NOTIFICATIONS,
+            LOGIN_JETPACK_CONNECTION-> PackageUtils.isDebugBuild()
         }
     }
 }
