@@ -167,10 +167,7 @@ class BannerDisplayEligibilityCheckerTest : BaseUnitTest() {
             )
         ).thenReturn(0L)
 
-        val canShowBanner = bannerDisplayEligibilityChecker.canShowCardReaderUpsellBanner(
-            0L,
-            KEY_BANNER_PAYMENTS
-        )
+        val canShowBanner = bannerDisplayEligibilityChecker.canShowCardReaderUpsellBanner(0L)
 
         assertThat(canShowBanner).isTrue
     }
@@ -185,10 +182,7 @@ class BannerDisplayEligibilityCheckerTest : BaseUnitTest() {
             )
         ).thenReturn(true)
 
-        val canShowBanner = bannerDisplayEligibilityChecker.canShowCardReaderUpsellBanner(
-            0L,
-            KEY_BANNER_PAYMENTS
-        )
+        val canShowBanner = bannerDisplayEligibilityChecker.canShowCardReaderUpsellBanner(0L)
 
         assertThat(canShowBanner).isFalse
     }
@@ -213,10 +207,7 @@ class BannerDisplayEligibilityCheckerTest : BaseUnitTest() {
             )
         ).thenReturn(lastDialogDismissedInMillis)
 
-        val canShowBanner = bannerDisplayEligibilityChecker.canShowCardReaderUpsellBanner(
-            currentTimeInMillis,
-            KEY_BANNER_PAYMENTS
-        )
+        val canShowBanner = bannerDisplayEligibilityChecker.canShowCardReaderUpsellBanner(currentTimeInMillis)
 
         assertThat(canShowBanner).isFalse
     }
@@ -241,10 +232,7 @@ class BannerDisplayEligibilityCheckerTest : BaseUnitTest() {
             )
         ).thenReturn(lastDialogDismissedInMillis)
 
-        val canShowBanner = bannerDisplayEligibilityChecker.canShowCardReaderUpsellBanner(
-            currentTimeInMillis,
-            KEY_BANNER_PAYMENTS
-        )
+        val canShowBanner = bannerDisplayEligibilityChecker.canShowCardReaderUpsellBanner(currentTimeInMillis)
 
         assertThat(canShowBanner).isTrue
     }
@@ -367,10 +355,7 @@ class BannerDisplayEligibilityCheckerTest : BaseUnitTest() {
             )
         ).thenReturn(12345L)
 
-        bannerDisplayEligibilityChecker.canShowCardReaderUpsellBanner(
-            0L,
-            KEY_BANNER_PAYMENTS
-        )
+        bannerDisplayEligibilityChecker.canShowCardReaderUpsellBanner(0L)
 
         // Then
         verify(analyticsTrackerWrapper, never()).track(
@@ -383,54 +368,15 @@ class BannerDisplayEligibilityCheckerTest : BaseUnitTest() {
     }
 
     @Test
-    fun `given upsell banner from payments, when banner is shown, then track proper event`() {
+    fun `given upsell banner from order list, when shouldTrackEvent is false, then do not track event`() {
         // WHEN
-        bannerDisplayEligibilityChecker.canShowCardReaderUpsellBanner(
-            0L,
-            KEY_BANNER_PAYMENTS
-        )
+        bannerDisplayEligibilityChecker.canShowCardReaderUpsellBanner(0L)
 
         // Then
-        verify(analyticsTrackerWrapper).track(
-            AnalyticsEvent.FEATURE_CARD_SHOWN,
-            mapOf(
-                AnalyticsTracker.KEY_BANNER_SOURCE to KEY_BANNER_PAYMENTS,
-                AnalyticsTracker.KEY_BANNER_CAMPAIGN_NAME to AnalyticsTracker.KEY_BANNER_UPSELL_CARD_READERS
-            )
-        )
-    }
-
-    @Test
-    fun `given upsell banner from order list, when banner is shown, then track proper event`() {
-        // WHEN
-        bannerDisplayEligibilityChecker.canShowCardReaderUpsellBanner(
-            0L,
-            KEY_BANNER_ORDER_LIST
-        )
-
-        // Then
-        verify(analyticsTrackerWrapper).track(
+        verify(analyticsTrackerWrapper, never()).track(
             AnalyticsEvent.FEATURE_CARD_SHOWN,
             mapOf(
                 AnalyticsTracker.KEY_BANNER_SOURCE to KEY_BANNER_ORDER_LIST,
-                AnalyticsTracker.KEY_BANNER_CAMPAIGN_NAME to AnalyticsTracker.KEY_BANNER_UPSELL_CARD_READERS
-            )
-        )
-    }
-
-    @Test
-    fun `given upsell banner from settings, when banner is shown, then track proper event`() {
-        // WHEN
-        bannerDisplayEligibilityChecker.canShowCardReaderUpsellBanner(
-            0L,
-            KEY_BANNER_SETTINGS
-        )
-
-        // Then
-        verify(analyticsTrackerWrapper).track(
-            AnalyticsEvent.FEATURE_CARD_SHOWN,
-            mapOf(
-                AnalyticsTracker.KEY_BANNER_SOURCE to KEY_BANNER_SETTINGS,
                 AnalyticsTracker.KEY_BANNER_CAMPAIGN_NAME to AnalyticsTracker.KEY_BANNER_UPSELL_CARD_READERS
             )
         )

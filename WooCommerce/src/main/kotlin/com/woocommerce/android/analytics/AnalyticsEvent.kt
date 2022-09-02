@@ -198,6 +198,7 @@ enum class AnalyticsEvent(val siteless: Boolean = false) {
     ORDER_DETAIL_CREATE_SHIPPING_LABEL_BUTTON_TAPPED,
     ORDER_DETAIL_WAITING_TIME_LOADED,
     ORDER_VIEW_CUSTOM_FIELDS_TAPPED,
+    ORDER_ADDRESS_VALIDATION_ERROR,
 
     // - Order detail editing
     ORDER_DETAIL_EDIT_FLOW_STARTED,
@@ -684,7 +685,6 @@ enum class AnalyticsEvent(val siteless: Boolean = false) {
     LOGIN_LOCAL_NOTIFICATION_DISMISSED(siteless = true),
 
     // Experiments (A/B test variants)
-    LOGIN_SITE_CREDENTIALS_EXPERIMENT,
     PROLOGUE_EXPERIMENT,
     MAGIC_LINK_SENT_SCREEN_EXPERIMENT,
     MAGIC_LINK_REQUEST_EXPERIMENT,
