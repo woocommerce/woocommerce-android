@@ -44,7 +44,7 @@ class ProductsUITest : TestBase() {
     }
 
     @Test
-    fun productListShowsAllProducts() {
+    fun this_is_an_intentional_fail() {
         val productsJSONArray = MocksReader().readAllProductsToArray()
 
         for (productJSON in productsJSONArray.iterator()) {

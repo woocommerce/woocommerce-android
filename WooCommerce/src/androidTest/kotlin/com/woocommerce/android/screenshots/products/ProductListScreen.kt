@@ -57,7 +57,7 @@ class ProductListScreen : Screen {
                 ViewMatchers.withChild(
                     Matchers.allOf(
                         ViewMatchers.withId(R.id.productStockAndStatus),
-                        ViewMatchers.withText(product.stockStatus + " • \$${product.priceDiscountedRaw}.00")
+                        ViewMatchers.withText(product.stockStatus + " hihi \$${product.priceDiscountedRaw}.00")
                     )
                 )
             )
