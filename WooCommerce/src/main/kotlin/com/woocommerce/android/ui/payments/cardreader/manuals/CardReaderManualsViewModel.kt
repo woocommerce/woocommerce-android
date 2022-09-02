@@ -20,9 +20,9 @@ class CardReaderManualsViewModel @Inject constructor(
     val manualState = when (storeCountryCode) {
         "CA" -> mutableListOf(
             ManualItem(
-                icon = R.drawable.ic_chipper_reader,
-                label = R.string.card_reader_bbpos_manual_card_reader,
-                onManualClicked = ::onBbposManualClicked
+                icon = R.drawable.ic_wisepad3_reader,
+                label = R.string.card_reader_wisepad_3_manual_card_reader,
+                onManualClicked = ::onWisePad3ManualCardReaderClicked
             )
         )
         "US" -> {
@@ -33,9 +33,9 @@ class CardReaderManualsViewModel @Inject constructor(
                     onManualClicked = ::onM2ManualClicked
                 ),
                 ManualItem(
-                    icon = R.drawable.ic_wisepad3_reader,
-                    label = R.string.card_reader_wisepad_3_manual_card_reader,
-                    onManualClicked = ::onWisePad3ManualCardReaderClicked
+                    icon = R.drawable.ic_chipper_reader,
+                    label = R.string.card_reader_bbpos_manual_card_reader,
+                    onManualClicked = ::onBbposManualClicked
                 )
             )
         }
