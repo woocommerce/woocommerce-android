@@ -3,25 +3,33 @@ package com.woocommerce.android.ui.payments.cardreader.manuals
 import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.AppUrls
 import com.woocommerce.android.R
+import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Test
+import org.mockito.kotlin.mock
+import org.wordpress.android.fluxc.store.WooCommerceStore
+import org.wordpress.android.fluxc.store.WooCommerceStore_Factory
 
 @ExperimentalCoroutinesApi
 class CardReaderManualsViewModelTest : BaseUnitTest() {
     private lateinit var viewModel: CardReaderManualsViewModel
     private val savedStateHandle: SavedStateHandle = SavedStateHandle()
+    private val wooStore: WooCommerceStore = mock()
+    private val selectedSite: SelectedSite = mock() {
+        on { get() }.thenReturn(mock())
+    }
 
     @Before
     fun setUp() {
-        viewModel = CardReaderManualsViewModel(savedStateHandle)
+        viewModel = CardReaderManualsViewModel(savedStateHandle, selectedSite, wooStore)
     }
 
     @Test
     fun `when screen shown, then BBPOS label is displayed`() {
-        val bbposRow = viewModel.manualState.find {
+        val bbposRow = viewModel.manualState?.find {
             it.label == R.string.card_reader_bbpos_manual_card_reader
         }
 
@@ -30,7 +38,7 @@ class CardReaderManualsViewModelTest : BaseUnitTest() {
 
     @Test
     fun `when user clicks BBPOS reader, then app navigates to BBPOS manual link`() {
-        val bbposRow = viewModel.manualState.find {
+        val bbposRow = viewModel.manualState?.find {
             it.label == R.string.card_reader_bbpos_manual_card_reader
         }
 
@@ -46,7 +54,7 @@ class CardReaderManualsViewModelTest : BaseUnitTest() {
 
     @Test
     fun `when screen shown, then BBPOS icon is displayed`() {
-        val bbposRow = viewModel.manualState.find {
+        val bbposRow = viewModel.manualState?.find {
             it.icon == R.drawable.ic_chipper_reader
         }
 
@@ -55,7 +63,7 @@ class CardReaderManualsViewModelTest : BaseUnitTest() {
 
     @Test
     fun `when screen shown, then M2 label is displayed`() {
-        val m2Row = viewModel.manualState.find {
+        val m2Row = viewModel.manualState?.find {
             it.label == R.string.card_reader_m2_manual_card_reader
         }
 
@@ -64,7 +72,7 @@ class CardReaderManualsViewModelTest : BaseUnitTest() {
 
     @Test
     fun `when user clicks M2 reader, then app navigates to M2 manual link`() {
-        val m2Row = viewModel.manualState.find {
+        val m2Row = viewModel.manualState?.find {
             it.label == R.string.card_reader_m2_manual_card_reader
         }
 
@@ -80,7 +88,7 @@ class CardReaderManualsViewModelTest : BaseUnitTest() {
 
     @Test
     fun `when screen is shown, then M2 icon is displayed`() {
-        val m2Row = viewModel.manualState.find {
+        val m2Row = viewModel.manualState?.find {
             it.icon == R.drawable.ic_m2_reader
         }
 
@@ -90,7 +98,7 @@ class CardReaderManualsViewModelTest : BaseUnitTest() {
     @Test
     fun `when screen shown, then wisepad3 label is displayed`() {
 
-        val wisePad3 = viewModel.manualState.find {
+        val wisePad3 = viewModel.manualState?.find {
             it.label == R.string.card_reader_wisepad_3_manual_card_reader
         }
 
@@ -100,7 +108,7 @@ class CardReaderManualsViewModelTest : BaseUnitTest() {
     @Test
     fun `when user clicks wisepad3 reader, then app navigates to wisepad3 manual link`() {
 
-        val wisePad3 = viewModel.manualState.find {
+        val wisePad3 = viewModel.manualState?.find {
             it.label == R.string.card_reader_wisepad_3_manual_card_reader
         }
 
@@ -117,7 +125,7 @@ class CardReaderManualsViewModelTest : BaseUnitTest() {
     @Test
     fun `when screen is shown, then wisepad3 icon is displayed`() {
 
-        val wisePad3 = viewModel.manualState.find {
+        val wisePad3 = viewModel.manualState?.find {
             it.icon == R.drawable.ic_wisepad3_reader
         }
 
