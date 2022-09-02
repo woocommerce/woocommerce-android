@@ -6,9 +6,6 @@ import androidx.lifecycle.asLiveData
 import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.login.AccountRepository
-import com.woocommerce.android.ui.login.accountmismatch.AccountMismatchErrorViewModel.AccountMismatchPrimaryButton.ENTER_NEW_SITE_ADDRESS
-import com.woocommerce.android.ui.login.accountmismatch.AccountMismatchErrorViewModel.AccountMismatchPrimaryButton.NONE
-import com.woocommerce.android.ui.login.accountmismatch.AccountMismatchErrorViewModel.AccountMismatchPrimaryButton.SHOW_SITE_PICKER
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.ResourceProvider
@@ -48,15 +45,18 @@ class AccountMismatchErrorViewModel @Inject constructor(
                     resourceProvider.getString(R.string.login_jetpack_not_connected, siteUrl)
                 },
                 primaryButtonText = when (navArgs.primaryButton) {
-                    SHOW_SITE_PICKER -> R.string.login_view_connected_stores
-                    ENTER_NEW_SITE_ADDRESS -> R.string.login_site_picker_try_another_address
-                    NONE -> null
+                    AccountMismatchPrimaryButton.SHOW_SITE_PICKER -> R.string.login_view_connected_stores
+                    AccountMismatchPrimaryButton.ENTER_NEW_SITE_ADDRESS -> R.string.login_site_picker_try_another_address
+                    AccountMismatchPrimaryButton.CONNECT_JETPACK -> R.string.login_connect_jetpack_button
+                    AccountMismatchPrimaryButton.NONE -> null
                 },
                 primaryButtonAction = {
                     when (navArgs.primaryButton) {
-                        SHOW_SITE_PICKER -> showConnectedStores()
-                        ENTER_NEW_SITE_ADDRESS -> navigateToSiteAddressScreen()
-                        NONE -> error("NONE as primary button shouldn't trigger the callback")
+                        AccountMismatchPrimaryButton.SHOW_SITE_PICKER -> showConnectedStores()
+                        AccountMismatchPrimaryButton.ENTER_NEW_SITE_ADDRESS -> navigateToSiteAddressScreen()
+                        AccountMismatchPrimaryButton.CONNECT_JETPACK -> startJetpackConnection()
+                        AccountMismatchPrimaryButton.NONE ->
+                            error("NONE as primary button shouldn't trigger the callback")
                     }
                 },
                 secondaryButtonText = R.string.login_try_another_account,
@@ -91,6 +91,10 @@ class AccountMismatchErrorViewModel @Inject constructor(
         }
     }
 
+    private fun startJetpackConnection() {
+        TODO("Not yet implemented")
+    }
+
     private fun helpFindingEmail() {
         triggerEvent(NavigateToEmailHelpDialogEvent)
     }
@@ -122,6 +126,6 @@ class AccountMismatchErrorViewModel @Inject constructor(
     object NavigateToLoginScreen : MultiLiveEvent.Event()
 
     enum class AccountMismatchPrimaryButton {
-        SHOW_SITE_PICKER, ENTER_NEW_SITE_ADDRESS, NONE
+        SHOW_SITE_PICKER, ENTER_NEW_SITE_ADDRESS, CONNECT_JETPACK, NONE
     }
 }
