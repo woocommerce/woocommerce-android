@@ -249,8 +249,8 @@ private fun JetpackConnectionWebView(viewState: ViewState.JetpackWebViewState, m
 
                         private fun decideUrl(url: String) {
                             val plainUrl = url.replace("^https?://".toRegex(), "")
-                            if (plainUrl.startsWith("wordpress.com/jetpack/connect/plans")
-                                || plainUrl.startsWith(viewState.siteUrl)
+                            if (plainUrl.startsWith("wordpress.com/jetpack/connect/plans") ||
+                                plainUrl.startsWith(viewState.siteUrl)
                             ) {
                                 viewState.onConnected()
                             }
