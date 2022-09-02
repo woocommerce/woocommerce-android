@@ -117,7 +117,7 @@ class CardReaderHubViewModel @Inject constructor(
 
     private fun createHubListWhenSinglePluginInstalled(
         isOnboardingComplete: Boolean,
-        cashOnDeliveryItem: CardReaderHubViewState.ListItem.ToggleableListItem,
+        cashOnDeliveryItem: ToggleableListItem,
         storeCountryCode: String? = wooStore.getStoreCountryCode(selectedSite.get())
     ) = mutableListOf(
         CardReaderHubViewState.ListItem.HeaderItem(
@@ -150,7 +150,7 @@ class CardReaderHubViewModel @Inject constructor(
         )
     ).apply {
         if (storeCountryCode == "CA" || storeCountryCode == "US") {
-            this.add(
+            add(
                 CardReaderHubViewState.ListItem.NonToggleableListItem(
                     icon = R.drawable.ic_card_reader_manual,
                     label = UiStringRes(R.string.settings_card_reader_manuals),
