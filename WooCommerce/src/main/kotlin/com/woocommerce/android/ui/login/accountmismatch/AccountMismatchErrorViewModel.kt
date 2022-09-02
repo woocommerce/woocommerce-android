@@ -36,9 +36,9 @@ class AccountMismatchErrorViewModel @Inject constructor(
     private val userAccount = accountRepository.getUserAccount()
     private val siteUrl = appPrefsWrapper.getLoginSiteAddress()!!
 
-    private val state = savedStateHandle.getStateFlow<Step>(viewModelScope, Step.Idle)
+    private val step = savedStateHandle.getStateFlow<Step>(viewModelScope, Step.Idle)
 
-    val viewState: LiveData<ViewState> = state.map { step ->
+    val viewState: LiveData<ViewState> = step.map { step ->
         when (step) {
             Step.Idle, Step.FetchingJetpackConnectionUrl -> prepareMainState(
                 isFetchingJetpackUrl = step is Step.FetchingJetpackConnectionUrl
@@ -92,10 +92,10 @@ class AccountMismatchErrorViewModel @Inject constructor(
         siteUrl = siteUrl,
         userAgent = userAgent.userAgent,
         onDismiss = {
-            state.value = Step.Idle
+            step.value = Step.Idle
         },
         onConnected = {
-            state.value = Step.Idle
+            step.value = Step.Idle
         }
     )
 
