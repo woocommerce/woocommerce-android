@@ -62,8 +62,6 @@ object AppUrls {
     const val STRIPE_LEARN_MORE_ABOUT_PAYMENTS_CASH_ON_DELIVERY =
         "https://docs.woocommerce.com/document/stripe/accept-in-person-payments-with-stripe/#section-8"
 
-    const val WOOCOMMERCE_M2_PURCHASE_CARD_READER = "https://woocommerce.com/products/m2-card-reader/"
-    const val STRIPE_M2_PURCHASE_CARD_READER = "https://stripe.com/terminal/stripe-reader"
     const val WOOCOMMERCE_PURCHASE_CARD_READER_IN_COUNTRY = "https://woocommerce.com/products/hardware/"
 
     const val BBPOS_MANUAL_CARD_READER =
