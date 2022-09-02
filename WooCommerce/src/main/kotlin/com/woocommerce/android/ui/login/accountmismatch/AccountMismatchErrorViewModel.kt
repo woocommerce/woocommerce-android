@@ -17,6 +17,7 @@ import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.getStateFlow
 import com.woocommerce.android.viewmodel.navArgs
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import kotlinx.parcelize.Parcelize
@@ -37,17 +38,18 @@ class AccountMismatchErrorViewModel @Inject constructor(
     private val siteUrl = appPrefsWrapper.getLoginSiteAddress()!!
 
     private val step = savedStateHandle.getStateFlow<Step>(viewModelScope, Step.Idle)
+    private val _loadingDialogMessage = MutableStateFlow<Int?>(null)
+    val loadingDialogMessage = _loadingDialogMessage.asLiveData()
 
     val viewState: LiveData<ViewState> = step.map { step ->
         when (step) {
-            Step.Idle, Step.FetchingJetpackConnectionUrl -> prepareMainState(
-                isFetchingJetpackUrl = step is Step.FetchingJetpackConnectionUrl
-            )
+            Step.Idle -> prepareMainState()
             is Step.JetpackConnection -> prepareJetpackConnectionState(step.connectionUrl)
         }
     }.asLiveData()
 
-    private fun prepareMainState(isFetchingJetpackUrl: Boolean) = ViewState.MainState(
+
+    private fun prepareMainState() = ViewState.MainState(
         userInfo = userAccount?.let {
             UserInfo(
                 avatarUrl = it.avatarUrl.orEmpty(),
@@ -55,7 +57,6 @@ class AccountMismatchErrorViewModel @Inject constructor(
                 displayName = it.displayName.orEmpty()
             )
         },
-        isFetchingJetpackUrl = isFetchingJetpackUrl,
         message = if (accountRepository.isUserLoggedIn()) {
             // When the user is already connected using WPCom account, show account mismatch error
             resourceProvider.getString(R.string.login_wpcom_account_mismatch, siteUrl)
@@ -123,14 +124,16 @@ class AccountMismatchErrorViewModel @Inject constructor(
     }
 
     private fun startJetpackConnection() = launch {
-        state.value = Step.FetchingJetpackConnectionUrl
+        _loadingDialogMessage.value = R.string.loading
         val site = accountMismatchRepository.getSiteByUrl(siteUrl) ?: error("The site is not cached")
         accountMismatchRepository.fetchJetpackConnectionUrl(site).fold(
             onSuccess = {
-                state.value = Step.JetpackConnection(it)
+                _loadingDialogMessage.value = null
+                step.value = Step.JetpackConnection(it)
             },
             onFailure = {
-                state.value = Step.Idle
+                _loadingDialogMessage.value = null
+                step.value = Step.Idle
                 // TODO show an error snackbar
             }
         )
@@ -148,7 +151,6 @@ class AccountMismatchErrorViewModel @Inject constructor(
         data class MainState(
             val userInfo: UserInfo?,
             val message: String,
-            val isFetchingJetpackUrl: Boolean,
             @StringRes val primaryButtonText: Int?,
             val primaryButtonAction: () -> Unit,
             @StringRes val secondaryButtonText: Int,
@@ -180,9 +182,6 @@ class AccountMismatchErrorViewModel @Inject constructor(
     private sealed interface Step : Parcelable {
         @Parcelize
         object Idle : Step
-
-        @Parcelize
-        object FetchingJetpackConnectionUrl : Step
 
         @Parcelize
         data class JetpackConnection(val connectionUrl: String) : Step

@@ -96,6 +96,9 @@ fun AccountMismatchErrorScreen(viewModel: AccountMismatchErrorViewModel) {
             }
         }
     }
+    viewModel.loadingDialogMessage.observeAsState().value?.let {
+        ProgressDialog(title = "", subtitle = stringResource(id = it))
+    }
 }
 
 @Composable
@@ -122,10 +125,6 @@ fun AccountMismatchErrorScreen(viewState: ViewState.MainState, modifier: Modifie
             secondaryButtonClick = viewState.secondaryButtonAction,
             modifier = Modifier.fillMaxWidth()
         )
-    }
-
-    if (viewState.isFetchingJetpackUrl) {
-        ProgressDialog(title = "", subtitle = "Loading...")
     }
 }
 
@@ -292,7 +291,6 @@ private fun AccountMismatchPreview() {
                     avatarUrl = ""
                 ),
                 message = stringResource(id = R.string.login_wpcom_account_mismatch, "url"),
-                isFetchingJetpackUrl = false,
                 primaryButtonText = R.string.continue_button,
                 primaryButtonAction = {},
                 secondaryButtonText = R.string.continue_button,
