@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.login.accountmismatch
 
+import android.os.Parcelable
 import androidx.annotation.StringRes
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.SavedStateHandle
@@ -17,6 +18,7 @@ import com.woocommerce.android.viewmodel.navArgs
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
+import kotlinx.parcelize.Parcelize
 import javax.inject.Inject
 
 @HiltViewModel
@@ -24,20 +26,21 @@ class AccountMismatchErrorViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
     private val accountRepository: AccountRepository,
     private val appPrefsWrapper: AppPrefsWrapper,
+    private val accountMismatchRepository: AccountMismatchRepository,
     private val resourceProvider: ResourceProvider
 ) : ScopedViewModel(savedStateHandle) {
     private val navArgs: AccountMismatchErrorFragmentArgs by savedStateHandle.navArgs()
     private val userAccount = accountRepository.getUserAccount()
     private val siteUrl = appPrefsWrapper.getLoginSiteAddress()!!
 
-    private val state = savedStateHandle.getStateFlow(viewModelScope, State.IDLE)
+    private val state = savedStateHandle.getStateFlow<Step>(viewModelScope, Step.Idle)
 
-    val viewState: LiveData<ViewState> = state.map { state ->
-        when (state) {
-            State.IDLE, State.FETCHING_JETPACK_URL -> prepareMainState(
-                isFetchingJetpackUrl = state == State.FETCHING_JETPACK_URL
+    val viewState: LiveData<ViewState> = state.map { step ->
+        when (step) {
+            Step.Idle, Step.FetchingJetpackConnectionUrl -> prepareMainState(
+                isFetchingJetpackUrl = step is Step.FetchingJetpackConnectionUrl
             )
-            State.JETPACK_CONNECTION -> TODO()
+            is Step.JetpackConnection -> prepareJetpackConnectionState(step.connectionUrl)
         }
     }.asLiveData()
 
@@ -79,6 +82,13 @@ class AccountMismatchErrorViewModel @Inject constructor(
         inlineButtonAction = { helpFindingEmail() }
     )
 
+    private fun prepareJetpackConnectionState(connectionUrl: String) = ViewState.JetpackWebViewState(
+        connectionUrl = connectionUrl,
+        siteUrl = siteUrl,
+        onDismiss = {},
+        onConnected = {}
+    )
+
     private fun showConnectedStores() {
         triggerEvent(Exit)
     }
@@ -102,8 +112,18 @@ class AccountMismatchErrorViewModel @Inject constructor(
         }
     }
 
-    private fun startJetpackConnection() {
-        state.value = State.FETCHING_JETPACK_URL
+    private fun startJetpackConnection() = launch {
+        state.value = Step.FetchingJetpackConnectionUrl
+        val site = accountMismatchRepository.getSiteByUrl(siteUrl) ?: error("The site is not cached")
+        accountMismatchRepository.fetchJetpackConnectionUrl(site).fold(
+            onSuccess = {
+                state.value = Step.JetpackConnection(it)
+            },
+            onFailure = {
+                state.value = Step.Idle
+                // TODO show an error snackbar
+            }
+        )
     }
 
     private fun helpFindingEmail() {
@@ -146,8 +166,15 @@ class AccountMismatchErrorViewModel @Inject constructor(
     object NavigateToEmailHelpDialogEvent : MultiLiveEvent.Event()
     object NavigateToLoginScreen : MultiLiveEvent.Event()
 
-    private enum class State {
-        IDLE, FETCHING_JETPACK_URL, JETPACK_CONNECTION
+    private sealed interface Step : Parcelable {
+        @Parcelize
+        object Idle : Step
+
+        @Parcelize
+        object FetchingJetpackConnectionUrl : Step
+
+        @Parcelize
+        data class JetpackConnection(val connectionUrl: String) : Step
     }
 
     enum class AccountMismatchPrimaryButton {
