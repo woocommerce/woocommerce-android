@@ -10,7 +10,6 @@ import com.woocommerce.android.model.UiString
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.payments.cardreader.CardReaderTracker
 import com.woocommerce.android.ui.payments.cardreader.CashOnDeliverySettingsRepository
-import com.woocommerce.android.ui.payments.cardreader.InPersonPaymentsCanadaFeatureFlag
 import com.woocommerce.android.ui.payments.cardreader.LearnMoreUrlProvider
 import com.woocommerce.android.ui.payments.cardreader.LearnMoreUrlProvider.LearnMoreUrlType.CASH_ON_DELIVERY
 import com.woocommerce.android.ui.payments.cardreader.hub.CardReaderHubViewModel.CardReaderHubEvents.OpenGenericWebView
@@ -18,12 +17,11 @@ import com.woocommerce.android.ui.payments.cardreader.hub.CardReaderHubViewModel
 import com.woocommerce.android.ui.payments.cardreader.hub.CardReaderHubViewModel.CardReaderHubViewState
 import com.woocommerce.android.ui.payments.cardreader.hub.CardReaderHubViewModel.CardReaderHubViewState.ListItem.NonToggleableListItem
 import com.woocommerce.android.ui.payments.cardreader.hub.CardReaderHubViewModel.CardReaderHubViewState.ListItem.ToggleableListItem
+import com.woocommerce.android.ui.payments.cardreader.hub.CardReaderHubViewModel.CashOnDeliverySource.PAYMENTS_HUB
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderFlowParam
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboardingChecker
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboardingState
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboardingState.StripeAccountPendingRequirement
-import com.woocommerce.android.ui.payments.cardreader.onboarding.PluginType.STRIPE_EXTENSION_GATEWAY
-import com.woocommerce.android.ui.payments.cardreader.onboarding.PluginType.WOOCOMMERCE_PAYMENTS
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.assertj.core.api.Assertions.assertThat
@@ -35,6 +33,7 @@ import org.mockito.ArgumentMatchers.eq
 import org.mockito.kotlin.any
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.mock
+import org.mockito.kotlin.never
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import org.wordpress.android.fluxc.model.SiteModel
@@ -48,11 +47,7 @@ import org.wordpress.android.fluxc.store.WooCommerceStore
 @ExperimentalCoroutinesApi
 class CardReaderHubViewModelTest : BaseUnitTest() {
     private lateinit var viewModel: CardReaderHubViewModel
-    private val inPersonPaymentsCanadaFeatureFlag: InPersonPaymentsCanadaFeatureFlag = mock()
-    private val appPrefsWrapper: AppPrefsWrapper = mock {
-        on(it.getCardReaderPreferredPlugin(any(), any(), any()))
-            .thenReturn(WOOCOMMERCE_PAYMENTS)
-    }
+    private val appPrefsWrapper: AppPrefsWrapper = mock()
     private val selectedSite: SelectedSite = mock {
         on(it.get()).thenReturn(SiteModel())
     }
@@ -175,24 +170,7 @@ class CardReaderHubViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `given ipp canada disabled, when user clicks on purchase card reader, then app opens external webview`() {
-        whenever(inPersonPaymentsCanadaFeatureFlag.isEnabled()).thenReturn(false)
-
-        (viewModel.viewStateData.value)?.rows?.find {
-            it.label == UiString.UiStringRes(R.string.card_reader_purchase_card_reader)
-        }!!.onClick!!.invoke()
-
-        assertThat(viewModel.event.value)
-            .isEqualTo(
-                CardReaderHubViewModel.CardReaderHubEvents.NavigateToPurchaseCardReaderFlow(
-                    AppUrls.WOOCOMMERCE_M2_PURCHASE_CARD_READER
-                )
-            )
-    }
-
-    @Test
-    fun `given ipp canada enabled, when user clicks on purchase card reader, then app opens external webview`() {
-        whenever(inPersonPaymentsCanadaFeatureFlag.isEnabled()).thenReturn(true)
+    fun `when user clicks on purchase card reader, then app opens external webview`() {
         whenever(wooStore.getStoreCountryCode(any())).thenReturn("US")
 
         (viewModel.viewStateData.value)?.rows?.find {
@@ -209,8 +187,6 @@ class CardReaderHubViewModelTest : BaseUnitTest() {
 
     @Test
     fun `when user clicks on purchase card reader, then orders card reader event tracked`() {
-        whenever(inPersonPaymentsCanadaFeatureFlag.isEnabled()).thenReturn(false)
-
         (viewModel.viewStateData.value)?.rows?.find {
             it.label == UiString.UiStringRes(R.string.card_reader_purchase_card_reader)
         }!!.onClick!!.invoke()
@@ -220,41 +196,14 @@ class CardReaderHubViewModelTest : BaseUnitTest() {
 
     @Test
     fun `when user clicks on purchase card reader, then app opens external webview with in-person-payments link`() {
+        val storeCountryCode = wooStore.getStoreCountryCode(selectedSite.get())
         (viewModel.viewStateData.value)?.rows?.find {
             it.label == UiString.UiStringRes(R.string.card_reader_purchase_card_reader)
         }!!.onClick!!.invoke()
 
         assertThat(
             (viewModel.event.value as CardReaderHubViewModel.CardReaderHubEvents.NavigateToPurchaseCardReaderFlow).url
-        ).isEqualTo(AppUrls.WOOCOMMERCE_M2_PURCHASE_CARD_READER)
-    }
-
-    @Test
-    fun `given wcpay active, when user clicks on purchase card reader, then woo purchase link shown`() {
-        whenever(appPrefsWrapper.getCardReaderPreferredPlugin(any(), any(), any()))
-            .thenReturn(WOOCOMMERCE_PAYMENTS)
-
-        (viewModel.viewStateData.value)?.rows?.find {
-            it.label == UiString.UiStringRes(R.string.card_reader_purchase_card_reader)
-        }!!.onClick!!.invoke()
-
-        assertThat(
-            (viewModel.event.value as CardReaderHubViewModel.CardReaderHubEvents.NavigateToPurchaseCardReaderFlow).url
-        ).isEqualTo(AppUrls.WOOCOMMERCE_M2_PURCHASE_CARD_READER)
-    }
-
-    @Test
-    fun `given stripe active, when user clicks on purchase card reader, then stripe purchase link shown`() {
-        whenever(appPrefsWrapper.getCardReaderPreferredPlugin(any(), any(), any()))
-            .thenReturn(STRIPE_EXTENSION_GATEWAY)
-
-        (viewModel.viewStateData.value)?.rows?.find {
-            it.label == UiString.UiStringRes(R.string.card_reader_purchase_card_reader)
-        }!!.onClick!!.invoke()
-
-        assertThat(
-            (viewModel.event.value as CardReaderHubViewModel.CardReaderHubEvents.NavigateToPurchaseCardReaderFlow).url
-        ).isEqualTo(AppUrls.STRIPE_M2_PURCHASE_CARD_READER)
+        ).isEqualTo("${AppUrls.WOOCOMMERCE_PURCHASE_CARD_READER_IN_COUNTRY}$storeCountryCode")
     }
 
     @Test
@@ -929,7 +878,7 @@ class CardReaderHubViewModelTest : BaseUnitTest() {
         }
 
     @Test
-    fun `given cash on delivery api success, when cod toggled, then track cod success event`() =
+    fun `given cash on delivery api success, when cod enabled, then track cod success event`() =
         testBlocking {
             // GIVEN
             whenever(
@@ -947,11 +896,11 @@ class CardReaderHubViewModelTest : BaseUnitTest() {
                 ).onToggled.invoke(true)
 
             // THEN
-            verify(cardReaderTracker).trackCashOnDeliveryEnabledSuccess()
+            verify(cardReaderTracker).trackCashOnDeliveryEnabledSuccess(PAYMENTS_HUB)
         }
 
     @Test
-    fun `given cash on delivery api failure, when cod toggled, then track cod failure event`() =
+    fun `given cash on delivery api failure, when cod enabled, then track cod failure event`() =
         testBlocking {
             // GIVEN
             whenever(
@@ -970,7 +919,104 @@ class CardReaderHubViewModelTest : BaseUnitTest() {
 
             // THEN
             verify(cardReaderTracker).trackCashOnDeliveryEnabledFailure(
-                "Enabling COD failed. Please try again later"
+                PAYMENTS_HUB,
+                "Toggling COD failed. Please try again later"
+            )
+        }
+
+    @Test
+    fun `given cash on delivery api success, when cod disabled, then do not track cod success event`() =
+        testBlocking {
+            // GIVEN
+            whenever(
+                cashOnDeliverySettingsRepository.toggleCashOnDeliveryOption(false)
+            ).thenReturn(
+                getSuccessWooResult()
+            )
+
+            // WHEN
+            (
+                viewModel.viewStateData.value?.rows?.find {
+                    it.label == UiString.UiStringRes(R.string.card_reader_enable_pay_in_person)
+                }
+                    as ToggleableListItem
+                ).onToggled.invoke(false)
+
+            // THEN
+            verify(cardReaderTracker, never()).trackCashOnDeliveryEnabledSuccess(PAYMENTS_HUB)
+        }
+
+    @Test
+    fun `given cash on delivery api failure, when cod disabled, then do not track cod failure event`() =
+        testBlocking {
+            // GIVEN
+            whenever(
+                cashOnDeliverySettingsRepository.toggleCashOnDeliveryOption(false)
+            ).thenReturn(
+                getFailureWooResult()
+            )
+
+            // WHEN
+            (
+                viewModel.viewStateData.value?.rows?.find {
+                    it.label == UiString.UiStringRes(R.string.card_reader_enable_pay_in_person)
+                }
+                    as ToggleableListItem
+                ).onToggled.invoke(false)
+
+            // THEN
+            verify(cardReaderTracker, never()).trackCashOnDeliveryEnabledFailure(
+                PAYMENTS_HUB,
+                "Toggling COD failed. Please try again later"
+            )
+        }
+
+    @Test
+    fun `given cash on delivery api failure, when cod disabled, then track cod disabled failure event`() =
+        testBlocking {
+            // GIVEN
+            whenever(
+                cashOnDeliverySettingsRepository.toggleCashOnDeliveryOption(false)
+            ).thenReturn(
+                getFailureWooResult()
+            )
+
+            // WHEN
+            (
+                viewModel.viewStateData.value?.rows?.find {
+                    it.label == UiString.UiStringRes(R.string.card_reader_enable_pay_in_person)
+                }
+                    as ToggleableListItem
+                ).onToggled.invoke(false)
+
+            // THEN
+            verify(cardReaderTracker).trackCashOnDeliveryDisabledFailure(
+                PAYMENTS_HUB,
+                "Toggling COD failed. Please try again later"
+            )
+        }
+
+    @Test
+    fun `given cash on delivery api success, when cod disabled, then track cod disabled success event`() =
+        testBlocking {
+            // GIVEN
+            whenever(
+                cashOnDeliverySettingsRepository.toggleCashOnDeliveryOption(false)
+            ).thenReturn(
+                getSuccessWooResult()
+            )
+
+            // WHEN
+            (
+                viewModel.viewStateData.value?.rows?.find {
+                    it.label == UiString.UiStringRes(R.string.card_reader_enable_pay_in_person)
+                }
+                    as ToggleableListItem
+                ).onToggled.invoke(false)
+
+            // THEN
+            verify(cardReaderTracker).trackCashOnDeliveryDisabledSuccess(
+                PAYMENTS_HUB
             )
         }
 
@@ -1017,7 +1063,7 @@ class CardReaderHubViewModelTest : BaseUnitTest() {
             // THEN
             assertThat(viewModel.event.value).isEqualTo(
                 ShowToastString(
-                    "Enabling COD failed. Please try again later"
+                    "Toggling COD failed. Please try again later"
                 )
             )
         }
@@ -1111,6 +1157,24 @@ class CardReaderHubViewModelTest : BaseUnitTest() {
                 OpenGenericWebView(AppUrls.WOOCOMMERCE_LEARN_MORE_ABOUT_PAYMENTS_CASH_ON_DELIVERY)
             )
         }
+
+    @Test
+    fun `when cash on delivery learn more clicked, then track learn more tapped event`() =
+        testBlocking {
+            // WHEN
+            whenever(learnMoreUrlProvider.provideLearnMoreUrlFor(CASH_ON_DELIVERY)).thenReturn(
+                AppUrls.WOOCOMMERCE_LEARN_MORE_ABOUT_PAYMENTS_CASH_ON_DELIVERY
+            )
+            (
+                viewModel.viewStateData.value?.rows?.find {
+                    it.label == UiString.UiStringRes(R.string.card_reader_enable_pay_in_person)
+                }
+                    as ToggleableListItem
+                ).onLearnMoreClicked.invoke()
+
+            // THEN
+            verify(cardReaderTracker).trackCashOnDeliveryLearnMoreTapped()
+        }
     // endregion
 
     private fun getSuccessWooResult() = WooResult(
@@ -1127,7 +1191,7 @@ class CardReaderHubViewModelTest : BaseUnitTest() {
     )
 
     private fun getFailureWooResult(
-        message: String? = "Enabling COD failed. Please try again later"
+        message: String? = "Toggling COD failed. Please try again later"
     ) = WooResult<WCGatewayModel>(
         error = WooError(
             type = WooErrorType.GENERIC_ERROR,
@@ -1139,7 +1203,6 @@ class CardReaderHubViewModelTest : BaseUnitTest() {
     private fun initViewModel() {
         viewModel = CardReaderHubViewModel(
             savedState,
-            inPersonPaymentsCanadaFeatureFlag,
             appPrefsWrapper,
             selectedSite,
             analyticsTrackerWrapper,
