@@ -1,4 +1,0 @@
-10.0 :
-Nous avons apporté diverses améliorations pour vous aider à lancer votre entreprise. Il est désormais plus simple de configurer votre boutique lorsque vous vous connectez. Et vous pouvez maintenant activer le paiement en personne directement dans l’application !
-Pour terminer, nous avons effectué quelques ajustements pour améliorer les performances. Mais nous n’en avons pas terminé. Attendez-vous à d’autres améliorations à l’avenir. Continuez de nous donner votre avis ! Nous les lisons tous !
-
