@@ -300,7 +300,8 @@ class CardReaderHubViewModel @Inject constructor(
                     )
                 } else {
                     cardReaderTracker.trackCashOnDeliveryDisabledFailure(
-                        PAYMENTS_HUB
+                        PAYMENTS_HUB,
+                        result.error.message
                     )
                 }
                 updateCashOnDeliveryOptionState(

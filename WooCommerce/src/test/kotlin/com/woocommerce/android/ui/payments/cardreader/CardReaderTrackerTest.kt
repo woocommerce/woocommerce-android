@@ -16,6 +16,7 @@ import com.woocommerce.android.analytics.AnalyticsEvent.CARD_READER_LOCATION_FAI
 import com.woocommerce.android.analytics.AnalyticsEvent.CARD_READER_LOCATION_SUCCESS
 import com.woocommerce.android.analytics.AnalyticsEvent.CARD_READER_SOFTWARE_UPDATE_FAILED
 import com.woocommerce.android.analytics.AnalyticsEvent.CARD_READER_SOFTWARE_UPDATE_STARTED
+import com.woocommerce.android.analytics.AnalyticsEvent.DISABLE_CASH_ON_DELIVERY_FAILED
 import com.woocommerce.android.analytics.AnalyticsEvent.ENABLE_CASH_ON_DELIVERY_FAILED
 import com.woocommerce.android.analytics.AnalyticsEvent.ENABLE_CASH_ON_DELIVERY_SUCCESS
 import com.woocommerce.android.analytics.AnalyticsEvent.PAYMENTS_FLOW_ORDER_COLLECT_PAYMENT_TAPPED
@@ -287,12 +288,16 @@ class CardReaderTrackerTest : BaseUnitTest() {
     fun `given disable cod method is invoked, when failure, then DISABLE_CASH_ON_DELIVERY_FAILED tracked`() =
         testBlocking {
             cardReaderTracker.trackCashOnDeliveryDisabledFailure(
-                ONBOARDING
+                ONBOARDING,
+                "Disabling COD failed. Please try again later."
             )
 
             verify(trackerWrapper).track(
-                eq(AnalyticsEvent.DISABLE_CASH_ON_DELIVERY_FAILED),
-                any()
+                stat = eq(DISABLE_CASH_ON_DELIVERY_FAILED),
+                properties = any(),
+                errorType = any(),
+                errorContext = eq(null),
+                errorDescription = eq("Disabling COD failed. Please try again later.")
             )
         }
 
@@ -300,13 +305,17 @@ class CardReaderTrackerTest : BaseUnitTest() {
     fun `given disable cod method is invoked, when failure & source is payments_hub, then event tracked`() =
         testBlocking {
             cardReaderTracker.trackCashOnDeliveryDisabledFailure(
-                PAYMENTS_HUB
+                PAYMENTS_HUB,
+                "Disabling COD failed. Please try again later."
             )
             val captor = argumentCaptor<Map<String, String>>()
 
             verify(trackerWrapper).track(
-                eq(AnalyticsEvent.DISABLE_CASH_ON_DELIVERY_FAILED),
-                captor.capture()
+                eq(DISABLE_CASH_ON_DELIVERY_FAILED),
+                captor.capture(),
+                errorType = any(),
+                errorContext = eq(null),
+                errorDescription = eq("Disabling COD failed. Please try again later.")
             )
             assertThat(captor.firstValue[KEY_CASH_ON_DELIVERY_SOURCE]).isEqualTo(
                 PAYMENTS_HUB.toString()

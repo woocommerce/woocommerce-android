@@ -973,7 +973,7 @@ class CardReaderHubViewModelTest : BaseUnitTest() {
             // THEN
             verify(cardReaderTracker).trackCashOnDeliveryEnabledFailure(
                 PAYMENTS_HUB,
-                "Enabling COD failed. Please try again later"
+                "Toggling COD failed. Please try again later"
             )
         }
 
@@ -1020,7 +1020,7 @@ class CardReaderHubViewModelTest : BaseUnitTest() {
             // THEN
             verify(cardReaderTracker, never()).trackCashOnDeliveryEnabledFailure(
                 PAYMENTS_HUB,
-                "Enabling COD failed. Please try again later"
+                "Toggling COD failed. Please try again later"
             )
         }
 
@@ -1043,7 +1043,10 @@ class CardReaderHubViewModelTest : BaseUnitTest() {
                 ).onToggled.invoke(false)
 
             // THEN
-            verify(cardReaderTracker).trackCashOnDeliveryDisabledFailure(PAYMENTS_HUB)
+            verify(cardReaderTracker).trackCashOnDeliveryDisabledFailure(
+                PAYMENTS_HUB,
+                "Toggling COD failed. Please try again later"
+            )
         }
 
     @Test
@@ -1113,7 +1116,7 @@ class CardReaderHubViewModelTest : BaseUnitTest() {
             // THEN
             assertThat(viewModel.event.value).isEqualTo(
                 ShowToastString(
-                    "Enabling COD failed. Please try again later"
+                    "Toggling COD failed. Please try again later"
                 )
             )
         }
@@ -1241,7 +1244,7 @@ class CardReaderHubViewModelTest : BaseUnitTest() {
     )
 
     private fun getFailureWooResult(
-        message: String? = "Enabling COD failed. Please try again later"
+        message: String? = "Toggling COD failed. Please try again later"
     ) = WooResult<WCGatewayModel>(
         error = WooError(
             type = WooErrorType.GENERIC_ERROR,

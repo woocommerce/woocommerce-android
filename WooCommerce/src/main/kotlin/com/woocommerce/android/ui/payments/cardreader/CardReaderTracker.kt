@@ -234,10 +234,11 @@ class CardReaderTracker @Inject constructor(
         )
     }
 
-    fun trackCashOnDeliveryDisabledFailure(source: CashOnDeliverySource) {
+    fun trackCashOnDeliveryDisabledFailure(source: CashOnDeliverySource, errorMessage: String?) {
         track(
             DISABLE_CASH_ON_DELIVERY_FAILED,
-            mutableMapOf(
+            errorDescription = errorMessage,
+            properties = mutableMapOf(
                 KEY_CASH_ON_DELIVERY_SOURCE to source.toString()
             )
         )
