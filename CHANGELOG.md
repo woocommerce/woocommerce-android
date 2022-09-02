@@ -4,7 +4,7 @@ Contains editorialized release notes. Raw release notes should go into `RELEASE-
 
 ## 10.2
 
-Even though this release doesn’t have any new features, we still put a lot of love into it! We’ve added a new Help Center page that makes it easier for you to login to the app. We’ve also added the option to accept card or cash payments on collection or delivery.   
+Even though this release doesn’t have any new features, we still put a lot of love into it! We’ve added a new Help Center page that makes it easier for you to login to the app. You can also enable or disable the option to take card or cash payments on collection or delivery.   
 Lastly, we’ve made some tweaks to improve performance. Please keep sending your feedback! We read every one of them!
 
 ## 10.1
