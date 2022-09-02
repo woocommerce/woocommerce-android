@@ -19,6 +19,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import kotlinx.parcelize.Parcelize
+import org.wordpress.android.fluxc.network.UserAgent
 import javax.inject.Inject
 
 @HiltViewModel
@@ -27,7 +28,8 @@ class AccountMismatchErrorViewModel @Inject constructor(
     private val accountRepository: AccountRepository,
     private val appPrefsWrapper: AppPrefsWrapper,
     private val accountMismatchRepository: AccountMismatchRepository,
-    private val resourceProvider: ResourceProvider
+    private val resourceProvider: ResourceProvider,
+    private val userAgent: UserAgent
 ) : ScopedViewModel(savedStateHandle) {
     private val navArgs: AccountMismatchErrorFragmentArgs by savedStateHandle.navArgs()
     private val userAccount = accountRepository.getUserAccount()
@@ -85,8 +87,11 @@ class AccountMismatchErrorViewModel @Inject constructor(
     private fun prepareJetpackConnectionState(connectionUrl: String) = ViewState.JetpackWebViewState(
         connectionUrl = connectionUrl,
         siteUrl = siteUrl,
+        userAgent = userAgent.userAgent,
         onDismiss = {},
-        onConnected = {}
+        onConnected = {
+            state.value = Step.Idle
+        }
     )
 
     private fun showConnectedStores() {
@@ -150,8 +155,9 @@ class AccountMismatchErrorViewModel @Inject constructor(
         data class JetpackWebViewState(
             val connectionUrl: String,
             val siteUrl: String,
+            val userAgent: String,
             val onDismiss: () -> Unit,
-            val onConnected: (String) -> Unit
+            val onConnected: () -> Unit
         ) : ViewState
     }
 
