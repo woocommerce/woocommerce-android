@@ -39,10 +39,12 @@ import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import coil.request.ImageRequest.Builder
 import com.woocommerce.android.R
+import com.woocommerce.android.ui.compose.component.ProgressDialog
 import com.woocommerce.android.ui.compose.component.WCColoredButton
 import com.woocommerce.android.ui.compose.component.WCOutlinedButton
 import com.woocommerce.android.ui.compose.component.WCTextButton
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
+import com.woocommerce.android.ui.login.accountmismatch.AccountMismatchErrorViewModel.ViewState
 
 @Composable
 fun AccountMismatchErrorScreen(viewModel: AccountMismatchErrorViewModel) {
@@ -62,13 +64,19 @@ fun AccountMismatchErrorScreen(viewModel: AccountMismatchErrorViewModel) {
                 elevation = 0.dp
             )
         }) { paddingValues ->
-            AccountMismatchErrorScreen(viewState = viewState, modifier = Modifier.padding(paddingValues))
+            when (viewState) {
+                is ViewState.MainState -> AccountMismatchErrorScreen(
+                    viewState = viewState,
+                    modifier = Modifier.padding(paddingValues)
+                )
+                is ViewState.JetpackWebViewState -> TODO()
+            }
         }
     }
 }
 
 @Composable
-fun AccountMismatchErrorScreen(viewState: AccountMismatchErrorViewModel.ViewState, modifier: Modifier = Modifier) {
+fun AccountMismatchErrorScreen(viewState: ViewState.MainState, modifier: Modifier = Modifier) {
     Column(
         modifier = modifier
             .background(MaterialTheme.colors.surface)
@@ -92,11 +100,15 @@ fun AccountMismatchErrorScreen(viewState: AccountMismatchErrorViewModel.ViewStat
             modifier = Modifier.fillMaxWidth()
         )
     }
+
+    if (viewState.isFetchingJetpackUrl) {
+        ProgressDialog(title = "", subtitle = "Loading...")
+    }
 }
 
 @Composable
 private fun MainContent(
-    viewState: AccountMismatchErrorViewModel.ViewState,
+    viewState: ViewState.MainState,
     modifier: Modifier = Modifier
 ) {
     Column(
@@ -200,13 +212,14 @@ private fun ButtonBar(
 private fun AccountMismatchPreview() {
     WooThemeWithBackground {
         AccountMismatchErrorScreen(
-            viewState = AccountMismatchErrorViewModel.ViewState(
+            viewState = ViewState.MainState(
                 userInfo = AccountMismatchErrorViewModel.UserInfo(
                     displayName = "displayname",
                     username = "username",
                     avatarUrl = ""
                 ),
                 message = stringResource(id = R.string.login_wpcom_account_mismatch, "url"),
+                isFetchingJetpackUrl = false,
                 primaryButtonText = R.string.continue_button,
                 primaryButtonAction = {},
                 secondaryButtonText = R.string.continue_button,
