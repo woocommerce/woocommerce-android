@@ -17,6 +17,7 @@ import com.woocommerce.android.ui.payments.cardreader.CashOnDeliverySettingsRepo
 import com.woocommerce.android.ui.payments.cardreader.LearnMoreUrlProvider
 import com.woocommerce.android.ui.payments.cardreader.LearnMoreUrlProvider.LearnMoreUrlType.CASH_ON_DELIVERY
 import com.woocommerce.android.ui.payments.cardreader.hub.CardReaderHubViewModel.CardReaderHubEvents.ShowToastString
+import com.woocommerce.android.ui.payments.cardreader.hub.CardReaderHubViewModel.CardReaderHubViewState.ListItem.HeaderItem
 import com.woocommerce.android.ui.payments.cardreader.hub.CardReaderHubViewModel.CardReaderHubViewState.ListItem.NonToggleableListItem
 import com.woocommerce.android.ui.payments.cardreader.hub.CardReaderHubViewModel.CardReaderHubViewState.ListItem.ToggleableListItem
 import com.woocommerce.android.ui.payments.cardreader.hub.CardReaderHubViewModel.CardReaderHubViewState.OnboardingErrorAction
@@ -118,25 +119,25 @@ class CardReaderHubViewModel @Inject constructor(
 
     private fun createHubListWhenSinglePluginInstalled(
         isOnboardingComplete: Boolean,
-        cashOnDeliveryItem: CardReaderHubViewState.ListItem.ToggleableListItem
+        cashOnDeliveryItem: ToggleableListItem
     ) =
         listOf(
-            CardReaderHubViewState.ListItem.HeaderItem(
+            HeaderItem(
                 label = UiStringRes(R.string.card_reader_payment_options_header),
                 index = 0
             ),
-            CardReaderHubViewState.ListItem.NonToggleableListItem(
+            NonToggleableListItem(
                 icon = R.drawable.ic_gridicons_money_on_surface,
                 label = UiStringRes(R.string.card_reader_collect_payment),
                 index = 1,
                 onClick = ::onCollectPaymentClicked
             ),
             cashOnDeliveryItem,
-            CardReaderHubViewState.ListItem.HeaderItem(
+            HeaderItem(
                 label = UiStringRes(R.string.card_reader_card_readers_header),
                 index = 4,
             ),
-            CardReaderHubViewState.ListItem.NonToggleableListItem(
+            NonToggleableListItem(
                 icon = R.drawable.ic_shopping_cart,
                 label = UiStringRes(R.string.card_reader_purchase_card_reader),
                 index = 5,
