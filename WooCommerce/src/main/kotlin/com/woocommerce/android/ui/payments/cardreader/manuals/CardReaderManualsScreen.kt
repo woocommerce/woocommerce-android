@@ -29,9 +29,11 @@ import com.woocommerce.android.R
 fun ManualsScreen(
     cardReaderManualsViewModel: CardReaderManualsViewModel = viewModel()
 ) {
-    ManualsList(
-        list = cardReaderManualsViewModel.manualState
-    )
+    cardReaderManualsViewModel.manualState?.let {
+        ManualsList(
+            list = it
+        )
+    }
 }
 
 @Composable

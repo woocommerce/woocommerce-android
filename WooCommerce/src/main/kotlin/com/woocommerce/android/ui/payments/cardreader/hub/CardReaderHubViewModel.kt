@@ -120,27 +120,27 @@ class CardReaderHubViewModel @Inject constructor(
         cashOnDeliveryItem: CardReaderHubViewState.ListItem.ToggleableListItem,
         storeCountryCode: String? = wooStore.getStoreCountryCode(selectedSite.get())
     ) = mutableListOf(
-            CardReaderHubViewState.ListItem.HeaderItem(
-                label = UiStringRes(R.string.card_reader_payment_options_header),
-                index = 0
-            ),
-            CardReaderHubViewState.ListItem.NonToggleableListItem(
-                icon = R.drawable.ic_gridicons_money_on_surface,
-                label = UiStringRes(R.string.card_reader_collect_payment),
-                index = 1,
-                onClick = ::onCollectPaymentClicked
-            ),
-            cashOnDeliveryItem,
-            CardReaderHubViewState.ListItem.HeaderItem(
-                label = UiStringRes(R.string.card_reader_card_readers_header),
-                index = 4,
-            ),
-            CardReaderHubViewState.ListItem.NonToggleableListItem(
-                icon = R.drawable.ic_shopping_cart,
-                label = UiStringRes(R.string.card_reader_purchase_card_reader),
-                index = 5,
-                onClick = ::onPurchaseCardReaderClicked
-            ),
+        CardReaderHubViewState.ListItem.HeaderItem(
+            label = UiStringRes(R.string.card_reader_payment_options_header),
+            index = 0
+        ),
+        CardReaderHubViewState.ListItem.NonToggleableListItem(
+            icon = R.drawable.ic_gridicons_money_on_surface,
+            label = UiStringRes(R.string.card_reader_collect_payment),
+            index = 1,
+            onClick = ::onCollectPaymentClicked
+        ),
+        cashOnDeliveryItem,
+        CardReaderHubViewState.ListItem.HeaderItem(
+            label = UiStringRes(R.string.card_reader_card_readers_header),
+            index = 4,
+        ),
+        CardReaderHubViewState.ListItem.NonToggleableListItem(
+            icon = R.drawable.ic_shopping_cart,
+            label = UiStringRes(R.string.card_reader_purchase_card_reader),
+            index = 5,
+            onClick = ::onPurchaseCardReaderClicked
+        ),
         CardReaderHubViewState.ListItem.NonToggleableListItem(
             icon = R.drawable.ic_manage_card_reader,
             label = UiStringRes(R.string.card_reader_manage_card_reader),
@@ -148,18 +148,18 @@ class CardReaderHubViewModel @Inject constructor(
             index = 6,
             onClick = ::onManageCardReaderClicked
         )
-        ).apply {
-            if(storeCountryCode == "CA" || storeCountryCode == "US") {
-                this.add(
-                    CardReaderHubViewState.ListItem.NonToggleableListItem(
-                        icon = R.drawable.ic_card_reader_manual,
-                        label = UiStringRes(R.string.settings_card_reader_manuals),
-                        index = 7,
-                        onClick = ::onCardReaderManualsClicked
-                    )
+    ).apply {
+        if (storeCountryCode == "CA" || storeCountryCode == "US") {
+            this.add(
+                CardReaderHubViewState.ListItem.NonToggleableListItem(
+                    icon = R.drawable.ic_card_reader_manual,
+                    label = UiStringRes(R.string.settings_card_reader_manuals),
+                    index = 7,
+                    onClick = ::onCardReaderManualsClicked
                 )
-            }
+            )
         }
+    }
 
     private fun createAdditionalItemWhenMultiplePluginsInstalled() =
         CardReaderHubViewState.ListItem.NonToggleableListItem(
@@ -169,7 +169,7 @@ class CardReaderHubViewModel @Inject constructor(
             onClick = ::onCardReaderPaymentProviderClicked
         )
 
-    private fun updateCashOnDeliveryOptionState(toggleableListItem: CardReaderHubViewState.ListItem.ToggleableListItem) {
+    private fun updateCashOnDeliveryOptionState(toggleableListItem: ToggleableListItem) {
         cashOnDeliveryState.value = toggleableListItem
         viewState.value = viewState.value?.copy(
             rows = (getNonTogggleableItems()!! + toggleableListItem).sortedBy {
@@ -271,7 +271,9 @@ class CardReaderHubViewModel @Inject constructor(
                     cashOnDeliveryState.value?.copy(isEnabled = true, isChecked = !isChecked)!!
                 )
                 if (result.error.message.isNullOrEmpty()) {
-                    triggerEvent(CardReaderConnectEvent.ShowToastString("Something went wrong, Please try again later."))
+                    triggerEvent(
+                        CardReaderConnectEvent.ShowToastString("Something went wrong, Please try again later.")
+                    )
                 } else {
                     triggerEvent(
                         CardReaderConnectEvent.ShowToastString(result.error.message!!)
