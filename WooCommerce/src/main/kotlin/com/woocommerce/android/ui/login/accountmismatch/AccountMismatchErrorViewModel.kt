@@ -10,6 +10,7 @@ import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.login.AccountRepository
 import com.woocommerce.android.util.FeatureFlag
+import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.ResourceProvider
@@ -97,6 +98,7 @@ class AccountMismatchErrorViewModel @Inject constructor(
         },
         onConnected = {
             step.value = Step.Idle
+            WooLog.d(WooLog.T.LOGIN, "Jetpack Connected")
         }
     )
 
