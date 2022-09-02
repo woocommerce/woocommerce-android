@@ -1,6 +1,10 @@
 package com.woocommerce.android.ui.login.accountmismatch
 
+import android.annotation.SuppressLint
 import android.content.res.Configuration
+import android.webkit.WebChromeClient
+import android.webkit.WebView
+import android.webkit.WebViewClient
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -17,14 +21,20 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
+import androidx.compose.material.LinearProgressIndicator
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
 import androidx.compose.material.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalConfiguration
@@ -36,6 +46,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.viewinterop.AndroidView
 import coil.compose.AsyncImage
 import coil.request.ImageRequest.Builder
 import com.woocommerce.android.R
@@ -69,7 +80,10 @@ fun AccountMismatchErrorScreen(viewModel: AccountMismatchErrorViewModel) {
                     viewState = viewState,
                     modifier = Modifier.padding(paddingValues)
                 )
-                is ViewState.JetpackWebViewState -> TODO()
+                is ViewState.JetpackWebViewState -> JetpackConnectionWebView(
+                    viewState = viewState,
+                    modifier = Modifier.padding(paddingValues)
+                )
             }
         }
     }
@@ -204,6 +218,56 @@ private fun ButtonBar(
         else -> Column(modifier = modifier) {
             Buttons(modifier = Modifier.fillMaxWidth())
         }
+    }
+}
+
+@SuppressLint("SetJavaScriptEnabled")
+@Composable
+private fun JetpackConnectionWebView(viewState: ViewState.JetpackWebViewState, modifier: Modifier = Modifier) {
+    var progress by remember {
+        mutableStateOf(0)
+    }
+    Column(modifier = modifier.fillMaxSize()) {
+        LinearProgressIndicator(
+            progress = (progress / 100f),
+            modifier = Modifier
+                .fillMaxWidth()
+                .alpha(if (progress == 100) 0f else 1f)
+        )
+
+        AndroidView(
+            factory = { context ->
+                WebView(context).apply {
+                    this.webViewClient = object : WebViewClient() {
+                        override fun doUpdateVisitedHistory(view: WebView?, url: String?, isReload: Boolean) {
+                            url?.let { decideUrl(it) }
+                        }
+
+                        override fun onLoadResource(view: WebView?, url: String?) {
+                            url?.let { decideUrl(it) }
+                        }
+
+                        private fun decideUrl(url: String) {
+                            val plainUrl = url.replace("^https?://".toRegex(), "")
+                            if (plainUrl.startsWith("wordpress.com/jetpack/connect/plans")
+                                || plainUrl.startsWith(viewState.siteUrl)
+                            ) {
+                                viewState.onConnected()
+                            }
+                        }
+                    }
+                    this.webChromeClient = object : WebChromeClient() {
+                        @Suppress("MagicNumber")
+                        override fun onProgressChanged(view: WebView?, newProgress: Int) {
+                            progress = newProgress
+                        }
+                    }
+                    this.settings.javaScriptEnabled = true
+
+                    loadUrl(viewState.connectionUrl)
+                }
+            }
+        )
     }
 }
 
