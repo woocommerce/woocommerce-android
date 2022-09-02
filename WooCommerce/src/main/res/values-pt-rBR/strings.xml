@@ -1,11 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2022-08-22 20:54:03+0000
+Translation-Revision-Date: 2022-08-31 19:54:03+0000
 Plural-Forms: nplurals=2; plural=(n > 1);
 Generator: GlotPress/2.4.0-alpha
 Language: pt_BR
 -->
 <resources>
+    <string name="card_reader_onboarding_with_pending_requirements">Há um problema que precisa da sua atenção. &lt;a href=\'\'&gt;Confira&lt;/a&gt;</string>
     <string name="login_site_picker_try_another_address">Tentar outro endereço</string>
     <string name="card_reader_onboarding_cash_on_delivery_enable_failure">Falha ao ativar o pagamento na entrega. Tente novamente mais tarde.</string>
     <string name="card_reader_onboarding_cash_on_delivery_disabled_button">Ativar pagamento presencial</string>
@@ -17,7 +18,7 @@ Language: pt_BR
     <string name="login_site_picker_enter_site_address">Digite um endereço de site</string>
     <string name="login_help_notification_get_link_by_email_button">Receba um link de login por e-mail</string>
     <string name="login_help_notification_invalid_password_title">Esqueceu sua senha?</string>
-    <string name="card_reader_onboarding_not_finished">Notamos que você ainda não concluiu a configuração dos pagamentos presenciais. &lt;b&gt;&lt;a href=\'\'&gt;Continuar configuração&lt;/a&gt;&lt;/b&gt;</string>
+    <string name="card_reader_onboarding_not_finished">Notamos que você ainda não concluiu a configuração dos pagamentos presenciais. &lt;a href=\'\'&gt;Continuar configuração&lt;/a&gt;</string>
     <string name="payments_hub_title">Pagamentos</string>
     <string name="orderlist_bottom_sheet_simple_payments_moved_button">Consegui!</string>
     <string name="orderlist_bottom_sheet_simple_payments_moved_description">Agora você pode acessar rapidamente os pagamentos presenciais e outras funcionalidades com facilidade</string>
