@@ -91,7 +91,9 @@ class AccountMismatchErrorViewModel @Inject constructor(
         connectionUrl = connectionUrl,
         siteUrl = siteUrl,
         userAgent = userAgent.userAgent,
-        onDismiss = {},
+        onDismiss = {
+            state.value = Step.Idle
+        },
         onConnected = {
             state.value = Step.Idle
         }

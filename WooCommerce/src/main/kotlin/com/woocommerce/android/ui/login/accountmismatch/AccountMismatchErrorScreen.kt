@@ -26,6 +26,8 @@ import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
 import androidx.compose.material.TopAppBar
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
@@ -64,6 +66,13 @@ fun AccountMismatchErrorScreen(viewModel: AccountMismatchErrorViewModel) {
             TopAppBar(
                 backgroundColor = MaterialTheme.colors.surface,
                 title = { },
+                navigationIcon = {
+                    if (viewState is ViewState.JetpackWebViewState) {
+                        IconButton(onClick = viewState.onDismiss) {
+                            Icon(Icons.Filled.ArrowBack, contentDescription = "Back")
+                        }
+                    }
+                },
                 actions = {
                     IconButton(onClick = viewModel::onHelpButtonClick) {
                         Icon(
