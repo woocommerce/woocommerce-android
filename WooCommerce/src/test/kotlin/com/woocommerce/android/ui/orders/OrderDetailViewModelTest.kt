@@ -632,6 +632,7 @@ class OrderDetailViewModelTest : BaseUnitTest() {
     fun `Display error message on fetch order error`() = testBlocking {
         whenever(orderDetailRepository.fetchOrderById(ORDER_ID)).thenReturn(null)
         whenever(orderDetailRepository.getOrderById(ORDER_ID)).thenReturn(null)
+        doReturn(true).whenever(orderDetailRepository).fetchOrderNotes(any())
 
         var snackbar: ShowSnackbar? = null
         viewModel.event.observeForever {
@@ -641,6 +642,7 @@ class OrderDetailViewModelTest : BaseUnitTest() {
         viewModel.start()
 
         verify(orderDetailRepository, times(1)).fetchOrderById(ORDER_ID)
+        verify(viewModel, never()).order
 
         assertThat(snackbar).isEqualTo(ShowSnackbar(string.order_error_fetch_generic))
     }
