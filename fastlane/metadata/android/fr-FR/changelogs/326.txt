@@ -1,0 +1,3 @@
+10.1 :
+Même si cette version ne comporte pas de nouvelles fonctionnalités, nous y avons mis tout notre cœur. Nous avons notamment corrigé un problème qui pouvait malencontreusement vous empêcher de percevoir des paiements. Continuez à nous envoyer vos commentaires. Votre avis nous intéresse !
+

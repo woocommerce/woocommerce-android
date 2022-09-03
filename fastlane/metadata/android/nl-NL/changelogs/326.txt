@@ -1,0 +1,3 @@
+10.1:
+Hoewel deze release geen nieuwe functies bevat, hebben we er wel veel liefde in gestopt, zoals het verhelpen van een probleem waardoor je misschien onterecht geen betalingen kon ontvangen. Blijf ons feedback sturen – wij luisteren!
+
