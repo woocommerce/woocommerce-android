@@ -386,8 +386,17 @@ class AnalyticsTracker private constructor(private val context: Context) {
 
         const val SOURCE_PRODUCT_DETAIL = "product_detail"
 
+        // -- Cash on Delivery
+        const val KEY_IS_ENABLED = "is_enabled"
+        const val KEY_CASH_ON_DELIVERY_SOURCE = "source"
+
         // -- Experiments
         const val KEY_EXPERIMENT_VARIANT = "experiment_variant"
+
+        // -- Help Center
+        const val KEY_SOURCE_FLOW = "source_flow"
+        const val KEY_SOURCE_STEP = "source_step"
+        const val KEY_HELP_CONTENT_URL = "help_content_url"
 
         var sendUsageStats: Boolean = true
             set(value) {

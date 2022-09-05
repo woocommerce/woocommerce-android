@@ -14,18 +14,19 @@ import com.woocommerce.android.model.UiString.UiStringRes
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.payments.cardreader.CardReaderTracker
 import com.woocommerce.android.ui.payments.cardreader.CashOnDeliverySettingsRepository
-import com.woocommerce.android.ui.payments.cardreader.InPersonPaymentsCanadaFeatureFlag
+import com.woocommerce.android.ui.payments.cardreader.LearnMoreUrlProvider
+import com.woocommerce.android.ui.payments.cardreader.LearnMoreUrlProvider.LearnMoreUrlType.CASH_ON_DELIVERY
 import com.woocommerce.android.ui.payments.cardreader.hub.CardReaderHubViewModel.CardReaderHubEvents.ShowToastString
+import com.woocommerce.android.ui.payments.cardreader.hub.CardReaderHubViewModel.CardReaderHubViewState.ListItem.HeaderItem
 import com.woocommerce.android.ui.payments.cardreader.hub.CardReaderHubViewModel.CardReaderHubViewState.ListItem.NonToggleableListItem
 import com.woocommerce.android.ui.payments.cardreader.hub.CardReaderHubViewModel.CardReaderHubViewState.ListItem.ToggleableListItem
 import com.woocommerce.android.ui.payments.cardreader.hub.CardReaderHubViewModel.CardReaderHubViewState.OnboardingErrorAction
+import com.woocommerce.android.ui.payments.cardreader.hub.CardReaderHubViewModel.CashOnDeliverySource.PAYMENTS_HUB
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderFlowParam
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboardingChecker
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboardingState
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboardingState.OnboardingCompleted
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboardingState.StripeAccountPendingRequirement
-import com.woocommerce.android.ui.payments.cardreader.onboarding.PluginType.STRIPE_EXTENSION_GATEWAY
-import com.woocommerce.android.ui.payments.cardreader.onboarding.PluginType.WOOCOMMERCE_PAYMENTS
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T.CARD_READER
 import com.woocommerce.android.viewmodel.MultiLiveEvent
@@ -39,13 +40,13 @@ import javax.inject.Inject
 @HiltViewModel
 class CardReaderHubViewModel @Inject constructor(
     savedState: SavedStateHandle,
-    private val inPersonPaymentsCanadaFeatureFlag: InPersonPaymentsCanadaFeatureFlag,
     private val appPrefsWrapper: AppPrefsWrapper,
     private val selectedSite: SelectedSite,
     private val analyticsTrackerWrapper: AnalyticsTrackerWrapper,
     private val wooStore: WooCommerceStore,
     private val cardReaderChecker: CardReaderOnboardingChecker,
-    private val cashOnDeliveryToggler: CashOnDeliverySettingsRepository,
+    private val cashOnDeliverySettingsRepository: CashOnDeliverySettingsRepository,
+    private val learnMoreUrlProvider: LearnMoreUrlProvider,
     private val cardReaderTracker: CardReaderTracker,
 ) : ScopedViewModel(savedState) {
     private val arguments: CardReaderHubFragmentArgs by savedState.navArgs()
@@ -54,12 +55,27 @@ class CardReaderHubViewModel @Inject constructor(
         ToggleableListItem(
             icon = R.drawable.ic_gridicons_credit_card,
             label = UiStringRes(R.string.card_reader_enable_pay_in_person),
-            description = UiStringRes(R.string.card_reader_enable_pay_in_person_description),
+            description = UiStringRes(
+                R.string.card_reader_enable_pay_in_person_description,
+                containsHtml = true
+            ),
             index = 2,
             isChecked = false,
-            onToggled = { (::onCashOnDeliveryToggled)(it) }
+            onToggled = { (::onCashOnDeliveryToggled)(it) },
+            onLearnMoreClicked = ::onLearnMoreClicked
         )
     )
+
+    private fun onLearnMoreClicked() {
+        cardReaderTracker.trackCashOnDeliveryLearnMoreTapped()
+        triggerEvent(
+            CardReaderHubEvents.OpenGenericWebView(
+                learnMoreUrlProvider.provideLearnMoreUrlFor(
+                    CASH_ON_DELIVERY
+                )
+            )
+        )
+    }
 
     private val viewState = MutableLiveData(
         CardReaderHubViewState(
@@ -68,16 +84,14 @@ class CardReaderHubViewModel @Inject constructor(
                     isOnboardingComplete = false,
                     cashOnDeliveryItem = cashOnDeliveryState.value!!
                 )
-                ).sortedBy {
-                it.index
-            },
+                ).sortedBy { it.index },
             isLoading = true,
             onboardingErrorAction = null
         )
     )
 
     private suspend fun checkAndUpdateCashOnDeliveryOptionState() {
-        val isCashOnDeliveryEnabled = cashOnDeliveryToggler.isCashOnDeliveryEnabled()
+        val isCashOnDeliveryEnabled = cashOnDeliverySettingsRepository.isCashOnDeliveryEnabled()
         updateCashOnDeliveryOptionState(
             cashOnDeliveryState.value?.copy(
                 isChecked = isCashOnDeliveryEnabled
@@ -99,22 +113,10 @@ class CardReaderHubViewModel @Inject constructor(
     }
 
     private val cardReaderPurchaseUrl: String by lazy {
-        if (inPersonPaymentsCanadaFeatureFlag.isEnabled()) {
-            val storeCountryCode = wooStore.getStoreCountryCode(selectedSite.get()) ?: null.also {
-                WooLog.e(CARD_READER, "Store's country code not found.")
-            }
-            "${AppUrls.WOOCOMMERCE_PURCHASE_CARD_READER_IN_COUNTRY}$storeCountryCode"
-        } else {
-            val preferredPlugin = appPrefsWrapper.getCardReaderPreferredPlugin(
-                selectedSite.get().id,
-                selectedSite.get().siteId,
-                selectedSite.get().selfHostedSiteId
-            )
-            when (preferredPlugin) {
-                STRIPE_EXTENSION_GATEWAY -> AppUrls.STRIPE_M2_PURCHASE_CARD_READER
-                WOOCOMMERCE_PAYMENTS, null -> AppUrls.WOOCOMMERCE_M2_PURCHASE_CARD_READER
-            }
+        val storeCountryCode = wooStore.getStoreCountryCode(selectedSite.get()) ?: null.also {
+            WooLog.e(CARD_READER, "Store's country code not found.")
         }
+        "${AppUrls.WOOCOMMERCE_PURCHASE_CARD_READER_IN_COUNTRY}$storeCountryCode"
     }
 
     private fun createHubListWhenSinglePluginInstalled(
@@ -122,7 +124,7 @@ class CardReaderHubViewModel @Inject constructor(
         cashOnDeliveryItem: ToggleableListItem
     ) =
         listOf(
-            CardReaderHubViewState.ListItem.HeaderItem(
+            HeaderItem(
                 label = UiStringRes(R.string.card_reader_payment_options_header),
                 index = 0
             ),
@@ -133,7 +135,7 @@ class CardReaderHubViewModel @Inject constructor(
                 onClick = ::onCollectPaymentClicked
             ),
             cashOnDeliveryItem,
-            CardReaderHubViewState.ListItem.HeaderItem(
+            HeaderItem(
                 label = UiStringRes(R.string.card_reader_card_readers_header),
                 index = 4,
             ),
@@ -187,9 +189,7 @@ class CardReaderHubViewModel @Inject constructor(
                 (
                     createHubListWhenSinglePluginInstalled(true, cashOnDeliveryState.value!!) +
                         createAdditionalItemWhenMultiplePluginsInstalled()
-                    ).sortedBy {
-                    it.index
-                }
+                    ).sortedBy { it.index }
             } else {
                 createHubListWhenSinglePluginInstalled(true, cashOnDeliveryState.value!!)
             },
@@ -210,9 +210,7 @@ class CardReaderHubViewModel @Inject constructor(
         return CardReaderHubViewState(
             rows = (
                 createHubListWhenSinglePluginInstalled(false, cashOnDeliveryState.value!!)
-                ).sortedBy {
-                it.index
-            },
+                ).sortedBy { it.index },
             isLoading = false,
             onboardingErrorAction = OnboardingErrorAction(
                 text = UiStringRes(R.string.card_reader_onboarding_not_finished, containsHtml = true),
@@ -254,20 +252,37 @@ class CardReaderHubViewModel @Inject constructor(
     }
 
     private fun onCashOnDeliveryToggled(isChecked: Boolean) {
+        cardReaderTracker.trackCashOnDeliveryToggled(isChecked)
         launch {
             updateCashOnDeliveryOptionState(
                 cashOnDeliveryState.value?.copy(isEnabled = false, isChecked = isChecked)!!
             )
-            val result = cashOnDeliveryToggler.toggleCashOnDeliveryOption(isChecked)
+            val result = cashOnDeliverySettingsRepository.toggleCashOnDeliveryOption(isChecked)
             if (!result.isError) {
-                cardReaderTracker.trackCashOnDeliveryEnabledSuccess()
+                if (isChecked) {
+                    cardReaderTracker.trackCashOnDeliveryEnabledSuccess(
+                        PAYMENTS_HUB
+                    )
+                } else {
+                    cardReaderTracker.trackCashOnDeliveryDisabledSuccess(
+                        PAYMENTS_HUB
+                    )
+                }
                 updateCashOnDeliveryOptionState(
                     cashOnDeliveryState.value?.copy(isEnabled = true, isChecked = isChecked)!!
                 )
             } else {
-                cardReaderTracker.trackCashOnDeliveryEnabledFailure(
-                    result.error.message
-                )
+                if (isChecked) {
+                    cardReaderTracker.trackCashOnDeliveryEnabledFailure(
+                        PAYMENTS_HUB,
+                        result.error.message
+                    )
+                } else {
+                    cardReaderTracker.trackCashOnDeliveryDisabledFailure(
+                        PAYMENTS_HUB,
+                        result.error.message
+                    )
+                }
                 updateCashOnDeliveryOptionState(
                     cashOnDeliveryState.value?.copy(isEnabled = true, isChecked = !isChecked)!!
                 )
@@ -317,6 +332,7 @@ class CardReaderHubViewModel @Inject constructor(
             val onboardingState: CardReaderOnboardingState
         ) : CardReaderHubEvents()
 
+        data class OpenGenericWebView(val url: String) : CardReaderHubEvents()
         data class ShowToastString(val message: String) : CardReaderHubEvents()
     }
 
@@ -348,7 +364,8 @@ class CardReaderHubViewModel @Inject constructor(
                 val isChecked: Boolean,
                 override val index: Int,
                 override val onClick: (() -> Unit)? = null,
-                val onToggled: (Boolean) -> Unit
+                val onToggled: (Boolean) -> Unit,
+                val onLearnMoreClicked: () -> Unit
             ) : ListItem()
 
             data class HeaderItem(
@@ -364,5 +381,10 @@ class CardReaderHubViewModel @Inject constructor(
             val text: UiString?,
             val onClick: () -> Unit,
         )
+    }
+
+    enum class CashOnDeliverySource(source: String) {
+        ONBOARDING(source = "onboarding"),
+        PAYMENTS_HUB(source = "payments_hub")
     }
 }

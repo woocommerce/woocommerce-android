@@ -7,6 +7,8 @@ import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
+import com.woocommerce.android.analytics.ExperimentTracker
+import com.woocommerce.android.experiment.JetpackTimeoutExperiment
 import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.initSavedStateHandle
 import com.woocommerce.android.support.HelpActivity
@@ -72,6 +74,8 @@ class SitePickerViewModelTest : BaseUnitTest() {
     }
     private val accountRepository: AccountRepository = mock()
     private val unifiedLoginTracker: UnifiedLoginTracker = mock()
+    private val experimentTracker: ExperimentTracker = mock()
+    private val jetpackTimeoutExperiment: JetpackTimeoutExperiment = mock()
 
     private lateinit var viewModel: SitePickerViewModel
     private lateinit var savedState: SavedStateHandle
@@ -86,7 +90,9 @@ class SitePickerViewModelTest : BaseUnitTest() {
             appPrefsWrapper = appPrefsWrapper,
             analyticsTrackerWrapper = analyticsTrackerWrapper,
             userEligibilityFetcher = userEligibilityFetcher,
-            unifiedLoginTracker = unifiedLoginTracker
+            unifiedLoginTracker = unifiedLoginTracker,
+            experimentTracker = experimentTracker,
+            jetpackTimeoutExperiment = jetpackTimeoutExperiment
         )
     }
 
@@ -100,7 +106,7 @@ class SitePickerViewModelTest : BaseUnitTest() {
     }
 
     private suspend fun givenThatSiteVerificationIsCompleted() {
-        whenever(repository.verifySiteWooAPIVersion(any())).thenReturn(
+        whenever(repository.verifySiteWooAPIVersion(any(), any())).thenReturn(
             WooResult(SitePickerTestUtils.apiVerificationResponse)
         )
         whenever(userEligibilityFetcher.fetchUserInfo()).thenReturn(SitePickerTestUtils.userModel)
@@ -369,6 +375,7 @@ class SitePickerViewModelTest : BaseUnitTest() {
 
     @Test
     fun `given that a site is selected, when verification is initiated, then is successful`() = testBlocking {
+        whenever(jetpackTimeoutExperiment.run()).thenReturn(false)
         givenThatSiteVerificationIsCompleted()
         whenSitesAreFetched()
         whenViewModelIsCreated()
@@ -388,7 +395,7 @@ class SitePickerViewModelTest : BaseUnitTest() {
         viewModel.onSiteSelected(selectedSiteModel)
         viewModel.onContinueButtonClick()
 
-        verify(repository, times(1)).verifySiteWooAPIVersion(any())
+        verify(repository, times(1)).verifySiteWooAPIVersion(any(), any())
         verify(selectedSite, times(1)).set(any())
         verify(userEligibilityFetcher, times(1)).fetchUserInfo()
         verify(userEligibilityFetcher, times(1)).updateUserInfo(any())
@@ -401,7 +408,8 @@ class SitePickerViewModelTest : BaseUnitTest() {
     @Test
     fun `given that a site is selected, when verification is initiated, but then returns upgrade error`() =
         testBlocking {
-            whenever(repository.verifySiteWooAPIVersion(any())).thenReturn(
+            whenever(jetpackTimeoutExperiment.run()).thenReturn(false)
+            whenever(repository.verifySiteWooAPIVersion(any(), any())).thenReturn(
                 WooResult(SitePickerTestUtils.errorApiVerificationResponse)
             )
             whenSitesAreFetched()
@@ -422,7 +430,7 @@ class SitePickerViewModelTest : BaseUnitTest() {
             viewModel.onSiteSelected(selectedSiteModel)
             viewModel.onContinueButtonClick()
 
-            verify(repository, times(1)).verifySiteWooAPIVersion(any())
+            verify(repository, times(1)).verifySiteWooAPIVersion(any(), any())
             verify(selectedSite, times(0)).set(any())
             verify(userEligibilityFetcher, times(0)).fetchUserInfo()
             verify(userEligibilityFetcher, times(0)).updateUserInfo(any())
@@ -655,7 +663,8 @@ class SitePickerViewModelTest : BaseUnitTest() {
     @Test
     fun `given site verification returns timeout error, when verifying site, timeout dialog is displayed`() =
         testBlocking {
-            whenever(repository.verifySiteWooAPIVersion(any())).thenReturn(
+            whenever(jetpackTimeoutExperiment.run()).thenReturn(false)
+            whenever(repository.verifySiteWooAPIVersion(any(), any())).thenReturn(
                 WooResult(SitePickerTestUtils.timeoutErrorApiVerificationResponse)
             )
             whenSitesAreFetched()
@@ -676,7 +685,7 @@ class SitePickerViewModelTest : BaseUnitTest() {
             viewModel.onSiteSelected(selectedSiteModel)
             viewModel.onContinueButtonClick()
 
-            verify(repository, times(1)).verifySiteWooAPIVersion(any())
+            verify(repository, times(1)).verifySiteWooAPIVersion(any(), any())
             assertThat(view).isInstanceOf(ShowDialog::class.java)
             assertThat(isProgressShown).containsExactly(false, true, false)
         }

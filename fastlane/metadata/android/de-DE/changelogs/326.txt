@@ -1,0 +1,3 @@
+10.1:
+Dieses Release enthält zwar keine neuen Funktionen, wir haben aber trotzdem viel Mühe hineingesteckt und unter anderem ein Problem behoben, wodurch das Annehmen von Zahlungen eventuell unnötigerweise blockiert wurde. Sende uns bitte weiter Feedback – wir freuen uns darauf!
+

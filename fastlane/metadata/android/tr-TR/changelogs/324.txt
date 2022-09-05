@@ -1,4 +1,0 @@
-10.0:
-İşinizi yürütmeye başlamanız için çeşitli geliştirmeler yaptık. Oturum açarken mağazanızı kurmak artık daha kolay. Ve artık doğrudan uygulama içinden şahsen ödemeyi etkinleştirebilirsiniz!
-Son olarak, performansı iyileştiren bazı ince ayarlar yaptık. Ama işimiz daha bitmedi. Gelecekteki geliştirmelerimiz için bizi takip edin. Lütfen geri bildirimlerinizi göndermeye devam edin! Her birini okuyoruz!
-
