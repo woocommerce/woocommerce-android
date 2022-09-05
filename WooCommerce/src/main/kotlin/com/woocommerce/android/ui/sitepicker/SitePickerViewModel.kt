@@ -231,6 +231,9 @@ class SitePickerViewModel @Inject constructor(
                 // The url doesn't match any sites for this account.
                 showAccountMismatchScreen(url)
             }
+            site.isWPCom -> {
+                loadNonAtomicView(site)
+            }
             !site.hasWooCommerce -> {
                 // Show not woo store message view.
                 loadWooNotFoundView(site)
@@ -251,6 +254,7 @@ class SitePickerViewModel @Inject constructor(
             isPrimaryBtnVisible = true,
             primaryBtnText = resourceProvider.getString(string.login_site_picker_enter_site_address),
             noStoresLabelText = resourceProvider.getString(string.login_no_stores),
+            isNoStoresBtnVisible = true,
             noStoresBtnText = resourceProvider.getString(string.login_site_picker_new_to_woo),
             currentSitePickerState = SitePickerState.NoStoreState
         )
@@ -292,8 +296,20 @@ class SitePickerViewModel @Inject constructor(
             isPrimaryBtnVisible = isWooInstallationEnabled,
             primaryBtnText = resourceProvider.getString(string.login_install_woo),
             noStoresLabelText = resourceProvider.getString(string.login_not_woo_store, site.url),
+            isNoStoresBtnVisible = true,
             noStoresBtnText = resourceProvider.getString(string.login_view_connected_stores),
             currentSitePickerState = SitePickerState.WooNotFoundState
+        )
+    }
+
+    private fun loadNonAtomicView(site: SiteModel) {
+        sitePickerViewState = sitePickerViewState.copy(
+            isNoStoresViewVisible = true,
+            isPrimaryBtnVisible = sitePickerViewState.hasConnectedStores == true,
+            primaryBtnText = resourceProvider.getString(string.login_view_connected_stores),
+            noStoresLabelText = resourceProvider.getString(string.login_non_atomic_site, site.url),
+            isNoStoresBtnVisible = false,
+            currentSitePickerState = SitePickerState.NonAtomicState
         )
     }
 
@@ -578,6 +594,7 @@ class SitePickerViewModel @Inject constructor(
         val isProgressDiaLogVisible: Boolean = false,
         val isPrimaryBtnVisible: Boolean = false,
         val isSecondaryBtnVisible: Boolean = false,
+        val isNoStoresBtnVisible: Boolean = false,
         val currentSitePickerState: SitePickerState = SitePickerState.StoreListState
     ) : Parcelable
 
@@ -612,6 +629,6 @@ class SitePickerViewModel @Inject constructor(
     }
 
     enum class SitePickerState {
-        StoreListState, NoStoreState, WooNotFoundState
+        StoreListState, NoStoreState, WooNotFoundState, NonAtomicState
     }
 }
