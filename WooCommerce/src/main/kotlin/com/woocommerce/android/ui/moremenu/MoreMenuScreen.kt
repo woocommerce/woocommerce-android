@@ -30,9 +30,9 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
-import androidx.compose.foundation.lazy.GridCells.Fixed
-import androidx.compose.foundation.lazy.LazyVerticalGrid
-import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.lazy.grid.itemsIndexed
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Button
@@ -101,7 +101,7 @@ fun MoreMenuScreen(
 @Composable
 private fun MoreMenuItems(state: MoreMenuViewState) {
     LazyVerticalGrid(
-        cells = Fixed(2),
+        columns = GridCells.Fixed(2),
         contentPadding = PaddingValues(
             horizontal = dimensionResource(id = R.dimen.major_100),
             vertical = dimensionResource(id = R.dimen.major_100)
@@ -310,7 +310,7 @@ fun MoreMenuBadge(badgeState: BadgeState?) {
             }
             AnimatedVisibility(
                 visibleState = visible,
-                enter = BadgeEnterAnimation()
+                enter = badgeEnterAnimation()
             ) {
                 val backgroundColor = colorResource(id = badgeState.backgroundColor)
                 Text(
@@ -330,7 +330,7 @@ fun MoreMenuBadge(badgeState: BadgeState?) {
 
 @OptIn(ExperimentalAnimationApi::class)
 @Composable
-private fun BadgeEnterAnimation(): EnterTransition {
+private fun badgeEnterAnimation(): EnterTransition {
     val animationSpec = TweenSpec<Float>(durationMillis = 400, delay = 200)
     return scaleIn(animationSpec = animationSpec) + fadeIn(animationSpec = animationSpec)
 }
