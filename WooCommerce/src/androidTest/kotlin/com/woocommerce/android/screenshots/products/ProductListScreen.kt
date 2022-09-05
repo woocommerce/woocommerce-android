@@ -27,7 +27,7 @@ class ProductListScreen : Screen {
     }
 
     fun tapOnCreateProduct(): ProductListScreen {
-        clickOn(R.id.addProductButton)
+        clickOn(R.id.fab)
         return this
     }
 
