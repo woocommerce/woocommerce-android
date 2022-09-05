@@ -975,7 +975,7 @@
     <string name="payments_hub_title">Payments</string>
     <string name="card_reader_manage_card_reader">Manage Card Reader</string>
     <string name="card_reader_enable_pay_in_person">Pay in Person</string>
-    <string name="card_reader_enable_pay_in_person_description">Pay in Person lets you accept card or cash payments on collection or delivery</string>
+    <string name="card_reader_enable_pay_in_person_description">The Pay in Person checkout option lets you accept payments for website orders, on collection or delivery. &lt;a href=\'\'&gt;Learn more&lt;/a&gt;</string>
     <string name="card_reader_purchase_card_reader">Order Card Reader</string>
     <string name="card_reader_manage_payment_provider">Change Payment Provider</string>
     <string name="card_reader_bbpos_manual_card_reader" translatable="false">BBPOS Chipper™ 2X BT</string>

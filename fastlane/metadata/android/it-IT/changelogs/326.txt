@@ -1,0 +1,3 @@
+10.1:
+Anche se questa versione non presenta nuove funzionalità, ci siamo comunque impegnati molto per realizzarla, risolvendo anche un problema relativo al blocco superfluo della ricezione dei pagamenti. Continua a inviarci feedback: siamo lieti di ascoltarli.
+

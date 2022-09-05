@@ -11,6 +11,9 @@ import com.woocommerce.android.AppUrls
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_HELP_CONTENT_URL
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_SOURCE_FLOW
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_SOURCE_STEP
 import com.woocommerce.android.databinding.ActivityHelpBinding
 import com.woocommerce.android.extensions.show
 import com.woocommerce.android.tools.SelectedSite
@@ -55,7 +58,16 @@ class HelpActivity : AppCompatActivity() {
         binding.contactContainer.setOnClickListener { createNewZendeskTicket(TicketType.General) }
         binding.identityContainer.setOnClickListener { showIdentityDialog(TicketType.General) }
         binding.myTicketsContainer.setOnClickListener { showZendeskTickets() }
-        binding.faqContainer.setOnClickListener { showZendeskFaq() }
+        binding.faqContainer.setOnClickListener {
+            val loginFlow = intent.extras?.getString(LOGIN_FLOW_KEY)
+            val loginStep = intent.extras?.getString(LOGIN_STEP_KEY)
+
+            if (loginFlow != null && loginStep != null) {
+                showLoginHelpCenter(originFromExtras, loginFlow, loginStep)
+            } else {
+                showZendeskFaq()
+            }
+        }
         binding.appLogContainer.setOnClickListener { showApplicationLog() }
         if (userIsLoggedIn() && selectedSite.exists()) {
             binding.ssrContainer.show()
@@ -169,6 +181,20 @@ class HelpActivity : AppCompatActivity() {
         zendeskHelper.showAllTickets(this, originFromExtras, selectedSiteOrNull(), extraTagsFromExtras)
     }
 
+    private fun showLoginHelpCenter(origin: Origin, loginFlow: String, loginStep: String) {
+        val helpCenterUrl = AppUrls.LOGIN_HELP_CENTER_URLS[origin] ?: AppUrls.APP_HELP_CENTER
+        AnalyticsTracker.track(
+            stat = AnalyticsEvent.SUPPORT_HELP_CENTER_VIEWED,
+            properties = mapOf(
+                KEY_SOURCE_FLOW to loginFlow,
+                KEY_SOURCE_STEP to loginStep,
+                KEY_HELP_CONTENT_URL to helpCenterUrl
+            )
+        )
+
+        ChromeCustomTabUtils.launchUrl(this, helpCenterUrl)
+    }
+
     private fun showZendeskFaq() {
         AnalyticsTracker.track(AnalyticsEvent.SUPPORT_HELP_CENTER_VIEWED)
         ChromeCustomTabUtils.launchUrl(this, AppUrls.APP_HELP_CENTER)
@@ -219,18 +245,26 @@ class HelpActivity : AppCompatActivity() {
     companion object {
         private const val ORIGIN_KEY = "ORIGIN_KEY"
         private const val EXTRA_TAGS_KEY = "EXTRA_TAGS_KEY"
+        private const val LOGIN_FLOW_KEY = "LOGIN_FLOW_KEY"
+        private const val LOGIN_STEP_KEY = "LOGIN_STEP_KEY"
 
         @JvmStatic
         fun createIntent(
             context: Context,
             origin: Origin,
-            extraSupportTags: List<String>?
+            extraSupportTags: List<String>?,
+            loginFlow: String? = null,
+            loginStep: String? = null
         ): Intent {
             val intent = Intent(context, HelpActivity::class.java)
             intent.putExtra(ORIGIN_KEY, origin)
             if (extraSupportTags != null && extraSupportTags.isNotEmpty()) {
                 intent.putStringArrayListExtra(EXTRA_TAGS_KEY, extraSupportTags as ArrayList<String>?)
             }
+
+            if (loginFlow != null) intent.putExtra(LOGIN_FLOW_KEY, loginFlow)
+            if (loginStep != null) intent.putExtra(LOGIN_STEP_KEY, loginStep)
+
             return intent
         }
     }
