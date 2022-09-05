@@ -53,7 +53,6 @@ class AccountMismatchErrorViewModel @Inject constructor(
         }
     }.asLiveData()
 
-
     private fun prepareMainState() = ViewState.MainState(
         userInfo = userAccount?.let {
             UserInfo(
