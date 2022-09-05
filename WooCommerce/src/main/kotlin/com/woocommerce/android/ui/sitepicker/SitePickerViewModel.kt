@@ -339,7 +339,12 @@ class SitePickerViewModel @Inject constructor(
         val cleanedUrl = siteModel.url.replaceFirst(protocolRegex, "")
 
         loginSiteAddress = cleanedUrl
-        loadWooNotFoundView(siteModel)
+
+        if (siteModel.isWPCom) {
+            loadNonAtomicView(siteModel)
+        } else {
+            loadWooNotFoundView(siteModel)
+        }
     }
 
     fun onViewConnectedStoresButtonClick() {
