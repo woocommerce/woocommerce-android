@@ -14,6 +14,7 @@ import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.analytics.ExperimentTracker
 import com.woocommerce.android.experiment.JetpackTimeoutExperiment
 import com.woocommerce.android.extensions.getSiteName
+import com.woocommerce.android.extensions.isNonAtomic
 import com.woocommerce.android.support.HelpActivity
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.common.UserEligibilityFetcher
@@ -231,7 +232,7 @@ class SitePickerViewModel @Inject constructor(
                 // The url doesn't match any sites for this account.
                 showAccountMismatchScreen(url)
             }
-            site.isWPCom -> {
+            site.isNonAtomic -> {
                 loadNonAtomicView(site)
             }
             !site.hasWooCommerce -> {
@@ -331,7 +332,7 @@ class SitePickerViewModel @Inject constructor(
         analyticsTrackerWrapper.track(
             stat = AnalyticsEvent.SITE_PICKER_NON_WOO_SITE_TAPPED,
             properties = mapOf(
-                AnalyticsTracker.KEY_IS_NON_ATOMIC to (!siteModel.isJetpackConnected && !siteModel.isJetpackCPConnected)
+                AnalyticsTracker.KEY_IS_NON_ATOMIC to siteModel.isNonAtomic
             )
         )
         // Strip protocol from site's URL
@@ -340,7 +341,7 @@ class SitePickerViewModel @Inject constructor(
 
         loginSiteAddress = cleanedUrl
 
-        if (siteModel.isWPCom) {
+        if (siteModel.isNonAtomic) {
             loadNonAtomicView(siteModel)
         } else {
             loadWooNotFoundView(siteModel)
