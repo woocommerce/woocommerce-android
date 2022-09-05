@@ -690,6 +690,26 @@ class SitePickerViewModelTest : BaseUnitTest() {
             assertThat(isProgressShown).containsExactly(false, true, false)
         }
 
+    @Test
+    fun `given entered site is non-atomic, when loading site picker, then display non-atomic site state`() =
+        testBlocking {
+            givenTheScreenIsFromLogin(true)
+            givenThatUserLoggedInFromEnteringSiteAddress(
+                expectedSiteList[1].apply {
+                    setIsWPCom(true)
+                }
+            )
+            whenSitesAreFetched()
+            whenViewModelIsCreated()
+
+            val state = viewModel.sitePickerViewStateData.liveData.captureValues().last()
+
+            assertThat(state.currentSitePickerState).isEqualTo(SitePickerViewModel.SitePickerState.NonAtomicState)
+            assertThat(state.isNoStoresViewVisible).isTrue
+            assertThat(state.noStoresLabelText).isEqualTo(resourceProvider.getString(R.string.login_non_atomic_site))
+            assertThat(state.isNoStoresBtnVisible).isFalse
+        }
+
     private fun SiteModel.clone(): SiteModel {
         // A quick way for supporting cloning SiteModel without changing SiteModel class itself
         val gson = Gson()
