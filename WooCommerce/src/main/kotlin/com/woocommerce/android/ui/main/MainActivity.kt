@@ -558,6 +558,14 @@ class MainActivity :
         navController.navigateSafely(action)
     }
 
+    override fun showFAB() {
+        binding.fab.show()
+    }
+
+    override fun hideFAB() {
+        binding.fab.hide()
+    }
+
     @Suppress("DEPRECATION")
     override fun showSettingsScreen() {
         AnalyticsTracker.track(AnalyticsEvent.MAIN_MENU_SETTINGS_TAPPED)
