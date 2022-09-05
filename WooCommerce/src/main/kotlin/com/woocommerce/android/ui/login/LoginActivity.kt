@@ -29,7 +29,6 @@ import com.woocommerce.android.experiment.MagicLinkRequestExperiment.MagicLinkRe
 import com.woocommerce.android.experiment.MagicLinkRequestExperiment.MagicLinkRequestVariant.ENHANCED
 import com.woocommerce.android.experiment.MagicLinkSentScreenExperiment
 import com.woocommerce.android.experiment.PrologueExperiment
-import com.woocommerce.android.experiment.SiteLoginExperiment
 import com.woocommerce.android.support.HelpActivity
 import com.woocommerce.android.support.HelpActivity.Origin
 import com.woocommerce.android.support.ZendeskExtraTags
@@ -145,16 +144,15 @@ class LoginActivity :
     @Inject internal lateinit var dispatcher: Dispatcher
     @Inject internal lateinit var loginNotificationScheduler: LoginNotificationScheduler
 
-    @Inject internal lateinit var siteLoginExperiment: SiteLoginExperiment
     @Inject internal lateinit var prologueExperiment: PrologueExperiment
     @Inject internal lateinit var sentScreenExperiment: MagicLinkSentScreenExperiment
     @Inject internal lateinit var magicLinkRequestExperiment: MagicLinkRequestExperiment
     @Inject internal lateinit var loginButtonSwapExperiment: LoginButtonSwapExperiment
 
     private var loginMode: LoginMode? = null
-    private var isSiteOnWPcom: Boolean? = null
-
     private lateinit var binding: ActivityLoginBinding
+
+    private var isWPComSite: Boolean? = null
 
     override fun androidInjector(): AndroidInjector<Any> = androidInjector
 
@@ -593,18 +591,11 @@ class LoginActivity :
         val siteAddressClean = inputSiteAddress.replaceFirst(protocolRegex, "")
         AppPrefs.setLoginSiteAddress(siteAddressClean)
 
-        lifecycleScope.launchWhenStarted {
-            if (hasJetpack) {
-                // if a site is self-hosted, we show either email login screen or site credentials login screen
-                if (isSiteOnWPcom != true) {
-                    siteLoginExperiment.run(inputSiteAddress, ::showEmailLoginScreen, ::loginViaSiteCredentials)
-                } else {
-                    showEmailLoginScreen()
-                }
-            } else {
-                // Let user log in via site credentials first before showing Jetpack missing screen.
-                loginViaSiteCredentials(inputSiteAddress)
-            }
+        if (hasJetpack) {
+            showEmailLoginScreen(inputSiteAddress.takeIf { isWPComSite != true })
+        } else {
+            // Let user log in via site credentials first before showing Jetpack missing screen.
+            loginViaSiteCredentials(inputSiteAddress)
         }
     }
 
@@ -644,7 +635,10 @@ class LoginActivity :
 
     private fun viewHelpAndSupport(origin: Origin) {
         val extraSupportTags = arrayListOf(ZendeskExtraTags.connectingJetpack)
-        startActivity(HelpActivity.createIntent(this, origin, extraSupportTags))
+        val flow = unifiedLoginTracker.getFlow()
+        val step = unifiedLoginTracker.previousStepBeforeHelpStep
+
+        startActivity(HelpActivity.createIntent(this, origin, extraSupportTags, flow?.value, step?.value))
     }
 
     override fun helpSiteAddress(url: String?) {
@@ -974,15 +968,15 @@ class LoginActivity :
 
     @SuppressWarnings("unused")
     @Subscribe(threadMode = MAIN)
-    fun onFetchedConnectSiteInfo(event: OnConnectSiteInfoChecked) {
-        isSiteOnWPcom = event.info.isWPCom
-    }
-
-    @SuppressWarnings("unused")
-    @Subscribe(threadMode = MAIN)
     fun onAuthOptionsFetched(event: OnAuthOptionsFetched) {
         if (event.error?.type == UNKNOWN_USER) {
             loginNotificationScheduler.onPasswordLoginError()
         }
+    }
+
+    @SuppressWarnings("unused")
+    @Subscribe(threadMode = MAIN)
+    fun onFetchedConnectSiteInfo(event: OnConnectSiteInfoChecked) {
+        isWPComSite = event.info.isWPCom
     }
 }

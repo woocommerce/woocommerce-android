@@ -6,15 +6,10 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlinx.coroutines.withContext
 import org.greenrobot.eventbus.Subscribe
-import org.greenrobot.eventbus.ThreadMode
 import org.greenrobot.eventbus.ThreadMode.MAIN
 import org.wordpress.android.fluxc.Dispatcher
-import org.wordpress.android.fluxc.action.AccountAction
-import org.wordpress.android.fluxc.generated.AccountActionBuilder
 import org.wordpress.android.fluxc.generated.SiteActionBuilder
 import org.wordpress.android.fluxc.model.SiteModel
-import org.wordpress.android.fluxc.store.AccountStore
-import org.wordpress.android.fluxc.store.AccountStore.OnAccountChanged
 import org.wordpress.android.fluxc.store.SiteStore
 import org.wordpress.android.fluxc.store.SiteStore.ConnectSiteInfoPayload
 import org.wordpress.android.fluxc.store.SiteStore.OnConnectSiteInfoChecked
@@ -29,16 +24,11 @@ import kotlin.coroutines.resume
 class SitePickerRepository @Inject constructor(
     private val siteStore: SiteStore,
     private val dispatcher: Dispatcher,
-    private val accountStore: AccountStore,
     private val wooCommerceStore: WooCommerceStore
 ) {
     suspend fun getSites() = withContext(Dispatchers.IO) { siteStore.sites }
 
     fun getSiteBySiteUrl(url: String) = SiteUtils.getSiteByMatchingUrl(siteStore, url)
-
-    fun getUserAccount() = accountStore.account
-
-    fun isUserLoggedIn() = accountStore.hasAccessToken()
 
     suspend fun fetchWooCommerceSites() = wooCommerceStore.fetchWooCommerceSites()
 
@@ -61,37 +51,8 @@ class SitePickerRepository @Inject constructor(
 
     suspend fun fetchSiteProductSettings(site: SiteModel) = wooCommerceStore.fetchSiteProductSettings(site)
 
-    suspend fun verifySiteWooAPIVersion(site: SiteModel) = wooCommerceStore.fetchSupportedApiVersion(site)
-
-    suspend fun logout(): Boolean = suspendCancellableCoroutine { continuation ->
-        val listener = object : Any() {
-            @Suppress("unused")
-            @Subscribe(threadMode = ThreadMode.MAIN)
-            fun onAccountChanged(event: OnAccountChanged) {
-                if (event.causeOfChange == AccountAction.SIGN_OUT) {
-                    dispatcher.unregister(this)
-                    if (!continuation.isActive) return
-
-                    if (event.isError) {
-                        WooLog.e(
-                            WooLog.T.SITE_PICKER,
-                            "Account error [type = ${event.causeOfChange}] : " +
-                                "${event.error.type} > ${event.error.message}"
-                        )
-                        continuation.resume(false)
-                    } else if (!isUserLoggedIn()) {
-                        continuation.resume(true)
-                    }
-                }
-            }
-        }
-        dispatcher.dispatch(AccountActionBuilder.newSignOutAction())
-        dispatcher.dispatch(SiteActionBuilder.newRemoveWpcomAndJetpackSitesAction())
-
-        continuation.invokeOnCancellation {
-            dispatcher.unregister(listener)
-        }
-    }
+    suspend fun verifySiteWooAPIVersion(site: SiteModel, overrideRetryPolicy: Boolean) =
+        wooCommerceStore.fetchSupportedApiVersion(site, overrideRetryPolicy)
 
     suspend fun fetchSiteInfo(siteAddress: String) =
         suspendCancellableCoroutine<Result<ConnectSiteInfoPayload>> { continuation ->

@@ -3,6 +3,7 @@ package com.woocommerce.android.ui.main
 import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.analytics.AnalyticsEvent
+import com.woocommerce.android.analytics.AnalyticsEvent.REVIEW_OPEN
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.model.FeatureAnnouncement
@@ -221,10 +222,19 @@ class MainActivityViewModelTest : BaseUnitTest() {
     }
 
     @Test
+    fun `when a new review notification is clicked, then review open even tracked`() {
+        val localPushId = 1001
+
+        viewModel.handleIncomingNotification(localPushId, testReviewNotification)
+
+        verify(analyticsTrackerWrapper).track(REVIEW_OPEN)
+    }
+
+    @Test
     fun `when a new zendesk notification is clicked, then the my tickets screen of zendesk is opened`() {
-        var event1: ViewZendeskTickets? = null
+        var event: ViewZendeskTickets? = null
         viewModel.event.observeForever {
-            if (it is ViewZendeskTickets) event1 = it
+            if (it is ViewZendeskTickets) event = it
         }
 
         viewModel.handleIncomingNotification(TEST_ZENDESK_PUSH_NOTIFICATION_ID, testZendeskNotification)
@@ -235,7 +245,7 @@ class MainActivityViewModelTest : BaseUnitTest() {
         verify(notificationMessageHandler, atLeastOnce()).removeNotificationByPushIdFromSystemsBar(
             eq(TEST_ZENDESK_PUSH_NOTIFICATION_ID)
         )
-        assertThat(event1).isEqualTo(ViewZendeskTickets)
+        assertThat(event).isEqualTo(ViewZendeskTickets)
     }
 
     @Test

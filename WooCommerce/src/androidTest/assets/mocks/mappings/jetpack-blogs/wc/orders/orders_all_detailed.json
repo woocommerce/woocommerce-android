@@ -100,6 +100,8 @@
                 "fee_lines": [],
                 "coupon_lines": [],
                 "refunds": [],
+                "payment_url": "",
+                "is_editable": true,
                 "date_created_gmt": "{{#assign 'currentYear'}}{{fnow format='yyyy'}}{{/assign}}{{currentYear}}-10-31T13:13:57",
                 "date_modified_gmt": "{{currentYear}}-10-31T13:13:57",
                 "date_paid_gmt": null
@@ -183,6 +185,8 @@
                 "fee_lines": [],
                 "coupon_lines": [],
                 "refunds": [],
+                "payment_url": "",
+                "is_editable": true,
                 "date_created_gmt": "{{currentYear}}-10-28T22:25:43",
                 "date_modified_gmt": "{{currentYear}}-10-28T22:25:43",
                 "date_paid_gmt": null
@@ -266,6 +270,8 @@
                 "fee_lines": [],
                 "coupon_lines": [],
                 "refunds": [],
+                "payment_url": "",
+                "is_editable": true,
                 "date_created_gmt": "{{currentYear}}-10-27T01:17:42",
                 "date_modified_gmt": "{{currentYear}}-10-27T01:17:42",
                 "date_paid_gmt": null
@@ -350,6 +356,8 @@
                 "fee_lines": [],
                 "coupon_lines": [],
                 "refunds": [],
+                "payment_url": "",
+                "is_editable": false,
                 "date_created_gmt": "{{currentYear}}-02-01T11:29:04",
                 "date_modified_gmt": "{{currentYear}}-04-27T02:41:38",
                 "date_paid_gmt": "{{currentYear}}-01-28T11:29:48"
@@ -414,6 +422,8 @@
                 "fee_lines": [],
                 "coupon_lines": [],
                 "refunds": [],
+                "payment_url": "",
+                "is_editable": false,
                 "date_created_gmt": "{{currentYear}}-01-31T06:20:00",
                 "date_modified_gmt": "{{currentYear}}-01-28T11:27:51",
                 "date_paid_gmt": "{{currentYear}}-01-28T11:20:38"
@@ -478,6 +488,8 @@
                 "fee_lines": [],
                 "coupon_lines": [],
                 "refunds": [],
+                "payment_url": "",
+                "is_editable": false,
                 "date_created_gmt": "{{currentYear}}-01-30T12:20:23",
                 "date_modified_gmt": "{{currentYear}}-01-28T11:27:37",
                 "date_paid_gmt": "{{currentYear}}-01-28T11:08:46"
@@ -558,6 +570,8 @@
                 "fee_lines": [],
                 "coupon_lines": [],
                 "refunds": [],
+                "payment_url": "",
+                "is_editable": false,
                 "date_created_gmt": "{{currentYear}}-01-30T09:57:33",
                 "date_modified_gmt": "{{currentYear}}-01-28T11:25:27",
                 "date_paid_gmt": "{{currentYear}}-01-28T09:59:27"
@@ -622,6 +636,8 @@
                 "fee_lines": [],
                 "coupon_lines": [],
                 "refunds": [],
+                "payment_url": "",
+                "is_editable": false,
                 "date_created_gmt": "{{currentYear}}-01-29T08:02:03",
                 "date_modified_gmt": "{{currentYear}}-01-28T14:31:59",
                 "date_paid_gmt": "{{currentYear}}-01-28T10:02:38"
@@ -686,6 +702,8 @@
                 "fee_lines": [],
                 "coupon_lines": [],
                 "refunds": [],
+                "payment_url": "",
+                "is_editable": false,
                 "date_created_gmt": "{{currentYear}}-01-29T01:22:55",
                 "date_modified_gmt": "{{currentYear}}-01-28T11:23:57",
                 "date_paid_gmt": "{{currentYear}}-01-28T11:23:57"
@@ -766,6 +784,8 @@
                 "fee_lines": [],
                 "coupon_lines": [],
                 "refunds": [],
+                "payment_url": "",
+                "is_editable": true,
                 "date_created_gmt": "{{currentYear}}-01-28T11:07:13",
                 "date_modified_gmt": "{{currentYear}}-01-28T11:21:26",
                 "date_paid_gmt": "{{currentYear}}-01-28T11:07:50"
@@ -830,6 +850,8 @@
                 "fee_lines": [],
                 "coupon_lines": [],
                 "refunds": [],
+                "payment_url": "",
+                "is_editable": false,
                 "date_created_gmt": "{{currentYear}}-01-28T09:05:30",
                 "date_modified_gmt": "{{currentYear}}-01-28T11:22:16",
                 "date_paid_gmt": "{{currentYear}}-01-28T11:22:16"
@@ -894,6 +916,8 @@
                 "fee_lines": [],
                 "coupon_lines": [],
                 "refunds": [],
+                "payment_url": "",
+                "is_editable": true,
                 "date_created_gmt": "{{currentYear}}-01-28T08:18:30",
                 "date_modified_gmt": "{{currentYear}}-01-28T11:19:49",
                 "date_paid_gmt": null
@@ -962,6 +986,8 @@
                     "reason": "Order fully refunded.",
                     "total": "-140.00"
                 }],
+                "payment_url": "",
+                "is_editable": true,
                 "date_created_gmt": "{{currentYear}}-01-27T10:16:01",
                 "date_modified_gmt": "{{currentYear}}-01-28T10:17:36",
                 "date_paid_gmt": "{{currentYear}}-01-28T10:16:35"
@@ -1026,6 +1052,8 @@
                 "fee_lines": [],
                 "coupon_lines": [],
                 "refunds": [],
+                "payment_url": "",
+                "is_editable": false,
                 "date_created_gmt": "{{currentYear}}-01-27T10:15:22",
                 "date_modified_gmt": "{{currentYear}}-01-28T10:15:57",
                 "date_paid_gmt": "{{currentYear}}-01-28T10:15:57"
@@ -1090,6 +1118,8 @@
                 "fee_lines": [],
                 "coupon_lines": [],
                 "refunds": [],
+                "payment_url": "",
+                "is_editable": false,
                 "date_created_gmt": "{{currentYear}}-01-27T10:09:44",
                 "date_modified_gmt": "{{currentYear}}-01-28T10:14:05",
                 "date_paid_gmt": "{{currentYear}}-01-28T10:10:19"
@@ -1170,6 +1200,8 @@
                 "fee_lines": [],
                 "coupon_lines": [],
                 "refunds": [],
+                "payment_url": "",
+                "is_editable": true,
                 "date_created_gmt": "{{#assign 'currentYear'}}{{fnow format='yyyy'}}{{/assign}}{{currentYear}}-01-31T11:26:08",
                 "date_modified_gmt": "{{currentYear}}-02-03T15:34:32",
                 "date_paid_gmt": "{{currentYear}}-01-28T11:26:54"
@@ -1234,6 +1266,8 @@
                 "fee_lines": [],
                 "coupon_lines": [],
                 "refunds": [],
+                "payment_url": "",
+                "is_editable": true,
                 "date_created_gmt": "{{currentYear}}-01-28T13:02:43",
                 "date_modified_gmt": "{{currentYear}}-02-03T13:12:20",
                 "date_paid_gmt": "{{currentYear}}-01-28T10:03:05"
@@ -1314,6 +1348,8 @@
                 "fee_lines": [],
                 "coupon_lines": [],
                 "refunds": [],
+                "payment_url": "",
+                "is_editable": true,
                 "date_created_gmt": "{{currentYear}}-01-27T10:14:22",
                 "date_modified_gmt": "{{currentYear}}-01-28T10:15:18",
                 "date_paid_gmt": "{{currentYear}}-01-28T10:14:46"
@@ -1425,6 +1461,8 @@
                 "fee_lines": [],
                 "coupon_lines": [],
                 "refunds": [],
+                "payment_url": "",
+                "is_editable": true,
                 "date_created_gmt": "{{currentYear}}-03-01T20:36:54",
                 "date_modified_gmt": "{{currentYear}}-04-30T21:40:20",
                 "date_paid_gmt": null
@@ -1505,6 +1543,8 @@
                 "fee_lines": [],
                 "coupon_lines": [],
                 "refunds": [],
+                "payment_url": "",
+                "is_editable": true,
                 "date_created_gmt": "{{currentYear}}-01-22T09:52:48",
                 "date_modified_gmt": "{{currentYear}}-06-14T16:49:49",
                 "date_paid_gmt": "{{currentYear}}-04-25T21:47:26"

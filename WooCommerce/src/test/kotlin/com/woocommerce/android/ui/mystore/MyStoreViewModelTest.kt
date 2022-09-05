@@ -18,6 +18,7 @@ import kotlinx.coroutines.flow.flow
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Test
+import org.mockito.ArgumentMatchers.anyInt
 import org.mockito.kotlin.any
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.never
@@ -33,7 +34,7 @@ import kotlin.test.assertTrue
 
 @ExperimentalCoroutinesApi
 class MyStoreViewModelTest : BaseUnitTest() {
-    private val savedState: SavedStateHandle = mock()
+    private val savedState = SavedStateHandle()
     private val networkStatus: NetworkStatus = mock()
     private val resourceProvider: ResourceProvider = mock()
     private val wooCommerceStore: WooCommerceStore = mock()
@@ -201,6 +202,32 @@ class MyStoreViewModelTest : BaseUnitTest() {
                 AnalyticsEvent.DASHBOARD_MAIN_STATS_LOADED,
                 mapOf(AnalyticsTracker.KEY_RANGE to "weeks")
             )
+        }
+
+    @Test
+    fun `Given stats loaded, when stats granularity changes, then selected option is saved into prefs`() =
+        testBlocking {
+            whenViewModelIsCreated()
+            givenNetworkConnectivity(connected = true)
+            givenStatsLoadingResult(GetStats.LoadStatsResult.RevenueStatsSuccess(null))
+
+            sut.onStatsGranularityChanged(ANY_SELECTED_STATS_GRANULARITY)
+
+            verify(appPrefsWrapper).setActiveStatsGranularity(
+                0,
+                ANY_SELECTED_STATS_GRANULARITY.name
+            )
+        }
+
+    @Test
+    fun `Given stats granularity previously selected, when view model is created, stats are retrieved from prefs`() =
+        testBlocking {
+            whenever(appPrefsWrapper.getActiveStatsGranularity(anyInt()))
+                .thenReturn(ANY_SELECTED_STATS_GRANULARITY.name)
+
+            whenViewModelIsCreated()
+
+            verify(appPrefsWrapper).getActiveStatsGranularity(anyInt())
         }
 
     @Test

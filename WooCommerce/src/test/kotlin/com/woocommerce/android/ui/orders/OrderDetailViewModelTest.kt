@@ -22,6 +22,7 @@ import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.ProductImageMap
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.PreviewReceipt
+import com.woocommerce.android.ui.orders.details.AddressValidator
 import com.woocommerce.android.ui.orders.details.OrderDetailFragmentArgs
 import com.woocommerce.android.ui.orders.details.OrderDetailRepository
 import com.woocommerce.android.ui.orders.details.OrderDetailViewModel
@@ -96,6 +97,7 @@ class OrderDetailViewModelTest : BaseUnitTest() {
     }
     private val paymentCollectibilityChecker: CardReaderPaymentCollectibilityChecker = mock()
     private val shippingLabelOnboardingRepository: ShippingLabelOnboardingRepository = mock()
+    private val addressValidator: AddressValidator = mock()
 
     private val savedState = OrderDetailFragmentArgs(orderId = ORDER_ID).initSavedStateHandle()
 
@@ -149,7 +151,8 @@ class OrderDetailViewModelTest : BaseUnitTest() {
                 cardReaderTracker,
                 analyticsTraWrapper,
                 shippingLabelOnboardingRepository,
-                mock()
+                mock(),
+                addressValidator
             )
         )
     }
@@ -632,6 +635,7 @@ class OrderDetailViewModelTest : BaseUnitTest() {
     fun `Display error message on fetch order error`() = testBlocking {
         whenever(orderDetailRepository.fetchOrderById(ORDER_ID)).thenReturn(null)
         whenever(orderDetailRepository.getOrderById(ORDER_ID)).thenReturn(null)
+        doReturn(true).whenever(orderDetailRepository).fetchOrderNotes(any())
 
         var snackbar: ShowSnackbar? = null
         viewModel.event.observeForever {
@@ -641,6 +645,7 @@ class OrderDetailViewModelTest : BaseUnitTest() {
         viewModel.start()
 
         verify(orderDetailRepository, times(1)).fetchOrderById(ORDER_ID)
+        verify(viewModel, never()).order
 
         assertThat(snackbar).isEqualTo(ShowSnackbar(string.order_error_fetch_generic))
     }

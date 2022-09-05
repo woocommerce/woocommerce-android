@@ -34,7 +34,6 @@ import com.woocommerce.android.model.toAppModel
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.orders.details.OrderDetailRepository
-import com.woocommerce.android.ui.payments.cardreader.InPersonPaymentsCanadaFeatureFlag
 import com.woocommerce.android.ui.payments.refunds.IssueRefundViewModel.InputValidationState.TOO_HIGH
 import com.woocommerce.android.ui.payments.refunds.IssueRefundViewModel.InputValidationState.TOO_LOW
 import com.woocommerce.android.ui.payments.refunds.IssueRefundViewModel.InputValidationState.VALID
@@ -97,7 +96,6 @@ class IssueRefundViewModel @Inject constructor(
     private val refundStore: WCRefundStore,
     private val paymentChargeRepository: PaymentChargeRepository,
     private val orderMapper: OrderMapper,
-    private val inPersonPaymentsCanadaFeatureFlag: InPersonPaymentsCanadaFeatureFlag,
     private val analyticsTrackerWrapper: AnalyticsTrackerWrapper,
 ) : ScopedViewModel(savedState) {
     companion object {
@@ -364,7 +362,7 @@ class IssueRefundViewModel @Inject constructor(
                     refundSummaryState = refundSummaryState.copy(
                         isFormEnabled = false
                     )
-                    if (isInteracRefund() && inPersonPaymentsCanadaFeatureFlag.isEnabled()) {
+                    if (isInteracRefund()) {
                         triggerEvent(IssueRefundEvent.NavigateToCardReaderScreen(order.id, commonState.refundTotal))
                     } else {
                         triggerEvent(
