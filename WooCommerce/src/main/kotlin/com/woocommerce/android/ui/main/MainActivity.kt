@@ -31,6 +31,7 @@ import androidx.navigation.fragment.FragmentNavigatorExtras
 import androidx.navigation.fragment.NavHostFragment
 import com.automattic.android.tracks.crashlogging.CrashLogging
 import com.google.android.material.appbar.AppBarLayout
+import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.BuildConfig
 import com.woocommerce.android.NavGraphMainDirections
@@ -203,6 +204,25 @@ class MainActivity :
                 showBottomNav()
             } else {
                 hideBottomNav()
+            }
+
+            when (val fabStatus = (f as? BaseFragment)?.fabStatus ?: AppBarStatus.Hidden) {
+                FabStatus.Hidden -> hideFAB()
+                is FabStatus.Visible -> {
+                    if (binding.fab.isVisible) {
+                        val listener = object : FloatingActionButton.OnVisibilityChangedListener() {
+                            override fun onHidden(fab: FloatingActionButton) {
+                                super.onHidden(fab)
+                                binding.fab.setVisibleFabStatus(fabStatus)
+                                showFAB()
+                            }
+                        }
+                        binding.fab.hide(listener)
+                    } else {
+                        binding.fab.setVisibleFabStatus(fabStatus)
+                        showFAB()
+                    }
+                }
             }
         }
     }
