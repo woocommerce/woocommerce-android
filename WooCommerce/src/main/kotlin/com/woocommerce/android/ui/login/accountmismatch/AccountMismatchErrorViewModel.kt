@@ -42,13 +42,13 @@ class AccountMismatchErrorViewModel @Inject constructor(
     private val userAccount = accountRepository.getUserAccount()
     private val siteUrl = appPrefsWrapper.getLoginSiteAddress()!!
 
-    private val step = savedStateHandle.getStateFlow<Step>(viewModelScope, Step.Idle)
+    private val step = savedStateHandle.getStateFlow<Step>(viewModelScope, Step.MainContent)
     private val _loadingDialogMessage = MutableStateFlow<Int?>(null)
     val loadingDialogMessage = _loadingDialogMessage.asLiveData()
 
     val viewState: LiveData<ViewState> = step.map { step ->
         when (step) {
-            Step.Idle -> prepareMainState()
+            Step.MainContent -> prepareMainState()
             is Step.JetpackConnection -> prepareJetpackConnectionState(step.connectionUrl)
         }
     }.asLiveData()
@@ -97,10 +97,10 @@ class AccountMismatchErrorViewModel @Inject constructor(
         successConnectionUrls = listOf(siteUrl, JETPACK_PLANS_URL),
         userAgent = userAgent.userAgent,
         onDismiss = {
-            step.value = Step.Idle
+            step.value = Step.MainContent
         },
         onConnected = {
-            step.value = Step.Idle
+            step.value = Step.MainContent
             WooLog.d(WooLog.T.LOGIN, "Jetpack Connected")
         }
     )
@@ -138,7 +138,7 @@ class AccountMismatchErrorViewModel @Inject constructor(
             },
             onFailure = {
                 _loadingDialogMessage.value = null
-                step.value = Step.Idle
+                step.value = Step.MainContent
                 // TODO show an error snackbar
             }
         )
@@ -186,7 +186,7 @@ class AccountMismatchErrorViewModel @Inject constructor(
 
     private sealed interface Step : Parcelable {
         @Parcelize
-        object Idle : Step
+        object MainContent : Step
 
         @Parcelize
         data class JetpackConnection(val connectionUrl: String) : Step
