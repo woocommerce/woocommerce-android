@@ -22,7 +22,6 @@ import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.paging.PagedList
 import androidx.recyclerview.widget.ItemTouchHelper
-import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.transition.MaterialFadeThrough
 import com.woocommerce.android.AppConstants
@@ -36,7 +35,6 @@ import com.woocommerce.android.databinding.FragmentOrderListBinding
 import com.woocommerce.android.extensions.handleDialogResult
 import com.woocommerce.android.extensions.handleResult
 import com.woocommerce.android.extensions.navigateSafely
-import com.woocommerce.android.extensions.pinFabAboveBottomNavigationBar
 import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.model.FeatureFeedbackSettings
 import com.woocommerce.android.model.FeatureFeedbackSettings.Feature.SIMPLE_PAYMENTS_AND_ORDER_CREATION
@@ -46,6 +44,7 @@ import com.woocommerce.android.ui.base.TopLevelFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.ui.feedback.SurveyType
+import com.woocommerce.android.ui.main.FabStatus
 import com.woocommerce.android.ui.main.MainActivity
 import com.woocommerce.android.ui.main.MainNavigationRouter
 import com.woocommerce.android.ui.orders.OrderStatusUpdateSource
@@ -96,6 +95,13 @@ class OrderListFragment :
         snackBar?.dismiss()
         super.onStop()
     }
+
+    override val fabStatus: FabStatus
+        get() = FabStatus.Visible(
+            icon = R.drawable.ic_add,
+            contentDescription = R.string.orderlist_create_order_button_description,
+            onClick = { showOrderCreationBottomSheet() }
+        )
 
     // Alias for interacting with [viewModel.isSearching] so the value is always identical
     // to the real value on the UI side.
@@ -196,7 +202,6 @@ class OrderListFragment :
             searchHandler.postDelayed({ searchView?.setQuery(searchQuery, true) }, 100)
         }
         binding.orderFiltersCard.setClickListener { viewModel.onFiltersButtonTapped() }
-        initCreateOrderFAB(binding.createOrderButton)
         initSwipeBehaviour()
         val isLandscape = DisplayUtils.isLandscape(context)
         if (!isLandscape) {
@@ -311,11 +316,6 @@ class OrderListFragment :
             }
             else -> super.onOptionsItemSelected(item)
         }
-    }
-
-    private fun initCreateOrderFAB(fabButton: FloatingActionButton) {
-        fabButton.setOnClickListener { showOrderCreationBottomSheet() }
-        pinFabAboveBottomNavigationBar(fabButton)
     }
 
     private fun isChildFragmentShowing() = (activity as? MainNavigationRouter)?.isChildFragmentShowing() ?: false

@@ -5,6 +5,7 @@ import androidx.annotation.LayoutRes
 import androidx.fragment.app.Fragment
 import com.woocommerce.android.ui.dialog.WooDialog
 import com.woocommerce.android.ui.main.AppBarStatus
+import com.woocommerce.android.ui.main.FabStatus
 import com.woocommerce.android.ui.main.MainActivity
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowDialog
 
@@ -13,6 +14,7 @@ open class BaseFragment : Fragment, BaseFragmentView {
     constructor(@LayoutRes layoutId: Int) : super(layoutId)
 
     open val activityAppBarStatus: AppBarStatus = AppBarStatus.Visible()
+    open val fabStatus: FabStatus = FabStatus.Hidden
 
     @CallSuper
     override fun onHiddenChanged(hidden: Boolean) {

@@ -14,7 +14,6 @@ import androidx.core.view.isVisible
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.transition.MaterialFadeThrough
 import com.woocommerce.android.FeedbackPrefs
@@ -25,13 +24,13 @@ import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.databinding.FragmentProductListBinding
 import com.woocommerce.android.extensions.handleResult
 import com.woocommerce.android.extensions.navigateSafely
-import com.woocommerce.android.extensions.pinFabAboveBottomNavigationBar
 import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.model.FeatureFeedbackSettings
 import com.woocommerce.android.model.Product
 import com.woocommerce.android.ui.base.TopLevelFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.feedback.SurveyType
+import com.woocommerce.android.ui.main.FabStatus
 import com.woocommerce.android.ui.main.MainActivity
 import com.woocommerce.android.ui.main.MainNavigationRouter
 import com.woocommerce.android.ui.products.ProductListViewModel.ProductListEvent.ScrollToTop
@@ -80,6 +79,14 @@ class ProductListFragment :
     private var _binding: FragmentProductListBinding? = null
     private val binding get() = _binding!!
 
+    private var initializingFABVisibility = true
+    override val fabStatus: FabStatus
+        get() = FabStatus.Visible(
+            icon = R.drawable.ic_add,
+            contentDescription = R.string.add_products_button,
+            onClick = { viewModel.onAddProductButtonClicked() }
+        )
+
     private val feedbackState: FeatureFeedbackSettings.FeedbackState
         get() =
             FeedbackPrefs.getFeatureFeedbackSettings(FeatureFeedbackSettings.Feature.PRODUCT_VARIATIONS)?.feedbackState
@@ -115,22 +122,12 @@ class ProductListFragment :
             }
         }
 
-        initAddProductFab(binding.addProductButton)
-
         if (viewModel.isSearching()) {
             binding.productsSearchTabView.isVisible = true
             binding.productsSearchTabView.show(this, viewModel.isSkuSearch())
         } else {
             viewModel.reloadProductsFromDb(excludeProductId = pendingTrashProductId)
         }
-    }
-
-    private fun initAddProductFab(fabButton: FloatingActionButton) {
-        fabButton.setOnClickListener {
-            viewModel.onAddProductButtonClicked()
-        }
-
-        pinFabAboveBottomNavigationBar(fabButton)
     }
 
     override fun onDestroyView() {
@@ -305,7 +302,12 @@ class ProductListFragment :
                 binding.productsSortFilterCard.setSortingTitle(getString(it))
             }
             new.isAddProductButtonVisible?.takeIfNotEqualTo(old?.isAddProductButtonVisible) { isVisible ->
-                showAddProductButton(show = isVisible)
+                // Drop the first call to favour main activity animation when setting the visibility of the FAB
+                if (initializingFABVisibility) {
+                    initializingFABVisibility = false
+                } else {
+                    showAddProductButton(show = isVisible)
+                }
             }
             new.isBottomNavBarVisible.takeIfNotEqualTo(old?.isBottomNavBarVisible) { isBottomNavBarVisible ->
                 showBottomNavBar(isVisible = isBottomNavBarVisible)
@@ -453,8 +455,8 @@ class ProductListFragment :
 
     private fun showAddProductButton(show: Boolean) {
         when (show) {
-            true -> binding.addProductButton.show()
-            else -> binding.addProductButton.hide()
+            true -> (activity as? MainActivity)?.showFAB()
+            else -> (activity as? MainActivity)?.hideFAB()
         }
     }
 
