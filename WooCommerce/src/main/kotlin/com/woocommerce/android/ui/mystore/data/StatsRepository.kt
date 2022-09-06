@@ -10,7 +10,6 @@ import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.withTimeoutOrNull
 import org.wordpress.android.fluxc.model.WCRevenueStatsModel
 import org.wordpress.android.fluxc.model.leaderboards.WCTopPerformerProductModel
-import org.wordpress.android.fluxc.store.NotificationStore
 import org.wordpress.android.fluxc.store.WCLeaderboardsStore
 import org.wordpress.android.fluxc.store.WCOrderStore
 import org.wordpress.android.fluxc.store.WCStatsStore
@@ -29,7 +28,6 @@ class StatsRepository @Inject constructor(
     private val wcOrderStore: WCOrderStore,
     private val wcLeaderboardsStore: WCLeaderboardsStore,
     private val wooCommerceStore: WooCommerceStore,
-    private val notificationStore: NotificationStore
 ) {
     companion object {
         private val TAG = StatsRepository::class.java
