@@ -1,11 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2022-08-23 11:54:03+0000
+Translation-Revision-Date: 2022-08-31 11:54:03+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: sv_SE
 -->
 <resources>
+    <string name="card_reader_onboarding_with_pending_requirements">Det finns ett problem som kräver din uppmärksamhet. &lt;a href=\'\'&gt;Ta en titt  på detta&lt;/a&gt;</string>
     <string name="login_site_picker_try_another_address">Försök med en annan adress</string>
     <string name="card_reader_onboarding_cash_on_delivery_enable_failure">Det gick inte att aktivera Postförskott. Försök igen senare.</string>
     <string name="card_reader_onboarding_cash_on_delivery_disabled_button">Aktivera Betala personligen</string>
@@ -17,7 +18,7 @@ Language: sv_SE
     <string name="login_site_picker_enter_site_address">Ange en webbplatsadress</string>
     <string name="login_help_notification_get_link_by_email_button">Få en inloggningslänk via e-post</string>
     <string name="login_help_notification_invalid_password_title">Kommer du inte ihåg ditt lösenord?</string>
-    <string name="card_reader_onboarding_not_finished">We’ve noticed that you have not yet finished In-Person Payments setup. &lt;b&gt;&lt;a href=\'\'&gt;Fortsätt installationen&lt;/a&gt;&lt;/b&gt;</string>
+    <string name="card_reader_onboarding_not_finished">Vi har noterat att du inte har slutfört installationen av Personliga betalningar. &lt;a href=\'\'&gt;Fortsätt installationen&lt;/a&gt;</string>
     <string name="payments_hub_title">Betalningar</string>
     <string name="orderlist_bottom_sheet_simple_payments_moved_button">Jag förstår!</string>
     <string name="orderlist_bottom_sheet_simple_payments_moved_description">Now you can quickly access In-Person Payments and other features with ease</string>
@@ -1816,7 +1817,7 @@ Language: sv_SE
     <string name="login_jetpack_what_is_description">Jetpack är ett kostnadsfritt tillägg i WordPress som ansluter din butik till de verktyg som behövs för att ge den bästa möjliga mobilupplevelsen, inklusive pushmeddelanden och statistik</string>
     <string name="login_jetpack_what_is">Vad är Jetpack?</string>
     <string name="login_view_connected_stores">Visa anslutna butiker</string>
-    <string name="login_not_connected_to_account">Det ser ut som att %1$s är ansluten till ett annat WordPress.com-konto.</string>
+    <string name="login_wpcom_account_mismatch">Det ser ut som att %1$s är ansluten till ett annat WordPress.com-konto.</string>
     <string name="keep_editing">Fortsätt redigera</string>
     <string name="notification_wpcom_username_needed">Logga in med ditt användarnamn och lösenord.</string>
     <string name="error_user_username_instead_of_email">Logga in med ditt WordPress.com användarnamn istället för din e-postadress.</string>

@@ -221,13 +221,15 @@
     <string name="login_connected_store">Connected store</string>
     <string name="login_verifying_site">Verifying site…</string>
     <string name="login_verifying_site_error">Cannot connect to %s</string>
+    <string name="login_verifying_site_jetpack_timeout_error_title">Connection Error</string>
+    <string name="login_verifying_site_jetpack_timeout_error_description">We were unable to connect to your site. Please contact support to troubleshoot the problem.</string>
     <string name="login_update_required_title">Update Store to WooCommerce 3.5</string>
     <string name="login_update_required_desc">This store uses an older version of WooCommerce. Please upgrade your store to WooCommerce 3.5 or greater to use it with this app.</string>
     <string name="login_avatar_content_description">Your profile photo</string>
     <string name="login_nostores_content_description">No WooCommerce stores</string>
     <string name="login_with_a_different_account">Login with a different account</string>
     <string name="login_no_stores">We didn\'t find WooCommerce stores connected to this account.</string>
-    <string name="login_not_connected_to_account">It looks like %1$s is connected to a different WordPress.com account.</string>
+    <string name="login_wpcom_account_mismatch">It looks like %1$s is connected to a different WordPress.com account.</string>
     <string name="login_try_another_account">Log in with another account</string>
     <string name="login_try_another_store">Try another store</string>
     <string name="login_not_woo_store">It looks like %1$s is not a WooCommerce site.</string>
@@ -972,6 +974,8 @@
         -->
     <string name="payments_hub_title">Payments</string>
     <string name="card_reader_manage_card_reader">Manage Card Reader</string>
+    <string name="card_reader_enable_pay_in_person">Pay in Person</string>
+    <string name="card_reader_enable_pay_in_person_description">The Pay in Person checkout option lets you accept payments for website orders, on collection or delivery. &lt;a href=\'\'&gt;Learn more&lt;/a&gt;</string>
     <string name="card_reader_purchase_card_reader">Order Card Reader</string>
     <string name="card_reader_manage_payment_provider">Change Payment Provider</string>
     <string name="card_reader_bbpos_manual_card_reader" translatable="false">BBPOS Chipper™ 2X BT</string>
@@ -1021,6 +1025,8 @@
     <string name="card_reader_payment_fetch_order_loading_payment_state">Refreshing order</string>
 
     <string name="card_reader_collect_payment">Collect payment</string>
+    <string name="card_reader_payment_options_header">PAYMENT OPTIONS</string>
+    <string name="card_reader_card_readers_header">CARD READERS</string>
     <string name="card_reader_payment_collect_payment_header" translatable="false">@string/card_reader_collect_payment</string>
     <string name="card_reader_payment_processing_payment_header" translatable="false">@string/card_reader_collect_payment</string>
     <string name="card_reader_payment_capturing_payment_header" translatable="false">@string/card_reader_collect_payment</string>

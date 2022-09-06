@@ -1,0 +1,3 @@
+10,1:
+Bu sürümde, ödeme almanızın gereksiz şekilde engellenebileceği bir sorunu düzeltmek de dahil olmak üzere, herhangi bir yeni özellik olmamasına rağmen, yine de içine çok fazla sevgi kattık. Lütfen bize geri bildirim göndermeye devam edin, sizi dinliyoruz.
+

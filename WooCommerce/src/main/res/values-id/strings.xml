@@ -1,11 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2022-08-23 11:54:03+0000
+Translation-Revision-Date: 2022-09-02 09:54:03+0000
 Plural-Forms: nplurals=2; plural=n > 1;
 Generator: GlotPress/2.4.0-alpha
 Language: id
 -->
 <resources>
+    <string name="card_reader_onboarding_with_pending_requirements">Ada masalah yang perlu Anda perhatikan. Harap &lt;a href=\'\'&gt;diperiksa&lt;/a&gt;</string>
     <string name="login_site_picker_try_another_address">Coba alamat lainnya</string>
     <string name="card_reader_onboarding_cash_on_delivery_enable_failure">Gagal mengaktifkan bayar di tempat. Silakan coba lagi nanti.</string>
     <string name="card_reader_onboarding_cash_on_delivery_disabled_button">Aktifkan Pembayaran Langsung</string>
@@ -17,7 +18,7 @@ Language: id
     <string name="login_site_picker_enter_site_address">Masukkan alamat situs</string>
     <string name="login_help_notification_get_link_by_email_button">Dapatkan tautan untuk login melalui email</string>
     <string name="login_help_notification_invalid_password_title">Lupa kata sandi Anda?</string>
-    <string name="card_reader_onboarding_not_finished">Kami mendapati bahwa Anda belum menyelesaikan penyiapan Pembayaran Langsung. &lt;b&gt;&lt;a href=\'\'&gt;Lanjutkan penyiapan&lt;/a&gt;&lt;/b&gt;</string>
+    <string name="card_reader_onboarding_not_finished">Kami mendapati bahwa Anda belum menyelesaikan penyiapan Pembayaran Langsung. &lt;a href=\'\'&gt;Lanjutkan penyiapan&lt;/a&gt;</string>
     <string name="payments_hub_title">Pembayaran</string>
     <string name="orderlist_bottom_sheet_simple_payments_moved_button">Mantap!</string>
     <string name="orderlist_bottom_sheet_simple_payments_moved_description">Sekarang, Anda dapat mengakses Pembayaran Langsung dan fitur-fitur lain dengan cepat dan mudah</string>
@@ -1816,7 +1817,7 @@ Language: id
     <string name="login_jetpack_what_is_description">Jetpack merupakan plugin WordPress gratis yang menghubungkan toko Anda dengan peralatan yang diperlukan agar dapat memberikan pengalaman seluler terbaik, mencakup pemberitahuan push dan statistik</string>
     <string name="login_jetpack_what_is">Apa itu Jetpack?</string>
     <string name="login_view_connected_stores">Lihat toko terhubung</string>
-    <string name="login_not_connected_to_account">Sepertinya %1$s tidak terhubung ke akun WordPress.com lainnya.</string>
+    <string name="login_wpcom_account_mismatch">Sepertinya %1$s tidak terhubung ke akun WordPress.com lainnya.</string>
     <string name="keep_editing">Lanjutkan menyunting</string>
     <string name="notification_wpcom_username_needed">Silakan login dengan nama pengguna dan kata sandi Anda.</string>
     <string name="error_user_username_instead_of_email">Silakan login menggunakan nama pengguna WordPress.com sebagai ganti alamat email Anda.</string>

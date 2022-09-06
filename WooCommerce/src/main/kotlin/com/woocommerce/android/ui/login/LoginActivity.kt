@@ -5,6 +5,7 @@ import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
+import android.os.Parcelable
 import android.view.MenuItem
 import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.app.AppCompatActivity
@@ -29,6 +30,7 @@ import com.woocommerce.android.experiment.MagicLinkRequestExperiment.MagicLinkRe
 import com.woocommerce.android.experiment.MagicLinkRequestExperiment.MagicLinkRequestVariant.ENHANCED
 import com.woocommerce.android.experiment.MagicLinkSentScreenExperiment
 import com.woocommerce.android.experiment.PrologueExperiment
+import com.woocommerce.android.extensions.parcelable
 import com.woocommerce.android.support.HelpActivity
 import com.woocommerce.android.support.HelpActivity.Origin
 import com.woocommerce.android.support.ZendeskExtraTags
@@ -41,6 +43,9 @@ import com.woocommerce.android.ui.login.UnifiedLoginTracker.Flow
 import com.woocommerce.android.ui.login.UnifiedLoginTracker.Flow.LOGIN_SITE_ADDRESS
 import com.woocommerce.android.ui.login.UnifiedLoginTracker.Source
 import com.woocommerce.android.ui.login.UnifiedLoginTracker.Step.ENTER_SITE_ADDRESS
+import com.woocommerce.android.ui.login.accountmismatch.AccountMismatchErrorFragment
+import com.woocommerce.android.ui.login.accountmismatch.AccountMismatchErrorFragmentArgs
+import com.woocommerce.android.ui.login.accountmismatch.AccountMismatchErrorViewModel.AccountMismatchPrimaryButton
 import com.woocommerce.android.ui.login.localnotifications.LoginHelpNotificationType
 import com.woocommerce.android.ui.login.localnotifications.LoginHelpNotificationType.DEFAULT_HELP
 import com.woocommerce.android.ui.login.localnotifications.LoginHelpNotificationType.LOGIN_SITE_ADDRESS_EMAIL_ERROR
@@ -61,6 +66,7 @@ import dagger.android.AndroidInjector
 import dagger.android.DispatchingAndroidInjector
 import dagger.android.HasAndroidInjector
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.parcelize.Parcelize
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode.MAIN
 import org.wordpress.android.fluxc.Dispatcher
@@ -118,6 +124,7 @@ class LoginActivity :
         private const val KEY_UNIFIED_TRACKER_SOURCE = "KEY_UNIFIED_TRACKER_SOURCE"
         private const val KEY_UNIFIED_TRACKER_FLOW = "KEY_UNIFIED_TRACKER_FLOW"
         private const val KEY_LOGIN_HELP_NOTIFICATION = "KEY_LOGIN_HELP_NOTIFICATION"
+        private const val KEY_CONNECT_SITE_INFO = "KEY_CONNECT_SITE_INFO"
 
         fun createIntent(
             context: Context,
@@ -152,7 +159,7 @@ class LoginActivity :
     private var loginMode: LoginMode? = null
     private lateinit var binding: ActivityLoginBinding
 
-    private var isWPComSite: Boolean? = null
+    private var connectSiteInfo: ConnectSiteInfo? = null
 
     override fun androidInjector(): AndroidInjector<Any> = androidInjector
 
@@ -192,6 +199,7 @@ class LoginActivity :
         savedInstanceState?.let { ss ->
             unifiedLoginTracker.setSource(ss.getString(KEY_UNIFIED_TRACKER_SOURCE, Source.DEFAULT.value))
             unifiedLoginTracker.setFlow(ss.getString(KEY_UNIFIED_TRACKER_FLOW))
+            connectSiteInfo = ss.parcelable(KEY_CONNECT_SITE_INFO)
         }
     }
 
@@ -220,6 +228,7 @@ class LoginActivity :
         super.onSaveInstanceState(outState)
 
         outState.putString(KEY_UNIFIED_TRACKER_SOURCE, unifiedLoginTracker.getSource().value)
+        outState.putParcelable(KEY_CONNECT_SITE_INFO, connectSiteInfo)
         unifiedLoginTracker.getFlow()?.value?.let {
             outState.putString(KEY_UNIFIED_TRACKER_FLOW, it)
         }
@@ -592,7 +601,7 @@ class LoginActivity :
         AppPrefs.setLoginSiteAddress(siteAddressClean)
 
         if (hasJetpack) {
-            showEmailLoginScreen(inputSiteAddress.takeIf { isWPComSite != true })
+            showEmailLoginScreen(inputSiteAddress.takeIf { connectSiteInfo?.isWPCom != true })
         } else {
             // Let user log in via site credentials first before showing Jetpack missing screen.
             loginViaSiteCredentials(inputSiteAddress)
@@ -706,15 +715,27 @@ class LoginActivity :
         userAvatarUrl: String?,
         checkJetpackAvailability: Boolean
     ) {
-        val jetpackReqFragment = LoginNoJetpackFragment.newInstance(
-            siteAddress, endpointAddress, username, password, userAvatarUrl,
-            checkJetpackAvailability
-        )
-        changeFragment(
-            fragment = jetpackReqFragment as Fragment,
-            shouldAddToBackStack = true,
-            tag = LoginJetpackRequiredFragment.TAG
-        )
+        if (connectSiteInfo?.isJetpackConnected == true) {
+            // If jetpack is present, but we can't find the connected email, then show account mismatch error
+            val fragment = AccountMismatchErrorFragment().apply {
+                arguments = AccountMismatchErrorFragmentArgs(AccountMismatchPrimaryButton.CONNECT_JETPACK).toBundle()
+            }
+            changeFragment(
+                fragment = fragment,
+                shouldAddToBackStack = true,
+                tag = AccountMismatchErrorFragment::class.java.simpleName
+            )
+        } else {
+            val jetpackReqFragment = LoginNoJetpackFragment.newInstance(
+                siteAddress, endpointAddress, username, password, userAvatarUrl,
+                checkJetpackAvailability
+            )
+            changeFragment(
+                fragment = jetpackReqFragment as Fragment,
+                shouldAddToBackStack = true,
+                tag = LoginJetpackRequiredFragment.TAG
+            )
+        }
     }
 
     override fun helpHandleDiscoveryError(
@@ -977,6 +998,21 @@ class LoginActivity :
     @SuppressWarnings("unused")
     @Subscribe(threadMode = MAIN)
     fun onFetchedConnectSiteInfo(event: OnConnectSiteInfoChecked) {
-        isWPComSite = event.info.isWPCom
+        if (event.isError) {
+            connectSiteInfo = null
+        } else {
+            connectSiteInfo = event.info.let {
+                ConnectSiteInfo(
+                    isWPCom = it.isWPCom,
+                    isJetpackConnected = it.isJetpackConnected
+                )
+            }
+        }
     }
+
+    @Parcelize
+    private data class ConnectSiteInfo(
+        val isWPCom: Boolean,
+        val isJetpackConnected: Boolean
+    ) : Parcelable
 }

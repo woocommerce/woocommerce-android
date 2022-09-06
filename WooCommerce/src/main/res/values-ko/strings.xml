@@ -1,11 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2022-08-23 13:54:04+0000
+Translation-Revision-Date: 2022-08-31 09:54:04+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: ko_KR
 -->
 <resources>
+    <string name="card_reader_onboarding_with_pending_requirements">주의가 필요한 문제가 있습니다. &lt;a href=\'\'&gt;유의&lt;/a&gt;해 주세요.</string>
     <string name="login_site_picker_try_another_address">다른 주소 시도</string>
     <string name="card_reader_onboarding_cash_on_delivery_enable_failure">배송 시 현금을 활성화하지 못했습니다. 나중에 다시 시도하세요.</string>
     <string name="card_reader_onboarding_cash_on_delivery_disabled_button">대면 결제 활성화</string>
@@ -17,7 +18,7 @@ Language: ko_KR
     <string name="login_site_picker_enter_site_address">사이트 주소 입력</string>
     <string name="login_help_notification_get_link_by_email_button">이메일로 로그인 링크 받기</string>
     <string name="login_help_notification_invalid_password_title">비밀번호가 기억나지 않나요?</string>
-    <string name="card_reader_onboarding_not_finished">아직 대면 결제 설정을 완료하지 않으신 것 같습니다. &lt;b&gt;&lt;a href=\'\'&gt;설정 계속&lt;/a&gt;&lt;/b&gt;</string>
+    <string name="card_reader_onboarding_not_finished">아직 대면 결제 설정을 완료하지 않으신 것 같습니다. &lt;a href=\'\'&gt;설정 계속&lt;/a&gt;</string>
     <string name="payments_hub_title">결제</string>
     <string name="orderlist_bottom_sheet_simple_payments_moved_button">알겠어요!</string>
     <string name="orderlist_bottom_sheet_simple_payments_moved_description">이제 빠르고 쉽게 대면 결제와 기타 기능에 접근하실 수 있습니다.</string>
@@ -1816,7 +1817,7 @@ Language: ko_KR
     <string name="login_jetpack_what_is_description">Jetpack은 스토어를 최고의 모바일 환경을 제공하는 데 필요한 푸시 알림, 통계 등의 도구와 연결하는 무료 워드프레스 플러그인입니다.</string>
     <string name="login_jetpack_what_is">Jetpack이란 무엇인가요?</string>
     <string name="login_view_connected_stores">연결된 스토어 보기</string>
-    <string name="login_not_connected_to_account">%1$s이(가) 다른 워드프레스닷컴 계정에 연결되어 있는 것 같습니다.</string>
+    <string name="login_wpcom_account_mismatch">%1$s이(가) 다른 워드프레스닷컴 계정에 연결되어 있는 것 같습니다.</string>
     <string name="keep_editing">계속 편집하기</string>
     <string name="notification_wpcom_username_needed">사용자 이름과 비밀번호를 사용하여 로그인하세요.</string>
     <string name="error_user_username_instead_of_email">이메일 주소가 아닌 워드프레스닷컴 사용자 이름을 사용하여 로그인하세요.</string>
