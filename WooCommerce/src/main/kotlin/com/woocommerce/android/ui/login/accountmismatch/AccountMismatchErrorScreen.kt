@@ -85,7 +85,7 @@ fun AccountMismatchErrorScreen(viewState: AccountMismatchErrorViewModel.ViewStat
         )
 
         ButtonBar(
-            primaryButtonText = stringResource(id = viewState.primaryButtonText),
+            primaryButtonText = viewState.primaryButtonText?.let { stringResource(id = it) },
             primaryButtonClick = viewState.primaryButtonAction,
             secondaryButtonText = stringResource(id = viewState.secondaryButtonText),
             secondaryButtonClick = viewState.secondaryButtonAction,
@@ -104,11 +104,9 @@ private fun MainContent(
         verticalArrangement = Arrangement.Center,
         modifier = modifier
     ) {
-        UserInfo(
-            avatarUrl = viewState.avatarUrl,
-            displayName = viewState.displayName,
-            username = viewState.username
-        )
+        viewState.userInfo?.let {
+            UserInfo(it)
+        }
 
         Image(
             painter = painterResource(id = R.drawable.img_woo_no_stores),
@@ -118,25 +116,27 @@ private fun MainContent(
                 .weight(1f, fill = false)
         )
         Text(
-            text = stringResource(id = R.string.login_not_connected_to_account, viewState.siteUrl),
+            text = viewState.message,
             textAlign = TextAlign.Center
         )
         Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.major_100)))
-        WCTextButton(onClick = viewState.inlineButtonAction) {
-            Text(text = stringResource(id = viewState.inlineButtonText))
+        viewState.inlineButtonText?.let { buttonText ->
+            WCTextButton(onClick = viewState.inlineButtonAction) {
+                Text(text = stringResource(id = buttonText))
+            }
         }
     }
 }
 
 @Composable
-private fun UserInfo(avatarUrl: String, displayName: String, username: String, modifier: Modifier = Modifier) {
+private fun UserInfo(userInfo: AccountMismatchErrorViewModel.UserInfo, modifier: Modifier = Modifier) {
     Column(
         modifier = modifier,
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
         AsyncImage(
             model = Builder(LocalContext.current)
-                .data(avatarUrl)
+                .data(userInfo.avatarUrl)
                 .crossfade(true)
                 .build(),
             placeholder = painterResource(R.drawable.img_gravatar_placeholder),
@@ -149,12 +149,12 @@ private fun UserInfo(avatarUrl: String, displayName: String, username: String, m
         )
 
         Text(
-            text = displayName,
+            text = userInfo.displayName,
             style = MaterialTheme.typography.h5,
             color = colorResource(id = R.color.color_on_surface_high)
         )
         Text(
-            text = username,
+            text = userInfo.username,
             style = MaterialTheme.typography.body1
         )
     }
@@ -162,7 +162,7 @@ private fun UserInfo(avatarUrl: String, displayName: String, username: String, m
 
 @Composable
 private fun ButtonBar(
-    primaryButtonText: String,
+    primaryButtonText: String?,
     primaryButtonClick: () -> Unit,
     secondaryButtonText: String,
     secondaryButtonClick: () -> Unit,
@@ -170,9 +170,12 @@ private fun ButtonBar(
 ) {
     @Composable
     fun Buttons(modifier: Modifier) {
-        WCColoredButton(onClick = primaryButtonClick, modifier = modifier) {
-            Text(text = primaryButtonText)
+        primaryButtonText?.let {
+            WCColoredButton(onClick = primaryButtonClick, modifier = modifier) {
+                Text(text = primaryButtonText)
+            }
         }
+
         WCOutlinedButton(onClick = secondaryButtonClick, modifier = modifier) {
             Text(text = secondaryButtonText)
         }
@@ -198,10 +201,12 @@ private fun AccountMismatchPreview() {
     WooThemeWithBackground {
         AccountMismatchErrorScreen(
             viewState = AccountMismatchErrorViewModel.ViewState(
-                siteUrl = "url",
-                displayName = "displayname",
-                username = "username",
-                avatarUrl = "",
+                userInfo = AccountMismatchErrorViewModel.UserInfo(
+                    displayName = "displayname",
+                    username = "username",
+                    avatarUrl = ""
+                ),
+                message = stringResource(id = R.string.login_wpcom_account_mismatch, "url"),
                 primaryButtonText = R.string.continue_button,
                 primaryButtonAction = {},
                 secondaryButtonText = R.string.continue_button,
