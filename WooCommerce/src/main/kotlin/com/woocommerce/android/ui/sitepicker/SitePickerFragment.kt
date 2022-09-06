@@ -24,6 +24,7 @@ import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.common.wpcomwebview.WPComWebViewFragment
 import com.woocommerce.android.ui.login.LoginActivity
 import com.woocommerce.android.ui.login.LoginEmailHelpDialogFragment
+import com.woocommerce.android.ui.login.accountmismatch.AccountMismatchErrorViewModel.AccountMismatchPrimaryButton
 import com.woocommerce.android.ui.main.AppBarStatus
 import com.woocommerce.android.ui.main.MainActivity
 import com.woocommerce.android.ui.sitepicker.SitePickerViewModel.SitePickerEvent.NavigateToAccountMismatchScreen
@@ -265,7 +266,10 @@ class SitePickerFragment : BaseFragment(R.layout.fragment_site_picker), LoginEma
 
     private fun navigateToAccountMismatchScreen(hasConnectedStores: Boolean) {
         findNavController().navigateSafely(
-            SitePickerFragmentDirections.actionSitePickerFragmentToAccountMismatchErrorFragment(hasConnectedStores)
+            SitePickerFragmentDirections.actionSitePickerFragmentToAccountMismatchErrorFragment(
+                primaryButton = if (hasConnectedStores) AccountMismatchPrimaryButton.SHOW_SITE_PICKER
+                else AccountMismatchPrimaryButton.ENTER_NEW_SITE_ADDRESS
+            )
         )
     }
 
