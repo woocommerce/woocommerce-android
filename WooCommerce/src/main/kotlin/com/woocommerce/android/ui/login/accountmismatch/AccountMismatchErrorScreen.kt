@@ -19,6 +19,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
 import androidx.compose.material.LinearProgressIndicator
@@ -91,6 +92,9 @@ fun AccountMismatchErrorScreen(viewModel: AccountMismatchErrorViewModel) {
                 )
                 is ViewState.JetpackWebViewState -> JetpackConnectionWebView(
                     viewState = viewState,
+                    modifier = Modifier.padding(paddingValues)
+                )
+                ViewState.FetchingJetpackEmailViewState -> FetchJetpackEmailScreen(
                     modifier = Modifier.padding(paddingValues)
                 )
             }
@@ -273,6 +277,19 @@ private fun JetpackConnectionWebView(viewState: ViewState.JetpackWebViewState, m
                 }
             }
         )
+    }
+}
+
+@Composable
+private fun FetchJetpackEmailScreen(modifier: Modifier = Modifier) {
+    Column(
+        modifier = modifier.fillMaxSize(),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center
+    ) {
+        Text(text = "Fetching your account details...")
+        Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.major_100)))
+        CircularProgressIndicator()
     }
 }
 

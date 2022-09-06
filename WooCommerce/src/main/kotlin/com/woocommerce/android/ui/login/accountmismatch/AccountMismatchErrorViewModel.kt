@@ -18,10 +18,15 @@ import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.getStateFlow
 import com.woocommerce.android.viewmodel.navArgs
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.CoroutineStart.LAZY
+import kotlinx.coroutines.Deferred
+import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import kotlinx.parcelize.Parcelize
+import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.network.UserAgent
 import javax.inject.Inject
 
@@ -41,6 +46,9 @@ class AccountMismatchErrorViewModel @Inject constructor(
     private val navArgs: AccountMismatchErrorFragmentArgs by savedStateHandle.navArgs()
     private val userAccount = accountRepository.getUserAccount()
     private val siteUrl = appPrefsWrapper.getLoginSiteAddress()!!
+    private val site: Deferred<SiteModel> = async(start = LAZY) {
+        accountMismatchRepository.getSiteByUrl(siteUrl) ?: error("The site is not cached")
+    }
 
     private val step = savedStateHandle.getStateFlow<Step>(viewModelScope, Step.MainContent)
     private val _loadingDialogMessage = MutableStateFlow<Int?>(null)
@@ -50,8 +58,13 @@ class AccountMismatchErrorViewModel @Inject constructor(
         when (step) {
             Step.MainContent -> prepareMainState()
             is Step.JetpackConnection -> prepareJetpackConnectionState(step.connectionUrl)
+            Step.FetchJetpackEmail -> ViewState.FetchingJetpackEmailViewState
         }
     }.asLiveData()
+
+    init {
+        handleFetchingJetpackEmail()
+    }
 
     private fun prepareMainState() = ViewState.MainState(
         userInfo = userAccount?.let {
@@ -100,8 +113,7 @@ class AccountMismatchErrorViewModel @Inject constructor(
             step.value = Step.MainContent
         },
         onConnected = {
-            step.value = Step.MainContent
-            WooLog.d(WooLog.T.LOGIN, "Jetpack Connected")
+            step.value = Step.FetchJetpackEmail
         }
     )
 
@@ -130,7 +142,7 @@ class AccountMismatchErrorViewModel @Inject constructor(
 
     private fun startJetpackConnection() = launch {
         _loadingDialogMessage.value = R.string.loading
-        val site = accountMismatchRepository.getSiteByUrl(siteUrl) ?: error("The site is not cached")
+        val site = site.await()
         accountMismatchRepository.fetchJetpackConnectionUrl(site).fold(
             onSuccess = {
                 _loadingDialogMessage.value = null
@@ -142,6 +154,21 @@ class AccountMismatchErrorViewModel @Inject constructor(
                 // TODO show an error snackbar
             }
         )
+    }
+
+    private fun handleFetchingJetpackEmail() = launch {
+        step.filter { it is Step.FetchJetpackEmail }
+            .collect {
+                val site = site.await()
+                accountMismatchRepository.fetchJetpackConnectedEmail(site).fold(
+                    onSuccess = {
+                        WooLog.d(WooLog.T.LOGIN, "Jetpack connected email is: $it")
+                    },
+                    onFailure = {
+                        TODO()
+                    }
+                )
+            }
     }
 
     private fun helpFindingEmail() {
@@ -171,6 +198,8 @@ class AccountMismatchErrorViewModel @Inject constructor(
             val onDismiss: () -> Unit,
             val onConnected: () -> Unit
         ) : ViewState
+
+        object FetchingJetpackEmailViewState : ViewState
     }
 
     data class UserInfo(
@@ -190,6 +219,9 @@ class AccountMismatchErrorViewModel @Inject constructor(
 
         @Parcelize
         data class JetpackConnection(val connectionUrl: String) : Step
+
+        @Parcelize
+        object FetchJetpackEmail : Step
     }
 
     enum class AccountMismatchPrimaryButton {
