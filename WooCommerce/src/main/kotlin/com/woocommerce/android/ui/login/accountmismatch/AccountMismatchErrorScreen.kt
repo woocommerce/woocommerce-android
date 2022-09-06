@@ -263,7 +263,6 @@ private fun JetpackConnectionWebView(viewState: ViewState.JetpackWebViewState, m
                         }
                     }
                     this.webChromeClient = object : WebChromeClient() {
-                        @Suppress("MagicNumber")
                         override fun onProgressChanged(view: WebView?, newProgress: Int) {
                             progress = newProgress
                         }
