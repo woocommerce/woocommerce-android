@@ -713,7 +713,7 @@ class LoginActivity :
         changeFragment(
             fragment = jetpackReqFragment as Fragment,
             shouldAddToBackStack = true,
-            tag = LoginJetpackRequiredFragment.TAG
+            tag = LoginNoJetpackFragment.TAG
         )
     }
 
@@ -731,7 +731,7 @@ class LoginActivity :
         changeFragment(
             fragment = discoveryErrorFragment as Fragment,
             shouldAddToBackStack = true,
-            tag = LoginJetpackRequiredFragment.TAG
+            tag = LoginDiscoveryErrorFragment.TAG
         )
     }
 
