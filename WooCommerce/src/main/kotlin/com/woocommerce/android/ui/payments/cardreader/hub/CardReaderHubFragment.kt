@@ -65,7 +65,10 @@ class CardReaderHubFragment : BaseFragment(R.layout.fragment_card_reader_hub) {
                 }
                 is CardReaderHubViewModel.CardReaderHubEvents.NavigateToPurchaseCardReaderFlow -> {
                     findNavController().navigate(
-                        NavGraphMainDirections.actionGlobalWPComWebViewFragment(urlToLoad = event.url)
+                        NavGraphMainDirections.actionGlobalWPComWebViewFragment(
+                            urlToLoad = event.url,
+                            title = resources.getString(event.titleRes)
+                        )
                     )
                 }
                 is CardReaderHubViewModel.CardReaderHubEvents.NavigateToCardReaderManualsScreen -> {
