@@ -1,6 +1,10 @@
 package com.woocommerce.android.ui.login.accountmismatch
 
+import android.annotation.SuppressLint
 import android.content.res.Configuration
+import android.webkit.WebChromeClient
+import android.webkit.WebView
+import android.webkit.WebViewClient
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -17,14 +21,22 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
+import androidx.compose.material.LinearProgressIndicator
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
 import androidx.compose.material.TopAppBar
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalConfiguration
@@ -36,13 +48,16 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.viewinterop.AndroidView
 import coil.compose.AsyncImage
 import coil.request.ImageRequest.Builder
 import com.woocommerce.android.R
+import com.woocommerce.android.ui.compose.component.ProgressDialog
 import com.woocommerce.android.ui.compose.component.WCColoredButton
 import com.woocommerce.android.ui.compose.component.WCOutlinedButton
 import com.woocommerce.android.ui.compose.component.WCTextButton
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
+import com.woocommerce.android.ui.login.accountmismatch.AccountMismatchErrorViewModel.ViewState
 
 @Composable
 fun AccountMismatchErrorScreen(viewModel: AccountMismatchErrorViewModel) {
@@ -51,6 +66,13 @@ fun AccountMismatchErrorScreen(viewModel: AccountMismatchErrorViewModel) {
             TopAppBar(
                 backgroundColor = MaterialTheme.colors.surface,
                 title = { },
+                navigationIcon = {
+                    if (viewState is ViewState.JetpackWebViewState) {
+                        IconButton(onClick = viewState.onDismiss) {
+                            Icon(Icons.Filled.ArrowBack, contentDescription = "Back")
+                        }
+                    }
+                },
                 actions = {
                     IconButton(onClick = viewModel::onHelpButtonClick) {
                         Icon(
@@ -62,13 +84,25 @@ fun AccountMismatchErrorScreen(viewModel: AccountMismatchErrorViewModel) {
                 elevation = 0.dp
             )
         }) { paddingValues ->
-            AccountMismatchErrorScreen(viewState = viewState, modifier = Modifier.padding(paddingValues))
+            when (viewState) {
+                is ViewState.MainState -> AccountMismatchErrorScreen(
+                    viewState = viewState,
+                    modifier = Modifier.padding(paddingValues)
+                )
+                is ViewState.JetpackWebViewState -> JetpackConnectionWebView(
+                    viewState = viewState,
+                    modifier = Modifier.padding(paddingValues)
+                )
+            }
         }
+    }
+    viewModel.loadingDialogMessage.observeAsState().value?.let {
+        ProgressDialog(title = "", subtitle = stringResource(id = it))
     }
 }
 
 @Composable
-fun AccountMismatchErrorScreen(viewState: AccountMismatchErrorViewModel.ViewState, modifier: Modifier = Modifier) {
+fun AccountMismatchErrorScreen(viewState: ViewState.MainState, modifier: Modifier = Modifier) {
     Column(
         modifier = modifier
             .background(MaterialTheme.colors.surface)
@@ -85,7 +119,7 @@ fun AccountMismatchErrorScreen(viewState: AccountMismatchErrorViewModel.ViewStat
         )
 
         ButtonBar(
-            primaryButtonText = stringResource(id = viewState.primaryButtonText),
+            primaryButtonText = viewState.primaryButtonText?.let { stringResource(id = it) },
             primaryButtonClick = viewState.primaryButtonAction,
             secondaryButtonText = stringResource(id = viewState.secondaryButtonText),
             secondaryButtonClick = viewState.secondaryButtonAction,
@@ -96,7 +130,7 @@ fun AccountMismatchErrorScreen(viewState: AccountMismatchErrorViewModel.ViewStat
 
 @Composable
 private fun MainContent(
-    viewState: AccountMismatchErrorViewModel.ViewState,
+    viewState: ViewState.MainState,
     modifier: Modifier = Modifier
 ) {
     Column(
@@ -104,11 +138,9 @@ private fun MainContent(
         verticalArrangement = Arrangement.Center,
         modifier = modifier
     ) {
-        UserInfo(
-            avatarUrl = viewState.avatarUrl,
-            displayName = viewState.displayName,
-            username = viewState.username
-        )
+        viewState.userInfo?.let {
+            UserInfo(it)
+        }
 
         Image(
             painter = painterResource(id = R.drawable.img_woo_no_stores),
@@ -118,25 +150,27 @@ private fun MainContent(
                 .weight(1f, fill = false)
         )
         Text(
-            text = stringResource(id = R.string.login_not_connected_to_account, viewState.siteUrl),
+            text = viewState.message,
             textAlign = TextAlign.Center
         )
         Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.major_100)))
-        WCTextButton(onClick = viewState.inlineButtonAction) {
-            Text(text = stringResource(id = viewState.inlineButtonText))
+        viewState.inlineButtonText?.let { buttonText ->
+            WCTextButton(onClick = viewState.inlineButtonAction) {
+                Text(text = stringResource(id = buttonText))
+            }
         }
     }
 }
 
 @Composable
-private fun UserInfo(avatarUrl: String, displayName: String, username: String, modifier: Modifier = Modifier) {
+private fun UserInfo(userInfo: AccountMismatchErrorViewModel.UserInfo, modifier: Modifier = Modifier) {
     Column(
         modifier = modifier,
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
         AsyncImage(
             model = Builder(LocalContext.current)
-                .data(avatarUrl)
+                .data(userInfo.avatarUrl)
                 .crossfade(true)
                 .build(),
             placeholder = painterResource(R.drawable.img_gravatar_placeholder),
@@ -149,12 +183,12 @@ private fun UserInfo(avatarUrl: String, displayName: String, username: String, m
         )
 
         Text(
-            text = displayName,
+            text = userInfo.displayName,
             style = MaterialTheme.typography.h5,
             color = colorResource(id = R.color.color_on_surface_high)
         )
         Text(
-            text = username,
+            text = userInfo.username,
             style = MaterialTheme.typography.body1
         )
     }
@@ -162,7 +196,7 @@ private fun UserInfo(avatarUrl: String, displayName: String, username: String, m
 
 @Composable
 private fun ButtonBar(
-    primaryButtonText: String,
+    primaryButtonText: String?,
     primaryButtonClick: () -> Unit,
     secondaryButtonText: String,
     secondaryButtonClick: () -> Unit,
@@ -170,9 +204,12 @@ private fun ButtonBar(
 ) {
     @Composable
     fun Buttons(modifier: Modifier) {
-        WCColoredButton(onClick = primaryButtonClick, modifier = modifier) {
-            Text(text = primaryButtonText)
+        primaryButtonText?.let {
+            WCColoredButton(onClick = primaryButtonClick, modifier = modifier) {
+                Text(text = primaryButtonText)
+            }
         }
+
         WCOutlinedButton(onClick = secondaryButtonClick, modifier = modifier) {
             Text(text = secondaryButtonText)
         }
@@ -192,16 +229,65 @@ private fun ButtonBar(
     }
 }
 
+@SuppressLint("SetJavaScriptEnabled")
+@Composable
+private fun JetpackConnectionWebView(viewState: ViewState.JetpackWebViewState, modifier: Modifier = Modifier) {
+    var progress by remember {
+        mutableStateOf(0)
+    }
+    Column(modifier = modifier.fillMaxSize()) {
+        LinearProgressIndicator(
+            progress = (progress / 100f),
+            modifier = Modifier
+                .fillMaxWidth()
+                .alpha(if (progress == 100) 0f else 1f)
+        )
+
+        AndroidView(
+            factory = { context ->
+                WebView(context).apply {
+                    this.webViewClient = object : WebViewClient() {
+                        override fun doUpdateVisitedHistory(view: WebView?, url: String?, isReload: Boolean) {
+                            url?.let { decideUrl(it) }
+                        }
+
+                        override fun onLoadResource(view: WebView?, url: String?) {
+                            url?.let { decideUrl(it) }
+                        }
+
+                        private fun decideUrl(url: String) {
+                            val urlWithoutScheme = url.replace("^https?://".toRegex(), "")
+                            if (viewState.successConnectionUrls.any { urlWithoutScheme.startsWith(it) }) {
+                                viewState.onConnected()
+                            }
+                        }
+                    }
+                    this.webChromeClient = object : WebChromeClient() {
+                        override fun onProgressChanged(view: WebView?, newProgress: Int) {
+                            progress = newProgress
+                        }
+                    }
+                    this.settings.javaScriptEnabled = true
+
+                    loadUrl(viewState.connectionUrl)
+                }
+            }
+        )
+    }
+}
+
 @Preview
 @Composable
 private fun AccountMismatchPreview() {
     WooThemeWithBackground {
         AccountMismatchErrorScreen(
-            viewState = AccountMismatchErrorViewModel.ViewState(
-                siteUrl = "url",
-                displayName = "displayname",
-                username = "username",
-                avatarUrl = "",
+            viewState = ViewState.MainState(
+                userInfo = AccountMismatchErrorViewModel.UserInfo(
+                    displayName = "displayname",
+                    username = "username",
+                    avatarUrl = ""
+                ),
+                message = stringResource(id = R.string.login_wpcom_account_mismatch, "url"),
                 primaryButtonText = R.string.continue_button,
                 primaryButtonAction = {},
                 secondaryButtonText = R.string.continue_button,

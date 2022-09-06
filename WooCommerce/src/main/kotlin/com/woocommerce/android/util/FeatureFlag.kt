@@ -13,7 +13,8 @@ enum class FeatureFlag {
     COUPONS_M2,
     WC_SHIPPING_BANNER,
     UNIFIED_ORDER_EDITING,
-    ORDER_CREATION_CUSTOMER_SEARCH;
+    ORDER_CREATION_CUSTOMER_SEARCH,
+    LOGIN_JETPACK_CONNECTION;
 
     fun isEnabled(context: Context? = null): Boolean {
         return when (this) {
@@ -26,7 +27,8 @@ enum class FeatureFlag {
             UNIFIED_ORDER_EDITING -> true
             ANALYTICS_HUB,
             MORE_MENU_INBOX,
-            WC_SHIPPING_BANNER -> PackageUtils.isDebugBuild()
+            WC_SHIPPING_BANNER,
+            LOGIN_JETPACK_CONNECTION -> PackageUtils.isDebugBuild()
         }
     }
 }

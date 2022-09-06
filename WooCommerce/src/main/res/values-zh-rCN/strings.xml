@@ -1817,7 +1817,7 @@ Language: zh_CN
     <string name="login_jetpack_what_is_description">Jetpack 是一款免费的 WordPress 插件，可以将您的商店与所需的工具连接起来，为您提供最佳的移动体验，包括推送通知和统计数据</string>
     <string name="login_jetpack_what_is">Jetpack 是什么？</string>
     <string name="login_view_connected_stores">查看连接的商店</string>
-    <string name="login_not_connected_to_account">%1$s 似乎连接了其他 WordPress.com 帐户。</string>
+    <string name="login_wpcom_account_mismatch">%1$s 似乎连接了其他 WordPress.com 帐户。</string>
     <string name="keep_editing">继续编辑</string>
     <string name="notification_wpcom_username_needed">请使用您的用户名和密码登录。</string>
     <string name="error_user_username_instead_of_email">请使用您的 WordPress.com 用户名（而不是电子邮件地址）登录。</string>
