@@ -13,6 +13,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.transition.Slide
 import androidx.transition.TransitionManager
 import com.google.android.material.textview.MaterialTextView
+import com.woocommerce.android.NavGraphMainDirections
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.databinding.FragmentCardReaderHubBinding
@@ -63,7 +64,9 @@ class CardReaderHubFragment : BaseFragment(R.layout.fragment_card_reader_hub) {
                     )
                 }
                 is CardReaderHubViewModel.CardReaderHubEvents.NavigateToPurchaseCardReaderFlow -> {
-                    ChromeCustomTabUtils.launchUrl(requireContext(), event.url)
+                    findNavController().navigate(
+                        NavGraphMainDirections.actionGlobalWPComWebViewFragment(urlToLoad = event.url)
+                    )
                 }
                 is CardReaderHubViewModel.CardReaderHubEvents.NavigateToCardReaderManualsScreen -> {
                     findNavController().navigateSafely(R.id.action_cardReaderHubFragment_to_cardReaderManualsFragment)
