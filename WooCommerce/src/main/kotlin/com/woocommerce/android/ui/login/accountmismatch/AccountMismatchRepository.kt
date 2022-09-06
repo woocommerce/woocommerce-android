@@ -23,4 +23,13 @@ class AccountMismatchRepository @Inject constructor(
             else -> Result.success(result.url)
         }
     }
+
+    suspend fun fetchJetpackConnectedEmail(site: SiteModel): Result<String> {
+        val result = jetpackStore.fetchJetpackUser(site)
+        return when {
+            result.isError -> Result.failure(Exception(result.error.message))
+            result.user?.wpcomEmail.isNullOrEmpty() -> Result.failure(Exception("Email missing from response"))
+            else -> Result.success(result.user!!.wpcomEmail)
+        }
+    }
 }
