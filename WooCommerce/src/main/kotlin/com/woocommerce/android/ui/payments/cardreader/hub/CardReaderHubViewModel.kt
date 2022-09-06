@@ -9,9 +9,12 @@ import com.woocommerce.android.AppUrls
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
+import com.woocommerce.android.cardreader.internal.config.CardReaderConfig
+import com.woocommerce.android.cardreader.internal.config.CardReaderConfigForUnsupportedCountry
 import com.woocommerce.android.model.UiString
 import com.woocommerce.android.model.UiString.UiStringRes
 import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.ui.payments.cardreader.CardReaderCountryConfigProvider
 import com.woocommerce.android.ui.payments.cardreader.CardReaderTracker
 import com.woocommerce.android.ui.payments.cardreader.CashOnDeliverySettingsRepository
 import com.woocommerce.android.ui.payments.cardreader.LearnMoreUrlProvider
@@ -45,8 +48,11 @@ class CardReaderHubViewModel @Inject constructor(
     private val cashOnDeliverySettingsRepository: CashOnDeliverySettingsRepository,
     private val learnMoreUrlProvider: LearnMoreUrlProvider,
     private val cardReaderTracker: CardReaderTracker,
+    private val cardReaderCountryConfigProvider: CardReaderCountryConfigProvider
 ) : ScopedViewModel(savedState) {
     private val arguments: CardReaderHubFragmentArgs by savedState.navArgs()
+    private val storeCountryCode: String? = wooStore.getStoreCountryCode(selectedSite.get())
+    private val countryConfig: CardReaderConfig = cardReaderCountryConfigProvider.provideCountryConfigFor(storeCountryCode)
 
     private val cashOnDeliveryState = MutableLiveData(
         ToggleableListItem(
@@ -118,7 +124,6 @@ class CardReaderHubViewModel @Inject constructor(
     private fun createHubListWhenSinglePluginInstalled(
         isOnboardingComplete: Boolean,
         cashOnDeliveryItem: ToggleableListItem,
-        storeCountryCode: String? = wooStore.getStoreCountryCode(selectedSite.get())
     ) = mutableListOf(
         CardReaderHubViewState.ListItem.HeaderItem(
             label = UiStringRes(R.string.card_reader_payment_options_header),
@@ -149,7 +154,7 @@ class CardReaderHubViewModel @Inject constructor(
             onClick = ::onManageCardReaderClicked
         )
     ).apply {
-        if (storeCountryCode == "CA" || storeCountryCode == "US") {
+        if (countryConfig != CardReaderConfigForUnsupportedCountry) {
             add(
                 CardReaderHubViewState.ListItem.NonToggleableListItem(
                     icon = R.drawable.ic_card_reader_manual,
