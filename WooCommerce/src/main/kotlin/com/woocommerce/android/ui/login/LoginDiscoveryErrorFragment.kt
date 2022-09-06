@@ -121,7 +121,7 @@ class LoginDiscoveryErrorFragment : Fragment(layout.fragment_login_discovery_err
                 )
             }
         }
-        requireActivity().addMenuProvider(this,viewLifecycleOwner, Lifecycle.State.RESUMED)
+        requireActivity().addMenuProvider(this, viewLifecycleOwner, Lifecycle.State.RESUMED)
     }
 
     override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
