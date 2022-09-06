@@ -1,0 +1,3 @@
+10.1:
+Den här versionen innehåller inte några nya funktioner, men vi har fortfarande lagt ner mycket jobb på den. Vi har bland annat åtgärdat ett problem som gjorde att du felaktigt kunde blockeras från att ta emot betalningar. Fortsätt att skicka feedback till oss – vi lyssnar!
+

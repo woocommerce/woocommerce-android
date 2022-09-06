@@ -83,6 +83,9 @@ class CardReaderHubFragment : BaseFragment(R.layout.fragment_card_reader_hub) {
                         CardReaderHubFragmentDirections.actionCardReaderHubFragmentToSimplePayments()
                     )
                 }
+                is CardReaderHubViewModel.CardReaderHubEvents.OpenGenericWebView -> {
+                    ChromeCustomTabUtils.launchUrl(requireContext(), event.url)
+                }
                 is CardReaderHubViewModel.CardReaderHubEvents.ShowToastString -> {
                     ToastUtils.showToast(context, event.message)
                 }
