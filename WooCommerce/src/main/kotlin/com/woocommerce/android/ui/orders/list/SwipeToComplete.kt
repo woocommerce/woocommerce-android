@@ -31,6 +31,8 @@ class SwipeToComplete(
     companion object {
         private const val NO_SWIPE_ABLE_SCREEN_PERCENT = 0.10
         const val OLD_STATUS = "old_status"
+        const val SWIPE_THRESHOLD = .5F
+        const val SWIPE_VELOCITY_THRESHOLD = 0F
     }
 
     private val displayMetrics = context.resources.displayMetrics
@@ -57,6 +59,9 @@ class SwipeToComplete(
     ): Boolean {
         return false
     }
+
+    override fun getSwipeThreshold(viewHolder: RecyclerView.ViewHolder) = SWIPE_THRESHOLD
+    override fun getSwipeVelocityThreshold(defaultValue: Float) = SWIPE_VELOCITY_THRESHOLD
 
     override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
         val pos = viewHolder.absoluteAdapterPosition
