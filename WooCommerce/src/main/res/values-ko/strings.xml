@@ -1817,7 +1817,7 @@ Language: ko_KR
     <string name="login_jetpack_what_is_description">Jetpack은 스토어를 최고의 모바일 환경을 제공하는 데 필요한 푸시 알림, 통계 등의 도구와 연결하는 무료 워드프레스 플러그인입니다.</string>
     <string name="login_jetpack_what_is">Jetpack이란 무엇인가요?</string>
     <string name="login_view_connected_stores">연결된 스토어 보기</string>
-    <string name="login_not_connected_to_account">%1$s이(가) 다른 워드프레스닷컴 계정에 연결되어 있는 것 같습니다.</string>
+    <string name="login_wpcom_account_mismatch">%1$s이(가) 다른 워드프레스닷컴 계정에 연결되어 있는 것 같습니다.</string>
     <string name="keep_editing">계속 편집하기</string>
     <string name="notification_wpcom_username_needed">사용자 이름과 비밀번호를 사용하여 로그인하세요.</string>
     <string name="error_user_username_instead_of_email">이메일 주소가 아닌 워드프레스닷컴 사용자 이름을 사용하여 로그인하세요.</string>

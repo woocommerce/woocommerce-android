@@ -6,9 +6,12 @@ import androidx.lifecycle.asLiveData
 import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.login.AccountRepository
+import com.woocommerce.android.ui.login.accountmismatch.AccountMismatchErrorViewModel.AccountMismatchPrimaryButton.ENTER_NEW_SITE_ADDRESS
+import com.woocommerce.android.ui.login.accountmismatch.AccountMismatchErrorViewModel.AccountMismatchPrimaryButton.NONE
+import com.woocommerce.android.ui.login.accountmismatch.AccountMismatchErrorViewModel.AccountMismatchPrimaryButton.SHOW_SITE_PICKER
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
-import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Logout
+import com.woocommerce.android.viewmodel.ResourceProvider
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.navArgs
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -20,33 +23,46 @@ import javax.inject.Inject
 class AccountMismatchErrorViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
     private val accountRepository: AccountRepository,
-    private val appPrefsWrapper: AppPrefsWrapper
+    private val appPrefsWrapper: AppPrefsWrapper,
+    private val resourceProvider: ResourceProvider
 ) : ScopedViewModel(savedStateHandle) {
     private val navArgs: AccountMismatchErrorFragmentArgs by savedStateHandle.navArgs()
     val viewState = flow {
-        val userInfo = accountRepository.getUserAccount()
+        val userAccount = accountRepository.getUserAccount()
+        val siteUrl = appPrefsWrapper.getLoginSiteAddress()!!
 
         emit(
             ViewState(
-                siteUrl = appPrefsWrapper.getLoginSiteAddress()!!,
-                avatarUrl = userInfo?.avatarUrl.orEmpty(),
-                username = userInfo?.userName.orEmpty(),
-                displayName = userInfo?.displayName.orEmpty(),
-                primaryButtonText = if (navArgs.hasConnectedStores) {
-                    R.string.login_view_connected_stores
+                userInfo = userAccount?.let {
+                    UserInfo(
+                        avatarUrl = it.avatarUrl.orEmpty(),
+                        username = it.userName,
+                        displayName = it.displayName.orEmpty()
+                    )
+                },
+                message = if (accountRepository.isUserLoggedIn()) {
+                    // When the user is already connected using WPCom account, show account mismatch error
+                    resourceProvider.getString(R.string.login_wpcom_account_mismatch, siteUrl)
                 } else {
-                    R.string.login_site_picker_try_another_address
+                    // Explain that account is not connected to Jetpack
+                    resourceProvider.getString(R.string.login_jetpack_not_connected, siteUrl)
+                },
+                primaryButtonText = when (navArgs.primaryButton) {
+                    SHOW_SITE_PICKER -> R.string.login_view_connected_stores
+                    ENTER_NEW_SITE_ADDRESS -> R.string.login_site_picker_try_another_address
+                    NONE -> null
                 },
                 primaryButtonAction = {
-                    if (navArgs.hasConnectedStores) {
-                        showConnectedStores()
-                    } else {
-                        navigateToSiteAddressScreen()
+                    when (navArgs.primaryButton) {
+                        SHOW_SITE_PICKER -> showConnectedStores()
+                        ENTER_NEW_SITE_ADDRESS -> navigateToSiteAddressScreen()
+                        NONE -> error("NONE as primary button shouldn't trigger the callback")
                     }
                 },
                 secondaryButtonText = R.string.login_try_another_account,
-                secondaryButtonAction = { logout() },
-                inlineButtonText = R.string.login_need_help_finding_email,
+                secondaryButtonAction = { loginWithDifferentAccount() },
+                inlineButtonText = if (accountRepository.isUserLoggedIn()) R.string.login_need_help_finding_email
+                else null,
                 inlineButtonAction = { helpFindingEmail() }
             )
         )
@@ -60,11 +76,17 @@ class AccountMismatchErrorViewModel @Inject constructor(
         triggerEvent(NavigateToSiteAddressEvent)
     }
 
-    private fun logout() = launch {
-        accountRepository.logout().let {
-            if (it) {
-                appPrefsWrapper.removeLoginSiteAddress()
-                triggerEvent(Logout)
+    private fun loginWithDifferentAccount() {
+        if (!accountRepository.isUserLoggedIn()) {
+            triggerEvent(NavigateToLoginScreen)
+        } else {
+            launch {
+                accountRepository.logout().let {
+                    if (it) {
+                        appPrefsWrapper.removeLoginSiteAddress()
+                        triggerEvent(NavigateToLoginScreen)
+                    }
+                }
             }
         }
     }
@@ -78,19 +100,28 @@ class AccountMismatchErrorViewModel @Inject constructor(
     }
 
     data class ViewState(
-        val siteUrl: String,
-        val avatarUrl: String,
-        val displayName: String,
-        val username: String,
-        @StringRes val primaryButtonText: Int,
+        val userInfo: UserInfo?,
+        val message: String,
+        @StringRes val primaryButtonText: Int?,
         val primaryButtonAction: () -> Unit,
         @StringRes val secondaryButtonText: Int,
         val secondaryButtonAction: () -> Unit,
-        @StringRes val inlineButtonText: Int,
+        @StringRes val inlineButtonText: Int?,
         val inlineButtonAction: () -> Unit
+    )
+
+    data class UserInfo(
+        val avatarUrl: String,
+        val displayName: String,
+        val username: String
     )
 
     object NavigateToHelpScreen : MultiLiveEvent.Event()
     object NavigateToSiteAddressEvent : MultiLiveEvent.Event()
     object NavigateToEmailHelpDialogEvent : MultiLiveEvent.Event()
+    object NavigateToLoginScreen : MultiLiveEvent.Event()
+
+    enum class AccountMismatchPrimaryButton {
+        SHOW_SITE_PICKER, ENTER_NEW_SITE_ADDRESS, NONE
+    }
 }

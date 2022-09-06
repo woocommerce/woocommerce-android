@@ -1817,7 +1817,7 @@ Language: fr
     <string name="login_jetpack_what_is_description">Jetpack est une extension WordPress gratuite qui connecte votre boutique aux outils dont vous avez besoin pour vous offrir une expérience optimale, dont les notifications push et les statistiques</string>
     <string name="login_jetpack_what_is">Qu\'est-ce que Jetpack ?</string>
     <string name="login_view_connected_stores">Voir les boutiques connectées</string>
-    <string name="login_not_connected_to_account">Il semblerait que %1$s soit connecté à un autre compte WordPress.com.</string>
+    <string name="login_wpcom_account_mismatch">Il semblerait que %1$s soit connecté à un autre compte WordPress.com.</string>
     <string name="keep_editing">Continuer à écrire</string>
     <string name="notification_wpcom_username_needed">Veuillez vous connecter avec votre nom d\'utilisateur et votre mot de passe.</string>
     <string name="error_user_username_instead_of_email">Veuillez vous connecter avec votre nom d\'utilisateur WordPress.com plutôt que votre adresse e-mail.</string>

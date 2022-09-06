@@ -435,8 +435,9 @@
         android:name="com.woocommerce.android.ui.login.accountmismatch.AccountMismatchErrorFragment"
         android:label="AccountMismatchErrorFragment">
         <argument
-            android:name="hasConnectedStores"
-            app:argType="boolean" />
+            android:name="primaryButton"
+            app:argType="com.woocommerce.android.ui.login.accountmismatch.AccountMismatchErrorViewModel$AccountMismatchPrimaryButton"
+            android:defaultValue="NONE" />
         <action
             android:id="@+id/action_accountMismatchErrorFragment_to_sitePickerSiteDiscoveryFragment"
             app:destination="@id/sitePickerSiteDiscoveryFragment"
