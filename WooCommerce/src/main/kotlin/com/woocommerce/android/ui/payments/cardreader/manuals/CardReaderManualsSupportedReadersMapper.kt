@@ -1,6 +1,5 @@
 package com.woocommerce.android.ui.payments.cardreader.manuals
 
-import com.woocommerce.android.R
 import com.woocommerce.android.R.drawable
 import com.woocommerce.android.R.string
 import com.woocommerce.android.cardreader.connection.SpecificReader
