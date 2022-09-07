@@ -58,6 +58,9 @@ class AccountMismatchErrorViewModel @Inject constructor(
             Step.MainContent -> prepareMainState()
             is Step.JetpackConnection -> prepareJetpackConnectionState(step.connectionUrl)
             Step.FetchJetpackEmail -> ViewState.FetchingJetpackEmailViewState
+            Step.FetchingJetpackEmailFailed -> ViewState.JetpackEmailErrorState {
+                this.step.value = Step.FetchJetpackEmail
+            }
         }
     }.asLiveData()
 
@@ -164,7 +167,7 @@ class AccountMismatchErrorViewModel @Inject constructor(
                         triggerEvent(OnJetpackConnectedEvent(it))
                     },
                     onFailure = {
-                        TODO()
+                        step.value = Step.FetchingJetpackEmailFailed
                     }
                 )
             }
@@ -199,6 +202,7 @@ class AccountMismatchErrorViewModel @Inject constructor(
         ) : ViewState
 
         object FetchingJetpackEmailViewState : ViewState
+        data class JetpackEmailErrorState(val retry: () -> Unit) : ViewState
     }
 
     data class UserInfo(
@@ -222,6 +226,9 @@ class AccountMismatchErrorViewModel @Inject constructor(
 
         @Parcelize
         object FetchJetpackEmail : Step
+
+        @Parcelize
+        object FetchingJetpackEmailFailed : Step
     }
 
     enum class AccountMismatchPrimaryButton {

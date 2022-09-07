@@ -97,6 +97,10 @@ fun AccountMismatchErrorScreen(viewModel: AccountMismatchErrorViewModel) {
                 ViewState.FetchingJetpackEmailViewState -> FetchJetpackEmailScreen(
                     modifier = Modifier.padding(paddingValues)
                 )
+                is ViewState.JetpackEmailErrorState -> JetpackEmailErrorScreen(
+                    modifier = Modifier.padding(paddingValues),
+                    retry = viewState.retry
+                )
             }
         }
     }
@@ -290,6 +294,21 @@ private fun FetchJetpackEmailScreen(modifier: Modifier = Modifier) {
         Text(text = "Fetching your account details...")
         Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.major_100)))
         CircularProgressIndicator()
+    }
+}
+
+@Composable
+private fun JetpackEmailErrorScreen(retry: () -> Unit, modifier: Modifier = Modifier) {
+    Column(
+        modifier = modifier.fillMaxSize(),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.spacedBy(dimensionResource(R.dimen.major_100), Alignment.CenterVertically)
+    ) {
+        Image(painter = painterResource(id = R.drawable.img_wpcom_error), contentDescription = null)
+        Text(text = "Fetching details of your account failed...", textAlign = TextAlign.Center)
+        WCColoredButton(onClick = retry) {
+            Text(text = stringResource(id = R.string.retry))
+        }
     }
 }
 
