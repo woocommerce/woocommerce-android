@@ -15,30 +15,30 @@ class CardReaderManualsSupportedReadersMapper @Inject constructor() {
 
     fun mapSupportedReadersToManualItems(
         cardReaderConfigForSupportedCountry: CardReaderConfigForSupportedCountry,
-        clickListeners: Map<SpecificReader, () -> Unit>,
-
-    ) = cardReaderConfigForSupportedCountry.supportedReaders.map {
-        when(it) {
-            Chipper2X -> ManualItem(
-                icon = drawable.ic_chipper_reader,
-                label = string.card_reader_bbpos_manual_card_reader,
-                onManualClicked = clickListeners[it]!!
-            )
-            StripeM2 -> ManualItem(
-                icon = drawable.ic_m2_reader,
-                label = string.card_reader_m2_manual_card_reader,
-                onManualClicked = clickListeners[it]!!
-            )
-            WisePade3 -> ManualItem(
-                icon = R.drawable.ic_wisepad3_reader,
-                label = R.string.card_reader_wisepad_3_manual_card_reader,
-                onManualClicked = clickListeners[it]!!
-            )
-            else -> error("$it doesn't have a manual")
+        clickListeners: Map<SpecificReader, () -> Unit>
+    ) = cardReaderConfigForSupportedCountry
+        .supportedReaders.map {
+            when (it) {
+                Chipper2X -> ManualItem(
+                    icon = drawable.ic_chipper_reader,
+                    label = string.card_reader_bbpos_manual_card_reader,
+                    onManualClicked = clickListeners[it]!!
+                )
+                StripeM2 -> ManualItem(
+                    icon = drawable.ic_m2_reader,
+                    label = string.card_reader_m2_manual_card_reader,
+                    onManualClicked = clickListeners[it]!!
+                )
+                WisePade3 -> ManualItem(
+                    icon = drawable.ic_wisepad3_reader,
+                    label = string.card_reader_wisepad_3_manual_card_reader,
+                    onManualClicked = clickListeners[it]!!
+                )
+                else -> error("$it doesn't have a manual")
 
 //            CotsDevice -> TODO()
 //            VerifoneP400 -> TODO()
 //            WisePadeE -> TODO()
+            }
         }
-    }
 }

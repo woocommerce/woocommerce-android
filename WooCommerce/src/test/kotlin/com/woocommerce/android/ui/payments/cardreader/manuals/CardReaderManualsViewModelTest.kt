@@ -3,7 +3,6 @@ package com.woocommerce.android.ui.payments.cardreader.manuals
 import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.AppUrls
 import com.woocommerce.android.R
-import com.woocommerce.android.cardreader.internal.config.CardReaderConfigForSupportedCountry
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.payments.cardreader.CardReaderCountryConfigProvider
 import com.woocommerce.android.viewmodel.BaseUnitTest
@@ -20,7 +19,6 @@ class CardReaderManualsViewModelTest : BaseUnitTest() {
     private val savedStateHandle: SavedStateHandle = SavedStateHandle()
     private val wooStore: WooCommerceStore = mock()
     private val cardReaderManualSupportedCountryMapper: CardReaderManualsSupportedReadersMapper = mock()
-    private val cardReaderConfig: CardReaderConfigForSupportedCountry = mock()
     private val selectedSite: SelectedSite = mock() {
         on { get() }.thenReturn(mock())
     }
@@ -33,7 +31,7 @@ class CardReaderManualsViewModelTest : BaseUnitTest() {
             selectedSite,
             wooStore,
             cardReaderManualSupportedCountryMapper,
-            cardReaderConfig
+            cardReaderCountryConfigProvider
         )
     }
 

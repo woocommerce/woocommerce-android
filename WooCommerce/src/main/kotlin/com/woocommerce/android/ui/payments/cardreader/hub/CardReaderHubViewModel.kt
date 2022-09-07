@@ -55,14 +55,17 @@ class CardReaderHubViewModel @Inject constructor(
 ) : ScopedViewModel(savedState) {
     private val arguments: CardReaderHubFragmentArgs by savedState.navArgs()
     private val storeCountryCode: String? = wooStore.getStoreCountryCode(selectedSite.get())
-    private val countryConfig: CardReaderConfig = cardReaderCountryConfigProvider.provideCountryConfigFor(storeCountryCode)
+    private val countryConfig: CardReaderConfig =
+        cardReaderCountryConfigProvider.provideCountryConfigFor(
+            storeCountryCode
+        )
 
     private val cashOnDeliveryState = MutableLiveData(
         ToggleableListItem(
-            icon = R.drawable.ic_gridicons_credit_card,
-            label = UiStringRes(R.string.card_reader_enable_pay_in_person),
+            icon = drawable.ic_gridicons_credit_card,
+            label = UiStringRes(string.card_reader_enable_pay_in_person),
             description = UiStringRes(
-                R.string.card_reader_enable_pay_in_person_description,
+                string.card_reader_enable_pay_in_person_description,
                 containsHtml = true
             ),
             index = 2,
@@ -129,29 +132,29 @@ class CardReaderHubViewModel @Inject constructor(
         cashOnDeliveryItem: ToggleableListItem,
     ) = mutableListOf(
         CardReaderHubViewState.ListItem.HeaderItem(
-            label = UiStringRes(R.string.card_reader_payment_options_header),
+            label = UiStringRes(string.card_reader_payment_options_header),
             index = 0
         ),
         NonToggleableListItem(
-            icon = R.drawable.ic_gridicons_money_on_surface,
-            label = UiStringRes(R.string.card_reader_collect_payment),
+            icon = drawable.ic_gridicons_money_on_surface,
+            label = UiStringRes(string.card_reader_collect_payment),
             index = 1,
             onClick = ::onCollectPaymentClicked
         ),
         cashOnDeliveryItem,
         CardReaderHubViewState.ListItem.HeaderItem(
-            label = UiStringRes(R.string.card_reader_card_readers_header),
+            label = UiStringRes(string.card_reader_card_readers_header),
             index = 4,
         ),
         NonToggleableListItem(
-            icon = R.drawable.ic_shopping_cart,
-            label = UiStringRes(R.string.card_reader_purchase_card_reader),
+            icon = drawable.ic_shopping_cart,
+            label = UiStringRes(string.card_reader_purchase_card_reader),
             index = 5,
             onClick = ::onPurchaseCardReaderClicked
         ),
         NonToggleableListItem(
-            icon = R.drawable.ic_manage_card_reader,
-            label = UiStringRes(R.string.card_reader_manage_card_reader),
+            icon = drawable.ic_manage_card_reader,
+            label = UiStringRes(string.card_reader_manage_card_reader),
             isEnabled = isOnboardingComplete,
             index = 6,
             onClick = ::onManageCardReaderClicked
@@ -160,8 +163,8 @@ class CardReaderHubViewModel @Inject constructor(
         if (countryConfig != CardReaderConfigForUnsupportedCountry) {
             add(
                 NonToggleableListItem(
-                    icon = R.drawable.ic_card_reader_manual,
-                    label = UiStringRes(R.string.settings_card_reader_manuals),
+                    icon = drawable.ic_card_reader_manual,
+                    label = UiStringRes(string.settings_card_reader_manuals),
                     index = 7,
                     onClick = ::onCardReaderManualsClicked
                 )
@@ -210,7 +213,7 @@ class CardReaderHubViewModel @Inject constructor(
     private fun createOnboardingWithPendingRequirementsState(state: CardReaderOnboardingState) =
         createOnboardingCompleteState().copy(
             onboardingErrorAction = OnboardingErrorAction(
-                text = UiStringRes(R.string.card_reader_onboarding_with_pending_requirements, containsHtml = true),
+                text = UiStringRes(string.card_reader_onboarding_with_pending_requirements, containsHtml = true),
                 onClick = { onOnboardingErrorClicked(state) }
             )
         )
@@ -222,7 +225,7 @@ class CardReaderHubViewModel @Inject constructor(
                 ).sortedBy { it.index },
             isLoading = false,
             onboardingErrorAction = OnboardingErrorAction(
-                text = UiStringRes(R.string.card_reader_onboarding_not_finished, containsHtml = true),
+                text = UiStringRes(string.card_reader_onboarding_not_finished, containsHtml = true),
                 onClick = { onOnboardingErrorClicked(state) }
             )
         )
