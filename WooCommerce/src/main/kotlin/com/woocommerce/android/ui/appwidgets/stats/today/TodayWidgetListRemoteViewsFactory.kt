@@ -12,7 +12,7 @@ import javax.inject.Inject
 /**
  * Class extends [RemoteViewsFactory] and acts as an interface for the current day stats widget ListView adapter
  */
-class TodayWidgetListProvider @Inject constructor(
+class TodayWidgetListRemoteViewsFactory @Inject constructor(
     val context: Context,
     intent: Intent
 ) : RemoteViewsFactory {
