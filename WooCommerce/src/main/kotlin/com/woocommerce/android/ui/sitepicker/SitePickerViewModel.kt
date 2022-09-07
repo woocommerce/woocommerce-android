@@ -14,7 +14,7 @@ import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.analytics.ExperimentTracker
 import com.woocommerce.android.experiment.JetpackTimeoutExperiment
 import com.woocommerce.android.extensions.getSiteName
-import com.woocommerce.android.extensions.isNonAtomic
+import com.woocommerce.android.extensions.isSimpleWPComSite
 import com.woocommerce.android.support.HelpActivity
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.common.UserEligibilityFetcher
@@ -232,8 +232,8 @@ class SitePickerViewModel @Inject constructor(
                 // The url doesn't match any sites for this account.
                 showAccountMismatchScreen(url)
             }
-            site.isNonAtomic -> {
-                loadNonAtomicView(site)
+            site.isSimpleWPComSite -> {
+                loadSimpleWPComView(site)
             }
             !site.hasWooCommerce -> {
                 // Show not woo store message view.
@@ -303,14 +303,14 @@ class SitePickerViewModel @Inject constructor(
         )
     }
 
-    private fun loadNonAtomicView(site: SiteModel) {
+    private fun loadSimpleWPComView(site: SiteModel) {
         sitePickerViewState = sitePickerViewState.copy(
             isNoStoresViewVisible = true,
             isPrimaryBtnVisible = sitePickerViewState.hasConnectedStores == true,
             primaryBtnText = resourceProvider.getString(string.login_view_connected_stores),
-            noStoresLabelText = resourceProvider.getString(string.login_non_atomic_site, site.url),
+            noStoresLabelText = resourceProvider.getString(string.login_simple_wpcom_site, site.url),
             isNoStoresBtnVisible = false,
-            currentSitePickerState = SitePickerState.NonAtomicState
+            currentSitePickerState = SitePickerState.SimpleWPComState
         )
     }
 
@@ -332,7 +332,7 @@ class SitePickerViewModel @Inject constructor(
         analyticsTrackerWrapper.track(
             stat = AnalyticsEvent.SITE_PICKER_NON_WOO_SITE_TAPPED,
             properties = mapOf(
-                AnalyticsTracker.KEY_IS_NON_ATOMIC to siteModel.isNonAtomic
+                AnalyticsTracker.KEY_IS_NON_ATOMIC to siteModel.isSimpleWPComSite
             )
         )
         // Strip protocol from site's URL
@@ -341,8 +341,8 @@ class SitePickerViewModel @Inject constructor(
 
         loginSiteAddress = cleanedUrl
 
-        if (siteModel.isNonAtomic) {
-            loadNonAtomicView(siteModel)
+        if (siteModel.isSimpleWPComSite) {
+            loadSimpleWPComView(siteModel)
         } else {
             loadWooNotFoundView(siteModel)
         }
@@ -635,6 +635,6 @@ class SitePickerViewModel @Inject constructor(
     }
 
     enum class SitePickerState {
-        StoreListState, NoStoreState, WooNotFoundState, NonAtomicState
+        StoreListState, NoStoreState, WooNotFoundState, SimpleWPComState
     }
 }

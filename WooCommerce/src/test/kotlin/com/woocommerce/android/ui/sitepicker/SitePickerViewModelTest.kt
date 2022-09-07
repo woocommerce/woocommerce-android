@@ -691,7 +691,7 @@ class SitePickerViewModelTest : BaseUnitTest() {
         }
 
     @Test
-    fun `given entered site is non-atomic, when loading site picker, then display non-atomic site state`() =
+    fun `given entered site is a simple WPCom site, when loading site picker, then display simple site state`() =
         testBlocking {
             givenTheScreenIsFromLogin(true)
             givenThatUserLoggedInFromEnteringSiteAddress(
@@ -704,9 +704,9 @@ class SitePickerViewModelTest : BaseUnitTest() {
 
             val state = viewModel.sitePickerViewStateData.liveData.captureValues().last()
 
-            assertThat(state.currentSitePickerState).isEqualTo(SitePickerViewModel.SitePickerState.NonAtomicState)
+            assertThat(state.currentSitePickerState).isEqualTo(SitePickerViewModel.SitePickerState.SimpleWPComState)
             assertThat(state.isNoStoresViewVisible).isTrue
-            assertThat(state.noStoresLabelText).isEqualTo(resourceProvider.getString(R.string.login_non_atomic_site))
+            assertThat(state.noStoresLabelText).isEqualTo(resourceProvider.getString(R.string.login_simple_wpcom_site))
             assertThat(state.isNoStoresBtnVisible).isFalse
         }
 

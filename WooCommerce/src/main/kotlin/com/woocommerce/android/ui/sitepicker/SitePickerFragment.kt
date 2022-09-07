@@ -36,7 +36,7 @@ import com.woocommerce.android.ui.sitepicker.SitePickerViewModel.SitePickerEvent
 import com.woocommerce.android.ui.sitepicker.SitePickerViewModel.SitePickerEvent.NavigateToWPComWebView
 import com.woocommerce.android.ui.sitepicker.SitePickerViewModel.SitePickerEvent.ShowWooUpgradeDialogEvent
 import com.woocommerce.android.ui.sitepicker.SitePickerViewModel.SitePickerState.NoStoreState
-import com.woocommerce.android.ui.sitepicker.SitePickerViewModel.SitePickerState.NonAtomicState
+import com.woocommerce.android.ui.sitepicker.SitePickerViewModel.SitePickerState.SimpleWPComState
 import com.woocommerce.android.ui.sitepicker.SitePickerViewModel.SitePickerState.StoreListState
 import com.woocommerce.android.ui.sitepicker.SitePickerViewModel.SitePickerState.WooNotFoundState
 import com.woocommerce.android.ui.sitepicker.sitediscovery.SitePickerSiteDiscoveryFragment
@@ -141,7 +141,7 @@ class SitePickerFragment : BaseFragment(R.layout.fragment_site_picker), LoginEma
                     StoreListState -> updateStoreListView()
                     NoStoreState -> updateNoStoresView()
                     WooNotFoundState -> updateWooNotFoundView()
-                    NonAtomicState -> updateNonAtomicView()
+                    SimpleWPComState -> updateSimpleWPComView()
                 }
             }
         }
@@ -207,7 +207,7 @@ class SitePickerFragment : BaseFragment(R.layout.fragment_site_picker), LoginEma
         }
     }
 
-    private fun updateNonAtomicView() {
+    private fun updateSimpleWPComView() {
         binding.loginEpilogueButtonBar.buttonPrimary.setOnClickListener {
             viewModel.onViewConnectedStoresButtonClick()
         }
