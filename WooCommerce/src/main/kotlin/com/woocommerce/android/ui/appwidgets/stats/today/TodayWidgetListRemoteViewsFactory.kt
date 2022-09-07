@@ -16,7 +16,6 @@ class TodayWidgetListRemoteViewsFactory @Inject constructor(
     val context: Context,
     intent: Intent
 ) : RemoteViewsFactory {
-    // TODO this injection doesn't work
     @Inject lateinit var viewModel: TodayWidgetListViewModel
     @Inject lateinit var widgetUpdater: TodayWidgetUpdater
 
