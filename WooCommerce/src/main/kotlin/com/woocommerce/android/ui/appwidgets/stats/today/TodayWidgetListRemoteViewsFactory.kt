@@ -6,7 +6,7 @@ import android.content.Intent
 import android.widget.RemoteViews
 import android.widget.RemoteViewsService.RemoteViewsFactory
 import com.woocommerce.android.R
-import com.woocommerce.android.ui.appwidgets.stats.StatsWidget.Companion.SITE_ID_KEY
+import com.woocommerce.android.ui.appwidgets.stats.StatsWidgetProvider.Companion.SITE_ID_KEY
 import javax.inject.Inject
 
 /**

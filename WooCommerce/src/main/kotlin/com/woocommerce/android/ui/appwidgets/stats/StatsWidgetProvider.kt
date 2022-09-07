@@ -13,7 +13,7 @@ import com.woocommerce.android.ui.appwidgets.WidgetUpdater
  *
  * Through this class, broadcasts will be received when the App Widget is updated, enabled, disabled and deleted.
  */
-abstract class StatsWidget : AppWidgetProvider() {
+abstract class StatsWidgetProvider : AppWidgetProvider() {
     companion object {
         const val SITE_ID_KEY = "site_id_key"
     }
