@@ -34,10 +34,6 @@ class CardReaderManualsSupportedReadersMapper @Inject constructor() {
                     onManualClicked = clickListeners[it]!!
                 )
                 else -> error("$it doesn't have a manual")
-
-//            CotsDevice -> TODO()
-//            VerifoneP400 -> TODO()
-//            WisePadeE -> TODO()
             }
         }
 }

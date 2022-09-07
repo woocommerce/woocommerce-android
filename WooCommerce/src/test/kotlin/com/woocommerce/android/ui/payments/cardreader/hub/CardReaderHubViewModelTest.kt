@@ -8,6 +8,7 @@ import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.initSavedStateHandle
 import com.woocommerce.android.model.UiString
 import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.ui.payments.cardreader.CardReaderCountryConfigProvider
 import com.woocommerce.android.ui.payments.cardreader.CardReaderTracker
 import com.woocommerce.android.ui.payments.cardreader.CashOnDeliverySettingsRepository
 import com.woocommerce.android.ui.payments.cardreader.LearnMoreUrlProvider
@@ -51,6 +52,7 @@ class CardReaderHubViewModelTest : BaseUnitTest() {
     }
     private val analyticsTrackerWrapper: AnalyticsTrackerWrapper = mock()
     private val wooStore: WooCommerceStore = mock()
+    private val cardReaderCountryConfigProvider: CardReaderCountryConfigProvider = mock()
     private val cardReaderChecker: CardReaderOnboardingChecker = mock {
         onBlocking { getOnboardingState() } doReturn mock<CardReaderOnboardingState.OnboardingCompleted>()
     }
@@ -1093,7 +1095,8 @@ class CardReaderHubViewModelTest : BaseUnitTest() {
             cardReaderChecker,
             cashOnDeliverySettingsRepository,
             learnMoreUrlProvider,
-            cardReaderTracker
+            cardReaderTracker,
+            cardReaderCountryConfigProvider
         )
         viewModel.onViewVisible()
     }
