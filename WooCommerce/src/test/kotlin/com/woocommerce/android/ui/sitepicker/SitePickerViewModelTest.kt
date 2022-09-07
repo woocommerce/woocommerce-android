@@ -690,6 +690,26 @@ class SitePickerViewModelTest : BaseUnitTest() {
             assertThat(isProgressShown).containsExactly(false, true, false)
         }
 
+    @Test
+    fun `given entered site is a simple WPCom site, when loading site picker, then display simple site state`() =
+        testBlocking {
+            givenTheScreenIsFromLogin(true)
+            givenThatUserLoggedInFromEnteringSiteAddress(
+                expectedSiteList[1].apply {
+                    setIsWPCom(true)
+                }
+            )
+            whenSitesAreFetched()
+            whenViewModelIsCreated()
+
+            val state = viewModel.sitePickerViewStateData.liveData.captureValues().last()
+
+            assertThat(state.currentSitePickerState).isEqualTo(SitePickerViewModel.SitePickerState.SimpleWPComState)
+            assertThat(state.isNoStoresViewVisible).isTrue
+            assertThat(state.noStoresLabelText).isEqualTo(resourceProvider.getString(R.string.login_simple_wpcom_site))
+            assertThat(state.isNoStoresBtnVisible).isFalse
+        }
+
     private fun SiteModel.clone(): SiteModel {
         // A quick way for supporting cloning SiteModel without changing SiteModel class itself
         val gson = Gson()

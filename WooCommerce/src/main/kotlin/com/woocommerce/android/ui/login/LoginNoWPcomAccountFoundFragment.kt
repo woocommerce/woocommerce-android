@@ -8,7 +8,9 @@ import android.view.MenuItem
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
+import androidx.core.view.MenuProvider
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.Lifecycle.State
 import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.R
 import com.woocommerce.android.databinding.FragmentLoginNoWpcomAccountFoundBinding
@@ -22,7 +24,7 @@ import org.wordpress.android.login.LoginListener
 import javax.inject.Inject
 
 @AndroidEntryPoint
-class LoginNoWPcomAccountFoundFragment : Fragment(R.layout.fragment_login_no_wpcom_account_found) {
+class LoginNoWPcomAccountFoundFragment : Fragment(R.layout.fragment_login_no_wpcom_account_found), MenuProvider {
     interface Listener {
         fun onWhatIsWordPressLinkNoWpcomAccountScreenClicked()
     }
@@ -43,8 +45,10 @@ class LoginNoWPcomAccountFoundFragment : Fragment(R.layout.fragment_login_no_wpc
     private var loginListener: LoginListener? = null
     private var emailAddress: String? = null
 
-    @Inject internal lateinit var appPrefsWrapper: AppPrefsWrapper
-    @Inject internal lateinit var unifiedLoginTracker: UnifiedLoginTracker
+    @Inject
+    internal lateinit var appPrefsWrapper: AppPrefsWrapper
+    @Inject
+    internal lateinit var unifiedLoginTracker: UnifiedLoginTracker
     private lateinit var whatIsWordPressLinkClickListener: Listener
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -56,7 +60,7 @@ class LoginNoWPcomAccountFoundFragment : Fragment(R.layout.fragment_login_no_wpc
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        setHasOptionsMenu(true)
+        requireActivity().addMenuProvider(this, viewLifecycleOwner, State.RESUMED)
 
         val binding = FragmentLoginNoWpcomAccountFoundBinding.bind(view)
         val btnBinding = binding.loginEpilogueButtonBar
@@ -115,12 +119,11 @@ class LoginNoWPcomAccountFoundFragment : Fragment(R.layout.fragment_login_no_wpc
         }
     }
 
-    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
-        super.onCreateOptionsMenu(menu, inflater)
+    override fun onCreateMenu(menu: Menu, inflater: MenuInflater) {
         inflater.inflate(R.menu.menu_login, menu)
     }
 
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+    override fun onMenuItemSelected(item: MenuItem): Boolean {
         if (item.itemId == R.id.help) {
             unifiedLoginTracker.trackClick(Click.SHOW_HELP)
             loginListener?.helpEmailScreen(emailAddress ?: StringUtils.EMPTY_STRING)

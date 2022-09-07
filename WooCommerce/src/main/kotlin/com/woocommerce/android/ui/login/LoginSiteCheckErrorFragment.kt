@@ -43,7 +43,7 @@ class LoginSiteCheckErrorFragment : Fragment(R.layout.fragment_login_site_check_
         super.onCreate(savedInstanceState)
 
         arguments?.let {
-            siteAddress = it.getString(LoginJetpackRequiredFragment.ARG_SITE_ADDRESS, null)
+            siteAddress = it.getString(ARG_SITE_ADDRESS, null)
             errorMsg = it.getString(ARG_ERROR_MESSAGE, null)
         }
     }

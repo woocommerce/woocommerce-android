@@ -14,6 +14,7 @@ import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.analytics.ExperimentTracker
 import com.woocommerce.android.experiment.JetpackTimeoutExperiment
 import com.woocommerce.android.extensions.getSiteName
+import com.woocommerce.android.extensions.isSimpleWPComSite
 import com.woocommerce.android.support.HelpActivity
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.common.UserEligibilityFetcher
@@ -231,6 +232,9 @@ class SitePickerViewModel @Inject constructor(
                 // The url doesn't match any sites for this account.
                 showAccountMismatchScreen(url)
             }
+            site.isSimpleWPComSite -> {
+                loadSimpleWPComView(site)
+            }
             !site.hasWooCommerce -> {
                 // Show not woo store message view.
                 loadWooNotFoundView(site)
@@ -251,6 +255,7 @@ class SitePickerViewModel @Inject constructor(
             isPrimaryBtnVisible = true,
             primaryBtnText = resourceProvider.getString(string.login_site_picker_enter_site_address),
             noStoresLabelText = resourceProvider.getString(string.login_no_stores),
+            isNoStoresBtnVisible = true,
             noStoresBtnText = resourceProvider.getString(string.login_site_picker_new_to_woo),
             currentSitePickerState = SitePickerState.NoStoreState
         )
@@ -292,8 +297,20 @@ class SitePickerViewModel @Inject constructor(
             isPrimaryBtnVisible = isWooInstallationEnabled,
             primaryBtnText = resourceProvider.getString(string.login_install_woo),
             noStoresLabelText = resourceProvider.getString(string.login_not_woo_store, site.url),
+            isNoStoresBtnVisible = true,
             noStoresBtnText = resourceProvider.getString(string.login_view_connected_stores),
             currentSitePickerState = SitePickerState.WooNotFoundState
+        )
+    }
+
+    private fun loadSimpleWPComView(site: SiteModel) {
+        sitePickerViewState = sitePickerViewState.copy(
+            isNoStoresViewVisible = true,
+            isPrimaryBtnVisible = sitePickerViewState.hasConnectedStores == true,
+            primaryBtnText = resourceProvider.getString(string.login_view_connected_stores),
+            noStoresLabelText = resourceProvider.getString(string.login_simple_wpcom_site, site.url),
+            isNoStoresBtnVisible = false,
+            currentSitePickerState = SitePickerState.SimpleWPComState
         )
     }
 
@@ -315,7 +332,7 @@ class SitePickerViewModel @Inject constructor(
         analyticsTrackerWrapper.track(
             stat = AnalyticsEvent.SITE_PICKER_NON_WOO_SITE_TAPPED,
             properties = mapOf(
-                AnalyticsTracker.KEY_IS_NON_ATOMIC to (!siteModel.isJetpackConnected && !siteModel.isJetpackCPConnected)
+                AnalyticsTracker.KEY_IS_NON_ATOMIC to siteModel.isSimpleWPComSite
             )
         )
         // Strip protocol from site's URL
@@ -323,7 +340,12 @@ class SitePickerViewModel @Inject constructor(
         val cleanedUrl = siteModel.url.replaceFirst(protocolRegex, "")
 
         loginSiteAddress = cleanedUrl
-        loadWooNotFoundView(siteModel)
+
+        if (siteModel.isSimpleWPComSite) {
+            loadSimpleWPComView(siteModel)
+        } else {
+            loadWooNotFoundView(siteModel)
+        }
     }
 
     fun onViewConnectedStoresButtonClick() {
@@ -578,6 +600,7 @@ class SitePickerViewModel @Inject constructor(
         val isProgressDiaLogVisible: Boolean = false,
         val isPrimaryBtnVisible: Boolean = false,
         val isSecondaryBtnVisible: Boolean = false,
+        val isNoStoresBtnVisible: Boolean = false,
         val currentSitePickerState: SitePickerState = SitePickerState.StoreListState
     ) : Parcelable
 
@@ -612,6 +635,6 @@ class SitePickerViewModel @Inject constructor(
     }
 
     enum class SitePickerState {
-        StoreListState, NoStoreState, WooNotFoundState
+        StoreListState, NoStoreState, WooNotFoundState, SimpleWPComState
     }
 }
