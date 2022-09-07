@@ -1214,7 +1214,6 @@ class CardReaderHubViewModelTest : BaseUnitTest() {
             cashOnDeliverySettingsRepository,
             learnMoreUrlProvider,
             cardReaderTracker,
-            cardReaderCountryConfigProvider
         )
         viewModel.onViewVisible()
     }
