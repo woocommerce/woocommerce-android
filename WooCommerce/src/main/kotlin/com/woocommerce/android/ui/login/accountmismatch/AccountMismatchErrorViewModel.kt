@@ -10,7 +10,6 @@ import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.login.AccountRepository
 import com.woocommerce.android.util.FeatureFlag
-import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.ResourceProvider
@@ -162,7 +161,7 @@ class AccountMismatchErrorViewModel @Inject constructor(
                 val site = site.await()
                 accountMismatchRepository.fetchJetpackConnectedEmail(site).fold(
                     onSuccess = {
-                        WooLog.d(WooLog.T.LOGIN, "Jetpack connected email is: $it")
+                        triggerEvent(OnJetpackConnectedEvent(it))
                     },
                     onFailure = {
                         TODO()
@@ -212,6 +211,7 @@ class AccountMismatchErrorViewModel @Inject constructor(
     object NavigateToSiteAddressEvent : MultiLiveEvent.Event()
     object NavigateToEmailHelpDialogEvent : MultiLiveEvent.Event()
     object NavigateToLoginScreen : MultiLiveEvent.Event()
+    data class OnJetpackConnectedEvent(val email: String) : MultiLiveEvent.Event()
 
     private sealed interface Step : Parcelable {
         @Parcelize

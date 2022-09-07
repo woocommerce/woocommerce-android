@@ -20,9 +20,11 @@ import com.woocommerce.android.ui.login.accountmismatch.AccountMismatchErrorView
 import com.woocommerce.android.ui.login.accountmismatch.AccountMismatchErrorViewModel.NavigateToHelpScreen
 import com.woocommerce.android.ui.login.accountmismatch.AccountMismatchErrorViewModel.NavigateToLoginScreen
 import com.woocommerce.android.ui.login.accountmismatch.AccountMismatchErrorViewModel.NavigateToSiteAddressEvent
+import com.woocommerce.android.ui.login.accountmismatch.AccountMismatchErrorViewModel.OnJetpackConnectedEvent
 import com.woocommerce.android.ui.main.AppBarStatus
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import dagger.hilt.android.AndroidEntryPoint
+import org.wordpress.android.login.LoginListener
 import org.wordpress.android.login.LoginMode
 
 @AndroidEntryPoint
@@ -71,8 +73,15 @@ class AccountMismatchErrorFragment : BaseFragment(), Listener {
                         .actionAccountMismatchErrorFragmentToSitePickerSiteDiscoveryFragment()
                 )
                 is NavigateToLoginScreen -> navigateToLoginScreen()
+                is OnJetpackConnectedEvent -> onJetpackConnected(event.email)
                 is Exit -> findNavController().navigateUp()
             }
+        }
+    }
+
+    private fun onJetpackConnected(email: String) {
+        if (requireActivity() is LoginListener) {
+            (requireActivity() as LoginListener).gotWpcomEmail(email, true, null)
         }
     }
 
