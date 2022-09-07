@@ -87,6 +87,8 @@ class AccountMismatchErrorFragment : BaseFragment(), Listener {
 
     private fun onJetpackConnected(email: String) {
         if (requireActivity() is LoginListener) {
+            // Make sure this fragment is removed from the backstack
+            requireActivity().supportFragmentManager.popBackStack()
             (requireActivity() as LoginListener).gotWpcomEmail(email, true, null)
         }
     }
