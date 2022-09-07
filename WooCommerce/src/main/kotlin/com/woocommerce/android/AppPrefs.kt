@@ -997,25 +997,6 @@ object AppPrefs {
         }
     }
 
-    /**
-     * Widget settings
-     */
-    fun setStatsWidgetSelectedSiteId(siteId: Long, appWidgetId: Int) {
-        setLong(getSiteIdWidgetKey(appWidgetId), siteId)
-    }
-
-    fun getStatsWidgetSelectedSiteId(appWidgetId: Int): Long {
-        return getLong(getSiteIdWidgetKey(appWidgetId), -1)
-    }
-
-    fun removeStatsWidgetSelectedSiteId(appWidgetId: Int) {
-        remove(getSiteIdWidgetKey(appWidgetId))
-    }
-
-    private fun getSiteIdWidgetKey(appWidgetId: Int): String {
-        return DeletablePrefKey.STATS_WIDGET_SELECTED_SITE_ID.name + appWidgetId
-    }
-
     enum class CardReaderOnboardingStatus {
         CARD_READER_ONBOARDING_COMPLETED,
         CARD_READER_ONBOARDING_PENDING,

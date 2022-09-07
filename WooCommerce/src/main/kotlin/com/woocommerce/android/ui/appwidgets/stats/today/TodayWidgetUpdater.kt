@@ -9,11 +9,11 @@ import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.R
 import com.woocommerce.android.extensions.getTitle
 import com.woocommerce.android.tools.NetworkStatus
+import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.appwidgets.WidgetUpdater
 import com.woocommerce.android.ui.appwidgets.WidgetUtils
 import com.woocommerce.android.viewmodel.ResourceProvider
 import org.wordpress.android.fluxc.store.AccountStore
-import org.wordpress.android.fluxc.store.SiteStore
 import javax.inject.Inject
 
 /**
@@ -22,7 +22,7 @@ import javax.inject.Inject
 class TodayWidgetUpdater
 @Inject constructor(
     private val appPrefsWrapper: AppPrefsWrapper,
-    private val siteStore: SiteStore,
+    private val selectedSite: SelectedSite,
     private val accountStore: AccountStore,
     private val networkStatus: NetworkStatus,
     private val resourceProvider: ResourceProvider,
@@ -35,8 +35,7 @@ class TodayWidgetUpdater
     ) {
         val widgetManager = appWidgetManager ?: AppWidgetManager.getInstance(context)
 
-        val siteId = appPrefsWrapper.getAppWidgetSiteId(appWidgetId)
-        val siteModel = siteStore.getSiteBySiteId(siteId)
+        val siteModel = selectedSite.getIfExists()
 
         val networkAvailable = networkStatus.isConnected()
         val hasAccessToken = accountStore.hasAccessToken()
@@ -88,7 +87,6 @@ class TodayWidgetUpdater
 
     override fun componentName(context: Context) = ComponentName(context, TodayStatsWidget::class.java)
 
-    override fun delete(appWidgetId: Int) {
-        appPrefsWrapper.removeAppWidgetSiteId(appWidgetId)
-    }
+    @Suppress("EmptyFunctionBlock")
+    override fun delete(appWidgetId: Int) { }
 }
