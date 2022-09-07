@@ -6,7 +6,6 @@ import android.content.Intent
 import android.widget.RemoteViews
 import android.widget.RemoteViewsService.RemoteViewsFactory
 import com.woocommerce.android.R
-import com.woocommerce.android.ui.appwidgets.stats.StatsWidgetProvider.Companion.SITE_ID_KEY
 import javax.inject.Inject
 
 /**
@@ -19,11 +18,10 @@ class TodayWidgetListRemoteViewsFactory @Inject constructor(
     @Inject lateinit var viewModel: TodayWidgetListViewModel
     @Inject lateinit var widgetUpdater: TodayWidgetUpdater
 
-    private val siteId: Int = intent.getIntExtra(SITE_ID_KEY, 0)
     private val appWidgetId = intent.getIntExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, -1)
 
     override fun onCreate() {
-        viewModel.start(siteId, appWidgetId)
+        viewModel.start(appWidgetId)
     }
 
     /**

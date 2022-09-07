@@ -50,15 +50,14 @@ class TodayWidgetUpdater
             siteModel.let {
                 views.setOnClickPendingIntent(
                     R.id.widget_title_container,
-                    widgetUtils.getPendingSelfIntent(context, siteModel.id)
+                    widgetUtils.getPendingSelfIntent(context)
                 )
             }
             widgetUtils.showList(
                 widgetManager,
                 views,
                 context,
-                appWidgetId,
-                siteModel.id
+                appWidgetId
             )
         } else {
             // Widget data will only be displayed if network is available,
