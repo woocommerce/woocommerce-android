@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <appwidget-provider xmlns:android="http://schemas.android.com/apk/res/android"
+    android:description="@string/stats_today_widget_description"
     android:initialKeyguardLayout="@layout/stats_widget_list"
     android:initialLayout="@layout/stats_widget_list"
     android:minWidth="@dimen/stats_widget_min_width"

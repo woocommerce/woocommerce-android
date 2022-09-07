@@ -2601,6 +2601,7 @@
     <string name="stats_widget_offline_error">Your network is unavailable.\nCheck your data or wifi connection.</string>
     <string name="stats_widget_availability_message">Store analytics not available! Please upgrade to the latest version of WooCommerce to view your store analytics.</string>
     <string name="stats_today_widget_configure_title">Today\'s store stats</string>
+    <string name="stats_today_widget_description">WooCommerce Stats Today</string>
     <string name="stats_today_widget_configure_store_hint">Select your store</string>
     <string name="stats_today_widget_configure_color_hint">Color</string>
     <string name="stats_widget_site_selection_content_description">Site icon</string>
