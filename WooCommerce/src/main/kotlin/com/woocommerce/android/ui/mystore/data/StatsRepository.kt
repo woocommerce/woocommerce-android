@@ -3,6 +3,7 @@ package com.woocommerce.android.ui.mystore.data
 import com.woocommerce.android.AppConstants
 import com.woocommerce.android.extensions.semverCompareTo
 import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.ui.mystore.domain.GetTopPerformers
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T.DASHBOARD
 import kotlinx.coroutines.flow.Flow
@@ -110,6 +111,13 @@ class StatsRepository @Inject constructor(
                 emit(Result.success(model))
             }
         }
+    }
+
+    fun observeTopPerformers(
+        granularity: WCStatsStore.StatsGranularity,
+        topPerformersCount: Int
+    ): Flow<GetTopPerformers.TopPerformersResult> {
+
     }
 
     suspend fun checkIfStoreHasNoOrders(): Flow<Result<Boolean>> = flow {
