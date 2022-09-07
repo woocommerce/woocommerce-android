@@ -36,6 +36,7 @@
               "activate_plugins": true
             },
             "jetpack": true,
+            "jetpack_connection": true,
             "visible": true,
             "is_private": true,
             "organization_id": 0,
