@@ -45,7 +45,7 @@ class TodayWidgetUpdater
         val views = RemoteViews(context.packageName, R.layout.stats_widget_list)
 
         if (networkAvailable && hasAccessToken && siteModel != null) {
-            views.setTextViewText(R.id.widget_title, siteModel.getTitle(context))
+            views.setTextViewText(R.id.widget_title, siteModel.getTitle(context.getString(R.string.my_store)))
             views.setViewVisibility(R.id.widget_type, View.VISIBLE)
 
             siteModel.let {
