@@ -61,6 +61,7 @@ class SwipeToComplete(
     }
 
     override fun getSwipeThreshold(viewHolder: RecyclerView.ViewHolder) = SWIPE_THRESHOLD
+    override fun getSwipeEscapeVelocity(defaultValue: Float) = SWIPE_VELOCITY_THRESHOLD
     override fun getSwipeVelocityThreshold(defaultValue: Float) = SWIPE_VELOCITY_THRESHOLD
 
     override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
