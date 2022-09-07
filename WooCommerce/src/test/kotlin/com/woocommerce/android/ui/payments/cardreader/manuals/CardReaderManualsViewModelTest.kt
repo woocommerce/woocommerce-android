@@ -4,6 +4,7 @@ import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.AppUrls
 import com.woocommerce.android.R
 import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.ui.payments.cardreader.CardReaderCountryConfigProvider
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.assertj.core.api.Assertions.assertThat
@@ -11,7 +12,6 @@ import org.junit.Before
 import org.junit.Test
 import org.mockito.kotlin.mock
 import org.wordpress.android.fluxc.store.WooCommerceStore
-import org.wordpress.android.fluxc.store.WooCommerceStore_Factory
 
 @ExperimentalCoroutinesApi
 class CardReaderManualsViewModelTest : BaseUnitTest() {
@@ -21,10 +21,16 @@ class CardReaderManualsViewModelTest : BaseUnitTest() {
     private val selectedSite: SelectedSite = mock() {
         on { get() }.thenReturn(mock())
     }
+    private val cardReaderCountryConfigProvider: CardReaderCountryConfigProvider = mock()
 
     @Before
     fun setUp() {
-        viewModel = CardReaderManualsViewModel(savedStateHandle, selectedSite, wooStore)
+        viewModel = CardReaderManualsViewModel(
+            savedStateHandle,
+            selectedSite,
+            wooStore,
+            cardReaderCountryConfigProvider
+        )
     }
 
     @Test

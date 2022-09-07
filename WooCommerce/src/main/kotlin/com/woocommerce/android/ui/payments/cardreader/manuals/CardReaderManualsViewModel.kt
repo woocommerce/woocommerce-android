@@ -3,10 +3,18 @@ package com.woocommerce.android.ui.payments.cardreader.manuals
 import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.AppUrls
 import com.woocommerce.android.R
+import com.woocommerce.android.cardreader.connection.SpecificReader.Chipper2X
+import com.woocommerce.android.cardreader.connection.SpecificReader.StripeM2
+import com.woocommerce.android.cardreader.connection.SpecificReader.WisePade3
+import com.woocommerce.android.cardreader.internal.config.CardReaderConfig
+import com.woocommerce.android.cardreader.internal.config.CardReaderConfigForSupportedCountry
+import com.woocommerce.android.cardreader.internal.config.CardReaderConfigForUSA
 import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.ui.payments.cardreader.CardReaderCountryConfigProvider
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
+import dagger.internal.MapBuilder
 import org.wordpress.android.fluxc.store.WooCommerceStore
 import javax.inject.Inject
 
@@ -15,6 +23,9 @@ class CardReaderManualsViewModel @Inject constructor(
     savedState: SavedStateHandle,
     selectedSite: SelectedSite,
     wooStore: WooCommerceStore,
+    cardReaderManualSupportedCountryMapper: CardReaderManualsSupportedReadersMapper,
+    cardReaderConfig: CardReaderConfigForSupportedCountry
+
 ) : ScopedViewModel(savedState) {
     val storeCountryCode = wooStore.getStoreCountryCode(selectedSite.get())
     val manualState = when (storeCountryCode) {
