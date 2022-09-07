@@ -1,0 +1,3 @@
+10.1:
+Esta versão não tem nenhuma funcionalidade nova, mas nos dedicamos muito a ela, inclusive corrigimos um problema em que você podia ser bloqueado de receber pagamentos sem motivo nenhum. Continue compartilhando seu feedback conosco. Estamos ouvindo.
+

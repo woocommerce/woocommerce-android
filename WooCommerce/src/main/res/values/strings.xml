@@ -229,7 +229,8 @@
     <string name="login_nostores_content_description">No WooCommerce stores</string>
     <string name="login_with_a_different_account">Login with a different account</string>
     <string name="login_no_stores">We didn\'t find WooCommerce stores connected to this account.</string>
-    <string name="login_not_connected_to_account">It looks like %1$s is connected to a different WordPress.com account.</string>
+    <string name="login_wpcom_account_mismatch">It looks like %1$s is connected to a different WordPress.com account.</string>
+    <string name="login_jetpack_not_connected">It looks like your account is not connected to %1$s\'s Jetpack</string>
     <string name="login_try_another_account">Log in with another account</string>
     <string name="login_try_another_store">Try another store</string>
     <string name="login_not_woo_store">It looks like %1$s is not a WooCommerce site.</string>
@@ -268,6 +269,8 @@
     <string name="login_site_picker_enter_site_address">Enter a site address</string>
     <string name="site_discovery_postlogin_failure">A failure occurred, please contact support</string>
     <string name="login_site_picker_new_to_woo">New to WooCommerce</string>
+    <string name="login_connect_jetpack_button">Connect Jetpack to your account</string>
+    <string name="login_simple_wpcom_site">The site %1$s is currently on a WordPress.com plan that does not support plugin installation. Please upgrade your plan to use WooCommerce.</string>
     <!--
         My Store View
     -->
@@ -975,7 +978,7 @@
     <string name="payments_hub_title">Payments</string>
     <string name="card_reader_manage_card_reader">Manage Card Reader</string>
     <string name="card_reader_enable_pay_in_person">Pay in Person</string>
-    <string name="card_reader_enable_pay_in_person_description">Pay in Person lets you accept card or cash payments on collection or delivery. &lt;a href=\'\'&gt;Learn more&lt;/a&gt;</string>
+    <string name="card_reader_enable_pay_in_person_description">The Pay in Person checkout option lets you accept payments for website orders, on collection or delivery. &lt;a href=\'\'&gt;Learn more&lt;/a&gt;</string>
     <string name="card_reader_purchase_card_reader">Order Card Reader</string>
     <string name="card_reader_manage_payment_provider">Change Payment Provider</string>
     <string name="card_reader_bbpos_manual_card_reader" translatable="false">BBPOS Chipper™ 2X BT</string>

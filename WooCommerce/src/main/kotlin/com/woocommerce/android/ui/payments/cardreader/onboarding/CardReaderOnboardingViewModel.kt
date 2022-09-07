@@ -15,6 +15,7 @@ import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.payments.cardreader.CardReaderTracker
 import com.woocommerce.android.ui.payments.cardreader.LearnMoreUrlProvider
 import com.woocommerce.android.ui.payments.cardreader.LearnMoreUrlProvider.LearnMoreUrlType.IN_PERSON_PAYMENTS
+import com.woocommerce.android.ui.payments.cardreader.hub.CardReaderHubViewModel.CashOnDeliverySource.ONBOARDING
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboardingParams.Check
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboardingParams.Failed
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboardingState.ChoosePaymentGatewayProvider
@@ -315,7 +316,9 @@ class CardReaderOnboardingViewModel @Inject constructor(
                 settings = Settings(instructions = "Pay by card or another accepted payment method"),
             )
             result.model?.let {
-                cardReaderTracker.trackCashOnDeliveryEnabledSuccess()
+                cardReaderTracker.trackCashOnDeliveryEnabledSuccess(
+                    ONBOARDING
+                )
                 viewState.postValue(
                     CashOnDeliveryDisabledState(
                         onSkipCashOnDeliveryClicked = {
@@ -340,6 +343,7 @@ class CardReaderOnboardingViewModel @Inject constructor(
                 )
             } ?: run {
                 cardReaderTracker.trackCashOnDeliveryEnabledFailure(
+                    ONBOARDING,
                     result.error.message
                 )
                 viewState.postValue(

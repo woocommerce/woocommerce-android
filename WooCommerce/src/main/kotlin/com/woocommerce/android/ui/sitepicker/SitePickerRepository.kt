@@ -29,6 +29,10 @@ class SitePickerRepository @Inject constructor(
     suspend fun getSites() = withContext(Dispatchers.IO) { siteStore.sites }
 
     fun getSiteBySiteUrl(url: String) = SiteUtils.getSiteByMatchingUrl(siteStore, url)
+        .takeIf {
+            // Take only sites returned from the WPCom /me/sites response
+            it?.origin == SiteModel.ORIGIN_WPCOM_REST
+        }
 
     suspend fun fetchWooCommerceSites() = wooCommerceStore.fetchWooCommerceSites()
 
@@ -51,7 +55,8 @@ class SitePickerRepository @Inject constructor(
 
     suspend fun fetchSiteProductSettings(site: SiteModel) = wooCommerceStore.fetchSiteProductSettings(site)
 
-    suspend fun verifySiteWooAPIVersion(site: SiteModel) = wooCommerceStore.fetchSupportedApiVersion(site)
+    suspend fun verifySiteWooAPIVersion(site: SiteModel, overrideRetryPolicy: Boolean) =
+        wooCommerceStore.fetchSupportedApiVersion(site, overrideRetryPolicy)
 
     suspend fun fetchSiteInfo(siteAddress: String) =
         suspendCancellableCoroutine<Result<ConnectSiteInfoPayload>> { continuation ->

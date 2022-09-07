@@ -1,11 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2022-08-23 15:54:03+0000
+Translation-Revision-Date: 2022-08-29 15:54:03+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: it
 -->
 <resources>
+    <string name="card_reader_onboarding_with_pending_requirements">Si è verificato un problema che richiede la tua attenzione. &lt;a href=\'\'&gt;Dai un\'occhiata&lt;/a&gt;</string>
     <string name="login_site_picker_try_another_address">Prova con un altro indirizzo</string>
     <string name="card_reader_onboarding_cash_on_delivery_enable_failure">Non è stato possibile abilitare il pagamento alla consegna. Riprova più tardi.</string>
     <string name="card_reader_onboarding_cash_on_delivery_disabled_button">Abilita Paga di persona</string>
@@ -17,7 +18,7 @@ Language: it
     <string name="login_site_picker_enter_site_address">Inserisci un indirizzo del sito</string>
     <string name="login_help_notification_get_link_by_email_button">Richiedi un link di accesso via e-mail</string>
     <string name="login_help_notification_invalid_password_title">Non ricordi la password?</string>
-    <string name="card_reader_onboarding_not_finished">Abbiamo notato che non hai ancora completato la configurazione dei Pagamenti di persona. &lt;b&gt;&lt;a href=\'\'&gt;Continua con la configurazione&lt;/a&gt;&lt;/b&gt;</string>
+    <string name="card_reader_onboarding_not_finished">Abbiamo notato che non hai ancora completato la configurazione dei Pagamenti di persona. &lt;a href=\'\'&gt;Continua con la configurazione&lt;/a&gt;</string>
     <string name="payments_hub_title">Pagamenti</string>
     <string name="orderlist_bottom_sheet_simple_payments_moved_button">OK!</string>
     <string name="orderlist_bottom_sheet_simple_payments_moved_description">Ora puoi accedere rapidamente e con facilità ai Pagamenti di persona e ad altre funzionalità</string>
@@ -1816,7 +1817,7 @@ Language: it
     <string name="login_jetpack_what_is_description">Jetpack è un plugin WordPress gratuito che collega il tuo negozio con gli strumenti necessari per assicurarti la migliore esperienza mobile, incluse le notifiche push e le statistiche</string>
     <string name="login_jetpack_what_is">Che cos\'è Jetpack?</string>
     <string name="login_view_connected_stores">Visualizza i negozi collegati</string>
-    <string name="login_not_connected_to_account">%1$s è collegato a un altro account WordPress.com.</string>
+    <string name="login_wpcom_account_mismatch">%1$s è collegato a un altro account WordPress.com.</string>
     <string name="keep_editing">Continua a modificare</string>
     <string name="notification_wpcom_username_needed">Accedi con i tuoi nome utente e password.</string>
     <string name="error_user_username_instead_of_email">Accedi utilizzando il tuo nome utente di WordPress.com invece del tuo indirizzo e-mail.</string>
