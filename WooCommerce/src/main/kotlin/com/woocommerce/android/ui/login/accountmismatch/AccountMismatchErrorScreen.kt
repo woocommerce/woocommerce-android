@@ -291,7 +291,10 @@ private fun FetchJetpackEmailScreen(modifier: Modifier = Modifier) {
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
-        Text(text = "Fetching your account details...")
+        Text(
+            text = stringResource(id = R.string.login_jetpack_verify_connection),
+            textAlign = TextAlign.Center
+        )
         Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.major_100)))
         CircularProgressIndicator()
     }
@@ -305,7 +308,10 @@ private fun JetpackEmailErrorScreen(retry: () -> Unit, modifier: Modifier = Modi
         verticalArrangement = Arrangement.spacedBy(dimensionResource(R.dimen.major_100), Alignment.CenterVertically)
     ) {
         Image(painter = painterResource(id = R.drawable.img_wpcom_error), contentDescription = null)
-        Text(text = "Fetching details of your account failed...", textAlign = TextAlign.Center)
+        Text(
+            text = stringResource(id = R.string.login_jetpack_connection_verification_failed),
+            textAlign = TextAlign.Center
+        )
         WCColoredButton(onClick = retry) {
             Text(text = stringResource(id = R.string.retry))
         }
