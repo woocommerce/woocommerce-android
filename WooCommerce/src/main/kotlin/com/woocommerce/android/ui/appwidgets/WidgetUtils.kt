@@ -21,7 +21,6 @@ import kotlin.random.Random
  */
 class WidgetUtils
 @Inject constructor() {
-    @Suppress("LongParameterList")
     fun showList(
         appWidgetManager: AppWidgetManager,
         views: RemoteViews,
