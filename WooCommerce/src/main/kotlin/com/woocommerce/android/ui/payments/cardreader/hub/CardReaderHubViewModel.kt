@@ -7,6 +7,8 @@ import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.AppUrls
 import com.woocommerce.android.R
+import com.woocommerce.android.R.drawable
+import com.woocommerce.android.R.string
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.cardreader.internal.config.CardReaderConfig
@@ -20,6 +22,7 @@ import com.woocommerce.android.ui.payments.cardreader.CashOnDeliverySettingsRepo
 import com.woocommerce.android.ui.payments.cardreader.LearnMoreUrlProvider
 import com.woocommerce.android.ui.payments.cardreader.LearnMoreUrlProvider.LearnMoreUrlType.CASH_ON_DELIVERY
 import com.woocommerce.android.ui.payments.cardreader.connect.CardReaderConnectEvent
+import com.woocommerce.android.ui.payments.cardreader.hub.CardReaderHubViewModel.CardReaderHubViewState.ListItem.NonToggleableListItem
 import com.woocommerce.android.ui.payments.cardreader.hub.CardReaderHubViewModel.CardReaderHubViewState.ListItem.ToggleableListItem
 import com.woocommerce.android.ui.payments.cardreader.hub.CardReaderHubViewModel.CardReaderHubViewState.OnboardingErrorAction
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderFlowParam
@@ -129,7 +132,7 @@ class CardReaderHubViewModel @Inject constructor(
             label = UiStringRes(R.string.card_reader_payment_options_header),
             index = 0
         ),
-        CardReaderHubViewState.ListItem.NonToggleableListItem(
+        NonToggleableListItem(
             icon = R.drawable.ic_gridicons_money_on_surface,
             label = UiStringRes(R.string.card_reader_collect_payment),
             index = 1,
@@ -140,13 +143,13 @@ class CardReaderHubViewModel @Inject constructor(
             label = UiStringRes(R.string.card_reader_card_readers_header),
             index = 4,
         ),
-        CardReaderHubViewState.ListItem.NonToggleableListItem(
+        NonToggleableListItem(
             icon = R.drawable.ic_shopping_cart,
             label = UiStringRes(R.string.card_reader_purchase_card_reader),
             index = 5,
             onClick = ::onPurchaseCardReaderClicked
         ),
-        CardReaderHubViewState.ListItem.NonToggleableListItem(
+        NonToggleableListItem(
             icon = R.drawable.ic_manage_card_reader,
             label = UiStringRes(R.string.card_reader_manage_card_reader),
             isEnabled = isOnboardingComplete,
@@ -156,7 +159,7 @@ class CardReaderHubViewModel @Inject constructor(
     ).apply {
         if (countryConfig != CardReaderConfigForUnsupportedCountry) {
             add(
-                CardReaderHubViewState.ListItem.NonToggleableListItem(
+                NonToggleableListItem(
                     icon = R.drawable.ic_card_reader_manual,
                     label = UiStringRes(R.string.settings_card_reader_manuals),
                     index = 7,
@@ -167,9 +170,9 @@ class CardReaderHubViewModel @Inject constructor(
     }
 
     private fun createAdditionalItemWhenMultiplePluginsInstalled() =
-        CardReaderHubViewState.ListItem.NonToggleableListItem(
-            icon = R.drawable.ic_payment_provider,
-            label = UiStringRes(R.string.card_reader_manage_payment_provider),
+        NonToggleableListItem(
+            icon = drawable.ic_payment_provider,
+            label = UiStringRes(string.card_reader_manage_payment_provider),
             index = 3,
             onClick = ::onCardReaderPaymentProviderClicked
         )
