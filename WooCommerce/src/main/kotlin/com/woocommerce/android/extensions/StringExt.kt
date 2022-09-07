@@ -89,3 +89,6 @@ fun String.capitalizeWords(): String {
  * Syntactic sugar for `string.ifEmpty { null }`.
  */
 fun String.orNullIfEmpty(): String? = this.ifEmpty { null }
+
+fun String?.isNotNullOrEmpty() = this.isNullOrEmpty().not()
+
