@@ -48,7 +48,7 @@ class CardReaderHubViewModel @Inject constructor(
     private val cashOnDeliverySettingsRepository: CashOnDeliverySettingsRepository,
     private val learnMoreUrlProvider: LearnMoreUrlProvider,
     private val cardReaderTracker: CardReaderTracker,
-    private val cardReaderCountryConfigProvider: CardReaderCountryConfigProvider
+    cardReaderCountryConfigProvider: CardReaderCountryConfigProvider
 ) : ScopedViewModel(savedState) {
     private val arguments: CardReaderHubFragmentArgs by savedState.navArgs()
     private val storeCountryCode: String? = wooStore.getStoreCountryCode(selectedSite.get())

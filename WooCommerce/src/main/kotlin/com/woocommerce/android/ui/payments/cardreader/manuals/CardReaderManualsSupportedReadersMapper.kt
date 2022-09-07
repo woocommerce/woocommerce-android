@@ -5,11 +5,8 @@ import com.woocommerce.android.R.drawable
 import com.woocommerce.android.R.string
 import com.woocommerce.android.cardreader.connection.SpecificReader
 import com.woocommerce.android.cardreader.connection.SpecificReader.Chipper2X
-import com.woocommerce.android.cardreader.connection.SpecificReader.CotsDevice
 import com.woocommerce.android.cardreader.connection.SpecificReader.StripeM2
-import com.woocommerce.android.cardreader.connection.SpecificReader.VerifoneP400
 import com.woocommerce.android.cardreader.connection.SpecificReader.WisePade3
-import com.woocommerce.android.cardreader.connection.SpecificReader.WisePadeE
 import com.woocommerce.android.cardreader.internal.config.CardReaderConfigForSupportedCountry
 import com.woocommerce.android.ui.payments.cardreader.manuals.CardReaderManualsViewModel.ManualItem
 import javax.inject.Inject
@@ -38,10 +35,10 @@ class CardReaderManualsSupportedReadersMapper @Inject constructor() {
                 onManualClicked = clickListeners[it]!!
             )
             else -> error("$it doesn't have a manual")
+
 //            CotsDevice -> TODO()
 //            VerifoneP400 -> TODO()
 //            WisePadeE -> TODO()
         }
-
     }
 }
