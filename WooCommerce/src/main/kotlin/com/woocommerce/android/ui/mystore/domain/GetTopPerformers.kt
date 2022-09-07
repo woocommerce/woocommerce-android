@@ -15,6 +15,14 @@ class GetTopPerformers @Inject constructor(
     private val statsRepository: StatsRepository,
     private val coroutineDispatchers: CoroutineDispatchers,
 ) {
+
+    fun observeTopPerformers(
+        granularity: WCStatsStore.StatsGranularity,
+        topPerformersCount: Int
+    ): Flow<TopPerformersResult> {
+
+    }
+
     suspend operator fun invoke(
         granularity: WCStatsStore.StatsGranularity,
         topPerformersCount: Int,
