@@ -12,5 +12,5 @@ import dagger.hilt.android.scopes.ActivityScoped
 interface UIMessageResolverModule {
     @ActivityScoped
     @Binds
-    abstract fun provideUiMessageResolver(mainUIMessageResolver: MainUIMessageResolver): UIMessageResolver
+    fun provideUiMessageResolver(mainUIMessageResolver: MainUIMessageResolver): UIMessageResolver
 }

@@ -1,7 +1,6 @@
 package com.woocommerce.android.ui.main
 
 import android.app.Activity
-import com.woocommerce.android.ui.base.UIMessageResolver
 import dagger.Binds
 import dagger.Module
 import dagger.Provides
