@@ -32,7 +32,7 @@ abstract class StatsWidgetProvider : AppWidgetProvider() {
     }
 
     override fun onUpdate(context: Context, appWidgetManager: AppWidgetManager, appWidgetIds: IntArray) {
-        for (appWidgetId in appWidgetIds) {
+        appWidgetIds.forEach { appWidgetId ->
             widgetUpdater.updateAppWidget(
                 context,
                 appWidgetId,
@@ -42,7 +42,7 @@ abstract class StatsWidgetProvider : AppWidgetProvider() {
     }
 
     override fun onDeleted(context: Context, appWidgetIds: IntArray) {
-        for (appWidgetId in appWidgetIds) {
+        appWidgetIds.forEach { appWidgetId ->
             widgetUpdater.delete(appWidgetId)
         }
     }
