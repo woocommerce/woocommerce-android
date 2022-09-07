@@ -1,6 +1,7 @@
 package com.woocommerce.android.ui.payments.cardreader.hub
 
 import androidx.annotation.DrawableRes
+import androidx.annotation.StringRes
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
@@ -233,7 +234,12 @@ class CardReaderHubViewModel @Inject constructor(
 
     private fun onPurchaseCardReaderClicked() {
         trackEvent(AnalyticsEvent.PAYMENTS_HUB_ORDER_CARD_READER_TAPPED)
-        triggerEvent(CardReaderHubEvents.NavigateToPurchaseCardReaderFlow(cardReaderPurchaseUrl))
+        triggerEvent(
+            CardReaderHubEvents.NavigateToPurchaseCardReaderFlow(
+                url = cardReaderPurchaseUrl,
+                titleRes = R.string.card_reader_purchase_card_reader
+            )
+        )
     }
 
     private fun onCardReaderManualsClicked() {
@@ -325,7 +331,10 @@ class CardReaderHubViewModel @Inject constructor(
 
     sealed class CardReaderHubEvents : MultiLiveEvent.Event() {
         data class NavigateToCardReaderDetail(val cardReaderFlowParam: CardReaderFlowParam) : CardReaderHubEvents()
-        data class NavigateToPurchaseCardReaderFlow(val url: String) : CardReaderHubEvents()
+        data class NavigateToPurchaseCardReaderFlow(
+            val url: String,
+            @StringRes val titleRes: Int
+        ) : CardReaderHubEvents()
         object NavigateToPaymentCollectionScreen : CardReaderHubEvents()
         object NavigateToCardReaderManualsScreen : CardReaderHubEvents()
         data class NavigateToCardReaderOnboardingScreen(
