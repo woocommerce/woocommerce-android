@@ -91,4 +91,3 @@ fun String.capitalizeWords(): String {
 fun String.orNullIfEmpty(): String? = this.ifEmpty { null }
 
 fun String?.isNotNullOrEmpty() = this.isNullOrEmpty().not()
-
