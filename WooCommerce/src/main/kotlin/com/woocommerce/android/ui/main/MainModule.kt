@@ -23,8 +23,4 @@ internal abstract class MainModule {
     @ActivityScoped
     @Binds
     abstract fun provideMainPresenter(mainActivityPresenter: MainPresenter): MainContract.Presenter
-
-    @ActivityScoped
-    @Binds
-    abstract fun provideUiMessageResolver(mainUIMessageResolver: MainUIMessageResolver): UIMessageResolver
 }
