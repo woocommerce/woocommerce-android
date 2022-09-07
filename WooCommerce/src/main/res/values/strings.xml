@@ -272,7 +272,8 @@
     <string name="login_connect_jetpack_button">Connect Jetpack to your account</string>
     <string name="login_simple_wpcom_site">The site %1$s is currently on a WordPress.com plan that does not support plugin installation. Please upgrade your plan to use WooCommerce.</string>
     <string name="login_jetpack_connection_verification_failed">Cannot verify your Jetpack connection. Please try again.</string>
-    <string name="login_jetpack_verify_connection">Verifying Jetpack connection...</string>
+    <string name="login_jetpack_verify_connection">Verifying Jetpack connection…</string>
+    <string name="login_jetpack_connection_url_failed">Fetching connection data failed…</string>
     <!--
         My Store View
     -->

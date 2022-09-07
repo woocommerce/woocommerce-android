@@ -12,6 +12,7 @@ import androidx.navigation.fragment.findNavController
 import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.support.HelpActivity
 import com.woocommerce.android.ui.base.BaseFragment
+import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.ui.login.LoginActivity
 import com.woocommerce.android.ui.login.LoginEmailHelpDialogFragment
@@ -23,13 +24,17 @@ import com.woocommerce.android.ui.login.accountmismatch.AccountMismatchErrorView
 import com.woocommerce.android.ui.login.accountmismatch.AccountMismatchErrorViewModel.OnJetpackConnectedEvent
 import com.woocommerce.android.ui.main.AppBarStatus
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import dagger.hilt.android.AndroidEntryPoint
 import org.wordpress.android.login.LoginListener
 import org.wordpress.android.login.LoginMode
+import javax.inject.Inject
 
 @AndroidEntryPoint
 class AccountMismatchErrorFragment : BaseFragment(), Listener {
     private val viewModel: AccountMismatchErrorViewModel by viewModels()
+    @Inject
+    lateinit var uiMessageResolver: UIMessageResolver
 
     override val activityAppBarStatus: AppBarStatus
         get() = AppBarStatus.Hidden
@@ -74,6 +79,7 @@ class AccountMismatchErrorFragment : BaseFragment(), Listener {
                 )
                 is NavigateToLoginScreen -> navigateToLoginScreen()
                 is OnJetpackConnectedEvent -> onJetpackConnected(event.email)
+                is ShowSnackbar -> uiMessageResolver.showSnack(event.message)
                 is Exit -> findNavController().navigateUp()
             }
         }

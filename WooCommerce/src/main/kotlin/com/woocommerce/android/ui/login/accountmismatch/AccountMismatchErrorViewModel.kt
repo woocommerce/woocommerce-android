@@ -12,6 +12,7 @@ import com.woocommerce.android.ui.login.AccountRepository
 import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.viewmodel.ResourceProvider
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.getStateFlow
@@ -153,7 +154,7 @@ class AccountMismatchErrorViewModel @Inject constructor(
             onFailure = {
                 _loadingDialogMessage.value = null
                 step.value = Step.MainContent
-                // TODO show an error snackbar
+                triggerEvent(ShowSnackbar(R.string.login_jetpack_connection_url_failed))
             }
         )
     }
