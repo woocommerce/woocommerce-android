@@ -164,7 +164,7 @@ class CardReaderHubViewModel @Inject constructor(
                 onClick = ::onManageCardReaderClicked
             )
         ).apply {
-            if(countryConfig != CardReaderConfigForUnsupportedCountry) {
+            if (countryConfig != CardReaderConfigForUnsupportedCountry) {
                 add(
                     NonToggleableListItem(
                         icon = R.drawable.ic_card_reader_manual,
