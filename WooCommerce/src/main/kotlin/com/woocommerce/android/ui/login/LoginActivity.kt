@@ -11,8 +11,6 @@ import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
-import com.google.android.material.snackbar.BaseTransientBottomBar
-import com.google.android.material.snackbar.Snackbar
 import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.AppUrls
@@ -35,6 +33,7 @@ import com.woocommerce.android.support.HelpActivity
 import com.woocommerce.android.support.HelpActivity.Origin
 import com.woocommerce.android.support.ZendeskExtraTags
 import com.woocommerce.android.support.ZendeskHelper
+import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.login.LoginPrologueCarouselFragment.PrologueCarouselListener
 import com.woocommerce.android.ui.login.LoginPrologueFragment.PrologueFinishedListener
 import com.woocommerce.android.ui.login.LoginPrologueSurveyFragment.PrologueSurveyListener
@@ -155,6 +154,7 @@ class LoginActivity :
     @Inject internal lateinit var sentScreenExperiment: MagicLinkSentScreenExperiment
     @Inject internal lateinit var magicLinkRequestExperiment: MagicLinkRequestExperiment
     @Inject internal lateinit var loginButtonSwapExperiment: LoginButtonSwapExperiment
+    @Inject internal lateinit var uiMessageResolver: UIMessageResolver
 
     private var loginMode: LoginMode? = null
     private lateinit var binding: ActivityLoginBinding
@@ -806,7 +806,9 @@ class LoginActivity :
     }
 
     override fun onGoogleSignupError(msg: String?) {
-        Snackbar.make(binding.mainView, msg ?: "", BaseTransientBottomBar.LENGTH_LONG).show()
+        msg?.let {
+            uiMessageResolver.showSnack(it)
+        }
     }
 
     //  -- END: GoogleListener implementation methods
