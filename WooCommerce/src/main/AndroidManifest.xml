@@ -116,7 +116,7 @@
             android:name="com.google.android.actions"
             android:resource="@xml/stats_today_widget_info" />
         <receiver
-            android:name=".ui.appwidgets.stats.today.TodayStatsWidget"
+            android:name=".ui.appwidgets.stats.today.TodayStatsWidgetProvider"
             android:exported="false"
             android:label="@string/today">
             <intent-filter>

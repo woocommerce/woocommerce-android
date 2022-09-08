@@ -81,12 +81,12 @@ class TodayWidgetUpdater
                 errorMessage,
                 resourceProvider,
                 context,
-                TodayStatsWidget::class.java
+                TodayStatsWidgetProvider::class.java
             )
         }
     }
 
-    override fun componentName(context: Context) = ComponentName(context, TodayStatsWidget::class.java)
+    override fun componentName(context: Context) = ComponentName(context, TodayStatsWidgetProvider::class.java)
 
     override fun delete(appWidgetId: Int) {
         appPrefsWrapper.removeAppWidgetSiteId(appWidgetId)
