@@ -1,34 +1,32 @@
 package com.woocommerce.android.ui.appwidgets.stats.today
 
 import androidx.annotation.LayoutRes
-import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.R
 import com.woocommerce.android.R.string
-import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.viewmodel.ResourceProvider
-import com.woocommerce.android.viewmodel.ScopedViewModel
-import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.runBlocking
+import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.model.WCRevenueStatsModel
+import org.wordpress.android.fluxc.store.SiteStore
 import javax.inject.Inject
 
-@HiltViewModel
 class TodayWidgetListViewModel @Inject constructor(
-    savedState: SavedStateHandle,
-    private val selectedSite: SelectedSite,
+    private val siteStore: SiteStore,
     private val resourceProvider: ResourceProvider,
     private val currencyFormatter: CurrencyFormatter,
     private val repository: TodayWidgetListViewRepository,
     private val appPrefsWrapper: AppPrefsWrapper
-) : ScopedViewModel(savedState) {
+) {
+    private var siteId: Int? = null
     private var appWidgetId: Int? = null
 
     private val mutableData = mutableListOf<TodayWidgetListItem>()
     val data: List<TodayWidgetListItem> = mutableData
 
-    fun start(appWidgetId: Int) {
+    fun start(siteId: Int, appWidgetId: Int) {
+        this.siteId = siteId
         this.appWidgetId = appWidgetId
     }
 
@@ -41,7 +39,12 @@ class TodayWidgetListViewModel @Inject constructor(
             return
         }
 
-        val site = selectedSite.getIfExists()
+        if (siteId == null) {
+            appWidgetId?.let { onError(it) }
+            return
+        }
+
+        val site = siteId?.let { siteStore.getSiteByLocalId(it) }
         if (site == null) {
             appWidgetId?.let { onError(it) }
             return
@@ -66,7 +69,7 @@ class TodayWidgetListViewModel @Inject constructor(
         val revenueStats = repository.getTodayRevenueStats(site)
         val visitorStats = repository.getTodayVisitorStats(site)
         val currencyCode = repository.getStatsCurrency(site)
-        val uiModels = buildListItemUiModel(revenueStats, visitorStats, currencyCode)
+        val uiModels = buildListItemUiModel(revenueStats, visitorStats, currencyCode, site)
         if (uiModels != data) {
             mutableData.clear()
             mutableData.addAll(uiModels)
@@ -76,7 +79,8 @@ class TodayWidgetListViewModel @Inject constructor(
     private fun buildListItemUiModel(
         revenueStats: WCRevenueStatsModel?,
         visitorCount: String,
-        currencyCode: String?
+        currencyCode: String?,
+        site: SiteModel
     ): List<TodayWidgetListItem> {
         val layout = R.layout.stats_widget_list_item
 
@@ -87,21 +91,26 @@ class TodayWidgetListViewModel @Inject constructor(
             orderCount = total.ordersCount ?: 0
         }
 
+        val localSiteId = site.siteId.toInt()
+
         val formatCurrencyForDisplay = currencyFormatter::formatCurrencyRounded
 
         return listOf(
             TodayWidgetListItem(
                 layout,
+                localSiteId,
                 resourceProvider.getString(string.dashboard_stats_revenue),
                 formatCurrencyForDisplay(grossRevenue, currencyCode.orEmpty())
             ),
             TodayWidgetListItem(
                 layout,
+                localSiteId,
                 resourceProvider.getString(string.dashboard_stats_orders),
                 orderCount.toString()
             ),
             TodayWidgetListItem(
                 layout,
+                localSiteId,
                 resourceProvider.getString(string.dashboard_stats_visitors),
                 visitorCount
             )
@@ -110,6 +119,7 @@ class TodayWidgetListViewModel @Inject constructor(
 
     data class TodayWidgetListItem(
         @LayoutRes val layout: Int,
+        val localSiteId: Int,
         val key: String,
         val value: String
     )
