@@ -10,7 +10,6 @@ import com.woocommerce.android.AppUrls
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
-import com.woocommerce.android.cardreader.internal.config.CardReaderConfig
 import com.woocommerce.android.cardreader.internal.config.CardReaderConfigForUnsupportedCountry
 import com.woocommerce.android.model.UiString
 import com.woocommerce.android.model.UiString.UiStringRes
@@ -21,6 +20,7 @@ import com.woocommerce.android.ui.payments.cardreader.CashOnDeliverySettingsRepo
 import com.woocommerce.android.ui.payments.cardreader.LearnMoreUrlProvider
 import com.woocommerce.android.ui.payments.cardreader.LearnMoreUrlProvider.LearnMoreUrlType.CASH_ON_DELIVERY
 import com.woocommerce.android.ui.payments.cardreader.hub.CardReaderHubViewModel.CardReaderHubEvents.ShowToastString
+import com.woocommerce.android.ui.payments.cardreader.hub.CardReaderHubViewModel.CardReaderHubViewState.ListItem
 import com.woocommerce.android.ui.payments.cardreader.hub.CardReaderHubViewModel.CardReaderHubViewState.ListItem.HeaderItem
 import com.woocommerce.android.ui.payments.cardreader.hub.CardReaderHubViewModel.CardReaderHubViewState.ListItem.NonToggleableListItem
 import com.woocommerce.android.ui.payments.cardreader.hub.CardReaderHubViewModel.CardReaderHubViewState.ListItem.ToggleableListItem
@@ -56,11 +56,10 @@ class CardReaderHubViewModel @Inject constructor(
     private val cardReaderTracker: CardReaderTracker,
 ) : ScopedViewModel(savedState) {
     private val arguments: CardReaderHubFragmentArgs by savedState.navArgs()
-    private val storeCountryCode: String? = wooStore.getStoreCountryCode(selectedSite.get())
-    private val countryConfig: CardReaderConfig =
-        cardReaderCountryConfigProvider.provideCountryConfigFor(
-            storeCountryCode
-        )
+    private val storeCountryCode = wooStore.getStoreCountryCode(selectedSite.get())
+    private val countryConfig = cardReaderCountryConfigProvider.provideCountryConfigFor(
+        storeCountryCode
+    )
 
     private val cashOnDeliveryState = MutableLiveData(
         ToggleableListItem(
@@ -133,13 +132,12 @@ class CardReaderHubViewModel @Inject constructor(
     private fun createHubListWhenSinglePluginInstalled(
         isOnboardingComplete: Boolean,
         cashOnDeliveryItem: ToggleableListItem
-    ) =
-        mutableListOf(
-            HeaderItem(
-                label = UiStringRes(R.string.card_reader_payment_options_header),
-                index = 0
-            ),
-            NonToggleableListItem(
+    ): List<ListItem> = mutableListOf(
+        HeaderItem(
+            label = UiStringRes(R.string.card_reader_payment_options_header),
+            index = 0
+        ),
+        NonToggleableListItem(
                 icon = R.drawable.ic_gridicons_money_on_surface,
                 label = UiStringRes(R.string.card_reader_collect_payment),
                 index = 1,
@@ -193,7 +191,7 @@ class CardReaderHubViewModel @Inject constructor(
         )
     }
 
-    private fun getNonTogggleableItems(): List<CardReaderHubViewState.ListItem>? {
+    private fun getNonTogggleableItems(): List<ListItem>? {
         return viewState.value?.rows?.filter {
             it !is ToggleableListItem
         }
