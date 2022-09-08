@@ -12,7 +12,6 @@ import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.ui.login.AccountRepository
-import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
@@ -94,9 +93,7 @@ class AccountMismatchErrorViewModel @Inject constructor(
         primaryButtonText = when (navArgs.primaryButton) {
             AccountMismatchPrimaryButton.SHOW_SITE_PICKER -> R.string.login_view_connected_stores
             AccountMismatchPrimaryButton.ENTER_NEW_SITE_ADDRESS -> R.string.login_site_picker_try_another_address
-            AccountMismatchPrimaryButton.CONNECT_JETPACK -> {
-                if (FeatureFlag.LOGIN_JETPACK_CONNECTION.isEnabled()) R.string.login_connect_jetpack_button else null
-            }
+            AccountMismatchPrimaryButton.CONNECT_JETPACK -> R.string.login_connect_jetpack_button
             AccountMismatchPrimaryButton.NONE -> null
         },
         primaryButtonAction = {
