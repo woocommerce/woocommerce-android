@@ -7,7 +7,10 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.AppPrefsWrapper
+import com.woocommerce.android.OnChangedException
 import com.woocommerce.android.R
+import com.woocommerce.android.analytics.AnalyticsEvent
+import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.ui.login.AccountRepository
 import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.viewmodel.MultiLiveEvent
@@ -37,7 +40,8 @@ class AccountMismatchErrorViewModel @Inject constructor(
     private val appPrefsWrapper: AppPrefsWrapper,
     private val accountMismatchRepository: AccountMismatchRepository,
     private val resourceProvider: ResourceProvider,
-    private val userAgent: UserAgent
+    private val userAgent: UserAgent,
+    private val analyticsTrackerWrapper: AnalyticsTrackerWrapper
 ) : ScopedViewModel(savedStateHandle) {
     companion object {
         private const val JETPACK_PLANS_URL = "wordpress.com/jetpack/connect/plans"
@@ -67,6 +71,9 @@ class AccountMismatchErrorViewModel @Inject constructor(
 
     init {
         handleFetchingJetpackEmail()
+        if (navArgs.primaryButton == AccountMismatchPrimaryButton.CONNECT_JETPACK) {
+            analyticsTrackerWrapper.track(AnalyticsEvent.LOGIN_JETPACK_CONNECTION_ERROR_SHOWN)
+        }
     }
 
     private fun prepareMainState() = ViewState.MainState(
@@ -113,9 +120,11 @@ class AccountMismatchErrorViewModel @Inject constructor(
         successConnectionUrls = listOf(siteUrl, JETPACK_PLANS_URL),
         userAgent = userAgent.userAgent,
         onDismiss = {
+            analyticsTrackerWrapper.track(AnalyticsEvent.LOGIN_JETPACK_CONNECT_DISMISSED)
             step.value = Step.MainContent
         },
         onConnected = {
+            analyticsTrackerWrapper.track(AnalyticsEvent.LOGIN_JETPACK_CONNECT_COMPLETED)
             step.value = Step.FetchJetpackEmail
         }
     )
@@ -144,6 +153,7 @@ class AccountMismatchErrorViewModel @Inject constructor(
     }
 
     private fun startJetpackConnection() = launch {
+        analyticsTrackerWrapper.track(AnalyticsEvent.LOGIN_JETPACK_CONNECT_BUTTON_TAPPED)
         _loadingDialogMessage.value = R.string.loading
         val site = site.await()
         accountMismatchRepository.fetchJetpackConnectionUrl(site).fold(
@@ -169,6 +179,12 @@ class AccountMismatchErrorViewModel @Inject constructor(
                     },
                     onFailure = {
                         step.value = Step.FetchingJetpackEmailFailed
+                        analyticsTrackerWrapper.track(
+                            stat = AnalyticsEvent.LOGIN_JETPACK_CONNECTION_VERIFICATION_FAILED,
+                            errorContext = this.javaClass.simpleName,
+                            errorType = (it as? OnChangedException)?.error?.javaClass?.simpleName,
+                            errorDescription = it.message
+                        )
                     }
                 )
             }
