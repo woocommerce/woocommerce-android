@@ -8,9 +8,11 @@ import com.woocommerce.android.cardreader.connection.SpecificReader.WisePade3
 import com.woocommerce.android.cardreader.internal.config.CardReaderConfigForSupportedCountry
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.payments.cardreader.CardReaderCountryConfigProvider
+import com.woocommerce.android.ui.payments.cardreader.connect.CardReaderConnectViewModel.ListItemViewState.ScanningInProgressListItem.label
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
+import org.wordpress.android.fluxc.generated.endpoint.WOOCOMMERCE.data
 import org.wordpress.android.fluxc.store.WooCommerceStore
 import javax.inject.Inject
 
@@ -36,7 +38,7 @@ class CardReaderManualsViewModel @Inject constructor(
                 )
             )
         }
-        else -> null
+        else -> error("Manual not available")
     }
 
     private fun onBbposManualClicked() {
