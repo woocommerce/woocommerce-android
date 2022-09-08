@@ -6,8 +6,10 @@ import android.view.Menu
 import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
+import androidx.core.view.MenuProvider
 import androidx.core.view.isVisible
 import androidx.hilt.navigation.fragment.hiltNavGraphViewModels
+import androidx.lifecycle.Lifecycle
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.DefaultItemAnimator
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -50,7 +52,10 @@ import java.math.BigDecimal
 import javax.inject.Inject
 
 @AndroidEntryPoint
-class OrderCreateEditFormFragment : BaseFragment(R.layout.fragment_order_create_edit_form), BackPressListener {
+class OrderCreateEditFormFragment :
+    BaseFragment(R.layout.fragment_order_create_edit_form),
+    BackPressListener,
+    MenuProvider {
     private val viewModel by hiltNavGraphViewModels<OrderCreateEditViewModel>(R.id.nav_graph_order_creations)
 
     @Inject lateinit var currencyFormatter: CurrencyFormatter
@@ -80,7 +85,7 @@ class OrderCreateEditFormFragment : BaseFragment(R.layout.fragment_order_create_
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        setHasOptionsMenu(true)
+        requireActivity().addMenuProvider(this, viewLifecycleOwner, Lifecycle.State.RESUMED)
         with(FragmentOrderCreateEditFormBinding.bind(view)) {
             setupObserversWith(this)
             setupHandleResults()
@@ -88,7 +93,7 @@ class OrderCreateEditFormFragment : BaseFragment(R.layout.fragment_order_create_
         }
     }
 
-    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+    override fun onCreateMenu(menu: Menu, inflater: MenuInflater) {
         super.onCreateOptionsMenu(menu, inflater)
         inflater.inflate(R.menu.menu_order_creation, menu)
 
@@ -103,7 +108,7 @@ class OrderCreateEditFormFragment : BaseFragment(R.layout.fragment_order_create_
         }
     }
 
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+    override fun onMenuItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
             R.id.menu_create -> {
                 viewModel.onCreateOrderClicked(viewModel.currentDraft)
