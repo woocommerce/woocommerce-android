@@ -7,23 +7,38 @@ import android.widget.RemoteViews
 import android.widget.RemoteViewsService.RemoteViewsFactory
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.appwidgets.stats.StatsWidgetProvider.Companion.SITE_ID_KEY
-import javax.inject.Inject
+import dagger.hilt.EntryPoint
+import dagger.hilt.InstallIn
+import dagger.hilt.android.EntryPointAccessors
+import dagger.hilt.components.SingletonComponent
 
 /**
  * Class extends [RemoteViewsFactory] and acts as an interface for the current day stats widget ListView adapter
  */
-class TodayWidgetListRemoteViewsFactory @Inject constructor(
+class TodayWidgetListRemoteViewsFactory(
     val context: Context,
     intent: Intent
 ) : RemoteViewsFactory {
-    // TODO this injection doesn't work
-    @Inject lateinit var viewModel: TodayWidgetListViewModel
-    @Inject lateinit var widgetUpdater: TodayWidgetUpdater
+
+    @EntryPoint
+    @InstallIn(SingletonComponent::class)
+    interface TodayWidgetListEntryPoint {
+        fun viewModel(): TodayWidgetListViewModel
+        fun widgetUpdater(): TodayWidgetUpdater
+    }
+
+    lateinit var viewModel: TodayWidgetListViewModel
+    lateinit var widgetUpdater: TodayWidgetUpdater
 
     private val siteId: Int = intent.getIntExtra(SITE_ID_KEY, 0)
     private val appWidgetId = intent.getIntExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, -1)
 
     override fun onCreate() {
+        val hiltEntryPoint =
+            EntryPointAccessors.fromApplication(context, TodayWidgetListEntryPoint::class.java)
+        viewModel = hiltEntryPoint.viewModel()
+        widgetUpdater = hiltEntryPoint.widgetUpdater()
+
         viewModel.start(siteId, appWidgetId)
     }
 
