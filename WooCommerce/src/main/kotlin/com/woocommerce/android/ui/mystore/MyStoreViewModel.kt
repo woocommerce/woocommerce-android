@@ -63,7 +63,6 @@ import javax.inject.Inject
 @HiltViewModel
 class MyStoreViewModel @Inject constructor(
     savedState: SavedStateHandle,
-    notificationStore: NotificationStore,
     private val networkStatus: NetworkStatus,
     private val resourceProvider: ResourceProvider,
     private val wooCommerceStore: WooCommerceStore,
@@ -98,11 +97,6 @@ class MyStoreViewModel @Inject constructor(
 
     private val forceRefreshTrigger = MutableSharedFlow<Boolean>(extraBufferCapacity = 1)
 
-    private val onNewOrderNotificationFlow = notificationStore.observeNotificationsForSite(
-        site = selectedSite.get(),
-        filterBySubtype = listOf(NotificationModel.Kind.STORE_ORDER.toString())
-    ).filter { it.isNotEmpty() }
-
     private val _activeStatsGranularity = savedState.getStateFlow(viewModelScope, getSelectedStatsGranularityIfAny())
     val activeStatsGranularity = _activeStatsGranularity.asLiveData()
 
@@ -113,7 +107,6 @@ class MyStoreViewModel @Inject constructor(
     init {
         ConnectionChangeReceiver.getEventBus().register(this)
         initExPlat()
-        initOnNewOrderTrigger()
         viewModelScope.launch {
             combine(
                 _activeStatsGranularity,
@@ -342,14 +335,6 @@ class MyStoreViewModel @Inject constructor(
         val previouslySelectedGranularity = appPrefsWrapper.getActiveStatsGranularity(selectedSite.getSelectedSiteId())
         return runCatching { StatsGranularity.valueOf(previouslySelectedGranularity.uppercase()) }
             .getOrElse { StatsGranularity.DAYS }
-    }
-
-    private fun initOnNewOrderTrigger() {
-        viewModelScope.launch {
-            onNewOrderNotificationFlow.collect {
-                forceRefreshTrigger.tryEmit(true)
-            }
-        }
     }
 
     sealed class RevenueStatsViewState {
