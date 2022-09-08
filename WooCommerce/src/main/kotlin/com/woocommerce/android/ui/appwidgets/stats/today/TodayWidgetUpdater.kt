@@ -44,7 +44,7 @@ class TodayWidgetUpdater
         val views = RemoteViews(context.packageName, R.layout.stats_widget_list)
 
         if (networkAvailable && hasAccessToken && siteModel != null) {
-            views.setTextViewText(R.id.widget_title, siteModel.getTitle(context))
+            views.setTextViewText(R.id.widget_title, siteModel.getTitle(context.getString(R.string.my_store)))
             views.setViewVisibility(R.id.widget_type, View.VISIBLE)
 
             siteModel.let {
@@ -79,12 +79,12 @@ class TodayWidgetUpdater
                 errorMessage,
                 resourceProvider,
                 context,
-                TodayStatsWidget::class.java
+                TodayStatsWidgetProvider::class.java
             )
         }
     }
 
-    override fun componentName(context: Context) = ComponentName(context, TodayStatsWidget::class.java)
+    override fun componentName(context: Context) = ComponentName(context, TodayStatsWidgetProvider::class.java)
 
     @Suppress("EmptyFunctionBlock")
     override fun delete(appWidgetId: Int) { }
