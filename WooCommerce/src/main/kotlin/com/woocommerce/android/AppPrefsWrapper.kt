@@ -267,6 +267,15 @@ class AppPrefsWrapper @Inject constructor() {
         AppPrefs.setPromoBannerShown(bannerType, shown)
     }
 
+    fun isV4StatsSupported() = AppPrefs.isV4StatsSupported()
+
+    /**
+     * Widget settings
+     */
+    fun getAppWidgetSiteId(appWidgetId: Int) = AppPrefs.getStatsWidgetSelectedSiteId(appWidgetId)
+    fun setAppWidgetSiteId(siteId: Long, appWidgetId: Int) = AppPrefs.setStatsWidgetSelectedSiteId(siteId, appWidgetId)
+    fun removeAppWidgetSiteId(appWidgetId: Int) = AppPrefs.removeStatsWidgetSelectedSiteId(appWidgetId)
+
     /**
      * Observes changes to the preferences
      */

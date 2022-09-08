@@ -35,6 +35,7 @@
             android:name=".LeakCanaryInstaller"
             android:authorities="${applicationId}.leakcanary-installer"
             android:exported="false" />
+
     </application>
 
 </manifest>
