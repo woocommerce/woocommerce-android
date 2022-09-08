@@ -1,9 +1,9 @@
 package com.woocommerce.android.ui.mystore.data
 
 import com.woocommerce.android.AppConstants
+import com.woocommerce.android.WooException
 import com.woocommerce.android.extensions.semverCompareTo
 import com.woocommerce.android.tools.SelectedSite
-import com.woocommerce.android.ui.mystore.domain.GetTopPerformers
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T.DASHBOARD
 import kotlinx.coroutines.flow.Flow
@@ -11,6 +11,7 @@ import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.withTimeoutOrNull
 import org.wordpress.android.fluxc.model.WCRevenueStatsModel
 import org.wordpress.android.fluxc.model.leaderboards.WCTopPerformerProductModel
+import org.wordpress.android.fluxc.persistence.entity.TopPerformerProductEntity
 import org.wordpress.android.fluxc.store.WCLeaderboardsStore
 import org.wordpress.android.fluxc.store.WCOrderStore
 import org.wordpress.android.fluxc.store.WCStatsStore
@@ -102,22 +103,34 @@ class StatsRepository @Inject constructor(
                 )
         }.let { result ->
             val model = result.model
-            if (result.isError || model == null) {
-                val resultError: Result<List<WCTopPerformerProductModel>> = Result.failure(
-                    Exception(result.error?.message.orEmpty())
-                )
-                emit(resultError)
-            } else {
-                emit(Result.success(model))
+            when {
+                result.isError || model == null -> emit(Result.failure(WooException(result.error)))
+                else -> emit(Result.success(model))
             }
         }
     }
 
     fun observeTopPerformers(
-        granularity: WCStatsStore.StatsGranularity,
-        topPerformersCount: Int
-    ): Flow<GetTopPerformers.TopPerformersResult> {
+        granularity: StatsGranularity,
+    ): Flow<List<TopPerformerProductEntity>> =
+        wcLeaderboardsStore.observeTopPerformerProducts(granularity, selectedSite.get().siteId)
 
+    suspend fun fetchProductLeaderboardsNew(
+        forceRefresh: Boolean,
+        granularity: StatsGranularity,
+        quantity: Int
+    ): Result<Unit> {
+        val result = wcLeaderboardsStore.fetchProductLeaderboardsNew(
+            site = selectedSite.get(),
+            granularity = granularity,
+            quantity = quantity,
+            addProductsPath = supportsProductOnlyLeaderboardEndpoint(),
+            forceRefresh = forceRefresh
+        )
+        return when {
+            result.isError -> Result.failure(WooException(result.error))
+            else -> Result.success(Unit)
+        }
     }
 
     suspend fun checkIfStoreHasNoOrders(): Flow<Result<Boolean>> = flow {
