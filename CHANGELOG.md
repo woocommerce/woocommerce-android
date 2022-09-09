@@ -2,6 +2,10 @@
 Contains editorialized release notes. Raw release notes should go into `RELEASE-NOTES.txt`.
 -->
 
+## 10.3
+
+More stability fixes to help you log in much easier. Added the ability to set up Jetpack if it's not connected yet. And we fixed a bug where Jetpack can be incorrectly assumed as unavailable. Please keep your feedback coming! 
+
 ## 10.2
 
 Even though this release doesn’t have any new features, we still put a lot of love into it! We’ve added a new Help Center page that makes it easier for you to login to the app. You can also enable or disable the option to take card or cash payments on collection or delivery.   
