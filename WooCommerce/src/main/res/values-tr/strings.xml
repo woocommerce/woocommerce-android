@@ -1,11 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2022-09-02 09:54:03+0000
+Translation-Revision-Date: 2022-09-06 11:54:03+0000
 Plural-Forms: nplurals=2; plural=(n > 1);
 Generator: GlotPress/2.4.0-alpha
 Language: tr
 -->
 <resources>
+    <string name="card_reader_card_readers_header">KART OKUYUCULAR</string>
+    <string name="card_reader_payment_options_header">ÖDEME SEÇENEKLERİ</string>
+    <string name="card_reader_enable_pay_in_person_description">Şahsen Ödeme seçeneği web sitesi siparişleri için tahsilat veya teslimat sırasında ödeme kabul etmenizi sağlar. &lt;a href=\'\'&gt;Daha fazlasını öğrenin&lt;/a&gt;</string>
+    <string name="card_reader_enable_pay_in_person">Şahsen Ödeyin</string>
+    <string name="login_verifying_site_jetpack_timeout_error_description">Sitenize bağlanamadık. Sorunu gidermek için lütfen desteğe başvurun.</string>
+    <string name="login_verifying_site_jetpack_timeout_error_title">Bağlantı Hatası</string>
     <string name="card_reader_onboarding_with_pending_requirements">İlgilenmeniz gereken bir sorun var. Lütfen &lt;a href=\'\'&gt;bir göz atın&lt;/a&gt;</string>
     <string name="login_site_picker_try_another_address">Başka bir adres deneyin</string>
     <string name="card_reader_onboarding_cash_on_delivery_enable_failure">Teslimatta nakit ödeme etkinleştirilemedi. Lütfen daha sonra tekrar deneyin.</string>

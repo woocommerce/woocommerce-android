@@ -1,11 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2022-08-30 09:54:03+0000
+Translation-Revision-Date: 2022-09-06 11:54:03+0000
 Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);
 Generator: GlotPress/2.4.0-alpha
 Language: ru
 -->
 <resources>
+    <string name="card_reader_card_readers_header">УСТРОЙСТВА ЧТЕНИЯ КАРТ</string>
+    <string name="card_reader_payment_options_header">СПОСОБЫ ОПЛАТЫ</string>
+    <string name="card_reader_enable_pay_in_person_description">Способ оформления заказа \"Очная оплата\" позволяет вам принимать платежи за заказы на веб-сайте при получении товара покупателем. &lt;a href=\'\'&gt;Подробнее&lt;/a&gt;</string>
+    <string name="card_reader_enable_pay_in_person">Очная оплата</string>
+    <string name="login_verifying_site_jetpack_timeout_error_description">Не удалось подключиться к вашему сайту. Обратитесь в службу поддержки для устранения проблемы.</string>
+    <string name="login_verifying_site_jetpack_timeout_error_title">Ошибка подключения</string>
     <string name="card_reader_onboarding_with_pending_requirements">Есть проблема, требующая вашего внимания. Пожалуйста, &lt;a href=\'\'&gt;изучите&lt;/a&gt; её</string>
     <string name="login_site_picker_try_another_address">Используйте другой адрес</string>
     <string name="card_reader_onboarding_cash_on_delivery_enable_failure">Не удалось включить наложенный платёж. Повторите попытку позже.</string>

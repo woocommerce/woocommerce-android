@@ -1,11 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2022-08-30 11:54:02+0000
+Translation-Revision-Date: 2022-09-06 13:54:04+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: de
 -->
 <resources>
+    <string name="card_reader_card_readers_header">KARTENLESEGERÄTE</string>
+    <string name="card_reader_payment_options_header">ZAHLUNGSOPTIONEN</string>
+    <string name="card_reader_enable_pay_in_person_description">Mit der Bezahloption „Persönliche Zahlung“ kannst du bei Abholung oder Zustellung von Bestellungen auf deiner Website Zahlungen annehmen. &lt;a href=\'\'&gt;Weitere Informationen&lt;/a&gt;</string>
+    <string name="card_reader_enable_pay_in_person">Persönliche Zahlung</string>
+    <string name="login_verifying_site_jetpack_timeout_error_description">Es konnte keine Verbindung zu deiner Website hergestellt werden. Bitte wende dich an den Support um das Problem zu beheben.</string>
+    <string name="login_verifying_site_jetpack_timeout_error_title">Verbindungsfehler</string>
     <string name="card_reader_onboarding_with_pending_requirements">Ein Problem erfordert deine Aufmerksamkeit. Bitte &lt;a href=\'\'&gt;schau es dir an&lt;/a&gt;</string>
     <string name="login_site_picker_try_another_address">Andere Adresse versuchen</string>
     <string name="card_reader_onboarding_cash_on_delivery_enable_failure">Bezahlung per Nachnahme konnte nicht aktiviert werden. Versuch es später noch einmal.</string>

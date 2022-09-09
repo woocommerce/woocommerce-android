@@ -1,0 +1,4 @@
+10.2:
+Meski tidak ada fitur baru dalam rilis ini, kami tetap berupaya keras memberikan yang terbaik! Kami menambahkan halaman Pusat Bantuan baru agar Anda bisa login ke aplikasi dengan lebih mudah. Opsi untuk menerima pembayaran secara tunai atau dengan kartu saat barang diambil atau diantarkan kini juga dapat diaktifkan atau dinonaktifkan.
+Terakhir, kami juga telah menyempurnakan aplikasi agar performanya lebih prima. Terus kirimkan feedback Anda! Kami membaca semuanya!
+
