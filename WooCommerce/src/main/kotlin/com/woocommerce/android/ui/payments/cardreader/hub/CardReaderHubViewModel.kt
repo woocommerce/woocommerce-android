@@ -138,41 +138,41 @@ class CardReaderHubViewModel @Inject constructor(
             index = 0
         ),
         NonToggleableListItem(
-                icon = R.drawable.ic_gridicons_money_on_surface,
-                label = UiStringRes(R.string.card_reader_collect_payment),
-                index = 1,
-                onClick = ::onCollectPaymentClicked
-            ),
-            cashOnDeliveryItem,
-            HeaderItem(
-                label = UiStringRes(R.string.card_reader_card_readers_header),
-                index = 4,
-            ),
-            NonToggleableListItem(
-                icon = R.drawable.ic_shopping_cart,
-                label = UiStringRes(R.string.card_reader_purchase_card_reader),
-                index = 5,
-                onClick = ::onPurchaseCardReaderClicked
-            ),
-            NonToggleableListItem(
-                icon = R.drawable.ic_manage_card_reader,
-                label = UiStringRes(R.string.card_reader_manage_card_reader),
-                isEnabled = isOnboardingComplete,
-                index = 6,
-                onClick = ::onManageCardReaderClicked
-            )
-        ).apply {
-            if (countryConfig != CardReaderConfigForUnsupportedCountry) {
-                add(
-                    NonToggleableListItem(
-                        icon = R.drawable.ic_card_reader_manual,
-                        label = UiStringRes(R.string.settings_card_reader_manuals),
-                        index = 7,
-                        onClick = ::onCardReaderManualsClicked
-                    )
+            icon = R.drawable.ic_gridicons_money_on_surface,
+            label = UiStringRes(R.string.card_reader_collect_payment),
+            index = 1,
+            onClick = ::onCollectPaymentClicked
+        ),
+        cashOnDeliveryItem,
+        HeaderItem(
+            label = UiStringRes(R.string.card_reader_card_readers_header),
+            index = 4,
+        ),
+        NonToggleableListItem(
+            icon = R.drawable.ic_shopping_cart,
+            label = UiStringRes(R.string.card_reader_purchase_card_reader),
+            index = 5,
+            onClick = ::onPurchaseCardReaderClicked
+        ),
+        NonToggleableListItem(
+            icon = R.drawable.ic_manage_card_reader,
+            label = UiStringRes(R.string.card_reader_manage_card_reader),
+            isEnabled = isOnboardingComplete,
+            index = 6,
+            onClick = ::onManageCardReaderClicked
+        )
+    ).apply {
+        if (countryConfig != CardReaderConfigForUnsupportedCountry) {
+            add(
+                NonToggleableListItem(
+                    icon = R.drawable.ic_card_reader_manual,
+                    label = UiStringRes(R.string.settings_card_reader_manuals),
+                    index = 7,
+                    onClick = ::onCardReaderManualsClicked
                 )
-            }
+            )
         }
+    }
 
     private fun createAdditionalItemWhenMultiplePluginsInstalled() =
         NonToggleableListItem(
@@ -348,6 +348,7 @@ class CardReaderHubViewModel @Inject constructor(
             val url: String,
             @StringRes val titleRes: Int
         ) : CardReaderHubEvents()
+
         object NavigateToPaymentCollectionScreen : CardReaderHubEvents()
         object NavigateToCardReaderManualsScreen : CardReaderHubEvents()
         data class NavigateToCardReaderOnboardingScreen(
