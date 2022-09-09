@@ -18,10 +18,10 @@ import com.woocommerce.android.ui.login.LoginEmailHelpDialogFragment
 import com.woocommerce.android.ui.login.LoginEmailHelpDialogFragment.Listener
 import com.woocommerce.android.ui.login.accountmismatch.AccountMismatchErrorViewModel.NavigateToEmailHelpDialogEvent
 import com.woocommerce.android.ui.login.accountmismatch.AccountMismatchErrorViewModel.NavigateToHelpScreen
+import com.woocommerce.android.ui.login.accountmismatch.AccountMismatchErrorViewModel.NavigateToLoginScreen
 import com.woocommerce.android.ui.login.accountmismatch.AccountMismatchErrorViewModel.NavigateToSiteAddressEvent
 import com.woocommerce.android.ui.main.AppBarStatus
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
-import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Logout
 import dagger.hilt.android.AndroidEntryPoint
 import org.wordpress.android.login.LoginMode
 
@@ -70,13 +70,13 @@ class AccountMismatchErrorFragment : BaseFragment(), Listener {
                     AccountMismatchErrorFragmentDirections
                         .actionAccountMismatchErrorFragmentToSitePickerSiteDiscoveryFragment()
                 )
-                is Logout -> onLogout()
+                is NavigateToLoginScreen -> navigateToLoginScreen()
                 is Exit -> findNavController().navigateUp()
             }
         }
     }
 
-    private fun onLogout() {
+    private fun navigateToLoginScreen() {
         val intent = Intent(context, LoginActivity::class.java).apply {
             flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
             LoginMode.WOO_LOGIN_MODE.putInto(this)

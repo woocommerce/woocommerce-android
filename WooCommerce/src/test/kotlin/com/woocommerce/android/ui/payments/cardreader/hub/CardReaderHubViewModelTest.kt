@@ -180,7 +180,8 @@ class CardReaderHubViewModelTest : BaseUnitTest() {
         assertThat(viewModel.event.value)
             .isEqualTo(
                 CardReaderHubViewModel.CardReaderHubEvents.NavigateToPurchaseCardReaderFlow(
-                    "${AppUrls.WOOCOMMERCE_PURCHASE_CARD_READER_IN_COUNTRY}US"
+                    url = "${AppUrls.WOOCOMMERCE_PURCHASE_CARD_READER_IN_COUNTRY}US",
+                    titleRes = R.string.card_reader_purchase_card_reader
                 )
             )
     }

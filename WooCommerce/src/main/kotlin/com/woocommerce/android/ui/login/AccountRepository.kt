@@ -9,6 +9,7 @@ import org.wordpress.android.fluxc.Dispatcher
 import org.wordpress.android.fluxc.action.AccountAction.SIGN_OUT
 import org.wordpress.android.fluxc.generated.AccountActionBuilder
 import org.wordpress.android.fluxc.generated.SiteActionBuilder
+import org.wordpress.android.fluxc.model.AccountModel
 import org.wordpress.android.fluxc.store.AccountStore
 import org.wordpress.android.fluxc.store.AccountStore.OnAccountChanged
 import javax.inject.Inject
@@ -18,7 +19,7 @@ class AccountRepository @Inject constructor(
     private val accountStore: AccountStore,
     private val dispatcher: Dispatcher
 ) {
-    fun getUserAccount() = accountStore.account
+    fun getUserAccount(): AccountModel? = accountStore.account.takeIf { it.userId != 0L }
 
     fun isUserLoggedIn() = accountStore.hasAccessToken()
 

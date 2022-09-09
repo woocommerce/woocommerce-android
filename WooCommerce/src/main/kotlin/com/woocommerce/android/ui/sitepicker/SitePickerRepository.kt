@@ -29,6 +29,10 @@ class SitePickerRepository @Inject constructor(
     suspend fun getSites() = withContext(Dispatchers.IO) { siteStore.sites }
 
     fun getSiteBySiteUrl(url: String) = SiteUtils.getSiteByMatchingUrl(siteStore, url)
+        .takeIf {
+            // Take only sites returned from the WPCom /me/sites response
+            it?.origin == SiteModel.ORIGIN_WPCOM_REST
+        }
 
     suspend fun fetchWooCommerceSites() = wooCommerceStore.fetchWooCommerceSites()
 
