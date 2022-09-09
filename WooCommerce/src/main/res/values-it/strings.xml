@@ -1,11 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2022-08-29 15:54:03+0000
+Translation-Revision-Date: 2022-09-06 13:54:04+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: it
 -->
 <resources>
+    <string name="card_reader_card_readers_header">LETTORI DI CARTE</string>
+    <string name="card_reader_payment_options_header">OPZIONI DI PAGAMENTO</string>
+    <string name="card_reader_enable_pay_in_person_description">L\'opzione di pagamento Paga di persona ti consente di accettare pagamenti per ordini sul sito Web, al ritiro o alla consegna. &lt;a href=\'\'&gt;Scopri di più&lt;/a&gt;</string>
+    <string name="card_reader_enable_pay_in_person">Paga di persona</string>
+    <string name="login_verifying_site_jetpack_timeout_error_description">Non siamo stati in grado di connetterci al tuo sito. Contatta il supporto per risolvere il problema.</string>
+    <string name="login_verifying_site_jetpack_timeout_error_title">Errore di connessione</string>
     <string name="card_reader_onboarding_with_pending_requirements">Si è verificato un problema che richiede la tua attenzione. &lt;a href=\'\'&gt;Dai un\'occhiata&lt;/a&gt;</string>
     <string name="login_site_picker_try_another_address">Prova con un altro indirizzo</string>
     <string name="card_reader_onboarding_cash_on_delivery_enable_failure">Non è stato possibile abilitare il pagamento alla consegna. Riprova più tardi.</string>

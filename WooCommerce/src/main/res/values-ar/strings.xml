@@ -1,11 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2022-08-30 15:54:03+0000
+Translation-Revision-Date: 2022-09-07 12:54:03+0000
 Plural-Forms: nplurals=6; plural=n==0 ? 0 : n==1 ? 1 : n==2 ? 2 : n%100>=3 && n%100<=10 ? 3 : n%100>=11 && n%100<=99 ? 4 : 5;
 Generator: GlotPress/2.4.0-alpha
 Language: ar
 -->
 <resources>
+    <string name="card_reader_card_readers_header">قراء البطاقات</string>
+    <string name="card_reader_payment_options_header">خيارات الدفع</string>
+    <string name="card_reader_enable_pay_in_person_description">يتيح لك خيار السداد \"الدفع بشكل شخصي\" قبول المدفوعات بالنسبة إلى الطلبات على موقع الويب عند التحصيل أو التسليم.  &lt;a href=\'\'&gt;معرفة المزيد&lt;/a&gt;</string>
+    <string name="card_reader_enable_pay_in_person">الدفع بشكل شخصي</string>
+    <string name="login_verifying_site_jetpack_timeout_error_description">تعذر علينا الاتصال بموقعك. يُرجى الاتصال بالدعم لحل المشكلة.</string>
+    <string name="login_verifying_site_jetpack_timeout_error_title">خطأ في الاتصال</string>
     <string name="card_reader_onboarding_with_pending_requirements">توجد مشكلة تتطلب اهتمامك. يرجى &lt;a href=\'\'&gt;إلقاء نظرة عليها&lt;/a&gt;</string>
     <string name="login_site_picker_try_another_address">تجربة عنوان آخر</string>
     <string name="card_reader_onboarding_cash_on_delivery_enable_failure">فشل تمكين خيار الدفع نقدًا عند التوصيل. يرجى المحاولة مرة أخرى لاحقًا.</string>

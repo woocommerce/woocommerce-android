@@ -57,7 +57,6 @@ import javax.inject.Inject
 import kotlin.math.abs
 
 @AndroidEntryPoint
-@Suppress("ForbiddenComment")
 @OptIn(FlowPreview::class)
 class MyStoreFragment : TopLevelFragment(R.layout.fragment_my_store) {
     companion object {
@@ -119,7 +118,6 @@ class MyStoreFragment : TopLevelFragment(R.layout.fragment_my_store) {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        setHasOptionsMenu(true)
 
         initTabLayout()
 
@@ -302,30 +300,6 @@ class MyStoreFragment : TopLevelFragment(R.layout.fragment_my_store) {
         super.onDestroyView()
         _binding = null
     }
-
-    /*
-    Hide Settings icon on My Store, because it is moved to the "More" screen.
-    We temporarily comment out the code instead of deleting, because we might want to restore it later,
-    based on merchants feedbacks.
-
-    TODO: Maybe restore Settings icon on My Store, depending on merchants feedbacks.
-    For more context: https://github.com/woocommerce/woocommerce-android/issues/5586
-
-    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
-        inflater.inflate(R.menu.menu_action_bar, menu)
-        super.onCreateOptionsMenu(menu, inflater)
-    }
-
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        return when (item.itemId) {
-            R.id.menu_settings -> {
-                (activity as? MainNavigationRouter)?.showSettingsScreen()
-                true
-            }
-            else -> super.onOptionsItemSelected(item)
-        }
-    }
-     */
 
     private fun showStats(revenueStatsModel: RevenueStatsUiModel?) {
         addTabLayoutToAppBar()
