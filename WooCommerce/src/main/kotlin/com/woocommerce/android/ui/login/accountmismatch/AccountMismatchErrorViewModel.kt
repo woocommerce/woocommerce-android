@@ -166,6 +166,10 @@ class AccountMismatchErrorViewModel @Inject constructor(
 
     private fun startJetpackConnection() = launch {
         analyticsTrackerWrapper.track(AnalyticsEvent.LOGIN_JETPACK_CONNECT_BUTTON_TAPPED)
+        if (accountMismatchRepository.getSiteByUrl(siteUrl) == null) {
+            step.value = Step.SiteCredentials()
+            return@launch
+        }
         _loadingDialogMessage.value = R.string.loading
         val site = site.await()
         accountMismatchRepository.fetchJetpackConnectionUrl(site).fold(
@@ -269,7 +273,7 @@ class AccountMismatchErrorViewModel @Inject constructor(
         object MainContent : Step
 
         @Parcelize
-        data class SiteCredentials(val username: String, val password: String) : Step
+        data class SiteCredentials(val username: String = "", val password: String = "") : Step
 
         @Parcelize
         data class JetpackConnection(val connectionUrl: String) : Step

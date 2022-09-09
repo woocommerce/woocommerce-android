@@ -159,7 +159,7 @@ class SitePickerFragment : BaseFragment(R.layout.fragment_site_picker), LoginEma
                 is NavigateToSiteAddressEvent -> navigateToAddressScreen()
                 is NavigateToEmailHelpDialogEvent -> navigateToNeedHelpFindingEmailScreen()
                 is NavigateToWPComWebView -> navigateToWPComWebView(event)
-                is NavigateToAccountMismatchScreen -> navigateToAccountMismatchScreen(event.hasConnectedStores)
+                is NavigateToAccountMismatchScreen -> navigateToAccountMismatchScreen(event.primaryButton)
                 is ShowSnackbar -> uiMessageResolver.showSnack(event.message)
                 is ShowDialog -> event.showDialog()
                 is Logout -> onLogout()
@@ -275,11 +275,10 @@ class SitePickerFragment : BaseFragment(R.layout.fragment_site_picker), LoginEma
         )
     }
 
-    private fun navigateToAccountMismatchScreen(hasConnectedStores: Boolean) {
+    private fun navigateToAccountMismatchScreen(primaryButton: AccountMismatchPrimaryButton) {
         findNavController().navigateSafely(
             SitePickerFragmentDirections.actionSitePickerFragmentToAccountMismatchErrorFragment(
-                primaryButton = if (hasConnectedStores) AccountMismatchPrimaryButton.SHOW_SITE_PICKER
-                else AccountMismatchPrimaryButton.ENTER_NEW_SITE_ADDRESS
+                primaryButton = primaryButton
             )
         )
     }

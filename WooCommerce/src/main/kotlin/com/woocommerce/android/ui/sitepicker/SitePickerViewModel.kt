@@ -20,6 +20,7 @@ import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.common.UserEligibilityFetcher
 import com.woocommerce.android.ui.login.AccountRepository
 import com.woocommerce.android.ui.login.UnifiedLoginTracker
+import com.woocommerce.android.ui.login.accountmismatch.AccountMismatchErrorViewModel.AccountMismatchPrimaryButton
 import com.woocommerce.android.ui.sitepicker.SitePickerViewModel.SitePickerEvent.NavigateToAccountMismatchScreen
 import com.woocommerce.android.ui.sitepicker.SitePickerViewModel.SitePickerEvent.NavigateToWPComWebView
 import com.woocommerce.android.ui.sitepicker.SitePickerViewModel.SitesListItem.Header
@@ -107,7 +108,7 @@ class SitePickerViewModel @Inject constructor(
             if (sitesInDb.isNotEmpty()) {
                 displaySites(sitesInDb)
             }
-            fetchSitesFromApi(sitesInDb.isEmpty())
+            fetchSitesFromApi(sitesInDb.isEmpty() || !loginSiteAddress.isNullOrEmpty())
         }
     }
 
@@ -266,17 +267,31 @@ class SitePickerViewModel @Inject constructor(
      * to a site that is not connected to the account the user logged
      * in with.
      */
-    private fun showAccountMismatchScreen(url: String) {
-        analyticsTrackerWrapper.track(
-            AnalyticsEvent.SITE_PICKER_AUTO_LOGIN_ERROR_NOT_CONNECTED_TO_USER,
-            mapOf(
-                AnalyticsTracker.KEY_URL to url,
-                AnalyticsTracker.KEY_HAS_CONNECTED_STORES to sitePickerViewState.hasConnectedStores
-            )
-        )
-        trackLoginEvent(currentStep = UnifiedLoginTracker.Step.WRONG_WP_ACCOUNT)
+    private fun showAccountMismatchScreen(url: String) = launch {
         if (event.value !is NavigateToAccountMismatchScreen) {
-            triggerEvent(NavigateToAccountMismatchScreen(sitePickerViewState.hasConnectedStores ?: false))
+            sitePickerViewState = sitePickerViewState.copy(isSkeletonViewVisible = true)
+            analyticsTrackerWrapper.track(
+                AnalyticsEvent.SITE_PICKER_AUTO_LOGIN_ERROR_NOT_CONNECTED_TO_USER,
+                mapOf(
+                    AnalyticsTracker.KEY_URL to url,
+                    AnalyticsTracker.KEY_HAS_CONNECTED_STORES to sitePickerViewState.hasConnectedStores
+                )
+            )
+            trackLoginEvent(currentStep = UnifiedLoginTracker.Step.WRONG_WP_ACCOUNT)
+            repository.fetchSiteInfo(url).fold(
+                onSuccess = {
+                    val primaryButton = when {
+                        !it.isWPCom -> AccountMismatchPrimaryButton.CONNECT_JETPACK
+                        sitePickerViewState.hasConnectedStores ?: false -> AccountMismatchPrimaryButton.SHOW_SITE_PICKER
+                        else -> AccountMismatchPrimaryButton.ENTER_NEW_SITE_ADDRESS
+                    }
+                    triggerEvent(NavigateToAccountMismatchScreen(primaryButton))
+                },
+                onFailure = {
+                    TODO()
+                }
+            )
+            sitePickerViewState = sitePickerViewState.copy(isSkeletonViewVisible = false)
         }
     }
 
@@ -631,7 +646,7 @@ class SitePickerViewModel @Inject constructor(
         object NavigateToSiteAddressEvent : SitePickerEvent()
         data class NavigateToHelpFragmentEvent(val origin: HelpActivity.Origin) : SitePickerEvent()
         data class NavigateToWPComWebView(val url: String, val validationUrl: String) : SitePickerEvent()
-        data class NavigateToAccountMismatchScreen(val hasConnectedStores: Boolean) : SitePickerEvent()
+        data class NavigateToAccountMismatchScreen(val primaryButton: AccountMismatchPrimaryButton) : SitePickerEvent()
     }
 
     enum class SitePickerState {
