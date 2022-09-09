@@ -1,0 +1,4 @@
+10.2:
+Aunque esta versión no tiene ninguna función nueva, hemos puesto mucho empeño en desarrollarla. Hemos añadido una nueva página al centro de ayuda para que sea más sencillo acceder a la aplicación. También puedes activar o desactivar la opción de aceptar pagos con tarjeta o en efectivo en la recogida o entrega.
+Por último, hemos hecho algunos ajustes para mejorar el rendimiento. Sigue enviándonos tus comentarios. Los leemos todos.
+
