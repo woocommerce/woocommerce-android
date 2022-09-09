@@ -1,11 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2022-08-31 11:54:03+0000
+Translation-Revision-Date: 2022-09-07 05:35:04+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: sv_SE
 -->
 <resources>
+    <string name="card_reader_card_readers_header">KORTLÄSARE</string>
+    <string name="card_reader_payment_options_header">BETALNINGSALTERNATIV</string>
+    <string name="card_reader_enable_pay_in_person_description">Kassaalternativet Betala personligen gör det möjligt att ta emot betalningar för webbplatsbeställningar vid upphämtning eller leverans. &lt;a href=\'\'&gt;Läs mer&lt;/a&gt;</string>
+    <string name="card_reader_enable_pay_in_person">Betala personligen</string>
+    <string name="login_verifying_site_jetpack_timeout_error_description">Vi kunde inte ansluta till din webbplats. Kontakta supporten för att felsöka problemet.</string>
+    <string name="login_verifying_site_jetpack_timeout_error_title">Anslutningsfel</string>
     <string name="card_reader_onboarding_with_pending_requirements">Det finns ett problem som kräver din uppmärksamhet. &lt;a href=\'\'&gt;Ta en titt  på detta&lt;/a&gt;</string>
     <string name="login_site_picker_try_another_address">Försök med en annan adress</string>
     <string name="card_reader_onboarding_cash_on_delivery_enable_failure">Det gick inte att aktivera Postförskott. Försök igen senare.</string>

@@ -1,3 +1,0 @@
-10.1:
-Meski tidak ada fitur baru dalam rilis ini, kami tetap memberikan upaya terbaik, termasuk perbaikan masalah yang membuat Anda tidak dapat menerima pembayaran. Terus berikan kami feedback – kami siap mendengarkan!
-
