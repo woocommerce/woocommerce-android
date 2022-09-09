@@ -58,7 +58,7 @@ class MainPresenterTest : BaseUnitTest() {
     private val productImageMap: ProductImageMap = mock()
     private val appPrefs: AppPrefsWrapper = mock()
     private val clearCardReaderDataAction: ClearCardReaderDataAction = mock()
-    private val statsWidgetUpdaters: WidgetUpdater.StatsWidgetUpdaters  = mock()
+    private val statsWidgetUpdaters: WidgetUpdater.StatsWidgetUpdaters = mock()
 
     private val wcOrderStore: WCOrderStore = mock {
         on { observeOrderCountForSite(any(), any()) } doReturn emptyFlow()
