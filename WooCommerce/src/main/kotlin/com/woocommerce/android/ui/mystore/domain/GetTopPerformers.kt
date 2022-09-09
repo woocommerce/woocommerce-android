@@ -5,7 +5,6 @@ import com.woocommerce.android.util.CoroutineDispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
-import org.wordpress.android.fluxc.model.leaderboards.WCTopPerformerProductModel
 import org.wordpress.android.fluxc.persistence.entity.TopPerformerProductEntity
 import org.wordpress.android.fluxc.store.WCStatsStore
 import javax.inject.Inject
@@ -23,35 +22,11 @@ class GetTopPerformers @Inject constructor(
                     .sortDescByQuantityAndTotal()
             }.flowOn(coroutineDispatchers.computation)
 
-//    suspend operator fun invoke(
-//        granularity: WCStatsStore.StatsGranularity,
-//        topPerformersCount: Int,
-//        forceRefresh: Boolean = false,
-//    ): Flow<TopPerformersResult> =
-//        statsRepository.fetchProductLeaderboards(forceRefresh, granularity, topPerformersCount)
-//            .transform { result ->
-//                result.fold(
-//                    onSuccess = { topPerformers ->
-//                        val sortedTopPerformers = sortTopPerformers(topPerformers)
-//                        emit(TopPerformersResult.TopPerformersSuccess(sortedTopPerformers))
-//                    },
-//                    onFailure = {
-//                        emit(TopPerformersError)
-//                    }
-//                )
-//            }.flowOn(coroutineDispatchers.computation)
-
     suspend operator fun invoke(
         granularity: WCStatsStore.StatsGranularity,
         topPerformersCount: Int,
         forceRefresh: Boolean = false,
-    ): Result<Unit> = statsRepository.fetchProductLeaderboardsNew(forceRefresh, granularity, topPerformersCount)
-
-//    private fun sortTopPerformers(topPerformers: List<WCTopPerformerProductModel>) =
-//        topPerformers.sortedWith(
-//            compareByDescending(WCTopPerformerProductModel::quantity)
-//                .thenByDescending(WCTopPerformerProductModel::total)
-//        )
+    ): Result<Unit> = statsRepository.fetchTopPerformerProducts(forceRefresh, granularity, topPerformersCount)
 
     private fun List<TopPerformerProduct>.sortDescByQuantityAndTotal() =
         sortedWith(
@@ -68,14 +43,6 @@ class GetTopPerformers @Inject constructor(
             total = total,
             imageUrl = imageUrl
         )
-
-    sealed class TopPerformersResult {
-        data class TopPerformersSuccess(
-            val topPerformers: List<WCTopPerformerProductModel>
-        ) : TopPerformersResult()
-
-        object TopPerformersError : TopPerformersResult()
-    }
 
     data class TopPerformerProduct(
         val productId: Long,

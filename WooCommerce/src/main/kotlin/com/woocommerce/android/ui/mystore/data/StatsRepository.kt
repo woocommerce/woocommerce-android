@@ -10,7 +10,6 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.withTimeoutOrNull
 import org.wordpress.android.fluxc.model.WCRevenueStatsModel
-import org.wordpress.android.fluxc.model.leaderboards.WCTopPerformerProductModel
 import org.wordpress.android.fluxc.persistence.entity.TopPerformerProductEntity
 import org.wordpress.android.fluxc.store.WCLeaderboardsStore
 import org.wordpress.android.fluxc.store.WCOrderStore
@@ -37,6 +36,7 @@ class StatsRepository @Inject constructor(
         // Minimum supported version to use /wc-analytics/leaderboards/products instead of slower endpoint
         // /wc-analytics/leaderboards. More info https://github.com/woocommerce/woocommerce-android/issues/6688
         private const val PRODUCT_ONLY_LEADERBOARD_MIN_WC_VERSION = "6.7.0"
+        private const val AN_HOUR_IN_MILLIS = 3600000
     }
 
     suspend fun fetchRevenueStats(
@@ -82,56 +82,41 @@ class StatsRepository @Inject constructor(
             }
         }
 
-    suspend fun fetchProductLeaderboards(
-        forceRefresh: Boolean,
-        granularity: StatsGranularity,
-        quantity: Int
-    ): Flow<Result<List<WCTopPerformerProductModel>>> = flow {
-        when (forceRefresh) {
-            true -> wcLeaderboardsStore.fetchProductLeaderboards(
-                site = selectedSite.get(),
-                unit = granularity,
-                quantity = quantity,
-                addProductsPath = supportsProductOnlyLeaderboardEndpoint(),
-                forceRefresh = forceRefresh
-            )
-            false ->
-                // TODO: Check if data has been invalidated, is so fetch data from API
-                wcLeaderboardsStore.fetchCachedProductLeaderboards(
-                    site = selectedSite.get(),
-                    unit = granularity
-                )
-        }.let { result ->
-            val model = result.model
-            when {
-                result.isError || model == null -> emit(Result.failure(WooException(result.error)))
-                else -> emit(Result.success(model))
-            }
-        }
-    }
-
     fun observeTopPerformers(
         granularity: StatsGranularity,
     ): Flow<List<TopPerformerProductEntity>> =
-        wcLeaderboardsStore.observeTopPerformerProducts(granularity, selectedSite.get().siteId)
+        wcLeaderboardsStore.observeTopPerformerProducts(selectedSite.get().siteId, granularity)
 
-    suspend fun fetchProductLeaderboardsNew(
+    suspend fun fetchTopPerformerProducts(
         forceRefresh: Boolean,
         granularity: StatsGranularity,
         quantity: Int
     ): Result<Unit> {
-        val result = wcLeaderboardsStore.fetchProductLeaderboardsNew(
-            site = selectedSite.get(),
-            granularity = granularity,
-            quantity = quantity,
-            addProductsPath = supportsProductOnlyLeaderboardEndpoint(),
-            forceRefresh = forceRefresh
+        val cachedTopPerformers = wcLeaderboardsStore.getCachedTopPerformerProducts(
+            siteId = selectedSite.get().siteId,
+            granularity = granularity
         )
-        return when {
-            result.isError -> Result.failure(WooException(result.error))
-            else -> Result.success(Unit)
+        return if (forceRefresh || cachedTopPerformers.isEmpty() || cachedTopPerformers.expired()) {
+            val result = wcLeaderboardsStore.fetchTopPerformerProducts(
+                site = selectedSite.get(),
+                granularity = granularity,
+                quantity = quantity,
+                addProductsPath = supportsProductOnlyLeaderboardEndpoint(),
+                forceRefresh = forceRefresh
+            )
+            when {
+                result.isError -> Result.failure(WooException(result.error))
+                else -> Result.success(Unit)
+            }
+        } else {
+            Result.success(Unit)
         }
     }
+
+    private fun List<TopPerformerProductEntity>.expired(): Boolean =
+        any { topPerformerProductEntity ->
+            System.currentTimeMillis() - topPerformerProductEntity.millisSinceLastUpdated > AN_HOUR_IN_MILLIS
+        }
 
     suspend fun checkIfStoreHasNoOrders(): Flow<Result<Boolean>> = flow {
         val result = withTimeoutOrNull(AppConstants.REQUEST_TIMEOUT) {
