@@ -1,11 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2022-08-31 19:54:03+0000
+Translation-Revision-Date: 2022-09-06 17:54:06+0000
 Plural-Forms: nplurals=2; plural=(n > 1);
 Generator: GlotPress/2.4.0-alpha
 Language: pt_BR
 -->
 <resources>
+    <string name="card_reader_card_readers_header">LEITORES DE CARTÃO</string>
+    <string name="card_reader_payment_options_header">OPÇÕES DE PAGAMENTO</string>
+    <string name="card_reader_enable_pay_in_person_description">A opção de pagamento presencial permite que você aceite pagamentos de pedidos do site, na coleta ou na entrega. &lt;a href=\'\'&gt;Saiba mais&lt;/a&gt;</string>
+    <string name="card_reader_enable_pay_in_person">Pagamento presencial</string>
+    <string name="login_verifying_site_jetpack_timeout_error_description">Não foi possível conectar ao site. Entre em contato com o suporte para solucionar o problema.</string>
+    <string name="login_verifying_site_jetpack_timeout_error_title">Erro de conexão</string>
     <string name="card_reader_onboarding_with_pending_requirements">Há um problema que precisa da sua atenção. &lt;a href=\'\'&gt;Confira&lt;/a&gt;</string>
     <string name="login_site_picker_try_another_address">Tentar outro endereço</string>
     <string name="card_reader_onboarding_cash_on_delivery_enable_failure">Falha ao ativar o pagamento na entrega. Tente novamente mais tarde.</string>
@@ -1817,7 +1823,6 @@ Language: pt_BR
     <string name="login_jetpack_what_is_description">O Jetpack é um plugin gratuito do WordPress que conecta sua loja às ferramentas necessárias para proporcionar a você a melhor experiência em dispositivos móveis, incluindo notificações push e estatísticas</string>
     <string name="login_jetpack_what_is">O que é o Jetpack?</string>
     <string name="login_view_connected_stores">Visualizar lojas conectadas</string>
-    <string name="login_not_connected_to_account">Parece que %1$s está conectado(a) a uma conta diferente do WordPress.com.</string>
     <string name="keep_editing">Continuar editando</string>
     <string name="notification_wpcom_username_needed">Faça login com seu nome de usuário e senha.</string>
     <string name="error_user_username_instead_of_email">Faça login com seu nome de usuário do WordPress.com em vez do endereço de e-mail.</string>

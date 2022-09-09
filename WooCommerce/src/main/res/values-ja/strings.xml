@@ -1,11 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2022-08-30 11:54:03+0000
+Translation-Revision-Date: 2022-09-08 10:54:04+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: ja_JP
 -->
 <resources>
+    <string name="card_reader_card_readers_header">カードリーダー</string>
+    <string name="card_reader_payment_options_header">支払いオプション</string>
+    <string name="card_reader_enable_pay_in_person_description">「直接支払い」の購入手続きオプションを使用すると、サイトでの注文の支払いを集荷または配達時に受け取ることができます。 &lt;a href=\'\'&gt;さらに詳しく&lt;/a&gt;</string>
+    <string name="card_reader_enable_pay_in_person">直接支払い</string>
+    <string name="login_verifying_site_jetpack_timeout_error_description">サイトに接続できませんでした。 問題のトラブルシューティングについて、サポートにお問い合わせください。</string>
+    <string name="login_verifying_site_jetpack_timeout_error_title">接続エラー</string>
     <string name="card_reader_onboarding_with_pending_requirements">ご確認が必要な問題があります。 &lt;a href=\'\'&gt;ご確認ください&lt;/a&gt;</string>
     <string name="login_site_picker_try_another_address">別のアドレスを試す</string>
     <string name="card_reader_onboarding_cash_on_delivery_enable_failure">代金引換を有効にできませんでした。 後でやり直してください。</string>
@@ -1817,7 +1823,6 @@ Language: ja_JP
     <string name="login_jetpack_what_is_description">Jetpack は WordPress の無料のプラグインであり、ストアをモバイルでの最適な操作に必要なツール (プッシュ通知および統計を含む) と接続します。</string>
     <string name="login_jetpack_what_is">Jetpack とは ?</string>
     <string name="login_view_connected_stores">連携ストアを表示</string>
-    <string name="login_not_connected_to_account">%1$s は別の WordPress.com アカウントと関連付けられているようです。</string>
     <string name="keep_editing">編集を続行</string>
     <string name="notification_wpcom_username_needed">ユーザー名とパスワードでログインしてください。</string>
     <string name="error_user_username_instead_of_email">メールアドレスではなく WordPress.com ユーザー名を使用してログインしてください。</string>

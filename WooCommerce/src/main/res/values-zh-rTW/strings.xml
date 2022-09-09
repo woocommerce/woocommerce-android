@@ -1,11 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2022-09-02 09:54:03+0000
+Translation-Revision-Date: 2022-09-06 11:54:03+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: zh_TW
 -->
 <resources>
+    <string name="card_reader_card_readers_header">讀卡機</string>
+    <string name="card_reader_payment_options_header">付款選項</string>
+    <string name="card_reader_enable_pay_in_person_description">「親自收款」結帳選項可讓你在收貨或貨到時接受網站訂單付款。 &lt;a href=\'\'&gt;深入瞭解&lt;/a&gt;</string>
+    <string name="card_reader_enable_pay_in_person">親自收款</string>
+    <string name="login_verifying_site_jetpack_timeout_error_description">我們無法連線至你的網站。 請聯絡支援團隊以移難排解此問題。</string>
+    <string name="login_verifying_site_jetpack_timeout_error_title">連線錯誤</string>
     <string name="card_reader_onboarding_with_pending_requirements">你有一個問題需採取行動。 請&lt;a href=\'\'&gt;查看&lt;/a&gt;</string>
     <string name="login_site_picker_try_another_address">嘗試其他地址</string>
     <string name="card_reader_onboarding_cash_on_delivery_enable_failure">無法啟用貨到付款。 請稍後再試一次。</string>
@@ -1817,7 +1823,6 @@ Language: zh_TW
     <string name="login_jetpack_what_is_description">Jetpack 是一款免費的 WordPress 外掛程式，能夠透過所需工具連結你的商店，為你提供最佳行動裝置體驗，包含推播通知和統計資料</string>
     <string name="login_jetpack_what_is">什麼是 Jetpack？</string>
     <string name="login_view_connected_stores">檢視連結的商店</string>
-    <string name="login_not_connected_to_account">%1$s 似乎已經連結至不同的 WordPress.com 帳號。</string>
     <string name="keep_editing">繼續編輯</string>
     <string name="notification_wpcom_username_needed">請透過你的使用者名稱和密碼登入。</string>
     <string name="error_user_username_instead_of_email">請使用你的 WordPress.com 使用者名稱登入，而非電子郵件地址。</string>

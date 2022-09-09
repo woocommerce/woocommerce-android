@@ -1,11 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2022-08-31 16:54:04+0000
+Translation-Revision-Date: 2022-09-06 15:54:04+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: nl
 -->
 <resources>
+    <string name="card_reader_card_readers_header">KAARTLEZERS</string>
+    <string name="card_reader_payment_options_header">BETALINGSOPTIES</string>
+    <string name="card_reader_enable_pay_in_person_description">Met de optie \'Fysiek betalen\' kan je betalingen voor websitebestellingen accepteren bij ophalen of ontvangst. &lt;a href=\'\'&gt;Meer informatie&lt;/a&gt;</string>
+    <string name="card_reader_enable_pay_in_person">Fysiek betalen</string>
+    <string name="login_verifying_site_jetpack_timeout_error_description">We konden geen verbinding maken met je site. Neem contact op met de ondersteuning om dit probleem op te lossen.</string>
+    <string name="login_verifying_site_jetpack_timeout_error_title">Verbindingsfout</string>
     <string name="card_reader_onboarding_with_pending_requirements">Er is een probleem dat jouw aandacht vereist. &lt;a href=\'\'&gt;Kijk er even naar&lt;/a&gt;</string>
     <string name="login_site_picker_try_another_address">Probeer een ander adres</string>
     <string name="card_reader_onboarding_cash_on_delivery_enable_failure">Contant betalen bij ontvangst inschakelen mislukt. Probeer later opnieuw.</string>
@@ -1817,7 +1823,6 @@ Language: nl
     <string name="login_jetpack_what_is_description">Jetpack is een gratis WordPress-plugin die aan je winkel wordt gekoppeld en je de tools voor de beste mobiele ervaring biedt, waaronder pushmeldingen en statistieken</string>
     <string name="login_jetpack_what_is">Wat is Jetpack?</string>
     <string name="login_view_connected_stores">Aangesloten winkels bekijken</string>
-    <string name="login_not_connected_to_account">Het lijkt erop dat %1$s is verbonden met een ander WordPress.com-account.</string>
     <string name="keep_editing">Doorgaan met bewerken</string>
     <string name="notification_wpcom_username_needed">Log in met je gebruikersnaam en wachtwoord.</string>
     <string name="error_user_username_instead_of_email">Log in met je WordPress.com-gebruikersnaam in plaats van met je e-mailadres.</string>

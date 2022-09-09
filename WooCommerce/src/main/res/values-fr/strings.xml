@@ -1,11 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2022-08-31 11:54:03+0000
+Translation-Revision-Date: 2022-09-06 15:54:04+0000
 Plural-Forms: nplurals=2; plural=n > 1;
 Generator: GlotPress/2.4.0-alpha
 Language: fr
 -->
 <resources>
+    <string name="card_reader_card_readers_header">LECTEURS DE CARTE</string>
+    <string name="card_reader_payment_options_header">OPTIONS DE PAIEMENT</string>
+    <string name="card_reader_enable_pay_in_person_description">L’option « Payer en personne » à la validation de la commande vous permet d’accepter les paiements pour les commandes passées sur votre site au retrait ou à la livraison. &lt;a href=\'\'&gt;Lire la suite&lt;/a&gt;</string>
+    <string name="card_reader_enable_pay_in_person">Payer en personne</string>
+    <string name="login_verifying_site_jetpack_timeout_error_description">Nous n’avons pas pu nous connecter à votre site. Contactez l’assistance afin de résoudre le problème.</string>
+    <string name="login_verifying_site_jetpack_timeout_error_title">Erreur de connexion</string>
     <string name="card_reader_onboarding_with_pending_requirements">Un problème nécessite votre attention. Veuillez &lt;a href=\'\'&gt;y jeter un coup d’œil&lt;/a&gt;</string>
     <string name="login_site_picker_try_another_address">Essayer une autre adresse</string>
     <string name="card_reader_onboarding_cash_on_delivery_enable_failure">Échec de l’activation du paiement à la livraison. Veuillez réessayer ultérieurement.</string>
@@ -1817,7 +1823,6 @@ Language: fr
     <string name="login_jetpack_what_is_description">Jetpack est une extension WordPress gratuite qui connecte votre boutique aux outils dont vous avez besoin pour vous offrir une expérience optimale, dont les notifications push et les statistiques</string>
     <string name="login_jetpack_what_is">Qu\'est-ce que Jetpack ?</string>
     <string name="login_view_connected_stores">Voir les boutiques connectées</string>
-    <string name="login_not_connected_to_account">Il semblerait que %1$s soit connecté à un autre compte WordPress.com.</string>
     <string name="keep_editing">Continuer à écrire</string>
     <string name="notification_wpcom_username_needed">Veuillez vous connecter avec votre nom d\'utilisateur et votre mot de passe.</string>
     <string name="error_user_username_instead_of_email">Veuillez vous connecter avec votre nom d\'utilisateur WordPress.com plutôt que votre adresse e-mail.</string>

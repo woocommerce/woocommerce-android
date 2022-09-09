@@ -1,11 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2022-09-02 09:54:03+0000
+Translation-Revision-Date: 2022-09-06 11:54:03+0000
 Plural-Forms: nplurals=2; plural=(n > 1);
 Generator: GlotPress/2.4.0-alpha
 Language: tr
 -->
 <resources>
+    <string name="card_reader_card_readers_header">KART OKUYUCULAR</string>
+    <string name="card_reader_payment_options_header">ÖDEME SEÇENEKLERİ</string>
+    <string name="card_reader_enable_pay_in_person_description">Şahsen Ödeme seçeneği web sitesi siparişleri için tahsilat veya teslimat sırasında ödeme kabul etmenizi sağlar. &lt;a href=\'\'&gt;Daha fazlasını öğrenin&lt;/a&gt;</string>
+    <string name="card_reader_enable_pay_in_person">Şahsen Ödeyin</string>
+    <string name="login_verifying_site_jetpack_timeout_error_description">Sitenize bağlanamadık. Sorunu gidermek için lütfen desteğe başvurun.</string>
+    <string name="login_verifying_site_jetpack_timeout_error_title">Bağlantı Hatası</string>
     <string name="card_reader_onboarding_with_pending_requirements">İlgilenmeniz gereken bir sorun var. Lütfen &lt;a href=\'\'&gt;bir göz atın&lt;/a&gt;</string>
     <string name="login_site_picker_try_another_address">Başka bir adres deneyin</string>
     <string name="card_reader_onboarding_cash_on_delivery_enable_failure">Teslimatta nakit ödeme etkinleştirilemedi. Lütfen daha sonra tekrar deneyin.</string>
@@ -1817,7 +1823,6 @@ Language: tr
     <string name="login_jetpack_what_is_description">Jetpack, size en iyi mobil deneyimi sunmak için anında bildirimler ve istatistikler dahil olmak üzere gerekli araçlarla sizi mağazaya bağlayan ücretsiz bir WordPress eklentisidir.</string>
     <string name="login_jetpack_what_is">Jetpack nedir?</string>
     <string name="login_view_connected_stores">Bağlanılan mağazaları görüntüle</string>
-    <string name="login_not_connected_to_account">Görünüşe göre %1$s başka bir WordPress.com hesabına bağlı.</string>
     <string name="keep_editing">Düzenlemeye devam et</string>
     <string name="notification_wpcom_username_needed">Lütfen kullanıcı adınız ve şifrenizle oturum açın.</string>
     <string name="error_user_username_instead_of_email">E-posta adresiniz yerine lütfen WordPress.com kullanıcı adınızla oturum açın.</string>

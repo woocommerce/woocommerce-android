@@ -1,11 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2022-08-31 11:54:03+0000
+Translation-Revision-Date: 2022-09-07 05:35:04+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: sv_SE
 -->
 <resources>
+    <string name="card_reader_card_readers_header">KORTLÄSARE</string>
+    <string name="card_reader_payment_options_header">BETALNINGSALTERNATIV</string>
+    <string name="card_reader_enable_pay_in_person_description">Kassaalternativet Betala personligen gör det möjligt att ta emot betalningar för webbplatsbeställningar vid upphämtning eller leverans. &lt;a href=\'\'&gt;Läs mer&lt;/a&gt;</string>
+    <string name="card_reader_enable_pay_in_person">Betala personligen</string>
+    <string name="login_verifying_site_jetpack_timeout_error_description">Vi kunde inte ansluta till din webbplats. Kontakta supporten för att felsöka problemet.</string>
+    <string name="login_verifying_site_jetpack_timeout_error_title">Anslutningsfel</string>
     <string name="card_reader_onboarding_with_pending_requirements">Det finns ett problem som kräver din uppmärksamhet. &lt;a href=\'\'&gt;Ta en titt  på detta&lt;/a&gt;</string>
     <string name="login_site_picker_try_another_address">Försök med en annan adress</string>
     <string name="card_reader_onboarding_cash_on_delivery_enable_failure">Det gick inte att aktivera Postförskott. Försök igen senare.</string>
@@ -1817,7 +1823,7 @@ Language: sv_SE
     <string name="login_jetpack_what_is_description">Jetpack är ett kostnadsfritt tillägg i WordPress som ansluter din butik till de verktyg som behövs för att ge den bästa möjliga mobilupplevelsen, inklusive pushmeddelanden och statistik</string>
     <string name="login_jetpack_what_is">Vad är Jetpack?</string>
     <string name="login_view_connected_stores">Visa anslutna butiker</string>
-    <string name="login_not_connected_to_account">Det ser ut som att %1$s är ansluten till ett annat WordPress.com-konto.</string>
+    <string name="login_wpcom_account_mismatch">Det ser ut som att %1$s är ansluten till ett annat WordPress.com-konto.</string>
     <string name="keep_editing">Fortsätt redigera</string>
     <string name="notification_wpcom_username_needed">Logga in med ditt användarnamn och lösenord.</string>
     <string name="error_user_username_instead_of_email">Logga in med ditt WordPress.com användarnamn istället för din e-postadress.</string>
