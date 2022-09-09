@@ -62,7 +62,7 @@ class CardReaderHubViewModelTest : BaseUnitTest() {
         onBlocking { getOnboardingState() } doReturn mock<CardReaderOnboardingState.OnboardingCompleted>()
     }
     private val cashOnDeliverySettingsRepository: CashOnDeliverySettingsRepository = mock {
-        onBlocking { isCashOnDeliveryEnabled() } doReturn true
+        onBlocking { isCashOnDeliveryEnabled() } doReturn false
     }
     private val learnMoreUrlProvider: LearnMoreUrlProvider = mock()
     private val cardReaderTracker: CardReaderTracker = mock()
