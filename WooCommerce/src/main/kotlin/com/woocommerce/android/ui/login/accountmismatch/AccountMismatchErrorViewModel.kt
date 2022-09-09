@@ -60,6 +60,7 @@ class AccountMismatchErrorViewModel @Inject constructor(
     val viewState: LiveData<ViewState> = step.map { step ->
         when (step) {
             Step.MainContent -> prepareMainState()
+            is Step.SiteCredentials -> prepareSiteCredentialsState(step.username, step.password)
             is Step.JetpackConnection -> prepareJetpackConnectionState(step.connectionUrl)
             Step.FetchJetpackEmail -> ViewState.FetchingJetpackEmailViewState
             Step.FetchingJetpackEmailFailed -> ViewState.JetpackEmailErrorState {
@@ -110,6 +111,20 @@ class AccountMismatchErrorViewModel @Inject constructor(
         inlineButtonText = if (accountRepository.isUserLoggedIn()) R.string.login_need_help_finding_email
         else null,
         inlineButtonAction = { helpFindingEmail() }
+    )
+
+    private fun prepareSiteCredentialsState(username: String, password: String) = ViewState.SiteCredentialsViewState(
+        username = username,
+        password = password,
+        errorMessage = null,
+        onUsernameChanged = {
+            step.value = Step.SiteCredentials(username = it, password = password)
+        },
+        onPasswordChanged = {
+            step.value = Step.SiteCredentials(username = username, password = it)
+        },
+        onContinueClick = {},
+        onLoginWithAnotherAccountClick = {}
     )
 
     private fun prepareJetpackConnectionState(connectionUrl: String) = ViewState.JetpackWebViewState(
@@ -213,6 +228,18 @@ class AccountMismatchErrorViewModel @Inject constructor(
             val inlineButtonAction: () -> Unit
         ) : ViewState
 
+        data class SiteCredentialsViewState(
+            val username: String,
+            val password: String,
+            @StringRes val errorMessage: Int?,
+            val onUsernameChanged: (String) -> Unit,
+            val onPasswordChanged: (String) -> Unit,
+            val onContinueClick: () -> Unit,
+            val onLoginWithAnotherAccountClick: () -> Unit
+        ) : ViewState {
+            val isValid = username.isNotBlank() && password.isNotBlank()
+        }
+
         data class JetpackWebViewState(
             val connectionUrl: String,
             val successConnectionUrls: List<String>,
@@ -240,6 +267,9 @@ class AccountMismatchErrorViewModel @Inject constructor(
     private sealed interface Step : Parcelable {
         @Parcelize
         object MainContent : Step
+
+        @Parcelize
+        data class SiteCredentials(val username: String, val password: String) : Step
 
         @Parcelize
         data class JetpackConnection(val connectionUrl: String) : Step

@@ -56,6 +56,7 @@ import com.woocommerce.android.R
 import com.woocommerce.android.ui.compose.component.ProgressDialog
 import com.woocommerce.android.ui.compose.component.WCColoredButton
 import com.woocommerce.android.ui.compose.component.WCOutlinedButton
+import com.woocommerce.android.ui.compose.component.WCOutlinedTextField
 import com.woocommerce.android.ui.compose.component.WCTextButton
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.ui.login.accountmismatch.AccountMismatchErrorViewModel.ViewState
@@ -101,11 +102,59 @@ fun AccountMismatchErrorScreen(viewModel: AccountMismatchErrorViewModel) {
                     modifier = Modifier.padding(paddingValues),
                     retry = viewState.retry
                 )
+                is ViewState.SiteCredentialsViewState -> SiteCredentialsScreen(
+                    viewState = viewState,
+                    modifier = Modifier.padding(paddingValues)
+                )
             }
         }
     }
     viewModel.loadingDialogMessage.observeAsState().value?.let {
         ProgressDialog(title = "", subtitle = stringResource(id = it))
+    }
+}
+
+@Composable
+fun SiteCredentialsScreen(
+    viewState: ViewState.SiteCredentialsViewState,
+    modifier: Modifier
+) {
+    Column(
+        modifier = modifier
+            .background(MaterialTheme.colors.surface)
+            .fillMaxSize()
+            .padding(dimensionResource(id = R.dimen.major_100)),
+        verticalArrangement = Arrangement.spacedBy(dimensionResource(id = R.dimen.major_100)),
+    ) {
+        Column(
+            Modifier
+                .weight(1f)
+                .fillMaxWidth()
+        ) {
+            Text(text = stringResource(id = R.string.enter_credentials_for_site))
+            WCOutlinedTextField(
+                value = viewState.username,
+                onValueChange = viewState.onUsernameChanged,
+                label = stringResource(id = R.string.username),
+                isError = viewState.errorMessage != null
+            )
+            WCOutlinedTextField(
+                value = viewState.password,
+                onValueChange = viewState.onPasswordChanged,
+                label = stringResource(id = R.string.password),
+                isError = viewState.errorMessage != null,
+                helperText = viewState.errorMessage?.let { stringResource(id = it) }
+            )
+        }
+
+        ButtonBar(
+            primaryButtonText = stringResource(id = R.string.continue_button),
+            primaryButtonClick = viewState.onContinueClick,
+            isPrimaryButtonEnabled = viewState.isValid,
+            secondaryButtonText = stringResource(id = R.string.login_try_another_account),
+            secondaryButtonClick = viewState.onLoginWithAnotherAccountClick,
+            modifier = Modifier.fillMaxWidth()
+        )
     }
 }
 
@@ -208,12 +257,13 @@ private fun ButtonBar(
     primaryButtonClick: () -> Unit,
     secondaryButtonText: String,
     secondaryButtonClick: () -> Unit,
-    modifier: Modifier
+    modifier: Modifier = Modifier,
+    isPrimaryButtonEnabled: Boolean = true,
 ) {
     @Composable
     fun Buttons(modifier: Modifier) {
         primaryButtonText?.let {
-            WCColoredButton(onClick = primaryButtonClick, modifier = modifier) {
+            WCColoredButton(onClick = primaryButtonClick, enabled = isPrimaryButtonEnabled, modifier = modifier) {
                 Text(text = primaryButtonText)
             }
         }
