@@ -5,6 +5,9 @@ import com.woocommerce.android.AppUrls
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
+import com.woocommerce.android.cardreader.internal.config.CardReaderConfig
+import com.woocommerce.android.cardreader.internal.config.CardReaderConfigForUSA
+import com.woocommerce.android.cardreader.internal.config.CardReaderConfigForUnsupportedCountry
 import com.woocommerce.android.initSavedStateHandle
 import com.woocommerce.android.model.UiString
 import com.woocommerce.android.tools.SelectedSite
@@ -58,7 +61,9 @@ class CardReaderHubViewModelTest : BaseUnitTest() {
     private val cardReaderChecker: CardReaderOnboardingChecker = mock {
         onBlocking { getOnboardingState() } doReturn mock<CardReaderOnboardingState.OnboardingCompleted>()
     }
-    private val cashOnDeliverySettingsRepository: CashOnDeliverySettingsRepository = mock()
+    private val cashOnDeliverySettingsRepository: CashOnDeliverySettingsRepository = mock {
+        onBlocking { isCashOnDeliveryEnabled() } doReturn true
+    }
     private val learnMoreUrlProvider: LearnMoreUrlProvider = mock()
     private val cardReaderTracker: CardReaderTracker = mock()
 
@@ -120,10 +125,33 @@ class CardReaderHubViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `when screen shown, then manual card reader row icon is present`() {
+    fun `given supported country, when screen shown, then manual card reader row is present`() {
+
+        val supportedCountry: CardReaderConfig = CardReaderConfigForUSA
+        whenever(cardReaderCountryConfigProvider.provideCountryConfigFor("US")).thenReturn(supportedCountry)
+        whenever(wooStore.getStoreCountryCode(selectedSite.get())).thenReturn("US")
+
+        initViewModel()
+
         assertThat((viewModel.viewStateData.value)?.rows)
             .anyMatch {
-                it.icon == R.drawable.ic_card_reader_manual
+                it.icon == R.drawable.ic_card_reader_manual &&
+                    it.label == UiString.UiStringRes(R.string.settings_card_reader_manuals)
+            }
+    }
+
+    @Test
+    fun `given unsupported country, when screen shown, then manual card reader row is not present`() {
+        val unSupportedCountry: CardReaderConfig = CardReaderConfigForUnsupportedCountry
+        whenever(cardReaderCountryConfigProvider.provideCountryConfigFor("BR")).thenReturn(unSupportedCountry)
+        whenever(wooStore.getStoreCountryCode(selectedSite.get())).thenReturn("BR")
+
+        initViewModel()
+
+        assertThat((viewModel.viewStateData.value)?.rows)
+            .noneMatch() {
+                it.icon == R.drawable.ic_card_reader_manual &&
+                    it.label == UiString.UiStringRes(R.string.settings_card_reader_manuals)
             }
     }
 
@@ -1213,7 +1241,8 @@ class CardReaderHubViewModelTest : BaseUnitTest() {
             cardReaderChecker,
             cashOnDeliverySettingsRepository,
             learnMoreUrlProvider,
-            cardReaderTracker,
+            cardReaderCountryConfigProvider,
+            cardReaderTracker
         )
         viewModel.onViewVisible()
     }
