@@ -31,7 +31,8 @@ allprojects {
             // TODO fix all the warnings and change to true before end of 2022
             allWarningsAsErrors = false
             freeCompilerArgs += [
-                    "-Xopt-in=kotlin.RequiresOptIn"
+                    "-Xopt-in=kotlin.RequiresOptIn",
+                    "-Xjvm-default=all-compatibility",
             ]
         }
     }
