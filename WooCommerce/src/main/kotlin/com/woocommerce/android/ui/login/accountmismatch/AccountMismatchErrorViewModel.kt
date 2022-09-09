@@ -162,6 +162,12 @@ class AccountMismatchErrorViewModel @Inject constructor(
                 _loadingDialogMessage.value = null
                 step.value = Step.MainContent
                 triggerEvent(ShowSnackbar(R.string.login_jetpack_connection_url_failed))
+                analyticsTrackerWrapper.track(
+                    stat = AnalyticsEvent.LOGIN_JETPACK_CONNECTION_URL_FETCH_FAILED,
+                    errorContext = this.javaClass.simpleName,
+                    errorType = (it as? OnChangedException)?.error?.javaClass?.simpleName,
+                    errorDescription = it.message
+                )
             }
         )
     }

@@ -103,6 +103,7 @@ enum class AnalyticsEvent(val siteless: Boolean = false) {
     LOGIN_JETPACK_SETUP_DISMISSED(siteless = true),
     LOGIN_JETPACK_SETUP_COMPLETED(siteless = true),
     LOGIN_JETPACK_CONNECTION_ERROR_SHOWN(siteless = true),
+    LOGIN_JETPACK_CONNECTION_URL_FETCH_FAILED(siteless = true),
     LOGIN_JETPACK_CONNECT_BUTTON_TAPPED(siteless = true),
     LOGIN_JETPACK_CONNECT_COMPLETED(siteless = true),
     LOGIN_JETPACK_CONNECT_DISMISSED(siteless = true),
