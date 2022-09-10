@@ -13,6 +13,9 @@ class GetTopPerformers @Inject constructor(
     private val statsRepository: StatsRepository,
     private val coroutineDispatchers: CoroutineDispatchers,
 ) {
+    private companion object {
+        const val NUM_TOP_PERFORMERS = 5
+    }
 
     fun observeTopPerformers(granularity: WCStatsStore.StatsGranularity): Flow<List<TopPerformerProduct>> =
         statsRepository.observeTopPerformers(granularity)
@@ -24,8 +27,8 @@ class GetTopPerformers @Inject constructor(
 
     suspend operator fun invoke(
         granularity: WCStatsStore.StatsGranularity,
-        topPerformersCount: Int,
         forceRefresh: Boolean = false,
+        topPerformersCount: Int = NUM_TOP_PERFORMERS,
     ): Result<Unit> = statsRepository.fetchTopPerformerProducts(forceRefresh, granularity, topPerformersCount)
 
     private fun List<TopPerformerProduct>.sortDescByQuantityAndTotal() =

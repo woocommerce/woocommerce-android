@@ -73,7 +73,6 @@ class MyStoreViewModel @Inject constructor(
     private val explat: ExPlat
 ) : ScopedViewModel(savedState) {
     private companion object {
-        const val NUM_TOP_PERFORMERS = 5
         const val DAYS_TO_REDISPLAY_JP_BENEFITS_BANNER = 5
     }
 
@@ -247,7 +246,7 @@ class MyStoreViewModel @Inject constructor(
             _topPerformersState.value = _topPerformersState.value?.copy(isLoading = true)
         }
 
-        val result = getTopPerformers(granularity, NUM_TOP_PERFORMERS, forceRefresh)
+        val result = getTopPerformers(granularity, forceRefresh)
         result.fold(
             onFailure = { _topPerformersState.value = _topPerformersState.value?.copy(isError = true) },
             onSuccess = {
