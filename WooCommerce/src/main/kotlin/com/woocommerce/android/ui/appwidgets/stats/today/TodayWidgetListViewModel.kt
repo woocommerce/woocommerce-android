@@ -3,40 +3,33 @@ package com.woocommerce.android.ui.appwidgets.stats.today
 import androidx.annotation.LayoutRes
 import com.woocommerce.android.R
 import com.woocommerce.android.R.string
+import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.viewmodel.ResourceProvider
 import kotlinx.coroutines.runBlocking
 import org.wordpress.android.fluxc.model.SiteModel
-import org.wordpress.android.fluxc.store.SiteStore
 import org.wordpress.android.fluxc.store.WCStatsStore
 import org.wordpress.android.fluxc.store.WooCommerceStore
 import javax.inject.Inject
 
 class TodayWidgetListViewModel @Inject constructor(
-    private val siteStore: SiteStore,
+    private val selectedSite: SelectedSite,
     private val resourceProvider: ResourceProvider,
     private val currencyFormatter: CurrencyFormatter,
     private val wooCommerceStore: WooCommerceStore,
     private val getWidgetStats: GetWidgetStats,
 ) {
-    private var siteId: Int? = null
     private var appWidgetId: Int? = null
 
     private val mutableData = mutableListOf<TodayWidgetListItem>()
     val data: List<TodayWidgetListItem> = mutableData
 
-    fun start(siteId: Int, appWidgetId: Int) {
-        this.siteId = siteId
+    fun start(appWidgetId: Int) {
         this.appWidgetId = appWidgetId
     }
 
     fun onDataSetChanged(onError: (appWidgetId: Int) -> Unit) {
-        if (siteId == null) {
-            appWidgetId?.let { onError(it) }
-            return
-        }
-
-        val site = siteId?.let { siteStore.getSiteByLocalId(it) }
+        val site = selectedSite.getIfExists()
         if (site == null) {
             appWidgetId?.let { onError(it) }
             return
