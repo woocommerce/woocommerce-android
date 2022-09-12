@@ -380,8 +380,7 @@ class MyStoreStatsView @JvmOverloads constructor(
      * are different
      */
     fun updateView(revenueStatsModel: RevenueStatsUiModel?): Boolean {
-        if (activeGranularity == StatsGranularity.DAYS &&
-            revenueStatsModel == this.revenueStatsModel) {
+        if (revenueStatsModel == this.revenueStatsModel) {
             return false
         }
 
