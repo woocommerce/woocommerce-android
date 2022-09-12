@@ -307,11 +307,10 @@ class MyStoreFragment : TopLevelFragment(R.layout.fragment_my_store) {
         binding.myStoreStats.showErrorView(false)
         showChartSkeleton(false)
 
-        // if stats have changed and we're viewing today's stats, we also need to
-        // update the stats today widget
-        if (binding.myStoreStats.updateView(revenueStatsModel) &&
-            viewModel.activeStatsGranularity.value == StatsGranularity.DAYS
-        ) {
+        binding.myStoreStats.updateView(revenueStatsModel)
+
+        // update the stats today widget if we're viewing today's stats
+        if (viewModel.activeStatsGranularity.value == StatsGranularity.DAYS) {
             (activity as? MainActivity)?.updateStatsWidgets()
         }
     }

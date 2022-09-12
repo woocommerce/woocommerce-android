@@ -375,15 +375,7 @@ class MyStoreStatsView @JvmOverloads constructor(
         }
     }
 
-    /**
-     * Updates the view to use the passed model, return true only if stats
-     * are different
-     */
-    fun updateView(revenueStatsModel: RevenueStatsUiModel?): Boolean {
-        if (revenueStatsModel == this.revenueStatsModel) {
-            return false
-        }
-
+    fun updateView(revenueStatsModel: RevenueStatsUiModel?) {
         updateDate(revenueStatsModel, activeGranularity)
         this.revenueStatsModel = revenueStatsModel
 
@@ -398,7 +390,6 @@ class MyStoreStatsView @JvmOverloads constructor(
         } ?: mapOf()
 
         updateChartView()
-        return true
     }
 
     fun showErrorView(show: Boolean) {
