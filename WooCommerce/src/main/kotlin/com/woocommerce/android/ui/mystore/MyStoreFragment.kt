@@ -33,6 +33,7 @@ import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.base.TopLevelFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.main.AppBarStatus
+import com.woocommerce.android.ui.main.MainActivity
 import com.woocommerce.android.ui.main.MainNavigationRouter
 import com.woocommerce.android.ui.mystore.MyStoreViewModel.MyStoreEvent.OpenTopPerformer
 import com.woocommerce.android.ui.mystore.MyStoreViewModel.OrderState
@@ -306,6 +307,7 @@ class MyStoreFragment : TopLevelFragment(R.layout.fragment_my_store) {
         binding.myStoreStats.showErrorView(false)
         showChartSkeleton(false)
         binding.myStoreStats.updateView(revenueStatsModel)
+        (activity as? MainActivity)?.updateStatsWidgets()
     }
 
     private fun showStatsError() {

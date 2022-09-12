@@ -38,7 +38,7 @@ class AppSettingsActivity :
     @Inject lateinit var selectedSite: SelectedSite
     @Inject lateinit var prefs: AppPrefs
     @Inject lateinit var notificationMessageHandler: NotificationMessageHandler
-    @Inject lateinit var appWidgetUpdaters: WidgetUpdater.StatsWidgetUpdaters
+    @Inject lateinit var statsWidgetUpdaters: WidgetUpdater.StatsWidgetUpdaters
 
     private var isBetaOptionChanged = false
 
@@ -114,7 +114,7 @@ class AppSettingsActivity :
 
     override fun finishLogout() {
         notificationMessageHandler.removeAllNotificationsFromSystemsBar()
-        appWidgetUpdaters.updateTodayWidget()
+        statsWidgetUpdaters.updateTodayWidget()
 
         val mainIntent = Intent(this, MainActivity::class.java)
         mainIntent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
