@@ -239,7 +239,6 @@ class StatsRepository @Inject constructor(
         }
     }
 
-
     private fun OrderStatsError?.toWooError(): WooError {
         if (this == null) {
             return WooError(
