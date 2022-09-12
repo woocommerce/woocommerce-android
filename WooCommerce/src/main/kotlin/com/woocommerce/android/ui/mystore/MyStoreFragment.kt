@@ -306,8 +306,9 @@ class MyStoreFragment : TopLevelFragment(R.layout.fragment_my_store) {
         addTabLayoutToAppBar()
         binding.myStoreStats.showErrorView(false)
         showChartSkeleton(false)
-        binding.myStoreStats.updateView(revenueStatsModel)
-        (activity as? MainActivity)?.updateStatsWidgets()
+        if (binding.myStoreStats.updateView(revenueStatsModel)) {
+            (activity as? MainActivity)?.updateStatsWidgets()
+        }
     }
 
     private fun showStatsError() {
