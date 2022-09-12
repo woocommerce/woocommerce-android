@@ -6,8 +6,10 @@ import com.woocommerce.android.extensions.semverCompareTo
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T.DASHBOARD
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.withTimeoutOrNull
 import org.wordpress.android.fluxc.model.WCRevenueStatsModel
 import org.wordpress.android.fluxc.persistence.entity.TopPerformerProductEntity
@@ -85,7 +87,9 @@ class StatsRepository @Inject constructor(
     fun observeTopPerformers(
         granularity: StatsGranularity,
     ): Flow<List<TopPerformerProductEntity>> =
-        wcLeaderboardsStore.observeTopPerformerProducts(selectedSite.get().siteId, granularity)
+        wcLeaderboardsStore
+            .observeTopPerformerProducts(selectedSite.get().siteId, granularity)
+            .flowOn(Dispatchers.IO)
 
     suspend fun fetchTopPerformerProducts(
         forceRefresh: Boolean,
