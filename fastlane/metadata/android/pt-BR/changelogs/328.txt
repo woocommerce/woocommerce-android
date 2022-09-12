@@ -1,0 +1,4 @@
+10,2:
+Ainda que esta versão não tenha nenhuma funcionalidade nova, nós a fizemos com muito amor. Adicionamos uma nova página da Central de ajuda que facilita o login no aplicativo. Você também pode ativar ou desativar a opção de receber pagamentos com cartão ou dinheiro na coleta ou entrega.
+Por fim, fizemos alguns ajustes para melhorar o desempenho. Continue enviando o seu feedback! Lemos cada um deles!
+

@@ -1,85 +1,102 @@
 <ar>
-10.1:
-على الرغم من أن هذا الإصدار لا يحتوي على أي ميزات جديدة، إلا أننا ما زلنا نهتم به كثيرًا، بما في ذلك إصلاح مشكلة حيث كان قد يتم حظرك بلا داعٍ من تحصيل المدفوعات. يرجى مواصلة إرسال الملاحظات إلينا – فكلنا آذان صاغية!
+10.2:
+على الرغم من أن هذا الإصدار لا يحتوي على أي ميزات جديدة، إلا أننا ما زلنا نحبه كثيرًا! لقد أضفنا صفحة مركز المساعدة الجديدة التي تُسهِّل عليك تسجيل الدخول إلى التطبيق. يمكنك أيضًا تمكين خيار الحصول على المدفوعات بالبطاقة أو نقدًا أو تعطيله عند التحصيل أو التسليم.
+وأخيرًا، لقد أجرينا بعض التعديلات على الأداء. يرجى الاستمرار في إرسال ملاحظاتك! حيث إننا نقرأها كلها!
 
 </ar>
 <de-DE>
-10.1:
-Dieses Release enthält zwar keine neuen Funktionen, wir haben aber trotzdem viel Mühe hineingesteckt und unter anderem ein Problem behoben, wodurch das Annehmen von Zahlungen eventuell unnötigerweise blockiert wurde. Sende uns bitte weiter Feedback – wir freuen uns darauf!
+10.2:
+Diese Version enthält zwar keine neuen Funktionen, wir haben uns aber trotzdem viel Mühe gegeben! Wir haben eine neue Seite zum Hilfe-Center hinzugefügt, die dir das Anmelden in der App erleichtert. Und du kannst jetzt die Option für Karten- oder Bargeldzahlungen bei Abholung oder Zustellung aktivieren oder deaktivieren.
+Außerdem haben wir ein paar raffinierte Änderungen vorgenommen, um die Performance zu verbessern. Sende uns bitte weiterhin dein Feedback! Wir lesen alle Einsendungen.
 
 </de-DE>
 <es-ES>
-10.1:
-Aunque esta versión no incluya funciones nuevas, le hemos puesto mucho empeño, lo que incluye la resolución de un problema por el que se podía bloquear innecesariamente la recepción de pagos. Sigue enviando tus comentarios: ¡te escuchamos!
+10.2:
+Aunque esta versión no tiene ninguna función nueva, hemos puesto mucho empeño en desarrollarla. Hemos añadido una nueva página al centro de ayuda para que sea más sencillo acceder a la aplicación. También puedes activar o desactivar la opción de aceptar pagos con tarjeta o en efectivo en la recogida o entrega.
+Por último, hemos hecho algunos ajustes para mejorar el rendimiento. Sigue enviándonos tus comentarios. Los leemos todos.
 
 </es-ES>
 <fr-FR>
-10.1 :
-Même si cette version ne comporte pas de nouvelles fonctionnalités, nous y avons mis tout notre cœur. Nous avons notamment corrigé un problème qui pouvait malencontreusement vous empêcher de percevoir des paiements. Continuez à nous envoyer vos commentaires. Votre avis nous intéresse !
+10.2 :
+Cette version n’offre aucune nouvelle fonctionnalité, mais nous y avons mis tout notre cœur ! Nous avons ajouté une nouvelle page de centre d’aide qui facilite la connexion à l’application. Vous pouvez également activer ou désactiver l’option permettant d’accepter les paiements par carte ou en espèce au retrait ou à la livraison.
+Récemment, nous avons apporté quelques modifications pour améliorer les performances. Continuez de nous donner votre avis ! Nous les lisons tous !
 
 </fr-FR>
 <iw-IL>
-10.1:
-אומנם אין הפעם אפשרויות חדשות אבל עדיין הקדשנו המון זמן ואהבה לגרסה הזאת, כולל תיקון של בעיה שגרמה לחסימה לא מוצדקת של משתמשים מקבלת תשלומים. נשמח לקבל עוד משוב – אנחנו תמיד כאן כדי להקשיב!
+10.2:
+אומנם אין הפעם אפשרויות חדשות אבל עדיין הקדשנו המון זמן ואהבה לגרסה הזאת! We’ve added a new Help Center page that makes it easier for you to login to the app. You can also enable or disable the option to take card or cash payments on collection or delivery.
+אחרון חביב, ביצענו כמה שינויים כדי לשפר את הביצועים. נשמח להמשיך לקבל משוב! אנחנו קוראים כל משוב שאנחנו מקבלים!
 
 </iw-IL>
 <id>
-10.1:
-Meski tidak ada fitur baru dalam rilis ini, kami tetap memberikan upaya terbaik, termasuk perbaikan masalah yang membuat Anda tidak dapat menerima pembayaran. Terus berikan kami feedback – kami siap mendengarkan!
+10.2:
+Meski tidak ada fitur baru dalam rilis ini, kami tetap berupaya keras memberikan yang terbaik! Kami menambahkan halaman Pusat Bantuan baru agar Anda bisa login ke aplikasi dengan lebih mudah. Opsi untuk menerima pembayaran secara tunai atau dengan kartu saat barang diambil atau diantarkan kini juga dapat diaktifkan atau dinonaktifkan.
+Terakhir, kami juga telah menyempurnakan aplikasi agar performanya lebih prima. Terus kirimkan feedback Anda! Kami membaca semuanya!
 
 </id>
 <it-IT>
-10.1:
-Anche se questa versione non presenta nuove funzionalità, ci siamo comunque impegnati molto per realizzarla, risolvendo anche un problema relativo al blocco superfluo della ricezione dei pagamenti. Continua a inviarci feedback: siamo lieti di ascoltarli.
+10.2:
+Anche se questo rilascio non ha alcuna nuova funzionalità, ci abbiamo messo comunque tanto amore. Abbiamo aggiunto una nuova pagina del Centro assistenza che semplifica l'accesso all'app. Puoi anche abilitare o disabilitare l'opzione per accettare pagamenti con carta o contanti al ritiro o alla consegna.
+Infine, abbiamo effettuato alcune piccole modifiche per migliorare le prestazioni. Continua a inviarci il tuo feedback. Li leggiamo uno a uno.
 
 </it-IT>
 <ja-JP>
-10.1:
-このリリースには新しい機能はありませんが、支払いの受け取りが不必要にブロックされる場合があるという問題を修正するなど、多くの修正を行いました。 引き続き、フィードバックをお寄せください。
+10.2:
+今回のリリースに新機能はありませんが、いくつかの点を改善しました。 アプリへのログインを簡単にする新しいヘルプセンターページを追加しました。また、集荷や配達時にカードか現金で支払う設定を有効または無効にすることもできます。
+さらに、パフォーマンスの微調整も行いました。 引き続き皆さまのご意見をお待ちしております。 よろしくお願いいたします。
 
 </ja-JP>
 <ko-KR>
-10.1:
-이 릴리스에는 새로운 기능은 없지만, 결제 진행이 결제가 불필요하게 차단될 수도 있는 문제를 해결하는 등 사랑은 듬뿍 담았습니다. 계속 피드백을 보내주세요. 경청하겠습니다!
+10.2:
+이 릴리스에는 새로운 기능이 없지만, 사랑을 듬뿍 담았습니다. 앱에 더 쉽게 로그인할 수 있도록 새로운 도움말 센터 페이지를 추가했습니다. 수거 또는 배달 시 카드 또는 현금 결제를 진행하는 옵션을 활성화하거나 비활성화할 수도 있습니다.
+마지막으로 성능을 개선할 수 있게 몇 가지를 조정했습니다. 피드백을 계속 보내주세요! 하나하나 읽어보고 있습니다!
 
 </ko-KR>
 <nl-NL>
-10.1:
-Hoewel deze release geen nieuwe functies bevat, hebben we er wel veel liefde in gestopt, zoals het verhelpen van een probleem waardoor je misschien onterecht geen betalingen kon ontvangen. Blijf ons feedback sturen – wij luisteren!
+10.2:
+Deze release heeft misschien geen nieuwe functies, maar we hebben er wel ons uiterste best op gedaan! We hebben een nieuwe Help Center-pagina toegevoegd waarmee je eenvoudiger kunt inloggen in de app. Je kan ook de optie om contante of kaartbetalingen te accepteren bij ophalen of ontvangst in- of uitschakelen.
+Als laatste hebben we wat dingetjes aangepast om de prestaties te verbeteren. Blijf ons voorzien van feedback. We lezen alles!
 
 </nl-NL>
 <pt-BR>
-10.1:
-Esta versão não tem nenhuma funcionalidade nova, mas nos dedicamos muito a ela, inclusive corrigimos um problema em que você podia ser bloqueado de receber pagamentos sem motivo nenhum. Continue compartilhando seu feedback conosco. Estamos ouvindo.
+10,2:
+Ainda que esta versão não tenha nenhuma funcionalidade nova, nós a fizemos com muito amor. Adicionamos uma nova página da Central de ajuda que facilita o login no aplicativo. Você também pode ativar ou desativar a opção de receber pagamentos com cartão ou dinheiro na coleta ou entrega.
+Por fim, fizemos alguns ajustes para melhorar o desempenho. Continue enviando o seu feedback! Lemos cada um deles!
 
 </pt-BR>
 <ru-RU>
-10.1:
-Хотя в этом выпуске нет новых возможностей, мы, как и прежде, вложили много энергии в его разработку, включая устранение проблемы, которая не позволяла принимать платежи. Мы по-прежнему ждём ваших отзывов и прислушиваемся к ним!
+10.2:
+В этом выпуске нет новых функций, но мы вложили в него душу. Мы добавили в Справочный центр новую страницу, которая поможет легко выполнять вход в приложение. Вы также можете активировать или деактивировать опцию, позволяющую принимать наличные или безналичные платежи при получении товара покупателем.
+Наконец, мы повысили производительность. Продолжайте отправлять нам отзывы! Мы всё читаем.
 
 </ru-RU>
 <sv-SE>
-10.1:
-Den här versionen innehåller inte några nya funktioner, men vi har fortfarande lagt ner mycket jobb på den. Vi har bland annat åtgärdat ett problem som gjorde att du felaktigt kunde blockeras från att ta emot betalningar. Fortsätt att skicka feedback till oss – vi lyssnar!
+10.2:
+Den här versionen kanske inte innehåller några nya funktioner, men vi har ändå lagt ner mycket jobb på den. Vi har lagt till en ny Hjälpcenter-sida som gör det enklare för dig att logga in i appen. Du kan också aktivera eller inaktivera alternativet att ta emot kortbetalningar eller kontanta betalningar vid upphämtning eller leverans.
+Slutligen har vi även gjort några justeringar för att förbättra prestandan. Fortsätt att skicka feedback. Vi läser allt.
 
 </sv-SE>
 <tr-TR>
-10,1:
-Bu sürümde, ödeme almanızın gereksiz şekilde engellenebileceği bir sorunu düzeltmek de dahil olmak üzere, herhangi bir yeni özellik olmamasına rağmen, yine de içine çok fazla sevgi kattık. Lütfen bize geri bildirim göndermeye devam edin, sizi dinliyoruz.
+10.2:
+Bu sürümde yeni özellikler bulunmasa da, yine de işin içine çok fazla sevgi katıyoruz! Uygulamada oturum açmanızı kolaylaştıran yeni bir Yardım Merkezi sayfası ekledik. Ayrıca tahsilat veya teslimatta kart veya nakit ödeme alma seçeneğini etkinleştirebilir veya devre dışı bırakabilirsiniz.
+Son olarak, performansı iyileştiren bazı ince ayarlar yaptık. Lütfen geri bildirimlerinizi göndermeye devam edin! Her birini okuyoruz!
 
 </tr-TR>
 <zh-CN>
-10.1：
-尽管该版本没有添加任何新功能，但我们仍然投入了大量精力，包括修复了您在收款时遇到不必要的阻碍的问题。 请继续向我们发送反馈，我们时刻倾听您的意见！
+10.2：
+尽管此版本没有任何新功能，但我们仍费了不少心力！ 我们添加了新的帮助中心页面，让您更轻松地登录应用程序。您还可以启用或禁用在收货或交货时接受银行卡或现金付款的选项。
+最后，我们做了一些调整来改善性能。 请继续发送您的反馈意见！ 我们会阅读每一条反馈！
 
 </zh-CN>
 <zh-TW>
-10.1：
-儘管此版本沒有任何新功能，但我們仍然投入相當多的心力，其中也解決了因不當封鎖導致你無法收款的問題。 歡迎繼續給予我們批評指教，我們很樂意接受！
+10.2：
+儘管此版本沒有任何新功能，我們仍投注了許多心血。 我們新增了全新的「說明中心」頁面，讓登入應用程式變得更加簡單。你也可以啟用或停用在收貨或貨到時接受卡片或現金付款的選項。
+最後，我們進行了些許調整來改善網站效能。 請持續提供意見回饋給我們！ 我們會讀過每一則留言！
 
 </zh-TW>
 <en-US>
-10.1:
-Even though this release doesn’t have any new features, we still put a lot of love into it, including fixing an issue where you might be unnecessarily blocked from taking payments. Please continue to send us feedback – we are listening!
+10.2:
+Even though this release doesn’t have any new features, we still put a lot of love into it! We’ve added a new Help Center page that makes it easier for you to login to the app. You can also enable or disable the option to take card or cash payments on collection or delivery.
+Lastly, we’ve made some tweaks to improve performance. Please keep sending your feedback! We read every one of them!
 
 </en-US>
