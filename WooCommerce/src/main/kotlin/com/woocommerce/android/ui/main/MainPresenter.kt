@@ -145,8 +145,6 @@ class MainPresenter @Inject constructor(
             // In all other login cases, this logic is handled by the login library
             mainView?.notifyTokenUpdated()
             dispatcher.dispatch(AccountActionBuilder.newFetchAccountAction())
-        } else {
-            mainView?.showLoginScreen()
         }
     }
 
