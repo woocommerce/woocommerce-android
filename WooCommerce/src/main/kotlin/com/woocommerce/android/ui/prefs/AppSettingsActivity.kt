@@ -14,6 +14,7 @@ import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.databinding.ActivityAppSettingsBinding
 import com.woocommerce.android.push.NotificationMessageHandler
 import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.ui.appwidgets.WidgetUpdater
 import com.woocommerce.android.ui.main.MainActivity
 import com.woocommerce.android.ui.prefs.MainSettingsFragment.AppSettingsListener
 import com.woocommerce.android.util.AnalyticsUtils
@@ -37,6 +38,7 @@ class AppSettingsActivity :
     @Inject lateinit var selectedSite: SelectedSite
     @Inject lateinit var prefs: AppPrefs
     @Inject lateinit var notificationMessageHandler: NotificationMessageHandler
+    @Inject lateinit var appWidgetUpdaters: WidgetUpdater.StatsWidgetUpdaters
 
     private var isBetaOptionChanged = false
 
@@ -112,6 +114,7 @@ class AppSettingsActivity :
 
     override fun finishLogout() {
         notificationMessageHandler.removeAllNotificationsFromSystemsBar()
+        appWidgetUpdaters.updateTodayWidget()
 
         val mainIntent = Intent(this, MainActivity::class.java)
         mainIntent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
