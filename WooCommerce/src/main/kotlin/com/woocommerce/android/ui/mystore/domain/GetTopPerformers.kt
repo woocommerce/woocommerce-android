@@ -25,7 +25,7 @@ class GetTopPerformers @Inject constructor(
                     .sortDescByQuantityAndTotal()
             }.flowOn(coroutineDispatchers.computation)
 
-    suspend operator fun invoke(
+    suspend fun fetchTopPerformers(
         granularity: WCStatsStore.StatsGranularity,
         forceRefresh: Boolean = false,
         topPerformersCount: Int = NUM_TOP_PERFORMERS,

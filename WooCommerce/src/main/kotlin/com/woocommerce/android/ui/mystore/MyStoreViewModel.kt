@@ -90,7 +90,7 @@ class MyStoreViewModel @Inject constructor(
     private var _hasOrders = MutableLiveData<OrderState>()
     val hasOrders: LiveData<OrderState> = _hasOrders
 
-    private val forceRefreshTrigger = MutableSharedFlow<Unit>(extraBufferCapacity = 1)
+    private val refreshTrigger = MutableSharedFlow<Unit>(extraBufferCapacity = 1)
 
     private val _activeStatsGranularity = savedState.getStateFlow(viewModelScope, getSelectedStatsGranularityIfAny())
     val activeStatsGranularity = _activeStatsGranularity.asLiveData()
@@ -109,7 +109,7 @@ class MyStoreViewModel @Inject constructor(
         viewModelScope.launch {
             combine(
                 _activeStatsGranularity,
-                forceRefreshTrigger.onStart { emit(Unit) }
+                refreshTrigger.onStart { emit(Unit) }
             ) { granularity, _ ->
                 granularity
             }.collectLatest { granularity ->
@@ -132,7 +132,7 @@ class MyStoreViewModel @Inject constructor(
     fun onEventMainThread(event: ConnectionChangeEvent) {
         if (event.isConnected) {
             if (refreshStoreStats.any { it } || refreshTopPerformerStats.any { it }) {
-                forceRefreshTrigger.tryEmit(Unit)
+                refreshTrigger.tryEmit(Unit)
             }
         }
     }
@@ -149,7 +149,7 @@ class MyStoreViewModel @Inject constructor(
         usageTracksEventEmitter.interacted()
         analyticsTrackerWrapper.track(AnalyticsEvent.DASHBOARD_PULLED_TO_REFRESH)
         resetForceRefresh()
-        forceRefreshTrigger.tryEmit(Unit)
+        refreshTrigger.tryEmit(Unit)
     }
 
     fun getSelectedSiteName(): String =
@@ -243,10 +243,10 @@ class MyStoreViewModel @Inject constructor(
         val forceRefresh = refreshTopPerformerStats[granularity.ordinal]
         if (forceRefresh) {
             refreshTopPerformerStats[granularity.ordinal] = false
-            _topPerformersState.value = _topPerformersState.value?.copy(isLoading = true)
         }
 
-        val result = getTopPerformers(granularity, forceRefresh)
+        _topPerformersState.value = _topPerformersState.value?.copy(isLoading = true)
+        val result = getTopPerformers.fetchTopPerformers(granularity, forceRefresh)
         result.fold(
             onFailure = { _topPerformersState.value = _topPerformersState.value?.copy(isError = true) },
             onSuccess = {
