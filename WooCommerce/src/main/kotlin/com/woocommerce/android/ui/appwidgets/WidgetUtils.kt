@@ -9,7 +9,6 @@ import android.os.Build
 import android.view.View
 import android.widget.RemoteViews
 import com.woocommerce.android.R
-import com.woocommerce.android.ui.appwidgets.stats.StatsWidgetProvider.Companion.SITE_ID_KEY
 import com.woocommerce.android.ui.main.MainActivity
 import com.woocommerce.android.viewmodel.ResourceProvider
 import java.util.Date
@@ -26,8 +25,7 @@ class WidgetUtils
         appWidgetManager: AppWidgetManager,
         views: RemoteViews,
         context: Context,
-        appWidgetId: Int,
-        siteId: Int
+        appWidgetId: Int
     ) {
         views.setPendingIntentTemplate(R.id.widget_content, getPendingTemplate(context))
         views.setViewVisibility(R.id.widget_content, View.VISIBLE)
@@ -35,7 +33,6 @@ class WidgetUtils
 
         val listIntent = Intent(context, WidgetService::class.java)
         listIntent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, appWidgetId)
-        listIntent.putExtra(SITE_ID_KEY, siteId)
         listIntent.data = Uri.parse(listIntent.toUri(Intent.URI_INTENT_SCHEME))
 
         views.setRemoteAdapter(R.id.widget_content, listIntent)
@@ -75,12 +72,9 @@ class WidgetUtils
 
     @Suppress("UnusedPrivateMember")
     fun getPendingSelfIntent(
-        context: Context,
-        localSiteId: Int
+        context: Context
     ): PendingIntent {
         val intent = Intent(context, MainActivity::class.java)
-        // TODO pass the localSiteId to the activity in order to auto login the
-        // user to the widget's site id
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
         return PendingIntent.getActivity(
             context,

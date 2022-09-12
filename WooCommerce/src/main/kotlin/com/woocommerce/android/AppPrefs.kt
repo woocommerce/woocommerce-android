@@ -94,9 +94,7 @@ object AppPrefs {
         CARD_READER_UPSELL_BANNER_DIALOG_DISMISSED_FOREVER,
         CARD_READER_UPSELL_BANNER_DIALOG_DISMISSED_REMIND_ME_LATER,
         CARD_READER_DO_NOT_SHOW_CASH_ON_DELIVERY_DISABLED_ONBOARDING_STATE,
-        ACTIVE_STATS_GRANULARITY,
-        // Widget settings
-        STATS_WIDGET_SELECTED_SITE_ID
+        ACTIVE_STATS_GRANULARITY
     }
 
     /**
@@ -995,25 +993,6 @@ object AppPrefs {
                 return null
             }
         }
-    }
-
-    /**
-     * Widget settings
-     */
-    fun setStatsWidgetSelectedSiteId(siteId: Long, appWidgetId: Int) {
-        setLong(getSiteIdWidgetKey(appWidgetId), siteId)
-    }
-
-    fun getStatsWidgetSelectedSiteId(appWidgetId: Int): Long {
-        return getLong(getSiteIdWidgetKey(appWidgetId), -1)
-    }
-
-    fun removeStatsWidgetSelectedSiteId(appWidgetId: Int) {
-        remove(getSiteIdWidgetKey(appWidgetId))
-    }
-
-    private fun getSiteIdWidgetKey(appWidgetId: Int): String {
-        return DeletablePrefKey.STATS_WIDGET_SELECTED_SITE_ID.name + appWidgetId
     }
 
     enum class CardReaderOnboardingStatus {

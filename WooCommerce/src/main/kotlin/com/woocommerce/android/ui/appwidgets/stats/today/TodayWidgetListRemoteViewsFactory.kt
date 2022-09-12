@@ -6,7 +6,6 @@ import android.content.Intent
 import android.widget.RemoteViews
 import android.widget.RemoteViewsService.RemoteViewsFactory
 import com.woocommerce.android.R
-import com.woocommerce.android.ui.appwidgets.stats.StatsWidgetProvider.Companion.SITE_ID_KEY
 import dagger.hilt.EntryPoint
 import dagger.hilt.InstallIn
 import dagger.hilt.android.EntryPointAccessors
@@ -30,7 +29,6 @@ class TodayWidgetListRemoteViewsFactory(
     lateinit var viewModel: TodayWidgetListViewModel
     lateinit var widgetUpdater: TodayWidgetUpdater
 
-    private val siteId: Int = intent.getIntExtra(SITE_ID_KEY, 0)
     private val appWidgetId = intent.getIntExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, -1)
 
     override fun onCreate() {
@@ -39,7 +37,7 @@ class TodayWidgetListRemoteViewsFactory(
         viewModel = hiltEntryPoint.viewModel()
         widgetUpdater = hiltEntryPoint.widgetUpdater()
 
-        viewModel.start(siteId, appWidgetId)
+        viewModel.start(appWidgetId)
     }
 
     /**

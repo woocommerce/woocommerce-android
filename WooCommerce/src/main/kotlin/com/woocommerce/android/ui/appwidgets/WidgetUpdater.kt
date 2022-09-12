@@ -3,7 +3,6 @@ package com.woocommerce.android.ui.appwidgets
 import android.appwidget.AppWidgetManager
 import android.content.ComponentName
 import android.content.Context
-import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.ui.appwidgets.stats.today.TodayWidgetUpdater
 import javax.inject.Inject
 
@@ -31,7 +30,6 @@ interface WidgetUpdater {
     class StatsWidgetUpdaters
     @Inject constructor(
         private val todayWidgetUpdater: TodayWidgetUpdater,
-        private val appPrefsWrapper: AppPrefsWrapper,
         private val context: Context
     ) {
         private val widgetUpdaters = listOf(todayWidgetUpdater)
@@ -55,20 +53,15 @@ interface WidgetUpdater {
          * Method used to update the today widget when stats is refreshed OR
          * another store is selected
          */
-        fun updateTodayWidget(siteId: Long) {
-            todayWidgetUpdater.update(siteId)
+        fun updateTodayWidget() {
+            todayWidgetUpdater.update()
         }
 
-        private fun WidgetUpdater.update(
-            siteId: Long
-        ) {
+        private fun WidgetUpdater.update() {
             val appWidgetManager = AppWidgetManager.getInstance(context)
             val allWidgetIds = appWidgetManager.getAppWidgetIds(this.componentName(context))
-            for (appWidgetId in allWidgetIds) {
-                val widgetSiteId = appPrefsWrapper.getAppWidgetSiteId(appWidgetId)
-                if (siteId == widgetSiteId) {
-                    this.updateAppWidget(context, appWidgetId, appWidgetManager)
-                }
+            allWidgetIds.forEach { appWidgetId ->
+                this.updateAppWidget(context, appWidgetId, appWidgetManager)
             }
         }
     }
