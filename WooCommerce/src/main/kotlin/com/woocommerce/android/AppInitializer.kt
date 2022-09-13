@@ -339,8 +339,8 @@ class AppInitializer @Inject constructor() : ApplicationLifecycleListener {
         val widgetManager = AppWidgetManager.getInstance(application)
 
         val widgets = widgetManager.installedProviders.filter { providerInfo ->
-            // We only care about WooCommerce widgets so we filter widgets by packageName
-            // and we also check that has at least one widget id (at least one installed)
+            // We only care about WooCommerce widgets so we filter providerInfo by packageName
+            // and we also check that it has at least one widget id (at least one widget installed)
             providerInfo.provider.packageName == application.packageName &&
                 widgetManager.getAppWidgetIds(providerInfo.provider).isNotEmpty()
         }.map { providerInfo -> providerInfo.getWidgetName() }
