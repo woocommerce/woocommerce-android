@@ -108,6 +108,10 @@ class MainActivity :
         const val FIELD_REMOTE_NOTIFICATION = "remote-notification"
         const val FIELD_PUSH_ID = "local-push-id"
 
+        // widget-related constants
+        const val FIELD_OPENED_FROM_WIDGET = "opened-from-push-widget"
+        const val FIELD_WIDGET_NAME = "widget-name"
+
         interface BackPressListener {
             fun onRequestAllowBackPress(): Boolean
         }
@@ -299,6 +303,9 @@ class MainActivity :
     override fun onResume() {
         super.onResume()
         AnalyticsTracker.trackViewShown(this)
+
+        // Track if App was opened from a widget
+        trackIfOpenedFromWidget()
 
         if (selectedSite.exists()) {
             updateOrderBadge(false)
@@ -903,5 +910,18 @@ class MainActivity :
             actionListener = actionListener
         )
             .show()
+    }
+
+    private fun trackIfOpenedFromWidget() {
+        if (intent.getBooleanExtra(FIELD_OPENED_FROM_WIDGET, false)) {
+            val widgetName = intent.getStringExtra(FIELD_WIDGET_NAME)
+            AnalyticsTracker.track(
+                stat = AnalyticsEvent.WIDGET_TAPPED,
+                properties = mapOf(AnalyticsTracker.KEY_NAME to widgetName)
+            )
+            // Reset these flag now that they have being processed
+            intent.removeExtra(FIELD_OPENED_FROM_WIDGET)
+            intent.removeExtra(FIELD_WIDGET_NAME)
+        }
     }
 }

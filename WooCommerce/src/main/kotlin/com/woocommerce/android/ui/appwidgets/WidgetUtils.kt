@@ -72,10 +72,13 @@ class WidgetUtils
 
     @Suppress("UnusedPrivateMember")
     fun getPendingSelfIntent(
-        context: Context
+        context: Context,
+        widgetName: String
     ): PendingIntent {
         val intent = Intent(context, MainActivity::class.java)
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+        intent.putExtra(MainActivity.FIELD_OPENED_FROM_WIDGET, true)
+        intent.putExtra(MainActivity.FIELD_WIDGET_NAME, widgetName)
         return PendingIntent.getActivity(
             context,
             getRandomId(),
