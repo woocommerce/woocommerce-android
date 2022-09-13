@@ -84,8 +84,8 @@ class TodayWidgetListViewModel @Inject constructor(
         )
     }
 
-    private fun formatRevenue(revenue: Double, currencyCode: String) : String {
-        return if (revenue == 0.0) {
+    private fun formatRevenue(revenue: Double, currencyCode: String) =
+        if (revenue == 0.0) {
             currencyFormatter.formatCurrencyRounded(revenue, currencyCode)
         } else {
             currencyFormatter.formatCurrency(revenue.toBigDecimal(), currencyCode)
