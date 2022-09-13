@@ -63,6 +63,7 @@ import com.woocommerce.android.ui.main.BottomNavigationPosition.PRODUCTS
 import com.woocommerce.android.ui.main.MainActivityViewModel.MoreMenuBadgeState.Hidden
 import com.woocommerce.android.ui.main.MainActivityViewModel.MoreMenuBadgeState.NewFeature
 import com.woocommerce.android.ui.main.MainActivityViewModel.MoreMenuBadgeState.UnseenReviews
+import com.woocommerce.android.ui.main.MainActivityViewModel.RestartActivityForAppLink
 import com.woocommerce.android.ui.main.MainActivityViewModel.RestartActivityForNotification
 import com.woocommerce.android.ui.main.MainActivityViewModel.ShowFeatureAnnouncement
 import com.woocommerce.android.ui.main.MainActivityViewModel.ViewMyStoreStats
@@ -81,11 +82,11 @@ import com.woocommerce.android.util.WooAnimUtils.Duration
 import com.woocommerce.android.widgets.AppRatingDialog
 import com.woocommerce.android.widgets.DisabledAppBarLayoutBehavior
 import dagger.hilt.android.AndroidEntryPoint
+import javax.inject.Inject
+import kotlin.math.abs
 import org.wordpress.android.login.LoginAnalyticsListener
 import org.wordpress.android.login.LoginMode
 import org.wordpress.android.util.NetworkUtils
-import javax.inject.Inject
-import kotlin.math.abs
 
 // TODO Extract logic out of MainActivity to reduce size
 @Suppress("LargeClass")
@@ -280,6 +281,8 @@ class MainActivity :
         if (!BuildConfig.DEBUG) {
             checkForAppUpdates()
         }
+
+        viewModel.handleIncomingAppLink(intent?.data)
     }
 
     override fun hideProgressDialog() {
@@ -709,6 +712,10 @@ class MainActivity :
                     intent.putExtra(FIELD_OPENED_FROM_PUSH, true)
                     intent.putExtra(FIELD_REMOTE_NOTIFICATION, event.notification)
                     intent.putExtra(FIELD_PUSH_ID, event.pushId)
+                    restart()
+                }
+                is RestartActivityForAppLink -> {
+                    intent.data = event.data
                     restart()
                 }
                 is ShowFeatureAnnouncement -> {
