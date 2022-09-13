@@ -90,7 +90,6 @@ class TodayWidgetListViewModel @Inject constructor(
         } else {
             currencyFormatter.formatCurrency(revenue.toBigDecimal(), currencyCode)
         }
-    }
 
     data class TodayWidgetListItem(
         @LayoutRes val layout: Int,
