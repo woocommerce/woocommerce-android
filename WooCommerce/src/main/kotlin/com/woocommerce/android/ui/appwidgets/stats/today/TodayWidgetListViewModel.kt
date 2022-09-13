@@ -62,19 +62,12 @@ class TodayWidgetListViewModel @Inject constructor(
         val localSiteId = site.siteId.toInt()
         val currencyCode = wooCommerceStore.getSiteSettings(site)?.currencyCode.orEmpty()
 
-        val formattedRevenue = if (stats.revenueGross == 0.0) {
-            currencyFormatter.formatCurrencyRounded(stats.revenueGross, currencyCode)
-        } else {
-            currencyFormatter
-                .formatCurrency(stats.revenueGross.toBigDecimal(), currencyCode)
-        }
-
         return listOf(
             TodayWidgetListItem(
                 layout,
                 localSiteId,
                 resourceProvider.getString(string.dashboard_stats_revenue),
-                formattedRevenue
+                formatRevenue(stats.revenueGross, currencyCode)
             ),
             TodayWidgetListItem(
                 layout,
@@ -89,6 +82,14 @@ class TodayWidgetListViewModel @Inject constructor(
                 stats.visitorsTotal.toString()
             )
         )
+    }
+
+    private fun formatRevenue(revenue: Double, currencyCode: String) : String {
+        return if (revenue == 0.0) {
+            currencyFormatter.formatCurrencyRounded(revenue, currencyCode)
+        } else {
+            currencyFormatter.formatCurrency(revenue.toBigDecimal(), currencyCode)
+        }
     }
 
     data class TodayWidgetListItem(
