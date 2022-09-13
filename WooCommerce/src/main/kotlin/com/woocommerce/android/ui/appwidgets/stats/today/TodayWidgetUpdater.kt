@@ -47,12 +47,11 @@ class TodayWidgetUpdater
             views.setTextViewText(R.id.widget_title, siteModel.getTitle(context.getString(R.string.my_store)))
             views.setViewVisibility(R.id.widget_type, View.VISIBLE)
 
-            siteModel.let {
-                views.setOnClickPendingIntent(
-                    R.id.widget_title_container,
-                    widgetUtils.getPendingSelfIntent(context)
-                )
-            }
+            views.setOnClickPendingIntent(
+                R.id.widget_title_container,
+                widgetUtils.getPendingSelfIntent(context, TodayStatsWidgetProvider.WIDGET_NAME)
+            )
+
             widgetUtils.showList(
                 widgetManager,
                 views,
