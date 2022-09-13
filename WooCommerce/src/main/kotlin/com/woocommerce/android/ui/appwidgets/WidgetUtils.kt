@@ -2,6 +2,7 @@ package com.woocommerce.android.ui.appwidgets
 
 import android.app.PendingIntent
 import android.appwidget.AppWidgetManager
+import android.appwidget.AppWidgetProviderInfo
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
@@ -9,6 +10,8 @@ import android.os.Build
 import android.view.View
 import android.widget.RemoteViews
 import com.woocommerce.android.R
+import com.woocommerce.android.ui.appwidgets.WidgetUtils.Companion.WIDGET_NO_REGISTERED
+import com.woocommerce.android.ui.appwidgets.stats.today.TodayStatsWidgetProvider
 import com.woocommerce.android.ui.main.MainActivity
 import com.woocommerce.android.viewmodel.ResourceProvider
 import java.util.Date
@@ -125,5 +128,13 @@ class WidgetUtils
         } else {
             PendingIntent.FLAG_UPDATE_CURRENT
         }
+        const val WIDGET_NO_REGISTERED = "no-registered"
+    }
+}
+
+fun AppWidgetProviderInfo.getWidgetName(): String {
+    return when (this.provider.className) {
+        TodayStatsWidgetProvider::class.java.name -> TodayStatsWidgetProvider.WIDGET_NAME
+        else -> WIDGET_NO_REGISTERED
     }
 }
