@@ -54,7 +54,7 @@ class WidgetUtils
         hasAccessToken: Boolean,
         widgetType: Class<*>
     ) {
-        val pendingIntent = getPendingSelfIntent(context)
+        val pendingIntent = getPendingSelfIntent(context, TodayStatsWidgetProvider.WIDGET_NAME)
         views.setOnClickPendingIntent(
             R.id.widget_title_container,
             pendingIntent
