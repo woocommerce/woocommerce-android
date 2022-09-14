@@ -48,25 +48,32 @@ class WidgetUtils
         errorMessage: Int,
         resourceProvider: ResourceProvider,
         context: Context,
+        hasAccessToken: Boolean,
         widgetType: Class<*>
     ) {
+        val pendingIntent = getPendingSelfIntent(context)
         views.setOnClickPendingIntent(
             R.id.widget_title_container,
-            PendingIntent.getActivity(
-                context,
-                0,
-                Intent(),
-                PENDING_INTENT_FLAGS
-            )
+            pendingIntent
         )
+
         views.setViewVisibility(R.id.widget_content, View.GONE)
         views.setViewVisibility(R.id.widget_error, View.VISIBLE)
         views.setTextViewText(
             R.id.widget_error_message,
             resourceProvider.getString(errorMessage)
         )
-        val pendingSync = getRetryIntent(context, widgetType, appWidgetId)
-        views.setOnClickPendingIntent(R.id.widget_error, pendingSync)
+
+        // if the access token exists it means the user is logged in and is experiencing an error, in which
+        // case we show a Retry button that attempts to fetch stats again. if the user isn't logged in, we
+        // hide the Retry button and launch the app when the widget is clicked.
+        views.setViewVisibility(R.id.widget_retry_button, if (hasAccessToken) View.VISIBLE else View.GONE)
+        if (hasAccessToken) {
+            views.setOnClickPendingIntent(R.id.widget_error, getRetryIntent(context, widgetType, appWidgetId))
+        } else {
+            views.setOnClickPendingIntent(R.id.widget_error, pendingIntent)
+        }
+
         appWidgetManager.updateAppWidget(appWidgetId, views)
     }
 
