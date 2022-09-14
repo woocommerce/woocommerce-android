@@ -12,6 +12,7 @@ import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.appwidgets.WidgetUpdater
 import com.woocommerce.android.ui.appwidgets.WidgetUtils
+import com.woocommerce.android.util.DateUtils
 import com.woocommerce.android.viewmodel.ResourceProvider
 import org.wordpress.android.fluxc.store.AccountStore
 import javax.inject.Inject
@@ -26,7 +27,8 @@ class TodayWidgetUpdater
     private val accountStore: AccountStore,
     private val networkStatus: NetworkStatus,
     private val resourceProvider: ResourceProvider,
-    private val widgetUtils: WidgetUtils
+    private val widgetUtils: WidgetUtils,
+    private val dateUtils: DateUtils
 ) : WidgetUpdater {
     override fun updateAppWidget(
         context: Context,
@@ -46,6 +48,14 @@ class TodayWidgetUpdater
         if (networkAvailable && hasAccessToken && siteModel != null) {
             views.setTextViewText(R.id.widget_title, siteModel.getTitle(context.getString(R.string.my_store)))
             views.setViewVisibility(R.id.widget_type, View.VISIBLE)
+
+            views.setTextViewText(
+                R.id.widget_update_time,
+                String.format(
+                    resourceProvider.getString(R.string.stats_widget_last_updated_message),
+                    dateUtils.getCurrentTime()
+                )
+            )
 
             siteModel.let {
                 views.setOnClickPendingIntent(
