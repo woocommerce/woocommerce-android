@@ -60,7 +60,6 @@ class TodayWidgetListViewModel @Inject constructor(
     ): List<TodayWidgetListItem> {
         val layout = R.layout.stats_widget_list_item
         val localSiteId = site.siteId.toInt()
-        val formatCurrencyForDisplay = currencyFormatter::formatCurrencyRounded
         val currencyCode = wooCommerceStore.getSiteSettings(site)?.currencyCode.orEmpty()
 
         return listOf(
@@ -68,7 +67,10 @@ class TodayWidgetListViewModel @Inject constructor(
                 layout,
                 localSiteId,
                 resourceProvider.getString(string.dashboard_stats_revenue),
-                formatCurrencyForDisplay(stats.revenueGross, currencyCode)
+                currencyFormatter.getFormattedAmountZeroRounded(
+                    stats.revenueGross,
+                    currencyCode
+                )
             ),
             TodayWidgetListItem(
                 layout,
