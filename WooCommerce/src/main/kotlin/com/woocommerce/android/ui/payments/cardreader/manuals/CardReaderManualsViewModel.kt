@@ -41,17 +41,17 @@ class CardReaderManualsViewModel @Inject constructor(
     }
 
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
-    private fun onBbposManualClicked() {
+    fun onBbposManualClicked() {
         triggerEvent(ManualEvents.NavigateToCardReaderManualLink(AppUrls.BBPOS_MANUAL_CARD_READER))
     }
 
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
-    private fun onM2ManualClicked() {
+    fun onM2ManualClicked() {
         triggerEvent(ManualEvents.NavigateToCardReaderManualLink(AppUrls.M2_MANUAL_CARD_READER))
     }
 
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
-    private fun onWisePad3ManualCardReaderClicked() {
+    fun onWisePad3ManualCardReaderClicked() {
         triggerEvent(ManualEvents.NavigateToCardReaderManualLink(AppUrls.WISEPAD_3_MANUAL_CARD_READER))
     }
 
