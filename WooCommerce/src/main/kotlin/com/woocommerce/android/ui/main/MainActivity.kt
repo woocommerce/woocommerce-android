@@ -50,6 +50,7 @@ import com.woocommerce.android.model.Notification
 import com.woocommerce.android.support.HelpActivity
 import com.woocommerce.android.support.HelpActivity.Origin
 import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.ui.appwidgets.WidgetUpdater
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.base.TopLevelFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
@@ -122,6 +123,7 @@ class MainActivity :
     @Inject lateinit var selectedSite: SelectedSite
     @Inject lateinit var uiMessageResolver: UIMessageResolver
     @Inject lateinit var crashLogging: CrashLogging
+    @Inject lateinit var appWidgetUpdaters: WidgetUpdater.StatsWidgetUpdaters
 
     private val viewModel: MainActivityViewModel by viewModels()
 
@@ -903,5 +905,9 @@ class MainActivity :
             actionListener = actionListener
         )
             .show()
+    }
+
+    override fun updateStatsWidgets() {
+        appWidgetUpdaters.updateTodayWidget()
     }
 }
