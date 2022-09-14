@@ -67,7 +67,10 @@ class TodayWidgetListViewModel @Inject constructor(
                 layout,
                 localSiteId,
                 resourceProvider.getString(string.dashboard_stats_revenue),
-                formatRevenue(stats.revenueGross, currencyCode)
+                currencyFormatter.getFormattedAmountZeroRounded(
+                    stats.revenueGross,
+                    currencyCode
+                )
             ),
             TodayWidgetListItem(
                 layout,
@@ -83,13 +86,6 @@ class TodayWidgetListViewModel @Inject constructor(
             )
         )
     }
-
-    private fun formatRevenue(revenue: Double, currencyCode: String) =
-        if (revenue == 0.0) {
-            currencyFormatter.formatCurrencyRounded(revenue, currencyCode)
-        } else {
-            currencyFormatter.formatCurrency(revenue.toBigDecimal(), currencyCode)
-        }
 
     data class TodayWidgetListItem(
         @LayoutRes val layout: Int,
