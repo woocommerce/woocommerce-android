@@ -28,9 +28,13 @@ class WidgetUtils
         appWidgetManager: AppWidgetManager,
         views: RemoteViews,
         context: Context,
-        appWidgetId: Int
+        appWidgetId: Int,
+        widgetName: String
     ) {
-        views.setPendingIntentTemplate(R.id.widget_content, getPendingTemplate(context))
+        views.setPendingIntentTemplate(
+            R.id.widget_content,
+            getWidgetTapPendingIntent(context, widgetName)
+        )
         views.setViewVisibility(R.id.widget_content, View.VISIBLE)
         views.setViewVisibility(R.id.widget_error, View.GONE)
 
@@ -52,9 +56,10 @@ class WidgetUtils
         resourceProvider: ResourceProvider,
         context: Context,
         hasAccessToken: Boolean,
-        widgetType: Class<*>
+        widgetType: Class<*>,
+        widgetName: String
     ) {
-        val pendingIntent = getPendingSelfIntent(context, TodayStatsWidgetProvider.WIDGET_NAME)
+        val pendingIntent = getWidgetTapPendingIntent(context, widgetName)
         views.setOnClickPendingIntent(
             R.id.widget_title_container,
             pendingIntent
@@ -80,15 +85,15 @@ class WidgetUtils
         appWidgetManager.updateAppWidget(appWidgetId, views)
     }
 
-    @Suppress("UnusedPrivateMember")
-    fun getPendingSelfIntent(
+    fun getWidgetTapPendingIntent(
         context: Context,
         widgetName: String
     ): PendingIntent {
-        val intent = Intent(context, MainActivity::class.java)
-        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP)
-        intent.putExtra(MainActivity.FIELD_OPENED_FROM_WIDGET, true)
-        intent.putExtra(MainActivity.FIELD_WIDGET_NAME, widgetName)
+        val intent = Intent(context, MainActivity::class.java).apply {
+            addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP)
+            putExtra(MainActivity.FIELD_OPENED_FROM_WIDGET, true)
+            putExtra(MainActivity.FIELD_WIDGET_NAME, widgetName)
+        }
         return PendingIntent.getActivity(
             context,
             getRandomId(),
@@ -110,17 +115,6 @@ class WidgetUtils
             context,
             Random(appWidgetId).nextInt(),
             intentSync,
-            PENDING_INTENT_FLAGS
-        )
-    }
-
-    private fun getPendingTemplate(context: Context): PendingIntent {
-        val intent = Intent(context, MainActivity::class.java)
-        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP)
-        return PendingIntent.getActivity(
-            context,
-            getRandomId(),
-            intent,
             PENDING_INTENT_FLAGS
         )
     }
