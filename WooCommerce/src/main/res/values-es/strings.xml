@@ -1,11 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2022-08-31 11:54:03+0000
+Translation-Revision-Date: 2022-09-06 11:54:03+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: es
 -->
 <resources>
+    <string name="card_reader_card_readers_header">LECTORES DE TARJETAS</string>
+    <string name="card_reader_payment_options_header">OPCIONES DE PAGO</string>
+    <string name="card_reader_enable_pay_in_person_description">Con Pagos en persona puedes aceptar pagos para pedidos en el sitio web, en la recogida o entrega. &lt;a href=\'\'&gt;Más información&lt;/a&gt;</string>
+    <string name="card_reader_enable_pay_in_person">Pagos en persona</string>
+    <string name="login_verifying_site_jetpack_timeout_error_description">No hemos podido conectarnos a tu sitio. Para solucionar el problema, ponte en contacto con el servicio de soporte.</string>
+    <string name="login_verifying_site_jetpack_timeout_error_title">Error de conexión</string>
     <string name="card_reader_onboarding_with_pending_requirements">Hay un problema que necesita tu atención. &lt;a href=\'\'&gt;Échale un vistazo&lt;/a&gt;</string>
     <string name="login_site_picker_try_another_address">Prueba con otra dirección</string>
     <string name="card_reader_onboarding_cash_on_delivery_enable_failure">No se ha podido activar el pago contra reembolso. Inténtalo de nuevo más tarde.</string>

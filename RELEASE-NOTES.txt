@@ -1,7 +1,12 @@
 *** PLEASE FOLLOW THIS FORMAT: [<priority indicator, more stars = higher priority>] <description> [<PR URL>]
+10.4
+-----
+
+
 10.3
 -----
 - [*] Login: fix an issue where the app shows that Jetpack is not installed when connecting using wrong account [https://github.com/woocommerce/woocommerce-android/pull/7330]
+- [**] Login: Add ability to connect Jetpack when signing with site credentials to a site that has Jetpack but not connected yet [https://github.com/woocommerce/woocommerce-android/pull/7375]
 
 10.2
 -----

@@ -19,6 +19,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
 import androidx.compose.material.LinearProgressIndicator
@@ -92,6 +93,13 @@ fun AccountMismatchErrorScreen(viewModel: AccountMismatchErrorViewModel) {
                 is ViewState.JetpackWebViewState -> JetpackConnectionWebView(
                     viewState = viewState,
                     modifier = Modifier.padding(paddingValues)
+                )
+                ViewState.FetchingJetpackEmailViewState -> FetchJetpackEmailScreen(
+                    modifier = Modifier.padding(paddingValues)
+                )
+                is ViewState.JetpackEmailErrorState -> JetpackEmailErrorScreen(
+                    modifier = Modifier.padding(paddingValues),
+                    retry = viewState.retry
                 )
             }
         }
@@ -273,6 +281,40 @@ private fun JetpackConnectionWebView(viewState: ViewState.JetpackWebViewState, m
                 }
             }
         )
+    }
+}
+
+@Composable
+private fun FetchJetpackEmailScreen(modifier: Modifier = Modifier) {
+    Column(
+        modifier = modifier.fillMaxSize(),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center
+    ) {
+        Text(
+            text = stringResource(id = R.string.login_jetpack_verify_connection),
+            textAlign = TextAlign.Center
+        )
+        Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.major_100)))
+        CircularProgressIndicator()
+    }
+}
+
+@Composable
+private fun JetpackEmailErrorScreen(retry: () -> Unit, modifier: Modifier = Modifier) {
+    Column(
+        modifier = modifier.fillMaxSize(),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.spacedBy(dimensionResource(R.dimen.major_100), Alignment.CenterVertically)
+    ) {
+        Image(painter = painterResource(id = R.drawable.img_wpcom_error), contentDescription = null)
+        Text(
+            text = stringResource(id = R.string.login_jetpack_connection_verification_failed),
+            textAlign = TextAlign.Center
+        )
+        WCColoredButton(onClick = retry) {
+            Text(text = stringResource(id = R.string.retry))
+        }
     }
 }
 

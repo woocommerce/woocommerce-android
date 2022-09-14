@@ -1,0 +1,4 @@
+10.2:
+Anche se questo rilascio non ha alcuna nuova funzionalità, ci abbiamo messo comunque tanto amore. Abbiamo aggiunto una nuova pagina del Centro assistenza che semplifica l'accesso all'app. Puoi anche abilitare o disabilitare l'opzione per accettare pagamenti con carta o contanti al ritiro o alla consegna.
+Infine, abbiamo effettuato alcune piccole modifiche per migliorare le prestazioni. Continua a inviarci il tuo feedback. Li leggiamo uno a uno.
+

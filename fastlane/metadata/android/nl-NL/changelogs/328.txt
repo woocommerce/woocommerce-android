@@ -1,0 +1,4 @@
+10.2:
+Deze release heeft misschien geen nieuwe functies, maar we hebben er wel ons uiterste best op gedaan! We hebben een nieuwe Help Center-pagina toegevoegd waarmee je eenvoudiger kunt inloggen in de app. Je kan ook de optie om contante of kaartbetalingen te accepteren bij ophalen of ontvangst in- of uitschakelen.
+Als laatste hebben we wat dingetjes aangepast om de prestaties te verbeteren. Blijf ons voorzien van feedback. We lezen alles!
+

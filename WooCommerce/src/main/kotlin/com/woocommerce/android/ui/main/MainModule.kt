@@ -1,7 +1,6 @@
 package com.woocommerce.android.ui.main
 
 import android.app.Activity
-import com.woocommerce.android.ui.base.UIMessageResolver
 import dagger.Binds
 import dagger.Module
 import dagger.Provides
@@ -23,8 +22,4 @@ internal abstract class MainModule {
     @ActivityScoped
     @Binds
     abstract fun provideMainPresenter(mainActivityPresenter: MainPresenter): MainContract.Presenter
-
-    @ActivityScoped
-    @Binds
-    abstract fun provideUiMessageResolver(mainUIMessageResolver: MainUIMessageResolver): UIMessageResolver
 }

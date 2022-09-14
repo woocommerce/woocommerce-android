@@ -31,7 +31,8 @@ allprojects {
             // TODO fix all the warnings and change to true before end of 2022
             allWarningsAsErrors = false
             freeCompilerArgs += [
-                    "-Xopt-in=kotlin.RequiresOptIn"
+                    "-Xopt-in=kotlin.RequiresOptIn",
+                    "-Xjvm-default=all-compatibility",
             ]
         }
     }
@@ -81,7 +82,7 @@ tasks.register("installGitHooks", Copy) {
 }
 
 ext {
-    fluxCVersion = 'trunk-5bf1d46d70671aadf40a8ed2be87f5787c554ae0'
+    fluxCVersion = 'trunk-00e4f710060f07f46733e88d83768c01b686f180'
     glideVersion = '4.13.2'
     coilVersion = '2.1.0'
     constraintLayoutVersion = '1.2.0'

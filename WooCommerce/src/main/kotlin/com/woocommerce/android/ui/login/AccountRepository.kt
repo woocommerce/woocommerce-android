@@ -45,6 +45,7 @@ class AccountRepository @Inject constructor(
                 }
             }
         }
+        dispatcher.register(listener)
         dispatcher.dispatch(AccountActionBuilder.newSignOutAction())
         dispatcher.dispatch(SiteActionBuilder.newRemoveWpcomAndJetpackSitesAction())
 
