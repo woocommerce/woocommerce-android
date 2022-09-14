@@ -86,7 +86,7 @@ class WidgetUtils
         widgetName: String
     ): PendingIntent {
         val intent = Intent(context, MainActivity::class.java)
-        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP)
         intent.putExtra(MainActivity.FIELD_OPENED_FROM_WIDGET, true)
         intent.putExtra(MainActivity.FIELD_WIDGET_NAME, widgetName)
         return PendingIntent.getActivity(
