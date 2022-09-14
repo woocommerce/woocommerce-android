@@ -79,6 +79,7 @@ class TodayWidgetUpdater
                 errorMessage,
                 resourceProvider,
                 context,
+                showRetry = hasAccessToken,
                 TodayStatsWidgetProvider::class.java
             )
         }

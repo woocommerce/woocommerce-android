@@ -48,6 +48,7 @@ class WidgetUtils
         errorMessage: Int,
         resourceProvider: ResourceProvider,
         context: Context,
+        showRetry: Boolean,
         widgetType: Class<*>
     ) {
         views.setOnClickPendingIntent(
@@ -61,6 +62,7 @@ class WidgetUtils
         )
         views.setViewVisibility(R.id.widget_content, View.GONE)
         views.setViewVisibility(R.id.widget_error, View.VISIBLE)
+        views.setViewVisibility(R.id.widget_retry_button, if (showRetry) View.VISIBLE else View.GONE)
         views.setTextViewText(
             R.id.widget_error_message,
             resourceProvider.getString(errorMessage)
