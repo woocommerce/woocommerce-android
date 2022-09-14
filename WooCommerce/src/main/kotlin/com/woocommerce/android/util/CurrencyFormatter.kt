@@ -176,4 +176,14 @@ class CurrencyFormatter @Inject constructor(
         }
         return formatter.format(amount)
     }
+
+    /**
+     * Returns formatted amount with currency symbol with 0.0 rounded to 0
+     */
+    fun getFormattedAmountZeroRounded(revenue: Double, currencyCode: String) =
+        if (revenue == 0.0) {
+            formatCurrencyRounded(revenue, currencyCode)
+        } else {
+            formatCurrency(revenue.toBigDecimal(), currencyCode)
+        }
 }

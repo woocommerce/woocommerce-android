@@ -78,6 +78,7 @@ class TodayWidgetUpdater
                 errorMessage,
                 resourceProvider,
                 context,
+                hasAccessToken,
                 TodayStatsWidgetProvider::class.java
             )
         }

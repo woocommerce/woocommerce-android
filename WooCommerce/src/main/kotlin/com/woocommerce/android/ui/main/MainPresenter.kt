@@ -13,7 +13,6 @@ import com.woocommerce.android.push.NotificationChannelType.NEW_ORDER
 import com.woocommerce.android.tools.ProductImageMap
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.tools.SelectedSite.SelectedSiteChangedEvent
-import com.woocommerce.android.ui.appwidgets.WidgetUpdater
 import com.woocommerce.android.ui.payments.cardreader.ClearCardReaderDataAction
 import com.woocommerce.android.util.WooLog
 import kotlinx.coroutines.launch
@@ -45,8 +44,7 @@ class MainPresenter @Inject constructor(
     private val productImageMap: ProductImageMap,
     private val appPrefsWrapper: AppPrefsWrapper,
     private val wcOrderStore: WCOrderStore,
-    private val clearCardReaderDataAction: ClearCardReaderDataAction,
-    private val statsWidgetUpdaters: WidgetUpdater.StatsWidgetUpdaters
+    private val clearCardReaderDataAction: ClearCardReaderDataAction
 ) : MainContract.Presenter {
     private var mainView: MainContract.View? = null
 
@@ -106,7 +104,7 @@ class MainPresenter @Inject constructor(
         )
         coroutineScope.launch { clearCardReaderDataAction() }
 
-        updateWidgets()
+        updateStatsWidgets()
     }
 
     override fun fetchUnfilledOrderCount() {
@@ -220,10 +218,10 @@ class MainPresenter @Inject constructor(
         if (pendingUnfilledOrderCountCheck) {
             fetchUnfilledOrderCount()
         }
-        updateWidgets()
+        updateStatsWidgets()
     }
 
-    private fun updateWidgets() {
-        statsWidgetUpdaters.updateTodayWidget()
+    override fun updateStatsWidgets() {
+        mainView?.updateStatsWidgets()
     }
 }
