@@ -74,5 +74,5 @@ class CardReaderManualsSupportedReaderMapperTest : BaseUnitTest() {
 }
 
 private fun onManualClicked() {
-
+ //dummy function
 }
