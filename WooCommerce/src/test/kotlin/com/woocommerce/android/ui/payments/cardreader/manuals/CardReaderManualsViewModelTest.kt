@@ -29,7 +29,7 @@ class CardReaderManualsViewModelTest : BaseUnitTest() {
     private val cardReaderCountryConfigProvider: CardReaderCountryConfigProvider = mock()
 
     @Test
-    fun `when screen shown, then BBPOS label is displayed`() {
+    fun `when screen shown, a manual list is displayed`() {
         val supportedCountry: CardReaderConfigForSupportedCountry = CardReaderConfigForUSA
         whenever(wooStore.getStoreCountryCode(selectedSite.get())).thenReturn("US")
         whenever(cardReaderCountryConfigProvider.provideCountryConfigFor("US")).thenReturn(supportedCountry)
