@@ -1,17 +1,16 @@
 package com.woocommerce.android.ui.payments.cardreader.manuals
 
+import com.woocommerce.android.R.drawable
+import com.woocommerce.android.R.string
+import com.woocommerce.android.cardreader.connection.SpecificReader
+import com.woocommerce.android.cardreader.internal.config.CardReaderConfigForCanada
 import com.woocommerce.android.cardreader.internal.config.CardReaderConfigForUSA
+import com.woocommerce.android.ui.payments.cardreader.manuals.CardReaderManualsViewModel.ManualItem
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.assertj.core.api.Assertions
 import org.junit.Before
 import org.junit.Test
-import com.woocommerce.android.R.drawable
-import com.woocommerce.android.R.string
-import com.woocommerce.android.cardreader.connection.SpecificReader
-import com.woocommerce.android.cardreader.internal.config.CardReaderConfigForCanada
-import com.woocommerce.android.ui.payments.cardreader.manuals.CardReaderManualsViewModel.ManualItem
-
 
 @ExperimentalCoroutinesApi
 class CardReaderManualsSupportedReaderMapperTest : BaseUnitTest() {
@@ -48,7 +47,6 @@ class CardReaderManualsSupportedReaderMapperTest : BaseUnitTest() {
         )
 
         Assertions.assertThat(expectedManualItems).isEqualTo(actualManualItems)
-
     }
 
     @Test
@@ -70,9 +68,8 @@ class CardReaderManualsSupportedReaderMapperTest : BaseUnitTest() {
 
         Assertions.assertThat(expectedManuals).isEqualTo(actualManualItems)
     }
-
 }
 
 private fun onManualClicked() {
- //dummy function
+    // dummy function
 }
