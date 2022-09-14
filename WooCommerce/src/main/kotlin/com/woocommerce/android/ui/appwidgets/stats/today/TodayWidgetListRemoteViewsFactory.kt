@@ -88,7 +88,6 @@ class TodayWidgetListRemoteViewsFactory(
         rv.setTextViewText(R.id.list_item_value, uiModel.value)
 
         val intent = Intent()
-        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
         rv.setOnClickFillInIntent(R.id.container, intent)
         return rv
     }
