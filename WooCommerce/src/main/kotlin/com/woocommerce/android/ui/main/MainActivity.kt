@@ -203,13 +203,6 @@ class MainActivity :
                 hideBottomNav()
             }
         }
-
-        override fun onFragmentPreCreated(fm: FragmentManager, f: Fragment, savedInstanceState: Bundle?) {
-            super.onFragmentPreCreated(fm, f, savedInstanceState)
-            if (isDialogDestination(navController.currentDestination!!)) return
-
-            uiMessageResolver.anchorViewId = null
-        }
     }
 
     /**

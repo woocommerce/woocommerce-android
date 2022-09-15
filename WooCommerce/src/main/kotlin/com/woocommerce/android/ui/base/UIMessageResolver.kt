@@ -14,7 +14,7 @@ import com.woocommerce.android.model.UiString
  * class defines the snackbar root, the ease of injecting it straight into presenters for error handling without
  * having to pass directives over to the view, and ui testability.
  *
- * @see com.woocommerce.android.ui.main.MainUIMessageResolver
+ * @see com.woocommerce.android.ui.message.DefaultUIMessageResolver
  */
 interface UIMessageResolver {
     /**
