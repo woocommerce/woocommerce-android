@@ -267,6 +267,8 @@ class AppPrefsWrapper @Inject constructor() {
         AppPrefs.setPromoBannerShown(bannerType, shown)
     }
 
+    fun isV4StatsSupported() = AppPrefs.isV4StatsSupported()
+
     /**
      * Observes changes to the preferences
      */

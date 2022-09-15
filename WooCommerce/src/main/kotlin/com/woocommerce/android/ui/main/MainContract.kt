@@ -14,6 +14,7 @@ interface MainContract {
         fun fetchUnfilledOrderCount()
         fun fetchSitesAfterDowngrade()
         fun isUserEligible(): Boolean
+        fun updateStatsWidgets()
     }
 
     interface View : BaseView<Presenter> {
@@ -29,5 +30,6 @@ interface MainContract {
         fun hideProgressDialog()
         fun showProgressDialog(@StringRes stringId: Int)
         fun showUserEligibilityErrorScreen()
+        fun updateStatsWidgets()
     }
 }
