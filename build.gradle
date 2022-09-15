@@ -120,6 +120,39 @@ ext {
     mockitoVersion = '4.6.1'
 }
 
+// Running maestro tests
+task login(type: Exec) {
+    doFirst {
+        println "Running maestro UI tests"
+    }
+
+    workingDir = './uiTests'
+    executable "maestro"
+    args "test",
+            "-e", "EMAIL=mucidev@gmail.com",
+            "-e", "PASSWORD=fatrA15.",
+            "LoginFlow.yaml"
+}
+
+task createOrderNote(type: Exec, dependsOn: login) {
+    doFirst {
+        println "Running maestro UI tests"
+    }
+
+    workingDir = './uiTests'
+    executable "maestro"
+    args "test", "CreateOrderNote.yaml"
+}
+
+tasks.register("runMaestro") {
+    group = 'UI tests'
+    description = 'Runs all available maestro test inside /uiTest folders for this project'
+    dependsOn createOrderNote
+    doLast {
+        println("Done")
+    }
+}
+
 // Onboarding and dev env setup tasks
 task checkBundler(type: Exec) {
     doFirst {
