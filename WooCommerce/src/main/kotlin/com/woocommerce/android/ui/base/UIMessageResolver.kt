@@ -23,6 +23,8 @@ interface UIMessageResolver {
      */
     val snackbarRoot: ViewGroup
 
+    var anchorViewId: Int?
+
     /**
      * Create and return a snackbar displaying a message to restart the app once the in app update has been
      * successfully installed
@@ -41,7 +43,9 @@ interface UIMessageResolver {
             snackbarRoot.context.getString(stringResId, *stringArgs),
             snackbarRoot.context.getString(R.string.install),
             actionListener
-        )
+        ).apply {
+            anchorViewId?.let { setAnchorView(it) }
+        }
     }
 
     /**
@@ -63,7 +67,9 @@ interface UIMessageResolver {
             String.format(message, *stringArgs),
             actionText,
             actionListener
-        )
+        ).apply {
+            anchorViewId?.let { setAnchorView(it) }
+        }
     }
 
     /**
@@ -85,7 +91,9 @@ interface UIMessageResolver {
             snackbarRoot.context.getString(message, *stringArgs),
             actionText,
             actionListener
-        )
+        ).apply {
+            anchorViewId?.let { setAnchorView(it) }
+        }
     }
 
     /**
@@ -105,7 +113,9 @@ interface UIMessageResolver {
             snackbarRoot.context.getString(stringResId, *stringArgs),
             snackbarRoot.context.getString(R.string.undo),
             actionListener
-        )
+        ).apply {
+            anchorViewId?.let { setAnchorView(it) }
+        }
     }
 
     /**
@@ -125,7 +135,9 @@ interface UIMessageResolver {
             String.format(message, *stringArgs),
             snackbarRoot.context.getString(R.string.undo),
             actionListener
-        )
+        ).apply {
+            anchorViewId?.let { setAnchorView(it) }
+        }
     }
 
     /**
@@ -145,7 +157,9 @@ interface UIMessageResolver {
             snackbarRoot.context.getString(stringResId, *stringArgs),
             snackbarRoot.context.getString(R.string.retry),
             actionListener
-        )
+        ).apply {
+            anchorViewId?.let { setAnchorView(it) }
+        }
     }
 
     /**
@@ -163,7 +177,9 @@ interface UIMessageResolver {
             message,
             snackbarRoot.context.getString(R.string.retry),
             actionListener
-        )
+        ).apply {
+            anchorViewId?.let { setAnchorView(it) }
+        }
     }
 
     /**
@@ -174,21 +190,31 @@ interface UIMessageResolver {
      */
     fun getSnack(@StringRes stringResId: Int, vararg stringArgs: String = arrayOf()) = Snackbar.make(
         snackbarRoot, snackbarRoot.context.getString(stringResId, *stringArgs), BaseTransientBottomBar.LENGTH_LONG
-    )
+    ).apply {
+        anchorViewId?.let { setAnchorView(it) }
+    }
 
     /**
      * Display a snackbar with the provided message.
      *
      * @param [msg] The message to display in the snackbar
      */
-    fun showSnack(msg: String) = Snackbar.make(snackbarRoot, msg, BaseTransientBottomBar.LENGTH_LONG).show()
+    fun showSnack(msg: String) = Snackbar.make(snackbarRoot, msg, BaseTransientBottomBar.LENGTH_LONG)
+        .apply {
+            anchorViewId?.let { setAnchorView(it) }
+        }
+        .show()
 
     /**
      * Display a snackbar with the provided string resource.
      *
      * @param [msgId] The resource ID of the message to display in the snackbar
      */
-    fun showSnack(@StringRes msgId: Int) = Snackbar.make(snackbarRoot, msgId, BaseTransientBottomBar.LENGTH_LONG).show()
+    fun showSnack(@StringRes msgId: Int) = Snackbar.make(snackbarRoot, msgId, BaseTransientBottomBar.LENGTH_LONG)
+        .apply {
+            anchorViewId?.let { setAnchorView(it) }
+        }
+        .show()
 
     /**
      * Display a snackbar with the provided [UiString].
@@ -200,6 +226,8 @@ interface UIMessageResolver {
             is UiString.UiStringRes ->
                 Snackbar.make(snackbarRoot, message.stringRes, BaseTransientBottomBar.LENGTH_LONG)
             is UiString.UiStringText -> Snackbar.make(snackbarRoot, message.text, BaseTransientBottomBar.LENGTH_LONG)
+        }.apply {
+            anchorViewId?.let { setAnchorView(it) }
         }
         snackbar.show()
     }

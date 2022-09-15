@@ -12,4 +12,5 @@ class MainUIMessageResolver @Inject constructor(activity: Activity) : UIMessageR
             "To be able to use UIMessageResolver, the activity has to contain a Layout with id snack_root"
         }
     }
+    override var anchorViewId: Int? = null
 }
