@@ -91,7 +91,11 @@ class ProductListFragment :
         setHasOptionsMenu(true)
 
         _binding = FragmentProductListBinding.bind(view)
+
         view.doOnPreDraw { startPostponedEnterTransition() }
+
+        uiMessageResolver.anchorViewId = binding.addProductButton.id
+
         setupObservers(viewModel)
         setupResultHandlers()
         ViewGroupCompat.setTransitionGroup(binding.productsRefreshLayout, true)
