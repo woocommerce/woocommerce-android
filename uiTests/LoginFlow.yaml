@@ -1,0 +1,17 @@
+name: Login with WP.com flow
+appId: com.woocommerce.android.dev
+---
+- launchApp:
+      clearState: true
+- tapOn: "Skip"
+- tapOn: "Continue with WordPress.com"
+- inputText: ${EMAIL}
+- tapOn: "Continue"
+- tapOn:
+      id: "com.woocommerce.android.dev:id/input"
+- inputText: ${PASSWORD}
+- tapOn: "Continue"
+- tapOn:
+      below: "Select store to connect"
+      retryTapIfNoChange: false
+- tapOn: "Continue"
