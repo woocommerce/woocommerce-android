@@ -17,7 +17,7 @@ class ResolveAppLinkTest {
 
     @Before
     fun setUp() {
-        sut = ResolveAppLink(selectedSite, mock())
+        sut = ResolveAppLink(selectedSite, mock(), mock())
     }
 
     @Test
@@ -95,7 +95,7 @@ class ResolveAppLinkTest {
 
     private fun mockUri(orderId: String = TEST_ORDER_ID.toString(), blogId: String = TEST_BLOG_ID.toString()): Uri {
         val uri = mock<Uri> {
-            on { path } doReturn "orders/details?order_id=$orderId&blog_id=$blogId"
+            on { path } doReturn "orders/details"
             on { getQueryParameter("order_id") } doReturn orderId
             on { getQueryParameter("blog_id") } doReturn blogId
         }

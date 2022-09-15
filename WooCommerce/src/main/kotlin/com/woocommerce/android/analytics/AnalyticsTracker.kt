@@ -398,6 +398,9 @@ class AnalyticsTracker private constructor(private val context: Context) {
         const val KEY_SOURCE_STEP = "source_step"
         const val KEY_HELP_CONTENT_URL = "help_content_url"
 
+        // -- App links
+        const val KEY_PATH = "path"
+
         var sendUsageStats: Boolean = true
             set(value) {
                 if (value != field) {
