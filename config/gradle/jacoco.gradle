@@ -74,8 +74,8 @@ rootProject.afterEvaluate {
         classDirectories.from = files([kotlinClasses])
 
         executionData.from = files([
-                "WooCommerce/build/jacoco/testJalapenoDebugUnitTest.exec",
-                "libs/cardreader/build/jacoco/testDebugUnitTest.exec"
+                "WooCommerce/build/outputs/unit_test_code_coverage/jalapenoDebugUnitTest/testJalapenoDebugUnitTest.exec",
+                "libs/cardreader/build/outputs/unit_test_code_coverage/debugUnitTest/testDebugUnitTest.exec"
         ])
     }
 }

@@ -28,6 +28,7 @@ import com.woocommerce.android.AppPrefs.DeletablePrefKey.PRODUCT_SORTING_PREFIX
 import com.woocommerce.android.AppPrefs.DeletablePrefKey.RECEIPT_PREFIX
 import com.woocommerce.android.AppPrefs.UndeletablePrefKey.ONBOARDING_CAROUSEL_DISPLAYED
 import com.woocommerce.android.extensions.orNullIfEmpty
+import com.woocommerce.android.extensions.packageInfo
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.payments.cardreader.onboarding.PersistentOnboardingData
 import com.woocommerce.android.ui.payments.cardreader.onboarding.PluginType
@@ -174,9 +175,10 @@ object AppPrefs {
         get() = try {
             context
                 .packageManager
-                .getPackageInfo(context.packageName, 0)
-                .firstInstallTime
-                .let { Date(it) }
+                .packageInfo(context.packageName, 0)
+                .firstInstallTime.let {
+                    Date(it)
+                }
         } catch (ex: Throwable) {
             relativeInstallationDate
         }
