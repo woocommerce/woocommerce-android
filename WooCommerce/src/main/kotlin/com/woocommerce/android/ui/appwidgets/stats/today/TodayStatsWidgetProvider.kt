@@ -7,6 +7,9 @@ import javax.inject.Inject
 
 @AndroidEntryPoint
 class TodayStatsWidgetProvider : StatsWidgetProvider() {
+    companion object {
+        const val WIDGET_NAME = "today-stats"
+    }
     @Inject lateinit var todayWidgetUpdater: TodayWidgetUpdater
     override val widgetUpdater: WidgetUpdater
         get() = todayWidgetUpdater

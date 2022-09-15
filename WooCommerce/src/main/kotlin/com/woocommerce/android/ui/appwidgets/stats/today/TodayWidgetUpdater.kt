@@ -57,17 +57,17 @@ class TodayWidgetUpdater
                 )
             )
 
-            siteModel.let {
-                views.setOnClickPendingIntent(
-                    R.id.widget_title_container,
-                    widgetUtils.getPendingSelfIntent(context)
-                )
-            }
+            views.setOnClickPendingIntent(
+                R.id.widget_title_container,
+                widgetUtils.getWidgetTapPendingIntent(context, TodayStatsWidgetProvider.WIDGET_NAME)
+            )
+
             widgetUtils.showList(
                 widgetManager,
                 views,
                 context,
-                appWidgetId
+                appWidgetId,
+                TodayStatsWidgetProvider.WIDGET_NAME
             )
         } else {
             // Widget data will only be displayed if network is available,
@@ -90,7 +90,8 @@ class TodayWidgetUpdater
                 resourceProvider,
                 context,
                 hasAccessToken,
-                TodayStatsWidgetProvider::class.java
+                TodayStatsWidgetProvider::class.java,
+                TodayStatsWidgetProvider.WIDGET_NAME
             )
         }
     }
