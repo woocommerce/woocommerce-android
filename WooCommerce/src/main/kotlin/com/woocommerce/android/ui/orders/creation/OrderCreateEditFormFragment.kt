@@ -114,7 +114,7 @@ class OrderCreateEditFormFragment :
                 viewModel.onCreateOrderClicked(viewModel.currentDraft)
                 true
             }
-            else -> super.onOptionsItemSelected(item)
+            else -> false
         }
     }
 
