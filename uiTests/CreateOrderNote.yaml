@@ -1,0 +1,16 @@
+name: Order detail
+appId: com.woocommerce.android.dev
+---
+- launchApp
+- tapOn:
+      id: "com.woocommerce.android.dev:id/orders"
+- tapOn:
+      id: "com.woocommerce.android.dev:id/orderNum"
+- scroll
+- tapOn: "ADD A NOTE"
+- inputText: "This is a new note generated from Maestro testing framework"
+- tapOn: "ADD"
+- scroll
+- scroll
+- assertVisible:
+      text: "This is a new note generated from Maestro testing framework"
