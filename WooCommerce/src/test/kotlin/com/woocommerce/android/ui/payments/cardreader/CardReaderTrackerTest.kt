@@ -16,6 +16,7 @@ import com.woocommerce.android.analytics.AnalyticsEvent.CARD_READER_LOCATION_FAI
 import com.woocommerce.android.analytics.AnalyticsEvent.CARD_READER_LOCATION_SUCCESS
 import com.woocommerce.android.analytics.AnalyticsEvent.CARD_READER_SOFTWARE_UPDATE_FAILED
 import com.woocommerce.android.analytics.AnalyticsEvent.CARD_READER_SOFTWARE_UPDATE_STARTED
+import com.woocommerce.android.analytics.AnalyticsEvent.DISABLE_CASH_ON_DELIVERY_FAILED
 import com.woocommerce.android.analytics.AnalyticsEvent.ENABLE_CASH_ON_DELIVERY_FAILED
 import com.woocommerce.android.analytics.AnalyticsEvent.ENABLE_CASH_ON_DELIVERY_SUCCESS
 import com.woocommerce.android.analytics.AnalyticsEvent.PAYMENTS_FLOW_ORDER_COLLECT_PAYMENT_TAPPED
@@ -25,9 +26,12 @@ import com.woocommerce.android.analytics.AnalyticsEvent.RECEIPT_PRINT_FAILED
 import com.woocommerce.android.analytics.AnalyticsEvent.RECEIPT_PRINT_SUCCESS
 import com.woocommerce.android.analytics.AnalyticsEvent.RECEIPT_PRINT_TAPPED
 import com.woocommerce.android.analytics.AnalyticsTracker
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_CASH_ON_DELIVERY_SOURCE
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.cardreader.connection.event.SoftwareUpdateStatus.Failed
 import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.ui.payments.cardreader.hub.CardReaderHubViewModel.CashOnDeliverySource.ONBOARDING
+import com.woocommerce.android.ui.payments.cardreader.hub.CardReaderHubViewModel.CashOnDeliverySource.PAYMENTS_HUB
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboardingState
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboardingState.ChoosePaymentGatewayProvider
 import com.woocommerce.android.ui.payments.cardreader.onboarding.PluginType.STRIPE_EXTENSION_GATEWAY
@@ -159,15 +163,48 @@ class CardReaderTrackerTest : BaseUnitTest() {
     @Test
     fun `given enable cod is tapped, when success, then ENABLE_CASH_ON_DELIVERY_SUCCESS tracked`() =
         testBlocking {
-            cardReaderTracker.trackCashOnDeliveryEnabledSuccess()
+            cardReaderTracker.trackCashOnDeliveryEnabledSuccess(
+                ONBOARDING
+            )
 
             verify(trackerWrapper).track(eq(ENABLE_CASH_ON_DELIVERY_SUCCESS), any())
+        }
+
+    @Test
+    fun `given enable cod is tapped from onboarding, when success, then proper source is tracked`() =
+        testBlocking {
+            cardReaderTracker.trackCashOnDeliveryEnabledSuccess(
+                ONBOARDING
+            )
+            val captor = argumentCaptor<Map<String, String>>()
+
+            verify(trackerWrapper).track(
+                eq(ENABLE_CASH_ON_DELIVERY_SUCCESS),
+                captor.capture()
+            )
+            assertThat(captor.firstValue[KEY_CASH_ON_DELIVERY_SOURCE]).isEqualTo(ONBOARDING.toString())
+        }
+
+    @Test
+    fun `given enable cod is tapped from payments hub, when success, then then proper source is tracked`() =
+        testBlocking {
+            cardReaderTracker.trackCashOnDeliveryEnabledSuccess(
+                PAYMENTS_HUB
+            )
+            val captor = argumentCaptor<Map<String, String>>()
+
+            verify(trackerWrapper).track(
+                eq(ENABLE_CASH_ON_DELIVERY_SUCCESS),
+                captor.capture()
+            )
+            assertThat(captor.firstValue[KEY_CASH_ON_DELIVERY_SOURCE]).isEqualTo(PAYMENTS_HUB.toString())
         }
 
     @Test
     fun `given enable cod is tapped, when failure, then ENABLE_CASH_ON_DELIVERY_FAILED tracked`() =
         testBlocking {
             cardReaderTracker.trackCashOnDeliveryEnabledFailure(
+                ONBOARDING,
                 "COD failed. Please try again later."
             )
 
@@ -177,6 +214,122 @@ class CardReaderTrackerTest : BaseUnitTest() {
                 errorType = any(),
                 errorContext = eq(null),
                 errorDescription = eq("COD failed. Please try again later.")
+            )
+        }
+
+    @Test
+    fun `given track cod toggled invoked, then PAYMENTS_HUB_CASH_ON_DELIVERY_TOGGLED tracked`() =
+        testBlocking {
+            cardReaderTracker.trackCashOnDeliveryToggled(isEnabled = true)
+
+            verify(trackerWrapper).track(
+                eq(AnalyticsEvent.PAYMENTS_HUB_CASH_ON_DELIVERY_TOGGLED),
+                any()
+            )
+        }
+
+    @Test
+    fun `given track cod toggled invoked with true, then PAYMENTS_HUB_CASH_ON_DELIVERY_TOGGLED tracked`() =
+        testBlocking {
+            cardReaderTracker.trackCashOnDeliveryToggled(isEnabled = true)
+            val captor = argumentCaptor<Map<String, Boolean>>()
+
+            verify(trackerWrapper).track(
+                eq(AnalyticsEvent.PAYMENTS_HUB_CASH_ON_DELIVERY_TOGGLED),
+                captor.capture()
+            )
+            assertThat(captor.firstValue[AnalyticsTracker.KEY_IS_ENABLED]).isEqualTo(true)
+        }
+
+    @Test
+    fun `given track cod toggled invoked with false, then PAYMENTS_HUB_CASH_ON_DELIVERY_TOGGLED tracked`() =
+        testBlocking {
+            cardReaderTracker.trackCashOnDeliveryToggled(isEnabled = false)
+            val captor = argumentCaptor<Map<String, Boolean>>()
+
+            verify(trackerWrapper).track(
+                eq(AnalyticsEvent.PAYMENTS_HUB_CASH_ON_DELIVERY_TOGGLED),
+                captor.capture()
+            )
+            assertThat(captor.firstValue[AnalyticsTracker.KEY_IS_ENABLED]).isEqualTo(false)
+        }
+
+    @Test
+    fun `given disable cod method is invoked, when success, then DISABLE_CASH_ON_DELIVERY_SUCCESS tracked`() =
+        testBlocking {
+            cardReaderTracker.trackCashOnDeliveryDisabledSuccess(
+                ONBOARDING
+            )
+
+            verify(trackerWrapper).track(
+                eq(AnalyticsEvent.DISABLE_CASH_ON_DELIVERY_SUCCESS),
+                any()
+            )
+        }
+
+    @Test
+    fun `given disable cod method is invoked, when success & source is payments_hub, then event tracked`() =
+        testBlocking {
+            cardReaderTracker.trackCashOnDeliveryDisabledSuccess(
+                PAYMENTS_HUB
+            )
+            val captor = argumentCaptor<Map<String, String>>()
+
+            verify(trackerWrapper).track(
+                eq(AnalyticsEvent.DISABLE_CASH_ON_DELIVERY_SUCCESS),
+                captor.capture()
+            )
+            assertThat(captor.firstValue[KEY_CASH_ON_DELIVERY_SOURCE]).isEqualTo(
+                PAYMENTS_HUB.toString()
+            )
+        }
+
+    @Test
+    fun `given disable cod method is invoked, when failure, then DISABLE_CASH_ON_DELIVERY_FAILED tracked`() =
+        testBlocking {
+            cardReaderTracker.trackCashOnDeliveryDisabledFailure(
+                ONBOARDING,
+                "Disabling COD failed. Please try again later."
+            )
+
+            verify(trackerWrapper).track(
+                stat = eq(DISABLE_CASH_ON_DELIVERY_FAILED),
+                properties = any(),
+                errorType = any(),
+                errorContext = eq(null),
+                errorDescription = eq("Disabling COD failed. Please try again later.")
+            )
+        }
+
+    @Test
+    fun `given disable cod method is invoked, when failure & source is payments_hub, then event tracked`() =
+        testBlocking {
+            cardReaderTracker.trackCashOnDeliveryDisabledFailure(
+                PAYMENTS_HUB,
+                "Disabling COD failed. Please try again later."
+            )
+            val captor = argumentCaptor<Map<String, String>>()
+
+            verify(trackerWrapper).track(
+                eq(DISABLE_CASH_ON_DELIVERY_FAILED),
+                captor.capture(),
+                errorType = any(),
+                errorContext = eq(null),
+                errorDescription = eq("Disabling COD failed. Please try again later.")
+            )
+            assertThat(captor.firstValue[KEY_CASH_ON_DELIVERY_SOURCE]).isEqualTo(
+                PAYMENTS_HUB.toString()
+            )
+        }
+
+    @Test
+    fun `given learn more cod method is invoked, then proper event is tracked`() =
+        testBlocking {
+            cardReaderTracker.trackCashOnDeliveryLearnMoreTapped()
+
+            verify(trackerWrapper).track(
+                eq(AnalyticsEvent.PAYMENTS_HUB_CASH_ON_DELIVERY_TOGGLED_LEARN_MORE_TAPPED),
+                any()
             )
         }
 

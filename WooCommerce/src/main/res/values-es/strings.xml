@@ -1,14 +1,30 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2022-08-18 09:54:03+0000
+Translation-Revision-Date: 2022-09-06 11:54:03+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: es
 -->
 <resources>
+    <string name="card_reader_card_readers_header">LECTORES DE TARJETAS</string>
+    <string name="card_reader_payment_options_header">OPCIONES DE PAGO</string>
+    <string name="card_reader_enable_pay_in_person_description">Con Pagos en persona puedes aceptar pagos para pedidos en el sitio web, en la recogida o entrega. &lt;a href=\'\'&gt;Más información&lt;/a&gt;</string>
+    <string name="card_reader_enable_pay_in_person">Pagos en persona</string>
+    <string name="login_verifying_site_jetpack_timeout_error_description">No hemos podido conectarnos a tu sitio. Para solucionar el problema, ponte en contacto con el servicio de soporte.</string>
+    <string name="login_verifying_site_jetpack_timeout_error_title">Error de conexión</string>
+    <string name="card_reader_onboarding_with_pending_requirements">Hay un problema que necesita tu atención. &lt;a href=\'\'&gt;Échale un vistazo&lt;/a&gt;</string>
+    <string name="login_site_picker_try_another_address">Prueba con otra dirección</string>
+    <string name="card_reader_onboarding_cash_on_delivery_enable_failure">No se ha podido activar el pago contra reembolso. Inténtalo de nuevo más tarde.</string>
+    <string name="card_reader_onboarding_cash_on_delivery_disabled_button">Activar Pagos en persona</string>
+    <string name="card_reader_onboarding_cash_on_delivery_disabled_error_hint">Establecer la opción \"Pagos en persona\" en la página de finalizar compra permite aceptar pagos con tarjeta o en efectivo en la recogida o entrega.</string>
+    <string name="card_reader_onboarding_cash_on_delivery_disabled_error_header">Añade Pagos en persona a la página de finalizar compra</string>
+    <string name="card_reader_connect_learn_more">&lt;a href=\'\'&gt;Más información&lt;/a&gt; sobre los Pagos en persona</string>
+    <string name="login_site_picker_new_to_woo">Nuevo en WooCommerce</string>
+    <string name="site_discovery_postlogin_failure">Se ha producido un error, contacta con soporte.</string>
+    <string name="login_site_picker_enter_site_address">Introduce la dirección del sitio web</string>
     <string name="login_help_notification_get_link_by_email_button">Obtener un enlace de acceso por correo electrónico</string>
     <string name="login_help_notification_invalid_password_title">¿No recuerdas la contraseña?</string>
-    <string name="card_reader_onboarding_not_finished">Nos hemos dado cuenta de que aún no has terminado la configuración de Pagos en persona. &lt;b&gt;&lt;a href=\'\'&gt;Continuar con la configuración&lt;/a&gt;&lt;/b&gt;</string>
+    <string name="card_reader_onboarding_not_finished">Nos hemos dado cuenta de que aún no has terminado de configurar Pagos en persona. &lt;a href=\'\'&gt;Continuar con la configuración&lt;/a&gt;</string>
     <string name="payments_hub_title">Pagos</string>
     <string name="orderlist_bottom_sheet_simple_payments_moved_button">¡Entendido!</string>
     <string name="orderlist_bottom_sheet_simple_payments_moved_description">Ahora puedes acceder rápidamente a Pagos en persona y a otras funciones con facilidad</string>
@@ -1037,7 +1053,6 @@ Language: es
     <string name="orderdetail_net">Pago neto</string>
     <string name="orderdetail_payment_paid_by_customer">Pagado</string>
     <string name="login_jetpack_view_instructions_alt">Más información sobre la conexión con Jetpack</string>
-    <string name="login_no_stores">No hemos encontrado tiendas WooCommerce conectadas a esta cuenta. Para utilizar esta aplicación necesitarás instalar y conectar el plugin gratuito de Jetpack en tus tiendas de WooCommerce.</string>
     <string name="edit">Editar</string>
     <string name="product_images_validate_drag_and_drop">Validar</string>
     <string name="product_images_drag_and_drop_description">Arrastrar y soltar para reordenar fotos</string>
@@ -1808,7 +1823,7 @@ Language: es
     <string name="login_jetpack_what_is_description">Jetpack es un plugin gratuito de WordPress que conecta tu tienda con las herramientas necesarias para ofrecer la mejor experiencia para móviles, como notificaciones push y estadísticas</string>
     <string name="login_jetpack_what_is">¿Qué es Jetpack?</string>
     <string name="login_view_connected_stores">Ver tiendas conectadas</string>
-    <string name="login_not_connected_to_account">Parece que %1$s está conectado a otra cuenta de WordPress.com.</string>
+    <string name="login_wpcom_account_mismatch">Parece que %1$s está conectado a otra cuenta de WordPress.com.</string>
     <string name="keep_editing">Seguir editando</string>
     <string name="notification_wpcom_username_needed">Accede con tu nombre de usuario y tu contraseña.</string>
     <string name="error_user_username_instead_of_email">Accede con tu nombre de usuario de WordPress.com en lugar de hacerlo con tu dirección de correo electrónico.</string>
@@ -2129,6 +2144,7 @@ Language: es
     <string name="dashboard_stats_granularity_months">Meses</string>
     <string name="dashboard_stats_granularity_weeks">Semanas</string>
     <string name="dashboard_stats_granularity_days">Días</string>
+    <string name="login_no_stores">No hemos encontrado tiendas de WooCommerce conectadas a esta cuenta.</string>
     <string name="login_with_a_different_account">Acceder con otra cuenta</string>
     <string name="login_nostores_content_description">No hay tiendas WooCommerce</string>
     <string name="login_avatar_content_description">Tu foto de perfil</string>

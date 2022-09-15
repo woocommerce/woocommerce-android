@@ -17,6 +17,7 @@ import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.payments.SelectPaymentMethodViewModel.TakePaymentViewState.Loading
 import com.woocommerce.android.ui.payments.banner.BannerDisplayEligibilityChecker
+import com.woocommerce.android.ui.payments.banner.BannerState
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderFlowParam.CardReadersHub
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderFlowParam.PaymentOrRefund
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderFlowParam.PaymentOrRefund.Payment
@@ -87,20 +88,38 @@ class SelectPaymentMethodViewModel @Inject constructor(
                             paymentUrl = order.paymentUrl,
                             orderTotal = currencyFormatter.formatCurrency(order.total, currencyCode),
                             isPaymentCollectableWithCardReader = isPaymentCollectableWithCardReader,
-                            shouldShowCardReaderUpsellBanner =
-                            (
-                                canShowCardReaderUpsellBanner(
-                                    System.currentTimeMillis(),
-                                    AnalyticsTracker.KEY_BANNER_PAYMENTS
-                                ) &&
-                                    isPaymentCollectableWithCardReader
-                                )
+                            bannerState = BannerState(
+                                shouldDisplayBanner =
+                                (
+                                    canShowCardReaderUpsellBanner(System.currentTimeMillis()) &&
+                                        isPaymentCollectableWithCardReader
+                                    ),
+                                onPrimaryActionClicked = { onCtaClicked(AnalyticsTracker.KEY_BANNER_PAYMENTS) },
+                                onDismissClicked = { onDismissClicked() },
+                                title = R.string.card_reader_upsell_card_reader_banner_title,
+                                description = R.string.card_reader_upsell_card_reader_banner_description,
+                                primaryActionLabel = R.string.card_reader_upsell_card_reader_banner_cta,
+                                chipLabel = R.string.card_reader_upsell_card_reader_banner_new
+                            )
                         )
+                        trackBannerShownIfDisplayed()
                     }
                     is Refund -> triggerEvent(NavigateToCardReaderRefundFlow(param))
                 }
             }
         }.exhaustive
+    }
+
+    private fun trackBannerShownIfDisplayed() {
+        if ((viewState.value as? TakePaymentViewState.Success)?.bannerState?.shouldDisplayBanner == true) {
+            analyticsTrackerWrapper.track(
+                AnalyticsEvent.FEATURE_CARD_SHOWN,
+                mapOf(
+                    AnalyticsTracker.KEY_BANNER_SOURCE to AnalyticsTracker.KEY_BANNER_PAYMENTS,
+                    AnalyticsTracker.KEY_BANNER_CAMPAIGN_NAME to AnalyticsTracker.KEY_BANNER_UPSELL_CARD_READERS
+                )
+            )
+        }
     }
 
     fun onCashPaymentClicked() {
@@ -282,7 +301,7 @@ class SelectPaymentMethodViewModel @Inject constructor(
             ORDER -> AnalyticsTracker.VALUE_ORDER_PAYMENTS_FLOW
         }
 
-    fun onCtaClicked(source: String) {
+    private fun onCtaClicked(source: String) {
         launch {
             triggerEvent(
                 OpenPurchaseCardReaderLink(bannerDisplayEligibilityChecker.getPurchaseCardReaderUrl(source))
@@ -290,7 +309,7 @@ class SelectPaymentMethodViewModel @Inject constructor(
         }
     }
 
-    fun onDismissClicked() {
+    private fun onDismissClicked() {
         shouldShowUpsellCardReaderDismissDialog.value = true
         triggerEvent(DismissCardReaderUpsellBanner)
     }
@@ -311,8 +330,8 @@ class SelectPaymentMethodViewModel @Inject constructor(
         shouldShowUpsellCardReaderDismissDialog.value = false
     }
 
-    private fun canShowCardReaderUpsellBanner(currentTimeInMillis: Long, source: String): Boolean {
-        return bannerDisplayEligibilityChecker.canShowCardReaderUpsellBanner(currentTimeInMillis, source)
+    private fun canShowCardReaderUpsellBanner(currentTimeInMillis: Long): Boolean {
+        return bannerDisplayEligibilityChecker.canShowCardReaderUpsellBanner(currentTimeInMillis)
     }
 
     sealed class TakePaymentViewState {
@@ -321,7 +340,7 @@ class SelectPaymentMethodViewModel @Inject constructor(
             val paymentUrl: String,
             val orderTotal: String,
             val isPaymentCollectableWithCardReader: Boolean,
-            val shouldShowCardReaderUpsellBanner: Boolean
+            val bannerState: BannerState
         ) : TakePaymentViewState()
     }
 

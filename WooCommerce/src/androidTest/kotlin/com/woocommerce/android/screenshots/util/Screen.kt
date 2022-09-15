@@ -133,6 +133,19 @@ open class Screen {
         )
     }
 
+    fun scrollToListItem(itemTitle: String, list: ViewInteraction) {
+        list.perform(
+            RecyclerViewActions.actionOnItem<RecyclerView.ViewHolder>(
+                ViewMatchers.hasDescendant(
+                    ViewMatchers.withText(
+                        itemTitle
+                    )
+                ),
+                ViewActions.scrollTo()
+            )
+        )
+    }
+
     fun selectListItem(itemTitle: String, listID: Int) {
         Espresso.onView(ViewMatchers.withId(listID)).perform(
             RecyclerViewActions.actionOnItem<RecyclerView.ViewHolder>(

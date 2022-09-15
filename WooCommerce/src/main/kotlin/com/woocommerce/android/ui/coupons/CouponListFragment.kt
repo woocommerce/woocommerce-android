@@ -11,8 +11,10 @@ import android.view.ViewGroup
 import android.widget.SearchView.OnQueryTextListener
 import androidx.appcompat.widget.SearchView
 import androidx.compose.ui.platform.ViewCompositionStrategy
+import androidx.core.view.MenuProvider
 import androidx.core.view.isVisible
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.Lifecycle.State
 import androidx.navigation.fragment.findNavController
 import com.woocommerce.android.FeedbackPrefs
 import com.woocommerce.android.NavGraphMainDirections
@@ -54,7 +56,6 @@ class CouponListFragment : BaseFragment(R.layout.fragment_coupon_list) {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        setHasOptionsMenu(true)
         _binding = FragmentCouponListBinding.inflate(inflater, container, false)
 
         val view = binding.root
@@ -72,6 +73,7 @@ class CouponListFragment : BaseFragment(R.layout.fragment_coupon_list) {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        setupMenu()
         setupObservers()
     }
 
@@ -92,11 +94,22 @@ class CouponListFragment : BaseFragment(R.layout.fragment_coupon_list) {
         }
     }
 
-    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
-        super.onCreateOptionsMenu(menu, inflater)
-        inflater.inflate(R.menu.menu_search, menu)
-        searchMenuItem = menu.findItem(R.id.menu_search)
-        initSearch()
+    private fun setupMenu() {
+        requireActivity().addMenuProvider(
+            object : MenuProvider {
+                override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
+                    menuInflater.inflate(R.menu.menu_search, menu)
+                    searchMenuItem = menu.findItem(R.id.menu_search)
+                    initSearch()
+                }
+
+                override fun onMenuItemSelected(item: MenuItem): Boolean {
+                    return false
+                }
+            },
+            viewLifecycleOwner,
+            State.RESUMED
+        )
     }
 
     override fun onViewStateRestored(savedInstanceState: Bundle?) {

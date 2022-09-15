@@ -1,0 +1,26 @@
+{
+    "request": {
+        "method": "GET",
+        "urlPathPattern": "/wpcom/v2/experiments/0.1.0/assignments/woocommerceandroid/(.*)",
+        "queryParameters": {
+            // These two matchers below seem (from relatively thourough testing) to behave
+            // the same as logical AND. I could not have the "and" from WireMock docs work.
+            "experiment_names": {
+                "contains": "woocommerceandroid_explat_aa_test_202208"
+            },
+            "experiment_names": {
+                "contains": "woocommerceandroid_product_details_linked_products_banner"
+            }
+        }
+    },
+    "response": {
+        "status": 401,
+        "jsonBody": {
+            "code": "oauth2_invalid_token",
+            "message": "The OAuth2 token is invalid.",
+            "data": {
+                "status": 401
+            }
+        }
+    }
+}

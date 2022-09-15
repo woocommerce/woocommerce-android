@@ -5,6 +5,9 @@ import com.woocommerce.android.viewmodel.ResourceProvider
 import org.wordpress.android.fluxc.model.AccountModel
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.model.user.WCUserModel
+import org.wordpress.android.fluxc.network.BaseRequest
+import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooError
+import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooErrorType
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.system.WCApiVersionResponse
 import org.wordpress.android.fluxc.store.WooCommerceStore
 
@@ -31,6 +34,11 @@ object SitePickerTestUtils {
     val errorApiVerificationResponse = WCApiVersionResponse(
         siteModel = SiteModel(),
         apiVersion = WooCommerceStore.WOO_API_NAMESPACE_V1
+    )
+
+    val timeoutErrorApiVerificationResponse = WooError(
+        WooErrorType.TIMEOUT,
+        BaseRequest.GenericErrorType.UNKNOWN
     )
 
     val userModel = WCUserModel()

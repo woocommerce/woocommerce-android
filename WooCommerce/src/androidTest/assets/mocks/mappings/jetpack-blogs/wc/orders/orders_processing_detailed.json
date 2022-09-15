@@ -97,6 +97,8 @@
                 "fee_lines": [],
                 "coupon_lines": [],
                 "refunds": [],
+                "payment_url": "",
+                "is_editable": true,
                 "date_created_gmt": "{{#assign 'currentYear'}}{{fnow format='yyyy'}}{{/assign}}{{currentYear}}-01-31T11:26:08",
                 "date_modified_gmt": "{{currentYear}}-02-03T15:34:32",
                 "date_paid_gmt": "{{currentYear}}-01-28T11:26:54"
@@ -161,6 +163,8 @@
                 "fee_lines": [],
                 "coupon_lines": [],
                 "refunds": [],
+                "payment_url": "",
+                "is_editable": true,
                 "date_created_gmt": "{{currentYear}}-01-28T13:02:43",
                 "date_modified_gmt": "{{currentYear}}-02-03T13:12:20",
                 "date_paid_gmt": "{{currentYear}}-01-28T10:03:05"
@@ -241,6 +245,8 @@
                 "fee_lines": [],
                 "coupon_lines": [],
                 "refunds": [],
+                "payment_url": "",
+                "is_editable": true,
                 "date_created_gmt": "{{currentYear}}-01-27T10:14:22",
                 "date_modified_gmt": "{{currentYear}}-01-28T10:15:18",
                 "date_paid_gmt": "{{currentYear}}-01-28T10:14:46"
@@ -352,6 +358,8 @@
                 "fee_lines": [],
                 "coupon_lines": [],
                 "refunds": [],
+                "payment_url": "",
+                "is_editable": true,
                 "date_created_gmt": "{{currentYear}}-03-01T20:36:54",
                 "date_modified_gmt": "{{currentYear}}-04-30T21:40:20",
                 "date_paid_gmt": null
@@ -432,6 +440,8 @@
                 "fee_lines": [],
                 "coupon_lines": [],
                 "refunds": [],
+                "payment_url": "",
+                "is_editable": true,
                 "date_created_gmt": "{{currentYear}}-01-22T09:52:48",
                 "date_modified_gmt": "{{currentYear}}-06-14T16:49:49",
                 "date_paid_gmt": "{{currentYear}}-04-25T21:47:26"

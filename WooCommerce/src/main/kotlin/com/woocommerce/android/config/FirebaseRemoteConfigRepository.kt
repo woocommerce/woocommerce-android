@@ -4,11 +4,11 @@ import androidx.annotation.VisibleForTesting
 import com.automattic.android.tracks.crashlogging.CrashLogging
 import com.google.firebase.remoteconfig.FirebaseRemoteConfig
 import com.google.firebase.remoteconfig.ktx.remoteConfigSettings
+import com.woocommerce.android.experiment.JetpackTimeoutExperiment.JetpackTimeoutPolicyVariant
 import com.woocommerce.android.experiment.LoginButtonSwapExperiment.LoginButtonSwapVariant
 import com.woocommerce.android.experiment.MagicLinkRequestExperiment.MagicLinkRequestVariant
 import com.woocommerce.android.experiment.MagicLinkSentScreenExperiment.MagicLinkSentScreenVariant
 import com.woocommerce.android.experiment.PrologueExperiment.PrologueVariant
-import com.woocommerce.android.experiment.SiteLoginExperiment.SiteLoginVariant
 import com.woocommerce.android.util.PackageUtils
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T
@@ -28,11 +28,11 @@ class FirebaseRemoteConfigRepository @Inject constructor(
     companion object {
         @VisibleForTesting
         const val PROLOGUE_VARIANT_KEY = "prologue_variant"
-        private const val SITE_CREDENTIALS_EXPERIMENT_VARIANT_KEY = "site_credentials_emphasis"
         private const val MAGIC_LINK_SENT_EXPERIMENT_VARIANT_KEY = "magic_link_sent_experiment_variant"
         private const val MAGIC_LINK_REQUEST_VARIANT_KEY = "magic_link_experiment_variant"
         private const val LOGIN_BUTTON_SWAP_VARIANT_KEY = "login_button_swap_variant"
         private const val PERFORMANCE_MONITORING_SAMPLE_RATE_KEY = "wc_android_performance_monitoring_sample_rate"
+        private const val JETPACK_TIMEOUT_POLICY_VARIANT_KEY = "jetpack_timeout_policy_variant"
         private const val DEBUG_INTERVAL = 10L
         private const val RELEASE_INTERVAL = 31200L
     }
@@ -48,10 +48,10 @@ class FirebaseRemoteConfigRepository @Inject constructor(
     private val defaultValues by lazy {
         mapOf(
             PROLOGUE_VARIANT_KEY to PrologueVariant.CONTROL.name,
-            SITE_CREDENTIALS_EXPERIMENT_VARIANT_KEY to SiteLoginVariant.EMAIL_LOGIN.name,
             MAGIC_LINK_SENT_EXPERIMENT_VARIANT_KEY to MagicLinkSentScreenVariant.CONTROL.name,
             MAGIC_LINK_REQUEST_VARIANT_KEY to MagicLinkRequestVariant.CONTROL.name,
-            LOGIN_BUTTON_SWAP_VARIANT_KEY to LoginButtonSwapVariant.CONTROL.name
+            LOGIN_BUTTON_SWAP_VARIANT_KEY to LoginButtonSwapVariant.CONTROL.name,
+            JETPACK_TIMEOUT_POLICY_VARIANT_KEY to JetpackTimeoutPolicyVariant.CONTROL.name
         )
     }
 
@@ -88,14 +88,6 @@ class FirebaseRemoteConfigRepository @Inject constructor(
                 emit(PrologueVariant.valueOf(defaultValues[PROLOGUE_VARIANT_KEY]!!))
             }
 
-    override fun observeSiteLoginVariant(): Flow<SiteLoginVariant> =
-        observeStringRemoteValue(SITE_CREDENTIALS_EXPERIMENT_VARIANT_KEY)
-            .map { SiteLoginVariant.valueOf(it.uppercase()) }
-            .catch {
-                crashLogging.get().recordException(it)
-                emit(SiteLoginVariant.valueOf(defaultValues[SITE_CREDENTIALS_EXPERIMENT_VARIANT_KEY]!!))
-            }
-
     override fun observeMagicLinkSentScreenVariant(): Flow<MagicLinkSentScreenVariant> =
         observeStringRemoteValue(MAGIC_LINK_SENT_EXPERIMENT_VARIANT_KEY)
             .map { MagicLinkSentScreenVariant.valueOf(it.uppercase()) }
@@ -122,6 +114,14 @@ class FirebaseRemoteConfigRepository @Inject constructor(
 
     override fun getPerformanceMonitoringSampleRate(): Double =
         remoteConfig.getDouble(PERFORMANCE_MONITORING_SAMPLE_RATE_KEY)
+
+    override fun observeJetpackTimeoutPolicyVariantVariant(): Flow<JetpackTimeoutPolicyVariant> =
+        observeStringRemoteValue(JETPACK_TIMEOUT_POLICY_VARIANT_KEY)
+            .map { JetpackTimeoutPolicyVariant.valueOf(it.uppercase()) }
+            .catch {
+                crashLogging.get().recordException(it)
+                emit(JetpackTimeoutPolicyVariant.valueOf(defaultValues[JETPACK_TIMEOUT_POLICY_VARIANT_KEY]!!))
+            }
 
     private fun observeStringRemoteValue(key: String) = changesTrigger
         .map { remoteConfig.getString(key) }

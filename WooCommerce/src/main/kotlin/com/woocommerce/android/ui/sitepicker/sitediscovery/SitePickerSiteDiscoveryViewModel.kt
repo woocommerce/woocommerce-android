@@ -9,6 +9,7 @@ import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
+import com.woocommerce.android.ui.login.AccountRepository
 import com.woocommerce.android.ui.sitepicker.SitePickerRepository
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
@@ -39,6 +40,7 @@ import kotlin.text.RegexOption.IGNORE_CASE
 class SitePickerSiteDiscoveryViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
     private val sitePickRepository: SitePickerRepository,
+    private val accountRepository: AccountRepository,
     private val resourceProvider: ResourceProvider,
     private val analyticsTracker: AnalyticsTrackerWrapper
 ) : ScopedViewModel(savedStateHandle) {
@@ -209,8 +211,8 @@ class SitePickerSiteDiscoveryViewModel @Inject constructor(
 
     private fun logout() {
         launch {
-            sitePickRepository.logout().let {
-                if (it && sitePickRepository.isUserLoggedIn()) {
+            accountRepository.logout().let {
+                if (it) {
                     triggerEvent(Logout)
                 }
             }

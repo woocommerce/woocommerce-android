@@ -13,6 +13,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.transition.Slide
 import androidx.transition.TransitionManager
 import com.google.android.material.textview.MaterialTextView
+import com.woocommerce.android.NavGraphMainDirections
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.databinding.FragmentCardReaderHubBinding
@@ -23,6 +24,7 @@ import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboa
 import com.woocommerce.android.util.ChromeCustomTabUtils
 import com.woocommerce.android.util.UiHelpers
 import dagger.hilt.android.AndroidEntryPoint
+import org.wordpress.android.util.ToastUtils
 
 private const val APPEARANCE_ANIMATION_DURATION_MS = 600L
 
@@ -62,7 +64,12 @@ class CardReaderHubFragment : BaseFragment(R.layout.fragment_card_reader_hub) {
                     )
                 }
                 is CardReaderHubViewModel.CardReaderHubEvents.NavigateToPurchaseCardReaderFlow -> {
-                    ChromeCustomTabUtils.launchUrl(requireContext(), event.url)
+                    findNavController().navigate(
+                        NavGraphMainDirections.actionGlobalWPComWebViewFragment(
+                            urlToLoad = event.url,
+                            title = resources.getString(event.titleRes)
+                        )
+                    )
                 }
                 is CardReaderHubViewModel.CardReaderHubEvents.NavigateToCardReaderManualsScreen -> {
                     findNavController().navigateSafely(R.id.action_cardReaderHubFragment_to_cardReaderManualsFragment)
@@ -81,6 +88,12 @@ class CardReaderHubFragment : BaseFragment(R.layout.fragment_card_reader_hub) {
                     findNavController().navigate(
                         CardReaderHubFragmentDirections.actionCardReaderHubFragmentToSimplePayments()
                     )
+                }
+                is CardReaderHubViewModel.CardReaderHubEvents.OpenGenericWebView -> {
+                    ChromeCustomTabUtils.launchUrl(requireContext(), event.url)
+                }
+                is CardReaderHubViewModel.CardReaderHubEvents.ShowToastString -> {
+                    ToastUtils.showToast(context, event.message)
                 }
                 else -> event.isHandled = false
             }

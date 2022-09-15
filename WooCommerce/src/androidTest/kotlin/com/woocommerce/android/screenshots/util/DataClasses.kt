@@ -25,6 +25,10 @@ val productTypesMap = mapOf(
     "simple" to "Physical product"
 )
 
+val orderStatusMap = mapOf(
+    "pending" to "Pending payment"
+)
+
 data class ReviewData(
     val productID: Int,
     val status: String,
@@ -66,4 +70,14 @@ data class ProductData(
 
         return price
     }
+}
+
+data class OrderData(
+    val id: Int,
+    val productName: String,
+    val statusRaw: String,
+    val totalRaw: String
+) {
+    val status = orderStatusMap[statusRaw]
+    val total = "\$$totalRaw"
 }

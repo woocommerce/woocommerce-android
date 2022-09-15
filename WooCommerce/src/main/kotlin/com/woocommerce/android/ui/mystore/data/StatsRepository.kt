@@ -1,6 +1,7 @@
 package com.woocommerce.android.ui.mystore.data
 
 import com.woocommerce.android.AppConstants
+import com.woocommerce.android.extensions.semverCompareTo
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T.DASHBOARD
@@ -12,7 +13,12 @@ import org.wordpress.android.fluxc.model.leaderboards.WCTopPerformerProductModel
 import org.wordpress.android.fluxc.store.WCLeaderboardsStore
 import org.wordpress.android.fluxc.store.WCOrderStore
 import org.wordpress.android.fluxc.store.WCStatsStore
-import org.wordpress.android.fluxc.store.WCStatsStore.*
+import org.wordpress.android.fluxc.store.WCStatsStore.FetchNewVisitorStatsPayload
+import org.wordpress.android.fluxc.store.WCStatsStore.FetchRevenueStatsPayload
+import org.wordpress.android.fluxc.store.WCStatsStore.OrderStatsError
+import org.wordpress.android.fluxc.store.WCStatsStore.StatsGranularity
+import org.wordpress.android.fluxc.store.WooCommerceStore
+import org.wordpress.android.fluxc.store.WooCommerceStore.WooPlugin.WOO_CORE
 import javax.inject.Inject
 
 class StatsRepository @Inject constructor(
@@ -20,10 +26,15 @@ class StatsRepository @Inject constructor(
     private val wcStatsStore: WCStatsStore,
     @Suppress("UnusedPrivateMember", "Required to ensure the WCOrderStore is initialized!")
     private val wcOrderStore: WCOrderStore,
-    private val wcLeaderboardsStore: WCLeaderboardsStore
+    private val wcLeaderboardsStore: WCLeaderboardsStore,
+    private val wooCommerceStore: WooCommerceStore,
 ) {
     companion object {
         private val TAG = StatsRepository::class.java
+
+        // Minimum supported version to use /wc-analytics/leaderboards/products instead of slower endpoint
+        // /wc-analytics/leaderboards. More info https://github.com/woocommerce/woocommerce-android/issues/6688
+        private const val PRODUCT_ONLY_LEADERBOARD_MIN_WC_VERSION = "6.7.0"
     }
 
     suspend fun fetchRevenueStats(
@@ -70,15 +81,17 @@ class StatsRepository @Inject constructor(
         }
 
     suspend fun fetchProductLeaderboards(
-        forced: Boolean,
+        forceRefresh: Boolean,
         granularity: StatsGranularity,
         quantity: Int
     ): Flow<Result<List<WCTopPerformerProductModel>>> = flow {
-        when (forced) {
+        when (forceRefresh) {
             true -> wcLeaderboardsStore.fetchProductLeaderboards(
                 site = selectedSite.get(),
                 unit = granularity,
-                quantity = quantity
+                quantity = quantity,
+                addProductsPath = supportsProductOnlyLeaderboardEndpoint(),
+                forceRefresh = forceRefresh
             )
             false -> wcLeaderboardsStore.fetchCachedProductLeaderboards(
                 site = selectedSite.get(),
@@ -115,6 +128,12 @@ class StatsRepository @Inject constructor(
                 emit(Result.failure(Exception(errorMessage)))
             }
         }
+    }
+
+    private fun supportsProductOnlyLeaderboardEndpoint(): Boolean {
+        val currentWooCoreVersion =
+            wooCommerceStore.getSitePlugin(selectedSite.get(), WOO_CORE)?.version ?: "0.0"
+        return currentWooCoreVersion.semverCompareTo(PRODUCT_ONLY_LEADERBOARD_MIN_WC_VERSION) >= 0
     }
 
     data class StatsException(val error: OrderStatsError?) : Exception()

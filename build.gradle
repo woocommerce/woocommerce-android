@@ -31,7 +31,8 @@ allprojects {
             // TODO fix all the warnings and change to true before end of 2022
             allWarningsAsErrors = false
             freeCompilerArgs += [
-                    "-Xopt-in=kotlin.RequiresOptIn"
+                    "-Xopt-in=kotlin.RequiresOptIn",
+                    "-Xjvm-default=all-compatibility",
             ]
         }
     }
@@ -81,7 +82,7 @@ tasks.register("installGitHooks", Copy) {
 }
 
 ext {
-    fluxCVersion = 'trunk-efc3333cb6612f863df964cf83b95d66d9ef6619'
+    fluxCVersion = 'trunk-00e4f710060f07f46733e88d83768c01b686f180'
     glideVersion = '4.13.2'
     coilVersion = '2.1.0'
     constraintLayoutVersion = '1.2.0'
@@ -89,11 +90,11 @@ ext {
     eventBusVersion = '3.3.1'
     googlePlayCoreVersion = '1.10.3'
     coroutinesVersion = '1.6.1'
-    lifecycleVersion = '2.4.1'
+    lifecycleVersion = '2.5.1'
     aztecVersion = 'v1.3.45'
     flipperVersion = '0.154.0'
     stateMachineVersion = '0.2.0'
-    coreKtxVersion = '1.7.0'
+    coreKtxVersion = '1.8.0'
     appCompatVersion = '1.4.2'
     materialVersion = '1.6.1'
     hiltJetpackVersion = '1.0.0'

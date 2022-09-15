@@ -28,6 +28,7 @@ import com.woocommerce.android.AppPrefs.DeletablePrefKey.PRODUCT_SORTING_PREFIX
 import com.woocommerce.android.AppPrefs.DeletablePrefKey.RECEIPT_PREFIX
 import com.woocommerce.android.AppPrefs.UndeletablePrefKey.ONBOARDING_CAROUSEL_DISPLAYED
 import com.woocommerce.android.extensions.orNullIfEmpty
+import com.woocommerce.android.extensions.packageInfo
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.payments.cardreader.onboarding.PersistentOnboardingData
 import com.woocommerce.android.ui.payments.cardreader.onboarding.PluginType
@@ -94,6 +95,7 @@ object AppPrefs {
         CARD_READER_UPSELL_BANNER_DIALOG_DISMISSED_FOREVER,
         CARD_READER_UPSELL_BANNER_DIALOG_DISMISSED_REMIND_ME_LATER,
         CARD_READER_DO_NOT_SHOW_CASH_ON_DELIVERY_DISABLED_ONBOARDING_STATE,
+        ACTIVE_STATS_GRANULARITY,
     }
 
     /**
@@ -173,9 +175,10 @@ object AppPrefs {
         get() = try {
             context
                 .packageManager
-                .getPackageInfo(context.packageName, 0)
-                .firstInstallTime
-                .let { Date(it) }
+                .packageInfo(context.packageName, 0)
+                .firstInstallTime.let {
+                    Date(it)
+                }
         } catch (ex: Throwable) {
             relativeInstallationDate
         }
@@ -861,6 +864,17 @@ object AppPrefs {
     fun setPaymentsIconWasClickedOnMoreScreen() {
         setBoolean(UndeletablePrefKey.USER_CLICKED_ON_PAYMENTS_MORE_SCREEN, true)
     }
+
+    fun setActiveStatsGranularity(currentSiteId: Int, activeStatsGranularity: String) {
+        setString(getActiveStatsGranularityFilterKey(currentSiteId), activeStatsGranularity)
+    }
+
+    fun getActiveStatsGranularity(currentSiteId: Int) = getString(
+        getActiveStatsGranularityFilterKey(currentSiteId)
+    )
+
+    private fun getActiveStatsGranularityFilterKey(currentSiteId: Int) =
+        PrefKeyString("${DeletablePrefKey.ACTIVE_STATS_GRANULARITY}:$currentSiteId")
 
     /**
      * Remove all user and site-related preferences.

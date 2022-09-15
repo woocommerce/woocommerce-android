@@ -5,6 +5,7 @@ import android.content.pm.PackageInfo
 import android.content.pm.PackageManager
 import androidx.core.content.pm.PackageInfoCompat
 import com.woocommerce.android.BuildConfig
+import com.woocommerce.android.extensions.packageInfo
 import java.util.Locale
 
 object PackageUtils {
@@ -37,7 +38,7 @@ object PackageUtils {
     private fun getPackageInfo(context: Context): PackageInfo? {
         return try {
             val manager = context.packageManager
-            manager.getPackageInfo(context.packageName, 0)
+            manager.packageInfo(context.packageName, 0)
         } catch (e: PackageManager.NameNotFoundException) {
             null
         }

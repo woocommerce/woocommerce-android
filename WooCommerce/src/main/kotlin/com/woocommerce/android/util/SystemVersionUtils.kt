@@ -4,6 +4,8 @@ import android.os.Build
 
 @Suppress("Unused")
 object SystemVersionUtils {
+    fun isAtLeastT() = Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU
+
     fun isAtLeastS() = Build.VERSION.SDK_INT >= Build.VERSION_CODES.S
 
     fun isAtLeastR() = Build.VERSION.SDK_INT >= Build.VERSION_CODES.R

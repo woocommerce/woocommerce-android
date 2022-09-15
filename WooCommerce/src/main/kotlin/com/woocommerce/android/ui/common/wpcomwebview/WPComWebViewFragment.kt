@@ -60,7 +60,7 @@ class WPComWebViewFragment : BaseFragment(R.layout.fragment_wpcom_webview), UrlI
                 }
             }
             this.settings.javaScriptEnabled = true
-            settings.userAgentString = userAgent.getUserAgent()
+            settings.userAgentString = userAgent.userAgent
         }
 
         loadAuthenticatedUrl(binding.webView, navArgs.urlToLoad)
@@ -105,6 +105,8 @@ class WPComWebViewFragment : BaseFragment(R.layout.fragment_wpcom_webview), UrlI
         }
         return ""
     }
+
+    override fun getFragmentTitle() = navArgs.title ?: super.getFragmentTitle()
 
     override fun onRequestAllowBackPress(): Boolean {
         navigateBackWithNotice(WEBVIEW_DISMISSED)

@@ -203,18 +203,18 @@ interface UIMessageResolver {
         }
         snackbar.show()
     }
-
-    private fun getIndefiniteSnackbarWithAction(
-        view: View,
-        msg: String,
-        actionString: String,
-        actionListener: View.OnClickListener
-    ) = Snackbar.make(view, msg, BaseTransientBottomBar.LENGTH_INDEFINITE).setAction(actionString, actionListener)
-
-    private fun getSnackbarWithAction(
-        view: View,
-        msg: String,
-        actionString: String,
-        actionListener: View.OnClickListener
-    ) = Snackbar.make(view, msg, BaseTransientBottomBar.LENGTH_LONG).setAction(actionString, actionListener)
 }
+
+private fun getIndefiniteSnackbarWithAction(
+    view: View,
+    msg: String,
+    actionString: String,
+    actionListener: View.OnClickListener
+) = Snackbar.make(view, msg, BaseTransientBottomBar.LENGTH_INDEFINITE).setAction(actionString, actionListener)
+
+private fun getSnackbarWithAction(
+    view: View,
+    msg: String,
+    actionString: String,
+    actionListener: View.OnClickListener
+) = Snackbar.make(view, msg, BaseTransientBottomBar.LENGTH_LONG).setAction(actionString, actionListener)

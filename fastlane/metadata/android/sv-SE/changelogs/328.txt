@@ -1,0 +1,4 @@
+10.2:
+Den här versionen kanske inte innehåller några nya funktioner, men vi har ändå lagt ner mycket jobb på den. Vi har lagt till en ny Hjälpcenter-sida som gör det enklare för dig att logga in i appen. Du kan också aktivera eller inaktivera alternativet att ta emot kortbetalningar eller kontanta betalningar vid upphämtning eller leverans.
+Slutligen har vi även gjort några justeringar för att förbättra prestandan. Fortsätt att skicka feedback. Vi läser allt.
+

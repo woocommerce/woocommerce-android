@@ -22,6 +22,7 @@ class ProductListScreen : Screen {
 
     fun selectProductByName(productName: String): SingleProductScreen {
         selectListItem(productName, LIST_VIEW)
+        waitForElementToBeDisplayed(R.id.productDetail_root)
         return SingleProductScreen()
     }
 
@@ -56,7 +57,7 @@ class ProductListScreen : Screen {
                 ViewMatchers.withChild(
                     Matchers.allOf(
                         ViewMatchers.withId(R.id.productStockAndStatus),
-                        ViewMatchers.withText(product.stockStatus)
+                        ViewMatchers.withText(product.stockStatus + " • \$${product.priceDiscountedRaw}.00")
                     )
                 )
             )
