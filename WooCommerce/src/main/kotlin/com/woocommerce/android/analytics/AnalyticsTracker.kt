@@ -398,6 +398,9 @@ class AnalyticsTracker private constructor(private val context: Context) {
         const val KEY_SOURCE_STEP = "source_step"
         const val KEY_HELP_CONTENT_URL = "help_content_url"
 
+        // Widgets
+        const val KEY_WIDGETS = "widgets"
+
         // -- App links
         const val KEY_PATH = "path"
 

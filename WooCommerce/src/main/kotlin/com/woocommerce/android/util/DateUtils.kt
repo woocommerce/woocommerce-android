@@ -20,6 +20,7 @@ class DateUtils @Inject constructor(
 ) {
     private val friendlyMonthDayFormat: SimpleDateFormat = SimpleDateFormat("MMM d", locale)
     private val friendlyMonthDayYearFormat: SimpleDateFormat = SimpleDateFormat("MMM d, yyyy", locale)
+    private val friendlyTimeFormat: SimpleDateFormat = SimpleDateFormat("h:mm a", locale)
 
     private val weekOfYearStartingMondayFormat: SimpleDateFormat = SimpleDateFormat("yyyy-'W'ww", locale).apply {
         calendar = Calendar.getInstance().apply {
@@ -508,6 +509,11 @@ class DateUtils @Inject constructor(
      * Returns current date
      */
     fun getCurrentDate() = Date()
+
+    /**
+     * Returns current date in the format h:mm a
+     */
+    fun getCurrentTime(): String = friendlyTimeFormat.format(getCurrentDate())
 
     /**
      * Returns a Calendar object with argument date applied argument operation

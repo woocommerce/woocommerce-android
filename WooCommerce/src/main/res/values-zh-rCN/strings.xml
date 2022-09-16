@@ -1,11 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2022-09-06 11:54:03+0000
+Translation-Revision-Date: 2022-09-13 10:54:04+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: zh_CN
 -->
 <resources>
+    <string name="login_jetpack_connection_url_failed">获取连接数据失败…</string>
+    <string name="login_jetpack_verify_connection">正在验证 Jetpack 连接…</string>
+    <string name="login_jetpack_connection_verification_failed">无法验证您的 Jetpack 连接。 请重试。</string>
+    <string name="login_simple_wpcom_site">站点 %1$s 目前采用不支持插件安装的 WordPress.com 套餐。 请升级您的套餐来使用 WooCommerce。</string>
+    <string name="login_connect_jetpack_button">将 Jetpack 连接到您的账户</string>
+    <string name="login_jetpack_not_connected">您的账户似乎未连接到 %1$s 的 Jetpack</string>
     <string name="card_reader_card_readers_header">读卡器</string>
     <string name="card_reader_payment_options_header">付款选项</string>
     <string name="card_reader_enable_pay_in_person_description">通过启用“现场付款”结账选项，您可在收货或交货时接受网站订单付款。 &lt;a href=\'\'&gt;了解更多&lt;/a&gt;</string>
@@ -1823,7 +1829,7 @@ Language: zh_CN
     <string name="login_jetpack_what_is_description">Jetpack 是一款免费的 WordPress 插件，可以将您的商店与所需的工具连接起来，为您提供最佳的移动体验，包括推送通知和统计数据</string>
     <string name="login_jetpack_what_is">Jetpack 是什么？</string>
     <string name="login_view_connected_stores">查看连接的商店</string>
-    <string name="login_wpcom_account_mismatch">%1$s 似乎连接了其他 WordPress.com 帐户。</string>
+    <string name="login_wpcom_account_mismatch">%1$s 似乎连接了其他 WordPress.com 账户。</string>
     <string name="keep_editing">继续编辑</string>
     <string name="notification_wpcom_username_needed">请使用您的用户名和密码登录。</string>
     <string name="error_user_username_instead_of_email">请使用您的 WordPress.com 用户名（而不是电子邮件地址）登录。</string>

@@ -1,0 +1,2 @@
+10.3 :
+Nous avons apporté des corrections de stabilité supplémentaires pour faciliter votre connexion. Il est désormais possible de configurer Jetpack si la connexion n’a pas encore été effectuée. Enfin, nous avons corrigé un bogue lors duquel Jetpack pouvait être considéré à tort comme indisponible. Continuez de nous faire part de vos commentaires !

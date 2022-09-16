@@ -1,0 +1,2 @@
+10.3:
+Wir haben weitere Stabilitätsprobleme behoben, wodurch die Anmeldung für dich wesentlich einfacher wird. Es ist jetzt möglich, Jetpack einzurichten, wenn es noch nicht verbunden ist. Den Fehler, dass Jetpack fälschlicherweise als nicht verfügbar angezeigt wird, haben wir ebenfalls behoben. Wir freuen uns auf weiteres Feedback!

@@ -103,6 +103,8 @@ class MainPresenter @Inject constructor(
                 .newFetchOrderStatusOptionsAction(FetchOrderStatusOptionsPayload(site))
         )
         coroutineScope.launch { clearCardReaderDataAction() }
+
+        updateStatsWidgets()
     }
 
     override fun fetchUnfilledOrderCount() {
@@ -216,5 +218,10 @@ class MainPresenter @Inject constructor(
         if (pendingUnfilledOrderCountCheck) {
             fetchUnfilledOrderCount()
         }
+        updateStatsWidgets()
+    }
+
+    override fun updateStatsWidgets() {
+        mainView?.updateStatsWidgets()
     }
 }

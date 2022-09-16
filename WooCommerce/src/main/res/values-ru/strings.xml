@@ -1,11 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2022-09-06 11:54:03+0000
+Translation-Revision-Date: 2022-09-13 10:54:04+0000
 Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);
 Generator: GlotPress/2.4.0-alpha
 Language: ru
 -->
 <resources>
+    <string name="login_jetpack_connection_url_failed">Сбой получения данных о подключении…</string>
+    <string name="login_jetpack_verify_connection">Проверка подключения Jetpack…</string>
+    <string name="login_jetpack_connection_verification_failed">Не удалось проверить подключение Jetpack. Повторите попытку.</string>
+    <string name="login_simple_wpcom_site">Сейчас на сайте %1$s используется план WordPress.com, который не поддерживает установку плагинов. Перейдите на другой план, чтобы использовать WooCommerce.</string>
+    <string name="login_connect_jetpack_button">Подключите Jetpack к учётной записи</string>
+    <string name="login_jetpack_not_connected">Похоже, что ваша учётная запись не подключена к Jetpack %1$s</string>
     <string name="card_reader_card_readers_header">УСТРОЙСТВА ЧТЕНИЯ КАРТ</string>
     <string name="card_reader_payment_options_header">СПОСОБЫ ОПЛАТЫ</string>
     <string name="card_reader_enable_pay_in_person_description">Способ оформления заказа \"Очная оплата\" позволяет вам принимать платежи за заказы на веб-сайте при получении товара покупателем. &lt;a href=\'\'&gt;Подробнее&lt;/a&gt;</string>
@@ -1823,7 +1829,7 @@ Language: ru
     <string name="login_jetpack_what_is_description">Jetpack — это бесплатный плагин WordPress с дополнительными инструментами, которые обеспечивают удобное управление магазином с мобильных устройств и доступ к расширенным возможностям, например push-уведомлениям и статистике.</string>
     <string name="login_jetpack_what_is">Что такое Jetpack?</string>
     <string name="login_view_connected_stores">Открыть список подключенных магазинов</string>
-    <string name="login_wpcom_account_mismatch">Похоже, что %1$s подключен к другой учетной записи WordPress.com.</string>
+    <string name="login_wpcom_account_mismatch">Похоже, что %1$s подключён к другой учётной записи WordPress.com.</string>
     <string name="keep_editing">Продолжить редактирование</string>
     <string name="notification_wpcom_username_needed">Please log in with your username and password.</string>
     <string name="error_user_username_instead_of_email">Войдите, используя имя пользователя WordPress.com вместо адреса электронной почты.</string>

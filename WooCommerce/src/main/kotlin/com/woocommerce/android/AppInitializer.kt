@@ -1,6 +1,7 @@
 package com.woocommerce.android
 
 import android.app.Application
+import android.appwidget.AppWidgetManager
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
@@ -23,6 +24,7 @@ import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.RateLimitedTask
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.tracker.SendTelemetry
+import com.woocommerce.android.ui.appwidgets.getWidgetName
 import com.woocommerce.android.ui.common.UserEligibilityFetcher
 import com.woocommerce.android.ui.main.MainActivity
 import com.woocommerce.android.util.AppThemeUtils
@@ -59,6 +61,7 @@ import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
+@Suppress("TooManyFunctions")
 class AppInitializer @Inject constructor() : ApplicationLifecycleListener {
     companion object {
         private const val SECONDS_BETWEEN_SITE_UPDATE = 60 * 60 // 1 hour
@@ -161,7 +164,7 @@ class AppInitializer @Inject constructor() : ApplicationLifecycleListener {
 
     @Suppress("DEPRECATION")
     override fun onAppComesFromBackground() {
-        AnalyticsTracker.track(AnalyticsEvent.APPLICATION_OPENED)
+        trackApplicationOpened()
 
         if (!connectionReceiverRegistered) {
             connectionReceiverRegistered = true
@@ -330,5 +333,21 @@ class AppInitializer @Inject constructor() : ApplicationLifecycleListener {
             )
             AnalyticsTracker.track(AnalyticsEvent.JETPACK_TUNNEL_TIMEOUT, properties)
         }
+    }
+
+    private fun trackApplicationOpened() {
+        val widgetManager = AppWidgetManager.getInstance(application)
+
+        val widgets = widgetManager.installedProviders.filter { providerInfo ->
+            // We only care about WooCommerce widgets so we filter providerInfo by packageName
+            // and we also check that it has at least one widget id (at least one widget installed)
+            providerInfo.provider.packageName == application.packageName &&
+                widgetManager.getAppWidgetIds(providerInfo.provider).isNotEmpty()
+        }.map { providerInfo -> providerInfo.getWidgetName() }
+
+        AnalyticsTracker.track(
+            stat = AnalyticsEvent.APPLICATION_OPENED,
+            properties = mapOf(AnalyticsTracker.KEY_WIDGETS to widgets)
+        )
     }
 }

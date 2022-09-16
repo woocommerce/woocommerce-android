@@ -322,7 +322,10 @@ class MyStoreStatsView @JvmOverloads constructor(
     override fun onValueSelected(entry: Entry?, h: Highlight?) {
         if (entry == null) return
         // display the revenue for this entry
-        val formattedRevenue = getFormattedRevenueValue(entry.y.toDouble())
+        val formattedRevenue = currencyFormatter.getFormattedAmountZeroRounded(
+            entry.y.toDouble(),
+            revenueStatsModel?.currencyCode.orEmpty()
+        )
         revenueValue.text = formattedRevenue
 
         // display the order count for this entry
@@ -460,7 +463,10 @@ class MyStoreStatsView @JvmOverloads constructor(
         val wasEmpty = binding.chart.lineData?.let { it.dataSetCount == 0 } ?: true
 
         val grossRevenue = revenueStatsModel?.totalSales ?: 0.0
-        val revenue = getFormattedRevenueValue(grossRevenue)
+        val revenue = currencyFormatter.getFormattedAmountZeroRounded(
+            grossRevenue,
+            revenueStatsModel?.currencyCode.orEmpty()
+        )
 
         val orderCount = revenueStatsModel?.totalOrdersCount ?: 0
         val orders = orderCount.toString()
@@ -519,14 +525,6 @@ class MyStoreStatsView @JvmOverloads constructor(
         }
         isRequestingStats = false
     }
-
-    private fun getFormattedRevenueValue(revenue: Double) =
-        if (revenue == 0.0) {
-            currencyFormatter.formatCurrencyRounded(revenue, revenueStatsModel?.currencyCode.orEmpty())
-        } else {
-            currencyFormatter
-                .formatCurrency(revenue.toBigDecimal(), revenueStatsModel?.currencyCode.orEmpty())
-        }
 
     private fun getDateFromIndex(dateIndex: Int) = chartRevenueStats.keys.elementAt(dateIndex - 1)
 

@@ -1,11 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2022-09-06 11:54:03+0000
+Translation-Revision-Date: 2022-09-14 09:54:04+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: es
 -->
 <resources>
+    <string name="login_jetpack_connection_url_failed">No se han podido recuperar los datos de conexión…</string>
+    <string name="login_jetpack_verify_connection">Verificando la conexión de Jetpack…</string>
+    <string name="login_jetpack_connection_verification_failed">No se puede verificar tu conexión de Jetpack. Vuelve a intentarlo.</string>
+    <string name="login_simple_wpcom_site">En este momento, el sitio %1$s dispone de un plan de WordPress.com que no es compatible con la instalación de plugins. Mejora tu plan para usar WooCommerce.</string>
+    <string name="login_connect_jetpack_button">Conecta Jetpack a tu cuenta</string>
+    <string name="login_jetpack_not_connected">Parece que tu cuenta no está conectada a %1$s de Jetpack.</string>
     <string name="card_reader_card_readers_header">LECTORES DE TARJETAS</string>
     <string name="card_reader_payment_options_header">OPCIONES DE PAGO</string>
     <string name="card_reader_enable_pay_in_person_description">Con Pagos en persona puedes aceptar pagos para pedidos en el sitio web, en la recogida o entrega. &lt;a href=\'\'&gt;Más información&lt;/a&gt;</string>
