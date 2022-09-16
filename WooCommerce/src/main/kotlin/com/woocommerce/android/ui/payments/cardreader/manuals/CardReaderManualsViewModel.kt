@@ -40,18 +40,15 @@ class CardReaderManualsViewModel @Inject constructor(
         else -> error("Manual not available")
     }
 
-    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
-    fun onBbposManualClicked() {
+  private  fun onBbposManualClicked() {
         triggerEvent(ManualEvents.NavigateToCardReaderManualLink(AppUrls.BBPOS_MANUAL_CARD_READER))
     }
 
-    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
-    fun onM2ManualClicked() {
+    private fun onM2ManualClicked() {
         triggerEvent(ManualEvents.NavigateToCardReaderManualLink(AppUrls.M2_MANUAL_CARD_READER))
     }
 
-    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
-    fun onWisePad3ManualCardReaderClicked() {
+   private fun onWisePad3ManualCardReaderClicked() {
         triggerEvent(ManualEvents.NavigateToCardReaderManualLink(AppUrls.WISEPAD_3_MANUAL_CARD_READER))
     }
 
