@@ -1,0 +1,2 @@
+10.3:
+Fler stabilitetskorrigeringar för att göra det lättare att logga in. Tillägg av möjligheten att konfigurera Jetpack om det inte är anslutet ännu. Vi har dessutom åtgärdat en bugg som gjorde att Jetpack kunde misstas för att vara otillgängligt. Fortsätt att lämna feedback.

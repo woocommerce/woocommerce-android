@@ -1,0 +1,2 @@
+10.3:
+Più correzioni alla stabilità per aiutarti ad accedere molto più facilmente. Abbiamo aggiunto la possibilità di impostare Jetpack se non si è ancora connessi. Abbiamo inoltre corretto un bug a causa del quale Jetpack può essere erroneamente considerato non disponibile. Mantieni il tuo feedback pronto.

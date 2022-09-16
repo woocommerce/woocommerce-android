@@ -1,0 +1,2 @@
+10.3:
+Perbaikan stabilitas lanjutan untuk mempermudah login. Penambahan fitur penyiapan Jetpack jika belum terhubung. Kami juga memperbaiki bug penyebab Jetpack dianggap tidak tersedia. Terus kirimkan feedback Anda!
