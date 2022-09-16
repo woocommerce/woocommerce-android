@@ -1,2 +1,2 @@
-- [***] We added a today's stats app widget. Simply long press on the WooCommerce icon, tap Widgets, then drag the Today widget to your home screen. (https://github.com/woocommerce/woocommerce-android/pull/7393)
+This release contains a handful of minor improvements to make your experience smoother. We hope you notice the love we put into our software.
 
