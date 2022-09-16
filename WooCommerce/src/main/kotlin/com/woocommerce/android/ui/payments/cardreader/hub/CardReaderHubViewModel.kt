@@ -52,7 +52,6 @@ class CardReaderHubViewModel @Inject constructor(
     private val cashOnDeliverySettingsRepository: CashOnDeliverySettingsRepository,
     private val learnMoreUrlProvider: LearnMoreUrlProvider,
     cardReaderCountryConfigProvider: CardReaderCountryConfigProvider,
-
     private val cardReaderTracker: CardReaderTracker,
 ) : ScopedViewModel(savedState) {
     private val arguments: CardReaderHubFragmentArgs by savedState.navArgs()
