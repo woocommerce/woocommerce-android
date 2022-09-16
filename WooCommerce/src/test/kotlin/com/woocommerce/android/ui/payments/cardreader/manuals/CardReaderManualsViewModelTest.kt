@@ -4,6 +4,10 @@ import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.AppUrls
 import com.woocommerce.android.R.drawable
 import com.woocommerce.android.R.string
+import com.woocommerce.android.cardreader.connection.SpecificReader
+import com.woocommerce.android.cardreader.connection.SpecificReader.Chipper2X
+import com.woocommerce.android.cardreader.connection.SpecificReader.StripeM2
+import com.woocommerce.android.cardreader.connection.SpecificReader.WisePade3
 import com.woocommerce.android.cardreader.internal.config.CardReaderConfigForCanada
 import com.woocommerce.android.cardreader.internal.config.CardReaderConfigForSupportedCountry
 import com.woocommerce.android.cardreader.internal.config.CardReaderConfigForUSA
@@ -52,23 +56,20 @@ class CardReaderManualsViewModelTest : BaseUnitTest() {
     fun `given US store, when user click on chipper reader, then correct webview is displayed`() {
         whenever(wooStore.getStoreCountryCode(selectedSite.get())).thenReturn("US")
         whenever(cardReaderCountryConfigProvider.provideCountryConfigFor("US")).thenReturn(supportedCountryUs)
-        whenever(cardReaderManualSupportedCountryMapper.mapSupportedReadersToManualItems(any(), any())).thenReturn(
+        whenever(cardReaderManualSupportedCountryMapper.mapSupportedReadersToManualItems(any(), any())).thenAnswer {
             listOf(
                 ManualItem(
                     icon = drawable.ic_chipper_reader,
                     label = string.card_reader_bbpos_manual_card_reader,
-                    onManualClicked = { viewModel.onBbposManualClicked() }
+                    onManualClicked = (it.arguments[1] as Map<SpecificReader, () -> Unit>)[Chipper2X] as () -> Unit
                 ),
-                ManualItem(
-                    icon = drawable.ic_m2_reader,
-                    label = string.card_reader_m2_manual_card_reader,
-                    onManualClicked = { viewModel.onM2ManualClicked() }
-                )
             )
-        )
+        }
 
         initViewModel()
-        viewModel.manualState[0].onManualClicked.invoke()
+        viewModel.manualState.find {
+            it.label == string.card_reader_bbpos_manual_card_reader
+        }?.onManualClicked?.invoke()
 
         assertThat(viewModel.event.value).isEqualTo(
             CardReaderManualsViewModel.ManualEvents.NavigateToCardReaderManualLink(AppUrls.BBPOS_MANUAL_CARD_READER)
@@ -79,23 +80,21 @@ class CardReaderManualsViewModelTest : BaseUnitTest() {
     fun `given US store, when user clicks on M2 reader, then correct webview is displayed`() {
         whenever(wooStore.getStoreCountryCode(selectedSite.get())).thenReturn("US")
         whenever(cardReaderCountryConfigProvider.provideCountryConfigFor("US")).thenReturn(supportedCountryUs)
-        whenever(cardReaderManualSupportedCountryMapper.mapSupportedReadersToManualItems(any(), any())).thenReturn(
+        whenever(cardReaderManualSupportedCountryMapper.mapSupportedReadersToManualItems(any(), any())).thenAnswer{
             listOf(
-                ManualItem(
-                    icon = drawable.ic_chipper_reader,
-                    label = string.card_reader_bbpos_manual_card_reader,
-                    onManualClicked = { viewModel.onBbposManualClicked() }
-                ),
                 ManualItem(
                     icon = drawable.ic_m2_reader,
                     label = string.card_reader_m2_manual_card_reader,
-                    onManualClicked = { viewModel.onM2ManualClicked() }
-                )
+                    onManualClicked = (it.arguments[1] as Map<SpecificReader, () -> Unit>) [StripeM2] as () -> Unit
+                ),
             )
-        )
+        }
+
 
         initViewModel()
-        viewModel.manualState[1].onManualClicked.invoke()
+        viewModel.manualState.find {
+            it.label == string.card_reader_m2_manual_card_reader
+        }?.onManualClicked?.invoke()
 
         assertThat(viewModel.event.value).isEqualTo(
             CardReaderManualsViewModel.ManualEvents.NavigateToCardReaderManualLink(AppUrls.M2_MANUAL_CARD_READER)
@@ -106,17 +105,19 @@ class CardReaderManualsViewModelTest : BaseUnitTest() {
     fun `given CA store, when user clicks wisepa3, then correct webview is displayed`() {
         whenever(wooStore.getStoreCountryCode(selectedSite.get())).thenReturn("CA")
         whenever(cardReaderCountryConfigProvider.provideCountryConfigFor("CA")).thenReturn(supportedCountryCA)
-        whenever(cardReaderManualSupportedCountryMapper.mapSupportedReadersToManualItems(any(), any())).thenReturn(
+        whenever(cardReaderManualSupportedCountryMapper.mapSupportedReadersToManualItems(any(), any())).thenAnswer {
             listOf(
                 ManualItem(
                     icon = drawable.ic_wisepad3_reader,
                     label = string.card_reader_wisepad_3_manual_card_reader,
-                    onManualClicked = { viewModel.onWisePad3ManualCardReaderClicked() }
+                    onManualClicked = (it.arguments[1] as Map<SpecificReader, () -> Unit >) [WisePade3] as () -> Unit
                 )
             )
-        )
+        }
         initViewModel()
-        viewModel.manualState[0].onManualClicked.invoke()
+        viewModel.manualState.find {
+            it.label == string.card_reader_wisepad_3_manual_card_reader
+        }?.onManualClicked?.invoke()
 
         assertThat(viewModel.event.value).isEqualTo(
             CardReaderManualsViewModel.ManualEvents.NavigateToCardReaderManualLink(AppUrls.WISEPAD_3_MANUAL_CARD_READER)
