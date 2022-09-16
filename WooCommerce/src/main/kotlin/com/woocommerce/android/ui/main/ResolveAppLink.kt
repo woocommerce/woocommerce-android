@@ -29,6 +29,7 @@ class ResolveAppLink @Inject constructor(
         val (blogId, orderId) = try {
             (data.getParamOrNull("blog_id") to data.getParamOrNull("order_id"))
         } catch (e: NumberFormatException) {
+            tracker.track(AnalyticsEvent.UNIVERSAL_LINK_FAILED, properties = mapOf(KEY_URL to data.toString()))
             crashLogging.recordException(e, REPORT_CATEGORY)
             return Action.ViewStats
         }
