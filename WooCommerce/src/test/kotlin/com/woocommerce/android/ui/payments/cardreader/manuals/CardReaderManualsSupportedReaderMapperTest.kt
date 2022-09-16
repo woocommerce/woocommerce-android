@@ -8,7 +8,7 @@ import com.woocommerce.android.cardreader.internal.config.CardReaderConfigForUSA
 import com.woocommerce.android.ui.payments.cardreader.manuals.CardReaderManualsViewModel.ManualItem
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import org.assertj.core.api.Assertions
+import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Test
 
@@ -46,7 +46,7 @@ class CardReaderManualsSupportedReaderMapperTest : BaseUnitTest() {
             )
         )
 
-        Assertions.assertThat(expectedManualItems).isEqualTo(actualManualItems)
+        assertThat(expectedManualItems).isEqualTo(actualManualItems)
     }
 
     @Test
@@ -66,7 +66,7 @@ class CardReaderManualsSupportedReaderMapperTest : BaseUnitTest() {
             )
         )
 
-        Assertions.assertThat(expectedManuals).isEqualTo(actualManualItems)
+        assertThat(expectedManuals).isEqualTo(actualManualItems)
     }
 }
 
