@@ -148,12 +148,16 @@ class OrderCreateEditRepository @Inject constructor(
         }
     }
 
+    private var isAutoDraftSupported: Boolean? = null
     private suspend fun isAutoDraftSupported(): Boolean {
+        isAutoDraftSupported?.let { return it }
         val version = withContext(dispatchers.io) {
             wooCommerceStore.getSitePlugin(selectedSite.get(), WooCommerceStore.WooPlugin.WOO_CORE)?.version
                 ?: "0.0"
         }
-        return version.semverCompareTo(AUTO_DRAFT_SUPPORTED_VERSION) >= 0
+        val isSupported = version.semverCompareTo(AUTO_DRAFT_SUPPORTED_VERSION) >= 0
+        isAutoDraftSupported = isSupported
+        return isSupported
     }
 
     private suspend fun Order.Status.toDataModel(): WCOrderStatusModel {
