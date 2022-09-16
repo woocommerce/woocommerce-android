@@ -1,11 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2022-09-07 09:54:04+0000
+Translation-Revision-Date: 2022-09-13 10:54:04+0000
 Plural-Forms: nplurals=2; plural=n > 1;
 Generator: GlotPress/2.4.0-alpha
 Language: id
 -->
 <resources>
+    <string name="login_jetpack_connection_url_failed">Gagal mengambil data koneksi…</string>
+    <string name="login_jetpack_verify_connection">Memverifikasi koneksi Jetpack…</string>
+    <string name="login_jetpack_connection_verification_failed">Tidak dapat memverifikasi koneksi Jetpack Anda. Harap coba lagi.</string>
+    <string name="login_simple_wpcom_site">Situs %1$s saat ini menggunakan paket WordPress.com yang tidak mendukung instalasi plugin. Upgrade paket Anda untuk menggunakan WooCommerce.</string>
+    <string name="login_connect_jetpack_button">Hubungkan Jetpack ke akun Anda</string>
+    <string name="login_jetpack_not_connected">Sepertinya akun Anda tidak terhubung ke Jetpack %1$s</string>
     <string name="card_reader_card_readers_header">PEMBACA KARTU</string>
     <string name="card_reader_payment_options_header">OPSI PEMBAYARAN</string>
     <string name="card_reader_enable_pay_in_person_description">Dengan opsi checkout Pembayaran Langsung, Anda bisa menerima pembayaran untuk pesanan online, saat barang diambil atau diantarkan. &lt;a href=\'\'&gt;Baca selengkapnya&lt;/a&gt;</string>
@@ -1823,7 +1829,7 @@ Language: id
     <string name="login_jetpack_what_is_description">Jetpack merupakan plugin WordPress gratis yang menghubungkan toko Anda dengan peralatan yang diperlukan agar dapat memberikan pengalaman seluler terbaik, mencakup pemberitahuan push dan statistik</string>
     <string name="login_jetpack_what_is">Apa itu Jetpack?</string>
     <string name="login_view_connected_stores">Lihat toko terhubung</string>
-    <string name="login_wpcom_account_mismatch">Sepertinya %1$s tidak terhubung ke akun WordPress.com lainnya.</string>
+    <string name="login_wpcom_account_mismatch">Sepertinya %1$s terhubung ke akun WordPress.com lain.</string>
     <string name="keep_editing">Lanjutkan menyunting</string>
     <string name="notification_wpcom_username_needed">Silakan login dengan nama pengguna dan kata sandi Anda.</string>
     <string name="error_user_username_instead_of_email">Silakan login menggunakan nama pengguna WordPress.com sebagai ganti alamat email Anda.</string>

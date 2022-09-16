@@ -1,11 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2022-09-06 15:54:04+0000
+Translation-Revision-Date: 2022-09-13 14:54:06+0000
 Plural-Forms: nplurals=2; plural=n > 1;
 Generator: GlotPress/2.4.0-alpha
 Language: fr
 -->
 <resources>
+    <string name="login_jetpack_connection_url_failed">La récupération de vos données de connexion a échoué…</string>
+    <string name="login_jetpack_verify_connection">Vérification de la connexion Jetpack en cours</string>
+    <string name="login_jetpack_connection_verification_failed">Impossible de vérifier votre connexion Jetpack. Veuillez réessayer.</string>
+    <string name="login_simple_wpcom_site">Le site %1$s dispose actuellement d’un plan WordPress.com qui ne prend pas en charge l’installation d’extensions. Veuillez mettre à niveau votre plan pour utiliser WooCommerce.</string>
+    <string name="login_connect_jetpack_button">Connecter Jetpack à votre compte</string>
+    <string name="login_jetpack_not_connected">Il semblerait que votre compte ne soit pas connecté à l’extension Jetpack de %1$s</string>
     <string name="card_reader_card_readers_header">LECTEURS DE CARTE</string>
     <string name="card_reader_payment_options_header">OPTIONS DE PAIEMENT</string>
     <string name="card_reader_enable_pay_in_person_description">L’option « Payer en personne » à la validation de la commande vous permet d’accepter les paiements pour les commandes passées sur votre site au retrait ou à la livraison. &lt;a href=\'\'&gt;Lire la suite&lt;/a&gt;</string>
