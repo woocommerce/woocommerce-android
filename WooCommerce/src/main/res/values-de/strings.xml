@@ -1,11 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2022-09-06 13:54:04+0000
+Translation-Revision-Date: 2022-09-13 14:54:03+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: de
 -->
 <resources>
+    <string name="login_jetpack_connection_url_failed">Das Abrufen von Verbindungsdaten ist fehlgeschlagen …</string>
+    <string name="login_jetpack_verify_connection">Die Jetpack-Verbindung wird überprüft …</string>
+    <string name="login_jetpack_connection_verification_failed">Deine Jetpack-Verbindung kann nicht überprüft werden. Bitte versuche es erneut.</string>
+    <string name="login_simple_wpcom_site">Für die Website %1$s gilt derzeit ein WordPress.com-Tarif, in dem das Installieren von Plugins nicht möglich ist. Bitte führe ein Tarif-Upgrade durch, um WooCommerce nutzen zu können.</string>
+    <string name="login_connect_jetpack_button">Verbinde Jetpack mit deinem Konto</string>
+    <string name="login_jetpack_not_connected">Offenbar ist dein Konto nicht mit Jetpack von %1$s verbunden</string>
     <string name="card_reader_card_readers_header">KARTENLESEGERÄTE</string>
     <string name="card_reader_payment_options_header">ZAHLUNGSOPTIONEN</string>
     <string name="card_reader_enable_pay_in_person_description">Mit der Bezahloption „Persönliche Zahlung“ kannst du bei Abholung oder Zustellung von Bestellungen auf deiner Website Zahlungen annehmen. &lt;a href=\'\'&gt;Weitere Informationen&lt;/a&gt;</string>
@@ -1823,7 +1829,7 @@ Language: de
     <string name="login_jetpack_what_is_description">Jetpack ist ein kostenloses WordPress-Plugin, das deinen Shop mit den Tools verbindet, die du für ein bestmögliches mobiles Erlebnis benötigst, einschließlich Push-Benachrichtigungen und Statistiken.</string>
     <string name="login_jetpack_what_is">Was ist Jetpack?</string>
     <string name="login_view_connected_stores">Verbundene Shops anzeigen</string>
-    <string name="login_wpcom_account_mismatch">%1$s ist offenbar mit einem anderen WordPress.com-Konto verbunden.</string>
+    <string name="login_wpcom_account_mismatch">Offenbar ist %1$s mit einem anderen WordPress.com-Konto verbunden.</string>
     <string name="keep_editing">Weiter bearbeiten</string>
     <string name="notification_wpcom_username_needed">Bitte melde dich mit deinem Benutzernamen und deinem Passwort an.</string>
     <string name="error_user_username_instead_of_email">Bitte melde dich mit deinem WordPress.com-Benutzernamen anstelle deiner E-Mail-Adresse an.</string>

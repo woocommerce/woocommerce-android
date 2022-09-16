@@ -1,0 +1,2 @@
+10.3:
+Daha kolay oturum açmanıza yardımcı olacak daha fazla tutarlılık düzeltmesi yapıldı. Henüz bağlı değilse Jetpack kurma özelliği eklendi. Ve Jetpack'i kullanılamıyor olarak gösteren yanlış bir hata düzeltili. Lütfen geri bildirimlerinizi devam edin!

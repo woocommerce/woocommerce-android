@@ -1,4 +1,0 @@
-10.2 :
-Cette version n’offre aucune nouvelle fonctionnalité, mais nous y avons mis tout notre cœur ! Nous avons ajouté une nouvelle page de centre d’aide qui facilite la connexion à l’application. Vous pouvez également activer ou désactiver l’option permettant d’accepter les paiements par carte ou en espèce au retrait ou à la livraison.
-Récemment, nous avons apporté quelques modifications pour améliorer les performances. Continuez de nous donner votre avis ! Nous les lisons tous !
-
