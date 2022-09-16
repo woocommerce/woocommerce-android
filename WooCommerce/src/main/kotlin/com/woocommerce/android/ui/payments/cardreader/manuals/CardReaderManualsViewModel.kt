@@ -1,6 +1,5 @@
 package com.woocommerce.android.ui.payments.cardreader.manuals
 
-import androidx.annotation.VisibleForTesting
 import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.AppUrls
 import com.woocommerce.android.cardreader.connection.SpecificReader.Chipper2X
@@ -40,7 +39,7 @@ class CardReaderManualsViewModel @Inject constructor(
         else -> error("Manual not available")
     }
 
-  private  fun onBbposManualClicked() {
+    private fun onBbposManualClicked() {
         triggerEvent(ManualEvents.NavigateToCardReaderManualLink(AppUrls.BBPOS_MANUAL_CARD_READER))
     }
 
@@ -48,7 +47,7 @@ class CardReaderManualsViewModel @Inject constructor(
         triggerEvent(ManualEvents.NavigateToCardReaderManualLink(AppUrls.M2_MANUAL_CARD_READER))
     }
 
-   private fun onWisePad3ManualCardReaderClicked() {
+    private fun onWisePad3ManualCardReaderClicked() {
         triggerEvent(ManualEvents.NavigateToCardReaderManualLink(AppUrls.WISEPAD_3_MANUAL_CARD_READER))
     }
 

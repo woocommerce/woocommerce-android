@@ -80,16 +80,15 @@ class CardReaderManualsViewModelTest : BaseUnitTest() {
     fun `given US store, when user clicks on M2 reader, then correct webview is displayed`() {
         whenever(wooStore.getStoreCountryCode(selectedSite.get())).thenReturn("US")
         whenever(cardReaderCountryConfigProvider.provideCountryConfigFor("US")).thenReturn(supportedCountryUs)
-        whenever(cardReaderManualSupportedCountryMapper.mapSupportedReadersToManualItems(any(), any())).thenAnswer{
+        whenever(cardReaderManualSupportedCountryMapper.mapSupportedReadersToManualItems(any(), any())).thenAnswer {
             listOf(
                 ManualItem(
                     icon = drawable.ic_m2_reader,
                     label = string.card_reader_m2_manual_card_reader,
-                    onManualClicked = (it.arguments[1] as Map<SpecificReader, () -> Unit>) [StripeM2] as () -> Unit
+                    onManualClicked = (it.arguments[1] as Map<SpecificReader, () -> Unit>)[StripeM2] as () -> Unit
                 ),
             )
         }
-
 
         initViewModel()
         viewModel.manualState.find {
@@ -110,7 +109,7 @@ class CardReaderManualsViewModelTest : BaseUnitTest() {
                 ManualItem(
                     icon = drawable.ic_wisepad3_reader,
                     label = string.card_reader_wisepad_3_manual_card_reader,
-                    onManualClicked = (it.arguments[1] as Map<SpecificReader, () -> Unit >) [WisePade3] as () -> Unit
+                    onManualClicked = (it.arguments[1] as Map<SpecificReader, () -> Unit>)[WisePade3] as () -> Unit
                 )
             )
         }
