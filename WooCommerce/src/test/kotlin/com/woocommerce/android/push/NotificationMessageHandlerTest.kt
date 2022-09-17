@@ -600,5 +600,4 @@ class NotificationMessageHandlerTest {
 
         verify(topPerformersStore).invalidateTopPerformers(any())
     }
-
 }
