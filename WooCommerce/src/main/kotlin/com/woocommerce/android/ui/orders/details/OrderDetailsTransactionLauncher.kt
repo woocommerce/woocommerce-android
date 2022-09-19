@@ -16,6 +16,7 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
+import org.wordpress.android.util.AppLog
 import javax.inject.Inject
 
 @ViewModelScoped
@@ -82,6 +83,7 @@ class OrderDetailsTransactionLauncher @Inject constructor(
                 waitingTimeTracker.start()
             }
             Lifecycle.Event.ON_DESTROY -> {
+                AppLog.w(AppLog.T.API, "Aborting. Not met conditions: ${conditionsToSatisfy.value}")
                 performanceTransactionId?.let {
                     performanceTransactionRepository.finishTransaction(it, TransactionStatus.ABORTED)
                 }

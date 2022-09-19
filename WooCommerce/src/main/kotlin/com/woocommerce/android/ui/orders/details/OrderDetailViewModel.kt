@@ -642,27 +642,22 @@ class OrderDetailViewModel @Inject constructor(
     }
 
     private fun fetchShipmentTrackingAsync() = async {
-        pluginsInformation[WooCommerceStore.WooPlugin.WOO_SHIPMENT_TRACKING.pluginName]
-            ?.takeIf { plugin ->
-                !plugin.isInstalled || !plugin.isActive
-            }?.let {
-                // Fetch data only when the plugin is installed and active
-                return@async
-            }
-        val result = orderDetailRepository.fetchOrderShipmentTrackingList(navArgs.orderId)
-        appPrefs.setTrackingExtensionAvailable(result == SUCCESS)
+        val plugin = pluginsInformation[WooCommerceStore.WooPlugin.WOO_SHIPMENT_TRACKING.pluginName]
+
+        if (plugin == null || plugin.isOperational) {
+            val result = orderDetailRepository.fetchOrderShipmentTrackingList(navArgs.orderId)
+            appPrefs.setTrackingExtensionAvailable(result == SUCCESS)
+        }
+
         orderDetailsTransactionLauncher.onShipmentTrackingFetched()
     }
 
     private fun fetchOrderShippingLabelsAsync() = async {
-        pluginsInformation[WooCommerceStore.WooPlugin.WOO_SERVICES.pluginName]
-            ?.takeIf { plugin ->
-                !plugin.isInstalled || !plugin.isActive
-            }?.let {
-                // Fetch data only when the plugin is installed and active
-                return@async
-            }
-        orderDetailRepository.fetchOrderShippingLabels(navArgs.orderId)
+        val plugin = pluginsInformation[WooCommerceStore.WooPlugin.WOO_SERVICES.pluginName]
+
+        if (plugin == null || plugin.isOperational) {
+            orderDetailRepository.fetchOrderShippingLabels(navArgs.orderId)
+        }
         orderDetailsTransactionLauncher.onShippingLabelFetched()
     }
 
