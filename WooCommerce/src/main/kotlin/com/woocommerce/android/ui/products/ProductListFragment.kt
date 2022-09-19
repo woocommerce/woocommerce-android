@@ -94,8 +94,6 @@ class ProductListFragment :
 
         view.doOnPreDraw { startPostponedEnterTransition() }
 
-        uiMessageResolver.anchorViewId = binding.addProductButton.id
-
         setupObservers(viewModel)
         setupResultHandlers()
         ViewGroupCompat.setTransitionGroup(binding.productsRefreshLayout, true)
@@ -457,8 +455,14 @@ class ProductListFragment :
 
     private fun showAddProductButton(show: Boolean) {
         when (show) {
-            true -> binding.addProductButton.show()
-            else -> binding.addProductButton.hide()
+            true -> {
+                uiMessageResolver.anchorViewId = binding.addProductButton.id
+                binding.addProductButton.show()
+            }
+            else -> {
+                uiMessageResolver.anchorViewId = null
+                binding.addProductButton.hide()
+            }
         }
     }
 
