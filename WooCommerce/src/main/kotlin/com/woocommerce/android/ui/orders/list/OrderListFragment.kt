@@ -179,6 +179,8 @@ class OrderListFragment :
 
         view.doOnPreDraw { startPostponedEnterTransition() }
 
+        uiMessageResolver.anchorViewId = binding.createOrderButton.id
+
         binding.orderListView.init(currencyFormatter = currencyFormatter, orderListListener = this)
         ViewGroupCompat.setTransitionGroup(binding.orderRefreshLayout, true)
         binding.orderRefreshLayout.apply {
