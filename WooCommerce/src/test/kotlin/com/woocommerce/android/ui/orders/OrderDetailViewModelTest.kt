@@ -1520,7 +1520,7 @@ class OrderDetailViewModelTest : BaseUnitTest() {
         viewModel.start()
 
         verify(orderDetailRepository).fetchOrderShippingLabels(any())
-        verify(orderDetailsTransactionLauncher).onShippingLabelFetched()
+        verify(orderDetailsTransactionLauncher).onShippingLabelFetchingCompleted()
     }
 
     @Test
@@ -1539,7 +1539,7 @@ class OrderDetailViewModelTest : BaseUnitTest() {
         viewModel.start()
 
         verify(orderDetailRepository, never()).fetchOrderShippingLabels(any())
-        verify(orderDetailsTransactionLauncher).onShippingLabelFetched()
+        verify(orderDetailsTransactionLauncher).onShippingLabelFetchingCompleted()
     }
 
     @Test
@@ -1558,7 +1558,7 @@ class OrderDetailViewModelTest : BaseUnitTest() {
         viewModel.start()
 
         verify(orderDetailRepository, never()).fetchOrderShippingLabels(any())
-        verify(orderDetailsTransactionLauncher).onShippingLabelFetched()
+        verify(orderDetailsTransactionLauncher).onShippingLabelFetchingCompleted()
     }
 
     @Test
@@ -1577,7 +1577,7 @@ class OrderDetailViewModelTest : BaseUnitTest() {
         viewModel.start()
 
         verify(orderDetailRepository).fetchOrderShipmentTrackingList(any())
-        verify(orderDetailsTransactionLauncher).onShipmentTrackingFetched()
+        verify(orderDetailsTransactionLauncher).onShipmentTrackingFetchingCompleted()
     }
 
     @Test
@@ -1596,7 +1596,7 @@ class OrderDetailViewModelTest : BaseUnitTest() {
         viewModel.start()
 
         verify(orderDetailRepository, never()).fetchOrderShipmentTrackingList(any())
-        verify(orderDetailsTransactionLauncher).onShipmentTrackingFetched()
+        verify(orderDetailsTransactionLauncher).onShipmentTrackingFetchingCompleted()
     }
 
     @Test
@@ -1615,7 +1615,7 @@ class OrderDetailViewModelTest : BaseUnitTest() {
         viewModel.start()
 
         verify(orderDetailRepository, never()).fetchOrderShipmentTrackingList(any())
-        verify(orderDetailsTransactionLauncher).onShipmentTrackingFetched()
+        verify(orderDetailsTransactionLauncher).onShipmentTrackingFetchingCompleted()
     }
 
     @Test

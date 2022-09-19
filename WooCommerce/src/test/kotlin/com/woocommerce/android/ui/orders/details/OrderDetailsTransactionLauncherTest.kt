@@ -55,10 +55,10 @@ class OrderDetailsTransactionLauncherTest : BaseUnitTest() {
         sut.onStateChanged(mock(), Lifecycle.Event.ON_CREATE)
 
         sut.onOrderFetched()
-        sut.onShippingLabelFetched()
+        sut.onShippingLabelFetchingCompleted()
         sut.onNotesFetched()
         sut.onRefundsFetched()
-        sut.onShipmentTrackingFetched()
+        sut.onShipmentTrackingFetchingCompleted()
         sut.onPackageCreationEligibleFetched()
 
         verify(performanceTransactionRepository).finishTransaction(transactionId, TransactionStatus.SUCCESSFUL)
@@ -70,10 +70,10 @@ class OrderDetailsTransactionLauncherTest : BaseUnitTest() {
         sut.onStateChanged(mock(), Lifecycle.Event.ON_DESTROY)
 
         sut.onOrderFetched()
-        sut.onShippingLabelFetched()
+        sut.onShippingLabelFetchingCompleted()
         sut.onNotesFetched()
         sut.onRefundsFetched()
-        sut.onShipmentTrackingFetched()
+        sut.onShipmentTrackingFetchingCompleted()
         sut.onPackageCreationEligibleFetched()
 
         verify(performanceTransactionRepository, never()).finishTransaction(transactionId, TransactionStatus.SUCCESSFUL)

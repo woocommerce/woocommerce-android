@@ -649,7 +649,7 @@ class OrderDetailViewModel @Inject constructor(
             appPrefs.setTrackingExtensionAvailable(result == SUCCESS)
         }
 
-        orderDetailsTransactionLauncher.onShipmentTrackingFetched()
+        orderDetailsTransactionLauncher.onShipmentTrackingFetchingCompleted()
     }
 
     private fun fetchOrderShippingLabelsAsync() = async {
@@ -658,7 +658,7 @@ class OrderDetailViewModel @Inject constructor(
         if (plugin == null || plugin.isOperational) {
             orderDetailRepository.fetchOrderShippingLabels(navArgs.orderId)
         }
-        orderDetailsTransactionLauncher.onShippingLabelFetched()
+        orderDetailsTransactionLauncher.onShippingLabelFetchingCompleted()
     }
 
     private fun loadOrderShippingLabels(): ListInfo<ShippingLabel> {
