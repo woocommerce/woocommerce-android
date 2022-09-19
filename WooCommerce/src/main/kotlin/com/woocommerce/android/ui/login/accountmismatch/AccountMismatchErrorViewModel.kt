@@ -48,7 +48,7 @@ class AccountMismatchErrorViewModel @Inject constructor(
 
     private val navArgs: AccountMismatchErrorFragmentArgs by savedStateHandle.navArgs()
     private val userAccount = accountRepository.getUserAccount()
-    private val siteUrl = navArgs.siteUrl ?: appPrefsWrapper.getLoginSiteAddress()!!
+    private val siteUrl = navArgs.siteUrl
     private val site: Deferred<SiteModel> = async(start = LAZY) {
         accountMismatchRepository.getSiteByUrl(siteUrl) ?: error("The site is not cached")
     }
