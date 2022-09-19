@@ -162,7 +162,7 @@ class OrderCreateEditRepository @Inject constructor(
 
     private suspend fun Order.Status.toDataModel(): WCOrderStatusModel {
         val key = this.value
-        return when{
+        return when {
             key == AUTO_DRAFT && isAutoDraftSupported() -> WCOrderStatusModel(AUTO_DRAFT)
             // If AUTO_DRAFT is not supported, use PENDING state
             key == AUTO_DRAFT && isAutoDraftSupported().not() -> WCOrderStatusModel(CoreOrderStatus.PENDING.value)
