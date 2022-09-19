@@ -42,10 +42,9 @@ interface UIMessageResolver {
             snackbarRoot,
             snackbarRoot.context.getString(stringResId, *stringArgs),
             snackbarRoot.context.getString(R.string.install),
-            actionListener
-        ).apply {
-            anchorViewId?.let { setAnchorView(it) }
-        }
+            actionListener,
+            anchorViewId
+        )
     }
 
     /**
@@ -66,10 +65,9 @@ interface UIMessageResolver {
             snackbarRoot,
             String.format(message, *stringArgs),
             actionText,
-            actionListener
-        ).apply {
-            anchorViewId?.let { setAnchorView(it) }
-        }
+            actionListener,
+            anchorViewId
+        )
     }
 
     /**
@@ -90,10 +88,9 @@ interface UIMessageResolver {
             snackbarRoot,
             snackbarRoot.context.getString(message, *stringArgs),
             actionText,
-            actionListener
-        ).apply {
-            anchorViewId?.let { setAnchorView(it) }
-        }
+            actionListener,
+            anchorViewId
+        )
     }
 
     /**
@@ -112,10 +109,9 @@ interface UIMessageResolver {
             snackbarRoot,
             snackbarRoot.context.getString(stringResId, *stringArgs),
             snackbarRoot.context.getString(R.string.undo),
-            actionListener
-        ).apply {
-            anchorViewId?.let { setAnchorView(it) }
-        }
+            actionListener,
+            anchorViewId
+        )
     }
 
     /**
@@ -134,10 +130,9 @@ interface UIMessageResolver {
             snackbarRoot,
             String.format(message, *stringArgs),
             snackbarRoot.context.getString(R.string.undo),
-            actionListener
-        ).apply {
-            anchorViewId?.let { setAnchorView(it) }
-        }
+            actionListener,
+            anchorViewId
+        )
     }
 
     /**
@@ -156,10 +151,9 @@ interface UIMessageResolver {
             snackbarRoot,
             snackbarRoot.context.getString(stringResId, *stringArgs),
             snackbarRoot.context.getString(R.string.retry),
-            actionListener
-        ).apply {
-            anchorViewId?.let { setAnchorView(it) }
-        }
+            actionListener,
+            anchorViewId
+        )
     }
 
     /**
@@ -176,10 +170,9 @@ interface UIMessageResolver {
             snackbarRoot,
             message,
             snackbarRoot.context.getString(R.string.retry),
-            actionListener
-        ).apply {
-            anchorViewId?.let { setAnchorView(it) }
-        }
+            actionListener,
+            anchorViewId
+        )
     }
 
     /**
@@ -237,12 +230,24 @@ private fun getIndefiniteSnackbarWithAction(
     view: View,
     msg: String,
     actionString: String,
-    actionListener: View.OnClickListener
+    actionListener: View.OnClickListener,
+    anchorViewId: Int?
 ) = Snackbar.make(view, msg, BaseTransientBottomBar.LENGTH_INDEFINITE).setAction(actionString, actionListener)
+    .apply {
+        anchorViewId?.let {
+            setAnchorView(it)
+        }
+    }
 
 private fun getSnackbarWithAction(
     view: View,
     msg: String,
     actionString: String,
-    actionListener: View.OnClickListener
+    actionListener: View.OnClickListener,
+    anchorViewId: Int?
 ) = Snackbar.make(view, msg, BaseTransientBottomBar.LENGTH_LONG).setAction(actionString, actionListener)
+    .apply {
+        anchorViewId?.let {
+            setAnchorView(it)
+        }
+    }
