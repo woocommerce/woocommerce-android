@@ -376,9 +376,9 @@ class OrderCreateEditViewModel @Inject constructor(
                 if (mode is Mode.Edit) {
                     _orderDraft.drop(1)
                 } else {
-                    // When we are on the order creation flow we need to maintain the order status as auto-draft.
-                    // This way we the draft created order needed to sync price modifiers, don't send notifications or
-                    // sync its state in other devices
+                    // When we are in the order creation flow, we need to keep the order status as auto-draft.
+                    // In this way, when the draft of the created order needs to synchronize the price modifiers,
+                    // the application does not send notifications or synchronize its status on other devices.
                     _orderDraft.map { order -> order.copy(status = orderCreationStatus) }
                 }
             syncStrategy.syncOrderChanges(changes, retryOrderDraftUpdateTrigger)
