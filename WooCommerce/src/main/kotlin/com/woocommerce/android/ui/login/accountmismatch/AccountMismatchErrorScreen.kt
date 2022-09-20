@@ -131,7 +131,7 @@ fun SiteCredentialsScreen(
                 .weight(1f)
                 .fillMaxWidth()
         ) {
-            Text(text = stringResource(id = R.string.enter_credentials_for_site))
+            Text(text = stringResource(id = R.string.enter_credentials_for_site, viewState.siteUrl))
             WCOutlinedTextField(
                 value = viewState.username,
                 onValueChange = viewState.onUsernameChanged,

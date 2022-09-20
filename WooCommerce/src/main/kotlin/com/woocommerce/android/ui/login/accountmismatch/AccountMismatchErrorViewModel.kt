@@ -12,6 +12,8 @@ import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.ui.login.AccountRepository
+import com.woocommerce.android.ui.login.accountmismatch.AccountMismatchRepository.JetpackAccountConnectionStatus.JetpackConnectedToAccount
+import com.woocommerce.android.ui.login.accountmismatch.AccountMismatchRepository.JetpackAccountConnectionStatus.JetpackNotConnected
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
@@ -60,7 +62,7 @@ class AccountMismatchErrorViewModel @Inject constructor(
     val viewState: LiveData<ViewState> = step.map { step ->
         when (step) {
             Step.MainContent -> prepareMainState()
-            is Step.SiteCredentials -> prepareSiteCredentialsState(step.username, step.password)
+            is Step.SiteCredentials -> prepareSiteCredentialsState(step)
             is Step.JetpackConnection -> prepareJetpackConnectionState(step.connectionUrl)
             Step.FetchJetpackEmail -> ViewState.FetchingJetpackEmailViewState
             Step.FetchingJetpackEmailFailed -> ViewState.JetpackEmailErrorState {
@@ -113,17 +115,34 @@ class AccountMismatchErrorViewModel @Inject constructor(
         inlineButtonAction = { helpFindingEmail() }
     )
 
-    private fun prepareSiteCredentialsState(username: String, password: String) = ViewState.SiteCredentialsViewState(
-        username = username,
-        password = password,
-        errorMessage = null,
+    private fun prepareSiteCredentialsState(stepData: Step.SiteCredentials) = ViewState.SiteCredentialsViewState(
+        siteUrl = siteUrl,
+        username = stepData.username,
+        password = stepData.password,
+        errorMessage = stepData.currentErrorMessage,
         onUsernameChanged = {
-            step.value = Step.SiteCredentials(username = it, password = password)
+            step.value = Step.SiteCredentials(username = it, password = stepData.password)
         },
         onPasswordChanged = {
-            step.value = Step.SiteCredentials(username = username, password = it)
+            step.value = Step.SiteCredentials(username = stepData.username, password = it)
         },
-        onContinueClick = {},
+        onContinueClick = {
+            launch {
+                _loadingDialogMessage.value = R.string.logging_in
+                accountMismatchRepository.checkJetpackConnection(siteUrl, stepData.username, stepData.password).fold(
+                    onSuccess = {
+                        _loadingDialogMessage.value = null
+                        when (it) {
+                            is JetpackConnectedToAccount -> TODO()
+                            JetpackNotConnected -> startJetpackConnection()
+                        }
+                    },
+                    onFailure = {
+                        _loadingDialogMessage.value = null
+                    }
+                )
+            }
+        },
         onLoginWithAnotherAccountClick = {}
     )
 
@@ -233,6 +252,7 @@ class AccountMismatchErrorViewModel @Inject constructor(
         ) : ViewState
 
         data class SiteCredentialsViewState(
+            val siteUrl: String,
             val username: String,
             val password: String,
             @StringRes val errorMessage: Int?,
@@ -273,7 +293,11 @@ class AccountMismatchErrorViewModel @Inject constructor(
         object MainContent : Step
 
         @Parcelize
-        data class SiteCredentials(val username: String = "", val password: String = "") : Step
+        data class SiteCredentials(
+            val username: String = "",
+            val password: String = "",
+            @StringRes val currentErrorMessage: Int? = null
+        ) : Step
 
         @Parcelize
         data class JetpackConnection(val connectionUrl: String) : Step
