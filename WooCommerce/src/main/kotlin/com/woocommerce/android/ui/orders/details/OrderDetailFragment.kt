@@ -7,10 +7,12 @@ import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
 import androidx.core.content.ContextCompat
+import androidx.core.view.MenuProvider
 import androidx.core.view.ViewCompat
 import androidx.core.view.isVisible
 import androidx.fragment.app.viewModels
 import androidx.hilt.navigation.fragment.hiltNavGraphViewModels
+import androidx.lifecycle.Lifecycle
 import androidx.navigation.fragment.findNavController
 import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.transition.MaterialContainerTransform
@@ -73,7 +75,10 @@ import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
 @AndroidEntryPoint
-class OrderDetailFragment : BaseFragment(R.layout.fragment_order_detail), OrderProductActionListener {
+class OrderDetailFragment :
+    BaseFragment(R.layout.fragment_order_detail),
+    OrderProductActionListener,
+    MenuProvider {
     companion object {
         val TAG: String = OrderDetailFragment::class.java.simpleName
     }
@@ -135,7 +140,7 @@ class OrderDetailFragment : BaseFragment(R.layout.fragment_order_detail), OrderP
 
         _binding = FragmentOrderDetailBinding.bind(view)
 
-        setHasOptionsMenu(true)
+        requireActivity().addMenuProvider(this, viewLifecycleOwner, Lifecycle.State.RESUMED)
         setupObservers(viewModel)
         setupOrderEditingObservers(orderEditingViewModel)
         setupResultHandlers(viewModel)
@@ -162,28 +167,26 @@ class OrderDetailFragment : BaseFragment(R.layout.fragment_order_detail), OrderP
         _binding = null
     }
 
-    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
-        super.onCreateOptionsMenu(menu, inflater)
+    override fun onCreateMenu(menu: Menu, inflater: MenuInflater) {
         inflater.inflate(R.menu.menu_order_detail, menu)
         val menuEditOrder = menu.findItem(R.id.menu_edit_order)
         menuEditOrder.isVisible = FeatureFlag.UNIFIED_ORDER_EDITING.isEnabled()
     }
 
-    override fun onPrepareOptionsMenu(menu: Menu) {
-        super.onPrepareOptionsMenu(menu)
+    override fun onPrepareMenu(menu: Menu) {
         menu.findItem(R.id.menu_edit_order)?.let {
             it.isEnabled = viewModel.hasOrder()
         }
     }
 
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+    override fun onMenuItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
             R.id.menu_edit_order -> {
                 viewModel.onEditClicked()
                 true
             }
             else -> {
-                super.onOptionsItemSelected(item)
+                false
             }
         }
     }
