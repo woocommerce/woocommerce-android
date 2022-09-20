@@ -11,6 +11,7 @@ import org.wordpress.android.fluxc.Dispatcher
 import org.wordpress.android.fluxc.generated.AuthenticationActionBuilder
 import org.wordpress.android.fluxc.generated.SiteActionBuilder
 import org.wordpress.android.fluxc.model.SiteModel
+import org.wordpress.android.fluxc.store.AccountStore.OnAuthenticationChanged
 import org.wordpress.android.fluxc.store.AccountStore.OnDiscoveryResponse
 import org.wordpress.android.fluxc.store.JetpackStore
 import org.wordpress.android.fluxc.store.SiteStore
@@ -19,7 +20,6 @@ import org.wordpress.android.fluxc.store.SiteStore.RefreshSitesXMLRPCPayload
 import org.wordpress.android.login.util.SiteUtils
 import javax.inject.Inject
 import kotlin.coroutines.resume
-
 
 class AccountMismatchRepository @Inject constructor(
     private val jetpackStore: JetpackStore,
@@ -72,8 +72,8 @@ class AccountMismatchRepository @Inject constructor(
         WooLog.d(WooLog.T.LOGIN, "Checking Jetpack Connection status for site $siteUrl")
 
         return discoverXMlRPCAddress(siteUrl)
-            .map { xmlrpcEndpoint ->
-                fetchXMLRPCSite(xmlrpcEndpoint, username, password)
+            .mapCatching { xmlrpcEndpoint ->
+                fetchXMLRPCSite(xmlrpcEndpoint, username, password).getOrThrow()
             }.mapCatching {
                 withContext(Dispatchers.IO) {
                     val xmlrpcSite = SiteUtils.getXMLRPCSiteByUrl(siteStore, siteUrl)
@@ -135,6 +135,20 @@ class AccountMismatchRepository @Inject constructor(
     private suspend fun fetchXMLRPCSite(xmlrpcEndpoint: String, username: String, password: String): Result<Unit> =
         suspendCancellableCoroutine { cont ->
             val listener = object : Any() {
+                @Suppress("unused")
+                @Subscribe(threadMode = MAIN)
+                fun onAuthenticationChanged(event: OnAuthenticationChanged) {
+                    dispatcher.unregister(this)
+                    if (event.isError) {
+                        WooLog.w(
+                            tag = WooLog.T.LOGIN,
+                            message = "Authenticating to XMLRPC site $xmlrpcEndpoint failed, " +
+                                "error: ${event.error.message}"
+                        )
+                        cont.resume(Result.failure(OnChangedException(event.error, event.error.message)))
+                    }
+                }
+
                 @Suppress("unused")
                 @Subscribe(threadMode = MAIN)
                 fun onSiteChanged(event: OnSiteChanged) {

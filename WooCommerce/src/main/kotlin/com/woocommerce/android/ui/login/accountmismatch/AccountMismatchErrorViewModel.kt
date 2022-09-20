@@ -11,12 +11,15 @@ import com.woocommerce.android.OnChangedException
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
+import com.woocommerce.android.model.UiString.UiStringRes
+import com.woocommerce.android.model.UiString.UiStringText
 import com.woocommerce.android.ui.login.AccountRepository
 import com.woocommerce.android.ui.login.accountmismatch.AccountMismatchRepository.JetpackAccountConnectionStatus.JetpackConnectedToAccount
 import com.woocommerce.android.ui.login.accountmismatch.AccountMismatchRepository.JetpackAccountConnectionStatus.JetpackNotConnected
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowUiStringSnackbar
 import com.woocommerce.android.viewmodel.ResourceProvider
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.getStateFlow
@@ -28,10 +31,20 @@ import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.parcelize.Parcelize
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.network.UserAgent
+import org.wordpress.android.fluxc.network.xmlrpc.XMLRPCRequest.XmlRpcErrorType.AUTH_REQUIRED
+import org.wordpress.android.fluxc.store.AccountStore.AuthenticationError
+import org.wordpress.android.fluxc.store.AccountStore.AuthenticationErrorType.AUTHORIZATION_REQUIRED
+import org.wordpress.android.fluxc.store.AccountStore.AuthenticationErrorType.HTTP_AUTH_ERROR
+import org.wordpress.android.fluxc.store.AccountStore.AuthenticationErrorType.INCORRECT_USERNAME_OR_PASSWORD
+import org.wordpress.android.fluxc.store.AccountStore.AuthenticationErrorType.INVALID_OTP
+import org.wordpress.android.fluxc.store.AccountStore.AuthenticationErrorType.INVALID_TOKEN
+import org.wordpress.android.fluxc.store.AccountStore.AuthenticationErrorType.NEEDS_2FA
+import org.wordpress.android.fluxc.store.AccountStore.AuthenticationErrorType.NOT_AUTHENTICATED
 import javax.inject.Inject
 
 @HiltViewModel
@@ -137,8 +150,21 @@ class AccountMismatchErrorViewModel @Inject constructor(
                             JetpackNotConnected -> startJetpackConnection()
                         }
                     },
-                    onFailure = {
+                    onFailure = { exception ->
                         _loadingDialogMessage.value = null
+                        if (exception is OnChangedException && exception.error is AuthenticationError) {
+                            val errorMessage = exception.error.toErrorMessage()
+                            if (errorMessage == null) {
+                                val message = exception.error.message?.takeIf { it.isNotEmpty() }
+                                    ?.let { UiStringText(it) } ?: UiStringRes(R.string.error_generic)
+                                triggerEvent(ShowUiStringSnackbar(message))
+                            }
+                            step.update { step ->
+                                (step as Step.SiteCredentials).copy(currentErrorMessage = errorMessage)
+                            }
+                        } else {
+                            triggerEvent(ShowSnackbar(R.string.error_generic))
+                        }
                     }
                 )
             }
@@ -237,6 +263,20 @@ class AccountMismatchErrorViewModel @Inject constructor(
 
     fun onHelpButtonClick() {
         triggerEvent(NavigateToHelpScreen)
+    }
+
+    private fun AuthenticationError.toErrorMessage() = when (type) {
+        INCORRECT_USERNAME_OR_PASSWORD, NOT_AUTHENTICATED, HTTP_AUTH_ERROR ->
+            if (type == HTTP_AUTH_ERROR && xmlRpcErrorType == AUTH_REQUIRED) {
+                R.string.login_error_xml_rpc_auth_error_communicating
+            } else {
+                R.string.username_or_password_incorrect
+            }
+        INVALID_OTP, INVALID_TOKEN, AUTHORIZATION_REQUIRED, NEEDS_2FA ->
+            R.string.login_2fa_not_supported_self_hosted_site
+        else -> {
+            null
+        }
     }
 
     sealed interface ViewState {
