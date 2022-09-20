@@ -5,15 +5,21 @@ import android.view.Menu
 import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
+import androidx.core.view.MenuProvider
 import androidx.core.view.isVisible
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.Lifecycle
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.woocommerce.android.AppUrls
 import com.woocommerce.android.NavGraphMainDirections
 import com.woocommerce.android.R
 import com.woocommerce.android.databinding.FragmentEditShippingLabelPaymentBinding
-import com.woocommerce.android.extensions.*
+import com.woocommerce.android.extensions.handleNotice
+import com.woocommerce.android.extensions.navigateBackWithNotice
+import com.woocommerce.android.extensions.navigateBackWithResult
+import com.woocommerce.android.extensions.navigateSafely
+import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.common.wpcomwebview.WPComWebViewFragment
@@ -38,7 +44,8 @@ class EditShippingLabelPaymentFragment :
     BaseFragment(
         R.layout.fragment_edit_shipping_label_payment
     ),
-    BackPressListener {
+    BackPressListener,
+    MenuProvider {
     companion object {
         const val EDIT_PAYMENTS_CLOSED = "edit_payments_closed"
         const val EDIT_PAYMENTS_RESULT = "edit_payments_result"
@@ -57,13 +64,7 @@ class EditShippingLabelPaymentFragment :
 
     override fun getFragmentTitle() = getString(R.string.orderdetail_shipping_label_item_payment)
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setHasOptionsMenu(true)
-    }
-
-    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
-        super.onCreateOptionsMenu(menu, inflater)
+    override fun onCreateMenu(menu: Menu, inflater: MenuInflater) {
         inflater.inflate(R.menu.menu_done, menu)
         doneMenuItem = menu.findItem(R.id.menu_done)
         doneMenuItem.isVisible = viewModel.viewStateData.liveData.value?.canSave ?: false
@@ -71,6 +72,9 @@ class EditShippingLabelPaymentFragment :
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        requireActivity().addMenuProvider(this, viewLifecycleOwner, Lifecycle.State.RESUMED)
+
         val binding = FragmentEditShippingLabelPaymentBinding.bind(view)
         binding.paymentMethodsList.apply {
             layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
@@ -89,13 +93,13 @@ class EditShippingLabelPaymentFragment :
         setupResultHandlers()
     }
 
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+    override fun onMenuItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
             R.id.menu_done -> {
                 viewModel.onDoneButtonClicked()
                 true
             }
-            else -> super.onOptionsItemSelected(item)
+            else -> false
         }
     }
 
