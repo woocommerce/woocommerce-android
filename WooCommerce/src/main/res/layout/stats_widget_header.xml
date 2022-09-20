@@ -48,6 +48,6 @@
         android:layout_height="wrap_content"
         android:layout_alignStart="@+id/widget_title"
         android:layout_below="@+id/widget_title"
-        tools:text="as of 10:00 PM" />
+        tools:text="As of 10:00 PM" />
 
 </RelativeLayout>

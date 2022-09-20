@@ -1,7 +1,11 @@
 *** PLEASE FOLLOW THIS FORMAT: [<priority indicator, more stars = higher priority>] <description> [<PR URL>]
+10.5
+-----
+
+
 10.4
 -----
-- [***] We added a today's stats app widget. Simply long press on the WooCommerce icon, tap Widgets, then drag the Today widget to your home screen. 
+- [***] We added a today's stats app widget. Simply long press on the WooCommerce icon, tap Widgets, then drag the Today widget to your home screen. (https://github.com/woocommerce/woocommerce-android/pull/7393)
 
 10.3
 -----

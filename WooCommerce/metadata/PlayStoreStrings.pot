@@ -11,18 +11,17 @@ msgstr ""
 "Project-Id-Version: Release Notes & Play Store Descriptions\n"
 
 #. translators: Release notes for this version to be displayed in the Play Store. Limit to 500 characters including spaces and commas!
+msgctxt "release_note_104"
+msgid ""
+"10.4:\n"
+"This release contains a handful of minor improvements to make your experience smoother. We hope you notice the love we put into our software.\n"
+"\n"
+msgstr ""
+
 msgctxt "release_note_103"
 msgid ""
 "10.3:\n"
 "More stability fixes to help you log in much easier. Added the ability to set up Jetpack if it's not connected yet. And we fixed a bug where Jetpack can be incorrectly assumed as unavailable. Please keep your feedback coming!\n"
-msgstr ""
-
-msgctxt "release_note_102"
-msgid ""
-"10.2:\n"
-"Even though this release doesn’t have any new features, we still put a lot of love into it! We’ve added a new Help Center page that makes it easier for you to login to the app. You can also enable or disable the option to take card or cash payments on collection or delivery.\n"
-"Lastly, we’ve made some tweaks to improve performance. Please keep sending your feedback! We read every one of them!\n"
-"\n"
 msgstr ""
 
 #. translators: Short description of the app to be displayed in the Play Store. Limit to 80 characters including spaces and commas!
