@@ -8,8 +8,10 @@ import android.view.MenuItem.OnActionExpandListener
 import android.view.View
 import android.widget.ImageView
 import androidx.appcompat.widget.SearchView
+import androidx.core.view.MenuProvider
 import androidx.fragment.app.viewModels
 import androidx.hilt.navigation.fragment.hiltNavGraphViewModels
+import androidx.lifecycle.Lifecycle
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.woocommerce.android.R
@@ -38,7 +40,8 @@ class OrderCreateEditProductSelectionFragment :
     BaseFragment(R.layout.fragment_order_create_edit_product_selection),
     OnLoadMoreListener,
     SearchView.OnQueryTextListener,
-    OnActionExpandListener {
+    OnActionExpandListener,
+    MenuProvider {
     private val sharedViewModel by hiltNavGraphViewModels<OrderCreateEditViewModel>(R.id.nav_graph_order_creations)
     private val productListViewModel by viewModels<OrderCreateEditProductSelectionViewModel>()
 
@@ -54,7 +57,7 @@ class OrderCreateEditProductSelectionFragment :
             productsList.layoutManager = LinearLayoutManager(requireActivity())
             setupObserversWith(this)
         }
-        setHasOptionsMenu(true)
+        requireActivity().addMenuProvider(this, viewLifecycleOwner, Lifecycle.State.RESUMED)
     }
 
     override fun onDestroyView() {
@@ -144,7 +147,7 @@ class OrderCreateEditProductSelectionFragment :
     override fun getFragmentTitle() = getString(R.string.order_creation_add_products)
 
     // region Search configuration and events
-    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+    override fun onCreateMenu(menu: Menu, inflater: MenuInflater) {
         inflater.inflate(R.menu.menu_product_selection_fragment, menu)
 
         searchMenuItem = menu.findItem(R.id.menu_search)
@@ -152,18 +155,15 @@ class OrderCreateEditProductSelectionFragment :
         searchView?.queryHint = getString(R.string.product_search_hint)
         searchView?.findViewById<ImageView>(androidx.appcompat.R.id.search_close_btn)
             ?.setOnClickListener { onClearSearchButtonClicked() }
-
-        super.onCreateOptionsMenu(menu, inflater)
     }
 
-    override fun onPrepareOptionsMenu(menu: Menu) {
+    override fun onPrepareMenu(menu: Menu) {
         searchMenuItem
             ?.takeIf { it.isActionViewExpanded != productListViewModel.isSearchActive }
             ?.restoreSearchMenuItemState()
-        super.onPrepareOptionsMenu(menu)
     }
 
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+    override fun onMenuItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
             R.id.menu_search -> {
                 registerSearchListeners()
