@@ -75,7 +75,6 @@ class OrderFulfillFragment :
 
         val binding = FragmentOrderFulfillBinding.bind(view)
 
-        setHasOptionsMenu(true)
         setupObservers(binding)
         setupResultHandlers(viewModel)
     }
