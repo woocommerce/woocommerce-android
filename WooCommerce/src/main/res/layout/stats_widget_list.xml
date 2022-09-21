@@ -7,16 +7,13 @@
 
     <include layout="@layout/stats_widget_header" />
 
-    <GridView
+    <ListView
         android:id="@+id/widget_content"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:divider="@null"
-        android:dividerHeight="0dp"
-        android:numColumns="3"
         android:paddingTop="@dimen/margin_medium"
-        android:paddingBottom="@dimen/margin_medium"
-        android:stretchMode="columnWidth" />
+        android:paddingBottom="@dimen/margin_medium" />
 
     <include layout="@layout/stats_widget_error" />
 </LinearLayout>
