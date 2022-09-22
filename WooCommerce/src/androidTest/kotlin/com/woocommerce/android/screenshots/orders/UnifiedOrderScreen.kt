@@ -12,11 +12,12 @@ import androidx.test.espresso.matcher.ViewMatchers.withId
 import androidx.test.espresso.matcher.ViewMatchers.withText
 import com.woocommerce.android.R
 import com.woocommerce.android.screenshots.util.Screen
-import org.hamcrest.core.AllOf
+import org.hamcrest.core.AllOf.allOf
 
-class UnifiedOrderScreen : Screen {
+class UnifiedOrderScreen : Screen(ORDER_CREATION) {
     companion object {
         const val CREATE_BUTTON = R.id.menu_create
+        const val CUSTOMER_SECTION = R.id.customer_section
         const val DONE_BUTTON = R.id.menu_done
         const val EDIT_STATUS_BUTTON = R.id.orderStatus_editButton
         const val FEE_BUTTON = R.id.fee_button
@@ -26,8 +27,6 @@ class UnifiedOrderScreen : Screen {
         const val TOOLBAR = R.id.collapsing_toolbar
         const val UPDATE_STATUS_LIST_VIEW = R.id.select_dialog_listview
     }
-
-    constructor() : super(ORDER_CREATION)
 
     fun createOrder(): SingleOrderScreen {
         clickOn(CREATE_BUTTON)
@@ -45,7 +44,7 @@ class UnifiedOrderScreen : Screen {
     }
 
     fun clickAddCustomerDetails(): CustomerDetailsScreen {
-        waitForElementToBeDisplayed(CREATE_BUTTON)
+        scrollTo(CUSTOMER_SECTION)
         Espresso.onView(withText("Add customer details"))
             .perform(click())
         return CustomerDetailsScreen()
@@ -53,7 +52,6 @@ class UnifiedOrderScreen : Screen {
 
     fun addShipping(): UnifiedOrderScreen {
         clickOn(SHIPPING_BUTTON)
-        waitForElementToBeDisplayed(DONE_BUTTON)
         Espresso.onView((withText("0")))
             .perform(ViewActions.replaceText("3.30"))
         clickOn(DONE_BUTTON)
@@ -62,12 +60,11 @@ class UnifiedOrderScreen : Screen {
 
     fun addFee(): UnifiedOrderScreen {
         clickOn(FEE_BUTTON)
-        waitForElementToBeDisplayed(DONE_BUTTON)
 
         // Clearing first before re-adding because of the mock file, this is prepopulated at this point
-        Espresso.onView((AllOf.allOf(withText("2.25"), withEffectiveVisibility(ViewMatchers.Visibility.VISIBLE))))
+        Espresso.onView((allOf(withText("2.25"), withEffectiveVisibility(ViewMatchers.Visibility.VISIBLE))))
             .perform(ViewActions.clearText())
-        Espresso.onView((AllOf.allOf(withText("0"), withEffectiveVisibility(ViewMatchers.Visibility.VISIBLE))))
+        Espresso.onView((allOf(withText("0"), withEffectiveVisibility(ViewMatchers.Visibility.VISIBLE))))
             .perform(ViewActions.replaceText("2.25"))
 
         clickOn(DONE_BUTTON)
