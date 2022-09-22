@@ -45,6 +45,7 @@ class UnifiedOrderScreen : Screen {
     }
 
     fun clickAddCustomerDetails(): CustomerDetailsScreen {
+        waitForElementToBeDisplayed(CREATE_BUTTON)
         Espresso.onView(withText("Add customer details"))
             .perform(click())
         return CustomerDetailsScreen()
@@ -52,16 +53,16 @@ class UnifiedOrderScreen : Screen {
 
     fun addShipping(): UnifiedOrderScreen {
         clickOn(SHIPPING_BUTTON)
-
+        waitForElementToBeDisplayed(DONE_BUTTON)
         Espresso.onView((withText("0")))
             .perform(ViewActions.replaceText("3.30"))
-
         clickOn(DONE_BUTTON)
         return this
     }
 
     fun addFee(): UnifiedOrderScreen {
         clickOn(FEE_BUTTON)
+        waitForElementToBeDisplayed(DONE_BUTTON)
 
         // Clearing first before re-adding because of the mock file, this is prepopulated at this point
         Espresso.onView((AllOf.allOf(withText("2.25"), withEffectiveVisibility(ViewMatchers.Visibility.VISIBLE))))
