@@ -52,7 +52,6 @@ class SingleOrderScreen : Screen {
         assertIdAndTextDisplayed(AMOUNT_FEE, order.feeAmount)
         assertIdAndTextDisplayed(AMOUNT_TOTAL, order.total)
 
-
         return this
     }
 

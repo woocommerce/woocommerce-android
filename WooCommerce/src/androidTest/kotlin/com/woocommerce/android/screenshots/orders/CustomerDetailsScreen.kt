@@ -21,19 +21,22 @@ import org.hamcrest.core.AllOf.allOf
 class CustomerDetailsScreen : Screen(TOOLBAR) {
     companion object {
         const val ADDRESS_SWITCH = R.id.addressSwitch
-        const val EDIT_TEXT_FIELD = R.id.edit_text
+        const val EDIT_TEXT = R.id.edit_text
         const val TOOLBAR = R.id.toolbar
         const val FIRST_NAME = "Mira"
         const val HINT_TEXT = "First name"
     }
 
     fun addCustomerDetails(): UnifiedOrderScreen {
-        updateFirstName((allOf(withId(EDIT_TEXT_FIELD), withHint(HINT_TEXT), withEffectiveVisibility(ViewMatchers.Visibility.VISIBLE))))
-        Espresso.onView((allOf(withId(EDIT_TEXT_FIELD), withText(FIRST_NAME))))
+        addFirstName((allOf(withId(EDIT_TEXT), withHint(HINT_TEXT), withEffectiveVisibility(ViewMatchers.Visibility.VISIBLE))))
+
+        Espresso.onView((allOf(withId(EDIT_TEXT), withText(FIRST_NAME))))
             .perform(closeSoftKeyboard())
         Espresso.onView((allOf(withId(ADDRESS_SWITCH))))
             .perform(scrollTo(), click())
-        updateFirstName((allOf(withId(EDIT_TEXT_FIELD), withHint(HINT_TEXT), withText(""))))
+
+        addFirstName((allOf(withId(EDIT_TEXT), withHint(HINT_TEXT), withText(""))))
+
         Espresso.onView(withText("DONE"))
             .check(ViewAssertions.matches(isDisplayed()))
             .perform(click())
@@ -41,7 +44,7 @@ class CustomerDetailsScreen : Screen(TOOLBAR) {
         return UnifiedOrderScreen()
     }
 
-    private fun updateFirstName (matchers: Matcher<View>) {
+    private fun addFirstName(matchers: Matcher<View>) {
         Espresso.onView(matchers)
             .perform(scrollTo(), click())
             .perform(replaceText(FIRST_NAME))
