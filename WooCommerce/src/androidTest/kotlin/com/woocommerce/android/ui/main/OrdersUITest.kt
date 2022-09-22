@@ -54,10 +54,15 @@ class OrdersUITest : TestBase() {
                 .createFABTap()
                 .newOrderTap()
                 .assertNewOrderScreen()
+                .updateOrderStatus("Processing")
                 .addProductTap()
                 .assertOrderSelectProductScreen()
                 .selectProduct(orderData.productName)
                 .assertNewOrderScreenWithProduct(orderData.productName)
+                .clickAddCustomerDetails()
+                .addCustomerDetails()
+                .addShipping()
+                .addFee()
                 .createOrder()
                 .assertSingleOrderScreenWithProduct(orderData)
                 .goBackToOrdersScreen()
@@ -66,8 +71,11 @@ class OrdersUITest : TestBase() {
 
     private fun mapJSONToOrder(orderJSON: JSONObject): OrderData {
         return OrderData(
+            customer = orderJSON.getJSONObject("billing").getString("first_name"),
+            feeRaw = orderJSON.getJSONArray("fee_lines").getJSONObject(0).getString("total"),
             id = orderJSON.getInt("id"),
             productName = orderJSON.getJSONArray("line_items").getJSONObject(0).getString("name"),
+            shippingRaw = orderJSON.getString("shipping_total"),
             statusRaw = orderJSON.getString("status"),
             totalRaw = orderJSON.getString("total")
         )
