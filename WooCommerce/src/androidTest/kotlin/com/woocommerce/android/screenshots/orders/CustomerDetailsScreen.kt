@@ -28,14 +28,14 @@ class CustomerDetailsScreen : Screen(TOOLBAR) {
     }
 
     fun addCustomerDetails(): UnifiedOrderScreen {
-        addFirstName((allOf(withId(EDIT_TEXT), withHint(HINT_TEXT), withEffectiveVisibility(ViewMatchers.Visibility.VISIBLE))))
+        addFirstName((allOf(withHint(HINT_TEXT), withEffectiveVisibility(ViewMatchers.Visibility.VISIBLE))))
 
         Espresso.onView((allOf(withId(EDIT_TEXT), withText(FIRST_NAME))))
             .perform(closeSoftKeyboard())
         Espresso.onView((allOf(withId(ADDRESS_SWITCH))))
             .perform(scrollTo(), click())
 
-        addFirstName((allOf(withId(EDIT_TEXT), withHint(HINT_TEXT), withText(""))))
+        addFirstName((allOf(withHint(HINT_TEXT), withText(""))))
 
         Espresso.onView(withText("DONE"))
             .check(ViewAssertions.matches(isDisplayed()))
