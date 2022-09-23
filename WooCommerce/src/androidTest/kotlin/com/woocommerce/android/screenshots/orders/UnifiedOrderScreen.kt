@@ -45,7 +45,7 @@ class UnifiedOrderScreen : Screen(ORDER_CREATION) {
     }
 
     fun clickAddCustomerDetails(): CustomerDetailsScreen {
-        waitForElementToBeDisplayed(CUSTOMER_SECTION)
+        waitForElementToBeDisplayed(PAYMENT_SECTION)
         scrollTo(CUSTOMER_SECTION)
         Espresso.onView(withText("Add customer details"))
             .perform(click())
