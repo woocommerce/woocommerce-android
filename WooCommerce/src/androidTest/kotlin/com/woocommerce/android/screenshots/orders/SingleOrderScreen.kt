@@ -7,6 +7,7 @@ import androidx.test.espresso.matcher.ViewMatchers.isDisplayed
 import androidx.test.espresso.matcher.ViewMatchers.withId
 import androidx.test.espresso.matcher.ViewMatchers.withText
 import com.woocommerce.android.R
+import com.woocommerce.android.screenshots.util.NestedScrollViewExtension
 import com.woocommerce.android.screenshots.util.OrderData
 import com.woocommerce.android.screenshots.util.Screen
 import org.hamcrest.Matchers
@@ -50,8 +51,10 @@ class SingleOrderScreen : Screen {
         assertIdAndTextDisplayed(ORDER_STATUS_CUSTOMER, order.customerName)
         assertIdAndTextDisplayed(AMOUNT_SHIPPING, order.shippingAmount)
         assertIdAndTextDisplayed(AMOUNT_FEE, order.feeAmount)
-        // TODO add scroll that works to get to this view
-//        assertIdAndTextDisplayed(AMOUNT_TOTAL, order.total)
+
+        Espresso.onView(withId(AMOUNT_TOTAL))
+            .perform(NestedScrollViewExtension())
+        assertIdAndTextDisplayed(AMOUNT_TOTAL, order.total)
 
         return this
     }

@@ -28,7 +28,12 @@ class CustomerDetailsScreen : Screen(TOOLBAR) {
     }
 
     fun addCustomerDetails(): UnifiedOrderScreen {
-        addFirstName((allOf(withHint(HINT_TEXT), withText(""), withEffectiveVisibility(ViewMatchers.Visibility.VISIBLE))))
+        waitForElementToBeDisplayed(TOOLBAR)
+        addFirstName((allOf(
+            withId(EDIT_TEXT),
+            withHint(HINT_TEXT),
+            withText(""),
+            withEffectiveVisibility(ViewMatchers.Visibility.VISIBLE))))
 
         Espresso.onView((allOf(withId(EDIT_TEXT), withText(FIRST_NAME))))
             .perform(closeSoftKeyboard())
