@@ -1,7 +1,8 @@
 *** PLEASE FOLLOW THIS FORMAT: [<priority indicator, more stars = higher priority>] <description> [<PR URL>]
 10.5
 -----
-[**] Fixed a bug that caused new products to default to one per order [https://github.com/woocommerce/woocommerce-android/pull/7450]
+- [**] Fixed a bug that caused new products to default to one per order [https://github.com/woocommerce/woocommerce-android/pull/7450]
+- [*] We redesigned the today's stats widget [https://github.com/woocommerce/woocommerce-android/pull/7442]
 
 10.4
 -----
