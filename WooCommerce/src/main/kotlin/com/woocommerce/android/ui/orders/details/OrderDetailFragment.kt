@@ -346,8 +346,7 @@ class OrderDetailFragment :
         binding.orderDetailCustomerInfo.updateCustomerInfo(
             order = order,
             isVirtualOrder = viewModel.hasVirtualProductsOnly(),
-            // Customer Info is read-only in UOE
-            isReadOnly = FeatureFlag.UNIFIED_ORDER_EDITING.isEnabled()
+            isReadOnly = false
         )
         binding.orderDetailPaymentInfo.updatePaymentInfo(
             order = order,
