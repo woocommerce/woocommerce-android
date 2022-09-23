@@ -1,6 +1,5 @@
 package com.woocommerce.android.ui.orders.list
 
-import android.content.Context
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
@@ -199,12 +198,6 @@ class OrderListFragment :
         binding.orderFiltersCard.setClickListener { viewModel.onFiltersButtonTapped() }
         initCreateOrderFAB(binding.createOrderButton)
         initSwipeBehaviour()
-        val isLandscape = DisplayUtils.isLandscape(context)
-        if (!isLandscape) {
-            lifecycleScope.launch {
-                viewModel.updateBannerState()
-            }
-        }
     }
 
     private fun initSwipeBehaviour() {
@@ -235,27 +228,17 @@ class OrderListFragment :
     }
 
     private fun bannerDisplayViewLogic(
-        context: Context,
-        shouldDisplayBanner: Boolean,
         bannerState: BannerState
     ) {
-        if (!shouldDisplayBanner) {
+        if (!bannerState.shouldDisplayBanner) {
             binding.upsellCardReaderComposeView.upsellCardReaderBannerView.visibility = View.GONE
+            displaySimplePaymentsWIPCard(true)
         } else {
             if (viewModel.shouldShowUpsellCardReaderDismissDialog.value == true) {
                 applyBannerDismissDialogComposeUI()
             }
-            val isLandscape = DisplayUtils.isLandscape(context)
-            /**
-             * We are hiding the upsell card reader banner in the landscape mode since it becomes impossible for
-             * the merchants to scroll the order list. More info here: pdfdoF-12d-p2
-             */
-            if (!isLandscape) {
-                applyBannerComposeUI(bannerState)
-            }
-            if (viewModel.shouldDisplaySimplePaymentsWIPCard() || isLandscape) {
-                displaySimplePaymentsWIPCard(true)
-            }
+            applyBannerComposeUI(bannerState)
+            displaySimplePaymentsWIPCard(false)
         }
     }
 
@@ -356,22 +339,12 @@ class OrderListFragment :
         }
 
         viewModel.pagedListData.observe(viewLifecycleOwner) {
-            viewModel.bannerState.value?.let { state ->
-                bannerDisplayViewLogic(
-                    binding.root.context,
-                    it.size > 0,
-                    state
-                )
-            }
+            updateBannerState(it.size)
             updatePagedListData(it)
         }
 
         viewModel.bannerState.observe(viewLifecycleOwner) { state ->
-            bannerDisplayViewLogic(
-                binding.root.context,
-                true,
-                state
-            )
+            bannerDisplayViewLogic(state)
         }
 
         viewModel.event.observe(viewLifecycleOwner) { event ->
@@ -453,6 +426,13 @@ class OrderListFragment :
             new.filterCount.takeIfNotEqualTo(old?.filterCount) { filterCount ->
                 binding.orderFiltersCard.updateFilterSelection(filterCount)
             }
+        }
+    }
+
+    private fun updateBannerState(orderListSize: Int) {
+        val isLandScape = DisplayUtils.isLandscape(context)
+        lifecycleScope.launch {
+            viewModel.updateBannerState(isLandScape, orderListSize)
         }
     }
 

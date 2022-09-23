@@ -188,11 +188,16 @@ class OrderListViewModel @Inject constructor(
         }
     }
 
-    suspend fun updateBannerState() {
+    private suspend fun shouldDisplayBanner(isLandScape: Boolean, orderListSize: Int): Boolean {
+        return bannerDisplayEligibilityChecker.isEligibleForInPersonPayments() &&
+            canShowCardReaderUpsellBanner(System.currentTimeMillis()) &&
+            !isLandScape &&
+            orderListSize > 0
+    }
+
+    suspend fun updateBannerState(isLandScape: Boolean, orderListSize: Int) {
         bannerState.value = BannerState(
-            shouldDisplayBanner =
-            bannerDisplayEligibilityChecker.isEligibleForInPersonPayments() &&
-                canShowCardReaderUpsellBanner(System.currentTimeMillis()),
+            shouldDisplayBanner = shouldDisplayBanner(isLandScape, orderListSize),
             onPrimaryActionClicked = {
                 onCtaClicked(AnalyticsTracker.KEY_BANNER_ORDER_LIST)
             },
