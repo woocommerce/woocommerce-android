@@ -24,26 +24,32 @@ class CustomerDetailsScreen : Screen(TOOLBAR) {
     }
 
     fun addCustomerDetails(): UnifiedOrderScreen {
-        addFirstName(allOf(
-            ViewMatchers.withId(EDIT_TEXT),
-            ViewMatchers.withHint(HINT_TEXT),
-            ViewMatchers.withEffectiveVisibility(ViewMatchers.Visibility.VISIBLE)
-        ))
+        addFirstName(
+            allOf(
+                ViewMatchers.withId(EDIT_TEXT),
+                ViewMatchers.withHint(HINT_TEXT),
+                ViewMatchers.withEffectiveVisibility(ViewMatchers.Visibility.VISIBLE)
+            )
+        )
 
-        Espresso.onView(allOf(
-            ViewMatchers.withId(EDIT_TEXT),
-            ViewMatchers.withText(FIRST_NAME),
-            ViewMatchers.withEffectiveVisibility(ViewMatchers.Visibility.VISIBLE)
-        ))
+        Espresso.onView(
+            allOf(
+                ViewMatchers.withId(EDIT_TEXT),
+                ViewMatchers.withText(FIRST_NAME),
+                ViewMatchers.withEffectiveVisibility(ViewMatchers.Visibility.VISIBLE)
+            )
+        )
             .perform(closeSoftKeyboard())
         Espresso.onView(allOf(ViewMatchers.withId(ADDRESS_SWITCH)))
             .perform(scrollTo(), click())
 
-        addFirstName(allOf(
-            ViewMatchers.withId(EDIT_TEXT),
-            ViewMatchers.withHint(HINT_TEXT),
-            ViewMatchers.withText("")
-        ))
+        addFirstName(
+            allOf(
+                ViewMatchers.withId(EDIT_TEXT),
+                ViewMatchers.withHint(HINT_TEXT),
+                ViewMatchers.withText("")
+            )
+        )
 
         Espresso.onView(ViewMatchers.withText("DONE"))
             .check(ViewAssertions.matches(isDisplayed()))
