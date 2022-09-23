@@ -9,10 +9,6 @@ import androidx.test.espresso.action.ViewActions.scrollTo
 import androidx.test.espresso.assertion.ViewAssertions
 import androidx.test.espresso.matcher.ViewMatchers
 import androidx.test.espresso.matcher.ViewMatchers.isDisplayed
-import androidx.test.espresso.matcher.ViewMatchers.withEffectiveVisibility
-import androidx.test.espresso.matcher.ViewMatchers.withHint
-import androidx.test.espresso.matcher.ViewMatchers.withId
-import androidx.test.espresso.matcher.ViewMatchers.withText
 import com.woocommerce.android.R
 import com.woocommerce.android.screenshots.util.Screen
 import org.hamcrest.Matcher
@@ -28,21 +24,28 @@ class CustomerDetailsScreen : Screen(TOOLBAR) {
     }
 
     fun addCustomerDetails(): UnifiedOrderScreen {
-        waitForElementToBeDisplayed(TOOLBAR)
-        addFirstName((allOf(
-            withId(EDIT_TEXT),
-            withHint(HINT_TEXT),
-            withText(""),
-            withEffectiveVisibility(ViewMatchers.Visibility.VISIBLE))))
+        addFirstName(allOf(
+            ViewMatchers.withId(EDIT_TEXT),
+            ViewMatchers.withHint(HINT_TEXT),
+            ViewMatchers.withEffectiveVisibility(ViewMatchers.Visibility.VISIBLE)
+        ))
 
-        Espresso.onView((allOf(withId(EDIT_TEXT), withText(FIRST_NAME))))
+        Espresso.onView(allOf(
+            ViewMatchers.withId(EDIT_TEXT),
+            ViewMatchers.withText(FIRST_NAME),
+            ViewMatchers.withEffectiveVisibility(ViewMatchers.Visibility.VISIBLE)
+        ))
             .perform(closeSoftKeyboard())
-        Espresso.onView((allOf(withId(ADDRESS_SWITCH))))
+        Espresso.onView(allOf(ViewMatchers.withId(ADDRESS_SWITCH)))
             .perform(scrollTo(), click())
 
-        addFirstName((allOf(withHint(HINT_TEXT), withText(""))))
+        addFirstName(allOf(
+            ViewMatchers.withId(EDIT_TEXT),
+            ViewMatchers.withHint(HINT_TEXT),
+            ViewMatchers.withText("")
+        ))
 
-        Espresso.onView(withText("DONE"))
+        Espresso.onView(ViewMatchers.withText("DONE"))
             .check(ViewAssertions.matches(isDisplayed()))
             .perform(click())
 
