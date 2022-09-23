@@ -59,7 +59,7 @@ class OrdersUITest : TestBase() {
                 .assertOrderSelectProductScreen()
                 .selectProduct(orderData.productName)
                 .clickAddCustomerDetails()
-                .addCustomerDetails()
+                .addCustomerDetails("Mira")
                 .addShipping()
                 .addFee()
                 .createOrder()

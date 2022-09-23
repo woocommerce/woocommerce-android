@@ -1,6 +1,5 @@
 package com.woocommerce.android.screenshots.orders
 
-import android.view.View
 import androidx.test.espresso.Espresso
 import androidx.test.espresso.action.ViewActions.click
 import androidx.test.espresso.action.ViewActions.closeSoftKeyboard
@@ -11,55 +10,71 @@ import androidx.test.espresso.matcher.ViewMatchers
 import androidx.test.espresso.matcher.ViewMatchers.isDisplayed
 import com.woocommerce.android.R
 import com.woocommerce.android.screenshots.util.Screen
-import org.hamcrest.Matcher
+import org.hamcrest.Matchers.not
 import org.hamcrest.core.AllOf.allOf
 
 class CustomerDetailsScreen : Screen(TOOLBAR) {
     companion object {
         const val ADDRESS_SWITCH = R.id.addressSwitch
-        const val EDIT_TEXT = R.id.edit_text
+        const val FIRST_NAME_INPUT = R.id.first_name
         const val TOOLBAR = R.id.toolbar
-        const val FIRST_NAME = "Mira"
-        const val HINT_TEXT = "First name"
+        const val FIRST_NAME_INPUT_HINT_TEXT = "First name"
     }
 
-    fun addCustomerDetails(): UnifiedOrderScreen {
-        addFirstName(
-            allOf(
-                ViewMatchers.withId(EDIT_TEXT),
-                ViewMatchers.withHint(HINT_TEXT),
-                ViewMatchers.isCompletelyDisplayed()
-            )
-        )
+    fun addCustomerDetails(customerFirstName: String): UnifiedOrderScreen {
+        // Temporary for debugging
+        Thread.sleep(5000)
 
+        // Enter First Name
         Espresso.onView(
             allOf(
-                ViewMatchers.withId(EDIT_TEXT),
-                ViewMatchers.withText(FIRST_NAME),
+                ViewMatchers.isDescendantOfA(ViewMatchers.withId(FIRST_NAME_INPUT)),
+                ViewMatchers.withHint(FIRST_NAME_INPUT_HINT_TEXT),
+                ViewMatchers.isCompletelyDisplayed()
             )
-        )
-            .perform(closeSoftKeyboard())
-        Espresso.onView(allOf(ViewMatchers.withId(ADDRESS_SWITCH)))
-            .perform(scrollTo(), click())
+        ).perform(scrollTo(), click(), replaceText(customerFirstName), closeSoftKeyboard())
 
-        addFirstName(
+        // Temporary for debugging
+        Thread.sleep(2000)
+
+        // Enable the switch to enter shipping details
+        Espresso.onView(allOf(ViewMatchers.withId(ADDRESS_SWITCH)))
+            .perform(scrollTo())
+
+        // Temporary for debugging
+        Thread.sleep(2000)
+
+        try {
+            // Enable the switch to enter shipping details
+            Espresso.onView(
+                allOf(
+                    ViewMatchers.withId(ADDRESS_SWITCH),
+                    ViewMatchers.isNotChecked()
+                )
+            ).perform(click())
+        } catch (e: java.lang.Exception) { // ignore the failure
+            println(e)
+        }
+
+        // Temporary for debugging
+        Thread.sleep(2000)
+
+        // Enter First Name used for Shipping
+        Espresso.onView(
             allOf(
-                ViewMatchers.withId(EDIT_TEXT),
-                ViewMatchers.withHint(HINT_TEXT),
-                ViewMatchers.withText("")
+                ViewMatchers.isDescendantOfA(ViewMatchers.withId(FIRST_NAME_INPUT)),
+                ViewMatchers.withHint(FIRST_NAME_INPUT_HINT_TEXT),
+                ViewMatchers.withText(not(customerFirstName))
             )
-        )
+        ).perform(scrollTo(), click(), replaceText(customerFirstName + "Shipping"), closeSoftKeyboard())
+
+        // Temporary for debugging
+        Thread.sleep(2000)
 
         Espresso.onView(ViewMatchers.withText("DONE"))
             .check(ViewAssertions.matches(isDisplayed()))
             .perform(click())
 
         return UnifiedOrderScreen()
-    }
-
-    private fun addFirstName(matchers: Matcher<View>) {
-        Espresso.onView(matchers)
-            .perform(scrollTo(), click())
-            .perform(replaceText(FIRST_NAME))
     }
 }
