@@ -28,7 +28,7 @@ class CustomerDetailsScreen : Screen(TOOLBAR) {
             allOf(
                 ViewMatchers.withId(EDIT_TEXT),
                 ViewMatchers.withHint(HINT_TEXT),
-                ViewMatchers.withEffectiveVisibility(ViewMatchers.Visibility.VISIBLE)
+                ViewMatchers.isCompletelyDisplayed()
             )
         )
 
@@ -36,7 +36,6 @@ class CustomerDetailsScreen : Screen(TOOLBAR) {
             allOf(
                 ViewMatchers.withId(EDIT_TEXT),
                 ViewMatchers.withText(FIRST_NAME),
-                ViewMatchers.withEffectiveVisibility(ViewMatchers.Visibility.VISIBLE)
             )
         )
             .perform(closeSoftKeyboard())
