@@ -58,7 +58,6 @@ class OrdersUITest : TestBase() {
                 .addProductTap()
                 .assertOrderSelectProductScreen()
                 .selectProduct(orderData.productName)
-                .assertNewOrderScreenWithProduct(orderData.productName)
                 .clickAddCustomerDetails()
                 .addCustomerDetails()
                 .addShipping()

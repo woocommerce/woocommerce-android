@@ -22,6 +22,7 @@ class UnifiedOrderScreen : Screen(ORDER_CREATION) {
         const val EDIT_STATUS_BUTTON = R.id.orderStatus_editButton
         const val FEE_BUTTON = R.id.fee_button
         const val ORDER_CREATION = R.id.order_creation_root
+        const val PAYMENT_SECTION = R.id.payment_section
         const val PRODUCTS_SECTION = R.id.products_section
         const val SHIPPING_BUTTON = R.id.shipping_button
         const val TOOLBAR = R.id.collapsing_toolbar
@@ -44,6 +45,7 @@ class UnifiedOrderScreen : Screen(ORDER_CREATION) {
     }
 
     fun clickAddCustomerDetails(): CustomerDetailsScreen {
+        waitForElementToBeDisplayed(CUSTOMER_SECTION)
         scrollTo(CUSTOMER_SECTION)
         Espresso.onView(withText("Add customer details"))
             .perform(click())
@@ -51,6 +53,7 @@ class UnifiedOrderScreen : Screen(ORDER_CREATION) {
     }
 
     fun addShipping(): UnifiedOrderScreen {
+        waitForElementToBeDisplayed(PAYMENT_SECTION)
         clickOn(SHIPPING_BUTTON)
         Espresso.onView((withText("0")))
             .perform(ViewActions.replaceText("3.30"))
@@ -59,6 +62,7 @@ class UnifiedOrderScreen : Screen(ORDER_CREATION) {
     }
 
     fun addFee(): UnifiedOrderScreen {
+        waitForElementToBeDisplayed(PAYMENT_SECTION)
         clickOn(FEE_BUTTON)
 
         // Clearing first before re-adding because of the mock file, this is prepopulated at this point
@@ -84,11 +88,6 @@ class UnifiedOrderScreen : Screen(ORDER_CREATION) {
         Espresso.onView(withId(ORDER_CREATION)).check(matches(isDisplayed()))
         Espresso.onView(withId(CREATE_BUTTON)).check(matches(isDisplayed()))
         return this
-    }
-
-    fun assertNewOrderScreenWithProduct(productName: String): UnifiedOrderScreen {
-        Espresso.onView(withText(productName)).check(matches(isDisplayed()))
-        return assertNewOrderScreen()
     }
 
     fun goBackToOrdersScreen(): OrderListScreen {
