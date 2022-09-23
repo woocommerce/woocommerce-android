@@ -58,9 +58,8 @@ class OrdersUITest : TestBase() {
                 .addProductTap()
                 .assertOrderSelectProductScreen()
                 .selectProduct(orderData.productName)
-                // TODO add scroll that works to get to this view
-//                .clickAddCustomerDetails()
-//                .addCustomerDetails()
+                .clickAddCustomerDetails()
+                .addCustomerDetails()
                 .addShipping()
                 .addFee()
                 .createOrder()

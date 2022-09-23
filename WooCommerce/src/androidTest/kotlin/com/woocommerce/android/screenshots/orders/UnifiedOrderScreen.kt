@@ -11,6 +11,7 @@ import androidx.test.espresso.matcher.ViewMatchers.withEffectiveVisibility
 import androidx.test.espresso.matcher.ViewMatchers.withId
 import androidx.test.espresso.matcher.ViewMatchers.withText
 import com.woocommerce.android.R
+import com.woocommerce.android.screenshots.util.NestedScrollViewExtension
 import com.woocommerce.android.screenshots.util.Screen
 import org.hamcrest.core.AllOf.allOf
 
@@ -46,7 +47,8 @@ class UnifiedOrderScreen : Screen(ORDER_CREATION) {
 
     fun clickAddCustomerDetails(): CustomerDetailsScreen {
         waitForElementToBeDisplayed(PAYMENT_SECTION)
-        scrollTo(CUSTOMER_SECTION)
+        Espresso.onView(withId(CUSTOMER_SECTION))
+            .perform(NestedScrollViewExtension())
         Espresso.onView(withText("Add customer details"))
             .perform(click())
         return CustomerDetailsScreen()
