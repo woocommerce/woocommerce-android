@@ -1,3 +1,1 @@
-- [**] Fixed a bug that caused new products to default to one per order [https://github.com/woocommerce/woocommerce-android/pull/7450]
-- [*] We redesigned the today's stats widget [https://github.com/woocommerce/woocommerce-android/pull/7442]
-
+We've added a new stats widget to the app! Simply long press on the WooCommerce icon, tap Widgets, then drag the Today widget to your home screen. We welcome your feedback on the app, especially the new features we’re working on.
