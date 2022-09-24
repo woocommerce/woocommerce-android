@@ -78,7 +78,7 @@ object ProductHelper {
             attributes = listOf(),
             saleEndDateGmt = null,
             saleStartDateGmt = null,
-            isSoldIndividually = true,
+            isSoldIndividually = false,
             taxStatus = ProductTaxStatus.Taxable,
             isSaleScheduled = false,
             menuOrder = 0,
