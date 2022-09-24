@@ -1,11 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2022-09-13 18:54:03+0000
+Translation-Revision-Date: 2022-09-20 15:54:03+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: he_IL
 -->
 <resources>
+    <string name="stats_widget_last_updated_message">החל ממועד ⁦%1$s⁩</string>
+    <string name="stats_widget_error_no_data">לא ניתן היה לטעון את הנתונים</string>
+    <string name="stats_today_widget_description">WooCommerce Stats Today</string>
+    <string name="stats_today_widget_configure_title">הנתונים הסטטיסטיים של החנות היום</string>
+    <string name="stats_widget_availability_message">הניתוחים הסטטיסטיים של החנות לא זמינים! יש לשדרג לגרסה האחרונה של WooCommerce כדי להציג את הניתוחים הסטטיסטיים של החנות.</string>
+    <string name="stats_widget_offline_error">הרשת שלך לא זמינה.\nמומלץ לבדוק את חיבור הנתונים או רשת ה-Wi-Fi.</string>
+    <string name="stats_widget_log_in_message">יש להתחבר לאפליקציה של WooCommerce</string>
     <string name="login_jetpack_connection_url_failed">הבאת נתוני החיבור נכשלה…</string>
     <string name="login_jetpack_verify_connection">מאמתים את החיבור של Jetpack…</string>
     <string name="login_jetpack_connection_verification_failed">לא ניתן היה לאמת את החיבור של Jetpack. יש לנסות שוב.</string>

@@ -1,11 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2022-09-13 16:54:03+0000
+Translation-Revision-Date: 2022-09-20 13:54:04+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: ko_KR
 -->
 <resources>
+    <string name="stats_widget_last_updated_message">%1$s 현재</string>
+    <string name="stats_widget_error_no_data">데이터를 로드할 수 없음</string>
+    <string name="stats_today_widget_description">우커머스 통계 오늘</string>
+    <string name="stats_today_widget_configure_title">오늘의 스토어 통계</string>
+    <string name="stats_widget_availability_message">스토어 분석을 사용할 수 없습니다! 스토어 분석을 보려면 우커머스 최신 버전으로 업그레이드하세요.</string>
+    <string name="stats_widget_offline_error">네트워크를 사용할 수 없습니다.\n데이터 또는 Wi-Fi 연결을 확인하세요.</string>
+    <string name="stats_widget_log_in_message">우커머스 앱에 로그인하세요.</string>
     <string name="login_jetpack_connection_url_failed">실패한 연결 데이터를 가져오는 중…</string>
     <string name="login_jetpack_verify_connection">젯팩 연결 확인 중…</string>
     <string name="login_jetpack_connection_verification_failed">젯팩 연결을 확인할 수 없습니다. 다시 시도하세요.</string>
