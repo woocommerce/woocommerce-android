@@ -440,6 +440,9 @@
         android:name="com.woocommerce.android.ui.login.accountmismatch.AccountMismatchErrorFragment"
         android:label="AccountMismatchErrorFragment">
         <argument
+            android:name="siteUrl"
+            app:argType="string" />
+        <argument
             android:name="primaryButton"
             app:argType="com.woocommerce.android.ui.login.accountmismatch.AccountMismatchErrorViewModel$AccountMismatchPrimaryButton"
             android:defaultValue="NONE" />

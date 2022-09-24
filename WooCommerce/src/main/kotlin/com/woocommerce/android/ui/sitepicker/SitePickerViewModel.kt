@@ -276,7 +276,12 @@ class SitePickerViewModel @Inject constructor(
         )
         trackLoginEvent(currentStep = UnifiedLoginTracker.Step.WRONG_WP_ACCOUNT)
         if (event.value !is NavigateToAccountMismatchScreen) {
-            triggerEvent(NavigateToAccountMismatchScreen(sitePickerViewState.hasConnectedStores ?: false))
+            triggerEvent(
+                NavigateToAccountMismatchScreen(
+                    hasConnectedStores = sitePickerViewState.hasConnectedStores ?: false,
+                    siteUrl = url
+                )
+            )
         }
     }
 
@@ -631,7 +636,10 @@ class SitePickerViewModel @Inject constructor(
         object NavigateToSiteAddressEvent : SitePickerEvent()
         data class NavigateToHelpFragmentEvent(val origin: HelpActivity.Origin) : SitePickerEvent()
         data class NavigateToWPComWebView(val url: String, val validationUrl: String) : SitePickerEvent()
-        data class NavigateToAccountMismatchScreen(val hasConnectedStores: Boolean) : SitePickerEvent()
+        data class NavigateToAccountMismatchScreen(
+            val hasConnectedStores: Boolean,
+            val siteUrl: String
+        ) : SitePickerEvent()
     }
 
     enum class SitePickerState {

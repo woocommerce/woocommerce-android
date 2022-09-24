@@ -1,11 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2022-09-13 14:54:06+0000
+Translation-Revision-Date: 2022-09-17 02:10:06+0000
 Plural-Forms: nplurals=2; plural=n > 1;
 Generator: GlotPress/2.4.0-alpha
 Language: fr
 -->
 <resources>
+    <string name="stats_widget_error_no_data">Impossible de charger les données</string>
     <string name="login_jetpack_connection_url_failed">La récupération de vos données de connexion a échoué…</string>
     <string name="login_jetpack_verify_connection">Vérification de la connexion Jetpack en cours</string>
     <string name="login_jetpack_connection_verification_failed">Impossible de vérifier votre connexion Jetpack. Veuillez réessayer.</string>
