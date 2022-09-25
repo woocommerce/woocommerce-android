@@ -1,4 +1,0 @@
-10.2:
-Diese Version enthält zwar keine neuen Funktionen, wir haben uns aber trotzdem viel Mühe gegeben! Wir haben eine neue Seite zum Hilfe-Center hinzugefügt, die dir das Anmelden in der App erleichtert. Und du kannst jetzt die Option für Karten- oder Bargeldzahlungen bei Abholung oder Zustellung aktivieren oder deaktivieren.
-Außerdem haben wir ein paar raffinierte Änderungen vorgenommen, um die Performance zu verbessern. Sende uns bitte weiterhin dein Feedback! Wir lesen alle Einsendungen.
-

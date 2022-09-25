@@ -103,6 +103,8 @@ class MainPresenter @Inject constructor(
                 .newFetchOrderStatusOptionsAction(FetchOrderStatusOptionsPayload(site))
         )
         coroutineScope.launch { clearCardReaderDataAction() }
+
+        updateStatsWidgets()
     }
 
     override fun fetchUnfilledOrderCount() {
@@ -141,8 +143,6 @@ class MainPresenter @Inject constructor(
             // In all other login cases, this logic is handled by the login library
             mainView?.notifyTokenUpdated()
             dispatcher.dispatch(AccountActionBuilder.newFetchAccountAction())
-        } else {
-            mainView?.showLoginScreen()
         }
     }
 
@@ -218,5 +218,10 @@ class MainPresenter @Inject constructor(
         if (pendingUnfilledOrderCountCheck) {
             fetchUnfilledOrderCount()
         }
+        updateStatsWidgets()
+    }
+
+    override fun updateStatsWidgets() {
+        mainView?.updateStatsWidgets()
     }
 }

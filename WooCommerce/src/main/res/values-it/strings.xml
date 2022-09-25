@@ -1,11 +1,24 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2022-09-06 13:54:04+0000
+Translation-Revision-Date: 2022-09-20 15:54:03+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: it
 -->
 <resources>
+    <string name="stats_widget_last_updated_message">A partire dalle %1$s</string>
+    <string name="stats_widget_error_no_data">Impossibile caricare i dati</string>
+    <string name="stats_today_widget_description">Statistiche WooCommerce oggi</string>
+    <string name="stats_today_widget_configure_title">Statistiche negozio odierne</string>
+    <string name="stats_widget_availability_message">Analisi del negozio non disponibile! Esegui l\'aggiornament all\'ultima versione di WooCommerce per visualizzare le analisi del tuo negozio.</string>
+    <string name="stats_widget_offline_error">La rete non è disponibile.\nControlla la connessione dati o WiFi.</string>
+    <string name="stats_widget_log_in_message">Accedi all\'app WooCommerce</string>
+    <string name="login_jetpack_connection_url_failed">Recupero dei dati della connessione non riuscito…</string>
+    <string name="login_jetpack_verify_connection">Verifica della connessione a Jetpack…</string>
+    <string name="login_jetpack_connection_verification_failed">Impossibile verificare la connessione a Jetpack. Riprova.</string>
+    <string name="login_simple_wpcom_site">Il sito %1$s dispone attualmente di un piano WordPress.com che non supporta l\'installazione di plugin. Aggiorna il tuo piano per utilizzare WooCommerce.</string>
+    <string name="login_connect_jetpack_button">Connetti Jetpack al tuo account</string>
+    <string name="login_jetpack_not_connected">Sembra che l\'account non sia connesso a Jetpack di %1$s</string>
     <string name="card_reader_card_readers_header">LETTORI DI CARTE</string>
     <string name="card_reader_payment_options_header">OPZIONI DI PAGAMENTO</string>
     <string name="card_reader_enable_pay_in_person_description">L\'opzione di pagamento Paga di persona ti consente di accettare pagamenti per ordini sul sito Web, al ritiro o alla consegna. &lt;a href=\'\'&gt;Scopri di più&lt;/a&gt;</string>
@@ -1823,7 +1836,7 @@ Language: it
     <string name="login_jetpack_what_is_description">Jetpack è un plugin WordPress gratuito che collega il tuo negozio con gli strumenti necessari per assicurarti la migliore esperienza mobile, incluse le notifiche push e le statistiche</string>
     <string name="login_jetpack_what_is">Che cos\'è Jetpack?</string>
     <string name="login_view_connected_stores">Visualizza i negozi collegati</string>
-    <string name="login_wpcom_account_mismatch">%1$s è collegato a un altro account WordPress.com.</string>
+    <string name="login_wpcom_account_mismatch">Sembra che %1$s sia connesso a un account WordPress.com differente.</string>
     <string name="keep_editing">Continua a modificare</string>
     <string name="notification_wpcom_username_needed">Accedi con i tuoi nome utente e password.</string>
     <string name="error_user_username_instead_of_email">Accedi utilizzando il tuo nome utente di WordPress.com invece del tuo indirizzo e-mail.</string>

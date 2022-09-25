@@ -28,6 +28,7 @@ import com.woocommerce.android.AppPrefs.DeletablePrefKey.PRODUCT_SORTING_PREFIX
 import com.woocommerce.android.AppPrefs.DeletablePrefKey.RECEIPT_PREFIX
 import com.woocommerce.android.AppPrefs.UndeletablePrefKey.ONBOARDING_CAROUSEL_DISPLAYED
 import com.woocommerce.android.extensions.orNullIfEmpty
+import com.woocommerce.android.extensions.packageInfo
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.payments.cardreader.onboarding.PersistentOnboardingData
 import com.woocommerce.android.ui.payments.cardreader.onboarding.PluginType
@@ -94,7 +95,7 @@ object AppPrefs {
         CARD_READER_UPSELL_BANNER_DIALOG_DISMISSED_FOREVER,
         CARD_READER_UPSELL_BANNER_DIALOG_DISMISSED_REMIND_ME_LATER,
         CARD_READER_DO_NOT_SHOW_CASH_ON_DELIVERY_DISABLED_ONBOARDING_STATE,
-        ACTIVE_STATS_GRANULARITY,
+        ACTIVE_STATS_GRANULARITY
     }
 
     /**
@@ -174,9 +175,10 @@ object AppPrefs {
         get() = try {
             context
                 .packageManager
-                .getPackageInfo(context.packageName, 0)
-                .firstInstallTime
-                .let { Date(it) }
+                .packageInfo(context.packageName, 0)
+                .firstInstallTime.let {
+                    Date(it)
+                }
         } catch (ex: Throwable) {
             relativeInstallationDate
         }
@@ -918,17 +920,30 @@ object AppPrefs {
         PreferenceUtils.setInt(getPreferences(), key.toString(), value)
 
     private fun getLong(key: PrefKey, default: Long = 0L) =
-        PreferenceUtils.getLong(getPreferences(), key.toString(), default)
+        getLong(key.toString(), default)
+
+    private fun getLong(keyName: String, default: Long = 0L) =
+        PreferenceUtils.getLong(getPreferences(), keyName, default)
 
     private fun setLong(key: PrefKey, value: Long) =
-        PreferenceUtils.setLong(getPreferences(), key.toString(), value)
+        setLong(key.toString(), value)
+
+    private fun setLong(keyName: String, value: Long) =
+        PreferenceUtils.setLong(getPreferences(), keyName, value)
 
     private fun getString(key: PrefKey, defaultValue: String = ""): String {
-        return PreferenceUtils.getString(getPreferences(), key.toString(), defaultValue) ?: defaultValue
+        return getString(key.toString(), defaultValue)
+    }
+
+    private fun getString(keyName: String, defaultValue: String = ""): String {
+        return PreferenceUtils.getString(getPreferences(), keyName, defaultValue) ?: defaultValue
     }
 
     private fun setString(key: PrefKey, value: String) =
-        PreferenceUtils.setString(getPreferences(), key.toString(), value)
+        setString(key.toString(), value)
+
+    private fun setString(keyName: String, value: String) =
+        PreferenceUtils.setString(getPreferences(), keyName, value)
 
     fun getBoolean(key: PrefKey, default: Boolean) =
         PreferenceUtils.getBoolean(getPreferences(), key.toString(), default)
@@ -939,7 +954,11 @@ object AppPrefs {
     fun getPreferences() = PreferenceManager.getDefaultSharedPreferences(context)
 
     private fun remove(key: PrefKey) {
-        getPreferences().edit().remove(key.toString()).apply()
+        remove(key.toString())
+    }
+
+    private fun remove(keyName: String) {
+        getPreferences().edit().remove(keyName).apply()
     }
 
     fun exists(key: PrefKey) = getPreferences().contains(key.toString())

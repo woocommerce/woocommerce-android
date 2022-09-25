@@ -9,7 +9,9 @@ import android.view.MenuItem
 import android.view.View
 import androidx.annotation.CallSuper
 import androidx.annotation.LayoutRes
+import androidx.core.view.MenuProvider
 import androidx.hilt.navigation.fragment.hiltNavGraphViewModels
+import androidx.lifecycle.Lifecycle
 import androidx.navigation.fragment.findNavController
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsEvent
@@ -21,7 +23,7 @@ import com.woocommerce.android.viewmodel.MultiLiveEvent
 import org.wordpress.android.util.ActivityUtils
 import javax.inject.Inject
 
-abstract class BaseOrderEditingFragment : BaseFragment, BackPressListener {
+abstract class BaseOrderEditingFragment : BaseFragment, BackPressListener, MenuProvider {
     constructor() : super()
     constructor(@LayoutRes layoutId: Int) : super(layoutId)
 
@@ -72,7 +74,6 @@ abstract class BaseOrderEditingFragment : BaseFragment, BackPressListener {
     @CallSuper
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setHasOptionsMenu(true)
         if (savedInstanceState == null) {
             trackEventStarted()
         }
@@ -81,39 +82,37 @@ abstract class BaseOrderEditingFragment : BaseFragment, BackPressListener {
     @CallSuper
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        requireActivity().addMenuProvider(this, viewLifecycleOwner, Lifecycle.State.RESUMED)
         setupObservers()
     }
 
     @CallSuper
-    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
-        super.onCreateOptionsMenu(menu, inflater)
+    override fun onCreateMenu(menu: Menu, inflater: MenuInflater) {
         inflater.inflate(R.menu.menu_done, menu)
         doneMenuItem = menu.findItem(R.id.menu_done)
     }
 
     @CallSuper
-    override fun onPrepareOptionsMenu(menu: Menu) {
-        super.onPrepareOptionsMenu(menu)
+    override fun onPrepareMenu(menu: Menu) {
         updateDoneMenuItem()
     }
 
     private fun setupObservers() {
         sharedViewModel.event.observe(
-            viewLifecycleOwner,
-            { event ->
-                when (event) {
-                    is MultiLiveEvent.Event.ShowSnackbar -> {
-                        uiMessageResolver.showSnack(event.message)
-                    }
+            viewLifecycleOwner
+        ) { event ->
+            when (event) {
+                is MultiLiveEvent.Event.ShowSnackbar -> {
+                    uiMessageResolver.showSnack(event.message)
                 }
             }
-        )
+        }
 
         sharedViewModel.start()
     }
 
     @CallSuper
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+    override fun onMenuItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
             R.id.menu_done -> {
                 if (saveChanges()) {
@@ -121,7 +120,7 @@ abstract class BaseOrderEditingFragment : BaseFragment, BackPressListener {
                 }
                 true
             }
-            else -> super.onOptionsItemSelected(item)
+            else -> false
         }
     }
 
