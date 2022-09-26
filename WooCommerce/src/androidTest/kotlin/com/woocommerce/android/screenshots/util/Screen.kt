@@ -14,6 +14,7 @@ import androidx.test.espresso.ViewAction
 import androidx.test.espresso.ViewInteraction
 import androidx.test.espresso.action.ViewActions
 import androidx.test.espresso.action.ViewActions.click
+import androidx.test.espresso.assertion.ViewAssertions
 import androidx.test.espresso.assertion.ViewAssertions.matches
 import androidx.test.espresso.contrib.RecyclerViewActions
 import androidx.test.espresso.contrib.RecyclerViewActions.actionOnItemAtPosition
@@ -33,6 +34,7 @@ import androidx.test.runner.lifecycle.Stage.RESUMED
 import com.google.android.material.tabs.TabLayout
 import com.woocommerce.android.R
 import org.hamcrest.CoreMatchers.allOf
+import org.hamcrest.CoreMatchers.not
 import org.hamcrest.Matcher
 import org.hamcrest.Matchers.`is`
 import tools.fastlane.screengrab.Screengrab
@@ -74,6 +76,16 @@ open class Screen {
         private fun isElementDisplayed(element: ViewInteraction): Boolean {
             return try {
                 element.check(matches(isDisplayed()))
+                true
+            } catch (e: Throwable) {
+                false
+            }
+        }
+
+        fun isElementNotDisplayed(element: Int): Boolean {
+            return try {
+                onView(withId(element))
+                    .check(matches(not(isDisplayed())))
                 true
             } catch (e: Throwable) {
                 false
@@ -295,6 +307,18 @@ open class Screen {
         } catch (e: java.lang.Exception) { // ignore the failure
         }
         return isElementDisplayed(elementId)
+    }
+
+    fun waitForElementToNotBeDisplayed(element: Int): Boolean {
+        try {
+            waitForConditionToBeTrueWithoutFailure(
+                Supplier<Boolean> {
+                    isElementNotDisplayed(element)
+                }
+            )
+        } catch (e: java.lang.Exception) { // ignore the failure
+        }
+        return isElementNotDisplayed(element)
     }
 
     fun isElementDisplayed(elementID: Int): Boolean {
