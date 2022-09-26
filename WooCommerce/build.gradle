@@ -91,6 +91,7 @@ android {
         javaCompileOptions.annotationProcessorOptions.arguments['dagger.hilt.disableModulesHaveInstallInCheck'] = 'true'
 
         buildConfigField "boolean", "USE_SIMULATED_READER", project.hasProperty("useSimulatedReader").toString()
+        resValue "bool", "enable_leak_canary", isLeakCanaryEnabled().toString()
 
         packagingOptions {
             exclude 'META-INF/gradle/incremental.annotation.processors'
@@ -161,6 +162,10 @@ android {
         debug.java.srcDirs += 'src/debug/kotlin'
         test.java.srcDirs += 'src/test/kotlin'
         androidTest.java.srcDirs += 'src/androidTest/kotlin'
+
+        if (isLeakCanaryEnabled()) {
+            debug.java.srcDirs += 'src/leakcanary/kotlin'
+        }
     }
 
     lintOptions {
@@ -276,7 +281,10 @@ dependencies {
         // See https://github.com/wordpress-mobile/WordPress-FluxC-Android/issues/919
         exclude group: 'com.squareup.okhttp3'
     }
-    debugImplementation 'com.squareup.leakcanary:leakcanary-android-core:2.9.1'
+
+    if (isLeakCanaryEnabled()) {
+        debugImplementation 'com.squareup.leakcanary:leakcanary-android-core:2.9.1'
+    }
 
     // Dependencies for local unit tests
     testImplementation "junit:junit:$jUnitVersion"
@@ -471,6 +479,10 @@ static def loadPropertiesFromFile(inputFile) {
         properties.load(stream)
     }
     return properties
+}
+
+def isLeakCanaryEnabled() {
+    return project.properties.getOrDefault('enableLeakCanary', 'true') == 'true'
 }
 
 // For app signing
