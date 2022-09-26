@@ -24,7 +24,23 @@ class CustomerDetailsScreen : Screen(TOOLBAR) {
 
     fun addCustomerDetails(customerFirstName: String): UnifiedOrderScreen {
         // Temporary for debugging
-        Thread.sleep(5000)
+//        Thread.sleep(5000)
+//        Espresso.onView(
+//            allOf(
+//                ViewMatchers.withId(PROGRESS_BAR),
+//                ViewMatchers.withEffectiveVisibility(ViewMatchers.Visibility.GONE)
+//            )
+//        ).check(ViewAssertions.matches(not(ViewMatchers.isDisplayed())))
+
+        waitForElementToBeDisplayed(
+            Espresso.onView(
+                allOf(
+                    ViewMatchers.isDescendantOfA(ViewMatchers.withId(FIRST_NAME_INPUT)),
+                    ViewMatchers.withHint(FIRST_NAME_INPUT_HINT_TEXT),
+                    ViewMatchers.isCompletelyDisplayed()
+                )
+            )
+        )
 
         // Enter First Name
         Espresso.onView(
@@ -58,7 +74,7 @@ class CustomerDetailsScreen : Screen(TOOLBAR) {
                 ViewMatchers.withHint(FIRST_NAME_INPUT_HINT_TEXT),
                 ViewMatchers.withText(not(customerFirstName))
             )
-        ).perform(scrollTo(), click(), replaceText(customerFirstName + "Shipping"), closeSoftKeyboard())
+        ).perform(scrollTo(), click(), replaceText("$customerFirstName Shipping"), closeSoftKeyboard())
 
         Espresso.onView(ViewMatchers.withText("DONE"))
             .check(ViewAssertions.matches(isDisplayed()))

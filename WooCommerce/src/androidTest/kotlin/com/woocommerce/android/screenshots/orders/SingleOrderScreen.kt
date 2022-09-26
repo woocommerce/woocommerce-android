@@ -49,11 +49,11 @@ class SingleOrderScreen : Screen {
 
         assertIdAndTextDisplayed(ORDER_STATUS_TAG, order.status)
         assertIdAndTextDisplayed(ORDER_STATUS_CUSTOMER, order.customerName)
-        assertIdAndTextDisplayed(AMOUNT_SHIPPING, order.shippingAmount)
-        assertIdAndTextDisplayed(AMOUNT_FEE, order.feeAmount)
 
         Espresso.onView(withId(AMOUNT_TOTAL))
             .perform(NestedScrollViewExtension())
+        assertIdAndTextDisplayed(AMOUNT_SHIPPING, order.shippingAmount)
+        assertIdAndTextDisplayed(AMOUNT_FEE, order.feeAmount)
         assertIdAndTextDisplayed(AMOUNT_TOTAL, order.total)
 
         return this
