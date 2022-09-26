@@ -18,13 +18,14 @@ class CustomerDetailsScreen : Screen(TOOLBAR) {
         const val ADDRESS_SWITCH = R.id.addressSwitch
         const val FIRST_NAME_INPUT = R.id.first_name
         const val TOOLBAR = R.id.toolbar
+        const val PROGRESS_BAR = R.id.progress_indicator
         const val FIRST_NAME_INPUT_HINT_TEXT = "First name"
     }
 
     fun addCustomerDetails(customerFirstName: String): UnifiedOrderScreen {
         // Temporary for debugging
-        Thread.sleep(5000)
-
+//        Thread.sleep(5000)
+        Espresso.onView(allOf(ViewMatchers.withId(PROGRESS_BAR), ViewMatchers.withEffectiveVisibility(ViewMatchers.Visibility.GONE)))
         // Enter First Name
         Espresso.onView(
             allOf(
@@ -35,14 +36,14 @@ class CustomerDetailsScreen : Screen(TOOLBAR) {
         ).perform(scrollTo(), click(), replaceText(customerFirstName), closeSoftKeyboard())
 
         // Temporary for debugging
-        Thread.sleep(2000)
+//        Thread.sleep(2000)
 
         // Enable the switch to enter shipping details
         Espresso.onView(allOf(ViewMatchers.withId(ADDRESS_SWITCH)))
             .perform(scrollTo())
 
         // Temporary for debugging
-        Thread.sleep(2000)
+//        Thread.sleep(2000)
 
         try {
             // Enable the switch to enter shipping details
@@ -57,7 +58,7 @@ class CustomerDetailsScreen : Screen(TOOLBAR) {
         }
 
         // Temporary for debugging
-        Thread.sleep(2000)
+//        Thread.sleep(2000)
 
         // Enter First Name used for Shipping
         Espresso.onView(
