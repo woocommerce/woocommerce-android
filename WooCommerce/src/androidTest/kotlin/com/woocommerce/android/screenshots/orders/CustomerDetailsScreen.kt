@@ -23,9 +23,6 @@ class CustomerDetailsScreen : Screen(TOOLBAR) {
     }
 
     fun addCustomerDetails(customerFirstName: String): UnifiedOrderScreen {
-        // Temporary for debugging
-//        Thread.sleep(5000)
-
         waitForElementToNotBeDisplayed(PROGRESS_BAR)
 
         // Enter First Name
