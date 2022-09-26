@@ -23,7 +23,7 @@ class CustomerDetailsScreen : Screen(TOOLBAR) {
     }
 
     fun addCustomerDetails(customerFirstName: String): UnifiedOrderScreen {
-        waitForElementToNotBeDisplayed(PROGRESS_BAR)
+        waitForElementToDisappear(PROGRESS_BAR)
 
         // Enter First Name
         Espresso.onView(
@@ -32,7 +32,12 @@ class CustomerDetailsScreen : Screen(TOOLBAR) {
                 ViewMatchers.withHint(FIRST_NAME_INPUT_HINT_TEXT),
                 ViewMatchers.isCompletelyDisplayed()
             )
-        ).perform(scrollTo(), click(), replaceText(customerFirstName), closeSoftKeyboard())
+        ).perform(
+            scrollTo(),
+            click(),
+            replaceText(customerFirstName),
+            closeSoftKeyboard()
+        )
 
         // Enable the switch to enter shipping details
         Espresso.onView(allOf(ViewMatchers.withId(ADDRESS_SWITCH)))
@@ -57,7 +62,12 @@ class CustomerDetailsScreen : Screen(TOOLBAR) {
                 ViewMatchers.withHint(FIRST_NAME_INPUT_HINT_TEXT),
                 ViewMatchers.withText(not(customerFirstName))
             )
-        ).perform(scrollTo(), click(), replaceText("$customerFirstName Shipping"), closeSoftKeyboard())
+        ).perform(
+            scrollTo(),
+            click(),
+            replaceText("$customerFirstName Shipping"),
+            closeSoftKeyboard()
+        )
 
         Espresso.onView(ViewMatchers.withText("DONE"))
             .check(ViewAssertions.matches(isDisplayed()))

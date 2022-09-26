@@ -81,7 +81,7 @@ open class Screen {
             }
         }
 
-        fun isElementNotDisplayed(element: Int): Boolean {
+        private fun isElementNotDisplayed(element: Int): Boolean {
             return try {
                 onView(withId(element))
                     .check(matches(not(isDisplayed())))
@@ -308,16 +308,12 @@ open class Screen {
         return isElementDisplayed(elementId)
     }
 
-    fun waitForElementToNotBeDisplayed(element: Int): Boolean {
-        try {
-            waitForConditionToBeTrueWithoutFailure(
-                Supplier<Boolean> {
-                    isElementNotDisplayed(element)
-                }
-            )
-        } catch (e: java.lang.Exception) { // ignore the failure
-        }
-        return isElementNotDisplayed(element)
+    fun waitForElementToDisappear(element: Int) {
+        waitForConditionToBeTrue(
+            Supplier<Boolean> {
+                isElementNotDisplayed(element)
+            }
+        )
     }
 
     fun isElementDisplayed(elementID: Int): Boolean {
