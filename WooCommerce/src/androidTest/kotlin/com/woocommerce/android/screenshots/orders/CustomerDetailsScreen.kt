@@ -24,13 +24,13 @@ class CustomerDetailsScreen : Screen(TOOLBAR) {
 
     fun addCustomerDetails(customerFirstName: String): UnifiedOrderScreen {
         // Temporary for debugging
-//        Thread.sleep(5000)
-        Espresso.onView(
-            allOf(
-                ViewMatchers.withId(PROGRESS_BAR),
-                ViewMatchers.withEffectiveVisibility(ViewMatchers.Visibility.GONE)
-            )
-        ).check(ViewAssertions.matches(not(ViewMatchers.isDisplayed())))
+        Thread.sleep(5000)
+//        Espresso.onView(
+//            allOf(
+//                ViewMatchers.withId(PROGRESS_BAR),
+//                ViewMatchers.withEffectiveVisibility(ViewMatchers.Visibility.GONE)
+//            )
+//        ).check(ViewAssertions.matches(not(ViewMatchers.isDisplayed())))
 
         // Enter First Name
         Espresso.onView(
