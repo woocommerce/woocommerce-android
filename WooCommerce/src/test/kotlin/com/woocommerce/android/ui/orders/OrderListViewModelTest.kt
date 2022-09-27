@@ -27,6 +27,7 @@ import com.woocommerce.android.ui.orders.list.OrderListViewModel.OrderListEvent.
 import com.woocommerce.android.ui.orders.list.OrderListViewModel.OrderListEvent.ShowErrorSnack
 import com.woocommerce.android.ui.payments.banner.BannerDisplayEligibilityChecker
 import com.woocommerce.android.ui.payments.banner.BannerState
+import com.woocommerce.android.util.LandscapeChecker
 import com.woocommerce.android.util.getOrAwaitValue
 import com.woocommerce.android.util.observeForTesting
 import com.woocommerce.android.viewmodel.BaseUnitTest
@@ -92,6 +93,7 @@ class OrderListViewModelTest : BaseUnitTest() {
     private val getSelectedOrderFiltersCount: GetSelectedOrderFiltersCount = mock()
     private val bannerDisplayEligibilityChecker: BannerDisplayEligibilityChecker = mock()
     private val analyticsTrackerWrapper: AnalyticsTrackerWrapper = mock()
+    private val landscapeChecker: LandscapeChecker = mock()
 
     @Before
     fun setup() = testBlocking {
@@ -127,7 +129,8 @@ class OrderListViewModelTest : BaseUnitTest() {
             getSelectedOrderFiltersCount = getSelectedOrderFiltersCount,
             bannerDisplayEligibilityChecker = bannerDisplayEligibilityChecker,
             orderListTransactionLauncher = mock(),
-            analyticsTrackerWrapper = analyticsTrackerWrapper
+            analyticsTrackerWrapper = analyticsTrackerWrapper,
+            landscapeChecker = landscapeChecker,
         )
     }
 
@@ -461,7 +464,7 @@ class OrderListViewModelTest : BaseUnitTest() {
                 bannerDisplayEligibilityChecker.canShowCardReaderUpsellBanner(anyLong())
             ).thenReturn(true)
             whenever(bannerDisplayEligibilityChecker.isEligibleForInPersonPayments()).thenReturn(true)
-            viewModel.updateBannerState(false, 1)
+            viewModel.updateBannerState(landscapeChecker, false)
 
             // WHEN
             viewModel.bannerState.value?.onPrimaryActionClicked?.invoke()
@@ -481,9 +484,10 @@ class OrderListViewModelTest : BaseUnitTest() {
                 bannerDisplayEligibilityChecker.canShowCardReaderUpsellBanner(anyLong())
             ).thenReturn(true)
             whenever(bannerDisplayEligibilityChecker.isEligibleForInPersonPayments()).thenReturn(true)
+            whenever(landscapeChecker.isLandscape()).thenReturn(true)
 
             // WHEN
-            viewModel.updateBannerState(true, 1)
+            viewModel.updateBannerState(landscapeChecker, false)
 
             // Then
             assertThat(
@@ -500,9 +504,10 @@ class OrderListViewModelTest : BaseUnitTest() {
                 bannerDisplayEligibilityChecker.canShowCardReaderUpsellBanner(anyLong())
             ).thenReturn(true)
             whenever(bannerDisplayEligibilityChecker.isEligibleForInPersonPayments()).thenReturn(true)
+            whenever(landscapeChecker.isLandscape()).thenReturn(false)
 
             // WHEN
-            viewModel.updateBannerState(false, 1)
+            viewModel.updateBannerState(landscapeChecker, false)
 
             // Then
             assertThat(
@@ -521,7 +526,7 @@ class OrderListViewModelTest : BaseUnitTest() {
             whenever(bannerDisplayEligibilityChecker.isEligibleForInPersonPayments()).thenReturn(true)
 
             // WHEN
-            viewModel.updateBannerState(false, 0)
+            viewModel.updateBannerState(landscapeChecker, true)
 
             // Then
             assertThat(
@@ -540,7 +545,7 @@ class OrderListViewModelTest : BaseUnitTest() {
             whenever(bannerDisplayEligibilityChecker.isEligibleForInPersonPayments()).thenReturn(true)
 
             // WHEN
-            viewModel.updateBannerState(false, 1)
+            viewModel.updateBannerState(landscapeChecker, false)
 
             // Then
             assertThat(
@@ -557,7 +562,7 @@ class OrderListViewModelTest : BaseUnitTest() {
                 bannerDisplayEligibilityChecker.canShowCardReaderUpsellBanner(anyLong())
             ).thenReturn(true)
             whenever(bannerDisplayEligibilityChecker.isEligibleForInPersonPayments()).thenReturn(true)
-            viewModel.updateBannerState(false, 1)
+            viewModel.updateBannerState(landscapeChecker, false)
 
             // WHEN
             viewModel.bannerState.value?.onDismissClicked?.invoke()
@@ -599,7 +604,7 @@ class OrderListViewModelTest : BaseUnitTest() {
                 bannerDisplayEligibilityChecker.canShowCardReaderUpsellBanner(anyLong())
             ).thenReturn(true)
             whenever(bannerDisplayEligibilityChecker.isEligibleForInPersonPayments()).thenReturn(true)
-            viewModel.updateBannerState(false, 1)
+            viewModel.updateBannerState(landscapeChecker, false)
 
             // WHEN
             viewModel.bannerState.value?.onDismissClicked?.invoke()
@@ -639,7 +644,7 @@ class OrderListViewModelTest : BaseUnitTest() {
             whenever(bannerDisplayEligibilityChecker.isEligibleForInPersonPayments()).thenReturn(false)
 
             // WHEN
-            viewModel.updateBannerState(false, 1)
+            viewModel.updateBannerState(landscapeChecker, false)
 
             // THEN
             assertFalse(viewModel.bannerState.value?.shouldDisplayBanner!!)
@@ -656,7 +661,7 @@ class OrderListViewModelTest : BaseUnitTest() {
             whenever(bannerDisplayEligibilityChecker.isEligibleForInPersonPayments()).thenReturn(true)
 
             // WHEN
-            viewModel.updateBannerState(false, 1)
+            viewModel.updateBannerState(landscapeChecker, false)
 
             // THEN
             assertTrue(viewModel.bannerState.value?.shouldDisplayBanner!!)
@@ -703,7 +708,7 @@ class OrderListViewModelTest : BaseUnitTest() {
                 bannerDisplayEligibilityChecker.canShowCardReaderUpsellBanner(anyLong())
             ).thenReturn(true)
             whenever(bannerDisplayEligibilityChecker.isEligibleForInPersonPayments()).thenReturn(true)
-            viewModel.updateBannerState(false, 1)
+            viewModel.updateBannerState(landscapeChecker, false)
             val captor = argumentCaptor<String>()
 
             // WHEN
@@ -721,7 +726,7 @@ class OrderListViewModelTest : BaseUnitTest() {
                 bannerDisplayEligibilityChecker.canShowCardReaderUpsellBanner(anyLong())
             ).thenReturn(true)
             whenever(bannerDisplayEligibilityChecker.isEligibleForInPersonPayments()).thenReturn(true)
-            viewModel.updateBannerState(false, 1)
+            viewModel.updateBannerState(landscapeChecker, false)
 
             // WHEN
             val title = viewModel.bannerState.value?.title
@@ -737,7 +742,7 @@ class OrderListViewModelTest : BaseUnitTest() {
                 bannerDisplayEligibilityChecker.canShowCardReaderUpsellBanner(anyLong())
             ).thenReturn(true)
             whenever(bannerDisplayEligibilityChecker.isEligibleForInPersonPayments()).thenReturn(true)
-            viewModel.updateBannerState(false, 1)
+            viewModel.updateBannerState(landscapeChecker, false)
 
             // WHEN
             val description = viewModel.bannerState.value?.description
@@ -753,7 +758,7 @@ class OrderListViewModelTest : BaseUnitTest() {
                 bannerDisplayEligibilityChecker.canShowCardReaderUpsellBanner(anyLong())
             ).thenReturn(true)
             whenever(bannerDisplayEligibilityChecker.isEligibleForInPersonPayments()).thenReturn(true)
-            viewModel.updateBannerState(false, 1)
+            viewModel.updateBannerState(landscapeChecker, false)
 
             // WHEN
             val primaryActionLabel = viewModel.bannerState.value?.primaryActionLabel
@@ -769,7 +774,7 @@ class OrderListViewModelTest : BaseUnitTest() {
                 bannerDisplayEligibilityChecker.canShowCardReaderUpsellBanner(anyLong())
             ).thenReturn(true)
             whenever(bannerDisplayEligibilityChecker.isEligibleForInPersonPayments()).thenReturn(true)
-            viewModel.updateBannerState(false, 1)
+            viewModel.updateBannerState(landscapeChecker, false)
 
             // WHEN
             val chipLabel = viewModel.bannerState.value?.chipLabel
@@ -785,7 +790,7 @@ class OrderListViewModelTest : BaseUnitTest() {
                 bannerDisplayEligibilityChecker.canShowCardReaderUpsellBanner(anyLong())
             ).thenReturn(true)
             whenever(bannerDisplayEligibilityChecker.isEligibleForInPersonPayments()).thenReturn(true)
-            viewModel.updateBannerState(false, 1)
+            viewModel.updateBannerState(landscapeChecker, false)
 
             verify(analyticsTrackerWrapper).track(
                 AnalyticsEvent.FEATURE_CARD_SHOWN,

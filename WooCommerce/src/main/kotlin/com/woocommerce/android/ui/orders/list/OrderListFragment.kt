@@ -198,6 +198,13 @@ class OrderListFragment :
         binding.orderFiltersCard.setClickListener { viewModel.onFiltersButtonTapped() }
         initCreateOrderFAB(binding.createOrderButton)
         initSwipeBehaviour()
+        updateBannerState()
+    }
+
+    private fun updateBannerState() {
+        lifecycleScope.launch {
+            viewModel.updateBannerState()
+        }
     }
 
     private fun initSwipeBehaviour() {
@@ -339,7 +346,6 @@ class OrderListFragment :
         }
 
         viewModel.pagedListData.observe(viewLifecycleOwner) {
-            updateBannerState(it.size)
             updatePagedListData(it)
         }
 
@@ -426,13 +432,6 @@ class OrderListFragment :
             new.filterCount.takeIfNotEqualTo(old?.filterCount) { filterCount ->
                 binding.orderFiltersCard.updateFilterSelection(filterCount)
             }
-        }
-    }
-
-    private fun updateBannerState(orderListSize: Int) {
-        val isLandScape = DisplayUtils.isLandscape(context)
-        lifecycleScope.launch {
-            viewModel.updateBannerState(isLandScape, orderListSize)
         }
     }
 

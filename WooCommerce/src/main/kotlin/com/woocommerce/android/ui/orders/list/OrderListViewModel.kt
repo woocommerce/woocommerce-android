@@ -15,6 +15,7 @@ import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.map
+import androidx.lifecycle.viewModelScope
 import androidx.paging.PagedList
 import com.google.android.material.snackbar.Snackbar
 import com.woocommerce.android.R
@@ -37,6 +38,7 @@ import com.woocommerce.android.ui.orders.list.OrderListViewModel.OrderListEvent.
 import com.woocommerce.android.ui.payments.banner.BannerDisplayEligibilityChecker
 import com.woocommerce.android.ui.payments.banner.BannerState
 import com.woocommerce.android.util.CoroutineDispatchers
+import com.woocommerce.android.util.LandscapeChecker
 import com.woocommerce.android.util.ThrottleLiveData
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.viewmodel.LiveDataDelegate
@@ -91,7 +93,8 @@ class OrderListViewModel @Inject constructor(
     private val getSelectedOrderFiltersCount: GetSelectedOrderFiltersCount,
     private val bannerDisplayEligibilityChecker: BannerDisplayEligibilityChecker,
     private val orderListTransactionLauncher: OrderListTransactionLauncher,
-    private val analyticsTrackerWrapper: AnalyticsTrackerWrapper
+    private val analyticsTrackerWrapper: AnalyticsTrackerWrapper,
+    private val landscapeChecker: LandscapeChecker,
 ) : ScopedViewModel(savedState), LifecycleOwner {
     private val lifecycleRegistry: LifecycleRegistry by lazy {
         LifecycleRegistry(this)
@@ -188,16 +191,21 @@ class OrderListViewModel @Inject constructor(
         }
     }
 
-    private suspend fun shouldDisplayBanner(isLandScape: Boolean, orderListSize: Int): Boolean {
+    private suspend fun shouldDisplayBanner(isLandScape: Boolean, isOrderListEmpty: Boolean): Boolean {
         return bannerDisplayEligibilityChecker.isEligibleForInPersonPayments() &&
             canShowCardReaderUpsellBanner(System.currentTimeMillis()) &&
             !isLandScape &&
-            orderListSize > 0
+            !isOrderListEmpty
     }
 
-    suspend fun updateBannerState(isLandScape: Boolean, orderListSize: Int) {
+    suspend fun updateBannerState() {
+        updateBannerState(landscapeChecker, _pagedListData.value.isNullOrEmpty())
+    }
+
+    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    suspend fun updateBannerState(landscapeChecker: LandscapeChecker, isOrdersListEmpty: Boolean) {
         bannerState.value = BannerState(
-            shouldDisplayBanner = shouldDisplayBanner(isLandScape, orderListSize),
+            shouldDisplayBanner = shouldDisplayBanner(landscapeChecker.isLandscape(), isOrdersListEmpty),
             onPrimaryActionClicked = {
                 onCtaClicked(AnalyticsTracker.KEY_BANNER_ORDER_LIST)
             },
@@ -352,6 +360,9 @@ class OrderListViewModel @Inject constructor(
 
         _pagedListData.addSource(pagedListWrapper.data) { pagedList ->
             pagedList?.let {
+                viewModelScope.launch {
+                    updateBannerState(landscapeChecker, it.isNullOrEmpty())
+                }
                 _pagedListData.value = it
             }
         }
