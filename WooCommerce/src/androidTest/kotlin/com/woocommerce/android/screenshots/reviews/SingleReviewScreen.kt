@@ -18,6 +18,7 @@ class SingleReviewScreen : Screen {
 
     fun goBackToReviewsScreen(): ReviewsListScreen {
         pressBack()
+        waitForElementToBeDisplayed(R.id.reviewsList)
         return ReviewsListScreen()
     }
 
