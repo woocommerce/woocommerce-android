@@ -1,2 +1,0 @@
-10.3:
-Stabiliteit verbeterd, zodat je makkelijker in kan loggen. De mogelijkheid toegevoegd om Jetpack in te stellen als deze nog niet verbonden is. We hebben ook een bug verholpen waarbij Jetpack onjuist als niet beschikbaar werd gezien. Blijf ons je feedback sturen!

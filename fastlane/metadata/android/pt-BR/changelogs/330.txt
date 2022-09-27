@@ -1,2 +1,0 @@
-10.3:
-Mais correções de estabilidade para facilitar ainda mais o login. Capacidade de configurar o Jetpack se ele ainda não estiver conectado. Além da correção de um bug que fazia o Jetpack aparecer como indisponível por engano. Continue enviando seu feedback!

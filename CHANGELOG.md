@@ -2,6 +2,10 @@
 Contains editorialized release notes. Raw release notes should go into `RELEASE-NOTES.txt`.
 -->
 
+## 10.5
+
+We've added a new stats widget to the app! Simply long press on the WooCommerce icon, tap Widgets, then drag the Today widget to your home screen. We welcome your feedback on the app, especially the new features we’re working on.
+
 ## 10.4
 
 This release contains a handful of minor improvements to make your experience smoother. We hope you notice the love we put into our software.

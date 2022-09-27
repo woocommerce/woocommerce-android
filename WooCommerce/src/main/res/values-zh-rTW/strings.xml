@@ -1,11 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2022-09-13 14:54:03+0000
+Translation-Revision-Date: 2022-09-20 09:54:23+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: zh_TW
 -->
 <resources>
+    <string name="stats_widget_last_updated_message">始於 %1$s</string>
+    <string name="stats_widget_error_no_data">無法載入資料</string>
+    <string name="stats_today_widget_description">WooCommerce 今日統計資料</string>
+    <string name="stats_today_widget_configure_title">今日商店統計資料</string>
+    <string name="stats_widget_availability_message">無法查看商店分析資料！ 請升級至最新版的 WooCommerce 以查看你的商店分析資料。</string>
+    <string name="stats_widget_offline_error">網路無法使用。\n請檢查你的日期或 Wi-Fi 連線。</string>
+    <string name="stats_widget_log_in_message">請登入 WooCommerce 應用程式</string>
     <string name="login_jetpack_connection_url_failed">擷取連結資料失敗…</string>
     <string name="login_jetpack_verify_connection">正在確認 Jetpack 連結…</string>
     <string name="login_jetpack_connection_verification_failed">無法驗證你的 Jetpack 連結。 請再試一次。</string>

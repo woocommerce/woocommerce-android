@@ -1,11 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2022-09-13 10:54:04+0000
+Translation-Revision-Date: 2022-09-19 10:54:03+0000
 Plural-Forms: nplurals=2; plural=n > 1;
 Generator: GlotPress/2.4.0-alpha
 Language: id
 -->
 <resources>
+    <string name="stats_widget_last_updated_message">Sejak %1$s</string>
+    <string name="stats_widget_error_no_data">Tidak dapat memuat data</string>
+    <string name="stats_today_widget_description">Statistik WooCommerce Hari Ini</string>
+    <string name="stats_today_widget_configure_title">Statistik toko hari ini</string>
+    <string name="stats_widget_availability_message">Analitik toko tidak tersedia! Harap upgrade ke versi WooCommerce terbaru untuk melihat analitik toko Anda.</string>
+    <string name="stats_widget_offline_error">Jaringan Anda tidak tersedia.\nPeriksa koneksi data atau Wi-Fi Anda.</string>
+    <string name="stats_widget_log_in_message">Silakan login ke aplikasi WooCommerce</string>
     <string name="login_jetpack_connection_url_failed">Gagal mengambil data koneksi…</string>
     <string name="login_jetpack_verify_connection">Memverifikasi koneksi Jetpack…</string>
     <string name="login_jetpack_connection_verification_failed">Tidak dapat memverifikasi koneksi Jetpack Anda. Harap coba lagi.</string>

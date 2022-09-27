@@ -1,0 +1,3 @@
+10.4:
+Deze release bevat tal van kleine verbeteringen om je ervaring soepeler te laten verlopen. We hopen dat je merkt dat we dit met liefde doen.
+

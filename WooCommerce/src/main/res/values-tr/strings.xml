@@ -1,11 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2022-09-13 14:54:04+0000
+Translation-Revision-Date: 2022-09-20 22:54:04+0000
 Plural-Forms: nplurals=2; plural=(n > 1);
 Generator: GlotPress/2.4.0-alpha
 Language: tr
 -->
 <resources>
+    <string name="stats_widget_last_updated_message">%1$s itibarıyla</string>
+    <string name="stats_widget_error_no_data">Veri yüklenemedi</string>
+    <string name="stats_today_widget_description">WooCommerce İstatistikleri Bugün</string>
+    <string name="stats_today_widget_configure_title">Bugünün mağaza istatistikleri</string>
+    <string name="stats_widget_availability_message">Mağaza analizi mevcut değil! Mağaza analizlerinizi görüntülemek için lütfen en son WooCommerce sürümüne yükseltin.</string>
+    <string name="stats_widget_offline_error">Bağlantınız bulunmuyor\nVerilerinizi veya kablosuz İnternet bağlantınızı kontrol edin.</string>
+    <string name="stats_widget_log_in_message">Lütfen WooCommerce uygulamasında giriş yapın</string>
     <string name="login_jetpack_connection_url_failed">Bağlantı verileri alınamadı…</string>
     <string name="login_jetpack_verify_connection">Jetpack bağlantısı doğrulanıyor…</string>
     <string name="login_jetpack_connection_verification_failed">Jetpack bağlantınız doğrulanamıyor. Lütfen tekrar deneyin.</string>

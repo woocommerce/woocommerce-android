@@ -1,0 +1,3 @@
+10.4:
+Den här versionen innehåller en handfull mindre förbättringar som ska göra din upplevelse smidigare. Vi hoppas att du kommer att märka hur mycket arbete vi lägger ned på vår programvara.
+
