@@ -128,7 +128,6 @@ object WidgetUtils {
     private fun getRandomId(): Int {
         return Random(Date().time).nextInt()
     }
-
 }
 
 fun AppWidgetProviderInfo.getWidgetName(): String {

@@ -211,5 +211,3 @@ class UpdateTodayStatsWorker @AssistedInject constructor(
         remoteViews.setTextViewText(R.id.widget_title, site.getTitle(resourceProvider.getString(R.string.my_store)))
     }
 }
-
-
