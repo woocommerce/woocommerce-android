@@ -13,12 +13,16 @@ import com.woocommerce.android.experiment.MagicLinkRequestExperiment.MagicLinkRe
 import com.woocommerce.android.experiment.MagicLinkRequestExperiment.MagicLinkRequestVariant.AUTOMATIC
 import com.woocommerce.android.experiment.MagicLinkRequestExperiment.MagicLinkRequestVariant.CONTROL
 import com.woocommerce.android.experiment.MagicLinkRequestExperiment.MagicLinkRequestVariant.ENHANCED
+import com.woocommerce.android.extensions.requestPasswordAutoFillWithDelay
+import com.woocommerce.android.extensions.showKeyboardWithDelay
 import dagger.android.support.AndroidSupportInjection
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
 import org.wordpress.android.login.LoginEmailPasswordFragment
 import org.wordpress.android.login.LoginListener
 import org.wordpress.android.login.LoginWpcomService
+import org.wordpress.android.login.widgets.WPLoginInputRow
+
 
 class WooLoginEmailPasswordFragment : LoginEmailPasswordFragment() {
     companion object {
@@ -96,12 +100,17 @@ class WooLoginEmailPasswordFragment : LoginEmailPasswordFragment() {
             AUTOMATIC -> R.layout.fragment_login_email_password
         }
 
-    override fun setupContent(rootView: ViewGroup?) {
+    override fun setupContent(rootView: ViewGroup) {
         super.setupContent(rootView)
         when (variant) {
             ENHANCED -> addRequestMagicLinkButton(rootView)
             AUTOMATIC -> addOpenEmailClientButton(rootView)
-            CONTROL -> {}
+            CONTROL -> {
+                with (rootView.findViewById<WPLoginInputRow>(R.id.login_password_row).editText) {
+                    requestPasswordAutoFillWithDelay()
+                    showKeyboardWithDelay()
+                }
+            }
         }
     }
 
