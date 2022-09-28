@@ -23,7 +23,7 @@ class CustomerDetailsScreen : Screen(TOOLBAR) {
     }
 
     fun addCustomerDetails(customerFirstName: String): UnifiedOrderScreen {
-        waitForElementToDisappear(PROGRESS_BAR)
+        waitForElementToDisappearWithoutFailure(PROGRESS_BAR)
 
         // Enter First Name
         Espresso.onView(

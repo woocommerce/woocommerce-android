@@ -9,7 +9,7 @@ abstract class TestIdler : IdlingResource {
     private var mConditionWasMet = false
 
     private val mNumberOfTries = 100
-    private val mRetryInterval = 300
+    private val mRetryInterval = 100
 
     override fun getName(): String? {
         return this.javaClass.name
