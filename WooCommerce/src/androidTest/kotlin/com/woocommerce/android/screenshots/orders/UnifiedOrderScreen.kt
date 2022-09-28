@@ -52,16 +52,6 @@ class UnifiedOrderScreen : Screen(ORDER_CREATION) {
         Espresso.onView(withText("Add customer details"))
             .perform(click())
 
-        waitForElementToBeDisplayed(
-            Espresso.onView(
-                allOf(
-                    ViewMatchers.isDescendantOfA(withId(CustomerDetailsScreen.FIRST_NAME_INPUT)),
-                    ViewMatchers.withHint(CustomerDetailsScreen.FIRST_NAME_INPUT_HINT_TEXT),
-                    ViewMatchers.isCompletelyDisplayed()
-                )
-            )
-        )
-
         return CustomerDetailsScreen()
     }
 
