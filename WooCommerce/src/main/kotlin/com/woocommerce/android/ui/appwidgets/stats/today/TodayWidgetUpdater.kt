@@ -27,7 +27,6 @@ class TodayWidgetUpdater
     private val accountStore: AccountStore,
     private val networkStatus: NetworkStatus,
     private val resourceProvider: ResourceProvider,
-    private val widgetUtils: WidgetUtils,
     private val dateUtils: DateUtils
 ) : WidgetUpdater {
     override fun updateAppWidget(
@@ -59,10 +58,10 @@ class TodayWidgetUpdater
 
             views.setOnClickPendingIntent(
                 R.id.widget_title_container,
-                widgetUtils.getWidgetTapPendingIntent(context, TodayStatsWidgetProvider.WIDGET_NAME)
+                WidgetUtils.getWidgetTapPendingIntent(context, TodayStatsWidgetProvider.WIDGET_NAME)
             )
 
-            widgetUtils.showList(
+            WidgetUtils.showList(
                 widgetManager,
                 views,
                 context,
@@ -82,7 +81,7 @@ class TodayWidgetUpdater
 
             views.setTextViewText(R.id.widget_title, resourceProvider.getString(R.string.my_store))
             views.setViewVisibility(R.id.widget_type, View.GONE)
-            widgetUtils.showError(
+            WidgetUtils.showError(
                 widgetManager,
                 views,
                 appWidgetId,
@@ -99,5 +98,5 @@ class TodayWidgetUpdater
     override fun componentName(context: Context) = ComponentName(context, TodayStatsWidgetProvider::class.java)
 
     @Suppress("EmptyFunctionBlock")
-    override fun delete(appWidgetId: Int) { }
+    override fun delete(context: Context, appWidgetId: Int) { }
 }
