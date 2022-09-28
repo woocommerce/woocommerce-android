@@ -39,7 +39,7 @@ abstract class StatsWidgetProvider : AppWidgetProvider() {
 
     override fun onDeleted(context: Context, appWidgetIds: IntArray) {
         appWidgetIds.forEach { appWidgetId ->
-            widgetUpdater.delete(appWidgetId)
+            widgetUpdater.delete(context, appWidgetId)
         }
     }
 

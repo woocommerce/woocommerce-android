@@ -25,7 +25,7 @@ interface WidgetUpdater {
     /**
      * Called when a widget is deleted
      */
-    fun delete(appWidgetId: Int)
+    fun delete(context: Context, appWidgetId: Int)
 
     class StatsWidgetUpdaters
     @Inject constructor(
