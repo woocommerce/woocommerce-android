@@ -128,6 +128,19 @@
                 android:resource="@xml/stats_today_widget_info" />
         </receiver>
 
+        <receiver
+            android:name=".ui.appwidgets.stats.daily.DailyStatsWidgetProvider"
+            android:exported="false"
+            android:label="@string/daily">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/stats_today_widget_info" />
+        </receiver>
+
         <!-- Services -->
         <service
             android:name=".push.FCMMessageService"
