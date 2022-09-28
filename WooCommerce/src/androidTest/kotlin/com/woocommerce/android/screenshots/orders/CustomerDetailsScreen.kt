@@ -39,12 +39,12 @@ class CustomerDetailsScreen : Screen(TOOLBAR) {
             closeSoftKeyboard()
         )
 
-        // Enable the switch to enter shipping details
+        // Scroll to the switch to enter shipping details
         Espresso.onView(allOf(ViewMatchers.withId(ADDRESS_SWITCH)))
             .perform(scrollTo())
 
         try {
-            // Enable the switch to enter shipping details
+            // Tap the switch if it's not already enabled
             Espresso.onView(
                 allOf(
                     ViewMatchers.withId(ADDRESS_SWITCH),
