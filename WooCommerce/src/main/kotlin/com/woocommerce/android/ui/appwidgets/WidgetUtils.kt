@@ -10,20 +10,26 @@ import android.os.Build
 import android.view.View
 import android.widget.RemoteViews
 import com.woocommerce.android.R
-import com.woocommerce.android.ui.appwidgets.WidgetUtils.Companion.WIDGET_NO_REGISTERED
+import com.woocommerce.android.ui.appwidgets.WidgetUtils.WIDGET_NO_REGISTERED
 import com.woocommerce.android.ui.appwidgets.stats.today.TodayStatsWidgetProvider
 import com.woocommerce.android.ui.main.MainActivity
 import com.woocommerce.android.viewmodel.ResourceProvider
 import java.util.Date
-import javax.inject.Inject
 import kotlin.random.Random
 
 /**
  * Utils class for for displaying data and handling click events in widgets.
  * Currently used to display stats widget list OR error message if stats is unavailable.
  */
-class WidgetUtils
-@Inject constructor() {
+object WidgetUtils {
+
+    private val PENDING_INTENT_FLAGS = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+        PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+    } else {
+        PendingIntent.FLAG_UPDATE_CURRENT
+    }
+    const val WIDGET_NO_REGISTERED = "no-registered"
+
     fun showList(
         appWidgetManager: AppWidgetManager,
         views: RemoteViews,
@@ -102,7 +108,7 @@ class WidgetUtils
         )
     }
 
-    private fun getRetryIntent(
+    fun getRetryIntent(
         context: Context,
         widgetType: Class<*>,
         appWidgetId: Int
@@ -123,14 +129,6 @@ class WidgetUtils
         return Random(Date().time).nextInt()
     }
 
-    companion object {
-        private val PENDING_INTENT_FLAGS = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
-        } else {
-            PendingIntent.FLAG_UPDATE_CURRENT
-        }
-        const val WIDGET_NO_REGISTERED = "no-registered"
-    }
 }
 
 fun AppWidgetProviderInfo.getWidgetName(): String {
