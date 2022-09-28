@@ -40,23 +40,23 @@ class TodayWidgetListViewModel @Inject constructor(
         // of the actual contents in the interim
         val todayStatsResult = runBlocking { getWidgetStats(WCStatsStore.StatsGranularity.DAYS, site) }
 
-        if (todayStatsResult.isError) {
-            appWidgetId?.let { onError(it) }
-        } else {
+        if (todayStatsResult is GetWidgetStats.WidgetStatsResult.WidgetStats) {
             val uiModels = buildListItemUiModel(
                 site = site,
-                stats = todayStatsResult.model!!
+                stats = todayStatsResult
             )
             if (uiModels != data) {
                 mutableData.clear()
                 mutableData.addAll(uiModels)
             }
+        } else {
+            appWidgetId?.let { onError(it) }
         }
     }
 
     private fun buildListItemUiModel(
         site: SiteModel,
-        stats: GetWidgetStats.WidgetStats
+        stats: GetWidgetStats.WidgetStatsResult.WidgetStats
     ): List<TodayWidgetListItem> {
         val layout = R.layout.stats_widget_list_item
         val localSiteId = site.siteId.toInt()
