@@ -34,8 +34,8 @@ class OrderListScreen : Screen {
     fun newOrderTap(): UnifiedOrderScreen {
         try {
             clickOn(CREATE_ORDER_OPTION)
-        } catch (e: java.lang.Exception) {
-            // ignore the failure
+        } catch (e: java.lang.Exception) { // ignore the error
+            println(e)
         }
 
         return UnifiedOrderScreen()
