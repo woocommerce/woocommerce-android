@@ -308,17 +308,12 @@ open class Screen {
         return isElementDisplayed(elementId)
     }
 
-    fun waitForElementToDisappearWithoutFailure(element: Int) {
-        try {
-            waitForConditionToBeTrue(
-                Supplier<Boolean> {
-                    isElementNotDisplayed(element)
-                }
-            )
-        } catch (e: java.lang.Exception) { // ignore the failure
-            println(e)
-        }
-    }
+    fun waitForElementToDisappear(element: Int) {
+        waitForConditionToBeTrue(
+            Supplier<Boolean> {
+                isElementNotDisplayed(element)
+            }
+        )
 
     fun isElementDisplayed(elementID: Int): Boolean {
         return Screen.isElementDisplayed(elementID)
