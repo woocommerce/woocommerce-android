@@ -23,7 +23,6 @@ import org.wordpress.android.login.LoginListener
 import org.wordpress.android.login.LoginWpcomService
 import org.wordpress.android.login.widgets.WPLoginInputRow
 
-
 class WooLoginEmailPasswordFragment : LoginEmailPasswordFragment() {
     companion object {
         private const val ARG_VARIANT = "ARG_VARIANT"
@@ -106,7 +105,7 @@ class WooLoginEmailPasswordFragment : LoginEmailPasswordFragment() {
             ENHANCED -> addRequestMagicLinkButton(rootView)
             AUTOMATIC -> addOpenEmailClientButton(rootView)
             CONTROL -> {
-                with (rootView.findViewById<WPLoginInputRow>(R.id.login_password_row).editText) {
+                with(rootView.findViewById<WPLoginInputRow>(R.id.login_password_row).editText) {
                     requestPasswordAutoFillWithDelay()
                     showKeyboardWithDelay()
                 }

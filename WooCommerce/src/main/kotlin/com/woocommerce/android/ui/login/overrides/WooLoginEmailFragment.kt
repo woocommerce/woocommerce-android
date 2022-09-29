@@ -9,7 +9,6 @@ import com.woocommerce.android.extensions.showKeyboardWithDelay
 import org.wordpress.android.login.LoginEmailFragment
 import org.wordpress.android.login.widgets.WPLoginInputRow
 
-
 class WooLoginEmailFragment : LoginEmailFragment() {
     interface Listener {
         fun onWhatIsWordPressLinkClicked()
