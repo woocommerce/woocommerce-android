@@ -314,6 +314,7 @@ open class Screen {
                 isElementNotDisplayed(element)
             }
         )
+    }
 
     fun isElementDisplayed(elementID: Int): Boolean {
         return Screen.isElementDisplayed(elementID)

@@ -33,7 +33,6 @@ class OrderListScreen : Screen {
 
     fun newOrderTap(): UnifiedOrderScreen {
         clickOn(CREATE_ORDER_OPTION)
-
         return UnifiedOrderScreen()
     }
 }
