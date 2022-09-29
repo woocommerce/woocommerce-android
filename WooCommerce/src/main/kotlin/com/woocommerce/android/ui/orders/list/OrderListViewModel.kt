@@ -115,7 +115,15 @@ class OrderListViewModel @Inject constructor(
     internal var viewState by viewStateLiveData
 
     private val _pagedListData = MediatorLiveData<PagedOrdersList>()
-    val pagedListData: LiveData<PagedOrdersList> = _pagedListData
+    val pagedListData: LiveData<PagedOrdersList>
+        get() {
+            return _pagedListData.map {
+                viewModelScope.launch {
+                    updateBannerState(landscapeChecker, _pagedListData.value.isNullOrEmpty())
+                }
+                it
+            }
+        }
 
     private val _isLoadingMore = MediatorLiveData<Boolean>()
     val isLoadingMore: LiveData<Boolean> = _isLoadingMore
@@ -196,10 +204,6 @@ class OrderListViewModel @Inject constructor(
             canShowCardReaderUpsellBanner(System.currentTimeMillis()) &&
             !isLandScape &&
             !isOrderListEmpty
-    }
-
-    suspend fun updateBannerState() {
-        updateBannerState(landscapeChecker, _pagedListData.value.isNullOrEmpty())
     }
 
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
@@ -360,9 +364,7 @@ class OrderListViewModel @Inject constructor(
 
         _pagedListData.addSource(pagedListWrapper.data) { pagedList ->
             pagedList?.let {
-                viewModelScope.launch {
-                    updateBannerState(landscapeChecker, it.isNullOrEmpty())
-                }
+
                 _pagedListData.value = it
             }
         }
