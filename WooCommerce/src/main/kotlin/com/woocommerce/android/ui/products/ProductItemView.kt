@@ -39,7 +39,7 @@ class ProductItemView @JvmOverloads constructor(
     private val statusColor = ContextCompat.getColor(context, R.color.product_status_fg_other)
     private val statusPendingColor = ContextCompat.getColor(context, R.color.product_status_fg_pending)
     private val selectedBackgroundColor = ContextCompat.getColor(context, R.color.color_primary)
-    private val unSelectedBackgroundColor = ContextCompat.getColor(context, R.color.white)
+    private val unSelectedBackgroundColor = ContextCompat.getColor(context, R.color.color_on_primary_high)
 
     fun bind(
         product: Product,
