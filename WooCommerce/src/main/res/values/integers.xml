@@ -16,6 +16,8 @@
 
     <integer name="activity_transition_duration">300</integer>
 
-    <!-- Specifies how often, in milliseconds, the stats widget should be updated (30min) -->
-    <integer name="stats_widget_update_period">1800000</integer>
+    <!-- Specifies how often, in milliseconds, the stats widget should be updated. It is 0 because
+     the we will rely in a WorkManager task to update the widget instead of the updatePeriodMillis
+     property -->
+    <integer name="stats_widget_update_period">0</integer>
 </resources>

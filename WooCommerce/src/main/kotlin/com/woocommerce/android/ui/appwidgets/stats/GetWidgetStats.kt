@@ -1,4 +1,4 @@
-package com.woocommerce.android.ui.appwidgets.stats.today
+package com.woocommerce.android.ui.appwidgets.stats
 
 import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.tools.NetworkStatus
