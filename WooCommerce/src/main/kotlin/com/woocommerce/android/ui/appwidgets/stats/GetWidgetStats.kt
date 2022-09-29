@@ -56,9 +56,10 @@ class GetWidgetStats @Inject constructor(
         data class WidgetStatsFailure(val errorMessage: String?) : WidgetStatsResult()
         data class WidgetStats(
             private val revenueModel: WCRevenueStatsModel?,
-            private val visitorsMap: Map<String, Int>?
+            private val visitorsMap: Map<String, Int>?,
+            val currencyCode: String
         ) : WidgetStatsResult() {
-            constructor(stats: StatsRepository.SiteStats) : this(stats.revenue, stats.visitors)
+            constructor(stats: StatsRepository.SiteStats) : this(stats.revenue, stats.visitors, stats.currencyCode)
 
             val visitorsTotal: Int
             val ordersTotal: Int
