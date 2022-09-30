@@ -240,10 +240,6 @@ class AnalyticsTracker private constructor(private val context: Context) {
             SYSTEM("system")
         }
 
-        const val KEY_VALIDATION_SCENARIO = "validation_scenario"
-        const val VALUE_VALIDATION_SCENARIO_LOCAL = "local"
-        const val VALUE_VALIDATION_SCENARIO_REMOTE = "remote"
-
         const val KEY_FEEDBACK_ACTION = "action"
         const val KEY_FEEDBACK_CONTEXT = "context"
         const val VALUE_FEEDBACK_GENERAL_CONTEXT = "general"
