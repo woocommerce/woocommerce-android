@@ -11,6 +11,7 @@ import com.woocommerce.android.screenshots.util.NestedScrollViewExtension
 import com.woocommerce.android.screenshots.util.OrderData
 import com.woocommerce.android.screenshots.util.Screen
 import org.hamcrest.Matchers
+import org.hamcrest.core.AllOf.allOf
 
 class SingleOrderScreen : Screen {
     companion object {
@@ -18,6 +19,8 @@ class SingleOrderScreen : Screen {
         const val AMOUNT_SHIPPING = R.id.paymentInfo_shippingTotal
         const val AMOUNT_TOTAL = R.id.paymentInfo_total
         const val COLLECT_PAYMENT_BUTTON = R.id.paymentInfo_collectCardPresentPaymentButton
+        const val CUSTOMER_NOTE = R.id.customerInfo_customerNote
+        const val CUSTOMER_NOTE_TEXT_FIELD = R.id.notEmptyLabel
         const val ORDER_NUMBER_LABEL = R.id.orderStatus_subtitle
         const val ORDER_STATUS_CUSTOMER = R.id.orderStatus_header
         const val ORDER_STATUS_TAG = R.id.orderStatus_orderTags
@@ -55,6 +58,10 @@ class SingleOrderScreen : Screen {
         assertIdAndTextDisplayed(AMOUNT_SHIPPING, order.shippingAmount)
         assertIdAndTextDisplayed(AMOUNT_FEE, order.feeAmount)
         assertIdAndTextDisplayed(AMOUNT_TOTAL, order.total)
+
+        Espresso.onView(withId(CUSTOMER_NOTE))
+            .perform(NestedScrollViewExtension())
+        assertIdAndTextDisplayed(CUSTOMER_NOTE_TEXT_FIELD, order.customerNote)
 
         return this
     }
