@@ -1,3 +1,0 @@
-10.4:
-Esta versión incluye algunas pequeñas mejoras para que la experiencia sea más fluida. Esperamos que seas consciente del cariño que le ponemos a nuestro software.
-
