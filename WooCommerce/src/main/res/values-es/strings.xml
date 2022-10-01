@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2022-09-20 09:54:23+0000
+Translation-Revision-Date: 2022-09-28 13:36:39+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: es
@@ -103,7 +103,6 @@ Language: es
     <string name="support_system_status_report_share_label">Compartir el informe de estado del sistema</string>
     <string name="support_system_status_report_copy_label">Copiar el informe de estado del sistema al portapapeles</string>
     <string name="card_reader_connect_keep_searching_button">Seguir buscando</string>
-    <string name="card_reader_payment_description_v2">Pago en persona del pedido n.º %s para %s blog_id %s.</string>
     <string name="card_reader_manage_payment_provider">Cambiar proveedor de pagos</string>
     <string name="orderdetail_refunded_line_with_info">Reembolsado: %1$s</string>
     <string name="orderdetail_payment_summary_onhold_plain">Pago pendiente</string>
@@ -187,7 +186,6 @@ Language: es
     <string name="shipping_label_install_wc_shipping_banner_button">Obtener WooCommerce Shipping</string>
     <string name="shipping_label_install_wc_shipping_banner_description">Imprime etiquetas desde tu teléfono con WooCommerce Shipping.</string>
     <string name="shipping_label_install_wc_shipping_banner_title">¿Necesitas una etiqueta de envío?</string>
-    <string name="order_creation_change_product_quantity">Cambiar la cantidad de producto de %d a %d</string>
     <string name="variations_bulk_update_regular_price">Actualizar precio normal</string>
     <string name="variations_bulk_update_sale_price">Actualizar precio rebajado</string>
     <string name="card_reader_onboarding_stripe_unsupported_in_country_header">No admitimos la extensión WooCommerce Stripe en %1$s</string>
@@ -320,8 +318,8 @@ Language: es
     <string name="coupon_list_wip_message_enabled">¡Hemos estado trabajando para que puedas ver y editar los cupones desde tu dispositivo!</string>
     <string name="coupon_list_wip_title">Ver y editar cupones</string>
     <string name="coupon_list_empty_heading">No se han encontrado cupones</string>
-    <string name="coupon_list_item_label_included_and_excluded">%1s excepto %2s</string>
-    <string name="coupon_list_item_label_products_and_categories">%1s y %2s</string>
+    <string name="coupon_list_item_label_included_and_excluded">%1$s excepto %2$s</string>
+    <string name="coupon_list_item_label_products_and_categories">%1$s y %2$s</string>
     <string name="coupon_list_item_label_everything">todo</string>
     <string name="coupon_list_item_label_expired">Caducado</string>
     <string name="coupon_list_item_label_active">Activo</string>
@@ -1390,7 +1388,6 @@ Language: es
     <string name="product_width">Ancho</string>
     <string name="product_length">Longitud</string>
     <string name="order_refunds_refund_info_title">Productos reembolsados</string>
-    <string name="order_refunds_detail_item_description">%s (%sx%d)</string>
     <string name="order_refunds_method">%1$s a través de %2$s</string>
     <string name="order_refunds_confirmation">¿Seguro que quieres solicitar un reembolso? Esta acción no se puede deshacer.</string>
     <string name="orderdetail_refunded_products">Productos reembolsados</string>
@@ -1430,7 +1427,6 @@ Language: es
     <string name="order_refunds_select_quantity">Seleccionar cantidad</string>
     <string name="order_refunds_shipping_refund">Reembolso del envío</string>
     <string name="order_refunds_products_refund">Reembolso de productos</string>
-    <string name="order_refunds_item_description">%s x %s cada uno</string>
     <string name="order_refunds_items_selected">%d elementos seleccionados</string>
     <string name="order_refunds_items_select_none">Borrar selección</string>
     <string name="order_refunds_items_select_all">Seleccionar todo</string>
@@ -1441,7 +1437,6 @@ Language: es
     <string name="image_source_device_chooser">Elegir del dispositivo</string>
     <string name="image_source_title">Elegir un método de carga</string>
     <string name="product_images_upload_channel_title">Cargas</string>
-    <string name="product_images_uploading_multi_notif_message">Cargando imágenes…%d de %d</string>
     <string name="product_images_uploading_single_notif_message">Cargando imagen…</string>
     <string name="product_images_camera_error">No se puede acceder a la cámara</string>
     <string name="product_image_remove_confirmation">¿Seguro que quieres eliminar esta imagen?</string>
@@ -2162,7 +2157,6 @@ Language: es
     <string name="login_nostores_content_description">No hay tiendas WooCommerce</string>
     <string name="login_avatar_content_description">Tu foto de perfil</string>
     <string name="login_connected_store">Tienda conectada</string>
-    <string name="login_configure_link">Lee las %sinstrucciones de configuración%s.</string>
     <string name="login_jetpack_required">Esta aplicación requiere que Jetpack esté conectado a tu tienda.</string>
     <string name="at_username">\@%s</string>
     <string name="enter_site_address">Introduce la dirección de la tienda de WooCommerce que quieres conectar.</string>

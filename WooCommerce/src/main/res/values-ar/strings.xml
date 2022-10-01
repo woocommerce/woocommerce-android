@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2022-09-19 22:54:03+0000
+Translation-Revision-Date: 2022-09-28 13:35:36+0000
 Plural-Forms: nplurals=6; plural=n==0 ? 0 : n==1 ? 1 : n==2 ? 2 : n%100>=3 && n%100<=10 ? 3 : n%100>=11 && n%100<=99 ? 4 : 5;
 Generator: GlotPress/2.4.0-alpha
 Language: ar
@@ -103,7 +103,6 @@ Language: ar
     <string name="support_system_status_report_share_label">مشاركة تقرير حالة النظام</string>
     <string name="support_system_status_report_copy_label">نسخ تقرير حالة النظام إلى الحافظة</string>
     <string name="card_reader_connect_keep_searching_button">الاستمرار في البحث</string>
-    <string name="card_reader_payment_description_v2">عملية دفع شخصية للطلب رقم %s لـ %s blog_id %s.</string>
     <string name="card_reader_manage_payment_provider">تغيير مزوِّد الدفع</string>
     <string name="orderdetail_refunded_line_with_info">تم رد المبالغ المدفوعة: ⁦%1$s⁩</string>
     <string name="orderdetail_payment_summary_onhold_plain">بانتظار الدفع</string>
@@ -187,7 +186,6 @@ Language: ar
     <string name="shipping_label_install_wc_shipping_banner_button">الحصول على WooCommerce Shipping</string>
     <string name="shipping_label_install_wc_shipping_banner_description">اطبع الملصقات من هاتفك باستخدام WooCommerce Shipping.</string>
     <string name="shipping_label_install_wc_shipping_banner_title">هل تحتاج إلى ملصق شحن؟</string>
-    <string name="order_creation_change_product_quantity">تغيير كمية المنتج من %d إلى %d</string>
     <string name="variations_bulk_update_regular_price">تحديث السعر العادي</string>
     <string name="variations_bulk_update_sale_price">تحديث سعر البيع</string>
     <string name="card_reader_onboarding_stripe_unsupported_in_country_header">لا ندعم إضافة WooCommerce Stripe في ⁦%1$s⁩</string>
@@ -320,8 +318,8 @@ Language: ar
     <string name="coupon_list_wip_message_enabled">لقد كنا نعمل على إتاحة عرض القسائم وتحريرها من جهازك!</string>
     <string name="coupon_list_wip_title">عرض القسائم وتحريرها</string>
     <string name="coupon_list_empty_heading">لم يتم العثور على قسائم</string>
-    <string name="coupon_list_item_label_included_and_excluded">%1s من دون %2s</string>
-    <string name="coupon_list_item_label_products_and_categories">%1s و%2s</string>
+    <string name="coupon_list_item_label_included_and_excluded">%1$s من دون %2$s</string>
+    <string name="coupon_list_item_label_products_and_categories">%1$s و%2$s</string>
     <string name="coupon_list_item_label_everything">كل شيء</string>
     <string name="coupon_list_item_label_expired">منتهي الصلاحية</string>
     <string name="coupon_list_item_label_active">نشط</string>
@@ -1390,7 +1388,6 @@ Language: ar
     <string name="product_width">العرض</string>
     <string name="product_length">المدة</string>
     <string name="order_refunds_refund_info_title">المنتجات المستردة</string>
-    <string name="order_refunds_detail_item_description">%s (%s × %d)</string>
     <string name="order_refunds_method">%1$s عبر %2$s</string>
     <string name="order_refunds_confirmation">هل تريد بالتأكيد إرسال مبلغ الاسترداد؟ لا يمكن التراجع عن هذا.</string>
     <string name="orderdetail_refunded_products">المنتجات المستردة</string>
@@ -1430,7 +1427,6 @@ Language: ar
     <string name="order_refunds_select_quantity">تحديد الكمية</string>
     <string name="order_refunds_shipping_refund">استرداد أموال الشحن</string>
     <string name="order_refunds_products_refund">استرداد أموال المنتجات</string>
-    <string name="order_refunds_item_description">%s x %s لكل منها</string>
     <string name="order_refunds_items_selected">%d من العناصر المُحدَّدة</string>
     <string name="order_refunds_items_select_none">عدم اختيار أي شيء</string>
     <string name="order_refunds_items_select_all">اختيار الكل</string>
@@ -1441,7 +1437,6 @@ Language: ar
     <string name="image_source_device_chooser">الاختيار من جهاز</string>
     <string name="image_source_title">اختيار طريقة الرفع</string>
     <string name="product_images_upload_channel_title">عمليات الرفع</string>
-    <string name="product_images_uploading_multi_notif_message">جارٍ رفع الصور…%d من أصل %d</string>
     <string name="product_images_uploading_single_notif_message">جارٍ رفع الصورة…</string>
     <string name="product_images_camera_error">يتعذر الوصول إلى الكاميرا</string>
     <string name="product_image_remove_confirmation">هل تريد بالتأكيد إزالة هذه الصورة؟</string>
@@ -2162,7 +2157,6 @@ Language: ar
     <string name="login_nostores_content_description">لا توجد متاجر WooCommerce</string>
     <string name="login_avatar_content_description">صورة ملفك الشخصي</string>
     <string name="login_connected_store">المتجر الذي تم الاتصال به</string>
-    <string name="login_configure_link">اقرأ %sتعليمات التكوين%s.</string>
     <string name="login_jetpack_required">يتطلب هذا التطبيق اتصال Jetpack بمتجرك.</string>
     <string name="at_username">\@%s</string>
     <string name="enter_site_address">Enter the address of the WooCommerce store you\'d like to connect.</string>

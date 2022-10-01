@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2022-09-21 09:54:03+0000
+Translation-Revision-Date: 2022-09-28 13:57:51+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: ja_JP
@@ -103,7 +103,6 @@ Language: ja_JP
     <string name="support_system_status_report_share_label">システムステータスレポートを共有</string>
     <string name="support_system_status_report_copy_label">システムステータスレポートをクリップボードにコピー</string>
     <string name="card_reader_connect_keep_searching_button">検索を続行</string>
-    <string name="card_reader_payment_description_v2">%s blog_id %s への注文 #%sのオフラインでの支払い。</string>
     <string name="card_reader_manage_payment_provider">決済サービス業者を変更</string>
     <string name="orderdetail_refunded_line_with_info">返金済み: %1$s</string>
     <string name="orderdetail_payment_summary_onhold_plain">支払い待ち</string>
@@ -187,7 +186,6 @@ Language: ja_JP
     <string name="shipping_label_install_wc_shipping_banner_button">WooCommerce Shipping を入手</string>
     <string name="shipping_label_install_wc_shipping_banner_description">WooCommerce Shipping を使用してスマートフォンからラベルを印刷します。</string>
     <string name="shipping_label_install_wc_shipping_banner_title">配送ラベルが必要な場合</string>
-    <string name="order_creation_change_product_quantity">商品数量を%dから%dに変更</string>
     <string name="variations_bulk_update_regular_price">通常価格を更新</string>
     <string name="variations_bulk_update_sale_price">販売価格を更新</string>
     <string name="card_reader_onboarding_stripe_unsupported_in_country_header">%1$s では WooCommerce Stripe 拡張機能がサポートされていません</string>
@@ -320,8 +318,8 @@ Language: ja_JP
     <string name="coupon_list_wip_message_enabled">デバイスからクーポンを表示、編集できる機能を開発中です !</string>
     <string name="coupon_list_wip_title">クーポンを表示して編集する</string>
     <string name="coupon_list_empty_heading">クーポンが見つかりません</string>
-    <string name="coupon_list_item_label_included_and_excluded">%1s (%2s を除く)</string>
-    <string name="coupon_list_item_label_products_and_categories">%1s、%2s</string>
+    <string name="coupon_list_item_label_included_and_excluded">%1$s (%2$s を除く)</string>
+    <string name="coupon_list_item_label_products_and_categories">%1$s、%2$s</string>
     <string name="coupon_list_item_label_everything">すべて</string>
     <string name="coupon_list_item_label_expired">期限切れ</string>
     <string name="coupon_list_item_label_active">有効</string>
@@ -1390,7 +1388,6 @@ Language: ja_JP
     <string name="product_width">横幅</string>
     <string name="product_length">長さ</string>
     <string name="order_refunds_refund_info_title">返金済み商品</string>
-    <string name="order_refunds_detail_item_description">%s (%s x %d)</string>
     <string name="order_refunds_method">%2$s により %1$s</string>
     <string name="order_refunds_confirmation">返金を受けますか ?この操作は元に戻すことができません。</string>
     <string name="orderdetail_refunded_products">返金済み商品</string>
@@ -1430,7 +1427,6 @@ Language: ja_JP
     <string name="order_refunds_select_quantity">数量を選択</string>
     <string name="order_refunds_shipping_refund">配送料の返金</string>
     <string name="order_refunds_products_refund">商品の返金</string>
-    <string name="order_refunds_item_description">各 %s x %s</string>
     <string name="order_refunds_items_selected">%d項目を選択済み</string>
     <string name="order_refunds_items_select_none">選択しない</string>
     <string name="order_refunds_items_select_all">すべて選択</string>
@@ -1441,7 +1437,6 @@ Language: ja_JP
     <string name="image_source_device_chooser">デバイスから選択</string>
     <string name="image_source_title">アップロード方法を選択</string>
     <string name="product_images_upload_channel_title">アップロード</string>
-    <string name="product_images_uploading_multi_notif_message">画像をアップロードしています…%d件中%d件</string>
     <string name="product_images_uploading_single_notif_message">画像をアップロードしています…</string>
     <string name="product_images_camera_error">カメラにアクセスできません</string>
     <string name="product_image_remove_confirmation">画像を削除してもよいですか ?</string>
@@ -2162,7 +2157,6 @@ Language: ja_JP
     <string name="login_nostores_content_description">WooCommerce ストアがありません</string>
     <string name="login_avatar_content_description">自分のプロフィール写真</string>
     <string name="login_connected_store">連携ストア</string>
-    <string name="login_configure_link">%s設定手順%sを参照してください。</string>
     <string name="login_jetpack_required">このアプリを使用するには、Jetpack をストアに連携させる必要があります。</string>
     <string name="at_username">\@%s</string>
     <string name="enter_site_address">連携させる WooCommerce ストアのアドレスを入力してください。</string>
