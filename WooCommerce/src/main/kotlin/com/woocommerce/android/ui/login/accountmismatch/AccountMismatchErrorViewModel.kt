@@ -178,7 +178,7 @@ class AccountMismatchErrorViewModel @Inject constructor(
             }
         },
         onCancel = { step.value = Step.MainContent },
-        onLoginWithAnotherAccountClick = {}
+        onLoginWithAnotherAccountClick = ::loginWithDifferentAccount
     )
 
     private fun prepareJetpackConnectionState(connectionUrl: String) = ViewState.JetpackWebViewState(
