@@ -49,7 +49,7 @@ class AccountMismatchErrorFragment : BaseFragment(), Listener {
     private val backButtonCallback = object : OnBackPressedCallback(false) {
         override fun handleOnBackPressed() {
             // The callback is enabled only when showing the WebView
-            when(val state = viewModel.viewState.value) {
+            when (val state = viewModel.viewState.value) {
                 is ViewState.JetpackWebViewState -> state.onDismiss()
                 is ViewState.SiteCredentialsViewState -> state.onCancel()
                 else -> {
