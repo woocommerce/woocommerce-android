@@ -271,18 +271,29 @@ class CardReaderHubViewModelTest : BaseUnitTest() {
 
     @Test
     fun `when user clicks on manuals row, then app navigates to manuals screen`() {
+        val supportedCountry: CardReaderConfig = CardReaderConfigForUSA
+        whenever(cardReaderCountryConfigProvider.provideCountryConfigFor("US")).thenReturn(supportedCountry)
+        whenever(wooStore.getStoreCountryCode(selectedSite.get())).thenReturn("US")
+
+        initViewModel()
+
         (viewModel.viewStateData.value)?.rows?.find {
             it.label == UiString.UiStringRes(R.string.settings_card_reader_manuals)
         }!!.onClick!!.invoke()
 
         assertThat(viewModel.event.value)
-            .isEqualTo(
-                CardReaderHubViewModel.CardReaderHubEvents.NavigateToCardReaderManualsScreen
+            .isInstanceOf(
+                CardReaderHubViewModel.CardReaderHubEvents.NavigateToCardReaderManualsScreen::class.java
             )
     }
 
     @Test
     fun `when user clicks on manuals row, then click on manuals tracked`() {
+        val supportedCountry: CardReaderConfig = CardReaderConfigForUSA
+        whenever(cardReaderCountryConfigProvider.provideCountryConfigFor("US")).thenReturn(supportedCountry)
+        whenever(wooStore.getStoreCountryCode(selectedSite.get())).thenReturn("US")
+
+        initViewModel()
         (viewModel.viewStateData.value)?.rows?.find {
             it.label == UiString.UiStringRes(R.string.settings_card_reader_manuals)
         }!!.onClick!!.invoke()
@@ -513,6 +524,10 @@ class CardReaderHubViewModelTest : BaseUnitTest() {
     @Test
     fun `given onboarding error, when screen shown, then card reader manual is enabled`() =
         testBlocking {
+            val supportedCountry: CardReaderConfig = CardReaderConfigForUSA
+            whenever(cardReaderCountryConfigProvider.provideCountryConfigFor("US")).thenReturn(supportedCountry)
+            whenever(wooStore.getStoreCountryCode(selectedSite.get())).thenReturn("US")
+
             whenever(cardReaderChecker.getOnboardingState()).thenReturn(
                 mock<CardReaderOnboardingState.GenericError>()
             )
@@ -606,6 +621,10 @@ class CardReaderHubViewModelTest : BaseUnitTest() {
     @Test
     fun `given pending requirements status, when screen shown, then card reader manuals is enabled`() =
         testBlocking {
+            val supportedCountry: CardReaderConfig = CardReaderConfigForUSA
+            whenever(cardReaderCountryConfigProvider.provideCountryConfigFor("US")).thenReturn(supportedCountry)
+            whenever(wooStore.getStoreCountryCode(selectedSite.get())).thenReturn("US")
+
             whenever(cardReaderChecker.getOnboardingState()).thenReturn(
                 mock<StripeAccountPendingRequirement>()
             )
