@@ -145,7 +145,16 @@ class AccountMismatchErrorViewModel @Inject constructor(
                     onSuccess = {
                         _loadingDialogMessage.value = null
                         when (it) {
-                            is JetpackConnectionStatus.ConnectedToDifferentAccount -> TODO()
+                            is JetpackConnectionStatus.ConnectedToDifferentAccount -> {
+                                // TODO we should probably offer a better UX handling here:
+                                //  explain the situation to the user
+                                triggerEvent(
+                                    OnJetpackConnectedEvent(
+                                        email = it.wpcomEmail,
+                                        isAuthenticated = false
+                                    )
+                                )
+                            }
                             JetpackConnectionStatus.NotConnected -> startJetpackConnection()
                         }
                     },
