@@ -5,6 +5,9 @@ import android.content.res.Configuration
 import android.webkit.WebChromeClient
 import android.webkit.WebView
 import android.webkit.WebViewClient
+import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.ExperimentalAnimationApi
+import androidx.compose.animation.core.updateTransition
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -49,7 +52,6 @@ import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
-import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -61,6 +63,7 @@ import com.woocommerce.android.ui.compose.component.ProgressDialog
 import com.woocommerce.android.ui.compose.component.WCColoredButton
 import com.woocommerce.android.ui.compose.component.WCOutlinedButton
 import com.woocommerce.android.ui.compose.component.WCOutlinedTextField
+import com.woocommerce.android.ui.compose.component.WCPasswordField
 import com.woocommerce.android.ui.compose.component.WCTextButton
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.ui.login.accountmismatch.AccountMismatchErrorViewModel.ViewState
@@ -145,14 +148,12 @@ private fun SiteCredentialsScreen(
                 singleLine = true,
                 keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next)
             )
-            WCOutlinedTextField(
+            WCPasswordField(
                 value = viewState.password,
                 onValueChange = viewState.onPasswordChanged,
                 label = stringResource(id = R.string.password),
                 isError = viewState.errorMessage != null,
                 helperText = viewState.errorMessage?.let { stringResource(id = it) },
-                visualTransformation = PasswordVisualTransformation(),
-                singleLine = true,
                 keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
                 keyboardActions = KeyboardActions(
                     onDone = { viewState.onContinueClick() }

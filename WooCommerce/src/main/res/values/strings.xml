@@ -147,6 +147,8 @@
     <string name="variations_bulk_update_sale_price">Update Sale Price</string>
     <string name="variations_bulk_update_regular_price">Update Regular Price</string>
     <string name="tip">Tip</string>
+    <string name="hide_password_content_description">Hide password</string>
+    <string name="show_password_content_description">Show password</string>
 
     <!--
         Date/Time Labels
