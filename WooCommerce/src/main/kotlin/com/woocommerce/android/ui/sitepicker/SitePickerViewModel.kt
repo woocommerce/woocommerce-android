@@ -583,6 +583,11 @@ class SitePickerViewModel @Inject constructor(
         launch { fetchSitesFromApi(showSkeleton = true) }
     }
 
+    fun onJetpackConnected() = launch {
+        // Reload sites
+        fetchSitesFromApi(showSkeleton = true)
+    }
+
     private fun trackLoginEvent(
         currentFlow: UnifiedLoginTracker.Flow? = null,
         currentStep: UnifiedLoginTracker.Step? = null,

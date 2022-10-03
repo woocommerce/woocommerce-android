@@ -10,6 +10,7 @@ import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
+import com.woocommerce.android.extensions.navigateBackWithNotice
 import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.support.HelpActivity
 import com.woocommerce.android.ui.base.BaseFragment
@@ -35,6 +36,10 @@ import javax.inject.Inject
 
 @AndroidEntryPoint
 class AccountMismatchErrorFragment : BaseFragment(), Listener {
+    companion object {
+        const val JETPACK_CONNECTED_NOTICE = "jetpack-connected"
+    }
+
     private val viewModel: AccountMismatchErrorViewModel by viewModels()
     @Inject
     lateinit var uiMessageResolver: UIMessageResolver
@@ -105,6 +110,8 @@ class AccountMismatchErrorFragment : BaseFragment(), Listener {
             // Make sure this fragment is removed from the backstack
             requireActivity().supportFragmentManager.popBackStack()
             (requireActivity() as LoginListener).gotWpcomEmail(email, true, null)
+        } else {
+            navigateBackWithNotice(JETPACK_CONNECTED_NOTICE)
         }
     }
 

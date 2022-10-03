@@ -24,6 +24,7 @@ import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.common.wpcomwebview.WPComWebViewFragment
 import com.woocommerce.android.ui.login.LoginActivity
 import com.woocommerce.android.ui.login.LoginEmailHelpDialogFragment
+import com.woocommerce.android.ui.login.accountmismatch.AccountMismatchErrorFragment
 import com.woocommerce.android.ui.login.accountmismatch.AccountMismatchErrorViewModel.AccountMismatchPrimaryButton
 import com.woocommerce.android.ui.main.AppBarStatus
 import com.woocommerce.android.ui.main.MainActivity
@@ -179,6 +180,9 @@ class SitePickerFragment : BaseFragment(R.layout.fragment_site_picker), LoginEma
         }
         handleResult<String>(SitePickerSiteDiscoveryFragment.SITE_PICKER_SITE_ADDRESS_RESULT) {
             viewModel.onSiteAddressReceived(it)
+        }
+        handleNotice(AccountMismatchErrorFragment.JETPACK_CONNECTED_NOTICE) {
+            viewModel.onJetpackConnected()
         }
     }
 
