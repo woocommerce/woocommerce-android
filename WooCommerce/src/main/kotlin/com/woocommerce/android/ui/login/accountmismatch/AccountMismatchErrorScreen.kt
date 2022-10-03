@@ -68,6 +68,7 @@ import com.woocommerce.android.ui.compose.component.WCTextButton
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.ui.login.accountmismatch.AccountMismatchErrorViewModel.ViewState
 
+@OptIn(ExperimentalAnimationApi::class)
 @Composable
 fun AccountMismatchErrorScreen(viewModel: AccountMismatchErrorViewModel) {
     viewModel.viewState.observeAsState().value?.let { viewState ->
@@ -93,26 +94,31 @@ fun AccountMismatchErrorScreen(viewModel: AccountMismatchErrorViewModel) {
                 elevation = 0.dp
             )
         }) { paddingValues ->
-            when (viewState) {
-                is ViewState.MainState -> AccountMismatchErrorScreen(
-                    viewState = viewState,
-                    modifier = Modifier.padding(paddingValues)
-                )
-                is ViewState.JetpackWebViewState -> JetpackConnectionWebView(
-                    viewState = viewState,
-                    modifier = Modifier.padding(paddingValues)
-                )
-                ViewState.FetchingJetpackEmailViewState -> FetchJetpackEmailScreen(
-                    modifier = Modifier.padding(paddingValues)
-                )
-                is ViewState.JetpackEmailErrorState -> JetpackEmailErrorScreen(
-                    modifier = Modifier.padding(paddingValues),
-                    retry = viewState.retry
-                )
-                is ViewState.SiteCredentialsViewState -> SiteCredentialsScreen(
-                    viewState = viewState,
-                    modifier = Modifier.padding(paddingValues)
-                )
+            val transition = updateTransition(targetState = viewState, label = "state")
+            transition.AnimatedContent(
+                contentKey = { viewState::class.java }
+            ) { targetState ->
+                when (targetState) {
+                    is ViewState.MainState -> AccountMismatchErrorScreen(
+                        viewState = targetState,
+                        modifier = Modifier.padding(paddingValues)
+                    )
+                    is ViewState.JetpackWebViewState -> JetpackConnectionWebView(
+                        viewState = targetState,
+                        modifier = Modifier.padding(paddingValues)
+                    )
+                    ViewState.FetchingJetpackEmailViewState -> FetchJetpackEmailScreen(
+                        modifier = Modifier.padding(paddingValues)
+                    )
+                    is ViewState.JetpackEmailErrorState -> JetpackEmailErrorScreen(
+                        modifier = Modifier.padding(paddingValues),
+                        retry = targetState.retry
+                    )
+                    is ViewState.SiteCredentialsViewState -> SiteCredentialsScreen(
+                        viewState = targetState,
+                        modifier = Modifier.padding(paddingValues)
+                    )
+                }
             }
         }
     }
