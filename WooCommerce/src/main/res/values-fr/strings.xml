@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2022-09-28 13:38:42+0000
+Translation-Revision-Date: 2022-10-02 19:17:47+0000
 Plural-Forms: nplurals=2; plural=n > 1;
 Generator: GlotPress/2.4.0-alpha
 Language: fr
@@ -103,6 +103,7 @@ Language: fr
     <string name="support_system_status_report_share_label">Partager le rapport sur l’état du système</string>
     <string name="support_system_status_report_copy_label">Copier le rapport sur l’état du système dans le presse-papiers</string>
     <string name="card_reader_connect_keep_searching_button">Continuer la recherche</string>
+    <string name="card_reader_payment_description_v2">Paiement en personne de la commande n° %1$s pour %2$s blog_id %3$s.</string>
     <string name="card_reader_manage_payment_provider">Changer de fournisseur de paiement</string>
     <string name="orderdetail_refunded_line_with_info">Remboursés : %1$s</string>
     <string name="orderdetail_payment_summary_onhold_plain">Paiement en attente</string>
@@ -186,6 +187,7 @@ Language: fr
     <string name="shipping_label_install_wc_shipping_banner_button">Obtenir WooCommerce Shipping</string>
     <string name="shipping_label_install_wc_shipping_banner_description">Imprimez des étiquettes depuis votre téléphone avec WooCommerce Shipping.</string>
     <string name="shipping_label_install_wc_shipping_banner_title">Vous avez besoin d’une étiquette de livraison ?</string>
+    <string name="order_creation_change_product_quantity">Modifier la quantité de produit de %1$d à %2$d</string>
     <string name="variations_bulk_update_regular_price">Mettre à jour le tarif standard</string>
     <string name="variations_bulk_update_sale_price">Mettre à jour le tarif promotionnel</string>
     <string name="card_reader_onboarding_stripe_unsupported_in_country_header">Nous ne prenons pas en charge l’extension WooCommerce Stripe en %1$s</string>
@@ -1388,6 +1390,7 @@ Language: fr
     <string name="product_width">Largeur</string>
     <string name="product_length">Longueur</string>
     <string name="order_refunds_refund_info_title">Produits remboursés</string>
+    <string name="order_refunds_detail_item_description">%1$s (%2$s x %3$d)</string>
     <string name="order_refunds_method">%1$s via %2$s</string>
     <string name="order_refunds_confirmation">Voulez-vous vraiment déclencher un remboursement ? Cette opération est irréversible.</string>
     <string name="orderdetail_refunded_products">Produits remboursés</string>
@@ -1427,6 +1430,7 @@ Language: fr
     <string name="order_refunds_select_quantity">Sélectionner une quantité</string>
     <string name="order_refunds_shipping_refund">Remboursement des frais d’expédition</string>
     <string name="order_refunds_products_refund">Remboursement des produits</string>
+    <string name="order_refunds_item_description">%1$s x %2$s chacun</string>
     <string name="order_refunds_items_selected">%d articles sélectionnés</string>
     <string name="order_refunds_items_select_none">Ne rien sélectionner</string>
     <string name="order_refunds_items_select_all">Sélectionner tout</string>
@@ -1437,6 +1441,7 @@ Language: fr
     <string name="image_source_device_chooser">Choisir depuis l’appareil</string>
     <string name="image_source_title">Sélectionner une méthode de chargement</string>
     <string name="product_images_upload_channel_title">Chargements</string>
+    <string name="product_images_uploading_multi_notif_message">Chargement des images…%1$d of %2$d</string>
     <string name="product_images_uploading_single_notif_message">Chargement de l’image…</string>
     <string name="product_images_camera_error">Impossible d’accéder à l’appareil photo</string>
     <string name="product_image_remove_confirmation">Voulez-vous vraiment supprimer cette image ?</string>
@@ -2157,6 +2162,7 @@ Language: fr
     <string name="login_nostores_content_description">Aucune boutique WooCommerce</string>
     <string name="login_avatar_content_description">Votre photo de profil</string>
     <string name="login_connected_store">Boutique connectée</string>
+    <string name="login_configure_link">Lisez les %1$sinstructions de configuration%2$s.</string>
     <string name="login_jetpack_required">Cette application nécessite de connecter Jetpack à votre boutique.</string>
     <string name="at_username">\@%s</string>
     <string name="enter_site_address">Entrez l\'adresse de la boutique WooCommerce que vous aimeriez connecter.</string>

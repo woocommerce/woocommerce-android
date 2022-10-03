@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2022-09-28 13:57:51+0000
+Translation-Revision-Date: 2022-10-02 20:17:59+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: ja_JP
@@ -1388,6 +1388,7 @@ Language: ja_JP
     <string name="product_width">横幅</string>
     <string name="product_length">長さ</string>
     <string name="order_refunds_refund_info_title">返金済み商品</string>
+    <string name="order_refunds_detail_item_description">%1$s (%2$s x %3$d)</string>
     <string name="order_refunds_method">%2$s により %1$s</string>
     <string name="order_refunds_confirmation">返金を受けますか ?この操作は元に戻すことができません。</string>
     <string name="orderdetail_refunded_products">返金済み商品</string>
@@ -1427,6 +1428,7 @@ Language: ja_JP
     <string name="order_refunds_select_quantity">数量を選択</string>
     <string name="order_refunds_shipping_refund">配送料の返金</string>
     <string name="order_refunds_products_refund">商品の返金</string>
+    <string name="order_refunds_item_description">各 %1$s x %2$s</string>
     <string name="order_refunds_items_selected">%d項目を選択済み</string>
     <string name="order_refunds_items_select_none">選択しない</string>
     <string name="order_refunds_items_select_all">すべて選択</string>
