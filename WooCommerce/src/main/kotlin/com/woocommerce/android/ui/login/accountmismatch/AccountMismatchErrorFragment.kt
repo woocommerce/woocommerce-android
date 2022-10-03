@@ -30,7 +30,6 @@ import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowUiStringSnackbar
 import dagger.hilt.android.AndroidEntryPoint
-import org.wordpress.android.login.LoginListener
 import org.wordpress.android.login.LoginMode
 import javax.inject.Inject
 
@@ -97,7 +96,7 @@ class AccountMismatchErrorFragment : BaseFragment(), Listener {
                         .actionAccountMismatchErrorFragmentToSitePickerSiteDiscoveryFragment()
                 )
                 is NavigateToLoginScreen -> navigateToLoginScreen()
-                is OnJetpackConnectedEvent -> onJetpackConnected(event.email)
+                is OnJetpackConnectedEvent -> onJetpackConnected(event)
                 is ShowSnackbar -> uiMessageResolver.showSnack(event.message)
                 is ShowUiStringSnackbar -> uiMessageResolver.showSnack(event.message)
                 is Exit -> findNavController().navigateUp()
@@ -105,11 +104,17 @@ class AccountMismatchErrorFragment : BaseFragment(), Listener {
         }
     }
 
-    private fun onJetpackConnected(email: String) {
-        if (requireActivity() is LoginListener) {
+    private fun onJetpackConnected(event: OnJetpackConnectedEvent) {
+        if (!event.isAuthenticated) {
             // Make sure this fragment is removed from the backstack
-            requireActivity().supportFragmentManager.popBackStack()
-            (requireActivity() as LoginListener).gotWpcomEmail(email, true, null)
+            val intent = Intent(requireActivity(), LoginActivity::class.java).apply {
+                flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK or
+                    Intent.FLAG_ACTIVITY_CLEAR_TASK
+                action = LoginActivity.LOGIN_WITH_WPCOM_EMAIL_ACTION
+                putExtra(LoginActivity.EMAIL_PARAMETER, event.email)
+                LoginMode.WOO_LOGIN_MODE.putInto(this)
+            }
+            startActivity(intent)
         } else {
             navigateBackWithNotice(JETPACK_CONNECTED_NOTICE)
         }

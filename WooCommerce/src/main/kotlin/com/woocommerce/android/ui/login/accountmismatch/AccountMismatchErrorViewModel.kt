@@ -240,8 +240,10 @@ class AccountMismatchErrorViewModel @Inject constructor(
             .collect {
                 val site = site.await() ?: error("The site is not cached")
                 accountMismatchRepository.fetchJetpackConnectedEmail(site).fold(
-                    onSuccess = {
-                        triggerEvent(OnJetpackConnectedEvent(it))
+                    onSuccess = { email ->
+                        val isUserAuthenticated = accountRepository.isUserLoggedIn() &&
+                            accountRepository.getUserAccount()?.email == email
+                        triggerEvent(OnJetpackConnectedEvent(email, isAuthenticated = isUserAuthenticated))
                     },
                     onFailure = {
                         step.value = Step.FetchingJetpackEmailFailed
@@ -325,7 +327,7 @@ class AccountMismatchErrorViewModel @Inject constructor(
     object NavigateToSiteAddressEvent : MultiLiveEvent.Event()
     object NavigateToEmailHelpDialogEvent : MultiLiveEvent.Event()
     object NavigateToLoginScreen : MultiLiveEvent.Event()
-    data class OnJetpackConnectedEvent(val email: String) : MultiLiveEvent.Event()
+    data class OnJetpackConnectedEvent(val email: String, val isAuthenticated: Boolean) : MultiLiveEvent.Event()
 
     private sealed interface Step : Parcelable {
         @Parcelize
