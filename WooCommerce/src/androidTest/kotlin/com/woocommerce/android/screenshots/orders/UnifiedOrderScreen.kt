@@ -18,10 +18,12 @@ import org.hamcrest.core.AllOf.allOf
 class UnifiedOrderScreen : Screen(ORDER_CREATION) {
     companion object {
         const val CREATE_BUTTON = R.id.menu_create
+        const val CUSTOMER_NOTE_EDITOR = R.id.customerOrderNote_editor
         const val CUSTOMER_SECTION = R.id.customer_section
         const val DONE_BUTTON = R.id.menu_done
         const val EDIT_STATUS_BUTTON = R.id.orderStatus_editButton
         const val FEE_BUTTON = R.id.fee_button
+        const val NOTES_SECTION = R.id.notes_section
         const val ORDER_CREATION = R.id.order_creation_root
         const val PAYMENT_SECTION = R.id.payment_section
         const val PRODUCTS_SECTION = R.id.products_section
@@ -73,6 +75,19 @@ class UnifiedOrderScreen : Screen(ORDER_CREATION) {
             .perform(ViewActions.clearText())
         Espresso.onView((allOf(withText("0"), withEffectiveVisibility(ViewMatchers.Visibility.VISIBLE))))
             .perform(ViewActions.replaceText("2.25"))
+
+        clickOn(DONE_BUTTON)
+        return this
+    }
+
+    fun addCustomerNotes(note: String): UnifiedOrderScreen {
+        Espresso.onView(withId(NOTES_SECTION))
+            .perform(NestedScrollViewExtension())
+        Espresso.onView(withText("Add note"))
+            .perform(click())
+
+        Espresso.onView(withId(CUSTOMER_NOTE_EDITOR))
+            .perform((ViewActions.replaceText(note)))
 
         clickOn(DONE_BUTTON)
         return this

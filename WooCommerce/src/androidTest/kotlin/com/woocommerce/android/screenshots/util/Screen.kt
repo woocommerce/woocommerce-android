@@ -168,6 +168,8 @@ open class Screen {
                 ViewActions.click()
             )
         )
+
+        idleFor(1000) // allow for transitions
     }
 
     private fun clickOn(viewInteraction: ViewInteraction) {
@@ -278,6 +280,7 @@ open class Screen {
 
     protected fun pressBack() {
         Espresso.pressBack()
+        idleFor(1000) // allow for transitions
     }
 
     fun waitForElementToBeDisplayed(elementID: Int) {

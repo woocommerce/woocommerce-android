@@ -32,8 +32,6 @@ class FeedbackCompletedFragment : androidx.fragment.app.Fragment(R.layout.fragme
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        setHasOptionsMenu(true)
-
         val binding = FragmentFeedbackCompletedBinding.bind(view)
         val contactUsText = getString(R.string.feedback_completed_contact_us)
         binding.completionHelpGuide.setClickableText(

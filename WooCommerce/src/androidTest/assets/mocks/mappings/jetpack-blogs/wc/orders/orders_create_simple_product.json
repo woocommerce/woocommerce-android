@@ -56,7 +56,7 @@
         },
         "payment_method": "",
         "payment_method_title": "",
-        "customer_note": "",
+        "customer_note": "Customer notes 123~",
         "number": "2201",
         "meta_data": [],
         "line_items": [
