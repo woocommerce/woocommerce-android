@@ -1,11 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2022-09-13 16:54:04+0000
+Translation-Revision-Date: 2022-09-20 13:54:04+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: nl
 -->
 <resources>
+    <string name="stats_widget_last_updated_message">Vanaf %1$s</string>
+    <string name="stats_widget_error_no_data">Kan gegevens niet laden</string>
+    <string name="stats_today_widget_description">WooCommerce-statistieken van vandaag</string>
+    <string name="stats_today_widget_configure_title">Winkelstatistieken van vandaag</string>
+    <string name="stats_widget_availability_message">Winkelanalyses zijn niet beschikbaar! Upgrade naar de nieuwste versie van WooCommerce om je winkelanalyses te zien.</string>
+    <string name="stats_widget_offline_error">Je netwerk is niet beschikbaar.\nControleer je data- of wifi-verbinding.</string>
+    <string name="stats_widget_log_in_message">Log in op de WooCommerce-app</string>
     <string name="login_jetpack_connection_url_failed">Ophalen koppelingsgegevens mislukt…</string>
     <string name="login_jetpack_verify_connection">Ophalen koppelingsgegevens mislukt…</string>
     <string name="login_jetpack_connection_verification_failed">Kan je Jetpack-verbinding niet verifiëren. Probeer het nog eens.</string>
@@ -155,7 +162,6 @@ Language: nl
     <string name="variations_bulk_update_regular_prices_success">Reguliere prijzen bijgewerkt.</string>
     <string name="variations_bulk_update_error">Er is iets fout gegaan. Probeer het nog eens.</string>
     <string name="variations_bulk_update_current_prices_mixed">Huidige prijzen verschillen.</string>
-    <string name="variations_bulk_update_current_price">Huidige prijs is %@. %s</string>
     <string name="variations_bulk_update_price_info">De prijs wordt bijgewerkt voor %d variaties.</string>
     <string name="variations_bulk_update_dialog_price_mixed">Gecombineerd</string>
     <string name="variations_bulk_update_dialog_price_none">Geen</string>

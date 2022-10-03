@@ -22,9 +22,9 @@ class OrderSelectProductScreen : Screen {
         return this
     }
 
-    fun selectProduct(productName: String): OrderCreationScreen {
+    fun selectProduct(productName: String): UnifiedOrderScreen {
         scrollToListItem(productName, LIST_VIEW)
         selectListItem(productName, LIST_VIEW)
-        return OrderCreationScreen()
+        return UnifiedOrderScreen()
     }
 }

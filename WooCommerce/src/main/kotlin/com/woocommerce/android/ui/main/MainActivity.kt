@@ -173,9 +173,7 @@ class MainActivity :
 
     private val fragmentLifecycleObserver: FragmentLifecycleCallbacks = object : FragmentLifecycleCallbacks() {
         override fun onFragmentViewCreated(fm: FragmentManager, f: Fragment, v: View, savedInstanceState: Bundle?) {
-            val currentDestination = navController.currentDestination!!
-            val isDialogDestination = currentDestination.navigatorName == DIALOG_NAVIGATOR_NAME
-            if (isDialogDestination) return
+            if (isDialogDestination(navController.currentDestination!!)) return
 
             when (val appBarStatus = (f as? BaseFragment)?.activityAppBarStatus ?: AppBarStatus.Visible()) {
                 is AppBarStatus.Visible -> {

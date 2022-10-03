@@ -27,8 +27,10 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="@dimen/minor_100"
-        android:layout_toEndOf="@+id/widget_app_icon"
         android:layout_toStartOf="@+id/widget_type"
+        android:layout_toEndOf="@+id/widget_app_icon"
+        android:ellipsize="end"
+        android:maxLines="1"
         tools:text="@string/my_store" />
 
     <TextView
@@ -46,8 +48,8 @@
         style="@style/Woo.StatsWidgetSubtitle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignStart="@+id/widget_title"
         android:layout_below="@+id/widget_title"
-        tools:text="as of 10:00 PM" />
+        android:layout_alignStart="@+id/widget_title"
+        tools:text="As of 10:00 PM" />
 
 </RelativeLayout>

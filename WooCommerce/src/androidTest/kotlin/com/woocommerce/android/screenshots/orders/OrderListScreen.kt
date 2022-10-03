@@ -31,8 +31,8 @@ class OrderListScreen : Screen {
         return this
     }
 
-    fun newOrderTap(): OrderCreationScreen {
+    fun newOrderTap(): UnifiedOrderScreen {
         clickOn(CREATE_ORDER_OPTION)
-        return OrderCreationScreen()
+        return UnifiedOrderScreen()
     }
 }

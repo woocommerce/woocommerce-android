@@ -1,11 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2022-09-13 18:54:03+0000
+Translation-Revision-Date: 2022-09-20 15:54:03+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: it
 -->
 <resources>
+    <string name="stats_widget_last_updated_message">A partire dalle %1$s</string>
+    <string name="stats_widget_error_no_data">Impossibile caricare i dati</string>
+    <string name="stats_today_widget_description">Statistiche WooCommerce oggi</string>
+    <string name="stats_today_widget_configure_title">Statistiche negozio odierne</string>
+    <string name="stats_widget_availability_message">Analisi del negozio non disponibile! Esegui l\'aggiornament all\'ultima versione di WooCommerce per visualizzare le analisi del tuo negozio.</string>
+    <string name="stats_widget_offline_error">La rete non è disponibile.\nControlla la connessione dati o WiFi.</string>
+    <string name="stats_widget_log_in_message">Accedi all\'app WooCommerce</string>
     <string name="login_jetpack_connection_url_failed">Recupero dei dati della connessione non riuscito…</string>
     <string name="login_jetpack_verify_connection">Verifica della connessione a Jetpack…</string>
     <string name="login_jetpack_connection_verification_failed">Impossibile verificare la connessione a Jetpack. Riprova.</string>

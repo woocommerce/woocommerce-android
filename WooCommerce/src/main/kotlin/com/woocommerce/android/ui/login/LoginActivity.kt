@@ -718,7 +718,10 @@ class LoginActivity :
         if (connectSiteInfo?.isJetpackInstalled == true && connectSiteInfo?.isJetpackActive == true) {
             // If jetpack is present, but we can't find the connected email, then show account mismatch error
             val fragment = AccountMismatchErrorFragment().apply {
-                arguments = AccountMismatchErrorFragmentArgs(AccountMismatchPrimaryButton.CONNECT_JETPACK).toBundle()
+                arguments = AccountMismatchErrorFragmentArgs(
+                    siteUrl = siteAddress,
+                    primaryButton = AccountMismatchPrimaryButton.CONNECT_JETPACK
+                ).toBundle()
             }
             changeFragment(
                 fragment = fragment,

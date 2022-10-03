@@ -15,6 +15,7 @@ import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.map
+import androidx.lifecycle.viewModelScope
 import androidx.paging.PagedList
 import com.google.android.material.snackbar.Snackbar
 import com.woocommerce.android.R
@@ -37,6 +38,7 @@ import com.woocommerce.android.ui.orders.list.OrderListViewModel.OrderListEvent.
 import com.woocommerce.android.ui.payments.banner.BannerDisplayEligibilityChecker
 import com.woocommerce.android.ui.payments.banner.BannerState
 import com.woocommerce.android.util.CoroutineDispatchers
+import com.woocommerce.android.util.LandscapeChecker
 import com.woocommerce.android.util.ThrottleLiveData
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.viewmodel.LiveDataDelegate
@@ -91,7 +93,8 @@ class OrderListViewModel @Inject constructor(
     private val getSelectedOrderFiltersCount: GetSelectedOrderFiltersCount,
     private val bannerDisplayEligibilityChecker: BannerDisplayEligibilityChecker,
     private val orderListTransactionLauncher: OrderListTransactionLauncher,
-    private val analyticsTrackerWrapper: AnalyticsTrackerWrapper
+    private val analyticsTrackerWrapper: AnalyticsTrackerWrapper,
+    private val landscapeChecker: LandscapeChecker,
 ) : ScopedViewModel(savedState), LifecycleOwner {
     private val lifecycleRegistry: LifecycleRegistry by lazy {
         LifecycleRegistry(this)
@@ -112,7 +115,15 @@ class OrderListViewModel @Inject constructor(
     internal var viewState by viewStateLiveData
 
     private val _pagedListData = MediatorLiveData<PagedOrdersList>()
-    val pagedListData: LiveData<PagedOrdersList> = _pagedListData
+    val pagedListData: LiveData<PagedOrdersList>
+        get() {
+            return _pagedListData.map {
+                viewModelScope.launch {
+                    updateBannerState(landscapeChecker, _pagedListData.value.isNullOrEmpty())
+                }
+                it
+            }
+        }
 
     private val _isLoadingMore = MediatorLiveData<Boolean>()
     val isLoadingMore: LiveData<Boolean> = _isLoadingMore
@@ -188,11 +199,17 @@ class OrderListViewModel @Inject constructor(
         }
     }
 
-    suspend fun updateBannerState() {
+    private suspend fun shouldDisplayBanner(isLandScape: Boolean, isOrderListEmpty: Boolean): Boolean {
+        return bannerDisplayEligibilityChecker.isEligibleForInPersonPayments() &&
+            canShowCardReaderUpsellBanner(System.currentTimeMillis()) &&
+            !isLandScape &&
+            !isOrderListEmpty
+    }
+
+    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    suspend fun updateBannerState(landscapeChecker: LandscapeChecker, isOrdersListEmpty: Boolean) {
         bannerState.value = BannerState(
-            shouldDisplayBanner =
-            bannerDisplayEligibilityChecker.isEligibleForInPersonPayments() &&
-                canShowCardReaderUpsellBanner(System.currentTimeMillis()),
+            shouldDisplayBanner = shouldDisplayBanner(landscapeChecker.isLandscape(), isOrdersListEmpty),
             onPrimaryActionClicked = {
                 onCtaClicked(AnalyticsTracker.KEY_BANNER_ORDER_LIST)
             },
@@ -347,6 +364,7 @@ class OrderListViewModel @Inject constructor(
 
         _pagedListData.addSource(pagedListWrapper.data) { pagedList ->
             pagedList?.let {
+
                 _pagedListData.value = it
             }
         }

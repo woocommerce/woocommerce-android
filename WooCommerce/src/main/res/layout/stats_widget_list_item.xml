@@ -5,7 +5,7 @@
     style="@style/Woo.StatsWidgetListItem"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    tools:showIn="@layout/stats_widget_list">
+    android:orientation="horizontal">
 
     <TextView
         android:id="@+id/list_item_title"
@@ -17,7 +17,8 @@
     <TextView
         android:id="@+id/list_item_value"
         style="@style/Woo.StatsWidgetListItemValue"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
+        android:layout_weight="1"
         tools:text="20,345" />
 </LinearLayout>
