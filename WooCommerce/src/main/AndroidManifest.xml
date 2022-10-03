@@ -53,7 +53,7 @@
                 <data
                     android:scheme="https"
                     android:host="woocommerce.com"
-                    android:pathPattern="/orders/details" />
+                    android:pathPattern="/mobile/orders/details" />
             </intent-filter>
         </activity>
         <activity
