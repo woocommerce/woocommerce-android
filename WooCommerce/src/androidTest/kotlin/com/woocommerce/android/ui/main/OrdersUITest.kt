@@ -45,6 +45,9 @@ class OrdersUITest : TestBase() {
 
     @Test
     fun createOrderTest() {
+        val firstName = "Mira"
+        val note = "Customer notes 123~"
+        val status = "Processing"
         val ordersJSONArray = MocksReader().readOrderToArray()
 
         for (orderJSON in ordersJSONArray.iterator()) {
@@ -54,10 +57,15 @@ class OrdersUITest : TestBase() {
                 .createFABTap()
                 .newOrderTap()
                 .assertNewOrderScreen()
+                .updateOrderStatus(status)
                 .addProductTap()
                 .assertOrderSelectProductScreen()
                 .selectProduct(orderData.productName)
-                .assertNewOrderScreenWithProduct(orderData.productName)
+                .clickAddCustomerDetails()
+                .addCustomerDetails(firstName)
+                .addCustomerNotes(note)
+                .addShipping()
+                .addFee()
                 .createOrder()
                 .assertSingleOrderScreenWithProduct(orderData)
                 .goBackToOrdersScreen()
@@ -66,8 +74,12 @@ class OrdersUITest : TestBase() {
 
     private fun mapJSONToOrder(orderJSON: JSONObject): OrderData {
         return OrderData(
+            customer = orderJSON.getJSONObject("billing").getString("first_name"),
+            customerNoteRaw = orderJSON.getString("customer_note"),
+            feeRaw = orderJSON.getJSONArray("fee_lines").getJSONObject(0).getString("total"),
             id = orderJSON.getInt("id"),
             productName = orderJSON.getJSONArray("line_items").getJSONObject(0).getString("name"),
+            shippingRaw = orderJSON.getString("shipping_total"),
             statusRaw = orderJSON.getString("status"),
             totalRaw = orderJSON.getString("total")
         )

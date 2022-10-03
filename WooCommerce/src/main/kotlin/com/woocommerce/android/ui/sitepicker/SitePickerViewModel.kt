@@ -285,7 +285,12 @@ class SitePickerViewModel @Inject constructor(
                         sitePickerViewState.hasConnectedStores ?: false -> AccountMismatchPrimaryButton.SHOW_SITE_PICKER
                         else -> AccountMismatchPrimaryButton.ENTER_NEW_SITE_ADDRESS
                     }
-                    triggerEvent(NavigateToAccountMismatchScreen(primaryButton))
+                    triggerEvent(
+                        NavigateToAccountMismatchScreen(
+                            primaryButton = primaryButton,
+                            siteUrl = url
+                        )
+                    )
                 },
                 onFailure = {
                     TODO()
@@ -651,7 +656,10 @@ class SitePickerViewModel @Inject constructor(
         object NavigateToSiteAddressEvent : SitePickerEvent()
         data class NavigateToHelpFragmentEvent(val origin: HelpActivity.Origin) : SitePickerEvent()
         data class NavigateToWPComWebView(val url: String, val validationUrl: String) : SitePickerEvent()
-        data class NavigateToAccountMismatchScreen(val primaryButton: AccountMismatchPrimaryButton) : SitePickerEvent()
+        data class NavigateToAccountMismatchScreen(
+            val primaryButton: AccountMismatchPrimaryButton,
+            val siteUrl: String
+        ) : SitePickerEvent()
     }
 
     enum class SitePickerState {

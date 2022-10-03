@@ -118,13 +118,7 @@ class OrderCreateEditRepository @Inject constructor(
         )
 
         val result = if (order.id == 0L) {
-            val status = if (isAutoDraftSupported()) {
-                WCOrderStatusModel(statusKey = AUTO_DRAFT)
-            } else {
-                WCOrderStatusModel(statusKey = CoreOrderStatus.PENDING.value)
-            }
-
-            orderUpdateStore.createOrder(selectedSite.get(), request.copy(status = status))
+            orderUpdateStore.createOrder(selectedSite.get(), request)
         } else {
             orderUpdateStore.updateOrder(selectedSite.get(), order.id, request)
         }
@@ -154,20 +148,29 @@ class OrderCreateEditRepository @Inject constructor(
         }
     }
 
+    private var isAutoDraftSupported: Boolean? = null
     private suspend fun isAutoDraftSupported(): Boolean {
+        isAutoDraftSupported?.let { return it }
         val version = withContext(dispatchers.io) {
             wooCommerceStore.getSitePlugin(selectedSite.get(), WooCommerceStore.WooPlugin.WOO_CORE)?.version
                 ?: "0.0"
         }
-        return version.semverCompareTo(AUTO_DRAFT_SUPPORTED_VERSION) >= 0
+        val isSupported = version.semverCompareTo(AUTO_DRAFT_SUPPORTED_VERSION) >= 0
+        isAutoDraftSupported = isSupported
+        return isSupported
     }
 
     private suspend fun Order.Status.toDataModel(): WCOrderStatusModel {
         val key = this.value
-        return withContext(dispatchers.io) {
-            // Currently this query will run on the current thread, so forcing the usage of IO dispatcher
-            orderStore.getOrderStatusForSiteAndKey(selectedSite.get(), key)
-                ?: WCOrderStatusModel(statusKey = key).apply { label = key }
+        return when {
+            key == AUTO_DRAFT && isAutoDraftSupported() -> WCOrderStatusModel(AUTO_DRAFT)
+            // If AUTO_DRAFT is not supported, use PENDING state
+            key == AUTO_DRAFT && isAutoDraftSupported().not() -> WCOrderStatusModel(CoreOrderStatus.PENDING.value)
+            else -> withContext(dispatchers.io) {
+                // Currently this query will run on the current thread, so forcing the usage of IO dispatcher
+                orderStore.getOrderStatusForSiteAndKey(selectedSite.get(), key)
+                    ?: WCOrderStatusModel(statusKey = key).apply { label = key }
+            }
         }
     }
 

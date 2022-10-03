@@ -1,11 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2022-09-13 14:54:03+0000
+Translation-Revision-Date: 2022-09-19 12:54:04+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: de
 -->
 <resources>
+    <string name="stats_widget_last_updated_message">Stand: %1$s</string>
+    <string name="stats_widget_error_no_data">Daten konnten nicht geladen werden</string>
+    <string name="stats_today_widget_description">Heutige WooCommerce-Statistiken</string>
+    <string name="stats_today_widget_configure_title">Heutige Shop-Statistiken</string>
+    <string name="stats_widget_availability_message">Es sind keine Shop-Statistiken verfügbar! Bitte führe ein Upgrade auf die neueste Version von WooCommerce durch, um deine Shop-Statistiken anzuzeigen.</string>
+    <string name="stats_widget_offline_error">Dein Netzwerk ist nicht verfügbar.\nPrüfe deine Daten- oder WLAN-Verbindung.</string>
+    <string name="stats_widget_log_in_message">Bitte melde dich in der WooCommerce-App an</string>
     <string name="login_jetpack_connection_url_failed">Das Abrufen von Verbindungsdaten ist fehlgeschlagen …</string>
     <string name="login_jetpack_verify_connection">Die Jetpack-Verbindung wird überprüft …</string>
     <string name="login_jetpack_connection_verification_failed">Deine Jetpack-Verbindung kann nicht überprüft werden. Bitte versuche es erneut.</string>

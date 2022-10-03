@@ -61,7 +61,7 @@ class AccountMismatchErrorViewModel @Inject constructor(
 
     private val navArgs: AccountMismatchErrorFragmentArgs by savedStateHandle.navArgs()
     private val userAccount = accountRepository.getUserAccount()
-    private val siteUrl = appPrefsWrapper.getLoginSiteAddress()!!
+    private val siteUrl = navArgs.siteUrl
     private val site: Deferred<SiteModel?>
         get() = async {
             accountMismatchRepository.getSiteByUrl(siteUrl)

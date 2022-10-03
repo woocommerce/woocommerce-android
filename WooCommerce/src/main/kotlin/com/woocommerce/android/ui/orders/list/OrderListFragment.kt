@@ -1,6 +1,5 @@
 package com.woocommerce.android.ui.orders.list
 
-import android.content.Context
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
@@ -14,11 +13,12 @@ import android.view.ViewGroup
 import androidx.appcompat.widget.SearchView
 import androidx.appcompat.widget.SearchView.OnQueryTextListener
 import androidx.compose.ui.platform.ViewCompositionStrategy
+import androidx.core.view.MenuProvider
 import androidx.core.view.ViewGroupCompat
 import androidx.core.view.doOnPreDraw
 import androidx.core.view.isVisible
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.Lifecycle
 import androidx.navigation.fragment.findNavController
 import androidx.paging.PagedList
 import androidx.recyclerview.widget.ItemTouchHelper
@@ -65,7 +65,6 @@ import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.widgets.WCEmptyView.EmptyViewType
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.launch
 import org.wordpress.android.util.DisplayUtils
 import javax.inject.Inject
 import org.wordpress.android.util.ActivityUtils as WPActivityUtils
@@ -76,7 +75,8 @@ class OrderListFragment :
     OnQueryTextListener,
     OnActionExpandListener,
     OrderListListener,
-    SwipeToComplete.OnSwipeListener {
+    SwipeToComplete.OnSwipeListener,
+    MenuProvider {
     companion object {
         const val TAG: String = "OrderListFragment"
         const val STATE_KEY_SEARCH_QUERY = "search-query"
@@ -144,20 +144,17 @@ class OrderListFragment :
         reenterTransition = fadeThroughTransition
     }
 
-    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+    override fun onCreateMenu(menu: Menu, inflater: MenuInflater) {
         inflater.inflate(R.menu.menu_order_list_fragment, menu)
 
         orderListMenu = menu
         searchMenuItem = menu.findItem(R.id.menu_search)
         searchView = searchMenuItem?.actionView as SearchView?
         searchView?.queryHint = getString(R.string.orderlist_search_hint)
-
-        super.onCreateOptionsMenu(menu, inflater)
     }
 
-    override fun onPrepareOptionsMenu(menu: Menu) {
+    override fun onPrepareMenu(menu: Menu) {
         refreshOptionsMenu()
-        super.onPrepareOptionsMenu(menu)
     }
 
     override fun onCreateView(
@@ -165,7 +162,6 @@ class OrderListFragment :
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        setHasOptionsMenu(true)
         _binding = FragmentOrderListBinding.inflate(inflater, container, false)
 
         return binding.root
@@ -175,7 +171,7 @@ class OrderListFragment :
         super.onViewCreated(view, savedInstanceState)
         postponeEnterTransition()
 
-        setHasOptionsMenu(true)
+        requireActivity().addMenuProvider(this, viewLifecycleOwner, Lifecycle.State.RESUMED)
 
         view.doOnPreDraw { startPostponedEnterTransition() }
 
@@ -200,12 +196,6 @@ class OrderListFragment :
         binding.orderFiltersCard.setClickListener { viewModel.onFiltersButtonTapped() }
         initCreateOrderFAB(binding.createOrderButton)
         initSwipeBehaviour()
-        val isLandscape = DisplayUtils.isLandscape(context)
-        if (!isLandscape) {
-            lifecycleScope.launch {
-                viewModel.updateBannerState()
-            }
-        }
     }
 
     private fun initSwipeBehaviour() {
@@ -236,27 +226,17 @@ class OrderListFragment :
     }
 
     private fun bannerDisplayViewLogic(
-        context: Context,
-        shouldDisplayBanner: Boolean,
         bannerState: BannerState
     ) {
-        if (!shouldDisplayBanner) {
+        if (!bannerState.shouldDisplayBanner) {
             binding.upsellCardReaderComposeView.upsellCardReaderBannerView.visibility = View.GONE
+            displaySimplePaymentsWIPCard(true)
         } else {
             if (viewModel.shouldShowUpsellCardReaderDismissDialog.value == true) {
                 applyBannerDismissDialogComposeUI()
             }
-            val isLandscape = DisplayUtils.isLandscape(context)
-            /**
-             * We are hiding the upsell card reader banner in the landscape mode since it becomes impossible for
-             * the merchants to scroll the order list. More info here: pdfdoF-12d-p2
-             */
-            if (!isLandscape) {
-                applyBannerComposeUI(bannerState)
-            }
-            if (viewModel.shouldDisplaySimplePaymentsWIPCard() || isLandscape) {
-                displaySimplePaymentsWIPCard(true)
-            }
+            applyBannerComposeUI(bannerState)
+            displaySimplePaymentsWIPCard(false)
         }
     }
 
@@ -304,14 +284,14 @@ class OrderListFragment :
         }
     }
 
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+    override fun onMenuItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
             R.id.menu_search -> {
                 AnalyticsTracker.track(AnalyticsEvent.ORDERS_LIST_MENU_SEARCH_TAPPED)
                 enableSearchListeners()
                 true
             }
-            else -> super.onOptionsItemSelected(item)
+            else -> false
         }
     }
 
@@ -357,22 +337,11 @@ class OrderListFragment :
         }
 
         viewModel.pagedListData.observe(viewLifecycleOwner) {
-            viewModel.bannerState.value?.let { state ->
-                bannerDisplayViewLogic(
-                    binding.root.context,
-                    it.size > 0,
-                    state
-                )
-            }
             updatePagedListData(it)
         }
 
         viewModel.bannerState.observe(viewLifecycleOwner) { state ->
-            bannerDisplayViewLogic(
-                binding.root.context,
-                true,
-                state
-            )
+            bannerDisplayViewLogic(state)
         }
 
         viewModel.event.observe(viewLifecycleOwner) { event ->
@@ -503,17 +472,6 @@ class OrderListFragment :
         binding.orderListView.submitPagedList(pagedListData)
     }
 
-    /**
-     * We use this to clear the options menu when navigating to a child destination - otherwise this
-     * fragment's menu will continue to appear when the child is shown
-     */
-    private fun showOptionsMenu(show: Boolean) {
-        setHasOptionsMenu(show)
-        if (show) {
-            refreshOptionsMenu()
-        }
-    }
-
     override fun openOrderDetail(orderId: Long, orderStatus: String, sharedView: View?) {
         viewModel.trackOrderClickEvent(orderId, orderStatus)
 
@@ -526,7 +484,6 @@ class OrderListFragment :
             searchQuery = savedSearch
             isSearching = true
         }
-        showOptionsMenu(false)
         (activity as? MainNavigationRouter)?.run {
             if (sharedView != null) {
                 showOrderDetailWithSharedTransition(

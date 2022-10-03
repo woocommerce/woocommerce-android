@@ -160,7 +160,7 @@ class SitePickerFragment : BaseFragment(R.layout.fragment_site_picker), LoginEma
                 is NavigateToSiteAddressEvent -> navigateToAddressScreen()
                 is NavigateToEmailHelpDialogEvent -> navigateToNeedHelpFindingEmailScreen()
                 is NavigateToWPComWebView -> navigateToWPComWebView(event)
-                is NavigateToAccountMismatchScreen -> navigateToAccountMismatchScreen(event.primaryButton)
+                is NavigateToAccountMismatchScreen -> navigateToAccountMismatchScreen(event)
                 is ShowSnackbar -> uiMessageResolver.showSnack(event.message)
                 is ShowDialog -> event.showDialog()
                 is Logout -> onLogout()
@@ -279,10 +279,11 @@ class SitePickerFragment : BaseFragment(R.layout.fragment_site_picker), LoginEma
         )
     }
 
-    private fun navigateToAccountMismatchScreen(primaryButton: AccountMismatchPrimaryButton) {
+    private fun navigateToAccountMismatchScreen(event: NavigateToAccountMismatchScreen) {
         findNavController().navigateSafely(
             SitePickerFragmentDirections.actionSitePickerFragmentToAccountMismatchErrorFragment(
-                primaryButton = primaryButton
+                siteUrl = event.siteUrl,
+                primaryButton = event.primaryButton
             )
         )
     }
