@@ -5,7 +5,6 @@ import com.automattic.android.tracks.crashlogging.CrashLogging
 import com.google.firebase.remoteconfig.FirebaseRemoteConfig
 import com.google.firebase.remoteconfig.ktx.remoteConfigSettings
 import com.woocommerce.android.experiment.JetpackTimeoutExperiment.JetpackTimeoutPolicyVariant
-import com.woocommerce.android.experiment.LoginButtonSwapExperiment.LoginButtonSwapVariant
 import com.woocommerce.android.experiment.MagicLinkRequestExperiment.MagicLinkRequestVariant
 import com.woocommerce.android.experiment.MagicLinkSentScreenExperiment.MagicLinkSentScreenVariant
 import com.woocommerce.android.experiment.PrologueExperiment.PrologueVariant
@@ -30,7 +29,6 @@ class FirebaseRemoteConfigRepository @Inject constructor(
         const val PROLOGUE_VARIANT_KEY = "prologue_variant"
         private const val MAGIC_LINK_SENT_EXPERIMENT_VARIANT_KEY = "magic_link_sent_experiment_variant"
         private const val MAGIC_LINK_REQUEST_VARIANT_KEY = "magic_link_experiment_variant"
-        private const val LOGIN_BUTTON_SWAP_VARIANT_KEY = "login_button_swap_variant"
         private const val PERFORMANCE_MONITORING_SAMPLE_RATE_KEY = "wc_android_performance_monitoring_sample_rate"
         private const val JETPACK_TIMEOUT_POLICY_VARIANT_KEY = "jetpack_timeout_policy_variant"
         private const val DEBUG_INTERVAL = 10L
@@ -50,7 +48,6 @@ class FirebaseRemoteConfigRepository @Inject constructor(
             PROLOGUE_VARIANT_KEY to PrologueVariant.CONTROL.name,
             MAGIC_LINK_SENT_EXPERIMENT_VARIANT_KEY to MagicLinkSentScreenVariant.CONTROL.name,
             MAGIC_LINK_REQUEST_VARIANT_KEY to MagicLinkRequestVariant.CONTROL.name,
-            LOGIN_BUTTON_SWAP_VARIANT_KEY to LoginButtonSwapVariant.CONTROL.name,
             JETPACK_TIMEOUT_POLICY_VARIANT_KEY to JetpackTimeoutPolicyVariant.CONTROL.name
         )
     }
@@ -102,14 +99,6 @@ class FirebaseRemoteConfigRepository @Inject constructor(
             .catch {
                 crashLogging.get().recordException(it)
                 emit(MagicLinkRequestVariant.valueOf(defaultValues[MAGIC_LINK_REQUEST_VARIANT_KEY]!!))
-            }
-
-    override fun observeLoginButtonsSwapVariant(): Flow<LoginButtonSwapVariant> =
-        observeStringRemoteValue(LOGIN_BUTTON_SWAP_VARIANT_KEY)
-            .map { LoginButtonSwapVariant.valueOf(it.uppercase()) }
-            .catch {
-                crashLogging.get().recordException(it)
-                emit(LoginButtonSwapVariant.valueOf(defaultValues[LOGIN_BUTTON_SWAP_VARIANT_KEY]!!))
             }
 
     override fun getPerformanceMonitoringSampleRate(): Double =

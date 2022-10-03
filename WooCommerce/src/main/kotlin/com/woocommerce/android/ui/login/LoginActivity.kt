@@ -22,7 +22,6 @@ import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_SOURCE
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_JETPACK_INSTALLATION_SOURCE_WEB
 import com.woocommerce.android.analytics.ExperimentTracker
 import com.woocommerce.android.databinding.ActivityLoginBinding
-import com.woocommerce.android.experiment.LoginButtonSwapExperiment
 import com.woocommerce.android.experiment.MagicLinkRequestExperiment
 import com.woocommerce.android.experiment.MagicLinkRequestExperiment.MagicLinkRequestVariant.AUTOMATIC
 import com.woocommerce.android.experiment.MagicLinkRequestExperiment.MagicLinkRequestVariant.ENHANCED
@@ -153,7 +152,6 @@ class LoginActivity :
     @Inject internal lateinit var prologueExperiment: PrologueExperiment
     @Inject internal lateinit var sentScreenExperiment: MagicLinkSentScreenExperiment
     @Inject internal lateinit var magicLinkRequestExperiment: MagicLinkRequestExperiment
-    @Inject internal lateinit var loginButtonSwapExperiment: LoginButtonSwapExperiment
     @Inject internal lateinit var uiMessageResolver: UIMessageResolver
 
     private var loginMode: LoginMode? = null
@@ -472,11 +470,7 @@ class LoginActivity :
     }
 
     private fun showPrologueFragment() = lifecycleScope.launchWhenStarted {
-        val createOriginalFragment = { LoginPrologueFragment() }
-        val createSwappedFragment = { LoginPrologueSwappedFragment() }
-        val loginFragment = loginButtonSwapExperiment.run(createOriginalFragment, createSwappedFragment)
-
-        val prologueFragment = getPrologueFragment() ?: loginFragment
+        val prologueFragment = getPrologueFragment() ?: LoginPrologueFragment()
         changeFragment(prologueFragment, true, LoginPrologueFragment.TAG)
     }
 
