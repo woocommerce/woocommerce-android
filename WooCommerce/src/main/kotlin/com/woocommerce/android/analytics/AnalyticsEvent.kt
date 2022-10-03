@@ -696,4 +696,7 @@ enum class AnalyticsEvent(val siteless: Boolean = false) {
     MAGIC_LINK_REQUEST_EXPERIMENT,
     LOGIN_BUTTON_SWAP_EXPERIMENT,
     JETPACK_TIMEOUT_EXPERIMENT,
+
+    // Widgets
+    WIDGET_TAPPED
 }

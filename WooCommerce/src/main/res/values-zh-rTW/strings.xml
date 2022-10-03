@@ -1,11 +1,24 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2022-09-06 11:54:03+0000
+Translation-Revision-Date: 2022-09-20 09:54:23+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: zh_TW
 -->
 <resources>
+    <string name="stats_widget_last_updated_message">始於 %1$s</string>
+    <string name="stats_widget_error_no_data">無法載入資料</string>
+    <string name="stats_today_widget_description">WooCommerce 今日統計資料</string>
+    <string name="stats_today_widget_configure_title">今日商店統計資料</string>
+    <string name="stats_widget_availability_message">無法查看商店分析資料！ 請升級至最新版的 WooCommerce 以查看你的商店分析資料。</string>
+    <string name="stats_widget_offline_error">網路無法使用。\n請檢查你的日期或 Wi-Fi 連線。</string>
+    <string name="stats_widget_log_in_message">請登入 WooCommerce 應用程式</string>
+    <string name="login_jetpack_connection_url_failed">擷取連結資料失敗…</string>
+    <string name="login_jetpack_verify_connection">正在確認 Jetpack 連結…</string>
+    <string name="login_jetpack_connection_verification_failed">無法驗證你的 Jetpack 連結。 請再試一次。</string>
+    <string name="login_simple_wpcom_site">網站 %1$s 目前使用的 WordPress.com 方案不支援安裝外掛程式。 若要使用 WooCommerce，請升級你的方案。</string>
+    <string name="login_connect_jetpack_button">將 Jetpack 連結到你的帳號</string>
+    <string name="login_jetpack_not_connected">你的帳號似乎未連結至 %1$s 的 Jetpack</string>
     <string name="card_reader_card_readers_header">讀卡機</string>
     <string name="card_reader_payment_options_header">付款選項</string>
     <string name="card_reader_enable_pay_in_person_description">「親自收款」結帳選項可讓你在收貨或貨到時接受網站訂單付款。 &lt;a href=\'\'&gt;深入瞭解&lt;/a&gt;</string>
@@ -1823,7 +1836,7 @@ Language: zh_TW
     <string name="login_jetpack_what_is_description">Jetpack 是一款免費的 WordPress 外掛程式，能夠透過所需工具連結你的商店，為你提供最佳行動裝置體驗，包含推播通知和統計資料</string>
     <string name="login_jetpack_what_is">什麼是 Jetpack？</string>
     <string name="login_view_connected_stores">檢視連結的商店</string>
-    <string name="login_wpcom_account_mismatch">%1$s 似乎已經連結至不同的 WordPress.com 帳號。</string>
+    <string name="login_wpcom_account_mismatch">%1$s 似乎已連結至不同的 WordPress.com 帳號。</string>
     <string name="keep_editing">繼續編輯</string>
     <string name="notification_wpcom_username_needed">請透過你的使用者名稱和密碼登入。</string>
     <string name="error_user_username_instead_of_email">請使用你的 WordPress.com 使用者名稱登入，而非電子郵件地址。</string>

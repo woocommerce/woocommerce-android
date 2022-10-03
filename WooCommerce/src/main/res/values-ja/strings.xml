@@ -1,11 +1,24 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2022-09-08 10:54:04+0000
+Translation-Revision-Date: 2022-09-21 09:54:03+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: ja_JP
 -->
 <resources>
+    <string name="stats_widget_last_updated_message">%1$s時点</string>
+    <string name="stats_widget_error_no_data">データを読み込めませんでした</string>
+    <string name="stats_today_widget_description">WooCommerce Stats Today</string>
+    <string name="stats_today_widget_configure_title">今日のストアの統計情報</string>
+    <string name="stats_widget_availability_message">ストアアナリティクスを利用できません ! ストアアナリティクスを表示するには、WooCommerce の最新バージョンにアップグレードしてください。</string>
+    <string name="stats_widget_offline_error">お客様のネットワークが使用できません。\nデータまたは Wi-Fi 接続を確認してください。</string>
+    <string name="stats_widget_log_in_message">WooCommerce アプリにログインしてください</string>
+    <string name="login_jetpack_connection_url_failed">接続データを取得できませんでした…</string>
+    <string name="login_jetpack_verify_connection">Jetpack 接続を検証中…</string>
+    <string name="login_jetpack_connection_verification_failed">Jetpack 接続を検証できません。 もう一度お試しください。</string>
+    <string name="login_simple_wpcom_site">サイト %1$s は現在、プラグインのインストールに対応していない WordPress.com プランを利用しています。 WooCommerce を使用するには、プランをアップグレードしてください。</string>
+    <string name="login_connect_jetpack_button">Jetpack をアカウントに接続する</string>
+    <string name="login_jetpack_not_connected">アカウントと %1$s の Jetpack が接続されていないようです</string>
     <string name="card_reader_card_readers_header">カードリーダー</string>
     <string name="card_reader_payment_options_header">支払いオプション</string>
     <string name="card_reader_enable_pay_in_person_description">「直接支払い」の購入手続きオプションを使用すると、サイトでの注文の支払いを集荷または配達時に受け取ることができます。 &lt;a href=\'\'&gt;さらに詳しく&lt;/a&gt;</string>

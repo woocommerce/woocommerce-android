@@ -1,11 +1,24 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2022-09-06 11:54:03+0000
+Translation-Revision-Date: 2022-09-20 22:54:04+0000
 Plural-Forms: nplurals=2; plural=(n > 1);
 Generator: GlotPress/2.4.0-alpha
 Language: tr
 -->
 <resources>
+    <string name="stats_widget_last_updated_message">%1$s itibarıyla</string>
+    <string name="stats_widget_error_no_data">Veri yüklenemedi</string>
+    <string name="stats_today_widget_description">WooCommerce İstatistikleri Bugün</string>
+    <string name="stats_today_widget_configure_title">Bugünün mağaza istatistikleri</string>
+    <string name="stats_widget_availability_message">Mağaza analizi mevcut değil! Mağaza analizlerinizi görüntülemek için lütfen en son WooCommerce sürümüne yükseltin.</string>
+    <string name="stats_widget_offline_error">Bağlantınız bulunmuyor\nVerilerinizi veya kablosuz İnternet bağlantınızı kontrol edin.</string>
+    <string name="stats_widget_log_in_message">Lütfen WooCommerce uygulamasında giriş yapın</string>
+    <string name="login_jetpack_connection_url_failed">Bağlantı verileri alınamadı…</string>
+    <string name="login_jetpack_verify_connection">Jetpack bağlantısı doğrulanıyor…</string>
+    <string name="login_jetpack_connection_verification_failed">Jetpack bağlantınız doğrulanamıyor. Lütfen tekrar deneyin.</string>
+    <string name="login_simple_wpcom_site">%1$s sitesinde şu anda eklenti yüklemeyi desteklemeyen bir WordPress.com paketi kullanılıyor. WooCommerce kullanabilmek için lütfen paketinizi yükseltin.</string>
+    <string name="login_connect_jetpack_button">Jetpack\'i hesabınıza bağlayın</string>
+    <string name="login_jetpack_not_connected">Hesabınızın %1$s Jetpack\'e bağlı olmadığı anlaşılıyor</string>
     <string name="card_reader_card_readers_header">KART OKUYUCULAR</string>
     <string name="card_reader_payment_options_header">ÖDEME SEÇENEKLERİ</string>
     <string name="card_reader_enable_pay_in_person_description">Şahsen Ödeme seçeneği web sitesi siparişleri için tahsilat veya teslimat sırasında ödeme kabul etmenizi sağlar. &lt;a href=\'\'&gt;Daha fazlasını öğrenin&lt;/a&gt;</string>
@@ -1823,7 +1836,7 @@ Language: tr
     <string name="login_jetpack_what_is_description">Jetpack, size en iyi mobil deneyimi sunmak için anında bildirimler ve istatistikler dahil olmak üzere gerekli araçlarla sizi mağazaya bağlayan ücretsiz bir WordPress eklentisidir.</string>
     <string name="login_jetpack_what_is">Jetpack nedir?</string>
     <string name="login_view_connected_stores">Bağlanılan mağazaları görüntüle</string>
-    <string name="login_wpcom_account_mismatch">Görünüşe göre %1$s başka bir WordPress.com hesabına bağlı.</string>
+    <string name="login_wpcom_account_mismatch">Görünüşe göre %1$s farklı bir WordPress.com hesabına bağlı.</string>
     <string name="keep_editing">Düzenlemeye devam et</string>
     <string name="notification_wpcom_username_needed">Lütfen kullanıcı adınız ve şifrenizle oturum açın.</string>
     <string name="error_user_username_instead_of_email">E-posta adresiniz yerine lütfen WordPress.com kullanıcı adınızla oturum açın.</string>

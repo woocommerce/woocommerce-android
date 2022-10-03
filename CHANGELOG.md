@@ -2,6 +2,18 @@
 Contains editorialized release notes. Raw release notes should go into `RELEASE-NOTES.txt`.
 -->
 
+## 10.6
+
+For this release, we focused on polishing a few things and taking care of minor bugs that our team found. Don’t be fooled – we are working on some pretty cool stuff for you all, like making it easier for you to login to the app using the autofill option! Keep your feedback rolling in; it helps us figure out what to work on next. 💜
+
+## 10.5
+
+We've added a new stats widget to the app! Simply long press on the WooCommerce icon, tap Widgets, then drag the Today widget to your home screen. We welcome your feedback on the app, especially the new features we’re working on.
+
+## 10.4
+
+This release contains a handful of minor improvements to make your experience smoother. We hope you notice the love we put into our software.
+
 ## 10.3
 
 More stability fixes to help you log in much easier. Added the ability to set up Jetpack if it's not connected yet. And we fixed a bug where Jetpack can be incorrectly assumed as unavailable. Please keep your feedback coming! 

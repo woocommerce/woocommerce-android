@@ -1,0 +1,3 @@
+10.4:
+Rilis ini memuat berbagai perbaikan minor agar pengalaman Anda makin mulus. Kami harap Anda menyukai upaya yang kami berikan dalam perangkat lunak kami.
+
