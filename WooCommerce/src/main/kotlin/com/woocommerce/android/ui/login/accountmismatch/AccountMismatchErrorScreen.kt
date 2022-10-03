@@ -18,6 +18,8 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.Icon
@@ -46,6 +48,8 @@ import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -115,7 +119,7 @@ fun AccountMismatchErrorScreen(viewModel: AccountMismatchErrorViewModel) {
 }
 
 @Composable
-fun SiteCredentialsScreen(
+private fun SiteCredentialsScreen(
     viewState: ViewState.SiteCredentialsViewState,
     modifier: Modifier
 ) {
@@ -127,23 +131,32 @@ fun SiteCredentialsScreen(
         verticalArrangement = Arrangement.spacedBy(dimensionResource(id = R.dimen.major_100)),
     ) {
         Column(
-            Modifier
+            modifier = Modifier
                 .weight(1f)
-                .fillMaxWidth()
+                .fillMaxWidth(),
         ) {
             Text(text = stringResource(id = R.string.enter_credentials_for_site, viewState.siteUrl))
+            Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.major_100)))
             WCOutlinedTextField(
                 value = viewState.username,
                 onValueChange = viewState.onUsernameChanged,
                 label = stringResource(id = R.string.username),
-                isError = viewState.errorMessage != null
+                isError = viewState.errorMessage != null,
+                singleLine = true,
+                keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next)
             )
             WCOutlinedTextField(
                 value = viewState.password,
                 onValueChange = viewState.onPasswordChanged,
                 label = stringResource(id = R.string.password),
                 isError = viewState.errorMessage != null,
-                helperText = viewState.errorMessage?.let { stringResource(id = it) }
+                helperText = viewState.errorMessage?.let { stringResource(id = it) },
+                visualTransformation = PasswordVisualTransformation(),
+                singleLine = true,
+                keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
+                keyboardActions = KeyboardActions(
+                    onDone = { viewState.onContinueClick() }
+                )
             )
         }
 
