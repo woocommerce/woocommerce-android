@@ -1,2 +1,1 @@
-- [*] Fixed a bug that caused having duplicate when uploading multiple images [https://github.com/woocommerce/woocommerce-android/pull/7459]
-
+For this release, we focused on polishing a few things and taking care of minor bugs that our team found. Don’t be fooled – we are working on some pretty cool stuff for you all, like making it easier for you to login to the app using the autofill option! Keep your feedback rolling in; it helps us figure out what to work on next. 💜
