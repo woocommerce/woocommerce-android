@@ -293,7 +293,9 @@ class SitePickerViewModel @Inject constructor(
                     )
                 },
                 onFailure = {
-                    TODO()
+                    triggerEvent(ShowSnackbar(string.site_picker_error))
+                    loginSiteAddress = null
+                    loadAndDisplaySites()
                 }
             )
             sitePickerViewState = sitePickerViewState.copy(isSkeletonViewVisible = false)
