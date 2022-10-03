@@ -5,39 +5,27 @@ import com.woocommerce.android.AppUrls
 import com.woocommerce.android.cardreader.connection.SpecificReader.Chipper2X
 import com.woocommerce.android.cardreader.connection.SpecificReader.StripeM2
 import com.woocommerce.android.cardreader.connection.SpecificReader.WisePade3
-import com.woocommerce.android.cardreader.internal.config.CardReaderConfigForSupportedCountry
-import com.woocommerce.android.tools.SelectedSite
-import com.woocommerce.android.ui.payments.cardreader.CardReaderCountryConfigProvider
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.ScopedViewModel
+import com.woocommerce.android.viewmodel.navArgs
 import dagger.hilt.android.lifecycle.HiltViewModel
-import org.wordpress.android.fluxc.store.WooCommerceStore
 import javax.inject.Inject
 
 @HiltViewModel
 class CardReaderManualsViewModel @Inject constructor(
     savedState: SavedStateHandle,
-    selectedSite: SelectedSite,
-    wooStore: WooCommerceStore,
     cardReaderManualsSupportedReadersMapper: CardReaderManualsSupportedReadersMapper,
-    cardReaderCountryConfigProvider: CardReaderCountryConfigProvider
-
 ) : ScopedViewModel(savedState) {
-    val storeCountryCode = wooStore.getStoreCountryCode(selectedSite.get())
-    private val cardReaderConfig = cardReaderCountryConfigProvider.provideCountryConfigFor(storeCountryCode)
-    val manualState = when (cardReaderConfig) {
-        is CardReaderConfigForSupportedCountry -> {
-            cardReaderManualsSupportedReadersMapper.mapSupportedReadersToManualItems(
-                cardReaderConfig,
-                mapOf(
-                    Chipper2X to ::onBbposManualClicked,
-                    StripeM2 to ::onM2ManualClicked,
-                    WisePade3 to ::onWisePad3ManualCardReaderClicked
-                )
-            )
-        }
-        else -> error("Manual not available")
-    }
+    private val navArgs: CardReaderManualsFragmentArgs by savedState.navArgs()
+    private val cardReaderConfig = navArgs.cardReaderConfig
+    val manualState = cardReaderManualsSupportedReadersMapper.mapSupportedReadersToManualItems(
+        cardReaderConfig,
+        mapOf(
+            Chipper2X to ::onBbposManualClicked,
+            StripeM2 to ::onM2ManualClicked,
+            WisePade3 to ::onWisePad3ManualCardReaderClicked
+        )
+    )
 
     private fun onBbposManualClicked() {
         triggerEvent(ManualEvents.NavigateToCardReaderManualLink(AppUrls.BBPOS_MANUAL_CARD_READER))

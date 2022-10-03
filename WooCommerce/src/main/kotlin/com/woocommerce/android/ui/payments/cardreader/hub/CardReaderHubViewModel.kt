@@ -10,7 +10,7 @@ import com.woocommerce.android.AppUrls
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
-import com.woocommerce.android.cardreader.internal.config.CardReaderConfigForUnsupportedCountry
+import com.woocommerce.android.cardreader.internal.config.CardReaderConfigForSupportedCountry
 import com.woocommerce.android.model.UiString
 import com.woocommerce.android.model.UiString.UiStringRes
 import com.woocommerce.android.tools.SelectedSite
@@ -161,13 +161,13 @@ class CardReaderHubViewModel @Inject constructor(
             onClick = ::onManageCardReaderClicked
         )
     ).apply {
-        if (countryConfig != CardReaderConfigForUnsupportedCountry) {
+        if (countryConfig is CardReaderConfigForSupportedCountry) {
             add(
                 NonToggleableListItem(
                     icon = R.drawable.ic_card_reader_manual,
                     label = UiStringRes(R.string.settings_card_reader_manuals),
                     index = 7,
-                    onClick = ::onCardReaderManualsClicked
+                    onClick = { onCardReaderManualsClicked(countryConfig) }
                 )
             )
         }
@@ -254,9 +254,9 @@ class CardReaderHubViewModel @Inject constructor(
         )
     }
 
-    private fun onCardReaderManualsClicked() {
+    private fun onCardReaderManualsClicked(countryConfig: CardReaderConfigForSupportedCountry) {
         trackEvent(AnalyticsEvent.PAYMENTS_HUB_CARD_READER_MANUALS_TAPPED)
-        triggerEvent(CardReaderHubEvents.NavigateToCardReaderManualsScreen)
+        triggerEvent(CardReaderHubEvents.NavigateToCardReaderManualsScreen(countryConfig))
     }
 
     private fun onCardReaderPaymentProviderClicked() {
@@ -349,7 +349,9 @@ class CardReaderHubViewModel @Inject constructor(
         ) : CardReaderHubEvents()
 
         object NavigateToPaymentCollectionScreen : CardReaderHubEvents()
-        object NavigateToCardReaderManualsScreen : CardReaderHubEvents()
+        data class NavigateToCardReaderManualsScreen(
+            val countryConfig: CardReaderConfigForSupportedCountry
+        ) : CardReaderHubEvents()
         data class NavigateToCardReaderOnboardingScreen(
             val onboardingState: CardReaderOnboardingState
         ) : CardReaderHubEvents()

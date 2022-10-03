@@ -2,8 +2,9 @@ package com.woocommerce.android.cardreader.internal.config
 
 import com.stripe.stripeterminal.external.models.PaymentMethodType
 import com.woocommerce.android.cardreader.connection.SpecificReader
+import java.io.Serializable
 
-sealed class CardReaderConfig
+sealed class CardReaderConfig : Serializable
 
 @Suppress("LongParameterList")
 sealed class CardReaderConfigForSupportedCountry(
