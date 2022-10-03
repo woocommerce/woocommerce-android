@@ -177,6 +177,7 @@ class AccountMismatchErrorViewModel @Inject constructor(
                 )
             }
         },
+        onCancel = { step.value = Step.MainContent },
         onLoginWithAnotherAccountClick = {}
     )
 
@@ -309,7 +310,8 @@ class AccountMismatchErrorViewModel @Inject constructor(
             val onUsernameChanged: (String) -> Unit,
             val onPasswordChanged: (String) -> Unit,
             val onContinueClick: () -> Unit,
-            val onLoginWithAnotherAccountClick: () -> Unit
+            val onLoginWithAnotherAccountClick: () -> Unit,
+            val onCancel: () -> Unit
         ) : ViewState {
             val isValid = username.isNotBlank() && password.isNotBlank()
         }

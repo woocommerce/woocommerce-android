@@ -49,7 +49,13 @@ class AccountMismatchErrorFragment : BaseFragment(), Listener {
     private val backButtonCallback = object : OnBackPressedCallback(false) {
         override fun handleOnBackPressed() {
             // The callback is enabled only when showing the WebView
-            (viewModel.viewState.value as? ViewState.JetpackWebViewState)?.onDismiss?.invoke()
+            when(val state = viewModel.viewState.value) {
+                is ViewState.JetpackWebViewState -> state.onDismiss()
+                is ViewState.SiteCredentialsViewState -> state.onCancel()
+                else -> {
+                    // NO-OP
+                }
+            }
         }
     }
 
@@ -73,7 +79,8 @@ class AccountMismatchErrorFragment : BaseFragment(), Listener {
 
     private fun setupObservers() {
         viewModel.viewState.observe(viewLifecycleOwner) {
-            backButtonCallback.isEnabled = it is ViewState.JetpackWebViewState
+            backButtonCallback.isEnabled = it is ViewState.JetpackWebViewState ||
+                it is ViewState.SiteCredentialsViewState
         }
         viewModel.event.observe(viewLifecycleOwner) { event ->
             when (event) {
