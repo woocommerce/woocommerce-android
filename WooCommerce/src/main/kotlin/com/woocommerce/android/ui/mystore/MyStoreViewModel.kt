@@ -238,7 +238,10 @@ class MyStoreViewModel @Inject constructor(
     }
 
     private suspend fun loadTopPerformersStats(granularity: StatsGranularity) {
-        if (!networkStatus.isConnected()) return
+        if (!networkStatus.isConnected()) {
+            refreshTopPerformerStats[granularity.ordinal] = true
+            return
+        }
 
         val forceRefresh = refreshTopPerformerStats[granularity.ordinal]
         if (forceRefresh) {
