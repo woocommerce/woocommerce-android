@@ -14,8 +14,7 @@ import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.model.UiString.UiStringRes
 import com.woocommerce.android.model.UiString.UiStringText
 import com.woocommerce.android.ui.login.AccountRepository
-import com.woocommerce.android.ui.login.accountmismatch.AccountMismatchRepository.JetpackAccountConnectionStatus.JetpackConnectedToAccount
-import com.woocommerce.android.ui.login.accountmismatch.AccountMismatchRepository.JetpackAccountConnectionStatus.JetpackNotConnected
+import com.woocommerce.android.ui.login.accountmismatch.AccountMismatchRepository.JetpackConnectionStatus
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
@@ -146,8 +145,8 @@ class AccountMismatchErrorViewModel @Inject constructor(
                     onSuccess = {
                         _loadingDialogMessage.value = null
                         when (it) {
-                            is JetpackConnectedToAccount -> TODO()
-                            JetpackNotConnected -> startJetpackConnection()
+                            is JetpackConnectionStatus.ConnectedToDifferentAccount -> TODO()
+                            JetpackConnectionStatus.NotConnected -> startJetpackConnection()
                         }
                     },
                     onFailure = { exception ->

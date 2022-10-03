@@ -68,7 +68,7 @@ class AccountMismatchRepository @Inject constructor(
         siteUrl: String,
         username: String,
         password: String
-    ): Result<JetpackAccountConnectionStatus> {
+    ): Result<JetpackConnectionStatus> {
         WooLog.d(WooLog.T.LOGIN, "Checking Jetpack Connection status for site $siteUrl")
 
         return discoverXMlRPCAddress(siteUrl)
@@ -84,7 +84,7 @@ class AccountMismatchRepository @Inject constructor(
                         }
                         xmlrpcSite.jetpackUserEmail.isNullOrEmpty() -> {
                             WooLog.d(WooLog.T.LOGIN, "Jetpack site is not connected to a WPCom account")
-                            JetpackAccountConnectionStatus.JetpackNotConnected
+                            JetpackConnectionStatus.NotConnected
                         }
                         else -> {
                             WooLog.d(
@@ -92,16 +92,19 @@ class AccountMismatchRepository @Inject constructor(
                                 message = "Jetpack site is connected to different WPCom account:" +
                                     " ${xmlrpcSite.jetpackUserEmail}"
                             )
-                            JetpackAccountConnectionStatus.JetpackConnectedToAccount(xmlrpcSite.jetpackUserEmail)
+                            JetpackConnectionStatus.ConnectedToDifferentAccount(xmlrpcSite.jetpackUserEmail)
                         }
                     }
                 }
             }
     }
 
-    sealed interface JetpackAccountConnectionStatus {
-        object JetpackNotConnected : JetpackAccountConnectionStatus
-        data class JetpackConnectedToAccount(val wpcomEmail: String) : JetpackAccountConnectionStatus
+    /**
+     * Represents Jetpack Connection status for the current wp-admin account
+     */
+    sealed interface JetpackConnectionStatus {
+        object NotConnected : JetpackConnectionStatus
+        data class ConnectedToDifferentAccount(val wpcomEmail: String) : JetpackConnectionStatus
     }
 
     private suspend fun discoverXMlRPCAddress(siteUrl: String): Result<String> = suspendCancellableCoroutine { cont ->
