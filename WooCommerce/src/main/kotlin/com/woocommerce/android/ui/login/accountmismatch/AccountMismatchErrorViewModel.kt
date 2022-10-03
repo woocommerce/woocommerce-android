@@ -24,7 +24,6 @@ import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.getStateFlow
 import com.woocommerce.android.viewmodel.navArgs
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.CoroutineStart.LAZY
 import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -63,9 +62,10 @@ class AccountMismatchErrorViewModel @Inject constructor(
     private val navArgs: AccountMismatchErrorFragmentArgs by savedStateHandle.navArgs()
     private val userAccount = accountRepository.getUserAccount()
     private val siteUrl = appPrefsWrapper.getLoginSiteAddress()!!
-    private val site: Deferred<SiteModel> = async(start = LAZY) {
-        accountMismatchRepository.getSiteByUrl(siteUrl) ?: error("The site is not cached")
-    }
+    private val site: Deferred<SiteModel?>
+        get() = async {
+            accountMismatchRepository.getSiteByUrl(siteUrl)
+        }
 
     private val step = savedStateHandle.getStateFlow<Step>(viewModelScope, Step.MainContent)
     private val _loadingDialogMessage = MutableStateFlow<Int?>(null)
@@ -210,12 +210,12 @@ class AccountMismatchErrorViewModel @Inject constructor(
 
     private fun startJetpackConnection() = launch {
         analyticsTrackerWrapper.track(AnalyticsEvent.LOGIN_JETPACK_CONNECT_BUTTON_TAPPED)
-        if (accountMismatchRepository.getSiteByUrl(siteUrl) == null) {
+        val site = site.await()
+        if (site == null || site.username.isNullOrEmpty() || site.password.isNullOrEmpty()) {
             step.value = Step.SiteCredentials()
             return@launch
         }
         _loadingDialogMessage.value = R.string.loading
-        val site = site.await()
         accountMismatchRepository.fetchJetpackConnectionUrl(site).fold(
             onSuccess = {
                 _loadingDialogMessage.value = null
@@ -238,7 +238,7 @@ class AccountMismatchErrorViewModel @Inject constructor(
     private fun handleFetchingJetpackEmail() = launch {
         step.filter { it is Step.FetchJetpackEmail }
             .collect {
-                val site = site.await()
+                val site = site.await() ?: error("The site is not cached")
                 accountMismatchRepository.fetchJetpackConnectedEmail(site).fold(
                     onSuccess = {
                         triggerEvent(OnJetpackConnectedEvent(it))
