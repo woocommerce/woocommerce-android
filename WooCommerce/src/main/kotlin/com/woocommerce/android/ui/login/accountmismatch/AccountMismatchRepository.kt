@@ -9,10 +9,13 @@ import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode.MAIN
 import org.wordpress.android.fluxc.Dispatcher
 import org.wordpress.android.fluxc.generated.AuthenticationActionBuilder
+import org.wordpress.android.fluxc.generated.SiteActionBuilder
 import org.wordpress.android.fluxc.model.SiteModel
+import org.wordpress.android.fluxc.store.AccountStore.OnAuthenticationChanged
 import org.wordpress.android.fluxc.store.AccountStore.OnDiscoveryResponse
 import org.wordpress.android.fluxc.store.JetpackStore
 import org.wordpress.android.fluxc.store.SiteStore
+import org.wordpress.android.fluxc.store.SiteStore.OnSiteChanged
 import org.wordpress.android.fluxc.store.SiteStore.RefreshSitesXMLRPCPayload
 import org.wordpress.android.login.util.SiteUtils
 import javax.inject.Inject
@@ -131,24 +134,57 @@ class AccountMismatchRepository @Inject constructor(
         username: String,
         password: String
     ): Result<SiteModel> {
-        val selfHostedPayload = RefreshSitesXMLRPCPayload(
-            username = username,
-            password = password,
-            url = xmlrpcEndpoint
-        )
-        WooLog.d(WooLog.T.LOGIN, "Fetch XMLRPC site, url: $xmlrpcEndpoint")
+        val authenticationResult = suspendCancellableCoroutine<Result<Unit>> { cont ->
+            val listener = object : Any() {
+                @Suppress("unused")
+                @Subscribe(threadMode = MAIN)
+                fun onAuthenticationChanged(event: OnAuthenticationChanged) {
+                    dispatcher.unregister(this)
+                    if (event.isError) {
+                        WooLog.w(
+                            tag = WooLog.T.LOGIN,
+                            message = "Authenticating to XMLRPC site $xmlrpcEndpoint failed, " +
+                                "error: ${event.error.message}"
+                        )
+                        cont.resume(Result.failure(OnChangedException(event.error, event.error.message)))
+                    }
+                }
 
-        val xmlrpcSiteResult = siteStore.fetchSitesXmlRpc(selfHostedPayload)
-        if (xmlrpcSiteResult.isError) {
-            WooLog.w(
-                tag = WooLog.T.LOGIN,
-                message = "Authenticating to XMLRPC site $xmlrpcEndpoint failed, " +
-                    "error: ${xmlrpcSiteResult.error.message}"
+                @Suppress("unused")
+                @Subscribe(threadMode = MAIN)
+                fun onSiteChanged(event: OnSiteChanged) {
+                    dispatcher.unregister(this)
+                    if (event.isError) {
+                        WooLog.w(
+                            tag = WooLog.T.LOGIN,
+                            message = "XMLRPC site $xmlrpcEndpoint fetch failed, error: ${event.error.message}"
+                        )
+                        cont.resume(Result.failure(OnChangedException(event.error, event.error.message)))
+                    } else {
+                        WooLog.d(WooLog.T.LOGIN, "XMLRPC site $xmlrpcEndpoint fetch succeeded")
+                        cont.resume(Result.success(Unit))
+                    }
+                }
+            }
+
+            WooLog.d(WooLog.T.LOGIN, "Fetch XMLRPC site, url: $xmlrpcEndpoint")
+            val selfHostedPayload = RefreshSitesXMLRPCPayload(
+                username = username,
+                password = password,
+                url = xmlrpcEndpoint
             )
-
-            return Result.failure(OnChangedException(xmlrpcSiteResult.error, xmlrpcSiteResult.error.message))
+            dispatcher.register(listener)
+            dispatcher.dispatch(SiteActionBuilder.newFetchSitesXmlRpcAction(selfHostedPayload))
+            cont.invokeOnCancellation { dispatcher.unregister(listener) }
         }
 
+        @Suppress("UNCHECKED_CAST")
+        if (authenticationResult.isFailure) return authenticationResult as Result<SiteModel>
+
+        return fetchSiteOptions(siteUrl)
+    }
+
+    private suspend fun fetchSiteOptions(siteUrl: String): Result<SiteModel> {
         WooLog.d(WooLog.T.LOGIN, "Fetch XMLRPC site options")
         val site = getSiteByUrl(siteUrl) ?: run {
             WooLog.e(WooLog.T.LOGIN, "XMLRPC site null after fetching!!")
@@ -160,12 +196,12 @@ class AccountMismatchRepository @Inject constructor(
             fetchSiteResult.isError -> {
                 WooLog.w(
                     tag = WooLog.T.LOGIN,
-                    message = "XMLRPC site $xmlrpcEndpoint fetch failed, error: ${fetchSiteResult.error.message}"
+                    message = "XMLRPC site $siteUrl fetch failed, error: ${fetchSiteResult.error.message}"
                 )
                 Result.failure(OnChangedException(fetchSiteResult.error, fetchSiteResult.error.message))
             }
             else -> {
-                WooLog.d(WooLog.T.LOGIN, "XMLRPC site $xmlrpcEndpoint fetch succeeded")
+                WooLog.d(WooLog.T.LOGIN, "XMLRPC site $siteUrl fetch succeeded")
                 Result.success(getSiteByUrl(siteUrl)!!)
             }
         }
