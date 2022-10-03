@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2022-09-20 09:54:23+0000
+Translation-Revision-Date: 2022-09-28 13:31:34+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: sv_SE
@@ -103,7 +103,7 @@ Language: sv_SE
     <string name="support_system_status_report_share_label">Dela systemstatusrapport</string>
     <string name="support_system_status_report_copy_label">Kopiera systemstatusrapport till urklipp</string>
     <string name="card_reader_connect_keep_searching_button">Fortsätt söka</string>
-    <string name="card_reader_payment_description_v2">Personlig betalning för beställning nr. %s för %s blog_id %s.</string>
+    <string name="card_reader_payment_description_v2">Personlig betalning för beställning #%1$s för %2$s blog_id %3$s.</string>
     <string name="card_reader_manage_payment_provider">Ändra betalningsleverantör</string>
     <string name="orderdetail_refunded_line_with_info">Återbetalat: %1$s</string>
     <string name="orderdetail_payment_summary_onhold_plain">Inväntar betalning</string>
@@ -187,7 +187,7 @@ Language: sv_SE
     <string name="shipping_label_install_wc_shipping_banner_button">Skaffa WooCommerce Shipping</string>
     <string name="shipping_label_install_wc_shipping_banner_description">Skriv ut etiketter från din telefon, med WooCommerce Shipping.</string>
     <string name="shipping_label_install_wc_shipping_banner_title">Behöver du en fraktetikett?</string>
-    <string name="order_creation_change_product_quantity">Ändra produktantalet från %d till %d</string>
+    <string name="order_creation_change_product_quantity">Ändra produktantalet från %1$d till %2$d</string>
     <string name="variations_bulk_update_regular_price">Uppdatera ordinarie pris</string>
     <string name="variations_bulk_update_sale_price">Uppdatera reapris</string>
     <string name="card_reader_onboarding_stripe_unsupported_in_country_header">Vi stöder inte WooCommerce Stripe-utökningen i %1$s</string>
@@ -320,8 +320,8 @@ Language: sv_SE
     <string name="coupon_list_wip_message_enabled">Vi har arbetat med att göra det möjligt att visa och redigera rabattkoder från din enhet!</string>
     <string name="coupon_list_wip_title">Visa och redigera rabattkoder</string>
     <string name="coupon_list_empty_heading">Inga rabattkoder hittades</string>
-    <string name="coupon_list_item_label_included_and_excluded">%1s exkl. %2s</string>
-    <string name="coupon_list_item_label_products_and_categories">%1s och %2s</string>
+    <string name="coupon_list_item_label_included_and_excluded">%1$s exkl. %2$s</string>
+    <string name="coupon_list_item_label_products_and_categories">%1$s och %2$s</string>
     <string name="coupon_list_item_label_everything">allt</string>
     <string name="coupon_list_item_label_expired">Har löpt ut</string>
     <string name="coupon_list_item_label_active">Aktiva</string>
@@ -1390,7 +1390,7 @@ Language: sv_SE
     <string name="product_width">Bredd</string>
     <string name="product_length">Längd</string>
     <string name="order_refunds_refund_info_title">Återbetalda produkter</string>
-    <string name="order_refunds_detail_item_description">%s (%s x %d)</string>
+    <string name="order_refunds_detail_item_description">%1$s (%2$s x %3$d)</string>
     <string name="order_refunds_method">%1$s via %2$s</string>
     <string name="order_refunds_confirmation">Är du säker på att du vill utfärda en återbetalning? Det här kan inte ångras.</string>
     <string name="orderdetail_refunded_products">Återbetalda produkter</string>
@@ -1430,7 +1430,7 @@ Language: sv_SE
     <string name="order_refunds_select_quantity">Välj kvantitet</string>
     <string name="order_refunds_shipping_refund">Fraktåterbetalning</string>
     <string name="order_refunds_products_refund">Produktåterbetalning</string>
-    <string name="order_refunds_item_description">%s x %s vardera</string>
+    <string name="order_refunds_item_description">%1$s x %2$s vardera</string>
     <string name="order_refunds_items_selected">%d artiklar valda</string>
     <string name="order_refunds_items_select_none">Välj ingen</string>
     <string name="order_refunds_items_select_all">Välj alla</string>
@@ -1441,7 +1441,7 @@ Language: sv_SE
     <string name="image_source_device_chooser">Välj från enheten</string>
     <string name="image_source_title">Välj en uppladdningsmetod</string>
     <string name="product_images_upload_channel_title">Uppladdningar</string>
-    <string name="product_images_uploading_multi_notif_message">Laddar upp bilder…%d av %d</string>
+    <string name="product_images_uploading_multi_notif_message">Laddar upp bilder … %1$d av %2$d</string>
     <string name="product_images_uploading_single_notif_message">Laddar upp bild…</string>
     <string name="product_images_camera_error">Det går inte att komma åt kameran</string>
     <string name="product_image_remove_confirmation">Är du säker på att du vill ta bort den här bilden?</string>
@@ -2162,7 +2162,7 @@ Language: sv_SE
     <string name="login_nostores_content_description">Inga WooCommerce-butiker</string>
     <string name="login_avatar_content_description">Ditt profilfoto</string>
     <string name="login_connected_store">Ansluten butik</string>
-    <string name="login_configure_link">Läs %skonfigurationsinstruktionerna%s.</string>
+    <string name="login_configure_link">Läs %1$skonfigurationsinstruktionerna%2$s.</string>
     <string name="login_jetpack_required">Denna app kräver Jetpack för att ansluta till din butik.</string>
     <string name="at_username">\@%s</string>
     <string name="enter_site_address">Ange adressen till den WooCommerce-butik som du vill ansluta.</string>
