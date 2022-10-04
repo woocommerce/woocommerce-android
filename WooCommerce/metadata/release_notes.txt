@@ -1,2 +1,1 @@
-Even though this release doesn’t have any new features, we still put a lot of love into it, including fixing an issue where you might be unnecessarily blocked from taking payments. Please continue to send us feedback – we are listening!
-
+We've added a new stats widget to the app! Simply long press on the WooCommerce icon, tap Widgets, then drag the Today widget to your home screen. We welcome your feedback on the app, especially the new features we’re working on.

@@ -6,7 +6,7 @@ import androidx.core.os.ConfigurationCompat
 
 object DeviceInfo {
     val OS: String
-        get() = android.os.Build.VERSION.RELEASE
+        get() = Build.VERSION.RELEASE
     val name: String
         get() {
             val manufacturer = Build.MANUFACTURER
@@ -20,9 +20,6 @@ object DeviceInfo {
     val locale: String?
         get() {
             val locale = ConfigurationCompat.getLocales(Resources.getSystem().configuration)
-            if (locale.isEmpty.not()) {
-                return locale[0]?.displayLanguage
-            }
-            return null
+            return locale[0]?.displayLanguage
         }
 }

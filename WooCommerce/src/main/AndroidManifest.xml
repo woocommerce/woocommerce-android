@@ -3,12 +3,10 @@
     xmlns:tools="http://schemas.android.com/tools"
     package="com.woocommerce.android">
 
-    <!-- Mark the camera as optional, as the back camera is missing from some ChromeOS devices-->
+    <!-- Mark the camera as optional, as the back camera is missing from some ChromeOS devices -->
     <uses-feature
         android:name="android.hardware.camera"
-        android:required="false" />
-
-    <!-- Normal permissions, access automatically granted to app -->
+        android:required="false" /> <!-- Normal permissions, access automatically granted to app -->
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
@@ -42,15 +40,15 @@
             android:windowSoftInputMode="adjustResize">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-
         <activity
             android:name=".ui.login.LoginActivity"
+            android:exported="true"
             android:theme="@style/LoginTheme"
-            android:windowSoftInputMode="adjustResize"
-            android:exported="true">
+            android:windowSoftInputMode="adjustResize">
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
 
@@ -62,7 +60,6 @@
                     android:scheme="woocommerce" />
             </intent-filter>
         </activity>
-
         <activity
             android:name=".ui.login.MagicLinkInterceptActivity"
             android:exported="true">
@@ -77,49 +74,59 @@
                     android:scheme="woocommerce" />
             </intent-filter>
         </activity>
-
         <activity
             android:name=".ui.prefs.AppSettingsActivity"
             android:theme="@style/Theme.Woo.DayNight" />
-
         <activity
             android:name=".ui.prefs.UnifiedAboutScreenActivity"
             android:theme="@style/Theme.Woo.UnifiedAbout" />
-
         <activity
             android:name=".support.WooLogViewerActivity"
             android:label="@string/logviewer_activity_title"
             android:theme="@style/Theme.Woo.DayNight" />
-
         <activity
             android:name=".support.SSRActivity"
             android:label="@string/support_system_status_report"
             android:theme="@style/Theme.Woo.DayNight" />
-
         <activity
             android:name=".support.HelpActivity"
             android:label="@string/support_help"
             android:theme="@style/Theme.Woo.DayNight" />
-
         <activity
             android:name="zendesk.support.guide.HelpCenterActivity"
             android:theme="@style/Theme.Woo.DayNight.Zendesk" />
-
         <activity
             android:name="zendesk.support.guide.ViewArticleActivity"
             android:theme="@style/Theme.Woo.DayNight.Zendesk" />
-
         <activity
             android:name="zendesk.support.request.RequestActivity"
             android:theme="@style/Theme.Woo.DayNight.Zendesk" />
-
         <activity
             android:name="zendesk.support.requestlist.RequestListActivity"
             android:theme="@style/Theme.Woo.DayNight.Zendesk" />
-
         <activity
             android:name="org.wordpress.android.mediapicker.ui.MediaPickerActivity"
             android:theme="@style/Theme.Woo.DayNight" />
+
+        <!-- Stats today app widget -->
+        <service
+            android:name=".ui.appwidgets.WidgetService"
+            android:permission="android.permission.BIND_REMOTEVIEWS" />
+        <meta-data
+            android:name="com.google.android.actions"
+            android:resource="@xml/stats_today_widget_info" />
+        <receiver
+            android:name=".ui.appwidgets.stats.today.TodayStatsWidgetProvider"
+            android:exported="false"
+            android:label="@string/today">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/stats_today_widget_info" />
+        </receiver>
 
         <!-- Services -->
         <service
@@ -129,12 +136,10 @@
                 <action android:name="com.google.firebase.MESSAGING_EVENT" />
             </intent-filter>
         </service>
-
         <service
             android:name=".push.NotificationsProcessingService"
             android:exported="false"
-            android:label="Notifications Quick Actions processing Service"></service>
-
+            android:label="Notifications Quick Actions processing Service" />
         <service
             android:name="org.wordpress.android.login.LoginWpcomService"
             android:exported="false"
@@ -158,12 +163,11 @@
                 android:name="android.support.FILE_PROVIDER_PATHS"
                 android:resource="@xml/provider_paths" />
         </provider>
-
         <provider
             android:name="androidx.startup.InitializationProvider"
-            tools:node="merge"
+            android:authorities="${applicationId}.androidx-startup"
             android:exported="false"
-            android:authorities="${applicationId}.androidx-startup">
+            tools:node="merge">
             <meta-data
                 android:name="androidx.work.WorkManagerInitializer"
                 android:value="androidx.startup"

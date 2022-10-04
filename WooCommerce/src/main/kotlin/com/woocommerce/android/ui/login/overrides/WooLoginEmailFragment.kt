@@ -6,11 +6,13 @@ import android.widget.Button
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.LayoutRes
 import com.woocommerce.android.R
+import com.woocommerce.android.extensions.showKeyboardWithDelay
 import com.woocommerce.android.ui.dialog.WooDialog
 import com.woocommerce.android.util.WooPermissionUtils
 import com.woocommerce.android.util.WooPermissionUtils.hasCameraPermission
 import com.woocommerce.android.util.WooPermissionUtils.requestCameraPermission
 import org.wordpress.android.login.LoginEmailFragment
+import org.wordpress.android.login.widgets.WPLoginInputRow
 
 class WooLoginEmailFragment : LoginEmailFragment() {
     interface Listener {
@@ -32,8 +34,11 @@ class WooLoginEmailFragment : LoginEmailFragment() {
 
     override fun setupContent(rootView: ViewGroup) {
         super.setupContent(rootView)
-        rootView.findViewById<Button>(R.id.login_what_is_wordpress).setOnClickListener {
-            whatIsWordPressLinkClickListener.onWhatIsWordPressLinkClicked()
+        with(rootView) {
+            findViewById<Button>(R.id.login_what_is_wordpress).setOnClickListener {
+                whatIsWordPressLinkClickListener.onWhatIsWordPressLinkClicked()
+            }
+            findViewById<WPLoginInputRow>(R.id.login_email_row).editText.showKeyboardWithDelay(0)
         }
 
         rootView.findViewById<Button>(R.id.button_login_qr_code).setOnClickListener {

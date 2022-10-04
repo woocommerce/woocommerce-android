@@ -11,11 +11,16 @@ import com.woocommerce.android.R.string
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
+import com.woocommerce.android.analytics.ExperimentTracker
+import com.woocommerce.android.experiment.JetpackTimeoutExperiment
 import com.woocommerce.android.extensions.getSiteName
+import com.woocommerce.android.extensions.isSimpleWPComSite
 import com.woocommerce.android.support.HelpActivity
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.common.UserEligibilityFetcher
+import com.woocommerce.android.ui.login.AccountRepository
 import com.woocommerce.android.ui.login.UnifiedLoginTracker
+import com.woocommerce.android.ui.sitepicker.SitePickerViewModel.SitePickerEvent.NavigateToAccountMismatchScreen
 import com.woocommerce.android.ui.sitepicker.SitePickerViewModel.SitePickerEvent.NavigateToWPComWebView
 import com.woocommerce.android.ui.sitepicker.SitePickerViewModel.SitesListItem.Header
 import com.woocommerce.android.ui.sitepicker.SitePickerViewModel.SitesListItem.NonWooSiteUiModel
@@ -49,11 +54,14 @@ class SitePickerViewModel @Inject constructor(
     savedState: SavedStateHandle,
     private val selectedSite: SelectedSite,
     private val repository: SitePickerRepository,
+    private val accountRepository: AccountRepository,
     private val resourceProvider: ResourceProvider,
     private val appPrefsWrapper: AppPrefsWrapper,
     private val unifiedLoginTracker: UnifiedLoginTracker,
     private val analyticsTrackerWrapper: AnalyticsTrackerWrapper,
-    private val userEligibilityFetcher: UserEligibilityFetcher
+    private val userEligibilityFetcher: UserEligibilityFetcher,
+    private val experimentTracker: ExperimentTracker,
+    private val jetpackTimeoutExperiment: JetpackTimeoutExperiment,
 ) : ScopedViewModel(savedState) {
     companion object {
         private const val WOOCOMMERCE_INSTALLATION_URL = "https://wordpress.com/plugins/woocommerce/"
@@ -165,7 +173,7 @@ class SitePickerViewModel @Inject constructor(
         }
 
         if (filteredSites.isEmpty()) {
-            loginSiteAddress?.let { loadAccountMismatchView(it) } ?: loadNoStoreView()
+            loginSiteAddress?.let { showAccountMismatchScreen(it) } ?: loadNoStoreView()
             return
         }
 
@@ -222,7 +230,10 @@ class SitePickerViewModel @Inject constructor(
         when {
             site == null -> {
                 // The url doesn't match any sites for this account.
-                loadAccountMismatchView(url)
+                showAccountMismatchScreen(url)
+            }
+            site.isSimpleWPComSite -> {
+                loadSimpleWPComView(site)
             }
             !site.hasWooCommerce -> {
                 // Show not woo store message view.
@@ -244,6 +255,7 @@ class SitePickerViewModel @Inject constructor(
             isPrimaryBtnVisible = true,
             primaryBtnText = resourceProvider.getString(string.login_site_picker_enter_site_address),
             noStoresLabelText = resourceProvider.getString(string.login_no_stores),
+            isNoStoresBtnVisible = true,
             noStoresBtnText = resourceProvider.getString(string.login_site_picker_new_to_woo),
             currentSitePickerState = SitePickerState.NoStoreState
         )
@@ -254,7 +266,7 @@ class SitePickerViewModel @Inject constructor(
      * to a site that is not connected to the account the user logged
      * in with.
      */
-    private fun loadAccountMismatchView(url: String) {
+    private fun showAccountMismatchScreen(url: String) {
         analyticsTrackerWrapper.track(
             AnalyticsEvent.SITE_PICKER_AUTO_LOGIN_ERROR_NOT_CONNECTED_TO_USER,
             mapOf(
@@ -263,17 +275,14 @@ class SitePickerViewModel @Inject constructor(
             )
         )
         trackLoginEvent(currentStep = UnifiedLoginTracker.Step.WRONG_WP_ACCOUNT)
-        sitePickerViewState = sitePickerViewState.copy(
-            isNoStoresViewVisible = true,
-            isPrimaryBtnVisible = sitePickerViewState.hasConnectedStores == true || !loginSiteAddress.isNullOrEmpty(),
-            primaryBtnText = resourceProvider.getString(
-                if (sitePickerViewState.hasConnectedStores == true) string.login_view_connected_stores
-                else string.login_site_picker_try_another_address
-            ),
-            noStoresLabelText = resourceProvider.getString(string.login_not_connected_to_account, url),
-            noStoresBtnText = resourceProvider.getString(string.login_need_help_finding_email),
-            currentSitePickerState = SitePickerState.AccountMismatchState
-        )
+        if (event.value !is NavigateToAccountMismatchScreen) {
+            triggerEvent(
+                NavigateToAccountMismatchScreen(
+                    hasConnectedStores = sitePickerViewState.hasConnectedStores ?: false,
+                    siteUrl = url
+                )
+            )
+        }
     }
 
     private fun loadWooNotFoundView(site: SiteModel) {
@@ -293,12 +302,24 @@ class SitePickerViewModel @Inject constructor(
             isPrimaryBtnVisible = isWooInstallationEnabled,
             primaryBtnText = resourceProvider.getString(string.login_install_woo),
             noStoresLabelText = resourceProvider.getString(string.login_not_woo_store, site.url),
+            isNoStoresBtnVisible = true,
             noStoresBtnText = resourceProvider.getString(string.login_view_connected_stores),
             currentSitePickerState = SitePickerState.WooNotFoundState
         )
     }
 
-    private fun getUserInfo() = repository.getUserAccount().let {
+    private fun loadSimpleWPComView(site: SiteModel) {
+        sitePickerViewState = sitePickerViewState.copy(
+            isNoStoresViewVisible = true,
+            isPrimaryBtnVisible = sitePickerViewState.hasConnectedStores == true,
+            primaryBtnText = resourceProvider.getString(string.login_view_connected_stores),
+            noStoresLabelText = resourceProvider.getString(string.login_simple_wpcom_site, site.url),
+            isNoStoresBtnVisible = false,
+            currentSitePickerState = SitePickerState.SimpleWPComState
+        )
+    }
+
+    private fun getUserInfo() = accountRepository.getUserAccount()?.let {
         UserInfo(displayName = it.displayName, username = it.userName ?: "", userAvatarUrl = it.avatarUrl)
     }
 
@@ -316,7 +337,7 @@ class SitePickerViewModel @Inject constructor(
         analyticsTrackerWrapper.track(
             stat = AnalyticsEvent.SITE_PICKER_NON_WOO_SITE_TAPPED,
             properties = mapOf(
-                AnalyticsTracker.KEY_IS_NON_ATOMIC to (!siteModel.isJetpackConnected && !siteModel.isJetpackCPConnected)
+                AnalyticsTracker.KEY_IS_NON_ATOMIC to siteModel.isSimpleWPComSite
             )
         )
         // Strip protocol from site's URL
@@ -324,7 +345,12 @@ class SitePickerViewModel @Inject constructor(
         val cleanedUrl = siteModel.url.replaceFirst(protocolRegex, "")
 
         loginSiteAddress = cleanedUrl
-        loadWooNotFoundView(siteModel)
+
+        if (siteModel.isSimpleWPComSite) {
+            loadSimpleWPComView(siteModel)
+        } else {
+            loadWooNotFoundView(siteModel)
+        }
     }
 
     fun onViewConnectedStoresButtonClick() {
@@ -363,8 +389,8 @@ class SitePickerViewModel @Inject constructor(
     fun onTryAnotherAccountButtonClick() {
         trackLoginEvent(clickEvent = UnifiedLoginTracker.Click.TRY_ANOTHER_ACCOUNT)
         launch {
-            repository.logout().let {
-                if (!repository.isUserLoggedIn()) {
+            accountRepository.logout().let {
+                if (it) {
                     appPrefsWrapper.removeLoginSiteAddress()
                     triggerEvent(Logout)
                 }
@@ -407,10 +433,18 @@ class SitePickerViewModel @Inject constructor(
 
                 sitePickerViewState = sitePickerViewState.copy(isProgressDiaLogVisible = true)
                 launch {
-                    val siteVerificationResult = repository.verifySiteWooAPIVersion(it.site)
+
+                    // A/B experiment to test what Jetpack timeout policy is more effective for site verification
+
+                    val siteVerificationResult = repository.verifySiteWooAPIVersion(
+                        it.site,
+                        overrideRetryPolicy = jetpackTimeoutExperiment.run()
+                    )
+
                     when {
                         siteVerificationResult.isError -> onSiteVerificationError(siteVerificationResult, it)
                         siteVerificationResult.model?.apiVersion == WooCommerceStore.WOO_API_NAMESPACE_V3 -> {
+                            experimentTracker.log(ExperimentTracker.SITE_VERIFICATION_SUCCESSFUL_EVENT)
                             selectedSite.set(it.site)
                             userEligibilityFetcher.fetchUserInfo()?.let { userModel ->
                                 sitePickerViewState = sitePickerViewState.copy(isProgressDiaLogVisible = false)
@@ -571,6 +605,7 @@ class SitePickerViewModel @Inject constructor(
         val isProgressDiaLogVisible: Boolean = false,
         val isPrimaryBtnVisible: Boolean = false,
         val isSecondaryBtnVisible: Boolean = false,
+        val isNoStoresBtnVisible: Boolean = false,
         val currentSitePickerState: SitePickerState = SitePickerState.StoreListState
     ) : Parcelable
 
@@ -601,9 +636,13 @@ class SitePickerViewModel @Inject constructor(
         object NavigateToSiteAddressEvent : SitePickerEvent()
         data class NavigateToHelpFragmentEvent(val origin: HelpActivity.Origin) : SitePickerEvent()
         data class NavigateToWPComWebView(val url: String, val validationUrl: String) : SitePickerEvent()
+        data class NavigateToAccountMismatchScreen(
+            val hasConnectedStores: Boolean,
+            val siteUrl: String
+        ) : SitePickerEvent()
     }
 
     enum class SitePickerState {
-        StoreListState, NoStoreState, AccountMismatchState, WooNotFoundState
+        StoreListState, NoStoreState, WooNotFoundState, SimpleWPComState
     }
 }

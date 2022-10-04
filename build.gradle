@@ -31,7 +31,8 @@ allprojects {
             // TODO fix all the warnings and change to true before end of 2022
             allWarningsAsErrors = false
             freeCompilerArgs += [
-                    "-Xopt-in=kotlin.RequiresOptIn"
+                    "-Xopt-in=kotlin.RequiresOptIn",
+                    "-Xjvm-default=all-compatibility",
             ]
         }
     }
@@ -81,7 +82,7 @@ tasks.register("installGitHooks", Copy) {
 }
 
 ext {
-    fluxCVersion = 'trunk-9f03e6805a2ba81e8ff1fcbb262e04a60866267d'
+    fluxCVersion = '1.54.0'
     glideVersion = '4.13.2'
     coilVersion = '2.1.0'
     constraintLayoutVersion = '1.2.0'
@@ -98,8 +99,8 @@ ext {
     materialVersion = '1.6.1'
     hiltJetpackVersion = '1.0.0'
     wordPressUtilsVersion = '2.6.0'
-    mediapickerVersion = '0.1.0'
-    wordPressLoginVersion = '0.18.0'
+    mediapickerVersion = 'trunk-6d9cbe0b1a0f0f2163b6ab6e0e5b2aadc6511ddd'
+    wordPressLoginVersion = '0.20.0'
     aboutAutomatticVersion = '0.0.6'
     workManagerVersion = '2.7.1'
 

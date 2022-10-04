@@ -50,6 +50,7 @@ import com.woocommerce.android.model.Notification
 import com.woocommerce.android.support.HelpActivity
 import com.woocommerce.android.support.HelpActivity.Origin
 import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.ui.appwidgets.WidgetUpdater
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.base.TopLevelFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
@@ -108,6 +109,10 @@ class MainActivity :
         const val FIELD_REMOTE_NOTIFICATION = "remote-notification"
         const val FIELD_PUSH_ID = "local-push-id"
 
+        // widget-related constants
+        const val FIELD_OPENED_FROM_WIDGET = "opened-from-push-widget"
+        const val FIELD_WIDGET_NAME = "widget-name"
+
         interface BackPressListener {
             fun onRequestAllowBackPress(): Boolean
         }
@@ -122,6 +127,7 @@ class MainActivity :
     @Inject lateinit var selectedSite: SelectedSite
     @Inject lateinit var uiMessageResolver: UIMessageResolver
     @Inject lateinit var crashLogging: CrashLogging
+    @Inject lateinit var appWidgetUpdaters: WidgetUpdater.StatsWidgetUpdaters
 
     private val viewModel: MainActivityViewModel by viewModels()
 
@@ -166,9 +172,7 @@ class MainActivity :
 
     private val fragmentLifecycleObserver: FragmentLifecycleCallbacks = object : FragmentLifecycleCallbacks() {
         override fun onFragmentViewCreated(fm: FragmentManager, f: Fragment, v: View, savedInstanceState: Bundle?) {
-            val currentDestination = navController.currentDestination!!
-            val isDialogDestination = currentDestination.navigatorName == DIALOG_NAVIGATOR_NAME
-            if (isDialogDestination) return
+            if (isDialogDestination(navController.currentDestination!!)) return
 
             when (val appBarStatus = (f as? BaseFragment)?.activityAppBarStatus ?: AppBarStatus.Visible()) {
                 is AppBarStatus.Visible -> {
@@ -299,6 +303,9 @@ class MainActivity :
     override fun onResume() {
         super.onResume()
         AnalyticsTracker.trackViewShown(this)
+
+        // Track if App was opened from a widget
+        trackIfOpenedFromWidget()
 
         if (selectedSite.exists()) {
             updateOrderBadge(false)
@@ -903,5 +910,22 @@ class MainActivity :
             actionListener = actionListener
         )
             .show()
+    }
+
+    override fun updateStatsWidgets() {
+        appWidgetUpdaters.updateTodayWidget()
+    }
+
+    private fun trackIfOpenedFromWidget() {
+        if (intent.getBooleanExtra(FIELD_OPENED_FROM_WIDGET, false)) {
+            val widgetName = intent.getStringExtra(FIELD_WIDGET_NAME)
+            AnalyticsTracker.track(
+                stat = AnalyticsEvent.WIDGET_TAPPED,
+                properties = mapOf(AnalyticsTracker.KEY_NAME to widgetName)
+            )
+            // Reset these flag now that they have being processed
+            intent.removeExtra(FIELD_OPENED_FROM_WIDGET)
+            intent.removeExtra(FIELD_WIDGET_NAME)
+        }
     }
 }

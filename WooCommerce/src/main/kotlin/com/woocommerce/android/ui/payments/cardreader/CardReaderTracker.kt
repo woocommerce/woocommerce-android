@@ -28,9 +28,13 @@ import com.woocommerce.android.analytics.AnalyticsEvent.CARD_READER_LOCATION_SUC
 import com.woocommerce.android.analytics.AnalyticsEvent.CARD_READER_SOFTWARE_UPDATE_FAILED
 import com.woocommerce.android.analytics.AnalyticsEvent.CARD_READER_SOFTWARE_UPDATE_STARTED
 import com.woocommerce.android.analytics.AnalyticsEvent.CARD_READER_SOFTWARE_UPDATE_SUCCESS
+import com.woocommerce.android.analytics.AnalyticsEvent.DISABLE_CASH_ON_DELIVERY_FAILED
+import com.woocommerce.android.analytics.AnalyticsEvent.DISABLE_CASH_ON_DELIVERY_SUCCESS
 import com.woocommerce.android.analytics.AnalyticsEvent.ENABLE_CASH_ON_DELIVERY_FAILED
 import com.woocommerce.android.analytics.AnalyticsEvent.ENABLE_CASH_ON_DELIVERY_SUCCESS
 import com.woocommerce.android.analytics.AnalyticsEvent.PAYMENTS_FLOW_ORDER_COLLECT_PAYMENT_TAPPED
+import com.woocommerce.android.analytics.AnalyticsEvent.PAYMENTS_HUB_CASH_ON_DELIVERY_TOGGLED
+import com.woocommerce.android.analytics.AnalyticsEvent.PAYMENTS_HUB_CASH_ON_DELIVERY_TOGGLED_LEARN_MORE_TAPPED
 import com.woocommerce.android.analytics.AnalyticsEvent.RECEIPT_EMAIL_FAILED
 import com.woocommerce.android.analytics.AnalyticsEvent.RECEIPT_EMAIL_TAPPED
 import com.woocommerce.android.analytics.AnalyticsEvent.RECEIPT_PRINT_CANCELED
@@ -38,6 +42,8 @@ import com.woocommerce.android.analytics.AnalyticsEvent.RECEIPT_PRINT_FAILED
 import com.woocommerce.android.analytics.AnalyticsEvent.RECEIPT_PRINT_SUCCESS
 import com.woocommerce.android.analytics.AnalyticsEvent.RECEIPT_PRINT_TAPPED
 import com.woocommerce.android.analytics.AnalyticsTracker
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_CASH_ON_DELIVERY_SOURCE
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_IS_ENABLED
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_PAYMENT_GATEWAY
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.cardreader.connection.event.SoftwareUpdateStatus.Failed
@@ -45,6 +51,7 @@ import com.woocommerce.android.cardreader.payments.CardInteracRefundStatus.Refun
 import com.woocommerce.android.cardreader.payments.CardPaymentStatus.CardPaymentStatusErrorType
 import com.woocommerce.android.cardreader.payments.CardPaymentStatus.CardPaymentStatusErrorType.Generic
 import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.ui.payments.cardreader.hub.CardReaderHubViewModel.CashOnDeliverySource
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboardingState
 import com.woocommerce.android.ui.payments.cardreader.onboarding.PluginType
 import com.woocommerce.android.ui.payments.cardreader.onboarding.PluginType.STRIPE_EXTENSION_GATEWAY
@@ -190,15 +197,55 @@ class CardReaderTracker @Inject constructor(
         }
     }
 
-    fun trackCashOnDeliveryEnabledSuccess() {
-        track(ENABLE_CASH_ON_DELIVERY_SUCCESS)
+    fun trackCashOnDeliveryToggled(isEnabled: Boolean) {
+        track(
+            PAYMENTS_HUB_CASH_ON_DELIVERY_TOGGLED,
+            mutableMapOf(
+                KEY_IS_ENABLED to isEnabled
+            )
+        )
     }
 
-    fun trackCashOnDeliveryEnabledFailure(errorMessage: String?) {
+    fun trackCashOnDeliveryEnabledSuccess(source: CashOnDeliverySource) {
+        track(
+            ENABLE_CASH_ON_DELIVERY_SUCCESS,
+            mutableMapOf(
+                KEY_CASH_ON_DELIVERY_SOURCE to source.toString()
+            )
+        )
+    }
+
+    fun trackCashOnDeliveryEnabledFailure(source: CashOnDeliverySource, errorMessage: String?) {
         track(
             ENABLE_CASH_ON_DELIVERY_FAILED,
-            errorDescription = errorMessage
+            errorDescription = errorMessage,
+            properties = mutableMapOf(
+                KEY_CASH_ON_DELIVERY_SOURCE to source.toString()
+            )
         )
+    }
+
+    fun trackCashOnDeliveryDisabledSuccess(source: CashOnDeliverySource) {
+        track(
+            DISABLE_CASH_ON_DELIVERY_SUCCESS,
+            mutableMapOf(
+                KEY_CASH_ON_DELIVERY_SOURCE to source.toString()
+            )
+        )
+    }
+
+    fun trackCashOnDeliveryDisabledFailure(source: CashOnDeliverySource, errorMessage: String?) {
+        track(
+            DISABLE_CASH_ON_DELIVERY_FAILED,
+            errorDescription = errorMessage,
+            properties = mutableMapOf(
+                KEY_CASH_ON_DELIVERY_SOURCE to source.toString()
+            )
+        )
+    }
+
+    fun trackCashOnDeliveryLearnMoreTapped() {
+        track(PAYMENTS_HUB_CASH_ON_DELIVERY_TOGGLED_LEARN_MORE_TAPPED)
     }
 
     fun trackPaymentGatewaySelected(pluginType: PluginType) {

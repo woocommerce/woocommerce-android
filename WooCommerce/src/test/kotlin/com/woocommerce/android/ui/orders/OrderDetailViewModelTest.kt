@@ -22,11 +22,13 @@ import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.ProductImageMap
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.PreviewReceipt
+import com.woocommerce.android.ui.orders.details.AddressValidator
 import com.woocommerce.android.ui.orders.details.OrderDetailFragmentArgs
 import com.woocommerce.android.ui.orders.details.OrderDetailRepository
 import com.woocommerce.android.ui.orders.details.OrderDetailViewModel
 import com.woocommerce.android.ui.orders.details.OrderDetailViewModel.OrderInfo
 import com.woocommerce.android.ui.orders.details.OrderDetailViewModel.ViewState
+import com.woocommerce.android.ui.orders.details.OrderDetailsTransactionLauncher
 import com.woocommerce.android.ui.orders.details.ShippingLabelOnboardingRepository
 import com.woocommerce.android.ui.payments.cardreader.CardReaderTracker
 import com.woocommerce.android.ui.payments.cardreader.payment.CardReaderPaymentCollectibilityChecker
@@ -96,10 +98,12 @@ class OrderDetailViewModelTest : BaseUnitTest() {
     }
     private val paymentCollectibilityChecker: CardReaderPaymentCollectibilityChecker = mock()
     private val shippingLabelOnboardingRepository: ShippingLabelOnboardingRepository = mock()
+    private val addressValidator: AddressValidator = mock()
 
     private val savedState = OrderDetailFragmentArgs(orderId = ORDER_ID).initSavedStateHandle()
 
     private val productImageMap = mock<ProductImageMap>()
+    private val orderDetailsTransactionLauncher = mock<OrderDetailsTransactionLauncher>()
 
     private val order = OrderTestUtils.generateTestOrder(ORDER_ID)
     private val orderInfo = OrderInfo(OrderTestUtils.generateTestOrder(ORDER_ID))
@@ -149,7 +153,8 @@ class OrderDetailViewModelTest : BaseUnitTest() {
                 cardReaderTracker,
                 analyticsTraWrapper,
                 shippingLabelOnboardingRepository,
-                mock()
+                orderDetailsTransactionLauncher,
+                addressValidator
             )
         )
     }
@@ -632,6 +637,7 @@ class OrderDetailViewModelTest : BaseUnitTest() {
     fun `Display error message on fetch order error`() = testBlocking {
         whenever(orderDetailRepository.fetchOrderById(ORDER_ID)).thenReturn(null)
         whenever(orderDetailRepository.getOrderById(ORDER_ID)).thenReturn(null)
+        doReturn(true).whenever(orderDetailRepository).fetchOrderNotes(any())
 
         var snackbar: ShowSnackbar? = null
         viewModel.event.observeForever {
@@ -641,6 +647,7 @@ class OrderDetailViewModelTest : BaseUnitTest() {
         viewModel.start()
 
         verify(orderDetailRepository, times(1)).fetchOrderById(ORDER_ID)
+        verify(viewModel, never()).order
 
         assertThat(snackbar).isEqualTo(ShowSnackbar(string.order_error_fetch_generic))
     }
@@ -1512,7 +1519,8 @@ class OrderDetailViewModelTest : BaseUnitTest() {
 
         viewModel.start()
 
-        verify(orderDetailRepository, times(1)).fetchOrderShippingLabels(any())
+        verify(orderDetailRepository).fetchOrderShippingLabels(any())
+        verify(orderDetailsTransactionLauncher).onShippingLabelFetchingCompleted()
     }
 
     @Test
@@ -1531,6 +1539,7 @@ class OrderDetailViewModelTest : BaseUnitTest() {
         viewModel.start()
 
         verify(orderDetailRepository, never()).fetchOrderShippingLabels(any())
+        verify(orderDetailsTransactionLauncher).onShippingLabelFetchingCompleted()
     }
 
     @Test
@@ -1549,6 +1558,7 @@ class OrderDetailViewModelTest : BaseUnitTest() {
         viewModel.start()
 
         verify(orderDetailRepository, never()).fetchOrderShippingLabels(any())
+        verify(orderDetailsTransactionLauncher).onShippingLabelFetchingCompleted()
     }
 
     @Test
@@ -1566,7 +1576,8 @@ class OrderDetailViewModelTest : BaseUnitTest() {
 
         viewModel.start()
 
-        verify(orderDetailRepository, times(1)).fetchOrderShipmentTrackingList(any())
+        verify(orderDetailRepository).fetchOrderShipmentTrackingList(any())
+        verify(orderDetailsTransactionLauncher).onShipmentTrackingFetchingCompleted()
     }
 
     @Test
@@ -1585,6 +1596,7 @@ class OrderDetailViewModelTest : BaseUnitTest() {
         viewModel.start()
 
         verify(orderDetailRepository, never()).fetchOrderShipmentTrackingList(any())
+        verify(orderDetailsTransactionLauncher).onShipmentTrackingFetchingCompleted()
     }
 
     @Test
@@ -1603,6 +1615,7 @@ class OrderDetailViewModelTest : BaseUnitTest() {
         viewModel.start()
 
         verify(orderDetailRepository, never()).fetchOrderShipmentTrackingList(any())
+        verify(orderDetailsTransactionLauncher).onShipmentTrackingFetchingCompleted()
     }
 
     @Test

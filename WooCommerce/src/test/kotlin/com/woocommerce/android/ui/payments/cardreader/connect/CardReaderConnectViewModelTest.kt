@@ -17,6 +17,7 @@ import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.payments.cardreader.CardReaderTracker
 import com.woocommerce.android.ui.payments.cardreader.CardReaderTrackingInfoKeeper
 import com.woocommerce.android.ui.payments.cardreader.LearnMoreUrlProvider
+import com.woocommerce.android.ui.payments.cardreader.LearnMoreUrlProvider.LearnMoreUrlType.IN_PERSON_PAYMENTS
 import com.woocommerce.android.ui.payments.cardreader.connect.CardReaderConnectEvent.CheckBluetoothEnabled
 import com.woocommerce.android.ui.payments.cardreader.connect.CardReaderConnectEvent.CheckBluetoothPermissionsGiven
 import com.woocommerce.android.ui.payments.cardreader.connect.CardReaderConnectEvent.CheckLocationEnabled
@@ -991,7 +992,7 @@ class CardReaderConnectViewModelTest : BaseUnitTest() {
         testBlocking {
             init(scanState = SCANNING)
             val url = "https://www.example.com"
-            whenever(learnMoreUrlProvider.providerLearnMoreUrl()).thenReturn(url)
+            whenever(learnMoreUrlProvider.provideLearnMoreUrlFor(IN_PERSON_PAYMENTS)).thenReturn(url)
 
             (viewModel.viewStateData.value as ScanningState).onLearnMoreClicked.invoke()
 
@@ -1003,7 +1004,7 @@ class CardReaderConnectViewModelTest : BaseUnitTest() {
         testBlocking {
             init(scanState = SCANNING)
             val url = "https://www.example.com"
-            whenever(learnMoreUrlProvider.providerLearnMoreUrl()).thenReturn(url)
+            whenever(learnMoreUrlProvider.provideLearnMoreUrlFor(IN_PERSON_PAYMENTS)).thenReturn(url)
 
             (viewModel.viewStateData.value as ScanningState).onLearnMoreClicked.invoke()
 

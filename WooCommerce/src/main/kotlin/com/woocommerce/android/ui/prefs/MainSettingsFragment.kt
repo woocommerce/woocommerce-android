@@ -240,10 +240,6 @@ class MainSettingsFragment : Fragment(R.layout.fragment_settings_main), MainSett
         }
     }
 
-    override fun openPurchaseCardReaderLink(url: String) {
-        ChromeCustomTabUtils.launchUrl(requireContext(), url)
-    }
-
     override fun showLatestAnnouncementOption(announcement: FeatureAnnouncement) {
         binding.optionWhatsNew.show()
         binding.optionWhatsNew.setOnClickListener {

@@ -5,6 +5,7 @@ import androidx.lifecycle.asLiveData
 import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsEvent
+import com.woocommerce.android.analytics.AnalyticsEvent.REVIEW_OPEN
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.model.FeatureAnnouncement
@@ -111,6 +112,7 @@ class MainActivityViewModel @Inject constructor(
         notificationHandler.markNotificationTapped(notification.remoteNoteId)
         notificationHandler.removeNotificationByPushIdFromSystemsBar(localPushId)
         if (notification.channelType == NotificationChannelType.REVIEW) {
+            analyticsTrackerWrapper.track(REVIEW_OPEN)
             triggerEvent(ViewReviewDetail(notification.uniqueId))
         } else if (notification.channelType == NotificationChannelType.NEW_ORDER) {
             if (siteStore.getSiteBySiteId(notification.remoteSiteId) != null) {

@@ -1,0 +1,3 @@
+10.4:
+Bu sürüm, deneyiminizi daha sorunsuz hale getirmek için birkaç küçük iyileştirme içerir. Yazılımımıza gönlümüzden kattığımız sevgiyi fark edeceğinizi umuyoruz.
+

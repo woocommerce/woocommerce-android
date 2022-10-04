@@ -28,6 +28,7 @@ import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_FLOW_EDITING
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.extensions.whenNotNullNorEmpty
+import com.woocommerce.android.model.Address
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.model.Order.OrderStatus
 import com.woocommerce.android.model.OrderNote
@@ -103,6 +104,7 @@ class OrderDetailViewModel @Inject constructor(
     private val trackerWrapper: AnalyticsTrackerWrapper,
     private val shippingLabelOnboardingRepository: ShippingLabelOnboardingRepository,
     private val orderDetailsTransactionLauncher: OrderDetailsTransactionLauncher,
+    private val addressValidator: AddressValidator
 ) : ScopedViewModel(savedState), OnProductFetchedListener {
     private val navArgs: OrderDetailFragmentArgs by savedState.navArgs()
 
@@ -166,6 +168,8 @@ class OrderDetailViewModel @Inject constructor(
                 displayOrderDetails()
                 fetchOrder(showSkeleton = false)
             } ?: fetchOrder(showSkeleton = true)
+
+            validateShippingAddress()
         }
     }
 
@@ -198,7 +202,8 @@ class OrderDetailViewModel @Inject constructor(
             )
             isFetchingData = false
 
-            displayOrderDetails()
+            if (hasOrder()) displayOrderDetails()
+
             viewState = viewState.copy(
                 isOrderDetailSkeletonShown = false,
                 isRefreshing = false
@@ -574,6 +579,13 @@ class OrderDetailViewModel @Inject constructor(
         }
     }
 
+    private fun validateShippingAddress() {
+        if (hasOrder().not() || order.shippingAddress == Address.EMPTY) return
+        launch {
+            addressValidator.validate(order.id, order.shippingAddress)
+        }
+    }
+
     private fun fetchOrderNotesAsync() = async {
         if (!orderDetailRepository.fetchOrderNotes(navArgs.orderId)) {
             triggerEvent(ShowSnackbar(string.order_error_fetch_notes_generic))
@@ -630,28 +642,23 @@ class OrderDetailViewModel @Inject constructor(
     }
 
     private fun fetchShipmentTrackingAsync() = async {
-        pluginsInformation[WooCommerceStore.WooPlugin.WOO_SHIPMENT_TRACKING.pluginName]
-            ?.takeIf { plugin ->
-                !plugin.isInstalled || !plugin.isActive
-            }?.let {
-                // Fetch data only when the plugin is installed and active
-                return@async
-            }
-        val result = orderDetailRepository.fetchOrderShipmentTrackingList(navArgs.orderId)
-        appPrefs.setTrackingExtensionAvailable(result == SUCCESS)
-        orderDetailsTransactionLauncher.onShipmentTrackingFetched()
+        val plugin = pluginsInformation[WooCommerceStore.WooPlugin.WOO_SHIPMENT_TRACKING.pluginName]
+
+        if (plugin == null || plugin.isOperational) {
+            val result = orderDetailRepository.fetchOrderShipmentTrackingList(navArgs.orderId)
+            appPrefs.setTrackingExtensionAvailable(result == SUCCESS)
+        }
+
+        orderDetailsTransactionLauncher.onShipmentTrackingFetchingCompleted()
     }
 
     private fun fetchOrderShippingLabelsAsync() = async {
-        pluginsInformation[WooCommerceStore.WooPlugin.WOO_SERVICES.pluginName]
-            ?.takeIf { plugin ->
-                !plugin.isInstalled || !plugin.isActive
-            }?.let {
-                // Fetch data only when the plugin is installed and active
-                return@async
-            }
-        orderDetailRepository.fetchOrderShippingLabels(navArgs.orderId)
-        orderDetailsTransactionLauncher.onShippingLabelFetched()
+        val plugin = pluginsInformation[WooCommerceStore.WooPlugin.WOO_SERVICES.pluginName]
+
+        if (plugin == null || plugin.isOperational) {
+            orderDetailRepository.fetchOrderShippingLabels(navArgs.orderId)
+        }
+        orderDetailsTransactionLauncher.onShippingLabelFetchingCompleted()
     }
 
     private fun loadOrderShippingLabels(): ListInfo<ShippingLabel> {

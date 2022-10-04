@@ -53,6 +53,7 @@
 
     <color name="woo_black">@android:color/black</color>
     <color name="woo_black_90">#121212</color>
+    <color name="woo_black_90_alpha_004">#0A000000</color>"
     <color name="woo_black_90_alpha_012">#1F121212</color>
     <color name="woo_black_90_alpha_020">#33121212</color>
     <color name="woo_black_90_alpha_038">#61121212</color>

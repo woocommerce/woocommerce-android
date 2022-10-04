@@ -1,4 +1,0 @@
-10.0:
-Vi har gjort diverse förbättringar för när du vill komma igång med ditt företag. Det är nu enklare att konfigurera din butik när du loggar in. Du kan nu dessutom aktivera personliga betalningar direkt i appen.
-Slutligen har vi även gjort några justeringar för att förbättra prestandan. Men vi är inte klara. Håll utkik efter fler förbättringar framöver. Fortsätt att skicka feedback. Vi läser allt.
-

@@ -15,11 +15,13 @@ import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.map
+import androidx.lifecycle.viewModelScope
 import androidx.paging.PagedList
 import com.google.android.material.snackbar.Snackbar
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
+import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.extensions.NotificationReceivedEvent
 import com.woocommerce.android.model.RequestResult.SUCCESS
 import com.woocommerce.android.network.ConnectionChangeReceiver.ConnectionChangeEvent
@@ -34,7 +36,9 @@ import com.woocommerce.android.ui.orders.list.OrderListViewModel.OrderListEvent.
 import com.woocommerce.android.ui.orders.list.OrderListViewModel.OrderListEvent.ShowErrorSnack
 import com.woocommerce.android.ui.orders.list.OrderListViewModel.OrderListEvent.ShowOrderFilters
 import com.woocommerce.android.ui.payments.banner.BannerDisplayEligibilityChecker
+import com.woocommerce.android.ui.payments.banner.BannerState
 import com.woocommerce.android.util.CoroutineDispatchers
+import com.woocommerce.android.util.LandscapeChecker
 import com.woocommerce.android.util.ThrottleLiveData
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.viewmodel.LiveDataDelegate
@@ -65,6 +69,7 @@ import org.wordpress.android.mediapicker.util.filter
 import javax.inject.Inject
 
 private const val EMPTY_VIEW_THROTTLE = 250L
+
 // Small delay before triggering the glance animation event
 private const val DELAY_GLANCE_DURATION = 500L
 typealias PagedOrdersList = PagedList<OrderListItemUIType>
@@ -87,7 +92,9 @@ class OrderListViewModel @Inject constructor(
     private val getWCOrderListDescriptorWithFilters: GetWCOrderListDescriptorWithFilters,
     private val getSelectedOrderFiltersCount: GetSelectedOrderFiltersCount,
     private val bannerDisplayEligibilityChecker: BannerDisplayEligibilityChecker,
-    private val orderListTransactionLauncher: OrderListTransactionLauncher
+    private val orderListTransactionLauncher: OrderListTransactionLauncher,
+    private val analyticsTrackerWrapper: AnalyticsTrackerWrapper,
+    private val landscapeChecker: LandscapeChecker,
 ) : ScopedViewModel(savedState), LifecycleOwner {
     private val lifecycleRegistry: LifecycleRegistry by lazy {
         LifecycleRegistry(this)
@@ -108,7 +115,15 @@ class OrderListViewModel @Inject constructor(
     internal var viewState by viewStateLiveData
 
     private val _pagedListData = MediatorLiveData<PagedOrdersList>()
-    val pagedListData: LiveData<PagedOrdersList> = _pagedListData
+    val pagedListData: LiveData<PagedOrdersList>
+        get() {
+            return _pagedListData.map {
+                viewModelScope.launch {
+                    updateBannerState(landscapeChecker, _pagedListData.value.isNullOrEmpty())
+                }
+                it
+            }
+        }
 
     private val _isLoadingMore = MediatorLiveData<Boolean>()
     val isLoadingMore: LiveData<Boolean> = _isLoadingMore
@@ -138,7 +153,7 @@ class OrderListViewModel @Inject constructor(
     val emptyViewType: LiveData<EmptyViewType?> = _emptyViewType
 
     val shouldShowUpsellCardReaderDismissDialog: MutableLiveData<Boolean> = MutableLiveData(false)
-    val isEligibleForInPersonPayments: MutableLiveData<Boolean> = MutableLiveData(false)
+    val bannerState: MutableLiveData<BannerState> = MutableLiveData()
 
     var isSearching = false
     private var dismissListErrors = false
@@ -159,7 +174,6 @@ class OrderListViewModel @Inject constructor(
             _emptyViewType.postValue(EmptyViewType.ORDER_LIST_LOADING)
             if (selectedSite.exists()) {
                 loadOrders()
-                isEligibleForInPersonPayments()
             } else {
                 WooLog.w(
                     WooLog.T.ORDERS,
@@ -185,8 +199,39 @@ class OrderListViewModel @Inject constructor(
         }
     }
 
-    private suspend fun isEligibleForInPersonPayments() {
-        isEligibleForInPersonPayments.value = bannerDisplayEligibilityChecker.isEligibleForInPersonPayments()
+    private suspend fun shouldDisplayBanner(isLandScape: Boolean, isOrderListEmpty: Boolean): Boolean {
+        return bannerDisplayEligibilityChecker.isEligibleForInPersonPayments() &&
+            canShowCardReaderUpsellBanner(System.currentTimeMillis()) &&
+            !isLandScape &&
+            !isOrderListEmpty
+    }
+
+    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    suspend fun updateBannerState(landscapeChecker: LandscapeChecker, isOrdersListEmpty: Boolean) {
+        bannerState.value = BannerState(
+            shouldDisplayBanner = shouldDisplayBanner(landscapeChecker.isLandscape(), isOrdersListEmpty),
+            onPrimaryActionClicked = {
+                onCtaClicked(AnalyticsTracker.KEY_BANNER_ORDER_LIST)
+            },
+            onDismissClicked = { onDismissClicked() },
+            title = R.string.card_reader_upsell_card_reader_banner_title,
+            description = R.string.card_reader_upsell_card_reader_banner_description,
+            primaryActionLabel = R.string.card_reader_upsell_card_reader_banner_cta,
+            chipLabel = R.string.card_reader_upsell_card_reader_banner_new
+        )
+        trackBannerShownIfDisplayed()
+    }
+
+    private fun trackBannerShownIfDisplayed() {
+        if (bannerState.value?.shouldDisplayBanner == true) {
+            analyticsTrackerWrapper.track(
+                AnalyticsEvent.FEATURE_CARD_SHOWN,
+                mapOf(
+                    AnalyticsTracker.KEY_BANNER_SOURCE to AnalyticsTracker.KEY_BANNER_ORDER_LIST,
+                    AnalyticsTracker.KEY_BANNER_CAMPAIGN_NAME to AnalyticsTracker.KEY_BANNER_UPSELL_CARD_READERS
+                )
+            )
+        }
     }
 
     fun loadOrders() {
@@ -319,6 +364,7 @@ class OrderListViewModel @Inject constructor(
 
         _pagedListData.addSource(pagedListWrapper.data) { pagedList ->
             pagedList?.let {
+
                 _pagedListData.value = it
             }
         }
@@ -486,7 +532,7 @@ class OrderListViewModel @Inject constructor(
         loadOrders()
     }
 
-    fun onCtaClicked(source: String) {
+    private fun onCtaClicked(source: String) {
         launch {
             triggerEvent(
                 OpenPurchaseCardReaderLink(bannerDisplayEligibilityChecker.getPurchaseCardReaderUrl(source))
@@ -494,7 +540,7 @@ class OrderListViewModel @Inject constructor(
         }
     }
 
-    fun onDismissClicked() {
+    private fun onDismissClicked() {
         shouldShowUpsellCardReaderDismissDialog.value = true
         triggerEvent(OrderListEvent.DismissCardReaderUpsellBanner)
     }
@@ -515,12 +561,12 @@ class OrderListViewModel @Inject constructor(
         shouldShowUpsellCardReaderDismissDialog.value = false
     }
 
-    fun canShowCardReaderUpsellBanner(currentTimeInMillis: Long, source: String): Boolean {
-        return bannerDisplayEligibilityChecker.canShowCardReaderUpsellBanner(currentTimeInMillis, source)
+    private fun canShowCardReaderUpsellBanner(currentTimeInMillis: Long): Boolean {
+        return bannerDisplayEligibilityChecker.canShowCardReaderUpsellBanner(currentTimeInMillis)
     }
 
     fun shouldDisplaySimplePaymentsWIPCard(): Boolean {
-        return !canShowCardReaderUpsellBanner(System.currentTimeMillis(), AnalyticsTracker.KEY_BANNER_ORDER_LIST)
+        return !canShowCardReaderUpsellBanner(System.currentTimeMillis())
     }
 
     private fun updateOrderDisplayedStatus(position: Int, status: String) {

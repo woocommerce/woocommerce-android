@@ -1,8 +1,6 @@
 package com.woocommerce.android.ui.prefs
 
-import androidx.lifecycle.MutableLiveData
 import com.woocommerce.android.tools.SelectedSite
-import com.woocommerce.android.ui.payments.banner.BannerDisplayEligibilityChecker
 import com.woocommerce.android.ui.whatsnew.FeatureAnnouncementRepository
 import com.woocommerce.android.util.BuildConfigWrapper
 import com.woocommerce.android.util.StringUtils
@@ -20,19 +18,13 @@ class MainSettingsPresenter @Inject constructor(
     private val wooCommerceStore: WooCommerceStore,
     private val featureAnnouncementRepository: FeatureAnnouncementRepository,
     private val buildConfigWrapper: BuildConfigWrapper,
-    private val bannerDisplayEligibilityChecker: BannerDisplayEligibilityChecker,
 ) : MainSettingsContract.Presenter {
     private var appSettingsFragmentView: MainSettingsContract.View? = null
 
     private var jetpackMonitoringJob: Job? = null
 
-    override val isEligibleForInPersonPayments: MutableLiveData<Boolean> = MutableLiveData(false)
-
     override fun takeView(view: MainSettingsContract.View) {
         appSettingsFragmentView = view
-        coroutineScope.launch {
-            isEligibleForInPersonPayments.value = bannerDisplayEligibilityChecker.isEligibleForInPersonPayments()
-        }
     }
 
     override fun dropView() {
@@ -72,17 +64,5 @@ class MainSettingsPresenter @Inject constructor(
                     .collect { setupJetpackInstallOption() }
             }
         }
-    }
-
-    override fun onCtaClicked(source: String) {
-        coroutineScope.launch {
-            appSettingsFragmentView?.openPurchaseCardReaderLink(
-                bannerDisplayEligibilityChecker.getPurchaseCardReaderUrl(source)
-            )
-        }
-    }
-
-    override fun canShowCardReaderUpsellBanner(currentTimeInMillis: Long, source: String): Boolean {
-        return bannerDisplayEligibilityChecker.canShowCardReaderUpsellBanner(currentTimeInMillis, source)
     }
 }

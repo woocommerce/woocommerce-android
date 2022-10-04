@@ -74,9 +74,9 @@ android {
         if (project.hasProperty("versionName")) {
             versionName project.property("versionName")
         } else {
-            versionName "10.1-rc-1"
+            versionName "10.5-rc-1"
         }
-        versionCode 325
+        versionCode 333
 
         minSdkVersion gradle.ext.minSdkVersion
         // Update targetSdkVersion only after reviewing all the OS changes (developer.android.com/about/versions/[ENTER_ANDROID_VERSION]/migration)
@@ -91,6 +91,7 @@ android {
         javaCompileOptions.annotationProcessorOptions.arguments['dagger.hilt.disableModulesHaveInstallInCheck'] = 'true'
 
         buildConfigField "boolean", "USE_SIMULATED_READER", project.hasProperty("useSimulatedReader").toString()
+        resValue "bool", "enable_leak_canary", isLeakCanaryEnabled().toString()
 
         packagingOptions {
             exclude 'META-INF/gradle/incremental.annotation.processors'
@@ -161,13 +162,14 @@ android {
         debug.java.srcDirs += 'src/debug/kotlin'
         test.java.srcDirs += 'src/test/kotlin'
         androidTest.java.srcDirs += 'src/androidTest/kotlin'
+
+        if (isLeakCanaryEnabled()) {
+            debug.java.srcDirs += 'src/leakcanary/kotlin'
+        }
     }
 
     lintOptions {
         disable 'InvalidPackage'
-        // TODO remove this after we update AGP, it's a bug that has been fixed in 4.1.1 and later
-        // see: https://issuetracker.google.com/issues/168794947
-        disable "ParcelCreator"
     }
 
     testOptions {
@@ -217,7 +219,7 @@ dependencies {
     implementation("com.automattic.tracks:experimentation:trunk-f25f5b5e77df8313f19d47d07e7411256d18df79") {
         exclude group: "org.wordpress", module: "fluxc"
     }
-    implementation 'com.automattic:Automattic-Tracks-Android:trunk-95d0743430d709a8ee1fdc128e726056cfd6bb09'
+    implementation 'com.automattic:Automattic-Tracks-Android:trunk-9c862fc2d53bc8e914216eb192b727427c71e71e'
 
     implementation("${gradle.ext.fluxCBinaryPath}:$fluxCVersion") {
         exclude group: "com.android.support"
@@ -281,7 +283,10 @@ dependencies {
         // See https://github.com/wordpress-mobile/WordPress-FluxC-Android/issues/919
         exclude group: 'com.squareup.okhttp3'
     }
-    debugImplementation 'com.squareup.leakcanary:leakcanary-android-core:2.9.1'
+
+    if (isLeakCanaryEnabled()) {
+        debugImplementation 'com.squareup.leakcanary:leakcanary-android-core:2.9.1'
+    }
 
     // Dependencies for local unit tests
     testImplementation "junit:junit:$jUnitVersion"
@@ -324,8 +329,8 @@ dependencies {
     }
 
     // ViewModel and LiveData
-    implementation "androidx.fragment:fragment-ktx:1.4.1"
-    implementation "androidx.activity:activity-ktx:1.4.0"
+    implementation "androidx.fragment:fragment-ktx:1.5.2"
+    implementation "androidx.activity:activity-ktx:1.5.1"
     implementation "androidx.lifecycle:lifecycle-viewmodel-savedstate:$lifecycleVersion"
     implementation "androidx.lifecycle:lifecycle-livedata-ktx:$lifecycleVersion"
     implementation "androidx.lifecycle:lifecycle-process:$lifecycleVersion"
@@ -476,6 +481,10 @@ static def loadPropertiesFromFile(inputFile) {
         properties.load(stream)
     }
     return properties
+}
+
+def isLeakCanaryEnabled() {
+    return project.properties.getOrDefault('enableLeakCanary', 'true') == 'true'
 }
 
 // For app signing

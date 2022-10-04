@@ -78,7 +78,7 @@
                 "coupon_lines":[],
                 "refunds":[],
                 "payment_url": "https://automatticwidgets.wpcomstaging.com/checkout/order-pay/2201/?pay_for_order=true&key=wc_order_itGmODLV25QAx",
-                "is_editable": false,
+                "is_editable": true,
                 "date_created_gmt": "{{fnow offset='-10 minutes' format=customformat}}",
                 "date_modified_gmt": "{{fnow offset='-10 minutes' format=customformat}}",
                 "date_completed_gmt":null,

@@ -1,11 +1,25 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2022-08-22 20:54:03+0000
+Translation-Revision-Date: 2022-09-17 02:10:06+0000
 Plural-Forms: nplurals=2; plural=(n > 1);
 Generator: GlotPress/2.4.0-alpha
 Language: pt_BR
 -->
 <resources>
+    <string name="stats_widget_error_no_data">Não foi possível carregar os dados</string>
+    <string name="login_jetpack_connection_url_failed">Falha ao buscar dados de conexão…</string>
+    <string name="login_jetpack_verify_connection">Verificando a conexão do Jetpack…</string>
+    <string name="login_jetpack_connection_verification_failed">Não foi possível verificar sua conexão com o Jetpack. Tente novamente.</string>
+    <string name="login_simple_wpcom_site">O site %1$s está em um plano do WordPress.com que não é compatível com instalação de plugins. Faça upgrade de plano para usar o WooCommerce.</string>
+    <string name="login_connect_jetpack_button">Conecte o Jetpack à sua conta</string>
+    <string name="login_jetpack_not_connected">Parece que sua conta não está conectada ao Jetpack de %1$s</string>
+    <string name="card_reader_card_readers_header">LEITORES DE CARTÃO</string>
+    <string name="card_reader_payment_options_header">OPÇÕES DE PAGAMENTO</string>
+    <string name="card_reader_enable_pay_in_person_description">A opção de pagamento presencial permite que você aceite pagamentos de pedidos do site, na coleta ou na entrega. &lt;a href=\'\'&gt;Saiba mais&lt;/a&gt;</string>
+    <string name="card_reader_enable_pay_in_person">Pagamento presencial</string>
+    <string name="login_verifying_site_jetpack_timeout_error_description">Não foi possível conectar ao site. Entre em contato com o suporte para solucionar o problema.</string>
+    <string name="login_verifying_site_jetpack_timeout_error_title">Erro de conexão</string>
+    <string name="card_reader_onboarding_with_pending_requirements">Há um problema que precisa da sua atenção. &lt;a href=\'\'&gt;Confira&lt;/a&gt;</string>
     <string name="login_site_picker_try_another_address">Tentar outro endereço</string>
     <string name="card_reader_onboarding_cash_on_delivery_enable_failure">Falha ao ativar o pagamento na entrega. Tente novamente mais tarde.</string>
     <string name="card_reader_onboarding_cash_on_delivery_disabled_button">Ativar pagamento presencial</string>
@@ -17,7 +31,7 @@ Language: pt_BR
     <string name="login_site_picker_enter_site_address">Digite um endereço de site</string>
     <string name="login_help_notification_get_link_by_email_button">Receba um link de login por e-mail</string>
     <string name="login_help_notification_invalid_password_title">Esqueceu sua senha?</string>
-    <string name="card_reader_onboarding_not_finished">Notamos que você ainda não concluiu a configuração dos pagamentos presenciais. &lt;b&gt;&lt;a href=\'\'&gt;Continuar configuração&lt;/a&gt;&lt;/b&gt;</string>
+    <string name="card_reader_onboarding_not_finished">Notamos que você ainda não concluiu a configuração dos pagamentos presenciais. &lt;a href=\'\'&gt;Continuar configuração&lt;/a&gt;</string>
     <string name="payments_hub_title">Pagamentos</string>
     <string name="orderlist_bottom_sheet_simple_payments_moved_button">Consegui!</string>
     <string name="orderlist_bottom_sheet_simple_payments_moved_description">Agora você pode acessar rapidamente os pagamentos presenciais e outras funcionalidades com facilidade</string>
@@ -1816,7 +1830,7 @@ Language: pt_BR
     <string name="login_jetpack_what_is_description">O Jetpack é um plugin gratuito do WordPress que conecta sua loja às ferramentas necessárias para proporcionar a você a melhor experiência em dispositivos móveis, incluindo notificações push e estatísticas</string>
     <string name="login_jetpack_what_is">O que é o Jetpack?</string>
     <string name="login_view_connected_stores">Visualizar lojas conectadas</string>
-    <string name="login_not_connected_to_account">Parece que %1$s está conectado(a) a uma conta diferente do WordPress.com.</string>
+    <string name="login_wpcom_account_mismatch">Parece que %1$s está conectado a outra conta do WordPress.com.</string>
     <string name="keep_editing">Continuar editando</string>
     <string name="notification_wpcom_username_needed">Faça login com seu nome de usuário e senha.</string>
     <string name="error_user_username_instead_of_email">Faça login com seu nome de usuário do WordPress.com em vez do endereço de e-mail.</string>

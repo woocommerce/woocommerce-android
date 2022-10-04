@@ -102,6 +102,12 @@ enum class AnalyticsEvent(val siteless: Boolean = false) {
     LOGIN_JETPACK_SETUP_BUTTON_TAPPED(siteless = true),
     LOGIN_JETPACK_SETUP_DISMISSED(siteless = true),
     LOGIN_JETPACK_SETUP_COMPLETED(siteless = true),
+    LOGIN_JETPACK_CONNECTION_ERROR_SHOWN(siteless = true),
+    LOGIN_JETPACK_CONNECTION_URL_FETCH_FAILED(siteless = true),
+    LOGIN_JETPACK_CONNECT_BUTTON_TAPPED(siteless = true),
+    LOGIN_JETPACK_CONNECT_COMPLETED(siteless = true),
+    LOGIN_JETPACK_CONNECT_DISMISSED(siteless = true),
+    LOGIN_JETPACK_CONNECTION_VERIFICATION_FAILED(siteless = true),
 
     // -- Site Picker
     SITE_PICKER_STORES_SHOWN(siteless = true),
@@ -198,6 +204,7 @@ enum class AnalyticsEvent(val siteless: Boolean = false) {
     ORDER_DETAIL_CREATE_SHIPPING_LABEL_BUTTON_TAPPED,
     ORDER_DETAIL_WAITING_TIME_LOADED,
     ORDER_VIEW_CUSTOM_FIELDS_TAPPED,
+    ORDER_ADDRESS_VALIDATION_ERROR,
 
     // - Order detail editing
     ORDER_DETAIL_EDIT_FLOW_STARTED,
@@ -290,6 +297,8 @@ enum class AnalyticsEvent(val siteless: Boolean = false) {
     // -- Cash on Delivery - onboarding
     ENABLE_CASH_ON_DELIVERY_SUCCESS,
     ENABLE_CASH_ON_DELIVERY_FAILED,
+    DISABLE_CASH_ON_DELIVERY_SUCCESS,
+    DISABLE_CASH_ON_DELIVERY_FAILED,
 
     // -- Card Present Payments - collection
     CARD_PRESENT_COLLECT_PAYMENT_FAILED,
@@ -377,6 +386,8 @@ enum class AnalyticsEvent(val siteless: Boolean = false) {
     PAYMENTS_HUB_CARD_READER_MANUALS_TAPPED,
     PAYMENTS_HUB_MANAGE_CARD_READERS_TAPPED,
     PAYMENTS_HUB_ONBOARDING_ERROR_TAPPED,
+    PAYMENTS_HUB_CASH_ON_DELIVERY_TOGGLED,
+    PAYMENTS_HUB_CASH_ON_DELIVERY_TOGGLED_LEARN_MORE_TAPPED,
 
     // -- Product list
     PRODUCT_LIST_LOADED,
@@ -680,9 +691,12 @@ enum class AnalyticsEvent(val siteless: Boolean = false) {
     LOGIN_LOCAL_NOTIFICATION_DISMISSED(siteless = true),
 
     // Experiments (A/B test variants)
-    LOGIN_SITE_CREDENTIALS_EXPERIMENT,
     PROLOGUE_EXPERIMENT,
     MAGIC_LINK_SENT_SCREEN_EXPERIMENT,
     MAGIC_LINK_REQUEST_EXPERIMENT,
-    LOGIN_BUTTON_SWAP_EXPERIMENT
+    LOGIN_BUTTON_SWAP_EXPERIMENT,
+    JETPACK_TIMEOUT_EXPERIMENT,
+
+    // Widgets
+    WIDGET_TAPPED
 }

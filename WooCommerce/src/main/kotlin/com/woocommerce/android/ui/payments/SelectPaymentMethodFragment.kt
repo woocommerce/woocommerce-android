@@ -7,7 +7,6 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.ui.platform.ViewCompositionStrategy
-import androidx.compose.ui.res.stringResource
 import androidx.core.view.isVisible
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
@@ -32,7 +31,8 @@ import com.woocommerce.android.ui.payments.SelectPaymentMethodViewModel.Navigate
 import com.woocommerce.android.ui.payments.SelectPaymentMethodViewModel.SharePaymentUrl
 import com.woocommerce.android.ui.payments.SelectPaymentMethodViewModel.TakePaymentViewState.Loading
 import com.woocommerce.android.ui.payments.SelectPaymentMethodViewModel.TakePaymentViewState.Success
-import com.woocommerce.android.ui.payments.banner.PaymentsScreenBanner
+import com.woocommerce.android.ui.payments.banner.Banner
+import com.woocommerce.android.ui.payments.banner.BannerState
 import com.woocommerce.android.ui.payments.banner.PaymentsScreenBannerDismissDialog
 import com.woocommerce.android.ui.payments.cardreader.connect.CardReaderConnectDialogFragment
 import com.woocommerce.android.ui.payments.cardreader.payment.CardReaderPaymentDialogFragment
@@ -64,7 +64,6 @@ class SelectPaymentMethodFragment : BaseFragment(R.layout.fragment_take_payment)
         if (viewModel.shouldShowUpsellCardReaderDismissDialog.value == true) {
             applyBannerDismissDialogComposeUI()
         }
-        applyBannerComposeUI()
         return view
     }
 
@@ -74,18 +73,13 @@ class SelectPaymentMethodFragment : BaseFragment(R.layout.fragment_take_payment)
         setupResultHandlers()
     }
 
-    private fun applyBannerComposeUI() {
+    private fun applyBannerComposeUI(state: BannerState) {
         binding.upsellCardReaderComposeView.upsellCardReaderBannerView.apply {
             // Dispose of the Composition when the view's LifecycleOwner is destroyed
             setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
             setContent {
                 WooThemeWithBackground {
-                    PaymentsScreenBanner(
-                        viewModel = viewModel,
-                        title = stringResource(id = R.string.card_reader_upsell_card_reader_banner_title),
-                        subtitle = stringResource(id = R.string.card_reader_upsell_card_reader_banner_description),
-                        ctaLabel = stringResource(id = R.string.card_reader_upsell_card_reader_banner_cta)
-                    )
+                    Banner(bannerState = state)
                 }
             }
         }
@@ -150,6 +144,7 @@ class SelectPaymentMethodFragment : BaseFragment(R.layout.fragment_take_payment)
                 viewModel.onSharePaymentUrlClicked()
             }
         }
+        applyBannerComposeUI(state.bannerState)
     }
 
     @Suppress("LongMethod")

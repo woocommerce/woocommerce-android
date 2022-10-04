@@ -203,6 +203,13 @@ class AppPrefsWrapper @Inject constructor() {
 
     fun hasOnboardingCarouselBeenDisplayed(): Boolean = AppPrefs.hasOnboardingCarouselBeenDisplayed()
 
+    fun setActiveStatsGranularity(currentSiteId: Int, statsGranularity: String) {
+        AppPrefs.setActiveStatsGranularity(currentSiteId, statsGranularity)
+    }
+
+    fun getActiveStatsGranularity(currentSiteId: Int) =
+        AppPrefs.getActiveStatsGranularity(currentSiteId)
+
     /**
      * Card Reader Upsell
      */
@@ -259,6 +266,8 @@ class AppPrefsWrapper @Inject constructor() {
     fun setPromoBannerShown(bannerType: PromoBannerType, shown: Boolean) {
         AppPrefs.setPromoBannerShown(bannerType, shown)
     }
+
+    fun isV4StatsSupported() = AppPrefs.isV4StatsSupported()
 
     /**
      * Observes changes to the preferences

@@ -1,7 +1,33 @@
 *** PLEASE FOLLOW THIS FORMAT: [<priority indicator, more stars = higher priority>] <description> [<PR URL>]
+10.7
+-----
+- [*] Improved autofill capabilities for the login flow [https://github.com/woocommerce/woocommerce-android/pull/7461]
+
+10.6
+-----
+- [*] Fixed a bug that caused having duplicate when uploading multiple images [https://github.com/woocommerce/woocommerce-android/pull/7459]
+
+10.5
+-----
+- [**] Fixed a bug that caused new products to default to one per order [https://github.com/woocommerce/woocommerce-android/pull/7450]
+- [*] We redesigned the today's stats widget [https://github.com/woocommerce/woocommerce-android/pull/7442]
+
+10.4
+-----
+- [***] We added a today's stats app widget. Simply long press on the WooCommerce icon, tap Widgets, then drag the Today widget to your home screen. (https://github.com/woocommerce/woocommerce-android/pull/7393)
+
+10.3
+-----
+- [*] Login: fix an issue where the app shows that Jetpack is not installed when connecting using wrong account [https://github.com/woocommerce/woocommerce-android/pull/7330]
+- [**] Login: Add ability to connect Jetpack when signing with site credentials to a site that has Jetpack but not connected yet [https://github.com/woocommerce/woocommerce-android/pull/7375]
+
 10.2
 -----
+-[**] In-Person Payments: Added Pay in Person toggle option in the Payments (Menu -> Payments) screen. Merchants can enable or disable "Pay in Person" from the app [https://github.com/woocommerce/woocommerce-android/pull/7280]
 - [*] SitePicker: Reduces Jetpack timeout loading times and shows new error dialog  [https://github.com/woocommerce/woocommerce-android/pull/7271
+- [*] Login: "Help Center" option now show specific login-related help page if opened from certain login steps [https://github.com/woocommerce/woocommerce-android/pull/7319]
+- [*] My store stats: Save selected stats granularity in My store tab between app session and site switching [https://github.com/woocommerce/woocommerce-android/pull/7304
+- [*] [Internal] extract the account mismatch error to a standalone screen [https://github.com/woocommerce/woocommerce-android/pull/7311]
 
 10.1
 -----
