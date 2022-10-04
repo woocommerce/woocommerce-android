@@ -374,6 +374,9 @@ class AnalyticsTracker private constructor(private val context: Context) {
         const val VALUE_JETPACK_INSTALLATION_SOURCE_WEB = "web"
         const val VALUE_JETPACK_INSTALLATION_SOURCE_NATIVE = "native"
 
+        // -- Login with WordPress.com account flow
+        const val VALUE_LOGIN_WITH_WORDPRESS_COM = "wordpress_com"
+
         // -- Upsell banner
         const val KEY_BANNER_SOURCE = "source"
         const val KEY_BANNER_PAYMENTS = "payment_methods"

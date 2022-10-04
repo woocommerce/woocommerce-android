@@ -87,7 +87,7 @@ class QrCodeScanningFragment : Fragment(), OnClickListener {
         }
     }
 
-    fun setOnBarCodeScanner(onCodeScanned: (rawValue: String?) -> Unit) {
+    fun setOnCodeScanned(onCodeScanned: (rawValue: String?) -> Unit) {
         this.onCodeScanned = onCodeScanned
     }
 
