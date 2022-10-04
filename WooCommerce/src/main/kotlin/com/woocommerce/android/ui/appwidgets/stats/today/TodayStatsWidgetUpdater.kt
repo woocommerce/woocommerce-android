@@ -4,11 +4,11 @@ import android.appwidget.AppWidgetManager
 import android.content.ComponentName
 import android.content.Context
 import androidx.work.BackoffPolicy
-import androidx.work.Data
 import androidx.work.ExistingPeriodicWorkPolicy
 import androidx.work.PeriodicWorkRequestBuilder
 import androidx.work.WorkManager
 import androidx.work.WorkRequest
+import androidx.work.workDataOf
 import com.woocommerce.android.ui.appwidgets.WidgetUpdater
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
@@ -16,9 +16,7 @@ import javax.inject.Inject
 class TodayStatsWidgetUpdater @Inject constructor() : WidgetUpdater {
     override fun updateAppWidget(context: Context, appWidgetId: Int, appWidgetManager: AppWidgetManager?) {
         val uniqueName = getUniqueName(appWidgetId)
-        val data = Data.Builder()
-            .putInt(UpdateTodayStatsWorker.DATA_WIDGET_ID, appWidgetId)
-            .build()
+        val data = workDataOf(UpdateTodayStatsWorker.DATA_WIDGET_ID to appWidgetId)
 
         val workRequest =
             PeriodicWorkRequestBuilder<UpdateTodayStatsWorker>(
