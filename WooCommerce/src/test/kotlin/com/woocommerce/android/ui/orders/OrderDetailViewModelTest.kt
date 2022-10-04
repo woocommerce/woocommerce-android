@@ -22,7 +22,6 @@ import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.ProductImageMap
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.PreviewReceipt
-import com.woocommerce.android.ui.orders.details.AddressValidator
 import com.woocommerce.android.ui.orders.details.OrderDetailFragmentArgs
 import com.woocommerce.android.ui.orders.details.OrderDetailRepository
 import com.woocommerce.android.ui.orders.details.OrderDetailViewModel
@@ -98,7 +97,6 @@ class OrderDetailViewModelTest : BaseUnitTest() {
     }
     private val paymentCollectibilityChecker: CardReaderPaymentCollectibilityChecker = mock()
     private val shippingLabelOnboardingRepository: ShippingLabelOnboardingRepository = mock()
-    private val addressValidator: AddressValidator = mock()
 
     private val savedState = OrderDetailFragmentArgs(orderId = ORDER_ID).initSavedStateHandle()
 
@@ -153,8 +151,7 @@ class OrderDetailViewModelTest : BaseUnitTest() {
                 cardReaderTracker,
                 analyticsTraWrapper,
                 shippingLabelOnboardingRepository,
-                orderDetailsTransactionLauncher,
-                addressValidator
+                orderDetailsTransactionLauncher
             )
         )
     }
