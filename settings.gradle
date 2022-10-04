@@ -70,6 +70,7 @@ rootProject.name = 'WCAndroid'
 
 include ':quicklogin'
 include ':libs:cardreader'
+include ':libs:iap'
 include ':WooCommerce'
 
 gradle.ext.fluxCBinaryPath = "org.wordpress:fluxc"
