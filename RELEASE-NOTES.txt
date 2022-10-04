@@ -3,13 +3,10 @@
 -----
 
 
-10.7
------
-- [*] Improved autofill capabilities for the login flow [https://github.com/woocommerce/woocommerce-android/pull/7461]
-
 10.6
 -----
 - [*] Fixed a bug that caused having duplicate when uploading multiple images [https://github.com/woocommerce/woocommerce-android/pull/7459]
+- [*] Improved autofill capabilities for the login flow [https://github.com/woocommerce/woocommerce-android/pull/7461]
 
 10.5
 -----
