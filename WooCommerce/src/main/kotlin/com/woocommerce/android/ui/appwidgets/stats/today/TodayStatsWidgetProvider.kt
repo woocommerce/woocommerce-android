@@ -9,8 +9,11 @@ import javax.inject.Inject
 class TodayStatsWidgetProvider : StatsWidgetProvider() {
     companion object {
         const val WIDGET_NAME = "today-stats"
+        const val WIDGET_UPDATE_INTERVAL = 15L
     }
-    @Inject lateinit var todayWidgetUpdater: TodayWidgetUpdater
+
+    @Inject lateinit var todayWidgetUpdater: TodayStatsWidgetUpdater
+
     override val widgetUpdater: WidgetUpdater
         get() = todayWidgetUpdater
 }

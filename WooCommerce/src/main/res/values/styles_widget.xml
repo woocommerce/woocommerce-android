@@ -92,4 +92,19 @@
         <item name="android:layout_gravity">center</item>
         <item name="android:gravity">end|center_vertical</item>
     </style>
+
+    <style name="Woo.StatsWidgetKey" parent="TextAppearance.AppCompat.Body1">
+        <item name="android:textSize">@dimen/text_minor_100</item>
+        <item name="android:textColor">@color/color_on_surface_high</item>
+        <item name="android:ellipsize">end</item>
+        <item name="android:gravity">start|center_vertical</item>
+    </style>
+
+    <style name="Woo.StatsWidgetValue" parent="TextAppearance.AppCompat.Body1">
+        <item name="android:textSize">@dimen/text_minor_100</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:textColor">@color/color_on_surface</item>
+        <item name="android:gravity">end|center_vertical</item>
+    </style>
+
 </resources>

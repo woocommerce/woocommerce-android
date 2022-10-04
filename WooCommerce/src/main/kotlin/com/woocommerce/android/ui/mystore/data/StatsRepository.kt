@@ -144,7 +144,11 @@ class StatsRepository @Inject constructor(
     }
 
     data class StatsException(val error: OrderStatsError?) : Exception()
-    data class SiteStats(val revenue: WCRevenueStatsModel?, val visitors: Map<String, Int>?)
+    data class SiteStats(
+        val revenue: WCRevenueStatsModel?,
+        val visitors: Map<String, Int>?,
+        val currencyCode: String
+    )
 
     private suspend fun fetchRevenueStats(
         granularity: StatsGranularity,
@@ -226,6 +230,7 @@ class StatsRepository @Inject constructor(
         }
         val visitorStats = fetchVisitorStats.await()
         val revenueStats = fetchRevenueStats.await()
+        val siteCurrencyCode = wooCommerceStore.getSiteSettings(site)?.currencyCode.orEmpty()
 
         return@coroutineScope if (visitorStats.isError || revenueStats.isError) {
             val error = WooError(
@@ -235,7 +240,13 @@ class StatsRepository @Inject constructor(
             )
             WooResult(error)
         } else {
-            WooResult(SiteStats(revenue = revenueStats.model, visitors = visitorStats.model))
+            WooResult(
+                SiteStats(
+                    revenue = revenueStats.model,
+                    visitors = visitorStats.model,
+                    currencyCode = siteCurrencyCode
+                )
+            )
         }
     }
 
