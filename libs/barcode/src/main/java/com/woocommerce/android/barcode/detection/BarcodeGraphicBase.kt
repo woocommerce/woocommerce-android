@@ -28,7 +28,6 @@ import androidx.core.content.ContextCompat
 import com.woocommerce.android.barcode.R
 import com.woocommerce.android.barcode.camera.GraphicOverlay
 import com.woocommerce.android.barcode.camera.GraphicOverlay.Graphic
-import com.woocommerce.android.barcode.settings.PreferenceUtils
 
 internal abstract class BarcodeGraphicBase(overlay: GraphicOverlay) : Graphic(overlay) {
     private val boxPaint: Paint = Paint().apply {
@@ -56,7 +55,18 @@ internal abstract class BarcodeGraphicBase(overlay: GraphicOverlay) : Graphic(ov
         pathEffect = CornerPathEffect(boxCornerRadius)
     }
 
-    val boxRect: RectF = PreferenceUtils.getBarcodeReticleBox(overlay)
+    val boxRect: RectF = getBarcodeReticleBox(overlay)
+
+    @Suppress("MagicNumber")
+    private fun getBarcodeReticleBox(overlay: GraphicOverlay): RectF {
+        val overlayWidth = overlay.width.toFloat()
+        val overlayHeight = overlay.height.toFloat()
+        val boxWidth = overlayWidth * 80 / 100
+        val boxHeight = overlayHeight * 50 / 100
+        val cx = overlayWidth / 2
+        val cy = overlayHeight / 2
+        return RectF(cx - boxWidth / 2, cy - boxHeight / 2, cx + boxWidth / 2, cy + boxHeight / 2)
+    }
 
     override fun draw(canvas: Canvas) {
         // Draws the dark background scrim and leaves the box area clear.

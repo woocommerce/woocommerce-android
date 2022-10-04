@@ -29,7 +29,6 @@ import com.woocommerce.android.barcode.camera.FrameProcessorBase
 import com.woocommerce.android.barcode.camera.GraphicOverlay
 import com.woocommerce.android.barcode.camera.WorkflowModel
 import com.woocommerce.android.barcode.camera.WorkflowModel.WorkflowState
-import com.woocommerce.android.barcode.settings.PreferenceUtils
 import java.io.IOException
 
 /** A processor to run the barcode detector.  */
@@ -60,7 +59,6 @@ class BarcodeProcessor(
         Log.d(TAG, "Barcode result size: ${results.size}")
 
         // Picks the barcode, if exists, that covers the center of graphic overlay.
-
         val barcodeInCenter = results.firstOrNull { barcode ->
             val boundingBox = barcode.boundingBox ?: return@firstOrNull false
             val box = graphicOverlay.translateRect(boundingBox)
@@ -74,23 +72,10 @@ class BarcodeProcessor(
             workflowModel.setWorkflowState(WorkflowState.DETECTING)
         } else {
             cameraReticleAnimator.cancel()
-            val sizeProgress = PreferenceUtils.getProgressToMeetBarcodeSizeRequirement(graphicOverlay, barcodeInCenter)
-            if (sizeProgress < 1) {
-                // Barcode in the camera view is too small, so prompt user to move camera closer.
-                graphicOverlay.add(BarcodeConfirmingGraphic(graphicOverlay, barcodeInCenter))
-                workflowModel.setWorkflowState(WorkflowState.CONFIRMING)
-            } else {
-                // Barcode size in the camera view is sufficient.
-                if (PreferenceUtils.shouldDelayLoadingBarcodeResult(graphicOverlay.context)) {
-                    val loadingAnimator = createLoadingAnimator(graphicOverlay, barcodeInCenter)
-                    loadingAnimator.start()
-                    graphicOverlay.add(BarcodeLoadingGraphic(graphicOverlay, loadingAnimator))
-                    workflowModel.setWorkflowState(WorkflowState.SEARCHING)
-                } else {
-                    workflowModel.setWorkflowState(WorkflowState.DETECTED)
-                    workflowModel.detectedBarcode.setValue(barcodeInCenter)
-                }
-            }
+            val loadingAnimator = createLoadingAnimator(graphicOverlay, barcodeInCenter)
+            loadingAnimator.start()
+            graphicOverlay.add(BarcodeLoadingGraphic(graphicOverlay, loadingAnimator))
+            workflowModel.setWorkflowState(WorkflowState.SEARCHING)
         }
         graphicOverlay.invalidate()
     }
