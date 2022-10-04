@@ -14,6 +14,7 @@ import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.model.UiString.UiStringRes
 import com.woocommerce.android.model.UiString.UiStringText
 import com.woocommerce.android.ui.login.AccountRepository
+import com.woocommerce.android.ui.login.UnifiedLoginTracker
 import com.woocommerce.android.ui.login.accountmismatch.AccountMismatchRepository.JetpackConnectionStatus
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
@@ -53,7 +54,8 @@ class AccountMismatchErrorViewModel @Inject constructor(
     private val accountMismatchRepository: AccountMismatchRepository,
     private val resourceProvider: ResourceProvider,
     private val userAgent: UserAgent,
-    private val analyticsTrackerWrapper: AnalyticsTrackerWrapper
+    private val analyticsTrackerWrapper: AnalyticsTrackerWrapper,
+    private val unifiedLoginTracker: UnifiedLoginTracker,
 ) : ScopedViewModel(savedStateHandle) {
     companion object {
         private const val JETPACK_PLANS_URL = "wordpress.com/jetpack/connect/plans"
@@ -222,6 +224,7 @@ class AccountMismatchErrorViewModel @Inject constructor(
         analyticsTrackerWrapper.track(AnalyticsEvent.LOGIN_JETPACK_CONNECT_BUTTON_TAPPED)
         val site = site.await()
         if (site == null || site.username.isNullOrEmpty() || site.password.isNullOrEmpty()) {
+            unifiedLoginTracker.track(step = UnifiedLoginTracker.Step.USERNAME_PASSWORD)
             step.value = Step.SiteCredentials()
             return@launch
         }
