@@ -16,8 +16,6 @@
 
 package com.woocommerce.android.barcode
 
-import android.animation.AnimatorInflater.loadAnimator
-import android.animation.AnimatorSet
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -43,7 +41,6 @@ class QrCodeScanningFragment : Fragment(), OnClickListener {
     }
 
     private var cameraSource: CameraSource? = null
-    private var promptChipAnimator: AnimatorSet? = null
     private val workflowModel: WorkflowModel by activityViewModels()
     private var currentWorkflowState: WorkflowState? = null
     private var onCodeScanned: (rawValue: String?) -> Unit = {}
@@ -59,13 +56,7 @@ class QrCodeScanningFragment : Fragment(), OnClickListener {
             setOnClickListener(this@QrCodeScanningFragment)
             cameraSource = CameraSource(this)
         }
-        promptChipAnimator = (loadAnimator(context, R.animator.bottom_prompt_chip_enter) as AnimatorSet)
-            .apply {
-                setTarget(promptChip)
-            }
-
         closeButton.setOnClickListener(this)
-
         setUpWorkflowModel()
     }
 
@@ -134,8 +125,6 @@ class QrCodeScanningFragment : Fragment(), OnClickListener {
             currentWorkflowState = workflowState
             Log.d(TAG, "Current workflow state: ${currentWorkflowState!!.name}")
 
-            val wasPromptChipGone = promptChip.visibility == View.GONE
-
             when (workflowState) {
                 WorkflowState.DETECTING -> {
                     promptChip.visibility = View.VISIBLE
@@ -157,11 +146,6 @@ class QrCodeScanningFragment : Fragment(), OnClickListener {
                     stopCameraPreview()
                 }
                 else -> promptChip.visibility = View.GONE
-            }
-
-            val shouldPlayPromptChipEnteringAnimation = wasPromptChipGone && promptChip.visibility == View.VISIBLE
-            promptChipAnimator?.let {
-                if (shouldPlayPromptChipEnteringAnimation && !it.isRunning) it.start()
             }
         }
 
