@@ -18,7 +18,6 @@ package com.woocommerce.android.barcode
 
 import android.animation.AnimatorInflater.loadAnimator
 import android.animation.AnimatorSet
-import android.hardware.Camera
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -35,7 +34,6 @@ import kotlinx.android.synthetic.main.camera_preview_overlay.graphicOverlay
 import kotlinx.android.synthetic.main.camera_preview_overlay.promptChip
 import kotlinx.android.synthetic.main.fragment_live_barcode.preview
 import kotlinx.android.synthetic.main.top_action_bar_in_live_camera.closeButton
-import kotlinx.android.synthetic.main.top_action_bar_in_live_camera.flashButton
 import java.io.IOException
 
 /** Demonstrates the barcode scanning workflow using camera preview.  */
@@ -68,9 +66,6 @@ class QrCodeScanningFragment : Fragment(), OnClickListener {
 
         closeButton.setOnClickListener(this)
 
-        flashButton.apply {
-            setOnClickListener(this@QrCodeScanningFragment)
-        }
         setUpWorkflowModel()
     }
 
@@ -98,17 +93,6 @@ class QrCodeScanningFragment : Fragment(), OnClickListener {
     override fun onClick(view: View) {
         when (view.id) {
             R.id.closeButton -> requireActivity().onBackPressed()
-            R.id.flashButton -> {
-                flashButton.let {
-                    if (it.isSelected) {
-                        it.isSelected = false
-                        cameraSource?.updateFlashMode(Camera.Parameters.FLASH_MODE_OFF)
-                    } else {
-                        it.isSelected = true
-                        cameraSource?.updateFlashMode(Camera.Parameters.FLASH_MODE_TORCH)
-                    }
-                }
-            }
         }
     }
 
@@ -135,7 +119,6 @@ class QrCodeScanningFragment : Fragment(), OnClickListener {
         val workflowModel = this.workflowModel
         if (workflowModel.isCameraLive) {
             workflowModel.markCameraFrozen()
-            flashButton.isSelected = false
             preview.stop()
         }
     }

@@ -157,12 +157,6 @@ class CameraSource(private val graphicOverlay: GraphicOverlay) {
         }
     }
 
-    fun updateFlashMode(flashMode: String) {
-        val parameters = camera?.parameters
-        parameters?.flashMode = flashMode
-        camera?.parameters = parameters
-    }
-
     /**
      * Opens the camera and applies the user settings.
      *
