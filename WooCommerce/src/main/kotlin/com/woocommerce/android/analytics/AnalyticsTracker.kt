@@ -401,6 +401,9 @@ class AnalyticsTracker private constructor(private val context: Context) {
         // Widgets
         const val KEY_WIDGETS = "widgets"
 
+        // -- App links
+        const val KEY_PATH = "path"
+
         var sendUsageStats: Boolean = true
             set(value) {
                 if (value != field) {

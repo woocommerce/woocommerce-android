@@ -698,5 +698,9 @@ enum class AnalyticsEvent(val siteless: Boolean = false) {
     JETPACK_TIMEOUT_EXPERIMENT,
 
     // Widgets
-    WIDGET_TAPPED
+    WIDGET_TAPPED,
+
+    // App links
+    UNIVERSAL_LINK_OPENED,
+    UNIVERSAL_LINK_FAILED,
 }
