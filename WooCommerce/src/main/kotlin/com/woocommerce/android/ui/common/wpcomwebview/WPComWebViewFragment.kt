@@ -18,7 +18,6 @@ import dagger.hilt.android.AndroidEntryPoint
 import org.wordpress.android.fluxc.network.UserAgent
 import javax.inject.Inject
 
-
 /**
  * This fragments allows loading specific pages from WordPress.com with the current user logged in.
  * It accepts two parameters:

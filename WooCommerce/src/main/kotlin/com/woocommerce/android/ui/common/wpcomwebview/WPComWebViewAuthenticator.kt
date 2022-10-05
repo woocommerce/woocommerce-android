@@ -7,6 +7,7 @@ import org.wordpress.android.fluxc.store.AccountStore
 import java.io.UnsupportedEncodingException
 import java.net.URLEncoder
 import java.nio.charset.StandardCharsets
+import java.util.Locale
 import javax.inject.Inject
 
 private const val WPCOM_LOGIN_URL = "https://wordpress.com/wp-login.php"
@@ -19,6 +20,7 @@ class WPComWebViewAuthenticator @Inject constructor(
         webView.postUrl(WPCOM_LOGIN_URL, postData.toByteArray())
     }
 
+    @Suppress("ReturnCount")
     private fun getAuthPostData(redirectUrl: String): String {
         val username = accountStore.account.userName.takeIf { it.isNotNullOrEmpty() } ?: return ""
         val token = accountStore.accessToken.takeIf { it.isNotNullOrEmpty() } ?: return ""
@@ -26,9 +28,10 @@ class WPComWebViewAuthenticator @Inject constructor(
         val utf8 = StandardCharsets.UTF_8.name()
         try {
             var postData = String.format(
+                Locale.ROOT,
                 "log=%s&redirect_to=%s",
                 URLEncoder.encode(username, utf8),
-                URLEncoder.encode(redirectUrl, utf8)
+                URLEncoder.encode(redirectUrl, utf8),
             )
 
             // Add token authorization
