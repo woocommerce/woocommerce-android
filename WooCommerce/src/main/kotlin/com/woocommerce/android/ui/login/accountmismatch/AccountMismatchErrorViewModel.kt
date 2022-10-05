@@ -13,6 +13,7 @@ import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.model.UiString.UiStringRes
 import com.woocommerce.android.model.UiString.UiStringText
+import com.woocommerce.android.ui.common.wpcomwebview.WPComWebViewAuthenticator
 import com.woocommerce.android.ui.login.AccountRepository
 import com.woocommerce.android.ui.login.UnifiedLoginTracker
 import com.woocommerce.android.ui.login.accountmismatch.AccountMismatchRepository.JetpackConnectionStatus
@@ -53,9 +54,10 @@ class AccountMismatchErrorViewModel @Inject constructor(
     private val appPrefsWrapper: AppPrefsWrapper,
     private val accountMismatchRepository: AccountMismatchRepository,
     private val resourceProvider: ResourceProvider,
-    private val userAgent: UserAgent,
     private val analyticsTrackerWrapper: AnalyticsTrackerWrapper,
     private val unifiedLoginTracker: UnifiedLoginTracker,
+    val wpComWebViewAuthenticator: WPComWebViewAuthenticator,
+    val userAgent: UserAgent
 ) : ScopedViewModel(savedStateHandle) {
     companion object {
         private const val JETPACK_PLANS_URL = "wordpress.com/jetpack/connect/plans"
@@ -186,7 +188,6 @@ class AccountMismatchErrorViewModel @Inject constructor(
     private fun prepareJetpackConnectionState(connectionUrl: String) = ViewState.JetpackWebViewState(
         connectionUrl = connectionUrl,
         successConnectionUrls = listOf(siteUrl, JETPACK_PLANS_URL),
-        userAgent = userAgent.userAgent,
         onDismiss = {
             analyticsTrackerWrapper.track(AnalyticsEvent.LOGIN_JETPACK_CONNECT_DISMISSED)
             step.value = Step.MainContent
@@ -322,7 +323,6 @@ class AccountMismatchErrorViewModel @Inject constructor(
         data class JetpackWebViewState(
             val connectionUrl: String,
             val successConnectionUrls: List<String>,
-            val userAgent: String,
             val onDismiss: () -> Unit,
             val onConnected: () -> Unit
         ) : ViewState
