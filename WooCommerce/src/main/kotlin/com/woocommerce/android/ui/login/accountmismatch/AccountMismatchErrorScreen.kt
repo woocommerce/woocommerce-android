@@ -57,6 +57,8 @@ import com.woocommerce.android.ui.compose.component.WCOutlinedTextField
 import com.woocommerce.android.ui.compose.component.WCPasswordField
 import com.woocommerce.android.ui.compose.component.WCTextButton
 import com.woocommerce.android.ui.compose.component.WCWebView
+import com.woocommerce.android.ui.compose.component.WebViewNavigator
+import com.woocommerce.android.ui.compose.component.rememberWebViewNavigator
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.ui.login.accountmismatch.AccountMismatchErrorViewModel.ViewState
 import org.wordpress.android.fluxc.network.UserAgent
@@ -64,6 +66,8 @@ import org.wordpress.android.fluxc.network.UserAgent
 @OptIn(ExperimentalAnimationApi::class)
 @Composable
 fun AccountMismatchErrorScreen(viewModel: AccountMismatchErrorViewModel) {
+    val webViewNavigator = rememberWebViewNavigator()
+
     viewModel.viewState.observeAsState().value?.let { viewState ->
         Scaffold(topBar = {
             TopAppBar(
@@ -71,7 +75,13 @@ fun AccountMismatchErrorScreen(viewModel: AccountMismatchErrorViewModel) {
                 title = { },
                 navigationIcon = {
                     if (viewState is ViewState.JetpackWebViewState) {
-                        IconButton(onClick = viewState.onDismiss) {
+                        IconButton(onClick = {
+                            if (webViewNavigator.canGoBack) {
+                                webViewNavigator.navigateBack()
+                            } else {
+                                viewState.onDismiss()
+                            }
+                        }) {
                             Icon(Icons.Filled.ArrowBack, contentDescription = "Back")
                         }
                     }
@@ -99,6 +109,7 @@ fun AccountMismatchErrorScreen(viewModel: AccountMismatchErrorViewModel) {
                     is ViewState.JetpackWebViewState -> JetpackConnectionWebView(
                         viewState = targetState,
                         wpComWebViewAuthenticator = viewModel.wpComWebViewAuthenticator,
+                        webViewNavigator = webViewNavigator,
                         userAgent = viewModel.userAgent,
                         modifier = Modifier.padding(paddingValues)
                     )
@@ -307,6 +318,7 @@ private fun ButtonBar(
 private fun JetpackConnectionWebView(
     viewState: ViewState.JetpackWebViewState,
     wpComWebViewAuthenticator: WPComWebViewAuthenticator,
+    webViewNavigator: WebViewNavigator,
     userAgent: UserAgent,
     modifier: Modifier = Modifier
 ) {
@@ -314,6 +326,7 @@ private fun JetpackConnectionWebView(
         url = viewState.connectionUrl,
         wpComAuthenticator = wpComWebViewAuthenticator,
         userAgent = userAgent,
+        webViewNavigator = webViewNavigator,
         onUrlLoaded = { url: String ->
             val urlWithoutScheme = url.replace("^https?://".toRegex(), "")
             if (viewState.successConnectionUrls.any { urlWithoutScheme.startsWith(it) }) {
