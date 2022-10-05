@@ -9,6 +9,8 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material.LinearProgressIndicator
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.Stable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -16,6 +18,8 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.viewinterop.AndroidView
+import com.woocommerce.android.ui.common.wpcomwebview.WPComWebViewAuthenticator
+import kotlinx.coroutines.flow.MutableSharedFlow
 import org.wordpress.android.fluxc.network.UserAgent
 
 @SuppressLint("SetJavaScriptEnabled")
@@ -25,7 +29,8 @@ fun WCWebView(
     userAgent: UserAgent,
     onUrlLoaded: (String) -> Unit,
     modifier: Modifier = Modifier,
-    wpComAuthenticator: WPComWebViewAuthenticator? = null
+    wpComAuthenticator: WPComWebViewAuthenticator? = null,
+    webViewNavigator: WebViewNavigator = rememberWebViewNavigator()
 ) {
     var webView by remember { mutableStateOf<WebView?>(null) }
     var progress by remember { mutableStateOf(0) }
@@ -34,6 +39,12 @@ fun WCWebView(
 
     BackHandler(canGoBack) {
         webView?.goBack()
+    }
+
+    LaunchedEffect(webView, webViewNavigator) {
+        with(webViewNavigator) {
+            webView?.handleNavigationEvents()
+        }
     }
 
     Column(modifier = modifier) {
@@ -78,3 +89,32 @@ fun WCWebView(
         }
     }
 }
+
+@Stable
+class WebViewNavigator() {
+    private enum class NavigationEvent {
+        BACK, FORWARD
+    }
+
+    private val navigationEvents: MutableSharedFlow<NavigationEvent> = MutableSharedFlow(extraBufferCapacity = 1)
+
+    suspend fun WebView.handleNavigationEvents() {
+        navigationEvents.collect {
+            when (it) {
+                NavigationEvent.BACK -> goBack()
+                NavigationEvent.FORWARD -> goForward()
+            }
+        }
+    }
+
+    fun navigateBack() {
+        navigationEvents.tryEmit(NavigationEvent.BACK)
+    }
+
+    fun navigateForward() {
+        navigationEvents.tryEmit(NavigationEvent.FORWARD)
+    }
+}
+
+@Composable
+fun rememberWebViewNavigator(): WebViewNavigator = remember { WebViewNavigator() }
