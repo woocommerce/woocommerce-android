@@ -5,7 +5,6 @@ import android.os.Bundle
 import android.view.ViewGroup
 import android.widget.Button
 import androidx.annotation.LayoutRes
-import androidx.core.view.isVisible
 import com.bumptech.glide.Registry.MissingComponentException
 import com.woocommerce.android.R
 import dagger.android.support.AndroidSupportInjection
@@ -24,7 +23,6 @@ class WooLoginEmailPasswordFragment : LoginEmailPasswordFragment() {
             idToken: String? = null,
             service: String? = null,
             isSocialLogin: Boolean = false,
-            allowMagicLink: Boolean = true,
             verifyMagicLinkEmail: Boolean = false
         ): WooLoginEmailPasswordFragment {
             val fragment = WooLoginEmailPasswordFragment()
@@ -34,7 +32,7 @@ class WooLoginEmailPasswordFragment : LoginEmailPasswordFragment() {
             args.putString(ARG_SOCIAL_ID_TOKEN, idToken)
             args.putString(ARG_SOCIAL_SERVICE, service)
             args.putBoolean(ARG_SOCIAL_LOGIN, isSocialLogin)
-            args.putBoolean(ARG_ALLOW_MAGIC_LINK, allowMagicLink)
+            args.putBoolean(ARG_ALLOW_MAGIC_LINK, false) // This hides the old link button
             args.putBoolean(ARG_VERIFY_MAGIC_LINK_EMAIL, verifyMagicLinkEmail)
             fragment.arguments = args
             return fragment
@@ -82,7 +80,6 @@ class WooLoginEmailPasswordFragment : LoginEmailPasswordFragment() {
 
         rootView.findViewById<Button>(R.id.bottom_button_magic_link)?.apply {
             setOnClickListener {
-                it.isVisible = arguments?.getBoolean(ARG_ALLOW_MAGIC_LINK) ?: true
                 loginListener?.useMagicLinkInstead(email, false)
             }
         }
