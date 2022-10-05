@@ -20,6 +20,7 @@ import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.viewinterop.AndroidView
 import com.woocommerce.android.ui.common.wpcomwebview.WPComWebViewAuthenticator
 import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.onCompletion
 import org.wordpress.android.fluxc.network.UserAgent
 
 @SuppressLint("SetJavaScriptEnabled")
@@ -91,21 +92,33 @@ fun WCWebView(
 }
 
 @Stable
-class WebViewNavigator() {
+class WebViewNavigator {
     private enum class NavigationEvent {
         BACK, FORWARD
     }
 
     private val navigationEvents: MutableSharedFlow<NavigationEvent> = MutableSharedFlow(extraBufferCapacity = 1)
+    private var webView: WebView? = null
 
     suspend fun WebView.handleNavigationEvents() {
-        navigationEvents.collect {
-            when (it) {
-                NavigationEvent.BACK -> goBack()
-                NavigationEvent.FORWARD -> goForward()
+        webView = this
+        navigationEvents
+            .onCompletion {
+                webView = null
             }
-        }
+            .collect {
+                when (it) {
+                    NavigationEvent.BACK -> goBack()
+                    NavigationEvent.FORWARD -> goForward()
+                }
+            }
     }
+
+    val canGoBack
+        get() = webView?.canGoBack() ?: false
+
+    val canGoForward
+        get() = webView?.canGoForward() ?: false
 
     fun navigateBack() {
         navigationEvents.tryEmit(NavigationEvent.BACK)
