@@ -3,9 +3,13 @@
 -----
 - [*] Improved autofill capabilities for the login flow [https://github.com/woocommerce/woocommerce-android/pull/7461]
 - [*] Fixes bug with visitor stats discrepancies between monthly and yearly granularities [https://github.com/wordpress-mobile/WordPress-FluxC-Android/pull/2535]
+
+
 10.6
 -----
 - [*] Fixed a bug that caused having duplicate when uploading multiple images [https://github.com/woocommerce/woocommerce-android/pull/7459]
+- [*] Improved autofill capabilities for the login flow [https://github.com/woocommerce/woocommerce-android/pull/7461]
+
 
 10.5
 -----

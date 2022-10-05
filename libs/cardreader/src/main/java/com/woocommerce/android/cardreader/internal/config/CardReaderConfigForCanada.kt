@@ -2,7 +2,9 @@ package com.woocommerce.android.cardreader.internal.config
 
 import com.stripe.stripeterminal.external.models.PaymentMethodType
 import com.woocommerce.android.cardreader.connection.SpecificReader
+import kotlinx.parcelize.Parcelize
 
+@Parcelize
 object CardReaderConfigForCanada : CardReaderConfigForSupportedCountry(
     currency = "CAD",
     countryCode = "CA",
