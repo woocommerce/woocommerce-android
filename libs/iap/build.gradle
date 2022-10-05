@@ -30,4 +30,5 @@ dependencies {
     implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:$coroutinesVersion"
 
     implementation("com.android.billingclient:billing-ktx:$billingVersion")
+    implementation "androidx.appcompat:appcompat:$appCompatVersion"
 }
