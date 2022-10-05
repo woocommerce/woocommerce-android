@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.webkit.WebChromeClient
 import android.webkit.WebView
 import android.webkit.WebViewClient
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material.LinearProgressIndicator
@@ -26,8 +27,14 @@ fun WPComAuthenticatedWebView(
     onUrlLoaded: (String) -> Unit,
     modifier: Modifier = Modifier
 ) {
+    var webView by remember { mutableStateOf<WebView?>(null) }
     var progress by remember { mutableStateOf(0) }
     var lastLoadedUrl by remember { mutableStateOf("") }
+    var canGoBack by remember { mutableStateOf(false) }
+
+    BackHandler(canGoBack) {
+        webView?.goBack()
+    }
 
     Column(modifier = modifier) {
         LinearProgressIndicator(
@@ -48,22 +55,26 @@ fun WPComAuthenticatedWebView(
                         override fun onLoadResource(view: WebView?, url: String?) {
                             url?.let { onUrlLoaded(it) }
                         }
+
+                        override fun onPageFinished(view: WebView?, url: String?) {
+                            super.onPageFinished(view, url)
+                            canGoBack = view?.canGoBack() ?: false
+                        }
                     }
                     this.webChromeClient = object : WebChromeClient() {
                         override fun onProgressChanged(view: WebView?, newProgress: Int) {
-                            if (newProgress == 100 || newProgress - progress >= 5) {
-                                progress = newProgress
-                            }
+                            progress = newProgress
                         }
                     }
                     this.settings.javaScriptEnabled = true
                     this.settings.userAgentString = userAgent.userAgent
-                }
+                }.also { webView = it }
             }
         ) { webView ->
             if (lastLoadedUrl == url) return@AndroidView
             lastLoadedUrl = url
             authenticator.authenticateAndLoadUrl(webView, url)
+            canGoBack = webView.canGoBack()
         }
     }
 }
