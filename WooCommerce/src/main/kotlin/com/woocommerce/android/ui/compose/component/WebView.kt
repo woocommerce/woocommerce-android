@@ -30,6 +30,7 @@ fun WCWebView(
     userAgent: UserAgent,
     onUrlLoaded: (String) -> Unit,
     modifier: Modifier = Modifier,
+    captureBackPresses: Boolean = true,
     wpComAuthenticator: WPComWebViewAuthenticator? = null,
     webViewNavigator: WebViewNavigator = rememberWebViewNavigator()
 ) {
@@ -38,7 +39,7 @@ fun WCWebView(
     var lastLoadedUrl by remember { mutableStateOf("") }
     var canGoBack by remember { mutableStateOf(false) }
 
-    BackHandler(canGoBack) {
+    BackHandler(captureBackPresses && canGoBack) {
         webView?.goBack()
     }
 
