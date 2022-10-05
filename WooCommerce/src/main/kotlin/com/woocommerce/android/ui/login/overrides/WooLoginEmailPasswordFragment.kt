@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.view.ViewGroup
 import android.widget.Button
 import androidx.annotation.LayoutRes
+import androidx.core.view.isVisible
 import com.bumptech.glide.Registry.MissingComponentException
 import com.woocommerce.android.R
 import dagger.android.support.AndroidSupportInjection
@@ -79,6 +80,7 @@ class WooLoginEmailPasswordFragment : LoginEmailPasswordFragment() {
         super.setupContent(rootView)
 
         rootView.findViewById<Button>(R.id.bottom_button_magic_link)?.apply {
+            isVisible = true // this button was intentionally hidden until the password screen is shown
             setOnClickListener {
                 loginListener?.useMagicLinkInstead(email, false)
             }
