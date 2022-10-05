@@ -97,6 +97,9 @@ class MainActivityViewModel @Inject constructor(
             ResolveAppLink.Action.ViewStats -> {
                 triggerEvent(ViewMyStoreStats)
             }
+            ResolveAppLink.Action.ViewPayments -> {
+                triggerEvent(ViewPayments)
+            }
             ResolveAppLink.Action.DoNothing -> {
                 // no-op
             }
@@ -180,6 +183,7 @@ class MainActivityViewModel @Inject constructor(
     object ViewReviewList : Event()
     object ViewMyStoreStats : Event()
     object ViewZendeskTickets : Event()
+    object ViewPayments : Event()
     data class RestartActivityForNotification(val pushId: Int, val notification: Notification) : Event()
     data class RestartActivityForAppLink(val data: Uri) : Event()
     data class ShowFeatureAnnouncement(val announcement: FeatureAnnouncement) : Event()
