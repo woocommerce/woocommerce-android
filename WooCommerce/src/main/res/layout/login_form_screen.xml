@@ -49,7 +49,6 @@
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/bottom_button_magic_link"
                 style="@style/Widget.LoginFlow.Button.Secondary"
-                android:visibility="gone"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="@string/login_magic_link_button" />
