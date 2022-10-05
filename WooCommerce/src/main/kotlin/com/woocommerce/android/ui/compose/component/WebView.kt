@@ -1,4 +1,4 @@
-package com.woocommerce.android.ui.common.wpcomwebview
+package com.woocommerce.android.ui.compose.component
 
 import android.annotation.SuppressLint
 import android.webkit.WebChromeClient
@@ -20,7 +20,7 @@ import org.wordpress.android.fluxc.network.UserAgent
 
 @SuppressLint("SetJavaScriptEnabled")
 @Composable
-fun WPComAuthenticatedWebView(
+fun WCWebView(
     url: String,
     authenticator: WPComWebViewAuthenticator,
     userAgent: UserAgent,
