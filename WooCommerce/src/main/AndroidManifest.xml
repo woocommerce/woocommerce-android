@@ -109,9 +109,6 @@
             android:theme="@style/Theme.Woo.DayNight" />
 
         <!-- Stats today app widget -->
-        <service
-            android:name=".ui.appwidgets.WidgetService"
-            android:permission="android.permission.BIND_REMOTEVIEWS" />
         <meta-data
             android:name="com.google.android.actions"
             android:resource="@xml/stats_today_widget_info" />

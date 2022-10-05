@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2022-09-20 15:54:03+0000
+Translation-Revision-Date: 2022-10-02 20:28:14+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: he_IL
@@ -103,7 +103,7 @@ Language: he_IL
     <string name="support_system_status_report_share_label">לשתף דוח מצב המערכת</string>
     <string name="support_system_status_report_copy_label">להעתיק את דוח מצב המערכת ללוח</string>
     <string name="card_reader_connect_keep_searching_button">להמשיך בחיפוש</string>
-    <string name="card_reader_payment_description_v2">תשלום באופן אישי על ההזמנה מס\' %s עבור %s blog_id %s.</string>
+    <string name="card_reader_payment_description_v2">תשלום באופן אישי על ההזמנה מס\' %1$s עבור %2$s blog_id %3$s.</string>
     <string name="card_reader_manage_payment_provider">לשנות ספק תשלום</string>
     <string name="orderdetail_refunded_line_with_info">הונפק החזר כספי של: ⁦%1$s⁩</string>
     <string name="orderdetail_payment_summary_onhold_plain">ממתין לתשלום</string>
@@ -187,7 +187,7 @@ Language: he_IL
     <string name="shipping_label_install_wc_shipping_banner_button">לקבל את WooCommerce Shipping</string>
     <string name="shipping_label_install_wc_shipping_banner_description">להדפיס תוויות מהטלפון שלך בעזרת WooCommerce Shipping.</string>
     <string name="shipping_label_install_wc_shipping_banner_title">יש לך צורך בתווית משלוח?</string>
-    <string name="order_creation_change_product_quantity">לשנות את כמות המוצר מ-%d ל-%d</string>
+    <string name="order_creation_change_product_quantity">לשנות את כמות המוצר מ-%1$d ל-%2$d</string>
     <string name="variations_bulk_update_regular_price">לעדכן את המחיר הרגיל</string>
     <string name="variations_bulk_update_sale_price">לעדכן את מחיר המבצע</string>
     <string name="card_reader_onboarding_stripe_unsupported_in_country_header">אנחנו לא תומכים בהרחבה WooCommerce Stripe בתוך ⁦%1$s⁩</string>
@@ -320,8 +320,8 @@ Language: he_IL
     <string name="coupon_list_wip_message_enabled">אנחנו כרגע עובדים על אפשרות להציג ולערוך קופונים מהמכשיר שלך!</string>
     <string name="coupon_list_wip_title">להציג ולנהל קופונים</string>
     <string name="coupon_list_empty_heading">לא נמצאו קופונים</string>
-    <string name="coupon_list_item_label_included_and_excluded">%1s לא כולל %2s</string>
-    <string name="coupon_list_item_label_products_and_categories">%1s ו-%2s.</string>
+    <string name="coupon_list_item_label_included_and_excluded">%1$s לא כולל %2$s</string>
+    <string name="coupon_list_item_label_products_and_categories">%1$s ו-%2$s.</string>
     <string name="coupon_list_item_label_everything">הכול</string>
     <string name="coupon_list_item_label_expired">פג תוקף</string>
     <string name="coupon_list_item_label_active">פעיל</string>
@@ -1390,7 +1390,7 @@ Language: he_IL
     <string name="product_width">רוחב</string>
     <string name="product_length">אורך</string>
     <string name="order_refunds_refund_info_title">מוצרים שעליהם ניתן החזר כספי</string>
-    <string name="order_refunds_detail_item_description">%s (%s x %d)</string>
+    <string name="order_refunds_detail_item_description">%1$s (%2$s x %3$d)</string>
     <string name="order_refunds_method">%1$s דרך %2$s</string>
     <string name="order_refunds_confirmation">האם ברצונך ליצור החזר כספי? לא ניתן לבטל את הפעולה.</string>
     <string name="orderdetail_refunded_products">מוצרים שעליהם ניתן החזר כספי</string>
@@ -1430,7 +1430,7 @@ Language: he_IL
     <string name="order_refunds_select_quantity">יש לבחור את הכמות</string>
     <string name="order_refunds_shipping_refund">החזר כספי על דמי המשלוח</string>
     <string name="order_refunds_products_refund">החזר כספי על המוצרים</string>
-    <string name="order_refunds_item_description">%s x %s לכל פריט</string>
+    <string name="order_refunds_item_description">%1$s x %2$s לכל פריט</string>
     <string name="order_refunds_items_selected">%d פריטים נבחרו</string>
     <string name="order_refunds_items_select_none">לא לבחור בפריטים</string>
     <string name="order_refunds_items_select_all">בחר הכול</string>
@@ -1441,7 +1441,7 @@ Language: he_IL
     <string name="image_source_device_chooser">לבחור מהמכשיר</string>
     <string name="image_source_title">יש לבחור את שיטת ההעלאה</string>
     <string name="product_images_upload_channel_title">העלאות</string>
-    <string name="product_images_uploading_multi_notif_message">מעלה תמונות…%dמתוך %d</string>
+    <string name="product_images_uploading_multi_notif_message">מעלה תמונות…%1$d מתוך %2$d</string>
     <string name="product_images_uploading_single_notif_message">מעלה תמונות…</string>
     <string name="product_images_camera_error">לא ניתן לגשת למצלמה</string>
     <string name="product_image_remove_confirmation">האם ברצונך להסיר את התמונה?</string>
@@ -2162,7 +2162,7 @@ Language: he_IL
     <string name="login_nostores_content_description">אין חנויות WooCommerce</string>
     <string name="login_avatar_content_description">תמונת הפרופיל שלך</string>
     <string name="login_connected_store">חנות מחוברת</string>
-    <string name="login_configure_link">קריאת %sהוראות ההגדרה%s.</string>
+    <string name="login_configure_link">קריאת %1$sהוראות ההגדרה%2$s.</string>
     <string name="login_jetpack_required">אפליקציה זו דורשת Jetpack כדי לחבר אותך לחנות.</string>
     <string name="at_username">‎@‎%s‎</string>
     <string name="enter_site_address">יש להזין את כתובת החנות שלך ב-WooCommerce שאליה ברצונך להתחבר.</string>

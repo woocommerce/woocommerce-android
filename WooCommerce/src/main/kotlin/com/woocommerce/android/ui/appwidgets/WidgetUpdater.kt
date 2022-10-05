@@ -3,7 +3,7 @@ package com.woocommerce.android.ui.appwidgets
 import android.appwidget.AppWidgetManager
 import android.content.ComponentName
 import android.content.Context
-import com.woocommerce.android.ui.appwidgets.stats.today.TodayWidgetUpdater
+import com.woocommerce.android.ui.appwidgets.stats.today.TodayStatsWidgetUpdater
 import javax.inject.Inject
 
 /**
@@ -25,14 +25,14 @@ interface WidgetUpdater {
     /**
      * Called when a widget is deleted
      */
-    fun delete(appWidgetId: Int)
+    fun delete(context: Context, appWidgetId: Int)
 
     class StatsWidgetUpdaters
     @Inject constructor(
-        private val todayWidgetUpdater: TodayWidgetUpdater,
+        private val todayStatsWidgetUpdater: TodayStatsWidgetUpdater,
         private val context: Context
     ) {
-        private val widgetUpdaters = listOf(todayWidgetUpdater)
+        private val widgetUpdaters = listOf(todayStatsWidgetUpdater)
 
         /**
          * Update method is called when we need to update all the widgets that are active.
@@ -54,7 +54,7 @@ interface WidgetUpdater {
          * another store is selected
          */
         fun updateTodayWidget() {
-            todayWidgetUpdater.update()
+            todayStatsWidgetUpdater.update()
         }
 
         private fun WidgetUpdater.update() {

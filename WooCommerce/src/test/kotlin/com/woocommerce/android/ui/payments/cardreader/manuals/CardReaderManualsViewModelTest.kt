@@ -2,125 +2,120 @@ package com.woocommerce.android.ui.payments.cardreader.manuals
 
 import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.AppUrls
-import com.woocommerce.android.R
+import com.woocommerce.android.R.drawable
+import com.woocommerce.android.R.string
+import com.woocommerce.android.cardreader.connection.SpecificReader
+import com.woocommerce.android.cardreader.connection.SpecificReader.Chipper2X
+import com.woocommerce.android.cardreader.connection.SpecificReader.StripeM2
+import com.woocommerce.android.cardreader.connection.SpecificReader.WisePade3
+import com.woocommerce.android.cardreader.internal.config.CardReaderConfigForCanada
+import com.woocommerce.android.cardreader.internal.config.CardReaderConfigForSupportedCountry
+import com.woocommerce.android.cardreader.internal.config.CardReaderConfigForUSA
+import com.woocommerce.android.initSavedStateHandle
+import com.woocommerce.android.ui.payments.cardreader.manuals.CardReaderManualsViewModel.ManualItem
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.assertj.core.api.Assertions.assertThat
-import org.junit.Before
 import org.junit.Test
+import org.mockito.kotlin.any
+import org.mockito.kotlin.mock
+import org.mockito.kotlin.whenever
 
 @ExperimentalCoroutinesApi
 class CardReaderManualsViewModelTest : BaseUnitTest() {
     private lateinit var viewModel: CardReaderManualsViewModel
-    private val savedStateHandle: SavedStateHandle = SavedStateHandle()
+    private val manualList: List<ManualItem> = mock()
+    private val cardReaderManualSupportedCountryMapper: CardReaderManualsSupportedReadersMapper = mock()
+    private val supportedCountryUs: CardReaderConfigForSupportedCountry = CardReaderConfigForUSA
+    private val supportedCountryCA: CardReaderConfigForSupportedCountry = CardReaderConfigForCanada
+    private val savedStateHandleCA = CardReaderManualsFragmentArgs(
+        supportedCountryCA
+    ).initSavedStateHandle()
+    private val savedStateHandleUS = CardReaderManualsFragmentArgs(
+        supportedCountryUs
+    ).initSavedStateHandle()
 
-    @Before
-    fun setUp() {
-        viewModel = CardReaderManualsViewModel(savedStateHandle)
+    @Test
+    fun `when screen shown, a manual list is displayed`() {
+        whenever(cardReaderManualSupportedCountryMapper.mapSupportedReadersToManualItems(any(), any())).thenReturn(
+            manualList
+        )
+
+        initViewModel(savedStateHandleUS)
+
+        assertThat(viewModel.manualState)
+            .isEqualTo(manualList)
     }
 
     @Test
-    fun `when screen shown, then BBPOS label is displayed`() {
-        val bbposRow = viewModel.manualState.find {
-            it.label == R.string.card_reader_bbpos_manual_card_reader
+    fun `given US store, when user click on chipper reader, then correct webview is displayed`() {
+        whenever(cardReaderManualSupportedCountryMapper.mapSupportedReadersToManualItems(any(), any())).thenAnswer {
+            listOf(
+                ManualItem(
+                    icon = drawable.ic_chipper_reader,
+                    label = string.card_reader_bbpos_manual_card_reader,
+                    onManualClicked = (it.arguments[1] as Map<SpecificReader, () -> Unit>)[Chipper2X] as () -> Unit
+                ),
+            )
         }
 
-        assertThat(bbposRow).isNotNull
+        initViewModel(savedStateHandleUS)
+        viewModel.manualState.find {
+            it.label == string.card_reader_bbpos_manual_card_reader
+        }?.onManualClicked?.invoke()
+
+        assertThat(viewModel.event.value).isEqualTo(
+            CardReaderManualsViewModel.ManualEvents.NavigateToCardReaderManualLink(AppUrls.BBPOS_MANUAL_CARD_READER)
+        )
     }
 
     @Test
-    fun `when user clicks BBPOS reader, then app navigates to BBPOS manual link`() {
-        val bbposRow = viewModel.manualState.find {
-            it.label == R.string.card_reader_bbpos_manual_card_reader
+    fun `given US store, when user clicks on M2 reader, then correct webview is displayed`() {
+        whenever(cardReaderManualSupportedCountryMapper.mapSupportedReadersToManualItems(any(), any())).thenAnswer {
+            listOf(
+                ManualItem(
+                    icon = drawable.ic_m2_reader,
+                    label = string.card_reader_m2_manual_card_reader,
+                    onManualClicked = (it.arguments[1] as Map<SpecificReader, () -> Unit>)[StripeM2] as () -> Unit
+                ),
+            )
         }
 
-        bbposRow!!.onManualClicked.invoke()
+        initViewModel(savedStateHandleUS)
+        viewModel.manualState.find {
+            it.label == string.card_reader_m2_manual_card_reader
+        }?.onManualClicked?.invoke()
 
-        assertThat(viewModel.event.value)
-            .isEqualTo(
-                CardReaderManualsViewModel.ManualEvents.NavigateToCardReaderManualLink(
-                    AppUrls.BBPOS_MANUAL_CARD_READER
+        assertThat(viewModel.event.value).isEqualTo(
+            CardReaderManualsViewModel.ManualEvents.NavigateToCardReaderManualLink(AppUrls.M2_MANUAL_CARD_READER)
+        )
+    }
+
+    @Test
+    fun `given CA store, when user clicks wisepa3, then correct webview is displayed`() {
+        whenever(cardReaderManualSupportedCountryMapper.mapSupportedReadersToManualItems(any(), any())).thenAnswer {
+            listOf(
+                ManualItem(
+                    icon = drawable.ic_wisepad3_reader,
+                    label = string.card_reader_wisepad_3_manual_card_reader,
+                    onManualClicked = (it.arguments[1] as Map<SpecificReader, () -> Unit>)[WisePade3] as () -> Unit
                 )
             )
+        }
+        initViewModel(savedStateHandleCA)
+        viewModel.manualState.find {
+            it.label == string.card_reader_wisepad_3_manual_card_reader
+        }?.onManualClicked?.invoke()
+
+        assertThat(viewModel.event.value).isEqualTo(
+            CardReaderManualsViewModel.ManualEvents.NavigateToCardReaderManualLink(AppUrls.WISEPAD_3_MANUAL_CARD_READER)
+        )
     }
 
-    @Test
-    fun `when screen shown, then BBPOS icon is displayed`() {
-        val bbposRow = viewModel.manualState.find {
-            it.icon == R.drawable.ic_chipper_reader
-        }
-
-        assertThat(bbposRow).isNotNull
-    }
-
-    @Test
-    fun `when screen shown, then M2 label is displayed`() {
-        val m2Row = viewModel.manualState.find {
-            it.label == R.string.card_reader_m2_manual_card_reader
-        }
-
-        assertThat(m2Row).isNotNull
-    }
-
-    @Test
-    fun `when user clicks M2 reader, then app navigates to M2 manual link`() {
-        val m2Row = viewModel.manualState.find {
-            it.label == R.string.card_reader_m2_manual_card_reader
-        }
-
-        m2Row!!.onManualClicked.invoke()
-
-        assertThat(viewModel.event.value)
-            .isEqualTo(
-                CardReaderManualsViewModel.ManualEvents.NavigateToCardReaderManualLink(
-                    AppUrls.M2_MANUAL_CARD_READER
-                )
-            )
-    }
-
-    @Test
-    fun `when screen is shown, then M2 icon is displayed`() {
-        val m2Row = viewModel.manualState.find {
-            it.icon == R.drawable.ic_m2_reader
-        }
-
-        assertThat(m2Row).isNotNull
-    }
-
-    @Test
-    fun `when screen shown, then wisepad3 label is displayed`() {
-
-        val wisePad3 = viewModel.manualState.find {
-            it.label == R.string.card_reader_wisepad_3_manual_card_reader
-        }
-
-        assertThat(wisePad3).isNotNull
-    }
-
-    @Test
-    fun `when user clicks wisepad3 reader, then app navigates to wisepad3 manual link`() {
-
-        val wisePad3 = viewModel.manualState.find {
-            it.label == R.string.card_reader_wisepad_3_manual_card_reader
-        }
-
-        wisePad3!!.onManualClicked.invoke()
-
-        assertThat(viewModel.event.value)
-            .isEqualTo(
-                CardReaderManualsViewModel.ManualEvents.NavigateToCardReaderManualLink(
-                    AppUrls.WISEPAD_3_MANUAL_CARD_READER
-                )
-            )
-    }
-
-    @Test
-    fun `when screen is shown, then wisepad3 icon is displayed`() {
-
-        val wisePad3 = viewModel.manualState.find {
-            it.icon == R.drawable.ic_wisepad3_reader
-        }
-
-        assertThat(wisePad3).isNotNull
+    private fun initViewModel(savedStateHandle: SavedStateHandle) {
+        viewModel = CardReaderManualsViewModel(
+            savedStateHandle,
+            cardReaderManualSupportedCountryMapper,
+        )
     }
 }
