@@ -22,10 +22,10 @@ import org.wordpress.android.fluxc.network.UserAgent
 @Composable
 fun WCWebView(
     url: String,
-    authenticator: WPComWebViewAuthenticator,
     userAgent: UserAgent,
     onUrlLoaded: (String) -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    wpComAuthenticator: WPComWebViewAuthenticator? = null
 ) {
     var webView by remember { mutableStateOf<WebView?>(null) }
     var progress by remember { mutableStateOf(0) }
@@ -73,7 +73,7 @@ fun WCWebView(
         ) { webView ->
             if (lastLoadedUrl == url) return@AndroidView
             lastLoadedUrl = url
-            authenticator.authenticateAndLoadUrl(webView, url)
+            wpComAuthenticator?.authenticateAndLoadUrl(webView, url) ?: webView.loadUrl(url)
             canGoBack = webView.canGoBack()
         }
     }
