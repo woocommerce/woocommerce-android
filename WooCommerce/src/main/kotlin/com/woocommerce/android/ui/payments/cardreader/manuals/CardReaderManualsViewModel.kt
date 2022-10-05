@@ -2,31 +2,28 @@ package com.woocommerce.android.ui.payments.cardreader.manuals
 
 import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.AppUrls
-import com.woocommerce.android.R
+import com.woocommerce.android.cardreader.connection.SpecificReader.Chipper2X
+import com.woocommerce.android.cardreader.connection.SpecificReader.StripeM2
+import com.woocommerce.android.cardreader.connection.SpecificReader.WisePade3
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.ScopedViewModel
+import com.woocommerce.android.viewmodel.navArgs
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 
 @HiltViewModel
 class CardReaderManualsViewModel @Inject constructor(
     savedState: SavedStateHandle,
+    cardReaderManualsSupportedReadersMapper: CardReaderManualsSupportedReadersMapper,
 ) : ScopedViewModel(savedState) {
-    val manualState = mutableListOf(
-        ManualItem(
-            icon = R.drawable.ic_chipper_reader,
-            label = R.string.card_reader_bbpos_manual_card_reader,
-            onManualClicked = ::onBbposManualClicked
-        ),
-        ManualItem(
-            icon = R.drawable.ic_m2_reader,
-            label = R.string.card_reader_m2_manual_card_reader,
-            onManualClicked = ::onM2ManualClicked
-        ),
-        ManualItem(
-            icon = R.drawable.ic_wisepad3_reader,
-            label = R.string.card_reader_wisepad_3_manual_card_reader,
-            onManualClicked = ::onWisePad3ManualCardReaderClicked
+    private val navArgs: CardReaderManualsFragmentArgs by savedState.navArgs()
+    private val cardReaderConfig = navArgs.cardReaderConfig
+    val manualState = cardReaderManualsSupportedReadersMapper.mapSupportedReadersToManualItems(
+        cardReaderConfig,
+        mapOf(
+            Chipper2X to ::onBbposManualClicked,
+            StripeM2 to ::onM2ManualClicked,
+            WisePade3 to ::onWisePad3ManualCardReaderClicked
         )
     )
 

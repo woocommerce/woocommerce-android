@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2022-09-19 10:54:03+0000
+Translation-Revision-Date: 2022-10-02 19:38:14+0000
 Plural-Forms: nplurals=2; plural=n > 1;
 Generator: GlotPress/2.4.0-alpha
 Language: id
@@ -103,7 +103,7 @@ Language: id
     <string name="support_system_status_report_share_label">Bagikan laporan status sistem</string>
     <string name="support_system_status_report_copy_label">Salin laporan status sistem ke clipboard</string>
     <string name="card_reader_connect_keep_searching_button">Terus Mencari</string>
-    <string name="card_reader_payment_description_v2">Pembayaran Langsung untuk Pesanan #%s di %s blog_id %s.</string>
+    <string name="card_reader_payment_description_v2">Pembayaran Langsung untuk Pesanan #%1$s di %2$s blog_id %3$s.</string>
     <string name="card_reader_manage_payment_provider">Ubah Penyedia Pembayaran</string>
     <string name="orderdetail_refunded_line_with_info">Dana dikembalikan: %1$s</string>
     <string name="orderdetail_payment_summary_onhold_plain">Menunggu pembayaran</string>
@@ -187,7 +187,7 @@ Language: id
     <string name="shipping_label_install_wc_shipping_banner_button">Dapatkan WooCommerce Shipping</string>
     <string name="shipping_label_install_wc_shipping_banner_description">Cetak label dari ponsel dengan WooCommerce Shipping.</string>
     <string name="shipping_label_install_wc_shipping_banner_title">Perlu label pengiriman?</string>
-    <string name="order_creation_change_product_quantity">Ubah jumlah produk dari %d menjadi %d</string>
+    <string name="order_creation_change_product_quantity">Ubah jumlah produk dari %1$d menjadi %2$d</string>
     <string name="variations_bulk_update_regular_price">Perbarui Harga Normal</string>
     <string name="variations_bulk_update_sale_price">Perbarui Harga Obral</string>
     <string name="card_reader_onboarding_stripe_unsupported_in_country_header">Kami tidak mendukung ekstensi WooCommerce Stripe di %1$s</string>
@@ -320,8 +320,8 @@ Language: id
     <string name="coupon_list_wip_message_enabled">Kini Anda dapat melihat dan mengedit kupon dengan perangkat Anda!</string>
     <string name="coupon_list_wip_title">Lihat dan edit kupon</string>
     <string name="coupon_list_empty_heading">Tidak ada kupon ditemukan</string>
-    <string name="coupon_list_item_label_included_and_excluded">%1s excl. %2s</string>
-    <string name="coupon_list_item_label_products_and_categories">%1s dan %2s</string>
+    <string name="coupon_list_item_label_included_and_excluded">%1$s excl. %2$s</string>
+    <string name="coupon_list_item_label_products_and_categories">%1$s dan %2$s</string>
     <string name="coupon_list_item_label_everything">semua</string>
     <string name="coupon_list_item_label_expired">Kedaluwarsa </string>
     <string name="coupon_list_item_label_active">Aktif</string>
@@ -1390,7 +1390,7 @@ Language: id
     <string name="product_width">Lebar</string>
     <string name="product_length">Panjang</string>
     <string name="order_refunds_refund_info_title">Produk yang dananya dikembalikan</string>
-    <string name="order_refunds_detail_item_description">%s (%s x %d)</string>
+    <string name="order_refunds_detail_item_description">%1$s (%2$s x %3$d)</string>
     <string name="order_refunds_method">%1$s melalui %2$s</string>
     <string name="order_refunds_confirmation">Apakah Anda yakin ingin meminta pengembalian dana? Hal ini tidak dapat dibatalkan.</string>
     <string name="orderdetail_refunded_products">Produk yang dananya dikembalikan</string>
@@ -1430,7 +1430,7 @@ Language: id
     <string name="order_refunds_select_quantity">Pilih jumlah</string>
     <string name="order_refunds_shipping_refund">Pengembalian dana pengiriman</string>
     <string name="order_refunds_products_refund">Pengembalian dana produk</string>
-    <string name="order_refunds_item_description">%s x %s tiap buah</string>
+    <string name="order_refunds_item_description">%1$s x %2$s tiap buah</string>
     <string name="order_refunds_items_selected">%d item terpilih</string>
     <string name="order_refunds_items_select_none">Tidak memilih</string>
     <string name="order_refunds_items_select_all">Pilih semua</string>
@@ -1441,7 +1441,7 @@ Language: id
     <string name="image_source_device_chooser">Pilih dari perangkat</string>
     <string name="image_source_title">Pilih metode pengunggahan</string>
     <string name="product_images_upload_channel_title">Unggahan</string>
-    <string name="product_images_uploading_multi_notif_message">Mengunggah gambar…%d dari %d</string>
+    <string name="product_images_uploading_multi_notif_message">Mengunggah gambar…%1$d dari %2$d</string>
     <string name="product_images_uploading_single_notif_message">Mengunggah gambar…</string>
     <string name="product_images_camera_error">Tidak dapat mengakses kamera</string>
     <string name="product_image_remove_confirmation">Anda yakin ingin menghapus gambar ini?</string>
@@ -2162,7 +2162,7 @@ Language: id
     <string name="login_nostores_content_description">Tidak ada toko WooCommerce</string>
     <string name="login_avatar_content_description">Foto profil Anda</string>
     <string name="login_connected_store">Toko yang terhubung</string>
-    <string name="login_configure_link">Baca %sinstruksi konfigurasi%s.</string>
+    <string name="login_configure_link">Baca %1$sinstruksi konfigurasi%2$s.</string>
     <string name="login_jetpack_required">Aplikasi ini memerlukan Jetpack agar dapat terhubung ke toko Anda.</string>
     <string name="at_username">\@%s</string>
     <string name="enter_site_address">Masukkan alamat toko WooCommerce yang ingin dihubungkan.</string>
