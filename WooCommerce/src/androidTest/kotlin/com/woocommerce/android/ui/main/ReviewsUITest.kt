@@ -49,7 +49,7 @@ class ReviewsUITest : TestBase() {
     }
 
     @Test
-    fun reviewListShowsAllReviews() {
+    fun e2eReviewListShowsAllReviews() {
         val reviewsJSONArray = MocksReader().readAllReviewsToArray()
 
         reviewsJSONArray.iterator().forEach { review ->
