@@ -118,13 +118,17 @@ class AccountMismatchErrorViewModel @Inject constructor(
         primaryButtonAction = {
             when (navArgs.primaryButton) {
                 AccountMismatchPrimaryButton.CONNECT_JETPACK -> startJetpackConnection()
-                AccountMismatchPrimaryButton.CONNECT_WPCOM_SITE -> triggerEvent(
-                    ShowDialog(
-                        titleId = R.string.login_account_mismatch_connect_wpcom_dialog_title,
-                        messageId = R.string.login_account_mismatch_connect_wpcom_dialog_message,
-                        positiveButtonId = R.string.continue_button
+                AccountMismatchPrimaryButton.CONNECT_WPCOM_SITE -> {
+                    // We are re-using the same event as Jetpack connection here
+                    analyticsTrackerWrapper.track(AnalyticsEvent.LOGIN_JETPACK_CONNECT_BUTTON_TAPPED)
+                    triggerEvent(
+                        ShowDialog(
+                            titleId = R.string.login_account_mismatch_connect_wpcom_dialog_title,
+                            messageId = R.string.login_account_mismatch_connect_wpcom_dialog_message,
+                            positiveButtonId = R.string.continue_button
+                        )
                     )
-                )
+                }
                 AccountMismatchPrimaryButton.NONE ->
                     error("NONE as primary button shouldn't trigger the callback")
             }
