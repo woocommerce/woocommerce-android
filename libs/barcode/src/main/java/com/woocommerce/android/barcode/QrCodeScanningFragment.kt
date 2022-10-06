@@ -32,6 +32,7 @@ import kotlinx.android.synthetic.main.camera_preview_overlay.graphicOverlay
 import kotlinx.android.synthetic.main.camera_preview_overlay.promptChip
 import kotlinx.android.synthetic.main.fragment_live_barcode.preview
 import kotlinx.android.synthetic.main.top_action_bar_in_live_camera.closeButton
+import kotlinx.android.synthetic.main.top_action_bar_in_live_camera.helpButton
 import java.io.IOException
 
 /** Demonstrates the barcode scanning workflow using camera preview.  */
@@ -44,6 +45,7 @@ class QrCodeScanningFragment : Fragment(), OnClickListener {
     private val workflowModel: WorkflowModel by activityViewModels()
     private var currentWorkflowState: WorkflowState? = null
     private var onCodeScanned: (rawValue: String?) -> Unit = {}
+    private var onHelpClicked: () -> Unit = {}
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         return inflater.inflate(R.layout.fragment_live_barcode, container, false)
@@ -57,6 +59,7 @@ class QrCodeScanningFragment : Fragment(), OnClickListener {
             cameraSource = CameraSource(this)
         }
         closeButton.setOnClickListener(this)
+        helpButton.setOnClickListener { onHelpClicked() }
         setUpWorkflowModel()
     }
 
@@ -87,8 +90,12 @@ class QrCodeScanningFragment : Fragment(), OnClickListener {
         }
     }
 
-    fun setOnCodeScanned(onCodeScanned: (rawValue: String?) -> Unit) {
+    fun setClickListeners(
+        onCodeScanned: (rawValue: String?) -> Unit,
+        onHelpClicked: () -> Unit
+    ) {
         this.onCodeScanned = onCodeScanned
+        this.onHelpClicked = onHelpClicked
     }
 
     private fun startCameraPreview() {

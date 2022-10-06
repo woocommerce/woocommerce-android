@@ -16,7 +16,7 @@
         app:srcCompat="@drawable/ic_close_vd_white_24" />
 
     <ImageView
-        android:id="@+id/infoButton"
+        android:id="@+id/helpButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentEnd="true"

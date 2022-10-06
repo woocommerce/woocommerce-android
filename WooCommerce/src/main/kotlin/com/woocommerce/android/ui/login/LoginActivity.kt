@@ -990,13 +990,16 @@ class LoginActivity :
         val fragment =
             supportFragmentManager.findFragmentByTag(QrCodeScanningFragment.TAG) as? QrCodeScanningFragment
                 ?: QrCodeScanningFragment()
-        fragment.setOnCodeScanned { rawValue ->
-            AnalyticsTracker.track(stat = AnalyticsEvent.LOGIN_WITH_QR_CODE_SCANNED)
-            val intent = Intent(Intent.ACTION_VIEW, Uri.parse(rawValue))
-            intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK or
-                Intent.FLAG_ACTIVITY_CLEAR_TASK
-            startActivity(intent)
-        }
+        fragment.setClickListeners(
+            onCodeScanned = { rawValue ->
+                AnalyticsTracker.track(stat = AnalyticsEvent.LOGIN_WITH_QR_CODE_SCANNED)
+                val intent = Intent(Intent.ACTION_VIEW, Uri.parse(rawValue))
+                intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK or
+                    Intent.FLAG_ACTIVITY_CLEAR_TASK
+                startActivity(intent)
+            },
+            onHelpClicked = { viewHelpAndSupport(Origin.LOGIN_WITH_QR_CODE) }
+        )
         changeFragment(fragment, shouldAddToBackStack = true, tag = QrCodeScanningFragment.TAG)
     }
 
