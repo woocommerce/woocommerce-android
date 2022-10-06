@@ -14,17 +14,9 @@ import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.common.wpcomwebview.WPComWebViewFragment.UrlComparisonMode.EQUALITY
 import com.woocommerce.android.ui.common.wpcomwebview.WPComWebViewFragment.UrlComparisonMode.PARTIAL
 import com.woocommerce.android.ui.main.MainActivity.Companion.BackPressListener
-import com.woocommerce.android.util.WooLog
 import dagger.hilt.android.AndroidEntryPoint
 import org.wordpress.android.fluxc.network.UserAgent
-import org.wordpress.android.fluxc.store.AccountStore
-import org.wordpress.android.util.StringUtils
-import java.io.UnsupportedEncodingException
-import java.net.URLEncoder
-import java.nio.charset.StandardCharsets
 import javax.inject.Inject
-
-private const val WPCOM_LOGIN_URL = "https://wordpress.com/wp-login.php"
 
 /**
  * This fragments allows loading specific pages from WordPress.com with the current user logged in.
@@ -42,7 +34,7 @@ class WPComWebViewFragment : BaseFragment(R.layout.fragment_wpcom_webview), UrlI
     private val webViewClient by lazy { WPComWebViewClient(this) }
     private val navArgs: WPComWebViewFragmentArgs by navArgs()
 
-    @Inject lateinit var accountStore: AccountStore
+    @Inject lateinit var wpcomWebViewAuthenticator: WPComWebViewAuthenticator
 
     @Inject lateinit var userAgent: UserAgent
 
@@ -63,17 +55,7 @@ class WPComWebViewFragment : BaseFragment(R.layout.fragment_wpcom_webview), UrlI
             settings.userAgentString = userAgent.userAgent
         }
 
-        loadAuthenticatedUrl(binding.webView, navArgs.urlToLoad)
-    }
-
-    private fun loadAuthenticatedUrl(webView: WebView, urlToLoad: String) {
-        val postData = getAuthenticationPostData(
-            urlToLoad = urlToLoad,
-            username = accountStore.account.userName,
-            token = accountStore.accessToken
-        )
-
-        webView.postUrl(WPCOM_LOGIN_URL, postData.toByteArray())
+        wpcomWebViewAuthenticator.authenticateAndLoadUrl(binding.webView, navArgs.urlToLoad)
     }
 
     override fun onLoadUrl(url: String) {
@@ -85,25 +67,6 @@ class WPComWebViewFragment : BaseFragment(R.layout.fragment_wpcom_webview), UrlI
         if (isAdded && navArgs.urlToTriggerExit?.matchesUrl(url) == true) {
             navigateBackWithNotice(WEBVIEW_RESULT)
         }
-    }
-
-    private fun getAuthenticationPostData(urlToLoad: String, username: String, token: String): String {
-        val utf8 = StandardCharsets.UTF_8.name()
-        try {
-            var postData = String.format(
-                "log=%s&redirect_to=%s",
-                URLEncoder.encode(StringUtils.notNullStr(username), utf8),
-                URLEncoder.encode(StringUtils.notNullStr(urlToLoad), utf8)
-            )
-
-            // Add token authorization
-            postData += "&authorization=Bearer " + URLEncoder.encode(token, utf8)
-
-            return postData
-        } catch (e: UnsupportedEncodingException) {
-            WooLog.e(WooLog.T.UTILS, e)
-        }
-        return ""
     }
 
     override fun getFragmentTitle() = navArgs.title ?: super.getFragmentTitle()

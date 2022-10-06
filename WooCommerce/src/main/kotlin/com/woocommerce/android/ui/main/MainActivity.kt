@@ -357,19 +357,13 @@ class MainActivity :
     override fun onBackPressed() {
         AnalyticsTracker.trackBackPressed(this)
 
-        if (!isAtNavigationRoot()) {
-            // go no further if active fragment doesn't allow back press - we use this so fragments can
-            // provide confirmation before discarding the current action, such as adding an order note
-            getActiveChildFragment()?.let { fragment ->
-                if (fragment is BackPressListener && !(fragment as BackPressListener).onRequestAllowBackPress()) {
-                    return
-                }
+        getActiveChildFragment()?.let { fragment ->
+            if (fragment is BackPressListener && !(fragment as BackPressListener).onRequestAllowBackPress()) {
+                return
             }
-            navController.navigateUp()
-            return
-        } else {
-            super.onBackPressed()
         }
+
+        super.onBackPressed()
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
