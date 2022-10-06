@@ -268,38 +268,39 @@ class SitePickerViewModel @Inject constructor(
      * in with.
      */
     private fun showAccountMismatchScreen(url: String) = launch {
-        if (event.value !is NavigateToAccountMismatchScreen) {
-            sitePickerViewState = sitePickerViewState.copy(isSkeletonViewVisible = true)
-            analyticsTrackerWrapper.track(
-                AnalyticsEvent.SITE_PICKER_AUTO_LOGIN_ERROR_NOT_CONNECTED_TO_USER,
-                mapOf(
-                    AnalyticsTracker.KEY_URL to url,
-                    AnalyticsTracker.KEY_HAS_CONNECTED_STORES to sitePickerViewState.hasConnectedStores
-                )
+        sitePickerViewState = sitePickerViewState.copy(isSkeletonViewVisible = true)
+        analyticsTrackerWrapper.track(
+            AnalyticsEvent.SITE_PICKER_AUTO_LOGIN_ERROR_NOT_CONNECTED_TO_USER,
+            mapOf(
+                AnalyticsTracker.KEY_URL to url,
+                AnalyticsTracker.KEY_HAS_CONNECTED_STORES to sitePickerViewState.hasConnectedStores
             )
-            trackLoginEvent(currentStep = UnifiedLoginTracker.Step.WRONG_WP_ACCOUNT)
-            repository.fetchSiteInfo(url).fold(
-                onSuccess = {
-                    val primaryButton = when {
-                        !it.isWPCom -> AccountMismatchPrimaryButton.CONNECT_JETPACK
-                        sitePickerViewState.hasConnectedStores ?: false -> AccountMismatchPrimaryButton.SHOW_SITE_PICKER
-                        else -> AccountMismatchPrimaryButton.ENTER_NEW_SITE_ADDRESS
-                    }
+        )
+        trackLoginEvent(currentStep = UnifiedLoginTracker.Step.WRONG_WP_ACCOUNT)
+        repository.fetchSiteInfo(url).fold(
+            onSuccess = {
+                val primaryButton = when {
+                    !it.isWPCom -> AccountMismatchPrimaryButton.CONNECT_JETPACK
+                    sitePickerViewState.hasConnectedStores ?: false -> AccountMismatchPrimaryButton.SHOW_SITE_PICKER
+                    else -> AccountMismatchPrimaryButton.ENTER_NEW_SITE_ADDRESS
+                }
+                if (event.value !is NavigateToAccountMismatchScreen) {
+                    // The check is to avoid triggering the navigation multiple times
                     triggerEvent(
                         NavigateToAccountMismatchScreen(
                             primaryButton = primaryButton,
                             siteUrl = url
                         )
                     )
-                },
-                onFailure = {
-                    triggerEvent(ShowSnackbar(string.site_picker_error))
-                    loginSiteAddress = null
-                    loadAndDisplaySites()
                 }
-            )
-            sitePickerViewState = sitePickerViewState.copy(isSkeletonViewVisible = false)
-        }
+            },
+            onFailure = {
+                triggerEvent(ShowSnackbar(string.site_picker_error))
+                loginSiteAddress = null
+                loadAndDisplaySites()
+            }
+        )
+        sitePickerViewState = sitePickerViewState.copy(isSkeletonViewVisible = false)
     }
 
     private fun loadWooNotFoundView(site: SiteModel) {
