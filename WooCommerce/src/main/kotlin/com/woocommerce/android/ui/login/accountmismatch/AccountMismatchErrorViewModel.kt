@@ -18,7 +18,6 @@ import com.woocommerce.android.ui.login.AccountRepository
 import com.woocommerce.android.ui.login.UnifiedLoginTracker
 import com.woocommerce.android.ui.login.accountmismatch.AccountMismatchRepository.JetpackConnectionStatus
 import com.woocommerce.android.viewmodel.MultiLiveEvent
-import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowDialog
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowUiStringSnackbar
@@ -202,14 +201,6 @@ class AccountMismatchErrorViewModel @Inject constructor(
             step.value = Step.FetchJetpackEmail
         }
     )
-
-    private fun showConnectedStores() {
-        triggerEvent(Exit)
-    }
-
-    private fun navigateToSiteAddressScreen() {
-        triggerEvent(NavigateToSiteAddressEvent)
-    }
 
     private fun loginWithDifferentAccount() {
         if (!accountRepository.isUserLoggedIn()) {
