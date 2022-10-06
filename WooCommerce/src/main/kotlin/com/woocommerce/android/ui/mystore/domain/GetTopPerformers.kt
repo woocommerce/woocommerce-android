@@ -1,13 +1,11 @@
 package com.woocommerce.android.ui.mystore.domain
 
 import com.woocommerce.android.ui.mystore.data.StatsRepository
-import com.woocommerce.android.ui.mystore.domain.GetTopPerformers.TopPerformersResult.TopPerformersError
-import com.woocommerce.android.ui.mystore.domain.GetTopPerformers.TopPerformersResult.TopPerformersSuccess
 import com.woocommerce.android.util.CoroutineDispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOn
-import kotlinx.coroutines.flow.transform
-import org.wordpress.android.fluxc.model.leaderboards.WCTopPerformerProductModel
+import kotlinx.coroutines.flow.map
+import org.wordpress.android.fluxc.persistence.entity.TopPerformerProductEntity
 import org.wordpress.android.fluxc.store.WCStatsStore
 import javax.inject.Inject
 
@@ -15,35 +13,46 @@ class GetTopPerformers @Inject constructor(
     private val statsRepository: StatsRepository,
     private val coroutineDispatchers: CoroutineDispatchers,
 ) {
-    suspend operator fun invoke(
-        forceRefresh: Boolean,
-        granularity: WCStatsStore.StatsGranularity,
-        topPerformersCount: Int
-    ): Flow<TopPerformersResult> =
-        statsRepository.fetchProductLeaderboards(forceRefresh, granularity, topPerformersCount)
-            .transform { result ->
-                result.fold(
-                    onSuccess = { topPerformers ->
-                        val sortedTopPerformers = sortTopPerformers(topPerformers)
-                        emit(TopPerformersSuccess(sortedTopPerformers))
-                    },
-                    onFailure = {
-                        emit(TopPerformersError)
-                    }
-                )
+    private companion object {
+        const val NUM_TOP_PERFORMERS = 5
+    }
+
+    fun observeTopPerformers(granularity: WCStatsStore.StatsGranularity): Flow<List<TopPerformerProduct>> =
+        statsRepository.observeTopPerformers(granularity)
+            .map { topPerformersProductEntities ->
+                topPerformersProductEntities
+                    .map { it.toTopPerformerProduct() }
+                    .sortDescByQuantityAndTotal()
             }.flowOn(coroutineDispatchers.computation)
 
-    private fun sortTopPerformers(topPerformers: List<WCTopPerformerProductModel>) =
-        topPerformers.sortedWith(
-            compareByDescending(WCTopPerformerProductModel::quantity)
-                .thenByDescending(WCTopPerformerProductModel::total)
+    suspend fun fetchTopPerformers(
+        granularity: WCStatsStore.StatsGranularity,
+        forceRefresh: Boolean = false,
+        topPerformersCount: Int = NUM_TOP_PERFORMERS,
+    ): Result<Unit> = statsRepository.fetchTopPerformerProducts(forceRefresh, granularity, topPerformersCount)
+
+    private fun List<TopPerformerProduct>.sortDescByQuantityAndTotal() =
+        sortedWith(
+            compareByDescending(TopPerformerProduct::quantity)
+                .thenByDescending(TopPerformerProduct::total)
         )
 
-    sealed class TopPerformersResult {
-        data class TopPerformersSuccess(
-            val topPerformers: List<WCTopPerformerProductModel>
-        ) : TopPerformersResult()
+    private fun TopPerformerProductEntity.toTopPerformerProduct() =
+        TopPerformerProduct(
+            productId = productId,
+            name = name,
+            quantity = quantity,
+            currency = currency,
+            total = total,
+            imageUrl = imageUrl
+        )
 
-        object TopPerformersError : TopPerformersResult()
-    }
+    data class TopPerformerProduct(
+        val productId: Long,
+        val name: String,
+        val quantity: Int,
+        val currency: String,
+        val total: Double,
+        val imageUrl: String?
+    )
 }
