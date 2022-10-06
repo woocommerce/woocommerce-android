@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2022-09-20 15:54:03+0000
+Translation-Revision-Date: 2022-10-02 20:22:25+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: it
@@ -103,7 +103,7 @@ Language: it
     <string name="support_system_status_report_share_label">Condividi rapporto dello stato del sistema</string>
     <string name="support_system_status_report_copy_label">Copia il rapporto dello stato del sistema negli appunti</string>
     <string name="card_reader_connect_keep_searching_button">Continua a cercare</string>
-    <string name="card_reader_payment_description_v2">Pagamento di persona per l\'ordine #%s per %s blog_id %s.</string>
+    <string name="card_reader_payment_description_v2">Pagamento di persona per l\'ordine #%1$s per %2$s blog_id %3$s.</string>
     <string name="card_reader_manage_payment_provider">Cambia fornitore dei pagamenti</string>
     <string name="orderdetail_refunded_line_with_info">Rimborsato: %1$s</string>
     <string name="orderdetail_payment_summary_onhold_plain">In attesa di pagamento</string>
@@ -187,7 +187,7 @@ Language: it
     <string name="shipping_label_install_wc_shipping_banner_button">Ottieni WooCommerce Shipping</string>
     <string name="shipping_label_install_wc_shipping_banner_description">Stampa etichette dal tuo telefono con WooCommerce Shipping.</string>
     <string name="shipping_label_install_wc_shipping_banner_title">Hai bisogno di un\'etichetta di spedizione?</string>
-    <string name="order_creation_change_product_quantity">Cambia la quantità di prodotto da %d a %d</string>
+    <string name="order_creation_change_product_quantity">Cambia la quantità di prodotto da %1$d a %2$d</string>
     <string name="variations_bulk_update_regular_price">Aggiorna al prezzo standard</string>
     <string name="variations_bulk_update_sale_price">Aggiorna prezzo di vendita</string>
     <string name="card_reader_onboarding_stripe_unsupported_in_country_header">Non supportiamo l\'estensione WooCommerce Stripe in %1$s</string>
@@ -320,8 +320,8 @@ Language: it
     <string name="coupon_list_wip_message_enabled">Abbiamo lavorato per rendere possibile la visualizzazione e la modifica dei coupon sul tuo dispositivo!</string>
     <string name="coupon_list_wip_title">Visualizza e modifica i codici promozionali</string>
     <string name="coupon_list_empty_heading">Non è stato trovato alcun codice promozionale</string>
-    <string name="coupon_list_item_label_included_and_excluded">%1s senza %2s</string>
-    <string name="coupon_list_item_label_products_and_categories">%1s e %2s</string>
+    <string name="coupon_list_item_label_included_and_excluded">%1$s senza %2$s</string>
+    <string name="coupon_list_item_label_products_and_categories">%1$s e %2$s</string>
     <string name="coupon_list_item_label_everything">tutto</string>
     <string name="coupon_list_item_label_expired">Scaduto</string>
     <string name="coupon_list_item_label_active">Attivo</string>
@@ -1390,7 +1390,7 @@ Language: it
     <string name="product_width">Larghezza</string>
     <string name="product_length">Lunghezza</string>
     <string name="order_refunds_refund_info_title">Prodotti rimborsati</string>
-    <string name="order_refunds_detail_item_description">%s (%s x %d)</string>
+    <string name="order_refunds_detail_item_description">%1$s (%2$s x %3$d)</string>
     <string name="order_refunds_method">%1$s tramite %2$s</string>
     <string name="order_refunds_confirmation">Desideri emettere un rimborso? Questo non può essere annullato.</string>
     <string name="orderdetail_refunded_products">Prodotti rimborsati</string>
@@ -1430,7 +1430,7 @@ Language: it
     <string name="order_refunds_select_quantity">Seleziona quantità</string>
     <string name="order_refunds_shipping_refund">Rimborso spedizione</string>
     <string name="order_refunds_products_refund">Rimborso prodotti</string>
-    <string name="order_refunds_item_description">%s x %s ciascuno</string>
+    <string name="order_refunds_item_description">%1$s x %2$s ciascuno</string>
     <string name="order_refunds_items_selected">%d elementi selezionati</string>
     <string name="order_refunds_items_select_none">Non selezionare nessuno</string>
     <string name="order_refunds_items_select_all">Seleziona tutto</string>
@@ -1441,7 +1441,7 @@ Language: it
     <string name="image_source_device_chooser">Scegli da dispositivo</string>
     <string name="image_source_title">Seleziona un metodo di caricamento</string>
     <string name="product_images_upload_channel_title">Carica</string>
-    <string name="product_images_uploading_multi_notif_message">Caricamento delle immagini in corso…%d di %d</string>
+    <string name="product_images_uploading_multi_notif_message">Caricamento delle immagini in corso…%1$d di %2$d</string>
     <string name="product_images_uploading_single_notif_message">Caricamento delle immagini in corso…</string>
     <string name="product_images_camera_error">Impossibile accedere alla fotocamera</string>
     <string name="product_image_remove_confirmation">Desideri rimuovere questa immagine?</string>
@@ -2162,7 +2162,7 @@ Language: it
     <string name="login_nostores_content_description">Nessun negozio WooCommerce</string>
     <string name="login_avatar_content_description">Foto del profilo</string>
     <string name="login_connected_store">Negozio collegato</string>
-    <string name="login_configure_link">Leggi le %sistruzioni di configurazione%s.</string>
+    <string name="login_configure_link">Leggi le %1$sistruzioni di configurazione%2$s.</string>
     <string name="login_jetpack_required">Questa app richiede che Jetpack sia connesso al tuo negozio.</string>
     <string name="at_username">\@%s</string>
     <string name="enter_site_address">Immetti l\'indirizzo del negozio WooCommerce che desideri connettere.</string>

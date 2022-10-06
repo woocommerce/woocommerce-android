@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2022-09-20 13:54:04+0000
+Translation-Revision-Date: 2022-10-02 20:25:43+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: nl
@@ -103,7 +103,7 @@ Language: nl
     <string name="support_system_status_report_share_label">Systeemstatusrapport delen</string>
     <string name="support_system_status_report_copy_label">Systeemstatusrapport kopiëren naar klembord</string>
     <string name="card_reader_connect_keep_searching_button">Verder zoeken</string>
-    <string name="card_reader_payment_description_v2">Fysieke betaling voor bestelnr. %s voor %s blog_id %s.</string>
+    <string name="card_reader_payment_description_v2">Fysieke betaling voor bestelnr. %1$s voor %2$s blog_id %3$s.</string>
     <string name="card_reader_manage_payment_provider">Betaalverwerker wijzigen</string>
     <string name="orderdetail_refunded_line_with_info">Terugbetaald: %1$s</string>
     <string name="orderdetail_payment_summary_onhold_plain">Openstaande betaling</string>
@@ -186,7 +186,7 @@ Language: nl
     <string name="shipping_label_install_wc_shipping_banner_button">Aan de slag met WooCommerce Shipping</string>
     <string name="shipping_label_install_wc_shipping_banner_description">Druk labels af vanaf je telefoon met WooCommerce Shipping.</string>
     <string name="shipping_label_install_wc_shipping_banner_title">Verzendlabel nodig?</string>
-    <string name="order_creation_change_product_quantity">Verander de producthoeveelheid van %d naar %d</string>
+    <string name="order_creation_change_product_quantity">Verander de producthoeveelheid van %1$d naar %2$d</string>
     <string name="variations_bulk_update_regular_price">Reguliere prijs bijwerken</string>
     <string name="variations_bulk_update_sale_price">Verkoopprijs bijgewerkt</string>
     <string name="card_reader_onboarding_stripe_unsupported_in_country_header">Er is geen ondersteuning voor de WooCommerce Stripe-extensie in %1$s</string>
@@ -319,8 +319,8 @@ Language: nl
     <string name="coupon_list_wip_message_enabled">We hebben hard gewerkt zodat jij coupons vanuit je apparaat kunt bekijken en bewerken!</string>
     <string name="coupon_list_wip_title">Coupons bekijken en bewerken</string>
     <string name="coupon_list_empty_heading">Geen coupons gevonden</string>
-    <string name="coupon_list_item_label_included_and_excluded">%1s excl. %2s</string>
-    <string name="coupon_list_item_label_products_and_categories">%1s en %2s</string>
+    <string name="coupon_list_item_label_included_and_excluded">%1$s excl. %2$s</string>
+    <string name="coupon_list_item_label_products_and_categories">%1$s en %2$s</string>
     <string name="coupon_list_item_label_everything">alles</string>
     <string name="coupon_list_item_label_expired">Verlopen</string>
     <string name="coupon_list_item_label_active">Actief</string>
@@ -1389,7 +1389,7 @@ Language: nl
     <string name="product_width">Breedte</string>
     <string name="product_length">Lengte</string>
     <string name="order_refunds_refund_info_title">Gerestitueerde producten</string>
-    <string name="order_refunds_detail_item_description">%s (%s x %d)</string>
+    <string name="order_refunds_detail_item_description">%1$s (%2$s x %3$d)</string>
     <string name="order_refunds_method">%1$s via %2$s</string>
     <string name="order_refunds_confirmation">Weet je zeker dat je restitutie wilt aanvragen? Dit kan niet ongedaan worden gemaakt.</string>
     <string name="orderdetail_refunded_products">Gerestitueerde producten</string>
@@ -1429,7 +1429,7 @@ Language: nl
     <string name="order_refunds_select_quantity">Selecteer hoeveelheid</string>
     <string name="order_refunds_shipping_refund">Verzendkostenvergoeding</string>
     <string name="order_refunds_products_refund">Productvergoeding</string>
-    <string name="order_refunds_item_description">%s x %s per stuk</string>
+    <string name="order_refunds_item_description">%1$s x %2$s per stuk</string>
     <string name="order_refunds_items_selected">%d items geselecteerd</string>
     <string name="order_refunds_items_select_none">Niets selecteren</string>
     <string name="order_refunds_items_select_all">Alles selecteren</string>
@@ -1440,7 +1440,7 @@ Language: nl
     <string name="image_source_device_chooser">Kiezen op apparaat</string>
     <string name="image_source_title">Selecteer een uploadmethode</string>
     <string name="product_images_upload_channel_title">Uploads</string>
-    <string name="product_images_uploading_multi_notif_message">Bezig met afbeeldingen uploaden…%d van %d</string>
+    <string name="product_images_uploading_multi_notif_message">Bezig met afbeeldingen uploaden…%1$d van %2$d</string>
     <string name="product_images_uploading_single_notif_message">Bezig met afbeeldingen uploaden…</string>
     <string name="product_images_camera_error">Geen toegang tot camera</string>
     <string name="product_image_remove_confirmation">Weet je zeker dat je deze afbeelding wilt verwijderen?</string>
@@ -2161,7 +2161,7 @@ Language: nl
     <string name="login_nostores_content_description">Geen WooCommerce-winkels</string>
     <string name="login_avatar_content_description">Je profielfoto</string>
     <string name="login_connected_store">Gekoppelde winkel</string>
-    <string name="login_configure_link">Lees de %sconfiguratie-instructies%s.</string>
+    <string name="login_configure_link">Lees de %1$sconfiguratie-instructies%2$s.</string>
     <string name="login_jetpack_required">Om deze app te gebruiken, moet Jetpack aan je winkel zijn gekoppeld.</string>
     <string name="at_username">\@%s</string>
     <string name="enter_site_address">Voer het adres van de WooCommerce-winkel die je wilt koppelen in.</string>

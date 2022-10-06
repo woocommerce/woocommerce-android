@@ -147,6 +147,8 @@
     <string name="variations_bulk_update_sale_price">Update Sale Price</string>
     <string name="variations_bulk_update_regular_price">Update Regular Price</string>
     <string name="tip">Tip</string>
+    <string name="hide_password_content_description">Hide password</string>
+    <string name="show_password_content_description">Show password</string>
 
     <!--
         Date/Time Labels
@@ -274,6 +276,7 @@
     <string name="login_jetpack_connection_verification_failed">Cannot verify your Jetpack connection. Please try again.</string>
     <string name="login_jetpack_verify_connection">Verifying Jetpack connection…</string>
     <string name="login_jetpack_connection_url_failed">Fetching connection data failed…</string>
+    <string name="login_2fa_not_supported_self_hosted_site">2FA not supported for self-hosted sites. Please use an app-password.</string>
     <!--
         My Store View
     -->

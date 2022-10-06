@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2022-09-20 22:54:04+0000
+Translation-Revision-Date: 2022-09-28 13:58:46+0000
 Plural-Forms: nplurals=2; plural=(n > 1);
 Generator: GlotPress/2.4.0-alpha
 Language: tr
@@ -103,7 +103,6 @@ Language: tr
     <string name="support_system_status_report_share_label">Sistem durum raporunu paylaş</string>
     <string name="support_system_status_report_copy_label">Sistem durum raporunu panoya kopyala</string>
     <string name="card_reader_connect_keep_searching_button">Aramaya Devam Et</string>
-    <string name="card_reader_payment_description_v2">%s blog_id %s, %s no\'lu Sipariş için Şahsen Ödeme.</string>
     <string name="card_reader_manage_payment_provider">Ödeme Sağlayıcısını Değiştir</string>
     <string name="orderdetail_refunded_line_with_info">Geri ödeme yapıldı: %1$s</string>
     <string name="orderdetail_payment_summary_onhold_plain">Bekleyen ödeme</string>
@@ -187,7 +186,6 @@ Language: tr
     <string name="shipping_label_install_wc_shipping_banner_button">WooCommerce Shipping\'i Edinin</string>
     <string name="shipping_label_install_wc_shipping_banner_description">WooCommerce Shipping ile etiketleri telefonunuzdan yazdırın.</string>
     <string name="shipping_label_install_wc_shipping_banner_title">Bir gönderim etiketine mi ihtiyacınız var?</string>
-    <string name="order_creation_change_product_quantity">%d olan ürün miktarını %d olarak değiştir</string>
     <string name="variations_bulk_update_regular_price">Normal Fiyatı Güncelle</string>
     <string name="variations_bulk_update_sale_price">Satış Fiyatını Güncelle</string>
     <string name="card_reader_onboarding_stripe_unsupported_in_country_header">%1$s için WooCommerce Stripe uzantısını desteklemiyoruz</string>
@@ -320,8 +318,8 @@ Language: tr
     <string name="coupon_list_wip_message_enabled">Kuponları cihazınızdan görüntüleyip düzenleyebilmeniz için çalışıyoruz!</string>
     <string name="coupon_list_wip_title">Kuponları görüntüle ve düzenle</string>
     <string name="coupon_list_empty_heading">Kupon bulunamadı</string>
-    <string name="coupon_list_item_label_included_and_excluded">%2s hariç, %1s</string>
-    <string name="coupon_list_item_label_products_and_categories">%1s ve %2s</string>
+    <string name="coupon_list_item_label_included_and_excluded">%2$s hariç, %1$s</string>
+    <string name="coupon_list_item_label_products_and_categories">%1$s ve %2$s</string>
     <string name="coupon_list_item_label_everything">her şey</string>
     <string name="coupon_list_item_label_expired">Süresi doldu</string>
     <string name="coupon_list_item_label_active">Etkin</string>
@@ -1390,7 +1388,6 @@ Language: tr
     <string name="product_width">Genişlik</string>
     <string name="product_length">Uzunluk</string>
     <string name="order_refunds_refund_info_title">Para iadesi yapılan ürünler</string>
-    <string name="order_refunds_detail_item_description">%s (%s x %d)</string>
     <string name="order_refunds_method">%2$s üzerinden %1$s</string>
     <string name="order_refunds_confirmation">Para iadesi yapmak istediğinizden emin misiniz? Bu işlem geri alınamaz.</string>
     <string name="orderdetail_refunded_products">Para iadesi yapılan ürünler</string>
@@ -1430,7 +1427,6 @@ Language: tr
     <string name="order_refunds_select_quantity">Miktar seçin</string>
     <string name="order_refunds_shipping_refund">Gönderim para iadesi</string>
     <string name="order_refunds_products_refund">Ürün para iadesi</string>
-    <string name="order_refunds_item_description">Her biri %s x %s</string>
     <string name="order_refunds_items_selected">%d öge seçildi</string>
     <string name="order_refunds_items_select_none">Hiçbirini seçme</string>
     <string name="order_refunds_items_select_all">Tümünü seç</string>
@@ -1441,7 +1437,6 @@ Language: tr
     <string name="image_source_device_chooser">Cihazdan seç</string>
     <string name="image_source_title">Karşıya yükleme yöntemi seçin</string>
     <string name="product_images_upload_channel_title">Yüklemeler</string>
-    <string name="product_images_uploading_multi_notif_message">Görseller yükleniyor…%d/%d</string>
     <string name="product_images_uploading_single_notif_message">Görsel yükleniyor…</string>
     <string name="product_images_camera_error">Kameraya erişilemedi</string>
     <string name="product_image_remove_confirmation">Bu görseli kaldırmak istediğinizden emin misiniz?</string>
@@ -2162,7 +2157,6 @@ Language: tr
     <string name="login_nostores_content_description">WooCommerce mağazası bulunmuyor</string>
     <string name="login_avatar_content_description">Profil fotoğrafınız</string>
     <string name="login_connected_store">Bağlı mağaza</string>
-    <string name="login_configure_link">%sYapılandırma talimatlarını%s okuyun.</string>
     <string name="login_jetpack_required">Bu uygulama Jetpack\'in mağazanıza bağlanmasını gerektiriyor.</string>
     <string name="at_username">\@%s</string>
     <string name="enter_site_address">Bağlanmak istediğiniz WooCommerce mağazasının adresini girin.</string>

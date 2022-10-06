@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2022-09-20 09:54:23+0000
+Translation-Revision-Date: 2022-09-28 13:59:07+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: zh_TW
@@ -103,7 +103,6 @@ Language: zh_TW
     <string name="support_system_status_report_share_label">分享系統狀態報告</string>
     <string name="support_system_status_report_copy_label">將系統狀態報告複製到剪貼簿</string>
     <string name="card_reader_connect_keep_searching_button">繼續搜尋</string>
-    <string name="card_reader_payment_description_v2">為 %s blog_id %s 的訂單 #%s 親自收款。</string>
     <string name="card_reader_manage_payment_provider">變更付款供應商</string>
     <string name="orderdetail_refunded_line_with_info">已退款：%1$s</string>
     <string name="orderdetail_payment_summary_onhold_plain">正在等待付款</string>
@@ -187,7 +186,6 @@ Language: zh_TW
     <string name="shipping_label_install_wc_shipping_banner_button">下載 WooCommerce Shipping</string>
     <string name="shipping_label_install_wc_shipping_banner_description">從安裝 WooCommerce Shipping 的手機列印標籤。</string>
     <string name="shipping_label_install_wc_shipping_banner_title">需要運送標籤嗎？</string>
-    <string name="order_creation_change_product_quantity">將商品數量從 %d 變更為 %d</string>
     <string name="variations_bulk_update_regular_price">更新原價</string>
     <string name="variations_bulk_update_sale_price">更新折扣價</string>
     <string name="card_reader_onboarding_stripe_unsupported_in_country_header">我們未在 %1$s 支援 WooCommerce Stripe 擴充功能</string>
@@ -320,8 +318,8 @@ Language: zh_TW
     <string name="coupon_list_wip_message_enabled">我們一直努力讓你可以在裝置上查看並編輯優惠券！</string>
     <string name="coupon_list_wip_title">檢視並編輯優惠券</string>
     <string name="coupon_list_empty_heading">找不到折價券</string>
-    <string name="coupon_list_item_label_included_and_excluded">%1s (不包括 %2s)</string>
-    <string name="coupon_list_item_label_products_and_categories">%1s 與 %2s</string>
+    <string name="coupon_list_item_label_included_and_excluded">%1$s (不包括 %2$s)</string>
+    <string name="coupon_list_item_label_products_and_categories">%1$s 與 %2$s</string>
     <string name="coupon_list_item_label_everything">全部</string>
     <string name="coupon_list_item_label_expired">已到期</string>
     <string name="coupon_list_item_label_active">使用中</string>
@@ -1390,7 +1388,6 @@ Language: zh_TW
     <string name="product_width">寬度</string>
     <string name="product_length">長度</string>
     <string name="order_refunds_refund_info_title">已退款的商品</string>
-    <string name="order_refunds_detail_item_description">%s (%s x %d)</string>
     <string name="order_refunds_method">%1$s，付款方式：%2$s</string>
     <string name="order_refunds_confirmation">確定要申請退款？此動作無法復原。</string>
     <string name="orderdetail_refunded_products">已退款的商品</string>
@@ -1430,7 +1427,6 @@ Language: zh_TW
     <string name="order_refunds_select_quantity">選取數量</string>
     <string name="order_refunds_shipping_refund">運費退款</string>
     <string name="order_refunds_products_refund">產品退款</string>
-    <string name="order_refunds_item_description">每個 %s x %s</string>
     <string name="order_refunds_items_selected">已選取 %d 個項目</string>
     <string name="order_refunds_items_select_none">全部不選</string>
     <string name="order_refunds_items_select_all">全部選取</string>
@@ -1441,7 +1437,6 @@ Language: zh_TW
     <string name="image_source_device_chooser">從裝置中選擇</string>
     <string name="image_source_title">選取上傳方式</string>
     <string name="product_images_upload_channel_title">上傳</string>
-    <string name="product_images_uploading_multi_notif_message">正在上傳圖片…已上傳 %d，共 %d</string>
     <string name="product_images_uploading_single_notif_message">正在上傳圖片…</string>
     <string name="product_images_camera_error">無法存取攝影機</string>
     <string name="product_image_remove_confirmation">確定要移除此圖片？</string>
@@ -2162,7 +2157,6 @@ Language: zh_TW
     <string name="login_nostores_content_description">無 WooCommerce 商店</string>
     <string name="login_avatar_content_description">你的個人檔案照片</string>
     <string name="login_connected_store">連結的商店</string>
-    <string name="login_configure_link">閱讀%s設定說明%s。</string>
     <string name="login_jetpack_required">此應用程式需要 Jetpack 才能連結至你的商店。</string>
     <string name="at_username">\@%s</string>
     <string name="enter_site_address">請輸入要連結的 WooCommerce 商店位址。</string>
