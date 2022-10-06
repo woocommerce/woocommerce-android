@@ -160,20 +160,13 @@ class SitePickerFragment : BaseFragment(R.layout.fragment_site_picker), LoginEma
                 is NavigateToEmailHelpDialogEvent -> navigateToNeedHelpFindingEmailScreen()
                 is NavigateToWPComWebView -> navigateToWPComWebView(event)
                 is NavigateToAccountMismatchScreen -> navigateToAccountMismatchScreen(event)
-                is ShowSnackbar -> showSnackbar(event)
+                is ShowSnackbar -> uiMessageResolver.getSnack(stringResId = event.message, stringArgs = event.args)
+                    .show()
                 is ShowDialog -> event.showDialog()
                 is Logout -> onLogout()
                 is Exit -> findNavController().navigateUp()
                 else -> event.isHandled = false
             }
-        }
-    }
-
-    private fun showSnackbar(event: ShowSnackbar) {
-        if (event.args.isNotEmpty()) {
-            uiMessageResolver.getSnack(event.message, *event.args).show()
-        } else {
-            uiMessageResolver.showSnack(event.message)
         }
     }
 
