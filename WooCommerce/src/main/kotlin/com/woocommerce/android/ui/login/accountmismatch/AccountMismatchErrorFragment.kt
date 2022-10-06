@@ -25,6 +25,7 @@ import com.woocommerce.android.ui.login.accountmismatch.AccountMismatchErrorView
 import com.woocommerce.android.ui.login.accountmismatch.AccountMismatchErrorViewModel.OnJetpackConnectedEvent
 import com.woocommerce.android.ui.main.AppBarStatus
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowDialog
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowUiStringSnackbar
 import dagger.hilt.android.AndroidEntryPoint
@@ -86,6 +87,7 @@ class AccountMismatchErrorFragment : BaseFragment(), Listener {
                 is OnJetpackConnectedEvent -> onJetpackConnected(event)
                 is ShowSnackbar -> uiMessageResolver.showSnack(event.message)
                 is ShowUiStringSnackbar -> uiMessageResolver.showSnack(event.message)
+                is ShowDialog -> event.showDialog()
                 is Exit -> findNavController().navigateUp()
             }
         }

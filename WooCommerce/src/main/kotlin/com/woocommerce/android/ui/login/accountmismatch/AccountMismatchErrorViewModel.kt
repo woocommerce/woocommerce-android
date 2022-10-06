@@ -19,6 +19,7 @@ import com.woocommerce.android.ui.login.UnifiedLoginTracker
 import com.woocommerce.android.ui.login.accountmismatch.AccountMismatchRepository.JetpackConnectionStatus
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowDialog
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowUiStringSnackbar
 import com.woocommerce.android.viewmodel.ResourceProvider
@@ -110,14 +111,20 @@ class AccountMismatchErrorViewModel @Inject constructor(
             resourceProvider.getString(R.string.login_jetpack_not_connected, siteUrl)
         },
         primaryButtonText = when (navArgs.primaryButton) {
-            AccountMismatchPrimaryButton.CONNECT_JETPACK -> R.string.login_connect_jetpack_button
-            AccountMismatchPrimaryButton.CONNECT_WPCOM_SITE -> R.string.login_connect_jetpack_button
+            AccountMismatchPrimaryButton.CONNECT_JETPACK -> R.string.login_account_mismatch_connect_jetpack
+            AccountMismatchPrimaryButton.CONNECT_WPCOM_SITE -> R.string.login_account_mismatch_connect_wpcom
             AccountMismatchPrimaryButton.NONE -> null
         },
         primaryButtonAction = {
             when (navArgs.primaryButton) {
                 AccountMismatchPrimaryButton.CONNECT_JETPACK -> startJetpackConnection()
-                AccountMismatchPrimaryButton.CONNECT_WPCOM_SITE -> TODO()
+                AccountMismatchPrimaryButton.CONNECT_WPCOM_SITE -> triggerEvent(
+                    ShowDialog(
+                        titleId = R.string.login_account_mismatch_connect_wpcom_dialog_title,
+                        messageId = R.string.login_account_mismatch_connect_wpcom_dialog_message,
+                        positiveButtonId = R.string.continue_button
+                    )
+                )
                 AccountMismatchPrimaryButton.NONE ->
                     error("NONE as primary button shouldn't trigger the callback")
             }
