@@ -282,7 +282,8 @@ class SitePickerFragment : BaseFragment(R.layout.fragment_site_picker), LoginEma
         findNavController().navigateSafely(
             SitePickerFragmentDirections.actionSitePickerFragmentToAccountMismatchErrorFragment(
                 siteUrl = event.siteUrl,
-                primaryButton = event.primaryButton
+                primaryButton = event.primaryButton,
+                allowBackNavigation = event.hasConnectedStores
             )
         )
     }

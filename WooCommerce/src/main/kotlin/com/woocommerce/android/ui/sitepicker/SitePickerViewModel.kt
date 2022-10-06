@@ -288,7 +288,8 @@ class SitePickerViewModel @Inject constructor(
                     triggerEvent(
                         NavigateToAccountMismatchScreen(
                             primaryButton = primaryButton,
-                            siteUrl = url
+                            siteUrl = url,
+                            hasConnectedStores = sitePickerViewState.hasConnectedStores ?: false
                         )
                     )
                 }
@@ -660,7 +661,8 @@ class SitePickerViewModel @Inject constructor(
         data class NavigateToWPComWebView(val url: String, val validationUrl: String) : SitePickerEvent()
         data class NavigateToAccountMismatchScreen(
             val primaryButton: AccountMismatchPrimaryButton,
-            val siteUrl: String
+            val siteUrl: String,
+            val hasConnectedStores: Boolean
         ) : SitePickerEvent()
     }
 
