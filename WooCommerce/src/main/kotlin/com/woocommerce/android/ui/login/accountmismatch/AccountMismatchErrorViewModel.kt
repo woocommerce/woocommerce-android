@@ -110,16 +110,14 @@ class AccountMismatchErrorViewModel @Inject constructor(
             resourceProvider.getString(R.string.login_jetpack_not_connected, siteUrl)
         },
         primaryButtonText = when (navArgs.primaryButton) {
-            AccountMismatchPrimaryButton.SHOW_SITE_PICKER -> R.string.login_view_connected_stores
-            AccountMismatchPrimaryButton.ENTER_NEW_SITE_ADDRESS -> R.string.login_site_picker_try_another_address
             AccountMismatchPrimaryButton.CONNECT_JETPACK -> R.string.login_connect_jetpack_button
+            AccountMismatchPrimaryButton.CONNECT_WPCOM_SITE -> R.string.login_connect_jetpack_button
             AccountMismatchPrimaryButton.NONE -> null
         },
         primaryButtonAction = {
             when (navArgs.primaryButton) {
-                AccountMismatchPrimaryButton.SHOW_SITE_PICKER -> showConnectedStores()
-                AccountMismatchPrimaryButton.ENTER_NEW_SITE_ADDRESS -> navigateToSiteAddressScreen()
                 AccountMismatchPrimaryButton.CONNECT_JETPACK -> startJetpackConnection()
+                AccountMismatchPrimaryButton.CONNECT_WPCOM_SITE -> TODO()
                 AccountMismatchPrimaryButton.NONE ->
                     error("NONE as primary button shouldn't trigger the callback")
             }
@@ -365,6 +363,6 @@ class AccountMismatchErrorViewModel @Inject constructor(
     }
 
     enum class AccountMismatchPrimaryButton {
-        SHOW_SITE_PICKER, ENTER_NEW_SITE_ADDRESS, CONNECT_JETPACK, NONE
+        CONNECT_JETPACK, CONNECT_WPCOM_SITE, NONE
     }
 }

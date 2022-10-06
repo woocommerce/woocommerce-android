@@ -280,9 +280,8 @@ class SitePickerViewModel @Inject constructor(
         repository.fetchSiteInfo(url).fold(
             onSuccess = {
                 val primaryButton = when {
-                    !it.isWPCom -> AccountMismatchPrimaryButton.CONNECT_JETPACK
-                    sitePickerViewState.hasConnectedStores ?: false -> AccountMismatchPrimaryButton.SHOW_SITE_PICKER
-                    else -> AccountMismatchPrimaryButton.ENTER_NEW_SITE_ADDRESS
+                    it.isWPCom -> AccountMismatchPrimaryButton.CONNECT_WPCOM_SITE
+                    else -> AccountMismatchPrimaryButton.CONNECT_JETPACK
                 }
                 if (event.value !is NavigateToAccountMismatchScreen) {
                     // The check is to avoid triggering the navigation multiple times
