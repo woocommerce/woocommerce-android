@@ -34,12 +34,14 @@ import com.woocommerce.android.viewmodel.ResourceProvider
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.getStateFlow
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.filter
+import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.take
 import kotlinx.coroutines.flow.update
@@ -262,17 +264,17 @@ class MyStoreViewModel @Inject constructor(
         _topPerformersState.value = _topPerformersState.value?.copy(isLoading = false)
     }
 
+    @OptIn(ExperimentalCoroutinesApi::class)
     private fun observeTopPerformerUpdates() {
         viewModelScope.launch {
-            _activeStatsGranularity.collectLatest { granularity ->
+            _activeStatsGranularity.flatMapLatest { granularity ->
                 getTopPerformers.observeTopPerformers(granularity)
-                    .collectLatest {
-                        _topPerformersState.value = TopPerformersState(
-                            isLoading = false,
-                            isError = false,
-                            topPerformers = it.toTopPerformersUiList(),
-                        )
-                    }
+            }.collectLatest {
+                _topPerformersState.value = TopPerformersState(
+                    isLoading = false,
+                    isError = false,
+                    topPerformers = it.toTopPerformersUiList(),
+                )
             }
         }
     }
