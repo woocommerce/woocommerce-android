@@ -1,4 +1,4 @@
-package com.example.iap.internal
+package com.example.iap.internal.core
 
 import com.android.billingclient.api.BillingClient.ProductType
 import com.example.iap.model.IAPProductType

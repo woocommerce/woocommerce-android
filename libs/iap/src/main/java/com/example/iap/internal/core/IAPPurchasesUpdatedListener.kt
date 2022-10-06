@@ -1,4 +1,4 @@
-package com.example.iap.internal
+package com.example.iap.internal.core
 
 import com.android.billingclient.api.BillingResult
 import com.android.billingclient.api.Purchase
@@ -21,7 +21,7 @@ internal class IAPPurchasesUpdatedListener(
         val debugMessage = billingResult.debugMessage
         logWrapper.d(IAP_LOG_TAG, "onPurchasesUpdated: $responseCode $debugMessage")
         purchaseContinuation?.resume(
-            iapOutMapper.mapPurchaseResponseToIAPPurchaseResponse(
+            iapOutMapper.mapPurchaseResultToIAPPurchaseResponse(
                 billingResult,
                 purchases
             )

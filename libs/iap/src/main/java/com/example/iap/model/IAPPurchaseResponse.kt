@@ -7,7 +7,7 @@ sealed class IAPPurchaseResponse {
 
 data class IAPPurchase(
     val orderId: String,
-    val products: List<String>,
+    val products: List<Product>,
     val isAcknowledged: Boolean,
     val isAutoRenewing: Boolean,
     val state: State,
@@ -18,4 +18,11 @@ data class IAPPurchase(
     enum class State {
         UNSPECIFIED_STATE, PURCHASED, PENDING
     }
+
+    data class Product(
+        val name: String,
+        val id: String,
+        val price: Long,
+        val currency: String,
+    )
 }

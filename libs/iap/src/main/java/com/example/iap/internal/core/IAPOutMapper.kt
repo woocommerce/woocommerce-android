@@ -1,4 +1,4 @@
-package com.example.iap.internal
+package com.example.iap.internal.core
 
 import com.android.billingclient.api.BillingClient.BillingResponseCode.BILLING_UNAVAILABLE
 import com.android.billingclient.api.BillingClient.BillingResponseCode.DEVELOPER_ERROR
@@ -13,6 +13,7 @@ import com.android.billingclient.api.BillingClient.BillingResponseCode.SERVICE_U
 import com.android.billingclient.api.BillingClient.BillingResponseCode.USER_CANCELED
 import com.android.billingclient.api.BillingResult
 import com.android.billingclient.api.ProductDetails
+import com.android.billingclient.api.ProductDetailsResult
 import com.android.billingclient.api.Purchase
 import com.android.billingclient.api.Purchase.PurchaseState
 import com.example.iap.internal.model.IAPProductDetailsResponse
@@ -21,26 +22,41 @@ import com.example.iap.model.IAPPurchase
 import com.example.iap.model.IAPPurchase.State
 import com.example.iap.model.IAPPurchase.State.PENDING
 import com.example.iap.model.IAPPurchase.State.PURCHASED
-import com.example.iap.model.IAPPurchaseResponse
 
 internal class IAPOutMapper {
-    fun mapPurchaseResponseToIAPPurchaseResponse(
-        billingResult: BillingResult,
-        purchases: List<Purchase>?,
-    ) = when (billingResult.responseCode) {
-        OK -> IAPPurchaseResponse.Success(purchases?.map { mapPurchaseToIAPPurchase(it) })
-        else -> IAPPurchaseResponse.Error(mapBillingResultErrorToBillingResultType(billingResult))
-    }
+    fun mapProductDetailsResultToIAPProductDetailsResponse(productDetailsResult: ProductDetailsResult) =
+        when (productDetailsResult.billingResult.responseCode) {
+            OK -> IAPProductDetailsResponse.Success(productDetailsResult.productDetailsList)
+            else -> IAPProductDetailsResponse.Error(
+                mapBillingResultErrorToBillingResultType(
+                    productDetailsResult.billingResult
+                )
+            )
+        }
 
-    fun mapProductDetailsResponseToIAPProductDetailsResponse(
-        billingResult: BillingResult,
-        productDetails: ProductDetails,
-    ) = when (billingResult.responseCode) {
-        OK -> IAPProductDetailsResponse.Success(productDetails)
-        else -> IAPProductDetailsResponse.Error(mapBillingResultErrorToBillingResultType(billingResult))
-    }
+    fun mapPurchaseWithProductDetailsToIAPPurchase(
+        purchase: Purchase,
+        productDetails: List<ProductDetails>
+    ) = IAPPurchase(
+        orderId = purchase.orderId,
+        products = productDetails.map { mapProductDetailsToIAPProduct(it) },
+        isAcknowledged = purchase.isAcknowledged,
+        isAutoRenewing = purchase.isAutoRenewing,
+        state = mapPurchaseStateToIAPPurchaseState(purchase.purchaseState),
+        developerPayload = purchase.developerPayload,
+        purchaseToken = purchase.purchaseToken,
+        signature = purchase.signature
+    )
 
-    private fun mapBillingResultErrorToBillingResultType(billingResult: BillingResult) =
+    private fun mapProductDetailsToIAPProduct(productDetails: ProductDetails) =
+        IAPPurchase.Product(
+            id = productDetails.productId,
+            name = productDetails.name,
+            price = productDetails.getPriceOfTheFirstPurchasedOfferInMicros,
+            currency = productDetails.getCurrencyOfTheFirstPurchasedOffer
+        )
+
+    fun mapBillingResultErrorToBillingResultType(billingResult: BillingResult) =
         when (billingResult.responseCode) {
             USER_CANCELED -> BillingErrorType.UserCancelled(billingResult.debugMessage)
             ITEM_ALREADY_OWNED -> BillingErrorType.ItemAlreadyOwned(billingResult.debugMessage)
@@ -56,18 +72,6 @@ internal class IAPOutMapper {
                 BillingErrorType.Unknown(billingResult.debugMessage)
             }
         }
-
-    private fun mapPurchaseToIAPPurchase(purchase: Purchase) =
-        IAPPurchase(
-            orderId = purchase.orderId,
-            products = purchase.products,
-            isAcknowledged = purchase.isAcknowledged,
-            isAutoRenewing = purchase.isAutoRenewing,
-            state = mapPurchaseStateToIAPPurchaseState(purchase.purchaseState),
-            developerPayload = purchase.developerPayload,
-            purchaseToken = purchase.purchaseToken,
-            signature = purchase.signature
-        )
 
     private fun mapPurchaseStateToIAPPurchaseState(@PurchaseState purchaseState: Int) =
         when (purchaseState) {

@@ -1,4 +1,4 @@
-package com.example.iap.internal
+package com.example.iap.internal.core
 
 import android.app.Activity
 import androidx.lifecycle.DefaultLifecycleObserver

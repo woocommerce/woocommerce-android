@@ -1,4 +1,4 @@
-package com.example.iap.internal
+package com.example.iap.internal.core
 
 import androidx.appcompat.app.AppCompatActivity
 import com.example.iap.LogWrapper
