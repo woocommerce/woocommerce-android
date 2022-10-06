@@ -18,6 +18,7 @@ import com.woocommerce.android.ui.login.AccountRepository
 import com.woocommerce.android.ui.login.UnifiedLoginTracker
 import com.woocommerce.android.ui.login.accountmismatch.AccountMismatchRepository.JetpackConnectionStatus
 import com.woocommerce.android.viewmodel.MultiLiveEvent
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowDialog
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowUiStringSnackbar
@@ -132,7 +133,13 @@ class AccountMismatchErrorViewModel @Inject constructor(
         secondaryButtonAction = { loginWithDifferentAccount() },
         inlineButtonText = if (accountRepository.isUserLoggedIn()) R.string.login_need_help_finding_email
         else null,
-        inlineButtonAction = { helpFindingEmail() }
+        inlineButtonAction = { helpFindingEmail() },
+        showNavigationIcon = navArgs.allowBackNavigation,
+        onBackPressed = {
+            if (navArgs.allowBackNavigation) {
+                triggerEvent(Exit)
+            }
+        }
     )
 
     private fun prepareSiteCredentialsState(stepData: Step.SiteCredentials) = ViewState.SiteCredentialsViewState(
@@ -185,14 +192,14 @@ class AccountMismatchErrorViewModel @Inject constructor(
                 )
             }
         },
-        onCancel = { step.value = Step.MainContent },
+        onBackPressed = { step.value = Step.MainContent },
         onLoginWithAnotherAccountClick = ::loginWithDifferentAccount
     )
 
     private fun prepareJetpackConnectionState(connectionUrl: String) = ViewState.JetpackWebViewState(
         connectionUrl = connectionUrl,
         successConnectionUrls = listOf(siteUrl, JETPACK_PLANS_URL),
-        onDismiss = {
+        onBackPressed = {
             analyticsTrackerWrapper.track(AnalyticsEvent.LOGIN_JETPACK_CONNECT_DISMISSED)
             step.value = Step.MainContent
         },
@@ -291,6 +298,11 @@ class AccountMismatchErrorViewModel @Inject constructor(
     }
 
     sealed interface ViewState {
+        val showNavigationIcon: Boolean
+            get() = false
+        val onBackPressed: () -> Unit
+            get() = {}
+
         data class MainState(
             val userInfo: UserInfo?,
             val message: String,
@@ -299,7 +311,9 @@ class AccountMismatchErrorViewModel @Inject constructor(
             @StringRes val secondaryButtonText: Int,
             val secondaryButtonAction: () -> Unit,
             @StringRes val inlineButtonText: Int?,
-            val inlineButtonAction: () -> Unit
+            val inlineButtonAction: () -> Unit,
+            override val showNavigationIcon: Boolean,
+            override val onBackPressed: () -> Unit
         ) : ViewState
 
         data class SiteCredentialsViewState(
@@ -311,17 +325,20 @@ class AccountMismatchErrorViewModel @Inject constructor(
             val onPasswordChanged: (String) -> Unit,
             val onContinueClick: () -> Unit,
             val onLoginWithAnotherAccountClick: () -> Unit,
-            val onCancel: () -> Unit
+            override val onBackPressed: () -> Unit
         ) : ViewState {
             val isValid = username.isNotBlank() && password.isNotBlank()
+            override val showNavigationIcon: Boolean = true
         }
 
         data class JetpackWebViewState(
             val connectionUrl: String,
             val successConnectionUrls: List<String>,
-            val onDismiss: () -> Unit,
-            val onConnected: () -> Unit
-        ) : ViewState
+            val onConnected: () -> Unit,
+            override val onBackPressed: () -> Unit
+        ) : ViewState {
+            override val showNavigationIcon: Boolean = true
+        }
 
         object FetchingJetpackEmailViewState : ViewState
         data class JetpackEmailErrorState(val retry: () -> Unit) : ViewState

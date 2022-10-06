@@ -88,8 +88,16 @@ class AccountMismatchErrorFragment : BaseFragment(), Listener {
                 is ShowSnackbar -> uiMessageResolver.showSnack(event.message)
                 is ShowUiStringSnackbar -> uiMessageResolver.showSnack(event.message)
                 is ShowDialog -> event.showDialog()
-                is Exit -> findNavController().navigateUp()
+                is Exit -> navigateBack()
             }
+        }
+    }
+
+    private fun navigateBack() {
+        if (requireActivity() is LoginActivity) {
+            parentFragmentManager.popBackStack()
+        } else {
+            findNavController().navigateUp()
         }
     }
 
