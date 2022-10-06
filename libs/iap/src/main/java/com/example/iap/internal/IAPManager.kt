@@ -10,6 +10,7 @@ import com.android.billingclient.api.queryPurchasesAsync
 import com.example.iap.internal.model.IAPProductDetailsResponse
 import com.example.iap.internal.model.IAPProductDetailsResponse.Error
 import com.example.iap.internal.model.IAPProductDetailsResponse.Success
+import com.example.iap.model.BillingErrorType
 import com.example.iap.model.BillingErrorType.ServiceDisconnected
 import com.example.iap.model.IAPProduct
 import com.example.iap.model.IAPProductType
@@ -59,26 +60,33 @@ internal class IAPManager(
         }
     }
 
-    private suspend fun queryProductDetails(iapProductType: IAPProduct) =
+    private suspend fun queryProductDetails(iapProduct: IAPProduct) =
         withContext(Dispatchers.IO) {
             suspendCoroutine<IAPProductDetailsResponse> { cont ->
                 val params = QueryProductDetailsParams.newBuilder()
                     .setProductList(
                         listOf(
                             QueryProductDetailsParams.Product.newBuilder()
-                                .setProductId(iapProductType.value)
-                                .setProductType(iapInMapper.mapProductTypeToIAPProductType(iapProductType.productType))
+                                .setProductId(iapProduct.value)
+                                .setProductType(iapInMapper.mapProductTypeToIAPProductType(iapProduct.productType))
                                 .build()
                         )
                     ).build()
-                billingClient.queryProductDetailsAsync(params)
-                { billingResult, productDetails ->
-                    cont.resume(
-                        iapOutMapper.mapProductDetailsResponseToIAPProductDetailsResponse(
-                            billingResult,
-                            productDetails
+                billingClient.queryProductDetailsAsync(params) { billingResult, productDetails ->
+                    if (productDetails.isEmpty()) {
+                        cont.resume(
+                            Error(
+                                BillingErrorType.ItemUnavailable("Item $iapProduct not found")
+                            )
                         )
-                    )
+                    } else {
+                        cont.resume(
+                            iapOutMapper.mapProductDetailsResponseToIAPProductDetailsResponse(
+                                billingResult,
+                                productDetails.first()
+                            )
+                        )
+                    }
                 }
             }
         }

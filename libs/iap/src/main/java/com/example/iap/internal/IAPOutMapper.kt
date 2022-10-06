@@ -34,7 +34,7 @@ internal class IAPOutMapper {
 
     fun mapProductDetailsResponseToIAPProductDetailsResponse(
         billingResult: BillingResult,
-        productDetails: List<ProductDetails>,
+        productDetails: ProductDetails,
     ) = when (billingResult.responseCode) {
         OK -> IAPProductDetailsResponse.Success(productDetails)
         else -> IAPProductDetailsResponse.Error(mapBillingResultErrorToBillingResultType(billingResult))
