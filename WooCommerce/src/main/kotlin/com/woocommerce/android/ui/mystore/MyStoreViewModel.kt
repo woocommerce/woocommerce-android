@@ -250,7 +250,7 @@ class MyStoreViewModel @Inject constructor(
             refreshTopPerformerStats[granularity.ordinal] = false
         }
 
-        _topPerformersState.value = _topPerformersState.value?.copy(isLoading = true)
+        _topPerformersState.value = _topPerformersState.value?.copy(isLoading = true, isError = false)
         val result = getTopPerformers.fetchTopPerformers(granularity, forceRefresh)
         result.fold(
             onFailure = { _topPerformersState.value = _topPerformersState.value?.copy(isError = true) },
