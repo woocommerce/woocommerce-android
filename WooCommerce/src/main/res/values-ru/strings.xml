@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2022-09-19 16:54:03+0000
+Translation-Revision-Date: 2022-10-02 19:36:45+0000
 Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);
 Generator: GlotPress/2.4.0-alpha
 Language: ru
@@ -103,7 +103,7 @@ Language: ru
     <string name="support_system_status_report_share_label">Отправить отчёт о состоянии системы</string>
     <string name="support_system_status_report_copy_label">Копировать отчёт о состоянии системы в буфер обмена</string>
     <string name="card_reader_connect_keep_searching_button">Продолжить поиск</string>
-    <string name="card_reader_payment_description_v2">Оплата при получении, заказ № %s для %s blog_id %s.</string>
+    <string name="card_reader_payment_description_v2">Оплата при получении, заказ № %1$s для %2$s blog_id %3$s.</string>
     <string name="card_reader_manage_payment_provider">Изменение платёжного сервиса</string>
     <string name="orderdetail_refunded_line_with_info">Возвращенные средства: %1$s</string>
     <string name="orderdetail_payment_summary_onhold_plain">Ожидание платежа</string>
@@ -187,7 +187,7 @@ Language: ru
     <string name="shipping_label_install_wc_shipping_banner_button">Установить WooCommerce Shipping</string>
     <string name="shipping_label_install_wc_shipping_banner_description">Печатайте транспортные этикетки с телефона, используя WooCommerce Shipping.</string>
     <string name="shipping_label_install_wc_shipping_banner_title">Нужна транспортная этикетка?</string>
-    <string name="order_creation_change_product_quantity">Измените количество товара с %d на %d</string>
+    <string name="order_creation_change_product_quantity">Измените количество товара с %1$d на %2$d</string>
     <string name="variations_bulk_update_regular_price">Обновить обычную цену</string>
     <string name="variations_bulk_update_sale_price">Обновить акционную цену</string>
     <string name="card_reader_onboarding_stripe_unsupported_in_country_header">Расширение WooCommerce Stripe не поддерживается в %1$s</string>
@@ -320,8 +320,8 @@ Language: ru
     <string name="coupon_list_wip_message_enabled">Мы разработали функцию, которая позволяет просматривать и редактировать купоны на вашем устройстве.</string>
     <string name="coupon_list_wip_title">Просмотр и редактирование купонов</string>
     <string name="coupon_list_empty_heading">Купоны не найдены</string>
-    <string name="coupon_list_item_label_included_and_excluded">%1s без учёта %2s</string>
-    <string name="coupon_list_item_label_products_and_categories">%1s и %2s</string>
+    <string name="coupon_list_item_label_included_and_excluded">%1$s без учёта %2$s</string>
+    <string name="coupon_list_item_label_products_and_categories">%1$s и %2$s</string>
     <string name="coupon_list_item_label_everything">всё</string>
     <string name="coupon_list_item_label_expired">Просрочен</string>
     <string name="coupon_list_item_label_active">Активный</string>
@@ -1390,7 +1390,7 @@ Language: ru
     <string name="product_width">Ширина</string>
     <string name="product_length">Длина</string>
     <string name="order_refunds_refund_info_title">Продукты, по которым возвращены средства</string>
-    <string name="order_refunds_detail_item_description">%s (%s x %d)</string>
+    <string name="order_refunds_detail_item_description">%1$s (%2$s x %3$d)</string>
     <string name="order_refunds_method">%1$s с помощью %2$s</string>
     <string name="order_refunds_confirmation">Вы уверены, что хотите вернуть деньги? Это действие нельзя отменить.</string>
     <string name="orderdetail_refunded_products">Продукты, по которым возвращены средства</string>
@@ -1430,7 +1430,7 @@ Language: ru
     <string name="order_refunds_select_quantity">Выбрать количество</string>
     <string name="order_refunds_shipping_refund">Возврат средств за доставку</string>
     <string name="order_refunds_products_refund">Возврат средств за продукты</string>
-    <string name="order_refunds_item_description">%s x %s каждый</string>
+    <string name="order_refunds_item_description">%1$s x %2$s каждый</string>
     <string name="order_refunds_items_selected">Выбрано элементов: %d</string>
     <string name="order_refunds_items_select_none">Ничего не выбирать</string>
     <string name="order_refunds_items_select_all">Выбрать все</string>
@@ -1441,7 +1441,7 @@ Language: ru
     <string name="image_source_device_chooser">Выбрать с устройства</string>
     <string name="image_source_title">Выберите способ загрузки</string>
     <string name="product_images_upload_channel_title">Загрузки</string>
-    <string name="product_images_uploading_multi_notif_message">Загрузка изображений…%d из %d</string>
+    <string name="product_images_uploading_multi_notif_message">Загрузка изображений…%1$d из %2$d</string>
     <string name="product_images_uploading_single_notif_message">Загрузка изображения…</string>
     <string name="product_images_camera_error">Нет доступа к камере</string>
     <string name="product_image_remove_confirmation">Вы уверены, что хотите удалить это изображение?</string>
@@ -2162,7 +2162,7 @@ Language: ru
     <string name="login_nostores_content_description">Нет магазинов WooCommerce</string>
     <string name="login_avatar_content_description">Фотография в вашем профиле</string>
     <string name="login_connected_store">Подключенный магазин</string>
-    <string name="login_configure_link">Ознакомьтесь с %sинструкциями по настройке%s.</string>
+    <string name="login_configure_link">Ознакомьтесь с %1$sинструкциями по настройке%2$s.</string>
     <string name="login_jetpack_required">Для подключения к вашему магазину этому приложению требуется Jetpack.</string>
     <string name="at_username">\@%s</string>
     <string name="enter_site_address">Введите адрес магазина WooCommerce, к которому требуется подключиться.</string>

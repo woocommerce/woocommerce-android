@@ -46,6 +46,7 @@
                 android:layout_height="wrap_content"
                 android:text="@string/login_continue" />
 
+            <!-- this button is intentionally hidden until the password screen is shown -->
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/bottom_button_magic_link"
                 style="@style/Widget.LoginFlow.Button.Secondary"

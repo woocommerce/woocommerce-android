@@ -17,7 +17,6 @@ import androidx.activity.viewModels
 import androidx.annotation.StringRes
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.appcompat.widget.Toolbar
-import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.core.content.ContextCompat
 import androidx.core.view.isVisible
@@ -64,6 +63,7 @@ import com.woocommerce.android.ui.main.BottomNavigationPosition.PRODUCTS
 import com.woocommerce.android.ui.main.MainActivityViewModel.MoreMenuBadgeState.Hidden
 import com.woocommerce.android.ui.main.MainActivityViewModel.MoreMenuBadgeState.NewFeature
 import com.woocommerce.android.ui.main.MainActivityViewModel.MoreMenuBadgeState.UnseenReviews
+import com.woocommerce.android.ui.main.MainActivityViewModel.RestartActivityForAppLink
 import com.woocommerce.android.ui.main.MainActivityViewModel.RestartActivityForNotification
 import com.woocommerce.android.ui.main.MainActivityViewModel.ShowFeatureAnnouncement
 import com.woocommerce.android.ui.main.MainActivityViewModel.ViewMyStoreStats
@@ -284,6 +284,8 @@ class MainActivity :
         if (!BuildConfig.DEBUG) {
             checkForAppUpdates()
         }
+
+        viewModel.handleIncomingAppLink(intent?.data)
     }
 
     override fun hideProgressDialog() {
@@ -325,6 +327,8 @@ class MainActivity :
 
         setIntent(intent)
         initFragment(null)
+
+        viewModel.handleIncomingAppLink(intent?.data)
     }
 
     public override fun onDestroy() {
@@ -695,6 +699,7 @@ class MainActivity :
                     startActivity(HelpActivity.createIntent(this, Origin.ZENDESK_NOTIFICATION, null))
                 }
                 is ViewOrderDetail -> {
+                    intent.data = null
                     showOrderDetail(
                         orderId = event.uniqueId,
                         remoteNoteId = event.remoteNoteId,
@@ -710,6 +715,10 @@ class MainActivity :
                     intent.putExtra(FIELD_OPENED_FROM_PUSH, true)
                     intent.putExtra(FIELD_REMOTE_NOTIFICATION, event.notification)
                     intent.putExtra(FIELD_PUSH_ID, event.pushId)
+                    restart()
+                }
+                is RestartActivityForAppLink -> {
+                    intent.data = event.data
                     restart()
                 }
                 is ShowFeatureAnnouncement -> {
@@ -820,7 +829,6 @@ class MainActivity :
         navController.navigateSafely(action)
     }
 
-    @OptIn(ExperimentalFoundationApi::class)
     override fun showMoreMenu() {
         binding.bottomNav.currentPosition = MORE
         binding.bottomNav.active(MORE.position)
