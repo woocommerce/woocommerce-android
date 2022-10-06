@@ -5,6 +5,9 @@ import android.content.res.Configuration
 import android.webkit.WebChromeClient
 import android.webkit.WebView
 import android.webkit.WebViewClient
+import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.ExperimentalAnimationApi
+import androidx.compose.animation.core.updateTransition
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -18,6 +21,8 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.Icon
@@ -46,6 +51,7 @@ import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -56,10 +62,13 @@ import com.woocommerce.android.R
 import com.woocommerce.android.ui.compose.component.ProgressDialog
 import com.woocommerce.android.ui.compose.component.WCColoredButton
 import com.woocommerce.android.ui.compose.component.WCOutlinedButton
+import com.woocommerce.android.ui.compose.component.WCOutlinedTextField
+import com.woocommerce.android.ui.compose.component.WCPasswordField
 import com.woocommerce.android.ui.compose.component.WCTextButton
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.ui.login.accountmismatch.AccountMismatchErrorViewModel.ViewState
 
+@OptIn(ExperimentalAnimationApi::class)
 @Composable
 fun AccountMismatchErrorScreen(viewModel: AccountMismatchErrorViewModel) {
     viewModel.viewState.observeAsState().value?.let { viewState ->
@@ -85,27 +94,87 @@ fun AccountMismatchErrorScreen(viewModel: AccountMismatchErrorViewModel) {
                 elevation = 0.dp
             )
         }) { paddingValues ->
-            when (viewState) {
-                is ViewState.MainState -> AccountMismatchErrorScreen(
-                    viewState = viewState,
-                    modifier = Modifier.padding(paddingValues)
-                )
-                is ViewState.JetpackWebViewState -> JetpackConnectionWebView(
-                    viewState = viewState,
-                    modifier = Modifier.padding(paddingValues)
-                )
-                ViewState.FetchingJetpackEmailViewState -> FetchJetpackEmailScreen(
-                    modifier = Modifier.padding(paddingValues)
-                )
-                is ViewState.JetpackEmailErrorState -> JetpackEmailErrorScreen(
-                    modifier = Modifier.padding(paddingValues),
-                    retry = viewState.retry
-                )
+            val transition = updateTransition(targetState = viewState, label = "state")
+            transition.AnimatedContent(
+                contentKey = { viewState::class.java }
+            ) { targetState ->
+                when (targetState) {
+                    is ViewState.MainState -> AccountMismatchErrorScreen(
+                        viewState = targetState,
+                        modifier = Modifier.padding(paddingValues)
+                    )
+                    is ViewState.JetpackWebViewState -> JetpackConnectionWebView(
+                        viewState = targetState,
+                        modifier = Modifier.padding(paddingValues)
+                    )
+                    ViewState.FetchingJetpackEmailViewState -> FetchJetpackEmailScreen(
+                        modifier = Modifier.padding(paddingValues)
+                    )
+                    is ViewState.JetpackEmailErrorState -> JetpackEmailErrorScreen(
+                        modifier = Modifier.padding(paddingValues),
+                        retry = targetState.retry
+                    )
+                    is ViewState.SiteCredentialsViewState -> SiteCredentialsScreen(
+                        viewState = targetState,
+                        modifier = Modifier.padding(paddingValues)
+                    )
+                }
             }
         }
     }
     viewModel.loadingDialogMessage.observeAsState().value?.let {
         ProgressDialog(title = "", subtitle = stringResource(id = it))
+    }
+}
+
+@Composable
+private fun SiteCredentialsScreen(
+    viewState: ViewState.SiteCredentialsViewState,
+    modifier: Modifier
+) {
+    Column(
+        modifier = modifier
+            .background(MaterialTheme.colors.surface)
+            .fillMaxSize()
+            .padding(dimensionResource(id = R.dimen.major_100)),
+        verticalArrangement = Arrangement.spacedBy(dimensionResource(id = R.dimen.major_100)),
+    ) {
+        Column(
+            modifier = Modifier
+                .weight(1f)
+                .fillMaxWidth(),
+        ) {
+            Text(text = stringResource(id = R.string.enter_credentials_for_site, viewState.siteUrl))
+            Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.major_100)))
+            WCOutlinedTextField(
+                value = viewState.username,
+                onValueChange = viewState.onUsernameChanged,
+                label = stringResource(id = R.string.username),
+                isError = viewState.errorMessage != null,
+                singleLine = true,
+                keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next)
+            )
+            WCPasswordField(
+                value = viewState.password,
+                onValueChange = viewState.onPasswordChanged,
+                label = stringResource(id = R.string.password),
+                isError = viewState.errorMessage != null,
+                helperText = viewState.errorMessage?.let { stringResource(id = it) },
+                keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
+                keyboardActions = KeyboardActions(
+                    onDone = { viewState.onContinueClick() }
+                )
+            )
+        }
+
+        ButtonBar(
+            primaryButtonText = stringResource(id = R.string.continue_button),
+            primaryButtonClick = viewState.onContinueClick,
+            isPrimaryButtonEnabled = viewState.isValid,
+            secondaryButtonText = stringResource(id = R.string.login_try_another_account),
+            secondaryButtonClick = viewState.onLoginWithAnotherAccountClick,
+            modifier = Modifier.fillMaxWidth()
+        )
     }
 }
 
@@ -208,12 +277,13 @@ private fun ButtonBar(
     primaryButtonClick: () -> Unit,
     secondaryButtonText: String,
     secondaryButtonClick: () -> Unit,
-    modifier: Modifier
+    modifier: Modifier = Modifier,
+    isPrimaryButtonEnabled: Boolean = true,
 ) {
     @Composable
     fun Buttons(modifier: Modifier) {
         primaryButtonText?.let {
-            WCColoredButton(onClick = primaryButtonClick, modifier = modifier) {
+            WCColoredButton(onClick = primaryButtonClick, enabled = isPrimaryButtonEnabled, modifier = modifier) {
                 Text(text = primaryButtonText)
             }
         }

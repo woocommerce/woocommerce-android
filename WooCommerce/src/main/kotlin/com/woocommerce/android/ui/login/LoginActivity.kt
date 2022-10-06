@@ -118,6 +118,9 @@ class LoginActivity :
         private const val KEY_LOGIN_HELP_NOTIFICATION = "KEY_LOGIN_HELP_NOTIFICATION"
         private const val KEY_CONNECT_SITE_INFO = "KEY_CONNECT_SITE_INFO"
 
+        const val LOGIN_WITH_WPCOM_EMAIL_ACTION = "login_with_wpcom_email"
+        const val EMAIL_PARAMETER = "email"
+
         fun createIntent(
             context: Context,
             notificationType: LoginHelpNotificationType,
@@ -171,20 +174,29 @@ class LoginActivity :
         setContentView(binding.root)
         val loginHelpNotification = getLoginHelpNotification()
 
-        if (hasJetpackConnectedIntent()) {
-            AnalyticsTracker.track(
-                stat = AnalyticsEvent.LOGIN_JETPACK_SETUP_COMPLETED,
-                properties = mapOf(KEY_SOURCE to VALUE_JETPACK_INSTALLATION_SOURCE_WEB)
-            )
-            startLoginViaWPCom()
-        } else if (hasMagicLinkLoginIntent()) {
-            getAuthTokenFromIntent()?.let { showMagicLinkInterceptFragment(it) }
-        } else if (!loginHelpNotification.isNullOrBlank()) {
-            processLoginHelpNotification(loginHelpNotification)
-        } else if (savedInstanceState == null) {
-            loginAnalyticsListener.trackLoginAccessed()
+        when {
+            intent?.action == LOGIN_WITH_WPCOM_EMAIL_ACTION -> {
+                val email = intent.extras!!.getString(EMAIL_PARAMETER)
+                gotWpcomEmail(email, verifyEmail = true, null)
+            }
+            hasJetpackConnectedIntent() -> {
+                AnalyticsTracker.track(
+                    stat = AnalyticsEvent.LOGIN_JETPACK_SETUP_COMPLETED,
+                    properties = mapOf(KEY_SOURCE to VALUE_JETPACK_INSTALLATION_SOURCE_WEB)
+                )
+                startLoginViaWPCom()
+            }
+            hasMagicLinkLoginIntent() -> {
+                getAuthTokenFromIntent()?.let { showMagicLinkInterceptFragment(it) }
+            }
+            !loginHelpNotification.isNullOrBlank() -> {
+                processLoginHelpNotification(loginHelpNotification)
+            }
+            savedInstanceState == null -> {
+                loginAnalyticsListener.trackLoginAccessed()
 
-            showPrologue()
+                showPrologue()
+            }
         }
 
         savedInstanceState?.let { ss ->
