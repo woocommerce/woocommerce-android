@@ -267,15 +267,13 @@ class MyStoreViewModel @Inject constructor(
     @OptIn(ExperimentalCoroutinesApi::class)
     private fun observeTopPerformerUpdates() {
         viewModelScope.launch {
-            _activeStatsGranularity.flatMapLatest { granularity ->
-                getTopPerformers.observeTopPerformers(granularity)
-            }.collectLatest {
-                _topPerformersState.value = TopPerformersState(
-                    isLoading = false,
-                    isError = false,
-                    topPerformers = it.toTopPerformersUiList(),
-                )
-            }
+            _activeStatsGranularity
+                .flatMapLatest { granularity -> getTopPerformers.observeTopPerformers(granularity) }
+                .collectLatest {
+                    _topPerformersState.value = _topPerformersState.value?.copy(
+                        topPerformers = it.toTopPerformersUiList(),
+                    )
+                }
         }
     }
 
