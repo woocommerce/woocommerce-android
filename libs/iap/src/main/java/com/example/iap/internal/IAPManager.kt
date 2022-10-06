@@ -3,6 +3,7 @@ package com.example.iap.internal
 import androidx.appcompat.app.AppCompatActivity
 import com.android.billingclient.api.BillingClient
 import com.android.billingclient.api.BillingFlowParams
+import com.android.billingclient.api.BillingFlowParams.ProductDetailsParams
 import com.android.billingclient.api.QueryProductDetailsParams
 import com.android.billingclient.api.QueryPurchasesParams
 import com.android.billingclient.api.queryPurchasesAsync
@@ -14,7 +15,6 @@ import com.example.iap.model.IAPProduct
 import com.example.iap.model.IAPProductType
 import com.example.iap.model.IAPPurchaseResponse
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.withContext
 import kotlin.coroutines.resume
 import kotlin.coroutines.suspendCoroutine
@@ -24,7 +24,7 @@ internal class IAPManager(
     private val iapLifecycleObserver: IAPLifecycleObserver,
     private val iapOutMapper: IAPOutMapper,
     private val iapInMapper: IAPInMapper,
-    private val iapPurchasesFlow: Flow<IAPPurchaseResponse>,
+    private val iapPurchasesUpdatedListener: IAPPurchasesUpdatedListener,
 ) {
     private val billingClient: BillingClient
         get() = iapLifecycleObserver.billingClient
@@ -51,18 +51,9 @@ internal class IAPManager(
 
         return when (val iapProductDetailsResponse = queryProductDetails(iapProductType)) {
             is Success -> {
-                val productDetailsParams = BillingFlowParams.ProductDetailsParams.newBuilder()
-                    .setProductDetails(iapProductDetailsResponse.productDetails)
-                    .build()
-                val flowParams = BillingFlowParams.newBuilder()
-                    .setProductDetailsParamsList(listOf(productDetailsParams))
-                    .build()
+                val flowParams = buildBillingFlowParams(iapProductDetailsResponse)
                 billingClient.launchBillingFlow(activity, flowParams)
-                withContext(Dispatchers.IO) {
-                    iapPurchasesFlow.collect {
-                        return@collect it
-                    }
-                }
+                suspendCoroutine { iapPurchasesUpdatedListener.waitTillNextPurchaseEvent(it) }
             }
             is Error -> IAPPurchaseResponse.Error(iapProductDetailsResponse.errorType)
         }
@@ -91,4 +82,13 @@ internal class IAPManager(
                 }
             }
         }
+
+    private fun buildBillingFlowParams(iapProductDetailsResponse: Success): BillingFlowParams {
+        val productDetailsParams = ProductDetailsParams.newBuilder()
+            .setProductDetails(iapProductDetailsResponse.productDetails)
+            .build()
+        return BillingFlowParams.newBuilder()
+            .setProductDetailsParamsList(listOf(productDetailsParams))
+            .build()
+    }
 }
