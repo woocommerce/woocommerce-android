@@ -268,7 +268,7 @@ class SitePickerViewModel @Inject constructor(
      * in with.
      */
     private fun showAccountMismatchScreen(url: String) = launch {
-        sitePickerViewState = sitePickerViewState.copy(isSkeletonViewVisible = true)
+        sitePickerViewState = sitePickerViewState.copy(isSkeletonViewVisible = true, isPrimaryBtnVisible = false)
         analyticsTrackerWrapper.track(
             AnalyticsEvent.SITE_PICKER_AUTO_LOGIN_ERROR_NOT_CONNECTED_TO_USER,
             mapOf(
