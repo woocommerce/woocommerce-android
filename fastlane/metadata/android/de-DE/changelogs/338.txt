@@ -1,0 +1,2 @@
+10.6:
+In dieser Version haben wir einige Dinge verbessert und kleinere Bugs behoben, die unser Team gefunden hat. Aber das ist noch lange nicht alles – wir arbeiten an ein paar tollen Neuerungen, wie z. B. der Autofill-Funktion zur vereinfachten Anmeldung in der App! Sendet uns weiterhin Feedback! So finden wir heraus, was wir als Nächstes optimieren können. 💜
