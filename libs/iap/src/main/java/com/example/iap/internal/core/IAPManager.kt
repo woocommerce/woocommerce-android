@@ -102,19 +102,20 @@ internal class IAPManager(
             purchasesProductDetailsResponses.map {
                 iapOutMapper.mapPurchaseWithProductDetailsToIAPPurchase(
                     it.first,
-                    it.second.filterIsInstance<Success>().map { it.productDetails }
+                    it.second.filterIsInstance<Success>().flatMap { it.productDetails }
                 )
             }
         )
     }
 
     private fun buildBillingFlowParams(iapProductDetailsResponse: Success): BillingFlowParams {
-        val productDetailsParams = ProductDetailsParams.newBuilder()
-            .setProductDetails(iapProductDetailsResponse.productDetails)
-            .build()
+        val productDetailsParams = iapProductDetailsResponse.productDetails.map { productDetails ->
+            ProductDetailsParams.newBuilder()
+                .setProductDetails(productDetails)
+                .build()
+        }
         return BillingFlowParams.newBuilder()
-            .setProductDetailsParamsList(listOf(productDetailsParams))
+            .setProductDetailsParamsList(productDetailsParams)
             .build()
     }
-
 }

@@ -26,7 +26,7 @@ import com.example.iap.model.IAPPurchase.State.PURCHASED
 internal class IAPOutMapper {
     fun mapProductDetailsResultToIAPProductDetailsResponse(productDetailsResult: ProductDetailsResult) =
         when (productDetailsResult.billingResult.responseCode) {
-            OK -> IAPProductDetailsResponse.Success(productDetailsResult.productDetailsList)
+            OK -> IAPProductDetailsResponse.Success(productDetailsResult.productDetailsList.orEmpty())
             else -> IAPProductDetailsResponse.Error(
                 mapBillingResultErrorToBillingResultType(
                     productDetailsResult.billingResult
