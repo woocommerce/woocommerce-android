@@ -3,10 +3,15 @@
 -----
 - [*] Improved autofill capabilities for the login flow [https://github.com/woocommerce/woocommerce-android/pull/7461]
 - [*] Adds a new option to log in scanning the QR code embedded in the magic link email [https://github.com/woocommerce/woocommerce-android/pull/7481]
+- [**] Login: Add ability to connect Jetpack when signing with WPCom account to a site that has Jetpack but not connected yet [https://github.com/woocommerce/woocommerce-android/pull/7471]
+- [*] Fixes bug with visitor stats discrepancies between monthly and yearly granularities [https://github.com/wordpress-mobile/WordPress-FluxC-Android/pull/2535]
+
 
 10.6
 -----
 - [*] Fixed a bug that caused having duplicate when uploading multiple images [https://github.com/woocommerce/woocommerce-android/pull/7459]
+- [*] Improved autofill capabilities for the login flow [https://github.com/woocommerce/woocommerce-android/pull/7461]
+
 
 10.5
 -----

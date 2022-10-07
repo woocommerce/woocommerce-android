@@ -70,36 +70,36 @@
         android:text="@string/login_prologue_new_to_woo"
         android:textAllCaps="false"
         app:layout_constraintTop_toBottomOf="@id/prologueTitle"
-        app:layout_constraintBottom_toTopOf="@id/button_login_store"
+        app:layout_constraintBottom_toTopOf="@id/button_login_wpcom"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
 
     <com.google.android.material.button.MaterialButton
-        android:id="@+id/button_login_store"
+        android:id="@+id/button_login_wpcom"
         style="@style/Woo.Button.Colored"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="@dimen/major_100"
         android:layout_marginEnd="@dimen/minor_100"
         android:layout_marginBottom="@dimen/major_100"
-        android:text="@string/login_store_address"
         android:textAllCaps="false"
+        android:text="@string/login_wpcom"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@id/button_login_wpcom"
+        app:layout_constraintEnd_toStartOf="@id/button_login_store"
         app:layout_constraintStart_toStartOf="parent" />
 
     <com.google.android.material.button.MaterialButton
-        android:id="@+id/button_login_wpcom"
+        android:id="@+id/button_login_store"
         style="@style/Woo.Button.Colored.White"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="@dimen/minor_100"
         android:layout_marginEnd="@dimen/major_100"
         android:layout_marginBottom="@dimen/major_100"
-        android:text="@string/login_wpcom"
+        android:text="@string/login_store_address"
         android:textAllCaps="false"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@id/button_login_store" />
+        app:layout_constraintStart_toEndOf="@id/button_login_wpcom" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

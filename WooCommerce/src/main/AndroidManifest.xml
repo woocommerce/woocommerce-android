@@ -43,6 +43,23 @@
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+
+            <intent-filter android:autoVerify="true">
+                <action android:name="android.intent.action.VIEW" />
+
+                <category android:name="android.intent.category.BROWSABLE" />
+                <category android:name="android.intent.category.DEFAULT" />
+
+                <data
+                    android:scheme="https"
+                    android:host="woocommerce.com"
+                    android:pathPattern="/mobile/orders/details" />
+
+                <data
+                    android:scheme="https"
+                    android:host="woocommerce.com"
+                    android:pathPattern="/mobile/payments" />
+            </intent-filter>
         </activity>
         <activity
             android:name=".ui.login.LoginActivity"
@@ -109,9 +126,6 @@
             android:theme="@style/Theme.Woo.DayNight" />
 
         <!-- Stats today app widget -->
-        <service
-            android:name=".ui.appwidgets.WidgetService"
-            android:permission="android.permission.BIND_REMOTEVIEWS" />
         <meta-data
             android:name="com.google.android.actions"
             android:resource="@xml/stats_today_widget_info" />
