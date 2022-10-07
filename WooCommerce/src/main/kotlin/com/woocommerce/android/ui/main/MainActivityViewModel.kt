@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.main
 
+import android.net.Uri
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
 import com.woocommerce.android.AppPrefs
@@ -41,6 +42,7 @@ class MainActivityViewModel @Inject constructor(
     private val buildConfigWrapper: BuildConfigWrapper,
     private val prefs: AppPrefs,
     private val analyticsTrackerWrapper: AnalyticsTrackerWrapper,
+    private val resolveAppLink: ResolveAppLink,
     moreMenuNewFeatureHandler: MoreMenuNewFeatureHandler,
     unseenReviewsCountHandler: UnseenReviewsCountHandler,
 ) : ScopedViewModel(savedState) {
@@ -71,15 +73,7 @@ class MainActivityViewModel @Inject constructor(
             val currentSite = selectedSite.get()
             val isSiteSpecificNotification = it.remoteSiteId != 0L
             if (isSiteSpecificNotification && it.remoteSiteId != currentSite.siteId) {
-                // Update selected store
-                siteStore.getSiteBySiteId(it.remoteSiteId)?.let { updatedSite ->
-                    selectedSite.set(updatedSite)
-                    // Recreate activity before showing notification
-                    triggerEvent(RestartActivityForNotification(localPushId, notification))
-                } ?: run {
-                    // If for any reason we can't get the store, show the default screen
-                    triggerEvent(ViewMyStoreStats)
-                }
+                changeSiteAndRestart(it.remoteSiteId, RestartActivityForNotification(localPushId, notification))
             } else {
                 when (localPushId) {
                     it.getGroupPushId() -> onGroupMessageOpened(it.channelType, it.remoteSiteId)
@@ -88,6 +82,38 @@ class MainActivityViewModel @Inject constructor(
                 }
             }
         } ?: run {
+            triggerEvent(ViewMyStoreStats)
+        }
+    }
+
+    fun handleIncomingAppLink(uri: Uri?) {
+        when (val event = resolveAppLink(uri)) {
+            is ResolveAppLink.Action.ChangeSiteAndRestart -> {
+                changeSiteAndRestart(event.siteId, RestartActivityForAppLink(event.uri))
+            }
+            is ResolveAppLink.Action.ViewOrderDetail -> {
+                triggerEvent(ViewOrderDetail(uniqueId = event.orderId, remoteNoteId = 0L))
+            }
+            ResolveAppLink.Action.ViewStats -> {
+                triggerEvent(ViewMyStoreStats)
+            }
+            ResolveAppLink.Action.ViewPayments -> {
+                triggerEvent(ViewPayments)
+            }
+            ResolveAppLink.Action.DoNothing -> {
+                // no-op
+            }
+        }
+    }
+
+    private fun changeSiteAndRestart(remoteSiteId: Long, restartEvent: Event) {
+        // Update selected store
+        siteStore.getSiteBySiteId(remoteSiteId)?.let { updatedSite ->
+            selectedSite.set(updatedSite)
+            // Recreate activity before showing notification
+            triggerEvent(restartEvent)
+        } ?: run {
+            // If for any reason we can't get the store, show the default screen
             triggerEvent(ViewMyStoreStats)
         }
     }
@@ -157,7 +183,9 @@ class MainActivityViewModel @Inject constructor(
     object ViewReviewList : Event()
     object ViewMyStoreStats : Event()
     object ViewZendeskTickets : Event()
+    object ViewPayments : Event()
     data class RestartActivityForNotification(val pushId: Int, val notification: Notification) : Event()
+    data class RestartActivityForAppLink(val data: Uri) : Event()
     data class ShowFeatureAnnouncement(val announcement: FeatureAnnouncement) : Event()
     data class ViewReviewDetail(val uniqueId: Long) : Event()
     data class ViewOrderDetail(val uniqueId: Long, val remoteNoteId: Long) : Event()

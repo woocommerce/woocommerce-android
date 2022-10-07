@@ -16,6 +16,7 @@ import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.common.UserEligibilityFetcher
 import com.woocommerce.android.ui.login.AccountRepository
 import com.woocommerce.android.ui.login.UnifiedLoginTracker
+import com.woocommerce.android.ui.login.accountmismatch.AccountMismatchErrorViewModel.AccountMismatchPrimaryButton.CONNECT_JETPACK
 import com.woocommerce.android.ui.sitepicker.SitePickerViewModel.SitePickerEvent
 import com.woocommerce.android.ui.sitepicker.SitePickerViewModel.SitePickerEvent.NavigateToAccountMismatchScreen
 import com.woocommerce.android.ui.sitepicker.SitePickerViewModel.SitePickerEvent.NavigateToEmailHelpDialogEvent
@@ -56,6 +57,7 @@ import org.wordpress.android.fluxc.network.BaseRequest
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooError
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooErrorType
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooResult
+import org.wordpress.android.fluxc.store.SiteStore.ConnectSiteInfoPayload
 
 @ExperimentalCoroutinesApi
 class SitePickerViewModelTest : BaseUnitTest() {
@@ -317,6 +319,15 @@ class SitePickerViewModelTest : BaseUnitTest() {
     fun `given the site address entered during login does not match the user account, account error is displayed`() =
         testBlocking {
             givenThatUserLoggedInFromEnteringSiteAddress(null)
+            whenever(repository.fetchSiteInfo(any())).thenReturn(
+                Result.success(
+                    ConnectSiteInfoPayload(
+                        url = SitePickerTestUtils.loginSiteAddress,
+                        isWordPress = true,
+                        isWPCom = false
+                    )
+                )
+            )
             whenSitesAreFetched()
             whenViewModelIsCreated()
 
@@ -331,7 +342,7 @@ class SitePickerViewModelTest : BaseUnitTest() {
                 )
             )
 
-            assertThat(viewModel.event.value).isEqualTo(NavigateToAccountMismatchScreen(true, url))
+            assertThat(viewModel.event.value).isEqualTo(NavigateToAccountMismatchScreen(CONNECT_JETPACK, url))
         }
 
     @Test
