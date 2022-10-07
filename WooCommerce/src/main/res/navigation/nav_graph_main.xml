@@ -447,6 +447,9 @@
             app:argType="com.woocommerce.android.ui.login.accountmismatch.AccountMismatchErrorViewModel$AccountMismatchPrimaryButton"
             android:defaultValue="NONE" />
         <argument
+            android:name="errorType"
+            app:argType="com.woocommerce.android.ui.login.accountmismatch.AccountMismatchErrorViewModel$AccountMismatchErrorType" />
+        <argument
             android:name="allowBackNavigation"
             app:argType="boolean"
             android:defaultValue="true" />
