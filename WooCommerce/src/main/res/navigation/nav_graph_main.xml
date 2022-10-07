@@ -450,9 +450,5 @@
             android:name="allowBackNavigation"
             app:argType="boolean"
             android:defaultValue="true" />
-        <action
-            android:id="@+id/action_accountMismatchErrorFragment_to_sitePickerSiteDiscoveryFragment"
-            app:destination="@id/sitePickerSiteDiscoveryFragment"
-            app:popUpTo="@id/sitePickerFragment" />
     </fragment>
 </navigation>

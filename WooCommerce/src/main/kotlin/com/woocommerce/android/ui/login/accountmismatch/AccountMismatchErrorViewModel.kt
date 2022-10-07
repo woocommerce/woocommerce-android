@@ -355,7 +355,6 @@ class AccountMismatchErrorViewModel @Inject constructor(
     )
 
     object NavigateToHelpScreen : MultiLiveEvent.Event()
-    object NavigateToSiteAddressEvent : MultiLiveEvent.Event()
     object NavigateToEmailHelpDialogEvent : MultiLiveEvent.Event()
     object NavigateToLoginScreen : MultiLiveEvent.Event()
     data class OnJetpackConnectedEvent(val email: String, val isAuthenticated: Boolean) : MultiLiveEvent.Event()
