@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2022-10-02 20:25:43+0000
+Translation-Revision-Date: 2022-10-07 11:35:31+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: nl
@@ -162,6 +162,7 @@ Language: nl
     <string name="variations_bulk_update_regular_prices_success">Reguliere prijzen bijgewerkt.</string>
     <string name="variations_bulk_update_error">Er is iets fout gegaan. Probeer het nog eens.</string>
     <string name="variations_bulk_update_current_prices_mixed">Huidige prijzen verschillen.</string>
+    <string name="variations_bulk_update_current_price">Huidige prijs is %s.</string>
     <string name="variations_bulk_update_price_info">De prijs wordt bijgewerkt voor %d variaties.</string>
     <string name="variations_bulk_update_dialog_price_mixed">Gecombineerd</string>
     <string name="variations_bulk_update_dialog_price_none">Geen</string>
