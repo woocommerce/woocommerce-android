@@ -21,12 +21,14 @@ class WooLoginEmailFragment : LoginEmailFragment() {
 
     override fun setupContent(rootView: ViewGroup) {
         super.setupContent(rootView)
-        with(rootView) {
-            findViewById<Button>(R.id.login_what_is_wordpress).setOnClickListener {
-                whatIsWordPressLinkClickListener.onWhatIsWordPressLinkClicked()
-            }
-            findViewById<WPLoginInputRow>(R.id.login_email_row).editText.showKeyboardWithDelay(0)
+        rootView.findViewById<Button>(R.id.login_what_is_wordpress).setOnClickListener {
+            whatIsWordPressLinkClickListener.onWhatIsWordPressLinkClicked()
         }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        requireView().findViewById<WPLoginInputRow>(R.id.login_email_row).editText.showKeyboardWithDelay(0)
     }
 
     override fun onAttach(context: Context) {
