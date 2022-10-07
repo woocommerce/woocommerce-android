@@ -17,7 +17,6 @@ import androidx.activity.viewModels
 import androidx.annotation.StringRes
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.appcompat.widget.Toolbar
-import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.core.content.ContextCompat
 import androidx.core.view.isVisible
@@ -64,16 +63,19 @@ import com.woocommerce.android.ui.main.BottomNavigationPosition.PRODUCTS
 import com.woocommerce.android.ui.main.MainActivityViewModel.MoreMenuBadgeState.Hidden
 import com.woocommerce.android.ui.main.MainActivityViewModel.MoreMenuBadgeState.NewFeature
 import com.woocommerce.android.ui.main.MainActivityViewModel.MoreMenuBadgeState.UnseenReviews
+import com.woocommerce.android.ui.main.MainActivityViewModel.RestartActivityForAppLink
 import com.woocommerce.android.ui.main.MainActivityViewModel.RestartActivityForNotification
 import com.woocommerce.android.ui.main.MainActivityViewModel.ShowFeatureAnnouncement
 import com.woocommerce.android.ui.main.MainActivityViewModel.ViewMyStoreStats
 import com.woocommerce.android.ui.main.MainActivityViewModel.ViewOrderDetail
 import com.woocommerce.android.ui.main.MainActivityViewModel.ViewOrderList
+import com.woocommerce.android.ui.main.MainActivityViewModel.ViewPayments
 import com.woocommerce.android.ui.main.MainActivityViewModel.ViewReviewDetail
 import com.woocommerce.android.ui.main.MainActivityViewModel.ViewReviewList
 import com.woocommerce.android.ui.main.MainActivityViewModel.ViewZendeskTickets
 import com.woocommerce.android.ui.moremenu.MoreMenuFragmentDirections
 import com.woocommerce.android.ui.orders.list.OrderListFragmentDirections
+import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderFlowParam
 import com.woocommerce.android.ui.prefs.AppSettingsActivity
 import com.woocommerce.android.ui.products.ProductListFragmentDirections
 import com.woocommerce.android.ui.reviews.ReviewListFragmentDirections
@@ -284,6 +286,8 @@ class MainActivity :
         if (!BuildConfig.DEBUG) {
             checkForAppUpdates()
         }
+
+        viewModel.handleIncomingAppLink(intent?.data)
     }
 
     override fun hideProgressDialog() {
@@ -325,6 +329,8 @@ class MainActivity :
 
         setIntent(intent)
         initFragment(null)
+
+        viewModel.handleIncomingAppLink(intent?.data)
     }
 
     public override fun onDestroy() {
@@ -353,19 +359,13 @@ class MainActivity :
     override fun onBackPressed() {
         AnalyticsTracker.trackBackPressed(this)
 
-        if (!isAtNavigationRoot()) {
-            // go no further if active fragment doesn't allow back press - we use this so fragments can
-            // provide confirmation before discarding the current action, such as adding an order note
-            getActiveChildFragment()?.let { fragment ->
-                if (fragment is BackPressListener && !(fragment as BackPressListener).onRequestAllowBackPress()) {
-                    return
-                }
+        getActiveChildFragment()?.let { fragment ->
+            if (fragment is BackPressListener && !(fragment as BackPressListener).onRequestAllowBackPress()) {
+                return
             }
-            navController.navigateUp()
-            return
-        } else {
-            super.onBackPressed()
         }
+
+        super.onBackPressed()
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
@@ -701,6 +701,7 @@ class MainActivity :
                     startActivity(HelpActivity.createIntent(this, Origin.ZENDESK_NOTIFICATION, null))
                 }
                 is ViewOrderDetail -> {
+                    intent.data = null
                     showOrderDetail(
                         orderId = event.uniqueId,
                         remoteNoteId = event.remoteNoteId,
@@ -718,10 +719,15 @@ class MainActivity :
                     intent.putExtra(FIELD_PUSH_ID, event.pushId)
                     restart()
                 }
+                is RestartActivityForAppLink -> {
+                    intent.data = event.data
+                    restart()
+                }
                 is ShowFeatureAnnouncement -> {
                     val action = NavGraphMainDirections.actionOpenWhatsnewFromMain(event.announcement)
                     navController.navigateSafely(action)
                 }
+                ViewPayments -> showPayments()
             }
         }
 
@@ -793,6 +799,14 @@ class MainActivity :
         navController.navigateSafely(action)
     }
 
+    private fun showPayments() {
+        showBottomNav()
+        binding.bottomNav.currentPosition = MORE
+        binding.bottomNav.active(MORE.position)
+        val action = MoreMenuFragmentDirections.actionMoreMenuToPaymentFlow(CardReaderFlowParam.CardReadersHub)
+        navController.navigateSafely(action)
+    }
+
     override fun showReviewDetailWithSharedTransition(
         remoteReviewId: Long,
         launchedFromNotification: Boolean,
@@ -826,7 +840,6 @@ class MainActivity :
         navController.navigateSafely(action)
     }
 
-    @OptIn(ExperimentalFoundationApi::class)
     override fun showMoreMenu() {
         binding.bottomNav.currentPosition = MORE
         binding.bottomNav.active(MORE.position)

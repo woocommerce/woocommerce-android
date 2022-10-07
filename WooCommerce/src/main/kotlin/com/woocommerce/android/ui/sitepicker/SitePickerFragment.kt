@@ -24,7 +24,7 @@ import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.common.wpcomwebview.WPComWebViewFragment
 import com.woocommerce.android.ui.login.LoginActivity
 import com.woocommerce.android.ui.login.LoginEmailHelpDialogFragment
-import com.woocommerce.android.ui.login.accountmismatch.AccountMismatchErrorViewModel.AccountMismatchPrimaryButton
+import com.woocommerce.android.ui.login.accountmismatch.AccountMismatchErrorFragment
 import com.woocommerce.android.ui.main.AppBarStatus
 import com.woocommerce.android.ui.main.MainActivity
 import com.woocommerce.android.ui.sitepicker.SitePickerViewModel.SitePickerEvent.NavigateToAccountMismatchScreen
@@ -160,7 +160,8 @@ class SitePickerFragment : BaseFragment(R.layout.fragment_site_picker), LoginEma
                 is NavigateToEmailHelpDialogEvent -> navigateToNeedHelpFindingEmailScreen()
                 is NavigateToWPComWebView -> navigateToWPComWebView(event)
                 is NavigateToAccountMismatchScreen -> navigateToAccountMismatchScreen(event)
-                is ShowSnackbar -> uiMessageResolver.showSnack(event.message)
+                is ShowSnackbar -> uiMessageResolver.getSnack(stringResId = event.message, stringArgs = event.args)
+                    .show()
                 is ShowDialog -> event.showDialog()
                 is Logout -> onLogout()
                 is Exit -> findNavController().navigateUp()
@@ -179,6 +180,9 @@ class SitePickerFragment : BaseFragment(R.layout.fragment_site_picker), LoginEma
         }
         handleResult<String>(SitePickerSiteDiscoveryFragment.SITE_PICKER_SITE_ADDRESS_RESULT) {
             viewModel.onSiteAddressReceived(it)
+        }
+        handleNotice(AccountMismatchErrorFragment.JETPACK_CONNECTED_NOTICE) {
+            viewModel.onJetpackConnected()
         }
     }
 
@@ -279,8 +283,7 @@ class SitePickerFragment : BaseFragment(R.layout.fragment_site_picker), LoginEma
         findNavController().navigateSafely(
             SitePickerFragmentDirections.actionSitePickerFragmentToAccountMismatchErrorFragment(
                 siteUrl = event.siteUrl,
-                primaryButton = if (event.hasConnectedStores) AccountMismatchPrimaryButton.SHOW_SITE_PICKER
-                else AccountMismatchPrimaryButton.ENTER_NEW_SITE_ADDRESS
+                primaryButton = event.primaryButton
             )
         )
     }

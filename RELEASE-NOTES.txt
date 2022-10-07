@@ -1,6 +1,9 @@
 *** PLEASE FOLLOW THIS FORMAT: [<priority indicator, more stars = higher priority>] <description> [<PR URL>]
 10.7
 -----
+- [*] Improved autofill capabilities for the login flow [https://github.com/woocommerce/woocommerce-android/pull/7461]
+- [**] Login: Add ability to connect Jetpack when signing with WPCom account to a site that has Jetpack but not connected yet [https://github.com/woocommerce/woocommerce-android/pull/7471]
+- [*] Fixes bug with visitor stats discrepancies between monthly and yearly granularities [https://github.com/wordpress-mobile/WordPress-FluxC-Android/pull/2535]
 
 
 10.6

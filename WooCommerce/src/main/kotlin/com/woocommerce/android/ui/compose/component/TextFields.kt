@@ -28,13 +28,19 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.dimensionResource
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
@@ -233,6 +239,47 @@ fun WCSearchField(
                         )
                     }
                 }
+            }
+        }
+    )
+}
+
+@Composable
+fun WCPasswordField(
+    value: String,
+    onValueChange: (String) -> Unit,
+    label: String,
+    modifier: Modifier = Modifier,
+    isError: Boolean = false,
+    helperText: String? = null,
+    keyboardOptions: KeyboardOptions = KeyboardOptions.Default,
+    keyboardActions: KeyboardActions = KeyboardActions.Default
+) {
+    var isPasswordVisible: Boolean by remember { mutableStateOf(false) }
+
+    WCOutlinedTextField(
+        value = value,
+        onValueChange = onValueChange,
+        label = label,
+        isError = isError,
+        helperText = helperText,
+        modifier = modifier,
+        visualTransformation = if (!isPasswordVisible) PasswordVisualTransformation() else VisualTransformation.None,
+        singleLine = true,
+        keyboardOptions = keyboardOptions.copy(keyboardType = KeyboardType.Password),
+        keyboardActions = keyboardActions,
+        trailingIcon = {
+            val image = if (isPasswordVisible) {
+                painterResource(id = R.drawable.ic_password_visibility)
+            } else {
+                painterResource(id = R.drawable.ic_password_visibility_off)
+            }
+
+            val description = if (isPasswordVisible) stringResource(id = R.string.hide_password_content_description)
+            else stringResource(id = R.string.show_password_content_description)
+
+            IconButton(onClick = { isPasswordVisible = !isPasswordVisible }) {
+                Icon(painter = image, description)
             }
         }
     )
