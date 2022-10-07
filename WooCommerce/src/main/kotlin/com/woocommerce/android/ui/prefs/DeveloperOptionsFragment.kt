@@ -11,7 +11,6 @@ import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class DeveloperOptionsFragment : BaseFragment(R.layout.fragment_developer_options) {
-    override fun getFragmentTitle() = resources.getString(R.string.dev_options)
     private var _binding: FragmentDeveloperOptionsBinding? = null
     private val binding get() = _binding!!
     // private val viewModel: DeveloperOptionsViewModel by viewModels()
@@ -24,6 +23,8 @@ class DeveloperOptionsFragment : BaseFragment(R.layout.fragment_developer_option
         _binding = FragmentDeveloperOptionsBinding.inflate(inflater, container, false)
         return binding.root
     }
+
+    override fun getFragmentTitle() = resources.getString(R.string.dev_options)
 
     override fun onDestroyView() {
         super.onDestroyView()
