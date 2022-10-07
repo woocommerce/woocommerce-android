@@ -40,5 +40,5 @@ dependencies {
     implementation 'androidx.preference:preference-ktx:1.2.0'
 
     // Barcode model
-    implementation 'com.google.android.gms:play-services-mlkit-barcode-scanning:18.0.0'
+    implementation 'com.google.android.gms:play-services-mlkit-barcode-scanning:18.1.0'
 }
