@@ -434,7 +434,11 @@
     <fragment
         android:id="@+id/sitePickerSiteDiscoveryFragment"
         android:name="com.woocommerce.android.ui.sitepicker.sitediscovery.SitePickerSiteDiscoveryFragment"
-        android:label="SitePickerSiteDiscoveryFragment" />
+        android:label="SitePickerSiteDiscoveryFragment" >
+        <action
+            android:id="@+id/action_sitePickerSiteDiscoveryFragment_to_accountMismatchErrorFragment"
+            app:destination="@id/accountMismatchErrorFragment" />
+    </fragment>
     <fragment
         android:id="@+id/accountMismatchErrorFragment"
         android:name="com.woocommerce.android.ui.login.accountmismatch.AccountMismatchErrorFragment"
