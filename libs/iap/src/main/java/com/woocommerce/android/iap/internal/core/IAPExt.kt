@@ -1,4 +1,4 @@
-package com.example.iap.internal.core
+package com.woocommerce.android.iap.internal.core
 
 import com.android.billingclient.api.BillingClient.BillingResponseCode
 import com.android.billingclient.api.ProductDetails

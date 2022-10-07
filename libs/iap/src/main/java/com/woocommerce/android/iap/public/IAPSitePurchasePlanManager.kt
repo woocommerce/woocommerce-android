@@ -1,7 +1,7 @@
-package com.example.iap
+package com.woocommerce.android.iap.public
 
-import com.example.iap.model.IAPProduct
-import com.example.iap.model.IAPPurchaseResponse
+import com.woocommerce.android.iap.public.model.IAPProduct
+import com.woocommerce.android.iap.public.model.IAPPurchaseResponse
 
 interface IAPSitePurchasePlanManager {
     /**

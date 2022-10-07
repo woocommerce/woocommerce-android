@@ -1,4 +1,4 @@
-package com.example.iap.model
+package com.woocommerce.android.iap.public.model
 
 sealed class IAPPurchaseResponse {
     data class Success(val purchases: List<IAPPurchase>?) : IAPPurchaseResponse()

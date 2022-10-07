@@ -1,14 +1,14 @@
-package com.example.iap.internal.planpurchase
+package com.woocommerce.android.iap.internal.planpurchase
 
 import androidx.appcompat.app.AppCompatActivity
-import com.example.iap.IAPSitePurchasePlanManager
-import com.example.iap.IAPStore
-import com.example.iap.LogWrapper
-import com.example.iap.internal.core.IAPManagerFactory
-import com.example.iap.model.IAPProduct
-import com.example.iap.model.IAPPurchaseResponse
-import com.example.iap.model.IAPPurchaseResponse.Error
-import com.example.iap.model.IAPPurchaseResponse.Success
+import com.woocommerce.android.iap.public.IAPSitePurchasePlanManager
+import com.woocommerce.android.iap.public.IAPStore
+import com.woocommerce.android.iap.public.LogWrapper
+import com.woocommerce.android.iap.internal.core.IAPManagerFactory
+import com.woocommerce.android.iap.public.model.IAPProduct
+import com.woocommerce.android.iap.public.model.IAPPurchaseResponse
+import com.woocommerce.android.iap.public.model.IAPPurchaseResponse.Error
+import com.woocommerce.android.iap.public.model.IAPPurchaseResponse.Success
 
 internal class IAPManagerPlanSitePurchaseManagerImpl(
     private val iapStore: IAPStore,

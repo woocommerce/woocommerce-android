@@ -1,4 +1,4 @@
-package com.example.iap.internal.core
+package com.woocommerce.android.iap.internal.core
 
 import androidx.appcompat.app.AppCompatActivity
 import com.android.billingclient.api.BillingClient
@@ -9,13 +9,13 @@ import com.android.billingclient.api.QueryProductDetailsParams
 import com.android.billingclient.api.QueryPurchasesParams
 import com.android.billingclient.api.queryProductDetails
 import com.android.billingclient.api.queryPurchasesAsync
-import com.example.iap.internal.model.IAPProductDetailsResponse
-import com.example.iap.internal.model.IAPProductDetailsResponse.Error
-import com.example.iap.internal.model.IAPProductDetailsResponse.Success
-import com.example.iap.model.BillingErrorType
-import com.example.iap.model.IAPProduct
-import com.example.iap.model.IAPProductType
-import com.example.iap.model.IAPPurchaseResponse
+import com.woocommerce.android.iap.internal.model.IAPProductDetailsResponse
+import com.woocommerce.android.iap.internal.model.IAPProductDetailsResponse.Error
+import com.woocommerce.android.iap.internal.model.IAPProductDetailsResponse.Success
+import com.woocommerce.android.iap.public.model.BillingErrorType
+import com.woocommerce.android.iap.public.model.IAPProduct
+import com.woocommerce.android.iap.public.model.IAPProductType
+import com.woocommerce.android.iap.public.model.IAPPurchaseResponse
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import kotlin.coroutines.suspendCoroutine

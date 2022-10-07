@@ -1,7 +1,7 @@
-package com.example.iap
+package com.woocommerce.android.iap.public
 
 import androidx.appcompat.app.AppCompatActivity
-import com.example.iap.internal.planpurchase.IAPManagerPlanSitePurchaseManagerImpl
+import com.woocommerce.android.iap.internal.planpurchase.IAPManagerPlanSitePurchaseManagerImpl
 
 object IAPSitePurchasePlanFactory {
     fun createIAPSitePurchasePlan(

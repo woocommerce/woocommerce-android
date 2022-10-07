@@ -1,4 +1,4 @@
-package com.example.iap.internal.core
+package com.woocommerce.android.iap.internal.core
 
 import com.android.billingclient.api.BillingClient.BillingResponseCode.BILLING_UNAVAILABLE
 import com.android.billingclient.api.BillingClient.BillingResponseCode.DEVELOPER_ERROR
@@ -16,12 +16,12 @@ import com.android.billingclient.api.ProductDetails
 import com.android.billingclient.api.ProductDetailsResult
 import com.android.billingclient.api.Purchase
 import com.android.billingclient.api.Purchase.PurchaseState
-import com.example.iap.internal.model.IAPProductDetailsResponse
-import com.example.iap.model.BillingErrorType
-import com.example.iap.model.IAPPurchase
-import com.example.iap.model.IAPPurchase.State
-import com.example.iap.model.IAPPurchase.State.PENDING
-import com.example.iap.model.IAPPurchase.State.PURCHASED
+import com.woocommerce.android.iap.internal.model.IAPProductDetailsResponse
+import com.woocommerce.android.iap.public.model.BillingErrorType
+import com.woocommerce.android.iap.public.model.IAPPurchase
+import com.woocommerce.android.iap.public.model.IAPPurchase.State
+import com.woocommerce.android.iap.public.model.IAPPurchase.State.PENDING
+import com.woocommerce.android.iap.public.model.IAPPurchase.State.PURCHASED
 
 internal class IAPOutMapper {
     fun mapProductDetailsResultToIAPProductDetailsResponse(productDetailsResult: ProductDetailsResult) =
