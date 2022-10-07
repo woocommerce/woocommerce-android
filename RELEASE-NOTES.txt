@@ -2,6 +2,7 @@
 10.7
 -----
 - [*] Improved autofill capabilities for the login flow [https://github.com/woocommerce/woocommerce-android/pull/7461]
+- [*] Adds a new option to log in scanning the QR code embedded in the magic link email [https://github.com/woocommerce/woocommerce-android/pull/7481]
 
 10.6
 -----
