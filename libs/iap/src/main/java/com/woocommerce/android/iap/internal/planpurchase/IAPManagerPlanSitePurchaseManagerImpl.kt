@@ -33,10 +33,9 @@ internal class IAPManagerPlanSitePurchaseManagerImpl(
     }
 
     override suspend fun purchasePlan(iapProduct: IAPProduct): IAPPurchaseResponse {
-        when (val response = iapManager.startPurchase(iapProduct)) {
-            is Success -> TODO()
-            is Error -> TODO()
-        }
+        val response = iapManager.startPurchase(iapProduct)
+        if (response is Success) iapStore.confirmOrderOnServer(iapProduct)
+        return response
     }
 
     private fun isProductPurchased(

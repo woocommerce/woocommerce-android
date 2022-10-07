@@ -1,0 +1,40 @@
+plugins {
+    id 'com.android.application'
+    id 'org.jetbrains.kotlin.android'
+}
+
+android {
+    compileSdkVersion gradle.ext.compileSdkVersion
+
+    defaultConfig {
+        minSdkVersion gradle.ext.minSdkVersion
+        targetSdkVersion gradle.ext.targetSdkVersion
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+}
+
+
+dependencies {
+    implementation project(":libs:iap")
+    implementation("${gradle.ext.fluxCBinaryPath}:$fluxCVersion") {
+        exclude group: "com.android.support"
+        exclude group: "org.wordpress", module: "utils"
+    }
+    implementation("${gradle.ext.fluxCWooCommercePluginBinaryPath}:$fluxCVersion") {
+        exclude group: "com.android.support"
+        exclude group: "org.wordpress", module: "utils"
+    }
+
+    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:$coroutinesVersion"
+    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:$coroutinesVersion"
+
+    implementation("com.android.billingclient:billing-ktx:$billingVersion")
+    implementation "androidx.appcompat:appcompat:$appCompatVersion"
+
+    implementation "androidx.activity:activity-ktx:1.5.1"
+    implementation "androidx.lifecycle:lifecycle-viewmodel:$lifecycleVersion"
+}
