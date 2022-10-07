@@ -55,6 +55,11 @@
                     android:scheme="https"
                     android:host="woocommerce.com"
                     android:pathPattern="/mobile/orders/details" />
+
+                <data
+                    android:scheme="https"
+                    android:host="woocommerce.com"
+                    android:pathPattern="/mobile/payments" />
             </intent-filter>
         </activity>
         <activity

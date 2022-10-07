@@ -48,10 +48,10 @@ class ResolveAppLinkTest {
     }
 
     @Test
-    fun `view stats if there's not selected site`() {
+    fun `for order details link view stats if there's not selected site`() {
         whenever(selectedSite.exists()).thenReturn(false)
 
-        val uri = mockUri()
+        val uri = mockOrderDetailsUri()
         val result = sut(uri)
 
         assertThat(result).isEqualTo(ResolveAppLink.Action.ViewStats)
@@ -59,15 +59,10 @@ class ResolveAppLinkTest {
     }
 
     @Test
-    fun `view stats when query parameter is malformed`() {
-        whenever(selectedSite.exists()).thenReturn(true)
-        whenever(selectedSite.getIfExists()).thenReturn(
-            SiteModel().apply {
-                siteId = TEST_BLOG_ID
-            }
-        )
+    fun `for order details link view stats when query parameter is malformed`() {
+        mockSiteSelected()
 
-        val uri = mockUri(orderId = "not_a_number")
+        val uri = mockOrderDetailsUri(orderId = "not_a_number")
         val result = sut(uri)
 
         assertThat(result).isEqualTo(ResolveAppLink.Action.ViewStats)
@@ -75,15 +70,10 @@ class ResolveAppLinkTest {
     }
 
     @Test
-    fun `view order details event when app link contained valid data`() {
-        whenever(selectedSite.exists()).thenReturn(true)
-        whenever(selectedSite.getIfExists()).thenReturn(
-            SiteModel().apply {
-                siteId = TEST_BLOG_ID
-            }
-        )
+    fun `for order details link view order details event when app link contained valid data`() {
+        mockSiteSelected()
 
-        val uri = mockUri()
+        val uri = mockOrderDetailsUri()
         val result = sut(uri)
 
         assertThat(result).isEqualTo(ResolveAppLink.Action.ViewOrderDetail(TEST_ORDER_ID))
@@ -91,25 +81,97 @@ class ResolveAppLinkTest {
     }
 
     @Test
-    fun `restart activity event when app link points to a different than selected blog id`() {
-        whenever(selectedSite.exists()).thenReturn(true)
-        whenever(selectedSite.getIfExists()).thenReturn(
-            SiteModel().apply {
-                siteId = 987
-            }
-        )
+    fun `for order details link restart activity event when link points to a different than selected blog id`() {
+        mockSiteSelected(mockedSiteId = 987)
 
-        val uri = mockUri()
+        val uri = mockOrderDetailsUri()
         val result = sut(uri)
 
         assertThat(result).isEqualTo(ResolveAppLink.Action.ChangeSiteAndRestart(TEST_BLOG_ID, uri))
         verifyNoInteractions(tracker)
     }
 
-    private fun mockUri(orderId: String = TEST_ORDER_ID.toString(), blogId: String = TEST_BLOG_ID.toString()): Uri {
+    @Test
+    fun `for payments link view stats if there's not selected site`() {
+        whenever(selectedSite.exists()).thenReturn(false)
+
+        val uri = mockPaymentsUri()
+        val result = sut(uri)
+
+        assertThat(result).isEqualTo(ResolveAppLink.Action.ViewStats)
+        verify(tracker).track(AnalyticsEvent.UNIVERSAL_LINK_FAILED, mapOf(KEY_URL to uri.toString()))
+    }
+
+    @Test
+    fun `for payments link view stats when query parameter is malformed`() {
+        mockSiteSelected()
+
+        val uri = mockPaymentsUri(blogId = "not_a_number")
+        val result = sut(uri)
+
+        assertThat(result).isEqualTo(ResolveAppLink.Action.ViewStats)
+        verify(tracker).track(AnalyticsEvent.UNIVERSAL_LINK_FAILED, mapOf(KEY_URL to uri.toString()))
+    }
+
+    @Test
+    fun `for payments link view payments screen when app link contained valid data`() {
+        mockSiteSelected()
+
+        val uri = mockPaymentsUri()
+        val result = sut(uri)
+
+        assertThat(result).isEqualTo(ResolveAppLink.Action.ViewPayments)
+        verify(tracker).track(AnalyticsEvent.UNIVERSAL_LINK_OPENED, mapOf(KEY_PATH to uri.path))
+    }
+
+    @Test
+    fun `for payments link restart activity event when link points to a different than selected blog id`() {
+        mockSiteSelected(mockedSiteId = 987)
+
+        val uri = mockPaymentsUri()
+        val result = sut(uri)
+
+        assertThat(result).isEqualTo(ResolveAppLink.Action.ChangeSiteAndRestart(TEST_BLOG_ID, uri))
+        verifyNoInteractions(tracker)
+    }
+
+    @Test
+    fun `for payments link open payments even if blog id is null`() {
+        mockSiteSelected()
+
+        val uri = mockPaymentsUri(blogId = null)
+        val result = sut(uri)
+
+        assertThat(result).isEqualTo(ResolveAppLink.Action.ViewPayments)
+        verify(tracker).track(AnalyticsEvent.UNIVERSAL_LINK_OPENED, mapOf(KEY_PATH to uri.path))
+    }
+
+    private fun mockSiteSelected(mockedSiteId: Long = TEST_BLOG_ID) {
+        whenever(selectedSite.exists()).thenReturn(true)
+        whenever(selectedSite.getIfExists()).thenReturn(
+            SiteModel().apply {
+                siteId = mockedSiteId
+            }
+        )
+    }
+
+    private fun mockOrderDetailsUri(
+        orderId: String = TEST_ORDER_ID.toString(),
+        blogId: String = TEST_BLOG_ID.toString()
+    ): Uri {
         val uri = mock<Uri> {
             on { path } doReturn "orders/details"
             on { getQueryParameter("order_id") } doReturn orderId
+            on { getQueryParameter("blog_id") } doReturn blogId
+        }
+        return uri
+    }
+
+    private fun mockPaymentsUri(
+        blogId: String? = TEST_BLOG_ID.toString()
+    ): Uri {
+        val uri = mock<Uri> {
+            on { path } doReturn "payments"
             on { getQueryParameter("blog_id") } doReturn blogId
         }
         return uri

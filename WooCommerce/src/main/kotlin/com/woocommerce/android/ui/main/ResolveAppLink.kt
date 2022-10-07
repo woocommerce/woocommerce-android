@@ -16,44 +16,79 @@ class ResolveAppLink @Inject constructor(
 ) {
 
     operator fun invoke(uri: Uri?): Action {
-        when {
+        return when {
             uri?.path?.contains("orders/details") == true -> {
-                return prepareOrderDetailsEvent(uri)
+                prepareOrderDetailsAction(uri)
             }
+            uri?.path?.contains("payments") == true -> {
+                preparePaymentsAction(uri)
+            }
+            else -> Action.DoNothing
         }
-
-        return Action.DoNothing
     }
 
-    private fun prepareOrderDetailsEvent(data: Uri): Action {
-        val (blogId, orderId) = try {
-            (data.getParamOrNull("blog_id") to data.getParamOrNull("order_id"))
+    private fun preparePaymentsAction(data: Uri): Action {
+        val blogId = try {
+            data.getParamOrNull("blog_id")
         } catch (e: NumberFormatException) {
-            tracker.track(AnalyticsEvent.UNIVERSAL_LINK_FAILED, properties = mapOf(KEY_URL to data.toString()))
+            trackLinkFailure(data)
             crashLogging.recordException(e, REPORT_CATEGORY)
             return Action.ViewStats
         }
 
         return when {
-            blogId == null || orderId == null -> {
-                tracker.track(AnalyticsEvent.UNIVERSAL_LINK_FAILED, properties = mapOf(KEY_URL to data.toString()))
-                crashLogging.recordEvent(message = "Malformed AppLink: $data", category = REPORT_CATEGORY)
-                Action.ViewStats
+            blogId == null -> {
+                trackLinkSuccess(data)
+                Action.ViewPayments
             }
             !selectedSite.exists() -> {
-                tracker.track(AnalyticsEvent.UNIVERSAL_LINK_FAILED, properties = mapOf(KEY_URL to data.toString()))
-                crashLogging.recordEvent(message = "User not logged in", category = REPORT_CATEGORY)
+                trackLinkFailure(data)
                 Action.ViewStats
             }
             selectedSite.getIfExists()?.siteId != blogId -> {
                 Action.ChangeSiteAndRestart(siteId = blogId, uri = data)
             }
             else -> {
-                tracker.track(AnalyticsEvent.UNIVERSAL_LINK_OPENED, properties = mapOf(KEY_PATH to data.path.orEmpty()))
+                trackLinkSuccess(data)
+                Action.ViewPayments
+            }
+        }
+    }
+
+    private fun prepareOrderDetailsAction(data: Uri): Action {
+        val (blogId, orderId) = try {
+            (data.getParamOrNull("blog_id") to data.getParamOrNull("order_id"))
+        } catch (e: NumberFormatException) {
+            trackLinkFailure(data)
+            crashLogging.recordException(e, REPORT_CATEGORY)
+            return Action.ViewStats
+        }
+
+        return when {
+            blogId == null || orderId == null -> {
+                trackLinkFailure(data)
+                crashLogging.recordEvent(message = "Malformed AppLink: $data", category = REPORT_CATEGORY)
+                Action.ViewStats
+            }
+            !selectedSite.exists() -> {
+                trackLinkFailure(data)
+                Action.ViewStats
+            }
+            selectedSite.getIfExists()?.siteId != blogId -> {
+                Action.ChangeSiteAndRestart(siteId = blogId, uri = data)
+            }
+            else -> {
+                trackLinkSuccess(data)
                 Action.ViewOrderDetail(orderId = orderId)
             }
         }
     }
+
+    private fun trackLinkSuccess(data: Uri) =
+        tracker.track(AnalyticsEvent.UNIVERSAL_LINK_OPENED, properties = mapOf(KEY_PATH to data.path.orEmpty()))
+
+    private fun trackLinkFailure(data: Uri) =
+        tracker.track(AnalyticsEvent.UNIVERSAL_LINK_FAILED, properties = mapOf(KEY_URL to data.toString()))
 
     private fun Uri.getParamOrNull(key: String) = getQueryParameter(key)?.toLong()
 
@@ -61,6 +96,7 @@ class ResolveAppLink @Inject constructor(
         data class ViewOrderDetail(val orderId: Long) : Action()
         data class ChangeSiteAndRestart(val siteId: Long, val uri: Uri) : Action()
         object ViewStats : Action()
+        object ViewPayments : Action()
         object DoNothing : Action()
     }
 
