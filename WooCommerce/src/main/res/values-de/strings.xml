@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2022-10-02 19:14:03+0000
+Translation-Revision-Date: 2022-10-05 08:42:31+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: de
@@ -2212,7 +2212,7 @@ Language: de
     <string name="notification_channel_general_title">Allgemein</string>
     <string name="app_name">WooCommerce</string>
     <string-array name="date_range_selectors">
-        <item>0@string/date_timeframe_today</item>
+        <item>\@string/date_timeframe_today</item>
         <item>\@string/date_timeframe_yesterday</item>
         <item>\@string/date_timeframe_last_week</item>
         <item>\@string/date_timeframe_last_month</item>
