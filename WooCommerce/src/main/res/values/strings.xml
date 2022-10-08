@@ -272,12 +272,15 @@
     <string name="login_site_picker_enter_site_address">Enter a site address</string>
     <string name="site_discovery_postlogin_failure">A failure occurred, please contact support</string>
     <string name="login_site_picker_new_to_woo">New to WooCommerce</string>
-    <string name="login_connect_jetpack_button">Connect Jetpack to your account</string>
     <string name="login_simple_wpcom_site">The site %1$s is currently on a WordPress.com plan that does not support plugin installation. Please upgrade your plan to use WooCommerce.</string>
     <string name="login_jetpack_connection_verification_failed">Cannot verify your Jetpack connection. Please try again.</string>
     <string name="login_jetpack_verify_connection">Verifying Jetpack connection…</string>
     <string name="login_jetpack_connection_url_failed">Fetching connection data failed…</string>
     <string name="login_2fa_not_supported_self_hosted_site">2FA not supported for self-hosted sites. Please use an app-password.</string>
+    <string name="login_account_mismatch_connect_jetpack">Connect Jetpack to your account</string>
+    <string name="login_account_mismatch_connect_wpcom">Connect to the site</string>
+    <string name="login_account_mismatch_connect_wpcom_dialog_title">Connecting to a WordPress.com site</string>
+    <string name="login_account_mismatch_connect_wpcom_dialog_message">Please contact the site owner for an invitation to the site as a shop manager or administrator to use the app.</string>
     <!--
         My Store View
     -->

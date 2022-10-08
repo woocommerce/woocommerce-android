@@ -342,7 +342,7 @@ class SitePickerViewModelTest : BaseUnitTest() {
                 )
             )
 
-            assertThat(viewModel.event.value).isEqualTo(NavigateToAccountMismatchScreen(CONNECT_JETPACK, url))
+            assertThat(viewModel.event.value).isEqualTo(NavigateToAccountMismatchScreen(CONNECT_JETPACK, url, true))
         }
 
     @Test

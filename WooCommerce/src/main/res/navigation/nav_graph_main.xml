@@ -446,9 +446,9 @@
             android:name="primaryButton"
             app:argType="com.woocommerce.android.ui.login.accountmismatch.AccountMismatchErrorViewModel$AccountMismatchPrimaryButton"
             android:defaultValue="NONE" />
-        <action
-            android:id="@+id/action_accountMismatchErrorFragment_to_sitePickerSiteDiscoveryFragment"
-            app:destination="@id/sitePickerSiteDiscoveryFragment"
-            app:popUpTo="@id/sitePickerFragment" />
+        <argument
+            android:name="allowBackNavigation"
+            app:argType="boolean"
+            android:defaultValue="true" />
     </fragment>
 </navigation>
