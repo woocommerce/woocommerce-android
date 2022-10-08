@@ -59,7 +59,6 @@ class DeveloperOptionsAdapter :
         override fun areContentsTheSame(oldItem: ListItem, newItem: ListItem): Boolean {
             return oldItem == newItem && (oldItem.isEnabled == newItem.isEnabled)
         }
-
     }
 
     companion object {

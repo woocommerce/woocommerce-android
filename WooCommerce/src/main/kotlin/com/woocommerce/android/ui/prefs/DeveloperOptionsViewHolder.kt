@@ -44,7 +44,3 @@ abstract class DeveloperOptionsViewHolder(val parent: ViewGroup, @LayoutRes layo
         }
     }
 }
-
-
-
-
