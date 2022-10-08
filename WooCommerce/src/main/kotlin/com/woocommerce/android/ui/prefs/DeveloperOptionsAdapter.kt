@@ -3,18 +3,22 @@ package com.woocommerce.android.ui.prefs
 import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
+import com.woocommerce.android.ui.payments.cardreader.hub.CardReaderHubAdapter.Companion.VIEW_TYPE_NON_TOGGELABLE
 import com.woocommerce.android.ui.prefs.DeveloperOptionsViewModel.DeveloperOptionsViewState.ListItem
+import com.woocommerce.android.ui.prefs.DeveloperOptionsViewModel.DeveloperOptionsViewState.ListItem.NonToggleableListItem
+import com.woocommerce.android.ui.prefs.DeveloperOptionsViewModel.DeveloperOptionsViewState.ListItem.ToggleableListItem
 
 class DeveloperOptionsAdapter :
     ListAdapter<ListItem, DeveloperOptionsViewHolder>(ListItemDiffCallback) {
 
     override fun getItemViewType(position: Int): Int {
         return when (getItem(position)) {
-            is ListItem.ToggleableListItem -> {
+            is ToggleableListItem -> {
                 VIEW_TYPE_TOGGLEABLE
             }
-            is ListItem.NonToggleableListItem ->
+            is NonToggleableListItem -> {
                 VIEW_TYPE_NON_TOGGLEABLE
+            }
         }
     }
 
@@ -22,6 +26,9 @@ class DeveloperOptionsAdapter :
         return when (viewType) {
             VIEW_TYPE_TOGGLEABLE -> {
                 DeveloperOptionsViewHolder.ToggleableViewHolder(parent)
+            }
+            VIEW_TYPE_NON_TOGGELABLE -> {
+                DeveloperOptionsViewHolder.RowViewHolder(parent)
             }
             else -> {
                 throw error("Unknown section")
@@ -40,10 +47,10 @@ class DeveloperOptionsAdapter :
     @Suppress("ReturnCount")
     object ListItemDiffCallback : DiffUtil.ItemCallback<ListItem>() {
         override fun areItemsTheSame(oldItem: ListItem, newItem: ListItem): Boolean {
-            if (oldItem is ListItem.ToggleableListItem && newItem is ListItem.ToggleableListItem) {
+            if (oldItem is ToggleableListItem && newItem is ToggleableListItem) {
                 return oldItem.label == newItem.label
             }
-            if (oldItem is ListItem.NonToggleableListItem && newItem is ListItem.NonToggleableListItem) {
+            if (oldItem is NonToggleableListItem && newItem is NonToggleableListItem) {
                 return (oldItem.label == newItem.label && oldItem.isEnabled == newItem.isEnabled)
             }
             return false
@@ -60,7 +67,3 @@ class DeveloperOptionsAdapter :
         const val VIEW_TYPE_NON_TOGGLEABLE = 1
     }
 }
-
-
-
-
