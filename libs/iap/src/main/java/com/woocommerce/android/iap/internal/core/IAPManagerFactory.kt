@@ -11,7 +11,6 @@ internal object IAPManagerFactory {
         val iapOutMapper = IAPOutMapper()
         val iapPurchasesUpdatedListener = IAPPurchasesUpdatedListener(
             logWrapper,
-            iapOutMapper,
         )
         val iapLifecycleObserver = IAPLifecycleObserver(
             activity,

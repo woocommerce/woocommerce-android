@@ -14,6 +14,7 @@ import com.woocommerce.android.iap.internal.model.IAPProductDetailsResponse.Erro
 import com.woocommerce.android.iap.internal.model.IAPProductDetailsResponse.Success
 import com.woocommerce.android.iap.public.model.BillingErrorType
 import com.woocommerce.android.iap.public.model.IAPProduct
+import com.woocommerce.android.iap.public.model.IAPProductInfoResponse
 import com.woocommerce.android.iap.public.model.IAPProductType
 import com.woocommerce.android.iap.public.model.IAPPurchaseResponse
 import kotlinx.coroutines.Dispatchers
@@ -40,7 +41,7 @@ internal class IAPManager(
                 .setProductType(iapInMapper.mapProductTypeToIAPProductType(iapProductType))
             val purchasesResult = billingClient.queryPurchasesAsync(params.build())
 
-            if (purchasesResult.isSuccess) {
+            if (purchasesResult.billingResult.isSuccess) {
                 return@withContext handleFetchPurchasesSuccess(purchasesResult, iapProductType)
             } else {
                 return@withContext IAPPurchaseResponse.Error(
@@ -52,17 +53,45 @@ internal class IAPManager(
         }
 
     suspend fun startPurchase(iapProduct: IAPProduct): IAPPurchaseResponse =
-        when (val iapProductDetailsResponse = queryProductDetails(iapProduct.name, iapProduct.productType)) {
+        when (val iapProductDetailsResponse = fetchProductDetails(iapProduct.name, iapProduct.productType)) {
             is Success -> {
                 val flowParams = buildBillingFlowParams(iapProductDetailsResponse)
                 billingClient.launchBillingFlow(activity, flowParams)
-                suspendCoroutine { iapPurchasesUpdatedListener.waitTillNextPurchaseEvent(it) }
+                val purchasesResult = suspendCoroutine<PurchasesResult> {
+                    iapPurchasesUpdatedListener.waitTillNextPurchaseEvent(it)
+                }
+                if (purchasesResult.billingResult.isSuccess) {
+                    IAPPurchaseResponse.Success(
+                        purchasesResult.purchasesList.map {
+                            // TODO we might return purchase with wrong product details here
+                            iapOutMapper.mapPurchaseWithProductDetailsToIAPPurchase(
+                                it,
+                                iapProductDetailsResponse.productDetails
+                            )
+                        }
+                    )
+                } else {
+                    IAPPurchaseResponse.Error(
+                        iapOutMapper.mapBillingResultErrorToBillingResultType(
+                            purchasesResult.billingResult
+                        )
+                    )
+                }
             }
 
             is Error -> IAPPurchaseResponse.Error(iapProductDetailsResponse.errorType)
         }
 
-    private suspend fun queryProductDetails(
+    suspend fun fetchIAPProductInfo(iapProduct: IAPProduct): IAPProductInfoResponse {
+        return when (val response = fetchProductDetails(iapProduct.name, iapProduct.productType)) {
+            is Success -> IAPProductInfoResponse.Success(
+                iapOutMapper.mapProductDetailsToIAPProductInfo(response.productDetails.first())
+            )
+            is Error -> IAPProductInfoResponse.Error(response.errorType)
+        }
+    }
+
+    private suspend fun fetchProductDetails(
         iapProductName: String,
         iapProductType: IAPProductType,
     ): IAPProductDetailsResponse {
@@ -88,7 +117,7 @@ internal class IAPManager(
         iapProductType: IAPProductType
     ): IAPPurchaseResponse {
         val purchasesProductDetailsResponses = purchasesResult.purchasesList.map {
-            it to it.products.map { product -> queryProductDetails(product, iapProductType) }
+            it to it.products.map { product -> fetchProductDetails(product, iapProductType) }
         }
 
         purchasesProductDetailsResponses.forEach {

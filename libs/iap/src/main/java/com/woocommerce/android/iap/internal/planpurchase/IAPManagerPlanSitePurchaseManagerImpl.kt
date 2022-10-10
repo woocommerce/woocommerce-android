@@ -38,6 +38,8 @@ internal class IAPManagerPlanSitePurchaseManagerImpl(
         return response
     }
 
+    override suspend fun fetchIapProductInfo(iapProduct: IAPProduct) = iapManager.fetchIAPProductInfo(iapProduct)
+
     private fun isProductPurchased(
         response: Success,
         iapProduct: IAPProduct

@@ -1,6 +1,7 @@
 package com.woocommerce.android.iap.public
 
 import com.woocommerce.android.iap.public.model.IAPProduct
+import com.woocommerce.android.iap.public.model.IAPProductInfoResponse
 import com.woocommerce.android.iap.public.model.IAPPurchaseResponse
 
 interface IAPSitePurchasePlanManager {
@@ -13,4 +14,6 @@ interface IAPSitePurchasePlanManager {
     suspend fun isPlanPurchased(iapProduct: IAPProduct): Boolean
 
     suspend fun purchasePlan(iapProduct: IAPProduct): IAPPurchaseResponse
+
+    suspend fun fetchIapProductInfo(iapProduct: IAPProduct): IAPProductInfoResponse
 }

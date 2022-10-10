@@ -18,10 +18,13 @@ import com.android.billingclient.api.Purchase
 import com.android.billingclient.api.Purchase.PurchaseState
 import com.woocommerce.android.iap.internal.model.IAPProductDetailsResponse
 import com.woocommerce.android.iap.public.model.BillingErrorType
+import com.woocommerce.android.iap.public.model.IAPProductInfo
 import com.woocommerce.android.iap.public.model.IAPPurchase
 import com.woocommerce.android.iap.public.model.IAPPurchase.State
 import com.woocommerce.android.iap.public.model.IAPPurchase.State.PENDING
 import com.woocommerce.android.iap.public.model.IAPPurchase.State.PURCHASED
+
+private const val MILLION = 1_000_000
 
 internal class IAPOutMapper {
     fun mapProductDetailsResultToIAPProductDetailsResponse(productDetailsResult: ProductDetailsResult) =
@@ -48,12 +51,21 @@ internal class IAPOutMapper {
         signature = purchase.signature
     )
 
+    fun mapProductDetailsToIAPProductInfo(productDetails: ProductDetails) =
+        IAPProductInfo(
+            localizedTitle = productDetails.title,
+            localizedDescription = productDetails.description,
+            // TODO return currenct and amount separatly so it can be handled in the UI properly?
+            displayPrice = "${productDetails.priceOfTheFirstPurchasedOfferInMicros / MILLION}" +
+                productDetails.currencyOfTheFirstPurchasedOffer
+        )
+
     private fun mapProductDetailsToIAPProduct(productDetails: ProductDetails) =
         IAPPurchase.Product(
             id = productDetails.productId,
             name = productDetails.name,
-            price = productDetails.getPriceOfTheFirstPurchasedOfferInMicros,
-            currency = productDetails.getCurrencyOfTheFirstPurchasedOffer
+            price = productDetails.priceOfTheFirstPurchasedOfferInMicros,
+            currency = productDetails.currencyOfTheFirstPurchasedOffer
         )
 
     fun mapBillingResultErrorToBillingResultType(billingResult: BillingResult) =
