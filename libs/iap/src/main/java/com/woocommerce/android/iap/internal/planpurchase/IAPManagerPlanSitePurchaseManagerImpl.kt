@@ -43,5 +43,5 @@ internal class IAPManagerPlanSitePurchaseManagerImpl(
     private fun isProductPurchased(
         response: Success,
         iapProduct: IAPProduct
-    ) = response.purchases?.find { it.products.find { iapProduct.name == it.name } != null } != null
+    ) = response.purchases?.find { it.products.find { iapProduct.productId == it.name } != null } != null
 }

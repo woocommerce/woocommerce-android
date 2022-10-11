@@ -2,7 +2,7 @@ package com.woocommerce.android.iap.public.model
 
 sealed class IAPProductInfoResponse {
     data class Success(val productInfo: IAPProductInfo) : IAPProductInfoResponse()
-    data class Error(val errorType: BillingErrorType) : IAPProductInfoResponse()
+    data class Error(val errorType: IAPBillingErrorType) : IAPProductInfoResponse()
 }
 
 data class IAPProductInfo(

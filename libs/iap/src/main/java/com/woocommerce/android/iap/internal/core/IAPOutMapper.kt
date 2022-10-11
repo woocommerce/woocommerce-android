@@ -17,7 +17,7 @@ import com.android.billingclient.api.ProductDetailsResult
 import com.android.billingclient.api.Purchase
 import com.android.billingclient.api.Purchase.PurchaseState
 import com.woocommerce.android.iap.internal.model.IAPProductDetailsResponse
-import com.woocommerce.android.iap.public.model.BillingErrorType
+import com.woocommerce.android.iap.public.model.IAPBillingErrorType
 import com.woocommerce.android.iap.public.model.IAPProductInfo
 import com.woocommerce.android.iap.public.model.IAPPurchase
 import com.woocommerce.android.iap.public.model.IAPPurchase.State
@@ -70,18 +70,18 @@ internal class IAPOutMapper {
 
     fun mapBillingResultErrorToBillingResultType(billingResult: BillingResult) =
         when (billingResult.responseCode) {
-            USER_CANCELED -> BillingErrorType.UserCancelled(billingResult.debugMessage)
-            ITEM_ALREADY_OWNED -> BillingErrorType.ItemAlreadyOwned(billingResult.debugMessage)
-            DEVELOPER_ERROR -> BillingErrorType.DeveloperError(billingResult.debugMessage)
-            SERVICE_DISCONNECTED -> BillingErrorType.ServiceDisconnected(billingResult.debugMessage)
-            BILLING_UNAVAILABLE -> BillingErrorType.BillingUnavailable(billingResult.debugMessage)
-            ITEM_UNAVAILABLE -> BillingErrorType.ItemUnavailable(billingResult.debugMessage)
-            FEATURE_NOT_SUPPORTED -> BillingErrorType.FeatureNotSupported(billingResult.debugMessage)
-            SERVICE_TIMEOUT -> BillingErrorType.ServiceTimeout(billingResult.debugMessage)
-            SERVICE_UNAVAILABLE -> BillingErrorType.ServiceUnavailable(billingResult.debugMessage)
-            ITEM_NOT_OWNED -> BillingErrorType.ItemNotOwned(billingResult.debugMessage)
+            USER_CANCELED -> IAPBillingErrorType.UserCancelled(billingResult.debugMessage)
+            ITEM_ALREADY_OWNED -> IAPBillingErrorType.ItemAlreadyOwned(billingResult.debugMessage)
+            DEVELOPER_ERROR -> IAPBillingErrorType.DeveloperError(billingResult.debugMessage)
+            SERVICE_DISCONNECTED -> IAPBillingErrorType.ServiceDisconnected(billingResult.debugMessage)
+            BILLING_UNAVAILABLE -> IAPBillingErrorType.BillingUnavailable(billingResult.debugMessage)
+            ITEM_UNAVAILABLE -> IAPBillingErrorType.ItemUnavailable(billingResult.debugMessage)
+            FEATURE_NOT_SUPPORTED -> IAPBillingErrorType.FeatureNotSupported(billingResult.debugMessage)
+            SERVICE_TIMEOUT -> IAPBillingErrorType.ServiceTimeout(billingResult.debugMessage)
+            SERVICE_UNAVAILABLE -> IAPBillingErrorType.ServiceUnavailable(billingResult.debugMessage)
+            ITEM_NOT_OWNED -> IAPBillingErrorType.ItemNotOwned(billingResult.debugMessage)
             else -> {
-                BillingErrorType.Unknown(billingResult.debugMessage)
+                IAPBillingErrorType.Unknown(billingResult.debugMessage)
             }
         }
 

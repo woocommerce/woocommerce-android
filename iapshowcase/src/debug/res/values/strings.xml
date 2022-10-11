@@ -1,3 +1,4 @@
 <resources>
+    <string name="showcase_iap_product_info">Product info:</string>
     <string name="showcase_iap_make_purchase">Make purchase</string>
 </resources>

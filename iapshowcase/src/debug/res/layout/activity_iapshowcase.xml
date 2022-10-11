@@ -4,13 +4,56 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:gravity="center_horizontal"
+    android:orientation="vertical"
     android:padding="16dp"
     tools:context="com.woocommerce.android.iapshowcase.IAPShowcaseActivity">
 
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/showcase_iap_product_info"
+        android:textAppearance="@style/TextAppearance.AppCompat.Display1" />
+
+    <TextView
+        android:id="@+id/tvProductInfoTitle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:textAppearance="@style/TextAppearance.AppCompat.Body1"
+        tools:text="Product 1" />
+
+    <TextView
+        android:id="@+id/tvProductInfoDescription"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:textAppearance="@style/TextAppearance.AppCompat.Body1"
+        tools:text="Nice product!" />
+
+    <TextView
+        android:id="@+id/tvProductInfoPrice"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:textAppearance="@style/TextAppearance.AppCompat.Body1"
+        tools:text="5.99$" />
+
     <Button
         android:id="@+id/btnStartPurchase"
+        android:enabled="false"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
         android:text="@string/showcase_iap_make_purchase" />
+
+    <TextView
+        android:id="@+id/tvPurchaseStatusInfo"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:textAppearance="@style/TextAppearance.AppCompat.Body2"
+        android:textColor="@android:color/holo_red_dark"
+        android:textStyle="bold"
+        tools:text="Error Message " />
 
 </LinearLayout>

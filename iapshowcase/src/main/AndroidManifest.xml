@@ -3,7 +3,7 @@
 
     <application>
         <activity
-            android:theme="@style/Theme.AppCompat.DayNight"
+            android:theme="@style/Theme.AppCompat.DayNight.NoActionBar"
             android:name="com.woocommerce.android.iapshowcase.IAPShowcaseActivity"
             android:exported="true" />
     </application>

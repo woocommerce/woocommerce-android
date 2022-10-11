@@ -12,7 +12,7 @@ import com.android.billingclient.api.queryPurchasesAsync
 import com.woocommerce.android.iap.internal.model.IAPProductDetailsResponse
 import com.woocommerce.android.iap.internal.model.IAPProductDetailsResponse.Error
 import com.woocommerce.android.iap.internal.model.IAPProductDetailsResponse.Success
-import com.woocommerce.android.iap.public.model.BillingErrorType
+import com.woocommerce.android.iap.public.model.IAPBillingErrorType
 import com.woocommerce.android.iap.public.model.IAPProduct
 import com.woocommerce.android.iap.public.model.IAPProductInfoResponse
 import com.woocommerce.android.iap.public.model.IAPProductType
@@ -53,7 +53,7 @@ internal class IAPManager(
         }
 
     suspend fun startPurchase(iapProduct: IAPProduct): IAPPurchaseResponse =
-        when (val iapProductDetailsResponse = fetchProductDetails(iapProduct.name, iapProduct.productType)) {
+        when (val iapProductDetailsResponse = fetchProductDetails(iapProduct.productId, iapProduct.productType)) {
             is Success -> {
                 val flowParams = buildBillingFlowParams(iapProductDetailsResponse)
                 billingClient.launchBillingFlow(activity, flowParams)
@@ -83,7 +83,7 @@ internal class IAPManager(
         }
 
     suspend fun fetchIAPProductInfo(iapProduct: IAPProduct): IAPProductInfoResponse {
-        return when (val response = fetchProductDetails(iapProduct.name, iapProduct.productType)) {
+        return when (val response = fetchProductDetails(iapProduct.productId, iapProduct.productType)) {
             is Success -> IAPProductInfoResponse.Success(
                 iapOutMapper.mapProductDetailsToIAPProductInfo(response.productDetails.first())
             )
@@ -106,7 +106,7 @@ internal class IAPManager(
             ).build()
         val productDetailsResult = billingClient.queryProductDetails(params)
         return if (productDetailsResult.productDetailsList.isNullOrEmpty()) {
-            Error(BillingErrorType.ItemUnavailable("Item $iapProductName not found"))
+            Error(IAPBillingErrorType.ItemUnavailable("Item $iapProductName not found"))
         } else {
             iapOutMapper.mapProductDetailsResultToIAPProductDetailsResponse(productDetailsResult)
         }
