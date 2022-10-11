@@ -2,6 +2,7 @@ package com.woocommerce.android.ui.orders.details
 
 import android.content.Context
 import android.os.Parcelable
+import android.util.Log
 import androidx.annotation.StringRes
 import androidx.lifecycle.LifecycleObserver
 import androidx.lifecycle.LiveData
@@ -160,6 +161,7 @@ class OrderDetailViewModel @Inject constructor(
     }
 
     fun start() {
+        Log.d("NotificationMessage", "OrderDetailsViewModel.start")
         launch {
             orderDetailRepository.getOrderById(navArgs.orderId)?.let {
                 order = it
