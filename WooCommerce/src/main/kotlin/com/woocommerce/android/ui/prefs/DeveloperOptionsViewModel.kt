@@ -27,6 +27,8 @@ class DeveloperOptionsViewModel @Inject constructor(
         )
     )
 
+    val viewStateData: LiveData<DeveloperOptionsViewState> = viewState
+
     private fun createDeveloperOptionsList(): List<ListItem> = mutableListOf(
         ToggleableListItem(
             icon = drawable.img_card_reader_connecting,
@@ -38,8 +40,6 @@ class DeveloperOptionsViewModel @Inject constructor(
             onToggled = {}
         )
     )
-
-    val viewStateData: LiveData<DeveloperOptionsViewState> = viewState
 
     data class DeveloperOptionsViewState(
         val rows: List<ListItem>
