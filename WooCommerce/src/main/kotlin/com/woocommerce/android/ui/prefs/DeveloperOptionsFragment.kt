@@ -23,18 +23,18 @@ class DeveloperOptionsFragment : BaseFragment(R.layout.fragment_developer_option
         observeViewState(binding)
     }
 
-    private fun observeViewState(binding: FragmentDeveloperOptionsBinding) {
-        viewModel.viewStateData.observe(viewLifecycleOwner) { state ->
-            (binding.developerOptionsRv.adapter as DeveloperOptionsAdapter).setItems(state.rows)
-        }
-    }
-
     private fun initViews(binding: FragmentDeveloperOptionsBinding) {
         binding.developerOptionsRv.layoutManager = LinearLayoutManager(requireContext())
         binding.developerOptionsRv.addItemDecoration(
             DividerItemDecoration(requireContext(), DividerItemDecoration.VERTICAL)
         )
         binding.developerOptionsRv.adapter = DeveloperOptionsAdapter()
+    }
+
+    private fun observeViewState(binding: FragmentDeveloperOptionsBinding) {
+        viewModel.viewStateData.observe(viewLifecycleOwner) { state ->
+            (binding.developerOptionsRv.adapter as DeveloperOptionsAdapter).setItems(state.rows)
+        }
     }
 
     override fun getFragmentTitle() = resources.getString(R.string.dev_options)
