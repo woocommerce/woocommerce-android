@@ -24,6 +24,7 @@ internal object IAPManagerFactory {
             iapOutMapper,
             iapInMapper,
             iapPurchasesUpdatedListener,
+            logWrapper,
         )
     }
 }

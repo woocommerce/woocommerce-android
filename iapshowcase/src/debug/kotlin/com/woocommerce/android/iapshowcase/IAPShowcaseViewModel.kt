@@ -35,14 +35,14 @@ class IAPShowcaseViewModel(private val iapManager: IAPSitePurchasePlanManager) :
             when (val response = iapManager.purchasePlan(iapProductToBuy)) {
                 is IAPPurchaseResponse.Success -> {
                     val purchase = response.purchases!!.first()
-                    _purchaseStatusInfo.value =
-                        "Plan ${iapProductToBuy.productId} successfully purchased. Info:" +
-                            "Token: ${purchase.purchaseToken}" +
-                            "Payload: ${purchase.developerPayload}" +
-                            "Signature: ${purchase.signature}" +
-                            "Order Id: ${purchase.orderId}" +
-                            "State: ${purchase.state}" +
-                            "Products: ${purchase.products.joinToString { ", " }}"
+                    _purchaseStatusInfo.value = "Plan ${iapProductToBuy.productId} successfully purchased." +
+                        "Info:\n" +
+                        "Token: ${purchase.purchaseToken}\n" +
+                        "Payload: ${purchase.developerPayload}\n" +
+                        "Signature: ${purchase.signature}\n" +
+                        "Order Id: ${purchase.orderId}\n" +
+                        "State: ${purchase.state}\n" +
+                        "Products: ${purchase.products.joinToString { ", " }}"
                 }
                 is IAPPurchaseResponse.Error -> _purchaseStatusInfo.value = response.errorType.debugMessage
             }

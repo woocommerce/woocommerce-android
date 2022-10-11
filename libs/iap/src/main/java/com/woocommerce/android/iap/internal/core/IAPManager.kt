@@ -12,6 +12,8 @@ import com.android.billingclient.api.queryPurchasesAsync
 import com.woocommerce.android.iap.internal.model.IAPProductDetailsResponse
 import com.woocommerce.android.iap.internal.model.IAPProductDetailsResponse.Error
 import com.woocommerce.android.iap.internal.model.IAPProductDetailsResponse.Success
+import com.woocommerce.android.iap.public.IAP_LOG_TAG
+import com.woocommerce.android.iap.public.LogWrapper
 import com.woocommerce.android.iap.public.model.IAPBillingErrorType
 import com.woocommerce.android.iap.public.model.IAPProduct
 import com.woocommerce.android.iap.public.model.IAPProductInfoResponse
@@ -27,6 +29,7 @@ internal class IAPManager(
     private val iapOutMapper: IAPOutMapper,
     private val iapInMapper: IAPInMapper,
     private val iapPurchasesUpdatedListener: IAPPurchasesUpdatedListener,
+    private val logWrapper: LogWrapper,
 ) {
     private val billingClient: BillingClient
         get() = iapLifecycleObserver.billingClient
@@ -37,6 +40,7 @@ internal class IAPManager(
 
     suspend fun fetchPurchases(iapProductType: IAPProductType): IAPPurchaseResponse =
         withContext(Dispatchers.IO) {
+            waitBillingClientInitialisation()
             val params = QueryPurchasesParams.newBuilder()
                 .setProductType(iapInMapper.mapProductTypeToIAPProductType(iapProductType))
             val purchasesResult = billingClient.queryPurchasesAsync(params.build())
@@ -82,35 +86,43 @@ internal class IAPManager(
             is Error -> IAPPurchaseResponse.Error(iapProductDetailsResponse.errorType)
         }
 
-    suspend fun fetchIAPProductInfo(iapProduct: IAPProduct): IAPProductInfoResponse {
-        return when (val response = fetchProductDetails(iapProduct.productId, iapProduct.productType)) {
-            is Success -> IAPProductInfoResponse.Success(
-                iapOutMapper.mapProductDetailsToIAPProductInfo(response.productDetails.first())
-            )
-            is Error -> IAPProductInfoResponse.Error(response.errorType)
+    suspend fun fetchIAPProductInfo(iapProduct: IAPProduct): IAPProductInfoResponse =
+        withContext(Dispatchers.IO) {
+            waitBillingClientInitialisation()
+            when (val response = fetchProductDetails(iapProduct.productId, iapProduct.productType)) {
+                is Success -> IAPProductInfoResponse.Success(
+                    iapOutMapper.mapProductDetailsToIAPProductInfo(response.productDetails.first())
+                )
+                is Error -> IAPProductInfoResponse.Error(response.errorType)
+            }
         }
-    }
 
     private suspend fun fetchProductDetails(
         iapProductName: String,
         iapProductType: IAPProductType,
-    ): IAPProductDetailsResponse {
-        val params = QueryProductDetailsParams.newBuilder()
-            .setProductList(
-                listOf(
-                    QueryProductDetailsParams.Product.newBuilder()
-                        .setProductId(iapProductName)
-                        .setProductType(iapInMapper.mapProductTypeToIAPProductType(iapProductType))
-                        .build()
-                )
-            ).build()
-        val productDetailsResult = billingClient.queryProductDetails(params)
-        return if (productDetailsResult.productDetailsList.isNullOrEmpty()) {
-            Error(IAPBillingErrorType.ItemUnavailable("Item $iapProductName not found"))
-        } else {
-            iapOutMapper.mapProductDetailsResultToIAPProductDetailsResponse(productDetailsResult)
+    ): IAPProductDetailsResponse =
+        withContext(Dispatchers.IO) {
+            val params = QueryProductDetailsParams.newBuilder()
+                .setProductList(
+                    listOf(
+                        QueryProductDetailsParams.Product.newBuilder()
+                            .setProductId(iapProductName)
+                            .setProductType(iapInMapper.mapProductTypeToIAPProductType(iapProductType))
+                            .build()
+                    )
+                ).build()
+            val productDetailsResult = billingClient.queryProductDetails(params)
+            logWrapper.d(
+                IAP_LOG_TAG,
+                "queryProductDetails result: ${productDetailsResult.billingResult}, " +
+                    "${productDetailsResult.productDetailsList?.joinToString { ", " }}"
+            )
+            if (productDetailsResult.productDetailsList.isNullOrEmpty()) {
+                Error(IAPBillingErrorType.ItemUnavailable("Item $iapProductName not found"))
+            } else {
+                iapOutMapper.mapProductDetailsResultToIAPProductDetailsResponse(productDetailsResult)
+            }
         }
-    }
 
     private suspend fun handleFetchPurchasesSuccess(
         purchasesResult: PurchasesResult,
@@ -135,6 +147,10 @@ internal class IAPManager(
                 )
             }
         )
+    }
+
+    private suspend fun waitBillingClientInitialisation() {
+        iapLifecycleObserver.waitTillConnectionEstablished()
     }
 
     private fun buildBillingFlowParams(iapProductDetailsResponse: Success): BillingFlowParams {
