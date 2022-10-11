@@ -51,7 +51,7 @@ class DeveloperOptionsAdapter :
                 return oldItem.label == newItem.label
             }
             if (oldItem is NonToggleableListItem && newItem is NonToggleableListItem) {
-                return (oldItem.label == newItem.label && oldItem.isEnabled == newItem.isEnabled)
+                return oldItem.label == newItem.label
             }
             return false
         }
