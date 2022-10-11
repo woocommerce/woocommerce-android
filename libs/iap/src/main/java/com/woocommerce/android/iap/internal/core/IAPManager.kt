@@ -156,6 +156,8 @@ internal class IAPManager(
     private fun buildBillingFlowParams(iapProductDetailsResponse: Success): BillingFlowParams {
         val productDetailsParams = iapProductDetailsResponse.productDetails.map { productDetails ->
             ProductDetailsParams.newBuilder()
+                // TODO support for multiple offers?
+                .setOfferToken(productDetails.subscriptionOfferDetails!!.first().offerToken)
                 .setProductDetails(productDetails)
                 .build()
         }
