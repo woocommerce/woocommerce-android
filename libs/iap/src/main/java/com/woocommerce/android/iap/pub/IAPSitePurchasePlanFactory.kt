@@ -1,4 +1,4 @@
-package com.woocommerce.android.iap.public
+package com.woocommerce.android.iap.pub
 
 import androidx.appcompat.app.AppCompatActivity
 import com.woocommerce.android.iap.internal.planpurchase.IAPManagerPlanSitePurchaseManagerImpl

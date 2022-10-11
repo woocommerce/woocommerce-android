@@ -1,6 +1,6 @@
-package com.woocommerce.android.iap.public.model
+package com.woocommerce.android.iap.pub.model
 
-import com.woocommerce.android.iap.public.model.IAPProductType.SUBS
+import com.woocommerce.android.iap.pub.model.IAPProductType.SUBS
 
 sealed class IAPProduct(val productId: String, val productType: IAPProductType) {
     object WPPremiumPlan : IAPProduct("premium_plan", SUBS)

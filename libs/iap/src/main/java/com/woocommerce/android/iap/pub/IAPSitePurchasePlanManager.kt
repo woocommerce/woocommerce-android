@@ -1,8 +1,8 @@
-package com.woocommerce.android.iap.public
+package com.woocommerce.android.iap.pub
 
-import com.woocommerce.android.iap.public.model.IAPProduct
-import com.woocommerce.android.iap.public.model.IAPProductInfoResponse
-import com.woocommerce.android.iap.public.model.IAPPurchaseResponse
+import com.woocommerce.android.iap.pub.model.IAPProduct
+import com.woocommerce.android.iap.pub.model.IAPProductInfoResponse
+import com.woocommerce.android.iap.pub.model.IAPPurchaseResponse
 
 interface IAPSitePurchasePlanManager {
     /**

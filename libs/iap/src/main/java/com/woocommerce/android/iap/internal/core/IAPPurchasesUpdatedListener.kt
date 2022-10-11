@@ -4,8 +4,8 @@ import com.android.billingclient.api.BillingResult
 import com.android.billingclient.api.Purchase
 import com.android.billingclient.api.PurchasesResult
 import com.android.billingclient.api.PurchasesUpdatedListener
-import com.woocommerce.android.iap.public.IAP_LOG_TAG
-import com.woocommerce.android.iap.public.LogWrapper
+import com.woocommerce.android.iap.pub.IAP_LOG_TAG
+import com.woocommerce.android.iap.pub.LogWrapper
 import kotlin.coroutines.Continuation
 import kotlin.coroutines.resume
 

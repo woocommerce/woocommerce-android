@@ -7,8 +7,8 @@ import com.android.billingclient.api.BillingClient
 import com.android.billingclient.api.BillingClientStateListener
 import com.android.billingclient.api.BillingResult
 import com.android.billingclient.api.PurchasesUpdatedListener
-import com.woocommerce.android.iap.public.IAP_LOG_TAG
-import com.woocommerce.android.iap.public.LogWrapper
+import com.woocommerce.android.iap.pub.IAP_LOG_TAG
+import com.woocommerce.android.iap.pub.LogWrapper
 import java.util.Collections
 import kotlin.coroutines.Continuation
 import kotlin.coroutines.resume

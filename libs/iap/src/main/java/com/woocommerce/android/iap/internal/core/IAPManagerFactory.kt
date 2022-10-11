@@ -1,7 +1,7 @@
 package com.woocommerce.android.iap.internal.core
 
 import androidx.appcompat.app.AppCompatActivity
-import com.woocommerce.android.iap.public.LogWrapper
+import com.woocommerce.android.iap.pub.LogWrapper
 
 internal object IAPManagerFactory {
     fun createIAPManager(

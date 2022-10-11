@@ -1,7 +1,7 @@
 package com.woocommerce.android.iapshowcase
 
-import com.woocommerce.android.iap.public.IAPStore
-import com.woocommerce.android.iap.public.model.IAPProduct
+import com.woocommerce.android.iap.pub.IAPStore
+import com.woocommerce.android.iap.pub.model.IAPProduct
 
 class IAPShowcaseStore : IAPStore {
     override fun confirmOrderOnServer(iapProduct: IAPProduct) {

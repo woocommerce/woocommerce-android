@@ -1,4 +1,4 @@
-package com.woocommerce.android.iap.public
+package com.woocommerce.android.iap.pub
 
 const val IAP_LOG_TAG = "IAP"
 

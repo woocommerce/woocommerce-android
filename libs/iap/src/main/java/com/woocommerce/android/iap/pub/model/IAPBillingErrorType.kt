@@ -1,4 +1,4 @@
-package com.woocommerce.android.iap.public.model
+package com.woocommerce.android.iap.pub.model
 
 sealed class IAPBillingErrorType(val debugMessage: String) {
     class UserCancelled(debugMessage: String) : IAPBillingErrorType(debugMessage)

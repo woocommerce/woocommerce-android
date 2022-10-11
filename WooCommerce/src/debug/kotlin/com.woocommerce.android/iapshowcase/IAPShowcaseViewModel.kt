@@ -5,11 +5,11 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
-import com.woocommerce.android.iap.public.IAPSitePurchasePlanManager
-import com.woocommerce.android.iap.public.model.IAPProduct
-import com.woocommerce.android.iap.public.model.IAPProductInfo
-import com.woocommerce.android.iap.public.model.IAPProductInfoResponse
-import com.woocommerce.android.iap.public.model.IAPPurchaseResponse
+import com.woocommerce.android.iap.pub.IAPSitePurchasePlanManager
+import com.woocommerce.android.iap.pub.model.IAPProduct
+import com.woocommerce.android.iap.pub.model.IAPProductInfo
+import com.woocommerce.android.iap.pub.model.IAPProductInfoResponse
+import com.woocommerce.android.iap.pub.model.IAPPurchaseResponse
 import kotlinx.coroutines.launch
 
 private val iapProductToBuy = IAPProduct.WPPremiumPlanTesting

@@ -1,4 +1,4 @@
-package com.woocommerce.android.iap.public.model
+package com.woocommerce.android.iap.pub.model
 
 sealed class IAPProductInfoResponse {
     data class Success(val productInfo: IAPProductInfo) : IAPProductInfoResponse()

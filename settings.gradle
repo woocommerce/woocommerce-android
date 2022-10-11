@@ -134,4 +134,3 @@ if (localBuilds.exists()) {
         }
     }
 }
-include ':iapshowcase'

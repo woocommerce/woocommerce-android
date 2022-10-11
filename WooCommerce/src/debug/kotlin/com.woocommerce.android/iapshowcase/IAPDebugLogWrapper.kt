@@ -1,7 +1,8 @@
 package com.woocommerce.android.iapshowcase
 
 import android.util.Log
-import com.woocommerce.android.iap.public.LogWrapper
+import com.woocommerce.android.BuildConfig
+import com.woocommerce.android.iap.pub.LogWrapper
 
 class IAPDebugLogWrapper : LogWrapper {
     override fun w(tag: String, message: String) {

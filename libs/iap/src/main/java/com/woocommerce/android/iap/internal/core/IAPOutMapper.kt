@@ -17,12 +17,12 @@ import com.android.billingclient.api.ProductDetailsResult
 import com.android.billingclient.api.Purchase
 import com.android.billingclient.api.Purchase.PurchaseState
 import com.woocommerce.android.iap.internal.model.IAPProductDetailsResponse
-import com.woocommerce.android.iap.public.model.IAPBillingErrorType
-import com.woocommerce.android.iap.public.model.IAPProductInfo
-import com.woocommerce.android.iap.public.model.IAPPurchase
-import com.woocommerce.android.iap.public.model.IAPPurchase.State
-import com.woocommerce.android.iap.public.model.IAPPurchase.State.PENDING
-import com.woocommerce.android.iap.public.model.IAPPurchase.State.PURCHASED
+import com.woocommerce.android.iap.pub.model.IAPBillingErrorType
+import com.woocommerce.android.iap.pub.model.IAPProductInfo
+import com.woocommerce.android.iap.pub.model.IAPPurchase
+import com.woocommerce.android.iap.pub.model.IAPPurchase.State
+import com.woocommerce.android.iap.pub.model.IAPPurchase.State.PENDING
+import com.woocommerce.android.iap.pub.model.IAPPurchase.State.PURCHASED
 
 private const val MILLION = 1_000_000
 

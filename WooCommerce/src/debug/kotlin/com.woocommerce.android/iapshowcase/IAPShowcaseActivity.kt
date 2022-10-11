@@ -5,7 +5,8 @@ import android.widget.Button
 import android.widget.TextView
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
-import com.woocommerce.android.iap.public.IAPSitePurchasePlanFactory
+import com.woocommerce.android.R
+import com.woocommerce.android.iap.pub.IAPSitePurchasePlanFactory
 
 class IAPShowcaseActivity : AppCompatActivity() {
     private val iapManager = IAPSitePurchasePlanFactory.createIAPSitePurchasePlan(
