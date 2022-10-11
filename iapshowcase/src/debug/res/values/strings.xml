@@ -1,4 +1,5 @@
 <resources>
     <string name="showcase_iap_product_info">Product info:</string>
     <string name="showcase_iap_make_purchase">Make purchase</string>
+    <string name="showcase_iap_refetch_product_info">Refetch product info</string>
 </resources>

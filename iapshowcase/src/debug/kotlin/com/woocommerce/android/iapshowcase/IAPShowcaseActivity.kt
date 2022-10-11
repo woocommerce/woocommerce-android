@@ -27,14 +27,21 @@ class IAPShowcaseActivity : AppCompatActivity() {
         findViewById<Button>(R.id.btnStartPurchase).setOnClickListener {
             viewModel.purchasePlan()
         }
+        findViewById<Button>(R.id.btnFetchAgain).setOnClickListener {
+            viewModel.fetchProductInfo()
+        }
     }
 
     private fun setupObservers() {
         viewModel.purchaseStatusInfo.observe(this) {
+            findViewById<Button>(R.id.btnFetchAgain).isEnabled = true
+
             findViewById<Button>(R.id.btnStartPurchase).isEnabled = false
             findViewById<TextView>(R.id.tvPurchaseStatusInfo).text = it
         }
         viewModel.productInfo.observe(this) {
+            findViewById<Button>(R.id.btnFetchAgain).isEnabled = false
+
             findViewById<Button>(R.id.btnStartPurchase).isEnabled = true
             findViewById<TextView>(R.id.tvProductInfoTitle).text = it.localizedTitle
             findViewById<TextView>(R.id.tvProductInfoDescription).text = it.localizedDescription

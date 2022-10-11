@@ -22,6 +22,10 @@ class IAPShowcaseViewModel(private val iapManager: IAPSitePurchasePlanManager) :
     val purchaseStatusInfo: LiveData<String> = _purchaseStatusInfo
 
     init {
+        fetchProductInfo()
+    }
+
+    fun fetchProductInfo() {
         viewModelScope.launch {
             when (val response = iapManager.fetchIapProductInfo(iapProductToBuy)) {
                 is IAPProductInfoResponse.Success -> _productInfo.value = response.productInfo
