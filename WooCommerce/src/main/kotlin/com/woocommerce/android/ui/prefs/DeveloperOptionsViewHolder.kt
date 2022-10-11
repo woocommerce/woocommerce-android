@@ -36,9 +36,7 @@ abstract class DeveloperOptionsViewHolder(val parent: ViewGroup, @LayoutRes layo
             binding.developerOptionsSwitch.isClickable = uiState.isEnabled
             binding.developerOptionsSwitch.isChecked = uiState.isChecked
             binding.developerOptionsSwitch.setOnCheckedChangeListener { _, isChecked ->
-                if (uiState.isEnabled) {
                     uiState.onToggled(isChecked)
-                }
             }
         }
     }
