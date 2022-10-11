@@ -196,6 +196,18 @@
     </fragment>
 
     <action
+        android:id="@+id/action_global_orderDetailsFragment"
+        app:destination="@id/orderDetailFragment">
+        <argument
+            android:name="orderId"
+            app:argType="long" />
+        <argument
+            android:name="remoteNoteId"
+            android:defaultValue="0L"
+            app:argType="long" />
+    </action>
+
+    <action
         android:id="@+id/action_global_feedbackSurveyFragment"
         app:destination="@id/feedbackSurveyFragment" />
     <fragment
