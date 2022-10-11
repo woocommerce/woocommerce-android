@@ -37,8 +37,8 @@
         android:id="@+id/imageView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:adjustViewBounds="true"
         android:layout_marginTop="@dimen/major_400"
+        android:adjustViewBounds="true"
         android:importantForAccessibility="no"
         android:src="@drawable/img_prologue_reviews"
         app:layout_constraintEnd_toEndOf="parent"
@@ -51,15 +51,15 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
-        android:gravity="center"
-        android:textStyle="bold"
-        tools:layout_width="200dp"
         android:layout_marginTop="@dimen/major_300"
+        android:gravity="center"
+        android:text="@string/lets_get_started"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toTopOf="@id/newToWooButton"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/imageView"
-        app:layout_constraintBottom_toTopOf="@id/newToWooButton"
-        android:text="@string/lets_get_started" />
+        tools:layout_width="200dp" />
 
     <com.google.android.material.button.MaterialButton
         android:id="@+id/newToWooButton"
@@ -69,10 +69,10 @@
         android:layout_marginBottom="@dimen/major_150"
         android:text="@string/login_prologue_new_to_woo"
         android:textAllCaps="false"
-        app:layout_constraintTop_toBottomOf="@id/prologueTitle"
         app:layout_constraintBottom_toTopOf="@id/button_login_wpcom"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/prologueTitle" />
 
     <com.google.android.material.button.MaterialButton
         android:id="@+id/button_login_wpcom"
@@ -95,6 +95,19 @@
         android:layout_marginBottom="@dimen/major_150"
         android:text="@string/login_store_address"
         android:textAllCaps="false"
+        app:layout_constraintBottom_toTopOf="@id/button_get_started" />
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/button_get_started"
+        style="@style/Woo.Button.Colored.White"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/major_100"
+        android:layout_marginEnd="@dimen/major_100"
+        android:layout_marginBottom="@dimen/major_150"
+        android:text="@string/login_get_started"
+        android:textAllCaps="false"
+        android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
