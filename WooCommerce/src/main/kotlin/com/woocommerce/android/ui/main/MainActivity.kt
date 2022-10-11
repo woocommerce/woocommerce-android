@@ -850,14 +850,16 @@ class MainActivity :
         remoteNoteId: Long,
         launchedFromNotification: Boolean
     ) {
+        crashLogging.recordEvent("Opening order $orderId")
         if (launchedFromNotification) {
             binding.bottomNav.currentPosition = ORDERS
             binding.bottomNav.active(ORDERS.position)
+            OrderListFragmentDirections.actionGlobalOrderDetailsFragment(orderId, remoteNoteId)
+                .apply { navController.navigateSafely(this) }
+        } else {
+            OrderListFragmentDirections.actionOrderListFragmentToOrderDetailFragment(orderId, remoteNoteId)
+                .apply { navController.navigateSafely(this) }
         }
-
-        val action = OrderListFragmentDirections.actionGlobalOrderDetailsFragment(orderId, remoteNoteId)
-        crashLogging.recordEvent("Opening order $orderId")
-        navController.navigateSafely(action)
     }
 
     override fun showOrderDetailWithSharedTransition(
