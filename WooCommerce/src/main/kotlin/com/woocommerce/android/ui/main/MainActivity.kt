@@ -855,7 +855,7 @@ class MainActivity :
             binding.bottomNav.active(ORDERS.position)
         }
 
-        val action = OrderListFragmentDirections.actionOrderListFragmentToOrderDetailFragment(orderId, remoteNoteId)
+        val action = OrderListFragmentDirections.actionGlobalOrderDetailsFragment(orderId, remoteNoteId)
         crashLogging.recordEvent("Opening order $orderId")
         navController.navigateSafely(action)
     }
