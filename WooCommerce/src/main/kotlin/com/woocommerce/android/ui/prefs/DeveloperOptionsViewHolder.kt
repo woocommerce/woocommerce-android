@@ -31,7 +31,7 @@ abstract class DeveloperOptionsViewHolder(val parent: ViewGroup, @LayoutRes layo
                 itemView.context,
                 uiState.label
             )
-            binding.enableSimulatedCardReaderIcon.setImageResource(uiState.icon)
+            binding.developerOptionsToggleableIcon.setImageResource(uiState.icon)
             binding.developerOptionsSwitch.isEnabled = uiState.isEnabled
             binding.developerOptionsSwitch.isClickable = uiState.isEnabled
             binding.developerOptionsSwitch.isChecked = uiState.isChecked

@@ -7,7 +7,7 @@
     android:background="@color/color_surface">
 
     <androidx.appcompat.widget.AppCompatImageView
-        android:id="@+id/enableSimulatedCardReaderIcon"
+        android:id="@+id/developerOptionsToggleableIcon"
         android:layout_width="100dp"
         android:layout_height="100dp"
         android:layout_marginTop="0.5dp"
@@ -25,7 +25,7 @@
         android:paddingEnd="@dimen/major_100"
         android:textColor="@color/color_on_surface"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toEndOf="@id/enableSimulatedCardReaderIcon"
+        app:layout_constraintStart_toEndOf="@id/developerOptionsToggleableIcon"
         app:layout_constraintTop_toTopOf="parent"
         tools:text="Enable Simulated Card Reader" />
 
