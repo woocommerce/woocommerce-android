@@ -74,9 +74,9 @@ android {
         if (project.hasProperty("versionName")) {
             versionName project.property("versionName")
         } else {
-            versionName "10.6-rc-1"
+            versionName "10.7-rc-1"
         }
-        versionCode 337
+        versionCode 341
 
         minSdkVersion gradle.ext.minSdkVersion
         // Update targetSdkVersion only after reviewing all the OS changes (developer.android.com/about/versions/[ENTER_ANDROID_VERSION]/migration)
@@ -207,6 +207,7 @@ dependencies {
 
     implementation "androidx.navigation:navigation-fragment-ktx:$gradle.ext.navigationVersion"
     implementation "androidx.navigation:navigation-ui-ktx:$gradle.ext.navigationVersion"
+    api "androidx.navigation:navigation-dynamic-features-fragment:$gradle.ext.navigationVersion"
 
     implementation "androidx.work:work-runtime-ktx:$workManagerVersion"
 
@@ -247,6 +248,7 @@ dependencies {
     }
 
     implementation project(":libs:cardreader")
+    implementation project(":libs:barcode")
 
     implementation 'com.facebook.shimmer:shimmer:0.5.0'
     implementation 'com.github.chrisbanes:PhotoView:2.3.0'

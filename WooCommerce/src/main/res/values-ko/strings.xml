@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2022-09-28 13:58:01+0000
+Translation-Revision-Date: 2022-10-04 15:54:03+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: ko_KR
@@ -103,6 +103,7 @@ Language: ko_KR
     <string name="support_system_status_report_share_label">시스템 상태 보고서 공유</string>
     <string name="support_system_status_report_copy_label">클립보드에 시스템 상태 보고서 복사</string>
     <string name="card_reader_connect_keep_searching_button">계속 검색</string>
+    <string name="card_reader_payment_description_v2">%2$s blog_id %3$s에 대한 주문 #%1$s 직접 결제.</string>
     <string name="card_reader_manage_payment_provider">결제 제공업체 변경</string>
     <string name="orderdetail_refunded_line_with_info">환불됨: %1$s</string>
     <string name="orderdetail_payment_summary_onhold_plain">결제 대기 중</string>
@@ -186,6 +187,7 @@ Language: ko_KR
     <string name="shipping_label_install_wc_shipping_banner_button">우커머스 배송 가져오기</string>
     <string name="shipping_label_install_wc_shipping_banner_description">우커머스 배송을 통해 스마트폰의 레이블을 인쇄하세요.</string>
     <string name="shipping_label_install_wc_shipping_banner_title">배송 레이블이 필요하신가요?</string>
+    <string name="order_creation_change_product_quantity">%1$d에서 %2$d(으)로 상품 수량 변경</string>
     <string name="variations_bulk_update_regular_price">정상 가격 업데이트</string>
     <string name="variations_bulk_update_sale_price">할인 가격 업데이트</string>
     <string name="card_reader_onboarding_stripe_unsupported_in_country_header">%1$s에서 WooCommerce Stripe 확장 기능은 지원되지 않습니다.</string>
@@ -1388,6 +1390,7 @@ Language: ko_KR
     <string name="product_width">가로</string>
     <string name="product_length">길이</string>
     <string name="order_refunds_refund_info_title">환불된 제품</string>
+    <string name="order_refunds_detail_item_description">%1$s(%2$s x %3$d)</string>
     <string name="order_refunds_method">%2$s을(를) 통한 %1$s</string>
     <string name="order_refunds_confirmation">환불을 발행하시겠습니까? 취소할 수 없습니다.</string>
     <string name="orderdetail_refunded_products">환불된 제품</string>
@@ -1427,6 +1430,7 @@ Language: ko_KR
     <string name="order_refunds_select_quantity">수량 선택</string>
     <string name="order_refunds_shipping_refund">배송비 환불</string>
     <string name="order_refunds_products_refund">제품 환불</string>
+    <string name="order_refunds_item_description">각각 %1$s x %2$s</string>
     <string name="order_refunds_items_selected">%d개 항목 선택됨</string>
     <string name="order_refunds_items_select_none">아무것도 선택하지 않음</string>
     <string name="order_refunds_items_select_all">모두 선택</string>
@@ -1437,6 +1441,7 @@ Language: ko_KR
     <string name="image_source_device_chooser">기기에서 선택</string>
     <string name="image_source_title">업로드 방법 선택</string>
     <string name="product_images_upload_channel_title">업로드</string>
+    <string name="product_images_uploading_multi_notif_message">이미지 업로드 중…%1$d/%2$d개</string>
     <string name="product_images_uploading_single_notif_message">이미지 업로드 중…</string>
     <string name="product_images_camera_error">카메라에 액세스할 수 없습니다.</string>
     <string name="product_image_remove_confirmation">이 이미지를 제거하시겠습니까?</string>
@@ -2157,6 +2162,7 @@ Language: ko_KR
     <string name="login_nostores_content_description">우커머스 스토어 없음</string>
     <string name="login_avatar_content_description">프로필 사진</string>
     <string name="login_connected_store">연결된 스토어</string>
+    <string name="login_configure_link">%1$s구성 지침%2$s을 읽어보세요.</string>
     <string name="login_jetpack_required">이 앱에서 회원님의 스토어에 연결하려면 젯팩이 있어야 합니다.</string>
     <string name="at_username">\@%s</string>
     <string name="enter_site_address">연결하려는 WooCommerce 스토어의 주소를 입력합니다.</string>

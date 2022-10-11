@@ -10,7 +10,6 @@ import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import com.woocommerce.android.extensions.navigateBackWithNotice
-import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.support.HelpActivity
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
@@ -21,10 +20,10 @@ import com.woocommerce.android.ui.login.LoginEmailHelpDialogFragment.Listener
 import com.woocommerce.android.ui.login.accountmismatch.AccountMismatchErrorViewModel.NavigateToEmailHelpDialogEvent
 import com.woocommerce.android.ui.login.accountmismatch.AccountMismatchErrorViewModel.NavigateToHelpScreen
 import com.woocommerce.android.ui.login.accountmismatch.AccountMismatchErrorViewModel.NavigateToLoginScreen
-import com.woocommerce.android.ui.login.accountmismatch.AccountMismatchErrorViewModel.NavigateToSiteAddressEvent
 import com.woocommerce.android.ui.login.accountmismatch.AccountMismatchErrorViewModel.OnJetpackConnectedEvent
 import com.woocommerce.android.ui.main.AppBarStatus
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowDialog
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowUiStringSnackbar
 import dagger.hilt.android.AndroidEntryPoint
@@ -78,16 +77,21 @@ class AccountMismatchErrorFragment : BaseFragment(), Listener {
                         it.show(parentFragmentManager, LoginEmailHelpDialogFragment.TAG)
                     }
                 }
-                is NavigateToSiteAddressEvent -> findNavController().navigateSafely(
-                    AccountMismatchErrorFragmentDirections
-                        .actionAccountMismatchErrorFragmentToSitePickerSiteDiscoveryFragment()
-                )
                 is NavigateToLoginScreen -> navigateToLoginScreen()
                 is OnJetpackConnectedEvent -> onJetpackConnected(event)
                 is ShowSnackbar -> uiMessageResolver.showSnack(event.message)
                 is ShowUiStringSnackbar -> uiMessageResolver.showSnack(event.message)
-                is Exit -> findNavController().navigateUp()
+                is ShowDialog -> event.showDialog()
+                is Exit -> navigateBack()
             }
+        }
+    }
+
+    private fun navigateBack() {
+        if (requireActivity() is LoginActivity) {
+            parentFragmentManager.popBackStack()
+        } else {
+            findNavController().navigateUp()
         }
     }
 

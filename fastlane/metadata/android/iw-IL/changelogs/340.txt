@@ -1,0 +1,2 @@
+10.6:
+בגרסה הזאת, אנחנו מתמקדים בשיפור של כמה דברים ובתיקון של באגים קטנים שהצוות שלנו איתר. Don’t be fooled – we are working on some pretty cool stuff for you all, like making it easier for you to login to the app using the autofill option! נשמח להמשיך לקבל משוב, זה עוזר לנו להבין על מה כדאי לנו לעבוד בשלב הבא. 💜

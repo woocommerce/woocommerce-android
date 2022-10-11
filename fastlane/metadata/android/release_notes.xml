@@ -1,12 +1,68 @@
 <ar>
-10.5:
-لقد أضفنا مربعًا جانبيًا للإحصاءات الجديدة إلى التطبيق! ما عليك سوى الضغط ضغطًا مطولاً على أيقونة WooCommerce، واضغط على المربعات الجانبية، ثم اسحب المربع الجانبي "اليوم" إلى شاشتك الرئيسية. إننا نرحب بملاحظاتك حول التطبيق، وخاصة الميزات الجديدة التي نعمل على طرحها.
+10.6:
+بالنسبة إلى هذا الإصدار، لقد ركزنا على تلميع بعض الأشياء ومراعاة الأخطاء الطفيفة التي وجدها فريقنا. لا تنخدع - إننا نعمل على بعض الأشياء الرائعة تمامًا التي تناسب الجميع، مثل: تسهيل تسجيلك الدخول إلى التطبيق باستخدام خيار التعبئة التلقائية! حافظ على تدفق ملاحظاتك؛ حيث إنها تساعدنا على تحديد ما يجب العمل عليه فيما بعد. 💜
 </ar>
+<de-DE>
+10.6:
+In dieser Version haben wir einige Dinge verbessert und kleinere Bugs behoben, die unser Team gefunden hat. Aber das ist noch lange nicht alles – wir arbeiten an ein paar tollen Neuerungen, wie z. B. der Autofill-Funktion zur vereinfachten Anmeldung in der App! Sendet uns weiterhin Feedback! So finden wir heraus, was wir als Nächstes optimieren können. 💜
+</de-DE>
+<es-ES>
+10.6:
+Para esta versión, nos hemos centrado en mejorar algunos aspectos y solucionar pequeños errores que nuestro equipo ha encontrado. Que no te engañen las apariencias: estamos trabajando en mejorar funciones muy interesantes para todos vosotros, como facilitaros el acceso a la aplicación mediante la opción de autocompletar. Sigue compartiendo tus opiniones, ya que nos ayudarán a averiguar en qué debemos trabajar. 💜
+</es-ES>
+<fr-FR>
+10.6 :
+Pour cette version, nous nous sommes concentrés sur l’apport d’améliorations et la résolution de bogues mineurs détectés par notre équipe. Mais rassurez-vous : il y aura des nouveautés intéressantes pour tout le monde, notamment avec l'option de remplissage automatique, qui vous permettra de vous connecter plus aisément à l'application. Continuez à nous faire part de vos commentaires ; ils nous aident à nous améliorer. 💜
+</fr-FR>
+<iw-IL>
+10.6:
+בגרסה הזאת, אנחנו מתמקדים בשיפור של כמה דברים ובתיקון של באגים קטנים שהצוות שלנו איתר. Don’t be fooled – we are working on some pretty cool stuff for you all, like making it easier for you to login to the app using the autofill option! נשמח להמשיך לקבל משוב, זה עוזר לנו להבין על מה כדאי לנו לעבוד בשלב הבא. 💜
+</iw-IL>
+<id>
+10.6:
+Untuk rilis kali ini, kami fokus memoles beberapa hal dan mengatasi bug minor yang ditemukan oleh tim. Jangan terkecoh – kami sedang mengerjakan hal-hal yang menakjubkan untuk Anda semua, seperti mempermudah Anda untuk login ke aplikasi dengan pilihan isi otomatis! Terus kirimkan feedback Anda untuk memberi tahu kami apa yang harus ditingkatkan selanjutnya. 💜
+</id>
+<it-IT>
+10.6:
+Per questo rilascio, ci siamo concentrati sul perfezionamento di alcuni dettagli e ci siamo occupati dei piccoli bug riscontrati dal nostro team. Non lasciarti ingannare: stiamo lavorando su alcune cose interessanti per tutti voi, come rendere più facile l'accesso all'app utilizzando l'opzione di compilazione automatica! Continua a inviarci il tuo feedback; ci aiuta a capire su cosa lavorare in futuro. 💜
+</it-IT>
+<ja-JP>
+10.6:
+今回のリリースでは、いくつかの点を改善し、チームが発見したマイナーなバグの修正を行いました。 自動入力オプションでアプリへのログインを簡単にするなど、ユーザーの皆様に満足いただける変更を行っています。 引き続きフィードバックをお待ちしております。いただいたご意見は、今後の製品改善に役立たせていただきます。 💜
+</ja-JP>
+<ko-KR>
+10.6:
+이 릴리스에서는 몇 가지 사항을 개선하고 팀에서 발견한 사소한 버그를 처리하는 데 집중했습니다. 기대를 저버리지 마세요. 자동 완성 옵션을 사용하여 앱에 더 쉽게 로그인할 수 있도록 하는 등 회원님 여러분 모두를 위해 아주 멋진 몇 가지 작업을 진행하고 있습니다! 피드백을 계속 보내주세요. 다음에 작업할 내용을 파악하는 데 도움이 됩니다. 💜
+</ko-KR>
+<nl-NL>
+10.6:
+Met deze release hebben we ons gefocust op het gladstrijken van wat dingen en het oplossen van kleine bugs die ons team tegenkwam. Maar dat is niet alles – we werken ook aan gave dingen voor jullie, zoals het makkelijker maken om in te loggen in de app met de autofill-optie. Blijf komen met jullie feedback; dat helpt ons kiezen waar we aan moeten werken.
+</nl-NL>
+<pt-BR>
+10.6:
+Para esta versão, focamos em algumas melhorias e na correção de bugs irrelevantes que a nossa equipe encontrou. Mas não se engane! Estamos trabalhando em novidades bem legais para vocês, como facilitar o login no aplicativo usando a opção de preenchimento automático. Continue dando feedback, ele nos ajuda a saber no que trabalhar em seguida. 💜
+</pt-BR>
 <ru-RU>
-10.5:
-В приложении появился новый виджет статистики. Просто нажмите и удерживайте значок WooCommerce, коснитесь элемента "Виджеты", а затем перетащите виджет "Сегодня" на главный экран. Мы будем рады вашим отзывам о приложении, особенно о новых разрабатываемых функциях.
+10.6:
+В этом выпуске усовершенствованы некоторые возможности и исправлены незначительные ошибки. А ещё мы работаем над классными функциями, например стараемся упростить вход в приложение с помощью автозаполнения. Оставляйте свои отзывы, они помогают нам выявлять области для дальнейшего улучшения. 💜
 </ru-RU>
+<sv-SE>
+10.6:
+Med den här versionen har vi fokuserat på att förfina ett par saker och att åtgärda några mindre fel som vårt team hittade. Låt dig inte luras – vi har några riktigt häftiga saker på gång för er, exempelvis enklare inloggning i appen med automatisk ifyllning. Fortsätt att lämna feedback. Det hjälper oss att lista ut vad vi ska hitta på härnäst. 💜
+</sv-SE>
+<tr-TR>
+10.6:
+Bu sürümde birkaç şeyi düzeltmeye ve ekibimizin bulduğu küçük hataları gidermeye odaklandık. Ama sadece bu kadar değil. Otomatik doldurma seçeneğini kullanarak uygulamada oturum açmanızı kolaylaştırmak gibi hepiniz için oldukça güzel şeyler üzerinde çalışıyoruz! Geri bildirimleriniz devam etsin; üzerinde çalışacağımız sıradaki özelliği bulmamıza yardımcı oluyor. 💜
+</tr-TR>
+<zh-CN>
+10.6：
+我们在此版本中重点完善了一些新内容，并处理了我们团队发现的一些小错误。 不要被误导了，我们始终致力于为大家提供一些很酷的内容，例如确保您能够使用自动填充选项更轻松地登录应用程序！ 请随时提供您的反馈，为我们接下来的工作提供灵感。💜
+</zh-CN>
+<zh-TW>
+10.6：
+在此版本中，我們著重於改善一些項目，並修正團隊發現的小錯誤。 Don’t be fooled – we are working on some pretty cool stuff for you all, like making it easier for you to login to the app using the autofill option! 歡迎提供意見回饋；這有助於我們找到接下來努力的方向。💜
+</zh-TW>
 <en-US>
-10.5:
-We've added a new stats widget to the app! Simply long press on the WooCommerce icon, tap Widgets, then drag the Today widget to your home screen. We welcome your feedback on the app, especially the new features we’re working on.
+10.6:
+For this release, we focused on polishing a few things and taking care of minor bugs that our team found. Don’t be fooled – we are working on some pretty cool stuff for you all, like making it easier for you to login to the app using the autofill option! Keep your feedback rolling in; it helps us figure out what to work on next. 💜
 </en-US>

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2022-10-02 20:17:59+0000
+Translation-Revision-Date: 2022-10-04 09:54:04+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: ja_JP
@@ -103,6 +103,7 @@ Language: ja_JP
     <string name="support_system_status_report_share_label">システムステータスレポートを共有</string>
     <string name="support_system_status_report_copy_label">システムステータスレポートをクリップボードにコピー</string>
     <string name="card_reader_connect_keep_searching_button">検索を続行</string>
+    <string name="card_reader_payment_description_v2">%2$s blog_id %3$s への注文 #%1$sのオフラインでの支払い。</string>
     <string name="card_reader_manage_payment_provider">決済サービス業者を変更</string>
     <string name="orderdetail_refunded_line_with_info">返金済み: %1$s</string>
     <string name="orderdetail_payment_summary_onhold_plain">支払い待ち</string>
@@ -186,6 +187,7 @@ Language: ja_JP
     <string name="shipping_label_install_wc_shipping_banner_button">WooCommerce Shipping を入手</string>
     <string name="shipping_label_install_wc_shipping_banner_description">WooCommerce Shipping を使用してスマートフォンからラベルを印刷します。</string>
     <string name="shipping_label_install_wc_shipping_banner_title">配送ラベルが必要な場合</string>
+    <string name="order_creation_change_product_quantity">商品数量を%1$dから%2$dに変更</string>
     <string name="variations_bulk_update_regular_price">通常価格を更新</string>
     <string name="variations_bulk_update_sale_price">販売価格を更新</string>
     <string name="card_reader_onboarding_stripe_unsupported_in_country_header">%1$s では WooCommerce Stripe 拡張機能がサポートされていません</string>
@@ -1439,6 +1441,7 @@ Language: ja_JP
     <string name="image_source_device_chooser">デバイスから選択</string>
     <string name="image_source_title">アップロード方法を選択</string>
     <string name="product_images_upload_channel_title">アップロード</string>
+    <string name="product_images_uploading_multi_notif_message">画像をアップロードしています… %1$d/%2$d</string>
     <string name="product_images_uploading_single_notif_message">画像をアップロードしています…</string>
     <string name="product_images_camera_error">カメラにアクセスできません</string>
     <string name="product_image_remove_confirmation">画像を削除してもよいですか ?</string>
@@ -2159,6 +2162,7 @@ Language: ja_JP
     <string name="login_nostores_content_description">WooCommerce ストアがありません</string>
     <string name="login_avatar_content_description">自分のプロフィール写真</string>
     <string name="login_connected_store">連携ストア</string>
+    <string name="login_configure_link">%1$s設定に関する指示%2$sを参照してください。</string>
     <string name="login_jetpack_required">このアプリを使用するには、Jetpack をストアに連携させる必要があります。</string>
     <string name="at_username">\@%s</string>
     <string name="enter_site_address">連携させる WooCommerce ストアのアドレスを入力してください。</string>
