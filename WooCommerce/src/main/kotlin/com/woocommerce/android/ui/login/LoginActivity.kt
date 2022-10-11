@@ -672,7 +672,7 @@ class LoginActivity :
         userAvatarUrl: String?,
         checkJetpackAvailability: Boolean
     ) {
-        if (connectSiteInfo?.isJetpackInstalled == true && connectSiteInfo?.isJetpackActive == true) {
+        if (connectSiteInfo?.isJetpackActive == true && connectSiteInfo?.isJetpackConnected == true) {
             // If jetpack is present, but we can't find the connected email, then show account mismatch error
             val fragment = AccountMismatchErrorFragment().apply {
                 arguments = AccountMismatchErrorFragmentArgs(
@@ -979,7 +979,7 @@ class LoginActivity :
             connectSiteInfo = event.info.let {
                 ConnectSiteInfo(
                     isWPCom = it.isWPCom,
-                    isJetpackInstalled = it.isJetpackConnected,
+                    isJetpackConnected = it.isJetpackConnected,
                     isJetpackActive = it.isJetpackActive
                 )
             }
@@ -989,7 +989,7 @@ class LoginActivity :
     @Parcelize
     private data class ConnectSiteInfo(
         val isWPCom: Boolean,
-        val isJetpackInstalled: Boolean,
+        val isJetpackConnected: Boolean,
         val isJetpackActive: Boolean
     ) : Parcelable
 }
