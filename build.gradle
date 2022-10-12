@@ -64,7 +64,8 @@ def detektAll = tasks.register("detektAll", io.gitlab.arturbosch.detekt.Detekt) 
 
 def detektAutoCorrectPrompt = tasks.register("detektAutoCorrectPrompt") {
     doLast {
-        if (detektAll.get().state.failure != null) {
+        def detektTask = detektAll.get()
+        if (detektTask.state.failure != null && !detektTask.autoCorrect) {
             println ".-----------------------------------------------------------------------------------------------------------------------------------.\n" +
                     "| 🛠  Did you know: you can ask Detekt to automatically resolve some of the issues by running `./gradlew detektAll --auto-correct` |\n" +
                     "'-----------------------------------------------------------------------------------------------------------------------------------'"
