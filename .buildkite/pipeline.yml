@@ -34,7 +34,7 @@ steps:
     command: |
       echo "--- 🧪 Testing"
       cp gradle.properties-example gradle.properties
-      ./gradlew testJalapenoDebug lib:cardreader:testDebug lib:iap:testDebug
+      ./gradlew testJalapenoDebug lib:cardreader:testDebug
       echo "--- ⚒️ Generating and uploading code coverage"
       ./gradlew jacocoTestReport
       .buildkite/commands/upload-code-coverage.sh
