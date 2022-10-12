@@ -105,7 +105,7 @@
         android:layout_marginStart="@dimen/major_100"
         android:layout_marginEnd="@dimen/major_100"
         android:layout_marginBottom="@dimen/major_150"
-        android:text="@string/login_get_started"
+        android:text="@string/signup_get_started_button"
         android:textAllCaps="false"
         android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="parent" />

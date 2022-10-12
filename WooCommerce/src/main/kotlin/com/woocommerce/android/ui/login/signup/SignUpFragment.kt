@@ -23,7 +23,7 @@ class SignUpFragment : BaseFragment() {
 
             setContent {
                 WooThemeWithBackground {
-                    //TODO add layout
+                    SignUpScreen()
                 }
             }
         }

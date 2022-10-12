@@ -202,7 +202,6 @@
     <string name="login_with_store_address">Log in with your store address</string>
     <string name="login_configure_link">Read the %1$sconfiguration instructions%2$s.</string>
     <string name="login_with_qr_code">Scan QR code to login</string>
-    <string name="login_get_started">Get started</string>
 
     <string name="login_prologue_label_analytics">Track sales and high performing products</string>
     <string name="login_prologue_label_orders">Manage and edit orders on the go</string>
@@ -313,6 +312,16 @@
     <string name="my_store_stats_availability_title">We can\'t display your\n store\'s analytics</string>
     <string name="my_store_stats_availability_description">Make sure you are running the latest version of WooCommerce on your site and that you have WooCommerce Admin activated.\n\nStill need help? %1$s</string>
     <string name="my_store_stats_availability_contact_us">Contact us</string>
+
+    <!--
+        Sign Up Flow
+    -->
+    <string name="signup_get_started_button">Get started</string>
+    <string name="signup_get_started_label">Get started \nin minutes</string>
+    <string name="signup_already_registered">First, let’s create your account. Already registered? Log in</string>
+    <string name="signup_email_address_hint">Your email address</string>
+    <string name="signup_password_hint">Choose a password</string>
+    <string name="signup_accept_terms_of_service">By continuing, you agree to our Terms of Service.</string>
 
     <!--
         Analytics View
