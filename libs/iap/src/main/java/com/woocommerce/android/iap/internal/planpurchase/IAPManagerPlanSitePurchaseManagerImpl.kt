@@ -6,6 +6,7 @@ import com.woocommerce.android.iap.pub.IAPSitePurchasePlanManager
 import com.woocommerce.android.iap.pub.IAPStore
 import com.woocommerce.android.iap.pub.LogWrapper
 import com.woocommerce.android.iap.pub.model.IAPProduct
+import com.woocommerce.android.iap.pub.model.IAPPurchase
 import com.woocommerce.android.iap.pub.model.IAPPurchaseResponse
 import com.woocommerce.android.iap.pub.model.IAPPurchaseResponse.Error
 import com.woocommerce.android.iap.pub.model.IAPPurchaseResponse.Success
@@ -19,15 +20,7 @@ internal class IAPManagerPlanSitePurchaseManagerImpl(
 
     override suspend fun isPlanPurchased(iapProduct: IAPProduct): Boolean {
         return when (val response = iapManager.fetchPurchases(iapProduct.productType)) {
-            is Success -> {
-                val isPurchased = isProductPurchased(response, iapProduct)
-                if (isPurchased) {
-                    iapStore.confirmOrderOnServer(iapProduct)
-                    true
-                } else {
-                    false
-                }
-            }
+            is Success -> isProductPurchased(response, iapProduct)
             is Error -> false
         }
     }
@@ -43,5 +36,6 @@ internal class IAPManagerPlanSitePurchaseManagerImpl(
     private fun isProductPurchased(
         response: Success,
         iapProduct: IAPProduct
-    ) = response.purchases?.find { it.products.find { iapProduct.productId == it.name } != null } != null
+    ) = response.purchases?.find { it.products.find { iapProduct.productId == it.id } != null }?.state ==
+        IAPPurchase.State.PURCHASED
 }
