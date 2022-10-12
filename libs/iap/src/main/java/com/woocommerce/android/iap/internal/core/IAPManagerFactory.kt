@@ -1,12 +1,12 @@
 package com.woocommerce.android.iap.internal.core
 
 import androidx.appcompat.app.AppCompatActivity
-import com.woocommerce.android.iap.pub.LogWrapper
+import com.woocommerce.android.iap.pub.IAPLogWrapper
 
 internal object IAPManagerFactory {
     fun createIAPManager(
         activity: AppCompatActivity,
-        logWrapper: LogWrapper
+        logWrapper: IAPLogWrapper
     ): IAPManager {
         val iapOutMapper = IAPOutMapper()
         val iapPurchasesUpdatedListener = IAPPurchasesUpdatedListener(

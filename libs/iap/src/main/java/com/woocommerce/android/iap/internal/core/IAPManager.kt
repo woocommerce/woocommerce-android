@@ -12,8 +12,8 @@ import com.android.billingclient.api.queryPurchasesAsync
 import com.woocommerce.android.iap.internal.model.IAPProductDetailsResponse
 import com.woocommerce.android.iap.internal.model.IAPProductDetailsResponse.Error
 import com.woocommerce.android.iap.internal.model.IAPProductDetailsResponse.Success
+import com.woocommerce.android.iap.pub.IAPLogWrapper
 import com.woocommerce.android.iap.pub.IAP_LOG_TAG
-import com.woocommerce.android.iap.pub.LogWrapper
 import com.woocommerce.android.iap.pub.model.IAPBillingErrorType
 import com.woocommerce.android.iap.pub.model.IAPProduct
 import com.woocommerce.android.iap.pub.model.IAPProductInfoResponse
@@ -29,7 +29,7 @@ internal class IAPManager(
     private val iapOutMapper: IAPOutMapper,
     private val iapInMapper: IAPInMapper,
     private val iapPurchasesUpdatedListener: IAPPurchasesUpdatedListener,
-    private val logWrapper: LogWrapper,
+    private val logWrapper: IAPLogWrapper,
 ) {
     private val billingClient: BillingClient
         get() = iapLifecycleObserver.billingClient
