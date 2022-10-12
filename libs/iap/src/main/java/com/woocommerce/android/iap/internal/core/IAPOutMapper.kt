@@ -56,7 +56,7 @@ internal class IAPOutMapper {
             localizedTitle = productDetails.title,
             localizedDescription = productDetails.description,
             // TODO return currenct and amount separatly so it can be handled in the UI properly?
-            displayPrice = "${productDetails.priceOfTheFirstPurchasedOfferInMicros / MILLION}" +
+            displayPrice = "${productDetails.priceOfTheFirstPurchasedOfferInMicros / MILLION} " +
                 productDetails.currencyOfTheFirstPurchasedOffer
         )
 
