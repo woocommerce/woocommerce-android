@@ -76,7 +76,7 @@ object AppUrls {
     const val LOGIN_WITH_EMAIL_WHAT_IS_WORDPRESS_COM_ACCOUNT =
         "https://woocommerce.com/document/what-is-a-wordpress-com-account/"
 
-    const val NEW_TO_WOO_DOC = "https://woocommerce.com/document/woocommerce-features"
+    const val NEW_TO_WOO_DOC = "https://woocommerce.com/woocommerce-features"
 
     private const val LOGIN_HELP_CENTER = "https://woocommerce.com/document/android-ios-apps-login-help-faq/"
     val LOGIN_HELP_CENTER_URLS = mapOf(

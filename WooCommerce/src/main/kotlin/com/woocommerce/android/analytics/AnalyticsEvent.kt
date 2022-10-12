@@ -108,6 +108,8 @@ enum class AnalyticsEvent(val siteless: Boolean = false) {
     LOGIN_JETPACK_CONNECT_COMPLETED(siteless = true),
     LOGIN_JETPACK_CONNECT_DISMISSED(siteless = true),
     LOGIN_JETPACK_CONNECTION_VERIFICATION_FAILED(siteless = true),
+    LOGIN_WITH_QR_CODE_BUTTON_TAPPED(siteless = true),
+    LOGIN_WITH_QR_CODE_SCANNED(siteless = true),
 
     // -- Site Picker
     SITE_PICKER_STORES_SHOWN(siteless = true),
@@ -691,7 +693,6 @@ enum class AnalyticsEvent(val siteless: Boolean = false) {
 
     // Experiments (A/B test variants)
     PROLOGUE_EXPERIMENT,
-    MAGIC_LINK_SENT_SCREEN_EXPERIMENT,
     JETPACK_TIMEOUT_EXPERIMENT,
 
     // Widgets

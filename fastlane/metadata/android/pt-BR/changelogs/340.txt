@@ -1,0 +1,2 @@
+10.6:
+Para esta versão, focamos em algumas melhorias e na correção de bugs irrelevantes que a nossa equipe encontrou. Mas não se engane! Estamos trabalhando em novidades bem legais para vocês, como facilitar o login no aplicativo usando a opção de preenchimento automático. Continue dando feedback, ele nos ajuda a saber no que trabalhar em seguida. 💜

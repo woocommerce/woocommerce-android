@@ -24,6 +24,8 @@ class DeveloperOptionsFragment : BaseFragment(R.layout.fragment_developer_option
         return binding.root
     }
 
+    override fun getFragmentTitle() = resources.getString(R.string.dev_options)
+
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null

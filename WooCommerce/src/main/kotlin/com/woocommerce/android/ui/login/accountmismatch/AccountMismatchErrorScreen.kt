@@ -32,8 +32,6 @@ import androidx.compose.material.TopAppBar
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.derivedStateOf
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -72,33 +70,19 @@ fun AccountMismatchErrorScreen(viewModel: AccountMismatchErrorViewModel) {
     val webViewNavigator = rememberWebViewNavigator()
 
     viewModel.viewState.observeAsState().value?.let { viewState ->
-        val overrideBackButton by derivedStateOf {
-            viewState is ViewState.JetpackWebViewState ||
-                viewState is ViewState.SiteCredentialsViewState
-        }
-        val goBack = {
-            when (val state = viewModel.viewState.value) {
-                is ViewState.JetpackWebViewState -> state.onDismiss()
-                is ViewState.SiteCredentialsViewState -> state.onCancel()
-                else -> {
-                    // NO-OP
-                }
-            }
-        }
-
-        BackHandler(overrideBackButton, onBack = goBack)
+        BackHandler(onBack = viewState.onBackPressed)
 
         Scaffold(topBar = {
             TopAppBar(
                 backgroundColor = MaterialTheme.colors.surface,
                 title = { },
                 navigationIcon = {
-                    if (overrideBackButton) {
+                    if (viewState.showNavigationIcon) {
                         IconButton(onClick = {
                             if (webViewNavigator.canGoBack) {
                                 webViewNavigator.navigateBack()
                             } else {
-                                goBack()
+                                viewState.onBackPressed()
                             }
                         }) {
                             Icon(Icons.Filled.ArrowBack, contentDescription = "Back")
@@ -407,7 +391,9 @@ private fun AccountMismatchPreview() {
                 secondaryButtonText = R.string.continue_button,
                 secondaryButtonAction = {},
                 inlineButtonText = R.string.continue_button,
-                inlineButtonAction = {}
+                inlineButtonAction = {},
+                showNavigationIcon = true,
+                onBackPressed = {}
             )
         )
     }

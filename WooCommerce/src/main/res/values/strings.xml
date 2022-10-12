@@ -201,6 +201,7 @@
     <string name="login_store_address">Enter your store address</string>
     <string name="login_with_store_address">Log in with your store address</string>
     <string name="login_configure_link">Read the %1$sconfiguration instructions%2$s.</string>
+    <string name="login_with_qr_code">Scan QR code to login</string>
 
     <string name="login_prologue_label_analytics">Track sales and high performing products</string>
     <string name="login_prologue_label_orders">Manage and edit orders on the go</string>
@@ -271,12 +272,15 @@
     <string name="login_site_picker_enter_site_address">Enter a site address</string>
     <string name="site_discovery_postlogin_failure">A failure occurred, please contact support</string>
     <string name="login_site_picker_new_to_woo">New to WooCommerce</string>
-    <string name="login_connect_jetpack_button">Connect Jetpack to your account</string>
     <string name="login_simple_wpcom_site">The site %1$s is currently on a WordPress.com plan that does not support plugin installation. Please upgrade your plan to use WooCommerce.</string>
     <string name="login_jetpack_connection_verification_failed">Cannot verify your Jetpack connection. Please try again.</string>
     <string name="login_jetpack_verify_connection">Verifying Jetpack connection…</string>
     <string name="login_jetpack_connection_url_failed">Fetching connection data failed…</string>
     <string name="login_2fa_not_supported_self_hosted_site">2FA not supported for self-hosted sites. Please use an app-password.</string>
+    <string name="login_account_mismatch_connect_jetpack">Connect Jetpack to your account</string>
+    <string name="login_account_mismatch_connect_wpcom">Connect to the site</string>
+    <string name="login_account_mismatch_connect_wpcom_dialog_title">Connecting to a WordPress.com site</string>
+    <string name="login_account_mismatch_connect_wpcom_dialog_message">Please contact the site owner for an invitation to the site as a shop manager or administrator to use the app.</string>
     <!--
         My Store View
     -->
@@ -1705,6 +1709,7 @@
     <string name="settings_about_title">About WooCommerce</string>
     <string name="settings_about_recommend_app_subject">WooCommerce</string>
     <string name="settings_about_recommend_app_message">Hey! Here is a link to download the WooCommerce app. I\'m really enjoying it and thought you might too. %1$s</string>
+    <string name="dev_options">Developer Options</string>
     <!--
         WCToggleSingleOptionView
     -->
@@ -2179,6 +2184,12 @@
     <string name="login_help_notification_wordpress_login_button">Log in with WordPress.com</string>
     <string name="login_help_notification_invalid_password_title">Can\'t remember your password?</string>
     <string name="login_help_notification_get_link_by_email_button">Get a login link by email</string>
+
+    <!-- Qr code login -->
+    <string name="qr_code_login_scanner_title">Camera Barcode Scanner</string>
+    <string name="qr_code_login_camera_permission_denied_title">Camera Access Needed</string>
+    <string name="qr_code_login_camera_permission_denied_message">To use this feature, kindly allow the permissions to use your camera.</string>
+    <string name="qr_code_login_edit_camera_permission">Edit permissions</string>
 
     <!-- Other -->
     <string name="error_loading_image">Unable to load image</string>
