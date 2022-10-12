@@ -32,9 +32,9 @@ import com.woocommerce.android.ui.compose.component.WCOutlinedTextField
 import com.woocommerce.android.ui.compose.component.WCPasswordField
 
 @Composable
-fun SignUpScreen() {
+fun SignUpScreen(viewModel: SignUpViewModel) {
     Scaffold(topBar = {
-        Toolbar(onBackButtonClick = { /*TODO*/ })
+        Toolbar(onArrowBackPressed = viewModel::onBackPressed)
     }) {
         SignUpForm(onPrimaryButtonClicked = { /*TODO*/ })
     }
@@ -42,14 +42,14 @@ fun SignUpScreen() {
 
 @Composable
 private fun Toolbar(
-    onBackButtonClick: () -> Unit,
+    onArrowBackPressed: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     TopAppBar(
         backgroundColor = MaterialTheme.colors.surface,
         title = {},
         navigationIcon = {
-            IconButton(onClick = onBackButtonClick) {
+            IconButton(onClick = onArrowBackPressed) {
                 Icon(
                     Icons.Filled.ArrowBack,
                     contentDescription = stringResource(id = R.string.back)
