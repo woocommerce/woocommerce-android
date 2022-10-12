@@ -2,7 +2,6 @@ package com.woocommerce.android.ui.orders.details
 
 import android.graphics.Color
 import android.os.Bundle
-import android.util.Log
 import android.view.Menu
 import android.view.MenuInflater
 import android.view.MenuItem
@@ -137,7 +136,6 @@ class OrderDetailFragment :
     override fun getFragmentTitle() = screenTitle
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        Log.d("NotificationMessage", "OrderDetailsFragment.onViewCreated")
         super.onViewCreated(view, savedInstanceState)
 
         _binding = FragmentOrderDetailBinding.bind(view)

@@ -2,7 +2,6 @@ package com.woocommerce.android.push
 
 import android.content.Context
 import android.os.Build
-import android.util.Log
 import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsEvent.LOGIN_LOCAL_NOTIFICATION_DISMISSED
@@ -84,7 +83,6 @@ class NotificationMessageHandler @Inject constructor(
 
     @Suppress("ReturnCount", "ComplexMethod")
     fun onNewMessageReceived(messageData: Map<String, String>, appContext: Context) {
-        Log.d("NotificationMessage", "onNewMessageReceived")
         if (!accountStore.hasAccessToken()) {
             wooLogWrapper.e(NOTIFS, "User is not logged in!")
             return
