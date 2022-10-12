@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/nav_graph_login"
+    app:startDestination="@id/loginPrologueFragment">
+
+    <include app:graph="@navigation/nav_graph_store_creation" />
+
+    <fragment
+        android:id="@+id/loginPrologueFragment"
+        android:name="com.woocommerce.android.ui.login.LoginPrologueFragment"
+        android:label="fragment_login_prologue">
+        <action
+            android:id="@+id/action_loginPrologueFragment_to_signupFragment"
+            app:destination="@id/nav_graph_store_creation"
+            app:enterAnim="@anim/default_enter_anim"
+            app:exitAnim="@anim/default_exit_anim"
+            app:popEnterAnim="@anim/default_pop_enter_anim"
+            app:popExitAnim="@anim/default_pop_exit_anim" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/loginPrologueCarouselFragment"
+        android:name="com.woocommerce.android.ui.login.LoginPrologueCarouselFragment"
+        android:label="fragment_login_prologue_carousel" />
+
+</navigation>
