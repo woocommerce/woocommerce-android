@@ -44,7 +44,7 @@ subprojects {
     }
 }
 
-tasks.register("detektAll", io.gitlab.arturbosch.detekt.Detekt) {
+def detektAll = tasks.register("detektAll", io.gitlab.arturbosch.detekt.Detekt) {
     description = "Custom DETEKT build for all modules"
     parallel = true
     ignoreFailures = false
@@ -60,6 +60,20 @@ tasks.register("detektAll", io.gitlab.arturbosch.detekt.Detekt) {
         xml.enabled = true
         txt.enabled = false
     }
+}
+
+def detektAutoCorrectPrompt = tasks.register("detektAutoCorrectPrompt") {
+    doLast {
+        if (detektAll.get().state.failure != null) {
+            println ".-----------------------------------------------------------------------------------------------------------------------------------.\n" +
+                    "| 🛠  Did you know: you can ask Detekt to automatically resolve some of the issues by running `./gradlew detektAll --auto-correct` |\n" +
+                    "'-----------------------------------------------------------------------------------------------------------------------------------'"
+        }
+    }
+}
+
+detektAll.configure{
+    finalizedBy detektAutoCorrectPrompt
 }
 
 dependencies {
