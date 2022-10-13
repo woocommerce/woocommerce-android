@@ -210,9 +210,17 @@ class ProductListViewModel @Inject constructor(
     }
 
     fun onSearchRequested() {
+        val searchFilter = if (viewState.isSkuSearch) {
+            AnalyticsTracker.VALUE_SEARCH_SKU
+        } else {
+            AnalyticsTracker.VALUE_SEARCH_ALL
+        }
         AnalyticsTracker.track(
             AnalyticsEvent.PRODUCT_LIST_SEARCHED,
-            mapOf(AnalyticsTracker.KEY_SEARCH to viewState.query)
+            mapOf(
+                AnalyticsTracker.KEY_SEARCH to viewState.query,
+                AnalyticsTracker.KEY_SEARCH_FILTER to searchFilter
+            )
         )
         refreshProducts()
     }
