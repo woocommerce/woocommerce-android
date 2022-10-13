@@ -56,8 +56,8 @@ open class LoginPrologueFragment(@LayoutRes layout: Int) : Fragment(layout) {
             unifiedLoginTracker.track(Flow.PROLOGUE, Step.PROLOGUE)
         }
 
-        binding.buttonGetStarted?.isVisible = isVisible && FeatureFlag.STORE_CREATION_FLOW.isEnabled()
-        binding.buttonGetStarted?.setOnClickListener {
+        binding.buttonGetStarted.isVisible = FeatureFlag.STORE_CREATION_FLOW.isEnabled()
+        binding.buttonGetStarted.setOnClickListener {
             prologueFinishedListener?.onGetStartedClicked()
         }
     }
