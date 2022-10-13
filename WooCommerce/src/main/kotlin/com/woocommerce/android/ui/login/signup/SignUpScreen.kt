@@ -11,6 +11,8 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
 import androidx.compose.material.MaterialTheme
@@ -73,6 +75,7 @@ private fun SignUpForm(
         modifier = modifier
             .background(MaterialTheme.colors.surface)
             .fillMaxSize()
+            .verticalScroll(rememberScrollState())
             .padding(dimensionResource(id = R.dimen.major_125)),
         verticalArrangement = Arrangement.spacedBy(dimensionResource(id = R.dimen.major_100)),
     ) {
