@@ -1,6 +1,7 @@
 package com.woocommerce.android.ui.login.signup
 
 import android.content.res.Configuration
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -33,6 +34,8 @@ import com.woocommerce.android.ui.compose.component.WCPasswordField
 
 @Composable
 fun SignUpScreen(viewModel: SignUpViewModel) {
+    BackHandler(onBack = viewModel::onBackPressed)
+
     Scaffold(topBar = {
         Toolbar(onArrowBackPressed = viewModel::onBackPressed)
     }) {
@@ -100,7 +103,8 @@ private fun SignUpForm(
         Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.major_100)))
         WCColoredButton(
             modifier = Modifier.fillMaxWidth(),
-            onClick = { onPrimaryButtonClicked() }) {
+            onClick = { onPrimaryButtonClicked() }
+        ) {
             Text(text = stringResource(id = R.string.signup_get_started_button))
         }
     }
