@@ -11,4 +11,11 @@ class SignUpViewModel @Inject constructor(
     fun onBackPressed() {
         triggerEvent(MultiLiveEvent.Event.Exit)
     }
+
+    fun onTermsOfServiceClicked() {
+        triggerEvent(OnTermsOfServiceClicked)
+    }
+
+    object OnTermsOfServiceClicked : MultiLiveEvent.Event()
+
 }

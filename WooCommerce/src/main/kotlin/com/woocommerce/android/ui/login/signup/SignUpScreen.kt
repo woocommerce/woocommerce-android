@@ -1,6 +1,7 @@
 package com.woocommerce.android.ui.login.signup
 
 import android.content.res.Configuration
+import android.text.Spanned
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
@@ -12,6 +13,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.text.ClickableText
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
@@ -29,19 +31,25 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Devices
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.core.text.toSpanned
 import com.woocommerce.android.R
+import com.woocommerce.android.compose.utils.toAnnotatedString
 import com.woocommerce.android.ui.compose.component.WCColoredButton
 import com.woocommerce.android.ui.compose.component.WCOutlinedTextField
 import com.woocommerce.android.ui.compose.component.WCPasswordField
 
 @Composable
-fun SignUpScreen(viewModel: SignUpViewModel) {
+fun SignUpScreen(viewModel: SignUpViewModel, termsOfServiceText: Spanned) {
     BackHandler(onBack = viewModel::onBackPressed)
 
     Scaffold(topBar = {
         Toolbar(onArrowBackPressed = viewModel::onBackPressed)
     }) {
-        SignUpForm(onPrimaryButtonClicked = { /*TODO*/ })
+        SignUpForm(
+            termsOfServiceClicked = viewModel::onTermsOfServiceClicked,
+            termsOfServiceText = termsOfServiceText,
+            onPrimaryButtonClicked = { /*TODO*/ },
+        )
     }
 }
 
@@ -69,6 +77,8 @@ private fun Toolbar(
 @Composable
 private fun SignUpForm(
     modifier: Modifier = Modifier,
+    termsOfServiceText: Spanned,
+    termsOfServiceClicked: () -> Unit,
     onPrimaryButtonClicked: () -> Unit
 ) {
     Column(
@@ -99,9 +109,11 @@ private fun SignUpForm(
             label = stringResource(id = R.string.signup_password_hint),
             onValueChange = {},
         )
-        Text(
-            text = stringResource(id = R.string.signup_accept_terms_of_service),
+        ClickableText(
+            modifier = Modifier.fillMaxWidth(),
+            text = termsOfServiceText.toAnnotatedString(),
             style = MaterialTheme.typography.body2,
+            onClick = { termsOfServiceClicked() }
         )
         Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.major_100)))
         WCColoredButton(
@@ -121,5 +133,9 @@ private fun SignUpForm(
 @Preview(name = "large screen", device = Devices.NEXUS_10)
 @Composable
 fun SignUpFormPreview() {
-    SignUpForm(onPrimaryButtonClicked = {})
+    SignUpForm(
+        termsOfServiceText = "By continuing, you agree to our Terms of Service.".toSpanned(),
+        termsOfServiceClicked = {},
+        onPrimaryButtonClicked = {},
+    )
 }
