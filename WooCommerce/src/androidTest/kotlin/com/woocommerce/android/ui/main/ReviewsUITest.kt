@@ -13,10 +13,10 @@ import com.woocommerce.android.screenshots.reviews.ReviewsListScreen
 import com.woocommerce.android.screenshots.util.MocksReader
 import com.woocommerce.android.screenshots.util.ReviewData
 import com.woocommerce.android.screenshots.util.iterator
+import com.woocommerce.android.ui.login.LoginActivity
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
 import org.junit.Before
-import org.junit.Ignore
 import org.junit.Rule
 import org.junit.Test
 
@@ -32,23 +32,24 @@ class ReviewsUITest : TestBase() {
     val initRule = InitializationRule()
 
     @get:Rule(order = 3)
-    var activityRule = ActivityTestRule(MainActivity::class.java)
+    var activityRule = ActivityTestRule(LoginActivity::class.java)
 
     @Before
     fun setUp() {
         WelcomeScreen
-            .logoutIfNeeded(composeTestRule)
+            .skipCarouselIfNeeded()
             .selectLogin()
             .proceedWith(BuildConfig.SCREENSHOTS_URL)
             .proceedWith(BuildConfig.SCREENSHOTS_USERNAME)
             .proceedWith(BuildConfig.SCREENSHOTS_PASSWORD)
 
-        TabNavComponent().gotoMoreMenuScreen().openReviewsListScreen(composeTestRule)
+        TabNavComponent()
+            .gotoMoreMenuScreen()
+            .openReviewsListScreen(composeTestRule)
     }
 
-    @Ignore("Disabled because it fails in CI")
     @Test
-    fun reviewListShowsAllReviews() {
+    fun e2eReviewListShowsAllReviews() {
         val reviewsJSONArray = MocksReader().readAllReviewsToArray()
 
         reviewsJSONArray.iterator().forEach { review ->

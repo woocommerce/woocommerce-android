@@ -1,14 +1,43 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2022-08-18 11:54:04+0000
+Translation-Revision-Date: 2022-10-02 19:36:45+0000
 Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);
 Generator: GlotPress/2.4.0-alpha
 Language: ru
 -->
 <resources>
+    <string name="stats_widget_last_updated_message">На %1$s</string>
+    <string name="stats_widget_error_no_data">Невозможно загрузить данные</string>
+    <string name="stats_today_widget_description">Статистика WooCommerce за сегодня</string>
+    <string name="stats_today_widget_configure_title">Статистика магазина за сегодня</string>
+    <string name="stats_widget_availability_message">Аналитика для магазина недоступна Чтобы просмотреть аналитику для магазина, перейдите на последнюю версию WooCommerce.</string>
+    <string name="stats_widget_offline_error">Ваша сеть недоступна.\nПроверьте свои данные или соединение Wi-Fi.</string>
+    <string name="stats_widget_log_in_message">Войдите в приложение WooCommerce</string>
+    <string name="login_jetpack_connection_url_failed">Сбой получения данных о подключении…</string>
+    <string name="login_jetpack_verify_connection">Проверка подключения Jetpack…</string>
+    <string name="login_jetpack_connection_verification_failed">Не удалось проверить подключение Jetpack. Повторите попытку.</string>
+    <string name="login_simple_wpcom_site">Сейчас на сайте %1$s используется план WordPress.com, который не поддерживает установку плагинов. Перейдите на другой план, чтобы использовать WooCommerce.</string>
+    <string name="login_connect_jetpack_button">Подключите Jetpack к учётной записи</string>
+    <string name="login_jetpack_not_connected">Похоже, что ваша учётная запись не подключена к Jetpack %1$s</string>
+    <string name="card_reader_card_readers_header">УСТРОЙСТВА ЧТЕНИЯ КАРТ</string>
+    <string name="card_reader_payment_options_header">СПОСОБЫ ОПЛАТЫ</string>
+    <string name="card_reader_enable_pay_in_person_description">Способ оформления заказа \"Очная оплата\" позволяет вам принимать платежи за заказы на веб-сайте при получении товара покупателем. &lt;a href=\'\'&gt;Подробнее&lt;/a&gt;</string>
+    <string name="card_reader_enable_pay_in_person">Очная оплата</string>
+    <string name="login_verifying_site_jetpack_timeout_error_description">Не удалось подключиться к вашему сайту. Обратитесь в службу поддержки для устранения проблемы.</string>
+    <string name="login_verifying_site_jetpack_timeout_error_title">Ошибка подключения</string>
+    <string name="card_reader_onboarding_with_pending_requirements">Есть проблема, требующая вашего внимания. Пожалуйста, &lt;a href=\'\'&gt;изучите&lt;/a&gt; её</string>
+    <string name="login_site_picker_try_another_address">Используйте другой адрес</string>
+    <string name="card_reader_onboarding_cash_on_delivery_enable_failure">Не удалось включить наложенный платёж. Повторите попытку позже.</string>
+    <string name="card_reader_onboarding_cash_on_delivery_disabled_button">Включить опцию «Очная оплата»</string>
+    <string name="card_reader_onboarding_cash_on_delivery_disabled_error_hint">Опция «Очная оплата» позволяет вам принимать плату наличными и кредитными картами при получении товара покупателем.</string>
+    <string name="card_reader_onboarding_cash_on_delivery_disabled_error_header">Добавьте опцию «Очная оплата» для оформления заказа</string>
+    <string name="card_reader_connect_learn_more">&lt;a href=\'\'&gt;Подробности&lt;/a&gt; об очных платежах</string>
+    <string name="login_site_picker_new_to_woo">Недавно на WooCommerce</string>
+    <string name="site_discovery_postlogin_failure">Произошла ошибка, обратитесь в службу поддержки</string>
+    <string name="login_site_picker_enter_site_address">Введите адрес сайта</string>
     <string name="login_help_notification_get_link_by_email_button">Получить ссылку на вход по эл. почте</string>
     <string name="login_help_notification_invalid_password_title">Забыли пароль?</string>
-    <string name="card_reader_onboarding_not_finished">Мы заметили, что вы ещё не завершили настройку очных платежей. &lt;b&gt;&lt;a href=\'\'&gt;Продолжить настройку&lt;/a&gt;&lt;/b&gt;</string>
+    <string name="card_reader_onboarding_not_finished">Мы заметили, что вы не закончили настройку очных платежей. &lt;a href=\'\'&gt;Продолжить настройку&lt;/a&gt;</string>
     <string name="payments_hub_title">Платежи</string>
     <string name="orderlist_bottom_sheet_simple_payments_moved_button">Понятно!</string>
     <string name="orderlist_bottom_sheet_simple_payments_moved_description">Теперь можно быстро и просто получать доступ к очным платежам и другим функциям</string>
@@ -74,7 +103,7 @@ Language: ru
     <string name="support_system_status_report_share_label">Отправить отчёт о состоянии системы</string>
     <string name="support_system_status_report_copy_label">Копировать отчёт о состоянии системы в буфер обмена</string>
     <string name="card_reader_connect_keep_searching_button">Продолжить поиск</string>
-    <string name="card_reader_payment_description_v2">Оплата при получении, заказ № %s для %s blog_id %s.</string>
+    <string name="card_reader_payment_description_v2">Оплата при получении, заказ № %1$s для %2$s blog_id %3$s.</string>
     <string name="card_reader_manage_payment_provider">Изменение платёжного сервиса</string>
     <string name="orderdetail_refunded_line_with_info">Возвращенные средства: %1$s</string>
     <string name="orderdetail_payment_summary_onhold_plain">Ожидание платежа</string>
@@ -158,7 +187,7 @@ Language: ru
     <string name="shipping_label_install_wc_shipping_banner_button">Установить WooCommerce Shipping</string>
     <string name="shipping_label_install_wc_shipping_banner_description">Печатайте транспортные этикетки с телефона, используя WooCommerce Shipping.</string>
     <string name="shipping_label_install_wc_shipping_banner_title">Нужна транспортная этикетка?</string>
-    <string name="order_creation_change_product_quantity">Измените количество товара с %d на %d</string>
+    <string name="order_creation_change_product_quantity">Измените количество товара с %1$d на %2$d</string>
     <string name="variations_bulk_update_regular_price">Обновить обычную цену</string>
     <string name="variations_bulk_update_sale_price">Обновить акционную цену</string>
     <string name="card_reader_onboarding_stripe_unsupported_in_country_header">Расширение WooCommerce Stripe не поддерживается в %1$s</string>
@@ -291,8 +320,8 @@ Language: ru
     <string name="coupon_list_wip_message_enabled">Мы разработали функцию, которая позволяет просматривать и редактировать купоны на вашем устройстве.</string>
     <string name="coupon_list_wip_title">Просмотр и редактирование купонов</string>
     <string name="coupon_list_empty_heading">Купоны не найдены</string>
-    <string name="coupon_list_item_label_included_and_excluded">%1s без учёта %2s</string>
-    <string name="coupon_list_item_label_products_and_categories">%1s и %2s</string>
+    <string name="coupon_list_item_label_included_and_excluded">%1$s без учёта %2$s</string>
+    <string name="coupon_list_item_label_products_and_categories">%1$s и %2$s</string>
     <string name="coupon_list_item_label_everything">всё</string>
     <string name="coupon_list_item_label_expired">Просрочен</string>
     <string name="coupon_list_item_label_active">Активный</string>
@@ -1037,7 +1066,6 @@ Language: ru
     <string name="orderdetail_net">Чистая выплата</string>
     <string name="orderdetail_payment_paid_by_customer">Платно</string>
     <string name="login_jetpack_view_instructions_alt">Дополнительные сведения о подключении Jetpack</string>
-    <string name="login_no_stores">Нам не удалось найти магазины WooCommerce, подключенные к этой учётной записи. Чтобы использовать это приложение, нужно установить и подключить бесплатный плагин Jetpack в магазинах WooCommerce.</string>
     <string name="edit">Правка</string>
     <string name="product_images_validate_drag_and_drop">Подтвердить</string>
     <string name="product_images_drag_and_drop_description">Перетащите фотографии, чтобы изменить их порядок</string>
@@ -1362,7 +1390,7 @@ Language: ru
     <string name="product_width">Ширина</string>
     <string name="product_length">Длина</string>
     <string name="order_refunds_refund_info_title">Продукты, по которым возвращены средства</string>
-    <string name="order_refunds_detail_item_description">%s (%s x %d)</string>
+    <string name="order_refunds_detail_item_description">%1$s (%2$s x %3$d)</string>
     <string name="order_refunds_method">%1$s с помощью %2$s</string>
     <string name="order_refunds_confirmation">Вы уверены, что хотите вернуть деньги? Это действие нельзя отменить.</string>
     <string name="orderdetail_refunded_products">Продукты, по которым возвращены средства</string>
@@ -1402,7 +1430,7 @@ Language: ru
     <string name="order_refunds_select_quantity">Выбрать количество</string>
     <string name="order_refunds_shipping_refund">Возврат средств за доставку</string>
     <string name="order_refunds_products_refund">Возврат средств за продукты</string>
-    <string name="order_refunds_item_description">%s x %s каждый</string>
+    <string name="order_refunds_item_description">%1$s x %2$s каждый</string>
     <string name="order_refunds_items_selected">Выбрано элементов: %d</string>
     <string name="order_refunds_items_select_none">Ничего не выбирать</string>
     <string name="order_refunds_items_select_all">Выбрать все</string>
@@ -1413,7 +1441,7 @@ Language: ru
     <string name="image_source_device_chooser">Выбрать с устройства</string>
     <string name="image_source_title">Выберите способ загрузки</string>
     <string name="product_images_upload_channel_title">Загрузки</string>
-    <string name="product_images_uploading_multi_notif_message">Загрузка изображений…%d из %d</string>
+    <string name="product_images_uploading_multi_notif_message">Загрузка изображений…%1$d из %2$d</string>
     <string name="product_images_uploading_single_notif_message">Загрузка изображения…</string>
     <string name="product_images_camera_error">Нет доступа к камере</string>
     <string name="product_image_remove_confirmation">Вы уверены, что хотите удалить это изображение?</string>
@@ -1808,7 +1836,7 @@ Language: ru
     <string name="login_jetpack_what_is_description">Jetpack — это бесплатный плагин WordPress с дополнительными инструментами, которые обеспечивают удобное управление магазином с мобильных устройств и доступ к расширенным возможностям, например push-уведомлениям и статистике.</string>
     <string name="login_jetpack_what_is">Что такое Jetpack?</string>
     <string name="login_view_connected_stores">Открыть список подключенных магазинов</string>
-    <string name="login_not_connected_to_account">Похоже, что %1$s подключен к другой учетной записи WordPress.com.</string>
+    <string name="login_wpcom_account_mismatch">Похоже, что %1$s подключён к другой учётной записи WordPress.com.</string>
     <string name="keep_editing">Продолжить редактирование</string>
     <string name="notification_wpcom_username_needed">Please log in with your username and password.</string>
     <string name="error_user_username_instead_of_email">Войдите, используя имя пользователя WordPress.com вместо адреса электронной почты.</string>
@@ -2129,11 +2157,12 @@ Language: ru
     <string name="dashboard_stats_granularity_months">Мес.</string>
     <string name="dashboard_stats_granularity_weeks">Нед.</string>
     <string name="dashboard_stats_granularity_days">Дн.</string>
+    <string name="login_no_stores">Мы не нашли магазины WooCommerce, подключённые к этой учётной записи.</string>
     <string name="login_with_a_different_account">Войти под другой учётной записью</string>
     <string name="login_nostores_content_description">Нет магазинов WooCommerce</string>
     <string name="login_avatar_content_description">Фотография в вашем профиле</string>
     <string name="login_connected_store">Подключенный магазин</string>
-    <string name="login_configure_link">Ознакомьтесь с %sинструкциями по настройке%s.</string>
+    <string name="login_configure_link">Ознакомьтесь с %1$sинструкциями по настройке%2$s.</string>
     <string name="login_jetpack_required">Для подключения к вашему магазину этому приложению требуется Jetpack.</string>
     <string name="at_username">\@%s</string>
     <string name="enter_site_address">Введите адрес магазина WooCommerce, к которому требуется подключиться.</string>

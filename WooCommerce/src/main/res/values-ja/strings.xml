@@ -1,14 +1,43 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2022-08-17 09:54:03+0000
+Translation-Revision-Date: 2022-10-04 09:54:04+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: ja_JP
 -->
 <resources>
+    <string name="stats_widget_last_updated_message">%1$s時点</string>
+    <string name="stats_widget_error_no_data">データを読み込めませんでした</string>
+    <string name="stats_today_widget_description">WooCommerce Stats Today</string>
+    <string name="stats_today_widget_configure_title">今日のストアの統計情報</string>
+    <string name="stats_widget_availability_message">ストアアナリティクスを利用できません ! ストアアナリティクスを表示するには、WooCommerce の最新バージョンにアップグレードしてください。</string>
+    <string name="stats_widget_offline_error">お客様のネットワークが使用できません。\nデータまたは Wi-Fi 接続を確認してください。</string>
+    <string name="stats_widget_log_in_message">WooCommerce アプリにログインしてください</string>
+    <string name="login_jetpack_connection_url_failed">接続データを取得できませんでした…</string>
+    <string name="login_jetpack_verify_connection">Jetpack 接続を検証中…</string>
+    <string name="login_jetpack_connection_verification_failed">Jetpack 接続を検証できません。 もう一度お試しください。</string>
+    <string name="login_simple_wpcom_site">サイト %1$s は現在、プラグインのインストールに対応していない WordPress.com プランを利用しています。 WooCommerce を使用するには、プランをアップグレードしてください。</string>
+    <string name="login_connect_jetpack_button">Jetpack をアカウントに接続する</string>
+    <string name="login_jetpack_not_connected">アカウントと %1$s の Jetpack が接続されていないようです</string>
+    <string name="card_reader_card_readers_header">カードリーダー</string>
+    <string name="card_reader_payment_options_header">支払いオプション</string>
+    <string name="card_reader_enable_pay_in_person_description">「直接支払い」の購入手続きオプションを使用すると、サイトでの注文の支払いを集荷または配達時に受け取ることができます。 &lt;a href=\'\'&gt;さらに詳しく&lt;/a&gt;</string>
+    <string name="card_reader_enable_pay_in_person">直接支払い</string>
+    <string name="login_verifying_site_jetpack_timeout_error_description">サイトに接続できませんでした。 問題のトラブルシューティングについて、サポートにお問い合わせください。</string>
+    <string name="login_verifying_site_jetpack_timeout_error_title">接続エラー</string>
+    <string name="card_reader_onboarding_with_pending_requirements">ご確認が必要な問題があります。 &lt;a href=\'\'&gt;ご確認ください&lt;/a&gt;</string>
+    <string name="login_site_picker_try_another_address">別のアドレスを試す</string>
+    <string name="card_reader_onboarding_cash_on_delivery_enable_failure">代金引換を有効にできませんでした。 後でやり直してください。</string>
+    <string name="card_reader_onboarding_cash_on_delivery_disabled_button">直接支払いを有効化</string>
+    <string name="card_reader_onboarding_cash_on_delivery_disabled_error_hint">購入手続きの「直接支払い」オプションでは、集荷または配送時にカードまたは現金での支払いを受けることができます。</string>
+    <string name="card_reader_onboarding_cash_on_delivery_disabled_error_header">購入手続きに直接支払いを追加</string>
+    <string name="card_reader_connect_learn_more">直接支払いについて&lt;a href=\'\'&gt;詳しく読む&lt;/a&gt;。</string>
+    <string name="login_site_picker_new_to_woo">初めて WooCommerce をお使いになる場合</string>
+    <string name="site_discovery_postlogin_failure">エラーが生じました。サポートにお問い合わせください</string>
+    <string name="login_site_picker_enter_site_address">サイトアドレスを入力</string>
     <string name="login_help_notification_get_link_by_email_button">ログインリンクをメールで取得</string>
     <string name="login_help_notification_invalid_password_title">パスワードを忘れた場合</string>
-    <string name="card_reader_onboarding_not_finished">「オフラインでの支払い」の設定が完了していないようです。 &lt;b&gt;&lt;a href=\'\'&gt;セットアップを続行&lt;/a&gt;&lt;/b&gt;</string>
+    <string name="card_reader_onboarding_not_finished">「オフラインでの支払い」の設定が完了していないようです。 &lt;a href=\'\'&gt;セットアップを続行&lt;/a&gt;</string>
     <string name="payments_hub_title">支払い</string>
     <string name="orderlist_bottom_sheet_simple_payments_moved_button">分かりました。</string>
     <string name="orderlist_bottom_sheet_simple_payments_moved_description">「オフラインでの支払い」やその他の機能に簡単に素早くアクセスできるようになりました</string>
@@ -74,7 +103,7 @@ Language: ja_JP
     <string name="support_system_status_report_share_label">システムステータスレポートを共有</string>
     <string name="support_system_status_report_copy_label">システムステータスレポートをクリップボードにコピー</string>
     <string name="card_reader_connect_keep_searching_button">検索を続行</string>
-    <string name="card_reader_payment_description_v2">%s blog_id %s への注文 #%sのオフラインでの支払い。</string>
+    <string name="card_reader_payment_description_v2">%2$s blog_id %3$s への注文 #%1$sのオフラインでの支払い。</string>
     <string name="card_reader_manage_payment_provider">決済サービス業者を変更</string>
     <string name="orderdetail_refunded_line_with_info">返金済み: %1$s</string>
     <string name="orderdetail_payment_summary_onhold_plain">支払い待ち</string>
@@ -158,7 +187,7 @@ Language: ja_JP
     <string name="shipping_label_install_wc_shipping_banner_button">WooCommerce Shipping を入手</string>
     <string name="shipping_label_install_wc_shipping_banner_description">WooCommerce Shipping を使用してスマートフォンからラベルを印刷します。</string>
     <string name="shipping_label_install_wc_shipping_banner_title">配送ラベルが必要な場合</string>
-    <string name="order_creation_change_product_quantity">商品数量を%dから%dに変更</string>
+    <string name="order_creation_change_product_quantity">商品数量を%1$dから%2$dに変更</string>
     <string name="variations_bulk_update_regular_price">通常価格を更新</string>
     <string name="variations_bulk_update_sale_price">販売価格を更新</string>
     <string name="card_reader_onboarding_stripe_unsupported_in_country_header">%1$s では WooCommerce Stripe 拡張機能がサポートされていません</string>
@@ -291,8 +320,8 @@ Language: ja_JP
     <string name="coupon_list_wip_message_enabled">デバイスからクーポンを表示、編集できる機能を開発中です !</string>
     <string name="coupon_list_wip_title">クーポンを表示して編集する</string>
     <string name="coupon_list_empty_heading">クーポンが見つかりません</string>
-    <string name="coupon_list_item_label_included_and_excluded">%1s (%2s を除く)</string>
-    <string name="coupon_list_item_label_products_and_categories">%1s、%2s</string>
+    <string name="coupon_list_item_label_included_and_excluded">%1$s (%2$s を除く)</string>
+    <string name="coupon_list_item_label_products_and_categories">%1$s、%2$s</string>
     <string name="coupon_list_item_label_everything">すべて</string>
     <string name="coupon_list_item_label_expired">期限切れ</string>
     <string name="coupon_list_item_label_active">有効</string>
@@ -1037,7 +1066,6 @@ Language: ja_JP
     <string name="orderdetail_net">支払額 (正味)</string>
     <string name="orderdetail_payment_paid_by_customer">支払済み</string>
     <string name="login_jetpack_view_instructions_alt">Jetpack の連携について詳しく読む</string>
-    <string name="login_no_stores">このアカウントに連携している WooCommerce ストアが見つかりません このアプリを使用するには、無料の Jetpack プラグインを WooCommerce ストアにインストールして連携させる必要があります。</string>
     <string name="edit">編集</string>
     <string name="product_images_validate_drag_and_drop">認証</string>
     <string name="product_images_drag_and_drop_description">写真の順序を変更するにはドラッグ &amp; ドロップしてください</string>
@@ -1362,7 +1390,7 @@ Language: ja_JP
     <string name="product_width">横幅</string>
     <string name="product_length">長さ</string>
     <string name="order_refunds_refund_info_title">返金済み商品</string>
-    <string name="order_refunds_detail_item_description">%s (%s x %d)</string>
+    <string name="order_refunds_detail_item_description">%1$s (%2$s x %3$d)</string>
     <string name="order_refunds_method">%2$s により %1$s</string>
     <string name="order_refunds_confirmation">返金を受けますか ?この操作は元に戻すことができません。</string>
     <string name="orderdetail_refunded_products">返金済み商品</string>
@@ -1402,7 +1430,7 @@ Language: ja_JP
     <string name="order_refunds_select_quantity">数量を選択</string>
     <string name="order_refunds_shipping_refund">配送料の返金</string>
     <string name="order_refunds_products_refund">商品の返金</string>
-    <string name="order_refunds_item_description">各 %s x %s</string>
+    <string name="order_refunds_item_description">各 %1$s x %2$s</string>
     <string name="order_refunds_items_selected">%d項目を選択済み</string>
     <string name="order_refunds_items_select_none">選択しない</string>
     <string name="order_refunds_items_select_all">すべて選択</string>
@@ -1413,7 +1441,7 @@ Language: ja_JP
     <string name="image_source_device_chooser">デバイスから選択</string>
     <string name="image_source_title">アップロード方法を選択</string>
     <string name="product_images_upload_channel_title">アップロード</string>
-    <string name="product_images_uploading_multi_notif_message">画像をアップロードしています…%d件中%d件</string>
+    <string name="product_images_uploading_multi_notif_message">画像をアップロードしています… %1$d/%2$d</string>
     <string name="product_images_uploading_single_notif_message">画像をアップロードしています…</string>
     <string name="product_images_camera_error">カメラにアクセスできません</string>
     <string name="product_image_remove_confirmation">画像を削除してもよいですか ?</string>
@@ -1808,7 +1836,7 @@ Language: ja_JP
     <string name="login_jetpack_what_is_description">Jetpack は WordPress の無料のプラグインであり、ストアをモバイルでの最適な操作に必要なツール (プッシュ通知および統計を含む) と接続します。</string>
     <string name="login_jetpack_what_is">Jetpack とは ?</string>
     <string name="login_view_connected_stores">連携ストアを表示</string>
-    <string name="login_not_connected_to_account">%1$s は別の WordPress.com アカウントと関連付けられているようです。</string>
+    <string name="login_wpcom_account_mismatch">%1$s は別の WordPress.com アカウントと関連付けられているようです。</string>
     <string name="keep_editing">編集を続行</string>
     <string name="notification_wpcom_username_needed">ユーザー名とパスワードでログインしてください。</string>
     <string name="error_user_username_instead_of_email">メールアドレスではなく WordPress.com ユーザー名を使用してログインしてください。</string>
@@ -2129,11 +2157,12 @@ Language: ja_JP
     <string name="dashboard_stats_granularity_months">月</string>
     <string name="dashboard_stats_granularity_weeks">週</string>
     <string name="dashboard_stats_granularity_days">日</string>
+    <string name="login_no_stores">このアカウントに連携している WooCommerce ストアが見つかりません</string>
     <string name="login_with_a_different_account">別のアカウントでログインします</string>
     <string name="login_nostores_content_description">WooCommerce ストアがありません</string>
     <string name="login_avatar_content_description">自分のプロフィール写真</string>
     <string name="login_connected_store">連携ストア</string>
-    <string name="login_configure_link">%s設定手順%sを参照してください。</string>
+    <string name="login_configure_link">%1$s設定に関する指示%2$sを参照してください。</string>
     <string name="login_jetpack_required">このアプリを使用するには、Jetpack をストアに連携させる必要があります。</string>
     <string name="at_username">\@%s</string>
     <string name="enter_site_address">連携させる WooCommerce ストアのアドレスを入力してください。</string>

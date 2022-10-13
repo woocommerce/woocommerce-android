@@ -1,2 +1,0 @@
-9.9:
-Esta versão tem algumas melhorias na sua experiência de login, incluindo a opção de instalar o WooCommerce a partir do aplicativo. Também temos uma nova seção de Pagamentos, no aplicativo vá até o menu Mais para começar a usar-los.

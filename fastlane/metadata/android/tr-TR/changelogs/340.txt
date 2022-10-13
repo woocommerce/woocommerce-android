@@ -1,0 +1,2 @@
+10.6:
+Bu sürümde birkaç şeyi düzeltmeye ve ekibimizin bulduğu küçük hataları gidermeye odaklandık. Ama sadece bu kadar değil. Otomatik doldurma seçeneğini kullanarak uygulamada oturum açmanızı kolaylaştırmak gibi hepiniz için oldukça güzel şeyler üzerinde çalışıyoruz! Geri bildirimleriniz devam etsin; üzerinde çalışacağımız sıradaki özelliği bulmamıza yardımcı oluyor. 💜

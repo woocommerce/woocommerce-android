@@ -13,14 +13,13 @@ import com.woocommerce.android.screenshots.login.WelcomeScreen
 import com.woocommerce.android.screenshots.mystore.MyStoreScreen
 import com.woocommerce.android.screenshots.notifications.NotificationsScreen
 import com.woocommerce.android.screenshots.orders.CardReaderPaymentScreen
-import com.woocommerce.android.screenshots.orders.OrderCreationScreen
+import com.woocommerce.android.screenshots.orders.UnifiedOrderScreen
 import com.woocommerce.android.screenshots.products.ProductListScreen
 import com.woocommerce.android.ui.main.MainActivity
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
 import org.junit.After
 import org.junit.Before
-import org.junit.Ignore
 import org.junit.Rule
 import org.junit.Test
 import tools.fastlane.screengrab.Screengrab
@@ -66,7 +65,6 @@ class ScreenshotTest : TestBase(failOnUnmatchedWireMockRequests = false) {
         CleanStatusBar.disable()
     }
 
-    @Ignore("Disabled because it fails in CI")
     @Test
     fun screenshots() {
         val testedTheme: String? = InstrumentationRegistry.getArguments().getString("theme")
@@ -98,7 +96,7 @@ class ScreenshotTest : TestBase(failOnUnmatchedWireMockRequests = false) {
             .gotoOrdersScreen()
             .createFABTap()
             .newOrderTap()
-            .thenTakeScreenshot<OrderCreationScreen>("add-order")
+            .thenTakeScreenshot<UnifiedOrderScreen>("add-order")
             .goBackToOrdersScreen()
 
         // Capture In-Person Payment

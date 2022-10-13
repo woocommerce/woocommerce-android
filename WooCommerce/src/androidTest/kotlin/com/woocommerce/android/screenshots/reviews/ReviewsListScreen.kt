@@ -17,6 +17,7 @@ class ReviewsListScreen : Screen(LIST_VIEW) {
 
     fun selectReviewByTitle(reviewTitle: String): SingleReviewScreen {
         selectListItem(reviewTitle, LIST_VIEW)
+        waitForElementToBeDisplayed(R.id.review_product_name)
         return SingleReviewScreen()
     }
 

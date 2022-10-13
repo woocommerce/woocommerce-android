@@ -33,11 +33,11 @@ import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.base.TopLevelFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.main.AppBarStatus
+import com.woocommerce.android.ui.main.MainActivity
 import com.woocommerce.android.ui.main.MainNavigationRouter
 import com.woocommerce.android.ui.mystore.MyStoreViewModel.MyStoreEvent.OpenTopPerformer
 import com.woocommerce.android.ui.mystore.MyStoreViewModel.OrderState
 import com.woocommerce.android.ui.mystore.MyStoreViewModel.RevenueStatsViewState
-import com.woocommerce.android.ui.mystore.MyStoreViewModel.TopPerformersViewState
 import com.woocommerce.android.ui.mystore.MyStoreViewModel.VisitorStatsViewState
 import com.woocommerce.android.util.ActivityUtils
 import com.woocommerce.android.util.CurrencyFormatter
@@ -57,7 +57,6 @@ import javax.inject.Inject
 import kotlin.math.abs
 
 @AndroidEntryPoint
-@Suppress("ForbiddenComment")
 @OptIn(FlowPreview::class)
 class MyStoreFragment : TopLevelFragment(R.layout.fragment_my_store) {
     companion object {
@@ -119,7 +118,6 @@ class MyStoreFragment : TopLevelFragment(R.layout.fragment_my_store) {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        setHasOptionsMenu(true)
 
         initTabLayout()
 
@@ -200,10 +198,10 @@ class MyStoreFragment : TopLevelFragment(R.layout.fragment_my_store) {
             }
         }
         viewModel.topPerformersState.observe(viewLifecycleOwner) { topPerformers ->
-            when (topPerformers) {
-                is TopPerformersViewState.Loading -> showTopPerformersLoading()
-                is TopPerformersViewState.Error -> showTopPerformersError()
-                is TopPerformersViewState.Content -> showTopPerformers(topPerformers.topPerformers)
+            when {
+                topPerformers.isLoading -> showTopPerformersLoading()
+                topPerformers.isError -> showTopPerformersError()
+                else -> showTopPerformers(topPerformers.topPerformers)
             }
         }
         viewModel.hasOrders.observe(viewLifecycleOwner) { newValue ->
@@ -303,35 +301,17 @@ class MyStoreFragment : TopLevelFragment(R.layout.fragment_my_store) {
         _binding = null
     }
 
-    /*
-    Hide Settings icon on My Store, because it is moved to the "More" screen.
-    We temporarily comment out the code instead of deleting, because we might want to restore it later,
-    based on merchants feedbacks.
-
-    TODO: Maybe restore Settings icon on My Store, depending on merchants feedbacks.
-    For more context: https://github.com/woocommerce/woocommerce-android/issues/5586
-
-    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
-        inflater.inflate(R.menu.menu_action_bar, menu)
-        super.onCreateOptionsMenu(menu, inflater)
-    }
-
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        return when (item.itemId) {
-            R.id.menu_settings -> {
-                (activity as? MainNavigationRouter)?.showSettingsScreen()
-                true
-            }
-            else -> super.onOptionsItemSelected(item)
-        }
-    }
-     */
-
     private fun showStats(revenueStatsModel: RevenueStatsUiModel?) {
         addTabLayoutToAppBar()
         binding.myStoreStats.showErrorView(false)
         showChartSkeleton(false)
+
         binding.myStoreStats.updateView(revenueStatsModel)
+
+        // update the stats today widget if we're viewing today's stats
+        if (viewModel.activeStatsGranularity.value == StatsGranularity.DAYS) {
+            (activity as? MainActivity)?.updateStatsWidgets()
+        }
     }
 
     private fun showStatsError() {

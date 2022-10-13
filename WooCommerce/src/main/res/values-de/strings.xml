@@ -1,14 +1,43 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2022-08-18 09:54:03+0000
+Translation-Revision-Date: 2022-10-05 08:42:31+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: de
 -->
 <resources>
+    <string name="stats_widget_last_updated_message">Stand: %1$s</string>
+    <string name="stats_widget_error_no_data">Daten konnten nicht geladen werden</string>
+    <string name="stats_today_widget_description">Heutige WooCommerce-Statistiken</string>
+    <string name="stats_today_widget_configure_title">Heutige Shop-Statistiken</string>
+    <string name="stats_widget_availability_message">Es sind keine Shop-Statistiken verfügbar! Bitte führe ein Upgrade auf die neueste Version von WooCommerce durch, um deine Shop-Statistiken anzuzeigen.</string>
+    <string name="stats_widget_offline_error">Dein Netzwerk ist nicht verfügbar.\nPrüfe deine Daten- oder WLAN-Verbindung.</string>
+    <string name="stats_widget_log_in_message">Bitte melde dich in der WooCommerce-App an</string>
+    <string name="login_jetpack_connection_url_failed">Das Abrufen von Verbindungsdaten ist fehlgeschlagen …</string>
+    <string name="login_jetpack_verify_connection">Die Jetpack-Verbindung wird überprüft …</string>
+    <string name="login_jetpack_connection_verification_failed">Deine Jetpack-Verbindung kann nicht überprüft werden. Bitte versuche es erneut.</string>
+    <string name="login_simple_wpcom_site">Für die Website %1$s gilt derzeit ein WordPress.com-Tarif, in dem das Installieren von Plugins nicht möglich ist. Bitte führe ein Tarif-Upgrade durch, um WooCommerce nutzen zu können.</string>
+    <string name="login_connect_jetpack_button">Verbinde Jetpack mit deinem Konto</string>
+    <string name="login_jetpack_not_connected">Offenbar ist dein Konto nicht mit Jetpack von %1$s verbunden</string>
+    <string name="card_reader_card_readers_header">KARTENLESEGERÄTE</string>
+    <string name="card_reader_payment_options_header">ZAHLUNGSOPTIONEN</string>
+    <string name="card_reader_enable_pay_in_person_description">Mit der Bezahloption „Persönliche Zahlung“ kannst du bei Abholung oder Zustellung von Bestellungen auf deiner Website Zahlungen annehmen. &lt;a href=\'\'&gt;Weitere Informationen&lt;/a&gt;</string>
+    <string name="card_reader_enable_pay_in_person">Persönliche Zahlung</string>
+    <string name="login_verifying_site_jetpack_timeout_error_description">Es konnte keine Verbindung zu deiner Website hergestellt werden. Bitte wende dich an den Support um das Problem zu beheben.</string>
+    <string name="login_verifying_site_jetpack_timeout_error_title">Verbindungsfehler</string>
+    <string name="card_reader_onboarding_with_pending_requirements">Ein Problem erfordert deine Aufmerksamkeit. Bitte &lt;a href=\'\'&gt;schau es dir an&lt;/a&gt;</string>
+    <string name="login_site_picker_try_another_address">Andere Adresse versuchen</string>
+    <string name="card_reader_onboarding_cash_on_delivery_enable_failure">Bezahlung per Nachnahme konnte nicht aktiviert werden. Versuch es später noch einmal.</string>
+    <string name="card_reader_onboarding_cash_on_delivery_disabled_button">„Persönliche Zahlung“ aktivieren</string>
+    <string name="card_reader_onboarding_cash_on_delivery_disabled_error_hint">Mit der Bezahloption „Persönliche Zahlung“ kannst du Karten- oder Barzahlung bei Abholung oder Lieferung akzeptieren.</string>
+    <string name="card_reader_onboarding_cash_on_delivery_disabled_error_header">„Persönliche Zahlung“ als Bezahloption hinzufügen</string>
+    <string name="card_reader_connect_learn_more">&lt;a href=\'\'&gt;Weitere Informationen&lt;/a&gt; zu „Persönliche Zahlungen“</string>
+    <string name="login_site_picker_new_to_woo">Neu bei WooCommerce</string>
+    <string name="site_discovery_postlogin_failure">Es ist ein Fehler aufgetreten, kontaktiere bitte den Support</string>
+    <string name="login_site_picker_enter_site_address">Website-Adresse eingeben</string>
     <string name="login_help_notification_get_link_by_email_button">Fordere einen Anmeldelink per E-Mail an</string>
     <string name="login_help_notification_invalid_password_title">Hast du dein Passwort vergessen?</string>
-    <string name="card_reader_onboarding_not_finished">Wir haben festgestellt, dass du die Einrichtung von Persönliche Zahlungen noch nicht abgeschlossen hast. &lt;b&gt;&lt;a href=\'\'&gt;Mit der Einrichtung fortfahren&lt;/a&gt;&lt;/b&gt;</string>
+    <string name="card_reader_onboarding_not_finished">Wir haben festgestellt, dass du die Einrichtung von Persönliche Zahlungen noch nicht abgeschlossen hast. &lt;a href=\'\'&gt;Mit der Einrichtung fortfahren&lt;/a&gt;</string>
     <string name="payments_hub_title">Zahlungen</string>
     <string name="orderlist_bottom_sheet_simple_payments_moved_button">Verstanden!</string>
     <string name="orderlist_bottom_sheet_simple_payments_moved_description">Jetzt kannst du schnell und einfach auf Persönliche Zahlungen und andere Funktionen zugreifen</string>
@@ -74,7 +103,7 @@ Language: de
     <string name="support_system_status_report_share_label">Bericht zum Systemstatus teilen</string>
     <string name="support_system_status_report_copy_label">Bericht zum Systemstatus in die Zwischenablage kopieren</string>
     <string name="card_reader_connect_keep_searching_button">Weiter suchen</string>
-    <string name="card_reader_payment_description_v2">Persönliche Zahlung für Bestellung #%s für %s blog_id %s.</string>
+    <string name="card_reader_payment_description_v2">Persönliche Zahlung für Bestellung #%1$s für %2$s blog_id %3$s.</string>
     <string name="card_reader_manage_payment_provider">Zahlungsanbieter ändern</string>
     <string name="orderdetail_refunded_line_with_info">Rückerstattet: %1$s</string>
     <string name="orderdetail_payment_summary_onhold_plain">Warten auf Zahlung</string>
@@ -158,7 +187,7 @@ Language: de
     <string name="shipping_label_install_wc_shipping_banner_button">WooCommerce Shipping installieren</string>
     <string name="shipping_label_install_wc_shipping_banner_description">Drucke Etiketten über dein Mobiltelefon aus – WooCommerce Shipping macht es möglich.</string>
     <string name="shipping_label_install_wc_shipping_banner_title">Du brauchst ein Versandetikett?</string>
-    <string name="order_creation_change_product_quantity">Ändere die Produktmenge von %d zu %d</string>
+    <string name="order_creation_change_product_quantity">Ändere die Produktmenge von %1$d zu %2$d</string>
     <string name="variations_bulk_update_regular_price">Regulären Preis aktualisieren</string>
     <string name="variations_bulk_update_sale_price">Verkaufspreis aktualisieren</string>
     <string name="card_reader_onboarding_stripe_unsupported_in_country_header">Die WooCommerce Stripe-Erweiterung wird in %1$s nicht unterstützt</string>
@@ -291,8 +320,8 @@ Language: de
     <string name="coupon_list_wip_message_enabled">Wir haben daran gearbeitet, das Anzeigen und Bearbeiten von Gutscheinen von deinem Gerät aus zu ermöglichen!</string>
     <string name="coupon_list_wip_title">Gutscheine anzeigen und bearbeiten</string>
     <string name="coupon_list_empty_heading">Keine Gutscheine gefunden</string>
-    <string name="coupon_list_item_label_included_and_excluded">%1s außer %2s</string>
-    <string name="coupon_list_item_label_products_and_categories">%1s und %2s</string>
+    <string name="coupon_list_item_label_included_and_excluded">%1$s außer %2$s</string>
+    <string name="coupon_list_item_label_products_and_categories">%1$s und %2$s</string>
     <string name="coupon_list_item_label_everything">alles</string>
     <string name="coupon_list_item_label_expired">Abgelaufen</string>
     <string name="coupon_list_item_label_active">Aktiv</string>
@@ -1037,7 +1066,6 @@ Language: de
     <string name="orderdetail_net">Nettozahlung</string>
     <string name="orderdetail_payment_paid_by_customer">Bezahlt</string>
     <string name="login_jetpack_view_instructions_alt">Weitere Informationen zum Verbinden von Jetpack</string>
-    <string name="login_no_stores">Wir konnten keine WooCommerce-Shops finden, die mit diesem Konto verknüpft sind. Du musst in deinen WooCommerce-Shops das kostenlose Jetpack-Plugin installieren und verbinden, um diese App zu verwenden.</string>
     <string name="edit">Bearbeiten</string>
     <string name="product_images_validate_drag_and_drop">Bestätigen</string>
     <string name="product_images_drag_and_drop_description">Nutze Drag-and-Drop zum Umsortieren der Fotos</string>
@@ -1362,7 +1390,7 @@ Language: de
     <string name="product_width">Breite</string>
     <string name="product_length">Länge</string>
     <string name="order_refunds_refund_info_title">Erstattete Produkte</string>
-    <string name="order_refunds_detail_item_description">%s (%s x %d)</string>
+    <string name="order_refunds_detail_item_description">%1$s (%2$s x %3$d)</string>
     <string name="order_refunds_method">%1$s per %2$s</string>
     <string name="order_refunds_confirmation">Möchtest du wirklich eine Rückerstattung ausstellen? Dies kann nicht rückgängig gemacht werden.</string>
     <string name="orderdetail_refunded_products">Erstattete Produkte</string>
@@ -1402,7 +1430,7 @@ Language: de
     <string name="order_refunds_select_quantity">Menge wählen</string>
     <string name="order_refunds_shipping_refund">Versandrückerstattung</string>
     <string name="order_refunds_products_refund">Rückerstattung für Produkt</string>
-    <string name="order_refunds_item_description">Je %s x %s</string>
+    <string name="order_refunds_item_description">Je %1$s x %2$s</string>
     <string name="order_refunds_items_selected">%d Artikel ausgewählt</string>
     <string name="order_refunds_items_select_none">Keine auswählen</string>
     <string name="order_refunds_items_select_all">Alle auswählen</string>
@@ -1413,7 +1441,7 @@ Language: de
     <string name="image_source_device_chooser">Von Gerät auswählen</string>
     <string name="image_source_title">Upload-Methode wählen</string>
     <string name="product_images_upload_channel_title">Uploads</string>
-    <string name="product_images_uploading_multi_notif_message">Bilder werden hochgeladen …%d von %d</string>
+    <string name="product_images_uploading_multi_notif_message">Bilder werden hochgeladen …%1$d von %2$d</string>
     <string name="product_images_uploading_single_notif_message">Bild wird hochgeladen …</string>
     <string name="product_images_camera_error">Auf die Kamera kann nicht zugegriffen werden</string>
     <string name="product_image_remove_confirmation">Möchtest du dieses Bild wirklich entfernen?</string>
@@ -1808,7 +1836,7 @@ Language: de
     <string name="login_jetpack_what_is_description">Jetpack ist ein kostenloses WordPress-Plugin, das deinen Shop mit den Tools verbindet, die du für ein bestmögliches mobiles Erlebnis benötigst, einschließlich Push-Benachrichtigungen und Statistiken.</string>
     <string name="login_jetpack_what_is">Was ist Jetpack?</string>
     <string name="login_view_connected_stores">Verbundene Shops anzeigen</string>
-    <string name="login_not_connected_to_account">%1$s ist offenbar mit einem anderen WordPress.com-Konto verbunden.</string>
+    <string name="login_wpcom_account_mismatch">Offenbar ist %1$s mit einem anderen WordPress.com-Konto verbunden.</string>
     <string name="keep_editing">Weiter bearbeiten</string>
     <string name="notification_wpcom_username_needed">Bitte melde dich mit deinem Benutzernamen und deinem Passwort an.</string>
     <string name="error_user_username_instead_of_email">Bitte melde dich mit deinem WordPress.com-Benutzernamen anstelle deiner E-Mail-Adresse an.</string>
@@ -2129,11 +2157,12 @@ Language: de
     <string name="dashboard_stats_granularity_months">Monate</string>
     <string name="dashboard_stats_granularity_weeks">Wochen</string>
     <string name="dashboard_stats_granularity_days">Tage</string>
+    <string name="login_no_stores">Wir konnten keine WooCommerce-Shops finden, die mit diesem Konto verknüpft sind.</string>
     <string name="login_with_a_different_account">Mit einem anderen Konto anmelden</string>
     <string name="login_nostores_content_description">Keine WooCommerce-Shops</string>
     <string name="login_avatar_content_description">Dein Profilfoto</string>
     <string name="login_connected_store">Verbundener Shop</string>
-    <string name="login_configure_link">Lies die %sKonfigurationsanleitung%s.</string>
+    <string name="login_configure_link">Lies die %1$sKonfigurationsanleitung%2$s.</string>
     <string name="login_jetpack_required">Für diese App muss Jetpack mit deinem Shop verbunden sein.</string>
     <string name="at_username">\@%s</string>
     <string name="enter_site_address">Gib die Adresse des WooCommerce-Shops ein, den du verbinden möchtest.</string>
@@ -2183,7 +2212,7 @@ Language: de
     <string name="notification_channel_general_title">Allgemein</string>
     <string name="app_name">WooCommerce</string>
     <string-array name="date_range_selectors">
-        <item>0@string/date_timeframe_today</item>
+        <item>\@string/date_timeframe_today</item>
         <item>\@string/date_timeframe_yesterday</item>
         <item>\@string/date_timeframe_last_week</item>
         <item>\@string/date_timeframe_last_month</item>

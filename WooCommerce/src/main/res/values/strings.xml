@@ -147,6 +147,8 @@
     <string name="variations_bulk_update_sale_price">Update Sale Price</string>
     <string name="variations_bulk_update_regular_price">Update Regular Price</string>
     <string name="tip">Tip</string>
+    <string name="hide_password_content_description">Hide password</string>
+    <string name="show_password_content_description">Show password</string>
 
     <!--
         Date/Time Labels
@@ -198,7 +200,8 @@
     <string name="login_wpcom">Continue with WordPress.com</string>
     <string name="login_store_address">Enter your store address</string>
     <string name="login_with_store_address">Log in with your store address</string>
-    <string name="login_configure_link">Read the %sconfiguration instructions%s.</string>
+    <string name="login_configure_link">Read the %1$sconfiguration instructions%2$s.</string>
+    <string name="login_with_qr_code">Scan QR code to login</string>
 
     <string name="login_prologue_label_analytics">Track sales and high performing products</string>
     <string name="login_prologue_label_orders">Manage and edit orders on the go</string>
@@ -221,13 +224,16 @@
     <string name="login_connected_store">Connected store</string>
     <string name="login_verifying_site">Verifying site…</string>
     <string name="login_verifying_site_error">Cannot connect to %s</string>
+    <string name="login_verifying_site_jetpack_timeout_error_title">Connection Error</string>
+    <string name="login_verifying_site_jetpack_timeout_error_description">We were unable to connect to your site. Please contact support to troubleshoot the problem.</string>
     <string name="login_update_required_title">Update Store to WooCommerce 3.5</string>
     <string name="login_update_required_desc">This store uses an older version of WooCommerce. Please upgrade your store to WooCommerce 3.5 or greater to use it with this app.</string>
     <string name="login_avatar_content_description">Your profile photo</string>
     <string name="login_nostores_content_description">No WooCommerce stores</string>
     <string name="login_with_a_different_account">Login with a different account</string>
     <string name="login_no_stores">We didn\'t find WooCommerce stores connected to this account.</string>
-    <string name="login_not_connected_to_account">It looks like %1$s is connected to a different WordPress.com account.</string>
+    <string name="login_wpcom_account_mismatch">It looks like %1$s is connected to a different WordPress.com account.</string>
+    <string name="login_jetpack_not_connected">It looks like your account is not connected to %1$s\'s Jetpack</string>
     <string name="login_try_another_account">Log in with another account</string>
     <string name="login_try_another_store">Try another store</string>
     <string name="login_not_woo_store">It looks like %1$s is not a WooCommerce site.</string>
@@ -266,6 +272,15 @@
     <string name="login_site_picker_enter_site_address">Enter a site address</string>
     <string name="site_discovery_postlogin_failure">A failure occurred, please contact support</string>
     <string name="login_site_picker_new_to_woo">New to WooCommerce</string>
+    <string name="login_simple_wpcom_site">The site %1$s is currently on a WordPress.com plan that does not support plugin installation. Please upgrade your plan to use WooCommerce.</string>
+    <string name="login_jetpack_connection_verification_failed">Cannot verify your Jetpack connection. Please try again.</string>
+    <string name="login_jetpack_verify_connection">Verifying Jetpack connection…</string>
+    <string name="login_jetpack_connection_url_failed">Fetching connection data failed…</string>
+    <string name="login_2fa_not_supported_self_hosted_site">2FA not supported for self-hosted sites. Please use an app-password.</string>
+    <string name="login_account_mismatch_connect_jetpack">Connect Jetpack to your account</string>
+    <string name="login_account_mismatch_connect_wpcom">Connect to the site</string>
+    <string name="login_account_mismatch_connect_wpcom_dialog_title">Connecting to a WordPress.com site</string>
+    <string name="login_account_mismatch_connect_wpcom_dialog_message">Please contact the site owner for an invitation to the site as a shop manager or administrator to use the app.</string>
     <!--
         My Store View
     -->
@@ -414,7 +429,7 @@
     <string name="order_creation_fee_percentage_calculated_amount">Calculated amount: %s</string>
     <string name="order_creation_customer_search_empty">No customers found</string>
     <string name="order_creation_customer_search_hint">Search customers</string>
-    <string name="order_creation_change_product_quantity">Change the product quantity from %d to %d</string>
+    <string name="order_creation_change_product_quantity">Change the product quantity from %1$d to %2$d</string>
     <!--
         Order Editing
     -->
@@ -878,8 +893,8 @@
     <string name="order_refunds_items_select_all">Select all</string>
     <string name="order_refunds_items_select_none">Select none</string>
     <string name="order_refunds_items_selected">%d items selected</string>
-    <string name="order_refunds_item_description">%s x %s each</string>
-    <string name="order_refunds_detail_item_description">%s (%s x %d)</string>
+    <string name="order_refunds_item_description">%1$s x %2$s each</string>
+    <string name="order_refunds_detail_item_description">%1$s (%2$s x %3$d)</string>
     <string name="order_refunds_products_refund">Products refund</string>
     <string name="order_refunds_shipping_refund">Shipping refund</string>
     <string name="order_refunds_fees_refund">Fees refund</string>
@@ -972,6 +987,8 @@
         -->
     <string name="payments_hub_title">Payments</string>
     <string name="card_reader_manage_card_reader">Manage Card Reader</string>
+    <string name="card_reader_enable_pay_in_person">Pay in Person</string>
+    <string name="card_reader_enable_pay_in_person_description">The Pay in Person checkout option lets you accept payments for website orders, on collection or delivery. &lt;a href=\'\'&gt;Learn more&lt;/a&gt;</string>
     <string name="card_reader_purchase_card_reader">Order Card Reader</string>
     <string name="card_reader_manage_payment_provider">Change Payment Provider</string>
     <string name="card_reader_bbpos_manual_card_reader" translatable="false">BBPOS Chipper™ 2X BT</string>
@@ -1021,6 +1038,8 @@
     <string name="card_reader_payment_fetch_order_loading_payment_state">Refreshing order</string>
 
     <string name="card_reader_collect_payment">Collect payment</string>
+    <string name="card_reader_payment_options_header">PAYMENT OPTIONS</string>
+    <string name="card_reader_card_readers_header">CARD READERS</string>
     <string name="card_reader_payment_collect_payment_header" translatable="false">@string/card_reader_collect_payment</string>
     <string name="card_reader_payment_processing_payment_header" translatable="false">@string/card_reader_collect_payment</string>
     <string name="card_reader_payment_capturing_payment_header" translatable="false">@string/card_reader_collect_payment</string>
@@ -1064,7 +1083,7 @@
     <string name="card_reader_payment_send_receipt">Send receipt</string>
     <string name="card_reader_payment_save_for_later">Save receipt and continue</string>
 
-    <string name="card_reader_payment_description_v2">In-Person Payment for Order #%s for %s blog_id %s.</string>
+    <string name="card_reader_payment_description_v2">In-Person Payment for Order #%1$s for %2$s blog_id %3$s.</string>
     <string name="card_reader_payment_receipt_email_subject">Your receipt from %s</string>
     <string name="card_reader_payment_receipt_email_content">Thank you for your purchase! Click the link below for your payment receipt.\n\n%s</string>
     <string name="card_reader_payment_email_client_not_found">Can\'t detect your email client app</string>
@@ -1585,7 +1604,7 @@
     <string name="product_image_remove_confirmation">Are you sure you want to remove this image?</string>
     <string name="product_images_camera_error">Unable to access camera</string>
     <string name="product_images_uploading_single_notif_message">Uploading image…</string>
-    <string name="product_images_uploading_multi_notif_message">Uploading images…%d of %d</string>
+    <string name="product_images_uploading_multi_notif_message">Uploading images…%1$d of %2$d</string>
     <string name="product_images_upload_channel_title">Uploads</string>
     <string name="image_source_title">Select an upload method</string>
     <string name="image_source_device_chooser">Choose from device</string>
@@ -1690,6 +1709,7 @@
     <string name="settings_about_title">About WooCommerce</string>
     <string name="settings_about_recommend_app_subject">WooCommerce</string>
     <string name="settings_about_recommend_app_message">Hey! Here is a link to download the WooCommerce app. I\'m really enjoying it and thought you might too. %1$s</string>
+    <string name="dev_options">Developer Options</string>
     <!--
         WCToggleSingleOptionView
     -->
@@ -2026,8 +2046,8 @@
     <string name="coupon_list_item_label_active">Active</string>
     <string name="coupon_list_item_label_expired">Expired</string>
     <string name="coupon_list_item_label_everything">everything</string>
-    <string name="coupon_list_item_label_products_and_categories">%1s and %2s</string>
-    <string name="coupon_list_item_label_included_and_excluded">%1s excl. %2s</string>
+    <string name="coupon_list_item_label_products_and_categories">%1$s and %2$s</string>
+    <string name="coupon_list_item_label_included_and_excluded">%1$s excl. %2$s</string>
     <string name="coupon_list_empty_heading">No coupons found</string>
     <string name="coupon_list_wip_title">View and edit coupons</string>
     <string name="coupon_list_wip_message_enabled">We’ve been working on making it possible to view and edit coupons from your device!</string>
@@ -2164,6 +2184,12 @@
     <string name="login_help_notification_wordpress_login_button">Log in with WordPress.com</string>
     <string name="login_help_notification_invalid_password_title">Can\'t remember your password?</string>
     <string name="login_help_notification_get_link_by_email_button">Get a login link by email</string>
+
+    <!-- Qr code login -->
+    <string name="qr_code_login_scanner_title">Camera Barcode Scanner</string>
+    <string name="qr_code_login_camera_permission_denied_title">Camera Access Needed</string>
+    <string name="qr_code_login_camera_permission_denied_message">To use this feature, kindly allow the permissions to use your camera.</string>
+    <string name="qr_code_login_edit_camera_permission">Edit permissions</string>
 
     <!-- Other -->
     <string name="error_loading_image">Unable to load image</string>
@@ -2585,6 +2611,17 @@
     <string name="login_magic_links_sent_label_short">Check your email on this device!</string>
     <string name="login_magic_links_email_sent">We just sent a magic link to</string>
     <string name="login_site_picker_try_another_address">Try another address</string>
+
+    <!--
+    Stats widgets
+    -->
+    <string name="stats_widget_log_in_message">Please log in to the WooCommerce app</string>
+    <string name="stats_widget_offline_error">Your network is unavailable.\nCheck your data or wifi connection.</string>
+    <string name="stats_widget_availability_message">Store analytics not available! Please upgrade to the latest version of WooCommerce to view your store analytics.</string>
+    <string name="stats_today_widget_configure_title">Today\'s store stats</string>
+    <string name="stats_today_widget_description">WooCommerce Stats Today</string>
+    <string name="stats_widget_error_no_data">Couldn\'t load data</string>
+    <string name="stats_widget_last_updated_message">As of %1$s</string>
 
     <!-- Site creation -->
     <string name="media_accessing_progress">Accessing content of a private site</string>

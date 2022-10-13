@@ -1,68 +1,68 @@
 <ar>
-9.9:
-يحتوي هذا الإصدار على بعض التحسينات على تجربة تسجيل الدخول لديك، بما في ذلك تثبيت WooCommerce من التطبيق. لدينا كذلك قسم مدفوعات جديد في التطبيق. توجَّه مباشرةً إلى قائمة المزيد لبدء استخدام المدفوعات!
+10.6:
+بالنسبة إلى هذا الإصدار، لقد ركزنا على تلميع بعض الأشياء ومراعاة الأخطاء الطفيفة التي وجدها فريقنا. لا تنخدع - إننا نعمل على بعض الأشياء الرائعة تمامًا التي تناسب الجميع، مثل: تسهيل تسجيلك الدخول إلى التطبيق باستخدام خيار التعبئة التلقائية! حافظ على تدفق ملاحظاتك؛ حيث إنها تساعدنا على تحديد ما يجب العمل عليه فيما بعد. 💜
 </ar>
 <de-DE>
-9.9:
-Bei dieser Version gibt es einige Verbesserungen bei deinem Anmeldeprozess, einschließlich der Option, WooCommerce über die App zu installieren. Außerdem gibt es in der App einen neuen Abschnitt „Zahlungen“. Gehe zum Menü „Mehr“, um „Zahlungen“ zu nutzen!
+10.6:
+In dieser Version haben wir einige Dinge verbessert und kleinere Bugs behoben, die unser Team gefunden hat. Aber das ist noch lange nicht alles – wir arbeiten an ein paar tollen Neuerungen, wie z. B. der Autofill-Funktion zur vereinfachten Anmeldung in der App! Sendet uns weiterhin Feedback! So finden wir heraus, was wir als Nächstes optimieren können. 💜
 </de-DE>
 <es-ES>
-9.9:
-Esta versión tiene algunas mejoras en la experiencia de inicio de sesión, como la opción de instalar WooCommerce desde la aplicación. También tenemos una sección nueva de Pagos en la aplicación. Dirígete al menú Más para empezar a usar Pagos.
+10.6:
+Para esta versión, nos hemos centrado en mejorar algunos aspectos y solucionar pequeños errores que nuestro equipo ha encontrado. Que no te engañen las apariencias: estamos trabajando en mejorar funciones muy interesantes para todos vosotros, como facilitaros el acceso a la aplicación mediante la opción de autocompletar. Sigue compartiendo tus opiniones, ya que nos ayudarán a averiguar en qué debemos trabajar. 💜
 </es-ES>
 <fr-FR>
-9.9+
-This release has a few improvements to your login experience, including the option to install WooCommerce from the app. We also have a new Payments section in the app. Head over to the More menu to start using Payments!
+10.6 :
+Pour cette version, nous nous sommes concentrés sur l’apport d’améliorations et la résolution de bogues mineurs détectés par notre équipe. Mais rassurez-vous : il y aura des nouveautés intéressantes pour tout le monde, notamment avec l'option de remplissage automatique, qui vous permettra de vous connecter plus aisément à l'application. Continuez à nous faire part de vos commentaires ; ils nous aident à nous améliorer. 💜
 </fr-FR>
 <iw-IL>
-9.9:
-בגרסה הזאת הוספנו כמה שיפורים לחוויית ההתחברות, כולל אפשרות להתקין את WooCommerce מהאפליקציה. בנוסף, יש מקטע 'תשלומים' חדש באפליקציה. כדאי לעבור לתפריט 'עוד' ולהתחיל להשתמש ב'תשלומים'!
+10.6:
+בגרסה הזאת, אנחנו מתמקדים בשיפור של כמה דברים ובתיקון של באגים קטנים שהצוות שלנו איתר. Don’t be fooled – we are working on some pretty cool stuff for you all, like making it easier for you to login to the app using the autofill option! נשמח להמשיך לקבל משוב, זה עוזר לנו להבין על מה כדאי לנו לעבוד בשלב הבא. 💜
 </iw-IL>
 <id>
-9.9:
-Rilis ini berisi beberapa peningkatan untuk pengalaman login Anda, termasuk pilihan untuk menginstal WooCommerce dari aplikasi. Kami juga menambahkan bagian Pembayaran baru di aplikasi. Lihat menu Lainnya untuk mulai menggunakan Pembayaran!
+10.6:
+Untuk rilis kali ini, kami fokus memoles beberapa hal dan mengatasi bug minor yang ditemukan oleh tim. Jangan terkecoh – kami sedang mengerjakan hal-hal yang menakjubkan untuk Anda semua, seperti mempermudah Anda untuk login ke aplikasi dengan pilihan isi otomatis! Terus kirimkan feedback Anda untuk memberi tahu kami apa yang harus ditingkatkan selanjutnya. 💜
 </id>
 <it-IT>
-9.9:
-Questa versione apporta alcuni miglioramenti alla tua esperienza di accesso, inclusa l'opzione di installare WooCommerce dall'app. Abbiamo anche una nuova sezione Pagamenti nell'app. Vai al menu Altro per iniziare a utilizzare Pagamenti!
+10.6:
+Per questo rilascio, ci siamo concentrati sul perfezionamento di alcuni dettagli e ci siamo occupati dei piccoli bug riscontrati dal nostro team. Non lasciarti ingannare: stiamo lavorando su alcune cose interessanti per tutti voi, come rendere più facile l'accesso all'app utilizzando l'opzione di compilazione automatica! Continua a inviarci il tuo feedback; ci aiuta a capire su cosa lavorare in futuro. 💜
 </it-IT>
 <ja-JP>
-9.9:
-このリリースでは、アプリから WooCommerce をインストールするオプションなど、ログイン操作がいくつか改善されました。また、アプリ内に新しい「支払い」セクションが追加されました。「支払い」は「その他」メニューから利用できます。
+10.6:
+今回のリリースでは、いくつかの点を改善し、チームが発見したマイナーなバグの修正を行いました。 自動入力オプションでアプリへのログインを簡単にするなど、ユーザーの皆様に満足いただける変更を行っています。 引き続きフィードバックをお待ちしております。いただいたご意見は、今後の製品改善に役立たせていただきます。 💜
 </ja-JP>
 <ko-KR>
-9.9:
-이 릴리스에서는 앱에서 우커머스를 설치하는 옵션을 포함하여 로그인 환경이 몇 가지 개선되었습니다. 앱에 새 결제 섹션도 있습니다. 더 보기 메뉴로 이동하여 결제 사용을 시작하세요!
+10.6:
+이 릴리스에서는 몇 가지 사항을 개선하고 팀에서 발견한 사소한 버그를 처리하는 데 집중했습니다. 기대를 저버리지 마세요. 자동 완성 옵션을 사용하여 앱에 더 쉽게 로그인할 수 있도록 하는 등 회원님 여러분 모두를 위해 아주 멋진 몇 가지 작업을 진행하고 있습니다! 피드백을 계속 보내주세요. 다음에 작업할 내용을 파악하는 데 도움이 됩니다. 💜
 </ko-KR>
 <nl-NL>
-9.9:
-Deze versie bevat een paar verbeteringen van je loginervaring, waaronder de optie om WooCommerce rechtstreeks vanuit de app te installeren. De app bevat ook een nieuw gedeelte Betalingen. Ga naar het menu Meer om te beginnen met Betalingen!
+10.6:
+Met deze release hebben we ons gefocust op het gladstrijken van wat dingen en het oplossen van kleine bugs die ons team tegenkwam. Maar dat is niet alles – we werken ook aan gave dingen voor jullie, zoals het makkelijker maken om in te loggen in de app met de autofill-optie. Blijf komen met jullie feedback; dat helpt ons kiezen waar we aan moeten werken.
 </nl-NL>
 <pt-BR>
-9.9:
-Esta versão tem algumas melhorias na sua experiência de login, incluindo a opção de instalar o WooCommerce a partir do aplicativo. Também temos uma nova seção de Pagamentos, no aplicativo vá até o menu Mais para começar a usar-los.
+10.6:
+Para esta versão, focamos em algumas melhorias e na correção de bugs irrelevantes que a nossa equipe encontrou. Mas não se engane! Estamos trabalhando em novidades bem legais para vocês, como facilitar o login no aplicativo usando a opção de preenchimento automático. Continue dando feedback, ele nos ajuda a saber no que trabalhar em seguida. 💜
 </pt-BR>
 <ru-RU>
-9.9:
-В этом выпуске улучшена процедура входа, а также добавлена возможность установки WooCommerce из приложения. Кроме того, в приложении появился новый раздел "Платежи". Перейдите в меню "Ещё", чтобы начать использовать функцию платежей.
+10.6:
+В этом выпуске усовершенствованы некоторые возможности и исправлены незначительные ошибки. А ещё мы работаем над классными функциями, например стараемся упростить вход в приложение с помощью автозаполнения. Оставляйте свои отзывы, они помогают нам выявлять области для дальнейшего улучшения. 💜
 </ru-RU>
 <sv-SE>
-9.9+
-This release has a few improvements to your login experience, including the option to install WooCommerce from the app. We also have a new Payments section in the app. Head over to the More menu to start using Payments!
+10.6:
+Med den här versionen har vi fokuserat på att förfina ett par saker och att åtgärda några mindre fel som vårt team hittade. Låt dig inte luras – vi har några riktigt häftiga saker på gång för er, exempelvis enklare inloggning i appen med automatisk ifyllning. Fortsätt att lämna feedback. Det hjälper oss att lista ut vad vi ska hitta på härnäst. 💜
 </sv-SE>
 <tr-TR>
-9.9:
-Bu sürümde, WooCommerce'i uygulamadan yükleme seçeneği de dahil olmak üzere, oturum açma deneyiminizde bazı iyileştirmeler yapıldı. Ayrıca uygulamada yeni bir Ödemeler bölümümüz de var. Ödemeleri kullanmaya başlamak için Daha Fazla menüsüne gidin!
+10.6:
+Bu sürümde birkaç şeyi düzeltmeye ve ekibimizin bulduğu küçük hataları gidermeye odaklandık. Ama sadece bu kadar değil. Otomatik doldurma seçeneğini kullanarak uygulamada oturum açmanızı kolaylaştırmak gibi hepiniz için oldukça güzel şeyler üzerinde çalışıyoruz! Geri bildirimleriniz devam etsin; üzerinde çalışacağımız sıradaki özelliği bulmamıza yardımcı oluyor. 💜
 </tr-TR>
 <zh-CN>
-9.9：
-此版本包含了对登录体验所做的一些改进，包括从应用程序中安装 WooCommerce 的选项。应用程序中还包含新的“付款”部分。前往“更多”菜单，开始使用“付款”！
+10.6：
+我们在此版本中重点完善了一些新内容，并处理了我们团队发现的一些小错误。 不要被误导了，我们始终致力于为大家提供一些很酷的内容，例如确保您能够使用自动填充选项更轻松地登录应用程序！ 请随时提供您的反馈，为我们接下来的工作提供灵感。💜
 </zh-CN>
 <zh-TW>
-9.9：
-此版本已對登入體驗進行一些改善，包含從應用程式安裝 WooCommerce 的選項。我們也在應用程式中加入全新「付款」區段，前往「更多」選單即可開始使用付款功能！
+10.6：
+在此版本中，我們著重於改善一些項目，並修正團隊發現的小錯誤。 Don’t be fooled – we are working on some pretty cool stuff for you all, like making it easier for you to login to the app using the autofill option! 歡迎提供意見回饋；這有助於我們找到接下來努力的方向。💜
 </zh-TW>
 <en-US>
-9.9:
-This release has a few improvements to your login experience, including the option to install WooCommerce from the app. We also have a new Payments section in the app. Head over to the More menu to start using Payments!
+10.6:
+For this release, we focused on polishing a few things and taking care of minor bugs that our team found. Don’t be fooled – we are working on some pretty cool stuff for you all, like making it easier for you to login to the app using the autofill option! Keep your feedback rolling in; it helps us figure out what to work on next. 💜
 </en-US>

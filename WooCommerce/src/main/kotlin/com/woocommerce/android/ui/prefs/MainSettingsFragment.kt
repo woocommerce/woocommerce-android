@@ -36,6 +36,7 @@ import com.woocommerce.android.support.HelpActivity.Origin
 import com.woocommerce.android.util.AnalyticsUtils
 import com.woocommerce.android.util.AppThemeUtils
 import com.woocommerce.android.util.ChromeCustomTabUtils
+import com.woocommerce.android.util.PackageUtils
 import com.woocommerce.android.util.SystemVersionUtils
 import com.woocommerce.android.util.ThemeOption
 import com.woocommerce.android.util.WooLog
@@ -163,6 +164,15 @@ class MainSettingsFragment : Fragment(R.layout.fragment_settings_main), MainSett
             }
         }
 
+        if (PackageUtils.isDebugBuild()) {
+            binding.optionDevelopers.visibility = View.VISIBLE
+            binding.optionDevelopers.setOnClickListener {
+                findNavController().navigateSafely(R.id.action_mainSettingsFragment_to_developerOptionsFragment)
+            }
+        } else {
+            binding.optionDevelopers.visibility = View.GONE
+        }
+
         binding.optionBetaFeatures.setOnClickListener {
             AnalyticsTracker.track(SETTINGS_BETA_FEATURES_BUTTON_TAPPED)
             val action = MainSettingsFragmentDirections.actionMainSettingsFragmentToBetaFeaturesFragment()
@@ -238,10 +248,6 @@ class MainSettingsFragment : Fragment(R.layout.fragment_settings_main), MainSett
             // Hide the whole container because jetpack is the only option there
             binding.storeSettingsContainer.visibility = View.GONE
         }
-    }
-
-    override fun openPurchaseCardReaderLink(url: String) {
-        ChromeCustomTabUtils.launchUrl(requireContext(), url)
     }
 
     override fun showLatestAnnouncementOption(announcement: FeatureAnnouncement) {

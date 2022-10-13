@@ -1,0 +1,44 @@
+plugins {
+    id 'com.android.library'
+    id 'kotlin-android'
+    id 'kotlin-android-extensions'
+}
+
+android {
+    compileSdkVersion 31
+
+    defaultConfig {
+        minSdkVersion 21
+        targetSdkVersion 31
+
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled true
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+    }
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+    kotlinOptions {
+        jvmTarget = '1.8'
+        freeCompilerArgs += [
+                "-Xopt-in=kotlinx.coroutines.ExperimentalCoroutinesApi"
+        ]
+    }
+}
+
+dependencies {
+    implementation "androidx.core:core-ktx:$coreKtxVersion"
+    implementation "androidx.annotation:annotation:1.4.0"
+    implementation "androidx.interpolator:interpolator:1.0.0"
+    implementation "com.google.android.material:material:$materialVersion"
+    implementation 'androidx.preference:preference-ktx:1.2.0'
+
+    // Barcode model
+    implementation 'com.google.android.gms:play-services-mlkit-barcode-scanning:18.1.0'
+}

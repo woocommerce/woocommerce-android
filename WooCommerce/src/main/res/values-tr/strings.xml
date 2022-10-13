@@ -1,14 +1,43 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2022-08-17 13:54:03+0000
+Translation-Revision-Date: 2022-10-04 15:54:03+0000
 Plural-Forms: nplurals=2; plural=(n > 1);
 Generator: GlotPress/2.4.0-alpha
 Language: tr
 -->
 <resources>
+    <string name="stats_widget_last_updated_message">%1$s itibarıyla</string>
+    <string name="stats_widget_error_no_data">Veri yüklenemedi</string>
+    <string name="stats_today_widget_description">WooCommerce İstatistikleri Bugün</string>
+    <string name="stats_today_widget_configure_title">Bugünün mağaza istatistikleri</string>
+    <string name="stats_widget_availability_message">Mağaza analizi mevcut değil! Mağaza analizlerinizi görüntülemek için lütfen en son WooCommerce sürümüne yükseltin.</string>
+    <string name="stats_widget_offline_error">Bağlantınız bulunmuyor\nVerilerinizi veya kablosuz İnternet bağlantınızı kontrol edin.</string>
+    <string name="stats_widget_log_in_message">Lütfen WooCommerce uygulamasında giriş yapın</string>
+    <string name="login_jetpack_connection_url_failed">Bağlantı verileri alınamadı…</string>
+    <string name="login_jetpack_verify_connection">Jetpack bağlantısı doğrulanıyor…</string>
+    <string name="login_jetpack_connection_verification_failed">Jetpack bağlantınız doğrulanamıyor. Lütfen tekrar deneyin.</string>
+    <string name="login_simple_wpcom_site">%1$s sitesinde şu anda eklenti yüklemeyi desteklemeyen bir WordPress.com paketi kullanılıyor. WooCommerce kullanabilmek için lütfen paketinizi yükseltin.</string>
+    <string name="login_connect_jetpack_button">Jetpack\'i hesabınıza bağlayın</string>
+    <string name="login_jetpack_not_connected">Hesabınızın %1$s Jetpack\'e bağlı olmadığı anlaşılıyor</string>
+    <string name="card_reader_card_readers_header">KART OKUYUCULAR</string>
+    <string name="card_reader_payment_options_header">ÖDEME SEÇENEKLERİ</string>
+    <string name="card_reader_enable_pay_in_person_description">Şahsen Ödeme seçeneği web sitesi siparişleri için tahsilat veya teslimat sırasında ödeme kabul etmenizi sağlar. &lt;a href=\'\'&gt;Daha fazlasını öğrenin&lt;/a&gt;</string>
+    <string name="card_reader_enable_pay_in_person">Şahsen Ödeyin</string>
+    <string name="login_verifying_site_jetpack_timeout_error_description">Sitenize bağlanamadık. Sorunu gidermek için lütfen desteğe başvurun.</string>
+    <string name="login_verifying_site_jetpack_timeout_error_title">Bağlantı Hatası</string>
+    <string name="card_reader_onboarding_with_pending_requirements">İlgilenmeniz gereken bir sorun var. Lütfen &lt;a href=\'\'&gt;bir göz atın&lt;/a&gt;</string>
+    <string name="login_site_picker_try_another_address">Başka bir adres deneyin</string>
+    <string name="card_reader_onboarding_cash_on_delivery_enable_failure">Teslimatta nakit ödeme etkinleştirilemedi. Lütfen daha sonra tekrar deneyin.</string>
+    <string name="card_reader_onboarding_cash_on_delivery_disabled_button">Şahsen Ödemeyi Etkinleştir</string>
+    <string name="card_reader_onboarding_cash_on_delivery_disabled_error_hint">Ödeme sayfanızdaki \"Şahsen Öde\" seçeneği, tahsilat veya teslimatta kart veya nakit ödemeleri kabul etmenizi sağlar.</string>
+    <string name="card_reader_onboarding_cash_on_delivery_disabled_error_header">Ödeme sayfanıza Şahsen Ödeme yöntemini ekleyin</string>
+    <string name="card_reader_connect_learn_more">Şahsen Ödemeler hakkında &lt;a href=\'\'&gt;daha fazla bilgi edinin&lt;/a&gt;</string>
+    <string name="login_site_picker_new_to_woo">WooCommerce\'ü yeni kullanmaya mı başladınız?</string>
+    <string name="site_discovery_postlogin_failure">Bir hata oluştu, lütfen desteğe başvurun</string>
+    <string name="login_site_picker_enter_site_address">Bir site adresi girin</string>
     <string name="login_help_notification_get_link_by_email_button">E-posta ile bir oturum açma bağlantısı alın</string>
     <string name="login_help_notification_invalid_password_title">Şifrenizi hatırlamıyor musunuz?</string>
-    <string name="card_reader_onboarding_not_finished">Şahsen Ödeme kurulumunu henüz tamamlamadığınızı fark ettik. &lt;b&gt;&lt;a href=\'\'&gt;Kuruluma devam et&lt;/a&gt;&lt;/b&gt;</string>
+    <string name="card_reader_onboarding_not_finished">Şahsen Ödeme kurulumunu henüz tamamlamadığınızı fark ettik. &lt;a href=\'\'&gt;Kuruluma devam et&lt;/a&gt;</string>
     <string name="payments_hub_title">Ödemeler</string>
     <string name="orderlist_bottom_sheet_simple_payments_moved_button">Anladım!</string>
     <string name="orderlist_bottom_sheet_simple_payments_moved_description">Artık Şahsen Ödemelere ve diğer özelliklere kolayca hızlı bir şekilde erişebilirsiniz.</string>
@@ -74,7 +103,7 @@ Language: tr
     <string name="support_system_status_report_share_label">Sistem durum raporunu paylaş</string>
     <string name="support_system_status_report_copy_label">Sistem durum raporunu panoya kopyala</string>
     <string name="card_reader_connect_keep_searching_button">Aramaya Devam Et</string>
-    <string name="card_reader_payment_description_v2">%s blog_id %s, %s no\'lu Sipariş için Şahsen Ödeme.</string>
+    <string name="card_reader_payment_description_v2">%2$s blog_id %3$s, %1$s no\'lu Sipariş için Şahsen Ödeme.</string>
     <string name="card_reader_manage_payment_provider">Ödeme Sağlayıcısını Değiştir</string>
     <string name="orderdetail_refunded_line_with_info">Geri ödeme yapıldı: %1$s</string>
     <string name="orderdetail_payment_summary_onhold_plain">Bekleyen ödeme</string>
@@ -158,7 +187,7 @@ Language: tr
     <string name="shipping_label_install_wc_shipping_banner_button">WooCommerce Shipping\'i Edinin</string>
     <string name="shipping_label_install_wc_shipping_banner_description">WooCommerce Shipping ile etiketleri telefonunuzdan yazdırın.</string>
     <string name="shipping_label_install_wc_shipping_banner_title">Bir gönderim etiketine mi ihtiyacınız var?</string>
-    <string name="order_creation_change_product_quantity">%d olan ürün miktarını %d olarak değiştir</string>
+    <string name="order_creation_change_product_quantity">%1$d olan ürün miktarını %2$d olarak değiştir</string>
     <string name="variations_bulk_update_regular_price">Normal Fiyatı Güncelle</string>
     <string name="variations_bulk_update_sale_price">Satış Fiyatını Güncelle</string>
     <string name="card_reader_onboarding_stripe_unsupported_in_country_header">%1$s için WooCommerce Stripe uzantısını desteklemiyoruz</string>
@@ -291,8 +320,8 @@ Language: tr
     <string name="coupon_list_wip_message_enabled">Kuponları cihazınızdan görüntüleyip düzenleyebilmeniz için çalışıyoruz!</string>
     <string name="coupon_list_wip_title">Kuponları görüntüle ve düzenle</string>
     <string name="coupon_list_empty_heading">Kupon bulunamadı</string>
-    <string name="coupon_list_item_label_included_and_excluded">%2s hariç, %1s</string>
-    <string name="coupon_list_item_label_products_and_categories">%1s ve %2s</string>
+    <string name="coupon_list_item_label_included_and_excluded">%2$s hariç, %1$s</string>
+    <string name="coupon_list_item_label_products_and_categories">%1$s ve %2$s</string>
     <string name="coupon_list_item_label_everything">her şey</string>
     <string name="coupon_list_item_label_expired">Süresi doldu</string>
     <string name="coupon_list_item_label_active">Etkin</string>
@@ -1037,7 +1066,6 @@ Language: tr
     <string name="orderdetail_net">Net ödeme</string>
     <string name="orderdetail_payment_paid_by_customer">Ödendi</string>
     <string name="login_jetpack_view_instructions_alt">Jetpack\'i bağlama hakkında daha fazla bilgi edinin</string>
-    <string name="login_no_stores">Bu hesaba bağlı WooCommerce mağazası bulamadık. Bu uygulamayı kullanmak için WooCommerce mağazalarınıza ücretsiz Jetpack eklentisini kurmanız ve bağlamanız gerekir.</string>
     <string name="edit">Düzenle</string>
     <string name="product_images_validate_drag_and_drop">Doğrula</string>
     <string name="product_images_drag_and_drop_description">Fotoğrafların sıralamasını değiştirmek için sürükle bırak</string>
@@ -1362,7 +1390,7 @@ Language: tr
     <string name="product_width">Genişlik</string>
     <string name="product_length">Uzunluk</string>
     <string name="order_refunds_refund_info_title">Para iadesi yapılan ürünler</string>
-    <string name="order_refunds_detail_item_description">%s (%s x %d)</string>
+    <string name="order_refunds_detail_item_description">%1$s (%2$s x %3$d)</string>
     <string name="order_refunds_method">%2$s üzerinden %1$s</string>
     <string name="order_refunds_confirmation">Para iadesi yapmak istediğinizden emin misiniz? Bu işlem geri alınamaz.</string>
     <string name="orderdetail_refunded_products">Para iadesi yapılan ürünler</string>
@@ -1402,7 +1430,7 @@ Language: tr
     <string name="order_refunds_select_quantity">Miktar seçin</string>
     <string name="order_refunds_shipping_refund">Gönderim para iadesi</string>
     <string name="order_refunds_products_refund">Ürün para iadesi</string>
-    <string name="order_refunds_item_description">Her biri %s x %s</string>
+    <string name="order_refunds_item_description">Her biri %1$s x %2$s</string>
     <string name="order_refunds_items_selected">%d öge seçildi</string>
     <string name="order_refunds_items_select_none">Hiçbirini seçme</string>
     <string name="order_refunds_items_select_all">Tümünü seç</string>
@@ -1413,7 +1441,7 @@ Language: tr
     <string name="image_source_device_chooser">Cihazdan seç</string>
     <string name="image_source_title">Karşıya yükleme yöntemi seçin</string>
     <string name="product_images_upload_channel_title">Yüklemeler</string>
-    <string name="product_images_uploading_multi_notif_message">Görseller yükleniyor…%d/%d</string>
+    <string name="product_images_uploading_multi_notif_message">Görseller yükleniyor…%1$d / %2$d</string>
     <string name="product_images_uploading_single_notif_message">Görsel yükleniyor…</string>
     <string name="product_images_camera_error">Kameraya erişilemedi</string>
     <string name="product_image_remove_confirmation">Bu görseli kaldırmak istediğinizden emin misiniz?</string>
@@ -1808,7 +1836,7 @@ Language: tr
     <string name="login_jetpack_what_is_description">Jetpack, size en iyi mobil deneyimi sunmak için anında bildirimler ve istatistikler dahil olmak üzere gerekli araçlarla sizi mağazaya bağlayan ücretsiz bir WordPress eklentisidir.</string>
     <string name="login_jetpack_what_is">Jetpack nedir?</string>
     <string name="login_view_connected_stores">Bağlanılan mağazaları görüntüle</string>
-    <string name="login_not_connected_to_account">Görünüşe göre %1$s başka bir WordPress.com hesabına bağlı.</string>
+    <string name="login_wpcom_account_mismatch">Görünüşe göre %1$s farklı bir WordPress.com hesabına bağlı.</string>
     <string name="keep_editing">Düzenlemeye devam et</string>
     <string name="notification_wpcom_username_needed">Lütfen kullanıcı adınız ve şifrenizle oturum açın.</string>
     <string name="error_user_username_instead_of_email">E-posta adresiniz yerine lütfen WordPress.com kullanıcı adınızla oturum açın.</string>
@@ -2129,11 +2157,12 @@ Language: tr
     <string name="dashboard_stats_granularity_months">Ay</string>
     <string name="dashboard_stats_granularity_weeks">Hafta</string>
     <string name="dashboard_stats_granularity_days">Gün</string>
+    <string name="login_no_stores">Bu hesaba bağlı WooCommerce mağazası bulamadık.</string>
     <string name="login_with_a_different_account">Farklı bir hesap ile giriş yapın</string>
     <string name="login_nostores_content_description">WooCommerce mağazası bulunmuyor</string>
     <string name="login_avatar_content_description">Profil fotoğrafınız</string>
     <string name="login_connected_store">Bağlı mağaza</string>
-    <string name="login_configure_link">%sYapılandırma talimatlarını%s okuyun.</string>
+    <string name="login_configure_link">%1$sYapılandırma talimatlarını%2$s okuyun.</string>
     <string name="login_jetpack_required">Bu uygulama Jetpack\'in mağazanıza bağlanmasını gerektiriyor.</string>
     <string name="at_username">\@%s</string>
     <string name="enter_site_address">Bağlanmak istediğiniz WooCommerce mağazasının adresini girin.</string>

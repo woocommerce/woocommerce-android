@@ -1,14 +1,43 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2022-08-16 12:54:03+0000
+Translation-Revision-Date: 2022-10-02 19:38:14+0000
 Plural-Forms: nplurals=2; plural=n > 1;
 Generator: GlotPress/2.4.0-alpha
 Language: id
 -->
 <resources>
+    <string name="stats_widget_last_updated_message">Sejak %1$s</string>
+    <string name="stats_widget_error_no_data">Tidak dapat memuat data</string>
+    <string name="stats_today_widget_description">Statistik WooCommerce Hari Ini</string>
+    <string name="stats_today_widget_configure_title">Statistik toko hari ini</string>
+    <string name="stats_widget_availability_message">Analitik toko tidak tersedia! Harap upgrade ke versi WooCommerce terbaru untuk melihat analitik toko Anda.</string>
+    <string name="stats_widget_offline_error">Jaringan Anda tidak tersedia.\nPeriksa koneksi data atau Wi-Fi Anda.</string>
+    <string name="stats_widget_log_in_message">Silakan login ke aplikasi WooCommerce</string>
+    <string name="login_jetpack_connection_url_failed">Gagal mengambil data koneksi…</string>
+    <string name="login_jetpack_verify_connection">Memverifikasi koneksi Jetpack…</string>
+    <string name="login_jetpack_connection_verification_failed">Tidak dapat memverifikasi koneksi Jetpack Anda. Harap coba lagi.</string>
+    <string name="login_simple_wpcom_site">Situs %1$s saat ini menggunakan paket WordPress.com yang tidak mendukung instalasi plugin. Upgrade paket Anda untuk menggunakan WooCommerce.</string>
+    <string name="login_connect_jetpack_button">Hubungkan Jetpack ke akun Anda</string>
+    <string name="login_jetpack_not_connected">Sepertinya akun Anda tidak terhubung ke Jetpack %1$s</string>
+    <string name="card_reader_card_readers_header">PEMBACA KARTU</string>
+    <string name="card_reader_payment_options_header">OPSI PEMBAYARAN</string>
+    <string name="card_reader_enable_pay_in_person_description">Dengan opsi checkout Pembayaran Langsung, Anda bisa menerima pembayaran untuk pesanan online, saat barang diambil atau diantarkan. &lt;a href=\'\'&gt;Baca selengkapnya&lt;/a&gt;</string>
+    <string name="card_reader_enable_pay_in_person">Pembayaran Langsung</string>
+    <string name="login_verifying_site_jetpack_timeout_error_description">Kami tidak dapat terhubung ke situs Anda. Harap hubungi tim dukungan untuk memecahkan masalah ini.</string>
+    <string name="login_verifying_site_jetpack_timeout_error_title">Error Koneksi</string>
+    <string name="card_reader_onboarding_with_pending_requirements">Ada masalah yang perlu Anda perhatikan. Harap &lt;a href=\'\'&gt;diperiksa&lt;/a&gt;</string>
+    <string name="login_site_picker_try_another_address">Coba alamat lainnya</string>
+    <string name="card_reader_onboarding_cash_on_delivery_enable_failure">Gagal mengaktifkan bayar di tempat. Silakan coba lagi nanti.</string>
+    <string name="card_reader_onboarding_cash_on_delivery_disabled_button">Aktifkan Pembayaran Langsung</string>
+    <string name="card_reader_onboarding_cash_on_delivery_disabled_error_hint">Dengan pilihan \"Pembayaran Langsung\" saat checkout, Anda dapat menerima pembayaran kartu atau tunai saat pengambilan atau penerimaan barang.</string>
+    <string name="card_reader_onboarding_cash_on_delivery_disabled_error_header">Tambahkan Pembayaran Langsung pada proses checkout Anda</string>
+    <string name="card_reader_connect_learn_more">&lt;a href=\'\'&gt;Pelajari selengkapnya&lt;/a&gt; tentang Pembayaran Langsung</string>
+    <string name="login_site_picker_new_to_woo">Baru menggunakan WooCommerce</string>
+    <string name="site_discovery_postlogin_failure">Terjadi kegagalan, silakan hubungi dukungan</string>
+    <string name="login_site_picker_enter_site_address">Masukkan alamat situs</string>
     <string name="login_help_notification_get_link_by_email_button">Dapatkan tautan untuk login melalui email</string>
     <string name="login_help_notification_invalid_password_title">Lupa kata sandi Anda?</string>
-    <string name="card_reader_onboarding_not_finished">Kami mendapati bahwa Anda belum menyelesaikan penyiapan Pembayaran Langsung. &lt;b&gt;&lt;a href=\'\'&gt;Lanjutkan penyiapan&lt;/a&gt;&lt;/b&gt;</string>
+    <string name="card_reader_onboarding_not_finished">Kami mendapati bahwa Anda belum menyelesaikan penyiapan Pembayaran Langsung. &lt;a href=\'\'&gt;Lanjutkan penyiapan&lt;/a&gt;</string>
     <string name="payments_hub_title">Pembayaran</string>
     <string name="orderlist_bottom_sheet_simple_payments_moved_button">Mantap!</string>
     <string name="orderlist_bottom_sheet_simple_payments_moved_description">Sekarang, Anda dapat mengakses Pembayaran Langsung dan fitur-fitur lain dengan cepat dan mudah</string>
@@ -74,7 +103,7 @@ Language: id
     <string name="support_system_status_report_share_label">Bagikan laporan status sistem</string>
     <string name="support_system_status_report_copy_label">Salin laporan status sistem ke clipboard</string>
     <string name="card_reader_connect_keep_searching_button">Terus Mencari</string>
-    <string name="card_reader_payment_description_v2">Pembayaran Langsung untuk Pesanan #%s di %s blog_id %s.</string>
+    <string name="card_reader_payment_description_v2">Pembayaran Langsung untuk Pesanan #%1$s di %2$s blog_id %3$s.</string>
     <string name="card_reader_manage_payment_provider">Ubah Penyedia Pembayaran</string>
     <string name="orderdetail_refunded_line_with_info">Dana dikembalikan: %1$s</string>
     <string name="orderdetail_payment_summary_onhold_plain">Menunggu pembayaran</string>
@@ -158,7 +187,7 @@ Language: id
     <string name="shipping_label_install_wc_shipping_banner_button">Dapatkan WooCommerce Shipping</string>
     <string name="shipping_label_install_wc_shipping_banner_description">Cetak label dari ponsel dengan WooCommerce Shipping.</string>
     <string name="shipping_label_install_wc_shipping_banner_title">Perlu label pengiriman?</string>
-    <string name="order_creation_change_product_quantity">Ubah jumlah produk dari %d menjadi %d</string>
+    <string name="order_creation_change_product_quantity">Ubah jumlah produk dari %1$d menjadi %2$d</string>
     <string name="variations_bulk_update_regular_price">Perbarui Harga Normal</string>
     <string name="variations_bulk_update_sale_price">Perbarui Harga Obral</string>
     <string name="card_reader_onboarding_stripe_unsupported_in_country_header">Kami tidak mendukung ekstensi WooCommerce Stripe di %1$s</string>
@@ -291,8 +320,8 @@ Language: id
     <string name="coupon_list_wip_message_enabled">Kini Anda dapat melihat dan mengedit kupon dengan perangkat Anda!</string>
     <string name="coupon_list_wip_title">Lihat dan edit kupon</string>
     <string name="coupon_list_empty_heading">Tidak ada kupon ditemukan</string>
-    <string name="coupon_list_item_label_included_and_excluded">%1s excl. %2s</string>
-    <string name="coupon_list_item_label_products_and_categories">%1s dan %2s</string>
+    <string name="coupon_list_item_label_included_and_excluded">%1$s excl. %2$s</string>
+    <string name="coupon_list_item_label_products_and_categories">%1$s dan %2$s</string>
     <string name="coupon_list_item_label_everything">semua</string>
     <string name="coupon_list_item_label_expired">Kedaluwarsa </string>
     <string name="coupon_list_item_label_active">Aktif</string>
@@ -1037,7 +1066,6 @@ Language: id
     <string name="orderdetail_net">Pembayaran Bersih</string>
     <string name="orderdetail_payment_paid_by_customer">Berbayar</string>
     <string name="login_jetpack_view_instructions_alt">Pelajari selengkapnya tentang cara menghubungkan Jetpack</string>
-    <string name="login_no_stores">Kami tidak menemukan toko WooCommerce yang terhubung ke akun ini. Anda perlu menginstal dan menghubungkan plugin gratis Jetpack dengan toko WooCommerce Anda untuk menggunakan aplikasi ini.</string>
     <string name="edit">Sunting</string>
     <string name="product_images_validate_drag_and_drop">Validasi</string>
     <string name="product_images_drag_and_drop_description">Tarik dan lepas untuk mengurutkan foto</string>
@@ -1362,7 +1390,7 @@ Language: id
     <string name="product_width">Lebar</string>
     <string name="product_length">Panjang</string>
     <string name="order_refunds_refund_info_title">Produk yang dananya dikembalikan</string>
-    <string name="order_refunds_detail_item_description">%s (%s x %d)</string>
+    <string name="order_refunds_detail_item_description">%1$s (%2$s x %3$d)</string>
     <string name="order_refunds_method">%1$s melalui %2$s</string>
     <string name="order_refunds_confirmation">Apakah Anda yakin ingin meminta pengembalian dana? Hal ini tidak dapat dibatalkan.</string>
     <string name="orderdetail_refunded_products">Produk yang dananya dikembalikan</string>
@@ -1402,7 +1430,7 @@ Language: id
     <string name="order_refunds_select_quantity">Pilih jumlah</string>
     <string name="order_refunds_shipping_refund">Pengembalian dana pengiriman</string>
     <string name="order_refunds_products_refund">Pengembalian dana produk</string>
-    <string name="order_refunds_item_description">%s x %s tiap buah</string>
+    <string name="order_refunds_item_description">%1$s x %2$s tiap buah</string>
     <string name="order_refunds_items_selected">%d item terpilih</string>
     <string name="order_refunds_items_select_none">Tidak memilih</string>
     <string name="order_refunds_items_select_all">Pilih semua</string>
@@ -1413,7 +1441,7 @@ Language: id
     <string name="image_source_device_chooser">Pilih dari perangkat</string>
     <string name="image_source_title">Pilih metode pengunggahan</string>
     <string name="product_images_upload_channel_title">Unggahan</string>
-    <string name="product_images_uploading_multi_notif_message">Mengunggah gambar…%d dari %d</string>
+    <string name="product_images_uploading_multi_notif_message">Mengunggah gambar…%1$d dari %2$d</string>
     <string name="product_images_uploading_single_notif_message">Mengunggah gambar…</string>
     <string name="product_images_camera_error">Tidak dapat mengakses kamera</string>
     <string name="product_image_remove_confirmation">Anda yakin ingin menghapus gambar ini?</string>
@@ -1808,7 +1836,7 @@ Language: id
     <string name="login_jetpack_what_is_description">Jetpack merupakan plugin WordPress gratis yang menghubungkan toko Anda dengan peralatan yang diperlukan agar dapat memberikan pengalaman seluler terbaik, mencakup pemberitahuan push dan statistik</string>
     <string name="login_jetpack_what_is">Apa itu Jetpack?</string>
     <string name="login_view_connected_stores">Lihat toko terhubung</string>
-    <string name="login_not_connected_to_account">Sepertinya %1$s tidak terhubung ke akun WordPress.com lainnya.</string>
+    <string name="login_wpcom_account_mismatch">Sepertinya %1$s terhubung ke akun WordPress.com lain.</string>
     <string name="keep_editing">Lanjutkan menyunting</string>
     <string name="notification_wpcom_username_needed">Silakan login dengan nama pengguna dan kata sandi Anda.</string>
     <string name="error_user_username_instead_of_email">Silakan login menggunakan nama pengguna WordPress.com sebagai ganti alamat email Anda.</string>
@@ -2129,11 +2157,12 @@ Language: id
     <string name="dashboard_stats_granularity_months">Bulan</string>
     <string name="dashboard_stats_granularity_weeks">Minggu</string>
     <string name="dashboard_stats_granularity_days">Hari</string>
+    <string name="login_no_stores">Kami tidak menemukan toko WooCommerce yang terhubung ke akun ini.</string>
     <string name="login_with_a_different_account">Login dengan akun lain</string>
     <string name="login_nostores_content_description">Tidak ada toko WooCommerce</string>
     <string name="login_avatar_content_description">Foto profil Anda</string>
     <string name="login_connected_store">Toko yang terhubung</string>
-    <string name="login_configure_link">Baca %sinstruksi konfigurasi%s.</string>
+    <string name="login_configure_link">Baca %1$sinstruksi konfigurasi%2$s.</string>
     <string name="login_jetpack_required">Aplikasi ini memerlukan Jetpack agar dapat terhubung ke toko Anda.</string>
     <string name="at_username">\@%s</string>
     <string name="enter_site_address">Masukkan alamat toko WooCommerce yang ingin dihubungkan.</string>

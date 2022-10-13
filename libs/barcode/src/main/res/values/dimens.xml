@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="top_action_bar_padding_horizontal">@dimen/minor_100</dimen>
+  <dimen name="top_action_bar_height">@dimen/major_350</dimen>
+  <dimen name="top_action_button_padding">@dimen/major_75</dimen>
+  <dimen name="search_progress_bar_size">@dimen/major_300</dimen>
+  <dimen name="search_button_text_size">@dimen/text_minor_125</dimen>
+  <dimen name="search_button_margin_bottom">@dimen/major_150</dimen>
+  <dimen name="bottom_prompt_chip_text_size">@dimen/text_minor_100</dimen>
+  <dimen name="bottom_prompt_chip_margin_bottom">@dimen/major_175</dimen>
+  <dimen name="bottom_prompt_chip_corner_radius">@dimen/minor_100</dimen>
+    <dimen name="barcode_bottom_sheet_padding_vertical">@dimen/major_75</dimen>
+  <dimen name="barcode_reticle_ripple_stroke_width">@dimen/minor_50</dimen>
+  <dimen name="barcode_reticle_ripple_size_offset">@dimen/major_250</dimen>
+  <dimen name="barcode_reticle_stroke_width">@dimen/minor_50</dimen>
+  <dimen name="barcode_reticle_corner_radius">@dimen/minor_100</dimen>
+  <dimen name="barcode_field_padding_horizontal">@dimen/major_150</dimen>
+  <dimen name="barcode_field_padding_vertical">@dimen/major_75</dimen>
+  <dimen name="barcode_field_value_size">@dimen/text_minor_125</dimen>
+  <dimen name="barcode_field_value_padding">@dimen/major_100</dimen>
+  <dimen name="barcode_field_label_size">@dimen/text_minor_80</dimen>
+  <dimen name="barcode_field_label_padding">@dimen/minor_50</dimen>
+</resources>

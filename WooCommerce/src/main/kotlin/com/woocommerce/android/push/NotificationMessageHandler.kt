@@ -29,6 +29,7 @@ import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.CoreOrderStatus
 import org.wordpress.android.fluxc.store.AccountStore
 import org.wordpress.android.fluxc.store.NotificationStore.FetchNotificationPayload
 import org.wordpress.android.fluxc.store.SiteStore
+import org.wordpress.android.fluxc.store.WCLeaderboardsStore
 import org.wordpress.android.fluxc.store.WCOrderStore.FetchOrderListPayload
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -47,6 +48,7 @@ class NotificationMessageHandler @Inject constructor(
     private val zendeskHelper: ZendeskHelper,
     private val notificationsParser: NotificationsParser,
     private val selectedSite: SelectedSite,
+    private val topPerformersStore: WCLeaderboardsStore
 ) {
     companion object {
         private const val KEY_PUSH_TYPE_ZENDESK = "zendesk"
@@ -164,6 +166,7 @@ class NotificationMessageHandler @Inject constructor(
                         )
                     )
                 )
+                topPerformersStore.invalidateTopPerformers(site.siteId)
             } ?: wooLogWrapper.e(NOTIFS, "Site not found - can't dispatchNewOrderEvents")
         }
     }

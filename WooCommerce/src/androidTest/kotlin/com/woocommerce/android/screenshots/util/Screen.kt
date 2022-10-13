@@ -33,6 +33,7 @@ import androidx.test.runner.lifecycle.Stage.RESUMED
 import com.google.android.material.tabs.TabLayout
 import com.woocommerce.android.R
 import org.hamcrest.CoreMatchers.allOf
+import org.hamcrest.CoreMatchers.not
 import org.hamcrest.Matcher
 import org.hamcrest.Matchers.`is`
 import tools.fastlane.screengrab.Screengrab
@@ -74,6 +75,16 @@ open class Screen {
         private fun isElementDisplayed(element: ViewInteraction): Boolean {
             return try {
                 element.check(matches(isDisplayed()))
+                true
+            } catch (e: Throwable) {
+                false
+            }
+        }
+
+        private fun isElementNotDisplayed(element: Int): Boolean {
+            return try {
+                onView(withId(element))
+                    .check(matches(not(isDisplayed())))
                 true
             } catch (e: Throwable) {
                 false
@@ -133,6 +144,19 @@ open class Screen {
         )
     }
 
+    fun scrollToListItem(itemTitle: String, list: ViewInteraction) {
+        list.perform(
+            RecyclerViewActions.actionOnItem<RecyclerView.ViewHolder>(
+                ViewMatchers.hasDescendant(
+                    ViewMatchers.withText(
+                        itemTitle
+                    )
+                ),
+                ViewActions.scrollTo()
+            )
+        )
+    }
+
     fun selectListItem(itemTitle: String, listID: Int) {
         Espresso.onView(ViewMatchers.withId(listID)).perform(
             RecyclerViewActions.actionOnItem<RecyclerView.ViewHolder>(
@@ -144,6 +168,8 @@ open class Screen {
                 ViewActions.click()
             )
         )
+
+        idleFor(1000) // allow for transitions
     }
 
     private fun clickOn(viewInteraction: ViewInteraction) {
@@ -254,6 +280,7 @@ open class Screen {
 
     protected fun pressBack() {
         Espresso.pressBack()
+        idleFor(1000) // allow for transitions
     }
 
     fun waitForElementToBeDisplayed(elementID: Int) {
@@ -282,6 +309,14 @@ open class Screen {
         } catch (e: java.lang.Exception) { // ignore the failure
         }
         return isElementDisplayed(elementId)
+    }
+
+    fun waitForElementToDisappear(element: Int) {
+        waitForConditionToBeTrue(
+            Supplier<Boolean> {
+                isElementNotDisplayed(element)
+            }
+        )
     }
 
     fun isElementDisplayed(elementID: Int): Boolean {

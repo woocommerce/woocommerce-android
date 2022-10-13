@@ -24,23 +24,26 @@ import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.common.wpcomwebview.WPComWebViewFragment
 import com.woocommerce.android.ui.login.LoginActivity
 import com.woocommerce.android.ui.login.LoginEmailHelpDialogFragment
+import com.woocommerce.android.ui.login.accountmismatch.AccountMismatchErrorFragment
 import com.woocommerce.android.ui.main.AppBarStatus
 import com.woocommerce.android.ui.main.MainActivity
+import com.woocommerce.android.ui.sitepicker.SitePickerViewModel.SitePickerEvent.NavigateToAccountMismatchScreen
 import com.woocommerce.android.ui.sitepicker.SitePickerViewModel.SitePickerEvent.NavigateToEmailHelpDialogEvent
+import com.woocommerce.android.ui.sitepicker.SitePickerViewModel.SitePickerEvent.NavigateToHelpFragmentEvent
 import com.woocommerce.android.ui.sitepicker.SitePickerViewModel.SitePickerEvent.NavigateToMainActivityEvent
 import com.woocommerce.android.ui.sitepicker.SitePickerViewModel.SitePickerEvent.NavigateToNewToWooEvent
 import com.woocommerce.android.ui.sitepicker.SitePickerViewModel.SitePickerEvent.NavigateToSiteAddressEvent
 import com.woocommerce.android.ui.sitepicker.SitePickerViewModel.SitePickerEvent.NavigateToWPComWebView
-import com.woocommerce.android.ui.sitepicker.SitePickerViewModel.SitePickerEvent.NavigationToHelpFragmentEvent
 import com.woocommerce.android.ui.sitepicker.SitePickerViewModel.SitePickerEvent.ShowWooUpgradeDialogEvent
-import com.woocommerce.android.ui.sitepicker.SitePickerViewModel.SitePickerState.AccountMismatchState
 import com.woocommerce.android.ui.sitepicker.SitePickerViewModel.SitePickerState.NoStoreState
+import com.woocommerce.android.ui.sitepicker.SitePickerViewModel.SitePickerState.SimpleWPComState
 import com.woocommerce.android.ui.sitepicker.SitePickerViewModel.SitePickerState.StoreListState
 import com.woocommerce.android.ui.sitepicker.SitePickerViewModel.SitePickerState.WooNotFoundState
 import com.woocommerce.android.ui.sitepicker.sitediscovery.SitePickerSiteDiscoveryFragment
 import com.woocommerce.android.util.ChromeCustomTabUtils
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Logout
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowDialog
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.widgets.CustomProgressDialog
 import com.woocommerce.android.widgets.SkeletonView
@@ -54,6 +57,7 @@ class SitePickerFragment : BaseFragment(R.layout.fragment_site_picker), LoginEma
     private val binding get() = _binding!!
 
     private val viewModel: SitePickerViewModel by viewModels()
+
     @Inject
     lateinit var uiMessageResolver: UIMessageResolver
 
@@ -124,6 +128,9 @@ class SitePickerFragment : BaseFragment(R.layout.fragment_site_picker), LoginEma
             new.noStoresBtnText?.takeIfNotEqualTo(old?.noStoresBtnText) {
                 binding.noStoresView.noStoresBtnText = it
             }
+            new.isNoStoresBtnVisible.takeIfNotEqualTo(old?.isNoStoresBtnVisible) {
+                binding.noStoresView.isNoStoresBtnVisible = it
+            }
             new.noStoresLabelText?.takeIfNotEqualTo(old?.noStoresLabelText) {
                 binding.noStoresView.noStoresText = it
             }
@@ -137,8 +144,8 @@ class SitePickerFragment : BaseFragment(R.layout.fragment_site_picker), LoginEma
                 when (it) {
                     StoreListState -> updateStoreListView()
                     NoStoreState -> updateNoStoresView()
-                    AccountMismatchState -> updateAccountMismatchView(new.hasConnectedStores == true)
                     WooNotFoundState -> updateWooNotFoundView()
+                    SimpleWPComState -> updateSimpleWPComView()
                 }
             }
         }
@@ -151,12 +158,15 @@ class SitePickerFragment : BaseFragment(R.layout.fragment_site_picker), LoginEma
             when (event) {
                 is NavigateToMainActivityEvent -> (activity as? MainActivity)?.handleSitePickerResult()
                 is ShowWooUpgradeDialogEvent -> showWooUpgradeDialog()
-                is NavigationToHelpFragmentEvent -> navigateToHelpScreen()
+                is NavigateToHelpFragmentEvent -> navigateToHelpScreen(event.origin)
                 is NavigateToNewToWooEvent -> navigateToNewToWooScreen()
                 is NavigateToSiteAddressEvent -> navigateToAddressScreen()
                 is NavigateToEmailHelpDialogEvent -> navigateToNeedHelpFindingEmailScreen()
                 is NavigateToWPComWebView -> navigateToWPComWebView(event)
-                is ShowSnackbar -> uiMessageResolver.showSnack(event.message)
+                is NavigateToAccountMismatchScreen -> navigateToAccountMismatchScreen(event)
+                is ShowSnackbar -> uiMessageResolver.getSnack(stringResId = event.message, stringArgs = event.args)
+                    .show()
+                is ShowDialog -> event.showDialog()
                 is Logout -> onLogout()
                 is Exit -> findNavController().navigateUp()
                 else -> event.isHandled = false
@@ -179,6 +189,9 @@ class SitePickerFragment : BaseFragment(R.layout.fragment_site_picker), LoginEma
         handleResult<String>(SitePickerSiteDiscoveryFragment.SITE_PICKER_SITE_ADDRESS_RESULT) {
             viewModel.onSiteAddressReceived(it)
         }
+        handleNotice(AccountMismatchErrorFragment.JETPACK_CONNECTED_NOTICE) {
+            viewModel.onJetpackConnected()
+        }
     }
 
     private fun updateStoreListView() {
@@ -196,25 +209,18 @@ class SitePickerFragment : BaseFragment(R.layout.fragment_site_picker), LoginEma
         }
     }
 
-    private fun updateAccountMismatchView(hasConnectedStores: Boolean) {
-        binding.loginEpilogueButtonBar.buttonPrimary.setOnClickListener {
-            if (hasConnectedStores) {
-                viewModel.onViewConnectedStoresButtonClick()
-            } else {
-                viewModel.onEnterSiteAddressClick()
-            }
-        }
-        binding.noStoresView.clickSecondaryAction {
-            viewModel.onNeedHelpFindingEmailButtonClick()
-        }
-    }
-
     private fun updateWooNotFoundView() {
         binding.loginEpilogueButtonBar.buttonPrimary.setOnClickListener {
             AnalyticsTracker.track(AnalyticsEvent.LOGIN_WOOCOMMERCE_SETUP_BUTTON_TAPPED)
             viewModel.onInstallWooClicked()
         }
         binding.noStoresView.clickSecondaryAction {
+            viewModel.onViewConnectedStoresButtonClick()
+        }
+    }
+
+    private fun updateSimpleWPComView() {
+        binding.loginEpilogueButtonBar.buttonPrimary.setOnClickListener {
             viewModel.onViewConnectedStoresButtonClick()
         }
     }
@@ -262,8 +268,8 @@ class SitePickerFragment : BaseFragment(R.layout.fragment_site_picker), LoginEma
             .navigateSafely(SitePickerFragmentDirections.actionSitePickerFragmentToSitePickerSiteDiscoveryFragment())
     }
 
-    private fun navigateToHelpScreen() {
-        startActivity(HelpActivity.createIntent(requireContext(), HelpActivity.Origin.LOGIN_EPILOGUE, null))
+    private fun navigateToHelpScreen(origin: HelpActivity.Origin) {
+        startActivity(HelpActivity.createIntent(requireContext(), origin, null))
     }
 
     private fun navigateToNeedHelpFindingEmailScreen() {
@@ -277,6 +283,16 @@ class SitePickerFragment : BaseFragment(R.layout.fragment_site_picker), LoginEma
             NavGraphMainDirections.actionGlobalWPComWebViewFragment(
                 urlToLoad = event.url,
                 urlToTriggerExit = event.validationUrl
+            )
+        )
+    }
+
+    private fun navigateToAccountMismatchScreen(event: NavigateToAccountMismatchScreen) {
+        findNavController().navigateSafely(
+            SitePickerFragmentDirections.actionSitePickerFragmentToAccountMismatchErrorFragment(
+                siteUrl = event.siteUrl,
+                primaryButton = event.primaryButton,
+                allowBackNavigation = event.hasConnectedStores
             )
         )
     }

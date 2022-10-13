@@ -142,6 +142,7 @@ class AnalyticsTracker private constructor(private val context: Context) {
         const val KEY_ERROR_CONTEXT = "error_context"
         const val KEY_ERROR_DESC = "error_description"
         const val KEY_ERROR_TYPE = "error_type"
+        const val KEY_ERROR_MESSAGE = "error_message"
         const val KEY_FROM = "from"
         const val KEY_HAS_UNFULFILLED_ORDERS = "has_unfulfilled_orders"
         const val KEY_ID = "id"
@@ -369,6 +370,9 @@ class AnalyticsTracker private constructor(private val context: Context) {
         const val VALUE_JETPACK_INSTALLATION_SOURCE_WEB = "web"
         const val VALUE_JETPACK_INSTALLATION_SOURCE_NATIVE = "native"
 
+        // -- Login with WordPress.com account flow
+        const val VALUE_LOGIN_WITH_WORDPRESS_COM = "wordpress_com"
+
         // -- Upsell banner
         const val KEY_BANNER_SOURCE = "source"
         const val KEY_BANNER_PAYMENTS = "payment_methods"
@@ -381,8 +385,23 @@ class AnalyticsTracker private constructor(private val context: Context) {
 
         const val SOURCE_PRODUCT_DETAIL = "product_detail"
 
+        // -- Cash on Delivery
+        const val KEY_IS_ENABLED = "is_enabled"
+        const val KEY_CASH_ON_DELIVERY_SOURCE = "source"
+
         // -- Experiments
         const val KEY_EXPERIMENT_VARIANT = "experiment_variant"
+
+        // -- Help Center
+        const val KEY_SOURCE_FLOW = "source_flow"
+        const val KEY_SOURCE_STEP = "source_step"
+        const val KEY_HELP_CONTENT_URL = "help_content_url"
+
+        // Widgets
+        const val KEY_WIDGETS = "widgets"
+
+        // -- App links
+        const val KEY_PATH = "path"
 
         var sendUsageStats: Boolean = true
             set(value) {

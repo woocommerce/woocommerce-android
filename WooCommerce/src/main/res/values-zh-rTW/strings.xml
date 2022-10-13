@@ -1,14 +1,43 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2022-08-16 09:54:24+0000
+Translation-Revision-Date: 2022-10-04 09:54:04+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: zh_TW
 -->
 <resources>
+    <string name="stats_widget_last_updated_message">始於 %1$s</string>
+    <string name="stats_widget_error_no_data">無法載入資料</string>
+    <string name="stats_today_widget_description">WooCommerce 今日統計資料</string>
+    <string name="stats_today_widget_configure_title">今日商店統計資料</string>
+    <string name="stats_widget_availability_message">無法查看商店分析資料！ 請升級至最新版的 WooCommerce 以查看你的商店分析資料。</string>
+    <string name="stats_widget_offline_error">網路無法使用。\n請檢查你的日期或 Wi-Fi 連線。</string>
+    <string name="stats_widget_log_in_message">請登入 WooCommerce 應用程式</string>
+    <string name="login_jetpack_connection_url_failed">擷取連結資料失敗…</string>
+    <string name="login_jetpack_verify_connection">正在確認 Jetpack 連結…</string>
+    <string name="login_jetpack_connection_verification_failed">無法驗證你的 Jetpack 連結。 請再試一次。</string>
+    <string name="login_simple_wpcom_site">網站 %1$s 目前使用的 WordPress.com 方案不支援安裝外掛程式。 若要使用 WooCommerce，請升級你的方案。</string>
+    <string name="login_connect_jetpack_button">將 Jetpack 連結到你的帳號</string>
+    <string name="login_jetpack_not_connected">你的帳號似乎未連結至 %1$s 的 Jetpack</string>
+    <string name="card_reader_card_readers_header">讀卡機</string>
+    <string name="card_reader_payment_options_header">付款選項</string>
+    <string name="card_reader_enable_pay_in_person_description">「親自收款」結帳選項可讓你在收貨或貨到時接受網站訂單付款。 &lt;a href=\'\'&gt;深入瞭解&lt;/a&gt;</string>
+    <string name="card_reader_enable_pay_in_person">親自收款</string>
+    <string name="login_verifying_site_jetpack_timeout_error_description">我們無法連線至你的網站。 請聯絡支援團隊以移難排解此問題。</string>
+    <string name="login_verifying_site_jetpack_timeout_error_title">連線錯誤</string>
+    <string name="card_reader_onboarding_with_pending_requirements">你有一個問題需採取行動。 請&lt;a href=\'\'&gt;查看&lt;/a&gt;</string>
+    <string name="login_site_picker_try_another_address">嘗試其他地址</string>
+    <string name="card_reader_onboarding_cash_on_delivery_enable_failure">無法啟用貨到付款。 請稍後再試一次。</string>
+    <string name="card_reader_onboarding_cash_on_delivery_disabled_button">啟用親自收款</string>
+    <string name="card_reader_onboarding_cash_on_delivery_disabled_error_hint">結帳畫面的「親自收款」選項可讓你在收貨或貨到時接受卡片或現金付款。</string>
+    <string name="card_reader_onboarding_cash_on_delivery_disabled_error_header">將「親自收款」功能新增至結帳畫面</string>
+    <string name="card_reader_connect_learn_more">&lt;a href=\'\'&gt;深入瞭解&lt;/a&gt;親自收款功能</string>
+    <string name="login_site_picker_new_to_woo">第一次使用 WooCommerce</string>
+    <string name="site_discovery_postlogin_failure">發生錯誤，請聯絡支援團隊</string>
+    <string name="login_site_picker_enter_site_address">輸入網站位址</string>
     <string name="login_help_notification_get_link_by_email_button">透過電子郵件取得登入連結</string>
     <string name="login_help_notification_invalid_password_title">忘記密碼了嗎？</string>
-    <string name="card_reader_onboarding_not_finished">我們注意到你尚未完成「親自收款」設定。 &lt;b&gt;&lt;a href=\'\'&gt;繼續設定&lt;/a&gt;&lt;/b&gt;</string>
+    <string name="card_reader_onboarding_not_finished">我們注意到你尚未完成「親自收款」設定。 &lt;a href=\'\'&gt;繼續設定&lt;/a&gt;</string>
     <string name="payments_hub_title">付款</string>
     <string name="orderlist_bottom_sheet_simple_payments_moved_button">瞭解！</string>
     <string name="orderlist_bottom_sheet_simple_payments_moved_description">你現在可以快速輕鬆存取「親自收款」和其他功能</string>
@@ -74,7 +103,7 @@ Language: zh_TW
     <string name="support_system_status_report_share_label">分享系統狀態報告</string>
     <string name="support_system_status_report_copy_label">將系統狀態報告複製到剪貼簿</string>
     <string name="card_reader_connect_keep_searching_button">繼續搜尋</string>
-    <string name="card_reader_payment_description_v2">為 %s blog_id %s 的訂單 #%s 親自收款。</string>
+    <string name="card_reader_payment_description_v2">為 %2$sblog_id%3$s 的訂單 #%1$s 親自付款。</string>
     <string name="card_reader_manage_payment_provider">變更付款供應商</string>
     <string name="orderdetail_refunded_line_with_info">已退款：%1$s</string>
     <string name="orderdetail_payment_summary_onhold_plain">正在等待付款</string>
@@ -158,7 +187,7 @@ Language: zh_TW
     <string name="shipping_label_install_wc_shipping_banner_button">下載 WooCommerce Shipping</string>
     <string name="shipping_label_install_wc_shipping_banner_description">從安裝 WooCommerce Shipping 的手機列印標籤。</string>
     <string name="shipping_label_install_wc_shipping_banner_title">需要運送標籤嗎？</string>
-    <string name="order_creation_change_product_quantity">將商品數量從 %d 變更為 %d</string>
+    <string name="order_creation_change_product_quantity">將商品數量從 %1$d 變更為 %2$d</string>
     <string name="variations_bulk_update_regular_price">更新原價</string>
     <string name="variations_bulk_update_sale_price">更新折扣價</string>
     <string name="card_reader_onboarding_stripe_unsupported_in_country_header">我們未在 %1$s 支援 WooCommerce Stripe 擴充功能</string>
@@ -291,8 +320,8 @@ Language: zh_TW
     <string name="coupon_list_wip_message_enabled">我們一直努力讓你可以在裝置上查看並編輯優惠券！</string>
     <string name="coupon_list_wip_title">檢視並編輯優惠券</string>
     <string name="coupon_list_empty_heading">找不到折價券</string>
-    <string name="coupon_list_item_label_included_and_excluded">%1s (不包括 %2s)</string>
-    <string name="coupon_list_item_label_products_and_categories">%1s 與 %2s</string>
+    <string name="coupon_list_item_label_included_and_excluded">%1$s (不包括 %2$s)</string>
+    <string name="coupon_list_item_label_products_and_categories">%1$s 與 %2$s</string>
     <string name="coupon_list_item_label_everything">全部</string>
     <string name="coupon_list_item_label_expired">已到期</string>
     <string name="coupon_list_item_label_active">使用中</string>
@@ -1037,7 +1066,6 @@ Language: zh_TW
     <string name="orderdetail_net">付款淨額</string>
     <string name="orderdetail_payment_paid_by_customer">已付款</string>
     <string name="login_jetpack_view_instructions_alt">深入瞭解如何連結 Jetpack</string>
-    <string name="login_no_stores">找不到與此帳號連結的 WooCommerce 商店。 你需要在 WooCommerce 商店安裝並連結免費的 Jetpack 外掛程式，才能使用此應用程式。</string>
     <string name="edit">編輯</string>
     <string name="product_images_validate_drag_and_drop">驗證</string>
     <string name="product_images_drag_and_drop_description">拖曳相片來重新排序</string>
@@ -1362,7 +1390,7 @@ Language: zh_TW
     <string name="product_width">寬度</string>
     <string name="product_length">長度</string>
     <string name="order_refunds_refund_info_title">已退款的商品</string>
-    <string name="order_refunds_detail_item_description">%s (%s x %d)</string>
+    <string name="order_refunds_detail_item_description">%1$s (%2$s x %3$d)</string>
     <string name="order_refunds_method">%1$s，付款方式：%2$s</string>
     <string name="order_refunds_confirmation">確定要申請退款？此動作無法復原。</string>
     <string name="orderdetail_refunded_products">已退款的商品</string>
@@ -1402,7 +1430,7 @@ Language: zh_TW
     <string name="order_refunds_select_quantity">選取數量</string>
     <string name="order_refunds_shipping_refund">運費退款</string>
     <string name="order_refunds_products_refund">產品退款</string>
-    <string name="order_refunds_item_description">每個 %s x %s</string>
+    <string name="order_refunds_item_description">每個 %1$s x %2$s</string>
     <string name="order_refunds_items_selected">已選取 %d 個項目</string>
     <string name="order_refunds_items_select_none">全部不選</string>
     <string name="order_refunds_items_select_all">全部選取</string>
@@ -1413,7 +1441,7 @@ Language: zh_TW
     <string name="image_source_device_chooser">從裝置中選擇</string>
     <string name="image_source_title">選取上傳方式</string>
     <string name="product_images_upload_channel_title">上傳</string>
-    <string name="product_images_uploading_multi_notif_message">正在上傳圖片…已上傳 %d，共 %d</string>
+    <string name="product_images_uploading_multi_notif_message">正在上傳圖片… 第 %1$d 個，共 %2$d 個</string>
     <string name="product_images_uploading_single_notif_message">正在上傳圖片…</string>
     <string name="product_images_camera_error">無法存取攝影機</string>
     <string name="product_image_remove_confirmation">確定要移除此圖片？</string>
@@ -1808,7 +1836,7 @@ Language: zh_TW
     <string name="login_jetpack_what_is_description">Jetpack 是一款免費的 WordPress 外掛程式，能夠透過所需工具連結你的商店，為你提供最佳行動裝置體驗，包含推播通知和統計資料</string>
     <string name="login_jetpack_what_is">什麼是 Jetpack？</string>
     <string name="login_view_connected_stores">檢視連結的商店</string>
-    <string name="login_not_connected_to_account">%1$s 似乎已經連結至不同的 WordPress.com 帳號。</string>
+    <string name="login_wpcom_account_mismatch">%1$s 似乎已連結至不同的 WordPress.com 帳號。</string>
     <string name="keep_editing">繼續編輯</string>
     <string name="notification_wpcom_username_needed">請透過你的使用者名稱和密碼登入。</string>
     <string name="error_user_username_instead_of_email">請使用你的 WordPress.com 使用者名稱登入，而非電子郵件地址。</string>
@@ -2129,11 +2157,12 @@ Language: zh_TW
     <string name="dashboard_stats_granularity_months">月</string>
     <string name="dashboard_stats_granularity_weeks">週</string>
     <string name="dashboard_stats_granularity_days">天</string>
+    <string name="login_no_stores">找不到與此帳號連結的 WooCommerce 商店。</string>
     <string name="login_with_a_different_account">使用不同的帳號登入</string>
     <string name="login_nostores_content_description">無 WooCommerce 商店</string>
     <string name="login_avatar_content_description">你的個人檔案照片</string>
     <string name="login_connected_store">連結的商店</string>
-    <string name="login_configure_link">閱讀%s設定說明%s。</string>
+    <string name="login_configure_link">閱讀%1$s設定說明%2$s。</string>
     <string name="login_jetpack_required">此應用程式需要 Jetpack 才能連結至你的商店。</string>
     <string name="at_username">\@%s</string>
     <string name="enter_site_address">請輸入要連結的 WooCommerce 商店位址。</string>

@@ -80,11 +80,14 @@ class OrderCreateEditProductSelectionViewModel @Inject constructor(
     }
 
     fun onProductSelected(productId: Long) {
-        val product = productList.value!!.first { it.remoteId == productId }
-        if (product.numVariations == 0) {
-            triggerEvent(AddProduct(productId))
-        } else {
-            triggerEvent(ShowProductVariations(productId))
+        productList.value!!.firstOrNull { it.remoteId == productId }?.let { product ->
+            if (product.numVariations == 0) {
+                triggerEvent(AddProduct(productId))
+            } else {
+                triggerEvent(ShowProductVariations(productId))
+            }
+        } ?: run {
+            triggerEvent(ProductNotFound)
         }
     }
 
@@ -155,4 +158,6 @@ class OrderCreateEditProductSelectionViewModel @Inject constructor(
     ) : Parcelable
 
     data class AddProduct(val productId: Long) : MultiLiveEvent.Event()
+
+    object ProductNotFound : MultiLiveEvent.Event()
 }

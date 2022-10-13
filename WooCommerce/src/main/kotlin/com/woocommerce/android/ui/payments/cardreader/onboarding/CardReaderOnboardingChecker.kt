@@ -15,6 +15,7 @@ import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.payments.cardreader.CardReaderCountryConfigProvider
 import com.woocommerce.android.ui.payments.cardreader.CardReaderTrackingInfoKeeper
+import com.woocommerce.android.ui.payments.cardreader.CashOnDeliverySettingsRepository
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboardingState.CashOnDeliveryDisabled
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboardingState.ChoosePaymentGatewayProvider
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboardingState.GenericError
@@ -48,7 +49,6 @@ import org.wordpress.android.fluxc.model.payments.inperson.WCPaymentAccountResul
 import org.wordpress.android.fluxc.model.payments.inperson.WCPaymentAccountResult.WCPaymentAccountStatus.RESTRICTED
 import org.wordpress.android.fluxc.model.payments.inperson.WCPaymentAccountResult.WCPaymentAccountStatus.RESTRICTED_SOON
 import org.wordpress.android.fluxc.model.plugin.SitePluginModel
-import org.wordpress.android.fluxc.store.WCGatewayStore
 import org.wordpress.android.fluxc.store.WCInPersonPaymentsStore
 import org.wordpress.android.fluxc.store.WCInPersonPaymentsStore.InPersonPaymentsPluginType
 import org.wordpress.android.fluxc.store.WooCommerceStore
@@ -71,11 +71,11 @@ class CardReaderOnboardingChecker @Inject constructor(
     private val appPrefsWrapper: AppPrefsWrapper,
     private val wooStore: WooCommerceStore,
     private val inPersonPaymentsStore: WCInPersonPaymentsStore,
-    private val wcGatewayStore: WCGatewayStore,
     private val dispatchers: CoroutineDispatchers,
     private val networkStatus: NetworkStatus,
     private val cardReaderTrackingInfoKeeper: CardReaderTrackingInfoKeeper,
     private val cardReaderCountryConfigProvider: CardReaderCountryConfigProvider,
+    private val cashOnDeliverySettingsRepository: CashOnDeliverySettingsRepository,
 ) {
     suspend fun getOnboardingState(pluginType: PluginType? = null): CardReaderOnboardingState {
         if (!networkStatus.isConnected()) return NoConnectionError
@@ -197,7 +197,7 @@ class CardReaderOnboardingChecker @Inject constructor(
 
         if (
             !isCashOnDeliveryDisabledStateSkipped() &&
-            !isCashOnDeliveryEnabled()
+            !cashOnDeliverySettingsRepository.isCashOnDeliveryEnabled()
         ) return CashOnDeliveryDisabled(
             requireNotNull(countryCode),
             preferredPlugin.type,
@@ -218,13 +218,6 @@ class CardReaderOnboardingChecker @Inject constructor(
             remoteSiteId = site.siteId,
             selfHostedSiteId = site.selfHostedSiteId,
         )
-    }
-
-    private suspend fun isCashOnDeliveryEnabled(): Boolean {
-        val gateways = wcGatewayStore.fetchAllGateways(selectedSite.get()).model
-        return gateways?.firstOrNull { wcGatewayModel ->
-            wcGatewayModel.id.equals("cod", ignoreCase = true)
-        }?.isEnabled ?: false
     }
 
     private fun isUserComingFromChoosePaymentGatewayScreen(userSelectedPlugin: PluginType?): Boolean {

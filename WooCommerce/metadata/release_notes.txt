@@ -1,3 +1,1 @@
-We’ve made various enhancements to get your business started. It’s now easier to set up your store when logging in. And you can now enable paying in person right in the app!
-Lastly, we’ve made some tweaks to improve performance. But we’re not done. Keep an eye out for more enhancements in the future. Please keep sending your feedback! We read every one of them!
-
+For this release, we improved the login flow with better autofill and an option to connect Jetpack, if Jetpack is not connected. We also fixed a discrepancy between the monthly and the visitor stats. Yay math! Keep your feedback rolling in; it helps us figure out what to work on next. 💜

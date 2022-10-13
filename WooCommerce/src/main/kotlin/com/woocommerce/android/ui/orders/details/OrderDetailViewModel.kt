@@ -35,6 +35,7 @@ import com.woocommerce.android.model.OrderShipmentTracking
 import com.woocommerce.android.model.Refund
 import com.woocommerce.android.model.RequestResult.SUCCESS
 import com.woocommerce.android.model.ShippingLabel
+import com.woocommerce.android.model.WooPlugin
 import com.woocommerce.android.model.getNonRefundedProducts
 import com.woocommerce.android.model.loadProducts
 import com.woocommerce.android.tools.NetworkStatus
@@ -83,6 +84,7 @@ import org.wordpress.android.fluxc.persistence.entity.OrderMetaDataEntity
 import org.wordpress.android.fluxc.store.WCOrderStore.OnOrderChanged
 import org.wordpress.android.fluxc.store.WCOrderStore.UpdateOrderResult.OptimisticUpdateResult
 import org.wordpress.android.fluxc.store.WCOrderStore.UpdateOrderResult.RemoteUpdateResult
+import org.wordpress.android.fluxc.store.WooCommerceStore
 import javax.inject.Inject
 
 @HiltViewModel
@@ -100,7 +102,7 @@ class OrderDetailViewModel @Inject constructor(
     private val cardReaderTracker: CardReaderTracker,
     private val trackerWrapper: AnalyticsTrackerWrapper,
     private val shippingLabelOnboardingRepository: ShippingLabelOnboardingRepository,
-    private val orderDetailsTransactionLauncher: OrderDetailsTransactionLauncher,
+    private val orderDetailsTransactionLauncher: OrderDetailsTransactionLauncher
 ) : ScopedViewModel(savedState), OnProductFetchedListener {
     private val navArgs: OrderDetailFragmentArgs by savedState.navArgs()
 
@@ -148,8 +150,13 @@ class OrderDetailViewModel @Inject constructor(
         orderDetailsTransactionLauncher.clear()
     }
 
+    private var pluginsInformation: Map<String, WooPlugin> = HashMap()
+
     init {
         productImageMap.subscribeToOnProductFetchedEvents(this)
+        launch {
+            pluginsInformation = orderDetailRepository.getOrderDetailsPluginsInfo()
+        }
     }
 
     fun start() {
@@ -191,7 +198,8 @@ class OrderDetailViewModel @Inject constructor(
             )
             isFetchingData = false
 
-            displayOrderDetails()
+            if (hasOrder()) displayOrderDetails()
+
             viewState = viewState.copy(
                 isOrderDetailSkeletonShown = false,
                 isRefreshing = false
@@ -623,14 +631,23 @@ class OrderDetailViewModel @Inject constructor(
     }
 
     private fun fetchShipmentTrackingAsync() = async {
-        val result = orderDetailRepository.fetchOrderShipmentTrackingList(navArgs.orderId)
-        appPrefs.setTrackingExtensionAvailable(result == SUCCESS)
-        orderDetailsTransactionLauncher.onShipmentTrackingFetched()
+        val plugin = pluginsInformation[WooCommerceStore.WooPlugin.WOO_SHIPMENT_TRACKING.pluginName]
+
+        if (plugin == null || plugin.isOperational) {
+            val result = orderDetailRepository.fetchOrderShipmentTrackingList(navArgs.orderId)
+            appPrefs.setTrackingExtensionAvailable(result == SUCCESS)
+        }
+
+        orderDetailsTransactionLauncher.onShipmentTrackingFetchingCompleted()
     }
 
     private fun fetchOrderShippingLabelsAsync() = async {
-        orderDetailRepository.fetchOrderShippingLabels(navArgs.orderId)
-        orderDetailsTransactionLauncher.onShippingLabelFetched()
+        val plugin = pluginsInformation[WooCommerceStore.WooPlugin.WOO_SERVICES.pluginName]
+
+        if (plugin == null || plugin.isOperational) {
+            orderDetailRepository.fetchOrderShippingLabels(navArgs.orderId)
+        }
+        orderDetailsTransactionLauncher.onShippingLabelFetchingCompleted()
     }
 
     private fun loadOrderShippingLabels(): ListInfo<ShippingLabel> {

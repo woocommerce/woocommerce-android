@@ -17,7 +17,6 @@ import androidx.activity.viewModels
 import androidx.annotation.StringRes
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.appcompat.widget.Toolbar
-import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.core.content.ContextCompat
 import androidx.core.view.isVisible
@@ -50,6 +49,7 @@ import com.woocommerce.android.model.Notification
 import com.woocommerce.android.support.HelpActivity
 import com.woocommerce.android.support.HelpActivity.Origin
 import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.ui.appwidgets.WidgetUpdater
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.base.TopLevelFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
@@ -63,16 +63,19 @@ import com.woocommerce.android.ui.main.BottomNavigationPosition.PRODUCTS
 import com.woocommerce.android.ui.main.MainActivityViewModel.MoreMenuBadgeState.Hidden
 import com.woocommerce.android.ui.main.MainActivityViewModel.MoreMenuBadgeState.NewFeature
 import com.woocommerce.android.ui.main.MainActivityViewModel.MoreMenuBadgeState.UnseenReviews
+import com.woocommerce.android.ui.main.MainActivityViewModel.RestartActivityForAppLink
 import com.woocommerce.android.ui.main.MainActivityViewModel.RestartActivityForNotification
 import com.woocommerce.android.ui.main.MainActivityViewModel.ShowFeatureAnnouncement
 import com.woocommerce.android.ui.main.MainActivityViewModel.ViewMyStoreStats
 import com.woocommerce.android.ui.main.MainActivityViewModel.ViewOrderDetail
 import com.woocommerce.android.ui.main.MainActivityViewModel.ViewOrderList
+import com.woocommerce.android.ui.main.MainActivityViewModel.ViewPayments
 import com.woocommerce.android.ui.main.MainActivityViewModel.ViewReviewDetail
 import com.woocommerce.android.ui.main.MainActivityViewModel.ViewReviewList
 import com.woocommerce.android.ui.main.MainActivityViewModel.ViewZendeskTickets
 import com.woocommerce.android.ui.moremenu.MoreMenuFragmentDirections
 import com.woocommerce.android.ui.orders.list.OrderListFragmentDirections
+import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderFlowParam
 import com.woocommerce.android.ui.prefs.AppSettingsActivity
 import com.woocommerce.android.ui.products.ProductListFragmentDirections
 import com.woocommerce.android.ui.reviews.ReviewListFragmentDirections
@@ -108,6 +111,10 @@ class MainActivity :
         const val FIELD_REMOTE_NOTIFICATION = "remote-notification"
         const val FIELD_PUSH_ID = "local-push-id"
 
+        // widget-related constants
+        const val FIELD_OPENED_FROM_WIDGET = "opened-from-push-widget"
+        const val FIELD_WIDGET_NAME = "widget-name"
+
         interface BackPressListener {
             fun onRequestAllowBackPress(): Boolean
         }
@@ -122,6 +129,7 @@ class MainActivity :
     @Inject lateinit var selectedSite: SelectedSite
     @Inject lateinit var uiMessageResolver: UIMessageResolver
     @Inject lateinit var crashLogging: CrashLogging
+    @Inject lateinit var appWidgetUpdaters: WidgetUpdater.StatsWidgetUpdaters
 
     private val viewModel: MainActivityViewModel by viewModels()
 
@@ -166,9 +174,7 @@ class MainActivity :
 
     private val fragmentLifecycleObserver: FragmentLifecycleCallbacks = object : FragmentLifecycleCallbacks() {
         override fun onFragmentViewCreated(fm: FragmentManager, f: Fragment, v: View, savedInstanceState: Bundle?) {
-            val currentDestination = navController.currentDestination!!
-            val isDialogDestination = currentDestination.navigatorName == DIALOG_NAVIGATOR_NAME
-            if (isDialogDestination) return
+            if (isDialogDestination(navController.currentDestination!!)) return
 
             when (val appBarStatus = (f as? BaseFragment)?.activityAppBarStatus ?: AppBarStatus.Visible()) {
                 is AppBarStatus.Visible -> {
@@ -280,6 +286,8 @@ class MainActivity :
         if (!BuildConfig.DEBUG) {
             checkForAppUpdates()
         }
+
+        viewModel.handleIncomingAppLink(intent?.data)
     }
 
     override fun hideProgressDialog() {
@@ -300,6 +308,9 @@ class MainActivity :
         super.onResume()
         AnalyticsTracker.trackViewShown(this)
 
+        // Track if App was opened from a widget
+        trackIfOpenedFromWidget()
+
         if (selectedSite.exists()) {
             updateOrderBadge(false)
         }
@@ -318,6 +329,8 @@ class MainActivity :
 
         setIntent(intent)
         initFragment(null)
+
+        viewModel.handleIncomingAppLink(intent?.data)
     }
 
     public override fun onDestroy() {
@@ -346,19 +359,13 @@ class MainActivity :
     override fun onBackPressed() {
         AnalyticsTracker.trackBackPressed(this)
 
-        if (!isAtNavigationRoot()) {
-            // go no further if active fragment doesn't allow back press - we use this so fragments can
-            // provide confirmation before discarding the current action, such as adding an order note
-            getActiveChildFragment()?.let { fragment ->
-                if (fragment is BackPressListener && !(fragment as BackPressListener).onRequestAllowBackPress()) {
-                    return
-                }
+        getActiveChildFragment()?.let { fragment ->
+            if (fragment is BackPressListener && !(fragment as BackPressListener).onRequestAllowBackPress()) {
+                return
             }
-            navController.navigateUp()
-            return
-        } else {
-            super.onBackPressed()
         }
+
+        super.onBackPressed()
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
@@ -694,6 +701,7 @@ class MainActivity :
                     startActivity(HelpActivity.createIntent(this, Origin.ZENDESK_NOTIFICATION, null))
                 }
                 is ViewOrderDetail -> {
+                    intent.data = null
                     showOrderDetail(
                         orderId = event.uniqueId,
                         remoteNoteId = event.remoteNoteId,
@@ -711,10 +719,15 @@ class MainActivity :
                     intent.putExtra(FIELD_PUSH_ID, event.pushId)
                     restart()
                 }
+                is RestartActivityForAppLink -> {
+                    intent.data = event.data
+                    restart()
+                }
                 is ShowFeatureAnnouncement -> {
                     val action = NavGraphMainDirections.actionOpenWhatsnewFromMain(event.announcement)
                     navController.navigateSafely(action)
                 }
+                ViewPayments -> showPayments()
             }
         }
 
@@ -786,6 +799,14 @@ class MainActivity :
         navController.navigateSafely(action)
     }
 
+    private fun showPayments() {
+        showBottomNav()
+        binding.bottomNav.currentPosition = MORE
+        binding.bottomNav.active(MORE.position)
+        val action = MoreMenuFragmentDirections.actionMoreMenuToPaymentFlow(CardReaderFlowParam.CardReadersHub)
+        navController.navigateSafely(action)
+    }
+
     override fun showReviewDetailWithSharedTransition(
         remoteReviewId: Long,
         launchedFromNotification: Boolean,
@@ -819,7 +840,6 @@ class MainActivity :
         navController.navigateSafely(action)
     }
 
-    @OptIn(ExperimentalFoundationApi::class)
     override fun showMoreMenu() {
         binding.bottomNav.currentPosition = MORE
         binding.bottomNav.active(MORE.position)
@@ -903,5 +923,22 @@ class MainActivity :
             actionListener = actionListener
         )
             .show()
+    }
+
+    override fun updateStatsWidgets() {
+        appWidgetUpdaters.updateTodayWidget()
+    }
+
+    private fun trackIfOpenedFromWidget() {
+        if (intent.getBooleanExtra(FIELD_OPENED_FROM_WIDGET, false)) {
+            val widgetName = intent.getStringExtra(FIELD_WIDGET_NAME)
+            AnalyticsTracker.track(
+                stat = AnalyticsEvent.WIDGET_TAPPED,
+                properties = mapOf(AnalyticsTracker.KEY_NAME to widgetName)
+            )
+            // Reset these flag now that they have being processed
+            intent.removeExtra(FIELD_OPENED_FROM_WIDGET)
+            intent.removeExtra(FIELD_WIDGET_NAME)
+        }
     }
 }

@@ -17,6 +17,7 @@ import com.woocommerce.android.model.Product
 import com.woocommerce.android.model.Refund
 import com.woocommerce.android.model.RequestResult
 import com.woocommerce.android.model.ShippingLabel
+import com.woocommerce.android.model.WooPlugin
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.ProductImageMap
 import com.woocommerce.android.tools.SelectedSite
@@ -26,6 +27,7 @@ import com.woocommerce.android.ui.orders.details.OrderDetailRepository
 import com.woocommerce.android.ui.orders.details.OrderDetailViewModel
 import com.woocommerce.android.ui.orders.details.OrderDetailViewModel.OrderInfo
 import com.woocommerce.android.ui.orders.details.OrderDetailViewModel.ViewState
+import com.woocommerce.android.ui.orders.details.OrderDetailsTransactionLauncher
 import com.woocommerce.android.ui.orders.details.ShippingLabelOnboardingRepository
 import com.woocommerce.android.ui.payments.cardreader.CardReaderTracker
 import com.woocommerce.android.ui.payments.cardreader.payment.CardReaderPaymentCollectibilityChecker
@@ -62,6 +64,7 @@ import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.CoreOrderStatus
 import org.wordpress.android.fluxc.store.WCOrderStore.OnOrderChanged
 import org.wordpress.android.fluxc.store.WCOrderStore.OrderError
 import org.wordpress.android.fluxc.store.WCOrderStore.UpdateOrderResult
+import org.wordpress.android.fluxc.store.WooCommerceStore
 import org.wordpress.android.fluxc.utils.DateUtils
 import java.math.BigDecimal
 import java.util.Date
@@ -81,7 +84,10 @@ class OrderDetailViewModelTest : BaseUnitTest() {
     private val editor = mock<SharedPreferences.Editor>()
     private val preferences = mock<SharedPreferences> { whenever(it.edit()).thenReturn(editor) }
     private val selectedSite: SelectedSite = mock()
-    private val orderDetailRepository: OrderDetailRepository = mock()
+    private val pluginsInfo = HashMap<String, WooPlugin>()
+    private val orderDetailRepository: OrderDetailRepository = mock {
+        onBlocking { getOrderDetailsPluginsInfo() } doReturn pluginsInfo
+    }
     private val addonsRepository: AddonRepository = mock()
     private val cardReaderTracker: CardReaderTracker = mock()
     private val analyticsTraWrapper: AnalyticsTrackerWrapper = mock()
@@ -95,6 +101,7 @@ class OrderDetailViewModelTest : BaseUnitTest() {
     private val savedState = OrderDetailFragmentArgs(orderId = ORDER_ID).initSavedStateHandle()
 
     private val productImageMap = mock<ProductImageMap>()
+    private val orderDetailsTransactionLauncher = mock<OrderDetailsTransactionLauncher>()
 
     private val order = OrderTestUtils.generateTestOrder(ORDER_ID)
     private val orderInfo = OrderInfo(OrderTestUtils.generateTestOrder(ORDER_ID))
@@ -128,6 +135,27 @@ class OrderDetailViewModelTest : BaseUnitTest() {
         isOrderDetailSkeletonShown = false
     )
 
+    private fun createViewModel() {
+        viewModel = spy(
+            OrderDetailViewModel(
+                coroutinesTestRule.testDispatchers,
+                savedState,
+                appPrefsWrapper,
+                networkStatus,
+                resources,
+                orderDetailRepository,
+                addonsRepository,
+                selectedSite,
+                productImageMap,
+                paymentCollectibilityChecker,
+                cardReaderTracker,
+                analyticsTraWrapper,
+                shippingLabelOnboardingRepository,
+                orderDetailsTransactionLauncher
+            )
+        )
+    }
+
     @Before
     fun setup() {
         doReturn(true).whenever(networkStatus).isConnected()
@@ -144,24 +172,9 @@ class OrderDetailViewModelTest : BaseUnitTest() {
             doReturn(false).whenever(paymentCollectibilityChecker).isCollectable(any())
         }
 
-        viewModel = spy(
-            OrderDetailViewModel(
-                coroutinesTestRule.testDispatchers,
-                savedState,
-                appPrefsWrapper,
-                networkStatus,
-                resources,
-                orderDetailRepository,
-                addonsRepository,
-                selectedSite,
-                productImageMap,
-                paymentCollectibilityChecker,
-                cardReaderTracker,
-                analyticsTraWrapper,
-                shippingLabelOnboardingRepository,
-                mock()
-            )
-        )
+        pluginsInfo.clear()
+
+        createViewModel()
 
         clearInvocations(
             viewModel,
@@ -621,6 +634,7 @@ class OrderDetailViewModelTest : BaseUnitTest() {
     fun `Display error message on fetch order error`() = testBlocking {
         whenever(orderDetailRepository.fetchOrderById(ORDER_ID)).thenReturn(null)
         whenever(orderDetailRepository.getOrderById(ORDER_ID)).thenReturn(null)
+        doReturn(true).whenever(orderDetailRepository).fetchOrderNotes(any())
 
         var snackbar: ShowSnackbar? = null
         viewModel.event.observeForever {
@@ -630,6 +644,7 @@ class OrderDetailViewModelTest : BaseUnitTest() {
         viewModel.start()
 
         verify(orderDetailRepository, times(1)).fetchOrderById(ORDER_ID)
+        verify(viewModel, never()).order
 
         assertThat(snackbar).isEqualTo(ShowSnackbar(string.order_error_fetch_generic))
     }
@@ -1485,4 +1500,130 @@ class OrderDetailViewModelTest : BaseUnitTest() {
             verify(orderDetailRepository, times(2)).fetchOrderById(any())
             verify(orderDetailRepository, times(2)).fetchOrderNotes(any())
         }
+
+    @Test
+    fun `when service plugin is installed and active, then fetch plugin data`() = testBlocking {
+        val services = WooCommerceStore.WooPlugin.WOO_SERVICES.pluginName
+        pluginsInfo[services] = WooPlugin(
+            isInstalled = true,
+            isActive = true,
+            version = "1.0.0"
+        )
+        doReturn(order).whenever(orderDetailRepository).getOrderById(any())
+        doReturn(true).whenever(orderDetailRepository).fetchOrderNotes(any())
+        doReturn(true).whenever(addonsRepository).containsAddonsFrom(any())
+        createViewModel()
+
+        viewModel.start()
+
+        verify(orderDetailRepository).fetchOrderShippingLabels(any())
+        verify(orderDetailsTransactionLauncher).onShippingLabelFetchingCompleted()
+    }
+
+    @Test
+    fun `when service plugin is NOT active, then DON'T fetch plugin data`() = testBlocking {
+        val services = WooCommerceStore.WooPlugin.WOO_SERVICES.pluginName
+        pluginsInfo[services] = WooPlugin(
+            isInstalled = true,
+            isActive = false,
+            version = "1.0.0"
+        )
+        doReturn(order).whenever(orderDetailRepository).getOrderById(any())
+        doReturn(true).whenever(orderDetailRepository).fetchOrderNotes(any())
+        doReturn(true).whenever(addonsRepository).containsAddonsFrom(any())
+        createViewModel()
+
+        viewModel.start()
+
+        verify(orderDetailRepository, never()).fetchOrderShippingLabels(any())
+        verify(orderDetailsTransactionLauncher).onShippingLabelFetchingCompleted()
+    }
+
+    @Test
+    fun `when service plugin is NOT installed, then DON'T fetch plugin data`() = testBlocking {
+        val services = WooCommerceStore.WooPlugin.WOO_SERVICES.pluginName
+        pluginsInfo[services] = WooPlugin(
+            isInstalled = false,
+            isActive = false,
+            version = null
+        )
+        doReturn(order).whenever(orderDetailRepository).getOrderById(any())
+        doReturn(true).whenever(orderDetailRepository).fetchOrderNotes(any())
+        doReturn(true).whenever(addonsRepository).containsAddonsFrom(any())
+        createViewModel()
+
+        viewModel.start()
+
+        verify(orderDetailRepository, never()).fetchOrderShippingLabels(any())
+        verify(orderDetailsTransactionLauncher).onShippingLabelFetchingCompleted()
+    }
+
+    @Test
+    fun `when shipment tracking plugin is installed and active, then fetch plugin data`() = testBlocking {
+        val shipmentTracking = WooCommerceStore.WooPlugin.WOO_SHIPMENT_TRACKING.pluginName
+        pluginsInfo[shipmentTracking] = WooPlugin(
+            isInstalled = true,
+            isActive = true,
+            version = "1.0.0"
+        )
+        doReturn(order).whenever(orderDetailRepository).getOrderById(any())
+        doReturn(true).whenever(orderDetailRepository).fetchOrderNotes(any())
+        doReturn(true).whenever(addonsRepository).containsAddonsFrom(any())
+        createViewModel()
+
+        viewModel.start()
+
+        verify(orderDetailRepository).fetchOrderShipmentTrackingList(any())
+        verify(orderDetailsTransactionLauncher).onShipmentTrackingFetchingCompleted()
+    }
+
+    @Test
+    fun `when shipment tracking plugin is NOT active, then DON'T fetch plugin data`() = testBlocking {
+        val shipmentTracking = WooCommerceStore.WooPlugin.WOO_SHIPMENT_TRACKING.pluginName
+        pluginsInfo[shipmentTracking] = WooPlugin(
+            isInstalled = true,
+            isActive = false,
+            version = "1.0.0"
+        )
+        doReturn(order).whenever(orderDetailRepository).getOrderById(any())
+        doReturn(true).whenever(orderDetailRepository).fetchOrderNotes(any())
+        doReturn(true).whenever(addonsRepository).containsAddonsFrom(any())
+        createViewModel()
+
+        viewModel.start()
+
+        verify(orderDetailRepository, never()).fetchOrderShipmentTrackingList(any())
+        verify(orderDetailsTransactionLauncher).onShipmentTrackingFetchingCompleted()
+    }
+
+    @Test
+    fun `when shipment tracking plugin is NOT installed, then DON'T fetch plugin data`() = testBlocking {
+        val shipmentTracking = WooCommerceStore.WooPlugin.WOO_SHIPMENT_TRACKING.pluginName
+        pluginsInfo[shipmentTracking] = WooPlugin(
+            isInstalled = false,
+            isActive = false,
+            version = null
+        )
+        doReturn(order).whenever(orderDetailRepository).getOrderById(any())
+        doReturn(true).whenever(orderDetailRepository).fetchOrderNotes(any())
+        doReturn(true).whenever(addonsRepository).containsAddonsFrom(any())
+        createViewModel()
+
+        viewModel.start()
+
+        verify(orderDetailRepository, never()).fetchOrderShipmentTrackingList(any())
+        verify(orderDetailsTransactionLauncher).onShipmentTrackingFetchingCompleted()
+    }
+
+    @Test
+    fun `when there is no info about the plugins, then optimistically fetch plugin data`() = testBlocking {
+        doReturn(order).whenever(orderDetailRepository).getOrderById(any())
+        doReturn(true).whenever(orderDetailRepository).fetchOrderNotes(any())
+        doReturn(true).whenever(addonsRepository).containsAddonsFrom(any())
+
+        viewModel.start()
+
+        verify(orderDetailRepository, times(1)).fetchOrderShippingLabels(any())
+        verify(orderDetailRepository, times(1)).fetchOrderShipmentTrackingList(any())
+    }
 }

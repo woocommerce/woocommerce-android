@@ -4,6 +4,7 @@ import android.content.Context
 import android.util.AttributeSet
 import android.view.LayoutInflater
 import android.view.View
+import androidx.core.view.isVisible
 import com.google.android.material.card.MaterialCardView
 import com.woocommerce.android.databinding.ViewLoginNoStoresBinding
 
@@ -25,6 +26,8 @@ class LoginNoStoresView @JvmOverloads constructor(
         set(value) {
             binding.btnSecondaryAction.text = value
         }
+
+    var isNoStoresBtnVisible by binding.btnSecondaryAction::isVisible
 
     fun clickSecondaryAction(onClickListener: ((view: View) -> Unit)) {
         binding.btnSecondaryAction.setOnClickListener(onClickListener)
