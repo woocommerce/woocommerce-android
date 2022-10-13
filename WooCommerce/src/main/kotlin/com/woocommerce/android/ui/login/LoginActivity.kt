@@ -242,14 +242,6 @@ class LoginActivity :
         }
     }
 
-    private fun showPrologueCarouselFragment() {
-        val fragment = LoginPrologueCarouselFragment.newInstance()
-        supportFragmentManager.beginTransaction()
-            .replace(R.id.nav_host_fragment_login, fragment, LoginPrologueCarouselFragment.TAG)
-            .addToBackStack(LoginPrologueCarouselFragment.TAG)
-            .commitAllowingStateLoss()
-    }
-
     private fun showPrologue() {
         val graphInflater = navHostFragment.navController.navInflater
         val navGraph = graphInflater.inflate(R.navigation.nav_graph_login)
