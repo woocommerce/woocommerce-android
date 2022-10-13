@@ -16,7 +16,7 @@ internal class IAPManagerPlanSitePurchaseManagerImpl(
     activity: AppCompatActivity,
     logWrapper: IAPLogWrapper,
 ) : IAPSitePurchasePlanManager {
-    private val iapManager by lazy { IAPManagerFactory.createIAPManager(activity, logWrapper) }
+    private val iapManager = IAPManagerFactory.createIAPManager(activity, logWrapper)
 
     override suspend fun isPlanPurchased(iapProduct: IAPProduct): Boolean {
         return when (val response = iapManager.fetchPurchases(iapProduct.productType)) {

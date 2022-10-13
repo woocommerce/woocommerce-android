@@ -53,20 +53,20 @@ internal class IAPLifecycleObserver(
         }
     }
 
+    suspend fun waitTillConnectionEstablished() = suspendCoroutine<Unit> {
+        if (billingClient.isReady) {
+            it.resume(Unit)
+        } else {
+            connectionEstablishingContinuations.add(it)
+        }
+    }
+
     private fun disconnectFromIAPService() {
         releaseWaiters()
         if (billingClient.isReady) {
             billingClient.endConnection()
         } else {
             logWrapper.d(IAP_LOG_TAG, "BillingClient is not connected")
-        }
-    }
-
-    suspend fun waitTillConnectionEstablished() = suspendCoroutine<Unit> {
-        if (billingClient.isReady) {
-            it.resume(Unit)
-        } else {
-            connectionEstablishingContinuations.add(it)
         }
     }
 
