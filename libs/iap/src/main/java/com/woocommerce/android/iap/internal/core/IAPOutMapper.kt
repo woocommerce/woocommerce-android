@@ -17,14 +17,8 @@ import com.android.billingclient.api.ProductDetailsResult
 import com.android.billingclient.api.Purchase
 import com.android.billingclient.api.Purchase.PurchaseState
 import com.woocommerce.android.iap.internal.model.IAPProductDetailsResponse
-import com.woocommerce.android.iap.pub.model.IAPBillingErrorType
-import com.woocommerce.android.iap.pub.model.IAPProductInfo
-import com.woocommerce.android.iap.pub.model.IAPPurchase
-import com.woocommerce.android.iap.pub.model.IAPPurchase.State
-import com.woocommerce.android.iap.pub.model.IAPPurchase.State.PENDING
-import com.woocommerce.android.iap.pub.model.IAPPurchase.State.PURCHASED
-
-private const val MILLION = 1_000_000
+import com.woocommerce.android.iap.internal.model.IAPPurchase
+import com.woocommerce.android.iap.pub.model.IAPError
 
 internal class IAPOutMapper {
     fun mapProductDetailsResultToIAPProductDetailsResponse(productDetailsResult: ProductDetailsResult) =
@@ -51,15 +45,6 @@ internal class IAPOutMapper {
         signature = purchase.signature
     )
 
-    fun mapProductDetailsToIAPProductInfo(productDetails: ProductDetails) =
-        IAPProductInfo(
-            localizedTitle = productDetails.title,
-            localizedDescription = productDetails.description,
-            // TODO return currency and amount separetly so it can be handled in the UI properly?
-            displayPrice = "${productDetails.priceOfTheFirstPurchasedOfferInMicros / MILLION} " +
-                productDetails.currencyOfTheFirstPurchasedOffer
-        )
-
     private fun mapProductDetailsToIAPProduct(productDetails: ProductDetails) =
         IAPPurchase.Product(
             id = productDetails.productId,
@@ -70,25 +55,25 @@ internal class IAPOutMapper {
 
     fun mapBillingResultErrorToBillingResultType(billingResult: BillingResult) =
         when (billingResult.responseCode) {
-            USER_CANCELED -> IAPBillingErrorType.UserCancelled(billingResult.debugMessage)
-            ITEM_ALREADY_OWNED -> IAPBillingErrorType.ItemAlreadyOwned(billingResult.debugMessage)
-            DEVELOPER_ERROR -> IAPBillingErrorType.DeveloperError(billingResult.debugMessage)
-            SERVICE_DISCONNECTED -> IAPBillingErrorType.ServiceDisconnected(billingResult.debugMessage)
-            BILLING_UNAVAILABLE -> IAPBillingErrorType.BillingUnavailable(billingResult.debugMessage)
-            ITEM_UNAVAILABLE -> IAPBillingErrorType.ItemUnavailable(billingResult.debugMessage)
-            FEATURE_NOT_SUPPORTED -> IAPBillingErrorType.FeatureNotSupported(billingResult.debugMessage)
-            SERVICE_TIMEOUT -> IAPBillingErrorType.ServiceTimeout(billingResult.debugMessage)
-            SERVICE_UNAVAILABLE -> IAPBillingErrorType.ServiceUnavailable(billingResult.debugMessage)
-            ITEM_NOT_OWNED -> IAPBillingErrorType.ItemNotOwned(billingResult.debugMessage)
+            USER_CANCELED -> IAPError.Billing.UserCancelled(billingResult.debugMessage)
+            ITEM_ALREADY_OWNED -> IAPError.Billing.ItemAlreadyOwned(billingResult.debugMessage)
+            DEVELOPER_ERROR -> IAPError.Billing.DeveloperError(billingResult.debugMessage)
+            SERVICE_DISCONNECTED -> IAPError.Billing.ServiceDisconnected(billingResult.debugMessage)
+            BILLING_UNAVAILABLE -> IAPError.Billing.BillingUnavailable(billingResult.debugMessage)
+            ITEM_UNAVAILABLE -> IAPError.Billing.ItemUnavailable(billingResult.debugMessage)
+            FEATURE_NOT_SUPPORTED -> IAPError.Billing.FeatureNotSupported(billingResult.debugMessage)
+            SERVICE_TIMEOUT -> IAPError.Billing.ServiceTimeout(billingResult.debugMessage)
+            SERVICE_UNAVAILABLE -> IAPError.Billing.ServiceUnavailable(billingResult.debugMessage)
+            ITEM_NOT_OWNED -> IAPError.Billing.ItemNotOwned(billingResult.debugMessage)
             else -> {
-                IAPBillingErrorType.Unknown(billingResult.debugMessage)
+                IAPError.Billing.Unknown(billingResult.debugMessage)
             }
         }
 
     private fun mapPurchaseStateToIAPPurchaseState(@PurchaseState purchaseState: Int) =
         when (purchaseState) {
-            PurchaseState.PURCHASED -> PURCHASED
-            PurchaseState.PENDING -> PENDING
-            else -> State.UNSPECIFIED_STATE
+            PurchaseState.PURCHASED -> IAPPurchase.State.PURCHASED
+            PurchaseState.PENDING -> IAPPurchase.State.PENDING
+            else -> IAPPurchase.State.UNSPECIFIED_STATE
         }
 }
