@@ -59,7 +59,7 @@ internal class IAPManager(
     suspend fun startPurchase(iapProduct: IAPProduct): IAPPurchaseResponse =
         when (val iapProductDetailsResponse = fetchProductDetails(iapProduct.productId, iapProduct.productType)) {
             is Success -> {
-                val flowParams = buildBillingFlowParams(iapProductDetailsResponse.productDetails.first())
+                val flowParams = buildBillingFlowParams(iapProductDetailsResponse.productDetails)
                 billingClient.launchBillingFlow(activity, flowParams)
                 val purchasesResult = suspendCoroutine<PurchasesResult> {
                     iapPurchasesUpdatedListener.waitTillNextPurchaseEvent(it)
@@ -70,7 +70,7 @@ internal class IAPManager(
                             // TODO we might return purchase with wrong product details here
                             iapOutMapper.mapPurchaseWithProductDetailsToIAPPurchase(
                                 it,
-                                iapProductDetailsResponse.productDetails
+                                listOf(iapProductDetailsResponse.productDetails)
                             )
                         }
                     )
@@ -118,7 +118,11 @@ internal class IAPManager(
             if (productDetailsResult.productDetailsList.isNullOrEmpty()) {
                 Error(IAPError.Billing.ItemUnavailable("Item $iapProductName not found"))
             } else {
-                iapOutMapper.mapProductDetailsResultToIAPProductDetailsResponse(productDetailsResult)
+                if (productDetailsResult.billingResult.isSuccess) {
+                    Success(productDetailsResult.productDetailsList!!.first())
+                } else {
+                    Error(iapOutMapper.mapBillingResultErrorToBillingResultType(productDetailsResult.billingResult))
+                }
             }
         }
 
@@ -139,7 +143,7 @@ internal class IAPManager(
             purchasesProductDetailsResponses.map {
                 iapOutMapper.mapPurchaseWithProductDetailsToIAPPurchase(
                     it.first,
-                    it.second.filterIsInstance<Success>().flatMap { it.productDetails }
+                    it.second.filterIsInstance<Success>().map { it.productDetails }
                 )
             }
         )

@@ -6,31 +6,18 @@ import com.android.billingclient.api.BillingClient.BillingResponseCode.FEATURE_N
 import com.android.billingclient.api.BillingClient.BillingResponseCode.ITEM_ALREADY_OWNED
 import com.android.billingclient.api.BillingClient.BillingResponseCode.ITEM_NOT_OWNED
 import com.android.billingclient.api.BillingClient.BillingResponseCode.ITEM_UNAVAILABLE
-import com.android.billingclient.api.BillingClient.BillingResponseCode.OK
 import com.android.billingclient.api.BillingClient.BillingResponseCode.SERVICE_DISCONNECTED
 import com.android.billingclient.api.BillingClient.BillingResponseCode.SERVICE_TIMEOUT
 import com.android.billingclient.api.BillingClient.BillingResponseCode.SERVICE_UNAVAILABLE
 import com.android.billingclient.api.BillingClient.BillingResponseCode.USER_CANCELED
 import com.android.billingclient.api.BillingResult
 import com.android.billingclient.api.ProductDetails
-import com.android.billingclient.api.ProductDetailsResult
 import com.android.billingclient.api.Purchase
 import com.android.billingclient.api.Purchase.PurchaseState
-import com.woocommerce.android.iap.internal.model.IAPProductDetailsResponse
 import com.woocommerce.android.iap.internal.model.IAPPurchase
 import com.woocommerce.android.iap.pub.model.IAPError
 
 internal class IAPOutMapper {
-    fun mapProductDetailsResultToIAPProductDetailsResponse(productDetailsResult: ProductDetailsResult) =
-        when (productDetailsResult.billingResult.responseCode) {
-            OK -> IAPProductDetailsResponse.Success(productDetailsResult.productDetailsList.orEmpty())
-            else -> IAPProductDetailsResponse.Error(
-                mapBillingResultErrorToBillingResultType(
-                    productDetailsResult.billingResult
-                )
-            )
-        }
-
     fun mapPurchaseWithProductDetailsToIAPPurchase(
         purchase: Purchase,
         productDetails: List<ProductDetails>

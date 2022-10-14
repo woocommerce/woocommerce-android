@@ -11,4 +11,3 @@ data class WPComPlanProduct(
     val price: Long,
     val currency: String,
 )
-
