@@ -1644,8 +1644,7 @@ class ProductDetailViewModel @Inject constructor(
      * doesn't already have linked products
      */
     private fun checkLinkedProductPromo() {
-        if (abTestLinkProductsPromoIsTreatment &&
-            appPrefsWrapper.isPromoBannerShown(PromoBannerType.LINKED_PRODUCTS).not() &&
+        if (appPrefsWrapper.isPromoBannerShown(PromoBannerType.LINKED_PRODUCTS).not() &&
             viewState.productDraft?.hasLinkedProducts() == false
         ) {
             appPrefsWrapper.setPromoBannerShown(PromoBannerType.LINKED_PRODUCTS, true)
