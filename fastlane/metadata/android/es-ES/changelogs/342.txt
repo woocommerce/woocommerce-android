@@ -1,0 +1,2 @@
+10.7:
+En esta versión, hemos mejorado el flujo de acceso gracias a una mejora de la función para autocompletar y una opción para conectar Jeckpack si no está conectado. También hemos solucionado una discrepancia entre las estadísticas mensuales y las de los visitantes. ¡Vivan las estadísticas! Sigue compartiendo tus opiniones, ya que nos ayudan a averiguar en qué debemos trabajar. 💜

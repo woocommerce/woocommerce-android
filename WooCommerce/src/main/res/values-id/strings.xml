@@ -1,11 +1,20 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2022-10-02 19:38:14+0000
+Translation-Revision-Date: 2022-10-11 11:54:04+0000
 Plural-Forms: nplurals=2; plural=n > 1;
 Generator: GlotPress/2.4.0-alpha
 Language: id
 -->
 <resources>
+    <string name="qr_code_login_edit_camera_permission">Edit izin</string>
+    <string name="qr_code_login_camera_permission_denied_message">Untuk menggunakan fitur ini, berikan izin untuk menggunakan kamera Anda.</string>
+    <string name="qr_code_login_camera_permission_denied_title">Akses Kamera Diperlukan</string>
+    <string name="qr_code_login_scanner_title">Pemindai Barcode Kamera</string>
+    <string name="dev_options">Pilihan Pengembang</string>
+    <string name="login_2fa_not_supported_self_hosted_site">2FA tidak didukung untuk situs yang dihosting sendiri. Gunakan kata sandi aplikasi.</string>
+    <string name="login_with_qr_code">Pindai kode QR untuk login</string>
+    <string name="show_password_content_description">Tunjukkan kata sandi</string>
+    <string name="hide_password_content_description">Sembunyikan password</string>
     <string name="stats_widget_last_updated_message">Sejak %1$s</string>
     <string name="stats_widget_error_no_data">Tidak dapat memuat data</string>
     <string name="stats_today_widget_description">Statistik WooCommerce Hari Ini</string>
