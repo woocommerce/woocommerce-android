@@ -1,11 +1,20 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2022-10-02 20:20:33+0000
+Translation-Revision-Date: 2022-10-11 14:54:04+0000
 Plural-Forms: nplurals=2; plural=(n > 1);
 Generator: GlotPress/2.4.0-alpha
 Language: pt_BR
 -->
 <resources>
+    <string name="qr_code_login_edit_camera_permission">Editar permissões</string>
+    <string name="qr_code_login_camera_permission_denied_message">Para usar esta funcionalidade, permita o uso da sua câmera.</string>
+    <string name="qr_code_login_camera_permission_denied_title">Necessário acesso à câmera</string>
+    <string name="qr_code_login_scanner_title">Leitor de código de barras da câmera</string>
+    <string name="dev_options">Opções do desenvolvedor</string>
+    <string name="login_2fa_not_supported_self_hosted_site">Sites auto-hospedados não oferecem autenticação em dois fatores (2FA). Use a senha do aplicativo.</string>
+    <string name="login_with_qr_code">Leia o QR code para fazer login</string>
+    <string name="show_password_content_description">Mostrar senha</string>
+    <string name="hide_password_content_description">Ocultar senha</string>
     <string name="stats_widget_last_updated_message">Às %1$s</string>
     <string name="stats_widget_error_no_data">Não foi possível carregar os dados</string>
     <string name="stats_today_widget_description">Estatísticas de hoje do WooCommerce</string>
