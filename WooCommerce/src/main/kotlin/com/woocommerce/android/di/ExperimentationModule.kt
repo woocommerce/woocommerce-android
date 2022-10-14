@@ -24,8 +24,7 @@ class ExperimentationModule {
     ) = ExPlat(
         platform = ExperimentStore.Platform.WOOCOMMERCE_ANDROID,
         experiments = setOf(
-            AA_TEST_202208,
-            AB_TEST_LINKED_PRODUCTS_PROMO
+            AA_TEST_202208
         ),
         experimentStore = experimentStore,
         appLogWrapper = appLogWrapper,
