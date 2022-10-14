@@ -1,2 +1,0 @@
-10.6:
-Untuk rilis kali ini, kami fokus memoles beberapa hal dan mengatasi bug minor yang ditemukan oleh tim. Jangan terkecoh – kami sedang mengerjakan hal-hal yang menakjubkan untuk Anda semua, seperti mempermudah Anda untuk login ke aplikasi dengan pilihan isi otomatis! Terus kirimkan feedback Anda untuk memberi tahu kami apa yang harus ditingkatkan selanjutnya. 💜

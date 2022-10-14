@@ -1,0 +1,2 @@
+10.7:
+Bu sürümde, daha iyi otomatik doldurma ve Jetpack bağlı değilse Jetpack'e bağlanma seçeneği ile oturum açma akışını iyileştirdik. Aylık istatistikler ve ziyaretçi istatistikleri arasındaki tutarsızlığı da düzelttik. Yaşasın matematik! Geri bildirimleriniz devam etsin; üzerinde çalışacağımız sıradaki özelliği bulmamıza yardımcı oluyor. 💜
