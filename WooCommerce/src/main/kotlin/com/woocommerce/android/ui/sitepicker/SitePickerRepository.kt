@@ -12,6 +12,7 @@ import org.wordpress.android.fluxc.generated.SiteActionBuilder
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.store.SiteStore
 import org.wordpress.android.fluxc.store.SiteStore.ConnectSiteInfoPayload
+import org.wordpress.android.fluxc.store.SiteStore.FetchSitesPayload
 import org.wordpress.android.fluxc.store.SiteStore.OnConnectSiteInfoChecked
 import org.wordpress.android.fluxc.store.SiteStore.SiteErrorType
 import org.wordpress.android.fluxc.store.WooCommerceStore
@@ -39,6 +40,8 @@ class SitePickerRepository @Inject constructor(
         }
 
     suspend fun fetchWooCommerceSites() = wooCommerceStore.fetchWooCommerceSites()
+
+    suspend fun fetchSites() = siteStore.fetchSites(FetchSitesPayload())
 
     suspend fun fetchWooCommerceSite(siteModel: SiteModel): Result<SiteModel> {
         return wooCommerceStore.fetchWooCommerceSite(siteModel).let {

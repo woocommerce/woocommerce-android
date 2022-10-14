@@ -117,7 +117,9 @@ class SitePickerViewModel @Inject constructor(
             isSkeletonViewVisible = showSkeleton
         )
 
+        delay(5000)
         val startTime = System.currentTimeMillis()
+        repository.fetchSites()
         val result = repository.fetchWooCommerceSites()
         val duration = System.currentTimeMillis() - startTime
 
@@ -406,7 +408,7 @@ class SitePickerViewModel @Inject constructor(
 
     fun onCreateSite() {
         triggerEvent(
-            NavigateToWPComWebView("https://woocommerce.com/start", "notice=purchase-success")
+            NavigateToWPComWebView("https://woocommerce.com/start", "calypso/images/wpcom-ecommerce")
         )
     }
 
@@ -536,9 +538,11 @@ class SitePickerViewModel @Inject constructor(
 
     fun onSiteCreated(url: String) {
         launch {
-            repository.fetchWooCommerceSites()
-            loginSiteAddress = url
-            onInstallWooClicked()
+            fetchSitesFromApi(showSkeleton = true)
+            repository.getSiteBySiteUrl(url)?.let { site ->
+                onSiteSelected(site)
+                onContinueButtonClick(true)
+            }
         }
     }
 

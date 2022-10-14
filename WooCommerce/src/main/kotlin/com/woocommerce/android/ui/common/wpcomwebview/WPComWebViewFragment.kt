@@ -35,6 +35,7 @@ class WPComWebViewFragment : BaseFragment(R.layout.fragment_wpcom_webview), UrlI
 
     private val webViewClient by lazy { WPComWebViewClient(this) }
     private val navArgs: WPComWebViewFragmentArgs by navArgs()
+    private var siteUrl: String? = null
 
     @Inject lateinit var wpcomWebViewAuthenticator: WPComWebViewAuthenticator
 
@@ -54,6 +55,7 @@ class WPComWebViewFragment : BaseFragment(R.layout.fragment_wpcom_webview), UrlI
                 }
             }
             this.settings.javaScriptEnabled = true
+            this.settings.domStorageEnabled = true
             settings.userAgentString = userAgent.userAgent
         }
 
@@ -66,16 +68,18 @@ class WPComWebViewFragment : BaseFragment(R.layout.fragment_wpcom_webview), UrlI
             EQUALITY -> equals(url, ignoreCase = true)
         }
 
-        val slug = "siteSlug="
-        val range = "$slug.+&".toRegex().find(url)?.range
-        val start = (range?.first ?: 0) + slug.length
-        val end = (range?.last ?: 0)
+        val thankYou = "source=/checkout/thank-you/"
+        "$thankYou.+/".toRegex().find(url)?.range?.let { range ->
+            val start = range.first + thankYou.length
+            val end = range.last
+            siteUrl = url.substring(start, end)
+        }
 
         if (isAdded && navArgs.urlToTriggerExit?.matchesUrl(url) == true) {
-            if (range == null) {
+            if (siteUrl == null) {
                 navigateBackWithNotice(WEBVIEW_RESULT)
             } else {
-                navigateBackWithResult(WEBVIEW_RESULT_WITH_URL, url.substring(start, end))
+                navigateBackWithResult(WEBVIEW_RESULT_WITH_URL, siteUrl)
             }
         }
     }
