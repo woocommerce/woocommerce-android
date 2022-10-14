@@ -17,6 +17,7 @@ import com.woocommerce.android.iap.pub.model.WPComProductResult
 import com.woocommerce.android.iap.pub.model.WPComPurchaseResult
 
 private val iapProduct = IAPProduct.WPPremiumPlanTesting
+private const val SUPPORTED_CURRENCY = "USD"
 
 internal class IAPPurchaseWPComPlanActionsImpl(
     activity: AppCompatActivity,
@@ -47,10 +48,10 @@ internal class IAPPurchaseWPComPlanActionsImpl(
         return when (val response = iapManager.fetchIAPProductDetails(iapProduct)) {
             is IAPProductDetailsResponse.Success -> WPComProductResult.Success(
                 WPComPlanProduct(
-                    localizedTitle = response.productDetails.first().title,
-                    localizedDescription = response.productDetails.first().description,
-                    price = response.productDetails.first().priceOfTheFirstPurchasedOfferInMicros,
-                    currency = response.productDetails.first().currencyOfTheFirstPurchasedOffer,
+                    localizedTitle = response.productDetails.title,
+                    localizedDescription = response.productDetails.description,
+                    price = response.productDetails.priceOfTheFirstPurchasedOfferInMicros,
+                    currency = response.productDetails.currencyOfTheFirstPurchasedOffer,
                 )
             )
             is IAPProductDetailsResponse.Error -> WPComProductResult.Error(response.error)
@@ -58,8 +59,14 @@ internal class IAPPurchaseWPComPlanActionsImpl(
     }
 
     override suspend fun isIAPSupported(): IAPSupportedResult {
-        TODO("Not yet implemented")
+        return when (val response = iapManager.fetchIAPProductDetails(iapProduct)) {
+            is IAPProductDetailsResponse.Success -> IAPSupportedResult.Success(isCurrencySupported(response))
+            is IAPProductDetailsResponse.Error -> IAPSupportedResult.Error(response.error)
+        }
     }
+
+    private fun isCurrencySupported(response: IAPProductDetailsResponse.Success) =
+        SUPPORTED_CURRENCY.equals(response.productDetails.currencyOfTheFirstPurchasedOffer, ignoreCase = true)
 
     private fun isProductPurchased(
         iapPurchases: List<IAPPurchase>?,
