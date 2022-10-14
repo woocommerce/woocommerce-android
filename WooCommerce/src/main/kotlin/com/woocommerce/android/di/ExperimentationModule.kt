@@ -36,8 +36,5 @@ class ExperimentationModule {
         val AA_TEST_202208 = object : Experiment {
             override val identifier: String = "woocommerceandroid_explat_aa_test_202208"
         }
-        val AB_TEST_LINKED_PRODUCTS_PROMO = object : Experiment {
-            override val identifier: String = "woocommerceandroid_product_details_linked_products_banner"
-        }
     }
 }
