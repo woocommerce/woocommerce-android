@@ -24,6 +24,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -41,18 +42,28 @@ import com.woocommerce.android.R
 import com.woocommerce.android.ui.compose.component.WCColoredButton
 import com.woocommerce.android.ui.compose.component.WCOutlinedTextField
 import com.woocommerce.android.ui.compose.component.WCPasswordField
+import com.woocommerce.android.ui.login.signup.SignUpViewModel.AccountCreatedSuccess
+import com.woocommerce.android.ui.login.signup.SignUpViewModel.Error
+import com.woocommerce.android.ui.login.signup.SignUpViewModel.Loading
+import com.woocommerce.android.ui.login.signup.SignUpViewModel.SignUpForm
 
 @Composable
 fun SignUpScreen(viewModel: SignUpViewModel) {
-    BackHandler(onBack = viewModel::onBackPressed)
+    val signUpState by viewModel.viewState.observeAsState(SignUpForm)
 
+    BackHandler(onBack = viewModel::onBackPressed)
     Scaffold(topBar = {
         Toolbar(onArrowBackPressed = viewModel::onBackPressed)
     }) {
-        SignUpForm(
-            termsOfServiceClicked = viewModel::onTermsOfServiceClicked,
-            onPrimaryButtonClicked = viewModel::onGetStartedCLicked,
-        )
+        when (signUpState) {
+            SignUpForm -> SignUpForm(
+                termsOfServiceClicked = viewModel::onTermsOfServiceClicked,
+                onPrimaryButtonClicked = viewModel::onGetStartedCLicked,
+            )
+            Loading -> TODO()
+            AccountCreatedSuccess -> TODO()
+            Error -> TODO()
+        }
     }
 }
 

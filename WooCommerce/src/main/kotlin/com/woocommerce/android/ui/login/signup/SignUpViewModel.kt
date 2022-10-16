@@ -36,6 +36,7 @@ class SignUpViewModel @Inject constructor(
     }
 
     sealed class SignUpState
+    object SignUpForm : SignUpState()
     object Loading : SignUpState()
     object AccountCreatedSuccess : SignUpState()
     object Error : SignUpState()
