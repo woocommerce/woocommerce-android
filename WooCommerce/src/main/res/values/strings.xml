@@ -323,6 +323,7 @@
     <string name="signup_password_hint">Choose a password</string>
     <string name="signup_terms_of_service_description">By continuing, you agree to our</string>
     <string name="signup_terms_of_service_linked_text">Terms of Service.</string>
+    <string name="signup_creating_account_loading_message">Creating new account</string>
 
     <!--
         Analytics View

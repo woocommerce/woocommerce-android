@@ -39,6 +39,7 @@ import androidx.compose.ui.tooling.preview.Devices
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.woocommerce.android.R
+import com.woocommerce.android.ui.compose.component.ProgressDialog
 import com.woocommerce.android.ui.compose.component.WCColoredButton
 import com.woocommerce.android.ui.compose.component.WCOutlinedTextField
 import com.woocommerce.android.ui.compose.component.WCPasswordField
@@ -60,7 +61,11 @@ fun SignUpScreen(viewModel: SignUpViewModel) {
                 termsOfServiceClicked = viewModel::onTermsOfServiceClicked,
                 onPrimaryButtonClicked = viewModel::onGetStartedCLicked,
             )
-            Loading -> TODO()
+            Loading ->
+                ProgressDialog(
+                    title = "",
+                    subtitle = stringResource(id = R.string.signup_creating_account_loading_message)
+                )
             AccountCreatedSuccess -> TODO()
             Error -> TODO()
         }
