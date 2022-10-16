@@ -23,6 +23,10 @@ import androidx.compose.material.TopAppBar
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
@@ -47,7 +51,7 @@ fun SignUpScreen(viewModel: SignUpViewModel) {
     }) {
         SignUpForm(
             termsOfServiceClicked = viewModel::onTermsOfServiceClicked,
-            onPrimaryButtonClicked = { /*TODO*/ },
+            onPrimaryButtonClicked = viewModel::onGetStartedCLicked,
         )
     }
 }
@@ -77,8 +81,11 @@ private fun Toolbar(
 private fun SignUpForm(
     modifier: Modifier = Modifier,
     termsOfServiceClicked: () -> Unit,
-    onPrimaryButtonClicked: () -> Unit
+    onPrimaryButtonClicked: (String, String) -> Unit
 ) {
+    var email by remember { mutableStateOf("") }
+    var password by remember { mutableStateOf("") }
+
     Column(
         modifier = modifier
             .background(MaterialTheme.colors.surface)
@@ -98,14 +105,14 @@ private fun SignUpForm(
         )
         Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.major_100)))
         WCOutlinedTextField(
-            value = "",
+            value = email,
+            onValueChange = { email = it },
             label = stringResource(id = R.string.signup_email_address_hint),
-            onValueChange = {},
         )
         WCPasswordField(
-            value = "",
+            value = password,
+            onValueChange = { password = it },
             label = stringResource(id = R.string.signup_password_hint),
-            onValueChange = {},
         )
         TermsOfServiceText(
             modifier = Modifier.clickable { termsOfServiceClicked() }
@@ -113,7 +120,7 @@ private fun SignUpForm(
         Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.major_100)))
         WCColoredButton(
             modifier = Modifier.fillMaxWidth(),
-            onClick = { onPrimaryButtonClicked() }
+            onClick = { onPrimaryButtonClicked(email, password) }
         ) {
             Text(text = stringResource(id = R.string.signup_get_started_button))
         }
@@ -145,6 +152,6 @@ private fun TermsOfServiceText(modifier: Modifier = Modifier) {
 fun SignUpFormPreview() {
     SignUpForm(
         termsOfServiceClicked = {},
-        onPrimaryButtonClicked = {},
+        onPrimaryButtonClicked = { _, _ -> },
     )
 }

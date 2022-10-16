@@ -7,6 +7,7 @@ import javax.inject.Inject
 
 class SignUpViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
+
 ) : ScopedViewModel(savedStateHandle) {
     fun onBackPressed() {
         triggerEvent(MultiLiveEvent.Event.Exit)
@@ -14,6 +15,10 @@ class SignUpViewModel @Inject constructor(
 
     fun onTermsOfServiceClicked() {
         triggerEvent(OnTermsOfServiceClicked)
+    }
+
+    fun onGetStartedCLicked(email: String, password: String) {
+
     }
 
     object OnTermsOfServiceClicked : MultiLiveEvent.Event()
