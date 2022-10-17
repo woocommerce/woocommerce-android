@@ -33,9 +33,8 @@ class DeveloperOptionsViewModel @Inject constructor(
         ToggleableListItem(
             icon = drawable.img_card_reader_connecting,
             label = UiStringRes(string.enable_card_reader),
-            isEnabled = false,
+            isEnabled = true,
             isChecked = false,
-            onClick = {},
             onToggled = {}
         )
     )
@@ -46,14 +45,12 @@ class DeveloperOptionsViewModel @Inject constructor(
         sealed class ListItem {
             abstract val label: UiString
             abstract val icon: Int?
-            abstract val onClick: (() -> Unit)?
             abstract var isEnabled: Boolean
 
             data class ToggleableListItem(
                 @DrawableRes override val icon: Int,
                 override val label: UiString,
                 override var isEnabled: Boolean = false,
-                override val onClick: () -> Unit,
                 val onToggled: (Boolean) -> Unit,
                 val isChecked: Boolean
             ) : ListItem()
@@ -62,7 +59,7 @@ class DeveloperOptionsViewModel @Inject constructor(
                 @DrawableRes override val icon: Int,
                 override val label: UiString,
                 override var isEnabled: Boolean = false,
-                override val onClick: () -> Unit
+                 val onClick: () -> Unit
             ) : ListItem()
         }
     }
