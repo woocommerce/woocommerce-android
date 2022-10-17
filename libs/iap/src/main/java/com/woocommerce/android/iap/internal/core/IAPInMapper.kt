@@ -1,7 +1,7 @@
 package com.woocommerce.android.iap.internal.core
 
 import com.android.billingclient.api.BillingClient.ProductType
-import com.woocommerce.android.iap.pub.model.IAPProductType
+import com.woocommerce.android.iap.internal.model.IAPProductType
 
 internal class IAPInMapper {
     @ProductType
