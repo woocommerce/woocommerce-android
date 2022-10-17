@@ -78,6 +78,9 @@ object AppUrls {
 
     const val NEW_TO_WOO_DOC = "https://woocommerce.com/woocommerce-features"
 
+    const val WORPRESS_COM_TERMS = "https://wordpress.com/tos"
+    const val JETPACK_SYNC_POLICY = "https://jetpack.com/support/what-data-does-jetpack-sync"
+
     private const val LOGIN_HELP_CENTER = "https://woocommerce.com/document/android-ios-apps-login-help-faq/"
     val LOGIN_HELP_CENTER_URLS = mapOf(
         LOGIN_EMAIL to "$LOGIN_HELP_CENTER#enter-wordpress-com-email-address-login-using-store-address-flow",

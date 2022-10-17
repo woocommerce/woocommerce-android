@@ -138,6 +138,7 @@ class AccountMismatchErrorViewModel @Inject constructor(
         inlineButtonText = if (navArgs.errorType == WPCOM_ACCOUNT_MISMATCH) R.string.login_need_help_finding_email
         else null,
         inlineButtonAction = { helpFindingEmail() },
+        showJetpackTermsConsent = navArgs.primaryButton == AccountMismatchPrimaryButton.CONNECT_JETPACK,
         showNavigationIcon = navArgs.allowBackNavigation,
         onBackPressed = {
             if (navArgs.allowBackNavigation) {
@@ -316,6 +317,7 @@ class AccountMismatchErrorViewModel @Inject constructor(
             val secondaryButtonAction: () -> Unit,
             @StringRes val inlineButtonText: Int?,
             val inlineButtonAction: () -> Unit,
+            val showJetpackTermsConsent: Boolean,
             override val showNavigationIcon: Boolean,
             override val onBackPressed: () -> Unit
         ) : ViewState
