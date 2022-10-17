@@ -544,13 +544,13 @@ class MainActivity :
         }
     }
 
-    @Suppress("DEPRECATION")
     override fun showLoginScreen() {
         selectedSite.reset()
-        val intent = Intent(this, LoginActivity::class.java)
-        LoginMode.WOO_LOGIN_MODE.putInto(intent)
+        val intent = Intent(this, LoginActivity::class.java).apply {
+            flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+            LoginMode.WOO_LOGIN_MODE.putInto(this)
+        }
         startActivity(intent)
-        finish()
     }
 
     override fun showUserEligibilityErrorScreen() {
