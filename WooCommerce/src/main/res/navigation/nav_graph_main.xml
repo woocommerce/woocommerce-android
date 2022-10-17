@@ -437,7 +437,8 @@
         android:label="SitePickerSiteDiscoveryFragment" >
         <action
             android:id="@+id/action_sitePickerSiteDiscoveryFragment_to_accountMismatchErrorFragment"
-            app:destination="@id/accountMismatchErrorFragment" />
+            app:destination="@id/accountMismatchErrorFragment"
+            app:popUpTo="@id/sitePickerFragment" />
     </fragment>
     <fragment
         android:id="@+id/accountMismatchErrorFragment"
