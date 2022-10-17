@@ -23,7 +23,7 @@ internal class IAPPurchaseWPComPlanActionsImpl(
     activity: AppCompatActivity,
     logWrapper: IAPLogWrapper,
 ) : PurchaseWPComPlanActions {
-    private val iapManager by lazy { IAPManagerFactory.createIAPManager(activity, logWrapper) }
+    private val iapManager = IAPManagerFactory.createIAPManager(activity, logWrapper)
 
     override suspend fun isWPComPlanPurchased(): WPComIsPurchasedResult {
         return when (val response = iapManager.fetchPurchases(iapProduct.productType)) {

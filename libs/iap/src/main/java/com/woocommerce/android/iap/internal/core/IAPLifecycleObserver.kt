@@ -12,6 +12,7 @@ import com.woocommerce.android.iap.pub.IAP_LOG_TAG
 import java.util.Collections
 import kotlin.coroutines.Continuation
 import kotlin.coroutines.resume
+import kotlin.coroutines.resumeWithException
 import kotlin.coroutines.suspendCoroutine
 
 internal class IAPLifecycleObserver(
@@ -54,7 +55,13 @@ internal class IAPLifecycleObserver(
     }
 
     suspend fun waitTillConnectionEstablished() = suspendCoroutine<Unit> {
-        if (billingClient.isReady) {
+        if (this.activity.isDestroyed) {
+            it.resumeWithException(
+                IllegalStateException(
+                    "Activity is destroyed. Make sure that activity scope is used for IAPManager"
+                )
+            )
+        } else if (billingClient.isReady) {
             it.resume(Unit)
         } else {
             connectionEstablishingContinuations.add(it)

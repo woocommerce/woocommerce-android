@@ -1,85 +1,81 @@
 package com.woocommerce.android.iapshowcase
 
-import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
-import com.woocommerce.android.iap.pub.IAPSitePurchasePlanManager
-import com.woocommerce.android.iap.pub.model.IAPProduct
-import com.woocommerce.android.iap.pub.model.IAPProductInfo
-import com.woocommerce.android.iap.pub.model.IAPProductInfoResponse
-import com.woocommerce.android.iap.pub.model.IAPPurchaseResponse
+import com.woocommerce.android.iap.internal.model.IAPSupportedResult
+import com.woocommerce.android.iap.pub.PurchaseWPComPlanActions
+import com.woocommerce.android.iap.pub.model.IAPError
+import com.woocommerce.android.iap.pub.model.WPComIsPurchasedResult
+import com.woocommerce.android.iap.pub.model.WPComPlanProduct
+import com.woocommerce.android.iap.pub.model.WPComProductResult
+import com.woocommerce.android.iap.pub.model.WPComPurchaseResult
+import com.woocommerce.android.viewmodel.SingleLiveEvent
 import kotlinx.coroutines.launch
 
-private val iapProductToBuy = IAPProduct.WPPremiumPlanTesting
+class IAPShowcaseViewModel : ViewModel() {
+    lateinit var iapManager: PurchaseWPComPlanActions
 
-class IAPShowcaseViewModel(private val iapManager: IAPSitePurchasePlanManager) : ViewModel() {
-    private val _productInfo = MutableLiveData<IAPProductInfo>()
-    val productInfo: LiveData<IAPProductInfo> = _productInfo
+    private val _productInfo = MutableLiveData<WPComPlanProduct>()
+    val productInfo: LiveData<WPComPlanProduct> = _productInfo
 
-    private val _purchaseStatusInfo = MutableLiveData<String>()
-    val purchaseStatusInfo: LiveData<String> = _purchaseStatusInfo
+    private val _iapEvent = SingleLiveEvent<String>()
+    val iapEvent: LiveData<String> = _iapEvent
 
-    private val _productInfoFetchingError = MutableLiveData<String>()
-    val productInfoFetchingError: LiveData<String> = _productInfoFetchingError
-
-    init {
-        fetchProductAndPurchaseInfo()
-    }
-
-    fun fetchProductAndPurchaseInfo() {
-        fetchProductInfo()
-        fetchPurchases()
-    }
-
-    fun purchasePlan() {
+    fun purchasePlan(remoteSiteId: Long) {
         viewModelScope.launch {
-            when (val response = iapManager.purchasePlan(iapProductToBuy)) {
-                is IAPPurchaseResponse.Success -> {
-                    val purchase = response.purchases!!.first()
-                    Log.d(
-                        "IAP",
-                        "Info:\n" +
-                            "Token: ${purchase.purchaseToken}\n" +
-                            "Payload: ${purchase.developerPayload}\n" +
-                            "Signature: ${purchase.signature}\n" +
-                            "Order Id: ${purchase.orderId}\n" +
-                            "State: ${purchase.state}\n" +
-                            "Is acknowledged: ${purchase.isAcknowledged}\n" +
-                            "Is AutoRenewing: ${purchase.isAutoRenewing}\n" +
-                            "Products: ${purchase.products.joinToString { ", " }}"
-                    )
-                    _purchaseStatusInfo.value = "Plan ${iapProductToBuy.productId} successfully purchased"
+            when (val response = iapManager.purchaseWPComPlan(remoteSiteId)) {
+                is WPComPurchaseResult.Success -> _iapEvent.value = "Plan has been successfully purchased"
+                is WPComPurchaseResult.Error -> handleError(response.errorType)
+            }
+        }
+    }
+
+    fun checkIfWPComPlanPurchased() {
+        viewModelScope.launch {
+            when (val response = iapManager.isWPComPlanPurchased()) {
+                is WPComIsPurchasedResult.Success -> {
+                    _iapEvent.value = if (response.isPlanPurchased) {
+                        "Plan has been purchased already"
+                    } else {
+                        "Plan hasn't been purchased yet"
+                    }
                 }
-                is IAPPurchaseResponse.Error -> _purchaseStatusInfo.value = response.errorType.debugMessage
+                is WPComIsPurchasedResult.Error -> handleError(response.errorType)
             }
         }
     }
 
-    fun fetchPurchases() {
+    fun fetchWPComPlanProduct() {
         viewModelScope.launch {
-            if (iapManager.isPlanPurchased(iapProductToBuy)) {
-                _purchaseStatusInfo.value = "Plan ${iapProductToBuy.productId} is already purchased"
-            } else {
-                _purchaseStatusInfo.value = "Plan ${iapProductToBuy.productId} is not purchased"
+            when (val response = iapManager.fetchWPComPlanProduct()) {
+                is WPComProductResult.Success -> _productInfo.value = response.productInfo
+                is WPComProductResult.Error -> handleError(response.errorType)
             }
         }
     }
 
-    private fun fetchProductInfo() {
+    fun checkIfIAPSupported() {
         viewModelScope.launch {
-            when (val response = iapManager.fetchIapProductInfo(iapProductToBuy)) {
-                is IAPProductInfoResponse.Success -> _productInfo.value = response.productInfo
-                is IAPProductInfoResponse.Error -> _productInfoFetchingError.value = response.errorType.debugMessage
+            when (val response = iapManager.isIAPSupported()) {
+                is IAPSupportedResult.Success -> {
+                    _iapEvent.value = if (response.isSupported) {
+                        "IAP is supported"
+                    } else {
+                        "IAP is not supported"
+                    }
+                }
+                is IAPSupportedResult.Error -> handleError(response.errorType)
             }
         }
     }
 
-    class Factory(private val iapManager: IAPSitePurchasePlanManager) : ViewModelProvider.Factory {
-        override fun <T : ViewModel> create(modelClass: Class<T>): T {
-            return IAPShowcaseViewModel(iapManager) as T
+    private fun handleError(error: IAPError) {
+        _iapEvent.value = when (error) {
+            is IAPError.Billing -> "Billing error: ${error.debugMessage}"
+            IAPError.RemoteCommunication.Network -> "Network error"
+            is IAPError.RemoteCommunication.Server -> "Server error: ${error.reason}"
         }
     }
 }

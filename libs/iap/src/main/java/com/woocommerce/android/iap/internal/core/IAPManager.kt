@@ -115,14 +115,14 @@ internal class IAPManager(
                 "queryProductDetails result: ${productDetailsResult.billingResult}, " +
                     "${productDetailsResult.productDetailsList?.joinToString { ", " }}"
             )
-            if (productDetailsResult.productDetailsList.isNullOrEmpty()) {
-                Error(IAPError.Billing.ItemUnavailable("Item $iapProductName not found"))
-            } else {
-                if (productDetailsResult.billingResult.isSuccess) {
-                    Success(productDetailsResult.productDetailsList!!.first())
+            if (productDetailsResult.billingResult.isSuccess) {
+                if (productDetailsResult.productDetailsList.isNullOrEmpty()) {
+                    Error(IAPError.Billing.ItemUnavailable("Item $iapProductName not found"))
                 } else {
-                    Error(iapOutMapper.mapBillingResultErrorToBillingResultType(productDetailsResult.billingResult))
+                    Success(productDetailsResult.productDetailsList!!.first())
                 }
+            } else {
+                Error(iapOutMapper.mapBillingResultErrorToBillingResultType(productDetailsResult.billingResult))
             }
         }
 
