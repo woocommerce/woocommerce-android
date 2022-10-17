@@ -217,8 +217,7 @@ class LoginActivity :
         AnalyticsTracker.trackBackPressed(this)
         if (supportFragmentManager.backStackEntryCount != 0) {
             supportFragmentManager.popBackStack()
-        } else if (
-            navHostFragment.childFragmentManager.backStackEntryCount == 0) {
+        } else if (navHostFragment.childFragmentManager.backStackEntryCount == 0) {
             finish()
         }
     }
