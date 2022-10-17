@@ -203,6 +203,10 @@ class SitePickerSiteDiscoveryViewModel @Inject constructor(
         navigateBackToSitePicker()
     }
 
+    fun onJetpackConnected() {
+        navigateBackToSitePicker()
+    }
+
     private fun navigateBackToSitePicker() {
         fetchedSiteUrl.let { url ->
             requireNotNull(url)

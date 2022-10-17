@@ -20,6 +20,7 @@ import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.common.wpcomwebview.WPComWebViewFragment
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.ui.login.LoginActivity
+import com.woocommerce.android.ui.login.accountmismatch.AccountMismatchErrorFragment
 import com.woocommerce.android.ui.login.accountmismatch.AccountMismatchErrorViewModel.AccountMismatchErrorType
 import com.woocommerce.android.ui.login.accountmismatch.AccountMismatchErrorViewModel.AccountMismatchPrimaryButton
 import com.woocommerce.android.ui.main.AppBarStatus
@@ -89,6 +90,9 @@ class SitePickerSiteDiscoveryFragment : BaseFragment() {
     private fun setupResultHandlers() {
         handleNotice(WPComWebViewFragment.WEBVIEW_RESULT) {
             viewModel.onJetpackInstalled()
+        }
+        handleNotice(AccountMismatchErrorFragment.JETPACK_CONNECTED_NOTICE) {
+            viewModel.onJetpackConnected()
         }
     }
 
