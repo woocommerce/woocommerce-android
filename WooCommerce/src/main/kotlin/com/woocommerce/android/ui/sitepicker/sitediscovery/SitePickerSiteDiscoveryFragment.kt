@@ -1,7 +1,5 @@
 package com.woocommerce.android.ui.sitepicker.sitediscovery
 
-import android.app.Activity
-import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -19,8 +17,8 @@ import com.woocommerce.android.support.ZendeskHelper
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.common.wpcomwebview.WPComWebViewFragment
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
-import com.woocommerce.android.ui.login.LoginActivity
 import com.woocommerce.android.ui.main.AppBarStatus
+import com.woocommerce.android.ui.main.MainActivity
 import com.woocommerce.android.ui.sitepicker.sitediscovery.SitePickerSiteDiscoveryViewModel.CreateZendeskTicket
 import com.woocommerce.android.ui.sitepicker.sitediscovery.SitePickerSiteDiscoveryViewModel.NavigateToHelpScreen
 import com.woocommerce.android.ui.sitepicker.sitediscovery.SitePickerSiteDiscoveryViewModel.StartJetpackInstallation
@@ -28,7 +26,6 @@ import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Logout
 import dagger.hilt.android.AndroidEntryPoint
-import org.wordpress.android.login.LoginMode
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -104,10 +101,6 @@ class SitePickerSiteDiscoveryFragment : BaseFragment() {
     }
 
     private fun onLogout() {
-        requireActivity().setResult(Activity.RESULT_CANCELED)
-        val intent = Intent(context, LoginActivity::class.java)
-        LoginMode.WOO_LOGIN_MODE.putInto(intent)
-        startActivity(intent)
-        requireActivity().finish()
+        (requireActivity() as MainActivity).showLoginScreen()
     }
 }

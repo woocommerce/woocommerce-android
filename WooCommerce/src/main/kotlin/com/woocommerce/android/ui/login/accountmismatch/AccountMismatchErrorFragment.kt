@@ -22,6 +22,7 @@ import com.woocommerce.android.ui.login.accountmismatch.AccountMismatchErrorView
 import com.woocommerce.android.ui.login.accountmismatch.AccountMismatchErrorViewModel.NavigateToLoginScreen
 import com.woocommerce.android.ui.login.accountmismatch.AccountMismatchErrorViewModel.OnJetpackConnectedEvent
 import com.woocommerce.android.ui.main.AppBarStatus
+import com.woocommerce.android.ui.main.MainActivity
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowDialog
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
@@ -112,11 +113,16 @@ class AccountMismatchErrorFragment : BaseFragment(), Listener {
     }
 
     private fun navigateToLoginScreen() {
-        val intent = Intent(context, LoginActivity::class.java).apply {
-            flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
-            LoginMode.WOO_LOGIN_MODE.putInto(this)
+        val activity = requireActivity()
+        if (activity is MainActivity) {
+            activity.showLoginScreen()
+        } else {
+            val intent = Intent(context, LoginActivity::class.java).apply {
+                flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+                LoginMode.WOO_LOGIN_MODE.putInto(this)
+            }
+            startActivity(intent)
         }
-        startActivity(intent)
     }
 
     override fun onEmailNeedMoreHelpClicked() {

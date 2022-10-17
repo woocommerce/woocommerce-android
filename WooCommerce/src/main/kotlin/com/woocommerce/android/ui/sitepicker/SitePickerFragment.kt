@@ -1,7 +1,5 @@
 package com.woocommerce.android.ui.sitepicker
 
-import android.app.Activity
-import android.content.Intent
 import android.os.Bundle
 import android.view.View
 import androidx.core.view.isVisible
@@ -22,7 +20,6 @@ import com.woocommerce.android.support.HelpActivity
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.common.wpcomwebview.WPComWebViewFragment
-import com.woocommerce.android.ui.login.LoginActivity
 import com.woocommerce.android.ui.login.LoginEmailHelpDialogFragment
 import com.woocommerce.android.ui.login.accountmismatch.AccountMismatchErrorFragment
 import com.woocommerce.android.ui.main.AppBarStatus
@@ -48,7 +45,6 @@ import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.widgets.CustomProgressDialog
 import com.woocommerce.android.widgets.SkeletonView
 import dagger.hilt.android.AndroidEntryPoint
-import org.wordpress.android.login.LoginMode
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -290,11 +286,7 @@ class SitePickerFragment : BaseFragment(R.layout.fragment_site_picker), LoginEma
     }
 
     private fun onLogout() {
-        activity?.setResult(Activity.RESULT_CANCELED)
-        val intent = Intent(context, LoginActivity::class.java)
-        LoginMode.WOO_LOGIN_MODE.putInto(intent)
-        startActivity(intent)
-        activity?.finish()
+        (requireActivity() as MainActivity).showLoginScreen()
     }
 
     override fun onEmailNeedMoreHelpClicked() {
