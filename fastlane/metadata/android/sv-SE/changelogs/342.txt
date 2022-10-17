@@ -1,0 +1,2 @@
+10.7:
+I den här versionen har vi förbättrat inloggningsflödet med bättre automatisk ifyllning och möjlighet att ansluta Jetpack, om Jetpack inte är anslutet. Vi har också åtgärdat en avvikelse mellan månads- och besöksstatistiken. Hurra för matematik! Fortsätt att lämna feedback. Det hjälper oss att lista ut vad vi ska hitta på härnäst. 💜

@@ -1,2 +1,0 @@
-10.6:
-Met deze release hebben we ons gefocust op het gladstrijken van wat dingen en het oplossen van kleine bugs die ons team tegenkwam. Maar dat is niet alles – we werken ook aan gave dingen voor jullie, zoals het makkelijker maken om in te loggen in de app met de autofill-optie. Blijf komen met jullie feedback; dat helpt ons kiezen waar we aan moeten werken.

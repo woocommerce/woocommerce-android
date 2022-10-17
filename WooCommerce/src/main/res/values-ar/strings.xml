@@ -1,11 +1,20 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2022-10-03 14:54:03+0000
+Translation-Revision-Date: 2022-10-11 14:54:04+0000
 Plural-Forms: nplurals=6; plural=n==0 ? 0 : n==1 ? 1 : n==2 ? 2 : n%100>=3 && n%100<=10 ? 3 : n%100>=11 && n%100<=99 ? 4 : 5;
 Generator: GlotPress/2.4.0-alpha
 Language: ar
 -->
 <resources>
+    <string name="qr_code_login_edit_camera_permission">تحرير الأذونات</string>
+    <string name="qr_code_login_camera_permission_denied_message">لاستخدام هذه الميزة، يُرجى السماح بالأذونات لاستخدام الكاميرا لديك.</string>
+    <string name="qr_code_login_camera_permission_denied_title">يلزم الوصول إلى الكاميرا</string>
+    <string name="qr_code_login_scanner_title">الماسح الضوئي للكود الشريطي للكاميرا</string>
+    <string name="dev_options">خيارات المطور</string>
+    <string name="login_2fa_not_supported_self_hosted_site">المصادقة الثنائية (2FA) غير مدعومة في المواقع المستضافة ذاتيًا.  يُرجى استخدام كلمة مرور التطبيق.</string>
+    <string name="login_with_qr_code">مسح رمز الاستجابة السريعة لتسجيل الدخول</string>
+    <string name="show_password_content_description">عرض كلمة المرور</string>
+    <string name="hide_password_content_description">إخفاء كلمة المرور</string>
     <string name="stats_widget_last_updated_message">بدءًا من ⁦%1$s⁩</string>
     <string name="stats_widget_error_no_data">لا يمكن تحميل البيانات</string>
     <string name="stats_today_widget_description">إحصاءات WooCommerce اليوم</string>

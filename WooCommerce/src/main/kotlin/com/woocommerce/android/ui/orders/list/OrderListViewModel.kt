@@ -535,7 +535,10 @@ class OrderListViewModel @Inject constructor(
     private fun onCtaClicked(source: String) {
         launch {
             triggerEvent(
-                OpenPurchaseCardReaderLink(bannerDisplayEligibilityChecker.getPurchaseCardReaderUrl(source))
+                OpenPurchaseCardReaderLink(
+                    bannerDisplayEligibilityChecker.getPurchaseCardReaderUrl(source),
+                    R.string.card_reader_purchase_card_reader
+                )
             )
         }
     }
@@ -682,7 +685,10 @@ class OrderListViewModel @Inject constructor(
         object DismissCardReaderUpsellBanner : OrderListEvent()
         object DismissCardReaderUpsellBannerViaRemindMeLater : OrderListEvent()
         object DismissCardReaderUpsellBannerViaDontShowAgain : OrderListEvent()
-        data class OpenPurchaseCardReaderLink(val url: String) : OrderListEvent()
+        data class OpenPurchaseCardReaderLink(
+            val url: String,
+            @StringRes val titleRes: Int,
+        ) : OrderListEvent()
         data class ShowRetryErrorSnack(
             val message: String,
             val retry: View.OnClickListener

@@ -1,11 +1,20 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2022-10-04 15:54:03+0000
+Translation-Revision-Date: 2022-10-12 15:54:03+0000
 Plural-Forms: nplurals=2; plural=(n > 1);
 Generator: GlotPress/2.4.0-alpha
 Language: tr
 -->
 <resources>
+    <string name="qr_code_login_edit_camera_permission">İzinleri düzenle</string>
+    <string name="qr_code_login_camera_permission_denied_message">Bu özelliği kullanmak için lütfen kameranızın kullanımına izin verin.</string>
+    <string name="qr_code_login_camera_permission_denied_title">Kamera Erişimi Gerekli</string>
+    <string name="qr_code_login_scanner_title">Kamera Barkod Tarayıcı</string>
+    <string name="dev_options">Geliştirici Seçenekleri</string>
+    <string name="login_2fa_not_supported_self_hosted_site">2FA, bağımsız olarak barındırılan siteler için desteklenmez. Lütfen bir uygulama parolası kullanın.</string>
+    <string name="login_with_qr_code">Oturum açmak için QR kodunu tarayın</string>
+    <string name="show_password_content_description">Parolayı göster</string>
+    <string name="hide_password_content_description">Şifreyi gizle</string>
     <string name="stats_widget_last_updated_message">%1$s itibarıyla</string>
     <string name="stats_widget_error_no_data">Veri yüklenemedi</string>
     <string name="stats_today_widget_description">WooCommerce İstatistikleri Bugün</string>

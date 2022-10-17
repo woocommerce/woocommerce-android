@@ -16,8 +16,13 @@ class WPComWebViewAuthenticator @Inject constructor(
     private val accountStore: AccountStore
 ) {
     fun authenticateAndLoadUrl(webView: WebView, url: String) {
-        val postData = getAuthPostData(url)
-        webView.postUrl(WPCOM_LOGIN_URL, postData.toByteArray())
+        getAuthPostData(url).let { postData ->
+            if (postData.isNotEmpty()) {
+                webView.postUrl(WPCOM_LOGIN_URL, postData.toByteArray())
+            } else {
+                webView.loadUrl(url)
+            }
+        }
     }
 
     @Suppress("ReturnCount")

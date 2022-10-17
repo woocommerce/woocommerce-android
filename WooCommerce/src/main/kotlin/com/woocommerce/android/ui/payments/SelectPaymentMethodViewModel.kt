@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.payments
 
+import androidx.annotation.StringRes
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
@@ -304,7 +305,10 @@ class SelectPaymentMethodViewModel @Inject constructor(
     private fun onCtaClicked(source: String) {
         launch {
             triggerEvent(
-                OpenPurchaseCardReaderLink(bannerDisplayEligibilityChecker.getPurchaseCardReaderUrl(source))
+                OpenPurchaseCardReaderLink(
+                    bannerDisplayEligibilityChecker.getPurchaseCardReaderUrl(source),
+                    R.string.card_reader_purchase_card_reader
+                )
             )
         }
     }
@@ -347,7 +351,10 @@ class SelectPaymentMethodViewModel @Inject constructor(
     object DismissCardReaderUpsellBanner : MultiLiveEvent.Event()
     object DismissCardReaderUpsellBannerViaRemindMeLater : MultiLiveEvent.Event()
     object DismissCardReaderUpsellBannerViaDontShowAgain : MultiLiveEvent.Event()
-    data class OpenPurchaseCardReaderLink(val url: String) : MultiLiveEvent.Event()
+    data class OpenPurchaseCardReaderLink(
+        val url: String,
+        @StringRes val titleRes: Int,
+    ) : MultiLiveEvent.Event()
 
     data class SharePaymentUrl(
         val storeName: String,

@@ -363,7 +363,12 @@ class OrderListFragment :
                     binding.upsellCardReaderComposeView.upsellCardReaderDismissView.visibility = View.GONE
                 }
                 is OrderListViewModel.OrderListEvent.OpenPurchaseCardReaderLink -> {
-                    ChromeCustomTabUtils.launchUrl(requireContext(), event.url)
+                    findNavController().navigate(
+                        NavGraphMainDirections.actionGlobalWPComWebViewFragment(
+                            urlToLoad = event.url,
+                            title = resources.getString(event.titleRes)
+                        )
+                    )
                 }
                 is OrderListViewModel.OrderListEvent.NotifyOrderChanged -> {
                     binding.orderListView.ordersList.adapter?.notifyItemChanged(event.position)

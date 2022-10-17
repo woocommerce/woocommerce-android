@@ -164,6 +164,7 @@ class AnalyticsTracker private constructor(private val context: Context) {
         const val KEY_STATUS = "status"
         const val KEY_TOTAL_DURATION = "total_duration"
         const val KEY_SEARCH = "search"
+        const val KEY_SEARCH_FILTER = "filter"
         const val KEY_TO = "to"
         const val KEY_TYPE = "type"
         const val KEY_CARRIER = "carrier"
@@ -217,6 +218,8 @@ class AnalyticsTracker private constructor(private val context: Context) {
         const val VALUE_PURCHASE_FAILED = "purchase_failed"
         const val VALUE_PURCHASE_SUCCEEDED = "purchase_succeeded"
         const val VALUE_PURCHASE_READY = "purchase_ready"
+        const val VALUE_SEARCH_ALL = "all"
+        const val VALUE_SEARCH_SKU = "sku"
 
         const val KEY_FLOW = "flow"
         const val KEY_HAS_DIFFERENT_SHIPPING_DETAILS = "has_different_shipping_details"

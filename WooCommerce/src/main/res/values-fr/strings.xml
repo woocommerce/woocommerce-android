@@ -1,11 +1,20 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2022-10-02 19:17:47+0000
+Translation-Revision-Date: 2022-10-11 09:54:04+0000
 Plural-Forms: nplurals=2; plural=n > 1;
 Generator: GlotPress/2.4.0-alpha
 Language: fr
 -->
 <resources>
+    <string name="qr_code_login_edit_camera_permission">Modifier les droits</string>
+    <string name="qr_code_login_camera_permission_denied_message">Pour pouvoir utiliser cette fonctionnalité, il vous suffit d’accorder les droits d’accès à votre appareil photo.</string>
+    <string name="qr_code_login_camera_permission_denied_title">Accès à l’appareil photo requis</string>
+    <string name="qr_code_login_scanner_title">Lecteur de codes-barres de l’appareil photo</string>
+    <string name="dev_options">Options pour les développeurs</string>
+    <string name="login_2fa_not_supported_self_hosted_site">L’authentification à deux facteurs n’est pas prise en charge pour les sites auto-hébergés. Utilisez un mot de passe d’application.</string>
+    <string name="login_with_qr_code">Scanner le code QR pour se connecter</string>
+    <string name="show_password_content_description">Afficher le mot de passe</string>
+    <string name="hide_password_content_description">Cacher le mot de passe</string>
     <string name="stats_widget_last_updated_message">À partir du %1$s</string>
     <string name="stats_widget_error_no_data">Impossible de charger les données</string>
     <string name="stats_today_widget_description">WooCommerce Stats Today</string>

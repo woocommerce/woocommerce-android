@@ -1,0 +1,2 @@
+10.7 :
+Pour cette version, nous avons amélioré le flux de connexion avec un remplissage automatique optimisé et une option permettant de connecter Jetpack, le cas échéant. Nous avons également corrigé un écart entre les statistiques mensuelles et de trafic. Vive les maths ! Continuez à nous faire part de vos commentaires ; ils nous aident à nous améliorer. 💜
