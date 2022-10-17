@@ -66,7 +66,12 @@ class ProductDetailCardBuilder(
 ) {
     private lateinit var originalSku: String
 
-    suspend fun buildPropertyCards(product: Product, originalSku: String, isProductUnderCreation: Boolean = false): List<ProductPropertyCard> {
+    suspend fun buildPropertyCards(
+        product: Product,
+        originalSku: String,
+        isProductUnderCreation: Boolean = false
+    ): List<ProductPropertyCard> {
+
         this.originalSku = originalSku
 
         val cards = mutableListOf<ProductPropertyCard>()
@@ -98,7 +103,7 @@ class ProductDetailCardBuilder(
             type = SECONDARY,
             properties = listOf(
                 product.price(),
-                if(isProductUnderCreation) null else product.productReviews(),
+                if (isProductUnderCreation) null else product.productReviews(),
                 product.inventory(SIMPLE),
                 product.addons(),
                 product.shipping(),
@@ -117,7 +122,7 @@ class ProductDetailCardBuilder(
             type = SECONDARY,
             properties = listOf(
                 product.groupedProducts(),
-                if(isProductUnderCreation) product.productReviews() else null,
+                if (isProductUnderCreation) product.productReviews() else null,
                 product.inventory(GROUPED),
                 product.addons(),
                 product.categories(),
@@ -134,7 +139,7 @@ class ProductDetailCardBuilder(
             type = SECONDARY,
             properties = listOf(
                 product.price(),
-                if(isProductUnderCreation) null else product.productReviews(),
+                if (isProductUnderCreation) null else product.productReviews(),
                 product.externalLink(),
                 product.inventory(EXTERNAL),
                 product.addons(),
@@ -154,7 +159,7 @@ class ProductDetailCardBuilder(
                 product.warning(),
                 product.variations(),
                 product.variationAttributes(),
-                if(isProductUnderCreation) null else product.productReviews(),
+                if (isProductUnderCreation) null else product.productReviews(),
                 product.inventory(VARIABLE),
                 product.addons(),
                 product.shipping(),
@@ -175,7 +180,7 @@ class ProductDetailCardBuilder(
         return ProductPropertyCard(
             type = SECONDARY,
             properties = listOf(
-                if(isProductUnderCreation) null else product.productReviews(),
+                if (isProductUnderCreation) null else product.productReviews(),
                 product.addons(),
                 product.categories(),
                 product.tags(),
