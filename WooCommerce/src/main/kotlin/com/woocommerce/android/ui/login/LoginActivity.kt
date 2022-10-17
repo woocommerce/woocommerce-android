@@ -216,7 +216,10 @@ class LoginActivity :
         AnalyticsTracker.trackBackPressed(this)
         if (supportFragmentManager.backStackEntryCount != 0) {
             supportFragmentManager.popBackStack()
-        } else if (navHostFragment.childFragmentManager.backStackEntryCount == 0) {
+        } else if (
+            navHostFragment.childFragmentManager.backStackEntryCount == 0 ||
+            navHostFragment.childFragmentManager.fragments[0] is LoginPrologueFragment
+        ) {
             finish()
         }
     }
@@ -322,12 +325,6 @@ class LoginActivity :
 
     private fun getLoginViaSiteAddressFragment(): LoginSiteAddressFragment? =
         supportFragmentManager.findFragmentByTag(LoginSiteAddressFragment.TAG) as? WooLoginSiteAddressFragment
-
-    private fun getPrologueFragment(): LoginPrologueFragment? =
-        supportFragmentManager.findFragmentByTag(LoginPrologueFragment.TAG) as? LoginPrologueFragment
-
-    private fun getPrologueSurveyFragment(): LoginPrologueSurveyFragment? =
-        supportFragmentManager.findFragmentByTag(LoginPrologueSurveyFragment.TAG) as? LoginPrologueSurveyFragment
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         if (item.itemId == android.R.id.home) {
@@ -447,14 +444,12 @@ class LoginActivity :
         changeFragment(loginSiteAddressFragment, true, LoginSiteAddressFragment.TAG)
     }
 
-    private fun showPrologueFragment() = lifecycleScope.launchWhenStarted {
-        val prologueFragment = getPrologueFragment() ?: LoginPrologueFragment()
-        changeFragment(prologueFragment, true, LoginPrologueFragment.TAG)
+    private fun showPrologueFragmentFromCarousel() = lifecycleScope.launchWhenStarted {
+        navController.navigate(R.id.action_loginPrologueCarouselFragment_to_loginPrologueFragment)
     }
 
     private fun showPrologueSurveyFragment() {
-        val prologueSurveyFragment = getPrologueSurveyFragment() ?: LoginPrologueSurveyFragment()
-        changeFragment(prologueSurveyFragment, true, LoginPrologueSurveyFragment.TAG)
+        navController.navigate(R.id.loginPrologueSurveyFragment)
     }
 
     override fun loginViaSocialAccount(
@@ -915,12 +910,12 @@ class LoginActivity :
 
     override fun onCarouselFinished() {
         lifecycleScope.launchWhenStarted {
-            prologueExperiment.run(::showPrologueFragment, ::showPrologueSurveyFragment)
+            prologueExperiment.run(::showPrologueFragmentFromCarousel, ::showPrologueSurveyFragment)
         }
     }
 
     override fun onSurveyFinished() {
-        showPrologueFragment()
+        navController.navigate(R.id.action_loginPrologueSurveyFragment_to_loginPrologueFragment)
     }
 
     override fun onPasswordError() {

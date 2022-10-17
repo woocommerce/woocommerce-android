@@ -22,6 +22,31 @@
     <fragment
         android:id="@+id/loginPrologueCarouselFragment"
         android:name="com.woocommerce.android.ui.login.LoginPrologueCarouselFragment"
-        android:label="fragment_login_prologue_carousel" />
+        android:label="fragment_login_prologue_carousel">
+        <action
+            android:id="@+id/action_loginPrologueCarouselFragment_to_loginPrologueFragment"
+            app:destination="@id/loginPrologueFragment"
+            app:enterAnim="@anim/default_enter_anim"
+            app:exitAnim="@anim/default_exit_anim"
+            app:popEnterAnim="@anim/default_pop_enter_anim"
+            app:popExitAnim="@anim/default_pop_exit_anim"
+            app:popUpTo="@+id/loginPrologueFragment"
+            app:popUpToInclusive="true" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/loginPrologueSurveyFragment"
+        android:name="com.woocommerce.android.ui.login.LoginPrologueSurveyFragment"
+        android:label="fragment_login_prologue_survey">
+        <action
+            android:id="@+id/action_loginPrologueSurveyFragment_to_loginPrologueFragment"
+            app:destination="@id/loginPrologueFragment"
+            app:enterAnim="@anim/default_enter_anim"
+            app:exitAnim="@anim/default_exit_anim"
+            app:popEnterAnim="@anim/default_pop_enter_anim"
+            app:popExitAnim="@anim/default_pop_exit_anim"
+            app:popUpTo="@+id/loginPrologueFragment"
+            app:popUpToInclusive="true" />
+    </fragment>
 
 </navigation>
