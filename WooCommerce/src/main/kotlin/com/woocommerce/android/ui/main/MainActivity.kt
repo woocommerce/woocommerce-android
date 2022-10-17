@@ -78,6 +78,7 @@ import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderFlowP
 import com.woocommerce.android.ui.prefs.AppSettingsActivity
 import com.woocommerce.android.ui.products.ProductListFragmentDirections
 import com.woocommerce.android.ui.reviews.ReviewListFragmentDirections
+import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.util.WooAnimUtils
 import com.woocommerce.android.util.WooAnimUtils.Duration
 import com.woocommerce.android.widgets.AppRatingDialog
@@ -238,7 +239,7 @@ class MainActivity :
         super.onCreate(savedInstanceState)
 
         // Verify authenticated session
-        if (!presenter.userIsLoggedIn()) {
+        if (!presenter.userIsLoggedIn() && !FeatureFlag.SIMPLIFIED_LOGIN.isEnabled()) {
             showLoginScreen()
             return
         }
@@ -546,11 +547,17 @@ class MainActivity :
 
     override fun showLoginScreen() {
         selectedSite.reset()
-        val intent = Intent(this, LoginActivity::class.java).apply {
-            flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
-            LoginMode.WOO_LOGIN_MODE.putInto(this)
+        if (FeatureFlag.SIMPLIFIED_LOGIN.isEnabled()) {
+            // TODO check if we need to confirm the user logout before restarting
+            restart()
+        } else {
+            val intent = Intent(this, LoginActivity::class.java).apply {
+                flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+                LoginMode.WOO_LOGIN_MODE.putInto(this)
+            }
+            startActivity(intent)
+            finish()
         }
-        startActivity(intent)
     }
 
     override fun showUserEligibilityErrorScreen() {

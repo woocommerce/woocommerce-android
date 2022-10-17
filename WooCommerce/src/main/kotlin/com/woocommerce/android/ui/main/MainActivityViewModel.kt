@@ -15,6 +15,7 @@ import com.woocommerce.android.push.NotificationChannelType
 import com.woocommerce.android.push.NotificationMessageHandler
 import com.woocommerce.android.push.UnseenReviewsCountHandler
 import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.ui.login.AccountRepository
 import com.woocommerce.android.ui.main.MainActivityViewModel.MoreMenuBadgeState.Hidden
 import com.woocommerce.android.ui.main.MainActivityViewModel.MoreMenuBadgeState.NewFeature
 import com.woocommerce.android.ui.main.MainActivityViewModel.MoreMenuBadgeState.UnseenReviews
@@ -39,6 +40,7 @@ class MainActivityViewModel @Inject constructor(
     private val selectedSite: SelectedSite,
     private val notificationHandler: NotificationMessageHandler,
     private val featureAnnouncementRepository: FeatureAnnouncementRepository,
+    accountRepository: AccountRepository,
     private val buildConfigWrapper: BuildConfigWrapper,
     private val prefs: AppPrefs,
     private val analyticsTrackerWrapper: AnalyticsTrackerWrapper,
@@ -52,7 +54,11 @@ class MainActivityViewModel @Inject constructor(
         }
     }
 
-    val startDestination = if (selectedSite.exists()) R.id.dashboard else R.id.sitePickerFragment
+    val startDestination = when {
+        !accountRepository.isUserLoggedIn() -> R.id.nav_graph_login
+        !selectedSite.exists() -> R.id.sitePickerFragment
+        else -> R.id.dashboard
+    }
 
     val moreMenuBadgeState = combine(
         unseenReviewsCountHandler.observeUnseenCount(),
