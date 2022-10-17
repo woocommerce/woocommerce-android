@@ -1,7 +1,7 @@
 *** PLEASE FOLLOW THIS FORMAT: [<priority indicator, more stars = higher priority>] <description> [<PR URL>]
 10.9
 -----
-
+- [**] Login: add support for Jetpack connection to sites that have Jetpack but don't have any connected accounts [https://github.com/woocommerce/woocommerce-android/pull/7545]
 
 10.8
 -----
