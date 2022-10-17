@@ -1033,8 +1033,7 @@ class ProductDetailViewModel @Inject constructor(
     private fun updateCards(product: Product) {
         launch(dispatchers.io) {
             mutex.withLock {
-                val cards =
-                    cardBuilder.buildPropertyCards(product, storedProduct.value?.sku ?: "", isProductUnderCreation)
+                val cards = cardBuilder.buildPropertyCards(product, storedProduct.value?.sku ?: "")
                 withContext(dispatchers.main) {
                     _productDetailCards.value = cards
                 }

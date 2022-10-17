@@ -66,11 +66,7 @@ class ProductDetailCardBuilder(
 ) {
     private lateinit var originalSku: String
 
-    suspend fun buildPropertyCards(
-        product: Product,
-        originalSku: String,
-        hideReviewsItem: Boolean = false
-    ): List<ProductPropertyCard> {
+    suspend fun buildPropertyCards(product: Product, originalSku: String): List<ProductPropertyCard> {
 
         this.originalSku = originalSku
 
@@ -78,11 +74,11 @@ class ProductDetailCardBuilder(
         cards.addIfNotEmpty(getPrimaryCard(product))
 
         when (product.productType) {
-            SIMPLE -> cards.addIfNotEmpty(getSimpleProductCard(product, hideReviewsItem))
-            VARIABLE -> cards.addIfNotEmpty(getVariableProductCard(product, hideReviewsItem))
-            GROUPED -> cards.addIfNotEmpty(getGroupedProductCard(product, hideReviewsItem))
-            EXTERNAL -> cards.addIfNotEmpty(getExternalProductCard(product, hideReviewsItem))
-            OTHER -> cards.addIfNotEmpty(getOtherProductCard(product, hideReviewsItem))
+            SIMPLE -> cards.addIfNotEmpty(getSimpleProductCard(product))
+            VARIABLE -> cards.addIfNotEmpty(getVariableProductCard(product))
+            GROUPED -> cards.addIfNotEmpty(getGroupedProductCard(product))
+            EXTERNAL -> cards.addIfNotEmpty(getExternalProductCard(product))
+            OTHER -> cards.addIfNotEmpty(getOtherProductCard(product))
         }
 
         return cards
@@ -98,12 +94,12 @@ class ProductDetailCardBuilder(
         )
     }
 
-    private suspend fun getSimpleProductCard(product: Product, hideReviewsItem: Boolean): ProductPropertyCard {
+    private suspend fun getSimpleProductCard(product: Product): ProductPropertyCard {
         return ProductPropertyCard(
             type = SECONDARY,
             properties = listOf(
                 product.price(),
-                if (hideReviewsItem) null else product.productReviews(),
+                if (viewModel.isProductUnderCreation) null else product.productReviews(),
                 product.inventory(SIMPLE),
                 product.addons(),
                 product.shipping(),
@@ -117,12 +113,12 @@ class ProductDetailCardBuilder(
         )
     }
 
-    private suspend fun getGroupedProductCard(product: Product, hideReviewsItem: Boolean): ProductPropertyCard {
+    private suspend fun getGroupedProductCard(product: Product): ProductPropertyCard {
         return ProductPropertyCard(
             type = SECONDARY,
             properties = listOf(
                 product.groupedProducts(),
-                if (hideReviewsItem) null else product.productReviews(),
+                if (viewModel.isProductUnderCreation) null else product.productReviews(),
                 product.inventory(GROUPED),
                 product.addons(),
                 product.categories(),
@@ -134,12 +130,12 @@ class ProductDetailCardBuilder(
         )
     }
 
-    private suspend fun getExternalProductCard(product: Product, hideReviewsItem: Boolean): ProductPropertyCard {
+    private suspend fun getExternalProductCard(product: Product): ProductPropertyCard {
         return ProductPropertyCard(
             type = SECONDARY,
             properties = listOf(
                 product.price(),
-                if (hideReviewsItem) null else product.productReviews(),
+                if (viewModel.isProductUnderCreation) null else product.productReviews(),
                 product.externalLink(),
                 product.inventory(EXTERNAL),
                 product.addons(),
@@ -152,14 +148,14 @@ class ProductDetailCardBuilder(
         )
     }
 
-    private suspend fun getVariableProductCard(product: Product, hideReviewsItem: Boolean): ProductPropertyCard {
+    private suspend fun getVariableProductCard(product: Product): ProductPropertyCard {
         return ProductPropertyCard(
             type = SECONDARY,
             properties = listOf(
                 product.warning(),
                 product.variations(),
                 product.variationAttributes(),
-                if (hideReviewsItem) null else product.productReviews(),
+                if (viewModel.isProductUnderCreation) null else product.productReviews(),
                 product.inventory(VARIABLE),
                 product.addons(),
                 product.shipping(),
@@ -176,11 +172,11 @@ class ProductDetailCardBuilder(
      * Used for product types the app doesn't support yet (ex: subscriptions), uses a subset
      * of properties since we can't be sure pricing, shipping, etc., are applicable
      */
-    private suspend fun getOtherProductCard(product: Product, hideReviewsItem: Boolean): ProductPropertyCard {
+    private suspend fun getOtherProductCard(product: Product): ProductPropertyCard {
         return ProductPropertyCard(
             type = SECONDARY,
             properties = listOf(
-                if (hideReviewsItem) null else product.productReviews(),
+                if (viewModel.isProductUnderCreation) null else product.productReviews(),
                 product.addons(),
                 product.categories(),
                 product.tags(),
