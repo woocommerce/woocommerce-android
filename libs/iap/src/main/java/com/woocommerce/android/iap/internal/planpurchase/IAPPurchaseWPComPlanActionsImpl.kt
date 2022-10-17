@@ -9,8 +9,11 @@ import com.woocommerce.android.iap.internal.model.IAPProductDetailsResponse
 import com.woocommerce.android.iap.internal.model.IAPPurchase
 import com.woocommerce.android.iap.internal.model.IAPPurchaseResponse
 import com.woocommerce.android.iap.internal.model.IAPSupportedResult
+import com.woocommerce.android.iap.internal.network.IAPMobilePayAPI
+import com.woocommerce.android.iap.internal.network.model.CreateAndConfirmOrderResponse
 import com.woocommerce.android.iap.pub.IAPLogWrapper
 import com.woocommerce.android.iap.pub.PurchaseWPComPlanActions
+import com.woocommerce.android.iap.pub.model.IAPError
 import com.woocommerce.android.iap.pub.model.WPComIsPurchasedResult
 import com.woocommerce.android.iap.pub.model.WPComPlanProduct
 import com.woocommerce.android.iap.pub.model.WPComProductResult
@@ -22,6 +25,7 @@ private const val SUPPORTED_CURRENCY = "USD"
 internal class IAPPurchaseWPComPlanActionsImpl(
     activity: AppCompatActivity,
     logWrapper: IAPLogWrapper,
+    private val iapMobilePayAPI: IAPMobilePayAPI,
 ) : PurchaseWPComPlanActions {
     private val iapManager = IAPManagerFactory.createIAPManager(activity, logWrapper)
 
@@ -39,7 +43,24 @@ internal class IAPPurchaseWPComPlanActionsImpl(
 
     override suspend fun purchaseWPComPlan(remoteSiteId: Long): WPComPurchaseResult {
         return when (val response = iapManager.startPurchase(iapProduct)) {
-            is IAPPurchaseResponse.Success -> WPComPurchaseResult.Success
+            is IAPPurchaseResponse.Success -> {
+                val purchase = response.purchases!!.first()
+                val apiResponse = iapMobilePayAPI.createAndConfirmOrder(
+                    remoteSiteId = remoteSiteId,
+                    productIdentifier = purchase.products.first().id,
+                    price = purchase.products.first().price,
+                    currency = purchase.products.first().currency,
+                    response.purchases.first().purchaseToken
+                )
+                when (apiResponse) {
+                    is CreateAndConfirmOrderResponse.Success -> WPComPurchaseResult.Success
+                    CreateAndConfirmOrderResponse.Network -> WPComPurchaseResult.Error(
+                        IAPError.RemoteCommunication.Network
+                    )
+                    is CreateAndConfirmOrderResponse.Server ->
+                        WPComPurchaseResult.Error(IAPError.RemoteCommunication.Server(apiResponse.reason))
+                }
+            }
             is IAPPurchaseResponse.Error -> WPComPurchaseResult.Error(response.error)
         }
     }
