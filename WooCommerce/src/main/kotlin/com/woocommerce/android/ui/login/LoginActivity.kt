@@ -348,6 +348,7 @@ class LoginActivity :
     override fun startOver() {
         // Clear logged in url from AppPrefs
         AppPrefs.removeLoginSiteAddress()
+        // This will clear the back stack and return user to LoginPrologueFragment
         supportFragmentManager.popBackStack(null, POP_BACK_STACK_INCLUSIVE)
     }
 
