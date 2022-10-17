@@ -673,7 +673,7 @@ class LoginActivity :
         userAvatarUrl: String?,
         checkJetpackAvailability: Boolean
     ) {
-        if (connectSiteInfo?.isJetpackActive == true && connectSiteInfo?.isJetpackConnected == true) {
+        if (connectSiteInfo?.isJetpackActive == true) {
             // If jetpack is present, but we can't find the connected email, then show account mismatch error
             val fragment = AccountMismatchErrorFragment().apply {
                 arguments = AccountMismatchErrorFragmentArgs(
