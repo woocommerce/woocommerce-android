@@ -45,9 +45,9 @@ class WooCommerceComUTMProviderTest {
         val utmCampaign = "feature_announcement_card"
         val utmSource = "orders_list"
         val utmContent = "upsell_card_readers"
-        val url = "https://www.woocommerce.com?utm_campaign=${utmCampaign}&utm_source=${utmSource}"
-        val expectedUrl = "https://www.woocommerce.com?utm_campaign=${utmCampaign}&utm_source=${utmSource}" +
-            "&utm_content=${utmContent}&utm_term=1234&utm_medium=woo_android"
+        val url = "https://www.woocommerce.com?utm_campaign=$utmCampaign&utm_source=$utmSource"
+        val expectedUrl = "https://www.woocommerce.com?utm_campaign=$utmCampaign&utm_source=$utmSource" +
+            "&utm_content=$utmContent&utm_term=1234&utm_medium=woo_android"
         val defaultUTMMedium = "woo_android"
 
         val urlWithUTM = provideUTMProvider(
@@ -69,8 +69,8 @@ class WooCommerceComUTMProviderTest {
         val utmCampaign = "feature_announcement_card"
         val defaultUTMMedium = "woo_android"
         val url = "https://www.woocommerce.com/us/hw?utm_campaign=payments_menu_item"
-        val expectedUrl = "https://www.woocommerce.com/us/hw?utm_campaign=${utmCampaign}" +
-            "&utm_term=1234&utm_medium=${defaultUTMMedium}"
+        val expectedUrl = "https://www.woocommerce.com/us/hw?utm_campaign=$utmCampaign" +
+            "&utm_term=1234&utm_medium=$defaultUTMMedium"
 
         val urlWithUTM = provideUTMProvider(
             campaign = utmCampaign,
@@ -93,8 +93,8 @@ class WooCommerceComUTMProviderTest {
         val utmContent = "upsell_card_readers"
         val defaultUTMMedium = "woo_android"
         val url = "https://www.woocommerce.com/us/hw?utm_campaign=payments_menu_item&utm_source=payments_menu"
-        val expectedUrl = "https://www.woocommerce.com/us/hw?utm_campaign=${utmCampaign}&utm_source=${utmSource}" +
-            "&utm_content=${utmContent}&utm_term=1234&utm_medium=${defaultUTMMedium}"
+        val expectedUrl = "https://www.woocommerce.com/us/hw?utm_campaign=$utmCampaign&utm_source=$utmSource" +
+            "&utm_content=$utmContent&utm_term=1234&utm_medium=$defaultUTMMedium"
 
         val urlWithUTM = provideUTMProvider(
             campaign = utmCampaign,
@@ -113,8 +113,8 @@ class WooCommerceComUTMProviderTest {
     @Test
     fun `givenUrlWithOtherParamsThenConstructUrlByKeepingOtherUrlParams`() {
         val url = "https://www.woocommerce.com?test_utm_campaign=payments_menu_item&test_utm_source=payments_menu"
-        val expectedUrl = "https://www.woocommerce.com?test_utm_campaign=payments_menu_item&test_utm_source=payments_menu" +
-            "&utm_medium=woo_android"
+        val expectedUrl = "https://www.woocommerce.com?test_utm_campaign=payments_menu_item" +
+            "&test_utm_source=payments_menu&utm_medium=woo_android"
 
         val urlWithUTM = provideDefaultUTMProvider().getUrlWithUtmParams(url.toUri())
 
@@ -136,7 +136,7 @@ class WooCommerceComUTMProviderTest {
     @Test
     fun `givenUrlWithUtmParamsWhenQueryParamsAreProvidedThenConstructUrlByOverridingOnlyTheMissingUtmParams`() {
         val utmCampaign = "feature_announcement_card"
-        val url = "https://www.woocommerce.com?utm_campaign=${utmCampaign}"
+        val url = "https://www.woocommerce.com?utm_campaign=$utmCampaign"
         val expectedUrl = "$url&utm_term=1234&utm_medium=woo_android"
 
         val urlWithUTM = provideUTMProvider(
