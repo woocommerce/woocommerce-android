@@ -350,9 +350,7 @@ class LoginActivity :
     override fun startOver() {
         // Clear logged in url from AppPrefs
         AppPrefs.removeLoginSiteAddress()
-
-        // Pop all the fragments from the backstack until we get to the Prologue fragment
-        supportFragmentManager.popBackStack(LoginPrologueFragment.TAG, 0)
+        supportFragmentManager.popBackStack(null, POP_BACK_STACK_INCLUSIVE)
     }
 
     override fun onPrimaryButtonClicked() {
