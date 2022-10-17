@@ -6,7 +6,9 @@ import com.woocommerce.android.media.MediaFilesRepository.UploadResult.UploadPro
 import com.woocommerce.android.media.MediaFilesRepository.UploadResult.UploadSuccess
 import com.woocommerce.android.media.ProductImagesUploadWorker.Companion.DURATION_BEFORE_STOPPING_SERVICE
 import com.woocommerce.android.media.ProductImagesUploadWorker.Event
-import com.woocommerce.android.media.ProductImagesUploadWorker.Event.MediaUploadEvent.*
+import com.woocommerce.android.media.ProductImagesUploadWorker.Event.MediaUploadEvent.FetchSucceeded
+import com.woocommerce.android.media.ProductImagesUploadWorker.Event.MediaUploadEvent.UploadFailed
+import com.woocommerce.android.media.ProductImagesUploadWorker.Event.MediaUploadEvent.UploadSucceeded
 import com.woocommerce.android.media.ProductImagesUploadWorker.Event.ProductUpdateEvent.ProductUpdateFailed
 import com.woocommerce.android.media.ProductImagesUploadWorker.Event.ProductUpdateEvent.ProductUpdateSucceeded
 import com.woocommerce.android.media.ProductImagesUploadWorker.Event.ProductUploadsCompleted
@@ -19,15 +21,23 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.toList
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.test.TestCoroutineScope
+import kotlinx.coroutines.test.TestScope
+import kotlinx.coroutines.test.advanceTimeBy
+import kotlinx.coroutines.test.advanceUntilIdle
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Test
-import org.mockito.kotlin.*
+import org.mockito.kotlin.any
+import org.mockito.kotlin.doReturn
+import org.mockito.kotlin.mock
+import org.mockito.kotlin.never
+import org.mockito.kotlin.times
+import org.mockito.kotlin.verify
+import org.mockito.kotlin.whenever
 import org.wordpress.android.fluxc.model.MediaModel
 import org.wordpress.android.fluxc.store.MediaStore.MediaErrorType.GENERIC_ERROR
 import org.wordpress.android.util.DateTimeUtils
-import java.util.*
+import java.util.Date
 
 @ExperimentalCoroutinesApi
 class ProductImagesUploadWorkerTest : BaseUnitTest() {
@@ -59,7 +69,7 @@ class ProductImagesUploadWorkerTest : BaseUnitTest() {
             productDetailRepository = productDetailRepository,
             productImagesServiceWrapper = productImagesServiceWrapper,
             notificationHandler = notificationHandler,
-            appCoroutineScope = TestCoroutineScope(coroutinesTestRule.testDispatcher)
+            appCoroutineScope = TestScope(coroutinesTestRule.testDispatcher)
         )
     }
 
@@ -166,26 +176,26 @@ class ProductImagesUploadWorkerTest : BaseUnitTest() {
     @Test
     fun `when update product is requested, then fetch product`() = testBlocking {
         val product = ProductTestUtils.generateProduct(REMOTE_PRODUCT_ID)
-        whenever(productDetailRepository.fetchProduct(REMOTE_PRODUCT_ID)).thenReturn(product)
+        whenever(productDetailRepository.fetchProductOrLoadFromCache(REMOTE_PRODUCT_ID)).thenReturn(product)
 
         worker.enqueueWork(Work.UpdateProduct(REMOTE_PRODUCT_ID, listOf(UPLOADED_MEDIA)))
 
-        verify(productDetailRepository).fetchProduct(REMOTE_PRODUCT_ID)
+        verify(productDetailRepository).fetchProductOrLoadFromCache(REMOTE_PRODUCT_ID)
     }
 
     @Test
     fun `when fetching product fails, then retry three times`() = testBlocking {
-        whenever(productDetailRepository.fetchProduct(REMOTE_PRODUCT_ID)).thenReturn(null)
+        whenever(productDetailRepository.fetchProductOrLoadFromCache(REMOTE_PRODUCT_ID)).thenReturn(null)
 
         worker.enqueueWork(Work.UpdateProduct(REMOTE_PRODUCT_ID, listOf(UPLOADED_MEDIA)))
 
         verify(productDetailRepository, times(ProductImagesUploadWorker.PRODUCT_UPDATE_RETRIES))
-            .fetchProduct(REMOTE_PRODUCT_ID)
+            .fetchProductOrLoadFromCache(REMOTE_PRODUCT_ID)
     }
 
     @Test
     fun `when fetching product fails, then send an event`() = testBlocking {
-        whenever(productDetailRepository.fetchProduct(REMOTE_PRODUCT_ID)).thenReturn(null)
+        whenever(productDetailRepository.fetchProductOrLoadFromCache(REMOTE_PRODUCT_ID)).thenReturn(null)
 
         val eventsList = mutableListOf<Event>()
         val job = launch {
@@ -201,7 +211,7 @@ class ProductImagesUploadWorkerTest : BaseUnitTest() {
     @Test
     fun `when update product is requested, then update product`() = testBlocking {
         val product = ProductTestUtils.generateProduct(REMOTE_PRODUCT_ID)
-        whenever(productDetailRepository.fetchProduct(REMOTE_PRODUCT_ID)).thenReturn(product)
+        whenever(productDetailRepository.fetchProductOrLoadFromCache(REMOTE_PRODUCT_ID)).thenReturn(product)
 
         worker.enqueueWork(Work.UpdateProduct(REMOTE_PRODUCT_ID, listOf(UPLOADED_MEDIA)))
 
@@ -212,7 +222,7 @@ class ProductImagesUploadWorkerTest : BaseUnitTest() {
     @Test
     fun `when update product succeeds, then send an event`() = testBlocking {
         val product = ProductTestUtils.generateProduct(REMOTE_PRODUCT_ID)
-        whenever(productDetailRepository.fetchProduct(REMOTE_PRODUCT_ID)).thenReturn(product)
+        whenever(productDetailRepository.fetchProductOrLoadFromCache(REMOTE_PRODUCT_ID)).thenReturn(product)
         whenever(productDetailRepository.updateProduct(any())).thenReturn(true)
 
         val eventsList = mutableListOf<Event>()
@@ -229,7 +239,7 @@ class ProductImagesUploadWorkerTest : BaseUnitTest() {
     @Test
     fun `when update product fails, then retry three times`() = testBlocking {
         val product = ProductTestUtils.generateProduct(REMOTE_PRODUCT_ID)
-        whenever(productDetailRepository.fetchProduct(REMOTE_PRODUCT_ID)).thenReturn(product)
+        whenever(productDetailRepository.fetchProductOrLoadFromCache(REMOTE_PRODUCT_ID)).thenReturn(product)
         whenever(productDetailRepository.updateProduct(any())).thenReturn(false)
 
         worker.enqueueWork(Work.UpdateProduct(REMOTE_PRODUCT_ID, listOf(UPLOADED_MEDIA)))
@@ -242,7 +252,7 @@ class ProductImagesUploadWorkerTest : BaseUnitTest() {
     @Test
     fun `when update product fails, then send an event`() = testBlocking {
         val product = ProductTestUtils.generateProduct(REMOTE_PRODUCT_ID)
-        whenever(productDetailRepository.fetchProduct(REMOTE_PRODUCT_ID)).thenReturn(product)
+        whenever(productDetailRepository.fetchProductOrLoadFromCache(REMOTE_PRODUCT_ID)).thenReturn(product)
         whenever(productDetailRepository.updateProduct(any())).thenReturn(false)
 
         val eventsList = mutableListOf<Event>()

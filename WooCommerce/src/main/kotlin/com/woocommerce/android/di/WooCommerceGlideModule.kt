@@ -19,6 +19,7 @@ import dagger.hilt.EntryPoint
 import dagger.hilt.EntryPoints
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
+import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import java.io.IOException
@@ -60,6 +61,7 @@ class WooCommerceGlideModule : AppGlideModule() {
      * default cache size. Note that this only affects devices running API 26 or later since earlier
      * APIs don't support getCacheQuotaBytes().
      */
+    @OptIn(DelicateCoroutinesApi::class)
     private fun initGlideCache(context: Context, builder: GlideBuilder) {
         if (SystemVersionUtils.isAtLeastO()) {
             val storageManager = context.getSystemService(Context.STORAGE_SERVICE) as StorageManager

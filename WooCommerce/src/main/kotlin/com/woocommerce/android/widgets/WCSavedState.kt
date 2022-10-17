@@ -6,6 +6,7 @@ import android.os.Parcel
 import android.os.Parcelable
 import android.view.View.BaseSavedState
 import androidx.annotation.RequiresApi
+import com.woocommerce.android.extensions.parcelable
 
 /**
  * Wrapper for custom view state which can be used to save the parent's (super.onSaveInstanceState) state
@@ -24,18 +25,18 @@ class WCSavedState : BaseSavedState {
      * the super(source, loader) method won't work on older APIs - thus the app will crash.
      */
     constructor(source: Parcel, loader: ClassLoader?, superState: Parcelable?) : super(superState) {
-        savedState = source.readParcelable(loader)
+        savedState = source.parcelable(loader)
     }
 
     constructor(source: Parcel) : super(source) {
-        savedState = source.readParcelable(this::class.java.classLoader)
+        savedState = source.parcelable(this::class.java.classLoader)
     }
 
     @RequiresApi(VERSION_CODES.N)
     constructor(source: Parcel, loader: ClassLoader?) : super(source, loader) {
         savedState = loader?.let {
-            source.readParcelable<Parcelable>(it)
-        } ?: source.readParcelable<Parcelable>(this::class.java.classLoader)
+            source.parcelable(it)
+        } ?: source.parcelable(this::class.java.classLoader)
     }
 
     override fun writeToParcel(out: Parcel, flags: Int) {
@@ -51,7 +52,7 @@ class WCSavedState : BaseSavedState {
                 return if (VERSION.SDK_INT >= VERSION_CODES.N) {
                     WCSavedState(source, loader)
                 } else {
-                    WCSavedState(source, loader, source.readParcelable<Parcelable>(loader))
+                    WCSavedState(source, loader, source.parcelable(loader))
                 }
             }
 

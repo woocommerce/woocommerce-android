@@ -3,7 +3,6 @@ package com.woocommerce.android.extensions
 import android.view.View
 import androidx.annotation.IdRes
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.Observer
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import com.google.android.material.appbar.AppBarLayout
@@ -88,15 +87,12 @@ fun <T> Fragment.handleResult(key: String, entryId: Int? = null, handler: (T) ->
     }
 
     entry?.savedStateHandle?.let { saveState ->
-        saveState.getLiveData<T?>(key).observe(
-            this.viewLifecycleOwner,
-            Observer {
-                it?.let {
-                    handler(it)
-                    saveState.set(key, null)
-                }
+        saveState.getLiveData<T?>(key).observe(this.viewLifecycleOwner) {
+            it?.let {
+                handler(it)
+                saveState.set(key, null)
             }
-        )
+        }
     }
 }
 
@@ -157,15 +153,12 @@ fun Fragment.handleNotice(key: String, entryId: Int? = null, handler: () -> Unit
     }
 
     entry?.savedStateHandle?.let { saveState ->
-        saveState.getLiveData<String>(key).observe(
-            this.viewLifecycleOwner,
-            Observer {
-                it?.let {
-                    handler()
-                    saveState.set(key, null)
-                }
+        saveState.getLiveData<String>(key).observe(this.viewLifecycleOwner) {
+            it?.let {
+                handler()
+                saveState.set(key, null)
             }
-        )
+        }
     }
 }
 

@@ -1,0 +1,2 @@
+10.7:
+Per questa versione, abbiamo migliorato il flusso di accesso con una migliore compilazione automatica e un'opzione per connettere Jetpack, se Jetpack non è connesso. Abbiamo anche corretto una discrepanza tra le statistiche mensili e quelle dei visitatori. Ah, la matematica! Continua a inviarci il tuo feedback; ci aiuta a capire su cosa lavorare in futuro. 💜

@@ -5,6 +5,7 @@ sealed class CardPaymentStatus {
     object CollectingPayment : CardPaymentStatus()
     object WaitingForInput : CardPaymentStatus()
     object ProcessingPayment : CardPaymentStatus()
+    data class ProcessingPaymentCompleted(val paymentMethodType: PaymentMethodType) : CardPaymentStatus()
     object CapturingPayment : CardPaymentStatus()
     data class PaymentCompleted(val receiptUrl: String) : CardPaymentStatus()
 
@@ -139,6 +140,12 @@ sealed class CardPaymentStatus {
         TRY_ANOTHER_READ_METHOD,
         TRY_ANOTHER_CARD,
         CHECK_MOBILE_DEVICE,
+    }
+
+    enum class PaymentMethodType(val stringRepresentation: String) {
+        INTERAC_PRESENT("card_interac"),
+        CARD_PRESENT("card"),
+        UNKNOWN("unknown"),
     }
 }
 

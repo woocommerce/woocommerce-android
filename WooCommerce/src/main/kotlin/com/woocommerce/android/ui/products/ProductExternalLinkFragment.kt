@@ -2,7 +2,6 @@ package com.woocommerce.android.ui.products
 
 import android.os.Bundle
 import android.view.View
-import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
@@ -51,15 +50,12 @@ class ProductExternalLinkFragment : BaseProductFragment(R.layout.fragment_produc
     override fun getFragmentTitle() = getString(R.string.product_external_link)
 
     private fun setupObservers(viewModel: ProductDetailViewModel) {
-        viewModel.event.observe(
-            viewLifecycleOwner,
-            Observer { event ->
-                when (event) {
-                    is ExitExternalLink -> findNavController().navigateUp()
-                    else -> event.isHandled = false
-                }
+        viewModel.event.observe(viewLifecycleOwner) { event ->
+            when (event) {
+                is ExitExternalLink -> findNavController().navigateUp()
+                else -> event.isHandled = false
             }
-        )
+        }
         updateProductView(viewModel.getProduct())
     }
 

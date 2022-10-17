@@ -46,16 +46,4 @@ class OrderItemTest {
         )
         assertEquals("First Value, Second Value", orderItemUnderTest.attributesDescription)
     }
-
-    @Test
-    fun `should ignore values starting with _ character`() {
-        orderItemUnderTest = orderItemUnderTest.copy(
-            attributesList = listOf(
-                Order.Item.Attribute("First Key", "First Value"),
-                Order.Item.Attribute("_Invalid Key", "Ignored Value"),
-                Order.Item.Attribute("Second Key", "Second Value")
-            )
-        )
-        assertEquals("First Value, Second Value", orderItemUnderTest.attributesDescription)
-    }
 }

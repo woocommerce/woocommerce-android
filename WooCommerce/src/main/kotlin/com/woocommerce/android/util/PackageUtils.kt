@@ -5,6 +5,7 @@ import android.content.pm.PackageInfo
 import android.content.pm.PackageManager
 import androidx.core.content.pm.PackageInfoCompat
 import com.woocommerce.android.BuildConfig
+import com.woocommerce.android.extensions.packageInfo
 import java.util.Locale
 
 object PackageUtils {
@@ -20,7 +21,7 @@ object PackageUtils {
     fun isTesting(): Boolean {
         if (isTesting == null) {
             isTesting = try {
-                Class.forName("com.woocommerce.android.viewmodel.BaseUnitTest")
+                Class.forName("org.junit.Test")
                 true
             } catch (e: ClassNotFoundException) {
                 false
@@ -29,24 +30,15 @@ object PackageUtils {
         return isTesting!!
     }
 
-    fun isUITesting(): Boolean {
-        return try {
-            Class.forName("com.woocommerce.android.helpers.TestBase")
-            true
-        } catch (e: ClassNotFoundException) {
-            false
-        }
-    }
-
     fun isBetaBuild(context: Context): Boolean {
-        val versionName = getVersionName(context).toLowerCase(Locale.ROOT)
+        val versionName = getVersionName(context).lowercase(Locale.ROOT)
         return (versionName.contains("beta") || versionName.contains("rc"))
     }
 
     private fun getPackageInfo(context: Context): PackageInfo? {
         return try {
             val manager = context.packageManager
-            manager.getPackageInfo(context.packageName, 0)
+            manager.packageInfo(context.packageName, 0)
         } catch (e: PackageManager.NameNotFoundException) {
             null
         }

@@ -51,7 +51,7 @@ class ProductShippingClassAdapter(
         RecyclerView.ViewHolder(viewBinding.root) {
         init {
             itemView.setOnClickListener {
-                val position = adapterPosition
+                @Suppress("DEPRECATION") val position = adapterPosition
                 if (position > -1) {
                     onItemClicked(items[position])
                 }

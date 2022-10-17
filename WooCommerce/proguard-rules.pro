@@ -73,3 +73,10 @@
 ###### Glide - begin
 -keep class com.bumptech.glide.GeneratedAppGlideModuleImpl { *; }
 ###### Glide - end
+
+###### SavedStateHandleExt - begin
+###### We use reflection so we have to keep this method
+-keepclassmembers class * extends androidx.navigation.NavArgs {
+    fromSavedStateHandle(androidx.lifecycle.SavedStateHandle);
+}
+###### SavedStateHandleExt - end

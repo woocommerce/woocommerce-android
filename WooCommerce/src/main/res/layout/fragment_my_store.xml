@@ -12,13 +12,6 @@
         android:layout_height="wrap_content"
         android:orientation="vertical">
 
-        <!-- Date bar -->
-        <com.woocommerce.android.ui.mystore.MyStoreDateRangeView
-            android:id="@+id/my_store_date_bar"
-            style="@style/Woo.Card.WithoutPadding"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
-
         <com.woocommerce.android.widgets.ScrollChildSwipeRefreshLayout
             android:id="@+id/my_store_refresh_layout"
             android:layout_width="match_parent"
@@ -38,18 +31,11 @@
                     android:descendantFocusability="blocksDescendants"
                     android:orientation="vertical">
 
-                    <com.woocommerce.android.widgets.WCEmptyStatsView
-                        android:id="@+id/empty_stats_view"
-                        style="@style/Woo.Card.WithoutPadding"
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:visibility="gone"
-                        tools:visibility="visible" />
-
                     <com.woocommerce.android.widgets.WCEmptyView
                         android:id="@+id/empty_view"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
+                        android:layout_marginTop="@dimen/major_350"
                         android:visibility="gone"
                         tools:visibility="visible" />
 

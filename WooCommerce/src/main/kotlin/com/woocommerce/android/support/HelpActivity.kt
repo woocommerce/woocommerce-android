@@ -4,25 +4,26 @@ import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.view.MenuItem
-import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.AppUrls
 import com.woocommerce.android.R
+import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
-import com.woocommerce.android.analytics.AnalyticsTracker.Stat
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_HELP_CONTENT_URL
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_SOURCE_FLOW
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_SOURCE_STEP
 import com.woocommerce.android.databinding.ActivityHelpBinding
 import com.woocommerce.android.extensions.show
 import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.ui.login.localnotifications.LoginNotificationScheduler
 import com.woocommerce.android.util.ChromeCustomTabUtils
-import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.util.PackageUtils
 import dagger.hilt.android.AndroidEntryPoint
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.store.AccountStore
 import org.wordpress.android.fluxc.store.SiteStore
-import java.util.ArrayList
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -32,6 +33,7 @@ class HelpActivity : AppCompatActivity() {
     @Inject lateinit var supportHelper: SupportHelper
     @Inject lateinit var zendeskHelper: ZendeskHelper
     @Inject lateinit var selectedSite: SelectedSite
+    @Inject lateinit var loginNotificationScheduler: LoginNotificationScheduler
 
     private lateinit var binding: ActivityHelpBinding
 
@@ -56,7 +58,16 @@ class HelpActivity : AppCompatActivity() {
         binding.contactContainer.setOnClickListener { createNewZendeskTicket(TicketType.General) }
         binding.identityContainer.setOnClickListener { showIdentityDialog(TicketType.General) }
         binding.myTicketsContainer.setOnClickListener { showZendeskTickets() }
-        binding.faqContainer.setOnClickListener { showZendeskFaq() }
+        binding.faqContainer.setOnClickListener {
+            val loginFlow = intent.extras?.getString(LOGIN_FLOW_KEY)
+            val loginStep = intent.extras?.getString(LOGIN_STEP_KEY)
+
+            if (loginFlow != null && loginStep != null) {
+                showLoginHelpCenter(originFromExtras, loginFlow, loginStep)
+            } else {
+                showZendeskFaq()
+            }
+        }
         binding.appLogContainer.setOnClickListener { showApplicationLog() }
         if (userIsLoggedIn() && selectedSite.exists()) {
             binding.ssrContainer.show()
@@ -64,7 +75,6 @@ class HelpActivity : AppCompatActivity() {
         }
 
         with(binding.contactPaymentsContainer) {
-            visibility = if (FeatureFlag.CARD_READER.isEnabled()) View.VISIBLE else View.GONE
             setOnClickListener { createNewZendeskTicket(TicketType.Payments) }
         }
 
@@ -78,6 +88,14 @@ class HelpActivity : AppCompatActivity() {
          */
         if (savedInstanceState == null && originFromExtras == Origin.ZENDESK_NOTIFICATION) {
             showZendeskTickets()
+        }
+
+        if (originFromExtras == Origin.LOGIN_HELP_NOTIFICATION) {
+            loginNotificationScheduler.onNotificationTapped(extraTagsFromExtras?.first())
+        }
+
+        if (originFromExtras == Origin.SITE_PICKER_JETPACK_TIMEOUT) {
+            createNewZendeskTicket(TicketType.General)
         }
     }
 
@@ -99,7 +117,7 @@ class HelpActivity : AppCompatActivity() {
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         if (item.itemId == android.R.id.home) {
-            onBackPressed()
+            onBackPressedDispatcher.onBackPressed()
             return true
         }
         return super.onOptionsItemSelected(item)
@@ -132,10 +150,10 @@ class HelpActivity : AppCompatActivity() {
 
         supportHelper.showSupportIdentityInputDialog(this, emailSuggestion, isNameInputHidden = true) { email, _ ->
             zendeskHelper.setSupportEmail(email)
-            AnalyticsTracker.track(Stat.SUPPORT_IDENTITY_SET)
+            AnalyticsTracker.track(AnalyticsEvent.SUPPORT_IDENTITY_SET)
             createNewZendeskTicket(ticketType)
         }
-        AnalyticsTracker.track(Stat.SUPPORT_IDENTITY_FORM_VIEWED)
+        AnalyticsTracker.track(AnalyticsEvent.SUPPORT_IDENTITY_FORM_VIEWED)
     }
 
     private fun refreshContactEmailText() {
@@ -159,12 +177,26 @@ class HelpActivity : AppCompatActivity() {
     }
 
     private fun showZendeskTickets() {
-        AnalyticsTracker.track(Stat.SUPPORT_TICKETS_VIEWED)
+        AnalyticsTracker.track(AnalyticsEvent.SUPPORT_TICKETS_VIEWED)
         zendeskHelper.showAllTickets(this, originFromExtras, selectedSiteOrNull(), extraTagsFromExtras)
     }
 
+    private fun showLoginHelpCenter(origin: Origin, loginFlow: String, loginStep: String) {
+        val helpCenterUrl = AppUrls.LOGIN_HELP_CENTER_URLS[origin] ?: AppUrls.APP_HELP_CENTER
+        AnalyticsTracker.track(
+            stat = AnalyticsEvent.SUPPORT_HELP_CENTER_VIEWED,
+            properties = mapOf(
+                KEY_SOURCE_FLOW to loginFlow,
+                KEY_SOURCE_STEP to loginStep,
+                KEY_HELP_CONTENT_URL to helpCenterUrl
+            )
+        )
+
+        ChromeCustomTabUtils.launchUrl(this, helpCenterUrl)
+    }
+
     private fun showZendeskFaq() {
-        AnalyticsTracker.track(Stat.SUPPORT_HELP_CENTER_VIEWED)
+        AnalyticsTracker.track(AnalyticsEvent.SUPPORT_HELP_CENTER_VIEWED)
         ChromeCustomTabUtils.launchUrl(this, AppUrls.APP_HELP_CENTER)
         /* TODO: for now we simply link to the online woo mobile support documentation, but we should show the
         Zendesk FAQ once it's ready
@@ -174,7 +206,7 @@ class HelpActivity : AppCompatActivity() {
     }
 
     private fun showApplicationLog() {
-        AnalyticsTracker.track(Stat.SUPPORT_APPLICATION_LOG_VIEWED)
+        AnalyticsTracker.track(AnalyticsEvent.SUPPORT_APPLICATION_LOG_VIEWED)
         startActivity(Intent(this, WooLogViewerActivity::class.java))
     }
 
@@ -200,7 +232,11 @@ class HelpActivity : AppCompatActivity() {
         LOGIN_EPILOGUE("origin:login-epilogue"),
         LOGIN_CONNECTED_EMAIL_HELP("origin:login-connected-email-help"),
         SIGNUP_EMAIL("origin:signup-email"),
-        SIGNUP_MAGIC_LINK("origin:signup-magic-link");
+        SIGNUP_MAGIC_LINK("origin:signup-magic-link"),
+        JETPACK_INSTALLATION("origin:jetpack-installation"),
+        LOGIN_HELP_NOTIFICATION("origin:login-local-notification"),
+        SITE_PICKER_JETPACK_TIMEOUT("origin:site-picker-jetpack-error"),
+        LOGIN_WITH_QR_CODE("origin:qr-code-scanner");
 
         override fun toString(): String {
             return stringValue
@@ -210,18 +246,26 @@ class HelpActivity : AppCompatActivity() {
     companion object {
         private const val ORIGIN_KEY = "ORIGIN_KEY"
         private const val EXTRA_TAGS_KEY = "EXTRA_TAGS_KEY"
+        private const val LOGIN_FLOW_KEY = "LOGIN_FLOW_KEY"
+        private const val LOGIN_STEP_KEY = "LOGIN_STEP_KEY"
 
         @JvmStatic
         fun createIntent(
             context: Context,
             origin: Origin,
-            extraSupportTags: List<String>?
+            extraSupportTags: List<String>?,
+            loginFlow: String? = null,
+            loginStep: String? = null
         ): Intent {
             val intent = Intent(context, HelpActivity::class.java)
             intent.putExtra(ORIGIN_KEY, origin)
             if (extraSupportTags != null && extraSupportTags.isNotEmpty()) {
                 intent.putStringArrayListExtra(EXTRA_TAGS_KEY, extraSupportTags as ArrayList<String>?)
             }
+
+            if (loginFlow != null) intent.putExtra(LOGIN_FLOW_KEY, loginFlow)
+            if (loginStep != null) intent.putExtra(LOGIN_STEP_KEY, loginStep)
+
             return intent
         }
     }

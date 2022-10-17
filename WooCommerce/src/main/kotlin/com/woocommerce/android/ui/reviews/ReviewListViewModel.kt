@@ -4,65 +4,67 @@ import android.os.Parcelable
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
+import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.R
-import com.woocommerce.android.analytics.AnalyticsTracker
-import com.woocommerce.android.analytics.AnalyticsTracker.Stat
-import com.woocommerce.android.annotations.OpenClassOnDebug
 import com.woocommerce.android.model.ActionStatus
 import com.woocommerce.android.model.ProductReview
-import com.woocommerce.android.model.RequestResult.ERROR
 import com.woocommerce.android.model.RequestResult.NO_ACTION_NEEDED
 import com.woocommerce.android.model.RequestResult.SUCCESS
 import com.woocommerce.android.network.ConnectionChangeReceiver.ConnectionChangeEvent
-import com.woocommerce.android.push.NotificationChannelType.REVIEW
-import com.woocommerce.android.extensions.NotificationReceivedEvent
+import com.woocommerce.android.push.UnseenReviewsCountHandler
 import com.woocommerce.android.tools.NetworkStatus
-import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.reviews.ReviewListViewModel.ReviewListEvent.MarkAllAsRead
+import com.woocommerce.android.ui.reviews.domain.MarkAllReviewsAsSeen
+import com.woocommerce.android.ui.reviews.domain.MarkAllReviewsAsSeen.Fail
+import com.woocommerce.android.ui.reviews.domain.MarkAllReviewsAsSeen.Success
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T.REVIEWS
 import com.woocommerce.android.viewmodel.LiveDataDelegate
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.viewmodel.ScopedViewModel
-import com.woocommerce.android.viewmodel.SingleLiveEvent
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.drop
 import kotlinx.coroutines.launch
 import kotlinx.parcelize.Parcelize
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
 import org.wordpress.android.fluxc.Dispatcher
-import org.wordpress.android.fluxc.action.WCProductAction.UPDATE_PRODUCT_REVIEW_STATUS
-import org.wordpress.android.fluxc.generated.WCProductActionBuilder
-import org.wordpress.android.fluxc.store.WCProductStore.OnProductReviewChanged
-import org.wordpress.android.fluxc.store.WCProductStore.UpdateProductReviewStatusPayload
 import javax.inject.Inject
 
-@OpenClassOnDebug
 @HiltViewModel
 class ReviewListViewModel @Inject constructor(
     savedState: SavedStateHandle,
     private val networkStatus: NetworkStatus,
     private val dispatcher: Dispatcher,
-    private val selectedSite: SelectedSite,
-    private val reviewRepository: ReviewListRepository
-) : ScopedViewModel(savedState) {
+    private val reviewRepository: ReviewListRepository,
+    private val markAllReviewsAsSeen: MarkAllReviewsAsSeen,
+    private val unseenReviewsCountHandler: UnseenReviewsCountHandler,
+    private val reviewModerationHandler: ReviewModerationHandler
+) : ScopedViewModel(savedState), ReviewModerationConsumer {
     companion object {
         private const val TAG = "ReviewListViewModel"
     }
-    private val _moderateProductReview = SingleLiveEvent<ProductReviewModerationRequest?>()
-    val moderateProductReview: LiveData<ProductReviewModerationRequest?> = _moderateProductReview
-
     private val _reviewList = MutableLiveData<List<ProductReview>>()
-    val reviewList: LiveData<List<ProductReview>> = _reviewList
 
-    final val viewStateData = LiveDataDelegate(savedState, ViewState())
+    override val ReviewModerationConsumer.rawReviewList: LiveData<List<ProductReview>>
+        get() = _reviewList
+
+    override val ReviewModerationConsumer.reviewModerationHandler: ReviewModerationHandler
+        get() = this@ReviewListViewModel.reviewModerationHandler
+
+    val viewStateData = LiveDataDelegate(savedState, ViewState())
     private var viewState by viewStateData
 
     init {
         EventBus.getDefault().register(this)
         dispatcher.register(this)
+        observeReviewUpdates()
+        launch {
+            observeModerationEvents()
+        }
     }
 
     override fun onCleared() {
@@ -90,11 +92,11 @@ class ReviewListViewModel @Inject constructor(
         }
     }
 
-    /**
-     * Reload reviews from the database. Useful when a change happens on the backend
-     * when the list view was not visible.
-     */
-    fun reloadReviewsFromCache() {
+    override fun ReviewModerationConsumer.onReviewModerationSuccess() {
+        reloadReviewsFromCache()
+    }
+
+    private fun reloadReviewsFromCache() {
         launch {
             _reviewList.value = reviewRepository.getCachedProductReviews()
         }
@@ -130,55 +132,22 @@ class ReviewListViewModel @Inject constructor(
             triggerEvent(MarkAllAsRead(ActionStatus.SUBMITTED))
 
             launch {
-                when (reviewRepository.markAllProductReviewsAsRead()) {
-                    ERROR -> {
+                when (markAllReviewsAsSeen()) {
+                    Fail -> {
                         triggerEvent(MarkAllAsRead(ActionStatus.ERROR))
                         triggerEvent(ShowSnackbar(R.string.wc_mark_all_read_error))
                     }
-                    NO_ACTION_NEEDED, SUCCESS -> {
+                    Success -> {
                         triggerEvent(MarkAllAsRead(ActionStatus.SUCCESS))
                         triggerEvent(ShowSnackbar(R.string.wc_mark_all_read_success))
+                        _reviewList.value = reviewRepository.getCachedProductReviews()
                     }
                 }
             }
         } else {
-            // Network is not connected
             showOfflineSnack()
         }
     }
-
-    // region Review Moderation
-    fun submitReviewStatusChange(review: ProductReview, newStatus: ProductReviewStatus) {
-        if (networkStatus.isConnected()) {
-            val payload = UpdateProductReviewStatusPayload(
-                selectedSite.get(),
-                review.remoteId,
-                newStatus.toString()
-            )
-            dispatcher.dispatch(WCProductActionBuilder.newUpdateProductReviewStatusAction(payload))
-
-            AnalyticsTracker.track(
-                Stat.REVIEW_ACTION,
-                mapOf(AnalyticsTracker.KEY_TYPE to newStatus.toString())
-            )
-
-            sendReviewModerationUpdate(ActionStatus.SUBMITTED)
-        } else {
-            // Network is not connected
-            showOfflineSnack()
-            sendReviewModerationUpdate(ActionStatus.ERROR)
-        }
-    }
-
-    private fun sendReviewModerationUpdate(newRequestStatus: ActionStatus) {
-        _moderateProductReview.value = _moderateProductReview.value?.apply { actionStatus = newRequestStatus }
-
-        // If the request has been completed, set the event to null to prevent issues later.
-        if (newRequestStatus.isComplete()) {
-            _moderateProductReview.value = null
-        }
-    }
-    // endregion
 
     private suspend fun fetchReviewList(loadMore: Boolean) {
         if (networkStatus.isConnected()) {
@@ -207,49 +176,20 @@ class ReviewListViewModel @Inject constructor(
         triggerEvent(ShowSnackbar(R.string.offline_error))
     }
 
+    private fun observeReviewUpdates() {
+        viewModelScope.launch {
+            unseenReviewsCountHandler.observeUnseenCount()
+                .drop(1)
+                .collectLatest { forceRefreshReviews() }
+        }
+    }
+
     @Suppress("unused")
     @Subscribe(threadMode = ThreadMode.MAIN)
     fun onEventMainThread(event: ConnectionChangeEvent) {
         if (event.isConnected) {
             // Refresh data now that a connection is active if needed
             forceRefreshReviews()
-        }
-    }
-
-    @Suppress("unused")
-    @Subscribe(threadMode = ThreadMode.MAIN)
-    fun onEventMainThread(event: NotificationReceivedEvent) {
-        if (event.channel == REVIEW) {
-            // New review notification received. Request the list of reviews be refreshed.
-            forceRefreshReviews()
-        }
-    }
-
-    @Suppress("unused")
-    @Subscribe(threadMode = ThreadMode.MAIN)
-    fun onEventMainThread(event: OnRequestModerateReviewEvent) {
-        if (networkStatus.isConnected()) {
-            // Send the request to the UI to show the UNDO snackbar
-            viewState = viewState.copy(isRefreshing = true)
-            _moderateProductReview.value = event.request
-        } else {
-            // Network not connected
-            showOfflineSnack()
-        }
-    }
-
-    @SuppressWarnings("unused")
-    @Subscribe(threadMode = ThreadMode.MAIN)
-    fun onProductReviewChanged(event: OnProductReviewChanged) {
-        if (event.causeOfChange == UPDATE_PRODUCT_REVIEW_STATUS) {
-            if (event.isError) {
-                // Show an error in the UI and reload the view
-                triggerEvent(ShowSnackbar(R.string.wc_moderate_review_error))
-                sendReviewModerationUpdate(ActionStatus.ERROR)
-            } else {
-                sendReviewModerationUpdate(ActionStatus.SUCCESS)
-                reloadReviewsFromCache()
-            }
         }
     }
 

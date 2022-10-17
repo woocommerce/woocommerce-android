@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fillViewport="true">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:animateLayoutChanges="true">
+
+        <LinearLayout
+            android:id="@+id/container"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/color_surface"
+            android:orientation="vertical"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <com.google.android.material.textview.MaterialTextView
+                style="@style/TextAppearance.Woo.Subtitle1"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@color/default_window_background"
+                android:padding="@dimen/major_100"
+                android:text="@string/simple_payments_choose_method" />
+
+            <View
+                android:id="@+id/divider1"
+                android:layout_width="wrap_content"
+                android:layout_height="1dp"
+                android:background="@color/divider_color" />
+
+            <com.google.android.material.textview.MaterialTextView
+                android:id="@+id/textCash"
+                style="@style/Woo.Card.Body.Bold"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="0dp"
+                android:background="?attr/selectableItemBackground"
+                android:drawableStart="@drawable/ic_gridicons_money"
+                android:drawableEnd="@drawable/ic_arrow_right"
+                android:drawablePadding="@dimen/major_100"
+                android:padding="@dimen/major_100"
+                android:text="@string/cash" />
+
+            <View
+                android:id="@+id/divider2"
+                android:layout_width="wrap_content"
+                android:layout_height="1dp"
+                android:background="@color/divider_color" />
+
+            <com.google.android.material.textview.MaterialTextView
+                android:id="@+id/textCard"
+                style="@style/Woo.Card.Body.Bold"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="0dp"
+                android:background="?attr/selectableItemBackground"
+                android:drawableStart="@drawable/ic_gridicons_credit_card"
+                android:drawableEnd="@drawable/ic_arrow_right"
+                android:drawablePadding="@dimen/major_100"
+                android:padding="@dimen/major_100"
+                android:text="@string/card" />
+
+            <View
+                android:id="@+id/divider3"
+                android:layout_width="wrap_content"
+                android:layout_height="1dp"
+                android:background="@color/divider_color" />
+
+            <com.google.android.material.textview.MaterialTextView
+                android:id="@+id/textShare"
+                style="@style/Woo.Card.Body.Bold"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="0dp"
+                android:background="?attr/selectableItemBackground"
+                android:drawableStart="@drawable/ic_gridicons_link"
+                android:drawableEnd="@drawable/ic_arrow_right"
+                android:drawablePadding="@dimen/major_100"
+                android:padding="@dimen/major_100"
+                android:text="@string/simple_payments_share_payment_link" />
+
+            <View
+                android:id="@+id/divider4"
+                android:layout_width="wrap_content"
+                android:layout_height="1dp"
+                android:background="@color/divider_color" />
+
+        </LinearLayout>
+
+        <include
+            android:id="@+id/upsellCardReaderComposeView"
+            layout="@layout/fragment_card_reader_upsell_banner"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/major_150"
+            app:layout_constraintTop_toBottomOf="@id/container"/>
+
+        <ProgressBar
+            android:id="@+id/pbLoading"
+            style="?android:attr/progressBarStyleLarge"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</ScrollView>

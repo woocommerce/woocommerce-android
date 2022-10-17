@@ -1,2 +1,0 @@
-8.1:
-Con esta versión, se ha actualizado la pestaña de pedidos. Las pestañas ya no están, y te ofrecemos la opción de filtrar por estado o por rango de fechas. Este cambio se lleva a cabo a raíz de los comentarios directos que hemos recibido a lo largo de los años, así que estamos seguros de que te gustará.

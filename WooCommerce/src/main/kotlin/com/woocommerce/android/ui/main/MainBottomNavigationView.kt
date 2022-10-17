@@ -2,7 +2,6 @@ package com.woocommerce.android.ui.main
 
 import android.content.Context
 import android.os.Bundle
-import android.os.Parcelable
 import android.util.AttributeSet
 import android.view.MenuItem
 import android.view.View
@@ -30,7 +29,7 @@ class MainBottomNavigationView @JvmOverloads constructor(
     private lateinit var navController: NavController
     private lateinit var listener: MainNavigationListener
     private lateinit var ordersBadge: BadgeDrawable
-    private lateinit var reviewsBadge: BadgeDrawable
+    private lateinit var moreMenuBadge: BadgeDrawable
 
     interface MainNavigationListener {
         fun onNavItemSelected(navPos: BottomNavigationPosition)
@@ -74,32 +73,14 @@ class MainBottomNavigationView @JvmOverloads constructor(
             })
     }
 
-    /**
-     * HACK alert! The bottom nav's presenter stores the badges in its saved state and recreates them
-     * in onRestoreInstanceState, which should be fine but instead it ends up creating duplicates
-     * of our badges. To work around this we remove the badges before state is saved and recreate
-     * them ourselves when state is restored.
-     */
-    override fun onSaveInstanceState(): Parcelable {
-        removeBadge(R.id.orders)
-        removeBadge(R.id.reviews)
-        return super.onSaveInstanceState()
-    }
-
-    override fun onRestoreInstanceState(state: Parcelable?) {
-        super.onRestoreInstanceState(state)
-        createBadges()
-    }
-
     private fun createBadges() {
         ordersBadge = getOrCreateBadge(R.id.orders)
         ordersBadge.isVisible = false
         ordersBadge.backgroundColor = ContextCompat.getColor(context, R.color.color_primary)
         ordersBadge.maxCharacterCount = 3 // this includes the plus sign
 
-        reviewsBadge = getOrCreateBadge(R.id.reviews)
-        reviewsBadge.isVisible = false
-        reviewsBadge.backgroundColor = ContextCompat.getColor(context, R.color.color_primary)
+        moreMenuBadge = getOrCreateBadge(R.id.moreMenu)
+        moreMenuBadge.isVisible = false
     }
 
     /**
@@ -129,8 +110,19 @@ class MainBottomNavigationView @JvmOverloads constructor(
         assignNavigationListeners(true)
     }
 
-    fun showReviewsBadge(show: Boolean) {
-        reviewsBadge.isVisible = show
+    fun showMoreMenuUnseenReviewsBadge(count: Int) {
+        moreMenuBadge.backgroundColor = ContextCompat.getColor(context, R.color.color_primary)
+        moreMenuBadge.number = count
+        moreMenuBadge.isVisible = true
+    }
+
+    fun showMoreMenuNewFeatureBadge() {
+        moreMenuBadge.backgroundColor = ContextCompat.getColor(context, R.color.color_secondary)
+        moreMenuBadge.isVisible = true
+    }
+
+    fun hideMoreMenuBadge() {
+        moreMenuBadge.isVisible = false
     }
 
     fun setOrderBadgeCount(count: Int) {

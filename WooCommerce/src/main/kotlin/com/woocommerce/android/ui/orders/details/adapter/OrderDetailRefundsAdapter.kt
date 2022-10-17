@@ -15,6 +15,7 @@ import java.math.BigDecimal
 class OrderDetailRefundsAdapter(
     private val isCashPayment: Boolean,
     private val paymentMethodTitle: String,
+    private val orderDetailRefundsLineBuilder: OrderDetailRefundsLineBuilder,
     private val formatCurrency: (BigDecimal) -> String
 ) : RecyclerView.Adapter<OrderDetailRefundsAdapter.ViewHolder>() {
     var refundList: List<Refund> = ArrayList()
@@ -38,6 +39,7 @@ class OrderDetailRefundsAdapter(
             ),
             isCashPayment,
             paymentMethodTitle,
+            orderDetailRefundsLineBuilder,
             formatCurrency
         )
     }
@@ -52,12 +54,19 @@ class OrderDetailRefundsAdapter(
         private val viewBinding: OrderDetailRefundPaymentItemBinding,
         private val isCashPayment: Boolean,
         private val paymentMethodTitle: String,
+        private val orderDetailRefundsLineBuilder: OrderDetailRefundsLineBuilder,
         private val formatCurrency: (BigDecimal) -> String
     ) : RecyclerView.ViewHolder(
         viewBinding.root
     ) {
         fun bind(refund: Refund) {
             val context = viewBinding.root.context
+
+            val refundLine = orderDetailRefundsLineBuilder.buildRefundLine(refund)
+            viewBinding.refundsListLblRefund.text = context.getString(
+                R.string.orderdetail_refunded_line_with_info,
+                refundLine
+            )
             viewBinding.refundsListRefundAmount.text = context.getString(
                 R.string.orderdetail_refund_amount,
                 formatCurrency(refund.amount)

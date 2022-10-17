@@ -5,8 +5,8 @@ import android.util.AttributeSet
 import android.view.LayoutInflater
 import com.google.android.material.card.MaterialCardView
 import com.woocommerce.android.AppUrls
+import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
-import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.databinding.MyStoreStatsRevertedNoticeBinding
 import com.woocommerce.android.util.ChromeCustomTabUtils
 import com.woocommerce.android.util.WooAnimUtils
@@ -32,12 +32,12 @@ class MyStoreStatsRevertedNoticeCard @JvmOverloads constructor(
         }
 
         binding.btnLearnMore.setOnClickListener {
-            AnalyticsTracker.track(Stat.DASHBOARD_NEW_STATS_REVERTED_BANNER_LEARN_MORE_TAPPED)
+            AnalyticsTracker.track(AnalyticsEvent.DASHBOARD_NEW_STATS_REVERTED_BANNER_LEARN_MORE_TAPPED)
             ChromeCustomTabUtils.launchUrl(context, AppUrls.WOOCOMMERCE_PLUGIN)
         }
 
         binding.btnDismiss.setOnClickListener {
-            AnalyticsTracker.track(Stat.DASHBOARD_NEW_STATS_REVERTED_BANNER_DISMISS_TAPPED)
+            AnalyticsTracker.track(AnalyticsEvent.DASHBOARD_NEW_STATS_REVERTED_BANNER_DISMISS_TAPPED)
             listener.onMyStoreStatsRevertedNoticeCardDismissed()
         }
     }

@@ -30,7 +30,7 @@
         android:layout_height="wrap_content"
         android:layout_centerVertical="true"
         android:layout_toEndOf="@+id/frame_product"
-        android:layout_toStartOf="@+id/text_TotalSpend"
+        android:layout_toStartOf="@+id/itemsSoldTextView"
         android:layout_marginBottom="@dimen/major_100"
         android:layout_marginTop="@dimen/major_100"
         android:orientation="vertical">
@@ -45,21 +45,21 @@
             tools:text="text_ProductName"/>
 
         <com.google.android.material.textview.MaterialTextView
-            android:id="@+id/text_ProductOrders"
+            android:id="@+id/netSalesTextView"
             style="@style/Woo.Card.ListItem.Body"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            tools:text="text_ProductOrders"/>
+            tools:text="Net sales: $823.20" />
     </LinearLayout>
 
     <com.google.android.material.textview.MaterialTextView
-        android:id="@+id/text_TotalSpend"
+        android:id="@+id/itemsSoldTextView"
         style="@style/Woo.Card.ListItem.Title"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentEnd="true"
         android:layout_margin="@dimen/major_100"
-        tools:text="$150"/>
+        tools:text="$150" />
 
     <View
         style="@style/Woo.Divider"

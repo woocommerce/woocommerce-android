@@ -186,7 +186,7 @@
                 app:layout_constraintTop_toBottomOf="@+id/customerInfo_billingAddressSection" />
 
             <!-- Billing Phone -->
-            <com.google.android.material.textview.MaterialTextView
+            <com.woocommerce.android.widgets.WCSelectableTextView
                 android:id="@+id/customerInfo_phone"
                 style="@style/Woo.Card.Body"
                 android:layout_width="wrap_content"
@@ -223,7 +223,7 @@
                 app:layout_constraintTop_toBottomOf="@+id/customerInfo_callOrMessageBtn" />
 
             <!-- Email Address -->
-            <com.google.android.material.textview.MaterialTextView
+            <com.woocommerce.android.widgets.WCSelectableTextView
                 android:id="@+id/customerInfo_emailAddr"
                 style="@style/Woo.Card.Body"
                 android:layout_width="wrap_content"

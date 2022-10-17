@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="wrap_content">
 
     <androidx.appcompat.widget.AppCompatTextView
         android:id="@+id/header_label"
@@ -11,6 +11,7 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="@dimen/major_100"
         android:layout_marginTop="@dimen/major_75"
+        android:accessibilityHeading="true"
         android:textAppearance="?attr/textAppearanceHeadline6"
         app:layout_constraintEnd_toStartOf="@id/edit_button"
         app:layout_constraintStart_toStartOf="parent"
@@ -27,20 +28,36 @@
         app:layout_constraintTop_toTopOf="parent"
         tools:visibility="visible" />
 
+    <ImageView
+        android:id="@+id/lock_icon"
+        android:layout_width="@dimen/image_minor_40"
+        android:layout_height="@dimen/image_minor_40"
+        android:layout_marginEnd="@dimen/major_100"
+        android:src="@drawable/ic_lock"
+        android:contentDescription="@string/order_editing_locked_content_description"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="@+id/header_label"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/header_label" />
+
     <FrameLayout
         android:id="@+id/content_layout"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:padding="@dimen/major_100"
+        android:layout_marginTop="@dimen/major_100"
+        android:paddingHorizontal="@dimen/major_100"
         android:visibility="gone"
+        app:layout_constraintBottom_toTopOf="@id/add_buttons_layout"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/header_label" />
+        app:layout_constraintTop_toBottomOf="@id/header_label"
+        app:layout_goneMarginBottom="@dimen/major_100" />
 
     <androidx.appcompat.widget.LinearLayoutCompat
         android:id="@+id/add_buttons_layout"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/content_layout" />

@@ -2,22 +2,50 @@ package com.woocommerce.android.ui.main
 
 import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.AppPrefs
+import com.woocommerce.android.analytics.AnalyticsEvent
+import com.woocommerce.android.analytics.AnalyticsEvent.REVIEW_OPEN
+import com.woocommerce.android.analytics.AnalyticsTracker
+import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.model.FeatureAnnouncement
 import com.woocommerce.android.model.FeatureAnnouncementItem
 import com.woocommerce.android.push.NotificationChannelType
 import com.woocommerce.android.push.NotificationMessageHandler
 import com.woocommerce.android.push.NotificationTestUtils
+import com.woocommerce.android.push.UnseenReviewsCountHandler
 import com.woocommerce.android.push.WooNotificationType
 import com.woocommerce.android.tools.SelectedSite
-import com.woocommerce.android.ui.main.MainActivityViewModel.*
+import com.woocommerce.android.ui.main.MainActivityViewModel.MoreMenuBadgeState.Hidden
+import com.woocommerce.android.ui.main.MainActivityViewModel.MoreMenuBadgeState.NewFeature
+import com.woocommerce.android.ui.main.MainActivityViewModel.MoreMenuBadgeState.UnseenReviews
+import com.woocommerce.android.ui.main.MainActivityViewModel.RestartActivityForNotification
+import com.woocommerce.android.ui.main.MainActivityViewModel.ShowFeatureAnnouncement
+import com.woocommerce.android.ui.main.MainActivityViewModel.ViewMyStoreStats
+import com.woocommerce.android.ui.main.MainActivityViewModel.ViewOrderDetail
+import com.woocommerce.android.ui.main.MainActivityViewModel.ViewOrderList
+import com.woocommerce.android.ui.main.MainActivityViewModel.ViewReviewDetail
+import com.woocommerce.android.ui.main.MainActivityViewModel.ViewReviewList
+import com.woocommerce.android.ui.main.MainActivityViewModel.ViewZendeskTickets
+import com.woocommerce.android.ui.moremenu.MoreMenuNewFeature.Payments
+import com.woocommerce.android.ui.moremenu.MoreMenuNewFeatureHandler
 import com.woocommerce.android.ui.whatsnew.FeatureAnnouncementRepository
 import com.woocommerce.android.util.BuildConfigWrapper
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.flowOf
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Test
-import org.mockito.kotlin.*
+import org.mockito.kotlin.any
+import org.mockito.kotlin.atLeastOnce
+import org.mockito.kotlin.clearInvocations
+import org.mockito.kotlin.doReturn
+import org.mockito.kotlin.eq
+import org.mockito.kotlin.mock
+import org.mockito.kotlin.never
+import org.mockito.kotlin.spy
+import org.mockito.kotlin.verify
+import org.mockito.kotlin.whenever
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.store.SiteStore
 
@@ -41,6 +69,7 @@ class MainActivityViewModelTest : BaseUnitTest() {
     private lateinit var viewModel: MainActivityViewModel
     private val savedStateHandle: SavedStateHandle = SavedStateHandle()
     private val selectedSite: SelectedSite = mock()
+    private val analyticsTrackerWrapper: AnalyticsTrackerWrapper = mock()
 
     private val siteStore: SiteStore = mock()
     private val siteModel: SiteModel = SiteModel().apply {
@@ -77,6 +106,10 @@ class MainActivityViewModelTest : BaseUnitTest() {
     private val featureAnnouncementRepository: FeatureAnnouncementRepository = mock()
     private val buildConfigWrapper: BuildConfigWrapper = mock()
     private val prefs: AppPrefs = mock()
+    private val moreMenuNewFeatureHandler: MoreMenuNewFeatureHandler = mock()
+    private val unseenReviewsCountHandler: UnseenReviewsCountHandler = mock {
+        on { observeUnseenCount() } doReturn MutableStateFlow(1)
+    }
 
     private val testAnnouncement = FeatureAnnouncement(
         appVersionName = "14.2",
@@ -110,17 +143,7 @@ class MainActivityViewModelTest : BaseUnitTest() {
 
     @Before
     fun setup() {
-        viewModel = spy(
-            MainActivityViewModel(
-                savedStateHandle,
-                siteStore,
-                selectedSite,
-                notificationMessageHandler,
-                featureAnnouncementRepository,
-                buildConfigWrapper,
-                prefs
-            )
-        )
+        createViewModel()
 
         clearInvocations(
             viewModel,
@@ -160,7 +183,6 @@ class MainActivityViewModelTest : BaseUnitTest() {
         assertThat(event).isEqualTo(
             ViewOrderDetail(
                 testOrderNotification.uniqueId,
-                siteModel.id,
                 testOrderNotification.remoteNoteId
             )
         )
@@ -200,10 +222,19 @@ class MainActivityViewModelTest : BaseUnitTest() {
     }
 
     @Test
+    fun `when a new review notification is clicked, then review open even tracked`() {
+        val localPushId = 1001
+
+        viewModel.handleIncomingNotification(localPushId, testReviewNotification)
+
+        verify(analyticsTrackerWrapper).track(REVIEW_OPEN)
+    }
+
+    @Test
     fun `when a new zendesk notification is clicked, then the my tickets screen of zendesk is opened`() {
-        var event1: ViewZendeskTickets? = null
+        var event: ViewZendeskTickets? = null
         viewModel.event.observeForever {
-            if (it is ViewZendeskTickets) event1 = it
+            if (it is ViewZendeskTickets) event = it
         }
 
         viewModel.handleIncomingNotification(TEST_ZENDESK_PUSH_NOTIFICATION_ID, testZendeskNotification)
@@ -214,7 +245,7 @@ class MainActivityViewModelTest : BaseUnitTest() {
         verify(notificationMessageHandler, atLeastOnce()).removeNotificationByPushIdFromSystemsBar(
             eq(TEST_ZENDESK_PUSH_NOTIFICATION_ID)
         )
-        assertThat(event1).isEqualTo(ViewZendeskTickets)
+        assertThat(event).isEqualTo(ViewZendeskTickets)
     }
 
     @Test
@@ -325,4 +356,106 @@ class MainActivityViewModelTest : BaseUnitTest() {
             viewModel.showFeatureAnnouncementIfNeeded()
             assertThat(viewModel.event.value).isEqualTo(ShowFeatureAnnouncement(testAnnouncement))
         }
+
+    @Test
+    fun `given existing announcement cache, when app is upgraded and announcement is valid, track event is tracked`() =
+        testBlocking {
+            doReturn(testAnnouncement).whenever(featureAnnouncementRepository).getLatestFeatureAnnouncement(true)
+            doReturn("14.0").whenever(prefs).getLastVersionWithAnnouncement()
+            doReturn("14.2").whenever(buildConfigWrapper).versionName
+
+            viewModel.showFeatureAnnouncementIfNeeded()
+
+            verify(analyticsTrackerWrapper).track(
+                AnalyticsEvent.FEATURE_ANNOUNCEMENT_SHOWN,
+                mapOf(
+                    AnalyticsTracker.KEY_ANNOUNCEMENT_VIEW_SOURCE to
+                        AnalyticsTracker.VALUE_ANNOUNCEMENT_SOURCE_UPGRADE
+                )
+            )
+        }
+
+    @Test
+    fun `given zero unseen reviews and no new features, when listening badge state, then hidden returned`() =
+        testBlocking {
+            // GIVEN
+            whenever(unseenReviewsCountHandler.observeUnseenCount()).thenReturn(flowOf(0))
+            whenever(moreMenuNewFeatureHandler.moreMenuNewFeaturesAvailable).thenReturn(MutableStateFlow(emptyList()))
+            createViewModel()
+
+            // WHEN
+            viewModel.moreMenuBadgeState.observeForever { }
+
+            // THEN
+            assertThat(viewModel.moreMenuBadgeState.value).isEqualTo(Hidden)
+        }
+
+    @Test
+    fun `given unseen reviews and no new features, when listening badge state, then unseen reviews returned`() =
+        testBlocking {
+            // GIVEN
+            whenever(unseenReviewsCountHandler.observeUnseenCount()).thenReturn(flowOf(1))
+            whenever(moreMenuNewFeatureHandler.moreMenuNewFeaturesAvailable).thenReturn(
+                MutableStateFlow(emptyList())
+            )
+            createViewModel()
+
+            // WHEN
+            viewModel.moreMenuBadgeState.observeForever {}
+
+            // THEN
+            assertThat(viewModel.moreMenuBadgeState.value).isEqualTo(UnseenReviews(1))
+        }
+
+    @Test
+    fun `given unseen reviews and new features, when listening badge state, then new feature returned`() =
+        testBlocking {
+            // GIVEN
+            whenever(unseenReviewsCountHandler.observeUnseenCount()).thenReturn(flowOf(1))
+            whenever(moreMenuNewFeatureHandler.moreMenuNewFeaturesAvailable).thenReturn(
+                MutableStateFlow(listOf(Payments))
+            )
+            createViewModel()
+
+            // WHEN
+            viewModel.moreMenuBadgeState.observeForever { }
+
+            // THEN
+            assertThat(viewModel.moreMenuBadgeState.value).isEqualTo(NewFeature)
+        }
+
+    @Test
+    fun `given zero unseen reviews and new features, when listening badge state, then new feature returned`() =
+        testBlocking {
+            // GIVEN
+            whenever(unseenReviewsCountHandler.observeUnseenCount()).thenReturn(flowOf(0))
+            whenever(moreMenuNewFeatureHandler.moreMenuNewFeaturesAvailable).thenReturn(
+                MutableStateFlow(listOf(Payments))
+            )
+            createViewModel()
+
+            // WHEN
+            viewModel.moreMenuBadgeState.observeForever { }
+
+            // THEN
+            assertThat(viewModel.moreMenuBadgeState.value).isEqualTo(NewFeature)
+        }
+
+    private fun createViewModel() {
+        viewModel = spy(
+            MainActivityViewModel(
+                savedStateHandle,
+                siteStore,
+                selectedSite,
+                notificationMessageHandler,
+                featureAnnouncementRepository,
+                buildConfigWrapper,
+                prefs,
+                analyticsTrackerWrapper,
+                mock(),
+                moreMenuNewFeatureHandler,
+                unseenReviewsCountHandler,
+            )
+        )
+    }
 }

@@ -5,6 +5,7 @@ import android.text.format.DateUtils
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.view.ViewCompat
 import androidx.paging.PagedListAdapter
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
@@ -13,6 +14,7 @@ import com.woocommerce.android.BuildConfig
 import com.woocommerce.android.R
 import com.woocommerce.android.databinding.OrderListHeaderBinding
 import com.woocommerce.android.databinding.OrderListItemBinding
+import com.woocommerce.android.model.Order
 import com.woocommerce.android.model.TimeGroup
 import com.woocommerce.android.model.toOrderStatus
 import com.woocommerce.android.ui.orders.OrderStatusTag
@@ -127,7 +129,10 @@ class OrderListAdapter(
     }
 
     private inner class OrderItemUIViewHolder(val viewBinding: OrderListItemBinding) :
-        RecyclerView.ViewHolder(viewBinding.getRoot()) {
+        RecyclerView.ViewHolder(viewBinding.root), SwipeToComplete.SwipeAbleViewHolder {
+        private var isNotCompleted = true
+        private var orderId = SwipeToComplete.SwipeAbleViewHolder.EMPTY_SWIPED_ID
+        private val extras = HashMap<String, String>()
         fun onBind(orderItemUI: OrderListItemUI) {
             // Grab the current context from the underlying view
             val ctx = this.itemView.context
@@ -145,11 +150,25 @@ class OrderListAdapter(
             viewBinding.orderTags.removeAllViews()
             processTagView(orderItemUI.status, this)
 
+            ViewCompat.setTransitionName(
+                viewBinding.root,
+                String.format(
+                    ctx.getString(R.string.order_card_transition_name),
+                    orderItemUI.orderId
+                )
+            )
+            extras.clear()
+            val status = Order.Status.fromValue(orderItemUI.status)
+
+            orderId = orderItemUI.orderId
+            isNotCompleted = status != Order.Status.Completed
+            extras[SwipeToComplete.OLD_STATUS] = orderItemUI.status
+
             this.itemView.setOnClickListener {
                 listener.openOrderDetail(
-                    orderItemUI.localOrderId.value,
-                    orderItemUI.remoteOrderId.value,
-                    orderItemUI.status
+                    orderId = orderItemUI.orderId,
+                    orderStatus = orderItemUI.status,
+                    sharedView = viewBinding.root
                 )
             }
         }
@@ -173,14 +192,24 @@ class OrderListAdapter(
                 label = status
             }
         }
+
+        override fun isSwipeAble(): Boolean = isNotCompleted
+        override fun getSwipedItemId(): Long = orderId
+        override fun getSwipedExtras(): Map<String, String> = extras
     }
 
     private class LoadingViewHolder(view: View) : RecyclerView.ViewHolder(view)
 
     private class SectionHeaderViewHolder(val viewBinding: OrderListHeaderBinding) :
-        RecyclerView.ViewHolder(viewBinding.getRoot()) {
+        RecyclerView.ViewHolder(viewBinding.root) {
         fun onBind(header: SectionHeader) {
             viewBinding.orderListHeader.setText(TimeGroup.valueOf(header.title.name).labelRes)
+
+            (viewBinding.headingContainer as View).announceForAccessibility(
+                viewBinding.headingContainer.resources
+                    .getString(TimeGroup.valueOf(header.title.name).labelRes)
+            )
+            ViewCompat.setAccessibilityHeading(viewBinding.headingContainer as View, true)
         }
     }
 }
@@ -191,13 +220,13 @@ private val OrderListDiffItemCallback = object : DiffUtil.ItemCallback<OrderList
             return oldItem.title == newItem.title
         }
         if (oldItem is LoadingItem && newItem is LoadingItem) {
-            return oldItem.remoteId == newItem.remoteId
+            return oldItem.orderId == newItem.orderId
         }
         if (oldItem is OrderListItemUI && newItem is OrderListItemUI) {
-            return oldItem.remoteOrderId == newItem.remoteOrderId
+            return oldItem.orderId == newItem.orderId
         }
         if (oldItem is LoadingItem && newItem is OrderListItemUI) {
-            return oldItem.remoteId == newItem.remoteOrderId
+            return oldItem.orderId == newItem.orderId
         }
         return false
     }

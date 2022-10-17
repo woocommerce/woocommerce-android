@@ -55,6 +55,11 @@ class SkeletonView {
         skeletonView = viewSkeleton
         shimmerView.addView(skeletonView)
 
+        // take the replaced view's top position into account
+        if (actualView.top > 0) {
+            (skeletonView.layoutParams as? ViewGroup.MarginLayoutParams)?.topMargin = actualView.top
+        }
+
         // hide the actual data view
         actualView.visibility = View.GONE
 

@@ -12,6 +12,8 @@ fun List<Image>.areSameImagesAs(images: List<Image>) = this.areSameAs(images) { 
 
 fun List<Product>.areSameProductsAs(products: List<Product>) = this.areSameAs(products) { isSameProduct(it) }
 
+infix fun List<Product>.differsFrom(otherList: List<Product>) = this.areSameProductsAs(otherList).not()
+
 fun List<String>.joinToString(separator: String = ", ", lastSeparator: String): String {
     return if (this.size < 3) {
         joinToString(lastSeparator)

@@ -7,6 +7,9 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.stateIn
 import kotlin.coroutines.CoroutineContext
 
 /**
@@ -28,4 +31,17 @@ abstract class ScopedViewModel(
         event.isHandled = false
         _event.value = event
     }
+
+    /**
+     * Convert a [Flow] to [StateFlow].
+     *
+     * This uses a policy of keeping the upstream active for 5 seconds after disappearance of last collector
+     * to avoid restarting the Flow during configuration changes.
+     */
+    @Suppress("MagicNumber")
+    protected fun <T> Flow<T>.toStateFlow(initialValue: T) = stateIn(
+        scope = viewModelScope,
+        started = SharingStarted.WhileSubscribed(5000),
+        initialValue = initialValue
+    )
 }

@@ -8,33 +8,38 @@ import android.view.MenuItem.OnActionExpandListener
 import android.view.View
 import androidx.appcompat.widget.SearchView
 import androidx.appcompat.widget.SearchView.OnQueryTextListener
+import androidx.core.view.ViewGroupCompat
+import androidx.core.view.doOnPreDraw
 import androidx.core.view.isVisible
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.snackbar.Snackbar
+import com.google.android.material.transition.MaterialFadeThrough
 import com.woocommerce.android.FeedbackPrefs
 import com.woocommerce.android.NavGraphMainDirections
 import com.woocommerce.android.R
+import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
-import com.woocommerce.android.analytics.AnalyticsTracker.Stat
-import com.woocommerce.android.analytics.AnalyticsTracker.Stat.FEATURE_FEEDBACK_BANNER
 import com.woocommerce.android.databinding.FragmentProductListBinding
-import com.woocommerce.android.extensions.*
+import com.woocommerce.android.extensions.handleResult
+import com.woocommerce.android.extensions.navigateSafely
+import com.woocommerce.android.extensions.pinFabAboveBottomNavigationBar
+import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.model.FeatureFeedbackSettings
-import com.woocommerce.android.model.FeatureFeedbackSettings.FeedbackState
-import com.woocommerce.android.model.FeatureFeedbackSettings.FeedbackState.*
 import com.woocommerce.android.model.Product
 import com.woocommerce.android.ui.base.TopLevelFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.feedback.SurveyType
 import com.woocommerce.android.ui.main.MainActivity
 import com.woocommerce.android.ui.main.MainNavigationRouter
-import com.woocommerce.android.ui.products.ProductListAdapter.OnProductClickListener
-import com.woocommerce.android.ui.products.ProductListViewModel.ProductListEvent.*
+import com.woocommerce.android.ui.products.ProductListViewModel.ProductListEvent.ScrollToTop
+import com.woocommerce.android.ui.products.ProductListViewModel.ProductListEvent.ShowAddProductBottomSheet
+import com.woocommerce.android.ui.products.ProductListViewModel.ProductListEvent.ShowProductFilterScreen
+import com.woocommerce.android.ui.products.ProductListViewModel.ProductListEvent.ShowProductSortingBottomSheet
 import com.woocommerce.android.ui.products.ProductSortAndFiltersCard.ProductSortAndFilterListener
+import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.widgets.SkeletonView
 import com.woocommerce.android.widgets.WCEmptyView.EmptyViewType
@@ -44,18 +49,19 @@ import javax.inject.Inject
 @AndroidEntryPoint
 class ProductListFragment :
     TopLevelFragment(R.layout.fragment_product_list),
-    OnProductClickListener,
     ProductSortAndFilterListener,
     OnLoadMoreListener,
     OnQueryTextListener,
-    OnActionExpandListener {
+    OnActionExpandListener,
+    WCProductSearchTabView.ProductSearchTypeChangedListener {
     companion object {
         val TAG: String = ProductListFragment::class.java.simpleName
-        val CURRENT_WIP_NOTICE_FEATURE = FeatureFeedbackSettings.Feature.PRODUCTS_VARIATIONS
-        val PRODUCT_FILTER_RESULT_KEY = "product_filter_result"
+        const val PRODUCT_FILTER_RESULT_KEY = "product_filter_result"
     }
 
     @Inject lateinit var uiMessageResolver: UIMessageResolver
+
+    @Inject lateinit var currencyFormatter: CurrencyFormatter
 
     private var _productAdapter: ProductListAdapter? = null
     private val productAdapter: ProductListAdapter
@@ -74,22 +80,28 @@ class ProductListFragment :
     private var _binding: FragmentProductListBinding? = null
     private val binding get() = _binding!!
 
-    private val feedbackState: FeedbackState
+    private val feedbackState: FeatureFeedbackSettings.FeedbackState
         get() =
-            FeedbackPrefs.getFeatureFeedbackSettings(TAG)
-                ?.takeIf { it.name == CURRENT_WIP_NOTICE_FEATURE.name }
-                ?.state ?: UNANSWERED
+            FeedbackPrefs.getFeatureFeedbackSettings(FeatureFeedbackSettings.Feature.PRODUCT_VARIATIONS)?.feedbackState
+                ?: FeatureFeedbackSettings.FeedbackState.UNANSWERED
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
+        postponeEnterTransition()
         setHasOptionsMenu(true)
 
         _binding = FragmentProductListBinding.bind(view)
+
+        view.doOnPreDraw { startPostponedEnterTransition() }
+
         setupObservers(viewModel)
         setupResultHandlers()
-
-        _productAdapter = ProductListAdapter(this, this)
+        ViewGroupCompat.setTransitionGroup(binding.productsRefreshLayout, true)
+        _productAdapter = ProductListAdapter(
+            ::onProductClick,
+            loadMoreListener = this,
+            currencyFormatter = currencyFormatter
+        )
         binding.productsRecycler.layoutManager = LinearLayoutManager(requireActivity())
         binding.productsRecycler.adapter = productAdapter
 
@@ -107,7 +119,10 @@ class ProductListFragment :
 
         initAddProductFab(binding.addProductButton)
 
-        if (!viewModel.isSearching()) {
+        if (viewModel.isSearching()) {
+            binding.productsSearchTabView.isVisible = true
+            binding.productsSearchTabView.show(this, viewModel.isSkuSearch())
+        } else {
             viewModel.reloadProductsFromDb(excludeProductId = pendingTrashProductId)
         }
     }
@@ -125,6 +140,7 @@ class ProductListFragment :
         disableSearchListeners()
         searchView = null
         _productAdapter = null
+        binding.productsSearchTabView.hide()
         super.onDestroyView()
         _binding = null
     }
@@ -137,6 +153,15 @@ class ProductListFragment :
     override fun onStop() {
         super.onStop()
         trashProductUndoSnack?.dismiss()
+    }
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        val transitionDuration = resources.getInteger(R.integer.default_fragment_transition).toLong()
+        val fadeThroughTransition = MaterialFadeThrough().apply { duration = transitionDuration }
+        enterTransition = fadeThroughTransition
+        exitTransition = fadeThroughTransition
+        reenterTransition = fadeThroughTransition
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
@@ -187,7 +212,7 @@ class ProductListFragment :
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
             R.id.menu_search -> {
-                AnalyticsTracker.track(Stat.PRODUCT_LIST_MENU_SEARCH_TAPPED)
+                AnalyticsTracker.track(AnalyticsEvent.PRODUCT_LIST_MENU_SEARCH_TAPPED)
                 enableSearchListeners()
                 true
             }
@@ -222,16 +247,22 @@ class ProductListFragment :
         return true
     }
 
-    override fun onMenuItemActionExpand(item: MenuItem?): Boolean {
+    override fun onProductSearchTypeChanged(isSkuSearch: Boolean) {
+        viewModel.onSearchTypeChanged(isSkuSearch)
+    }
+
+    override fun onMenuItemActionExpand(item: MenuItem): Boolean {
         viewModel.onSearchOpened()
         onSearchViewActiveChanged(isActive = true)
+        binding.productsSearchTabView.show(this)
         return true
     }
 
-    override fun onMenuItemActionCollapse(item: MenuItem?): Boolean {
+    override fun onMenuItemActionCollapse(item: MenuItem): Boolean {
         viewModel.onSearchClosed()
         closeSearchView()
         onSearchViewActiveChanged(isActive = false)
+        binding.productsSearchTabView.hide()
         return true
     }
 
@@ -278,37 +309,31 @@ class ProductListFragment :
             new.isAddProductButtonVisible?.takeIfNotEqualTo(old?.isAddProductButtonVisible) { isVisible ->
                 showAddProductButton(show = isVisible)
             }
-            new.isBottomNavBarVisible?.takeIfNotEqualTo(old?.isBottomNavBarVisible) { isBottomNavBarVisible ->
+            new.isBottomNavBarVisible.takeIfNotEqualTo(old?.isBottomNavBarVisible) { isBottomNavBarVisible ->
                 showBottomNavBar(isVisible = isBottomNavBarVisible)
             }
         }
 
-        viewModel.productList.observe(
-            viewLifecycleOwner,
-            Observer {
-                showProductList(it)
-            }
-        )
+        viewModel.productList.observe(viewLifecycleOwner) {
+            showProductList(it)
+        }
 
-        viewModel.event.observe(
-            viewLifecycleOwner,
-            Observer { event ->
-                when (event) {
-                    is ShowSnackbar -> uiMessageResolver.showSnack(event.message)
-                    is ScrollToTop -> scrollToTop()
-                    is ShowAddProductBottomSheet -> showAddProductBottomSheet()
-                    is ShowProductFilterScreen -> showProductFilterScreen(
-                        event.stockStatusFilter,
-                        event.productTypeFilter,
-                        event.productStatusFilter,
-                        event.productCategoryFilter,
-                        event.selectedCategoryName
-                    )
-                    is ShowProductSortingBottomSheet -> showProductSortingBottomSheet()
-                    else -> event.isHandled = false
-                }
+        viewModel.event.observe(viewLifecycleOwner) { event ->
+            when (event) {
+                is ShowSnackbar -> uiMessageResolver.showSnack(event.message)
+                is ScrollToTop -> scrollToTop()
+                is ShowAddProductBottomSheet -> showAddProductBottomSheet()
+                is ShowProductFilterScreen -> showProductFilterScreen(
+                    event.stockStatusFilter,
+                    event.productTypeFilter,
+                    event.productStatusFilter,
+                    event.productCategoryFilter,
+                    event.selectedCategoryName
+                )
+                is ShowProductSortingBottomSheet -> showProductSortingBottomSheet()
+                else -> event.isHandled = false
             }
-        )
+        }
     }
 
     private fun setupResultHandlers() {
@@ -384,13 +409,14 @@ class ProductListFragment :
     }
 
     private fun showProductList(products: List<Product>) {
-        productAdapter.setProductList(products)
+        productAdapter.submitList(products)
 
-        showProductWIPNoticeCard(true)
+        // set to false to remove the new feature banner temporarily
+        showProductWIPNoticeCard(false)
     }
 
     private fun showProductWIPNoticeCard(show: Boolean) {
-        if (show && feedbackState != DISMISSED) {
+        if (show && feedbackState != FeatureFeedbackSettings.FeedbackState.DISMISSED) {
             val wipCardTitleId = R.string.product_wip_title_m5
             val wipCardMessageId = R.string.product_wip_message_variations
 
@@ -429,15 +455,25 @@ class ProductListFragment :
 
     private fun showAddProductButton(show: Boolean) {
         when (show) {
-            true -> binding.addProductButton.show()
-            else -> binding.addProductButton.hide()
+            true -> {
+                uiMessageResolver.anchorViewId = binding.addProductButton.id
+                binding.addProductButton.show()
+            }
+            else -> {
+                uiMessageResolver.anchorViewId = null
+                binding.addProductButton.hide()
+            }
         }
     }
 
-    override fun onProductClick(remoteProductId: Long) = showProductDetails(remoteProductId)
-
-    private fun showProductDetails(remoteProductId: Long) {
-        (activity as? MainNavigationRouter)?.showProductDetail(remoteProductId, enableTrash = true)
+    private fun onProductClick(remoteProductId: Long, sharedView: View?) {
+        (activity as? MainNavigationRouter)?.let { router ->
+            if (sharedView == null) {
+                router.showProductDetail(remoteProductId, enableTrash = true)
+            } else {
+                router.showProductDetailWithSharedTransition(remoteProductId, sharedView, enableTrash = true)
+            }
+        }
     }
 
     private fun showAddProductBottomSheet() {
@@ -482,13 +518,13 @@ class ProductListFragment :
 
     private fun onGiveFeedbackClicked() {
         AnalyticsTracker.track(
-            FEATURE_FEEDBACK_BANNER,
+            AnalyticsEvent.FEATURE_FEEDBACK_BANNER,
             mapOf(
                 AnalyticsTracker.KEY_FEEDBACK_CONTEXT to AnalyticsTracker.VALUE_PRODUCTS_VARIATIONS_FEEDBACK,
                 AnalyticsTracker.KEY_FEEDBACK_ACTION to AnalyticsTracker.VALUE_FEEDBACK_GIVEN
             )
         )
-        registerFeedbackSetting(GIVEN)
+        registerFeedbackSetting(FeatureFeedbackSettings.FeedbackState.GIVEN)
         NavGraphMainDirections
             .actionGlobalFeedbackSurveyFragment(SurveyType.PRODUCT)
             .apply { findNavController().navigateSafely(this) }
@@ -496,19 +532,21 @@ class ProductListFragment :
 
     private fun onDismissProductWIPNoticeCardClicked() {
         AnalyticsTracker.track(
-            FEATURE_FEEDBACK_BANNER,
+            AnalyticsEvent.FEATURE_FEEDBACK_BANNER,
             mapOf(
                 AnalyticsTracker.KEY_FEEDBACK_CONTEXT to AnalyticsTracker.VALUE_PRODUCTS_VARIATIONS_FEEDBACK,
                 AnalyticsTracker.KEY_FEEDBACK_ACTION to AnalyticsTracker.VALUE_FEEDBACK_DISMISSED
             )
         )
-        registerFeedbackSetting(DISMISSED)
+        registerFeedbackSetting(FeatureFeedbackSettings.FeedbackState.DISMISSED)
         showProductWIPNoticeCard(false)
     }
 
-    private fun registerFeedbackSetting(state: FeedbackState) {
-        FeatureFeedbackSettings(CURRENT_WIP_NOTICE_FEATURE.name, state)
-            .run { FeedbackPrefs.setFeatureFeedbackSettings(TAG, this) }
+    private fun registerFeedbackSetting(state: FeatureFeedbackSettings.FeedbackState) {
+        FeatureFeedbackSettings(
+            FeatureFeedbackSettings.Feature.PRODUCT_VARIATIONS,
+            state
+        ).registerItself()
     }
 
     override fun shouldExpandToolbar(): Boolean {

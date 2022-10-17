@@ -1,23 +1,23 @@
 package com.woocommerce.android.ui.products
 
 import androidx.lifecycle.SavedStateHandle
-import com.woocommerce.android.AppPrefs
+import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.R
-import com.woocommerce.android.R.drawable
-import com.woocommerce.android.R.string
 import com.woocommerce.android.initSavedStateHandle
 import com.woocommerce.android.media.MediaFilesRepository
 import com.woocommerce.android.media.ProductImagesServiceWrapper
+import com.woocommerce.android.model.Product
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.ui.media.MediaFileUploadHandler
+import com.woocommerce.android.ui.products.ProductDetailViewModel.MenuButtonsState
 import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductDetailViewState
-import com.woocommerce.android.ui.products.ProductStatus.DRAFT
 import com.woocommerce.android.ui.products.addons.AddonRepository
 import com.woocommerce.android.ui.products.categories.ProductCategoriesRepository
-import com.woocommerce.android.ui.products.models.ProductProperty.*
+import com.woocommerce.android.ui.products.models.ProductProperty.ComplexProperty
+import com.woocommerce.android.ui.products.models.ProductProperty.Editable
+import com.woocommerce.android.ui.products.models.ProductProperty.PropertyGroup
+import com.woocommerce.android.ui.products.models.ProductProperty.RatingBar
 import com.woocommerce.android.ui.products.models.ProductPropertyCard
-import com.woocommerce.android.ui.products.models.ProductPropertyCard.Type.PRIMARY
-import com.woocommerce.android.ui.products.models.ProductPropertyCard.Type.SECONDARY
 import com.woocommerce.android.ui.products.models.SiteParameters
 import com.woocommerce.android.ui.products.tags.ProductTagsRepository
 import com.woocommerce.android.ui.products.variations.VariationRepository
@@ -28,12 +28,22 @@ import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowDialog
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.viewmodel.ResourceProvider
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.flow.*
-import kotlinx.coroutines.test.runBlockingTest
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.emptyFlow
+import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.flow.onCompletion
+import kotlinx.coroutines.flow.onSubscription
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Test
-import org.mockito.kotlin.*
+import org.mockito.kotlin.any
+import org.mockito.kotlin.clearInvocations
+import org.mockito.kotlin.doReturn
+import org.mockito.kotlin.mock
+import org.mockito.kotlin.spy
+import org.mockito.kotlin.times
+import org.mockito.kotlin.verify
+import org.mockito.kotlin.whenever
 import org.wordpress.android.fluxc.model.MediaModel
 import org.wordpress.android.fluxc.store.WooCommerceStore
 import java.math.BigDecimal
@@ -72,7 +82,7 @@ class ProductDetailViewModel_AddFlowTest : BaseUnitTest() {
     private val siteParams = SiteParameters(
         currencyCode = "USD",
         currencySymbol = "$",
-        currencyPosition = null,
+        currencyFormattingParameters = null,
         weightUnit = "kg",
         dimensionUnit = "cm",
         gmtOffset = 0f
@@ -81,7 +91,7 @@ class ProductDetailViewModel_AddFlowTest : BaseUnitTest() {
         on(it.getParameters(any(), any<SavedStateHandle>())).thenReturn(siteParams)
     }
 
-    private val prefs: AppPrefs = mock {
+    private val prefs: AppPrefsWrapper = mock {
         on(it.getSelectedProductType()).then { "simple" }
     }
     private val addonRepository: AddonRepository = mock {
@@ -98,7 +108,7 @@ class ProductDetailViewModel_AddFlowTest : BaseUnitTest() {
 
     private val expectedCards = listOf(
         ProductPropertyCard(
-            type = PRIMARY,
+            type = ProductPropertyCard.Type.PRIMARY,
             properties = listOf(
                 Editable(R.string.product_detail_title_hint, ""),
                 ComplexProperty(
@@ -109,7 +119,7 @@ class ProductDetailViewModel_AddFlowTest : BaseUnitTest() {
             )
         ),
         ProductPropertyCard(
-            type = SECONDARY,
+            type = ProductPropertyCard.Type.SECONDARY,
             properties = listOf(
                 PropertyGroup(
                     R.string.product_price,
@@ -118,20 +128,20 @@ class ProductDetailViewModel_AddFlowTest : BaseUnitTest() {
                     showTitle = false
                 ),
                 RatingBar(
-                    string.product_reviews,
-                    resources.getString(string.product_ratings_count_zero),
+                    R.string.product_reviews,
+                    resources.getString(R.string.product_ratings_count_zero),
                     0F,
-                    drawable.ic_reviews
+                    R.drawable.ic_reviews
                 ),
                 PropertyGroup(
-                    string.product_inventory,
+                    R.string.product_inventory,
                     mapOf(
                         Pair(
-                            resources.getString(string.product_stock_status),
-                            resources.getString(string.product_stock_status_instock)
+                            resources.getString(R.string.product_stock_status),
+                            resources.getString(R.string.product_stock_status_instock)
                         )
                     ),
-                    drawable.ic_gridicons_list_checkmark,
+                    R.drawable.ic_gridicons_list_checkmark,
                     true
                 ),
                 ComplexProperty(
@@ -164,6 +174,7 @@ class ProductDetailViewModel_AddFlowTest : BaseUnitTest() {
                 mediaFileUploadHandler,
                 prefs,
                 addonRepository,
+                experimentStore = mock()
             )
         )
 
@@ -181,7 +192,7 @@ class ProductDetailViewModel_AddFlowTest : BaseUnitTest() {
     }
 
     @Test
-    fun `Displays the product detail properties correctly`() = coroutinesTestRule.testDispatcher.runBlockingTest {
+    fun `Displays the product detail properties correctly`() = testBlocking {
         viewModel.productDetailViewStateData.observeForever { _, _ -> }
 
         var cards: List<ProductPropertyCard>? = null
@@ -195,9 +206,9 @@ class ProductDetailViewModel_AddFlowTest : BaseUnitTest() {
     }
 
     @Test
-    fun `Display success message on add product success`() = coroutinesTestRule.testDispatcher.runBlockingTest {
+    fun `Display success message on add product success`() = testBlocking {
         // given
-        doReturn(product).whenever(productRepository).getProduct(any())
+        doReturn(product).whenever(productRepository).getProductAsync(any())
         doReturn(Pair(true, 1L)).whenever(productRepository).addProduct(any())
 
         var successSnackbarShown = false
@@ -206,6 +217,8 @@ class ProductDetailViewModel_AddFlowTest : BaseUnitTest() {
                 successSnackbarShown = true
             }
         }
+        var hasChanges: Boolean? = null
+        viewModel.hasChanges.observeForever { hasChanges = it }
 
         var productData: ProductDetailViewState? = null
 
@@ -214,19 +227,19 @@ class ProductDetailViewModel_AddFlowTest : BaseUnitTest() {
 
         viewModel.start()
 
-        viewModel.onUpdateButtonClicked(false)
+        viewModel.onPublishButtonClicked()
 
         // then
-        verify(productRepository, times(1)).getProduct(1L)
+        verify(productRepository, times(1)).getProductAsync(1L)
 
         assertThat(successSnackbarShown).isTrue()
         assertThat(productData?.isProgressDialogShown).isFalse()
-        assertThat(productData?.isProductUpdated).isFalse()
+        assertThat(hasChanges).isFalse()
         assertThat(productData?.productDraft).isEqualTo(product)
     }
 
     @Test
-    fun `Display error message on add product failed`() = coroutinesTestRule.testDispatcher.runBlockingTest {
+    fun `Display error message on add product failed`() = testBlocking {
         // given
         doReturn(Pair(false, 0L)).whenever(productRepository).addProduct(any())
 
@@ -244,7 +257,7 @@ class ProductDetailViewModel_AddFlowTest : BaseUnitTest() {
 
         viewModel.start()
 
-        viewModel.onUpdateButtonClicked(false)
+        viewModel.onPublishButtonClicked()
 
         // then
         assertThat(successSnackbarShown).isTrue()
@@ -252,7 +265,7 @@ class ProductDetailViewModel_AddFlowTest : BaseUnitTest() {
     }
 
     @Test
-    fun `Display error message on add product for NO network`() = coroutinesTestRule.testDispatcher.runBlockingTest {
+    fun `Display error message on add product for NO network`() = testBlocking {
         // given
         doReturn(false).whenever(networkStatus).isConnected()
 
@@ -270,7 +283,7 @@ class ProductDetailViewModel_AddFlowTest : BaseUnitTest() {
 
         viewModel.start()
 
-        viewModel.onUpdateButtonClicked(true)
+        viewModel.onPublishButtonClicked()
 
         // then
         assertThat(successSnackbarShown).isTrue()
@@ -279,9 +292,9 @@ class ProductDetailViewModel_AddFlowTest : BaseUnitTest() {
 
     @Test
     fun `Display correct message on updating a freshly added product`() =
-        coroutinesTestRule.testDispatcher.runBlockingTest {
+        testBlocking {
             // given
-            doReturn(product).whenever(productRepository).getProduct(any())
+            doReturn(product).whenever(productRepository).getProductAsync(any())
             doReturn(Pair(true, 1L)).whenever(productRepository).addProduct(any())
 
             var successSnackbarShown = false
@@ -290,6 +303,8 @@ class ProductDetailViewModel_AddFlowTest : BaseUnitTest() {
                     successSnackbarShown = true
                 }
             }
+            var hasChanges: Boolean? = null
+            viewModel.hasChanges.observeForever { hasChanges = it }
 
             var productData: ProductDetailViewState? = null
 
@@ -298,20 +313,20 @@ class ProductDetailViewModel_AddFlowTest : BaseUnitTest() {
 
             viewModel.start()
 
-            viewModel.onUpdateButtonClicked(true)
+            viewModel.onPublishButtonClicked()
 
             // then
-            verify(productRepository, times(1)).getProduct(1L)
+            verify(productRepository, times(1)).getProductAsync(1L)
 
             assertThat(successSnackbarShown).isTrue()
             assertThat(productData?.isProgressDialogShown).isFalse()
-            assertThat(productData?.isProductUpdated).isFalse()
+            assertThat(hasChanges).isFalse()
             assertThat(productData?.productDraft).isEqualTo(product)
 
             // when
             doReturn(true).whenever(productRepository).updateProduct(any())
 
-            viewModel.onUpdateButtonClicked(true)
+            viewModel.onPublishButtonClicked()
             verify(productRepository, times(1)).updateProduct(any())
 
             viewModel.event.observeForever {
@@ -323,19 +338,20 @@ class ProductDetailViewModel_AddFlowTest : BaseUnitTest() {
             // then
             assertThat(successSnackbarShown).isTrue()
             assertThat(productData?.isProgressDialogShown).isFalse()
-            assertThat(productData?.isProductUpdated).isFalse()
+            assertThat(hasChanges).isFalse()
             assertThat(productData?.productDraft).isEqualTo(product)
         }
 
     @Test
     fun `Save as draft shown in discard dialog when changes made in add flow`() {
         doReturn(true).whenever(viewModel).isProductUnderCreation
+        viewModel.productDetailViewStateData.observeForever { _, _ -> }
 
         viewModel.start()
 
         // this will force the viewModel to consider the product as changed, so when we click the back button
         // below it will show the discard dialog
-        viewModel.updateProductDraft(productStatus = DRAFT)
+        viewModel.updateProductDraft(productStatus = ProductStatus.DRAFT)
 
         var saveAsDraftShown = false
         viewModel.event.observeForever {
@@ -353,7 +369,7 @@ class ProductDetailViewModel_AddFlowTest : BaseUnitTest() {
         doReturn(false).whenever(viewModel).isProductUnderCreation
 
         viewModel.start()
-        viewModel.updateProductDraft(productStatus = DRAFT)
+        viewModel.updateProductDraft(productStatus = ProductStatus.DRAFT)
 
         var saveAsDraftShown = false
         viewModel.event.observeForever {
@@ -369,7 +385,7 @@ class ProductDetailViewModel_AddFlowTest : BaseUnitTest() {
     @Test
     fun `when a new product is saved, then assign the new id to ongoing image uploads`() = testBlocking {
         doReturn(Pair(true, PRODUCT_REMOTE_ID)).whenever(productRepository).addProduct(any())
-        doReturn(product).whenever(productRepository).getProduct(any())
+        doReturn(product).whenever(productRepository).getProductAsync(any())
         savedState = ProductDetailFragmentArgs(isAddProduct = true).initSavedStateHandle()
 
         setup()
@@ -388,12 +404,11 @@ class ProductDetailViewModel_AddFlowTest : BaseUnitTest() {
                 .onCompletion { isObservingEvents = false }
             doReturn(successEvents).whenever(mediaFileUploadHandler)
                 .observeSuccessfulUploads(ProductDetailViewModel.DEFAULT_ADD_NEW_PRODUCT_ID)
-            savedState = ProductDetailFragmentArgs(isAddProduct = true).initSavedStateHandle()
+            viewModel.productDetailViewStateData.observeForever { _, _ -> }
 
-            setup()
             viewModel.start()
             // Make some changes to trigger discard changes dialog
-            viewModel.onProductTitleChanged("Product")
+            viewModel.onProductTitleChanged("Product 2")
             viewModel.onBackButtonClickedProductDetail()
 
             assertThat(isObservingEvents).isFalse()
@@ -408,9 +423,8 @@ class ProductDetailViewModel_AddFlowTest : BaseUnitTest() {
                 .onCompletion { isObservingEvents = false }
             doReturn(successEvents).whenever(mediaFileUploadHandler)
                 .observeSuccessfulUploads(ProductDetailViewModel.DEFAULT_ADD_NEW_PRODUCT_ID)
-            savedState = ProductDetailFragmentArgs(isAddProduct = true).initSavedStateHandle()
+            viewModel.productDetailViewStateData.observeForever { _, _ -> }
 
-            setup()
             viewModel.start()
             // Make some changes to trigger discard changes dialog
             viewModel.onProductTitleChanged("Product")
@@ -424,10 +438,9 @@ class ProductDetailViewModel_AddFlowTest : BaseUnitTest() {
     fun `given a product is under creation, when clicking on save product, then assign uploads to the new id`() =
         testBlocking {
             doReturn(Pair(true, PRODUCT_REMOTE_ID)).whenever(productRepository).addProduct(any())
-            doReturn(product).whenever(productRepository).getProduct(any())
-            savedState = ProductDetailFragmentArgs(isAddProduct = true).initSavedStateHandle()
+            doReturn(product).whenever(productRepository).getProductAsync(any())
+            viewModel.productDetailViewStateData.observeForever { _, _ -> }
 
-            setup()
             viewModel.start()
             // Make some changes to trigger discard changes dialog
             viewModel.onProductTitleChanged("Product")
@@ -436,4 +449,42 @@ class ProductDetailViewModel_AddFlowTest : BaseUnitTest() {
 
             verify(mediaFileUploadHandler).assignUploadsToCreatedProduct(PRODUCT_REMOTE_ID)
         }
+
+    @Test
+    fun `Publish option shown when product is published and from addProduct flow and is under product creation`() {
+        viewModel.productDetailViewStateData.observeForever { _, _ -> }
+
+        var menuButtonsState: MenuButtonsState? = null
+        viewModel.menuButtonsState.observeForever { menuButtonsState = it }
+
+        viewModel.start()
+        viewModel.updateProductDraft(productStatus = ProductStatus.PUBLISH)
+        assertThat(menuButtonsState?.publishOption).isTrue
+    }
+
+    @Test
+    fun `Save option not shown when product has changes but in add product flow`() {
+        viewModel.productDetailViewStateData.observeForever { _, _ -> }
+
+        var menuButtonsState: MenuButtonsState? = null
+        viewModel.menuButtonsState.observeForever { menuButtonsState = it }
+
+        viewModel.start()
+        viewModel.updateProductDraft(title = "name")
+
+        assertThat(menuButtonsState?.saveOption).isFalse()
+    }
+
+    @Test
+    fun `given product status is draft, when save is clicked, then save product with correct status`() = testBlocking {
+        whenever(productRepository.addProduct(any())).thenAnswer { it.arguments.first() as Product }
+        var viewState: ProductDetailViewState? = null
+        viewModel.productDetailViewStateData.observeForever { _, new -> viewState = new }
+
+        viewModel.start()
+        viewModel.updateProductDraft(productStatus = ProductStatus.DRAFT)
+        viewModel.onSaveButtonClicked()
+
+        assertThat(viewState?.productDraft?.status).isEqualTo(ProductStatus.DRAFT)
+    }
 }

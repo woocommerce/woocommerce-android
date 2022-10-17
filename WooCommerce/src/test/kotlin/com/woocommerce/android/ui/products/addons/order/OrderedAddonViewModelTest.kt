@@ -17,7 +17,6 @@ import com.woocommerce.android.ui.products.addons.AddonTestFixtures.orderedAddon
 import com.woocommerce.android.ui.products.models.SiteParameters
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.test.runBlockingTest
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Test
@@ -68,7 +67,7 @@ class OrderedAddonViewModelTest : BaseUnitTest() {
 
     @Test
     fun `should trigger a successful parse to all data at once`() =
-        coroutinesTestRule.testDispatcher.runBlockingTest {
+        testBlocking {
             whenever(addonRepositoryMock.updateGlobalAddonsSuccessfully()).thenReturn(true)
             whenever(addonRepositoryMock.getOrderAddonsData(321, 999, 123))
                 .thenReturn(Pair(defaultProductAddonList, defaultOrderAttributes))
@@ -87,7 +86,7 @@ class OrderedAddonViewModelTest : BaseUnitTest() {
 
     @Test
     fun `should parse Addons with parsed option as FlatFee when matching PercentageBased option is found`() =
-        coroutinesTestRule.testDispatcher.runBlockingTest {
+        testBlocking {
             whenever(addonRepositoryMock.getOrderAddonsData(321, 999, 123))
                 .thenReturn(Pair(defaultProductAddonList, orderAttributesWithPercentageBasedItem))
             whenever(addonRepositoryMock.updateGlobalAddonsSuccessfully()).thenReturn(false)
@@ -106,7 +105,7 @@ class OrderedAddonViewModelTest : BaseUnitTest() {
 
     @Test
     fun `should request data even if fetchGlobalAddons returns an error`() =
-        coroutinesTestRule.testDispatcher.runBlockingTest {
+        testBlocking {
             whenever(addonRepositoryMock.getOrderAddonsData(321, 999, 123))
                 .thenReturn(Pair(defaultProductAddonList, defaultOrderAttributes))
             whenever(addonRepositoryMock.updateGlobalAddonsSuccessfully()).thenReturn(false)
@@ -125,7 +124,7 @@ class OrderedAddonViewModelTest : BaseUnitTest() {
 
     @Test
     fun `should inject Attribute data when matching option is NOT found`() =
-        coroutinesTestRule.testDispatcher.runBlockingTest {
+        testBlocking {
             val mockResponse = Pair(
                 listOf(
                     emptyProductAddon.copy(
@@ -165,7 +164,7 @@ class OrderedAddonViewModelTest : BaseUnitTest() {
 
     @Test
     fun `should return Addon with single option when matching option is found`() =
-        coroutinesTestRule.testDispatcher.runBlockingTest {
+        testBlocking {
             whenever(addonRepositoryMock.getOrderAddonsData(321, 999, 123))
                 .thenReturn(
                     Pair(
@@ -206,7 +205,7 @@ class OrderedAddonViewModelTest : BaseUnitTest() {
 
     @Test
     fun `should return two Addons with a single option when matching addon is found twice`() =
-        coroutinesTestRule.testDispatcher.runBlockingTest {
+        testBlocking {
             whenever(addonRepositoryMock.getOrderAddonsData(321, 999, 123))
                 .doReturn(
                     Pair(
@@ -266,14 +265,14 @@ class OrderedAddonViewModelTest : BaseUnitTest() {
 
     @Test
     fun `should enable and disable skeleton view when loading the view data`() =
-        coroutinesTestRule.testDispatcher.runBlockingTest {
+        testBlocking {
             whenever(addonRepositoryMock.updateGlobalAddonsSuccessfully()).thenReturn(true)
             whenever(addonRepositoryMock.getOrderAddonsData(321, 999, 123))
                 .thenReturn(Pair(defaultProductAddonList, defaultOrderAttributes))
 
             var timesCalled = 0
             var viewModelStarted = false
-            viewModelUnderTest.viewStateLiveData.observeForever { old, new ->
+            viewModelUnderTest.viewStateLiveData.observeForever { _, new ->
                 if (viewModelStarted) {
                     when (timesCalled) {
                         0 -> assertThat(new.isSkeletonShown).isTrue
@@ -293,12 +292,12 @@ class OrderedAddonViewModelTest : BaseUnitTest() {
 
     @Test
     fun `should enable and disable skeleton view when loading the view data fails`() =
-        coroutinesTestRule.testDispatcher.runBlockingTest {
+        testBlocking {
             whenever(addonRepositoryMock.updateGlobalAddonsSuccessfully()).thenReturn(false)
 
             var timesCalled = 0
             var viewModelStarted = false
-            viewModelUnderTest.viewStateLiveData.observeForever { old, new ->
+            viewModelUnderTest.viewStateLiveData.observeForever { _, new ->
                 if (viewModelStarted) {
                     when (timesCalled) {
                         0 -> assertThat(new.isSkeletonShown).isTrue
@@ -318,12 +317,12 @@ class OrderedAddonViewModelTest : BaseUnitTest() {
 
     @Test
     fun `should change isLoadingFailure to true when loading the view data fails`() =
-        coroutinesTestRule.testDispatcher.runBlockingTest {
+        testBlocking {
             whenever(addonRepositoryMock.updateGlobalAddonsSuccessfully()).thenReturn(false)
 
             var timesCalled = 0
             var viewModelStarted = false
-            viewModelUnderTest.viewStateLiveData.observeForever { old, new ->
+            viewModelUnderTest.viewStateLiveData.observeForever { _, new ->
                 if (viewModelStarted) {
                     when (timesCalled) {
                         0 -> assertThat(new.isLoadingFailure).isFalse
@@ -343,14 +342,14 @@ class OrderedAddonViewModelTest : BaseUnitTest() {
 
     @Test
     fun `should change isLoadingFailure to true when the Ordered Addons data is empty`() =
-        coroutinesTestRule.testDispatcher.runBlockingTest {
+        testBlocking {
             whenever(addonRepositoryMock.updateGlobalAddonsSuccessfully()).thenReturn(false)
             whenever(addonRepositoryMock.getOrderAddonsData(321, 999, 123))
                 .thenReturn(Pair(emptyList(), emptyList()))
 
             var timesCalled = 0
             var viewModelStarted = false
-            viewModelUnderTest.viewStateLiveData.observeForever { old, new ->
+            viewModelUnderTest.viewStateLiveData.observeForever { _, new ->
                 if (viewModelStarted) {
                     when (timesCalled) {
                         0 -> assertThat(new.isLoadingFailure).isFalse
@@ -370,14 +369,14 @@ class OrderedAddonViewModelTest : BaseUnitTest() {
 
     @Test
     fun `should keep isLoadingFailure to false when loading the view data succeeds`() =
-        coroutinesTestRule.testDispatcher.runBlockingTest {
+        testBlocking {
             whenever(addonRepositoryMock.updateGlobalAddonsSuccessfully()).thenReturn(true)
             whenever(addonRepositoryMock.getOrderAddonsData(321, 999, 123))
                 .thenReturn(Pair(defaultProductAddonList, defaultOrderAttributes))
 
             var timesCalled = 0
             var viewModelStarted = false
-            viewModelUnderTest.viewStateLiveData.observeForever { old, new ->
+            viewModelUnderTest.viewStateLiveData.observeForever { _, new ->
                 if (viewModelStarted) {
                     when (timesCalled) {
                         0 -> assertThat(new.isLoadingFailure).isFalse

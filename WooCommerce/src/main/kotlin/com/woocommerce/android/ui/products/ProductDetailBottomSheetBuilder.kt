@@ -2,7 +2,7 @@ package com.woocommerce.android.ui.products
 
 import androidx.annotation.StringRes
 import com.woocommerce.android.R.string
-import com.woocommerce.android.analytics.AnalyticsTracker.Stat
+import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.model.Product
 import com.woocommerce.android.ui.products.ProductNavigationTarget.AddProductDownloadableFile
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewLinkedProducts
@@ -16,7 +16,6 @@ import com.woocommerce.android.ui.products.ProductType.GROUPED
 import com.woocommerce.android.ui.products.ProductType.OTHER
 import com.woocommerce.android.ui.products.ProductType.SIMPLE
 import com.woocommerce.android.ui.products.ProductType.VARIABLE
-import com.woocommerce.android.ui.products.ProductType.VIRTUAL
 import com.woocommerce.android.viewmodel.ResourceProvider
 
 class ProductDetailBottomSheetBuilder(
@@ -37,7 +36,7 @@ class ProductDetailBottomSheetBuilder(
     data class ProductDetailBottomSheetUiItem(
         val type: ProductDetailBottomSheetType,
         val clickEvent: ProductNavigationTarget,
-        val stat: Stat? = null
+        val stat: AnalyticsEvent? = null
     )
 
     fun buildBottomSheetList(product: Product): List<ProductDetailBottomSheetUiItem> {
@@ -45,15 +44,6 @@ class ProductDetailBottomSheetBuilder(
             SIMPLE -> {
                 listOfNotNull(
                     product.getShipping(),
-                    product.getCategories(),
-                    product.getTags(),
-                    product.getShortDescription(),
-                    product.getLinkedProducts(),
-                    product.getDownloadableFiles()
-                )
-            }
-            VIRTUAL -> {
-                listOfNotNull(
                     product.getCategories(),
                     product.getTags(),
                     product.getShortDescription(),
@@ -110,7 +100,7 @@ class ProductDetailBottomSheetBuilder(
                         shippingClassId
                     )
                 ),
-                Stat.PRODUCT_DETAIL_VIEW_SHIPPING_SETTINGS_TAPPED
+                AnalyticsEvent.PRODUCT_DETAIL_VIEW_SHIPPING_SETTINGS_TAPPED
             )
         } else {
             null
@@ -122,7 +112,7 @@ class ProductDetailBottomSheetBuilder(
             ProductDetailBottomSheetUiItem(
                 ProductDetailBottomSheetType.PRODUCT_CATEGORIES,
                 ViewProductCategories(remoteId),
-                Stat.PRODUCT_DETAIL_VIEW_CATEGORIES_TAPPED
+                AnalyticsEvent.PRODUCT_DETAIL_VIEW_CATEGORIES_TAPPED
             )
         } else {
             null
@@ -148,7 +138,7 @@ class ProductDetailBottomSheetBuilder(
                     shortDescription,
                     resources.getString(string.product_short_description)
                 ),
-                Stat.PRODUCT_DETAIL_VIEW_SHORT_DESCRIPTION_TAPPED
+                AnalyticsEvent.PRODUCT_DETAIL_VIEW_SHORT_DESCRIPTION_TAPPED
             )
         } else {
             null
@@ -160,7 +150,7 @@ class ProductDetailBottomSheetBuilder(
             ProductDetailBottomSheetUiItem(
                 ProductDetailBottomSheetType.LINKED_PRODUCTS,
                 ViewLinkedProducts(remoteId),
-                Stat.PRODUCT_DETAIL_VIEW_LINKED_PRODUCTS_TAPPED
+                AnalyticsEvent.PRODUCT_DETAIL_VIEW_LINKED_PRODUCTS_TAPPED
             )
         } else {
             null

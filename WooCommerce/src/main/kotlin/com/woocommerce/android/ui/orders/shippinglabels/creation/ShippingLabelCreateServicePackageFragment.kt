@@ -14,13 +14,13 @@ import com.woocommerce.android.databinding.FragmentShippingLabelCreateServicePac
 import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
-import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
-import dagger.hilt.android.AndroidEntryPoint
-import org.wordpress.android.util.ActivityUtils
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelCreateServicePackageViewModel.PackageSuccessfullyMadeEvent
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.widgets.CustomProgressDialog
 import com.woocommerce.android.widgets.SkeletonView
 import com.woocommerce.android.widgets.WCEmptyView
+import dagger.hilt.android.AndroidEntryPoint
+import org.wordpress.android.util.ActivityUtils
 import javax.inject.Inject
 
 @AndroidEntryPoint

@@ -5,11 +5,13 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.Transformations
+import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.R.string
+import com.woocommerce.android.analytics.AnalyticsEvent
+import com.woocommerce.android.analytics.AnalyticsEvent.PRODUCT_VARIANTS_BULK_UPDATE_TAPPED
+import com.woocommerce.android.analytics.AnalyticsEvent.PRODUCT_VARIATION_VIEW_VARIATION_DETAIL_TAPPED
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_PRODUCT_ID
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.track
-import com.woocommerce.android.analytics.AnalyticsTracker.Stat
-import com.woocommerce.android.analytics.AnalyticsTracker.Stat.PRODUCT_VARIATION_VIEW_VARIATION_DETAIL_TAPPED
 import com.woocommerce.android.extensions.isNotSet
 import com.woocommerce.android.extensions.isSet
 import com.woocommerce.android.model.Product
@@ -17,6 +19,7 @@ import com.woocommerce.android.model.ProductVariation
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.ui.products.ProductDetailRepository
 import com.woocommerce.android.ui.products.variations.VariationListViewModel.ViewState
+import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.viewmodel.LiveDataDelegate
@@ -27,6 +30,7 @@ import com.woocommerce.android.viewmodel.ScopedViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import kotlinx.parcelize.Parcelize
 import javax.inject.Inject
 
@@ -46,13 +50,17 @@ import javax.inject.Inject
  * With that said, when we update the Variation list, we should also update the
  * [ViewState.parentProduct] so the correct information is returned [onExit]
  */
+
+private const val BULK_UPDATE_VARIATIONS_LIMIT = 100
+
 @HiltViewModel
 class VariationListViewModel @Inject constructor(
     savedState: SavedStateHandle,
     private val variationRepository: VariationRepository,
     private val productRepository: ProductDetailRepository,
     private val networkStatus: NetworkStatus,
-    private val currencyFormatter: CurrencyFormatter
+    private val currencyFormatter: CurrencyFormatter,
+    private val dispatchers: CoroutineDispatchers
 ) : ScopedViewModel(savedState) {
     private var remoteProductId = 0L
 
@@ -90,9 +98,23 @@ class VariationListViewModel @Inject constructor(
         loadVariations(remoteProductId, loadMore = true)
     }
 
-    override fun onCleared() {
-        super.onCleared()
-        variationRepository.onCleanup()
+    fun onBulkUpdateClicked() {
+        track(PRODUCT_VARIANTS_BULK_UPDATE_TAPPED)
+
+        val variationsCount = viewState.parentProduct?.numVariations ?: return
+
+        if (variationsCount > BULK_UPDATE_VARIATIONS_LIMIT) {
+            triggerEvent(ShowBulkUpdateLimitExceededWarning)
+        } else {
+            viewState = viewState.copy(isBulkUpdateProgressDialogShown = true)
+            viewModelScope.launch(dispatchers.io) {
+                val variations = getAllVariations(remoteProductId)
+                withContext(dispatchers.main) {
+                    triggerEvent(ShowBulkUpdateAttrPicker(variations))
+                    viewState = viewState.copy(isBulkUpdateProgressDialogShown = false)
+                }
+            }
+        }
     }
 
     fun onItemClick(variation: ProductVariation) {
@@ -101,12 +123,12 @@ class VariationListViewModel @Inject constructor(
     }
 
     fun onCreateEmptyVariationClick() {
-        trackWithProductId(Stat.PRODUCT_VARIATION_ADD_MORE_TAPPED)
+        trackWithProductId(AnalyticsEvent.PRODUCT_VARIATION_ADD_MORE_TAPPED)
         handleVariationCreation()
     }
 
     fun onCreateFirstVariationRequested() {
-        trackWithProductId(Stat.PRODUCT_VARIATION_ADD_FIRST_TAPPED)
+        trackWithProductId(AnalyticsEvent.PRODUCT_VARIATION_ADD_FIRST_TAPPED)
         viewState.parentProduct
             ?.variationEnabledAttributes
             ?.takeIf { it.isNotEmpty() }
@@ -120,7 +142,7 @@ class VariationListViewModel @Inject constructor(
                 ?.let { remove(it) }
         }?.toList().let { _variationList.value = it }
 
-        productRepository.fetchProduct(productID)
+        productRepository.fetchProductOrLoadFromCache(productID)
             ?.let { viewState = viewState.copy(parentProduct = it) }
     }
 
@@ -162,7 +184,7 @@ class VariationListViewModel @Inject constructor(
 
     private suspend fun syncProductToVariations(productID: Long) {
         loadVariations(productID, withSkeletonView = false)
-        productRepository.fetchProduct(productID)
+        productRepository.fetchProductOrLoadFromCache(productID)
             ?.let { viewState = viewState.copy(parentProduct = it) }
     }
 
@@ -206,10 +228,11 @@ class VariationListViewModel @Inject constructor(
             if (fetchedVariations.isNullOrEmpty()) {
                 if (!loadMore) {
                     _variationList.value = emptyList()
-                    viewState = viewState.copy(isEmptyViewVisible = true)
+                    viewState = viewState.copy(isEmptyViewVisible = true, isVariationsOptionsMenuEnabled = false)
                 }
             } else {
                 _variationList.value = combineData(fetchedVariations)
+                viewState = viewState.copy(isVariationsOptionsMenuEnabled = true)
             }
         } else {
             triggerEvent(ShowSnackbar(string.offline_error))
@@ -219,6 +242,13 @@ class VariationListViewModel @Inject constructor(
             isRefreshing = false,
             isLoadingMore = false
         )
+    }
+
+    private suspend fun getAllVariations(remoteProductId: Long): Collection<ProductVariation> {
+        while (variationRepository.canLoadMoreProductVariations) {
+            variationRepository.fetchProductVariations(remoteProductId, true)
+        }
+        return variationRepository.getProductVariationList(remoteProductId)
     }
 
     private fun combineData(variations: List<ProductVariation>): List<ProductVariation> {
@@ -237,7 +267,7 @@ class VariationListViewModel @Inject constructor(
         return variations
     }
 
-    private fun trackWithProductId(event: Stat) {
+    private fun trackWithProductId(event: AnalyticsEvent) {
         viewState.parentProduct?.let { track(event, mapOf(KEY_PRODUCT_ID to it.remoteId)) }
     }
 
@@ -250,7 +280,9 @@ class VariationListViewModel @Inject constructor(
         val isEmptyViewVisible: Boolean? = null,
         val isWarningVisible: Boolean? = null,
         val isProgressDialogShown: Boolean? = null,
-        val parentProduct: Product? = null
+        val parentProduct: Product? = null,
+        val isVariationsOptionsMenuEnabled: Boolean = false,
+        val isBulkUpdateProgressDialogShown: Boolean = false,
     ) : Parcelable
 
     @Parcelize
@@ -259,5 +291,15 @@ class VariationListViewModel @Inject constructor(
     ) : Parcelable
 
     data class ShowVariationDetail(val variation: ProductVariation) : Event()
+
+    /**
+     * Represents event responsible for displaying [VariationsBulkUpdateAttrPickerDialog].
+     */
+    data class ShowBulkUpdateAttrPicker(val variationsToUpdate: Collection<ProductVariation>) : Event()
     object ShowAddAttributeView : Event()
+
+    /**
+     * Informs about exceeded limit of 100 variations bulk update.
+     */
+    object ShowBulkUpdateLimitExceededWarning : Event()
 }

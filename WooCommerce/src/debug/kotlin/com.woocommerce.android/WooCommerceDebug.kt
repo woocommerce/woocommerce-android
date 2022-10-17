@@ -11,6 +11,7 @@ import com.facebook.flipper.plugins.inspector.InspectorFlipperPlugin
 import com.facebook.flipper.plugins.network.NetworkFlipperPlugin
 import com.facebook.flipper.plugins.sharedpreferences.SharedPreferencesFlipperPlugin
 import com.facebook.soloader.SoLoader
+import com.woocommerce.android.util.SystemVersionUtils
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T
 import dagger.hilt.android.HiltAndroidApp
@@ -18,7 +19,9 @@ import dagger.hilt.android.HiltAndroidApp
 @HiltAndroidApp
 class WooCommerceDebug : WooCommerce() {
     override fun onCreate() {
-        if (FlipperUtils.shouldEnableFlipper(this)) {
+        if (FlipperUtils.shouldEnableFlipper(this) &&
+            SystemVersionUtils.isAtLeastM()
+        ) {
             SoLoader.init(this, false)
             AndroidFlipperClient.getInstance(this).apply {
                 addPlugin(InspectorFlipperPlugin(applicationContext, DescriptorMapping.withDefaults()))
@@ -51,6 +54,11 @@ class WooCommerceDebug : WooCommerce() {
                 .detectLeakedClosableObjects()
                 .detectLeakedRegistrationObjects()
                 .penaltyLog()
+                .apply {
+                    if (SystemVersionUtils.isAtLeastP()) {
+                        detectNonSdkApiUsage()
+                    }
+                }
                 .build()
         )
         WooLog.w(T.UTILS, "Strict mode enabled")

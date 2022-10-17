@@ -1,0 +1,96 @@
+plugins {
+    id 'com.android.test'
+    id 'org.jetbrains.kotlin.android'
+}
+
+repositories {
+    maven {
+        url 'https://a8c-libs.s3.amazonaws.com/android'
+        content {
+            includeGroup "org.wordpress"
+            includeGroup "org.wordpress.fluxc"
+            includeGroup "org.wordpress.fluxc.plugins"
+            includeGroup "org.wordpress.wellsql"
+            includeGroup "org.wordpress.mediapicker"
+            includeGroup "com.automattic"
+            includeGroup "com.automattic.tracks"
+        }
+    }
+    maven {
+        url 'https://zendesk.jfrog.io/zendesk/repo'
+        content {
+            includeGroup "com.zendesk"
+            includeGroup "com.zendesk.belvedere2"
+        }
+    }
+    mavenCentral()
+    maven {
+        url "https://a8c-libs.s3.amazonaws.com/android/jcenter-mirror"
+        content {
+            includeVersion "com.android.volley", "volley", "1.1.1"
+            includeVersion "com.google.android", "flexbox", "2.0.1"
+            includeVersion "com.jraska", "falcon", "2.1.1"
+            includeVersion "org.wordpress", "wellsql", "1.6.0"
+            includeVersion "org.wordpress", "wellsql-core", "1.6.0"
+        }
+    }
+    maven {
+        url "https://jitpack.io"
+        content {
+            includeModule("com.github.Automattic", "Automattic-Tracks-Android")
+            includeModule("com.github.wordpress-mobile.WordPress-Aztec-Android", "aztec")
+            includeModule("com.github.wordpress-mobile.WordPress-Aztec-Android", "glide-loader")
+            includeModule("com.github.chrisbanes", "PhotoView")
+            includeModule("com.github.PhilJay", "MPAndroidChart")
+        }
+    }
+}
+
+android {
+    compileSdkVersion gradle.ext.compileSdkVersion
+
+    defaultConfig {
+        minSdkVersion gradle.ext.minSdkVersion
+        targetSdkVersion gradle.ext.targetSdkVersion
+
+        missingDimensionStrategy 'buildType', 'wasabi'
+
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        testApplicationId "com.woocommerce.android.dev.quicklogin"
+
+        buildConfigField "String", "QUICK_LOGIN_WP_EMAIL", "\"${project.getProperties().get("quickLoginWpEmail")}\""
+        buildConfigField "String", "QUICK_LOGIN_WP_PASSWORD", "\"${project.getProperties().get("quickLoginWpPassword")}\""
+        buildConfigField "String", "QUICK_LOGIN_WP_SITE", "\"${project.getProperties().get("quickLoginWpSite")}\""
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+
+    targetProjectPath ':WooCommerce'
+}
+
+dependencies {
+    implementation "androidx.lifecycle:lifecycle-process:$lifecycleVersion"
+
+    implementation "androidx.test.uiautomator:uiautomator:2.2.0"
+    implementation "junit:junit:$jUnitVersion"
+    implementation "androidx.test.ext:junit:$jUnitExtVersion"
+    implementation "androidx.test:runner:$androidxTestCoreVersion"
+    implementation "androidx.test:rules:$androidxTestCoreVersion"
+    implementation "androidx.test:core:$androidxTestCoreVersion"
+}
+
+if (project.hasProperty("debugStoreFile")) {
+    def sharedDebugStore = file(project.debugStoreFile.replaceFirst("^~", System.getProperty("user.home")))
+    if (sharedDebugStore.exists()) {
+        android {
+            signingConfigs {
+                debug {
+                    storeFile sharedDebugStore
+                }
+            }
+        }
+    }
+}

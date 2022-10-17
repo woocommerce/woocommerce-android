@@ -27,7 +27,9 @@ class AttributesAddedFragment : BaseProductFragment(R.layout.fragment_attributes
         super.onViewCreated(view, savedInstanceState)
 
         FragmentAttributesAddedBinding.bind(view).apply {
-            generateVariationButton.setOnClickListener(::onGenerateVariationClicked)
+            generateVariationButton.setOnClickListener {
+                viewModel.onGenerateVariationClicked()
+            }
         }
 
         setupObservers()
@@ -53,10 +55,6 @@ class AttributesAddedFragment : BaseProductFragment(R.layout.fragment_attributes
             is ShowSnackbar -> uiMessageResolver.getSnack(event.message)
             else -> event.isHandled = false
         }
-    }
-
-    private fun onGenerateVariationClicked(view: View) {
-        viewModel.onGenerateVariationClicked()
     }
 
     override fun onRequestAllowBackPress(): Boolean {

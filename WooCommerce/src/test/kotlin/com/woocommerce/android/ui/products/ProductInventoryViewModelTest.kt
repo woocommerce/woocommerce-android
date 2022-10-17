@@ -13,7 +13,6 @@ import com.woocommerce.android.viewmodel.BaseUnitTest
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.*
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.test.runBlockingTest
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Test
@@ -72,7 +71,7 @@ class ProductInventoryViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `Test that the initial data is displayed correctly`() = coroutinesTestRule.testDispatcher.runBlockingTest {
+    fun `Test that the initial data is displayed correctly`() = testBlocking {
         var actual: InventoryData? = null
         viewModel.viewStateData.observeForever { _, new ->
             actual = new.inventoryData
@@ -83,7 +82,7 @@ class ProductInventoryViewModelTest : BaseUnitTest() {
 
     @Test
     fun `Test that when data is changed the view state is updated`() =
-        coroutinesTestRule.testDispatcher.runBlockingTest {
+        testBlocking {
             var actual: InventoryData? = null
             viewModel.viewStateData.observeForever { _, new ->
                 actual = new.inventoryData
@@ -102,7 +101,7 @@ class ProductInventoryViewModelTest : BaseUnitTest() {
         }
 
     @Test
-    fun `Test that an error is shown if SKU is already taken`() = coroutinesTestRule.testDispatcher.runBlockingTest {
+    fun `Test that an error is shown if SKU is already taken`() = testBlocking {
         whenever(productDetailRepository.isSkuAvailableLocally(takenSku)).thenReturn(false)
         whenever(productDetailRepository.isSkuAvailableRemotely(expectedData.sku!!)).thenReturn(true)
         whenever(productDetailRepository.isSkuAvailableLocally(expectedData.sku!!)).thenReturn(true)
@@ -125,7 +124,7 @@ class ProductInventoryViewModelTest : BaseUnitTest() {
 
     @Test
     fun `Test that a discard dialog isn't shown if no data changed`() =
-        coroutinesTestRule.testDispatcher.runBlockingTest {
+        testBlocking {
             val events = mutableListOf<Event>()
             viewModel.event.observeForever {
                 events.add(it)
@@ -141,7 +140,7 @@ class ProductInventoryViewModelTest : BaseUnitTest() {
         }
 
     @Test
-    fun `Test that a the correct data is returned when exiting`() = coroutinesTestRule.testDispatcher.runBlockingTest {
+    fun `Test that a the correct data is returned when exiting`() = testBlocking {
         val events = mutableListOf<Event>()
         viewModel.event.observeForever {
             events.add(it)
@@ -169,7 +168,7 @@ class ProductInventoryViewModelTest : BaseUnitTest() {
 
     @Test
     fun `Test that the individual sale switch is visible for products`() =
-        coroutinesTestRule.testDispatcher.runBlockingTest {
+        testBlocking {
             var viewState: ViewState? = null
             viewModel.viewStateData.observeForever { _, new ->
                 viewState = new
@@ -180,7 +179,7 @@ class ProductInventoryViewModelTest : BaseUnitTest() {
 
     @Test
     fun `Test that the individual sale switch is not visible for variations`() =
-        coroutinesTestRule.testDispatcher.runBlockingTest {
+        testBlocking {
             viewModel = createViewModel(RequestCodes.VARIATION_DETAIL_INVENTORY)
 
             var viewState: ViewState? = null
@@ -193,7 +192,7 @@ class ProductInventoryViewModelTest : BaseUnitTest() {
 
     @Test
     fun `Test that stock quantity field is not editable if stock quantity is non-whole decimal`() =
-        coroutinesTestRule.testDispatcher.runBlockingTest {
+        testBlocking {
             viewModel = createViewModel(RequestCodes.PRODUCT_DETAIL_INVENTORY, initialDataWithNonWholeDecimalQuantity)
 
             var viewState: ViewState? = null

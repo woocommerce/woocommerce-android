@@ -2,7 +2,6 @@ package com.woocommerce.android.extensions
 
 import android.content.Context
 import android.text.format.DateFormat
-import com.woocommerce.android.util.DateUtils
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T
 import org.apache.commons.lang3.time.DateUtils.isSameDay
@@ -73,8 +72,6 @@ fun Date.getTimeString(context: Context): String = DateFormat.getTimeFormat(cont
 fun Date.getShortDate(context: Context): String = DateFormat.getDateFormat(context).format(this)
 
 fun Date.getMediumDate(context: Context): String = DateFormat.getMediumDateFormat(context).format(this)
-
-fun Date?.offsetGmtDate(gmtOffset: Float) = this?.let { DateUtils.offsetGmtDate(it, gmtOffset) }
 
 fun Date.formatToYYYYmmDDhhmmss(): String =
     SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.getDefault()).format(this)

@@ -38,13 +38,6 @@
         "value": "Yes",
         "display_key": "Delivery ($5,00)",
         "display_value": "Yes"
-      },
-      {
-        "id": 453,
-        "key": "_reduced_stock",
-        "value": "1",
-        "display_key": "_reduced_stock",
-        "display_value": "1"
       }
     ],
     "sku": "",

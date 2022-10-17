@@ -11,6 +11,17 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
+        <!-- Product search type view -->
+        <com.woocommerce.android.ui.products.WCProductSearchTabView
+            android:id="@+id/productsSearchTabView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:visibility="gone"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:visibility="visible" />
+
         <!-- Products work in progress notice card -->
         <com.woocommerce.android.ui.products.FeatureWIPNoticeCard
             android:id="@+id/products_wip_card"
@@ -22,7 +33,7 @@
             app:layout_constraintBottom_toTopOf="@+id/products_sort_filter_card"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/productsSearchTabView"
             tools:visibility="visible" />
 
         <!-- Products filter and sort view -->
@@ -58,7 +69,7 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintTop_toBottomOf="@id/productsSearchTabView" />
 
         <ProgressBar
             android:id="@+id/loadMoreProgress"

@@ -4,11 +4,13 @@ import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.mystore.data.StatsRepository
 import com.woocommerce.android.ui.mystore.data.StatsRepository.StatsException
-import com.woocommerce.android.ui.mystore.domain.GetStats.LoadStatsResult.GenericError
 import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.util.FeatureFlag
-import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.flowOn
+import kotlinx.coroutines.flow.merge
+import kotlinx.coroutines.flow.transform
 import org.wordpress.android.fluxc.model.WCRevenueStatsModel
 import org.wordpress.android.fluxc.store.WCStatsStore.OrderStatsErrorType
 import org.wordpress.android.fluxc.store.WCStatsStore.StatsGranularity
@@ -20,7 +22,6 @@ class GetStats @Inject constructor(
     private val appPrefsWrapper: AppPrefsWrapper,
     private val coroutineDispatchers: CoroutineDispatchers
 ) {
-    @ExperimentalCoroutinesApi
     suspend operator fun invoke(refresh: Boolean, granularity: StatsGranularity): Flow<LoadStatsResult> =
         merge(
             hasOrders(),
@@ -51,7 +52,7 @@ class GetStats @Inject constructor(
                             appPrefsWrapper.setV4StatsSupported(false)
                             emit(LoadStatsResult.PluginNotActive)
                         } else {
-                            emit(GenericError)
+                            emit(LoadStatsResult.RevenueStatsError)
                         }
                     }
                 )
@@ -90,7 +91,7 @@ class GetStats @Inject constructor(
             val hasOrder: Boolean
         ) : LoadStatsResult()
 
-        object GenericError : LoadStatsResult()
+        object RevenueStatsError : LoadStatsResult()
         object VisitorsStatsError : LoadStatsResult()
         object PluginNotActive : LoadStatsResult()
         object IsJetPackCPEnabled : LoadStatsResult()

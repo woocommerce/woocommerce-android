@@ -48,7 +48,7 @@ class ProductFilterOptionListAdapter(
         }
     }
 
-    override fun getItemId(position: Int) = position.toLong()
+    override fun getItemId(position: Int) = getItem(position).filterOptionItemValue.hashCode().toLong()
 
     class ProductFilterOptionViewHolder(val viewBinding: ProductFilterOptionListItemBinding) :
         RecyclerView.ViewHolder(viewBinding.root) {

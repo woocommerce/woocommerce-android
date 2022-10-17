@@ -1,1 +1,2 @@
-View and manage orders
+Create orders
+on the fly

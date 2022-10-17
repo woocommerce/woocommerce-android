@@ -6,7 +6,6 @@ import android.view.View
 import androidx.annotation.StringRes
 import androidx.core.view.isVisible
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import com.woocommerce.android.R
 import com.woocommerce.android.databinding.FragmentProductShippingBinding
@@ -76,18 +75,15 @@ class ProductShippingFragment : BaseProductEditorFragment(R.layout.fragment_prod
                 binding.productShippingClassSpinner.setText(viewModel.getShippingClassByRemoteShippingClassId(classId))
             }
         }
-        viewModel.event.observe(
-            viewLifecycleOwner,
-            Observer { event ->
-                when (event) {
-                    is ShowSnackbar -> uiMessageResolver.showSnack(event.message)
-                    is ExitWithResult<*> -> navigateBackWithResult(KEY_SHIPPING_DIALOG_RESULT, event.data)
-                    is Exit -> findNavController().navigateUp()
-                    is ShowDialog -> event.showDialog()
-                    else -> event.isHandled = false
-                }
+        viewModel.event.observe(viewLifecycleOwner) { event ->
+            when (event) {
+                is ShowSnackbar -> uiMessageResolver.showSnack(event.message)
+                is ExitWithResult<*> -> navigateBackWithResult(KEY_SHIPPING_DIALOG_RESULT, event.data)
+                is Exit -> findNavController().navigateUp()
+                is ShowDialog -> event.showDialog()
+                else -> event.isHandled = false
             }
-        )
+        }
     }
 
     private fun setupResultHandlers() {

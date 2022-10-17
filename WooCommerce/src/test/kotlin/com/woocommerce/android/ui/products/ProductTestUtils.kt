@@ -1,11 +1,7 @@
 package com.woocommerce.android.ui.products
 
-import com.woocommerce.android.model.Product
-import com.woocommerce.android.model.ProductAttribute
-import com.woocommerce.android.model.ProductCategory
-import com.woocommerce.android.model.ProductTag
-import com.woocommerce.android.model.ProductVariation
-import com.woocommerce.android.model.toAppModel
+import com.woocommerce.android.model.*
+import com.woocommerce.android.ui.products.ProductStatus.DRAFT
 import org.wordpress.android.fluxc.model.MediaModel
 import org.wordpress.android.fluxc.model.WCProductModel
 import org.wordpress.android.fluxc.model.WCProductVariationModel
@@ -14,12 +10,18 @@ import java.sql.Date
 import java.time.Instant
 
 object ProductTestUtils {
-    fun generateProduct(productId: Long = 1L, isVirtual: Boolean = false): Product {
+    fun generateProduct(
+        productId: Long = 1L,
+        isVirtual: Boolean = false,
+        isVariable: Boolean = false,
+        isPurchasable: Boolean = true,
+        customStatus: String? = null
+    ): Product {
         return WCProductModel(2).apply {
             dateCreated = "2018-01-05T05:14:30Z"
             localSiteId = 1
             remoteProductId = productId
-            status = "publish"
+            status = customStatus ?: "publish"
             type = "simple"
             stockStatus = "instock"
             price = "20.00"
@@ -41,8 +43,17 @@ object ProductTestUtils {
             length = "1"
             width = "2"
             height = "3"
-            variations = "[]"
-            attributes = "[]"
+            variations = if (isVariable) "[123]" else "[]"
+            attributes = """[
+                                {
+                                    "id": 1,
+                                    "name":"Color",
+                                    "position":0",
+                                    "visible":"true",
+                                    "variation":"true",
+                                    "options": ["Blue","Green","Red"]
+                                }
+                            ]"""
             categories = ""
             ratingCount = 4
             groupedProductIds = "[10,11]"
@@ -50,6 +61,7 @@ object ProductTestUtils {
             shortDescription = "short desc"
             virtual = isVirtual
             stockQuantity = 4.2
+            purchasable = isPurchasable
         }.toAppModel()
     }
 
@@ -67,6 +79,25 @@ object ProductTestUtils {
             return this
         }
     }
+
+    fun generateProductListWithDrafts(): List<Product> =
+        generateProductList()
+            .toMutableList()
+            .apply {
+                add(generateProduct(6, customStatus = DRAFT.toString()))
+            }
+
+    fun generateProductListWithNonPurchasable(): List<Product> =
+        generateProductList()
+            .toMutableList()
+            .apply {
+                add(generateProduct(6, isPurchasable = false))
+            }
+
+    fun generateProductListWithVariations(): List<Product> =
+        generateProductList()
+            .toMutableList()
+            .apply { add(generateProduct(6, isVariable = true)) }
 
     private fun generateProductVariation(
         productId: Long = 1L,

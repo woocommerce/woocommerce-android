@@ -1,9 +1,8 @@
 package com.woocommerce.android.ui.products.categories
 
 import com.woocommerce.android.AppConstants
+import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
-import com.woocommerce.android.analytics.AnalyticsTracker.Stat
-import com.woocommerce.android.annotations.OpenClassOnDebug
 import com.woocommerce.android.model.ProductCategory
 import com.woocommerce.android.model.RequestResult
 import com.woocommerce.android.model.toProductCategory
@@ -24,7 +23,6 @@ import org.wordpress.android.fluxc.store.WCProductStore.OnProductCategoryChanged
 import org.wordpress.android.fluxc.store.WCProductStore.ProductErrorType.TERM_EXISTS
 import javax.inject.Inject
 
-@OpenClassOnDebug
 class ProductCategoriesRepository @Inject constructor(
     private val dispatcher: Dispatcher,
     private val productStore: WCProductStore,
@@ -110,14 +108,14 @@ class ProductCategoriesRepository @Inject constructor(
                 if (event.isError) {
                     loadContinuation.continueWith(false)
                     AnalyticsTracker.track(
-                        Stat.PRODUCT_CATEGORIES_LOAD_FAILED,
+                        AnalyticsEvent.PRODUCT_CATEGORIES_LOAD_FAILED,
                         this.javaClass.simpleName,
                         event.error.type.toString(),
                         event.error.message
                     )
                 } else {
                     canLoadMoreProductCategories = event.canLoadMore
-                    AnalyticsTracker.track(Stat.PRODUCT_CATEGORIES_LOADED)
+                    AnalyticsTracker.track(AnalyticsEvent.PRODUCT_CATEGORIES_LOADED)
                     loadContinuation.continueWith(true)
                 }
             }
@@ -128,13 +126,13 @@ class ProductCategoriesRepository @Inject constructor(
                     } else RequestResult.ERROR
                     addProductCategoryContinuation.continueWith(requestResultType)
                     AnalyticsTracker.track(
-                        Stat.PARENT_CATEGORIES_LOAD_FAILED,
+                        AnalyticsEvent.PARENT_CATEGORIES_LOAD_FAILED,
                         this.javaClass.simpleName,
                         event.error.type.toString(),
                         event.error.message
                     )
                 } else {
-                    AnalyticsTracker.track(Stat.PARENT_CATEGORIES_LOADED)
+                    AnalyticsTracker.track(AnalyticsEvent.PARENT_CATEGORIES_LOADED)
                     addProductCategoryContinuation.continueWith(RequestResult.SUCCESS)
                 }
             }

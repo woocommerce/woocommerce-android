@@ -4,8 +4,8 @@ import android.os.Parcelable
 import androidx.annotation.StringRes
 import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.R
+import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
-import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.ui.products.ProductListViewModel.OnProductSortingChanged
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.ScopedViewModel
@@ -49,7 +49,7 @@ class ProductSortingViewModel @Inject constructor(
             DATE_DESC -> AnalyticsTracker.VALUE_SORT_DATE_DESC
         }
         AnalyticsTracker.track(
-            Stat.PRODUCT_LIST_SORTING_OPTION_SELECTED,
+            AnalyticsEvent.PRODUCT_LIST_SORTING_OPTION_SELECTED,
             mapOf(AnalyticsTracker.KEY_SORT_ORDER to order)
         )
         productListRepository.productSortingChoice = option

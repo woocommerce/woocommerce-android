@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/nav_graph_jetpack_install"
+    app:startDestination="@id/jetpackBenefitsDialog">
+    <dialog
+        android:id="@+id/jetpackInstallStartDialog"
+        android:name="com.woocommerce.android.ui.jetpack.JetpackInstallStartDialog"
+        android:label="JetpackInstallStartDialog"
+        tools:layout="@layout/dialog_jetpack_install_start">
+        <action
+            android:id="@+id/action_jetpackInstallStartDialog_to_jetpackInstallProgressDialog"
+            app:destination="@id/jetpackInstallProgressDialog" />
+    </dialog>
+    <dialog
+        android:id="@+id/jetpackInstallProgressDialog"
+        android:name="com.woocommerce.android.ui.jetpack.JetpackInstallProgressDialog"
+        android:label="JetpackInstallProgressDialog"
+        tools:layout="@layout/dialog_jetpack_install_progress">
+    </dialog>
+    <dialog
+        android:id="@+id/jetpackBenefitsDialog"
+        android:name="com.woocommerce.android.ui.jetpack.JetpackBenefitsDialog"
+        android:label="JetpackBenefitsDialog">
+        <action
+            android:id="@+id/action_jetpackBenefitsDialog_to_jetpackInstallStartDialog"
+            app:destination="@id/jetpackInstallStartDialog" />
+    </dialog>
+</navigation>

@@ -76,7 +76,7 @@ private fun List<ProductCategory>.sortByNameAndParent(): Set<ProductCategoryItem
     val visited = mutableSetOf<Long>()
 
     // we first sort the list by name in a descending order
-    val productCategoriesSortedByNameDesc = this.sortedByDescending { it.name.toLowerCase(Locale.US) }
+    val productCategoriesSortedByNameDesc = this.sortedByDescending { it.name.lowercase(Locale.US) }
 
     // add root nodes to the Stack
     stack.addAll(productCategoriesSortedByNameDesc.filter { it.parentId == 0L })

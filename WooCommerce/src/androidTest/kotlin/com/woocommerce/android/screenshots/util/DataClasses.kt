@@ -25,6 +25,11 @@ val productTypesMap = mapOf(
     "simple" to "Physical product"
 )
 
+val orderStatusMap = mapOf(
+    "pending" to "Pending payment",
+    "processing" to "Processing"
+)
+
 data class ReviewData(
     val productID: Int,
     val status: String,
@@ -51,7 +56,6 @@ data class ProductData(
     val stockStatus = productStatusesMap[stockStatusRaw]
     val price = getPriceDescription()
     val type = productTypesMap[typeRaw]
-    val reviewsCountBeautified = getRatingDescription()
 
     private fun getPriceDescription(): String {
         var price = "Regular price: \$$priceRegularRaw.00"
@@ -67,12 +71,23 @@ data class ProductData(
 
         return price
     }
+}
 
-    private fun getRatingDescription(): String {
-        return when (reviewsCount) {
-            0 -> ""
-            1 -> "• rated once"
-            else -> "• rated $reviewsCount times"
-        }
-    }
+data class OrderData(
+    val customer: String,
+    val customerNoteRaw: String,
+    val feeRaw: String,
+    val id: Int,
+    val productName: String,
+    val shippingRaw: String,
+    val statusRaw: String,
+    val totalRaw: String
+) {
+    // there is a white space in the text value returned by the element, adjusting here to match that
+    val customerName = "$customer "
+    val customerNote = "\"$customerNoteRaw\""
+    val feeAmount = "\$$feeRaw"
+    val shippingAmount = "\$$shippingRaw"
+    val status = orderStatusMap[statusRaw]
+    val total = "\$$totalRaw"
 }

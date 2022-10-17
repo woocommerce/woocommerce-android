@@ -19,8 +19,8 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.Snackbar
 import com.woocommerce.android.AppUrls
 import com.woocommerce.android.R
+import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
-import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.databinding.FragmentProductImagesBinding
 import com.woocommerce.android.extensions.navigateBackWithResult
 import com.woocommerce.android.extensions.navigateSafely
@@ -28,8 +28,7 @@ import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.mediapicker.MediaPickerUtil.processDeviceMediaResult
 import com.woocommerce.android.mediapicker.MediaPickerUtil.processMediaLibraryResult
 import com.woocommerce.android.model.Product.Image
-import com.woocommerce.android.ui.products.ProductImagesViewModel.ProductImagesState.Browsing
-import com.woocommerce.android.ui.products.ProductImagesViewModel.ProductImagesState.Dragging
+import com.woocommerce.android.ui.products.ProductImagesViewModel.ProductImagesState
 import com.woocommerce.android.ui.products.ProductImagesViewModel.ShowCamera
 import com.woocommerce.android.ui.products.ProductImagesViewModel.ShowDeleteImageConfirmation
 import com.woocommerce.android.ui.products.ProductImagesViewModel.ShowImageDetail
@@ -97,20 +96,21 @@ class ProductImagesFragment :
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         when (viewModel.viewStateData.liveData.value?.productImagesState) {
-            is Dragging -> {
+            is ProductImagesState.Dragging -> {
                 inflater.inflate(R.menu.menu_dragging, menu)
                 setHomeIcon(R.drawable.ic_gridicons_cross_24dp)
             }
-            Browsing -> {
+            ProductImagesState.Browsing -> {
                 super.onCreateOptionsMenu(menu, inflater)
                 setHomeIcon(R.drawable.ic_back_24dp)
             }
+            null -> Unit // Do nothing
         }
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when (viewModel.viewStateData.liveData.value?.productImagesState) {
-            is Dragging -> {
+            is ProductImagesState.Dragging -> {
                 when (item.itemId) {
                     R.id.menu_validate -> {
                         viewModel.onValidateButtonClicked()
@@ -162,11 +162,11 @@ class ProductImagesFragment :
             new.productImagesState.takeIfNotEqualTo(old?.productImagesState) {
                 requireActivity().invalidateOptionsMenu()
                 when (new.productImagesState) {
-                    Browsing -> {
+                    ProductImagesState.Browsing -> {
                         binding.addImageButton.isEnabled = true
                         binding.imageGallery.setDraggingState(isDragging = false)
                     }
-                    is Dragging -> {
+                    is ProductImagesState.Dragging -> {
                         binding.addImageButton.isEnabled = false
                         binding.imageGallery.setDraggingState(isDragging = true)
                     }
@@ -318,7 +318,7 @@ class ProductImagesFragment :
         result.processDeviceMediaResult()?.let { mediaUris ->
             if (mediaUris.isNotEmpty()) {
                 AnalyticsTracker.track(
-                    Stat.PRODUCT_IMAGE_ADDED,
+                    AnalyticsEvent.PRODUCT_IMAGE_ADDED,
                     mapOf(AnalyticsTracker.KEY_IMAGE_SOURCE to source)
                 )
                 viewModel.uploadProductImages(navArgs.remoteId, mediaUris)
@@ -329,7 +329,7 @@ class ProductImagesFragment :
     private fun handleMediaLibraryPickerResult(result: ActivityResult) {
         result.processMediaLibraryResult()?.let {
             AnalyticsTracker.track(
-                Stat.PRODUCT_IMAGE_ADDED,
+                AnalyticsEvent.PRODUCT_IMAGE_ADDED,
                 mapOf(AnalyticsTracker.KEY_IMAGE_SOURCE to AnalyticsTracker.IMAGE_SOURCE_WPMEDIA)
             )
             viewModel.onMediaLibraryImagesAdded(it)

@@ -1,9 +1,12 @@
 package com.woocommerce.android.extensions
 
+import android.annotation.SuppressLint
 import android.graphics.Rect
+import android.view.MotionEvent
 import android.view.TouchDelegate
 import android.view.View
 import android.view.View.MeasureSpec
+import android.view.View.OnTouchListener
 import android.view.ViewGroup
 import android.view.animation.Animation
 import android.view.animation.Transformation
@@ -17,6 +20,14 @@ import androidx.transition.ChangeBounds
 import androidx.transition.Transition
 import androidx.transition.TransitionListenerAdapter
 import androidx.transition.TransitionManager
+import kotlinx.coroutines.channels.awaitClose
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.callbackFlow
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.filter
+import kotlinx.coroutines.flow.map
+
+private const val EXPAND_COLLAPSE_ANIMATION_DURATION_MILLIS = 300L
 
 fun View.show() {
     this.visibility = View.VISIBLE
@@ -26,7 +37,7 @@ fun View.hide() {
     this.visibility = View.GONE
 }
 
-fun View.expand() {
+fun View.expand(duration: Long = 300L) {
     if (!this.isVisible) {
         this.visibility = View.VISIBLE
         this.measure(
@@ -52,12 +63,12 @@ fun View.expand() {
             }
         }
 
-        a.duration = 300
+        a.duration = duration
         this.startAnimation(a)
     }
 }
 
-fun View.collapse() {
+fun View.collapse(duration: Long = 300L) {
     if (this.isVisible) {
         val initialHeight = this.measuredHeight
         val view = this
@@ -77,14 +88,14 @@ fun View.collapse() {
             }
         }
 
-        a.duration = 300
+        a.duration = duration
         this.startAnimation(a)
     }
 }
 
 fun Group.expand() {
     if (this.isVisible) return
-    val animationDuration = 300L
+    val animationDuration = EXPAND_COLLAPSE_ANIMATION_DURATION_MILLIS
     val parent = parent as ViewGroup
     val transition = ChangeBounds()
         .setDuration(animationDuration)
@@ -95,7 +106,7 @@ fun Group.expand() {
 
 fun Group.collapse() {
     if (!this.isVisible) return
-    val animationDuration = 300L
+    val animationDuration = EXPAND_COLLAPSE_ANIMATION_DURATION_MILLIS
     val parent = parent as ConstraintLayout
     val views = referencedIds.map { parent.getViewById(it) }
     val originalHeights = views.map { it.layoutParams.height }
@@ -140,4 +151,34 @@ fun ViewGroup.setEnabledRecursive(enabled: Boolean) {
         it.isEnabled = enabled
         if (it is ViewGroup) it.setEnabledRecursive(enabled)
     }
+}
+
+/**
+ * Return a Flow of events matching what an [OnTouchListener] would return.
+ *
+ * @param handled defines what the [OnTouchListener.onTouch] returns, defaults to returning false
+ */
+@SuppressLint("ClickableViewAccessibility")
+fun View.touchEvents(
+    handled: (MotionEvent) -> Boolean = { false }
+): Flow<MotionEvent> = callbackFlow {
+    val listener = OnTouchListener { _, motionEvent ->
+        trySend(motionEvent)
+        return@OnTouchListener handled(motionEvent)
+    }
+
+    setOnTouchListener(listener)
+
+    awaitClose { setOnTouchListener(null) }
+}
+
+/**
+ * Returns a Flow of events that are triggered when a scroll is started on a view.
+ */
+fun View.scrollStartEvents(): Flow<Unit> {
+    return touchEvents()
+        .map { it.action }
+        .distinctUntilChanged()
+        .filter { it == MotionEvent.ACTION_MOVE }
+        .map { }
 }

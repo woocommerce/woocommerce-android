@@ -3,13 +3,12 @@ package com.woocommerce.android.ui.products.categories
 import android.os.Bundle
 import android.view.View
 import androidx.core.view.isVisible
-import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.woocommerce.android.R
+import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
-import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.databinding.FragmentProductCategoriesListBinding
 import com.woocommerce.android.extensions.handleResult
 import com.woocommerce.android.extensions.takeIfNotEqualTo
@@ -60,12 +59,13 @@ class ProductCategoriesFragment :
         viewModel.fetchProductCategories()
     }
 
+    @Suppress("DEPRECATION")
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
 
         val activity = requireActivity()
 
-        productCategoriesAdapter = ProductCategoriesAdapter(activity.baseContext, this, this)
+        productCategoriesAdapter = ProductCategoriesAdapter(this, this)
         with(binding.productCategoriesRecycler) {
             layoutManager = LinearLayoutManager(activity)
             adapter = productCategoriesAdapter
@@ -79,7 +79,7 @@ class ProductCategoriesFragment :
         binding.productCategoriesLayout.apply {
             scrollUpChild = binding.productCategoriesRecycler
             setOnRefreshListener {
-                AnalyticsTracker.track(Stat.PRODUCT_CATEGORIES_PULLED_TO_REFRESH)
+                AnalyticsTracker.track(AnalyticsEvent.PRODUCT_CATEGORIES_PULLED_TO_REFRESH)
                 viewModel.refreshProductCategories()
             }
         }
@@ -104,22 +104,16 @@ class ProductCategoriesFragment :
             }
         }
 
-        viewModel.productCategories.observe(
-            viewLifecycleOwner,
-            Observer {
-                showProductCategories(it)
-            }
-        )
+        viewModel.productCategories.observe(viewLifecycleOwner) {
+            showProductCategories(it)
+        }
 
-        viewModel.event.observe(
-            viewLifecycleOwner,
-            Observer { event ->
-                when (event) {
-                    is ExitProductCategories -> findNavController().navigateUp()
-                    else -> event.isHandled = false
-                }
+        viewModel.event.observe(viewLifecycleOwner) { event ->
+            when (event) {
+                is ExitProductCategories -> findNavController().navigateUp()
+                else -> event.isHandled = false
             }
-        )
+        }
     }
 
     private fun setupResultHandlers() {

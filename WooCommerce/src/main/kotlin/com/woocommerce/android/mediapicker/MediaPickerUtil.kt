@@ -4,6 +4,7 @@ import android.net.Uri
 import android.os.Bundle
 import androidx.activity.result.ActivityResult
 import androidx.appcompat.app.AppCompatActivity
+import com.woocommerce.android.extensions.parcelableArrayList
 import com.woocommerce.android.model.Product
 import com.woocommerce.android.util.WooLog
 import org.wordpress.android.mediapicker.MediaPickerConstants
@@ -56,7 +57,7 @@ object MediaPickerUtil {
     }
 
     private fun handleMediaLibraryPickerResult(data: Bundle): List<Product.Image> {
-        return data.getParcelableArrayList<MediaItem.Identifier.RemoteMedia>(MediaPickerConstants.EXTRA_REMOTE_MEDIA)
+        return data.parcelableArrayList<MediaItem.Identifier.RemoteMedia>(MediaPickerConstants.EXTRA_REMOTE_MEDIA)
             ?.map { Product.Image(it.id, it.name, it.url, DateTimeUtils.dateFromIso8601(it.date)) }
             ?: emptyList()
     }

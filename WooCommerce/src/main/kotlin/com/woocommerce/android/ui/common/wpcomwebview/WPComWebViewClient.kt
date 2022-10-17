@@ -8,4 +8,9 @@ class WPComWebViewClient(private val urlInterceptor: UrlInterceptor) : WebViewCl
         super.onLoadResource(view, url)
         url?.let { urlInterceptor.onLoadUrl(url) }
     }
+
+    override fun doUpdateVisitedHistory(view: WebView?, url: String?, isReload: Boolean) {
+        super.doUpdateVisitedHistory(view, url, isReload)
+        url?.let { urlInterceptor.onLoadUrl(url) }
+    }
 }

@@ -1,22 +1,36 @@
 package com.woocommerce.android.screenshots
 
-import androidx.test.rule.ActivityTestRule
+import android.util.Log
+import androidx.compose.ui.test.junit4.createComposeRule
+import androidx.test.ext.junit.rules.ActivityScenarioRule
+import androidx.test.platform.app.InstrumentationRegistry
+import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.BuildConfig
 import com.woocommerce.android.helpers.InitializationRule
 import com.woocommerce.android.helpers.TestBase
+import com.woocommerce.android.push.WooNotificationBuilder
 import com.woocommerce.android.screenshots.login.WelcomeScreen
 import com.woocommerce.android.screenshots.mystore.MyStoreScreen
+import com.woocommerce.android.screenshots.notifications.NotificationsScreen
+import com.woocommerce.android.screenshots.orders.CardReaderPaymentScreen
+import com.woocommerce.android.screenshots.orders.UnifiedOrderScreen
+import com.woocommerce.android.screenshots.products.ProductListScreen
 import com.woocommerce.android.ui.main.MainActivity
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
+import org.junit.After
+import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import tools.fastlane.screengrab.Screengrab
 import tools.fastlane.screengrab.UiAutomatorScreenshotStrategy
+import tools.fastlane.screengrab.cleanstatusbar.CleanStatusBar
 import tools.fastlane.screengrab.locale.LocaleTestRule
+import java.util.concurrent.TimeoutException
+import javax.inject.Inject
 
 @HiltAndroidTest
-class ScreenshotTest : TestBase() {
+class ScreenshotTest : TestBase(failOnUnmatchedWireMockRequests = false) {
     @get:Rule(order = 0)
     val rule = HiltAndroidRule(this)
 
@@ -24,26 +38,89 @@ class ScreenshotTest : TestBase() {
     val initRule = InitializationRule()
 
     @get:Rule(order = 2)
-    val localeTestRule = LocaleTestRule()
+    val composeTestRule = createComposeRule()
 
     @get:Rule(order = 3)
-    var activityRule = ActivityTestRule(MainActivity::class.java)
+    val localeTestRule = LocaleTestRule()
+
+    @get:Rule(order = 4)
+    var activityRule = ActivityScenarioRule(MainActivity::class.java)
+
+    @Inject lateinit var wooNotificationBuilder: WooNotificationBuilder
+
+    @Before
+    fun setUp() {
+        try {
+            CleanStatusBar.enableWithDefaults()
+        } catch (e: RuntimeException) {
+            if (e.cause is TimeoutException) {
+                Log.w("ScreenshotTest", e)
+            } else throw e
+        }
+        rule.inject()
+    }
+
+    @After
+    fun tearDown() {
+        CleanStatusBar.disable()
+    }
 
     @Test
     fun screenshots() {
+        val testedTheme: String? = InstrumentationRegistry.getArguments().getString("theme")
         Screengrab.setDefaultScreenshotStrategy(UiAutomatorScreenshotStrategy())
 
         WelcomeScreen
-            .logoutIfNeeded()
+            .logoutIfNeeded(composeTestRule)
             .selectLogin()
-            // Connect a WooCommerce store by URL
             .proceedWith(BuildConfig.SCREENSHOTS_URL)
             .proceedWith(BuildConfig.SCREENSHOTS_USERNAME)
             .proceedWith(BuildConfig.SCREENSHOTS_PASSWORD)
 
+        if (testedTheme == "light" || testedTheme == "dark") {
+            TabNavComponent()
+                .gotoMoreMenuScreen()
+                .openSettings(composeTestRule)
+                .setTheme(testedTheme)
+                .goBackToMoreMenuScreen()
+            TabNavComponent().gotoMyStoreScreen()
+        }
+
         // My Store
-        // When debugging these tests, you might want to save time and avoid the logout - login flow above.
         MyStoreScreen()
-            .then<MyStoreScreen> { it.stats.switchToStatsDashboardYearsTab() }
+            .stats.switchToStatsDashboardMonthTab()
+            .thenTakeScreenshot<MyStoreScreen>("order-dashboard")
+
+        // Create Orders
+        TabNavComponent()
+            .gotoOrdersScreen()
+            .createFABTap()
+            .newOrderTap()
+            .thenTakeScreenshot<UnifiedOrderScreen>("add-order")
+            .goBackToOrdersScreen()
+
+        // Capture In-Person Payment
+        AppPrefs.setCardReaderWelcomeDialogShown() // Skip card reader welcome screen
+        AppPrefs.setShowCardReaderConnectedTutorial(false) // Skip card reader tutorial
+        TabNavComponent()
+            .gotoOrdersScreen()
+            .selectOrder(2)
+            .tapOnCollectPayment()
+            .chooseCardPayment()
+            .thenTakeScreenshot<CardReaderPaymentScreen>("in-person-payments")
+            .goBackToPaymentSelection()
+            .goBackToOrderDetails()
+            .goBackToOrdersScreen()
+
+        // Create Products
+        TabNavComponent()
+            .gotoProductsScreen()
+            .tapOnCreateProduct()
+            .thenTakeScreenshot<ProductListScreen>("add-product")
+            .goBackToProductList()
+
+        NotificationsScreen(wooNotificationBuilder)
+            .thenTakeScreenshot<NotificationsScreen>("push-notifications")
+            .goBackToApp()
     }
 }

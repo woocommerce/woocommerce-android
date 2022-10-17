@@ -1,28 +1,22 @@
 package com.woocommerce.android.model
 
 import android.os.Parcelable
-import com.woocommerce.android.extensions.*
-import com.woocommerce.android.model.Order.*
+import com.woocommerce.android.extensions.sumByBigDecimal
+import com.woocommerce.android.extensions.sumByFloat
+import com.woocommerce.android.model.Order.OrderStatus
 import com.woocommerce.android.ui.products.ProductHelper
 import com.woocommerce.android.util.AddressUtils
-import com.woocommerce.android.util.StringUtils
 import kotlinx.parcelize.IgnoredOnParcel
 import kotlinx.parcelize.Parcelize
-import org.wordpress.android.fluxc.model.LocalOrRemoteId
-import org.wordpress.android.fluxc.model.WCOrderModel
 import org.wordpress.android.fluxc.model.WCOrderStatusModel
-import org.wordpress.android.fluxc.model.order.OrderIdentifier
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.CoreOrderStatus
-import org.wordpress.android.util.DateTimeUtils
 import java.math.BigDecimal
-import java.util.*
+import java.util.Date
+import java.util.Locale
 
 @Parcelize
 data class Order(
-    @Deprecated(replaceWith = ReplaceWith("remoteId"), message = "Use remote id to identify order.")
-    val identifier: OrderIdentifier,
-    private val rawLocalOrderId: Int,
-    private val rawRemoteOrderId: Long,
+    val id: Long,
     val number: String,
     val dateCreated: Date,
     val dateModified: Date,
@@ -34,7 +28,6 @@ data class Order(
     val shippingTotal: BigDecimal,
     val discountTotal: BigDecimal,
     val refundTotal: BigDecimal,
-    val feesTotal: BigDecimal,
     val currency: String,
     val orderKey: String,
     val customerNote: String,
@@ -43,31 +36,39 @@ data class Order(
     val paymentMethodTitle: String,
     val isCashPayment: Boolean,
     val pricesIncludeTax: Boolean,
-    val multiShippingLinesAvailable: Boolean,
     val billingAddress: Address,
     val shippingAddress: Address,
     val shippingMethods: List<ShippingMethod>,
     val items: List<Item>,
     val shippingLines: List<ShippingLine>,
     val feesLines: List<FeeLine>,
-    val metaData: List<MetaData<String>>
+    val taxLines: List<TaxLine>,
+    val chargeId: String?,
+    val shippingPhone: String,
+    val paymentUrl: String,
+    val isEditable: Boolean
 ) : Parcelable {
-    @Deprecated(replaceWith = ReplaceWith("remoteId"), message = "Use remote id to identify order.")
-    val localId
-        get() = LocalOrRemoteId.LocalId(this.rawLocalOrderId)
-
-    val remoteId
-        get() = LocalOrRemoteId.RemoteId(this.rawRemoteOrderId)
-
     @IgnoredOnParcel
     val isOrderPaid = datePaid != null
 
+    @IgnoredOnParcel
+    val isOrderFullyRefunded = refundTotal >= total
+
     // Allow refunding only integer quantities
     @IgnoredOnParcel
-    val availableRefundQuantity = items.sumByFloat { it.quantity }.toInt() + feesLines.count()
+    val quantityOfItemsWhichPossibleToRefund = items.sumByFloat { it.quantity }.toInt() + feesLines.count()
 
     @IgnoredOnParcel
-    val isRefundAvailable = refundTotal < total && availableRefundQuantity > 0
+    val isRefundAvailable = !isOrderFullyRefunded && quantityOfItemsWhichPossibleToRefund > 0 && isOrderPaid
+
+    val hasMultipleShippingLines: Boolean
+        get() = shippingLines.size > 1
+
+    val hasMultipleFeeLines: Boolean
+        get() = feesLines.size > 1
+
+    @IgnoredOnParcel
+    val feesTotal = feesLines.sumByBigDecimal(FeeLine::total)
 
     @Parcelize
     data class ShippingMethod(
@@ -104,6 +105,12 @@ data class Order(
         val isVariation: Boolean = variationId != 0L
 
         @IgnoredOnParcel
+        val pricePreDiscount = if (quantity == 0f) BigDecimal.ZERO else subtotal / quantity.toBigDecimal()
+
+        @IgnoredOnParcel
+        val discount = subtotal - total
+
+        @IgnoredOnParcel
         var containsAddons = false
 
         @IgnoredOnParcel
@@ -114,10 +121,28 @@ data class Order(
          */
         val attributesDescription
             get() = attributesList.filter {
-                it.value.isNotEmpty() && it.key.isNotEmpty() && it.isNotInternalAttributeData
+                it.value.isNotEmpty() && it.key.isNotEmpty()
             }.joinToString {
                 it.value.replaceFirstChar { if (it.isLowerCase()) it.titlecase(Locale.getDefault()) else it.toString() }
             }
+
+        companion object {
+            val EMPTY by lazy {
+                Item(
+                    itemId = 0,
+                    productId = 0,
+                    name = "",
+                    price = BigDecimal(0),
+                    sku = "",
+                    quantity = 0f,
+                    subtotal = BigDecimal(0),
+                    totalTax = BigDecimal(0),
+                    total = BigDecimal(0),
+                    variationId = 0,
+                    attributesList = emptyList()
+                )
+            }
+        }
 
         @Parcelize
         data class Attribute(
@@ -148,28 +173,48 @@ data class Order(
             val asAddonPrice = keyAsAddonRegexGroup
                 ?.last()
                 .orEmpty()
-
-            // Don't include empty or the "_reduced_stock" key
-            // skipping "_reduced_stock" is a temporary workaround until "type" is added to the response.
-            val isNotInternalAttributeData
-                get() = key.first().toString() != "_"
         }
     }
 
     @Parcelize
     data class ShippingLine(
         val itemId: Long,
-        val methodId: String,
+        val methodId: String?,
         val methodTitle: String,
         val totalTax: BigDecimal,
         val total: BigDecimal
+    ) : Parcelable {
+        constructor(methodId: String, methodTitle: String, total: BigDecimal) :
+            this(0L, methodId, methodTitle, BigDecimal.ZERO, total)
+    }
+
+    @Parcelize
+    data class TaxLine(
+        val id: Long,
+        val label: String,
+        val compound: Boolean,
+        val taxTotal: String,
+        val ratePercent: Float
     ) : Parcelable
 
     @Parcelize
     data class FeeLine(
-        val name: String,
-        val total: BigDecimal
-    ) : Parcelable
+        val id: Long,
+        val name: String?,
+        val total: BigDecimal,
+        val totalTax: BigDecimal,
+    ) : Parcelable {
+        fun getTotalValue(): BigDecimal = total + totalTax
+
+        companion object {
+            val EMPTY = FeeLine(
+                id = 0,
+                name = "",
+                total = BigDecimal.ZERO,
+                totalTax = BigDecimal.ZERO
+            )
+        }
+    }
 
     fun getBillingName(defaultValue: String): String {
         return when {
@@ -182,7 +227,7 @@ data class Order(
     fun formatBillingInformationForDisplay(): String {
         val billingName = getBillingName("")
         val billingAddress = this.billingAddress.getEnvelopeAddress()
-        val billingCountry = AddressUtils.getCountryLabelByCountryCode(this.billingAddress.country)
+        val billingCountry = AddressUtils.getCountryLabelByCountryCode(this.billingAddress.country.code)
         return this.billingAddress.getFullAddress(
             billingName, billingAddress, billingCountry
         )
@@ -191,7 +236,7 @@ data class Order(
     fun formatShippingInformationForDisplay(): String {
         val shippingName = "${shippingAddress.firstName} ${shippingAddress.lastName}"
         val shippingAddress = this.shippingAddress.getEnvelopeAddress()
-        val shippingCountry = AddressUtils.getCountryLabelByCountryCode(this.shippingAddress.country)
+        val shippingCountry = AddressUtils.getCountryLabelByCountryCode(this.shippingAddress.country.code)
         return this.shippingAddress.getFullAddress(
             shippingName, shippingAddress, shippingCountry
         )
@@ -199,8 +244,16 @@ data class Order(
 
     fun getProductIds() = items.map { it.productId }
 
+    fun isEmpty() = this.copy(
+        currency = "",
+        dateCreated = DEFAULT_EMPTY_ORDER.dateCreated,
+        dateModified = DEFAULT_EMPTY_ORDER.dateModified
+    ) == DEFAULT_EMPTY_ORDER
+
     sealed class Status(val value: String) : Parcelable {
         companion object {
+            const val AUTO_DRAFT = "auto-draft"
+
             fun fromValue(value: String): Status {
                 return fromDataModel(CoreOrderStatus.fromValue(value)) ?: Custom(value)
             }
@@ -249,11 +302,9 @@ data class Order(
     }
 
     companion object {
-        val EMPTY by lazy {
+        private val DEFAULT_EMPTY_ORDER by lazy {
             Order(
-                identifier = OrderIdentifier(),
-                rawLocalOrderId = 0,
-                rawRemoteOrderId = 0,
+                id = 0,
                 number = "",
                 dateCreated = Date(),
                 dateModified = Date(),
@@ -265,7 +316,6 @@ data class Order(
                 shippingTotal = BigDecimal(0),
                 discountTotal = BigDecimal(0),
                 refundTotal = BigDecimal(0),
-                feesTotal = BigDecimal(0),
                 currency = "",
                 orderKey = "",
                 customerNote = "",
@@ -274,121 +324,23 @@ data class Order(
                 paymentMethodTitle = "",
                 isCashPayment = false,
                 pricesIncludeTax = false,
-                multiShippingLinesAvailable = false,
                 billingAddress = Address.EMPTY,
                 shippingAddress = Address.EMPTY,
                 shippingMethods = emptyList(),
                 items = emptyList(),
                 shippingLines = emptyList(),
-                metaData = emptyList(),
-                feesLines = emptyList()
+                chargeId = "",
+                feesLines = emptyList(),
+                taxLines = emptyList(),
+                shippingPhone = "",
+                paymentUrl = "",
+                isEditable = true
             )
         }
-    }
-}
 
-fun WCOrderModel.toAppModel(): Order {
-    @Suppress("DEPRECATION_ERROR")
-    return Order(
-        identifier = OrderIdentifier(this),
-        rawLocalOrderId = this.id,
-        rawRemoteOrderId = this.remoteOrderId.value,
-        number = this.number,
-        dateCreated = DateTimeUtils.dateUTCFromIso8601(this.dateCreated) ?: Date(),
-        dateModified = DateTimeUtils.dateUTCFromIso8601(this.dateModified) ?: Date(),
-        datePaid = DateTimeUtils.dateUTCFromIso8601(this.datePaid),
-        status = Status.fromValue(status),
-        total = this.total.toBigDecimalOrNull()?.roundError() ?: BigDecimal.ZERO,
-        productsTotal = this.getOrderSubtotal().toBigDecimal().roundError(),
-        totalTax = this.totalTax.toBigDecimalOrNull()?.roundError() ?: BigDecimal.ZERO,
-        shippingTotal = this.shippingTotal.toBigDecimalOrNull()?.roundError() ?: BigDecimal.ZERO,
-        discountTotal = this.discountTotal.toBigDecimalOrNull()?.roundError() ?: BigDecimal.ZERO,
-        refundTotal = -this.refundTotal.toBigDecimal().roundError(), // WCOrderModel.refundTotal is NEGATIVE
-        feesTotal = this.getFeeLineList()
-            .sumByBigDecimal { it.total?.toBigDecimalOrNull()?.roundError() ?: BigDecimal.ZERO },
-        currency = this.currency,
-        orderKey = this.orderKey,
-        customerNote = this.customerNote,
-        discountCodes = this.discountCodes,
-        paymentMethod = this.paymentMethod,
-        paymentMethodTitle = this.paymentMethodTitle,
-        isCashPayment = CASH_PAYMENTS.contains(this.paymentMethod),
-        pricesIncludeTax = this.pricesIncludeTax,
-        multiShippingLinesAvailable = this.isMultiShippingLinesAvailable(),
-        billingAddress = this.getBillingAddress().let {
-            Address(
-                it.company,
-                it.firstName,
-                it.lastName,
-                this.billingPhone,
-                it.country,
-                it.state,
-                it.address1,
-                it.address2,
-                it.city,
-                it.postcode,
-                this.billingEmail
-            )
-        },
-        shippingAddress = this.getShippingAddress().let {
-            Address(
-                it.company,
-                it.firstName,
-                it.lastName,
-                it.phone,
-                it.country,
-                it.state,
-                it.address1,
-                it.address2,
-                it.city,
-                it.postcode,
-                ""
-            )
-        },
-        shippingMethods = getShippingLineList().filter { it.methodId != null && it.methodTitle != null }.map {
-            ShippingMethod(
-                it.methodId!!,
-                it.methodTitle!!,
-                it.total?.toBigDecimalOrNull() ?: BigDecimal.ZERO,
-                it.totalTax?.toBigDecimalOrNull() ?: BigDecimal.ZERO
-            )
-        },
-        items = getLineItemList()
-            .filter { it.productId != null && it.id != null }
-            .map {
-                Item(
-                    it.id!!,
-                    it.productId!!,
-                    it.parentName?.fastStripHtml() ?: it.name?.fastStripHtml() ?: StringUtils.EMPTY,
-                    it.price?.toBigDecimalOrNull()?.roundError() ?: BigDecimal.ZERO,
-                    it.sku ?: "",
-                    it.quantity ?: 0f,
-                    it.subtotal?.toBigDecimalOrNull()?.roundError() ?: BigDecimal.ZERO,
-                    it.totalTax?.toBigDecimalOrNull()?.roundError() ?: BigDecimal.ZERO,
-                    it.total?.toBigDecimalOrNull()?.roundError() ?: BigDecimal.ZERO,
-                    it.variationId ?: 0,
-                    it.getAttributeList().map { attribute ->
-                        Item.Attribute(attribute.key.orEmpty(), attribute.value.orEmpty())
-                    }
-                )
-            },
-        shippingLines = getShippingLineList().map {
-            ShippingLine(
-                it.id!!,
-                it.methodId ?: StringUtils.EMPTY,
-                it.methodTitle ?: StringUtils.EMPTY,
-                it.totalTax?.toBigDecimalOrNull()?.roundError() ?: BigDecimal.ZERO,
-                it.total?.toBigDecimalOrNull()?.roundError() ?: BigDecimal.ZERO
-            )
-        },
-        feesLines = this.getFeeLineList().map {
-            FeeLine(
-                it.name ?: StringUtils.EMPTY,
-                it.total?.toBigDecimalOrNull()?.roundError() ?: BigDecimal.ZERO
-            )
-        },
-        metaData = getMetaDataList().mapNotNull { it.toAppModel() }
-    )
+        val EMPTY
+            get() = DEFAULT_EMPTY_ORDER.copy(dateCreated = Date(), dateModified = Date())
+    }
 }
 
 fun WCOrderStatusModel.toOrderStatus(): OrderStatus {

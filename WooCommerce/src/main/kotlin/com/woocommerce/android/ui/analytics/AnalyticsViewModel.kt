@@ -3,6 +3,13 @@ package com.woocommerce.android.ui.analytics
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.R
+import com.woocommerce.android.ui.analytics.daterangeselector.AnalyticsDateRangeCalculator
+import com.woocommerce.android.ui.analytics.daterangeselector.AnalyticsDateRangeSelectorViewState
+import com.woocommerce.android.ui.analytics.daterangeselector.AnalyticsDateRanges
+import com.woocommerce.android.ui.analytics.daterangeselector.DateRange
+import com.woocommerce.android.ui.analytics.daterangeselector.DateRange.MultipleDateRange
+import com.woocommerce.android.ui.analytics.daterangeselector.DateRange.SimpleDateRange
+import com.woocommerce.android.ui.analytics.daterangeselector.formatDatesToFriendlyPeriod
 import com.woocommerce.android.model.ProductItem
 import com.woocommerce.android.model.DeltaPercentage
 import com.woocommerce.android.tools.SelectedSite
@@ -32,6 +39,7 @@ import com.zendesk.util.DateUtils.isSameDay
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import java.util.Date
 import kotlinx.coroutines.launch
 import java.util.*
 import javax.inject.Inject

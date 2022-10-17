@@ -2,10 +2,9 @@ package com.woocommerce.android.ui.dialog
 
 import android.app.Activity
 import android.content.DialogInterface.OnClickListener
+import androidx.annotation.StringRes
 import androidx.appcompat.app.AlertDialog
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
-import androidx.annotation.StringRes
-import com.woocommerce.android.R.string
 import java.lang.ref.WeakReference
 
 /**
@@ -32,26 +31,24 @@ object WooDialog {
             return
         }
 
-        val message = messageId?.let {
-            activity.applicationContext.getString(it)
-        } ?: activity.applicationContext.getString(string.discard_message)
-
-        val positiveButtonTextId = positiveButtonId ?: string.discard
-        val negativeButtonTextId = negativeButtonId ?: string.keep_editing
-
         val builder = MaterialAlertDialogBuilder(activity)
-            .setMessage(message)
             .setCancelable(true)
-            .setPositiveButton(positiveButtonTextId, posBtnAction)
-            .setNegativeButton(negativeButtonTextId, negBtnAction)
             .setOnDismissListener { onCleared() }
-
-        neutBtAction?.let {
-            val neutralButtonTextId = neutralButtonId ?: string.product_detail_save_as_draft
-            builder.setNeutralButton(neutralButtonTextId, it)
-        }
-
-        titleId?.let { builder.setTitle(activity.applicationContext.getString(it)) }
+            .apply {
+                titleId?.let { setTitle(it) }
+            }
+            .apply {
+                messageId?.let { setMessage(messageId) }
+            }
+            .apply {
+                positiveButtonId?.let { setPositiveButton(it, posBtnAction) }
+            }
+            .apply {
+                negativeButtonId?.let { setNegativeButton(negativeButtonId, negBtnAction) }
+            }
+            .apply {
+                neutralButtonId?.let { setNeutralButton(it, neutBtAction) }
+            }
 
         dialogRef = WeakReference(builder.show())
     }

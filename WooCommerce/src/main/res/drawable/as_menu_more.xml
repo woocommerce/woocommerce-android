@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<animated-selector
+    xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:state_focused="true"
+        android:drawable="@drawable/ic_more_menu">
+    </item>
+
+    <item
+        android:id="@+id/selected"
+        android:state_selected="true"
+        android:drawable="@drawable/ic_more_menu">
+    </item>
+
+    <item
+        android:id="@+id/unselected"
+        android:state_selected="false"
+        android:drawable="@drawable/ic_more_menu">
+    </item>
+
+</animated-selector>

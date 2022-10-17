@@ -8,7 +8,6 @@ object RequestCodes {
 
     const val ADD_ACCOUNT = BASE_REQUEST_CODE + 0
     const val SETTINGS = BASE_REQUEST_CODE + 1
-    const val SITE_PICKER = BASE_REQUEST_CODE + 2
     const val IN_APP_UPDATE = BASE_REQUEST_CODE + 3
 
     const val CAMERA_PERMISSION = BASE_REQUEST_CODE + 10

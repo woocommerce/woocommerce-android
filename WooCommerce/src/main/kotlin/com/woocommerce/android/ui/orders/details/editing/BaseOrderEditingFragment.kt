@@ -7,10 +7,14 @@ import android.view.Menu
 import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
+import androidx.annotation.CallSuper
 import androidx.annotation.LayoutRes
+import androidx.core.view.MenuProvider
 import androidx.hilt.navigation.fragment.hiltNavGraphViewModels
+import androidx.lifecycle.Lifecycle
 import androidx.navigation.fragment.findNavController
 import com.woocommerce.android.R
+import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
@@ -19,14 +23,14 @@ import com.woocommerce.android.viewmodel.MultiLiveEvent
 import org.wordpress.android.util.ActivityUtils
 import javax.inject.Inject
 
-abstract class BaseOrderEditingFragment : BaseFragment, BackPressListener {
+abstract class BaseOrderEditingFragment : BaseFragment, BackPressListener, MenuProvider {
     constructor() : super()
     constructor(@LayoutRes layoutId: Int) : super(layoutId)
 
     protected val sharedViewModel by hiltNavGraphViewModels<OrderEditingViewModel>(R.id.nav_graph_orders)
     @Inject lateinit var uiMessageResolver: UIMessageResolver
 
-    private var doneMenuItem: MenuItem? = null
+    protected var doneMenuItem: MenuItem? = null
 
     /**
      * The value to pass to analytics for the specific screen, used to record when the user enters or
@@ -67,46 +71,48 @@ abstract class BaseOrderEditingFragment : BaseFragment, BackPressListener {
      */
     abstract fun saveChanges(): Boolean
 
+    @CallSuper
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setHasOptionsMenu(true)
         if (savedInstanceState == null) {
             trackEventStarted()
         }
     }
 
+    @CallSuper
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        requireActivity().addMenuProvider(this, viewLifecycleOwner, Lifecycle.State.RESUMED)
         setupObservers()
     }
 
-    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
-        super.onCreateOptionsMenu(menu, inflater)
+    @CallSuper
+    override fun onCreateMenu(menu: Menu, inflater: MenuInflater) {
         inflater.inflate(R.menu.menu_done, menu)
         doneMenuItem = menu.findItem(R.id.menu_done)
     }
 
-    override fun onPrepareOptionsMenu(menu: Menu) {
-        super.onPrepareOptionsMenu(menu)
+    @CallSuper
+    override fun onPrepareMenu(menu: Menu) {
         updateDoneMenuItem()
     }
 
     private fun setupObservers() {
         sharedViewModel.event.observe(
-            viewLifecycleOwner,
-            { event ->
-                when (event) {
-                    is MultiLiveEvent.Event.ShowSnackbar -> {
-                        uiMessageResolver.showSnack(event.message)
-                    }
+            viewLifecycleOwner
+        ) { event ->
+            when (event) {
+                is MultiLiveEvent.Event.ShowSnackbar -> {
+                    uiMessageResolver.showSnack(event.message)
                 }
             }
-        )
+        }
 
         sharedViewModel.start()
     }
 
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+    @CallSuper
+    override fun onMenuItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
             R.id.menu_done -> {
                 if (saveChanges()) {
@@ -114,7 +120,7 @@ abstract class BaseOrderEditingFragment : BaseFragment, BackPressListener {
                 }
                 true
             }
-            else -> super.onOptionsItemSelected(item)
+            else -> false
         }
     }
 
@@ -122,6 +128,7 @@ abstract class BaseOrderEditingFragment : BaseFragment, BackPressListener {
         doneMenuItem?.isVisible = hasChanges()
     }
 
+    @CallSuper
     override fun onRequestAllowBackPress(): Boolean {
         return if (hasChanges()) {
             confirmDiscard()
@@ -140,7 +147,7 @@ abstract class BaseOrderEditingFragment : BaseFragment, BackPressListener {
         ).showDialog()
     }
 
-    private fun navigateUp() {
+    protected fun navigateUp() {
         trackEventCanceled()
         ActivityUtils.hideKeyboard(activity)
         findNavController().navigateUp()
@@ -148,7 +155,7 @@ abstract class BaseOrderEditingFragment : BaseFragment, BackPressListener {
 
     private fun trackEventStarted() {
         AnalyticsTracker.track(
-            AnalyticsTracker.Stat.ORDER_DETAIL_EDIT_FLOW_STARTED,
+            AnalyticsEvent.ORDER_DETAIL_EDIT_FLOW_STARTED,
             mapOf(
                 AnalyticsTracker.KEY_SUBJECT to analyticsValue
             )
@@ -157,7 +164,7 @@ abstract class BaseOrderEditingFragment : BaseFragment, BackPressListener {
 
     private fun trackEventCanceled() {
         AnalyticsTracker.track(
-            AnalyticsTracker.Stat.ORDER_DETAIL_EDIT_FLOW_CANCELED,
+            AnalyticsEvent.ORDER_DETAIL_EDIT_FLOW_CANCELED,
             mapOf(
                 AnalyticsTracker.KEY_SUBJECT to analyticsValue
             )

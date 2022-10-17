@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<merge xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:background="@drawable/bg_stepper_view"
+    android:gravity="center"
+    android:orientation="horizontal"
+    tools:parentTag="androidx.appcompat.widget.LinearLayoutCompat">
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/minus_button"
+        style="@style/Woo.Button.Icon"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:icon="@drawable/ic_gridicons_minus" />
+
+    <androidx.appcompat.widget.AppCompatTextView
+        android:id="@+id/value_text"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:accessibilityLiveRegion="polite"
+        android:maxLines="1"
+        android:minEms="2"
+        android:textAlignment="center"
+        android:textAppearance="?attr/textAppearanceSubtitle1"
+        tools:text="1" />
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/plus_button"
+        style="@style/Woo.Button.Icon"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:icon="@drawable/ic_add" />
+</merge>

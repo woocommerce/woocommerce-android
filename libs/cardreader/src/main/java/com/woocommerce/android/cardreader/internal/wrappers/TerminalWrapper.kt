@@ -9,12 +9,14 @@ import com.stripe.stripeterminal.external.callable.ConnectionTokenProvider
 import com.stripe.stripeterminal.external.callable.DiscoveryListener
 import com.stripe.stripeterminal.external.callable.PaymentIntentCallback
 import com.stripe.stripeterminal.external.callable.ReaderCallback
+import com.stripe.stripeterminal.external.callable.RefundCallback
 import com.stripe.stripeterminal.external.callable.TerminalListener
 import com.stripe.stripeterminal.external.models.ConnectionConfiguration
 import com.stripe.stripeterminal.external.models.DiscoveryConfiguration
 import com.stripe.stripeterminal.external.models.PaymentIntent
 import com.stripe.stripeterminal.external.models.PaymentIntentParameters
 import com.stripe.stripeterminal.external.models.Reader
+import com.stripe.stripeterminal.external.models.RefundParameters
 import com.stripe.stripeterminal.external.models.SimulateReaderUpdate
 import com.stripe.stripeterminal.external.models.SimulatorConfiguration
 import com.stripe.stripeterminal.log.LogLevel
@@ -66,6 +68,12 @@ internal class TerminalWrapper {
 
     fun cancelPayment(paymentIntent: PaymentIntent, callback: PaymentIntentCallback) =
         Terminal.getInstance().cancelPaymentIntent(paymentIntent, callback)
+
+    fun refundPayment(refundParameters: RefundParameters, callback: Callback) =
+        Terminal.getInstance().collectRefundPaymentMethod(refundParameters, callback)
+
+    fun processRefund(callback: RefundCallback) =
+        Terminal.getInstance().processRefund(callback)
 
     fun installSoftwareUpdate() = Terminal.getInstance().installAvailableUpdate()
 

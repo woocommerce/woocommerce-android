@@ -9,11 +9,19 @@ import com.woocommerce.android.ui.common.UserEligibilityErrorViewModel.ViewState
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.*
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.test.runBlockingTest
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Test
-import org.mockito.kotlin.*
+import org.mockito.kotlin.KArgumentCaptor
+import org.mockito.kotlin.any
+import org.mockito.kotlin.argumentCaptor
+import org.mockito.kotlin.clearInvocations
+import org.mockito.kotlin.doReturn
+import org.mockito.kotlin.mock
+import org.mockito.kotlin.spy
+import org.mockito.kotlin.times
+import org.mockito.kotlin.verify
+import org.mockito.kotlin.whenever
 import org.wordpress.android.fluxc.Dispatcher
 import org.wordpress.android.fluxc.action.AccountAction.SIGN_OUT
 import org.wordpress.android.fluxc.action.SiteAction
@@ -68,7 +76,7 @@ class UserEligibilityErrorViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `Displays the user eligibility error screen correctly`() = coroutinesTestRule.testDispatcher.runBlockingTest {
+    fun `Displays the user eligibility error screen correctly`() = testBlocking {
         doReturn(testUser).whenever(userEligibilityFetcher).getUserByEmail(any())
         whenever(appPrefsWrapper.getUserEmail()).thenReturn(testUser.email)
 
@@ -83,7 +91,7 @@ class UserEligibilityErrorViewModelTest : BaseUnitTest() {
 
     @Test
     fun `Handles retry button correctly when user is not eligible`() =
-        coroutinesTestRule.testDispatcher.runBlockingTest {
+        testBlocking {
             doReturn(testUser).whenever(userEligibilityFetcher).fetchUserInfo()
             doReturn(false).whenever(appPrefsWrapper).isUserEligible()
 
@@ -110,7 +118,7 @@ class UserEligibilityErrorViewModelTest : BaseUnitTest() {
         }
 
     @Test
-    fun `Handles retry button correctly when user is eligible`() = coroutinesTestRule.testDispatcher.runBlockingTest {
+    fun `Handles retry button correctly when user is eligible`() = testBlocking {
         testUser.roles = "[\"shop_manager\"]"
         doReturn(testUser).whenever(userEligibilityFetcher).fetchUserInfo()
         doReturn(true).whenever(appPrefsWrapper).isUserEligible()

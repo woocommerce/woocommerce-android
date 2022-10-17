@@ -1,6 +1,8 @@
 package com.woocommerce.android
 
 import android.app.Application
+import androidx.hilt.work.HiltWorkerFactory
+import androidx.work.Configuration
 import com.yarolegovich.wellsql.WellSql
 import dagger.android.AndroidInjector
 import dagger.android.DispatchingAndroidInjector
@@ -14,11 +16,17 @@ import dagger.hilt.components.SingletonComponent
 @CustomTestApplication(BaseWooCommerce::class)
 interface WooCommerceTest
 
-open class BaseWooCommerce : Application(), HasAndroidInjector {
+open class BaseWooCommerce : Application(), HasAndroidInjector, Configuration.Provider {
     @EntryPoint
     @InstallIn(SingletonComponent::class)
     interface AndroidInjectorEntryPoint {
         fun injector(): DispatchingAndroidInjector<Any>
+    }
+
+    @EntryPoint
+    @InstallIn(SingletonComponent::class)
+    interface HiltWorkerFactoryEntryPoint {
+        fun workerFactory(): HiltWorkerFactory
     }
 
     override fun onCreate() {
@@ -32,5 +40,16 @@ open class BaseWooCommerce : Application(), HasAndroidInjector {
             applicationContext,
             AndroidInjectorEntryPoint::class.java
         ).injector()
+    }
+
+    override fun getWorkManagerConfiguration(): Configuration {
+        val hiltWorkerFactory = EntryPoints.get(
+            applicationContext,
+            HiltWorkerFactoryEntryPoint::class.java
+        ).workerFactory()
+
+        return Configuration.Builder()
+            .setWorkerFactory(hiltWorkerFactory)
+            .build()
     }
 }

@@ -51,6 +51,7 @@ class SelectedSite(
         )
     }
 
+    @Suppress("DEPRECATION")
     fun set(siteModel: SiteModel) {
         state.value = siteModel
         PreferenceUtils.setInt(getPreferences(), SELECTED_SITE_LOCAL_ID, siteModel.id)

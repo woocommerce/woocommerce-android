@@ -6,6 +6,7 @@ import android.view.ViewGroup
 import androidx.annotation.StringRes
 import androidx.core.content.ContextCompat
 import androidx.core.text.HtmlCompat
+import androidx.core.view.ViewCompat
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.ViewHolder
 import com.woocommerce.android.R
@@ -18,7 +19,6 @@ import com.woocommerce.android.util.StringUtils
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T
 import com.woocommerce.android.widgets.UnreadItemDecoration.ItemType
-import com.woocommerce.android.widgets.sectionedrecyclerview.Section
 import com.woocommerce.android.widgets.sectionedrecyclerview.SectionParameters
 import com.woocommerce.android.widgets.sectionedrecyclerview.SectionedRecyclerViewAdapter
 import com.woocommerce.android.widgets.sectionedrecyclerview.StatelessSection
@@ -26,14 +26,8 @@ import com.woocommerce.android.widgets.sectionedrecyclerview.StatelessSection
 class ReviewListAdapter(private val clickListener: OnReviewClickListener) : SectionedRecyclerViewAdapter() {
     private val reviewList = mutableListOf<ProductReview>()
 
-    // Copy of current review manually removed from the list so the action may be undone.
-    private var pendingRemovalReview: Triple<ProductReview, ReviewListSection, Int>? = null
-
-    // List of all remote note IDs the user has removed this session
-    private val removedRemoteIds = HashSet<Long>()
-
     interface OnReviewClickListener {
-        fun onReviewClick(review: ProductReview) {}
+        fun onReviewClick(review: ProductReview, sharedView: View? = null) {}
     }
 
     fun setReviews(reviews: List<ProductReview>) {
@@ -93,9 +87,6 @@ class ReviewListAdapter(private val clickListener: OnReviewClickListener) : Sect
         reviewList.clear()
         reviewList.addAll(reviews)
 
-        // remove any items temporarily being hidden
-        pendingRemovalReview?.first?.remoteId?.let { hideReviewWithId(it, notifyDataChanged = false) }
-
         notifyDataSetChanged()
     }
 
@@ -124,52 +115,6 @@ class ReviewListAdapter(private val clickListener: OnReviewClickListener) : Sect
         }
 
         return true
-    }
-
-    /**
-     * Locates and removes the review from the appropriate section, but keeps a reference to
-     * it so it may be be restored if needed. This temporary object will get cleared either manually
-     * by reverting the action, or by loading a fresh list of product reviews.
-     *
-     * If we've hidden this item already, but have since received fresh data, set [notifyDataChanged] as false to
-     * suppress the dataChanged notifications and prevent the UI from jumping.
-     *
-     * @param remoteId The remote Id of the product review
-     * @param notifyDataChanged If true, notify the UI of changes to the underlying data set. Default true.
-     */
-    fun hideReviewWithId(remoteId: Long, notifyDataChanged: Boolean = true) {
-        val posInList = reviewList.indexOfFirst { it.remoteId == remoteId }
-        if (posInList == -1) {
-            WooLog.w(T.REVIEWS, "Unable to hide product review, position is -1")
-            pendingRemovalReview = null
-            removedRemoteIds.remove(remoteId)
-            return
-        }
-
-        getSectionForListItemPosition(posInList)?.let {
-            val section = it as ReviewListSection
-            val posInSection = getPositionInSectionByListPos(posInList)
-            pendingRemovalReview = Triple(reviewList[posInList], section, posInSection)
-
-            // remove from the section list
-            section.list.removeAt(posInSection)
-
-            if (!removedRemoteIds.contains(remoteId)) {
-                removedRemoteIds.add(remoteId)
-            }
-
-            if (notifyDataChanged) {
-                notifyItemRemovedFromSection(section, posInSection)
-            }
-
-            if (section.list.size == 0) {
-                val sectionPos = getSectionPosition(section)
-                section.isVisible = false
-                if (sectionPos != INVALID_POSITION && notifyDataChanged) {
-                    notifySectionChangedToInvisible(section, sectionPos)
-                }
-            }
-        }
     }
 
     /**
@@ -223,107 +168,7 @@ class ReviewListAdapter(private val clickListener: OnReviewClickListener) : Sect
         return ItemType.READ
     }
 
-    /**
-     * Inserts the previously removed review and notifies the recycler view.
-     * @return The position in the adapter the item was added to
-     */
-    fun revertHiddenReviewAndReturnPos(): Int {
-        return pendingRemovalReview?.let { (review, section, pos) ->
-            if (!section.isVisible) {
-                section.isVisible = true
-                notifySectionChangedToVisible(section)
-            }
-
-            with(section.list) {
-                if (pos < size) {
-                    add(pos, review)
-                } else {
-                    add(review)
-                }
-            }
-
-            removedRemoteIds.remove(review.remoteId)
-            pendingRemovalReview = null
-
-            notifyItemInsertedInSection(section, pos)
-            getPositionInAdapter(section, pos)
-        } ?: INVALID_POSITION
-    }
-
-    /**
-     * Removes the previously hidden review from the main list so changes from the
-     * database will be properly applied.
-     */
-    fun removeHiddenReviewFromList() {
-        pendingRemovalReview?.let { (review, _, _) ->
-            reviewList.remove(review)
-
-            removedRemoteIds.remove(review.remoteId)
-            pendingRemovalReview = null
-        }
-    }
-
-    /**
-     * Resets any pending review moderation state
-     */
-    fun resetPendingModerationState() {
-        pendingRemovalReview = null
-    }
-
     fun isEmpty() = reviewList.isEmpty()
-    // endregion
-
-    // region Private methods
-    /**
-     * Return the item position relative to the section.
-     *
-     * @param position position of the item in the original backing list
-     * @return position of the item in the section
-     */
-    private fun getPositionInSectionByListPos(position: Int): Int {
-        var currentPos = 0
-
-        sectionsMap.entries.forEach {
-            val section = it.value
-            val sectionTotal = section.getContentItemsTotal()
-
-            // check if position is in this section
-            if (position >= currentPos && position <= currentPos + sectionTotal - 1) {
-                return position - currentPos
-            }
-
-            currentPos += sectionTotal
-        }
-
-        // position not found, fail fast
-        throw IndexOutOfBoundsException("Unable to find matching position $position in section")
-    }
-
-    /**
-     * Returns the Section object for a position in the backing list.
-     *
-     * @param position position in the original list
-     * @return Section object for that position or null if not found
-     */
-    private fun getSectionForListItemPosition(position: Int): Section? {
-        var currentPos = 0
-
-        sectionsMap.entries.forEach {
-            val section = it.value
-            val sectionTotal = section.getContentItemsTotal()
-
-            // check if position is in this section
-            if (position >= currentPos && position <= currentPos + sectionTotal - 1) {
-                return section
-            }
-
-            currentPos += sectionTotal
-        }
-
-        // position not found, fail fast
-        WooLog.w(T.REVIEWS, "Unable to find matching section for position $position")
-        return null
-    }
     // endregion
 
     private inner class ReviewListSection(
@@ -355,7 +200,7 @@ class ReviewListAdapter(private val clickListener: OnReviewClickListener) : Sect
                 reviewStatus = ProductReviewStatus.fromString(review.status)
             )
             itemHolder.itemView.setOnClickListener {
-                clickListener.onReviewClick(review)
+                clickListener.onReviewClick(review, itemHolder.itemView)
             }
         }
 
@@ -395,6 +240,14 @@ class ReviewListAdapter(private val clickListener: OnReviewClickListener) : Sect
             viewBinding.notifRating.visibility = View.GONE
             viewBinding.notifIcon.setImageResource(R.drawable.ic_comment)
             viewBinding.notifDesc.maxLines = 2
+
+            ViewCompat.setTransitionName(
+                viewBinding.root,
+                String.format(
+                    context.getString(R.string.review_card_transition_name),
+                    review.remoteId
+                )
+            )
 
             if (review.rating > 0) {
                 viewBinding.notifRating.numStars = review.rating

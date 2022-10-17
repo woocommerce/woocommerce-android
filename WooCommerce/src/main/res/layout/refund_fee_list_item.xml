@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/issueRefund_feesName"
+        style="@style/Woo.Card.Title"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:maxLines="2"
+        app:layout_constrainedWidth="true"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:text="MasterCard Fees" />
+
+    <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/issueRefund_feesPrice"
+        style="@style/Woo.Card.Body"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="@+id/issueRefund_feesName"
+        app:layout_constraintTop_toBottomOf="@id/issueRefund_feesName"
+        tools:text="$24.00" />
+
+    <com.google.android.material.switchmaterial.SwitchMaterial
+        android:id="@+id/issueRefund_feeLineSwitch"
+        style="@style/Woo.Card.Body.High"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:gravity="center_vertical"
+        android:importantForAccessibility="no"
+        android:visibility="gone"
+        app:layout_constraintStart_toEndOf="@id/issueRefund_feesName"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <View
+        android:id="@+id/issueRefund_feesDivider"
+        style="@style/Woo.Divider"
+        android:layout_marginStart="@dimen/major_100"
+        android:layout_marginTop="@dimen/major_75"
+        android:layout_marginEnd="@dimen/minor_00"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/issueRefund_feesPrice" />
+</androidx.constraintlayout.widget.ConstraintLayout>

@@ -1,30 +1,59 @@
 package com.woocommerce.android.ui.login
 
 import android.app.Activity
+import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
+import android.os.Parcelable
 import android.view.MenuItem
+import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
-import com.google.android.material.snackbar.BaseTransientBottomBar
-import com.google.android.material.snackbar.Snackbar
+import androidx.lifecycle.lifecycleScope
 import com.woocommerce.android.AppPrefs
+import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.AppUrls
+import com.woocommerce.android.AppUrls.LOGIN_WITH_EMAIL_WHAT_IS_WORDPRESS_COM_ACCOUNT
 import com.woocommerce.android.R
+import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
-import com.woocommerce.android.analytics.AnalyticsTracker.Stat
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_FLOW
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_SOURCE
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_JETPACK_INSTALLATION_SOURCE_WEB
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_LOGIN_WITH_WORDPRESS_COM
+import com.woocommerce.android.analytics.ExperimentTracker
+import com.woocommerce.android.barcode.QrCodeScanningFragment
 import com.woocommerce.android.databinding.ActivityLoginBinding
+import com.woocommerce.android.experiment.PrologueExperiment
+import com.woocommerce.android.extensions.parcelable
 import com.woocommerce.android.support.HelpActivity
 import com.woocommerce.android.support.HelpActivity.Origin
 import com.woocommerce.android.support.ZendeskExtraTags
 import com.woocommerce.android.support.ZendeskHelper
+import com.woocommerce.android.ui.base.UIMessageResolver
+import com.woocommerce.android.ui.login.LoginPrologueCarouselFragment.PrologueCarouselListener
 import com.woocommerce.android.ui.login.LoginPrologueFragment.PrologueFinishedListener
+import com.woocommerce.android.ui.login.LoginPrologueSurveyFragment.PrologueSurveyListener
 import com.woocommerce.android.ui.login.UnifiedLoginTracker.Click
 import com.woocommerce.android.ui.login.UnifiedLoginTracker.Flow
 import com.woocommerce.android.ui.login.UnifiedLoginTracker.Flow.LOGIN_SITE_ADDRESS
 import com.woocommerce.android.ui.login.UnifiedLoginTracker.Source
 import com.woocommerce.android.ui.login.UnifiedLoginTracker.Step.ENTER_SITE_ADDRESS
+import com.woocommerce.android.ui.login.accountmismatch.AccountMismatchErrorFragment
+import com.woocommerce.android.ui.login.accountmismatch.AccountMismatchErrorFragmentArgs
+import com.woocommerce.android.ui.login.accountmismatch.AccountMismatchErrorViewModel.AccountMismatchPrimaryButton
+import com.woocommerce.android.ui.login.localnotifications.LoginHelpNotificationType
+import com.woocommerce.android.ui.login.localnotifications.LoginHelpNotificationType.DEFAULT_HELP
+import com.woocommerce.android.ui.login.localnotifications.LoginHelpNotificationType.LOGIN_SITE_ADDRESS_EMAIL_ERROR
+import com.woocommerce.android.ui.login.localnotifications.LoginHelpNotificationType.LOGIN_SITE_ADDRESS_ERROR
+import com.woocommerce.android.ui.login.localnotifications.LoginHelpNotificationType.LOGIN_SITE_ADDRESS_PASSWORD_ERROR
+import com.woocommerce.android.ui.login.localnotifications.LoginHelpNotificationType.LOGIN_WPCOM_EMAIL_ERROR
+import com.woocommerce.android.ui.login.localnotifications.LoginHelpNotificationType.LOGIN_WPCOM_PASSWORD_ERROR
+import com.woocommerce.android.ui.login.localnotifications.LoginNotificationScheduler
+import com.woocommerce.android.ui.login.overrides.WooLoginEmailFragment
+import com.woocommerce.android.ui.login.overrides.WooLoginEmailPasswordFragment
+import com.woocommerce.android.ui.login.overrides.WooLoginSiteAddressFragment
 import com.woocommerce.android.ui.main.MainActivity
 import com.woocommerce.android.util.ActivityUtils
 import com.woocommerce.android.util.ChromeCustomTabUtils
@@ -34,10 +63,17 @@ import dagger.android.AndroidInjector
 import dagger.android.DispatchingAndroidInjector
 import dagger.android.HasAndroidInjector
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.parcelize.Parcelize
+import org.greenrobot.eventbus.Subscribe
+import org.greenrobot.eventbus.ThreadMode.MAIN
+import org.wordpress.android.fluxc.Dispatcher
 import org.wordpress.android.fluxc.network.MemorizingTrustManager
 import org.wordpress.android.fluxc.store.AccountStore.AuthEmailPayloadScheme.WOOCOMMERCE
+import org.wordpress.android.fluxc.store.AccountStore.AuthOptionsErrorType.UNKNOWN_USER
+import org.wordpress.android.fluxc.store.AccountStore.OnAuthOptionsFetched
 import org.wordpress.android.fluxc.store.SiteStore
 import org.wordpress.android.fluxc.store.SiteStore.ConnectSiteInfoPayload
+import org.wordpress.android.fluxc.store.SiteStore.OnConnectSiteInfoChecked
 import org.wordpress.android.login.AuthOptions
 import org.wordpress.android.login.GoogleFragment.GoogleListener
 import org.wordpress.android.login.Login2FaFragment
@@ -47,32 +83,58 @@ import org.wordpress.android.login.LoginEmailPasswordFragment
 import org.wordpress.android.login.LoginGoogleFragment
 import org.wordpress.android.login.LoginListener
 import org.wordpress.android.login.LoginMagicLinkRequestFragment
-import org.wordpress.android.login.LoginMagicLinkSentFragment
+import org.wordpress.android.login.LoginMagicLinkSentImprovedFragment
 import org.wordpress.android.login.LoginMode
 import org.wordpress.android.login.LoginSiteAddressFragment
 import org.wordpress.android.login.LoginUsernamePasswordFragment
 import org.wordpress.android.util.ToastUtils
-import java.util.ArrayList
 import javax.inject.Inject
 import kotlin.text.RegexOption.IGNORE_CASE
 
-@Suppress("SameParameterValue")
+// TODO Extract logic out of LoginActivity to reduce size
+@Suppress("SameParameterValue", "LargeClass")
 @AndroidEntryPoint
 class LoginActivity :
     AppCompatActivity(),
     LoginListener,
     GoogleListener,
     PrologueFinishedListener,
+    PrologueCarouselListener,
     HasAndroidInjector,
     LoginNoJetpackListener,
-    LoginEmailHelpDialogFragment.Listener {
+    LoginEmailHelpDialogFragment.Listener,
+    WooLoginEmailFragment.Listener,
+    PrologueSurveyListener,
+    WooLoginEmailPasswordFragment.Listener,
+    LoginNoWPcomAccountFoundFragment.Listener {
     companion object {
         private const val FORGOT_PASSWORD_URL_SUFFIX = "wp-login.php?action=lostpassword"
         private const val MAGIC_LOGIN = "magic-login"
         private const val TOKEN_PARAMETER = "token"
+        private const val JETPACK_CONNECT_URL = "https://wordpress.com/jetpack/connect"
+        private const val JETPACK_CONNECTED_REDIRECT_URL = "woocommerce://jetpack-connected"
 
         private const val KEY_UNIFIED_TRACKER_SOURCE = "KEY_UNIFIED_TRACKER_SOURCE"
         private const val KEY_UNIFIED_TRACKER_FLOW = "KEY_UNIFIED_TRACKER_FLOW"
+        private const val KEY_LOGIN_HELP_NOTIFICATION = "KEY_LOGIN_HELP_NOTIFICATION"
+        private const val KEY_CONNECT_SITE_INFO = "KEY_CONNECT_SITE_INFO"
+
+        const val LOGIN_WITH_WPCOM_EMAIL_ACTION = "login_with_wpcom_email"
+        const val EMAIL_PARAMETER = "email"
+
+        fun createIntent(
+            context: Context,
+            notificationType: LoginHelpNotificationType,
+        ): Intent {
+            val intent = Intent(context, LoginActivity::class.java)
+            intent.apply {
+                flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK or
+                    Intent.FLAG_ACTIVITY_CLEAR_TASK
+                putExtra(KEY_LOGIN_HELP_NOTIFICATION, notificationType.toString())
+                LoginMode.WOO_LOGIN_MODE.putInto(this)
+            }
+            return intent
+        }
     }
 
     @Inject internal lateinit var androidInjector: DispatchingAndroidInjector<Any>
@@ -80,29 +142,77 @@ class LoginActivity :
     @Inject internal lateinit var unifiedLoginTracker: UnifiedLoginTracker
     @Inject internal lateinit var zendeskHelper: ZendeskHelper
     @Inject internal lateinit var urlUtils: UrlUtils
+    @Inject internal lateinit var experimentTracker: ExperimentTracker
+    @Inject internal lateinit var appPrefsWrapper: AppPrefsWrapper
+    @Inject internal lateinit var dispatcher: Dispatcher
+    @Inject internal lateinit var loginNotificationScheduler: LoginNotificationScheduler
+
+    @Inject internal lateinit var prologueExperiment: PrologueExperiment
+    @Inject internal lateinit var uiMessageResolver: UIMessageResolver
 
     private var loginMode: LoginMode? = null
-
     private lateinit var binding: ActivityLoginBinding
+
+    private var connectSiteInfo: ConnectSiteInfo? = null
 
     override fun androidInjector(): AndroidInjector<Any> = androidInjector
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        onBackPressedDispatcher.addCallback(
+            this,
+            object : OnBackPressedCallback(true) {
+                override fun handleOnBackPressed() {
+                    handleBackPress()
+                }
+            }
+        )
+
+        dispatcher.register(this)
 
         binding = ActivityLoginBinding.inflate(layoutInflater)
         setContentView(binding.root)
+        val loginHelpNotification = getLoginHelpNotification()
 
-        if (hasMagicLinkLoginIntent()) {
-            getAuthTokenFromIntent()?.let { showMagicLinkInterceptFragment(it) }
-        } else if (savedInstanceState == null) {
-            loginAnalyticsListener.trackLoginAccessed()
-            showPrologueFragment()
+        when {
+            intent?.action == LOGIN_WITH_WPCOM_EMAIL_ACTION -> {
+                val email = intent.extras!!.getString(EMAIL_PARAMETER)
+                gotWpcomEmail(email, verifyEmail = true, null)
+            }
+            hasJetpackConnectedIntent() -> {
+                AnalyticsTracker.track(
+                    stat = AnalyticsEvent.LOGIN_JETPACK_SETUP_COMPLETED,
+                    properties = mapOf(KEY_SOURCE to VALUE_JETPACK_INSTALLATION_SOURCE_WEB)
+                )
+                startLoginViaWPCom()
+            }
+            hasMagicLinkLoginIntent() -> {
+                getAuthTokenFromIntent()?.let { showMagicLinkInterceptFragment(it) }
+            }
+            !loginHelpNotification.isNullOrBlank() -> {
+                processLoginHelpNotification(loginHelpNotification)
+            }
+            savedInstanceState == null -> {
+                loginAnalyticsListener.trackLoginAccessed()
+
+                showPrologue()
+            }
         }
 
         savedInstanceState?.let { ss ->
             unifiedLoginTracker.setSource(ss.getString(KEY_UNIFIED_TRACKER_SOURCE, Source.DEFAULT.value))
             unifiedLoginTracker.setFlow(ss.getString(KEY_UNIFIED_TRACKER_FLOW))
+            connectSiteInfo = ss.parcelable(KEY_CONNECT_SITE_INFO)
+        }
+    }
+
+    private fun handleBackPress() {
+        AnalyticsTracker.trackBackPressed(this)
+
+        if (supportFragmentManager.backStackEntryCount == 1) {
+            finish()
+        } else {
+            supportFragmentManager.popBackStack()
         }
     }
 
@@ -111,21 +221,36 @@ class LoginActivity :
         AnalyticsTracker.trackViewShown(this)
     }
 
+    override fun onDestroy() {
+        super.onDestroy()
+
+        dispatcher.unregister(this)
+    }
+
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
 
         outState.putString(KEY_UNIFIED_TRACKER_SOURCE, unifiedLoginTracker.getSource().value)
+        outState.putParcelable(KEY_CONNECT_SITE_INFO, connectSiteInfo)
         unifiedLoginTracker.getFlow()?.value?.let {
             outState.putString(KEY_UNIFIED_TRACKER_FLOW, it)
         }
     }
 
-    private fun showPrologueFragment() {
-        val fragment = LoginPrologueFragment.newInstance()
+    private fun showPrologueCarouselFragment() {
+        val fragment = LoginPrologueCarouselFragment.newInstance()
         supportFragmentManager.beginTransaction()
-            .replace(R.id.fragment_container, fragment, LoginPrologueFragment.TAG)
-            .addToBackStack(LoginPrologueFragment.TAG)
+            .replace(R.id.fragment_container, fragment, LoginPrologueCarouselFragment.TAG)
+            .addToBackStack(LoginPrologueCarouselFragment.TAG)
             .commitAllowingStateLoss()
+    }
+
+    private fun showPrologue() {
+        if (!appPrefsWrapper.hasOnboardingCarouselBeenDisplayed()) {
+            showPrologueCarouselFragment()
+        } else {
+            showPrologueFragment()
+        }
     }
 
     private fun hasMagicLinkLoginIntent(): Boolean {
@@ -143,22 +268,36 @@ class LoginActivity :
     private fun showMagicLinkInterceptFragment(authToken: String) {
         val fragment = MagicLinkInterceptFragment.newInstance(authToken)
         supportFragmentManager.beginTransaction()
-            .replace(R.id.fragment_container, fragment, LoginPrologueFragment.TAG)
+            .replace(R.id.fragment_container, fragment, MagicLinkInterceptFragment.TAG)
             .addToBackStack(null)
             .commitAllowingStateLoss()
     }
 
-    private fun slideInFragment(fragment: Fragment, shouldAddToBackStack: Boolean, tag: String) {
+    private fun hasJetpackConnectedIntent(): Boolean {
+        val action = intent.action
+        val uri = intent.data
+
+        return Intent.ACTION_VIEW == action && uri.toString() == JETPACK_CONNECTED_REDIRECT_URL
+    }
+
+    private fun changeFragment(
+        fragment: Fragment,
+        shouldAddToBackStack: Boolean,
+        tag: String,
+        animate: Boolean = true
+    ) {
         val fragmentTransaction = supportFragmentManager.beginTransaction()
-        fragmentTransaction.setCustomAnimations(
-            R.anim.activity_slide_in_from_right,
-            R.anim.activity_slide_out_to_left,
-            R.anim.activity_slide_in_from_left,
-            R.anim.activity_slide_out_to_right
-        )
+        if (animate) {
+            fragmentTransaction.setCustomAnimations(
+                R.anim.default_enter_anim,
+                R.anim.default_exit_anim,
+                R.anim.default_pop_enter_anim,
+                R.anim.default_pop_exit_anim
+            )
+        }
         fragmentTransaction.replace(R.id.fragment_container, fragment, tag)
         if (shouldAddToBackStack) {
-            fragmentTransaction.addToBackStack(null)
+            fragmentTransaction.addToBackStack(tag)
         }
         fragmentTransaction.commitAllowingStateLoss()
     }
@@ -182,25 +321,21 @@ class LoginActivity :
     }
 
     private fun getLoginViaSiteAddressFragment(): LoginSiteAddressFragment? =
-        supportFragmentManager.findFragmentByTag(LoginSiteAddressFragment.TAG) as? LoginSiteAddressFragment
+        supportFragmentManager.findFragmentByTag(LoginSiteAddressFragment.TAG) as? WooLoginSiteAddressFragment
+
+    private fun getPrologueFragment(): LoginPrologueFragment? =
+        supportFragmentManager.findFragmentByTag(LoginPrologueFragment.TAG) as? LoginPrologueFragment
+
+    private fun getPrologueSurveyFragment(): LoginPrologueSurveyFragment? =
+        supportFragmentManager.findFragmentByTag(LoginPrologueSurveyFragment.TAG) as? LoginPrologueSurveyFragment
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         if (item.itemId == android.R.id.home) {
-            onBackPressed()
+            onBackPressedDispatcher.onBackPressed()
             return true
         }
 
         return false
-    }
-
-    override fun onBackPressed() {
-        AnalyticsTracker.trackBackPressed(this)
-
-        if (supportFragmentManager.backStackEntryCount == 1) {
-            finish()
-        } else {
-            super.onBackPressed()
-        }
     }
 
     override fun getLoginMode(): LoginMode {
@@ -233,7 +368,14 @@ class LoginActivity :
         startLoginViaWPCom()
     }
 
+    override fun onNewToWooButtonClicked() {
+        ChromeCustomTabUtils.launchUrl(this, AppUrls.NEW_TO_WOO_DOC)
+    }
+
     private fun showMainActivityAndFinish() {
+        experimentTracker.log(ExperimentTracker.LOGIN_SUCCESSFUL_EVENT)
+        loginNotificationScheduler.onLoginSuccess()
+
         val intent = Intent(this, MainActivity::class.java)
         intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
         startActivity(intent)
@@ -245,10 +387,13 @@ class LoginActivity :
         val loginUsernamePasswordFragment = LoginUsernamePasswordFragment.newInstance(
             "wordpress.com", "wordpress.com", username, password, true
         )
-        slideInFragment(loginUsernamePasswordFragment, true, LoginUsernamePasswordFragment.TAG)
+        changeFragment(loginUsernamePasswordFragment, true, LoginUsernamePasswordFragment.TAG)
     }
 
     private fun startLoginViaWPCom() {
+        // Clean previously saved site address, e.g: if merchants return from a store address flow.
+        AppPrefs.removeLoginSiteAddress()
+
         unifiedLoginTracker.setFlow(Flow.WORDPRESS_COM.value)
         showEmailLoginScreen()
     }
@@ -256,26 +401,26 @@ class LoginActivity :
     override fun gotWpcomEmail(email: String?, verifyEmail: Boolean, authOptions: AuthOptions?) {
         val isMagicLinkEnabled =
             getLoginMode() != LoginMode.WPCOM_LOGIN_DEEPLINK && getLoginMode() != LoginMode.SHARE_INTENT
-
+        email?.let { appPrefsWrapper.setLoginEmail(it) }
         if (authOptions != null) {
             if (authOptions.isPasswordless) {
                 showMagicLinkRequestScreen(email, verifyEmail, allowPassword = false, forceRequestAtStart = true)
             } else {
-                showEmailPasswordScreen(email, verifyEmail, isMagicLinkEnabled)
+                showEmailPasswordScreen(email, verifyEmail)
             }
         } else {
             if (isMagicLinkEnabled) {
                 showMagicLinkRequestScreen(email, verifyEmail, allowPassword = true, forceRequestAtStart = false)
             } else {
-                showEmailPasswordScreen(email, verifyEmail, false)
+                showEmailPasswordScreen(email, verifyEmail)
             }
         }
     }
 
-    private fun showEmailPasswordScreen(email: String?, verifyEmail: Boolean, allowMagicLink: Boolean) {
-        val loginEmailPasswordFragment = LoginEmailPasswordFragment
-            .newInstance(email, null, null, null, false, allowMagicLink, verifyEmail)
-        slideInFragment(loginEmailPasswordFragment, true, LoginEmailPasswordFragment.TAG)
+    private fun showEmailPasswordScreen(email: String?, verifyEmail: Boolean) {
+        val wooLoginEmailPasswordFragment = WooLoginEmailPasswordFragment
+            .newInstance(email, verifyMagicLinkEmail = verifyEmail)
+        changeFragment(wooLoginEmailPasswordFragment, true, LoginEmailPasswordFragment.TAG)
     }
 
     private fun showMagicLinkRequestScreen(
@@ -289,13 +434,23 @@ class LoginActivity :
             .newInstance(
                 email, scheme, false, null, verifyEmail, allowPassword, forceRequestAtStart
             )
-        slideInFragment(loginMagicLinkRequestFragment, true, LoginMagicLinkRequestFragment.TAG)
+        changeFragment(loginMagicLinkRequestFragment, true, LoginMagicLinkRequestFragment.TAG, false)
     }
 
     override fun loginViaSiteAddress() {
         unifiedLoginTracker.setFlowAndStep(LOGIN_SITE_ADDRESS, ENTER_SITE_ADDRESS)
-        val loginSiteAddressFragment = getLoginViaSiteAddressFragment() ?: LoginSiteAddressFragment()
-        slideInFragment(loginSiteAddressFragment, true, LoginSiteAddressFragment.TAG)
+        val loginSiteAddressFragment = getLoginViaSiteAddressFragment() ?: WooLoginSiteAddressFragment()
+        changeFragment(loginSiteAddressFragment, true, LoginSiteAddressFragment.TAG)
+    }
+
+    private fun showPrologueFragment() = lifecycleScope.launchWhenStarted {
+        val prologueFragment = getPrologueFragment() ?: LoginPrologueFragment()
+        changeFragment(prologueFragment, true, LoginPrologueFragment.TAG)
+    }
+
+    private fun showPrologueSurveyFragment() {
+        val prologueSurveyFragment = getPrologueSurveyFragment() ?: LoginPrologueSurveyFragment()
+        changeFragment(prologueSurveyFragment, true, LoginPrologueSurveyFragment.TAG)
     }
 
     override fun loginViaSocialAccount(
@@ -304,11 +459,13 @@ class LoginActivity :
         service: String?,
         isPasswordRequired: Boolean
     ) {
-        val loginEmailPasswordFragment = LoginEmailPasswordFragment.newInstance(
-            email, null, idToken,
-            service, isPasswordRequired
+        val loginEmailPasswordFragment = WooLoginEmailPasswordFragment.newInstance(
+            emailAddress = email,
+            idToken = idToken,
+            service = service,
+            isSocialLogin = isPasswordRequired
         )
-        slideInFragment(loginEmailPasswordFragment, true, LoginEmailPasswordFragment.TAG)
+        changeFragment(loginEmailPasswordFragment, true, LoginEmailPasswordFragment.TAG)
     }
 
     override fun loggedInViaSocialAccount(oldSitesIds: ArrayList<Int>, doLoginUpdate: Boolean) {
@@ -321,8 +478,8 @@ class LoginActivity :
     }
 
     override fun showMagicLinkSentScreen(email: String?, allowPassword: Boolean) {
-        val loginMagicLinkSentFragment = LoginMagicLinkSentFragment.newInstance(email, allowPassword)
-        slideInFragment(loginMagicLinkSentFragment, true, LoginMagicLinkSentFragment.TAG)
+        val loginMagicLinkSentFragment = LoginMagicLinkSentImprovedFragment.newInstance(email, true)
+        changeFragment(loginMagicLinkSentFragment, true, LoginMagicLinkSentImprovedFragment.TAG, false)
     }
 
     override fun openEmailClient(isLogin: Boolean) {
@@ -336,8 +493,8 @@ class LoginActivity :
 
     override fun usePasswordInstead(email: String?) {
         loginAnalyticsListener.trackLoginMagicLinkExited()
-        val loginEmailPasswordFragment = LoginEmailPasswordFragment.newInstance(email, null, null, null, false)
-        slideInFragment(loginEmailPasswordFragment, true, LoginEmailPasswordFragment.TAG)
+        val loginEmailPasswordFragment = WooLoginEmailPasswordFragment.newInstance(email)
+        changeFragment(loginEmailPasswordFragment, true, LoginEmailPasswordFragment.TAG)
     }
 
     override fun forgotPassword(url: String?) {
@@ -347,7 +504,7 @@ class LoginActivity :
 
     override fun needs2fa(email: String?, password: String?) {
         val login2FaFragment = Login2FaFragment.newInstance(email, password)
-        slideInFragment(login2FaFragment, true, Login2FaFragment.TAG)
+        changeFragment(login2FaFragment, true, Login2FaFragment.TAG)
     }
 
     override fun needs2faSocial(
@@ -362,13 +519,13 @@ class LoginActivity :
             email, userId,
             nonceAuthenticator, nonceBackup, nonceSms
         )
-        slideInFragment(login2FaFragment, true, Login2FaFragment.TAG)
+        changeFragment(login2FaFragment, true, Login2FaFragment.TAG)
     }
 
     override fun needs2faSocialConnect(email: String?, password: String?, idToken: String?, service: String?) {
         loginAnalyticsListener.trackLoginSocial2faNeeded()
         val login2FaFragment = Login2FaFragment.newInstanceSocialConnect(email, password, idToken, service)
-        slideInFragment(login2FaFragment, true, Login2FaFragment.TAG)
+        changeFragment(login2FaFragment, true, Login2FaFragment.TAG)
     }
 
     override fun loggedInViaPassword(oldSitesIds: ArrayList<Int>) {
@@ -401,18 +558,10 @@ class LoginActivity :
         AppPrefs.setLoginSiteAddress(siteAddressClean)
 
         if (hasJetpack) {
-            showEmailLoginScreen(inputSiteAddress)
+            showEmailLoginScreen(inputSiteAddress.takeIf { connectSiteInfo?.isWPCom != true })
         } else {
-            // hide the keyboard
-            org.wordpress.android.util.ActivityUtils.hideKeyboard(this)
-
-            // Show the 'Jetpack required' fragment
-            val jetpackReqFragment = LoginJetpackRequiredFragment.newInstance(siteAddressClean)
-            slideInFragment(
-                fragment = jetpackReqFragment as Fragment,
-                shouldAddToBackStack = true,
-                tag = LoginJetpackRequiredFragment.TAG
-            )
+            // Let user log in via site credentials first before showing Jetpack missing screen.
+            loginViaSiteCredentials(inputSiteAddress)
         }
     }
 
@@ -424,6 +573,9 @@ class LoginActivity :
      * in the login process.
      */
     override fun loginViaSiteCredentials(inputSiteAddress: String?) {
+        // hide the keyboard
+        org.wordpress.android.util.ActivityUtils.hideKeyboard(this)
+
         unifiedLoginTracker.trackClick(Click.LOGIN_WITH_SITE_CREDS)
         showUsernamePasswordScreen(inputSiteAddress, null, null, null)
     }
@@ -436,7 +588,7 @@ class LoginActivity :
         val loginUsernamePasswordFragment = LoginUsernamePasswordFragment.newInstance(
             inputSiteAddress, endpointAddress, null, null, false
         )
-        slideInFragment(loginUsernamePasswordFragment, true, LoginUsernamePasswordFragment.TAG)
+        changeFragment(loginUsernamePasswordFragment, true, LoginUsernamePasswordFragment.TAG)
     }
 
     override fun handleSslCertificateError(
@@ -449,7 +601,10 @@ class LoginActivity :
 
     private fun viewHelpAndSupport(origin: Origin) {
         val extraSupportTags = arrayListOf(ZendeskExtraTags.connectingJetpack)
-        startActivity(HelpActivity.createIntent(this, origin, extraSupportTags))
+        val flow = unifiedLoginTracker.getFlow()
+        val step = unifiedLoginTracker.previousStepBeforeHelpStep
+
+        startActivity(HelpActivity.createIntent(this, origin, extraSupportTags, flow?.value, step?.value))
     }
 
     override fun helpSiteAddress(url: String?) {
@@ -474,6 +629,7 @@ class LoginActivity :
         viewHelpAndSupport(Origin.LOGIN_SOCIAL)
     }
 
+    @Suppress("DEPRECATION")
     override fun addGoogleLoginFragment(isSignupFromLoginEnabled: Boolean) {
         val fragmentManager = supportFragmentManager
         val fragmentTransaction = fragmentManager.beginTransaction()
@@ -516,15 +672,30 @@ class LoginActivity :
         userAvatarUrl: String?,
         checkJetpackAvailability: Boolean
     ) {
-        val jetpackReqFragment = LoginNoJetpackFragment.newInstance(
-            siteAddress, endpointAddress, username, password, userAvatarUrl,
-            checkJetpackAvailability
-        )
-        slideInFragment(
-            fragment = jetpackReqFragment as Fragment,
-            shouldAddToBackStack = true,
-            tag = LoginJetpackRequiredFragment.TAG
-        )
+        if (connectSiteInfo?.isJetpackActive == true && connectSiteInfo?.isJetpackConnected == true) {
+            // If jetpack is present, but we can't find the connected email, then show account mismatch error
+            val fragment = AccountMismatchErrorFragment().apply {
+                arguments = AccountMismatchErrorFragmentArgs(
+                    siteUrl = siteAddress,
+                    primaryButton = AccountMismatchPrimaryButton.CONNECT_JETPACK
+                ).toBundle()
+            }
+            changeFragment(
+                fragment = fragment,
+                shouldAddToBackStack = true,
+                tag = AccountMismatchErrorFragment::class.java.simpleName
+            )
+        } else {
+            val jetpackReqFragment = LoginNoJetpackFragment.newInstance(
+                siteAddress, endpointAddress, username, password, userAvatarUrl,
+                checkJetpackAvailability
+            )
+            changeFragment(
+                fragment = jetpackReqFragment as Fragment,
+                shouldAddToBackStack = true,
+                tag = LoginNoJetpackFragment.TAG
+            )
+        }
     }
 
     override fun helpHandleDiscoveryError(
@@ -538,10 +709,10 @@ class LoginActivity :
         val discoveryErrorFragment = LoginDiscoveryErrorFragment.newInstance(
             siteAddress, endpointAddress, username, password, userAvatarUrl, errorMessage
         )
-        slideInFragment(
+        changeFragment(
             fragment = discoveryErrorFragment as Fragment,
             shouldAddToBackStack = true,
-            tag = LoginJetpackRequiredFragment.TAG
+            tag = LoginDiscoveryErrorFragment.TAG
         )
     }
 
@@ -595,7 +766,9 @@ class LoginActivity :
     }
 
     override fun onGoogleSignupError(msg: String?) {
-        Snackbar.make(binding.mainView, msg ?: "", BaseTransientBottomBar.LENGTH_LONG).show()
+        msg?.let {
+            uiMessageResolver.showSnack(it)
+        }
     }
 
     //  -- END: GoogleListener implementation methods
@@ -613,10 +786,11 @@ class LoginActivity :
     }
 
     override fun showHelpFindingConnectedEmail() {
-        AnalyticsTracker.track(Stat.LOGIN_BY_EMAIL_HELP_FINDING_CONNECTED_EMAIL_LINK_TAPPED)
+        AnalyticsTracker.track(AnalyticsEvent.LOGIN_BY_EMAIL_HELP_FINDING_CONNECTED_EMAIL_LINK_TAPPED)
         unifiedLoginTracker.trackClick(Click.HELP_FINDING_CONNECTED_EMAIL)
 
-        LoginEmailHelpDialogFragment().show(supportFragmentManager, LoginEmailHelpDialogFragment.TAG)
+        LoginEmailHelpDialogFragment.newInstance(this)
+            .show(supportFragmentManager, LoginEmailHelpDialogFragment.TAG)
     }
 
     override fun onEmailNeedMoreHelpClicked() {
@@ -629,14 +803,12 @@ class LoginActivity :
             val loginEmailFragment = getLoginEmailFragment(
                 siteCredsLayout = true
             ) ?: LoginEmailFragment.newInstance(siteAddress, true)
-            slideInFragment(loginEmailFragment as Fragment, true, LoginEmailFragment.TAG_SITE_CREDS_LAYOUT)
+            changeFragment(loginEmailFragment as Fragment, true, LoginEmailFragment.TAG_SITE_CREDS_LAYOUT)
         } else {
             val loginEmailFragment = getLoginEmailFragment(
                 siteCredsLayout = false
-            ) ?: LoginEmailFragment.newInstance(siteAddress, false)
-            slideInFragment(
-                loginEmailFragment as Fragment, true, LoginEmailFragment.TAG
-            )
+            ) ?: WooLoginEmailFragment()
+            changeFragment(loginEmailFragment as Fragment, true, LoginEmailFragment.TAG)
         }
     }
 
@@ -649,13 +821,20 @@ class LoginActivity :
         val loginUsernamePasswordFragment = LoginUsernamePasswordFragment.newInstance(
             siteAddress, endpointAddress, inputUsername, inputPassword, false
         )
-        slideInFragment(loginUsernamePasswordFragment, true, LoginUsernamePasswordFragment.TAG)
+        changeFragment(loginUsernamePasswordFragment, true, LoginUsernamePasswordFragment.TAG)
+    }
+
+    override fun startJetpackInstall(siteAddress: String?) {
+        siteAddress?.let {
+            val url = "$JETPACK_CONNECT_URL?url=$it&mobile_redirect=$JETPACK_CONNECTED_REDIRECT_URL&from=mobile"
+            ChromeCustomTabUtils.launchUrl(this, url)
+        }
     }
 
     override fun gotUnregisteredEmail(email: String?) {
         // Show the 'No WordPress.com account found' screen
         val fragment = LoginNoWPcomAccountFoundFragment.newInstance(email)
-        slideInFragment(
+        changeFragment(
             fragment = fragment as Fragment,
             shouldAddToBackStack = true,
             tag = LoginNoWPcomAccountFoundFragment.TAG
@@ -705,14 +884,112 @@ class LoginActivity :
 
             // show the "not WordPress error" screen
             val genericErrorFragment = LoginSiteCheckErrorFragment.newInstance(siteAddressClean, errorMessage)
-            slideInFragment(
+            changeFragment(
                 fragment = genericErrorFragment,
                 shouldAddToBackStack = true,
                 tag = LoginSiteCheckErrorFragment.TAG
             )
+            loginNotificationScheduler.scheduleNotification(LOGIN_SITE_ADDRESS_ERROR)
         } else {
             // Just in case we use this method for a different scenario in the future
             TODO("Handle a new error scenario")
         }
     }
+
+    override fun onWhatIsWordPressLinkClicked() {
+        ChromeCustomTabUtils.launchUrl(this, LOGIN_WITH_EMAIL_WHAT_IS_WORDPRESS_COM_ACCOUNT)
+        unifiedLoginTracker.trackClick(Click.WHAT_IS_WORDPRESS_COM)
+    }
+
+    override fun onWhatIsWordPressLinkNoWpcomAccountScreenClicked() {
+        ChromeCustomTabUtils.launchUrl(this, LOGIN_WITH_EMAIL_WHAT_IS_WORDPRESS_COM_ACCOUNT)
+        unifiedLoginTracker.trackClick(Click.WHAT_IS_WORDPRESS_COM_ON_INVALID_EMAIL_SCREEN)
+    }
+
+    private fun getLoginHelpNotification(): String? =
+        intent.extras?.getString(KEY_LOGIN_HELP_NOTIFICATION)
+
+    override fun onCarouselFinished() {
+        lifecycleScope.launchWhenStarted {
+            prologueExperiment.run(::showPrologueFragment, ::showPrologueSurveyFragment)
+        }
+    }
+
+    override fun onSurveyFinished() {
+        showPrologueFragment()
+    }
+
+    override fun onPasswordError() {
+        val notificationType = when {
+            !appPrefsWrapper.getLoginSiteAddress()
+                .isNullOrBlank() -> LOGIN_SITE_ADDRESS_PASSWORD_ERROR
+            else -> LOGIN_WPCOM_PASSWORD_ERROR
+        }
+        loginNotificationScheduler.scheduleNotification(notificationType)
+    }
+
+    override fun onQrCodeLoginClicked() {
+        AnalyticsTracker.track(
+            stat = AnalyticsEvent.LOGIN_WITH_QR_CODE_BUTTON_TAPPED,
+            properties = mapOf(KEY_FLOW to VALUE_LOGIN_WITH_WORDPRESS_COM)
+        )
+        val fragment =
+            supportFragmentManager.findFragmentByTag(QrCodeScanningFragment.TAG) as? QrCodeScanningFragment
+                ?: QrCodeScanningFragment()
+        fragment.setClickListeners(
+            onCodeScanned = { rawValue ->
+                AnalyticsTracker.track(stat = AnalyticsEvent.LOGIN_WITH_QR_CODE_SCANNED)
+                val intent = Intent(Intent.ACTION_VIEW, Uri.parse(rawValue))
+                intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK or
+                    Intent.FLAG_ACTIVITY_CLEAR_TASK
+                startActivity(intent)
+            },
+            onHelpClicked = { viewHelpAndSupport(Origin.LOGIN_WITH_QR_CODE) }
+        )
+        changeFragment(fragment, shouldAddToBackStack = true, tag = QrCodeScanningFragment.TAG)
+    }
+
+    private fun processLoginHelpNotification(loginHelpNotification: String) {
+        when (LoginHelpNotificationType.fromString(loginHelpNotification)) {
+            LOGIN_SITE_ADDRESS_ERROR -> startLoginViaWPCom()
+            LOGIN_SITE_ADDRESS_PASSWORD_ERROR,
+            LOGIN_WPCOM_PASSWORD_ERROR -> useMagicLinkInstead(appPrefsWrapper.getLoginEmail(), verifyEmail = false)
+            LOGIN_WPCOM_EMAIL_ERROR,
+            LOGIN_SITE_ADDRESS_EMAIL_ERROR,
+            DEFAULT_HELP ->
+                WooLog.e(WooLog.T.NOTIFICATIONS, "Invalid notification type to be handled by LoginActivity")
+        }
+        loginNotificationScheduler.onNotificationTapped(loginHelpNotification)
+    }
+
+    @SuppressWarnings("unused")
+    @Subscribe(threadMode = MAIN)
+    fun onAuthOptionsFetched(event: OnAuthOptionsFetched) {
+        if (event.error?.type == UNKNOWN_USER) {
+            loginNotificationScheduler.onPasswordLoginError()
+        }
+    }
+
+    @SuppressWarnings("unused")
+    @Subscribe(threadMode = MAIN)
+    fun onFetchedConnectSiteInfo(event: OnConnectSiteInfoChecked) {
+        if (event.isError) {
+            connectSiteInfo = null
+        } else {
+            connectSiteInfo = event.info.let {
+                ConnectSiteInfo(
+                    isWPCom = it.isWPCom,
+                    isJetpackConnected = it.isJetpackConnected,
+                    isJetpackActive = it.isJetpackActive
+                )
+            }
+        }
+    }
+
+    @Parcelize
+    private data class ConnectSiteInfo(
+        val isWPCom: Boolean,
+        val isJetpackConnected: Boolean,
+        val isJetpackActive: Boolean
+    ) : Parcelable
 }

@@ -3,6 +3,7 @@ package com.woocommerce.android.ui.orders.filters
 import android.os.Parcelable
 import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.R
+import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.ui.orders.filters.data.DateRange
 import com.woocommerce.android.ui.orders.filters.data.OrderFiltersRepository
@@ -73,7 +74,7 @@ class OrderFilterOptionsViewModel @Inject constructor(
     private fun trackFilterSelection() {
         if (_viewState.filterOptions.isAnyFilterOptionSelected()) {
             AnalyticsTracker.track(
-                AnalyticsTracker.Stat.ORDERS_LIST_FILTER,
+                AnalyticsEvent.ORDERS_LIST_FILTER,
                 getTrackingForFilterSelection()
             )
         }

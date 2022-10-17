@@ -1,0 +1,2 @@
+10.7:
+Para este lançamento, otimizamos o fluxo de login com um melhor preenchimento automático e uma opção para conectar o Jetpack, caso ele não esteja conectado. Também corrigimos uma inconsistência entre as estatísticas mensais e as estatísticas dos visitantes. Viva a matemática! Continue dando feedback, ele nos ajuda a saber no que trabalhar em seguida. 💜

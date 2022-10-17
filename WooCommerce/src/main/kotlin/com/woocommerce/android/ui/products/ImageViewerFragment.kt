@@ -49,8 +49,6 @@ class ImageViewerFragment : Fragment(R.layout.fragment_image_viewer), RequestLis
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-
         _binding = FragmentImageViewerBinding.bind(view)
 
         loadImage()

@@ -6,6 +6,7 @@ import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
+import androidx.browser.customtabs.CustomTabColorSchemeParams
 import androidx.browser.customtabs.CustomTabsClient
 import androidx.browser.customtabs.CustomTabsIntent
 import androidx.browser.customtabs.CustomTabsService.ACTION_CUSTOM_TABS_CONNECTION
@@ -14,6 +15,8 @@ import androidx.browser.customtabs.CustomTabsServiceConnection
 import androidx.browser.customtabs.CustomTabsSession
 import androidx.core.content.ContextCompat
 import com.woocommerce.android.R
+import com.woocommerce.android.extensions.intentActivities
+import com.woocommerce.android.extensions.service
 import org.wordpress.android.util.ToastUtils
 
 /**
@@ -104,9 +107,12 @@ object ChromeCustomTabUtils {
     }
 
     private fun createIntent(context: Context, tabSession: CustomTabsSession? = null): CustomTabsIntent {
-        val intent = CustomTabsIntent.Builder(tabSession)
+        val defaultColorSchemeParams = CustomTabColorSchemeParams.Builder()
             .setToolbarColor(ContextCompat.getColor(context, R.color.color_surface))
-            .addDefaultShareMenuItem()
+            .build()
+        val intent = CustomTabsIntent.Builder(tabSession)
+            .setDefaultColorSchemeParams(defaultColorSchemeParams)
+            .setShareState(CustomTabsIntent.SHARE_STATE_ON)
             .setShowTitle(true)
             .build()
         intent.intent.putExtra(Intent.EXTRA_REFERRER, Uri.parse("android-app://" + context.packageName))
@@ -122,12 +128,12 @@ object ChromeCustomTabUtils {
 
         val pm = context.packageManager
         val activityIntent = Intent(Intent.ACTION_VIEW, Uri.parse("http://www.example.com"))
-        val resolvedActivityList = pm.queryIntentActivities(activityIntent, 0)
+        val resolvedActivityList = pm.intentActivities(activityIntent, 0)
         for (info in resolvedActivityList) {
             val serviceIntent = Intent()
             serviceIntent.action = ACTION_CUSTOM_TABS_CONNECTION
             serviceIntent.setPackage(info.activityInfo.packageName)
-            if (pm.resolveService(serviceIntent, 0) != null) {
+            if (pm.service(serviceIntent, 0) != null) {
                 canUseCustomTabs = true
                 return true
             }

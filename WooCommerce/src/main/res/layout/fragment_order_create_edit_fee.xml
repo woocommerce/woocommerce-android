@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <androidx.appcompat.widget.LinearLayoutCompat
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <com.woocommerce.android.widgets.WCElevatedConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="@dimen/major_100">
+
+            <com.google.android.material.switchmaterial.SwitchMaterial
+                android:id="@+id/fee_type_switch"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/order_creation_fee_percentage_toggle_text"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <com.woocommerce.android.widgets.WCMaterialOutlinedCurrencyEditTextView
+                android:id="@+id/fee_amount_edit_text"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/major_75"
+                android:hint="@string/amount"
+                android:imeOptions="flagNoFullscreen"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/fee_type_switch"
+                app:supportsEmptyState="false"
+                app:supportsNegativeValues="true" />
+
+            <com.woocommerce.android.widgets.WCMaterialOutlinedEditTextView
+                android:id="@+id/fee_percentage_edit_text"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/major_75"
+                android:hint="@string/order_creation_fee_percentage_hint"
+                android:imeOptions="flagNoFullscreen"
+                android:inputType="numberDecimal|numberSigned"
+                android:visibility="gone"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/fee_type_switch" />
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/fee_percentage_calculated_amount"
+                android:layout_marginTop="@dimen/major_100"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAppearance="?attr/textAppearanceSubtitle1"
+                app:layout_constraintTop_toBottomOf="@+id/fee_percentage_edit_text"
+                app:layout_constraintEnd_toEndOf="@+id/fee_percentage_edit_text"/>
+
+        </com.woocommerce.android.widgets.WCElevatedConstraintLayout>
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/removeFeeButton"
+            style="@style/Woo.Button.Colored"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/major_100"
+            android:text="@string/order_creation_add_fee_removal_hint"
+            android:visibility="gone" />
+
+    </androidx.appcompat.widget.LinearLayoutCompat>
+
+</ScrollView>

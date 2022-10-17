@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.appcompat.widget.LinearLayoutCompat xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context=".ui.main.MainActivity">
+
+    <com.google.android.material.appbar.MaterialToolbar
+        android:id="@+id/fullscreen_state_toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        style="@style/Widget.Woo.Toolbar"
+        android:animateLayoutChanges="true"
+        app:navigationIcon="@drawable/ic_close"
+        app:navigationIconTint="@color/color_icon"
+        app:title="@string/variations_bulk_update_dialog_title" />
+
+    <androidx.appcompat.widget.LinearLayoutCompat
+        android:id="@+id/collapsed_state_header"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="?selectableItemBackground"
+        android:orientation="vertical"
+        android:padding="@dimen/major_100">
+
+        <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/title"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/variations_bulk_update_dialog_title"
+            android:textColor="@color/color_on_surface_high"
+            android:textSize="@dimen/text_major_25"
+            android:textStyle="bold" />
+
+        <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/subtitle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/variations_bulk_update_dialog_subtitle"
+            android:textColor="@color/color_on_surface_medium"
+            android:textSize="@dimen/text_minor_100" />
+    </androidx.appcompat.widget.LinearLayoutCompat>
+
+    <androidx.appcompat.widget.LinearLayoutCompat
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/minor_10"
+            android:background="@color/divider_color" />
+
+        <androidx.appcompat.widget.AppCompatTextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingHorizontal="@dimen/major_85"
+            android:paddingVertical="@dimen/major_75"
+            android:text="@string/variations_bulk_update_dialog_price_section_title"
+            android:textColor="@color/color_on_surface_medium"
+            android:textSize="@dimen/text_minor_125" />
+
+        <androidx.appcompat.widget.LinearLayoutCompat
+            android:id="@+id/regular_price"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="?selectableItemBackground"
+            android:clickable="true"
+            android:focusable="true"
+            android:orientation="vertical"
+            android:paddingVertical="@dimen/major_75">
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/price_title"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingHorizontal="@dimen/major_100"
+                android:text="@string/variations_bulk_update_dialog_regular_price_label"
+                android:textColor="@color/color_on_surface_high"
+                android:textSize="@dimen/text_minor_125" />
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/price_subtitle"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingHorizontal="@dimen/major_100"
+                android:textColor="@color/color_on_surface_medium"
+                android:textSize="@dimen/text_minor_100"
+                tools:text="$8.00" />
+        </androidx.appcompat.widget.LinearLayoutCompat>
+
+        <androidx.appcompat.widget.LinearLayoutCompat
+            android:id="@+id/sale_price"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="?selectableItemBackground"
+            android:clickable="true"
+            android:focusable="true"
+            android:orientation="vertical"
+            android:paddingVertical="@dimen/major_75">
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/sale_price_title"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingHorizontal="@dimen/major_100"
+                android:text="@string/variations_bulk_update_dialog_sale_price_label"
+                android:textColor="@color/color_on_surface_high"
+                android:textSize="@dimen/text_minor_125" />
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/sale_price_subtitle"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingHorizontal="@dimen/major_100"
+                android:textColor="@color/color_on_surface_medium"
+                android:textSize="@dimen/text_minor_100"
+                tools:text="$8.00" />
+        </androidx.appcompat.widget.LinearLayoutCompat>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/minor_10"
+            android:background="@color/divider_color" />
+
+        <View
+            android:id="@+id/bottom_spacer"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+    </androidx.appcompat.widget.LinearLayoutCompat>
+</androidx.appcompat.widget.LinearLayoutCompat>

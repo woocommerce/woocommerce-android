@@ -1,16 +1,16 @@
 package com.woocommerce.android.ui.products
 
 import com.woocommerce.android.AppConstants
+import com.woocommerce.android.AppPrefsWrapper
+import com.woocommerce.android.analytics.AnalyticsEvent.PRODUCT_LIST_LOADED
+import com.woocommerce.android.analytics.AnalyticsEvent.PRODUCT_LIST_LOAD_ERROR
 import com.woocommerce.android.analytics.AnalyticsTracker
-import com.woocommerce.android.analytics.AnalyticsTracker.Stat.PRODUCT_LIST_LOADED
-import com.woocommerce.android.analytics.AnalyticsTracker.Stat.PRODUCT_LIST_LOAD_ERROR
 import com.woocommerce.android.model.Product
 import com.woocommerce.android.model.toAppModel
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.util.ContinuationWrapper
 import com.woocommerce.android.util.ContinuationWrapper.ContinuationResult.Cancellation
 import com.woocommerce.android.util.ContinuationWrapper.ContinuationResult.Success
-import com.woocommerce.android.util.PreferencesWrapper
 import com.woocommerce.android.util.WooLog
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
@@ -27,14 +27,13 @@ import org.wordpress.android.fluxc.store.WCProductStore.ProductSorting.TITLE_ASC
 import javax.inject.Inject
 
 class ProductListRepository @Inject constructor(
-    prefsWrapper: PreferencesWrapper,
+    private val appPrefsWrapper: AppPrefsWrapper,
     private val dispatcher: Dispatcher,
     private val productStore: WCProductStore,
     private val selectedSite: SelectedSite
 ) {
     companion object {
         private const val PRODUCT_PAGE_SIZE = WCProductStore.DEFAULT_PRODUCT_PAGE_SIZE
-        private const val PRODUCT_SORTING_PREF_KEY = "product_sorting_pref_key"
     }
 
     private var loadContinuation = ContinuationWrapper<Boolean>(WooLog.T.PRODUCTS)
@@ -42,22 +41,23 @@ class ProductListRepository @Inject constructor(
     private var trashContinuation = ContinuationWrapper<Boolean>(WooLog.T.PRODUCTS)
     private var offset = 0
 
-    private val sharedPreferences by lazy { prefsWrapper.sharedPreferences }
-
     var canLoadMoreProducts = true
         private set
 
     var lastSearchQuery: String? = null
         private set
 
+    var lastIsSkuSearch = false
+        private set
+
     var productSortingChoice: ProductSorting
         get() {
             return ProductSorting.valueOf(
-                sharedPreferences.getString(PRODUCT_SORTING_PREF_KEY, TITLE_ASC.name) ?: TITLE_ASC.name
+                appPrefsWrapper.getProductSortingChoice(selectedSite.getSelectedSiteId()) ?: TITLE_ASC.name
             )
         }
         set(value) {
-            sharedPreferences.edit().putString(PRODUCT_SORTING_PREF_KEY, value.name).commit()
+            appPrefsWrapper.setProductSortingChoice(selectedSite.getSelectedSiteId(), value.name)
         }
 
     init {
@@ -80,11 +80,12 @@ class ProductListRepository @Inject constructor(
         loadContinuation.callAndWaitUntilTimeout(AppConstants.REQUEST_TIMEOUT) {
             offset = if (loadMore) offset + PRODUCT_PAGE_SIZE else 0
             lastSearchQuery = null
+            lastIsSkuSearch = false
             val payload = WCProductStore.FetchProductsPayload(
-                selectedSite.get(),
-                PRODUCT_PAGE_SIZE,
-                offset,
-                productSortingChoice,
+                site = selectedSite.get(),
+                pageSize = PRODUCT_PAGE_SIZE,
+                offset = offset,
+                sorting = productSortingChoice,
                 filterOptions = productFilterOptions,
                 excludedProductIds = excludedProductIds
             )
@@ -101,6 +102,7 @@ class ProductListRepository @Inject constructor(
      */
     suspend fun searchProductList(
         searchQuery: String,
+        isSkuSearch: Boolean = false,
         loadMore: Boolean = false,
         excludedProductIds: List<Long>? = null
     ): List<Product>? {
@@ -110,12 +112,14 @@ class ProductListRepository @Inject constructor(
         val result = searchContinuation.callAndWaitUntilTimeout(AppConstants.REQUEST_TIMEOUT) {
             offset = if (loadMore) offset + PRODUCT_PAGE_SIZE else 0
             lastSearchQuery = searchQuery
+            lastIsSkuSearch = isSkuSearch
             val payload = WCProductStore.SearchProductsPayload(
-                selectedSite.get(),
-                searchQuery,
-                PRODUCT_PAGE_SIZE,
-                offset,
-                productSortingChoice,
+                site = selectedSite.get(),
+                searchQuery = searchQuery,
+                isSkuSearch = isSkuSearch,
+                pageSize = PRODUCT_PAGE_SIZE,
+                offset = offset,
+                sorting = productSortingChoice,
                 excludedProductIds = excludedProductIds
             )
             dispatcher.dispatch(WCProductActionBuilder.newSearchProductsAction(payload))

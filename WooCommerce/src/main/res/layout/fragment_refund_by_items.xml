@@ -84,6 +84,37 @@
             </LinearLayout>
         </com.google.android.material.card.MaterialCardView>
 
+        <com.google.android.material.card.MaterialCardView
+            android:id="@+id/issueRefund_feesContainer"
+            style="@style/Woo.Card"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:visibility="gone"
+            tools:visibility="visible">
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:animateLayoutChanges="true"
+                android:orientation="vertical">
+
+                <com.google.android.material.switchmaterial.SwitchMaterial
+                    android:id="@+id/issueRefund_feesMainSwitch"
+                    style="@style/Woo.Card.Body.High"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center_vertical"
+                    android:importantForAccessibility="no"
+                    android:text="@string/order_refunds_refund_fees" />
+
+                <include
+                    android:id="@+id/issueRefund_feesSection"
+                    layout="@layout/refund_by_items_fees"
+                    android:visibility="gone"
+                    tools:visibility="visible" />
+
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
+
         <!-- Button: Next -->
         <com.google.android.material.button.MaterialButton
             android:id="@+id/issueRefund_btnNextFromItems"

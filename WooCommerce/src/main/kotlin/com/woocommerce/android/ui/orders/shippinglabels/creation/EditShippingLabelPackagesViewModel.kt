@@ -3,6 +3,7 @@ package com.woocommerce.android.ui.orders.shippinglabels.creation
 import android.os.Parcelable
 import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.R.string
+import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.extensions.sumByFloat
 import com.woocommerce.android.model.*
@@ -16,16 +17,13 @@ import com.woocommerce.android.ui.products.models.SiteParameters
 import com.woocommerce.android.ui.products.variations.VariationDetailRepository
 import com.woocommerce.android.viewmodel.LiveDataDelegate
 import com.woocommerce.android.viewmodel.MultiLiveEvent
-import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
-import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
-import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.*
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.navArgs
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import kotlinx.parcelize.IgnoredOnParcel
 import kotlinx.parcelize.Parcelize
-import org.wordpress.android.fluxc.model.order.toIdSet
 import org.wordpress.android.fluxc.store.WCProductStore.ProductErrorType
 import javax.inject.Inject
 import kotlin.math.ceil
@@ -85,7 +83,7 @@ class EditShippingLabelPackagesViewModel @Inject constructor(
 
     private suspend fun createDefaultPackage(): List<ShippingLabelPackage> {
         val lastUsedPackage = shippingLabelRepository.getLastUsedPackage()
-        val order = requireNotNull(orderDetailRepository.getOrder(arguments.orderId))
+        val order = requireNotNull(orderDetailRepository.getOrderById(arguments.orderId))
         loadProductsWeightsIfNeeded(order)
 
         val items = order.getShippableItems().map { it.toShippingItem() }
@@ -103,7 +101,7 @@ class EditShippingLabelPackagesViewModel @Inject constructor(
     private suspend fun loadProductsWeightsIfNeeded(order: Order) {
         suspend fun fetchProductIfNeeded(productId: Long): Boolean {
             if (productDetailRepository.getProduct(productId) == null) {
-                return productDetailRepository.fetchProduct(productId) != null ||
+                return productDetailRepository.fetchProductOrLoadFromCache(productId) != null ||
                     productDetailRepository.lastFetchProductErrorType == ProductErrorType.INVALID_PRODUCT_ID
             }
             return true
@@ -112,8 +110,8 @@ class EditShippingLabelPackagesViewModel @Inject constructor(
         suspend fun fetchVariationIfNeeded(productId: Long, variationId: Long): Boolean {
             if (!fetchProductIfNeeded(productId)) return false
             if (variationDetailRepository.getVariation(productId, variationId) == null) {
-                return variationDetailRepository.fetchVariation(productId, variationId) != null ||
-                    variationDetailRepository.lastFetchVariationErrorType == ProductErrorType.INVALID_PRODUCT_ID
+                val response = variationDetailRepository.fetchVariation(productId, variationId)
+                return !response.isError || response.error.type == ProductErrorType.INVALID_PRODUCT_ID
             }
             return true
         }
@@ -177,7 +175,7 @@ class EditShippingLabelPackagesViewModel @Inject constructor(
     }
 
     fun onMoveButtonClicked(item: ShippingLabelPackage.Item, shippingPackage: ShippingLabelPackage) {
-        AnalyticsTracker.track(AnalyticsTracker.Stat.SHIPPING_LABEL_MOVE_ITEM_TAPPED)
+        AnalyticsTracker.track(AnalyticsEvent.SHIPPING_LABEL_MOVE_ITEM_TAPPED)
         triggerEvent(ShowMoveItemDialog(item, shippingPackage, viewState.packages))
     }
 
@@ -252,11 +250,11 @@ class EditShippingLabelPackagesViewModel @Inject constructor(
             }
         }
 
-        fun moveItemToIndividualPackage(): List<ShippingLabelPackageUiModel> {
+        suspend fun moveItemToIndividualPackage(): List<ShippingLabelPackageUiModel> {
             val updatedPackages = removeItemFromCurrentPackage()
 
             // We fetch products when this screen is opened, so we can retrieve details from DB
-            val product: IProduct? = orderDetailRepository.getOrder(arguments.orderId)
+            val product: IProduct? = orderDetailRepository.getOrderById(arguments.orderId)
                 ?.items
                 ?.find { it.uniqueId == item.productId }
                 ?.let {
@@ -308,7 +306,7 @@ class EditShippingLabelPackagesViewModel @Inject constructor(
     }
 
     private fun Order.getShippableItems(): List<Order.Item> {
-        val refunds = orderDetailRepository.getOrderRefunds(identifier.toIdSet().remoteOrderId)
+        val refunds = orderDetailRepository.getOrderRefunds(id)
         return refunds.getNonRefundedProducts(items)
             .filter {
                 val product = productDetailRepository.getProduct(it.productId)
@@ -317,7 +315,7 @@ class EditShippingLabelPackagesViewModel @Inject constructor(
             }
     }
 
-    private fun Order.Item.toShippingItem(): ShippingLabelPackage.Item {
+    private suspend fun Order.Item.toShippingItem(): ShippingLabelPackage.Item {
         val weight = if (isVariation) {
             variationDetailRepository.getVariation(productId, variationId)!!.weight
         } else {

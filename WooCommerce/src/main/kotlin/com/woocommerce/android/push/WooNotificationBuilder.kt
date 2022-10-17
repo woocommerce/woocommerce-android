@@ -17,6 +17,7 @@ import androidx.core.content.ContextCompat
 import com.bumptech.glide.Glide
 import com.woocommerce.android.R
 import com.woocommerce.android.model.Notification
+import com.woocommerce.android.ui.login.localnotifications.LoginNotificationScheduler
 import com.woocommerce.android.ui.main.MainActivity
 import com.woocommerce.android.util.SystemVersionUtils
 import com.woocommerce.android.util.WooLog
@@ -72,6 +73,39 @@ class WooNotificationBuilder @Inject constructor(private val context: Context) {
     ) {
         getNotificationBuilder(channelId, notification).apply {
             showNotification(notification.noteId, notification = notification, builder = this)
+        }
+    }
+
+    fun buildAndDisplayLoginHelpNotification(
+        notificationLocalId: Int,
+        channelId: String,
+        notification: Notification,
+        notificationTappedIntent: Intent,
+        actions: List<Pair<String, Intent>> = emptyList()
+    ) {
+        val channelType = notification.channelType
+        getNotificationBuilder(channelId, notification).apply {
+            val notificationContentIntent =
+                buildPendingIntentForGivenIntent(notificationLocalId, notificationTappedIntent)
+            setContentIntent(notificationContentIntent)
+            actions.forEach { action ->
+                addAction(
+                    R.drawable.ic_woo_w_notification,
+                    action.first,
+                    buildPendingIntentForGivenIntent(notificationLocalId, action.second)
+                )
+            }
+            setLargeIcon(getLargeIconBitmap(context, notification.icon, channelType.shouldCircularizeNoteIcon()))
+            // Call processing service when notification is dismissed
+            val pendingDeleteIntent = NotificationsProcessingService.getPendingIntentForNotificationDismiss(
+                context, notificationLocalId
+            )
+            setDeleteIntent(pendingDeleteIntent)
+            NotificationManagerCompat.from(context).notify(
+                LoginNotificationScheduler.LOGIN_HELP_NOTIFICATION_TAG,
+                notificationLocalId,
+                build()
+            )
         }
     }
 
@@ -138,7 +172,7 @@ class WooNotificationBuilder @Inject constructor(private val context: Context) {
             }
     }
 
-    fun showNotification(
+    private fun showNotification(
         pushId: Int,
         notification: Notification,
         builder: NotificationCompat.Builder
@@ -165,6 +199,15 @@ class WooNotificationBuilder @Inject constructor(private val context: Context) {
             // see https://github.com/woocommerce/woocommerce-android/issues/920
             WooLog.e(WooLog.T.NOTIFS, e)
         }
+    }
+
+    private fun buildPendingIntentForGivenIntent(notificationLocalId: Int, intent: Intent): PendingIntent {
+        val flags = if (SystemVersionUtils.isAtLeastS()) {
+            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+        } else {
+            PendingIntent.FLAG_UPDATE_CURRENT
+        }
+        return PendingIntent.getActivity(context, notificationLocalId, intent, flags)
     }
 
     fun createNotificationChannels() {

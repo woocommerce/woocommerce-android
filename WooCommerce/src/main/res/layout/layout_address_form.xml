@@ -1,0 +1,207 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
+
+    <LinearLayout
+        android:id="@+id/details_header_container"
+        android:layout_width="match_parent"
+        android:focusable="true"
+        android:layout_height="@dimen/major_300"
+        android:orientation="vertical">
+
+        <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/card_header"
+            style="@style/Woo.Card.Header"
+            android:importantForAccessibility="no"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/details" />
+
+        <View
+            style="@style/Woo.Divider"
+            android:layout_marginStart="@dimen/major_100" />
+
+    </LinearLayout>
+
+    <com.woocommerce.android.widgets.WCElevatedLinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <com.woocommerce.android.widgets.WCMaterialOutlinedEditTextView
+            android:id="@+id/first_name"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="@dimen/major_100"
+            android:layout_marginTop="@dimen/major_100"
+            android:hint="@string/order_detail_edit_address_details_first_name"
+            android:imeOptions="flagNoFullscreen"
+            android:inputType="textPersonName|textCapWords"
+            android:nextFocusForward="@id/last_name"
+            android:saveEnabled="false"
+            app:errorEnabled="true" />
+
+        <com.woocommerce.android.widgets.WCMaterialOutlinedEditTextView
+            android:id="@+id/last_name"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="@dimen/major_100"
+            android:hint="@string/order_detail_edit_address_details_last_name"
+            android:imeOptions="flagNoFullscreen"
+            android:inputType="textPersonName|textCapWords"
+            android:nextFocusForward="@+id/email"
+            android:saveEnabled="false"
+            app:errorEnabled="true" />
+
+        <com.woocommerce.android.widgets.WCMaterialOutlinedEditTextView
+            android:id="@+id/email"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="@dimen/major_100"
+            android:hint="@string/order_detail_edit_address_details_email"
+            android:imeOptions="flagNoFullscreen"
+            android:inputType="textEmailAddress"
+            android:nextFocusForward="@+id/phone"
+            android:saveEnabled="false"
+            app:errorEnabled="true" />
+
+        <com.woocommerce.android.widgets.WCMaterialOutlinedEditTextView
+            android:id="@+id/phone"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="@dimen/major_100"
+            android:hint="@string/order_detail_edit_address_details_phone"
+            android:imeOptions="flagNoFullscreen"
+            android:inputType="phone"
+            android:nextFocusForward="@+id/company"
+            android:saveEnabled="false"
+            app:errorEnabled="true" />
+
+    </com.woocommerce.android.widgets.WCElevatedLinearLayout>
+
+    <LinearLayout
+        android:id="@+id/address_header_container"
+        android:layout_width="match_parent"
+        android:focusable="true"
+        android:layout_height="@dimen/major_300"
+        android:orientation="vertical">
+
+        <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/address_section_header"
+            style="@style/Woo.Card.Header"
+            android:importantForAccessibility="no"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/order_detail_address_section" />
+
+        <View
+            style="@style/Woo.Divider"
+            android:layout_marginStart="@dimen/major_100" />
+
+    </LinearLayout>
+
+    <com.woocommerce.android.widgets.WCElevatedLinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="@dimen/minor_100"
+        android:orientation="vertical">
+
+        <com.woocommerce.android.widgets.WCMaterialOutlinedEditTextView
+            android:id="@+id/company"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="@dimen/major_100"
+            android:layout_marginTop="@dimen/major_100"
+            android:hint="@string/order_detail_edit_address_company"
+            android:imeOptions="flagNoFullscreen"
+            android:inputType="text"
+            android:nextFocusForward="@id/address1"
+            android:saveEnabled="false"
+            app:errorEnabled="true" />
+
+        <com.woocommerce.android.widgets.WCMaterialOutlinedEditTextView
+            android:id="@+id/address1"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="@dimen/major_100"
+            android:hint="@string/order_detail_edit_address_line1"
+            android:imeOptions="flagNoFullscreen"
+            android:inputType="textPostalAddress"
+            android:nextFocusForward="@+id/address2"
+            android:saveEnabled="false"
+            app:errorEnabled="true" />
+
+        <com.woocommerce.android.widgets.WCMaterialOutlinedEditTextView
+            android:id="@+id/address2"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="@dimen/major_100"
+            android:hint="@string/order_detail_edit_address_line2"
+            android:imeOptions="flagNoFullscreen"
+            android:inputType="textPostalAddress"
+            android:nextFocusForward="@+id/city"
+            android:saveEnabled="false"
+            app:errorEnabled="true" />
+
+        <com.woocommerce.android.widgets.WCMaterialOutlinedEditTextView
+            android:id="@+id/city"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="@dimen/major_100"
+            android:hint="@string/order_detail_edit_address_city"
+            android:imeOptions="flagNoFullscreen"
+            android:inputType="text"
+            android:nextFocusForward="@+id/postcode"
+            android:saveEnabled="false"
+            app:errorEnabled="true" />
+
+        <com.woocommerce.android.widgets.WCMaterialOutlinedEditTextView
+            android:id="@+id/postcode"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="@dimen/major_100"
+            android:hint="@string/order_detail_edit_address_zip"
+            android:imeOptions="flagNoFullscreen"
+            android:inputType="textPostalAddress"
+            android:saveEnabled="false"
+            app:errorEnabled="true" />
+
+        <com.woocommerce.android.widgets.WCMaterialOutlinedSpinnerView
+            android:id="@+id/countrySpinner"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="@dimen/major_100"
+            android:hint="@string/shipping_label_edit_address_country"
+            android:inputType="text"
+            android:saveEnabled="false" />
+
+        <com.woocommerce.android.widgets.WCMaterialOutlinedEditTextView
+            android:id="@+id/stateEditText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="@dimen/major_100"
+            android:layout_marginVertical="@dimen/major_100"
+            android:hint="@string/shipping_label_edit_address_state"
+            android:imeOptions="flagNoFullscreen"
+            android:inputType="text"
+            android:saveEnabled="false"
+            android:visibility="gone"
+            tools:visibility="visible" />
+
+        <com.woocommerce.android.widgets.WCMaterialOutlinedSpinnerView
+            android:id="@+id/stateSpinner"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="@dimen/major_100"
+            android:layout_marginVertical="@dimen/major_100"
+            android:hint="@string/shipping_label_edit_address_state"
+            android:inputType="text"
+            android:saveEnabled="false" />
+
+    </com.woocommerce.android.widgets.WCElevatedLinearLayout>
+
+</LinearLayout>

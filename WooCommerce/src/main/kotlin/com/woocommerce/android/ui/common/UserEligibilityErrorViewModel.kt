@@ -4,7 +4,6 @@ import android.os.Parcelable
 import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.R.string
-import com.woocommerce.android.annotations.OpenClassOnDebug
 import com.woocommerce.android.model.User
 import com.woocommerce.android.model.toAppModel
 import com.woocommerce.android.util.WooLog
@@ -26,7 +25,6 @@ import org.wordpress.android.fluxc.store.AccountStore
 import org.wordpress.android.fluxc.store.AccountStore.OnAccountChanged
 import javax.inject.Inject
 
-@OpenClassOnDebug
 @HiltViewModel
 class UserEligibilityErrorViewModel @Inject constructor(
     savedState: SavedStateHandle,

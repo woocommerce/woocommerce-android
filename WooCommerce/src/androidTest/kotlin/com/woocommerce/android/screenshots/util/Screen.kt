@@ -3,6 +3,7 @@ package com.woocommerce.android.screenshots.util
 import android.app.Activity
 import android.content.res.Configuration
 import android.view.View
+import androidx.annotation.StringRes
 import androidx.recyclerview.widget.RecyclerView
 import androidx.test.espresso.Espresso
 import androidx.test.espresso.Espresso.closeSoftKeyboard
@@ -23,14 +24,18 @@ import androidx.test.espresso.matcher.ViewMatchers.isCompletelyDisplayed
 import androidx.test.espresso.matcher.ViewMatchers.isDescendantOfA
 import androidx.test.espresso.matcher.ViewMatchers.isDisplayed
 import androidx.test.espresso.matcher.ViewMatchers.isNotChecked
+import androidx.test.espresso.matcher.ViewMatchers.withClassName
 import androidx.test.espresso.matcher.ViewMatchers.withId
+import androidx.test.espresso.matcher.ViewMatchers.withText
 import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.runner.lifecycle.ActivityLifecycleMonitorRegistry
 import androidx.test.runner.lifecycle.Stage.RESUMED
 import com.google.android.material.tabs.TabLayout
 import com.woocommerce.android.R
 import org.hamcrest.CoreMatchers.allOf
+import org.hamcrest.CoreMatchers.not
 import org.hamcrest.Matcher
+import org.hamcrest.Matchers.`is`
 import tools.fastlane.screengrab.Screengrab
 import java.util.function.Supplier
 
@@ -63,9 +68,23 @@ open class Screen {
             return isElementDisplayed(onView(withId(elementID)))
         }
 
+        fun isElementDisplayed(text: String): Boolean {
+            return isElementDisplayed(onView(withText(text)))
+        }
+
         private fun isElementDisplayed(element: ViewInteraction): Boolean {
             return try {
                 element.check(matches(isDisplayed()))
+                true
+            } catch (e: Throwable) {
+                false
+            }
+        }
+
+        private fun isElementNotDisplayed(element: Int): Boolean {
+            return try {
+                onView(withId(element))
+                    .check(matches(not(isDisplayed())))
                 true
             } catch (e: Throwable) {
                 false
@@ -83,6 +102,9 @@ open class Screen {
         val modeSuffix = if (isDarkTheme()) "dark" else "light"
         val screenshotName = "$screenshotCount-$name-$modeSuffix"
 //        try {
+        // Wait for 2 seconds to increase the probability of all
+        // screen components to be loaded properly
+        idleFor(2000)
         Screengrab.screenshot(screenshotName)
 //        } catch (e: Throwable) {
 //            Log.w("screenshots", "Error capturing $screenshotName", e)
@@ -122,6 +144,19 @@ open class Screen {
         )
     }
 
+    fun scrollToListItem(itemTitle: String, list: ViewInteraction) {
+        list.perform(
+            RecyclerViewActions.actionOnItem<RecyclerView.ViewHolder>(
+                ViewMatchers.hasDescendant(
+                    ViewMatchers.withText(
+                        itemTitle
+                    )
+                ),
+                ViewActions.scrollTo()
+            )
+        )
+    }
+
     fun selectListItem(itemTitle: String, listID: Int) {
         Espresso.onView(ViewMatchers.withId(listID)).perform(
             RecyclerViewActions.actionOnItem<RecyclerView.ViewHolder>(
@@ -133,6 +168,8 @@ open class Screen {
                 ViewActions.click()
             )
         )
+
+        idleFor(1000) // allow for transitions
     }
 
     private fun clickOn(viewInteraction: ViewInteraction) {
@@ -167,12 +204,24 @@ open class Screen {
         }
     }
 
-    fun selectItemWithTitleInTabLayout(stringID: Int, tabLayout: Int, elementParentId: Int) {
+    fun selectItemWithTitleInTabLayout(stringID: Int, tabLayoutId: Int, elementParentId: Int) {
         val string = getTranslatedString(stringID)
         val tabLayout = onView(
             allOf(
                 isDescendantOfA(withId(elementParentId)),
-                withId(tabLayout)
+                withId(tabLayoutId)
+            )
+        )
+
+        tabLayout.perform(selectTabWithText(string))
+    }
+
+    fun selectItemWithTitleInTabLayout(stringID: Int, elementParentId: Int) {
+        val string = getTranslatedString(stringID)
+        val tabLayout = onView(
+            allOf(
+                isDescendantOfA(withId(elementParentId)),
+                withClassName(`is`("com.google.android.material.tabs.TabLayout"))
             )
         )
 
@@ -197,7 +246,7 @@ open class Screen {
                 for (i in 0 until tabLayout.tabCount) {
                     val tab = tabLayout.getTabAt(i)
                     if (tab?.text == string) {
-                        tab?.select()
+                        tab.select()
                     }
                 }
             }
@@ -215,8 +264,12 @@ open class Screen {
             .perform(actionOnItemAtPosition<RecyclerView.ViewHolder>(index, click()))
     }
 
-    fun clickButtonInDialogWithTitle(resourceID: Int) {
+    fun clickButtonInDialogWithTitle(@StringRes resourceID: Int) {
         val title = getTranslatedString(resourceID)
+        clickButtonInDialogWithTitle(title)
+    }
+
+    fun clickButtonInDialogWithTitle(title: String) {
         val dialogButton = onView(ViewMatchers.withText(title)).inRoot(isDialog())
         clickOn(dialogButton)
     }
@@ -227,6 +280,7 @@ open class Screen {
 
     protected fun pressBack() {
         Espresso.pressBack()
+        idleFor(1000) // allow for transitions
     }
 
     fun waitForElementToBeDisplayed(elementID: Int) {
@@ -237,7 +291,7 @@ open class Screen {
         )
     }
 
-    private fun waitForElementToBeDisplayed(element: ViewInteraction) {
+    fun waitForElementToBeDisplayed(element: ViewInteraction) {
         waitForConditionToBeTrue(
             Supplier<Boolean> {
                 isElementDisplayed(element)
@@ -255,6 +309,14 @@ open class Screen {
         } catch (e: java.lang.Exception) { // ignore the failure
         }
         return isElementDisplayed(elementId)
+    }
+
+    fun waitForElementToDisappear(element: Int) {
+        waitForConditionToBeTrue(
+            Supplier<Boolean> {
+                isElementNotDisplayed(element)
+            }
+        )
     }
 
     fun isElementDisplayed(elementID: Int): Boolean {
@@ -332,11 +394,11 @@ open class Screen {
         return mCurrentActivity
     }
 
-    private fun getTranslatedString(resourceID: Int): String {
+    protected fun getTranslatedString(resourceID: Int): String {
         return getCurrentActivity()!!.resources.getString(resourceID)
     }
 
-    protected fun idleFor(milliseconds: Int) {
+    fun idleFor(milliseconds: Int) {
         try {
             Thread.sleep(milliseconds.toLong())
         } catch (ex: Exception) {

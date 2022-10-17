@@ -1,44 +1,36 @@
 package com.woocommerce.android.ui.orders.shippinglabels.creation
 
-import org.mockito.kotlin.spy
-import com.woocommerce.android.model.PackageDimensions
-import com.woocommerce.android.model.ShippingLabelPackage
+import com.woocommerce.android.model.*
 import com.woocommerce.android.model.ShippingLabelPackage.Item
-import com.woocommerce.android.model.ShippingPackage
-import com.woocommerce.android.model.toAppModel
 import com.woocommerce.android.ui.orders.OrderTestUtils
-import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.Event
+import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.*
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.Event.DataLoaded
-import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.SideEffect
-import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.State
-import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.StateMachineData
-import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.Step.CarrierStep
-import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.Step.CustomsStep
-import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.Step.OriginAddressStep
-import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.Step.PackagingStep
-import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.Step.PaymentsStep
-import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.Step.ShippingAddressStep
-import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.StepStatus.DONE
-import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.StepStatus.NOT_READY
-import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.StepStatus.READY
-import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.StepsState
-import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.Transition
+import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.Step.*
+import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.StepStatus.*
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.take
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.test.runBlockingTest
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Test
+import org.mockito.kotlin.any
+import org.mockito.kotlin.doReturn
+import org.mockito.kotlin.mock
+import org.mockito.kotlin.spy
 import java.math.BigDecimal
 
 @ExperimentalCoroutinesApi
 class ShippingLabelsStateMachineTest : BaseUnitTest() {
     private lateinit var stateMachine: ShippingLabelsStateMachine
 
-    private val order = OrderTestUtils.generateOrder().toAppModel()
+    private val orderMapper = OrderMapper(
+        getLocations = mock {
+            on { invoke(any(), any()) } doReturn (Location.EMPTY to AmbiguousLocation.EMPTY)
+        }
+    )
+    private val order = OrderTestUtils.generateOrder().let { orderMapper.toAppModel(it) }
     private val originAddress = CreateShippingLabelTestUtils.generateAddress()
     private val shippingAddress = originAddress.copy(company = "McDonald's")
     private val data = StateMachineData(
@@ -63,7 +55,7 @@ class ShippingLabelsStateMachineTest : BaseUnitTest() {
     }
 
     @Test
-    fun `Test the data login sequence of events after start`() = coroutinesTestRule.testDispatcher.runBlockingTest {
+    fun `Test the data login sequence of events after start`() = testBlocking {
         val expectedSideEffectCount = 3 // necessary to terminate the flow
         var transition: Transition? = null
         launch {
@@ -74,12 +66,12 @@ class ShippingLabelsStateMachineTest : BaseUnitTest() {
 
         assertThat(transition?.sideEffect).isEqualTo(SideEffect.NoOp)
 
-        stateMachine.start(order.remoteId.toString())
+        stateMachine.start(order.id)
 
-        assertThat(transition?.state).isEqualTo(State.DataLoading(order.remoteId.toString()))
+        assertThat(transition?.state).isEqualTo(State.DataLoading(order.id))
 
         stateMachine.handleEvent(
-            Event.DataLoaded(
+            DataLoaded(
                 order,
                 originAddress,
                 shippingAddress,
@@ -91,7 +83,7 @@ class ShippingLabelsStateMachineTest : BaseUnitTest() {
     }
 
     @Test
-    fun `Test successful address verification`() = coroutinesTestRule.testDispatcher.runBlockingTest {
+    fun `Test successful address verification`() = testBlocking {
         val expectedSideEffectCount = 5 // necessary to terminate the flow
         var transition: Transition? = null
         launch {
@@ -100,8 +92,8 @@ class ShippingLabelsStateMachineTest : BaseUnitTest() {
             }
         }
 
-        stateMachine.start(order.remoteId.toString())
-        stateMachine.handleEvent(Event.DataLoaded(order, originAddress, shippingAddress, null))
+        stateMachine.start(order.id)
+        stateMachine.handleEvent(DataLoaded(order, originAddress, shippingAddress, null))
         stateMachine.handleEvent(Event.OriginAddressValidationStarted)
 
         assertThat(transition?.state).isEqualTo(State.OriginAddressValidation(data))
@@ -117,7 +109,7 @@ class ShippingLabelsStateMachineTest : BaseUnitTest() {
     }
 
     @Test
-    fun `test show packages step`() = coroutinesTestRule.testDispatcher.runBlockingTest {
+    fun `test show packages step`() = testBlocking {
         val packagesList = listOf(
             ShippingLabelPackage(
                 position = 1,
@@ -134,8 +126,8 @@ class ShippingLabelsStateMachineTest : BaseUnitTest() {
             )
         )
 
-        stateMachine.start(order.toString())
-        stateMachine.handleEvent(Event.DataLoaded(order, originAddress, shippingAddress, null))
+        stateMachine.start(order.id)
+        stateMachine.handleEvent(DataLoaded(order, originAddress, shippingAddress, null))
         stateMachine.handleEvent(Event.OriginAddressValidationStarted)
         stateMachine.handleEvent(Event.AddressValidated(originAddress))
         stateMachine.handleEvent(Event.ShippingAddressValidationStarted)
@@ -160,10 +152,10 @@ class ShippingLabelsStateMachineTest : BaseUnitTest() {
     @Test
     fun `when the origin address is a US military state, then require a customs form`() = testBlocking {
         val originAddress = originAddress.copy(
-            state = "AA",
-            country = "US"
+            state = AmbiguousLocation.Raw("AA"),
+            country = Location("US", "US")
         )
-        stateMachine.start(order.identifier)
+        stateMachine.start(order.id)
         stateMachine.handleEvent(DataLoaded(order, originAddress, shippingAddress, null))
 
         val machineState = stateMachine.transitions.value.state
@@ -173,10 +165,10 @@ class ShippingLabelsStateMachineTest : BaseUnitTest() {
     @Test
     fun `when the shipping address is a US military state, then require a customs form`() = testBlocking {
         val shippingAddress = shippingAddress.copy(
-            state = "AA",
-            country = "US"
+            state = AmbiguousLocation.Raw("AA"),
+            country = Location("US", "US")
         )
-        stateMachine.start(order.identifier)
+        stateMachine.start(order.id)
         stateMachine.handleEvent(DataLoaded(order, originAddress, shippingAddress, null))
 
         val machineState = stateMachine.transitions.value.state
@@ -186,12 +178,12 @@ class ShippingLabelsStateMachineTest : BaseUnitTest() {
     @Test
     fun `when the origin and shipping address have same country, then don't require a customs form`() = testBlocking {
         val originAddress = originAddress.copy(
-            country = "UK"
+            country = Location("UK", "UK")
         )
         val shippingAddress = shippingAddress.copy(
-            country = "UK"
+            country = Location("UK", "UK")
         )
-        stateMachine.start(order.identifier)
+        stateMachine.start(order.id)
         stateMachine.handleEvent(DataLoaded(order, originAddress, shippingAddress, null))
 
         val machineState = stateMachine.transitions.value.state
@@ -201,12 +193,12 @@ class ShippingLabelsStateMachineTest : BaseUnitTest() {
     @Test
     fun `when the origin and shipping address have different countries, then require a customs form`() = testBlocking {
         val originAddress = originAddress.copy(
-            country = "US"
+            country = Location("US", "US")
         )
         val shippingAddress = shippingAddress.copy(
-            country = "UK"
+            country = Location("UK", "UK")
         )
-        stateMachine.start(order.identifier)
+        stateMachine.start(order.id)
         stateMachine.handleEvent(DataLoaded(order, originAddress, shippingAddress, null))
 
         val machineState = stateMachine.transitions.value.state

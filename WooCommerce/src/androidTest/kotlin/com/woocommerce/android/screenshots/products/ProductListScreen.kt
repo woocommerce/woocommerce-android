@@ -22,7 +22,26 @@ class ProductListScreen : Screen {
 
     fun selectProductByName(productName: String): SingleProductScreen {
         selectListItem(productName, LIST_VIEW)
+        waitForElementToBeDisplayed(R.id.productDetail_root)
         return SingleProductScreen()
+    }
+
+    fun tapOnCreateProduct(): ProductListScreen {
+        clickOn(R.id.addProductButton)
+        return this
+    }
+
+    fun goBackToProductList(): ProductListScreen {
+        while (!isElementDisplayed(R.id.productsRecycler)) {
+            pressBack()
+        }
+
+        return this
+    }
+
+    fun openSearchPane(): ProductListScreen {
+        clickOn(R.id.menu_search)
+        return this
     }
 
     fun assertProductCard(product: ProductData): ProductListScreen {
@@ -38,7 +57,7 @@ class ProductListScreen : Screen {
                 ViewMatchers.withChild(
                     Matchers.allOf(
                         ViewMatchers.withId(R.id.productStockAndStatus),
-                        ViewMatchers.withText(product.stockStatus)
+                        ViewMatchers.withText(product.stockStatus + " • \$${product.priceDiscountedRaw}.00")
                     )
                 )
             )

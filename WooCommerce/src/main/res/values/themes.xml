@@ -42,7 +42,7 @@
         <item name="android:textColorLink">@color/color_secondary</item>
 
         <item name="minTouchTargetSize">@dimen/min_tap_target</item>
-        <item name="actionMenuTextColor">?attr/colorSecondary</item>
+        <item name="actionMenuTextColor">@color/action_menu_fg_selector</item>
 
         <!-- Shapes -->
         <item name="shapeAppearanceSmallComponent">@style/ShapeAppearance.Theme.Woo.SmallComponent</item>
@@ -110,6 +110,12 @@
         <item name="wcMaterialOutlinedCurrencyEditTextViewStyle">@style/Widget.Woo.WCMaterialOutlinedCurrencyEditTextView</item>
         <item name="wcMaterialOutlinedEditTextViewStyle">@style/Widget.Woo.WCMaterialOutlinedEditTextView</item>
         <item name="wcSingleOptionTextViewStyle">@style/Widget.Woo.WCSingleOptionTextView</item>
+
+        <!-- Default animations -->
+        <item name="enterAnim">@anim/default_enter_anim</item>
+        <item name="exitAnim">@anim/default_exit_anim</item>
+        <item name="popEnterAnim">@anim/default_pop_enter_anim</item>
+        <item name="popExitAnim">@anim/default_pop_exit_anim</item>
     </style>
 
     <style name="Theme.Woo.Dialog" parent="@style/ThemeOverlay.MaterialComponents.MaterialAlertDialog">

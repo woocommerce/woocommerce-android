@@ -5,15 +5,18 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.R
+import com.woocommerce.android.analytics.AnalyticsEvent.PRODUCT_REVIEWS_LOADED
+import com.woocommerce.android.analytics.AnalyticsEvent.PRODUCT_REVIEWS_LOAD_FAILED
 import com.woocommerce.android.analytics.AnalyticsTracker
-import com.woocommerce.android.analytics.AnalyticsTracker.Stat.PRODUCT_REVIEWS_LOADED
-import com.woocommerce.android.analytics.AnalyticsTracker.Stat.PRODUCT_REVIEWS_LOAD_FAILED
 import com.woocommerce.android.model.ProductReview
 import com.woocommerce.android.tools.NetworkStatus
+import com.woocommerce.android.ui.reviews.ReviewModerationConsumer
+import com.woocommerce.android.ui.reviews.ReviewModerationHandler
+import com.woocommerce.android.ui.reviews.observeModerationEvents
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T.PRODUCTS
 import com.woocommerce.android.viewmodel.LiveDataDelegate
-import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.*
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.navArgs
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -26,20 +29,29 @@ import javax.inject.Inject
 class ProductReviewsViewModel @Inject constructor(
     savedState: SavedStateHandle,
     private val networkStatus: NetworkStatus,
-    private val reviewsRepository: ProductReviewsRepository
-) : ScopedViewModel(savedState) {
+    private val reviewsRepository: ProductReviewsRepository,
+    private val reviewModerationHandler: ReviewModerationHandler
+) : ScopedViewModel(savedState), ReviewModerationConsumer {
     private val _reviewList = MutableLiveData<List<ProductReview>>()
-    val reviewList: LiveData<List<ProductReview>> = _reviewList
+
+    override val ReviewModerationConsumer.reviewModerationHandler: ReviewModerationHandler
+        get() = this@ProductReviewsViewModel.reviewModerationHandler
+
+    override val ReviewModerationConsumer.rawReviewList: LiveData<List<ProductReview>>
+        get() = _reviewList
 
     val productReviewsViewStateData = LiveDataDelegate(savedState, ProductReviewsViewState())
     private var productReviewsViewState by productReviewsViewStateData
 
     private val navArgs: ProductReviewsFragmentArgs by savedState.navArgs()
 
+    private var hasModifiedReviews: Boolean = false
+
     init {
         if (_reviewList.value == null) {
             loadProductReviews()
         }
+        launch { observeModerationEvents() }
     }
 
     fun refreshProductReviews() {
@@ -57,7 +69,29 @@ class ProductReviewsViewModel @Inject constructor(
         launch { fetchProductReviews(remoteProductId = navArgs.remoteProductId, loadMore = true) }
     }
 
-    private fun loadProductReviews() {
+    override fun ReviewModerationConsumer.onReviewModerationSuccess() {
+        reloadReviewsFromCache()
+        hasModifiedReviews = true
+    }
+
+    fun onBackButtonClicked() {
+        if (hasModifiedReviews) {
+            triggerEvent(ExitWithResult(Unit))
+        } else {
+            triggerEvent(Exit)
+        }
+    }
+
+    private fun reloadReviewsFromCache() {
+        launch {
+            _reviewList.value = reviewsRepository.getProductReviewsFromDB(navArgs.remoteProductId)
+            productReviewsViewState = productReviewsViewState.copy(
+                isEmptyViewVisible = _reviewList.value?.isEmpty() == true
+            )
+        }
+    }
+
+    private fun loadProductReviews() = launch {
         // Initial load. Get and show reviewList from the db if any
         val reviewsInDb = reviewsRepository.getProductReviewsFromDB(navArgs.remoteProductId)
         if (reviewsInDb.isNotEmpty()) {
@@ -67,7 +101,7 @@ class ProductReviewsViewModel @Inject constructor(
             productReviewsViewState = productReviewsViewState.copy(isSkeletonShown = true)
         }
 
-        launch { fetchProductReviews(navArgs.remoteProductId, loadMore = false) }
+        fetchProductReviews(navArgs.remoteProductId, loadMore = false)
     }
 
     private suspend fun fetchProductReviews(

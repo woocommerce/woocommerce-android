@@ -5,6 +5,7 @@ import android.graphics.Canvas
 import android.graphics.drawable.Drawable
 import android.view.View
 import android.widget.ImageView
+import androidx.core.content.ContextCompat
 import org.hamcrest.Description
 import org.hamcrest.TypeSafeMatcher
 
@@ -35,8 +36,7 @@ open class DrawableMatcher(resourceId: Int) : TypeSafeMatcher<View>() {
         }
 
         // We get the drawable from the resources that we are going to compare with image view source
-        val resources = item.context?.resources
-        val expectedDrawable = resources?.getDrawable(expectedId) ?: return false
+        val expectedDrawable = ContextCompat.getDrawable(item.context, expectedId) ?: return false
 
         // comparing the bitmaps should give results of the matcher if they are equal
         val bitmap = getBitmap(item.drawable)

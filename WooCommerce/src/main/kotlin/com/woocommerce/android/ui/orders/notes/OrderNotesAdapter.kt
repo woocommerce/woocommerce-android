@@ -51,9 +51,8 @@ class OrderNotesAdapter : Adapter<OrderNoteViewHolder>() {
     }
 
     override fun onBindViewHolder(holder: OrderNoteViewHolder, position: Int) {
-        val isLast = position == notes.size - 1
         when (getItemViewType(position)) {
-            ViewType.NOTE.id -> (holder as NoteItemViewHolder).bind(notes[position] as Note, isLast)
+            ViewType.NOTE.id -> (holder as NoteItemViewHolder).bind(notes[position] as Note)
             ViewType.HEADER.id -> (holder as HeaderItemViewHolder).bind(notes[position] as Header)
             else -> throw IllegalArgumentException("Unexpected view holder in OrderNotesAdapter")
         }

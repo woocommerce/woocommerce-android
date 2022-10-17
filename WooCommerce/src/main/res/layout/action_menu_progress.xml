@@ -9,5 +9,5 @@
         android:layout_height="32dp"
         android:layout_gravity="center"
         android:padding="4dp"
-        android:indeterminateTint="@color/white"/>
+        android:indeterminateTint="@color/color_secondary" />
 </FrameLayout>

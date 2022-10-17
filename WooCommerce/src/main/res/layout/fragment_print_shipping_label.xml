@@ -46,7 +46,7 @@
             android:layout_marginEnd="@dimen/major_100"
             android:layout_marginBottom="@dimen/major_100"
             android:contentDescription="@string/shipping_label_print_disclaimer"
-            android:src="@drawable/ic_info_outline_24dp"
+            android:src="@drawable/ic_deprecated_info_outline_24dp"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/shippingLabelPrint_errorMessage" />
 
@@ -181,7 +181,7 @@
                 android:layout_height="wrap_content"
                 android:layout_margin="@dimen/major_100"
                 android:contentDescription="@string/shipping_label_print_info"
-                android:src="@drawable/ic_info_outline_24dp"
+                android:src="@drawable/ic_deprecated_info_outline_24dp"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />

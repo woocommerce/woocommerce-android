@@ -15,8 +15,6 @@ class LicensesFragment : Fragment(R.layout.fragment_licenses) {
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-
         val binding = FragmentLicensesBinding.bind(view)
 
         context?.let {

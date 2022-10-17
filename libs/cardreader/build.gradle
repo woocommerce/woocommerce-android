@@ -1,14 +1,15 @@
 plugins {
     id 'com.android.library'
-    id 'kotlin-android'
+    id 'org.jetbrains.kotlin.android'
+    id 'org.jetbrains.kotlin.plugin.parcelize'
 }
 
 android {
-    compileSdkVersion 31
+    compileSdkVersion gradle.ext.compileSdkVersion
 
     defaultConfig {
-        minSdkVersion 21
-        targetSdkVersion 31
+        minSdkVersion gradle.ext.minSdkVersion
+        targetSdkVersion gradle.ext.targetSdkVersion
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -23,16 +24,10 @@ android {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
     }
-    kotlinOptions {
-        jvmTarget = '1.8'
-        freeCompilerArgs += [
-                "-Xopt-in=kotlinx.coroutines.ExperimentalCoroutinesApi"
-        ]
-    }
 }
 
 dependencies {
-    implementation 'androidx.lifecycle:lifecycle-process:2.3.1'
+    implementation "androidx.lifecycle:lifecycle-process:$lifecycleVersion"
     implementation "androidx.core:core-ktx:$coreKtxVersion"
     implementation "androidx.appcompat:appcompat:$appCompatVersion"
     implementation "com.google.android.material:material:$materialVersion"
@@ -44,7 +39,7 @@ dependencies {
     androidTestImplementation "androidx.test.ext:junit:$jUnitExtVersion"
     androidTestImplementation "androidx.test.espresso:espresso-core:$espressoVersion"
 
-    implementation "com.stripe:stripeterminal:2.5.2"
+    implementation "com.stripe:stripeterminal:2.12.0"
 
     // Coroutines
     implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:$coroutinesVersion"

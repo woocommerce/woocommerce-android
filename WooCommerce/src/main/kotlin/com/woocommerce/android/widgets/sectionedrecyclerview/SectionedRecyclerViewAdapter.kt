@@ -271,7 +271,6 @@ open class SectionedRecyclerViewAdapter : RecyclerView.Adapter<RecyclerView.View
                     State.LOADING -> viewType + 3
                     State.FAILED -> viewType + 4
                     State.EMPTY -> viewType + 5
-                    else -> throw IllegalStateException("Invalid state")
                 }
             }
 

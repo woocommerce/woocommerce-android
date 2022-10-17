@@ -36,6 +36,7 @@
     <color name="color_accent_3">@color/woo_blue_30</color>
 
     <color name="inverted_surface_overlay">@color/color_surface</color>
+    <color name="color_text_link">@color/woo_pink_30</color>
 
     <!--
         App colors
@@ -116,6 +117,7 @@
         Payment reader
     -->
     <color name="disconnected_state_number_background_color">@color/woo_black_900</color>
+    <color name="select_payment_gateway_stroke">@color/woo_gray_80</color>
 
     <!--
     Jetpack plugin installation dialog
@@ -126,6 +128,22 @@
     <color name="reader_update_progress_color">@color/woo_purple_40</color>
     <color name="reader_update_rest_color">@color/woo_purple_20</color>
     <color name="reader_update_border_color">#7F54B3</color>
+
+    <!--
+    More menu button
+    -->
+    <color name="more_menu_button_background">#232323</color>
+    <color name="more_menu_button_icon_background">#383838</color>
+
+    <!-- Woo application log - all white -->
+    <color name="log_text_verbose">@color/white</color>
+    <color name="log_text_debug">@color/white</color>
+    <color name="log_text_info">@color/white</color>
+    <color name="log_text_warning">@color/white</color>
+    <color name="log_text_error">@color/white</color>
+
+    <!-- Text colors -->
+    <color name="link_text">@color/woo_blue_30</color>
 
     <!--
     Analytics

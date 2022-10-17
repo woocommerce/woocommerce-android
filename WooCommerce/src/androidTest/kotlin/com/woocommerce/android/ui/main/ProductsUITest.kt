@@ -1,3 +1,5 @@
+@file:Suppress("DEPRECATION")
+
 package com.woocommerce.android.ui.main
 
 import androidx.test.rule.ActivityTestRule
@@ -7,9 +9,10 @@ import com.woocommerce.android.helpers.TestBase
 import com.woocommerce.android.screenshots.TabNavComponent
 import com.woocommerce.android.screenshots.login.WelcomeScreen
 import com.woocommerce.android.screenshots.products.ProductListScreen
-import com.woocommerce.android.screenshots.util.ProductData
 import com.woocommerce.android.screenshots.util.MocksReader
+import com.woocommerce.android.screenshots.util.ProductData
 import com.woocommerce.android.screenshots.util.iterator
+import com.woocommerce.android.ui.login.LoginActivity
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
 import org.json.JSONObject
@@ -26,12 +29,12 @@ class ProductsUITest : TestBase() {
     val initRule = InitializationRule()
 
     @get:Rule(order = 2)
-    var activityRule = ActivityTestRule(MainActivity::class.java)
+    var activityRule = ActivityTestRule(LoginActivity::class.java)
 
     @Before
     fun setUp() {
         WelcomeScreen
-            .logoutIfNeeded()
+            .skipCarouselIfNeeded()
             .selectLogin()
             .proceedWith(BuildConfig.SCREENSHOTS_URL)
             .proceedWith(BuildConfig.SCREENSHOTS_USERNAME)
@@ -41,7 +44,7 @@ class ProductsUITest : TestBase() {
     }
 
     @Test
-    fun productListShowsAllProducts() {
+    fun e2eProductListShowsAllProducts() {
         val productsJSONArray = MocksReader().readAllProductsToArray()
 
         for (productJSON in productsJSONArray.iterator()) {

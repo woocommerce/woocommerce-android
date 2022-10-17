@@ -6,11 +6,10 @@ import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
 import androidx.hilt.navigation.fragment.hiltNavGraphViewModels
-import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import com.woocommerce.android.R
+import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
-import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.databinding.FragmentAddProductCategoryBinding
 import com.woocommerce.android.extensions.navigateBackWithResult
 import com.woocommerce.android.extensions.navigateSafely
@@ -66,7 +65,7 @@ class AddProductCategoryFragment : BaseFragment(R.layout.fragment_add_product_ca
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
             R.id.menu_done -> {
-                AnalyticsTracker.track(Stat.ADD_PRODUCT_CATEGORY_SAVE_TAPPED)
+                AnalyticsTracker.track(AnalyticsEvent.ADD_PRODUCT_CATEGORY_SAVE_TAPPED)
                 viewModel.addProductCategory(getCategoryName())
                 true
             }
@@ -117,18 +116,15 @@ class AddProductCategoryFragment : BaseFragment(R.layout.fragment_add_product_ca
             new.displayProgressDialog?.takeIfNotEqualTo(old?.displayProgressDialog) { showProgressDialog(it) }
         }
 
-        viewModel.event.observe(
-            viewLifecycleOwner,
-            Observer { event ->
-                when (event) {
-                    is ShowSnackbar -> uiMessageResolver.showSnack(event.message)
-                    is Exit -> requireActivity().onBackPressed()
-                    is ShowDialog -> event.showDialog()
-                    is ExitWithResult<*> -> navigateBackWithResult(ARG_ADDED_CATEGORY, event.data)
-                    else -> event.isHandled = false
-                }
+        viewModel.event.observe(viewLifecycleOwner) { event ->
+            when (event) {
+                is ShowSnackbar -> uiMessageResolver.showSnack(event.message)
+                is Exit -> requireActivity().onBackPressedDispatcher.onBackPressed()
+                is ShowDialog -> event.showDialog()
+                is ExitWithResult<*> -> navigateBackWithResult(ARG_ADDED_CATEGORY, event.data)
+                else -> event.isHandled = false
             }
-        )
+        }
     }
 
     private fun displayCategoryNameError(messageId: Int) {

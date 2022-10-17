@@ -14,24 +14,22 @@ interface MainContract {
         fun fetchUnfilledOrderCount()
         fun fetchSitesAfterDowngrade()
         fun isUserEligible(): Boolean
+        fun updateStatsWidgets()
     }
 
     interface View : BaseView<Presenter> {
         fun notifyTokenUpdated()
         fun showLoginScreen()
-        fun showSitePickerScreen()
         fun updateSelectedSite()
         fun updateOfflineStatusBar(isConnected: Boolean)
         fun hideBottomNav()
         fun showBottomNav()
-        fun hideReviewsBadge()
-        fun showReviewsBadge()
-        fun updateReviewsBadge()
         fun hideOrderBadge()
         fun showOrderBadge(count: Int)
         fun updateOrderBadge(hideCountUntilComplete: Boolean)
         fun hideProgressDialog()
         fun showProgressDialog(@StringRes stringId: Int)
         fun showUserEligibilityErrorScreen()
+        fun updateStatsWidgets()
     }
 }

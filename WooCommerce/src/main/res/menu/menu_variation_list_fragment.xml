@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <item
+        android:id="@+id/menu_bulk_update"
+        android:title="@string/variation_list_menu_bulk_update"
+        android:visible="false"
+        app:showAsAction="never" />
+
+</menu>

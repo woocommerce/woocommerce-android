@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.products.models
 
+import androidx.annotation.ColorRes
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
 import com.woocommerce.android.R
@@ -75,6 +76,8 @@ sealed class ProductProperty(val type: Type) {
         val text: String = "",
         var shouldFocus: Boolean = false,
         var isReadOnly: Boolean = false,
+        @StringRes val badgeText: Int? = null,
+        @ColorRes val badgeColor: Int? = null,
         val onTextChanged: ((String) -> Unit)? = null
     ) : ProductProperty(EDITABLE)
 

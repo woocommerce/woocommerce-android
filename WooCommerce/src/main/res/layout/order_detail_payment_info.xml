@@ -202,6 +202,7 @@
 
                 <!-- Paid by customer -->
                 <LinearLayout
+                    android:id="@+id/paymentInfo_amountPaidSection"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="@dimen/major_75"
@@ -383,7 +384,7 @@
                 android:textColor="@color/color_on_surface_medium"
                 android:layout_marginVertical="@dimen/major_100"
                 android:layout_height="wrap_content"
-                android:drawableStart="@drawable/ic_info_outline_24dp"
+                android:drawableStart="@drawable/ic_deprecated_info_outline_24dp"
                 android:drawablePadding="@dimen/major_100"
                 android:background="?attr/selectableItemBackground"
                 android:layout_marginEnd="@dimen/major_100"

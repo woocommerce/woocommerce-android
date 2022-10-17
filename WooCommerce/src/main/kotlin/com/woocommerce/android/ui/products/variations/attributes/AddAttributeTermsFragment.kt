@@ -8,7 +8,6 @@ import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
 import androidx.core.view.isVisible
-import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.ItemTouchHelper
@@ -19,6 +18,7 @@ import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.databinding.FragmentAddAttributeTermsBinding
 import com.woocommerce.android.extensions.handleResult
 import com.woocommerce.android.extensions.navigateSafely
+import com.woocommerce.android.extensions.parcelable
 import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.model.ProductAttributeTerm
 import com.woocommerce.android.ui.dialog.WooDialog
@@ -95,7 +95,7 @@ class AddAttributeTermsFragment : BaseProductFragment(R.layout.fragment_add_attr
                     attribute.terms.find {
                         it == termName
                     }
-                }?.let { term ->
+                }?.let {
                     globalTermsAdapter.addTerm(termName)
                 }
 
@@ -233,6 +233,7 @@ class AddAttributeTermsFragment : BaseProductFragment(R.layout.fragment_add_attr
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
         if (isConfirmRemoveDialogShowing) {
             outState.putBoolean(KEY_IS_CONFIRM_REMOVE_DIALOG_SHOWING, true)
         }
@@ -255,7 +256,7 @@ class AddAttributeTermsFragment : BaseProductFragment(R.layout.fragment_add_attr
         )
         assignedTermsAdapter = binding.assignedTermList.adapter as AttributeTermsListAdapter
         assignedTermsAdapter.setOnTermListener(assignedTermListener)
-        savedInstanceState?.getParcelable<Parcelable>(LIST_STATE_KEY_ASSIGNED)?.let {
+        savedInstanceState?.parcelable<Parcelable>(LIST_STATE_KEY_ASSIGNED)?.let {
             layoutManagerAssigned!!.onRestoreInstanceState(it)
         }
 
@@ -266,7 +267,7 @@ class AddAttributeTermsFragment : BaseProductFragment(R.layout.fragment_add_attr
         )
         globalTermsAdapter = binding.globalTermList.adapter as AttributeTermsListAdapter
         globalTermsAdapter.setOnTermListener(globalTermListener)
-        savedInstanceState?.getParcelable<Parcelable>(LIST_STATE_KEY_GLOBAL)?.let {
+        savedInstanceState?.parcelable<Parcelable>(LIST_STATE_KEY_GLOBAL)?.let {
             layoutManagerGlobal!!.onRestoreInstanceState(it)
         }
 
@@ -310,12 +311,9 @@ class AddAttributeTermsFragment : BaseProductFragment(R.layout.fragment_add_attr
     }
 
     private fun setupObservers() {
-        viewModel.attributeTermsList.observe(
-            viewLifecycleOwner,
-            Observer {
-                showGlobalAttributeTerms(it)
-            }
-        )
+        viewModel.attributeTermsList.observe(viewLifecycleOwner) {
+            showGlobalAttributeTerms(it)
+        }
 
         viewModel.globalAttributeTermsViewStateData.observe(viewLifecycleOwner) { old, new ->
             new.isSkeletonShown?.takeIfNotEqualTo(old?.isSkeletonShown) {
@@ -323,15 +321,12 @@ class AddAttributeTermsFragment : BaseProductFragment(R.layout.fragment_add_attr
             }
         }
 
-        viewModel.event.observe(
-            viewLifecycleOwner,
-            Observer { event ->
-                when (event) {
-                    is ExitProductAddAttributeTerms -> findNavController().navigateUp()
-                    else -> event.isHandled = false
-                }
+        viewModel.event.observe(viewLifecycleOwner) { event ->
+            when (event) {
+                is ExitProductAddAttributeTerms -> findNavController().navigateUp()
+                else -> event.isHandled = false
             }
-        )
+        }
     }
 
     private fun setupResultHandlers() {

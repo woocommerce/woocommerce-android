@@ -1,22 +1,24 @@
-Gerencie seu negócio de onde você estiver, com o aplicativo móvel WooCommerce. Crie produtos, processe pedidos e acompanhe as principais estatísticas em tempo real.
+Gerencie sua loja de onde você estiver
 
-ADICIONE PRODUTOS
-Crie, agrupe e publique produtos diretamente dos dispositivos móveis Android que preferir. Aproveite sua criatividade quando ela entrar em ação: transforme suas ideias em produtos em questão de segundos ou salve-as como rascunho para mais tarde.
+Gerencie seu negócio de onde você estiver, com o aplicativo móvel WooCommerce. Adicione produtos, crie pedidos, receba pagamentos rapidamente e fique de olho em novas vendas e estatísticas importantes em tempo real.
 
-RECEBA NOTIFICAÇÕES
-Nunca perca um pedido ou avaliação. Não precisa se preocupar em perder oportunidades. Ative os alertas em tempo real e ouça o som de notificações para cada nova venda!
+Adicione e edite produtos com apenas um toque
+Comece em poucos segundos! Crie, agrupe e publique produtos diretamente do seu dispositivo Android. Aproveite sua criatividade quando ela entrar em ação: transforme suas ideias em produtos imediatamente ou as salve como rascunho para mais tarde.
 
-VISUALIZE E MODIFIQUE PEDIDOS
-Role a tela dos resumos ou pesquise por detalhes do cliente ou do pedido. Toque nos detalhes para ver a cobrança por item, iniciar a conclusão e alterar o status do pedido. Adicione anotações ao pedido ou envie um e-mail diretamente aos clientes para acompanhamento.
+Crie pedidos na hora
+Após criar alguns produtos, fica fácil. Escolha itens do seu catálogo, adicione taxa de envio e preencha os detalhes do cliente para criar rapidamente um pedido sincronizado com seu inventário.
 
-MONITORE SUAS ESTATÍSTICAS
-Veja quais produtos são mais populares, em um piscar de olhos. Acompanhe sua receita geral, contagem de pedidos e dados semanais, mensais e anuais dos visitantes. Conhecimento é poder!
+Aceite pagamentos presenciais
+Receba pagamentos presencialmente usando um leitor de cartão e o WooCommerce In-Person Payments. Comece um novo pedido, ou encontre um existente que esteja com pagamento pendente, e receba o pagamento usando o leitor de cartão ou uma carteira digital, como o Google Pay.
 
-ALTERNE ENTRE LOJAS
-Para quem tem mais de uma loja, é fácil alternar entre os negócios em questão de segundos.
+Receba notificações de todas as vendas
+Agora que você está ativo nas vendas, nunca perca um pedido ou uma avaliação. Mantenha-se informado ativando alertas em tempo real para ouvir o som de notificações para cada nova venda!
 
-O WooCommerce é a plataforma de comércio eletrônico open source mais personalizável do mundo. Esteja você lançando um negócio, tendo varejo online tradicional ou desenvolvendo sites para clientes, use o WooCommerce para uma loja que combina conteúdo e comércio de maneira poderosa.
+Monitore as vendas e os produtos mais vendidos
+Veja quais produtos são mais populares, em um piscar de olhos. Acompanhe sua receita geral, contagem de pedidos e dados semanais, mensais e anuais dos visitantes. Conhecimento é poder.
 
-Requisitos: WooCommerce versão 3.5 ou posterior e o plugin do Jetpack.
+O WooCommerce é a plataforma de comércio eletrônico open source mais personalizável do mundo. Esteja você lançando um negócio, trazendo sua loja física para a Web ou desenvolvendo sites para clientes, use o WooCommerce para ter uma loja que combine conteúdo e comércio com eficácia.
+
+Requisitos: WooCommerce versão 3.5 ou superior.
 
 Veja o Aviso de privacidade para usuários residentes da Califórnia em https://automattic.com/privacy/#california-consumer-privacy-act-ccpa.

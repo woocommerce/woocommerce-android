@@ -138,8 +138,9 @@ object ProductImagesUtils {
     private fun getOptimizedImagePath(context: Context, path: String): String? {
         try {
             getOptimizedImageUri(context, path)?.let { optUri ->
-                MediaUtils.getRealPathFromURI(context, optUri)?.let {
-                    return it
+                val realPath = MediaUtils.getRealPathFromURI(context, optUri)
+                if (realPath != null) {
+                    return realPath
                 }
             } ?: WooLog.w(T.MEDIA, "mediaModelFromLocalUri > failed to optimize image")
         } catch (e: Exception) {

@@ -48,10 +48,14 @@ class GetWCOrderListDescriptorWithFilters @Inject constructor(
                 var afterDate: String? = null
                 var beforeDate: String? = null
                 if (customDateRange.first > 0) {
-                    afterDate = dateUtils.toIso8601Format(customDateRange.first)
+                    afterDate = dateUtils.toIso8601Format(
+                        dateUtils.getDateInMillisAtTheStartOfTheDay(customDateRange.first)
+                    )
                 }
                 if (customDateRange.second > 0) {
-                    beforeDate = dateUtils.toIso8601Format(customDateRange.second)
+                    beforeDate = dateUtils.toIso8601Format(
+                        dateUtils.getDateInMillisAtTheEndOfTheDay(customDateRange.second)
+                    )
                 }
                 Pair(afterDate, beforeDate)
             }

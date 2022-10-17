@@ -1,0 +1,192 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    style="@style/Woo.Card"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <androidx.appcompat.widget.LinearLayoutCompat
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <androidx.appcompat.widget.LinearLayoutCompat
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:minHeight="@dimen/major_300"
+            android:orientation="horizontal"
+            android:paddingHorizontal="@dimen/major_100">
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/header_label"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:accessibilityHeading="true"
+                android:text="@string/order_creation_payment"
+                android:textAppearance="?attr/textAppearanceHeadline6" />
+
+            <ImageView
+                android:id="@+id/lock_icon"
+                android:layout_width="@dimen/image_minor_40"
+                android:layout_height="@dimen/image_minor_40"
+                android:src="@drawable/ic_lock"
+                android:visibility="gone"
+                android:contentDescription="@string/order_editing_locked_content_description"
+                android:layout_gravity="center_vertical"/>
+
+            <ProgressBar
+                android:id="@+id/loading_progress"
+                android:layout_width="@dimen/major_200"
+                android:layout_height="@dimen/major_200"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                android:visibility="gone"/>
+
+        </androidx.appcompat.widget.LinearLayoutCompat>
+
+        <androidx.appcompat.widget.LinearLayoutCompat
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:minHeight="@dimen/major_300"
+            android:orientation="horizontal"
+            android:paddingHorizontal="@dimen/major_100"
+            android:focusable="true"
+            android:focusableInTouchMode="false">
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/products_total_label"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="@string/order_creation_payment_products_total"
+                android:textAppearance="?attr/textAppearanceSubtitle1" />
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/products_total_value"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAppearance="?attr/textAppearanceSubtitle1"
+                tools:text="$20.00" />
+        </androidx.appcompat.widget.LinearLayoutCompat>
+
+        <androidx.appcompat.widget.LinearLayoutCompat
+            android:id="@+id/shipping_layout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical"
+            android:minHeight="@dimen/major_300"
+            android:orientation="horizontal">
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/shipping_button"
+                style="@style/Woo.Button.TextButton.Secondary"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:gravity="start|center_vertical"
+                android:text="@string/order_creation_add_shipping"
+                app:icon="@drawable/ic_add"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/tax_label" />
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/shipping_value"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAppearance="?attr/textAppearanceSubtitle1"
+                android:layout_marginEnd="@dimen/major_100"
+                android:layout_marginStart="@dimen/major_100"
+                tools:text="$20.00" />
+
+        </androidx.appcompat.widget.LinearLayoutCompat>
+
+        <androidx.appcompat.widget.LinearLayoutCompat
+            android:id="@+id/fee_layout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:minHeight="@dimen/major_300"
+            android:orientation="horizontal">
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/fee_button"
+                style="@style/Woo.Button.TextButton.Secondary"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:gravity="start|center_vertical"
+                android:text="@string/order_creation_add_fee"
+                app:icon="@drawable/ic_add" />
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/fee_value"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="@dimen/major_100"
+                android:layout_marginStart="@dimen/major_100"
+                android:textAppearance="?attr/textAppearanceSubtitle1"
+                tools:text="$20.00" />
+
+        </androidx.appcompat.widget.LinearLayoutCompat>
+
+        <androidx.appcompat.widget.LinearLayoutCompat
+            android:id="@+id/tax_layout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:minHeight="@dimen/major_300"
+            android:orientation="horizontal"
+            android:paddingHorizontal="@dimen/major_100"
+            android:focusable="true"
+            android:focusableInTouchMode="false">
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/tax_label"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="@string/order_creation_payment_tax"
+                android:textAppearance="?attr/textAppearanceSubtitle1" />
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/tax_value"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAppearance="?attr/textAppearanceSubtitle1"
+                tools:text="$0.00" />
+        </androidx.appcompat.widget.LinearLayoutCompat>
+
+        <androidx.appcompat.widget.LinearLayoutCompat
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:minHeight="@dimen/major_300"
+            android:orientation="horizontal"
+            android:paddingHorizontal="@dimen/major_100"
+            android:focusable="true"
+            android:focusableInTouchMode="false">
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/order_total_label"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="@string/order_creation_payment_order_total"
+                android:textAppearance="?attr/textAppearanceSubtitle1"
+                android:textStyle="bold"
+                />
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/order_total_value"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAppearance="?attr/textAppearanceSubtitle1"
+                android:textStyle="bold"
+                tools:text="$20.00" />
+        </androidx.appcompat.widget.LinearLayoutCompat>
+    </androidx.appcompat.widget.LinearLayoutCompat>
+</com.google.android.material.card.MaterialCardView>

@@ -11,17 +11,12 @@ import com.woocommerce.android.R
 import com.woocommerce.android.databinding.FragmentWpcomWebviewBinding
 import com.woocommerce.android.extensions.navigateBackWithNotice
 import com.woocommerce.android.ui.base.BaseFragment
-import com.woocommerce.android.util.WooLog
+import com.woocommerce.android.ui.common.wpcomwebview.WPComWebViewFragment.UrlComparisonMode.EQUALITY
+import com.woocommerce.android.ui.common.wpcomwebview.WPComWebViewFragment.UrlComparisonMode.PARTIAL
+import com.woocommerce.android.ui.main.MainActivity.Companion.BackPressListener
 import dagger.hilt.android.AndroidEntryPoint
 import org.wordpress.android.fluxc.network.UserAgent
-import org.wordpress.android.fluxc.store.AccountStore
-import org.wordpress.android.util.StringUtils
-import java.io.UnsupportedEncodingException
-import java.net.URLEncoder
-import java.nio.charset.StandardCharsets
 import javax.inject.Inject
-
-private const val WPCOM_LOGIN_URL = "https://wordpress.com/wp-login.php"
 
 /**
  * This fragments allows loading specific pages from WordPress.com with the current user logged in.
@@ -30,15 +25,16 @@ private const val WPCOM_LOGIN_URL = "https://wordpress.com/wp-login.php"
  * urlToTriggerExit: optional URL or part of URL to trigger exit with notice when loaded.
  */
 @AndroidEntryPoint
-class WPComWebViewFragment : BaseFragment(R.layout.fragment_wpcom_webview), UrlInterceptor {
+class WPComWebViewFragment : BaseFragment(R.layout.fragment_wpcom_webview), UrlInterceptor, BackPressListener {
     companion object {
         const val WEBVIEW_RESULT = "webview-result"
+        const val WEBVIEW_DISMISSED = "webview-dismissed"
     }
 
     private val webViewClient by lazy { WPComWebViewClient(this) }
     private val navArgs: WPComWebViewFragmentArgs by navArgs()
 
-    @Inject lateinit var accountStore: AccountStore
+    @Inject lateinit var wpcomWebViewAuthenticator: WPComWebViewAuthenticator
 
     @Inject lateinit var userAgent: UserAgent
 
@@ -56,46 +52,31 @@ class WPComWebViewFragment : BaseFragment(R.layout.fragment_wpcom_webview), UrlI
                 }
             }
             this.settings.javaScriptEnabled = true
-            settings.userAgentString = userAgent.getUserAgent()
+            settings.userAgentString = userAgent.userAgent
         }
 
-        loadAuthenticatedUrl(binding.webView, navArgs.urlToLoad)
-    }
-
-    private fun loadAuthenticatedUrl(webView: WebView, urlToLoad: String) {
-        val postData = getAuthenticationPostData(
-            urlToLoad = urlToLoad,
-            username = accountStore.account.userName,
-            token = accountStore.accessToken
-        )
-
-        webView.postUrl(WPCOM_LOGIN_URL, postData.toByteArray())
+        wpcomWebViewAuthenticator.authenticateAndLoadUrl(binding.webView, navArgs.urlToLoad)
     }
 
     override fun onLoadUrl(url: String) {
-        navArgs.urlToTriggerExit?.let {
-            if (url.contains(it)) {
-                navigateBackWithNotice(WEBVIEW_RESULT)
-            }
+        fun String.matchesUrl(url: String) = when (navArgs.urlComparisonMode) {
+            PARTIAL -> url.contains(this, ignoreCase = true)
+            EQUALITY -> equals(url, ignoreCase = true)
+        }
+
+        if (isAdded && navArgs.urlToTriggerExit?.matchesUrl(url) == true) {
+            navigateBackWithNotice(WEBVIEW_RESULT)
         }
     }
 
-    fun getAuthenticationPostData(urlToLoad: String, username: String, token: String): String {
-        val utf8 = StandardCharsets.UTF_8.name()
-        try {
-            var postData = String.format(
-                "log=%s&redirect_to=%s",
-                URLEncoder.encode(StringUtils.notNullStr(username), utf8),
-                URLEncoder.encode(StringUtils.notNullStr(urlToLoad), utf8)
-            )
+    override fun getFragmentTitle() = navArgs.title ?: super.getFragmentTitle()
 
-            // Add token authorization
-            postData += "&authorization=Bearer " + URLEncoder.encode(token, utf8)
+    override fun onRequestAllowBackPress(): Boolean {
+        navigateBackWithNotice(WEBVIEW_DISMISSED)
+        return false
+    }
 
-            return postData
-        } catch (e: UnsupportedEncodingException) {
-            WooLog.e(WooLog.T.UTILS, e)
-        }
-        return ""
+    enum class UrlComparisonMode {
+        PARTIAL, EQUALITY
     }
 }

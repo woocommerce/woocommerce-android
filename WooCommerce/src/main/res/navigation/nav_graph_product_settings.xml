@@ -15,46 +15,22 @@
             app:argType="long" />
         <action
             android:id="@+id/action_productSettingsFragment_to_productStatusFragment"
-            app:destination="@id/productStatusFragment"
-            app:enterAnim="@anim/activity_slide_in_from_right"
-            app:exitAnim="@anim/activity_slide_out_to_left"
-            app:popEnterAnim="@anim/activity_slide_in_from_left"
-            app:popExitAnim="@anim/activity_slide_out_to_right" />
+            app:destination="@id/productStatusFragment" />
         <action
             android:id="@+id/action_productSettingsFragment_to_productCatalogVisibilityFragment"
-            app:destination="@id/productCatalogVisibilityFragment"
-            app:enterAnim="@anim/activity_slide_in_from_right"
-            app:exitAnim="@anim/activity_slide_out_to_left"
-            app:popEnterAnim="@anim/activity_slide_in_from_left"
-            app:popExitAnim="@anim/activity_slide_out_to_right" />
+            app:destination="@id/productCatalogVisibilityFragment" />
         <action
             android:id="@+id/action_productSettingsFragment_to_productVisibilityFragment"
-            app:destination="@id/productVisibilityFragment"
-            app:enterAnim="@anim/activity_slide_in_from_right"
-            app:exitAnim="@anim/activity_slide_out_to_left"
-            app:popEnterAnim="@anim/activity_slide_in_from_left"
-            app:popExitAnim="@anim/activity_slide_out_to_right" />
+            app:destination="@id/productVisibilityFragment" />
         <action
             android:id="@+id/action_productSettingsFragment_to_productSlugFragment"
-            app:destination="@id/productSlugFragment"
-            app:enterAnim="@anim/activity_slide_in_from_right"
-            app:exitAnim="@anim/activity_slide_out_to_left"
-            app:popEnterAnim="@anim/activity_slide_in_from_left"
-            app:popExitAnim="@anim/activity_slide_out_to_right" />
+            app:destination="@id/productSlugFragment" />
         <action
             android:id="@+id/action_productSettingsFragment_to_aztecEditorFragment"
-            app:destination="@id/aztecEditorFragment"
-            app:enterAnim="@anim/activity_slide_in_from_right"
-            app:exitAnim="@anim/activity_slide_out_to_left"
-            app:popEnterAnim="@anim/activity_slide_in_from_left"
-            app:popExitAnim="@anim/activity_slide_out_to_right" />
+            app:destination="@id/aztecEditorFragment" />
         <action
             android:id="@+id/action_productSettingsFragment_to_productMenuOrderFragment"
-            app:destination="@id/productMenuOrderFragment"
-            app:enterAnim="@anim/activity_slide_in_from_right"
-            app:exitAnim="@anim/activity_slide_out_to_left"
-            app:popEnterAnim="@anim/activity_slide_in_from_left"
-            app:popExitAnim="@anim/activity_slide_out_to_right" />
+            app:destination="@id/productMenuOrderFragment" />
     </fragment>
 
     <fragment

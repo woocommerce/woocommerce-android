@@ -1,0 +1,2 @@
+10.7:
+Dalam rilis ini, kami menyempurnakan alur login dengan memperbaiki pengisian otomatis dan pilihan untuk menghubungkan Jetpack jika Jetpack tidak terhubung. Kami juga memperbaiki perbedaan antara statistik bulanan dan statistik pengunjung. Mari berhitung! Terus kirimkan feedback Anda untuk memberi tahu kami apa yang harus ditingkatkan selanjutnya. 💜

@@ -1,0 +1,2 @@
+10.7:
+Für diese Version haben wir den Anmeldevorgang optimiert mit besserer automatischer Eingabe und einer Option zum Verbinden von Jetpack, sollte es nicht verbunden sein. Wir haben auch eine Diskrepanz zwischen den monatlichen und den Besucherstatistiken behoben. Yay, Mathe! Sende uns weiterhin Feedback! So finden wir heraus, was wir als Nächstes optimieren können. 💜

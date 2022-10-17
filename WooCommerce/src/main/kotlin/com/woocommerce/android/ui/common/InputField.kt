@@ -27,6 +27,7 @@ abstract class InputField<T : InputField<T>>(open val content: String) : Parcela
             else error == null
         }
 
+    @Suppress("UNCHECKED_CAST")
     fun validate(): T {
         val clone = this.clone() as T
         clone.error = validateInternal()

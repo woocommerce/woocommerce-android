@@ -4,14 +4,17 @@ import android.content.Context
 import android.os.Build
 import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.R
-import com.woocommerce.android.analytics.AnalyticsTracker.Stat.PUSH_NOTIFICATION_RECEIVED
-import com.woocommerce.android.analytics.AnalyticsTracker.Stat.PUSH_NOTIFICATION_TAPPED
+import com.woocommerce.android.analytics.AnalyticsEvent.LOGIN_LOCAL_NOTIFICATION_DISMISSED
+import com.woocommerce.android.analytics.AnalyticsEvent.PUSH_NOTIFICATION_RECEIVED
+import com.woocommerce.android.analytics.AnalyticsEvent.PUSH_NOTIFICATION_TAPPED
+import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.extensions.NotificationReceivedEvent
-import com.woocommerce.android.extensions.NotificationsUnseenReviewsEvent
 import com.woocommerce.android.model.Notification
 import com.woocommerce.android.model.isOrderNotification
 import com.woocommerce.android.model.toAppModel
 import com.woocommerce.android.support.ZendeskHelper
+import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.ui.login.localnotifications.LoginNotificationScheduler.Companion.LOGIN_HELP_NOTIFICATION_ID
 import com.woocommerce.android.util.NotificationsParser
 import com.woocommerce.android.util.WooLog.T.NOTIFS
 import com.woocommerce.android.util.WooLogWrapper
@@ -26,6 +29,7 @@ import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.CoreOrderStatus
 import org.wordpress.android.fluxc.store.AccountStore
 import org.wordpress.android.fluxc.store.NotificationStore.FetchNotificationPayload
 import org.wordpress.android.fluxc.store.SiteStore
+import org.wordpress.android.fluxc.store.WCLeaderboardsStore
 import org.wordpress.android.fluxc.store.WCOrderStore.FetchOrderListPayload
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -42,11 +46,14 @@ class NotificationMessageHandler @Inject constructor(
     private val notificationBuilder: WooNotificationBuilder,
     private val analyticsTracker: NotificationAnalyticsTracker,
     private val zendeskHelper: ZendeskHelper,
-    private val notificationsParser: NotificationsParser
+    private val notificationsParser: NotificationsParser,
+    private val selectedSite: SelectedSite,
+    private val topPerformersStore: WCLeaderboardsStore
 ) {
     companion object {
         private const val KEY_PUSH_TYPE_ZENDESK = "zendesk"
         private const val KEY_ZENDESK_REQUEST_ID = "zendesk_sdk_request_id"
+
         // All Zendesk push notifications will show the same notification, so hopefully this will be a unique ID
         private const val ZENDESK_PUSH_NOTIFICATION_ID = 1999999999
 
@@ -61,12 +68,28 @@ class NotificationMessageHandler @Inject constructor(
     @Synchronized
     fun onNotificationDismissed(localPushId: Int) {
         removeNotificationByPushIdFromSystemsBar(localPushId)
+        if (localPushId == LOGIN_HELP_NOTIFICATION_ID) {
+            onLocalNotificationDismissed()
+        }
+    }
+
+    private fun onLocalNotificationDismissed() {
+        val notificationTypeName = appPrefsWrapper.getPreLoginNotificationDisplayedType()
+        AnalyticsTracker.track(
+            stat = LOGIN_LOCAL_NOTIFICATION_DISMISSED,
+            properties = mapOf(AnalyticsTracker.KEY_TYPE to notificationTypeName)
+        )
     }
 
     @Suppress("ReturnCount", "ComplexMethod")
     fun onNewMessageReceived(messageData: Map<String, String>, appContext: Context) {
         if (!accountStore.hasAccessToken()) {
             wooLogWrapper.e(NOTIFS, "User is not logged in!")
+            return
+        }
+
+        if (!selectedSite.exists()) {
+            wooLogWrapper.e(NOTIFS, "User has no site selected!")
             return
         }
 
@@ -143,6 +166,7 @@ class NotificationMessageHandler @Inject constructor(
                         )
                     )
                 )
+                topPerformersStore.invalidateTopPerformers(site.siteId)
             } ?: wooLogWrapper.e(NOTIFS, "Site not found - can't dispatchNewOrderEvents")
         }
     }
@@ -204,9 +228,6 @@ class NotificationMessageHandler @Inject constructor(
             }
         }
 
-        if (notification.isReviewNotification) {
-            setHasUnseenReviewNotifs(true)
-        }
         EventBus.getDefault().post(NotificationReceivedEvent(notification.channelType))
     }
 
@@ -257,7 +278,6 @@ class NotificationMessageHandler @Inject constructor(
     fun removeAllNotificationsFromSystemsBar() {
         clearNotifications()
         notificationBuilder.cancelAllNotifications()
-        setHasUnseenReviewNotifs(false)
     }
 
     @Synchronized
@@ -313,18 +333,6 @@ class NotificationMessageHandler @Inject constructor(
     private fun updateNotificationsState() {
         if (!hasNotifications()) {
             notificationBuilder.cancelAllNotifications()
-            setHasUnseenReviewNotifs(false)
-        }
-    }
-
-    /**
-     * Called when we want to update the unseen state of review notifs - changes the related
-     * shared preference and posts an EventBus event so main activity can update the badge
-     */
-    private fun setHasUnseenReviewNotifs(hasUnseen: Boolean) {
-        if (appPrefsWrapper.hasUnseenReviews() != hasUnseen) {
-            appPrefsWrapper.setHasUnseenReviews(hasUnseen)
-            EventBus.getDefault().post(NotificationsUnseenReviewsEvent(hasUnseen))
         }
     }
 }

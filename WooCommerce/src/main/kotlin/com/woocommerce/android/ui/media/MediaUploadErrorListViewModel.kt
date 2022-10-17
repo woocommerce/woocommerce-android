@@ -75,9 +75,9 @@ class MediaUploadErrorListViewModel @Inject constructor(
         val filePath: String
     ) : Parcelable {
         constructor(state: UploadStatus.Failed) : this(
-            fileName = state.media.fileName ?: "",
+            fileName = state.media.fileName.orEmpty(),
             errorMessage = state.mediaErrorMessage,
-            filePath = state.media.filePath
+            filePath = state.media.filePath.orEmpty()
         )
     }
 }

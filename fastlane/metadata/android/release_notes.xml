@@ -1,68 +1,68 @@
 <ar>
-8.1:
-لقد حصلت علامة تبويب الطلبات على تحديث يتضمن هذا الإصدار. اختفت علامات التبويب الآن، ولقد منحناك عامل تصفية حسب خيار الحالة أو نطاق التاريخ. يعتمد هذا على ملاحظاتك المباشرة على مدار السنين، ونعلم أنك ستحب التغيير!
+10.7:
+بالنسبة إلى هذا الإصدار، عززنا تدفق تسجيل الدخول من خلال تحسين الملء التلقائي وخيار الاتصال بـ Jetpack، في حال عدم الاتصال بـ Jetpack. أصلحنا أيضًا التباين بين الإحصاءات الشهرية وإحصاءات الزائرين. مرحى، الرياضيات! حافظ على تدفق ملاحظاتك؛ حيث إنها تساعدنا على تحديد ما يجب العمل عليه فيما بعد. 💜
 </ar>
 <de-DE>
-8.1:
-Der Tab „Bestellungen“ wurde in dieser Version aktualisiert. Wir haben die Tabs entfernt und stattdessen eine Option zum Filtern nach Status oder Zeitraum hinzugefügt. Diese Änderung basiert auf jahrelangem Feedback der Benutzer. Deshalb wissen wir, dass sie dir gefallen wird!
+10.7:
+Für diese Version haben wir den Anmeldevorgang optimiert mit besserer automatischer Eingabe und einer Option zum Verbinden von Jetpack, sollte es nicht verbunden sein. Wir haben auch eine Diskrepanz zwischen den monatlichen und den Besucherstatistiken behoben. Yay, Mathe! Sende uns weiterhin Feedback! So finden wir heraus, was wir als Nächstes optimieren können. 💜
 </de-DE>
 <es-ES>
-8.1:
-Con esta versión, se ha actualizado la pestaña de pedidos. Las pestañas ya no están, y te ofrecemos la opción de filtrar por estado o por rango de fechas. Este cambio se lleva a cabo a raíz de los comentarios directos que hemos recibido a lo largo de los años, así que estamos seguros de que te gustará.
+10.7:
+En esta versión, hemos mejorado el flujo de acceso gracias a una mejora de la función para autocompletar y una opción para conectar Jeckpack si no está conectado. También hemos solucionado una discrepancia entre las estadísticas mensuales y las de los visitantes. ¡Vivan las estadísticas! Sigue compartiendo tus opiniones, ya que nos ayudan a averiguar en qué debemos trabajar. 💜
 </es-ES>
 <fr-FR>
-8.1 :
-L’onglet Commandes a fait peau neuve ! À la place des onglets, vous pouvez désormais filtrer les commandes par état ou plage de dates. Cette mise à jour tient compte des commentaires que vous avez formulés au fil des ans. Elle va vous plaire.
+10.7 :
+Pour cette version, nous avons amélioré le flux de connexion avec un remplissage automatique optimisé et une option permettant de connecter Jetpack, le cas échéant. Nous avons également corrigé un écart entre les statistiques mensuelles et de trafic. Vive les maths ! Continuez à nous faire part de vos commentaires ; ils nous aident à nous améliorer. 💜
 </fr-FR>
 <iw-IL>
-8.1:
-עדכנו את לשונית ההזמנות בגרסה החדשה. הלשוניות לא קיימות עוד והוספנו אפשרות לסנן לפי סטטוס או טווח תאריכים. השינוי בוצע בהתאם למשוב שקיבלנו ממשתמשים במהלך השנים ואנחנו בטוחים שהעדכון ימצא חן בעיניך!
+10.7:
+בגרסה הזאת, שיפרנו את תהליך ההתחברות, עם מילוי אוטומטי טוב יותר ועם אפשרות לחבר את Jetpack במידה והשירות לא מחובר. בנוסף, שיפרנו חוסר התאמה בין הנתונים הסטטיסטיים של החודש ושל המבקרים. Yay מתמטיקה! נשמח להמשיך לקבל משוב, זה עוזר לנו להבין על מה כדאי לנו לעבוד בשלב הבא. 💜
 </iw-IL>
 <id>
-8.1:
-Melalui rilis ini, tab pesanan akan diperbarui. Sekarang tab sudah dihilangkan, dan kami memberi Anda penyaring berdasarkan status atau pilihan rentang tanggal. Pembaruan ini didasarkan pada feedback langsung Anda, dan kami tahu Anda akan menyukai perubahan ini! 
+10.7:
+Dalam rilis ini, kami menyempurnakan alur login dengan memperbaiki pengisian otomatis dan pilihan untuk menghubungkan Jetpack jika Jetpack tidak terhubung. Kami juga memperbaiki perbedaan antara statistik bulanan dan statistik pengunjung. Mari berhitung! Terus kirimkan feedback Anda untuk memberi tahu kami apa yang harus ditingkatkan selanjutnya. 💜
 </id>
 <it-IT>
-8.1:
-È stato effettuato un aggiornamento della scheda degli ordini a questa versione. Le schede ora sono sparite e ti abbiamo fornito un filtro per stato oppure l'opzione per intervallo di date. Alla base di ciò c'è il feedback diretto che ci hai inviato nel corso degli anni e sappiamo che ti piacerà la modifica.
+10.7:
+Per questa versione, abbiamo migliorato il flusso di accesso con una migliore compilazione automatica e un'opzione per connettere Jetpack, se Jetpack non è connesso. Abbiamo anche corretto una discrepanza tra le statistiche mensili e quelle dei visitatori. Ah, la matematica! Continua a inviarci il tuo feedback; ci aiuta a capire su cosa lavorare in futuro. 💜
 </it-IT>
 <ja-JP>
-8.1:
-このリリースでは注文タブが更新されました。  タブがなくなり、ステータスや日付範囲のオプションでフィルタリングできるようになりました。 これは長年にわたるお客様からの直接のフィードバックに基づくもので、皆さまにはこの変更を気に入っていただけると思います。
+10.7:
+このリリースでは、自動入力機能と、Jetpack に接続していない場合の Jetpack への接続オプションを改良して、ログインフローを改善しました。 月次と訪問者の統計間の不整合も修正しました。 算数バンザイ ! 引き続きフィードバックをお待ちしております。いただいたご意見は、今後の製品改善に役立たせていただきます。 💜
 </ja-JP>
 <ko-KR>
-8.1:
-이 릴리스를 통해 주문 탭이 업데이트되었습니다. 이제는 탭이 사라지고 상태 또는 날짜 범위별 필터링 옵션이 제공됩니다. 수년간의 직접적인 피드백을 반영했으며, 마음에 드실 것으로 생각합니다!
+10.7:
+이 릴리스에서는 더 나은 자동 완성과 젯팩이 연결되지 않은 경우 젯팩을 연결하는 옵션으로 로그인 절차를 개선했습니다. 월간 통계와 방문자 통계 사이의 불일치도 해결했습니다. 수학적입니다! 피드백을 계속 보내주세요. 다음에 작업할 내용을 파악하는 데 도움이 됩니다. 💜
 </ko-KR>
 <nl-NL>
-8.1:
-Het bestellingentabblad is in deze versie bijgewerkt. De tabbladen zijn nu weggehaald. We hebben de optie gegeven om te filteren op status of binnen een datumbereik. We hebben dit op basis van jullie feedback van de afgelopen jaren gedaan, dus we verwachten dat deze update met open armen wordt onthaald!
+10.7:
+Voor deze release hebben we het inlogproces verbeterd. Automatisch invullen is verbeterd en we hebben een optie toegevoegd om Jetpack te koppelen als Jetpack nog niet is gekoppeld. We hebben ook een verschil tussen de maandelijkse en de bezoekersstatistieken opgelost. Wiskunde is geweldig! Blijf komen met jullie feedback; dat helpt ons kiezen waar we aan moeten werken. 💜
 </nl-NL>
 <pt-BR>
-8.1:
-A guia de pedidos recebeu uma atualização nesta versão. Agora, as guias não existem mais, e você tem a opção de filtrar por status ou intervalo de datas. Essa decisão foi baseada no seu feedback direto, ao longo dos anos. Temos certeza de que você vai adorar a mudança!
+10.7:
+Para este lançamento, otimizamos o fluxo de login com um melhor preenchimento automático e uma opção para conectar o Jetpack, caso ele não esteja conectado. Também corrigimos uma inconsistência entre as estatísticas mensais e as estatísticas dos visitantes. Viva a matemática! Continue dando feedback, ele nos ajuda a saber no que trabalhar em seguida. 💜
 </pt-BR>
 <ru-RU>
-8.1:
-В этом выпуске обновлена вкладка заказов. Теперь вкладки исчезли и мы предоставили вам возможность фильтровать заказы по статусу или диапазону дат. Пользователи долгое время сами просили об этом, поэтому мы уверены, что вы оцените это изменение!
+10.7:
+В этом выпуске усовершенствована процедура входа благодаря улучшенной функции автозаполнения и опции подключения плагина Jetpack, если он ещё не подключён. Кроме того, устранены несоответствия между статистикой по месяцам и посетителям. Да здравствует математика! Оставляйте свои отзывы, они помогают нам выявлять области для дальнейшего улучшения. 💜
 </ru-RU>
 <sv-SE>
-8.1:
-Beställningsfliken har fått en uppdatering i den här version. Flikarna är nu borta och vi har skapat ett alternativ för att filtrera efter status eller datumintervall. Denna ändring är baserad på direkt feedback från er genom åren och vi vet att du kommer att gilla den!
+10.7:
+I den här versionen har vi förbättrat inloggningsflödet med bättre automatisk ifyllning och möjlighet att ansluta Jetpack, om Jetpack inte är anslutet. Vi har också åtgärdat en avvikelse mellan månads- och besöksstatistiken. Hurra för matematik! Fortsätt att lämna feedback. Det hjälper oss att lista ut vad vi ska hitta på härnäst. 💜
 </sv-SE>
 <tr-TR>
-8.1:
-Siparişler sekmesi bu sürümde güncellendi. Sekmeleri kaldırdık ve duruma veya tarih aralığına göre filtreleme seçeneğini sunduk. Bu değişikliği yıllardır sizden aldığımız geri bildirimlere göre yaptık. Beğeneceğinizi biliyoruz!
+10.7:
+Bu sürümde, daha iyi otomatik doldurma ve Jetpack bağlı değilse Jetpack'e bağlanma seçeneği ile oturum açma akışını iyileştirdik. Aylık istatistikler ve ziyaretçi istatistikleri arasındaki tutarsızlığı da düzelttik. Yaşasın matematik! Geri bildirimleriniz devam etsin; üzerinde çalışacağımız sıradaki özelliği bulmamıza yardımcı oluyor. 💜
 </tr-TR>
 <zh-CN>
-8.1：
-本版本中更新了“订单”选项卡。 选项卡现已被删除，但我们为您提供了按状态或日期范围选项进行筛选的过滤器。 此项更改基于多年来的用户直接反馈，因此我们知道您会喜欢的！
+10.7：
+在此版本中，我们通过优化自动填充功能并添加连接到 Jetpack（如果未连接 Jetpack）的选项，改进了登录流程。 我们还修复了月度统计和访客统计间的差异。 数学的魅力无穷！ 请随时提供您的反馈，为我们接下来的工作提供灵感。💜
 </zh-CN>
 <zh-TW>
-8.1：
-此版本更新了訂單分頁。 我們現已移除這些分頁，並提供篩選功能，讓你根據狀態或日期範圍選項進行篩選。 我們參考了各位在這些年來直接提供的意見回饋，相信你會喜歡這項變更！
+10.7：
+我們在這個版本改善了登入流程，提供了更方便的自動填寫功能，未與 Jetpack 連結時，還會提供連結 Jetpack 選項。 我們也修復了每月統計資料和訪客統計資料之間的不一致。 數學問題是不是很有趣呢！ 歡迎提供意見回饋；這有助於我們找到接下來努力的方向。💜
 </zh-TW>
 <en-US>
-8.1:
-The orders tab has gotten an update with this release. The tabs are now gone, and we’ve given you a filter by status or date range option. This is based upon your direct feedback over the years, and we know you’ll like the change!
+10.7:
+For this release, we improved the login flow with better autofill and an option to connect Jetpack, if Jetpack is not connected. We also fixed a discrepancy between the monthly and the visitor stats. Yay math! Keep your feedback rolling in; it helps us figure out what to work on next. 💜
 </en-US>

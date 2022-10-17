@@ -1,2 +1,0 @@
-8.1:
-A guia de pedidos recebeu uma atualização nesta versão. Agora, as guias não existem mais, e você tem a opção de filtrar por status ou intervalo de datas. Essa decisão foi baseada no seu feedback direto, ao longo dos anos. Temos certeza de que você vai adorar a mudança!

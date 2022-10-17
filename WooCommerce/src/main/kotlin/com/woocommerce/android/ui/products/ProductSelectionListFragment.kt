@@ -11,7 +11,6 @@ import androidx.appcompat.widget.SearchView
 import androidx.appcompat.widget.SearchView.OnQueryTextListener
 import androidx.core.view.isVisible
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.Observer
 import androidx.recyclerview.selection.SelectionPredicates
 import androidx.recyclerview.selection.SelectionTracker
 import androidx.recyclerview.selection.StorageStrategy
@@ -24,6 +23,7 @@ import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.model.Product
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
+import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.util.StringUtils
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
@@ -40,12 +40,16 @@ class ProductSelectionListFragment :
     OnQueryTextListener,
     OnActionExpandListener {
     @Inject lateinit var uiMessageResolver: UIMessageResolver
+    @Inject lateinit var currencyFormatter: CurrencyFormatter
 
     val viewModel: ProductSelectionListViewModel by viewModels()
 
     private var tracker: SelectionTracker<Long>? = null
     private val productSelectionListAdapter: ProductListAdapter by lazy {
-        ProductListAdapter(loadMoreListener = this)
+        ProductListAdapter(
+            loadMoreListener = this,
+            currencyFormatter = currencyFormatter
+        )
     }
 
     private val skeletonView = SkeletonView()
@@ -185,27 +189,21 @@ class ProductSelectionListFragment :
             }
         }
 
-        viewModel.productList.observe(
-            viewLifecycleOwner,
-            Observer {
-                showProductList(it)
-            }
-        )
+        viewModel.productList.observe(viewLifecycleOwner) {
+            showProductList(it)
+        }
 
-        viewModel.event.observe(
-            viewLifecycleOwner,
-            Observer { event ->
-                when (event) {
-                    is ShowSnackbar -> uiMessageResolver.showSnack(event.message)
-                    is ExitWithResult<*> -> {
-                        val key = viewModel.groupedProductListType.resultKey
-                        val productIds = (event.data as? List<Long>) ?: emptyList()
-                        navigateBackWithResult(key, productIds)
-                    }
-                    else -> event.isHandled = false
+        viewModel.event.observe(viewLifecycleOwner) { event ->
+            when (event) {
+                is ShowSnackbar -> uiMessageResolver.showSnack(event.message)
+                is ExitWithResult<*> -> {
+                    val key = viewModel.groupedProductListType.resultKey
+                    val productIds = (event.data as? List<*>) ?: emptyList<Long>()
+                    navigateBackWithResult(key, productIds)
                 }
+                else -> event.isHandled = false
             }
-        )
+        }
     }
 
     private fun showSkeleton(show: Boolean) {
@@ -217,7 +215,7 @@ class ProductSelectionListFragment :
     }
 
     private fun showProductList(productSelectionList: List<Product>) {
-        productSelectionListAdapter.setProductList(productSelectionList)
+        productSelectionListAdapter.submitList(productSelectionList)
     }
 
     private fun enableProductsRefresh(enable: Boolean) {
@@ -251,12 +249,12 @@ class ProductSelectionListFragment :
         return true
     }
 
-    override fun onMenuItemActionExpand(item: MenuItem?): Boolean {
+    override fun onMenuItemActionExpand(item: MenuItem): Boolean {
         viewModel.onSearchOpened()
         return true
     }
 
-    override fun onMenuItemActionCollapse(item: MenuItem?): Boolean {
+    override fun onMenuItemActionCollapse(item: MenuItem): Boolean {
         viewModel.onSearchClosed()
         closeSearchView()
         return true

@@ -2,6 +2,7 @@ package com.woocommerce.android.ui.orders.shippinglabels.creation
 
 import android.os.Parcelable
 import androidx.lifecycle.SavedStateHandle
+import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.model.ShippingLabelPackage
 import com.woocommerce.android.model.ShippingPackage
@@ -48,7 +49,7 @@ class MoveShippingItemViewModel @Inject constructor(
     fun onMoveButtonClicked() {
         viewState.selectedDestination?.let {
             AnalyticsTracker.track(
-                stat = AnalyticsTracker.Stat.SHIPPING_LABEL_ITEM_MOVED,
+                stat = AnalyticsEvent.SHIPPING_LABEL_ITEM_MOVED,
                 properties = mapOf(
                     "destination" to when (it) {
                         is ExistingPackage -> "existing_package"

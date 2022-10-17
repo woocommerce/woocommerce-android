@@ -3,7 +3,8 @@ package com.woocommerce.android.ui.orders.shippinglabels.creation
 import android.annotation.SuppressLint
 import android.view.LayoutInflater
 import android.view.ViewGroup
-import androidx.recyclerview.widget.RecyclerView
+import androidx.recyclerview.widget.DiffUtil
+import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView.ViewHolder
 import com.woocommerce.android.R
 import com.woocommerce.android.databinding.ShippingPackageListHeaderBinding
@@ -13,20 +14,14 @@ import com.woocommerce.android.model.ShippingPackage
 class ShippingPackagesAdapter(
     private val lengthUnit: String,
     private val onPackageSelected: (ShippingPackage) -> Unit
-) : RecyclerView.Adapter<ViewHolder>() {
+) : ListAdapter<ShippingPackagesAdapter.ListItem, ViewHolder>(ShippingPackagesDiffCallBack) {
     companion object {
         private const val VIEW_TYPE_HEADER = 0
         private const val VIEW_TYPE_PACKAGE = 1
     }
 
-    private var items: List<ListItem> = emptyList()
-        set(value) {
-            field = value
-            notifyDataSetChanged()
-        }
-
     fun updatePackages(packages: List<ShippingPackage>) {
-        items = packages.groupBy { it.category }.flatMap { entry ->
+        val items = packages.groupBy { it.category }.flatMap { entry ->
             val list = mutableListOf<ListItem>()
             list.add(ListItem.Header(entry.key))
             list.addAll(
@@ -36,6 +31,7 @@ class ShippingPackagesAdapter(
             )
             list
         }
+        submitList(items)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
@@ -51,17 +47,15 @@ class ShippingPackagesAdapter(
         }
     }
 
-    override fun getItemCount(): Int = items.size
-
     override fun getItemViewType(position: Int): Int {
-        return when (items[position]) {
+        return when (getItem(position)) {
             is ListItem.Header -> VIEW_TYPE_HEADER
             is ListItem.Package -> VIEW_TYPE_PACKAGE
         }
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        when (val item = items[position]) {
+        when (val item = getItem(position)) {
             is ListItem.Header -> (holder as HeaderViewHolder).bind(item.title)
             is ListItem.Package -> (holder as PackageViewHolder).bind(item.data)
         }
@@ -92,7 +86,19 @@ class ShippingPackagesAdapter(
         }
     }
 
-    private sealed class ListItem {
+    object ShippingPackagesDiffCallBack : DiffUtil.ItemCallback<ListItem>() {
+        override fun areItemsTheSame(
+            oldItem: ListItem,
+            newItem: ListItem
+        ): Boolean = oldItem == newItem
+
+        override fun areContentsTheSame(
+            oldItem: ListItem,
+            newItem: ListItem
+        ): Boolean = oldItem == newItem
+    }
+
+    sealed class ListItem {
         data class Header(val title: String) : ListItem()
         data class Package(val data: ShippingPackage) : ListItem()
     }

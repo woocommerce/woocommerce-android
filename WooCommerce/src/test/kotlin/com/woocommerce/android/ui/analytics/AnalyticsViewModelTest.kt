@@ -32,10 +32,16 @@ import kotlinx.coroutines.flow.toList
 import kotlinx.coroutines.launch
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
+import org.mockito.kotlin.any
+import org.mockito.kotlin.anyVararg
+import org.mockito.kotlin.doAnswer
+import org.mockito.kotlin.doReturn
+import org.mockito.kotlin.doReturnConsecutively
+import org.mockito.kotlin.mock
 import org.mockito.kotlin.*
 import org.wordpress.android.fluxc.model.SiteModel
 import java.text.SimpleDateFormat
-import java.util.*
+import java.util.Date
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 

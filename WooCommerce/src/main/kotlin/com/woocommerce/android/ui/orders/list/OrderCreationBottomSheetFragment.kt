@@ -4,18 +4,19 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import com.google.android.material.bottomsheet.BottomSheetDialogFragment
+import androidx.navigation.fragment.findNavController
 import com.woocommerce.android.databinding.DialogOrderCreationBottomSheetBinding
 import com.woocommerce.android.extensions.navigateBackWithResult
+import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.ui.orders.list.OrderCreationBottomSheetFragment.OrderCreationAction.CREATE_ORDER
-import com.woocommerce.android.ui.orders.list.OrderCreationBottomSheetFragment.OrderCreationAction.SIMPLE_PAYMENT
+import com.woocommerce.android.widgets.WCBottomSheetDialogFragment
 
-class OrderCreationBottomSheetFragment : BottomSheetDialogFragment() {
+class OrderCreationBottomSheetFragment : WCBottomSheetDialogFragment() {
     companion object {
         const val KEY_ORDER_CREATION_ACTION_RESULT = "key_order_creation_action_result"
     }
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         return DialogOrderCreationBottomSheetBinding.inflate(inflater, container, false).root
     }
 
@@ -29,7 +30,9 @@ class OrderCreationBottomSheetFragment : BottomSheetDialogFragment() {
         }
 
         binding.simplePaymentButton.setOnClickListener {
-            navigateBackWithResult(KEY_ORDER_CREATION_ACTION_RESULT, SIMPLE_PAYMENT)
+            OrderCreationBottomSheetFragmentDirections
+                .actionOrderCreationBottomSheetFragmentToSimplePaymentsMovedBottomSheetFragment()
+                .let { findNavController().navigateSafely(it) }
         }
     }
 

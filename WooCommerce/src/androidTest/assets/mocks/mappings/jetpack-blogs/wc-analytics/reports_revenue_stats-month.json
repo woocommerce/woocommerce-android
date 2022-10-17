@@ -8,10 +8,10 @@
       },
       "path": {
         "matches": "/wc-analytics/reports/revenue/stats/(.*)"
-      },     
+      },
       "query": {
         "matches": "(.*)interval\":\"month(.*)"
-      },          
+      },
       "locale": {
           "matches": "(.*)"
       }
@@ -39,7 +39,7 @@
           "segments": []
         },
         "intervals": [{
-          "interval": "{{#assign 'currentYear'}}{{now format='yyyy'}}{{/assign}}{{currentYear}}-01",
+          "interval": "{{#assign 'currentYear'}}{{fnow format='yyyy'}}{{/assign}}{{currentYear}}-01",
           "date_start": "{{currentYear}}-01-01 00:00:00",
           "date_start_gmt": "{{currentYear}}-01-01 00:00:00",
           "date_end": "{{currentYear}}-01-31 23:59:59",

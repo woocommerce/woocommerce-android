@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.appcompat.widget.LinearLayoutCompat xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <com.woocommerce.android.widgets.WCElevatedConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <com.woocommerce.android.ui.products.ProductItemView
+            android:id="@+id/productItemView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+    </com.woocommerce.android.widgets.WCElevatedConstraintLayout>
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/removeProductButton"
+        style="@style/Woo.Button.Colored"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="@dimen/major_100"
+        android:text="@string/order_creation_remove_product" />
+
+</androidx.appcompat.widget.LinearLayoutCompat>

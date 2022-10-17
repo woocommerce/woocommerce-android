@@ -205,6 +205,7 @@ class OrderDetailShippingLabelsAdapter(
 
             // Shipping label header
             with(viewBinding.shippingLabelListLblPackage) {
+                @Suppress("DEPRECATION")
                 text = context.getString(
                     R.string.orderdetail_shipping_label_item_header,
                     adapterPosition + 1
@@ -215,7 +216,7 @@ class OrderDetailShippingLabelsAdapter(
             shippingLabel.originAddress?.let {
                 viewBinding.shippingLabelItemShipFrom.setShippingLabelValue(
                     it.getFullAddress(
-                        it.firstName, it.getEnvelopeAddress(), it.getCountryLabelByCountryCode()
+                        it.firstName, it.getEnvelopeAddress(), it.country.name
                     )
                 )
             }
@@ -224,7 +225,7 @@ class OrderDetailShippingLabelsAdapter(
             shippingLabel.destinationAddress?.let {
                 viewBinding.shippingLabelItemShipTo.setShippingLabelValue(
                     it.getFullAddress(
-                        it.firstName, it.getEnvelopeAddress(), it.getCountryLabelByCountryCode()
+                        it.firstName, it.getEnvelopeAddress(), it.country.name
                     )
                 )
             }

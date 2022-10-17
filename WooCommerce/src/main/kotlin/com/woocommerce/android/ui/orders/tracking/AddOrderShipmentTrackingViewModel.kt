@@ -5,9 +5,9 @@ import android.os.Parcelable
 import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.R
 import com.woocommerce.android.R.string
+import com.woocommerce.android.analytics.AnalyticsEvent
+import com.woocommerce.android.analytics.AnalyticsEvent.ORDER_SHIPMENT_TRACKING_ADD_BUTTON_TAPPED
 import com.woocommerce.android.analytics.AnalyticsTracker
-import com.woocommerce.android.analytics.AnalyticsTracker.Stat
-import com.woocommerce.android.analytics.AnalyticsTracker.Stat.ORDER_SHIPMENT_TRACKING_ADD_BUTTON_TAPPED
 import com.woocommerce.android.model.OrderShipmentTracking
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.ViewShipmentTrackingProviders
@@ -23,7 +23,6 @@ import com.woocommerce.android.viewmodel.navArgs
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import kotlinx.parcelize.Parcelize
-import org.wordpress.android.fluxc.model.order.OrderIdentifier
 import org.wordpress.android.fluxc.store.WCOrderStore.OnOrderChanged
 import javax.inject.Inject
 import org.wordpress.android.fluxc.utils.DateUtils as FluxCDateUtils
@@ -47,9 +46,6 @@ class AddOrderShipmentTrackingViewModel @Inject constructor(
 
     val currentSelectedDate: String
         get() = addOrderShipmentTrackingViewState.date
-
-    val orderId: OrderIdentifier
-        get() = navArgs.orderId
 
     fun onCarrierSelected(carrier: Carrier) {
         addOrderShipmentTrackingViewState = addOrderShipmentTrackingViewState.copy(
@@ -85,7 +81,7 @@ class AddOrderShipmentTrackingViewModel @Inject constructor(
     fun onCarrierClicked() {
         triggerEvent(
             ViewShipmentTrackingProviders(
-                orderIdentifier = orderId,
+                orderId = navArgs.orderId,
                 selectedProvider = addOrderShipmentTrackingViewState.carrier.name
             )
         )
@@ -130,15 +126,16 @@ class AddOrderShipmentTrackingViewModel @Inject constructor(
                 trackingLink = addOrderShipmentTrackingViewState.trackingLink
             )
 
-            val onOrderChanged = orderDetailRepository.addOrderShipmentTracking(orderId, shipmentTracking)
+            val onOrderChanged =
+                orderDetailRepository.addOrderShipmentTracking(navArgs.orderId, shipmentTracking)
             if (!onOrderChanged.isError) {
-                AnalyticsTracker.track(Stat.ORDER_TRACKING_ADD_SUCCESS)
+                AnalyticsTracker.track(AnalyticsEvent.ORDER_TRACKING_ADD_SUCCESS)
                 addOrderShipmentTrackingViewState = addOrderShipmentTrackingViewState.copy(showLoadingProgress = false)
                 triggerEvent(ShowSnackbar(string.order_shipment_tracking_added))
                 triggerEvent(ExitWithResult(shipmentTracking))
             } else {
                 AnalyticsTracker.track(
-                    Stat.ORDER_TRACKING_ADD_FAILED,
+                    AnalyticsEvent.ORDER_TRACKING_ADD_FAILED,
                     prepareTracksEventsDetails(onOrderChanged)
                 )
                 addOrderShipmentTrackingViewState = addOrderShipmentTrackingViewState.copy(showLoadingProgress = false)

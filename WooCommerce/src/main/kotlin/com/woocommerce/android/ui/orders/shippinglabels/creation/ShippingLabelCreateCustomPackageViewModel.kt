@@ -3,6 +3,7 @@ package com.woocommerce.android.ui.orders.shippinglabels.creation
 import android.os.Parcelable
 import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.R.string
+import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.model.CustomPackageType
 import com.woocommerce.android.model.PackageDimensions
@@ -126,7 +127,7 @@ class ShippingLabelCreateCustomPackageViewModel @Inject constructor(
             when {
                 result.isError -> {
                     AnalyticsTracker.track(
-                        stat = AnalyticsTracker.Stat.SHIPPING_LABEL_ADD_PACKAGE_FAILED,
+                        stat = AnalyticsEvent.SHIPPING_LABEL_ADD_PACKAGE_FAILED,
                         properties = mapOf(
                             "type" to "custom",
                             "error" to result.error.message

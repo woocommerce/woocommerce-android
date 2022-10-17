@@ -5,10 +5,10 @@ import androidx.annotation.StringRes
 import com.woocommerce.android.R
 import com.woocommerce.android.R.drawable
 import com.woocommerce.android.R.string
-import com.woocommerce.android.analytics.AnalyticsTracker.Stat
-import com.woocommerce.android.analytics.AnalyticsTracker.Stat.PRODUCT_VARIATION_VIEW_INVENTORY_SETTINGS_TAPPED
-import com.woocommerce.android.analytics.AnalyticsTracker.Stat.PRODUCT_VARIATION_VIEW_PRICE_SETTINGS_TAPPED
-import com.woocommerce.android.analytics.AnalyticsTracker.Stat.PRODUCT_VARIATION_VIEW_SHIPPING_SETTINGS_TAPPED
+import com.woocommerce.android.analytics.AnalyticsEvent
+import com.woocommerce.android.analytics.AnalyticsEvent.PRODUCT_VARIATION_VIEW_INVENTORY_SETTINGS_TAPPED
+import com.woocommerce.android.analytics.AnalyticsEvent.PRODUCT_VARIATION_VIEW_PRICE_SETTINGS_TAPPED
+import com.woocommerce.android.analytics.AnalyticsEvent.PRODUCT_VARIATION_VIEW_SHIPPING_SETTINGS_TAPPED
 import com.woocommerce.android.extensions.addIfNotEmpty
 import com.woocommerce.android.extensions.filterNotEmpty
 import com.woocommerce.android.extensions.isNotSet
@@ -113,7 +113,7 @@ class VariationDetailCardBuilder(
                 ViewDescriptionEditor(
                     variationDescription, resources.getString(string.product_description)
                 ),
-                Stat.PRODUCT_VARIATION_VIEW_VARIATION_DESCRIPTION_TAPPED
+                AnalyticsEvent.PRODUCT_VARIATION_VIEW_VARIATION_DESCRIPTION_TAPPED
             )
         }
     }
@@ -202,7 +202,8 @@ class VariationDetailCardBuilder(
                     ViewAttributes(
                         remoteProductId,
                         remoteVariationId
-                    )
+                    ),
+                    AnalyticsEvent.PRODUCT_VARIATION_DETAILS_ATTRIBUTES_TAPPED
                 )
             }
         )

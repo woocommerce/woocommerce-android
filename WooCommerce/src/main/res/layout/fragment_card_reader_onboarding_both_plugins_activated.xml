@@ -1,0 +1,148 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/textHeader"
+        style="@style/TextAppearance.Woo.Headline6"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="@dimen/margin_large"
+        android:gravity="center"
+        android:paddingHorizontal="@dimen/major_200"
+        app:layout_constraintBottom_toTopOf="@id/illustration"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_chainStyle="packed"
+        tools:text="@string/card_reader_onboarding_both_plugins_activated_header" />
+
+    <androidx.appcompat.widget.AppCompatImageView
+        android:id="@+id/illustration"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/major_275"
+        app:layout_constraintBottom_toTopOf="@id/hintLabel"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/textHeader"
+        tools:src="@drawable/img_products_error" />
+
+    <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/hintLabel"
+        style="@style/TextAppearance.Woo.Body1"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/major_275"
+        android:gravity="center"
+        android:paddingHorizontal="@dimen/major_200"
+        android:textColor="@color/color_on_surface_high"
+        app:layout_constraintBottom_toTopOf="@id/hintPluginOneLabel"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/illustration"
+        tools:text="@string/card_reader_onboarding_both_plugins_activated_hint_admin" />
+
+    <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/hintPluginOneLabel"
+        style="@style/TextAppearance.Woo.Body1"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/major_100"
+        android:gravity="center"
+        android:paddingHorizontal="@dimen/major_200"
+        android:textColor="@color/color_on_surface_high"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toTopOf="@id/hintOrLabel"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/hintLabel"
+        tools:text="@string/card_reader_onboarding_both_plugins_activated_hint_plugin_one" />
+
+    <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/hintOrLabel"
+        style="@style/TextAppearance.Woo.Body1"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:paddingHorizontal="@dimen/major_200"
+        android:textColor="@color/color_on_surface_high"
+        app:layout_constraintBottom_toTopOf="@id/hintPluginTwoLabel"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/hintPluginOneLabel"
+        tools:text="@string/exclusive_or" />
+
+    <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/hintPluginTwoLabel"
+        style="@style/TextAppearance.Woo.Body1"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:paddingHorizontal="@dimen/major_200"
+        android:textColor="@color/color_on_surface_high"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toTopOf="@id/textSupport"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/hintOrLabel"
+        tools:text="@string/card_reader_onboarding_both_plugins_activated_hint_plugin_two" />
+
+    <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/textSupport"
+        style="@style/TextAppearance.Woo.Body1"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/margin_medium"
+        android:background="?attr/selectableItemBackground"
+        android:gravity="center"
+        android:paddingHorizontal="@dimen/major_200"
+        android:paddingVertical="@dimen/major_100"
+        android:textColor="@color/color_on_surface_high"
+        app:layout_constraintBottom_toTopOf="@+id/openPluginStore"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/hintPluginTwoLabel"
+        app:layout_constraintVertical_bias="0"
+        tools:text="@string/card_reader_onboarding_contact_support" />
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/openPluginStore"
+        style="@style/Woo.Button.Colored"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="@dimen/major_100"
+        android:visibility="gone"
+        app:layout_constraintBottom_toTopOf="@+id/refreshAfterUpdating"
+        app:layout_constraintTop_toBottomOf="@+id/textSupport"
+        app:layout_constraintVertical_bias="1"
+        tools:text="@string/refresh_button"
+        tools:visibility="visible" />
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/refreshAfterUpdating"
+        style="@style/Woo.Button.Outlined"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="@dimen/major_100"
+        android:visibility="gone"
+        app:layout_constraintBottom_toTopOf="@+id/learn_more_container"
+        app:layout_constraintTop_toBottomOf="@+id/openPluginStore"
+        app:layout_constraintVertical_bias="1"
+        tools:text="@string/refresh_button"
+        tools:visibility="visible" />
+
+    <include
+        android:id="@+id/learn_more_container"
+        layout="@layout/card_reader_learn_more_section"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/major_350"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="1" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.appcompat.widget.LinearLayoutCompat xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <com.google.android.material.card.MaterialCardView
+        style="@style/Woo.Card"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <androidx.appcompat.widget.LinearLayoutCompat
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <com.woocommerce.android.widgets.WCMaterialOutlinedCurrencyEditTextView
+                android:id="@+id/price"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/major_100"
+                android:layout_marginTop="@dimen/major_75"
+                android:layout_marginEnd="@dimen/major_100"
+                android:inputType="numberDecimal|numberSigned" />
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/current_price_info"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingHorizontal="@dimen/major_200"
+                android:paddingTop="@dimen/minor_50"
+                android:paddingBottom="@dimen/major_85"
+                android:textColor="@color/material_on_surface_emphasis_medium"
+                android:textSize="@dimen/text_minor_80"
+                tools:text="Current price is $23" />
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/minor_10"
+                android:background="@color/inverted_surface_overlay" />
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/price_update_info"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:paddingVertical="@dimen/major_100"
+                android:textColor="@color/color_on_surface_disabled"
+                android:textSize="@dimen/text_minor_80"
+                tools:text="Price will be updated for 6 variations" />
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/minor_10"
+                android:background="@color/inverted_surface_overlay" />
+
+        </androidx.appcompat.widget.LinearLayoutCompat>
+
+    </com.google.android.material.card.MaterialCardView>
+
+</androidx.appcompat.widget.LinearLayoutCompat>

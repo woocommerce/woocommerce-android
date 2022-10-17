@@ -4,8 +4,8 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.woocommerce.android.databinding.ProductAddonOptionItemBinding
-import com.woocommerce.android.ui.products.addons.options.AddonOptionListAdapter.AddonOptionsViewHolder
 import com.woocommerce.android.ui.products.addons.handlePriceType
+import com.woocommerce.android.ui.products.addons.options.AddonOptionListAdapter.AddonOptionsViewHolder
 import org.wordpress.android.fluxc.domain.Addon
 import java.math.BigDecimal
 

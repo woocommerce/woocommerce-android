@@ -5,7 +5,9 @@ import android.view.Menu
 import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
+import androidx.core.view.MenuProvider
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.Lifecycle
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -15,6 +17,7 @@ import com.woocommerce.android.extensions.handleResult
 import com.woocommerce.android.extensions.navigateBackWithNotice
 import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.ui.base.BaseFragment
+import com.woocommerce.android.ui.main.AppBarStatus
 import com.woocommerce.android.ui.main.MainActivity.Companion.BackPressListener
 import com.woocommerce.android.ui.orders.filters.adapter.OrderFilterCategoryAdapter
 import com.woocommerce.android.ui.orders.filters.model.OrderFilterCategoryUiModel
@@ -28,22 +31,30 @@ import dagger.hilt.android.AndroidEntryPoint
 @AndroidEntryPoint
 class OrderFilterCategoriesFragment :
     BaseFragment(R.layout.fragment_order_filter_list),
-    BackPressListener {
+    BackPressListener,
+    MenuProvider {
     companion object {
         const val KEY_UPDATED_FILTER_OPTIONS = "key_updated_filter_options"
     }
 
     private val viewModel: OrderFilterCategoriesViewModel by viewModels()
 
-    lateinit var orderFilterCategoryAdapter: OrderFilterCategoryAdapter
+    private lateinit var orderFilterCategoryAdapter: OrderFilterCategoryAdapter
 
     private var clearAllMenuItem: MenuItem? = null
+
+    override val activityAppBarStatus: AppBarStatus
+        get() = AppBarStatus.Visible(
+            navigationIcon = R.drawable.ic_gridicons_cross_24dp,
+            hasShadow = false,
+            hasDivider = true
+        )
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
         val binding = FragmentOrderFilterListBinding.bind(view)
-        setHasOptionsMenu(true)
+        requireActivity().addMenuProvider(this, viewLifecycleOwner, Lifecycle.State.RESUMED)
         setUpObservers(viewModel)
 
         setUpFiltersRecyclerView(binding)
@@ -55,20 +66,19 @@ class OrderFilterCategoriesFragment :
         }
     }
 
-    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
-        super.onCreateOptionsMenu(menu, inflater)
+    override fun onCreateMenu(menu: Menu, inflater: MenuInflater) {
         menu.clear()
         inflater.inflate(R.menu.menu_clear, menu)
         clearAllMenuItem = menu.findItem(R.id.menu_clear)
     }
 
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+    override fun onMenuItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
             R.id.menu_clear -> {
                 viewModel.onClearFilters()
                 true
             }
-            else -> super.onOptionsItemSelected(item)
+            else -> false
         }
     }
 

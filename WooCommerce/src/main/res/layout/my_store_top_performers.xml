@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/topPerformers_linearLayout"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical">
@@ -12,15 +12,10 @@
         style="@style/Woo.Card.Title"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/dashboard_top_performers_title"/>
-
-    <com.google.android.material.textview.MaterialTextView
-        style="@style/Woo.Card.Body"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="@string/dashboard_top_performers_description"/>
+        android:text="@string/dashboard_top_performers_title" />
 
     <FrameLayout
+        android:id="@+id/topPerformers_list_header"
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
@@ -29,18 +24,15 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="start"
-            android:text="@string/product"/>
+            android:text="@string/product" />
 
         <com.google.android.material.textview.MaterialTextView
             style="@style/Woo.Card.ListHeader"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="end"
-            android:text="@string/dashboard_top_performers_total_spend"/>
+            android:text="@string/dashboard_top_performers_items_sold" />
     </FrameLayout>
-
-    <View
-        style="@style/Woo.Divider"/>
 
     <RelativeLayout
         android:id="@+id/dashboard_top_performers_container"
@@ -52,7 +44,8 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:minHeight="@dimen/top_performer_min_height"
-            tools:listitem="@layout/top_performers_list_item"/>
+            android:nestedScrollingEnabled="false"
+            tools:listitem="@layout/top_performers_list_item" />
 
         <ImageView
             android:id="@+id/topPerformers_error"
@@ -62,17 +55,33 @@
             android:contentDescription="@string/dashboard_stats_error_content_description"
             android:visibility="gone"
             app:srcCompat="@drawable/ic_woo_error_state"
-            tools:visibility="visible"/>
+            tools:visibility="visible" />
 
-        <com.google.android.material.textview.MaterialTextView
-            android:id="@+id/topPerformers_emptyView"
-            style="@style/Woo.Card.StatusMessage"
-            android:layout_width="wrap_content"
+        <LinearLayout
+            android:id="@+id/topPerformersEmptyViewLinearLayout"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_centerInParent="true"
-            android:text="@string/dashboard_top_performers_empty"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="@dimen/major_100"
+            android:gravity="center"
+            android:orientation="vertical"
             android:visibility="gone"
-            tools:visibility="visible"/>
+            tools:visibility="visible">
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:importantForAccessibility="no"
+                android:src="@drawable/img_top_performers_empty" />
+
+            <com.google.android.material.textview.MaterialTextView
+                style="@style/Woo.Card.StatusMessage"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="@dimen/minor_00"
+                android:text="@string/dashboard_top_performers_empty" />
+
+        </LinearLayout>
     </RelativeLayout>
 
 </LinearLayout>

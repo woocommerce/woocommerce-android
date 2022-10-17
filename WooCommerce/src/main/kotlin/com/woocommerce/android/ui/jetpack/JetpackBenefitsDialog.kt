@@ -5,8 +5,8 @@ import android.view.View
 import androidx.fragment.app.DialogFragment
 import androidx.navigation.fragment.findNavController
 import com.woocommerce.android.R
+import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
-import com.woocommerce.android.analytics.AnalyticsTracker.Stat
 import com.woocommerce.android.databinding.DialogJetpackBenefitsBinding
 import com.woocommerce.android.extensions.navigateSafely
 import dagger.hilt.android.AndroidEntryPoint
@@ -26,8 +26,6 @@ class JetpackBenefitsDialog : DialogFragment(R.layout.dialog_jetpack_benefits) {
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-
         // Specify transition animations
         dialog?.window?.attributes?.windowAnimations = R.style.Woo_Animations_Dialog
 
@@ -40,7 +38,7 @@ class JetpackBenefitsDialog : DialogFragment(R.layout.dialog_jetpack_benefits) {
                 JetpackBenefitsDialogDirections.actionJetpackBenefitsDialogToJetpackInstallStartDialog()
             )
             AnalyticsTracker.track(
-                stat = Stat.JETPACK_INSTALL_BUTTON_TAPPED,
+                stat = AnalyticsEvent.JETPACK_INSTALL_BUTTON_TAPPED,
                 properties = mapOf(AnalyticsTracker.KEY_JETPACK_INSTALLATION_SOURCE to "benefits_modal")
             )
         }
