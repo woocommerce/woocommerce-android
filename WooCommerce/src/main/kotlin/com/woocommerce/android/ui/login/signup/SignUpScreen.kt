@@ -43,7 +43,6 @@ import com.woocommerce.android.ui.compose.component.ProgressDialog
 import com.woocommerce.android.ui.compose.component.WCColoredButton
 import com.woocommerce.android.ui.compose.component.WCOutlinedTextField
 import com.woocommerce.android.ui.compose.component.WCPasswordField
-import com.woocommerce.android.ui.login.signup.SignUpViewModel.AccountCreatedSuccess
 import com.woocommerce.android.ui.login.signup.SignUpViewModel.Error
 import com.woocommerce.android.ui.login.signup.SignUpViewModel.Loading
 import com.woocommerce.android.ui.login.signup.SignUpViewModel.SignUpForm
@@ -66,7 +65,6 @@ fun SignUpScreen(viewModel: SignUpViewModel) {
                     title = "",
                     subtitle = stringResource(id = R.string.signup_creating_account_loading_message)
                 )
-            AccountCreatedSuccess -> TODO()
             Error -> TODO()
         }
     }

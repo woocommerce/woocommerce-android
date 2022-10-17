@@ -32,7 +32,10 @@ class SignUpViewModel @Inject constructor(
             signUpRepository.createAccount(email, password)
                 .fold(
                     onFailure = { _viewState.value = Error },
-                    onSuccess = { _viewState.value = AccountCreatedSuccess }
+                    onSuccess = {
+                        _viewState.value = SignUpForm
+                        triggerEvent(NavigateToNextStep)
+                    }
                 )
         }
     }
@@ -40,8 +43,9 @@ class SignUpViewModel @Inject constructor(
     sealed class SignUpState
     object SignUpForm : SignUpState()
     object Loading : SignUpState()
-    object AccountCreatedSuccess : SignUpState()
     object Error : SignUpState()
 
     object OnTermsOfServiceClicked : MultiLiveEvent.Event()
+    object NavigateToNextStep : MultiLiveEvent.Event()
+
 }
