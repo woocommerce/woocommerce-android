@@ -3,7 +3,6 @@
 package com.woocommerce.android.ui.main
 
 import android.animation.ValueAnimator
-import android.app.Activity
 import android.app.ProgressDialog
 import android.content.Intent
 import android.content.res.Resources.Theme
@@ -529,12 +528,6 @@ class MainActivity :
     public override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         when (requestCode) {
-            RequestCodes.ADD_ACCOUNT -> {
-                if (resultCode == Activity.RESULT_OK) {
-                    // TODO Launch next screen
-                }
-                return
-            }
             RequestCodes.SETTINGS -> {
                 // beta features have changed. Restart activity for changes to take effect
                 if (resultCode == AppSettingsActivity.RESULT_CODE_BETA_OPTIONS_CHANGED) {
@@ -556,7 +549,7 @@ class MainActivity :
         selectedSite.reset()
         val intent = Intent(this, LoginActivity::class.java)
         LoginMode.WOO_LOGIN_MODE.putInto(intent)
-        startActivityForResult(intent, RequestCodes.ADD_ACCOUNT)
+        startActivity(intent)
         finish()
     }
 

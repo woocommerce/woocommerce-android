@@ -6,7 +6,6 @@ package com.woocommerce.android
 object RequestCodes {
     private const val BASE_REQUEST_CODE = 100
 
-    const val ADD_ACCOUNT = BASE_REQUEST_CODE + 0
     const val SETTINGS = BASE_REQUEST_CODE + 1
     const val IN_APP_UPDATE = BASE_REQUEST_CODE + 3
 
