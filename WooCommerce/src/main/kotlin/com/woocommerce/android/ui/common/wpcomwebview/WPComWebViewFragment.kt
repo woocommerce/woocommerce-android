@@ -10,6 +10,7 @@ import androidx.navigation.fragment.navArgs
 import com.woocommerce.android.R
 import com.woocommerce.android.databinding.FragmentWpcomWebviewBinding
 import com.woocommerce.android.extensions.navigateBackWithNotice
+import com.woocommerce.android.extensions.navigateBackWithResult
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.common.wpcomwebview.WPComWebViewFragment.UrlComparisonMode.EQUALITY
 import com.woocommerce.android.ui.common.wpcomwebview.WPComWebViewFragment.UrlComparisonMode.PARTIAL
@@ -28,11 +29,15 @@ import javax.inject.Inject
 class WPComWebViewFragment : BaseFragment(R.layout.fragment_wpcom_webview), UrlInterceptor, BackPressListener {
     companion object {
         const val WEBVIEW_RESULT = "webview-result"
+        const val WEBVIEW_RESULT_WITH_URL = "webview-result-with-url"
         const val WEBVIEW_DISMISSED = "webview-dismissed"
+        const val WEBVIEW_STORE_CHECKOUT_STRING = "source=/checkout/thank-you/"
+        const val WEBVIEW_STORE_URL_KEY = "source=/checkout/thank-you/"
     }
 
     private val webViewClient by lazy { WPComWebViewClient(this) }
     private val navArgs: WPComWebViewFragmentArgs by navArgs()
+    private var siteUrl: String? = null
 
     @Inject lateinit var wpcomWebViewAuthenticator: WPComWebViewAuthenticator
 
@@ -52,10 +57,18 @@ class WPComWebViewFragment : BaseFragment(R.layout.fragment_wpcom_webview), UrlI
                 }
             }
             this.settings.javaScriptEnabled = true
+            this.settings.domStorageEnabled = true
             settings.userAgentString = userAgent.userAgent
         }
 
+        siteUrl = savedInstanceState?.getString(WEBVIEW_STORE_URL_KEY)
+
         wpcomWebViewAuthenticator.authenticateAndLoadUrl(binding.webView, navArgs.urlToLoad)
+    }
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        outState.putString(WEBVIEW_STORE_URL_KEY, siteUrl)
+        super.onSaveInstanceState(outState)
     }
 
     override fun onLoadUrl(url: String) {
@@ -64,8 +77,22 @@ class WPComWebViewFragment : BaseFragment(R.layout.fragment_wpcom_webview), UrlI
             EQUALITY -> equals(url, ignoreCase = true)
         }
 
+        siteUrl = extractSiteUrl(url)
+
         if (isAdded && navArgs.urlToTriggerExit?.matchesUrl(url) == true) {
-            navigateBackWithNotice(WEBVIEW_RESULT)
+            if (siteUrl == null) {
+                navigateBackWithNotice(WEBVIEW_RESULT)
+            } else {
+                navigateBackWithResult(WEBVIEW_RESULT_WITH_URL, siteUrl)
+            }
+        }
+    }
+
+    private fun extractSiteUrl(url: String): String? {
+        return "$WEBVIEW_STORE_CHECKOUT_STRING.+/".toRegex().find(url)?.range?.let { range ->
+            val start = range.first + WEBVIEW_STORE_CHECKOUT_STRING.length
+            val end = range.last
+            url.substring(start, end)
         }
     }
 
