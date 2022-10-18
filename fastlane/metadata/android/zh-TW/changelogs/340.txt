@@ -1,2 +1,0 @@
-10.6：
-在此版本中，我們著重於改善一些項目，並修正團隊發現的小錯誤。 Don’t be fooled – we are working on some pretty cool stuff for you all, like making it easier for you to login to the app using the autofill option! 歡迎提供意見回饋；這有助於我們找到接下來努力的方向。💜

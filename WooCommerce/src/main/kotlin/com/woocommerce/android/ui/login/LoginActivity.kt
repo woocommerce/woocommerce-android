@@ -10,6 +10,7 @@ import android.view.MenuItem
 import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.FragmentManager.POP_BACK_STACK_INCLUSIVE
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.NavController
 import androidx.navigation.fragment.NavHostFragment
@@ -323,12 +324,6 @@ class LoginActivity :
     private fun getLoginViaSiteAddressFragment(): LoginSiteAddressFragment? =
         supportFragmentManager.findFragmentByTag(LoginSiteAddressFragment.TAG) as? WooLoginSiteAddressFragment
 
-    private fun getPrologueFragment(): LoginPrologueFragment? =
-        supportFragmentManager.findFragmentByTag(LoginPrologueFragment.TAG) as? LoginPrologueFragment
-
-    private fun getPrologueSurveyFragment(): LoginPrologueSurveyFragment? =
-        supportFragmentManager.findFragmentByTag(LoginPrologueSurveyFragment.TAG) as? LoginPrologueSurveyFragment
-
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         if (item.itemId == android.R.id.home) {
             onBackPressedDispatcher.onBackPressed()
@@ -353,9 +348,8 @@ class LoginActivity :
     override fun startOver() {
         // Clear logged in url from AppPrefs
         AppPrefs.removeLoginSiteAddress()
-
-        // Pop all the fragments from the backstack until we get to the Prologue fragment
-        supportFragmentManager.popBackStack(LoginPrologueFragment.TAG, 0)
+        // This will clear the back stack and return user to LoginPrologueFragment
+        supportFragmentManager.popBackStack(null, POP_BACK_STACK_INCLUSIVE)
     }
 
     override fun onPrimaryButtonClicked() {
@@ -447,14 +441,12 @@ class LoginActivity :
         changeFragment(loginSiteAddressFragment, true, LoginSiteAddressFragment.TAG)
     }
 
-    private fun showPrologueFragment() = lifecycleScope.launchWhenStarted {
-        val prologueFragment = getPrologueFragment() ?: LoginPrologueFragment()
-        changeFragment(prologueFragment, true, LoginPrologueFragment.TAG)
+    private fun showPrologueFragmentFromCarousel() = lifecycleScope.launchWhenStarted {
+        navController.navigate(R.id.action_loginPrologueCarouselFragment_to_loginPrologueFragment)
     }
 
     private fun showPrologueSurveyFragment() {
-        val prologueSurveyFragment = getPrologueSurveyFragment() ?: LoginPrologueSurveyFragment()
-        changeFragment(prologueSurveyFragment, true, LoginPrologueSurveyFragment.TAG)
+        navController.navigate(R.id.loginPrologueSurveyFragment)
     }
 
     override fun loginViaSocialAccount(
@@ -676,7 +668,7 @@ class LoginActivity :
         userAvatarUrl: String?,
         checkJetpackAvailability: Boolean
     ) {
-        if (connectSiteInfo?.isJetpackInstalled == true && connectSiteInfo?.isJetpackActive == true) {
+        if (connectSiteInfo?.isJetpackActive == true && connectSiteInfo?.isJetpackConnected == true) {
             // If jetpack is present, but we can't find the connected email, then show account mismatch error
             val fragment = AccountMismatchErrorFragment().apply {
                 arguments = AccountMismatchErrorFragmentArgs(
@@ -915,12 +907,12 @@ class LoginActivity :
 
     override fun onCarouselFinished() {
         lifecycleScope.launchWhenStarted {
-            prologueExperiment.run(::showPrologueFragment, ::showPrologueSurveyFragment)
+            prologueExperiment.run(::showPrologueFragmentFromCarousel, ::showPrologueSurveyFragment)
         }
     }
 
     override fun onSurveyFinished() {
-        showPrologueFragment()
+        navController.navigate(R.id.action_loginPrologueSurveyFragment_to_loginPrologueFragment)
     }
 
     override fun onPasswordError() {
@@ -983,7 +975,7 @@ class LoginActivity :
             connectSiteInfo = event.info.let {
                 ConnectSiteInfo(
                     isWPCom = it.isWPCom,
-                    isJetpackInstalled = it.isJetpackConnected,
+                    isJetpackConnected = it.isJetpackConnected,
                     isJetpackActive = it.isJetpackActive
                 )
             }
@@ -993,7 +985,7 @@ class LoginActivity :
     @Parcelize
     private data class ConnectSiteInfo(
         val isWPCom: Boolean,
-        val isJetpackInstalled: Boolean,
+        val isJetpackConnected: Boolean,
         val isJetpackActive: Boolean
     ) : Parcelable
 }

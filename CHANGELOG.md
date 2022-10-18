@@ -2,6 +2,10 @@
 Contains editorialized release notes. Raw release notes should go into `RELEASE-NOTES.txt`.
 -->
 
+## 10.8
+
+This release includes a handful of minor improvements and bug fixes that our team found. We are working hard on a few exciting features as well – and you’ll see that later this year. Thanks for using WooCommerce!
+
 ## 10.7
 
 For this release, we improved the login flow with better autofill and an option to connect Jetpack, if Jetpack is not connected. We also fixed a discrepancy between the monthly and the visitor stats. Yay math! Keep your feedback rolling in; it helps us figure out what to work on next. 💜

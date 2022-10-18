@@ -1,11 +1,20 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2022-09-28 13:31:34+0000
+Translation-Revision-Date: 2022-10-11 14:54:04+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: sv_SE
 -->
 <resources>
+    <string name="qr_code_login_edit_camera_permission">Redigera behörigheter</string>
+    <string name="qr_code_login_camera_permission_denied_message">För att använda den här funktionen, tillåt att din kamera används.</string>
+    <string name="qr_code_login_camera_permission_denied_title">Kameraåtkomst krävs</string>
+    <string name="qr_code_login_scanner_title">Kamerastreckkodsskanner</string>
+    <string name="dev_options">Utvecklaralternativ</string>
+    <string name="login_2fa_not_supported_self_hosted_site">2FA stöds inte för webbplatser som drivs på egen server. Använd ett applösenord.</string>
+    <string name="login_with_qr_code">Skanna QR-kod för att logga in</string>
+    <string name="show_password_content_description">Visa lösenord</string>
+    <string name="hide_password_content_description">Dölj lösenord</string>
     <string name="stats_widget_last_updated_message">Per den %1$s</string>
     <string name="stats_widget_error_no_data">Det gick inte att ladda data</string>
     <string name="stats_today_widget_description">WooCommerce-statistik idag</string>

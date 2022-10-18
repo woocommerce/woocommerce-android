@@ -1,0 +1,2 @@
+10.7:
+Voor deze release hebben we het inlogproces verbeterd. Automatisch invullen is verbeterd en we hebben een optie toegevoegd om Jetpack te koppelen als Jetpack nog niet is gekoppeld. We hebben ook een verschil tussen de maandelijkse en de bezoekersstatistieken opgelost. Wiskunde is geweldig! Blijf komen met jullie feedback; dat helpt ons kiezen waar we aan moeten werken. 💜
