@@ -224,7 +224,7 @@ class AnalyticsRepository @Inject constructor(
             AnalyticTimePeriod.LAST_MONTH, AnalyticTimePeriod.MONTH_TO_DATE -> MONTHS
             AnalyticTimePeriod.LAST_QUARTER, AnalyticTimePeriod.QUARTER_TO_DATE -> MONTHS
             AnalyticTimePeriod.LAST_YEAR, AnalyticTimePeriod.YEAR_TO_DATE -> YEARS
-            AnalyticTimePeriod.CUSTOM, AnalyticTimePeriod.CUSTOM -> AnalyticTimePeriod.CUSTOM
+            AnalyticTimePeriod.CUSTOM -> DAYS // TODO nbradbury - not sure this is right
         }
 
     private fun calculateDeltaPercentage(previousVal: Double, currentVal: Double): DeltaPercentage = when {

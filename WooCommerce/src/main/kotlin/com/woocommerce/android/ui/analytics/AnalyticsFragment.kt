@@ -38,7 +38,6 @@ class AnalyticsFragment :
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         bind(view)
-        setupObservers()
         setupResultHandlers(viewModel)
         lifecycleScope.launchWhenStarted { viewModel.state.collect { newState -> handleStateChange(newState) } }
         viewModel.event.observe(viewLifecycleOwner, { event -> handleEvent(event) })
@@ -58,6 +57,7 @@ class AnalyticsFragment :
             is AnalyticsViewEvent.OpenUrl -> ChromeCustomTabUtils.launchUrl(requireContext(), event.url)
             is AnalyticsViewEvent.OpenWPComWebView -> findNavController()
                 .navigate(NavGraphMainDirections.actionGlobalWPComWebViewFragment(urlToLoad = event.url))
+            is AnalyticsViewModel.CustomDateRangeClicked -> showDateRangePicker(event.dateRange)
             else -> event.isHandled = false
         }
     }
@@ -71,17 +71,6 @@ class AnalyticsFragment :
             values = getDateRangeSelectorViewState().availableRangeDates.toTypedArray(),
             selectedItem = getDateRangeSelectorViewState().selectedPeriod
         )
-
-    private fun setupObservers() {
-        viewModel.event.observe(viewLifecycleOwner) { event ->
-            when (event) {
-                is AnalyticsViewModel.CustomDateRangeClicked -> {
-                    showDateRangePicker(event.dateRange)
-                }
-                else -> event.isHandled = false
-            }
-        }
-    }
 
     private fun setupResultHandlers(viewModel: AnalyticsViewModel) {
         handleDialogResult<String>(
@@ -130,7 +119,7 @@ class AnalyticsFragment :
                 .build()
         datePicker.show(parentFragmentManager, DATE_PICKER_FRAGMENT_TAG)
         datePicker.addOnPositiveButtonClickListener {
-            viewModel.onCustomDateRangeChanged(it.first, it.second)
+            viewModel.onCustomDateRangeChanged(it?.first ?: 0L, it.second ?: 0L)
         }
     }
 }
