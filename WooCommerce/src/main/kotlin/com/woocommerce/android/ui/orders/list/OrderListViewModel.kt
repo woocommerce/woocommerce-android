@@ -538,7 +538,7 @@ class OrderListViewModel @Inject constructor(
         val utmProvider = WooCommerceComUTMProvider(
             campaign = UTM_CAMPAIGN,
             source = UTM_SOURCE,
-            content = null,
+            content = UTM_CONTENT,
             siteId = selectedSite.getIfExists()?.siteId
         )
         launch {
@@ -718,6 +718,7 @@ class OrderListViewModel @Inject constructor(
     companion object {
         const val UTM_CAMPAIGN = "feature_announcement_card"
         const val UTM_SOURCE = "orders_list"
+        const val UTM_CONTENT = "upsell_card_readers"
     }
 }
 

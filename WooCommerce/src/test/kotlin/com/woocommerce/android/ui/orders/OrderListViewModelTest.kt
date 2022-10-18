@@ -21,6 +21,7 @@ import com.woocommerce.android.ui.orders.list.OrderListItemUIType
 import com.woocommerce.android.ui.orders.list.OrderListRepository
 import com.woocommerce.android.ui.orders.list.OrderListViewModel
 import com.woocommerce.android.ui.orders.list.OrderListViewModel.Companion.UTM_CAMPAIGN
+import com.woocommerce.android.ui.orders.list.OrderListViewModel.Companion.UTM_CONTENT
 import com.woocommerce.android.ui.orders.list.OrderListViewModel.Companion.UTM_SOURCE
 import com.woocommerce.android.ui.orders.list.OrderListViewModel.OrderListEvent.DismissCardReaderUpsellBanner
 import com.woocommerce.android.ui.orders.list.OrderListViewModel.OrderListEvent.DismissCardReaderUpsellBannerViaDontShowAgain
@@ -500,6 +501,7 @@ class OrderListViewModelTest : BaseUnitTest() {
             val event = viewModel.event.value as OpenPurchaseCardReaderLink
             assertThat(event.utmProvider.campaign).isEqualTo(UTM_CAMPAIGN)
             assertThat(event.utmProvider.source).isEqualTo(UTM_SOURCE)
+            assertThat(event.utmProvider.content).isEqualTo(UTM_CONTENT)
         }
     }
 
