@@ -22,6 +22,8 @@ import com.woocommerce.android.ui.payments.cardreader.hub.CardReaderHubViewModel
 import com.woocommerce.android.ui.payments.cardreader.hub.CardReaderHubViewModel.CardReaderHubViewState.ListItem.NonToggleableListItem
 import com.woocommerce.android.ui.payments.cardreader.hub.CardReaderHubViewModel.CardReaderHubViewState.ListItem.ToggleableListItem
 import com.woocommerce.android.ui.payments.cardreader.hub.CardReaderHubViewModel.CashOnDeliverySource.PAYMENTS_HUB
+import com.woocommerce.android.ui.payments.cardreader.hub.CardReaderHubViewModel.Companion.UTM_CAMPAIGN
+import com.woocommerce.android.ui.payments.cardreader.hub.CardReaderHubViewModel.Companion.UTM_SOURCE
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderFlowParam
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboardingChecker
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboardingState
@@ -215,6 +217,24 @@ class CardReaderHubViewModelTest : BaseUnitTest() {
             .isEqualTo("${AppUrls.WOOCOMMERCE_PURCHASE_CARD_READER_IN_COUNTRY}US")
         assertThat(event.titleRes)
             .isEqualTo(R.string.card_reader_purchase_card_reader)
+    }
+
+    @Test
+    fun `when user clicks on purchase card reader, then proper utm properties are populated`() {
+        whenever(wooStore.getStoreCountryCode(any())).thenReturn("US")
+
+        (viewModel.viewStateData.value)?.rows?.find {
+            it.label == UiString.UiStringRes(R.string.card_reader_purchase_card_reader)
+        }!!.onClick!!.invoke()
+
+        val event = (
+            viewModel.event.value as CardReaderHubViewModel.CardReaderHubEvents.NavigateToPurchaseCardReaderFlow
+            )
+
+        assertThat(event.utmProvider.campaign)
+            .isEqualTo(UTM_CAMPAIGN)
+        assertThat(event.utmProvider.source)
+            .isEqualTo(UTM_SOURCE)
     }
 
     @Test

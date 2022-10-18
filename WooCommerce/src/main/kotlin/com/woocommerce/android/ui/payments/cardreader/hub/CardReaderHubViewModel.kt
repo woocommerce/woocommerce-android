@@ -423,7 +423,7 @@ class CardReaderHubViewModel @Inject constructor(
     }
 
     companion object {
-        private const val UTM_CAMPAIGN = "payments_menu_item"
-        private const val UTM_SOURCE = "payments_menu"
+        const val UTM_CAMPAIGN = "payments_menu_item"
+        const val UTM_SOURCE = "payments_menu"
     }
 }
