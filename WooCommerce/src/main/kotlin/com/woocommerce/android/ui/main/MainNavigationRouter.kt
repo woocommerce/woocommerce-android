@@ -51,4 +51,6 @@ interface MainNavigationRouter {
 
     fun showFeedbackSurvey()
     fun showSettingsScreen()
+
+    fun showAnalytics()
 }
