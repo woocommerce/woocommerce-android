@@ -91,6 +91,10 @@ class SitePickerFragment : BaseFragment(R.layout.fragment_site_picker), LoginEma
         binding.loginEpilogueButtonBar.buttonSecondary.setOnClickListener {
             viewModel.onTryAnotherAccountButtonClick()
         }
+
+        binding.loginEpilogueButtonBar.buttonTertiary.setOnClickListener {
+            viewModel.onCreateSiteButtonClick()
+        }
     }
 
     @Suppress("LongMethod", "ComplexMethod")
@@ -174,6 +178,13 @@ class SitePickerFragment : BaseFragment(R.layout.fragment_site_picker), LoginEma
         handleNotice(WPComWebViewFragment.WEBVIEW_RESULT) {
             AnalyticsTracker.track(AnalyticsEvent.LOGIN_WOOCOMMERCE_SETUP_COMPLETED)
             viewModel.onWooInstalled()
+        }
+        handleResult<String>(WPComWebViewFragment.WEBVIEW_RESULT_WITH_URL) { siteUrl ->
+            AnalyticsTracker.track(
+                AnalyticsEvent.LOGIN_WOOCOMMERCE_SITE_CREATED,
+                mapOf(AnalyticsTracker.KEY_URL to siteUrl)
+            )
+            viewModel.onSiteCreated(siteUrl)
         }
         handleNotice(WPComWebViewFragment.WEBVIEW_DISMISSED) {
             AnalyticsTracker.track(AnalyticsEvent.LOGIN_WOOCOMMERCE_SETUP_DISMISSED)

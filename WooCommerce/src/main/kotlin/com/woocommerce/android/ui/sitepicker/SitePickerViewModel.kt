@@ -67,6 +67,8 @@ class SitePickerViewModel @Inject constructor(
     companion object {
         private const val WOOCOMMERCE_INSTALLATION_URL = "https://wordpress.com/plugins/woocommerce/"
         private const val WOOCOMMERCE_INSTALLATION_DONE_URL = "marketplace/thank-you/woocommerce"
+        private const val WOOCOMMERCE_STORE_CREATION_URL = "https://woocommerce.com/start"
+        private const val WOOCOMMERCE_STORE_CREATION_DONE_URL = "calypso/images/wpcom-ecommerce"
     }
 
     private val navArgs: SitePickerFragmentArgs by savedState.navArgs()
@@ -404,6 +406,11 @@ class SitePickerViewModel @Inject constructor(
         triggerEvent(SitePickerEvent.NavigateToSiteAddressEvent)
     }
 
+    fun onCreateSiteButtonClick() {
+        analyticsTrackerWrapper.track(AnalyticsEvent.SITE_PICKER_CREATE_SITE_TAPPED)
+        triggerEvent(NavigateToWPComWebView(WOOCOMMERCE_STORE_CREATION_URL, WOOCOMMERCE_STORE_CREATION_DONE_URL))
+    }
+
     fun onTryAnotherAccountButtonClick() {
         trackLoginEvent(clickEvent = UnifiedLoginTracker.Click.TRY_ANOTHER_ACCOUNT)
         launch {
@@ -525,6 +532,16 @@ class SitePickerViewModel @Inject constructor(
                     validationUrl = WOOCOMMERCE_INSTALLATION_DONE_URL
                 )
             )
+        }
+    }
+
+    fun onSiteCreated(url: String) {
+        launch {
+            fetchSitesFromApi(showSkeleton = true)
+            repository.getSiteBySiteUrl(url)?.let { site ->
+                onSiteSelected(site)
+                onContinueButtonClick(true)
+            }
         }
     }
 

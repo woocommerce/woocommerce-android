@@ -2,6 +2,7 @@ package com.woocommerce.android.ui.common.wpcomwebview
 
 import android.annotation.SuppressLint
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import android.webkit.WebChromeClient
 import android.webkit.WebView
@@ -61,7 +62,7 @@ class WPComWebViewFragment : BaseFragment(R.layout.fragment_wpcom_webview), UrlI
             settings.userAgentString = userAgent.userAgent
         }
 
-        siteUrl = savedInstanceState?.getString(WEBVIEW_STORE_URL_KEY)
+        siteUrl = savedInstanceState?.getString(WEBVIEW_STORE_URL_KEY) ?: siteUrl
 
         wpcomWebViewAuthenticator.authenticateAndLoadUrl(binding.webView, navArgs.urlToLoad)
     }
@@ -77,7 +78,7 @@ class WPComWebViewFragment : BaseFragment(R.layout.fragment_wpcom_webview), UrlI
             EQUALITY -> equals(url, ignoreCase = true)
         }
 
-        siteUrl = extractSiteUrl(url)
+        extractSiteUrl(url)
 
         if (isAdded && navArgs.urlToTriggerExit?.matchesUrl(url) == true) {
             if (siteUrl == null) {
@@ -88,11 +89,11 @@ class WPComWebViewFragment : BaseFragment(R.layout.fragment_wpcom_webview), UrlI
         }
     }
 
-    private fun extractSiteUrl(url: String): String? {
-        return "$WEBVIEW_STORE_CHECKOUT_STRING.+/".toRegex().find(url)?.range?.let { range ->
+    private fun extractSiteUrl(url: String) {
+        "$WEBVIEW_STORE_CHECKOUT_STRING.+/".toRegex().find(url)?.range?.let { range ->
             val start = range.first + WEBVIEW_STORE_CHECKOUT_STRING.length
             val end = range.last
-            url.substring(start, end)
+            siteUrl = url.substring(start, end)
         }
     }
 
