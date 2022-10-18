@@ -87,7 +87,7 @@ class AnalyticsViewModel @Inject constructor(
                     fromDateStr,
                     toDateStr
                 ),
-                toDatePeriod = resourceProvider.getString(R.string.date_timeframe_custom),
+                toDatePeriod = resourceProvider.getString(R.string.date_timeframe_custom_date_range),
                 selectedPeriod = ""
             )
         )

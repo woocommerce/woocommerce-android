@@ -155,6 +155,7 @@
     -->
     <string name="date_timeframe_future">Upcoming</string>
     <string name="date_timeframe_custom">Custom</string>
+    <string name="date_timeframe_custom_date_range">Custom date range</string>
     <string name="date_timeframe_today">Today</string>
     <string name="date_timeframe_yesterday">Yesterday</string>
     <string name="date_timeframe_last_week">Last Week</string>
