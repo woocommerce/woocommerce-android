@@ -141,9 +141,6 @@ class ProductDetailViewModel @Inject constructor(
 
     private val storedProduct = MutableStateFlow<Product?>(null)
 
-    // A/B test to determine whether to show the linked products promo
-    private var abTestLinkProductsPromoIsTreatment = false
-
     // view state for the product categories screen
     val productCategoriesViewStateData = LiveDataDelegate(savedState, ProductCategoriesViewState())
     private var productCategoriesViewState by productCategoriesViewStateData
