@@ -173,8 +173,7 @@ class ProductDetailViewModel_AddFlowTest : BaseUnitTest() {
                 variationRepository,
                 mediaFileUploadHandler,
                 prefs,
-                addonRepository,
-                experimentStore = mock()
+                addonRepository
             )
         )
 
