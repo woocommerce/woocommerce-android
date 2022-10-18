@@ -11,6 +11,10 @@ import com.woocommerce.android.model.Order
 import com.woocommerce.android.model.OrderMapper
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.ui.orders.list.OrderListViewModel
+import com.woocommerce.android.ui.payments.SelectPaymentMethodViewModel.Companion.UTM_CAMPAIGN
+import com.woocommerce.android.ui.payments.SelectPaymentMethodViewModel.Companion.UTM_CONTENT
+import com.woocommerce.android.ui.payments.SelectPaymentMethodViewModel.Companion.UTM_SOURCE
 import com.woocommerce.android.ui.payments.SelectPaymentMethodViewModel.NavigateBackToHub
 import com.woocommerce.android.ui.payments.SelectPaymentMethodViewModel.NavigateBackToOrderList
 import com.woocommerce.android.ui.payments.SelectPaymentMethodViewModel.NavigateToCardReaderHubFlow
@@ -619,6 +623,32 @@ class SelectPaymentMethodViewModelTest : BaseUnitTest() {
             assertThat(
                 viewModel.event.value
             ).isInstanceOf(OpenPurchaseCardReaderLink::class.java)
+        }
+    }
+
+    @Test
+    fun `given upsell banner, when purchase reader clicked, then proper utm properties are populated`() {
+        runTest {
+            // GIVEN
+            whenever(
+                bannerDisplayEligibilityChecker.getPurchaseCardReaderUrl(KEY_BANNER_PAYMENTS)
+            ).thenReturn(
+                "${AppUrls.WOOCOMMERCE_PURCHASE_CARD_READER_IN_COUNTRY}US"
+            )
+            whenever(cardPaymentCollectibilityChecker.isCollectable(order)).thenReturn(true)
+            whenever(
+                bannerDisplayEligibilityChecker.canShowCardReaderUpsellBanner(anyLong())
+            ).thenReturn(true)
+
+            // WHEN
+            val viewModel = initViewModel(Payment(1L, ORDER))
+            (viewModel.viewStateData.value as Success).bannerState.onPrimaryActionClicked.invoke()
+
+            // Then
+            val event = viewModel.event.value as OpenPurchaseCardReaderLink
+            assertThat(event.utmProvider.campaign).isEqualTo(UTM_CAMPAIGN)
+            assertThat(event.utmProvider.source).isEqualTo(UTM_SOURCE)
+            assertThat(event.utmProvider.content).isEqualTo(UTM_CONTENT)
         }
     }
 

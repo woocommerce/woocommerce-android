@@ -7,6 +7,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.ui.platform.ViewCompositionStrategy
+import androidx.core.net.toUri
 import androidx.core.view.isVisible
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
@@ -212,7 +213,7 @@ class SelectPaymentMethodFragment : BaseFragment(R.layout.fragment_take_payment)
                 is SelectPaymentMethodViewModel.OpenPurchaseCardReaderLink -> {
                     findNavController().navigate(
                         NavGraphMainDirections.actionGlobalWPComWebViewFragment(
-                            urlToLoad = event.url,
+                            urlToLoad = event.utmProvider.getUrlWithUtmParams(event.url.toUri()),
                             title = resources.getString(event.titleRes)
                         )
                     )
