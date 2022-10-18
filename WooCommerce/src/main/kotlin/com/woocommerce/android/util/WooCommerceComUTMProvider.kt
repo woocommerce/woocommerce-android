@@ -62,7 +62,7 @@ class WooCommerceComUTMProvider(
      *
      * utm_source=null -  is an invalid query
      */
-    private fun isValidQuery(query: String) : Boolean {
+    private fun isValidQuery(query: String): Boolean {
         return !query.isNullOrEmpty() && (parameters[query]?.toString().isNullOrEmpty() || query !in parameters)
     }
 
