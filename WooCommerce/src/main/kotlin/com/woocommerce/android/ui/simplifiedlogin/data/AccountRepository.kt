@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.simplifiedlogin.data
 
+import com.woocommerce.android.OnChangedException
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T
 import com.woocommerce.android.util.WooLog.T.SITE_PICKER
@@ -14,6 +15,7 @@ import org.wordpress.android.fluxc.generated.SiteActionBuilder
 import org.wordpress.android.fluxc.model.AccountModel
 import org.wordpress.android.fluxc.store.AccountStore
 import org.wordpress.android.fluxc.store.AccountStore.AuthenticatePayload
+import org.wordpress.android.fluxc.store.AccountStore.AuthenticationError
 import org.wordpress.android.fluxc.store.AccountStore.AuthenticationErrorType.EMAIL_LOGIN_NOT_ALLOWED
 import org.wordpress.android.fluxc.store.AccountStore.AuthenticationErrorType.INCORRECT_USERNAME_OR_PASSWORD
 import org.wordpress.android.fluxc.store.AccountStore.AuthenticationErrorType.NEEDS_2FA
@@ -31,43 +33,29 @@ class AccountRepository @Inject constructor(
 
     fun isUserLoggedIn() = accountStore.hasAccessToken()
 
-    suspend fun login(emailOrUsername: String, password: String) =
-        suspendCancellableCoroutine<WPComLoginResult> { cont ->
-            val listener = object : Any() {
-                // OnChanged events
-                @Subscribe(threadMode = MAIN)
-                @Suppress("unused")
-                fun onAuthenticationChanged(event: OnAuthenticationChanged) {
-                    dispatcher.unregister(this)
-                    if (event.isError) {
-                        WooLog.w(
-                            T.LOGIN,
-                            "onAuthenticationChanged has error: " + event.error.type + " - " + event.error.message
-                        )
-                        when (event.error.type) {
-                            INCORRECT_USERNAME_OR_PASSWORD, NOT_AUTHENTICATED -> cont.resume(WPComLoginResult.AuthenticationError)
-                            NEEDS_2FA -> cont.resume(WPComLoginResult.Requires2FA)
-                            EMAIL_LOGIN_NOT_ALLOWED -> cont.resume(WPComLoginResult.EmailLoginNotAllowed)
-                            else -> cont.resume(WPComLoginResult.GenericError(event.error.message.orEmpty()))
-                        }
-                    } else {
-                        WooLog.i(T.LOGIN, "Authentication Succeeded for user ${event.userName}")
-                        cont.resume(WPComLoginResult.Success(event.userName!!))
-                    }
+    suspend fun login(emailOrUsername: String, password: String): WPComLoginResult {
+        WooLog.i(
+            T.LOGIN,
+            "Signing in using WPCom email or username: $emailOrUsername"
+        )
+        return submitAuthRequest(emailOrUsername, password, null, false).fold(
+            onSuccess = {
+                WPComLoginResult.Success(it)
+            },
+            onFailure = {
+                val authError = (it as? OnChangedException)?.error as? AuthenticationError
+                    ?: return@fold WPComLoginResult.GenericError(it.message.orEmpty())
+
+                when (authError.type) {
+                    INCORRECT_USERNAME_OR_PASSWORD, NOT_AUTHENTICATED -> WPComLoginResult.AuthenticationError
+                    NEEDS_2FA -> WPComLoginResult.Requires2FA
+                    EMAIL_LOGIN_NOT_ALLOWED -> WPComLoginResult.EmailLoginNotAllowed
+                    else -> WPComLoginResult.GenericError(authError.message.orEmpty())
                 }
             }
+        )
+    }
 
-            val payload = AuthenticatePayload(emailOrUsername, password)
-            dispatcher.dispatch(AuthenticationActionBuilder.newAuthenticateAction(payload))
-            WooLog.i(
-                T.LOGIN,
-                "User tries to log in wpcom. email or username: $emailOrUsername"
-            )
-
-            cont.invokeOnCancellation {
-                dispatcher.unregister(listener)
-            }
-        }
 
     suspend fun logout(): Boolean = suspendCancellableCoroutine { continuation ->
         val listener = object : Any() {
@@ -99,6 +87,42 @@ class AccountRepository @Inject constructor(
             dispatcher.unregister(listener)
         }
     }
+
+    private suspend fun submitAuthRequest(
+        emailOrUsername: String,
+        password: String,
+        twoStepCode: String?,
+        shouldRequestTwoStepCode: Boolean
+    ) = suspendCancellableCoroutine<Result<String>> { cont ->
+        val listener = object : Any() {
+            // OnChanged events
+            @Subscribe(threadMode = MAIN)
+            @Suppress("unused")
+            fun onAuthenticationChanged(event: OnAuthenticationChanged) {
+                dispatcher.unregister(this)
+                if (event.isError) {
+                    WooLog.w(
+                        T.LOGIN,
+                        "onAuthenticationChanged has error: " + event.error.type + " - " + event.error.message
+                    )
+                    cont.resume(Result.failure(OnChangedException(event.error)))
+                } else {
+                    WooLog.i(T.LOGIN, "Authentication Succeeded for user ${event.userName}")
+                    cont.resume(Result.success(event.userName!!))
+                }
+            }
+        }
+
+        val payload = AuthenticatePayload(emailOrUsername, password).apply {
+            this.twoStepCode = twoStepCode
+            this.shouldSendTwoStepSms = shouldRequestTwoStepCode
+        }
+        dispatcher.dispatch(AuthenticationActionBuilder.newAuthenticateAction(payload))
+
+        cont.invokeOnCancellation {
+            dispatcher.unregister(listener)
+        }
+    }
 }
 
 sealed interface WPComLoginResult {
@@ -108,3 +132,16 @@ sealed interface WPComLoginResult {
     object AuthenticationError : WPComLoginResult
     data class GenericError(val errorMessage: String) : WPComLoginResult
 }
+
+sealed interface WPCom2FAResult {
+    data class Success(val username: String) : WPCom2FAResult
+    object OTPInvalid : WPCom2FAResult
+    data class GenericError(val errorMessage: String) : WPCom2FAResult
+}
+
+sealed interface NewTwoStepSMSResult {
+    object Success : NewTwoStepSMSResult
+    data class UserSignedIn(val username: String) : NewTwoStepSMSResult
+    data class GenericError(val errorMessage: String) : NewTwoStepSMSResult
+}
+
