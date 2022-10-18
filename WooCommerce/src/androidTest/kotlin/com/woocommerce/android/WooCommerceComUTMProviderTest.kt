@@ -36,8 +36,8 @@ class WooCommerceComUTMProviderTest {
 
         val urlWithUTM = provideDefaultUTMProvider().getUrlWithUtmParams(url.toUri())
 
-        assertThat(urlWithUTM.getQueryParameter("utm_medium")).isEqualTo(defaultUTMMedium)
-        assertThat(urlWithUTM.toString()).isEqualTo(expectedUrl)
+        assertThat(urlWithUTM.toUri().getQueryParameter("utm_medium")).isEqualTo(defaultUTMMedium)
+        assertThat(urlWithUTM).isEqualTo(expectedUrl)
     }
 
     @Test
@@ -57,11 +57,11 @@ class WooCommerceComUTMProviderTest {
             siteId = 1234L
         ).getUrlWithUtmParams(url.toUri())
 
-        assertThat(urlWithUTM.getQueryParameter("utm_medium")).isEqualTo(defaultUTMMedium)
-        assertThat(urlWithUTM.getQueryParameter("utm_campaign")).isEqualTo(utmCampaign)
-        assertThat(urlWithUTM.getQueryParameter("utm_source")).isEqualTo(utmSource)
-        assertThat(urlWithUTM.getQueryParameter("utm_content")).isEqualTo(utmContent)
-        assertThat(urlWithUTM.toString()).isEqualTo(expectedUrl)
+        assertThat(urlWithUTM.toUri().getQueryParameter("utm_medium")).isEqualTo(defaultUTMMedium)
+        assertThat(urlWithUTM.toUri().getQueryParameter("utm_campaign")).isEqualTo(utmCampaign)
+        assertThat(urlWithUTM.toUri().getQueryParameter("utm_source")).isEqualTo(utmSource)
+        assertThat(urlWithUTM.toUri().getQueryParameter("utm_content")).isEqualTo(utmContent)
+        assertThat(urlWithUTM).isEqualTo(expectedUrl)
     }
 
     @Test
@@ -79,11 +79,11 @@ class WooCommerceComUTMProviderTest {
             siteId = 1234L
         ).getUrlWithUtmParams(url.toUri())
 
-        assertThat(urlWithUTM.getQueryParameter("utm_medium")).isEqualTo(defaultUTMMedium)
-        assertThat(urlWithUTM.getQueryParameter("utm_campaign")).isEqualTo(utmCampaign)
-        assertFalse(urlWithUTM.toString().contains("utm_source"))
-        assertFalse(urlWithUTM.toString().contains("utm_content"))
-        assertThat(urlWithUTM.toString()).isEqualTo(expectedUrl)
+        assertThat(urlWithUTM.toUri().getQueryParameter("utm_medium")).isEqualTo(defaultUTMMedium)
+        assertThat(urlWithUTM.toUri().getQueryParameter("utm_campaign")).isEqualTo(utmCampaign)
+        assertFalse(urlWithUTM.contains("utm_source"))
+        assertFalse(urlWithUTM.contains("utm_content"))
+        assertThat(urlWithUTM).isEqualTo(expectedUrl)
     }
 
     @Test
@@ -103,11 +103,11 @@ class WooCommerceComUTMProviderTest {
             siteId = 1234L
         ).getUrlWithUtmParams(url.toUri())
 
-        assertThat(urlWithUTM.getQueryParameter("utm_medium")).isEqualTo(defaultUTMMedium)
-        assertThat(urlWithUTM.getQueryParameter("utm_campaign")).isEqualTo(utmCampaign)
-        assertThat(urlWithUTM.getQueryParameter("utm_source")).isEqualTo(utmSource)
-        assertThat(urlWithUTM.getQueryParameter("utm_content")).isEqualTo(utmContent)
-        assertThat(urlWithUTM.toString()).isEqualTo(expectedUrl)
+        assertThat(urlWithUTM.toUri().getQueryParameter("utm_medium")).isEqualTo(defaultUTMMedium)
+        assertThat(urlWithUTM.toUri().getQueryParameter("utm_campaign")).isEqualTo(utmCampaign)
+        assertThat(urlWithUTM.toUri().getQueryParameter("utm_source")).isEqualTo(utmSource)
+        assertThat(urlWithUTM.toUri().getQueryParameter("utm_content")).isEqualTo(utmContent)
+        assertThat(urlWithUTM).isEqualTo(expectedUrl)
     }
 
     @Test
@@ -118,9 +118,9 @@ class WooCommerceComUTMProviderTest {
 
         val urlWithUTM = provideDefaultUTMProvider().getUrlWithUtmParams(url.toUri())
 
-        assertTrue(urlWithUTM.toString().contains("test_utm_campaign"))
-        assertTrue(urlWithUTM.toString().contains("test_utm_source"))
-        assertThat(urlWithUTM.toString()).isEqualTo(expectedUrl)
+        assertTrue(urlWithUTM.contains("test_utm_campaign"))
+        assertTrue(urlWithUTM.contains("test_utm_source"))
+        assertThat(urlWithUTM).isEqualTo(expectedUrl)
     }
 
     @Test
@@ -129,8 +129,8 @@ class WooCommerceComUTMProviderTest {
 
         val urlWithUTM = provideDefaultUTMProvider().getUrlWithUtmParams(url.toUri())
 
-        assertThat(urlWithUTM.getQueryParameter("test_utm_campaign")).isEqualTo("payments_menu_item")
-        assertThat(urlWithUTM.getQueryParameter("test_utm_source")).isEqualTo("payments_menu")
+        assertThat(urlWithUTM.toUri().getQueryParameter("test_utm_campaign")).isEqualTo("payments_menu_item")
+        assertThat(urlWithUTM.toUri().getQueryParameter("test_utm_source")).isEqualTo("payments_menu")
     }
 
     @Test
@@ -146,7 +146,7 @@ class WooCommerceComUTMProviderTest {
             siteId = 1234L
         ).getUrlWithUtmParams(url.toUri())
 
-        assertThat(urlWithUTM.getQueryParameter("utm_campaign")).isEqualTo(utmCampaign)
-        assertThat(urlWithUTM.toString()).isEqualTo(expectedUrl)
+        assertThat(urlWithUTM.toUri().getQueryParameter("utm_campaign")).isEqualTo(utmCampaign)
+        assertThat(urlWithUTM).isEqualTo(expectedUrl)
     }
 }

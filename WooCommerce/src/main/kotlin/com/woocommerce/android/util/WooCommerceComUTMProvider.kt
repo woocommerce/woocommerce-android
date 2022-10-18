@@ -9,6 +9,23 @@ interface UtmProvider {
     val source: String
     val content: String?
     val siteId: Long?
+
+    val parameters: Map<String, Any?>
+    get() {
+        return mapOf<String, Any?>(
+            "utm_campaign" to campaign,
+            "utm_source" to source,
+            "utm_content" to content,
+            "utm_term" to siteId,
+            "utm_medium" to defaultUTMMedium
+        )
+    }
+
+    fun getUrlWithUtmParams(uri: Uri): String
+
+    companion object {
+        private const val defaultUTMMedium = "woo_android"
+    }
 }
 
 @Reusable
@@ -18,14 +35,7 @@ class WooCommerceComUTMProvider(
     override val content: String?,
     override val siteId: Long?
 ) : UtmProvider {
-    private val parameters = mapOf<String, Any?>(
-        "utm_campaign" to campaign,
-        "utm_source" to source,
-        "utm_content" to content,
-        "utm_term" to siteId,
-        "utm_medium" to defaultUTMMedium
-    )
-    fun getUrlWithUtmParams(uri: Uri): Uri {
+    override fun getUrlWithUtmParams(uri: Uri): String {
         val uriBuilder = (uri.scheme + "://" + uri.host + uri.path).toUri().buildUpon()
         // remove any null, empty query items and existing utm query items to avoid duplicates
         uri.queryParameterNames.filter { query ->
@@ -39,10 +49,6 @@ class WooCommerceComUTMProvider(
                 uriBuilder.appendQueryParameter(entry.key, (entry.value)?.toString())
             }
         }
-        return uriBuilder.build()
-    }
-
-    companion object {
-        private const val defaultUTMMedium = "woo_android"
+        return uriBuilder.build().toString()
     }
 }
