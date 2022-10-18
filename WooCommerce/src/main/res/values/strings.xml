@@ -2641,4 +2641,7 @@
     <string name="stats_widget_last_updated_message">As of %1$s</string>
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
+
+    <!-- Store creation -->
+    <string name="create_new_store">Create a new store</string>
 </resources>
