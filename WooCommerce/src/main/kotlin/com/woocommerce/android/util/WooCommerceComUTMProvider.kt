@@ -28,6 +28,12 @@ interface UtmProvider {
     }
 }
 
+/**
+ * Make sure to write tests in WooCommerceComUTMProviderTest class if you change the behaviour of this class.
+ * WooCommerceComUTMProviderTest makes use of Uri class and needs an android device/emulator to run the tests.
+ * WooCommerceComUTMProviderTest will not be run as part of PR checks, it's important to run it manually when
+ * the behaviour of this class changes.
+ */
 @Reusable
 class WooCommerceComUTMProvider(
     override val campaign: String,
