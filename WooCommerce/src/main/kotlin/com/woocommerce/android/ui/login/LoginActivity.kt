@@ -366,10 +366,6 @@ class LoginActivity :
         ChromeCustomTabUtils.launchUrl(this, AppUrls.NEW_TO_WOO_DOC)
     }
 
-    override fun onGetStartedClicked() {
-        navController.navigate(LoginPrologueFragmentDirections.actionLoginPrologueFragmentToSignupFragment())
-    }
-
     private fun showMainActivityAndFinish() {
         experimentTracker.log(ExperimentTracker.LOGIN_SUCCESSFUL_EVENT)
         loginNotificationScheduler.onLoginSuccess()
