@@ -18,6 +18,7 @@ import org.wordpress.android.fluxc.store.AccountStore.AuthenticatePayload
 import org.wordpress.android.fluxc.store.AccountStore.AuthenticationError
 import org.wordpress.android.fluxc.store.AccountStore.AuthenticationErrorType.EMAIL_LOGIN_NOT_ALLOWED
 import org.wordpress.android.fluxc.store.AccountStore.AuthenticationErrorType.INCORRECT_USERNAME_OR_PASSWORD
+import org.wordpress.android.fluxc.store.AccountStore.AuthenticationErrorType.INVALID_OTP
 import org.wordpress.android.fluxc.store.AccountStore.AuthenticationErrorType.NEEDS_2FA
 import org.wordpress.android.fluxc.store.AccountStore.AuthenticationErrorType.NOT_AUTHENTICATED
 import org.wordpress.android.fluxc.store.AccountStore.OnAccountChanged
@@ -56,6 +57,42 @@ class AccountRepository @Inject constructor(
         )
     }
 
+
+    suspend fun submitTwoStepCode(emailOrUsername: String, password: String, twoStepCode: String): WPCom2FAResult {
+        WooLog.i(T.LOGIN, "Sumbitting 2FA verification code")
+
+        return submitAuthRequest(emailOrUsername, password, twoStepCode, false).fold(
+            onSuccess = { WPCom2FAResult.Success(it) },
+            onFailure = {
+                val authError = (it as? OnChangedException)?.error as? AuthenticationError
+                    ?: return@fold WPCom2FAResult.GenericError(it.message.orEmpty())
+
+                when (authError.type) {
+                    INVALID_OTP -> WPCom2FAResult.OTPInvalid
+                    else -> WPCom2FAResult.GenericError(authError.message.orEmpty())
+                }
+            }
+        )
+    }
+
+    suspend fun requestTwoStepCode(emailOrUsername: String, password: String): NewTwoStepSMSResult {
+        WooLog.i(T.LOGIN, "Sumbitting 2FA verification code")
+
+        return submitAuthRequest(emailOrUsername, password, null, true)
+            .fold(
+                onSuccess = {
+                    // This can happen if the user disabled 2fa before requesting a new code
+                    NewTwoStepSMSResult.UserSignedIn(it)
+                },
+                onFailure = {
+                    if (((it as? OnChangedException)?.error as? AuthenticationError)?.type == NEEDS_2FA) {
+                        NewTwoStepSMSResult.Success
+                    } else {
+                        NewTwoStepSMSResult.GenericError(it.message.orEmpty())
+                    }
+                }
+            )
+    }
 
     suspend fun logout(): Boolean = suspendCancellableCoroutine { continuation ->
         val listener = object : Any() {
