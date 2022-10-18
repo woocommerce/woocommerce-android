@@ -74,9 +74,12 @@ class AnalyticsViewModel @Inject constructor(
     }
 
     fun onCustomDateRangeChanged(startDateMillis: Long, endDateMillis: Long) {
+        val startDate = Date(startDateMillis)
+        val endDate = Date(endDateMillis)
         val dateFormat = SimpleDateFormat("EEE, LLL d, yy", Locale.getDefault())
-        val fromDateStr = dateFormat.format(Date(startDateMillis))
-        val toDateStr = dateFormat.format(Date(endDateMillis))
+        val fromDateStr = dateFormat.format(startDate)
+        val toDateStr = dateFormat.format(endDate)
+
         mutableState.value = state.value.copy(
             analyticsDateRangeSelectorState = state.value.analyticsDateRangeSelectorState.copy(
                 fromDatePeriod = resourceProvider.getString(
@@ -88,6 +91,16 @@ class AnalyticsViewModel @Inject constructor(
                 selectedPeriod = ""
             )
         )
+
+        val dateRange = analyticsDateRange.getAnalyticsDateRangeFromCustom(startDate, endDate)
+        saveSelectedDateRange(dateRange)
+        saveSelectedTimePeriod(AnalyticTimePeriod.CUSTOM)
+
+        viewModelScope.launch {
+            updateRevenue(isRefreshing = false, showSkeleton = true)
+            updateOrders(isRefreshing = false, showSkeleton = true)
+            updateProducts(isRefreshing = false, showSkeleton = true)
+        }
     }
     init {
         viewModelScope.launch {

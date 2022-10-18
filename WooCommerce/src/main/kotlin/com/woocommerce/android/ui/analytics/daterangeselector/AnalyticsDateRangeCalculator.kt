@@ -72,6 +72,10 @@ class AnalyticsDateRangeCalculator @Inject constructor(
         SimpleDateRange(getDateOfFirstDayPreviousQuarter(), getDateOfLastDayPreviousQuarter()),
     )
 
+    fun getAnalyticsDateRangeFromCustom(startDate: Date, endDate: Date) = SimpleDateRange(
+        from = startDate, to = endDate
+    )
+
     private fun getDateOfLastDayPreviousQuarter() = dateUtils.getDateForLastDayOfPreviousQuarter()
 
     private fun getDateOfFirstDayPreviousQuarter() = dateUtils.getDateForFirstDayOfPreviousQuarter()
