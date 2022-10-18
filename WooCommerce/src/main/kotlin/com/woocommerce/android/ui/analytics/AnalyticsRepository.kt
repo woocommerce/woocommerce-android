@@ -20,12 +20,12 @@ import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.withContext
 import org.wordpress.android.fluxc.model.WCRevenueStatsModel
-import org.wordpress.android.fluxc.model.leaderboards.WCTopPerformerProductModel
 import org.wordpress.android.fluxc.store.WCStatsStore.StatsGranularity
 import org.wordpress.android.fluxc.store.WCStatsStore.StatsGranularity.*
 import org.wordpress.android.fluxc.store.WooCommerceStore
 import javax.inject.Inject
 import kotlin.math.round
+import org.wordpress.android.fluxc.persistence.entity.TopPerformerProductEntity
 
 class AnalyticsRepository @Inject constructor(
     private val statsRepository: StatsRepository,
@@ -125,9 +125,9 @@ class AnalyticsRepository @Inject constructor(
         val currentItemsSold = currentPeriodTotalRevenue.itemsSold!!
         val productItems = productsStats?.map {
             ProductItem(
-                it.product.name,
+                it.name,
                 it.total,
-                it.product.getFirstImageUrl(),
+                it.imageUrl,
                 it.quantity,
                 it.currency
             )
@@ -204,7 +204,7 @@ class AnalyticsRepository @Inject constructor(
         dateRange: AnalyticsDateRange,
         granularity: StatsGranularity,
         quantity: Int
-    ): Result<List<WCTopPerformerProductModel>> {
+    ): Result<List<TopPerformerProductEntity>> {
         val startDate = when (dateRange) {
             is SimpleDateRange -> dateRange.to.formatToYYYYmmDD()
             is MultipleDateRange -> dateRange.to.from.formatToYYYYmmDD()
@@ -258,13 +258,13 @@ class AnalyticsRepository @Inject constructor(
         endDate: String,
         granularity: StatsGranularity,
         quantity: Int,
-    ): Result<List<WCTopPerformerProductModel>> = withContext(dispatchers.io) {
+    ): Result<List<TopPerformerProductEntity>> = withContext(dispatchers.io) {
         statsRepository.fetchProductLeaderboards(
             true,
             granularity,
             quantity,
-            startDate,
-            endDate
+//            startDate,
+//            endDate
         ).flowOn(dispatchers.io).single()
     }
 

@@ -30,6 +30,7 @@ import org.wordpress.android.fluxc.store.WCStatsStore.StatsGranularity
 import org.wordpress.android.fluxc.store.WooCommerceStore
 import org.wordpress.android.fluxc.store.WooCommerceStore.WooPlugin.WOO_CORE
 import javax.inject.Inject
+import org.wordpress.android.fluxc.model.leaderboards.WCTopPerformerProductModel
 
 class StatsRepository @Inject constructor(
     private val selectedSite: SelectedSite,
@@ -124,6 +125,35 @@ class StatsRepository @Inject constructor(
             }
         } else {
             Result.success(Unit)
+        }
+    }
+
+    suspend fun fetchProductLeaderboards(
+        forceRefresh: Boolean,
+        granularity: StatsGranularity,
+        quantity: Int
+    ): Flow<Result<List<TopPerformerProductEntity>>> = flow {
+        when (forceRefresh) {
+            true -> wcLeaderboardsStore.fetchTopPerformerProducts(
+                site = selectedSite.get(),
+                quantity = quantity,
+                addProductsPath = supportsProductOnlyLeaderboardEndpoint(),
+                forceRefresh = forceRefresh
+            )
+            false -> wcLeaderboardsStore.fetchTopPerformerProducts(
+                site = selectedSite.get(),
+                granularity = granularity
+            )
+        }.let { result ->
+            val model = result.model
+            if (result.isError || model == null) {
+                val resultError: Result<List<TopPerformerProductEntity>> = Result.failure(
+                    Exception(result.error?.message.orEmpty())
+                )
+                emit(resultError)
+            } else {
+                emit(Result.success(model))
+            }
         }
     }
 

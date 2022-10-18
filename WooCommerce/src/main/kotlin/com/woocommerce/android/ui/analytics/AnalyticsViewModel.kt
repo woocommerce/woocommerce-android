@@ -5,10 +5,6 @@ import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.analytics.daterangeselector.AnalyticsDateRangeCalculator
 import com.woocommerce.android.ui.analytics.daterangeselector.AnalyticsDateRangeSelectorViewState
-import com.woocommerce.android.ui.analytics.daterangeselector.AnalyticsDateRanges
-import com.woocommerce.android.ui.analytics.daterangeselector.DateRange
-import com.woocommerce.android.ui.analytics.daterangeselector.DateRange.MultipleDateRange
-import com.woocommerce.android.ui.analytics.daterangeselector.DateRange.SimpleDateRange
 import com.woocommerce.android.ui.analytics.daterangeselector.formatDatesToFriendlyPeriod
 import com.woocommerce.android.model.ProductItem
 import com.woocommerce.android.model.DeltaPercentage
