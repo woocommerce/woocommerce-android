@@ -20,6 +20,8 @@ import com.woocommerce.android.ui.orders.list.OrderListItemIdentifier
 import com.woocommerce.android.ui.orders.list.OrderListItemUIType
 import com.woocommerce.android.ui.orders.list.OrderListRepository
 import com.woocommerce.android.ui.orders.list.OrderListViewModel
+import com.woocommerce.android.ui.orders.list.OrderListViewModel.Companion.UTM_CAMPAIGN
+import com.woocommerce.android.ui.orders.list.OrderListViewModel.Companion.UTM_SOURCE
 import com.woocommerce.android.ui.orders.list.OrderListViewModel.OrderListEvent.DismissCardReaderUpsellBanner
 import com.woocommerce.android.ui.orders.list.OrderListViewModel.OrderListEvent.DismissCardReaderUpsellBannerViaDontShowAgain
 import com.woocommerce.android.ui.orders.list.OrderListViewModel.OrderListEvent.DismissCardReaderUpsellBannerViaRemindMeLater
@@ -473,6 +475,31 @@ class OrderListViewModelTest : BaseUnitTest() {
             assertThat(
                 viewModel.event.value
             ).isInstanceOf(OpenPurchaseCardReaderLink::class.java)
+        }
+    }
+
+    @Test
+    fun `given upsell banner, when purchase reader clicked, then proper utm properties are populated`() {
+        runTest {
+            // GIVEN
+            whenever(
+                bannerDisplayEligibilityChecker.getPurchaseCardReaderUrl(KEY_BANNER_ORDER_LIST)
+            ).thenReturn(
+                "${AppUrls.WOOCOMMERCE_PURCHASE_CARD_READER_IN_COUNTRY}US"
+            )
+            whenever(
+                bannerDisplayEligibilityChecker.canShowCardReaderUpsellBanner(anyLong())
+            ).thenReturn(true)
+            whenever(bannerDisplayEligibilityChecker.isEligibleForInPersonPayments()).thenReturn(true)
+            viewModel.updateBannerState(landscapeChecker, false)
+
+            // WHEN
+            viewModel.bannerState.value?.onPrimaryActionClicked?.invoke()
+
+            // Then
+            val event = viewModel.event.value as OpenPurchaseCardReaderLink
+            assertThat(event.utmProvider.campaign).isEqualTo(UTM_CAMPAIGN)
+            assertThat(event.utmProvider.source).isEqualTo(UTM_SOURCE)
         }
     }
 

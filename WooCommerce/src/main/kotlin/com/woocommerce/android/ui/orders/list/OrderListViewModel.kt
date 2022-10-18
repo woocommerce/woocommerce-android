@@ -40,6 +40,8 @@ import com.woocommerce.android.ui.payments.banner.BannerState
 import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.util.LandscapeChecker
 import com.woocommerce.android.util.ThrottleLiveData
+import com.woocommerce.android.util.UtmProvider
+import com.woocommerce.android.util.WooCommerceComUTMProvider
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.viewmodel.LiveDataDelegate
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
@@ -533,9 +535,16 @@ class OrderListViewModel @Inject constructor(
     }
 
     private fun onCtaClicked(source: String) {
+        val utmProvider = WooCommerceComUTMProvider(
+            campaign = UTM_CAMPAIGN,
+            source = UTM_SOURCE,
+            content = null,
+            siteId = selectedSite.getIfExists()?.siteId
+        )
         launch {
             triggerEvent(
                 OpenPurchaseCardReaderLink(
+                    utmProvider,
                     bannerDisplayEligibilityChecker.getPurchaseCardReaderUrl(source),
                     R.string.card_reader_purchase_card_reader
                 )
@@ -686,6 +695,7 @@ class OrderListViewModel @Inject constructor(
         object DismissCardReaderUpsellBannerViaRemindMeLater : OrderListEvent()
         object DismissCardReaderUpsellBannerViaDontShowAgain : OrderListEvent()
         data class OpenPurchaseCardReaderLink(
+            val utmProvider: UtmProvider,
             val url: String,
             @StringRes val titleRes: Int,
         ) : OrderListEvent()
@@ -704,6 +714,11 @@ class OrderListViewModel @Inject constructor(
         val arePaymentGatewaysFetched: Boolean = false,
         val filterCount: Int = 0
     ) : Parcelable
+
+    companion object {
+        const val UTM_CAMPAIGN = "feature_announcement_card"
+        const val UTM_SOURCE = "orders_list"
+    }
 }
 
 object InAppLifecycleMemory {
