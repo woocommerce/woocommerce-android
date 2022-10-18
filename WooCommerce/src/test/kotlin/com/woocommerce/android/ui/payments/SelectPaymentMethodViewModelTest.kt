@@ -11,7 +11,6 @@ import com.woocommerce.android.model.Order
 import com.woocommerce.android.model.OrderMapper
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.SelectedSite
-import com.woocommerce.android.ui.orders.list.OrderListViewModel
 import com.woocommerce.android.ui.payments.SelectPaymentMethodViewModel.Companion.UTM_CAMPAIGN
 import com.woocommerce.android.ui.payments.SelectPaymentMethodViewModel.Companion.UTM_CONTENT
 import com.woocommerce.android.ui.payments.SelectPaymentMethodViewModel.Companion.UTM_SOURCE
