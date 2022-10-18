@@ -94,8 +94,8 @@ class WooCommerceComUTMProviderTest {
         val utmSource = "orders_list"
         val utmContent = "upsell_card_readers"
         val defaultUTMMedium = "woo_android"
-        val url = "https://www.woocommerce.com/us/hw?utm_campaign=${existingUtmCampaign}" +
-            "&utm_source=${existingUtmSource}"
+        val url = "https://www.woocommerce.com/us/hw?utm_campaign=$existingUtmCampaign" +
+            "&utm_source=$existingUtmSource"
         val expectedUrl = "https://www.woocommerce.com/us/hw?utm_campaign=$utmCampaign&utm_source=$utmSource" +
             "&utm_content=$utmContent&utm_term=1234&utm_medium=$defaultUTMMedium"
 
@@ -121,8 +121,8 @@ class WooCommerceComUTMProviderTest {
         val newUtmSource = ""
         val newUtmContent = null
         val defaultUTMMedium = "woo_android"
-        val url = "https://www.woocommerce.com/us/hw?utm_campaign=${existingUtmCampaign}" +
-            "&utm_source=${existingUtmSource}"
+        val url = "https://www.woocommerce.com/us/hw?utm_campaign=$existingUtmCampaign" +
+            "&utm_source=$existingUtmSource"
         val expectedUrl = "https://www.woocommerce.com/us/hw?utm_campaign=$existingUtmCampaign" +
             "&utm_source=$existingUtmSource&utm_term=1234&utm_medium=$defaultUTMMedium"
 
