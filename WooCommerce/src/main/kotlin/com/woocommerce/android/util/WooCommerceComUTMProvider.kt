@@ -11,15 +11,15 @@ interface UtmProvider {
     val siteId: Long?
 
     val parameters: Map<String, Any?>
-    get() {
-        return mapOf<String, Any?>(
-            "utm_campaign" to campaign,
-            "utm_source" to source,
-            "utm_content" to content,
-            "utm_term" to siteId,
-            "utm_medium" to defaultUTMMedium
-        )
-    }
+        get() {
+            return mapOf<String, Any?>(
+                "utm_campaign" to campaign,
+                "utm_source" to source,
+                "utm_content" to content,
+                "utm_term" to siteId,
+                "utm_medium" to defaultUTMMedium
+            )
+        }
 
     fun getUrlWithUtmParams(uri: Uri): String
 

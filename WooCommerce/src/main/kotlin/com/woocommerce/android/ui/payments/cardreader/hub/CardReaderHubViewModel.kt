@@ -2,7 +2,6 @@ package com.woocommerce.android.ui.payments.cardreader.hub
 
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
-import androidx.core.net.toUri
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
