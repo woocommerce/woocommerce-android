@@ -39,6 +39,7 @@ class AnalyticsDateRangeCalculator @Inject constructor(
             AnalyticTimePeriod.MONTH_TO_DATE -> getMonthToDateRange()
             AnalyticTimePeriod.QUARTER_TO_DATE -> getQuarterToRangeDate()
             AnalyticTimePeriod.YEAR_TO_DATE -> getYearToDateRange()
+            AnalyticTimePeriod.CUSTOM -> getYearToDateRange() // unused - here for completion
         }
 
     private fun getYearToDateRange() = MultipleDateRange(
@@ -147,7 +148,8 @@ enum class AnalyticTimePeriod(val description: String) {
     WEEK_TO_DATE("Week to Date"),
     MONTH_TO_DATE("Month to Date"),
     QUARTER_TO_DATE("Quarter to Date"),
-    YEAR_TO_DATE("Year to Date");
+    YEAR_TO_DATE("Year to Date"),
+    CUSTOM("Custom");
 
     companion object {
         fun from(datePeriod: String): AnalyticTimePeriod = values()

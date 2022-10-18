@@ -329,8 +329,10 @@
     -->
     <string name="analytics_date_range_to_date">%1$s (%2$s)</string>
     <string name="analytics_date_range_from_date">vs Previous Period (%1$s)</string>
+    <string name="date_timeframe_custom">Custom</string>
+    <string name="analytics_date_range_custom">%1$s - %2$s</string>
     <string name="analytics_date_range_selector_description">Selector for date range filter</string>
-    <string-array name="date_range_selectors">
+    <string-array name="analytics_date_range_selectors">
         <item translatable="false">@string/date_timeframe_today</item>
         <item translatable="false">@string/date_timeframe_yesterday</item>
         <item translatable="false">@string/date_timeframe_last_week</item>
