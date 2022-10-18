@@ -26,6 +26,7 @@ import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderFlowP
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboardingChecker
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboardingState
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboardingState.StripeAccountPendingRequirement
+import com.woocommerce.android.util.WooCommerceComUTMProvider
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.assertj.core.api.Assertions.assertThat
@@ -207,13 +208,14 @@ class CardReaderHubViewModelTest : BaseUnitTest() {
             it.label == UiString.UiStringRes(R.string.card_reader_purchase_card_reader)
         }!!.onClick!!.invoke()
 
-        assertThat(viewModel.event.value)
-            .isEqualTo(
-                CardReaderHubViewModel.CardReaderHubEvents.NavigateToPurchaseCardReaderFlow(
-                    url = "${AppUrls.WOOCOMMERCE_PURCHASE_CARD_READER_IN_COUNTRY}US",
-                    titleRes = R.string.card_reader_purchase_card_reader
-                )
+        val event = (
+            viewModel.event.value as CardReaderHubViewModel.CardReaderHubEvents.NavigateToPurchaseCardReaderFlow
             )
+
+        assertThat(event.url)
+            .isEqualTo("${AppUrls.WOOCOMMERCE_PURCHASE_CARD_READER_IN_COUNTRY}US")
+        assertThat(event.titleRes)
+            .isEqualTo(R.string.card_reader_purchase_card_reader)
     }
 
     @Test

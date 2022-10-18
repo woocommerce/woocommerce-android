@@ -2,6 +2,7 @@ package com.woocommerce.android.ui.payments.cardreader.hub
 
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
+import androidx.core.net.toUri
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
@@ -31,6 +32,8 @@ import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboa
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboardingState
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboardingState.OnboardingCompleted
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboardingState.StripeAccountPendingRequirement
+import com.woocommerce.android.util.UtmProvider
+import com.woocommerce.android.util.WooCommerceComUTMProvider
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T.CARD_READER
 import com.woocommerce.android.viewmodel.MultiLiveEvent
@@ -246,8 +249,15 @@ class CardReaderHubViewModel @Inject constructor(
 
     private fun onPurchaseCardReaderClicked() {
         trackEvent(AnalyticsEvent.PAYMENTS_HUB_ORDER_CARD_READER_TAPPED)
+        val utmProvider = WooCommerceComUTMProvider(
+            campaign = UTM_CAMPAIGN,
+            source = UTM_SOURCE,
+            content = null,
+            siteId = selectedSite.getIfExists()?.siteId
+        )
         triggerEvent(
             CardReaderHubEvents.NavigateToPurchaseCardReaderFlow(
+                utmProvider = utmProvider,
                 url = cardReaderPurchaseUrl,
                 titleRes = R.string.card_reader_purchase_card_reader
             )
@@ -344,6 +354,7 @@ class CardReaderHubViewModel @Inject constructor(
     sealed class CardReaderHubEvents : MultiLiveEvent.Event() {
         data class NavigateToCardReaderDetail(val cardReaderFlowParam: CardReaderFlowParam) : CardReaderHubEvents()
         data class NavigateToPurchaseCardReaderFlow(
+            val utmProvider: UtmProvider,
             val url: String,
             @StringRes val titleRes: Int
         ) : CardReaderHubEvents()
@@ -410,5 +421,10 @@ class CardReaderHubViewModel @Inject constructor(
     enum class CashOnDeliverySource(source: String) {
         ONBOARDING(source = "onboarding"),
         PAYMENTS_HUB(source = "payments_hub")
+    }
+
+    companion object {
+        private const val UTM_CAMPAIGN = "payments_menu_item"
+        private const val UTM_SOURCE = "payments_menu"
     }
 }
