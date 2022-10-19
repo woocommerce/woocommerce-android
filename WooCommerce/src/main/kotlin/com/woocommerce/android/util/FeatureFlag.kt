@@ -30,7 +30,7 @@ enum class FeatureFlag {
             MORE_MENU_INBOX,
             WC_SHIPPING_BANNER,
             STORE_CREATION_FLOW -> PackageUtils.isDebugBuild()
-            SIMPLIFIED_LOGIN -> false
+            SIMPLIFIED_LOGIN -> true
         }
     }
 }
