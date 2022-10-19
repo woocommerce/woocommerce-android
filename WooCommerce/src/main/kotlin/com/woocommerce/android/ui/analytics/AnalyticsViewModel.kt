@@ -3,43 +3,42 @@ package com.woocommerce.android.ui.analytics
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.R
-import com.woocommerce.android.ui.analytics.daterangeselector.AnalyticsDateRangeCalculator
-import com.woocommerce.android.ui.analytics.daterangeselector.AnalyticsDateRangeSelectorViewState
-import com.woocommerce.android.ui.analytics.daterangeselector.formatDatesToFriendlyPeriod
-import com.woocommerce.android.model.ProductItem
 import com.woocommerce.android.model.DeltaPercentage
+import com.woocommerce.android.model.ProductItem
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.analytics.AnalyticsRepository.FetchStrategy.ForceNew
 import com.woocommerce.android.ui.analytics.AnalyticsRepository.FetchStrategy.Saved
 import com.woocommerce.android.ui.analytics.AnalyticsRepository.OrdersResult.OrdersData
+import com.woocommerce.android.ui.analytics.AnalyticsRepository.OrdersResult.OrdersError
 import com.woocommerce.android.ui.analytics.AnalyticsRepository.ProductsResult.ProductsData
 import com.woocommerce.android.ui.analytics.AnalyticsRepository.ProductsResult.ProductsError
-import com.woocommerce.android.ui.analytics.AnalyticsRepository.OrdersResult.OrdersError
 import com.woocommerce.android.ui.analytics.AnalyticsRepository.RevenueResult.RevenueData
 import com.woocommerce.android.ui.analytics.AnalyticsRepository.RevenueResult.RevenueError
 import com.woocommerce.android.ui.analytics.AnalyticsViewEvent.OpenUrl
 import com.woocommerce.android.ui.analytics.AnalyticsViewEvent.OpenWPComWebView
 import com.woocommerce.android.ui.analytics.RefreshIndicator.NotShowIndicator
 import com.woocommerce.android.ui.analytics.RefreshIndicator.ShowIndicator
-import com.woocommerce.android.ui.analytics.daterangeselector.*
+import com.woocommerce.android.ui.analytics.daterangeselector.AnalyticTimePeriod
+import com.woocommerce.android.ui.analytics.daterangeselector.AnalyticsDateRange
 import com.woocommerce.android.ui.analytics.daterangeselector.AnalyticsDateRange.MultipleDateRange
 import com.woocommerce.android.ui.analytics.daterangeselector.AnalyticsDateRange.SimpleDateRange
+import com.woocommerce.android.ui.analytics.daterangeselector.AnalyticsDateRangeCalculator
+import com.woocommerce.android.ui.analytics.daterangeselector.AnalyticsDateRangeSelectorViewState
+import com.woocommerce.android.ui.analytics.daterangeselector.formatDatesToFriendlyPeriod
 import com.woocommerce.android.ui.analytics.informationcard.AnalyticsInformationSectionViewState
-import com.woocommerce.android.ui.analytics.informationcard.AnalyticsInformationViewState.*
+import com.woocommerce.android.ui.analytics.informationcard.AnalyticsInformationViewState.DataViewState
+import com.woocommerce.android.ui.analytics.informationcard.AnalyticsInformationViewState.LoadingViewState
+import com.woocommerce.android.ui.analytics.informationcard.AnalyticsInformationViewState.NoDataState
 import com.woocommerce.android.ui.analytics.listcard.AnalyticsListCardItemViewState
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.util.DateUtils
-import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.ResourceProvider
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.zendesk.util.DateUtils.isSameDay
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
-import java.util.Date
 import kotlinx.coroutines.launch
-import java.text.SimpleDateFormat
-import java.util.*
 import javax.inject.Inject
 import com.woocommerce.android.ui.analytics.listcard.AnalyticsListViewState as ProductsViewState
 import com.woocommerce.android.ui.analytics.listcard.AnalyticsListViewState.LoadingViewState as LoadingProductsViewState
@@ -67,41 +66,6 @@ class AnalyticsViewModel @Inject constructor(
 
     val state: StateFlow<AnalyticsViewState> = mutableState
 
-    data class CustomDateRangeClicked(val dateRange: SimpleDateRange) : MultiLiveEvent.Event()
-
-    fun onCustomDateRangeClicked() {
-        triggerEvent(CustomDateRangeClicked(getSavedDateRange() as SimpleDateRange))
-    }
-
-    fun onCustomDateRangeChanged(startDateMillis: Long, endDateMillis: Long) {
-        val startDate = Date(startDateMillis)
-        val endDate = Date(endDateMillis)
-        val dateFormat = SimpleDateFormat("EEE, LLL d, yy", Locale.getDefault())
-        val fromDateStr = dateFormat.format(startDate)
-        val toDateStr = dateFormat.format(endDate)
-
-        mutableState.value = state.value.copy(
-            analyticsDateRangeSelectorState = state.value.analyticsDateRangeSelectorState.copy(
-                fromDatePeriod = resourceProvider.getString(
-                    R.string.analytics_date_range_custom,
-                    fromDateStr,
-                    toDateStr
-                ),
-                toDatePeriod = resourceProvider.getString(R.string.date_timeframe_custom_date_range),
-                selectedPeriod = ""
-            )
-        )
-
-        val dateRange = analyticsDateRange.getAnalyticsDateRangeFromCustom(startDate, endDate)
-        saveSelectedDateRange(dateRange)
-        saveSelectedTimePeriod(AnalyticTimePeriod.CUSTOM)
-
-        viewModelScope.launch {
-            updateRevenue(isRefreshing = false, showSkeleton = true)
-            updateOrders(isRefreshing = false, showSkeleton = true)
-            updateProducts(isRefreshing = false, showSkeleton = true)
-        }
-    }
     init {
         viewModelScope.launch {
             updateRevenue(isRefreshing = false, showSkeleton = true)
@@ -302,8 +266,7 @@ class AnalyticsViewModel @Inject constructor(
             }
     }
 
-    private fun getAvailableDateRanges() =
-        resourceProvider.getStringArray(R.array.analytics_date_range_selectors).asList()
+    private fun getAvailableDateRanges() = resourceProvider.getStringArray(R.array.date_range_selectors).asList()
     private fun getDefaultTimePeriod() = AnalyticTimePeriod.TODAY
     private fun getDefaultDateRange() = analyticsDateRange.getAnalyticsDateRangeFrom(getDefaultTimePeriod())
 
@@ -319,7 +282,6 @@ class AnalyticsViewModel @Inject constructor(
             AnalyticTimePeriod.MONTH_TO_DATE -> resourceProvider.getString(R.string.date_timeframe_month_to_date)
             AnalyticTimePeriod.QUARTER_TO_DATE -> resourceProvider.getString(R.string.date_timeframe_quarter_to_date)
             AnalyticTimePeriod.YEAR_TO_DATE -> resourceProvider.getString(R.string.date_timeframe_year_to_date)
-            AnalyticTimePeriod.CUSTOM -> resourceProvider.getString(R.string.date_timeframe_custom)
         }
 
     private fun formatValue(value: String, currencyCode: String?) = currencyCode

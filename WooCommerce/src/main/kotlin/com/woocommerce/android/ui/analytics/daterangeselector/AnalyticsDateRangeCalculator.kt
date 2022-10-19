@@ -4,11 +4,11 @@ import android.os.Parcelable
 import com.woocommerce.android.ui.analytics.daterangeselector.AnalyticsDateRange.MultipleDateRange
 import com.woocommerce.android.ui.analytics.daterangeselector.AnalyticsDateRange.SimpleDateRange
 import com.woocommerce.android.util.DateUtils
+import kotlinx.parcelize.Parcelize
 import java.util.Calendar
 import java.util.Date
 import java.util.Locale
 import javax.inject.Inject
-import kotlinx.parcelize.Parcelize
 
 sealed class AnalyticsDateRange {
     @Parcelize

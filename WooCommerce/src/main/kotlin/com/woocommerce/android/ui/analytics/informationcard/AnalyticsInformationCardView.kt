@@ -7,7 +7,9 @@ import android.view.View
 import com.google.android.material.card.MaterialCardView
 import com.woocommerce.android.R
 import com.woocommerce.android.databinding.AnalyticsInformationCardViewBinding
-import com.woocommerce.android.ui.analytics.informationcard.AnalyticsInformationViewState.*
+import com.woocommerce.android.ui.analytics.informationcard.AnalyticsInformationViewState.DataViewState
+import com.woocommerce.android.ui.analytics.informationcard.AnalyticsInformationViewState.LoadingViewState
+import com.woocommerce.android.ui.analytics.informationcard.AnalyticsInformationViewState.NoDataState
 import com.woocommerce.android.widgets.SkeletonView
 
 class AnalyticsInformationCardView @JvmOverloads constructor(
