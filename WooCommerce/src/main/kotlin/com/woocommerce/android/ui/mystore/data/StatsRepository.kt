@@ -131,7 +131,10 @@ class StatsRepository @Inject constructor(
     suspend fun fetchProductLeaderboards(
         forceRefresh: Boolean,
         granularity: StatsGranularity,
-        quantity: Int
+        quantity: Int,
+        //TODO - use those dates
+        startDate: String,
+        endDate: String,
     ): Flow<Result<List<TopPerformerProductEntity>>> = flow {
         when (forceRefresh) {
             true -> wcLeaderboardsStore.fetchTopPerformerProducts(

@@ -85,8 +85,6 @@ class GetTopPerformersTest : BaseUnitTest() {
                 anyBoolean(),
                 any(),
                 anyInt(),
-                any(),
-                any()
             )
         ).thenReturn(result)
     }

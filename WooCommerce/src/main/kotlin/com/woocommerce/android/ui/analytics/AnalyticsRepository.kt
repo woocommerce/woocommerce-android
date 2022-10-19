@@ -263,8 +263,8 @@ class AnalyticsRepository @Inject constructor(
             true,
             granularity,
             quantity,
-//            startDate,
-//            endDate
+            startDate,
+            endDate
         ).flowOn(dispatchers.io).single()
     }
 
