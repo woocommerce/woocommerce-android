@@ -1,7 +1,6 @@
 package com.woocommerce.android.ui.login.signup
 
 import android.content.res.Configuration
-import android.widget.Toast
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
@@ -30,7 +29,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.SpanStyle
@@ -45,6 +43,8 @@ import com.woocommerce.android.ui.compose.component.ProgressDialog
 import com.woocommerce.android.ui.compose.component.WCColoredButton
 import com.woocommerce.android.ui.compose.component.WCOutlinedTextField
 import com.woocommerce.android.ui.compose.component.WCPasswordField
+import com.woocommerce.android.ui.login.signup.SignUpViewModel.InputFieldError.EMAIL
+import com.woocommerce.android.ui.login.signup.SignUpViewModel.InputFieldError.PASSWORD
 import com.woocommerce.android.ui.login.signup.SignUpViewModel.SignUpState
 
 @Composable
@@ -61,10 +61,10 @@ fun SignUpScreen(viewModel: SignUpViewModel) {
                     title = "",
                     subtitle = stringResource(id = R.string.signup_creating_account_loading_message)
                 )
-            state.isError -> Toast.makeText(LocalContext.current, state.errorMessage, Toast.LENGTH_LONG).show()
             else -> SignUpForm(
                 termsOfServiceClicked = viewModel::onTermsOfServiceClicked,
                 onPrimaryButtonClicked = viewModel::onGetStartedCLicked,
+                signUpState = state
             )
         }
     }
@@ -95,10 +95,11 @@ private fun Toolbar(
 private fun SignUpForm(
     modifier: Modifier = Modifier,
     termsOfServiceClicked: () -> Unit,
-    onPrimaryButtonClicked: (String, String) -> Unit
+    onPrimaryButtonClicked: (String, String) -> Unit,
+    signUpState: SignUpState
 ) {
-    var email by remember { mutableStateOf("") }
-    var password by remember { mutableStateOf("") }
+    var email by remember { mutableStateOf(signUpState.email ?: "") }
+    var password by remember { mutableStateOf(signUpState.password ?: "") }
 
     Column(
         modifier = modifier
@@ -122,11 +123,15 @@ private fun SignUpForm(
             value = email,
             onValueChange = { email = it },
             label = stringResource(id = R.string.signup_email_address_hint),
+            isError = signUpState.error?.type == EMAIL,
+            helperText = signUpState.error?.stringId?.let { stringResource(id = it) }
         )
         WCPasswordField(
             value = password,
             onValueChange = { password = it },
             label = stringResource(id = R.string.signup_password_hint),
+            isError = signUpState.error?.type == PASSWORD,
+            helperText = signUpState.error?.stringId?.let { stringResource(id = it) }
         )
         TermsOfServiceText(
             modifier = Modifier.clickable { termsOfServiceClicked() }
@@ -167,5 +172,6 @@ fun SignUpFormPreview() {
     SignUpForm(
         termsOfServiceClicked = {},
         onPrimaryButtonClicked = { _, _ -> },
+        signUpState = SignUpState()
     )
 }

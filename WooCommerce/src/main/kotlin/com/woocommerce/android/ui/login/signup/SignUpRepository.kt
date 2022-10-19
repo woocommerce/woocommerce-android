@@ -1,6 +1,5 @@
 package com.woocommerce.android.ui.login.signup
 
-import com.woocommerce.android.OnChangedException
 import com.woocommerce.android.util.WooLog
 import org.wordpress.android.fluxc.Dispatcher
 import org.wordpress.android.fluxc.generated.AccountActionBuilder
@@ -12,7 +11,13 @@ class SignUpRepository @Inject constructor(
     private val signUpStore: SignUpStore,
     private val dispatcher: Dispatcher
 ) {
-    suspend fun createAccount(email: String, password: String): Result<Unit> {
+    private companion object {
+        const val EMAIL_EXIST_API_ERROR = "email_exists"
+        const val EMAIL_INVALID_API_ERROR = "email_invalid"
+        const val PASSWORD_INVALID_API_ERROR = "password_invalid"
+    }
+
+    suspend fun createAccount(email: String, password: String): AccountCreationResult {
         // 1. Get suggestions for username based on email
         WooLog.d(WooLog.T.LOGIN, "Fetching suggestions for username")
         val userNameSuggestionsResult = signUpStore.fetchUserNameSuggestions(email)
@@ -25,7 +30,7 @@ class SignUpRepository @Inject constructor(
         return when {
             accountCreatedResult.isError -> {
                 WooLog.w(WooLog.T.LOGIN, "Error creating new WP account: ${accountCreatedResult.error.apiError}")
-                Result.failure(OnChangedException(accountCreatedResult.error, accountCreatedResult.error?.apiError))
+                AccountCreationError(accountCreatedResult.error.apiError.toSignUpError())
             }
             else -> {
                 WooLog.w(WooLog.T.LOGIN, "Success creating new account")
@@ -34,15 +39,28 @@ class SignUpRepository @Inject constructor(
                         UpdateTokenPayload(accountCreatedResult.token)
                     )
                 )
-                Result.success(Unit)
+                AccountCreationSuccess
             }
         }
     }
 
-    // TODO map error based on apiErrorMessage
+    sealed class AccountCreationResult
+    object AccountCreationSuccess : AccountCreationResult()
+    data class AccountCreationError(
+        val error: SignUpError
+    ) : AccountCreationResult()
+
+    private fun String?.toSignUpError() =
+        when {
+            this == EMAIL_EXIST_API_ERROR -> SignUpError.EMAIL_EXIST
+            this == EMAIL_INVALID_API_ERROR -> SignUpError.EMAIL_INVALID
+            this == PASSWORD_INVALID_API_ERROR -> SignUpError.PASSWORD_INVALID
+            else -> SignUpError.UNKNOWN_ERROR
+        }
+
     enum class SignUpError {
         EMAIL_EXIST,
-        USERNAME_EXIST,
+        EMAIL_INVALID,
         PASSWORD_INVALID,
         UNKNOWN_ERROR
     }
