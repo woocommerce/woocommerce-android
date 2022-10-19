@@ -4,16 +4,16 @@ import android.net.Uri
 import androidx.core.net.toUri
 
 /**
- * Make sure to write tests in WooCommerceComUTMProviderTest class if you change the behaviour of this interface.
- * This interface makes use of Uri class and needs an android device/emulator to run the tests.
+ * Make sure to write tests in WooCommerceComUTMProviderTest class if you change the behaviour of this class.
+ * This class makes use of Uri class and needs an android device/emulator to run the tests.
  * WooCommerceComUTMProviderTest will not be run as part of PR checks, it's important to run it manually when
- * the behaviour of this interface changes.
+ * the behaviour of this class changes.
  */
-interface UtmProvider {
-    val campaign: String
-    val source: String
-    val content: String?
-    val siteId: Long?
+abstract class UtmProvider {
+    abstract val campaign: String
+    abstract val source: String
+    abstract val content: String?
+    abstract val siteId: Long?
 
     val parameters: Map<String, Any?>
         get() {
@@ -54,11 +54,11 @@ interface UtmProvider {
      *
      * utm_source=null -  is an invalid query
      */
-    fun isValidQuery(query: String): Boolean {
-        return !query.isNullOrEmpty() && (parameters[query]?.toString().isNullOrEmpty() || query !in parameters)
+    private fun isValidQuery(query: String): Boolean {
+        return query.isNotEmpty() && (parameters[query]?.toString().isNullOrEmpty() || query !in parameters)
     }
 
-    fun filterAndBuildValidExistingQueries(uri: Uri, uriBuilder: Uri.Builder) {
+    private fun filterAndBuildValidExistingQueries(uri: Uri, uriBuilder: Uri.Builder) {
         uri.queryParameterNames.filter { query ->
             isValidQuery(query)
         }.forEach { validQuery ->
@@ -66,7 +66,7 @@ interface UtmProvider {
         }
     }
 
-    fun filterAndBuildValidUtmQueries(uriBuilder: Uri.Builder) {
+    private fun filterAndBuildValidUtmQueries(uriBuilder: Uri.Builder) {
         parameters.forEach { entry ->
             if (!entry.value?.toString().isNullOrEmpty()) {
                 uriBuilder.appendQueryParameter(entry.key, (entry.value)?.toString())

@@ -9,7 +9,7 @@ import org.junit.Test
 
 class WooCommerceComUTMProviderTest {
 
-    private fun provideDefaultUTMProvider() = object : UtmProvider {
+    private fun provideDefaultUTMProvider() = object : UtmProvider() {
         override val campaign: String
             get() = ""
         override val source: String
@@ -25,7 +25,7 @@ class WooCommerceComUTMProviderTest {
         source: String,
         content: String?,
         siteId: Long?
-    ) = object : UtmProvider {
+    ) = object : UtmProvider() {
         override val campaign: String
             get() = campaign
         override val source: String

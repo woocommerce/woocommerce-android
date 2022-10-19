@@ -20,7 +20,7 @@ class WooCommerceComUTMProviderModule {
     @Named("order-list")
     fun provideOrderListUpsellCardReaderUtm(
         selectedSite: SelectedSite
-    ) = object : UtmProvider {
+    ) = object : UtmProvider() {
         override val campaign: String
             get() = OrderListViewModel.UTM_CAMPAIGN
         override val source: String
@@ -36,7 +36,7 @@ class WooCommerceComUTMProviderModule {
     @Named("select-payment")
     fun provideSelectPaymentMethodUpsellCardReaderUtm(
         selectedSite: SelectedSite
-    ) = object : UtmProvider {
+    ) = object : UtmProvider() {
         override val campaign: String
             get() = SelectPaymentMethodViewModel.UTM_CAMPAIGN
         override val source: String
@@ -52,7 +52,7 @@ class WooCommerceComUTMProviderModule {
     @Named("payment-menu")
     fun providePaymentMenuUtm(
         selectedSite: SelectedSite
-    ) = object : UtmProvider {
+    ) = object : UtmProvider() {
         override val campaign: String
             get() = CardReaderHubViewModel.UTM_CAMPAIGN
         override val source: String
