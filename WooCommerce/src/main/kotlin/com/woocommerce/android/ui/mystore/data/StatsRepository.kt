@@ -30,7 +30,6 @@ import org.wordpress.android.fluxc.store.WCStatsStore.StatsGranularity
 import org.wordpress.android.fluxc.store.WooCommerceStore
 import org.wordpress.android.fluxc.store.WooCommerceStore.WooPlugin.WOO_CORE
 import javax.inject.Inject
-import org.wordpress.android.fluxc.model.leaderboards.WCTopPerformerProductModel
 
 class StatsRepository @Inject constructor(
     private val selectedSite: SelectedSite,

@@ -11,7 +11,9 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.material.card.MaterialCardView
 import com.woocommerce.android.R
 import com.woocommerce.android.databinding.AnalyticsListCardViewBinding
-import com.woocommerce.android.ui.analytics.listcard.AnalyticsListViewState.*
+import com.woocommerce.android.ui.analytics.listcard.AnalyticsListViewState.DataViewState
+import com.woocommerce.android.ui.analytics.listcard.AnalyticsListViewState.LoadingViewState
+import com.woocommerce.android.ui.analytics.listcard.AnalyticsListViewState.NoDataState
 import com.woocommerce.android.widgets.SkeletonView
 import com.woocommerce.android.widgets.tags.ITag
 import com.woocommerce.android.widgets.tags.TagConfig
