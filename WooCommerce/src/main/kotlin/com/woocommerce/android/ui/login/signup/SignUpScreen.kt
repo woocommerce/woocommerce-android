@@ -1,6 +1,7 @@
 package com.woocommerce.android.ui.login.signup
 
 import android.content.res.Configuration
+import android.widget.Toast
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
@@ -29,6 +30,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.SpanStyle
@@ -43,29 +45,27 @@ import com.woocommerce.android.ui.compose.component.ProgressDialog
 import com.woocommerce.android.ui.compose.component.WCColoredButton
 import com.woocommerce.android.ui.compose.component.WCOutlinedTextField
 import com.woocommerce.android.ui.compose.component.WCPasswordField
-import com.woocommerce.android.ui.login.signup.SignUpViewModel.Error
-import com.woocommerce.android.ui.login.signup.SignUpViewModel.Loading
-import com.woocommerce.android.ui.login.signup.SignUpViewModel.SignUpForm
+import com.woocommerce.android.ui.login.signup.SignUpViewModel.SignUpState
 
 @Composable
 fun SignUpScreen(viewModel: SignUpViewModel) {
-    val signUpState by viewModel.viewState.observeAsState(SignUpForm)
+    val state by viewModel.viewState.observeAsState(SignUpState())
 
     BackHandler(onBack = viewModel::onBackPressed)
     Scaffold(topBar = {
         Toolbar(onArrowBackPressed = viewModel::onBackPressed)
     }) {
-        when (signUpState) {
-            SignUpForm -> SignUpForm(
-                termsOfServiceClicked = viewModel::onTermsOfServiceClicked,
-                onPrimaryButtonClicked = viewModel::onGetStartedCLicked,
-            )
-            Loading ->
+        when {
+            state.isLoading ->
                 ProgressDialog(
                     title = "",
                     subtitle = stringResource(id = R.string.signup_creating_account_loading_message)
                 )
-            Error -> TODO()
+            state.isError -> Toast.makeText(LocalContext.current, state.errorMessage, Toast.LENGTH_LONG).show()
+            else -> SignUpForm(
+                termsOfServiceClicked = viewModel::onTermsOfServiceClicked,
+                onPrimaryButtonClicked = viewModel::onGetStartedCLicked,
+            )
         }
     }
 }

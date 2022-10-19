@@ -28,22 +28,23 @@ class SignUpViewModel @Inject constructor(
 
     fun onGetStartedCLicked(email: String, password: String) {
         viewModelScope.launch {
-            _viewState.value = Loading
+            _viewState.value = SignUpState(isLoading = true)
             signUpRepository.createAccount(email, password)
                 .fold(
-                    onFailure = { _viewState.value = Error },
+                    onFailure = { _viewState.value = SignUpState(isError = true, errorMessage = it.message) },
                     onSuccess = {
-                        _viewState.value = SignUpForm
+                        _viewState.value = SignUpState(isLoading = false)
                         triggerEvent(NavigateToNextStep)
                     }
                 )
         }
     }
 
-    sealed class SignUpState
-    object SignUpForm : SignUpState()
-    object Loading : SignUpState()
-    object Error : SignUpState()
+    data class SignUpState(
+        val isLoading: Boolean = false,
+        val isError: Boolean = false,
+        val errorMessage: String? = null
+    )
 
     object OnTermsOfServiceClicked : MultiLiveEvent.Event()
     object NavigateToNextStep : MultiLiveEvent.Event()
