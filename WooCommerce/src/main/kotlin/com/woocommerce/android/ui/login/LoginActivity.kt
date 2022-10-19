@@ -249,7 +249,7 @@ class LoginActivity :
         if (!appPrefsWrapper.hasOnboardingCarouselBeenDisplayed()) {
             navGraph.setStartDestination(R.id.loginPrologueCarouselFragment)
         } else {
-            navGraph.setStartDestination(R.id.loginPrologueFragment)
+            navGraph.setStartDestination(R.id.legacyLoginPrologueFragment)
         }
         navController.graph = navGraph
     }
