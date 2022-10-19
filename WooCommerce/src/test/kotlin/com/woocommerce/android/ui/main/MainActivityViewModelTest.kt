@@ -27,6 +27,7 @@ import com.woocommerce.android.ui.main.MainActivityViewModel.ViewReviewList
 import com.woocommerce.android.ui.main.MainActivityViewModel.ViewZendeskTickets
 import com.woocommerce.android.ui.moremenu.MoreMenuNewFeature.Payments
 import com.woocommerce.android.ui.moremenu.MoreMenuNewFeatureHandler
+import com.woocommerce.android.ui.simplifiedlogin.data.AccountRepository
 import com.woocommerce.android.ui.whatsnew.FeatureAnnouncementRepository
 import com.woocommerce.android.util.BuildConfigWrapper
 import com.woocommerce.android.viewmodel.BaseUnitTest
@@ -70,6 +71,7 @@ class MainActivityViewModelTest : BaseUnitTest() {
     private val savedStateHandle: SavedStateHandle = SavedStateHandle()
     private val selectedSite: SelectedSite = mock()
     private val analyticsTrackerWrapper: AnalyticsTrackerWrapper = mock()
+    private val accountRepository: AccountRepository = mock()
 
     private val siteStore: SiteStore = mock()
     private val siteModel: SiteModel = SiteModel().apply {
@@ -449,6 +451,7 @@ class MainActivityViewModelTest : BaseUnitTest() {
                 selectedSite,
                 notificationMessageHandler,
                 featureAnnouncementRepository,
+                accountRepository,
                 buildConfigWrapper,
                 prefs,
                 analyticsTrackerWrapper,
