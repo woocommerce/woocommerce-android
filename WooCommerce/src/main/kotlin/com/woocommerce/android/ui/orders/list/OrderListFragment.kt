@@ -13,7 +13,6 @@ import android.view.ViewGroup
 import androidx.appcompat.widget.SearchView
 import androidx.appcompat.widget.SearchView.OnQueryTextListener
 import androidx.compose.ui.platform.ViewCompositionStrategy
-import androidx.core.net.toUri
 import androidx.core.view.MenuProvider
 import androidx.core.view.ViewGroupCompat
 import androidx.core.view.doOnPreDraw
@@ -366,7 +365,7 @@ class OrderListFragment :
                 is OrderListViewModel.OrderListEvent.OpenPurchaseCardReaderLink -> {
                     findNavController().navigate(
                         NavGraphMainDirections.actionGlobalWPComWebViewFragment(
-                            urlToLoad = event.utmProvider.getUrlWithUtmParams(event.url.toUri()),
+                            urlToLoad = event.url,
                             title = resources.getString(event.titleRes)
                         )
                     )

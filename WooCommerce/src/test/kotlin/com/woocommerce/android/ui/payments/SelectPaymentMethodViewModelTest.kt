@@ -11,9 +11,6 @@ import com.woocommerce.android.model.Order
 import com.woocommerce.android.model.OrderMapper
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.SelectedSite
-import com.woocommerce.android.ui.payments.SelectPaymentMethodViewModel.Companion.UTM_CAMPAIGN
-import com.woocommerce.android.ui.payments.SelectPaymentMethodViewModel.Companion.UTM_CONTENT
-import com.woocommerce.android.ui.payments.SelectPaymentMethodViewModel.Companion.UTM_SOURCE
 import com.woocommerce.android.ui.payments.SelectPaymentMethodViewModel.NavigateBackToHub
 import com.woocommerce.android.ui.payments.SelectPaymentMethodViewModel.NavigateBackToOrderList
 import com.woocommerce.android.ui.payments.SelectPaymentMethodViewModel.NavigateToCardReaderHubFlow
@@ -30,6 +27,7 @@ import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderFlowP
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderFlowParam.PaymentOrRefund.Refund
 import com.woocommerce.android.ui.payments.cardreader.payment.CardReaderPaymentCollectibilityChecker
 import com.woocommerce.android.util.CurrencyFormatter
+import com.woocommerce.android.util.UtmProvider
 import com.woocommerce.android.util.captureValues
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowDialog
@@ -92,6 +90,7 @@ class SelectPaymentMethodViewModelTest : BaseUnitTest() {
     }
     private val analyticsTrackerWrapper: AnalyticsTrackerWrapper = mock()
     private val bannerDisplayEligibilityChecker: BannerDisplayEligibilityChecker = mock()
+    private val selectPaymentUtmProvider: UtmProvider = mock()
 
     @Test
     fun `given hub flow, when view model init, then navigate to hub flow emitted`() = testBlocking {
@@ -609,6 +608,9 @@ class SelectPaymentMethodViewModelTest : BaseUnitTest() {
             ).thenReturn(
                 "${AppUrls.WOOCOMMERCE_PURCHASE_CARD_READER_IN_COUNTRY}US"
             )
+            whenever(selectPaymentUtmProvider.getUrlWithUtmParams(any())).thenReturn(
+                "${AppUrls.WOOCOMMERCE_PURCHASE_CARD_READER_IN_COUNTRY}US"
+            )
             whenever(cardPaymentCollectibilityChecker.isCollectable(order)).thenReturn(true)
             whenever(
                 bannerDisplayEligibilityChecker.canShowCardReaderUpsellBanner(anyLong())
@@ -622,32 +624,6 @@ class SelectPaymentMethodViewModelTest : BaseUnitTest() {
             assertThat(
                 viewModel.event.value
             ).isInstanceOf(OpenPurchaseCardReaderLink::class.java)
-        }
-    }
-
-    @Test
-    fun `given upsell banner, when purchase reader clicked, then proper utm properties are populated`() {
-        runTest {
-            // GIVEN
-            whenever(
-                bannerDisplayEligibilityChecker.getPurchaseCardReaderUrl(KEY_BANNER_PAYMENTS)
-            ).thenReturn(
-                "${AppUrls.WOOCOMMERCE_PURCHASE_CARD_READER_IN_COUNTRY}US"
-            )
-            whenever(cardPaymentCollectibilityChecker.isCollectable(order)).thenReturn(true)
-            whenever(
-                bannerDisplayEligibilityChecker.canShowCardReaderUpsellBanner(anyLong())
-            ).thenReturn(true)
-
-            // WHEN
-            val viewModel = initViewModel(Payment(1L, ORDER))
-            (viewModel.viewStateData.value as Success).bannerState.onPrimaryActionClicked.invoke()
-
-            // Then
-            val event = viewModel.event.value as OpenPurchaseCardReaderLink
-            assertThat(event.utmProvider.campaign).isEqualTo(UTM_CAMPAIGN)
-            assertThat(event.utmProvider.source).isEqualTo(UTM_SOURCE)
-            assertThat(event.utmProvider.content).isEqualTo(UTM_CONTENT)
         }
     }
 
@@ -901,7 +877,8 @@ class SelectPaymentMethodViewModelTest : BaseUnitTest() {
             orderMapper,
             analyticsTrackerWrapper,
             cardPaymentCollectibilityChecker,
-            bannerDisplayEligibilityChecker
+            bannerDisplayEligibilityChecker,
+            selectPaymentUtmProvider
         )
     }
 }

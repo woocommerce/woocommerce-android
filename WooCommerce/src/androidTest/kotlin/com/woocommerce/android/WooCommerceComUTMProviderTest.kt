@@ -1,7 +1,7 @@
 package com.woocommerce.android
 
 import androidx.core.net.toUri
-import com.woocommerce.android.util.WooCommerceComUTMProvider
+import com.woocommerce.android.util.UtmProvider
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
@@ -9,24 +9,32 @@ import org.junit.Test
 
 class WooCommerceComUTMProviderTest {
 
-    private fun provideDefaultUTMProvider() = WooCommerceComUTMProvider(
-        campaign = "",
-        source = "",
-        content = "",
-        siteId = null
-    )
+    private fun provideDefaultUTMProvider() = object : UtmProvider {
+        override val campaign: String
+            get() = ""
+        override val source: String
+            get() = ""
+        override val content: String?
+            get() = null
+        override val siteId: Long?
+            get() = null
+    }
 
     private fun provideUTMProvider(
         campaign: String,
         source: String,
         content: String?,
         siteId: Long?
-    ) = WooCommerceComUTMProvider(
-        campaign = campaign,
-        source = source,
-        content = content,
-        siteId = siteId
-    )
+    ) = object : UtmProvider {
+        override val campaign: String
+            get() = campaign
+        override val source: String
+            get() = source
+        override val content: String?
+            get() = content
+        override val siteId: Long?
+            get() = siteId
+    }
 
     @Test
     fun `testUtmMediumAlwaysSetToWoo_android`() {
@@ -34,7 +42,7 @@ class WooCommerceComUTMProviderTest {
         val expectedUrl = "$url?utm_medium=woo_android"
         val defaultUTMMedium = "woo_android"
 
-        val urlWithUTM = provideDefaultUTMProvider().getUrlWithUtmParams(url.toUri())
+        val urlWithUTM = provideDefaultUTMProvider().getUrlWithUtmParams(url)
 
         assertThat(urlWithUTM.toUri().getQueryParameter("utm_medium")).isEqualTo(defaultUTMMedium)
         assertThat(urlWithUTM).isEqualTo(expectedUrl)
@@ -55,7 +63,7 @@ class WooCommerceComUTMProviderTest {
             source = utmSource,
             content = utmContent,
             siteId = 1234L
-        ).getUrlWithUtmParams(url.toUri())
+        ).getUrlWithUtmParams(url)
 
         assertThat(urlWithUTM.toUri().getQueryParameter("utm_medium")).isEqualTo(defaultUTMMedium)
         assertThat(urlWithUTM.toUri().getQueryParameter("utm_campaign")).isEqualTo(utmCampaign)
@@ -77,7 +85,7 @@ class WooCommerceComUTMProviderTest {
             source = "",
             content = null,
             siteId = 1234L
-        ).getUrlWithUtmParams(url.toUri())
+        ).getUrlWithUtmParams(url)
 
         assertThat(urlWithUTM.toUri().getQueryParameter("utm_medium")).isEqualTo(defaultUTMMedium)
         assertThat(urlWithUTM.toUri().getQueryParameter("utm_campaign")).isEqualTo(utmCampaign)
@@ -104,7 +112,7 @@ class WooCommerceComUTMProviderTest {
             source = utmSource,
             content = utmContent,
             siteId = 1234L
-        ).getUrlWithUtmParams(url.toUri())
+        ).getUrlWithUtmParams(url)
 
         assertThat(urlWithUTM.toUri().getQueryParameter("utm_medium")).isEqualTo(defaultUTMMedium)
         assertThat(urlWithUTM.toUri().getQueryParameter("utm_campaign")).isEqualTo(utmCampaign)
@@ -131,7 +139,7 @@ class WooCommerceComUTMProviderTest {
             source = newUtmSource,
             content = newUtmContent,
             siteId = 1234L
-        ).getUrlWithUtmParams(url.toUri())
+        ).getUrlWithUtmParams(url)
 
         assertThat(urlWithUTM.toUri().getQueryParameter("utm_medium")).isEqualTo(defaultUTMMedium)
         assertThat(urlWithUTM.toUri().getQueryParameter("utm_campaign")).isEqualTo(existingUtmCampaign)
@@ -145,7 +153,7 @@ class WooCommerceComUTMProviderTest {
         val expectedUrl = "https://www.woocommerce.com?test_utm_campaign=payments_menu_item" +
             "&test_utm_source=payments_menu&utm_medium=woo_android"
 
-        val urlWithUTM = provideDefaultUTMProvider().getUrlWithUtmParams(url.toUri())
+        val urlWithUTM = provideDefaultUTMProvider().getUrlWithUtmParams(url)
 
         assertTrue(urlWithUTM.contains("test_utm_campaign"))
         assertTrue(urlWithUTM.contains("test_utm_source"))
@@ -156,7 +164,7 @@ class WooCommerceComUTMProviderTest {
     fun `testUrlQueriesArePreservedWithCorrectValuesIfTheyAreValid`() {
         val url = "https://www.woocommerce.com?test_utm_campaign=payments_menu_item&test_utm_source=payments_menu"
 
-        val urlWithUTM = provideDefaultUTMProvider().getUrlWithUtmParams(url.toUri())
+        val urlWithUTM = provideDefaultUTMProvider().getUrlWithUtmParams(url)
 
         assertThat(urlWithUTM.toUri().getQueryParameter("test_utm_campaign")).isEqualTo("payments_menu_item")
         assertThat(urlWithUTM.toUri().getQueryParameter("test_utm_source")).isEqualTo("payments_menu")
@@ -173,7 +181,7 @@ class WooCommerceComUTMProviderTest {
             source = "",
             content = "",
             siteId = 1234L
-        ).getUrlWithUtmParams(url.toUri())
+        ).getUrlWithUtmParams(url)
 
         assertThat(urlWithUTM.toUri().getQueryParameter("utm_campaign")).isEqualTo(utmCampaign)
         assertThat(urlWithUTM).isEqualTo(expectedUrl)

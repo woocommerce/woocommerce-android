@@ -32,7 +32,6 @@ import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboa
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboardingState.OnboardingCompleted
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboardingState.StripeAccountPendingRequirement
 import com.woocommerce.android.util.UtmProvider
-import com.woocommerce.android.util.WooCommerceComUTMProvider
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T.CARD_READER
 import com.woocommerce.android.viewmodel.MultiLiveEvent
@@ -42,6 +41,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import org.wordpress.android.fluxc.store.WooCommerceStore
 import javax.inject.Inject
+import javax.inject.Named
 
 @HiltViewModel
 class CardReaderHubViewModel @Inject constructor(
@@ -55,6 +55,7 @@ class CardReaderHubViewModel @Inject constructor(
     private val learnMoreUrlProvider: LearnMoreUrlProvider,
     cardReaderCountryConfigProvider: CardReaderCountryConfigProvider,
     private val cardReaderTracker: CardReaderTracker,
+    @Named("payment-menu") private val paymentMenuUtmProvider: UtmProvider
 ) : ScopedViewModel(savedState) {
     private val arguments: CardReaderHubFragmentArgs by savedState.navArgs()
     private val storeCountryCode = wooStore.getStoreCountryCode(selectedSite.get())
@@ -248,16 +249,10 @@ class CardReaderHubViewModel @Inject constructor(
 
     private fun onPurchaseCardReaderClicked() {
         trackEvent(AnalyticsEvent.PAYMENTS_HUB_ORDER_CARD_READER_TAPPED)
-        val utmProvider = WooCommerceComUTMProvider(
-            campaign = UTM_CAMPAIGN,
-            source = UTM_SOURCE,
-            content = null,
-            siteId = selectedSite.getIfExists()?.siteId
-        )
+        println(paymentMenuUtmProvider.getUrlWithUtmParams(cardReaderPurchaseUrl))
         triggerEvent(
             CardReaderHubEvents.NavigateToPurchaseCardReaderFlow(
-                utmProvider = utmProvider,
-                url = cardReaderPurchaseUrl,
+                url = paymentMenuUtmProvider.getUrlWithUtmParams(cardReaderPurchaseUrl),
                 titleRes = R.string.card_reader_purchase_card_reader
             )
         )
@@ -353,7 +348,6 @@ class CardReaderHubViewModel @Inject constructor(
     sealed class CardReaderHubEvents : MultiLiveEvent.Event() {
         data class NavigateToCardReaderDetail(val cardReaderFlowParam: CardReaderFlowParam) : CardReaderHubEvents()
         data class NavigateToPurchaseCardReaderFlow(
-            val utmProvider: UtmProvider,
             val url: String,
             @StringRes val titleRes: Int
         ) : CardReaderHubEvents()

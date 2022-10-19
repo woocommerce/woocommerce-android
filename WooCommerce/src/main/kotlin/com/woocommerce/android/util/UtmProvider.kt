@@ -2,8 +2,13 @@ package com.woocommerce.android.util
 
 import android.net.Uri
 import androidx.core.net.toUri
-import dagger.Reusable
 
+/**
+ * Make sure to write tests in WooCommerceComUTMProviderTest class if you change the behaviour of this interface.
+ * This interface makes use of Uri class and needs an android device/emulator to run the tests.
+ * WooCommerceComUTMProviderTest will not be run as part of PR checks, it's important to run it manually when
+ * the behaviour of this interface changes.
+ */
 interface UtmProvider {
     val campaign: String
     val source: String
@@ -21,27 +26,8 @@ interface UtmProvider {
             )
         }
 
-    fun getUrlWithUtmParams(uri: Uri): String
-
-    companion object {
-        private const val defaultUTMMedium = "woo_android"
-    }
-}
-
-/**
- * Make sure to write tests in WooCommerceComUTMProviderTest class if you change the behaviour of this class.
- * WooCommerceComUTMProviderTest makes use of Uri class and needs an android device/emulator to run the tests.
- * WooCommerceComUTMProviderTest will not be run as part of PR checks, it's important to run it manually when
- * the behaviour of this class changes.
- */
-@Reusable
-class WooCommerceComUTMProvider(
-    override val campaign: String,
-    override val source: String,
-    override val content: String?,
-    override val siteId: Long?
-) : UtmProvider {
-    override fun getUrlWithUtmParams(uri: Uri): String {
+    fun getUrlWithUtmParams(uriString: String): String {
+        val uri = uriString.toUri()
         val uriBuilder = (uri.scheme + "://" + uri.host + uri.path).toUri().buildUpon()
         filterAndBuildValidExistingQueries(uri, uriBuilder)
         filterAndBuildValidUtmQueries(uriBuilder)
@@ -68,11 +54,11 @@ class WooCommerceComUTMProvider(
      *
      * utm_source=null -  is an invalid query
      */
-    private fun isValidQuery(query: String): Boolean {
+    fun isValidQuery(query: String): Boolean {
         return !query.isNullOrEmpty() && (parameters[query]?.toString().isNullOrEmpty() || query !in parameters)
     }
 
-    private fun filterAndBuildValidExistingQueries(uri: Uri, uriBuilder: Uri.Builder) {
+    fun filterAndBuildValidExistingQueries(uri: Uri, uriBuilder: Uri.Builder) {
         uri.queryParameterNames.filter { query ->
             isValidQuery(query)
         }.forEach { validQuery ->
@@ -80,11 +66,15 @@ class WooCommerceComUTMProvider(
         }
     }
 
-    private fun filterAndBuildValidUtmQueries(uriBuilder: Uri.Builder) {
+    fun filterAndBuildValidUtmQueries(uriBuilder: Uri.Builder) {
         parameters.forEach { entry ->
             if (!entry.value?.toString().isNullOrEmpty()) {
                 uriBuilder.appendQueryParameter(entry.key, (entry.value)?.toString())
             }
         }
+    }
+
+    companion object {
+        private const val defaultUTMMedium = "woo_android"
     }
 }

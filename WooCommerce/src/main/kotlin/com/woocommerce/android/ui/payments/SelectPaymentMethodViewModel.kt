@@ -29,7 +29,6 @@ import com.woocommerce.android.ui.payments.cardreader.payment.CardReaderPaymentC
 import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.util.UtmProvider
-import com.woocommerce.android.util.WooCommerceComUTMProvider
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.navArgs
@@ -42,6 +41,7 @@ import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.CoreOrderStatus
 import org.wordpress.android.fluxc.store.WCOrderStore
 import org.wordpress.android.fluxc.store.WooCommerceStore
 import javax.inject.Inject
+import javax.inject.Named
 
 @HiltViewModel
 class SelectPaymentMethodViewModel @Inject constructor(
@@ -56,6 +56,7 @@ class SelectPaymentMethodViewModel @Inject constructor(
     private val analyticsTrackerWrapper: AnalyticsTrackerWrapper,
     private val cardPaymentCollectibilityChecker: CardReaderPaymentCollectibilityChecker,
     private val bannerDisplayEligibilityChecker: BannerDisplayEligibilityChecker,
+    @Named("select-payment") private val selectPaymentUtmProvider: UtmProvider,
 ) : ScopedViewModel(savedState) {
     private val navArgs: SelectPaymentMethodFragmentArgs by savedState.navArgs()
     val shouldShowUpsellCardReaderDismissDialog: MutableLiveData<Boolean> = MutableLiveData(false)
@@ -305,17 +306,12 @@ class SelectPaymentMethodViewModel @Inject constructor(
         }
 
     private fun onCtaClicked(source: String) {
-        val utmProvider = WooCommerceComUTMProvider(
-            campaign = UTM_CAMPAIGN,
-            source = UTM_SOURCE,
-            content = UTM_CONTENT,
-            siteId = selectedSite.getIfExists()?.siteId
-        )
         launch {
             triggerEvent(
                 OpenPurchaseCardReaderLink(
-                    utmProvider,
-                    bannerDisplayEligibilityChecker.getPurchaseCardReaderUrl(source),
+                    selectPaymentUtmProvider.getUrlWithUtmParams(
+                        bannerDisplayEligibilityChecker.getPurchaseCardReaderUrl(source)
+                    ),
                     R.string.card_reader_purchase_card_reader
                 )
             )
@@ -361,7 +357,6 @@ class SelectPaymentMethodViewModel @Inject constructor(
     object DismissCardReaderUpsellBannerViaRemindMeLater : MultiLiveEvent.Event()
     object DismissCardReaderUpsellBannerViaDontShowAgain : MultiLiveEvent.Event()
     data class OpenPurchaseCardReaderLink(
-        val utmProvider: UtmProvider,
         val url: String,
         @StringRes val titleRes: Int,
     ) : MultiLiveEvent.Event()

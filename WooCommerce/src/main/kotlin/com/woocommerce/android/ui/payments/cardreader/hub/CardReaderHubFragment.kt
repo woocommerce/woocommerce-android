@@ -5,7 +5,6 @@ import android.text.method.LinkMovementMethod
 import android.view.Gravity
 import android.view.View
 import android.view.ViewGroup
-import androidx.core.net.toUri
 import androidx.core.view.isInvisible
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
@@ -67,7 +66,7 @@ class CardReaderHubFragment : BaseFragment(R.layout.fragment_card_reader_hub) {
                 is CardReaderHubViewModel.CardReaderHubEvents.NavigateToPurchaseCardReaderFlow -> {
                     findNavController().navigate(
                         NavGraphMainDirections.actionGlobalWPComWebViewFragment(
-                            urlToLoad = event.utmProvider.getUrlWithUtmParams(event.url.toUri()),
+                            urlToLoad = event.url,
                             title = resources.getString(event.titleRes)
                         )
                     )

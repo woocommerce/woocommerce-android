@@ -20,9 +20,6 @@ import com.woocommerce.android.ui.orders.list.OrderListItemIdentifier
 import com.woocommerce.android.ui.orders.list.OrderListItemUIType
 import com.woocommerce.android.ui.orders.list.OrderListRepository
 import com.woocommerce.android.ui.orders.list.OrderListViewModel
-import com.woocommerce.android.ui.orders.list.OrderListViewModel.Companion.UTM_CAMPAIGN
-import com.woocommerce.android.ui.orders.list.OrderListViewModel.Companion.UTM_CONTENT
-import com.woocommerce.android.ui.orders.list.OrderListViewModel.Companion.UTM_SOURCE
 import com.woocommerce.android.ui.orders.list.OrderListViewModel.OrderListEvent.DismissCardReaderUpsellBanner
 import com.woocommerce.android.ui.orders.list.OrderListViewModel.OrderListEvent.DismissCardReaderUpsellBannerViaDontShowAgain
 import com.woocommerce.android.ui.orders.list.OrderListViewModel.OrderListEvent.DismissCardReaderUpsellBannerViaRemindMeLater
@@ -31,6 +28,7 @@ import com.woocommerce.android.ui.orders.list.OrderListViewModel.OrderListEvent.
 import com.woocommerce.android.ui.payments.banner.BannerDisplayEligibilityChecker
 import com.woocommerce.android.ui.payments.banner.BannerState
 import com.woocommerce.android.util.LandscapeChecker
+import com.woocommerce.android.util.UtmProvider
 import com.woocommerce.android.util.getOrAwaitValue
 import com.woocommerce.android.util.observeForTesting
 import com.woocommerce.android.viewmodel.BaseUnitTest
@@ -97,6 +95,7 @@ class OrderListViewModelTest : BaseUnitTest() {
     private val bannerDisplayEligibilityChecker: BannerDisplayEligibilityChecker = mock()
     private val analyticsTrackerWrapper: AnalyticsTrackerWrapper = mock()
     private val landscapeChecker: LandscapeChecker = mock()
+    private val orderListUtmProvider: UtmProvider = mock()
 
     @Before
     fun setup() = testBlocking {
@@ -134,6 +133,7 @@ class OrderListViewModelTest : BaseUnitTest() {
             orderListTransactionLauncher = mock(),
             analyticsTrackerWrapper = analyticsTrackerWrapper,
             landscapeChecker = landscapeChecker,
+            orderListUtmProvider = orderListUtmProvider,
         )
     }
 
@@ -463,6 +463,9 @@ class OrderListViewModelTest : BaseUnitTest() {
             ).thenReturn(
                 "${AppUrls.WOOCOMMERCE_PURCHASE_CARD_READER_IN_COUNTRY}US"
             )
+            whenever(orderListUtmProvider.getUrlWithUtmParams(any())).thenReturn(
+                "${AppUrls.WOOCOMMERCE_PURCHASE_CARD_READER_IN_COUNTRY}US"
+            )
             whenever(
                 bannerDisplayEligibilityChecker.canShowCardReaderUpsellBanner(anyLong())
             ).thenReturn(true)
@@ -476,32 +479,6 @@ class OrderListViewModelTest : BaseUnitTest() {
             assertThat(
                 viewModel.event.value
             ).isInstanceOf(OpenPurchaseCardReaderLink::class.java)
-        }
-    }
-
-    @Test
-    fun `given upsell banner, when purchase reader clicked, then proper utm properties are populated`() {
-        runTest {
-            // GIVEN
-            whenever(
-                bannerDisplayEligibilityChecker.getPurchaseCardReaderUrl(KEY_BANNER_ORDER_LIST)
-            ).thenReturn(
-                "${AppUrls.WOOCOMMERCE_PURCHASE_CARD_READER_IN_COUNTRY}US"
-            )
-            whenever(
-                bannerDisplayEligibilityChecker.canShowCardReaderUpsellBanner(anyLong())
-            ).thenReturn(true)
-            whenever(bannerDisplayEligibilityChecker.isEligibleForInPersonPayments()).thenReturn(true)
-            viewModel.updateBannerState(landscapeChecker, false)
-
-            // WHEN
-            viewModel.bannerState.value?.onPrimaryActionClicked?.invoke()
-
-            // Then
-            val event = viewModel.event.value as OpenPurchaseCardReaderLink
-            assertThat(event.utmProvider.campaign).isEqualTo(UTM_CAMPAIGN)
-            assertThat(event.utmProvider.source).isEqualTo(UTM_SOURCE)
-            assertThat(event.utmProvider.content).isEqualTo(UTM_CONTENT)
         }
     }
 
