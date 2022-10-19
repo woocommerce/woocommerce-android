@@ -18,11 +18,6 @@ import com.woocommerce.android.ui.analytics.daterangeselector.AnalyticsDateRange
 import com.woocommerce.android.ui.analytics.daterangeselector.AnalyticsDateRange.SimpleDateRange
 import com.woocommerce.android.ui.mystore.data.StatsRepository
 import com.woocommerce.android.viewmodel.BaseUnitTest
-import java.text.SimpleDateFormat
-import java.util.Date
-import kotlin.test.assertEquals
-import kotlin.test.assertNotNull
-import kotlin.test.assertTrue
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.asFlow
 import kotlinx.coroutines.flow.flowOf
@@ -39,6 +34,11 @@ import org.wordpress.android.fluxc.model.WCProductModel
 import org.wordpress.android.fluxc.model.WCRevenueStatsModel
 import org.wordpress.android.fluxc.persistence.entity.TopPerformerProductEntity
 import org.wordpress.android.fluxc.store.WooCommerceStore
+import java.text.SimpleDateFormat
+import java.util.Date
+import kotlin.test.assertEquals
+import kotlin.test.assertNotNull
+import kotlin.test.assertTrue
 
 @ExperimentalCoroutinesApi
 class AnalyticsRepositoryTest : BaseUnitTest() {
@@ -804,14 +804,14 @@ class AnalyticsRepositoryTest : BaseUnitTest() {
 
         val productEntity = TopPerformerProductEntity(
             siteId = 0,
-           granularity = "",
-           productId = product.remoteProductId,
-           name = product.name,
-           imageUrl = product.getFirstImageUrl(),
-           quantity = TEN_VALUE.toInt(),
-           currency = CURRENCY,
-           total = TEN_VALUE,
-           millisSinceLastUpdated = 0
+            granularity = "",
+            productId = product.remoteProductId,
+            name = product.name,
+            imageUrl = product.getFirstImageUrl(),
+            quantity = TEN_VALUE.toInt(),
+            currency = CURRENCY,
+            total = TEN_VALUE,
+            millisSinceLastUpdated = 0
         )
         return mutableListOf(productEntity)
     }

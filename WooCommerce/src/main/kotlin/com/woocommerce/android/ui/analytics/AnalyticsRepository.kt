@@ -1,7 +1,11 @@
 package com.woocommerce.android.ui.analytics
 
 import com.woocommerce.android.extensions.formatToYYYYmmDD
-import com.woocommerce.android.model.*
+import com.woocommerce.android.model.DeltaPercentage
+import com.woocommerce.android.model.OrdersStat
+import com.woocommerce.android.model.ProductItem
+import com.woocommerce.android.model.ProductsStat
+import com.woocommerce.android.model.RevenueStat
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.analytics.AnalyticsRepository.OrdersResult.OrdersError
 import com.woocommerce.android.ui.analytics.AnalyticsRepository.ProductsResult.ProductsError
@@ -9,23 +13,28 @@ import com.woocommerce.android.ui.analytics.AnalyticsRepository.RevenueResult.Re
 import com.woocommerce.android.ui.analytics.AnalyticsRepository.RevenueResult.RevenueError
 import com.woocommerce.android.ui.analytics.daterangeselector.AnalyticTimePeriod
 import com.woocommerce.android.ui.analytics.daterangeselector.AnalyticsDateRange
-import com.woocommerce.android.ui.analytics.daterangeselector.AnalyticsDateRange.*
+import com.woocommerce.android.ui.analytics.daterangeselector.AnalyticsDateRange.MultipleDateRange
+import com.woocommerce.android.ui.analytics.daterangeselector.AnalyticsDateRange.SimpleDateRange
 import com.woocommerce.android.ui.mystore.data.StatsRepository
 import com.woocommerce.android.util.CoroutineDispatchers
 import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.async
 import kotlinx.coroutines.coroutineScope
-import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.flow.flowOn
+import kotlinx.coroutines.flow.single
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.withContext
 import org.wordpress.android.fluxc.model.WCRevenueStatsModel
+import org.wordpress.android.fluxc.persistence.entity.TopPerformerProductEntity
 import org.wordpress.android.fluxc.store.WCStatsStore.StatsGranularity
-import org.wordpress.android.fluxc.store.WCStatsStore.StatsGranularity.*
+import org.wordpress.android.fluxc.store.WCStatsStore.StatsGranularity.DAYS
+import org.wordpress.android.fluxc.store.WCStatsStore.StatsGranularity.MONTHS
+import org.wordpress.android.fluxc.store.WCStatsStore.StatsGranularity.WEEKS
+import org.wordpress.android.fluxc.store.WCStatsStore.StatsGranularity.YEARS
 import org.wordpress.android.fluxc.store.WooCommerceStore
 import javax.inject.Inject
 import kotlin.math.round
-import org.wordpress.android.fluxc.persistence.entity.TopPerformerProductEntity
 
 class AnalyticsRepository @Inject constructor(
     private val statsRepository: StatsRepository,
