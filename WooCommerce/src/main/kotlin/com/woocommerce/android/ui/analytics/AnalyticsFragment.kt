@@ -9,12 +9,12 @@ import com.woocommerce.android.R
 import com.woocommerce.android.databinding.FragmentAnalyticsBinding
 import com.woocommerce.android.extensions.handleDialogResult
 import com.woocommerce.android.extensions.navigateSafely
-import com.woocommerce.android.ui.base.TopLevelFragment
+import com.woocommerce.android.ui.base.BaseFragment
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class AnalyticsFragment :
-    TopLevelFragment(R.layout.fragment_analytics) {
+    BaseFragment(R.layout.fragment_analytics) {
     companion object {
         const val KEY_DATE_RANGE_SELECTOR_RESULT = "key_order_status_result"
     }
@@ -38,12 +38,6 @@ class AnalyticsFragment :
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
-    }
-
-    override fun shouldExpandToolbar(): Boolean = true
-
-    override fun scrollToTop() {
-        return
     }
 
     private fun openDateRangeSelector() = findNavController().navigateSafely(buildDialogDateRangeSelectorArguments())
