@@ -4,6 +4,7 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.annotation.LayoutRes
 import androidx.recyclerview.widget.RecyclerView
+import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.R
 import com.woocommerce.android.databinding.DeveloperOptionsListItemBinding
 import com.woocommerce.android.databinding.DeveloperOptionsTogglableItemBinding
@@ -32,9 +33,7 @@ abstract class DeveloperOptionsViewHolder(val parent: ViewGroup, @LayoutRes layo
                 uiState.label
             )
             binding.developerOptionsToggleableIcon.setImageResource(uiState.icon)
-            binding.developerOptionsSwitch.isEnabled = uiState.isEnabled
-            binding.developerOptionsSwitch.isClickable = uiState.isEnabled
-            binding.developerOptionsSwitch.isChecked = uiState.isChecked
+            binding.developerOptionsSwitch.isChecked = AppPrefs.isSimulatedReaderEnabled
             binding.developerOptionsSwitch.setOnCheckedChangeListener { _, isChecked ->
                 if (uiState.isEnabled) {
                     uiState.onToggled(isChecked)
