@@ -453,8 +453,10 @@ class AnalyticsViewModelTest : BaseUnitTest() {
         val getShowIndicatorStatesJob = launch { sut.state.toList(states) }
         sut.onRefreshRequested()
 
-        assertEquals(2, states.filter { it.refreshIndicator is NotShowIndicator }.size)
-        assertEquals(2, states.filter { it.refreshIndicator is RefreshIndicator.ShowIndicator }.size)
+        assertThat(states.map(AnalyticsViewState::refreshIndicator)).containsExactly(
+            NotShowIndicator,
+            RefreshIndicator.ShowIndicator
+        )
 
         getShowIndicatorStatesJob.cancel()
     }

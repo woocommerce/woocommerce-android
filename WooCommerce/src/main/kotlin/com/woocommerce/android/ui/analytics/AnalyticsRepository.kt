@@ -262,7 +262,6 @@ class AnalyticsRepository @Inject constructor(
             endDate
         ).flowOn(dispatchers.io).single().mapCatching { it!!.parseTotal()!! }
 
-    @Suppress("UnusedPrivateMember")
     private suspend fun fetchProductLeaderboards(
         startDate: String,
         endDate: String,
@@ -273,8 +272,8 @@ class AnalyticsRepository @Inject constructor(
             true,
             granularity,
             quantity,
-//            startDate,
-//            endDate
+            startDate,
+            endDate
         ).flowOn(dispatchers.io).single()
     }
 
