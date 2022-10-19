@@ -64,7 +64,7 @@ import kotlin.math.abs
 
 @AndroidEntryPoint
 @OptIn(FlowPreview::class)
-class MyStoreFragment : TopLevelFragment(R.layout.fragment_my_store), MenuProvider {
+class MyStoreFragment : TopLevelFragment(R.layout.fragment_my_store) {
     companion object {
         val TAG: String = MyStoreFragment::class.java.simpleName
 
@@ -123,8 +123,6 @@ class MyStoreFragment : TopLevelFragment(R.layout.fragment_my_store), MenuProvid
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        requireActivity().addMenuProvider(this, viewLifecycleOwner, State.RESUMED)
-
         initTabLayout()
 
         _binding = FragmentMyStoreBinding.bind(view)
@@ -227,20 +225,6 @@ class MyStoreFragment : TopLevelFragment(R.layout.fragment_my_store), MenuProvid
                 else -> event.isHandled = false
             }
         }
-    }
-
-    override fun onCreateMenu(menu: Menu, inflater: MenuInflater) {
-        if (FeatureFlag.ANALYTICS_HUB.isEnabled()) {
-            inflater.inflate(R.menu.menu_analytics, menu)
-        }
-    }
-
-    override fun onMenuItemSelected(menuItem: MenuItem): Boolean {
-        if (menuItem.itemId == R.id.menu_analytics) {
-            mainNavigationRouter?.showAnalytics()
-            return true
-        }
-        return false
     }
 
     private fun onJetpackCpConnected(benefitsBanner: BenefitsBannerUiModel) {
