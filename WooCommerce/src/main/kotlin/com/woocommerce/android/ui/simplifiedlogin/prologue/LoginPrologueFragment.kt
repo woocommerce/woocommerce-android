@@ -36,8 +36,8 @@ open class LoginPrologueFragment : BaseFragment(R.layout.fragment_login_prologue
         }
 
         binding.buttonLoginWpcom.setOnClickListener {
-            // Login with WordPress.com account
-            TODO()
+            findNavController()
+                .navigate(LoginPrologueFragmentDirections.actionLoginPrologueFragmentToSimplifiedLoginDemoFragment())
         }
 
         binding.newToWooButton.setOnClickListener {

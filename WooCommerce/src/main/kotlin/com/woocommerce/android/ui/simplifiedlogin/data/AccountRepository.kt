@@ -57,7 +57,6 @@ class AccountRepository @Inject constructor(
         )
     }
 
-
     suspend fun submitTwoStepCode(emailOrUsername: String, password: String, twoStepCode: String): WPCom2FAResult {
         WooLog.i(T.LOGIN, "Sumbitting 2FA verification code")
 
@@ -145,7 +144,7 @@ class AccountRepository @Inject constructor(
                     cont.resume(Result.failure(OnChangedException(event.error)))
                 } else {
                     WooLog.i(T.LOGIN, "Authentication Succeeded for user ${event.userName}")
-                    cont.resume(Result.success(event.userName!!))
+                    cont.resume(Result.success(event.userName))
                 }
             }
         }
@@ -154,6 +153,7 @@ class AccountRepository @Inject constructor(
             this.twoStepCode = twoStepCode
             this.shouldSendTwoStepSms = shouldRequestTwoStepCode
         }
+        dispatcher.register(listener)
         dispatcher.dispatch(AuthenticationActionBuilder.newAuthenticateAction(payload))
 
         cont.invokeOnCancellation {
@@ -163,7 +163,7 @@ class AccountRepository @Inject constructor(
 }
 
 sealed interface WPComLoginResult {
-    data class Success(val username: String) : WPComLoginResult
+    data class Success(val username: String?) : WPComLoginResult
     object Requires2FA : WPComLoginResult
     object EmailLoginNotAllowed : WPComLoginResult
     object AuthenticationError : WPComLoginResult
@@ -171,14 +171,14 @@ sealed interface WPComLoginResult {
 }
 
 sealed interface WPCom2FAResult {
-    data class Success(val username: String) : WPCom2FAResult
+    data class Success(val username: String?) : WPCom2FAResult
     object OTPInvalid : WPCom2FAResult
     data class GenericError(val errorMessage: String) : WPCom2FAResult
 }
 
 sealed interface NewTwoStepSMSResult {
     object Success : NewTwoStepSMSResult
-    data class UserSignedIn(val username: String) : NewTwoStepSMSResult
+    data class UserSignedIn(val username: String?) : NewTwoStepSMSResult
     data class GenericError(val errorMessage: String) : NewTwoStepSMSResult
 }
 

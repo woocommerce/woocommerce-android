@@ -6,6 +6,10 @@
 
     <include app:graph="@navigation/nav_graph_store_creation" />
 
+    <action
+        android:id="@+id/action_global_login_to_sitePickerFragment"
+        app:destination="@id/sitePickerFragment" />
+
     <fragment
         android:id="@+id/legacyLoginPrologueFragment"
         android:name="com.woocommerce.android.ui.login.LoginPrologueFragment"
@@ -30,6 +34,9 @@
             app:exitAnim="@anim/default_exit_anim"
             app:popEnterAnim="@anim/default_pop_enter_anim"
             app:popExitAnim="@anim/default_pop_exit_anim" />
+        <action
+            android:id="@+id/action_loginPrologueFragment_to_simplifiedLoginDemoFragment"
+            app:destination="@id/simplifiedLoginDemoFragment" />
     </fragment>
 
     <fragment
@@ -59,5 +66,8 @@
             app:popExitAnim="@anim/default_pop_exit_anim"
             app:popUpTo="@+id/nav_graph_login" />
     </fragment>
-
+    <fragment
+        android:id="@+id/simplifiedLoginDemoFragment"
+        android:name="com.woocommerce.android.ui.simplifiedlogin.SimplifiedLoginDemoFragment"
+        android:label="SimplifiedLoginDemoFragment" />
 </navigation>
