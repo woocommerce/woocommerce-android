@@ -156,8 +156,12 @@ class LoginActivity :
 
     private var loginMode: LoginMode? = null
     private lateinit var binding: ActivityLoginBinding
-    private lateinit var navController: NavController
-    private lateinit var navHostFragment: NavHostFragment
+
+    // Lazy init required to avoid crash. Full context: github.com/woocommerce/woocommerce-android/pull/7581
+    private val navController: NavController by lazy { navHostFragment.navController }
+    private val navHostFragment: NavHostFragment by lazy {
+        supportFragmentManager.findFragmentById(R.id.nav_host_fragment_login) as NavHostFragment
+    }
 
     private var connectSiteInfo: ConnectSiteInfo? = null
 
@@ -178,8 +182,6 @@ class LoginActivity :
 
         binding = ActivityLoginBinding.inflate(layoutInflater)
         setContentView(binding.root)
-        navHostFragment = supportFragmentManager.findFragmentById(R.id.nav_host_fragment_login) as NavHostFragment
-        navController = navHostFragment.navController
 
         val loginHelpNotification = getLoginHelpNotification()
 
