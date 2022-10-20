@@ -5,6 +5,7 @@ import com.android.billingclient.api.BillingClient
 import com.android.billingclient.api.BillingFlowParams
 import com.android.billingclient.api.BillingFlowParams.ProductDetailsParams
 import com.android.billingclient.api.ProductDetails
+import com.android.billingclient.api.Purchase
 import com.android.billingclient.api.PurchasesResult
 import com.android.billingclient.api.QueryProductDetailsParams
 import com.android.billingclient.api.QueryPurchasesParams
@@ -19,8 +20,15 @@ import com.woocommerce.android.iap.internal.model.IAPPurchaseResponse
 import com.woocommerce.android.iap.pub.IAPLogWrapper
 import com.woocommerce.android.iap.pub.IAP_LOG_TAG
 import com.woocommerce.android.iap.pub.model.IAPError
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.cancel
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.isActive
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import kotlin.coroutines.Continuation
+import kotlin.coroutines.resume
 import kotlin.coroutines.suspendCoroutine
 
 internal class IAPManager(
@@ -40,10 +48,7 @@ internal class IAPManager(
 
     suspend fun fetchPurchases(iapProductType: IAPProductType): IAPPurchaseResponse =
         withContext(Dispatchers.IO) {
-            waitBillingClientInitialisation()
-            val params = QueryPurchasesParams.newBuilder()
-                .setProductType(iapInMapper.mapProductTypeToIAPProductType(iapProductType))
-            val purchasesResult = billingClient.queryPurchasesAsync(params.build())
+            val purchasesResult = queryPurchases(iapProductType)
 
             if (purchasesResult.billingResult.isSuccess) {
                 return@withContext handleFetchPurchasesSuccess(purchasesResult, iapProductType)
@@ -61,9 +66,14 @@ internal class IAPManager(
             is Success -> {
                 val flowParams = buildBillingFlowParams(iapProductDetailsResponse.productDetails)
                 billingClient.launchBillingFlow(activity, flowParams)
+
+                var continuation: Continuation<PurchasesResult>? = null
+                val job = startPeriodicPurchasesCheckJob(iapProduct) { continuation }
                 val purchasesResult = suspendCoroutine<PurchasesResult> {
+                    continuation = it
                     iapPurchasesUpdatedListener.waitTillNextPurchaseEvent(it)
                 }
+                job.cancel()
                 if (purchasesResult.billingResult.isSuccess) {
                     IAPPurchaseResponse.Success(
                         purchasesResult.purchasesList.map {
@@ -162,5 +172,37 @@ internal class IAPManager(
         return BillingFlowParams.newBuilder()
             .setProductDetailsParamsList(listOf(productDetailsParams))
             .build()
+    }
+
+    private suspend fun queryPurchases(iapProductType: IAPProductType): PurchasesResult {
+        logWrapper.d(IAP_LOG_TAG, "Fetching purchases")
+        waitBillingClientInitialisation()
+        val params = QueryPurchasesParams.newBuilder()
+            .setProductType(iapInMapper.mapProductTypeToIAPProductType(iapProductType))
+        return billingClient.queryPurchasesAsync(params.build())
+    }
+
+    private fun startPeriodicPurchasesCheckJob(
+        iapProduct: IAPProduct,
+        continuationProvider: () -> Continuation<PurchasesResult>?,
+    ) = CoroutineScope(Dispatchers.IO).launch {
+        repeat(PURCHASE_STATE_CHECK_TIMES) {
+            if (!isActive) cancel()
+            delay(PURCHASE_STATE_CHECK_INTERVAL)
+            val purchasesResult = queryPurchases(iapProduct.productType)
+            logWrapper.d(IAP_LOG_TAG, "Fetching purchases. Result ${purchasesResult.billingResult}")
+            if (purchasesResult.billingResult.isSuccess &&
+                purchasesResult.purchasesList.firstOrNull {
+                    it.products.contains(iapProduct.productId)
+                }?.purchaseState == Purchase.PurchaseState.PURCHASED
+            ) {
+                continuationProvider()?.resume(purchasesResult)
+            }
+        }
+    }
+
+    companion object {
+        private const val PURCHASE_STATE_CHECK_INTERVAL = 20_000L
+        private const val PURCHASE_STATE_CHECK_TIMES = 20
     }
 }
