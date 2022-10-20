@@ -47,9 +47,11 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.core.text.HtmlCompat
 import coil.compose.AsyncImage
 import coil.request.ImageRequest.Builder
 import com.woocommerce.android.R
+import com.woocommerce.android.compose.utils.toAnnotatedString
 import com.woocommerce.android.ui.common.wpcomwebview.WPComWebViewAuthenticator
 import com.woocommerce.android.ui.compose.component.ProgressDialog
 import com.woocommerce.android.ui.compose.component.WCColoredButton
@@ -242,7 +244,10 @@ private fun MainContent(
         Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.major_100)))
         viewState.inlineButtonText?.let { buttonText ->
             WCTextButton(onClick = viewState.inlineButtonAction) {
-                Text(text = stringResource(id = buttonText))
+                Text(
+                    text = HtmlCompat.fromHtml(stringResource(id = buttonText), HtmlCompat.FROM_HTML_MODE_LEGACY)
+                        .toAnnotatedString()
+                )
             }
         }
     }

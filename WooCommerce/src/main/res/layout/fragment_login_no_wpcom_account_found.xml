@@ -58,7 +58,6 @@
                 android:layout_marginTop="@dimen/minor_100"
                 android:layout_marginStart="@dimen/major_100"
                 android:layout_marginEnd="@dimen/major_100"
-                android:text="@string/what_is_wordpress_link"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/no_wp_account_msg" />
@@ -71,7 +70,6 @@
                 android:layout_marginTop="@dimen/minor_100"
                 android:layout_marginStart="@dimen/major_100"
                 android:layout_marginEnd="@dimen/major_100"
-                android:text="@string/login_need_help_finding_email"
                 android:textAllCaps="false"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
