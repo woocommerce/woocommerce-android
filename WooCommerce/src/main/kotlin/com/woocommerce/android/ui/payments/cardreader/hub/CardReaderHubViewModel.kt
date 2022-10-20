@@ -249,7 +249,6 @@ class CardReaderHubViewModel @Inject constructor(
 
     private fun onPurchaseCardReaderClicked() {
         trackEvent(AnalyticsEvent.PAYMENTS_HUB_ORDER_CARD_READER_TAPPED)
-        println(paymentMenuUtmProvider.getUrlWithUtmParams(cardReaderPurchaseUrl))
         triggerEvent(
             CardReaderHubEvents.NavigateToPurchaseCardReaderFlow(
                 url = paymentMenuUtmProvider.getUrlWithUtmParams(cardReaderPurchaseUrl),
