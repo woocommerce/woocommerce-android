@@ -20,7 +20,7 @@ suspend inline fun <PAYLOAD, reified EVENT : Any> Dispatcher.dispatchAndAwait(
 }
 
 suspend inline fun <reified EVENT : Any> Dispatcher.awaitEvent(): EVENT = suspendCancellableCoroutine { continuation ->
-    val listener = object : Any() {
+    val listener = object {
         @Subscribe(threadMode = ThreadMode.MAIN)
         @Suppress("unused")
         fun onEvent(event: EVENT) {
@@ -42,4 +42,3 @@ suspend inline fun <reified EVENT : Any> Dispatcher.awaitEvent(): EVENT = suspen
         unregister(listener)
     }
 }
-
