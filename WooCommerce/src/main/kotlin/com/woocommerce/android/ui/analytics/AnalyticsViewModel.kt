@@ -41,7 +41,9 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
-import java.util.*
+import java.util.Date
+import java.util.Locale
+import java.util.TimeZone
 import javax.inject.Inject
 import com.woocommerce.android.ui.analytics.listcard.AnalyticsListViewState as ProductsViewState
 import com.woocommerce.android.ui.analytics.listcard.AnalyticsListViewState.LoadingViewState as LoadingProductsViewState
@@ -76,12 +78,11 @@ class AnalyticsViewModel @Inject constructor(
     }
 
     fun onCustomDateRangeChanged(startDateMillis: Long, endDateMillis: Long) {
-        val startDate = Date(startDateMillis)
-        val endDate = Date(endDateMillis)
-
         val dateFormat = SimpleDateFormat("EEE, LLL d, yy", Locale.getDefault())
         dateFormat.timeZone = TimeZone.getTimeZone("UTC")
 
+        val startDate = Date(startDateMillis)
+        val endDate = Date(endDateMillis)
         val fromDateStr = dateFormat.format(startDate)
         val toDateStr = dateFormat.format(endDate)
 
@@ -93,7 +94,7 @@ class AnalyticsViewModel @Inject constructor(
                     toDateStr
                 ),
                 toDatePeriod = resourceProvider.getString(R.string.date_timeframe_custom_date_range),
-                selectedPeriod = ""
+                selectedPeriod = getTimePeriodDescription(AnalyticTimePeriod.CUSTOM)
             )
         )
 
