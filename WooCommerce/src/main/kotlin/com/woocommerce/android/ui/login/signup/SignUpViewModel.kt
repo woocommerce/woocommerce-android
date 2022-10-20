@@ -23,10 +23,6 @@ class SignUpViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
     private val signUpRepository: SignUpRepository
 ) : ScopedViewModel(savedStateHandle) {
-    companion object {
-        private const val PASSWORD_MIN_LENGTH = 7
-    }
-
     private val _viewState = MutableLiveData<SignUpState>()
     val viewState: LiveData<SignUpState> = _viewState
 
@@ -39,12 +35,12 @@ class SignUpViewModel @Inject constructor(
     }
 
     fun onGetStartedCLicked(email: String, password: String) {
-        if (!areCredentialsValid(email, password)) return
-        _viewState.value = SignUpState(email = email, password = password)
+        val trimmedEmail = email.trim()
+        _viewState.value = SignUpState(email = trimmedEmail, password = password)
 
         viewModelScope.launch {
             _viewState.value = _viewState.value?.copy(isLoading = true)
-            when (val result = signUpRepository.createAccount(email, password)) {
+            when (val result = signUpRepository.createAccount(trimmedEmail, password)) {
                 is AccountCreationError ->
                     _viewState.value = _viewState.value?.copy(
                         isLoading = false,
@@ -58,29 +54,23 @@ class SignUpViewModel @Inject constructor(
         }
     }
 
-    private fun areCredentialsValid(email: String, password: String): Boolean {
-        // TODO
-        return true
-    }
-
     private fun SignUpError.toSignUpErrorUI() =
         when (this) {
-            SignUpError.EMAIL_EXIST ->
-                SignUpErrorUi(
-                    type = EMAIL,
-                    stringId = R.string.signup_email_exist_input
-                )
+            SignUpError.EMAIL_EXIST -> SignUpErrorUi(
+                type = EMAIL,
+                stringId = R.string.signup_email_exist_input
+            )
             SignUpError.EMAIL_INVALID -> SignUpErrorUi(
                 type = EMAIL,
                 stringId = R.string.signup_email_invalid_input
             )
             SignUpError.PASSWORD_INVALID -> SignUpErrorUi(
                 type = PASSWORD,
-                stringId = when {
-                    viewState.value?.password.isNullOrEmpty() -> R.string.signup_password_not_secure_enough
-                    viewState.value!!.password!!.length < PASSWORD_MIN_LENGTH -> R.string.signup_password_too_short
-                    else -> R.string.signup_password_not_secure_enough
-                }
+                stringId = R.string.signup_password_not_secure_enough
+            )
+            SignUpError.PASSWORD_TOO_SHORT -> SignUpErrorUi(
+                type = PASSWORD,
+                stringId = R.string.signup_password_too_short
             )
             SignUpError.UNKNOWN_ERROR -> SignUpErrorUi(
                 type = OTHER,
@@ -108,5 +98,4 @@ class SignUpViewModel @Inject constructor(
 
     object OnTermsOfServiceClicked : MultiLiveEvent.Event()
     object NavigateToNextStep : MultiLiveEvent.Event()
-
 }
