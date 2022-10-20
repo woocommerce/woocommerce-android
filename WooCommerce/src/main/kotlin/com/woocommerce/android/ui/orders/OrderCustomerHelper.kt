@@ -8,6 +8,7 @@ import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.model.Order
+import com.woocommerce.android.util.ActivityUtils
 import org.wordpress.android.util.ToastUtils
 import java.util.Locale
 
@@ -61,17 +62,12 @@ object OrderCustomerHelper {
             )
         )
 
-        val intent = Intent(Intent.ACTION_DIAL)
-        intent.data = Uri.parse("tel:$phone")
-        try {
-            context.startActivity(intent)
-        } catch (e: ActivityNotFoundException) {
+        ActivityUtils.dialPhoneNumber(context, phone) { error ->
             AnalyticsTracker.track(
                 AnalyticsEvent.ORDER_CONTACT_ACTION_FAILED,
                 this.javaClass.simpleName,
-                e.javaClass.simpleName, "No phone app was found"
+                error.javaClass.simpleName, "No phone app was found"
             )
-
             ToastUtils.showToast(context, R.string.error_no_phone_app)
         }
     }

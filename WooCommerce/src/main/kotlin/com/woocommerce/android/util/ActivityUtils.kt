@@ -36,6 +36,23 @@ object ActivityUtils {
         context.startActivity(intent)
     }
 
+    fun dialPhoneNumber(context: Context, phoneNumber: String) {
+        dialPhoneNumber(context, phoneNumber) {
+            ToastUtils.showToast(context, R.string.error_no_phone_app)
+        }
+    }
+
+    fun dialPhoneNumber(context: Context, phoneNumber: String, onError: (e: ActivityNotFoundException) -> Unit) {
+        val intent = Intent(Intent.ACTION_DIAL)
+        intent.data = Uri.parse("tel:$phoneNumber")
+
+        try {
+            context.startActivity(intent)
+        } catch (e: ActivityNotFoundException) {
+            onError(e)
+        }
+    }
+
     /**
      * Use this only when you want to open the external browser - otherwise use
      * [ChromeCustomTabUtils.launchUrl] to provide a better in-app experience
