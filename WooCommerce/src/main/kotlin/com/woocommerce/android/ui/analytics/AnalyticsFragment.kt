@@ -57,7 +57,7 @@ class AnalyticsFragment :
             is AnalyticsViewEvent.OpenUrl -> ChromeCustomTabUtils.launchUrl(requireContext(), event.url)
             is AnalyticsViewEvent.OpenWPComWebView -> findNavController()
                 .navigate(NavGraphMainDirections.actionGlobalWPComWebViewFragment(urlToLoad = event.url))
-            is AnalyticsViewEvent.CustomDateRangeClicked -> showDateRangePicker(event.dateRange)
+            is AnalyticsViewEvent.OpenDatePicker -> showDateRangePicker(event.dateRange)
             else -> event.isHandled = false
         }
     }

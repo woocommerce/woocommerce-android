@@ -17,7 +17,7 @@ data class AnalyticsViewState(
 sealed class AnalyticsViewEvent : MultiLiveEvent.Event() {
     data class OpenUrl(val url: String) : AnalyticsViewEvent()
     data class OpenWPComWebView(val url: String) : AnalyticsViewEvent()
-    data class CustomDateRangeClicked(val dateRange: AnalyticsDateRange.SimpleDateRange) : MultiLiveEvent.Event()
+    data class OpenDatePicker(val dateRange: AnalyticsDateRange.SimpleDateRange) : MultiLiveEvent.Event()
 }
 
 sealed class RefreshIndicator {

@@ -71,7 +71,7 @@ class AnalyticsViewModel @Inject constructor(
     val state: StateFlow<AnalyticsViewState> = mutableState
 
     fun onCustomDateRangeClicked() {
-        triggerEvent(AnalyticsViewEvent.CustomDateRangeClicked(getSavedDateRange() as SimpleDateRange))
+        triggerEvent(AnalyticsViewEvent.OpenDatePicker(getSavedDateRange() as SimpleDateRange))
     }
 
     fun onCustomDateRangeChanged(startDateMillis: Long, endDateMillis: Long) {
