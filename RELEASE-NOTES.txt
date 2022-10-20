@@ -2,8 +2,7 @@
 10.9
 -----
 - [**] Login: add support for Jetpack connection to sites that have Jetpack but don't have any connected accounts [https://github.com/woocommerce/woocommerce-android/pull/7545]
-[*] [Internal] In-Person Payments: add UTM parameters to card reader purchase URLs to allow attribution [https://github.com/woocommerce/woocommerce-android/pull/7554]
-
+- [*] [Internal] In-Person Payments: add UTM parameters to card reader purchase URLs to allow attribution [https://github.com/woocommerce/woocommerce-android/pull/7554]
 
 10.8
 -----
