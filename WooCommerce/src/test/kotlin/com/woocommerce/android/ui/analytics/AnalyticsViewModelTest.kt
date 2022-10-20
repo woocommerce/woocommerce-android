@@ -493,13 +493,11 @@ class AnalyticsViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `given a view, when custom date range is clicked, then CustomDateRangeClicked event is triggered`() {
-        whenever(siteModel.isWPCom).thenReturn(true)
-
+    fun `given a view, when custom date range is clicked, then OpenDatePicker event is triggered`() {
         sut = givenAViewModel()
         sut.onCustomDateRangeClicked()
 
-        assertThat(sut.event.value).isInstanceOf(AnalyticsViewEvent.CustomDateRangeClicked::class.java)
+        assertThat(sut.event.value).isInstanceOf(AnalyticsViewEvent.OpenDatePicker::class.java)
     }
 
     private fun givenAResourceProvider(): ResourceProvider = mock {
