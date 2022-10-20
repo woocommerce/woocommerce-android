@@ -1,11 +1,10 @@
 package com.woocommerce.android.ui.payments.cardreader.connect
 
-import androidx.annotation.DrawableRes
+ import androidx.annotation.DrawableRes
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.AppPrefsWrapper
-import com.woocommerce.android.BuildConfig
 import com.woocommerce.android.R
 import com.woocommerce.android.cardreader.CardReaderManager
 import com.woocommerce.android.cardreader.connection.CardReader
@@ -56,6 +55,7 @@ import com.woocommerce.android.ui.payments.cardreader.connect.CardReaderConnectV
 import com.woocommerce.android.ui.payments.cardreader.connect.CardReaderConnectViewState.ScanningState
 import com.woocommerce.android.ui.payments.cardreader.onboarding.PluginType
 import com.woocommerce.android.ui.payments.cardreader.update.CardReaderUpdateViewModel
+import com.woocommerce.android.ui.prefs.DeveloperOptionsRepository
 import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
@@ -75,6 +75,7 @@ class CardReaderConnectViewModel @Inject constructor(
     private val dispatchers: CoroutineDispatchers,
     private val tracker: CardReaderTracker,
     private val appPrefs: AppPrefsWrapper,
+    private val developerOptionsRepository: DeveloperOptionsRepository,
     private val locationRepository: CardReaderLocationRepository,
     private val selectedSite: SelectedSite,
     private val cardReaderManager: CardReaderManager,
@@ -245,7 +246,7 @@ class CardReaderConnectViewModel @Inject constructor(
         if (cardReaderManager.readerStatus.value !is CardReaderStatus.Connecting) {
             cardReaderManager
                 .discoverReaders(
-                    isSimulated = BuildConfig.USE_SIMULATED_READER,
+                    isSimulated = developerOptionsRepository.isSimulatedCardReaderEnabled(),
                     cardReaderTypesToDiscover = CardReaderTypesToDiscover.SpecificReaders(
                         listOf(SpecificReader.Chipper2X, SpecificReader.StripeM2, SpecificReader.WisePade3)
                     )

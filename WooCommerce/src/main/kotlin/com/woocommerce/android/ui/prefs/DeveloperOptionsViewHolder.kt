@@ -33,11 +33,9 @@ abstract class DeveloperOptionsViewHolder(val parent: ViewGroup, @LayoutRes layo
                 uiState.label
             )
             binding.developerOptionsToggleableIcon.setImageResource(uiState.icon)
-            binding.developerOptionsSwitch.isChecked = uiState.isEnabled
+            binding.developerOptionsSwitch.isChecked = AppPrefs.isSimulatedReaderEnabled
             binding.developerOptionsSwitch.setOnCheckedChangeListener { _, isChecked ->
-                if (uiState.isEnabled) {
                     uiState.onToggled(isChecked)
-                }
             }
             binding.root.setOnClickListener {
                 binding.developerOptionsSwitch.isChecked = !uiState.isChecked
