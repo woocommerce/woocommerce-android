@@ -315,6 +315,17 @@
     <string name="my_store_stats_availability_contact_us">Contact us</string>
 
     <!--
+        Sign Up Flow
+    -->
+    <string name="signup_get_started_button">Get started</string>
+    <string name="signup_get_started_label">Get started \nin minutes</string>
+    <string name="signup_already_registered">First, let’s create your account. Already registered? Log in</string>
+    <string name="signup_email_address_hint">Your email address</string>
+    <string name="signup_password_hint">Choose a password</string>
+    <string name="signup_terms_of_service_description">By continuing, you agree to our</string>
+    <string name="signup_terms_of_service_linked_text">Terms of Service.</string>
+
+    <!--
         Analytics View
     -->
     <string name="analytics_date_range_to_date">%1$s (%2$s)</string>
@@ -2629,4 +2640,6 @@
     <string name="stats_today_widget_description">WooCommerce Stats Today</string>
     <string name="stats_widget_error_no_data">Couldn\'t load data</string>
     <string name="stats_widget_last_updated_message">As of %1$s</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>
