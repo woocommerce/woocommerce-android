@@ -48,5 +48,4 @@ class SignUpViewModel @Inject constructor(
 
     object OnTermsOfServiceClicked : MultiLiveEvent.Event()
     object NavigateToNextStep : MultiLiveEvent.Event()
-
 }

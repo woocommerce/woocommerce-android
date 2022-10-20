@@ -19,9 +19,7 @@ class StoreCreationQuestionsFragment : BaseFragment() {
         return ComposeView(requireContext()).apply {
             setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
             setContent {
-                WooThemeWithBackground {
-
-                }
+                WooThemeWithBackground {}
             }
         }
     }
