@@ -1,5 +1,8 @@
 package com.woocommerce.android.util
 
+import kotlinx.coroutines.CoroutineStart
+import kotlinx.coroutines.async
+import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.suspendCancellableCoroutine
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
@@ -7,9 +10,16 @@ import org.wordpress.android.fluxc.Dispatcher
 import org.wordpress.android.fluxc.annotations.action.Action
 import kotlin.coroutines.resume
 
-suspend inline fun <PAYLOAD, reified EVENT: Any> Dispatcher.dispatchAndAwait(
+suspend inline fun <PAYLOAD, reified EVENT : Any> Dispatcher.dispatchAndAwait(
     action: Action<PAYLOAD>
-): EVENT = suspendCancellableCoroutine { continuation ->
+): EVENT = coroutineScope {
+    val deferred = async(start = CoroutineStart.LAZY) { awaitEvent<EVENT>() }
+    dispatch(action)
+
+    return@coroutineScope deferred.await()
+}
+
+suspend inline fun <reified EVENT : Any> Dispatcher.awaitEvent(): EVENT = suspendCancellableCoroutine { continuation ->
     val listener = object : Any() {
         @Subscribe(threadMode = ThreadMode.MAIN)
         @Suppress("unused")
@@ -27,9 +37,9 @@ suspend inline fun <PAYLOAD, reified EVENT: Any> Dispatcher.dispatchAndAwait(
         }
     }
     register(listener)
-    dispatch(action)
 
     continuation.invokeOnCancellation {
         unregister(listener)
     }
 }
+
