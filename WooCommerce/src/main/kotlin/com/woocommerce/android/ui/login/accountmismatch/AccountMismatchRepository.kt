@@ -8,10 +8,7 @@ import com.woocommerce.android.util.dispatchAndAwait
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.coroutineScope
-import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlinx.coroutines.withContext
-import org.greenrobot.eventbus.Subscribe
-import org.greenrobot.eventbus.ThreadMode.MAIN
 import org.wordpress.android.fluxc.Dispatcher
 import org.wordpress.android.fluxc.generated.AuthenticationActionBuilder
 import org.wordpress.android.fluxc.generated.SiteActionBuilder
@@ -24,7 +21,6 @@ import org.wordpress.android.fluxc.store.SiteStore.OnSiteChanged
 import org.wordpress.android.fluxc.store.SiteStore.RefreshSitesXMLRPCPayload
 import org.wordpress.android.login.util.SiteUtils
 import javax.inject.Inject
-import kotlin.coroutines.resume
 
 class AccountMismatchRepository @Inject constructor(
     private val jetpackStore: JetpackStore,
@@ -104,31 +100,21 @@ class AccountMismatchRepository @Inject constructor(
         data class ConnectedToDifferentAccount(val wpcomEmail: String) : JetpackConnectionStatus
     }
 
-    private suspend fun discoverXMlRPCAddress(siteUrl: String): Result<String> = suspendCancellableCoroutine { cont ->
-        val listener = object : Any() {
-            @Subscribe(threadMode = MAIN)
-            @Suppress("unused")
-            fun onDiscoverySucceeded(event: OnDiscoveryResponse) {
-                dispatcher.unregister(this)
-                if (event.isError) {
-                    WooLog.w(WooLog.T.LOGIN, "XMLRPC Discovery failed, error: ${event.error}")
-                    cont.resume(Result.failure(OnChangedException(event.error, event.error.name)))
-                } else {
-                    WooLog.d(
-                        tag = WooLog.T.LOGIN,
-                        message = "XMLRPC Discovery succeeded, xmrlpc endpoint: ${event.xmlRpcEndpoint}"
-                    )
-                    cont.resume(Result.success(event.xmlRpcEndpoint))
-                }
-            }
-        }
-
+    private suspend fun discoverXMlRPCAddress(siteUrl: String): Result<String> {
         WooLog.d(WooLog.T.LOGIN, "Running discovery to fetch XMLRPC endpoint for site $siteUrl")
-        dispatcher.register(listener)
-        dispatcher.dispatch(AuthenticationActionBuilder.newDiscoverEndpointAction(siteUrl))
 
-        cont.invokeOnCancellation {
-            dispatcher.unregister(listener)
+        val action = AuthenticationActionBuilder.newDiscoverEndpointAction(siteUrl)
+        val event: OnDiscoveryResponse = dispatcher.dispatchAndAwait(action)
+
+        return if (event.isError) {
+            WooLog.w(WooLog.T.LOGIN, "XMLRPC Discovery failed, error: ${event.error}")
+            Result.failure(OnChangedException(event.error, event.error.name))
+        } else {
+            WooLog.d(
+                tag = WooLog.T.LOGIN,
+                message = "XMLRPC Discovery succeeded, xmrlpc endpoint: ${event.xmlRpcEndpoint}"
+            )
+            Result.success(event.xmlRpcEndpoint)
         }
     }
 
