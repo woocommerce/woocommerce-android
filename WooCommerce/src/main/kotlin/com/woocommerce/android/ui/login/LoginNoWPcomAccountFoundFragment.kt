@@ -8,6 +8,7 @@ import android.view.MenuItem
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
+import androidx.core.text.HtmlCompat
 import androidx.core.view.MenuProvider
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Lifecycle.State
@@ -47,6 +48,7 @@ class LoginNoWPcomAccountFoundFragment : Fragment(R.layout.fragment_login_no_wpc
 
     @Inject
     internal lateinit var appPrefsWrapper: AppPrefsWrapper
+
     @Inject
     internal lateinit var unifiedLoginTracker: UnifiedLoginTracker
     private lateinit var whatIsWordPressLinkClickListener: Listener
@@ -77,9 +79,14 @@ class LoginNoWPcomAccountFoundFragment : Fragment(R.layout.fragment_login_no_wpc
 
         setupButtons(btnBinding, appPrefsWrapper.getLoginSiteAddress().isNullOrBlank())
 
+        binding.btnLoginWhatIsWordpress.text =
+            HtmlCompat.fromHtml(getString(R.string.what_is_wordpress_link), HtmlCompat.FROM_HTML_MODE_LEGACY)
         binding.btnLoginWhatIsWordpress.setOnClickListener {
             whatIsWordPressLinkClickListener.onWhatIsWordPressLinkNoWpcomAccountScreenClicked()
         }
+
+        binding.btnFindConnectedEmail.text =
+            HtmlCompat.fromHtml(getString(R.string.login_need_help_finding_email), HtmlCompat.FROM_HTML_MODE_LEGACY)
         binding.btnFindConnectedEmail.setOnClickListener {
             loginListener?.showHelpFindingConnectedEmail()
         }
