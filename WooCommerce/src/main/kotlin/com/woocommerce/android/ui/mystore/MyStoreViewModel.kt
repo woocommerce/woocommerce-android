@@ -159,6 +159,10 @@ class MyStoreViewModel @Inject constructor(
             }
         } ?: ""
 
+    fun onViewAnalyticsClicked() {
+        triggerEvent(MyStoreEvent.OpenAnalytics)
+    }
+
     private suspend fun loadStoreStats(granularity: StatsGranularity) {
         if (!networkStatus.isConnected()) {
             refreshStoreStats[granularity.ordinal] = true
@@ -377,5 +381,6 @@ class MyStoreViewModel @Inject constructor(
         data class OpenTopPerformer(
             val productId: Long
         ) : MyStoreEvent()
+        object OpenAnalytics : MyStoreEvent()
     }
 }

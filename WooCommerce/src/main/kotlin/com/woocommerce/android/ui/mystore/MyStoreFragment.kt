@@ -3,16 +3,11 @@ package com.woocommerce.android.ui.mystore
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
-import android.view.Menu
-import android.view.MenuInflater
-import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup.LayoutParams
-import androidx.core.view.MenuProvider
 import androidx.core.view.children
 import androidx.core.view.isVisible
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.Lifecycle.State
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import com.google.android.material.appbar.AppBarLayout
@@ -40,6 +35,7 @@ import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.main.AppBarStatus
 import com.woocommerce.android.ui.main.MainActivity
 import com.woocommerce.android.ui.main.MainNavigationRouter
+import com.woocommerce.android.ui.mystore.MyStoreViewModel.MyStoreEvent.OpenAnalytics
 import com.woocommerce.android.ui.mystore.MyStoreViewModel.MyStoreEvent.OpenTopPerformer
 import com.woocommerce.android.ui.mystore.MyStoreViewModel.OrderState
 import com.woocommerce.android.ui.mystore.MyStoreViewModel.RevenueStatsViewState
@@ -47,7 +43,6 @@ import com.woocommerce.android.ui.mystore.MyStoreViewModel.VisitorStatsViewState
 import com.woocommerce.android.util.ActivityUtils
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.util.DateUtils
-import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.util.WooAnimUtils
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.widgets.WCEmptyView.EmptyViewType
@@ -150,7 +145,7 @@ class MyStoreFragment : TopLevelFragment(R.layout.fragment_my_store) {
             currencyFormatter,
             usageTracksEventEmitter,
             viewLifecycleOwner.lifecycleScope
-        )
+        ) { viewModel.onViewAnalyticsClicked() }
 
         binding.myStoreTopPerformers.initView(selectedSite)
 
@@ -222,6 +217,9 @@ class MyStoreFragment : TopLevelFragment(R.layout.fragment_my_store) {
                         isTrashEnabled = false
                     )
                 )
+                OpenAnalytics -> {
+                    mainNavigationRouter?.showAnalytics()
+                }
                 else -> event.isHandled = false
             }
         }
