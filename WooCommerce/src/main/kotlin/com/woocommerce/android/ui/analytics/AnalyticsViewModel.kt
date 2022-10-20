@@ -32,7 +32,6 @@ import com.woocommerce.android.ui.analytics.informationcard.AnalyticsInformation
 import com.woocommerce.android.ui.analytics.listcard.AnalyticsListCardItemViewState
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.util.DateUtils
-import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.ResourceProvider
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.zendesk.util.DateUtils.isSameDay
@@ -71,10 +70,8 @@ class AnalyticsViewModel @Inject constructor(
 
     val state: StateFlow<AnalyticsViewState> = mutableState
 
-    data class CustomDateRangeClicked(val dateRange: SimpleDateRange) : MultiLiveEvent.Event()
-
     fun onCustomDateRangeClicked() {
-        triggerEvent(CustomDateRangeClicked(getSavedDateRange() as SimpleDateRange))
+        triggerEvent(AnalyticsViewEvent.CustomDateRangeClicked(getSavedDateRange() as SimpleDateRange))
     }
 
     fun onCustomDateRangeChanged(startDateMillis: Long, endDateMillis: Long) {

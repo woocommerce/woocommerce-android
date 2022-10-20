@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.analytics
 
+import com.woocommerce.android.ui.analytics.daterangeselector.AnalyticsDateRange
 import com.woocommerce.android.ui.analytics.daterangeselector.AnalyticsDateRangeSelectorViewState
 import com.woocommerce.android.ui.analytics.informationcard.AnalyticsInformationViewState
 import com.woocommerce.android.ui.analytics.listcard.AnalyticsListViewState
@@ -16,6 +17,7 @@ data class AnalyticsViewState(
 sealed class AnalyticsViewEvent : MultiLiveEvent.Event() {
     data class OpenUrl(val url: String) : AnalyticsViewEvent()
     data class OpenWPComWebView(val url: String) : AnalyticsViewEvent()
+    data class CustomDateRangeClicked(val dateRange: AnalyticsDateRange.SimpleDateRange) : MultiLiveEvent.Event()
 }
 
 sealed class RefreshIndicator {

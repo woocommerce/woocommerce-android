@@ -492,6 +492,16 @@ class AnalyticsViewModelTest : BaseUnitTest() {
         assertThat(sut.event.value).isInstanceOf(AnalyticsViewEvent.OpenUrl::class.java)
     }
 
+    @Test
+    fun `given a view, when custom date range is clicked, then CustomDateRangeClicked event is triggered`() {
+        whenever(siteModel.isWPCom).thenReturn(true)
+
+        sut = givenAViewModel()
+        sut.onCustomDateRangeClicked()
+
+        assertThat(sut.event.value).isInstanceOf(AnalyticsViewEvent.CustomDateRangeClicked::class.java)
+    }
+
     private fun givenAResourceProvider(): ResourceProvider = mock {
         on { getString(any()) } doAnswer { invocationOnMock -> invocationOnMock.arguments[0].toString() }
         on { getString(any(), any()) } doAnswer { invMock -> invMock.arguments[0].toString() }
