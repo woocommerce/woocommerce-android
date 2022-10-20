@@ -31,14 +31,13 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.SpanStyle
-import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.tooling.preview.Devices
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.core.text.HtmlCompat
 import com.woocommerce.android.R
+import com.woocommerce.android.compose.utils.toAnnotatedString
 import com.woocommerce.android.ui.compose.component.ProgressDialog
 import com.woocommerce.android.ui.compose.component.WCColoredButton
 import com.woocommerce.android.ui.compose.component.WCOutlinedTextField
@@ -149,13 +148,11 @@ private fun SignUpForm(
 @Composable
 private fun TermsOfServiceText(modifier: Modifier = Modifier) {
     Text(
-        text = buildAnnotatedString {
-            append(stringResource(id = R.string.signup_terms_of_service_description))
-            append(" ")
-            pushStyle(SpanStyle(textDecoration = TextDecoration.Underline))
-            append(stringResource(id = R.string.signup_terms_of_service_linked_text))
-            toAnnotatedString()
-        },
+        text = HtmlCompat
+            .fromHtml(
+                stringResource(id = R.string.signup_terms_of_service),
+                HtmlCompat.FROM_HTML_MODE_LEGACY
+            ).toAnnotatedString(),
         style = MaterialTheme.typography.body2,
         modifier = modifier,
     )
