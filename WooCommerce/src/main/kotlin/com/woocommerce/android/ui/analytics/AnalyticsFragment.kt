@@ -105,12 +105,10 @@ class AnalyticsFragment :
     private fun getDateRangeSelectorViewState() = viewModel.state.value.analyticsDateRangeSelectorState
 
     private fun showDateRangePicker(dateRange: AnalyticsDateRange.SimpleDateRange) {
-        val startMillis = dateRange.from.time
-        val endMillis = dateRange.to.time
         val datePicker =
             MaterialDatePicker.Builder.dateRangePicker()
                 .setTitleText(getString(R.string.orderfilters_date_range_picker_title))
-                .setSelection(androidx.core.util.Pair(startMillis, endMillis))
+                .setSelection(androidx.core.util.Pair(dateRange.from.time, dateRange.to.time))
                 .setCalendarConstraints(
                     CalendarConstraints.Builder()
                         .setEnd(MaterialDatePicker.todayInUtcMilliseconds())
