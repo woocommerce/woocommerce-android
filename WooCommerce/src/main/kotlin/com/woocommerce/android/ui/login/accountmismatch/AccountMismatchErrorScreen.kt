@@ -19,6 +19,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.text.ClickableText
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
@@ -50,9 +51,12 @@ import androidx.compose.ui.unit.dp
 import androidx.core.text.HtmlCompat
 import coil.compose.AsyncImage
 import coil.request.ImageRequest.Builder
+import com.woocommerce.android.AppUrls
 import com.woocommerce.android.R
 import com.woocommerce.android.compose.utils.toAnnotatedString
 import com.woocommerce.android.ui.common.wpcomwebview.WPComWebViewAuthenticator
+import com.woocommerce.android.ui.compose.URL_ANNOTATION_TAG
+import com.woocommerce.android.ui.compose.annotatedStringRes
 import com.woocommerce.android.ui.compose.component.ProgressDialog
 import com.woocommerce.android.ui.compose.component.WCColoredButton
 import com.woocommerce.android.ui.compose.component.WCOutlinedButton
@@ -64,6 +68,7 @@ import com.woocommerce.android.ui.compose.component.WebViewNavigator
 import com.woocommerce.android.ui.compose.component.rememberWebViewNavigator
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.ui.login.accountmismatch.AccountMismatchErrorViewModel.ViewState
+import com.woocommerce.android.util.ChromeCustomTabUtils
 import org.wordpress.android.fluxc.network.UserAgent
 
 @OptIn(ExperimentalAnimationApi::class)
@@ -213,6 +218,24 @@ fun AccountMismatchErrorScreen(viewState: ViewState.MainState, modifier: Modifie
             secondaryButtonClick = viewState.secondaryButtonAction,
             modifier = Modifier.fillMaxWidth()
         )
+
+        if (viewState.showJetpackTermsConsent) {
+            val consent = annotatedStringRes(stringResId = R.string.login_jetpack_connection_consent)
+            val context = LocalContext.current
+            ClickableText(
+                text = consent,
+                style = MaterialTheme.typography.caption.copy(textAlign = TextAlign.Center)
+            ) {
+                consent.getStringAnnotations(tag = URL_ANNOTATION_TAG, start = it, end = it)
+                    .firstOrNull()
+                    ?.let { annotation ->
+                        when (annotation.item) {
+                            "terms" -> ChromeCustomTabUtils.launchUrl(context, AppUrls.WORPRESS_COM_TERMS)
+                            "sync" -> ChromeCustomTabUtils.launchUrl(context, AppUrls.JETPACK_SYNC_POLICY)
+                        }
+                    }
+            }
+        }
     }
 }
 
@@ -397,6 +420,7 @@ private fun AccountMismatchPreview() {
                 secondaryButtonAction = {},
                 inlineButtonText = R.string.continue_button,
                 inlineButtonAction = {},
+                showJetpackTermsConsent = true,
                 showNavigationIcon = true,
                 onBackPressed = {}
             )
