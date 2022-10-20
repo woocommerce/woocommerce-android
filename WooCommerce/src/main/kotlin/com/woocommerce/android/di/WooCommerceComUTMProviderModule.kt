@@ -20,46 +20,34 @@ class WooCommerceComUTMProviderModule {
     @Named("order-list")
     fun provideOrderListUpsellCardReaderUtm(
         selectedSite: SelectedSite
-    ) = object : UtmProvider() {
-        override val campaign: String
-            get() = OrderListViewModel.UTM_CAMPAIGN
-        override val source: String
-            get() = OrderListViewModel.UTM_SOURCE
-        override val content: String?
-            get() = OrderListViewModel.UTM_CONTENT
-        override val siteId: Long?
-            get() = selectedSite.getIfExists()?.siteId
-    }
+    ) = UtmProvider(
+        campaign = OrderListViewModel.UTM_CAMPAIGN,
+        source = OrderListViewModel.UTM_SOURCE,
+        content = OrderListViewModel.UTM_CONTENT,
+        siteId = selectedSite.getIfExists()?.siteId
+    )
 
     @Provides
     @Singleton
     @Named("select-payment")
     fun provideSelectPaymentMethodUpsellCardReaderUtm(
         selectedSite: SelectedSite
-    ) = object : UtmProvider() {
-        override val campaign: String
-            get() = SelectPaymentMethodViewModel.UTM_CAMPAIGN
-        override val source: String
-            get() = SelectPaymentMethodViewModel.UTM_SOURCE
-        override val content: String?
-            get() = SelectPaymentMethodViewModel.UTM_CONTENT
-        override val siteId: Long?
-            get() = selectedSite.getIfExists()?.siteId
-    }
+    ) = UtmProvider(
+        campaign = SelectPaymentMethodViewModel.UTM_CAMPAIGN,
+        source = SelectPaymentMethodViewModel.UTM_SOURCE,
+        content = SelectPaymentMethodViewModel.UTM_CONTENT,
+        siteId = selectedSite.getIfExists()?.siteId
+    )
 
     @Provides
     @Singleton
     @Named("payment-menu")
     fun providePaymentMenuUtm(
         selectedSite: SelectedSite
-    ) = object : UtmProvider() {
-        override val campaign: String
-            get() = CardReaderHubViewModel.UTM_CAMPAIGN
-        override val source: String
-            get() = CardReaderHubViewModel.UTM_SOURCE
-        override val content: String?
-            get() = null
-        override val siteId: Long?
-            get() = selectedSite.getIfExists()?.siteId
-    }
+    ) = UtmProvider(
+        campaign = CardReaderHubViewModel.UTM_CAMPAIGN,
+        source = CardReaderHubViewModel.UTM_SOURCE,
+        content = null,
+        siteId = selectedSite.getIfExists()?.siteId
+    )
 }

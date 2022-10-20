@@ -9,32 +9,19 @@ import org.junit.Test
 
 class WooCommerceComUTMProviderTest {
 
-    private fun provideDefaultUTMProvider() = object : UtmProvider() {
-        override val campaign: String
-            get() = ""
-        override val source: String
-            get() = ""
-        override val content: String?
-            get() = null
-        override val siteId: Long?
-            get() = null
-    }
+    private fun provideDefaultUTMProvider() = UtmProvider(
+        campaign = "",
+        source = "",
+        content = null,
+        siteId = null,
+    )
 
     private fun provideUTMProvider(
         campaign: String,
         source: String,
         content: String?,
         siteId: Long?
-    ) = object : UtmProvider() {
-        override val campaign: String
-            get() = campaign
-        override val source: String
-            get() = source
-        override val content: String?
-            get() = content
-        override val siteId: Long?
-            get() = siteId
-    }
+    ) = UtmProvider(campaign, source, content, siteId)
 
     @Test
     fun `testUtmMediumAlwaysSetToWoo_android`() {

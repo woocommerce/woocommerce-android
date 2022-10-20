@@ -9,12 +9,12 @@ import androidx.core.net.toUri
  * WooCommerceComUTMProviderTest will not be run as part of PR checks, it's important to run it manually when
  * the behaviour of this class changes.
  */
-abstract class UtmProvider {
-    abstract val campaign: String
-    abstract val source: String
-    abstract val content: String?
-    abstract val siteId: Long?
-
+class UtmProvider(
+    val campaign: String,
+    val source: String,
+    val content: String?,
+    val siteId: Long?,
+) {
     val parameters: Map<String, Any?>
         get() {
             return mapOf<String, Any?>(
