@@ -322,8 +322,8 @@
     <string name="signup_already_registered">First, let’s create your account. Already registered? Log in</string>
     <string name="signup_email_address_hint">Your email address</string>
     <string name="signup_password_hint">Choose a password</string>
-    <string name="signup_terms_of_service_description">By continuing, you agree to our</string>
-    <string name="signup_terms_of_service_linked_text">Terms of Service.</string>
+    <string name="signup_terms_of_service">By continuing, you agree to our &lt;u&gt;Terms of Service.&lt;/u&gt;</string>
+    <string name="signup_creating_account_loading_message">Creating new account</string>
 
     <!--
         Analytics View
