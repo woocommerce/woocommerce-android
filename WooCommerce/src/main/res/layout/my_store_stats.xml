@@ -48,7 +48,7 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:layout_marginBottom="@dimen/minor_100"
-            android:text="@string/analytics_view"
+            android:text="@string/analytics_see_more"
             android:visibility="gone"
             tools:visibility="visible"
             />
