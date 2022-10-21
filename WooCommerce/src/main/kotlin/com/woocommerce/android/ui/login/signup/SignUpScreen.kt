@@ -138,7 +138,8 @@ private fun SignUpForm(
         Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.major_100)))
         WCColoredButton(
             modifier = Modifier.fillMaxWidth(),
-            onClick = { onPrimaryButtonClicked(email, password) }
+            onClick = { onPrimaryButtonClicked(email, password) },
+            enabled = email.isNotBlank() && password.isNotBlank()
         ) {
             Text(text = stringResource(id = R.string.signup_get_started_button))
         }
