@@ -8,6 +8,7 @@ import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup.LayoutParams
+import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.core.view.MenuProvider
 import androidx.core.view.children
 import androidx.core.view.isVisible
@@ -37,6 +38,7 @@ import com.woocommerce.android.support.HelpActivity.Origin
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.base.TopLevelFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
+import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.ui.main.AppBarStatus
 import com.woocommerce.android.ui.main.MainActivity
 import com.woocommerce.android.ui.main.MainNavigationRouter
@@ -44,6 +46,8 @@ import com.woocommerce.android.ui.mystore.MyStoreViewModel.MyStoreEvent.OpenTopP
 import com.woocommerce.android.ui.mystore.MyStoreViewModel.OrderState
 import com.woocommerce.android.ui.mystore.MyStoreViewModel.RevenueStatsViewState
 import com.woocommerce.android.ui.mystore.MyStoreViewModel.VisitorStatsViewState
+import com.woocommerce.android.ui.payments.banner.Banner
+import com.woocommerce.android.ui.payments.banner.BannerState
 import com.woocommerce.android.util.ActivityUtils
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.util.DateUtils
@@ -174,6 +178,18 @@ class MyStoreFragment : TopLevelFragment(R.layout.fragment_my_store), MenuProvid
         setupStateObservers()
     }
 
+    private fun applyBannerComposeUI(state: BannerState) {
+        binding.jitmView.apply {
+            // Dispose of the Composition when the view's LifecycleOwner is destroyed
+            setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
+            setContent {
+                WooThemeWithBackground {
+                    Banner(bannerState = state)
+                }
+            }
+        }
+    }
+
     @Suppress("ComplexMethod", "MagicNumber")
     private fun setupStateObservers() {
         viewModel.activeStatsGranularity.observe(viewLifecycleOwner) { activeGranularity ->
@@ -215,6 +231,9 @@ class MyStoreFragment : TopLevelFragment(R.layout.fragment_my_store), MenuProvid
                 OrderState.Empty -> showEmptyView(true)
                 OrderState.AtLeastOne -> showEmptyView(false)
             }
+        }
+        viewModel.bannerState.observe(viewLifecycleOwner) { bannerState ->
+            applyBannerComposeUI(bannerState)
         }
         viewModel.event.observe(viewLifecycleOwner) { event ->
             when (event) {
