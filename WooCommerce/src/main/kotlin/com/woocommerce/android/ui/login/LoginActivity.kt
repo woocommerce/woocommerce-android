@@ -108,7 +108,8 @@ class LoginActivity :
     WooLoginEmailFragment.Listener,
     PrologueSurveyListener,
     WooLoginEmailPasswordFragment.Listener,
-    LoginNoWPcomAccountFoundFragment.Listener {
+    LoginNoWPcomAccountFoundFragment.Listener,
+    SignUpFragment.Listener {
     companion object {
         private const val FORGOT_PASSWORD_URL_SUFFIX = "wp-login.php?action=lostpassword"
         private const val MAGIC_LOGIN = "magic-login"
@@ -953,6 +954,10 @@ class LoginActivity :
             onHelpClicked = { viewHelpAndSupport(Origin.LOGIN_WITH_QR_CODE) }
         )
         changeFragment(fragment, shouldAddToBackStack = true, tag = QrCodeScanningFragment.TAG)
+    }
+
+    override fun onAccountCreated() {
+        TODO("Not yet implemented")
     }
 
     private fun processLoginHelpNotification(loginHelpNotification: String) {
