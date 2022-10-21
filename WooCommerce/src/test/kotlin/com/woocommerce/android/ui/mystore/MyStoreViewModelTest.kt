@@ -6,11 +6,13 @@ import com.woocommerce.android.WooException
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
+import com.woocommerce.android.model.UiString
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.mystore.domain.GetStats
 import com.woocommerce.android.ui.mystore.domain.GetTopPerformers
 import com.woocommerce.android.ui.mystore.domain.GetTopPerformers.TopPerformerProduct
+import com.woocommerce.android.ui.payments.banner.BannerState
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import com.woocommerce.android.viewmodel.ResourceProvider
@@ -22,7 +24,9 @@ import org.junit.Before
 import org.junit.Test
 import org.mockito.ArgumentMatchers.anyBoolean
 import org.mockito.ArgumentMatchers.anyInt
+import org.mockito.ArgumentMatchers.anyString
 import org.mockito.kotlin.any
+import org.mockito.kotlin.argumentCaptor
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.never
 import org.mockito.kotlin.verify
@@ -31,6 +35,11 @@ import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.network.BaseRequest
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooError
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooErrorType
+import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooResult
+import org.wordpress.android.fluxc.network.rest.wpcom.wc.payments.inperson.JITMApiResponse
+import org.wordpress.android.fluxc.network.rest.wpcom.wc.payments.inperson.JITMContent
+import org.wordpress.android.fluxc.network.rest.wpcom.wc.payments.inperson.JITMCta
+import org.wordpress.android.fluxc.store.JitmStore
 import org.wordpress.android.fluxc.store.WCStatsStore.StatsGranularity
 import org.wordpress.android.fluxc.store.WooCommerceStore
 import kotlin.test.assertTrue
@@ -48,6 +57,7 @@ class MyStoreViewModelTest : BaseUnitTest() {
     private val appPrefsWrapper: AppPrefsWrapper = mock()
     private val usageTracksEventEmitter: MyStoreStatsUsageTracksEventEmitter = mock()
     private val analyticsTrackerWrapper: AnalyticsTrackerWrapper = mock()
+    private val jitmStore: JitmStore = mock()
 
     private lateinit var sut: MyStoreViewModel
 
@@ -397,6 +407,215 @@ class MyStoreViewModelTest : BaseUnitTest() {
             )
         }
 
+    // region Just In TimeMessages (JITM)
+    @Test
+    fun `given store setup in US, when viewmodel init, then request for jitm`() {
+        testBlocking {
+            givenNetworkConnectivity(connected = true)
+            whenever(selectedSite.get()).thenReturn(SiteModel())
+            whenever(
+                wooCommerceStore.getStoreCountryCode(any())
+            ).thenReturn("US")
+
+            whenViewModelIsCreated()
+
+            verify(jitmStore).fetchJitmMessage(any(), anyString())
+        }
+    }
+
+    @Test
+    fun `given store not setup in US, when viewmodel init, then do not request for jitm`() {
+        testBlocking {
+            givenNetworkConnectivity(connected = true)
+            whenever(selectedSite.get()).thenReturn(SiteModel())
+            whenever(
+                wooCommerceStore.getStoreCountryCode(any())
+            ).thenReturn("CA")
+
+            whenViewModelIsCreated()
+
+            verify(jitmStore, never()).fetchJitmMessage(any(), anyString())
+        }
+    }
+
+    @Test
+    fun `given store setup in US, when viewmodel init, then request for jitm with valid message path`() {
+        testBlocking {
+            givenNetworkConnectivity(connected = true)
+            whenever(selectedSite.get()).thenReturn(SiteModel())
+            whenever(
+                wooCommerceStore.getStoreCountryCode(any())
+            ).thenReturn("US")
+            val expectedMessagePath = "woomobile:my_store:admin_notices"
+            val captor = argumentCaptor<String>()
+
+            whenViewModelIsCreated()
+            verify(jitmStore).fetchJitmMessage(any(), captor.capture())
+
+            assertThat(captor.firstValue).isEqualTo(expectedMessagePath)
+        }
+    }
+
+    @Test
+    fun `given jitm success response, when viewmodel init, then proper banner state event is triggered`() {
+        testBlocking {
+            givenNetworkConnectivity(connected = true)
+            whenever(selectedSite.get()).thenReturn(SiteModel())
+            whenever(
+                wooCommerceStore.getStoreCountryCode(any())
+            ).thenReturn("US")
+            whenever(
+                jitmStore.fetchJitmMessage(any(), any())
+            ).thenReturn(
+                WooResult(
+                    model = arrayOf(provideJitmApiResponse())
+                )
+            )
+
+            whenViewModelIsCreated()
+
+            assertThat(sut.bannerState.value).isInstanceOf(BannerState::class.java)
+        }
+    }
+
+    @Test
+    fun `given jitm error response, when viewmodel init, then banner state event is not triggered`() {
+        testBlocking {
+            givenNetworkConnectivity(connected = true)
+            whenever(selectedSite.get()).thenReturn(SiteModel())
+            whenever(
+                wooCommerceStore.getStoreCountryCode(any())
+            ).thenReturn("US")
+            whenever(
+                jitmStore.fetchJitmMessage(any(), any())
+            ).thenReturn(
+                WooResult(
+                    error = WOO_GENERIC_ERROR
+                )
+            )
+
+            whenViewModelIsCreated()
+
+            assertThat(sut.bannerState.value).isNull()
+        }
+    }
+
+    @Test
+    fun `given jitm empty response, when viewmodel init, then banner state event is not triggered`() {
+        testBlocking {
+            givenNetworkConnectivity(connected = true)
+            whenever(selectedSite.get()).thenReturn(SiteModel())
+            whenever(
+                wooCommerceStore.getStoreCountryCode(any())
+            ).thenReturn("US")
+            whenever(
+                jitmStore.fetchJitmMessage(any(), any())
+            ).thenReturn(
+                WooResult(
+                    model = emptyArray()
+                )
+            )
+
+            whenViewModelIsCreated()
+
+            assertThat(sut.bannerState.value).isNull()
+        }
+    }
+
+    @Test
+    fun `given jitm success response, when viewmodel init, then proper jitm message is used in UI`() {
+        testBlocking {
+            givenNetworkConnectivity(connected = true)
+            whenever(selectedSite.get()).thenReturn(SiteModel())
+            whenever(
+                wooCommerceStore.getStoreCountryCode(any())
+            ).thenReturn("US")
+            val testJitmMessage = "Test jitm message"
+            whenever(
+                jitmStore.fetchJitmMessage(any(), any())
+            ).thenReturn(
+                WooResult(
+                    model = arrayOf(
+                        provideJitmApiResponse(
+                            content = provideJitmContent(message = testJitmMessage)
+                        )
+                    )
+                )
+            )
+
+            whenViewModelIsCreated()
+
+            assertThat(
+                (sut.bannerState.value as BannerState).title
+            ).isEqualTo(
+                UiString.UiStringText(text = testJitmMessage, containsHtml = false)
+            )
+        }
+    }
+
+    @Test
+    fun `given jitm success response, when viewmodel init, then proper jitm description is used in UI`() {
+        testBlocking {
+            givenNetworkConnectivity(connected = true)
+            whenever(selectedSite.get()).thenReturn(SiteModel())
+            whenever(
+                wooCommerceStore.getStoreCountryCode(any())
+            ).thenReturn("US")
+            val testJitmDescription = "Test jitm description"
+            whenever(
+                jitmStore.fetchJitmMessage(any(), any())
+            ).thenReturn(
+                WooResult(
+                    model = arrayOf(
+                        provideJitmApiResponse(
+                            content = provideJitmContent(description = testJitmDescription)
+                        )
+                    )
+                )
+            )
+
+            whenViewModelIsCreated()
+
+            assertThat(
+                (sut.bannerState.value as BannerState).description
+            ).isEqualTo(
+                UiString.UiStringText(text = testJitmDescription, containsHtml = false)
+            )
+        }
+    }
+
+    @Test
+    fun `given jitm success response, when viewmodel init, then proper jitm cta label is used in UI`() {
+        testBlocking {
+            givenNetworkConnectivity(connected = true)
+            whenever(selectedSite.get()).thenReturn(SiteModel())
+            whenever(
+                wooCommerceStore.getStoreCountryCode(any())
+            ).thenReturn("US")
+            val testJitmCtaLabel = "Test jitm Cta label"
+            whenever(
+                jitmStore.fetchJitmMessage(any(), any())
+            ).thenReturn(
+                WooResult(
+                    model = arrayOf(
+                        provideJitmApiResponse(
+                            jitmCta = provideJitmCta(message = testJitmCtaLabel)
+                        )
+                    )
+                )
+            )
+
+            whenViewModelIsCreated()
+
+            assertThat(
+                (sut.bannerState.value as BannerState).primaryActionLabel
+            ).isEqualTo(
+                UiString.UiStringText(text = testJitmCtaLabel, containsHtml = false)
+            )
+        }
+    }
+    //endregion
+
     private suspend fun givenStatsLoadingResult(result: GetStats.LoadStatsResult) {
         whenever(getStats.invoke(any(), any())).thenReturn(flow { emit(result) })
     }
@@ -449,7 +668,8 @@ class MyStoreViewModelTest : BaseUnitTest() {
             appPrefsWrapper,
             usageTracksEventEmitter,
             analyticsTrackerWrapper,
-            myStoreTransactionLauncher = mock()
+            myStoreTransactionLauncher = mock(),
+            jitmStore,
         )
     }
 
@@ -471,4 +691,48 @@ class MyStoreViewModelTest : BaseUnitTest() {
             imageUrl = null
         )
     }
+
+    private fun provideJitmApiResponse(
+        content: JITMContent = provideJitmContent(),
+        jitmCta: JITMCta = provideJitmCta(),
+        timeToLive: Int = 0,
+        id: String = "",
+        featureClass: String = "",
+        expires: Long = 0L,
+        maxDismissal: Int = 2,
+        isDismissible: Boolean = false,
+        url: String = "",
+        jitmStatsUrl: String = ""
+    ) = JITMApiResponse(
+        content = content,
+        cta = jitmCta,
+        timeToLive = timeToLive,
+        id = id,
+        featureClass = featureClass,
+        expires = expires,
+        maxDismissal = maxDismissal,
+        isDismissible = isDismissible,
+        url = url,
+        jitmStatsUrl = jitmStatsUrl
+    )
+
+    private fun provideJitmContent(
+        message: String = "",
+        description: String = "",
+        icon: String = "",
+        title: String = ""
+    ) = JITMContent(
+        message = message,
+        description = description,
+        icon = icon,
+        title = title
+    )
+
+    private fun provideJitmCta(
+        message: String = "",
+        link: String = ""
+    ) = JITMCta(
+        message = message,
+        link = link
+    )
 }
