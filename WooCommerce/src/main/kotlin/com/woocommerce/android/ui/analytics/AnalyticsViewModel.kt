@@ -83,7 +83,7 @@ class AnalyticsViewModel @Inject constructor(
         triggerEvent(AnalyticsViewEvent.OpenDatePicker(fromMillis, toMillis))
     }
 
-    fun onCustomDateRangeChanged(fromMillis: Long, toMillis : Long) {
+    fun onCustomDateRangeChanged(fromMillis: Long, toMillis: Long) {
         val dateFormat = SimpleDateFormat("EEE, LLL d, yy", Locale.getDefault())
         dateFormat.timeZone = TimeZone.getTimeZone("UTC")
 
