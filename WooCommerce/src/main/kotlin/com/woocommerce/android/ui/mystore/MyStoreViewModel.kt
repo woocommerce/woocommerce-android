@@ -54,7 +54,7 @@ import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
 import org.wordpress.android.fluxc.model.WCRevenueStatsModel
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooResult
-import org.wordpress.android.fluxc.network.rest.wpcom.wc.payments.inperson.JITMApiResponse
+import org.wordpress.android.fluxc.network.rest.wpcom.wc.jitm.JITMApiResponse
 import org.wordpress.android.fluxc.store.JitmStore
 import org.wordpress.android.fluxc.store.WCStatsStore.StatsGranularity
 import org.wordpress.android.fluxc.store.WooCommerceStore
@@ -161,7 +161,7 @@ class MyStoreViewModel @Inject constructor(
                 _bannerState.value = BannerState(
                     shouldDisplayBanner = true,
                     onPrimaryActionClicked = { (::onJitmCtaClicked)(response.model!![0].cta.link) },
-                    { },
+                    onDismissClicked = { (::onJitmDismissClicked)(response.model!![0].id) },
                     title = UiString.UiStringText(response.model!![0].content.message),
                     description = UiString.UiStringText(response.model!![0].content.description),
                     primaryActionLabel = UiString.UiStringText(response.model!![0].cta.message),
@@ -177,6 +177,13 @@ class MyStoreViewModel @Inject constructor(
                 utmProvider.getUrlWithUtmParams(url)
             )
         )
+    }
+
+    private fun onJitmDismissClicked(jitmId: String) {
+        viewModelScope.launch {
+            jitmStore.dismissJitmMessage(selectedSite.get(), jitmId)
+        }
+        triggerEvent(MyStoreEvent.OnJitmDismissed)
     }
 
     override fun onCleared() {
@@ -440,5 +447,6 @@ class MyStoreViewModel @Inject constructor(
             val url: String,
             @StringRes val titleRes: Int = R.string.card_reader_purchase_card_reader
         ) : MyStoreEvent()
+        object OnJitmDismissed : MyStoreEvent()
     }
 }
