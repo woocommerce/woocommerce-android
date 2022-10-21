@@ -41,6 +41,7 @@ import com.woocommerce.android.ui.payments.banner.BannerState
 import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.util.LandscapeChecker
 import com.woocommerce.android.util.ThrottleLiveData
+import com.woocommerce.android.util.UtmProvider
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.viewmodel.LiveDataDelegate
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
@@ -68,6 +69,7 @@ import org.wordpress.android.fluxc.store.WCOrderStore.OnOrderChanged
 import org.wordpress.android.fluxc.store.WCOrderStore.OnOrderSummariesFetched
 import org.wordpress.android.mediapicker.util.filter
 import javax.inject.Inject
+import javax.inject.Named
 
 private const val EMPTY_VIEW_THROTTLE = 250L
 
@@ -96,6 +98,7 @@ class OrderListViewModel @Inject constructor(
     private val orderListTransactionLauncher: OrderListTransactionLauncher,
     private val analyticsTrackerWrapper: AnalyticsTrackerWrapper,
     private val landscapeChecker: LandscapeChecker,
+    @Named("order-list") private val orderListUtmProvider: UtmProvider,
 ) : ScopedViewModel(savedState), LifecycleOwner {
     private val lifecycleRegistry: LifecycleRegistry by lazy {
         LifecycleRegistry(this)
@@ -537,7 +540,9 @@ class OrderListViewModel @Inject constructor(
         launch {
             triggerEvent(
                 OpenPurchaseCardReaderLink(
-                    bannerDisplayEligibilityChecker.getPurchaseCardReaderUrl(source),
+                    orderListUtmProvider.getUrlWithUtmParams(
+                        bannerDisplayEligibilityChecker.getPurchaseCardReaderUrl(source)
+                    ),
                     R.string.card_reader_purchase_card_reader
                 )
             )
@@ -705,6 +710,12 @@ class OrderListViewModel @Inject constructor(
         val arePaymentGatewaysFetched: Boolean = false,
         val filterCount: Int = 0
     ) : Parcelable
+
+    companion object {
+        const val UTM_CAMPAIGN = "feature_announcement_card"
+        const val UTM_SOURCE = "orders_list"
+        const val UTM_CONTENT = "upsell_card_readers"
+    }
 }
 
 object InAppLifecycleMemory {

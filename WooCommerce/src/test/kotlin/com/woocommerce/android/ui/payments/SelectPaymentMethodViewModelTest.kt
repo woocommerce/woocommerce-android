@@ -27,6 +27,7 @@ import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderFlowP
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderFlowParam.PaymentOrRefund.Refund
 import com.woocommerce.android.ui.payments.cardreader.payment.CardReaderPaymentCollectibilityChecker
 import com.woocommerce.android.util.CurrencyFormatter
+import com.woocommerce.android.util.UtmProvider
 import com.woocommerce.android.util.captureValues
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowDialog
@@ -89,6 +90,7 @@ class SelectPaymentMethodViewModelTest : BaseUnitTest() {
     }
     private val analyticsTrackerWrapper: AnalyticsTrackerWrapper = mock()
     private val bannerDisplayEligibilityChecker: BannerDisplayEligibilityChecker = mock()
+    private val selectPaymentUtmProvider: UtmProvider = mock()
 
     @Test
     fun `given hub flow, when view model init, then navigate to hub flow emitted`() = testBlocking {
@@ -606,6 +608,9 @@ class SelectPaymentMethodViewModelTest : BaseUnitTest() {
             ).thenReturn(
                 "${AppUrls.WOOCOMMERCE_PURCHASE_CARD_READER_IN_COUNTRY}US"
             )
+            whenever(selectPaymentUtmProvider.getUrlWithUtmParams(any())).thenReturn(
+                "${AppUrls.WOOCOMMERCE_PURCHASE_CARD_READER_IN_COUNTRY}US"
+            )
             whenever(cardPaymentCollectibilityChecker.isCollectable(order)).thenReturn(true)
             whenever(
                 bannerDisplayEligibilityChecker.canShowCardReaderUpsellBanner(anyLong())
@@ -872,7 +877,8 @@ class SelectPaymentMethodViewModelTest : BaseUnitTest() {
             orderMapper,
             analyticsTrackerWrapper,
             cardPaymentCollectibilityChecker,
-            bannerDisplayEligibilityChecker
+            bannerDisplayEligibilityChecker,
+            selectPaymentUtmProvider
         )
     }
 }
