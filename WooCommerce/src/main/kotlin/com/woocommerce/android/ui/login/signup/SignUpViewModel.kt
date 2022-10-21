@@ -6,13 +6,15 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.R
+import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.ui.login.signup.SignUpRepository.AccountCreationError
 import com.woocommerce.android.ui.login.signup.SignUpRepository.AccountCreationSuccess
 import com.woocommerce.android.ui.login.signup.SignUpRepository.SignUpError
-import com.woocommerce.android.ui.login.signup.SignUpViewModel.InputFieldError.EMAIL
-import com.woocommerce.android.ui.login.signup.SignUpViewModel.InputFieldError.OTHER
-import com.woocommerce.android.ui.login.signup.SignUpViewModel.InputFieldError.PASSWORD
+import com.woocommerce.android.ui.login.signup.SignUpViewModel.ErrorType.EMAIL
+import com.woocommerce.android.ui.login.signup.SignUpViewModel.ErrorType.PASSWORD
+import com.woocommerce.android.ui.login.signup.SignUpViewModel.ErrorType.UNKNOWN
 import com.woocommerce.android.viewmodel.MultiLiveEvent
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
@@ -21,7 +23,8 @@ import javax.inject.Inject
 @HiltViewModel
 class SignUpViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
-    private val signUpRepository: SignUpRepository
+    private val signUpRepository: SignUpRepository,
+    private val networkStatus: NetworkStatus,
 ) : ScopedViewModel(savedStateHandle) {
     private val _viewState = MutableLiveData<SignUpState>()
     val viewState: LiveData<SignUpState> = _viewState
@@ -41,11 +44,16 @@ class SignUpViewModel @Inject constructor(
         viewModelScope.launch {
             _viewState.value = _viewState.value?.copy(isLoading = true)
             when (val result = signUpRepository.createAccount(trimmedEmail, password)) {
-                is AccountCreationError ->
+                is AccountCreationError -> {
+                    val error = result.error.toSignUpErrorUi()
                     _viewState.value = _viewState.value?.copy(
                         isLoading = false,
-                        error = result.error.toSignUpErrorUI()
+                        error = error
                     )
+                    if (error.type == UNKNOWN) {
+                        triggerEvent(ShowSnackbar(error.stringId))
+                    }
+                }
                 AccountCreationSuccess -> {
                     _viewState.value = _viewState.value?.copy(isLoading = false)
                     triggerEvent(NavigateToNextStep)
@@ -54,7 +62,7 @@ class SignUpViewModel @Inject constructor(
         }
     }
 
-    private fun SignUpError.toSignUpErrorUI() =
+    private fun SignUpError.toSignUpErrorUi() =
         when (this) {
             SignUpError.EMAIL_EXIST -> SignUpErrorUi(
                 type = EMAIL,
@@ -73,8 +81,8 @@ class SignUpViewModel @Inject constructor(
                 stringId = R.string.signup_password_too_short
             )
             SignUpError.UNKNOWN_ERROR -> SignUpErrorUi(
-                type = OTHER,
-                stringId = R.string.signup_get_started_button
+                type = UNKNOWN,
+                stringId = R.string.signup_api_generic_error
             )
         }
 
@@ -86,14 +94,14 @@ class SignUpViewModel @Inject constructor(
     )
 
     data class SignUpErrorUi(
-        val type: InputFieldError,
+        val type: ErrorType,
         @StringRes val stringId: Int
     )
 
-    enum class InputFieldError {
+    enum class ErrorType {
         EMAIL,
         PASSWORD,
-        OTHER
+        UNKNOWN
     }
 
     object OnTermsOfServiceClicked : MultiLiveEvent.Event()

@@ -42,8 +42,7 @@ import com.woocommerce.android.ui.compose.component.ProgressDialog
 import com.woocommerce.android.ui.compose.component.WCColoredButton
 import com.woocommerce.android.ui.compose.component.WCOutlinedTextField
 import com.woocommerce.android.ui.compose.component.WCPasswordField
-import com.woocommerce.android.ui.login.signup.SignUpViewModel.InputFieldError.EMAIL
-import com.woocommerce.android.ui.login.signup.SignUpViewModel.InputFieldError.PASSWORD
+import com.woocommerce.android.ui.login.signup.SignUpViewModel.ErrorType
 import com.woocommerce.android.ui.login.signup.SignUpViewModel.SignUpState
 
 @Composable
@@ -122,14 +121,14 @@ private fun SignUpForm(
             value = email,
             onValueChange = { email = it },
             label = stringResource(id = R.string.signup_email_address_hint),
-            isError = signUpState.error?.type == EMAIL,
+            isError = signUpState.error?.type == ErrorType.EMAIL,
             helperText = signUpState.error?.stringId?.let { stringResource(id = it) }
         )
         WCPasswordField(
             value = password,
             onValueChange = { password = it },
             label = stringResource(id = R.string.signup_password_hint),
-            isError = signUpState.error?.type == PASSWORD,
+            isError = signUpState.error?.type == ErrorType.PASSWORD,
             helperText = signUpState.error?.stringId?.let { stringResource(id = it) }
         )
         TermsOfServiceText(
