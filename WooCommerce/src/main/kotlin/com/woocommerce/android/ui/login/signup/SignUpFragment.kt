@@ -8,8 +8,10 @@ import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
+import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
+import com.woocommerce.android.ui.login.signup.SignUpViewModel.NavigateToNextStep
 import com.woocommerce.android.ui.login.signup.SignUpViewModel.OnTermsOfServiceClicked
 import com.woocommerce.android.ui.main.AppBarStatus
 import com.woocommerce.android.util.ChromeCustomTabUtils
@@ -46,10 +48,17 @@ class SignUpFragment : BaseFragment() {
     private fun setupObservers() {
         viewModel.event.observe(viewLifecycleOwner) { event ->
             when (event) {
+                is NavigateToNextStep -> navigateToNextStep()
                 is OnTermsOfServiceClicked -> openTermsOfServiceUrl()
                 is Exit -> findNavController().navigateUp()
             }
         }
+    }
+
+    private fun navigateToNextStep() {
+        findNavController().navigateSafely(
+            SignUpFragmentDirections.actionSignUpFragmentToStoreCreationQuestionsFragment()
+        )
     }
 
     private fun openTermsOfServiceUrl() {
