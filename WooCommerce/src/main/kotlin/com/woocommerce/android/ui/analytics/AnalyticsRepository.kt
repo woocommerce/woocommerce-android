@@ -161,7 +161,7 @@ class AnalyticsRepository @Inject constructor(
         fetchStrategy: FetchStrategy
     ): Result<WCRevenueStatsModel.Total> = coroutineScope {
         val startDate = when (dateRange) {
-            is SimpleDateRange -> dateRange.to.formatToYYYYmmDD()
+            is SimpleDateRange -> dateRange.from.formatToYYYYmmDD()
             is MultipleDateRange -> dateRange.to.from.formatToYYYYmmDD()
         }
         val endDate = when (dateRange) {

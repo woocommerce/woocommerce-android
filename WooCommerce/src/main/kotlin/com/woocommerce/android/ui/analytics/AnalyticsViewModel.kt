@@ -74,7 +74,7 @@ class AnalyticsViewModel @Inject constructor(
         val savedRange = getSavedDateRange()
         val fromMillis = when (savedRange) {
             is SimpleDateRange -> savedRange.from.time
-            is MultipleDateRange -> savedRange.from.from.time
+            is MultipleDateRange -> savedRange.to.from.time
         }
         val toMillis = when (savedRange) {
             is SimpleDateRange -> savedRange.to.time
