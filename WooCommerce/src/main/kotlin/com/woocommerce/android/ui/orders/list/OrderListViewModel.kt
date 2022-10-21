@@ -24,6 +24,7 @@ import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.extensions.NotificationReceivedEvent
 import com.woocommerce.android.model.RequestResult.SUCCESS
+import com.woocommerce.android.model.UiString
 import com.woocommerce.android.network.ConnectionChangeReceiver.ConnectionChangeEvent
 import com.woocommerce.android.push.NotificationChannelType
 import com.woocommerce.android.tools.NetworkStatus
@@ -214,10 +215,10 @@ class OrderListViewModel @Inject constructor(
                 onCtaClicked(AnalyticsTracker.KEY_BANNER_ORDER_LIST)
             },
             onDismissClicked = { onDismissClicked() },
-            title = R.string.card_reader_upsell_card_reader_banner_title,
-            description = R.string.card_reader_upsell_card_reader_banner_description,
-            primaryActionLabel = R.string.card_reader_upsell_card_reader_banner_cta,
-            chipLabel = R.string.card_reader_upsell_card_reader_banner_new
+            title = UiString.UiStringRes(R.string.card_reader_upsell_card_reader_banner_title),
+            description = UiString.UiStringRes(R.string.card_reader_upsell_card_reader_banner_description),
+            primaryActionLabel = UiString.UiStringRes(R.string.card_reader_upsell_card_reader_banner_cta),
+            chipLabel = UiString.UiStringRes(R.string.card_reader_upsell_card_reader_banner_new)
         )
         trackBannerShownIfDisplayed()
     }
