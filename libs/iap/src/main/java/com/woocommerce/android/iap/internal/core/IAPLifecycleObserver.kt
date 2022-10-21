@@ -1,6 +1,6 @@
 package com.woocommerce.android.iap.internal.core
 
-import android.app.Activity
+import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.DefaultLifecycleObserver
 import androidx.lifecycle.LifecycleOwner
 import com.android.billingclient.api.BillingClient
@@ -16,18 +16,22 @@ import kotlin.coroutines.resumeWithException
 import kotlin.coroutines.suspendCoroutine
 
 internal class IAPLifecycleObserver(
-    private val activity: Activity,
     private val onPurchaseUpdated: PurchasesUpdatedListener,
     private val logWrapper: IAPLogWrapper,
 ) : DefaultLifecycleObserver {
     private val connectionEstablishingContinuations = Collections.synchronizedList(mutableListOf<Continuation<Unit>>())
 
-    val billingClient by lazy {
-        BillingClient
+    lateinit var billingClient: BillingClient
+    lateinit var activity: AppCompatActivity
+
+    fun initBillingClient(activity: AppCompatActivity) {
+        this.activity = activity
+        billingClient = BillingClient
             .newBuilder(activity)
             .setListener(onPurchaseUpdated)
             .enablePendingPurchases()
             .build()
+        activity.lifecycle.addObserver(this)
     }
 
     override fun onCreate(owner: LifecycleOwner) {
@@ -58,7 +62,7 @@ internal class IAPLifecycleObserver(
         if (this.activity.isDestroyed) {
             it.resumeWithException(
                 IllegalStateException(
-                    "Activity is destroyed. Make sure that activity scope is used for IAPManager"
+                    "Activity is destroyed. Make sure IAPManager::initIAP in every onCreate"
                 )
             )
         } else if (billingClient.isReady) {

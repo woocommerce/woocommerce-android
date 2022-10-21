@@ -14,9 +14,7 @@ import com.woocommerce.android.iap.pub.model.WPComPurchaseResult
 import com.woocommerce.android.viewmodel.SingleLiveEvent
 import kotlinx.coroutines.launch
 
-class IAPShowcaseViewModel : ViewModel() {
-    lateinit var iapManager: PurchaseWPComPlanActions
-
+class IAPShowcaseViewModel(private val iapManager: PurchaseWPComPlanActions) : ViewModel() {
     private val _productInfo = MutableLiveData<WPComPlanProduct>()
     val productInfo: LiveData<WPComPlanProduct> = _productInfo
 
