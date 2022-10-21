@@ -22,7 +22,6 @@ import com.woocommerce.android.iap.pub.IAP_LOG_TAG
 import com.woocommerce.android.iap.pub.model.IAPError
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.cancel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
@@ -187,16 +186,17 @@ internal class IAPManager(
         continuationProvider: () -> Continuation<PurchasesResult>?,
     ) = CoroutineScope(Dispatchers.IO).launch {
         repeat(PURCHASE_STATE_CHECK_TIMES) {
-            if (!isActive) cancel()
-            delay(PURCHASE_STATE_CHECK_INTERVAL)
-            val purchasesResult = queryPurchases(iapProduct.productType)
-            logWrapper.d(IAP_LOG_TAG, "Fetching purchases. Result ${purchasesResult.billingResult}")
-            if (purchasesResult.billingResult.isSuccess &&
-                purchasesResult.purchasesList.firstOrNull {
-                    it.products.contains(iapProduct.productId)
-                }?.purchaseState == Purchase.PurchaseState.PURCHASED
-            ) {
-                continuationProvider()?.resume(purchasesResult)
+            if (isActive) {
+                delay(PURCHASE_STATE_CHECK_INTERVAL)
+                val purchasesResult = queryPurchases(iapProduct.productType)
+                logWrapper.d(IAP_LOG_TAG, "Fetching purchases. Result ${purchasesResult.billingResult}")
+                if (purchasesResult.billingResult.isSuccess &&
+                    purchasesResult.purchasesList.firstOrNull {
+                        it.products.contains(iapProduct.productId)
+                    }?.purchaseState == Purchase.PurchaseState.PURCHASED
+                ) {
+                    continuationProvider()?.resume(purchasesResult)
+                }
             }
         }
     }
