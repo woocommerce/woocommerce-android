@@ -5,6 +5,7 @@ import android.view.ViewGroup
 import android.widget.Button
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.LayoutRes
+import androidx.core.text.HtmlCompat
 import com.woocommerce.android.R
 import com.woocommerce.android.extensions.showKeyboardWithDelay
 import com.woocommerce.android.ui.dialog.WooDialog
@@ -34,7 +35,10 @@ class WooLoginEmailFragment : LoginEmailFragment() {
 
     override fun setupContent(rootView: ViewGroup) {
         super.setupContent(rootView)
-        rootView.findViewById<Button>(R.id.login_what_is_wordpress).setOnClickListener {
+        val whatIsWordPressText = rootView.findViewById<Button>(R.id.login_what_is_wordpress)
+        whatIsWordPressText.text =
+            HtmlCompat.fromHtml(getString(R.string.what_is_wordpress_link), HtmlCompat.FROM_HTML_MODE_LEGACY)
+        whatIsWordPressText.setOnClickListener {
             whatIsWordPressLinkClickListener.onWhatIsWordPressLinkClicked()
         }
 

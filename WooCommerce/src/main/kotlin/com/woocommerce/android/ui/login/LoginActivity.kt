@@ -10,7 +10,10 @@ import android.view.MenuItem
 import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.FragmentManager.POP_BACK_STACK_INCLUSIVE
 import androidx.lifecycle.lifecycleScope
+import androidx.navigation.NavController
+import androidx.navigation.fragment.NavHostFragment
 import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.AppUrls
@@ -42,6 +45,7 @@ import com.woocommerce.android.ui.login.UnifiedLoginTracker.Source
 import com.woocommerce.android.ui.login.UnifiedLoginTracker.Step.ENTER_SITE_ADDRESS
 import com.woocommerce.android.ui.login.accountmismatch.AccountMismatchErrorFragment
 import com.woocommerce.android.ui.login.accountmismatch.AccountMismatchErrorFragmentArgs
+import com.woocommerce.android.ui.login.accountmismatch.AccountMismatchErrorViewModel.AccountMismatchErrorType
 import com.woocommerce.android.ui.login.accountmismatch.AccountMismatchErrorViewModel.AccountMismatchPrimaryButton
 import com.woocommerce.android.ui.login.localnotifications.LoginHelpNotificationType
 import com.woocommerce.android.ui.login.localnotifications.LoginHelpNotificationType.DEFAULT_HELP
@@ -153,6 +157,12 @@ class LoginActivity :
     private var loginMode: LoginMode? = null
     private lateinit var binding: ActivityLoginBinding
 
+    // Lazy init required to avoid crash. Full context: github.com/woocommerce/woocommerce-android/pull/7581
+    private val navController: NavController by lazy { navHostFragment.navController }
+    private val navHostFragment: NavHostFragment by lazy {
+        supportFragmentManager.findFragmentById(R.id.nav_host_fragment_login) as NavHostFragment
+    }
+
     private var connectSiteInfo: ConnectSiteInfo? = null
 
     override fun androidInjector(): AndroidInjector<Any> = androidInjector
@@ -172,6 +182,7 @@ class LoginActivity :
 
         binding = ActivityLoginBinding.inflate(layoutInflater)
         setContentView(binding.root)
+
         val loginHelpNotification = getLoginHelpNotification()
 
         when {
@@ -194,7 +205,6 @@ class LoginActivity :
             }
             savedInstanceState == null -> {
                 loginAnalyticsListener.trackLoginAccessed()
-
                 showPrologue()
             }
         }
@@ -208,11 +218,10 @@ class LoginActivity :
 
     private fun handleBackPress() {
         AnalyticsTracker.trackBackPressed(this)
-
-        if (supportFragmentManager.backStackEntryCount == 1) {
-            finish()
-        } else {
+        if (supportFragmentManager.backStackEntryCount != 0) {
             supportFragmentManager.popBackStack()
+        } else if (navHostFragment.childFragmentManager.backStackEntryCount == 0) {
+            finish()
         }
     }
 
@@ -237,20 +246,15 @@ class LoginActivity :
         }
     }
 
-    private fun showPrologueCarouselFragment() {
-        val fragment = LoginPrologueCarouselFragment.newInstance()
-        supportFragmentManager.beginTransaction()
-            .replace(R.id.fragment_container, fragment, LoginPrologueCarouselFragment.TAG)
-            .addToBackStack(LoginPrologueCarouselFragment.TAG)
-            .commitAllowingStateLoss()
-    }
-
     private fun showPrologue() {
+        val graphInflater = navHostFragment.navController.navInflater
+        val navGraph = graphInflater.inflate(R.navigation.nav_graph_login)
         if (!appPrefsWrapper.hasOnboardingCarouselBeenDisplayed()) {
-            showPrologueCarouselFragment()
+            navGraph.setStartDestination(R.id.loginPrologueCarouselFragment)
         } else {
-            showPrologueFragment()
+            navGraph.setStartDestination(R.id.loginPrologueFragment)
         }
+        navController.graph = navGraph
     }
 
     private fun hasMagicLinkLoginIntent(): Boolean {
@@ -268,7 +272,7 @@ class LoginActivity :
     private fun showMagicLinkInterceptFragment(authToken: String) {
         val fragment = MagicLinkInterceptFragment.newInstance(authToken)
         supportFragmentManager.beginTransaction()
-            .replace(R.id.fragment_container, fragment, MagicLinkInterceptFragment.TAG)
+            .replace(R.id.nav_host_fragment_login, fragment, MagicLinkInterceptFragment.TAG)
             .addToBackStack(null)
             .commitAllowingStateLoss()
     }
@@ -295,7 +299,7 @@ class LoginActivity :
                 R.anim.default_pop_exit_anim
             )
         }
-        fragmentTransaction.replace(R.id.fragment_container, fragment, tag)
+        fragmentTransaction.replace(R.id.nav_host_fragment_login, fragment, tag)
         if (shouldAddToBackStack) {
             fragmentTransaction.addToBackStack(tag)
         }
@@ -323,12 +327,6 @@ class LoginActivity :
     private fun getLoginViaSiteAddressFragment(): LoginSiteAddressFragment? =
         supportFragmentManager.findFragmentByTag(LoginSiteAddressFragment.TAG) as? WooLoginSiteAddressFragment
 
-    private fun getPrologueFragment(): LoginPrologueFragment? =
-        supportFragmentManager.findFragmentByTag(LoginPrologueFragment.TAG) as? LoginPrologueFragment
-
-    private fun getPrologueSurveyFragment(): LoginPrologueSurveyFragment? =
-        supportFragmentManager.findFragmentByTag(LoginPrologueSurveyFragment.TAG) as? LoginPrologueSurveyFragment
-
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         if (item.itemId == android.R.id.home) {
             onBackPressedDispatcher.onBackPressed()
@@ -353,9 +351,8 @@ class LoginActivity :
     override fun startOver() {
         // Clear logged in url from AppPrefs
         AppPrefs.removeLoginSiteAddress()
-
-        // Pop all the fragments from the backstack until we get to the Prologue fragment
-        supportFragmentManager.popBackStack(LoginPrologueFragment.TAG, 0)
+        // This will clear the back stack and return user to LoginPrologueFragment
+        supportFragmentManager.popBackStack(null, POP_BACK_STACK_INCLUSIVE)
     }
 
     override fun onPrimaryButtonClicked() {
@@ -443,14 +440,12 @@ class LoginActivity :
         changeFragment(loginSiteAddressFragment, true, LoginSiteAddressFragment.TAG)
     }
 
-    private fun showPrologueFragment() = lifecycleScope.launchWhenStarted {
-        val prologueFragment = getPrologueFragment() ?: LoginPrologueFragment()
-        changeFragment(prologueFragment, true, LoginPrologueFragment.TAG)
+    private fun showPrologueFragmentFromCarousel() = lifecycleScope.launchWhenStarted {
+        navController.navigate(R.id.action_loginPrologueCarouselFragment_to_loginPrologueFragment)
     }
 
     private fun showPrologueSurveyFragment() {
-        val prologueSurveyFragment = getPrologueSurveyFragment() ?: LoginPrologueSurveyFragment()
-        changeFragment(prologueSurveyFragment, true, LoginPrologueSurveyFragment.TAG)
+        navController.navigate(R.id.loginPrologueSurveyFragment)
     }
 
     override fun loginViaSocialAccount(
@@ -672,12 +667,13 @@ class LoginActivity :
         userAvatarUrl: String?,
         checkJetpackAvailability: Boolean
     ) {
-        if (connectSiteInfo?.isJetpackActive == true && connectSiteInfo?.isJetpackConnected == true) {
+        if (connectSiteInfo?.isJetpackActive == true) {
             // If jetpack is present, but we can't find the connected email, then show account mismatch error
             val fragment = AccountMismatchErrorFragment().apply {
                 arguments = AccountMismatchErrorFragmentArgs(
                     siteUrl = siteAddress,
-                    primaryButton = AccountMismatchPrimaryButton.CONNECT_JETPACK
+                    primaryButton = AccountMismatchPrimaryButton.CONNECT_JETPACK,
+                    errorType = AccountMismatchErrorType.ACCOUNT_NOT_CONNECTED
                 ).toBundle()
             }
             changeFragment(
@@ -911,12 +907,12 @@ class LoginActivity :
 
     override fun onCarouselFinished() {
         lifecycleScope.launchWhenStarted {
-            prologueExperiment.run(::showPrologueFragment, ::showPrologueSurveyFragment)
+            prologueExperiment.run(::showPrologueFragmentFromCarousel, ::showPrologueSurveyFragment)
         }
     }
 
     override fun onSurveyFinished() {
-        showPrologueFragment()
+        navController.navigate(R.id.action_loginPrologueSurveyFragment_to_loginPrologueFragment)
     }
 
     override fun onPasswordError() {

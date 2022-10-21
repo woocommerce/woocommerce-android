@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/nav_graph_store_creation"
+    app:startDestination="@id/signupFragment">
+
+    <fragment
+        android:id="@+id/signupFragment"
+        android:name="com.woocommerce.android.ui.login.signup.SignUpFragment"
+        android:label="fragment_sign_up">
+        <action
+            android:id="@+id/action_signUpFragment_to_storeCreationQuestionsFragment"
+            app:destination="@id/storeCreationQuestionsFragment"
+            app:enterAnim="@anim/default_enter_anim"
+            app:exitAnim="@anim/default_exit_anim"
+            app:popEnterAnim="@anim/default_pop_enter_anim"
+            app:popExitAnim="@anim/default_pop_exit_anim" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/storeCreationQuestionsFragment"
+        android:name="com.woocommerce.android.ui.login.storecreation.StoreCreationQuestionsFragment"
+        android:label="fragment_store_creation_questions" />
+
+</navigation>

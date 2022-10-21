@@ -22,6 +22,13 @@
         <action
             android:id="@+id/action_myStore_to_jetpackBenefitsDialog"
             app:destination="@id/nav_graph_jetpack_install" />
+        <action
+            android:id="@+id/action_myStore_to_analytics"
+            app:destination="@id/analytics"
+            app:enterAnim="@anim/activity_fade_in"
+            app:exitAnim="@null"
+            app:popEnterAnim="@null"
+            app:popExitAnim="@anim/activity_fade_out" />
     </fragment>
     <fragment
         android:id="@+id/orders"
@@ -434,7 +441,11 @@
     <fragment
         android:id="@+id/sitePickerSiteDiscoveryFragment"
         android:name="com.woocommerce.android.ui.sitepicker.sitediscovery.SitePickerSiteDiscoveryFragment"
-        android:label="SitePickerSiteDiscoveryFragment" />
+        android:label="SitePickerSiteDiscoveryFragment" >
+        <action
+            android:id="@+id/action_sitePickerSiteDiscoveryFragment_to_accountMismatchErrorFragment"
+            app:destination="@id/accountMismatchErrorFragment" />
+    </fragment>
     <fragment
         android:id="@+id/accountMismatchErrorFragment"
         android:name="com.woocommerce.android.ui.login.accountmismatch.AccountMismatchErrorFragment"
@@ -446,6 +457,9 @@
             android:name="primaryButton"
             app:argType="com.woocommerce.android.ui.login.accountmismatch.AccountMismatchErrorViewModel$AccountMismatchPrimaryButton"
             android:defaultValue="NONE" />
+        <argument
+            android:name="errorType"
+            app:argType="com.woocommerce.android.ui.login.accountmismatch.AccountMismatchErrorViewModel$AccountMismatchErrorType" />
         <argument
             android:name="allowBackNavigation"
             app:argType="boolean"
