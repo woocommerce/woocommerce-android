@@ -2,6 +2,8 @@ package com.woocommerce.android.ui.mystore
 
 import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.AppPrefsWrapper
+import com.woocommerce.android.AppUrls
+import com.woocommerce.android.R
 import com.woocommerce.android.WooException
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
@@ -9,11 +11,13 @@ import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.model.UiString
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.ui.mystore.MyStoreViewModel.MyStoreEvent.OnJitmCtaClicked
 import com.woocommerce.android.ui.mystore.domain.GetStats
 import com.woocommerce.android.ui.mystore.domain.GetTopPerformers
 import com.woocommerce.android.ui.mystore.domain.GetTopPerformers.TopPerformerProduct
 import com.woocommerce.android.ui.payments.banner.BannerState
 import com.woocommerce.android.util.CurrencyFormatter
+import com.woocommerce.android.util.UtmProvider
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import com.woocommerce.android.viewmodel.ResourceProvider
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -58,6 +62,7 @@ class MyStoreViewModelTest : BaseUnitTest() {
     private val usageTracksEventEmitter: MyStoreStatsUsageTracksEventEmitter = mock()
     private val analyticsTrackerWrapper: AnalyticsTrackerWrapper = mock()
     private val jitmStore: JitmStore = mock()
+    private val utmProvider: UtmProvider = mock()
 
     private lateinit var sut: MyStoreViewModel
 
@@ -614,6 +619,100 @@ class MyStoreViewModelTest : BaseUnitTest() {
             )
         }
     }
+
+    @Test
+    fun `given jitm displayed, when jitm cta clicked, then proper event is triggered`() {
+        testBlocking {
+            givenNetworkConnectivity(connected = true)
+            whenever(selectedSite.get()).thenReturn(SiteModel())
+            whenever(
+                wooCommerceStore.getStoreCountryCode(any())
+            ).thenReturn("US")
+            whenever(
+                jitmStore.fetchJitmMessage(any(), any())
+            ).thenReturn(
+                WooResult(
+                    model = arrayOf(provideJitmApiResponse())
+                )
+            )
+            whenever(utmProvider.getUrlWithUtmParams(any())).thenReturn("")
+
+            whenViewModelIsCreated()
+            (sut.bannerState.value as BannerState).onPrimaryActionClicked.invoke()
+
+            assertThat(
+                sut.event.value
+            ).isInstanceOf(
+                OnJitmCtaClicked::class.java
+            )
+        }
+    }
+
+    @Test
+    fun `given jitm displayed, when jitm cta clicked, then proper url is passed`() {
+        testBlocking {
+            givenNetworkConnectivity(connected = true)
+            whenever(selectedSite.get()).thenReturn(SiteModel())
+            whenever(
+                wooCommerceStore.getStoreCountryCode(any())
+            ).thenReturn("US")
+            whenever(
+                jitmStore.fetchJitmMessage(any(), any())
+            ).thenReturn(
+                WooResult(
+                    model = arrayOf(
+                        provideJitmApiResponse(
+                            jitmCta = provideJitmCta(
+                                link = "${AppUrls.WOOCOMMERCE_PURCHASE_CARD_READER_IN_COUNTRY}US"
+                            )
+                        )
+                    )
+                )
+            )
+            whenever(utmProvider.getUrlWithUtmParams(any())).thenReturn(
+                "${AppUrls.WOOCOMMERCE_PURCHASE_CARD_READER_IN_COUNTRY}US"
+            )
+
+            whenViewModelIsCreated()
+            (sut.bannerState.value as BannerState).onPrimaryActionClicked.invoke()
+
+            assertThat(
+                (sut.event.value as OnJitmCtaClicked).url
+            ).isEqualTo(
+                "${AppUrls.WOOCOMMERCE_PURCHASE_CARD_READER_IN_COUNTRY}US"
+            )
+        }
+    }
+
+    @Test
+    fun `given jitm displayed, when jitm cta clicked, then proper title is passed`() {
+        testBlocking {
+            givenNetworkConnectivity(connected = true)
+            whenever(selectedSite.get()).thenReturn(SiteModel())
+            whenever(
+                wooCommerceStore.getStoreCountryCode(any())
+            ).thenReturn("US")
+            whenever(
+                jitmStore.fetchJitmMessage(any(), any())
+            ).thenReturn(
+                WooResult(
+                    model = arrayOf(provideJitmApiResponse())
+                )
+            )
+            whenever(utmProvider.getUrlWithUtmParams(any())).thenReturn(
+                ""
+            )
+
+            whenViewModelIsCreated()
+            (sut.bannerState.value as BannerState).onPrimaryActionClicked.invoke()
+
+            assertThat(
+                (sut.event.value as OnJitmCtaClicked).titleRes
+            ).isEqualTo(
+                R.string.card_reader_purchase_card_reader
+            )
+        }
+    }
     //endregion
 
     private suspend fun givenStatsLoadingResult(result: GetStats.LoadStatsResult) {
@@ -670,6 +769,7 @@ class MyStoreViewModelTest : BaseUnitTest() {
             analyticsTrackerWrapper,
             myStoreTransactionLauncher = mock(),
             jitmStore,
+            utmProvider,
         )
     }
 

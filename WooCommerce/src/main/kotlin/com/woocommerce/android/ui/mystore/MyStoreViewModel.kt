@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.mystore
 
+import androidx.annotation.StringRes
 import androidx.annotation.VisibleForTesting
 import androidx.lifecycle.LifecycleObserver
 import androidx.lifecycle.LiveData
@@ -28,8 +29,8 @@ import com.woocommerce.android.ui.mystore.domain.GetStats.LoadStatsResult.Visito
 import com.woocommerce.android.ui.mystore.domain.GetTopPerformers
 import com.woocommerce.android.ui.mystore.domain.GetTopPerformers.TopPerformerProduct
 import com.woocommerce.android.ui.payments.banner.BannerState
-import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.util.CurrencyFormatter
+import com.woocommerce.android.util.UtmProvider
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.ResourceProvider
@@ -48,7 +49,6 @@ import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.take
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import org.apache.commons.text.StringEscapeUtils
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
@@ -63,6 +63,7 @@ import org.wordpress.android.util.PhotonUtils
 import java.math.BigDecimal
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
+import javax.inject.Named
 
 @HiltViewModel
 class MyStoreViewModel @Inject constructor(
@@ -79,10 +80,14 @@ class MyStoreViewModel @Inject constructor(
     private val analyticsTrackerWrapper: AnalyticsTrackerWrapper,
     private val myStoreTransactionLauncher: MyStoreTransactionLauncher,
     private val jitmStore: JitmStore,
+    @Named("my-store") private val utmProvider: UtmProvider,
 ) : ScopedViewModel(savedState) {
-    private companion object {
+    companion object {
         const val DAYS_TO_REDISPLAY_JP_BENEFITS_BANNER = 5
         const val JITM_MESSAGE_PATH = "woomobile:my_store:admin_notices"
+        const val UTM_CAMPAIGN = "jitm_group_woomobile_ipp"
+        const val UTM_SOURCE = "my_store"
+        const val UTM_CONTENT = "jitm_woomobile_ipp_barcode_users"
     }
 
     val performanceObserver: LifecycleObserver = myStoreTransactionLauncher
@@ -157,7 +162,7 @@ class MyStoreViewModel @Inject constructor(
             !response.model.isNullOrEmpty() -> {
                 _bannerState.value = BannerState(
                     shouldDisplayBanner = true,
-                    {},
+                    onPrimaryActionClicked = {(::onJitmCtaClicked)(response.model!![0].cta.link)},
                     {},
                     title = UiString.UiStringText(response.model!![0].content.message),
                     description = UiString.UiStringText(response.model!![0].content.description),
@@ -166,6 +171,14 @@ class MyStoreViewModel @Inject constructor(
                 )
             }
         }
+    }
+
+    private fun onJitmCtaClicked(url: String) {
+        triggerEvent(
+            MyStoreEvent.OnJitmCtaClicked(
+                utmProvider.getUrlWithUtmParams(url)
+            )
+        )
     }
 
     override fun onCleared() {
@@ -424,6 +437,10 @@ class MyStoreViewModel @Inject constructor(
     sealed class MyStoreEvent : MultiLiveEvent.Event() {
         data class OpenTopPerformer(
             val productId: Long
+        ) : MyStoreEvent()
+        data class OnJitmCtaClicked(
+            val url: String,
+            @StringRes val titleRes: Int = R.string.card_reader_purchase_card_reader
         ) : MyStoreEvent()
     }
 }
