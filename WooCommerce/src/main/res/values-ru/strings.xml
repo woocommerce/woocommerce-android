@@ -1,11 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2022-10-11 14:54:04+0000
+Translation-Revision-Date: 2022-10-19 14:54:04+0000
 Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);
 Generator: GlotPress/2.4.0-alpha
 Language: ru
 -->
 <resources>
+    <string name="enable_card_reader">Включить симуляцию устройства чтения карт</string>
+    <string name="login_account_mismatch_connect_wpcom_dialog_message">Чтобы использовать приложение, получите приглашение у владельца сайта, например у директора магазина или администратора.</string>
+    <string name="login_account_mismatch_connect_wpcom_dialog_title">Подключение к сайту WordPress.com</string>
+    <string name="login_account_mismatch_connect_wpcom">Подключить к сайту</string>
+    <string name="login_account_mismatch_connect_jetpack">Подключите Jetpack к учётной записи</string>
     <string name="qr_code_login_edit_camera_permission">Изменить разрешения</string>
     <string name="qr_code_login_camera_permission_denied_message">Для работы с этой функцией предоставьте разрешение на использование камеры.</string>
     <string name="qr_code_login_camera_permission_denied_title">Требуется доступ к камере</string>
@@ -26,7 +31,6 @@ Language: ru
     <string name="login_jetpack_verify_connection">Проверка подключения Jetpack…</string>
     <string name="login_jetpack_connection_verification_failed">Не удалось проверить подключение Jetpack. Повторите попытку.</string>
     <string name="login_simple_wpcom_site">Сейчас на сайте %1$s используется план WordPress.com, который не поддерживает установку плагинов. Перейдите на другой план, чтобы использовать WooCommerce.</string>
-    <string name="login_connect_jetpack_button">Подключите Jetpack к учётной записи</string>
     <string name="login_jetpack_not_connected">Похоже, что ваша учётная запись не подключена к Jetpack %1$s</string>
     <string name="card_reader_card_readers_header">УСТРОЙСТВА ЧТЕНИЯ КАРТ</string>
     <string name="card_reader_payment_options_header">СПОСОБЫ ОПЛАТЫ</string>
