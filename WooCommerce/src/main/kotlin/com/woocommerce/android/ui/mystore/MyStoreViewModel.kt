@@ -156,14 +156,12 @@ class MyStoreViewModel @Inject constructor(
 
     private fun populateResultToUI(response: WooResult<Array<JITMApiResponse>>) {
         when {
-            response.isError -> {
-
-            }
+            response.isError -> { }
             !response.model.isNullOrEmpty() -> {
                 _bannerState.value = BannerState(
                     shouldDisplayBanner = true,
-                    onPrimaryActionClicked = {(::onJitmCtaClicked)(response.model!![0].cta.link)},
-                    {},
+                    onPrimaryActionClicked = { (::onJitmCtaClicked)(response.model!![0].cta.link) },
+                    { },
                     title = UiString.UiStringText(response.model!![0].content.message),
                     description = UiString.UiStringText(response.model!![0].content.description),
                     primaryActionLabel = UiString.UiStringText(response.model!![0].cta.message),
