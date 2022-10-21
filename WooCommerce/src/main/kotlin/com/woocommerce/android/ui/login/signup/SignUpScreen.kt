@@ -117,19 +117,23 @@ private fun SignUpForm(
             style = MaterialTheme.typography.body1,
         )
         Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.major_100)))
+
+        val isEmailError = signUpState.error?.type == ErrorType.EMAIL
         WCOutlinedTextField(
             value = email,
             onValueChange = { email = it },
             label = stringResource(id = R.string.signup_email_address_hint),
-            isError = signUpState.error?.type == ErrorType.EMAIL,
-            helperText = signUpState.error?.stringId?.let { stringResource(id = it) }
+            isError = isEmailError,
+            helperText = if (isEmailError) signUpState.error?.stringId?.let { stringResource(id = it) } else null
         )
+
+        val isPasswordError = signUpState.error?.type == ErrorType.PASSWORD
         WCPasswordField(
             value = password,
             onValueChange = { password = it },
             label = stringResource(id = R.string.signup_password_hint),
             isError = signUpState.error?.type == ErrorType.PASSWORD,
-            helperText = signUpState.error?.stringId?.let { stringResource(id = it) }
+            helperText = if (isPasswordError) signUpState.error?.stringId?.let { stringResource(id = it) } else null
         )
         TermsOfServiceText(
             modifier = Modifier.clickable { termsOfServiceClicked() }
