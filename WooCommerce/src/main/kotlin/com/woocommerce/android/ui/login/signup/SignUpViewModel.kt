@@ -38,9 +38,13 @@ class SignUpViewModel @Inject constructor(
     }
 
     fun onGetStartedCLicked(email: String, password: String) {
+        if (!networkStatus.isConnected()) {
+            triggerEvent(ShowSnackbar(R.string.no_network_message))
+            return
+        }
+
         val trimmedEmail = email.trim()
         _viewState.value = SignUpState(email = trimmedEmail, password = password)
-
         viewModelScope.launch {
             _viewState.value = _viewState.value?.copy(isLoading = true)
             when (val result = signUpRepository.createAccount(trimmedEmail, password)) {
