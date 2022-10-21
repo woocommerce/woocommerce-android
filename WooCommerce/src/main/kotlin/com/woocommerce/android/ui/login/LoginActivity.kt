@@ -56,6 +56,7 @@ import com.woocommerce.android.ui.login.overrides.WooLoginEmailFragment
 import com.woocommerce.android.ui.login.overrides.WooLoginEmailPasswordFragment
 import com.woocommerce.android.ui.login.overrides.WooLoginSiteAddressFragment
 import com.woocommerce.android.ui.login.signup.SignUpFragment
+import com.woocommerce.android.ui.login.storecreation.StoreCreationFragment
 import com.woocommerce.android.ui.main.MainActivity
 import com.woocommerce.android.util.ActivityUtils
 import com.woocommerce.android.util.ChromeCustomTabUtils
@@ -291,6 +292,7 @@ class LoginActivity :
         fragmentTransaction.replace(R.id.fragment_container, fragment, tag)
         if (shouldAddToBackStack) {
             fragmentTransaction.addToBackStack(tag)
+            fragmentTransaction.setPrimaryNavigationFragment(fragment)
         }
         fragmentTransaction.commitAllowingStateLoss()
     }
@@ -957,7 +959,11 @@ class LoginActivity :
     }
 
     override fun onAccountCreated() {
-        TODO("Not yet implemented")
+        val storeCreationFragment =
+            supportFragmentManager.findFragmentByTag(StoreCreationFragment.TAG) as? StoreCreationFragment
+                ?: StoreCreationFragment()
+
+        changeFragment(storeCreationFragment, shouldAddToBackStack = true, tag = StoreCreationFragment.TAG)
     }
 
     private fun processLoginHelpNotification(loginHelpNotification: String) {
