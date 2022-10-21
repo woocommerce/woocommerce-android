@@ -460,7 +460,6 @@ class LoginActivity :
         changeFragment(prologueSurveyFragment, true, LoginPrologueSurveyFragment.TAG)
     }
 
-
     override fun loginViaSocialAccount(
         email: String?,
         idToken: String?,
