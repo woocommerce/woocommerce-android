@@ -45,6 +45,7 @@ import com.woocommerce.android.ui.login.UnifiedLoginTracker.Source
 import com.woocommerce.android.ui.login.UnifiedLoginTracker.Step.ENTER_SITE_ADDRESS
 import com.woocommerce.android.ui.login.accountmismatch.AccountMismatchErrorFragment
 import com.woocommerce.android.ui.login.accountmismatch.AccountMismatchErrorFragmentArgs
+import com.woocommerce.android.ui.login.accountmismatch.AccountMismatchErrorViewModel.AccountMismatchErrorType
 import com.woocommerce.android.ui.login.accountmismatch.AccountMismatchErrorViewModel.AccountMismatchPrimaryButton
 import com.woocommerce.android.ui.login.localnotifications.LoginHelpNotificationType
 import com.woocommerce.android.ui.login.localnotifications.LoginHelpNotificationType.DEFAULT_HELP
@@ -155,8 +156,12 @@ class LoginActivity :
 
     private var loginMode: LoginMode? = null
     private lateinit var binding: ActivityLoginBinding
-    private lateinit var navController: NavController
-    private lateinit var navHostFragment: NavHostFragment
+
+    // Lazy init required to avoid crash. Full context: github.com/woocommerce/woocommerce-android/pull/7581
+    private val navController: NavController by lazy { navHostFragment.navController }
+    private val navHostFragment: NavHostFragment by lazy {
+        supportFragmentManager.findFragmentById(R.id.nav_host_fragment_login) as NavHostFragment
+    }
 
     private var connectSiteInfo: ConnectSiteInfo? = null
 
@@ -177,8 +182,6 @@ class LoginActivity :
 
         binding = ActivityLoginBinding.inflate(layoutInflater)
         setContentView(binding.root)
-        navHostFragment = supportFragmentManager.findFragmentById(R.id.nav_host_fragment_login) as NavHostFragment
-        navController = navHostFragment.navController
 
         val loginHelpNotification = getLoginHelpNotification()
 
@@ -664,12 +667,13 @@ class LoginActivity :
         userAvatarUrl: String?,
         checkJetpackAvailability: Boolean
     ) {
-        if (connectSiteInfo?.isJetpackActive == true && connectSiteInfo?.isJetpackConnected == true) {
+        if (connectSiteInfo?.isJetpackActive == true) {
             // If jetpack is present, but we can't find the connected email, then show account mismatch error
             val fragment = AccountMismatchErrorFragment().apply {
                 arguments = AccountMismatchErrorFragmentArgs(
                     siteUrl = siteAddress,
-                    primaryButton = AccountMismatchPrimaryButton.CONNECT_JETPACK
+                    primaryButton = AccountMismatchPrimaryButton.CONNECT_JETPACK,
+                    errorType = AccountMismatchErrorType.ACCOUNT_NOT_CONNECTED
                 ).toBundle()
             }
             changeFragment(
