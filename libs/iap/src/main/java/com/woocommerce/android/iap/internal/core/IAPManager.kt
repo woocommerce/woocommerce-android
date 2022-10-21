@@ -22,13 +22,11 @@ import com.woocommerce.android.iap.pub.IAP_LOG_TAG
 import com.woocommerce.android.iap.pub.model.IAPError
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.cancel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import kotlin.coroutines.Continuation
-import kotlin.coroutines.resume
-import kotlin.coroutines.suspendCoroutine
 
 internal class IAPManager(
     private val activity: AppCompatActivity,
@@ -66,13 +64,8 @@ internal class IAPManager(
                 val flowParams = buildBillingFlowParams(iapProductDetailsResponse.productDetails)
                 billingClient.launchBillingFlow(activity, flowParams)
 
-                var continuation: Continuation<PurchasesResult>? = null
-                val job = startPeriodicPurchasesCheckJob(iapProduct) { continuation }
-                val purchasesResult = suspendCoroutine<PurchasesResult> {
-                    continuation = it
-                    iapPurchasesUpdatedListener.waitTillNextPurchaseEvent(it)
-                }
-                job.cancel()
+                startPeriodicPurchasesCheckJob(iapProduct) { iapPurchasesUpdatedListener.onPurchaseAvailable(it) }
+                val purchasesResult = iapPurchasesUpdatedListener.getPurchaseResult()
                 if (purchasesResult.billingResult.isSuccess) {
                     IAPPurchaseResponse.Success(
                         purchasesResult.purchasesList.map {
@@ -183,26 +176,29 @@ internal class IAPManager(
 
     private fun startPeriodicPurchasesCheckJob(
         iapProduct: IAPProduct,
-        continuationProvider: () -> Continuation<PurchasesResult>?,
-    ) = CoroutineScope(Dispatchers.IO).launch {
-        repeat(PURCHASE_STATE_CHECK_TIMES) {
-            if (isActive) {
-                delay(PURCHASE_STATE_CHECK_INTERVAL)
-                val purchasesResult = queryPurchases(iapProduct.productType)
-                logWrapper.d(IAP_LOG_TAG, "Fetching purchases. Result ${purchasesResult.billingResult}")
-                if (purchasesResult.billingResult.isSuccess &&
-                    purchasesResult.purchasesList.firstOrNull {
-                        it.products.contains(iapProduct.productId)
-                    }?.purchaseState == Purchase.PurchaseState.PURCHASED
-                ) {
-                    continuationProvider()?.resume(purchasesResult)
+        onPurchaseAvailable: (PurchasesResult) -> Unit,
+    ) {
+        CoroutineScope(Dispatchers.IO).launch {
+            repeat(PURCHASE_STATE_CHECK_TIMES) {
+                if (isActive) {
+                    delay(PURCHASE_STATE_CHECK_INTERVAL)
+                    val purchasesResult = queryPurchases(iapProduct.productType)
+                    logWrapper.d(IAP_LOG_TAG, "Fetching purchases. Result ${purchasesResult.billingResult}")
+                    if (purchasesResult.billingResult.isSuccess &&
+                        purchasesResult.purchasesList.firstOrNull {
+                            it.products.contains(iapProduct.productId)
+                        }?.purchaseState == Purchase.PurchaseState.PURCHASED
+                    ) {
+                        onPurchaseAvailable(purchasesResult)
+                        cancel()
+                    }
                 }
             }
         }
     }
 
     companion object {
-        private const val PURCHASE_STATE_CHECK_INTERVAL = 20_000L
-        private const val PURCHASE_STATE_CHECK_TIMES = 20
+        private const val PURCHASE_STATE_CHECK_INTERVAL = 10_000L
+        private const val PURCHASE_STATE_CHECK_TIMES = 30
     }
 }
