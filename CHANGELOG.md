@@ -5,6 +5,7 @@ Contains editorialized release notes. Raw release notes should go into `RELEASE-
 ## 10.9
 
 This release includes a lot more stability fixes to help you log in much easier. You can now connect your WordPress.com account with Jetpack and access your store that much faster. Keep that feedback coming!
+
 ## 10.8
 
 This release includes a handful of minor improvements and bug fixes that our team found. We are working hard on a few exciting features as well – and you’ll see that later this year. Thanks for using WooCommerce!
