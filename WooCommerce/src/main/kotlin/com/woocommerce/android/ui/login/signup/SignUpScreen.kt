@@ -132,7 +132,7 @@ private fun SignUpForm(
             value = password,
             onValueChange = { password = it },
             label = stringResource(id = R.string.signup_password_hint),
-            isError = signUpState.error?.type == ErrorType.PASSWORD,
+            isError = isPasswordError,
             helperText = if (isPasswordError) signUpState.error?.stringId?.let { stringResource(id = it) } else null
         )
         TermsOfServiceText(
