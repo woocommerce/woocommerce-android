@@ -2,6 +2,7 @@ package com.woocommerce.android.ui.payments.cardreader.hub
 
 import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.AppUrls
+import com.woocommerce.android.AppUrls.WOOCOMMERCE_PURCHASE_CARD_READER_IN_COUNTRY
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
@@ -26,6 +27,7 @@ import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderFlowP
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboardingChecker
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboardingState
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboardingState.StripeAccountPendingRequirement
+import com.woocommerce.android.util.UtmProvider
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.assertj.core.api.Assertions.assertThat
@@ -66,6 +68,7 @@ class CardReaderHubViewModelTest : BaseUnitTest() {
     }
     private val learnMoreUrlProvider: LearnMoreUrlProvider = mock()
     private val cardReaderTracker: CardReaderTracker = mock()
+    private val paymentMenuUtmProvider: UtmProvider = mock()
 
     private val savedState = CardReaderHubFragmentArgs(
         cardReaderFlowParam = CardReaderFlowParam.CardReadersHub,
@@ -202,22 +205,29 @@ class CardReaderHubViewModelTest : BaseUnitTest() {
     @Test
     fun `when user clicks on purchase card reader, then app opens external webview`() {
         whenever(wooStore.getStoreCountryCode(any())).thenReturn("US")
+        whenever(paymentMenuUtmProvider.getUrlWithUtmParams(any())).thenReturn(
+            "${WOOCOMMERCE_PURCHASE_CARD_READER_IN_COUNTRY}US"
+        )
 
         (viewModel.viewStateData.value)?.rows?.find {
             it.label == UiString.UiStringRes(R.string.card_reader_purchase_card_reader)
         }!!.onClick!!.invoke()
 
-        assertThat(viewModel.event.value)
-            .isEqualTo(
-                CardReaderHubViewModel.CardReaderHubEvents.NavigateToPurchaseCardReaderFlow(
-                    url = "${AppUrls.WOOCOMMERCE_PURCHASE_CARD_READER_IN_COUNTRY}US",
-                    titleRes = R.string.card_reader_purchase_card_reader
-                )
+        val event = (
+            viewModel.event.value as CardReaderHubViewModel.CardReaderHubEvents.NavigateToPurchaseCardReaderFlow
             )
+
+        assertThat(event.url)
+            .isEqualTo("${WOOCOMMERCE_PURCHASE_CARD_READER_IN_COUNTRY}US")
+        assertThat(event.titleRes)
+            .isEqualTo(R.string.card_reader_purchase_card_reader)
     }
 
     @Test
     fun `when user clicks on purchase card reader, then orders card reader event tracked`() {
+        whenever(paymentMenuUtmProvider.getUrlWithUtmParams(any())).thenReturn(
+            "${WOOCOMMERCE_PURCHASE_CARD_READER_IN_COUNTRY}US"
+        )
         (viewModel.viewStateData.value)?.rows?.find {
             it.label == UiString.UiStringRes(R.string.card_reader_purchase_card_reader)
         }!!.onClick!!.invoke()
@@ -228,13 +238,16 @@ class CardReaderHubViewModelTest : BaseUnitTest() {
     @Test
     fun `when user clicks on purchase card reader, then app opens external webview with in-person-payments link`() {
         val storeCountryCode = wooStore.getStoreCountryCode(selectedSite.get())
+        whenever(paymentMenuUtmProvider.getUrlWithUtmParams(any())).thenReturn(
+            "$WOOCOMMERCE_PURCHASE_CARD_READER_IN_COUNTRY$storeCountryCode"
+        )
         (viewModel.viewStateData.value)?.rows?.find {
             it.label == UiString.UiStringRes(R.string.card_reader_purchase_card_reader)
         }!!.onClick!!.invoke()
 
         assertThat(
             (viewModel.event.value as CardReaderHubViewModel.CardReaderHubEvents.NavigateToPurchaseCardReaderFlow).url
-        ).isEqualTo("${AppUrls.WOOCOMMERCE_PURCHASE_CARD_READER_IN_COUNTRY}$storeCountryCode")
+        ).isEqualTo("$WOOCOMMERCE_PURCHASE_CARD_READER_IN_COUNTRY$storeCountryCode")
     }
 
     @Test
@@ -1252,7 +1265,8 @@ class CardReaderHubViewModelTest : BaseUnitTest() {
             cashOnDeliverySettingsRepository,
             learnMoreUrlProvider,
             cardReaderCountryConfigProvider,
-            cardReaderTracker
+            cardReaderTracker,
+            paymentMenuUtmProvider
         )
         viewModel.onViewVisible()
     }

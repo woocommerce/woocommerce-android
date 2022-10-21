@@ -256,7 +256,7 @@
     <string name="login_jetpack_not_found">Jetpack not found. Please try again</string>
     <string name="login_jetpack_install">Install Jetpack</string>
     <string name="login_sign_in">Sign in</string>
-    <string name="login_need_help_finding_email"><u>Need help finding the required email?</u></string>
+    <string name="login_need_help_finding_email">&lt;u&gt;Need help finding the required email?&lt;/u&gt;</string>
     <string name="login_email_help_title">What email do I use to sign in?</string>
     <string name="login_email_help_desc">In your site admin you can find the email you used to connect to WordPress.com from the %1$sJetpack Dashboard%2$s under %3$sConnections &gt; Account connection%4$s</string>
     <string name="login_discovery_error_title">Connection error</string>
@@ -281,6 +281,7 @@
     <string name="login_account_mismatch_connect_wpcom">Connect to the site</string>
     <string name="login_account_mismatch_connect_wpcom_dialog_title">Connecting to a WordPress.com site</string>
     <string name="login_account_mismatch_connect_wpcom_dialog_message">Please contact the site owner for an invitation to the site as a shop manager or administrator to use the app.</string>
+    <string name="login_jetpack_connection_consent">By tapping the Connect Jetpack button, you agree to our &lt;a href=\'terms\'&gt;Terms of Service&lt;/a&gt; and to &lt;a href=\'sync\'&gt;share details&lt;/a&gt; with WordPress.com.</string>
     <!--
         My Store View
     -->
@@ -2555,7 +2556,7 @@
     <string name="enter_your_site_address">Enter your site address</string>
     <string name="reset_your_password">Reset your password</string>
     <string name="signup_confirmation_title">Signup confirmation</string>
-    <string name="what_is_wordpress_link"><u>What is WordPress.com?</u></string>
+    <string name="what_is_wordpress_link">&lt;u&gt;What is WordPress.com?&lt;/u&gt;</string>
 
     <string name="login_site_address">Site address</string>
 

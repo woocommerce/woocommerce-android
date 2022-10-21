@@ -20,9 +20,13 @@ import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.common.wpcomwebview.WPComWebViewFragment
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.ui.login.LoginActivity
+import com.woocommerce.android.ui.login.accountmismatch.AccountMismatchErrorFragment
+import com.woocommerce.android.ui.login.accountmismatch.AccountMismatchErrorViewModel.AccountMismatchErrorType
+import com.woocommerce.android.ui.login.accountmismatch.AccountMismatchErrorViewModel.AccountMismatchPrimaryButton
 import com.woocommerce.android.ui.main.AppBarStatus
 import com.woocommerce.android.ui.sitepicker.sitediscovery.SitePickerSiteDiscoveryViewModel.CreateZendeskTicket
 import com.woocommerce.android.ui.sitepicker.sitediscovery.SitePickerSiteDiscoveryViewModel.NavigateToHelpScreen
+import com.woocommerce.android.ui.sitepicker.sitediscovery.SitePickerSiteDiscoveryViewModel.ShowJetpackConnectionError
 import com.woocommerce.android.ui.sitepicker.sitediscovery.SitePickerSiteDiscoveryViewModel.StartJetpackInstallation
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
@@ -75,6 +79,7 @@ class SitePickerSiteDiscoveryFragment : BaseFragment() {
                     startActivity(HelpActivity.createIntent(requireContext(), Origin.LOGIN_SITE_ADDRESS, null))
                 }
                 is StartJetpackInstallation -> startJetpackInstallation(event.siteAddress)
+                is ShowJetpackConnectionError -> showJetpackErrorScreen(event.siteAddress)
                 is Logout -> onLogout()
                 is ExitWithResult<*> -> navigateBackWithResult(SITE_PICKER_SITE_ADDRESS_RESULT, event.data)
                 is Exit -> findNavController().navigateUp()
@@ -85,6 +90,9 @@ class SitePickerSiteDiscoveryFragment : BaseFragment() {
     private fun setupResultHandlers() {
         handleNotice(WPComWebViewFragment.WEBVIEW_RESULT) {
             viewModel.onJetpackInstalled()
+        }
+        handleNotice(AccountMismatchErrorFragment.JETPACK_CONNECTED_NOTICE) {
+            viewModel.onJetpackConnected()
         }
     }
 
@@ -100,6 +108,18 @@ class SitePickerSiteDiscoveryFragment : BaseFragment() {
                 urlToTriggerExit = JETPACK_CONNECTED_REDIRECT_URL,
                 urlComparisonMode = WPComWebViewFragment.UrlComparisonMode.EQUALITY
             )
+        )
+    }
+
+    private fun showJetpackErrorScreen(siteAddress: String) {
+        findNavController().navigate(
+            SitePickerSiteDiscoveryFragmentDirections
+                .actionSitePickerSiteDiscoveryFragmentToAccountMismatchErrorFragment(
+                    siteUrl = siteAddress,
+                    allowBackNavigation = true,
+                    primaryButton = AccountMismatchPrimaryButton.CONNECT_JETPACK,
+                    errorType = AccountMismatchErrorType.ACCOUNT_NOT_CONNECTED
+                )
         )
     }
 
