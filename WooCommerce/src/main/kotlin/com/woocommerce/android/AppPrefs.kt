@@ -210,7 +210,7 @@ object AppPrefs {
         set(value) = setBoolean(IS_COUPONS_ENABLED, value)
 
     var isSimulatedReaderEnabled: Boolean
-        get() = getBoolean(DeletablePrefKey.USE_SIMULATED_READER, false)
+        get() = getBoolean(DeletablePrefKey.USE_SIMULATED_READER, true)
         set(value) = setBoolean(DeletablePrefKey.USE_SIMULATED_READER, value)
 
     fun getProductSortingChoice(currentSiteId: Int) = getString(getProductSortingKey(currentSiteId)).orNullIfEmpty()
