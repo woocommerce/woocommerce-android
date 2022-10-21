@@ -24,6 +24,9 @@ import javax.inject.Inject
 
 @AndroidEntryPoint
 class SignUpFragment : BaseFragment() {
+    companion object {
+        const val TAG = "SignUpFragment"
+    }
 
     @Inject internal lateinit var urlUtils: UrlUtils
     @Inject lateinit var uiMessageResolver: UIMessageResolver
