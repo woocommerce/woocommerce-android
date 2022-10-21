@@ -71,17 +71,26 @@ class AnalyticsViewModel @Inject constructor(
     val state: StateFlow<AnalyticsViewState> = mutableState
 
     fun onCustomDateRangeClicked() {
-        triggerEvent(AnalyticsViewEvent.OpenDatePicker(getSavedDateRange() as SimpleDateRange))
+        val savedRange = getSavedDateRange()
+        val fromMillis = when (savedRange) {
+            is SimpleDateRange -> savedRange.from.time
+            is MultipleDateRange -> savedRange.from.from.time
+        }
+        val toMillis = when (savedRange) {
+            is SimpleDateRange -> savedRange.to.time
+            is MultipleDateRange -> savedRange.to.to.time
+        }
+        triggerEvent(AnalyticsViewEvent.OpenDatePicker(fromMillis, toMillis))
     }
 
-    fun onCustomDateRangeChanged(startDateMillis: Long, endDateMillis: Long) {
+    fun onCustomDateRangeChanged(fromMillis: Long, toMillis : Long) {
         val dateFormat = SimpleDateFormat("EEE, LLL d, yy", Locale.getDefault())
         dateFormat.timeZone = TimeZone.getTimeZone("UTC")
 
-        val startDate = Date(startDateMillis)
-        val endDate = Date(endDateMillis)
-        val fromDateStr = dateFormat.format(startDate)
-        val toDateStr = dateFormat.format(endDate)
+        val fromDate = Date(fromMillis)
+        val toDate = Date(toMillis)
+        val fromDateStr = dateFormat.format(fromDate)
+        val toDateStr = dateFormat.format(toDate)
 
         mutableState.value = state.value.copy(
             analyticsDateRangeSelectorState = state.value.analyticsDateRangeSelectorState.copy(
@@ -95,7 +104,7 @@ class AnalyticsViewModel @Inject constructor(
             )
         )
 
-        val dateRange = analyticsDateRange.getAnalyticsDateRangeFromCustom(startDate, endDate)
+        val dateRange = analyticsDateRange.getAnalyticsDateRangeFromCustom(fromDate, toDate)
         saveSelectedDateRange(dateRange)
         saveSelectedTimePeriod(AnalyticTimePeriod.CUSTOM)
 

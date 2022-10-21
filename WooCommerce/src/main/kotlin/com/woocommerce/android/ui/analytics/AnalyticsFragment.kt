@@ -14,7 +14,6 @@ import com.woocommerce.android.extensions.handleDialogResult
 import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.ui.analytics.RefreshIndicator.ShowIndicator
 import com.woocommerce.android.ui.analytics.daterangeselector.AnalyticTimePeriod
-import com.woocommerce.android.ui.analytics.daterangeselector.AnalyticsDateRange
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.util.ChromeCustomTabUtils
 import com.woocommerce.android.viewmodel.MultiLiveEvent
@@ -57,7 +56,7 @@ class AnalyticsFragment :
             is AnalyticsViewEvent.OpenUrl -> ChromeCustomTabUtils.launchUrl(requireContext(), event.url)
             is AnalyticsViewEvent.OpenWPComWebView -> findNavController()
                 .navigate(NavGraphMainDirections.actionGlobalWPComWebViewFragment(urlToLoad = event.url))
-            is AnalyticsViewEvent.OpenDatePicker -> showDateRangePicker(event.dateRange)
+            is AnalyticsViewEvent.OpenDatePicker -> showDateRangePicker(event.fromMillis, event.toMillis)
             else -> event.isHandled = false
         }
     }
@@ -104,11 +103,11 @@ class AnalyticsFragment :
 
     private fun getDateRangeSelectorViewState() = viewModel.state.value.analyticsDateRangeSelectorState
 
-    private fun showDateRangePicker(dateRange: AnalyticsDateRange.SimpleDateRange) {
+    private fun showDateRangePicker(fromMillis: Long, toMillis: Long) {
         val datePicker =
             MaterialDatePicker.Builder.dateRangePicker()
                 .setTitleText(getString(R.string.orderfilters_date_range_picker_title))
-                .setSelection(androidx.core.util.Pair(dateRange.from.time, dateRange.to.time))
+                .setSelection(androidx.core.util.Pair(fromMillis, toMillis))
                 .setCalendarConstraints(
                     CalendarConstraints.Builder()
                         .setEnd(MaterialDatePicker.todayInUtcMilliseconds())
