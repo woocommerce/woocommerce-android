@@ -1,15 +1,11 @@
 package com.woocommerce.android.ui.orders.details.customfields
 
-import android.content.ActivityNotFoundException
 import android.content.Context
-import android.content.Intent
-import android.net.Uri
 import android.webkit.URLUtil
-import com.woocommerce.android.R
 import com.woocommerce.android.util.ActivityUtils
+import com.woocommerce.android.util.ActivityUtils.sendEmail
 import com.woocommerce.android.util.ChromeCustomTabUtils
 import com.woocommerce.android.util.StringUtils
-import org.wordpress.android.util.ToastUtils
 
 object CustomOrderFieldsHelper {
     interface CustomOrderFieldClickListener {
@@ -47,16 +43,5 @@ object CustomOrderFieldsHelper {
 
     private fun showUrl(context: Context, url: String) {
         ChromeCustomTabUtils.launchUrl(context, url)
-    }
-
-    @Suppress("SwallowedException")
-    private fun sendEmail(context: Context, emailAddr: String) {
-        val intent = Intent(Intent.ACTION_SENDTO)
-        intent.data = Uri.parse("mailto:$emailAddr")
-        try {
-            context.startActivity(intent)
-        } catch (e: ActivityNotFoundException) {
-            ToastUtils.showToast(context, R.string.error_no_email_app)
-        }
     }
 }

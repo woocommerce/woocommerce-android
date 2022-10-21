@@ -9,6 +9,7 @@ import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.util.ActivityUtils
+import com.woocommerce.android.util.ActivityUtils.sendEmail
 import org.wordpress.android.util.ToastUtils
 import java.util.Locale
 
@@ -22,7 +23,7 @@ object OrderCustomerHelper {
     fun createEmail(
         context: Context,
         order: Order,
-        emailAddr: String
+        email: String
     ) {
         AnalyticsTracker.track(
             AnalyticsEvent.ORDER_CONTACT_ACTION,
@@ -33,17 +34,12 @@ object OrderCustomerHelper {
             )
         )
 
-        val intent = Intent(Intent.ACTION_SENDTO)
-        intent.data = Uri.parse("mailto:$emailAddr") // only email apps should handle this
-        try {
-            context.startActivity(intent)
-        } catch (e: ActivityNotFoundException) {
+        sendEmail(context, email) { error ->
             AnalyticsTracker.track(
                 AnalyticsEvent.ORDER_CONTACT_ACTION_FAILED,
                 this.javaClass.simpleName,
-                e.javaClass.simpleName, "No e-mail app was found"
+                error.javaClass.simpleName, "No e-mail app was found"
             )
-
             ToastUtils.showToast(context, R.string.error_no_email_app)
         }
     }

@@ -36,12 +36,14 @@ object ActivityUtils {
         context.startActivity(intent)
     }
 
+    @Suppress("SwallowedException")
     fun dialPhoneNumber(context: Context, phoneNumber: String) {
         dialPhoneNumber(context, phoneNumber) {
             ToastUtils.showToast(context, R.string.error_no_phone_app)
         }
     }
 
+    @Suppress("SwallowedException")
     fun dialPhoneNumber(context: Context, phoneNumber: String, onError: (e: ActivityNotFoundException) -> Unit) {
         val intent = Intent(Intent.ACTION_DIAL)
         intent.data = Uri.parse("tel:$phoneNumber")
@@ -98,18 +100,35 @@ object ActivityUtils {
         }
     }
 
-    fun composeEmail(activity: Activity, billingEmail: String, subject: UiString, content: UiString): Boolean {
+    @Suppress("SwallowedException")
+    fun sendEmail(context: Context, email: String) {
+        sendEmail(context, email) {
+            ToastUtils.showToast(context, R.string.error_no_email_app)
+        }
+    }
+
+    @Suppress("SwallowedException")
+    fun sendEmail(
+        context: Context,
+        email: String,
+        subject: UiString? = null,
+        content: UiString? = null,
+        onError: (e: ActivityNotFoundException) -> Unit = {}
+    ) {
         val intent = Intent(Intent.ACTION_SENDTO).apply {
             data = Uri.parse("mailto:") // only email apps should handle this
-            putExtra(Intent.EXTRA_EMAIL, arrayOf(billingEmail))
-            putExtra(Intent.EXTRA_SUBJECT, UiHelpers.getTextOfUiString(activity, subject))
-            putExtra(Intent.EXTRA_TEXT, UiHelpers.getTextOfUiString(activity, content))
+            putExtra(Intent.EXTRA_EMAIL, arrayOf(email))
+            if (subject != null) {
+                putExtra(Intent.EXTRA_SUBJECT, UiHelpers.getTextOfUiString(context, subject))
+            }
+            if (content != null) {
+                putExtra(Intent.EXTRA_TEXT, UiHelpers.getTextOfUiString(context, content))
+            }
         }
-        return try {
-            activity.startActivity(intent)
-            true
+        try {
+            context.startActivity(intent)
         } catch (e: ActivityNotFoundException) {
-            false
+            onError(e)
         }
     }
 
