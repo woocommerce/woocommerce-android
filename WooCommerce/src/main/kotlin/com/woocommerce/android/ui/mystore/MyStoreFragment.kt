@@ -217,8 +217,8 @@ class MyStoreFragment : TopLevelFragment(R.layout.fragment_my_store) {
                         isTrashEnabled = false
                     )
                 )
-                OpenAnalytics -> {
-                    mainNavigationRouter?.showAnalytics()
+                is OpenAnalytics -> {
+                    mainNavigationRouter?.showAnalytics(event.analyticsPeriod)
                 }
                 else -> event.isHandled = false
             }
