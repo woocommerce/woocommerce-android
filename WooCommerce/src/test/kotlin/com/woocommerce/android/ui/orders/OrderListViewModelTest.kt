@@ -28,6 +28,7 @@ import com.woocommerce.android.ui.orders.list.OrderListViewModel.OrderListEvent.
 import com.woocommerce.android.ui.payments.banner.BannerDisplayEligibilityChecker
 import com.woocommerce.android.ui.payments.banner.BannerState
 import com.woocommerce.android.util.LandscapeChecker
+import com.woocommerce.android.util.UtmProvider
 import com.woocommerce.android.util.getOrAwaitValue
 import com.woocommerce.android.util.observeForTesting
 import com.woocommerce.android.viewmodel.BaseUnitTest
@@ -94,6 +95,7 @@ class OrderListViewModelTest : BaseUnitTest() {
     private val bannerDisplayEligibilityChecker: BannerDisplayEligibilityChecker = mock()
     private val analyticsTrackerWrapper: AnalyticsTrackerWrapper = mock()
     private val landscapeChecker: LandscapeChecker = mock()
+    private val orderListUtmProvider: UtmProvider = mock()
 
     @Before
     fun setup() = testBlocking {
@@ -131,6 +133,7 @@ class OrderListViewModelTest : BaseUnitTest() {
             orderListTransactionLauncher = mock(),
             analyticsTrackerWrapper = analyticsTrackerWrapper,
             landscapeChecker = landscapeChecker,
+            orderListUtmProvider = orderListUtmProvider,
         )
     }
 
@@ -458,6 +461,9 @@ class OrderListViewModelTest : BaseUnitTest() {
             whenever(
                 bannerDisplayEligibilityChecker.getPurchaseCardReaderUrl(KEY_BANNER_ORDER_LIST)
             ).thenReturn(
+                "${AppUrls.WOOCOMMERCE_PURCHASE_CARD_READER_IN_COUNTRY}US"
+            )
+            whenever(orderListUtmProvider.getUrlWithUtmParams(any())).thenReturn(
                 "${AppUrls.WOOCOMMERCE_PURCHASE_CARD_READER_IN_COUNTRY}US"
             )
             whenever(

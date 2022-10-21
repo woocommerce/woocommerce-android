@@ -1,11 +1,20 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2022-10-07 11:35:31+0000
+Translation-Revision-Date: 2022-10-12 13:54:04+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: nl
 -->
 <resources>
+    <string name="qr_code_login_edit_camera_permission">Machtigingen bewerken</string>
+    <string name="qr_code_login_camera_permission_denied_message">Je moet ons toegang tot je camera geven om deze functie te kunnen gebruiken.</string>
+    <string name="qr_code_login_camera_permission_denied_title">Toegang tot camera is vereist</string>
+    <string name="qr_code_login_scanner_title">Barcodescanner van camera</string>
+    <string name="dev_options">Ontwikkelaarsopties</string>
+    <string name="login_2fa_not_supported_self_hosted_site">2FA wordt niet ondersteund voor zelf-gehoste sites. Gebruik een app-wachtwoord.</string>
+    <string name="login_with_qr_code">Scan de QR-code om in te loggen</string>
+    <string name="show_password_content_description">Wachtwoord weergeven</string>
+    <string name="hide_password_content_description">Wachtwoord verbergen</string>
     <string name="stats_widget_last_updated_message">Vanaf %1$s</string>
     <string name="stats_widget_error_no_data">Kan gegevens niet laden</string>
     <string name="stats_today_widget_description">WooCommerce-statistieken van vandaag</string>
