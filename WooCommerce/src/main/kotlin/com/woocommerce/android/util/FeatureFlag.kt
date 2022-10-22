@@ -14,6 +14,7 @@ enum class FeatureFlag {
     WC_SHIPPING_BANNER,
     UNIFIED_ORDER_EDITING,
     ORDER_CREATION_CUSTOMER_SEARCH,
+    STORE_CREATION_WEBVIEW_FLOW,
     STORE_CREATION_FLOW;
 
     fun isEnabled(context: Context? = null): Boolean {
@@ -29,6 +30,7 @@ enum class FeatureFlag {
             MORE_MENU_INBOX,
             WC_SHIPPING_BANNER,
             STORE_CREATION_FLOW -> PackageUtils.isDebugBuild()
+            STORE_CREATION_WEBVIEW_FLOW -> false //PackageUtils.isDebugBuild()
         }
     }
 }
