@@ -187,7 +187,6 @@ class AnalyticsTracker private constructor(private val context: Context) {
         const val KEY_CUSTOM_FIELDS_SIZE = "custom_fields_size"
         const val KEY_WAITING_TIME = "waiting_time"
         const val KEY_IS_NON_ATOMIC = "is_non_atomic"
-        const val KEY_CARD = "card"
 
         const val KEY_SORT_ORDER = "order"
         const val VALUE_SORT_NAME_ASC = "name,ascending"
@@ -237,6 +236,11 @@ class AnalyticsTracker private constructor(private val context: Context) {
 
         const val KEY_HAS_MULTIPLE_SHIPPING_LINES = "has_multiple_shipping_lines"
         const val KEY_HAS_MULTIPLE_FEE_LINES = "has_multiple_fee_lines"
+
+        const val KEY_CARD = "card"
+        const val VALUE_REVENUE_CARD_SELECTED = "revenue"
+        const val VALUE_ORDERS_CARD_SELECTED = "orders"
+        const val VALUE_PRODUCTS_CARD_SELECTED = "products"
 
         enum class OrderNoteType(val value: String) {
             CUSTOMER("customer"),
