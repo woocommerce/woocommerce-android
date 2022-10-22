@@ -4,6 +4,8 @@ import androidx.lifecycle.LifecycleObserver
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.R
+import com.woocommerce.android.analytics.AnalyticsEvent
+import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.model.DeltaPercentage
 import com.woocommerce.android.model.ProductItem
 import com.woocommerce.android.tools.SelectedSite
@@ -442,6 +444,15 @@ class AnalyticsViewModel @Inject constructor(
     private fun getSavedDateRange(): AnalyticsDateRange = savedState[DATE_RANGE_SELECTED_KEY] ?: getDefaultDateRange()
     private fun getSavedTimePeriod(): AnalyticTimePeriod = savedState[TIME_PERIOD_SELECTED_KEY]
         ?: getDefaultTimePeriod()
+
+    private fun trackSeeReportClicked(selectedCardType: String) {
+        AnalyticsTracker.track(
+            AnalyticsEvent.ANALYTICS_HUB_SEE_REPORT_TAPPED,
+            mapOf(
+                AnalyticsTracker.KEY_CARD to selectedCardType
+            )
+        )
+    }
 
     companion object {
         const val TIME_PERIOD_SELECTED_KEY = "time_period_selected_key"
