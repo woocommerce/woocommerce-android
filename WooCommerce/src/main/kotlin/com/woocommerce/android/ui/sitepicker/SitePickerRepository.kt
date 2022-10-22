@@ -41,6 +41,8 @@ class SitePickerRepository @Inject constructor(
 
     suspend fun fetchWooCommerceSites() = wooCommerceStore.fetchWooCommerceSites()
 
+    suspend fun fetchSites() = siteStore.fetchSites(FetchSitesPayload())
+
     suspend fun fetchWooCommerceSite(siteModel: SiteModel): Result<SiteModel> {
         return wooCommerceStore.fetchWooCommerceSite(siteModel).let {
             when {

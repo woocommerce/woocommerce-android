@@ -16,6 +16,7 @@ import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.databinding.FragmentSitePickerBinding
 import com.woocommerce.android.extensions.handleNotice
 import com.woocommerce.android.extensions.handleResult
+import com.woocommerce.android.extensions.joinToString
 import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.support.HelpActivity
@@ -179,12 +180,12 @@ class SitePickerFragment : BaseFragment(R.layout.fragment_site_picker), LoginEma
             AnalyticsTracker.track(AnalyticsEvent.LOGIN_WOOCOMMERCE_SETUP_COMPLETED)
             viewModel.onWooInstalled()
         }
-        handleResult<String>(WPComWebViewFragment.WEBVIEW_RESULT_WITH_URL) { siteUrl ->
+        handleResult<List<String>>(WPComWebViewFragment.WEBVIEW_RESULT_WITH_URL) { urls ->
             AnalyticsTracker.track(
                 AnalyticsEvent.LOGIN_WOOCOMMERCE_SITE_CREATED,
-                mapOf(AnalyticsTracker.KEY_URL to siteUrl)
+                mapOf(AnalyticsTracker.KEY_URL to urls.joinToString())
             )
-            viewModel.onSiteCreated(siteUrl)
+            viewModel.onSiteCreated(urls)
         }
         handleNotice(WPComWebViewFragment.WEBVIEW_DISMISSED) {
             AnalyticsTracker.track(AnalyticsEvent.LOGIN_WOOCOMMERCE_SETUP_DISMISSED)

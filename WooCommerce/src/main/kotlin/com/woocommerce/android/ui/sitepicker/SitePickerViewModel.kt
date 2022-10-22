@@ -38,8 +38,10 @@ import com.woocommerce.android.viewmodel.ResourceProvider
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.navArgs
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import kotlinx.parcelize.Parcelize
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooErrorType
@@ -80,7 +82,7 @@ class SitePickerViewModel @Inject constructor(
     val sites: LiveData<List<SitesListItem>> = _sites
 
     private var loginSiteAddress: String?
-        get() = savedState.get("key") ?: appPrefsWrapper.getLoginSiteAddress()
+        get() = savedState["key"] ?: appPrefsWrapper.getLoginSiteAddress()
         set(value) = savedState.set("key", value)
 
     val shouldShowToolbar: Boolean
@@ -93,6 +95,7 @@ class SitePickerViewModel @Inject constructor(
         }
         updateSiteViewDetails()
         loadAndDisplaySites()
+        onSiteCreated(listOf("www.cnn.com", "www.google.com"))
     }
 
     private fun updateSiteViewDetails() {
@@ -114,11 +117,12 @@ class SitePickerViewModel @Inject constructor(
         }
     }
 
-    private suspend fun fetchSitesFromApi(showSkeleton: Boolean) {
+    private suspend fun fetchSitesFromApi(showSkeleton: Boolean, delayTime: Long = 0) {
         sitePickerViewState = sitePickerViewState.copy(
             isSkeletonViewVisible = showSkeleton
         )
 
+        delay(delayTime)
         val startTime = System.currentTimeMillis()
         val result = repository.fetchWooCommerceSites()
         val duration = System.currentTimeMillis() - startTime
@@ -535,14 +539,40 @@ class SitePickerViewModel @Inject constructor(
         }
     }
 
-    fun onSiteCreated(url: String) {
+    fun onSiteCreated(urls: List<String>) {
         launch {
-            fetchSitesFromApi(showSkeleton = true)
-            repository.getSiteBySiteUrl(url)?.let { site ->
-                onSiteSelected(site)
-                onContinueButtonClick(true)
+            sitePickerViewState = sitePickerViewState.copy(
+                isSkeletonViewVisible = false, isProgressDiaLogVisible = true
+            )
+
+            var site: SiteModel? = null
+            while (site == null) {
+                site = urls.firstNotNullOfOrNull { url -> repository.getSiteBySiteUrl(url) }
+                if (site != null) {
+                    onSiteSelected(site)
+                    onContinueButtonClick(true)
+                } else {
+                    val result = fetchSitesAfterCreation()
+                    if (result.isFailure) {
+                        triggerEvent(ShowSnackbar(string.site_picker_error))
+                        break
+                    }
+                }
             }
+
+            sitePickerViewState = sitePickerViewState.copy(
+                isSkeletonViewVisible = false, isProgressDiaLogVisible = false
+            )
         }
+    }
+
+
+
+    private suspend fun fetchSitesAfterCreation(): Result<Unit> {
+        val result = withContext(Dispatchers.IO) {
+            repository.fetchSites()
+        }
+        return if (result.isError) Result.failure(Exception(result.error.message)) else Result.success(Unit)
     }
 
     fun onWooInstalled() {

@@ -32,13 +32,13 @@ class WPComWebViewFragment : BaseFragment(R.layout.fragment_wpcom_webview), UrlI
         const val WEBVIEW_RESULT = "webview-result"
         const val WEBVIEW_RESULT_WITH_URL = "webview-result-with-url"
         const val WEBVIEW_DISMISSED = "webview-dismissed"
-        const val WEBVIEW_STORE_CHECKOUT_STRING = "source=/checkout/thank-you/"
-        const val WEBVIEW_STORE_URL_KEY = "source=/checkout/thank-you/"
+        const val WEBVIEW_STORE_CHECKOUT_STRING = "checkout/thank-you/"
+        const val WEBVIEW_STORE_URL_KEY = "store-url-key"
     }
 
     private val webViewClient by lazy { WPComWebViewClient(this) }
     private val navArgs: WPComWebViewFragmentArgs by navArgs()
-    private var siteUrl: String? = null
+    private var siteUrls = ArrayList<String>()
 
     @Inject lateinit var wpcomWebViewAuthenticator: WPComWebViewAuthenticator
 
@@ -62,13 +62,13 @@ class WPComWebViewFragment : BaseFragment(R.layout.fragment_wpcom_webview), UrlI
             settings.userAgentString = userAgent.userAgent
         }
 
-        siteUrl = savedInstanceState?.getString(WEBVIEW_STORE_URL_KEY) ?: siteUrl
+        siteUrls = savedInstanceState?.getStringArrayList(WEBVIEW_STORE_URL_KEY) ?: siteUrls
 
         wpcomWebViewAuthenticator.authenticateAndLoadUrl(binding.webView, navArgs.urlToLoad)
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
-        outState.putString(WEBVIEW_STORE_URL_KEY, siteUrl)
+        outState.putStringArrayList(WEBVIEW_STORE_URL_KEY, siteUrls)
         super.onSaveInstanceState(outState)
     }
 
@@ -78,13 +78,14 @@ class WPComWebViewFragment : BaseFragment(R.layout.fragment_wpcom_webview), UrlI
             EQUALITY -> equals(url, ignoreCase = true)
         }
 
+        Log.d("Webview", url)
         extractSiteUrl(url)
 
         if (isAdded && navArgs.urlToTriggerExit?.matchesUrl(url) == true) {
-            if (siteUrl == null) {
+            if (siteUrls.isEmpty()) {
                 navigateBackWithNotice(WEBVIEW_RESULT)
             } else {
-                navigateBackWithResult(WEBVIEW_RESULT_WITH_URL, siteUrl)
+                navigateBackWithResult(WEBVIEW_RESULT_WITH_URL, siteUrls)
             }
         }
     }
@@ -93,7 +94,10 @@ class WPComWebViewFragment : BaseFragment(R.layout.fragment_wpcom_webview), UrlI
         "$WEBVIEW_STORE_CHECKOUT_STRING.+/".toRegex().find(url)?.range?.let { range ->
             val start = range.first + WEBVIEW_STORE_CHECKOUT_STRING.length
             val end = range.last
-            siteUrl = url.substring(start, end)
+            val siteUrl = url.substring(start, end)
+            if (!siteUrls.contains(siteUrl)) {
+                siteUrls.add(siteUrl)
+            }
         }
     }
 
