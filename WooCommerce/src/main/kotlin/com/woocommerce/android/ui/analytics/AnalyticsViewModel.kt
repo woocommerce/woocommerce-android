@@ -156,6 +156,7 @@ class AnalyticsViewModel @Inject constructor(
     }
 
     fun onRevenueSeeReportClick() {
+        trackSeeReportClicked(AnalyticsTracker.VALUE_REVENUE_CARD_SELECTED)
         if (selectedSite.getIfExists()?.isWPCom == true || selectedSite.getIfExists()?.isWPComAtomic == true) {
             triggerEvent(OpenWPComWebView(analyticsRepository.getRevenueAdminPanelUrl()))
         } else {
@@ -164,6 +165,7 @@ class AnalyticsViewModel @Inject constructor(
     }
 
     fun onOrdersSeeReportClick() {
+        trackSeeReportClicked(AnalyticsTracker.VALUE_ORDERS_CARD_SELECTED)
         if (selectedSite.getIfExists()?.isWPCom == true || selectedSite.getIfExists()?.isWPComAtomic == true) {
             triggerEvent(OpenWPComWebView(analyticsRepository.getOrdersAdminPanelUrl()))
         } else {
@@ -172,6 +174,7 @@ class AnalyticsViewModel @Inject constructor(
     }
 
     fun onProductsSeeReportClick() {
+        trackSeeReportClicked(AnalyticsTracker.VALUE_PRODUCTS_CARD_SELECTED)
         if (selectedSite.getIfExists()?.isWPCom == true || selectedSite.getIfExists()?.isWPComAtomic == true) {
             triggerEvent(OpenWPComWebView(analyticsRepository.getProductsAdminPanelUrl()))
         } else {
