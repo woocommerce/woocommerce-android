@@ -1,1 +1,3 @@
-This release includes a handful of minor improvements and bug fixes that our team found. We are working hard on a few exciting features as well – and you’ll see that later this year. Thanks for using WooCommerce!
+- [**] Login: add support for Jetpack connection to sites that have Jetpack but don't have any connected accounts [https://github.com/woocommerce/woocommerce-android/pull/7545]
+- [*] [Internal] In-Person Payments: add UTM parameters to card reader purchase URLs to allow attribution [https://github.com/woocommerce/woocommerce-android/pull/7554]
+
