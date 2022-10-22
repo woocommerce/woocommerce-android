@@ -7,6 +7,7 @@ import android.view.View
 import android.webkit.WebChromeClient
 import android.webkit.WebView
 import androidx.core.view.isVisible
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.navArgs
 import com.woocommerce.android.R
 import com.woocommerce.android.databinding.FragmentWpcomWebviewBinding
@@ -16,7 +17,10 @@ import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.common.wpcomwebview.WPComWebViewFragment.UrlComparisonMode.EQUALITY
 import com.woocommerce.android.ui.common.wpcomwebview.WPComWebViewFragment.UrlComparisonMode.PARTIAL
 import com.woocommerce.android.ui.main.MainActivity.Companion.BackPressListener
+import com.woocommerce.android.util.WooLog
+import com.woocommerce.android.util.WooLog.T
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.delay
 import org.wordpress.android.fluxc.network.UserAgent
 import javax.inject.Inject
 
@@ -78,14 +82,16 @@ class WPComWebViewFragment : BaseFragment(R.layout.fragment_wpcom_webview), UrlI
             EQUALITY -> equals(url, ignoreCase = true)
         }
 
-        Log.d("Webview", url)
         extractSiteUrl(url)
 
-        if (isAdded && navArgs.urlToTriggerExit?.matchesUrl(url) == true) {
-            if (siteUrls.isEmpty()) {
-                navigateBackWithNotice(WEBVIEW_RESULT)
-            } else {
-                navigateBackWithResult(WEBVIEW_RESULT_WITH_URL, siteUrls)
+        lifecycleScope.launchWhenResumed {
+            if (isAdded && navArgs.urlToTriggerExit?.matchesUrl(url) == true) {
+                if (siteUrls.isEmpty()) {
+                    navigateBackWithNotice(WEBVIEW_RESULT)
+                } else {
+                    navigateBackWithResult(WEBVIEW_RESULT_WITH_URL, siteUrls)
+                    WooLog.d(T.LOGIN, "Site creation URLs: ${siteUrls.joinToString()}")
+                }
             }
         }
     }
