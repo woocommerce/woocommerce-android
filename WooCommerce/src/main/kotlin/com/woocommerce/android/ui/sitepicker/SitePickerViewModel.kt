@@ -567,14 +567,13 @@ class SitePickerViewModel @Inject constructor(
         }
     }
 
-
     private suspend fun fetchSitesAfterCreation(): Result<List<SiteModel>> {
         val result = withContext(Dispatchers.Default) {
             delay(WOOCOMMERCE_STORE_CREATION_RETRY_INTERVAL)
             repository.fetchWooCommerceSites()
         }
         return if (result.isError) Result.failure(Exception(result.error.message))
-            else Result.success(result.model ?: emptyList())
+        else Result.success(result.model ?: emptyList())
     }
 
     fun onWooInstalled() {

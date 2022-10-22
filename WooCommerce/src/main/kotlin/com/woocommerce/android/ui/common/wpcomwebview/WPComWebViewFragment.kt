@@ -2,7 +2,6 @@ package com.woocommerce.android.ui.common.wpcomwebview
 
 import android.annotation.SuppressLint
 import android.os.Bundle
-import android.util.Log
 import android.view.View
 import android.webkit.WebChromeClient
 import android.webkit.WebView
@@ -20,7 +19,6 @@ import com.woocommerce.android.ui.main.MainActivity.Companion.BackPressListener
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.delay
 import org.wordpress.android.fluxc.network.UserAgent
 import javax.inject.Inject
 
