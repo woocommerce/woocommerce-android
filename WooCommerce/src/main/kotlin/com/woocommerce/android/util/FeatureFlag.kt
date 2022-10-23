@@ -30,7 +30,7 @@ enum class FeatureFlag {
             MORE_MENU_INBOX,
             WC_SHIPPING_BANNER,
             STORE_CREATION_FLOW -> PackageUtils.isDebugBuild()
-            STORE_CREATION_WEBVIEW_FLOW -> false //PackageUtils.isDebugBuild()
+            STORE_CREATION_WEBVIEW_FLOW -> PackageUtils.isDebugBuild()
         }
     }
 }
