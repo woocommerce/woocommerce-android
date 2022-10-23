@@ -28,6 +28,7 @@ import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderFlowP
 import com.woocommerce.android.ui.payments.cardreader.payment.CardReaderPaymentCollectibilityChecker
 import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.util.CurrencyFormatter
+import com.woocommerce.android.util.UtmProvider
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.navArgs
@@ -40,6 +41,7 @@ import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.CoreOrderStatus
 import org.wordpress.android.fluxc.store.WCOrderStore
 import org.wordpress.android.fluxc.store.WooCommerceStore
 import javax.inject.Inject
+import javax.inject.Named
 
 @HiltViewModel
 class SelectPaymentMethodViewModel @Inject constructor(
@@ -54,6 +56,7 @@ class SelectPaymentMethodViewModel @Inject constructor(
     private val analyticsTrackerWrapper: AnalyticsTrackerWrapper,
     private val cardPaymentCollectibilityChecker: CardReaderPaymentCollectibilityChecker,
     private val bannerDisplayEligibilityChecker: BannerDisplayEligibilityChecker,
+    @Named("select-payment") private val selectPaymentUtmProvider: UtmProvider,
 ) : ScopedViewModel(savedState) {
     private val navArgs: SelectPaymentMethodFragmentArgs by savedState.navArgs()
     val shouldShowUpsellCardReaderDismissDialog: MutableLiveData<Boolean> = MutableLiveData(false)
@@ -306,7 +309,9 @@ class SelectPaymentMethodViewModel @Inject constructor(
         launch {
             triggerEvent(
                 OpenPurchaseCardReaderLink(
-                    bannerDisplayEligibilityChecker.getPurchaseCardReaderUrl(source),
+                    selectPaymentUtmProvider.getUrlWithUtmParams(
+                        bannerDisplayEligibilityChecker.getPurchaseCardReaderUrl(source)
+                    ),
                     R.string.card_reader_purchase_card_reader
                 )
             )
@@ -381,5 +386,8 @@ class SelectPaymentMethodViewModel @Inject constructor(
 
     companion object {
         private const val DELAY_MS = 1L
+        const val UTM_CAMPAIGN = "feature_announcement_card"
+        const val UTM_SOURCE = "payment_method"
+        const val UTM_CONTENT = "upsell_card_readers"
     }
 }

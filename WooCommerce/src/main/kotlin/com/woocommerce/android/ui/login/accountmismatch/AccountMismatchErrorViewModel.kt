@@ -16,6 +16,7 @@ import com.woocommerce.android.model.UiString.UiStringText
 import com.woocommerce.android.ui.common.wpcomwebview.WPComWebViewAuthenticator
 import com.woocommerce.android.ui.login.AccountRepository
 import com.woocommerce.android.ui.login.UnifiedLoginTracker
+import com.woocommerce.android.ui.login.accountmismatch.AccountMismatchErrorViewModel.AccountMismatchErrorType.WPCOM_ACCOUNT_MISMATCH
 import com.woocommerce.android.ui.login.accountmismatch.AccountMismatchRepository.JetpackConnectionStatus
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
@@ -103,12 +104,11 @@ class AccountMismatchErrorViewModel @Inject constructor(
                 displayName = it.displayName.orEmpty()
             )
         },
-        message = if (accountRepository.isUserLoggedIn()) {
-            // When the user is already connected using WPCom account, show account mismatch error
-            resourceProvider.getString(R.string.login_wpcom_account_mismatch, siteUrl)
-        } else {
-            // Explain that account is not connected to Jetpack
-            resourceProvider.getString(R.string.login_jetpack_not_connected, siteUrl)
+        message = when (navArgs.errorType) {
+            AccountMismatchErrorType.WPCOM_ACCOUNT_MISMATCH ->
+                resourceProvider.getString(R.string.login_wpcom_account_mismatch, siteUrl)
+            AccountMismatchErrorType.ACCOUNT_NOT_CONNECTED ->
+                resourceProvider.getString(R.string.login_jetpack_not_connected, siteUrl)
         },
         primaryButtonText = when (navArgs.primaryButton) {
             AccountMismatchPrimaryButton.CONNECT_JETPACK -> R.string.login_account_mismatch_connect_jetpack
@@ -135,9 +135,10 @@ class AccountMismatchErrorViewModel @Inject constructor(
         },
         secondaryButtonText = R.string.login_try_another_account,
         secondaryButtonAction = { loginWithDifferentAccount() },
-        inlineButtonText = if (accountRepository.isUserLoggedIn()) R.string.login_need_help_finding_email
+        inlineButtonText = if (navArgs.errorType == WPCOM_ACCOUNT_MISMATCH) R.string.login_need_help_finding_email
         else null,
         inlineButtonAction = { helpFindingEmail() },
+        showJetpackTermsConsent = navArgs.primaryButton == AccountMismatchPrimaryButton.CONNECT_JETPACK,
         showNavigationIcon = navArgs.allowBackNavigation,
         onBackPressed = {
             if (navArgs.allowBackNavigation) {
@@ -316,6 +317,7 @@ class AccountMismatchErrorViewModel @Inject constructor(
             val secondaryButtonAction: () -> Unit,
             @StringRes val inlineButtonText: Int?,
             val inlineButtonAction: () -> Unit,
+            val showJetpackTermsConsent: Boolean,
             override val showNavigationIcon: Boolean,
             override val onBackPressed: () -> Unit
         ) : ViewState
@@ -382,5 +384,14 @@ class AccountMismatchErrorViewModel @Inject constructor(
 
     enum class AccountMismatchPrimaryButton {
         CONNECT_JETPACK, CONNECT_WPCOM_SITE, NONE
+    }
+
+    /**
+     * This state is just to allow different wordings depending on which flow resulted in this error screen depending
+     * on whether we can confirm that the site is connected to a different account or not.
+     */
+    enum class AccountMismatchErrorType {
+        WPCOM_ACCOUNT_MISMATCH,
+        ACCOUNT_NOT_CONNECTED
     }
 }

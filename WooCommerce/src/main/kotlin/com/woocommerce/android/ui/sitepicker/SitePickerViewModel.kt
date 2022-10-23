@@ -220,7 +220,9 @@ class SitePickerViewModel @Inject constructor(
         }
         sitePickerViewState = sitePickerViewState.copy(
             hasConnectedStores = filteredSites.isNotEmpty(),
-            isPrimaryBtnVisible = wooSites.isNotEmpty()
+            isPrimaryBtnVisible = wooSites.isNotEmpty(),
+            isNoStoresViewVisible = false,
+            currentSitePickerState = SitePickerState.StoreListState
         )
         loginSiteAddress?.let { processLoginSiteAddress(it) }
     }

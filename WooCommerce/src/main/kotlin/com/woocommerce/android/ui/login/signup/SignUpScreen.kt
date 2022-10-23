@@ -23,32 +23,48 @@ import androidx.compose.material.TopAppBar
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.SpanStyle
-import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.tooling.preview.Devices
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.core.text.HtmlCompat
 import com.woocommerce.android.R
+import com.woocommerce.android.compose.utils.toAnnotatedString
+import com.woocommerce.android.ui.compose.component.ProgressDialog
 import com.woocommerce.android.ui.compose.component.WCColoredButton
 import com.woocommerce.android.ui.compose.component.WCOutlinedTextField
 import com.woocommerce.android.ui.compose.component.WCPasswordField
+import com.woocommerce.android.ui.login.signup.SignUpViewModel.ErrorType
+import com.woocommerce.android.ui.login.signup.SignUpViewModel.SignUpState
 
 @Composable
 fun SignUpScreen(viewModel: SignUpViewModel) {
-    BackHandler(onBack = viewModel::onBackPressed)
+    val state by viewModel.viewState.observeAsState(SignUpState())
 
+    BackHandler(onBack = viewModel::onBackPressed)
     Scaffold(topBar = {
         Toolbar(onArrowBackPressed = viewModel::onBackPressed)
     }) {
-        SignUpForm(
-            termsOfServiceClicked = viewModel::onTermsOfServiceClicked,
-            onPrimaryButtonClicked = { /*TODO*/ },
-        )
+        when {
+            state.isLoading ->
+                ProgressDialog(
+                    title = "",
+                    subtitle = stringResource(id = R.string.signup_creating_account_loading_message)
+                )
+            else -> SignUpForm(
+                termsOfServiceClicked = viewModel::onTermsOfServiceClicked,
+                onPrimaryButtonClicked = viewModel::onGetStartedCLicked,
+                signUpState = state
+            )
+        }
     }
 }
 
@@ -77,8 +93,12 @@ private fun Toolbar(
 private fun SignUpForm(
     modifier: Modifier = Modifier,
     termsOfServiceClicked: () -> Unit,
-    onPrimaryButtonClicked: () -> Unit
+    onPrimaryButtonClicked: (String, String) -> Unit,
+    signUpState: SignUpState
 ) {
+    var email by remember { mutableStateOf(signUpState.email ?: "") }
+    var password by remember { mutableStateOf(signUpState.password ?: "") }
+
     Column(
         modifier = modifier
             .background(MaterialTheme.colors.surface)
@@ -97,15 +117,23 @@ private fun SignUpForm(
             style = MaterialTheme.typography.body1,
         )
         Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.major_100)))
+
+        val isEmailError = signUpState.error?.type == ErrorType.EMAIL
         WCOutlinedTextField(
-            value = "",
+            value = email,
+            onValueChange = { email = it },
             label = stringResource(id = R.string.signup_email_address_hint),
-            onValueChange = {},
+            isError = isEmailError,
+            helperText = if (isEmailError) signUpState.error?.stringId?.let { stringResource(id = it) } else null
         )
+
+        val isPasswordError = signUpState.error?.type == ErrorType.PASSWORD
         WCPasswordField(
-            value = "",
+            value = password,
+            onValueChange = { password = it },
             label = stringResource(id = R.string.signup_password_hint),
-            onValueChange = {},
+            isError = isPasswordError,
+            helperText = if (isPasswordError) signUpState.error?.stringId?.let { stringResource(id = it) } else null
         )
         TermsOfServiceText(
             modifier = Modifier.clickable { termsOfServiceClicked() }
@@ -113,7 +141,8 @@ private fun SignUpForm(
         Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.major_100)))
         WCColoredButton(
             modifier = Modifier.fillMaxWidth(),
-            onClick = { onPrimaryButtonClicked() }
+            onClick = { onPrimaryButtonClicked(email, password) },
+            enabled = email.isNotBlank() && password.isNotBlank()
         ) {
             Text(text = stringResource(id = R.string.signup_get_started_button))
         }
@@ -123,13 +152,11 @@ private fun SignUpForm(
 @Composable
 private fun TermsOfServiceText(modifier: Modifier = Modifier) {
     Text(
-        text = buildAnnotatedString {
-            append(stringResource(id = R.string.signup_terms_of_service_description))
-            append(" ")
-            pushStyle(SpanStyle(textDecoration = TextDecoration.Underline))
-            append(stringResource(id = R.string.signup_terms_of_service_linked_text))
-            toAnnotatedString()
-        },
+        text = HtmlCompat
+            .fromHtml(
+                stringResource(id = R.string.signup_terms_of_service),
+                HtmlCompat.FROM_HTML_MODE_LEGACY
+            ).toAnnotatedString(),
         style = MaterialTheme.typography.body2,
         modifier = modifier,
     )
@@ -145,6 +172,7 @@ private fun TermsOfServiceText(modifier: Modifier = Modifier) {
 fun SignUpFormPreview() {
     SignUpForm(
         termsOfServiceClicked = {},
-        onPrimaryButtonClicked = {},
+        onPrimaryButtonClicked = { _, _ -> },
+        signUpState = SignUpState()
     )
 }
