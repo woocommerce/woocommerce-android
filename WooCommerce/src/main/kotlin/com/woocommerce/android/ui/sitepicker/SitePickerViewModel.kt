@@ -415,7 +415,11 @@ class SitePickerViewModel @Inject constructor(
 
     fun onCreateSiteButtonClick() {
         analyticsTrackerWrapper.track(AnalyticsEvent.SITE_PICKER_CREATE_SITE_TAPPED)
-        triggerEvent(NavigateToWPComWebView(WOOCOMMERCE_STORE_CREATION_URL, WOOCOMMERCE_STORE_CREATION_DONE_URL))
+        triggerEvent(NavigateToWPComWebView(
+            url = WOOCOMMERCE_STORE_CREATION_URL,
+            validationUrl = WOOCOMMERCE_STORE_CREATION_DONE_URL,
+            title = resourceProvider.getString(string.create_new_store)
+        ))
     }
 
     fun onTryAnotherAccountButtonClick() {
@@ -708,7 +712,11 @@ class SitePickerViewModel @Inject constructor(
         object NavigateToNewToWooEvent : SitePickerEvent()
         object NavigateToSiteAddressEvent : SitePickerEvent()
         data class NavigateToHelpFragmentEvent(val origin: HelpActivity.Origin) : SitePickerEvent()
-        data class NavigateToWPComWebView(val url: String, val validationUrl: String) : SitePickerEvent()
+        data class NavigateToWPComWebView(
+            val url: String,
+            val validationUrl: String,
+            val title: String? = null
+        ) : SitePickerEvent()
         data class NavigateToAccountMismatchScreen(
             val primaryButton: AccountMismatchPrimaryButton,
             val siteUrl: String,

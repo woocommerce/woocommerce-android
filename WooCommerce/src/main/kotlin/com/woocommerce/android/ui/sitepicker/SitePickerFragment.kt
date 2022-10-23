@@ -16,7 +16,6 @@ import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.databinding.FragmentSitePickerBinding
 import com.woocommerce.android.extensions.handleNotice
 import com.woocommerce.android.extensions.handleResult
-import com.woocommerce.android.extensions.joinToString
 import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.support.HelpActivity
@@ -289,7 +288,8 @@ class SitePickerFragment : BaseFragment(R.layout.fragment_site_picker), LoginEma
         findNavController().navigate(
             NavGraphMainDirections.actionGlobalWPComWebViewFragment(
                 urlToLoad = event.url,
-                urlToTriggerExit = event.validationUrl
+                urlToTriggerExit = event.validationUrl,
+                title = event.title
             )
         )
     }
