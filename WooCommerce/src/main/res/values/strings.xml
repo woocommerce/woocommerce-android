@@ -324,7 +324,7 @@
     <string name="signup_terms_of_service">By continuing, you agree to our &lt;u&gt;Terms of Service.&lt;/u&gt;</string>
     <string name="signup_creating_account_loading_message">Creating new account</string>
     <string name="signup_email_exist_input">An account with this email already exists.</string>
-    <string name="signup_email_invalid_input">The email is invalid.</string>
+    <string name="signup_email_invalid_input">Please enter a valid email address.</string>
     <string name="signup_password_too_short">Your password is too short. Please pick a password that has at least 6 characters.</string>
     <string name="signup_password_not_secure_enough">Your password does not meet our security guidelines. Please try a more complex password.</string>
     <string name="signup_api_generic_error">Sorry, we couldn\'t create an account for the provided credentials. Please try with a different email.</string>
