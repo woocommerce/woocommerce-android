@@ -415,11 +415,13 @@ class SitePickerViewModel @Inject constructor(
 
     fun onCreateSiteButtonClick() {
         analyticsTrackerWrapper.track(AnalyticsEvent.SITE_PICKER_CREATE_SITE_TAPPED)
-        triggerEvent(NavigateToWPComWebView(
-            url = WOOCOMMERCE_STORE_CREATION_URL,
-            validationUrl = WOOCOMMERCE_STORE_CREATION_DONE_URL,
-            title = resourceProvider.getString(string.create_new_store)
-        ))
+        triggerEvent(
+            NavigateToWPComWebView(
+                url = WOOCOMMERCE_STORE_CREATION_URL,
+                validationUrl = WOOCOMMERCE_STORE_CREATION_DONE_URL,
+                title = resourceProvider.getString(string.create_new_store)
+            )
+        )
     }
 
     fun onTryAnotherAccountButtonClick() {
