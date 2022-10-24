@@ -1,0 +1,2 @@
+10.8:
+Den här versionen innehåller en handfull mindre förbättringar och buggkorrigeringar som vårt team har gjort. Vi jobbar även hårt på ett par riktigt spännande funktioner som du kommer att få ta del av senare under året. Tack för att du använder WooCommerce!
