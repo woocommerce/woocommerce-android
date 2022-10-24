@@ -43,10 +43,12 @@
         <Button
             android:id="@+id/view_analytics_button"
             style="@style/Woo.Button.Outlined"
-            android:layout_marginTop="@dimen/minor_100"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
+            android:layout_marginStart="@dimen/major_100"
+            android:layout_marginTop="@dimen/minor_100"
+            android:layout_marginEnd="@dimen/major_100"
             android:layout_marginBottom="@dimen/minor_100"
             android:text="@string/analytics_see_more"
             />
