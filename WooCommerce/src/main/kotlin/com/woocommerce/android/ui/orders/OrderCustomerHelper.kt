@@ -9,7 +9,6 @@ import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.util.ActivityUtils
-import com.woocommerce.android.util.ActivityUtils.sendEmail
 import org.wordpress.android.util.ToastUtils
 import java.util.Locale
 
@@ -34,7 +33,7 @@ object OrderCustomerHelper {
             )
         )
 
-        sendEmail(context, email) { error ->
+        ActivityUtils.sendEmail(context, email) { error ->
             AnalyticsTracker.track(
                 AnalyticsEvent.ORDER_CONTACT_ACTION_FAILED,
                 this.javaClass.simpleName,
