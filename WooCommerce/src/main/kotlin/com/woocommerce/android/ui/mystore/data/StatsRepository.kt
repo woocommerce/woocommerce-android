@@ -127,39 +127,6 @@ class StatsRepository @Inject constructor(
         }
     }
 
-    @Suppress("UnusedPrivateMember")
-    suspend fun fetchProductLeaderboards(
-        forceRefresh: Boolean,
-        granularity: StatsGranularity,
-        quantity: Int,
-        // TODO - use those dates
-        startDate: String,
-        endDate: String,
-    ): Flow<Result<List<TopPerformerProductEntity>>> = flow {
-        when (forceRefresh) {
-            true -> wcLeaderboardsStore.fetchTopPerformerProducts(
-                site = selectedSite.get(),
-                quantity = quantity,
-                addProductsPath = supportsProductOnlyLeaderboardEndpoint(),
-                forceRefresh = forceRefresh
-            )
-            false -> wcLeaderboardsStore.fetchTopPerformerProducts(
-                site = selectedSite.get(),
-                granularity = granularity
-            )
-        }.let { result ->
-            val model = result.model
-            if (result.isError || model == null) {
-                val resultError: Result<List<TopPerformerProductEntity>> = Result.failure(
-                    Exception(result.error?.message.orEmpty())
-                )
-                emit(resultError)
-            } else {
-                emit(Result.success(model))
-            }
-        }
-    }
-
     private fun List<TopPerformerProductEntity>.expired(): Boolean =
         any { topPerformerProductEntity ->
             System.currentTimeMillis() - topPerformerProductEntity.millisSinceLastUpdated > AN_HOUR_IN_MILLIS
