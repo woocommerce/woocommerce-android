@@ -3,6 +3,7 @@ package com.woocommerce.android.cardreader.internal.payments
 import com.woocommerce.android.cardreader.payments.StatementDescriptor
 import org.junit.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertNull
 import kotlin.test.assertTrue
 
 class StatementDescriptorTest {
@@ -35,13 +36,13 @@ class StatementDescriptorTest {
     @Test
     fun `given statement descriptor contains illegal chars only then replace them with -`() {
         // given
-        val originalStatementDescriptor = "<>'\"*"
+        val originalStatementDescriptor = "<>a'\"*"
 
         // when
         val statementDescriptor = StatementDescriptor(originalStatementDescriptor)
 
         // then
-        assertEquals("-----", statementDescriptor.value)
+        assertEquals("--a---", statementDescriptor.value)
     }
 
     @Test
@@ -59,7 +60,7 @@ class StatementDescriptorTest {
     }
 
     @Test
-    fun `given statement descriptor null it should be transformed to 5-char long default text`() {
+    fun `given statement descriptor null it should be set to null`() {
         // given
         val originalStatementDescriptor = null
 
@@ -67,6 +68,21 @@ class StatementDescriptorTest {
         val statementDescriptor = StatementDescriptor(originalStatementDescriptor)
 
         // then
-        assertEquals("-----", statementDescriptor.value)
+        assertNull(statementDescriptor.value)
+    }
+
+    @Test
+    fun `given statement descriptor doesn't contain any letters it should be set to null`() {
+        // given
+        val originalStatementDescriptor = "./`;'+_)(*&^%$#@!="
+        originalStatementDescriptor.filter { char ->
+            char in 'A'..'Z' || char in 'a'..'z'
+        }.length.also { lettersCount -> assertEquals(0, lettersCount) }
+
+        // when
+        val statementDescriptor = StatementDescriptor(originalStatementDescriptor)
+
+        // then
+        assertNull(statementDescriptor.value)
     }
 }
