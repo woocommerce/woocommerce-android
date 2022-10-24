@@ -161,6 +161,7 @@ class MyStoreViewModel @Inject constructor(
         } ?: ""
 
     fun onViewAnalyticsClicked() {
+        AnalyticsTracker.track(AnalyticsEvent.DASHBOARD_SEE_MORE_ANALYTICS_TAPPED)
         val targetPeriod = when (val state = revenueStatsState.value) {
             is RevenueStatsViewState.Content -> state.granularity.toAnalyticTimePeriod()
             else -> AnalyticTimePeriod.TODAY
