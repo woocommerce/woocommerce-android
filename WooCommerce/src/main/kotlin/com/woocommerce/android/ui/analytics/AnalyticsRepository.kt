@@ -24,7 +24,6 @@ import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.single
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
-import kotlinx.coroutines.withContext
 import org.wordpress.android.fluxc.model.WCRevenueStatsModel
 import org.wordpress.android.fluxc.persistence.entity.TopPerformerProductEntity
 import org.wordpress.android.fluxc.store.WCStatsStore.StatsGranularity
@@ -33,9 +32,11 @@ import org.wordpress.android.fluxc.store.WCStatsStore.StatsGranularity.MONTHS
 import org.wordpress.android.fluxc.store.WCStatsStore.StatsGranularity.WEEKS
 import org.wordpress.android.fluxc.store.WCStatsStore.StatsGranularity.YEARS
 import org.wordpress.android.fluxc.store.WooCommerceStore
+import org.wordpress.android.fluxc.utils.DateUtils
 import javax.inject.Inject
 import kotlin.math.round
 
+@Suppress("TooManyFunctions")
 class AnalyticsRepository @Inject constructor(
     private val statsRepository: StatsRepository,
     private val selectedSite: SelectedSite,
@@ -121,7 +122,7 @@ class AnalyticsRepository @Inject constructor(
 
         val currentPeriodTotalRevenue = getCurrentPeriodStats(dateRange, granularity, fetchStrategy).getOrNull()
         val previousPeriodTotalRevenue = getPreviousPeriodStats(dateRange, granularity, fetchStrategy).getOrNull()
-        val productsStats = getProductStats(dateRange, granularity, TOP_PRODUCTS_LIST_SIZE).getOrNull()
+        val productsStats = getProductStats(dateRange, fetchStrategy, TOP_PRODUCTS_LIST_SIZE).getOrNull()
 
         if (listOf(currentPeriodTotalRevenue, previousPeriodTotalRevenue, productsStats).any { it == null } ||
             currentPeriodTotalRevenue?.itemsSold == null ||
@@ -211,19 +212,30 @@ class AnalyticsRepository @Inject constructor(
 
     private suspend fun getProductStats(
         dateRange: AnalyticsDateRange,
-        granularity: StatsGranularity,
+        fetchStrategy: FetchStrategy,
         quantity: Int
     ): Result<List<TopPerformerProductEntity>> {
         val startDate = when (dateRange) {
-            is SimpleDateRange -> dateRange.to.formatToYYYYmmDD()
-            is MultipleDateRange -> dateRange.to.from.formatToYYYYmmDD()
+            is SimpleDateRange -> dateRange.from.formatToYYYYmmDD()
+            is MultipleDateRange -> dateRange.from.from.formatToYYYYmmDD()
         }
         val endDate = when (dateRange) {
             is SimpleDateRange -> dateRange.to.formatToYYYYmmDD()
             is MultipleDateRange -> dateRange.to.to.formatToYYYYmmDD()
         }
 
-        return fetchProductLeaderboards(startDate, endDate, granularity, quantity)
+        val site = selectedSite.get()
+        val startDateFormatted = DateUtils.getStartDateForSite(site, startDate)
+        val endDateFormatted = DateUtils.getEndDateForSite(site, endDate)
+
+        return statsRepository.fetchTopPerformerProducts(
+            forceRefresh = fetchStrategy is FetchStrategy.ForceNew,
+            startDate = startDateFormatted,
+            endDate = endDateFormatted,
+            quantity = quantity
+        ).map {
+            statsRepository.getTopPerformers(startDateFormatted, endDateFormatted)
+        }
     }
 
     private fun getGranularity(selectedRange: AnalyticTimePeriod) =
@@ -261,21 +273,6 @@ class AnalyticsRepository @Inject constructor(
             startDate,
             endDate
         ).flowOn(dispatchers.io).single().mapCatching { it!!.parseTotal()!! }
-
-    private suspend fun fetchProductLeaderboards(
-        startDate: String,
-        endDate: String,
-        granularity: StatsGranularity,
-        quantity: Int,
-    ): Result<List<TopPerformerProductEntity>> = withContext(dispatchers.io) {
-        statsRepository.fetchProductLeaderboards(
-            true,
-            granularity,
-            quantity,
-            startDate,
-            endDate
-        ).flowOn(dispatchers.io).single()
-    }
 
     private fun getCurrencyCode() = wooCommerceStore.getSiteSettings(selectedSite.get())?.currencyCode
     private fun getAdminPanelUrl() = selectedSite.getIfExists()?.adminUrl
