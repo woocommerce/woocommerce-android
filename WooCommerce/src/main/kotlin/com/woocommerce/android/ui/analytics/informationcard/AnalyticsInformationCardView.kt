@@ -23,7 +23,7 @@ class AnalyticsInformationCardView @JvmOverloads constructor(
     private var skeletonView = SkeletonView()
 
     init {
-        binding.seeReportText.isVisible = FeatureFlag.ANALYTICS_HUB_PRODUCTS.isEnabled()
+        binding.seeReportText.isVisible = FeatureFlag.ANALYTICS_HUB_PRODUCTS_AND_REPORTS.isEnabled()
     }
 
     internal fun updateInformation(viewState: AnalyticsInformationViewState) {

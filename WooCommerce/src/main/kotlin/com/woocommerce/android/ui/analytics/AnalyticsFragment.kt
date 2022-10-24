@@ -42,7 +42,7 @@ class AnalyticsFragment :
             binding.analyticsRefreshLayout.scrollUpChild = binding.scrollView
             viewModel.onRefreshRequested()
         }
-        binding.analyticsProductsCard.isVisible = FeatureFlag.ANALYTICS_HUB_PRODUCTS.isEnabled()
+        binding.analyticsProductsCard.isVisible = FeatureFlag.ANALYTICS_HUB_PRODUCTS_AND_REPORTS.isEnabled()
     }
 
     override fun onDestroyView() {

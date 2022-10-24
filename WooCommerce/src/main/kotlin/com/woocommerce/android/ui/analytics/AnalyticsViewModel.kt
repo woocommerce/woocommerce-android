@@ -185,7 +185,7 @@ class AnalyticsViewModel @Inject constructor(
 
     private fun updateProducts(isRefreshing: Boolean, showSkeleton: Boolean) =
         launch {
-            if (!FeatureFlag.ANALYTICS_HUB_PRODUCTS.isEnabled()) {
+            if (!FeatureFlag.ANALYTICS_HUB_PRODUCTS_AND_REPORTS.isEnabled()) {
                 return@launch
             }
             val timePeriod = getSavedTimePeriod()
