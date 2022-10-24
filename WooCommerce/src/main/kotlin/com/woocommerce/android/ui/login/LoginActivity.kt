@@ -29,6 +29,7 @@ import com.woocommerce.android.analytics.ExperimentTracker
 import com.woocommerce.android.barcode.QrCodeScanningFragment
 import com.woocommerce.android.databinding.ActivityLoginBinding
 import com.woocommerce.android.experiment.PrologueExperiment
+import com.woocommerce.android.experiment.SimplifiedLoginExperiment
 import com.woocommerce.android.experiment.SimplifiedLoginExperiment.LoginVariant
 import com.woocommerce.android.extensions.parcelable
 import com.woocommerce.android.extensions.serializable
@@ -153,8 +154,9 @@ class LoginActivity :
     @Inject internal lateinit var appPrefsWrapper: AppPrefsWrapper
     @Inject internal lateinit var dispatcher: Dispatcher
     @Inject internal lateinit var loginNotificationScheduler: LoginNotificationScheduler
-
     @Inject internal lateinit var prologueExperiment: PrologueExperiment
+    @Inject internal lateinit var simplifiedLoginExperiment: SimplifiedLoginExperiment
+
     @Inject internal lateinit var uiMessageResolver: UIMessageResolver
 
     private var loginMode: LoginMode? = null
@@ -168,7 +170,7 @@ class LoginActivity :
 
     private var connectSiteInfo: ConnectSiteInfo? = null
 
-    private var currentLoginVariant: LoginVariant = LoginVariant.STANDARD
+    private var currentLoginVariant: LoginVariant = simplifiedLoginExperiment.run()
 
     override fun androidInjector(): AndroidInjector<Any> = androidInjector
 
