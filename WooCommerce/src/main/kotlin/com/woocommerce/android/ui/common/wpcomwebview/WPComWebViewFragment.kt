@@ -6,7 +6,6 @@ import android.view.View
 import android.webkit.WebChromeClient
 import android.webkit.WebView
 import androidx.core.view.isVisible
-import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.navArgs
 import com.woocommerce.android.R
 import com.woocommerce.android.databinding.FragmentWpcomWebviewBinding
@@ -41,6 +40,7 @@ class WPComWebViewFragment : BaseFragment(R.layout.fragment_wpcom_webview), UrlI
     private val webViewClient by lazy { WPComWebViewClient(this) }
     private val navArgs: WPComWebViewFragmentArgs by navArgs()
     private var siteUrls = ArrayList<String>()
+    private var canNavigate = true
 
     @Inject lateinit var wpcomWebViewAuthenticator: WPComWebViewAuthenticator
 
@@ -82,14 +82,13 @@ class WPComWebViewFragment : BaseFragment(R.layout.fragment_wpcom_webview), UrlI
 
         extractSiteUrl(url)
 
-        lifecycleScope.launchWhenResumed {
-            if (isAdded && navArgs.urlToTriggerExit?.matchesUrl(url) == true) {
-                if (siteUrls.isEmpty()) {
-                    navigateBackWithNotice(WEBVIEW_RESULT)
-                } else {
-                    navigateBackWithResult(WEBVIEW_RESULT_WITH_URL, siteUrls)
-                    WooLog.d(T.LOGIN, "Site creation URLs: ${siteUrls.joinToString()}")
-                }
+        if (isAdded && navArgs.urlToTriggerExit?.matchesUrl(url) == true && canNavigate) {
+            canNavigate = false
+            if (siteUrls.isEmpty()) {
+                navigateBackWithNotice(WEBVIEW_RESULT)
+            } else {
+                navigateBackWithResult(WEBVIEW_RESULT_WITH_URL, siteUrls)
+                WooLog.d(T.LOGIN, "Site creation URLs: ${siteUrls.joinToString()}")
             }
         }
     }
