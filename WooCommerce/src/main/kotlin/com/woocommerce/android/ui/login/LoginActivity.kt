@@ -29,7 +29,9 @@ import com.woocommerce.android.analytics.ExperimentTracker
 import com.woocommerce.android.barcode.QrCodeScanningFragment
 import com.woocommerce.android.databinding.ActivityLoginBinding
 import com.woocommerce.android.experiment.PrologueExperiment
+import com.woocommerce.android.experiment.SimplifiedLoginExperiment.LoginVariant
 import com.woocommerce.android.extensions.parcelable
+import com.woocommerce.android.extensions.serializable
 import com.woocommerce.android.support.HelpActivity
 import com.woocommerce.android.support.HelpActivity.Origin
 import com.woocommerce.android.support.ZendeskExtraTags
@@ -122,6 +124,7 @@ class LoginActivity :
         private const val KEY_UNIFIED_TRACKER_FLOW = "KEY_UNIFIED_TRACKER_FLOW"
         private const val KEY_LOGIN_HELP_NOTIFICATION = "KEY_LOGIN_HELP_NOTIFICATION"
         private const val KEY_CONNECT_SITE_INFO = "KEY_CONNECT_SITE_INFO"
+        private const val KEY_CURRENT_LOGIN_VARIANT = "KEY_CURRENT_LOGIN_VARIANT"
 
         const val LOGIN_WITH_WPCOM_EMAIL_ACTION = "login_with_wpcom_email"
         const val EMAIL_PARAMETER = "email"
@@ -164,6 +167,8 @@ class LoginActivity :
     }
 
     private var connectSiteInfo: ConnectSiteInfo? = null
+
+    private var currentLoginVariant: LoginVariant = LoginVariant.STANDARD
 
     override fun androidInjector(): AndroidInjector<Any> = androidInjector
 
@@ -213,6 +218,7 @@ class LoginActivity :
             unifiedLoginTracker.setSource(ss.getString(KEY_UNIFIED_TRACKER_SOURCE, Source.DEFAULT.value))
             unifiedLoginTracker.setFlow(ss.getString(KEY_UNIFIED_TRACKER_FLOW))
             connectSiteInfo = ss.parcelable(KEY_CONNECT_SITE_INFO)
+            currentLoginVariant = ss.serializable(KEY_CURRENT_LOGIN_VARIANT) ?: LoginVariant.STANDARD
         }
     }
 
@@ -244,6 +250,7 @@ class LoginActivity :
         unifiedLoginTracker.getFlow()?.value?.let {
             outState.putString(KEY_UNIFIED_TRACKER_FLOW, it)
         }
+        outState.putSerializable(KEY_CURRENT_LOGIN_VARIANT, currentLoginVariant)
     }
 
     private fun showPrologue() {
