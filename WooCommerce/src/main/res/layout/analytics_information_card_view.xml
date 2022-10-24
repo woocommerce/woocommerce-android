@@ -96,6 +96,8 @@
             android:text="@string/analytics_see_report_button_text"
             android:textSize="@dimen/text_minor_125"
             android:translationZ="100dp"
+            android:visibility="gone"
+            tools:visibility="visible"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
