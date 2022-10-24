@@ -1,3 +1,4 @@
+@file:Suppress("MaxLineLength") // this is needed for the long link in kdoc.
 package com.woocommerce.android.cardreader.payments
 
 /**
@@ -8,7 +9,7 @@ package com.woocommerce.android.cardreader.payments
  * 3. It must not contain the following characters: <, >, ', ", *.
  * 4. It must contain at least one letter.
  *
- * **See:** [Stripe docs](https://stripe.dev/stripe-terminal-android/external/com.stripe.stripeterminal.external.models/-payment-intent-parameters/-builder/set-statement-descriptor.html)
+ * **See:** [Stripe docs](https://stripe.dev/stripe-terminal-android/external/com.stripe.stripeterminal.external.models/-payment-intent-parameters/-builder/set-statement-descriptor.html).
  *
  * [StatementDescriptor] exposes the [StatementDescriptor.value] property which is ready to use with Stripe API.
  *
