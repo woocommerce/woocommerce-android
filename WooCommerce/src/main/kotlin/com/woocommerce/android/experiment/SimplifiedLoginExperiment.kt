@@ -1,7 +1,9 @@
 package com.woocommerce.android.experiment
 
-class SimplifiedLoginExperiment {
-    fun run() = LoginVariant.STANDARD
+import javax.inject.Inject
+
+class SimplifiedLoginExperiment @Inject constructor() {
+    fun getCurrentVariant() = LoginVariant.SIMPLIFIED
 
     enum class LoginVariant {
         STANDARD,
