@@ -18,10 +18,10 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="@dimen/major_100"
             android:layout_marginEnd="@dimen/major_100"
+            android:text="@string/simplified_login_enter_email_address"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            tools:text="@string/simplified_login_enter_email_address" />
+            app:layout_constraintTop_toTopOf="parent" />
 
         <!-- Even though this field only accepts email addresses, we also include "username" as an
         autofill hint value to ensure that the default autofill service works well with it -->

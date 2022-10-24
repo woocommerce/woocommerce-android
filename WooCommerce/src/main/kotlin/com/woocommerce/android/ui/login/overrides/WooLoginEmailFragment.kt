@@ -3,6 +3,7 @@ package com.woocommerce.android.ui.login.overrides
 import android.content.Context
 import android.view.ViewGroup
 import android.widget.Button
+import android.widget.TextView
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.LayoutRes
 import androidx.core.text.HtmlCompat
@@ -57,6 +58,10 @@ class WooLoginEmailFragment : LoginEmailFragment() {
                 whatIsWordPressLinkClickListener.onQrCodeLoginClicked()
             } else requestCameraPermission(requestPermissionLauncher)
         }
+    }
+
+    override fun setupLabel(label: TextView) {
+        // NO-OP, For this custom screen, the correct label is set in the layout
     }
 
     override fun onResume() {
