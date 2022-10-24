@@ -1,4 +1,4 @@
-package com.woocommerce.android.support
+package com.woocommerce.android.support.help
 
 import android.content.Context
 import android.content.Intent
@@ -16,6 +16,11 @@ import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_SOURCE_F
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_SOURCE_STEP
 import com.woocommerce.android.databinding.ActivityHelpBinding
 import com.woocommerce.android.extensions.show
+import com.woocommerce.android.support.SSRActivity
+import com.woocommerce.android.support.SupportHelper
+import com.woocommerce.android.support.TicketType
+import com.woocommerce.android.support.WooLogViewerActivity
+import com.woocommerce.android.support.ZendeskHelper
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.login.localnotifications.LoginNotificationScheduler
 import com.woocommerce.android.util.ChromeCustomTabUtils
