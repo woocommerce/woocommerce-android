@@ -23,24 +23,24 @@ class StatementDescriptorTest {
     @Test
     fun `given statement descriptor contains illegal chars then replace them with -`() {
         // given
-        val originalStatementDescriptor = "aaa<aaa>aaa'aaa\"aaa"
+        val originalStatementDescriptor = "aaa<aaa>aaa'aaa\"aaa*"
 
         // when
         val statementDescriptor = StatementDescriptor(originalStatementDescriptor)
 
         // then
-        assertEquals("aaa-aaa-aaa-aaa-aaa", statementDescriptor.value)
+        assertEquals("aaa-aaa-aaa-aaa-aaa-", statementDescriptor.value)
     }
 
     @Test
     fun `given statement descriptor contains illegal chars only then replace them with -`() {
         // given
-        val originalStatementDescriptor = "<>'\""
+        val originalStatementDescriptor = "<>'\"*"
 
         // when
         val statementDescriptor = StatementDescriptor(originalStatementDescriptor)
 
         // then
-        assertEquals("----", statementDescriptor.value)
+        assertEquals("-----", statementDescriptor.value)
     }
 }
