@@ -1,7 +1,7 @@
 package com.woocommerce.android.ui.analytics
 
-import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.R
+import com.woocommerce.android.initSavedStateHandle
 import com.woocommerce.android.model.DeltaPercentage
 import com.woocommerce.android.model.OrdersStat
 import com.woocommerce.android.model.ProductItem
@@ -86,7 +86,7 @@ class AnalyticsViewModelTest : BaseUnitTest() {
     private val selectedSite: SelectedSite = mock {
         on { getIfExists() } doReturn siteModel
     }
-    private val savedState = SavedStateHandle()
+    private val savedState = AnalyticsFragmentArgs(targetGranularity = TODAY).initSavedStateHandle()
 
     private lateinit var sut: AnalyticsViewModel
 
