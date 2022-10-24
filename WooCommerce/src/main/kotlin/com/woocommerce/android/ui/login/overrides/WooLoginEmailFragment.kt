@@ -7,6 +7,9 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.LayoutRes
 import androidx.core.text.HtmlCompat
 import com.woocommerce.android.R
+import com.woocommerce.android.experiment.SimplifiedLoginExperiment
+import com.woocommerce.android.experiment.SimplifiedLoginExperiment.LoginVariant.SIMPLIFIED
+import com.woocommerce.android.experiment.SimplifiedLoginExperiment.LoginVariant.STANDARD
 import com.woocommerce.android.extensions.showKeyboardWithDelay
 import com.woocommerce.android.ui.dialog.WooDialog
 import com.woocommerce.android.util.WooPermissionUtils
@@ -14,6 +17,7 @@ import com.woocommerce.android.util.WooPermissionUtils.hasCameraPermission
 import com.woocommerce.android.util.WooPermissionUtils.requestCameraPermission
 import org.wordpress.android.login.LoginEmailFragment
 import org.wordpress.android.login.widgets.WPLoginInputRow
+import javax.inject.Inject
 
 class WooLoginEmailFragment : LoginEmailFragment() {
     interface Listener {
@@ -30,8 +34,14 @@ class WooLoginEmailFragment : LoginEmailFragment() {
 
     private lateinit var whatIsWordPressLinkClickListener: Listener
 
+    @Inject
+    lateinit var simplifiedLoginExperiment: SimplifiedLoginExperiment
+
     @LayoutRes
-    override fun getContentLayout(): Int = R.layout.fragment_login_email_screen
+    override fun getContentLayout(): Int = when (simplifiedLoginExperiment.getCurrentVariant()) {
+        STANDARD -> R.layout.fragment_login_email_screen
+        SIMPLIFIED -> R.layout.fragment_simplified_login_email_screen
+    }
 
     override fun setupContent(rootView: ViewGroup) {
         super.setupContent(rootView)
