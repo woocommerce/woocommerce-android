@@ -148,6 +148,7 @@ class AnalyticsViewModel @Inject constructor(
         saveSelectedTimePeriod(selectedTimePeriod)
         saveSelectedDateRange(dateRange)
         updateDateSelector()
+        trackSelectedDateRange(selectedTimePeriod)
         viewModelScope.launch {
             updateRevenue(isRefreshing = false, showSkeleton = true)
             updateOrders(isRefreshing = false, showSkeleton = true)
@@ -453,6 +454,15 @@ class AnalyticsViewModel @Inject constructor(
             AnalyticsEvent.ANALYTICS_HUB_SEE_REPORT_TAPPED,
             mapOf(
                 AnalyticsTracker.KEY_CARD to selectedCardType
+            )
+        )
+    }
+
+    private fun trackSelectedDateRange(selectedTimePeriod: AnalyticTimePeriod) {
+        AnalyticsTracker.track(
+            AnalyticsEvent.ANALYTICS_HUB_DATE_RANGE_SELECTED,
+            mapOf(
+                AnalyticsTracker.KEY_OPTION to selectedTimePeriod.description
             )
         )
     }
