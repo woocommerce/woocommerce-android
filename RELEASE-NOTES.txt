@@ -1,5 +1,5 @@
 *** PLEASE FOLLOW THIS FORMAT: [<priority indicator, more stars = higher priority>] <description> [<PR URL>]
-10.10
+11.0
 -----
 - [*] Fixed a bug caused by statement descriptor value too long or containing illegal chars [https://github.com/woocommerce/woocommerce-android/pull/7595]
 
