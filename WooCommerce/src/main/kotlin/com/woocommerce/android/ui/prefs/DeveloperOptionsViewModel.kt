@@ -64,7 +64,7 @@ class DeveloperOptionsViewModel @Inject constructor(
             icon = drawable.img_card_reader_connecting,
             label = UiStringRes(string.enable_card_reader),
             isEnabled = true,
-            isChecked = false,
+            isChecked = developerOptionsRepository.isSimulatedCardReaderEnabled(),
             onToggled = ::onSimulatedReaderToggled
         )
     )
@@ -99,7 +99,7 @@ class DeveloperOptionsViewModel @Inject constructor(
                 @DrawableRes override val icon: Int,
                 override val label: UiString,
                 override var isEnabled: Boolean = false,
-                 val onClick: () -> Unit
+                val onClick: () -> Unit
             ) : ListItem()
         }
     }
