@@ -35,7 +35,7 @@ class AnalyticsFragment :
         bind(view)
         setupResultHandlers(viewModel)
         lifecycleScope.launchWhenStarted { viewModel.state.collect { newState -> handleStateChange(newState) } }
-        viewModel.event.observe(viewLifecycleOwner, { event -> handleEvent(event) })
+        viewModel.event.observe(viewLifecycleOwner) { event -> handleEvent(event) }
         binding.analyticsRefreshLayout.setOnRefreshListener {
             binding.analyticsRefreshLayout.scrollUpChild = binding.scrollView
             viewModel.onRefreshRequested()

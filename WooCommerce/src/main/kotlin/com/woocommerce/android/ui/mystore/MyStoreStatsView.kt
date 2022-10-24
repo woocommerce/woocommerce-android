@@ -40,6 +40,7 @@ import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.mystore.MyStoreFragment.Companion.DEFAULT_STATS_GRANULARITY
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.util.DateUtils
+import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.util.WooAnimUtils
 import com.woocommerce.android.util.WooAnimUtils.Duration
 import com.woocommerce.android.util.roundToTheNextPowerOfTen
@@ -121,13 +122,15 @@ class MyStoreStatsView @JvmOverloads constructor(
     private val chartUserInteractions = MutableSharedFlow<Unit>()
     private lateinit var chartUserInteractionsJob: Job
 
+    @Suppress("LongParameterList")
     fun initView(
         period: StatsGranularity = DEFAULT_STATS_GRANULARITY,
         selectedSite: SelectedSite,
         dateUtils: DateUtils,
         currencyFormatter: CurrencyFormatter,
         usageTracksEventEmitter: MyStoreStatsUsageTracksEventEmitter,
-        lifecycleScope: LifecycleCoroutineScope
+        lifecycleScope: LifecycleCoroutineScope,
+        onViewAnalyticsClick: () -> Unit
     ) {
         this.selectedSite = selectedSite
         this.activeGranularity = period
@@ -137,6 +140,13 @@ class MyStoreStatsView @JvmOverloads constructor(
         this.coroutineScope = lifecycleScope
 
         initChart()
+
+        with(binding.viewAnalyticsButton) {
+            isVisible = FeatureFlag.ANALYTICS_HUB.isEnabled()
+            setOnClickListener {
+                onViewAnalyticsClick()
+            }
+        }
 
         visitorsValue.addTextChangedListener {
             updateConversionRate()
