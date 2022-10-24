@@ -31,4 +31,11 @@ dependencies {
 
     implementation("com.android.billingclient:billing-ktx:$billingVersion")
     implementation "androidx.appcompat:appcompat:$appCompatVersion"
+
+    testImplementation "junit:junit:$jUnitVersion"
+    testImplementation "org.mockito.kotlin:mockito-kotlin:$mockitoKotlinVersion"
+    testImplementation "org.mockito:mockito-inline:$mockitoVersion"
+    testImplementation "org.jetbrains.kotlin:kotlin-test-junit:$gradle.ext.kotlinVersion"
+    testImplementation "org.assertj:assertj-core:$assertjVersion"
+    testImplementation "org.jetbrains.kotlinx:kotlinx-coroutines-test:$coroutinesVersion"
 }
