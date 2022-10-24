@@ -13,10 +13,24 @@ package com.woocommerce.android.cardreader.payments
  */
 class StatementDescriptor(rawValue: String?) {
 
-    val value: String? = rawValue?.take(MAX_LENGTH)?.split("<", ">", "'", "\"", "*")?.joinToString(REPLACEMENT_CHAR)
+    val value: String by lazy {
+        if (rawValue == null || rawValue.isEmpty()) {
+            (1..MIN_LENGTH).joinToString(separator = "") { REPLACEMENT_CHAR }
+        } else {
+            StringBuilder().apply {
+                append(rawValue.take(MAX_LENGTH).split("<", ">", "'", "\"", "*").joinToString(REPLACEMENT_CHAR))
+
+                if (length < MIN_LENGTH) {
+                    val missingCharsCount = MIN_LENGTH - length
+                    append((1..missingCharsCount).joinToString("") { REPLACEMENT_CHAR })
+                }
+            }.toString()
+        }
+    }
 
     companion object {
         const val MAX_LENGTH = 22
+        const val MIN_LENGTH = 5
         const val REPLACEMENT_CHAR = "-"
     }
 }

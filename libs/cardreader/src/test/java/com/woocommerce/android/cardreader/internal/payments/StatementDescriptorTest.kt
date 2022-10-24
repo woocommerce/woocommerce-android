@@ -43,4 +43,30 @@ class StatementDescriptorTest {
         // then
         assertEquals("-----", statementDescriptor.value)
     }
+
+    @Test
+    fun `given statement descriptor size smaller than 5 chars it should be appended to at least 5 chars`() {
+        // given
+        val originalStatementDescriptor = "khf"
+        assertTrue(originalStatementDescriptor.length < 5)
+
+        // when
+        val statementDescriptor = StatementDescriptor(originalStatementDescriptor)
+
+        // then
+        assertEquals(5, statementDescriptor.value?.length)
+        assertEquals("$originalStatementDescriptor--", statementDescriptor.value)
+    }
+
+    @Test
+    fun `given statement descriptor null it should be transformed to 5-char long default text`() {
+        // given
+        val originalStatementDescriptor = null
+
+        // when
+        val statementDescriptor = StatementDescriptor(originalStatementDescriptor)
+
+        // then
+        assertEquals("-----", statementDescriptor.value)
+    }
 }
