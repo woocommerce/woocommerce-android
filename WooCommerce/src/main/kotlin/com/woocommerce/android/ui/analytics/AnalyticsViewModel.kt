@@ -90,11 +90,12 @@ class AnalyticsViewModel @Inject constructor(
     fun onCustomDateRangeChanged(fromMillis: Long, toMillis: Long) {
         val dateFormat = SimpleDateFormat("EEE, LLL d, yy", Locale.getDefault())
         dateFormat.timeZone = TimeZone.getTimeZone("UTC")
+        val fromDateStr = dateFormat.format(Date(fromMillis))
+        val toDateStr = dateFormat.format(Date(toMillis))
 
-        val fromDate = Date(fromMillis)
-        val toDate = Date(toMillis)
-        val fromDateStr = dateFormat.format(fromDate)
-        val toDateStr = dateFormat.format(toDate)
+        dateFormat.timeZone = TimeZone.getDefault()
+        val fromDateUtc = dateFormat.parse(fromDateStr)
+        val toDateUtc = dateFormat.parse(toDateStr)
 
         mutableState.value = state.value.copy(
             analyticsDateRangeSelectorState = state.value.analyticsDateRangeSelectorState.copy(
@@ -108,7 +109,7 @@ class AnalyticsViewModel @Inject constructor(
             )
         )
 
-        val dateRange = analyticsDateRange.getAnalyticsDateRangeFromCustom(fromDate, toDate)
+        val dateRange = analyticsDateRange.getAnalyticsDateRangeFromCustom(fromDateUtc, toDateUtc)
         saveSelectedDateRange(dateRange)
         saveSelectedTimePeriod(AnalyticTimePeriod.CUSTOM)
 
