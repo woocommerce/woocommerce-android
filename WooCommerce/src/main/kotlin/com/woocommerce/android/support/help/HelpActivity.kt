@@ -66,7 +66,7 @@ class HelpActivity : AppCompatActivity() {
         supportActionBar?.setHomeButtonEnabled(true)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
-        binding.contactContainer.setOnClickListener { createNewZendeskTicket(TicketType.General) }
+        binding.contactContainer.setOnClickListener { viewModel.contactSupport(TicketType.General) }
         binding.identityContainer.setOnClickListener { showIdentityDialog(TicketType.General) }
         binding.myTicketsContainer.setOnClickListener { showZendeskTickets() }
         binding.faqContainer.setOnClickListener {
@@ -87,7 +87,7 @@ class HelpActivity : AppCompatActivity() {
 
         with(binding.contactPaymentsContainer) {
             setOnClickListener {
-                viewModel.onContactPaymentsSupportClicked()
+                viewModel.contactSupport(TicketType.Payments)
             }
         }
 
@@ -108,7 +108,7 @@ class HelpActivity : AppCompatActivity() {
         }
 
         if (originFromExtras == Origin.SITE_PICKER_JETPACK_TIMEOUT) {
-            createNewZendeskTicket(TicketType.General)
+            viewModel.contactSupport(TicketType.General)
         }
 
         initObservers(binding)
@@ -121,7 +121,7 @@ class HelpActivity : AppCompatActivity() {
                     when (event) {
                         is HelpViewModel.ContactPaymentsSupportClickEvent.CreateTicket -> {
                             binding.helpLoading.visibility = View.GONE
-                            createNewZendeskTicket(TicketType.Payments, extraTags = event.supportTags)
+                            createNewZendeskTicket(event.ticketType, extraTags = event.supportTags)
                         }
                         HelpViewModel.ContactPaymentsSupportClickEvent.ShowLoading -> {
                             binding.helpLoading.visibility = View.VISIBLE
@@ -192,9 +192,7 @@ class HelpActivity : AppCompatActivity() {
 
     private fun refreshContactEmailText() {
         val supportEmail = AppPrefs.getSupportEmail()
-        binding.identityContainer.optionValue = if (supportEmail.isNotEmpty()) {
-            supportEmail
-        } else {
+        binding.identityContainer.optionValue = supportEmail.ifEmpty {
             getString(R.string.support_contact_email_not_set)
         }
     }
