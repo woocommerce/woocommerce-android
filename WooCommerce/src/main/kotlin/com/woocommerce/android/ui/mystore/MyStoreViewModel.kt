@@ -112,8 +112,10 @@ class MyStoreViewModel @Inject constructor(
     private val _activeStatsGranularity = savedState.getStateFlow(viewModelScope, getSelectedStatsGranularityIfAny())
     val activeStatsGranularity = _activeStatsGranularity.asLiveData()
 
-    @VisibleForTesting val refreshStoreStats = BooleanArray(StatsGranularity.values().size) { true }
-    @VisibleForTesting val refreshTopPerformerStats = BooleanArray(StatsGranularity.values().size) { true }
+    @VisibleForTesting
+    val refreshStoreStats = BooleanArray(StatsGranularity.values().size) { true }
+    @VisibleForTesting
+    val refreshTopPerformerStats = BooleanArray(StatsGranularity.values().size) { true }
 
     private var jetpackMonitoringJob: Job? = null
 
@@ -156,12 +158,17 @@ class MyStoreViewModel @Inject constructor(
 
     private fun populateResultToUI(response: WooResult<Array<JITMApiResponse>>) {
         when {
-            response.isError -> { }
+            response.isError -> {}
             !response.model.isNullOrEmpty() -> {
                 _bannerState.value = BannerState(
                     shouldDisplayBanner = true,
-                    onPrimaryActionClicked = { (::onJitmCtaClicked)(response.model!![0].cta.link) },
-                    onDismissClicked = { (::onJitmDismissClicked)(response.model!![0].id) },
+                    onPrimaryActionClicked = { onJitmCtaClicked(response.model!![0].cta.link) },
+                    onDismissClicked = {
+                        onJitmDismissClicked(
+                            response.model!![0].id,
+                            response.model!![0].featureClass
+                        )
+                    },
                     title = UiString.UiStringText(response.model!![0].content.message),
                     description = UiString.UiStringText(response.model!![0].content.description),
                     primaryActionLabel = UiString.UiStringText(response.model!![0].cta.message),
@@ -179,9 +186,9 @@ class MyStoreViewModel @Inject constructor(
         )
     }
 
-    private fun onJitmDismissClicked(jitmId: String) {
+    private fun onJitmDismissClicked(jitmId: String, featureClass: String) {
         viewModelScope.launch {
-            jitmStore.dismissJitmMessage(selectedSite.get(), jitmId)
+            jitmStore.dismissJitmMessage(selectedSite.get(), jitmId, featureClass)
         }
         triggerEvent(MyStoreEvent.OnJitmDismissed)
     }
@@ -443,10 +450,12 @@ class MyStoreViewModel @Inject constructor(
         data class OpenTopPerformer(
             val productId: Long
         ) : MyStoreEvent()
+
         data class OnJitmCtaClicked(
             val url: String,
             @StringRes val titleRes: Int = R.string.card_reader_purchase_card_reader
         ) : MyStoreEvent()
+
         object OnJitmDismissed : MyStoreEvent()
     }
 }
