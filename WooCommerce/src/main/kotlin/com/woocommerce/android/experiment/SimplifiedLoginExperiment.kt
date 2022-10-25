@@ -13,18 +13,20 @@ class SimplifiedLoginExperiment @Inject constructor(
     private val remoteConfigRepository: RemoteConfigRepository,
 ) {
     companion object {
+        // The two values below are set in Firebase
         private const val VARIANT_CONTROL = "control"
         private const val VARIANT_SIMPLIFIED = "simplified_login_i1"
     }
 
     fun run() {
-        // Firebase's activation event for A/B testing. Make sure to only call it once!
+        // Track Firebase's activation event for the A/B testing. Make sure to only call it once!
         experimentTracker.log(ExperimentTracker.SIMPLIFIED_LOGIN_ELIGIBLE_EVENT)
 
         // Track used variant
+        val variant = getCurrentVariant()
         analyticsTrackerWrapper.track(
             AnalyticsEvent.SIMPLIFIED_LOGIN_EXPERIMENT,
-            mapOf(Pair(AnalyticsTracker.KEY_EXPERIMENT_VARIANT, getCurrentVariant().name))
+            mapOf(Pair(AnalyticsTracker.KEY_EXPERIMENT_VARIANT, variant.name))
         )
     }
 
