@@ -1,6 +1,5 @@
 package com.woocommerce.android.util
 
-import kotlinx.coroutines.CoroutineStart
 import kotlinx.coroutines.async
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.suspendCancellableCoroutine
@@ -13,7 +12,7 @@ import kotlin.coroutines.resume
 suspend inline fun <PAYLOAD, reified EVENT : Any> Dispatcher.dispatchAndAwait(
     action: Action<PAYLOAD>
 ): EVENT = coroutineScope {
-    val deferred = async(start = CoroutineStart.LAZY) { awaitEvent<EVENT>() }
+    val deferred = async { awaitEvent<EVENT>() }
     dispatch(action)
 
     return@coroutineScope deferred.await()
