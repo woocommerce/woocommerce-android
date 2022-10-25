@@ -160,6 +160,7 @@ class MyStoreViewModel @Inject constructor(
         when {
             response.isError -> {}
             !response.model.isNullOrEmpty() -> {
+                trackJitmFetchSuccessEvent(response.model!![0].id)
                 _bannerState.value = BannerState(
                     shouldDisplayBanner = true,
                     onPrimaryActionClicked = { onJitmCtaClicked(response.model!![0].cta.link) },
@@ -176,6 +177,16 @@ class MyStoreViewModel @Inject constructor(
                 )
             }
         }
+    }
+
+    private fun trackJitmFetchSuccessEvent(jitmId: String) {
+        analyticsTrackerWrapper.track(
+            AnalyticsEvent.JITM_FETCH_SUCCESS,
+            mapOf(
+                "source" to UTM_SOURCE,
+                "jitms" to listOf(jitmId)
+            )
+        )
     }
 
     private fun onJitmCtaClicked(url: String) {

@@ -31,6 +31,7 @@ import org.mockito.ArgumentMatchers.anyInt
 import org.mockito.ArgumentMatchers.anyString
 import org.mockito.kotlin.any
 import org.mockito.kotlin.argumentCaptor
+import org.mockito.kotlin.eq
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.never
 import org.mockito.kotlin.verify
@@ -710,6 +711,59 @@ class MyStoreViewModelTest : BaseUnitTest() {
                 (sut.event.value as OnJitmCtaClicked).titleRes
             ).isEqualTo(
                 R.string.card_reader_purchase_card_reader
+            )
+        }
+    }
+
+    @Test
+    fun `given jitm success response, when viewmodel init, then jitm fetch success is tracked`() {
+        testBlocking {
+            givenNetworkConnectivity(connected = true)
+            whenever(selectedSite.get()).thenReturn(SiteModel())
+            whenever(
+                wooCommerceStore.getStoreCountryCode(any())
+            ).thenReturn("US")
+            whenever(
+                jitmStore.fetchJitmMessage(any(), any())
+            ).thenReturn(
+                WooResult(
+                    model = arrayOf(provideJitmApiResponse())
+                )
+            )
+
+            whenViewModelIsCreated()
+
+            verify(analyticsTrackerWrapper).track(
+                eq(AnalyticsEvent.JITM_FETCH_SUCCESS),
+                any()
+            )
+        }
+    }
+
+    @Test
+    fun `given jitm success, when viewmodel init, then jitm fetch success is tracked with correct properties`() {
+        testBlocking {
+            givenNetworkConnectivity(connected = true)
+            whenever(selectedSite.get()).thenReturn(SiteModel())
+            whenever(
+                wooCommerceStore.getStoreCountryCode(any())
+            ).thenReturn("US")
+            whenever(
+                jitmStore.fetchJitmMessage(any(), any())
+            ).thenReturn(
+                WooResult(
+                    model = arrayOf(provideJitmApiResponse(id = "12345"))
+                )
+            )
+
+            whenViewModelIsCreated()
+
+            verify(analyticsTrackerWrapper).track(
+                AnalyticsEvent.JITM_FETCH_SUCCESS,
+                mapOf(
+                    "source" to MyStoreViewModel.UTM_SOURCE,
+                    "jitms" to listOf("12345")
+                )
             )
         }
     }
