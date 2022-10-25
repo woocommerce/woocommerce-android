@@ -12,6 +12,8 @@ import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.JITM_FEATURE_CLASS
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.JITM_ID
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_ERROR_DESC
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_ERROR_TYPE
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_SOURCE
@@ -169,6 +171,10 @@ class MyStoreViewModel @Inject constructor(
                         it.id
                     }
                 )
+                trackJitmDisplayedEvent(
+                    response.model!![0].id,
+                    response.model!![0].featureClass
+                )
                 _bannerState.value = BannerState(
                     shouldDisplayBanner = true,
                     onPrimaryActionClicked = { onJitmCtaClicked(response.model!![0].cta.link) },
@@ -192,6 +198,17 @@ class MyStoreViewModel @Inject constructor(
                 trackJitmFetchFailureEvent(response.error.type, response.error.message)
             }
         }
+    }
+
+    private fun trackJitmDisplayedEvent(id: String, featureClass: String) {
+        analyticsTrackerWrapper.track(
+            AnalyticsEvent.JITM_DISPLAYED,
+            mapOf(
+                KEY_SOURCE to UTM_SOURCE,
+                JITM_ID to id,
+                JITM_FEATURE_CLASS to featureClass
+            )
+        )
     }
 
     private fun trackJitmFetchFailureEvent(type: WooErrorType, message: String?) {
