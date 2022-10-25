@@ -161,7 +161,7 @@ class HelpActivity : AppCompatActivity() {
 
     private fun createNewZendeskTicket(ticketType: TicketType, extraTags: List<String> = emptyList()) {
         if (!AppPrefs.hasSupportEmail()) {
-            showIdentityDialog(ticketType, extraTags)
+            showIdentityDialog(ticketType, extraTags, createNewTicket = true)
             return
         }
 
@@ -174,7 +174,11 @@ class HelpActivity : AppCompatActivity() {
         )
     }
 
-    private fun showIdentityDialog(ticketType: TicketType, extraTags: List<String> = emptyList()) {
+    private fun showIdentityDialog(
+        ticketType: TicketType,
+        extraTags: List<String> = emptyList(),
+        createNewTicket: Boolean = false
+    ) {
         val emailSuggestion = if (AppPrefs.hasSupportEmail()) {
             AppPrefs.getSupportEmail()
         } else {
@@ -185,7 +189,7 @@ class HelpActivity : AppCompatActivity() {
         supportHelper.showSupportIdentityInputDialog(this, emailSuggestion, isNameInputHidden = true) { email, _ ->
             zendeskHelper.setSupportEmail(email)
             AnalyticsTracker.track(AnalyticsEvent.SUPPORT_IDENTITY_SET)
-            createNewZendeskTicket(ticketType, extraTags)
+            if (createNewTicket) createNewZendeskTicket(ticketType, extraTags)
         }
         AnalyticsTracker.track(AnalyticsEvent.SUPPORT_IDENTITY_FORM_VIEWED)
     }
