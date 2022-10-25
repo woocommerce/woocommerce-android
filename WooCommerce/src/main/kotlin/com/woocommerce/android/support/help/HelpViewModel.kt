@@ -20,6 +20,11 @@ class HelpViewModel @Inject constructor(
 ) : ScopedViewModel(savedState) {
 
     fun contactSupport(ticketType: TicketType) {
+        if (!selectedSite.exists()) {
+            triggerEvent(ContactPaymentsSupportClickEvent.CreateTicket(ticketType, emptyList()))
+            return
+        }
+
         triggerEvent(ContactPaymentsSupportClickEvent.ShowLoading)
         launch {
             wooStore.fetchSitePlugins(selectedSite.get())

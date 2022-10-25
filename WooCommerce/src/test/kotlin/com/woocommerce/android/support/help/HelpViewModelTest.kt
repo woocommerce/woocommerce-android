@@ -23,7 +23,8 @@ class HelpViewModelTest : BaseUnitTest() {
     private val savedState: SavedStateHandle = SavedStateHandle()
     private val siteModel: SiteModel = mock()
     private val selectedSite: SelectedSite = mock {
-        whenever(it.get()).thenReturn(siteModel)
+        on { get() }.thenReturn(siteModel)
+        on { exists() }.thenReturn(true)
     }
     private val wooStore: WooCommerceStore = mock()
     private val viewModel = HelpViewModel(
@@ -33,7 +34,27 @@ class HelpViewModelTest : BaseUnitTest() {
     )
 
     @Test
-    fun `when on contact clicked, then loading event triggered`() {
+    fun `given site doesnt exist, when on contact clicked, then create event triggered`() {
+        // GIVEN
+        whenever(selectedSite.exists()).thenReturn(false)
+
+        // WHEN
+        viewModel.contactSupport(TicketType.General)
+
+        // THEN
+        assertThat(viewModel.event.value).isEqualTo(
+            HelpViewModel.ContactPaymentsSupportClickEvent.CreateTicket(
+                TicketType.General,
+                emptyList(),
+            )
+        )
+    }
+
+    @Test
+    fun `given site exists, when on contact clicked, then loading event triggered`() {
+        // GIVEN
+        whenever(selectedSite.exists()).thenReturn(true)
+
         // WHEN
         viewModel.contactSupport(TicketType.General)
 
