@@ -12,6 +12,7 @@ import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.JITMS
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.JITM_FEATURE_CLASS
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.JITM_ID
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_ERROR_DESC
@@ -227,7 +228,7 @@ class MyStoreViewModel @Inject constructor(
             AnalyticsEvent.JITM_FETCH_SUCCESS,
             mapOf(
                 KEY_SOURCE to UTM_SOURCE,
-                "jitms" to jitmIdList
+                JITMS to jitmIdList
             )
         )
     }
