@@ -6,18 +6,19 @@
     android:layout_height="match_parent"
     android:fillViewport="true">
 
-    <androidx.constraintlayout.widget.ConstraintLayout
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
 
         <com.google.android.material.textview.MaterialTextView
             android:id="@+id/label"
             style="@style/Widget.LoginFlow.TextView.Label"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginStart="@dimen/margin_extra_large"
-            android:layout_marginEnd="@dimen/margin_extra_large"
-            android:text="@string/enter_email_wordpress_com"
+            android:layout_marginStart="@dimen/major_100"
+            android:layout_marginEnd="@dimen/major_100"
+            android:text="@string/simplified_login_enter_email_address"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
@@ -28,74 +29,67 @@
             android:id="@+id/login_email_row"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginStart="@dimen/margin_extra_large"
-            android:layout_marginTop="@dimen/margin_extra_large"
-            android:layout_marginEnd="@dimen/margin_extra_large"
+            android:layout_marginStart="@dimen/major_100"
+            android:layout_marginTop="@dimen/major_100"
+            android:layout_marginEnd="@dimen/major_100"
             android:autofillHints="emailAddress,username"
             android:hint="@string/email_address"
             android:imeOptions="actionNext"
             android:importantForAutofill="yes"
             android:inputType="textEmailAddress"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/label"
             tools:ignore="UnusedAttribute" />
 
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/continue_tos"
-            style="@style/Widget.LoginFlow.Button.Tertiary.Small"
+        <Space
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="@dimen/margin_extra_large"
-            android:layout_marginEnd="@dimen/margin_extra_large"
-            android:text="@string/continue_terms_of_service_text"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/login_email_row"
-            tools:visibility="gone" />
+            android:layout_height="0dp"
+            android:layout_weight="1" />
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/login_continue_button"
             style="@style/Widget.LoginFlow.Button.Primary"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginStart="@dimen/margin_extra_large"
-            android:layout_marginEnd="@dimen/margin_extra_large"
-            android:text="@string/login_continue"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/continue_tos"
-            app:layout_goneMarginTop="@dimen/margin_extra_large" />
+            android:layout_marginStart="@dimen/major_100"
+            android:layout_marginEnd="@dimen/major_100"
+            android:text="@string/login_continue" />
 
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/login_what_is_wordpress"
-            style="@style/Widget.LoginFlow.Button.Tertiary"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="@dimen/margin_extra_large"
-            android:layout_marginEnd="@dimen/margin_extra_large"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/login_continue_button" />
 
-        <Space
-            android:id="@+id/spacer"
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_weight="1"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/login_what_is_wordpress" />
-
+        <!-- Hidden part, we are keeping this just to avoid getting NPEs when we try to assign listeners to those views -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
+            android:visibility="gone"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/spacer"
-            app:layout_constraintVertical_bias="1.0">
+            app:layout_constraintStart_toStartOf="parent">
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/login_what_is_wordpress"
+                style="@style/Widget.LoginFlow.Button.Tertiary"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/margin_extra_large"
+                android:layout_marginEnd="@dimen/margin_extra_large"
+                android:visibility="gone"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/login_continue_button" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/continue_tos"
+                style="@style/Widget.LoginFlow.Button.Tertiary.Small"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/margin_extra_large"
+                android:layout_marginEnd="@dimen/margin_extra_large"
+                android:text="@string/continue_terms_of_service_text"
+                android:visibility="gone"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/login_email_row"
+                tools:visibility="gone" />
+
 
             <include
                 android:id="@+id/orLayout"
@@ -136,9 +130,8 @@
                 android:layout_marginStart="@dimen/margin_extra_large"
                 android:layout_marginEnd="@dimen/margin_extra_large"
                 android:text="@string/continue_with_google_terms_of_service_text" />
-
         </LinearLayout>
 
-    </androidx.constraintlayout.widget.ConstraintLayout>
+    </LinearLayout>
 
 </ScrollView>
