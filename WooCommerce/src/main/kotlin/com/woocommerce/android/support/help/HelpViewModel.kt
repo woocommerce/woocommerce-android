@@ -36,28 +36,34 @@ class HelpViewModel @Inject constructor(
             val wcPayPluginInfo = wooStore.getSitePlugin(selectedSite.get(), WooPlugin.WOO_PAYMENTS)
             val stripePluginInfo = wooStore.getSitePlugin(selectedSite.get(), WooPlugin.WOO_STRIPE_GATEWAY)
 
-            val tags = listOf(determineWcPayTag(wcPayPluginInfo), determineStripeTag(stripePluginInfo))
+            val tags = determineWcPayTag(wcPayPluginInfo) + determineStripeTag(stripePluginInfo)
             triggerEvent(ContactPaymentsSupportClickEvent.CreateTicket(ticketType, tags))
         }
     }
 
-    private fun determineStripeTag(stripePluginInfo: SitePluginModel?) =
-        if (stripePluginInfo == null) {
-            STRIPE_NOT_INSTALLED_TAG
-        } else if (stripePluginInfo.isActive) {
-            STRIPE_INSTALLED_AND_ACTIVATED
-        } else {
-            STRIPE_INSTALLED
-        }
-
     private fun determineWcPayTag(wcPayPluginInfo: SitePluginModel?) =
-        if (wcPayPluginInfo == null) {
-            WCPAY_NOT_INSTALLED_TAG
-        } else if (wcPayPluginInfo.isActive) {
-            WCPAY_INSTALLED_AND_ACTIVATED
-        } else {
-            WCPAY_INSTALLED
-        }
+        listOf(
+            if (wcPayPluginInfo == null) {
+                WCPAY_NOT_INSTALLED_TAG
+            } else if (wcPayPluginInfo.isActive) {
+                WCPAY_INSTALLED_AND_ACTIVATED
+            } else {
+                WCPAY_INSTALLED
+            },
+            WCPAY_WOO_APP_GENERIC_TAG
+        )
+
+    private fun determineStripeTag(stripePluginInfo: SitePluginModel?) =
+        listOf(
+            if (stripePluginInfo == null) {
+                STRIPE_NOT_INSTALLED_TAG
+            } else if (stripePluginInfo.isActive) {
+                STRIPE_INSTALLED_AND_ACTIVATED
+            } else {
+                STRIPE_INSTALLED
+            },
+            STRIPE_WOO_APP_GENERIC_TAG
+        )
 
     sealed class ContactPaymentsSupportClickEvent : MultiLiveEvent.Event() {
         object ShowLoading : ContactPaymentsSupportClickEvent()
@@ -72,9 +78,13 @@ class HelpViewModel @Inject constructor(
         private const val WCPAY_INSTALLED = "woo_android_wcpay_installed_and_not_activated"
         private const val WCPAY_INSTALLED_AND_ACTIVATED = "woo_android_wcpay_installed_and_activated"
 
+        private const val WCPAY_WOO_APP_GENERIC_TAG = "woo_app_wcpay"
+
         private const val STRIPE_NOT_INSTALLED_TAG = "woo_android_stripe_not_installed"
         private const val STRIPE_INSTALLED = "woo_android_stripe_installed_and_not_activated"
         private const val STRIPE_INSTALLED_AND_ACTIVATED = "woo_android_stripe_installed_and_activated"
+
+        private const val STRIPE_WOO_APP_GENERIC_TAG = "woo_app_stripe"
 
         private const val SITE_PLUGINS_FETCHING_ERROR_TAG = "woo_android_site_plugins_fetching_error"
     }
