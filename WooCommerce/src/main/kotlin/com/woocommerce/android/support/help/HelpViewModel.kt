@@ -24,19 +24,14 @@ class HelpViewModel @Inject constructor(
         launch {
             wooStore.fetchSitePlugins(selectedSite.get())
             val fetchSitePluginsResult = wooStore.fetchSitePlugins(selectedSite.get())
-            if (fetchSitePluginsResult.isError) {
-                triggerEvent(
-                    ContactPaymentsSupportClickEvent.CreateTicket(
-                        ticketType,
-                        listOf(SITE_PLUGINS_FETCHING_ERROR_TAG)
-                    )
-                )
-                return@launch
-            }
-            val wcPayPluginInfo = wooStore.getSitePlugin(selectedSite.get(), WooPlugin.WOO_PAYMENTS)
-            val stripePluginInfo = wooStore.getSitePlugin(selectedSite.get(), WooPlugin.WOO_STRIPE_GATEWAY)
+            val tags = if (fetchSitePluginsResult.isError) {
+                listOf(SITE_PLUGINS_FETCHING_ERROR_TAG)
+            } else {
+                val wcPayPluginInfo = wooStore.getSitePlugin(selectedSite.get(), WooPlugin.WOO_PAYMENTS)
+                val stripePluginInfo = wooStore.getSitePlugin(selectedSite.get(), WooPlugin.WOO_STRIPE_GATEWAY)
 
-            val tags = listOf(determineWcPayTag(wcPayPluginInfo), determineStripeTag(stripePluginInfo))
+                listOf(determineWcPayTag(wcPayPluginInfo), determineStripeTag(stripePluginInfo))
+            }
             triggerEvent(ContactPaymentsSupportClickEvent.CreateTicket(ticketType, tags))
         }
     }
