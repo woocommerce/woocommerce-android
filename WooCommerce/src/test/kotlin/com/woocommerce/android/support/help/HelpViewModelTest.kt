@@ -61,7 +61,7 @@ class HelpViewModelTest : BaseUnitTest() {
             assertThat(viewModel.event.value).isEqualTo(
                 HelpViewModel.ContactPaymentsSupportClickEvent.CreateTicket(
                     TicketType.General,
-                    listOf("woo_android_site_plugins_fetching_error")
+                    listOf("woo_mobile_site_plugins_fetching_error")
                 )
             )
         }
@@ -86,7 +86,7 @@ class HelpViewModelTest : BaseUnitTest() {
             assertThat(viewModel.event.value).isEqualTo(
                 HelpViewModel.ContactPaymentsSupportClickEvent.CreateTicket(
                     TicketType.Payments,
-                    listOf("woo_android_site_plugins_fetching_error")
+                    listOf("woo_mobile_site_plugins_fetching_error")
                 )
             )
         }
@@ -106,10 +106,8 @@ class HelpViewModelTest : BaseUnitTest() {
                 HelpViewModel.ContactPaymentsSupportClickEvent.CreateTicket(
                     TicketType.General,
                     listOf(
-                        "woo_android_wcpay_not_installed",
-                        "woo_app_wcpay",
-                        "woo_android_stripe_not_installed",
-                        "woo_app_stripe"
+                        "woo_mobile_wcpay_not_installed",
+                        "woo_mobile_stripe_not_installed",
                     )
                 )
             )
@@ -131,10 +129,8 @@ class HelpViewModelTest : BaseUnitTest() {
                 HelpViewModel.ContactPaymentsSupportClickEvent.CreateTicket(
                     TicketType.General,
                     listOf(
-                        "woo_android_wcpay_installed_and_not_activated",
-                        "woo_app_wcpay",
-                        "woo_android_stripe_not_installed",
-                        "woo_app_stripe"
+                        "woo_mobile_wcpay_installed_and_not_activated",
+                        "woo_mobile_stripe_not_installed",
                     )
                 )
             )
@@ -159,10 +155,8 @@ class HelpViewModelTest : BaseUnitTest() {
                 HelpViewModel.ContactPaymentsSupportClickEvent.CreateTicket(
                     TicketType.General,
                     listOf(
-                        "woo_android_wcpay_installed_and_activated",
-                        "woo_app_wcpay",
-                        "woo_android_stripe_not_installed",
-                        "woo_app_stripe"
+                        "woo_mobile_wcpay_installed_and_activated",
+                        "woo_mobile_stripe_not_installed",
                     )
                 )
             )
@@ -184,10 +178,8 @@ class HelpViewModelTest : BaseUnitTest() {
                 HelpViewModel.ContactPaymentsSupportClickEvent.CreateTicket(
                     TicketType.General,
                     listOf(
-                        "woo_android_wcpay_not_installed",
-                        "woo_app_wcpay",
-                        "woo_android_stripe_installed_and_not_activated",
-                        "woo_app_stripe"
+                        "woo_mobile_wcpay_not_installed",
+                        "woo_mobile_stripe_installed_and_not_activated",
                     )
                 )
             )
@@ -212,10 +204,8 @@ class HelpViewModelTest : BaseUnitTest() {
                 HelpViewModel.ContactPaymentsSupportClickEvent.CreateTicket(
                     TicketType.General,
                     listOf(
-                        "woo_android_wcpay_not_installed",
-                        "woo_app_wcpay",
-                        "woo_android_stripe_installed_and_activated",
-                        "woo_app_stripe"
+                        "woo_mobile_wcpay_not_installed",
+                        "woo_mobile_stripe_installed_and_activated",
                     )
                 )
             )
@@ -241,10 +231,8 @@ class HelpViewModelTest : BaseUnitTest() {
                 HelpViewModel.ContactPaymentsSupportClickEvent.CreateTicket(
                     TicketType.General,
                     listOf(
-                        "woo_android_wcpay_installed_and_not_activated",
-                        "woo_app_wcpay",
-                        "woo_android_stripe_installed_and_not_activated",
-                        "woo_app_stripe"
+                        "woo_mobile_wcpay_installed_and_not_activated",
+                        "woo_mobile_stripe_installed_and_not_activated",
                     )
                 )
             )
@@ -272,10 +260,8 @@ class HelpViewModelTest : BaseUnitTest() {
                 HelpViewModel.ContactPaymentsSupportClickEvent.CreateTicket(
                     TicketType.General,
                     listOf(
-                        "woo_android_wcpay_installed_and_activated",
-                        "woo_app_wcpay",
-                        "woo_android_stripe_installed_and_not_activated",
-                        "woo_app_stripe"
+                        "woo_mobile_wcpay_installed_and_activated",
+                        "woo_mobile_stripe_installed_and_not_activated",
                     )
                 )
             )
@@ -303,10 +289,8 @@ class HelpViewModelTest : BaseUnitTest() {
                 HelpViewModel.ContactPaymentsSupportClickEvent.CreateTicket(
                     TicketType.General,
                     listOf(
-                        "woo_android_wcpay_installed_and_not_activated",
-                        "woo_app_wcpay",
-                        "woo_android_stripe_installed_and_activated",
-                        "woo_app_stripe"
+                        "woo_mobile_wcpay_installed_and_not_activated",
+                        "woo_mobile_stripe_installed_and_activated",
                     )
                 )
             )
@@ -336,10 +320,8 @@ class HelpViewModelTest : BaseUnitTest() {
                 HelpViewModel.ContactPaymentsSupportClickEvent.CreateTicket(
                     TicketType.General,
                     listOf(
-                        "woo_android_wcpay_installed_and_activated",
-                        "woo_app_wcpay",
-                        "woo_android_stripe_installed_and_activated",
-                        "woo_app_stripe"
+                        "woo_mobile_wcpay_installed_and_activated",
+                        "woo_mobile_stripe_installed_and_activated",
                     )
                 )
             )
