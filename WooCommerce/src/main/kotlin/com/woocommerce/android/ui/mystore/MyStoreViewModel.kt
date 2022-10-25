@@ -118,6 +118,7 @@ class MyStoreViewModel @Inject constructor(
 
     @VisibleForTesting
     val refreshStoreStats = BooleanArray(StatsGranularity.values().size) { true }
+
     @VisibleForTesting
     val refreshTopPerformerStats = BooleanArray(StatsGranularity.values().size) { true }
 
@@ -163,7 +164,11 @@ class MyStoreViewModel @Inject constructor(
     private fun populateResultToUI(response: WooResult<Array<JITMApiResponse>>) {
         when {
             !response.model.isNullOrEmpty() -> {
-                trackJitmFetchSuccessEvent(response.model!![0].id)
+                trackJitmFetchSuccessEvent(
+                    response.model!!.map {
+                        it.id
+                    }
+                )
                 _bannerState.value = BannerState(
                     shouldDisplayBanner = true,
                     onPrimaryActionClicked = { onJitmCtaClicked(response.model!![0].cta.link) },
@@ -178,6 +183,10 @@ class MyStoreViewModel @Inject constructor(
                     primaryActionLabel = UiString.UiStringText(response.model!![0].cta.message),
                     chipLabel = UiString.UiStringRes(R.string.card_reader_upsell_card_reader_banner_new)
                 )
+            }
+            !response.isError && response.model.isNullOrEmpty() -> {
+                // JITM fetch api succeeded but there aren't any JITMs to display at the moment
+                trackJitmFetchSuccessEvent(emptyList())
             }
             else -> {
                 trackJitmFetchFailureEvent(response.error.type, response.error.message)
@@ -196,12 +205,12 @@ class MyStoreViewModel @Inject constructor(
         )
     }
 
-    private fun trackJitmFetchSuccessEvent(jitmId: String) {
+    private fun trackJitmFetchSuccessEvent(jitmIdList: List<String>) {
         analyticsTrackerWrapper.track(
             AnalyticsEvent.JITM_FETCH_SUCCESS,
             mapOf(
                 "source" to UTM_SOURCE,
-                "jitms" to listOf(jitmId)
+                "jitms" to jitmIdList
             )
         )
     }

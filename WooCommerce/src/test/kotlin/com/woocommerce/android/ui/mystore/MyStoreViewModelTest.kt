@@ -769,6 +769,91 @@ class MyStoreViewModelTest : BaseUnitTest() {
     }
 
     @Test
+    fun `given jitm success, when viewmodel init, then jitm fetch success is tracked with correct jitm ids`() {
+        testBlocking {
+            givenNetworkConnectivity(connected = true)
+            whenever(selectedSite.get()).thenReturn(SiteModel())
+            whenever(
+                wooCommerceStore.getStoreCountryCode(any())
+            ).thenReturn("US")
+            whenever(
+                jitmStore.fetchJitmMessage(any(), any())
+            ).thenReturn(
+                WooResult(
+                    model = arrayOf(
+                        provideJitmApiResponse(id = "12345"),
+                        provideJitmApiResponse(id = "123456"),
+                        provideJitmApiResponse(id = "123")
+                    )
+                )
+            )
+
+            whenViewModelIsCreated()
+
+            verify(analyticsTrackerWrapper).track(
+                AnalyticsEvent.JITM_FETCH_SUCCESS,
+                mapOf(
+                    "source" to MyStoreViewModel.UTM_SOURCE,
+                    "jitms" to listOf("12345", "123456", "123")
+                )
+            )
+        }
+    }
+
+    @Test
+    fun `given jitm success with empty jitms, when viewmodel init, then jitm fetch success is tracked`() {
+        testBlocking {
+            givenNetworkConnectivity(connected = true)
+            whenever(selectedSite.get()).thenReturn(SiteModel())
+            whenever(
+                wooCommerceStore.getStoreCountryCode(any())
+            ).thenReturn("US")
+            whenever(
+                jitmStore.fetchJitmMessage(any(), any())
+            ).thenReturn(
+                WooResult(
+                    model = emptyArray()
+                )
+            )
+
+            whenViewModelIsCreated()
+
+            verify(analyticsTrackerWrapper).track(
+                eq(AnalyticsEvent.JITM_FETCH_SUCCESS),
+                any()
+            )
+        }
+    }
+
+    @Test
+    fun `given jitm success with empty jitms, when viewmodel init, then event is tracked with correct properties`() {
+        testBlocking {
+            givenNetworkConnectivity(connected = true)
+            whenever(selectedSite.get()).thenReturn(SiteModel())
+            whenever(
+                wooCommerceStore.getStoreCountryCode(any())
+            ).thenReturn("US")
+            whenever(
+                jitmStore.fetchJitmMessage(any(), any())
+            ).thenReturn(
+                WooResult(
+                    model = emptyArray()
+                )
+            )
+
+            whenViewModelIsCreated()
+
+            verify(analyticsTrackerWrapper).track(
+                AnalyticsEvent.JITM_FETCH_SUCCESS,
+                mapOf(
+                    "source" to MyStoreViewModel.UTM_SOURCE,
+                    "jitms" to emptyList<String>()
+                )
+            )
+        }
+    }
+
+    @Test
     fun `given jitm failure response, when viewmodel init, then jitm fetch failure is tracked`() {
         testBlocking {
             givenNetworkConnectivity(connected = true)
