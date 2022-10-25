@@ -9,4 +9,5 @@ interface RemoteConfigRepository {
     fun observePrologueVariant(): Flow<PrologueVariant>
     fun getPerformanceMonitoringSampleRate(): Double
     fun observeJetpackTimeoutPolicyVariantVariant(): Flow<JetpackTimeoutPolicyVariant>
+    fun getSimplifiedLoginVariant(): String
 }

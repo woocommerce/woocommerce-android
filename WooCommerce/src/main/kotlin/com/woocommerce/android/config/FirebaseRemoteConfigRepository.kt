@@ -27,6 +27,7 @@ class FirebaseRemoteConfigRepository @Inject constructor(
         const val PROLOGUE_VARIANT_KEY = "prologue_variant"
         private const val PERFORMANCE_MONITORING_SAMPLE_RATE_KEY = "wc_android_performance_monitoring_sample_rate"
         private const val JETPACK_TIMEOUT_POLICY_VARIANT_KEY = "jetpack_timeout_policy_variant"
+        private const val SIMPLIFIED_LOGIN_VARIANT_KEY = "simplified_login_variant"
         private const val DEBUG_INTERVAL = 10L
         private const val RELEASE_INTERVAL = 31200L
     }
@@ -89,6 +90,9 @@ class FirebaseRemoteConfigRepository @Inject constructor(
                 crashLogging.get().recordException(it)
                 emit(JetpackTimeoutPolicyVariant.valueOf(defaultValues[JETPACK_TIMEOUT_POLICY_VARIANT_KEY]!!))
             }
+
+    override fun getSimplifiedLoginVariant(): String =
+        remoteConfig.getString(SIMPLIFIED_LOGIN_VARIANT_KEY)
 
     private fun observeStringRemoteValue(key: String) = changesTrigger
         .map { remoteConfig.getString(key) }
