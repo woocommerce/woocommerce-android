@@ -114,6 +114,7 @@ class MyStoreViewModel @Inject constructor(
 
     @VisibleForTesting
     val refreshStoreStats = BooleanArray(StatsGranularity.values().size) { true }
+
     @VisibleForTesting
     val refreshTopPerformerStats = BooleanArray(StatsGranularity.values().size) { true }
 
@@ -160,9 +161,11 @@ class MyStoreViewModel @Inject constructor(
         when {
             response.isError -> {}
             !response.model.isNullOrEmpty() -> {
-                trackJitmFetchSuccessEvent(response.model!!.map {
-                    it.id
-                })
+                trackJitmFetchSuccessEvent(
+                    response.model!!.map {
+                        it.id
+                    }
+                )
                 _bannerState.value = BannerState(
                     shouldDisplayBanner = true,
                     onPrimaryActionClicked = { onJitmCtaClicked(response.model!![0].cta.link) },
