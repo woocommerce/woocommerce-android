@@ -209,7 +209,7 @@ class MyStoreViewModel @Inject constructor(
         analyticsTrackerWrapper.track(
             AnalyticsEvent.JITM_FETCH_SUCCESS,
             mapOf(
-                "source" to UTM_SOURCE,
+                KEY_SOURCE to UTM_SOURCE,
                 "jitms" to jitmIdList
             )
         )
