@@ -1,3 +1,4 @@
+@file:Suppress("MaxLineLength")
 package com.woocommerce.android.cardreader.internal.payments
 
 import com.woocommerce.android.cardreader.payments.StatementDescriptor
