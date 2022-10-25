@@ -412,7 +412,7 @@ class MyStoreViewModelTest : BaseUnitTest() {
             )
         }
 
-    // region Just In TimeMessages (JITM)
+    // region Just In Time Messages (JITM)
     @Test
     fun `given store setup in US, when viewmodel init, then request for jitm`() {
         testBlocking {
