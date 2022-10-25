@@ -150,7 +150,6 @@ class LoginActivity :
     @Inject internal lateinit var appPrefsWrapper: AppPrefsWrapper
     @Inject internal lateinit var dispatcher: Dispatcher
     @Inject internal lateinit var loginNotificationScheduler: LoginNotificationScheduler
-
     @Inject internal lateinit var prologueExperiment: PrologueExperiment
     @Inject internal lateinit var uiMessageResolver: UIMessageResolver
 
