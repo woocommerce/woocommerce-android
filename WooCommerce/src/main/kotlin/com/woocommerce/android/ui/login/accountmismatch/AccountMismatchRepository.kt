@@ -72,7 +72,7 @@ class AccountMismatchRepository @Inject constructor(
     ): Result<JetpackConnectionStatus> {
         WooLog.d(WooLog.T.LOGIN, "Checking Jetpack Connection status for site $siteUrl")
 
-        return discoverXMlRPCAddress(siteUrl)
+        return discoverXMLRPCAddress(siteUrl)
             .mapCatching { xmlrpcEndpoint ->
                 val xmlrpcSite = fetchXMLRPCSite(siteUrl, xmlrpcEndpoint, username, password).getOrThrow()
                 when {
@@ -100,7 +100,7 @@ class AccountMismatchRepository @Inject constructor(
         data class ConnectedToDifferentAccount(val wpcomEmail: String) : JetpackConnectionStatus
     }
 
-    private suspend fun discoverXMlRPCAddress(siteUrl: String): Result<String> {
+    private suspend fun discoverXMLRPCAddress(siteUrl: String): Result<String> {
         WooLog.d(WooLog.T.LOGIN, "Running discovery to fetch XMLRPC endpoint for site $siteUrl")
 
         val action = AuthenticationActionBuilder.newDiscoverEndpointAction(siteUrl)
