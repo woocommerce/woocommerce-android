@@ -12,6 +12,7 @@ import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_SOURCE
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.model.UiString
 import com.woocommerce.android.network.ConnectionChangeReceiver
@@ -192,7 +193,7 @@ class MyStoreViewModel @Inject constructor(
         analyticsTrackerWrapper.track(
             AnalyticsEvent.JITM_FETCH_SUCCESS,
             mapOf(
-                "source" to UTM_SOURCE,
+                KEY_SOURCE to UTM_SOURCE,
                 "jitms" to jitmIdList
             )
         )
