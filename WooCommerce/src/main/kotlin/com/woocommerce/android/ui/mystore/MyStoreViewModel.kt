@@ -12,6 +12,9 @@ import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_ERROR_DESC
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_ERROR_TYPE
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_SOURCE
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.model.UiString
 import com.woocommerce.android.network.ConnectionChangeReceiver
@@ -53,6 +56,7 @@ import org.apache.commons.text.StringEscapeUtils
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
 import org.wordpress.android.fluxc.model.WCRevenueStatsModel
+import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooErrorType
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooResult
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.jitm.JITMApiResponse
 import org.wordpress.android.fluxc.store.JitmStore
@@ -158,7 +162,6 @@ class MyStoreViewModel @Inject constructor(
 
     private fun populateResultToUI(response: WooResult<Array<JITMApiResponse>>) {
         when {
-            response.isError -> {}
             !response.model.isNullOrEmpty() -> {
                 trackJitmFetchSuccessEvent(response.model!![0].id)
                 _bannerState.value = BannerState(
@@ -176,7 +179,21 @@ class MyStoreViewModel @Inject constructor(
                     chipLabel = UiString.UiStringRes(R.string.card_reader_upsell_card_reader_banner_new)
                 )
             }
+            else -> {
+                trackJitmFetchFailureEvent(response.error.type, response.error.message)
+            }
         }
+    }
+
+    private fun trackJitmFetchFailureEvent(type: WooErrorType, message: String?) {
+        analyticsTrackerWrapper.track(
+            AnalyticsEvent.JITM_FETCH_FAILURE,
+            mapOf(
+                KEY_SOURCE to UTM_SOURCE,
+                KEY_ERROR_TYPE to type,
+                KEY_ERROR_DESC to message
+            )
+        )
     }
 
     private fun trackJitmFetchSuccessEvent(jitmId: String) {

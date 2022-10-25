@@ -767,6 +767,67 @@ class MyStoreViewModelTest : BaseUnitTest() {
             )
         }
     }
+
+    @Test
+    fun `given jitm failure response, when viewmodel init, then jitm fetch failure is tracked`() {
+        testBlocking {
+            givenNetworkConnectivity(connected = true)
+            whenever(selectedSite.get()).thenReturn(SiteModel())
+            whenever(
+                wooCommerceStore.getStoreCountryCode(any())
+            ).thenReturn("US")
+            whenever(
+                jitmStore.fetchJitmMessage(any(), any())
+            ).thenReturn(
+                WooResult(
+                    WooError(
+                        type = WooErrorType.GENERIC_ERROR,
+                        original = BaseRequest.GenericErrorType.NETWORK_ERROR
+                    )
+                )
+            )
+
+            whenViewModelIsCreated()
+
+            verify(analyticsTrackerWrapper).track(
+                eq(AnalyticsEvent.JITM_FETCH_FAILURE),
+                any()
+            )
+        }
+    }
+
+    @Test
+    fun `given jitm failure, when viewmodel init, then jitm fetch failure is tracked with correct properties`() {
+        testBlocking {
+            givenNetworkConnectivity(connected = true)
+            whenever(selectedSite.get()).thenReturn(SiteModel())
+            whenever(
+                wooCommerceStore.getStoreCountryCode(any())
+            ).thenReturn("US")
+            whenever(
+                jitmStore.fetchJitmMessage(any(), any())
+            ).thenReturn(
+                WooResult(
+                    WooError(
+                        type = WooErrorType.GENERIC_ERROR,
+                        original = BaseRequest.GenericErrorType.NETWORK_ERROR,
+                        message = "Generic error"
+                    )
+                )
+            )
+
+            whenViewModelIsCreated()
+
+            verify(analyticsTrackerWrapper).track(
+                AnalyticsEvent.JITM_FETCH_FAILURE,
+                mapOf(
+                    AnalyticsTracker.KEY_SOURCE to MyStoreViewModel.UTM_SOURCE,
+                    AnalyticsTracker.KEY_ERROR_TYPE to WooErrorType.GENERIC_ERROR,
+                    AnalyticsTracker.KEY_ERROR_DESC to "Generic error"
+                )
+            )
+        }
+    }
     //endregion
 
     private suspend fun givenStatsLoadingResult(result: GetStats.LoadStatsResult) {
