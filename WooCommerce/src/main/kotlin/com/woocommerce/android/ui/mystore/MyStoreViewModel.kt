@@ -160,7 +160,9 @@ class MyStoreViewModel @Inject constructor(
         when {
             response.isError -> {}
             !response.model.isNullOrEmpty() -> {
-                trackJitmFetchSuccessEvent(response.model!![0].id)
+                trackJitmFetchSuccessEvent(response.model!!.map {
+                    it.id
+                })
                 _bannerState.value = BannerState(
                     shouldDisplayBanner = true,
                     onPrimaryActionClicked = { onJitmCtaClicked(response.model!![0].cta.link) },
@@ -176,15 +178,19 @@ class MyStoreViewModel @Inject constructor(
                     chipLabel = UiString.UiStringRes(R.string.card_reader_upsell_card_reader_banner_new)
                 )
             }
+            !response.isError && response.model.isNullOrEmpty() -> {
+                // JITM fetch api succeeded but there aren't any JITMs to display at the moment
+                trackJitmFetchSuccessEvent(emptyList())
+            }
         }
     }
 
-    private fun trackJitmFetchSuccessEvent(jitmId: String) {
+    private fun trackJitmFetchSuccessEvent(jitmIdList: List<String>) {
         analyticsTrackerWrapper.track(
             AnalyticsEvent.JITM_FETCH_SUCCESS,
             mapOf(
                 "source" to UTM_SOURCE,
-                "jitms" to listOf(jitmId)
+                "jitms" to jitmIdList
             )
         )
     }
