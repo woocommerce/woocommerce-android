@@ -20,7 +20,6 @@ import com.woocommerce.android.ui.mystore.data.StatsRepository
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.asFlow
-import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.runTest
 import org.junit.Test
 import org.mockito.kotlin.any
@@ -41,6 +40,7 @@ import kotlin.test.assertNotNull
 import kotlin.test.assertTrue
 
 @ExperimentalCoroutinesApi
+@Suppress("LargeClass")
 class AnalyticsRepositoryTest : BaseUnitTest() {
     private val statsRepository: StatsRepository = mock()
     private val selectedSite: SelectedSite = mock()
@@ -534,9 +534,15 @@ class AnalyticsRepositoryTest : BaseUnitTest() {
             whenever(statsRepository.fetchRevenueStats(any(), any(), eq(CURRENT_DATE), eq(CURRENT_DATE)))
                 .thenReturn(listOf(Result.failure<WCRevenueStatsModel?>(StatsRepository.StatsException(null))).asFlow())
 
-            val productLeaderBoards = Result.success(givenAProductsStats())
-            whenever(statsRepository.fetchProductLeaderboards(any(), any(), any(), any(), any()))
-                .thenReturn(flowOf(productLeaderBoards))
+            whenever(statsRepository.fetchTopPerformerProducts(any(), any(), any(), any()))
+                .thenReturn(Result.success(Unit))
+
+            val productLeaderBoards = givenAProductsStats()
+            whenever(statsRepository.getTopPerformers(any(), any()))
+                .thenReturn(productLeaderBoards)
+
+            val siteModel: SiteModel = mock()
+            whenever(selectedSite.get()).thenReturn(siteModel)
 
             // When
             val result = sut.fetchProductsData(
@@ -560,9 +566,16 @@ class AnalyticsRepositoryTest : BaseUnitTest() {
             whenever(statsRepository.fetchRevenueStats(any(), any(), eq(CURRENT_DATE), eq(CURRENT_DATE)))
                 .thenReturn(listOf(Result.success(currentPeriodRevenue)).asFlow())
 
-            val productLeaderBoards = Result.success(givenAProductsStats())
-            whenever(statsRepository.fetchProductLeaderboards(any(), any(), any(), any(), any()))
-                .thenReturn(flowOf(productLeaderBoards))
+            whenever(statsRepository.fetchTopPerformerProducts(any(), any(), any(), any()))
+                .thenReturn(Result.success(Unit))
+
+            val productLeaderBoards = givenAProductsStats()
+            whenever(statsRepository.getTopPerformers(any(), any()))
+                .thenReturn(productLeaderBoards)
+
+            val siteModel: SiteModel = mock()
+            whenever(selectedSite.get()).thenReturn(siteModel)
+
             // When
             val result = sut.fetchProductsData(
                 SimpleDateRange(previousDate!!, currentDate!!),
@@ -585,9 +598,16 @@ class AnalyticsRepositoryTest : BaseUnitTest() {
             whenever(statsRepository.fetchRevenueStats(any(), any(), eq(CURRENT_DATE), eq(CURRENT_DATE)))
                 .thenReturn(listOf(Result.failure<WCRevenueStatsModel?>(StatsRepository.StatsException(null))).asFlow())
 
-            val productLeaderBoards = Result.success(givenAProductsStats())
-            whenever(statsRepository.fetchProductLeaderboards(any(), any(), any(), any(), any()))
-                .thenReturn(flowOf(productLeaderBoards))
+            whenever(statsRepository.fetchTopPerformerProducts(any(), any(), any(), any()))
+                .thenReturn(Result.success(Unit))
+
+            val productLeaderBoards = givenAProductsStats()
+            whenever(statsRepository.getTopPerformers(any(), any()))
+                .thenReturn(productLeaderBoards)
+
+            val siteModel: SiteModel = mock()
+            whenever(selectedSite.get()).thenReturn(siteModel)
+
             // When
             val result = sut.fetchProductsData(
                 SimpleDateRange(previousDate!!, currentDate!!),
@@ -611,9 +631,16 @@ class AnalyticsRepositoryTest : BaseUnitTest() {
             whenever(statsRepository.fetchRevenueStats(any(), any(), eq(CURRENT_DATE), eq(CURRENT_DATE)))
                 .thenReturn(listOf(Result.success(currentPeriodRevenue)).asFlow())
 
-            val productLeaderBoards = Result.success(givenAProductsStats())
-            whenever(statsRepository.fetchProductLeaderboards(any(), any(), any(), any(), any()))
-                .thenReturn(flowOf(productLeaderBoards))
+            whenever(statsRepository.fetchTopPerformerProducts(any(), any(), any(), any()))
+                .thenReturn(Result.success(Unit))
+
+            val productLeaderBoards = givenAProductsStats()
+            whenever(statsRepository.getTopPerformers(any(), any()))
+                .thenReturn(productLeaderBoards)
+
+            val siteModel: SiteModel = mock()
+            whenever(selectedSite.get()).thenReturn(siteModel)
+
             // When
             val result = sut.fetchProductsData(
                 SimpleDateRange(previousDate!!, currentDate!!),
@@ -633,8 +660,11 @@ class AnalyticsRepositoryTest : BaseUnitTest() {
             whenever(statsRepository.fetchRevenueStats(any(), any(), any(), any()))
                 .thenReturn(listOf(Result.success(revenue)).asFlow())
 
-            whenever(statsRepository.fetchProductLeaderboards(any(), any(), any(), any(), any()))
-                .thenReturn(flowOf(Result.failure(NullPointerException())))
+            whenever(statsRepository.fetchTopPerformerProducts(any(), any(), any(), any()))
+                .thenReturn(Result.failure(NullPointerException()))
+
+            val siteModel: SiteModel = mock()
+            whenever(selectedSite.get()).thenReturn(siteModel)
 
             // When
             val result = sut.fetchProductsData(
@@ -655,9 +685,15 @@ class AnalyticsRepositoryTest : BaseUnitTest() {
             whenever(statsRepository.fetchRevenueStats(any(), any(), any(), any()))
                 .thenReturn(listOf(Result.success(revenue)).asFlow())
 
-            val productLeaderBoards = Result.success(givenAProductsStats())
-            whenever(statsRepository.fetchProductLeaderboards(any(), any(), any(), any(), any()))
-                .thenReturn(flowOf(productLeaderBoards))
+            whenever(statsRepository.fetchTopPerformerProducts(any(), any(), any(), any()))
+                .thenReturn(Result.success(Unit))
+
+            val productLeaderBoards = givenAProductsStats()
+            whenever(statsRepository.getTopPerformers(any(), any()))
+                .thenReturn(productLeaderBoards)
+
+            val siteModel: SiteModel = mock()
+            whenever(selectedSite.get()).thenReturn(siteModel)
 
             // When
             val result = sut.fetchProductsData(
@@ -681,9 +717,15 @@ class AnalyticsRepositoryTest : BaseUnitTest() {
             whenever(statsRepository.fetchRevenueStats(any(), any(), any(), any()))
                 .thenReturn(listOf(Result.success(revenue)).asFlow())
 
-            val productLeaderBoards = Result.success(givenAProductsStats())
-            whenever(statsRepository.fetchProductLeaderboards(any(), any(), any(), any(), any()))
-                .thenReturn(flowOf(productLeaderBoards))
+            whenever(statsRepository.fetchTopPerformerProducts(any(), any(), any(), any()))
+                .thenReturn(Result.success(Unit))
+
+            val productLeaderBoards = givenAProductsStats()
+            whenever(statsRepository.getTopPerformers(any(), any()))
+                .thenReturn(productLeaderBoards)
+
+            val siteModel: SiteModel = mock()
+            whenever(selectedSite.get()).thenReturn(siteModel)
 
             // When
             sut.fetchRevenueData(
@@ -717,9 +759,15 @@ class AnalyticsRepositoryTest : BaseUnitTest() {
             whenever(statsRepository.fetchRevenueStats(any(), any(), any(), any()))
                 .thenReturn(listOf(Result.success(revenue)).asFlow())
 
-            val productLeaderBoards = Result.success(givenAProductsStats())
-            whenever(statsRepository.fetchProductLeaderboards(any(), any(), any(), any(), any()))
-                .thenReturn(flowOf(productLeaderBoards))
+            whenever(statsRepository.fetchTopPerformerProducts(any(), any(), any(), any()))
+                .thenReturn(Result.success(Unit))
+
+            val productLeaderBoards = givenAProductsStats()
+            whenever(statsRepository.getTopPerformers(any(), any()))
+                .thenReturn(productLeaderBoards)
+
+            val siteModel: SiteModel = mock()
+            whenever(selectedSite.get()).thenReturn(siteModel)
 
             // When
             sut.fetchRevenueData(
@@ -804,7 +852,7 @@ class AnalyticsRepositoryTest : BaseUnitTest() {
 
         val productEntity = TopPerformerProductEntity(
             siteId = 0,
-            granularity = "",
+            datePeriod = "2021-01-01-2021-01-02",
             productId = product.remoteProductId,
             name = product.name,
             imageUrl = product.getFirstImageUrl(),
