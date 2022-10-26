@@ -47,7 +47,6 @@ open class LoginPrologueFragment(@LayoutRes layout: Int) : Fragment(layout) {
             // Login with site address
             prologueFinishedListener?.onPrimaryButtonClicked()
         }
-        if (isSimplifiedLoginVariant) binding.buttonLoginStore.hide()
 
         binding.buttonLoginWpcom.setOnClickListener {
             // Login with WordPress.com account
@@ -66,6 +65,12 @@ open class LoginPrologueFragment(@LayoutRes layout: Int) : Fragment(layout) {
         binding.buttonGetStarted.isVisible = FeatureFlag.ACCOUNT_CREATION_FLOW.isEnabled()
         binding.buttonGetStarted.setOnClickListener {
             findNavController().navigate(LoginPrologueFragmentDirections.actionLoginPrologueFragmentToSignupFragment())
+        }
+
+        // Various updates related to Simplified Login A/B testing.
+        if (isSimplifiedLoginVariant) {
+            binding.buttonLoginStore.hide()
+            binding.newToWooButton.text = getString(R.string.login_prologue_learn_more_about_woo)
         }
     }
 
