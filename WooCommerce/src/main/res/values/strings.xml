@@ -265,7 +265,7 @@
     <string name="login_with_wordpress">Sign in with WordPress.com</string>
     <string name="login_troubleshooting_tips">Read our troubleshooting tips</string>
     <string name="login_discovery_error_option_select">Select an option</string>
-    <string name="login_no_wpcom_account_found">The email %1$s isn\'t used with a WordPress.com account.</string>
+    <string name="login_no_wpcom_account_found">Your email isn\'t used with a WordPress.com account.</string>
     <string name="user_role_access_error_msg">This app supports only Administrator and Shop Manager user roles. Please contact your store owner to upgrade your role.</string>
     <string name="user_role_access_error_link">Learn more about roles and permissions</string>
     <string name="user_role_access_error_retry">You don\'t have the correct user role</string>

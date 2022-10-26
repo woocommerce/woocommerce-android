@@ -83,8 +83,6 @@ class LoginNoWPcomAccountFoundFragment : Fragment(R.layout.fragment_login_no_wpc
             it.setDisplayShowTitleEnabled(false)
         }
 
-        binding.noWpAccountMsg.text = getString(R.string.login_no_wpcom_account_found, emailAddress)
-
         when (simplifiedLoginExperiment.getCurrentVariant()) {
             LoginVariant.CONTROL -> setupButtonsForStandardFlow(btnBinding, appPrefsWrapper.getLoginSiteAddress().isNullOrBlank())
             LoginVariant.SIMPLIFIED_LOGIN_WPCOM -> setupButtonsForSimplifiedFlow(btnBinding)
