@@ -44,7 +44,8 @@ class FirebaseRemoteConfigRepository @Inject constructor(
     private val defaultValues by lazy {
         mapOf(
             PROLOGUE_VARIANT_KEY to PrologueVariant.CONTROL.name,
-            JETPACK_TIMEOUT_POLICY_VARIANT_KEY to JetpackTimeoutPolicyVariant.CONTROL.name
+            JETPACK_TIMEOUT_POLICY_VARIANT_KEY to JetpackTimeoutPolicyVariant.CONTROL.name,
+            SIMPLIFIED_LOGIN_VARIANT_KEY to LoginVariant.CONTROL.name
         )
     }
 
