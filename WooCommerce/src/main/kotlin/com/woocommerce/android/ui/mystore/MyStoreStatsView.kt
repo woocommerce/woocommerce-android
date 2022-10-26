@@ -40,7 +40,6 @@ import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.mystore.MyStoreFragment.Companion.DEFAULT_STATS_GRANULARITY
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.util.DateUtils
-import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.util.WooAnimUtils
 import com.woocommerce.android.util.WooAnimUtils.Duration
 import com.woocommerce.android.util.roundToTheNextPowerOfTen
@@ -141,11 +140,8 @@ class MyStoreStatsView @JvmOverloads constructor(
 
         initChart()
 
-        with(binding.viewAnalyticsButton) {
-            isVisible = FeatureFlag.ANALYTICS_HUB.isEnabled()
-            setOnClickListener {
-                onViewAnalyticsClick()
-            }
+        binding.viewAnalyticsButton.setOnClickListener {
+            onViewAnalyticsClick()
         }
 
         visitorsValue.addTextChangedListener {
