@@ -38,7 +38,7 @@
         <com.woocommerce.android.widgets.tags.TagView
             android:id="@+id/cardInformationSectionDeltaTag"
             android:layout_width="wrap_content"
-            android:layout_height="@dimen/major_150"
+            android:layout_height="@dimen/text_major_50"
             android:textSize="@dimen/text_minor_80"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="@+id/cardInformationSectionValue"
