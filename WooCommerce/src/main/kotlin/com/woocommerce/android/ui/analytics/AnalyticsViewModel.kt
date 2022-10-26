@@ -157,6 +157,7 @@ class AnalyticsViewModel @Inject constructor(
     }
 
     fun onDateRangeSelectorClick() {
+        AnalyticsTracker.track(AnalyticsEvent.ANALYTICS_HUB_DATE_RANGE_BUTTON_TAPPED)
         triggerEvent(AnalyticsViewEvent.OpenDateRangeSelector)
     }
 
