@@ -8,8 +8,11 @@ import com.woocommerce.android.ui.login.signup.SignUpRepository.SignUpError.PASS
 import com.woocommerce.android.ui.login.signup.SignUpRepository.SignUpError.PASSWORD_TOO_SHORT
 import com.woocommerce.android.ui.login.signup.SignUpRepository.SignUpError.UNKNOWN_ERROR
 import com.woocommerce.android.util.WooLog
+import com.woocommerce.android.util.dispatchAndAwait
 import org.wordpress.android.fluxc.Dispatcher
 import org.wordpress.android.fluxc.generated.AccountActionBuilder
+import org.wordpress.android.fluxc.store.AccountStore.OnAccountChanged
+import org.wordpress.android.fluxc.store.AccountStore.OnAuthenticationChanged
 import org.wordpress.android.fluxc.store.AccountStore.UpdateTokenPayload
 import org.wordpress.android.fluxc.store.signup.SignUpStore
 import org.wordpress.android.login.LoginEmailFragment
@@ -48,12 +51,28 @@ class SignUpRepository @Inject constructor(
             }
             else -> {
                 WooLog.w(WooLog.T.LOGIN, "Success creating new account")
-                dispatcher.dispatch(
-                    AccountActionBuilder.newUpdateAccessTokenAction(
-                        UpdateTokenPayload(accountCreatedResult.token)
-                    )
-                )
-                AccountCreationSuccess
+                dispatcher.dispatchAndAwait<UpdateTokenPayload, OnAuthenticationChanged>(
+                    AccountActionBuilder.newUpdateAccessTokenAction(UpdateTokenPayload(accountCreatedResult.token))
+                ).let { updateTokenResult ->
+                    if (updateTokenResult.isError) {
+                        WooLog.w(WooLog.T.LOGIN, "Error updating token: ${updateTokenResult.error.message}")
+                        AccountCreationError(UNKNOWN_ERROR)
+                    } else {
+                        dispatcher.dispatchAndAwait<Void, OnAccountChanged>(
+                            AccountActionBuilder.newFetchAccountAction()
+                        ).let { accountFetchResult ->
+                            if (accountFetchResult.isError) {
+                                WooLog.w(
+                                    WooLog.T.LOGIN,
+                                    message = "Error fetching the user: ${accountFetchResult.error.message}"
+                                )
+                                AccountCreationError(UNKNOWN_ERROR)
+                            } else {
+                                AccountCreationSuccess
+                            }
+                        }
+                    }
+                }
             }
         }
     }
