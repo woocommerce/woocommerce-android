@@ -177,6 +177,7 @@ enum class AnalyticsEvent(val siteless: Boolean = false) {
     JITM_FETCH_FAILURE,
     JITM_DISPLAYED,
     JITM_CTA_TAPPED,
+    JITM_DISMISS_TAPPED,
 
     // -- Simple Payments
     SIMPLE_PAYMENTS_FLOW_STARTED,
