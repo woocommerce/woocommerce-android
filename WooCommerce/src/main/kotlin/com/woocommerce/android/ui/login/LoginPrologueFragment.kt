@@ -11,6 +11,9 @@ import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.databinding.FragmentLoginPrologueBinding
+import com.woocommerce.android.experiment.SimplifiedLoginExperiment
+import com.woocommerce.android.experiment.SimplifiedLoginExperiment.LoginVariant.SIMPLIFIED
+import com.woocommerce.android.extensions.hide
 import com.woocommerce.android.ui.login.UnifiedLoginTracker.Flow
 import com.woocommerce.android.ui.login.UnifiedLoginTracker.Step
 import com.woocommerce.android.util.FeatureFlag
@@ -32,15 +35,19 @@ open class LoginPrologueFragment(@LayoutRes layout: Int) : Fragment(layout) {
     constructor() : this(R.layout.fragment_login_prologue)
 
     @Inject lateinit var unifiedLoginTracker: UnifiedLoginTracker
+    @Inject lateinit var simplifiedLoginExperiment: SimplifiedLoginExperiment
     private var prologueFinishedListener: PrologueFinishedListener? = null
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        val isSimplifiedLoginVariant = simplifiedLoginExperiment.getCurrentVariant() == SIMPLIFIED
+
         val binding = FragmentLoginPrologueBinding.bind(view)
 
         binding.buttonLoginStore.setOnClickListener {
             // Login with site address
             prologueFinishedListener?.onPrimaryButtonClicked()
         }
+        if (isSimplifiedLoginVariant) binding.buttonLoginStore.hide()
 
         binding.buttonLoginWpcom.setOnClickListener {
             // Login with WordPress.com account
