@@ -29,6 +29,6 @@ class SimplifiedLoginExperiment @Inject constructor(
 
     enum class LoginVariant {
         CONTROL,
-        SIMPLIFIED_LOGIN_I1
+        SIMPLIFIED_LOGIN_WPCOM
     }
 }
