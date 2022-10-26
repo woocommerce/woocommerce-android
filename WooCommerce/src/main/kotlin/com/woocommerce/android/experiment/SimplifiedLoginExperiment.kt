@@ -12,11 +12,6 @@ class SimplifiedLoginExperiment @Inject constructor(
     private val experimentTracker: ExperimentTracker,
     private val remoteConfigRepository: RemoteConfigRepository,
 ) {
-    companion object {
-        // The two values below are set in Firebase
-        private const val VARIANT_CONTROL = "control"
-        private const val VARIANT_SIMPLIFIED = "simplified_login_i1"
-    }
 
     fun activate() {
         // Track Firebase's activation event for the A/B testing. Make sure to only call it once!
@@ -30,16 +25,10 @@ class SimplifiedLoginExperiment @Inject constructor(
         )
     }
 
-    fun getCurrentVariant(): LoginVariant {
-        return when (remoteConfigRepository.getSimplifiedLoginVariant()) {
-            VARIANT_CONTROL -> LoginVariant.STANDARD
-            VARIANT_SIMPLIFIED -> LoginVariant.SIMPLIFIED
-            else -> LoginVariant.STANDARD
-        }
-    }
+    fun getCurrentVariant() = remoteConfigRepository.getSimplifiedLoginVariant()
 
     enum class LoginVariant {
-        STANDARD,
-        SIMPLIFIED
+        CONTROL,
+        SIMPLIFIED_LOGIN_I1
     }
 }

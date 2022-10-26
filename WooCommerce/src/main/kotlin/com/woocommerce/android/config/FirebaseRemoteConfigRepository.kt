@@ -6,6 +6,7 @@ import com.google.firebase.remoteconfig.FirebaseRemoteConfig
 import com.google.firebase.remoteconfig.ktx.remoteConfigSettings
 import com.woocommerce.android.experiment.JetpackTimeoutExperiment.JetpackTimeoutPolicyVariant
 import com.woocommerce.android.experiment.PrologueExperiment.PrologueVariant
+import com.woocommerce.android.experiment.SimplifiedLoginExperiment.LoginVariant
 import com.woocommerce.android.util.PackageUtils
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T
@@ -91,8 +92,8 @@ class FirebaseRemoteConfigRepository @Inject constructor(
                 emit(JetpackTimeoutPolicyVariant.valueOf(defaultValues[JETPACK_TIMEOUT_POLICY_VARIANT_KEY]!!))
             }
 
-    override fun getSimplifiedLoginVariant(): String =
-        remoteConfig.getString(SIMPLIFIED_LOGIN_VARIANT_KEY)
+    override fun getSimplifiedLoginVariant(): LoginVariant =
+        LoginVariant.valueOf(remoteConfig.getString(SIMPLIFIED_LOGIN_VARIANT_KEY).uppercase())
 
     private fun observeStringRemoteValue(key: String) = changesTrigger
         .map { remoteConfig.getString(key) }
