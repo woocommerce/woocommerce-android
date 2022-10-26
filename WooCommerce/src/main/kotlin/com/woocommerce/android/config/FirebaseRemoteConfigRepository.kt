@@ -93,8 +93,14 @@ class FirebaseRemoteConfigRepository @Inject constructor(
                 emit(JetpackTimeoutPolicyVariant.valueOf(defaultValues[JETPACK_TIMEOUT_POLICY_VARIANT_KEY]!!))
             }
 
-    override fun getSimplifiedLoginVariant(): LoginVariant =
-        LoginVariant.valueOf(remoteConfig.getString(SIMPLIFIED_LOGIN_VARIANT_KEY).uppercase())
+    override fun getSimplifiedLoginVariant(): LoginVariant {
+        return try {
+            LoginVariant.valueOf(remoteConfig.getString(SIMPLIFIED_LOGIN_VARIANT_KEY).uppercase())
+        } catch (e: IllegalArgumentException) {
+            crashLogging.get().recordException(e)
+            LoginVariant.valueOf(defaultValues[SIMPLIFIED_LOGIN_VARIANT_KEY]!!)
+        }
+    }
 
     private fun observeStringRemoteValue(key: String) = changesTrigger
         .map { remoteConfig.getString(key) }
