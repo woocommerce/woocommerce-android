@@ -43,7 +43,6 @@ class AnalyticsDateRangeCalculatorTest : BaseUnitTest() {
     @Test
     fun `when the current date is given then get the date range for today is the expected`() {
         // Given
-        whenever(dateUtils.getCurrentDateTimeMinusDays(1)).thenReturn(DATE_ZERO)
         whenever(dateUtils.getCurrentDate()).thenReturn(date)
 
         // When
