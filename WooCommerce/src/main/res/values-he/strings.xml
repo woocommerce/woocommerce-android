@@ -55,7 +55,6 @@ Language: he_IL
     <string name="orderlist_bottom_sheet_simple_payments_moved_button">הבנתי!</string>
     <string name="orderlist_bottom_sheet_simple_payments_moved_description">כעת אפשר לגשת בקלות ובמהירות ל\'תשלומים באופן אישי\' ולאפשרויות נוספות</string>
     <string name="orderlist_bottom_sheet_simple_payments_moved_title">תשלומים מהלשונית \'תפריט\'</string>
-    <string name="login_no_wpcom_account_found">כתובת האימייל ⁦%1$s⁩ מקושרת לחשבון ב-WordPress.com.</string>
     <string name="login_non_woo_stores_label">אתרים אחרים</string>
     <string name="login_with_store_address">להתחבר עם הכתובת של החנות</string>
     <string name="more_menu_button_w___admin">מנהל מערכת של WC</string>

@@ -55,7 +55,6 @@ Language: ko_KR
     <string name="orderlist_bottom_sheet_simple_payments_moved_button">알겠어요!</string>
     <string name="orderlist_bottom_sheet_simple_payments_moved_description">이제 빠르고 쉽게 대면 결제와 기타 기능에 접근하실 수 있습니다.</string>
     <string name="orderlist_bottom_sheet_simple_payments_moved_title">메뉴 탭의 결제</string>
-    <string name="login_no_wpcom_account_found">%1$s 이메일은 워드프레스닷컴 계정에서 사용되지 않습니다.</string>
     <string name="login_non_woo_stores_label">기타 사이트</string>
     <string name="login_with_store_address">스토어 주소로 로그인</string>
     <string name="more_menu_button_w___admin">WC 관리자</string>

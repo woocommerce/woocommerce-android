@@ -55,7 +55,6 @@ Language: fr
     <string name="orderlist_bottom_sheet_simple_payments_moved_button">OK !</string>
     <string name="orderlist_bottom_sheet_simple_payments_moved_description">Vous pouvez désormais accéder rapidement aux paiements en personne et à d’autres fonctionnalités en toute simplicité.</string>
     <string name="orderlist_bottom_sheet_simple_payments_moved_title">Paiements à partir de l’onglet Menu</string>
-    <string name="login_no_wpcom_account_found">L’adresse e-mail %1$s n’est pas associée à un compte WordPress.com.</string>
     <string name="login_non_woo_stores_label">Autres sites</string>
     <string name="login_with_store_address">Connectez-vous avec l’adresse de votre boutique</string>
     <string name="more_menu_button_w___admin">WC Admin</string>

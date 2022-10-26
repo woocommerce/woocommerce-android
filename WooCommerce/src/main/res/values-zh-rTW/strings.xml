@@ -55,7 +55,6 @@ Language: zh_TW
     <string name="orderlist_bottom_sheet_simple_payments_moved_button">瞭解！</string>
     <string name="orderlist_bottom_sheet_simple_payments_moved_description">你現在可以快速輕鬆存取「親自收款」和其他功能</string>
     <string name="orderlist_bottom_sheet_simple_payments_moved_title">從「選單」分頁使用付款功能</string>
-    <string name="login_no_wpcom_account_found">電子郵件 %1$s 並未用於 WordPress.com 帳號。</string>
     <string name="login_non_woo_stores_label">其他網站</string>
     <string name="login_with_store_address">使用你的商店地址登入</string>
     <string name="more_menu_button_w___admin">WC 管理員</string>

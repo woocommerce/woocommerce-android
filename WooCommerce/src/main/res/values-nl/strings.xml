@@ -55,7 +55,6 @@ Language: nl
     <string name="orderlist_bottom_sheet_simple_payments_moved_button">Begrepen!</string>
     <string name="orderlist_bottom_sheet_simple_payments_moved_description">Nu heb je snel toegang tot Fysieke betalingen en andere functies</string>
     <string name="orderlist_bottom_sheet_simple_payments_moved_title">Betalingen van het tabblad Menu</string>
-    <string name="login_no_wpcom_account_found">De e-mail %1$s wordt niet gebruikt met een WordPress.com-account.</string>
     <string name="login_non_woo_stores_label">Andere sites</string>
     <string name="login_with_store_address">Log in met je winkeladres</string>
     <string name="more_menu_button_w___admin">WC Admin</string>

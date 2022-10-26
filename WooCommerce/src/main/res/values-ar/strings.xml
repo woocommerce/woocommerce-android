@@ -55,7 +55,6 @@ Language: ar
     <string name="orderlist_bottom_sheet_simple_payments_moved_button">فهمت!</string>
     <string name="orderlist_bottom_sheet_simple_payments_moved_description">يمكنك الآن الوصول بسرعة إلى المدفوعات الشخصية وغيرها من الميزات بسهولة</string>
     <string name="orderlist_bottom_sheet_simple_payments_moved_title">المدفوعات من علامة التبويب القائمة</string>
-    <string name="login_no_wpcom_account_found">لم يتم استخدام البريد الإلكتروني ⁦%1$s⁩ مع حساب ووردبريس.كوم.</string>
     <string name="login_non_woo_stores_label">مواقع أخرى</string>
     <string name="login_with_store_address">تسجيل الدخول باستخدام عنوان متجرك</string>
     <string name="more_menu_button_w___admin">مسؤول WC</string>
