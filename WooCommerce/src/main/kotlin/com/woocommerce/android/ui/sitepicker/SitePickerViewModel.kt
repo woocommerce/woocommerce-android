@@ -116,6 +116,11 @@ class SitePickerViewModel @Inject constructor(
             }
             fetchSitesFromApi(sitesInDb.isEmpty() || !loginSiteAddress.isNullOrEmpty())
         }
+        if (sitePickerViewState.userInfo == null) {
+            launch {
+                fetchUserAccount()
+            }
+        }
     }
 
     private suspend fun fetchSitesFromApi(showSkeleton: Boolean, delayTime: Long = 0) {
@@ -143,6 +148,17 @@ class SitePickerViewModel @Inject constructor(
                 displaySites(repository.getSites())
             }
         }
+    }
+
+    private suspend fun fetchUserAccount() {
+        accountRepository.fetchUserAccount().fold(
+            onSuccess = {
+                sitePickerViewState = sitePickerViewState.copy(userInfo = getUserInfo())
+            },
+            onFailure = {
+                triggerEvent(ShowSnackbar(string.error_fetch_my_profile))
+            }
+        )
     }
 
     private suspend fun getSitesFromDb(): List<SiteModel> {
