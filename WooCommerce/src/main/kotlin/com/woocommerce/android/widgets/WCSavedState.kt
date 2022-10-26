@@ -5,7 +5,6 @@ import android.os.Build.VERSION_CODES
 import android.os.Parcel
 import android.os.Parcelable
 import android.view.View.BaseSavedState
-import androidx.annotation.RequiresApi
 import com.woocommerce.android.extensions.parcelable
 
 /**
@@ -32,7 +31,6 @@ class WCSavedState : BaseSavedState {
         savedState = source.parcelable(this::class.java.classLoader)
     }
 
-    @RequiresApi(VERSION_CODES.N)
     constructor(source: Parcel, loader: ClassLoader?) : super(source, loader) {
         savedState = loader?.let {
             source.parcelable(it)
