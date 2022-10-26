@@ -178,7 +178,9 @@ class MyStoreViewModel @Inject constructor(
                 )
                 _bannerState.value = BannerState(
                     shouldDisplayBanner = true,
-                    onPrimaryActionClicked = { onJitmCtaClicked(response.model!![0].cta.link) },
+                    onPrimaryActionClicked = {
+                        onJitmCtaClicked(response)
+                    },
                     onDismissClicked = {
                         onJitmDismissClicked(
                             response.model!![0].id,
@@ -199,6 +201,17 @@ class MyStoreViewModel @Inject constructor(
                 trackJitmFetchFailureEvent(response.error.type, response.error.message)
             }
         }
+    }
+
+    private fun trackJitmCtaTappedEvent(id: String, featureClass: String) {
+        analyticsTrackerWrapper.track(
+            AnalyticsEvent.JITM_CTA_TAPPED,
+            mapOf(
+                KEY_SOURCE to UTM_SOURCE,
+                JITM_ID to id,
+                JITM_FEATURE_CLASS to featureClass
+            )
+        )
     }
 
     private fun trackJitmDisplayedEvent(id: String, featureClass: String) {
@@ -233,10 +246,14 @@ class MyStoreViewModel @Inject constructor(
         )
     }
 
-    private fun onJitmCtaClicked(url: String) {
+    private fun onJitmCtaClicked(response: WooResult<Array<JITMApiResponse>>) {
+        trackJitmCtaTappedEvent(
+            response.model!![0].id,
+            response.model!![0].featureClass
+        )
         triggerEvent(
             MyStoreEvent.OnJitmCtaClicked(
-                utmProvider.getUrlWithUtmParams(url)
+                utmProvider.getUrlWithUtmParams(response.model!![0].cta.link)
             )
         )
     }
