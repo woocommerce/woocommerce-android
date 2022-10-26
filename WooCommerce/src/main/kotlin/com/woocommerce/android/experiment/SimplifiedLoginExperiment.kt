@@ -18,7 +18,7 @@ class SimplifiedLoginExperiment @Inject constructor(
         private const val VARIANT_SIMPLIFIED = "simplified_login_i1"
     }
 
-    fun run() {
+    fun activate() {
         // Track Firebase's activation event for the A/B testing. Make sure to only call it once!
         experimentTracker.log(ExperimentTracker.SIMPLIFIED_LOGIN_ELIGIBLE_EVENT)
 
