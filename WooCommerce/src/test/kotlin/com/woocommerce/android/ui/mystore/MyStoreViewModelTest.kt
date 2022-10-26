@@ -1035,6 +1035,67 @@ class MyStoreViewModelTest : BaseUnitTest() {
             )
         }
     }
+
+    @Test
+    fun `given jitm displayed, when dismiss tapped, then dismiss tapped event is tracked`() {
+        testBlocking {
+            givenNetworkConnectivity(connected = true)
+            whenever(selectedSite.get()).thenReturn(SiteModel())
+            whenever(
+                wooCommerceStore.getStoreCountryCode(any())
+            ).thenReturn("US")
+            whenever(
+                jitmStore.fetchJitmMessage(any(), any())
+            ).thenReturn(
+                WooResult(
+                    model = arrayOf(provideJitmApiResponse())
+                )
+            )
+
+            whenViewModelIsCreated()
+            (sut.bannerState.value as BannerState).onDismissClicked.invoke()
+
+            verify(analyticsTrackerWrapper).track(
+                eq(AnalyticsEvent.JITM_DISMISS_TAPPED),
+                any()
+            )
+        }
+    }
+
+    @Test
+    fun `given jitm displayed, when dismiss tapped, then dismiss tapped event is tracked with correct properties`() {
+        testBlocking {
+            givenNetworkConnectivity(connected = true)
+            whenever(selectedSite.get()).thenReturn(SiteModel())
+            whenever(
+                wooCommerceStore.getStoreCountryCode(any())
+            ).thenReturn("US")
+            whenever(
+                jitmStore.fetchJitmMessage(any(), any())
+            ).thenReturn(
+                WooResult(
+                    model = arrayOf(
+                        provideJitmApiResponse(
+                            id = "12345",
+                            featureClass = "woomobile_ipp"
+                        )
+                    )
+                )
+            )
+
+            whenViewModelIsCreated()
+            (sut.bannerState.value as BannerState).onDismissClicked.invoke()
+
+            verify(analyticsTrackerWrapper).track(
+                AnalyticsEvent.JITM_DISMISS_TAPPED,
+                mapOf(
+                    AnalyticsTracker.KEY_SOURCE to MyStoreViewModel.UTM_SOURCE,
+                    AnalyticsTracker.JITM_ID to "12345",
+                    AnalyticsTracker.JITM_FEATURE_CLASS to "woomobile_ipp"
+                )
+            )
+        }
+    }
     //endregion
 
     private suspend fun givenStatsLoadingResult(result: GetStats.LoadStatsResult) {
