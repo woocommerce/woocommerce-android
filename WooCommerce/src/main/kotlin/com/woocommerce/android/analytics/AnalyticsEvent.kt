@@ -150,7 +150,6 @@ enum class AnalyticsEvent(val siteless: Boolean = false) {
     DASHBOARD_SEE_MORE_ANALYTICS_TAPPED,
     USED_ANALYTICS,
 
-
     // -- Analytics Hub
     ANALYTICS_HUB_DATE_RANGE_BUTTON_TAPPED,
     ANALYTICS_HUB_DATE_RANGE_SELECTED,
