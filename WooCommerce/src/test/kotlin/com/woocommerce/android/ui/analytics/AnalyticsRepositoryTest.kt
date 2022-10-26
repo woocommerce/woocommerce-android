@@ -2,6 +2,7 @@ package com.woocommerce.android.ui.analytics
 
 import com.woocommerce.android.model.DeltaPercentage
 import com.woocommerce.android.model.ProductItem
+import com.woocommerce.android.model.RevenueStat
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.analytics.AnalyticsRepository.Companion.ANALYTICS_ORDERS_PATH
 import com.woocommerce.android.ui.analytics.AnalyticsRepository.Companion.ANALYTICS_PRODUCTS_PATH
@@ -22,6 +23,7 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.asFlow
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.runTest
+import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 import org.mockito.kotlin.any
 import org.mockito.kotlin.eq
@@ -142,12 +144,21 @@ class AnalyticsRepositoryTest : BaseUnitTest() {
     fun `given previous and current period revenue, when fetchRevenueData, then result is the expected`() =
         runTest {
             // Given
-            val revenue = givenARevenue(TEN_VALUE, TEN_VALUE, TEN_VALUE.toInt())
+            val previousRevenue = givenARevenue(
+                totalSales = 100.0,
+                netValue = 80.0,
+                itemsSold = 10
+            )
+            val currentRevenue = givenARevenue(
+                totalSales = 120.0,
+                netValue = 100.0,
+                itemsSold = 12
+            )
             whenever(statsRepository.fetchRevenueStats(any(), any(), eq(PREVIOUS_DATE), eq(CURRENT_DATE)))
-                .thenReturn(listOf(Result.success(revenue)).asFlow())
+                .thenReturn(listOf(Result.success(currentRevenue)).asFlow())
 
             whenever(statsRepository.fetchRevenueStats(any(), any(), eq(PREVIOUS_DATE), eq(PREVIOUS_DATE)))
-                .thenReturn(listOf(Result.success(revenue)).asFlow())
+                .thenReturn(listOf(Result.success(previousRevenue)).asFlow())
 
             // When
             val result = sut.fetchRevenueData(
@@ -157,11 +168,17 @@ class AnalyticsRepositoryTest : BaseUnitTest() {
             )
 
             // Then
-            assertTrue(result is RevenueData)
-            assertEquals(TEN_VALUE, result.revenueStat.totalValue)
-            assertEquals(TEN_VALUE, result.revenueStat.netValue)
-            assertTrue(result.revenueStat.totalDelta is DeltaPercentage.Value)
-            assertTrue(result.revenueStat.netDelta is DeltaPercentage.Value)
+            assertThat(result).isEqualTo(
+                RevenueData(
+                    RevenueStat(
+                        totalValue = 120.0,
+                        netValue = 100.0,
+                        totalDelta = DeltaPercentage.Value(20),
+                        netDelta = DeltaPercentage.Value(25),
+                        currencyCode = null
+                    )
+                )
+            )
         }
 
     @Test
