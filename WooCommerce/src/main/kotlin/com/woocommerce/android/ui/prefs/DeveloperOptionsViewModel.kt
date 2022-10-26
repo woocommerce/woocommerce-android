@@ -27,7 +27,7 @@ class DeveloperOptionsViewModel @Inject constructor(
             label = UiStringRes(string.enable_card_reader),
             isEnabled = true,
             isChecked = false,
-            onToggled = ::onSimulatedReaderToggled
+            onToggled = { (::onSimulatedReaderToggled)(it) }
         )
     )
 
