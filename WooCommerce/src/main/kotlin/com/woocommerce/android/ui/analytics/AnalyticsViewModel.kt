@@ -156,6 +156,10 @@ class AnalyticsViewModel @Inject constructor(
         }
     }
 
+    fun onDateRangeSelectorClick() {
+        triggerEvent(AnalyticsViewEvent.OpenDateRangeSelector)
+    }
+
     fun onRevenueSeeReportClick() {
         trackSeeReportClicked(AnalyticsTracker.VALUE_REVENUE_CARD_SELECTED)
         if (selectedSite.getIfExists()?.isWPCom == true || selectedSite.getIfExists()?.isWPComAtomic == true) {
