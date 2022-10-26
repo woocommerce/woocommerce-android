@@ -34,7 +34,6 @@ import org.wordpress.android.fluxc.store.WCStatsStore.StatsGranularity.WEEKS
 import org.wordpress.android.fluxc.store.WCStatsStore.StatsGranularity.YEARS
 import org.wordpress.android.fluxc.store.WooCommerceStore
 import javax.inject.Inject
-import kotlin.math.round
 
 class AnalyticsRepository @Inject constructor(
     private val statsRepository: StatsRepository,
@@ -239,7 +238,7 @@ class AnalyticsRepository @Inject constructor(
     private fun calculateDeltaPercentage(previousVal: Double, currentVal: Double): DeltaPercentage = when {
         previousVal <= ZERO_VALUE -> DeltaPercentage.NotExist
         currentVal <= ZERO_VALUE -> DeltaPercentage.Value((MINUS_ONE * ONE_H_PERCENT))
-        else -> DeltaPercentage.Value((round((currentVal - previousVal) / previousVal) * ONE_H_PERCENT).toInt())
+        else -> DeltaPercentage.Value(((currentVal - previousVal) / previousVal * ONE_H_PERCENT).toInt())
     }
 
     private fun shouldUpdatePreviousStats(startDate: String, endDate: String, forceUpdate: Boolean) =
