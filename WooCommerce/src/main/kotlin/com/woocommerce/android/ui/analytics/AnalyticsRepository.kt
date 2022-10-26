@@ -161,7 +161,7 @@ class AnalyticsRepository @Inject constructor(
         fetchStrategy: FetchStrategy
     ): Result<WCRevenueStatsModel.Total> = coroutineScope {
         val startDate = when (dateRange) {
-            is SimpleDateRange -> dateRange.to.formatToYYYYmmDD()
+            is SimpleDateRange -> dateRange.from.formatToYYYYmmDD()
             is MultipleDateRange -> dateRange.to.from.formatToYYYYmmDD()
         }
         val endDate = when (dateRange) {
@@ -233,6 +233,7 @@ class AnalyticsRepository @Inject constructor(
             AnalyticTimePeriod.LAST_MONTH, AnalyticTimePeriod.MONTH_TO_DATE -> MONTHS
             AnalyticTimePeriod.LAST_QUARTER, AnalyticTimePeriod.QUARTER_TO_DATE -> MONTHS
             AnalyticTimePeriod.LAST_YEAR, AnalyticTimePeriod.YEAR_TO_DATE -> YEARS
+            AnalyticTimePeriod.CUSTOM -> DAYS
         }
 
     private fun calculateDeltaPercentage(previousVal: Double, currentVal: Double): DeltaPercentage = when {

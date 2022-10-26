@@ -154,6 +154,8 @@
         Date/Time Labels
     -->
     <string name="date_timeframe_future">Upcoming</string>
+    <string name="date_timeframe_custom">Custom</string>
+    <string name="date_timeframe_custom_date_range_title">Custom date range</string>
     <string name="date_timeframe_today">Today</string>
     <string name="date_timeframe_yesterday">Yesterday</string>
     <string name="date_timeframe_last_week">Last Week</string>
@@ -331,8 +333,10 @@
     <string name="analytics_see_more">See more</string>
     <string name="analytics_date_range_to_date">%1$s (%2$s)</string>
     <string name="analytics_date_range_from_date">vs Previous Period (%1$s)</string>
+    <string name="analytics_date_range_custom">%1$s - %2$s</string>
     <string name="analytics_date_range_selector_description">Selector for date range filter</string>
-    <string-array name="date_range_selectors">
+    <string-array name="analytics_date_range_selectors">
+        <item translatable="false">@string/date_timeframe_custom</item>
         <item translatable="false">@string/date_timeframe_today</item>
         <item translatable="false">@string/date_timeframe_yesterday</item>
         <item translatable="false">@string/date_timeframe_last_week</item>
@@ -342,6 +346,7 @@
         <item translatable="false">@string/date_timeframe_week_to_date</item>
         <item translatable="false">@string/date_timeframe_month_to_date</item>
         <item translatable="false">@string/date_timeframe_quarter_to_date</item>
+        <item translatable="false">@string/date_timeframe_year_to_date</item>
         <item translatable="false">@string/date_timeframe_year_to_date</item>
     </string-array>
     <string name="analytics_see_report_button_text">See report</string>e

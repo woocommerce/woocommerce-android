@@ -40,6 +40,10 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
+import java.util.TimeZone
 import javax.inject.Inject
 import com.woocommerce.android.ui.analytics.listcard.AnalyticsListViewState as ProductsViewState
 import com.woocommerce.android.ui.analytics.listcard.AnalyticsListViewState.LoadingViewState as LoadingProductsViewState
@@ -70,6 +74,51 @@ class AnalyticsViewModel @Inject constructor(
 
     val state: StateFlow<AnalyticsViewState> = mutableState
 
+    fun onCustomDateRangeClicked() {
+        val savedRange = getSavedDateRange()
+        val fromMillis = when (savedRange) {
+            is SimpleDateRange -> savedRange.from.time
+            is MultipleDateRange -> savedRange.to.from.time
+        }
+        val toMillis = when (savedRange) {
+            is SimpleDateRange -> savedRange.to.time
+            is MultipleDateRange -> savedRange.to.to.time
+        }
+        triggerEvent(AnalyticsViewEvent.OpenDatePicker(fromMillis, toMillis))
+    }
+
+    fun onCustomDateRangeChanged(fromMillis: Long, toMillis: Long) {
+        val dateFormat = SimpleDateFormat("EEE, LLL d, yy", Locale.getDefault())
+        dateFormat.timeZone = TimeZone.getTimeZone("UTC")
+        val fromDateStr = dateFormat.format(Date(fromMillis))
+        val toDateStr = dateFormat.format(Date(toMillis))
+
+        dateFormat.timeZone = TimeZone.getDefault()
+        val fromDateUtc = dateFormat.parse(fromDateStr)
+        val toDateUtc = dateFormat.parse(toDateStr)
+
+        mutableState.value = state.value.copy(
+            analyticsDateRangeSelectorState = state.value.analyticsDateRangeSelectorState.copy(
+                fromDatePeriod = resourceProvider.getString(
+                    R.string.analytics_date_range_custom,
+                    fromDateStr,
+                    toDateStr
+                ),
+                toDatePeriod = resourceProvider.getString(R.string.date_timeframe_custom_date_range_title),
+                selectedPeriod = getTimePeriodDescription(AnalyticTimePeriod.CUSTOM)
+            )
+        )
+
+        val dateRange = analyticsDateRange.getAnalyticsDateRangeFromCustom(fromDateUtc, toDateUtc)
+        saveSelectedDateRange(dateRange)
+        saveSelectedTimePeriod(AnalyticTimePeriod.CUSTOM)
+
+        viewModelScope.launch {
+            updateRevenue(isRefreshing = false, showSkeleton = true)
+            updateOrders(isRefreshing = false, showSkeleton = true)
+            updateProducts(isRefreshing = false, showSkeleton = true)
+        }
+    }
     init {
         viewModelScope.launch {
             updateRevenue(isRefreshing = false, showSkeleton = true)
@@ -270,8 +319,10 @@ class AnalyticsViewModel @Inject constructor(
             }
     }
 
-    private fun getAvailableDateRanges() = resourceProvider.getStringArray(R.array.date_range_selectors).asList()
+    private fun getAvailableDateRanges() =
+        resourceProvider.getStringArray(R.array.analytics_date_range_selectors).asList()
     private fun getDefaultTimePeriod() = navArgs.targetGranularity
+
     private fun getDefaultDateRange() = analyticsDateRange.getAnalyticsDateRangeFrom(getDefaultTimePeriod())
 
     private fun getTimePeriodDescription(analyticTimeRange: AnalyticTimePeriod): String =
@@ -286,6 +337,7 @@ class AnalyticsViewModel @Inject constructor(
             AnalyticTimePeriod.MONTH_TO_DATE -> resourceProvider.getString(R.string.date_timeframe_month_to_date)
             AnalyticTimePeriod.QUARTER_TO_DATE -> resourceProvider.getString(R.string.date_timeframe_quarter_to_date)
             AnalyticTimePeriod.YEAR_TO_DATE -> resourceProvider.getString(R.string.date_timeframe_year_to_date)
+            AnalyticTimePeriod.CUSTOM -> resourceProvider.getString(R.string.date_timeframe_custom)
         }
 
     private fun formatValue(value: String, currencyCode: String?) = currencyCode
