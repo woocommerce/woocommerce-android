@@ -1114,7 +1114,7 @@ class MyStoreViewModelTest : BaseUnitTest() {
                 )
             )
             whenever(jitmStore.dismissJitmMessage(any(), any(), any())).thenReturn(
-                WooResult(JitmDismissApiResponse(data = true))
+                WooResult(true)
             )
 
             whenViewModelIsCreated()
@@ -1148,7 +1148,7 @@ class MyStoreViewModelTest : BaseUnitTest() {
                 )
             )
             whenever(jitmStore.dismissJitmMessage(any(), any(), any())).thenReturn(
-                WooResult(JitmDismissApiResponse(data = true))
+                WooResult(true)
             )
 
             whenViewModelIsCreated()
@@ -1181,7 +1181,7 @@ class MyStoreViewModelTest : BaseUnitTest() {
                 )
             )
             whenever(jitmStore.dismissJitmMessage(any(), any(), any())).thenReturn(
-                WooResult(JitmDismissApiResponse(data = false))
+                WooResult(false)
             )
 
             whenViewModelIsCreated()
@@ -1295,7 +1295,7 @@ class MyStoreViewModelTest : BaseUnitTest() {
                 )
             )
             whenever(jitmStore.dismissJitmMessage(any(), any(), any())).thenReturn(
-                WooResult(JitmDismissApiResponse(data = false))
+                WooResult(false)
             )
 
             whenViewModelIsCreated()

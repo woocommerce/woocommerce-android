@@ -268,7 +268,7 @@ class MyStoreViewModel @Inject constructor(
         viewModelScope.launch {
             jitmStore.dismissJitmMessage(selectedSite.get(), jitmId, featureClass).also { response ->
                 when {
-                    response.model != null && response.model!!.data -> {
+                    response.model != null && response.model!! -> {
                         trackJitmDismissSuccessEvent(jitmId, featureClass)
                     }
                     else -> trackJitmDismissFailureEvent(
