@@ -264,6 +264,7 @@ class MyStoreViewModel @Inject constructor(
     }
 
     private fun onJitmDismissClicked(jitmId: String, featureClass: String) {
+        _bannerState.value = _bannerState.value?.copy(shouldDisplayBanner = false)
         trackJitmDismissTappedEvent(jitmId, featureClass)
         viewModelScope.launch {
             jitmStore.dismissJitmMessage(selectedSite.get(), jitmId, featureClass).also { response ->
@@ -280,7 +281,6 @@ class MyStoreViewModel @Inject constructor(
                 }
             }
         }
-        triggerEvent(MyStoreEvent.OnJitmDismissed)
     }
 
     private fun trackJitmDismissFailureEvent(
@@ -585,7 +585,5 @@ class MyStoreViewModel @Inject constructor(
             val url: String,
             @StringRes val titleRes: Int = R.string.card_reader_purchase_card_reader
         ) : MyStoreEvent()
-
-        object OnJitmDismissed : MyStoreEvent()
     }
 }
