@@ -502,7 +502,7 @@ class AnalyticsViewModelTest : BaseUnitTest() {
         AnalyticsViewModel(
             resourceProvider, dateUtil, calculator,
             currencyFormatter, analyticsRepository,
-            selectedSite, savedState
+            selectedSite, mock(), savedState
         )
 
     private fun getRevenueStats(
