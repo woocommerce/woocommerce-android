@@ -22,6 +22,7 @@ import com.woocommerce.android.R
 import com.woocommerce.android.R.attr
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
+import com.woocommerce.android.analytics.ExperimentTracker
 import com.woocommerce.android.databinding.FragmentMyStoreBinding
 import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.extensions.scrollStartEvents
@@ -75,6 +76,7 @@ class MyStoreFragment : TopLevelFragment(R.layout.fragment_my_store) {
     @Inject lateinit var uiMessageResolver: UIMessageResolver
     @Inject lateinit var dateUtils: DateUtils
     @Inject lateinit var usageTracksEventEmitter: MyStoreStatsUsageTracksEventEmitter
+    @Inject lateinit var experimentTracker: ExperimentTracker
 
     private var _binding: FragmentMyStoreBinding? = null
     private val binding get() = _binding!!
@@ -163,6 +165,9 @@ class MyStoreFragment : TopLevelFragment(R.layout.fragment_my_store) {
         binding.statsScrollView.scrollStartEvents()
             .onEach { usageTracksEventEmitter.interacted() }
             .launchIn(viewLifecycleOwner.lifecycleScope)
+
+        // Successful event for Simplified Login A/B testing.
+        experimentTracker.log(ExperimentTracker.SIMPLIFIED_LOGIN_SUCCESSFUL_EVENT)
 
         setupStateObservers()
     }

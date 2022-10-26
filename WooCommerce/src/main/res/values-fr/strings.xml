@@ -1,11 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2022-10-11 09:54:04+0000
+Translation-Revision-Date: 2022-10-20 14:54:03+0000
 Plural-Forms: nplurals=2; plural=n > 1;
 Generator: GlotPress/2.4.0-alpha
 Language: fr
 -->
 <resources>
+    <string name="enable_card_reader">Activer le lecteur de carte simulé</string>
+    <string name="login_account_mismatch_connect_wpcom_dialog_message">Contactez le propriétaire du site pour obtenir une invitation d\'accès au site en tant que gérant ou administrateur de boutique pour utiliser l\'application.</string>
+    <string name="login_account_mismatch_connect_wpcom_dialog_title">Association à un site WordPress.com</string>
+    <string name="login_account_mismatch_connect_wpcom">Associer au site</string>
+    <string name="login_account_mismatch_connect_jetpack">Associer Jetpack à votre compte</string>
     <string name="qr_code_login_edit_camera_permission">Modifier les droits</string>
     <string name="qr_code_login_camera_permission_denied_message">Pour pouvoir utiliser cette fonctionnalité, il vous suffit d’accorder les droits d’accès à votre appareil photo.</string>
     <string name="qr_code_login_camera_permission_denied_title">Accès à l’appareil photo requis</string>
@@ -26,7 +31,6 @@ Language: fr
     <string name="login_jetpack_verify_connection">Vérification de la connexion Jetpack en cours</string>
     <string name="login_jetpack_connection_verification_failed">Impossible de vérifier votre connexion Jetpack. Veuillez réessayer.</string>
     <string name="login_simple_wpcom_site">Le site %1$s dispose actuellement d’un plan WordPress.com qui ne prend pas en charge l’installation d’extensions. Veuillez mettre à niveau votre plan pour utiliser WooCommerce.</string>
-    <string name="login_connect_jetpack_button">Connecter Jetpack à votre compte</string>
     <string name="login_jetpack_not_connected">Il semblerait que votre compte ne soit pas connecté à l’extension Jetpack de %1$s</string>
     <string name="card_reader_card_readers_header">LECTEURS DE CARTE</string>
     <string name="card_reader_payment_options_header">OPTIONS DE PAIEMENT</string>

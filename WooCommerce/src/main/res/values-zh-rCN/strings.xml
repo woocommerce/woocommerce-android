@@ -1,11 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2022-10-11 11:54:04+0000
+Translation-Revision-Date: 2022-10-20 09:54:04+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: zh_CN
 -->
 <resources>
+    <string name="enable_card_reader">启用模拟读卡器</string>
+    <string name="login_account_mismatch_connect_wpcom_dialog_message">请联系站点所有者，以商店经理或管理员的身份邀请站点使用该应用程序。</string>
+    <string name="login_account_mismatch_connect_wpcom_dialog_title">正在连接到 WordPress.com 站点</string>
+    <string name="login_account_mismatch_connect_wpcom">连接到站点</string>
+    <string name="login_account_mismatch_connect_jetpack">将 Jetpack 连接到您的账户</string>
     <string name="qr_code_login_edit_camera_permission">编辑权限</string>
     <string name="qr_code_login_camera_permission_denied_message">要使用此功能，请允许摄像头使用权限。</string>
     <string name="qr_code_login_camera_permission_denied_title">需要摄像头访问权限</string>
@@ -26,7 +31,6 @@ Language: zh_CN
     <string name="login_jetpack_verify_connection">正在验证 Jetpack 连接…</string>
     <string name="login_jetpack_connection_verification_failed">无法验证您的 Jetpack 连接。 请重试。</string>
     <string name="login_simple_wpcom_site">站点 %1$s 目前采用不支持插件安装的 WordPress.com 套餐。 请升级您的套餐来使用 WooCommerce。</string>
-    <string name="login_connect_jetpack_button">将 Jetpack 连接到您的账户</string>
     <string name="login_jetpack_not_connected">您的账户似乎未连接到 %1$s 的 Jetpack</string>
     <string name="card_reader_card_readers_header">读卡器</string>
     <string name="card_reader_payment_options_header">付款选项</string>
