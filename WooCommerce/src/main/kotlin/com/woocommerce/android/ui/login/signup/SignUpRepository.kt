@@ -50,7 +50,6 @@ class SignUpRepository @Inject constructor(
                 AccountCreationError(accountCreatedResult.error.apiError.toSignUpError())
             }
             else -> {
-                WooLog.w(WooLog.T.LOGIN, "Success creating new account")
                 dispatcher.dispatchAndAwait<UpdateTokenPayload, OnAuthenticationChanged>(
                     AccountActionBuilder.newUpdateAccessTokenAction(UpdateTokenPayload(accountCreatedResult.token))
                 ).let { updateTokenResult ->
@@ -68,6 +67,7 @@ class SignUpRepository @Inject constructor(
                                 )
                                 AccountCreationError(UNKNOWN_ERROR)
                             } else {
+                                WooLog.w(WooLog.T.LOGIN, "Success creating new account")
                                 AccountCreationSuccess
                             }
                         }
