@@ -6,7 +6,6 @@ import android.widget.Button
 import android.widget.TextView
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.LayoutRes
-import androidx.core.text.HtmlCompat
 import com.woocommerce.android.R
 import com.woocommerce.android.experiment.SimplifiedLoginExperiment
 import com.woocommerce.android.experiment.SimplifiedLoginExperiment.LoginVariant.CONTROL
@@ -47,8 +46,6 @@ class WooLoginEmailFragment : LoginEmailFragment() {
     override fun setupContent(rootView: ViewGroup) {
         super.setupContent(rootView)
         val whatIsWordPressText = rootView.findViewById<Button>(R.id.login_what_is_wordpress)
-        whatIsWordPressText.text =
-            HtmlCompat.fromHtml(getString(R.string.what_is_wordpress_link), HtmlCompat.FROM_HTML_MODE_LEGACY)
         whatIsWordPressText.setOnClickListener {
             whatIsWordPressLinkClickListener.onWhatIsWordPressLinkClicked()
         }

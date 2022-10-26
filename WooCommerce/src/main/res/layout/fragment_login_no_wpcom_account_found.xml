@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical">
@@ -50,7 +49,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="@dimen/major_100"
                 android:layout_marginEnd="@dimen/major_100"
-                tools:text="@string/what_is_wordpress_link" />
+                android:text="@string/what_is_wordpress_link" />
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/btn_find_connected_email"
@@ -59,8 +58,8 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="@dimen/major_100"
                 android:layout_marginEnd="@dimen/major_100"
-                android:textAllCaps="false"
-                tools:text="@string/login_need_help_finding_email" />
+                android:text="@string/login_need_help_finding_email"
+                android:textAllCaps="false" />
 
             <View style="@style/Woo.Divider" />
 
