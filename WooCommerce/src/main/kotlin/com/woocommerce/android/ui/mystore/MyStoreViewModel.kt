@@ -179,7 +179,11 @@ class MyStoreViewModel @Inject constructor(
                 _bannerState.value = BannerState(
                     shouldDisplayBanner = true,
                     onPrimaryActionClicked = {
-                        onJitmCtaClicked(response)
+                        onJitmCtaClicked(
+                            id = response.model!![0].id,
+                            featureClass = response.model!![0].featureClass,
+                            url = response.model!![0].cta.link
+                        )
                     },
                     onDismissClicked = {
                         onJitmDismissClicked(
@@ -246,14 +250,15 @@ class MyStoreViewModel @Inject constructor(
         )
     }
 
-    private fun onJitmCtaClicked(response: WooResult<Array<JITMApiResponse>>) {
-        trackJitmCtaTappedEvent(
-            response.model!![0].id,
-            response.model!![0].featureClass
-        )
+    private fun onJitmCtaClicked(
+        id: String,
+        featureClass: String,
+        url: String
+    ) {
+        trackJitmCtaTappedEvent(id, featureClass)
         triggerEvent(
             MyStoreEvent.OnJitmCtaClicked(
-                utmProvider.getUrlWithUtmParams(response.model!![0].cta.link)
+                utmProvider.getUrlWithUtmParams(url)
             )
         )
     }
