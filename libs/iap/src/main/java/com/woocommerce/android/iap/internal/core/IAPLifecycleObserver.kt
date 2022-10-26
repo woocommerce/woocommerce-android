@@ -3,7 +3,6 @@ package com.woocommerce.android.iap.internal.core
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.DefaultLifecycleObserver
 import androidx.lifecycle.LifecycleOwner
-import com.android.billingclient.api.BillingClient
 import com.android.billingclient.api.BillingClientStateListener
 import com.android.billingclient.api.BillingResult
 import com.android.billingclient.api.PurchasesUpdatedListener
@@ -17,20 +16,17 @@ import kotlin.coroutines.suspendCoroutine
 
 internal class IAPLifecycleObserver(
     private val onPurchaseUpdated: PurchasesUpdatedListener,
-    private val logWrapper: IAPLogWrapper,
+    private val billingClientProvider: IAPBillingClientProvider,
+    private val logWrapper: IAPLogWrapper
 ) : DefaultLifecycleObserver {
     private val connectionEstablishingContinuations = Collections.synchronizedList(mutableListOf<Continuation<Unit>>())
 
-    lateinit var billingClient: BillingClient
+    lateinit var billingClient: IAPBillingClientWrapper
     lateinit var activity: AppCompatActivity
 
     fun initBillingClient(activity: AppCompatActivity) {
         this.activity = activity
-        billingClient = BillingClient
-            .newBuilder(activity)
-            .setListener(onPurchaseUpdated)
-            .enablePendingPurchases()
-            .build()
+        billingClient = billingClientProvider.provideBillingClient(activity, onPurchaseUpdated)
         activity.lifecycle.addObserver(this)
     }
 
