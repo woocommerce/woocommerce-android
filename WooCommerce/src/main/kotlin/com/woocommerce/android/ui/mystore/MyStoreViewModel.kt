@@ -266,9 +266,50 @@ class MyStoreViewModel @Inject constructor(
     private fun onJitmDismissClicked(jitmId: String, featureClass: String) {
         trackJitmDismissTappedEvent(jitmId, featureClass)
         viewModelScope.launch {
-            jitmStore.dismissJitmMessage(selectedSite.get(), jitmId, featureClass)
+            jitmStore.dismissJitmMessage(selectedSite.get(), jitmId, featureClass).also { response ->
+                when {
+                    response.model != null && response.model!!.data -> {
+                        trackJitmDismissSuccessEvent(jitmId, featureClass)
+                    }
+                    else -> trackJitmDismissFailureEvent(
+                        jitmId,
+                        featureClass,
+                        response.error?.type?.name,
+                        response.error?.message
+                    )
+                }
+            }
         }
         triggerEvent(MyStoreEvent.OnJitmDismissed)
+    }
+
+    private fun trackJitmDismissFailureEvent(
+        id: String,
+        featureClass: String,
+        errorType: String?,
+        errorDescription: String?
+    ) {
+        analyticsTrackerWrapper.track(
+            AnalyticsEvent.JITM_DISMISS_FAILURE,
+            mapOf(
+                KEY_SOURCE to UTM_SOURCE,
+                JITM_ID to id,
+                JITM_FEATURE_CLASS to featureClass,
+                KEY_ERROR_TYPE to errorType,
+                KEY_ERROR_DESC to errorDescription
+            )
+        )
+    }
+
+    private fun trackJitmDismissSuccessEvent(id: String, featureClass: String) {
+        analyticsTrackerWrapper.track(
+            AnalyticsEvent.JITM_DISMISS_SUCCESS,
+            mapOf(
+                KEY_SOURCE to UTM_SOURCE,
+                JITM_ID to id,
+                JITM_FEATURE_CLASS to featureClass
+            )
+        )
     }
 
     private fun trackJitmDismissTappedEvent(id: String, featureClass: String) {
