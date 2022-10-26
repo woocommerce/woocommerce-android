@@ -65,6 +65,7 @@ class AnalyticsFragment :
             is AnalyticsViewEvent.OpenWPComWebView -> findNavController()
                 .navigate(NavGraphMainDirections.actionGlobalWPComWebViewFragment(urlToLoad = event.url))
             is AnalyticsViewEvent.OpenDatePicker -> showDateRangePicker(event.fromMillis, event.toMillis)
+            is AnalyticsViewEvent.OpenDateRangeSelector -> openDateRangeSelector()
             else -> event.isHandled = false
         }
     }
@@ -94,7 +95,7 @@ class AnalyticsFragment :
 
     private fun bind(view: View) {
         _binding = FragmentAnalyticsBinding.bind(view)
-        binding.analyticsDateSelectorCard.setCalendarClickListener { openDateRangeSelector() }
+        binding.analyticsDateSelectorCard.setCalendarClickListener { viewModel.onDateRangeSelectorClick() }
         binding.analyticsRevenueCard.setSeeReportClickListener { viewModel.onRevenueSeeReportClick() }
         binding.analyticsOrdersCard.setSeeReportClickListener { viewModel.onOrdersSeeReportClick() }
         binding.analyticsProductsCard.setSeeReportClickListener { viewModel.onProductsSeeReportClick() }
