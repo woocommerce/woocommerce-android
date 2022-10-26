@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.analytics
 
+import androidx.lifecycle.LifecycleObserver
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.R
@@ -58,10 +59,13 @@ class AnalyticsViewModel @Inject constructor(
     private val currencyFormatter: CurrencyFormatter,
     private val analyticsRepository: AnalyticsRepository,
     private val selectedSite: SelectedSite,
+    private val transactionLauncher: AnalyticsHubTransactionLauncher,
     savedState: SavedStateHandle
 ) : ScopedViewModel(savedState) {
 
     private val navArgs: AnalyticsFragmentArgs by savedState.navArgs()
+
+    val performanceObserver: LifecycleObserver = transactionLauncher
 
     private val mutableState = MutableStateFlow(
         AnalyticsViewState(
@@ -187,15 +191,18 @@ class AnalyticsViewModel @Inject constructor(
             analyticsRepository.fetchRevenueData(dateRange, timePeriod, fetchStrategy)
                 .let {
                     when (it) {
-                        is RevenueData -> mutableState.value = state.value.copy(
-                            refreshIndicator = NotShowIndicator,
-                            revenueState = buildRevenueDataViewState(
-                                formatValue(it.revenueStat.totalValue.toString(), it.revenueStat.currencyCode),
-                                it.revenueStat.totalDelta,
-                                formatValue(it.revenueStat.netValue.toString(), it.revenueStat.currencyCode),
-                                it.revenueStat.netDelta
+                        is RevenueData -> {
+                            mutableState.value = state.value.copy(
+                                refreshIndicator = NotShowIndicator,
+                                revenueState = buildRevenueDataViewState(
+                                    formatValue(it.revenueStat.totalValue.toString(), it.revenueStat.currencyCode),
+                                    it.revenueStat.totalDelta,
+                                    formatValue(it.revenueStat.netValue.toString(), it.revenueStat.currencyCode),
+                                    it.revenueStat.netDelta
+                                )
                             )
-                        )
+                            transactionLauncher.onRevenueFetched()
+                        }
                         is RevenueError -> mutableState.value = state.value.copy(
                             refreshIndicator = NotShowIndicator,
                             revenueState = NoDataState(resourceProvider.getString(R.string.analytics_revenue_no_data))
@@ -217,14 +224,17 @@ class AnalyticsViewModel @Inject constructor(
             analyticsRepository.fetchOrdersData(dateRange, timePeriod, fetchStrategy)
                 .let {
                     when (it) {
-                        is OrdersData -> mutableState.value = state.value.copy(
-                            ordersState = buildOrdersDataViewState(
-                                it.ordersStat.ordersCount.toString(),
-                                it.ordersStat.ordersCountDelta,
-                                formatValue(it.ordersStat.avgOrderValue.toString(), it.ordersStat.currencyCode),
-                                it.ordersStat.avgOrderDelta
+                        is OrdersData -> {
+                            mutableState.value = state.value.copy(
+                                ordersState = buildOrdersDataViewState(
+                                    it.ordersStat.ordersCount.toString(),
+                                    it.ordersStat.ordersCountDelta,
+                                    formatValue(it.ordersStat.avgOrderValue.toString(), it.ordersStat.currencyCode),
+                                    it.ordersStat.avgOrderDelta
+                                )
                             )
-                        )
+                            transactionLauncher.onOrdersFetched()
+                        }
                         is OrdersError -> mutableState.value = state.value.copy(
                             ordersState = NoDataState(resourceProvider.getString(R.string.analytics_orders_no_data))
                         )
