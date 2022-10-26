@@ -207,7 +207,8 @@ class UnifiedLoginTracker
         HELP_TROUBLESHOOTING_TIPS("help_troubleshooting_tips"),
         TRY_AGAIN("try_again"),
         WHAT_IS_WORDPRESS_COM("what_is_wordpress_com"),
-        WHAT_IS_WORDPRESS_COM_ON_INVALID_EMAIL_SCREEN("what_is_wordpress_com_on_invalid_email_screen")
+        WHAT_IS_WORDPRESS_COM_ON_INVALID_EMAIL_SCREEN("what_is_wordpress_com_on_invalid_email_screen"),
+        CREATE_ACCOUNT("create_account")
     }
 
     companion object {

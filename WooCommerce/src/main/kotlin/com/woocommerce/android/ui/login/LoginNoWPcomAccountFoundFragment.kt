@@ -101,7 +101,7 @@ class LoginNoWPcomAccountFoundFragment : Fragment(R.layout.fragment_login_no_wpc
             with(btnBinding.buttonPrimary) {
                 text = getString(R.string.login_create_an_account)
                 setOnClickListener {
-                    unifiedLoginTracker.trackClick(Click.LOGIN_WITH_SITE_ADDRESS)
+                    unifiedLoginTracker.trackClick(Click.CREATE_ACCOUNT)
 
                     listener.onCreateAccountClicked()
                 }
