@@ -5,7 +5,6 @@ import android.appwidget.AppWidgetManager
 import android.appwidget.AppWidgetProviderInfo
 import android.content.Context
 import android.content.Intent
-import android.os.Build
 import com.woocommerce.android.ui.appwidgets.WidgetUtils.WIDGET_NO_REGISTERED
 import com.woocommerce.android.ui.appwidgets.stats.today.TodayStatsWidgetProvider
 import com.woocommerce.android.ui.main.MainActivity
@@ -17,11 +16,7 @@ import kotlin.random.Random
  * Currently used to display stats widget list OR error message if stats is unavailable.
  */
 object WidgetUtils {
-    private val PENDING_INTENT_FLAGS = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-        PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
-    } else {
-        PendingIntent.FLAG_UPDATE_CURRENT
-    }
+    private const val PENDING_INTENT_FLAGS = PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
     const val WIDGET_NO_REGISTERED = "no-registered"
 
     fun getWidgetTapPendingIntent(
