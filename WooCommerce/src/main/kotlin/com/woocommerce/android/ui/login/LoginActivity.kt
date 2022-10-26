@@ -914,6 +914,10 @@ class LoginActivity :
         unifiedLoginTracker.trackClick(Click.WHAT_IS_WORDPRESS_COM_ON_INVALID_EMAIL_SCREEN)
     }
 
+    override fun onCreateAccountClicked() {
+        changeFragment(SignUpFragment(), true, SignUpFragment.TAG)
+    }
+
     private fun getLoginHelpNotification(): String? =
         intent.extras?.getString(KEY_LOGIN_HELP_NOTIFICATION)
 
