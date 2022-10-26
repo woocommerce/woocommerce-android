@@ -36,6 +36,11 @@ class AnalyticsFragment :
 
     override fun getFragmentTitle() = getString(R.string.analytics)
 
+    override fun onCreate(savedInstanceState: Bundle?) {
+        lifecycle.addObserver(viewModel.performanceObserver)
+        super.onCreate(savedInstanceState)
+    }
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         bind(view)

@@ -704,4 +704,7 @@ enum class AnalyticsEvent(val siteless: Boolean = false) {
     // App links
     UNIVERSAL_LINK_OPENED,
     UNIVERSAL_LINK_FAILED,
+
+    // Analytics Hub
+    ANALYTICS_HUB_WAITING_TIME_LOADED
 }
