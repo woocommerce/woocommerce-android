@@ -114,4 +114,19 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@id/button_login_wpcom" />
 
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/button_create_store"
+        style="@style/Woo.Button.Colored.White"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/minor_100"
+        android:layout_marginEnd="@dimen/major_100"
+        android:layout_marginBottom="@dimen/major_100"
+        android:text="@string/login_create_store"
+        android:textAllCaps="false"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@id/button_login_wpcom" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>
