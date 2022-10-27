@@ -119,6 +119,7 @@ class AnalyticsViewModel @Inject constructor(
         val dateRange = analyticsDateRange.getAnalyticsDateRangeFromCustom(fromDateUtc, toDateUtc)
         saveSelectedDateRange(dateRange)
         saveSelectedTimePeriod(AnalyticTimePeriod.CUSTOM)
+        trackSelectedDateRange(AnalyticTimePeriod.CUSTOM)
 
         viewModelScope.launch {
             updateRevenue(isRefreshing = false, showSkeleton = true)
@@ -126,6 +127,7 @@ class AnalyticsViewModel @Inject constructor(
             updateProducts(isRefreshing = false, showSkeleton = true)
         }
     }
+
     init {
         viewModelScope.launch {
             updateRevenue(isRefreshing = false, showSkeleton = true)
