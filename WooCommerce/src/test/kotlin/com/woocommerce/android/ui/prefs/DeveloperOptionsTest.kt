@@ -1,7 +1,6 @@
 package com.woocommerce.android.ui.prefs
 
 import androidx.lifecycle.SavedStateHandle
-import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.R
 import com.woocommerce.android.model.UiString
 import com.woocommerce.android.viewmodel.BaseUnitTest
