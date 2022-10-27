@@ -64,7 +64,7 @@ class SignUpViewModel @Inject constructor(
                 }
                 AccountCreationSuccess -> {
                     _viewState.value = _viewState.value?.copy(isLoading = false)
-                    triggerEvent(NavigateToNextStep)
+                    triggerEvent(OnAccountCreated)
                 }
             }
         }
@@ -113,6 +113,6 @@ class SignUpViewModel @Inject constructor(
     }
 
     object OnTermsOfServiceClicked : MultiLiveEvent.Event()
-    object NavigateToNextStep : MultiLiveEvent.Event()
+    object OnAccountCreated : MultiLiveEvent.Event()
     object OnLoginClicked : MultiLiveEvent.Event()
 }

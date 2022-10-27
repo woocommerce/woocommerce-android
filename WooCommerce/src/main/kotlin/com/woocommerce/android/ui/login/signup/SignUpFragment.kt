@@ -11,7 +11,7 @@ import androidx.fragment.app.viewModels
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
-import com.woocommerce.android.ui.login.signup.SignUpViewModel.NavigateToNextStep
+import com.woocommerce.android.ui.login.signup.SignUpViewModel.OnAccountCreated
 import com.woocommerce.android.ui.login.signup.SignUpViewModel.OnLoginClicked
 import com.woocommerce.android.ui.login.signup.SignUpViewModel.OnTermsOfServiceClicked
 import com.woocommerce.android.ui.main.AppBarStatus
@@ -76,17 +76,13 @@ class SignUpFragment : BaseFragment() {
     private fun setupObservers() {
         viewModel.event.observe(viewLifecycleOwner) { event ->
             when (event) {
-                is NavigateToNextStep -> navigateToNextStep()
+                is OnAccountCreated -> signUpListener?.onAccountCreated()
                 is OnLoginClicked -> signUpListener?.onLoginClicked()
                 is OnTermsOfServiceClicked -> openTermsOfServiceUrl()
                 is ShowSnackbar -> uiMessageResolver.showSnack(event.message)
                 is Exit -> parentFragmentManager.popBackStack()
             }
         }
-    }
-
-    private fun navigateToNextStep() {
-        signUpListener?.onAccountCreated()
     }
 
     private fun openTermsOfServiceUrl() {
