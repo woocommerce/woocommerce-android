@@ -1,11 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2022-10-12 09:54:04+0000
+Translation-Revision-Date: 2022-10-20 09:54:03+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: ja_JP
 -->
 <resources>
+    <string name="enable_card_reader">シミュレートされたカードリーダーを有効にする</string>
+    <string name="login_account_mismatch_connect_wpcom_dialog_message">アプリを使用するには、サイトの所有者に連絡し、ショップ運営者または管理者としてサイトへの招待を受けてください。</string>
+    <string name="login_account_mismatch_connect_wpcom_dialog_title">WordPress.com サイトと連携中</string>
+    <string name="login_account_mismatch_connect_wpcom">サイトと連携</string>
+    <string name="login_account_mismatch_connect_jetpack">Jetpack をアカウントに接続する</string>
     <string name="qr_code_login_edit_camera_permission">権限を編集</string>
     <string name="qr_code_login_camera_permission_denied_message">この機能を使用するには、カメラを使用する権限を許可してください。</string>
     <string name="qr_code_login_camera_permission_denied_title">カメラへのアクセスが必要です</string>
@@ -26,7 +31,6 @@ Language: ja_JP
     <string name="login_jetpack_verify_connection">Jetpack 接続を検証中…</string>
     <string name="login_jetpack_connection_verification_failed">Jetpack 接続を検証できません。 もう一度お試しください。</string>
     <string name="login_simple_wpcom_site">サイト %1$s は現在、プラグインのインストールに対応していない WordPress.com プランを利用しています。 WooCommerce を使用するには、プランをアップグレードしてください。</string>
-    <string name="login_connect_jetpack_button">Jetpack をアカウントに接続する</string>
     <string name="login_jetpack_not_connected">アカウントと %1$s の Jetpack が接続されていないようです</string>
     <string name="card_reader_card_readers_header">カードリーダー</string>
     <string name="card_reader_payment_options_header">支払いオプション</string>

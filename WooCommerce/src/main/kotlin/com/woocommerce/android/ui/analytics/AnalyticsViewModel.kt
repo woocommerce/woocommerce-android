@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.analytics
 
+import androidx.lifecycle.LifecycleObserver
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.R
@@ -32,13 +33,19 @@ import com.woocommerce.android.ui.analytics.informationcard.AnalyticsInformation
 import com.woocommerce.android.ui.analytics.listcard.AnalyticsListCardItemViewState
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.util.DateUtils
+import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.viewmodel.ResourceProvider
 import com.woocommerce.android.viewmodel.ScopedViewModel
+import com.woocommerce.android.viewmodel.navArgs
 import com.zendesk.util.DateUtils.isSameDay
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
+import java.util.TimeZone
 import javax.inject.Inject
 import com.woocommerce.android.ui.analytics.listcard.AnalyticsListViewState as ProductsViewState
 import com.woocommerce.android.ui.analytics.listcard.AnalyticsListViewState.LoadingViewState as LoadingProductsViewState
@@ -52,8 +59,14 @@ class AnalyticsViewModel @Inject constructor(
     private val currencyFormatter: CurrencyFormatter,
     private val analyticsRepository: AnalyticsRepository,
     private val selectedSite: SelectedSite,
+    private val transactionLauncher: AnalyticsHubTransactionLauncher,
     savedState: SavedStateHandle
 ) : ScopedViewModel(savedState) {
+
+    private val navArgs: AnalyticsFragmentArgs by savedState.navArgs()
+
+    val performanceObserver: LifecycleObserver = transactionLauncher
+
     private val mutableState = MutableStateFlow(
         AnalyticsViewState(
             NotShowIndicator,
@@ -66,6 +79,51 @@ class AnalyticsViewModel @Inject constructor(
 
     val state: StateFlow<AnalyticsViewState> = mutableState
 
+    fun onCustomDateRangeClicked() {
+        val savedRange = getSavedDateRange()
+        val fromMillis = when (savedRange) {
+            is SimpleDateRange -> savedRange.from.time
+            is MultipleDateRange -> savedRange.to.from.time
+        }
+        val toMillis = when (savedRange) {
+            is SimpleDateRange -> savedRange.to.time
+            is MultipleDateRange -> savedRange.to.to.time
+        }
+        triggerEvent(AnalyticsViewEvent.OpenDatePicker(fromMillis, toMillis))
+    }
+
+    fun onCustomDateRangeChanged(fromMillis: Long, toMillis: Long) {
+        val dateFormat = SimpleDateFormat("EEE, LLL d, yy", Locale.getDefault())
+        dateFormat.timeZone = TimeZone.getTimeZone("UTC")
+        val fromDateStr = dateFormat.format(Date(fromMillis))
+        val toDateStr = dateFormat.format(Date(toMillis))
+
+        dateFormat.timeZone = TimeZone.getDefault()
+        val fromDateUtc = dateFormat.parse(fromDateStr)
+        val toDateUtc = dateFormat.parse(toDateStr)
+
+        mutableState.value = state.value.copy(
+            analyticsDateRangeSelectorState = state.value.analyticsDateRangeSelectorState.copy(
+                fromDatePeriod = resourceProvider.getString(
+                    R.string.analytics_date_range_custom,
+                    fromDateStr,
+                    toDateStr
+                ),
+                toDatePeriod = resourceProvider.getString(R.string.date_timeframe_custom_date_range_title),
+                selectedPeriod = getTimePeriodDescription(AnalyticTimePeriod.CUSTOM)
+            )
+        )
+
+        val dateRange = analyticsDateRange.getAnalyticsDateRangeFromCustom(fromDateUtc, toDateUtc)
+        saveSelectedDateRange(dateRange)
+        saveSelectedTimePeriod(AnalyticTimePeriod.CUSTOM)
+
+        viewModelScope.launch {
+            updateRevenue(isRefreshing = false, showSkeleton = true)
+            updateOrders(isRefreshing = false, showSkeleton = true)
+            updateProducts(isRefreshing = false, showSkeleton = true)
+        }
+    }
     init {
         viewModelScope.launch {
             updateRevenue(isRefreshing = false, showSkeleton = true)
@@ -133,15 +191,18 @@ class AnalyticsViewModel @Inject constructor(
             analyticsRepository.fetchRevenueData(dateRange, timePeriod, fetchStrategy)
                 .let {
                     when (it) {
-                        is RevenueData -> mutableState.value = state.value.copy(
-                            refreshIndicator = NotShowIndicator,
-                            revenueState = buildRevenueDataViewState(
-                                formatValue(it.revenueStat.totalValue.toString(), it.revenueStat.currencyCode),
-                                it.revenueStat.totalDelta,
-                                formatValue(it.revenueStat.netValue.toString(), it.revenueStat.currencyCode),
-                                it.revenueStat.netDelta
+                        is RevenueData -> {
+                            mutableState.value = state.value.copy(
+                                refreshIndicator = NotShowIndicator,
+                                revenueState = buildRevenueDataViewState(
+                                    formatValue(it.revenueStat.totalValue.toString(), it.revenueStat.currencyCode),
+                                    it.revenueStat.totalDelta,
+                                    formatValue(it.revenueStat.netValue.toString(), it.revenueStat.currencyCode),
+                                    it.revenueStat.netDelta
+                                )
                             )
-                        )
+                            transactionLauncher.onRevenueFetched()
+                        }
                         is RevenueError -> mutableState.value = state.value.copy(
                             refreshIndicator = NotShowIndicator,
                             revenueState = NoDataState(resourceProvider.getString(R.string.analytics_revenue_no_data))
@@ -163,14 +224,17 @@ class AnalyticsViewModel @Inject constructor(
             analyticsRepository.fetchOrdersData(dateRange, timePeriod, fetchStrategy)
                 .let {
                     when (it) {
-                        is OrdersData -> mutableState.value = state.value.copy(
-                            ordersState = buildOrdersDataViewState(
-                                it.ordersStat.ordersCount.toString(),
-                                it.ordersStat.ordersCountDelta,
-                                formatValue(it.ordersStat.avgOrderValue.toString(), it.ordersStat.currencyCode),
-                                it.ordersStat.avgOrderDelta
+                        is OrdersData -> {
+                            mutableState.value = state.value.copy(
+                                ordersState = buildOrdersDataViewState(
+                                    it.ordersStat.ordersCount.toString(),
+                                    it.ordersStat.ordersCountDelta,
+                                    formatValue(it.ordersStat.avgOrderValue.toString(), it.ordersStat.currencyCode),
+                                    it.ordersStat.avgOrderDelta
+                                )
                             )
-                        )
+                            transactionLauncher.onOrdersFetched()
+                        }
                         is OrdersError -> mutableState.value = state.value.copy(
                             ordersState = NoDataState(resourceProvider.getString(R.string.analytics_orders_no_data))
                         )
@@ -180,6 +244,9 @@ class AnalyticsViewModel @Inject constructor(
 
     private fun updateProducts(isRefreshing: Boolean, showSkeleton: Boolean) =
         launch {
+            if (!FeatureFlag.ANALYTICS_HUB_PRODUCTS_AND_REPORTS.isEnabled()) {
+                return@launch
+            }
             val timePeriod = getSavedTimePeriod()
             val dateRange = getSavedDateRange()
             val fetchStrategy = getFetchStrategy(isRefreshing)
@@ -266,8 +333,10 @@ class AnalyticsViewModel @Inject constructor(
             }
     }
 
-    private fun getAvailableDateRanges() = resourceProvider.getStringArray(R.array.date_range_selectors).asList()
-    private fun getDefaultTimePeriod() = AnalyticTimePeriod.TODAY
+    private fun getAvailableDateRanges() =
+        resourceProvider.getStringArray(R.array.analytics_date_range_selectors).asList()
+    private fun getDefaultTimePeriod() = navArgs.targetGranularity
+
     private fun getDefaultDateRange() = analyticsDateRange.getAnalyticsDateRangeFrom(getDefaultTimePeriod())
 
     private fun getTimePeriodDescription(analyticTimeRange: AnalyticTimePeriod): String =
@@ -282,6 +351,7 @@ class AnalyticsViewModel @Inject constructor(
             AnalyticTimePeriod.MONTH_TO_DATE -> resourceProvider.getString(R.string.date_timeframe_month_to_date)
             AnalyticTimePeriod.QUARTER_TO_DATE -> resourceProvider.getString(R.string.date_timeframe_quarter_to_date)
             AnalyticTimePeriod.YEAR_TO_DATE -> resourceProvider.getString(R.string.date_timeframe_year_to_date)
+            AnalyticTimePeriod.CUSTOM -> resourceProvider.getString(R.string.date_timeframe_custom)
         }
 
     private fun formatValue(value: String, currencyCode: String?) = currencyCode

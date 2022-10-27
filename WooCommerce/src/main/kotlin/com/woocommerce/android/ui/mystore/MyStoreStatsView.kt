@@ -121,13 +121,15 @@ class MyStoreStatsView @JvmOverloads constructor(
     private val chartUserInteractions = MutableSharedFlow<Unit>()
     private lateinit var chartUserInteractionsJob: Job
 
+    @Suppress("LongParameterList")
     fun initView(
         period: StatsGranularity = DEFAULT_STATS_GRANULARITY,
         selectedSite: SelectedSite,
         dateUtils: DateUtils,
         currencyFormatter: CurrencyFormatter,
         usageTracksEventEmitter: MyStoreStatsUsageTracksEventEmitter,
-        lifecycleScope: LifecycleCoroutineScope
+        lifecycleScope: LifecycleCoroutineScope,
+        onViewAnalyticsClick: () -> Unit
     ) {
         this.selectedSite = selectedSite
         this.activeGranularity = period
@@ -137,6 +139,10 @@ class MyStoreStatsView @JvmOverloads constructor(
         this.coroutineScope = lifecycleScope
 
         initChart()
+
+        binding.viewAnalyticsButton.setOnClickListener {
+            onViewAnalyticsClick()
+        }
 
         visitorsValue.addTextChangedListener {
             updateConversionRate()

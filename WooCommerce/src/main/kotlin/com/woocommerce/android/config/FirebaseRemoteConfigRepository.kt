@@ -6,6 +6,7 @@ import com.google.firebase.remoteconfig.FirebaseRemoteConfig
 import com.google.firebase.remoteconfig.ktx.remoteConfigSettings
 import com.woocommerce.android.experiment.JetpackTimeoutExperiment.JetpackTimeoutPolicyVariant
 import com.woocommerce.android.experiment.PrologueExperiment.PrologueVariant
+import com.woocommerce.android.experiment.SimplifiedLoginExperiment.LoginVariant
 import com.woocommerce.android.util.PackageUtils
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T
@@ -27,6 +28,7 @@ class FirebaseRemoteConfigRepository @Inject constructor(
         const val PROLOGUE_VARIANT_KEY = "prologue_variant"
         private const val PERFORMANCE_MONITORING_SAMPLE_RATE_KEY = "wc_android_performance_monitoring_sample_rate"
         private const val JETPACK_TIMEOUT_POLICY_VARIANT_KEY = "jetpack_timeout_policy_variant"
+        private const val SIMPLIFIED_LOGIN_VARIANT_KEY = "simplified_login_variant"
         private const val DEBUG_INTERVAL = 10L
         private const val RELEASE_INTERVAL = 31200L
     }
@@ -89,6 +91,9 @@ class FirebaseRemoteConfigRepository @Inject constructor(
                 crashLogging.get().recordException(it)
                 emit(JetpackTimeoutPolicyVariant.valueOf(defaultValues[JETPACK_TIMEOUT_POLICY_VARIANT_KEY]!!))
             }
+
+    override fun getSimplifiedLoginVariant(): LoginVariant =
+        LoginVariant.valueOf(remoteConfig.getString(SIMPLIFIED_LOGIN_VARIANT_KEY).uppercase())
 
     private fun observeStringRemoteValue(key: String) = changesTrigger
         .map { remoteConfig.getString(key) }

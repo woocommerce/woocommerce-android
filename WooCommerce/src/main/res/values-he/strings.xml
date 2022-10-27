@@ -1,11 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2022-10-13 09:54:22+0000
+Translation-Revision-Date: 2022-10-20 14:54:03+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: he_IL
 -->
 <resources>
+    <string name="enable_card_reader">להפעיל את הסימולציה של קורא הכרטיסים</string>
+    <string name="login_account_mismatch_connect_wpcom_dialog_message">כדי להשתמש באפליקציה, יש לפנות לבעלי האתר כדי לקבל הזמנה לאתר זה כמנהל חנות או כמנהל מערכת.</string>
+    <string name="login_account_mismatch_connect_wpcom_dialog_title">מתחבר לאתר ב-WordPress.com</string>
+    <string name="login_account_mismatch_connect_wpcom">להתחבר לאתר</string>
+    <string name="login_account_mismatch_connect_jetpack">לחבר את Jetpack לחשבון שלך</string>
     <string name="qr_code_login_edit_camera_permission">עריכת הרשאות</string>
     <string name="qr_code_login_camera_permission_denied_message">כדי להשתמש באפשרות הזאת, יש לאפשר להרשאות גישה למצלמה שלך.</string>
     <string name="qr_code_login_camera_permission_denied_title">דרושה גישה למצלמה</string>
@@ -26,7 +31,6 @@ Language: he_IL
     <string name="login_jetpack_verify_connection">מאמתים את החיבור של Jetpack…</string>
     <string name="login_jetpack_connection_verification_failed">לא ניתן היה לאמת את החיבור של Jetpack. יש לנסות שוב.</string>
     <string name="login_simple_wpcom_site">האתר ⁦%1$s⁩ רשום כעת לתוכנית של WordPress.com שלא תומכת בהתקנת תוספים. עליך לשדרג את התוכנית שלך כדי להשתמש ב-WooCommerce.</string>
-    <string name="login_connect_jetpack_button">לחבר את Jetpack לחשבון שלך</string>
     <string name="login_jetpack_not_connected">נראה שהחשבון שלך לא מחובר אל ⁦%1$s⁩ של Jetpack</string>
     <string name="card_reader_card_readers_header">קוראי כרטיסים</string>
     <string name="card_reader_payment_options_header">אפשרויות תשלום</string>

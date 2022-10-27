@@ -1,7 +1,7 @@
 package com.woocommerce.android.ui.analytics
 
-import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.R
+import com.woocommerce.android.initSavedStateHandle
 import com.woocommerce.android.model.DeltaPercentage
 import com.woocommerce.android.model.OrdersStat
 import com.woocommerce.android.model.ProductItem
@@ -86,7 +86,7 @@ class AnalyticsViewModelTest : BaseUnitTest() {
     private val selectedSite: SelectedSite = mock {
         on { getIfExists() } doReturn siteModel
     }
-    private val savedState = SavedStateHandle()
+    private val savedState = AnalyticsFragmentArgs(targetGranularity = TODAY).initSavedStateHandle()
 
     private lateinit var sut: AnalyticsViewModel
 
@@ -492,6 +492,14 @@ class AnalyticsViewModelTest : BaseUnitTest() {
         assertThat(sut.event.value).isInstanceOf(AnalyticsViewEvent.OpenUrl::class.java)
     }
 
+    @Test
+    fun `given a view, when custom date range is clicked, then OpenDatePicker event is triggered`() {
+        sut = givenAViewModel()
+        sut.onCustomDateRangeClicked()
+
+        assertThat(sut.event.value).isInstanceOf(AnalyticsViewEvent.OpenDatePicker::class.java)
+    }
+
     private fun givenAResourceProvider(): ResourceProvider = mock {
         on { getString(any()) } doAnswer { invocationOnMock -> invocationOnMock.arguments[0].toString() }
         on { getString(any(), any()) } doAnswer { invMock -> invMock.arguments[0].toString() }
@@ -502,7 +510,7 @@ class AnalyticsViewModelTest : BaseUnitTest() {
         AnalyticsViewModel(
             resourceProvider, dateUtil, calculator,
             currencyFormatter, analyticsRepository,
-            selectedSite, savedState
+            selectedSite, mock(), savedState
         )
 
     private fun getRevenueStats(

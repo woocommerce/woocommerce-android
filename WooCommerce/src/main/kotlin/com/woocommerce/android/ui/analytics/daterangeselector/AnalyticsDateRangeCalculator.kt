@@ -39,6 +39,7 @@ class AnalyticsDateRangeCalculator @Inject constructor(
             AnalyticTimePeriod.MONTH_TO_DATE -> getMonthToDateRange()
             AnalyticTimePeriod.QUARTER_TO_DATE -> getQuarterToRangeDate()
             AnalyticTimePeriod.YEAR_TO_DATE -> getYearToDateRange()
+            AnalyticTimePeriod.CUSTOM -> getYearToDateRange() // unused - here for completion
         }
 
     private fun getYearToDateRange() = MultipleDateRange(
@@ -71,6 +72,10 @@ class AnalyticsDateRangeCalculator @Inject constructor(
         SimpleDateRange(getDateOfFirstDayPreviousQuarter(), getDateOfLastDayPreviousQuarter()),
     )
 
+    fun getAnalyticsDateRangeFromCustom(startDate: Date, endDate: Date) = SimpleDateRange(
+        from = startDate, to = endDate
+    )
+
     private fun getDateOfLastDayPreviousQuarter() = dateUtils.getDateForLastDayOfPreviousQuarter()
 
     private fun getDateOfFirstDayPreviousQuarter() = dateUtils.getDateForFirstDayOfPreviousQuarter()
@@ -79,11 +84,9 @@ class AnalyticsDateRangeCalculator @Inject constructor(
 
     private fun getDateOfLastDayTwoQuartersAgo() = dateUtils.getDateForLastDayOfPreviousQuarter(TWO)
 
-    private fun getYesterdayRange() = SimpleDateRange(getDateForTwoDaysAgo(), getDateForYesterday())
+    private fun getYesterdayRange() = SimpleDateRange(getDateForYesterday(), getDateForYesterday())
 
-    private fun getDateForTwoDaysAgo() = Date(dateUtils.getCurrentDateTimeMinusDays(TWO))
-
-    private fun getTodayRange() = SimpleDateRange(getDateForYesterday(), dateUtils.getCurrentDate())
+    private fun getTodayRange() = SimpleDateRange(dateUtils.getCurrentDate(), dateUtils.getCurrentDate())
 
     private fun getDateForYesterday() = Date(dateUtils.getCurrentDateTimeMinusDays(ONE))
 
@@ -147,7 +150,8 @@ enum class AnalyticTimePeriod(val description: String) {
     WEEK_TO_DATE("Week to Date"),
     MONTH_TO_DATE("Month to Date"),
     QUARTER_TO_DATE("Quarter to Date"),
-    YEAR_TO_DATE("Year to Date");
+    YEAR_TO_DATE("Year to Date"),
+    CUSTOM("Custom");
 
     companion object {
         fun from(datePeriod: String): AnalyticTimePeriod = values()

@@ -1,7 +1,6 @@
 package com.woocommerce.android.ui.login.signup
 
 import android.content.res.Configuration
-import android.widget.Toast
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
@@ -30,7 +29,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -44,6 +42,7 @@ import com.woocommerce.android.ui.compose.component.ProgressDialog
 import com.woocommerce.android.ui.compose.component.WCColoredButton
 import com.woocommerce.android.ui.compose.component.WCOutlinedTextField
 import com.woocommerce.android.ui.compose.component.WCPasswordField
+import com.woocommerce.android.ui.login.signup.SignUpViewModel.ErrorType
 import com.woocommerce.android.ui.login.signup.SignUpViewModel.SignUpState
 
 @Composable
@@ -60,10 +59,10 @@ fun SignUpScreen(viewModel: SignUpViewModel) {
                     title = "",
                     subtitle = stringResource(id = R.string.signup_creating_account_loading_message)
                 )
-            state.isError -> Toast.makeText(LocalContext.current, state.errorMessage, Toast.LENGTH_LONG).show()
             else -> SignUpForm(
                 termsOfServiceClicked = viewModel::onTermsOfServiceClicked,
                 onPrimaryButtonClicked = viewModel::onGetStartedCLicked,
+                signUpState = state
             )
         }
     }
@@ -94,10 +93,11 @@ private fun Toolbar(
 private fun SignUpForm(
     modifier: Modifier = Modifier,
     termsOfServiceClicked: () -> Unit,
-    onPrimaryButtonClicked: (String, String) -> Unit
+    onPrimaryButtonClicked: (String, String) -> Unit,
+    signUpState: SignUpState
 ) {
-    var email by remember { mutableStateOf("") }
-    var password by remember { mutableStateOf("") }
+    var email by remember { mutableStateOf(signUpState.email ?: "") }
+    var password by remember { mutableStateOf(signUpState.password ?: "") }
 
     Column(
         modifier = modifier
@@ -117,15 +117,23 @@ private fun SignUpForm(
             style = MaterialTheme.typography.body1,
         )
         Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.major_100)))
+
+        val isEmailError = signUpState.error?.type == ErrorType.EMAIL
         WCOutlinedTextField(
             value = email,
             onValueChange = { email = it },
             label = stringResource(id = R.string.signup_email_address_hint),
+            isError = isEmailError,
+            helperText = if (isEmailError) signUpState.error?.stringId?.let { stringResource(id = it) } else null
         )
+
+        val isPasswordError = signUpState.error?.type == ErrorType.PASSWORD
         WCPasswordField(
             value = password,
             onValueChange = { password = it },
             label = stringResource(id = R.string.signup_password_hint),
+            isError = isPasswordError,
+            helperText = if (isPasswordError) signUpState.error?.stringId?.let { stringResource(id = it) } else null
         )
         TermsOfServiceText(
             modifier = Modifier.clickable { termsOfServiceClicked() }
@@ -133,7 +141,8 @@ private fun SignUpForm(
         Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.major_100)))
         WCColoredButton(
             modifier = Modifier.fillMaxWidth(),
-            onClick = { onPrimaryButtonClicked(email, password) }
+            onClick = { onPrimaryButtonClicked(email, password) },
+            enabled = email.isNotBlank() && password.isNotBlank()
         ) {
             Text(text = stringResource(id = R.string.signup_get_started_button))
         }
@@ -164,5 +173,6 @@ fun SignUpFormPreview() {
     SignUpForm(
         termsOfServiceClicked = {},
         onPrimaryButtonClicked = { _, _ -> },
+        signUpState = SignUpState()
     )
 }

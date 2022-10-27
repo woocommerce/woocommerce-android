@@ -34,7 +34,6 @@ import org.wordpress.android.fluxc.store.WCStatsStore.StatsGranularity.YEARS
 import org.wordpress.android.fluxc.store.WooCommerceStore
 import org.wordpress.android.fluxc.utils.DateUtils
 import javax.inject.Inject
-import kotlin.math.round
 
 @Suppress("TooManyFunctions")
 class AnalyticsRepository @Inject constructor(
@@ -162,7 +161,7 @@ class AnalyticsRepository @Inject constructor(
         fetchStrategy: FetchStrategy
     ): Result<WCRevenueStatsModel.Total> = coroutineScope {
         val startDate = when (dateRange) {
-            is SimpleDateRange -> dateRange.to.formatToYYYYmmDD()
+            is SimpleDateRange -> dateRange.from.formatToYYYYmmDD()
             is MultipleDateRange -> dateRange.to.from.formatToYYYYmmDD()
         }
         val endDate = when (dateRange) {
@@ -245,12 +244,13 @@ class AnalyticsRepository @Inject constructor(
             AnalyticTimePeriod.LAST_MONTH, AnalyticTimePeriod.MONTH_TO_DATE -> MONTHS
             AnalyticTimePeriod.LAST_QUARTER, AnalyticTimePeriod.QUARTER_TO_DATE -> MONTHS
             AnalyticTimePeriod.LAST_YEAR, AnalyticTimePeriod.YEAR_TO_DATE -> YEARS
+            AnalyticTimePeriod.CUSTOM -> DAYS
         }
 
     private fun calculateDeltaPercentage(previousVal: Double, currentVal: Double): DeltaPercentage = when {
         previousVal <= ZERO_VALUE -> DeltaPercentage.NotExist
         currentVal <= ZERO_VALUE -> DeltaPercentage.Value((MINUS_ONE * ONE_H_PERCENT))
-        else -> DeltaPercentage.Value((round((currentVal - previousVal) / previousVal) * ONE_H_PERCENT).toInt())
+        else -> DeltaPercentage.Value(((currentVal - previousVal) / previousVal * ONE_H_PERCENT).toInt())
     }
 
     private fun shouldUpdatePreviousStats(startDate: String, endDate: String, forceUpdate: Boolean) =
