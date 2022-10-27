@@ -39,6 +39,7 @@ import com.woocommerce.android.cardreader.payments.CardPaymentStatus.WaitingForI
 import com.woocommerce.android.cardreader.payments.PaymentData
 import com.woocommerce.android.cardreader.payments.PaymentInfo
 import com.woocommerce.android.cardreader.payments.RefundParams
+import com.woocommerce.android.cardreader.payments.StatementDescriptor
 import com.woocommerce.android.extensions.exhaustive
 import com.woocommerce.android.extensions.semverCompareTo
 import com.woocommerce.android.model.Order
@@ -245,14 +246,15 @@ class CardReaderPaymentViewModel
         val customerEmail = order.billingAddress.email
         val site = selectedSite.get()
         val countryCode = getStoreCountryCode()
+        val rawStatementDescriptor = appPrefsWrapper.getCardReaderStatementDescriptor(
+            localSiteId = site.id,
+            remoteSiteId = site.siteId,
+            selfHostedSiteId = site.selfHostedSiteId
+        )
         cardReaderManager.collectPayment(
             PaymentInfo(
                 paymentDescription = order.getPaymentDescription(),
-                statementDescriptor = appPrefsWrapper.getCardReaderStatementDescriptor(
-                    localSiteId = site.id,
-                    remoteSiteId = site.siteId,
-                    selfHostedSiteId = site.selfHostedSiteId
-                ),
+                statementDescriptor = StatementDescriptor(rawStatementDescriptor),
                 orderId = order.id,
                 amount = order.total,
                 currency = order.currency,

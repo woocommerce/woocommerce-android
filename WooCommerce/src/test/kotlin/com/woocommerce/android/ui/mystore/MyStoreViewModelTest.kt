@@ -28,7 +28,6 @@ import org.junit.Before
 import org.junit.Test
 import org.mockito.ArgumentMatchers.anyBoolean
 import org.mockito.ArgumentMatchers.anyInt
-import org.mockito.ArgumentMatchers.anyString
 import org.mockito.kotlin.any
 import org.mockito.kotlin.argumentCaptor
 import org.mockito.kotlin.eq
@@ -413,45 +412,12 @@ class MyStoreViewModelTest : BaseUnitTest() {
             )
         }
 
-    // region Just In TimeMessages (JITM)
-    @Test
-    fun `given store setup in US, when viewmodel init, then request for jitm`() {
-        testBlocking {
-            givenNetworkConnectivity(connected = true)
-            whenever(selectedSite.get()).thenReturn(SiteModel())
-            whenever(
-                wooCommerceStore.getStoreCountryCode(any())
-            ).thenReturn("US")
-
-            whenViewModelIsCreated()
-
-            verify(jitmStore).fetchJitmMessage(any(), anyString())
-        }
-    }
-
-    @Test
-    fun `given store not setup in US, when viewmodel init, then do not request for jitm`() {
-        testBlocking {
-            givenNetworkConnectivity(connected = true)
-            whenever(selectedSite.get()).thenReturn(SiteModel())
-            whenever(
-                wooCommerceStore.getStoreCountryCode(any())
-            ).thenReturn("CA")
-
-            whenViewModelIsCreated()
-
-            verify(jitmStore, never()).fetchJitmMessage(any(), anyString())
-        }
-    }
-
+    // region Just In Time Messages (JITM)
     @Test
     fun `given store setup in US, when viewmodel init, then request for jitm with valid message path`() {
         testBlocking {
             givenNetworkConnectivity(connected = true)
             whenever(selectedSite.get()).thenReturn(SiteModel())
-            whenever(
-                wooCommerceStore.getStoreCountryCode(any())
-            ).thenReturn("US")
             val expectedMessagePath = "woomobile:my_store:admin_notices"
             val captor = argumentCaptor<String>()
 
@@ -467,9 +433,6 @@ class MyStoreViewModelTest : BaseUnitTest() {
         testBlocking {
             givenNetworkConnectivity(connected = true)
             whenever(selectedSite.get()).thenReturn(SiteModel())
-            whenever(
-                wooCommerceStore.getStoreCountryCode(any())
-            ).thenReturn("US")
             whenever(
                 jitmStore.fetchJitmMessage(any(), any())
             ).thenReturn(
@@ -490,9 +453,6 @@ class MyStoreViewModelTest : BaseUnitTest() {
             givenNetworkConnectivity(connected = true)
             whenever(selectedSite.get()).thenReturn(SiteModel())
             whenever(
-                wooCommerceStore.getStoreCountryCode(any())
-            ).thenReturn("US")
-            whenever(
                 jitmStore.fetchJitmMessage(any(), any())
             ).thenReturn(
                 WooResult(
@@ -512,9 +472,6 @@ class MyStoreViewModelTest : BaseUnitTest() {
             givenNetworkConnectivity(connected = true)
             whenever(selectedSite.get()).thenReturn(SiteModel())
             whenever(
-                wooCommerceStore.getStoreCountryCode(any())
-            ).thenReturn("US")
-            whenever(
                 jitmStore.fetchJitmMessage(any(), any())
             ).thenReturn(
                 WooResult(
@@ -533,9 +490,6 @@ class MyStoreViewModelTest : BaseUnitTest() {
         testBlocking {
             givenNetworkConnectivity(connected = true)
             whenever(selectedSite.get()).thenReturn(SiteModel())
-            whenever(
-                wooCommerceStore.getStoreCountryCode(any())
-            ).thenReturn("US")
             val testJitmMessage = "Test jitm message"
             whenever(
                 jitmStore.fetchJitmMessage(any(), any())
@@ -564,9 +518,6 @@ class MyStoreViewModelTest : BaseUnitTest() {
         testBlocking {
             givenNetworkConnectivity(connected = true)
             whenever(selectedSite.get()).thenReturn(SiteModel())
-            whenever(
-                wooCommerceStore.getStoreCountryCode(any())
-            ).thenReturn("US")
             val testJitmDescription = "Test jitm description"
             whenever(
                 jitmStore.fetchJitmMessage(any(), any())
@@ -595,9 +546,6 @@ class MyStoreViewModelTest : BaseUnitTest() {
         testBlocking {
             givenNetworkConnectivity(connected = true)
             whenever(selectedSite.get()).thenReturn(SiteModel())
-            whenever(
-                wooCommerceStore.getStoreCountryCode(any())
-            ).thenReturn("US")
             val testJitmCtaLabel = "Test jitm Cta label"
             whenever(
                 jitmStore.fetchJitmMessage(any(), any())
@@ -627,9 +575,6 @@ class MyStoreViewModelTest : BaseUnitTest() {
             givenNetworkConnectivity(connected = true)
             whenever(selectedSite.get()).thenReturn(SiteModel())
             whenever(
-                wooCommerceStore.getStoreCountryCode(any())
-            ).thenReturn("US")
-            whenever(
                 jitmStore.fetchJitmMessage(any(), any())
             ).thenReturn(
                 WooResult(
@@ -654,9 +599,6 @@ class MyStoreViewModelTest : BaseUnitTest() {
         testBlocking {
             givenNetworkConnectivity(connected = true)
             whenever(selectedSite.get()).thenReturn(SiteModel())
-            whenever(
-                wooCommerceStore.getStoreCountryCode(any())
-            ).thenReturn("US")
             whenever(
                 jitmStore.fetchJitmMessage(any(), any())
             ).thenReturn(
@@ -691,9 +633,6 @@ class MyStoreViewModelTest : BaseUnitTest() {
             givenNetworkConnectivity(connected = true)
             whenever(selectedSite.get()).thenReturn(SiteModel())
             whenever(
-                wooCommerceStore.getStoreCountryCode(any())
-            ).thenReturn("US")
-            whenever(
                 jitmStore.fetchJitmMessage(any(), any())
             ).thenReturn(
                 WooResult(
@@ -721,9 +660,6 @@ class MyStoreViewModelTest : BaseUnitTest() {
             givenNetworkConnectivity(connected = true)
             whenever(selectedSite.get()).thenReturn(SiteModel())
             whenever(
-                wooCommerceStore.getStoreCountryCode(any())
-            ).thenReturn("US")
-            whenever(
                 jitmStore.fetchJitmMessage(any(), any())
             ).thenReturn(
                 WooResult(
@@ -746,9 +682,6 @@ class MyStoreViewModelTest : BaseUnitTest() {
             givenNetworkConnectivity(connected = true)
             whenever(selectedSite.get()).thenReturn(SiteModel())
             whenever(
-                wooCommerceStore.getStoreCountryCode(any())
-            ).thenReturn("US")
-            whenever(
                 jitmStore.fetchJitmMessage(any(), any())
             ).thenReturn(
                 WooResult(
@@ -770,9 +703,6 @@ class MyStoreViewModelTest : BaseUnitTest() {
         testBlocking {
             givenNetworkConnectivity(connected = true)
             whenever(selectedSite.get()).thenReturn(SiteModel())
-            whenever(
-                wooCommerceStore.getStoreCountryCode(any())
-            ).thenReturn("US")
             whenever(
                 jitmStore.fetchJitmMessage(any(), any())
             ).thenReturn(
@@ -798,9 +728,6 @@ class MyStoreViewModelTest : BaseUnitTest() {
         testBlocking {
             givenNetworkConnectivity(connected = true)
             whenever(selectedSite.get()).thenReturn(SiteModel())
-            whenever(
-                wooCommerceStore.getStoreCountryCode(any())
-            ).thenReturn("US")
             whenever(
                 jitmStore.fetchJitmMessage(any(), any())
             ).thenReturn(
@@ -831,9 +758,6 @@ class MyStoreViewModelTest : BaseUnitTest() {
             givenNetworkConnectivity(connected = true)
             whenever(selectedSite.get()).thenReturn(SiteModel())
             whenever(
-                wooCommerceStore.getStoreCountryCode(any())
-            ).thenReturn("US")
-            whenever(
                 jitmStore.fetchJitmMessage(any(), any())
             ).thenReturn(
                 WooResult(
@@ -855,9 +779,6 @@ class MyStoreViewModelTest : BaseUnitTest() {
         testBlocking {
             givenNetworkConnectivity(connected = true)
             whenever(selectedSite.get()).thenReturn(SiteModel())
-            whenever(
-                wooCommerceStore.getStoreCountryCode(any())
-            ).thenReturn("US")
             whenever(
                 jitmStore.fetchJitmMessage(any(), any())
             ).thenReturn(
@@ -890,9 +811,6 @@ class MyStoreViewModelTest : BaseUnitTest() {
             givenNetworkConnectivity(connected = true)
             whenever(selectedSite.get()).thenReturn(SiteModel())
             whenever(
-                wooCommerceStore.getStoreCountryCode(any())
-            ).thenReturn("US")
-            whenever(
                 jitmStore.fetchJitmMessage(any(), any())
             ).thenReturn(
                 WooResult(
@@ -914,9 +832,6 @@ class MyStoreViewModelTest : BaseUnitTest() {
         testBlocking {
             givenNetworkConnectivity(connected = true)
             whenever(selectedSite.get()).thenReturn(SiteModel())
-            whenever(
-                wooCommerceStore.getStoreCountryCode(any())
-            ).thenReturn("US")
             whenever(
                 jitmStore.fetchJitmMessage(any(), any())
             ).thenReturn(
@@ -943,9 +858,6 @@ class MyStoreViewModelTest : BaseUnitTest() {
             givenNetworkConnectivity(connected = true)
             whenever(selectedSite.get()).thenReturn(SiteModel())
             whenever(
-                wooCommerceStore.getStoreCountryCode(any())
-            ).thenReturn("US")
-            whenever(
                 jitmStore.fetchJitmMessage(any(), any())
             ).thenReturn(
                 WooResult(
@@ -970,9 +882,6 @@ class MyStoreViewModelTest : BaseUnitTest() {
         testBlocking {
             givenNetworkConnectivity(connected = true)
             whenever(selectedSite.get()).thenReturn(SiteModel())
-            whenever(
-                wooCommerceStore.getStoreCountryCode(any())
-            ).thenReturn("US")
             whenever(
                 jitmStore.fetchJitmMessage(any(), any())
             ).thenReturn(
@@ -1004,9 +913,6 @@ class MyStoreViewModelTest : BaseUnitTest() {
             givenNetworkConnectivity(connected = true)
             whenever(selectedSite.get()).thenReturn(SiteModel())
             whenever(
-                wooCommerceStore.getStoreCountryCode(any())
-            ).thenReturn("US")
-            whenever(
                 jitmStore.fetchJitmMessage(any(), any())
             ).thenReturn(
                 WooResult(
@@ -1030,9 +936,6 @@ class MyStoreViewModelTest : BaseUnitTest() {
         testBlocking {
             givenNetworkConnectivity(connected = true)
             whenever(selectedSite.get()).thenReturn(SiteModel())
-            whenever(
-                wooCommerceStore.getStoreCountryCode(any())
-            ).thenReturn("US")
             whenever(
                 jitmStore.fetchJitmMessage(any(), any())
             ).thenReturn(
@@ -1067,9 +970,6 @@ class MyStoreViewModelTest : BaseUnitTest() {
             givenNetworkConnectivity(connected = true)
             whenever(selectedSite.get()).thenReturn(SiteModel())
             whenever(
-                wooCommerceStore.getStoreCountryCode(any())
-            ).thenReturn("US")
-            whenever(
                 jitmStore.fetchJitmMessage(any(), any())
             ).thenReturn(
                 WooResult(
@@ -1092,9 +992,6 @@ class MyStoreViewModelTest : BaseUnitTest() {
         testBlocking {
             givenNetworkConnectivity(connected = true)
             whenever(selectedSite.get()).thenReturn(SiteModel())
-            whenever(
-                wooCommerceStore.getStoreCountryCode(any())
-            ).thenReturn("US")
             whenever(
                 jitmStore.fetchJitmMessage(any(), any())
             ).thenReturn(
