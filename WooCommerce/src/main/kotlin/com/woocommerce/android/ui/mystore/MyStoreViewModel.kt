@@ -84,7 +84,6 @@ class MyStoreViewModel @Inject constructor(
 ) : ScopedViewModel(savedState) {
     companion object {
         private const val DAYS_TO_REDISPLAY_JP_BENEFITS_BANNER = 5
-        private const val US_COUNTRY_CODE = "US"
         const val JITM_MESSAGE_PATH = "woomobile:my_store:admin_notices"
         const val UTM_CAMPAIGN = "jitm_group_woomobile_ipp"
         const val UTM_SOURCE = "my_store"
@@ -124,10 +123,8 @@ class MyStoreViewModel @Inject constructor(
         _topPerformersState.value = TopPerformersState(isLoading = true)
 
         viewModelScope.launch {
-            if (isCountryUSA()) {
-                val response = jitmStore.fetchJitmMessage(selectedSite.get(), JITM_MESSAGE_PATH)
-                populateResultToUI(response)
-            }
+            val response = jitmStore.fetchJitmMessage(selectedSite.get(), JITM_MESSAGE_PATH)
+            populateResultToUI(response)
         }
         viewModelScope.launch {
             combine(
@@ -143,16 +140,6 @@ class MyStoreViewModel @Inject constructor(
             }
         }
         observeTopPerformerUpdates()
-    }
-
-    private fun isCountryUSA(): Boolean {
-        return getStoreCountryCode().equals(US_COUNTRY_CODE, ignoreCase = true)
-    }
-
-    private fun getStoreCountryCode(): String? {
-        return wooCommerceStore.getStoreCountryCode(selectedSite.get()) ?: null.also {
-            WooLog.e(WooLog.T.CARD_READER, "Store's country code not found.")
-        }
     }
 
     private fun populateResultToUI(response: WooResult<Array<JITMApiResponse>>) {
@@ -439,6 +426,7 @@ class MyStoreViewModel @Inject constructor(
         data class OpenTopPerformer(
             val productId: Long
         ) : MyStoreEvent()
+
         data class OnJitmCtaClicked(
             val url: String,
             @StringRes val titleRes: Int = R.string.card_reader_purchase_card_reader
