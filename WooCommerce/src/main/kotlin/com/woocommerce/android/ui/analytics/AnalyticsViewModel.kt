@@ -4,6 +4,8 @@ import androidx.lifecycle.LifecycleObserver
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.R
+import com.woocommerce.android.analytics.AnalyticsEvent
+import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.model.DeltaPercentage
 import com.woocommerce.android.model.ProductItem
 import com.woocommerce.android.tools.SelectedSite
@@ -117,6 +119,7 @@ class AnalyticsViewModel @Inject constructor(
         val dateRange = analyticsDateRange.getAnalyticsDateRangeFromCustom(fromDateUtc, toDateUtc)
         saveSelectedDateRange(dateRange)
         saveSelectedTimePeriod(AnalyticTimePeriod.CUSTOM)
+        trackSelectedDateRange(AnalyticTimePeriod.CUSTOM)
 
         viewModelScope.launch {
             updateRevenue(isRefreshing = false, showSkeleton = true)
@@ -124,6 +127,7 @@ class AnalyticsViewModel @Inject constructor(
             updateProducts(isRefreshing = false, showSkeleton = true)
         }
     }
+
     init {
         viewModelScope.launch {
             updateRevenue(isRefreshing = false, showSkeleton = true)
@@ -146,6 +150,7 @@ class AnalyticsViewModel @Inject constructor(
         saveSelectedTimePeriod(selectedTimePeriod)
         saveSelectedDateRange(dateRange)
         updateDateSelector()
+        trackSelectedDateRange(selectedTimePeriod)
         viewModelScope.launch {
             updateRevenue(isRefreshing = false, showSkeleton = true)
             updateOrders(isRefreshing = false, showSkeleton = true)
@@ -153,7 +158,13 @@ class AnalyticsViewModel @Inject constructor(
         }
     }
 
+    fun onDateRangeSelectorClick() {
+        AnalyticsTracker.track(AnalyticsEvent.ANALYTICS_HUB_DATE_RANGE_BUTTON_TAPPED)
+        triggerEvent(AnalyticsViewEvent.OpenDateRangeSelector)
+    }
+
     fun onRevenueSeeReportClick() {
+        trackSeeReportClicked(AnalyticsTracker.VALUE_REVENUE_CARD_SELECTED)
         if (selectedSite.getIfExists()?.isWPCom == true || selectedSite.getIfExists()?.isWPComAtomic == true) {
             triggerEvent(OpenWPComWebView(analyticsRepository.getRevenueAdminPanelUrl()))
         } else {
@@ -162,6 +173,7 @@ class AnalyticsViewModel @Inject constructor(
     }
 
     fun onOrdersSeeReportClick() {
+        trackSeeReportClicked(AnalyticsTracker.VALUE_ORDERS_CARD_SELECTED)
         if (selectedSite.getIfExists()?.isWPCom == true || selectedSite.getIfExists()?.isWPComAtomic == true) {
             triggerEvent(OpenWPComWebView(analyticsRepository.getOrdersAdminPanelUrl()))
         } else {
@@ -170,6 +182,7 @@ class AnalyticsViewModel @Inject constructor(
     }
 
     fun onProductsSeeReportClick() {
+        trackSeeReportClicked(AnalyticsTracker.VALUE_PRODUCTS_CARD_SELECTED)
         if (selectedSite.getIfExists()?.isWPCom == true || selectedSite.getIfExists()?.isWPComAtomic == true) {
             triggerEvent(OpenWPComWebView(analyticsRepository.getProductsAdminPanelUrl()))
         } else {
@@ -442,6 +455,24 @@ class AnalyticsViewModel @Inject constructor(
     private fun getSavedDateRange(): AnalyticsDateRange = savedState[DATE_RANGE_SELECTED_KEY] ?: getDefaultDateRange()
     private fun getSavedTimePeriod(): AnalyticTimePeriod = savedState[TIME_PERIOD_SELECTED_KEY]
         ?: getDefaultTimePeriod()
+
+    private fun trackSeeReportClicked(selectedCardType: String) {
+        AnalyticsTracker.track(
+            AnalyticsEvent.ANALYTICS_HUB_SEE_REPORT_TAPPED,
+            mapOf(
+                AnalyticsTracker.KEY_CARD to selectedCardType
+            )
+        )
+    }
+
+    private fun trackSelectedDateRange(selectedTimePeriod: AnalyticTimePeriod) {
+        AnalyticsTracker.track(
+            AnalyticsEvent.ANALYTICS_HUB_DATE_RANGE_SELECTED,
+            mapOf(
+                AnalyticsTracker.KEY_OPTION to selectedTimePeriod.description
+            )
+        )
+    }
 
     companion object {
         const val TIME_PERIOD_SELECTED_KEY = "time_period_selected_key"

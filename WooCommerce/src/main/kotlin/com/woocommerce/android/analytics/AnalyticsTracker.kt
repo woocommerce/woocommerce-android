@@ -237,6 +237,11 @@ class AnalyticsTracker private constructor(private val context: Context) {
         const val KEY_HAS_MULTIPLE_SHIPPING_LINES = "has_multiple_shipping_lines"
         const val KEY_HAS_MULTIPLE_FEE_LINES = "has_multiple_fee_lines"
 
+        const val KEY_CARD = "card"
+        const val VALUE_REVENUE_CARD_SELECTED = "revenue"
+        const val VALUE_ORDERS_CARD_SELECTED = "orders"
+        const val VALUE_PRODUCTS_CARD_SELECTED = "products"
+
         enum class OrderNoteType(val value: String) {
             CUSTOMER("customer"),
             PRIVATE("private"),
