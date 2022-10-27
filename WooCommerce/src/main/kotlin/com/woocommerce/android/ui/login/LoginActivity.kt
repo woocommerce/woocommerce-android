@@ -967,7 +967,6 @@ class LoginActivity :
                     ?: StoreCreationFragment()
             changeFragment(storeCreationFragment, shouldAddToBackStack = true, tag = StoreCreationFragment.TAG)
         }
-
     }
 
     override fun onLoginClicked() {
