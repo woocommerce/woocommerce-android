@@ -425,6 +425,9 @@
         <action
             android:id="@+id/action_sitePickerFragment_to_webViewStoreCreationFragment"
             app:destination="@id/webViewStoreCreationFragment" />
+        <action
+            android:id="@+id/action_sitePickerFragment_to_addStoreBottomSheetFragment"
+            app:destination="@id/addStoreBottomSheetFragment" />
     </fragment>
     <fragment
         android:id="@+id/simpleTextEditorFragment"
@@ -479,4 +482,12 @@
         android:id="@+id/webViewStoreCreationFragment"
         android:name="com.woocommerce.android.ui.login.storecreation.webview.WebViewStoreCreationFragment"
         android:label="WebViewStoreCreationFragment" />
+    <dialog
+        android:id="@+id/addStoreBottomSheetFragment"
+        android:name="com.woocommerce.android.ui.sitepicker.AddStoreBottomSheetFragment"
+        android:label="AddSiteBottomSheetFragment" >
+        <action
+            android:id="@+id/action_addSiteBottomSheetFragment_to_sitePickerSiteDiscoveryFragment"
+            app:destination="@id/sitePickerSiteDiscoveryFragment" />
+    </dialog>
 </navigation>

@@ -19,11 +19,11 @@ import com.woocommerce.android.ui.login.UnifiedLoginTracker
 import com.woocommerce.android.ui.login.accountmismatch.AccountMismatchErrorViewModel.AccountMismatchPrimaryButton.CONNECT_JETPACK
 import com.woocommerce.android.ui.sitepicker.SitePickerViewModel.SitePickerEvent
 import com.woocommerce.android.ui.sitepicker.SitePickerViewModel.SitePickerEvent.NavigateToAccountMismatchScreen
+import com.woocommerce.android.ui.sitepicker.SitePickerViewModel.SitePickerEvent.NavigateToAddStoreEvent
 import com.woocommerce.android.ui.sitepicker.SitePickerViewModel.SitePickerEvent.NavigateToEmailHelpDialogEvent
 import com.woocommerce.android.ui.sitepicker.SitePickerViewModel.SitePickerEvent.NavigateToHelpFragmentEvent
 import com.woocommerce.android.ui.sitepicker.SitePickerViewModel.SitePickerEvent.NavigateToMainActivityEvent
 import com.woocommerce.android.ui.sitepicker.SitePickerViewModel.SitePickerEvent.NavigateToNewToWooEvent
-import com.woocommerce.android.ui.sitepicker.SitePickerViewModel.SitePickerEvent.NavigateToSiteAddressEvent
 import com.woocommerce.android.ui.sitepicker.SitePickerViewModel.SitePickerEvent.ShowWooUpgradeDialogEvent
 import com.woocommerce.android.ui.sitepicker.SitePickerViewModel.SitePickerState.NoStoreState
 import com.woocommerce.android.ui.sitepicker.SitePickerViewModel.SitePickerState.StoreListState
@@ -514,17 +514,17 @@ class SitePickerViewModelTest : BaseUnitTest() {
             givenTheScreenIsFromLogin(true)
             whenViewModelIsCreated()
 
-            var view: NavigateToSiteAddressEvent? = null
+            var view: NavigateToAddStoreEvent? = null
             viewModel.event.observeForever {
-                if (it is NavigateToSiteAddressEvent) view = it
+                if (it is NavigateToAddStoreEvent) view = it
             }
 
-            viewModel.onEnterSiteAddressClick()
+            viewModel.onAddStoreClick()
 
             verify(analyticsTrackerWrapper, times(1)).track(
                 AnalyticsEvent.SITE_PICKER_ENTER_SITE_ADDRESS_TAPPED
             )
-            assertThat(view).isEqualTo(NavigateToSiteAddressEvent)
+            assertThat(view).isEqualTo(NavigateToAddStoreEvent)
         }
 
     @Test

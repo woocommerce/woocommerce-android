@@ -418,9 +418,9 @@ class SitePickerViewModel @Inject constructor(
         triggerEvent(SitePickerEvent.NavigateToNewToWooEvent)
     }
 
-    fun onEnterSiteAddressClick() {
+    fun onAddStoreClick() {
         analyticsTrackerWrapper.track(AnalyticsEvent.SITE_PICKER_ENTER_SITE_ADDRESS_TAPPED)
-        triggerEvent(SitePickerEvent.NavigateToSiteAddressEvent)
+        triggerEvent(SitePickerEvent.NavigateToAddStoreEvent)
     }
 
     fun onCreateSiteButtonClick() {
@@ -685,7 +685,7 @@ class SitePickerViewModel @Inject constructor(
         object NavigateToMainActivityEvent : SitePickerEvent()
         object NavigateToEmailHelpDialogEvent : SitePickerEvent()
         object NavigateToNewToWooEvent : SitePickerEvent()
-        object NavigateToSiteAddressEvent : SitePickerEvent()
+        object NavigateToAddStoreEvent : SitePickerEvent()
         object NavigateToStoreCreationEvent : SitePickerEvent()
         data class NavigateToHelpFragmentEvent(val origin: HelpActivity.Origin) : SitePickerEvent()
         data class NavigateToWPComWebView(
