@@ -1,8 +1,11 @@
 package com.woocommerce.android.widgets
 
 import android.os.Bundle
+import android.view.LayoutInflater
 import android.view.View
+import android.view.ViewGroup
 import androidx.annotation.CallSuper
+import androidx.annotation.LayoutRes
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.woocommerce.android.R
@@ -14,7 +17,23 @@ import org.wordpress.android.util.DisplayUtils
  * more items. This simple BottomSheetDialogFragment wrapper resolves this by showing the entire
  * sheet on large landscape tablets.
  */
-open class WCBottomSheetDialogFragment : BottomSheetDialogFragment() {
+open class WCBottomSheetDialogFragment : BottomSheetDialogFragment {
+    private val contentLayoutId: Int?
+
+    constructor() : super() {
+        contentLayoutId = null
+    }
+
+    constructor(@LayoutRes contentLayoutId: Int) : super() {
+        this.contentLayoutId = contentLayoutId
+    }
+
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+        return if (contentLayoutId != null) {
+            inflater.inflate(contentLayoutId, container, false)
+        } else null
+    }
+
     @CallSuper
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         if (DisplayUtils.isXLargeTablet(requireContext()) && DisplayUtils.isLandscape(requireContext())) {
