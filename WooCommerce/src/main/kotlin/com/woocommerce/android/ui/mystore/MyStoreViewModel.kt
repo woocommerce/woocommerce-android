@@ -15,6 +15,8 @@ import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_ERROR_DESC
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_ERROR_TYPE
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_SOURCE
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_JITM
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_JITM_COUNT
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.model.UiString
 import com.woocommerce.android.network.ConnectionChangeReceiver
@@ -149,11 +151,7 @@ class MyStoreViewModel @Inject constructor(
         when {
             !response.model.isNullOrEmpty() -> {
                 val model = response.model!!
-                trackJitmFetchSuccessEvent(
-                    response.model!!.map {
-                        it.id
-                    }
-                )
+                trackJitmFetchSuccessEvent(model[0].id, model.size)
                 _bannerState.value = BannerState(
                     shouldDisplayBanner = true,
                     onPrimaryActionClicked = { onJitmCtaClicked(model[0].cta.link) },
@@ -171,7 +169,7 @@ class MyStoreViewModel @Inject constructor(
             }
             !response.isError && response.model.isNullOrEmpty() -> {
                 // JITM fetch api succeeded but there aren't any JITMs to display at the moment
-                trackJitmFetchSuccessEvent(emptyList())
+                trackJitmFetchSuccessEvent()
             }
             else -> {
                 trackJitmFetchFailureEvent(response.error.type, response.error.message)
@@ -190,12 +188,13 @@ class MyStoreViewModel @Inject constructor(
         )
     }
 
-    private fun trackJitmFetchSuccessEvent(jitmIdList: List<String>) {
+    private fun trackJitmFetchSuccessEvent(jitmId: String? = null, jitmCount: Int? = null) {
         analyticsTrackerWrapper.track(
             AnalyticsEvent.JITM_FETCH_SUCCESS,
             mapOf(
                 KEY_SOURCE to UTM_SOURCE,
-                "jitms" to jitmIdList
+                KEY_JITM to jitmId,
+                KEY_JITM_COUNT to jitmCount
             )
         )
     }
