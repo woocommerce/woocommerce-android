@@ -84,7 +84,6 @@ class MyStoreViewModel @Inject constructor(
 ) : ScopedViewModel(savedState) {
     companion object {
         private const val DAYS_TO_REDISPLAY_JP_BENEFITS_BANNER = 5
-        private const val US_COUNTRY_CODE = "US"
         const val JITM_MESSAGE_PATH = "woomobile:my_store:admin_notices"
         const val UTM_CAMPAIGN = "jitm_group_woomobile_ipp"
         const val UTM_SOURCE = "my_store"
@@ -113,10 +112,8 @@ class MyStoreViewModel @Inject constructor(
     private val _activeStatsGranularity = savedState.getStateFlow(viewModelScope, getSelectedStatsGranularityIfAny())
     val activeStatsGranularity = _activeStatsGranularity.asLiveData()
 
-    @VisibleForTesting
-    val refreshStoreStats = BooleanArray(StatsGranularity.values().size) { true }
-    @VisibleForTesting
-    val refreshTopPerformerStats = BooleanArray(StatsGranularity.values().size) { true }
+    @VisibleForTesting val refreshStoreStats = BooleanArray(StatsGranularity.values().size) { true }
+    @VisibleForTesting val refreshTopPerformerStats = BooleanArray(StatsGranularity.values().size) { true }
 
     private var jetpackMonitoringJob: Job? = null
 
@@ -126,10 +123,8 @@ class MyStoreViewModel @Inject constructor(
         _topPerformersState.value = TopPerformersState(isLoading = true)
 
         viewModelScope.launch {
-            if (isCountryUSA()) {
-                val response = jitmStore.fetchJitmMessage(selectedSite.get(), JITM_MESSAGE_PATH)
-                populateResultToUI(response)
-            }
+            val response = jitmStore.fetchJitmMessage(selectedSite.get(), JITM_MESSAGE_PATH)
+            populateResultToUI(response)
         }
         viewModelScope.launch {
             combine(
@@ -147,34 +142,25 @@ class MyStoreViewModel @Inject constructor(
         observeTopPerformerUpdates()
     }
 
-    private fun isCountryUSA(): Boolean {
-        return getStoreCountryCode().equals(US_COUNTRY_CODE, ignoreCase = true)
-    }
-
-    private fun getStoreCountryCode(): String? {
-        return wooCommerceStore.getStoreCountryCode(selectedSite.get()) ?: null.also {
-            WooLog.e(WooLog.T.CARD_READER, "Store's country code not found.")
-        }
-    }
-
     private fun populateResultToUI(response: WooResult<Array<JITMApiResponse>>) {
         when {
             response.isError -> {
                 WooLog.e(WooLog.T.JITM, "Failed to fetch JITM for the message path $JITM_MESSAGE_PATH")
             }
             !response.model.isNullOrEmpty() -> {
+                val model = response.model!!
                 _bannerState.value = BannerState(
                     shouldDisplayBanner = true,
-                    onPrimaryActionClicked = { onJitmCtaClicked(response.model!![0].cta.link) },
+                    onPrimaryActionClicked = { onJitmCtaClicked(model[0].cta.link) },
                     onDismissClicked = {
                         onJitmDismissClicked(
-                            response.model!![0].id,
-                            response.model!![0].featureClass
+                            model[0].id,
+                            model[0].featureClass
                         )
                     },
-                    title = UiString.UiStringText(response.model!![0].content.message),
-                    description = UiString.UiStringText(response.model!![0].content.description),
-                    primaryActionLabel = UiString.UiStringText(response.model!![0].cta.message),
+                    title = UiString.UiStringText(model[0].content.message),
+                    description = UiString.UiStringText(model[0].content.description),
+                    primaryActionLabel = UiString.UiStringText(model[0].cta.message),
                     chipLabel = UiString.UiStringRes(R.string.card_reader_upsell_card_reader_banner_new)
                 )
             }
