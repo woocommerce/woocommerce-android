@@ -276,6 +276,9 @@ class AnalyticsTracker private constructor(private val context: Context) {
 
         const val VALUE_ORDER_PAYMENTS_FLOW = "order_payment"
 
+        const val KEY_JITM = "jitm"
+        const val KEY_JITM_COUNT = "count"
+
         // -- Downloadable Files
         const val KEY_DOWNLOADABLE_FILE_ACTION = "action"
 
