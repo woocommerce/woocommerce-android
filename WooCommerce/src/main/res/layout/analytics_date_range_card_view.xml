@@ -35,12 +35,11 @@
             app:layout_constraintTop_toBottomOf="@+id/tv_toDate"
             tools:text="vs Previous Period (10 Sept 2021)" />
 
-        <ImageButton
+        <ImageView
             android:id="@+id/btn_dateRangeSelector"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:padding="@dimen/major_100"
-            android:background="?selectableItemBackgroundBorderless"
             android:contentDescription="@string/analytics_date_range_selector_description"
             app:layout_constraintBottom_toBottomOf="@+id/tv_fromDate"
             app:layout_constraintEnd_toEndOf="parent"
