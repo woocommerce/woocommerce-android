@@ -15,7 +15,7 @@ class AnalyticsDateRangeCardView @JvmOverloads constructor(
     val binding = AnalyticsDateRangeCardViewBinding.inflate(LayoutInflater.from(ctx), this)
 
     fun setCalendarClickListener(onClickListener: ((view: View) -> Unit)) {
-        binding.btnDateRangeSelector.setOnClickListener(onClickListener)
+        binding.root.setOnClickListener(onClickListener)
     }
 
     fun updateFromText(fromDatePeriod: String) {
