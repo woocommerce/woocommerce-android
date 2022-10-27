@@ -80,6 +80,7 @@ fun WCWebView(
                         }
                     }
                     this.settings.javaScriptEnabled = true
+                    this.settings.domStorageEnabled = true
                     this.settings.userAgentString = userAgent.userAgent
                 }.also { webView = it }
             }
