@@ -148,13 +148,14 @@ class MyStoreViewModel @Inject constructor(
                 WooLog.e(WooLog.T.JITM, "Failed to fetch JITM for the message path $JITM_MESSAGE_PATH")
             }
             !response.model.isNullOrEmpty() -> {
+                val model = response.model!!
                 _bannerState.value = BannerState(
                     shouldDisplayBanner = true,
-                    onPrimaryActionClicked = { (::onJitmCtaClicked)(response.model!![0].cta.link) },
+                    onPrimaryActionClicked = { (::onJitmCtaClicked)(model[0].cta.link) },
                     { },
-                    title = UiString.UiStringText(response.model!![0].content.message),
-                    description = UiString.UiStringText(response.model!![0].content.description),
-                    primaryActionLabel = UiString.UiStringText(response.model!![0].cta.message),
+                    title = UiString.UiStringText(model[0].content.message),
+                    description = UiString.UiStringText(model[0].content.description),
+                    primaryActionLabel = UiString.UiStringText(model[0].cta.message),
                     chipLabel = UiString.UiStringRes(R.string.card_reader_upsell_card_reader_banner_new)
                 )
             }
