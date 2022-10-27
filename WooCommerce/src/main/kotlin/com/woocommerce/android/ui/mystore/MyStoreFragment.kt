@@ -30,6 +30,7 @@ import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.ExperimentTracker
 import com.woocommerce.android.databinding.FragmentMyStoreBinding
+import com.woocommerce.android.extensions.hide
 import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.extensions.scrollStartEvents
 import com.woocommerce.android.extensions.setClickableText
@@ -44,7 +45,6 @@ import com.woocommerce.android.ui.main.AppBarStatus
 import com.woocommerce.android.ui.main.MainActivity
 import com.woocommerce.android.ui.main.MainNavigationRouter
 import com.woocommerce.android.ui.mystore.MyStoreViewModel.MyStoreEvent.OnJitmCtaClicked
-import com.woocommerce.android.ui.mystore.MyStoreViewModel.MyStoreEvent.OnJitmDismissed
 import com.woocommerce.android.ui.mystore.MyStoreViewModel.MyStoreEvent.OpenTopPerformer
 import com.woocommerce.android.ui.mystore.MyStoreViewModel.OrderState
 import com.woocommerce.android.ui.mystore.MyStoreViewModel.RevenueStatsViewState
@@ -186,14 +186,18 @@ class MyStoreFragment : TopLevelFragment(R.layout.fragment_my_store), MenuProvid
     }
 
     private fun applyBannerComposeUI(state: BannerState) {
-        binding.jitmView.apply {
-            // Dispose of the Composition when the view's LifecycleOwner is destroyed
-            setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
-            setContent {
-                WooThemeWithBackground {
-                    Banner(bannerState = state)
+        if (state.shouldDisplayBanner) {
+            binding.jitmView.apply {
+                // Dispose of the Composition when the view's LifecycleOwner is destroyed
+                setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
+                setContent {
+                    WooThemeWithBackground {
+                        Banner(bannerState = state)
+                    }
                 }
             }
+        } else {
+            binding.jitmView.hide()
         }
     }
 
@@ -257,9 +261,6 @@ class MyStoreFragment : TopLevelFragment(R.layout.fragment_my_store), MenuProvid
                             title = resources.getString(event.titleRes)
                         )
                     )
-                }
-                OnJitmDismissed -> {
-                    binding.jitmView.visibility = View.GONE
                 }
                 else -> event.isHandled = false
             }

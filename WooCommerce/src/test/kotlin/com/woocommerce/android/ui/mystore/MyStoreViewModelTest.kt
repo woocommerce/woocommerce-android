@@ -713,6 +713,31 @@ class MyStoreViewModelTest : BaseUnitTest() {
             )
         }
     }
+
+    @Test
+    fun `given jitm displayed, when jitm dismiss tapped, then banner state is updated to not display`() {
+        testBlocking {
+            givenNetworkConnectivity(connected = true)
+            whenever(selectedSite.get()).thenReturn(SiteModel())
+            whenever(
+                wooCommerceStore.getStoreCountryCode(any())
+            ).thenReturn("US")
+            whenever(
+                jitmStore.fetchJitmMessage(any(), any())
+            ).thenReturn(
+                WooResult(
+                    model = arrayOf(provideJitmApiResponse())
+                )
+            )
+
+            whenViewModelIsCreated()
+            (sut.bannerState.value as BannerState).onDismissClicked.invoke()
+
+            assertThat(
+                (sut.bannerState.value as BannerState).shouldDisplayBanner
+            ).isEqualTo(false)
+        }
+    }
     //endregion
 
     private suspend fun givenStatsLoadingResult(result: GetStats.LoadStatsResult) {

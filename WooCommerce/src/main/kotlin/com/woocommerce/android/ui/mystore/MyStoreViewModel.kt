@@ -190,10 +190,10 @@ class MyStoreViewModel @Inject constructor(
     }
 
     private fun onJitmDismissClicked(jitmId: String, featureClass: String) {
+        _bannerState.value = _bannerState.value?.copy(shouldDisplayBanner = false)
         viewModelScope.launch {
             jitmStore.dismissJitmMessage(selectedSite.get(), jitmId, featureClass)
         }
-        triggerEvent(MyStoreEvent.OnJitmDismissed)
     }
 
     override fun onCleared() {
@@ -458,7 +458,5 @@ class MyStoreViewModel @Inject constructor(
             val url: String,
             @StringRes val titleRes: Int = R.string.card_reader_purchase_card_reader
         ) : MyStoreEvent()
-
-        object OnJitmDismissed : MyStoreEvent()
     }
 }
