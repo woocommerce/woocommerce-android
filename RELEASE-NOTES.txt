@@ -3,6 +3,7 @@
 -----
 - [*] Fixed a bug caused by statement descriptor value too long or containing illegal chars [https://github.com/woocommerce/woocommerce-android/pull/7595]
 - [*] [Internal] Simplified login: update email screen layout [https://github.com/woocommerce/woocommerce-android/pull/7619]
+- [*] [Internal] Simplified login: update prologue screen layout [https://github.com/woocommerce/woocommerce-android/pull/7634]
 
 10.9
 -----
