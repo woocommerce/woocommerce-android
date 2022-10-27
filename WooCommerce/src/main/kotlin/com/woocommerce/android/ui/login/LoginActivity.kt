@@ -27,10 +27,10 @@ import com.woocommerce.android.barcode.QrCodeScanningFragment
 import com.woocommerce.android.databinding.ActivityLoginBinding
 import com.woocommerce.android.experiment.PrologueExperiment
 import com.woocommerce.android.extensions.parcelable
-import com.woocommerce.android.support.HelpActivity
-import com.woocommerce.android.support.HelpActivity.Origin
 import com.woocommerce.android.support.ZendeskExtraTags
 import com.woocommerce.android.support.ZendeskHelper
+import com.woocommerce.android.support.help.HelpActivity
+import com.woocommerce.android.support.help.HelpActivity.Origin
 import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.login.LoginPrologueCarouselFragment.PrologueCarouselListener
 import com.woocommerce.android.ui.login.LoginPrologueFragment.PrologueFinishedListener
