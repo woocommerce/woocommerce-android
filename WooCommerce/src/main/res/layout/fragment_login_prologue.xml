@@ -59,13 +59,32 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/imageView"
-        tools:layout_width="200dp" />
+        tools:layout_width="200dp"
+        android:visibility="gone"/>
+
+    <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/prologueSimplifiedLoginTitle"
+        style="@style/Woo.TextView.Subtitle1"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="@dimen/major_300"
+        android:gravity="center"
+        android:text="@string/simplified_login_prologue_title"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toTopOf="@id/newToWooButton"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/imageView"
+        android:visibility="visible"
+        app:layout_constraintWidth_percent="0.65" />
 
     <com.google.android.material.button.MaterialButton
         android:id="@+id/newToWooButton"
         style="@style/Woo.Button.TextButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/major_300"
         android:layout_marginBottom="@dimen/major_150"
         android:text="@string/login_prologue_new_to_woo"
         android:textAllCaps="false"

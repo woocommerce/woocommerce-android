@@ -14,6 +14,7 @@ import com.woocommerce.android.databinding.FragmentLoginPrologueBinding
 import com.woocommerce.android.experiment.SimplifiedLoginExperiment
 import com.woocommerce.android.experiment.SimplifiedLoginExperiment.LoginVariant.SIMPLIFIED
 import com.woocommerce.android.extensions.hide
+import com.woocommerce.android.extensions.show
 import com.woocommerce.android.ui.login.UnifiedLoginTracker.Flow
 import com.woocommerce.android.ui.login.UnifiedLoginTracker.Step
 import com.woocommerce.android.util.FeatureFlag
@@ -75,6 +76,9 @@ open class LoginPrologueFragment(@LayoutRes layout: Int) : Fragment(layout) {
             binding.buttonGetStarted.hide()
 
             binding.buttonCreateStore.isVisible = FeatureFlag.STORE_CREATION_WEBVIEW_FLOW.isEnabled()
+
+            binding.prologueTitle.hide()
+            binding.prologueSimplifiedLoginTitle.show()
         }
     }
 
