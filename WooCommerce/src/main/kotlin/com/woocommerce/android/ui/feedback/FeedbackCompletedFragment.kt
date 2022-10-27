@@ -15,7 +15,7 @@ import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_FEEDBA
 import com.woocommerce.android.databinding.FragmentFeedbackCompletedBinding
 import com.woocommerce.android.extensions.setClickableText
 import com.woocommerce.android.extensions.startHelpActivity
-import com.woocommerce.android.support.HelpActivity.Origin.FEEDBACK_SURVEY
+import com.woocommerce.android.support.help.HelpActivity.Origin.FEEDBACK_SURVEY
 import com.woocommerce.android.ui.feedback.SurveyType.MAIN
 import com.woocommerce.android.widgets.WooClickableSpan
 
