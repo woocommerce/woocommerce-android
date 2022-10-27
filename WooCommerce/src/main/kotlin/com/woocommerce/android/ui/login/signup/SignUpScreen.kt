@@ -30,6 +30,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -170,7 +171,7 @@ private fun LoginToExistingAccountText(onLoginClicked: () -> Unit) {
     val text = annotatedStringRes(stringResId = R.string.signup_already_registered)
     ClickableText(
         text = text,
-        style = MaterialTheme.typography.body1,
+        style = MaterialTheme.typography.body1.copy(color = colorResource(id = R.color.color_on_surface_medium)),
     ) {
         text.getStringAnnotations(tag = URL_ANNOTATION_TAG, start = it, end = it)
             .firstOrNull()
