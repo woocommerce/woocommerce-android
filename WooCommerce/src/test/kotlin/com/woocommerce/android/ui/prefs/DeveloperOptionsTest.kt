@@ -10,22 +10,22 @@ import org.junit.Before
 import org.junit.Test
 import org.mockito.kotlin.mock
 import org.assertj.core.api.Assertions.assertThat
+import org.mockito.kotlin.whenever
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class DeveloperOptionsTest: BaseUnitTest() {
     private lateinit var viewModel: DeveloperOptionsViewModel
 
     private val savedStateHandle: SavedStateHandle = SavedStateHandle()
-    private val appPrefsWrapper: AppPrefsWrapper = mock()
     private val developerOptionsRepository: DeveloperOptionsRepository = mock()
 
     @Before
     fun setup() {
-        viewModel = DeveloperOptionsViewModel(savedStateHandle,developerOptionsRepository)
+        initViewModel()
     }
 
     @Test
-    fun `when dev options screen accessed, then enable simulate reader row is displayed`() {
+    fun `when dev options screen accessed, then enable simulated reader row is displayed`() {
 
         val simulatedReaderRow = viewModel.viewStateData.value?.rows?.find {
             it.label == UiString.UiStringRes(R.string.enable_card_reader)
@@ -34,5 +34,44 @@ class DeveloperOptionsTest: BaseUnitTest() {
         assertThat(simulatedReaderRow).isNotNull
     }
 
+    @Test
+    fun `when simulated card reader btn toggled, then simulated reader state is enabled`() {
+        testBlocking {
+            whenever(developerOptionsRepository.isSimulatedCardReaderEnabled()).thenReturn(true)
 
+            initViewModel()
+
+            assertThat(
+                (
+                    viewModel.viewStateData.value?.rows?.find {
+                it.label == UiString.UiStringRes(R.string.enable_card_reader)
+            } as DeveloperOptionsViewModel.DeveloperOptionsViewState.ListItem.ToggleableListItem
+                    ).isChecked
+            ).isTrue()
+        }
+    }
+
+    @Test
+    fun `when simulated card reader btn untoggled, then simulated reader state is disabled`() {
+        testBlocking {
+            whenever(developerOptionsRepository.isSimulatedCardReaderEnabled()).thenReturn(false)
+
+            initViewModel()
+
+            assertThat(
+                (
+                    viewModel.viewStateData.value?.rows?.find {
+                        it.label == UiString.UiStringRes(R.string.enable_card_reader)
+                    } as DeveloperOptionsViewModel.DeveloperOptionsViewState.ListItem.ToggleableListItem
+                    ).isChecked
+            ).isFalse()
+        }
+    }
+
+    private fun initViewModel() {
+        viewModel = DeveloperOptionsViewModel(
+            savedStateHandle,
+            developerOptionsRepository
+        )
+    }
 }
