@@ -10,6 +10,7 @@ import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.extensions.NotificationReceivedEvent
 import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.model.RequestResult
+import com.woocommerce.android.model.UiString
 import com.woocommerce.android.push.NotificationChannelType
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.SelectedSite
@@ -737,7 +738,13 @@ class OrderListViewModelTest : BaseUnitTest() {
             // WHEN
             val title = viewModel.bannerState.value?.title
 
-            assertThat(title).isEqualTo(R.string.card_reader_upsell_card_reader_banner_title)
+            assertThat(title).isEqualTo(
+                UiString.UiStringRes(
+                    stringRes = R.string.card_reader_upsell_card_reader_banner_title,
+                    params = emptyList(),
+                    containsHtml = false
+                )
+            )
         }
     }
 
@@ -753,7 +760,13 @@ class OrderListViewModelTest : BaseUnitTest() {
             // WHEN
             val description = viewModel.bannerState.value?.description
 
-            assertThat(description).isEqualTo(R.string.card_reader_upsell_card_reader_banner_description)
+            assertThat(description).isEqualTo(
+                UiString.UiStringRes(
+                    stringRes = R.string.card_reader_upsell_card_reader_banner_description,
+                    params = emptyList(),
+                    containsHtml = false
+                )
+            )
         }
     }
 
@@ -769,7 +782,13 @@ class OrderListViewModelTest : BaseUnitTest() {
             // WHEN
             val primaryActionLabel = viewModel.bannerState.value?.primaryActionLabel
 
-            assertThat(primaryActionLabel).isEqualTo(R.string.card_reader_upsell_card_reader_banner_cta)
+            assertThat(primaryActionLabel).isEqualTo(
+                UiString.UiStringRes(
+                    stringRes = R.string.card_reader_upsell_card_reader_banner_cta,
+                    params = emptyList(),
+                    containsHtml = false
+                )
+            )
         }
     }
 
@@ -785,7 +804,13 @@ class OrderListViewModelTest : BaseUnitTest() {
             // WHEN
             val chipLabel = viewModel.bannerState.value?.chipLabel
 
-            assertThat(chipLabel).isEqualTo(R.string.card_reader_upsell_card_reader_banner_new)
+            assertThat(chipLabel).isEqualTo(
+                UiString.UiStringRes(
+                    stringRes = R.string.card_reader_upsell_card_reader_banner_new,
+                    params = emptyList(),
+                    containsHtml = false
+                )
+            )
         }
     }
 
