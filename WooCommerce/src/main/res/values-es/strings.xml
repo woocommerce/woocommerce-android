@@ -1,11 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2022-10-11 23:54:04+0000
+Translation-Revision-Date: 2022-10-20 09:54:04+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: es
 -->
 <resources>
+    <string name="enable_card_reader">Activar lector de tarjeta simulado</string>
+    <string name="login_account_mismatch_connect_wpcom_dialog_message">Ponte en contacto con el propietario del sitio para obtener una invitación como gestor o administrador de la tienda y utilizar la aplicación con este rol.</string>
+    <string name="login_account_mismatch_connect_wpcom_dialog_title">Conectar a un sitio web de WordPress.com</string>
+    <string name="login_account_mismatch_connect_wpcom">Conectarse al sitio</string>
+    <string name="login_account_mismatch_connect_jetpack">Conectar Jetpack a tu cuenta</string>
     <string name="qr_code_login_edit_camera_permission">Editar permisos</string>
     <string name="qr_code_login_camera_permission_denied_message">Para usar esta función, activa los permisos para usar la cámara.</string>
     <string name="qr_code_login_camera_permission_denied_title">Se necesita acceso a la cámara</string>
@@ -26,7 +31,6 @@ Language: es
     <string name="login_jetpack_verify_connection">Verificando la conexión de Jetpack…</string>
     <string name="login_jetpack_connection_verification_failed">No se puede verificar tu conexión de Jetpack. Vuelve a intentarlo.</string>
     <string name="login_simple_wpcom_site">En este momento, el sitio %1$s dispone de un plan de WordPress.com que no es compatible con la instalación de plugins. Mejora tu plan para usar WooCommerce.</string>
-    <string name="login_connect_jetpack_button">Conecta Jetpack a tu cuenta</string>
     <string name="login_jetpack_not_connected">Parece que tu cuenta no está conectada a %1$s de Jetpack.</string>
     <string name="card_reader_card_readers_header">LECTORES DE TARJETAS</string>
     <string name="card_reader_payment_options_header">OPCIONES DE PAGO</string>

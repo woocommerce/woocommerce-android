@@ -1,11 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2022-10-11 14:54:04+0000
+Translation-Revision-Date: 2022-10-18 10:54:35+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: sv_SE
 -->
 <resources>
+    <string name="enable_card_reader">Aktivera simulerad kortläsare</string>
+    <string name="login_account_mismatch_connect_wpcom_dialog_message">Kontakta webbplatsens ägare för en inbjudan till webbplatsen som butikschef eller administratör för att använda appen.</string>
+    <string name="login_account_mismatch_connect_wpcom_dialog_title">Ansluter till en WordPress.com-webbplats</string>
+    <string name="login_account_mismatch_connect_wpcom">Anslut till webbplatsen</string>
+    <string name="login_account_mismatch_connect_jetpack">Anslut Jetpack till ditt konto</string>
     <string name="qr_code_login_edit_camera_permission">Redigera behörigheter</string>
     <string name="qr_code_login_camera_permission_denied_message">För att använda den här funktionen, tillåt att din kamera används.</string>
     <string name="qr_code_login_camera_permission_denied_title">Kameraåtkomst krävs</string>
@@ -26,7 +31,6 @@ Language: sv_SE
     <string name="login_jetpack_verify_connection">Verifierar Jetpack-anslutning …</string>
     <string name="login_jetpack_connection_verification_failed">Kan inte verifiera din Jetpack-anslutning. Försök igen.</string>
     <string name="login_simple_wpcom_site">Webbplatsen %1$s har för närvarande ett WordPress.com-paket som inte stöder installation av tillägg. Uppgradera ditt paket för att använda WooCommerce.</string>
-    <string name="login_connect_jetpack_button">Anslut Jetpack till ditt konto</string>
     <string name="login_jetpack_not_connected">Det verkar som att ditt konto inte är anslutet till Jetpack för %1$s</string>
     <string name="card_reader_card_readers_header">KORTLÄSARE</string>
     <string name="card_reader_payment_options_header">BETALNINGSALTERNATIV</string>

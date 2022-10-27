@@ -1,11 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2022-10-11 11:54:04+0000
+Translation-Revision-Date: 2022-10-19 11:54:04+0000
 Plural-Forms: nplurals=2; plural=n > 1;
 Generator: GlotPress/2.4.0-alpha
 Language: id
 -->
 <resources>
+    <string name="enable_card_reader">Aktifkan Pembaca Kartu Simulasi</string>
+    <string name="login_account_mismatch_connect_wpcom_dialog_message">Hubungi pemilik situs untuk menerima undangan ke situs sebagai manajer toko atau administrator untuk menggunakan aplikasi.</string>
+    <string name="login_account_mismatch_connect_wpcom_dialog_title">Menghubungkan ke situs WordPress.com</string>
+    <string name="login_account_mismatch_connect_wpcom">Hubungkan ke situs</string>
+    <string name="login_account_mismatch_connect_jetpack">Hubungkan Jetpack ke akun Anda</string>
     <string name="qr_code_login_edit_camera_permission">Edit izin</string>
     <string name="qr_code_login_camera_permission_denied_message">Untuk menggunakan fitur ini, berikan izin untuk menggunakan kamera Anda.</string>
     <string name="qr_code_login_camera_permission_denied_title">Akses Kamera Diperlukan</string>
@@ -26,7 +31,6 @@ Language: id
     <string name="login_jetpack_verify_connection">Memverifikasi koneksi Jetpack…</string>
     <string name="login_jetpack_connection_verification_failed">Tidak dapat memverifikasi koneksi Jetpack Anda. Harap coba lagi.</string>
     <string name="login_simple_wpcom_site">Situs %1$s saat ini menggunakan paket WordPress.com yang tidak mendukung instalasi plugin. Upgrade paket Anda untuk menggunakan WooCommerce.</string>
-    <string name="login_connect_jetpack_button">Hubungkan Jetpack ke akun Anda</string>
     <string name="login_jetpack_not_connected">Sepertinya akun Anda tidak terhubung ke Jetpack %1$s</string>
     <string name="card_reader_card_readers_header">PEMBACA KARTU</string>
     <string name="card_reader_payment_options_header">OPSI PEMBAYARAN</string>

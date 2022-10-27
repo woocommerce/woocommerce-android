@@ -2,11 +2,13 @@ package com.woocommerce.android.ui.login.accountmismatch
 
 import com.woocommerce.android.OnChangedException
 import com.woocommerce.android.util.WooLog
+import com.woocommerce.android.util.awaitAny
+import com.woocommerce.android.util.awaitEvent
+import com.woocommerce.android.util.dispatchAndAwait
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.suspendCancellableCoroutine
+import kotlinx.coroutines.async
+import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.withContext
-import org.greenrobot.eventbus.Subscribe
-import org.greenrobot.eventbus.ThreadMode.MAIN
 import org.wordpress.android.fluxc.Dispatcher
 import org.wordpress.android.fluxc.generated.AuthenticationActionBuilder
 import org.wordpress.android.fluxc.generated.SiteActionBuilder
@@ -19,7 +21,6 @@ import org.wordpress.android.fluxc.store.SiteStore.OnSiteChanged
 import org.wordpress.android.fluxc.store.SiteStore.RefreshSitesXMLRPCPayload
 import org.wordpress.android.login.util.SiteUtils
 import javax.inject.Inject
-import kotlin.coroutines.resume
 
 class AccountMismatchRepository @Inject constructor(
     private val jetpackStore: JetpackStore,
@@ -71,7 +72,7 @@ class AccountMismatchRepository @Inject constructor(
     ): Result<JetpackConnectionStatus> {
         WooLog.d(WooLog.T.LOGIN, "Checking Jetpack Connection status for site $siteUrl")
 
-        return discoverXMlRPCAddress(siteUrl)
+        return discoverXMLRPCAddress(siteUrl)
             .mapCatching { xmlrpcEndpoint ->
                 val xmlrpcSite = fetchXMLRPCSite(siteUrl, xmlrpcEndpoint, username, password).getOrThrow()
                 when {
@@ -99,31 +100,21 @@ class AccountMismatchRepository @Inject constructor(
         data class ConnectedToDifferentAccount(val wpcomEmail: String) : JetpackConnectionStatus
     }
 
-    private suspend fun discoverXMlRPCAddress(siteUrl: String): Result<String> = suspendCancellableCoroutine { cont ->
-        val listener = object : Any() {
-            @Subscribe(threadMode = MAIN)
-            @Suppress("unused")
-            fun onDiscoverySucceeded(event: OnDiscoveryResponse) {
-                dispatcher.unregister(this)
-                if (event.isError) {
-                    WooLog.w(WooLog.T.LOGIN, "XMLRPC Discovery failed, error: ${event.error}")
-                    cont.resume(Result.failure(OnChangedException(event.error, event.error.name)))
-                } else {
-                    WooLog.d(
-                        tag = WooLog.T.LOGIN,
-                        message = "XMLRPC Discovery succeeded, xmrlpc endpoint: ${event.xmlRpcEndpoint}"
-                    )
-                    cont.resume(Result.success(event.xmlRpcEndpoint))
-                }
-            }
-        }
-
+    private suspend fun discoverXMLRPCAddress(siteUrl: String): Result<String> {
         WooLog.d(WooLog.T.LOGIN, "Running discovery to fetch XMLRPC endpoint for site $siteUrl")
-        dispatcher.register(listener)
-        dispatcher.dispatch(AuthenticationActionBuilder.newDiscoverEndpointAction(siteUrl))
 
-        cont.invokeOnCancellation {
-            dispatcher.unregister(listener)
+        val action = AuthenticationActionBuilder.newDiscoverEndpointAction(siteUrl)
+        val event: OnDiscoveryResponse = dispatcher.dispatchAndAwait(action)
+
+        return if (event.isError) {
+            WooLog.w(WooLog.T.LOGIN, "XMLRPC Discovery failed, error: ${event.error}")
+            Result.failure(OnChangedException(event.error, event.error.name))
+        } else {
+            WooLog.d(
+                tag = WooLog.T.LOGIN,
+                message = "XMLRPC Discovery succeeded, xmrlpc endpoint: ${event.xmlRpcEndpoint}"
+            )
+            Result.success(event.xmlRpcEndpoint)
         }
     }
 
@@ -133,55 +124,47 @@ class AccountMismatchRepository @Inject constructor(
         xmlrpcEndpoint: String,
         username: String,
         password: String
-    ): Result<SiteModel> {
-        val authenticationResult = suspendCancellableCoroutine<Result<Unit>> { cont ->
-            val listener = object : Any() {
-                @Suppress("unused")
-                @Subscribe(threadMode = MAIN)
-                fun onAuthenticationChanged(event: OnAuthenticationChanged) {
-                    dispatcher.unregister(this)
-                    if (event.isError) {
-                        WooLog.w(
-                            tag = WooLog.T.LOGIN,
-                            message = "Authenticating to XMLRPC site $xmlrpcEndpoint failed, " +
-                                "error: ${event.error.message}"
-                        )
-                        cont.resume(Result.failure(OnChangedException(event.error, event.error.message)))
-                    }
-                }
-
-                @Suppress("unused")
-                @Subscribe(threadMode = MAIN)
-                fun onSiteChanged(event: OnSiteChanged) {
-                    dispatcher.unregister(this)
-                    if (event.isError) {
-                        WooLog.w(
-                            tag = WooLog.T.LOGIN,
-                            message = "XMLRPC site $xmlrpcEndpoint fetch failed, error: ${event.error.message}"
-                        )
-                        cont.resume(Result.failure(OnChangedException(event.error, event.error.message)))
-                    } else {
-                        WooLog.d(WooLog.T.LOGIN, "XMLRPC site $xmlrpcEndpoint fetch succeeded")
-                        cont.resume(Result.success(Unit))
-                    }
+    ): Result<SiteModel> = coroutineScope {
+        val authenticationTask = async {
+            dispatcher.awaitEvent<OnAuthenticationChanged>().also { event ->
+                if (event.isError) {
+                    WooLog.w(
+                        tag = WooLog.T.LOGIN,
+                        message = "Authenticating to XMLRPC site $xmlrpcEndpoint failed, " +
+                            "error: ${event.error.message}"
+                    )
                 }
             }
-
-            WooLog.d(WooLog.T.LOGIN, "Fetch XMLRPC site, url: $xmlrpcEndpoint")
+        }
+        val siteTask = async {
             val selfHostedPayload = RefreshSitesXMLRPCPayload(
                 username = username,
                 password = password,
                 url = xmlrpcEndpoint
             )
-            dispatcher.register(listener)
-            dispatcher.dispatch(SiteActionBuilder.newFetchSitesXmlRpcAction(selfHostedPayload))
-            cont.invokeOnCancellation { dispatcher.unregister(listener) }
+            dispatcher.dispatchAndAwait<RefreshSitesXMLRPCPayload, OnSiteChanged>(
+                action = SiteActionBuilder.newFetchSitesXmlRpcAction(
+                    selfHostedPayload
+                )
+            ).also { event ->
+                if (event.isError) {
+                    WooLog.w(
+                        tag = WooLog.T.LOGIN,
+                        message = "XMLRPC site $xmlrpcEndpoint fetch failed, error: ${event.error.message}"
+                    )
+                } else {
+                    WooLog.d(WooLog.T.LOGIN, "XMLRPC site $xmlrpcEndpoint fetch succeeded")
+                }
+            }
         }
 
-        @Suppress("UNCHECKED_CAST")
-        if (authenticationResult.isFailure) return authenticationResult as Result<SiteModel>
+        val tasks = listOf(authenticationTask, siteTask)
 
-        return fetchSiteOptions(siteUrl)
+        val event = tasks.awaitAny()
+
+        if (event.isError) return@coroutineScope Result.failure(OnChangedException(event.error))
+
+        return@coroutineScope fetchSiteOptions(siteUrl)
     }
 
     private suspend fun fetchSiteOptions(siteUrl: String): Result<SiteModel> {
