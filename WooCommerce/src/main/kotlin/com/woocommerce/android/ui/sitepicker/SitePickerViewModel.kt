@@ -278,10 +278,9 @@ class SitePickerViewModel @Inject constructor(
         sitePickerViewState = sitePickerViewState.copy(
             isNoStoresViewVisible = true,
             isPrimaryBtnVisible = true,
-            primaryBtnText = resourceProvider.getString(string.login_site_picker_enter_site_address),
+            primaryBtnText = resourceProvider.getString(string.login_site_picker_add_a_store),
             noStoresLabelText = resourceProvider.getString(string.login_no_stores),
-            isNoStoresBtnVisible = true,
-            noStoresBtnText = resourceProvider.getString(string.login_site_picker_new_to_woo),
+            isNoStoresBtnVisible = false,
             currentSitePickerState = SitePickerState.NoStoreState
         )
     }
