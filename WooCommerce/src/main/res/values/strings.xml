@@ -2647,6 +2647,10 @@
     <string name="stats_widget_error_no_data">Couldn\'t load data</string>
     <string name="stats_widget_last_updated_message">As of %1$s</string>
 
-    <!-- Store creation -->
-    <string name="create_new_store">Create a new store</string>
+    <!--
+    Store creation
+    -->
+    <string name="store_creation_create_new_store_label">Create a new store</string>
+    <string name="store_creation_cannot_load_store">Unable to load the new store. Please wait a bit and try again…</string>
+    <string name="store_creation_in_progress">Loading your new store…</string>
 </resources>
