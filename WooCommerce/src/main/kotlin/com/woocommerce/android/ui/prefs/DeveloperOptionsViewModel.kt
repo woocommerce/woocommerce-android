@@ -12,7 +12,6 @@ import com.woocommerce.android.ui.prefs.DeveloperOptionsViewModel.DeveloperOptio
 import com.woocommerce.android.ui.prefs.DeveloperOptionsViewModel.DeveloperOptionsViewState.ListItem.ToggleableListItem
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
@@ -21,16 +20,6 @@ class DeveloperOptionsViewModel @Inject constructor(
     private val developerOptionsRepository: DeveloperOptionsRepository
 ) : ScopedViewModel(savedState) {
 
-    private val simulatedReaderState = MutableLiveData(
-        ToggleableListItem(
-            icon = drawable.img_card_reader_connecting,
-            label = UiStringRes(string.enable_card_reader),
-            isEnabled = true,
-            isChecked = false,
-            onToggled = { (::onSimulatedReaderToggled)(it) }
-        )
-    )
-
     private val viewState = MutableLiveData(
         DeveloperOptionsViewState(
             rows = (
@@ -38,26 +27,6 @@ class DeveloperOptionsViewModel @Inject constructor(
                 )
         )
     )
-
-    private fun checkAndUpdateSimulatedReaderState() {
-        val isSimulatedReaderEnabled = developerOptionsRepository
-            .isSimulatedCardReaderEnabled()
-        updateSimulatedReaderState(
-            simulatedReaderState.value?.copy(
-                isChecked = isSimulatedReaderEnabled
-            )!!
-        )
-    }
-
-    fun onViewVisible() {
-        launch {
-            checkAndUpdateSimulatedReaderState()
-        }
-    }
-
-    private fun updateSimulatedReaderState(toggleableListItem: ToggleableListItem) {
-        simulatedReaderState.value = toggleableListItem
-    }
 
     private fun createDeveloperOptionsList(): List<ListItem> = mutableListOf(
         ToggleableListItem(
@@ -73,10 +42,15 @@ class DeveloperOptionsViewModel @Inject constructor(
 
     private fun onSimulatedReaderToggled(isChecked: Boolean) {
 
-        updateSimulatedReaderState(
-            simulatedReaderState.value?.copy(isEnabled = true, isChecked = isChecked)!!
+        developerOptionsRepository.changeSimulatedReaderState(isChecked)
+        val newState = (viewState.value?.rows?.first() as ToggleableListItem).copy(isChecked = isChecked)
+        viewState.value = viewState.value?.copy(
+            rows = viewState.value!!.rows.map {
+                if (it.label == newState.label)
+                    newState
+                else it
+            }
         )
-        developerOptionsRepository.isSimulatedCardReaderEnabled()
     }
 
     data class DeveloperOptionsViewState(
