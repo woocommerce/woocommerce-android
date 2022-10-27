@@ -1,16 +1,20 @@
 package com.woocommerce.android.ui.analytics.informationcard
 
 import android.content.Context
+import android.os.Build
 import android.util.AttributeSet
+import android.util.TypedValue
 import android.view.LayoutInflater
 import android.view.View
 import androidx.core.content.ContextCompat
 import androidx.core.view.isVisible
+import androidx.core.widget.TextViewCompat
 import com.google.android.material.card.MaterialCardView
 import com.woocommerce.android.R
 import com.woocommerce.android.databinding.AnalyticsInformationSectionViewBinding
 import com.woocommerce.android.widgets.tags.ITag
 import com.woocommerce.android.widgets.tags.TagConfig
+import org.wordpress.android.util.DisplayUtils
 import kotlin.math.absoluteValue
 
 internal class AnalyticsInformationSectionView @JvmOverloads constructor(
@@ -21,6 +25,22 @@ internal class AnalyticsInformationSectionView @JvmOverloads constructor(
     val binding = AnalyticsInformationSectionViewBinding.inflate(LayoutInflater.from(ctx), this)
 
     internal fun setViewState(sectionViewState: AnalyticsInformationSectionViewState) {
+        // on devices with a larger font size the revenue value may wrap to multiple lines, so we set the
+        // auto sizing programmatically on API levels that support it
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O_MR1) {
+            val minSize = resources.getDimensionPixelSize(R.dimen.text_minor_100)
+            val maxSize = resources.getDimensionPixelSize(R.dimen.text_major_50)
+            val granularity = DisplayUtils.spToPx(context, 1F).toInt()
+            binding.cardInformationSectionValue.maxLines = 1
+            TextViewCompat.setAutoSizeTextTypeUniformWithConfiguration(
+                binding.cardInformationSectionValue,
+                minSize,
+                maxSize,
+                granularity,
+                TypedValue.COMPLEX_UNIT_PX
+            )
+        }
+
         visibility = View.VISIBLE
         binding.cardInformationSectionTitle.text = sectionViewState.title
         binding.cardInformationSectionValue.text = sectionViewState.value

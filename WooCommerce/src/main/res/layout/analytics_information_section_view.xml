@@ -24,16 +24,16 @@
         <com.google.android.material.textview.MaterialTextView
             android:id="@+id/cardInformationSectionValue"
             style="@style/Woo.Card.Title"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/minor_00"
             android:layout_marginTop="@dimen/major_100"
             android:layout_marginBottom="@dimen/major_100"
-            android:layout_marginStart="@dimen/minor_00"
             android:textSize="@dimen/text_major_50"
             app:layout_constraintBottom_toTopOf="@+id/cardInformationSectionDeltaTag"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/cardInformationSectionTitle"
-            tools:text="$359687" />
+            tools:text="$359,687.50" />
 
         <com.woocommerce.android.widgets.tags.TagView
             android:id="@+id/cardInformationSectionDeltaTag"
