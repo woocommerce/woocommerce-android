@@ -13,7 +13,7 @@ import org.assertj.core.api.Assertions.assertThat
 import org.mockito.kotlin.whenever
 
 @OptIn(ExperimentalCoroutinesApi::class)
-class DeveloperOptionsTest: BaseUnitTest() {
+class DeveloperOptionsTest : BaseUnitTest() {
     private lateinit var viewModel: DeveloperOptionsViewModel
 
     private val savedStateHandle: SavedStateHandle = SavedStateHandle()
@@ -44,8 +44,8 @@ class DeveloperOptionsTest: BaseUnitTest() {
             assertThat(
                 (
                     viewModel.viewStateData.value?.rows?.find {
-                it.label == UiString.UiStringRes(R.string.enable_card_reader)
-            } as DeveloperOptionsViewModel.DeveloperOptionsViewState.ListItem.ToggleableListItem
+                        it.label == UiString.UiStringRes(R.string.enable_card_reader)
+                    } as DeveloperOptionsViewModel.DeveloperOptionsViewState.ListItem.ToggleableListItem
                     ).isChecked
             ).isTrue()
         }
