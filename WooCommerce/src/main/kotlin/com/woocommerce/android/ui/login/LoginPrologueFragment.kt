@@ -56,7 +56,7 @@ open class LoginPrologueFragment(@LayoutRes layout: Int) : Fragment(layout) {
             unifiedLoginTracker.track(Flow.PROLOGUE, Step.PROLOGUE)
         }
 
-        binding.buttonGetStarted.isVisible = FeatureFlag.STORE_CREATION_FLOW.isEnabled()
+        binding.buttonGetStarted.isVisible = FeatureFlag.ACCOUNT_CREATION_FLOW.isEnabled()
         binding.buttonGetStarted.setOnClickListener {
             findNavController().navigate(LoginPrologueFragmentDirections.actionLoginPrologueFragmentToSignupFragment())
         }

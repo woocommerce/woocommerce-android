@@ -1,11 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2022-10-12 19:54:04+0000
+Translation-Revision-Date: 2022-10-19 09:54:04+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: it
 -->
 <resources>
+    <string name="enable_card_reader">Attiva il lettore di carte simulato</string>
+    <string name="login_account_mismatch_connect_wpcom_dialog_message">Contatta il proprietario del sito per un invito al sito come gestore del negozio o amministratore per utilizzare l\'app.</string>
+    <string name="login_account_mismatch_connect_wpcom_dialog_title">Connessione a un sito WordPress.com</string>
+    <string name="login_account_mismatch_connect_wpcom">Connetti al sito</string>
+    <string name="login_account_mismatch_connect_jetpack">Connetti Jetpack al tuo account</string>
     <string name="qr_code_login_edit_camera_permission">Modifica autorizzazioni</string>
     <string name="qr_code_login_camera_permission_denied_message">Per utilizzare questa funzione, consenti le autorizzazioni per utilizzare la tua fotocamera.</string>
     <string name="qr_code_login_camera_permission_denied_title">Accesso alla fotocamera richiesto</string>
@@ -26,7 +31,6 @@ Language: it
     <string name="login_jetpack_verify_connection">Verifica della connessione a Jetpack…</string>
     <string name="login_jetpack_connection_verification_failed">Impossibile verificare la connessione a Jetpack. Riprova.</string>
     <string name="login_simple_wpcom_site">Il sito %1$s dispone attualmente di un piano WordPress.com che non supporta l\'installazione di plugin. Aggiorna il tuo piano per utilizzare WooCommerce.</string>
-    <string name="login_connect_jetpack_button">Connetti Jetpack al tuo account</string>
     <string name="login_jetpack_not_connected">Sembra che l\'account non sia connesso a Jetpack di %1$s</string>
     <string name="card_reader_card_readers_header">LETTORI DI CARTE</string>
     <string name="card_reader_payment_options_header">OPZIONI DI PAGAMENTO</string>

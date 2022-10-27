@@ -27,13 +27,14 @@ import com.woocommerce.android.R
 import com.woocommerce.android.R.attr
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
+import com.woocommerce.android.analytics.ExperimentTracker
 import com.woocommerce.android.databinding.FragmentMyStoreBinding
 import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.extensions.scrollStartEvents
 import com.woocommerce.android.extensions.setClickableText
 import com.woocommerce.android.extensions.startHelpActivity
 import com.woocommerce.android.extensions.verticalOffsetChanges
-import com.woocommerce.android.support.HelpActivity.Origin
+import com.woocommerce.android.support.help.HelpActivity.Origin
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.base.TopLevelFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
@@ -80,6 +81,7 @@ class MyStoreFragment : TopLevelFragment(R.layout.fragment_my_store), MenuProvid
     @Inject lateinit var uiMessageResolver: UIMessageResolver
     @Inject lateinit var dateUtils: DateUtils
     @Inject lateinit var usageTracksEventEmitter: MyStoreStatsUsageTracksEventEmitter
+    @Inject lateinit var experimentTracker: ExperimentTracker
 
     private var _binding: FragmentMyStoreBinding? = null
     private val binding get() = _binding!!
@@ -170,6 +172,9 @@ class MyStoreFragment : TopLevelFragment(R.layout.fragment_my_store), MenuProvid
         binding.statsScrollView.scrollStartEvents()
             .onEach { usageTracksEventEmitter.interacted() }
             .launchIn(viewLifecycleOwner.lifecycleScope)
+
+        // Successful event for Simplified Login A/B testing.
+        experimentTracker.log(ExperimentTracker.SIMPLIFIED_LOGIN_SUCCESSFUL_EVENT)
 
         setupStateObservers()
     }
