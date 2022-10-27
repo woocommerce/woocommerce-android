@@ -7,6 +7,9 @@ import com.woocommerce.android.R
 import com.woocommerce.android.WooException
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_JITM
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_JITM_COUNT
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_SOURCE
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.model.UiString
 import com.woocommerce.android.tools.NetworkStatus
@@ -716,8 +719,9 @@ class MyStoreViewModelTest : BaseUnitTest() {
             verify(analyticsTrackerWrapper).track(
                 AnalyticsEvent.JITM_FETCH_SUCCESS,
                 mapOf(
-                    "source" to MyStoreViewModel.UTM_SOURCE,
-                    "jitms" to listOf("12345")
+                    KEY_SOURCE to MyStoreViewModel.UTM_SOURCE,
+                    KEY_JITM to "12345",
+                    KEY_JITM_COUNT to 1
                 )
             )
         }
@@ -745,8 +749,9 @@ class MyStoreViewModelTest : BaseUnitTest() {
             verify(analyticsTrackerWrapper).track(
                 AnalyticsEvent.JITM_FETCH_SUCCESS,
                 mapOf(
-                    "source" to MyStoreViewModel.UTM_SOURCE,
-                    "jitms" to listOf("12345", "123456", "123")
+                    KEY_SOURCE to MyStoreViewModel.UTM_SOURCE,
+                    KEY_JITM to "12345",
+                    KEY_JITM_COUNT to 3
                 )
             )
         }
@@ -845,8 +850,9 @@ class MyStoreViewModelTest : BaseUnitTest() {
             verify(analyticsTrackerWrapper).track(
                 AnalyticsEvent.JITM_FETCH_SUCCESS,
                 mapOf(
-                    "source" to MyStoreViewModel.UTM_SOURCE,
-                    "jitms" to emptyList<String>()
+                    KEY_SOURCE to MyStoreViewModel.UTM_SOURCE,
+                    KEY_JITM to null,
+                    KEY_JITM_COUNT to null
                 )
             )
         }
