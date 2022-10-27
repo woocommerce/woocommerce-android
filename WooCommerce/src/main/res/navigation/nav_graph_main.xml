@@ -28,7 +28,11 @@
             app:enterAnim="@anim/activity_fade_in"
             app:exitAnim="@null"
             app:popEnterAnim="@null"
-            app:popExitAnim="@anim/activity_fade_out" />
+            app:popExitAnim="@anim/activity_fade_out" >
+            <argument
+                android:name="targetGranularity"
+                app:argType="com.woocommerce.android.ui.analytics.daterangeselector.AnalyticTimePeriod" />
+        </action>
     </fragment>
     <fragment
         android:id="@+id/orders"
@@ -132,6 +136,9 @@
         android:name="com.woocommerce.android.ui.analytics.AnalyticsFragment"
         android:label="fragment_analytics"
         tools:layout="@layout/fragment_analytics">
+        <argument
+            android:name="targetGranularity"
+            app:argType="com.woocommerce.android.ui.analytics.daterangeselector.AnalyticTimePeriod" />
         <action
             android:id="@+id/action_AnalyticsFragment_to_DateRangeSelector"
             app:destination="@id/analyticsDateRangeSelectorDialog" />

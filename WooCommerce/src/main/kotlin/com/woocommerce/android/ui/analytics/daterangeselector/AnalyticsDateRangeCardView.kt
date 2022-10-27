@@ -6,9 +6,7 @@ import android.view.LayoutInflater
 import android.view.View
 import com.google.android.material.card.MaterialCardView
 import com.woocommerce.android.databinding.AnalyticsDateRangeCardViewBinding
-import dagger.hilt.android.AndroidEntryPoint
 
-@AndroidEntryPoint
 class AnalyticsDateRangeCardView @JvmOverloads constructor(
     ctx: Context,
     attrs: AttributeSet? = null,
