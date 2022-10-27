@@ -5,6 +5,7 @@ import androidx.core.text.isDigitsOnly
 import com.woocommerce.android.ui.login.signup.SignUpRepository.SignUpError.EMAIL_EXIST
 import com.woocommerce.android.ui.login.signup.SignUpRepository.SignUpError.EMAIL_INVALID
 import com.woocommerce.android.ui.login.signup.SignUpRepository.SignUpError.PASSWORD_INVALID
+import com.woocommerce.android.ui.login.signup.SignUpRepository.SignUpError.PASSWORD_TOO_SHORT
 import com.woocommerce.android.ui.login.signup.SignUpRepository.SignUpError.UNKNOWN_ERROR
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.dispatchAndAwait
@@ -85,7 +86,7 @@ class SignUpRepository @Inject constructor(
     ): SignUpError? {
         val invalidCredentialsError = when {
             !isValidEmail(email) -> EMAIL_INVALID
-            password.length < PASSWORD_MIN_LENGTH -> SignUpError.PASSWORD_TOO_SHORT
+            password.length < PASSWORD_MIN_LENGTH -> PASSWORD_TOO_SHORT
             password.isDigitsOnly() -> PASSWORD_INVALID
             else -> null
         }
