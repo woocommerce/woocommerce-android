@@ -7,10 +7,11 @@ class DeveloperOptionsRepository @Inject constructor(
     private val appPrefs: AppPrefs
 ) {
 
-    fun isSimulatedCardReaderEnabled( ): Boolean {
+    fun isSimulatedCardReaderEnabled(): Boolean {
         return appPrefs.isSimulatedReaderEnabled
     }
+
+    fun changeSimulatedReaderState(isChecked: Boolean) {
+        appPrefs.isSimulatedReaderEnabled = isChecked
+    }
 }
-
-
-
