@@ -11,16 +11,16 @@ msgstr ""
 "Project-Id-Version: Release Notes & Play Store Descriptions\n"
 
 #. translators: Release notes for this version to be displayed in the Play Store. Limit to 500 characters including spaces and commas!
+msgctxt "release_note_109"
+msgid ""
+"10.9:\n"
+"This release includes a lot more stability fixes to help you log in much easier. You can now connect your WordPress.com account with Jetpack and access your store that much faster. Keep that feedback coming!\n"
+msgstr ""
+
 msgctxt "release_note_108"
 msgid ""
 "10.8:\n"
 "This release includes a handful of minor improvements and bug fixes that our team found. We are working hard on a few exciting features as well – and you’ll see that later this year. Thanks for using WooCommerce!\n"
-msgstr ""
-
-msgctxt "release_note_107"
-msgid ""
-"10.7:\n"
-"For this release, we improved the login flow with better autofill and an option to connect Jetpack, if Jetpack is not connected. We also fixed a discrepancy between the monthly and the visitor stats. Yay math! Keep your feedback rolling in; it helps us figure out what to work on next. 💜\n"
 msgstr ""
 
 #. translators: Short description of the app to be displayed in the Play Store. Limit to 80 characters including spaces and commas!

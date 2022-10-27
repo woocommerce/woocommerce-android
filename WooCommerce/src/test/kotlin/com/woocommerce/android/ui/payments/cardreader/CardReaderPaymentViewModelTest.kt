@@ -469,7 +469,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
             viewModel.start()
 
             verify(cardReaderManager).collectPayment(captor.capture())
-            assertThat(captor.firstValue.statementDescriptor).isEqualTo(expectedResult)
+            assertThat(captor.firstValue.statementDescriptor.value).isEqualTo(expectedResult)
         }
 
     @Test

@@ -1,11 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2022-10-11 14:54:04+0000
+Translation-Revision-Date: 2022-10-20 09:54:03+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: de
 -->
 <resources>
+    <string name="enable_card_reader">Simuliertes Kartenlesegerät aktivieren</string>
+    <string name="login_account_mismatch_connect_wpcom_dialog_message">Bitte kontaktiere den Website-Betreiber, um eine Einladung zur Website als Shop-Manager oder Administrator zu erhalten und die App verwenden zu können.</string>
+    <string name="login_account_mismatch_connect_wpcom_dialog_title">Mit einer WordPress.com-Website verbinden</string>
+    <string name="login_account_mismatch_connect_wpcom">Mit der Website verbinden</string>
+    <string name="login_account_mismatch_connect_jetpack">Verbinde Jetpack mit deinem Konto</string>
     <string name="qr_code_login_edit_camera_permission">Berechtigungen bearbeiten</string>
     <string name="qr_code_login_camera_permission_denied_message">Gewähre zum Verwenden dieser Funktion bitte Berechtigungen zur Nutzung deiner Kamera.</string>
     <string name="qr_code_login_camera_permission_denied_title">Kamerazugriff erforderlich</string>
@@ -26,7 +31,6 @@ Language: de
     <string name="login_jetpack_verify_connection">Die Jetpack-Verbindung wird überprüft …</string>
     <string name="login_jetpack_connection_verification_failed">Deine Jetpack-Verbindung kann nicht überprüft werden. Bitte versuche es erneut.</string>
     <string name="login_simple_wpcom_site">Für die Website %1$s gilt derzeit ein WordPress.com-Tarif, in dem das Installieren von Plugins nicht möglich ist. Bitte führe ein Tarif-Upgrade durch, um WooCommerce nutzen zu können.</string>
-    <string name="login_connect_jetpack_button">Verbinde Jetpack mit deinem Konto</string>
     <string name="login_jetpack_not_connected">Offenbar ist dein Konto nicht mit Jetpack von %1$s verbunden</string>
     <string name="card_reader_card_readers_header">KARTENLESEGERÄTE</string>
     <string name="card_reader_payment_options_header">ZAHLUNGSOPTIONEN</string>

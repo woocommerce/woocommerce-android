@@ -1,4 +1,10 @@
 *** PLEASE FOLLOW THIS FORMAT: [<priority indicator, more stars = higher priority>] <description> [<PR URL>]
+11.0
+-----
+- [*] Fixed a bug caused by statement descriptor value too long or containing illegal chars [https://github.com/woocommerce/woocommerce-android/pull/7595]
+- [*] [Internal] Simplified login: update email screen layout [https://github.com/woocommerce/woocommerce-android/pull/7619]
+- [**] Display Just In Time Message (JITM) related to card reader purchase on the MyStore screen [https://github.com/woocommerce/woocommerce-android/pull/7652]
+
 10.9
 -----
 - [**] Login: add support for Jetpack connection to sites that have Jetpack but don't have any connected accounts [https://github.com/woocommerce/woocommerce-android/pull/7545]

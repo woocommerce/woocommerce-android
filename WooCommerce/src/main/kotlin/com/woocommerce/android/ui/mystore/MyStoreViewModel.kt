@@ -83,7 +83,8 @@ class MyStoreViewModel @Inject constructor(
     @Named("my-store") private val utmProvider: UtmProvider,
 ) : ScopedViewModel(savedState) {
     companion object {
-        const val DAYS_TO_REDISPLAY_JP_BENEFITS_BANNER = 5
+        private const val DAYS_TO_REDISPLAY_JP_BENEFITS_BANNER = 5
+        private const val US_COUNTRY_CODE = "US"
         const val JITM_MESSAGE_PATH = "woomobile:my_store:admin_notices"
         const val UTM_CAMPAIGN = "jitm_group_woomobile_ipp"
         const val UTM_SOURCE = "my_store"
@@ -147,7 +148,7 @@ class MyStoreViewModel @Inject constructor(
     }
 
     private fun isCountryUSA(): Boolean {
-        return getStoreCountryCode().equals("US", ignoreCase = true)
+        return getStoreCountryCode().equals(US_COUNTRY_CODE, ignoreCase = true)
     }
 
     private fun getStoreCountryCode(): String? {
@@ -158,7 +159,9 @@ class MyStoreViewModel @Inject constructor(
 
     private fun populateResultToUI(response: WooResult<Array<JITMApiResponse>>) {
         when {
-            response.isError -> {}
+            response.isError -> {
+                WooLog.e(WooLog.T.JITM, "Failed to fetch JITM for the message path $JITM_MESSAGE_PATH")
+            }
             !response.model.isNullOrEmpty() -> {
                 _bannerState.value = BannerState(
                     shouldDisplayBanner = true,

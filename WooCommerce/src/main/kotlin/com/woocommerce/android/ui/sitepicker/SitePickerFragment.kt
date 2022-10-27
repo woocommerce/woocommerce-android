@@ -42,6 +42,7 @@ import com.woocommerce.android.ui.sitepicker.SitePickerViewModel.SitePickerState
 import com.woocommerce.android.ui.sitepicker.SitePickerViewModel.SitePickerState.WooNotFoundState
 import com.woocommerce.android.ui.sitepicker.sitediscovery.SitePickerSiteDiscoveryFragment
 import com.woocommerce.android.util.ChromeCustomTabUtils
+import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Logout
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowDialog
@@ -91,6 +92,11 @@ class SitePickerFragment : BaseFragment(R.layout.fragment_site_picker), LoginEma
         }
         binding.loginEpilogueButtonBar.buttonSecondary.setOnClickListener {
             viewModel.onTryAnotherAccountButtonClick()
+        }
+
+        binding.loginEpilogueButtonBar.buttonTertiary.isVisible = FeatureFlag.STORE_CREATION_WEBVIEW_FLOW.isEnabled()
+        binding.loginEpilogueButtonBar.buttonTertiary.setOnClickListener {
+            viewModel.onCreateSiteButtonClick()
         }
     }
 
@@ -175,6 +181,13 @@ class SitePickerFragment : BaseFragment(R.layout.fragment_site_picker), LoginEma
         handleNotice(WPComWebViewFragment.WEBVIEW_RESULT) {
             AnalyticsTracker.track(AnalyticsEvent.LOGIN_WOOCOMMERCE_SETUP_COMPLETED)
             viewModel.onWooInstalled()
+        }
+        handleResult<List<String>>(WPComWebViewFragment.WEBVIEW_RESULT_WITH_URL) { urls ->
+            AnalyticsTracker.track(
+                AnalyticsEvent.LOGIN_WOOCOMMERCE_SITE_CREATED,
+                mapOf(AnalyticsTracker.KEY_URL to urls.joinToString())
+            )
+            viewModel.onSiteCreated(urls)
         }
         handleNotice(WPComWebViewFragment.WEBVIEW_DISMISSED) {
             AnalyticsTracker.track(AnalyticsEvent.LOGIN_WOOCOMMERCE_SETUP_DISMISSED)
@@ -275,7 +288,8 @@ class SitePickerFragment : BaseFragment(R.layout.fragment_site_picker), LoginEma
         findNavController().navigate(
             NavGraphMainDirections.actionGlobalWPComWebViewFragment(
                 urlToLoad = event.url,
-                urlToTriggerExit = event.validationUrl
+                urlToTriggerExit = event.validationUrl,
+                title = event.title
             )
         )
     }
