@@ -131,6 +131,8 @@ enum class AnalyticsEvent(val siteless: Boolean = false) {
     SITE_PICKER_SITE_DISCOVERY(siteless = true),
     SITE_PICKER_JETPACK_TIMEOUT_ERROR_SHOWN(siteless = true),
     SITE_PICKER_JETPACK_TIMEOUT_CONTACT_SUPPORT_CLICKED(siteless = true),
+    SITE_PICKER_CREATE_SITE_TAPPED(siteless = true),
+    LOGIN_WOOCOMMERCE_SITE_CREATED(siteless = true),
 
     // -- Dashboard
     DASHBOARD_PULLED_TO_REFRESH,
@@ -351,8 +353,6 @@ enum class AnalyticsEvent(val siteless: Boolean = false) {
     MAIN_MENU_CONTACT_SUPPORT_TAPPED,
     MAIN_TAB_DASHBOARD_SELECTED,
     MAIN_TAB_DASHBOARD_RESELECTED,
-    MAIN_TAB_ANALYTICS_SELECTED,
-    MAIN_TAB_ANALYTICS_RESELECTED,
     MAIN_TAB_ORDERS_SELECTED,
     MAIN_TAB_ORDERS_RESELECTED,
     MAIN_TAB_PRODUCTS_SELECTED,
@@ -697,6 +697,7 @@ enum class AnalyticsEvent(val siteless: Boolean = false) {
     // Experiments (A/B test variants)
     PROLOGUE_EXPERIMENT,
     JETPACK_TIMEOUT_EXPERIMENT,
+    SIMPLIFIED_LOGIN_EXPERIMENT,
 
     // Widgets
     WIDGET_TAPPED,

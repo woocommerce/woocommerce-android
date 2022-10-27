@@ -1,11 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2022-10-12 15:54:03+0000
+Translation-Revision-Date: 2022-10-20 16:54:04+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: ko_KR
 -->
 <resources>
+    <string name="enable_card_reader">시뮬레이션한 카드 리더 활성화</string>
+    <string name="login_account_mismatch_connect_wpcom_dialog_message">상점 관리자 또는 앱을 사용하는 관리자로 사이트에 초대받으려면 사이트 소유자에게 문의하세요.</string>
+    <string name="login_account_mismatch_connect_wpcom_dialog_title">워드프레스닷컴 사이트에 연결하기</string>
+    <string name="login_account_mismatch_connect_wpcom">사이트에 연결</string>
+    <string name="login_account_mismatch_connect_jetpack">계정에 젯팩 연결</string>
     <string name="qr_code_login_edit_camera_permission">권한 편집</string>
     <string name="qr_code_login_camera_permission_denied_message">이 기능을 사용하려면 카메라 사용 권한을 허용하시기 바랍니다.</string>
     <string name="qr_code_login_camera_permission_denied_title">카메라 접근 권한 필요</string>
@@ -26,7 +31,6 @@ Language: ko_KR
     <string name="login_jetpack_verify_connection">젯팩 연결 확인 중…</string>
     <string name="login_jetpack_connection_verification_failed">젯팩 연결을 확인할 수 없습니다. 다시 시도하세요.</string>
     <string name="login_simple_wpcom_site">플러그인 설치가 지원되지 않는 워드프레스닷컴 요금제를 현재 %1$s 사이트에서 이용하고 있습니다. 요금제를 업그레이드하여 우커머스를 사용하세요.</string>
-    <string name="login_connect_jetpack_button">계정에 젯팩 연결</string>
     <string name="login_jetpack_not_connected">계정이 %1$s의 젯팩에 연결되지 않은 것 같습니다.</string>
     <string name="card_reader_card_readers_header">카드 리더</string>
     <string name="card_reader_payment_options_header">결제 옵션</string>
