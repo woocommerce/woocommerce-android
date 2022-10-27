@@ -13,14 +13,16 @@
         android:layout_weight="1"
         android:fillViewport="true">
 
-        <!-- The FrameLayout is needed to display the skeleton view dynamically -->
-        <FrameLayout
+        <!-- The LinearLayout is needed to display the skeleton view dynamically -->
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
 
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="0dp"
+                android:layout_weight="1"
                 android:id="@+id/site_picker_root">
 
                 <ImageButton
@@ -70,17 +72,17 @@
                 <!-- Login no stores view -->
                 <com.woocommerce.android.ui.sitepicker.views.LoginNoStoresView
                     android:id="@+id/no_stores_view"
-                    style="@style/Woo.Card.WithoutPadding"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:visibility="gone"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@+id/login_user_info"
+                    app:layout_constraintBottom_toBottomOf="parent"
                     tools:visibility="gone" />
 
             </androidx.constraintlayout.widget.ConstraintLayout>
-        </FrameLayout>
+        </LinearLayout>
     </androidx.core.widget.NestedScrollView>
 
     <include
