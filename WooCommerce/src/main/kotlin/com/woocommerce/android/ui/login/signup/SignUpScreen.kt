@@ -42,6 +42,7 @@ import com.woocommerce.android.ui.compose.component.ProgressDialog
 import com.woocommerce.android.ui.compose.component.WCColoredButton
 import com.woocommerce.android.ui.compose.component.WCOutlinedTextField
 import com.woocommerce.android.ui.compose.component.WCPasswordField
+import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.ui.login.signup.SignUpViewModel.ErrorType
 import com.woocommerce.android.ui.login.signup.SignUpViewModel.SignUpState
 
@@ -170,9 +171,11 @@ private fun TermsOfServiceText(modifier: Modifier = Modifier) {
 @Preview(name = "large screen", device = Devices.NEXUS_10)
 @Composable
 fun SignUpFormPreview() {
-    SignUpForm(
-        termsOfServiceClicked = {},
-        onPrimaryButtonClicked = { _, _ -> },
-        signUpState = SignUpState()
-    )
+    WooThemeWithBackground {
+        SignUpForm(
+            termsOfServiceClicked = {},
+            onPrimaryButtonClicked = { _, _ -> },
+            signUpState = SignUpState()
+        )
+    }
 }
