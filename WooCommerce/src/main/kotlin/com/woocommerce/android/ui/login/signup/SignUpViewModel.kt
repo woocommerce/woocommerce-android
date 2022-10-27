@@ -37,6 +37,10 @@ class SignUpViewModel @Inject constructor(
         triggerEvent(OnTermsOfServiceClicked)
     }
 
+    fun onLoginClicked() {
+        triggerEvent(OnTermsOfServiceClicked)
+    }
+
     fun onGetStartedCLicked(email: String, password: String) {
         if (!networkStatus.isConnected()) {
             triggerEvent(ShowSnackbar(R.string.no_network_message))

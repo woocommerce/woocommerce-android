@@ -320,7 +320,7 @@
     -->
     <string name="signup_get_started_button">Get started</string>
     <string name="signup_get_started_label">Get started \nin minutes</string>
-    <string name="signup_already_registered">First, let’s create your account. Already registered? Log in</string>
+    <string name="signup_already_registered">First, let’s create your account. Already registered? &lt;a href=\'login\'&gt;&lt;u&gt;Log in&lt;/u&gt;&lt;/a&gt;</string>
     <string name="signup_email_address_hint">Your email address</string>
     <string name="signup_password_hint">Choose a password</string>
     <string name="signup_terms_of_service">By continuing, you agree to our &lt;u&gt;Terms of Service.&lt;/u&gt;</string>
