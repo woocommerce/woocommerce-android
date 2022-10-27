@@ -14,6 +14,7 @@ import com.woocommerce.android.databinding.FragmentLoginPrologueBinding
 import com.woocommerce.android.experiment.SimplifiedLoginExperiment
 import com.woocommerce.android.experiment.SimplifiedLoginExperiment.LoginVariant.SIMPLIFIED
 import com.woocommerce.android.extensions.hide
+import com.woocommerce.android.extensions.show
 import com.woocommerce.android.ui.login.UnifiedLoginTracker.Flow
 import com.woocommerce.android.ui.login.UnifiedLoginTracker.Step
 import com.woocommerce.android.util.FeatureFlag
@@ -69,8 +70,11 @@ open class LoginPrologueFragment(@LayoutRes layout: Int) : Fragment(layout) {
 
         // Various updates related to Simplified Login A/B testing.
         if (isSimplifiedLoginVariant) {
-            binding.buttonLoginStore.hide()
             binding.newToWooButton.text = getString(R.string.login_prologue_learn_more_about_woo)
+
+            binding.buttonCreateStore.show()
+            binding.buttonLoginStore.hide()
+            binding.buttonGetStarted.hide()
         }
     }
 
