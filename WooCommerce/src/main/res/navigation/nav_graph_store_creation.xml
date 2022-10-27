@@ -15,11 +15,19 @@
             app:exitAnim="@anim/default_exit_anim"
             app:popEnterAnim="@anim/default_pop_enter_anim"
             app:popExitAnim="@anim/default_pop_exit_anim" />
+        <action
+            android:id="@+id/action_signupFragment_to_storeCreationFragment"
+            app:destination="@id/storeCreationFragment"
+            app:popUpTo="@id/nav_graph_store_creation" />
     </fragment>
 
     <fragment
         android:id="@+id/storeCreationQuestionsFragment"
         android:name="com.woocommerce.android.ui.login.storecreation.StoreCreationQuestionsFragment"
         android:label="fragment_store_creation_questions" />
+    <fragment
+        android:id="@+id/storeCreationFragment"
+        android:name="com.woocommerce.android.ui.login.storecreation.webview.WebViewStoreCreationFragment"
+        android:label="StoreCreationFragment" />
 
 </navigation>
