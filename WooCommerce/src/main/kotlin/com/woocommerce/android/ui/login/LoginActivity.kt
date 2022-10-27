@@ -30,10 +30,10 @@ import com.woocommerce.android.barcode.QrCodeScanningFragment
 import com.woocommerce.android.databinding.ActivityLoginBinding
 import com.woocommerce.android.experiment.PrologueExperiment
 import com.woocommerce.android.extensions.parcelable
-import com.woocommerce.android.support.HelpActivity
-import com.woocommerce.android.support.HelpActivity.Origin
 import com.woocommerce.android.support.ZendeskExtraTags
 import com.woocommerce.android.support.ZendeskHelper
+import com.woocommerce.android.support.help.HelpActivity
+import com.woocommerce.android.support.help.HelpActivity.Origin
 import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.login.LoginPrologueCarouselFragment.PrologueCarouselListener
 import com.woocommerce.android.ui.login.LoginPrologueFragment.PrologueFinishedListener
@@ -150,7 +150,6 @@ class LoginActivity :
     @Inject internal lateinit var appPrefsWrapper: AppPrefsWrapper
     @Inject internal lateinit var dispatcher: Dispatcher
     @Inject internal lateinit var loginNotificationScheduler: LoginNotificationScheduler
-
     @Inject internal lateinit var prologueExperiment: PrologueExperiment
     @Inject internal lateinit var uiMessageResolver: UIMessageResolver
 
@@ -367,10 +366,6 @@ class LoginActivity :
 
     override fun onNewToWooButtonClicked() {
         ChromeCustomTabUtils.launchUrl(this, AppUrls.NEW_TO_WOO_DOC)
-    }
-
-    override fun onGetStartedClicked() {
-        navController.navigate(LoginPrologueFragmentDirections.actionLoginPrologueFragmentToSignupFragment())
     }
 
     private fun showMainActivityAndFinish() {

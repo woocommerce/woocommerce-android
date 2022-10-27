@@ -1,11 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2022-10-11 14:54:04+0000
+Translation-Revision-Date: 2022-10-19 11:54:04+0000
 Plural-Forms: nplurals=6; plural=n==0 ? 0 : n==1 ? 1 : n==2 ? 2 : n%100>=3 && n%100<=10 ? 3 : n%100>=11 && n%100<=99 ? 4 : 5;
 Generator: GlotPress/2.4.0-alpha
 Language: ar
 -->
 <resources>
+    <string name="enable_card_reader">تمكين قارئ البطاقات المحاكي</string>
+    <string name="login_account_mismatch_connect_wpcom_dialog_message">يُرجى الاتصال بمالك الموقع للحصول على دعوة إلى الموقع كمدير متجر أو مسؤول استخدام التطبيق.</string>
+    <string name="login_account_mismatch_connect_wpcom_dialog_title">الاتصال بموقع ووردبريس.كوم</string>
+    <string name="login_account_mismatch_connect_wpcom">الاتصال بالموقع</string>
+    <string name="login_account_mismatch_connect_jetpack">ربط Jetpack بحسابك</string>
     <string name="qr_code_login_edit_camera_permission">تحرير الأذونات</string>
     <string name="qr_code_login_camera_permission_denied_message">لاستخدام هذه الميزة، يُرجى السماح بالأذونات لاستخدام الكاميرا لديك.</string>
     <string name="qr_code_login_camera_permission_denied_title">يلزم الوصول إلى الكاميرا</string>
@@ -26,7 +31,6 @@ Language: ar
     <string name="login_jetpack_verify_connection">جارٍ التحقُّق من اتصال Jetpack…</string>
     <string name="login_jetpack_connection_verification_failed">يتعذر التحقُّق من اتصال Jetpack الخاص بك. يرجى المحاولة مرة أخرى.</string>
     <string name="login_simple_wpcom_site">إنَّ الموقع ⁦%1$s⁩ مشترك في الوقت الحالي في خطة ووردبريس لا تدعم تثبيت إضافة. يرجى ترقية خطتك لاستخدام WooCommerce.</string>
-    <string name="login_connect_jetpack_button">ربط Jetpack بحسابك</string>
     <string name="login_jetpack_not_connected">يبدو أنَّ حسابك غير متصل بـ Jetpack الخاص بـ ⁦%1$s⁩</string>
     <string name="card_reader_card_readers_header">قراء البطاقات</string>
     <string name="card_reader_payment_options_header">خيارات الدفع</string>

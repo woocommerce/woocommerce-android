@@ -1,0 +1,2 @@
+10.8:
+Bu sürüm birkaç küçük iyileştirme ve ekibimizin bulduğu bazı hatalarla ilgili düzeltmeler içeriyor. Birkaç heyecan verici özellik üzerinde de çok çalışıyoruz ve bunları bu yıl içinde göreceksiniz. WooCommerce'i kullandığınız için teşekkürler!

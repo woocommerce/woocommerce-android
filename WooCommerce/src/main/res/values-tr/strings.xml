@@ -1,11 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2022-10-12 15:54:03+0000
+Translation-Revision-Date: 2022-10-20 09:54:03+0000
 Plural-Forms: nplurals=2; plural=(n > 1);
 Generator: GlotPress/2.4.0-alpha
 Language: tr
 -->
 <resources>
+    <string name="enable_card_reader">Kart Okuyucuyu Simülatörünü Etkinleştir</string>
+    <string name="login_account_mismatch_connect_wpcom_dialog_message">Uygulamayı kullanmak için mağaza yöneticisi veya yönetici olarak siteye davet için lütfen site sahibiyle iletişime geçin.</string>
+    <string name="login_account_mismatch_connect_wpcom_dialog_title">Bir WordPress.com sitesine bağlanıyor</string>
+    <string name="login_account_mismatch_connect_wpcom">Siteye bağlan</string>
+    <string name="login_account_mismatch_connect_jetpack">Jetpack\'i hesabınıza bağlayın</string>
     <string name="qr_code_login_edit_camera_permission">İzinleri düzenle</string>
     <string name="qr_code_login_camera_permission_denied_message">Bu özelliği kullanmak için lütfen kameranızın kullanımına izin verin.</string>
     <string name="qr_code_login_camera_permission_denied_title">Kamera Erişimi Gerekli</string>
@@ -26,7 +31,6 @@ Language: tr
     <string name="login_jetpack_verify_connection">Jetpack bağlantısı doğrulanıyor…</string>
     <string name="login_jetpack_connection_verification_failed">Jetpack bağlantınız doğrulanamıyor. Lütfen tekrar deneyin.</string>
     <string name="login_simple_wpcom_site">%1$s sitesinde şu anda eklenti yüklemeyi desteklemeyen bir WordPress.com paketi kullanılıyor. WooCommerce kullanabilmek için lütfen paketinizi yükseltin.</string>
-    <string name="login_connect_jetpack_button">Jetpack\'i hesabınıza bağlayın</string>
     <string name="login_jetpack_not_connected">Hesabınızın %1$s Jetpack\'e bağlı olmadığı anlaşılıyor</string>
     <string name="card_reader_card_readers_header">KART OKUYUCULAR</string>
     <string name="card_reader_payment_options_header">ÖDEME SEÇENEKLERİ</string>
