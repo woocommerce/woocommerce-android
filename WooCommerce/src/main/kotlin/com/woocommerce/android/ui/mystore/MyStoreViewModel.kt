@@ -37,7 +37,6 @@ import com.woocommerce.android.ui.mystore.domain.GetTopPerformers.TopPerformerPr
 import com.woocommerce.android.ui.payments.banner.BannerState
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.util.UtmProvider
-import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.ResourceProvider
 import com.woocommerce.android.viewmodel.ScopedViewModel
@@ -154,13 +153,13 @@ class MyStoreViewModel @Inject constructor(
             !response.model.isNullOrEmpty() -> {
                 val model = response.model!!
                 trackJitmFetchSuccessEvent(
-                    response.model!!.map {
+                    model.map {
                         it.id
                     }
                 )
                 trackJitmDisplayedEvent(
-                    response.model!![0].id,
-                    response.model!![0].featureClass
+                    model[0].id,
+                    model[0].featureClass
                 )
                 _bannerState.value = BannerState(
                     shouldDisplayBanner = true,
