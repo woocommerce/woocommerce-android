@@ -24,10 +24,20 @@ class DeveloperOptionsTest : BaseUnitTest() {
     }
 
     @Test
-    fun `when dev options screen accessed, then enable simulated reader row is displayed`() {
+    fun `when dev options screen accessed, then enable simulated reader label is displayed`() {
 
         val simulatedReaderRow = viewModel.viewStateData.value?.rows?.find {
             it.label == UiString.UiStringRes(R.string.enable_card_reader)
+        }
+
+        assertThat(simulatedReaderRow).isNotNull
+    }
+
+    @Test
+    fun `when dev options screen accessed, then enable simulated reader icon is displayed`() {
+
+        val simulatedReaderRow = viewModel.viewStateData.value?.rows?.find {
+            it.icon == R.drawable.img_card_reader_connecting
         }
 
         assertThat(simulatedReaderRow).isNotNull
