@@ -1,11 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2022-10-12 13:54:04+0000
+Translation-Revision-Date: 2022-10-20 23:54:04+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: nl
 -->
 <resources>
+    <string name="enable_card_reader">Gesimuleerde kaartlezer inschakelen</string>
+    <string name="login_account_mismatch_connect_wpcom_dialog_message">Neem contact op met de eigenaar van de site voor een uitnodiging om als winkelmanager of beheerder de app te gebruiken.</string>
+    <string name="login_account_mismatch_connect_wpcom_dialog_title">Verbinden met een WordPress.com site</string>
+    <string name="login_account_mismatch_connect_wpcom">Koppel je site</string>
+    <string name="login_account_mismatch_connect_jetpack">Koppel Jetpack aan je account</string>
     <string name="qr_code_login_edit_camera_permission">Machtigingen bewerken</string>
     <string name="qr_code_login_camera_permission_denied_message">Je moet ons toegang tot je camera geven om deze functie te kunnen gebruiken.</string>
     <string name="qr_code_login_camera_permission_denied_title">Toegang tot camera is vereist</string>
@@ -26,7 +31,6 @@ Language: nl
     <string name="login_jetpack_verify_connection">Ophalen koppelingsgegevens mislukt…</string>
     <string name="login_jetpack_connection_verification_failed">Kan je Jetpack-verbinding niet verifiëren. Probeer het nog eens.</string>
     <string name="login_simple_wpcom_site">De site %1$s maakt momenteel gebruik van een WordPress.com-abonnement dat de installatie van plugins niet ondersteunt. Upgrade je abonnement om WooCommerce te kunnen gebruiken</string>
-    <string name="login_connect_jetpack_button">Koppel Jetpack aan je account</string>
     <string name="login_jetpack_not_connected">Het lijkt erop dat je account niet is verbonden met de Jetpack van %1$s</string>
     <string name="card_reader_card_readers_header">KAARTLEZERS</string>
     <string name="card_reader_payment_options_header">BETALINGSOPTIES</string>

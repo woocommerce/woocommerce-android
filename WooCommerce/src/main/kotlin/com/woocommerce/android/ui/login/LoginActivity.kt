@@ -150,7 +150,6 @@ class LoginActivity :
     @Inject internal lateinit var appPrefsWrapper: AppPrefsWrapper
     @Inject internal lateinit var dispatcher: Dispatcher
     @Inject internal lateinit var loginNotificationScheduler: LoginNotificationScheduler
-
     @Inject internal lateinit var prologueExperiment: PrologueExperiment
     @Inject internal lateinit var uiMessageResolver: UIMessageResolver
 
@@ -367,10 +366,6 @@ class LoginActivity :
 
     override fun onNewToWooButtonClicked() {
         ChromeCustomTabUtils.launchUrl(this, AppUrls.NEW_TO_WOO_DOC)
-    }
-
-    override fun onGetStartedClicked() {
-        navController.navigate(LoginPrologueFragmentDirections.actionLoginPrologueFragmentToSignupFragment())
     }
 
     private fun showMainActivityAndFinish() {
