@@ -913,9 +913,6 @@ class MyStoreViewModelTest : BaseUnitTest() {
             givenNetworkConnectivity(connected = true)
             whenever(selectedSite.get()).thenReturn(SiteModel())
             whenever(
-                wooCommerceStore.getStoreCountryCode(any())
-            ).thenReturn("US")
-            whenever(
                 jitmStore.fetchJitmMessage(any(), any())
             ).thenReturn(
                 WooResult(
@@ -939,9 +936,6 @@ class MyStoreViewModelTest : BaseUnitTest() {
         testBlocking {
             givenNetworkConnectivity(connected = true)
             whenever(selectedSite.get()).thenReturn(SiteModel())
-            whenever(
-                wooCommerceStore.getStoreCountryCode(any())
-            ).thenReturn("US")
             whenever(
                 jitmStore.fetchJitmMessage(any(), any())
             ).thenReturn(
