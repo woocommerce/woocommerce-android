@@ -124,10 +124,6 @@ internal class IAPManager(
                 "queryProductDetails result: ${productDetailsResult.billingResult}, " +
                     "${productDetailsResult.productDetailsList?.joinToString { ", " }}"
             )
-            logWrapper.d(
-                IAP_LOG_TAG,
-                productDetailsResult.productDetailsList!!.first().toString()
-            )
             if (productDetailsResult.billingResult.isSuccess) {
                 if (productDetailsResult.productDetailsList.isNullOrEmpty()) {
                     Error(IAPError.Billing.ItemUnavailable("Item $iapProductName not found"))
