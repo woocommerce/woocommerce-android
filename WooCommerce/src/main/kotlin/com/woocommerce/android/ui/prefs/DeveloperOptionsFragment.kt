@@ -38,10 +38,4 @@ class DeveloperOptionsFragment : BaseFragment(R.layout.fragment_developer_option
     }
 
     override fun getFragmentTitle() = resources.getString(R.string.dev_options)
-
-    override fun onResume() {
-        super.onResume()
-
-        viewModel.onViewVisible()
-    }
 }
