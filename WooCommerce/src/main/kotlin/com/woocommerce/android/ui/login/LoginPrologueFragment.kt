@@ -71,6 +71,7 @@ open class LoginPrologueFragment(@LayoutRes layout: Int) : Fragment(layout) {
         // Various updates related to Simplified Login A/B testing.
         if (isSimplifiedLoginVariant) {
             binding.newToWooButton.text = getString(R.string.login_prologue_learn_more_about_woo)
+            binding.buttonLoginWpcom.text = getString(R.string.log_in)
 
             binding.buttonLoginStore.hide()
             binding.buttonGetStarted.hide()
