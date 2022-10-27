@@ -15,6 +15,7 @@ import com.woocommerce.android.iap.internal.core.IAPPurchasesUpdatedListener
 import com.woocommerce.android.iap.internal.model.IAPSupportedResult
 import com.woocommerce.android.iap.internal.network.IAPMobilePayAPI
 import com.woocommerce.android.iap.internal.planpurchase.IAPPurchaseWPComPlanActionsImpl
+import com.woocommerce.android.iap.pub.model.IAPError
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runTest
 import org.assertj.core.api.Assertions.assertThat
@@ -47,7 +48,6 @@ class IAPPurchaseWPComPlanActionsTest {
             logWrapperMock
         )
 
-
         sut = IAPPurchaseWPComPlanActionsImpl(
             iapMobilePayAPI = mobilePayAPIMock,
             iapManager = buildIapManager(iapLifecycleObserver, purchasesUpdatedListener)
@@ -65,7 +65,7 @@ class IAPPurchaseWPComPlanActionsTest {
         val productDetails = buildProductDetails("AED")
         whenever(billingClientMock.queryProductDetails(any())).thenReturn(
             ProductDetailsResult(
-                buildBillingResultWithOkResponse(),
+                buildBillingResult(BillingClient.BillingResponseCode.OK),
                 listOf(productDetails)
             )
         )
@@ -75,6 +75,47 @@ class IAPPurchaseWPComPlanActionsTest {
 
         // THEN
         assertThat((result as IAPSupportedResult.Success).isSupported).isFalse()
+    }
+
+    @Test
+    fun `given product USD currency, when iap support checked, then success with true returned`() = runTest {
+        // GIVEN
+        val productDetails = buildProductDetails("USD")
+        whenever(billingClientMock.queryProductDetails(any())).thenReturn(
+            ProductDetailsResult(
+                buildBillingResult(BillingClient.BillingResponseCode.OK),
+                listOf(productDetails)
+            )
+        )
+
+        // WHEN
+        val result = sut.isIAPSupported()
+
+        // THEN
+        assertThat((result as IAPSupportedResult.Success).isSupported).isTrue()
+    }
+
+    @Test
+    fun `given product fetching error, when iap support checked, then error returned`() = runTest {
+        // GIVEN
+        val productDetails = buildProductDetails("USD")
+        val responseCode = BillingClient.BillingResponseCode.DEVELOPER_ERROR
+        val debugMessage = "debug message"
+        whenever(billingClientMock.queryProductDetails(any())).thenReturn(
+            ProductDetailsResult(
+                buildBillingResult(responseCode, debugMessage),
+                listOf(productDetails)
+            )
+        )
+
+        // WHEN
+        val result = sut.isIAPSupported()
+
+        // THEN
+        assertThat((result as IAPSupportedResult.Error).errorType).isInstanceOf(
+            IAPError.Billing.DeveloperError::class.java
+        )
+        assertThat((result.errorType as IAPError.Billing).debugMessage).isEqualTo(debugMessage)
     }
     //endregion
 
@@ -86,11 +127,14 @@ class IAPPurchaseWPComPlanActionsTest {
         }
     }
 
-    private fun buildBillingResultWithOkResponse() = BillingResult
+    private fun buildBillingResult(
+        @BillingClient.BillingResponseCode responseCode: Int,
+        debugMessage: String = ""
+    ) = BillingResult
         .newBuilder()
-        .setResponseCode(
-            BillingClient.BillingResponseCode.OK
-        ).build()
+        .setResponseCode(responseCode)
+        .setDebugMessage(debugMessage)
+        .build()
 
     private fun buildIapManager(
         iapLifecycleObserver: IAPLifecycleObserver,
