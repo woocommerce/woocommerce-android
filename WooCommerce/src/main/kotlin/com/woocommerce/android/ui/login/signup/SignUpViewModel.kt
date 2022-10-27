@@ -38,7 +38,7 @@ class SignUpViewModel @Inject constructor(
     }
 
     fun onLoginClicked() {
-        triggerEvent(OnTermsOfServiceClicked)
+        triggerEvent(OnLoginClicked)
     }
 
     fun onGetStartedCLicked(email: String, password: String) {
@@ -114,4 +114,5 @@ class SignUpViewModel @Inject constructor(
 
     object OnTermsOfServiceClicked : MultiLiveEvent.Event()
     object NavigateToNextStep : MultiLiveEvent.Event()
+    object OnLoginClicked : MultiLiveEvent.Event()
 }

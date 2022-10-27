@@ -965,6 +965,10 @@ class LoginActivity :
         changeFragment(storeCreationFragment, shouldAddToBackStack = true, tag = StoreCreationFragment.TAG)
     }
 
+    override fun onLoginClicked() {
+        startLoginViaWPCom()
+    }
+
     private fun processLoginHelpNotification(loginHelpNotification: String) {
         when (LoginHelpNotificationType.fromString(loginHelpNotification)) {
             LOGIN_SITE_ADDRESS_ERROR -> startLoginViaWPCom()
