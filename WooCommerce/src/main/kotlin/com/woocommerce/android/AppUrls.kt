@@ -1,8 +1,8 @@
 package com.woocommerce.android
 
-import com.woocommerce.android.support.HelpActivity.Origin.LOGIN_EMAIL
-import com.woocommerce.android.support.HelpActivity.Origin.LOGIN_SITE_ADDRESS
-import com.woocommerce.android.support.HelpActivity.Origin.LOGIN_USERNAME_PASSWORD
+import com.woocommerce.android.support.help.HelpActivity.Origin.LOGIN_EMAIL
+import com.woocommerce.android.support.help.HelpActivity.Origin.LOGIN_SITE_ADDRESS
+import com.woocommerce.android.support.help.HelpActivity.Origin.LOGIN_USERNAME_PASSWORD
 
 object AppUrls {
     const val APP_HELP_CENTER = "https://docs.woocommerce.com/document/android/"

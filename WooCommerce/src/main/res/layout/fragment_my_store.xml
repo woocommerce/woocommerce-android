@@ -42,7 +42,8 @@
                     <androidx.compose.ui.platform.ComposeView
                         android:id="@+id/jitmView"
                         android:layout_width="match_parent"
-                        android:layout_height="wrap_content" />
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="@dimen/minor_100"/>
 
                     <!-- Order stats -->
                     <com.woocommerce.android.ui.mystore.MyStoreStatsView

@@ -4,7 +4,7 @@ import java.math.BigDecimal
 
 data class PaymentInfo(
     val paymentDescription: String,
-    val statementDescriptor: String?,
+    val statementDescriptor: StatementDescriptor,
     val orderId: Long,
     val amount: BigDecimal,
     val currency: String,
