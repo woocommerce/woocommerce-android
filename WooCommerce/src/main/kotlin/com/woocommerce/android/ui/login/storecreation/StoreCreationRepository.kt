@@ -16,7 +16,7 @@ class StoreCreationRepository @Inject constructor(
     private val siteStore: SiteStore
 ) {
     companion object {
-        private const val SITE_CHECK_DELAY = 2000L
+        private const val SITE_CHECK_DELAY = 5000L
     }
 
     fun selectSite(site: SiteModel) {
