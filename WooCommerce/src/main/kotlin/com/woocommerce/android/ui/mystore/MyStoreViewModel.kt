@@ -179,7 +179,7 @@ class MyStoreViewModel @Inject constructor(
             AnalyticsEvent.JITM_FETCH_FAILURE,
             mapOf(
                 KEY_SOURCE to UTM_SOURCE,
-                KEY_ERROR_TYPE to type,
+                KEY_ERROR_TYPE to type.name,
                 KEY_ERROR_DESC to message
             )
         )

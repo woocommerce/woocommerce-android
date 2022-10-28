@@ -853,7 +853,7 @@ class MyStoreViewModelTest : BaseUnitTest() {
                 AnalyticsEvent.JITM_FETCH_FAILURE,
                 mapOf(
                     AnalyticsTracker.KEY_SOURCE to MyStoreViewModel.UTM_SOURCE,
-                    AnalyticsTracker.KEY_ERROR_TYPE to WooErrorType.GENERIC_ERROR,
+                    AnalyticsTracker.KEY_ERROR_TYPE to WooErrorType.GENERIC_ERROR.name,
                     AnalyticsTracker.KEY_ERROR_DESC to "Generic error"
                 )
             )
