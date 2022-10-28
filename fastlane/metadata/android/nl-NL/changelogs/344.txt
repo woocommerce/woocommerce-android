@@ -1,2 +1,0 @@
-10.8:
-Deze release omvat een aantal kleine verbeteringen en bugfixes die ons team heeft gevonden. We zijn ook hard aan het werk aan een aantal spannende functies - dat zal je later dit jaar zien. Bedankt dat je WooCommerce gebruikt!

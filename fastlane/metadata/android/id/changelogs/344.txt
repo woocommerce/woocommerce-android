@@ -1,2 +1,0 @@
-10.8:
-Rilis ini menghadirkan penyempurnaan minor dan memperbaiki bug yang tim kami temukan. Kami juga sedang bekerja keras mengembangkan berbagai fitur menarik yang akan meluncur tahun ini! Terima kasih telah menggunakan WooCommerce!
