@@ -74,10 +74,6 @@ open class LoginPrologueFragment(@LayoutRes layout: Int) : Fragment(layout) {
             binding.buttonLoginWpcom.text = getString(R.string.log_in)
 
             binding.buttonLoginStore.hide()
-            binding.buttonGetStarted.hide()
-
-            binding.buttonCreateStore.isVisible = FeatureFlag.STORE_CREATION_WEBVIEW_FLOW.isEnabled()
-
             binding.prologueTitle.hide()
             binding.prologueSimplifiedLoginTitle.show()
         }
