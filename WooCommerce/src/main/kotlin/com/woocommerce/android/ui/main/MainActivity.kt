@@ -46,16 +46,16 @@ import com.woocommerce.android.extensions.expand
 import com.woocommerce.android.extensions.hide
 import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.model.Notification
-import com.woocommerce.android.support.HelpActivity
-import com.woocommerce.android.support.HelpActivity.Origin
+import com.woocommerce.android.support.help.HelpActivity
+import com.woocommerce.android.support.help.HelpActivity.Origin
 import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.ui.analytics.daterangeselector.AnalyticTimePeriod
 import com.woocommerce.android.ui.appwidgets.WidgetUpdater
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.base.TopLevelFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.feedback.SurveyType
 import com.woocommerce.android.ui.login.LoginActivity
-import com.woocommerce.android.ui.main.BottomNavigationPosition.ANALYTICS
 import com.woocommerce.android.ui.main.BottomNavigationPosition.MORE
 import com.woocommerce.android.ui.main.BottomNavigationPosition.MY_STORE
 import com.woocommerce.android.ui.main.BottomNavigationPosition.ORDERS
@@ -573,8 +573,8 @@ class MainActivity :
         startActivityForResult(intent, RequestCodes.SETTINGS)
     }
 
-    override fun showAnalytics() {
-        val action = MyStoreFragmentDirections.actionMyStoreToAnalytics()
+    override fun showAnalytics(targetPeriod: AnalyticTimePeriod) {
+        val action = MyStoreFragmentDirections.actionMyStoreToAnalytics(targetPeriod)
         navController.navigateSafely(action)
     }
 
@@ -638,7 +638,6 @@ class MainActivity :
     override fun onNavItemSelected(navPos: BottomNavigationPosition) {
         val stat = when (navPos) {
             MY_STORE -> AnalyticsEvent.MAIN_TAB_DASHBOARD_SELECTED
-            ANALYTICS -> AnalyticsEvent.MAIN_TAB_ANALYTICS_SELECTED
             ORDERS -> AnalyticsEvent.MAIN_TAB_ORDERS_SELECTED
             PRODUCTS -> AnalyticsEvent.MAIN_TAB_PRODUCTS_SELECTED
             MORE -> AnalyticsEvent.MAIN_TAB_HUB_MENU_SELECTED
@@ -653,7 +652,6 @@ class MainActivity :
     override fun onNavItemReselected(navPos: BottomNavigationPosition) {
         val stat = when (navPos) {
             MY_STORE -> AnalyticsEvent.MAIN_TAB_DASHBOARD_RESELECTED
-            ANALYTICS -> AnalyticsEvent.MAIN_TAB_ANALYTICS_RESELECTED
             ORDERS -> AnalyticsEvent.MAIN_TAB_ORDERS_RESELECTED
             PRODUCTS -> AnalyticsEvent.MAIN_TAB_PRODUCTS_RESELECTED
             MORE -> AnalyticsEvent.MAIN_TAB_HUB_MENU_RESELECTED

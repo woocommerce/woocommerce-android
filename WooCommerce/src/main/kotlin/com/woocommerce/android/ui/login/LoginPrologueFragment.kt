@@ -6,7 +6,6 @@ import android.view.View
 import androidx.annotation.LayoutRes
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
-import androidx.navigation.fragment.findNavController
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
@@ -31,6 +30,7 @@ open class LoginPrologueFragment(@LayoutRes layout: Int) : Fragment(layout) {
         fun onPrimaryButtonClicked()
         fun onSecondaryButtonClicked()
         fun onNewToWooButtonClicked()
+        fun onGetStartedClicked()
     }
 
     constructor() : this(R.layout.fragment_login_prologue)
@@ -65,7 +65,7 @@ open class LoginPrologueFragment(@LayoutRes layout: Int) : Fragment(layout) {
 
         binding.buttonGetStarted.isVisible = FeatureFlag.ACCOUNT_CREATION_FLOW.isEnabled()
         binding.buttonGetStarted.setOnClickListener {
-            findNavController().navigate(LoginPrologueFragmentDirections.actionLoginPrologueFragmentToSignupFragment())
+            prologueFinishedListener?.onGetStartedClicked()
         }
 
         // Various updates related to Simplified Login A/B testing.
