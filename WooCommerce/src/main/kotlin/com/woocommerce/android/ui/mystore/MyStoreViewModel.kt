@@ -148,33 +148,29 @@ class MyStoreViewModel @Inject constructor(
     }
 
     private fun populateResultToUI(response: WooResult<Array<JITMApiResponse>>) {
-        when {
-            !response.model.isNullOrEmpty() -> {
-                val model = response.model!!
-                trackJitmFetchSuccessEvent(model[0].id, model.size)
-                _bannerState.value = BannerState(
-                    shouldDisplayBanner = true,
-                    onPrimaryActionClicked = { onJitmCtaClicked(model[0].cta.link) },
-                    onDismissClicked = {
-                        onJitmDismissClicked(
-                            model[0].id,
-                            model[0].featureClass
-                        )
-                    },
-                    title = UiString.UiStringText(model[0].content.message),
-                    description = UiString.UiStringText(model[0].content.description),
-                    primaryActionLabel = UiString.UiStringText(model[0].cta.message),
-                    chipLabel = UiString.UiStringRes(R.string.card_reader_upsell_card_reader_banner_new)
-                )
-            }
-            !response.isError && response.model.isNullOrEmpty() -> {
-                // JITM fetch api succeeded but there aren't any JITMs to display at the moment
-                trackJitmFetchSuccessEvent()
-            }
-            else -> {
-                trackJitmFetchFailureEvent(response.error.type, response.error.message)
-            }
+        if (response.isError) {
+            trackJitmFetchFailureEvent(response.error.type, response.error.message)
+            WooLog.e(WooLog.T.JITM, "Failed to fetch JITM for the message path $JITM_MESSAGE_PATH")
+            return
         }
+
+        trackJitmFetchSuccessEvent(response.model?.getOrNull(0)?.id, response.model?.size)
+        response.model?.getOrNull(0)?.let { model: JITMApiResponse ->
+            _bannerState.value = BannerState(
+                shouldDisplayBanner = true,
+                onPrimaryActionClicked = { onJitmCtaClicked(model.cta.link) },
+                onDismissClicked = {
+                    onJitmDismissClicked(
+                        model.id,
+                        model.featureClass
+                    )
+                },
+                title = UiString.UiStringText(model.content.message),
+                description = UiString.UiStringText(model.content.description),
+                primaryActionLabel = UiString.UiStringText(model.cta.message),
+                chipLabel = UiString.UiStringRes(R.string.card_reader_upsell_card_reader_banner_new)
+            )
+        } ?: WooLog.i(WooLog.T.JITM, "No JITM Campaign in progress")
     }
 
     private fun trackJitmFetchFailureEvent(type: WooErrorType, message: String?) {

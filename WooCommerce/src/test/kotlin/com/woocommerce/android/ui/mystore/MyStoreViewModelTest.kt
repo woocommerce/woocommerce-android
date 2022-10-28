@@ -728,7 +728,7 @@ class MyStoreViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `given jitm success, when viewmodel init, then jitm fetch success is tracked with correct jitm ids`() {
+    fun `given jitm success, when viewmodel init, then jitm fetch success is tracked with highest score jitm id`() {
         testBlocking {
             givenNetworkConnectivity(connected = true)
             whenever(selectedSite.get()).thenReturn(SiteModel())
@@ -799,7 +799,7 @@ class MyStoreViewModelTest : BaseUnitTest() {
                 mapOf(
                     KEY_SOURCE to MyStoreViewModel.UTM_SOURCE,
                     KEY_JITM to null,
-                    KEY_JITM_COUNT to null
+                    KEY_JITM_COUNT to 0
                 )
             )
         }
