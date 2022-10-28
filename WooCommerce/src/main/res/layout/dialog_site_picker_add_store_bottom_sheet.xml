@@ -5,6 +5,7 @@
     android:orientation="vertical">
 
     <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/createNewStoreButton"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="?android:attr/selectableItemBackground"
@@ -13,6 +14,7 @@
         android:textAppearance="?attr/textAppearanceSubtitle1" />
 
     <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/connectExistingStoreButton"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="?android:attr/selectableItemBackground"

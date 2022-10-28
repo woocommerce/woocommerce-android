@@ -34,7 +34,6 @@ import com.woocommerce.android.ui.sitepicker.SitePickerViewModel.SitePickerEvent
 import com.woocommerce.android.ui.sitepicker.SitePickerViewModel.SitePickerEvent.NavigateToHelpFragmentEvent
 import com.woocommerce.android.ui.sitepicker.SitePickerViewModel.SitePickerEvent.NavigateToMainActivityEvent
 import com.woocommerce.android.ui.sitepicker.SitePickerViewModel.SitePickerEvent.NavigateToNewToWooEvent
-import com.woocommerce.android.ui.sitepicker.SitePickerViewModel.SitePickerEvent.NavigateToStoreCreationEvent
 import com.woocommerce.android.ui.sitepicker.SitePickerViewModel.SitePickerEvent.NavigateToWPComWebView
 import com.woocommerce.android.ui.sitepicker.SitePickerViewModel.SitePickerEvent.ShowWooUpgradeDialogEvent
 import com.woocommerce.android.ui.sitepicker.SitePickerViewModel.SitePickerState.NoStoreState
@@ -167,7 +166,6 @@ class SitePickerFragment : BaseFragment(R.layout.fragment_site_picker), LoginEma
                 is NavigateToAddStoreEvent -> navigateToAddStoreScreen()
                 is NavigateToEmailHelpDialogEvent -> navigateToNeedHelpFindingEmailScreen()
                 is NavigateToWPComWebView -> navigateToWPComWebView(event)
-                is NavigateToStoreCreationEvent -> navigateToStoreCreation()
                 is NavigateToAccountMismatchScreen -> navigateToAccountMismatchScreen(event)
                 is ShowSnackbar -> uiMessageResolver.getSnack(stringResId = event.message, stringArgs = event.args)
                     .show()
@@ -177,12 +175,6 @@ class SitePickerFragment : BaseFragment(R.layout.fragment_site_picker), LoginEma
                 else -> event.isHandled = false
             }
         }
-    }
-
-    private fun navigateToStoreCreation() {
-        findNavController().navigateSafely(
-            SitePickerFragmentDirections.actionSitePickerFragmentToWebViewStoreCreationFragment()
-        )
     }
 
     private fun handleResults() {
