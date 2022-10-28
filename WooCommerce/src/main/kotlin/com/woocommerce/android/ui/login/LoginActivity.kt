@@ -60,6 +60,7 @@ import com.woocommerce.android.ui.login.storecreation.StoreCreationFragment
 import com.woocommerce.android.ui.main.MainActivity
 import com.woocommerce.android.util.ActivityUtils
 import com.woocommerce.android.util.ChromeCustomTabUtils
+import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.util.UrlUtils
 import com.woocommerce.android.util.WooLog
 import dagger.android.AndroidInjector
@@ -958,11 +959,18 @@ class LoginActivity :
     }
 
     override fun onAccountCreated() {
-        val storeCreationFragment =
-            supportFragmentManager.findFragmentByTag(StoreCreationFragment.TAG) as? StoreCreationFragment
-                ?: StoreCreationFragment()
+        if (FeatureFlag.STORE_CREATION_WEBVIEW_FLOW.isEnabled()) {
+            showMainActivityAndFinish()
+        } else {
+            val storeCreationFragment =
+                supportFragmentManager.findFragmentByTag(StoreCreationFragment.TAG) as? StoreCreationFragment
+                    ?: StoreCreationFragment()
+            changeFragment(storeCreationFragment, shouldAddToBackStack = true, tag = StoreCreationFragment.TAG)
+        }
+    }
 
-        changeFragment(storeCreationFragment, shouldAddToBackStack = true, tag = StoreCreationFragment.TAG)
+    override fun onLoginClicked() {
+        startLoginViaWPCom()
     }
 
     private fun processLoginHelpNotification(loginHelpNotification: String) {

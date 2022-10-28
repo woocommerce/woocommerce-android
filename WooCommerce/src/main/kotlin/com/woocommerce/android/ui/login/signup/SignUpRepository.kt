@@ -2,6 +2,7 @@ package com.woocommerce.android.ui.login.signup
 
 import android.util.Patterns
 import androidx.core.text.isDigitsOnly
+import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.ui.login.signup.SignUpRepository.SignUpError.EMAIL_EXIST
 import com.woocommerce.android.ui.login.signup.SignUpRepository.SignUpError.EMAIL_INVALID
 import com.woocommerce.android.ui.login.signup.SignUpRepository.SignUpError.PASSWORD_INVALID
@@ -20,7 +21,8 @@ import javax.inject.Inject
 
 class SignUpRepository @Inject constructor(
     private val signUpStore: SignUpStore,
-    private val dispatcher: Dispatcher
+    private val dispatcher: Dispatcher,
+    private val prefsWrapper: AppPrefsWrapper
 ) {
     private companion object {
         const val EMAIL_EXIST_API_ERROR = "email_exists"
@@ -75,6 +77,7 @@ class SignUpRepository @Inject constructor(
                 AccountCreationError(UNKNOWN_ERROR)
             } else {
                 WooLog.w(WooLog.T.LOGIN, "Success creating new account")
+                prefsWrapper.markAsNewSignUp(true)
                 AccountCreationSuccess
             }
         }

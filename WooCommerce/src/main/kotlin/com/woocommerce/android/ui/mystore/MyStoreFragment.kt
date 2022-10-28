@@ -3,16 +3,12 @@ package com.woocommerce.android.ui.mystore
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
-import android.view.Menu
-import android.view.MenuInflater
-import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup.LayoutParams
-import androidx.core.view.MenuProvider
+import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.core.view.children
 import androidx.core.view.isVisible
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.Lifecycle.State
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import com.google.android.material.appbar.AppBarLayout
@@ -29,6 +25,7 @@ import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.ExperimentTracker
 import com.woocommerce.android.databinding.FragmentMyStoreBinding
+import com.woocommerce.android.extensions.hide
 import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.extensions.scrollStartEvents
 import com.woocommerce.android.extensions.setClickableText
@@ -38,17 +35,21 @@ import com.woocommerce.android.support.help.HelpActivity.Origin
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.base.TopLevelFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
+import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.ui.main.AppBarStatus
 import com.woocommerce.android.ui.main.MainActivity
 import com.woocommerce.android.ui.main.MainNavigationRouter
+import com.woocommerce.android.ui.mystore.MyStoreViewModel.MyStoreEvent.OnJitmCtaClicked
+import com.woocommerce.android.ui.mystore.MyStoreViewModel.MyStoreEvent.OpenAnalytics
 import com.woocommerce.android.ui.mystore.MyStoreViewModel.MyStoreEvent.OpenTopPerformer
 import com.woocommerce.android.ui.mystore.MyStoreViewModel.OrderState
 import com.woocommerce.android.ui.mystore.MyStoreViewModel.RevenueStatsViewState
 import com.woocommerce.android.ui.mystore.MyStoreViewModel.VisitorStatsViewState
+import com.woocommerce.android.ui.payments.banner.Banner
+import com.woocommerce.android.ui.payments.banner.BannerState
 import com.woocommerce.android.util.ActivityUtils
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.util.DateUtils
-import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.util.WooAnimUtils
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.widgets.WCEmptyView.EmptyViewType
@@ -65,7 +66,7 @@ import kotlin.math.abs
 
 @AndroidEntryPoint
 @OptIn(FlowPreview::class)
-class MyStoreFragment : TopLevelFragment(R.layout.fragment_my_store), MenuProvider {
+class MyStoreFragment : TopLevelFragment(R.layout.fragment_my_store) {
     companion object {
         val TAG: String = MyStoreFragment::class.java.simpleName
 
@@ -125,8 +126,6 @@ class MyStoreFragment : TopLevelFragment(R.layout.fragment_my_store), MenuProvid
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        requireActivity().addMenuProvider(this, viewLifecycleOwner, State.RESUMED)
-
         initTabLayout()
 
         _binding = FragmentMyStoreBinding.bind(view)
@@ -154,7 +153,7 @@ class MyStoreFragment : TopLevelFragment(R.layout.fragment_my_store), MenuProvid
             currencyFormatter,
             usageTracksEventEmitter,
             viewLifecycleOwner.lifecycleScope
-        )
+        ) { viewModel.onViewAnalyticsClicked() }
 
         binding.myStoreTopPerformers.initView(selectedSite)
 
@@ -179,7 +178,23 @@ class MyStoreFragment : TopLevelFragment(R.layout.fragment_my_store), MenuProvid
         setupStateObservers()
     }
 
-    @Suppress("ComplexMethod", "MagicNumber")
+    private fun applyBannerComposeUI(state: BannerState) {
+        if (state.shouldDisplayBanner) {
+            binding.jitmView.apply {
+                // Dispose of the Composition when the view's LifecycleOwner is destroyed
+                setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
+                setContent {
+                    WooThemeWithBackground {
+                        Banner(bannerState = state)
+                    }
+                }
+            }
+        } else {
+            binding.jitmView.hide()
+        }
+    }
+
+    @Suppress("ComplexMethod", "MagicNumber", "LongMethod")
     private fun setupStateObservers() {
         viewModel.activeStatsGranularity.observe(viewLifecycleOwner) { activeGranularity ->
             if (tabLayout.getTabAt(tabLayout.selectedTabPosition)?.tag != activeGranularity) {
@@ -221,6 +236,9 @@ class MyStoreFragment : TopLevelFragment(R.layout.fragment_my_store), MenuProvid
                 OrderState.AtLeastOne -> showEmptyView(false)
             }
         }
+        viewModel.bannerState.observe(viewLifecycleOwner) { bannerState ->
+            applyBannerComposeUI(bannerState)
+        }
         viewModel.event.observe(viewLifecycleOwner) { event ->
             when (event) {
                 is OpenTopPerformer -> findNavController().navigateSafely(
@@ -229,23 +247,20 @@ class MyStoreFragment : TopLevelFragment(R.layout.fragment_my_store), MenuProvid
                         isTrashEnabled = false
                     )
                 )
+                is OpenAnalytics -> {
+                    mainNavigationRouter?.showAnalytics(event.analyticsPeriod)
+                }
+                is OnJitmCtaClicked -> {
+                    findNavController().navigate(
+                        NavGraphMainDirections.actionGlobalWPComWebViewFragment(
+                            urlToLoad = event.url,
+                            title = resources.getString(event.titleRes)
+                        )
+                    )
+                }
                 else -> event.isHandled = false
             }
         }
-    }
-
-    override fun onCreateMenu(menu: Menu, inflater: MenuInflater) {
-        if (FeatureFlag.ANALYTICS_HUB.isEnabled()) {
-            inflater.inflate(R.menu.menu_analytics, menu)
-        }
-    }
-
-    override fun onMenuItemSelected(menuItem: MenuItem): Boolean {
-        if (menuItem.itemId == R.id.menu_analytics) {
-            mainNavigationRouter?.showAnalytics()
-            return true
-        }
-        return false
     }
 
     private fun onJetpackCpConnected(benefitsBanner: BenefitsBannerUiModel) {

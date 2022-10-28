@@ -147,7 +147,13 @@ enum class AnalyticsEvent(val siteless: Boolean = false) {
     DASHBOARD_NEW_STATS_AVAILABILITY_BANNER_CANCEL_TAPPED,
     DASHBOARD_NEW_STATS_AVAILABILITY_BANNER_TRY_TAPPED,
     DASHBOARD_WAITING_TIME_LOADED,
+    DASHBOARD_SEE_MORE_ANALYTICS_TAPPED,
     USED_ANALYTICS,
+
+    // -- Analytics Hub
+    ANALYTICS_HUB_DATE_RANGE_BUTTON_TAPPED,
+    ANALYTICS_HUB_DATE_RANGE_SELECTED,
+    ANALYTICS_HUB_SEE_REPORT_TAPPED,
 
     // -- Orders List
     ORDERS_LIST_FILTER,
@@ -173,6 +179,15 @@ enum class AnalyticsEvent(val siteless: Boolean = false) {
     FEATURE_CARD_SHOWN,
     FEATURE_CARD_DISMISSED,
     FEATURE_CARD_CTA_TAPPED,
+
+    // -- Just In Time Messages
+    JITM_FETCH_SUCCESS,
+    JITM_FETCH_FAILURE,
+    JITM_DISPLAYED,
+    JITM_CTA_TAPPED,
+    JITM_DISMISS_TAPPED,
+    JITM_DISMISS_SUCCESS,
+    JITM_DISMISS_FAILURE,
 
     // -- Simple Payments
     SIMPLE_PAYMENTS_FLOW_STARTED,
@@ -702,4 +717,7 @@ enum class AnalyticsEvent(val siteless: Boolean = false) {
     // App links
     UNIVERSAL_LINK_OPENED,
     UNIVERSAL_LINK_FAILED,
+
+    // Analytics Hub
+    ANALYTICS_HUB_WAITING_TIME_LOADED
 }

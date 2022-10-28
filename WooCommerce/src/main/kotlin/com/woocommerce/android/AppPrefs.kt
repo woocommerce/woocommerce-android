@@ -96,7 +96,8 @@ object AppPrefs {
         CARD_READER_UPSELL_BANNER_DIALOG_DISMISSED_REMIND_ME_LATER,
         CARD_READER_DO_NOT_SHOW_CASH_ON_DELIVERY_DISABLED_ONBOARDING_STATE,
         ACTIVE_STATS_GRANULARITY,
-        USE_SIMULATED_READER
+        USE_SIMULATED_READER,
+        NEW_SIGN_UP
     }
 
     /**
@@ -877,6 +878,12 @@ object AppPrefs {
     fun getActiveStatsGranularity(currentSiteId: Int) = getString(
         getActiveStatsGranularityFilterKey(currentSiteId)
     )
+
+    fun markAsNewSignUp(newSignUp: Boolean) {
+        setBoolean(DeletablePrefKey.NEW_SIGN_UP, newSignUp)
+    }
+
+    fun getIsNewSignUp() = getBoolean(DeletablePrefKey.NEW_SIGN_UP, false)
 
     private fun getActiveStatsGranularityFilterKey(currentSiteId: Int) =
         PrefKeyString("${DeletablePrefKey.ACTIVE_STATS_GRANULARITY}:$currentSiteId")

@@ -84,7 +84,7 @@ class GetTopPerformersTest : BaseUnitTest() {
             statsRepository.fetchTopPerformerProducts(
                 anyBoolean(),
                 any(),
-                anyInt()
+                anyInt(),
             )
         ).thenReturn(result)
     }
@@ -95,7 +95,7 @@ class GetTopPerformersTest : BaseUnitTest() {
         val EXPECTED_TOP_PERFORMERS_ENTITY_LIST = listOf(
             TopPerformerProductEntity(
                 siteId = 1234,
-                granularity = "DAYS",
+                datePeriod = "2021-01-01-2021-01-02",
                 productId = 134,
                 name = "Shirt",
                 imageUrl = "",
