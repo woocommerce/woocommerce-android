@@ -238,7 +238,6 @@ class AnalyticsTracker private constructor(private val context: Context) {
         const val KEY_HAS_MULTIPLE_FEE_LINES = "has_multiple_fee_lines"
 
         const val JITM_ID = "jitm_id"
-        const val JITMS = "jitms"
         const val JITM_FEATURE_CLASS = "feature_class"
 
         enum class OrderNoteType(val value: String) {
