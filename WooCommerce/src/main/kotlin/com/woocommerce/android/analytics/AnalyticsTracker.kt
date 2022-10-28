@@ -242,6 +242,9 @@ class AnalyticsTracker private constructor(private val context: Context) {
         const val VALUE_ORDERS_CARD_SELECTED = "orders"
         const val VALUE_PRODUCTS_CARD_SELECTED = "products"
 
+        const val JITM_ID = "jitm_id"
+        const val JITM_FEATURE_CLASS = "feature_class"
+
         enum class OrderNoteType(val value: String) {
             CUSTOMER("customer"),
             PRIVATE("private"),
@@ -280,6 +283,9 @@ class AnalyticsTracker private constructor(private val context: Context) {
         const val VALUE_SIMPLE_PAYMENTS_SOURCE_PAYMENT_METHOD = "payment_method"
 
         const val VALUE_ORDER_PAYMENTS_FLOW = "order_payment"
+
+        const val KEY_JITM = "jitm"
+        const val KEY_JITM_COUNT = "count"
 
         // -- Downloadable Files
         const val KEY_DOWNLOADABLE_FILE_ACTION = "action"

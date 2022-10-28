@@ -1,11 +1,21 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2022-10-20 16:54:04+0000
+Translation-Revision-Date: 2022-10-27 14:54:03+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: ko_KR
 -->
 <resources>
+    <string name="hello_blank_fragment">안녕하세요 blank fragment</string>
+    <string name="what_is_wordpress_link">&lt;u&gt;워드프레스닷컴이란 무엇인가요?&lt;/u&gt;</string>
+    <string name="signup_creating_account_loading_message">새 계정 만들기</string>
+    <string name="signup_terms_of_service">계속하면 &lt;u&gt;서비스 약관에 동의하는 것입니다.&lt;/u&gt;</string>
+    <string name="signup_password_hint">비밀번호 선택</string>
+    <string name="signup_email_address_hint">사용 중인 이메일 주소</string>
+    <string name="signup_already_registered">먼저 계정을 만들어 보겠습니다. 이미 등록하셨나요? 로그인</string>
+    <string name="signup_get_started_label">시작하기 \n분 단위</string>
+    <string name="signup_get_started_button">시작하기</string>
+    <string name="login_jetpack_connection_consent">젯팩 연결 버튼을 누르면 &lt;a href=\'terms\'&gt;서비스 약관&lt;/a&gt; 및 워드프레스닷컴과 &lt;a href=\'sync\'&gt;상세 정보&lt;/a&gt; 공유에 동의하는 것입니다.</string>
     <string name="enable_card_reader">시뮬레이션한 카드 리더 활성화</string>
     <string name="login_account_mismatch_connect_wpcom_dialog_message">상점 관리자 또는 앱을 사용하는 관리자로 사이트에 초대받으려면 사이트 소유자에게 문의하세요.</string>
     <string name="login_account_mismatch_connect_wpcom_dialog_title">워드프레스닷컴 사이트에 연결하기</string>
@@ -1845,6 +1855,7 @@ Language: ko_KR
     <string name="orderdetail_track_shipment">배송 추적</string>
     <string name="login_email_help_desc">사이트 관리에서 %1$sJetpack 대시보드%2$s(%3$s연결 &gt; 계정 연결%4$s)에서 워드프레스닷컴에 연결하는 데 사용한 이메일을 찾을 수 있습니다.</string>
     <string name="login_email_help_title">로그인할 때 어떤 이메일을 사용하나요?</string>
+    <string name="login_need_help_finding_email">&lt;u&gt;필수 이메일을 찾는 도움말이 필요하신가요?&lt;/u&gt;</string>
     <string name="login_jetpack_what_is_description">Jetpack은 스토어를 최고의 모바일 환경을 제공하는 데 필요한 푸시 알림, 통계 등의 도구와 연결하는 무료 워드프레스 플러그인입니다.</string>
     <string name="login_jetpack_what_is">Jetpack이란 무엇인가요?</string>
     <string name="login_view_connected_stores">연결된 스토어 보기</string>

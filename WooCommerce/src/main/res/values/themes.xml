@@ -12,7 +12,10 @@
         <item name="android:windowSplashScreenAnimatedIcon" tools:targetApi="s">@drawable/img_woo_bubble_white</item>
     </style>
 
-    <style name="Theme.Woo" parent="Theme.WooBase"/>
+    <style name="Theme.Woo" parent="Theme.WooBase">
+        <item name="android:statusBarColor">@color/color_status_bar</item>
+        <item name="android:windowLightStatusBar">?attr/isLightTheme</item>
+    </style>
     <style name="Theme.WooBase" parent="Theme.MaterialComponents.DayNight.DarkActionBar">
         <!-- Colors -->
         <item name="colorPrimary">@color/color_primary</item>

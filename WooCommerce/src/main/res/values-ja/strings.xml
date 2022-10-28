@@ -1,11 +1,21 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2022-10-20 09:54:03+0000
+Translation-Revision-Date: 2022-10-26 12:54:03+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: ja_JP
 -->
 <resources>
+    <string name="hello_blank_fragment">こちらは空です</string>
+    <string name="what_is_wordpress_link">&lt;u&gt;WordPress.com とは何ですか ?&lt;/u&gt;</string>
+    <string name="signup_creating_account_loading_message">新しいアカウントの作成中</string>
+    <string name="signup_terms_of_service">継続することで、&lt;u&gt;利用規約に合意したことになります。&lt;/u&gt;</string>
+    <string name="signup_password_hint">パスワードを選択</string>
+    <string name="signup_email_address_hint">あなたのメールアドレス</string>
+    <string name="signup_already_registered">最初に、アカウントを作成しましょう。 すでに登録されていますか ? ログイン</string>
+    <string name="signup_get_started_label">数分で\n新規登録</string>
+    <string name="signup_get_started_button">新規登録</string>
+    <string name="login_jetpack_connection_consent">「Jetpack に接続」ボタンをタップすると、利用規約および WordPress.com と詳細情報を共有することに同意したものとみなされます。&lt;a href=\'terms\'&gt;&lt;/a&gt;&lt;a href=\'sync\'&gt;&lt;/a&gt;</string>
     <string name="enable_card_reader">シミュレートされたカードリーダーを有効にする</string>
     <string name="login_account_mismatch_connect_wpcom_dialog_message">アプリを使用するには、サイトの所有者に連絡し、ショップ運営者または管理者としてサイトへの招待を受けてください。</string>
     <string name="login_account_mismatch_connect_wpcom_dialog_title">WordPress.com サイトと連携中</string>
@@ -1845,6 +1855,7 @@ Language: ja_JP
     <string name="orderdetail_track_shipment">配送状況を追跡</string>
     <string name="login_email_help_desc">サイトの管理では、WordPress.com への接続に使用するメールアドレスは %1$sJetpack のダッシュボード%2$sの%3$s「接続 → アカウントの接続」%4$sで確認できます</string>
     <string name="login_email_help_title">サインインにはどのメールアドレスを使用すればよいですか ?</string>
+    <string name="login_need_help_finding_email">&lt;u&gt;必要なメールアドレスをお忘れですか ?&lt;/u&gt;</string>
     <string name="login_jetpack_what_is_description">Jetpack は WordPress の無料のプラグインであり、ストアをモバイルでの最適な操作に必要なツール (プッシュ通知および統計を含む) と接続します。</string>
     <string name="login_jetpack_what_is">Jetpack とは ?</string>
     <string name="login_view_connected_stores">連携ストアを表示</string>

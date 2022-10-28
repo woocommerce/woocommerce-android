@@ -1,11 +1,21 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2022-10-20 14:54:03+0000
+Translation-Revision-Date: 2022-10-27 09:54:03+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: he_IL
 -->
 <resources>
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="what_is_wordpress_link">&lt;u&gt;_מה זה WordPress.com?_&lt;/u&gt;</string>
+    <string name="signup_creating_account_loading_message">יוצר חשבון</string>
+    <string name="signup_terms_of_service">המשך הפעולה מהווה את הסכמתך &lt;u&gt;לתנאי השימוש שלנו&lt;/u&gt;</string>
+    <string name="signup_password_hint">בחירת סיסמה</string>
+    <string name="signup_email_address_hint">כתובת האימייל שלך</string>
+    <string name="signup_already_registered">ראשית, ניצור את החשבון שלך. כבר נרשמת? התחברות</string>
+    <string name="signup_get_started_label">להתחיל כעת › \nin minutes</string>
+    <string name="signup_get_started_button">להתחיל כעת ›</string>
+    <string name="login_jetpack_connection_consent">לחיצה על הכפתור הגדרת Jetpack מהווה את הסכמתך לתנאי השימוש שלנו ולשיתוף המידע עם WordPress.com.&lt;a href=\'terms\'&gt;&lt;/a&gt;&lt;a href=\'sync\'&gt;&lt;/a&gt;</string>
     <string name="enable_card_reader">להפעיל את הסימולציה של קורא הכרטיסים</string>
     <string name="login_account_mismatch_connect_wpcom_dialog_message">כדי להשתמש באפליקציה, יש לפנות לבעלי האתר כדי לקבל הזמנה לאתר זה כמנהל חנות או כמנהל מערכת.</string>
     <string name="login_account_mismatch_connect_wpcom_dialog_title">מתחבר לאתר ב-WordPress.com</string>
@@ -1845,6 +1855,7 @@ Language: he_IL
     <string name="orderdetail_track_shipment">מעקב אחר משלוח</string>
     <string name="login_email_help_desc">במנהל המערכת של האתר שלך אפשר למצור את כתובת האימייל שבה השתמשת כדי להתחבר אל WordPress.com %1$sמלוח הבקרה של Jetpack%2$s במקטע %3$sחיבורים &gt; חיבור החשבון%4$s</string>
     <string name="login_email_help_title">באיזה אימייל השתמשי כדי להתחבר?</string>
+    <string name="login_need_help_finding_email">&lt;u&gt;נדרשת לך עזרה במציאת האימייל הנדרש?&lt;/u&gt;</string>
     <string name="login_jetpack_what_is_description">Jetpack הוא תוסף חינמי ב-WordPress שמתחבר לחנות שלך עם כלים שיאפשרו לך ליהנות מהחוויה הטובה ביותר בנייד, כולל הודעות דחיפה ונתונים סטטיסטיים</string>
     <string name="login_jetpack_what_is">מה זה Jetpack?</string>
     <string name="login_view_connected_stores">להצגת החנויות המחוברות</string>
