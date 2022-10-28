@@ -94,11 +94,6 @@ class SitePickerFragment : BaseFragment(R.layout.fragment_site_picker), LoginEma
             viewModel.onTryAnotherAccountButtonClick()
         }
 
-        binding.loginEpilogueButtonBar.buttonTertiary.isVisible = FeatureFlag.STORE_CREATION_WEBVIEW_FLOW.isEnabled()
-        binding.loginEpilogueButtonBar.buttonTertiary.setOnClickListener {
-            viewModel.onCreateSiteButtonClick()
-        }
-
         if (!FeatureFlag.STORE_CREATION_WEBVIEW_FLOW.isEnabled()) {
             binding.addStoreButton.setText(R.string.site_picker_connect_existing_store)
         }
@@ -275,8 +270,9 @@ class SitePickerFragment : BaseFragment(R.layout.fragment_site_picker), LoginEma
             findNavController()
                 .navigateSafely(SitePickerFragmentDirections.actionSitePickerFragmentToAddStoreBottomSheetFragment())
         } else {
-            findNavController()
-                .navigateSafely(SitePickerFragmentDirections.actionSitePickerFragmentToSitePickerSiteDiscoveryFragment())
+            findNavController().navigateSafely(
+                SitePickerFragmentDirections.actionSitePickerFragmentToSitePickerSiteDiscoveryFragment()
+            )
         }
     }
 
