@@ -43,14 +43,17 @@ class DeveloperOptionsViewModel @Inject constructor(
     private fun onSimulatedReaderToggled(isChecked: Boolean) {
 
         developerOptionsRepository.changeSimulatedReaderState(isChecked)
-        val newState = (viewState.value?.rows?.first() as ToggleableListItem).copy(isChecked = isChecked)
-        _viewState.value = viewState.value?.copy(
-            rows = viewState.value!!.rows.map {
-                if (it.label == newState.label)
-                    newState
-                else it
-            }
-        )
+        val currentViewState = viewState.value
+        (currentViewState?.rows?.first() as? ToggleableListItem)?.let { originalListItem ->
+            val newState = originalListItem.copy(isChecked = isChecked)
+            _viewState.value = currentViewState.copy(
+                rows = currentViewState.rows.map {
+                    if (it.label == newState.label)
+                        newState
+                    else it
+                }
+            )
+        }
     }
 
     data class DeveloperOptionsViewState(
