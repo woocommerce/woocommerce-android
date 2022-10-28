@@ -97,6 +97,7 @@ class SitePickerViewModel @Inject constructor(
         }
         updateSiteViewDetails()
         loadAndDisplaySites()
+        if (appPrefsWrapper.getIsNewSignUp()) startStoreCreationWebFlow()
     }
 
     private fun updateSiteViewDetails() {
@@ -652,6 +653,17 @@ class SitePickerViewModel @Inject constructor(
         fetchSitesFromApi(showSkeleton = true)
     }
 
+    private fun startStoreCreationWebFlow() {
+        appPrefsWrapper.markAsNewSignUp(false)
+        triggerEvent(
+            NavigateToWPComWebView(
+                url = WOOCOMMERCE_STORE_CREATION_URL,
+                validationUrl = WOOCOMMERCE_STORE_CREATION_DONE_URL,
+                title = resourceProvider.getString(string.create_new_store)
+            )
+        )
+    }
+
     private fun trackLoginEvent(
         currentFlow: UnifiedLoginTracker.Flow? = null,
         currentStep: UnifiedLoginTracker.Step? = null,
@@ -719,6 +731,7 @@ class SitePickerViewModel @Inject constructor(
             val validationUrl: String,
             val title: String? = null
         ) : SitePickerEvent()
+
         data class NavigateToAccountMismatchScreen(
             val primaryButton: AccountMismatchPrimaryButton,
             val siteUrl: String,

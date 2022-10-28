@@ -448,7 +448,7 @@
     <fragment
         android:id="@+id/sitePickerSiteDiscoveryFragment"
         android:name="com.woocommerce.android.ui.sitepicker.sitediscovery.SitePickerSiteDiscoveryFragment"
-        android:label="SitePickerSiteDiscoveryFragment" >
+        android:label="SitePickerSiteDiscoveryFragment">
         <action
             android:id="@+id/action_sitePickerSiteDiscoveryFragment_to_accountMismatchErrorFragment"
             app:destination="@id/accountMismatchErrorFragment" />
@@ -462,14 +462,14 @@
             app:argType="string" />
         <argument
             android:name="primaryButton"
-            app:argType="com.woocommerce.android.ui.login.accountmismatch.AccountMismatchErrorViewModel$AccountMismatchPrimaryButton"
-            android:defaultValue="NONE" />
+            android:defaultValue="NONE"
+            app:argType="com.woocommerce.android.ui.login.accountmismatch.AccountMismatchErrorViewModel$AccountMismatchPrimaryButton" />
         <argument
             android:name="errorType"
             app:argType="com.woocommerce.android.ui.login.accountmismatch.AccountMismatchErrorViewModel$AccountMismatchErrorType" />
         <argument
             android:name="allowBackNavigation"
-            app:argType="boolean"
-            android:defaultValue="true" />
+            android:defaultValue="true"
+            app:argType="boolean" />
     </fragment>
 </navigation>
