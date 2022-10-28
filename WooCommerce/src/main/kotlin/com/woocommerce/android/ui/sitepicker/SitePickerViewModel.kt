@@ -96,12 +96,31 @@ class SitePickerViewModel @Inject constructor(
             false -> loadStorePickerView()
         }
         updateSiteViewDetails()
+        loadAndDisplayUserInfo()
         loadAndDisplaySites()
+    }
+
+    private fun loadAndDisplayUserInfo() = launch {
+        fun getUserInfo() = accountRepository.getUserAccount()?.let {
+            UserInfo(displayName = it.displayName, username = it.userName ?: "", userAvatarUrl = it.avatarUrl)
+        }
+
+        if (accountRepository.getUserAccount() != null) {
+            sitePickerViewState = sitePickerViewState.copy(userInfo = getUserInfo())
+        } else {
+            accountRepository.fetchUserAccount().fold(
+                onSuccess = {
+                    sitePickerViewState = sitePickerViewState.copy(userInfo = getUserInfo())
+                },
+                onFailure = {
+                    triggerEvent(ShowSnackbar(string.error_fetch_my_profile))
+                }
+            )
+        }
     }
 
     private fun updateSiteViewDetails() {
         sitePickerViewState = sitePickerViewState.copy(
-            userInfo = getUserInfo(),
             primaryBtnText = resourceProvider.getString(string.continue_button),
             secondaryBtnText = resourceProvider.getString(string.login_try_another_account),
             currentSitePickerState = SitePickerState.StoreListState
@@ -115,11 +134,6 @@ class SitePickerViewModel @Inject constructor(
                 displaySites(sitesInDb)
             }
             fetchSitesFromApi(sitesInDb.isEmpty() || !loginSiteAddress.isNullOrEmpty())
-        }
-        if (sitePickerViewState.userInfo == null) {
-            launch {
-                fetchUserAccount()
-            }
         }
     }
 
@@ -148,17 +162,6 @@ class SitePickerViewModel @Inject constructor(
                 displaySites(repository.getSites())
             }
         }
-    }
-
-    private suspend fun fetchUserAccount() {
-        accountRepository.fetchUserAccount().fold(
-            onSuccess = {
-                sitePickerViewState = sitePickerViewState.copy(userInfo = getUserInfo())
-            },
-            onFailure = {
-                triggerEvent(ShowSnackbar(string.error_fetch_my_profile))
-            }
-        )
     }
 
     private suspend fun getSitesFromDb(): List<SiteModel> {
@@ -360,10 +363,6 @@ class SitePickerViewModel @Inject constructor(
             isNoStoresBtnVisible = false,
             currentSitePickerState = SitePickerState.SimpleWPComState
         )
-    }
-
-    private fun getUserInfo() = accountRepository.getUserAccount()?.let {
-        UserInfo(displayName = it.displayName, username = it.userName ?: "", userAvatarUrl = it.avatarUrl)
     }
 
     fun onSiteSelected(siteModel: SiteModel) {
