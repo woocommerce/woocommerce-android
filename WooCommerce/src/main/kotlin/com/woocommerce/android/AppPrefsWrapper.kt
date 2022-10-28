@@ -210,6 +210,12 @@ class AppPrefsWrapper @Inject constructor() {
     fun getActiveStatsGranularity(currentSiteId: Int) =
         AppPrefs.getActiveStatsGranularity(currentSiteId)
 
+    fun markAsNewSignUp(newSignUp: Boolean) {
+        AppPrefs.markAsNewSignUp(newSignUp)
+    }
+
+    fun getIsNewSignUp() = AppPrefs.getIsNewSignUp()
+
     /**
      * Card Reader Upsell
      */

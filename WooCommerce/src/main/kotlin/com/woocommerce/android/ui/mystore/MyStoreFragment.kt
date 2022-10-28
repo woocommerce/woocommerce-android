@@ -3,16 +3,11 @@ package com.woocommerce.android.ui.mystore
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
-import android.view.Menu
-import android.view.MenuInflater
-import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup.LayoutParams
-import androidx.core.view.MenuProvider
 import androidx.core.view.children
 import androidx.core.view.isVisible
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.Lifecycle.State
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import com.google.android.material.appbar.AppBarLayout
@@ -41,6 +36,7 @@ import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.main.AppBarStatus
 import com.woocommerce.android.ui.main.MainActivity
 import com.woocommerce.android.ui.main.MainNavigationRouter
+import com.woocommerce.android.ui.mystore.MyStoreViewModel.MyStoreEvent.OpenAnalytics
 import com.woocommerce.android.ui.mystore.MyStoreViewModel.MyStoreEvent.OpenTopPerformer
 import com.woocommerce.android.ui.mystore.MyStoreViewModel.OrderState
 import com.woocommerce.android.ui.mystore.MyStoreViewModel.RevenueStatsViewState
@@ -48,7 +44,6 @@ import com.woocommerce.android.ui.mystore.MyStoreViewModel.VisitorStatsViewState
 import com.woocommerce.android.util.ActivityUtils
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.util.DateUtils
-import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.util.WooAnimUtils
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.widgets.WCEmptyView.EmptyViewType
@@ -65,7 +60,7 @@ import kotlin.math.abs
 
 @AndroidEntryPoint
 @OptIn(FlowPreview::class)
-class MyStoreFragment : TopLevelFragment(R.layout.fragment_my_store), MenuProvider {
+class MyStoreFragment : TopLevelFragment(R.layout.fragment_my_store) {
     companion object {
         val TAG: String = MyStoreFragment::class.java.simpleName
 
@@ -125,8 +120,6 @@ class MyStoreFragment : TopLevelFragment(R.layout.fragment_my_store), MenuProvid
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        requireActivity().addMenuProvider(this, viewLifecycleOwner, State.RESUMED)
-
         initTabLayout()
 
         _binding = FragmentMyStoreBinding.bind(view)
@@ -154,7 +147,7 @@ class MyStoreFragment : TopLevelFragment(R.layout.fragment_my_store), MenuProvid
             currencyFormatter,
             usageTracksEventEmitter,
             viewLifecycleOwner.lifecycleScope
-        )
+        ) { viewModel.onViewAnalyticsClicked() }
 
         binding.myStoreTopPerformers.initView(selectedSite)
 
@@ -229,23 +222,12 @@ class MyStoreFragment : TopLevelFragment(R.layout.fragment_my_store), MenuProvid
                         isTrashEnabled = false
                     )
                 )
+                is OpenAnalytics -> {
+                    mainNavigationRouter?.showAnalytics(event.analyticsPeriod)
+                }
                 else -> event.isHandled = false
             }
         }
-    }
-
-    override fun onCreateMenu(menu: Menu, inflater: MenuInflater) {
-        if (FeatureFlag.ANALYTICS_HUB.isEnabled()) {
-            inflater.inflate(R.menu.menu_analytics, menu)
-        }
-    }
-
-    override fun onMenuItemSelected(menuItem: MenuItem): Boolean {
-        if (menuItem.itemId == R.id.menu_analytics) {
-            mainNavigationRouter?.showAnalytics()
-            return true
-        }
-        return false
     }
 
     private fun onJetpackCpConnected(benefitsBanner: BenefitsBannerUiModel) {

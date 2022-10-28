@@ -16,6 +16,7 @@ import com.woocommerce.android.network.ConnectionChangeReceiver
 import com.woocommerce.android.network.ConnectionChangeReceiver.ConnectionChangeEvent
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.ui.analytics.daterangeselector.AnalyticTimePeriod
 import com.woocommerce.android.ui.mystore.domain.GetStats
 import com.woocommerce.android.ui.mystore.domain.GetStats.LoadStatsResult.HasOrders
 import com.woocommerce.android.ui.mystore.domain.GetStats.LoadStatsResult.IsJetPackCPEnabled
@@ -158,6 +159,15 @@ class MyStoreViewModel @Inject constructor(
                 site.name
             }
         } ?: ""
+
+    fun onViewAnalyticsClicked() {
+        AnalyticsTracker.track(AnalyticsEvent.DASHBOARD_SEE_MORE_ANALYTICS_TAPPED)
+        val targetPeriod = when (val state = revenueStatsState.value) {
+            is RevenueStatsViewState.Content -> state.granularity.toAnalyticTimePeriod()
+            else -> AnalyticTimePeriod.TODAY
+        }
+        triggerEvent(MyStoreEvent.OpenAnalytics(targetPeriod))
+    }
 
     private suspend fun loadStoreStats(granularity: StatsGranularity) {
         if (!networkStatus.isConnected()) {
@@ -341,6 +351,13 @@ class MyStoreViewModel @Inject constructor(
             .getOrElse { StatsGranularity.DAYS }
     }
 
+    private fun StatsGranularity.toAnalyticTimePeriod() = when (this) {
+        StatsGranularity.DAYS -> AnalyticTimePeriod.TODAY
+        StatsGranularity.WEEKS -> AnalyticTimePeriod.WEEK_TO_DATE
+        StatsGranularity.MONTHS -> AnalyticTimePeriod.MONTH_TO_DATE
+        StatsGranularity.YEARS -> AnalyticTimePeriod.YEAR_TO_DATE
+    }
+
     sealed class RevenueStatsViewState {
         object Loading : RevenueStatsViewState()
         object GenericError : RevenueStatsViewState()
@@ -377,5 +394,6 @@ class MyStoreViewModel @Inject constructor(
         data class OpenTopPerformer(
             val productId: Long
         ) : MyStoreEvent()
+        data class OpenAnalytics(val analyticsPeriod: AnalyticTimePeriod) : MyStoreEvent()
     }
 }

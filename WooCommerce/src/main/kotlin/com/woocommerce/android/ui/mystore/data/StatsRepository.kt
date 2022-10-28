@@ -29,8 +29,10 @@ import org.wordpress.android.fluxc.store.WCStatsStore.OrderStatsError
 import org.wordpress.android.fluxc.store.WCStatsStore.StatsGranularity
 import org.wordpress.android.fluxc.store.WooCommerceStore
 import org.wordpress.android.fluxc.store.WooCommerceStore.WooPlugin.WOO_CORE
+import org.wordpress.android.fluxc.utils.DateUtils
 import javax.inject.Inject
 
+@Suppress("TooManyFunctions")
 class StatsRepository @Inject constructor(
     private val selectedSite: SelectedSite,
     private val wcStatsStore: WCStatsStore,
@@ -50,27 +52,30 @@ class StatsRepository @Inject constructor(
 
     suspend fun fetchRevenueStats(
         granularity: StatsGranularity,
-        forced: Boolean
-    ): Flow<Result<WCRevenueStatsModel?>> = flow {
-        val statsPayload = FetchRevenueStatsPayload(selectedSite.get(), granularity, forced = forced)
-        val result = wcStatsStore.fetchRevenueStats(statsPayload)
+        forced: Boolean,
+        startDate: String = "",
+        endDate: String = ""
+    ): Flow<Result<WCRevenueStatsModel?>> =
+        flow {
+            val statsPayload = FetchRevenueStatsPayload(selectedSite.get(), granularity, startDate, endDate, forced)
+            val result = wcStatsStore.fetchRevenueStats(statsPayload)
 
-        if (!result.isError) {
-            val revenueStatsModel = wcStatsStore.getRawRevenueStats(
-                selectedSite.get(), result.granularity, result.startDate!!, result.endDate!!
-            )
-            Result.success(revenueStatsModel)
-            emit(Result.success(revenueStatsModel))
-        } else {
-            val errorMessage = result.error?.message ?: "Timeout"
-            WooLog.e(
-                DASHBOARD,
-                "$TAG - Error fetching revenue stats: $errorMessage"
-            )
-            val exception = StatsException(error = result.error)
-            emit(Result.failure(exception))
+            if (!result.isError) {
+                val revenueStatsModel = wcStatsStore.getRawRevenueStats(
+                    selectedSite.get(), result.granularity, result.startDate!!, result.endDate!!
+                )
+                Result.success(revenueStatsModel)
+                emit(Result.success(revenueStatsModel))
+            } else {
+                val errorMessage = result.error?.message ?: "Timeout"
+                WooLog.e(
+                    DASHBOARD,
+                    "$TAG - Error fetching revenue stats: $errorMessage"
+                )
+                val exception = StatsException(error = result.error)
+                emit(Result.failure(exception))
+            }
         }
-    }
 
     suspend fun fetchVisitorStats(granularity: StatsGranularity, forced: Boolean): Flow<Result<Map<String, Int>>> =
         flow {
@@ -93,24 +98,57 @@ class StatsRepository @Inject constructor(
 
     fun observeTopPerformers(
         granularity: StatsGranularity,
-    ): Flow<List<TopPerformerProductEntity>> =
-        wcLeaderboardsStore
-            .observeTopPerformerProducts(selectedSite.get().siteId, granularity)
+    ): Flow<List<TopPerformerProductEntity>> {
+        val siteModel = selectedSite.get()
+        val datePeriod = granularity.datePeriod(siteModel)
+        return wcLeaderboardsStore
+            .observeTopPerformerProducts(siteModel.siteId, datePeriod)
             .flowOn(Dispatchers.IO)
+    }
+
+    suspend fun getTopPerformers(
+        startDate: String,
+        endDate: String
+    ): List<TopPerformerProductEntity> {
+        val siteModel = selectedSite.get()
+        val datePeriod = DateUtils.getDatePeriod(startDate, endDate)
+        return wcLeaderboardsStore.getCachedTopPerformerProducts(siteModel.siteId, datePeriod)
+    }
 
     suspend fun fetchTopPerformerProducts(
         forceRefresh: Boolean,
         granularity: StatsGranularity,
         quantity: Int
     ): Result<Unit> {
+        val siteModel = selectedSite.get()
+        val startDate = granularity.startDateTime(siteModel)
+        val endDate = granularity.endDateTime(siteModel)
+
+        return fetchTopPerformerProducts(
+            forceRefresh = forceRefresh,
+            startDate = startDate,
+            endDate = endDate,
+            quantity = quantity
+        )
+    }
+
+    suspend fun fetchTopPerformerProducts(
+        forceRefresh: Boolean,
+        startDate: String,
+        endDate: String,
+        quantity: Int
+    ): Result<Unit> {
+        val siteModel = selectedSite.get()
+        val datePeriod = DateUtils.getDatePeriod(startDate, endDate)
         val cachedTopPerformers = wcLeaderboardsStore.getCachedTopPerformerProducts(
-            siteId = selectedSite.get().siteId,
-            granularity = granularity
+            siteId = siteModel.siteId,
+            datePeriod = datePeriod
         )
         return if (forceRefresh || cachedTopPerformers.isEmpty() || cachedTopPerformers.expired()) {
             val result = wcLeaderboardsStore.fetchTopPerformerProducts(
-                site = selectedSite.get(),
-                granularity = granularity,
+                site = siteModel,
+                startDate = startDate,
+                endDate = endDate,
                 quantity = quantity,
                 addProductsPath = supportsProductOnlyLeaderboardEndpoint(),
                 forceRefresh = forceRefresh
