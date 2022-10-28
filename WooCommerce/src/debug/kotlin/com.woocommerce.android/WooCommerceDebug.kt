@@ -19,9 +19,7 @@ import dagger.hilt.android.HiltAndroidApp
 @HiltAndroidApp
 class WooCommerceDebug : WooCommerce() {
     override fun onCreate() {
-        if (FlipperUtils.shouldEnableFlipper(this) &&
-            SystemVersionUtils.isAtLeastM()
-        ) {
+        if (FlipperUtils.shouldEnableFlipper(this)) {
             SoLoader.init(this, false)
             AndroidFlipperClient.getInstance(this).apply {
                 addPlugin(InspectorFlipperPlugin(applicationContext, DescriptorMapping.withDefaults()))
