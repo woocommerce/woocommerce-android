@@ -74,7 +74,7 @@ class AnalyticsFragment :
     private fun openDateRangeSelector() = findNavController().navigateSafely(buildDialogDateRangeSelectorArguments())
 
     private fun buildDialogDateRangeSelectorArguments(): NavDirections {
-        val ranges = getDateRangeSelectorViewState().availableRangeDates.distinct().toTypedArray()
+        val ranges = getDateRangeSelectorViewState().availableRangeDates.toTypedArray()
         return AnalyticsFragmentDirections.actionAnalyticsFragmentToDateRangeSelector(
             requestKey = KEY_DATE_RANGE_SELECTOR_RESULT,
             keys = ranges,
