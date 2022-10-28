@@ -161,6 +161,7 @@ class AnalyticsViewModel @Inject constructor(
     }
 
     fun onDateRangeSelectorClick() {
+        onTrackableUIInteraction()
         AnalyticsTracker.track(AnalyticsEvent.ANALYTICS_HUB_DATE_RANGE_BUTTON_TAPPED)
         triggerEvent(AnalyticsViewEvent.OpenDateRangeSelector)
     }
@@ -190,6 +191,10 @@ class AnalyticsViewModel @Inject constructor(
         } else {
             triggerEvent(OpenUrl(analyticsRepository.getProductsAdminPanelUrl()))
         }
+    }
+
+    fun onTrackableUIInteraction() {
+        usageTracksEventEmitter.interacted()
     }
 
     private fun updateRevenue(isRefreshing: Boolean, showSkeleton: Boolean) =
@@ -459,6 +464,7 @@ class AnalyticsViewModel @Inject constructor(
         ?: getDefaultTimePeriod()
 
     private fun trackSeeReportClicked(selectedCardType: String) {
+        onTrackableUIInteraction()
         AnalyticsTracker.track(
             AnalyticsEvent.ANALYTICS_HUB_SEE_REPORT_TAPPED,
             mapOf(
@@ -468,6 +474,7 @@ class AnalyticsViewModel @Inject constructor(
     }
 
     private fun trackSelectedDateRange(selectedTimePeriod: AnalyticTimePeriod) {
+        onTrackableUIInteraction()
         AnalyticsTracker.track(
             AnalyticsEvent.ANALYTICS_HUB_DATE_RANGE_SELECTED,
             mapOf(
