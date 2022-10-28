@@ -83,14 +83,9 @@ class AnalyticsViewModel @Inject constructor(
 
     fun onCustomDateRangeClicked() {
         val savedRange = getSavedDateRange()
-        val fromMillis = when (savedRange) {
-            is SimpleDateRange -> savedRange.from.time
-            is MultipleDateRange -> savedRange.to.from.time
-        }
-        val toMillis = when (savedRange) {
-            is SimpleDateRange -> savedRange.to.time
-            is MultipleDateRange -> savedRange.to.to.time
-        }
+        val currentPeriod = savedRange.getCurrentPeriod()
+        val fromMillis = currentPeriod.startDate.time
+        val toMillis = currentPeriod.endDate.time
         triggerEvent(AnalyticsViewEvent.OpenDatePicker(fromMillis, toMillis))
     }
 
@@ -348,6 +343,7 @@ class AnalyticsViewModel @Inject constructor(
 
     private fun getAvailableDateRanges() =
         resourceProvider.getStringArray(R.array.analytics_date_range_selectors).asList()
+
     private fun getDefaultTimePeriod() = navArgs.targetGranularity
 
     private fun getDefaultDateRange() = analyticsDateRange.getAnalyticsDateRangeFrom(getDefaultTimePeriod())

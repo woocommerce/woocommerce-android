@@ -158,14 +158,9 @@ class AnalyticsRepository @Inject constructor(
         granularity: StatsGranularity,
         fetchStrategy: FetchStrategy
     ): Result<WCRevenueStatsModel.Total> = coroutineScope {
-        val startDate = when (dateRange) {
-            is SimpleDateRange -> dateRange.from.formatToYYYYmmDD()
-            is MultipleDateRange -> dateRange.to.from.formatToYYYYmmDD()
-        }
-        val endDate = when (dateRange) {
-            is SimpleDateRange -> dateRange.to.formatToYYYYmmDD()
-            is MultipleDateRange -> dateRange.to.to.formatToYYYYmmDD()
-        }
+        val currentPeriod = dateRange.getCurrentPeriod()
+        val startDate = currentPeriod.startDate.formatToYYYYmmDD()
+        val endDate = currentPeriod.endDate.formatToYYYYmmDD()
 
         getCurrentRevenueMutex.withLock {
             if (shouldUpdateCurrentStats(startDate, endDate, fetchStrategy == FetchStrategy.ForceNew)) {
@@ -185,14 +180,9 @@ class AnalyticsRepository @Inject constructor(
         granularity: StatsGranularity,
         fetchStrategy: FetchStrategy
     ): Result<WCRevenueStatsModel.Total> = coroutineScope {
-        val startDate = when (dateRange) {
-            is SimpleDateRange -> dateRange.from.formatToYYYYmmDD()
-            is MultipleDateRange -> dateRange.from.from.formatToYYYYmmDD()
-        }
-        val endDate = when (dateRange) {
-            is SimpleDateRange -> dateRange.from.formatToYYYYmmDD()
-            is MultipleDateRange -> dateRange.from.to.formatToYYYYmmDD()
-        }
+        val previousPeriod = dateRange.getPreviousPeriod()
+        val startDate = previousPeriod.startDate.formatToYYYYmmDD()
+        val endDate = previousPeriod.endDate.formatToYYYYmmDD()
 
         getPreviousRevenueMutex.withLock {
             if (shouldUpdatePreviousStats(startDate, endDate, fetchStrategy == FetchStrategy.ForceNew)) {
@@ -212,14 +202,9 @@ class AnalyticsRepository @Inject constructor(
         fetchStrategy: FetchStrategy,
         quantity: Int
     ): Result<List<TopPerformerProductEntity>> {
-        val startDate = when (dateRange) {
-            is SimpleDateRange -> dateRange.from.formatToYYYYmmDD()
-            is MultipleDateRange -> dateRange.from.from.formatToYYYYmmDD()
-        }
-        val endDate = when (dateRange) {
-            is SimpleDateRange -> dateRange.to.formatToYYYYmmDD()
-            is MultipleDateRange -> dateRange.to.to.formatToYYYYmmDD()
-        }
+        val totalPeriod = dateRange.getTotalPeriod()
+        val startDate = totalPeriod.startDate.formatToYYYYmmDD()
+        val endDate = totalPeriod.endDate.formatToYYYYmmDD()
 
         val site = selectedSite.get()
         val startDateFormatted = DateUtils.getStartDateForSite(site, startDate)
