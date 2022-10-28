@@ -8,7 +8,6 @@ import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
-import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.support.HelpActivity
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
@@ -16,10 +15,8 @@ import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.ui.login.LoginActivity
 import com.woocommerce.android.ui.login.storecreation.webview.WebViewStoreCreationViewModel.NavigateToHelpScreen
 import com.woocommerce.android.ui.login.storecreation.webview.WebViewStoreCreationViewModel.NavigateToNewStore
-import com.woocommerce.android.ui.login.storecreation.webview.WebViewStoreCreationViewModel.NavigateToSitePicker
 import com.woocommerce.android.ui.main.AppBarStatus
 import com.woocommerce.android.ui.main.MainActivity
-import com.woocommerce.android.ui.sitepicker.SitePickerFragmentDirections
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import dagger.hilt.android.AndroidEntryPoint
@@ -61,11 +58,6 @@ class WebViewStoreCreationFragment : BaseFragment() {
                             origin = HelpActivity.Origin.LOGIN_SITE_ADDRESS,
                             extraSupportTags = null
                         )
-                    )
-                }
-                NavigateToSitePicker -> {
-                    findNavController().navigateSafely(
-                        SitePickerFragmentDirections.actionGlobalLoginToSitePickerFragment()
                     )
                 }
                 is ShowSnackbar -> uiMessageResolver.showSnack(event.message)

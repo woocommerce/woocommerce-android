@@ -61,8 +61,7 @@ class SignUpFragment : BaseFragment() {
 
     private fun navigateToNextStep() {
         findNavController().navigateSafely(
-            SignUpFragmentDirections.actionSignupFragmentToStoreCreationFragment()
-//            SignUpFragmentDirections.actionSignUpFragmentToStoreCreationQuestionsFragment()
+            SignUpFragmentDirections.actionSignUpFragmentToStoreCreationQuestionsFragment()
         )
     }
 
