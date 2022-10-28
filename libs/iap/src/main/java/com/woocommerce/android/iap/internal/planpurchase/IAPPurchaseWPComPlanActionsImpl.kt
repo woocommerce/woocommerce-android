@@ -1,6 +1,5 @@
 package com.woocommerce.android.iap.internal.planpurchase
 
-import androidx.appcompat.app.AppCompatActivity
 import com.woocommerce.android.iap.internal.core.IAPManager
 import com.woocommerce.android.iap.internal.core.currencyOfTheFirstPurchasedOffer
 import com.woocommerce.android.iap.internal.core.priceOfTheFirstPurchasedOfferInMicros
@@ -11,6 +10,7 @@ import com.woocommerce.android.iap.internal.model.IAPPurchaseResponse
 import com.woocommerce.android.iap.internal.model.IAPSupportedResult
 import com.woocommerce.android.iap.internal.network.IAPMobilePayAPI
 import com.woocommerce.android.iap.internal.network.model.CreateAndConfirmOrderResponse
+import com.woocommerce.android.iap.pub.IAPActivityWrapper
 import com.woocommerce.android.iap.pub.PurchaseWPComPlanActions
 import com.woocommerce.android.iap.pub.model.IAPError
 import com.woocommerce.android.iap.pub.model.WPComIsPurchasedResult
@@ -25,8 +25,8 @@ internal class IAPPurchaseWPComPlanActionsImpl(
     private val iapMobilePayAPI: IAPMobilePayAPI,
     private val iapManager: IAPManager,
 ) : PurchaseWPComPlanActions {
-    override fun initIAPWithNewActivity(activity: AppCompatActivity) {
-        iapManager.initIAP(activity)
+    init {
+        iapManager.connect()
     }
 
     override suspend fun isWPComPlanPurchased(): WPComIsPurchasedResult {
@@ -41,8 +41,11 @@ internal class IAPPurchaseWPComPlanActionsImpl(
         }
     }
 
-    override suspend fun purchaseWPComPlan(remoteSiteId: Long): WPComPurchaseResult {
-        return when (val response = iapManager.startPurchase(iapProduct)) {
+    override suspend fun purchaseWPComPlan(
+        activityWrapper: IAPActivityWrapper,
+        remoteSiteId: Long
+    ): WPComPurchaseResult {
+        return when (val response = iapManager.startPurchase(activityWrapper, iapProduct)) {
             is IAPPurchaseResponse.Success -> {
                 val purchase = response.purchases!!.first()
                 val apiResponse = iapMobilePayAPI.createAndConfirmOrder(
@@ -84,6 +87,10 @@ internal class IAPPurchaseWPComPlanActionsImpl(
             is IAPProductDetailsResponse.Success -> IAPSupportedResult.Success(isCurrencySupported(response))
             is IAPProductDetailsResponse.Error -> IAPSupportedResult.Error(response.error)
         }
+    }
+
+    override fun close() {
+        iapManager.disconnect()
     }
 
     private fun isCurrencySupported(response: IAPProductDetailsResponse.Success) =

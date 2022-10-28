@@ -5,6 +5,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.iap.internal.model.IAPSupportedResult
+import com.woocommerce.android.iap.pub.IAPActivityWrapper
 import com.woocommerce.android.iap.pub.PurchaseWPComPlanActions
 import com.woocommerce.android.iap.pub.model.IAPError
 import com.woocommerce.android.iap.pub.model.WPComIsPurchasedResult
@@ -14,16 +15,16 @@ import com.woocommerce.android.iap.pub.model.WPComPurchaseResult
 import com.woocommerce.android.viewmodel.SingleLiveEvent
 import kotlinx.coroutines.launch
 
-class IAPShowcaseViewModel(private val iapManager: PurchaseWPComPlanActions) : ViewModel() {
+class IAPShowcaseViewModel(private val iapManager: PurchaseWPComPlanActions) : ViewModel(iapManager) {
     private val _productInfo = MutableLiveData<WPComPlanProduct>()
     val productInfo: LiveData<WPComPlanProduct> = _productInfo
 
     private val _iapEvent = SingleLiveEvent<String>()
     val iapEvent: LiveData<String> = _iapEvent
 
-    fun purchasePlan(remoteSiteId: Long) {
+    fun purchasePlan(activityWrapper: IAPActivityWrapper, remoteSiteId: Long) {
         viewModelScope.launch {
-            when (val response = iapManager.purchaseWPComPlan(remoteSiteId)) {
+            when (val response = iapManager.purchaseWPComPlan(activityWrapper, remoteSiteId)) {
                 is WPComPurchaseResult.Success -> _iapEvent.value = "Plan has been successfully purchased"
                 is WPComPurchaseResult.Error -> handleError(response.errorType)
             }

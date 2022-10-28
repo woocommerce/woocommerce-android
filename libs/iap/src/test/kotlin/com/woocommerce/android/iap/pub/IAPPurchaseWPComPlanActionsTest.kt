@@ -6,9 +6,9 @@ import com.android.billingclient.api.BillingClientStateListener
 import com.android.billingclient.api.BillingResult
 import com.android.billingclient.api.ProductDetailsResult
 import com.woocommerce.android.iap.internal.core.IAPBillingClientProvider
+import com.woocommerce.android.iap.internal.core.IAPBillingClientStateHandler
 import com.woocommerce.android.iap.internal.core.IAPBillingClientWrapper
 import com.woocommerce.android.iap.internal.core.IAPInMapper
-import com.woocommerce.android.iap.internal.core.IAPLifecycleObserver
 import com.woocommerce.android.iap.internal.core.IAPManager
 import com.woocommerce.android.iap.internal.core.IAPOutMapper
 import com.woocommerce.android.iap.internal.core.IAPPurchasesUpdatedListener
@@ -42,7 +42,7 @@ class IAPPurchaseWPComPlanActionsTest {
             on { provideBillingClient(any(), any()) }.thenReturn(billingClientMock)
         }
 
-        val iapLifecycleObserver = IAPLifecycleObserver(
+        val iapBillingClientStateHandler = IAPBillingClientStateHandler(
             purchasesUpdatedListener,
             billingClientProvider,
             logWrapperMock
@@ -50,12 +50,12 @@ class IAPPurchaseWPComPlanActionsTest {
 
         sut = IAPPurchaseWPComPlanActionsImpl(
             iapMobilePayAPI = mobilePayAPIMock,
-            iapManager = buildIapManager(iapLifecycleObserver, purchasesUpdatedListener)
+            iapManager = buildIapManager(iapBillingClientStateHandler, purchasesUpdatedListener)
         )
         sut.initIAPWithNewActivity(activityMock)
         setupBillingClientToBeConnected()
 
-        iapLifecycleObserver.onCreate(mock())
+        iapBillingClientStateHandler.onCreate(mock())
     }
 
     //region Tests
@@ -137,13 +137,13 @@ class IAPPurchaseWPComPlanActionsTest {
         .build()
 
     private fun buildIapManager(
-        iapLifecycleObserver: IAPLifecycleObserver,
+        iapBillingClientStateHandler: IAPBillingClientStateHandler,
         purchasesUpdatedListener: IAPPurchasesUpdatedListener
     ): IAPManager {
         val outMapper = IAPOutMapper()
         val inMapper = IAPInMapper()
         return IAPManager(
-            iapLifecycleObserver,
+            iapBillingClientStateHandler,
             outMapper,
             inMapper,
             purchasesUpdatedListener,

@@ -1,21 +1,22 @@
 package com.woocommerce.android.iap.internal.core
 
+import android.app.Application
 import com.woocommerce.android.iap.pub.IAPLogWrapper
 
 internal object IAPManagerFactory {
-    fun createIAPManager(logWrapper: IAPLogWrapper): IAPManager {
+    fun createIAPManager(
+        context: Application,
+        logWrapper: IAPLogWrapper
+    ): IAPManager {
         val iapOutMapper = IAPOutMapper()
-        val iapPurchasesUpdatedListener = IAPPurchasesUpdatedListener(
-            logWrapper,
-        )
-        val iapLifecycleObserver = IAPLifecycleObserver(
-            iapPurchasesUpdatedListener,
-            IAPBillingClientProvider(),
+        val iapPurchasesUpdatedListener = IAPPurchasesUpdatedListener(logWrapper)
+        val iapBillingClientStateHandler = IAPBillingClientStateHandler(
+            IAPBillingClientProvider(context, iapPurchasesUpdatedListener),
             logWrapper
         )
         val iapInMapper = IAPInMapper()
         return IAPManager(
-            iapLifecycleObserver,
+            iapBillingClientStateHandler,
             iapOutMapper,
             iapInMapper,
             iapPurchasesUpdatedListener,
