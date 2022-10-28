@@ -73,7 +73,7 @@ class IAPShowcaseViewModel : ViewModel() {
 
     private fun handleError(error: IAPError) {
         _iapEvent.value = when (error) {
-            is IAPError.Billing -> "Billing error: ${error.debugMessage}"
+            is IAPError.Billing -> "Billing error: ${error::class.java.simpleName} ${error.debugMessage}"
             IAPError.RemoteCommunication.Network -> "Network error"
             is IAPError.RemoteCommunication.Server -> "Server error: ${error.reason}"
         }
