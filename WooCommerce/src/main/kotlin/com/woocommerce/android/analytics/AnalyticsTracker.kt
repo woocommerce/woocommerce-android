@@ -242,6 +242,9 @@ class AnalyticsTracker private constructor(private val context: Context) {
         const val VALUE_ORDERS_CARD_SELECTED = "orders"
         const val VALUE_PRODUCTS_CARD_SELECTED = "products"
 
+        const val JITM_ID = "jitm_id"
+        const val JITM_FEATURE_CLASS = "feature_class"
+
         enum class OrderNoteType(val value: String) {
             CUSTOMER("customer"),
             PRIVATE("private"),
