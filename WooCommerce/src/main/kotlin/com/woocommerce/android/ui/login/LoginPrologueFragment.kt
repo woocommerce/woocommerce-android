@@ -40,6 +40,7 @@ open class LoginPrologueFragment(@LayoutRes layout: Int) : Fragment(layout) {
     private var prologueFinishedListener: PrologueFinishedListener? = null
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        simplifiedLoginExperiment.activate()
         val isSimplifiedLoginVariant = simplifiedLoginExperiment.getCurrentVariant() == SIMPLIFIED_LOGIN_WPCOM
 
         val binding = FragmentLoginPrologueBinding.bind(view)
