@@ -15,8 +15,8 @@ import com.woocommerce.android.ui.analytics.AnalyticsRepository.ProductsResult.P
 import com.woocommerce.android.ui.analytics.AnalyticsRepository.RevenueResult.RevenueData
 import com.woocommerce.android.ui.analytics.AnalyticsRepository.RevenueResult.RevenueError
 import com.woocommerce.android.ui.analytics.daterangeselector.AnalyticTimePeriod
-import com.woocommerce.android.ui.analytics.daterangeselector.AnalyticsDateRange.MultipleDateRange
-import com.woocommerce.android.ui.analytics.daterangeselector.AnalyticsDateRange.SimpleDateRange
+import com.woocommerce.android.ui.analytics.daterangeselector.MultipleDateRange
+import com.woocommerce.android.ui.analytics.daterangeselector.SimpleDateRange
 import com.woocommerce.android.ui.mystore.data.StatsRepository
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
