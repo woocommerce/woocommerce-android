@@ -912,6 +912,316 @@ class MyStoreViewModelTest : BaseUnitTest() {
             )
         }
     }
+
+    @Test
+    fun `given jitm displayed, when cta tapped, then cta tapped event is tracked`() {
+        testBlocking {
+            givenNetworkConnectivity(connected = true)
+            whenever(selectedSite.get()).thenReturn(SiteModel())
+            whenever(
+                jitmStore.fetchJitmMessage(any(), any())
+            ).thenReturn(
+                WooResult(
+                    model = arrayOf(provideJitmApiResponse())
+                )
+            )
+            whenever(utmProvider.getUrlWithUtmParams(any())).thenReturn("")
+
+            whenViewModelIsCreated()
+            (sut.bannerState.value as BannerState).onPrimaryActionClicked.invoke()
+
+            verify(analyticsTrackerWrapper).track(
+                eq(AnalyticsEvent.JITM_CTA_TAPPED),
+                any()
+            )
+        }
+    }
+
+    @Test
+    fun `given jitm displayed, when cta tapped, then cta tapped event is tracked with correct properties`() {
+        testBlocking {
+            givenNetworkConnectivity(connected = true)
+            whenever(selectedSite.get()).thenReturn(SiteModel())
+            whenever(
+                jitmStore.fetchJitmMessage(any(), any())
+            ).thenReturn(
+                WooResult(
+                    model = arrayOf(
+                        provideJitmApiResponse(
+                            id = "12345",
+                            featureClass = "woomobile_ipp"
+                        )
+                    )
+                )
+            )
+            whenever(utmProvider.getUrlWithUtmParams(any())).thenReturn("")
+
+            whenViewModelIsCreated()
+            (sut.bannerState.value as BannerState).onPrimaryActionClicked.invoke()
+
+            verify(analyticsTrackerWrapper).track(
+                AnalyticsEvent.JITM_CTA_TAPPED,
+                mapOf(
+                    AnalyticsTracker.KEY_SOURCE to MyStoreViewModel.UTM_SOURCE,
+                    AnalyticsTracker.JITM_ID to "12345",
+                    AnalyticsTracker.JITM_FEATURE_CLASS to "woomobile_ipp"
+                )
+            )
+        }
+    }
+
+    @Test
+    fun `given jitm displayed, when dismiss tapped, then dismiss tapped event is tracked`() {
+        testBlocking {
+            givenNetworkConnectivity(connected = true)
+            whenever(selectedSite.get()).thenReturn(SiteModel())
+            whenever(
+                jitmStore.fetchJitmMessage(any(), any())
+            ).thenReturn(
+                WooResult(
+                    model = arrayOf(provideJitmApiResponse())
+                )
+            )
+
+            whenViewModelIsCreated()
+            (sut.bannerState.value as BannerState).onDismissClicked.invoke()
+
+            verify(analyticsTrackerWrapper).track(
+                eq(AnalyticsEvent.JITM_DISMISS_TAPPED),
+                any()
+            )
+        }
+    }
+
+    @Test
+    fun `given jitm displayed, when dismiss tapped, then dismiss tapped event is tracked with correct properties`() {
+        testBlocking {
+            givenNetworkConnectivity(connected = true)
+            whenever(selectedSite.get()).thenReturn(SiteModel())
+            whenever(
+                jitmStore.fetchJitmMessage(any(), any())
+            ).thenReturn(
+                WooResult(
+                    model = arrayOf(
+                        provideJitmApiResponse(
+                            id = "12345",
+                            featureClass = "woomobile_ipp"
+                        )
+                    )
+                )
+            )
+
+            whenViewModelIsCreated()
+            (sut.bannerState.value as BannerState).onDismissClicked.invoke()
+
+            verify(analyticsTrackerWrapper).track(
+                AnalyticsEvent.JITM_DISMISS_TAPPED,
+                mapOf(
+                    AnalyticsTracker.KEY_SOURCE to MyStoreViewModel.UTM_SOURCE,
+                    AnalyticsTracker.JITM_ID to "12345",
+                    AnalyticsTracker.JITM_FEATURE_CLASS to "woomobile_ipp"
+                )
+            )
+        }
+    }
+
+    @Test
+    fun `given jitm dismissed, when dismiss success, then dismiss success event is tracked`() {
+        testBlocking {
+            givenNetworkConnectivity(connected = true)
+            whenever(selectedSite.get()).thenReturn(SiteModel())
+            whenever(
+                jitmStore.fetchJitmMessage(any(), any())
+            ).thenReturn(
+                WooResult(
+                    model = arrayOf(provideJitmApiResponse())
+                )
+            )
+            whenever(jitmStore.dismissJitmMessage(any(), any(), any())).thenReturn(
+                WooResult(true)
+            )
+
+            whenViewModelIsCreated()
+            (sut.bannerState.value as BannerState).onDismissClicked.invoke()
+
+            verify(analyticsTrackerWrapper).track(
+                eq(AnalyticsEvent.JITM_DISMISS_SUCCESS),
+                any()
+            )
+        }
+    }
+
+    @Test
+    fun `given jitm dismissed, when dismiss success, then dismiss success event is tracked with correct properties`() {
+        testBlocking {
+            givenNetworkConnectivity(connected = true)
+            whenever(selectedSite.get()).thenReturn(SiteModel())
+            whenever(
+                jitmStore.fetchJitmMessage(any(), any())
+            ).thenReturn(
+                WooResult(
+                    model = arrayOf(
+                        provideJitmApiResponse(
+                            id = "12345",
+                            featureClass = "woomobile_ipp"
+                        )
+                    )
+                )
+            )
+            whenever(jitmStore.dismissJitmMessage(any(), any(), any())).thenReturn(
+                WooResult(true)
+            )
+
+            whenViewModelIsCreated()
+            (sut.bannerState.value as BannerState).onDismissClicked.invoke()
+
+            verify(analyticsTrackerWrapper).track(
+                AnalyticsEvent.JITM_DISMISS_SUCCESS,
+                mapOf(
+                    AnalyticsTracker.KEY_SOURCE to MyStoreViewModel.UTM_SOURCE,
+                    AnalyticsTracker.JITM_ID to "12345",
+                    AnalyticsTracker.JITM_FEATURE_CLASS to "woomobile_ipp"
+                )
+            )
+        }
+    }
+
+    @Test
+    fun `given jitm dismissed, when dismiss failure, then dismiss failure event is tracked`() {
+        testBlocking {
+            givenNetworkConnectivity(connected = true)
+            whenever(selectedSite.get()).thenReturn(SiteModel())
+            whenever(
+                jitmStore.fetchJitmMessage(any(), any())
+            ).thenReturn(
+                WooResult(
+                    model = arrayOf(provideJitmApiResponse())
+                )
+            )
+            whenever(jitmStore.dismissJitmMessage(any(), any(), any())).thenReturn(
+                WooResult(false)
+            )
+
+            whenViewModelIsCreated()
+            (sut.bannerState.value as BannerState).onDismissClicked.invoke()
+
+            verify(analyticsTrackerWrapper).track(
+                eq(AnalyticsEvent.JITM_DISMISS_FAILURE),
+                any()
+            )
+        }
+    }
+
+    @Test
+    fun `given jitm dismissed, when dismiss error, then dismiss failure event is tracked`() {
+        testBlocking {
+            givenNetworkConnectivity(connected = true)
+            whenever(selectedSite.get()).thenReturn(SiteModel())
+            whenever(
+                jitmStore.fetchJitmMessage(any(), any())
+            ).thenReturn(
+                WooResult(
+                    model = arrayOf(provideJitmApiResponse())
+                )
+            )
+            whenever(jitmStore.dismissJitmMessage(any(), any(), any())).thenReturn(
+                WooResult(
+                    WooError(
+                        type = WooErrorType.GENERIC_ERROR,
+                        original = BaseRequest.GenericErrorType.NETWORK_ERROR
+                    )
+                )
+            )
+
+            whenViewModelIsCreated()
+            (sut.bannerState.value as BannerState).onDismissClicked.invoke()
+
+            verify(analyticsTrackerWrapper).track(
+                eq(AnalyticsEvent.JITM_DISMISS_FAILURE),
+                any()
+            )
+        }
+    }
+
+    @Test
+    fun `given jitm dismissed, when dismiss error, then dismiss failure event is tracked with correct properties`() {
+        testBlocking {
+            givenNetworkConnectivity(connected = true)
+            whenever(selectedSite.get()).thenReturn(SiteModel())
+            whenever(
+                jitmStore.fetchJitmMessage(any(), any())
+            ).thenReturn(
+                WooResult(
+                    model = arrayOf(
+                        provideJitmApiResponse(
+                            id = "12345",
+                            featureClass = "woomobile_ipp"
+                        )
+                    )
+                )
+            )
+            whenever(jitmStore.dismissJitmMessage(any(), any(), any())).thenReturn(
+                WooResult(
+                    WooError(
+                        type = WooErrorType.GENERIC_ERROR,
+                        original = BaseRequest.GenericErrorType.NETWORK_ERROR,
+                        message = "Generic error"
+                    )
+                )
+            )
+
+            whenViewModelIsCreated()
+            (sut.bannerState.value as BannerState).onDismissClicked.invoke()
+
+            verify(analyticsTrackerWrapper).track(
+                AnalyticsEvent.JITM_DISMISS_FAILURE,
+                mapOf(
+                    AnalyticsTracker.KEY_SOURCE to MyStoreViewModel.UTM_SOURCE,
+                    AnalyticsTracker.JITM_ID to "12345",
+                    AnalyticsTracker.JITM_FEATURE_CLASS to "woomobile_ipp",
+                    AnalyticsTracker.KEY_ERROR_TYPE to WooErrorType.GENERIC_ERROR.name,
+                    AnalyticsTracker.KEY_ERROR_DESC to "Generic error",
+                )
+            )
+        }
+    }
+
+    @Test
+    fun `given jitm dismissed, when dismiss failure, then dismiss failure event is tracked with correct properties`() {
+        testBlocking {
+            givenNetworkConnectivity(connected = true)
+            whenever(selectedSite.get()).thenReturn(SiteModel())
+            whenever(
+                jitmStore.fetchJitmMessage(any(), any())
+            ).thenReturn(
+                WooResult(
+                    model = arrayOf(
+                        provideJitmApiResponse(
+                            id = "12345",
+                            featureClass = "woomobile_ipp"
+                        )
+                    )
+                )
+            )
+            whenever(jitmStore.dismissJitmMessage(any(), any(), any())).thenReturn(
+                WooResult(false)
+            )
+
+            whenViewModelIsCreated()
+            (sut.bannerState.value as BannerState).onDismissClicked.invoke()
+
+            verify(analyticsTrackerWrapper).track(
+                AnalyticsEvent.JITM_DISMISS_FAILURE,
+                mapOf(
+                    AnalyticsTracker.KEY_SOURCE to MyStoreViewModel.UTM_SOURCE,
+                    AnalyticsTracker.JITM_ID to "12345",
+                    AnalyticsTracker.JITM_FEATURE_CLASS to "woomobile_ipp",
+                    AnalyticsTracker.KEY_ERROR_TYPE to null,
+                    AnalyticsTracker.KEY_ERROR_DESC to null,
+                )
+            )
+        }
+    }
     //endregion
 
     private suspend fun givenStatsLoadingResult(result: GetStats.LoadStatsResult) {
