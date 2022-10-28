@@ -34,7 +34,7 @@ class WebViewStoreCreationViewModel @Inject constructor(
         private const val STORE_CREATION_URL = "https://woocommerce.com/start"
         private const val SITE_URL_KEYWORD = "checkout/thank-you/"
         private const val WEBVIEW_EXIT_TRIGGER_KEYWORD = "calypso/images/wpcom-ecommerce"
-        private const val STORE_LOAD_RETRIES_LIMIT = 3
+        private const val STORE_LOAD_RETRIES_LIMIT = 10
     }
 
     private val step = savedStateHandle.getStateFlow<Step>(viewModelScope, Step.StoreCreation)
@@ -96,15 +96,16 @@ class WebViewStoreCreationViewModel @Inject constructor(
     private fun onStoreCreated() {
         step.value = Step.StoreLoading
         launch {
-            var newSite: SiteModel? = null
-            var numRetries = 0
-            while (newSite?.hasWooCommerce != true) {
-                numRetries++
-                newSite = possibleStoreUrls.firstNotNullOfOrNull { url -> repository.getSiteBySiteUrl(url) }
-                if (newSite != null && newSite.hasWooCommerce) {
+            // keep fetching the user's sites until the new site is properly configured or the retry limit is reached
+            for (retries in 0..STORE_LOAD_RETRIES_LIMIT) {
+                val newSite = possibleStoreUrls.firstNotNullOfOrNull { url -> repository.getSiteBySiteUrl(url) }
+                if (newSite?.isJetpackInstalled == true && newSite.isJetpackConnected) {
+                    WooLog.d(T.LOGIN, "Found new site: ${newSite.url}")
                     repository.selectSite(newSite)
                     triggerEvent(NavigateToNewStore)
-                    WooLog.d(T.LOGIN, "Found new site: ${newSite.url}")
+                } else if (retries == STORE_LOAD_RETRIES_LIMIT) {
+                    WooLog.d(T.LOGIN, "Maximum retries reached...")
+                    step.value = Step.StoreLoadingError
                 } else {
                     WooLog.d(T.LOGIN, "New site not found, retrying...")
                     val result = repository.fetchSitesAfterCreation()
@@ -112,9 +113,9 @@ class WebViewStoreCreationViewModel @Inject constructor(
                         step.value = Step.StoreLoadingError
                         break
                     }
-                    // && numRetries < STORE_LOAD_RETRIES_LIMIT
                 }
             }
+            WooLog.d(T.LOGIN, "Store creation done...")
         }
     }
 
@@ -122,7 +123,6 @@ class WebViewStoreCreationViewModel @Inject constructor(
         possibleStoreUrls.add(url)
     }
 
-    object NavigateToSitePicker : MultiLiveEvent.Event()
     object NavigateToNewStore : MultiLiveEvent.Event()
     object NavigateToHelpScreen : MultiLiveEvent.Event()
 
