@@ -32,7 +32,7 @@ class DeveloperOptionsFragment : BaseFragment(R.layout.fragment_developer_option
     }
 
     private fun observeViewState(binding: FragmentDeveloperOptionsBinding) {
-        viewModel.viewStateData.observe(viewLifecycleOwner) { state ->
+        viewModel.viewState.observe(viewLifecycleOwner) { state ->
             (binding.developerOptionsRv.adapter as DeveloperOptionsAdapter).setItems(state.rows)
         }
     }

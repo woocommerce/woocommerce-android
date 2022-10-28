@@ -4,6 +4,7 @@ import android.content.res.Configuration
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.tooling.preview.Preview
 import com.woocommerce.android.R
+import com.woocommerce.android.model.UiString
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.ui.payments.banner.Banner
 import com.woocommerce.android.ui.payments.banner.BannerState
@@ -19,10 +20,10 @@ fun PromoBanner(
             shouldDisplayBanner = true,
             onPrimaryActionClicked = onCtaClick,
             onDismissClicked = onDismissClick,
-            title = bannerType.titleRes,
-            description = bannerType.messageRes,
-            primaryActionLabel = R.string.set_up_now,
-            chipLabel = R.string.tip
+            title = UiString.UiStringRes(bannerType.titleRes),
+            description = UiString.UiStringRes(bannerType.messageRes),
+            primaryActionLabel = UiString.UiStringRes(R.string.set_up_now),
+            chipLabel = UiString.UiStringRes(R.string.tip)
         )
     )
 }

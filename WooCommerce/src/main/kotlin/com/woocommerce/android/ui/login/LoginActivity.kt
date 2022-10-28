@@ -10,10 +10,7 @@ import android.view.MenuItem
 import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.FragmentManager.POP_BACK_STACK_INCLUSIVE
 import androidx.lifecycle.lifecycleScope
-import androidx.navigation.NavController
-import androidx.navigation.fragment.NavHostFragment
 import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.AppUrls
@@ -30,10 +27,10 @@ import com.woocommerce.android.barcode.QrCodeScanningFragment
 import com.woocommerce.android.databinding.ActivityLoginBinding
 import com.woocommerce.android.experiment.PrologueExperiment
 import com.woocommerce.android.extensions.parcelable
-import com.woocommerce.android.support.HelpActivity
-import com.woocommerce.android.support.HelpActivity.Origin
 import com.woocommerce.android.support.ZendeskExtraTags
 import com.woocommerce.android.support.ZendeskHelper
+import com.woocommerce.android.support.help.HelpActivity
+import com.woocommerce.android.support.help.HelpActivity.Origin
 import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.login.LoginPrologueCarouselFragment.PrologueCarouselListener
 import com.woocommerce.android.ui.login.LoginPrologueFragment.PrologueFinishedListener
@@ -58,9 +55,14 @@ import com.woocommerce.android.ui.login.localnotifications.LoginNotificationSche
 import com.woocommerce.android.ui.login.overrides.WooLoginEmailFragment
 import com.woocommerce.android.ui.login.overrides.WooLoginEmailPasswordFragment
 import com.woocommerce.android.ui.login.overrides.WooLoginSiteAddressFragment
+import com.woocommerce.android.ui.login.signup.SignUpFragment
+import com.woocommerce.android.ui.login.signup.SignUpFragment.NextStep.SITE_PICKER
+import com.woocommerce.android.ui.login.signup.SignUpFragment.NextStep.STORE_CREATION
+import com.woocommerce.android.ui.login.storecreation.StoreCreationFragment
 import com.woocommerce.android.ui.main.MainActivity
 import com.woocommerce.android.util.ActivityUtils
 import com.woocommerce.android.util.ChromeCustomTabUtils
+import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.util.UrlUtils
 import com.woocommerce.android.util.WooLog
 import dagger.android.AndroidInjector
@@ -110,7 +112,8 @@ class LoginActivity :
     WooLoginEmailFragment.Listener,
     PrologueSurveyListener,
     WooLoginEmailPasswordFragment.Listener,
-    LoginNoWPcomAccountFoundFragment.Listener {
+    LoginNoWPcomAccountFoundFragment.Listener,
+    SignUpFragment.Listener {
     companion object {
         private const val FORGOT_PASSWORD_URL_SUFFIX = "wp-login.php?action=lostpassword"
         private const val MAGIC_LOGIN = "magic-login"
@@ -155,12 +158,6 @@ class LoginActivity :
 
     private var loginMode: LoginMode? = null
     private lateinit var binding: ActivityLoginBinding
-
-    // Lazy init required to avoid crash. Full context: github.com/woocommerce/woocommerce-android/pull/7581
-    private val navController: NavController by lazy { navHostFragment.navController }
-    private val navHostFragment: NavHostFragment by lazy {
-        supportFragmentManager.findFragmentById(R.id.nav_host_fragment_login) as NavHostFragment
-    }
 
     private var connectSiteInfo: ConnectSiteInfo? = null
 
@@ -217,10 +214,10 @@ class LoginActivity :
 
     private fun handleBackPress() {
         AnalyticsTracker.trackBackPressed(this)
-        if (supportFragmentManager.backStackEntryCount != 0) {
-            supportFragmentManager.popBackStack()
-        } else if (navHostFragment.childFragmentManager.backStackEntryCount == 0) {
+        if (supportFragmentManager.backStackEntryCount == 1) {
             finish()
+        } else {
+            supportFragmentManager.popBackStack()
         }
     }
 
@@ -246,14 +243,11 @@ class LoginActivity :
     }
 
     private fun showPrologue() {
-        val graphInflater = navHostFragment.navController.navInflater
-        val navGraph = graphInflater.inflate(R.navigation.nav_graph_login)
         if (!appPrefsWrapper.hasOnboardingCarouselBeenDisplayed()) {
-            navGraph.setStartDestination(R.id.loginPrologueCarouselFragment)
+            showPrologueCarouselFragment()
         } else {
-            navGraph.setStartDestination(R.id.loginPrologueFragment)
+            showPrologueFragment()
         }
-        navController.graph = navGraph
     }
 
     private fun hasMagicLinkLoginIntent(): Boolean {
@@ -271,7 +265,7 @@ class LoginActivity :
     private fun showMagicLinkInterceptFragment(authToken: String) {
         val fragment = MagicLinkInterceptFragment.newInstance(authToken)
         supportFragmentManager.beginTransaction()
-            .replace(R.id.nav_host_fragment_login, fragment, MagicLinkInterceptFragment.TAG)
+            .replace(R.id.fragment_container, fragment, MagicLinkInterceptFragment.TAG)
             .addToBackStack(null)
             .commitAllowingStateLoss()
     }
@@ -298,9 +292,10 @@ class LoginActivity :
                 R.anim.default_pop_exit_anim
             )
         }
-        fragmentTransaction.replace(R.id.nav_host_fragment_login, fragment, tag)
+        fragmentTransaction.replace(R.id.fragment_container, fragment, tag)
         if (shouldAddToBackStack) {
             fragmentTransaction.addToBackStack(tag)
+            fragmentTransaction.setPrimaryNavigationFragment(fragment)
         }
         fragmentTransaction.commitAllowingStateLoss()
     }
@@ -322,6 +317,12 @@ class LoginActivity :
         }
         return if (fragment == null) null else fragment as LoginEmailFragment
     }
+
+    private fun getPrologueFragment(): LoginPrologueFragment? =
+        supportFragmentManager.findFragmentByTag(LoginPrologueFragment.TAG) as? LoginPrologueFragment
+
+    private fun getPrologueSurveyFragment(): LoginPrologueSurveyFragment? =
+        supportFragmentManager.findFragmentByTag(LoginPrologueSurveyFragment.TAG) as? LoginPrologueSurveyFragment
 
     private fun getLoginViaSiteAddressFragment(): LoginSiteAddressFragment? =
         supportFragmentManager.findFragmentByTag(LoginSiteAddressFragment.TAG) as? WooLoginSiteAddressFragment
@@ -350,8 +351,9 @@ class LoginActivity :
     override fun startOver() {
         // Clear logged in url from AppPrefs
         AppPrefs.removeLoginSiteAddress()
-        // This will clear the back stack and return user to LoginPrologueFragment
-        supportFragmentManager.popBackStack(null, POP_BACK_STACK_INCLUSIVE)
+
+        // Pop all the fragments from the backstack until we get to the Prologue fragment
+        supportFragmentManager.popBackStack(LoginPrologueFragment.TAG, 0)
     }
 
     override fun onPrimaryButtonClicked() {
@@ -366,6 +368,10 @@ class LoginActivity :
 
     override fun onNewToWooButtonClicked() {
         ChromeCustomTabUtils.launchUrl(this, AppUrls.NEW_TO_WOO_DOC)
+    }
+
+    override fun onGetStartedClicked() {
+        changeFragment(SignUpFragment.newInstance(SignUpFragment.NextStep.STORE_CREATION), true, SignUpFragment.TAG)
     }
 
     private fun showMainActivityAndFinish() {
@@ -439,12 +445,22 @@ class LoginActivity :
         changeFragment(loginSiteAddressFragment, true, LoginSiteAddressFragment.TAG)
     }
 
-    private fun showPrologueFragmentFromCarousel() = lifecycleScope.launchWhenStarted {
-        navController.navigate(R.id.action_loginPrologueCarouselFragment_to_loginPrologueFragment)
+    private fun showPrologueCarouselFragment() {
+        val fragment = LoginPrologueCarouselFragment.newInstance()
+        supportFragmentManager.beginTransaction()
+            .replace(R.id.fragment_container, fragment, LoginPrologueCarouselFragment.TAG)
+            .addToBackStack(LoginPrologueCarouselFragment.TAG)
+            .commitAllowingStateLoss()
+    }
+
+    private fun showPrologueFragment() = lifecycleScope.launchWhenStarted {
+        val prologueFragment = getPrologueFragment() ?: LoginPrologueFragment()
+        changeFragment(prologueFragment, true, LoginPrologueFragment.TAG)
     }
 
     private fun showPrologueSurveyFragment() {
-        navController.navigate(R.id.loginPrologueSurveyFragment)
+        val prologueSurveyFragment = getPrologueSurveyFragment() ?: LoginPrologueSurveyFragment()
+        changeFragment(prologueSurveyFragment, true, LoginPrologueSurveyFragment.TAG)
     }
 
     override fun loginViaSocialAccount(
@@ -901,17 +917,21 @@ class LoginActivity :
         unifiedLoginTracker.trackClick(Click.WHAT_IS_WORDPRESS_COM_ON_INVALID_EMAIL_SCREEN)
     }
 
+    override fun onCreateAccountClicked() {
+        changeFragment(SignUpFragment.newInstance(SignUpFragment.NextStep.SITE_PICKER), true, SignUpFragment.TAG)
+    }
+
     private fun getLoginHelpNotification(): String? =
         intent.extras?.getString(KEY_LOGIN_HELP_NOTIFICATION)
 
     override fun onCarouselFinished() {
         lifecycleScope.launchWhenStarted {
-            prologueExperiment.run(::showPrologueFragmentFromCarousel, ::showPrologueSurveyFragment)
+            prologueExperiment.run(::showPrologueFragment, ::showPrologueSurveyFragment)
         }
     }
 
     override fun onSurveyFinished() {
-        navController.navigate(R.id.action_loginPrologueSurveyFragment_to_loginPrologueFragment)
+        showPrologueFragment()
     }
 
     override fun onPasswordError() {
@@ -942,6 +962,26 @@ class LoginActivity :
             onHelpClicked = { viewHelpAndSupport(Origin.LOGIN_WITH_QR_CODE) }
         )
         changeFragment(fragment, shouldAddToBackStack = true, tag = QrCodeScanningFragment.TAG)
+    }
+
+    override fun onAccountCreated(nextStep: SignUpFragment.NextStep) {
+        when (nextStep) {
+            STORE_CREATION -> {
+                if (FeatureFlag.STORE_CREATION_WEBVIEW_FLOW.isEnabled()) {
+                    showMainActivityAndFinish()
+                } else {
+                    val storeCreationFragment =
+                        supportFragmentManager.findFragmentByTag(StoreCreationFragment.TAG) as? StoreCreationFragment
+                            ?: StoreCreationFragment()
+                    changeFragment(storeCreationFragment, shouldAddToBackStack = true, tag = StoreCreationFragment.TAG)
+                }
+            }
+            SITE_PICKER -> showMainActivityAndFinish()
+        }
+    }
+
+    override fun onLoginClicked() {
+        startLoginViaWPCom()
     }
 
     private fun processLoginHelpNotification(loginHelpNotification: String) {

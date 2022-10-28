@@ -8,7 +8,6 @@ import android.view.MenuItem
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
-import androidx.core.text.HtmlCompat
 import androidx.core.view.MenuProvider
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Lifecycle.State
@@ -16,9 +15,12 @@ import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.R
 import com.woocommerce.android.databinding.FragmentLoginNoWpcomAccountFoundBinding
 import com.woocommerce.android.databinding.ViewLoginEpilogueButtonBarBinding
+import com.woocommerce.android.experiment.SimplifiedLoginExperiment
+import com.woocommerce.android.experiment.SimplifiedLoginExperiment.LoginVariant
 import com.woocommerce.android.extensions.hide
 import com.woocommerce.android.ui.login.UnifiedLoginTracker.Click
 import com.woocommerce.android.ui.login.UnifiedLoginTracker.Step
+import com.woocommerce.android.util.FeatureFlag
 import com.zendesk.util.StringUtils
 import dagger.hilt.android.AndroidEntryPoint
 import org.wordpress.android.login.LoginListener
@@ -28,6 +30,7 @@ import javax.inject.Inject
 class LoginNoWPcomAccountFoundFragment : Fragment(R.layout.fragment_login_no_wpcom_account_found), MenuProvider {
     interface Listener {
         fun onWhatIsWordPressLinkNoWpcomAccountScreenClicked()
+        fun onCreateAccountClicked()
     }
 
     companion object {
@@ -51,7 +54,11 @@ class LoginNoWPcomAccountFoundFragment : Fragment(R.layout.fragment_login_no_wpc
 
     @Inject
     internal lateinit var unifiedLoginTracker: UnifiedLoginTracker
-    private lateinit var whatIsWordPressLinkClickListener: Listener
+
+    @Inject
+    lateinit var simplifiedLoginExperiment: SimplifiedLoginExperiment
+
+    private lateinit var listener: Listener
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -75,24 +82,51 @@ class LoginNoWPcomAccountFoundFragment : Fragment(R.layout.fragment_login_no_wpc
             it.setDisplayShowTitleEnabled(false)
         }
 
-        binding.noWpAccountMsg.text = getString(R.string.login_no_wpcom_account_found, emailAddress)
-
-        setupButtons(btnBinding, appPrefsWrapper.getLoginSiteAddress().isNullOrBlank())
-
-        binding.btnLoginWhatIsWordpress.text =
-            HtmlCompat.fromHtml(getString(R.string.what_is_wordpress_link), HtmlCompat.FROM_HTML_MODE_LEGACY)
-        binding.btnLoginWhatIsWordpress.setOnClickListener {
-            whatIsWordPressLinkClickListener.onWhatIsWordPressLinkNoWpcomAccountScreenClicked()
+        when (simplifiedLoginExperiment.getCurrentVariant()) {
+            LoginVariant.CONTROL ->
+                setupButtonsForStandardFlow(btnBinding, appPrefsWrapper.getLoginSiteAddress().isNullOrBlank())
+            LoginVariant.SIMPLIFIED_LOGIN_WPCOM -> setupButtonsForSimplifiedFlow(btnBinding)
         }
 
-        binding.btnFindConnectedEmail.text =
-            HtmlCompat.fromHtml(getString(R.string.login_need_help_finding_email), HtmlCompat.FROM_HTML_MODE_LEGACY)
+        binding.btnLoginWhatIsWordpress.setOnClickListener {
+            listener.onWhatIsWordPressLinkNoWpcomAccountScreenClicked()
+        }
+
         binding.btnFindConnectedEmail.setOnClickListener {
             loginListener?.showHelpFindingConnectedEmail()
         }
     }
 
-    private fun setupButtons(btnBinding: ViewLoginEpilogueButtonBarBinding, showEnterStoreAddressButton: Boolean) {
+    private fun setupButtonsForSimplifiedFlow(btnBinding: ViewLoginEpilogueButtonBarBinding) {
+        if (FeatureFlag.ACCOUNT_CREATION_FLOW.isEnabled()) {
+            with(btnBinding.buttonPrimary) {
+                text = getString(R.string.login_create_an_account)
+                setOnClickListener {
+                    unifiedLoginTracker.trackClick(Click.CREATE_ACCOUNT)
+
+                    listener.onCreateAccountClicked()
+                }
+            }
+        } else {
+            btnBinding.buttonPrimary.hide()
+        }
+
+        with(btnBinding.buttonSecondary) {
+            visibility = View.VISIBLE
+            text = getString(R.string.login_try_another_email)
+            setOnClickListener {
+                unifiedLoginTracker.trackClick(Click.TRY_ANOTHER_ACCOUNT)
+
+                loginListener?.startOver()
+            }
+        }
+        btnBinding.buttonTertiary.hide()
+    }
+
+    private fun setupButtonsForStandardFlow(
+        btnBinding: ViewLoginEpilogueButtonBarBinding,
+        showEnterStoreAddressButton: Boolean
+    ) {
         // Only show "Enter Store Address" button if not coming from the "Enter store address" login flow.
         if (showEnterStoreAddressButton) {
             with(btnBinding.buttonPrimary) {
@@ -124,6 +158,7 @@ class LoginNoWPcomAccountFoundFragment : Fragment(R.layout.fragment_login_no_wpc
             }
             btnBinding.buttonSecondary.hide()
         }
+        btnBinding.buttonTertiary.hide()
     }
 
     override fun onCreateMenu(menu: Menu, inflater: MenuInflater) {
@@ -143,12 +178,9 @@ class LoginNoWPcomAccountFoundFragment : Fragment(R.layout.fragment_login_no_wpc
     override fun onAttach(context: Context) {
         super.onAttach(context)
 
-        // this will throw if parent activity doesn't implement the login listener interface
-        loginListener = context as? LoginListener
-
-        if (activity is Listener) {
-            whatIsWordPressLinkClickListener = activity as Listener
-        }
+        // this will throw if parent activity doesn't implement the interfaces
+        loginListener = context as LoginListener
+        listener = activity as Listener
     }
 
     override fun onDetach() {

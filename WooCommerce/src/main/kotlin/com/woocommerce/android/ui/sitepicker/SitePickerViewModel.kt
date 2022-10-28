@@ -15,7 +15,7 @@ import com.woocommerce.android.analytics.ExperimentTracker
 import com.woocommerce.android.experiment.JetpackTimeoutExperiment
 import com.woocommerce.android.extensions.getSiteName
 import com.woocommerce.android.extensions.isSimpleWPComSite
-import com.woocommerce.android.support.HelpActivity
+import com.woocommerce.android.support.help.HelpActivity
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.common.UserEligibilityFetcher
 import com.woocommerce.android.ui.login.AccountRepository
@@ -97,12 +97,32 @@ class SitePickerViewModel @Inject constructor(
             false -> loadStorePickerView()
         }
         updateSiteViewDetails()
+        loadAndDisplayUserInfo()
         loadAndDisplaySites()
+        if (appPrefsWrapper.getIsNewSignUp()) startStoreCreationWebFlow()
+    }
+
+    private fun loadAndDisplayUserInfo() = launch {
+        fun getUserInfo() = accountRepository.getUserAccount()?.let {
+            UserInfo(displayName = it.displayName, username = it.userName ?: "", userAvatarUrl = it.avatarUrl)
+        }
+
+        if (accountRepository.getUserAccount() != null) {
+            sitePickerViewState = sitePickerViewState.copy(userInfo = getUserInfo())
+        } else {
+            accountRepository.fetchUserAccount().fold(
+                onSuccess = {
+                    sitePickerViewState = sitePickerViewState.copy(userInfo = getUserInfo())
+                },
+                onFailure = {
+                    triggerEvent(ShowSnackbar(string.error_fetch_my_profile))
+                }
+            )
+        }
     }
 
     private fun updateSiteViewDetails() {
         sitePickerViewState = sitePickerViewState.copy(
-            userInfo = getUserInfo(),
             primaryBtnText = resourceProvider.getString(string.continue_button),
             secondaryBtnText = resourceProvider.getString(string.login_try_another_account),
             currentSitePickerState = SitePickerState.StoreListState
@@ -345,10 +365,6 @@ class SitePickerViewModel @Inject constructor(
             isNoStoresBtnVisible = false,
             currentSitePickerState = SitePickerState.SimpleWPComState
         )
-    }
-
-    private fun getUserInfo() = accountRepository.getUserAccount()?.let {
-        UserInfo(displayName = it.displayName, username = it.userName ?: "", userAvatarUrl = it.avatarUrl)
     }
 
     fun onSiteSelected(siteModel: SiteModel) {
@@ -647,6 +663,17 @@ class SitePickerViewModel @Inject constructor(
         fetchSitesFromApi(showSkeleton = true)
     }
 
+    private fun startStoreCreationWebFlow() {
+        appPrefsWrapper.markAsNewSignUp(false)
+        triggerEvent(
+            NavigateToWPComWebView(
+                url = WOOCOMMERCE_STORE_CREATION_URL,
+                validationUrl = WOOCOMMERCE_STORE_CREATION_DONE_URL,
+                title = resourceProvider.getString(string.create_new_store)
+            )
+        )
+    }
+
     private fun trackLoginEvent(
         currentFlow: UnifiedLoginTracker.Flow? = null,
         currentStep: UnifiedLoginTracker.Step? = null,
@@ -715,6 +742,7 @@ class SitePickerViewModel @Inject constructor(
             val validationUrl: String,
             val title: String? = null
         ) : SitePickerEvent()
+
         data class NavigateToAccountMismatchScreen(
             val primaryButton: AccountMismatchPrimaryButton,
             val siteUrl: String,

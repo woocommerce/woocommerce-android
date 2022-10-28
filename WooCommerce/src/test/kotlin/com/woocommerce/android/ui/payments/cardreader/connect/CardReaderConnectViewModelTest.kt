@@ -55,6 +55,7 @@ import com.woocommerce.android.ui.payments.cardreader.connect.CardReaderConnectV
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderFlowParam
 import com.woocommerce.android.ui.payments.cardreader.onboarding.PluginType
 import com.woocommerce.android.ui.payments.cardreader.update.CardReaderUpdateViewModel
+import com.woocommerce.android.ui.prefs.DeveloperOptionsRepository
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -91,6 +92,7 @@ class CardReaderConnectViewModelTest : BaseUnitTest() {
     private val reader = mock<CardReader>().also { whenever(it.id).thenReturn("Dummy1") }
     private val reader2 = mock<CardReader>().also { whenever(it.id).thenReturn("Dummy2") }
     private val locationRepository: CardReaderLocationRepository = mock()
+    private val developerOptionsRepository: DeveloperOptionsRepository = mock()
     private val siteModel: SiteModel = mock()
     private val selectedSite: SelectedSite = mock {
         on { getIfExists() }.thenReturn(siteModel)
@@ -1428,6 +1430,7 @@ class CardReaderConnectViewModelTest : BaseUnitTest() {
             coroutinesTestRule.testDispatchers,
             tracker,
             appPrefs,
+            developerOptionsRepository,
             locationRepository,
             selectedSite,
             cardReaderManager,

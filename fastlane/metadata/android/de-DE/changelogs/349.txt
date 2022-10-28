@@ -1,0 +1,2 @@
+10.9:
+In dieser Version haben wir eine Vielzahl an Stabilitätsproblemen behoben, damit du dich einfacher anmelden kannst. Du kannst dein WordPress.com-Konto jetzt mit Jetpack verknüpfen und schneller auf deinen Store zugreifen. Sende uns weiterhin Feedback!

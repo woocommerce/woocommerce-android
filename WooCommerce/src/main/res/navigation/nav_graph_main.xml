@@ -28,7 +28,11 @@
             app:enterAnim="@anim/activity_fade_in"
             app:exitAnim="@null"
             app:popEnterAnim="@null"
-            app:popExitAnim="@anim/activity_fade_out" />
+            app:popExitAnim="@anim/activity_fade_out" >
+            <argument
+                android:name="targetGranularity"
+                app:argType="com.woocommerce.android.ui.analytics.daterangeselector.AnalyticTimePeriod" />
+        </action>
     </fragment>
     <fragment
         android:id="@+id/orders"
@@ -132,6 +136,9 @@
         android:name="com.woocommerce.android.ui.analytics.AnalyticsFragment"
         android:label="fragment_analytics"
         tools:layout="@layout/fragment_analytics">
+        <argument
+            android:name="targetGranularity"
+            app:argType="com.woocommerce.android.ui.analytics.daterangeselector.AnalyticTimePeriod" />
         <action
             android:id="@+id/action_AnalyticsFragment_to_DateRangeSelector"
             app:destination="@id/analyticsDateRangeSelectorDialog" />
@@ -444,7 +451,7 @@
     <fragment
         android:id="@+id/sitePickerSiteDiscoveryFragment"
         android:name="com.woocommerce.android.ui.sitepicker.sitediscovery.SitePickerSiteDiscoveryFragment"
-        android:label="SitePickerSiteDiscoveryFragment" >
+        android:label="SitePickerSiteDiscoveryFragment">
         <action
             android:id="@+id/action_sitePickerSiteDiscoveryFragment_to_accountMismatchErrorFragment"
             app:destination="@id/accountMismatchErrorFragment" />
@@ -458,15 +465,15 @@
             app:argType="string" />
         <argument
             android:name="primaryButton"
-            app:argType="com.woocommerce.android.ui.login.accountmismatch.AccountMismatchErrorViewModel$AccountMismatchPrimaryButton"
-            android:defaultValue="NONE" />
+            android:defaultValue="NONE"
+            app:argType="com.woocommerce.android.ui.login.accountmismatch.AccountMismatchErrorViewModel$AccountMismatchPrimaryButton" />
         <argument
             android:name="errorType"
             app:argType="com.woocommerce.android.ui.login.accountmismatch.AccountMismatchErrorViewModel$AccountMismatchErrorType" />
         <argument
             android:name="allowBackNavigation"
-            app:argType="boolean"
-            android:defaultValue="true" />
+            android:defaultValue="true"
+            app:argType="boolean" />
     </fragment>
     <fragment
         android:id="@+id/webViewStoreCreationFragment"
