@@ -1,11 +1,21 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2022-10-20 23:54:04+0000
+Translation-Revision-Date: 2022-10-27 14:54:03+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: nl
 -->
 <resources>
+    <string name="hello_blank_fragment">Hoi leeg segment</string>
+    <string name="what_is_wordpress_link">&lt;u&gt;Wat is WordPress.com?&lt;/u&gt;</string>
+    <string name="signup_creating_account_loading_message">Account wordt aangemaakt</string>
+    <string name="signup_terms_of_service">Door verder te gaan, ga je akkoord met onze &lt;u&gt;Servicevoorwaarden&lt;/u&gt;</string>
+    <string name="signup_password_hint">Kies een wachtwoord</string>
+    <string name="signup_email_address_hint">Je e-mailadres</string>
+    <string name="signup_already_registered">Laten we eerst je account aanmaken. Ben je al geregistreerd? Log in</string>
+    <string name="signup_get_started_label">Aan de slag \nin minuten</string>
+    <string name="signup_get_started_button">Aan de slag</string>
+    <string name="login_jetpack_connection_consent">Door op de knop Jetpack verbinden te klikken, ga je akkoord met onze &lt;a href=\'terms\'&gt;Servicevoorwaarden&lt;/a&gt; en met het &lt;a href=\'sync\'&gt;delen van informatie&lt;/a&gt; met WordPress.com.</string>
     <string name="enable_card_reader">Gesimuleerde kaartlezer inschakelen</string>
     <string name="login_account_mismatch_connect_wpcom_dialog_message">Neem contact op met de eigenaar van de site voor een uitnodiging om als winkelmanager of beheerder de app te gebruiken.</string>
     <string name="login_account_mismatch_connect_wpcom_dialog_title">Verbinden met een WordPress.com site</string>
@@ -1846,6 +1856,7 @@ Language: nl
     <string name="orderdetail_track_shipment">Verzending tracken</string>
     <string name="login_email_help_desc">In je sitebeheer kun je de e-mail vinden die je gebruikt hebt om verbinding te maken met WordPress.com via het %1$sJetpack-dashboard%2$s onder %3$sVerbindingen &gt; Accountverbinding%4$s</string>
     <string name="login_email_help_title">Welke e-mail moet ik gebruiken om me aan te melden?</string>
+    <string name="login_need_help_finding_email">&lt;u&gt;Heb je hulp nodig bij het vinden van de vereiste e-mail?&lt;/u&gt;</string>
     <string name="login_jetpack_what_is_description">Jetpack is een gratis WordPress-plugin die aan je winkel wordt gekoppeld en je de tools voor de beste mobiele ervaring biedt, waaronder pushmeldingen en statistieken</string>
     <string name="login_jetpack_what_is">Wat is Jetpack?</string>
     <string name="login_view_connected_stores">Aangesloten winkels bekijken</string>

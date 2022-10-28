@@ -1,11 +1,21 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2022-10-20 09:54:04+0000
+Translation-Revision-Date: 2022-10-27 11:54:04+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: es
 -->
 <resources>
+    <string name="hello_blank_fragment">Hola, (fragmento en blanco)</string>
+    <string name="what_is_wordpress_link">&lt;u&gt;¿Qué es WordPress.com?&lt;/u&gt;</string>
+    <string name="signup_creating_account_loading_message">Creando una nueva cuenta</string>
+    <string name="signup_terms_of_service">Si continúas, aceptas nuestras &lt;u&gt;condiciones del servicio.&lt;/u&gt;</string>
+    <string name="signup_password_hint">Selecciona una contraseña</string>
+    <string name="signup_email_address_hint">Tu dirección de correo electrónico</string>
+    <string name="signup_already_registered">Primero, vamos a crear tu cuenta. ¿Ya te has registrado? Acceder</string>
+    <string name="signup_get_started_label">Empieza ahora \nen unos minutos</string>
+    <string name="signup_get_started_button">Empieza ahora</string>
+    <string name="login_jetpack_connection_consent">Al tocar en el botón Conectar Jetpack, aceptas nuestras &lt;a href=\'terms\'&gt;condiciones del servicio&lt;/a&gt; y &lt;a href=\'sync\'&gt;compartir información&lt;/a&gt; con WordPress.com.</string>
     <string name="enable_card_reader">Activar lector de tarjeta simulado</string>
     <string name="login_account_mismatch_connect_wpcom_dialog_message">Ponte en contacto con el propietario del sitio para obtener una invitación como gestor o administrador de la tienda y utilizar la aplicación con este rol.</string>
     <string name="login_account_mismatch_connect_wpcom_dialog_title">Conectar a un sitio web de WordPress.com</string>
@@ -1846,6 +1856,7 @@ Language: es
     <string name="orderdetail_track_shipment">Hacer un seguimiento del envío</string>
     <string name="login_email_help_desc">En la sección admin de tu sitio encontrarás la dirección de correo electrónico que usaste para conectar WordPress.com desde el %1$sEscritorio de Jetpack%2$s, en %3$sConexiones &gt; Conexión de la cuenta%4$s</string>
     <string name="login_email_help_title">¿Qué dirección de correo electrónico debo usar para iniciar sesión?</string>
+    <string name="login_need_help_finding_email">&lt;u&gt;¿Necesitas ayuda para encontrar la dirección de correo electrónico solicitada?&lt;/u&gt;</string>
     <string name="login_jetpack_what_is_description">Jetpack es un plugin gratuito de WordPress que conecta tu tienda con las herramientas necesarias para ofrecer la mejor experiencia para móviles, como notificaciones push y estadísticas</string>
     <string name="login_jetpack_what_is">¿Qué es Jetpack?</string>
     <string name="login_view_connected_stores">Ver tiendas conectadas</string>
