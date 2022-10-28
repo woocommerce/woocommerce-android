@@ -28,6 +28,7 @@ class SignUpRepository @Inject constructor(
         const val EMAIL_EXIST_API_ERROR = "email_exists"
         const val EMAIL_INVALID_API_ERROR = "email_invalid"
         const val PASSWORD_INVALID_API_ERROR = "password_invalid"
+        const val USERNAME_INVALID_API_ERROR = "username_invalid"
         const val PASSWORD_MIN_LENGTH = 7
     }
 
@@ -113,6 +114,7 @@ class SignUpRepository @Inject constructor(
             this == EMAIL_EXIST_API_ERROR -> EMAIL_EXIST
             this == EMAIL_INVALID_API_ERROR -> EMAIL_INVALID
             this == PASSWORD_INVALID_API_ERROR -> PASSWORD_INVALID
+            this == USERNAME_INVALID_API_ERROR -> SignUpError.USERNAME_INVALID
             else -> UNKNOWN_ERROR
         }
 
@@ -121,6 +123,7 @@ class SignUpRepository @Inject constructor(
         EMAIL_INVALID,
         PASSWORD_INVALID,
         PASSWORD_TOO_SHORT,
+        USERNAME_INVALID,
         UNKNOWN_ERROR
     }
 }

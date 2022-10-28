@@ -98,7 +98,8 @@ class SignUpViewModel @Inject constructor(
                 type = PASSWORD,
                 stringId = R.string.signup_password_too_short
             )
-            SignUpError.UNKNOWN_ERROR -> SignUpErrorUi(
+            SignUpError.UNKNOWN_ERROR,
+            SignUpError.USERNAME_INVALID -> SignUpErrorUi(
                 type = UNKNOWN,
                 stringId = R.string.signup_api_generic_error
             )
