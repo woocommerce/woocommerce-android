@@ -65,7 +65,6 @@ Language: tr
     <string name="orderlist_bottom_sheet_simple_payments_moved_button">Anladım!</string>
     <string name="orderlist_bottom_sheet_simple_payments_moved_description">Artık Şahsen Ödemelere ve diğer özelliklere kolayca hızlı bir şekilde erişebilirsiniz.</string>
     <string name="orderlist_bottom_sheet_simple_payments_moved_title">Menü sekmesinden ödemeler</string>
-    <string name="login_no_wpcom_account_found">%1$s e-postası bir WordPress.com hesabıyla kullanılmaz.</string>
     <string name="login_non_woo_stores_label">Diğer siteler</string>
     <string name="login_with_store_address">Mağaza adresinizle oturum açın</string>
     <string name="more_menu_button_w___admin">WC Yöneticisi</string>

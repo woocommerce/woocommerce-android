@@ -65,7 +65,6 @@ Language: de
     <string name="orderlist_bottom_sheet_simple_payments_moved_button">Verstanden!</string>
     <string name="orderlist_bottom_sheet_simple_payments_moved_description">Jetzt kannst du schnell und einfach auf Persönliche Zahlungen und andere Funktionen zugreifen</string>
     <string name="orderlist_bottom_sheet_simple_payments_moved_title">Zahlungen über den Tab „Menü“</string>
-    <string name="login_no_wpcom_account_found">Die E-Mail %1$s wird nicht mit einem WordPress.com-Konto verwendet.</string>
     <string name="login_non_woo_stores_label">Andere Websites</string>
     <string name="login_with_store_address">Melde dich mit deiner Shop-Adresse an</string>
     <string name="more_menu_button_w___admin">WC Admin</string>
