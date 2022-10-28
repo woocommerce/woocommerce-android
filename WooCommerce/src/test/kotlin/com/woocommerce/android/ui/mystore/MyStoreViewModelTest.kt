@@ -2,16 +2,22 @@ package com.woocommerce.android.ui.mystore
 
 import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.AppPrefsWrapper
+import com.woocommerce.android.AppUrls
+import com.woocommerce.android.R
 import com.woocommerce.android.WooException
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
+import com.woocommerce.android.model.UiString
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.ui.mystore.MyStoreViewModel.MyStoreEvent.OnJitmCtaClicked
 import com.woocommerce.android.ui.mystore.domain.GetStats
 import com.woocommerce.android.ui.mystore.domain.GetTopPerformers
 import com.woocommerce.android.ui.mystore.domain.GetTopPerformers.TopPerformerProduct
+import com.woocommerce.android.ui.payments.banner.BannerState
 import com.woocommerce.android.util.CurrencyFormatter
+import com.woocommerce.android.util.UtmProvider
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import com.woocommerce.android.viewmodel.ResourceProvider
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -23,6 +29,7 @@ import org.junit.Test
 import org.mockito.ArgumentMatchers.anyBoolean
 import org.mockito.ArgumentMatchers.anyInt
 import org.mockito.kotlin.any
+import org.mockito.kotlin.argumentCaptor
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.never
 import org.mockito.kotlin.verify
@@ -31,6 +38,11 @@ import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.network.BaseRequest
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooError
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooErrorType
+import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooResult
+import org.wordpress.android.fluxc.network.rest.wpcom.wc.payments.inperson.JITMApiResponse
+import org.wordpress.android.fluxc.network.rest.wpcom.wc.payments.inperson.JITMContent
+import org.wordpress.android.fluxc.network.rest.wpcom.wc.payments.inperson.JITMCta
+import org.wordpress.android.fluxc.store.JitmStore
 import org.wordpress.android.fluxc.store.WCStatsStore.StatsGranularity
 import org.wordpress.android.fluxc.store.WooCommerceStore
 import kotlin.test.assertTrue
@@ -48,6 +60,8 @@ class MyStoreViewModelTest : BaseUnitTest() {
     private val appPrefsWrapper: AppPrefsWrapper = mock()
     private val usageTracksEventEmitter: MyStoreStatsUsageTracksEventEmitter = mock()
     private val analyticsTrackerWrapper: AnalyticsTrackerWrapper = mock()
+    private val jitmStore: JitmStore = mock()
+    private val utmProvider: UtmProvider = mock()
 
     private lateinit var sut: MyStoreViewModel
 
@@ -397,6 +411,249 @@ class MyStoreViewModelTest : BaseUnitTest() {
             )
         }
 
+    // region Just In Time Messages (JITM)
+    @Test
+    fun `given store setup in US, when viewmodel init, then request for jitm with valid message path`() {
+        testBlocking {
+            givenNetworkConnectivity(connected = true)
+            whenever(selectedSite.get()).thenReturn(SiteModel())
+            val expectedMessagePath = "woomobile:my_store:admin_notices"
+            val captor = argumentCaptor<String>()
+
+            whenViewModelIsCreated()
+            verify(jitmStore).fetchJitmMessage(any(), captor.capture())
+
+            assertThat(captor.firstValue).isEqualTo(expectedMessagePath)
+        }
+    }
+
+    @Test
+    fun `given jitm success response, when viewmodel init, then proper banner state event is triggered`() {
+        testBlocking {
+            givenNetworkConnectivity(connected = true)
+            whenever(selectedSite.get()).thenReturn(SiteModel())
+            whenever(
+                jitmStore.fetchJitmMessage(any(), any())
+            ).thenReturn(
+                WooResult(
+                    model = arrayOf(provideJitmApiResponse())
+                )
+            )
+
+            whenViewModelIsCreated()
+
+            assertThat(sut.bannerState.value).isInstanceOf(BannerState::class.java)
+        }
+    }
+
+    @Test
+    fun `given jitm error response, when viewmodel init, then banner state event is not triggered`() {
+        testBlocking {
+            givenNetworkConnectivity(connected = true)
+            whenever(selectedSite.get()).thenReturn(SiteModel())
+            whenever(
+                jitmStore.fetchJitmMessage(any(), any())
+            ).thenReturn(
+                WooResult(
+                    error = WOO_GENERIC_ERROR
+                )
+            )
+
+            whenViewModelIsCreated()
+
+            assertThat(sut.bannerState.value).isNull()
+        }
+    }
+
+    @Test
+    fun `given jitm empty response, when viewmodel init, then banner state event is not triggered`() {
+        testBlocking {
+            givenNetworkConnectivity(connected = true)
+            whenever(selectedSite.get()).thenReturn(SiteModel())
+            whenever(
+                jitmStore.fetchJitmMessage(any(), any())
+            ).thenReturn(
+                WooResult(
+                    model = emptyArray()
+                )
+            )
+
+            whenViewModelIsCreated()
+
+            assertThat(sut.bannerState.value).isNull()
+        }
+    }
+
+    @Test
+    fun `given jitm success response, when viewmodel init, then proper jitm message is used in UI`() {
+        testBlocking {
+            givenNetworkConnectivity(connected = true)
+            whenever(selectedSite.get()).thenReturn(SiteModel())
+            val testJitmMessage = "Test jitm message"
+            whenever(
+                jitmStore.fetchJitmMessage(any(), any())
+            ).thenReturn(
+                WooResult(
+                    model = arrayOf(
+                        provideJitmApiResponse(
+                            content = provideJitmContent(message = testJitmMessage)
+                        )
+                    )
+                )
+            )
+
+            whenViewModelIsCreated()
+
+            assertThat(
+                (sut.bannerState.value as BannerState).title
+            ).isEqualTo(
+                UiString.UiStringText(text = testJitmMessage, containsHtml = false)
+            )
+        }
+    }
+
+    @Test
+    fun `given jitm success response, when viewmodel init, then proper jitm description is used in UI`() {
+        testBlocking {
+            givenNetworkConnectivity(connected = true)
+            whenever(selectedSite.get()).thenReturn(SiteModel())
+            val testJitmDescription = "Test jitm description"
+            whenever(
+                jitmStore.fetchJitmMessage(any(), any())
+            ).thenReturn(
+                WooResult(
+                    model = arrayOf(
+                        provideJitmApiResponse(
+                            content = provideJitmContent(description = testJitmDescription)
+                        )
+                    )
+                )
+            )
+
+            whenViewModelIsCreated()
+
+            assertThat(
+                (sut.bannerState.value as BannerState).description
+            ).isEqualTo(
+                UiString.UiStringText(text = testJitmDescription, containsHtml = false)
+            )
+        }
+    }
+
+    @Test
+    fun `given jitm success response, when viewmodel init, then proper jitm cta label is used in UI`() {
+        testBlocking {
+            givenNetworkConnectivity(connected = true)
+            whenever(selectedSite.get()).thenReturn(SiteModel())
+            val testJitmCtaLabel = "Test jitm Cta label"
+            whenever(
+                jitmStore.fetchJitmMessage(any(), any())
+            ).thenReturn(
+                WooResult(
+                    model = arrayOf(
+                        provideJitmApiResponse(
+                            jitmCta = provideJitmCta(message = testJitmCtaLabel)
+                        )
+                    )
+                )
+            )
+
+            whenViewModelIsCreated()
+
+            assertThat(
+                (sut.bannerState.value as BannerState).primaryActionLabel
+            ).isEqualTo(
+                UiString.UiStringText(text = testJitmCtaLabel, containsHtml = false)
+            )
+        }
+    }
+
+    @Test
+    fun `given jitm displayed, when jitm cta clicked, then proper event is triggered`() {
+        testBlocking {
+            givenNetworkConnectivity(connected = true)
+            whenever(selectedSite.get()).thenReturn(SiteModel())
+            whenever(
+                jitmStore.fetchJitmMessage(any(), any())
+            ).thenReturn(
+                WooResult(
+                    model = arrayOf(provideJitmApiResponse())
+                )
+            )
+            whenever(utmProvider.getUrlWithUtmParams(any())).thenReturn("")
+
+            whenViewModelIsCreated()
+            (sut.bannerState.value as BannerState).onPrimaryActionClicked.invoke()
+
+            assertThat(
+                sut.event.value
+            ).isInstanceOf(
+                OnJitmCtaClicked::class.java
+            )
+        }
+    }
+
+    @Test
+    fun `given jitm displayed, when jitm cta clicked, then proper url is passed`() {
+        testBlocking {
+            givenNetworkConnectivity(connected = true)
+            whenever(selectedSite.get()).thenReturn(SiteModel())
+            whenever(
+                jitmStore.fetchJitmMessage(any(), any())
+            ).thenReturn(
+                WooResult(
+                    model = arrayOf(
+                        provideJitmApiResponse(
+                            jitmCta = provideJitmCta(
+                                link = "${AppUrls.WOOCOMMERCE_PURCHASE_CARD_READER_IN_COUNTRY}US"
+                            )
+                        )
+                    )
+                )
+            )
+            whenever(utmProvider.getUrlWithUtmParams(any())).thenReturn(
+                "${AppUrls.WOOCOMMERCE_PURCHASE_CARD_READER_IN_COUNTRY}US"
+            )
+
+            whenViewModelIsCreated()
+            (sut.bannerState.value as BannerState).onPrimaryActionClicked.invoke()
+
+            assertThat(
+                (sut.event.value as OnJitmCtaClicked).url
+            ).isEqualTo(
+                "${AppUrls.WOOCOMMERCE_PURCHASE_CARD_READER_IN_COUNTRY}US"
+            )
+        }
+    }
+
+    @Test
+    fun `given jitm displayed, when jitm cta clicked, then proper title is passed`() {
+        testBlocking {
+            givenNetworkConnectivity(connected = true)
+            whenever(selectedSite.get()).thenReturn(SiteModel())
+            whenever(
+                jitmStore.fetchJitmMessage(any(), any())
+            ).thenReturn(
+                WooResult(
+                    model = arrayOf(provideJitmApiResponse())
+                )
+            )
+            whenever(utmProvider.getUrlWithUtmParams(any())).thenReturn(
+                ""
+            )
+
+            whenViewModelIsCreated()
+            (sut.bannerState.value as BannerState).onPrimaryActionClicked.invoke()
+
+            assertThat(
+                (sut.event.value as OnJitmCtaClicked).titleRes
+            ).isEqualTo(
+                R.string.card_reader_purchase_card_reader
+            )
+        }
+    }
+    //endregion
+
     private suspend fun givenStatsLoadingResult(result: GetStats.LoadStatsResult) {
         whenever(getStats.invoke(any(), any())).thenReturn(flow { emit(result) })
     }
@@ -449,7 +706,9 @@ class MyStoreViewModelTest : BaseUnitTest() {
             appPrefsWrapper,
             usageTracksEventEmitter,
             analyticsTrackerWrapper,
-            myStoreTransactionLauncher = mock()
+            myStoreTransactionLauncher = mock(),
+            jitmStore,
+            utmProvider,
         )
     }
 
@@ -471,4 +730,48 @@ class MyStoreViewModelTest : BaseUnitTest() {
             imageUrl = null
         )
     }
+
+    private fun provideJitmApiResponse(
+        content: JITMContent = provideJitmContent(),
+        jitmCta: JITMCta = provideJitmCta(),
+        timeToLive: Int = 0,
+        id: String = "",
+        featureClass: String = "",
+        expires: Long = 0L,
+        maxDismissal: Int = 2,
+        isDismissible: Boolean = false,
+        url: String = "",
+        jitmStatsUrl: String = ""
+    ) = JITMApiResponse(
+        content = content,
+        cta = jitmCta,
+        timeToLive = timeToLive,
+        id = id,
+        featureClass = featureClass,
+        expires = expires,
+        maxDismissal = maxDismissal,
+        isDismissible = isDismissible,
+        url = url,
+        jitmStatsUrl = jitmStatsUrl
+    )
+
+    private fun provideJitmContent(
+        message: String = "",
+        description: String = "",
+        icon: String = "",
+        title: String = ""
+    ) = JITMContent(
+        message = message,
+        description = description,
+        icon = icon,
+        title = title
+    )
+
+    private fun provideJitmCta(
+        message: String = "",
+        link: String = ""
+    ) = JITMCta(
+        message = message,
+        link = link
+    )
 }

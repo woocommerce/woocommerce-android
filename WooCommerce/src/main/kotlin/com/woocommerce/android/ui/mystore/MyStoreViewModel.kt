@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.mystore
 
+import androidx.annotation.StringRes
 import androidx.annotation.VisibleForTesting
 import androidx.lifecycle.LifecycleObserver
 import androidx.lifecycle.LiveData
@@ -12,6 +13,7 @@ import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
+import com.woocommerce.android.model.UiString
 import com.woocommerce.android.network.ConnectionChangeReceiver
 import com.woocommerce.android.network.ConnectionChangeReceiver.ConnectionChangeEvent
 import com.woocommerce.android.tools.NetworkStatus
@@ -27,7 +29,10 @@ import com.woocommerce.android.ui.mystore.domain.GetStats.LoadStatsResult.Visito
 import com.woocommerce.android.ui.mystore.domain.GetStats.LoadStatsResult.VisitorsStatsSuccess
 import com.woocommerce.android.ui.mystore.domain.GetTopPerformers
 import com.woocommerce.android.ui.mystore.domain.GetTopPerformers.TopPerformerProduct
+import com.woocommerce.android.ui.payments.banner.BannerState
 import com.woocommerce.android.util.CurrencyFormatter
+import com.woocommerce.android.util.UtmProvider
+import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.ResourceProvider
 import com.woocommerce.android.viewmodel.ScopedViewModel
@@ -49,6 +54,9 @@ import org.apache.commons.text.StringEscapeUtils
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
 import org.wordpress.android.fluxc.model.WCRevenueStatsModel
+import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooResult
+import org.wordpress.android.fluxc.network.rest.wpcom.wc.payments.inperson.JITMApiResponse
+import org.wordpress.android.fluxc.store.JitmStore
 import org.wordpress.android.fluxc.store.WCStatsStore.StatsGranularity
 import org.wordpress.android.fluxc.store.WooCommerceStore
 import org.wordpress.android.util.FormatUtils
@@ -56,6 +64,7 @@ import org.wordpress.android.util.PhotonUtils
 import java.math.BigDecimal
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
+import javax.inject.Named
 
 @HiltViewModel
 class MyStoreViewModel @Inject constructor(
@@ -70,10 +79,16 @@ class MyStoreViewModel @Inject constructor(
     private val appPrefsWrapper: AppPrefsWrapper,
     private val usageTracksEventEmitter: MyStoreStatsUsageTracksEventEmitter,
     private val analyticsTrackerWrapper: AnalyticsTrackerWrapper,
-    private val myStoreTransactionLauncher: MyStoreTransactionLauncher
+    private val myStoreTransactionLauncher: MyStoreTransactionLauncher,
+    private val jitmStore: JitmStore,
+    @Named("my-store") private val utmProvider: UtmProvider,
 ) : ScopedViewModel(savedState) {
-    private companion object {
-        const val DAYS_TO_REDISPLAY_JP_BENEFITS_BANNER = 5
+    companion object {
+        private const val DAYS_TO_REDISPLAY_JP_BENEFITS_BANNER = 5
+        const val JITM_MESSAGE_PATH = "woomobile:my_store:admin_notices"
+        const val UTM_CAMPAIGN = "jitm_group_woomobile_ipp"
+        const val UTM_SOURCE = "my_store"
+        const val UTM_CONTENT = "jitm_woomobile_ipp_barcode_users"
     }
 
     val performanceObserver: LifecycleObserver = myStoreTransactionLauncher
@@ -86,6 +101,9 @@ class MyStoreViewModel @Inject constructor(
 
     private var _topPerformersState = MutableLiveData<TopPerformersState>()
     val topPerformersState: LiveData<TopPerformersState> = _topPerformersState
+
+    private val _bannerState: MutableLiveData<BannerState> = MutableLiveData()
+    val bannerState: LiveData<BannerState> = _bannerState
 
     private var _hasOrders = MutableLiveData<OrderState>()
     val hasOrders: LiveData<OrderState> = _hasOrders
@@ -106,6 +124,10 @@ class MyStoreViewModel @Inject constructor(
         _topPerformersState.value = TopPerformersState(isLoading = true)
 
         viewModelScope.launch {
+            val response = jitmStore.fetchJitmMessage(selectedSite.get(), JITM_MESSAGE_PATH)
+            populateResultToUI(response)
+        }
+        viewModelScope.launch {
             combine(
                 _activeStatsGranularity,
                 refreshTrigger.onStart { emit(Unit) }
@@ -119,6 +141,34 @@ class MyStoreViewModel @Inject constructor(
             }
         }
         observeTopPerformerUpdates()
+    }
+
+    private fun populateResultToUI(response: WooResult<Array<JITMApiResponse>>) {
+        when {
+            response.isError -> {
+                WooLog.e(WooLog.T.JITM, "Failed to fetch JITM for the message path $JITM_MESSAGE_PATH")
+            }
+            !response.model.isNullOrEmpty() -> {
+                val model = response.model!!
+                _bannerState.value = BannerState(
+                    shouldDisplayBanner = true,
+                    onPrimaryActionClicked = { (::onJitmCtaClicked)(model[0].cta.link) },
+                    { },
+                    title = UiString.UiStringText(model[0].content.message),
+                    description = UiString.UiStringText(model[0].content.description),
+                    primaryActionLabel = UiString.UiStringText(model[0].cta.message),
+                    chipLabel = UiString.UiStringRes(R.string.card_reader_upsell_card_reader_banner_new)
+                )
+            }
+        }
+    }
+
+    private fun onJitmCtaClicked(url: String) {
+        triggerEvent(
+            MyStoreEvent.OnJitmCtaClicked(
+                utmProvider.getUrlWithUtmParams(url)
+            )
+        )
     }
 
     override fun onCleared() {
@@ -395,5 +445,9 @@ class MyStoreViewModel @Inject constructor(
             val productId: Long
         ) : MyStoreEvent()
         data class OpenAnalytics(val analyticsPeriod: AnalyticTimePeriod) : MyStoreEvent()
+        data class OnJitmCtaClicked(
+            val url: String,
+            @StringRes val titleRes: Int = R.string.card_reader_purchase_card_reader
+        ) : MyStoreEvent()
     }
 }
