@@ -92,7 +92,7 @@ class MyStoreViewModel @Inject constructor(
 ) : ScopedViewModel(savedState) {
     companion object {
         private const val DAYS_TO_REDISPLAY_JP_BENEFITS_BANNER = 5
-        const val JITM_MESSAGE_PATH = "woomobile:my_store:admin_notices"
+        private const val JITM_MESSAGE_PATH = "woomobile:my_store:admin_notices"
         const val UTM_CAMPAIGN = "jitm_group_woomobile_ipp"
         const val UTM_SOURCE = "my_store"
         const val UTM_CONTENT = "jitm_woomobile_ipp_barcode_users"
@@ -249,8 +249,49 @@ class MyStoreViewModel @Inject constructor(
         _bannerState.value = _bannerState.value?.copy(shouldDisplayBanner = false)
         trackJitmDismissTappedEvent(jitmId, featureClass)
         viewModelScope.launch {
-            jitmStore.dismissJitmMessage(selectedSite.get(), jitmId, featureClass)
+            jitmStore.dismissJitmMessage(selectedSite.get(), jitmId, featureClass).also { response ->
+                when {
+                    response.model != null && response.model!! -> {
+                        trackJitmDismissSuccessEvent(jitmId, featureClass)
+                    }
+                    else -> trackJitmDismissFailureEvent(
+                        jitmId,
+                        featureClass,
+                        response.error?.type?.name,
+                        response.error?.message
+                    )
+                }
+            }
         }
+    }
+
+    private fun trackJitmDismissFailureEvent(
+        id: String,
+        featureClass: String,
+        errorType: String?,
+        errorDescription: String?
+    ) {
+        analyticsTrackerWrapper.track(
+            AnalyticsEvent.JITM_DISMISS_FAILURE,
+            mapOf(
+                KEY_SOURCE to UTM_SOURCE,
+                JITM_ID to id,
+                JITM_FEATURE_CLASS to featureClass,
+                KEY_ERROR_TYPE to errorType,
+                KEY_ERROR_DESC to errorDescription
+            )
+        )
+    }
+
+    private fun trackJitmDismissSuccessEvent(id: String, featureClass: String) {
+        analyticsTrackerWrapper.track(
+            AnalyticsEvent.JITM_DISMISS_SUCCESS,
+            mapOf(
+                KEY_SOURCE to UTM_SOURCE,
+                JITM_ID to id,
+                JITM_FEATURE_CLASS to featureClass
+            )
+        )
     }
 
     private fun trackJitmDismissTappedEvent(id: String, featureClass: String) {
