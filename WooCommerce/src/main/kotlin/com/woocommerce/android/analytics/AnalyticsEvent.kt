@@ -180,6 +180,15 @@ enum class AnalyticsEvent(val siteless: Boolean = false) {
     FEATURE_CARD_DISMISSED,
     FEATURE_CARD_CTA_TAPPED,
 
+    // -- Just In Time Messages
+    JITM_FETCH_SUCCESS,
+    JITM_FETCH_FAILURE,
+    JITM_DISPLAYED,
+    JITM_CTA_TAPPED,
+    JITM_DISMISS_TAPPED,
+    JITM_DISMISS_SUCCESS,
+    JITM_DISMISS_FAILURE,
+
     // -- Simple Payments
     SIMPLE_PAYMENTS_FLOW_STARTED,
     PAYMENTS_FLOW_CANCELED,
