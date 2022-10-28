@@ -98,6 +98,13 @@ class SitePickerFragment : BaseFragment(R.layout.fragment_site_picker), LoginEma
         binding.loginEpilogueButtonBar.buttonTertiary.setOnClickListener {
             viewModel.onCreateSiteButtonClick()
         }
+
+        if (!FeatureFlag.STORE_CREATION_WEBVIEW_FLOW.isEnabled()) {
+            binding.addStoreButton.setText(R.string.site_picker_connect_existing_store)
+        }
+        binding.addStoreButton.setOnClickListener {
+            viewModel.onAddStoreClick()
+        }
     }
 
     @Suppress("LongMethod", "ComplexMethod")
@@ -117,6 +124,7 @@ class SitePickerFragment : BaseFragment(R.layout.fragment_site_picker), LoginEma
             }
             new.isNoStoresViewVisible.takeIfNotEqualTo(old?.isNoStoresViewVisible) {
                 binding.sitesRecycler.isVisible = !it
+                binding.addStoreButton.isVisible = !it
                 binding.noStoresView.isVisible = it
             }
             new.toolbarTitle?.takeIfNotEqualTo(old?.toolbarTitle) {
