@@ -6,6 +6,8 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.R
+import com.woocommerce.android.analytics.AnalyticsEvent
+import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.ui.login.signup.SignUpRepository.AccountCreationError
 import com.woocommerce.android.ui.login.signup.SignUpRepository.AccountCreationSuccess
@@ -38,10 +40,13 @@ class SignUpViewModel @Inject constructor(
     }
 
     fun onLoginClicked() {
+        AnalyticsTracker.track(stat = AnalyticsEvent.SIGNUP_LOGIN_BUTTON_TAPPED)
         triggerEvent(OnLoginClicked)
     }
 
     fun onGetStartedCLicked(email: String, password: String) {
+        AnalyticsTracker.track(stat = AnalyticsEvent.SIGNUP_SUBMITTED)
+
         if (!networkStatus.isConnected()) {
             triggerEvent(ShowSnackbar(R.string.no_network_message))
             return
@@ -53,6 +58,10 @@ class SignUpViewModel @Inject constructor(
             _viewState.value = _viewState.value?.copy(isLoading = true)
             when (val result = signUpRepository.createAccount(trimmedEmail, password)) {
                 is AccountCreationError -> {
+                    AnalyticsTracker.track(
+                        stat = AnalyticsEvent.SIGNUP_ERROR,
+                        properties = mapOf(AnalyticsTracker.KEY_ERROR_TYPE to result.error.name)
+                    )
                     val error = result.error.toSignUpErrorUi()
                     _viewState.value = _viewState.value?.copy(
                         isLoading = false,
@@ -63,6 +72,7 @@ class SignUpViewModel @Inject constructor(
                     }
                 }
                 AccountCreationSuccess -> {
+                    AnalyticsTracker.track(stat = AnalyticsEvent.SIGNUP_SUCCESS)
                     _viewState.value = _viewState.value?.copy(isLoading = false)
                     triggerEvent(OnAccountCreated)
                 }
