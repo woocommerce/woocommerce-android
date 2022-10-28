@@ -66,8 +66,11 @@ internal class IAPManager(
                 val flowParams = buildBillingFlowParams(iapProductDetailsResponse.productDetails)
                 billingClient.launchBillingFlow(activity, flowParams)
 
-                startPeriodicPurchasesCheckJob(iapProduct) { iapPurchasesUpdatedListener.onPurchaseAvailable(it) }
+                val periodicJob = startPeriodicPurchasesCheckJob(iapProduct) {
+                    iapPurchasesUpdatedListener.onPurchaseAvailable(it)
+                }
                 val purchasesResult = iapPurchasesUpdatedListener.getPurchaseResult()
+                periodicJob.cancel()
                 if (purchasesResult.billingResult.isSuccess) {
                     IAPPurchaseResponse.Success(
                         purchasesResult.purchasesList.map {
@@ -179,18 +182,18 @@ internal class IAPManager(
     private fun startPeriodicPurchasesCheckJob(
         iapProduct: IAPProduct,
         onPurchaseAvailable: (PurchasesResult) -> Unit,
-    ) {
-        CoroutineScope(Dispatchers.IO).launch {
-            repeat(PURCHASE_STATE_CHECK_TIMES) {
-                if (isActive) {
-                    delay(PURCHASE_STATE_CHECK_INTERVAL)
-                    val purchasesResult = queryPurchases(iapProduct.productType)
-                    logWrapper.d(IAP_LOG_TAG, "Fetching purchases. Result ${purchasesResult.billingResult}")
-                    if (purchasesResult.billingResult.isSuccess &&
-                        purchasesResult.purchasesList.firstOrNull {
-                            it.products.contains(iapProduct.productId)
-                        }?.purchaseState == Purchase.PurchaseState.PURCHASED
-                    ) {
+    ) = CoroutineScope(Dispatchers.IO).launch {
+        repeat(PURCHASE_STATE_CHECK_TIMES) {
+            if (isActive) {
+                delay(PURCHASE_STATE_CHECK_INTERVAL)
+                val purchasesResult = queryPurchases(iapProduct.productType)
+                logWrapper.d(IAP_LOG_TAG, "Fetching purchases. Result ${purchasesResult.billingResult}")
+                if (purchasesResult.billingResult.isSuccess &&
+                    purchasesResult.purchasesList.firstOrNull {
+                        it.products.contains(iapProduct.productId)
+                    }?.purchaseState == Purchase.PurchaseState.PURCHASED
+                ) {
+                    if (isActive) {
                         onPurchaseAvailable(purchasesResult)
                         cancel()
                     }
