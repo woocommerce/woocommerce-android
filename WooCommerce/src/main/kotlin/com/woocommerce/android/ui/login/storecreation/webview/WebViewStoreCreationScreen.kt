@@ -105,6 +105,7 @@ private fun StoreCreationWebView(
         }
     }
 
+    var storeCreationTriggered: Boolean = false
     WCWebView(
         url = viewState.storeCreationUrl,
         wpComAuthenticator = wpComWebViewAuthenticator,
@@ -116,7 +117,8 @@ private fun StoreCreationWebView(
                 viewState.onSiteAddressFound(it)
             }
 
-            if (url.contains(viewState.exitTriggerKeyword, ignoreCase = true)) {
+            if (url.contains(viewState.exitTriggerKeyword, ignoreCase = true) && !storeCreationTriggered) {
+                storeCreationTriggered = true
                 viewState.onStoreCreated()
             }
         },
