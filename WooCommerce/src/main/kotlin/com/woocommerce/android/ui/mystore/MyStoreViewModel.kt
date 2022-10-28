@@ -55,7 +55,7 @@ import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
 import org.wordpress.android.fluxc.model.WCRevenueStatsModel
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooResult
-import org.wordpress.android.fluxc.network.rest.wpcom.wc.payments.inperson.JITMApiResponse
+import org.wordpress.android.fluxc.network.rest.wpcom.wc.jitm.JITMApiResponse
 import org.wordpress.android.fluxc.store.JitmStore
 import org.wordpress.android.fluxc.store.WCStatsStore.StatsGranularity
 import org.wordpress.android.fluxc.store.WooCommerceStore
@@ -152,8 +152,13 @@ class MyStoreViewModel @Inject constructor(
                 val model = response.model!!
                 _bannerState.value = BannerState(
                     shouldDisplayBanner = true,
-                    onPrimaryActionClicked = { (::onJitmCtaClicked)(model[0].cta.link) },
-                    { },
+                    onPrimaryActionClicked = { onJitmCtaClicked(model[0].cta.link) },
+                    onDismissClicked = {
+                        onJitmDismissClicked(
+                            model[0].id,
+                            model[0].featureClass
+                        )
+                    },
                     title = UiString.UiStringText(model[0].content.message),
                     description = UiString.UiStringText(model[0].content.description),
                     primaryActionLabel = UiString.UiStringText(model[0].cta.message),
@@ -169,6 +174,13 @@ class MyStoreViewModel @Inject constructor(
                 utmProvider.getUrlWithUtmParams(url)
             )
         )
+    }
+
+    private fun onJitmDismissClicked(jitmId: String, featureClass: String) {
+        _bannerState.value = _bannerState.value?.copy(shouldDisplayBanner = false)
+        viewModelScope.launch {
+            jitmStore.dismissJitmMessage(selectedSite.get(), jitmId, featureClass)
+        }
     }
 
     override fun onCleared() {

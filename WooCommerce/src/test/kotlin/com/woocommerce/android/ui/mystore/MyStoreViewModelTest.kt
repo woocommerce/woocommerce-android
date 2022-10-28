@@ -39,9 +39,9 @@ import org.wordpress.android.fluxc.network.BaseRequest
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooError
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooErrorType
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooResult
-import org.wordpress.android.fluxc.network.rest.wpcom.wc.payments.inperson.JITMApiResponse
-import org.wordpress.android.fluxc.network.rest.wpcom.wc.payments.inperson.JITMContent
-import org.wordpress.android.fluxc.network.rest.wpcom.wc.payments.inperson.JITMCta
+import org.wordpress.android.fluxc.network.rest.wpcom.wc.jitm.JITMApiResponse
+import org.wordpress.android.fluxc.network.rest.wpcom.wc.jitm.JITMContent
+import org.wordpress.android.fluxc.network.rest.wpcom.wc.jitm.JITMCta
 import org.wordpress.android.fluxc.store.JitmStore
 import org.wordpress.android.fluxc.store.WCStatsStore.StatsGranularity
 import org.wordpress.android.fluxc.store.WooCommerceStore
@@ -650,6 +650,28 @@ class MyStoreViewModelTest : BaseUnitTest() {
             ).isEqualTo(
                 R.string.card_reader_purchase_card_reader
             )
+        }
+    }
+
+    @Test
+    fun `given jitm displayed, when jitm dismiss tapped, then banner state is updated to not display`() {
+        testBlocking {
+            givenNetworkConnectivity(connected = true)
+            whenever(selectedSite.get()).thenReturn(SiteModel())
+            whenever(
+                jitmStore.fetchJitmMessage(any(), any())
+            ).thenReturn(
+                WooResult(
+                    model = arrayOf(provideJitmApiResponse())
+                )
+            )
+
+            whenViewModelIsCreated()
+            (sut.bannerState.value as BannerState).onDismissClicked.invoke()
+
+            assertThat(
+                (sut.bannerState.value as BannerState).shouldDisplayBanner
+            ).isEqualTo(false)
         }
     }
     //endregion
