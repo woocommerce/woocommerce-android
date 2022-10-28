@@ -68,15 +68,16 @@ open class LoginPrologueFragment(@LayoutRes layout: Int) : Fragment(layout) {
             prologueFinishedListener?.onGetStartedClicked()
         }
 
-        // Various updates related to Simplified Login A/B testing.
-        if (isSimplifiedLoginVariant) {
-            binding.newToWooButton.text = getString(R.string.login_prologue_learn_more_about_woo)
-            binding.buttonLoginWpcom.text = getString(R.string.log_in)
+        if (isSimplifiedLoginVariant) setupSimplifiedLoginVariant(binding)
+    }
 
-            binding.buttonLoginStore.hide()
-            binding.prologueTitle.hide()
-            binding.prologueSimplifiedLoginTitle.show()
-        }
+    private fun setupSimplifiedLoginVariant(binding: FragmentLoginPrologueBinding) {
+        binding.newToWooButton.text = getString(R.string.login_prologue_learn_more_about_woo)
+        binding.buttonLoginWpcom.text = getString(R.string.log_in)
+
+        binding.buttonLoginStore.hide()
+        binding.prologueTitle.hide()
+        binding.prologueSimplifiedLoginTitle.show()
     }
 
     override fun onAttach(context: Context) {
