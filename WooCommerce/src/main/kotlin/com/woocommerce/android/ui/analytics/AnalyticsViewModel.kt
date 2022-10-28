@@ -33,6 +33,7 @@ import com.woocommerce.android.ui.analytics.informationcard.AnalyticsInformation
 import com.woocommerce.android.ui.analytics.informationcard.AnalyticsInformationViewState.LoadingViewState
 import com.woocommerce.android.ui.analytics.informationcard.AnalyticsInformationViewState.NoDataState
 import com.woocommerce.android.ui.analytics.listcard.AnalyticsListCardItemViewState
+import com.woocommerce.android.ui.mystore.MyStoreStatsUsageTracksEventEmitter
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.util.DateUtils
 import com.woocommerce.android.util.FeatureFlag
@@ -62,6 +63,7 @@ class AnalyticsViewModel @Inject constructor(
     private val analyticsRepository: AnalyticsRepository,
     private val selectedSite: SelectedSite,
     private val transactionLauncher: AnalyticsHubTransactionLauncher,
+    private val usageTracksEventEmitter: MyStoreStatsUsageTracksEventEmitter,
     savedState: SavedStateHandle
 ) : ScopedViewModel(savedState) {
 
