@@ -29,7 +29,6 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
 internal class IAPManager(
-    private val activity: AppCompatActivity,
     private val iapLifecycleObserver: IAPLifecycleObserver,
     private val iapOutMapper: IAPOutMapper,
     private val iapInMapper: IAPInMapper,
@@ -39,8 +38,11 @@ internal class IAPManager(
     private val billingClient: BillingClient
         get() = iapLifecycleObserver.billingClient
 
-    init {
-        activity.lifecycle.addObserver(iapLifecycleObserver)
+    private lateinit var activity: AppCompatActivity
+
+    fun initIAP(activity: AppCompatActivity) {
+        this.activity = activity
+        iapLifecycleObserver.initBillingClient(activity)
     }
 
     suspend fun fetchPurchases(iapProductType: IAPProductType): IAPPurchaseResponse =

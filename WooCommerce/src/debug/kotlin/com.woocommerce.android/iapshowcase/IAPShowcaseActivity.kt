@@ -8,22 +8,28 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
 import com.woocommerce.android.R
 import com.woocommerce.android.iap.pub.IAPSitePurchasePlanFactory
 
 private const val MILLION = 1_000_000.0
 
 class IAPShowcaseActivity : AppCompatActivity() {
-    private val viewModel: IAPShowcaseViewModel by viewModels()
+    private val viewModel: IAPShowcaseViewModel by viewModels(null) {
+        object : ViewModelProvider.Factory {
+            override fun <T : ViewModel> create(modelClass: Class<T>) =
+                IAPShowcaseViewModel(IapManagerProvider.instance) as T
+        }
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_iapshowcase)
 
-        // PurchaseWPComPlanActions must be activity scoped
-        setActivityScopedIAPManagerInstance()
-
         setupObservers()
+
+        IapManagerProvider.instance.initIAPWithNewActivity(this)
 
         findViewById<Button>(R.id.btnFetchProductInfo).setOnClickListener {
             viewModel.fetchWPComPlanProduct()
@@ -39,13 +45,6 @@ class IAPShowcaseActivity : AppCompatActivity() {
         }
     }
 
-    private fun setActivityScopedIAPManagerInstance() {
-        viewModel.iapManager = IAPSitePurchasePlanFactory.createIAPSitePurchasePlan(
-            this,
-            IAPDebugLogWrapper()
-        )
-    }
-
     private fun setupObservers() {
         viewModel.productInfo.observe(this) {
             findViewById<TextView>(R.id.tvProductInfoTitle).text = it.localizedTitle
@@ -57,4 +56,8 @@ class IAPShowcaseActivity : AppCompatActivity() {
             Toast.makeText(this, it, Toast.LENGTH_SHORT).show()
         }
     }
+}
+
+object IapManagerProvider {
+    val instance = IAPSitePurchasePlanFactory.createIAPSitePurchasePlan(IAPDebugLogWrapper())
 }

@@ -26,11 +26,14 @@ private const val TEN_THOUSAND = 10_000
 private const val APP_ID = "com.woocommerce.android"
 
 internal class IAPPurchaseWPComPlanActionsImpl(
-    activity: AppCompatActivity,
     logWrapper: IAPLogWrapper,
     private val iapMobilePayAPI: IAPMobilePayAPI,
 ) : PurchaseWPComPlanActions {
-    private val iapManager = IAPManagerFactory.createIAPManager(activity, logWrapper)
+    private val iapManager = IAPManagerFactory.createIAPManager(logWrapper)
+
+    override fun initIAPWithNewActivity(activity: AppCompatActivity) {
+        iapManager.initIAP(activity)
+    }
 
     override suspend fun isWPComPlanPurchased(): WPComIsPurchasedResult {
         return when (val response = iapManager.fetchPurchases(iapProduct.productType)) {
