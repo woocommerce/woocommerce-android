@@ -5,6 +5,7 @@ import android.view.View
 import androidx.core.view.isVisible
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
+import androidx.navigation.NavDirections
 import androidx.navigation.fragment.findNavController
 import com.google.android.material.datepicker.CalendarConstraints
 import com.google.android.material.datepicker.MaterialDatePicker
@@ -72,13 +73,15 @@ class AnalyticsFragment :
 
     private fun openDateRangeSelector() = findNavController().navigateSafely(buildDialogDateRangeSelectorArguments())
 
-    private fun buildDialogDateRangeSelectorArguments() =
-        AnalyticsFragmentDirections.actionAnalyticsFragmentToDateRangeSelector(
+    private fun buildDialogDateRangeSelectorArguments(): NavDirections {
+        val ranges = getDateRangeSelectorViewState().availableRangeDates.distinct().toTypedArray()
+        return AnalyticsFragmentDirections.actionAnalyticsFragmentToDateRangeSelector(
             requestKey = KEY_DATE_RANGE_SELECTOR_RESULT,
-            keys = getDateRangeSelectorViewState().availableRangeDates.toTypedArray(),
-            values = getDateRangeSelectorViewState().availableRangeDates.toTypedArray(),
+            keys = ranges,
+            values = ranges,
             selectedItem = getDateRangeSelectorViewState().selectedPeriod
         )
+    }
 
     private fun setupResultHandlers(viewModel: AnalyticsViewModel) {
         handleDialogResult<String>(
