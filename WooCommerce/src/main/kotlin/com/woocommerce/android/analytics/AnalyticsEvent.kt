@@ -131,6 +131,8 @@ enum class AnalyticsEvent(val siteless: Boolean = false) {
     SITE_PICKER_SITE_DISCOVERY(siteless = true),
     SITE_PICKER_JETPACK_TIMEOUT_ERROR_SHOWN(siteless = true),
     SITE_PICKER_JETPACK_TIMEOUT_CONTACT_SUPPORT_CLICKED(siteless = true),
+    SITE_PICKER_CREATE_SITE_TAPPED(siteless = true),
+    LOGIN_WOOCOMMERCE_SITE_CREATED(siteless = true),
 
     // -- Dashboard
     DASHBOARD_PULLED_TO_REFRESH,
@@ -145,7 +147,13 @@ enum class AnalyticsEvent(val siteless: Boolean = false) {
     DASHBOARD_NEW_STATS_AVAILABILITY_BANNER_CANCEL_TAPPED,
     DASHBOARD_NEW_STATS_AVAILABILITY_BANNER_TRY_TAPPED,
     DASHBOARD_WAITING_TIME_LOADED,
+    DASHBOARD_SEE_MORE_ANALYTICS_TAPPED,
     USED_ANALYTICS,
+
+    // -- Analytics Hub
+    ANALYTICS_HUB_DATE_RANGE_BUTTON_TAPPED,
+    ANALYTICS_HUB_DATE_RANGE_SELECTED,
+    ANALYTICS_HUB_SEE_REPORT_TAPPED,
 
     // -- Orders List
     ORDERS_LIST_FILTER,
@@ -692,6 +700,7 @@ enum class AnalyticsEvent(val siteless: Boolean = false) {
     // Experiments (A/B test variants)
     PROLOGUE_EXPERIMENT,
     JETPACK_TIMEOUT_EXPERIMENT,
+    SIMPLIFIED_LOGIN_EXPERIMENT,
 
     // Widgets
     WIDGET_TAPPED,
@@ -699,4 +708,7 @@ enum class AnalyticsEvent(val siteless: Boolean = false) {
     // App links
     UNIVERSAL_LINK_OPENED,
     UNIVERSAL_LINK_FAILED,
+
+    // Analytics Hub
+    ANALYTICS_HUB_WAITING_TIME_LOADED
 }

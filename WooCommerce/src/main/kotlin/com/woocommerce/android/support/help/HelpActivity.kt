@@ -1,9 +1,11 @@
-package com.woocommerce.android.support
+package com.woocommerce.android.support.help
 
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.view.MenuItem
+import android.view.View
+import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import com.woocommerce.android.AppPrefs
@@ -15,7 +17,14 @@ import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_HELP_CON
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_SOURCE_FLOW
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_SOURCE_STEP
 import com.woocommerce.android.databinding.ActivityHelpBinding
+import com.woocommerce.android.extensions.exhaustive
+import com.woocommerce.android.extensions.serializable
 import com.woocommerce.android.extensions.show
+import com.woocommerce.android.support.SSRActivity
+import com.woocommerce.android.support.SupportHelper
+import com.woocommerce.android.support.TicketType
+import com.woocommerce.android.support.WooLogViewerActivity
+import com.woocommerce.android.support.ZendeskHelper
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.login.localnotifications.LoginNotificationScheduler
 import com.woocommerce.android.util.ChromeCustomTabUtils
@@ -28,6 +37,8 @@ import javax.inject.Inject
 
 @AndroidEntryPoint
 class HelpActivity : AppCompatActivity() {
+    private val viewModel: HelpViewModel by viewModels()
+
     @Inject lateinit var accountStore: AccountStore
     @Inject lateinit var siteStore: SiteStore
     @Inject lateinit var supportHelper: SupportHelper
@@ -38,7 +49,7 @@ class HelpActivity : AppCompatActivity() {
     private lateinit var binding: ActivityHelpBinding
 
     private val originFromExtras by lazy {
-        (intent.extras?.get(ORIGIN_KEY) as Origin?) ?: Origin.UNKNOWN
+        intent.extras?.serializable(ORIGIN_KEY) ?: Origin.UNKNOWN
     }
 
     private val extraTagsFromExtras by lazy {
@@ -55,7 +66,7 @@ class HelpActivity : AppCompatActivity() {
         supportActionBar?.setHomeButtonEnabled(true)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
-        binding.contactContainer.setOnClickListener { createNewZendeskTicket(TicketType.General) }
+        binding.contactContainer.setOnClickListener { viewModel.contactSupport(TicketType.General) }
         binding.identityContainer.setOnClickListener { showIdentityDialog(TicketType.General) }
         binding.myTicketsContainer.setOnClickListener { showZendeskTickets() }
         binding.faqContainer.setOnClickListener {
@@ -75,7 +86,9 @@ class HelpActivity : AppCompatActivity() {
         }
 
         with(binding.contactPaymentsContainer) {
-            setOnClickListener { createNewZendeskTicket(TicketType.Payments) }
+            setOnClickListener {
+                viewModel.contactSupport(TicketType.Payments)
+            }
         }
 
         binding.textVersion.text = getString(R.string.version_with_name_param, PackageUtils.getVersionName(this))
@@ -95,7 +108,28 @@ class HelpActivity : AppCompatActivity() {
         }
 
         if (originFromExtras == Origin.SITE_PICKER_JETPACK_TIMEOUT) {
-            createNewZendeskTicket(TicketType.General)
+            viewModel.contactSupport(TicketType.General)
+        }
+
+        initObservers(binding)
+    }
+
+    private fun initObservers(binding: ActivityHelpBinding) {
+        viewModel.event.observe(this) { event ->
+            when (event) {
+                is HelpViewModel.ContactPaymentsSupportClickEvent -> {
+                    when (event) {
+                        is HelpViewModel.ContactPaymentsSupportClickEvent.CreateTicket -> {
+                            binding.helpLoading.visibility = View.GONE
+                            createNewZendeskTicket(event.ticketType, extraTags = event.supportTags)
+                        }
+                        HelpViewModel.ContactPaymentsSupportClickEvent.ShowLoading -> {
+                            binding.helpLoading.visibility = View.VISIBLE
+                        }
+                    }.exhaustive
+                }
+                else -> event.isHandled = false
+            }
         }
     }
 
@@ -125,9 +159,9 @@ class HelpActivity : AppCompatActivity() {
 
     private fun userIsLoggedIn() = accountStore.hasAccessToken()
 
-    private fun createNewZendeskTicket(ticketType: TicketType) {
+    private fun createNewZendeskTicket(ticketType: TicketType, extraTags: List<String> = emptyList()) {
         if (!AppPrefs.hasSupportEmail()) {
-            showIdentityDialog(ticketType)
+            showIdentityDialog(ticketType, extraTags, createNewTicket = true)
             return
         }
 
@@ -135,12 +169,16 @@ class HelpActivity : AppCompatActivity() {
             context = this,
             origin = originFromExtras,
             selectedSite = selectedSiteOrNull(),
-            extraTags = extraTagsFromExtras,
+            extraTags = extraTags + extraTagsFromExtras.orEmpty(),
             ticketType = ticketType,
         )
     }
 
-    private fun showIdentityDialog(ticketType: TicketType) {
+    private fun showIdentityDialog(
+        ticketType: TicketType,
+        extraTags: List<String> = emptyList(),
+        createNewTicket: Boolean = false
+    ) {
         val emailSuggestion = if (AppPrefs.hasSupportEmail()) {
             AppPrefs.getSupportEmail()
         } else {
@@ -151,16 +189,14 @@ class HelpActivity : AppCompatActivity() {
         supportHelper.showSupportIdentityInputDialog(this, emailSuggestion, isNameInputHidden = true) { email, _ ->
             zendeskHelper.setSupportEmail(email)
             AnalyticsTracker.track(AnalyticsEvent.SUPPORT_IDENTITY_SET)
-            createNewZendeskTicket(ticketType)
+            if (createNewTicket) createNewZendeskTicket(ticketType, extraTags)
         }
         AnalyticsTracker.track(AnalyticsEvent.SUPPORT_IDENTITY_FORM_VIEWED)
     }
 
     private fun refreshContactEmailText() {
         val supportEmail = AppPrefs.getSupportEmail()
-        binding.identityContainer.optionValue = if (supportEmail.isNotEmpty()) {
-            supportEmail
-        } else {
+        binding.identityContainer.optionValue = supportEmail.ifEmpty {
             getString(R.string.support_contact_email_not_set)
         }
     }

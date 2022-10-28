@@ -46,9 +46,10 @@ import com.woocommerce.android.extensions.expand
 import com.woocommerce.android.extensions.hide
 import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.model.Notification
-import com.woocommerce.android.support.HelpActivity
-import com.woocommerce.android.support.HelpActivity.Origin
+import com.woocommerce.android.support.help.HelpActivity
+import com.woocommerce.android.support.help.HelpActivity.Origin
 import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.ui.analytics.daterangeselector.AnalyticTimePeriod
 import com.woocommerce.android.ui.appwidgets.WidgetUpdater
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.base.TopLevelFragment
@@ -572,8 +573,8 @@ class MainActivity :
         startActivityForResult(intent, RequestCodes.SETTINGS)
     }
 
-    override fun showAnalytics() {
-        val action = MyStoreFragmentDirections.actionMyStoreToAnalytics()
+    override fun showAnalytics(targetPeriod: AnalyticTimePeriod) {
+        val action = MyStoreFragmentDirections.actionMyStoreToAnalytics(targetPeriod)
         navController.navigateSafely(action)
     }
 

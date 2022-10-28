@@ -1,7 +1,13 @@
 *** PLEASE FOLLOW THIS FORMAT: [<priority indicator, more stars = higher priority>] <description> [<PR URL>]
+11.1
+-----
+- [***] We added a new Analytics Hub inside the My Store area of the app. Simply click on the See More button under the store stats to check more detailed information on Revenue and Orders. (https://github.com/woocommerce/woocommerce-android/pull/7556)
+
 11.0
 -----
-
+- [*] Fixed a bug caused by statement descriptor value too long or containing illegal chars [https://github.com/woocommerce/woocommerce-android/pull/7595]
+- [*] [Internal] Simplified login: update email screen layout [https://github.com/woocommerce/woocommerce-android/pull/7619]
+- [*] [Internal] IPP plugins statuses added as zendesk tags [https://github.com/woocommerce/woocommerce-android/pull/7624]
 
 10.9
 -----

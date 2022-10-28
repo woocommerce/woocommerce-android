@@ -154,6 +154,8 @@
         Date/Time Labels
     -->
     <string name="date_timeframe_future">Upcoming</string>
+    <string name="date_timeframe_custom">Custom</string>
+    <string name="date_timeframe_custom_date_range_title">Custom date range</string>
     <string name="date_timeframe_today">Today</string>
     <string name="date_timeframe_yesterday">Yesterday</string>
     <string name="date_timeframe_last_week">Last Week</string>
@@ -282,6 +284,7 @@
     <string name="login_account_mismatch_connect_wpcom_dialog_title">Connecting to a WordPress.com site</string>
     <string name="login_account_mismatch_connect_wpcom_dialog_message">Please contact the site owner for an invitation to the site as a shop manager or administrator to use the app.</string>
     <string name="login_jetpack_connection_consent">By tapping the Connect Jetpack button, you agree to our &lt;a href=\'terms\'&gt;Terms of Service&lt;/a&gt; and to &lt;a href=\'sync\'&gt;share details&lt;/a&gt; with WordPress.com.</string>
+    <string name="simplified_login_enter_email_address">Enter your email address to get started</string>
     <!--
         My Store View
     -->
@@ -324,14 +327,22 @@
     <string name="signup_password_hint">Choose a password</string>
     <string name="signup_terms_of_service">By continuing, you agree to our &lt;u&gt;Terms of Service.&lt;/u&gt;</string>
     <string name="signup_creating_account_loading_message">Creating new account</string>
+    <string name="signup_email_exist_input">An account with this email already exists.</string>
+    <string name="signup_email_invalid_input">Please enter a valid email address.</string>
+    <string name="signup_password_too_short">Your password is too short. Please pick a password that has at least 6 characters.</string>
+    <string name="signup_password_not_secure_enough">Your password does not meet our security guidelines. Please try a more complex password.</string>
+    <string name="signup_api_generic_error">Sorry, we couldn\'t create an account for the provided credentials. Please try with a different email.</string>
 
     <!--
         Analytics View
     -->
+    <string name="analytics_see_more">See more</string>
     <string name="analytics_date_range_to_date">%1$s (%2$s)</string>
     <string name="analytics_date_range_from_date">vs Previous Period (%1$s)</string>
+    <string name="analytics_date_range_custom">%1$s - %2$s</string>
     <string name="analytics_date_range_selector_description">Selector for date range filter</string>
-    <string-array name="date_range_selectors">
+    <string-array name="analytics_date_range_selectors">
+        <item translatable="false">@string/date_timeframe_custom</item>
         <item translatable="false">@string/date_timeframe_today</item>
         <item translatable="false">@string/date_timeframe_yesterday</item>
         <item translatable="false">@string/date_timeframe_last_week</item>
@@ -342,7 +353,25 @@
         <item translatable="false">@string/date_timeframe_month_to_date</item>
         <item translatable="false">@string/date_timeframe_quarter_to_date</item>
         <item translatable="false">@string/date_timeframe_year_to_date</item>
+        <item translatable="false">@string/date_timeframe_year_to_date</item>
     </string-array>
+    <string name="analytics_see_report_button_text">See report</string>e
+    <string name="analytics_see_report_button_content_description">See more report details</string>
+    <string name="analytics_revenue_card_title">Revenue</string>
+    <string name="analytics_revenue_no_data">No revenue this period</string>
+    <string name="analytics_orders_no_data">No orders this period</string>
+    <string name="analytics_products_no_data">No products this period</string>
+    <string name="analytics_total_sales_title">Total sales</string>
+    <string name="analytics_net_sales_title">Net sales</string>
+    <string name="analytics_information_card_delta" translatable="false">%1$s%2$d%%</string>
+    <string name="analytics_orders_card_title">Orders</string>
+    <string name="analytics_total_orders_title">Total Orders</string>
+    <string name="analytics_avg_orders_title">Average Order Value</string>
+    <string name="analytics_products_list_items_sold">Items sold</string>
+    <string name="analytics_products_card_title">Products</string>
+    <string name="analytics_products_list_header_title">Products</string>
+    <string name="analytics_products_list_header_subtitle">Items sold</string>
+    <string name="analytics_products_list_item_description">Net sales: %1$s</string>
 
     <!--
         Order List View
@@ -2640,6 +2669,7 @@
     <string name="stats_today_widget_description">WooCommerce Stats Today</string>
     <string name="stats_widget_error_no_data">Couldn\'t load data</string>
     <string name="stats_widget_last_updated_message">As of %1$s</string>
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
+
+    <!-- Store creation -->
+    <string name="create_new_store">Create a new store</string>
 </resources>
