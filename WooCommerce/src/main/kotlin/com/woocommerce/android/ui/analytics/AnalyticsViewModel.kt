@@ -193,9 +193,7 @@ class AnalyticsViewModel @Inject constructor(
         }
     }
 
-    fun onTrackableUIInteraction() {
-        usageTracksEventEmitter.interacted()
-    }
+    fun onTrackableUIInteraction() = usageTracksEventEmitter.interacted()
 
     private fun updateRevenue(isRefreshing: Boolean, showSkeleton: Boolean) =
         launch {
