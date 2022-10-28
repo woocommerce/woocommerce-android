@@ -424,14 +424,14 @@ class AnalyticsViewModel @Inject constructor(
             listRightHeader = resourceProvider.getString(R.string.analytics_products_list_header_subtitle),
             items = products
                 .sortedByDescending { it.quantity }
-                .mapIndexed { index, it ->
+                .mapIndexed { index, product ->
                     AnalyticsListCardItemViewState(
-                        it.image,
-                        it.name,
-                        it.quantity.toString(),
+                        product.image,
+                        product.name,
+                        product.quantity.toString(),
                         resourceProvider.getString(
                             R.string.analytics_products_list_item_description,
-                            formatValue(it.netSales.toString(), it.currencyCode)
+                            formatValue(product.netSales.toString(), product.currencyCode)
                         ),
                         index != products.size - 1
                     )
