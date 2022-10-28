@@ -5,8 +5,7 @@ import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.animation.core.updateTransition
-import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -25,6 +24,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.woocommerce.android.R.drawable
@@ -34,6 +34,7 @@ import com.woocommerce.android.ui.compose.component.WCColoredButton
 import com.woocommerce.android.ui.compose.component.WCWebView
 import com.woocommerce.android.ui.compose.component.WebViewNavigator
 import com.woocommerce.android.ui.compose.component.rememberWebViewNavigator
+import com.woocommerce.android.ui.login.storecreation.webview.WebViewStoreCreationViewModel.ViewState.ErrorState
 import com.woocommerce.android.ui.login.storecreation.webview.WebViewStoreCreationViewModel.ViewState.StoreCreationState
 import com.woocommerce.android.ui.login.storecreation.webview.WebViewStoreCreationViewModel.ViewState.StoreLoadingState
 import com.woocommerce.android.util.WooLog
@@ -81,7 +82,8 @@ fun WebViewStoreCreationScreen(viewModel: WebViewStoreCreationViewModel) {
                         userAgent = viewModel.userAgent,
                         modifier = Modifier.padding(paddingValues)
                     )
-                    is StoreLoadingState -> StoreCreationInProgress(targetState)
+                    is StoreLoadingState -> StoreCreationInProgress()
+                    is ErrorState -> StoreCreationError(targetState)
                 }
             }
         }
@@ -127,51 +129,54 @@ private fun StoreCreationWebView(
 }
 
 @Composable
-private fun StoreCreationInProgress(viewState: StoreLoadingState) {
+private fun StoreCreationError(viewState: ErrorState) {
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center,
         modifier = Modifier
             .fillMaxSize()
-            .background(MaterialTheme.colors.surface)
     ) {
-        Image(
-            painter = painterResource(id = drawable.img_empty_search),
-            contentDescription = "Store creation in progress illustration",
-            modifier = Modifier.padding(32.dp)
+        Text(
+            text = stringResource(id = string.store_creation_cannot_load_store),
+            style = MaterialTheme.typography.h6,
+            modifier = Modifier.padding(16.dp),
+            textAlign = TextAlign.Center
         )
 
-        if (viewState.isError) {
-            Text(
-                text = stringResource(id = string.store_creation_cannot_load_store),
-                style = MaterialTheme.typography.h6,
-                modifier = Modifier.padding(32.dp)
-            )
+        WCColoredButton(
+            onClick = { viewState.onRetryButtonClick() },
+            text = stringResource(id = string.retry),
+            modifier = Modifier.padding(16.dp)
+        )
+    }
+}
 
-            WCColoredButton(
-                onClick = { viewState.onRetryButtonClick() },
-                text = stringResource(id = string.retry),
-                modifier = Modifier.padding(32.dp)
-            )
-        } else {
-            Text(
-                text = stringResource(id = string.store_creation_in_progress),
-                style = MaterialTheme.typography.h6,
-                modifier = Modifier.padding(32.dp)
-            )
+@Composable
+private fun StoreCreationInProgress() {
+    Column(
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center,
+        modifier = Modifier
+            .fillMaxSize()
+    ) {
+        CircularProgressIndicator(modifier = Modifier.padding(16.dp))
 
-            CircularProgressIndicator(modifier = Modifier.padding(32.dp))
-        }
+        Text(
+            text = stringResource(id = string.store_creation_in_progress),
+            style = MaterialTheme.typography.h6,
+            modifier = Modifier.padding(16.dp)
+        )
     }
 }
 
 @Preview
 @Composable
 private fun PreviewStoreCreationInProgress() {
-    StoreCreationInProgress(StoreLoadingState(false, {}, {}))
+    StoreCreationInProgress()
 }
 
 @Preview
 @Composable
 private fun PreviewStoreCreationError() {
-    StoreCreationInProgress(StoreLoadingState(true, {}, {}))
+    StoreCreationError(ErrorState({}, {}))
 }

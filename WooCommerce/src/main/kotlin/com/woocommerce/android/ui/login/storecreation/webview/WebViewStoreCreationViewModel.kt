@@ -7,6 +7,7 @@ import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.ui.common.wpcomwebview.WPComWebViewAuthenticator
 import com.woocommerce.android.ui.login.storecreation.StoreCreationRepository
+import com.woocommerce.android.ui.login.storecreation.webview.WebViewStoreCreationViewModel.ViewState.ErrorState
 import com.woocommerce.android.ui.login.storecreation.webview.WebViewStoreCreationViewModel.ViewState.StoreCreationState
 import com.woocommerce.android.ui.login.storecreation.webview.WebViewStoreCreationViewModel.ViewState.StoreLoadingState
 import com.woocommerce.android.util.WooLog
@@ -19,7 +20,6 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import kotlinx.parcelize.Parcelize
-import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.network.UserAgent
 import javax.inject.Inject
 
@@ -41,8 +41,8 @@ class WebViewStoreCreationViewModel @Inject constructor(
     val viewState: LiveData<ViewState> = step.map { step ->
         when (step) {
             Step.StoreCreation -> prepareStoreCreationState()
-            Step.StoreLoading -> prepareStoreLoadingState(false)
-            Step.StoreLoadingError -> prepareStoreLoadingState(true)
+            Step.StoreLoading -> StoreLoadingState
+            Step.StoreLoadingError -> prepareErrorState()
         }
     }.asLiveData()
 
@@ -59,8 +59,7 @@ class WebViewStoreCreationViewModel @Inject constructor(
         }
     )
 
-    private fun prepareStoreLoadingState(isError: Boolean) = StoreLoadingState(
-        isError = isError,
+    private fun prepareErrorState() = ErrorState(
         onRetryButtonClick = {
             onStoreCreated()
         },
@@ -86,8 +85,9 @@ class WebViewStoreCreationViewModel @Inject constructor(
             override val onBackPressed: () -> Unit
         ) : ViewState
 
-        data class StoreLoadingState(
-            val isError: Boolean,
+        object StoreLoadingState : ViewState
+
+        data class ErrorState(
             val onRetryButtonClick: () -> Unit,
             override val onBackPressed: () -> Unit
         ) : ViewState
