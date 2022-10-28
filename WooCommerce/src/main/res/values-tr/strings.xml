@@ -1,11 +1,21 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2022-10-20 09:54:03+0000
+Translation-Revision-Date: 2022-10-26 16:54:04+0000
 Plural-Forms: nplurals=2; plural=(n > 1);
 Generator: GlotPress/2.4.0-alpha
 Language: tr
 -->
 <resources>
+    <string name="hello_blank_fragment">Merhaba boş parça</string>
+    <string name="what_is_wordpress_link">&lt;u&gt;WordPress.com nedir?&lt;/u&gt;</string>
+    <string name="signup_creating_account_loading_message">Yeni hesap oluşturma</string>
+    <string name="signup_terms_of_service">Devam ederek &lt;u&gt;Hizmet Şartlarımızı kabul etmiş olursunuz.&lt;/u&gt;</string>
+    <string name="signup_password_hint">Bir şifre seçin</string>
+    <string name="signup_email_address_hint">E-posta adresiniz</string>
+    <string name="signup_already_registered"> likle hesabınızı oluşturalım. Zaten kayıtlı mısınız? Oturum aç</string>
+    <string name="signup_get_started_label">Hemen başlayın: \ndakikalar içinde</string>
+    <string name="signup_get_started_button">Hemen başlayın</string>
+    <string name="login_jetpack_connection_consent">Jetpack\'i Bağla düğmesine dokunarak &lt;a href=\'terms\'&gt;Hizmet Şartlarımızı&lt;/a&gt; ve &lt;a href=\'sync\'&gt;ayrıntıları WordPress.com ile paylaşmayı&lt;/a&gt; kabul etmiş olursunuz.</string>
     <string name="enable_card_reader">Kart Okuyucuyu Simülatörünü Etkinleştir</string>
     <string name="login_account_mismatch_connect_wpcom_dialog_message">Uygulamayı kullanmak için mağaza yöneticisi veya yönetici olarak siteye davet için lütfen site sahibiyle iletişime geçin.</string>
     <string name="login_account_mismatch_connect_wpcom_dialog_title">Bir WordPress.com sitesine bağlanıyor</string>
@@ -1846,6 +1856,7 @@ Language: tr
     <string name="orderdetail_track_shipment">Gönderimi takip et</string>
     <string name="login_email_help_desc">Site yöneticinizde, %3$sBağlantılar &gt; Hesap bağlantısı %4$s bölümünde yer alan %1$sJetpack Panosu\'ndan%2$s WordPress.com\'a bağlanmak için kullandığınız e-postayı bulabilirsiniz.</string>
     <string name="login_email_help_title">Giriş yapmak için hangi e-postayı kullanmam gerek?</string>
+    <string name="login_need_help_finding_email">&lt;u&gt;Gerekli e-postayı bulmak için yardıma mı ihtiyacınız var?&lt;/u&gt;</string>
     <string name="login_jetpack_what_is_description">Jetpack, size en iyi mobil deneyimi sunmak için anında bildirimler ve istatistikler dahil olmak üzere gerekli araçlarla sizi mağazaya bağlayan ücretsiz bir WordPress eklentisidir.</string>
     <string name="login_jetpack_what_is">Jetpack nedir?</string>
     <string name="login_view_connected_stores">Bağlanılan mağazaları görüntüle</string>

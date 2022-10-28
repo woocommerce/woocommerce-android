@@ -1,2 +1,0 @@
-10.8:
-Diese Version enthält verschiedene kleinere Verbesserungen und Korrekturen von Fehlern, die unser Team gefunden hat. Wir arbeiten außerdem an einigen aufregenden Funktionen – mehr dazu Ende des Jahres. Vielen Dank, dass du WooCommerce nutzt!

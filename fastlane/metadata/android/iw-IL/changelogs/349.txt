@@ -1,0 +1,2 @@
+10.9:
+This release includes a lot more stability fixes to help you log in much easier. You can now connect your WordPress.com account with Jetpack and access your store that much faster. Keep that feedback coming!

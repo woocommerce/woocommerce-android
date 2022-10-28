@@ -1,11 +1,21 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2022-10-18 10:54:35+0000
+Translation-Revision-Date: 2022-10-27 11:54:04+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: sv_SE
 -->
 <resources>
+    <string name="hello_blank_fragment">Hej tomt fragment</string>
+    <string name="what_is_wordpress_link">&lt;u&gt;Vad är WordPress.com?&lt;/u&gt;</string>
+    <string name="signup_creating_account_loading_message">Skapar nytt konto</string>
+    <string name="signup_terms_of_service">Genom att fortsätta godkänner du våra &lt;u&gt;användarvillkor.&lt;/u&gt;</string>
+    <string name="signup_password_hint">Välj ett lösenord</string>
+    <string name="signup_email_address_hint">Din e-postadress</string>
+    <string name="signup_already_registered">Låt oss börja med att skapa ditt konto. Har du redan registrerat dig? Logga in</string>
+    <string name="signup_get_started_label">Kom igång \npå några minuter</string>
+    <string name="signup_get_started_button">Kom igång</string>
+    <string name="login_jetpack_connection_consent">Genom att klicka på knappen Anslut Jetpack godkänner du våra &lt;a href=\'terms\'&gt;användarvillkor&lt;/a&gt; och samtycker till att &lt;a href=\'sync\'&gt;dela information&lt;/a&gt; med WordPress.com.</string>
     <string name="enable_card_reader">Aktivera simulerad kortläsare</string>
     <string name="login_account_mismatch_connect_wpcom_dialog_message">Kontakta webbplatsens ägare för en inbjudan till webbplatsen som butikschef eller administratör för att använda appen.</string>
     <string name="login_account_mismatch_connect_wpcom_dialog_title">Ansluter till en WordPress.com-webbplats</string>
@@ -1846,6 +1856,7 @@ Language: sv_SE
     <string name="orderdetail_track_shipment">Spåra försändelse</string>
     <string name="login_email_help_desc">Du kan hitta e-postadressen som du använder för att ansluta till WordPress.com från din webbplatsadminsitration på %1$sJetpack Dashboard%2$s under %3$sAnslutningar &gt; Kontoanslutning%4$s</string>
     <string name="login_email_help_title">Vilken e-postadress ska jag använda för att logga in?</string>
+    <string name="login_need_help_finding_email">&lt;u&gt;Behöver du hjälp med att hitta e-postmeddelandet?&lt;/u&gt;</string>
     <string name="login_jetpack_what_is_description">Jetpack är ett kostnadsfritt tillägg i WordPress som ansluter din butik till de verktyg som behövs för att ge den bästa möjliga mobilupplevelsen, inklusive pushmeddelanden och statistik</string>
     <string name="login_jetpack_what_is">Vad är Jetpack?</string>
     <string name="login_view_connected_stores">Visa anslutna butiker</string>
