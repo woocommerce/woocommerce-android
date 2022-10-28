@@ -6,7 +6,6 @@ import android.os.Looper
 import android.view.View
 import android.view.ViewGroup.LayoutParams
 import androidx.compose.ui.platform.ViewCompositionStrategy
-import androidx.core.view.MenuProvider
 import androidx.core.view.children
 import androidx.core.view.isVisible
 import androidx.fragment.app.viewModels
