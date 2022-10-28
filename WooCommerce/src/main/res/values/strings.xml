@@ -1753,9 +1753,10 @@
     <string name="dev_options">Developer Options</string>
 
     <!--
-        Settings
+        Developer Options Screen
     -->
     <string name="enable_card_reader">Enable Simulated Card Reader</string>
+    <string name="simulated_reader_key">Simulated Reader Key</string>
 
     <!--
         WCToggleSingleOptionView
