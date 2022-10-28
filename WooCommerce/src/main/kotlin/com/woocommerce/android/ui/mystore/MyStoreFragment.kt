@@ -6,7 +6,6 @@ import android.os.Looper
 import android.view.View
 import android.view.ViewGroup.LayoutParams
 import androidx.compose.ui.platform.ViewCompositionStrategy
-import androidx.core.view.MenuProvider
 import androidx.core.view.children
 import androidx.core.view.isVisible
 import androidx.fragment.app.viewModels
@@ -61,7 +60,7 @@ import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import org.wordpress.android.fluxc.store.WCStatsStore.StatsGranularity
 import org.wordpress.android.util.NetworkUtils
-import java.util.Calendar
+import java.util.*
 import javax.inject.Inject
 import kotlin.math.abs
 
