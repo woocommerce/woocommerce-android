@@ -20,13 +20,15 @@ class DeveloperOptionsViewModel @Inject constructor(
     private val developerOptionsRepository: DeveloperOptionsRepository
 ) : ScopedViewModel(savedState) {
 
-    private val viewState = MutableLiveData(
+    private val _viewState = MutableLiveData(
         DeveloperOptionsViewState(
             rows = (
                 createDeveloperOptionsList()
                 )
         )
     )
+
+    val viewState: LiveData<DeveloperOptionsViewState> = _viewState
 
     private fun createDeveloperOptionsList(): List<ListItem> = mutableListOf(
         ToggleableListItem(
@@ -38,13 +40,11 @@ class DeveloperOptionsViewModel @Inject constructor(
         )
     )
 
-    val viewStateData: LiveData<DeveloperOptionsViewState> = viewState
-
     private fun onSimulatedReaderToggled(isChecked: Boolean) {
 
         developerOptionsRepository.changeSimulatedReaderState(isChecked)
         val newState = (viewState.value?.rows?.first() as ToggleableListItem).copy(isChecked = isChecked)
-        viewState.value = viewState.value?.copy(
+        _viewState.value = viewState.value?.copy(
             rows = viewState.value!!.rows.map {
                 if (it.label == newState.label)
                     newState
