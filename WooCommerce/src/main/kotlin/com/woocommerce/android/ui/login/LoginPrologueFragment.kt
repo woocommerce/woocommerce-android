@@ -40,7 +40,6 @@ open class LoginPrologueFragment(@LayoutRes layout: Int) : Fragment(layout) {
     private var prologueFinishedListener: PrologueFinishedListener? = null
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        simplifiedLoginExperiment.activate()
         val isSimplifiedLoginVariant = simplifiedLoginExperiment.getCurrentVariant() == SIMPLIFIED_LOGIN_WPCOM
 
         val binding = FragmentLoginPrologueBinding.bind(view)
@@ -62,6 +61,7 @@ open class LoginPrologueFragment(@LayoutRes layout: Int) : Fragment(layout) {
 
         if (savedInstanceState == null) {
             unifiedLoginTracker.track(Flow.PROLOGUE, Step.PROLOGUE)
+            simplifiedLoginExperiment.activate()
         }
 
         binding.buttonGetStarted.isVisible = FeatureFlag.ACCOUNT_CREATION_FLOW.isEnabled()
