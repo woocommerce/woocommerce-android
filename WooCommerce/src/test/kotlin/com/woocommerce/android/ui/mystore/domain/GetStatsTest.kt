@@ -14,6 +14,7 @@ import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Test
 import org.mockito.ArgumentMatchers.anyBoolean
+import org.mockito.ArgumentMatchers.anyString
 import org.mockito.kotlin.any
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.verify
@@ -169,7 +170,7 @@ class GetStatsTest : BaseUnitTest() {
     }
 
     private suspend fun givenFetchRevenueStats(result: Result<WCRevenueStatsModel?>) {
-        whenever(statsRepository.fetchRevenueStats(any(), anyBoolean()))
+        whenever(statsRepository.fetchRevenueStats(any(), anyBoolean(), anyString(), anyString()))
             .thenReturn(flow { emit(result) })
     }
 
