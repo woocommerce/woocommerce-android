@@ -799,7 +799,7 @@ class MyStoreViewModelTest : BaseUnitTest() {
                 mapOf(
                     KEY_SOURCE to MyStoreViewModel.UTM_SOURCE,
                     KEY_JITM to null,
-                    KEY_JITM_COUNT to null
+                    KEY_JITM_COUNT to 0
                 )
             )
         }
