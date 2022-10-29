@@ -549,6 +549,8 @@ platform :android do
       sh("cd .. && git add #{MAIN_STRINGS_PATH}")
       sh("git commit -m 'Update strings for translation'")
       sh("git push origin HEAD")
+      sh("git status")
+      sh("git diff")
     else
       UI.important("Your #{MAIN_STRINGS_PATH} has changed.")
       UI.input("Please, review the changes, commit them and press return to continue.")
