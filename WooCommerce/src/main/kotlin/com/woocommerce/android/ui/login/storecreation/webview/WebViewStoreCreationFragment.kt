@@ -8,12 +8,10 @@ import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
-import com.woocommerce.android.support.HelpActivity
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.ui.login.LoginActivity
-import com.woocommerce.android.ui.login.storecreation.webview.WebViewStoreCreationViewModel.NavigateToHelpScreen
 import com.woocommerce.android.ui.login.storecreation.webview.WebViewStoreCreationViewModel.NavigateToNewStore
 import com.woocommerce.android.ui.main.AppBarStatus
 import com.woocommerce.android.ui.main.MainActivity
@@ -51,15 +49,6 @@ class WebViewStoreCreationFragment : BaseFragment() {
         viewModel.event.observe(viewLifecycleOwner) { event ->
             when (event) {
                 NavigateToNewStore -> (activity as? MainActivity)?.handleSitePickerResult()
-                NavigateToHelpScreen -> {
-                    startActivity(
-                        HelpActivity.createIntent(
-                            context = requireContext(),
-                            origin = HelpActivity.Origin.LOGIN_SITE_ADDRESS,
-                            extraSupportTags = null
-                        )
-                    )
-                }
                 is ShowSnackbar -> uiMessageResolver.showSnack(event.message)
                 is Exit -> navigateBack()
             }

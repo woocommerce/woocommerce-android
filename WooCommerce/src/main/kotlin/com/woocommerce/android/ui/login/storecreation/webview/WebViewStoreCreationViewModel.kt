@@ -68,10 +68,6 @@ class WebViewStoreCreationViewModel @Inject constructor(
         }
     )
 
-    fun onHelpButtonClick() {
-        triggerEvent(NavigateToHelpScreen)
-    }
-
     sealed interface ViewState {
         val onBackPressed: () -> Unit
             get() = {}
@@ -124,7 +120,6 @@ class WebViewStoreCreationViewModel @Inject constructor(
     }
 
     object NavigateToNewStore : MultiLiveEvent.Event()
-    object NavigateToHelpScreen : MultiLiveEvent.Event()
 
     private sealed interface Step : Parcelable {
         @Parcelize
