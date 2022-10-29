@@ -1763,6 +1763,7 @@
     -->
     <string name="toggle_option_checked">option checked</string>
     <string name="toggle_option_not_checked">option not checked</string>
+    <string name="simulated_reader_toast">Simulated Card Reader has been disabled</string>
     <!--
         Help and support
     -->
