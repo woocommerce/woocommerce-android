@@ -42,7 +42,6 @@ class DeveloperOptionsViewModel @Inject constructor(
         )
     )
 
-
     private fun onSimulatedReaderToggled(isChecked: Boolean) {
         if (!isChecked) {
             launch {
@@ -53,9 +52,11 @@ class DeveloperOptionsViewModel @Inject constructor(
 
         developerOptionsRepository.changeSimulatedReaderState(isChecked)
         val currentViewState = viewState.value
-        (currentViewState?.rows?.find {
-            it.devOptionsKey == UiStringRes(string.simulated_reader_key)
-        } as? ToggleableListItem)?.let { originalListItem ->
+        (
+            currentViewState?.rows?.find {
+                it.devOptionsKey == UiStringRes(string.simulated_reader_key)
+            } as? ToggleableListItem
+            )?.let { originalListItem ->
             val newState = originalListItem.copy(isChecked = isChecked)
             _viewState.value = currentViewState.copy(
                 rows = currentViewState.rows.map {
