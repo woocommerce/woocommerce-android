@@ -1,6 +1,1 @@
-- [*] Fixed a bug caused by statement descriptor value too long or containing illegal chars [https://github.com/woocommerce/woocommerce-android/pull/7595]
-- [*] [Internal] Simplified login: update email screen layout [https://github.com/woocommerce/woocommerce-android/pull/7619]
-- [*] [Internal] Simplified login: update the "WP Account not found" screen [https://github.com/woocommerce/woocommerce-android/pull/7639]
-- [**] Display Just In Time Message (JITM) related to card reader purchase on the MyStore screen [https://github.com/woocommerce/woocommerce-android/pull/7652]
-- [*] [Internal] IPP plugins statuses added as zendesk tags [https://github.com/woocommerce/woocommerce-android/pull/7624]
-
+Good news! We added a new analytics section to the app! Simply click on the See More button under the store stats to check more detailed information on Revenue and Orders. This isn’t the last of it – more updates to come in the next few weeks!
