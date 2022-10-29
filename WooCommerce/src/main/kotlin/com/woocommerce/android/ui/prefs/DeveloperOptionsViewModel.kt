@@ -12,6 +12,7 @@ import com.woocommerce.android.ui.prefs.DeveloperOptionsViewModel.DeveloperOptio
 import com.woocommerce.android.ui.prefs.DeveloperOptionsViewModel.DeveloperOptionsViewState.ListItem.ToggleableListItem
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
@@ -44,10 +45,10 @@ class DeveloperOptionsViewModel @Inject constructor(
 
     private fun onSimulatedReaderToggled(isChecked: Boolean) {
         if (!isChecked) {
-//            launch {
-//                developerOptionsRepository.clearSelectedCardReader()
-//            }
-            developerOptionsRepository.showToast()
+            launch {
+                developerOptionsRepository.clearSelectedCardReader()
+                developerOptionsRepository.showToast()
+            }
         }
 
         developerOptionsRepository.changeSimulatedReaderState(isChecked)

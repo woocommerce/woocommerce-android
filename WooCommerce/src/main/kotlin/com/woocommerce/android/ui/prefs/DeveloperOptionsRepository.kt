@@ -1,17 +1,16 @@
 package com.woocommerce.android.ui.prefs
 
 import android.content.Context
-import android.widget.Toast
 import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.R
-import com.woocommerce.android.cardreader.CardReaderManager
+import com.woocommerce.android.ui.payments.cardreader.ClearCardReaderDataAction
 import org.wordpress.android.util.ToastUtils
 import javax.inject.Inject
 
 class DeveloperOptionsRepository @Inject constructor(
     private val appPrefs: AppPrefs,
-    private val cardReaderManager: CardReaderManager,
-    private val context: Context
+    private val context: Context,
+    private val clearCardReaderDataAction: ClearCardReaderDataAction
 ) {
 
     fun isSimulatedCardReaderEnabled(): Boolean {
@@ -23,7 +22,7 @@ class DeveloperOptionsRepository @Inject constructor(
     }
 
     suspend fun clearSelectedCardReader() {
-        cardReaderManager.disconnectReader()
+        clearCardReaderDataAction.invoke()
     }
 
     fun showToast() {
