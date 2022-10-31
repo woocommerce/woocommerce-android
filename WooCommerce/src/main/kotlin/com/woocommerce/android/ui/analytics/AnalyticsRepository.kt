@@ -159,8 +159,8 @@ class AnalyticsRepository @Inject constructor(
         fetchStrategy: FetchStrategy
     ): Result<WCRevenueStatsModel.Total> = coroutineScope {
         val currentPeriod = dateRange.getCurrentPeriod()
-        val startDate = currentPeriod.startDate.formatToYYYYmmDD()
-        val endDate = currentPeriod.endDate.formatToYYYYmmDD()
+        val startDate = currentPeriod.from.formatToYYYYmmDD()
+        val endDate = currentPeriod.to.formatToYYYYmmDD()
 
         getCurrentRevenueMutex.withLock {
             if (shouldUpdateCurrentStats(startDate, endDate, fetchStrategy == FetchStrategy.ForceNew)) {
@@ -181,8 +181,8 @@ class AnalyticsRepository @Inject constructor(
         fetchStrategy: FetchStrategy
     ): Result<WCRevenueStatsModel.Total> = coroutineScope {
         val previousPeriod = dateRange.getPreviousPeriod()
-        val startDate = previousPeriod.startDate.formatToYYYYmmDD()
-        val endDate = previousPeriod.endDate.formatToYYYYmmDD()
+        val startDate = previousPeriod.from.formatToYYYYmmDD()
+        val endDate = previousPeriod.to.formatToYYYYmmDD()
 
         getPreviousRevenueMutex.withLock {
             if (shouldUpdatePreviousStats(startDate, endDate, fetchStrategy == FetchStrategy.ForceNew)) {
@@ -203,8 +203,8 @@ class AnalyticsRepository @Inject constructor(
         quantity: Int
     ): Result<List<TopPerformerProductEntity>> {
         val totalPeriod = dateRange.getTotalPeriod()
-        val startDate = totalPeriod.startDate.formatToYYYYmmDD()
-        val endDate = totalPeriod.endDate.formatToYYYYmmDD()
+        val startDate = totalPeriod.from.formatToYYYYmmDD()
+        val endDate = totalPeriod.to.formatToYYYYmmDD()
 
         val site = selectedSite.get()
         val startDateFormatted = DateUtils.getStartDateForSite(site, startDate)

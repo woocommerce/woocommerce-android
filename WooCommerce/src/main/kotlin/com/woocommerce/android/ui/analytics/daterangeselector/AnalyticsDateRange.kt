@@ -4,7 +4,7 @@ import android.os.Parcelable
 import kotlinx.parcelize.Parcelize
 import java.util.Date
 
-data class DateRange(val startDate: Date, val endDate: Date)
+data class DateRange(val from: Date, val to: Date)
 
 sealed interface AnalyticsDateRange {
     fun getCurrentPeriod(): DateRange
@@ -17,9 +17,9 @@ class SimpleDateRange(
     val from: Date,
     val to: Date
 ) : AnalyticsDateRange, Parcelable {
-    override fun getCurrentPeriod(): DateRange = DateRange(startDate = from, endDate = to)
-    override fun getPreviousPeriod(): DateRange = DateRange(startDate = from, endDate = from)
-    override fun getTotalPeriod(): DateRange = DateRange(startDate = from, endDate = to)
+    override fun getCurrentPeriod(): DateRange = DateRange(from = from, to = to)
+    override fun getPreviousPeriod(): DateRange = DateRange(from = from, to = from)
+    override fun getTotalPeriod(): DateRange = DateRange(from = from, to = to)
 }
 
 @Parcelize
@@ -27,7 +27,7 @@ class MultipleDateRange(
     val from: SimpleDateRange,
     val to: SimpleDateRange
 ) : AnalyticsDateRange, Parcelable {
-    override fun getCurrentPeriod(): DateRange = DateRange(startDate = to.from, endDate = to.to)
-    override fun getPreviousPeriod(): DateRange = DateRange(startDate = from.from, endDate = from.to)
-    override fun getTotalPeriod(): DateRange = DateRange(startDate = from.from, endDate = to.to)
+    override fun getCurrentPeriod(): DateRange = DateRange(from = to.from, to = to.to)
+    override fun getPreviousPeriod(): DateRange = DateRange(from = from.from, to = from.to)
+    override fun getTotalPeriod(): DateRange = DateRange(from = from.from, to = to.to)
 }

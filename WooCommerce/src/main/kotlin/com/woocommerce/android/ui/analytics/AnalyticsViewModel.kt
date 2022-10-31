@@ -84,8 +84,8 @@ class AnalyticsViewModel @Inject constructor(
     fun onCustomDateRangeClicked() {
         val savedRange = getSavedDateRange()
         val currentPeriod = savedRange.getCurrentPeriod()
-        val fromMillis = currentPeriod.startDate.time
-        val toMillis = currentPeriod.endDate.time
+        val fromMillis = currentPeriod.from.time
+        val toMillis = currentPeriod.to.time
         triggerEvent(AnalyticsViewEvent.OpenDatePicker(fromMillis, toMillis))
     }
 
