@@ -36,7 +36,7 @@ class SignUpRepository @Inject constructor(
         WooLog.d(WooLog.T.LOGIN, "Fetching suggestions for username")
         val userNameSuggestionsResult = signUpStore.fetchUserNameSuggestions(email)
         val username = when {
-            userNameSuggestionsResult.isError -> email
+            userNameSuggestionsResult.isError -> email.substring(0, email.indexOf("@"))
             else -> userNameSuggestionsResult.suggestions.first()
         }
 
