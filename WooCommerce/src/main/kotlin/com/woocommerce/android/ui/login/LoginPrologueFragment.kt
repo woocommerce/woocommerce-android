@@ -13,7 +13,6 @@ import com.woocommerce.android.databinding.FragmentLoginPrologueBinding
 import com.woocommerce.android.experiment.SimplifiedLoginExperiment
 import com.woocommerce.android.experiment.SimplifiedLoginExperiment.LoginVariant.SIMPLIFIED_LOGIN_WPCOM
 import com.woocommerce.android.extensions.hide
-import com.woocommerce.android.extensions.show
 import com.woocommerce.android.ui.login.UnifiedLoginTracker.Flow
 import com.woocommerce.android.ui.login.UnifiedLoginTracker.Step
 import com.woocommerce.android.util.FeatureFlag
@@ -77,8 +76,6 @@ open class LoginPrologueFragment(@LayoutRes layout: Int) : Fragment(layout) {
         binding.buttonLoginWpcom.text = getString(R.string.log_in)
 
         binding.buttonLoginStore.hide()
-        binding.prologueTitle.hide()
-        binding.prologueSimplifiedLoginTitle.show()
     }
 
     override fun onAttach(context: Context) {
