@@ -85,34 +85,35 @@
         app:layout_constraintTop_toBottomOf="@id/prologueTitle"
         app:layout_constraintBottom_toBottomOf="parent">
 
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="horizontal">
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/button_login_wpcom"
-            style="@style/Woo.Button.Colored"
-            android:layout_width="0dp"
-            android:layout_weight="1"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="@dimen/major_100"
-            android:layout_marginEnd="@dimen/minor_100"
-            android:layout_marginBottom="@dimen/major_100"
-            android:textAllCaps="false"
-            android:text="@string/login_wpcom" />
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="horizontal">
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/button_login_wpcom"
+                style="@style/Woo.Button.Colored"
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/major_100"
+                android:layout_marginEnd="@dimen/minor_100"
+                android:layout_marginBottom="@dimen/major_100"
+                android:textAllCaps="false"
+                android:text="@string/login_wpcom" />
 
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/button_login_store"
-            style="@style/Woo.Button.Colored.White"
-            android:layout_width="0dp"
-            android:layout_weight="1"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="@dimen/minor_100"
-            android:layout_marginEnd="@dimen/major_100"
-            android:layout_marginBottom="@dimen/major_100"
-            android:text="@string/login_store_address"
-            android:textAllCaps="false" />
-    </LinearLayout>
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/button_login_store"
+                style="@style/Woo.Button.Colored.White"
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/minor_100"
+                android:layout_marginEnd="@dimen/major_100"
+                android:layout_marginBottom="@dimen/major_100"
+                android:text="@string/login_store_address"
+                android:textAllCaps="false" />
+        </LinearLayout>
+
         <com.google.android.material.button.MaterialButton
             android:id="@+id/button_get_started"
             style="@style/Woo.Button.Colored.White"
