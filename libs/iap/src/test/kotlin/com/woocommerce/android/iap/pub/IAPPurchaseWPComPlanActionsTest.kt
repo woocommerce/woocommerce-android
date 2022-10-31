@@ -65,17 +65,9 @@ class IAPPurchaseWPComPlanActionsTest {
     @Test
     fun `given product in NON USD currency, when iap support checked, then success with false returned`() = runTest {
         // GIVEN
-        val productDetails = buildProductDetails(
-            productId = iapProduct.productId,
-            name = "productName",
-            price = 100L,
+        setupQueryProductDetails(
+            responseCode = BillingClient.BillingResponseCode.OK,
             currency = "AED"
-        )
-        whenever(billingClientMock.queryProductDetails(any())).thenReturn(
-            ProductDetailsResult(
-                buildBillingResult(BillingClient.BillingResponseCode.OK),
-                listOf(productDetails)
-            )
         )
 
         // WHEN
@@ -88,18 +80,7 @@ class IAPPurchaseWPComPlanActionsTest {
     @Test
     fun `given product USD currency, when iap support checked, then success with true returned`() = runTest {
         // GIVEN
-        val productDetails = buildProductDetails(
-            productId = iapProduct.productId,
-            name = "productName",
-            price = 100L,
-            currency = "USD"
-        )
-        whenever(billingClientMock.queryProductDetails(any())).thenReturn(
-            ProductDetailsResult(
-                buildBillingResult(BillingClient.BillingResponseCode.OK),
-                listOf(productDetails)
-            )
-        )
+        setupQueryProductDetails(responseCode = BillingClient.BillingResponseCode.OK)
 
         // WHEN
         val result = sut.isIAPSupported()
@@ -111,19 +92,12 @@ class IAPPurchaseWPComPlanActionsTest {
     @Test
     fun `given product fetching error, when iap support checked, then error returned`() = runTest {
         // GIVEN
-        val productDetails = buildProductDetails(
-            productId = iapProduct.productId,
-            name = "productName",
-            price = 100L,
-            currency = "USD"
-        )
         val responseCode = BillingClient.BillingResponseCode.DEVELOPER_ERROR
         val debugMessage = "debug message"
-        whenever(billingClientMock.queryProductDetails(any())).thenReturn(
-            ProductDetailsResult(
-                buildBillingResult(responseCode, debugMessage),
-                listOf(productDetails)
-            )
+
+        setupQueryProductDetails(
+            responseCode = responseCode,
+            debugMessage = debugMessage
         )
 
         // WHEN
@@ -151,19 +125,7 @@ class IAPPurchaseWPComPlanActionsTest {
                 )
             )
         )
-
-        val productDetails = buildProductDetails(
-            productId = iapProduct.productId,
-            name = "productName",
-            price = 100L,
-            currency = "USD"
-        )
-        whenever(billingClientMock.queryProductDetails(any())).thenReturn(
-            ProductDetailsResult(
-                buildBillingResult(responseCode, debugMessage),
-                listOf(productDetails)
-            )
-        )
+        setupQueryProductDetails(responseCode = BillingClient.BillingResponseCode.OK, debugMessage = debugMessage)
 
         // WHEN
         val result = sut.isWPComPlanPurchased()
@@ -178,7 +140,6 @@ class IAPPurchaseWPComPlanActionsTest {
         runTest {
             // GIVEN
             val responseCode = BillingClient.BillingResponseCode.OK
-            val debugMessage = "debug message"
 
             setupPurchaseQuery(
                 responseCode = responseCode,
@@ -190,17 +151,9 @@ class IAPPurchaseWPComPlanActionsTest {
                 )
             )
 
-            val productDetails = buildProductDetails(
-                productId = "another_product_id",
-                name = "productName",
-                price = 100L,
-                currency = "USD"
-            )
-            whenever(billingClientMock.queryProductDetails(any())).thenReturn(
-                ProductDetailsResult(
-                    buildBillingResult(responseCode, debugMessage),
-                    listOf(productDetails)
-                )
+            setupQueryProductDetails(
+                responseCode = responseCode,
+                productId = "another_product_id"
             )
 
             // WHEN
@@ -216,7 +169,6 @@ class IAPPurchaseWPComPlanActionsTest {
         runTest {
             // GIVEN
             val responseCode = BillingClient.BillingResponseCode.OK
-            val debugMessage = "debug message"
 
             setupPurchaseQuery(
                 responseCode = responseCode,
@@ -228,18 +180,7 @@ class IAPPurchaseWPComPlanActionsTest {
                 )
             )
 
-            val productDetails = buildProductDetails(
-                productId = iapProduct.productId,
-                name = "productName",
-                price = 100L,
-                currency = "USD"
-            )
-            whenever(billingClientMock.queryProductDetails(any())).thenReturn(
-                ProductDetailsResult(
-                    buildBillingResult(responseCode, debugMessage),
-                    listOf(productDetails)
-                )
-            )
+            setupQueryProductDetails(responseCode = responseCode)
 
             // WHEN
             val result = sut.isWPComPlanPurchased()
@@ -281,19 +222,11 @@ class IAPPurchaseWPComPlanActionsTest {
         val price = 100L
         val title = "wc_plan"
         val description = "best plan ever"
-        val productDetails = buildProductDetails(
-            productId = iapProduct.productId,
-            name = "productName",
+        setupQueryProductDetails(
+            responseCode = responseCode,
             price = price,
-            currency = currency,
             title = title,
             description = description,
-        )
-        whenever(billingClientMock.queryProductDetails(any())).thenReturn(
-            ProductDetailsResult(
-                buildBillingResult(responseCode),
-                listOf(productDetails)
-            )
         )
 
         // WHEN
@@ -310,14 +243,10 @@ class IAPPurchaseWPComPlanActionsTest {
     @Test
     fun `given product query error, when fetching wp com plan product, then error returned`() = runTest {
         // GIVEN
-        val responseCode = BillingClient.BillingResponseCode.FEATURE_NOT_SUPPORTED
         val debugMessage = "debug message"
-
-        whenever(billingClientMock.queryProductDetails(any())).thenReturn(
-            ProductDetailsResult(
-                buildBillingResult(responseCode, debugMessage),
-                emptyList()
-            )
+        setupQueryProductDetails(
+            responseCode = BillingClient.BillingResponseCode.FEATURE_NOT_SUPPORTED,
+            debugMessage = debugMessage
         )
 
         // WHEN
@@ -330,6 +259,7 @@ class IAPPurchaseWPComPlanActionsTest {
         )
         assertThat((result.errorType as IAPError.Billing).debugMessage).isEqualTo(debugMessage)
     }
+    //endregion
 
     private suspend fun setupPurchaseQuery(
         @BillingClient.BillingResponseCode responseCode: Int,
@@ -343,7 +273,31 @@ class IAPPurchaseWPComPlanActionsTest {
             )
         )
     }
-    //endregion
+
+    private suspend fun setupQueryProductDetails(
+        responseCode: Int,
+        debugMessage: String = "",
+        productId: String = iapProduct.productId,
+        price: Long = 100L,
+        currency: String = "USD",
+        title: String = "title",
+        description: String = "description"
+    ) {
+        val productDetails = buildProductDetails(
+            productId = productId,
+            name = "productName",
+            price = price,
+            currency = currency,
+            title = title,
+            description = description,
+        )
+        whenever(billingClientMock.queryProductDetails(any())).thenReturn(
+            ProductDetailsResult(
+                buildBillingResult(responseCode, debugMessage),
+                listOf(productDetails)
+            )
+        )
+    }
 
     private fun setupBillingClientToBeConnected() {
         whenever(billingClientMock.startConnection(any())).thenAnswer {
