@@ -19,8 +19,8 @@ internal object IAPManagerFactory {
             iapBillingClientStateHandler,
             iapOutMapper,
             iapInMapper,
-            iapPurchasesUpdatedListener,
             logWrapper,
+            iapPurchasesUpdatedListener,
         )
     }
 }

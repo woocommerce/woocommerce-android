@@ -2,9 +2,9 @@ package com.woocommerce.android.iap.internal.model
 
 import com.woocommerce.android.iap.pub.model.IAPError
 
-internal sealed class IAPPurchaseResponse {
-    data class Success(val purchases: List<IAPPurchase>?) : IAPPurchaseResponse()
-    data class Error(val error: IAPError.Billing) : IAPPurchaseResponse()
+internal sealed class IAPPurchaseResult {
+    data class Success(val purchases: List<IAPPurchase>?) : IAPPurchaseResult()
+    data class Error(val error: IAPError.Billing) : IAPPurchaseResult()
 }
 
 internal data class IAPPurchase(

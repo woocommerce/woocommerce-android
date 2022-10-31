@@ -6,7 +6,7 @@ import com.woocommerce.android.iap.internal.core.priceOfTheFirstPurchasedOfferIn
 import com.woocommerce.android.iap.internal.model.IAPProduct
 import com.woocommerce.android.iap.internal.model.IAPProductDetailsResponse
 import com.woocommerce.android.iap.internal.model.IAPPurchase
-import com.woocommerce.android.iap.internal.model.IAPPurchaseResponse
+import com.woocommerce.android.iap.internal.model.IAPPurchaseResult
 import com.woocommerce.android.iap.internal.model.IAPSupportedResult
 import com.woocommerce.android.iap.internal.network.IAPMobilePayAPI
 import com.woocommerce.android.iap.internal.network.model.CreateAndConfirmOrderResponse
@@ -17,6 +17,11 @@ import com.woocommerce.android.iap.pub.model.WPComIsPurchasedResult
 import com.woocommerce.android.iap.pub.model.WPComPlanProduct
 import com.woocommerce.android.iap.pub.model.WPComProductResult
 import com.woocommerce.android.iap.pub.model.WPComPurchaseResult
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.mapNotNull
+import kotlinx.coroutines.flow.merge
 
 private val iapProduct = IAPProduct.WPPremiumPlanTesting
 private const val SUPPORTED_CURRENCY = "USD"
@@ -24,47 +29,38 @@ private const val SUPPORTED_CURRENCY = "USD"
 internal class IAPPurchaseWPComPlanActionsImpl(
     private val iapMobilePayAPI: IAPMobilePayAPI,
     private val iapManager: IAPManager,
+    private val remoteSiteId: Long,
 ) : PurchaseWPComPlanActions {
+
     init {
         iapManager.connect()
     }
 
+    private val purchaseWpComPlanFetchingProductsError = MutableStateFlow<WPComPurchaseResult.Error?>(null)
+
+    override val purchaseWpComPlanResult: Flow<WPComPurchaseResult> = merge(
+        purchaseWpComPlanFetchingProductsError.mapNotNull { it },
+        iapManager.purchaseWpComPlanResult.map { mapPurchaseResultToWPComPurchaseResult(it) },
+    )
+
     override suspend fun isWPComPlanPurchased(): WPComIsPurchasedResult {
         return when (val response = iapManager.fetchPurchases(iapProduct.productType)) {
-            is IAPPurchaseResponse.Success -> WPComIsPurchasedResult.Success(
+            is IAPPurchaseResult.Success -> WPComIsPurchasedResult.Success(
                 isProductPurchased(
                     response.purchases,
                     iapProduct
                 )
             )
-            is IAPPurchaseResponse.Error -> WPComIsPurchasedResult.Error(response.error)
+            is IAPPurchaseResult.Error -> WPComIsPurchasedResult.Error(response.error)
         }
     }
 
-    override suspend fun purchaseWPComPlan(
-        activityWrapper: IAPActivityWrapper,
-        remoteSiteId: Long
-    ): WPComPurchaseResult {
-        return when (val response = iapManager.startPurchase(activityWrapper, iapProduct)) {
-            is IAPPurchaseResponse.Success -> {
-                val purchase = response.purchases!!.first()
-                val apiResponse = iapMobilePayAPI.createAndConfirmOrder(
-                    remoteSiteId = remoteSiteId,
-                    productIdentifier = purchase.products.first().id,
-                    price = purchase.products.first().price,
-                    currency = purchase.products.first().currency,
-                    response.purchases.first().purchaseToken
-                )
-                when (apiResponse) {
-                    is CreateAndConfirmOrderResponse.Success -> WPComPurchaseResult.Success
-                    CreateAndConfirmOrderResponse.Network -> WPComPurchaseResult.Error(
-                        IAPError.RemoteCommunication.Network
-                    )
-                    is CreateAndConfirmOrderResponse.Server ->
-                        WPComPurchaseResult.Error(IAPError.RemoteCommunication.Server(apiResponse.reason))
-                }
+    override suspend fun purchaseWPComPlan(activityWrapper: IAPActivityWrapper) {
+        when (val response = iapManager.fetchIAPProductDetails(iapProduct)) {
+            is IAPProductDetailsResponse.Success -> iapManager.startPurchase(activityWrapper, response.productDetails)
+            is IAPProductDetailsResponse.Error -> {
+                purchaseWpComPlanFetchingProductsError.value = WPComPurchaseResult.Error(response.error)
             }
-            is IAPPurchaseResponse.Error -> WPComPurchaseResult.Error(response.error)
         }
     }
 
@@ -91,6 +87,35 @@ internal class IAPPurchaseWPComPlanActionsImpl(
 
     override fun close() {
         iapManager.disconnect()
+    }
+
+    private suspend fun mapPurchaseResultToWPComPurchaseResult(response: IAPPurchaseResult) = when (response) {
+        is IAPPurchaseResult.Success -> {
+            val purchase = response.purchases!!.first()
+            confirmPurchaseOnBackend(remoteSiteId, purchase)
+        }
+        is IAPPurchaseResult.Error -> WPComPurchaseResult.Error(response.error)
+    }
+
+    private suspend fun confirmPurchaseOnBackend(
+        remoteSiteId: Long,
+        purchase: IAPPurchase
+    ): WPComPurchaseResult {
+        val apiResponse = iapMobilePayAPI.createAndConfirmOrder(
+            remoteSiteId = remoteSiteId,
+            productIdentifier = purchase.products.first().id,
+            price = purchase.products.first().price,
+            currency = purchase.products.first().currency,
+            purchaseToken = purchase.purchaseToken
+        )
+        return when (apiResponse) {
+            is CreateAndConfirmOrderResponse.Success -> WPComPurchaseResult.Success
+            CreateAndConfirmOrderResponse.Network -> WPComPurchaseResult.Error(
+                IAPError.RemoteCommunication.Network
+            )
+            is CreateAndConfirmOrderResponse.Server ->
+                WPComPurchaseResult.Error(IAPError.RemoteCommunication.Server(apiResponse.reason))
+        }
     }
 
     private fun isCurrencySupported(response: IAPProductDetailsResponse.Success) =

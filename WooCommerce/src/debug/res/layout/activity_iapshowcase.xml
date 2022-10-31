@@ -65,16 +65,6 @@
             android:layout_marginTop="16dp"
             android:text="@string/showcase_iap_check_if_plan_purchased" />
 
-        <EditText
-            android:id="@+id/etRemoteBlogId"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="32dp"
-            android:hint="@string/showcase_iap_remote_blog_id"
-            android:inputType="number"
-            android:text="1"
-            tools:ignore="HardcodedText" />
-
         <Button
             android:id="@+id/btnStartPurchase"
             android:layout_width="match_parent"
