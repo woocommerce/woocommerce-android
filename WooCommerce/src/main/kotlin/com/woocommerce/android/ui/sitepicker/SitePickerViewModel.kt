@@ -665,13 +665,7 @@ class SitePickerViewModel @Inject constructor(
 
     private fun startStoreCreationWebFlow() {
         appPrefsWrapper.markAsNewSignUp(false)
-        triggerEvent(
-            NavigateToWPComWebView(
-                url = WOOCOMMERCE_STORE_CREATION_URL,
-                validationUrl = WOOCOMMERCE_STORE_CREATION_DONE_URL,
-                title = resourceProvider.getString(string.create_new_store)
-            )
-        )
+        triggerEvent(NavigateToStoreCreationEvent)
     }
 
     private fun trackLoginEvent(
