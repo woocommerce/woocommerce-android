@@ -17,7 +17,7 @@ class AddStoreBottomSheetFragment : WCBottomSheetDialogFragment(R.layout.dialog_
         val binding = DialogSitePickerAddStoreBottomSheetBinding.bind(view)
 
         binding.createNewStoreButton.setOnClickListener {
-            AnalyticsTracker.track(AnalyticsEvent.SITE_PICKER_CREATE_STORE_TAPPED)
+            AnalyticsTracker.track(AnalyticsEvent.SITE_PICKER_CREATE_SITE_TAPPED)
             findNavController().navigateSafely(
                 directions = AddStoreBottomSheetFragmentDirections
                     .actionAddStoreBottomSheetFragmentToWebViewStoreCreationFragment(),

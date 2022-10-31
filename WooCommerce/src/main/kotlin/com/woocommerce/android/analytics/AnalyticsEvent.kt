@@ -134,7 +134,6 @@ enum class AnalyticsEvent(val siteless: Boolean = false) {
     SITE_PICKER_NON_WOO_SITE_TAPPED(siteless = true),
     SITE_PICKER_NEW_TO_WOO_TAPPED(siteless = true),
     SITE_PICKER_ADD_A_STORE_TAPPED(siteless = true),
-    SITE_PICKER_CREATE_STORE_TAPPED(siteless = true),
     SITE_PICKER_CONNECT_EXISTING_STORE_TAPPED(siteless = true),
     SITE_PICKER_SITE_DISCOVERY(siteless = true),
     SITE_PICKER_JETPACK_TIMEOUT_ERROR_SHOWN(siteless = true),
