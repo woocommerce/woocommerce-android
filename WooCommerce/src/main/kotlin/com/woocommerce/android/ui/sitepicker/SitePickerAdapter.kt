@@ -1,6 +1,7 @@
 package com.woocommerce.android.ui.sitepicker
 
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
 import android.view.ViewGroup.LayoutParams
 import android.view.ViewGroup.MarginLayoutParams
@@ -102,7 +103,7 @@ class SitePickerAdapter(
         }
 
         fun bind(siteUiModel: WooSiteUiModel) {
-            viewBinding.checkIcon.isVisible = siteUiModel.isSelected
+            viewBinding.checkIcon.visibility = if (siteUiModel.isSelected) View.VISIBLE else View.INVISIBLE
             viewBinding.textSiteName.text = siteUiModel.site.getSiteName()
             viewBinding.textSiteDomain.text = StringUtils.getSiteDomainAndPath(siteUiModel.site)
 
