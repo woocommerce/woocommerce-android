@@ -210,7 +210,8 @@ internal class IAPManager(
         waitBillingClientInitialisation()
         val params = QueryPurchasesParams.newBuilder()
             .setProductType(iapInMapper.mapProductTypeToIAPProductType(iapProductType))
-        return billingClient.queryPurchasesAsync(params.build())
+            .build()
+        return billingClient.queryPurchasesAsync(params)
     }
 
     companion object {

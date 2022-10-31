@@ -23,13 +23,13 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.mapNotNull
 import kotlinx.coroutines.flow.merge
 
-private val iapProduct = IAPProduct.WPPremiumPlanTesting
 private const val SUPPORTED_CURRENCY = "USD"
 
 internal class IAPPurchaseWPComPlanActionsImpl(
     private val iapMobilePayAPI: IAPMobilePayAPI,
     private val iapManager: IAPManager,
     private val remoteSiteId: Long,
+    private val iapProduct: IAPProduct = IAPProduct.WPPremiumPlanTesting
 ) : PurchaseWPComPlanActions {
 
     init {
