@@ -5,6 +5,8 @@ import android.view.View
 import androidx.navigation.NavOptions
 import androidx.navigation.fragment.findNavController
 import com.woocommerce.android.R
+import com.woocommerce.android.analytics.AnalyticsEvent
+import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.databinding.DialogSitePickerAddStoreBottomSheetBinding
 import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.widgets.WCBottomSheetDialogFragment
@@ -15,6 +17,7 @@ class AddStoreBottomSheetFragment : WCBottomSheetDialogFragment(R.layout.dialog_
         val binding = DialogSitePickerAddStoreBottomSheetBinding.bind(view)
 
         binding.createNewStoreButton.setOnClickListener {
+            AnalyticsTracker.track(AnalyticsEvent.SITE_PICKER_CREATE_STORE_TAPPED)
             findNavController().navigateSafely(
                 directions = AddStoreBottomSheetFragmentDirections
                     .actionAddStoreBottomSheetFragmentToWebViewStoreCreationFragment(),
@@ -24,6 +27,7 @@ class AddStoreBottomSheetFragment : WCBottomSheetDialogFragment(R.layout.dialog_
             )
         }
         binding.connectExistingStoreButton.setOnClickListener {
+            AnalyticsTracker.track(AnalyticsEvent.SITE_PICKER_CONNECT_EXISTING_STORE_TAPPED)
             findNavController().navigateSafely(
                 directions = AddStoreBottomSheetFragmentDirections
                     .actionAddSiteBottomSheetFragmentToSitePickerSiteDiscoveryFragment(),

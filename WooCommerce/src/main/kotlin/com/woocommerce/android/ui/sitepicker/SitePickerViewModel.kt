@@ -422,7 +422,11 @@ class SitePickerViewModel @Inject constructor(
     }
 
     fun onAddStoreClick() {
-        analyticsTrackerWrapper.track(AnalyticsEvent.SITE_PICKER_ENTER_SITE_ADDRESS_TAPPED)
+        if (FeatureFlag.STORE_CREATION_WEBVIEW_FLOW.isEnabled()) {
+            analyticsTrackerWrapper.track(AnalyticsEvent.SITE_PICKER_ADD_A_STORE_TAPPED)
+        } else {
+            analyticsTrackerWrapper.track(AnalyticsEvent.SITE_PICKER_CONNECT_EXISTING_STORE_TAPPED)
+        }
         triggerEvent(SitePickerEvent.NavigateToAddStoreEvent)
     }
 
