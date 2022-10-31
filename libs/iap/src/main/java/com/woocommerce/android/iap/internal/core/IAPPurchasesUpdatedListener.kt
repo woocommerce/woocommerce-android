@@ -21,6 +21,10 @@ internal class IAPPurchasesUpdatedListener(
         val responseCode = billingResult.responseCode
         val debugMessage = billingResult.debugMessage
         logWrapper.d(IAP_LOG_TAG, "onPurchasesUpdated: $responseCode $debugMessage")
-        _purchaseWpComPlanResult.value = PurchasesResult(billingResult, purchases.orEmpty())
+        onPurchaseAvailable(PurchasesResult(billingResult, purchases.orEmpty()))
+    }
+
+    fun onPurchaseAvailable(purchasesResult: PurchasesResult) {
+        _purchaseWpComPlanResult.value = purchasesResult
     }
 }

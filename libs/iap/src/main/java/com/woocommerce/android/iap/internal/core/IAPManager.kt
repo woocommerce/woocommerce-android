@@ -19,6 +19,7 @@ import com.woocommerce.android.iap.pub.IAP_LOG_TAG
 import com.woocommerce.android.iap.pub.model.IAPError
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
@@ -31,13 +32,16 @@ internal class IAPManager(
     private val iapBillingClientStateHandler: IAPBillingClientStateHandler,
     private val iapOutMapper: IAPOutMapper,
     private val iapInMapper: IAPInMapper,
+    private val iapPurchasesUpdatedListener: IAPPurchasesUpdatedListener,
     private val logWrapper: IAPLogWrapper,
-    iapPurchasesUpdatedListener: IAPPurchasesUpdatedListener,
 ) {
     private val billingClient: IAPBillingClientWrapper
         get() = iapBillingClientStateHandler.billingClient
 
+    private var purchaseStatusCheckerJob: Job? = null
+
     val purchaseWpComPlanResult: Flow<IAPPurchaseResult> = iapPurchasesUpdatedListener.purchaseWpComPlanResult.map {
+        purchaseStatusCheckerJob?.cancel()
         mapPurchaseResultToIAPPurchaseResult(it)
     }
 
@@ -67,6 +71,9 @@ internal class IAPManager(
     fun startPurchase(activityWrapper: IAPActivityWrapper, productDetails: ProductDetails) {
         val flowParams = buildBillingFlowParams(productDetails)
         billingClient.launchBillingFlow(activityWrapper.activity, flowParams)
+        purchaseStatusCheckerJob = startPeriodicPurchasesCheckJob(productDetails) {
+            iapPurchasesUpdatedListener.onPurchaseAvailable(it)
+        }
     }
 
     suspend fun fetchIAPProductDetails(iapProduct: IAPProduct): IAPProductDetailsResponse =
@@ -78,18 +85,19 @@ internal class IAPManager(
             }
         }
 
-    fun startPeriodicPurchasesCheckJob(
-        iapProduct: IAPProduct,
+    private fun startPeriodicPurchasesCheckJob(
+        productDetails: ProductDetails,
         onPurchaseAvailable: (PurchasesResult) -> Unit,
     ) = CoroutineScope(Dispatchers.IO).launch {
         repeat(PURCHASE_STATE_CHECK_TIMES) {
             if (isActive) {
                 delay(PURCHASE_STATE_CHECK_INTERVAL)
-                val purchasesResult = queryPurchases(iapProduct.productType)
+                // TODO INAPP support?
+                val purchasesResult = queryPurchases(IAPProductType.SUBS)
                 logWrapper.d(IAP_LOG_TAG, "Fetching purchases. Result ${purchasesResult.billingResult}")
                 if (purchasesResult.billingResult.isSuccess &&
                     purchasesResult.purchasesList.firstOrNull {
-                        it.products.contains(iapProduct.productId)
+                        it.products.contains(productDetails.productId)
                     }?.purchaseState == Purchase.PurchaseState.PURCHASED
                 ) {
                     if (isActive) {
@@ -189,7 +197,6 @@ internal class IAPManager(
 
     private fun buildBillingFlowParams(productDetails: ProductDetails): BillingFlowParams {
         val productDetailsParams = ProductDetailsParams.newBuilder()
-            // TODO support for multiple offers?
             .setOfferToken(productDetails.firstOfferToken)
             .setProductDetails(productDetails)
             .build()
