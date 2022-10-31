@@ -190,13 +190,6 @@ class SitePickerFragment : BaseFragment(R.layout.fragment_site_picker), LoginEma
             AnalyticsTracker.track(AnalyticsEvent.LOGIN_WOOCOMMERCE_SETUP_COMPLETED)
             viewModel.onWooInstalled()
         }
-        handleResult<List<String>>(WPComWebViewFragment.WEBVIEW_RESULT_WITH_URL) { urls ->
-            AnalyticsTracker.track(
-                AnalyticsEvent.LOGIN_WOOCOMMERCE_SITE_CREATED,
-                mapOf(AnalyticsTracker.KEY_URL to urls.joinToString())
-            )
-            viewModel.onSiteCreated(urls)
-        }
         handleNotice(WPComWebViewFragment.WEBVIEW_DISMISSED) {
             AnalyticsTracker.track(AnalyticsEvent.LOGIN_WOOCOMMERCE_SETUP_DISMISSED)
         }
