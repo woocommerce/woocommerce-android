@@ -25,6 +25,7 @@ class SignUpRepository @Inject constructor(
         const val EMAIL_EXIST_API_ERROR = "email_exists"
         const val EMAIL_INVALID_API_ERROR = "email_invalid"
         const val PASSWORD_INVALID_API_ERROR = "password_invalid"
+        const val BLACKLISTED_WORDING_ON_USERNAME = "wordpress"
     }
 
     suspend fun createAccount(email: String, password: String): AccountCreationResult {
@@ -34,7 +35,9 @@ class SignUpRepository @Inject constructor(
         }
 
         WooLog.d(WooLog.T.LOGIN, "Fetching suggestions for username")
-        val userNameSuggestionsResult = signUpStore.fetchUserNameSuggestions(email)
+        val userNameSuggestionsResult = signUpStore.fetchUserNameSuggestions(
+            email.lowercase().replace(BLACKLISTED_WORDING_ON_USERNAME, "")
+        )
         val username = when {
             userNameSuggestionsResult.isError -> email.substring(0, email.indexOf("@"))
             else -> userNameSuggestionsResult.suggestions.first()
