@@ -30,8 +30,6 @@ import com.woocommerce.android.R.string
 import com.woocommerce.android.ui.common.wpcomwebview.WPComWebViewAuthenticator
 import com.woocommerce.android.ui.compose.component.WCColoredButton
 import com.woocommerce.android.ui.compose.component.WCWebView
-import com.woocommerce.android.ui.compose.component.WebViewNavigator
-import com.woocommerce.android.ui.compose.component.rememberWebViewNavigator
 import com.woocommerce.android.ui.login.storecreation.webview.WebViewStoreCreationViewModel.ViewState.ErrorState
 import com.woocommerce.android.ui.login.storecreation.webview.WebViewStoreCreationViewModel.ViewState.StoreCreationState
 import com.woocommerce.android.ui.login.storecreation.webview.WebViewStoreCreationViewModel.ViewState.StoreLoadingState
@@ -42,8 +40,6 @@ import org.wordpress.android.fluxc.network.UserAgent
 @OptIn(ExperimentalAnimationApi::class)
 @Composable
 fun WebViewStoreCreationScreen(viewModel: WebViewStoreCreationViewModel) {
-    val webViewNavigator = rememberWebViewNavigator()
-
     viewModel.viewState.observeAsState().value?.let { viewState ->
         BackHandler(onBack = viewModel::onBackPressed)
         Scaffold(topBar = {
@@ -68,7 +64,6 @@ fun WebViewStoreCreationScreen(viewModel: WebViewStoreCreationViewModel) {
                     is StoreCreationState -> StoreCreationWebView(
                         viewState = targetState,
                         wpComWebViewAuthenticator = viewModel.wpComWebViewAuthenticator,
-                        webViewNavigator = webViewNavigator,
                         userAgent = viewModel.userAgent,
                         modifier = Modifier.padding(paddingValues)
                     )
@@ -85,7 +80,6 @@ fun WebViewStoreCreationScreen(viewModel: WebViewStoreCreationViewModel) {
 private fun StoreCreationWebView(
     viewState: StoreCreationState,
     wpComWebViewAuthenticator: WPComWebViewAuthenticator,
-    webViewNavigator: WebViewNavigator,
     userAgent: UserAgent,
     modifier: Modifier = Modifier
 ) {
@@ -97,12 +91,11 @@ private fun StoreCreationWebView(
         }
     }
 
-    var storeCreationTriggered: Boolean = false
+    var storeCreationTriggered = false
     WCWebView(
         url = viewState.storeCreationUrl,
         wpComAuthenticator = wpComWebViewAuthenticator,
         userAgent = userAgent,
-        webViewNavigator = webViewNavigator,
         onUrlLoaded = { url: String ->
             WooLog.d(T.SITE_PICKER, url)
             extractSiteUrlOrNull(url)?.let {
@@ -168,5 +161,5 @@ private fun PreviewStoreCreationInProgress() {
 @Preview
 @Composable
 private fun PreviewStoreCreationError() {
-    StoreCreationError(ErrorState({}))
+    StoreCreationError(ErrorState { })
 }
