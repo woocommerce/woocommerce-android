@@ -9,18 +9,23 @@ import com.android.billingclient.api.PurchasesResult
 import com.woocommerce.android.iap.internal.core.IAPBillingClientProvider
 import com.woocommerce.android.iap.internal.core.IAPBillingClientStateHandler
 import com.woocommerce.android.iap.internal.core.IAPBillingClientWrapper
+import com.woocommerce.android.iap.internal.core.IAPBillingFlowParamsBuilder
 import com.woocommerce.android.iap.internal.core.IAPInMapper
 import com.woocommerce.android.iap.internal.core.IAPManager
 import com.woocommerce.android.iap.internal.core.IAPOutMapper
+import com.woocommerce.android.iap.internal.core.IAPPeriodicPurchaseStatusChecker
 import com.woocommerce.android.iap.internal.core.IAPPurchasesUpdatedListener
 import com.woocommerce.android.iap.internal.model.IAPProduct
 import com.woocommerce.android.iap.internal.model.IAPSupportedResult
 import com.woocommerce.android.iap.internal.network.IAPMobilePayAPI
+import com.woocommerce.android.iap.internal.network.model.CreateAndConfirmOrderResponse
 import com.woocommerce.android.iap.internal.planpurchase.IAPPurchaseWPComPlanActionsImpl
 import com.woocommerce.android.iap.pub.model.IAPError
 import com.woocommerce.android.iap.pub.model.WPComIsPurchasedResult
 import com.woocommerce.android.iap.pub.model.WPComProductResult
+import com.woocommerce.android.iap.pub.model.WPComPurchaseResult
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.test.runTest
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
@@ -36,14 +41,17 @@ class IAPPurchaseWPComPlanActionsTest {
     private val logWrapperMock: IAPLogWrapper = mock()
     private val mobilePayAPIMock: IAPMobilePayAPI = mock()
     private val billingClientMock: IAPBillingClientWrapper = mock()
+    private val billingFlowParamsBuilder: IAPBillingFlowParamsBuilder = mock()
+    private val periodicPurchaseStatusChecker: IAPPeriodicPurchaseStatusChecker = mock()
 
     private val iapProduct: IAPProduct = IAPProduct.WPPremiumPlanTesting
 
+    private lateinit var purchasesUpdatedListener: IAPPurchasesUpdatedListener
     private lateinit var sut: IAPPurchaseWPComPlanActionsImpl
 
     @Before
     fun setup() {
-        val purchasesUpdatedListener = IAPPurchasesUpdatedListener(logWrapperMock)
+        purchasesUpdatedListener = IAPPurchasesUpdatedListener(logWrapperMock)
         val billingClientProvider: IAPBillingClientProvider = mock {
             on { provideBillingClient() }.thenReturn(billingClientMock)
         }
@@ -259,6 +267,44 @@ class IAPPurchaseWPComPlanActionsTest {
         )
         assertThat((result.errorType as IAPError.Billing).debugMessage).isEqualTo(debugMessage)
     }
+
+    @Test
+    fun `given product query and purchase success, when purchasing plan, then success returned`() = runTest {
+        // GIVEN
+        val activityWrapper: IAPActivityWrapper = mock {
+            on { activity }.thenReturn(mock())
+        }
+
+        val purchaseToken = "purchaseToken"
+
+        val responseCode = BillingClient.BillingResponseCode.OK
+
+        setupQueryProductDetails(responseCode)
+
+        whenever(billingFlowParamsBuilder.buildBillingFlowParams(any())).thenReturn(mock())
+
+        setupMobilePayAPIMock(
+            purchaseToken = purchaseToken,
+            result = CreateAndConfirmOrderResponse.Success(REMOTE_SITE_ID)
+        )
+
+        // WHEN
+        sut.purchaseWPComPlan(activityWrapper)
+        purchasesUpdatedListener.onPurchasesUpdated(
+            buildBillingResult(responseCode),
+            listOf(
+                buildPurchase(
+                    listOf(iapProduct.productId),
+                    Purchase.PurchaseState.PURCHASED,
+                    purchaseToken = purchaseToken
+                )
+            )
+        )
+
+        // THEN
+        val result = sut.purchaseWpComPlanResult.firstOrNull()
+        assertThat(result).isInstanceOf(WPComPurchaseResult.Success::class.java)
+    }
     //endregion
 
     private suspend fun setupPurchaseQuery(
@@ -299,6 +345,25 @@ class IAPPurchaseWPComPlanActionsTest {
         )
     }
 
+    private suspend fun setupMobilePayAPIMock(
+        remoteSiteId: Long = REMOTE_SITE_ID,
+        productIdentifier: String = iapProduct.productId,
+        price: Long = 100L,
+        currency: String = "USD",
+        purchaseToken: String,
+        result: CreateAndConfirmOrderResponse,
+    ) {
+        whenever(
+            mobilePayAPIMock.createAndConfirmOrder(
+                remoteSiteId = remoteSiteId,
+                productIdentifier = productIdentifier,
+                price = price,
+                currency = currency,
+                purchaseToken = purchaseToken
+            )
+        ).thenReturn(result)
+    }
+
     private fun setupBillingClientToBeConnected() {
         whenever(billingClientMock.startConnection(any())).thenAnswer {
             val listener = it.arguments[0] as BillingClientStateListener
@@ -318,6 +383,8 @@ class IAPPurchaseWPComPlanActionsTest {
             outMapper,
             inMapper,
             purchasesUpdatedListener,
+            billingFlowParamsBuilder,
+            periodicPurchaseStatusChecker,
             logWrapperMock,
         )
     }

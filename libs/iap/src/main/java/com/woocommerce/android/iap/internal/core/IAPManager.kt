@@ -1,9 +1,6 @@
 package com.woocommerce.android.iap.internal.core
 
-import com.android.billingclient.api.BillingFlowParams
-import com.android.billingclient.api.BillingFlowParams.ProductDetailsParams
 import com.android.billingclient.api.ProductDetails
-import com.android.billingclient.api.Purchase
 import com.android.billingclient.api.PurchasesResult
 import com.android.billingclient.api.QueryProductDetailsParams
 import com.android.billingclient.api.QueryPurchasesParams
@@ -17,22 +14,20 @@ import com.woocommerce.android.iap.pub.IAPActivityWrapper
 import com.woocommerce.android.iap.pub.IAPLogWrapper
 import com.woocommerce.android.iap.pub.IAP_LOG_TAG
 import com.woocommerce.android.iap.pub.model.IAPError
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
-import kotlinx.coroutines.cancel
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.isActive
-import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
+@Suppress("LongParameterList")
 internal class IAPManager(
     private val iapBillingClientStateHandler: IAPBillingClientStateHandler,
     private val iapOutMapper: IAPOutMapper,
     private val iapInMapper: IAPInMapper,
     private val iapPurchasesUpdatedListener: IAPPurchasesUpdatedListener,
+    private val billingFlowParamsBuilder: IAPBillingFlowParamsBuilder,
+    private val periodicPurchaseStatusChecker: IAPPeriodicPurchaseStatusChecker,
     private val logWrapper: IAPLogWrapper,
 ) {
     private val billingClient: IAPBillingClientWrapper
@@ -69,9 +64,12 @@ internal class IAPManager(
         }
 
     fun startPurchase(activityWrapper: IAPActivityWrapper, productDetails: ProductDetails) {
-        val flowParams = buildBillingFlowParams(productDetails)
+        val flowParams = billingFlowParamsBuilder.buildBillingFlowParams(productDetails)
         billingClient.launchBillingFlow(activityWrapper.activity, flowParams)
-        purchaseStatusCheckerJob = startPeriodicPurchasesCheckJob(productDetails) {
+        purchaseStatusCheckerJob = periodicPurchaseStatusChecker.startPeriodicPurchasesCheckJob(
+            productDetails,
+            { queryPurchases(it) },
+        ) {
             iapPurchasesUpdatedListener.onPurchaseAvailable(it)
         }
     }
@@ -84,30 +82,6 @@ internal class IAPManager(
                 is Error -> Error(response.error)
             }
         }
-
-    private fun startPeriodicPurchasesCheckJob(
-        productDetails: ProductDetails,
-        onPurchaseAvailable: (PurchasesResult) -> Unit,
-    ) = CoroutineScope(Dispatchers.IO).launch {
-        repeat(PURCHASE_STATE_CHECK_TIMES) {
-            if (isActive) {
-                delay(PURCHASE_STATE_CHECK_INTERVAL)
-                // TODO INAPP support?
-                val purchasesResult = queryPurchases(IAPProductType.SUBS)
-                logWrapper.d(IAP_LOG_TAG, "Fetching purchases. Result ${purchasesResult.billingResult}")
-                if (purchasesResult.billingResult.isSuccess &&
-                    purchasesResult.purchasesList.firstOrNull {
-                        it.products.contains(productDetails.productId)
-                    }?.purchaseState == Purchase.PurchaseState.PURCHASED
-                ) {
-                    if (isActive) {
-                        onPurchaseAvailable(purchasesResult)
-                        cancel()
-                    }
-                }
-            }
-        }
-    }
 
     private suspend fun mapPurchaseResultToIAPPurchaseResult(purchasesResult: PurchasesResult): IAPPurchaseResult {
         return if (purchasesResult.billingResult.isSuccess) {
@@ -195,16 +169,6 @@ internal class IAPManager(
         iapBillingClientStateHandler.waitTillConnectionEstablished()
     }
 
-    private fun buildBillingFlowParams(productDetails: ProductDetails): BillingFlowParams {
-        val productDetailsParams = ProductDetailsParams.newBuilder()
-            .setOfferToken(productDetails.firstOfferToken)
-            .setProductDetails(productDetails)
-            .build()
-        return BillingFlowParams.newBuilder()
-            .setProductDetailsParamsList(listOf(productDetailsParams))
-            .build()
-    }
-
     private suspend fun queryPurchases(iapProductType: IAPProductType): PurchasesResult {
         logWrapper.d(IAP_LOG_TAG, "Fetching purchases")
         waitBillingClientInitialisation()
@@ -212,10 +176,5 @@ internal class IAPManager(
             .setProductType(iapInMapper.mapProductTypeToIAPProductType(iapProductType))
             .build()
         return billingClient.queryPurchasesAsync(params)
-    }
-
-    companion object {
-        private const val PURCHASE_STATE_CHECK_INTERVAL = 10_000L
-        private const val PURCHASE_STATE_CHECK_TIMES = 30
     }
 }
