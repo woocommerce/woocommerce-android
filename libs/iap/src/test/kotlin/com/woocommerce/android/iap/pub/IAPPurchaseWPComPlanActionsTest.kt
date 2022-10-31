@@ -24,6 +24,8 @@ import org.mockito.kotlin.any
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.whenever
 
+private const val REMOTE_SITE_ID = 1L
+
 @ExperimentalCoroutinesApi
 class IAPPurchaseWPComPlanActionsTest {
     private val logWrapperMock: IAPLogWrapper = mock()
@@ -46,7 +48,8 @@ class IAPPurchaseWPComPlanActionsTest {
         setupBillingClientToBeConnected()
         sut = IAPPurchaseWPComPlanActionsImpl(
             iapMobilePayAPI = mobilePayAPIMock,
-            iapManager = buildIapManager(iapBillingClientStateHandler, purchasesUpdatedListener)
+            iapManager = buildIapManager(iapBillingClientStateHandler, purchasesUpdatedListener),
+            REMOTE_SITE_ID,
         )
     }
 
