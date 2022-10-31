@@ -114,7 +114,6 @@
         android:layout_marginBottom="@dimen/major_150"
         android:text="@string/signup_get_started_button"
         android:textAllCaps="false"
-        android:visibility="gone"
         app:layout_constraintWidth_percent="0.5"
         app:layout_constraintBottom_toBottomOf="parent" />
 
