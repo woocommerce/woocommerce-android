@@ -141,15 +141,14 @@ class IAPPurchaseWPComPlanActionsTest {
         // GIVEN
         val responseCode = BillingClient.BillingResponseCode.OK
         val debugMessage = "debug message"
-        val purchase = buildPurchase(
-            listOf(iapProduct.productId),
-            Purchase.PurchaseState.PURCHASED
-        )
 
-        whenever(billingClientMock.queryPurchasesAsync(any())).thenReturn(
-            PurchasesResult(
-                buildBillingResult(responseCode),
-                listOf(purchase)
+        setupPurchaseQuery(
+            responseCode = responseCode,
+            listOf(
+                buildPurchase(
+                    listOf(iapProduct.productId),
+                    Purchase.PurchaseState.PURCHASED
+                )
             )
         )
 
@@ -180,15 +179,14 @@ class IAPPurchaseWPComPlanActionsTest {
             // GIVEN
             val responseCode = BillingClient.BillingResponseCode.OK
             val debugMessage = "debug message"
-            val purchase = buildPurchase(
-                listOf(iapProduct.productId),
-                Purchase.PurchaseState.PURCHASED
-            )
 
-            whenever(billingClientMock.queryPurchasesAsync(any())).thenReturn(
-                PurchasesResult(
-                    buildBillingResult(responseCode),
-                    listOf(purchase)
+            setupPurchaseQuery(
+                responseCode = responseCode,
+                listOf(
+                    buildPurchase(
+                        listOf(iapProduct.productId),
+                        Purchase.PurchaseState.PURCHASED
+                    )
                 )
             )
 
@@ -219,15 +217,14 @@ class IAPPurchaseWPComPlanActionsTest {
             // GIVEN
             val responseCode = BillingClient.BillingResponseCode.OK
             val debugMessage = "debug message"
-            val purchase = buildPurchase(
-                listOf(iapProduct.productId),
-                Purchase.PurchaseState.PENDING
-            )
 
-            whenever(billingClientMock.queryPurchasesAsync(any())).thenReturn(
-                PurchasesResult(
-                    buildBillingResult(responseCode),
-                    listOf(purchase)
+            setupPurchaseQuery(
+                responseCode = responseCode,
+                listOf(
+                    buildPurchase(
+                        listOf(iapProduct.productId),
+                        Purchase.PurchaseState.PENDING
+                    )
                 )
             )
 
@@ -258,11 +255,10 @@ class IAPPurchaseWPComPlanActionsTest {
         val responseCode = BillingClient.BillingResponseCode.DEVELOPER_ERROR
         val debugMessage = "debug message"
 
-        whenever(billingClientMock.queryPurchasesAsync(any())).thenReturn(
-            PurchasesResult(
-                buildBillingResult(responseCode, debugMessage),
-                emptyList()
-            )
+        setupPurchaseQuery(
+            responseCode = responseCode,
+            emptyList(),
+            debugMessage = debugMessage
         )
 
         // WHEN
@@ -333,6 +329,19 @@ class IAPPurchaseWPComPlanActionsTest {
             IAPError.Billing.FeatureNotSupported::class.java
         )
         assertThat((result.errorType as IAPError.Billing).debugMessage).isEqualTo(debugMessage)
+    }
+
+    private suspend fun setupPurchaseQuery(
+        @BillingClient.BillingResponseCode responseCode: Int,
+        purchases: List<Purchase>,
+        debugMessage: String = "",
+    ) {
+        whenever(billingClientMock.queryPurchasesAsync(any())).thenReturn(
+            PurchasesResult(
+                buildBillingResult(responseCode, debugMessage),
+                purchases
+            )
+        )
     }
     //endregion
 
