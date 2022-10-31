@@ -278,7 +278,10 @@ class SitePickerViewModel @Inject constructor(
         sitePickerViewState = sitePickerViewState.copy(
             isNoStoresViewVisible = true,
             isPrimaryBtnVisible = true,
-            primaryBtnText = resourceProvider.getString(string.login_site_picker_add_a_store),
+            primaryBtnText = resourceProvider.getString(
+                if (FeatureFlag.STORE_CREATION_WEBVIEW_FLOW.isEnabled()) string.login_site_picker_add_a_store
+                else string.site_picker_connect_existing_store
+            ),
             noStoresLabelText = resourceProvider.getString(string.login_no_stores),
             isNoStoresBtnVisible = false,
             currentSitePickerState = SitePickerState.NoStoreState
