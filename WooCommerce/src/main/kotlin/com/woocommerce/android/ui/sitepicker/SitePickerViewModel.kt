@@ -430,11 +430,6 @@ class SitePickerViewModel @Inject constructor(
         triggerEvent(SitePickerEvent.NavigateToAddStoreEvent)
     }
 
-    fun onCreateSiteButtonClick() {
-        analyticsTrackerWrapper.track(AnalyticsEvent.SITE_PICKER_CREATE_SITE_TAPPED)
-        triggerEvent(NavigateToStoreCreationEvent)
-    }
-
     fun onTryAnotherAccountButtonClick() {
         trackLoginEvent(clickEvent = UnifiedLoginTracker.Click.TRY_ANOTHER_ACCOUNT)
         launch {
