@@ -62,5 +62,4 @@ class WebViewStoreCreationFragment : BaseFragment() {
             findNavController().navigateUp()
         }
     }
-
 }

@@ -71,8 +71,6 @@ class SitePickerViewModel @Inject constructor(
     companion object {
         private const val WOOCOMMERCE_INSTALLATION_URL = "https://wordpress.com/plugins/woocommerce/"
         private const val WOOCOMMERCE_INSTALLATION_DONE_URL = "marketplace/thank-you/woocommerce"
-        private const val WOOCOMMERCE_STORE_CREATION_URL = "https://woocommerce.com/start"
-        private const val WOOCOMMERCE_STORE_CREATION_DONE_URL = "calypso/images/wpcom-ecommerce"
         private const val WOOCOMMERCE_STORE_CREATION_RETRY_INTERVAL = 2000L
     }
 
