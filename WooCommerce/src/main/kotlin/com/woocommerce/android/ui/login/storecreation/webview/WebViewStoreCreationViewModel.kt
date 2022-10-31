@@ -53,39 +53,32 @@ class WebViewStoreCreationViewModel @Inject constructor(
         siteUrlKeyword = SITE_URL_KEYWORD,
         exitTriggerKeyword = WEBVIEW_EXIT_TRIGGER_KEYWORD,
         onStoreCreated = ::onStoreCreated,
-        onSiteAddressFound = ::onSiteAddressFound,
-        onBackPressed = {
-            triggerEvent(Exit)
-        }
+        onSiteAddressFound = ::onSiteAddressFound
     )
 
     private fun prepareErrorState() = ErrorState(
         onRetryButtonClick = {
             onStoreCreated()
-        },
-        onBackPressed = {
-            triggerEvent(Exit)
         }
     )
 
-    sealed interface ViewState {
-        val onBackPressed: () -> Unit
-            get() = {}
+    fun onBackPressed() {
+        triggerEvent(Exit)
+    }
 
+    sealed interface ViewState {
         data class StoreCreationState(
             val storeCreationUrl: String,
             val siteUrlKeyword: String,
             val exitTriggerKeyword: String,
             val onStoreCreated: () -> Unit,
-            val onSiteAddressFound: (url: String) -> Unit,
-            override val onBackPressed: () -> Unit
+            val onSiteAddressFound: (url: String) -> Unit
         ) : ViewState
 
         object StoreLoadingState : ViewState
 
         data class ErrorState(
-            val onRetryButtonClick: () -> Unit,
-            override val onBackPressed: () -> Unit
+            val onRetryButtonClick: () -> Unit
         ) : ViewState
     }
 

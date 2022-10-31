@@ -45,14 +45,14 @@ fun WebViewStoreCreationScreen(viewModel: WebViewStoreCreationViewModel) {
     val webViewNavigator = rememberWebViewNavigator()
 
     viewModel.viewState.observeAsState().value?.let { viewState ->
-        BackHandler(onBack = viewState.onBackPressed)
+        BackHandler(onBack = viewModel::onBackPressed)
         Scaffold(topBar = {
             TopAppBar(
                 backgroundColor = MaterialTheme.colors.surface,
                 title = { Text(stringResource(id = string.store_creation_create_new_store_label)) },
                 navigationIcon = {
                     IconButton(onClick = {
-                        viewState.onBackPressed()
+                        viewModel.onBackPressed()
                     }) {
                         Icon(Filled.ArrowBack, contentDescription = "Back")
                     }
@@ -168,5 +168,5 @@ private fun PreviewStoreCreationInProgress() {
 @Preview
 @Composable
 private fun PreviewStoreCreationError() {
-    StoreCreationError(ErrorState({}, {}))
+    StoreCreationError(ErrorState({}))
 }
