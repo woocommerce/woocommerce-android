@@ -1,7 +1,6 @@
 package com.woocommerce.android.push
 
 import android.content.Context
-import android.os.Build
 import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsEvent.LOGIN_LOCAL_NOTIFICATION_DISMISSED
@@ -16,6 +15,7 @@ import com.woocommerce.android.support.ZendeskHelper
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.login.localnotifications.LoginNotificationScheduler.Companion.LOGIN_HELP_NOTIFICATION_ID
 import com.woocommerce.android.util.NotificationsParser
+import com.woocommerce.android.util.SystemVersionUtils
 import com.woocommerce.android.util.WooLog.T.NOTIFS
 import com.woocommerce.android.util.WooLogWrapper
 import com.woocommerce.android.viewmodel.ResourceProvider
@@ -176,13 +176,15 @@ class NotificationMessageHandler @Inject constructor(
      * note that we skip this for API 26+ since Oreo added per-app notification settings via channels
      */
     private fun isNotificationOptionEnabled(notification: Notification): Boolean {
-        return if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
+        return if (SystemVersionUtils.isAtLeastO()) {
+            true
+        } else {
             when {
                 notification.isOrderNotification -> appPrefsWrapper.isOrderNotificationsEnabled()
                 notification.isReviewNotification -> appPrefsWrapper.isReviewNotificationsEnabled()
                 else -> true
             }
-        } else true
+        }
     }
 
     private fun handleWooNotification(notification: Notification) {

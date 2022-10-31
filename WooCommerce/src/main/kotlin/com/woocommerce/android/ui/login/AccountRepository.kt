@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.login
 
+import com.woocommerce.android.OnChangedException
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T.SITE_PICKER
 import com.woocommerce.android.util.dispatchAndAwait
@@ -16,6 +17,15 @@ class AccountRepository @Inject constructor(
     private val dispatcher: Dispatcher
 ) {
     fun getUserAccount(): AccountModel? = accountStore.account.takeIf { it.userId != 0L }
+
+    suspend fun fetchUserAccount(): Result<Unit> {
+        val event: OnAccountChanged = dispatcher.dispatchAndAwait(AccountActionBuilder.newFetchAccountAction())
+
+        return when {
+            event.isError -> Result.failure(OnChangedException(event.error))
+            else -> Result.success(Unit)
+        }
+    }
 
     fun isUserLoggedIn() = accountStore.hasAccessToken()
 

@@ -73,12 +73,14 @@ class AnalyticsFragment :
     private fun openDateRangeSelector() = findNavController().navigateSafely(buildDialogDateRangeSelectorArguments())
 
     private fun buildDialogDateRangeSelectorArguments() =
-        AnalyticsFragmentDirections.actionAnalyticsFragmentToDateRangeSelector(
-            requestKey = KEY_DATE_RANGE_SELECTOR_RESULT,
-            keys = getDateRangeSelectorViewState().availableRangeDates.toTypedArray(),
-            values = getDateRangeSelectorViewState().availableRangeDates.toTypedArray(),
-            selectedItem = getDateRangeSelectorViewState().selectedPeriod
-        )
+        getDateRangeSelectorViewState().availableRangeDates.toTypedArray().let { ranges ->
+            AnalyticsFragmentDirections.actionAnalyticsFragmentToDateRangeSelector(
+                requestKey = KEY_DATE_RANGE_SELECTOR_RESULT,
+                keys = ranges,
+                values = ranges,
+                selectedItem = getDateRangeSelectorViewState().selectedPeriod
+            )
+        }
 
     private fun setupResultHandlers(viewModel: AnalyticsViewModel) {
         handleDialogResult<String>(

@@ -92,7 +92,6 @@
             android:nestedScrollingEnabled="false"
             tools:itemCount="3"
             tools:listitem="@layout/order_detail_product_list_item"
-            tools:targetApi="lollipop"
             android:visibility="gone"
             tools:visibility="visible" />
 

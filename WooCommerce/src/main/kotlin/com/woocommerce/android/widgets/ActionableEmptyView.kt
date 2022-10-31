@@ -1,7 +1,6 @@
 package com.woocommerce.android.widgets
 
 import android.content.Context
-import android.os.Build
 import android.util.AttributeSet
 import android.view.Gravity
 import android.view.LayoutInflater
@@ -45,11 +44,7 @@ class ActionableEmptyView : LinearLayout {
             }
 
             if (titleAppearance != 0) {
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                    binding.emptyViewText.setTextAppearance(titleAppearance)
-                } else {
-                    binding.emptyViewText.setTextAppearance(context, titleAppearance)
-                }
+                binding.emptyViewText.setTextAppearance(titleAppearance)
             }
 
             if (!titleAttribute.isNullOrEmpty()) {
