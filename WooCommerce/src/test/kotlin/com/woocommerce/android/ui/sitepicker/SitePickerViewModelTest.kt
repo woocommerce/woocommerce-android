@@ -509,7 +509,7 @@ class SitePickerViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `given there are no sites, when enter site address is tapped, then navigate to site discovery screen`() =
+    fun `given there are no sites, when add a store is tapped, then navigate to site discovery screen`() =
         testBlocking {
             givenTheScreenIsFromLogin(true)
             whenViewModelIsCreated()
@@ -522,7 +522,7 @@ class SitePickerViewModelTest : BaseUnitTest() {
             viewModel.onAddStoreClick()
 
             verify(analyticsTrackerWrapper, times(1)).track(
-                AnalyticsEvent.SITE_PICKER_ENTER_SITE_ADDRESS_TAPPED
+                AnalyticsEvent.SITE_PICKER_ADD_A_STORE_TAPPED
             )
             assertThat(view).isEqualTo(NavigateToAddStoreEvent)
         }
