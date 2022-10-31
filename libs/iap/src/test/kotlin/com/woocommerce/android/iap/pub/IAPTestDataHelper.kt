@@ -12,6 +12,8 @@ fun buildProductDetails(
     name: String,
     price: Long,
     currency: String,
+    title: String = "Title",
+    description: String = "Description",
 ): ProductDetails {
     val phaseList = mock<ProductDetails.PricingPhase> {
         on { priceCurrencyCode }.thenReturn(currency)
@@ -30,6 +32,8 @@ fun buildProductDetails(
         on { this.subscriptionOfferDetails }.thenReturn(listOf(subscriptionOfferDetails))
         on { this.productId }.thenReturn(productId)
         on { this.name }.thenReturn(name)
+        on { this.title }.thenReturn(title)
+        on { this.description }.thenReturn(description)
     }
 }
 
