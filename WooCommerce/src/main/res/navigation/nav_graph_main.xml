@@ -422,6 +422,9 @@
             app:exitAnim="@null"
             app:popEnterAnim="@null"
             app:popExitAnim="@anim/activity_fade_out" />
+        <action
+            android:id="@+id/action_sitePickerFragment_to_webViewStoreCreationFragment"
+            app:destination="@id/webViewStoreCreationFragment" />
     </fragment>
     <fragment
         android:id="@+id/simpleTextEditorFragment"
@@ -472,4 +475,8 @@
             android:defaultValue="true"
             app:argType="boolean" />
     </fragment>
+    <fragment
+        android:id="@+id/webViewStoreCreationFragment"
+        android:name="com.woocommerce.android.ui.login.storecreation.webview.WebViewStoreCreationFragment"
+        android:label="WebViewStoreCreationFragment" />
 </navigation>
