@@ -108,12 +108,12 @@ class WebViewStoreCreationViewModel @Inject constructor(
     }
 
     private fun exitStoreCreation() {
-        _dialogViewState.value = setDialogState(false)
+        _dialogViewState.value = setDialogState(isVisible = false)
         triggerEvent(Exit)
     }
 
     fun onBackPressed() {
-        _dialogViewState.value = setDialogState(true)
+        _dialogViewState.value = setDialogState(isVisible = true)
     }
 
     sealed interface ViewState {
@@ -126,6 +126,7 @@ class WebViewStoreCreationViewModel @Inject constructor(
             val onExitTriggered: () -> Unit,
             val onSiteAddressFound: (url: String) -> Unit
         ) : ViewState
+
         object StoreLoadingState : ViewState
 
         data class ErrorState(
