@@ -1,14 +1,13 @@
 package com.woocommerce.android.iap.pub
 
-import androidx.appcompat.app.AppCompatActivity
 import com.android.billingclient.api.BillingClient
 import com.android.billingclient.api.BillingClientStateListener
 import com.android.billingclient.api.BillingResult
 import com.android.billingclient.api.ProductDetailsResult
 import com.woocommerce.android.iap.internal.core.IAPBillingClientProvider
+import com.woocommerce.android.iap.internal.core.IAPBillingClientStateHandler
 import com.woocommerce.android.iap.internal.core.IAPBillingClientWrapper
 import com.woocommerce.android.iap.internal.core.IAPInMapper
-import com.woocommerce.android.iap.internal.core.IAPLifecycleObserver
 import com.woocommerce.android.iap.internal.core.IAPManager
 import com.woocommerce.android.iap.internal.core.IAPOutMapper
 import com.woocommerce.android.iap.internal.core.IAPPurchasesUpdatedListener
@@ -35,27 +34,20 @@ class IAPPurchaseWPComPlanActionsTest {
 
     @Before
     fun setup() {
-        val activityMock: AppCompatActivity = mock { on { lifecycle }.thenReturn(mock()) }
-
         val purchasesUpdatedListener = IAPPurchasesUpdatedListener(logWrapperMock)
         val billingClientProvider: IAPBillingClientProvider = mock {
-            on { provideBillingClient(any(), any()) }.thenReturn(billingClientMock)
+            on { provideBillingClient() }.thenReturn(billingClientMock)
         }
 
-        val iapLifecycleObserver = IAPLifecycleObserver(
-            purchasesUpdatedListener,
+        val iapBillingClientStateHandler = IAPBillingClientStateHandler(
             billingClientProvider,
             logWrapperMock
         )
-
+        setupBillingClientToBeConnected()
         sut = IAPPurchaseWPComPlanActionsImpl(
             iapMobilePayAPI = mobilePayAPIMock,
-            iapManager = buildIapManager(iapLifecycleObserver, purchasesUpdatedListener)
+            iapManager = buildIapManager(iapBillingClientStateHandler, purchasesUpdatedListener)
         )
-        sut.initIAPWithNewActivity(activityMock)
-        setupBillingClientToBeConnected()
-
-        iapLifecycleObserver.onCreate(mock())
     }
 
     //region Tests
@@ -137,13 +129,13 @@ class IAPPurchaseWPComPlanActionsTest {
         .build()
 
     private fun buildIapManager(
-        iapLifecycleObserver: IAPLifecycleObserver,
+        iapBillingClientStateHandler: IAPBillingClientStateHandler,
         purchasesUpdatedListener: IAPPurchasesUpdatedListener
     ): IAPManager {
         val outMapper = IAPOutMapper()
         val inMapper = IAPInMapper()
         return IAPManager(
-            iapLifecycleObserver,
+            iapBillingClientStateHandler,
             outMapper,
             inMapper,
             purchasesUpdatedListener,

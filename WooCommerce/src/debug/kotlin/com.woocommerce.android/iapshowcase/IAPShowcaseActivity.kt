@@ -11,6 +11,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import com.woocommerce.android.R
+import com.woocommerce.android.iap.pub.IAPActivityWrapper
 import com.woocommerce.android.iap.pub.IAPSitePurchasePlanFactory
 
 private const val MILLION = 1_000_000.0
@@ -19,7 +20,12 @@ class IAPShowcaseActivity : AppCompatActivity() {
     private val viewModel: IAPShowcaseViewModel by viewModels(null) {
         object : ViewModelProvider.Factory {
             override fun <T : ViewModel> create(modelClass: Class<T>) =
-                IAPShowcaseViewModel(IapManagerProvider.instance) as T
+                IAPShowcaseViewModel(
+                    IAPSitePurchasePlanFactory.createIAPSitePurchasePlan(
+                        this@IAPShowcaseActivity.application,
+                        IAPDebugLogWrapper()
+                    )
+                ) as T
         }
     }
 
@@ -29,13 +35,14 @@ class IAPShowcaseActivity : AppCompatActivity() {
 
         setupObservers()
 
-        IapManagerProvider.instance.initIAPWithNewActivity(this)
-
         findViewById<Button>(R.id.btnFetchProductInfo).setOnClickListener {
             viewModel.fetchWPComPlanProduct()
         }
         findViewById<Button>(R.id.btnStartPurchase).setOnClickListener {
-            viewModel.purchasePlan(findViewById<EditText>(R.id.etRemoteBlogId).text?.toString()?.toLong() ?: 1L)
+            viewModel.purchasePlan(
+                IAPActivityWrapper(this),
+                findViewById<EditText>(R.id.etRemoteBlogId).text?.toString()?.toLong() ?: 1L
+            )
         }
         findViewById<Button>(R.id.btnCheckIfPlanPurchased).setOnClickListener {
             viewModel.checkIfWPComPlanPurchased()
@@ -56,8 +63,4 @@ class IAPShowcaseActivity : AppCompatActivity() {
             Toast.makeText(this, it, Toast.LENGTH_SHORT).show()
         }
     }
-}
-
-object IapManagerProvider {
-    val instance = IAPSitePurchasePlanFactory.createIAPSitePurchasePlan(IAPDebugLogWrapper())
 }

@@ -1,6 +1,5 @@
 package com.woocommerce.android.iap.internal.core
 
-import androidx.appcompat.app.AppCompatActivity
 import com.android.billingclient.api.BillingFlowParams
 import com.android.billingclient.api.BillingFlowParams.ProductDetailsParams
 import com.android.billingclient.api.ProductDetails
@@ -14,6 +13,7 @@ import com.woocommerce.android.iap.internal.model.IAPProductDetailsResponse.Erro
 import com.woocommerce.android.iap.internal.model.IAPProductDetailsResponse.Success
 import com.woocommerce.android.iap.internal.model.IAPProductType
 import com.woocommerce.android.iap.internal.model.IAPPurchaseResponse
+import com.woocommerce.android.iap.pub.IAPActivityWrapper
 import com.woocommerce.android.iap.pub.IAPLogWrapper
 import com.woocommerce.android.iap.pub.IAP_LOG_TAG
 import com.woocommerce.android.iap.pub.model.IAPError
@@ -26,20 +26,21 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
 internal class IAPManager(
-    private val iapLifecycleObserver: IAPLifecycleObserver,
+    private val iapBillingClientStateHandler: IAPBillingClientStateHandler,
     private val iapOutMapper: IAPOutMapper,
     private val iapInMapper: IAPInMapper,
     private val iapPurchasesUpdatedListener: IAPPurchasesUpdatedListener,
     private val logWrapper: IAPLogWrapper,
 ) {
     private val billingClient: IAPBillingClientWrapper
-        get() = iapLifecycleObserver.billingClient
+        get() = iapBillingClientStateHandler.billingClient
 
-    private lateinit var activity: AppCompatActivity
+    fun connect() {
+        iapBillingClientStateHandler.connectToIAPService()
+    }
 
-    fun initIAP(activity: AppCompatActivity) {
-        this.activity = activity
-        iapLifecycleObserver.initBillingClient(activity)
+    fun disconnect() {
+        iapBillingClientStateHandler.disconnectFromIAPService()
     }
 
     suspend fun fetchPurchases(iapProductType: IAPProductType): IAPPurchaseResponse =
@@ -57,11 +58,11 @@ internal class IAPManager(
             }
         }
 
-    suspend fun startPurchase(iapProduct: IAPProduct): IAPPurchaseResponse =
+    suspend fun startPurchase(activityWrapper: IAPActivityWrapper, iapProduct: IAPProduct): IAPPurchaseResponse =
         when (val iapProductDetailsResponse = fetchProductDetails(iapProduct.productId, iapProduct.productType)) {
             is Success -> {
                 val flowParams = buildBillingFlowParams(iapProductDetailsResponse.productDetails)
-                billingClient.launchBillingFlow(activity, flowParams)
+                billingClient.launchBillingFlow(activityWrapper.activity, flowParams)
 
                 val periodicJob = startPeriodicPurchasesCheckJob(iapProduct) {
                     iapPurchasesUpdatedListener.onPurchaseAvailable(it)
@@ -154,7 +155,7 @@ internal class IAPManager(
     }
 
     private suspend fun waitBillingClientInitialisation() {
-        iapLifecycleObserver.waitTillConnectionEstablished()
+        iapBillingClientStateHandler.waitTillConnectionEstablished()
     }
 
     private fun buildBillingFlowParams(productDetails: ProductDetails): BillingFlowParams {
