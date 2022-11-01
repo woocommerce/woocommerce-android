@@ -3,7 +3,6 @@ package com.woocommerce.android.iapshowcase
 import android.os.Bundle
 import android.util.Log
 import android.widget.Button
-import android.widget.EditText
 import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.viewModels
@@ -15,6 +14,7 @@ import com.woocommerce.android.iap.pub.IAPActivityWrapper
 import com.woocommerce.android.iap.pub.IAPSitePurchasePlanFactory
 
 private const val MILLION = 1_000_000.0
+private const val REMOTE_SITE_ID = 1L
 
 class IAPShowcaseActivity : AppCompatActivity() {
     private val viewModel: IAPShowcaseViewModel by viewModels(null) {
@@ -23,7 +23,8 @@ class IAPShowcaseActivity : AppCompatActivity() {
                 IAPShowcaseViewModel(
                     IAPSitePurchasePlanFactory.createIAPSitePurchasePlan(
                         this@IAPShowcaseActivity.application,
-                        IAPDebugLogWrapper()
+                        REMOTE_SITE_ID,
+                        IAPDebugLogWrapper(),
                     )
                 ) as T
         }
@@ -39,10 +40,7 @@ class IAPShowcaseActivity : AppCompatActivity() {
             viewModel.fetchWPComPlanProduct()
         }
         findViewById<Button>(R.id.btnStartPurchase).setOnClickListener {
-            viewModel.purchasePlan(
-                IAPActivityWrapper(this),
-                findViewById<EditText>(R.id.etRemoteBlogId).text?.toString()?.toLong() ?: 1L
-            )
+            viewModel.purchasePlan(IAPActivityWrapper(this))
         }
         findViewById<Button>(R.id.btnCheckIfPlanPurchased).setOnClickListener {
             viewModel.checkIfWPComPlanPurchased()

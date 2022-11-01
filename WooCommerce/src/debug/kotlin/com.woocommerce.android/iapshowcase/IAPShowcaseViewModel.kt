@@ -4,6 +4,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.woocommerce.android.extensions.exhaustive
 import com.woocommerce.android.iap.internal.model.IAPSupportedResult
 import com.woocommerce.android.iap.pub.IAPActivityWrapper
 import com.woocommerce.android.iap.pub.PurchaseWPComPlanActions
@@ -13,6 +14,7 @@ import com.woocommerce.android.iap.pub.model.WPComPlanProduct
 import com.woocommerce.android.iap.pub.model.WPComProductResult
 import com.woocommerce.android.iap.pub.model.WPComPurchaseResult
 import com.woocommerce.android.viewmodel.SingleLiveEvent
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
 class IAPShowcaseViewModel(private val iapManager: PurchaseWPComPlanActions) : ViewModel(iapManager) {
@@ -22,13 +24,19 @@ class IAPShowcaseViewModel(private val iapManager: PurchaseWPComPlanActions) : V
     private val _iapEvent = SingleLiveEvent<String>()
     val iapEvent: LiveData<String> = _iapEvent
 
-    fun purchasePlan(activityWrapper: IAPActivityWrapper, remoteSiteId: Long) {
+    init {
         viewModelScope.launch {
-            when (val response = iapManager.purchaseWPComPlan(activityWrapper, remoteSiteId)) {
-                is WPComPurchaseResult.Success -> _iapEvent.value = "Plan has been successfully purchased"
-                is WPComPurchaseResult.Error -> handleError(response.errorType)
+            iapManager.purchaseWpComPlanResult.collectLatest { result ->
+                when (result) {
+                    is WPComPurchaseResult.Success -> _iapEvent.value = "Plan has been successfully purchased"
+                    is WPComPurchaseResult.Error -> handleError(result.errorType)
+                }.exhaustive
             }
         }
+    }
+
+    fun purchasePlan(activityWrapper: IAPActivityWrapper) {
+        viewModelScope.launch { iapManager.purchaseWPComPlan(activityWrapper) }
     }
 
     fun checkIfWPComPlanPurchased() {

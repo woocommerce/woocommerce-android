@@ -6,14 +6,15 @@ import com.android.billingclient.api.PurchasesResult
 import com.android.billingclient.api.PurchasesUpdatedListener
 import com.woocommerce.android.iap.pub.IAPLogWrapper
 import com.woocommerce.android.iap.pub.IAP_LOG_TAG
-import kotlin.coroutines.Continuation
-import kotlin.coroutines.resume
-import kotlin.coroutines.suspendCoroutine
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.mapNotNull
 
 internal class IAPPurchasesUpdatedListener(
     private val logWrapper: IAPLogWrapper,
 ) : PurchasesUpdatedListener {
-    private var purchaseContinuation: Continuation<PurchasesResult>? = null
+    private val _purchaseResult = MutableStateFlow<PurchasesResult?>(null)
+    val purchaseResult: Flow<PurchasesResult> = _purchaseResult.mapNotNull { it }
 
     override fun onPurchasesUpdated(billingResult: BillingResult, purchases: List<Purchase>?) {
         logWrapper.d(IAP_LOG_TAG, "onPurchasesUpdated $billingResult $purchases")
@@ -23,10 +24,7 @@ internal class IAPPurchasesUpdatedListener(
         onPurchaseAvailable(PurchasesResult(billingResult, purchases.orEmpty()))
     }
 
-    suspend fun getPurchaseResult() = suspendCoroutine<PurchasesResult> { purchaseContinuation = it }
-
     fun onPurchaseAvailable(purchasesResult: PurchasesResult) {
-        purchaseContinuation?.resume(purchasesResult)
-        purchaseContinuation = null
+        _purchaseResult.value = purchasesResult
     }
 }
