@@ -22,7 +22,7 @@ import com.woocommerce.android.ui.products.variations.VariationsBulkUpdateAttrPi
 import com.woocommerce.android.ui.products.variations.VariationsBulkUpdateAttrPickerViewModel.OpenVariationsBulkUpdateStockQuantity
 import com.woocommerce.android.ui.products.variations.VariationsBulkUpdateAttrPickerViewModel.ViewState
 import com.woocommerce.android.ui.products.variations.VariationsBulkUpdatePriceViewModel.PriceUpdateData
-import com.woocommerce.android.ui.products.variations.VariationsBulkUpdatePriceViewModel.StockQuantityUpdateData
+import com.woocommerce.android.ui.products.variations.VariationsBulkUpdateInventoryViewModel.InventoryUpdateData
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.widgets.WCBottomSheetDialogFragment
 import dagger.hilt.android.AndroidEntryPoint
@@ -114,7 +114,7 @@ class VariationsBulkUpdateAttrPickerDialog : WCBottomSheetDialogFragment() {
         ValuesGroupType.Mixed -> getString(R.string.variations_bulk_update_dialog_price_mixed)
         is ValuesGroupType.Common -> {
             val stockQuantity = groupType.data
-            if (stockQuantity != null) stockQuantity.toString() else ""
+            stockQuantity?.toString() ?: ""
         }
     }
 
@@ -134,11 +134,11 @@ class VariationsBulkUpdateAttrPickerDialog : WCBottomSheetDialogFragment() {
         dismiss()
     }
 
-    private fun openStockQuantityUpdate(data: StockQuantityUpdateData) {
-        /*VariationsBulkUpdateAttrPickerDialogDirections
-            .actionVariationsBulkUpdateAttrPickerFragmentToVariationsBulkUpdatePriceFragment(data)
+    private fun openStockQuantityUpdate(data: InventoryUpdateData) {
+        VariationsBulkUpdateAttrPickerDialogDirections
+            .actionVariationsBulkUpdateAttrPickerFragmentToVariationsBulkUpdateInventoryFragment(data)
             .run { findNavController().navigateSafely(this) }
-        dismiss()*/
+        dismiss()
     }
 
     private fun renderInternalSheetState(bottomSheetState: Int) {

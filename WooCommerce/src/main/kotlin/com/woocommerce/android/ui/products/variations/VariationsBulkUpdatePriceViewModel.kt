@@ -119,9 +119,4 @@ class VariationsBulkUpdatePriceViewModel @Inject constructor(
     enum class PriceType {
         Regular, Sale
     }
-
-    @Parcelize
-    data class StockQuantityUpdateData(
-        val variationsToUpdate: List<ProductVariation>
-    ) : Parcelable
 }

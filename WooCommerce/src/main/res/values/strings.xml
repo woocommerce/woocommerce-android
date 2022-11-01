@@ -1632,6 +1632,11 @@
     <string name="variations_bulk_update_warning_message">Currently bulk update is supported for 100 variations maximum.</string>
     <string name="variations_bulk_update_dialog_inventory_section_title">Inventory</string>
     <string name="variations_bulk_update_dialog_stock_quantity_label">@string/product_stock_quantity</string>
+    <string name="variations_bulk_update_stock_quantity_info">Stock quantity will be updated for %d variations</string>
+    <string name="variations_bulk_update_stock_quantity_dialog_title">Updating stock quantity</string>
+    <string name="variations_bulk_update_current_stock_quantity">Current stock quantity is %d</string>
+    <string name="variations_bulk_update_current_stock_quantity_mixed">Current stock quantity is mixed</string>
+    <string name="variations_bulk_update_stock_quantity_success">Updated stock quantity</string>
 
     <!--
         Product images

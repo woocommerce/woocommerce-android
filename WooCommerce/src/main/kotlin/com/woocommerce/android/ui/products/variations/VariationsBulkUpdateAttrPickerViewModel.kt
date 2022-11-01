@@ -12,7 +12,7 @@ import com.woocommerce.android.ui.products.ParameterRepository
 import com.woocommerce.android.ui.products.models.SiteParameters
 import com.woocommerce.android.ui.products.variations.VariationsBulkUpdatePriceViewModel.PriceType
 import com.woocommerce.android.ui.products.variations.VariationsBulkUpdatePriceViewModel.PriceUpdateData
-import com.woocommerce.android.ui.products.variations.VariationsBulkUpdatePriceViewModel.StockQuantityUpdateData
+import com.woocommerce.android.ui.products.variations.VariationsBulkUpdateInventoryViewModel.InventoryUpdateData
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.navArgs
@@ -77,9 +77,10 @@ class VariationsBulkUpdateAttrPickerViewModel @Inject constructor(
 
     fun onStockQuantityClicked() {
         track(PRODUCT_VARIANTS_BULK_UPDATE_STOCK_QUANTITY_TAPPED)
+        val stockManagedVariations = args.variationsToUpdate.filter { it.isStockManaged }
         triggerEvent(
             OpenVariationsBulkUpdateStockQuantity(
-                StockQuantityUpdateData(args.variationsToUpdate.toList())
+                InventoryUpdateData(stockManagedVariations)
             )
         )
     }
@@ -96,6 +97,6 @@ class VariationsBulkUpdateAttrPickerViewModel @Inject constructor(
     ) : Event()
 
     data class OpenVariationsBulkUpdateStockQuantity(
-        val data: StockQuantityUpdateData
+        val data: InventoryUpdateData
     ) : Event()
 }
