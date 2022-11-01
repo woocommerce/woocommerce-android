@@ -1,13 +1,18 @@
 package com.woocommerce.android.ui.products.variations
 
 import android.os.Bundle
+import android.text.Editable
+import android.text.TextWatcher
 import android.view.Menu
 import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
+import androidx.core.view.MenuProvider
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.Lifecycle
 import com.woocommerce.android.R
 import com.woocommerce.android.databinding.FragmentVariationsBulkUpdateInventoryBinding
+import com.woocommerce.android.extensions.showKeyboardWithDelay
 import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
@@ -24,7 +29,8 @@ import org.wordpress.android.util.ActivityUtils.hideKeyboard
 import javax.inject.Inject
 
 @AndroidEntryPoint
-class VariationsBulkUpdateInventoryFragment : BaseFragment(R.layout.fragment_variations_bulk_update_inventory) {
+class VariationsBulkUpdateInventoryFragment :
+    BaseFragment(R.layout.fragment_variations_bulk_update_inventory), TextWatcher {
     @Inject lateinit var uiMessageResolver: UIMessageResolver
     @Inject lateinit var currencyFormatter: CurrencyFormatter
 
@@ -38,22 +44,42 @@ class VariationsBulkUpdateInventoryFragment : BaseFragment(R.layout.fragment_var
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        setHasOptionsMenu(true)
         _binding = FragmentVariationsBulkUpdateInventoryBinding.bind(view)
-        binding.stockQuantityEditText.text.observe(viewLifecycleOwner) {
-            viewModel.onStockQuantityEntered(it.toString().toI)
-        }
-        ActivityUtils.showKeyboard(binding.stockQuantityEditText)
+        binding.stockQuantityEditText.textWatcher = this
+        binding.stockQuantityEditText.editText?.showKeyboardWithDelay()
 
         observeViewStateChanges()
         observeEvents()
+        setupMenu()
+    }
+
+    private fun setupMenu() {
+        requireActivity().addMenuProvider(
+            object : MenuProvider {
+                override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
+                    menuInflater.inflate(R.menu.menu_variations_bulk_update, menu)
+                }
+
+                override fun onMenuItemSelected(item: MenuItem): Boolean {
+                    return when(item.itemId) {
+                        R.id.done -> {
+                            viewModel.onDoneClicked()
+                            true
+                        }
+                        else -> false
+                    }
+                }
+            },
+            viewLifecycleOwner,
+            Lifecycle.State.RESUMED
+        )
     }
 
     private fun observeEvents() {
         viewModel.event.observe(viewLifecycleOwner) { event ->
             when (event) {
                 is ShowSnackbar -> {
-                    ActivityUtils.hideKeyboardForced(binding.stockQuantityEditText)
+                    ActivityUtils.hideKeyboardForced(binding.stockQuantityEditText.editText)
                     uiMessageResolver.showSnack(event.message)
                 }
                 is Exit -> requireActivity().onBackPressedDispatcher.onBackPressed()
@@ -66,6 +92,9 @@ class VariationsBulkUpdateInventoryFragment : BaseFragment(R.layout.fragment_var
             new.variationsToUpdateCount?.takeIfNotEqualTo(old?.variationsToUpdateCount) {
                 binding.currentStockQuantity.text =
                     getString(R.string.variations_bulk_update_stock_quantity_info).format(new.variationsToUpdateCount)
+            }
+            new.stockQuantityGroupType?.takeIfNotEqualTo(old?.stockQuantityGroupType) {
+                updateCurrentStockQuantityLabel(new.stockQuantityGroupType, new)
             }
             new.isProgressDialogShown.takeIfNotEqualTo(old?.isProgressDialogShown) { isVisible ->
                 updateProgressbarDialogVisibility(isVisible)
@@ -85,7 +114,7 @@ class VariationsBulkUpdateInventoryFragment : BaseFragment(R.layout.fragment_var
         binding.currentStockQuantity.text = when (groupType) {
             Mixed -> getString(R.string.variations_bulk_update_current_stock_quantity_mixed)
             None -> ""
-            is Common -> getString(R.string.variations_bulk_update_current_stock_quantity, viewState.)
+            is Common -> getString(R.string.variations_bulk_update_current_stock_quantity, viewState.stockQuantity)
         }
     }
 
@@ -102,24 +131,24 @@ class VariationsBulkUpdateInventoryFragment : BaseFragment(R.layout.fragment_var
         }
     }
 
-    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
-        menu.clear()
-        inflater.inflate(R.menu.menu_variations_bulk_update, menu)
-    }
-
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        return when (item.itemId) {
-            R.id.done -> {
-                viewModel.onDoneClicked()
-                true
-            }
-            else -> super.onOptionsItemSelected(item)
-        }
-    }
-
     override fun onPause() {
         super.onPause()
         hideProgressDialog()
         hideKeyboard(requireActivity())
+    }
+
+    override fun getFragmentTitle() = getString(R.string.product_stock_quantity)
+
+    override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
+        // NOOP
+    }
+
+    override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+        // NOOP
+    }
+
+    override fun afterTextChanged(editable: Editable?) {
+        val quantity = editable.toString().toInt()
+        viewModel.onStockQuantityEntered(quantity)
     }
 }

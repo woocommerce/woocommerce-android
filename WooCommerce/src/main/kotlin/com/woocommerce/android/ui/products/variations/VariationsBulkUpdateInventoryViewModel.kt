@@ -37,8 +37,7 @@ class VariationsBulkUpdateInventoryViewModel @Inject constructor(
     }
 
     fun onDoneClicked() {
-        // TODO track
-
+        // TODO tracking
         viewState = viewState.copy(isProgressDialogShown = true)
 
         launch(dispatchers.io) {
@@ -71,6 +70,7 @@ class VariationsBulkUpdateInventoryViewModel @Inject constructor(
     data class ViewState(
         val variationsToUpdateCount: Int? = null,
         val stockQuantity: Int? = null,
+        val stockQuantityGroupType: ValuesGroupType? = null,
         val isProgressDialogShown: Boolean = false,
     ) : Parcelable
 
