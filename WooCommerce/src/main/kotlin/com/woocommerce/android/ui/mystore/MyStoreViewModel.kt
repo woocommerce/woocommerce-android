@@ -217,17 +217,6 @@ class MyStoreViewModel @Inject constructor(
         )
     }
 
-    private fun trackJitmFetchSuccessEvent(jitmId: String? = null, jitmCount: Int? = null) {
-        analyticsTrackerWrapper.track(
-            AnalyticsEvent.JITM_FETCH_SUCCESS,
-            mapOf(
-                KEY_SOURCE to UTM_SOURCE,
-                KEY_JITM to jitmId,
-                KEY_JITM_COUNT to jitmCount
-            )
-        )
-    }
-
     private fun onJitmCtaClicked(
         id: String,
         featureClass: String,
