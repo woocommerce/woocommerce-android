@@ -42,6 +42,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.parcelize.Parcelize
+import org.wordpress.android.fluxc.model.AccountModel
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooErrorType
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooResult
@@ -91,28 +92,38 @@ class SitePickerViewModel @Inject constructor(
             false -> loadStorePickerView()
         }
         updateSiteViewDetails()
-        loadAndDisplayUserInfo()
+        loadUserInfoOrStartStoreCreation()
         loadAndDisplaySites()
-        if (appPrefsWrapper.getIsNewSignUp()) startStoreCreationWebFlow()
     }
 
-    private fun loadAndDisplayUserInfo() = launch {
-        fun getUserInfo() = accountRepository.getUserAccount()?.let {
-            UserInfo(displayName = it.displayName, username = it.userName ?: "", userAvatarUrl = it.avatarUrl)
-        }
+    private fun loadUserInfoOrStartStoreCreation() = launch {
+        getOrFetchAccount()?.let {
+            val userInfo = UserInfo(
+                displayName = it.displayName,
+                username = it.userName ?: "",
+                userAvatarUrl = it.avatarUrl
+            )
+            sitePickerViewState = sitePickerViewState.copy(userInfo = userInfo)
 
-        if (accountRepository.getUserAccount() != null) {
-            sitePickerViewState = sitePickerViewState.copy(userInfo = getUserInfo())
-        } else {
+            if (appPrefsWrapper.getIsNewSignUp()) {
+                triggerEvent(NavigateToStoreCreationEvent)
+            }
+        }
+        
+        appPrefsWrapper.markAsNewSignUp(false)
+    }
+
+    private suspend fun getOrFetchAccount(): AccountModel? {
+        return accountRepository.getUserAccount() ?:
             accountRepository.fetchUserAccount().fold(
                 onSuccess = {
-                    sitePickerViewState = sitePickerViewState.copy(userInfo = getUserInfo())
+                    return accountRepository.getUserAccount()
                 },
                 onFailure = {
                     triggerEvent(ShowSnackbar(string.error_fetch_my_profile))
+                    return null
                 }
             )
-        }
     }
 
     private fun updateSiteViewDetails() {
@@ -426,7 +437,7 @@ class SitePickerViewModel @Inject constructor(
 
     fun onCreateSiteButtonClick() {
         analyticsTrackerWrapper.track(AnalyticsEvent.SITE_PICKER_CREATE_SITE_TAPPED)
-        triggerEvent(NavigateToStoreCreationEvent)
+        checkAccountAndLaunchStoreCreationWebFlow()
     }
 
     fun onTryAnotherAccountButtonClick() {
@@ -621,9 +632,14 @@ class SitePickerViewModel @Inject constructor(
         fetchSitesFromApi(showSkeleton = true)
     }
 
-    private fun startStoreCreationWebFlow() {
-        appPrefsWrapper.markAsNewSignUp(false)
-        triggerEvent(NavigateToStoreCreationEvent)
+    private fun checkAccountAndLaunchStoreCreationWebFlow() = launch {
+        sitePickerViewState = sitePickerViewState.copy(isTertiaryBtnEnabled = false)
+
+        getOrFetchAccount()?.let {
+            triggerEvent(NavigateToStoreCreationEvent)
+        }
+
+        sitePickerViewState = sitePickerViewState.copy(isTertiaryBtnEnabled = true)
     }
 
     private fun trackLoginEvent(
@@ -658,6 +674,7 @@ class SitePickerViewModel @Inject constructor(
         val isProgressDiaLogVisible: Boolean = false,
         val isPrimaryBtnVisible: Boolean = false,
         val isSecondaryBtnVisible: Boolean = false,
+        val isTertiaryBtnEnabled: Boolean = true,
         val isNoStoresBtnVisible: Boolean = false,
         val currentSitePickerState: SitePickerState = SitePickerState.StoreListState
     ) : Parcelable
