@@ -91,7 +91,7 @@ class WebViewStoreCreationViewModel @Inject constructor(
     private fun onSiteAddressFound(url: String) {
         possibleStoreUrls.add(url)
     }
-    
+
     fun onBackPressed() {
         triggerEvent(Exit)
     }
