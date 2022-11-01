@@ -62,26 +62,6 @@ class WebViewStoreCreationViewModel @Inject constructor(
         }
     )
 
-    fun onBackPressed() {
-        triggerEvent(Exit)
-    }
-
-    sealed interface ViewState {
-        data class StoreCreationState(
-            val storeCreationUrl: String,
-            val siteUrlKeyword: String,
-            val exitTriggerKeyword: String,
-            val onStoreCreated: () -> Unit,
-            val onSiteAddressFound: (url: String) -> Unit
-        ) : ViewState
-
-        object StoreLoadingState : ViewState
-
-        data class ErrorState(
-            val onRetryButtonClick: () -> Unit
-        ) : ViewState
-    }
-
     private fun onStoreCreated() {
         step.value = Step.StoreLoading
         launch {
@@ -110,6 +90,26 @@ class WebViewStoreCreationViewModel @Inject constructor(
 
     private fun onSiteAddressFound(url: String) {
         possibleStoreUrls.add(url)
+    }
+    
+    fun onBackPressed() {
+        triggerEvent(Exit)
+    }
+
+    sealed interface ViewState {
+        data class StoreCreationState(
+            val storeCreationUrl: String,
+            val siteUrlKeyword: String,
+            val exitTriggerKeyword: String,
+            val onStoreCreated: () -> Unit,
+            val onSiteAddressFound: (url: String) -> Unit
+        ) : ViewState
+
+        object StoreLoadingState : ViewState
+
+        data class ErrorState(
+            val onRetryButtonClick: () -> Unit
+        ) : ViewState
     }
 
     object NavigateToNewStore : MultiLiveEvent.Event()
