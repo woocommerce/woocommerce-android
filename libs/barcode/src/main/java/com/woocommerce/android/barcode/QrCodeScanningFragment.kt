@@ -22,6 +22,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.View.OnClickListener
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import com.woocommerce.android.barcode.camera.CameraSource
@@ -39,12 +40,14 @@ import java.io.IOException
 class QrCodeScanningFragment : Fragment(), OnClickListener {
     companion object {
         const val TAG = "code_scanner_fragment"
+        const val MAGIC_LOGIN_ACTION = "magic-login"
+        const val MAGIC_LOGIN_SCHEME = "woocommerce"
     }
 
     private var cameraSource: CameraSource? = null
     private val workflowModel: WorkflowModel by activityViewModels()
     private var currentWorkflowState: WorkflowState? = null
-    private var onCodeScanned: (rawValue: String?) -> Unit = {}
+    private var onCodeScanned: (rawValue: String) -> Unit = {}
     private var onHelpClicked: () -> Unit = {}
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -157,9 +160,20 @@ class QrCodeScanningFragment : Fragment(), OnClickListener {
         }
 
         workflowModel.detectedBarcode.observe(viewLifecycleOwner) { barcode ->
-            if (barcode != null) {
-                onCodeScanned(barcode.rawValue)
+            val rawValue = barcode.rawValue
+            if (isValidScannedRawValue(rawValue)) {
+                onCodeScanned(rawValue!!)
+            } else {
+                workflowModel.setWorkflowState(WorkflowState.DETECTING)
+                Toast.makeText(
+                    requireContext(), resources.getText(R.string.not_a_valid_qr_code), Toast.LENGTH_LONG
+                ).show()
             }
         }
     }
+
+    private fun isValidScannedRawValue(scannedRawValue: String?): Boolean =
+        scannedRawValue != null
+            && scannedRawValue.contains(MAGIC_LOGIN_ACTION)
+            && scannedRawValue.contains(MAGIC_LOGIN_SCHEME)
 }
