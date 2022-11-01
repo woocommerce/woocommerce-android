@@ -56,6 +56,8 @@ import com.woocommerce.android.ui.login.overrides.WooLoginEmailFragment
 import com.woocommerce.android.ui.login.overrides.WooLoginEmailPasswordFragment
 import com.woocommerce.android.ui.login.overrides.WooLoginSiteAddressFragment
 import com.woocommerce.android.ui.login.signup.SignUpFragment
+import com.woocommerce.android.ui.login.signup.SignUpFragment.NextStep.SITE_PICKER
+import com.woocommerce.android.ui.login.signup.SignUpFragment.NextStep.STORE_CREATION
 import com.woocommerce.android.ui.login.storecreation.StoreCreationFragment
 import com.woocommerce.android.ui.main.MainActivity
 import com.woocommerce.android.util.ActivityUtils
@@ -369,7 +371,7 @@ class LoginActivity :
     }
 
     override fun onGetStartedClicked() {
-        changeFragment(SignUpFragment(), true, SignUpFragment.TAG)
+        changeFragment(SignUpFragment.newInstance(SignUpFragment.NextStep.STORE_CREATION), true, SignUpFragment.TAG)
     }
 
     private fun showMainActivityAndFinish() {
@@ -915,6 +917,10 @@ class LoginActivity :
         unifiedLoginTracker.trackClick(Click.WHAT_IS_WORDPRESS_COM_ON_INVALID_EMAIL_SCREEN)
     }
 
+    override fun onCreateAccountClicked() {
+        changeFragment(SignUpFragment.newInstance(SignUpFragment.NextStep.SITE_PICKER), true, SignUpFragment.TAG)
+    }
+
     private fun getLoginHelpNotification(): String? =
         intent.extras?.getString(KEY_LOGIN_HELP_NOTIFICATION)
 
@@ -958,14 +964,19 @@ class LoginActivity :
         changeFragment(fragment, shouldAddToBackStack = true, tag = QrCodeScanningFragment.TAG)
     }
 
-    override fun onAccountCreated() {
-        if (FeatureFlag.STORE_CREATION_WEBVIEW_FLOW.isEnabled()) {
-            showMainActivityAndFinish()
-        } else {
-            val storeCreationFragment =
-                supportFragmentManager.findFragmentByTag(StoreCreationFragment.TAG) as? StoreCreationFragment
-                    ?: StoreCreationFragment()
-            changeFragment(storeCreationFragment, shouldAddToBackStack = true, tag = StoreCreationFragment.TAG)
+    override fun onAccountCreated(nextStep: SignUpFragment.NextStep) {
+        when (nextStep) {
+            STORE_CREATION -> {
+                if (FeatureFlag.STORE_CREATION_WEBVIEW_FLOW.isEnabled()) {
+                    showMainActivityAndFinish()
+                } else {
+                    val storeCreationFragment =
+                        supportFragmentManager.findFragmentByTag(StoreCreationFragment.TAG) as? StoreCreationFragment
+                            ?: StoreCreationFragment()
+                    changeFragment(storeCreationFragment, shouldAddToBackStack = true, tag = StoreCreationFragment.TAG)
+                }
+            }
+            SITE_PICKER -> showMainActivityAndFinish()
         }
     }
 

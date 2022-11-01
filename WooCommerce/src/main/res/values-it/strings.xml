@@ -1,11 +1,21 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2022-10-19 09:54:04+0000
+Translation-Revision-Date: 2022-10-26 09:54:25+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: it
 -->
 <resources>
+    <string name="hello_blank_fragment">Ciao frammento vuoto</string>
+    <string name="what_is_wordpress_link">&lt;u&gt;Cos\'è WordPress.com?&lt;/u&gt;</string>
+    <string name="signup_creating_account_loading_message">Creazione di un nuovo account</string>
+    <string name="signup_terms_of_service">Continuando, accetti i nostri &lt;u&gt;Termini di servizio.&lt;/u&gt;</string>
+    <string name="signup_password_hint">Scegli una password</string>
+    <string name="signup_email_address_hint">Il tuo indirizzo e-mail</string>
+    <string name="signup_already_registered">Per prima cosa, crea un account. Registrazione già effettuata? Accesso</string>
+    <string name="signup_get_started_label">Crea il tuo sito \nin pochi minuti</string>
+    <string name="signup_get_started_button">Crea il tuo sito</string>
+    <string name="login_jetpack_connection_consent">Toccando il pulsante Configura Jetpack, accetti i nostri &lt;a href=\'terms\'&gt;Termini di servizio&lt;/a&gt; e la &lt;a href=\'sync\'&gt;condivisione delle informazioni&lt;/a&gt; con WordPress.com.</string>
     <string name="enable_card_reader">Attiva il lettore di carte simulato</string>
     <string name="login_account_mismatch_connect_wpcom_dialog_message">Contatta il proprietario del sito per un invito al sito come gestore del negozio o amministratore per utilizzare l\'app.</string>
     <string name="login_account_mismatch_connect_wpcom_dialog_title">Connessione a un sito WordPress.com</string>
@@ -55,7 +65,6 @@ Language: it
     <string name="orderlist_bottom_sheet_simple_payments_moved_button">OK!</string>
     <string name="orderlist_bottom_sheet_simple_payments_moved_description">Ora puoi accedere rapidamente e con facilità ai Pagamenti di persona e ad altre funzionalità</string>
     <string name="orderlist_bottom_sheet_simple_payments_moved_title">Pagamenti dalla scheda Menu</string>
-    <string name="login_no_wpcom_account_found">L\'e-mail %1$s non è utilizzata con un account WordPress.com.</string>
     <string name="login_non_woo_stores_label">Altri siti</string>
     <string name="login_with_store_address">Accesso con l\'indirizzo del negozio</string>
     <string name="more_menu_button_w___admin">WC Admin</string>
@@ -1846,6 +1855,7 @@ Language: it
     <string name="orderdetail_track_shipment">Traccia spedizione</string>
     <string name="login_email_help_desc">Nell\'amministrazione del sito puoi trovare l\'e-mail che hai usato per collegarti a WordPress.com dalla %1$sBacheca di Jetpack%2$s sotto %3$sConnessioni &gt; Connessione dell\'account%4$s</string>
     <string name="login_email_help_title">Quale e-mail uso per accedere?</string>
+    <string name="login_need_help_finding_email">&lt;u&gt;Hai bisogno di aiuto per trovare l\'e-mail richiesta?&lt;/u&gt;</string>
     <string name="login_jetpack_what_is_description">Jetpack è un plugin WordPress gratuito che collega il tuo negozio con gli strumenti necessari per assicurarti la migliore esperienza mobile, incluse le notifiche push e le statistiche</string>
     <string name="login_jetpack_what_is">Che cos\'è Jetpack?</string>
     <string name="login_view_connected_stores">Visualizza i negozi collegati</string>

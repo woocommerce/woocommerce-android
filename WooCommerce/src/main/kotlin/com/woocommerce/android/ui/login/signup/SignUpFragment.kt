@@ -7,7 +7,9 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
+import androidx.core.os.bundleOf
 import androidx.fragment.app.viewModels
+import com.woocommerce.android.extensions.serializable
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
@@ -26,10 +28,17 @@ import javax.inject.Inject
 class SignUpFragment : BaseFragment() {
     companion object {
         const val TAG = "SignUpFragment"
+        private const val NEXT_STEP_KEY = "next-step"
+
+        fun newInstance(nextStep: NextStep): SignUpFragment = SignUpFragment().apply {
+            arguments = bundleOf(
+                NEXT_STEP_KEY to nextStep
+            )
+        }
     }
 
     interface Listener {
-        fun onAccountCreated()
+        fun onAccountCreated(nextStep: NextStep)
         fun onLoginClicked()
     }
 
@@ -37,6 +46,8 @@ class SignUpFragment : BaseFragment() {
     @Inject lateinit var uiMessageResolver: UIMessageResolver
     private val viewModel: SignUpViewModel by viewModels()
     private var signUpListener: Listener? = null
+
+    private lateinit var nextStep: NextStep
 
     override val activityAppBarStatus: AppBarStatus
         get() = AppBarStatus.Hidden
@@ -49,6 +60,12 @@ class SignUpFragment : BaseFragment() {
             "Parent activity has to implement ${Listener::class.java.name}"
         }
         signUpListener = activity
+    }
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+
+        nextStep = requireArguments().serializable(NEXT_STEP_KEY) ?: error("Screen requires passing a NextStep")
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
@@ -76,7 +93,7 @@ class SignUpFragment : BaseFragment() {
     private fun setupObservers() {
         viewModel.event.observe(viewLifecycleOwner) { event ->
             when (event) {
-                is OnAccountCreated -> signUpListener?.onAccountCreated()
+                is OnAccountCreated -> signUpListener?.onAccountCreated(nextStep)
                 is OnLoginClicked -> signUpListener?.onLoginClicked()
                 is OnTermsOfServiceClicked -> openTermsOfServiceUrl()
                 is ShowSnackbar -> uiMessageResolver.showSnack(event.message)
@@ -87,5 +104,9 @@ class SignUpFragment : BaseFragment() {
 
     private fun openTermsOfServiceUrl() {
         ChromeCustomTabUtils.launchUrl(requireContext(), urlUtils.tosUrlWithLocale)
+    }
+
+    enum class NextStep {
+        STORE_CREATION, SITE_PICKER
     }
 }

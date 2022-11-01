@@ -34,6 +34,7 @@ import com.woocommerce.android.ui.sitepicker.SitePickerViewModel.SitePickerEvent
 import com.woocommerce.android.ui.sitepicker.SitePickerViewModel.SitePickerEvent.NavigateToMainActivityEvent
 import com.woocommerce.android.ui.sitepicker.SitePickerViewModel.SitePickerEvent.NavigateToNewToWooEvent
 import com.woocommerce.android.ui.sitepicker.SitePickerViewModel.SitePickerEvent.NavigateToSiteAddressEvent
+import com.woocommerce.android.ui.sitepicker.SitePickerViewModel.SitePickerEvent.NavigateToStoreCreationEvent
 import com.woocommerce.android.ui.sitepicker.SitePickerViewModel.SitePickerEvent.NavigateToWPComWebView
 import com.woocommerce.android.ui.sitepicker.SitePickerViewModel.SitePickerEvent.ShowWooUpgradeDialogEvent
 import com.woocommerce.android.ui.sitepicker.SitePickerViewModel.SitePickerState.NoStoreState
@@ -166,6 +167,7 @@ class SitePickerFragment : BaseFragment(R.layout.fragment_site_picker), LoginEma
                 is NavigateToSiteAddressEvent -> navigateToAddressScreen()
                 is NavigateToEmailHelpDialogEvent -> navigateToNeedHelpFindingEmailScreen()
                 is NavigateToWPComWebView -> navigateToWPComWebView(event)
+                is NavigateToStoreCreationEvent -> navigateToStoreCreation()
                 is NavigateToAccountMismatchScreen -> navigateToAccountMismatchScreen(event)
                 is ShowSnackbar -> uiMessageResolver.getSnack(stringResId = event.message, stringArgs = event.args)
                     .show()
@@ -177,17 +179,16 @@ class SitePickerFragment : BaseFragment(R.layout.fragment_site_picker), LoginEma
         }
     }
 
+    private fun navigateToStoreCreation() {
+        findNavController().navigateSafely(
+            SitePickerFragmentDirections.actionSitePickerFragmentToWebViewStoreCreationFragment()
+        )
+    }
+
     private fun handleResults() {
         handleNotice(WPComWebViewFragment.WEBVIEW_RESULT) {
             AnalyticsTracker.track(AnalyticsEvent.LOGIN_WOOCOMMERCE_SETUP_COMPLETED)
             viewModel.onWooInstalled()
-        }
-        handleResult<List<String>>(WPComWebViewFragment.WEBVIEW_RESULT_WITH_URL) { urls ->
-            AnalyticsTracker.track(
-                AnalyticsEvent.LOGIN_WOOCOMMERCE_SITE_CREATED,
-                mapOf(AnalyticsTracker.KEY_URL to urls.joinToString())
-            )
-            viewModel.onSiteCreated(urls)
         }
         handleNotice(WPComWebViewFragment.WEBVIEW_DISMISSED) {
             AnalyticsTracker.track(AnalyticsEvent.LOGIN_WOOCOMMERCE_SETUP_DISMISSED)

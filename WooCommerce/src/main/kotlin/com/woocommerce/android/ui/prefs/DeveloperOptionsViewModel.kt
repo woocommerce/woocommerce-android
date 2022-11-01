@@ -16,10 +16,11 @@ import javax.inject.Inject
 
 @HiltViewModel
 class DeveloperOptionsViewModel @Inject constructor(
-    savedState: SavedStateHandle
+    savedState: SavedStateHandle,
+    private val developerOptionsRepository: DeveloperOptionsRepository
 ) : ScopedViewModel(savedState) {
 
-    private val viewState = MutableLiveData(
+    private val _viewState = MutableLiveData(
         DeveloperOptionsViewState(
             rows = (
                 createDeveloperOptionsList()
@@ -27,18 +28,33 @@ class DeveloperOptionsViewModel @Inject constructor(
         )
     )
 
-    val viewStateData: LiveData<DeveloperOptionsViewState> = viewState
+    val viewState: LiveData<DeveloperOptionsViewState> = _viewState
 
     private fun createDeveloperOptionsList(): List<ListItem> = mutableListOf(
         ToggleableListItem(
             icon = drawable.img_card_reader_connecting,
             label = UiStringRes(string.enable_card_reader),
-            isEnabled = false,
-            isChecked = false,
-            onClick = {},
-            onToggled = {}
+            isEnabled = true,
+            isChecked = developerOptionsRepository.isSimulatedCardReaderEnabled(),
+            onToggled = ::onSimulatedReaderToggled
         )
     )
+
+    private fun onSimulatedReaderToggled(isChecked: Boolean) {
+
+        developerOptionsRepository.changeSimulatedReaderState(isChecked)
+        val currentViewState = viewState.value
+        (currentViewState?.rows?.first() as? ToggleableListItem)?.let { originalListItem ->
+            val newState = originalListItem.copy(isChecked = isChecked)
+            _viewState.value = currentViewState.copy(
+                rows = currentViewState.rows.map {
+                    if (it.label == newState.label)
+                        newState
+                    else it
+                }
+            )
+        }
+    }
 
     data class DeveloperOptionsViewState(
         val rows: List<ListItem>
@@ -46,14 +62,12 @@ class DeveloperOptionsViewModel @Inject constructor(
         sealed class ListItem {
             abstract val label: UiString
             abstract val icon: Int?
-            abstract val onClick: (() -> Unit)?
             abstract var isEnabled: Boolean
 
             data class ToggleableListItem(
                 @DrawableRes override val icon: Int,
                 override val label: UiString,
                 override var isEnabled: Boolean = false,
-                override val onClick: () -> Unit,
                 val onToggled: (Boolean) -> Unit,
                 val isChecked: Boolean
             ) : ListItem()
@@ -62,7 +76,7 @@ class DeveloperOptionsViewModel @Inject constructor(
                 @DrawableRes override val icon: Int,
                 override val label: UiString,
                 override var isEnabled: Boolean = false,
-                override val onClick: () -> Unit
+                val onClick: () -> Unit
             ) : ListItem()
         }
     }

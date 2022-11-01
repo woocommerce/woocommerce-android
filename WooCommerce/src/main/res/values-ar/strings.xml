@@ -1,11 +1,21 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2022-10-19 11:54:04+0000
+Translation-Revision-Date: 2022-10-26 12:54:04+0000
 Plural-Forms: nplurals=6; plural=n==0 ? 0 : n==1 ? 1 : n==2 ? 2 : n%100>=3 && n%100<=10 ? 3 : n%100>=11 && n%100<=99 ? 4 : 5;
 Generator: GlotPress/2.4.0-alpha
 Language: ar
 -->
 <resources>
+    <string name="hello_blank_fragment">مرحبًا، جزء فارغ</string>
+    <string name="what_is_wordpress_link">&lt;u&gt;ما المقصود بووردبريس.كوم؟&lt;/u&gt;</string>
+    <string name="signup_creating_account_loading_message">إنشاء حساب جديد</string>
+    <string name="signup_terms_of_service">يعني الاستمرار أنك توافق على &lt;u&gt;شروط الخدمة التي نقرها.&lt;/u&gt;</string>
+    <string name="signup_password_hint">اختر كلمة مرور</string>
+    <string name="signup_email_address_hint">عنوان بريدك الإلكتروني</string>
+    <string name="signup_already_registered">لنقم بإنشاء حسابك أولاً. هل تم التسجيل بالفعل. تسجيل الدخول</string>
+    <string name="signup_get_started_label">بدء \nفي غضون دقائق</string>
+    <string name="signup_get_started_button">بدء</string>
+    <string name="login_jetpack_connection_consent">يعني النقر على زر Connect Jetpack أنك توافق على &lt;a href=\'terms\'&gt;شروط الخدمة&lt;/a&gt; لدينا وعلى &lt;a href=\'sync\'&gt;مشاركة التفاصيل&lt;/a&gt; مع ووردبريس.كوم.</string>
     <string name="enable_card_reader">تمكين قارئ البطاقات المحاكي</string>
     <string name="login_account_mismatch_connect_wpcom_dialog_message">يُرجى الاتصال بمالك الموقع للحصول على دعوة إلى الموقع كمدير متجر أو مسؤول استخدام التطبيق.</string>
     <string name="login_account_mismatch_connect_wpcom_dialog_title">الاتصال بموقع ووردبريس.كوم</string>
@@ -55,7 +65,6 @@ Language: ar
     <string name="orderlist_bottom_sheet_simple_payments_moved_button">فهمت!</string>
     <string name="orderlist_bottom_sheet_simple_payments_moved_description">يمكنك الآن الوصول بسرعة إلى المدفوعات الشخصية وغيرها من الميزات بسهولة</string>
     <string name="orderlist_bottom_sheet_simple_payments_moved_title">المدفوعات من علامة التبويب القائمة</string>
-    <string name="login_no_wpcom_account_found">لم يتم استخدام البريد الإلكتروني ⁦%1$s⁩ مع حساب ووردبريس.كوم.</string>
     <string name="login_non_woo_stores_label">مواقع أخرى</string>
     <string name="login_with_store_address">تسجيل الدخول باستخدام عنوان متجرك</string>
     <string name="more_menu_button_w___admin">مسؤول WC</string>
@@ -1846,6 +1855,7 @@ Language: ar
     <string name="orderdetail_track_shipment">تعقب الشحنة</string>
     <string name="login_email_help_desc">في مسؤول موقعك، يمكنك العثور على البريد الإلكتروني الذي استخدمته للاتصال بوردبرس.كوم من %1$sلوحة التحكم في Jetpack %2$s أسفل %3$sالاتصالات &gt; الاتصال بالحساب%4$s</string>
     <string name="login_email_help_title">ما البريد الإلكتروني الذي أستخدمه لتسجيل الدخول؟</string>
+    <string name="login_need_help_finding_email">&lt;u&gt;هل تحتاج إلى مساعدة بشأن العثور على البريد الإلكتروني المطلوب؟&lt;/u&gt;</string>
     <string name="login_jetpack_what_is_description">Jetpack هو إضافة مجانية على وردبرس تربط متجرك بالأدوات اللازمة لمنحك أفضل تجربة على الهاتف المحمول، بما في ذلك تنبيهات الدفع والإحصاءات.</string>
     <string name="login_jetpack_what_is">ما المقصود بـ Jetpack؟</string>
     <string name="login_view_connected_stores">عرض المتاجر المتصلة</string>

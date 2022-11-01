@@ -9,6 +9,8 @@ import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.dispatchAndAwait
 import org.wordpress.android.fluxc.Dispatcher
 import org.wordpress.android.fluxc.generated.AccountActionBuilder
+import org.wordpress.android.fluxc.model.AccountModel
+import org.wordpress.android.fluxc.store.AccountStore.OnAccountChanged
 import org.wordpress.android.fluxc.store.AccountStore.OnAuthenticationChanged
 import org.wordpress.android.fluxc.store.AccountStore.UpdateTokenPayload
 import org.wordpress.android.fluxc.store.signup.SignUpStore
@@ -49,11 +51,12 @@ class SignUpRepository @Inject constructor(
                 WooLog.w(WooLog.T.LOGIN, "Error creating new WP account: ${accountCreatedResult.error.apiError}")
                 AccountCreationError(accountCreatedResult.error.apiError.toSignUpError())
             }
-            else -> onAccountCreationSuccess(accountCreatedResult)
+            else -> onAccountCreationSuccess(username, accountCreatedResult)
         }
     }
 
     private suspend fun onAccountCreationSuccess(
+        username: String,
         accountCreatedResult: SignUpStore.CreateWpAccountResult
     ): AccountCreationResult {
         dispatcher.dispatchAndAwait<UpdateTokenPayload, OnAuthenticationChanged>(
@@ -62,11 +65,28 @@ class SignUpRepository @Inject constructor(
             return if (updateTokenResult.isError) {
                 WooLog.w(WooLog.T.LOGIN, "Error updating token: ${updateTokenResult.error.message}")
                 AccountCreationError(UNKNOWN_ERROR)
-            } else {
-                WooLog.w(WooLog.T.LOGIN, "Success creating new account")
-                prefsWrapper.markAsNewSignUp(true)
-                AccountCreationSuccess
+            } else onTokenUpdatedSuccessfully(username)
+        }
+    }
+
+    private suspend fun onTokenUpdatedSuccessfully(username: String): AccountCreationResult {
+        return dispatcher.dispatchAndAwait<Void, OnAccountChanged>(
+            AccountActionBuilder.newFetchAccountAction()
+        ).let { accountFetchResult ->
+            if (accountFetchResult.isError) {
+                WooLog.w(WooLog.T.LOGIN, message = "Error fetching the user: ${accountFetchResult.error.message}")
+                // Persist the username manually and ignore the error
+                val account = AccountModel().apply {
+                    userName = username
+                }
+                dispatcher.dispatchAndAwait<AccountModel, OnAccountChanged>(
+                    AccountActionBuilder.newUpdateAccountAction(account)
+                )
             }
+
+            WooLog.w(WooLog.T.LOGIN, "Success creating new account")
+            prefsWrapper.markAsNewSignUp(true)
+            AccountCreationSuccess
         }
     }
 

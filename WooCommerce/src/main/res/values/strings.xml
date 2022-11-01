@@ -237,6 +237,7 @@
     <string name="login_wpcom_account_mismatch">It looks like %1$s is connected to a different WordPress.com account.</string>
     <string name="login_jetpack_not_connected">It looks like your account is not connected to %1$s\'s Jetpack</string>
     <string name="login_try_another_account">Log in with another account</string>
+    <string name="login_try_another_email">Try Another Address</string>
     <string name="login_try_another_store">Try another store</string>
     <string name="login_not_woo_store">It looks like %1$s is not a WooCommerce site.</string>
     <string name="login_install_woo">Install WooCommerce</string>
@@ -258,7 +259,7 @@
     <string name="login_jetpack_not_found">Jetpack not found. Please try again</string>
     <string name="login_jetpack_install">Install Jetpack</string>
     <string name="login_sign_in">Sign in</string>
-    <string name="login_need_help_finding_email">&lt;u&gt;Need help finding the required email?&lt;/u&gt;</string>
+    <string name="login_need_help_finding_email">Need help finding the required email?</string>
     <string name="login_email_help_title">What email do I use to sign in?</string>
     <string name="login_email_help_desc">In your site admin you can find the email you used to connect to WordPress.com from the %1$sJetpack Dashboard%2$s under %3$sConnections &gt; Account connection%4$s</string>
     <string name="login_discovery_error_title">Connection error</string>
@@ -266,7 +267,7 @@
     <string name="login_with_wordpress">Sign in with WordPress.com</string>
     <string name="login_troubleshooting_tips">Read our troubleshooting tips</string>
     <string name="login_discovery_error_option_select">Select an option</string>
-    <string name="login_no_wpcom_account_found">The email %1$s isn\'t used with a WordPress.com account.</string>
+    <string name="login_no_wpcom_account_found">Your email isn\'t used with a WordPress.com account.</string>
     <string name="user_role_access_error_msg">This app supports only Administrator and Shop Manager user roles. Please contact your store owner to upgrade your role.</string>
     <string name="user_role_access_error_link">Learn more about roles and permissions</string>
     <string name="user_role_access_error_retry">You don\'t have the correct user role</string>
@@ -285,6 +286,8 @@
     <string name="login_account_mismatch_connect_wpcom_dialog_message">Please contact the site owner for an invitation to the site as a shop manager or administrator to use the app.</string>
     <string name="login_jetpack_connection_consent">By tapping the Connect Jetpack button, you agree to our &lt;a href=\'terms\'&gt;Terms of Service&lt;/a&gt; and to &lt;a href=\'sync\'&gt;share details&lt;/a&gt; with WordPress.com.</string>
     <string name="simplified_login_enter_email_address">Enter your email address to get started</string>
+    <string name="login_create_an_account">Create An Account</string>
+
     <!--
         My Store View
     -->
@@ -352,7 +355,6 @@
         <item translatable="false">@string/date_timeframe_week_to_date</item>
         <item translatable="false">@string/date_timeframe_month_to_date</item>
         <item translatable="false">@string/date_timeframe_quarter_to_date</item>
-        <item translatable="false">@string/date_timeframe_year_to_date</item>
         <item translatable="false">@string/date_timeframe_year_to_date</item>
     </string-array>
     <string name="analytics_see_report_button_text">See report</string>e
@@ -1446,6 +1448,7 @@
     <string name="product_list_filters_show_products">Show products</string>
     <string name="product_list_filters_list_item">Selected filter option</string>
     <string name="product_search_hint">Search products</string>
+    <string name="product_search_hint_active_filters">Search filtered products</string>
     <string name="product_search_all">All products</string>
     <string name="product_search_sku">SKU</string>
     <string name="product_list_sorting_list_item">Selected sorting option</string>
@@ -2568,7 +2571,7 @@
     <string name="enter_your_site_address">Enter your site address</string>
     <string name="reset_your_password">Reset your password</string>
     <string name="signup_confirmation_title">Signup confirmation</string>
-    <string name="what_is_wordpress_link">&lt;u&gt;What is WordPress.com?&lt;/u&gt;</string>
+    <string name="what_is_wordpress_link">What is WordPress.com?</string>
 
     <string name="login_site_address">Site address</string>
 
@@ -2670,6 +2673,10 @@
     <string name="stats_widget_error_no_data">Couldn\'t load data</string>
     <string name="stats_widget_last_updated_message">As of %1$s</string>
 
-    <!-- Store creation -->
-    <string name="create_new_store">Create a new store</string>
+    <!--
+    Store creation
+    -->
+    <string name="store_creation_create_new_store_label">Create a new store</string>
+    <string name="store_creation_cannot_load_store">Couldn\'t load your store.\nPlease try again…</string>
+    <string name="store_creation_in_progress">Creating your store…</string>
 </resources>
