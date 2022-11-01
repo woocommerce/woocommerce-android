@@ -1,6 +1,9 @@
 package com.woocommerce.android.ui.jitm
 
 import com.woocommerce.android.analytics.AnalyticsEvent.JITM_FETCH_FAILURE
+import com.woocommerce.android.analytics.AnalyticsEvent.JITM_FETCH_SUCCESS
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_JITM
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_JITM_COUNT
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_SOURCE
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.ui.JitmTracker
@@ -49,6 +52,42 @@ class JitmTrackerTest : BaseUnitTest() {
                 "JitmTracker",
                 WooErrorType.GENERIC_ERROR.name,
                 "debug message",
+            )
+        }
+    }
+
+    @Test
+    fun `when track jitm success invoked, then JITM_FETCH_SUCCESS tracked`() {
+        testBlocking {
+            jitmTracker.trackJitmFetchSuccess(
+                UTM_SOURCE,
+                "12345",
+                1
+            )
+
+            verify(trackerWrapper).track(
+                eq(JITM_FETCH_SUCCESS),
+                any(),
+            )
+        }
+    }
+
+    @Test
+    fun `when track jitm success invoked, then JITM_FETCH_SUCCESS tracked with correct properties`() {
+        testBlocking {
+            jitmTracker.trackJitmFetchSuccess(
+                UTM_SOURCE,
+                "12345",
+                1
+            )
+
+            verify(trackerWrapper).track(
+                JITM_FETCH_SUCCESS,
+                mapOf(
+                    KEY_SOURCE to UTM_SOURCE,
+                    KEY_JITM to "12345",
+                    KEY_JITM_COUNT to 1
+                ),
             )
         }
     }
