@@ -51,9 +51,11 @@ internal class IAPBillingClientStateHandler(
     }
 
     private fun releaseWaiters() {
-        connectionEstablishingContinuations.forEach {
-            it.resume(Unit)
+        synchronized(connectionEstablishingContinuations) {
+            connectionEstablishingContinuations.forEach {
+                it.resume(Unit)
+            }
+            connectionEstablishingContinuations.clear()
         }
-        connectionEstablishingContinuations.clear()
     }
 }

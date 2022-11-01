@@ -24,6 +24,8 @@ import kotlinx.coroutines.flow.mapNotNull
 import kotlinx.coroutines.flow.merge
 
 private const val SUPPORTED_CURRENCY = "USD"
+private const val TEN_THOUSAND = 10_000
+private const val APP_ID = "com.woocommerce.android"
 
 internal class IAPPurchaseWPComPlanActionsImpl(
     private val iapMobilePayAPI: IAPMobilePayAPI,
@@ -104,9 +106,10 @@ internal class IAPPurchaseWPComPlanActionsImpl(
         val apiResponse = iapMobilePayAPI.createAndConfirmOrder(
             remoteSiteId = remoteSiteId,
             productIdentifier = purchase.products.first().id,
-            price = purchase.products.first().price,
+            priceInCents = convertMicroUnitsToCents(purchase.products.first().price),
             currency = purchase.products.first().currency,
-            purchaseToken = purchase.purchaseToken
+            purchaseToken = purchase.purchaseToken,
+            appId = APP_ID,
         )
         return when (apiResponse) {
             is CreateAndConfirmOrderResponse.Success -> WPComPurchaseResult.Success
@@ -126,4 +129,6 @@ internal class IAPPurchaseWPComPlanActionsImpl(
         iapProduct: IAPProduct
     ) = iapPurchases?.find { it.products.find { iapProduct.productId == it.id } != null }?.state ==
         IAPPurchase.State.PURCHASED
+
+    private fun convertMicroUnitsToCents(priceInMicroUnits: Long) = (priceInMicroUnits / TEN_THOUSAND).toInt()
 }
