@@ -1,11 +1,35 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2022-10-04 15:54:03+0000
+Translation-Revision-Date: 2022-10-26 16:54:04+0000
 Plural-Forms: nplurals=2; plural=(n > 1);
 Generator: GlotPress/2.4.0-alpha
 Language: tr
 -->
 <resources>
+    <string name="hello_blank_fragment">Merhaba boş parça</string>
+    <string name="what_is_wordpress_link">&lt;u&gt;WordPress.com nedir?&lt;/u&gt;</string>
+    <string name="signup_creating_account_loading_message">Yeni hesap oluşturma</string>
+    <string name="signup_terms_of_service">Devam ederek &lt;u&gt;Hizmet Şartlarımızı kabul etmiş olursunuz.&lt;/u&gt;</string>
+    <string name="signup_password_hint">Bir şifre seçin</string>
+    <string name="signup_email_address_hint">E-posta adresiniz</string>
+    <string name="signup_already_registered"> likle hesabınızı oluşturalım. Zaten kayıtlı mısınız? Oturum aç</string>
+    <string name="signup_get_started_label">Hemen başlayın: \ndakikalar içinde</string>
+    <string name="signup_get_started_button">Hemen başlayın</string>
+    <string name="login_jetpack_connection_consent">Jetpack\'i Bağla düğmesine dokunarak &lt;a href=\'terms\'&gt;Hizmet Şartlarımızı&lt;/a&gt; ve &lt;a href=\'sync\'&gt;ayrıntıları WordPress.com ile paylaşmayı&lt;/a&gt; kabul etmiş olursunuz.</string>
+    <string name="enable_card_reader">Kart Okuyucuyu Simülatörünü Etkinleştir</string>
+    <string name="login_account_mismatch_connect_wpcom_dialog_message">Uygulamayı kullanmak için mağaza yöneticisi veya yönetici olarak siteye davet için lütfen site sahibiyle iletişime geçin.</string>
+    <string name="login_account_mismatch_connect_wpcom_dialog_title">Bir WordPress.com sitesine bağlanıyor</string>
+    <string name="login_account_mismatch_connect_wpcom">Siteye bağlan</string>
+    <string name="login_account_mismatch_connect_jetpack">Jetpack\'i hesabınıza bağlayın</string>
+    <string name="qr_code_login_edit_camera_permission">İzinleri düzenle</string>
+    <string name="qr_code_login_camera_permission_denied_message">Bu özelliği kullanmak için lütfen kameranızın kullanımına izin verin.</string>
+    <string name="qr_code_login_camera_permission_denied_title">Kamera Erişimi Gerekli</string>
+    <string name="qr_code_login_scanner_title">Kamera Barkod Tarayıcı</string>
+    <string name="dev_options">Geliştirici Seçenekleri</string>
+    <string name="login_2fa_not_supported_self_hosted_site">2FA, bağımsız olarak barındırılan siteler için desteklenmez. Lütfen bir uygulama parolası kullanın.</string>
+    <string name="login_with_qr_code">Oturum açmak için QR kodunu tarayın</string>
+    <string name="show_password_content_description">Parolayı göster</string>
+    <string name="hide_password_content_description">Şifreyi gizle</string>
     <string name="stats_widget_last_updated_message">%1$s itibarıyla</string>
     <string name="stats_widget_error_no_data">Veri yüklenemedi</string>
     <string name="stats_today_widget_description">WooCommerce İstatistikleri Bugün</string>
@@ -17,7 +41,6 @@ Language: tr
     <string name="login_jetpack_verify_connection">Jetpack bağlantısı doğrulanıyor…</string>
     <string name="login_jetpack_connection_verification_failed">Jetpack bağlantınız doğrulanamıyor. Lütfen tekrar deneyin.</string>
     <string name="login_simple_wpcom_site">%1$s sitesinde şu anda eklenti yüklemeyi desteklemeyen bir WordPress.com paketi kullanılıyor. WooCommerce kullanabilmek için lütfen paketinizi yükseltin.</string>
-    <string name="login_connect_jetpack_button">Jetpack\'i hesabınıza bağlayın</string>
     <string name="login_jetpack_not_connected">Hesabınızın %1$s Jetpack\'e bağlı olmadığı anlaşılıyor</string>
     <string name="card_reader_card_readers_header">KART OKUYUCULAR</string>
     <string name="card_reader_payment_options_header">ÖDEME SEÇENEKLERİ</string>
@@ -42,7 +65,6 @@ Language: tr
     <string name="orderlist_bottom_sheet_simple_payments_moved_button">Anladım!</string>
     <string name="orderlist_bottom_sheet_simple_payments_moved_description">Artık Şahsen Ödemelere ve diğer özelliklere kolayca hızlı bir şekilde erişebilirsiniz.</string>
     <string name="orderlist_bottom_sheet_simple_payments_moved_title">Menü sekmesinden ödemeler</string>
-    <string name="login_no_wpcom_account_found">%1$s e-postası bir WordPress.com hesabıyla kullanılmaz.</string>
     <string name="login_non_woo_stores_label">Diğer siteler</string>
     <string name="login_with_store_address">Mağaza adresinizle oturum açın</string>
     <string name="more_menu_button_w___admin">WC Yöneticisi</string>
@@ -1833,6 +1855,7 @@ Language: tr
     <string name="orderdetail_track_shipment">Gönderimi takip et</string>
     <string name="login_email_help_desc">Site yöneticinizde, %3$sBağlantılar &gt; Hesap bağlantısı %4$s bölümünde yer alan %1$sJetpack Panosu\'ndan%2$s WordPress.com\'a bağlanmak için kullandığınız e-postayı bulabilirsiniz.</string>
     <string name="login_email_help_title">Giriş yapmak için hangi e-postayı kullanmam gerek?</string>
+    <string name="login_need_help_finding_email">&lt;u&gt;Gerekli e-postayı bulmak için yardıma mı ihtiyacınız var?&lt;/u&gt;</string>
     <string name="login_jetpack_what_is_description">Jetpack, size en iyi mobil deneyimi sunmak için anında bildirimler ve istatistikler dahil olmak üzere gerekli araçlarla sizi mağazaya bağlayan ücretsiz bir WordPress eklentisidir.</string>
     <string name="login_jetpack_what_is">Jetpack nedir?</string>
     <string name="login_view_connected_stores">Bağlanılan mağazaları görüntüle</string>

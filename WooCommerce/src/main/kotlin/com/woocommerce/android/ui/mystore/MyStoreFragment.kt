@@ -5,6 +5,7 @@ import android.os.Handler
 import android.os.Looper
 import android.view.View
 import android.view.ViewGroup.LayoutParams
+import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.core.view.children
 import androidx.core.view.isVisible
 import androidx.fragment.app.viewModels
@@ -22,23 +23,30 @@ import com.woocommerce.android.R
 import com.woocommerce.android.R.attr
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
+import com.woocommerce.android.analytics.ExperimentTracker
 import com.woocommerce.android.databinding.FragmentMyStoreBinding
+import com.woocommerce.android.extensions.hide
 import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.extensions.scrollStartEvents
 import com.woocommerce.android.extensions.setClickableText
 import com.woocommerce.android.extensions.startHelpActivity
 import com.woocommerce.android.extensions.verticalOffsetChanges
-import com.woocommerce.android.support.HelpActivity.Origin
+import com.woocommerce.android.support.help.HelpActivity.Origin
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.base.TopLevelFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
+import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.ui.main.AppBarStatus
 import com.woocommerce.android.ui.main.MainActivity
 import com.woocommerce.android.ui.main.MainNavigationRouter
+import com.woocommerce.android.ui.mystore.MyStoreViewModel.MyStoreEvent.OnJitmCtaClicked
+import com.woocommerce.android.ui.mystore.MyStoreViewModel.MyStoreEvent.OpenAnalytics
 import com.woocommerce.android.ui.mystore.MyStoreViewModel.MyStoreEvent.OpenTopPerformer
 import com.woocommerce.android.ui.mystore.MyStoreViewModel.OrderState
 import com.woocommerce.android.ui.mystore.MyStoreViewModel.RevenueStatsViewState
 import com.woocommerce.android.ui.mystore.MyStoreViewModel.VisitorStatsViewState
+import com.woocommerce.android.ui.payments.banner.Banner
+import com.woocommerce.android.ui.payments.banner.BannerState
 import com.woocommerce.android.util.ActivityUtils
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.util.DateUtils
@@ -74,6 +82,7 @@ class MyStoreFragment : TopLevelFragment(R.layout.fragment_my_store) {
     @Inject lateinit var uiMessageResolver: UIMessageResolver
     @Inject lateinit var dateUtils: DateUtils
     @Inject lateinit var usageTracksEventEmitter: MyStoreStatsUsageTracksEventEmitter
+    @Inject lateinit var experimentTracker: ExperimentTracker
 
     private var _binding: FragmentMyStoreBinding? = null
     private val binding get() = _binding!!
@@ -117,8 +126,6 @@ class MyStoreFragment : TopLevelFragment(R.layout.fragment_my_store) {
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-
         initTabLayout()
 
         _binding = FragmentMyStoreBinding.bind(view)
@@ -146,7 +153,7 @@ class MyStoreFragment : TopLevelFragment(R.layout.fragment_my_store) {
             currencyFormatter,
             usageTracksEventEmitter,
             viewLifecycleOwner.lifecycleScope
-        )
+        ) { viewModel.onViewAnalyticsClicked() }
 
         binding.myStoreTopPerformers.initView(selectedSite)
 
@@ -165,10 +172,29 @@ class MyStoreFragment : TopLevelFragment(R.layout.fragment_my_store) {
             .onEach { usageTracksEventEmitter.interacted() }
             .launchIn(viewLifecycleOwner.lifecycleScope)
 
+        // Successful event for Simplified Login A/B testing.
+        experimentTracker.log(ExperimentTracker.SIMPLIFIED_LOGIN_SUCCESSFUL_EVENT)
+
         setupStateObservers()
     }
 
-    @Suppress("ComplexMethod", "MagicNumber")
+    private fun applyBannerComposeUI(state: BannerState) {
+        if (state.shouldDisplayBanner) {
+            binding.jitmView.apply {
+                // Dispose of the Composition when the view's LifecycleOwner is destroyed
+                setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
+                setContent {
+                    WooThemeWithBackground {
+                        Banner(bannerState = state)
+                    }
+                }
+            }
+        } else {
+            binding.jitmView.hide()
+        }
+    }
+
+    @Suppress("ComplexMethod", "MagicNumber", "LongMethod")
     private fun setupStateObservers() {
         viewModel.activeStatsGranularity.observe(viewLifecycleOwner) { activeGranularity ->
             if (tabLayout.getTabAt(tabLayout.selectedTabPosition)?.tag != activeGranularity) {
@@ -210,6 +236,9 @@ class MyStoreFragment : TopLevelFragment(R.layout.fragment_my_store) {
                 OrderState.AtLeastOne -> showEmptyView(false)
             }
         }
+        viewModel.bannerState.observe(viewLifecycleOwner) { bannerState ->
+            applyBannerComposeUI(bannerState)
+        }
         viewModel.event.observe(viewLifecycleOwner) { event ->
             when (event) {
                 is OpenTopPerformer -> findNavController().navigateSafely(
@@ -218,6 +247,17 @@ class MyStoreFragment : TopLevelFragment(R.layout.fragment_my_store) {
                         isTrashEnabled = false
                     )
                 )
+                is OpenAnalytics -> {
+                    mainNavigationRouter?.showAnalytics(event.analyticsPeriod)
+                }
+                is OnJitmCtaClicked -> {
+                    findNavController().navigate(
+                        NavGraphMainDirections.actionGlobalWPComWebViewFragment(
+                            urlToLoad = event.url,
+                            title = resources.getString(event.titleRes)
+                        )
+                    )
+                }
                 else -> event.isHandled = false
             }
         }

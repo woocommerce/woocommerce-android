@@ -1,11 +1,35 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2022-10-02 19:36:45+0000
+Translation-Revision-Date: 2022-10-26 12:54:04+0000
 Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);
 Generator: GlotPress/2.4.0-alpha
 Language: ru
 -->
 <resources>
+    <string name="hello_blank_fragment">Пустой фрагмент с приветствием</string>
+    <string name="what_is_wordpress_link">&lt;u&gt;Что такое WordPress.com?&lt;/u&gt;</string>
+    <string name="signup_creating_account_loading_message">Создание учетной записи</string>
+    <string name="signup_terms_of_service">Продолжая, вы принимаете наши &lt;u&gt;Условия предоставления услуг.&lt;/u&gt;</string>
+    <string name="signup_password_hint">Выберите пароль</string>
+    <string name="signup_email_address_hint">Ваш адрес электронной почты</string>
+    <string name="signup_already_registered">Сначала создадим вам учетную запись. Уже зарегистрированы? Войти</string>
+    <string name="signup_get_started_label">Начало работы \nчерез несколько минут</string>
+    <string name="signup_get_started_button">Начало работы</string>
+    <string name="login_jetpack_connection_consent">Нажимая кнопку «Подключить Jetpack», вы принимаете &lt;a href=\'terms\'&gt;Условия предоставления услуг&lt;/a&gt; и разрешаете &lt;a href=\'sync\'&gt;обмен данными&lt;/a&gt; с WordPress.com.</string>
+    <string name="enable_card_reader">Включить симуляцию устройства чтения карт</string>
+    <string name="login_account_mismatch_connect_wpcom_dialog_message">Чтобы использовать приложение, получите приглашение у владельца сайта, например у директора магазина или администратора.</string>
+    <string name="login_account_mismatch_connect_wpcom_dialog_title">Подключение к сайту WordPress.com</string>
+    <string name="login_account_mismatch_connect_wpcom">Подключить к сайту</string>
+    <string name="login_account_mismatch_connect_jetpack">Подключите Jetpack к учётной записи</string>
+    <string name="qr_code_login_edit_camera_permission">Изменить разрешения</string>
+    <string name="qr_code_login_camera_permission_denied_message">Для работы с этой функцией предоставьте разрешение на использование камеры.</string>
+    <string name="qr_code_login_camera_permission_denied_title">Требуется доступ к камере</string>
+    <string name="qr_code_login_scanner_title">Сканер штрихкодов в камере</string>
+    <string name="dev_options">Параметры разработчика</string>
+    <string name="login_2fa_not_supported_self_hosted_site">Двухфакторная проверка подлинности не поддерживается для автономных сайтов. Используйте пароль приложения.</string>
+    <string name="login_with_qr_code">Отсканируйте QR-код для входа</string>
+    <string name="show_password_content_description">Показать пароль</string>
+    <string name="hide_password_content_description">Скрыть пароль</string>
     <string name="stats_widget_last_updated_message">На %1$s</string>
     <string name="stats_widget_error_no_data">Невозможно загрузить данные</string>
     <string name="stats_today_widget_description">Статистика WooCommerce за сегодня</string>
@@ -17,7 +41,6 @@ Language: ru
     <string name="login_jetpack_verify_connection">Проверка подключения Jetpack…</string>
     <string name="login_jetpack_connection_verification_failed">Не удалось проверить подключение Jetpack. Повторите попытку.</string>
     <string name="login_simple_wpcom_site">Сейчас на сайте %1$s используется план WordPress.com, который не поддерживает установку плагинов. Перейдите на другой план, чтобы использовать WooCommerce.</string>
-    <string name="login_connect_jetpack_button">Подключите Jetpack к учётной записи</string>
     <string name="login_jetpack_not_connected">Похоже, что ваша учётная запись не подключена к Jetpack %1$s</string>
     <string name="card_reader_card_readers_header">УСТРОЙСТВА ЧТЕНИЯ КАРТ</string>
     <string name="card_reader_payment_options_header">СПОСОБЫ ОПЛАТЫ</string>
@@ -42,7 +65,6 @@ Language: ru
     <string name="orderlist_bottom_sheet_simple_payments_moved_button">Понятно!</string>
     <string name="orderlist_bottom_sheet_simple_payments_moved_description">Теперь можно быстро и просто получать доступ к очным платежам и другим функциям</string>
     <string name="orderlist_bottom_sheet_simple_payments_moved_title">Платежи из вкладки меню</string>
-    <string name="login_no_wpcom_account_found">Адрес эл. почты %1$s не используется с учётной записью WordPress.com.</string>
     <string name="login_non_woo_stores_label">Другие сайты</string>
     <string name="login_with_store_address">Войти с помощью адреса магазина</string>
     <string name="more_menu_button_w___admin">WC Admin</string>
@@ -1833,6 +1855,7 @@ Language: ru
     <string name="orderdetail_track_shipment">Отследить посылку</string>
     <string name="login_email_help_desc">Чтобы узнать, какой адрес эл. почты вы использовали для подключения к WordPress.com, в режиме управления сайтом в %1$sконсоли Jetpack%2$s перейдите в %3$sПодключения &gt; Подключение учетных записей%4$s</string>
     <string name="login_email_help_title">Какой адрес эл. почты я использую для входа?</string>
+    <string name="login_need_help_finding_email">&lt;u&gt;Не можете вспомнить адрес эл. почты?&lt;/u&gt;</string>
     <string name="login_jetpack_what_is_description">Jetpack — это бесплатный плагин WordPress с дополнительными инструментами, которые обеспечивают удобное управление магазином с мобильных устройств и доступ к расширенным возможностям, например push-уведомлениям и статистике.</string>
     <string name="login_jetpack_what_is">Что такое Jetpack?</string>
     <string name="login_view_connected_stores">Открыть список подключенных магазинов</string>

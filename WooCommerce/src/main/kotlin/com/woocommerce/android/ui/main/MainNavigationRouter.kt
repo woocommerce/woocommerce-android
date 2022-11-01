@@ -1,6 +1,7 @@
 package com.woocommerce.android.ui.main
 
 import android.view.View
+import com.woocommerce.android.ui.analytics.daterangeselector.AnalyticTimePeriod
 
 interface MainNavigationRouter {
     fun isAtNavigationRoot(): Boolean
@@ -51,4 +52,6 @@ interface MainNavigationRouter {
 
     fun showFeedbackSurvey()
     fun showSettingsScreen()
+
+    fun showAnalytics(targetPeriod: AnalyticTimePeriod)
 }

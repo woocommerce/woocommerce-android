@@ -13,8 +13,8 @@ import kotlinx.coroutines.flow.mapNotNull
 internal class IAPPurchasesUpdatedListener(
     private val logWrapper: IAPLogWrapper,
 ) : PurchasesUpdatedListener {
-    private val _purchaseWpComPlanResult = MutableStateFlow<PurchasesResult?>(null)
-    val purchaseWpComPlanResult: Flow<PurchasesResult> = _purchaseWpComPlanResult.mapNotNull { it }
+    private val _purchaseResult = MutableStateFlow<PurchasesResult?>(null)
+    val purchaseResult: Flow<PurchasesResult> = _purchaseResult.mapNotNull { it }
 
     override fun onPurchasesUpdated(billingResult: BillingResult, purchases: List<Purchase>?) {
         logWrapper.d(IAP_LOG_TAG, "onPurchasesUpdated $billingResult $purchases")
@@ -25,6 +25,6 @@ internal class IAPPurchasesUpdatedListener(
     }
 
     fun onPurchaseAvailable(purchasesResult: PurchasesResult) {
-        _purchaseWpComPlanResult.value = purchasesResult
+        _purchaseResult.value = purchasesResult
     }
 }

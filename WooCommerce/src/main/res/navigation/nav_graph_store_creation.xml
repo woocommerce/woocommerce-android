@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/nav_graph_store_creation"
+    app:startDestination="@id/storeCreationQuestionsFragment">
+
+    <fragment
+        android:id="@+id/storeCreationQuestionsFragment"
+        android:name="com.woocommerce.android.ui.login.storecreation.StoreCreationQuestionsFragment"
+        android:label="fragment_store_creation_questions" />
+
+</navigation>

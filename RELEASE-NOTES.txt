@@ -1,7 +1,25 @@
 *** PLEASE FOLLOW THIS FORMAT: [<priority indicator, more stars = higher priority>] <description> [<PR URL>]
-10.8
+11.1
 -----
 
+
+11.0
+-----
+- [*] Fixed a bug caused by statement descriptor value too long or containing illegal chars [https://github.com/woocommerce/woocommerce-android/pull/7595]
+- [*] [Internal] Simplified login: update email screen layout [https://github.com/woocommerce/woocommerce-android/pull/7619]
+- [*] [Internal] Simplified login: update the "WP Account not found" screen [https://github.com/woocommerce/woocommerce-android/pull/7639]
+- [**] Display Just In Time Message (JITM) related to card reader purchase on the MyStore screen [https://github.com/woocommerce/woocommerce-android/pull/7652]
+- [*] [Internal] IPP plugins statuses added as zendesk tags [https://github.com/woocommerce/woocommerce-android/pull/7624]
+- [***] We added a new Analytics Hub inside the My Store area of the app. Simply click on the See More button under the store stats to check more detailed information on Revenue and Orders. (https://github.com/woocommerce/woocommerce-android/pull/7556)
+
+10.9
+-----
+- [**] Login: add support for Jetpack connection to sites that have Jetpack but don't have any connected accounts [https://github.com/woocommerce/woocommerce-android/pull/7545]
+- [*] [Internal] In-Person Payments: add UTM parameters to card reader purchase URLs to allow attribution [https://github.com/woocommerce/woocommerce-android/pull/7554]
+
+10.8
+-----
+[*] [Internal] Signed-in card reader purchase from upsell banner both from the orders list and selection of a payment method [https://github.com/woocommerce/woocommerce-android/pull/7535]
 
 10.7
 -----

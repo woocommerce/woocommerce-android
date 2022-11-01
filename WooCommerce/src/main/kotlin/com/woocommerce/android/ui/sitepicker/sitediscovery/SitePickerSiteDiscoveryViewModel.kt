@@ -179,8 +179,9 @@ class SitePickerSiteDiscoveryViewModel @Inject constructor(
                 when {
                     !it.exists -> inlineErrorFlow.value = R.string.invalid_site_url_message
                     !it.isWordPress -> stepFlow.value = Step.NotWordpress
-                    !it.isWPCom && (!it.hasJetpack || !it.isJetpackConnected) ->
+                    !it.isWPCom && !it.isJetpackActive ->
                         stepFlow.value = Step.JetpackUnavailable
+                    !it.isWPCom && !it.isJetpackConnected -> navigateToJetpackConnectionError()
                     else -> navigateBackToSitePicker()
                 }
             },
@@ -202,10 +203,21 @@ class SitePickerSiteDiscoveryViewModel @Inject constructor(
         navigateBackToSitePicker()
     }
 
+    fun onJetpackConnected() {
+        navigateBackToSitePicker()
+    }
+
     private fun navigateBackToSitePicker() {
         fetchedSiteUrl.let { url ->
             requireNotNull(url)
             triggerEvent(ExitWithResult(url))
+        }
+    }
+
+    private fun navigateToJetpackConnectionError() {
+        fetchedSiteUrl.let { url ->
+            requireNotNull(url)
+            triggerEvent(ShowJetpackConnectionError(url))
         }
     }
 
@@ -253,4 +265,5 @@ class SitePickerSiteDiscoveryViewModel @Inject constructor(
     object CreateZendeskTicket : MultiLiveEvent.Event()
     object NavigateToHelpScreen : MultiLiveEvent.Event()
     data class StartJetpackInstallation(val siteAddress: String) : MultiLiveEvent.Event()
+    data class ShowJetpackConnectionError(val siteAddress: String) : MultiLiveEvent.Event()
 }

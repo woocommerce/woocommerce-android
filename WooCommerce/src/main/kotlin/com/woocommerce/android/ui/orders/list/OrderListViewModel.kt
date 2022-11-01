@@ -24,6 +24,7 @@ import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.extensions.NotificationReceivedEvent
 import com.woocommerce.android.model.RequestResult.SUCCESS
+import com.woocommerce.android.model.UiString
 import com.woocommerce.android.network.ConnectionChangeReceiver.ConnectionChangeEvent
 import com.woocommerce.android.push.NotificationChannelType
 import com.woocommerce.android.tools.NetworkStatus
@@ -40,6 +41,7 @@ import com.woocommerce.android.ui.payments.banner.BannerState
 import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.util.LandscapeChecker
 import com.woocommerce.android.util.ThrottleLiveData
+import com.woocommerce.android.util.UtmProvider
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.viewmodel.LiveDataDelegate
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
@@ -67,6 +69,7 @@ import org.wordpress.android.fluxc.store.WCOrderStore.OnOrderChanged
 import org.wordpress.android.fluxc.store.WCOrderStore.OnOrderSummariesFetched
 import org.wordpress.android.mediapicker.util.filter
 import javax.inject.Inject
+import javax.inject.Named
 
 private const val EMPTY_VIEW_THROTTLE = 250L
 
@@ -95,6 +98,7 @@ class OrderListViewModel @Inject constructor(
     private val orderListTransactionLauncher: OrderListTransactionLauncher,
     private val analyticsTrackerWrapper: AnalyticsTrackerWrapper,
     private val landscapeChecker: LandscapeChecker,
+    @Named("order-list") private val orderListUtmProvider: UtmProvider,
 ) : ScopedViewModel(savedState), LifecycleOwner {
     private val lifecycleRegistry: LifecycleRegistry by lazy {
         LifecycleRegistry(this)
@@ -214,10 +218,10 @@ class OrderListViewModel @Inject constructor(
                 onCtaClicked(AnalyticsTracker.KEY_BANNER_ORDER_LIST)
             },
             onDismissClicked = { onDismissClicked() },
-            title = R.string.card_reader_upsell_card_reader_banner_title,
-            description = R.string.card_reader_upsell_card_reader_banner_description,
-            primaryActionLabel = R.string.card_reader_upsell_card_reader_banner_cta,
-            chipLabel = R.string.card_reader_upsell_card_reader_banner_new
+            title = UiString.UiStringRes(R.string.card_reader_upsell_card_reader_banner_title),
+            description = UiString.UiStringRes(R.string.card_reader_upsell_card_reader_banner_description),
+            primaryActionLabel = UiString.UiStringRes(R.string.card_reader_upsell_card_reader_banner_cta),
+            chipLabel = UiString.UiStringRes(R.string.card_reader_upsell_card_reader_banner_new)
         )
         trackBannerShownIfDisplayed()
     }
@@ -535,7 +539,12 @@ class OrderListViewModel @Inject constructor(
     private fun onCtaClicked(source: String) {
         launch {
             triggerEvent(
-                OpenPurchaseCardReaderLink(bannerDisplayEligibilityChecker.getPurchaseCardReaderUrl(source))
+                OpenPurchaseCardReaderLink(
+                    orderListUtmProvider.getUrlWithUtmParams(
+                        bannerDisplayEligibilityChecker.getPurchaseCardReaderUrl(source)
+                    ),
+                    R.string.card_reader_purchase_card_reader
+                )
             )
         }
     }
@@ -682,7 +691,10 @@ class OrderListViewModel @Inject constructor(
         object DismissCardReaderUpsellBanner : OrderListEvent()
         object DismissCardReaderUpsellBannerViaRemindMeLater : OrderListEvent()
         object DismissCardReaderUpsellBannerViaDontShowAgain : OrderListEvent()
-        data class OpenPurchaseCardReaderLink(val url: String) : OrderListEvent()
+        data class OpenPurchaseCardReaderLink(
+            val url: String,
+            @StringRes val titleRes: Int,
+        ) : OrderListEvent()
         data class ShowRetryErrorSnack(
             val message: String,
             val retry: View.OnClickListener
@@ -698,6 +710,12 @@ class OrderListViewModel @Inject constructor(
         val arePaymentGatewaysFetched: Boolean = false,
         val filterCount: Int = 0
     ) : Parcelable
+
+    companion object {
+        const val UTM_CAMPAIGN = "feature_announcement_card"
+        const val UTM_SOURCE = "orders_list"
+        const val UTM_CONTENT = "upsell_card_readers"
+    }
 }
 
 object InAppLifecycleMemory {

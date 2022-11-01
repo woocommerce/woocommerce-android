@@ -1,11 +1,35 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2022-09-28 13:31:34+0000
+Translation-Revision-Date: 2022-10-27 11:54:04+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: sv_SE
 -->
 <resources>
+    <string name="hello_blank_fragment">Hej tomt fragment</string>
+    <string name="what_is_wordpress_link">&lt;u&gt;Vad är WordPress.com?&lt;/u&gt;</string>
+    <string name="signup_creating_account_loading_message">Skapar nytt konto</string>
+    <string name="signup_terms_of_service">Genom att fortsätta godkänner du våra &lt;u&gt;användarvillkor.&lt;/u&gt;</string>
+    <string name="signup_password_hint">Välj ett lösenord</string>
+    <string name="signup_email_address_hint">Din e-postadress</string>
+    <string name="signup_already_registered">Låt oss börja med att skapa ditt konto. Har du redan registrerat dig? Logga in</string>
+    <string name="signup_get_started_label">Kom igång \npå några minuter</string>
+    <string name="signup_get_started_button">Kom igång</string>
+    <string name="login_jetpack_connection_consent">Genom att klicka på knappen Anslut Jetpack godkänner du våra &lt;a href=\'terms\'&gt;användarvillkor&lt;/a&gt; och samtycker till att &lt;a href=\'sync\'&gt;dela information&lt;/a&gt; med WordPress.com.</string>
+    <string name="enable_card_reader">Aktivera simulerad kortläsare</string>
+    <string name="login_account_mismatch_connect_wpcom_dialog_message">Kontakta webbplatsens ägare för en inbjudan till webbplatsen som butikschef eller administratör för att använda appen.</string>
+    <string name="login_account_mismatch_connect_wpcom_dialog_title">Ansluter till en WordPress.com-webbplats</string>
+    <string name="login_account_mismatch_connect_wpcom">Anslut till webbplatsen</string>
+    <string name="login_account_mismatch_connect_jetpack">Anslut Jetpack till ditt konto</string>
+    <string name="qr_code_login_edit_camera_permission">Redigera behörigheter</string>
+    <string name="qr_code_login_camera_permission_denied_message">För att använda den här funktionen, tillåt att din kamera används.</string>
+    <string name="qr_code_login_camera_permission_denied_title">Kameraåtkomst krävs</string>
+    <string name="qr_code_login_scanner_title">Kamerastreckkodsskanner</string>
+    <string name="dev_options">Utvecklaralternativ</string>
+    <string name="login_2fa_not_supported_self_hosted_site">2FA stöds inte för webbplatser som drivs på egen server. Använd ett applösenord.</string>
+    <string name="login_with_qr_code">Skanna QR-kod för att logga in</string>
+    <string name="show_password_content_description">Visa lösenord</string>
+    <string name="hide_password_content_description">Dölj lösenord</string>
     <string name="stats_widget_last_updated_message">Per den %1$s</string>
     <string name="stats_widget_error_no_data">Det gick inte att ladda data</string>
     <string name="stats_today_widget_description">WooCommerce-statistik idag</string>
@@ -17,7 +41,6 @@ Language: sv_SE
     <string name="login_jetpack_verify_connection">Verifierar Jetpack-anslutning …</string>
     <string name="login_jetpack_connection_verification_failed">Kan inte verifiera din Jetpack-anslutning. Försök igen.</string>
     <string name="login_simple_wpcom_site">Webbplatsen %1$s har för närvarande ett WordPress.com-paket som inte stöder installation av tillägg. Uppgradera ditt paket för att använda WooCommerce.</string>
-    <string name="login_connect_jetpack_button">Anslut Jetpack till ditt konto</string>
     <string name="login_jetpack_not_connected">Det verkar som att ditt konto inte är anslutet till Jetpack för %1$s</string>
     <string name="card_reader_card_readers_header">KORTLÄSARE</string>
     <string name="card_reader_payment_options_header">BETALNINGSALTERNATIV</string>
@@ -42,7 +65,6 @@ Language: sv_SE
     <string name="orderlist_bottom_sheet_simple_payments_moved_button">Jag förstår!</string>
     <string name="orderlist_bottom_sheet_simple_payments_moved_description">Now you can quickly access In-Person Payments and other features with ease</string>
     <string name="orderlist_bottom_sheet_simple_payments_moved_title">Betalningar från menyfliken</string>
-    <string name="login_no_wpcom_account_found">E-posten %1$s används inte med ett WordPress.com-konto.</string>
     <string name="login_non_woo_stores_label">Andra webbplatser</string>
     <string name="login_with_store_address">Logga in med din butiksadress</string>
     <string name="more_menu_button_w___admin">WC-admin</string>
@@ -1833,6 +1855,7 @@ Language: sv_SE
     <string name="orderdetail_track_shipment">Spåra försändelse</string>
     <string name="login_email_help_desc">Du kan hitta e-postadressen som du använder för att ansluta till WordPress.com från din webbplatsadminsitration på %1$sJetpack Dashboard%2$s under %3$sAnslutningar &gt; Kontoanslutning%4$s</string>
     <string name="login_email_help_title">Vilken e-postadress ska jag använda för att logga in?</string>
+    <string name="login_need_help_finding_email">&lt;u&gt;Behöver du hjälp med att hitta e-postmeddelandet?&lt;/u&gt;</string>
     <string name="login_jetpack_what_is_description">Jetpack är ett kostnadsfritt tillägg i WordPress som ansluter din butik till de verktyg som behövs för att ge den bästa möjliga mobilupplevelsen, inklusive pushmeddelanden och statistik</string>
     <string name="login_jetpack_what_is">Vad är Jetpack?</string>
     <string name="login_view_connected_stores">Visa anslutna butiker</string>

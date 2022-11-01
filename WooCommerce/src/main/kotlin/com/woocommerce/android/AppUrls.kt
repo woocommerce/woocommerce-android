@@ -1,8 +1,8 @@
 package com.woocommerce.android
 
-import com.woocommerce.android.support.HelpActivity.Origin.LOGIN_EMAIL
-import com.woocommerce.android.support.HelpActivity.Origin.LOGIN_SITE_ADDRESS
-import com.woocommerce.android.support.HelpActivity.Origin.LOGIN_USERNAME_PASSWORD
+import com.woocommerce.android.support.help.HelpActivity.Origin.LOGIN_EMAIL
+import com.woocommerce.android.support.help.HelpActivity.Origin.LOGIN_SITE_ADDRESS
+import com.woocommerce.android.support.help.HelpActivity.Origin.LOGIN_USERNAME_PASSWORD
 
 object AppUrls {
     const val APP_HELP_CENTER = "https://docs.woocommerce.com/document/android/"
@@ -77,6 +77,9 @@ object AppUrls {
         "https://woocommerce.com/document/what-is-a-wordpress-com-account/"
 
     const val NEW_TO_WOO_DOC = "https://woocommerce.com/woocommerce-features"
+
+    const val WORPRESS_COM_TERMS = "https://wordpress.com/tos"
+    const val JETPACK_SYNC_POLICY = "https://jetpack.com/support/what-data-does-jetpack-sync"
 
     private const val LOGIN_HELP_CENTER = "https://woocommerce.com/document/android-ios-apps-login-help-faq/"
     val LOGIN_HELP_CENTER_URLS = mapOf(

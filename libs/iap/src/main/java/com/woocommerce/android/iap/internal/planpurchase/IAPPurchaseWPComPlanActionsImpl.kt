@@ -42,7 +42,7 @@ internal class IAPPurchaseWPComPlanActionsImpl(
 
     override val purchaseWpComPlanResult: Flow<WPComPurchaseResult> = merge(
         purchaseWpComPlanFetchingProductsError.mapNotNull { it },
-        iapManager.purchaseWpComPlanResult.map { mapPurchaseResultToWPComPurchaseResult(it) },
+        iapManager.iapPurchaseResult.map { handleNewPurchaseResultEvent(it) },
     )
 
     override suspend fun isWPComPlanPurchased(): WPComIsPurchasedResult {
@@ -91,7 +91,7 @@ internal class IAPPurchaseWPComPlanActionsImpl(
         iapManager.disconnect()
     }
 
-    private suspend fun mapPurchaseResultToWPComPurchaseResult(response: IAPPurchaseResult) = when (response) {
+    private suspend fun handleNewPurchaseResultEvent(response: IAPPurchaseResult) = when (response) {
         is IAPPurchaseResult.Success -> {
             val purchase = response.purchases!!.first()
             confirmPurchaseOnBackend(remoteSiteId, purchase)

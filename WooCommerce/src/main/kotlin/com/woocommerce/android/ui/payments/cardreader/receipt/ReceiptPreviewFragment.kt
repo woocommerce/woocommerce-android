@@ -111,7 +111,8 @@ class ReceiptPreviewFragment : BaseFragment(R.layout.fragment_receipt_preview) {
     }
 
     private fun composeEmail(event: SendReceipt) {
-        val success = ActivityUtils.composeEmail(requireActivity(), event.address, event.subject, event.content)
-        if (!success) viewModel.onEmailActivityNotFound()
+        ActivityUtils.sendEmail(requireActivity(), event.address, event.subject, event.content) {
+            viewModel.onEmailActivityNotFound()
+        }
     }
 }

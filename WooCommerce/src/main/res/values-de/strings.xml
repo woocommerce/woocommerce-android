@@ -1,11 +1,35 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2022-10-05 08:42:31+0000
+Translation-Revision-Date: 2022-10-27 11:54:04+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: de
 -->
 <resources>
+    <string name="hello_blank_fragment">Hallo, (leeres Fragment)</string>
+    <string name="what_is_wordpress_link">&lt;u&gt;Was ist WordPress.com?&lt;/u&gt;</string>
+    <string name="signup_creating_account_loading_message">Neues Konto wird erstellt</string>
+    <string name="signup_terms_of_service">Indem du fortfährst, stimmst du unseren &lt;u&gt;Geschäftsbedingungen zu&lt;/u&gt;</string>
+    <string name="signup_password_hint">Wähle ein Passwort</string>
+    <string name="signup_email_address_hint">Deine E-Mail-Adresse</string>
+    <string name="signup_already_registered">Erstellen wir zuerst dein Konto. Bist du bereits registriert? Anmelden</string>
+    <string name="signup_get_started_label">Los geht’s \nin Minuten</string>
+    <string name="signup_get_started_button">Los geht’s</string>
+    <string name="login_jetpack_connection_consent">Durch Tippen auf den Button „Jetpack verbinden“ stimmst du unseren &lt;a href=\'terms\'&gt;Geschäftsbedingungen&lt;/a&gt; und dem &lt;a href=\'sync\'&gt;Teilen von Daten&lt;/a&gt; mit WordPress.com zu.</string>
+    <string name="enable_card_reader">Simuliertes Kartenlesegerät aktivieren</string>
+    <string name="login_account_mismatch_connect_wpcom_dialog_message">Bitte kontaktiere den Website-Betreiber, um eine Einladung zur Website als Shop-Manager oder Administrator zu erhalten und die App verwenden zu können.</string>
+    <string name="login_account_mismatch_connect_wpcom_dialog_title">Mit einer WordPress.com-Website verbinden</string>
+    <string name="login_account_mismatch_connect_wpcom">Mit der Website verbinden</string>
+    <string name="login_account_mismatch_connect_jetpack">Verbinde Jetpack mit deinem Konto</string>
+    <string name="qr_code_login_edit_camera_permission">Berechtigungen bearbeiten</string>
+    <string name="qr_code_login_camera_permission_denied_message">Gewähre zum Verwenden dieser Funktion bitte Berechtigungen zur Nutzung deiner Kamera.</string>
+    <string name="qr_code_login_camera_permission_denied_title">Kamerazugriff erforderlich</string>
+    <string name="qr_code_login_scanner_title">Barcode-Scanner der Kamera</string>
+    <string name="dev_options">Entwickleroptionen</string>
+    <string name="login_2fa_not_supported_self_hosted_site">2FA wird für selbst gehostete Websites nicht unterstützt. Bitte verwende ein App-Passwort.</string>
+    <string name="login_with_qr_code">Zum Anmelden den QR-Code scannen</string>
+    <string name="show_password_content_description">Passwort anzeigen</string>
+    <string name="hide_password_content_description">Passwort verbergen</string>
     <string name="stats_widget_last_updated_message">Stand: %1$s</string>
     <string name="stats_widget_error_no_data">Daten konnten nicht geladen werden</string>
     <string name="stats_today_widget_description">Heutige WooCommerce-Statistiken</string>
@@ -17,7 +41,6 @@ Language: de
     <string name="login_jetpack_verify_connection">Die Jetpack-Verbindung wird überprüft …</string>
     <string name="login_jetpack_connection_verification_failed">Deine Jetpack-Verbindung kann nicht überprüft werden. Bitte versuche es erneut.</string>
     <string name="login_simple_wpcom_site">Für die Website %1$s gilt derzeit ein WordPress.com-Tarif, in dem das Installieren von Plugins nicht möglich ist. Bitte führe ein Tarif-Upgrade durch, um WooCommerce nutzen zu können.</string>
-    <string name="login_connect_jetpack_button">Verbinde Jetpack mit deinem Konto</string>
     <string name="login_jetpack_not_connected">Offenbar ist dein Konto nicht mit Jetpack von %1$s verbunden</string>
     <string name="card_reader_card_readers_header">KARTENLESEGERÄTE</string>
     <string name="card_reader_payment_options_header">ZAHLUNGSOPTIONEN</string>
@@ -42,7 +65,6 @@ Language: de
     <string name="orderlist_bottom_sheet_simple_payments_moved_button">Verstanden!</string>
     <string name="orderlist_bottom_sheet_simple_payments_moved_description">Jetzt kannst du schnell und einfach auf Persönliche Zahlungen und andere Funktionen zugreifen</string>
     <string name="orderlist_bottom_sheet_simple_payments_moved_title">Zahlungen über den Tab „Menü“</string>
-    <string name="login_no_wpcom_account_found">Die E-Mail %1$s wird nicht mit einem WordPress.com-Konto verwendet.</string>
     <string name="login_non_woo_stores_label">Andere Websites</string>
     <string name="login_with_store_address">Melde dich mit deiner Shop-Adresse an</string>
     <string name="more_menu_button_w___admin">WC Admin</string>
@@ -1833,6 +1855,7 @@ Language: de
     <string name="orderdetail_track_shipment">Sendung verfolgen</string>
     <string name="login_email_help_desc">In deiner Website-Administration kannst du über das %1$sJetpack-Dashboard%2$s unter %3$sVerbindungen &gt; Kontoverbindung%4$s die E-Mail-Adresse finden, mit der du dich mit WordPress.com verbunden hast.</string>
     <string name="login_email_help_title">Mit welcher E-Mail-Adresse melde ich mich an?</string>
+    <string name="login_need_help_finding_email">&lt;u&gt;Benötigst du Hilfe bei der Suche nach der erforderlichen E-Mail-Adresse?&lt;/u&gt;</string>
     <string name="login_jetpack_what_is_description">Jetpack ist ein kostenloses WordPress-Plugin, das deinen Shop mit den Tools verbindet, die du für ein bestmögliches mobiles Erlebnis benötigst, einschließlich Push-Benachrichtigungen und Statistiken.</string>
     <string name="login_jetpack_what_is">Was ist Jetpack?</string>
     <string name="login_view_connected_stores">Verbundene Shops anzeigen</string>
