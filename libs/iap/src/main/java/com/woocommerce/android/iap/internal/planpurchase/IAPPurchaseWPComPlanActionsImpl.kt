@@ -43,7 +43,7 @@ internal class IAPPurchaseWPComPlanActionsImpl(
 
     override val purchaseWpComPlanResult: Flow<WPComPurchaseResult> = merge(
         purchaseWpComPlanFetchingProductsError.mapNotNull { it },
-        iapManager.purchaseWpComPlanResult.map { mapPurchaseResultToWPComPurchaseResult(it) },
+        iapManager.iapPurchaseResult.map { mapPurchaseResultToWPComPurchaseResult(it) },
     )
 
     override suspend fun isWPComPlanPurchased(): WPComIsPurchasedResult {

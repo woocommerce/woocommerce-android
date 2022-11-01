@@ -40,7 +40,7 @@ internal class IAPManager(
 
     private var purchaseStatusCheckerJob: Job? = null
 
-    val purchaseWpComPlanResult: Flow<IAPPurchaseResult> = iapPurchasesUpdatedListener.purchaseWpComPlanResult.map {
+    val iapPurchaseResult: Flow<IAPPurchaseResult> = iapPurchasesUpdatedListener.purchaseResult.map {
         purchaseStatusCheckerJob?.cancel()
         mapPurchaseResultToIAPPurchaseResult(it)
     }
