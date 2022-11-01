@@ -125,6 +125,7 @@ class MyStoreViewModel @Inject constructor(
 
     @VisibleForTesting
     val refreshStoreStats = BooleanArray(StatsGranularity.values().size) { true }
+
     @VisibleForTesting
     val refreshTopPerformerStats = BooleanArray(StatsGranularity.values().size) { true }
 
@@ -226,33 +227,16 @@ class MyStoreViewModel @Inject constructor(
                             featureClass
                         )
                     }
-                    else -> trackJitmDismissFailureEvent(
+                    else -> jitmTracker.trackJitmDismissFailure(
+                        UTM_SOURCE,
                         jitmId,
                         featureClass,
-                        response.error?.type?.name,
+                        response.error?.type,
                         response.error?.message
                     )
                 }
             }
         }
-    }
-
-    private fun trackJitmDismissFailureEvent(
-        id: String,
-        featureClass: String,
-        errorType: String?,
-        errorDescription: String?
-    ) {
-        analyticsTrackerWrapper.track(
-            AnalyticsEvent.JITM_DISMISS_FAILURE,
-            mapOf(
-                KEY_SOURCE to UTM_SOURCE,
-                JITM_ID to id,
-                JITM_FEATURE_CLASS to featureClass,
-                KEY_ERROR_TYPE to errorType,
-                KEY_ERROR_DESC to errorDescription
-            )
-        )
     }
 
     override fun onCleared() {
@@ -528,6 +512,7 @@ class MyStoreViewModel @Inject constructor(
         data class OpenTopPerformer(
             val productId: Long
         ) : MyStoreEvent()
+
         data class OpenAnalytics(val analyticsPeriod: AnalyticTimePeriod) : MyStoreEvent()
         data class OnJitmCtaClicked(
             val url: String,

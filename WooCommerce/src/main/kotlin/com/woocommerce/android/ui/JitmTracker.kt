@@ -105,8 +105,8 @@ class JitmTracker @Inject constructor(
         source: String,
         jitmId: String,
         featureClass: String,
-        errorType: WooErrorType,
-        errorDescription: String
+        errorType: WooErrorType?,
+        errorDescription: String?
     ) {
         track(
             stat = AnalyticsEvent.JITM_DISMISS_FAILURE,
@@ -114,9 +114,9 @@ class JitmTracker @Inject constructor(
                 KEY_SOURCE to source,
                 JITM_ID to jitmId,
                 JITM_FEATURE_CLASS to featureClass,
-                KEY_ERROR_TYPE to errorType.name,
-                KEY_ERROR_DESC to errorDescription
-            )
+            ),
+            errorType = errorType?.name,
+            errorDescription = errorDescription
         )
     }
 }

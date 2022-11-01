@@ -1090,9 +1090,12 @@ class MyStoreViewModelTest : BaseUnitTest() {
             whenViewModelIsCreated()
             (sut.bannerState.value as BannerState).onDismissClicked.invoke()
 
-            verify(analyticsTrackerWrapper).track(
-                eq(AnalyticsEvent.JITM_DISMISS_FAILURE),
-                any()
+            verify(jitmTracker).trackJitmDismissFailure(
+                anyString(),
+                anyString(),
+                anyString(),
+                eq(null),
+                eq(null)
             )
         }
     }
@@ -1121,9 +1124,12 @@ class MyStoreViewModelTest : BaseUnitTest() {
             whenViewModelIsCreated()
             (sut.bannerState.value as BannerState).onDismissClicked.invoke()
 
-            verify(analyticsTrackerWrapper).track(
-                eq(AnalyticsEvent.JITM_DISMISS_FAILURE),
-                any()
+            verify(jitmTracker).trackJitmDismissFailure(
+                anyString(),
+                anyString(),
+                anyString(),
+                any(),
+                eq(null)
             )
         }
     }
@@ -1158,15 +1164,12 @@ class MyStoreViewModelTest : BaseUnitTest() {
             whenViewModelIsCreated()
             (sut.bannerState.value as BannerState).onDismissClicked.invoke()
 
-            verify(analyticsTrackerWrapper).track(
-                AnalyticsEvent.JITM_DISMISS_FAILURE,
-                mapOf(
-                    AnalyticsTracker.KEY_SOURCE to MyStoreViewModel.UTM_SOURCE,
-                    AnalyticsTracker.JITM_ID to "12345",
-                    AnalyticsTracker.JITM_FEATURE_CLASS to "woomobile_ipp",
-                    AnalyticsTracker.KEY_ERROR_TYPE to WooErrorType.GENERIC_ERROR.name,
-                    AnalyticsTracker.KEY_ERROR_DESC to "Generic error",
-                )
+            verify(jitmTracker).trackJitmDismissFailure(
+                UTM_SOURCE,
+                "12345",
+                "woomobile_ipp",
+                WooErrorType.GENERIC_ERROR,
+                "Generic error"
             )
         }
     }
@@ -1195,15 +1198,12 @@ class MyStoreViewModelTest : BaseUnitTest() {
             whenViewModelIsCreated()
             (sut.bannerState.value as BannerState).onDismissClicked.invoke()
 
-            verify(analyticsTrackerWrapper).track(
-                AnalyticsEvent.JITM_DISMISS_FAILURE,
-                mapOf(
-                    AnalyticsTracker.KEY_SOURCE to MyStoreViewModel.UTM_SOURCE,
-                    AnalyticsTracker.JITM_ID to "12345",
-                    AnalyticsTracker.JITM_FEATURE_CLASS to "woomobile_ipp",
-                    AnalyticsTracker.KEY_ERROR_TYPE to null,
-                    AnalyticsTracker.KEY_ERROR_DESC to null,
-                )
+            verify(jitmTracker).trackJitmDismissFailure(
+                UTM_SOURCE,
+                "12345",
+                "woomobile_ipp",
+                null,
+                null
             )
         }
     }
