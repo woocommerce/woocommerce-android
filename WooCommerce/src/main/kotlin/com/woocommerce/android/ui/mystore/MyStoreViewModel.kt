@@ -215,7 +215,7 @@ class MyStoreViewModel @Inject constructor(
 
     private fun onJitmDismissClicked(jitmId: String, featureClass: String) {
         _bannerState.value = _bannerState.value?.copy(shouldDisplayBanner = false)
-        trackJitmDismissTappedEvent(jitmId, featureClass)
+        jitmTracker.trackJitmDismissTapped(UTM_SOURCE, jitmId, featureClass)
         viewModelScope.launch {
             jitmStore.dismissJitmMessage(selectedSite.get(), jitmId, featureClass).also { response ->
                 when {
@@ -254,17 +254,6 @@ class MyStoreViewModel @Inject constructor(
     private fun trackJitmDismissSuccessEvent(id: String, featureClass: String) {
         analyticsTrackerWrapper.track(
             AnalyticsEvent.JITM_DISMISS_SUCCESS,
-            mapOf(
-                KEY_SOURCE to UTM_SOURCE,
-                JITM_ID to id,
-                JITM_FEATURE_CLASS to featureClass
-            )
-        )
-    }
-
-    private fun trackJitmDismissTappedEvent(id: String, featureClass: String) {
-        analyticsTrackerWrapper.track(
-            AnalyticsEvent.JITM_DISMISS_TAPPED,
             mapOf(
                 KEY_SOURCE to UTM_SOURCE,
                 JITM_ID to id,
