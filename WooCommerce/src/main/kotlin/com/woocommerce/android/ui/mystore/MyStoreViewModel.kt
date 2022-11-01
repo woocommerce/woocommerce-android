@@ -162,7 +162,11 @@ class MyStoreViewModel @Inject constructor(
             return
         }
 
-        trackJitmFetchSuccessEvent(response.model?.getOrNull(0)?.id, response.model?.size)
+        jitmTracker.trackJitmFetchSuccess(
+            UTM_SOURCE,
+            response.model?.getOrNull(0)?.id,
+            response.model?.size
+        )
         response.model?.getOrNull(0)?.let { model: JITMApiResponse ->
             trackJitmDisplayedEvent(
                 model.id,
@@ -209,17 +213,6 @@ class MyStoreViewModel @Inject constructor(
                 KEY_SOURCE to UTM_SOURCE,
                 JITM_ID to id,
                 JITM_FEATURE_CLASS to featureClass
-            )
-        )
-    }
-
-    private fun trackJitmFetchFailureEvent(type: WooErrorType, message: String?) {
-        analyticsTrackerWrapper.track(
-            AnalyticsEvent.JITM_FETCH_FAILURE,
-            mapOf(
-                KEY_SOURCE to UTM_SOURCE,
-                KEY_ERROR_TYPE to type.name,
-                KEY_ERROR_DESC to message
             )
         )
     }

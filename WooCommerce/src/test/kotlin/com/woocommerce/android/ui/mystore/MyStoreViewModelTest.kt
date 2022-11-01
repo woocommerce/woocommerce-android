@@ -698,8 +698,9 @@ class MyStoreViewModelTest : BaseUnitTest() {
 
             whenViewModelIsCreated()
 
-            verify(analyticsTrackerWrapper).track(
-                eq(AnalyticsEvent.JITM_FETCH_SUCCESS),
+            verify(jitmTracker).trackJitmFetchSuccess(
+                any(),
+                any(),
                 any()
             )
         }
@@ -720,13 +721,10 @@ class MyStoreViewModelTest : BaseUnitTest() {
 
             whenViewModelIsCreated()
 
-            verify(analyticsTrackerWrapper).track(
-                AnalyticsEvent.JITM_FETCH_SUCCESS,
-                mapOf(
-                    KEY_SOURCE to MyStoreViewModel.UTM_SOURCE,
-                    KEY_JITM to "12345",
-                    KEY_JITM_COUNT to 1
-                )
+            verify(jitmTracker).trackJitmFetchSuccess(
+                UTM_SOURCE,
+                "12345",
+                1
             )
         }
     }
@@ -750,13 +748,10 @@ class MyStoreViewModelTest : BaseUnitTest() {
 
             whenViewModelIsCreated()
 
-            verify(analyticsTrackerWrapper).track(
-                AnalyticsEvent.JITM_FETCH_SUCCESS,
-                mapOf(
-                    KEY_SOURCE to MyStoreViewModel.UTM_SOURCE,
-                    KEY_JITM to "12345",
-                    KEY_JITM_COUNT to 3
-                )
+            verify(jitmTracker).trackJitmFetchSuccess(
+                UTM_SOURCE,
+                "12345",
+                3
             )
         }
     }
@@ -829,9 +824,10 @@ class MyStoreViewModelTest : BaseUnitTest() {
 
             whenViewModelIsCreated()
 
-            verify(analyticsTrackerWrapper).track(
-                eq(AnalyticsEvent.JITM_FETCH_SUCCESS),
-                any()
+            verify(jitmTracker).trackJitmFetchSuccess(
+                anyString(),
+                eq(null),
+                anyInt()
             )
         }
     }
@@ -851,13 +847,10 @@ class MyStoreViewModelTest : BaseUnitTest() {
 
             whenViewModelIsCreated()
 
-            verify(analyticsTrackerWrapper).track(
-                AnalyticsEvent.JITM_FETCH_SUCCESS,
-                mapOf(
-                    KEY_SOURCE to MyStoreViewModel.UTM_SOURCE,
-                    KEY_JITM to null,
-                    KEY_JITM_COUNT to 0
-                )
+            verify(jitmTracker).trackJitmFetchSuccess(
+                UTM_SOURCE,
+                null,
+                0
             )
         }
     }
