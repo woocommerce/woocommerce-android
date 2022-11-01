@@ -25,6 +25,7 @@ import com.woocommerce.android.network.ConnectionChangeReceiver
 import com.woocommerce.android.network.ConnectionChangeReceiver.ConnectionChangeEvent
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.ui.JitmTracker
 import com.woocommerce.android.ui.analytics.daterangeselector.AnalyticTimePeriod
 import com.woocommerce.android.ui.mystore.domain.GetStats
 import com.woocommerce.android.ui.mystore.domain.GetStats.LoadStatsResult.HasOrders
@@ -89,6 +90,7 @@ class MyStoreViewModel @Inject constructor(
     private val analyticsTrackerWrapper: AnalyticsTrackerWrapper,
     private val myStoreTransactionLauncher: MyStoreTransactionLauncher,
     private val jitmStore: JitmStore,
+    private val jitmTracker: JitmTracker,
     @Named("my-store") private val utmProvider: UtmProvider,
 ) : ScopedViewModel(savedState) {
     companion object {
@@ -155,7 +157,7 @@ class MyStoreViewModel @Inject constructor(
 
     private fun populateResultToUI(response: WooResult<Array<JITMApiResponse>>) {
         if (response.isError) {
-            trackJitmFetchFailureEvent(response.error.type, response.error.message)
+            jitmTracker.trackJitmFetchFailure(UTM_SOURCE, response.error.type, response.error.message)
             WooLog.e(WooLog.T.JITM, "Failed to fetch JITM for the message path $JITM_MESSAGE_PATH")
             return
         }

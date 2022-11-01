@@ -14,6 +14,8 @@ import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.model.UiString
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.ui.JitmTracker
+import com.woocommerce.android.ui.mystore.MyStoreViewModel.Companion.UTM_SOURCE
 import com.woocommerce.android.ui.mystore.MyStoreViewModel.MyStoreEvent.OnJitmCtaClicked
 import com.woocommerce.android.ui.mystore.domain.GetStats
 import com.woocommerce.android.ui.mystore.domain.GetTopPerformers
@@ -31,6 +33,7 @@ import org.junit.Before
 import org.junit.Test
 import org.mockito.ArgumentMatchers.anyBoolean
 import org.mockito.ArgumentMatchers.anyInt
+import org.mockito.ArgumentMatchers.anyString
 import org.mockito.kotlin.any
 import org.mockito.kotlin.argumentCaptor
 import org.mockito.kotlin.eq
@@ -65,6 +68,7 @@ class MyStoreViewModelTest : BaseUnitTest() {
     private val usageTracksEventEmitter: MyStoreStatsUsageTracksEventEmitter = mock()
     private val analyticsTrackerWrapper: AnalyticsTrackerWrapper = mock()
     private val jitmStore: JitmStore = mock()
+    private val jitmTracker: JitmTracker = mock()
     private val utmProvider: UtmProvider = mock()
 
     private lateinit var sut: MyStoreViewModel
@@ -869,17 +873,15 @@ class MyStoreViewModelTest : BaseUnitTest() {
                 WooResult(
                     WooError(
                         type = WooErrorType.GENERIC_ERROR,
-                        original = BaseRequest.GenericErrorType.NETWORK_ERROR
+                        original = BaseRequest.GenericErrorType.NETWORK_ERROR,
+                        message = ""
                     )
                 )
             )
 
             whenViewModelIsCreated()
 
-            verify(analyticsTrackerWrapper).track(
-                eq(AnalyticsEvent.JITM_FETCH_FAILURE),
-                any()
-            )
+            verify(jitmTracker).trackJitmFetchFailure(anyString(), any(), anyString())
         }
     }
 
@@ -902,13 +904,10 @@ class MyStoreViewModelTest : BaseUnitTest() {
 
             whenViewModelIsCreated()
 
-            verify(analyticsTrackerWrapper).track(
-                AnalyticsEvent.JITM_FETCH_FAILURE,
-                mapOf(
-                    AnalyticsTracker.KEY_SOURCE to MyStoreViewModel.UTM_SOURCE,
-                    AnalyticsTracker.KEY_ERROR_TYPE to WooErrorType.GENERIC_ERROR.name,
-                    AnalyticsTracker.KEY_ERROR_DESC to "Generic error"
-                )
+            verify(jitmTracker).trackJitmFetchFailure(
+                UTM_SOURCE,
+                WooErrorType.GENERIC_ERROR,
+                "Generic error"
             )
         }
     }
@@ -1278,6 +1277,7 @@ class MyStoreViewModelTest : BaseUnitTest() {
             analyticsTrackerWrapper,
             myStoreTransactionLauncher = mock(),
             jitmStore,
+            jitmTracker,
             utmProvider,
         )
     }
