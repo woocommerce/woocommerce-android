@@ -85,30 +85,6 @@ internal class IAPManager(
             }
         }
 
-    private fun startPeriodicPurchasesCheckJob(
-        productDetails: ProductDetails,
-        onPurchaseAvailable: (PurchasesResult) -> Unit,
-    ) = CoroutineScope(Dispatchers.IO).launch {
-        repeat(PURCHASE_STATE_CHECK_TIMES) {
-            if (isActive) {
-                delay(PURCHASE_STATE_CHECK_INTERVAL)
-                // TODO INAPP support?
-                val purchasesResult = queryPurchases(IAPProductType.SUBS)
-                logWrapper.d(IAP_LOG_TAG, "Fetching purchases. Result ${purchasesResult.billingResult}")
-                if (purchasesResult.billingResult.isSuccess &&
-                    purchasesResult.purchasesList.firstOrNull {
-                        it.products.contains(productDetails.productId)
-                    }?.purchaseState == Purchase.PurchaseState.PURCHASED
-                ) {
-                    if (isActive) {
-                        onPurchaseAvailable(purchasesResult)
-                        cancel()
-                    }
-                }
-            }
-        }
-    }
-
     private suspend fun mapPurchaseResultToIAPPurchaseResult(purchasesResult: PurchasesResult): IAPPurchaseResult {
         return if (purchasesResult.billingResult.isSuccess) {
             val purchase = purchasesResult.purchasesList.first()
@@ -212,6 +188,30 @@ internal class IAPManager(
             .setProductType(iapInMapper.mapProductTypeToIAPProductType(iapProductType))
             .build()
         return billingClient.queryPurchasesAsync(params)
+    }
+
+    private fun startPeriodicPurchasesCheckJob(
+        productDetails: ProductDetails,
+        onPurchaseAvailable: (PurchasesResult) -> Unit,
+    ) = CoroutineScope(Dispatchers.IO).launch {
+        repeat(PURCHASE_STATE_CHECK_TIMES) {
+            if (isActive) {
+                delay(PURCHASE_STATE_CHECK_INTERVAL)
+                // TODO INAPP support?
+                val purchasesResult = queryPurchases(IAPProductType.SUBS)
+                logWrapper.d(IAP_LOG_TAG, "Fetching purchases. Result ${purchasesResult.billingResult}")
+                if (purchasesResult.billingResult.isSuccess &&
+                    purchasesResult.purchasesList.firstOrNull {
+                        it.products.contains(productDetails.productId)
+                    }?.purchaseState == Purchase.PurchaseState.PURCHASED
+                ) {
+                    if (isActive) {
+                        onPurchaseAvailable(purchasesResult)
+                        cancel()
+                    }
+                }
+            }
+        }
     }
 
     companion object {
