@@ -920,8 +920,9 @@ class MyStoreViewModelTest : BaseUnitTest() {
             whenViewModelIsCreated()
             (sut.bannerState.value as BannerState).onPrimaryActionClicked.invoke()
 
-            verify(analyticsTrackerWrapper).track(
-                eq(AnalyticsEvent.JITM_CTA_TAPPED),
+            verify(jitmTracker).trackJitmCtaTapped(
+                any(),
+                any(),
                 any()
             )
         }
@@ -949,13 +950,11 @@ class MyStoreViewModelTest : BaseUnitTest() {
             whenViewModelIsCreated()
             (sut.bannerState.value as BannerState).onPrimaryActionClicked.invoke()
 
-            verify(analyticsTrackerWrapper).track(
-                AnalyticsEvent.JITM_CTA_TAPPED,
-                mapOf(
-                    AnalyticsTracker.KEY_SOURCE to MyStoreViewModel.UTM_SOURCE,
-                    AnalyticsTracker.JITM_ID to "12345",
-                    AnalyticsTracker.JITM_FEATURE_CLASS to "woomobile_ipp"
-                )
+
+            verify(jitmTracker).trackJitmCtaTapped(
+                UTM_SOURCE,
+                "12345",
+                "woomobile_ipp"
             )
         }
     }

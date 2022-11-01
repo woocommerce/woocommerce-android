@@ -196,23 +196,16 @@ class MyStoreViewModel @Inject constructor(
         } ?: WooLog.i(WooLog.T.JITM, "No JITM Campaign in progress")
     }
 
-    private fun trackJitmCtaTappedEvent(id: String, featureClass: String) {
-        analyticsTrackerWrapper.track(
-            AnalyticsEvent.JITM_CTA_TAPPED,
-            mapOf(
-                KEY_SOURCE to UTM_SOURCE,
-                JITM_ID to id,
-                JITM_FEATURE_CLASS to featureClass
-            )
-        )
-    }
-
     private fun onJitmCtaClicked(
         id: String,
         featureClass: String,
         url: String
     ) {
-        trackJitmCtaTappedEvent(id, featureClass)
+        jitmTracker.trackJitmCtaTapped(
+            UTM_SOURCE,
+            id,
+            featureClass
+        )
         triggerEvent(
             MyStoreEvent.OnJitmCtaClicked(
                 utmProvider.getUrlWithUtmParams(url)
