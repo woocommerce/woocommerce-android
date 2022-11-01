@@ -50,16 +50,8 @@ class WebViewStoreCreationFragment : BaseFragment() {
             when (event) {
                 NavigateToNewStore -> (activity as? MainActivity)?.handleSitePickerResult()
                 is ShowSnackbar -> uiMessageResolver.showSnack(event.message)
-                is Exit -> navigateBack()
+                is Exit -> findNavController().navigateUp()
             }
-        }
-    }
-
-    private fun navigateBack() {
-        if (requireActivity() is LoginActivity) {
-            parentFragmentManager.popBackStack()
-        } else {
-            findNavController().navigateUp()
         }
     }
 }
