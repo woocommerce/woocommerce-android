@@ -771,8 +771,9 @@ class MyStoreViewModelTest : BaseUnitTest() {
 
             whenViewModelIsCreated()
 
-            verify(analyticsTrackerWrapper).track(
-                eq(AnalyticsEvent.JITM_DISPLAYED),
+            verify(jitmTracker).trackJitmDisplayed(
+                any(),
+                any(),
                 any()
             )
         }
@@ -798,13 +799,10 @@ class MyStoreViewModelTest : BaseUnitTest() {
 
             whenViewModelIsCreated()
 
-            verify(analyticsTrackerWrapper).track(
-                AnalyticsEvent.JITM_DISPLAYED,
-                mapOf(
-                    AnalyticsTracker.KEY_SOURCE to MyStoreViewModel.UTM_SOURCE,
-                    AnalyticsTracker.JITM_ID to "12345",
-                    AnalyticsTracker.JITM_FEATURE_CLASS to "woomobile_ipp"
-                )
+            verify(jitmTracker).trackJitmDisplayed(
+                UTM_SOURCE,
+                "12345",
+                "woomobile_ipp"
             )
         }
     }

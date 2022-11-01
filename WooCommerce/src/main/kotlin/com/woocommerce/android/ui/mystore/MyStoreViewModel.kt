@@ -168,7 +168,8 @@ class MyStoreViewModel @Inject constructor(
             response.model?.size
         )
         response.model?.getOrNull(0)?.let { model: JITMApiResponse ->
-            trackJitmDisplayedEvent(
+            jitmTracker.trackJitmDisplayed(
+                UTM_SOURCE,
                 model.id,
                 model.featureClass
             )
@@ -198,17 +199,6 @@ class MyStoreViewModel @Inject constructor(
     private fun trackJitmCtaTappedEvent(id: String, featureClass: String) {
         analyticsTrackerWrapper.track(
             AnalyticsEvent.JITM_CTA_TAPPED,
-            mapOf(
-                KEY_SOURCE to UTM_SOURCE,
-                JITM_ID to id,
-                JITM_FEATURE_CLASS to featureClass
-            )
-        )
-    }
-
-    private fun trackJitmDisplayedEvent(id: String, featureClass: String) {
-        analyticsTrackerWrapper.track(
-            AnalyticsEvent.JITM_DISPLAYED,
             mapOf(
                 KEY_SOURCE to UTM_SOURCE,
                 JITM_ID to id,
