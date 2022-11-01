@@ -1,7 +1,12 @@
 package com.woocommerce.android.ui.jitm
 
+import com.woocommerce.android.analytics.AnalyticsEvent
+import com.woocommerce.android.analytics.AnalyticsEvent.JITM_DISPLAYED
 import com.woocommerce.android.analytics.AnalyticsEvent.JITM_FETCH_FAILURE
 import com.woocommerce.android.analytics.AnalyticsEvent.JITM_FETCH_SUCCESS
+import com.woocommerce.android.analytics.AnalyticsTracker
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.JITM_FEATURE_CLASS
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.JITM_ID
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_JITM
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_JITM_COUNT
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_SOURCE
@@ -87,6 +92,42 @@ class JitmTrackerTest : BaseUnitTest() {
                     KEY_SOURCE to UTM_SOURCE,
                     KEY_JITM to "12345",
                     KEY_JITM_COUNT to 1
+                ),
+            )
+        }
+    }
+
+    @Test
+    fun `when track jitm displayed invoked, then JITM_FETCH_DISPLAYED tracked`() {
+        testBlocking {
+            jitmTracker.trackJitmDisplayed(
+                UTM_SOURCE,
+                "12345",
+                ""
+            )
+
+            verify(trackerWrapper).track(
+                eq(JITM_DISPLAYED),
+                any(),
+            )
+        }
+    }
+
+    @Test
+    fun `when track jitm displayed invoked, then JITM_FETCH_DISPLAYED tracked with correct properties`() {
+        testBlocking {
+            jitmTracker.trackJitmDisplayed(
+                UTM_SOURCE,
+                "12345",
+                "test_feature_class"
+            )
+
+            verify(trackerWrapper).track(
+                JITM_DISPLAYED,
+                mapOf(
+                    KEY_SOURCE to UTM_SOURCE,
+                    JITM_ID to "12345",
+                    JITM_FEATURE_CLASS to "test_feature_class"
                 ),
             )
         }

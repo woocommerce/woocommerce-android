@@ -2,6 +2,8 @@ package com.woocommerce.android.ui
 
 import androidx.annotation.VisibleForTesting
 import com.woocommerce.android.analytics.AnalyticsEvent
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.JITM_FEATURE_CLASS
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.JITM_ID
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_JITM
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_JITM_COUNT
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_SOURCE
@@ -45,10 +47,21 @@ class JitmTracker @Inject constructor(
     fun trackJitmFetchSuccess(source: String, jitmId: String?, jitmCount: Int?) {
         track(
             stat = AnalyticsEvent.JITM_FETCH_SUCCESS,
-            properties = mutableMapOf(
+            properties = mapOf(
                 KEY_SOURCE to source,
                 KEY_JITM to (jitmId ?: "null"),
                 KEY_JITM_COUNT to (jitmCount ?: 0)
+            )
+        )
+    }
+
+    fun trackJitmDisplayed(source: String, jitmId: String, featureClass: String) {
+        track(
+            stat = AnalyticsEvent.JITM_DISPLAYED,
+            properties = mapOf(
+                KEY_SOURCE to source,
+                JITM_ID to jitmId,
+                JITM_FEATURE_CLASS to featureClass
             )
         )
     }
