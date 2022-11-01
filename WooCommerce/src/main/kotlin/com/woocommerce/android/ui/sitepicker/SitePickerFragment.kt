@@ -116,9 +116,6 @@ class SitePickerFragment : BaseFragment(R.layout.fragment_site_picker), LoginEma
             new.isSecondaryBtnVisible.takeIfNotEqualTo(old?.isSecondaryBtnVisible) {
                 binding.loginEpilogueButtonBar.buttonSecondary.isVisible = it
             }
-            new.isTertiaryBtnEnabled.takeIfNotEqualTo(old?.isTertiaryBtnEnabled) {
-                binding.loginEpilogueButtonBar.buttonTertiary.isEnabled = it
-            }
             new.isNoStoresViewVisible.takeIfNotEqualTo(old?.isNoStoresViewVisible) {
                 binding.sitesRecycler.isVisible = !it
                 binding.noStoresView.isVisible = it

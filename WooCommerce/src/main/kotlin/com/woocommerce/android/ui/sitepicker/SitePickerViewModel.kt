@@ -632,13 +632,9 @@ class SitePickerViewModel @Inject constructor(
     }
 
     private fun checkAccountAndLaunchStoreCreationWebFlow() = launch {
-        sitePickerViewState = sitePickerViewState.copy(isTertiaryBtnEnabled = false)
-
         getOrFetchAccount()?.let {
             triggerEvent(NavigateToStoreCreationEvent)
         }
-
-        sitePickerViewState = sitePickerViewState.copy(isTertiaryBtnEnabled = true)
     }
 
     private fun trackLoginEvent(
@@ -673,7 +669,6 @@ class SitePickerViewModel @Inject constructor(
         val isProgressDiaLogVisible: Boolean = false,
         val isPrimaryBtnVisible: Boolean = false,
         val isSecondaryBtnVisible: Boolean = false,
-        val isTertiaryBtnEnabled: Boolean = true,
         val isNoStoresBtnVisible: Boolean = false,
         val currentSitePickerState: SitePickerState = SitePickerState.StoreListState
     ) : Parcelable
