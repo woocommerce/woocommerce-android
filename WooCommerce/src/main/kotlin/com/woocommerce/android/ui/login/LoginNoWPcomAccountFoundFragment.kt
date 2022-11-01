@@ -97,14 +97,14 @@ class LoginNoWPcomAccountFoundFragment : Fragment(R.layout.fragment_login_no_wpc
     }
 
     private fun setupButtonsForSimplifiedFlow(btnBinding: ViewLoginEpilogueButtonBarBinding) {
-            with(btnBinding.buttonPrimary) {
-                text = getString(R.string.login_create_an_account)
-                setOnClickListener {
-                    unifiedLoginTracker.trackClick(Click.CREATE_ACCOUNT)
+        with(btnBinding.buttonPrimary) {
+            text = getString(R.string.login_create_an_account)
+            setOnClickListener {
+                unifiedLoginTracker.trackClick(Click.CREATE_ACCOUNT)
 
-                    listener.onCreateAccountClicked()
-                }
+                listener.onCreateAccountClicked()
             }
+        }
 
         with(btnBinding.buttonSecondary) {
             visibility = View.VISIBLE
