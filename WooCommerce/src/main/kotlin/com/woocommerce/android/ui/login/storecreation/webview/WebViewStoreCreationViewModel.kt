@@ -17,6 +17,7 @@ import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.getStateFlow
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import kotlinx.parcelize.Parcelize
@@ -33,9 +34,13 @@ class WebViewStoreCreationViewModel @Inject constructor(
     companion object {
         private const val STORE_CREATION_URL = "https://woocommerce.com/start"
         private const val SITE_URL_KEYWORD = "checkout/thank-you/"
-        private const val WEBVIEW_EXIT_TRIGGER_KEYWORD = "calypso/images/wpcom-ecommerce"
+        private const val WEBVIEW_SUCCESS_TRIGGER_KEYWORD = "calypso/images/wpcom-ecommerce"
+        private const val WEBVIEW_EXIT_TRIGGER_KEYWORD = "https://woocommerce.com/"
         private const val STORE_LOAD_RETRIES_LIMIT = 10
     }
+
+    private val _dialogViewState = savedStateHandle.getStateFlow(viewModelScope, setDialogState(isVisible = false))
+    val dialogViewState = _dialogViewState.asStateFlow().asLiveData()
 
     private val step = savedStateHandle.getStateFlow<Step>(viewModelScope, Step.StoreCreation)
     val viewState: LiveData<ViewState> = step.map { step ->
@@ -51,16 +56,26 @@ class WebViewStoreCreationViewModel @Inject constructor(
     private fun prepareStoreCreationState() = StoreCreationState(
         storeCreationUrl = STORE_CREATION_URL,
         siteUrlKeyword = SITE_URL_KEYWORD,
+        successTriggerKeyword = WEBVIEW_SUCCESS_TRIGGER_KEYWORD,
         exitTriggerKeyword = WEBVIEW_EXIT_TRIGGER_KEYWORD,
         onStoreCreated = ::onStoreCreated,
-        onSiteAddressFound = ::onSiteAddressFound
+        onSiteAddressFound = ::onSiteAddressFound,
+        onExitTriggered = ::exitStoreCreation
     )
 
     private fun prepareErrorState() = ErrorState(
-        onRetryButtonClick = {
-            onStoreCreated()
-        }
+        onRetryButtonClick = ::onStoreCreated
     )
+
+    private fun setDialogState(isVisible: Boolean) = DialogState(
+        isDialogVisible = isVisible,
+        onExitConfirmed = ::exitStoreCreation,
+        onDialogDismissed = ::onDialogDismissed
+    )
+
+    private fun onDialogDismissed() {
+        _dialogViewState.value = setDialogState(isVisible = false)
+    }
 
     private fun onStoreCreated() {
         step.value = Step.StoreLoading
@@ -92,25 +107,39 @@ class WebViewStoreCreationViewModel @Inject constructor(
         possibleStoreUrls.add(url)
     }
 
-    fun onBackPressed() {
+    private fun exitStoreCreation() {
+        _dialogViewState.value = setDialogState(false)
         triggerEvent(Exit)
+    }
+
+    fun onBackPressed() {
+        _dialogViewState.value = setDialogState(true)
     }
 
     sealed interface ViewState {
         data class StoreCreationState(
             val storeCreationUrl: String,
             val siteUrlKeyword: String,
+            val successTriggerKeyword: String,
             val exitTriggerKeyword: String,
             val onStoreCreated: () -> Unit,
+            val onExitTriggered: () -> Unit,
             val onSiteAddressFound: (url: String) -> Unit
         ) : ViewState
-
         object StoreLoadingState : ViewState
 
         data class ErrorState(
             val onRetryButtonClick: () -> Unit
         ) : ViewState
     }
+
+    @Parcelize
+    data class DialogState(
+        val isDialogVisible: Boolean,
+        val onExitConfirmed: () -> Unit,
+        val onDialogDismissed: () -> Unit
+    ) : Parcelable
+
 
     object NavigateToNewStore : MultiLiveEvent.Event()
 

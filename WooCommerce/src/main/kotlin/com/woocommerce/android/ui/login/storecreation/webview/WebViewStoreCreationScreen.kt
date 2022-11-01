@@ -15,6 +15,7 @@ import androidx.compose.material.IconButton
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
+import androidx.compose.material.TextButton
 import androidx.compose.material.TopAppBar
 import androidx.compose.material.icons.Icons.Filled
 import androidx.compose.material.icons.filled.ArrowBack
@@ -28,8 +29,10 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.woocommerce.android.R.string
 import com.woocommerce.android.ui.common.wpcomwebview.WPComWebViewAuthenticator
+import com.woocommerce.android.ui.compose.component.AlertDialog
 import com.woocommerce.android.ui.compose.component.WCColoredButton
 import com.woocommerce.android.ui.compose.component.WCWebView
+import com.woocommerce.android.ui.login.storecreation.webview.WebViewStoreCreationViewModel.DialogState
 import com.woocommerce.android.ui.login.storecreation.webview.WebViewStoreCreationViewModel.ViewState.ErrorState
 import com.woocommerce.android.ui.login.storecreation.webview.WebViewStoreCreationViewModel.ViewState.StoreCreationState
 import com.woocommerce.android.ui.login.storecreation.webview.WebViewStoreCreationViewModel.ViewState.StoreLoadingState
@@ -73,6 +76,13 @@ fun WebViewStoreCreationScreen(viewModel: WebViewStoreCreationViewModel) {
             }
         }
     }
+
+    viewModel.dialogViewState.observeAsState().value?.let {
+        if (it.isDialogVisible) {
+            ConfirmExitDialog(it)
+        }
+    }
+
 }
 
 @SuppressLint("SetJavaScriptEnabled")
@@ -102,9 +112,11 @@ private fun StoreCreationWebView(
                 viewState.onSiteAddressFound(it)
             }
 
-            if (url.contains(viewState.exitTriggerKeyword, ignoreCase = true) && !storeCreationTriggered) {
+            if (url.contains(viewState.successTriggerKeyword, ignoreCase = true) && !storeCreationTriggered) {
                 storeCreationTriggered = true
                 viewState.onStoreCreated()
+            } else if (url == viewState.exitTriggerKeyword) {
+                viewState.onExitTriggered()
             }
         },
         modifier = modifier.fillMaxSize()
@@ -150,6 +162,30 @@ private fun StoreCreationInProgress() {
             modifier = Modifier.padding(16.dp)
         )
     }
+}
+
+@Composable
+private fun ConfirmExitDialog(viewState: DialogState) {
+    AlertDialog(
+        onDismissRequest = { viewState.onDialogDismissed() },
+        title = {
+            Text(text = stringResource(id = string.store_creation_exit_dialog_title))
+        },
+        text = {
+            Text(text = stringResource(id = string.store_creation_exit_dialog_message))
+        },
+        confirmButton = {
+            TextButton(onClick = { viewState.onExitConfirmed() }) {
+                Text(stringResource(id = string.link_dialog_button_ok))
+            }
+        },
+        dismissButton = {
+            TextButton(onClick = { viewState.onDialogDismissed() }) {
+                Text(stringResource(id = string.cancel))
+            }
+        },
+        neutralButton = {}
+    )
 }
 
 @Preview

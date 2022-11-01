@@ -2679,4 +2679,6 @@
     <string name="store_creation_create_new_store_label">Create a new store</string>
     <string name="store_creation_cannot_load_store">Couldn\'t load your store.\nPlease try again…</string>
     <string name="store_creation_in_progress">Creating your store…</string>
+    <string name="store_creation_exit_dialog_title">Do you want to leave?</string>
+    <string name="store_creation_exit_dialog_message">You will lose all your store information.</string>
 </resources>
