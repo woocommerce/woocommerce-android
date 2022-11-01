@@ -8,6 +8,7 @@ import com.woocommerce.android.iap.pub.IAPLogWrapper
 import com.woocommerce.android.iap.pub.IAP_LOG_TAG
 import kotlin.coroutines.Continuation
 import kotlin.coroutines.resume
+import kotlin.coroutines.suspendCoroutine
 
 internal class IAPPurchasesUpdatedListener(
     private val logWrapper: IAPLogWrapper,
@@ -19,11 +20,13 @@ internal class IAPPurchasesUpdatedListener(
         val responseCode = billingResult.responseCode
         val debugMessage = billingResult.debugMessage
         logWrapper.d(IAP_LOG_TAG, "onPurchasesUpdated: $responseCode $debugMessage")
-        purchaseContinuation?.resume(PurchasesResult(billingResult, purchases.orEmpty()))
-        purchaseContinuation = null
+        onPurchaseAvailable(PurchasesResult(billingResult, purchases.orEmpty()))
     }
 
-    fun waitTillNextPurchaseEvent(continuation: Continuation<PurchasesResult>) {
-        purchaseContinuation = continuation
+    suspend fun getPurchaseResult() = suspendCoroutine<PurchasesResult> { purchaseContinuation = it }
+
+    fun onPurchaseAvailable(purchasesResult: PurchasesResult) {
+        purchaseContinuation?.resume(purchasesResult)
+        purchaseContinuation = null
     }
 }

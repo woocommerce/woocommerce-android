@@ -19,7 +19,10 @@ import com.woocommerce.android.iap.pub.model.WPComProductResult
 import com.woocommerce.android.iap.pub.model.WPComPurchaseResult
 
 private val iapProduct = IAPProduct.WPPremiumPlanTesting
+
 private const val SUPPORTED_CURRENCY = "USD"
+private const val TEN_THOUSAND = 10_000
+private const val APP_ID = "com.woocommerce.android"
 
 internal class IAPPurchaseWPComPlanActionsImpl(
     private val iapMobilePayAPI: IAPMobilePayAPI,
@@ -51,9 +54,10 @@ internal class IAPPurchaseWPComPlanActionsImpl(
                 val apiResponse = iapMobilePayAPI.createAndConfirmOrder(
                     remoteSiteId = remoteSiteId,
                     productIdentifier = purchase.products.first().id,
-                    price = purchase.products.first().price,
+                    priceInCents = convertMicroUnitsToCents(purchase.products.first().price),
                     currency = purchase.products.first().currency,
-                    response.purchases.first().purchaseToken
+                    purchaseToken = purchase.purchaseToken,
+                    appId = APP_ID,
                 )
                 when (apiResponse) {
                     is CreateAndConfirmOrderResponse.Success -> WPComPurchaseResult.Success
@@ -101,4 +105,6 @@ internal class IAPPurchaseWPComPlanActionsImpl(
         iapProduct: IAPProduct
     ) = iapPurchases?.find { it.products.find { iapProduct.productId == it.id } != null }?.state ==
         IAPPurchase.State.PURCHASED
+
+    private fun convertMicroUnitsToCents(priceInMicroUnits: Long) = (priceInMicroUnits / TEN_THOUSAND).toInt()
 }
