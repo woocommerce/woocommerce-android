@@ -56,24 +56,10 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/imageView"
-        app:layout_constraintBottom_toTopOf="@+id/newToWooButton"
+        app:layout_constraintBottom_toTopOf="@+id/loginButtons"
         android:gravity="center"
         android:textStyle="bold"
         android:text="@string/simplified_login_prologue_title" />
-
-    <com.google.android.material.button.MaterialButton
-        android:id="@+id/newToWooButton"
-        style="@style/Woo.Button.TextButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="@dimen/major_100"
-        android:text="@string/login_prologue_new_to_woo"
-        android:textAllCaps="false"
-        app:layout_constraintTop_toBottomOf="@id/prologueTitle"
-        app:layout_constraintBottom_toTopOf="@id/loginButtons"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        android:visibility="gone"/>
 
     <LinearLayout
         android:id="@+id/loginButtons"
