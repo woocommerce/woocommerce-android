@@ -4,6 +4,7 @@ import com.android.billingclient.api.ProductDetails
 import com.android.billingclient.api.PurchasesResult
 import com.android.billingclient.api.QueryProductDetailsParams
 import com.android.billingclient.api.QueryPurchasesParams
+import com.woocommerce.android.iap.internal.model.IAPBillingClientConnectionResult
 import com.woocommerce.android.iap.internal.model.IAPProduct
 import com.woocommerce.android.iap.internal.model.IAPProductDetailsResponse
 import com.woocommerce.android.iap.internal.model.IAPProductDetailsResponse.Error
@@ -50,6 +51,11 @@ internal class IAPManager(
 
     suspend fun fetchPurchases(iapProductType: IAPProductType): IAPPurchaseResult =
         withContext(Dispatchers.IO) {
+            val connectionResult = getConnectionResult()
+            if (connectionResult is IAPBillingClientConnectionResult.Error) {
+                return@withContext IAPPurchaseResult.Error(connectionResult.errorType)
+            }
+
             val purchasesResult = queryPurchases(iapProductType)
 
             if (purchasesResult.billingResult.isSuccess) {
@@ -63,7 +69,7 @@ internal class IAPManager(
             }
         }
 
-    fun startPurchase(activityWrapper: IAPActivityWrapper, productDetails: ProductDetails) {
+    suspend fun startPurchase(activityWrapper: IAPActivityWrapper, productDetails: ProductDetails) {
         val flowParams = billingFlowParamsBuilder.buildBillingFlowParams(productDetails)
         billingClient.launchBillingFlow(activityWrapper.activity, flowParams)
         purchaseStatusCheckerJob = periodicPurchaseStatusChecker.startPeriodicPurchasesCheckJob(
@@ -76,7 +82,11 @@ internal class IAPManager(
 
     suspend fun fetchIAPProductDetails(iapProduct: IAPProduct): IAPProductDetailsResponse =
         withContext(Dispatchers.IO) {
-            waitBillingClientInitialisation()
+            val connectionResult = getConnectionResult()
+            if (connectionResult is IAPBillingClientConnectionResult.Error) {
+                return@withContext Error(connectionResult.errorType)
+            }
+
             when (val response = fetchProductDetails(iapProduct.productId, iapProduct.productType)) {
                 is Success -> Success(response.productDetails)
                 is Error -> Error(response.error)
@@ -165,13 +175,10 @@ internal class IAPManager(
         )
     }
 
-    private suspend fun waitBillingClientInitialisation() {
-        iapBillingClientStateHandler.waitTillConnectionEstablished()
-    }
+    private suspend fun getConnectionResult() = iapBillingClientStateHandler.waitTillConnectionEstablished()
 
     private suspend fun queryPurchases(iapProductType: IAPProductType): PurchasesResult {
         logWrapper.d(IAP_LOG_TAG, "Fetching purchases")
-        waitBillingClientInitialisation()
         val params = QueryPurchasesParams.newBuilder()
             .setProductType(iapInMapper.mapProductTypeToIAPProductType(iapProductType))
             .build()
