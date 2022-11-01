@@ -25,9 +25,6 @@ import com.woocommerce.android.ui.analytics.daterangeselector.AnalyticTimePeriod
 import com.woocommerce.android.ui.analytics.daterangeselector.AnalyticsDateRange
 import com.woocommerce.android.ui.analytics.daterangeselector.AnalyticsDateRangeCalculator
 import com.woocommerce.android.ui.analytics.daterangeselector.AnalyticsDateRangeSelectorViewState
-import com.woocommerce.android.ui.analytics.daterangeselector.MultipleDateRange
-import com.woocommerce.android.ui.analytics.daterangeselector.SimpleDateRange
-import com.woocommerce.android.ui.analytics.daterangeselector.formatDatesToFriendlyPeriod
 import com.woocommerce.android.ui.analytics.informationcard.AnalyticsInformationSectionViewState
 import com.woocommerce.android.ui.analytics.informationcard.AnalyticsInformationViewState.DataViewState
 import com.woocommerce.android.ui.analytics.informationcard.AnalyticsInformationViewState.LoadingViewState
@@ -39,7 +36,6 @@ import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.viewmodel.ResourceProvider
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.navArgs
-import com.zendesk.util.DateUtils.isSameDay
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -284,61 +280,14 @@ class AnalyticsViewModel @Inject constructor(
     private fun updateDateSelector() {
         val timePeriod = getSavedTimePeriod()
         val dateRange = getSavedDateRange()
+        val timePeriodDescription = getTimePeriodDescription(timePeriod)
         mutableState.value = state.value.copy(
             analyticsDateRangeSelectorState = state.value.analyticsDateRangeSelectorState.copy(
-                fromDatePeriod = calculateFromDatePeriod(dateRange),
-                toDatePeriod = calculateToDatePeriod(timePeriod, dateRange),
+                fromDatePeriod = dateRange.fromDescription(dateUtils, resourceProvider),
+                toDatePeriod = dateRange.toDescription(dateUtils, resourceProvider, timePeriodDescription),
                 selectedPeriod = getTimePeriodDescription(timePeriod)
             )
         )
-    }
-
-    private fun calculateToDatePeriod(analyticTimeRange: AnalyticTimePeriod, dateRange: AnalyticsDateRange) =
-        when (dateRange) {
-            is SimpleDateRange -> resourceProvider.getString(
-                R.string.analytics_date_range_to_date,
-                getTimePeriodDescription(analyticTimeRange),
-                dateUtils.getShortMonthDayAndYearString(
-                    dateUtils.getYearMonthDayStringFromDate(dateRange.to)
-                ).orEmpty()
-            )
-            is MultipleDateRange ->
-                if (isSameDay(dateRange.to.from, dateRange.to.to)) {
-                    resourceProvider.getString(
-                        R.string.analytics_date_range_to_date,
-                        getTimePeriodDescription(analyticTimeRange),
-                        dateUtils.getShortMonthDayAndYearString(
-                            dateUtils.getYearMonthDayStringFromDate(dateRange.to.from)
-                        ).orEmpty()
-                    )
-                } else {
-                    resourceProvider.getString(
-                        R.string.analytics_date_range_to_date,
-                        getTimePeriodDescription(analyticTimeRange),
-                        dateRange.to.formatDatesToFriendlyPeriod()
-                    )
-                }
-        }
-
-    private fun calculateFromDatePeriod(dateRange: AnalyticsDateRange) = when (dateRange) {
-        is SimpleDateRange -> resourceProvider.getString(
-            R.string.analytics_date_range_from_date,
-            dateUtils.getShortMonthDayAndYearString(dateUtils.getYearMonthDayStringFromDate(dateRange.from)).orEmpty()
-        )
-        is MultipleDateRange ->
-            if (isSameDay(dateRange.from.from, dateRange.from.to)) {
-                resourceProvider.getString(
-                    R.string.analytics_date_range_from_date,
-                    dateUtils.getShortMonthDayAndYearString(
-                        dateUtils.getYearMonthDayStringFromDate(dateRange.from.from)
-                    ).orEmpty()
-                )
-            } else {
-                resourceProvider.getString(
-                    R.string.analytics_date_range_from_date,
-                    dateRange.from.formatDatesToFriendlyPeriod()
-                )
-            }
     }
 
     private fun getAvailableDateRanges() =
@@ -367,12 +316,18 @@ class AnalyticsViewModel @Inject constructor(
         ?.let { currencyFormatter.formatCurrency(value, it) }
         ?: value
 
-    private fun buildAnalyticsDateRangeSelectorViewState() = AnalyticsDateRangeSelectorViewState(
-        fromDatePeriod = calculateFromDatePeriod(getSavedDateRange()),
-        toDatePeriod = calculateToDatePeriod(getSavedTimePeriod(), getSavedDateRange()),
-        availableRangeDates = getAvailableDateRanges(),
-        selectedPeriod = getTimePeriodDescription(getSavedTimePeriod())
-    )
+    private fun buildAnalyticsDateRangeSelectorViewState(): AnalyticsDateRangeSelectorViewState {
+        val timePeriod = getSavedTimePeriod()
+        val dateRange = getSavedDateRange()
+        val timePeriodDescription = getTimePeriodDescription(timePeriod)
+
+        return AnalyticsDateRangeSelectorViewState(
+            fromDatePeriod = dateRange.fromDescription(dateUtils, resourceProvider),
+            toDatePeriod = dateRange.toDescription(dateUtils, resourceProvider, timePeriodDescription),
+            availableRangeDates = getAvailableDateRanges(),
+            selectedPeriod = getTimePeriodDescription(getSavedTimePeriod())
+        )
+    }
 
     private fun buildRevenueDataViewState(
         totalValue: String,
