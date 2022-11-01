@@ -82,7 +82,6 @@ fun WebViewStoreCreationScreen(viewModel: WebViewStoreCreationViewModel) {
             ConfirmExitDialog(it)
         }
     }
-
 }
 
 @SuppressLint("SetJavaScriptEnabled")

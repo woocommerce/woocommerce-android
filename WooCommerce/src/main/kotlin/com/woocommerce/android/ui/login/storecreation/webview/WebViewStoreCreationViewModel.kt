@@ -140,7 +140,6 @@ class WebViewStoreCreationViewModel @Inject constructor(
         val onDialogDismissed: () -> Unit
     ) : Parcelable
 
-
     object NavigateToNewStore : MultiLiveEvent.Event()
 
     private sealed interface Step : Parcelable {
