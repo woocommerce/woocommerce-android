@@ -46,15 +46,14 @@
         app:layout_constraintBottom_toTopOf="@id/prologueTitle"
         app:layout_constraintWidth_percent="0.6"/>
 
-
     <com.google.android.material.textview.MaterialTextView
         android:id="@+id/prologueTitle"
         style="@style/Woo.TextView.Subtitle1"
         android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center_horizontal"
-        android:layout_marginTop="@dimen/major_150"
-        android:gravity="center"
+        android:layout_height="0dp"
+        android:gravity="center_horizontal"
+        android:textAlignment="gravity"
+        android:layout_marginTop="@dimen/major_100"
         android:text="@string/simplified_login_prologue_title"
         android:textStyle="bold"
         app:layout_constraintEnd_toEndOf="parent"
