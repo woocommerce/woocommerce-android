@@ -1,2 +1,0 @@
-10.6:
-Para esta versión, nos hemos centrado en mejorar algunos aspectos y solucionar pequeños errores que nuestro equipo ha encontrado. Que no te engañen las apariencias: estamos trabajando en mejorar funciones muy interesantes para todos vosotros, como facilitaros el acceso a la aplicación mediante la opción de autocompletar. Sigue compartiendo tus opiniones, ya que nos ayudarán a averiguar en qué debemos trabajar. 💜

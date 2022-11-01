@@ -1,11 +1,35 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2022-10-04 09:54:04+0000
+Translation-Revision-Date: 2022-10-26 09:54:25+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: zh_TW
 -->
 <resources>
+    <string name="hello_blank_fragment">Hello 空白片段</string>
+    <string name="what_is_wordpress_link">&lt;u&gt;什麼是 WordPress.com？&lt;/u&gt;</string>
+    <string name="signup_creating_account_loading_message">建立新帳號</string>
+    <string name="signup_terms_of_service">繼續操作即代表你同意我們的&lt;u&gt;服務條款。&lt;/u&gt;</string>
+    <string name="signup_password_hint">選擇密碼</string>
+    <string name="signup_email_address_hint">你的電子郵件地址</string>
+    <string name="signup_already_registered">首先來建立你的帳號。 已經註冊了嗎？ 登入</string>
+    <string name="signup_get_started_label">開始使用 \n設定只要幾分鐘</string>
+    <string name="signup_get_started_button">開始使用</string>
+    <string name="login_jetpack_connection_consent">點選「連結 Jetpack」按鈕，即表示你同意我們的&lt;a href=\'terms\'&gt;服務條款&lt;/a&gt;，並同意與 WordPress.com &lt;a href=\'sync\'&gt;分享詳細資訊&lt;/a&gt;。</string>
+    <string name="enable_card_reader">啟用模擬讀卡機</string>
+    <string name="login_account_mismatch_connect_wpcom_dialog_message">請聯絡網站管理員以獲得網站邀請，成為商店經理或管理員後即可使用應用程式。</string>
+    <string name="login_account_mismatch_connect_wpcom_dialog_title">正在連結到 WordPress.com 網站</string>
+    <string name="login_account_mismatch_connect_wpcom">連結到網站</string>
+    <string name="login_account_mismatch_connect_jetpack">將 Jetpack 連結到你的帳號</string>
+    <string name="qr_code_login_edit_camera_permission">編輯權限</string>
+    <string name="qr_code_login_camera_permission_denied_message">若要使用此功能，請允許相機使用權限。</string>
+    <string name="qr_code_login_camera_permission_denied_title">需要相機存取權</string>
+    <string name="qr_code_login_scanner_title">相機條碼掃描器</string>
+    <string name="dev_options">開發人員選項</string>
+    <string name="login_2fa_not_supported_self_hosted_site">自助託管網站不支援 2FA。 請使用應用程式密碼。</string>
+    <string name="login_with_qr_code">掃描 QR 碼登入</string>
+    <string name="show_password_content_description">顯示密碼</string>
+    <string name="hide_password_content_description">隱藏密碼</string>
     <string name="stats_widget_last_updated_message">始於 %1$s</string>
     <string name="stats_widget_error_no_data">無法載入資料</string>
     <string name="stats_today_widget_description">WooCommerce 今日統計資料</string>
@@ -17,7 +41,6 @@ Language: zh_TW
     <string name="login_jetpack_verify_connection">正在確認 Jetpack 連結…</string>
     <string name="login_jetpack_connection_verification_failed">無法驗證你的 Jetpack 連結。 請再試一次。</string>
     <string name="login_simple_wpcom_site">網站 %1$s 目前使用的 WordPress.com 方案不支援安裝外掛程式。 若要使用 WooCommerce，請升級你的方案。</string>
-    <string name="login_connect_jetpack_button">將 Jetpack 連結到你的帳號</string>
     <string name="login_jetpack_not_connected">你的帳號似乎未連結至 %1$s 的 Jetpack</string>
     <string name="card_reader_card_readers_header">讀卡機</string>
     <string name="card_reader_payment_options_header">付款選項</string>
@@ -42,7 +65,6 @@ Language: zh_TW
     <string name="orderlist_bottom_sheet_simple_payments_moved_button">瞭解！</string>
     <string name="orderlist_bottom_sheet_simple_payments_moved_description">你現在可以快速輕鬆存取「親自收款」和其他功能</string>
     <string name="orderlist_bottom_sheet_simple_payments_moved_title">從「選單」分頁使用付款功能</string>
-    <string name="login_no_wpcom_account_found">電子郵件 %1$s 並未用於 WordPress.com 帳號。</string>
     <string name="login_non_woo_stores_label">其他網站</string>
     <string name="login_with_store_address">使用你的商店地址登入</string>
     <string name="more_menu_button_w___admin">WC 管理員</string>
@@ -1833,6 +1855,7 @@ Language: zh_TW
     <string name="orderdetail_track_shipment">追蹤貨件</string>
     <string name="login_email_help_desc">你可以在網站管理中透過%3$s連結 &gt; 帳號連結%4$s下方的 %1$sJetpack 儀表板%2$s找到用來連結至 WordPress.com 的電子郵件</string>
     <string name="login_email_help_title">我該使用什麼電子郵件登入？</string>
+    <string name="login_need_help_finding_email">&lt;u&gt;需要協助找出所需的電子郵件嗎？&lt;/u&gt;</string>
     <string name="login_jetpack_what_is_description">Jetpack 是一款免費的 WordPress 外掛程式，能夠透過所需工具連結你的商店，為你提供最佳行動裝置體驗，包含推播通知和統計資料</string>
     <string name="login_jetpack_what_is">什麼是 Jetpack？</string>
     <string name="login_view_connected_stores">檢視連結的商店</string>

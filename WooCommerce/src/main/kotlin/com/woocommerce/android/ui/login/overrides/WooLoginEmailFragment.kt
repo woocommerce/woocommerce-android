@@ -3,9 +3,13 @@ package com.woocommerce.android.ui.login.overrides
 import android.content.Context
 import android.view.ViewGroup
 import android.widget.Button
+import android.widget.TextView
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.LayoutRes
 import com.woocommerce.android.R
+import com.woocommerce.android.experiment.SimplifiedLoginExperiment
+import com.woocommerce.android.experiment.SimplifiedLoginExperiment.LoginVariant.CONTROL
+import com.woocommerce.android.experiment.SimplifiedLoginExperiment.LoginVariant.SIMPLIFIED_LOGIN_WPCOM
 import com.woocommerce.android.extensions.showKeyboardWithDelay
 import com.woocommerce.android.ui.dialog.WooDialog
 import com.woocommerce.android.util.WooPermissionUtils
@@ -13,6 +17,7 @@ import com.woocommerce.android.util.WooPermissionUtils.hasCameraPermission
 import com.woocommerce.android.util.WooPermissionUtils.requestCameraPermission
 import org.wordpress.android.login.LoginEmailFragment
 import org.wordpress.android.login.widgets.WPLoginInputRow
+import javax.inject.Inject
 
 class WooLoginEmailFragment : LoginEmailFragment() {
     interface Listener {
@@ -29,12 +34,19 @@ class WooLoginEmailFragment : LoginEmailFragment() {
 
     private lateinit var whatIsWordPressLinkClickListener: Listener
 
+    @Inject
+    lateinit var simplifiedLoginExperiment: SimplifiedLoginExperiment
+
     @LayoutRes
-    override fun getContentLayout(): Int = R.layout.fragment_login_email_screen
+    override fun getContentLayout(): Int = when (simplifiedLoginExperiment.getCurrentVariant()) {
+        CONTROL -> R.layout.fragment_login_email_screen
+        SIMPLIFIED_LOGIN_WPCOM -> R.layout.fragment_simplified_login_email_screen
+    }
 
     override fun setupContent(rootView: ViewGroup) {
         super.setupContent(rootView)
-        rootView.findViewById<Button>(R.id.login_what_is_wordpress).setOnClickListener {
+        val whatIsWordPressText = rootView.findViewById<Button>(R.id.login_what_is_wordpress)
+        whatIsWordPressText.setOnClickListener {
             whatIsWordPressLinkClickListener.onWhatIsWordPressLinkClicked()
         }
 
@@ -43,6 +55,10 @@ class WooLoginEmailFragment : LoginEmailFragment() {
                 whatIsWordPressLinkClickListener.onQrCodeLoginClicked()
             } else requestCameraPermission(requestPermissionLauncher)
         }
+    }
+
+    override fun setupLabel(label: TextView) {
+        // NO-OP, For this custom screen, the correct label is set in the layout
     }
 
     override fun onResume() {

@@ -6,7 +6,6 @@ import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.Paint
 import android.graphics.Rect
-import android.os.Build
 import android.os.SystemClock
 import android.text.Layout
 import android.text.StaticLayout
@@ -191,23 +190,10 @@ class SwipeToComplete(
         super.onChildDraw(canvas, recyclerView, viewHolder, dX, dY, actionState, isCurrentlyActive)
     }
 
-    @Suppress("deprecation")
     private fun getTextStaticLayout(width: Int): StaticLayout {
-        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            StaticLayout.Builder.obtain(message, 0, message.length, messagePaint, width)
-                .setAlignment(Layout.Alignment.ALIGN_CENTER)
-                .build()
-        } else {
-            StaticLayout(
-                message,
-                messagePaint,
-                width,
-                Layout.Alignment.ALIGN_CENTER,
-                1f,
-                0f,
-                false
-            )
-        }
+        return StaticLayout.Builder.obtain(message, 0, message.length, messagePaint, width)
+            .setAlignment(Layout.Alignment.ALIGN_CENTER)
+            .build()
     }
 
     interface SwipeAbleViewHolder {

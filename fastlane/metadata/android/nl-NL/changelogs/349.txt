@@ -1,0 +1,2 @@
+10.9:
+Deze release bevat een hoop verbeteringen voor de stabiliteit, zodat je makkelijker kunt inloggen. Je kunt nu je WordPress.com-account verbinden met Jetpack en zo veel sneller toegang krijgen tot je winkel. Kom maar door met die feedback!

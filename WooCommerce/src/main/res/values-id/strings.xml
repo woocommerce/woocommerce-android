@@ -1,11 +1,35 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2022-10-02 19:38:14+0000
+Translation-Revision-Date: 2022-10-26 09:54:24+0000
 Plural-Forms: nplurals=2; plural=n > 1;
 Generator: GlotPress/2.4.0-alpha
 Language: id
 -->
 <resources>
+    <string name="hello_blank_fragment">Halo, bagian kosong</string>
+    <string name="what_is_wordpress_link">&lt;u&gt;Apa itu WordPress.com?&lt;/u&gt;</string>
+    <string name="signup_creating_account_loading_message">Membuat akun baru</string>
+    <string name="signup_terms_of_service">Dengan melanjutkan, Anda menyetujui &lt;u&gt;Ketentuan Layanan kami.&lt;/u&gt;</string>
+    <string name="signup_password_hint">Pilih kata sandi</string>
+    <string name="signup_email_address_hint">Alamat email Anda</string>
+    <string name="signup_already_registered">Pertama-tama, mari buat akun Anda. Telah terdaftar? Login</string>
+    <string name="signup_get_started_label">Memulai \ndalam hitungan menit</string>
+    <string name="signup_get_started_button">Mulai</string>
+    <string name="login_jetpack_connection_consent">Dengan mengetuk tombol Hubungkan Jetpack, Anda menyetujui &lt;a href=\'terms\'&gt;Ketentuan Layanan&lt;/a&gt; kami dan bersedia &lt;a href=\'sync\'&gt;membagikan detail&lt;/a&gt; kepada WordPress.com.</string>
+    <string name="enable_card_reader">Aktifkan Pembaca Kartu Simulasi</string>
+    <string name="login_account_mismatch_connect_wpcom_dialog_message">Hubungi pemilik situs untuk menerima undangan ke situs sebagai manajer toko atau administrator untuk menggunakan aplikasi.</string>
+    <string name="login_account_mismatch_connect_wpcom_dialog_title">Menghubungkan ke situs WordPress.com</string>
+    <string name="login_account_mismatch_connect_wpcom">Hubungkan ke situs</string>
+    <string name="login_account_mismatch_connect_jetpack">Hubungkan Jetpack ke akun Anda</string>
+    <string name="qr_code_login_edit_camera_permission">Edit izin</string>
+    <string name="qr_code_login_camera_permission_denied_message">Untuk menggunakan fitur ini, berikan izin untuk menggunakan kamera Anda.</string>
+    <string name="qr_code_login_camera_permission_denied_title">Akses Kamera Diperlukan</string>
+    <string name="qr_code_login_scanner_title">Pemindai Barcode Kamera</string>
+    <string name="dev_options">Pilihan Pengembang</string>
+    <string name="login_2fa_not_supported_self_hosted_site">2FA tidak didukung untuk situs yang dihosting sendiri. Gunakan kata sandi aplikasi.</string>
+    <string name="login_with_qr_code">Pindai kode QR untuk login</string>
+    <string name="show_password_content_description">Tunjukkan kata sandi</string>
+    <string name="hide_password_content_description">Sembunyikan password</string>
     <string name="stats_widget_last_updated_message">Sejak %1$s</string>
     <string name="stats_widget_error_no_data">Tidak dapat memuat data</string>
     <string name="stats_today_widget_description">Statistik WooCommerce Hari Ini</string>
@@ -17,7 +41,6 @@ Language: id
     <string name="login_jetpack_verify_connection">Memverifikasi koneksi Jetpack…</string>
     <string name="login_jetpack_connection_verification_failed">Tidak dapat memverifikasi koneksi Jetpack Anda. Harap coba lagi.</string>
     <string name="login_simple_wpcom_site">Situs %1$s saat ini menggunakan paket WordPress.com yang tidak mendukung instalasi plugin. Upgrade paket Anda untuk menggunakan WooCommerce.</string>
-    <string name="login_connect_jetpack_button">Hubungkan Jetpack ke akun Anda</string>
     <string name="login_jetpack_not_connected">Sepertinya akun Anda tidak terhubung ke Jetpack %1$s</string>
     <string name="card_reader_card_readers_header">PEMBACA KARTU</string>
     <string name="card_reader_payment_options_header">OPSI PEMBAYARAN</string>
@@ -42,7 +65,6 @@ Language: id
     <string name="orderlist_bottom_sheet_simple_payments_moved_button">Mantap!</string>
     <string name="orderlist_bottom_sheet_simple_payments_moved_description">Sekarang, Anda dapat mengakses Pembayaran Langsung dan fitur-fitur lain dengan cepat dan mudah</string>
     <string name="orderlist_bottom_sheet_simple_payments_moved_title">Pembayaran dari tab Menu</string>
-    <string name="login_no_wpcom_account_found">Email %1$s tidak digunakan dengan akun WordPress.com.</string>
     <string name="login_non_woo_stores_label">Situs lain</string>
     <string name="login_with_store_address">Login dengan alamat toko Anda</string>
     <string name="more_menu_button_w___admin">Admin WC</string>
@@ -1833,6 +1855,7 @@ Language: id
     <string name="orderdetail_track_shipment">Lacak pengiriman</string>
     <string name="login_email_help_desc">Di admin situs, Anda bisa menemukan email yang Anda gunakan untuk terhubung ke WordPress.com dari %1$sDasbor Jetpack%2$s di bagian %3$sKoneksi &gt; Koneksi akun%4$s</string>
     <string name="login_email_help_title">Email apa yang saya gunakan untuk masuk?</string>
+    <string name="login_need_help_finding_email">&lt;u&gt;Perlu bantuan untuk menemukan email yang dibutuhkan?&lt;/u&gt;</string>
     <string name="login_jetpack_what_is_description">Jetpack merupakan plugin WordPress gratis yang menghubungkan toko Anda dengan peralatan yang diperlukan agar dapat memberikan pengalaman seluler terbaik, mencakup pemberitahuan push dan statistik</string>
     <string name="login_jetpack_what_is">Apa itu Jetpack?</string>
     <string name="login_view_connected_stores">Lihat toko terhubung</string>

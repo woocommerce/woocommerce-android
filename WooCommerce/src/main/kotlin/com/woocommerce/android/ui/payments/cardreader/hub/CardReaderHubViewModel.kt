@@ -31,6 +31,7 @@ import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboa
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboardingState
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboardingState.OnboardingCompleted
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboardingState.StripeAccountPendingRequirement
+import com.woocommerce.android.util.UtmProvider
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T.CARD_READER
 import com.woocommerce.android.viewmodel.MultiLiveEvent
@@ -40,6 +41,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import org.wordpress.android.fluxc.store.WooCommerceStore
 import javax.inject.Inject
+import javax.inject.Named
 
 @HiltViewModel
 class CardReaderHubViewModel @Inject constructor(
@@ -53,6 +55,7 @@ class CardReaderHubViewModel @Inject constructor(
     private val learnMoreUrlProvider: LearnMoreUrlProvider,
     cardReaderCountryConfigProvider: CardReaderCountryConfigProvider,
     private val cardReaderTracker: CardReaderTracker,
+    @Named("payment-menu") private val paymentMenuUtmProvider: UtmProvider
 ) : ScopedViewModel(savedState) {
     private val arguments: CardReaderHubFragmentArgs by savedState.navArgs()
     private val storeCountryCode = wooStore.getStoreCountryCode(selectedSite.get())
@@ -248,7 +251,7 @@ class CardReaderHubViewModel @Inject constructor(
         trackEvent(AnalyticsEvent.PAYMENTS_HUB_ORDER_CARD_READER_TAPPED)
         triggerEvent(
             CardReaderHubEvents.NavigateToPurchaseCardReaderFlow(
-                url = cardReaderPurchaseUrl,
+                url = paymentMenuUtmProvider.getUrlWithUtmParams(cardReaderPurchaseUrl),
                 titleRes = R.string.card_reader_purchase_card_reader
             )
         )
@@ -410,5 +413,10 @@ class CardReaderHubViewModel @Inject constructor(
     enum class CashOnDeliverySource(source: String) {
         ONBOARDING(source = "onboarding"),
         PAYMENTS_HUB(source = "payments_hub")
+    }
+
+    companion object {
+        const val UTM_CAMPAIGN = "payments_menu_item"
+        const val UTM_SOURCE = "payments_menu"
     }
 }

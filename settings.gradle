@@ -86,7 +86,7 @@ gradle.ext.mediaPickerSourceWordPressBinaryPath = "org.wordpress.mediapicker:sou
 gradle.ext {
     compileSdkVersion = 33
     targetSdkVersion = 31
-    minSdkVersion = 21
+    minSdkVersion = 24
 }
 
 def localBuilds = new File('local-builds.gradle')

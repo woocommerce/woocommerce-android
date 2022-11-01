@@ -1,11 +1,35 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2022-10-04 15:54:03+0000
+Translation-Revision-Date: 2022-10-27 09:54:03+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: zh_CN
 -->
 <resources>
+    <string name="hello_blank_fragment">问候空白片段</string>
+    <string name="what_is_wordpress_link">&lt;u&gt;什么是 WordPress.com？&lt;/u&gt;</string>
+    <string name="signup_creating_account_loading_message">正在创建账户</string>
+    <string name="signup_terms_of_service">继续即表示您同意我们的&lt;u&gt;服务条款。&lt;/u&gt;</string>
+    <string name="signup_password_hint">选择一个密码</string>
+    <string name="signup_email_address_hint">您的电子邮箱地址</string>
+    <string name="signup_already_registered">首先，我们来创建您的账户。 已注册？ 登录</string>
+    <string name="signup_get_started_label">几分钟内\n即可开始使用</string>
+    <string name="signup_get_started_button">开始使用</string>
+    <string name="login_jetpack_connection_consent">点击“连接 Jetpack”按钮即表示，您同意遵守我们的&lt;a href=\'terms\'&gt;服务条款&lt;/a&gt;，并与 WordPress.com &lt;a href=\'sync\'&gt;共享详细信息&lt;/a&gt;。</string>
+    <string name="enable_card_reader">启用模拟读卡器</string>
+    <string name="login_account_mismatch_connect_wpcom_dialog_message">请联系站点所有者，以商店经理或管理员的身份邀请站点使用该应用程序。</string>
+    <string name="login_account_mismatch_connect_wpcom_dialog_title">正在连接到 WordPress.com 站点</string>
+    <string name="login_account_mismatch_connect_wpcom">连接到站点</string>
+    <string name="login_account_mismatch_connect_jetpack">将 Jetpack 连接到您的账户</string>
+    <string name="qr_code_login_edit_camera_permission">编辑权限</string>
+    <string name="qr_code_login_camera_permission_denied_message">要使用此功能，请允许摄像头使用权限。</string>
+    <string name="qr_code_login_camera_permission_denied_title">需要摄像头访问权限</string>
+    <string name="qr_code_login_scanner_title">摄像头条形码扫描程序</string>
+    <string name="dev_options">开发者选项</string>
+    <string name="login_2fa_not_supported_self_hosted_site">自托管站点不支持 2FA。 请使用应用程序密码。</string>
+    <string name="login_with_qr_code">扫描二维码登录</string>
+    <string name="show_password_content_description">显示密码</string>
+    <string name="hide_password_content_description">隐藏密码</string>
     <string name="stats_widget_last_updated_message">截至 %1$s</string>
     <string name="stats_widget_error_no_data">无法加载数据</string>
     <string name="stats_today_widget_description">WooCommerce 今日统计数据</string>
@@ -17,7 +41,6 @@ Language: zh_CN
     <string name="login_jetpack_verify_connection">正在验证 Jetpack 连接…</string>
     <string name="login_jetpack_connection_verification_failed">无法验证您的 Jetpack 连接。 请重试。</string>
     <string name="login_simple_wpcom_site">站点 %1$s 目前采用不支持插件安装的 WordPress.com 套餐。 请升级您的套餐来使用 WooCommerce。</string>
-    <string name="login_connect_jetpack_button">将 Jetpack 连接到您的账户</string>
     <string name="login_jetpack_not_connected">您的账户似乎未连接到 %1$s 的 Jetpack</string>
     <string name="card_reader_card_readers_header">读卡器</string>
     <string name="card_reader_payment_options_header">付款选项</string>
@@ -42,7 +65,6 @@ Language: zh_CN
     <string name="orderlist_bottom_sheet_simple_payments_moved_button">知道了！</string>
     <string name="orderlist_bottom_sheet_simple_payments_moved_description">现在您可轻松快速地使用“现场付款”和其他功能</string>
     <string name="orderlist_bottom_sheet_simple_payments_moved_title">“菜单”选项卡中的“付款”</string>
-    <string name="login_no_wpcom_account_found">电子邮件 %1$s 未与 WordPress.com 账户结合使用。</string>
     <string name="login_non_woo_stores_label">其他站点</string>
     <string name="login_with_store_address">使用商店地址登录</string>
     <string name="more_menu_button_w___admin">WC Admin</string>
@@ -1833,6 +1855,7 @@ Language: zh_CN
     <string name="orderdetail_track_shipment">跟踪配送</string>
     <string name="login_email_help_desc">进行站点管理时，您可以从 %1$sJetpack 控制面板%2$s中找到用于连接 WordPress.com 的电子邮件，具体位于%3$s连接 &gt; 帐户连接%4$s下面</string>
     <string name="login_email_help_title">我用什么电子邮件登录？</string>
+    <string name="login_need_help_finding_email">&lt;u&gt;需要查找所需电子邮件方面的帮助？&lt;/u&gt;</string>
     <string name="login_jetpack_what_is_description">Jetpack 是一款免费的 WordPress 插件，可以将您的商店与所需的工具连接起来，为您提供最佳的移动体验，包括推送通知和统计数据</string>
     <string name="login_jetpack_what_is">Jetpack 是什么？</string>
     <string name="login_view_connected_stores">查看连接的商店</string>

@@ -164,6 +164,7 @@ class AnalyticsTracker private constructor(private val context: Context) {
         const val KEY_STATUS = "status"
         const val KEY_TOTAL_DURATION = "total_duration"
         const val KEY_SEARCH = "search"
+        const val KEY_SEARCH_FILTER = "filter"
         const val KEY_TO = "to"
         const val KEY_TYPE = "type"
         const val KEY_CARRIER = "carrier"
@@ -217,6 +218,8 @@ class AnalyticsTracker private constructor(private val context: Context) {
         const val VALUE_PURCHASE_FAILED = "purchase_failed"
         const val VALUE_PURCHASE_SUCCEEDED = "purchase_succeeded"
         const val VALUE_PURCHASE_READY = "purchase_ready"
+        const val VALUE_SEARCH_ALL = "all"
+        const val VALUE_SEARCH_SKU = "sku"
 
         const val KEY_FLOW = "flow"
         const val KEY_HAS_DIFFERENT_SHIPPING_DETAILS = "has_different_shipping_details"
@@ -233,6 +236,14 @@ class AnalyticsTracker private constructor(private val context: Context) {
 
         const val KEY_HAS_MULTIPLE_SHIPPING_LINES = "has_multiple_shipping_lines"
         const val KEY_HAS_MULTIPLE_FEE_LINES = "has_multiple_fee_lines"
+
+        const val KEY_CARD = "card"
+        const val VALUE_REVENUE_CARD_SELECTED = "revenue"
+        const val VALUE_ORDERS_CARD_SELECTED = "orders"
+        const val VALUE_PRODUCTS_CARD_SELECTED = "products"
+
+        const val JITM_ID = "jitm_id"
+        const val JITM_FEATURE_CLASS = "feature_class"
 
         enum class OrderNoteType(val value: String) {
             CUSTOMER("customer"),
@@ -272,6 +283,9 @@ class AnalyticsTracker private constructor(private val context: Context) {
         const val VALUE_SIMPLE_PAYMENTS_SOURCE_PAYMENT_METHOD = "payment_method"
 
         const val VALUE_ORDER_PAYMENTS_FLOW = "order_payment"
+
+        const val KEY_JITM = "jitm"
+        const val KEY_JITM_COUNT = "count"
 
         // -- Downloadable Files
         const val KEY_DOWNLOADABLE_FILE_ACTION = "action"

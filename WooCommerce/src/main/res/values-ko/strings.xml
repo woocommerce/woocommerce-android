@@ -1,11 +1,35 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2022-10-04 15:54:03+0000
+Translation-Revision-Date: 2022-10-27 14:54:03+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: ko_KR
 -->
 <resources>
+    <string name="hello_blank_fragment">안녕하세요 blank fragment</string>
+    <string name="what_is_wordpress_link">&lt;u&gt;워드프레스닷컴이란 무엇인가요?&lt;/u&gt;</string>
+    <string name="signup_creating_account_loading_message">새 계정 만들기</string>
+    <string name="signup_terms_of_service">계속하면 &lt;u&gt;서비스 약관에 동의하는 것입니다.&lt;/u&gt;</string>
+    <string name="signup_password_hint">비밀번호 선택</string>
+    <string name="signup_email_address_hint">사용 중인 이메일 주소</string>
+    <string name="signup_already_registered">먼저 계정을 만들어 보겠습니다. 이미 등록하셨나요? 로그인</string>
+    <string name="signup_get_started_label">시작하기 \n분 단위</string>
+    <string name="signup_get_started_button">시작하기</string>
+    <string name="login_jetpack_connection_consent">젯팩 연결 버튼을 누르면 &lt;a href=\'terms\'&gt;서비스 약관&lt;/a&gt; 및 워드프레스닷컴과 &lt;a href=\'sync\'&gt;상세 정보&lt;/a&gt; 공유에 동의하는 것입니다.</string>
+    <string name="enable_card_reader">시뮬레이션한 카드 리더 활성화</string>
+    <string name="login_account_mismatch_connect_wpcom_dialog_message">상점 관리자 또는 앱을 사용하는 관리자로 사이트에 초대받으려면 사이트 소유자에게 문의하세요.</string>
+    <string name="login_account_mismatch_connect_wpcom_dialog_title">워드프레스닷컴 사이트에 연결하기</string>
+    <string name="login_account_mismatch_connect_wpcom">사이트에 연결</string>
+    <string name="login_account_mismatch_connect_jetpack">계정에 젯팩 연결</string>
+    <string name="qr_code_login_edit_camera_permission">권한 편집</string>
+    <string name="qr_code_login_camera_permission_denied_message">이 기능을 사용하려면 카메라 사용 권한을 허용하시기 바랍니다.</string>
+    <string name="qr_code_login_camera_permission_denied_title">카메라 접근 권한 필요</string>
+    <string name="qr_code_login_scanner_title">카메라 바코드 스캐너</string>
+    <string name="dev_options">개발자 옵션</string>
+    <string name="login_2fa_not_supported_self_hosted_site">독립 호스트 사이트에는 2단계 인증이 지원되지 않습니다. 앱 비밀번호를 사용하세요.</string>
+    <string name="login_with_qr_code">QR 코드 스캔으로 로그인</string>
+    <string name="show_password_content_description">비밀번호 표시</string>
+    <string name="hide_password_content_description">비밀번호 숨기기</string>
     <string name="stats_widget_last_updated_message">%1$s 현재</string>
     <string name="stats_widget_error_no_data">데이터를 로드할 수 없음</string>
     <string name="stats_today_widget_description">우커머스 통계 오늘</string>
@@ -17,7 +41,6 @@ Language: ko_KR
     <string name="login_jetpack_verify_connection">젯팩 연결 확인 중…</string>
     <string name="login_jetpack_connection_verification_failed">젯팩 연결을 확인할 수 없습니다. 다시 시도하세요.</string>
     <string name="login_simple_wpcom_site">플러그인 설치가 지원되지 않는 워드프레스닷컴 요금제를 현재 %1$s 사이트에서 이용하고 있습니다. 요금제를 업그레이드하여 우커머스를 사용하세요.</string>
-    <string name="login_connect_jetpack_button">계정에 젯팩 연결</string>
     <string name="login_jetpack_not_connected">계정이 %1$s의 젯팩에 연결되지 않은 것 같습니다.</string>
     <string name="card_reader_card_readers_header">카드 리더</string>
     <string name="card_reader_payment_options_header">결제 옵션</string>
@@ -42,7 +65,6 @@ Language: ko_KR
     <string name="orderlist_bottom_sheet_simple_payments_moved_button">알겠어요!</string>
     <string name="orderlist_bottom_sheet_simple_payments_moved_description">이제 빠르고 쉽게 대면 결제와 기타 기능에 접근하실 수 있습니다.</string>
     <string name="orderlist_bottom_sheet_simple_payments_moved_title">메뉴 탭의 결제</string>
-    <string name="login_no_wpcom_account_found">%1$s 이메일은 워드프레스닷컴 계정에서 사용되지 않습니다.</string>
     <string name="login_non_woo_stores_label">기타 사이트</string>
     <string name="login_with_store_address">스토어 주소로 로그인</string>
     <string name="more_menu_button_w___admin">WC 관리자</string>
@@ -1833,6 +1855,7 @@ Language: ko_KR
     <string name="orderdetail_track_shipment">배송 추적</string>
     <string name="login_email_help_desc">사이트 관리에서 %1$sJetpack 대시보드%2$s(%3$s연결 &gt; 계정 연결%4$s)에서 워드프레스닷컴에 연결하는 데 사용한 이메일을 찾을 수 있습니다.</string>
     <string name="login_email_help_title">로그인할 때 어떤 이메일을 사용하나요?</string>
+    <string name="login_need_help_finding_email">&lt;u&gt;필수 이메일을 찾는 도움말이 필요하신가요?&lt;/u&gt;</string>
     <string name="login_jetpack_what_is_description">Jetpack은 스토어를 최고의 모바일 환경을 제공하는 데 필요한 푸시 알림, 통계 등의 도구와 연결하는 무료 워드프레스 플러그인입니다.</string>
     <string name="login_jetpack_what_is">Jetpack이란 무엇인가요?</string>
     <string name="login_view_connected_stores">연결된 스토어 보기</string>
