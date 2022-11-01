@@ -11,7 +11,6 @@ import org.mockito.kotlin.mock
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import org.wordpress.android.fluxc.Dispatcher
-import org.wordpress.android.fluxc.store.AccountStore.OnAccountChanged
 import org.wordpress.android.fluxc.store.AccountStore.OnAuthenticationChanged
 import org.wordpress.android.fluxc.store.signup.SignUpStore
 import org.wordpress.android.fluxc.store.signup.SignUpStore.CreateWpAccountResult
@@ -29,7 +28,7 @@ class SignUpRepositoryTest : BaseUnitTest() {
             "usernameTwo",
             "usernameThree"
         )
-        val DEFAULT_SUCCESSFUL_ACCOUNT_CREATION_RESULT = CreateWpAccountResult(success = true, ANY_AUTH_TOKEN)
+        val SUCCESSFUL_ACCOUNT_CREATION_RESULT = CreateWpAccountResult(success = true, ANY_AUTH_TOKEN)
     }
 
     private val signUpStore: SignUpStore = mock()
@@ -45,10 +44,10 @@ class SignUpRepositoryTest : BaseUnitTest() {
     )
 
     @Test
-    fun `given valid email, when creating account, then fetch username suggestions`() =
+    fun `given valid credentials, when creating account, then fetch username suggestions`() =
         testBlocking {
             givenValidateCredentialsReturns(null)
-            givenAccountCreationResult(DEFAULT_SUCCESSFUL_ACCOUNT_CREATION_RESULT)
+            givenAccountCreationResult(SUCCESSFUL_ACCOUNT_CREATION_RESULT)
             givenFetchUserNameSuggestionsReturns(
                 SignUpStore.UsernameSuggestionsResult(
                     USER_NAME_SUGGESTIONS_LIST
@@ -58,8 +57,6 @@ class SignUpRepositoryTest : BaseUnitTest() {
             val task = async { sut.createAccount(ANY_VALID_USER_EMAIL, ANY_PASSWORD) }
             // Handle token update
             dispatcher.emitChange(OnAuthenticationChanged())
-            // Handle account fetching
-            dispatcher.emitChange(OnAccountChanged())
             task.await()
 
             verify(signUpStore).fetchUserNameSuggestions(ANY_VALID_USER_EMAIL)
