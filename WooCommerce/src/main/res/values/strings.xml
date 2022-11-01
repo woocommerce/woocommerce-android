@@ -1630,6 +1630,8 @@
     <string name="variations_bulk_update_regular_prices_dialog_title">Updating regular prices</string>
     <string name="variations_bulk_update_warning_title">Bulk update limit exceeded</string>
     <string name="variations_bulk_update_warning_message">Currently bulk update is supported for 100 variations maximum.</string>
+    <string name="variations_bulk_update_dialog_inventory_section_title">Inventory</string>
+    <string name="variations_bulk_update_dialog_stock_quantity_label">@string/product_stock_quantity</string>
 
     <!--
         Product images

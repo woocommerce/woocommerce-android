@@ -58,6 +58,7 @@ class VariationsBulkUpdateAttrPickerDialog : WCBottomSheetDialogFragment() {
         binding.fullscreenStateToolbar.setNavigationOnClickListener { dismiss() }
         binding.regularPrice.setOnClickListener { viewModel.onRegularPriceUpdateClicked() }
         binding.salePrice.setOnClickListener { viewModel.onSalePriceUpdateClicked() }
+        binding.stockQuantity.setOnClickListener{ viewModel.onStockQuantityClicked() }
 
         bottomSheetBehavior.apply {
             isFitToContents = false

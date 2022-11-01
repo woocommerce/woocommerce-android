@@ -5,6 +5,7 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
 import com.woocommerce.android.analytics.AnalyticsEvent.PRODUCT_VARIANTS_BULK_UPDATE_REGULAR_PRICE_TAPPED
 import com.woocommerce.android.analytics.AnalyticsEvent.PRODUCT_VARIANTS_BULK_UPDATE_SALE_PRICE_TAPPED
+import com.woocommerce.android.analytics.AnalyticsEvent.PRODUCT_VARIANTS_BULK_UPDATE_STOCK_QUANTITY_TAPPED
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.track
 import com.woocommerce.android.model.ProductVariation
 import com.woocommerce.android.ui.products.ParameterRepository
@@ -63,6 +64,18 @@ class VariationsBulkUpdateAttrPickerViewModel @Inject constructor(
         )
     }
 
+    fun onStockQuantityClicked() {
+        track(PRODUCT_VARIANTS_BULK_UPDATE_STOCK_QUANTITY_TAPPED)
+        triggerEvent(
+            OpenVariationsBulkUpdateStockQuantity(
+                VariationsBulkUpdatePriceViewModel.StockQuantityUpdateData(
+                    args.variationsToUpdate.toList(),
+                    0
+                )
+            )
+        )
+    }
+
     data class ViewState(
         val currency: String? = null,
         val regularPriceGroupType: ValuesGroupType = ValuesGroupType.None,
@@ -71,5 +84,9 @@ class VariationsBulkUpdateAttrPickerViewModel @Inject constructor(
 
     data class OpenVariationsBulkUpdatePrice(
         val data: PriceUpdateData
+    ) : Event()
+
+    data class OpenVariationsBulkUpdateStockQuantity(
+        val data: VariationsBulkUpdatePriceViewModel.StockQuantityUpdateData
     ) : Event()
 }
