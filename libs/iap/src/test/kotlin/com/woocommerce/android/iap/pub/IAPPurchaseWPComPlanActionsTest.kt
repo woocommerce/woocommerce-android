@@ -25,6 +25,7 @@ import com.woocommerce.android.iap.pub.model.WPComIsPurchasedResult
 import com.woocommerce.android.iap.pub.model.WPComProductResult
 import com.woocommerce.android.iap.pub.model.WPComPurchaseResult
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.test.runTest
 import org.assertj.core.api.Assertions.assertThat
@@ -41,8 +42,13 @@ class IAPPurchaseWPComPlanActionsTest {
     private val logWrapperMock: IAPLogWrapper = mock()
     private val mobilePayAPIMock: IAPMobilePayAPI = mock()
     private val billingClientMock: IAPBillingClientWrapper = mock()
-    private val billingFlowParamsBuilder: IAPBillingFlowParamsBuilder = mock()
+    private val billingFlowParamsBuilder: IAPBillingFlowParamsBuilder = mock {
+        on { buildBillingFlowParams(any()) }.thenReturn(mock())
+    }
     private val periodicPurchaseStatusChecker: IAPPeriodicPurchaseStatusChecker = mock()
+    private val activityWrapper: IAPActivityWrapper = mock {
+        on { activity }.thenReturn(mock())
+    }
 
     private val iapProduct: IAPProduct = IAPProduct.WPPremiumPlanTesting
 
@@ -271,17 +277,10 @@ class IAPPurchaseWPComPlanActionsTest {
     @Test
     fun `given product query and purchase success, when purchasing plan, then success returned`() = runTest {
         // GIVEN
-        val activityWrapper: IAPActivityWrapper = mock {
-            on { activity }.thenReturn(mock())
-        }
-
         val purchaseToken = "purchaseToken"
-
         val responseCode = BillingClient.BillingResponseCode.OK
 
         setupQueryProductDetails(responseCode)
-
-        whenever(billingFlowParamsBuilder.buildBillingFlowParams(any())).thenReturn(mock())
 
         setupMobilePayAPIMock(
             purchaseToken = purchaseToken,
@@ -304,6 +303,155 @@ class IAPPurchaseWPComPlanActionsTest {
         // THEN
         val result = sut.purchaseWpComPlanResult.firstOrNull()
         assertThat(result).isInstanceOf(WPComPurchaseResult.Success::class.java)
+    }
+
+    @Test
+    fun `given product query error, when purchasing plan, then error returned`() = runTest {
+        // GIVEN
+        val debugMessage = "debug message"
+        setupQueryProductDetails(
+            responseCode = BillingClient.BillingResponseCode.SERVICE_DISCONNECTED,
+            debugMessage = debugMessage
+        )
+
+        // WHEN
+        sut.purchaseWPComPlan(activityWrapper)
+
+        // THEN
+        val result = sut.purchaseWpComPlanResult.firstOrNull()
+        assertThat(result).isInstanceOf(WPComPurchaseResult.Error::class.java)
+        assertThat((result as WPComPurchaseResult.Error).errorType).isInstanceOf(
+            IAPError.Billing.ServiceDisconnected::class.java
+        )
+        assertThat((result.errorType as IAPError.Billing).debugMessage).isEqualTo(debugMessage)
+    }
+
+    @Test
+    fun `given product query success and purchase error, when purchasing plan, then error returned`() = runTest {
+        // GIVEN
+        setupQueryProductDetails(responseCode = BillingClient.BillingResponseCode.OK)
+
+        val debugMessage = "debug message"
+
+        // WHEN
+        sut.purchaseWPComPlan(activityWrapper)
+        purchasesUpdatedListener.onPurchasesUpdated(
+            buildBillingResult(BillingClient.BillingResponseCode.SERVICE_DISCONNECTED, debugMessage),
+            emptyList()
+        )
+
+        // THEN
+        val result = sut.purchaseWpComPlanResult.firstOrNull()
+        assertThat(result).isInstanceOf(WPComPurchaseResult.Error::class.java)
+        assertThat((result as WPComPurchaseResult.Error).errorType).isInstanceOf(
+            IAPError.Billing.ServiceDisconnected::class.java
+        )
+        assertThat((result.errorType as IAPError.Billing).debugMessage).isEqualTo(debugMessage)
+    }
+
+    @Test
+    fun `given product query and purchase success and network err, when purchasing plan, then error`() = runTest {
+        // GIVEN
+        val purchaseToken = "purchaseToken"
+        val responseCode = BillingClient.BillingResponseCode.OK
+
+        setupQueryProductDetails(responseCode)
+
+        setupMobilePayAPIMock(
+            purchaseToken = purchaseToken,
+            result = CreateAndConfirmOrderResponse.Network
+        )
+
+        // WHEN
+        sut.purchaseWPComPlan(activityWrapper)
+        purchasesUpdatedListener.onPurchasesUpdated(
+            buildBillingResult(responseCode),
+            listOf(
+                buildPurchase(
+                    listOf(iapProduct.productId),
+                    Purchase.PurchaseState.PURCHASED,
+                    purchaseToken = purchaseToken
+                )
+            )
+        )
+
+        // THEN
+        val result = sut.purchaseWpComPlanResult.firstOrNull()
+        assertThat(result).isInstanceOf(WPComPurchaseResult.Error::class.java)
+        assertThat((result as WPComPurchaseResult.Error).errorType).isInstanceOf(
+            IAPError.RemoteCommunication.Network::class.java
+        )
+    }
+
+    @Test
+    fun `given callback didnt respond and periodic task return suc, when purchasing plan, then suc return`() = runTest {
+        // GIVEN
+        val purchaseToken = "purchaseToken"
+        val responseCode = BillingClient.BillingResponseCode.OK
+
+        setupQueryProductDetails(responseCode)
+
+        setupMobilePayAPIMock(
+            purchaseToken = purchaseToken,
+            result = CreateAndConfirmOrderResponse.Success(REMOTE_SITE_ID)
+        )
+
+        val purchasesResult = PurchasesResult(
+            buildBillingResult(responseCode),
+            listOf(
+                buildPurchase(
+                    listOf(iapProduct.productId),
+                    Purchase.PurchaseState.PURCHASED,
+                    purchaseToken = purchaseToken
+                )
+            )
+        )
+        whenever(periodicPurchaseStatusChecker.startPeriodicPurchasesCheckJob(any(), any(), any()))
+            .thenAnswer {
+                (it.arguments[2] as (PurchasesResult) -> Unit).invoke(purchasesResult)
+                mock<Job>()
+            }
+
+        // WHEN
+        sut.purchaseWPComPlan(activityWrapper)
+
+        // THEN
+        val result = sut.purchaseWpComPlanResult.firstOrNull()
+        assertThat(result).isInstanceOf(WPComPurchaseResult.Success::class.java)
+    }
+
+    @Test
+    fun `given callback didnt respond and periodic task return err, when purchasing plan, then err return`() = runTest {
+        // GIVEN
+        val purchaseToken = "purchaseToken"
+        val responseCode = BillingClient.BillingResponseCode.OK
+
+        setupQueryProductDetails(responseCode)
+
+        setupMobilePayAPIMock(
+            purchaseToken = purchaseToken,
+            result = CreateAndConfirmOrderResponse.Success(REMOTE_SITE_ID)
+        )
+
+        val purchasesResult = PurchasesResult(
+            buildBillingResult(BillingClient.BillingResponseCode.SERVICE_TIMEOUT),
+            emptyList()
+        )
+        whenever(periodicPurchaseStatusChecker.startPeriodicPurchasesCheckJob(any(), any(), any()))
+            .thenAnswer {
+                (it.arguments[2] as (PurchasesResult) -> Unit).invoke(purchasesResult)
+                mock<Job>()
+            }
+
+        // WHEN
+        sut.purchaseWPComPlan(activityWrapper)
+
+        // THEN
+        val result = sut.purchaseWpComPlanResult.firstOrNull()
+        assertThat(result).isInstanceOf(WPComPurchaseResult.Error::class.java)
+        assertThat((result as WPComPurchaseResult.Error).errorType).isInstanceOf(
+            IAPError.Billing.ServiceTimeout::class.java
+        )
     }
     //endregion
 
