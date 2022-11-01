@@ -12,6 +12,7 @@ import com.woocommerce.android.ui.products.ParameterRepository
 import com.woocommerce.android.ui.products.models.SiteParameters
 import com.woocommerce.android.ui.products.variations.VariationsBulkUpdatePriceViewModel.PriceType
 import com.woocommerce.android.ui.products.variations.VariationsBulkUpdatePriceViewModel.PriceUpdateData
+import com.woocommerce.android.ui.products.variations.VariationsBulkUpdatePriceViewModel.StockQuantityUpdateData
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.navArgs
@@ -44,9 +45,19 @@ class VariationsBulkUpdateAttrPickerViewModel @Inject constructor(
     init {
         val regularPriceValues = args.variationsToUpdate.asList().map { it.regularPrice }
         val salePriceValues = args.variationsToUpdate.asList().map { it.salePrice }
+
+        var stockQuantityValues: List<Double>? = null
+        args.variationsToUpdate.forEach { variation ->
+            if (variation.isStockManaged) {
+                stockQuantityValues = args.variationsToUpdate.asList().map { it.stockQuantity }
+                return@forEach
+            }
+        }
+
         _viewState.value = _viewState.value.copy(
             regularPriceGroupType = regularPriceValues.groupType(),
             salePriceGroupType = salePriceValues.groupType(),
+            stockQuantityGroupType = stockQuantityValues?.groupType() ?: ValuesGroupType.None
         )
     }
 
@@ -68,10 +79,7 @@ class VariationsBulkUpdateAttrPickerViewModel @Inject constructor(
         track(PRODUCT_VARIANTS_BULK_UPDATE_STOCK_QUANTITY_TAPPED)
         triggerEvent(
             OpenVariationsBulkUpdateStockQuantity(
-                VariationsBulkUpdatePriceViewModel.StockQuantityUpdateData(
-                    args.variationsToUpdate.toList(),
-                    0
-                )
+                StockQuantityUpdateData(args.variationsToUpdate.toList())
             )
         )
     }
@@ -80,6 +88,7 @@ class VariationsBulkUpdateAttrPickerViewModel @Inject constructor(
         val currency: String? = null,
         val regularPriceGroupType: ValuesGroupType = ValuesGroupType.None,
         val salePriceGroupType: ValuesGroupType = ValuesGroupType.None,
+        val stockQuantityGroupType: ValuesGroupType = ValuesGroupType.None
     )
 
     data class OpenVariationsBulkUpdatePrice(
@@ -87,6 +96,6 @@ class VariationsBulkUpdateAttrPickerViewModel @Inject constructor(
     ) : Event()
 
     data class OpenVariationsBulkUpdateStockQuantity(
-        val data: VariationsBulkUpdatePriceViewModel.StockQuantityUpdateData
+        val data: StockQuantityUpdateData
     ) : Event()
 }

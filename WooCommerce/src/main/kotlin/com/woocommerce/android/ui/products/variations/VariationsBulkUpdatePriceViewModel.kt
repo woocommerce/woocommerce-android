@@ -122,7 +122,6 @@ class VariationsBulkUpdatePriceViewModel @Inject constructor(
 
     @Parcelize
     data class StockQuantityUpdateData(
-        val variationsToUpdate: List<ProductVariation>,
-        val stockQuantity: Int
+        val variationsToUpdate: List<ProductVariation>
     ) : Parcelable
 }

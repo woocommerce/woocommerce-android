@@ -6,6 +6,7 @@ import android.view.View
 import android.view.View.GONE
 import android.view.View.VISIBLE
 import android.view.ViewGroup
+import androidx.core.view.isVisible
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import com.google.android.material.bottomsheet.BottomSheetBehavior.BottomSheetCallback
@@ -18,8 +19,10 @@ import com.woocommerce.android.R
 import com.woocommerce.android.databinding.FragmentVariationsBulkUpdateAttrPickerBinding
 import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.ui.products.variations.VariationsBulkUpdateAttrPickerViewModel.OpenVariationsBulkUpdatePrice
+import com.woocommerce.android.ui.products.variations.VariationsBulkUpdateAttrPickerViewModel.OpenVariationsBulkUpdateStockQuantity
 import com.woocommerce.android.ui.products.variations.VariationsBulkUpdateAttrPickerViewModel.ViewState
 import com.woocommerce.android.ui.products.variations.VariationsBulkUpdatePriceViewModel.PriceUpdateData
+import com.woocommerce.android.ui.products.variations.VariationsBulkUpdatePriceViewModel.StockQuantityUpdateData
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.widgets.WCBottomSheetDialogFragment
 import dagger.hilt.android.AndroidEntryPoint
@@ -86,6 +89,15 @@ class VariationsBulkUpdateAttrPickerDialog : WCBottomSheetDialogFragment() {
             binding.priceSubtitle.text = formatPriceSubtitle(newState.currency, newState.regularPriceGroupType)
             binding.salePriceSubtitle.text = formatPriceSubtitle(newState.currency, newState.salePriceGroupType)
         }
+
+        if (newState.stockQuantityGroupType != ValuesGroupType.None) {
+            binding.inventoryHeader.isVisible = true
+            binding.stockQuantity.isVisible = true
+            binding.stockQuantitySubtitle.text = formatStockQuantitySubtitle(newState.stockQuantityGroupType)
+        } else {
+            binding.inventoryHeader.isVisible = false
+            binding.stockQuantity.isVisible = false
+        }
     }
 
     private fun formatPriceSubtitle(currency: String, priceGroupType: ValuesGroupType) = when (priceGroupType) {
@@ -97,10 +109,20 @@ class VariationsBulkUpdateAttrPickerDialog : WCBottomSheetDialogFragment() {
         }
     }
 
+    private fun formatStockQuantitySubtitle(groupType: ValuesGroupType) = when (groupType) {
+        ValuesGroupType.None -> getString(R.string.variations_bulk_update_dialog_price_none)
+        ValuesGroupType.Mixed -> getString(R.string.variations_bulk_update_dialog_price_mixed)
+        is ValuesGroupType.Common -> {
+            val stockQuantity = groupType.data
+            if (stockQuantity != null) stockQuantity.toString() else ""
+        }
+    }
+
     private fun listenForEvents() {
         viewModel.event.observe(viewLifecycleOwner) {
             when (it) {
                 is OpenVariationsBulkUpdatePrice -> openRegularPriceUpdate(it.data)
+                is OpenVariationsBulkUpdateStockQuantity -> openStockQuantityUpdate(it.data)
             }
         }
     }
@@ -110,6 +132,13 @@ class VariationsBulkUpdateAttrPickerDialog : WCBottomSheetDialogFragment() {
             .actionVariationsBulkUpdateAttrPickerFragmentToVariationsBulkUpdatePriceFragment(data)
             .run { findNavController().navigateSafely(this) }
         dismiss()
+    }
+
+    private fun openStockQuantityUpdate(data: StockQuantityUpdateData) {
+        /*VariationsBulkUpdateAttrPickerDialogDirections
+            .actionVariationsBulkUpdateAttrPickerFragmentToVariationsBulkUpdatePriceFragment(data)
+            .run { findNavController().navigateSafely(this) }
+        dismiss()*/
     }
 
     private fun renderInternalSheetState(bottomSheetState: Int) {
