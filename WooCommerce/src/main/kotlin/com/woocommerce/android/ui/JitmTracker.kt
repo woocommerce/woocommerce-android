@@ -65,4 +65,15 @@ class JitmTracker @Inject constructor(
             )
         )
     }
+
+    fun trackJitmCtaTapped(source: String, jitmId: String, featureClass: String) {
+        track(
+            stat = AnalyticsEvent.JITM_CTA_TAPPED,
+            properties = mapOf(
+                KEY_SOURCE to source,
+                JITM_ID to jitmId,
+                JITM_FEATURE_CLASS to featureClass
+            )
+        )
+    }
 }

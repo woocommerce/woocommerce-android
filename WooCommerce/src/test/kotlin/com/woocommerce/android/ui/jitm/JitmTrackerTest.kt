@@ -1,6 +1,7 @@
 package com.woocommerce.android.ui.jitm
 
 import com.woocommerce.android.analytics.AnalyticsEvent
+import com.woocommerce.android.analytics.AnalyticsEvent.JITM_CTA_TAPPED
 import com.woocommerce.android.analytics.AnalyticsEvent.JITM_DISPLAYED
 import com.woocommerce.android.analytics.AnalyticsEvent.JITM_FETCH_FAILURE
 import com.woocommerce.android.analytics.AnalyticsEvent.JITM_FETCH_SUCCESS
@@ -124,6 +125,42 @@ class JitmTrackerTest : BaseUnitTest() {
 
             verify(trackerWrapper).track(
                 JITM_DISPLAYED,
+                mapOf(
+                    KEY_SOURCE to UTM_SOURCE,
+                    JITM_ID to "12345",
+                    JITM_FEATURE_CLASS to "test_feature_class"
+                ),
+            )
+        }
+    }
+
+    @Test
+    fun `when track jitm cta clicked invoked, then JITM_CTA_TAPPED tracked`() {
+        testBlocking {
+            jitmTracker.trackJitmCtaTapped(
+                UTM_SOURCE,
+                "12345",
+                ""
+            )
+
+            verify(trackerWrapper).track(
+                eq(JITM_CTA_TAPPED),
+                any(),
+            )
+        }
+    }
+
+    @Test
+    fun `when track jitm cta clicked invoked, then JITM_CTA_TAPPED tracked with correct properties`() {
+        testBlocking {
+            jitmTracker.trackJitmCtaTapped(
+                UTM_SOURCE,
+                "12345",
+                "test_feature_class"
+            )
+
+            verify(trackerWrapper).track(
+                JITM_CTA_TAPPED,
                 mapOf(
                     KEY_SOURCE to UTM_SOURCE,
                     JITM_ID to "12345",
