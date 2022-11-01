@@ -31,6 +31,7 @@
         app:layout_constraintTop_toBottomOf="@+id/image_prologue"
         app:layout_constraintBottom_toBottomOf="parent"
         app:srcCompat="@drawable/img_prologue_bg" />
+
     <ImageView
         android:id="@+id/imageView"
         android:layout_width="0dp"
@@ -83,6 +84,7 @@
         android:orientation="vertical"
         app:layout_constraintTop_toBottomOf="@id/prologueTitle"
         app:layout_constraintBottom_toBottomOf="parent">
+
         <com.google.android.material.button.MaterialButton
             android:id="@+id/button_login_wpcom"
             style="@style/Woo.Button.Colored"
@@ -100,9 +102,44 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="@dimen/major_100"
             android:layout_marginEnd="@dimen/major_100"
-            android:layout_marginBottom="@dimen/major_150"
+            android:layout_marginBottom="@dimen/minor_50"
             android:text="@string/login_store_address"
             android:textAllCaps="false" />
+
+        <LinearLayout
+            android:id="@+id/divider_or"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+            <View
+                android:id="@+id/divider_start"
+                android:layout_width="0dp"
+                android:layout_height="1dp"
+                android:layout_marginTop="@dimen/minor_100"
+                android:background="@color/divider_color"
+                android:layout_weight="1" />
+
+            <com.google.android.material.textview.MaterialTextView
+                android:id="@+id/or"
+                style="@style/Woo.TextView.Caption"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginTop="0dp"
+                android:layout_marginBottom="@dimen/minor_25"
+                android:layout_marginStart="@dimen/minor_50"
+                android:layout_marginEnd="@dimen/minor_50"
+                android:text="@string/login_or"
+                android:textAllCaps="true" />
+
+            <View
+                android:id="@+id/divider_end"
+                android:layout_width="0dp"
+                android:layout_height="1dp"
+                android:background="@color/divider_color"
+                android:layout_marginTop="@dimen/minor_100"
+                android:layout_weight="1" />
+        </LinearLayout>
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/button_get_started"
@@ -111,6 +148,7 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="@dimen/major_100"
             android:layout_marginEnd="@dimen/major_100"
+            android:layout_marginTop="@dimen/minor_50"
             android:layout_marginBottom="@dimen/major_150"
             android:text="@string/signup_get_started_button"
             android:textAllCaps="false"
