@@ -216,5 +216,5 @@
     <color name="analytics_delta_positive_color">#69B56E</color>
     <color name="analytics_delta_tag_negative_color">#C95854</color>
     <color name="analytics_delta_text_color">@color/white</color>
-    <color name="analytics_calendar_bg_color">@color/gray_5</color>
+    <color name="analytics_calendar_bg_color">@color/woo_black_alpha_008</color>
 </resources>

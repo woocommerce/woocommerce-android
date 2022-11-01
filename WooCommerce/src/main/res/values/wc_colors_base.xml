@@ -39,6 +39,7 @@
 
     <color name="woo_white">@android:color/white</color>
     <color name="woo_white_alpha_005">#0DFFFFFF</color>
+    <color name="woo_white_alpha_008">#08FFFFFF</color>
     <color name="woo_white_alpha_009">#17FFFFFF</color>
     <color name="woo_white_alpha_012">#1FFFFFFF</color>
     <color name="woo_white_alpha_038">#61FFFFFF</color>
@@ -61,6 +62,7 @@
     <color name="woo_black_90_alpha_087">#DE121212</color>
     <color name="woo_black_900">#272727</color>
     <color name="woo_black_80">#363636</color>
+    <color name="woo_black_alpha_008">#08212121</color>
 
     <color name="jetpack_green_40">#069e08</color>
     <color name="jetpack_black">#0B2621</color>
