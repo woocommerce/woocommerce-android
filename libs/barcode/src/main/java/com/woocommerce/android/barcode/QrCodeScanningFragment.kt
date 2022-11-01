@@ -173,7 +173,7 @@ class QrCodeScanningFragment : Fragment(), OnClickListener {
     }
 
     private fun isValidScannedRawValue(scannedRawValue: String?): Boolean =
-        scannedRawValue != null
-            && scannedRawValue.contains(MAGIC_LOGIN_ACTION)
-            && scannedRawValue.contains(MAGIC_LOGIN_SCHEME)
+        scannedRawValue != null &&
+            scannedRawValue.contains(MAGIC_LOGIN_ACTION) &&
+            scannedRawValue.contains(MAGIC_LOGIN_SCHEME)
 }
