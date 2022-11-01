@@ -8,12 +8,14 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.withContext
 
 internal interface IAPMobilePayAPI {
+    @Suppress("LongParameterList")
     suspend fun createAndConfirmOrder(
         remoteSiteId: Long,
         productIdentifier: String,
-        price: Long,
+        priceInCents: Int,
         currency: String,
         purchaseToken: String,
+        appId: String,
     ): CreateAndConfirmOrderResponse
 }
 
@@ -22,18 +24,20 @@ internal class IAPMobilePayAPIStub(private val iapLogWrapper: IAPLogWrapper) : I
     override suspend fun createAndConfirmOrder(
         remoteSiteId: Long,
         productIdentifier: String,
-        price: Long,
+        priceInCents: Int,
         currency: String,
         purchaseToken: String,
+        appId: String,
     ) = withContext(Dispatchers.IO) {
         iapLogWrapper.d(
             IAP_LOG_TAG,
             "Stubbed request: " +
                 "remoteSiteId $remoteSiteId, " +
                 "productIdentifier $productIdentifier, " +
-                "price $price, " +
+                "price $priceInCents, " +
                 "currency $currency, " +
-                "purchaseToken $purchaseToken"
+                "purchaseToken $purchaseToken, " +
+                "appId $appId"
         )
         delay(1000)
         if (Math.random() > 0.5) {
