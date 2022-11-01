@@ -18,7 +18,8 @@ import org.wordpress.android.fluxc.store.signup.SignUpStore.CreateWpAccountResul
 @OptIn(ExperimentalCoroutinesApi::class)
 class SignUpRepositoryTest : BaseUnitTest() {
     private companion object {
-        const val ANY_VALID_USER_EMAIL = "email@gmail.com"
+        const val EMAIL_WITHOUT_DOMAIN = "email"
+        const val VALID_USER_EMAIL = "email@gmail.com"
         const val USER_EMAIL_CONTAINING_WORDPRESS = "emailWithWordPress@gmail.com"
         const val ANY_PASSWORD = "anypassword"
         const val DEFAULT_USERNAME_SUGGESTION = "usernameOne"
@@ -54,26 +55,49 @@ class SignUpRepositoryTest : BaseUnitTest() {
                 )
             )
 
-            val task = async { sut.createAccount(ANY_VALID_USER_EMAIL, ANY_PASSWORD) }
+            val task = async { sut.createAccount(VALID_USER_EMAIL, ANY_PASSWORD) }
             // Handle token update
             dispatcher.emitChange(OnAuthenticationChanged())
             task.await()
 
-            verify(signUpStore).fetchUserNameSuggestions(ANY_VALID_USER_EMAIL)
-            verify(signUpStore).createWpAccount(ANY_VALID_USER_EMAIL, ANY_PASSWORD, DEFAULT_USERNAME_SUGGESTION)
+            verify(signUpStore).fetchUserNameSuggestions(VALID_USER_EMAIL)
+            verify(signUpStore).createWpAccount(VALID_USER_EMAIL, ANY_PASSWORD, DEFAULT_USERNAME_SUGGESTION)
         }
 
     @Test
-    fun `given username error, when fetching username suggestions , then use email address to create account`() =
+    fun `given username error, when fetching username suggestions, then use email without domain as username`() =
         testBlocking {
+            givenValidateCredentialsReturns(null)
+            givenAccountCreationResult(SUCCESSFUL_ACCOUNT_CREATION_RESULT)
+            givenFetchUserNameSuggestionsReturns(
+                SignUpStore.UsernameSuggestionsResult(SignUpStore.UsernameSuggestionsError("error"))
+            )
 
+            val task = async { sut.createAccount(VALID_USER_EMAIL, ANY_PASSWORD) }
+            // Handle token update
+            dispatcher.emitChange(OnAuthenticationChanged())
+            task.await()
+
+            verify(signUpStore).createWpAccount(VALID_USER_EMAIL, ANY_PASSWORD, EMAIL_WITHOUT_DOMAIN)
         }
-//
-//    @Test
-//    fun `given an email with wordpress wording in it, when create new account , then strip wordpress from email`() =
-//        testBlocking {
-//
-//        }
+
+    @Test
+    fun `given an email with wordpress wording in it, when create new account , then strip wordpress from email`() =
+        testBlocking {
+            givenValidateCredentialsReturns(null)
+            givenAccountCreationResult(SUCCESSFUL_ACCOUNT_CREATION_RESULT)
+            givenFetchUserNameSuggestionsReturns(
+                SignUpStore.UsernameSuggestionsResult(SignUpStore.UsernameSuggestionsError("error"))
+            )
+
+            val task = async { sut.createAccount(VALID_USER_EMAIL, ANY_PASSWORD) }
+            // Handle token update
+            dispatcher.emitChange(OnAuthenticationChanged())
+            task.await()
+
+            verify(signUpStore).fetchUserNameSuggestions(VALID_USER_EMAIL)
+            verify(signUpStore).createWpAccount(VALID_USER_EMAIL, ANY_PASSWORD, DEFAULT_USERNAME_SUGGESTION)
+        }
 
     private suspend fun givenFetchUserNameSuggestionsReturns(result: SignUpStore.UsernameSuggestionsResult) {
         whenever(signUpStore.fetchUserNameSuggestions(anyString())).thenReturn(result)
