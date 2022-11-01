@@ -9,7 +9,6 @@ import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.dispatchAndAwait
 import org.wordpress.android.fluxc.Dispatcher
 import org.wordpress.android.fluxc.generated.AccountActionBuilder
-import org.wordpress.android.fluxc.store.AccountStore.OnAccountChanged
 import org.wordpress.android.fluxc.store.AccountStore.OnAuthenticationChanged
 import org.wordpress.android.fluxc.store.AccountStore.UpdateTokenPayload
 import org.wordpress.android.fluxc.store.signup.SignUpStore
@@ -62,17 +61,6 @@ class SignUpRepository @Inject constructor(
         ).let { updateTokenResult ->
             return if (updateTokenResult.isError) {
                 WooLog.w(WooLog.T.LOGIN, "Error updating token: ${updateTokenResult.error.message}")
-                AccountCreationError(UNKNOWN_ERROR)
-            } else onTokenUpdatedSuccessfully()
-        }
-    }
-
-    private suspend fun onTokenUpdatedSuccessfully(): AccountCreationResult {
-        dispatcher.dispatchAndAwait<Void, OnAccountChanged>(
-            AccountActionBuilder.newFetchAccountAction()
-        ).let { accountFetchResult ->
-            return if (accountFetchResult.isError) {
-                WooLog.w(WooLog.T.LOGIN, message = "Error fetching the user: ${accountFetchResult.error.message}")
                 AccountCreationError(UNKNOWN_ERROR)
             } else {
                 WooLog.w(WooLog.T.LOGIN, "Success creating new account")
