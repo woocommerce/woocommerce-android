@@ -2,6 +2,7 @@ package com.woocommerce.android.ui.jitm
 
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsEvent.JITM_CTA_TAPPED
+import com.woocommerce.android.analytics.AnalyticsEvent.JITM_DISMISS_FAILURE
 import com.woocommerce.android.analytics.AnalyticsEvent.JITM_DISMISS_SUCCESS
 import com.woocommerce.android.analytics.AnalyticsEvent.JITM_DISMISS_TAPPED
 import com.woocommerce.android.analytics.AnalyticsEvent.JITM_DISPLAYED
@@ -10,6 +11,8 @@ import com.woocommerce.android.analytics.AnalyticsEvent.JITM_FETCH_SUCCESS
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.JITM_FEATURE_CLASS
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.JITM_ID
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_ERROR_DESC
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_ERROR_TYPE
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_JITM
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_JITM_COUNT
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_SOURCE
@@ -239,6 +242,48 @@ class JitmTrackerTest : BaseUnitTest() {
                     KEY_SOURCE to UTM_SOURCE,
                     JITM_ID to "12345",
                     JITM_FEATURE_CLASS to "test_feature_class"
+                )
+            )
+        }
+    }
+
+    @Test
+    fun `when track jitm dismiss failure invoked, then JITM_DISMISS_FAILURE tracked`() {
+        testBlocking {
+            jitmTracker.trackJitmDismissFailure(
+                UTM_SOURCE,
+                "12345",
+                "",
+                WooErrorType.GENERIC_ERROR,
+                "test error"
+            )
+
+            verify(trackerWrapper).track(
+                eq(JITM_DISMISS_FAILURE),
+                any(),
+            )
+        }
+    }
+
+    @Test
+    fun `when track jitm dismiss failure invoked, then JITM_DISMISS_FAILURE tracked with correct properties`() {
+        testBlocking {
+            jitmTracker.trackJitmDismissFailure(
+                UTM_SOURCE,
+                "12345",
+                "test_feature_class",
+                WooErrorType.GENERIC_ERROR,
+                "test error"
+            )
+
+            verify(trackerWrapper).track(
+                JITM_DISMISS_FAILURE,
+                mapOf(
+                    KEY_SOURCE to UTM_SOURCE,
+                    JITM_ID to "12345",
+                    JITM_FEATURE_CLASS to "test_feature_class",
+                    KEY_ERROR_TYPE to WooErrorType.GENERIC_ERROR.name,
+                    KEY_ERROR_DESC to "test error"
                 )
             )
         }
