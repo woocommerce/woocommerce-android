@@ -1031,8 +1031,9 @@ class MyStoreViewModelTest : BaseUnitTest() {
             whenViewModelIsCreated()
             (sut.bannerState.value as BannerState).onDismissClicked.invoke()
 
-            verify(analyticsTrackerWrapper).track(
-                eq(AnalyticsEvent.JITM_DISMISS_SUCCESS),
+            verify(jitmTracker).trackJitmDismissSuccess(
+                any(),
+                any(),
                 any()
             )
         }
@@ -1062,13 +1063,10 @@ class MyStoreViewModelTest : BaseUnitTest() {
             whenViewModelIsCreated()
             (sut.bannerState.value as BannerState).onDismissClicked.invoke()
 
-            verify(analyticsTrackerWrapper).track(
-                AnalyticsEvent.JITM_DISMISS_SUCCESS,
-                mapOf(
-                    AnalyticsTracker.KEY_SOURCE to MyStoreViewModel.UTM_SOURCE,
-                    AnalyticsTracker.JITM_ID to "12345",
-                    AnalyticsTracker.JITM_FEATURE_CLASS to "woomobile_ipp"
-                )
+            verify(jitmTracker).trackJitmDismissSuccess(
+                UTM_SOURCE,
+                "12345",
+                "woomobile_ipp"
             )
         }
     }

@@ -225,7 +225,7 @@ class JitmTrackerTest : BaseUnitTest() {
     }
 
     @Test
-    fun `when track jitm dismiss success invoked, then JITM_DISMISS_SUCCESS tracked wit hcorrect properties`() {
+    fun `when track jitm dismiss success invoked, then JITM_DISMISS_SUCCESS tracked with correct properties`() {
         testBlocking {
             jitmTracker.trackJitmDismissSuccess(
                 UTM_SOURCE,

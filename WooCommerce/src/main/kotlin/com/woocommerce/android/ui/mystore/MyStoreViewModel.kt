@@ -220,7 +220,11 @@ class MyStoreViewModel @Inject constructor(
             jitmStore.dismissJitmMessage(selectedSite.get(), jitmId, featureClass).also { response ->
                 when {
                     response.model != null && response.model!! -> {
-                        trackJitmDismissSuccessEvent(jitmId, featureClass)
+                        jitmTracker.trackJitmDismissSuccess(
+                            UTM_SOURCE,
+                            jitmId,
+                            featureClass
+                        )
                     }
                     else -> trackJitmDismissFailureEvent(
                         jitmId,
@@ -247,17 +251,6 @@ class MyStoreViewModel @Inject constructor(
                 JITM_FEATURE_CLASS to featureClass,
                 KEY_ERROR_TYPE to errorType,
                 KEY_ERROR_DESC to errorDescription
-            )
-        )
-    }
-
-    private fun trackJitmDismissSuccessEvent(id: String, featureClass: String) {
-        analyticsTrackerWrapper.track(
-            AnalyticsEvent.JITM_DISMISS_SUCCESS,
-            mapOf(
-                KEY_SOURCE to UTM_SOURCE,
-                JITM_ID to id,
-                JITM_FEATURE_CLASS to featureClass
             )
         )
     }
