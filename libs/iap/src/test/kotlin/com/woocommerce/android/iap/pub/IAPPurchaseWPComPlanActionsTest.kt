@@ -19,6 +19,7 @@ import com.woocommerce.android.iap.internal.network.IAPMobilePayAPI
 import com.woocommerce.android.iap.internal.planpurchase.IAPPurchaseWPComPlanActionsImpl
 import com.woocommerce.android.iap.pub.model.IAPError
 import com.woocommerce.android.iap.pub.model.WPComIsPurchasedResult
+import com.woocommerce.android.iap.pub.model.WPComProductResult
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runTest
 import org.assertj.core.api.Assertions.assertThat
@@ -271,6 +272,65 @@ class IAPPurchaseWPComPlanActionsTest {
         assertThat(result).isInstanceOf(WPComIsPurchasedResult.Error::class.java)
         assertThat((result as WPComIsPurchasedResult.Error).errorType).isInstanceOf(
             IAPError.Billing.DeveloperError::class.java
+        )
+        assertThat((result.errorType as IAPError.Billing).debugMessage).isEqualTo(debugMessage)
+    }
+
+    @Test
+    fun `given product query success, when fetching wp com plan product, then returned product info`() = runTest {
+        // GIVEN
+        val responseCode = BillingClient.BillingResponseCode.OK
+
+        val currency = "USD"
+        val price = 100L
+        val title = "wc_plan"
+        val description = "best plan ever"
+        val productDetails = buildProductDetails(
+            productId = iapProduct.productId,
+            name = "productName",
+            price = price,
+            currency = currency,
+            title = title,
+            description = description,
+        )
+        whenever(billingClientMock.queryProductDetails(any())).thenReturn(
+            ProductDetailsResult(
+                buildBillingResult(responseCode),
+                listOf(productDetails)
+            )
+        )
+
+        // WHEN
+        val result = sut.fetchWPComPlanProduct()
+
+        // THEN
+        assertThat(result).isInstanceOf(WPComProductResult.Success::class.java)
+        assertThat((result as WPComProductResult.Success).productInfo.currency).isEqualTo(currency)
+        assertThat(result.productInfo.price).isEqualTo(price)
+        assertThat(result.productInfo.localizedTitle).isEqualTo(title)
+        assertThat(result.productInfo.localizedDescription).isEqualTo(description)
+    }
+
+    @Test
+    fun `given product query error, when fetching wp com plan product, then error returned`() = runTest {
+        // GIVEN
+        val responseCode = BillingClient.BillingResponseCode.FEATURE_NOT_SUPPORTED
+        val debugMessage = "debug message"
+
+        whenever(billingClientMock.queryProductDetails(any())).thenReturn(
+            ProductDetailsResult(
+                buildBillingResult(responseCode, debugMessage),
+                emptyList()
+            )
+        )
+
+        // WHEN
+        val result = sut.fetchWPComPlanProduct()
+
+        // THEN
+        assertThat(result).isInstanceOf(WPComProductResult.Error::class.java)
+        assertThat((result as WPComProductResult.Error).errorType).isInstanceOf(
+            IAPError.Billing.FeatureNotSupported::class.java
         )
         assertThat((result.errorType as IAPError.Billing).debugMessage).isEqualTo(debugMessage)
     }
