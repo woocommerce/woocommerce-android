@@ -29,7 +29,6 @@ import com.woocommerce.android.ui.sitepicker.SitePickerViewModel.SitesListItem.N
 import com.woocommerce.android.ui.sitepicker.SitePickerViewModel.SitesListItem.WooSiteUiModel
 import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.util.WooLog
-import com.woocommerce.android.util.WooLog.T
 import com.woocommerce.android.viewmodel.LiveDataDelegate
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
@@ -40,10 +39,8 @@ import com.woocommerce.android.viewmodel.ResourceProvider
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.navArgs
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import kotlinx.parcelize.Parcelize
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooErrorType
@@ -71,7 +68,6 @@ class SitePickerViewModel @Inject constructor(
     companion object {
         private const val WOOCOMMERCE_INSTALLATION_URL = "https://wordpress.com/plugins/woocommerce/"
         private const val WOOCOMMERCE_INSTALLATION_DONE_URL = "marketplace/thank-you/woocommerce"
-        private const val WOOCOMMERCE_STORE_CREATION_RETRY_INTERVAL = 2000L
     }
 
     private val navArgs: SitePickerFragmentArgs by savedState.navArgs()
@@ -555,42 +551,6 @@ class SitePickerViewModel @Inject constructor(
                 )
             )
         }
-    }
-
-    fun onSiteCreated(urls: List<String>) {
-        launch {
-            sitePickerViewState = sitePickerViewState.copy(
-                isSkeletonViewVisible = false, isProgressDiaLogVisible = true
-            )
-
-            var newSite: SiteModel? = null
-            while (newSite?.hasWooCommerce != true) {
-                newSite = urls.firstNotNullOfOrNull { url -> repository.getSiteBySiteUrl(url) }
-                if (newSite != null && newSite.hasWooCommerce) {
-                    onSiteSelected(newSite)
-                    onContinueButtonClick(true)
-                    WooLog.d(T.LOGIN, "Found new site: ${newSite.url}")
-                } else {
-                    WooLog.d(T.LOGIN, "New site not found, retrying...")
-                    val result = fetchSitesAfterCreation()
-                    if (result.isFailure) {
-                        triggerEvent(ShowSnackbar(string.site_picker_error))
-                        break
-                    } else {
-                        displaySites(result.getOrDefault(emptyList()))
-                    }
-                }
-            }
-        }
-    }
-
-    private suspend fun fetchSitesAfterCreation(): Result<List<SiteModel>> {
-        val result = withContext(Dispatchers.Default) {
-            delay(WOOCOMMERCE_STORE_CREATION_RETRY_INTERVAL)
-            repository.fetchWooCommerceSites()
-        }
-        return if (result.isError) Result.failure(Exception(result.error.message))
-        else Result.success(result.model ?: emptyList())
     }
 
     fun onWooInstalled() {
