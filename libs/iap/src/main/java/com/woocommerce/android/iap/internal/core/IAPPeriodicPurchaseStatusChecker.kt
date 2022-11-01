@@ -37,6 +37,8 @@ internal class IAPPeriodicPurchaseStatusChecker(
                         cancel()
                     }
                 }
+            } else {
+                return@launch
             }
         }
     }
