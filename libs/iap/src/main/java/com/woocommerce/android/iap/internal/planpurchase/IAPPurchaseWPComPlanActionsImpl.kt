@@ -1,7 +1,7 @@
 package com.woocommerce.android.iap.internal.planpurchase
 
 import androidx.appcompat.app.AppCompatActivity
-import com.woocommerce.android.iap.internal.core.IAPManagerFactory
+import com.woocommerce.android.iap.internal.core.IAPManager
 import com.woocommerce.android.iap.internal.core.currencyOfTheFirstPurchasedOffer
 import com.woocommerce.android.iap.internal.core.priceOfTheFirstPurchasedOfferInMicros
 import com.woocommerce.android.iap.internal.model.IAPProduct
@@ -11,7 +11,6 @@ import com.woocommerce.android.iap.internal.model.IAPPurchaseResponse
 import com.woocommerce.android.iap.internal.model.IAPSupportedResult
 import com.woocommerce.android.iap.internal.network.IAPMobilePayAPI
 import com.woocommerce.android.iap.internal.network.model.CreateAndConfirmOrderResponse
-import com.woocommerce.android.iap.pub.IAPLogWrapper
 import com.woocommerce.android.iap.pub.PurchaseWPComPlanActions
 import com.woocommerce.android.iap.pub.model.IAPError
 import com.woocommerce.android.iap.pub.model.WPComIsPurchasedResult
@@ -26,11 +25,9 @@ private const val TEN_THOUSAND = 10_000
 private const val APP_ID = "com.woocommerce.android"
 
 internal class IAPPurchaseWPComPlanActionsImpl(
-    logWrapper: IAPLogWrapper,
     private val iapMobilePayAPI: IAPMobilePayAPI,
+    private val iapManager: IAPManager,
 ) : PurchaseWPComPlanActions {
-    private val iapManager = IAPManagerFactory.createIAPManager(logWrapper)
-
     override fun initIAPWithNewActivity(activity: AppCompatActivity) {
         iapManager.initIAP(activity)
     }

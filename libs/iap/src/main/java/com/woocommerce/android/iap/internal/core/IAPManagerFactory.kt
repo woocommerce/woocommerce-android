@@ -10,6 +10,7 @@ internal object IAPManagerFactory {
         )
         val iapLifecycleObserver = IAPLifecycleObserver(
             iapPurchasesUpdatedListener,
+            IAPBillingClientProvider(),
             logWrapper
         )
         val iapInMapper = IAPInMapper()

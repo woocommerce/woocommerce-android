@@ -1,7 +1,6 @@
 package com.woocommerce.android.iap.internal.core
 
 import androidx.appcompat.app.AppCompatActivity
-import com.android.billingclient.api.BillingClient
 import com.android.billingclient.api.BillingFlowParams
 import com.android.billingclient.api.BillingFlowParams.ProductDetailsParams
 import com.android.billingclient.api.ProductDetails
@@ -9,8 +8,6 @@ import com.android.billingclient.api.Purchase
 import com.android.billingclient.api.PurchasesResult
 import com.android.billingclient.api.QueryProductDetailsParams
 import com.android.billingclient.api.QueryPurchasesParams
-import com.android.billingclient.api.queryProductDetails
-import com.android.billingclient.api.queryPurchasesAsync
 import com.woocommerce.android.iap.internal.model.IAPProduct
 import com.woocommerce.android.iap.internal.model.IAPProductDetailsResponse
 import com.woocommerce.android.iap.internal.model.IAPProductDetailsResponse.Error
@@ -35,7 +32,7 @@ internal class IAPManager(
     private val iapPurchasesUpdatedListener: IAPPurchasesUpdatedListener,
     private val logWrapper: IAPLogWrapper,
 ) {
-    private val billingClient: BillingClient
+    private val billingClient: IAPBillingClientWrapper
         get() = iapLifecycleObserver.billingClient
 
     private lateinit var activity: AppCompatActivity
