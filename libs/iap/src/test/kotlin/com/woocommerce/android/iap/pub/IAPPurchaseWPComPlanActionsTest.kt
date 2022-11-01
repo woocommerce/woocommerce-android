@@ -232,7 +232,7 @@ class IAPPurchaseWPComPlanActionsTest {
         val description = "best plan ever"
         setupQueryProductDetails(
             responseCode = responseCode,
-            price = price,
+            priceMicroCents = price,
             title = title,
             description = description,
         )
@@ -324,7 +324,7 @@ class IAPPurchaseWPComPlanActionsTest {
         responseCode: Int,
         debugMessage: String = "",
         productId: String = iapProduct.productId,
-        price: Long = 100L,
+        priceMicroCents: Long = 10_000L,
         currency: String = "USD",
         title: String = "title",
         description: String = "description"
@@ -332,7 +332,7 @@ class IAPPurchaseWPComPlanActionsTest {
         val productDetails = buildProductDetails(
             productId = productId,
             name = "productName",
-            price = price,
+            price = priceMicroCents,
             currency = currency,
             title = title,
             description = description,
@@ -348,7 +348,7 @@ class IAPPurchaseWPComPlanActionsTest {
     private suspend fun setupMobilePayAPIMock(
         remoteSiteId: Long = REMOTE_SITE_ID,
         productIdentifier: String = iapProduct.productId,
-        price: Long = 100L,
+        priceInCents: Int = 1,
         currency: String = "USD",
         purchaseToken: String,
         result: CreateAndConfirmOrderResponse,
@@ -357,9 +357,10 @@ class IAPPurchaseWPComPlanActionsTest {
             mobilePayAPIMock.createAndConfirmOrder(
                 remoteSiteId = remoteSiteId,
                 productIdentifier = productIdentifier,
-                price = price,
+                priceInCents = priceInCents,
                 currency = currency,
-                purchaseToken = purchaseToken
+                purchaseToken = purchaseToken,
+                appId = "com.woocommerce.android",
             )
         ).thenReturn(result)
     }
