@@ -2,6 +2,7 @@ package com.woocommerce.android.ui.jitm
 
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsEvent.JITM_CTA_TAPPED
+import com.woocommerce.android.analytics.AnalyticsEvent.JITM_DISMISS_SUCCESS
 import com.woocommerce.android.analytics.AnalyticsEvent.JITM_DISMISS_TAPPED
 import com.woocommerce.android.analytics.AnalyticsEvent.JITM_DISPLAYED
 import com.woocommerce.android.analytics.AnalyticsEvent.JITM_FETCH_FAILURE
@@ -198,6 +199,42 @@ class JitmTrackerTest : BaseUnitTest() {
 
             verify(trackerWrapper).track(
                 JITM_DISMISS_TAPPED,
+                mapOf(
+                    KEY_SOURCE to UTM_SOURCE,
+                    JITM_ID to "12345",
+                    JITM_FEATURE_CLASS to "test_feature_class"
+                )
+            )
+        }
+    }
+
+    @Test
+    fun `when track jitm dismiss success invoked, then JITM_DISMISS_SUCCESS tracked`() {
+        testBlocking {
+            jitmTracker.trackJitmDismissSuccess(
+                UTM_SOURCE,
+                "12345",
+                ""
+            )
+
+            verify(trackerWrapper).track(
+                eq(JITM_DISMISS_SUCCESS),
+                any(),
+            )
+        }
+    }
+
+    @Test
+    fun `when track jitm dismiss success invoked, then JITM_DISMISS_SUCCESS tracked wit hcorrect properties`() {
+        testBlocking {
+            jitmTracker.trackJitmDismissSuccess(
+                UTM_SOURCE,
+                "12345",
+                "test_feature_class"
+            )
+
+            verify(trackerWrapper).track(
+                JITM_DISMISS_SUCCESS,
                 mapOf(
                     KEY_SOURCE to UTM_SOURCE,
                     JITM_ID to "12345",

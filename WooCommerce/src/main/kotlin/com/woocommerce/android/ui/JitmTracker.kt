@@ -87,4 +87,15 @@ class JitmTracker @Inject constructor(
             )
         )
     }
+
+    fun trackJitmDismissSuccess(source: String, jitmId: String, featureClass: String) {
+        track(
+            stat = AnalyticsEvent.JITM_DISMISS_SUCCESS,
+            properties = mapOf(
+                KEY_SOURCE to source,
+                JITM_ID to jitmId,
+                JITM_FEATURE_CLASS to featureClass
+            )
+        )
+    }
 }
