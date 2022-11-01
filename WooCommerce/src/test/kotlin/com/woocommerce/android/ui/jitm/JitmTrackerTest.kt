@@ -1,6 +1,7 @@
 package com.woocommerce.android.ui.jitm
 
 import com.woocommerce.android.analytics.AnalyticsEvent.JITM_FETCH_FAILURE
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_SOURCE
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.ui.JitmTracker
 import com.woocommerce.android.ui.mystore.MyStoreViewModel.Companion.UTM_SOURCE
@@ -31,6 +32,23 @@ class JitmTrackerTest : BaseUnitTest() {
                 anyString(),
                 anyString(),
                 anyString(),
+            )
+        }
+    }
+
+    @Test
+    fun `when track jitm failure invoked, then JITM_FETCH_FAILURE tracked with correct properties`() {
+        testBlocking {
+            jitmTracker.trackJitmFetchFailure(UTM_SOURCE, WooErrorType.GENERIC_ERROR, "debug message")
+
+            verify(trackerWrapper).track(
+                JITM_FETCH_FAILURE,
+                mapOf(
+                    KEY_SOURCE to UTM_SOURCE
+                ),
+                "JitmTracker",
+                WooErrorType.GENERIC_ERROR.name,
+                "debug message",
             )
         }
     }
