@@ -4,6 +4,8 @@ import com.android.billingclient.api.BillingClient
 import com.android.billingclient.api.BillingClientStateListener
 import com.android.billingclient.api.BillingResult
 import com.android.billingclient.api.ProductDetailsResult
+import com.android.billingclient.api.Purchase
+import com.android.billingclient.api.PurchasesResult
 import com.woocommerce.android.iap.internal.core.IAPBillingClientProvider
 import com.woocommerce.android.iap.internal.core.IAPBillingClientStateHandler
 import com.woocommerce.android.iap.internal.core.IAPBillingClientWrapper
@@ -11,10 +13,12 @@ import com.woocommerce.android.iap.internal.core.IAPInMapper
 import com.woocommerce.android.iap.internal.core.IAPManager
 import com.woocommerce.android.iap.internal.core.IAPOutMapper
 import com.woocommerce.android.iap.internal.core.IAPPurchasesUpdatedListener
+import com.woocommerce.android.iap.internal.model.IAPProduct
 import com.woocommerce.android.iap.internal.model.IAPSupportedResult
 import com.woocommerce.android.iap.internal.network.IAPMobilePayAPI
 import com.woocommerce.android.iap.internal.planpurchase.IAPPurchaseWPComPlanActionsImpl
 import com.woocommerce.android.iap.pub.model.IAPError
+import com.woocommerce.android.iap.pub.model.WPComIsPurchasedResult
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runTest
 import org.assertj.core.api.Assertions.assertThat
@@ -31,6 +35,8 @@ class IAPPurchaseWPComPlanActionsTest {
     private val logWrapperMock: IAPLogWrapper = mock()
     private val mobilePayAPIMock: IAPMobilePayAPI = mock()
     private val billingClientMock: IAPBillingClientWrapper = mock()
+
+    private val iapProduct: IAPProduct = IAPProduct.WPPremiumPlanTesting
 
     private lateinit var sut: IAPPurchaseWPComPlanActionsImpl
 
@@ -50,6 +56,7 @@ class IAPPurchaseWPComPlanActionsTest {
             iapMobilePayAPI = mobilePayAPIMock,
             iapManager = buildIapManager(iapBillingClientStateHandler, purchasesUpdatedListener),
             REMOTE_SITE_ID,
+            iapProduct = iapProduct,
         )
     }
 
@@ -57,7 +64,12 @@ class IAPPurchaseWPComPlanActionsTest {
     @Test
     fun `given product in NON USD currency, when iap support checked, then success with false returned`() = runTest {
         // GIVEN
-        val productDetails = buildProductDetails("AED")
+        val productDetails = buildProductDetails(
+            productId = iapProduct.productId,
+            name = "productName",
+            price = 100L,
+            currency = "AED"
+        )
         whenever(billingClientMock.queryProductDetails(any())).thenReturn(
             ProductDetailsResult(
                 buildBillingResult(BillingClient.BillingResponseCode.OK),
@@ -75,7 +87,12 @@ class IAPPurchaseWPComPlanActionsTest {
     @Test
     fun `given product USD currency, when iap support checked, then success with true returned`() = runTest {
         // GIVEN
-        val productDetails = buildProductDetails("USD")
+        val productDetails = buildProductDetails(
+            productId = iapProduct.productId,
+            name = "productName",
+            price = 100L,
+            currency = "USD"
+        )
         whenever(billingClientMock.queryProductDetails(any())).thenReturn(
             ProductDetailsResult(
                 buildBillingResult(BillingClient.BillingResponseCode.OK),
@@ -93,7 +110,12 @@ class IAPPurchaseWPComPlanActionsTest {
     @Test
     fun `given product fetching error, when iap support checked, then error returned`() = runTest {
         // GIVEN
-        val productDetails = buildProductDetails("USD")
+        val productDetails = buildProductDetails(
+            productId = iapProduct.productId,
+            name = "productName",
+            price = 100L,
+            currency = "USD"
+        )
         val responseCode = BillingClient.BillingResponseCode.DEVELOPER_ERROR
         val debugMessage = "debug message"
         whenever(billingClientMock.queryProductDetails(any())).thenReturn(
@@ -112,6 +134,146 @@ class IAPPurchaseWPComPlanActionsTest {
         )
         assertThat((result.errorType as IAPError.Billing).debugMessage).isEqualTo(debugMessage)
     }
+
+    @Test
+    fun `given success and product purchased, when iap wp com plan purchase checked, then true returned`() = runTest {
+        // GIVEN
+        val responseCode = BillingClient.BillingResponseCode.OK
+        val debugMessage = "debug message"
+        val purchase = buildPurchase(
+            listOf(iapProduct.productId),
+            Purchase.PurchaseState.PURCHASED
+        )
+
+        whenever(billingClientMock.queryPurchasesAsync(any())).thenReturn(
+            PurchasesResult(
+                buildBillingResult(responseCode),
+                listOf(purchase)
+            )
+        )
+
+        val productDetails = buildProductDetails(
+            productId = iapProduct.productId,
+            name = "productName",
+            price = 100L,
+            currency = "USD"
+        )
+        whenever(billingClientMock.queryProductDetails(any())).thenReturn(
+            ProductDetailsResult(
+                buildBillingResult(responseCode, debugMessage),
+                listOf(productDetails)
+            )
+        )
+
+        // WHEN
+        val result = sut.isWPComPlanPurchased()
+
+        // THEN
+        assertThat(result).isInstanceOf(WPComIsPurchasedResult.Success::class.java)
+        assertThat((result as WPComIsPurchasedResult.Success).isPlanPurchased).isTrue()
+    }
+
+    @Test
+    fun `given suc and other product purchased, when iap wp com plan purchase checked, then false returned`() =
+        runTest {
+            // GIVEN
+            val responseCode = BillingClient.BillingResponseCode.OK
+            val debugMessage = "debug message"
+            val purchase = buildPurchase(
+                listOf(iapProduct.productId),
+                Purchase.PurchaseState.PURCHASED
+            )
+
+            whenever(billingClientMock.queryPurchasesAsync(any())).thenReturn(
+                PurchasesResult(
+                    buildBillingResult(responseCode),
+                    listOf(purchase)
+                )
+            )
+
+            val productDetails = buildProductDetails(
+                productId = "another_product_id",
+                name = "productName",
+                price = 100L,
+                currency = "USD"
+            )
+            whenever(billingClientMock.queryProductDetails(any())).thenReturn(
+                ProductDetailsResult(
+                    buildBillingResult(responseCode, debugMessage),
+                    listOf(productDetails)
+                )
+            )
+
+            // WHEN
+            val result = sut.isWPComPlanPurchased()
+
+            // THEN
+            assertThat(result).isInstanceOf(WPComIsPurchasedResult.Success::class.java)
+            assertThat((result as WPComIsPurchasedResult.Success).isPlanPurchased).isFalse()
+        }
+
+    @Test
+    fun `given suc and product not purchased, when iap wp com plan purchase checked, then false returned`() =
+        runTest {
+            // GIVEN
+            val responseCode = BillingClient.BillingResponseCode.OK
+            val debugMessage = "debug message"
+            val purchase = buildPurchase(
+                listOf(iapProduct.productId),
+                Purchase.PurchaseState.PENDING
+            )
+
+            whenever(billingClientMock.queryPurchasesAsync(any())).thenReturn(
+                PurchasesResult(
+                    buildBillingResult(responseCode),
+                    listOf(purchase)
+                )
+            )
+
+            val productDetails = buildProductDetails(
+                productId = iapProduct.productId,
+                name = "productName",
+                price = 100L,
+                currency = "USD"
+            )
+            whenever(billingClientMock.queryProductDetails(any())).thenReturn(
+                ProductDetailsResult(
+                    buildBillingResult(responseCode, debugMessage),
+                    listOf(productDetails)
+                )
+            )
+
+            // WHEN
+            val result = sut.isWPComPlanPurchased()
+
+            // THEN
+            assertThat(result).isInstanceOf(WPComIsPurchasedResult.Success::class.java)
+            assertThat((result as WPComIsPurchasedResult.Success).isPlanPurchased).isFalse()
+        }
+
+    @Test
+    fun `given error, when iap wp com plan purchase checked, then error returned`() = runTest {
+        // GIVEN
+        val responseCode = BillingClient.BillingResponseCode.DEVELOPER_ERROR
+        val debugMessage = "debug message"
+
+        whenever(billingClientMock.queryPurchasesAsync(any())).thenReturn(
+            PurchasesResult(
+                buildBillingResult(responseCode, debugMessage),
+                emptyList()
+            )
+        )
+
+        // WHEN
+        val result = sut.isWPComPlanPurchased()
+
+        // THEN
+        assertThat(result).isInstanceOf(WPComIsPurchasedResult.Error::class.java)
+        assertThat((result as WPComIsPurchasedResult.Error).errorType).isInstanceOf(
+            IAPError.Billing.DeveloperError::class.java
+        )
+        assertThat((result.errorType as IAPError.Billing).debugMessage).isEqualTo(debugMessage)
+    }
     //endregion
 
     private fun setupBillingClientToBeConnected() {
@@ -121,15 +283,6 @@ class IAPPurchaseWPComPlanActionsTest {
             whenever(billingClientMock.isReady).thenReturn(true)
         }
     }
-
-    private fun buildBillingResult(
-        @BillingClient.BillingResponseCode responseCode: Int,
-        debugMessage: String = ""
-    ) = BillingResult
-        .newBuilder()
-        .setResponseCode(responseCode)
-        .setDebugMessage(debugMessage)
-        .build()
 
     private fun buildIapManager(
         iapBillingClientStateHandler: IAPBillingClientStateHandler,
