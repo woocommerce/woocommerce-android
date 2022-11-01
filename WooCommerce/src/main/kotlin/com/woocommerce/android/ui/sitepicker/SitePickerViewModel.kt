@@ -109,21 +109,20 @@ class SitePickerViewModel @Inject constructor(
                 triggerEvent(NavigateToStoreCreationEvent)
             }
         }
-        
+
         appPrefsWrapper.markAsNewSignUp(false)
     }
 
     private suspend fun getOrFetchAccount(): AccountModel? {
-        return accountRepository.getUserAccount() ?:
-            accountRepository.fetchUserAccount().fold(
-                onSuccess = {
-                    return accountRepository.getUserAccount()
-                },
-                onFailure = {
-                    triggerEvent(ShowSnackbar(string.error_fetch_my_profile))
-                    return null
-                }
-            )
+        return accountRepository.getUserAccount() ?: accountRepository.fetchUserAccount().fold(
+            onSuccess = {
+                accountRepository.getUserAccount()
+            },
+            onFailure = {
+                triggerEvent(ShowSnackbar(string.error_fetch_my_profile))
+                null
+            }
+        )
     }
 
     private fun updateSiteViewDetails() {
