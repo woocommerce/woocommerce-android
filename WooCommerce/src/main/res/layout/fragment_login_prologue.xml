@@ -138,7 +138,6 @@
             android:layout_marginBottom="@dimen/major_150"
             android:text="@string/signup_get_started_button"
             android:textAllCaps="false"
-            android:visibility="gone"
             tools:visibility="visible" />
     </LinearLayout>
 
