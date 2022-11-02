@@ -258,6 +258,9 @@ class JitmTrackerTest : BaseUnitTest() {
             verify(trackerWrapper).track(
                 eq(JITM_DISMISS_FAILURE),
                 any(),
+                any(),
+                any(),
+                any(),
             )
         }
     }
@@ -279,9 +282,10 @@ class JitmTrackerTest : BaseUnitTest() {
                     KEY_SOURCE to UTM_SOURCE,
                     JITM_ID to "12345",
                     JITM_FEATURE_CLASS to "test_feature_class",
-                    KEY_ERROR_TYPE to WooErrorType.GENERIC_ERROR.name,
-                    KEY_ERROR_DESC to "test error"
-                )
+                ),
+                errorContext = "JitmTracker",
+                errorType = WooErrorType.GENERIC_ERROR.name,
+                errorDescription = "test error",
             )
         }
     }
