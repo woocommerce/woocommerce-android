@@ -9,7 +9,7 @@
         android:name="com.woocommerce.android.ui.login.storecreation.StoreCreationQuestionsFragment"
         android:label="fragment_store_creation_questions">
         <action
-            android:id="@+id/action_storeCreationQuestionsFragment_to_storeCreationPickDomainFragment"
+            android:id="@+id/action_storeCreationQuestionsFragment_to_siteDomainPickerFragment"
             app:destination="@id/siteDomainPickerFragment" />
     </fragment>
 

@@ -2680,4 +2680,8 @@
     <string name="store_creation_create_new_store_label">Create a new store</string>
     <string name="store_creation_cannot_load_store">Couldn\'t load your store.\nPlease try again…</string>
     <string name="store_creation_in_progress">Creating your store…</string>
+    <string name="store_creation_domain_picker_title">Choose a domain</string>
+    <string name="store_creation_domain_picker_subtitle">This is where people will find you on the Internet. Don\'t worry, you can change it later.</string>
+    <string name="store_creation_domain_picker_hint">Type a domain</string>
+
 </resources>
