@@ -5,6 +5,7 @@ import com.woocommerce.android.iap.internal.core.IAPManagerFactory
 import com.woocommerce.android.iap.internal.network.IAPMobilePayAPI
 import com.woocommerce.android.iap.internal.network.IAPMobilePayAPIStub
 import com.woocommerce.android.iap.internal.planpurchase.IAPPurchaseWPComPlanActionsImpl
+import com.woocommerce.android.iap.internal.planpurchase.IAPPurchaseWpComPlanHandler
 
 object IAPSitePurchasePlanFactory {
     fun createIAPSitePurchasePlan(
@@ -14,6 +15,10 @@ object IAPSitePurchasePlanFactory {
     ): PurchaseWPComPlanActions {
         val iapMobilePayAPI: IAPMobilePayAPI = IAPMobilePayAPIStub(logWrapper)
         val iapManager = IAPManagerFactory.createIAPManager(context, logWrapper)
-        return IAPPurchaseWPComPlanActionsImpl(iapMobilePayAPI, iapManager, remoteSiteId)
+        val purchaseWpComPlanHandler = IAPPurchaseWpComPlanHandler(
+            iapMobilePayAPI,
+            iapManager,
+        )
+        return IAPPurchaseWPComPlanActionsImpl(purchaseWpComPlanHandler, iapManager, remoteSiteId)
     }
 }
