@@ -3,17 +3,21 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:paddingEnd="8dp">
 
     <com.woocommerce.android.widgets.WCMaterialOutlinedSpinnerView
         android:id="@+id/dev_options_spinner"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="@string/dev_options"
+        android:hint="@string/update_simulated_reader"
         android:inputType="text"
+        android:textColorHint="@color/color_on_surface"
+        app:endIconMode="dropdown_menu"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        tools:layout_editor_absoluteX="16dp" />
+        app:startIconDrawable="@drawable/img_card_reader_update_progress"
+        app:startIconTint="@color/color_primary" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
