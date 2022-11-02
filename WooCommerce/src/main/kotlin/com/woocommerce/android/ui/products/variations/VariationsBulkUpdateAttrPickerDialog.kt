@@ -113,8 +113,8 @@ class VariationsBulkUpdateAttrPickerDialog : WCBottomSheetDialogFragment() {
         ValuesGroupType.None -> getString(R.string.variations_bulk_update_dialog_price_none)
         ValuesGroupType.Mixed -> getString(R.string.variations_bulk_update_dialog_price_mixed)
         is ValuesGroupType.Common -> {
-            val stockQuantity = groupType.data
-            stockQuantity?.toString() ?: ""
+            val stockQuantity = (groupType.data as? Double)?.toInt() ?: 0
+            stockQuantity.toString()
         }
     }
 
