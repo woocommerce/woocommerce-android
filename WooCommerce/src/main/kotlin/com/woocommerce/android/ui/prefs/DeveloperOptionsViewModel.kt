@@ -46,7 +46,8 @@ class DeveloperOptionsViewModel @Inject constructor(
             icon = drawable.img_card_reader_update_progress,
             label = UiStringRes(string.update_simulated_reader),
             isEnabled = true,
-            onClick = {}
+            onClick = {},
+            key = UiStringRes(string.update_simulated_reader_key)
         )
     )
 
@@ -119,7 +120,8 @@ class DeveloperOptionsViewModel @Inject constructor(
                 @DrawableRes override val icon: Int,
                 override val label: UiString,
                 override var isEnabled: Boolean = false,
-                val onClick: () -> Unit
+                val onClick: () -> Unit,
+                override var key: UiString
             ) : ListItem()
         }
     }
