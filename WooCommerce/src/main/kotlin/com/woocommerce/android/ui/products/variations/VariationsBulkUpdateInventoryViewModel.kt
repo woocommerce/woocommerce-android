@@ -73,7 +73,6 @@ class VariationsBulkUpdateInventoryViewModel @Inject constructor(
         val isProgressDialogShown: Boolean = false,
     ) : Parcelable
 
-
     @Parcelize
     data class InventoryUpdateData(
         val variationsToUpdate: List<ProductVariation>,

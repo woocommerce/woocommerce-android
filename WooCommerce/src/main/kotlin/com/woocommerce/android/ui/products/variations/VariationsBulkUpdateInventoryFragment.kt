@@ -61,7 +61,7 @@ class VariationsBulkUpdateInventoryFragment :
                 }
 
                 override fun onMenuItemSelected(item: MenuItem): Boolean {
-                    return when(item.itemId) {
+                    return when (item.itemId) {
                         R.id.done -> {
                             viewModel.onDoneClicked()
                             true

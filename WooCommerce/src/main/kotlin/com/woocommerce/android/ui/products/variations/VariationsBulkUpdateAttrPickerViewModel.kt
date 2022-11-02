@@ -10,9 +10,9 @@ import com.woocommerce.android.analytics.AnalyticsTracker.Companion.track
 import com.woocommerce.android.model.ProductVariation
 import com.woocommerce.android.ui.products.ParameterRepository
 import com.woocommerce.android.ui.products.models.SiteParameters
+import com.woocommerce.android.ui.products.variations.VariationsBulkUpdateInventoryViewModel.InventoryUpdateData
 import com.woocommerce.android.ui.products.variations.VariationsBulkUpdatePriceViewModel.PriceType
 import com.woocommerce.android.ui.products.variations.VariationsBulkUpdatePriceViewModel.PriceUpdateData
-import com.woocommerce.android.ui.products.variations.VariationsBulkUpdateInventoryViewModel.InventoryUpdateData
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.navArgs

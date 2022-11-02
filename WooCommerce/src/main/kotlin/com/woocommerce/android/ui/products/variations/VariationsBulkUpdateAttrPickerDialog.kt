@@ -21,8 +21,8 @@ import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.ui.products.variations.VariationsBulkUpdateAttrPickerViewModel.OpenVariationsBulkUpdatePrice
 import com.woocommerce.android.ui.products.variations.VariationsBulkUpdateAttrPickerViewModel.OpenVariationsBulkUpdateStockQuantity
 import com.woocommerce.android.ui.products.variations.VariationsBulkUpdateAttrPickerViewModel.ViewState
-import com.woocommerce.android.ui.products.variations.VariationsBulkUpdatePriceViewModel.PriceUpdateData
 import com.woocommerce.android.ui.products.variations.VariationsBulkUpdateInventoryViewModel.InventoryUpdateData
+import com.woocommerce.android.ui.products.variations.VariationsBulkUpdatePriceViewModel.PriceUpdateData
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.widgets.WCBottomSheetDialogFragment
 import dagger.hilt.android.AndroidEntryPoint
@@ -61,7 +61,7 @@ class VariationsBulkUpdateAttrPickerDialog : WCBottomSheetDialogFragment() {
         binding.fullscreenStateToolbar.setNavigationOnClickListener { dismiss() }
         binding.regularPrice.setOnClickListener { viewModel.onRegularPriceUpdateClicked() }
         binding.salePrice.setOnClickListener { viewModel.onSalePriceUpdateClicked() }
-        binding.stockQuantity.setOnClickListener{ viewModel.onStockQuantityClicked() }
+        binding.stockQuantity.setOnClickListener { viewModel.onStockQuantityClicked() }
 
         bottomSheetBehavior.apply {
             isFitToContents = false
