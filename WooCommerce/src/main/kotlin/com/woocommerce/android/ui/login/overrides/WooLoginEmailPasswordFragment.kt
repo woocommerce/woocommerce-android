@@ -4,23 +4,16 @@ import android.content.Context
 import android.os.Bundle
 import android.view.ViewGroup
 import android.widget.Button
-import android.widget.TextView
 import androidx.annotation.LayoutRes
 import androidx.core.view.isVisible
 import com.bumptech.glide.Registry.MissingComponentException
 import com.woocommerce.android.R
-import com.woocommerce.android.experiment.SimplifiedLoginExperiment
-import com.woocommerce.android.experiment.SimplifiedLoginExperiment.LoginVariant.CONTROL
-import com.woocommerce.android.experiment.SimplifiedLoginExperiment.LoginVariant.SIMPLIFIED_LOGIN_WPCOM
-import com.woocommerce.android.extensions.hide
-import com.woocommerce.android.extensions.show
 import dagger.android.support.AndroidSupportInjection
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
 import org.wordpress.android.login.LoginEmailPasswordFragment
 import org.wordpress.android.login.LoginListener
 import org.wordpress.android.login.LoginWpcomService
-import javax.inject.Inject
 
 class WooLoginEmailPasswordFragment : LoginEmailPasswordFragment() {
     companion object {
@@ -56,9 +49,6 @@ class WooLoginEmailPasswordFragment : LoginEmailPasswordFragment() {
     private var email: String? = null
     private var isSocialLogin: Boolean = false
 
-    @Inject
-    lateinit var simplifiedLoginExperiment: SimplifiedLoginExperiment
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -87,22 +77,6 @@ class WooLoginEmailPasswordFragment : LoginEmailPasswordFragment() {
 
     @LayoutRes
     override fun getContentLayout(): Int = R.layout.fragment_login_email_password
-
-    override fun setupLabel(label: TextView) {
-        val text = if (isSocialLogin) {
-            R.string.enter_wpcom_password_google
-        } else when (simplifiedLoginExperiment.getCurrentVariant()) {
-            SIMPLIFIED_LOGIN_WPCOM -> R.string.enter_wpcom_password
-            CONTROL -> null
-        }
-
-        if (text != null) {
-            label.show()
-            label.setText(text)
-        } else {
-            label.hide()
-        }
-    }
 
     override fun setupContent(rootView: ViewGroup) {
         super.setupContent(rootView)
