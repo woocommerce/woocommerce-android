@@ -10,6 +10,7 @@ import com.woocommerce.android.model.UiString
 import com.woocommerce.android.model.UiString.UiStringRes
 import com.woocommerce.android.ui.prefs.DeveloperOptionsViewModel.DeveloperOptionsViewState.ListItem
 import com.woocommerce.android.ui.prefs.DeveloperOptionsViewModel.DeveloperOptionsViewState.ListItem.ToggleableListItem
+import com.woocommerce.android.ui.prefs.DeveloperOptionsViewModel.DeveloperOptionsViewState.ListItem.SpinnerListItem
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
@@ -37,6 +38,12 @@ class DeveloperOptionsViewModel @Inject constructor(
             isEnabled = true,
             isChecked = developerOptionsRepository.isSimulatedCardReaderEnabled(),
             onToggled = ::onSimulatedReaderToggled
+        ),
+        SpinnerListItem(
+            icon = drawable.img_card_reader_update_progress,
+            label = UiStringRes(string.update_simulated_reader),
+            isEnabled = true,
+            onClick = {}
         )
     )
 
@@ -73,6 +80,13 @@ class DeveloperOptionsViewModel @Inject constructor(
             ) : ListItem()
 
             data class NonToggleableListItem(
+                @DrawableRes override val icon: Int,
+                override val label: UiString,
+                override var isEnabled: Boolean = false,
+                val onClick: () -> Unit
+            ) : ListItem()
+
+            data class SpinnerListItem(
                 @DrawableRes override val icon: Int,
                 override val label: UiString,
                 override var isEnabled: Boolean = false,

@@ -6,9 +6,11 @@ import androidx.annotation.LayoutRes
 import androidx.recyclerview.widget.RecyclerView
 import com.woocommerce.android.R
 import com.woocommerce.android.databinding.DeveloperOptionsListItemBinding
+import com.woocommerce.android.databinding.DeveloperOptionsSpinnerItemBinding
 import com.woocommerce.android.databinding.DeveloperOptionsTogglableItemBinding
 import com.woocommerce.android.ui.prefs.DeveloperOptionsViewModel.DeveloperOptionsViewState.ListItem
 import com.woocommerce.android.ui.prefs.DeveloperOptionsViewModel.DeveloperOptionsViewState.ListItem.ToggleableListItem
+import com.woocommerce.android.ui.prefs.DeveloperOptionsViewModel.DeveloperOptionsViewState.ListItem.SpinnerListItem
 import com.woocommerce.android.util.UiHelpers
 
 abstract class DeveloperOptionsViewHolder(val parent: ViewGroup, @LayoutRes layout: Int) :
@@ -42,6 +44,19 @@ abstract class DeveloperOptionsViewHolder(val parent: ViewGroup, @LayoutRes layo
             binding.root.setOnClickListener {
                 binding.developerOptionsSwitch.isChecked = !uiState.isChecked
             }
+        }
+    }
+
+    class SpinnerViewHolder(parent: ViewGroup) :
+        DeveloperOptionsViewHolder(parent, R.layout.developer_options_spinner_item) {
+        var binding: DeveloperOptionsSpinnerItemBinding = DeveloperOptionsSpinnerItemBinding.bind(itemView)
+        override fun onBind(uiState: ListItem) {
+            uiState as SpinnerListItem
+            binding.devOptionsSpinner.getText()
+            binding.devOptionsSpinner.isEnabled = uiState.isEnabled
+            binding.devOptionsSpinner.setClickListener {  }
+
+
         }
     }
 }

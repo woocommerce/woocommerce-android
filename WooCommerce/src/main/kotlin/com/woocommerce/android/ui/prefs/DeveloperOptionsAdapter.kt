@@ -3,10 +3,10 @@ package com.woocommerce.android.ui.prefs
 import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
-import com.woocommerce.android.ui.payments.cardreader.hub.CardReaderHubAdapter.Companion.VIEW_TYPE_NON_TOGGELABLE
 import com.woocommerce.android.ui.prefs.DeveloperOptionsViewModel.DeveloperOptionsViewState.ListItem
 import com.woocommerce.android.ui.prefs.DeveloperOptionsViewModel.DeveloperOptionsViewState.ListItem.NonToggleableListItem
 import com.woocommerce.android.ui.prefs.DeveloperOptionsViewModel.DeveloperOptionsViewState.ListItem.ToggleableListItem
+import com.woocommerce.android.ui.prefs.DeveloperOptionsViewModel.DeveloperOptionsViewState.ListItem.SpinnerListItem
 
 class DeveloperOptionsAdapter :
     ListAdapter<ListItem, DeveloperOptionsViewHolder>(ListItemDiffCallback) {
@@ -19,6 +19,9 @@ class DeveloperOptionsAdapter :
             is NonToggleableListItem -> {
                 VIEW_TYPE_NON_TOGGLEABLE
             }
+            is SpinnerListItem -> {
+                VIEW_TYPE_SPINNER
+            }
         }
     }
 
@@ -27,8 +30,13 @@ class DeveloperOptionsAdapter :
             VIEW_TYPE_TOGGLEABLE -> {
                 DeveloperOptionsViewHolder.ToggleableViewHolder(parent)
             }
-            VIEW_TYPE_NON_TOGGELABLE -> {
+
+            VIEW_TYPE_NON_TOGGLEABLE -> {
                 DeveloperOptionsViewHolder.RowViewHolder(parent)
+            }
+
+            VIEW_TYPE_SPINNER -> {
+                DeveloperOptionsViewHolder.SpinnerViewHolder(parent)
             }
             else -> {
                 throw error("Unknown section")
@@ -62,7 +70,8 @@ class DeveloperOptionsAdapter :
     }
 
     companion object {
-        const val VIEW_TYPE_TOGGLEABLE = 0
-        const val VIEW_TYPE_NON_TOGGLEABLE = 1
+        const val VIEW_TYPE_NON_TOGGLEABLE = 0
+        const val VIEW_TYPE_TOGGLEABLE = 1
+        const val VIEW_TYPE_SPINNER = 2
     }
 }
