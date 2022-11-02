@@ -1,6 +1,7 @@
 package com.woocommerce.android.iap.pub
 
 import com.android.billingclient.api.BillingClient
+import com.android.billingclient.api.BillingClient.ProductType
 import com.android.billingclient.api.BillingResult
 import com.android.billingclient.api.ProductDetails
 import com.android.billingclient.api.Purchase
@@ -18,6 +19,10 @@ fun buildProductDetails(
     val phaseList = mock<ProductDetails.PricingPhase> {
         on { priceCurrencyCode }.thenReturn(currency)
         on { priceAmountMicros }.thenReturn(price)
+        on { billingCycleCount }.thenReturn(1)
+        on { recurrenceMode }.thenReturn(1)
+        on { billingPeriod }.thenReturn("1")
+        on { formattedPrice }.thenReturn("1")
     }
 
     val pricingPhases = mock<ProductDetails.PricingPhases> {
@@ -26,6 +31,8 @@ fun buildProductDetails(
 
     val subscriptionOfferDetails = mock<ProductDetails.SubscriptionOfferDetails> {
         on { this.pricingPhases }.thenReturn(pricingPhases)
+        on { this.offerToken }.thenReturn("offerToken")
+        on { this.offerTags }.thenReturn(listOf("tag"))
     }
 
     return mock {
@@ -34,12 +41,14 @@ fun buildProductDetails(
         on { this.name }.thenReturn(name)
         on { this.title }.thenReturn(title)
         on { this.description }.thenReturn(description)
+        on { this.productType }.thenReturn(ProductType.SUBS)
     }
 }
 
 fun buildPurchase(
     products: List<String>,
-    @PurchaseState purchaseState: Int
+    @PurchaseState purchaseState: Int,
+    purchaseToken: String = ""
 ): Purchase {
     return mock {
         on { this.purchaseState }.thenReturn(purchaseState)
@@ -48,7 +57,7 @@ fun buildPurchase(
         on { this.isAcknowledged }.thenReturn(false)
         on { this.isAutoRenewing }.thenReturn(false)
         on { this.developerPayload }.thenReturn("developerPayload")
-        on { this.purchaseToken }.thenReturn("purchaseToken")
+        on { this.purchaseToken }.thenReturn(purchaseToken)
         on { this.signature }.thenReturn("signature")
     }
 }
