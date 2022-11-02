@@ -86,9 +86,7 @@ class MyStoreViewModel @Inject constructor(
     companion object {
         private const val DAYS_TO_REDISPLAY_JP_BENEFITS_BANNER = 5
         private const val JITM_MESSAGE_PATH = "woomobile:my_store:admin_notices"
-        const val UTM_CAMPAIGN = "jitm_group_woomobile_ipp"
         const val UTM_SOURCE = "my_store"
-        const val UTM_CONTENT = "jitm_woomobile_ipp_barcode_users"
     }
 
     val performanceObserver: LifecycleObserver = myStoreTransactionLauncher
