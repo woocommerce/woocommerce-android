@@ -10,6 +10,7 @@ import com.woocommerce.android.model.UiString
 import com.woocommerce.android.model.UiString.UiStringRes
 import com.woocommerce.android.ui.prefs.DeveloperOptionsViewModel.DeveloperOptionsViewState.ListItem
 import com.woocommerce.android.ui.prefs.DeveloperOptionsViewModel.DeveloperOptionsViewState.ListItem.ToggleableListItem
+import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
@@ -18,7 +19,7 @@ import javax.inject.Inject
 @HiltViewModel
 class DeveloperOptionsViewModel @Inject constructor(
     savedState: SavedStateHandle,
-    private val developerOptionsRepository: DeveloperOptionsRepository
+    private val developerOptionsRepository: DeveloperOptionsRepository,
 ) : ScopedViewModel(savedState) {
 
     private val _viewState = MutableLiveData(
@@ -44,12 +45,21 @@ class DeveloperOptionsViewModel @Inject constructor(
 
     private fun onSimulatedReaderToggled(isChecked: Boolean) {
         if (!isChecked) {
-            launch {
-                developerOptionsRepository.clearSelectedCardReader()
-                developerOptionsRepository.showToast()
-            }
+            disconnectAndClearSelectedCardReader()
+            triggerEvent(
+                DeveloperOptionsEvents.ShowToastString(string.simulated_reader_toast)
+            )
         }
+        simulatedReaderStateChanged(isChecked)
+    }
 
+    private fun disconnectAndClearSelectedCardReader() {
+        launch {
+            developerOptionsRepository.clearSelectedCardReader()
+        }
+    }
+
+    private fun simulatedReaderStateChanged(isChecked: Boolean) {
         developerOptionsRepository.changeSimulatedReaderState(isChecked)
         val currentViewState = viewState.value
         (
@@ -66,6 +76,10 @@ class DeveloperOptionsViewModel @Inject constructor(
                 }
             )
         }
+    }
+
+    sealed class DeveloperOptionsEvents : MultiLiveEvent.Event() {
+        data class ShowToastString(val message: Int) : DeveloperOptionsEvents()
     }
 
     data class DeveloperOptionsViewState(
