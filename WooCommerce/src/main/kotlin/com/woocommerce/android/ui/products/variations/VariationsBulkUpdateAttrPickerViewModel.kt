@@ -82,7 +82,7 @@ class VariationsBulkUpdateAttrPickerViewModel @Inject constructor(
             OpenVariationsBulkUpdateStockQuantity(
                 InventoryUpdateData(
                     variationsToUpdate = stockManagedVariations,
-                    stockQuantity = stockManagedVariations.firstOrNull()?.stockQuantity?.toInt()
+                    stockQuantity = stockManagedVariations.firstOrNull()?.stockQuantity
                 )
             )
         )

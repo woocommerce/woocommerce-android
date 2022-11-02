@@ -20,6 +20,7 @@ import com.woocommerce.android.ui.products.variations.ValuesGroupType.Common
 import com.woocommerce.android.ui.products.variations.ValuesGroupType.Mixed
 import com.woocommerce.android.ui.products.variations.ValuesGroupType.None
 import com.woocommerce.android.util.CurrencyFormatter
+import com.woocommerce.android.util.StringUtils
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.widgets.CustomProgressDialog
@@ -45,7 +46,6 @@ class VariationsBulkUpdateInventoryFragment :
         super.onViewCreated(view, savedInstanceState)
 
         _binding = FragmentVariationsBulkUpdateInventoryBinding.bind(view)
-        binding.stockQuantityEditText.text = viewModel.stockQuantity.toString()
         binding.stockQuantityEditText.textWatcher = this
         binding.stockQuantityEditText.editText?.showKeyboardWithDelay()
 
@@ -90,6 +90,12 @@ class VariationsBulkUpdateInventoryFragment :
 
     private fun observeViewStateChanges() {
         viewModel.viewStateData.observe(viewLifecycleOwner) { old, new ->
+            new.stockQuantity?.takeIfNotEqualTo(old?.stockQuantity) {
+                val quantity = StringUtils.formatCountDecimal(it, forInput = true)
+                if (binding.stockQuantityEditText.text != quantity) {
+                    binding.stockQuantityEditText.text = quantity
+                }
+            }
             new.variationsToUpdateCount?.takeIfNotEqualTo(old?.variationsToUpdateCount) {
                 binding.currentStockQuantity.text =
                     getString(R.string.variations_bulk_update_stock_quantity_info).format(new.variationsToUpdateCount)
@@ -150,7 +156,7 @@ class VariationsBulkUpdateInventoryFragment :
 
     override fun afterTextChanged(editable: Editable?) {
         val value = editable.toString()
-        val quantity = if (value.isNotBlank()) value.toInt() else 0
+        val quantity = if (value.isNotBlank()) value.toDouble() else 0.0
         viewModel.onStockQuantityEntered(quantity)
     }
 }

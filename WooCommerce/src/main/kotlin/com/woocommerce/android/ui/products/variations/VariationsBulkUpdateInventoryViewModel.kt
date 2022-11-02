@@ -37,9 +37,6 @@ class VariationsBulkUpdateInventoryViewModel @Inject constructor(
         )
     }
 
-    val stockQuantity
-        get() = viewState.stockQuantity ?: 0
-
     fun onDoneClicked() {
         track(AnalyticsEvent.PRODUCT_VARIANTS_BULK_UPDATE_STOCK_QUANTITY_DONE_TAPPED)
         viewState = viewState.copy(isProgressDialogShown = true)
@@ -50,7 +47,7 @@ class VariationsBulkUpdateInventoryViewModel @Inject constructor(
             val result = variationRepository.bulkUpdateVariations(
                 productId,
                 variationsIds,
-                stockQuantity = viewState.stockQuantity ?: 0
+                stockQuantity = viewState.stockQuantity ?: 0.0
             )
             val snackText = if (result) {
                 R.string.variations_bulk_update_stock_quantity_success
@@ -66,14 +63,14 @@ class VariationsBulkUpdateInventoryViewModel @Inject constructor(
         }
     }
 
-    fun onStockQuantityEntered(quantity: Int) {
+    fun onStockQuantityEntered(quantity: Double) {
         viewState = viewState.copy(stockQuantity = quantity)
     }
 
     @Parcelize
     data class ViewState(
         val variationsToUpdateCount: Int? = null,
-        val stockQuantity: Int? = null,
+        val stockQuantity: Double? = null,
         val stockQuantityGroupType: ValuesGroupType? = null,
         val isProgressDialogShown: Boolean = false,
     ) : Parcelable
@@ -81,6 +78,6 @@ class VariationsBulkUpdateInventoryViewModel @Inject constructor(
     @Parcelize
     data class InventoryUpdateData(
         val variationsToUpdate: List<ProductVariation>,
-        val stockQuantity: Int? = null,
+        val stockQuantity: Double? = null,
     ) : Parcelable
 }
