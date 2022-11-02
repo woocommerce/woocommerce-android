@@ -478,5 +478,7 @@
     <fragment
         android:id="@+id/webViewStoreCreationFragment"
         android:name="com.woocommerce.android.ui.login.storecreation.webview.WebViewStoreCreationFragment"
-        android:label="WebViewStoreCreationFragment" />
+        android:label="WebViewStoreCreationFragment" >
+        <argument android:name="source" />
+    </fragment>
 </navigation>

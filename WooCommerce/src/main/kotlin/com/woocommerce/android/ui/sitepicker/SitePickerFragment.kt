@@ -167,7 +167,7 @@ class SitePickerFragment : BaseFragment(R.layout.fragment_site_picker), LoginEma
                 is NavigateToSiteAddressEvent -> navigateToAddressScreen()
                 is NavigateToEmailHelpDialogEvent -> navigateToNeedHelpFindingEmailScreen()
                 is NavigateToWPComWebView -> navigateToWPComWebView(event)
-                is NavigateToStoreCreationEvent -> navigateToStoreCreation()
+                is NavigateToStoreCreationEvent -> navigateToStoreCreation(event.source)
                 is NavigateToAccountMismatchScreen -> navigateToAccountMismatchScreen(event)
                 is ShowSnackbar -> uiMessageResolver.getSnack(stringResId = event.message, stringArgs = event.args)
                     .show()
@@ -179,9 +179,9 @@ class SitePickerFragment : BaseFragment(R.layout.fragment_site_picker), LoginEma
         }
     }
 
-    private fun navigateToStoreCreation() {
+    private fun navigateToStoreCreation(source: String) {
         findNavController().navigateSafely(
-            SitePickerFragmentDirections.actionSitePickerFragmentToWebViewStoreCreationFragment()
+            SitePickerFragmentDirections.actionSitePickerFragmentToWebViewStoreCreationFragment(source)
         )
     }
 

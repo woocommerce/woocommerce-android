@@ -85,6 +85,8 @@ class SitePickerViewModel @Inject constructor(
     val shouldShowToolbar: Boolean
         get() = !navArgs.openedFromLogin
 
+    private val navSource = getNavigationSource()
+
     init {
         when (navArgs.openedFromLogin) {
             true -> loadLoginView()
@@ -424,9 +426,25 @@ class SitePickerViewModel @Inject constructor(
         triggerEvent(SitePickerEvent.NavigateToSiteAddressEvent)
     }
 
+    private fun getNavigationSource(): String {
+        return if (navArgs.openedFromLogin) {
+            if (appPrefsWrapper.getIsNewSignUp()) {
+                AnalyticsTracker.VALUE_PROLOGUE
+            } else {
+                AnalyticsTracker.VALUE_LOGIN
+            }
+        } else {
+            AnalyticsTracker.VALUE_SWITCHING_STORE
+        }
+    }
+
     fun onCreateSiteButtonClick() {
-        analyticsTrackerWrapper.track(AnalyticsEvent.SITE_PICKER_CREATE_SITE_TAPPED)
-        triggerEvent(NavigateToStoreCreationEvent)
+        analyticsTrackerWrapper.track(
+            AnalyticsEvent.SITE_PICKER_CREATE_SITE_TAPPED,
+            mapOf(AnalyticsTracker.KEY_SOURCE to navSource)
+        )
+
+        triggerEvent(NavigateToStoreCreationEvent(navSource))
     }
 
     fun onTryAnotherAccountButtonClick() {
@@ -623,7 +641,7 @@ class SitePickerViewModel @Inject constructor(
 
     private fun startStoreCreationWebFlow() {
         appPrefsWrapper.markAsNewSignUp(false)
-        triggerEvent(NavigateToStoreCreationEvent)
+        triggerEvent(NavigateToStoreCreationEvent(navSource))
     }
 
     private fun trackLoginEvent(
@@ -687,7 +705,7 @@ class SitePickerViewModel @Inject constructor(
         object NavigateToEmailHelpDialogEvent : SitePickerEvent()
         object NavigateToNewToWooEvent : SitePickerEvent()
         object NavigateToSiteAddressEvent : SitePickerEvent()
-        object NavigateToStoreCreationEvent : SitePickerEvent()
+        data class NavigateToStoreCreationEvent(val source: String) : SitePickerEvent()
         data class NavigateToHelpFragmentEvent(val origin: HelpActivity.Origin) : SitePickerEvent()
         data class NavigateToWPComWebView(
             val url: String,
