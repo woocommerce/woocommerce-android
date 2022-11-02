@@ -1,6 +1,5 @@
 package com.woocommerce.android.ui.jitm
 
-import androidx.annotation.VisibleForTesting
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.JITM_FEATURE_CLASS
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.JITM_ID
@@ -14,8 +13,7 @@ import javax.inject.Inject
 class JitmTracker @Inject constructor(
     private val analyticsTrackerWrapper: AnalyticsTrackerWrapper
 ) {
-    @VisibleForTesting
-    fun track(
+    private fun track(
         stat: AnalyticsEvent,
         properties: Map<String, Any> = mapOf(),
         errorType: String? = null,
