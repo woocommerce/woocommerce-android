@@ -3,6 +3,8 @@ package com.woocommerce.android.ui.products.variations
 import android.os.Parcelable
 import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.R
+import com.woocommerce.android.analytics.AnalyticsEvent
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.track
 import com.woocommerce.android.model.ProductVariation
 import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.viewmodel.LiveDataDelegate
@@ -36,7 +38,7 @@ class VariationsBulkUpdateInventoryViewModel @Inject constructor(
     }
 
     fun onDoneClicked() {
-        // TODO tracking
+        track(AnalyticsEvent.PRODUCT_VARIANTS_BULK_UPDATE_STOCK_QUANTITY_DONE_TAPPED)
         viewState = viewState.copy(isProgressDialogShown = true)
 
         launch(dispatchers.io) {
