@@ -50,9 +50,7 @@ fun WebViewStoreCreationScreen(viewModel: WebViewStoreCreationViewModel) {
                 backgroundColor = MaterialTheme.colors.surface,
                 title = { Text(stringResource(id = string.store_creation_create_new_store_label)) },
                 navigationIcon = {
-                    IconButton(onClick = {
-                        viewModel.onBackPressed()
-                    }) {
+                    IconButton(onClick = viewModel::onBackPressed) {
                         Icon(Filled.ArrowBack, contentDescription = "Back")
                     }
                 },
