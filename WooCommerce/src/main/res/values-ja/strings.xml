@@ -65,7 +65,6 @@ Language: ja_JP
     <string name="orderlist_bottom_sheet_simple_payments_moved_button">分かりました。</string>
     <string name="orderlist_bottom_sheet_simple_payments_moved_description">「オフラインでの支払い」やその他の機能に簡単に素早くアクセスできるようになりました</string>
     <string name="orderlist_bottom_sheet_simple_payments_moved_title">「メニュー」タブの「支払い」</string>
-    <string name="login_no_wpcom_account_found">メールアドレス %1$s は WordPress.com アカウントで使用されていません。</string>
     <string name="login_non_woo_stores_label">その他のサイト</string>
     <string name="login_with_store_address">ストアアドレスでログイン</string>
     <string name="more_menu_button_w___admin">WC Admin</string>

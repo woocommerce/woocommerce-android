@@ -65,7 +65,6 @@ Language: sv_SE
     <string name="orderlist_bottom_sheet_simple_payments_moved_button">Jag förstår!</string>
     <string name="orderlist_bottom_sheet_simple_payments_moved_description">Now you can quickly access In-Person Payments and other features with ease</string>
     <string name="orderlist_bottom_sheet_simple_payments_moved_title">Betalningar från menyfliken</string>
-    <string name="login_no_wpcom_account_found">E-posten %1$s används inte med ett WordPress.com-konto.</string>
     <string name="login_non_woo_stores_label">Andra webbplatser</string>
     <string name="login_with_store_address">Logga in med din butiksadress</string>
     <string name="more_menu_button_w___admin">WC-admin</string>

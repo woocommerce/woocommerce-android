@@ -1,7 +1,6 @@
 package com.woocommerce.android.ui.login.signup
 
 import android.content.res.Configuration
-import android.widget.Toast
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
@@ -14,6 +13,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.text.ClickableText
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
@@ -30,7 +30,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -40,10 +40,14 @@ import androidx.compose.ui.unit.dp
 import androidx.core.text.HtmlCompat
 import com.woocommerce.android.R
 import com.woocommerce.android.compose.utils.toAnnotatedString
+import com.woocommerce.android.ui.compose.URL_ANNOTATION_TAG
+import com.woocommerce.android.ui.compose.annotatedStringRes
 import com.woocommerce.android.ui.compose.component.ProgressDialog
 import com.woocommerce.android.ui.compose.component.WCColoredButton
 import com.woocommerce.android.ui.compose.component.WCOutlinedTextField
 import com.woocommerce.android.ui.compose.component.WCPasswordField
+import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
+import com.woocommerce.android.ui.login.signup.SignUpViewModel.ErrorType
 import com.woocommerce.android.ui.login.signup.SignUpViewModel.SignUpState
 
 @Composable
@@ -60,10 +64,11 @@ fun SignUpScreen(viewModel: SignUpViewModel) {
                     title = "",
                     subtitle = stringResource(id = R.string.signup_creating_account_loading_message)
                 )
-            state.isError -> Toast.makeText(LocalContext.current, state.errorMessage, Toast.LENGTH_LONG).show()
             else -> SignUpForm(
                 termsOfServiceClicked = viewModel::onTermsOfServiceClicked,
                 onPrimaryButtonClicked = viewModel::onGetStartedCLicked,
+                onLoginClicked = viewModel::onLoginClicked,
+                signUpState = state
             )
         }
     }
@@ -94,10 +99,12 @@ private fun Toolbar(
 private fun SignUpForm(
     modifier: Modifier = Modifier,
     termsOfServiceClicked: () -> Unit,
-    onPrimaryButtonClicked: (String, String) -> Unit
+    onPrimaryButtonClicked: (String, String) -> Unit,
+    onLoginClicked: () -> Unit,
+    signUpState: SignUpState
 ) {
-    var email by remember { mutableStateOf("") }
-    var password by remember { mutableStateOf("") }
+    var email by remember { mutableStateOf(signUpState.email ?: "") }
+    var password by remember { mutableStateOf(signUpState.password ?: "") }
 
     Column(
         modifier = modifier
@@ -112,20 +119,25 @@ private fun SignUpForm(
             style = MaterialTheme.typography.h4,
             fontWeight = FontWeight.Bold
         )
-        Text(
-            text = stringResource(id = R.string.signup_already_registered),
-            style = MaterialTheme.typography.body1,
-        )
+        LoginToExistingAccountText(onLoginClicked)
         Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.major_100)))
+
+        val isEmailError = signUpState.error?.type == ErrorType.EMAIL
         WCOutlinedTextField(
             value = email,
             onValueChange = { email = it },
             label = stringResource(id = R.string.signup_email_address_hint),
+            isError = isEmailError,
+            helperText = if (isEmailError) signUpState.error?.stringId?.let { stringResource(id = it) } else null
         )
+
+        val isPasswordError = signUpState.error?.type == ErrorType.PASSWORD
         WCPasswordField(
             value = password,
             onValueChange = { password = it },
             label = stringResource(id = R.string.signup_password_hint),
+            isError = isPasswordError,
+            helperText = if (isPasswordError) signUpState.error?.stringId?.let { stringResource(id = it) } else null
         )
         TermsOfServiceText(
             modifier = Modifier.clickable { termsOfServiceClicked() }
@@ -133,7 +145,8 @@ private fun SignUpForm(
         Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.major_100)))
         WCColoredButton(
             modifier = Modifier.fillMaxWidth(),
-            onClick = { onPrimaryButtonClicked(email, password) }
+            onClick = { onPrimaryButtonClicked(email, password) },
+            enabled = email.isNotBlank() && password.isNotBlank()
         ) {
             Text(text = stringResource(id = R.string.signup_get_started_button))
         }
@@ -153,6 +166,19 @@ private fun TermsOfServiceText(modifier: Modifier = Modifier) {
     )
 }
 
+@Composable
+private fun LoginToExistingAccountText(onLoginClicked: () -> Unit) {
+    val text = annotatedStringRes(stringResId = R.string.signup_already_registered)
+    ClickableText(
+        text = text,
+        style = MaterialTheme.typography.body1.copy(color = colorResource(id = R.color.color_on_surface_medium)),
+    ) {
+        text.getStringAnnotations(tag = URL_ANNOTATION_TAG, start = it, end = it)
+            .firstOrNull()
+            ?.let { onLoginClicked() }
+    }
+}
+
 @ExperimentalFoundationApi
 @Preview(name = "dark", uiMode = Configuration.UI_MODE_NIGHT_YES)
 @Preview(name = "light", uiMode = Configuration.UI_MODE_NIGHT_NO)
@@ -161,8 +187,12 @@ private fun TermsOfServiceText(modifier: Modifier = Modifier) {
 @Preview(name = "large screen", device = Devices.NEXUS_10)
 @Composable
 fun SignUpFormPreview() {
-    SignUpForm(
-        termsOfServiceClicked = {},
-        onPrimaryButtonClicked = { _, _ -> },
-    )
+    WooThemeWithBackground {
+        SignUpForm(
+            termsOfServiceClicked = {},
+            onPrimaryButtonClicked = { _, _ -> },
+            onLoginClicked = {},
+            signUpState = SignUpState()
+        )
+    }
 }

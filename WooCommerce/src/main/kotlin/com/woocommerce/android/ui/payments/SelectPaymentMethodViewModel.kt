@@ -14,6 +14,7 @@ import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.extensions.exhaustive
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.model.OrderMapper
+import com.woocommerce.android.model.UiString
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.payments.SelectPaymentMethodViewModel.TakePaymentViewState.Loading
@@ -100,10 +101,18 @@ class SelectPaymentMethodViewModel @Inject constructor(
                                     ),
                                 onPrimaryActionClicked = { onCtaClicked(AnalyticsTracker.KEY_BANNER_PAYMENTS) },
                                 onDismissClicked = { onDismissClicked() },
-                                title = R.string.card_reader_upsell_card_reader_banner_title,
-                                description = R.string.card_reader_upsell_card_reader_banner_description,
-                                primaryActionLabel = R.string.card_reader_upsell_card_reader_banner_cta,
-                                chipLabel = R.string.card_reader_upsell_card_reader_banner_new
+                                title = UiString.UiStringRes(
+                                    R.string.card_reader_upsell_card_reader_banner_title
+                                ),
+                                description = UiString.UiStringRes(
+                                    R.string.card_reader_upsell_card_reader_banner_description
+                                ),
+                                primaryActionLabel = UiString.UiStringRes(
+                                    R.string.card_reader_upsell_card_reader_banner_cta
+                                ),
+                                chipLabel = UiString.UiStringRes(
+                                    R.string.card_reader_upsell_card_reader_banner_new
+                                )
                             )
                         )
                         trackBannerShownIfDisplayed()

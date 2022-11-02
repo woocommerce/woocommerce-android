@@ -65,7 +65,6 @@ Language: zh_CN
     <string name="orderlist_bottom_sheet_simple_payments_moved_button">知道了！</string>
     <string name="orderlist_bottom_sheet_simple_payments_moved_description">现在您可轻松快速地使用“现场付款”和其他功能</string>
     <string name="orderlist_bottom_sheet_simple_payments_moved_title">“菜单”选项卡中的“付款”</string>
-    <string name="login_no_wpcom_account_found">电子邮件 %1$s 未与 WordPress.com 账户结合使用。</string>
     <string name="login_non_woo_stores_label">其他站点</string>
     <string name="login_with_store_address">使用商店地址登录</string>
     <string name="more_menu_button_w___admin">WC Admin</string>

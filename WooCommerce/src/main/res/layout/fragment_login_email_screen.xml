@@ -17,10 +17,10 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="@dimen/margin_extra_large"
             android:layout_marginEnd="@dimen/margin_extra_large"
+            android:text="@string/enter_email_wordpress_com"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            tools:text="@string/enter_email_wordpress_com" />
+            app:layout_constraintTop_toTopOf="parent" />
 
         <!-- Even though this field only accepts email addresses, we also include "username" as an
         autofill hint value to ensure that the default autofill service works well with it -->
@@ -74,6 +74,7 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="@dimen/margin_extra_large"
             android:layout_marginEnd="@dimen/margin_extra_large"
+            android:text="@string/what_is_wordpress_link"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/login_continue_button" />
