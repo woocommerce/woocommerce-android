@@ -18,7 +18,7 @@ import com.woocommerce.android.network.ConnectionChangeReceiver
 import com.woocommerce.android.network.ConnectionChangeReceiver.ConnectionChangeEvent
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.SelectedSite
-import com.woocommerce.android.ui.JitmTracker
+import com.woocommerce.android.ui.jitm.JitmTracker
 import com.woocommerce.android.ui.analytics.daterangeselector.AnalyticTimePeriod
 import com.woocommerce.android.ui.mystore.domain.GetStats
 import com.woocommerce.android.ui.mystore.domain.GetStats.LoadStatsResult.HasOrders

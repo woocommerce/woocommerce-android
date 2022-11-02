@@ -1,4 +1,4 @@
-package com.woocommerce.android.ui
+package com.woocommerce.android.ui.jitm
 
 import androidx.annotation.VisibleForTesting
 import com.woocommerce.android.analytics.AnalyticsEvent

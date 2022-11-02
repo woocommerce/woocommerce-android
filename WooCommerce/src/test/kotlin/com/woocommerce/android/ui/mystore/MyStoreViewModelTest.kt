@@ -11,7 +11,7 @@ import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.model.UiString
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.SelectedSite
-import com.woocommerce.android.ui.JitmTracker
+import com.woocommerce.android.ui.jitm.JitmTracker
 import com.woocommerce.android.ui.mystore.MyStoreViewModel.Companion.UTM_SOURCE
 import com.woocommerce.android.ui.mystore.MyStoreViewModel.MyStoreEvent.OnJitmCtaClicked
 import com.woocommerce.android.ui.mystore.domain.GetStats
