@@ -15,6 +15,8 @@ import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.withTimeoutOrNull
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.model.WCRevenueStatsModel
+import org.wordpress.android.fluxc.model.stats.LimitMode
+import org.wordpress.android.fluxc.model.stats.time.VisitsAndViewsModel
 import org.wordpress.android.fluxc.network.BaseRequest
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooError
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooErrorType
@@ -299,6 +301,29 @@ class StatsRepository @Inject constructor(
                     currencyCode = siteCurrencyCode
                 )
             )
+        }
+    }
+
+    suspend fun fetchFullVisits(
+        granularity: org.wordpress.android.fluxc.network.utils.StatsGranularity,
+        forced: Boolean,
+        site: SiteModel = selectedSite.get()
+    ): WooResult<VisitsAndViewsModel> {
+        val result = visitsAndViewsStore.fetchVisits(
+            site,
+            granularity,
+            LimitMode.Top(15),
+            forced
+        )
+
+        return if (result.isError) {
+            WooLog.e(
+                DASHBOARD,
+                "$TAG - Error fetching visitor stats: ${result.error.message}"
+            )
+            WooResult(WooError(type = WooErrorType.GENERIC_ERROR, message = result.error.message, original = BaseRequest.GenericErrorType.NOT_FOUND))
+        } else {
+            WooResult(result.model)
         }
     }
 
