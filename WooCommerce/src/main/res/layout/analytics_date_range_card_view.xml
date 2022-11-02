@@ -10,6 +10,20 @@
         android:layout_height="wrap_content"
         android:paddingBottom="@dimen/major_100">
 
+        <ImageView
+            android:id="@+id/calendar_icon"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:padding="@dimen/major_85"
+            android:background="@drawable/bg_calendar_gray_circle"
+            android:importantForAccessibility="no"
+            app:layout_constraintBottom_toBottomOf="@+id/tv_fromDate"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/tv_toDate"
+            app:srcCompat="@drawable/ic_analytics_calendar"
+            app:tint="@color/color_on_surface"
+            android:layout_marginStart="@dimen/major_100"/>
+
         <com.google.android.material.textview.MaterialTextView
             android:id="@+id/tv_toDate"
             style="@style/Woo.Card.Title"
@@ -19,7 +33,7 @@
             android:maxLines="1"
             android:textSize="@dimen/text_minor_125"
             app:layout_constraintBottom_toTopOf="@+id/tv_fromDate"
-            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/calendar_icon"
             app:layout_constraintTop_toTopOf="parent"
             tools:text="Today (11 Sept 2021)" />
 
@@ -31,7 +45,7 @@
             android:layout_marginTop="@dimen/minor_100"
             android:maxLines="1"
             android:textSize="@dimen/text_minor_80"
-            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/calendar_icon"
             app:layout_constraintTop_toBottomOf="@+id/tv_toDate"
             tools:text="vs Previous Period (10 Sept 2021)" />
 
@@ -39,12 +53,12 @@
             android:id="@+id/btn_dateRangeSelector"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:padding="@dimen/major_100"
             android:importantForAccessibility="no"
+            android:layout_marginEnd="@dimen/major_100"
             app:layout_constraintBottom_toBottomOf="@+id/tv_fromDate"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="@+id/tv_toDate"
-            app:srcCompat="@drawable/ic_analytics_calendar" />
+            app:srcCompat="@drawable/ic_arrow_drop_down" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </merge>

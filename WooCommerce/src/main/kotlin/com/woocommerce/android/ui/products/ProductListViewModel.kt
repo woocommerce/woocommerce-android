@@ -270,7 +270,7 @@ class ProductListViewModel @Inject constructor(
                         isSkeletonShown = !loadMore,
                         isEmptyViewVisible = false,
                         displaySortAndFilterCard = false,
-                        isAddProductButtonVisible = false
+                        isAddProductButtonVisible = false,
                     )
                     fetchProductList(
                         viewState.query,
@@ -395,7 +395,8 @@ class ProductListViewModel @Inject constructor(
             productRepository.searchProductList(
                 searchQuery = searchQuery,
                 isSkuSearch = isSkuSearch,
-                loadMore = loadMore
+                loadMore = loadMore,
+                productFilterOptions = productFilterOptions
             )?.let { products ->
                 // make sure the search query hasn't changed while the fetch was processing
                 if (searchQuery == productRepository.lastSearchQuery &&
@@ -479,6 +480,8 @@ class ProductListViewModel @Inject constructor(
     ) : Parcelable {
         @IgnoredOnParcel
         val isBottomNavBarVisible = isSearchActive != true
+        @IgnoredOnParcel
+        val isFilteringActive = filterCount != null && filterCount > 0
     }
 
     sealed class ProductListEvent : Event() {

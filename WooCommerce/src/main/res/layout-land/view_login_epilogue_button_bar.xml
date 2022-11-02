@@ -41,7 +41,7 @@
         android:layout_weight="1"
         android:layout_marginStart="@dimen/minor_100"
         android:layout_marginEnd="@dimen/minor_00"
-        android:text="@string/create_new_store"
+        android:text="@string/store_creation_create_new_store_label"
         android:textAllCaps="false"
         tools:visibility="visible"/>
 </LinearLayout>

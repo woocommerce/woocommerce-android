@@ -10,13 +10,10 @@ import androidx.navigation.fragment.navArgs
 import com.woocommerce.android.R
 import com.woocommerce.android.databinding.FragmentWpcomWebviewBinding
 import com.woocommerce.android.extensions.navigateBackWithNotice
-import com.woocommerce.android.extensions.navigateBackWithResult
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.common.wpcomwebview.WPComWebViewFragment.UrlComparisonMode.EQUALITY
 import com.woocommerce.android.ui.common.wpcomwebview.WPComWebViewFragment.UrlComparisonMode.PARTIAL
 import com.woocommerce.android.ui.main.MainActivity.Companion.BackPressListener
-import com.woocommerce.android.util.WooLog
-import com.woocommerce.android.util.WooLog.T
 import dagger.hilt.android.AndroidEntryPoint
 import org.wordpress.android.fluxc.network.UserAgent
 import javax.inject.Inject
@@ -31,16 +28,11 @@ import javax.inject.Inject
 class WPComWebViewFragment : BaseFragment(R.layout.fragment_wpcom_webview), UrlInterceptor, BackPressListener {
     companion object {
         const val WEBVIEW_RESULT = "webview-result"
-        const val WEBVIEW_RESULT_WITH_URL = "webview-result-with-url"
         const val WEBVIEW_DISMISSED = "webview-dismissed"
-        const val WEBVIEW_STORE_CHECKOUT_STRING = "checkout/thank-you/"
-        const val WEBVIEW_STORE_URL_KEY = "store-url-key"
     }
 
     private val webViewClient by lazy { WPComWebViewClient(this) }
     private val navArgs: WPComWebViewFragmentArgs by navArgs()
-    private var siteUrls = ArrayList<String>()
-    private var canNavigate = true
 
     @Inject lateinit var wpcomWebViewAuthenticator: WPComWebViewAuthenticator
 
@@ -60,18 +52,10 @@ class WPComWebViewFragment : BaseFragment(R.layout.fragment_wpcom_webview), UrlI
                 }
             }
             this.settings.javaScriptEnabled = true
-            this.settings.domStorageEnabled = true
             settings.userAgentString = userAgent.userAgent
         }
 
-        siteUrls = savedInstanceState?.getStringArrayList(WEBVIEW_STORE_URL_KEY) ?: siteUrls
-
         wpcomWebViewAuthenticator.authenticateAndLoadUrl(binding.webView, navArgs.urlToLoad)
-    }
-
-    override fun onSaveInstanceState(outState: Bundle) {
-        outState.putStringArrayList(WEBVIEW_STORE_URL_KEY, siteUrls)
-        super.onSaveInstanceState(outState)
     }
 
     override fun onLoadUrl(url: String) {
@@ -80,27 +64,8 @@ class WPComWebViewFragment : BaseFragment(R.layout.fragment_wpcom_webview), UrlI
             EQUALITY -> equals(url, ignoreCase = true)
         }
 
-        extractSiteUrl(url)
-
-        if (isAdded && navArgs.urlToTriggerExit?.matchesUrl(url) == true && canNavigate) {
-            canNavigate = false
-            if (siteUrls.isEmpty()) {
-                navigateBackWithNotice(WEBVIEW_RESULT)
-            } else {
-                navigateBackWithResult(WEBVIEW_RESULT_WITH_URL, siteUrls)
-                WooLog.d(T.LOGIN, "Site creation URLs: ${siteUrls.joinToString()}")
-            }
-        }
-    }
-
-    private fun extractSiteUrl(url: String) {
-        "$WEBVIEW_STORE_CHECKOUT_STRING.+/".toRegex().find(url)?.range?.let { range ->
-            val start = range.first + WEBVIEW_STORE_CHECKOUT_STRING.length
-            val end = range.last
-            val siteUrl = url.substring(start, end)
-            if (!siteUrls.contains(siteUrl)) {
-                siteUrls.add(siteUrl)
-            }
+        if (isAdded && navArgs.urlToTriggerExit?.matchesUrl(url) == true) {
+            navigateBackWithNotice(WEBVIEW_RESULT)
         }
     }
 

@@ -1,6 +1,7 @@
 package com.woocommerce.android.ui.compose.component
 
 import android.annotation.SuppressLint
+import android.view.ViewGroup
 import android.webkit.WebChromeClient
 import android.webkit.WebView
 import android.webkit.WebViewClient
@@ -60,6 +61,10 @@ fun WCWebView(
         AndroidView(
             factory = { context ->
                 WebView(context).apply {
+                    layoutParams = ViewGroup.LayoutParams(
+                        ViewGroup.LayoutParams.MATCH_PARENT,
+                        ViewGroup.LayoutParams.MATCH_PARENT
+                    )
                     this.webViewClient = object : WebViewClient() {
                         override fun doUpdateVisitedHistory(view: WebView?, url: String?, isReload: Boolean) {
                             url?.let { onUrlLoaded(it) }
@@ -80,6 +85,7 @@ fun WCWebView(
                         }
                     }
                     this.settings.javaScriptEnabled = true
+                    this.settings.domStorageEnabled = true
                     this.settings.userAgentString = userAgent.userAgent
                 }.also { webView = it }
             }
