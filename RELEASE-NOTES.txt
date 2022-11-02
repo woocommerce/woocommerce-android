@@ -4,6 +4,7 @@
 - [*] [Internal] Simplified login: update prologue screen layout [https://github.com/woocommerce/woocommerce-android/pull/7634]
 - [*] We improved products search behavior. In case there are filters set on Products page, the search results will be filtered accordingly. [https://github.com/woocommerce/woocommerce-android/pull/7696]
 - [*] [Internal] Simplified login: update the site picker design [https://github.com/woocommerce/woocommerce-android/pull/7677]
+- [*] [Internal] Simplified login: update the password sceen [https://github.com/woocommerce/woocommerce-android/pull/7711]
 
 11.0
 -----
