@@ -59,6 +59,7 @@ open class LoginPrologueFragment(@LayoutRes layout: Int) : Fragment(layout) {
 
         binding.buttonGetStarted.isVisible = FeatureFlag.ACCOUNT_CREATION_FLOW.isEnabled()
         binding.buttonGetStarted.setOnClickListener {
+            AnalyticsTracker.track(stat = AnalyticsEvent.LOGIN_PROLOGUE_CREATE_SITE_TAPPED)
             prologueFinishedListener?.onGetStartedClicked()
         }
 
