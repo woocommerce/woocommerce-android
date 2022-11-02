@@ -21,34 +21,34 @@ internal class IAPBillingClientStateHandler(
     )
 
     @Volatile
-    private var connectionStatus: IAPBillingClientConnectionResult? = null
+    private var connectionResult: IAPBillingClientConnectionResult? = null
 
     val billingClient = billingClientProvider.provideBillingClient()
 
     fun connectToIAPService() {
         if (!billingClient.isReady) {
-            connectionStatus = null
+            connectionResult = null
             billingClient.startConnection(object : BillingClientStateListener {
                 override fun onBillingSetupFinished(billingResult: BillingResult) {
-                    connectionStatus = if (billingResult.isSuccess) {
+                    connectionResult = if (billingResult.isSuccess) {
                         IAPBillingClientConnectionResult.Success
                     } else {
                         IAPBillingClientConnectionResult.Error(
                             mapper.mapBillingResultErrorToBillingResultType(billingResult)
                         )
                     }
-                    releaseWaiters(connectionStatus!!)
+                    releaseWaiters(connectionResult!!)
                     logWrapper.d(IAP_LOG_TAG, "BillingClient setup finished with result $billingResult")
                 }
 
                 override fun onBillingServiceDisconnected() {
-                    connectionStatus = IAPBillingClientConnectionResult.Error(
+                    connectionResult = IAPBillingClientConnectionResult.Error(
                         IAPError.Billing.ServiceDisconnected(
                             "Billing service disconnected"
                         )
                     )
 
-                    releaseWaiters(connectionStatus!!)
+                    releaseWaiters(connectionResult!!)
                     logWrapper.d(IAP_LOG_TAG, "BillingClient disconnected")
                 }
             })
@@ -65,9 +65,9 @@ internal class IAPBillingClientStateHandler(
 
     suspend fun waitTillConnectionEstablished() = suspendCoroutine<IAPBillingClientConnectionResult> {
         connectionEstablishingContinuations.add(it)
-        when (connectionStatus) {
+        when (connectionResult) {
             IAPBillingClientConnectionResult.Success,
-            is IAPBillingClientConnectionResult.Error -> releaseWaiters(connectionStatus!!)
+            is IAPBillingClientConnectionResult.Error -> releaseWaiters(connectionResult!!)
             null -> {
                 // waiting for connection result
             }
