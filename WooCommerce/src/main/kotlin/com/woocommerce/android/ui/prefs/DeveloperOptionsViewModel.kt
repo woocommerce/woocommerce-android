@@ -35,7 +35,7 @@ class DeveloperOptionsViewModel @Inject constructor(
         ToggleableListItem(
             icon = drawable.img_card_reader_connecting,
             label = UiStringRes(string.enable_card_reader),
-            devOptionsKey = UiStringRes(string.simulated_reader_key),
+            key = UiStringRes(string.simulated_reader_key),
             isEnabled = true,
             isChecked = developerOptionsRepository.isSimulatedCardReaderEnabled(),
             onToggled = ::onSimulatedReaderToggled
@@ -54,7 +54,7 @@ class DeveloperOptionsViewModel @Inject constructor(
         val currentViewState = viewState.value
         (
             currentViewState?.rows?.find {
-                it.devOptionsKey == UiStringRes(string.simulated_reader_key)
+                it.key == UiStringRes(string.simulated_reader_key)
             } as? ToggleableListItem
             )?.let { originalListItem ->
             val newState = originalListItem.copy(isChecked = isChecked)
@@ -75,13 +75,13 @@ class DeveloperOptionsViewModel @Inject constructor(
             abstract val label: UiString
             abstract val icon: Int?
             abstract var isEnabled: Boolean
-            abstract var devOptionsKey: UiString
+            abstract var key: UiString
 
             data class ToggleableListItem(
                 @DrawableRes override val icon: Int,
                 override val label: UiString,
                 override var isEnabled: Boolean = false,
-                override var devOptionsKey: UiString,
+                override var key: UiString,
                 val onToggled: (Boolean) -> Unit,
                 val isChecked: Boolean
             ) : ListItem()
@@ -90,7 +90,7 @@ class DeveloperOptionsViewModel @Inject constructor(
                 @DrawableRes override val icon: Int,
                 override val label: UiString,
                 override var isEnabled: Boolean = false,
-                override var devOptionsKey: UiString,
+                override var key: UiString,
                 val onClick: () -> Unit
             ) : ListItem()
         }
