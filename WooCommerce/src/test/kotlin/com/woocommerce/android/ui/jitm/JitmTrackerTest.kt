@@ -9,8 +9,6 @@ import com.woocommerce.android.analytics.AnalyticsEvent.JITM_FETCH_FAILURE
 import com.woocommerce.android.analytics.AnalyticsEvent.JITM_FETCH_SUCCESS
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.JITM_FEATURE_CLASS
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.JITM_ID
-import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_ERROR_DESC
-import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_ERROR_TYPE
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_JITM
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_JITM_COUNT
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_SOURCE
