@@ -101,8 +101,8 @@ class VariationsBulkUpdateAttrPickerDialog : WCBottomSheetDialogFragment() {
     }
 
     private fun formatPriceSubtitle(currency: String, priceGroupType: ValuesGroupType) = when (priceGroupType) {
-        ValuesGroupType.None -> getString(R.string.variations_bulk_update_dialog_price_none)
-        ValuesGroupType.Mixed -> getString(R.string.variations_bulk_update_dialog_price_mixed)
+        ValuesGroupType.None -> getString(R.string.variations_bulk_update_dialog_none)
+        ValuesGroupType.Mixed -> getString(R.string.variations_bulk_update_dialog_mixed)
         is ValuesGroupType.Common -> {
             val price = priceGroupType.data as? BigDecimal?
             if (price != null) currencyFormatter.formatCurrency(amount = price, currencyCode = currency) else ""
@@ -110,8 +110,8 @@ class VariationsBulkUpdateAttrPickerDialog : WCBottomSheetDialogFragment() {
     }
 
     private fun formatStockQuantitySubtitle(groupType: ValuesGroupType) = when (groupType) {
-        ValuesGroupType.None -> getString(R.string.variations_bulk_update_dialog_price_none)
-        ValuesGroupType.Mixed -> getString(R.string.variations_bulk_update_dialog_price_mixed)
+        ValuesGroupType.None -> getString(R.string.variations_bulk_update_dialog_none)
+        ValuesGroupType.Mixed -> getString(R.string.variations_bulk_update_dialog_mixed)
         is ValuesGroupType.Common -> {
             val stockQuantity = (groupType.data as? Double)?.toInt() ?: 0
             stockQuantity.toString()
