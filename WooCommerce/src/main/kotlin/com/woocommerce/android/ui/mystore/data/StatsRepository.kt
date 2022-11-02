@@ -263,6 +263,29 @@ class StatsRepository @Inject constructor(
         }
     }
 
+    suspend fun fetchFullVisits(
+        granularity: org.wordpress.android.fluxc.network.utils.StatsGranularity,
+        forced: Boolean,
+        site: SiteModel = selectedSite.get()
+    ): WooResult<VisitsAndViewsModel> {
+        val result = visitsAndViewsStore.fetchVisits(
+            site,
+            granularity,
+            LimitMode.Top(15),
+            forced
+        )
+
+        return if (result.isError) {
+            WooLog.e(
+                DASHBOARD,
+                "$TAG - Error fetching visitor stats: ${result.error.message}"
+            )
+            WooResult(WooError(type = WooErrorType.GENERIC_ERROR, message = result.error.message, original = BaseRequest.GenericErrorType.NOT_FOUND))
+        } else {
+            WooResult(result.model)
+        }
+    }
+
     suspend fun fetchStats(
         granularity: StatsGranularity,
         forced: Boolean,
@@ -301,29 +324,6 @@ class StatsRepository @Inject constructor(
                     currencyCode = siteCurrencyCode
                 )
             )
-        }
-    }
-
-    suspend fun fetchFullVisits(
-        granularity: org.wordpress.android.fluxc.network.utils.StatsGranularity,
-        forced: Boolean,
-        site: SiteModel = selectedSite.get()
-    ): WooResult<VisitsAndViewsModel> {
-        val result = visitsAndViewsStore.fetchVisits(
-            site,
-            granularity,
-            LimitMode.Top(15),
-            forced
-        )
-
-        return if (result.isError) {
-            WooLog.e(
-                DASHBOARD,
-                "$TAG - Error fetching visitor stats: ${result.error.message}"
-            )
-            WooResult(WooError(type = WooErrorType.GENERIC_ERROR, message = result.error.message, original = BaseRequest.GenericErrorType.NOT_FOUND))
-        } else {
-            WooResult(result.model)
         }
     }
 
