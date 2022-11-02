@@ -29,6 +29,7 @@ import org.wordpress.android.fluxc.store.WCStatsStore.OrderStatsError
 import org.wordpress.android.fluxc.store.WCStatsStore.StatsGranularity
 import org.wordpress.android.fluxc.store.WooCommerceStore
 import org.wordpress.android.fluxc.store.WooCommerceStore.WooPlugin.WOO_CORE
+import org.wordpress.android.fluxc.store.stats.time.VisitsAndViewsStore
 import org.wordpress.android.fluxc.utils.DateUtils
 import javax.inject.Inject
 
@@ -39,7 +40,7 @@ class StatsRepository @Inject constructor(
     @Suppress("UnusedPrivateMember", "Required to ensure the WCOrderStore is initialized!")
     private val wcOrderStore: WCOrderStore,
     private val wcLeaderboardsStore: WCLeaderboardsStore,
-    private val visitsAndViewsStore: WCLeaderboardsStore,
+    private val visitsAndViewsStore: VisitsAndViewsStore,
     private val wooCommerceStore: WooCommerceStore,
 ) {
     companion object {
