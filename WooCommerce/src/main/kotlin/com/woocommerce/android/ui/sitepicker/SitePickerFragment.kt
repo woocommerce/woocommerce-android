@@ -43,7 +43,6 @@ import com.woocommerce.android.ui.sitepicker.SitePickerViewModel.SitePickerState
 import com.woocommerce.android.ui.sitepicker.SitePickerViewModel.SitePickerState.WooNotFoundState
 import com.woocommerce.android.ui.sitepicker.sitediscovery.SitePickerSiteDiscoveryFragment
 import com.woocommerce.android.util.ChromeCustomTabUtils
-import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Logout
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowDialog
@@ -95,7 +94,6 @@ class SitePickerFragment : BaseFragment(R.layout.fragment_site_picker), LoginEma
             viewModel.onTryAnotherAccountButtonClick()
         }
 
-        binding.loginEpilogueButtonBar.buttonTertiary.isVisible = FeatureFlag.STORE_CREATION_WEBVIEW_FLOW.isEnabled()
         binding.loginEpilogueButtonBar.buttonTertiary.setOnClickListener {
             viewModel.onCreateSiteButtonClick()
         }
