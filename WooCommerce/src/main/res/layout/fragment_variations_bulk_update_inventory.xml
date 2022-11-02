@@ -22,7 +22,7 @@
                 android:layout_marginStart="@dimen/major_100"
                 android:layout_marginTop="@dimen/major_75"
                 android:layout_marginEnd="@dimen/major_100"
-                android:inputType="numberDecimal|numberSigned" />
+                android:inputType="number|numberSigned" />
 
             <androidx.appcompat.widget.AppCompatTextView
                 android:id="@+id/currentStockQuantity"
