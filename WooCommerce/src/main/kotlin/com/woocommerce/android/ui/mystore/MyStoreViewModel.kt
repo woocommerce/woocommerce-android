@@ -12,13 +12,6 @@ import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
-import com.woocommerce.android.analytics.AnalyticsTracker.Companion.JITM_FEATURE_CLASS
-import com.woocommerce.android.analytics.AnalyticsTracker.Companion.JITM_ID
-import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_ERROR_DESC
-import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_ERROR_TYPE
-import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_JITM
-import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_JITM_COUNT
-import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_SOURCE
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.model.UiString
 import com.woocommerce.android.network.ConnectionChangeReceiver
@@ -62,7 +55,6 @@ import org.apache.commons.text.StringEscapeUtils
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
 import org.wordpress.android.fluxc.model.WCRevenueStatsModel
-import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooErrorType
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooResult
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.jitm.JITMApiResponse
 import org.wordpress.android.fluxc.store.JitmStore

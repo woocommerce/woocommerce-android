@@ -7,9 +7,6 @@ import com.woocommerce.android.R
 import com.woocommerce.android.WooException
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
-import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_JITM
-import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_JITM_COUNT
-import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_SOURCE
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.model.UiString
 import com.woocommerce.android.tools.NetworkStatus
@@ -949,7 +946,6 @@ class MyStoreViewModelTest : BaseUnitTest() {
 
             whenViewModelIsCreated()
             (sut.bannerState.value as BannerState).onPrimaryActionClicked.invoke()
-
 
             verify(jitmTracker).trackJitmCtaTapped(
                 UTM_SOURCE,

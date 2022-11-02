@@ -1,6 +1,5 @@
 package com.woocommerce.android.ui.jitm
 
-import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsEvent.JITM_CTA_TAPPED
 import com.woocommerce.android.analytics.AnalyticsEvent.JITM_DISMISS_FAILURE
 import com.woocommerce.android.analytics.AnalyticsEvent.JITM_DISMISS_SUCCESS
@@ -8,7 +7,6 @@ import com.woocommerce.android.analytics.AnalyticsEvent.JITM_DISMISS_TAPPED
 import com.woocommerce.android.analytics.AnalyticsEvent.JITM_DISPLAYED
 import com.woocommerce.android.analytics.AnalyticsEvent.JITM_FETCH_FAILURE
 import com.woocommerce.android.analytics.AnalyticsEvent.JITM_FETCH_SUCCESS
-import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.JITM_FEATURE_CLASS
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.JITM_ID
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_ERROR_DESC
