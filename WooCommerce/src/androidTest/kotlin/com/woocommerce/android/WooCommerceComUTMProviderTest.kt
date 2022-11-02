@@ -96,8 +96,8 @@ class WooCommerceComUTMProviderTest {
         val defaultUTMMedium = "woo_android"
         val url = "https://www.woocommerce.com/us/hw?utm_campaign=$existingUtmCampaign" +
             "&utm_source=$existingUtmSource"
-        val expectedUrl = "https://www.woocommerce.com/us/hw?utm_campaign=$jitmPrefixUtmCampaign&utm_source=$utmSource" +
-            "&utm_content=$jitmPrefixUtmContent&utm_term=1234&utm_medium=$defaultUTMMedium"
+        val expectedUrl = "https://www.woocommerce.com/us/hw?utm_campaign=$jitmPrefixUtmCampaign" +
+            "&utm_source=$utmSource&utm_content=$jitmPrefixUtmContent&utm_term=1234&utm_medium=$defaultUTMMedium"
 
         val urlWithUTM = provideUTMProvider(
             campaign = utmCampaign,

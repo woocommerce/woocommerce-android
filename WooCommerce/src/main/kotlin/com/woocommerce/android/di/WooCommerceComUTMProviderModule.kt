@@ -1,7 +1,6 @@
 package com.woocommerce.android.di
 
 import com.woocommerce.android.tools.SelectedSite
-import com.woocommerce.android.ui.mystore.MyStoreViewModel
 import com.woocommerce.android.ui.orders.list.OrderListViewModel
 import com.woocommerce.android.ui.payments.SelectPaymentMethodViewModel
 import com.woocommerce.android.ui.payments.cardreader.hub.CardReaderHubViewModel
