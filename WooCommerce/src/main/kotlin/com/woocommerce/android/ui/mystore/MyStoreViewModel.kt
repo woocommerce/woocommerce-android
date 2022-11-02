@@ -32,7 +32,6 @@ import com.woocommerce.android.ui.mystore.domain.GetTopPerformers
 import com.woocommerce.android.ui.mystore.domain.GetTopPerformers.TopPerformerProduct
 import com.woocommerce.android.ui.payments.banner.BannerState
 import com.woocommerce.android.util.CurrencyFormatter
-import com.woocommerce.android.util.UtmProvider
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.ResourceProvider
@@ -65,7 +64,6 @@ import org.wordpress.android.util.PhotonUtils
 import java.math.BigDecimal
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
-import javax.inject.Named
 
 @HiltViewModel
 class MyStoreViewModel @Inject constructor(
@@ -83,7 +81,7 @@ class MyStoreViewModel @Inject constructor(
     private val myStoreTransactionLauncher: MyStoreTransactionLauncher,
     private val jitmStore: JitmStore,
     private val jitmTracker: JitmTracker,
-    @Named("my-store") private val utmProvider: UtmProvider,
+    private val myStoreUtmProvider: MyStoreUtmProvider,
 ) : ScopedViewModel(savedState) {
     companion object {
         private const val DAYS_TO_REDISPLAY_JP_BENEFITS_BANNER = 5
@@ -201,7 +199,13 @@ class MyStoreViewModel @Inject constructor(
         )
         triggerEvent(
             MyStoreEvent.OnJitmCtaClicked(
-                utmProvider.getUrlWithUtmParams(url)
+                myStoreUtmProvider.getUrlWithUtmParams(
+                    source = UTM_SOURCE,
+                    id = id,
+                    featureClass = featureClass,
+                    siteId = selectedSite.getIfExists()?.siteId,
+                    url = url
+                )
             )
         )
     }
