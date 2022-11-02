@@ -10,6 +10,7 @@ import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.woocommerce.android.R
 import org.wordpress.android.util.DisplayUtils
+import kotlin.math.min
 
 /**
  * The default behavior of a bottom sheet in landscape causes it to be cut off after the first item,
@@ -36,11 +37,15 @@ open class WCBottomSheetDialogFragment : BottomSheetDialogFragment {
 
     @CallSuper
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        if (DisplayUtils.isXLargeTablet(requireContext()) && DisplayUtils.isLandscape(requireContext())) {
+        if (DisplayUtils.isLandscape(requireContext())) {
             dialog?.setOnShowListener {
                 val dialog = it as BottomSheetDialog
                 dialog.findViewById<View>(R.id.design_bottom_sheet)?.let { sheet ->
-                    dialog.behavior.peekHeight = sheet.height
+                    dialog.behavior.peekHeight = if (DisplayUtils.isXLargeTablet(requireContext())) {
+                        sheet.height
+                    } else {
+                        min(DisplayUtils.getWindowPixelHeight(requireContext()) / 2, sheet.height)
+                    }
                     sheet.parent.parent.requestLayout()
                 }
             }
