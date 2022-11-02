@@ -151,7 +151,8 @@ class VariationsBulkUpdateInventoryFragment :
     }
 
     override fun afterTextChanged(editable: Editable?) {
-        val quantity = editable.toString().toInt()
+        val value = editable.toString()
+        val quantity = if (value.isNotBlank()) value.toInt() else 0
         viewModel.onStockQuantityEntered(quantity)
     }
 }
