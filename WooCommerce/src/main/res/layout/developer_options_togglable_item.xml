@@ -18,11 +18,9 @@
 
     <com.google.android.material.textview.MaterialTextView
         android:id="@+id/developerOptionsToggleableListItemLabel"
-        style="@style/Widget.Woo.Settings.OptionValue"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:paddingStart="@dimen/major_100"
-        android:paddingEnd="@dimen/major_100"
+        android:textAppearance="@style/TextAppearance.Woo.Body1"
         android:textColor="@color/color_on_surface"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toEndOf="@id/developerOptionsToggleableIcon"
