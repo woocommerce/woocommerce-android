@@ -1,8 +1,6 @@
 package com.woocommerce.android.ui.products.variations
 
 import android.os.Bundle
-import android.text.Editable
-import android.text.TextWatcher
 import android.view.Menu
 import android.view.MenuInflater
 import android.view.MenuItem
@@ -31,7 +29,7 @@ import javax.inject.Inject
 
 @AndroidEntryPoint
 class VariationsBulkUpdateInventoryFragment :
-    BaseFragment(R.layout.fragment_variations_bulk_update_inventory), TextWatcher {
+    BaseFragment(R.layout.fragment_variations_bulk_update_inventory) {
     @Inject lateinit var uiMessageResolver: UIMessageResolver
     @Inject lateinit var currencyFormatter: CurrencyFormatter
 
@@ -46,8 +44,12 @@ class VariationsBulkUpdateInventoryFragment :
         super.onViewCreated(view, savedInstanceState)
 
         _binding = FragmentVariationsBulkUpdateInventoryBinding.bind(view)
-        binding.stockQuantityEditText.textWatcher = this
         binding.stockQuantityEditText.editText?.showKeyboardWithDelay()
+        binding.stockQuantityEditText.setOnTextChangedListener {
+            val text = it.toString()
+            val quantity = if (text.isNotBlank()) text.toDouble() else 0.0
+            viewModel.onStockQuantityChanged(quantity)
+        }
 
         observeViewStateChanges()
         observeEvents()
@@ -92,9 +94,7 @@ class VariationsBulkUpdateInventoryFragment :
         viewModel.viewStateData.observe(viewLifecycleOwner) { old, new ->
             new.stockQuantity?.takeIfNotEqualTo(old?.stockQuantity) {
                 val quantity = StringUtils.formatCountDecimal(it, forInput = true)
-                if (binding.stockQuantityEditText.text != quantity) {
-                    binding.stockQuantityEditText.text = quantity
-                }
+                binding.stockQuantityEditText.setTextIfDifferent(quantity)
             }
             new.variationsToUpdateCount?.takeIfNotEqualTo(old?.variationsToUpdateCount) {
                 binding.currentStockQuantity.text =
@@ -145,18 +145,4 @@ class VariationsBulkUpdateInventoryFragment :
     }
 
     override fun getFragmentTitle() = getString(R.string.product_stock_quantity)
-
-    override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
-        // NOOP
-    }
-
-    override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-        // NOOP
-    }
-
-    override fun afterTextChanged(editable: Editable?) {
-        val value = editable.toString()
-        val quantity = if (value.isNotBlank()) value.toDouble() else 0.0
-        viewModel.onStockQuantityEntered(quantity)
-    }
 }

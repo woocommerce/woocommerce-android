@@ -63,7 +63,7 @@ class VariationsBulkUpdateInventoryViewModel @Inject constructor(
         }
     }
 
-    fun onStockQuantityEntered(quantity: Double) {
+    fun onStockQuantityChanged(quantity: Double) {
         viewState = viewState.copy(stockQuantity = quantity)
     }
 
