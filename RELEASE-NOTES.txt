@@ -2,6 +2,7 @@
 11.1
 -----
 - [***] We added a new Analytics Hub inside the My Store area of the app. Simply click on the See More button under the store stats to check more detailed information on Revenue and Orders. (https://github.com/woocommerce/woocommerce-android/pull/7556)
+- [*][Internal] Removes the hardcoded UTM params and instead uses the fields from the JITM fetch API response as UTM params [https://github.com/woocommerce/woocommerce-android/pull/7718]
 
 11.0
 -----
