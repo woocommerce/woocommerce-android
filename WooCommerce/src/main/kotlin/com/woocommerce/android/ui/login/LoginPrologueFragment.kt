@@ -6,6 +6,7 @@ import android.view.View
 import androidx.annotation.LayoutRes
 import androidx.fragment.app.Fragment
 import com.woocommerce.android.R
+import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.databinding.FragmentLoginPrologueBinding
 import com.woocommerce.android.experiment.SimplifiedLoginExperiment
