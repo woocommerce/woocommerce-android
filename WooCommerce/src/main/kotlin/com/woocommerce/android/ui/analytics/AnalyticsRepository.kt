@@ -152,6 +152,19 @@ class AnalyticsRepository @Inject constructor(
         )
     }
 
+    suspend fun fetchVisitsData(
+        dateRange: AnalyticsDateRange,
+        selectedRange: AnalyticTimePeriod,
+        fetchStrategy: FetchStrategy
+    ): VisitorsResult {
+        return VisitorsResult.VisitorsData(
+            VisitorsStat(
+                0,
+                0
+            )
+        )
+    }
+
     fun getRevenueAdminPanelUrl() = getAdminPanelUrl() + ANALYTICS_REVENUE_PATH
     fun getOrdersAdminPanelUrl() = getAdminPanelUrl() + ANALYTICS_ORDERS_PATH
     fun getProductsAdminPanelUrl() = getAdminPanelUrl() + ANALYTICS_PRODUCTS_PATH
