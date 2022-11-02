@@ -6,12 +6,16 @@ import android.util.AttributeSet
 import android.util.TypedValue
 import android.view.LayoutInflater
 import android.view.View
+import androidx.compose.ui.platform.ViewCompositionStrategy
+import androidx.compose.ui.res.colorResource
 import androidx.core.content.ContextCompat
 import androidx.core.view.isVisible
 import androidx.core.widget.TextViewCompat
 import com.google.android.material.card.MaterialCardView
 import com.woocommerce.android.R
 import com.woocommerce.android.databinding.AnalyticsInformationSectionViewBinding
+import com.woocommerce.android.ui.analytics.LineChart
+import com.woocommerce.android.ui.compose.theme.WooTheme
 import com.woocommerce.android.widgets.tags.ITag
 import com.woocommerce.android.widgets.tags.TagConfig
 import org.wordpress.android.util.DisplayUtils
@@ -54,6 +58,22 @@ internal class AnalyticsInformationSectionView @JvmOverloads constructor(
                 AnalyticsInformationSectionDeltaTag(it, getDeltaTagText(sectionViewState.sign, it))
         }
         binding.cardInformationSectionDeltaTag.isVisible = sectionViewState.delta != null
+        binding.cardInformationChart.apply {
+            setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
+            setContent {
+                val color = if (sectionViewState.delta != null && sectionViewState.delta > 0) {
+                    colorResource(R.color.analytics_delta_positive_color)
+                } else {
+                    colorResource(R.color.analytics_delta_tag_negative_color)
+                }
+                WooTheme {
+                    LineChart(
+                        info = sectionViewState.chartInfo,
+                        color = color
+                    )
+                }
+            }
+        }
     }
 
     private fun getDeltaTagText(sign: String, value: Int) =
