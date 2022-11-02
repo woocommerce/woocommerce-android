@@ -51,16 +51,4 @@ class WooCommerceComUTMProviderModule {
         content = null,
         siteId = selectedSite.getIfExists()?.siteId
     )
-
-    @Provides
-    @Singleton
-    @Named("my-store")
-    fun provideMyStoreUtm(
-        selectedSite: SelectedSite
-    ) = UtmProvider(
-        campaign = MyStoreViewModel.UTM_CAMPAIGN,
-        source = MyStoreViewModel.UTM_SOURCE,
-        content = MyStoreViewModel.UTM_CONTENT,
-        siteId = selectedSite.getIfExists()?.siteId
-    )
 }
