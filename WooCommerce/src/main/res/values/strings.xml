@@ -2681,4 +2681,5 @@
     <string name="store_creation_in_progress">Creating your store…</string>
     <string name="store_creation_exit_dialog_title">Do you want to leave?</string>
     <string name="store_creation_exit_dialog_message">You will lose all your store information.</string>
+    <string name="store_creation_confirm_and_leave">Confirm and leave</string>
 </resources>

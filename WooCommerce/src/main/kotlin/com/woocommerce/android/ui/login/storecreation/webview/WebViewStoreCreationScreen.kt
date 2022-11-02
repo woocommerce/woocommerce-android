@@ -175,7 +175,7 @@ private fun ConfirmExitDialog(viewState: DialogState) {
         },
         confirmButton = {
             TextButton(onClick = { viewState.onExitConfirmed() }) {
-                Text(stringResource(id = string.link_dialog_button_ok))
+                Text(stringResource(id = string.store_creation_confirm_and_leave))
             }
         },
         dismissButton = {
