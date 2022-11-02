@@ -385,6 +385,7 @@
     <string name="orderlist_filter_by">Filter orders by</string>
     <string name="orderlist_filter">Filter</string>
     <string name="orderlist_search_hint">Search orders</string>
+    <string name="orderlist_search_hint_active_filters">Search filtered orders</string>
     <string name="orderlist_filtered" translatable="false">: %1$s</string>
     <string name="orderlist_loading">Looking up your orders…</string>
     <string name="orderlist_no_filters_title">All Orders</string>
@@ -1448,6 +1449,7 @@
     <string name="product_list_filters_show_products">Show products</string>
     <string name="product_list_filters_list_item">Selected filter option</string>
     <string name="product_search_hint">Search products</string>
+    <string name="product_search_hint_active_filters">Search filtered products</string>
     <string name="product_search_all">All products</string>
     <string name="product_search_sku">SKU</string>
     <string name="product_list_sorting_list_item">Selected sorting option</string>
@@ -1767,6 +1769,7 @@
     -->
     <string name="toggle_option_checked">option checked</string>
     <string name="toggle_option_not_checked">option not checked</string>
+    <string name="simulated_reader_toast">Simulated Card Reader has been disabled</string>
     <!--
         Help and support
     -->
@@ -2549,6 +2552,7 @@
     <string name="enter_account_info_for_site">Enter your account information for %1$s.</string>
     <string name="get_started">Get Started</string>
     <string name="lets_get_started">Let\'s get started!</string>
+    <string name="simplified_login_prologue_title">WooCommerce is a customizable, open-source eCommerce platform built on WordPress.</string>
     <string name="check_email">Check email</string>
     <string name="login_text_otp">Text me a code instead</string>
     <string name="login_text_otp_another">Text me another code instead</string>
@@ -2675,6 +2679,10 @@
     <string name="stats_widget_error_no_data">Couldn\'t load data</string>
     <string name="stats_widget_last_updated_message">As of %1$s</string>
 
-    <!-- Store creation -->
-    <string name="create_new_store">Create a new store</string>
+    <!--
+    Store creation
+    -->
+    <string name="store_creation_create_new_store_label">Create a new store</string>
+    <string name="store_creation_cannot_load_store">Couldn\'t load your store.\nPlease try again…</string>
+    <string name="store_creation_in_progress">Creating your store…</string>
 </resources>
