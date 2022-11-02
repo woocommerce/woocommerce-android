@@ -6,6 +6,7 @@ import com.woocommerce.android.model.OrdersStat
 import com.woocommerce.android.model.ProductItem
 import com.woocommerce.android.model.ProductsStat
 import com.woocommerce.android.model.RevenueStat
+import com.woocommerce.android.model.VisitorsStat
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.analytics.AnalyticsRepository.OrdersResult.OrdersError
 import com.woocommerce.android.ui.analytics.AnalyticsRepository.ProductsResult.ProductsError
@@ -302,6 +303,11 @@ class AnalyticsRepository @Inject constructor(
     sealed class ProductsResult {
         object ProductsError : ProductsResult()
         data class ProductsData(val productsStat: ProductsStat) : ProductsResult()
+    }
+
+    sealed class VisitorsResult {
+        object VisitorsError : VisitorsResult()
+        data class VisitorsData(val visitorsStat: VisitorsStat) : VisitorsResult()
     }
 
     sealed class FetchStrategy {
