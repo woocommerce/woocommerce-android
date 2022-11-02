@@ -4,7 +4,6 @@ import android.os.Parcelable
 import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.R
 import com.woocommerce.android.model.ProductVariation
-import com.woocommerce.android.ui.products.ParameterRepository
 import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.viewmodel.LiveDataDelegate
 import com.woocommerce.android.viewmodel.MultiLiveEvent
@@ -19,7 +18,6 @@ import javax.inject.Inject
 @HiltViewModel
 class VariationsBulkUpdateInventoryViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
-    parameterRepository: ParameterRepository,
     private val variationRepository: VariationRepository,
     private val dispatchers: CoroutineDispatchers,
 ) : ScopedViewModel(savedStateHandle) {
@@ -33,6 +31,7 @@ class VariationsBulkUpdateInventoryViewModel @Inject constructor(
     init {
         viewState = viewState.copy(
             variationsToUpdateCount = data.variationsToUpdate.size,
+            stockQuantity = data.stockQuantity
         )
     }
 

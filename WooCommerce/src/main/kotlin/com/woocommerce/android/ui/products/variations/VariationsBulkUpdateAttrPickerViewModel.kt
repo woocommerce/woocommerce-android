@@ -80,7 +80,10 @@ class VariationsBulkUpdateAttrPickerViewModel @Inject constructor(
         val stockManagedVariations = args.variationsToUpdate.filter { it.isStockManaged }
         triggerEvent(
             OpenVariationsBulkUpdateStockQuantity(
-                InventoryUpdateData(stockManagedVariations)
+                InventoryUpdateData(
+                    variationsToUpdate = stockManagedVariations,
+                    stockQuantity = stockManagedVariations.firstOrNull()?.stockQuantity?.toInt()
+                )
             )
         )
     }
