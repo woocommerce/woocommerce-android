@@ -2,11 +2,13 @@ package com.woocommerce.android.iapshowcase
 
 import android.os.Bundle
 import android.util.Log
+import android.view.View
 import android.widget.Button
 import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.isVisible
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import com.woocommerce.android.R
@@ -59,6 +61,10 @@ class IAPShowcaseActivity : AppCompatActivity() {
         viewModel.iapEvent.observe(this) {
             Log.w("IAP_SHOWCASE", it)
             Toast.makeText(this, it, Toast.LENGTH_SHORT).show()
+        }
+        viewModel.iapLoading.observe(this) {
+            findViewById<
+                View>(R.id.lpiLoading).isVisible = it
         }
     }
 }
