@@ -193,11 +193,21 @@ class ProductListFragment :
                 if (isSearchActive) {
                     menuItem.expandActionView()
                     searchView?.setQuery(viewModel.viewStateLiveData.liveData.value?.query, false)
+                    val queryHint = getSearchQueryHint()
+                    searchView?.queryHint = queryHint
                 } else {
                     menuItem.collapseActionView()
                 }
                 enableSearchListeners()
             }
+        }
+    }
+
+    private fun getSearchQueryHint(): String {
+        return if (viewModel.viewStateLiveData.liveData.value?.isFilteringActive == true) {
+            getString(R.string.product_search_hint_active_filters)
+        } else {
+            getString(R.string.product_search_hint)
         }
     }
 
@@ -311,6 +321,9 @@ class ProductListFragment :
             }
             new.isBottomNavBarVisible.takeIfNotEqualTo(old?.isBottomNavBarVisible) { isBottomNavBarVisible ->
                 showBottomNavBar(isVisible = isBottomNavBarVisible)
+            }
+            new.isSearchActive.takeIfNotEqualTo(old?.isSearchActive) {
+                refreshOptionsMenu()
             }
         }
 
