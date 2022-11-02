@@ -45,6 +45,7 @@ class VariationsBulkUpdateInventoryFragment :
         super.onViewCreated(view, savedInstanceState)
 
         _binding = FragmentVariationsBulkUpdateInventoryBinding.bind(view)
+        binding.stockQuantityEditText.text = viewModel.stockQuantity.toString()
         binding.stockQuantityEditText.textWatcher = this
         binding.stockQuantityEditText.editText?.showKeyboardWithDelay()
 
@@ -89,9 +90,6 @@ class VariationsBulkUpdateInventoryFragment :
 
     private fun observeViewStateChanges() {
         viewModel.viewStateData.observe(viewLifecycleOwner) { old, new ->
-            new.stockQuantity?.takeIfNotEqualTo(old?.stockQuantity) {
-                binding.stockQuantityEditText.text = it.toString()
-            }
             new.variationsToUpdateCount?.takeIfNotEqualTo(old?.variationsToUpdateCount) {
                 binding.currentStockQuantity.text =
                     getString(R.string.variations_bulk_update_stock_quantity_info).format(new.variationsToUpdateCount)

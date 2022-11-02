@@ -27,7 +27,7 @@ class VariationsBulkUpdateInventoryViewModel @Inject constructor(
     private val data: InventoryUpdateData = args.inventoryUpdateData
     private val variationsToUpdate: List<ProductVariation> = args.inventoryUpdateData.variationsToUpdate
 
-    val viewStateData = LiveDataDelegate(savedState, ViewState(stockQuantity = data.stockQuantity))
+    val viewStateData = LiveDataDelegate(savedState, ViewState())
     private var viewState by viewStateData
 
     init {
@@ -36,6 +36,9 @@ class VariationsBulkUpdateInventoryViewModel @Inject constructor(
             stockQuantity = data.stockQuantity
         )
     }
+
+    val stockQuantity
+        get() = viewState.stockQuantity ?: 0
 
     fun onDoneClicked() {
         track(AnalyticsEvent.PRODUCT_VARIANTS_BULK_UPDATE_STOCK_QUANTITY_DONE_TAPPED)
