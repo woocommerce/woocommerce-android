@@ -18,7 +18,10 @@ import com.woocommerce.android.iap.pub.model.IAPError
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.mapNotNull
+import kotlinx.coroutines.flow.merge
 import kotlinx.coroutines.withContext
 
 @Suppress("LongParameterList")
@@ -36,10 +39,15 @@ internal class IAPManager(
 
     private var purchaseStatusCheckerJob: Job? = null
 
-    val iapPurchaseResult: Flow<IAPPurchaseResult> = iapPurchasesUpdatedListener.purchaseResult.map {
-        purchaseStatusCheckerJob?.cancel()
-        mapPurchaseResultToIAPPurchaseResult(it)
-    }
+    private val purchaseError = MutableStateFlow<IAPPurchaseResult.Error?>(null)
+
+    val iapPurchaseResult: Flow<IAPPurchaseResult> = merge(
+        purchaseError.mapNotNull { it },
+        iapPurchasesUpdatedListener.purchaseResult.map {
+            purchaseStatusCheckerJob?.cancel()
+            mapPurchaseResultToIAPPurchaseResult(it)
+        }
+    )
 
     fun connect() {
         iapBillingClientStateHandler.connectToIAPService()
@@ -70,6 +78,12 @@ internal class IAPManager(
         }
 
     suspend fun startPurchase(activityWrapper: IAPActivityWrapper, productDetails: ProductDetails) {
+        val connectionResult = getConnectionResult()
+        if (connectionResult is IAPBillingClientConnectionResult.Error) {
+            purchaseError.value = IAPPurchaseResult.Error(connectionResult.errorType)
+            return
+        }
+
         val flowParams = billingFlowParamsBuilder.buildBillingFlowParams(productDetails)
         billingClient.launchBillingFlow(activityWrapper.activity, flowParams)
         purchaseStatusCheckerJob = periodicPurchaseStatusChecker.startPeriodicPurchasesCheckJob(
