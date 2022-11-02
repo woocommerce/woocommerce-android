@@ -3,8 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:paddingEnd="8dp">
+    android:layout_height="match_parent">
 
     <com.woocommerce.android.widgets.WCMaterialOutlinedSpinnerView
         android:id="@+id/dev_options_spinner"
@@ -13,7 +12,8 @@
         android:hint="@string/update_simulated_reader"
         android:inputType="text"
         android:textColorHint="@color/color_on_surface"
-        app:endIconMode="dropdown_menu"
+        app:endIconDrawable="@drawable/ic_arrow_drop_down"
+        app:endIconMode="custom"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
