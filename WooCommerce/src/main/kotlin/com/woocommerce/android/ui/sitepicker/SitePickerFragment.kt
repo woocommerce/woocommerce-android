@@ -43,6 +43,7 @@ import com.woocommerce.android.ui.sitepicker.SitePickerViewModel.SitePickerState
 import com.woocommerce.android.ui.sitepicker.SitePickerViewModel.SitePickerState.WooNotFoundState
 import com.woocommerce.android.ui.sitepicker.sitediscovery.SitePickerSiteDiscoveryFragment
 import com.woocommerce.android.util.ChromeCustomTabUtils
+import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Logout
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowDialog
@@ -178,9 +179,14 @@ class SitePickerFragment : BaseFragment(R.layout.fragment_site_picker), LoginEma
     }
 
     private fun navigateToStoreCreation() {
-        findNavController().navigateSafely(
-            SitePickerFragmentDirections.actionSitePickerFragmentToWebViewStoreCreationFragment()
-        )
+        when {
+            FeatureFlag.NATIVE_STORE_CREATION_FLOW.isEnabled() -> findNavController().navigateSafely(
+                SitePickerFragmentDirections.actionSitePickerFragmentToStoreCreationNativeFlow()
+            )
+            else -> findNavController().navigateSafely(
+                SitePickerFragmentDirections.actionSitePickerFragmentToWebViewStoreCreationFragment()
+            )
+        }
     }
 
     private fun handleResults() {
