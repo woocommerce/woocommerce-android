@@ -39,6 +39,7 @@ class StatsRepository @Inject constructor(
     @Suppress("UnusedPrivateMember", "Required to ensure the WCOrderStore is initialized!")
     private val wcOrderStore: WCOrderStore,
     private val wcLeaderboardsStore: WCLeaderboardsStore,
+    private val visitsAndViewsStore: WCLeaderboardsStore,
     private val wooCommerceStore: WooCommerceStore,
 ) {
     companion object {
