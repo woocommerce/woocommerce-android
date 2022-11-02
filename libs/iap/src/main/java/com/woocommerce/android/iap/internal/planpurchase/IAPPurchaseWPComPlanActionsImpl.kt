@@ -38,32 +38,53 @@ internal class IAPPurchaseWPComPlanActionsImpl(
         iapManager.connect()
     }
 
-    private val purchaseWpComPlanFetchingProductsError = MutableStateFlow<WPComPurchaseResult.Error?>(null)
+    private val purchaseWpComProductResult = MutableStateFlow<WPComPurchaseResult?>(null)
 
     override val purchaseWpComPlanResult: Flow<WPComPurchaseResult> = merge(
-        purchaseWpComPlanFetchingProductsError.mapNotNull { it },
+        purchaseWpComProductResult.mapNotNull { it },
         iapManager.iapPurchaseResult.map { handleNewPurchaseResultEvent(it) },
     )
 
     override suspend fun isWPComPlanPurchased(): WPComIsPurchasedResult {
         return when (val response = iapManager.fetchPurchases(iapProduct.productType)) {
             is IAPPurchaseResult.Success -> WPComIsPurchasedResult.Success(
-                isProductPurchased(
-                    response.purchases,
-                    iapProduct
-                )
+                response.purchases.isProductPurchased(iapProduct)
             )
             is IAPPurchaseResult.Error -> WPComIsPurchasedResult.Error(response.error)
         }
     }
 
     override suspend fun purchaseWPComPlan(activityWrapper: IAPActivityWrapper) {
+        purchaseWpComProductResult.value = null
+
+        if (syncWithBackendIfPurchasedAndNotAcknowledged()) return
+
         when (val response = iapManager.fetchIAPProductDetails(iapProduct)) {
             is IAPProductDetailsResponse.Success -> iapManager.startPurchase(activityWrapper, response.productDetails)
             is IAPProductDetailsResponse.Error -> {
-                purchaseWpComPlanFetchingProductsError.value = WPComPurchaseResult.Error(response.error)
+                purchaseWpComProductResult.value = WPComPurchaseResult.Error(response.error)
             }
         }
+    }
+
+    private suspend fun syncWithBackendIfPurchasedAndNotAcknowledged(): Boolean {
+        when (val response = iapManager.fetchPurchases(iapProduct.productType)) {
+            is IAPPurchaseResult.Success -> {
+                val purchaseWithProduct = response.purchases.findPurchaseWithProduct(iapProduct)
+                if (purchaseWithProduct?.isAcknowledged == false) {
+                    purchaseWpComProductResult.value =
+                        when (val confirmOrderResponse = confirmPurchaseOnBackend(remoteSiteId, purchaseWithProduct)) {
+                            WPComPurchaseResult.Success -> WPComPurchaseResult.Success
+                            is WPComPurchaseResult.Error -> WPComPurchaseResult.Error(confirmOrderResponse.errorType)
+                        }
+                    return true
+                }
+            }
+            is IAPPurchaseResult.Error -> {
+                purchaseWpComProductResult.value = WPComPurchaseResult.Error(response.error)
+            }
+        }
+        return false
     }
 
     override suspend fun fetchWPComPlanProduct(): WPComProductResult {
@@ -124,11 +145,11 @@ internal class IAPPurchaseWPComPlanActionsImpl(
     private fun isCurrencySupported(response: IAPProductDetailsResponse.Success) =
         SUPPORTED_CURRENCY.equals(response.productDetails.currencyOfTheFirstPurchasedOffer, ignoreCase = true)
 
-    private fun isProductPurchased(
-        iapPurchases: List<IAPPurchase>?,
-        iapProduct: IAPProduct
-    ) = iapPurchases?.find { it.products.find { iapProduct.productId == it.id } != null }?.state ==
-        IAPPurchase.State.PURCHASED
+    private fun List<IAPPurchase>?.isProductPurchased(iapProduct: IAPProduct) =
+        findPurchaseWithProduct(iapProduct)?.state == IAPPurchase.State.PURCHASED
+
+    private fun List<IAPPurchase>?.findPurchaseWithProduct(iapProduct: IAPProduct) =
+        this?.find { it.products.find { iapProduct.productId == it.id } != null }
 
     private fun convertMicroUnitsToCents(priceInMicroUnits: Long) = (priceInMicroUnits / TEN_THOUSAND).toInt()
 }
