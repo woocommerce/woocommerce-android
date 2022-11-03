@@ -377,7 +377,7 @@ class LoginActivity :
     }
 
     override fun onGetStartedClicked() {
-        changeFragment(SignUpFragment.newInstance(SignUpFragment.NextStep.STORE_CREATION), true, SignUpFragment.TAG)
+        changeFragment(SignUpFragment.newInstance(STORE_CREATION), true, SignUpFragment.TAG)
     }
 
     private fun showMainActivityAndFinish() {
@@ -924,7 +924,7 @@ class LoginActivity :
     }
 
     override fun onCreateAccountClicked() {
-        changeFragment(SignUpFragment.newInstance(SignUpFragment.NextStep.SITE_PICKER), true, SignUpFragment.TAG)
+        changeFragment(SignUpFragment.newInstance(SITE_PICKER), true, SignUpFragment.TAG)
     }
 
     private fun getLoginHelpNotification(): String? =
