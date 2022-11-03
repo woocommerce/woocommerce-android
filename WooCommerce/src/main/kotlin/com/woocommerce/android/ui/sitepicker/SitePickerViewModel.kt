@@ -422,11 +422,6 @@ class SitePickerViewModel @Inject constructor(
     }
 
     fun onAddStoreClick() {
-        analyticsTrackerWrapper.track(
-            AnalyticsEvent.SITE_PICKER_CREATE_SITE_TAPPED,
-            mapOf(AnalyticsTracker.KEY_SOURCE to navSource)
-        )
-
         triggerEvent(NavigateToAddStoreEvent(navSource))
     }
 
