@@ -194,6 +194,7 @@ class AnalyticsViewModel @Inject constructor(
         updateRevenue(isRefreshing = isRefreshing, showSkeleton = showSkeleton)
         updateOrders(isRefreshing = isRefreshing, showSkeleton = showSkeleton)
         updateProducts(isRefreshing = isRefreshing, showSkeleton = showSkeleton)
+        updateVisitors(isRefreshing = isRefreshing, showSkeleton = showSkeleton)
     }
 
     private fun updateVisitors(isRefreshing: Boolean, showSkeleton: Boolean) =
