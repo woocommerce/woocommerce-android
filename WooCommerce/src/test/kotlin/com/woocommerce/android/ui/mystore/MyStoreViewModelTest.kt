@@ -431,7 +431,7 @@ class MyStoreViewModelTest : BaseUnitTest() {
 
             if (BuildConfig.DEBUG) {
                 assertThat(captor.firstValue).isEqualTo(
-                    "platform=android&version=${BuildConfig.VERSION_NAME}&buildType=developer",
+                    "platform=android&version=${BuildConfig.VERSION_NAME}&build_type=developer",
                 )
             } else {
                 assertThat(captor.firstValue).isEqualTo(

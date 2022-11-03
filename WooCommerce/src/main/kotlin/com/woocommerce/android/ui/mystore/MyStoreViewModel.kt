@@ -155,7 +155,7 @@ class MyStoreViewModel @Inject constructor(
 
     private fun getQueryParams(): String {
         return if (BuildConfig.DEBUG) {
-            "platform=android&version=${BuildConfig.VERSION_NAME}&buildType=developer"
+            "platform=android&version=${BuildConfig.VERSION_NAME}&build_type=developer"
         } else {
             "platform=android&version=${BuildConfig.VERSION_NAME}"
         }
