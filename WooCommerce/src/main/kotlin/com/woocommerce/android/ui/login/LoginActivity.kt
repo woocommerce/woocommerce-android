@@ -967,17 +967,20 @@ class LoginActivity :
     override fun onAccountCreated(nextStep: SignUpFragment.NextStep) {
         when (nextStep) {
             STORE_CREATION -> {
-                if (FeatureFlag.STORE_CREATION_WEBVIEW_FLOW.isEnabled()) {
-                    showMainActivityAndFinish()
-                } else {
-                    val storeCreationFragment =
-                        supportFragmentManager.findFragmentByTag(StoreCreationFragment.TAG) as? StoreCreationFragment
-                            ?: StoreCreationFragment()
-                    changeFragment(storeCreationFragment, shouldAddToBackStack = true, tag = StoreCreationFragment.TAG)
+                when {
+                    FeatureFlag.NATIVE_STORE_CREATION_FLOW.isEnabled() -> showStoreCreationNextStep()
+                    else -> showMainActivityAndFinish()
                 }
             }
             SITE_PICKER -> showMainActivityAndFinish()
         }
+    }
+
+    private fun showStoreCreationNextStep() {
+        val storeCreationFragment =
+            supportFragmentManager.findFragmentByTag(StoreCreationFragment.TAG) as? StoreCreationFragment
+                ?: StoreCreationFragment()
+        changeFragment(storeCreationFragment, shouldAddToBackStack = true, tag = StoreCreationFragment.TAG)
     }
 
     override fun onLoginClicked() {
