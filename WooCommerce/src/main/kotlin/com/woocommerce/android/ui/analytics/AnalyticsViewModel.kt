@@ -77,7 +77,8 @@ class AnalyticsViewModel @Inject constructor(
             buildAnalyticsDateRangeSelectorViewState(),
             LoadingViewState,
             LoadingViewState,
-            LoadingProductsViewState
+            LoadingProductsViewState,
+            LoadingViewState,
         )
     )
 
