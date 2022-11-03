@@ -233,7 +233,7 @@
     <string name="login_avatar_content_description">Your profile photo</string>
     <string name="login_nostores_content_description">No WooCommerce stores</string>
     <string name="login_with_a_different_account">Login with a different account</string>
-    <string name="login_no_stores">We didn\'t find WooCommerce stores connected to this account.</string>
+    <string name="login_no_stores">Your account isn’t connected to any WooCommerce stores.</string>
     <string name="login_wpcom_account_mismatch">It looks like %1$s is connected to a different WordPress.com account.</string>
     <string name="login_jetpack_not_connected">It looks like your account is not connected to %1$s\'s Jetpack</string>
     <string name="login_try_another_account">Log in with another account</string>
@@ -273,6 +273,7 @@
     <string name="user_role_access_error_retry">You don\'t have the correct user role</string>
     <string name="user_access_verifying">Verifying role…</string>
     <string name="login_site_picker_enter_site_address">Enter a site address</string>
+    <string name="login_site_picker_add_a_store">Add a Store</string>
     <string name="site_discovery_postlogin_failure">A failure occurred, please contact support</string>
     <string name="login_site_picker_new_to_woo">New to WooCommerce</string>
     <string name="login_simple_wpcom_site">The site %1$s is currently on a WordPress.com plan that does not support plugin installation. Please upgrade your plan to use WooCommerce.</string>
@@ -287,6 +288,8 @@
     <string name="login_jetpack_connection_consent">By tapping the Connect Jetpack button, you agree to our &lt;a href=\'terms\'&gt;Terms of Service&lt;/a&gt; and to &lt;a href=\'sync\'&gt;share details&lt;/a&gt; with WordPress.com.</string>
     <string name="simplified_login_enter_email_address">Enter your email address to get started</string>
     <string name="login_create_an_account">Create An Account</string>
+    <string name="site_picker_create_new_store">Create a new store</string>
+    <string name="site_picker_connect_existing_store">Connect an existing store</string>
 
     <!--
         My Store View
@@ -385,6 +388,7 @@
     <string name="orderlist_filter_by">Filter orders by</string>
     <string name="orderlist_filter">Filter</string>
     <string name="orderlist_search_hint">Search orders</string>
+    <string name="orderlist_search_hint_active_filters">Search filtered orders</string>
     <string name="orderlist_filtered" translatable="false">: %1$s</string>
     <string name="orderlist_loading">Looking up your orders…</string>
     <string name="orderlist_no_filters_title">All Orders</string>
@@ -1756,15 +1760,17 @@
     <string name="dev_options">Developer Options</string>
 
     <!--
-        Settings
+        Developer Options Screen
     -->
     <string name="enable_card_reader">Enable Simulated Card Reader</string>
+    <string name="simulated_reader_key">Simulated Reader Key</string>
 
     <!--
         WCToggleSingleOptionView
     -->
     <string name="toggle_option_checked">option checked</string>
     <string name="toggle_option_not_checked">option not checked</string>
+    <string name="simulated_reader_toast">Simulated Card Reader has been disabled</string>
     <!--
         Help and support
     -->

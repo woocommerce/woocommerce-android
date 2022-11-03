@@ -1,7 +1,6 @@
 package com.woocommerce.android.di
 
 import com.woocommerce.android.tools.SelectedSite
-import com.woocommerce.android.ui.mystore.MyStoreViewModel
 import com.woocommerce.android.ui.orders.list.OrderListViewModel
 import com.woocommerce.android.ui.payments.SelectPaymentMethodViewModel
 import com.woocommerce.android.ui.payments.cardreader.hub.CardReaderHubViewModel
@@ -49,18 +48,6 @@ class WooCommerceComUTMProviderModule {
         campaign = CardReaderHubViewModel.UTM_CAMPAIGN,
         source = CardReaderHubViewModel.UTM_SOURCE,
         content = null,
-        siteId = selectedSite.getIfExists()?.siteId
-    )
-
-    @Provides
-    @Singleton
-    @Named("my-store")
-    fun provideMyStoreUtm(
-        selectedSite: SelectedSite
-    ) = UtmProvider(
-        campaign = MyStoreViewModel.UTM_CAMPAIGN,
-        source = MyStoreViewModel.UTM_SOURCE,
-        content = MyStoreViewModel.UTM_CONTENT,
         siteId = selectedSite.getIfExists()?.siteId
     )
 }

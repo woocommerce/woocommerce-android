@@ -4,15 +4,15 @@ import android.content.Context
 import android.util.AttributeSet
 import android.view.LayoutInflater
 import android.view.View
+import android.widget.FrameLayout
 import androidx.core.view.isVisible
-import com.google.android.material.card.MaterialCardView
 import com.woocommerce.android.databinding.ViewLoginNoStoresBinding
 
 class LoginNoStoresView @JvmOverloads constructor(
     ctx: Context,
     attrs: AttributeSet? = null,
     defStyleAttr: Int = 0
-) : MaterialCardView(ctx, attrs, defStyleAttr) {
+) : FrameLayout(ctx, attrs, defStyleAttr) {
     private val binding = ViewLoginNoStoresBinding.inflate(LayoutInflater.from(ctx), this)
 
     var noStoresText: String
