@@ -7,6 +7,7 @@
 - [*] We improved products search behavior. In case there are filters set on Products page, the search results will be filtered accordingly. [https://github.com/woocommerce/woocommerce-android/pull/7696]
 - [*] [Internal] Simplified login: update the site picker design [https://github.com/woocommerce/woocommerce-android/pull/7677]
 - [*] We improved orders search behavior. In case there are filters set on Orders page, the search results will be filtered accordingly. [https://github.com/woocommerce/woocommerce-android/pull/7728]
+- [*][Internal] Add encoded query params and phone locale while fetching JITM [https://github.com/woocommerce/woocommerce-android/pull/7738]
 
 11.0
 -----
