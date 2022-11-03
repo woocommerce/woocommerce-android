@@ -10,7 +10,7 @@
         android:id="@+id/divider_start"
         android:layout_width="0dp"
         android:layout_height="1dp"
-        android:layout_marginTop="@dimen/minor_100"
+        android:layout_marginTop="@dimen/major_100"
         android:background="@color/or_divider_line"
         android:layout_weight="1" />
 
@@ -19,11 +19,9 @@
         style="@style/Woo.TextView.Caption"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_gravity="center_horizontal"
-        android:layout_marginTop="0dp"
-        android:layout_marginBottom="@dimen/minor_25"
-        android:layout_marginStart="@dimen/minor_50"
-        android:layout_marginEnd="@dimen/minor_50"
+        android:layout_marginStart="@dimen/minor_100"
+        android:layout_marginEnd="@dimen/minor_100"
+        android:layout_marginTop="@dimen/minor_100"
         android:text="@string/login_or"
         android:textAllCaps="true"
         android:textColor="@color/or_divider_text" />
@@ -32,7 +30,7 @@
         android:id="@+id/divider_end"
         android:layout_width="0dp"
         android:layout_height="1dp"
-        android:layout_marginTop="@dimen/minor_100"
+        android:layout_marginTop="@dimen/major_100"
         android:background="@color/or_divider_line"
         android:layout_weight="1" />
 </LinearLayout>
