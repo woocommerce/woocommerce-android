@@ -11,7 +11,7 @@
         android:layout_width="0dp"
         android:layout_height="1dp"
         android:layout_marginTop="@dimen/minor_100"
-        android:background="@color/divider_color"
+        android:background="@color/or_divider_line"
         android:layout_weight="1" />
 
     <com.google.android.material.textview.MaterialTextView
@@ -25,13 +25,14 @@
         android:layout_marginStart="@dimen/minor_50"
         android:layout_marginEnd="@dimen/minor_50"
         android:text="@string/login_or"
-        android:textAllCaps="true" />
+        android:textAllCaps="true"
+        android:textColor="@color/or_divider_text" />
 
     <View
         android:id="@+id/divider_end"
         android:layout_width="0dp"
         android:layout_height="1dp"
-        android:background="@color/divider_color"
         android:layout_marginTop="@dimen/minor_100"
+        android:background="@color/or_divider_line"
         android:layout_weight="1" />
 </LinearLayout>
