@@ -84,6 +84,12 @@ class AnalyticsViewModel @Inject constructor(
 
     val state: StateFlow<AnalyticsViewState> = mutableState
 
+    init {
+        viewModelScope.launch {
+            refreshAllAnalyticsAtOnce(isRefreshing = false, showSkeleton = true)
+        }
+    }
+
     fun onCustomDateRangeClicked() {
         val savedRange = getSavedDateRange()
         val fromMillis = when (savedRange) {
@@ -129,12 +135,6 @@ class AnalyticsViewModel @Inject constructor(
         }
     }
 
-    init {
-        viewModelScope.launch {
-            refreshAllAnalyticsAtOnce(isRefreshing = false, showSkeleton = true)
-        }
-    }
-
     fun onRefreshRequested() {
         viewModelScope.launch {
             refreshAllAnalyticsAtOnce(isRefreshing = true, showSkeleton = false)
@@ -151,12 +151,6 @@ class AnalyticsViewModel @Inject constructor(
         viewModelScope.launch {
             refreshAllAnalyticsAtOnce(isRefreshing = false, showSkeleton = true)
         }
-    }
-
-    private fun refreshAllAnalyticsAtOnce(isRefreshing: Boolean, showSkeleton: Boolean) {
-        updateRevenue(isRefreshing = isRefreshing, showSkeleton = showSkeleton)
-        updateOrders(isRefreshing = isRefreshing, showSkeleton = showSkeleton)
-        updateProducts(isRefreshing = isRefreshing, showSkeleton = showSkeleton)
     }
 
     fun onDateRangeSelectorClick() {
@@ -193,6 +187,12 @@ class AnalyticsViewModel @Inject constructor(
     }
 
     fun onTrackableUIInteraction() = usageTracksEventEmitter.interacted()
+
+    private fun refreshAllAnalyticsAtOnce(isRefreshing: Boolean, showSkeleton: Boolean) {
+        updateRevenue(isRefreshing = isRefreshing, showSkeleton = showSkeleton)
+        updateOrders(isRefreshing = isRefreshing, showSkeleton = showSkeleton)
+        updateProducts(isRefreshing = isRefreshing, showSkeleton = showSkeleton)
+    }
 
     private fun updateRevenue(isRefreshing: Boolean, showSkeleton: Boolean) =
         launch {
