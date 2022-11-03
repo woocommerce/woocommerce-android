@@ -55,6 +55,7 @@ import com.woocommerce.android.ui.login.localnotifications.LoginNotificationSche
 import com.woocommerce.android.ui.login.overrides.WooLoginEmailFragment
 import com.woocommerce.android.ui.login.overrides.WooLoginEmailPasswordFragment
 import com.woocommerce.android.ui.login.overrides.WooLoginSiteAddressFragment
+import com.woocommerce.android.ui.login.qrcode.QrCodeLoginListener
 import com.woocommerce.android.ui.login.signup.SignUpFragment
 import com.woocommerce.android.ui.login.signup.SignUpFragment.NextStep.SITE_PICKER
 import com.woocommerce.android.ui.login.signup.SignUpFragment.NextStep.STORE_CREATION
@@ -113,7 +114,8 @@ class LoginActivity :
     PrologueSurveyListener,
     WooLoginEmailPasswordFragment.Listener,
     LoginNoWPcomAccountFoundFragment.Listener,
-    SignUpFragment.Listener {
+    SignUpFragment.Listener,
+    QrCodeLoginListener {
     companion object {
         private const val FORGOT_PASSWORD_URL_SUFFIX = "wp-login.php?action=lostpassword"
         private const val MAGIC_LOGIN = "magic-login"
@@ -943,27 +945,6 @@ class LoginActivity :
         loginNotificationScheduler.scheduleNotification(notificationType)
     }
 
-    override fun onQrCodeLoginClicked() {
-        AnalyticsTracker.track(
-            stat = AnalyticsEvent.LOGIN_WITH_QR_CODE_BUTTON_TAPPED,
-            properties = mapOf(KEY_FLOW to VALUE_LOGIN_WITH_WORDPRESS_COM)
-        )
-        val fragment =
-            supportFragmentManager.findFragmentByTag(QrCodeScanningFragment.TAG) as? QrCodeScanningFragment
-                ?: QrCodeScanningFragment()
-        fragment.setClickListeners(
-            onCodeScanned = { rawValue ->
-                AnalyticsTracker.track(stat = AnalyticsEvent.LOGIN_WITH_QR_CODE_SCANNED)
-                val intent = Intent(Intent.ACTION_VIEW, Uri.parse(rawValue))
-                intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK or
-                    Intent.FLAG_ACTIVITY_CLEAR_TASK
-                startActivity(intent)
-            },
-            onHelpClicked = { viewHelpAndSupport(Origin.LOGIN_WITH_QR_CODE) }
-        )
-        changeFragment(fragment, shouldAddToBackStack = true, tag = QrCodeScanningFragment.TAG)
-    }
-
     override fun onAccountCreated(nextStep: SignUpFragment.NextStep) {
         when (nextStep) {
             STORE_CREATION -> {
@@ -1030,4 +1011,28 @@ class LoginActivity :
         val isJetpackConnected: Boolean,
         val isJetpackActive: Boolean
     ) : Parcelable
+
+    override fun onScanQrCodeClicked(source: String) {
+        AnalyticsTracker.track(
+            stat = AnalyticsEvent.LOGIN_WITH_QR_CODE_BUTTON_TAPPED,
+            properties = mapOf(
+                KEY_FLOW to VALUE_LOGIN_WITH_WORDPRESS_COM,
+                KEY_SOURCE to source
+            )
+        )
+        val fragment =
+            supportFragmentManager.findFragmentByTag(QrCodeScanningFragment.TAG) as? QrCodeScanningFragment
+                ?: QrCodeScanningFragment()
+        fragment.setClickListeners(
+            onCodeScanned = { rawValue ->
+                AnalyticsTracker.track(stat = AnalyticsEvent.LOGIN_WITH_QR_CODE_SCANNED)
+                val intent = Intent(Intent.ACTION_VIEW, Uri.parse(rawValue))
+                intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK or
+                    Intent.FLAG_ACTIVITY_CLEAR_TASK
+                startActivity(intent)
+            },
+            onHelpClicked = { viewHelpAndSupport(Origin.LOGIN_WITH_QR_CODE) }
+        )
+        changeFragment(fragment, shouldAddToBackStack = true, tag = QrCodeScanningFragment.TAG)
+    }
 }

@@ -12,6 +12,7 @@ import com.woocommerce.android.experiment.SimplifiedLoginExperiment.LoginVariant
 import com.woocommerce.android.experiment.SimplifiedLoginExperiment.LoginVariant.SIMPLIFIED_LOGIN_WPCOM
 import com.woocommerce.android.extensions.showKeyboardWithDelay
 import com.woocommerce.android.ui.dialog.WooDialog
+import com.woocommerce.android.ui.login.qrcode.QrCodeLoginListener
 import com.woocommerce.android.util.WooPermissionUtils
 import com.woocommerce.android.util.WooPermissionUtils.hasCameraPermission
 import com.woocommerce.android.util.WooPermissionUtils.requestCameraPermission
@@ -20,19 +21,23 @@ import org.wordpress.android.login.widgets.WPLoginInputRow
 import javax.inject.Inject
 
 class WooLoginEmailFragment : LoginEmailFragment() {
+    companion object {
+        const val TRACKING_SOURCE = "WooLoginEmailFragment"
+    }
+
     interface Listener {
         fun onWhatIsWordPressLinkClicked()
-        fun onQrCodeLoginClicked()
     }
+
+    private lateinit var wooLoginEmailListener: Listener
+    private lateinit var qrCodeLoginListener: QrCodeLoginListener
 
     private val requestPermissionLauncher =
         registerForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted: Boolean ->
             if (isGranted) {
-                whatIsWordPressLinkClickListener.onQrCodeLoginClicked()
+                qrCodeLoginListener.onScanQrCodeClicked(TRACKING_SOURCE)
             } else showCameraPermissionDeniedDialog()
         }
-
-    private lateinit var whatIsWordPressLinkClickListener: Listener
 
     @Inject
     lateinit var simplifiedLoginExperiment: SimplifiedLoginExperiment
@@ -47,12 +52,12 @@ class WooLoginEmailFragment : LoginEmailFragment() {
         super.setupContent(rootView)
         val whatIsWordPressText = rootView.findViewById<Button>(R.id.login_what_is_wordpress)
         whatIsWordPressText.setOnClickListener {
-            whatIsWordPressLinkClickListener.onWhatIsWordPressLinkClicked()
+            wooLoginEmailListener.onWhatIsWordPressLinkClicked()
         }
 
         rootView.findViewById<Button>(R.id.button_login_qr_code).setOnClickListener {
             if (hasCameraPermission(requireContext())) {
-                whatIsWordPressLinkClickListener.onQrCodeLoginClicked()
+                qrCodeLoginListener.onScanQrCodeClicked(TRACKING_SOURCE)
             } else requestCameraPermission(requestPermissionLauncher)
         }
     }
@@ -69,7 +74,8 @@ class WooLoginEmailFragment : LoginEmailFragment() {
     override fun onAttach(context: Context) {
         super.onAttach(context)
         if (activity is Listener) {
-            whatIsWordPressLinkClickListener = activity as Listener
+            wooLoginEmailListener = activity as Listener
+            qrCodeLoginListener = activity as QrCodeLoginListener
         }
     }
 
