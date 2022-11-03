@@ -4,15 +4,14 @@ import androidx.annotation.DrawableRes
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
-import com.woocommerce.android.R
 import com.woocommerce.android.R.drawable
 import com.woocommerce.android.R.string
 import com.woocommerce.android.model.UiString
 import com.woocommerce.android.model.UiString.UiStringRes
 import com.woocommerce.android.ui.prefs.DeveloperOptionsViewModel.DeveloperOptionsViewState.ListItem
+import com.woocommerce.android.ui.prefs.DeveloperOptionsViewModel.DeveloperOptionsViewState.ListItem.SpinnerListItem
 import com.woocommerce.android.ui.prefs.DeveloperOptionsViewModel.DeveloperOptionsViewState.ListItem.ToggleableListItem
 import com.woocommerce.android.viewmodel.MultiLiveEvent
-import com.woocommerce.android.ui.prefs.DeveloperOptionsViewModel.DeveloperOptionsViewState.ListItem.SpinnerListItem
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
@@ -47,9 +46,9 @@ class DeveloperOptionsViewModel @Inject constructor(
             icon = drawable.img_card_reader_update_progress,
             endIcon = drawable.ic_arrow_drop_down,
             label = UiStringRes(string.update_simulated_reader),
+            key = UiStringRes(string.update_simulated_reader_key),
             isEnabled = true,
-            onClick = {},
-            key = UiStringRes(string.update_simulated_reader_key)
+            onClick = ::onUpdateSimulatedReaderClicked,
         )
     )
 
@@ -86,6 +85,11 @@ class DeveloperOptionsViewModel @Inject constructor(
                 }
             )
         }
+    }
+
+    private fun onUpdateSimulatedReaderClicked() {
+
+        TODO("Not yet implemented")
     }
 
     sealed class DeveloperOptionsEvents : MultiLiveEvent.Event() {

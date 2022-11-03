@@ -9,8 +9,8 @@ import com.woocommerce.android.databinding.DeveloperOptionsListItemBinding
 import com.woocommerce.android.databinding.DeveloperOptionsSpinnerItemBinding
 import com.woocommerce.android.databinding.DeveloperOptionsTogglableItemBinding
 import com.woocommerce.android.ui.prefs.DeveloperOptionsViewModel.DeveloperOptionsViewState.ListItem
-import com.woocommerce.android.ui.prefs.DeveloperOptionsViewModel.DeveloperOptionsViewState.ListItem.ToggleableListItem
 import com.woocommerce.android.ui.prefs.DeveloperOptionsViewModel.DeveloperOptionsViewState.ListItem.SpinnerListItem
+import com.woocommerce.android.ui.prefs.DeveloperOptionsViewModel.DeveloperOptionsViewState.ListItem.ToggleableListItem
 import com.woocommerce.android.util.UiHelpers
 
 abstract class DeveloperOptionsViewHolder(val parent: ViewGroup, @LayoutRes layout: Int) :
@@ -58,7 +58,9 @@ abstract class DeveloperOptionsViewHolder(val parent: ViewGroup, @LayoutRes layo
                 itemView.context,
                 uiState.label
             )
-            binding.root.setOnClickListener{ uiState.onClick.invoke() }
+            binding.root.setOnClickListener {
+                uiState.onClick.invoke()
+            }
         }
     }
 }
