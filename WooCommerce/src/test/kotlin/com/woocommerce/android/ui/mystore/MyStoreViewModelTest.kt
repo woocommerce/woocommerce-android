@@ -69,7 +69,7 @@ class MyStoreViewModelTest : BaseUnitTest() {
     private val analyticsTrackerWrapper: AnalyticsTrackerWrapper = mock()
     private val jitmStore: JitmStore = mock()
     private val jitmTracker: JitmTracker = mock()
-    private val utmProvider: UtmProvider = mock()
+    private val utmProvider: MyStoreUtmProvider = mock()
     private val localeProvider: LocaleProvider = mock()
 
     private lateinit var sut: MyStoreViewModel
@@ -610,6 +610,7 @@ class MyStoreViewModelTest : BaseUnitTest() {
         testBlocking {
             givenNetworkConnectivity(connected = true)
             whenever(selectedSite.get()).thenReturn(SiteModel())
+            whenever(selectedSite.getIfExists()).thenReturn(SiteModel())
             whenever(
                 jitmStore.fetchJitmMessage(any(), any(), any(), any())
             ).thenReturn(
@@ -617,7 +618,15 @@ class MyStoreViewModelTest : BaseUnitTest() {
                     model = arrayOf(provideJitmApiResponse())
                 )
             )
-            whenever(utmProvider.getUrlWithUtmParams(any())).thenReturn("")
+            whenever(
+                utmProvider.getUrlWithUtmParams(
+                    anyString(),
+                    anyString(),
+                    anyString(),
+                    any(),
+                    anyString(),
+                )
+            ).thenReturn("")
 
             whenViewModelIsCreated()
             (sut.bannerState.value as BannerState).onPrimaryActionClicked.invoke()
@@ -635,6 +644,7 @@ class MyStoreViewModelTest : BaseUnitTest() {
         testBlocking {
             givenNetworkConnectivity(connected = true)
             whenever(selectedSite.get()).thenReturn(SiteModel())
+            whenever(selectedSite.getIfExists()).thenReturn(SiteModel())
             whenever(
                 jitmStore.fetchJitmMessage(any(), any(), any(), any())
             ).thenReturn(
@@ -648,7 +658,15 @@ class MyStoreViewModelTest : BaseUnitTest() {
                     )
                 )
             )
-            whenever(utmProvider.getUrlWithUtmParams(any())).thenReturn(
+            whenever(
+                utmProvider.getUrlWithUtmParams(
+                    anyString(),
+                    anyString(),
+                    anyString(),
+                    any(),
+                    anyString(),
+                )
+            ).thenReturn(
                 "${AppUrls.WOOCOMMERCE_PURCHASE_CARD_READER_IN_COUNTRY}US"
             )
 
@@ -668,6 +686,7 @@ class MyStoreViewModelTest : BaseUnitTest() {
         testBlocking {
             givenNetworkConnectivity(connected = true)
             whenever(selectedSite.get()).thenReturn(SiteModel())
+            whenever(selectedSite.getIfExists()).thenReturn(SiteModel())
             whenever(
                 jitmStore.fetchJitmMessage(any(), any(), any(), any())
             ).thenReturn(
@@ -675,7 +694,15 @@ class MyStoreViewModelTest : BaseUnitTest() {
                     model = arrayOf(provideJitmApiResponse())
                 )
             )
-            whenever(utmProvider.getUrlWithUtmParams(any())).thenReturn(
+            whenever(
+                utmProvider.getUrlWithUtmParams(
+                    anyString(),
+                    anyString(),
+                    anyString(),
+                    any(),
+                    anyString(),
+                )
+            ).thenReturn(
                 ""
             )
 
@@ -937,6 +964,7 @@ class MyStoreViewModelTest : BaseUnitTest() {
         testBlocking {
             givenNetworkConnectivity(connected = true)
             whenever(selectedSite.get()).thenReturn(SiteModel())
+            whenever(selectedSite.getIfExists()).thenReturn(SiteModel())
             whenever(
                 jitmStore.fetchJitmMessage(any(), any(), any(), any())
             ).thenReturn(
@@ -944,7 +972,15 @@ class MyStoreViewModelTest : BaseUnitTest() {
                     model = arrayOf(provideJitmApiResponse())
                 )
             )
-            whenever(utmProvider.getUrlWithUtmParams(any())).thenReturn("")
+            whenever(
+                utmProvider.getUrlWithUtmParams(
+                    anyString(),
+                    anyString(),
+                    anyString(),
+                    any(),
+                    anyString(),
+                )
+            ).thenReturn("")
 
             whenViewModelIsCreated()
             (sut.bannerState.value as BannerState).onPrimaryActionClicked.invoke()
@@ -962,6 +998,7 @@ class MyStoreViewModelTest : BaseUnitTest() {
         testBlocking {
             givenNetworkConnectivity(connected = true)
             whenever(selectedSite.get()).thenReturn(SiteModel())
+            whenever(selectedSite.getIfExists()).thenReturn(SiteModel())
             whenever(
                 jitmStore.fetchJitmMessage(any(), any(), any(), any())
             ).thenReturn(
@@ -974,7 +1011,15 @@ class MyStoreViewModelTest : BaseUnitTest() {
                     )
                 )
             )
-            whenever(utmProvider.getUrlWithUtmParams(any())).thenReturn("")
+            whenever(
+                utmProvider.getUrlWithUtmParams(
+                    anyString(),
+                    anyString(),
+                    anyString(),
+                    any(),
+                    anyString(),
+                )
+            ).thenReturn("")
 
             whenViewModelIsCreated()
             (sut.bannerState.value as BannerState).onPrimaryActionClicked.invoke()

@@ -33,7 +33,6 @@ import com.woocommerce.android.ui.mystore.domain.GetTopPerformers
 import com.woocommerce.android.ui.mystore.domain.GetTopPerformers.TopPerformerProduct
 import com.woocommerce.android.ui.payments.banner.BannerState
 import com.woocommerce.android.util.CurrencyFormatter
-import com.woocommerce.android.util.UtmProvider
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.locale.LocaleProvider
 import com.woocommerce.android.viewmodel.MultiLiveEvent
@@ -69,7 +68,6 @@ import java.net.URLEncoder
 import java.util.Locale
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
-import javax.inject.Named
 
 @HiltViewModel
 class MyStoreViewModel @Inject constructor(
@@ -88,14 +86,12 @@ class MyStoreViewModel @Inject constructor(
     private val jitmStore: JitmStore,
     private val jitmTracker: JitmTracker,
     private val localeProvider: LocaleProvider,
-    @Named("my-store") private val utmProvider: UtmProvider,
+    private val myStoreUtmProvider: MyStoreUtmProvider,
 ) : ScopedViewModel(savedState) {
     companion object {
         private const val DAYS_TO_REDISPLAY_JP_BENEFITS_BANNER = 5
         private const val JITM_MESSAGE_PATH = "woomobile:my_store:admin_notices"
-        const val UTM_CAMPAIGN = "jitm_group_woomobile_ipp"
         const val UTM_SOURCE = "my_store"
-        const val UTM_CONTENT = "jitm_woomobile_ipp_barcode_users"
     }
 
     val performanceObserver: LifecycleObserver = myStoreTransactionLauncher
@@ -220,7 +216,13 @@ class MyStoreViewModel @Inject constructor(
         )
         triggerEvent(
             MyStoreEvent.OnJitmCtaClicked(
-                utmProvider.getUrlWithUtmParams(url)
+                myStoreUtmProvider.getUrlWithUtmParams(
+                    source = UTM_SOURCE,
+                    id = id,
+                    featureClass = featureClass,
+                    siteId = selectedSite.getIfExists()?.siteId,
+                    url = url
+                )
             )
         )
     }
