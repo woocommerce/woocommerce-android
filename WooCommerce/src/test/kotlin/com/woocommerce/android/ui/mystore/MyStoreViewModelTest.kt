@@ -51,7 +51,6 @@ import org.wordpress.android.fluxc.network.rest.wpcom.wc.jitm.JITMCta
 import org.wordpress.android.fluxc.store.JitmStore
 import org.wordpress.android.fluxc.store.WCStatsStore.StatsGranularity
 import org.wordpress.android.fluxc.store.WooCommerceStore
-import java.net.URLEncoder
 import kotlin.test.assertTrue
 
 @ExperimentalCoroutinesApi
