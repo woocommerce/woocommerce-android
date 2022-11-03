@@ -17,6 +17,8 @@ import com.woocommerce.android.ui.analytics.AnalyticsRepository.ProductsResult.P
 import com.woocommerce.android.ui.analytics.AnalyticsRepository.ProductsResult.ProductsError
 import com.woocommerce.android.ui.analytics.AnalyticsRepository.RevenueResult.RevenueData
 import com.woocommerce.android.ui.analytics.AnalyticsRepository.RevenueResult.RevenueError
+import com.woocommerce.android.ui.analytics.AnalyticsRepository.VisitorsResult.VisitorsData
+import com.woocommerce.android.ui.analytics.AnalyticsRepository.VisitorsResult.VisitorsError
 import com.woocommerce.android.ui.analytics.AnalyticsViewEvent.OpenUrl
 import com.woocommerce.android.ui.analytics.AnalyticsViewEvent.OpenWPComWebView
 import com.woocommerce.android.ui.analytics.RefreshIndicator.NotShowIndicator
@@ -380,6 +382,23 @@ class AnalyticsViewModel @Inject constructor(
         toDatePeriod = calculateToDatePeriod(getSavedTimePeriod(), getSavedDateRange()),
         availableRangeDates = getAvailableDateRanges(),
         selectedPeriod = getTimePeriodDescription(getSavedTimePeriod())
+    )
+
+    private fun buildVisitorsDataViewState(
+        visitorsCount: Int,
+        viewsCount: Int
+    ) = DataViewState(
+        title = "Visitors and Views",
+        leftSection = AnalyticsInformationSectionViewState(
+            "Visitors",
+            visitorsCount.toString(),
+            null
+        ),
+        rightSection = AnalyticsInformationSectionViewState(
+            "Views",
+            viewsCount.toString(),
+            null
+        )
     )
 
     private fun buildRevenueDataViewState(
