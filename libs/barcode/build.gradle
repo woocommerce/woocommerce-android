@@ -9,7 +9,7 @@ android {
 
     defaultConfig {
         minSdkVersion gradle.ext.minSdkVersion
-        targetSdkVersion 31
+        targetSdkVersion gradle.ext.targetSdkVersion
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
