@@ -58,19 +58,22 @@ internal class AnalyticsInformationSectionView @JvmOverloads constructor(
                 AnalyticsInformationSectionDeltaTag(it, getDeltaTagText(sectionViewState.sign, it))
         }
         binding.cardInformationSectionDeltaTag.isVisible = sectionViewState.delta != null
-        binding.cardInformationChart.apply {
-            setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
-            setContent {
-                val color = if (sectionViewState.delta != null && sectionViewState.delta > 0) {
-                    colorResource(R.color.analytics_delta_positive_color)
-                } else {
-                    colorResource(R.color.analytics_delta_tag_negative_color)
-                }
-                WooTheme {
-                    LineChart(
-                        info = sectionViewState.chartInfo,
-                        color = color
-                    )
+        // Display the Charts only when the tag is visible
+        if (sectionViewState.delta != null) {
+            binding.cardInformationChart.apply {
+                setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
+                setContent {
+                    val color = if (sectionViewState.delta > 0) {
+                        colorResource(R.color.analytics_delta_positive_color)
+                    } else {
+                        colorResource(R.color.analytics_delta_tag_negative_color)
+                    }
+                    WooTheme {
+                        LineChart(
+                            info = sectionViewState.chartInfo,
+                            color = color
+                        )
+                    }
                 }
             }
         }
