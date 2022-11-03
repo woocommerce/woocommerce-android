@@ -52,11 +52,13 @@ abstract class DeveloperOptionsViewHolder(val parent: ViewGroup, @LayoutRes layo
         var binding: DeveloperOptionsSpinnerItemBinding = DeveloperOptionsSpinnerItemBinding.bind(itemView)
         override fun onBind(uiState: ListItem) {
             uiState as SpinnerListItem
-            binding.devOptionsSpinner.getText()
-            binding.devOptionsSpinner.isEnabled = uiState.isEnabled
-            binding.devOptionsSpinner.setClickListener {  }
-
-
+            binding.developerOptionsSpinnerIcon.setImageResource(uiState.icon)
+            binding.developerOptionsSpinnerEndIcon.setImageResource(uiState.endIcon)
+            binding.developerOptionsSpinnerListItemLabel.text = UiHelpers.getTextOfUiString(
+                itemView.context,
+                uiState.label
+            )
+            binding.root.setOnClickListener{ uiState.onClick.invoke() }
         }
     }
 }

@@ -4,6 +4,7 @@ import androidx.annotation.DrawableRes
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
+import com.woocommerce.android.R
 import com.woocommerce.android.R.drawable
 import com.woocommerce.android.R.string
 import com.woocommerce.android.model.UiString
@@ -44,6 +45,7 @@ class DeveloperOptionsViewModel @Inject constructor(
         ),
         SpinnerListItem(
             icon = drawable.img_card_reader_update_progress,
+            endIcon = drawable.ic_arrow_drop_down,
             label = UiStringRes(string.update_simulated_reader),
             isEnabled = true,
             onClick = {},
@@ -118,6 +120,7 @@ class DeveloperOptionsViewModel @Inject constructor(
 
             data class SpinnerListItem(
                 @DrawableRes override val icon: Int,
+                @DrawableRes val endIcon: Int,
                 override val label: UiString,
                 override var isEnabled: Boolean = false,
                 val onClick: () -> Unit,
