@@ -416,12 +416,14 @@ class AnalyticsViewModel @Inject constructor(
         leftSection = AnalyticsInformationSectionViewState(
             "Visitors",
             visitorsCount.toString(),
-            null
+            null,
+            listOf()
         ),
         rightSection = AnalyticsInformationSectionViewState(
             "Views",
             viewsCount.toString(),
-            null
+            null,
+            listOf()
         )
     )
 
