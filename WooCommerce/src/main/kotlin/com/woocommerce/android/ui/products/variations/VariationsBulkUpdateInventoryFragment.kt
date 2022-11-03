@@ -17,7 +17,6 @@ import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.products.variations.ValuesGroupType.Common
 import com.woocommerce.android.ui.products.variations.ValuesGroupType.Mixed
 import com.woocommerce.android.ui.products.variations.ValuesGroupType.None
-import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.util.StringUtils
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
@@ -31,7 +30,6 @@ import javax.inject.Inject
 class VariationsBulkUpdateInventoryFragment :
     BaseFragment(R.layout.fragment_variations_bulk_update_inventory) {
     @Inject lateinit var uiMessageResolver: UIMessageResolver
-    @Inject lateinit var currencyFormatter: CurrencyFormatter
 
     private val viewModel: VariationsBulkUpdateInventoryViewModel by viewModels()
 
