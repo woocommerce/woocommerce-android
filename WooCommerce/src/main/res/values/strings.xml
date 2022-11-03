@@ -385,6 +385,7 @@
     <string name="orderlist_filter_by">Filter orders by</string>
     <string name="orderlist_filter">Filter</string>
     <string name="orderlist_search_hint">Search orders</string>
+    <string name="orderlist_search_hint_active_filters">Search filtered orders</string>
     <string name="orderlist_filtered" translatable="false">: %1$s</string>
     <string name="orderlist_loading">Looking up your orders…</string>
     <string name="orderlist_no_filters_title">All Orders</string>
@@ -1756,15 +1757,17 @@
     <string name="dev_options">Developer Options</string>
 
     <!--
-        Settings
+        Developer Options Screen
     -->
     <string name="enable_card_reader">Enable Simulated Card Reader</string>
+    <string name="simulated_reader_key">Simulated Reader Key</string>
 
     <!--
         WCToggleSingleOptionView
     -->
     <string name="toggle_option_checked">option checked</string>
     <string name="toggle_option_not_checked">option not checked</string>
+    <string name="simulated_reader_toast">Simulated Card Reader has been disabled</string>
     <!--
         Help and support
     -->

@@ -1,0 +1,39 @@
+package com.woocommerce.android
+
+import org.greenrobot.eventbus.Subscribe
+import org.wordpress.android.fluxc.Dispatcher
+import org.wordpress.android.fluxc.annotations.action.Action
+import java.util.Collections
+
+class FakeDispatcher : Dispatcher() {
+    private val listeners = mutableListOf<Any>()
+
+    @Synchronized
+    override fun register(`object`: Any) {
+        listeners.add(`object`)
+    }
+
+    override fun unregister(`object`: Any) {
+        listeners.remove(`object`)
+    }
+
+    override fun emitChange(changeEvent: Any) {
+        // Copy the listeners to avoid any issues because of concurrent changes
+        val listenersCopy = mutableListOf<Any>(listeners.size)
+        Collections.copy(listenersCopy, listeners)
+
+        listenersCopy.forEach { listener ->
+            listener::class.java.methods
+                .filter { method -> method.annotations.any { it.annotationClass == Subscribe::class } }
+                .forEach { method ->
+                    if (method.parameters.single().type.isAssignableFrom(changeEvent::class.java)) {
+                        method.invoke(listener, changeEvent)
+                    }
+                }
+        }
+    }
+
+    override fun dispatch(action: Action<*>?) {
+        // NO-OP
+    }
+}

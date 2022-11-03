@@ -9,6 +9,7 @@ import com.woocommerce.android.R
 import com.woocommerce.android.databinding.FragmentDeveloperOptionsBinding
 import com.woocommerce.android.ui.base.BaseFragment
 import dagger.hilt.android.AndroidEntryPoint
+import org.wordpress.android.util.ToastUtils
 
 @AndroidEntryPoint
 class DeveloperOptionsFragment : BaseFragment(R.layout.fragment_developer_options) {
@@ -21,6 +22,7 @@ class DeveloperOptionsFragment : BaseFragment(R.layout.fragment_developer_option
 
         initViews(binding)
         observeViewState(binding)
+        observeEvents()
     }
 
     private fun initViews(binding: FragmentDeveloperOptionsBinding) {
@@ -29,6 +31,18 @@ class DeveloperOptionsFragment : BaseFragment(R.layout.fragment_developer_option
             DividerItemDecoration(requireContext(), DividerItemDecoration.VERTICAL)
         )
         binding.developerOptionsRv.adapter = DeveloperOptionsAdapter()
+    }
+
+    private fun observeEvents() {
+        viewModel.event.observe(
+            viewLifecycleOwner
+        ) { event ->
+            when (event) {
+                is DeveloperOptionsViewModel.DeveloperOptionsEvents.ShowToastString -> {
+                    ToastUtils.showToast(context, event.message)
+                }
+            }
+        }
     }
 
     private fun observeViewState(binding: FragmentDeveloperOptionsBinding) {
