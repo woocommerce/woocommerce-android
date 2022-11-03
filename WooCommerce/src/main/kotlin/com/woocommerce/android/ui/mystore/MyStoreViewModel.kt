@@ -65,8 +65,7 @@ import org.wordpress.android.fluxc.store.WooCommerceStore
 import org.wordpress.android.util.FormatUtils
 import org.wordpress.android.util.PhotonUtils
 import java.math.BigDecimal
-import java.net.URLEncoder
-import java.util.Locale
+import java.util.*
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 import javax.inject.Named
@@ -137,7 +136,7 @@ class MyStoreViewModel @Inject constructor(
             val response = jitmStore.fetchJitmMessage(
                 selectedSite.get(),
                 JITM_MESSAGE_PATH,
-                getEncodedQueryParams(),
+                getQueryParams(),
                 (localeProvider.provideLocale() ?: Locale.getDefault()).toLanguageTag()
             )
             populateResultToUI(response)
@@ -158,13 +157,12 @@ class MyStoreViewModel @Inject constructor(
         observeTopPerformerUpdates()
     }
 
-    private fun getEncodedQueryParams(): String {
-        val query = if (BuildConfig.DEBUG) {
+    private fun getQueryParams(): String {
+        return if (BuildConfig.DEBUG) {
             "platform=android&version=${BuildConfig.VERSION_NAME}&buildType=developer"
         } else {
             "platform=android&version=${BuildConfig.VERSION_NAME}"
         }
-        return URLEncoder.encode(query, Charsets.UTF_8.name())
     }
 
     private fun populateResultToUI(response: WooResult<Array<JITMApiResponse>>) {

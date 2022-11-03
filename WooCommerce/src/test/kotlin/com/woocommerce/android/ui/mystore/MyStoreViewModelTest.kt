@@ -433,17 +433,11 @@ class MyStoreViewModelTest : BaseUnitTest() {
 
             if (BuildConfig.DEBUG) {
                 assertThat(captor.firstValue).isEqualTo(
-                    URLEncoder.encode(
-                        "platform=android&version=${BuildConfig.VERSION_NAME}&buildType=developer",
-                        Charsets.UTF_8.name()
-                    )
+                    "platform=android&version=${BuildConfig.VERSION_NAME}&buildType=developer",
                 )
             } else {
                 assertThat(captor.firstValue).isEqualTo(
-                    URLEncoder.encode(
-                        "platform=android&version=${BuildConfig.VERSION_NAME}",
-                        Charsets.UTF_8.name()
-                    )
+                    "platform=android&version=${BuildConfig.VERSION_NAME}",
                 )
             }
         }
