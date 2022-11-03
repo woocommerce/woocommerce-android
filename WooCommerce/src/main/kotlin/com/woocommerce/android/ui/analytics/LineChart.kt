@@ -9,10 +9,12 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.StrokeCap
+import androidx.compose.ui.graphics.drawscope.DrawScope
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
@@ -26,8 +28,16 @@ fun LineChart(
     strokeWidth: Dp = 2.dp
 ) {
     when (info.size) {
-        // We only draw the chart when info size is greater than 1
-        0, 1 -> {}
+        // We only draw the chart when info size is greater than 0
+        0 -> {}
+        1 -> {
+            SingleValueLineChart(
+                value = info[0],
+                color = color,
+                strokeWidth = strokeWidth,
+                modifier = modifier
+            )
+        }
         else -> {
             MultipleValuesLineChart(
                 info = info,
@@ -40,13 +50,68 @@ fun LineChart(
 }
 
 @Composable
+internal fun SingleValueLineChart(
+    value: Float,
+    color: Color,
+    strokeWidth: Dp,
+    modifier: Modifier = Modifier,
+) {
+    val transparentGraphColor = remember {
+        color.copy(alpha = 0.5f)
+    }
+
+    val higherValue = remember(value) { value + 1f }
+    val lowerValue = remember(value) { value - .15f }
+
+    val ratio = remember(value) { higherValue - lowerValue }
+    val animation = remember(value) { Animatable(0f) }
+
+    LaunchedEffect(value) {
+        animation.animateTo(
+            targetValue = 1f,
+            animationSpec = tween(
+                durationMillis = 300,
+                delayMillis = 100,
+                easing = LinearOutSlowInEasing
+            )
+        )
+    }
+
+    Canvas(modifier = modifier.fillMaxSize()) {
+        // Default padding percent 10%
+        val defaultPaddingPercent = 0.1f
+
+        val padding = size.width * defaultPaddingPercent
+        val yRatio = (value - lowerValue) / ratio
+        val lastX = size.width - padding
+        val chartTopDrawableArea = size.height - padding
+        val y = chartTopDrawableArea - (yRatio * chartTopDrawableArea) * animation.value
+
+        val strokePath = Path().apply {
+            moveTo(padding, y)
+            lineTo(lastX, y)
+        }
+
+        drawLineChart(
+            linePath = strokePath,
+            color = color,
+            transparentColor = transparentGraphColor,
+            strokeWidth = strokeWidth,
+            size = size,
+            padding = padding,
+            lastX = lastX
+        )
+    }
+}
+
+@Composable
 internal fun MultipleValuesLineChart(
     info: List<Float>,
     color: Color,
     strokeWidth: Dp,
     modifier: Modifier = Modifier,
 ) {
-    val transparentGraphColor = remember {
+    val transparentGraphColor = remember(info) {
         color.copy(alpha = 0.5f)
     }
     val higherValue = remember(info) {
@@ -71,8 +136,13 @@ internal fun MultipleValuesLineChart(
     }
 
     Canvas(modifier = modifier.fillMaxSize()) {
-        val padding = size.width * 0.1f
+        // Default padding percent 10%
+        val defaultPaddingPercent = 0.1f
+
+        val padding = size.width * defaultPaddingPercent
         val spaceBetweenValues = (size.width - padding) / info.size
+
+        var lastX = 0f
 
         val strokePath = Path().apply {
             val height = size.height
@@ -85,51 +155,76 @@ internal fun MultipleValuesLineChart(
                 val y = chartTopDrawableArea - (yRatio * chartTopDrawableArea) * animation.value
 
                 if (i == 0) moveTo(x, y) else lineTo(x, y)
+                lastX = x
             }
         }
 
-        val lastX = padding + info.size * spaceBetweenValues
-
-        val fillPath = Path()
-            .apply {
-                addPath(strokePath)
-                lineTo(lastX, size.height - padding)
-                lineTo(padding, size.height - padding)
-                close()
-            }
-
-        drawPath(
-            path = fillPath,
-            brush = Brush.verticalGradient(
-                colors = listOf(
-                    transparentGraphColor,
-                    Color.Transparent
-                ),
-                endY = size.height - padding
-            )
-        )
-
-        drawPath(
-            path = strokePath,
+        drawLineChart(
+            linePath = strokePath,
             color = color,
-            style = Stroke(
-                width = strokeWidth.toPx(),
-                cap = StrokeCap.Round
-            )
+            transparentColor = transparentGraphColor,
+            strokeWidth = strokeWidth,
+            size = size,
+            padding = padding,
+            lastX = lastX
         )
     }
 }
 
+@Suppress("LongParameterList")
+private fun DrawScope.drawLineChart(
+    linePath: Path,
+    color: Color,
+    transparentColor: Color,
+    strokeWidth: Dp,
+    size: Size,
+    padding: Float,
+    lastX: Float
+) {
+    val fillPath = Path()
+        .apply {
+            addPath(linePath)
+            lineTo(lastX, size.height - padding)
+            lineTo(padding, size.height - padding)
+            close()
+        }
+
+    drawPath(
+        path = fillPath,
+        brush = Brush.verticalGradient(
+            colors = listOf(
+                transparentColor,
+                Color.Transparent
+            ),
+            endY = size.height - padding
+        )
+    )
+
+    drawPath(
+        path = linePath,
+        color = color,
+        style = Stroke(
+            width = strokeWidth.toPx(),
+            cap = StrokeCap.Round
+        )
+    )
+}
+
+@Suppress("MagicNumber")
+private val infoMultipleValues = listOf(10f, 5.5f, 12f, -12f, 8f, 18f)
+@Suppress("MagicNumber")
+private val infoSingleValue = listOf(-10f)
+
 @Preview(widthDp = 300, heightDp = 300)
 @Composable
 internal fun LineChartPreviewSquare() {
-    LineChart(info = listOf(10f, 5.5f, 12f, 12f, 8f, 18f))
+    LineChart(info = infoMultipleValues)
 }
 
 @Preview(widthDp = 500, heightDp = 300)
 @Composable
 internal fun LineChartPreviewRectangle() {
-    LineChart(info = listOf(10f, 5.5f, 12f, 12f, 8f, 18f))
+    LineChart(info = infoMultipleValues)
 }
 
 @Preview(widthDp = 300, heightDp = 300)
@@ -141,5 +236,5 @@ internal fun LineChartPreviewEmpty() {
 @Preview(widthDp = 300, heightDp = 300)
 @Composable
 internal fun LineChartPreviewOneValue() {
-    LineChart(info = listOf(10f))
+    LineChart(info = infoSingleValue)
 }
