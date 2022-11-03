@@ -423,8 +423,8 @@
             app:popEnterAnim="@null"
             app:popExitAnim="@anim/activity_fade_out" />
         <action
-            android:id="@+id/action_sitePickerFragment_to_webViewStoreCreationFragment"
-            app:destination="@id/webViewStoreCreationFragment" />
+            android:id="@+id/action_sitePickerFragment_to_addStoreBottomSheetFragment"
+            app:destination="@id/addStoreBottomSheetFragment" />
     </fragment>
     <fragment
         android:id="@+id/simpleTextEditorFragment"
@@ -481,4 +481,15 @@
         android:label="WebViewStoreCreationFragment" >
         <argument android:name="source" />
     </fragment>
+    <dialog
+        android:id="@+id/addStoreBottomSheetFragment"
+        android:name="com.woocommerce.android.ui.sitepicker.AddStoreBottomSheetFragment"
+        android:label="AddSiteBottomSheetFragment" >
+        <action
+            android:id="@+id/action_addSiteBottomSheetFragment_to_sitePickerSiteDiscoveryFragment"
+            app:destination="@id/sitePickerSiteDiscoveryFragment" />
+        <action
+            android:id="@+id/action_addStoreBottomSheetFragment_to_webViewStoreCreationFragment"
+            app:destination="@id/webViewStoreCreationFragment" />
+    </dialog>
 </navigation>

@@ -280,10 +280,9 @@ class SitePickerViewModel @Inject constructor(
         sitePickerViewState = sitePickerViewState.copy(
             isNoStoresViewVisible = true,
             isPrimaryBtnVisible = true,
-            primaryBtnText = resourceProvider.getString(string.login_site_picker_enter_site_address),
+            primaryBtnText = resourceProvider.getString(string.login_site_picker_add_a_store),
             noStoresLabelText = resourceProvider.getString(string.login_no_stores),
-            isNoStoresBtnVisible = true,
-            noStoresBtnText = resourceProvider.getString(string.login_site_picker_new_to_woo),
+            isNoStoresBtnVisible = false,
             currentSitePickerState = SitePickerState.NoStoreState
         )
     }
@@ -421,9 +420,13 @@ class SitePickerViewModel @Inject constructor(
         triggerEvent(SitePickerEvent.NavigateToNewToWooEvent)
     }
 
-    fun onEnterSiteAddressClick() {
-        analyticsTrackerWrapper.track(AnalyticsEvent.SITE_PICKER_ENTER_SITE_ADDRESS_TAPPED)
-        triggerEvent(SitePickerEvent.NavigateToSiteAddressEvent)
+    fun onAddStoreClick() {
+        analyticsTrackerWrapper.track(
+            AnalyticsEvent.SITE_PICKER_CREATE_SITE_TAPPED,
+            mapOf(AnalyticsTracker.KEY_SOURCE to navSource)
+        )
+
+        triggerEvent(NavigateToStoreCreationEvent(navSource))
     }
 
     private fun getNavigationSource(): String {
@@ -436,15 +439,6 @@ class SitePickerViewModel @Inject constructor(
         } else {
             AnalyticsTracker.VALUE_SWITCHING_STORE
         }
-    }
-
-    fun onCreateSiteButtonClick() {
-        analyticsTrackerWrapper.track(
-            AnalyticsEvent.SITE_PICKER_CREATE_SITE_TAPPED,
-            mapOf(AnalyticsTracker.KEY_SOURCE to navSource)
-        )
-
-        triggerEvent(NavigateToStoreCreationEvent(navSource))
     }
 
     fun onTryAnotherAccountButtonClick() {
@@ -704,7 +698,7 @@ class SitePickerViewModel @Inject constructor(
         object NavigateToMainActivityEvent : SitePickerEvent()
         object NavigateToEmailHelpDialogEvent : SitePickerEvent()
         object NavigateToNewToWooEvent : SitePickerEvent()
-        object NavigateToSiteAddressEvent : SitePickerEvent()
+        object NavigateToAddStoreEvent : SitePickerEvent()
         data class NavigateToStoreCreationEvent(val source: String) : SitePickerEvent()
         data class NavigateToHelpFragmentEvent(val origin: HelpActivity.Origin) : SitePickerEvent()
         data class NavigateToWPComWebView(
