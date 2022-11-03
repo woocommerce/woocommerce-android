@@ -10,14 +10,16 @@ import com.woocommerce.android.model.UiString
 import com.woocommerce.android.model.UiString.UiStringRes
 import com.woocommerce.android.ui.prefs.DeveloperOptionsViewModel.DeveloperOptionsViewState.ListItem
 import com.woocommerce.android.ui.prefs.DeveloperOptionsViewModel.DeveloperOptionsViewState.ListItem.ToggleableListItem
+import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
 class DeveloperOptionsViewModel @Inject constructor(
     savedState: SavedStateHandle,
-    private val developerOptionsRepository: DeveloperOptionsRepository
+    private val developerOptionsRepository: DeveloperOptionsRepository,
 ) : ScopedViewModel(savedState) {
 
     private val _viewState = MutableLiveData(
@@ -34,6 +36,7 @@ class DeveloperOptionsViewModel @Inject constructor(
         ToggleableListItem(
             icon = drawable.img_card_reader_connecting,
             label = UiStringRes(string.enable_card_reader),
+            key = UiStringRes(string.simulated_reader_key),
             isEnabled = true,
             isChecked = developerOptionsRepository.isSimulatedCardReaderEnabled(),
             onToggled = ::onSimulatedReaderToggled
@@ -41,10 +44,29 @@ class DeveloperOptionsViewModel @Inject constructor(
     )
 
     private fun onSimulatedReaderToggled(isChecked: Boolean) {
+        if (!isChecked) {
+            disconnectAndClearSelectedCardReader()
+            triggerEvent(
+                DeveloperOptionsEvents.ShowToastString(string.simulated_reader_toast)
+            )
+        }
+        simulatedReaderStateChanged(isChecked)
+    }
 
+    private fun disconnectAndClearSelectedCardReader() {
+        launch {
+            developerOptionsRepository.clearSelectedCardReader()
+        }
+    }
+
+    private fun simulatedReaderStateChanged(isChecked: Boolean) {
         developerOptionsRepository.changeSimulatedReaderState(isChecked)
         val currentViewState = viewState.value
-        (currentViewState?.rows?.first() as? ToggleableListItem)?.let { originalListItem ->
+        (
+            currentViewState?.rows?.find {
+                it.key == UiStringRes(string.simulated_reader_key)
+            } as? ToggleableListItem
+            )?.let { originalListItem ->
             val newState = originalListItem.copy(isChecked = isChecked)
             _viewState.value = currentViewState.copy(
                 rows = currentViewState.rows.map {
@@ -56,6 +78,10 @@ class DeveloperOptionsViewModel @Inject constructor(
         }
     }
 
+    sealed class DeveloperOptionsEvents : MultiLiveEvent.Event() {
+        data class ShowToastString(val message: Int) : DeveloperOptionsEvents()
+    }
+
     data class DeveloperOptionsViewState(
         val rows: List<ListItem>
     ) {
@@ -63,11 +89,13 @@ class DeveloperOptionsViewModel @Inject constructor(
             abstract val label: UiString
             abstract val icon: Int?
             abstract var isEnabled: Boolean
+            abstract var key: UiString
 
             data class ToggleableListItem(
                 @DrawableRes override val icon: Int,
                 override val label: UiString,
                 override var isEnabled: Boolean = false,
+                override var key: UiString,
                 val onToggled: (Boolean) -> Unit,
                 val isChecked: Boolean
             ) : ListItem()
@@ -76,6 +104,7 @@ class DeveloperOptionsViewModel @Inject constructor(
                 @DrawableRes override val icon: Int,
                 override val label: UiString,
                 override var isEnabled: Boolean = false,
+                override var key: UiString,
                 val onClick: () -> Unit
             ) : ListItem()
         }

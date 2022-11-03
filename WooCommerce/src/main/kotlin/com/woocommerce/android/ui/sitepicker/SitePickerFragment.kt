@@ -42,7 +42,6 @@ import com.woocommerce.android.ui.sitepicker.SitePickerViewModel.SitePickerState
 import com.woocommerce.android.ui.sitepicker.SitePickerViewModel.SitePickerState.WooNotFoundState
 import com.woocommerce.android.ui.sitepicker.sitediscovery.SitePickerSiteDiscoveryFragment
 import com.woocommerce.android.util.ChromeCustomTabUtils
-import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Logout
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowDialog
@@ -94,9 +93,6 @@ class SitePickerFragment : BaseFragment(R.layout.fragment_site_picker), LoginEma
             viewModel.onTryAnotherAccountButtonClick()
         }
 
-        if (!FeatureFlag.STORE_CREATION_WEBVIEW_FLOW.isEnabled()) {
-            binding.addStoreButton.setText(R.string.site_picker_connect_existing_store)
-        }
         binding.addStoreButton.setOnClickListener {
             viewModel.onAddStoreClick()
         }
@@ -266,14 +262,8 @@ class SitePickerFragment : BaseFragment(R.layout.fragment_site_picker), LoginEma
     }
 
     private fun navigateToAddStoreScreen() {
-        if (FeatureFlag.STORE_CREATION_WEBVIEW_FLOW.isEnabled()) {
-            findNavController()
-                .navigateSafely(SitePickerFragmentDirections.actionSitePickerFragmentToAddStoreBottomSheetFragment())
-        } else {
-            findNavController().navigateSafely(
-                SitePickerFragmentDirections.actionSitePickerFragmentToSitePickerSiteDiscoveryFragment()
-            )
-        }
+        findNavController()
+            .navigateSafely(SitePickerFragmentDirections.actionSitePickerFragmentToAddStoreBottomSheetFragment())
     }
 
     private fun navigateToHelpScreen(origin: HelpActivity.Origin) {
