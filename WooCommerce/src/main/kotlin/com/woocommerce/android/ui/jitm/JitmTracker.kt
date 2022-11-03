@@ -111,7 +111,7 @@ class JitmTracker @Inject constructor(
                 JITM_ID to jitmId,
                 JITM_FEATURE_CLASS to featureClass,
             ),
-            errorType = errorType?.name,
+            errorType = errorType?.name ?: WooErrorType.GENERIC_ERROR.name,
             errorDescription = errorDescription
         )
     }
