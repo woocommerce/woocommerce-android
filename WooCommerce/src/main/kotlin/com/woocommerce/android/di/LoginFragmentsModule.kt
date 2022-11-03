@@ -2,7 +2,6 @@ package com.woocommerce.android.di
 
 import com.woocommerce.android.ui.login.overrides.WooLoginEmailFragment
 import com.woocommerce.android.ui.login.overrides.WooLoginEmailPasswordFragment
-import com.woocommerce.android.ui.login.overrides.WooLoginMagicLinkSentImprovedFragment
 import com.woocommerce.android.ui.login.overrides.WooLoginSiteAddressFragment
 import dagger.Module
 import dagger.android.ContributesAndroidInjector
@@ -20,7 +19,4 @@ abstract class LoginFragmentsModule {
 
     @ContributesAndroidInjector
     abstract fun provideWooLoginEmailPasswordFragment(): WooLoginEmailPasswordFragment
-
-    @ContributesAndroidInjector
-    abstract fun provideWooLoginMagicLinkSentImprovedFragment(): WooLoginMagicLinkSentImprovedFragment
 }
