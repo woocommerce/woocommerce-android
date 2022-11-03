@@ -268,7 +268,6 @@ class SitePickerFragment : BaseFragment(R.layout.fragment_site_picker), LoginEma
             .navigateSafely(SitePickerFragmentDirections.actionSitePickerFragmentToAddStoreBottomSheetFragment(source))
     }
 
-
     private fun navigateToStoreCreation(source: String) {
         findNavController()
             .navigateSafely(SitePickerFragmentDirections.actionSitePickerFragmentToWebViewStoreCreationFragment(source))
