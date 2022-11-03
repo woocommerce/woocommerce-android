@@ -54,6 +54,11 @@ class VariationsBulkUpdateInventoryFragment :
         setupMenu()
     }
 
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
+    }
+
     private fun setupMenu() {
         requireActivity().addMenuProvider(
             object : MenuProvider {
