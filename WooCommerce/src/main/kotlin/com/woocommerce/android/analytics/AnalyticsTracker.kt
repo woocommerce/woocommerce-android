@@ -417,6 +417,11 @@ class AnalyticsTracker private constructor(private val context: Context) {
         // -- App links
         const val KEY_PATH = "path"
 
+        // -- Store creation
+        const val VALUE_LOGIN = "login"
+        const val VALUE_SWITCHING_STORE = "switching_store"
+        const val VALUE_PROLOGUE = "prologue"
+
         var sendUsageStats: Boolean = true
             set(value) {
                 if (value != field) {
