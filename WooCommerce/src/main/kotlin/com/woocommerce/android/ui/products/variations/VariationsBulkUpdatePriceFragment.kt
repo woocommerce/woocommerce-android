@@ -51,6 +51,11 @@ class VariationsBulkUpdatePriceFragment : BaseFragment(R.layout.fragment_variati
         observeEvents()
     }
 
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
+    }
+
     private fun observeEvents() {
         viewModel.event.observe(viewLifecycleOwner) { event ->
             when (event) {

@@ -130,6 +130,13 @@
                 android:name="priceUpdateData"
                 app:argType="com.woocommerce.android.ui.products.variations.VariationsBulkUpdatePriceViewModel$PriceUpdateData" />
         </action>
+        <action
+            android:id="@+id/action_variationsBulkUpdateAttrPickerFragment_to_variationsBulkUpdateInventoryFragment"
+            app:destination="@id/variationsBulkUpdateInventoryFragment">
+            <argument
+                android:name="inventoryUpdateData"
+                app:argType="com.woocommerce.android.ui.products.variations.VariationsBulkUpdateInventoryViewModel$InventoryUpdateData" />
+        </action>
     </dialog>
     <fragment
         android:id="@+id/variationsBulkUpdatePriceFragment"
@@ -138,6 +145,14 @@
         <argument
             android:name="priceUpdateData"
             app:argType="com.woocommerce.android.ui.products.variations.VariationsBulkUpdatePriceViewModel$PriceUpdateData" />
+    </fragment>
+    <fragment
+        android:id="@+id/variationsBulkUpdateInventoryFragment"
+        android:name="com.woocommerce.android.ui.products.variations.VariationsBulkUpdateInventoryFragment"
+        android:label="variationsBulkUpdateInventoryFragment">
+        <argument
+            android:name="inventoryUpdateData"
+            app:argType="com.woocommerce.android.ui.products.variations.VariationsBulkUpdateInventoryViewModel$InventoryUpdateData" />
     </fragment>
     <fragment
         android:id="@+id/attributeListFragment"
