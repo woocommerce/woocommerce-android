@@ -125,25 +125,19 @@ class AnalyticsViewModel @Inject constructor(
         trackSelectedDateRange(AnalyticTimePeriod.CUSTOM)
 
         viewModelScope.launch {
-            updateRevenue(isRefreshing = false, showSkeleton = true)
-            updateOrders(isRefreshing = false, showSkeleton = true)
-            updateProducts(isRefreshing = false, showSkeleton = true)
+            refreshAllAnalyticsAtOnce(isRefreshing = false, showSkeleton = true)
         }
     }
 
     init {
         viewModelScope.launch {
-            updateRevenue(isRefreshing = false, showSkeleton = true)
-            updateOrders(isRefreshing = false, showSkeleton = true)
-            updateProducts(isRefreshing = false, showSkeleton = true)
+            refreshAllAnalyticsAtOnce(isRefreshing = false, showSkeleton = true)
         }
     }
 
     fun onRefreshRequested() {
         viewModelScope.launch {
-            updateRevenue(isRefreshing = true, showSkeleton = false)
-            updateOrders(isRefreshing = true, showSkeleton = false)
-            updateProducts(isRefreshing = true, showSkeleton = false)
+            refreshAllAnalyticsAtOnce(isRefreshing = true, showSkeleton = false)
         }
     }
 
@@ -155,10 +149,14 @@ class AnalyticsViewModel @Inject constructor(
         updateDateSelector()
         trackSelectedDateRange(selectedTimePeriod)
         viewModelScope.launch {
-            updateRevenue(isRefreshing = false, showSkeleton = true)
-            updateOrders(isRefreshing = false, showSkeleton = true)
-            updateProducts(isRefreshing = false, showSkeleton = true)
+            refreshAllAnalyticsAtOnce(isRefreshing = false, showSkeleton = true)
         }
+    }
+
+    private fun refreshAllAnalyticsAtOnce(isRefreshing: Boolean, showSkeleton: Boolean) {
+        updateRevenue(isRefreshing = isRefreshing, showSkeleton = showSkeleton)
+        updateOrders(isRefreshing = isRefreshing, showSkeleton = showSkeleton)
+        updateProducts(isRefreshing = isRefreshing, showSkeleton = showSkeleton)
     }
 
     fun onDateRangeSelectorClick() {
