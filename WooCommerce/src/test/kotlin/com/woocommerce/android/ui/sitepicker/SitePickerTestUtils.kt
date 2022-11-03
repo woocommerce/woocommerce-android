@@ -65,9 +65,9 @@ object SitePickerTestUtils {
     ) = defaultViewState.copy(
         isNoStoresViewVisible = true,
         isPrimaryBtnVisible = true,
-        primaryBtnText = resourceProvider.getString(R.string.login_site_picker_enter_site_address),
+        primaryBtnText = resourceProvider.getString(R.string.login_site_picker_add_a_store),
         noStoresLabelText = resourceProvider.getString(R.string.login_no_stores),
-        noStoresBtnText = resourceProvider.getString(R.string.login_site_picker_new_to_woo)
+        noStoresBtnText = null
     )
 
     fun generateStores(totalCount: Int = 5): List<SiteModel> {
