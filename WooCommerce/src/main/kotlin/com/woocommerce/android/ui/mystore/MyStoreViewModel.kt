@@ -9,6 +9,7 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.AppPrefsWrapper
+import com.woocommerce.android.BuildConfig
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
@@ -34,6 +35,7 @@ import com.woocommerce.android.ui.payments.banner.BannerState
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.util.UtmProvider
 import com.woocommerce.android.util.WooLog
+import com.woocommerce.android.util.locale.LocaleProvider
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.ResourceProvider
 import com.woocommerce.android.viewmodel.ScopedViewModel
@@ -63,6 +65,8 @@ import org.wordpress.android.fluxc.store.WooCommerceStore
 import org.wordpress.android.util.FormatUtils
 import org.wordpress.android.util.PhotonUtils
 import java.math.BigDecimal
+import java.net.URLEncoder
+import java.util.*
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 import javax.inject.Named
@@ -83,6 +87,7 @@ class MyStoreViewModel @Inject constructor(
     private val myStoreTransactionLauncher: MyStoreTransactionLauncher,
     private val jitmStore: JitmStore,
     private val jitmTracker: JitmTracker,
+    private val localeProvider: LocaleProvider,
     @Named("my-store") private val utmProvider: UtmProvider,
 ) : ScopedViewModel(savedState) {
     companion object {
@@ -129,7 +134,12 @@ class MyStoreViewModel @Inject constructor(
         _topPerformersState.value = TopPerformersState(isLoading = true)
 
         viewModelScope.launch {
-            val response = jitmStore.fetchJitmMessage(selectedSite.get(), JITM_MESSAGE_PATH)
+            val response = jitmStore.fetchJitmMessage(
+                selectedSite.get(),
+                JITM_MESSAGE_PATH,
+                getEncodedQueryParams(),
+                (localeProvider.provideLocale() ?: Locale.getDefault()).toLanguageTag()
+            )
             populateResultToUI(response)
         }
         viewModelScope.launch {
@@ -146,6 +156,15 @@ class MyStoreViewModel @Inject constructor(
             }
         }
         observeTopPerformerUpdates()
+    }
+
+    private fun getEncodedQueryParams(): String {
+        val query = if (BuildConfig.DEBUG) {
+            "platform=android&version=${BuildConfig.VERSION_NAME}&buildType=developer"
+        } else {
+            "platform=android&version=${BuildConfig.VERSION_NAME}"
+        }
+        return URLEncoder.encode(query, Charsets.UTF_8.name())
     }
 
     private fun populateResultToUI(response: WooResult<Array<JITMApiResponse>>) {
