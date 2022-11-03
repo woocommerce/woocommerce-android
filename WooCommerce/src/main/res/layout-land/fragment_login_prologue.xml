@@ -102,8 +102,8 @@
         </LinearLayout>
 
         <include
-            android:id="@+id/orLayout"
-            layout="@layout/login_or_layout"
+            android:id="@+id/orDivider"
+            layout="@layout/woo_login_or_layout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content" />
 

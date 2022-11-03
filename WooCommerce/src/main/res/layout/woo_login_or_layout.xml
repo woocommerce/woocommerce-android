@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/orLayout"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal">
+
+    <View
+        android:id="@+id/divider_start"
+        android:layout_width="0dp"
+        android:layout_height="1dp"
+        android:layout_marginTop="@dimen/minor_100"
+        android:background="@color/divider_color"
+        android:layout_weight="1" />
+
+    <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/or"
+        style="@style/Woo.TextView.Caption"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="0dp"
+        android:layout_marginBottom="@dimen/minor_25"
+        android:layout_marginStart="@dimen/minor_50"
+        android:layout_marginEnd="@dimen/minor_50"
+        android:text="@string/login_or"
+        android:textAllCaps="true" />
+
+    <View
+        android:id="@+id/divider_end"
+        android:layout_width="0dp"
+        android:layout_height="1dp"
+        android:background="@color/divider_color"
+        android:layout_marginTop="@dimen/minor_100"
+        android:layout_weight="1" />
+</LinearLayout>
