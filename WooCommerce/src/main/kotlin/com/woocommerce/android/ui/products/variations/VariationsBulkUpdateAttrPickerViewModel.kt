@@ -45,19 +45,13 @@ class VariationsBulkUpdateAttrPickerViewModel @Inject constructor(
     init {
         val regularPriceValues = args.variationsToUpdate.asList().map { it.regularPrice }
         val salePriceValues = args.variationsToUpdate.asList().map { it.salePrice }
-
-        var stockQuantityValues: List<Double>? = null
-        args.variationsToUpdate.forEach { variation ->
-            if (variation.isStockManaged) {
-                stockQuantityValues = args.variationsToUpdate.asList().map { it.stockQuantity }
-                return@forEach
-            }
-        }
+        val stockQuantityValues: List<Double> =
+            args.variationsToUpdate.filter { it.isStockManaged }.map { it.stockQuantity }
 
         _viewState.value = _viewState.value.copy(
             regularPriceGroupType = regularPriceValues.groupType(),
             salePriceGroupType = salePriceValues.groupType(),
-            stockQuantityGroupType = stockQuantityValues?.groupType() ?: ValuesGroupType.None
+            stockQuantityGroupType = stockQuantityValues.groupType()
         )
     }
 
