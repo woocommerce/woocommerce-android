@@ -54,6 +54,7 @@ import com.woocommerce.android.ui.login.localnotifications.LoginHelpNotification
 import com.woocommerce.android.ui.login.localnotifications.LoginNotificationScheduler
 import com.woocommerce.android.ui.login.overrides.WooLoginEmailFragment
 import com.woocommerce.android.ui.login.overrides.WooLoginEmailPasswordFragment
+import com.woocommerce.android.ui.login.overrides.WooLoginMagicLinkSentImprovedFragment
 import com.woocommerce.android.ui.login.overrides.WooLoginSiteAddressFragment
 import com.woocommerce.android.ui.login.qrcode.QrCodeLoginListener
 import com.woocommerce.android.ui.login.signup.SignUpFragment
@@ -490,7 +491,7 @@ class LoginActivity :
     }
 
     override fun showMagicLinkSentScreen(email: String?, allowPassword: Boolean) {
-        val loginMagicLinkSentFragment = LoginMagicLinkSentImprovedFragment.newInstance(email, true)
+        val loginMagicLinkSentFragment = WooLoginMagicLinkSentImprovedFragment.newInstance(email, true)
         changeFragment(loginMagicLinkSentFragment, true, LoginMagicLinkSentImprovedFragment.TAG, false)
     }
 
