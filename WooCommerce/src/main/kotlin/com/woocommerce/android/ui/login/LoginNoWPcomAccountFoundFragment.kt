@@ -20,7 +20,6 @@ import com.woocommerce.android.experiment.SimplifiedLoginExperiment.LoginVariant
 import com.woocommerce.android.extensions.hide
 import com.woocommerce.android.ui.login.UnifiedLoginTracker.Click
 import com.woocommerce.android.ui.login.UnifiedLoginTracker.Step
-import com.woocommerce.android.util.FeatureFlag
 import com.zendesk.util.StringUtils
 import dagger.hilt.android.AndroidEntryPoint
 import org.wordpress.android.login.LoginListener
@@ -98,17 +97,13 @@ class LoginNoWPcomAccountFoundFragment : Fragment(R.layout.fragment_login_no_wpc
     }
 
     private fun setupButtonsForSimplifiedFlow(btnBinding: ViewLoginEpilogueButtonBarBinding) {
-        if (FeatureFlag.ACCOUNT_CREATION_FLOW.isEnabled()) {
-            with(btnBinding.buttonPrimary) {
-                text = getString(R.string.login_create_an_account)
-                setOnClickListener {
-                    unifiedLoginTracker.trackClick(Click.CREATE_ACCOUNT)
+        with(btnBinding.buttonPrimary) {
+            text = getString(R.string.login_create_an_account)
+            setOnClickListener {
+                unifiedLoginTracker.trackClick(Click.CREATE_ACCOUNT)
 
-                    listener.onCreateAccountClicked()
-                }
+                listener.onCreateAccountClicked()
             }
-        } else {
-            btnBinding.buttonPrimary.hide()
         }
 
         with(btnBinding.buttonSecondary) {
@@ -120,7 +115,6 @@ class LoginNoWPcomAccountFoundFragment : Fragment(R.layout.fragment_login_no_wpc
                 loginListener?.startOver()
             }
         }
-        btnBinding.buttonTertiary.hide()
     }
 
     private fun setupButtonsForStandardFlow(
@@ -158,7 +152,6 @@ class LoginNoWPcomAccountFoundFragment : Fragment(R.layout.fragment_login_no_wpc
             }
             btnBinding.buttonSecondary.hide()
         }
-        btnBinding.buttonTertiary.hide()
     }
 
     override fun onCreateMenu(menu: Menu, inflater: MenuInflater) {

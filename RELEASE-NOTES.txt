@@ -1,7 +1,12 @@
 *** PLEASE FOLLOW THIS FORMAT: [<priority indicator, more stars = higher priority>] <description> [<PR URL>]
 11.1
 -----
-[*] We improved products search behavior. In case there are filters set on Products page, the search results will be filtered accordingly. [https://github.com/woocommerce/woocommerce-android/pull/7696]
+- [***] We added a new Analytics Hub inside the My Store area of the app. Simply click on the See More button under the store stats to check more detailed information on Revenue and Orders. (https://github.com/woocommerce/woocommerce-android/pull/7556)
+- [*][Internal] Removes the hardcoded UTM params and instead uses the fields from the JITM fetch API response as UTM params [https://github.com/woocommerce/woocommerce-android/pull/7718]
+- [*] [Internal] Simplified login: update prologue screen layout [https://github.com/woocommerce/woocommerce-android/pull/7634]
+- [*] We improved products search behavior. In case there are filters set on Products page, the search results will be filtered accordingly. [https://github.com/woocommerce/woocommerce-android/pull/7696]
+- [*] [Internal] Simplified login: update the site picker design [https://github.com/woocommerce/woocommerce-android/pull/7677]
+- [*] We improved orders search behavior. In case there are filters set on Orders page, the search results will be filtered accordingly. [https://github.com/woocommerce/woocommerce-android/pull/7728]
 
 11.0
 -----
