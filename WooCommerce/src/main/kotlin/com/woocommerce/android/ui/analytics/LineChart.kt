@@ -56,7 +56,7 @@ internal fun SingleValueLineChart(
     strokeWidth: Dp,
     modifier: Modifier = Modifier,
 ) {
-    val transparentGraphColor = remember {
+    val transparentGraphColor = remember(color) {
         color.copy(alpha = 0.5f)
     }
 
@@ -111,7 +111,7 @@ internal fun MultipleValuesLineChart(
     strokeWidth: Dp,
     modifier: Modifier = Modifier,
 ) {
-    val transparentGraphColor = remember(info) {
+    val transparentGraphColor = remember(color) {
         color.copy(alpha = 0.5f)
     }
     val higherValue = remember(info) {
