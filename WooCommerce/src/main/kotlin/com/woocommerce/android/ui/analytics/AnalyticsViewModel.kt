@@ -219,11 +219,11 @@ class AnalyticsViewModel @Inject constructor(
                                     it.visitorsStat.viewsCount
                                 )
                             )
-                            transactionLauncher.onRevenueFetched()
+                            //TODO: submit sentry monitor transaction finished event
                         }
                         is VisitorsError -> mutableState.value = state.value.copy(
                             refreshIndicator = NotShowIndicator,
-                            revenueState = NoDataState(resourceProvider.getString(R.string.analytics_revenue_no_data))
+                            visitorsState = NoDataState("No visitors data")
                         )
                     }
                 }
