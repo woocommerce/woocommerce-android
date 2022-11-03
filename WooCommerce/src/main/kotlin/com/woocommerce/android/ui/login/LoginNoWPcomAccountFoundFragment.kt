@@ -115,7 +115,6 @@ class LoginNoWPcomAccountFoundFragment : Fragment(R.layout.fragment_login_no_wpc
                 loginListener?.startOver()
             }
         }
-        btnBinding.buttonTertiary.hide()
     }
 
     private fun setupButtonsForStandardFlow(
@@ -153,7 +152,6 @@ class LoginNoWPcomAccountFoundFragment : Fragment(R.layout.fragment_login_no_wpc
             }
             btnBinding.buttonSecondary.hide()
         }
-        btnBinding.buttonTertiary.hide()
     }
 
     override fun onCreateMenu(menu: Menu, inflater: MenuInflater) {
