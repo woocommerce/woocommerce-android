@@ -22,6 +22,7 @@ import com.woocommerce.android.ui.login.AccountRepository
 import com.woocommerce.android.ui.login.UnifiedLoginTracker
 import com.woocommerce.android.ui.login.accountmismatch.AccountMismatchErrorViewModel.AccountMismatchPrimaryButton
 import com.woocommerce.android.ui.sitepicker.SitePickerViewModel.SitePickerEvent.NavigateToAccountMismatchScreen
+import com.woocommerce.android.ui.sitepicker.SitePickerViewModel.SitePickerEvent.NavigateToAddStoreEvent
 import com.woocommerce.android.ui.sitepicker.SitePickerViewModel.SitePickerEvent.NavigateToStoreCreationEvent
 import com.woocommerce.android.ui.sitepicker.SitePickerViewModel.SitePickerEvent.NavigateToWPComWebView
 import com.woocommerce.android.ui.sitepicker.SitePickerViewModel.SitesListItem.Header
@@ -426,7 +427,7 @@ class SitePickerViewModel @Inject constructor(
             mapOf(AnalyticsTracker.KEY_SOURCE to navSource)
         )
 
-        triggerEvent(NavigateToStoreCreationEvent(navSource))
+        triggerEvent(NavigateToAddStoreEvent(navSource))
     }
 
     private fun getNavigationSource(): String {
@@ -698,7 +699,7 @@ class SitePickerViewModel @Inject constructor(
         object NavigateToMainActivityEvent : SitePickerEvent()
         object NavigateToEmailHelpDialogEvent : SitePickerEvent()
         object NavigateToNewToWooEvent : SitePickerEvent()
-        object NavigateToAddStoreEvent : SitePickerEvent()
+        data class NavigateToAddStoreEvent(val source: String) : SitePickerEvent()
         data class NavigateToStoreCreationEvent(val source: String) : SitePickerEvent()
         data class NavigateToHelpFragmentEvent(val origin: HelpActivity.Origin) : SitePickerEvent()
         data class NavigateToWPComWebView(

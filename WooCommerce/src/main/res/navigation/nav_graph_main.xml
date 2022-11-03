@@ -425,6 +425,9 @@
         <action
             android:id="@+id/action_sitePickerFragment_to_addStoreBottomSheetFragment"
             app:destination="@id/addStoreBottomSheetFragment" />
+        <action
+            android:id="@+id/action_sitePickerFragment_to_webViewStoreCreationFragment"
+            app:destination="@id/webViewStoreCreationFragment" />
     </fragment>
     <fragment
         android:id="@+id/simpleTextEditorFragment"
@@ -491,5 +494,6 @@
         <action
             android:id="@+id/action_addStoreBottomSheetFragment_to_webViewStoreCreationFragment"
             app:destination="@id/webViewStoreCreationFragment" />
+        <argument android:name="source" />
     </dialog>
 </navigation>
