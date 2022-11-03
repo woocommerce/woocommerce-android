@@ -4,40 +4,24 @@ import android.content.Context
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.TextView
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.LayoutRes
 import com.woocommerce.android.R
 import com.woocommerce.android.experiment.SimplifiedLoginExperiment
 import com.woocommerce.android.experiment.SimplifiedLoginExperiment.LoginVariant.CONTROL
 import com.woocommerce.android.experiment.SimplifiedLoginExperiment.LoginVariant.SIMPLIFIED_LOGIN_WPCOM
 import com.woocommerce.android.extensions.showKeyboardWithDelay
-import com.woocommerce.android.ui.dialog.WooDialog
 import com.woocommerce.android.ui.login.qrcode.QrCodeLoginListener
-import com.woocommerce.android.util.WooPermissionUtils
-import com.woocommerce.android.util.WooPermissionUtils.hasCameraPermission
-import com.woocommerce.android.util.WooPermissionUtils.requestCameraPermission
 import org.wordpress.android.login.LoginEmailFragment
 import org.wordpress.android.login.widgets.WPLoginInputRow
 import javax.inject.Inject
 
 class WooLoginEmailFragment : LoginEmailFragment() {
-    companion object {
-        const val TRACKING_SOURCE = "WooLoginEmailFragment"
-    }
-
     interface Listener {
         fun onWhatIsWordPressLinkClicked()
     }
 
     private lateinit var wooLoginEmailListener: Listener
     private lateinit var qrCodeLoginListener: QrCodeLoginListener
-
-    private val requestPermissionLauncher =
-        registerForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted: Boolean ->
-            if (isGranted) {
-                qrCodeLoginListener.onScanQrCodeClicked(TRACKING_SOURCE)
-            } else showCameraPermissionDeniedDialog()
-        }
 
     @Inject
     lateinit var simplifiedLoginExperiment: SimplifiedLoginExperiment
@@ -56,9 +40,7 @@ class WooLoginEmailFragment : LoginEmailFragment() {
         }
 
         rootView.findViewById<Button>(R.id.button_login_qr_code).setOnClickListener {
-            if (hasCameraPermission(requireContext())) {
-                qrCodeLoginListener.onScanQrCodeClicked(TRACKING_SOURCE)
-            } else requestCameraPermission(requestPermissionLauncher)
+            qrCodeLoginListener.onScanQrCodeClicked(TAG)
         }
     }
 
@@ -77,20 +59,5 @@ class WooLoginEmailFragment : LoginEmailFragment() {
             wooLoginEmailListener = activity as Listener
             qrCodeLoginListener = activity as QrCodeLoginListener
         }
-    }
-
-    private fun showCameraPermissionDeniedDialog() {
-        WooDialog.showDialog(
-            requireActivity(),
-            titleId = R.string.qr_code_login_camera_permission_denied_title,
-            messageId = R.string.qr_code_login_camera_permission_denied_message,
-            positiveButtonId = R.string.qr_code_login_edit_camera_permission,
-            negativeButtonId = R.string.cancel,
-            posBtnAction = { dialog, _ ->
-                WooPermissionUtils.showAppSettings(requireContext())
-                dialog.dismiss()
-            },
-            negBtnAction = { dialog, _ -> dialog.dismiss() },
-        )
     }
 }
