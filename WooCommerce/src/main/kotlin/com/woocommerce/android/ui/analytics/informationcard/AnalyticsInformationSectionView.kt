@@ -14,6 +14,7 @@ import androidx.core.widget.TextViewCompat
 import com.google.android.material.card.MaterialCardView
 import com.woocommerce.android.R
 import com.woocommerce.android.databinding.AnalyticsInformationSectionViewBinding
+import com.woocommerce.android.extensions.greaterThan
 import com.woocommerce.android.ui.analytics.LineChart
 import com.woocommerce.android.ui.compose.theme.WooTheme
 import com.woocommerce.android.widgets.tags.ITag
@@ -57,23 +58,22 @@ internal class AnalyticsInformationSectionView @JvmOverloads constructor(
             binding.cardInformationSectionDeltaTag.tag =
                 AnalyticsInformationSectionDeltaTag(it, getDeltaTagText(sectionViewState.sign, it))
         }
-        binding.cardInformationSectionDeltaTag.isVisible = sectionViewState.delta != null
-        // Display the Charts only when the tag is visible
-        if (sectionViewState.delta != null) {
-            binding.cardInformationChart.apply {
-                setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
-                setContent {
-                    val color = if (sectionViewState.delta > 0) {
-                        colorResource(R.color.analytics_delta_positive_color)
-                    } else {
-                        colorResource(R.color.analytics_delta_tag_negative_color)
-                    }
-                    WooTheme {
-                        LineChart(
-                            info = sectionViewState.chartInfo,
-                            color = color
-                        )
-                    }
+        val isDeltaNotNull = sectionViewState.delta != null
+        binding.cardInformationSectionDeltaTag.isVisible = isDeltaNotNull
+        binding.cardInformationChart.apply {
+            isVisible = isDeltaNotNull
+            setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
+            setContent {
+                val color = if (sectionViewState.delta.greaterThan(0)) {
+                    colorResource(R.color.analytics_delta_positive_color)
+                } else {
+                    colorResource(R.color.analytics_delta_tag_negative_color)
+                }
+                WooTheme {
+                    LineChart(
+                        info = sectionViewState.chartInfo,
+                        color = color
+                    )
                 }
             }
         }
