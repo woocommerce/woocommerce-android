@@ -278,10 +278,7 @@ class SitePickerViewModel @Inject constructor(
         sitePickerViewState = sitePickerViewState.copy(
             isNoStoresViewVisible = true,
             isPrimaryBtnVisible = true,
-            primaryBtnText = resourceProvider.getString(
-                if (FeatureFlag.STORE_CREATION_WEBVIEW_FLOW.isEnabled()) string.login_site_picker_add_a_store
-                else string.site_picker_connect_existing_store
-            ),
+            primaryBtnText = resourceProvider.getString(string.login_site_picker_add_a_store),
             noStoresLabelText = resourceProvider.getString(string.login_no_stores),
             isNoStoresBtnVisible = false,
             currentSitePickerState = SitePickerState.NoStoreState
@@ -422,11 +419,7 @@ class SitePickerViewModel @Inject constructor(
     }
 
     fun onAddStoreClick() {
-        if (FeatureFlag.STORE_CREATION_WEBVIEW_FLOW.isEnabled()) {
-            analyticsTrackerWrapper.track(AnalyticsEvent.SITE_PICKER_ADD_A_STORE_TAPPED)
-        } else {
-            analyticsTrackerWrapper.track(AnalyticsEvent.SITE_PICKER_CONNECT_EXISTING_STORE_TAPPED)
-        }
+        analyticsTrackerWrapper.track(AnalyticsEvent.SITE_PICKER_ADD_A_STORE_TAPPED)
         triggerEvent(SitePickerEvent.NavigateToAddStoreEvent)
     }
 
