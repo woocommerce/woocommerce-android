@@ -196,6 +196,38 @@ class AnalyticsViewModel @Inject constructor(
         updateProducts(isRefreshing = isRefreshing, showSkeleton = showSkeleton)
     }
 
+    private fun updateVisitors(isRefreshing: Boolean, showSkeleton: Boolean) =
+        launch {
+            val timePeriod = getSavedTimePeriod()
+            val dateRange = getSavedDateRange()
+            val fetchStrategy = getFetchStrategy(isRefreshing)
+
+            if (showSkeleton) mutableState.value = state.value.copy(visitorsState = LoadingViewState)
+            mutableState.value = state.value.copy(
+                refreshIndicator = if (isRefreshing) ShowIndicator else NotShowIndicator
+            )
+
+            analyticsRepository.fetchVisitsData(dateRange, timePeriod, fetchStrategy)
+                .let {
+                    when (it) {
+                        is VisitorsData -> {
+                            mutableState.value = state.value.copy(
+                                refreshIndicator = NotShowIndicator,
+                                visitorsState = buildVisitorsDataViewState(
+                                    it.visitorsStat.visitorsCount,
+                                    it.visitorsStat.viewsCount
+                                )
+                            )
+                            transactionLauncher.onRevenueFetched()
+                        }
+                        is VisitorsError -> mutableState.value = state.value.copy(
+                            refreshIndicator = NotShowIndicator,
+                            revenueState = NoDataState(resourceProvider.getString(R.string.analytics_revenue_no_data))
+                        )
+                    }
+                }
+        }
+
     private fun updateRevenue(isRefreshing: Boolean, showSkeleton: Boolean) =
         launch {
             val timePeriod = getSavedTimePeriod()
