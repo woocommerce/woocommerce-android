@@ -329,6 +329,7 @@ class AnalyticsRepository @Inject constructor(
         const val ANALYTICS_REVENUE_PATH = "admin.php?page=wc-admin&path=%2Fanalytics%2Frevenue"
         const val ANALYTICS_ORDERS_PATH = "admin.php?page=wc-admin&path=%2Fanalytics%2Forders"
         const val ANALYTICS_PRODUCTS_PATH = "admin.php?page=wc-admin&path=%2Fanalytics%2Fproducts"
+        const val ANALYTICS_JETPACK_STATS_PATH = "admin.php?page=stats"
 
         const val ZERO_VALUE = 0.0
         const val MINUS_ONE = -1
