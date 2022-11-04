@@ -163,32 +163,28 @@ class AnalyticsViewModel @Inject constructor(
 
     fun onRevenueSeeReportClick() {
         trackSeeReportClicked(AnalyticsTracker.VALUE_REVENUE_CARD_SELECTED)
-        if (selectedSite.getIfExists()?.isWPCom == true || selectedSite.getIfExists()?.isWPComAtomic == true) {
-            triggerEvent(OpenWPComWebView(analyticsRepository.getRevenueAdminPanelUrl()))
-        } else {
-            triggerEvent(OpenUrl(analyticsRepository.getRevenueAdminPanelUrl()))
-        }
+        openReportsView(analyticsRepository.getRevenueAdminPanelUrl())
     }
 
     fun onOrdersSeeReportClick() {
         trackSeeReportClicked(AnalyticsTracker.VALUE_ORDERS_CARD_SELECTED)
-        if (selectedSite.getIfExists()?.isWPCom == true || selectedSite.getIfExists()?.isWPComAtomic == true) {
-            triggerEvent(OpenWPComWebView(analyticsRepository.getOrdersAdminPanelUrl()))
-        } else {
-            triggerEvent(OpenUrl(analyticsRepository.getOrdersAdminPanelUrl()))
-        }
+        openReportsView(analyticsRepository.getOrdersAdminPanelUrl())
     }
 
     fun onProductsSeeReportClick() {
         trackSeeReportClicked(AnalyticsTracker.VALUE_PRODUCTS_CARD_SELECTED)
-        if (selectedSite.getIfExists()?.isWPCom == true || selectedSite.getIfExists()?.isWPComAtomic == true) {
-            triggerEvent(OpenWPComWebView(analyticsRepository.getProductsAdminPanelUrl()))
-        } else {
-            triggerEvent(OpenUrl(analyticsRepository.getProductsAdminPanelUrl()))
-        }
+        openReportsView(analyticsRepository.getProductsAdminPanelUrl())
     }
 
     fun onTrackableUIInteraction() = usageTracksEventEmitter.interacted()
+
+    private fun openReportsView(panelUrl: String) {
+        if (selectedSite.getIfExists()?.isWPCom == true || selectedSite.getIfExists()?.isWPComAtomic == true) {
+            triggerEvent(OpenWPComWebView(panelUrl))
+        } else {
+            triggerEvent(OpenUrl(panelUrl))
+        }
+    }
 
     private fun refreshAllAnalyticsAtOnce(isRefreshing: Boolean, showSkeleton: Boolean) {
         updateRevenue(isRefreshing = isRefreshing, showSkeleton = showSkeleton)
