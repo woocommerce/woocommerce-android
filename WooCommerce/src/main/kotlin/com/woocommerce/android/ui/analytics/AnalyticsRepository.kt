@@ -202,6 +202,7 @@ class AnalyticsRepository @Inject constructor(
     fun getRevenueAdminPanelUrl() = getAdminPanelUrl() + ANALYTICS_REVENUE_PATH
     fun getOrdersAdminPanelUrl() = getAdminPanelUrl() + ANALYTICS_ORDERS_PATH
     fun getProductsAdminPanelUrl() = getAdminPanelUrl() + ANALYTICS_PRODUCTS_PATH
+    fun getJetpackStatsPanelUrl() = getAdminPanelUrl() + ANALYTICS_JETPACK_STATS_PATH
 
     private suspend fun getCurrentPeriodStats(
         dateRange: AnalyticsDateRange,
