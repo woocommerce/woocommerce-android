@@ -9,9 +9,9 @@
         android:id="@+id/divider_start"
         android:layout_width="0dp"
         android:layout_height="1dp"
-        android:layout_marginTop="@dimen/major_100"
         android:background="@color/or_divider_line"
-        android:layout_weight="1" />
+        android:layout_weight="1"
+        android:layout_gravity="center_vertical"/>
 
     <com.google.android.material.textview.MaterialTextView
         android:id="@+id/or"
@@ -29,7 +29,7 @@
         android:id="@+id/divider_end"
         android:layout_width="0dp"
         android:layout_height="1dp"
-        android:layout_marginTop="@dimen/major_100"
         android:background="@color/or_divider_line"
-        android:layout_weight="1" />
+        android:layout_weight="1"
+        android:layout_gravity="center_vertical"/>
 </LinearLayout>

@@ -92,7 +92,7 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="@dimen/major_100"
             android:layout_marginEnd="@dimen/major_100"
-            android:layout_marginBottom="@dimen/minor_50"
+            android:layout_marginBottom="@dimen/minor_25"
             android:text="@string/login_store_address"
             android:textAllCaps="false"
             android:layout_gravity="center_horizontal" />
