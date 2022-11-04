@@ -71,6 +71,17 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/analyticsOrdersCard"
                 tools:visibility="visible" />
+
+            <com.woocommerce.android.ui.analytics.informationcard.AnalyticsInformationCardView
+                android:id="@+id/analyticsVisitorsCard"
+                style="@style/Woo.Card.WithoutPadding"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/major_100"
+                app:cardElevation="@dimen/minor_10"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/analyticsProductsCard" />
         </androidx.constraintlayout.widget.ConstraintLayout>
     </androidx.core.widget.NestedScrollView>
 </com.woocommerce.android.widgets.ScrollChildSwipeRefreshLayout>
