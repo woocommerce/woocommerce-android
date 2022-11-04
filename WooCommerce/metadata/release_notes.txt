@@ -1,10 +1,1 @@
-- [***] We added a new Analytics Hub inside the My Store area of the app. Simply click on the See More button under the store stats to check more detailed information on Revenue and Orders. (https://github.com/woocommerce/woocommerce-android/pull/7556)
-- [*][Internal] Removes the hardcoded UTM params and instead uses the fields from the JITM fetch API response as UTM params [https://github.com/woocommerce/woocommerce-android/pull/7718]
-- [*] [Internal] Simplified login: update prologue screen layout [https://github.com/woocommerce/woocommerce-android/pull/7634]
-- [*] We improved products search behavior. In case there are filters set on Products page, the search results will be filtered accordingly. [https://github.com/woocommerce/woocommerce-android/pull/7696]
-- [*] [Internal] Simplified login: update the site picker design [https://github.com/woocommerce/woocommerce-android/pull/7677]
-- [*] [Internal] Simplified login: update the password sceen [https://github.com/woocommerce/woocommerce-android/pull/7711]
-- [*] We improved orders search behavior. In case there are filters set on Orders page, the search results will be filtered accordingly. [https://github.com/woocommerce/woocommerce-android/pull/7728]
-- [*] Adds new CTA to scan QR code from magic link email sent screen. [https://github.com/woocommerce/woocommerce-android/pull/7740]
-- [*] Bulk updating of product variations stock quantity is now supported [https://github.com/woocommerce/woocommerce-android/pull/7736]
-
+This release includes a lot of cool things for you to manage your store better! We added the option to bulk update stock quantity of variations. We have also added the option for you login via QR code. We've made various improvements to the orders and products search.
