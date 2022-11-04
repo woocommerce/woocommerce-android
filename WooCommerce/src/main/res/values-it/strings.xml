@@ -1,18 +1,46 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2022-10-26 09:54:25+0000
+Translation-Revision-Date: 2022-11-03 14:54:24+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: it
 -->
 <resources>
-    <string name="hello_blank_fragment">Ciao frammento vuoto</string>
-    <string name="what_is_wordpress_link">&lt;u&gt;Cos\'è WordPress.com?&lt;/u&gt;</string>
+    <string name="create_new_store">Crea un nuovo negozio</string>
+    <string name="analytics_products_list_item_description">Vendite nette: %1$s</string>
+    <string name="analytics_products_list_header_subtitle">Elementi venduti</string>
+    <string name="analytics_products_list_header_title">Prodotti</string>
+    <string name="analytics_products_card_title">Prodotti</string>
+    <string name="analytics_products_list_items_sold">Elementi venduti</string>
+    <string name="analytics_avg_orders_title">Valore medio dell\'ordine</string>
+    <string name="analytics_total_orders_title">Ordini totali</string>
+    <string name="analytics_orders_card_title">Ordini</string>
+    <string name="analytics_net_sales_title">Vendite nette</string>
+    <string name="analytics_total_sales_title">Totale delle vendite</string>
+    <string name="analytics_products_no_data">Nessun prodotto per questo periodo</string>
+    <string name="analytics_orders_no_data">Nessun ordine per questo periodo</string>
+    <string name="analytics_revenue_no_data">Nessuna entrata per questo periodo</string>
+    <string name="analytics_revenue_card_title">Guadagno</string>
+    <string name="analytics_see_report_button_content_description">Visualizza più dettagli del report</string>
+    <string name="analytics_see_report_button_text">Visualizza report</string>
+    <string name="analytics_date_range_custom">%1$s - %2$s</string>
+    <string name="analytics_see_more">Scopri di più</string>
+    <string name="signup_api_generic_error">Spiacenti, non è stato possibile creare un account per le credenziali fornite. Prova con un altro indirizzo e-mail.</string>
+    <string name="signup_password_not_secure_enough">La password non è conforme alle nostre linea guida sulla sicurezza. Riprova con una password più complessa.</string>
+    <string name="signup_password_too_short">La password è troppo breve. Per favore scegli una password composta da almeno 6 caratteri.</string>
+    <string name="signup_email_invalid_input">Inserisci un indirizzo e-mail valido.</string>
+    <string name="signup_email_exist_input">Esiste già un account con questa e-mail.</string>
+    <string name="signup_already_registered">Per prima cosa, crea un account. Registrazione già effettuata? &lt;a href=\'login\'&gt;&lt;u&gt;Accesso&lt;/u&gt;&lt;/a&gt;</string>
+    <string name="login_create_an_account">Crea un account</string>
+    <string name="simplified_login_enter_email_address">Inserisci il tuo indirizzo e-mail per iniziare</string>
+    <string name="login_try_another_email">Prova con un altro indirizzo</string>
+    <string name="date_timeframe_custom_date_range_title">Intervallo di date personalizzato</string>
+    <string name="date_timeframe_custom">Personalizza</string>
+    <string name="what_is_wordpress_link">Cos\'è WordPress.com?</string>
     <string name="signup_creating_account_loading_message">Creazione di un nuovo account</string>
     <string name="signup_terms_of_service">Continuando, accetti i nostri &lt;u&gt;Termini di servizio.&lt;/u&gt;</string>
     <string name="signup_password_hint">Scegli una password</string>
     <string name="signup_email_address_hint">Il tuo indirizzo e-mail</string>
-    <string name="signup_already_registered">Per prima cosa, crea un account. Registrazione già effettuata? Accesso</string>
     <string name="signup_get_started_label">Crea il tuo sito \nin pochi minuti</string>
     <string name="signup_get_started_button">Crea il tuo sito</string>
     <string name="login_jetpack_connection_consent">Toccando il pulsante Configura Jetpack, accetti i nostri &lt;a href=\'terms\'&gt;Termini di servizio&lt;/a&gt; e la &lt;a href=\'sync\'&gt;condivisione delle informazioni&lt;/a&gt; con WordPress.com.</string>
@@ -65,6 +93,7 @@ Language: it
     <string name="orderlist_bottom_sheet_simple_payments_moved_button">OK!</string>
     <string name="orderlist_bottom_sheet_simple_payments_moved_description">Ora puoi accedere rapidamente e con facilità ai Pagamenti di persona e ad altre funzionalità</string>
     <string name="orderlist_bottom_sheet_simple_payments_moved_title">Pagamenti dalla scheda Menu</string>
+    <string name="login_no_wpcom_account_found">L\'e-mail non è utilizzata con un account WordPress.com.</string>
     <string name="login_non_woo_stores_label">Altri siti</string>
     <string name="login_with_store_address">Accesso con l\'indirizzo del negozio</string>
     <string name="more_menu_button_w___admin">WC Admin</string>
@@ -1855,7 +1884,7 @@ Language: it
     <string name="orderdetail_track_shipment">Traccia spedizione</string>
     <string name="login_email_help_desc">Nell\'amministrazione del sito puoi trovare l\'e-mail che hai usato per collegarti a WordPress.com dalla %1$sBacheca di Jetpack%2$s sotto %3$sConnessioni &gt; Connessione dell\'account%4$s</string>
     <string name="login_email_help_title">Quale e-mail uso per accedere?</string>
-    <string name="login_need_help_finding_email">&lt;u&gt;Hai bisogno di aiuto per trovare l\'e-mail richiesta?&lt;/u&gt;</string>
+    <string name="login_need_help_finding_email">Hai bisogno di aiuto per trovare l\'e-mail richiesta?</string>
     <string name="login_jetpack_what_is_description">Jetpack è un plugin WordPress gratuito che collega il tuo negozio con gli strumenti necessari per assicurarti la migliore esperienza mobile, incluse le notifiche push e le statistiche</string>
     <string name="login_jetpack_what_is">Che cos\'è Jetpack?</string>
     <string name="login_view_connected_stores">Visualizza i negozi collegati</string>
@@ -2234,7 +2263,8 @@ Language: it
     <string name="all">Tutto</string>
     <string name="notification_channel_general_title">Generale</string>
     <string name="app_name">WooCommerce</string>
-    <string-array name="date_range_selectors">
+    <string-array name="analytics_date_range_selectors">
+        <item>\@string/date_timeframe_custom</item>
         <item>\@string/date_timeframe_today</item>
         <item>\@string/date_timeframe_yesterday</item>
         <item>\@string/date_timeframe_last_week</item>
