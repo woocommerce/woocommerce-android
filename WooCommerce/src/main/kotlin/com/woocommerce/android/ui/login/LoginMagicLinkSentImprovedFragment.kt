@@ -1,4 +1,4 @@
-package com.woocommerce.android.ui.login.overrides
+package com.woocommerce.android.ui.login
 
 import android.content.Context
 import android.os.Bundle
@@ -12,7 +12,7 @@ import androidx.core.view.MenuProvider
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Lifecycle
 import com.woocommerce.android.R
-import com.woocommerce.android.databinding.FragmentWooLoginMagicLinkSentBinding
+import com.woocommerce.android.databinding.FragmentLoginMagicLinkSentImprovedBinding
 import com.woocommerce.android.ui.login.qrcode.QrCodeLoginListener
 import dagger.hilt.android.AndroidEntryPoint
 import org.wordpress.android.login.LoginAnalyticsListener
@@ -20,14 +20,14 @@ import org.wordpress.android.login.LoginListener
 import javax.inject.Inject
 
 @AndroidEntryPoint
-class WooLoginMagicLinkSentImprovedFragment : Fragment(R.layout.fragment_woo_login_magic_link_sent), MenuProvider {
+class LoginMagicLinkSentImprovedFragment : Fragment(R.layout.fragment_login_magic_link_sent_improved), MenuProvider {
     companion object {
         const val TAG = "login_magic_link_sent_fragment_tag"
         private const val ARG_EMAIL_ADDRESS = "ARG_EMAIL_ADDRESS"
         private const val ARG_ALLOW_PASSWORD = "ARG_ALLOW_PASSWORD"
 
-        fun newInstance(email: String?, allowPassword: Boolean = true): WooLoginMagicLinkSentImprovedFragment {
-            val fragment = WooLoginMagicLinkSentImprovedFragment()
+        fun newInstance(email: String?, allowPassword: Boolean = true): LoginMagicLinkSentImprovedFragment {
+            val fragment = LoginMagicLinkSentImprovedFragment()
             val args = Bundle()
             args.putString(ARG_EMAIL_ADDRESS, email)
             args.putBoolean(ARG_ALLOW_PASSWORD, allowPassword)
@@ -72,7 +72,7 @@ class WooLoginMagicLinkSentImprovedFragment : Fragment(R.layout.fragment_woo_log
         (activity as AppCompatActivity).setSupportActionBar(toolbar)
         (activity as AppCompatActivity).supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
-        val binding = FragmentWooLoginMagicLinkSentBinding.bind(view)
+        val binding = FragmentLoginMagicLinkSentImprovedBinding.bind(view)
         binding.loginOpenEmailClient.setOnClickListener { mLoginListener?.openEmailClient(true) }
         with(binding.loginEnterPassword) {
             visibility = if (mAllowPassword) View.VISIBLE else View.GONE
