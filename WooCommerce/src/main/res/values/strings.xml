@@ -1623,8 +1623,8 @@
     <string name="variations_bulk_update_dialog_price_section_title">Price</string>
     <string name="variations_bulk_update_dialog_regular_price_label">Regular price</string>
     <string name="variations_bulk_update_dialog_sale_price_label">Sale price</string>
-    <string name="variations_bulk_update_dialog_price_none">None</string>
-    <string name="variations_bulk_update_dialog_price_mixed">Mixed</string>
+    <string name="variations_bulk_update_dialog_none">None</string>
+    <string name="variations_bulk_update_dialog_mixed">Mixed</string>
     <string name="variations_bulk_update_price_info">Price will be updated for %d variations</string>
     <string name="variations_bulk_update_current_price">Current price is %s</string>
     <string name="variations_bulk_update_current_prices_mixed">Current prices are mixed</string>
@@ -1635,6 +1635,13 @@
     <string name="variations_bulk_update_regular_prices_dialog_title">Updating regular prices</string>
     <string name="variations_bulk_update_warning_title">Bulk update limit exceeded</string>
     <string name="variations_bulk_update_warning_message">Currently bulk update is supported for 100 variations maximum.</string>
+    <string name="variations_bulk_update_dialog_inventory_section_title">Inventory</string>
+    <string name="variations_bulk_update_dialog_stock_quantity_label">@string/product_stock_quantity</string>
+    <string name="variations_bulk_update_stock_quantity_info">Stock quantity will be updated for %d variations</string>
+    <string name="variations_bulk_update_stock_quantity_dialog_title">Updating stock quantity</string>
+    <string name="variations_bulk_update_current_stock_quantity">Current stock quantity is %d</string>
+    <string name="variations_bulk_update_current_stock_quantity_mixed">Current stock quantity is mixed</string>
+    <string name="variations_bulk_update_stock_quantity_success">Updated stock quantity</string>
 
     <!--
         Product images
@@ -1848,7 +1855,7 @@
     <string name="magic_link_unavailable_error_message">Currently unavailable. Please enter your password</string>
     <string name="magic_link_update_error">An error has occurred. Please login to continue</string>
     <string name="magic_link_fetch_account_error">There was some trouble fetching your account. You can retry now or close and try again later.</string>
-    <string name="enter_wpcom_password">Enter your WordPress.com password.</string>
+    <string name="enter_wpcom_password">Enter the password for your account.</string>
     <string name="enter_wpcom_password_google">To proceed with this Google account, please provide the matching WordPress.com password. This will be asked only once.</string>
 
 
@@ -2687,4 +2694,7 @@
     <string name="store_creation_create_new_store_label">Create a new store</string>
     <string name="store_creation_cannot_load_store">Couldn\'t load your store.\nPlease try again…</string>
     <string name="store_creation_in_progress">Creating your store…</string>
+    <string name="store_creation_exit_dialog_title">Do you want to leave?</string>
+    <string name="store_creation_exit_dialog_message">You will lose all your store information.</string>
+    <string name="store_creation_confirm_and_leave">Confirm and leave</string>
 </resources>

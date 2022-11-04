@@ -89,7 +89,7 @@ class QrCodeScanningFragment : Fragment(), OnClickListener {
 
     override fun onClick(view: View) {
         when (view.id) {
-            R.id.closeButton -> requireActivity().onBackPressed()
+            R.id.closeButton -> requireActivity().onBackPressedDispatcher.onBackPressed()
         }
     }
 

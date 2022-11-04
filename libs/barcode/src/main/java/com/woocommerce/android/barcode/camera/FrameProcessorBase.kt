@@ -78,7 +78,7 @@ abstract class FrameProcessorBase<T> : FrameProcessor {
                 this@FrameProcessorBase.onSuccess(results, graphicOverlay)
                 processLatestFrame(graphicOverlay)
             }
-            .addOnFailureListener(executor) { e -> OnFailureListener { this@FrameProcessorBase.onFailure(it) } }
+            .addOnFailureListener(executor) { OnFailureListener { this@FrameProcessorBase.onFailure(it) } }
     }
 
     override fun stop() {

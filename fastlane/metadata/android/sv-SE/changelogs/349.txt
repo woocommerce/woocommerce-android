@@ -1,2 +1,0 @@
-10.9:
-Den här versionen innehåller en rad stabilitetskorrigeringar som gör det lättare för dig att logga in. Du kan nu ansluta ditt WordPress.com-konto till Jetpack och komma åt din butik mycket snabbare. Fortsätt lämna feedback.

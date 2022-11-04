@@ -34,6 +34,7 @@ import com.woocommerce.android.ui.sitepicker.SitePickerViewModel.SitePickerEvent
 import com.woocommerce.android.ui.sitepicker.SitePickerViewModel.SitePickerEvent.NavigateToHelpFragmentEvent
 import com.woocommerce.android.ui.sitepicker.SitePickerViewModel.SitePickerEvent.NavigateToMainActivityEvent
 import com.woocommerce.android.ui.sitepicker.SitePickerViewModel.SitePickerEvent.NavigateToNewToWooEvent
+import com.woocommerce.android.ui.sitepicker.SitePickerViewModel.SitePickerEvent.NavigateToStoreCreationEvent
 import com.woocommerce.android.ui.sitepicker.SitePickerViewModel.SitePickerEvent.NavigateToWPComWebView
 import com.woocommerce.android.ui.sitepicker.SitePickerViewModel.SitePickerEvent.ShowWooUpgradeDialogEvent
 import com.woocommerce.android.ui.sitepicker.SitePickerViewModel.SitePickerState.NoStoreState
@@ -162,7 +163,8 @@ class SitePickerFragment : BaseFragment(R.layout.fragment_site_picker), LoginEma
                 is ShowWooUpgradeDialogEvent -> showWooUpgradeDialog()
                 is NavigateToHelpFragmentEvent -> navigateToHelpScreen(event.origin)
                 is NavigateToNewToWooEvent -> navigateToNewToWooScreen()
-                is NavigateToAddStoreEvent -> navigateToAddStoreScreen()
+                is NavigateToAddStoreEvent -> navigateToAddStoreScreen(event.source)
+                is NavigateToStoreCreationEvent -> navigateToStoreCreation(event.source)
                 is NavigateToEmailHelpDialogEvent -> navigateToNeedHelpFindingEmailScreen()
                 is NavigateToWPComWebView -> navigateToWPComWebView(event)
                 is NavigateToAccountMismatchScreen -> navigateToAccountMismatchScreen(event)
@@ -261,9 +263,14 @@ class SitePickerFragment : BaseFragment(R.layout.fragment_site_picker), LoginEma
         ChromeCustomTabUtils.launchUrl(requireContext(), AppUrls.NEW_TO_WOO_DOC)
     }
 
-    private fun navigateToAddStoreScreen() {
+    private fun navigateToAddStoreScreen(source: String) {
         findNavController()
-            .navigateSafely(SitePickerFragmentDirections.actionSitePickerFragmentToAddStoreBottomSheetFragment())
+            .navigateSafely(SitePickerFragmentDirections.actionSitePickerFragmentToAddStoreBottomSheetFragment(source))
+    }
+
+    private fun navigateToStoreCreation(source: String) {
+        findNavController()
+            .navigateSafely(SitePickerFragmentDirections.actionSitePickerFragmentToWebViewStoreCreationFragment(source))
     }
 
     private fun navigateToHelpScreen(origin: HelpActivity.Origin) {

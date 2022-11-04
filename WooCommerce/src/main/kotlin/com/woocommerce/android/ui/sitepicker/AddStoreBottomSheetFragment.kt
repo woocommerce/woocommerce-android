@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.View
 import androidx.navigation.NavOptions
 import androidx.navigation.fragment.findNavController
+import androidx.navigation.fragment.navArgs
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
@@ -12,15 +13,21 @@ import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.widgets.WCBottomSheetDialogFragment
 
 class AddStoreBottomSheetFragment : WCBottomSheetDialogFragment(R.layout.dialog_site_picker_add_store_bottom_sheet) {
+    private val navArgs: AddStoreBottomSheetFragmentArgs by navArgs()
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         val binding = DialogSitePickerAddStoreBottomSheetBinding.bind(view)
 
         binding.createNewStoreButton.setOnClickListener {
-            AnalyticsTracker.track(AnalyticsEvent.SITE_PICKER_CREATE_SITE_TAPPED)
+            AnalyticsTracker.track(
+                AnalyticsEvent.SITE_PICKER_CREATE_SITE_TAPPED,
+                mapOf(AnalyticsTracker.KEY_SOURCE to navArgs.source)
+            )
+
             findNavController().navigateSafely(
                 directions = AddStoreBottomSheetFragmentDirections
-                    .actionAddStoreBottomSheetFragmentToWebViewStoreCreationFragment(),
+                    .actionAddStoreBottomSheetFragmentToWebViewStoreCreationFragment(navArgs.source),
                 navOptions = NavOptions.Builder()
                     .setPopUpTo(R.id.sitePickerFragment, false)
                     .build()
@@ -28,6 +35,7 @@ class AddStoreBottomSheetFragment : WCBottomSheetDialogFragment(R.layout.dialog_
         }
         binding.connectExistingStoreButton.setOnClickListener {
             AnalyticsTracker.track(AnalyticsEvent.SITE_PICKER_CONNECT_EXISTING_STORE_TAPPED)
+
             findNavController().navigateSafely(
                 directions = AddStoreBottomSheetFragmentDirections
                     .actionAddSiteBottomSheetFragmentToSitePickerSiteDiscoveryFragment(),
