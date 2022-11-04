@@ -116,6 +116,7 @@ class AnalyticsFragment :
         binding.analyticsRevenueCard.updateInformation(viewState.revenueState)
         binding.analyticsOrdersCard.updateInformation(viewState.ordersState)
         binding.analyticsProductsCard.updateInformation(viewState.productsState)
+        binding.analyticsVisitorsCard.updateInformation(viewState.visitorsState)
         binding.analyticsRefreshLayout.isRefreshing = viewState.refreshIndicator == ShowIndicator
     }
 
