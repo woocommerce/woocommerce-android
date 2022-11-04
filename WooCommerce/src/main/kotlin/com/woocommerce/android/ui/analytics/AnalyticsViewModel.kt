@@ -176,6 +176,11 @@ class AnalyticsViewModel @Inject constructor(
         openReportsView(analyticsRepository.getProductsAdminPanelUrl())
     }
 
+    fun onVisitorsSeeReportClick() {
+        //TODO: track visitors click
+        openReportsView(analyticsRepository.getJetpackStatsPanelUrl())
+    }
+
     fun onTrackableUIInteraction() = usageTracksEventEmitter.interacted()
 
     private fun openReportsView(panelUrl: String) {

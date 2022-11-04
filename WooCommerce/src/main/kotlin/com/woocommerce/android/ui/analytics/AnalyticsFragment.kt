@@ -108,6 +108,7 @@ class AnalyticsFragment :
         binding.analyticsRevenueCard.setSeeReportClickListener { viewModel.onRevenueSeeReportClick() }
         binding.analyticsOrdersCard.setSeeReportClickListener { viewModel.onOrdersSeeReportClick() }
         binding.analyticsProductsCard.setSeeReportClickListener { viewModel.onProductsSeeReportClick() }
+        binding.analyticsVisitorsCard.setSeeReportClickListener { viewModel.onVisitorsSeeReportClick() }
     }
 
     private fun handleStateChange(viewState: AnalyticsViewState) {
