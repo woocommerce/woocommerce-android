@@ -1,2 +1,0 @@
-10.9:
-Rilis ini menyertakan perbaikan stabilitas lebih lanjut untuk mempermudah login. Sekarang Anda dapat menghubungkan akun WordPress.com dengan Jetpack, dan mengakses toko Anda lebih cepat. Terus kirimkan feedback Anda!
