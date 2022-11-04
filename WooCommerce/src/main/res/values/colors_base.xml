@@ -217,4 +217,11 @@
     <color name="analytics_delta_tag_negative_color">#C95854</color>
     <color name="analytics_delta_text_color">@color/white</color>
     <color name="analytics_calendar_bg_color">@color/woo_black_alpha_008</color>
+
+    <!--
+    "OR" divider in Login screens
+    -->
+    <color name="or_divider_line">#DADBDC</color>
+    <color name="or_divider_text">#898A8D</color>
+
 </resources>
