@@ -1,0 +1,2 @@
+11.0:
+Buone notizie! Abbiamo aggiunto una nuova sezione di analisi all'app! Basta fare clic sul pulsante Vedi di più sotto le statistiche del negozio per controllare informazioni più dettagliate su Entrate e Ordini. Questa non è l'ultima novità: altri aggiornamenti saranno disponibili nelle prossime settimane.

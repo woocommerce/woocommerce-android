@@ -1,2 +1,0 @@
-10.9:
-Esta versão inclui bem mais correções de estabilidade para facilitar ainda mais o login. Agora você pode conectar sua conta do WordPress.com ao Jetpack e acessar sua loja muito mais rápido. Continue dando feedback!
