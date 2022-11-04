@@ -65,7 +65,7 @@ open class LoginPrologueFragment(@LayoutRes layout: Int) : Fragment(layout) {
     }
 
     private fun setupSimplifiedLoginVariant(binding: FragmentLoginPrologueBinding) {
-        binding.orDivider.orLayout.hide()
+        binding.orDivider.root.hide()
         binding.buttonLoginWpcom.text = getString(R.string.log_in)
 
         binding.buttonLoginStore.hide()
