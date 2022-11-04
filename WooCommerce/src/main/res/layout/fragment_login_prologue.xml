@@ -39,7 +39,7 @@
         android:layout_marginTop="@dimen/major_400"
         android:adjustViewBounds="true"
         android:importantForAccessibility="no"
-        android:src="@drawable/img_prologue_reviews"
+        android:src="@drawable/login_prologue_illustration"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/image_prologue"
