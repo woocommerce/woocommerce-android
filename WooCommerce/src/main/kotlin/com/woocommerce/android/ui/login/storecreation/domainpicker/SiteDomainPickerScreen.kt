@@ -19,6 +19,7 @@ import androidx.compose.material.IconButton
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
+import androidx.compose.material.TextButton
 import androidx.compose.material.TextFieldDefaults
 import androidx.compose.material.TopAppBar
 import androidx.compose.material.icons.Icons
@@ -43,7 +44,10 @@ import com.woocommerce.android.ui.login.storecreation.domainpicker.SiteDomainPic
 fun SiteDomainPickerScreen(viewModel: SiteDomainPickerViewModel) {
     viewModel.viewState.observeAsState(SiteDomainPickerState()).value.let { viewState ->
         Scaffold(topBar = {
-            Toolbar(onArrowBackPressed = viewModel::onBackPressed)
+            Toolbar(
+                onArrowBackPressed = viewModel::onBackPressed,
+                onSkipPressed = viewModel::onSkipPressed
+            )
         }) {
             SiteDomainSearchForm(
                 state = viewState,
@@ -57,6 +61,7 @@ fun SiteDomainPickerScreen(viewModel: SiteDomainPickerViewModel) {
 @Composable
 private fun Toolbar(
     onArrowBackPressed: () -> Unit,
+    onSkipPressed: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     TopAppBar(
@@ -68,6 +73,11 @@ private fun Toolbar(
                     Icons.Filled.ArrowBack,
                     contentDescription = stringResource(id = R.string.back)
                 )
+            }
+        },
+        actions = {
+            TextButton(onClick = onSkipPressed) {
+                Text(text = stringResource(id = R.string.store_creation_domain_picker_skip_button))
             }
         },
         elevation = 0.dp,
@@ -105,6 +115,7 @@ private fun SiteDomainSearchForm(
             modifier = Modifier
                 .fillMaxWidth()
                 .height(52.dp)
+                .padding(dimensionResource(id = R.dimen.major_100))
                 .border(
                     BorderStroke(
                         width = dimensionResource(id = R.dimen.minor_10),

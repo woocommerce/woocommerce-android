@@ -2683,5 +2683,6 @@
     <string name="store_creation_domain_picker_title">Choose a domain</string>
     <string name="store_creation_domain_picker_subtitle">This is where people will find you on the Internet. Don\'t worry, you can change it later.</string>
     <string name="store_creation_domain_picker_hint">Type a domain</string>
+    <string name="store_creation_domain_picker_skip_button">Skip</string>
 
 </resources>

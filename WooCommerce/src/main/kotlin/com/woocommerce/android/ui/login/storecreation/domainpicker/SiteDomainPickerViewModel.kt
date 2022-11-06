@@ -27,7 +27,11 @@ class SiteDomainPickerViewModel @Inject constructor(
     }.asLiveData()
 
     fun onBackPressed() {
+        // TODO
+    }
 
+    fun onSkipPressed() {
+        // TODO
     }
 
     fun onDomainChanged(query: String) {
