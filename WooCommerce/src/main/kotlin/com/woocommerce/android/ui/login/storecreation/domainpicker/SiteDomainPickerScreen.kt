@@ -45,6 +45,7 @@ import androidx.compose.ui.tooling.preview.Devices
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.woocommerce.android.R
+import com.woocommerce.android.ui.compose.component.WCColoredButton
 import com.woocommerce.android.ui.compose.component.WCSearchField
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.ui.login.storecreation.domainpicker.SiteDomainPickerViewModel.DomainSuggestionUi
@@ -62,6 +63,7 @@ fun SiteDomainPickerScreen(viewModel: SiteDomainPickerViewModel) {
             SiteDomainSearchForm(
                 state = viewState,
                 onDomainQueryChanged = viewModel::onDomainChanged,
+                onContinueClicked = viewModel::onContinueClicked,
                 modifier = Modifier.fillMaxSize()
             )
         }
@@ -99,6 +101,7 @@ private fun Toolbar(
 private fun SiteDomainSearchForm(
     state: SiteDomainPickerState,
     onDomainQueryChanged: (String) -> Unit,
+    onContinueClicked: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Column(
@@ -136,8 +139,16 @@ private fun SiteDomainSearchForm(
         DomainSuggestionList(
             suggestions = state.domainSuggestionUis,
             isLoading = state.isLoading,
-            modifier = Modifier.padding(top = dimensionResource(id = R.dimen.major_100))
+            modifier = Modifier
+                .weight(1f)
+                .padding(top = dimensionResource(id = R.dimen.major_100))
         )
+        WCColoredButton(
+            modifier = Modifier.fillMaxWidth(),
+            onClick = onContinueClicked,
+        ) {
+            Text(text = stringResource(id = R.string.continue_button))
+        }
     }
 }
 
@@ -242,6 +253,7 @@ fun SiteDomainPickerPreview() {
 
                     )
             ),
+            onContinueClicked = {},
             onDomainQueryChanged = {}
         )
     }

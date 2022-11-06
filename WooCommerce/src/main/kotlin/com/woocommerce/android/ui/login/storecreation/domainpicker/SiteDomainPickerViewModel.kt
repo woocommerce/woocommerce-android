@@ -26,7 +26,7 @@ class SiteDomainPickerViewModel @Inject constructor(
             domainSuggestionUis = listOf(
                 DomainSuggestionUi("whitechristmastrees.mywc.mysite"),
                 DomainSuggestionUi("whitechristmastrees.business.mywc.mysite", isSelected = true),
-                DomainSuggestionUi("whitechristmastrees.business.test"),
+                DomainSuggestionUi("whitechristmastreesVeryLongWithForcedLineBreak.business.test"),
                 DomainSuggestionUi("whitechristmastrees.business.scroll"),
                 DomainSuggestionUi("whitechristmastrees.business.more"),
                 DomainSuggestionUi("whitechristmastrees.business.another"),
@@ -43,6 +43,10 @@ class SiteDomainPickerViewModel @Inject constructor(
     }
 
     fun onSkipPressed() {
+        // TODO
+    }
+
+    fun onContinueClicked() {
         // TODO
     }
 
