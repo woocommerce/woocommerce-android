@@ -13,16 +13,28 @@ class SiteDomainPickerViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
 ) : ScopedViewModel(savedStateHandle) {
     private val domainQuery = savedState.getStateFlow(this, "")
-    private val domainSuggestions = savedState.getStateFlow(this, emptyList<DomainSuggestion>())
+    private val domainSuggestionsUi = savedState.getStateFlow(this, emptyList<DomainSuggestionUi>())
 
     val viewState = combine(
         domainQuery,
-        domainSuggestions
+        domainSuggestionsUi
     ) { domainQuery, domainSuggestions ->
+        // TODO using test data at the moment
         SiteDomainPickerState(
             isLoading = false,
-            domain = domainQuery,
-            domainSuggestions = domainSuggestions
+            domain = "White Christmas Tress",
+            domainSuggestionUis = listOf(
+                DomainSuggestionUi("whitechristmastrees.mywc.mysite"),
+                DomainSuggestionUi("whitechristmastrees.business.mywc.mysite", isSelected = true),
+                DomainSuggestionUi("whitechristmastrees.business.test"),
+                DomainSuggestionUi("whitechristmastrees.business.scroll"),
+                DomainSuggestionUi("whitechristmastrees.business.more"),
+                DomainSuggestionUi("whitechristmastrees.business.another"),
+                DomainSuggestionUi("whitechristmastrees.business.any"),
+                DomainSuggestionUi("whitechristmastrees.business.domain"),
+                DomainSuggestionUi("whitechristmastrees.business.site"),
+                DomainSuggestionUi("whitechristmastrees.business.other"),
+            )
         )
     }.asLiveData()
 
@@ -41,11 +53,11 @@ class SiteDomainPickerViewModel @Inject constructor(
     data class SiteDomainPickerState(
         val isLoading: Boolean = false,
         val domain: String = "",
-        val domainSuggestions: List<DomainSuggestion> = emptyList()
+        val domainSuggestionUis: List<DomainSuggestionUi> = emptyList()
     )
 
-    data class DomainSuggestion(
-        val isSelected: Boolean = false,
-        val domain: String = ""
+    data class DomainSuggestionUi(
+        val domain: String = "",
+        val isSelected: Boolean = false
     )
 }
