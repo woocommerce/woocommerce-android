@@ -406,12 +406,7 @@ class IAPPurchaseWPComPlanActionsTest {
         // GIVEN
         setupPurchaseQuery(
             responseCode = BillingClient.BillingResponseCode.OK,
-            listOf(
-                buildPurchase(
-                    listOf(iapProduct.productId),
-                    Purchase.PurchaseState.PURCHASED
-                )
-            )
+            listOf()
         )
 
         setupQueryProductDetails(responseCode = BillingClient.BillingResponseCode.OK)
@@ -435,48 +430,51 @@ class IAPPurchaseWPComPlanActionsTest {
     }
 
     @Test
-    fun `given product query and purchase success and network err, when purchasing plan, then error`() = runTest {
-        // GIVEN
-        setupPurchaseQuery(
-            responseCode = BillingClient.BillingResponseCode.OK,
-            listOf(
-                buildPurchase(
-                    listOf(iapProduct.productId),
-                    Purchase.PurchaseState.PURCHASED
+    fun `given product query and purchase success and network err, when purchasing plan, then error returned`() =
+        runTest {
+            // GIVEN
+            val purchaseToken = "purchaseToken"
+            setupPurchaseQuery(
+                responseCode = BillingClient.BillingResponseCode.OK,
+                listOf(
+                    buildPurchase(
+                        listOf(iapProduct.productId),
+                        Purchase.PurchaseState.PURCHASED,
+                        purchaseToken = purchaseToken,
+                        isAcknowledged = false,
+                    )
                 )
             )
-        )
 
-        val purchaseToken = "purchaseToken"
-        val responseCode = BillingClient.BillingResponseCode.OK
+            val responseCode = BillingClient.BillingResponseCode.OK
 
-        setupQueryProductDetails(responseCode)
+            setupQueryProductDetails(responseCode)
 
-        setupMobilePayAPIMock(
-            purchaseToken = purchaseToken,
-            result = CreateAndConfirmOrderResponse.Network
-        )
+            setupMobilePayAPIMock(
+                purchaseToken = purchaseToken,
+                result = CreateAndConfirmOrderResponse.Network
+            )
 
-        // WHEN
-        sut.purchaseWPComPlan(activityWrapperMock)
-        purchasesUpdatedListener.onPurchasesUpdated(
-            buildBillingResult(responseCode),
-            listOf(
-                buildPurchase(
-                    listOf(iapProduct.productId),
-                    Purchase.PurchaseState.PURCHASED,
-                    purchaseToken = purchaseToken
+            // WHEN
+            sut.purchaseWPComPlan(activityWrapperMock)
+            purchasesUpdatedListener.onPurchasesUpdated(
+                buildBillingResult(responseCode),
+                listOf(
+                    buildPurchase(
+                        listOf(iapProduct.productId),
+                        Purchase.PurchaseState.PURCHASED,
+                        purchaseToken = purchaseToken
+                    )
                 )
             )
-        )
 
-        // THEN
-        val result = sut.purchaseWpComPlanResult.firstOrNull()
-        assertThat(result).isInstanceOf(WPComPurchaseResult.Error::class.java)
-        assertThat((result as WPComPurchaseResult.Error).errorType).isInstanceOf(
-            IAPError.RemoteCommunication.Network::class.java
-        )
-    }
+            // THEN
+            val result = sut.purchaseWpComPlanResult.firstOrNull()
+            assertThat(result).isInstanceOf(WPComPurchaseResult.Error::class.java)
+            assertThat((result as WPComPurchaseResult.Error).errorType).isInstanceOf(
+                IAPError.RemoteCommunication.Network::class.java
+            )
+        }
 
     @Test
     fun `given callback didnt respond and periodic task return suc, when purchasing plan, then suc return`() = runTest {
@@ -528,7 +526,7 @@ class IAPPurchaseWPComPlanActionsTest {
             responseCode = BillingClient.BillingResponseCode.OK,
             listOf(
                 buildPurchase(
-                    listOf(iapProduct.productId),
+                    listOf(),
                     Purchase.PurchaseState.PURCHASED
                 )
             )
