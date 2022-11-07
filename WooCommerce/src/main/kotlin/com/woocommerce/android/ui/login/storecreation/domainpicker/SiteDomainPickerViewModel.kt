@@ -2,6 +2,7 @@ package com.woocommerce.android.ui.login.storecreation.domainpicker
 
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
+import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.getStateFlow
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -39,7 +40,7 @@ class SiteDomainPickerViewModel @Inject constructor(
     }.asLiveData()
 
     fun onBackPressed() {
-        // TODO
+        triggerEvent(MultiLiveEvent.Event.Exit)
     }
 
     fun onSkipPressed() {

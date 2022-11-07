@@ -10,6 +10,7 @@ import androidx.fragment.app.viewModels
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.ui.main.AppBarStatus
+import com.woocommerce.android.viewmodel.MultiLiveEvent
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -27,6 +28,19 @@ class SiteDomainPickerFragment : BaseFragment() {
                 WooThemeWithBackground {
                     SiteDomainPickerScreen(viewModel = viewModel)
                 }
+            }
+        }
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        setupObservers()
+    }
+
+    private fun setupObservers() {
+        viewModel.event.observe(viewLifecycleOwner) { event ->
+            when (event) {
+                is MultiLiveEvent.Event.Exit -> parentFragmentManager.popBackStack()
             }
         }
     }
