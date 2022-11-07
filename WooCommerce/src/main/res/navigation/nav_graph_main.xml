@@ -485,19 +485,22 @@
     <fragment
         android:id="@+id/webViewStoreCreationFragment"
         android:name="com.woocommerce.android.ui.login.storecreation.webview.WebViewStoreCreationFragment"
-        android:label="WebViewStoreCreationFragment" >
+        android:label="WebViewStoreCreationFragment">
         <argument android:name="source" />
     </fragment>
     <dialog
         android:id="@+id/addStoreBottomSheetFragment"
         android:name="com.woocommerce.android.ui.sitepicker.AddStoreBottomSheetFragment"
-        android:label="AddSiteBottomSheetFragment" >
+        android:label="AddSiteBottomSheetFragment">
         <action
             android:id="@+id/action_addSiteBottomSheetFragment_to_sitePickerSiteDiscoveryFragment"
             app:destination="@id/sitePickerSiteDiscoveryFragment" />
         <action
             android:id="@+id/action_addStoreBottomSheetFragment_to_webViewStoreCreationFragment"
             app:destination="@id/webViewStoreCreationFragment" />
+        <action
+            android:id="@+id/action_addStoreBottomSheetFragment_to_storeCreationNativeFlow"
+            app:destination="@id/nav_graph_store_creation" />
         <argument android:name="source" />
     </dialog>
 </navigation>

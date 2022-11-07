@@ -179,17 +179,6 @@ class SitePickerFragment : BaseFragment(R.layout.fragment_site_picker), LoginEma
         }
     }
 
-    private fun navigateToStoreCreation() {
-        when {
-            FeatureFlag.NATIVE_STORE_CREATION_FLOW.isEnabled() -> findNavController().navigateSafely(
-                SitePickerFragmentDirections.actionSitePickerFragmentToStoreCreationNativeFlow()
-            )
-            else -> findNavController().navigateSafely(
-                SitePickerFragmentDirections.actionSitePickerFragmentToWebViewStoreCreationFragment()
-            )
-        }
-    }
-
     private fun handleResults() {
         handleNotice(WPComWebViewFragment.WEBVIEW_RESULT) {
             AnalyticsTracker.track(AnalyticsEvent.LOGIN_WOOCOMMERCE_SETUP_COMPLETED)
@@ -281,8 +270,15 @@ class SitePickerFragment : BaseFragment(R.layout.fragment_site_picker), LoginEma
     }
 
     private fun navigateToStoreCreation(source: String) {
-        findNavController()
-            .navigateSafely(SitePickerFragmentDirections.actionSitePickerFragmentToWebViewStoreCreationFragment(source))
+        when {
+            FeatureFlag.NATIVE_STORE_CREATION_FLOW.isEnabled() -> findNavController().navigateSafely(
+                SitePickerFragmentDirections.actionSitePickerFragmentToStoreCreationNativeFlow()
+            )
+            else -> findNavController()
+                .navigateSafely(
+                    SitePickerFragmentDirections.actionSitePickerFragmentToWebViewStoreCreationFragment(source)
+                )
+        }
     }
 
     private fun navigateToHelpScreen(origin: HelpActivity.Origin) {
