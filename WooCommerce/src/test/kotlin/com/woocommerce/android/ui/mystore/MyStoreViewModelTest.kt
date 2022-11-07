@@ -20,7 +20,6 @@ import com.woocommerce.android.ui.mystore.domain.GetTopPerformers
 import com.woocommerce.android.ui.mystore.domain.GetTopPerformers.TopPerformerProduct
 import com.woocommerce.android.ui.payments.banner.BannerState
 import com.woocommerce.android.util.CurrencyFormatter
-import com.woocommerce.android.util.locale.LocaleProvider
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import com.woocommerce.android.viewmodel.ResourceProvider
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -69,7 +68,6 @@ class MyStoreViewModelTest : BaseUnitTest() {
     private val jitmStore: JitmStore = mock()
     private val jitmTracker: JitmTracker = mock()
     private val utmProvider: MyStoreUtmProvider = mock()
-    private val localeProvider: LocaleProvider = mock()
 
     private lateinit var sut: MyStoreViewModel
 
