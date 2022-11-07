@@ -24,6 +24,7 @@ import com.woocommerce.android.ui.analytics.RefreshIndicator.ShowIndicator
 import com.woocommerce.android.ui.analytics.daterangeselector.AnalyticTimePeriod
 import com.woocommerce.android.ui.analytics.daterangeselector.AnalyticsDateRange
 import com.woocommerce.android.ui.analytics.daterangeselector.AnalyticsDateRangeCalculator
+import com.woocommerce.android.ui.analytics.daterangeselector.AnalyticsDateRangeFormatter
 import com.woocommerce.android.ui.analytics.daterangeselector.AnalyticsDateRangeSelectorViewState
 import com.woocommerce.android.ui.analytics.informationcard.AnalyticsInformationSectionViewState
 import com.woocommerce.android.ui.analytics.informationcard.AnalyticsInformationViewState.DataViewState
@@ -32,7 +33,6 @@ import com.woocommerce.android.ui.analytics.informationcard.AnalyticsInformation
 import com.woocommerce.android.ui.analytics.listcard.AnalyticsListCardItemViewState
 import com.woocommerce.android.ui.mystore.MyStoreStatsUsageTracksEventEmitter
 import com.woocommerce.android.util.CurrencyFormatter
-import com.woocommerce.android.util.DateUtils
 import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.viewmodel.ResourceProvider
 import com.woocommerce.android.viewmodel.ScopedViewModel
@@ -53,13 +53,13 @@ import com.woocommerce.android.ui.analytics.listcard.AnalyticsListViewState.NoDa
 @HiltViewModel
 class AnalyticsViewModel @Inject constructor(
     private val resourceProvider: ResourceProvider,
-    private val dateUtils: DateUtils,
     private val analyticsDateRange: AnalyticsDateRangeCalculator,
     private val currencyFormatter: CurrencyFormatter,
     private val analyticsRepository: AnalyticsRepository,
     private val selectedSite: SelectedSite,
     private val transactionLauncher: AnalyticsHubTransactionLauncher,
     private val usageTracksEventEmitter: MyStoreStatsUsageTracksEventEmitter,
+    private val analyticsDateRangeFormatter: AnalyticsDateRangeFormatter,
     savedState: SavedStateHandle
 ) : ScopedViewModel(savedState) {
 
@@ -278,8 +278,8 @@ class AnalyticsViewModel @Inject constructor(
         val timePeriodDescription = getTimePeriodDescription(timePeriod)
         mutableState.value = state.value.copy(
             analyticsDateRangeSelectorState = state.value.analyticsDateRangeSelectorState.copy(
-                fromDatePeriod = dateRange.fromDescription(dateUtils, resourceProvider),
-                toDatePeriod = dateRange.toDescription(dateUtils, resourceProvider, timePeriodDescription),
+                fromDatePeriod = analyticsDateRangeFormatter.fromDescription(dateRange),
+                toDatePeriod = analyticsDateRangeFormatter.toDescription(dateRange, timePeriodDescription),
                 selectedPeriod = getTimePeriodDescription(timePeriod)
             )
         )
@@ -317,8 +317,8 @@ class AnalyticsViewModel @Inject constructor(
         val timePeriodDescription = getTimePeriodDescription(timePeriod)
 
         return AnalyticsDateRangeSelectorViewState(
-            fromDatePeriod = dateRange.fromDescription(dateUtils, resourceProvider),
-            toDatePeriod = dateRange.toDescription(dateUtils, resourceProvider, timePeriodDescription),
+            fromDatePeriod = analyticsDateRangeFormatter.fromDescription(dateRange),
+            toDatePeriod = analyticsDateRangeFormatter.toDescription(dateRange, timePeriodDescription),
             availableRangeDates = getAvailableDateRanges(),
             selectedPeriod = getTimePeriodDescription(getSavedTimePeriod())
         )
