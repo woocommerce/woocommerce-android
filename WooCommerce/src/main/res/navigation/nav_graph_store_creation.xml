@@ -9,13 +9,13 @@
         android:name="com.woocommerce.android.ui.login.storecreation.StoreCreationQuestionsFragment"
         android:label="fragment_store_creation_questions">
         <action
-            android:id="@+id/action_storeCreationQuestionsFragment_to_siteDomainPickerFragment"
-            app:destination="@id/siteDomainPickerFragment" />
+            android:id="@+id/action_storeCreationQuestionsFragment_to_domainPickerFragment"
+            app:destination="@id/domainPickerFragment" />
     </fragment>
 
     <fragment
-        android:id="@+id/siteDomainPickerFragment"
-        android:name="com.woocommerce.android.ui.login.storecreation.domainpicker.SiteDomainPickerFragment"
-        android:label="fragment_site_domain_picker" />
+        android:id="@+id/domainPickerFragment"
+        android:name="com.woocommerce.android.ui.login.storecreation.domainpicker.DomainPickerFragment"
+        android:label="fragment_domain_picker" />
 
 </navigation>

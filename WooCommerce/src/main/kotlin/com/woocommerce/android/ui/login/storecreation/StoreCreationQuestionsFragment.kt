@@ -48,7 +48,7 @@ class StoreCreationQuestionsFragment : BaseFragment() {
                             onClick = {
                                 findNavController().navigateSafely(
                                     StoreCreationQuestionsFragmentDirections
-                                        .actionStoreCreationQuestionsFragmentToSiteDomainPickerFragment()
+                                        .actionStoreCreationQuestionsFragmentToDomainPickerFragment()
                                 )
                             },
                         ) {

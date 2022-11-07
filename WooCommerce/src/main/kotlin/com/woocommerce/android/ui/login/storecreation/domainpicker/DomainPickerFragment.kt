@@ -14,8 +14,8 @@ import com.woocommerce.android.viewmodel.MultiLiveEvent
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
-class SiteDomainPickerFragment : BaseFragment() {
-    private val viewModel: SiteDomainPickerViewModel by viewModels()
+class DomainPickerFragment : BaseFragment() {
+    private val viewModel: DomainPickerViewModel by viewModels()
 
     override val activityAppBarStatus: AppBarStatus
         get() = AppBarStatus.Hidden
@@ -25,7 +25,7 @@ class SiteDomainPickerFragment : BaseFragment() {
             setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
             setContent {
                 WooThemeWithBackground {
-                    SiteDomainPickerScreen(viewModel = viewModel)
+                    DomainPickerScreen(viewModel = viewModel)
                 }
             }
         }

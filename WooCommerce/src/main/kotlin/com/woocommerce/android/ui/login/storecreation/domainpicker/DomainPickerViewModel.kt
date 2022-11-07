@@ -11,7 +11,7 @@ import kotlinx.coroutines.flow.update
 import javax.inject.Inject
 
 @HiltViewModel
-class SiteDomainPickerViewModel @Inject constructor(
+class DomainPickerViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
 ) : ScopedViewModel(savedStateHandle) {
     private val domainQuery = savedState.getStateFlow(this, "")
@@ -41,7 +41,7 @@ class SiteDomainPickerViewModel @Inject constructor(
         domainQuery,
         domainSuggestionsUi
     ) { domainQuery, domainSuggestions ->
-        SiteDomainPickerState(
+        DomainPickerState(
             isLoading = false,
             domain = domainQuery,
             domainSuggestionsUi = domainSuggestions
@@ -75,7 +75,7 @@ class SiteDomainPickerViewModel @Inject constructor(
         domainQuery.value = query
     }
 
-    data class SiteDomainPickerState(
+    data class DomainPickerState(
         val isLoading: Boolean = false,
         val domain: String = "",
         val domainSuggestionsUi: List<DomainSuggestionUi> = emptyList()

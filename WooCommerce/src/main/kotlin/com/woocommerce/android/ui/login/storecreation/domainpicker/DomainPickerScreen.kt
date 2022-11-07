@@ -49,19 +49,19 @@ import com.woocommerce.android.R
 import com.woocommerce.android.ui.compose.component.WCColoredButton
 import com.woocommerce.android.ui.compose.component.WCSearchField
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
-import com.woocommerce.android.ui.login.storecreation.domainpicker.SiteDomainPickerViewModel.DomainSuggestionUi
-import com.woocommerce.android.ui.login.storecreation.domainpicker.SiteDomainPickerViewModel.SiteDomainPickerState
+import com.woocommerce.android.ui.login.storecreation.domainpicker.DomainPickerViewModel.DomainPickerState
+import com.woocommerce.android.ui.login.storecreation.domainpicker.DomainPickerViewModel.DomainSuggestionUi
 
 @Composable
-fun SiteDomainPickerScreen(viewModel: SiteDomainPickerViewModel) {
-    viewModel.viewState.observeAsState(SiteDomainPickerState()).value.let { viewState ->
+fun DomainPickerScreen(viewModel: DomainPickerViewModel) {
+    viewModel.viewState.observeAsState(DomainPickerState()).value.let { viewState ->
         Scaffold(topBar = {
             Toolbar(
                 onArrowBackPressed = viewModel::onBackPressed,
                 onSkipPressed = viewModel::onSkipPressed
             )
         }) {
-            SiteDomainSearchForm(
+            DomainSearchForm(
                 state = viewState,
                 onDomainQueryChanged = viewModel::onDomainChanged,
                 onDomainSuggestionSelected = viewModel::onDomainSuggestionSelected,
@@ -100,8 +100,8 @@ private fun Toolbar(
 }
 
 @Composable
-private fun SiteDomainSearchForm(
-    state: SiteDomainPickerState,
+private fun DomainSearchForm(
+    state: DomainPickerState,
     onDomainQueryChanged: (String) -> Unit,
     onDomainSuggestionSelected: (Int) -> Unit,
     onContinueClicked: () -> Unit,
@@ -242,10 +242,10 @@ private fun DomainSuggestionItem(
 @Preview(name = "mid screen", device = Devices.PIXEL_4)
 @Preview(name = "large screen", device = Devices.NEXUS_10)
 @Composable
-fun SiteDomainPickerPreview() {
+fun DomainPickerPreview() {
     WooThemeWithBackground {
-        SiteDomainSearchForm(
-            state = SiteDomainPickerState(
+        DomainSearchForm(
+            state = DomainPickerState(
                 isLoading = false,
                 domain = "White Christmas Tress",
                 domainSuggestionsUi = listOf(
