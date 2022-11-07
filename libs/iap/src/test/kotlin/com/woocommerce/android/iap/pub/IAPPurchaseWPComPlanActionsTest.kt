@@ -35,6 +35,7 @@ import org.junit.Before
 import org.junit.Test
 import org.mockito.kotlin.any
 import org.mockito.kotlin.mock
+import org.mockito.kotlin.verifyNoInteractions
 import org.mockito.kotlin.whenever
 
 private const val REMOTE_SITE_ID = 1L
@@ -702,6 +703,33 @@ class IAPPurchaseWPComPlanActionsTest {
             // THEN
             val result = sut.purchaseWpComPlanResult.firstOrNull()
             assertThat(result).isInstanceOf(WPComPurchaseResult.Success::class.java)
+        }
+
+    @Test
+    fun `given purchase with not matched id, when purchasing plan, then backend is not called`() =
+        runTest {
+            // GIVEN
+            val purchaseToken = "purchaseToken"
+            setupPurchaseQuery(
+                responseCode = BillingClient.BillingResponseCode.OK,
+                listOf(
+                    buildPurchase(
+                        listOf("not_matched_id"),
+                        Purchase.PurchaseState.PURCHASED,
+                        purchaseToken = purchaseToken,
+                    )
+                )
+            )
+
+            val responseCode = BillingClient.BillingResponseCode.OK
+
+            setupQueryProductDetails(responseCode)
+
+            // WHEN
+            sut.purchaseWPComPlan(activityWrapperMock)
+
+            // THEN
+            verifyNoInteractions(mobilePayAPIMock)
         }
     //endregion
 
