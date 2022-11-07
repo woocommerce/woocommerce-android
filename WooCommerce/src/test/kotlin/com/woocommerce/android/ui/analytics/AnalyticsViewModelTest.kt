@@ -522,7 +522,6 @@ class AnalyticsViewModelTest : BaseUnitTest() {
         )
     }
 
-
     private fun getRevenueStats(
         totalValue: Double = TOTAL_VALUE,
         netValue: Double = NET_VALUE,
