@@ -140,7 +140,9 @@ private fun DomainSearchForm(
             backgroundColor = TextFieldDefaults.outlinedTextFieldColors().backgroundColor(enabled = true).value
         )
         Box(
-            modifier = Modifier.weight(1f)
+            modifier = Modifier
+                .weight(1f)
+                .fillMaxWidth()
         ) {
             if (state.isLoading) {
                 CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
