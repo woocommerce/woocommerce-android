@@ -51,6 +51,8 @@ import com.woocommerce.android.ui.compose.component.WCSearchField
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.ui.login.storecreation.domainpicker.DomainPickerViewModel.DomainPickerState
 import com.woocommerce.android.ui.login.storecreation.domainpicker.DomainPickerViewModel.DomainSuggestionUi
+import com.woocommerce.android.ui.login.storecreation.domainpicker.DomainPickerViewModel.LoadingState.Idle
+import com.woocommerce.android.ui.login.storecreation.domainpicker.DomainPickerViewModel.LoadingState.Loading
 
 @Composable
 fun DomainPickerScreen(viewModel: DomainPickerViewModel) {
@@ -144,7 +146,7 @@ private fun DomainSearchForm(
                 .weight(1f)
                 .fillMaxWidth()
         ) {
-            if (state.isLoading) {
+            if (state.loadingState == Loading) {
                 CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
             } else if (state.domainSuggestionsUi.isNotEmpty()) {
                 DomainSuggestionList(
@@ -248,7 +250,7 @@ fun DomainPickerPreview() {
     WooThemeWithBackground {
         DomainSearchForm(
             state = DomainPickerState(
-                isLoading = false,
+                loadingState = Idle,
                 domain = "White Christmas Tress",
                 domainSuggestionsUi = listOf(
                     DomainSuggestionUi("whitechristmastrees.mywc.mysite"),
