@@ -192,7 +192,7 @@ class AnalyticsRepository @Inject constructor(
         granularity: StatsGranularity,
         fetchStrategy: FetchStrategy
     ): Result<WCRevenueStatsModel?> = coroutineScope {
-        val currentPeriod = dateRange.getCurrentPeriod()
+        val currentPeriod = dateRange.getSelectedPeriod()
         val startDate = currentPeriod.from.formatToYYYYmmDD()
         val endDate = currentPeriod.to.formatToYYYYmmDD()
 
@@ -214,7 +214,7 @@ class AnalyticsRepository @Inject constructor(
         granularity: StatsGranularity,
         fetchStrategy: FetchStrategy
     ): Result<WCRevenueStatsModel?> = coroutineScope {
-        val previousPeriod = dateRange.getPreviousPeriod()
+        val previousPeriod = dateRange.getComparisonPeriod()
         val startDate = previousPeriod.from.formatToYYYYmmDD()
         val endDate = previousPeriod.to.formatToYYYYmmDD()
 
@@ -236,7 +236,7 @@ class AnalyticsRepository @Inject constructor(
         fetchStrategy: FetchStrategy,
         quantity: Int
     ): Result<List<TopPerformerProductEntity>> {
-        val totalPeriod = dateRange.getTotalPeriod()
+        val totalPeriod = dateRange.getAnalyzedPeriod()
         val startDate = totalPeriod.from.formatToYYYYmmDD()
         val endDate = totalPeriod.to.formatToYYYYmmDD()
 
