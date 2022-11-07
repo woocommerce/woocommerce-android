@@ -20,6 +20,7 @@ import com.woocommerce.android.ui.analytics.daterangeselector.AnalyticTimePeriod
 import com.woocommerce.android.ui.analytics.daterangeselector.AnalyticTimePeriod.TODAY
 import com.woocommerce.android.ui.analytics.daterangeselector.AnalyticTimePeriod.WEEK_TO_DATE
 import com.woocommerce.android.ui.analytics.daterangeselector.AnalyticsDateRangeCalculator
+import com.woocommerce.android.ui.analytics.daterangeselector.AnalyticsDateRangeFormatter
 import com.woocommerce.android.ui.analytics.daterangeselector.MultipleDateRange
 import com.woocommerce.android.ui.analytics.daterangeselector.SimpleDateRange
 import com.woocommerce.android.ui.analytics.informationcard.AnalyticsInformationViewState
@@ -506,12 +507,21 @@ class AnalyticsViewModelTest : BaseUnitTest() {
         on { getStringArray(any()) } doAnswer { DATE_RANGE_SELECTORS.toTypedArray() }
     }
 
-    private fun givenAViewModel(resourceProvider: ResourceProvider = givenAResourceProvider()) =
-        AnalyticsViewModel(
-            resourceProvider, dateUtil, calculator,
-            currencyFormatter, analyticsRepository,
-            selectedSite, mock(), mock(), savedState
+    private fun givenAViewModel(resourceProvider: ResourceProvider = givenAResourceProvider()): AnalyticsViewModel {
+        val analyticsDateRangeFormatter = AnalyticsDateRangeFormatter(dateUtil, resourceProvider)
+        return AnalyticsViewModel(
+            resourceProvider,
+            calculator,
+            currencyFormatter,
+            analyticsRepository,
+            selectedSite,
+            mock(),
+            mock(),
+            analyticsDateRangeFormatter,
+            savedState
         )
+    }
+
 
     private fun getRevenueStats(
         totalValue: Double = TOTAL_VALUE,
