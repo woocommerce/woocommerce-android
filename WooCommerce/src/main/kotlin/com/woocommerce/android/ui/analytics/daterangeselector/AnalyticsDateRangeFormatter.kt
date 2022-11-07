@@ -6,8 +6,8 @@ import com.woocommerce.android.viewmodel.ResourceProvider
 import javax.inject.Inject
 
 class AnalyticsDateRangeFormatter @Inject constructor(
-    val dateUtils: DateUtils,
-    val resourceProvider: ResourceProvider
+    private val dateUtils: DateUtils,
+    private val resourceProvider: ResourceProvider
 ) {
     fun fromDescription(range: AnalyticsDateRange): String {
         return when (range) {
