@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+@file:Suppress("DEPRECATION")
+
 package com.woocommerce.android.barcode
 
 import android.content.ContentResolver
@@ -54,6 +56,7 @@ object Utils {
      * be set to a size that is the same aspect ratio as the preview size we choose. Otherwise, the
      * preview images may be distorted on some devices.
      */
+    @Suppress("DEPRECATION")
     fun generateValidPreviewSizeList(camera: Camera): List<CameraSizePair> {
         val parameters = camera.parameters
         val supportedPreviewSizes = parameters.supportedPreviewSizes
