@@ -32,7 +32,7 @@ internal class IAPPurchaseWpComPlanHandler(
         when (val response = iapManager.fetchPurchases(iapProduct.productType)) {
             is IAPPurchaseResult.Success -> {
                 val existentPurchase = response.purchases.findPurchaseWithProduct(iapProduct)
-                if (existentPurchase != null) {
+                if (existentPurchase != null && existentPurchase.state == IAPPurchase.State.PURCHASED) {
                     handleExistingPurchase(existentPurchase, remoteSiteId)
                     return
                 }

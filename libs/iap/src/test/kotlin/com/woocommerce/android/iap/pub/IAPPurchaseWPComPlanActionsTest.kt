@@ -731,6 +731,33 @@ class IAPPurchaseWPComPlanActionsTest {
             // THEN
             verifyNoInteractions(mobilePayAPIMock)
         }
+
+    @Test
+    fun `given purchase with matched id but not purchased, when purchasing plan, then backend is not called`() =
+        runTest {
+            // GIVEN
+            val purchaseToken = "purchaseToken"
+            setupPurchaseQuery(
+                responseCode = BillingClient.BillingResponseCode.OK,
+                listOf(
+                    buildPurchase(
+                        listOf(iapProduct.productId),
+                        Purchase.PurchaseState.PURCHASED,
+                        purchaseToken = purchaseToken,
+                    )
+                )
+            )
+
+            val responseCode = BillingClient.BillingResponseCode.OK
+
+            setupQueryProductDetails(responseCode)
+
+            // WHEN
+            sut.purchaseWPComPlan(activityWrapperMock)
+
+            // THEN
+            verifyNoInteractions(mobilePayAPIMock)
+        }
     //endregion
 
     private suspend fun setupPurchaseQuery(
