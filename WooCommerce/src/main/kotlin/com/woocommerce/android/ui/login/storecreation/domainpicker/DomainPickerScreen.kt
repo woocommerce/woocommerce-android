@@ -146,7 +146,7 @@ private fun DomainSearchForm(
         ) {
             if (state.isLoading) {
                 CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
-            } else {
+            } else if (state.domainSuggestionsUi.isNotEmpty()) {
                 DomainSuggestionList(
                     suggestions = state.domainSuggestionsUi,
                     onDomainSuggestionSelected = onDomainSuggestionSelected
