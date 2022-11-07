@@ -481,9 +481,7 @@
     <fragment
         android:id="@+id/webViewStoreCreationFragment"
         android:name="com.woocommerce.android.ui.login.storecreation.webview.WebViewStoreCreationFragment"
-        android:label="WebViewStoreCreationFragment" >
-        <argument android:name="source" />
-    </fragment>
+        android:label="WebViewStoreCreationFragment" />
     <dialog
         android:id="@+id/addStoreBottomSheetFragment"
         android:name="com.woocommerce.android.ui.sitepicker.AddStoreBottomSheetFragment"
@@ -494,6 +492,5 @@
         <action
             android:id="@+id/action_addStoreBottomSheetFragment_to_webViewStoreCreationFragment"
             app:destination="@id/webViewStoreCreationFragment" />
-        <argument android:name="source" />
     </dialog>
 </navigation>
