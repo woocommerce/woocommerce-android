@@ -11,6 +11,9 @@ import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.ui.common.wpcomwebview.WPComWebViewAuthenticator
 import com.woocommerce.android.ui.login.storecreation.StoreCreationRepository
+import com.woocommerce.android.ui.login.storecreation.webview.WebViewStoreCreationViewModel.StoreLoadResult.ERROR
+import com.woocommerce.android.ui.login.storecreation.webview.WebViewStoreCreationViewModel.StoreLoadResult.STORE_FOUND
+import com.woocommerce.android.ui.login.storecreation.webview.WebViewStoreCreationViewModel.StoreLoadResult.STORE_NOT_FOUND
 import com.woocommerce.android.ui.login.storecreation.webview.WebViewStoreCreationViewModel.ViewState.ErrorState
 import com.woocommerce.android.ui.login.storecreation.webview.WebViewStoreCreationViewModel.ViewState.StoreCreationState
 import com.woocommerce.android.ui.login.storecreation.webview.WebViewStoreCreationViewModel.ViewState.StoreLoadingState
@@ -86,44 +89,53 @@ class WebViewStoreCreationViewModel @Inject constructor(
         _dialogViewState.value = setDialogState(isVisible = false)
     }
 
+    private suspend fun getOrFetchNewSite(): StoreLoadResult {
+        val newSite = possibleStoreUrls.firstNotNullOfOrNull { url -> repository.getSiteBySiteUrl(url) }
+        return if (newSite?.isJetpackInstalled == true && newSite.isJetpackConnected) {
+            WooLog.d(T.LOGIN, "Found new site: ${newSite.url}")
+            repository.selectSite(newSite)
+            triggerEvent(NavigateToNewStore)
+
+            val args = mapOf<String, String>(
+                AnalyticsTracker.KEY_SOURCE to navigationSource,
+                AnalyticsTracker.KEY_URL to newSite.url
+            )
+            analyticsTrackerWrapper.track(AnalyticsEvent.LOGIN_WOOCOMMERCE_SITE_CREATED, args)
+            STORE_FOUND
+        } else {
+            WooLog.d(T.LOGIN, "New site not found, retrying...")
+            val result = repository.fetchSitesAfterCreation()
+            return if (result.isFailure) {
+                step.value = Step.StoreLoadingError
+
+                analyticsTrackerWrapper.track(
+                    AnalyticsEvent.SITE_CREATION_FAILED,
+                    mapOf(
+                        AnalyticsTracker.KEY_SOURCE to navigationSource
+                    )
+                )
+                ERROR
+            } else {
+                STORE_NOT_FOUND
+            }
+        }
+    }
+
     private fun onStoreCreated() {
         step.value = Step.StoreLoading
         launch {
             // keep fetching the user's sites until the new site is properly configured or the retry limit is reached
-            for (retries in 0..STORE_LOAD_RETRIES_LIMIT) {
-                val newSite = possibleStoreUrls.firstNotNullOfOrNull { url -> repository.getSiteBySiteUrl(url) }
-                if (newSite?.isJetpackInstalled == true && newSite.isJetpackConnected) {
-                    WooLog.d(T.LOGIN, "Found new site: ${newSite.url}")
-                    repository.selectSite(newSite)
-                    triggerEvent(NavigateToNewStore)
-
-                    val args = mapOf<String, String>(
-                        AnalyticsTracker.KEY_SOURCE to navigationSource,
-                        AnalyticsTracker.KEY_URL to newSite.url
-                    )
-                    analyticsTrackerWrapper.track(AnalyticsEvent.LOGIN_WOOCOMMERCE_SITE_CREATED, args)
+            for (retries in 1 .. STORE_LOAD_RETRIES_LIMIT) {
+                val result = getOrFetchNewSite()
+                if (result == STORE_FOUND || result == ERROR || retries == STORE_LOAD_RETRIES_LIMIT) {
                     break
-                } else if (retries == STORE_LOAD_RETRIES_LIMIT) {
+                } else {
                     WooLog.d(T.LOGIN, "Maximum retries reached...")
                     step.value = Step.StoreLoadingError
-                } else {
-                    WooLog.d(T.LOGIN, "New site not found, retrying...")
-                    val result = repository.fetchSitesAfterCreation()
-                    if (result.isFailure) {
-                        step.value = Step.StoreLoadingError
-
-                        analyticsTrackerWrapper.track(
-                            AnalyticsEvent.SITE_CREATION_FAILED,
-                            mapOf(
-                                AnalyticsTracker.KEY_SOURCE to navigationSource
-                            )
-                        )
-                        break
-                    }
                 }
             }
-            WooLog.d(T.LOGIN, "Store creation done...")
         }
+        WooLog.d(T.LOGIN, "Store creation done...")
     }
 
     private fun onSiteAddressFound(url: String) {
@@ -182,5 +194,9 @@ class WebViewStoreCreationViewModel @Inject constructor(
 
         @Parcelize
         object StoreLoadingError : Step
+    }
+
+    private enum class StoreLoadResult {
+        STORE_FOUND, STORE_NOT_FOUND, ERROR
     }
 }
