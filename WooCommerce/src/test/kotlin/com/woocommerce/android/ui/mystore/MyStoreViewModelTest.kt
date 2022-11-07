@@ -428,7 +428,7 @@ class MyStoreViewModelTest : BaseUnitTest() {
             val captor = argumentCaptor<String>()
 
             whenViewModelIsCreated()
-            verify(jitmStore).fetchJitmMessage(any(), any(), captor.capture(), any())
+            verify(jitmStore).fetchJitmMessage(any(), any(), captor.capture())
 
             if (BuildConfig.DEBUG) {
                 assertThat(captor.firstValue).isEqualTo(
@@ -457,7 +457,7 @@ class MyStoreViewModelTest : BaseUnitTest() {
             val captor = argumentCaptor<String>()
 
             whenViewModelIsCreated()
-            verify(jitmStore).fetchJitmMessage(any(), captor.capture(), any(), any())
+            verify(jitmStore).fetchJitmMessage(any(), captor.capture(), any())
 
             assertThat(captor.firstValue).isEqualTo(expectedMessagePath)
         }
@@ -469,7 +469,7 @@ class MyStoreViewModelTest : BaseUnitTest() {
             givenNetworkConnectivity(connected = true)
             whenever(selectedSite.get()).thenReturn(SiteModel())
             whenever(
-                jitmStore.fetchJitmMessage(any(), any(), any(), any())
+                jitmStore.fetchJitmMessage(any(), any(), any())
             ).thenReturn(
                 WooResult(
                     model = arrayOf(provideJitmApiResponse())
@@ -488,7 +488,7 @@ class MyStoreViewModelTest : BaseUnitTest() {
             givenNetworkConnectivity(connected = true)
             whenever(selectedSite.get()).thenReturn(SiteModel())
             whenever(
-                jitmStore.fetchJitmMessage(any(), any(), any(), any())
+                jitmStore.fetchJitmMessage(any(), any(), any())
             ).thenReturn(
                 WooResult(
                     error = WOO_GENERIC_ERROR
@@ -507,7 +507,7 @@ class MyStoreViewModelTest : BaseUnitTest() {
             givenNetworkConnectivity(connected = true)
             whenever(selectedSite.get()).thenReturn(SiteModel())
             whenever(
-                jitmStore.fetchJitmMessage(any(), any(), any(), any())
+                jitmStore.fetchJitmMessage(any(), any(), any())
             ).thenReturn(
                 WooResult(
                     model = emptyArray()
@@ -527,7 +527,7 @@ class MyStoreViewModelTest : BaseUnitTest() {
             whenever(selectedSite.get()).thenReturn(SiteModel())
             val testJitmMessage = "Test jitm message"
             whenever(
-                jitmStore.fetchJitmMessage(any(), any(), any(), any())
+                jitmStore.fetchJitmMessage(any(), any(), any())
             ).thenReturn(
                 WooResult(
                     model = arrayOf(
@@ -555,7 +555,7 @@ class MyStoreViewModelTest : BaseUnitTest() {
             whenever(selectedSite.get()).thenReturn(SiteModel())
             val testJitmDescription = "Test jitm description"
             whenever(
-                jitmStore.fetchJitmMessage(any(), any(), any(), any())
+                jitmStore.fetchJitmMessage(any(), any(), any())
             ).thenReturn(
                 WooResult(
                     model = arrayOf(
@@ -583,7 +583,7 @@ class MyStoreViewModelTest : BaseUnitTest() {
             whenever(selectedSite.get()).thenReturn(SiteModel())
             val testJitmCtaLabel = "Test jitm Cta label"
             whenever(
-                jitmStore.fetchJitmMessage(any(), any(), any(), any())
+                jitmStore.fetchJitmMessage(any(), any(), any())
             ).thenReturn(
                 WooResult(
                     model = arrayOf(
@@ -611,7 +611,7 @@ class MyStoreViewModelTest : BaseUnitTest() {
             whenever(selectedSite.get()).thenReturn(SiteModel())
             whenever(selectedSite.getIfExists()).thenReturn(SiteModel())
             whenever(
-                jitmStore.fetchJitmMessage(any(), any(), any(), any())
+                jitmStore.fetchJitmMessage(any(), any(), any())
             ).thenReturn(
                 WooResult(
                     model = arrayOf(provideJitmApiResponse())
@@ -645,7 +645,7 @@ class MyStoreViewModelTest : BaseUnitTest() {
             whenever(selectedSite.get()).thenReturn(SiteModel())
             whenever(selectedSite.getIfExists()).thenReturn(SiteModel())
             whenever(
-                jitmStore.fetchJitmMessage(any(), any(), any(), any())
+                jitmStore.fetchJitmMessage(any(), any(), any())
             ).thenReturn(
                 WooResult(
                     model = arrayOf(
@@ -687,7 +687,7 @@ class MyStoreViewModelTest : BaseUnitTest() {
             whenever(selectedSite.get()).thenReturn(SiteModel())
             whenever(selectedSite.getIfExists()).thenReturn(SiteModel())
             whenever(
-                jitmStore.fetchJitmMessage(any(), any(), any(), any())
+                jitmStore.fetchJitmMessage(any(), any(), any())
             ).thenReturn(
                 WooResult(
                     model = arrayOf(provideJitmApiResponse())
@@ -722,7 +722,7 @@ class MyStoreViewModelTest : BaseUnitTest() {
             givenNetworkConnectivity(connected = true)
             whenever(selectedSite.get()).thenReturn(SiteModel())
             whenever(
-                jitmStore.fetchJitmMessage(any(), any(), any(), any())
+                jitmStore.fetchJitmMessage(any(), any(), any())
             ).thenReturn(
                 WooResult(
                     model = arrayOf(provideJitmApiResponse())
@@ -744,7 +744,7 @@ class MyStoreViewModelTest : BaseUnitTest() {
             givenNetworkConnectivity(connected = true)
             whenever(selectedSite.get()).thenReturn(SiteModel())
             whenever(
-                jitmStore.fetchJitmMessage(any(), any(), any(), any())
+                jitmStore.fetchJitmMessage(any(), any(), any())
             ).thenReturn(
                 WooResult(
                     model = arrayOf(provideJitmApiResponse())
@@ -767,7 +767,7 @@ class MyStoreViewModelTest : BaseUnitTest() {
             givenNetworkConnectivity(connected = true)
             whenever(selectedSite.get()).thenReturn(SiteModel())
             whenever(
-                jitmStore.fetchJitmMessage(any(), any(), any(), any())
+                jitmStore.fetchJitmMessage(any(), any(), any())
             ).thenReturn(
                 WooResult(
                     model = arrayOf(provideJitmApiResponse(id = "12345"))
@@ -790,7 +790,7 @@ class MyStoreViewModelTest : BaseUnitTest() {
             givenNetworkConnectivity(connected = true)
             whenever(selectedSite.get()).thenReturn(SiteModel())
             whenever(
-                jitmStore.fetchJitmMessage(any(), any(), any(), any())
+                jitmStore.fetchJitmMessage(any(), any(), any())
             ).thenReturn(
                 WooResult(
                     model = arrayOf(
@@ -817,7 +817,7 @@ class MyStoreViewModelTest : BaseUnitTest() {
             givenNetworkConnectivity(connected = true)
             whenever(selectedSite.get()).thenReturn(SiteModel())
             whenever(
-                jitmStore.fetchJitmMessage(any(), any(), any(), any())
+                jitmStore.fetchJitmMessage(any(), any(), any())
             ).thenReturn(
                 WooResult(
                     model = arrayOf(provideJitmApiResponse())
@@ -840,7 +840,7 @@ class MyStoreViewModelTest : BaseUnitTest() {
             givenNetworkConnectivity(connected = true)
             whenever(selectedSite.get()).thenReturn(SiteModel())
             whenever(
-                jitmStore.fetchJitmMessage(any(), any(), any(), any())
+                jitmStore.fetchJitmMessage(any(), any(), any())
             ).thenReturn(
                 WooResult(
                     model = arrayOf(
@@ -868,7 +868,7 @@ class MyStoreViewModelTest : BaseUnitTest() {
             givenNetworkConnectivity(connected = true)
             whenever(selectedSite.get()).thenReturn(SiteModel())
             whenever(
-                jitmStore.fetchJitmMessage(any(), any(), any(), any())
+                jitmStore.fetchJitmMessage(any(), any(), any())
             ).thenReturn(
                 WooResult(
                     model = emptyArray()
@@ -891,7 +891,7 @@ class MyStoreViewModelTest : BaseUnitTest() {
             givenNetworkConnectivity(connected = true)
             whenever(selectedSite.get()).thenReturn(SiteModel())
             whenever(
-                jitmStore.fetchJitmMessage(any(), any(), any(), any())
+                jitmStore.fetchJitmMessage(any(), any(), any())
             ).thenReturn(
                 WooResult(
                     model = emptyArray()
@@ -914,7 +914,7 @@ class MyStoreViewModelTest : BaseUnitTest() {
             givenNetworkConnectivity(connected = true)
             whenever(selectedSite.get()).thenReturn(SiteModel())
             whenever(
-                jitmStore.fetchJitmMessage(any(), any(), any(), any())
+                jitmStore.fetchJitmMessage(any(), any(), any())
             ).thenReturn(
                 WooResult(
                     WooError(
@@ -937,7 +937,7 @@ class MyStoreViewModelTest : BaseUnitTest() {
             givenNetworkConnectivity(connected = true)
             whenever(selectedSite.get()).thenReturn(SiteModel())
             whenever(
-                jitmStore.fetchJitmMessage(any(), any(), any(), any())
+                jitmStore.fetchJitmMessage(any(), any(), any())
             ).thenReturn(
                 WooResult(
                     WooError(
@@ -965,7 +965,7 @@ class MyStoreViewModelTest : BaseUnitTest() {
             whenever(selectedSite.get()).thenReturn(SiteModel())
             whenever(selectedSite.getIfExists()).thenReturn(SiteModel())
             whenever(
-                jitmStore.fetchJitmMessage(any(), any(), any(), any())
+                jitmStore.fetchJitmMessage(any(), any(), any())
             ).thenReturn(
                 WooResult(
                     model = arrayOf(provideJitmApiResponse())
@@ -999,7 +999,7 @@ class MyStoreViewModelTest : BaseUnitTest() {
             whenever(selectedSite.get()).thenReturn(SiteModel())
             whenever(selectedSite.getIfExists()).thenReturn(SiteModel())
             whenever(
-                jitmStore.fetchJitmMessage(any(), any(), any(), any())
+                jitmStore.fetchJitmMessage(any(), any(), any())
             ).thenReturn(
                 WooResult(
                     model = arrayOf(
@@ -1037,7 +1037,7 @@ class MyStoreViewModelTest : BaseUnitTest() {
             givenNetworkConnectivity(connected = true)
             whenever(selectedSite.get()).thenReturn(SiteModel())
             whenever(
-                jitmStore.fetchJitmMessage(any(), any(), any(), any())
+                jitmStore.fetchJitmMessage(any(), any(), any())
             ).thenReturn(
                 WooResult(
                     model = arrayOf(provideJitmApiResponse())
@@ -1061,7 +1061,7 @@ class MyStoreViewModelTest : BaseUnitTest() {
             givenNetworkConnectivity(connected = true)
             whenever(selectedSite.get()).thenReturn(SiteModel())
             whenever(
-                jitmStore.fetchJitmMessage(any(), any(), any(), any())
+                jitmStore.fetchJitmMessage(any(), any(), any())
             ).thenReturn(
                 WooResult(
                     model = arrayOf(
@@ -1090,7 +1090,7 @@ class MyStoreViewModelTest : BaseUnitTest() {
             givenNetworkConnectivity(connected = true)
             whenever(selectedSite.get()).thenReturn(SiteModel())
             whenever(
-                jitmStore.fetchJitmMessage(any(), any(), any(), any())
+                jitmStore.fetchJitmMessage(any(), any(), any())
             ).thenReturn(
                 WooResult(
                     model = arrayOf(provideJitmApiResponse())
@@ -1117,7 +1117,7 @@ class MyStoreViewModelTest : BaseUnitTest() {
             givenNetworkConnectivity(connected = true)
             whenever(selectedSite.get()).thenReturn(SiteModel())
             whenever(
-                jitmStore.fetchJitmMessage(any(), any(), any(), any())
+                jitmStore.fetchJitmMessage(any(), any(), any())
             ).thenReturn(
                 WooResult(
                     model = arrayOf(
@@ -1149,7 +1149,7 @@ class MyStoreViewModelTest : BaseUnitTest() {
             givenNetworkConnectivity(connected = true)
             whenever(selectedSite.get()).thenReturn(SiteModel())
             whenever(
-                jitmStore.fetchJitmMessage(any(), any(), any(), any())
+                jitmStore.fetchJitmMessage(any(), any(), any())
             ).thenReturn(
                 WooResult(
                     model = arrayOf(provideJitmApiResponse())
@@ -1178,7 +1178,7 @@ class MyStoreViewModelTest : BaseUnitTest() {
             givenNetworkConnectivity(connected = true)
             whenever(selectedSite.get()).thenReturn(SiteModel())
             whenever(
-                jitmStore.fetchJitmMessage(any(), any(), any(), any())
+                jitmStore.fetchJitmMessage(any(), any(), any())
             ).thenReturn(
                 WooResult(
                     model = arrayOf(provideJitmApiResponse())
@@ -1212,7 +1212,7 @@ class MyStoreViewModelTest : BaseUnitTest() {
             givenNetworkConnectivity(connected = true)
             whenever(selectedSite.get()).thenReturn(SiteModel())
             whenever(
-                jitmStore.fetchJitmMessage(any(), any(), any(), any())
+                jitmStore.fetchJitmMessage(any(), any(), any())
             ).thenReturn(
                 WooResult(
                     model = arrayOf(
@@ -1252,7 +1252,7 @@ class MyStoreViewModelTest : BaseUnitTest() {
             givenNetworkConnectivity(connected = true)
             whenever(selectedSite.get()).thenReturn(SiteModel())
             whenever(
-                jitmStore.fetchJitmMessage(any(), any(), any(), any())
+                jitmStore.fetchJitmMessage(any(), any(), any())
             ).thenReturn(
                 WooResult(
                     model = arrayOf(
@@ -1336,7 +1336,6 @@ class MyStoreViewModelTest : BaseUnitTest() {
             myStoreTransactionLauncher = mock(),
             jitmStore,
             jitmTracker,
-            localeProvider,
             utmProvider,
         )
     }

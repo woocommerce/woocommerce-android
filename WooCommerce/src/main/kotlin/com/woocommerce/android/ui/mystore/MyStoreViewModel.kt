@@ -34,7 +34,6 @@ import com.woocommerce.android.ui.mystore.domain.GetTopPerformers.TopPerformerPr
 import com.woocommerce.android.ui.payments.banner.BannerState
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.util.WooLog
-import com.woocommerce.android.util.locale.LocaleProvider
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.ResourceProvider
 import com.woocommerce.android.viewmodel.ScopedViewModel
@@ -65,7 +64,6 @@ import org.wordpress.android.util.FormatUtils
 import org.wordpress.android.util.PhotonUtils
 import java.math.BigDecimal
 import java.net.URLEncoder
-import java.util.Locale
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
@@ -85,7 +83,6 @@ class MyStoreViewModel @Inject constructor(
     private val myStoreTransactionLauncher: MyStoreTransactionLauncher,
     private val jitmStore: JitmStore,
     private val jitmTracker: JitmTracker,
-    private val localeProvider: LocaleProvider,
     private val myStoreUtmProvider: MyStoreUtmProvider,
 ) : ScopedViewModel(savedState) {
     companion object {
@@ -134,7 +131,6 @@ class MyStoreViewModel @Inject constructor(
                 selectedSite.get(),
                 JITM_MESSAGE_PATH,
                 getEncodedQueryParams(),
-                (localeProvider.provideLocale() ?: Locale.getDefault()).toLanguageTag()
             )
             populateResultToUI(response)
         }
