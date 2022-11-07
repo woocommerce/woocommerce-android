@@ -316,6 +316,13 @@ class AnalyticsRepository @Inject constructor(
             AnalyticTimePeriod.CUSTOM -> DAYS
         }
 
+    private fun StatsGranularity.asJetpackGranularity() = when (this) {
+        DAYS -> org.wordpress.android.fluxc.network.utils.StatsGranularity.DAYS
+        WEEKS -> org.wordpress.android.fluxc.network.utils.StatsGranularity.WEEKS
+        MONTHS -> org.wordpress.android.fluxc.network.utils.StatsGranularity.MONTHS
+        YEARS -> org.wordpress.android.fluxc.network.utils.StatsGranularity.YEARS
+    }
+
     private fun calculateDeltaPercentage(previousVal: Double, currentVal: Double): DeltaPercentage = when {
         previousVal <= ZERO_VALUE -> DeltaPercentage.NotExist
         currentVal <= ZERO_VALUE -> DeltaPercentage.Value((MINUS_ONE * ONE_H_PERCENT))
