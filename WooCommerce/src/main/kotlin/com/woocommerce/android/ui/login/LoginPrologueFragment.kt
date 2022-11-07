@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.view.View
 import androidx.annotation.LayoutRes
 import androidx.fragment.app.Fragment
+import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
@@ -58,6 +59,7 @@ open class LoginPrologueFragment(@LayoutRes layout: Int) : Fragment(layout) {
 
         binding.buttonGetStarted.setOnClickListener {
             AnalyticsTracker.track(stat = AnalyticsEvent.LOGIN_PROLOGUE_CREATE_SITE_TAPPED)
+            AppPrefs.setStoreCreationSource(AnalyticsTracker.VALUE_PROLOGUE)
             prologueFinishedListener?.onGetStartedClicked()
         }
 

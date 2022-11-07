@@ -13,6 +13,7 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.Lifecycle.State
 import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.R
+import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.databinding.FragmentLoginNoWpcomAccountFoundBinding
 import com.woocommerce.android.databinding.ViewLoginEpilogueButtonBarBinding
 import com.woocommerce.android.ui.login.UnifiedLoginTracker.Click
@@ -90,6 +91,7 @@ class LoginNoWPcomAccountFoundFragment : Fragment(R.layout.fragment_login_no_wpc
         with(btnBinding.buttonPrimary) {
             text = getString(R.string.login_create_an_account)
             setOnClickListener {
+                appPrefsWrapper.setStoreCreationSource(AnalyticsTracker.VALUE_LOGIN_EMAIL_ERROR)
                 unifiedLoginTracker.trackClick(Click.CREATE_ACCOUNT)
 
                 listener.onCreateAccountClicked()

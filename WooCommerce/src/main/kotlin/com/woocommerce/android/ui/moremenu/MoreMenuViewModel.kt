@@ -2,6 +2,7 @@ package com.woocommerce.android.ui.moremenu
 
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
+import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
@@ -33,6 +34,7 @@ class MoreMenuViewModel @Inject constructor(
     private val selectedSite: SelectedSite,
     private val moreMenuRepository: MoreMenuRepository,
     private val moreMenuNewFeatureHandler: MoreMenuNewFeatureHandler,
+    private val appPrefsWrapper: AppPrefsWrapper,
     unseenReviewsCountHandler: UnseenReviewsCountHandler
 ) : ScopedViewModel(savedState) {
     val moreMenuViewState =
@@ -136,6 +138,7 @@ class MoreMenuViewModel @Inject constructor(
         AnalyticsTracker.track(
             AnalyticsEvent.HUB_MENU_SWITCH_STORE_TAPPED
         )
+        appPrefsWrapper.setStoreCreationSource(AnalyticsTracker.VALUE_SWITCHING_STORE)
         triggerEvent(MoreMenuEvent.StartSitePickerEvent)
     }
 

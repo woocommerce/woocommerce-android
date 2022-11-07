@@ -5,6 +5,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
+import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
@@ -19,7 +20,6 @@ import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.getStateFlow
-import com.woocommerce.android.viewmodel.navArgs
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.map
@@ -31,10 +31,11 @@ import javax.inject.Inject
 @HiltViewModel
 class WebViewStoreCreationViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
-    val repository: StoreCreationRepository,
     val wpComWebViewAuthenticator: WPComWebViewAuthenticator,
     val userAgent: UserAgent,
-    val analyticsTrackerWrapper: AnalyticsTrackerWrapper
+    private val repository: StoreCreationRepository,
+    private val analyticsTrackerWrapper: AnalyticsTrackerWrapper,
+    private val appPrefsWrapper: AppPrefsWrapper
 ) : ScopedViewModel(savedStateHandle) {
     companion object {
         private const val STORE_CREATION_URL = "https://woocommerce.com/start"
@@ -43,8 +44,6 @@ class WebViewStoreCreationViewModel @Inject constructor(
         private const val WEBVIEW_EXIT_TRIGGER_KEYWORD = "https://woocommerce.com/"
         private const val STORE_LOAD_RETRIES_LIMIT = 10
     }
-
-    private val navArgs: WebViewStoreCreationFragmentArgs by savedStateHandle.navArgs()
 
     private val _dialogViewState = savedStateHandle.getStateFlow(viewModelScope, setDialogState(isVisible = false))
     val dialogViewState = _dialogViewState.asStateFlow().asLiveData()
@@ -59,6 +58,9 @@ class WebViewStoreCreationViewModel @Inject constructor(
     }.asLiveData()
 
     private val possibleStoreUrls = mutableListOf<String>()
+    private val navigationSource by lazy {
+        appPrefsWrapper.getStoreCreationSource()
+    }
 
     private fun prepareStoreCreationState() = StoreCreationState(
         storeCreationUrl = STORE_CREATION_URL,
@@ -96,10 +98,11 @@ class WebViewStoreCreationViewModel @Inject constructor(
                     triggerEvent(NavigateToNewStore)
 
                     val args = mapOf<String, String>(
-                        AnalyticsTracker.KEY_SOURCE to navArgs.source,
+                        AnalyticsTracker.KEY_SOURCE to navigationSource,
                         AnalyticsTracker.KEY_URL to newSite.url
                     )
                     analyticsTrackerWrapper.track(AnalyticsEvent.LOGIN_WOOCOMMERCE_SITE_CREATED, args)
+                    break
                 } else if (retries == STORE_LOAD_RETRIES_LIMIT) {
                     WooLog.d(T.LOGIN, "Maximum retries reached...")
                     step.value = Step.StoreLoadingError
@@ -112,7 +115,7 @@ class WebViewStoreCreationViewModel @Inject constructor(
                         analyticsTrackerWrapper.track(
                             AnalyticsEvent.SITE_CREATION_FAILED,
                             mapOf(
-                                AnalyticsTracker.KEY_SOURCE to navArgs.source
+                                AnalyticsTracker.KEY_SOURCE to navigationSource
                             )
                         )
                         break
@@ -131,7 +134,7 @@ class WebViewStoreCreationViewModel @Inject constructor(
         analyticsTrackerWrapper.track(
             AnalyticsEvent.SITE_CREATION_DISMISSED,
             mapOf(
-                AnalyticsTracker.KEY_SOURCE to navArgs.source
+                AnalyticsTracker.KEY_SOURCE to navigationSource
             )
         )
 

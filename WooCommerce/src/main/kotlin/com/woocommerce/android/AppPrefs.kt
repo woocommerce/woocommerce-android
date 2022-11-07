@@ -27,6 +27,7 @@ import com.woocommerce.android.AppPrefs.DeletablePrefKey.ORDER_FILTER_PREFIX
 import com.woocommerce.android.AppPrefs.DeletablePrefKey.PRODUCT_SORTING_PREFIX
 import com.woocommerce.android.AppPrefs.DeletablePrefKey.RECEIPT_PREFIX
 import com.woocommerce.android.AppPrefs.UndeletablePrefKey.ONBOARDING_CAROUSEL_DISPLAYED
+import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.extensions.orNullIfEmpty
 import com.woocommerce.android.extensions.packageInfo
 import com.woocommerce.android.tools.SelectedSite
@@ -97,7 +98,8 @@ object AppPrefs {
         CARD_READER_DO_NOT_SHOW_CASH_ON_DELIVERY_DISABLED_ONBOARDING_STATE,
         ACTIVE_STATS_GRANULARITY,
         USE_SIMULATED_READER,
-        NEW_SIGN_UP
+        NEW_SIGN_UP,
+        STORE_CREATION_SOURCE
     }
 
     /**
@@ -884,6 +886,12 @@ object AppPrefs {
     }
 
     fun getIsNewSignUp() = getBoolean(DeletablePrefKey.NEW_SIGN_UP, false)
+
+    fun setStoreCreationSource(source: String) {
+        setString(DeletablePrefKey.STORE_CREATION_SOURCE, source)
+    }
+
+    fun getStoreCreationSource() = getString(DeletablePrefKey.STORE_CREATION_SOURCE, AnalyticsTracker.VALUE_OTHER)
 
     private fun getActiveStatsGranularityFilterKey(currentSiteId: Int) =
         PrefKeyString("${DeletablePrefKey.ACTIVE_STATS_GRANULARITY}:$currentSiteId")
