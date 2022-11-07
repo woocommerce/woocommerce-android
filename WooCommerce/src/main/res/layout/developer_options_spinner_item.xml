@@ -6,17 +6,6 @@
     android:layout_height="wrap_content"
     android:background="@color/color_surface">
 
-    <com.google.android.material.textfield.TextInputEditText
-        android:id="@+id/spinner_edit_text"
-        style="@style/Woo.TextInputEditText"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:cursorVisible="false"
-        android:focusable="false"
-        android:focusableInTouchMode="false"
-        android:importantForAutofill="no"
-        tools:ignore="UnusedAttribute" />
-
     <androidx.appcompat.widget.AppCompatImageView
         android:id="@+id/developerOptionsSpinnerIcon"
         android:layout_width="100dp"
