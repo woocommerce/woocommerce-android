@@ -1,6 +1,6 @@
 @file:Suppress("DEPRECATION")
 
-package com.woocommerce.android.e2e.ui.tests
+package com.woocommerce.android.e2e.tests.ui
 
 import androidx.test.rule.ActivityTestRule
 import com.woocommerce.android.BuildConfig

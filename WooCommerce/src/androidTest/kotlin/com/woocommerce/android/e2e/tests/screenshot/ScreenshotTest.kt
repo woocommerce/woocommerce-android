@@ -1,4 +1,4 @@
-package com.woocommerce.android.e2e.screens
+package com.woocommerce.android.e2e.tests.screenshot
 
 import android.util.Log
 import androidx.compose.ui.test.junit4.createComposeRule
@@ -8,6 +8,7 @@ import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.BuildConfig
 import com.woocommerce.android.e2e.helpers.InitializationRule
 import com.woocommerce.android.e2e.helpers.TestBase
+import com.woocommerce.android.e2e.screens.TabNavComponent
 import com.woocommerce.android.e2e.screens.login.WelcomeScreen
 import com.woocommerce.android.e2e.screens.mystore.MyStoreScreen
 import com.woocommerce.android.e2e.screens.notifications.NotificationsScreen
