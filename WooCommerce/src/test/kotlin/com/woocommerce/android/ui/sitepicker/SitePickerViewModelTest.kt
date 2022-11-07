@@ -524,7 +524,7 @@ class SitePickerViewModelTest : BaseUnitTest() {
             verify(analyticsTrackerWrapper, times(1)).track(
                 AnalyticsEvent.SITE_PICKER_ADD_A_STORE_TAPPED
             )
-            assertThat(view).isEqualTo(NavigateToAddStoreEvent)
+            assertThat(view).isEqualTo(NavigateToAddStoreEvent(source = "login"))
         }
 
     @Test

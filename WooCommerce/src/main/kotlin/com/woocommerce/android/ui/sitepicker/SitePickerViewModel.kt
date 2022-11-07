@@ -22,6 +22,7 @@ import com.woocommerce.android.ui.login.AccountRepository
 import com.woocommerce.android.ui.login.UnifiedLoginTracker
 import com.woocommerce.android.ui.login.accountmismatch.AccountMismatchErrorViewModel.AccountMismatchPrimaryButton
 import com.woocommerce.android.ui.sitepicker.SitePickerViewModel.SitePickerEvent.NavigateToAccountMismatchScreen
+import com.woocommerce.android.ui.sitepicker.SitePickerViewModel.SitePickerEvent.NavigateToAddStoreEvent
 import com.woocommerce.android.ui.sitepicker.SitePickerViewModel.SitePickerEvent.NavigateToStoreCreationEvent
 import com.woocommerce.android.ui.sitepicker.SitePickerViewModel.SitePickerEvent.NavigateToWPComWebView
 import com.woocommerce.android.ui.sitepicker.SitePickerViewModel.SitesListItem.Header
@@ -84,6 +85,8 @@ class SitePickerViewModel @Inject constructor(
 
     val shouldShowToolbar: Boolean
         get() = !navArgs.openedFromLogin
+
+    private val navSource = getNavigationSource()
 
     init {
         when (navArgs.openedFromLogin) {
@@ -420,7 +423,19 @@ class SitePickerViewModel @Inject constructor(
 
     fun onAddStoreClick() {
         analyticsTrackerWrapper.track(AnalyticsEvent.SITE_PICKER_ADD_A_STORE_TAPPED)
-        triggerEvent(SitePickerEvent.NavigateToAddStoreEvent)
+        triggerEvent(NavigateToAddStoreEvent(navSource))
+    }
+
+    private fun getNavigationSource(): String {
+        return if (navArgs.openedFromLogin) {
+            if (appPrefsWrapper.getIsNewSignUp()) {
+                AnalyticsTracker.VALUE_PROLOGUE
+            } else {
+                AnalyticsTracker.VALUE_LOGIN
+            }
+        } else {
+            AnalyticsTracker.VALUE_SWITCHING_STORE
+        }
     }
 
     fun onTryAnotherAccountButtonClick() {
@@ -617,7 +632,7 @@ class SitePickerViewModel @Inject constructor(
 
     private fun startStoreCreationWebFlow() {
         appPrefsWrapper.markAsNewSignUp(false)
-        triggerEvent(NavigateToStoreCreationEvent)
+        triggerEvent(NavigateToStoreCreationEvent(navSource))
     }
 
     private fun trackLoginEvent(
@@ -680,8 +695,8 @@ class SitePickerViewModel @Inject constructor(
         object NavigateToMainActivityEvent : SitePickerEvent()
         object NavigateToEmailHelpDialogEvent : SitePickerEvent()
         object NavigateToNewToWooEvent : SitePickerEvent()
-        object NavigateToAddStoreEvent : SitePickerEvent()
-        object NavigateToStoreCreationEvent : SitePickerEvent()
+        data class NavigateToAddStoreEvent(val source: String) : SitePickerEvent()
+        data class NavigateToStoreCreationEvent(val source: String) : SitePickerEvent()
         data class NavigateToHelpFragmentEvent(val origin: HelpActivity.Origin) : SitePickerEvent()
         data class NavigateToWPComWebView(
             val url: String,

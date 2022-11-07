@@ -5,7 +5,9 @@ data class RevenueStat(
     val totalDelta: DeltaPercentage,
     val netValue: Double,
     val netDelta: DeltaPercentage,
-    val currencyCode: String?
+    val currencyCode: String?,
+    val totalRevenueByInterval: List<Double>,
+    val netRevenueByInterval: List<Double>
 )
 
 sealed class DeltaPercentage {

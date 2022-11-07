@@ -212,12 +212,7 @@ class AnalyticsViewModel @Inject constructor(
                         is RevenueData -> {
                             mutableState.value = state.value.copy(
                                 refreshIndicator = NotShowIndicator,
-                                revenueState = buildRevenueDataViewState(
-                                    formatValue(it.revenueStat.totalValue.toString(), it.revenueStat.currencyCode),
-                                    it.revenueStat.totalDelta,
-                                    formatValue(it.revenueStat.netValue.toString(), it.revenueStat.currencyCode),
-                                    it.revenueStat.netDelta
-                                )
+                                revenueState = buildRevenueDataViewState(it)
                             )
                             transactionLauncher.onRevenueFetched()
                         }
@@ -244,12 +239,7 @@ class AnalyticsViewModel @Inject constructor(
                     when (it) {
                         is OrdersData -> {
                             mutableState.value = state.value.copy(
-                                ordersState = buildOrdersDataViewState(
-                                    it.ordersStat.ordersCount.toString(),
-                                    it.ordersStat.ordersCountDelta,
-                                    formatValue(it.ordersStat.avgOrderValue.toString(), it.ordersStat.currencyCode),
-                                    it.ordersStat.avgOrderDelta
-                                )
+                                ordersState = buildOrdersDataViewState(it)
                             )
                             transactionLauncher.onOrdersFetched()
                         }
@@ -353,6 +343,7 @@ class AnalyticsViewModel @Inject constructor(
 
     private fun getAvailableDateRanges() =
         resourceProvider.getStringArray(R.array.analytics_date_range_selectors).asList()
+
     private fun getDefaultTimePeriod() = navArgs.targetGranularity
 
     private fun getDefaultDateRange() = analyticsDateRange.getAnalyticsDateRangeFrom(getDefaultTimePeriod())
@@ -383,43 +374,45 @@ class AnalyticsViewModel @Inject constructor(
         selectedPeriod = getTimePeriodDescription(getSavedTimePeriod())
     )
 
-    private fun buildRevenueDataViewState(
-        totalValue: String,
-        totalDelta: DeltaPercentage,
-        netValue: String,
-        netDelta: DeltaPercentage
-    ) =
+    private fun buildRevenueDataViewState(data: RevenueData) =
         DataViewState(
             title = resourceProvider.getString(R.string.analytics_revenue_card_title),
             leftSection = AnalyticsInformationSectionViewState(
                 resourceProvider.getString(R.string.analytics_total_sales_title),
-                totalValue,
-                if (totalDelta is DeltaPercentage.Value) totalDelta.value else null
+                formatValue(data.revenueStat.totalValue.toString(), data.revenueStat.currencyCode),
+                if (data.revenueStat.totalDelta is DeltaPercentage.Value) data.revenueStat.totalDelta.value else null,
+                data.revenueStat.totalRevenueByInterval.map { it.toFloat() }
             ),
             rightSection = AnalyticsInformationSectionViewState(
                 resourceProvider.getString(R.string.analytics_net_sales_title),
-                netValue,
-                if (netDelta is DeltaPercentage.Value) netDelta.value else null
-            )
+                formatValue(data.revenueStat.netValue.toString(), data.revenueStat.currencyCode),
+                if (data.revenueStat.netDelta is DeltaPercentage.Value) data.revenueStat.netDelta.value else null,
+                data.revenueStat.netRevenueByInterval.map { it.toFloat() }
+            ),
         )
 
-    private fun buildOrdersDataViewState(
-        totalOrders: String,
-        totalDelta: DeltaPercentage,
-        avgValue: String,
-        avgDelta: DeltaPercentage
-    ) =
+    private fun buildOrdersDataViewState(data: OrdersData) =
         DataViewState(
             title = resourceProvider.getString(R.string.analytics_orders_card_title),
             leftSection = AnalyticsInformationSectionViewState(
                 resourceProvider.getString(R.string.analytics_total_orders_title),
-                totalOrders,
-                if (totalDelta is DeltaPercentage.Value) totalDelta.value else null
+                data.ordersStat.ordersCount.toString(),
+                if (data.ordersStat.ordersCountDelta is DeltaPercentage.Value) {
+                    data.ordersStat.ordersCountDelta.value
+                } else {
+                    null
+                },
+                data.ordersStat.ordersCountByInterval.map { it.toFloat() }
             ),
             rightSection = AnalyticsInformationSectionViewState(
                 resourceProvider.getString(R.string.analytics_avg_orders_title),
-                avgValue,
-                if (avgDelta is DeltaPercentage.Value) avgDelta.value else null
+                formatValue(data.ordersStat.avgOrderValue.toString(), data.ordersStat.currencyCode),
+                if (data.ordersStat.avgOrderDelta is DeltaPercentage.Value) {
+                    data.ordersStat.avgOrderDelta.value
+                } else {
+                    null
+                },
+                data.ordersStat.avgOrderValueByInterval.map { it.toFloat() }
             )
         )
 
