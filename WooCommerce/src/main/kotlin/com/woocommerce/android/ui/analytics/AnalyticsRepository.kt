@@ -26,6 +26,8 @@ import kotlinx.coroutines.flow.single
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import org.wordpress.android.fluxc.model.WCRevenueStatsModel
+import org.wordpress.android.fluxc.model.stats.time.VisitsAndViewsModel
+import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooResult
 import org.wordpress.android.fluxc.persistence.entity.TopPerformerProductEntity
 import org.wordpress.android.fluxc.store.WCStatsStore.StatsGranularity
 import org.wordpress.android.fluxc.store.WCStatsStore.StatsGranularity.DAYS
@@ -284,6 +286,24 @@ class AnalyticsRepository @Inject constructor(
         ).map {
             statsRepository.getTopPerformers(startDateFormatted, endDateFormatted)
         }
+    }
+
+    private suspend fun getVisitorsStats(
+        dateRange: AnalyticsDateRange,
+        granularity: org.wordpress.android.fluxc.network.utils.StatsGranularity
+    ): WooResult<VisitsAndViewsModel> = coroutineScope {
+        val startDate = when (dateRange) {
+            is SimpleDateRange -> dateRange.from.formatToYYYYmmDD()
+            is MultipleDateRange -> dateRange.from.from.formatToYYYYmmDD()
+        }
+        val endDate = when (dateRange) {
+            is SimpleDateRange -> dateRange.to.formatToYYYYmmDD()
+            is MultipleDateRange -> dateRange.to.to.formatToYYYYmmDD()
+        }
+
+        val site = selectedSite.get()
+
+        statsRepository.fetchFullVisits(granularity, false, site)
     }
 
     private fun getGranularity(selectedRange: AnalyticTimePeriod) =
