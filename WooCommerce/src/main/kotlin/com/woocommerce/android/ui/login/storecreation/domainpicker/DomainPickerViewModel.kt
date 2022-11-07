@@ -40,11 +40,16 @@ class DomainPickerViewModel @Inject constructor(
         DomainPickerState(
             loadingState = loadingState,
             domain = domainQuery,
-            domainSuggestionsUi = domainSuggestions.map { domain ->
-                DomainSuggestionUi(
-                    isSelected = domain == selectedDomain,
-                    domain = domain
-                )
+            domainSuggestionsUi =
+            if (domainQuery.isBlank()) {
+                emptyList()
+            } else {
+                domainSuggestions.map { domain ->
+                    DomainSuggestionUi(
+                        isSelected = domain == selectedDomain,
+                        domain = domain
+                    )
+                }
             }
         )
     }.asLiveData()
