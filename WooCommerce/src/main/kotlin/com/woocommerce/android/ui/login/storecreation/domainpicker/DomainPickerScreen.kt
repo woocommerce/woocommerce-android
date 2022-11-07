@@ -105,7 +105,7 @@ private fun Toolbar(
 private fun DomainSearchForm(
     state: DomainPickerState,
     onDomainQueryChanged: (String) -> Unit,
-    onDomainSuggestionSelected: (Int) -> Unit,
+    onDomainSuggestionSelected: (String) -> Unit,
     onContinueClicked: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -167,7 +167,7 @@ private fun DomainSearchForm(
 @Composable
 private fun DomainSuggestionList(
     suggestions: List<DomainSuggestionUi>,
-    onDomainSuggestionSelected: (Int) -> Unit,
+    onDomainSuggestionSelected: (String) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Column(
@@ -185,7 +185,7 @@ private fun DomainSuggestionList(
                     domainSuggestion = suggestion,
                     modifier = Modifier
                         .fillMaxWidth()
-                        .clickable { onDomainSuggestionSelected(index) }
+                        .clickable { onDomainSuggestionSelected(suggestion.domain) }
                 )
                 if (index < suggestions.lastIndex)
                     Divider(
