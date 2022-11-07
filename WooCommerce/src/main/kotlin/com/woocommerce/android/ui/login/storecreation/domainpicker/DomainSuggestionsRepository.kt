@@ -25,9 +25,9 @@ class DomainSuggestionsRepository @Inject constructor(
     suspend fun fetchDomainSuggestions(domainQuery: String): Result<Unit> {
         val domainSuggestionsPayload = SiteStore.SuggestDomainsPayload(
             domainQuery,
-            onlyWordpressCom = false,
+            onlyWordpressCom = true,
             includeWordpressCom = false,
-            includeDotBlogSubdomain = true,
+            includeDotBlogSubdomain = false,
             SUGGESTIONS_REQUEST_COUNT,
             includeVendorDot = false
         )
@@ -52,7 +52,9 @@ class DomainSuggestionsRepository @Inject constructor(
                 } else {
                     WooLog.w(WooLog.T.LOGIN, "Domain suggestions loaded successfully")
                     domainSuggestions.update {
-                        domainSuggestionsEvent.suggestions.map { it.domain_name }
+                        domainSuggestionsEvent.suggestions
+                            .filter { it.is_free }
+                            .map { it.domain_name }
                     }
                     Result.success(Unit)
                 }
