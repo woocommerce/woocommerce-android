@@ -12,9 +12,9 @@
 - [*] [Internal] Simplified login: update the site picker design [https://github.com/woocommerce/woocommerce-android/pull/7677]
 - [*] [Internal] Simplified login: update the password sceen [https://github.com/woocommerce/woocommerce-android/pull/7711]
 - [*] We improved orders search behavior. In case there are filters set on Orders page, the search results will be filtered accordingly. [https://github.com/woocommerce/woocommerce-android/pull/7728]
-- [*][Internal] Add encoded query params and phone locale while fetching JITM [https://github.com/woocommerce/woocommerce-android/pull/7737]
 - [*] Adds new CTA to scan QR code from magic link email sent screen. [https://github.com/woocommerce/woocommerce-android/pull/7740]
 - [*] Bulk updating of product variations stock quantity is now supported [https://github.com/woocommerce/woocommerce-android/pull/7736]
+- [*][Internal] Add encoded query params and phone locale while fetching JITM [https://github.com/woocommerce/woocommerce-android/pull/7737]
 
 11.0
 -----

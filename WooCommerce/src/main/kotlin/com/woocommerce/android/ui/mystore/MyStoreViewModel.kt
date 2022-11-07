@@ -156,7 +156,7 @@ class MyStoreViewModel @Inject constructor(
 
     private fun getEncodedQueryParams(): String {
         val query = if (BuildConfig.DEBUG) {
-            "platform=android&version=${BuildConfig.VERSION_NAME}&buildType=developer"
+            "build_type=developer&platform=android&version=${BuildConfig.VERSION_NAME}"
         } else {
             "platform=android&version=${BuildConfig.VERSION_NAME}"
         }
