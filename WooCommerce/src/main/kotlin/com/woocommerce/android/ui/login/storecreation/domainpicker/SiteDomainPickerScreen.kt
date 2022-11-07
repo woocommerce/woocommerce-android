@@ -6,6 +6,7 @@ import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -63,6 +64,7 @@ fun SiteDomainPickerScreen(viewModel: SiteDomainPickerViewModel) {
             SiteDomainSearchForm(
                 state = viewState,
                 onDomainQueryChanged = viewModel::onDomainChanged,
+                onDomainSuggestionSelected = viewModel::onDomainSuggestionSelected,
                 onContinueClicked = viewModel::onContinueClicked,
                 modifier = Modifier.fillMaxSize()
             )
@@ -101,6 +103,7 @@ private fun Toolbar(
 private fun SiteDomainSearchForm(
     state: SiteDomainPickerState,
     onDomainQueryChanged: (String) -> Unit,
+    onDomainSuggestionSelected: (Int) -> Unit,
     onContinueClicked: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -136,13 +139,19 @@ private fun SiteDomainSearchForm(
                 ),
             backgroundColor = TextFieldDefaults.outlinedTextFieldColors().backgroundColor(enabled = true).value
         )
-        DomainSuggestionList(
-            suggestions = state.domainSuggestionUis,
-            isLoading = state.isLoading,
-            modifier = Modifier
-                .weight(1f)
-                .padding(top = dimensionResource(id = R.dimen.major_100))
-        )
+        Box(
+            modifier = Modifier.weight(1f)
+        ) {
+            if (state.isLoading) {
+                CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
+            } else {
+                DomainSuggestionList(
+                    suggestions = state.domainSuggestionsUi,
+                    onDomainSuggestionSelected = onDomainSuggestionSelected,
+                    modifier = Modifier.padding(top = dimensionResource(id = R.dimen.major_100))
+                )
+            }
+        }
         WCColoredButton(
             modifier = Modifier.fillMaxWidth(),
             onClick = onContinueClicked,
@@ -155,29 +164,33 @@ private fun SiteDomainSearchForm(
 @Composable
 private fun DomainSuggestionList(
     suggestions: List<DomainSuggestionUi>,
-    isLoading: Boolean,
-    modifier: Modifier = Modifier
+    onDomainSuggestionSelected: (Int) -> Unit,
+    modifier: Modifier = Modifier,
 ) {
-    Box(
-        modifier = modifier
-    ) {
-        if (isLoading) {
-            CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
-        } else {
-            Column(verticalArrangement = Arrangement.spacedBy(dimensionResource(id = R.dimen.major_100))) {
-                Text(
-                    text = stringResource(id = R.string.store_creation_domain_picker_suggestions_title).uppercase(),
-                    style = MaterialTheme.typography.body2,
-                    color = colorResource(id = R.color.color_on_surface_medium_selector)
+    Column(verticalArrangement = Arrangement.spacedBy(dimensionResource(id = R.dimen.major_100))) {
+        Text(
+            text = stringResource(id = R.string.store_creation_domain_picker_suggestions_title).uppercase(),
+            style = MaterialTheme.typography.body2,
+            color = colorResource(id = R.color.color_on_surface_medium_selector)
+        )
+        LazyColumn {
+            itemsIndexed(suggestions) { index, suggestion ->
+                DomainSuggestionItem(
+                    domainSuggestion = suggestion,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .clickable { onDomainSuggestionSelected(index) }
                 )
-                LazyColumn {
-                    itemsIndexed(suggestions) { _, suggestion ->
-                        DomainSuggestionItem(domainSuggestion = suggestion)
-                    }
-                }
+                if (index < suggestions.lastIndex)
+                    Divider(
+                        color = colorResource(id = R.color.divider_color),
+                        thickness = dimensionResource(id = R.dimen.minor_10)
+                    )
             }
         }
     }
+
+
 }
 
 @Composable
@@ -211,17 +224,15 @@ private fun DomainSuggestionItem(
         )
         if (domainSuggestion.isSelected) {
             Image(
-                modifier = Modifier.padding(start = dimensionResource(id = R.dimen.major_100)),
+                modifier = Modifier
+                    .padding(start = dimensionResource(id = R.dimen.major_100))
+                    .weight(1f),
                 alignment = Alignment.CenterEnd,
                 painter = painterResource(id = R.drawable.ic_done_secondary),
                 contentDescription = "Selected"
             )
         }
     }
-    Divider(
-        color = colorResource(id = R.color.divider_color),
-        thickness = dimensionResource(id = R.dimen.minor_10)
-    )
 }
 
 @ExperimentalFoundationApi
@@ -237,7 +248,7 @@ fun SiteDomainPickerPreview() {
             state = SiteDomainPickerState(
                 isLoading = false,
                 domain = "White Christmas Tress",
-                domainSuggestionUis = listOf(
+                domainSuggestionsUi = listOf(
                     DomainSuggestionUi("whitechristmastrees.mywc.mysite"),
                     DomainSuggestionUi("whitechristmastrees.business.mywc.mysite", isSelected = true),
                     DomainSuggestionUi("whitechristmastreesVeryLongWithLineBreak.business.test"),
@@ -253,8 +264,9 @@ fun SiteDomainPickerPreview() {
                     DomainSuggestionUi("whitechristmastrees.business.other")
                 )
             ),
+            onDomainQueryChanged = {},
             onContinueClicked = {},
-            onDomainQueryChanged = {}
+            onDomainSuggestionSelected = {}
         )
     }
 }
