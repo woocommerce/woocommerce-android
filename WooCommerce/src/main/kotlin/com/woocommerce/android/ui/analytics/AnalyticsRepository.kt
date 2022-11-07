@@ -290,7 +290,7 @@ class AnalyticsRepository @Inject constructor(
 
     private suspend fun getVisitorsStats(
         dateRange: AnalyticsDateRange,
-        granularity: org.wordpress.android.fluxc.network.utils.StatsGranularity
+        granularity: StatsGranularity
     ): WooResult<VisitsAndViewsModel> = coroutineScope {
         val startDate = when (dateRange) {
             is SimpleDateRange -> dateRange.from.formatToYYYYmmDD()
@@ -303,7 +303,7 @@ class AnalyticsRepository @Inject constructor(
 
         val site = selectedSite.get()
 
-        statsRepository.fetchFullVisits(granularity, false, site)
+        statsRepository.fetchFullVisits(granularity.asJetpackGranularity(), false, site)
     }
 
     private fun getGranularity(selectedRange: AnalyticTimePeriod) =
