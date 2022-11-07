@@ -147,8 +147,7 @@ private fun SiteDomainSearchForm(
             } else {
                 DomainSuggestionList(
                     suggestions = state.domainSuggestionsUi,
-                    onDomainSuggestionSelected = onDomainSuggestionSelected,
-                    modifier = Modifier.padding(top = dimensionResource(id = R.dimen.major_100))
+                    onDomainSuggestionSelected = onDomainSuggestionSelected
                 )
             }
         }
@@ -167,7 +166,10 @@ private fun DomainSuggestionList(
     onDomainSuggestionSelected: (Int) -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    Column(verticalArrangement = Arrangement.spacedBy(dimensionResource(id = R.dimen.major_100))) {
+    Column(
+        modifier = modifier,
+        verticalArrangement = Arrangement.spacedBy(dimensionResource(id = R.dimen.major_100))
+    ) {
         Text(
             text = stringResource(id = R.string.store_creation_domain_picker_suggestions_title).uppercase(),
             style = MaterialTheme.typography.body2,
@@ -189,8 +191,6 @@ private fun DomainSuggestionList(
             }
         }
     }
-
-
 }
 
 @Composable
