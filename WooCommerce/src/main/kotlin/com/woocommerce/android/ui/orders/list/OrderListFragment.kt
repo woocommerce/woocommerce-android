@@ -150,7 +150,15 @@ class OrderListFragment :
         orderListMenu = menu
         searchMenuItem = menu.findItem(R.id.menu_search)
         searchView = searchMenuItem?.actionView as SearchView?
-        searchView?.queryHint = getString(R.string.orderlist_search_hint)
+        searchView?.queryHint = getSearchQueryHint()
+    }
+
+    private fun getSearchQueryHint(): String {
+        return if (viewModel.viewState.isFilteringActive) {
+            getString(R.string.orderlist_search_hint_active_filters)
+        } else {
+            getString(R.string.orderlist_search_hint)
+        }
     }
 
     override fun onPrepareMenu(menu: Menu) {

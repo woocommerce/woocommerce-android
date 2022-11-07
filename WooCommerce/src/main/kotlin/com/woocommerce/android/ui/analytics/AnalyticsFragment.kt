@@ -13,6 +13,7 @@ import com.woocommerce.android.R
 import com.woocommerce.android.databinding.FragmentAnalyticsBinding
 import com.woocommerce.android.extensions.handleDialogResult
 import com.woocommerce.android.extensions.navigateSafely
+import com.woocommerce.android.extensions.scrollStartEvents
 import com.woocommerce.android.ui.analytics.RefreshIndicator.ShowIndicator
 import com.woocommerce.android.ui.analytics.daterangeselector.AnalyticTimePeriod
 import com.woocommerce.android.ui.base.BaseFragment
@@ -20,6 +21,8 @@ import com.woocommerce.android.util.ChromeCustomTabUtils
 import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 
 @AndroidEntryPoint
 class AnalyticsFragment :
@@ -49,9 +52,13 @@ class AnalyticsFragment :
         viewModel.event.observe(viewLifecycleOwner) { event -> handleEvent(event) }
         binding.analyticsRefreshLayout.setOnRefreshListener {
             binding.analyticsRefreshLayout.scrollUpChild = binding.scrollView
+            viewModel.onTrackableUIInteraction()
             viewModel.onRefreshRequested()
         }
         binding.analyticsProductsCard.isVisible = FeatureFlag.ANALYTICS_HUB_PRODUCTS_AND_REPORTS.isEnabled()
+        binding.scrollView.scrollStartEvents()
+            .onEach { viewModel.onTrackableUIInteraction() }
+            .launchIn(viewLifecycleOwner.lifecycleScope)
     }
 
     override fun onDestroyView() {
@@ -73,12 +80,14 @@ class AnalyticsFragment :
     private fun openDateRangeSelector() = findNavController().navigateSafely(buildDialogDateRangeSelectorArguments())
 
     private fun buildDialogDateRangeSelectorArguments() =
-        AnalyticsFragmentDirections.actionAnalyticsFragmentToDateRangeSelector(
-            requestKey = KEY_DATE_RANGE_SELECTOR_RESULT,
-            keys = getDateRangeSelectorViewState().availableRangeDates.toTypedArray(),
-            values = getDateRangeSelectorViewState().availableRangeDates.toTypedArray(),
-            selectedItem = getDateRangeSelectorViewState().selectedPeriod
-        )
+        getDateRangeSelectorViewState().availableRangeDates.toTypedArray().let { ranges ->
+            AnalyticsFragmentDirections.actionAnalyticsFragmentToDateRangeSelector(
+                requestKey = KEY_DATE_RANGE_SELECTOR_RESULT,
+                keys = ranges,
+                values = ranges,
+                selectedItem = getDateRangeSelectorViewState().selectedPeriod
+            )
+        }
 
     private fun setupResultHandlers(viewModel: AnalyticsViewModel) {
         handleDialogResult<String>(

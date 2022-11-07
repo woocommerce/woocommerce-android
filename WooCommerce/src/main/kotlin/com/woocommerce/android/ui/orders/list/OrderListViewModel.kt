@@ -33,6 +33,7 @@ import com.woocommerce.android.ui.orders.OrderStatusUpdateSource
 import com.woocommerce.android.ui.orders.details.OrderDetailRepository
 import com.woocommerce.android.ui.orders.filters.domain.GetSelectedOrderFiltersCount
 import com.woocommerce.android.ui.orders.filters.domain.GetWCOrderListDescriptorWithFilters
+import com.woocommerce.android.ui.orders.filters.domain.GetWCOrderListDescriptorWithFiltersAndSearchQuery
 import com.woocommerce.android.ui.orders.list.OrderListViewModel.OrderListEvent.OpenPurchaseCardReaderLink
 import com.woocommerce.android.ui.orders.list.OrderListViewModel.OrderListEvent.ShowErrorSnack
 import com.woocommerce.android.ui.orders.list.OrderListViewModel.OrderListEvent.ShowOrderFilters
@@ -52,6 +53,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import kotlinx.parcelize.IgnoredOnParcel
 import kotlinx.parcelize.Parcelize
 import okio.utf8Size
 import org.greenrobot.eventbus.EventBus
@@ -59,7 +61,6 @@ import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode.MAIN
 import org.wordpress.android.fluxc.Dispatcher
 import org.wordpress.android.fluxc.action.WCOrderAction.UPDATE_ORDER_STATUS
-import org.wordpress.android.fluxc.model.WCOrderListDescriptor
 import org.wordpress.android.fluxc.model.WCOrderStatusModel
 import org.wordpress.android.fluxc.model.list.PagedListWrapper
 import org.wordpress.android.fluxc.store.ListStore
@@ -93,6 +94,7 @@ class OrderListViewModel @Inject constructor(
     private val fetcher: WCOrderFetcher,
     private val resourceProvider: ResourceProvider,
     private val getWCOrderListDescriptorWithFilters: GetWCOrderListDescriptorWithFilters,
+    private val getWCOrderListDescriptorWithFiltersAndSearchQuery: GetWCOrderListDescriptorWithFiltersAndSearchQuery,
     private val getSelectedOrderFiltersCount: GetSelectedOrderFiltersCount,
     private val bannerDisplayEligibilityChecker: BannerDisplayEligibilityChecker,
     private val orderListTransactionLauncher: OrderListTransactionLauncher,
@@ -253,10 +255,7 @@ class OrderListViewModel @Inject constructor(
      * processing list will always use the same [processingPagedListWrapper].
      */
     fun submitSearchOrFilter(searchQuery: String) {
-        val listDescriptor = WCOrderListDescriptor(
-            selectedSite.get(),
-            searchQuery = sanitizeSearchQuery(searchQuery)
-        )
+        val listDescriptor = getWCOrderListDescriptorWithFiltersAndSearchQuery(sanitizeSearchQuery(searchQuery))
         val pagedListWrapper = listStore.getList(listDescriptor, dataSource, lifecycle)
         activatePagedListWrapper(pagedListWrapper, isFirstInit = true)
     }
@@ -709,7 +708,10 @@ class OrderListViewModel @Inject constructor(
         val isRefreshPending: Boolean = false,
         val arePaymentGatewaysFetched: Boolean = false,
         val filterCount: Int = 0
-    ) : Parcelable
+    ) : Parcelable {
+        @IgnoredOnParcel
+        val isFilteringActive = filterCount > 0
+    }
 
     companion object {
         const val UTM_CAMPAIGN = "feature_announcement_card"

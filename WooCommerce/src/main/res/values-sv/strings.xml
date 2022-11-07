@@ -1,18 +1,46 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2022-10-27 11:54:04+0000
+Translation-Revision-Date: 2022-11-03 10:54:04+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: sv_SE
 -->
 <resources>
-    <string name="hello_blank_fragment">Hej tomt fragment</string>
-    <string name="what_is_wordpress_link">&lt;u&gt;Vad är WordPress.com?&lt;/u&gt;</string>
+    <string name="create_new_store">Skapa en ny butik</string>
+    <string name="analytics_products_list_item_description">Nettoförsäljning: %1$s</string>
+    <string name="analytics_products_list_header_subtitle">Sålda artiklar</string>
+    <string name="analytics_products_list_header_title">Produkter</string>
+    <string name="analytics_products_card_title">Produkter</string>
+    <string name="analytics_products_list_items_sold">Sålda artiklar</string>
+    <string name="analytics_avg_orders_title">Genomsnittligt beställningsvärde</string>
+    <string name="analytics_total_orders_title">Totalt antal beställningar</string>
+    <string name="analytics_orders_card_title">Beställningar</string>
+    <string name="analytics_net_sales_title">Nettoförsäljning</string>
+    <string name="analytics_total_sales_title">Total försäljning</string>
+    <string name="analytics_products_no_data">Inga produkter denna period</string>
+    <string name="analytics_orders_no_data">Inga beställningar denna period</string>
+    <string name="analytics_revenue_no_data">Inga intäkter denna period</string>
+    <string name="analytics_revenue_card_title">Intäkt</string>
+    <string name="analytics_see_report_button_content_description">Se mer rapportdetaljer</string>
+    <string name="analytics_see_report_button_text">Se rapport</string>
+    <string name="analytics_date_range_custom">%1$s – %2$s</string>
+    <string name="analytics_see_more">Se mer</string>
+    <string name="signup_api_generic_error">Vi kunde inte skapa ett konto med de angivna autentiseringsuppgifterna. Prova med en annan e-postadress.</string>
+    <string name="signup_password_not_secure_enough">Ditt lösenord uppfyller inte våra säkerhetsriktlinjer. Försök med ett mer komplext lösenord.</string>
+    <string name="signup_password_too_short">Ditt lösenord är för kort. Välj ett lösenord som har minst 6 tecken.</string>
+    <string name="signup_email_invalid_input">Ange en giltig e-postadress.</string>
+    <string name="signup_email_exist_input">Ett konto med denna e-post finns redan.</string>
+    <string name="signup_already_registered">Låt oss först skapa ditt konto. Redan registrerad? &lt;a href=\'login\'&gt;&lt;u&gt;Logga in&lt;/u&gt;&lt;/a&gt;</string>
+    <string name="login_create_an_account">Skapa ett konto</string>
+    <string name="simplified_login_enter_email_address">Ange din e-postadress för att komma igång</string>
+    <string name="login_try_another_email">Försök med en annan adress</string>
+    <string name="date_timeframe_custom_date_range_title">Anpassat datumintervall</string>
+    <string name="date_timeframe_custom">Anpassat</string>
+    <string name="what_is_wordpress_link">Vad är WordPress.com?</string>
     <string name="signup_creating_account_loading_message">Skapar nytt konto</string>
     <string name="signup_terms_of_service">Genom att fortsätta godkänner du våra &lt;u&gt;användarvillkor.&lt;/u&gt;</string>
     <string name="signup_password_hint">Välj ett lösenord</string>
     <string name="signup_email_address_hint">Din e-postadress</string>
-    <string name="signup_already_registered">Låt oss börja med att skapa ditt konto. Har du redan registrerat dig? Logga in</string>
     <string name="signup_get_started_label">Kom igång \npå några minuter</string>
     <string name="signup_get_started_button">Kom igång</string>
     <string name="login_jetpack_connection_consent">Genom att klicka på knappen Anslut Jetpack godkänner du våra &lt;a href=\'terms\'&gt;användarvillkor&lt;/a&gt; och samtycker till att &lt;a href=\'sync\'&gt;dela information&lt;/a&gt; med WordPress.com.</string>
@@ -65,7 +93,7 @@ Language: sv_SE
     <string name="orderlist_bottom_sheet_simple_payments_moved_button">Jag förstår!</string>
     <string name="orderlist_bottom_sheet_simple_payments_moved_description">Now you can quickly access In-Person Payments and other features with ease</string>
     <string name="orderlist_bottom_sheet_simple_payments_moved_title">Betalningar från menyfliken</string>
-    <string name="login_no_wpcom_account_found">E-posten %1$s används inte med ett WordPress.com-konto.</string>
+    <string name="login_no_wpcom_account_found">Din e-post används inte med ett WordPress.com-konto.</string>
     <string name="login_non_woo_stores_label">Andra webbplatser</string>
     <string name="login_with_store_address">Logga in med din butiksadress</string>
     <string name="more_menu_button_w___admin">WC-admin</string>
@@ -1856,7 +1884,7 @@ Language: sv_SE
     <string name="orderdetail_track_shipment">Spåra försändelse</string>
     <string name="login_email_help_desc">Du kan hitta e-postadressen som du använder för att ansluta till WordPress.com från din webbplatsadminsitration på %1$sJetpack Dashboard%2$s under %3$sAnslutningar &gt; Kontoanslutning%4$s</string>
     <string name="login_email_help_title">Vilken e-postadress ska jag använda för att logga in?</string>
-    <string name="login_need_help_finding_email">&lt;u&gt;Behöver du hjälp med att hitta e-postmeddelandet?&lt;/u&gt;</string>
+    <string name="login_need_help_finding_email">Behöver du hjälp med att hitta e-postmeddelandet?</string>
     <string name="login_jetpack_what_is_description">Jetpack är ett kostnadsfritt tillägg i WordPress som ansluter din butik till de verktyg som behövs för att ge den bästa möjliga mobilupplevelsen, inklusive pushmeddelanden och statistik</string>
     <string name="login_jetpack_what_is">Vad är Jetpack?</string>
     <string name="login_view_connected_stores">Visa anslutna butiker</string>
@@ -2235,7 +2263,8 @@ Language: sv_SE
     <string name="all">Alla</string>
     <string name="notification_channel_general_title">Allmänt</string>
     <string name="app_name">WooCommerce</string>
-    <string-array name="date_range_selectors">
+    <string-array name="analytics_date_range_selectors">
+        <item>\@string/date_timeframe_custom</item>
         <item>\@string/date_timeframe_today</item>
         <item>\@string/date_timeframe_yesterday</item>
         <item>\@string/date_timeframe_last_week</item>

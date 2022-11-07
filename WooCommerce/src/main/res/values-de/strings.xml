@@ -1,18 +1,46 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2022-10-27 11:54:04+0000
+Translation-Revision-Date: 2022-11-02 14:54:04+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: de
 -->
 <resources>
-    <string name="hello_blank_fragment">Hallo, (leeres Fragment)</string>
-    <string name="what_is_wordpress_link">&lt;u&gt;Was ist WordPress.com?&lt;/u&gt;</string>
+    <string name="create_new_store">Neuen Shop einrichten</string>
+    <string name="analytics_products_list_item_description">Nettoumsatz: %1$s</string>
+    <string name="analytics_products_list_header_subtitle">Verkaufte Artikel</string>
+    <string name="analytics_products_list_header_title">Produkte</string>
+    <string name="analytics_products_card_title">Produkte</string>
+    <string name="analytics_products_list_items_sold">Verkaufte Artikel</string>
+    <string name="analytics_avg_orders_title">Durchschnittlicher Bestellwert</string>
+    <string name="analytics_total_orders_title">Bestellungen gesamt</string>
+    <string name="analytics_orders_card_title">Bestellungen</string>
+    <string name="analytics_net_sales_title">Nettoumsatz</string>
+    <string name="analytics_total_sales_title">Gesamtumsatz</string>
+    <string name="analytics_products_no_data">Keine Produkte in diesem Zeitraum</string>
+    <string name="analytics_orders_no_data">Keine Bestellungen in diesem Zeitraum</string>
+    <string name="analytics_revenue_no_data">Keine Einnahmen in diesem Zeitraum</string>
+    <string name="analytics_revenue_card_title">Einnahmen</string>
+    <string name="analytics_see_report_button_content_description">Mehr Berichtsdetails anzeigen</string>
+    <string name="analytics_see_report_button_text">Bericht anzeigen</string>
+    <string name="analytics_date_range_custom">%1$s – %2$s</string>
+    <string name="analytics_see_more">Mehr anzeigen</string>
+    <string name="signup_api_generic_error">Wir konnten leider kein Konto für die angegebenen Anmeldedaten erstellen. Versuche es bitte mit einer anderen E-Mail-Adresse.</string>
+    <string name="signup_password_not_secure_enough">Dein Passwort entspricht nicht unseren Sicherheitsrichtlinien. Bitte versuche es mit einem komplexeren Passwort.</string>
+    <string name="signup_password_too_short">Dein Passwort ist zu kurz. Bitte wähle ein Passwort mit mindestens 6 Zeichen.</string>
+    <string name="signup_email_invalid_input">Bitte gib eine gültige E-Mail-Adresse ein.</string>
+    <string name="signup_email_exist_input">Es ist bereits ein Konto mit dieser E-Mail-Adresse vorhanden.</string>
+    <string name="signup_already_registered">Erstellen wir zuerst dein Konto. Bist du bereits registriert? &lt;a href=\'login\'&gt;&lt;u&gt;Anmelden&lt;/u&gt;&lt;/a&gt;</string>
+    <string name="login_create_an_account">Konto erstellen</string>
+    <string name="simplified_login_enter_email_address">Gib als Erstes deine E-Mail-Adresse ein</string>
+    <string name="login_try_another_email">Andere Adresse versuchen</string>
+    <string name="date_timeframe_custom_date_range_title">Angepasster Zeitraum</string>
+    <string name="date_timeframe_custom">Angepasst</string>
+    <string name="what_is_wordpress_link">Was ist WordPress.com?</string>
     <string name="signup_creating_account_loading_message">Neues Konto wird erstellt</string>
     <string name="signup_terms_of_service">Indem du fortfährst, stimmst du unseren &lt;u&gt;Geschäftsbedingungen zu&lt;/u&gt;</string>
     <string name="signup_password_hint">Wähle ein Passwort</string>
     <string name="signup_email_address_hint">Deine E-Mail-Adresse</string>
-    <string name="signup_already_registered">Erstellen wir zuerst dein Konto. Bist du bereits registriert? Anmelden</string>
     <string name="signup_get_started_label">Los geht’s \nin Minuten</string>
     <string name="signup_get_started_button">Los geht’s</string>
     <string name="login_jetpack_connection_consent">Durch Tippen auf den Button „Jetpack verbinden“ stimmst du unseren &lt;a href=\'terms\'&gt;Geschäftsbedingungen&lt;/a&gt; und dem &lt;a href=\'sync\'&gt;Teilen von Daten&lt;/a&gt; mit WordPress.com zu.</string>
@@ -65,7 +93,7 @@ Language: de
     <string name="orderlist_bottom_sheet_simple_payments_moved_button">Verstanden!</string>
     <string name="orderlist_bottom_sheet_simple_payments_moved_description">Jetzt kannst du schnell und einfach auf Persönliche Zahlungen und andere Funktionen zugreifen</string>
     <string name="orderlist_bottom_sheet_simple_payments_moved_title">Zahlungen über den Tab „Menü“</string>
-    <string name="login_no_wpcom_account_found">Die E-Mail %1$s wird nicht mit einem WordPress.com-Konto verwendet.</string>
+    <string name="login_no_wpcom_account_found">Deine E-Mail-Adresse wird nicht mit einem WordPress.com-Konto verwendet.</string>
     <string name="login_non_woo_stores_label">Andere Websites</string>
     <string name="login_with_store_address">Melde dich mit deiner Shop-Adresse an</string>
     <string name="more_menu_button_w___admin">WC Admin</string>
@@ -1856,7 +1884,7 @@ Language: de
     <string name="orderdetail_track_shipment">Sendung verfolgen</string>
     <string name="login_email_help_desc">In deiner Website-Administration kannst du über das %1$sJetpack-Dashboard%2$s unter %3$sVerbindungen &gt; Kontoverbindung%4$s die E-Mail-Adresse finden, mit der du dich mit WordPress.com verbunden hast.</string>
     <string name="login_email_help_title">Mit welcher E-Mail-Adresse melde ich mich an?</string>
-    <string name="login_need_help_finding_email">&lt;u&gt;Benötigst du Hilfe bei der Suche nach der erforderlichen E-Mail-Adresse?&lt;/u&gt;</string>
+    <string name="login_need_help_finding_email">Benötigst du Hilfe bei der Suche nach der erforderlichen E-Mail-Adresse?</string>
     <string name="login_jetpack_what_is_description">Jetpack ist ein kostenloses WordPress-Plugin, das deinen Shop mit den Tools verbindet, die du für ein bestmögliches mobiles Erlebnis benötigst, einschließlich Push-Benachrichtigungen und Statistiken.</string>
     <string name="login_jetpack_what_is">Was ist Jetpack?</string>
     <string name="login_view_connected_stores">Verbundene Shops anzeigen</string>
@@ -2235,7 +2263,8 @@ Language: de
     <string name="all">Alle</string>
     <string name="notification_channel_general_title">Allgemein</string>
     <string name="app_name">WooCommerce</string>
-    <string-array name="date_range_selectors">
+    <string-array name="analytics_date_range_selectors">
+        <item>\@string/date_timeframe_custom</item>
         <item>\@string/date_timeframe_today</item>
         <item>\@string/date_timeframe_yesterday</item>
         <item>\@string/date_timeframe_last_week</item>

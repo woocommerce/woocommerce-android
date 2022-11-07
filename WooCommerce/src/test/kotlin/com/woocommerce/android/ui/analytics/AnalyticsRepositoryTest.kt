@@ -175,7 +175,9 @@ class AnalyticsRepositoryTest : BaseUnitTest() {
                         netValue = 100.0,
                         totalDelta = DeltaPercentage.Value(20),
                         netDelta = DeltaPercentage.Value(25),
-                        currencyCode = null
+                        currencyCode = null,
+                        totalRevenueByInterval = listOf(120.0),
+                        netRevenueByInterval = listOf(100.0)
                     )
                 )
             )
@@ -845,11 +847,17 @@ class AnalyticsRepositoryTest : BaseUnitTest() {
 
     private fun givenARevenue(totalSales: Double?, netValue: Double?, itemsSold: Int?): WCRevenueStatsModel {
         val stats: WCRevenueStatsModel = mock()
+        val interval: WCRevenueStatsModel.Interval = mock()
+        val subtotal: WCRevenueStatsModel.SubTotal = mock()
         val revenueStatsTotal: WCRevenueStatsModel.Total = mock()
         whenever(revenueStatsTotal.totalSales).thenReturn(totalSales)
         whenever(revenueStatsTotal.netRevenue).thenReturn(netValue)
         whenever(revenueStatsTotal.itemsSold).thenReturn(itemsSold)
         whenever(stats.parseTotal()).thenReturn(revenueStatsTotal)
+        whenever(subtotal.totalSales).thenReturn(totalSales)
+        whenever(subtotal.netRevenue).thenReturn(netValue)
+        whenever(interval.subtotals).thenReturn(subtotal)
+        whenever(stats.getIntervalList()).thenReturn(listOf(interval))
         return stats
     }
 

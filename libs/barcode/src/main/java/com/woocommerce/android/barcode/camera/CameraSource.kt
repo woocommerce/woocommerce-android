@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+@file:Suppress("DEPRECATION")
+
 package com.woocommerce.android.barcode.camera
 
 import android.content.Context

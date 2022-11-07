@@ -510,7 +510,7 @@ class AnalyticsViewModelTest : BaseUnitTest() {
         AnalyticsViewModel(
             resourceProvider, dateUtil, calculator,
             currencyFormatter, analyticsRepository,
-            selectedSite, mock(), savedState
+            selectedSite, mock(), mock(), savedState
         )
 
     private fun getRevenueStats(
@@ -519,7 +519,17 @@ class AnalyticsViewModelTest : BaseUnitTest() {
         currencyCode: String = CURRENCY_CODE,
         totalDelta: DeltaPercentage = DeltaPercentage.Value(TOTAL_DELTA.toInt()),
         netDelta: DeltaPercentage = DeltaPercentage.Value(NET_DELTA.toInt()),
-    ) = RevenueData(RevenueStat(totalValue, totalDelta, netValue, netDelta, currencyCode))
+    ) = RevenueData(
+        RevenueStat(
+            totalValue,
+            totalDelta,
+            netValue,
+            netDelta,
+            currencyCode,
+            listOf(TOTAL_VALUE),
+            listOf(NET_VALUE)
+        )
+    )
 
     private fun getOrdersStats(
         ordersCount: Int = ORDERS_COUNT,
@@ -533,7 +543,9 @@ class AnalyticsViewModelTest : BaseUnitTest() {
             DeltaPercentage.Value(ordersCountDelta),
             avgOrderValue,
             DeltaPercentage.Value(avgOrderValueDelta),
-            currencyCode
+            currencyCode,
+            listOf(ORDERS_COUNT.toLong()),
+            listOf(AVG_ORDER_VALUE)
         )
     )
 

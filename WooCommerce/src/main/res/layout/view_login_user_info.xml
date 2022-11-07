@@ -13,13 +13,12 @@
         android:gravity="center"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        android:background="@color/color_surface">
+        app:layout_constraintTop_toTopOf="parent" >
 
         <ImageView
             android:id="@+id/image_avatar"
-            android:layout_width="@dimen/image_major_72"
-            android:layout_height="@dimen/image_major_72"
+            android:layout_width="@dimen/image_major_64"
+            android:layout_height="@dimen/image_major_64"
             android:layout_marginBottom="@dimen/major_75"
             android:contentDescription="@string/login_avatar_content_description"
             tools:srcCompat="@drawable/img_gravatar_placeholder"/>

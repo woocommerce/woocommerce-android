@@ -74,6 +74,7 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="@dimen/margin_extra_large"
             android:layout_marginEnd="@dimen/margin_extra_large"
+            android:text="@string/what_is_wordpress_link"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/login_continue_button" />
@@ -98,8 +99,8 @@
             app:layout_constraintVertical_bias="1.0">
 
             <include
-                android:id="@+id/orLayout"
-                layout="@layout/login_or_layout"
+                android:id="@+id/orDivider"
+                layout="@layout/woo_login_or_layout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content" />
 

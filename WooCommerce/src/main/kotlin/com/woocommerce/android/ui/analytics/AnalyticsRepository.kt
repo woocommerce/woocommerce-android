@@ -52,8 +52,11 @@ class AnalyticsRepository @Inject constructor(
         fetchStrategy: FetchStrategy
     ): RevenueResult {
         val granularity = getGranularity(selectedRange)
-        val currentPeriodTotalRevenue = getCurrentPeriodStats(dateRange, granularity, fetchStrategy).getOrNull()
-        val previousPeriodTotalRevenue = getPreviousPeriodStats(dateRange, granularity, fetchStrategy).getOrNull()
+        val currentPeriod = getCurrentPeriodStats(dateRange, granularity, fetchStrategy).getOrNull()
+        val previousPeriod = getPreviousPeriodStats(dateRange, granularity, fetchStrategy).getOrNull()
+
+        val currentPeriodTotalRevenue = currentPeriod?.parseTotal()
+        val previousPeriodTotalRevenue = previousPeriod?.parseTotal()
 
         if (listOf(currentPeriodTotalRevenue, previousPeriodTotalRevenue).any { it == null } ||
             currentPeriodTotalRevenue?.totalSales == null ||
@@ -67,13 +70,25 @@ class AnalyticsRepository @Inject constructor(
         val currentTotalSales = currentPeriodTotalRevenue.totalSales!!
         val currentNetRevenue = currentPeriodTotalRevenue.netRevenue!!
 
+        val intervals = currentPeriod.getIntervalList()
+
+        val totalRevenueByInterval = intervals.map {
+            it.subtotals?.totalSales ?: 0.0
+        }
+
+        val netRevenueByInterval = intervals.map {
+            it.subtotals?.netRevenue ?: 0.0
+        }
+
         return RevenueData(
             RevenueStat(
                 currentTotalSales,
                 calculateDeltaPercentage(previousTotalSales, currentTotalSales),
                 currentNetRevenue,
                 calculateDeltaPercentage(previousNetRevenue, currentNetRevenue),
-                getCurrencyCode()
+                getCurrencyCode(),
+                totalRevenueByInterval,
+                netRevenueByInterval
             )
         )
     }
@@ -84,8 +99,12 @@ class AnalyticsRepository @Inject constructor(
         fetchStrategy: FetchStrategy
     ): OrdersResult {
         val granularity = getGranularity(selectedRange)
-        val currentPeriodTotalRevenue = getCurrentPeriodStats(dateRange, granularity, fetchStrategy).getOrNull()
-        val previousPeriodTotalRevenue = getPreviousPeriodStats(dateRange, granularity, fetchStrategy).getOrNull()
+
+        val currentPeriod = getCurrentPeriodStats(dateRange, granularity, fetchStrategy).getOrNull()
+        val previousPeriod = getPreviousPeriodStats(dateRange, granularity, fetchStrategy).getOrNull()
+
+        val currentPeriodTotalRevenue = currentPeriod?.parseTotal()
+        val previousPeriodTotalRevenue = previousPeriod?.parseTotal()
 
         if (listOf(currentPeriodTotalRevenue, previousPeriodTotalRevenue).any { it == null } ||
             currentPeriodTotalRevenue?.ordersCount == null ||
@@ -99,13 +118,25 @@ class AnalyticsRepository @Inject constructor(
         val currentOrdersCount = currentPeriodTotalRevenue.ordersCount!!
         val currentAvgOrderValue = currentPeriodTotalRevenue.avgOrderValue!!
 
+        val intervals = currentPeriod.getIntervalList()
+
+        val ordersCountByInterval = intervals.map {
+            it.subtotals?.ordersCount ?: 0
+        }
+
+        val avgOrderValueByInterval = intervals.map {
+            it.subtotals?.avgOrderValue ?: 0.0
+        }
+
         return OrdersResult.OrdersData(
             OrdersStat(
                 currentOrdersCount,
                 calculateDeltaPercentage(previousOrdersCount.toDouble(), currentOrdersCount.toDouble()),
                 currentAvgOrderValue,
                 calculateDeltaPercentage(previousOrderValue, currentAvgOrderValue),
-                getCurrencyCode()
+                getCurrencyCode(),
+                ordersCountByInterval,
+                avgOrderValueByInterval
             )
         )
     }
@@ -117,8 +148,11 @@ class AnalyticsRepository @Inject constructor(
     ): ProductsResult {
         val granularity = getGranularity(selectedRange)
 
-        val currentPeriodTotalRevenue = getCurrentPeriodStats(dateRange, granularity, fetchStrategy).getOrNull()
-        val previousPeriodTotalRevenue = getPreviousPeriodStats(dateRange, granularity, fetchStrategy).getOrNull()
+        val currentPeriod = getCurrentPeriodStats(dateRange, granularity, fetchStrategy).getOrNull()
+        val previousPeriod = getPreviousPeriodStats(dateRange, granularity, fetchStrategy).getOrNull()
+        val currentPeriodTotalRevenue = currentPeriod?.parseTotal()
+        val previousPeriodTotalRevenue = previousPeriod?.parseTotal()
+
         val productsStats = getProductStats(dateRange, fetchStrategy, TOP_PRODUCTS_LIST_SIZE).getOrNull()
 
         if (listOf(currentPeriodTotalRevenue, previousPeriodTotalRevenue, productsStats).any { it == null } ||
@@ -157,7 +191,7 @@ class AnalyticsRepository @Inject constructor(
         dateRange: AnalyticsDateRange,
         granularity: StatsGranularity,
         fetchStrategy: FetchStrategy
-    ): Result<WCRevenueStatsModel.Total> = coroutineScope {
+    ): Result<WCRevenueStatsModel?> = coroutineScope {
         val currentPeriod = dateRange.getCurrentPeriod()
         val startDate = currentPeriod.from.formatToYYYYmmDD()
         val endDate = currentPeriod.to.formatToYYYYmmDD()
@@ -179,7 +213,7 @@ class AnalyticsRepository @Inject constructor(
         dateRange: AnalyticsDateRange,
         granularity: StatsGranularity,
         fetchStrategy: FetchStrategy
-    ): Result<WCRevenueStatsModel.Total> = coroutineScope {
+    ): Result<WCRevenueStatsModel?> = coroutineScope {
         val previousPeriod = dateRange.getPreviousPeriod()
         val startDate = previousPeriod.from.formatToYYYYmmDD()
         val endDate = previousPeriod.to.formatToYYYYmmDD()
@@ -249,13 +283,13 @@ class AnalyticsRepository @Inject constructor(
         endDate: String,
         granularity: StatsGranularity,
         fetchStrategy: FetchStrategy
-    ): Result<WCRevenueStatsModel.Total> =
+    ): Result<WCRevenueStatsModel?> =
         statsRepository.fetchRevenueStats(
             granularity,
             fetchStrategy is FetchStrategy.ForceNew,
             startDate,
             endDate
-        ).flowOn(dispatchers.io).single().mapCatching { it!!.parseTotal()!! }
+        ).flowOn(dispatchers.io).single().mapCatching { it }
 
     private fun getCurrencyCode() = wooCommerceStore.getSiteSettings(selectedSite.get())?.currencyCode
     private fun getAdminPanelUrl() = selectedSite.getIfExists()?.adminUrl
@@ -295,6 +329,6 @@ class AnalyticsRepository @Inject constructor(
     private data class AnalyticsStatsResultWrapper(
         val startDate: String,
         val endDate: String,
-        val result: Deferred<Result<WCRevenueStatsModel.Total>>
+        val result: Deferred<Result<WCRevenueStatsModel?>>
     )
 }

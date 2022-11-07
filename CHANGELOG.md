@@ -1,6 +1,13 @@
 <!--
 Contains editorialized release notes. Raw release notes should go into `RELEASE-NOTES.txt`.
 -->
+## 11.1
+
+This release includes a lot of cool things for you to manage your store better! We added the option to bulk update stock quantity of variations. We have also added the option for you login via QR code. We've made various improvements to the orders and products search. 
+
+## 11.0
+
+Good news! We added a new analytics section to the app! Simply click on the See More button under the store stats to check more detailed information on Revenue and Orders. This isn’t the last of it – more updates to come in the next few weeks!
 
 ## 10.9
 

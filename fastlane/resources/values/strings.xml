@@ -154,6 +154,8 @@
         Date/Time Labels
     -->
     <string name="date_timeframe_future">Upcoming</string>
+    <string name="date_timeframe_custom">Custom</string>
+    <string name="date_timeframe_custom_date_range_title">Custom date range</string>
     <string name="date_timeframe_today">Today</string>
     <string name="date_timeframe_yesterday">Yesterday</string>
     <string name="date_timeframe_last_week">Last Week</string>
@@ -231,10 +233,11 @@
     <string name="login_avatar_content_description">Your profile photo</string>
     <string name="login_nostores_content_description">No WooCommerce stores</string>
     <string name="login_with_a_different_account">Login with a different account</string>
-    <string name="login_no_stores">We didn\'t find WooCommerce stores connected to this account.</string>
+    <string name="login_no_stores">Your account isn’t connected to any WooCommerce stores.</string>
     <string name="login_wpcom_account_mismatch">It looks like %1$s is connected to a different WordPress.com account.</string>
     <string name="login_jetpack_not_connected">It looks like your account is not connected to %1$s\'s Jetpack</string>
     <string name="login_try_another_account">Log in with another account</string>
+    <string name="login_try_another_email">Try Another Address</string>
     <string name="login_try_another_store">Try another store</string>
     <string name="login_not_woo_store">It looks like %1$s is not a WooCommerce site.</string>
     <string name="login_install_woo">Install WooCommerce</string>
@@ -256,7 +259,7 @@
     <string name="login_jetpack_not_found">Jetpack not found. Please try again</string>
     <string name="login_jetpack_install">Install Jetpack</string>
     <string name="login_sign_in">Sign in</string>
-    <string name="login_need_help_finding_email">&lt;u&gt;Need help finding the required email?&lt;/u&gt;</string>
+    <string name="login_need_help_finding_email">Need help finding the required email?</string>
     <string name="login_email_help_title">What email do I use to sign in?</string>
     <string name="login_email_help_desc">In your site admin you can find the email you used to connect to WordPress.com from the %1$sJetpack Dashboard%2$s under %3$sConnections &gt; Account connection%4$s</string>
     <string name="login_discovery_error_title">Connection error</string>
@@ -264,12 +267,13 @@
     <string name="login_with_wordpress">Sign in with WordPress.com</string>
     <string name="login_troubleshooting_tips">Read our troubleshooting tips</string>
     <string name="login_discovery_error_option_select">Select an option</string>
-    <string name="login_no_wpcom_account_found">The email %1$s isn\'t used with a WordPress.com account.</string>
+    <string name="login_no_wpcom_account_found">Your email isn\'t used with a WordPress.com account.</string>
     <string name="user_role_access_error_msg">This app supports only Administrator and Shop Manager user roles. Please contact your store owner to upgrade your role.</string>
     <string name="user_role_access_error_link">Learn more about roles and permissions</string>
     <string name="user_role_access_error_retry">You don\'t have the correct user role</string>
     <string name="user_access_verifying">Verifying role…</string>
     <string name="login_site_picker_enter_site_address">Enter a site address</string>
+    <string name="login_site_picker_add_a_store">Add a Store</string>
     <string name="site_discovery_postlogin_failure">A failure occurred, please contact support</string>
     <string name="login_site_picker_new_to_woo">New to WooCommerce</string>
     <string name="login_simple_wpcom_site">The site %1$s is currently on a WordPress.com plan that does not support plugin installation. Please upgrade your plan to use WooCommerce.</string>
@@ -282,6 +286,11 @@
     <string name="login_account_mismatch_connect_wpcom_dialog_title">Connecting to a WordPress.com site</string>
     <string name="login_account_mismatch_connect_wpcom_dialog_message">Please contact the site owner for an invitation to the site as a shop manager or administrator to use the app.</string>
     <string name="login_jetpack_connection_consent">By tapping the Connect Jetpack button, you agree to our &lt;a href=\'terms\'&gt;Terms of Service&lt;/a&gt; and to &lt;a href=\'sync\'&gt;share details&lt;/a&gt; with WordPress.com.</string>
+    <string name="simplified_login_enter_email_address">Enter your email address to get started</string>
+    <string name="login_create_an_account">Create An Account</string>
+    <string name="site_picker_create_new_store">Create a new store</string>
+    <string name="site_picker_connect_existing_store">Connect an existing store</string>
+
     <!--
         My Store View
     -->
@@ -318,20 +327,28 @@
         Sign Up Flow
     -->
     <string name="signup_get_started_button">Get started</string>
-    <string name="signup_get_started_label">Get started \nin minutes</string>
-    <string name="signup_already_registered">First, let’s create your account. Already registered? Log in</string>
+    <string name="signup_get_started_label">Get started in minutes</string>
+    <string name="signup_already_registered">First, let’s create your account. Already registered? &lt;a href=\'login\'&gt;&lt;u&gt;Log in&lt;/u&gt;&lt;/a&gt;</string>
     <string name="signup_email_address_hint">Your email address</string>
     <string name="signup_password_hint">Choose a password</string>
     <string name="signup_terms_of_service">By continuing, you agree to our &lt;u&gt;Terms of Service.&lt;/u&gt;</string>
     <string name="signup_creating_account_loading_message">Creating new account</string>
+    <string name="signup_email_exist_input">An account with this email already exists.</string>
+    <string name="signup_email_invalid_input">Please enter a valid email address.</string>
+    <string name="signup_password_too_short">Your password is too short. Please pick a password that has at least 6 characters.</string>
+    <string name="signup_password_not_secure_enough">Your password does not meet our security guidelines. Please try a more complex password.</string>
+    <string name="signup_api_generic_error">Sorry, we couldn\'t create an account for the provided credentials. Please try with a different email.</string>
 
     <!--
         Analytics View
     -->
+    <string name="analytics_see_more">See more</string>
     <string name="analytics_date_range_to_date">%1$s (%2$s)</string>
     <string name="analytics_date_range_from_date">vs Previous Period (%1$s)</string>
+    <string name="analytics_date_range_custom">%1$s - %2$s</string>
     <string name="analytics_date_range_selector_description">Selector for date range filter</string>
-    <string-array name="date_range_selectors">
+    <string-array name="analytics_date_range_selectors">
+        <item translatable="false">@string/date_timeframe_custom</item>
         <item translatable="false">@string/date_timeframe_today</item>
         <item translatable="false">@string/date_timeframe_yesterday</item>
         <item translatable="false">@string/date_timeframe_last_week</item>
@@ -343,6 +360,23 @@
         <item translatable="false">@string/date_timeframe_quarter_to_date</item>
         <item translatable="false">@string/date_timeframe_year_to_date</item>
     </string-array>
+    <string name="analytics_see_report_button_text">See report</string>e
+    <string name="analytics_see_report_button_content_description">See more report details</string>
+    <string name="analytics_revenue_card_title">Revenue</string>
+    <string name="analytics_revenue_no_data">No revenue this period</string>
+    <string name="analytics_orders_no_data">No orders this period</string>
+    <string name="analytics_products_no_data">No products this period</string>
+    <string name="analytics_total_sales_title">Total sales</string>
+    <string name="analytics_net_sales_title">Net sales</string>
+    <string name="analytics_information_card_delta" translatable="false">%1$s%2$d%%</string>
+    <string name="analytics_orders_card_title">Orders</string>
+    <string name="analytics_total_orders_title">Total Orders</string>
+    <string name="analytics_avg_orders_title">Average Order Value</string>
+    <string name="analytics_products_list_items_sold">Items sold</string>
+    <string name="analytics_products_card_title">Products</string>
+    <string name="analytics_products_list_header_title">Products</string>
+    <string name="analytics_products_list_header_subtitle">Items sold</string>
+    <string name="analytics_products_list_item_description">Net sales: %1$s</string>
 
     <!--
         Order List View
@@ -354,6 +388,7 @@
     <string name="orderlist_filter_by">Filter orders by</string>
     <string name="orderlist_filter">Filter</string>
     <string name="orderlist_search_hint">Search orders</string>
+    <string name="orderlist_search_hint_active_filters">Search filtered orders</string>
     <string name="orderlist_filtered" translatable="false">: %1$s</string>
     <string name="orderlist_loading">Looking up your orders…</string>
     <string name="orderlist_no_filters_title">All Orders</string>
@@ -1417,6 +1452,7 @@
     <string name="product_list_filters_show_products">Show products</string>
     <string name="product_list_filters_list_item">Selected filter option</string>
     <string name="product_search_hint">Search products</string>
+    <string name="product_search_hint_active_filters">Search filtered products</string>
     <string name="product_search_all">All products</string>
     <string name="product_search_sku">SKU</string>
     <string name="product_list_sorting_list_item">Selected sorting option</string>
@@ -1587,8 +1623,8 @@
     <string name="variations_bulk_update_dialog_price_section_title">Price</string>
     <string name="variations_bulk_update_dialog_regular_price_label">Regular price</string>
     <string name="variations_bulk_update_dialog_sale_price_label">Sale price</string>
-    <string name="variations_bulk_update_dialog_price_none">None</string>
-    <string name="variations_bulk_update_dialog_price_mixed">Mixed</string>
+    <string name="variations_bulk_update_dialog_none">None</string>
+    <string name="variations_bulk_update_dialog_mixed">Mixed</string>
     <string name="variations_bulk_update_price_info">Price will be updated for %d variations</string>
     <string name="variations_bulk_update_current_price">Current price is %s</string>
     <string name="variations_bulk_update_current_prices_mixed">Current prices are mixed</string>
@@ -1599,6 +1635,13 @@
     <string name="variations_bulk_update_regular_prices_dialog_title">Updating regular prices</string>
     <string name="variations_bulk_update_warning_title">Bulk update limit exceeded</string>
     <string name="variations_bulk_update_warning_message">Currently bulk update is supported for 100 variations maximum.</string>
+    <string name="variations_bulk_update_dialog_inventory_section_title">Inventory</string>
+    <string name="variations_bulk_update_dialog_stock_quantity_label" translatable="false">@string/product_stock_quantity</string>
+    <string name="variations_bulk_update_stock_quantity_info">Stock quantity will be updated for %d variations</string>
+    <string name="variations_bulk_update_stock_quantity_dialog_title">Updating stock quantity</string>
+    <string name="variations_bulk_update_current_stock_quantity">Current stock quantity is %d</string>
+    <string name="variations_bulk_update_current_stock_quantity_mixed">Current stock quantity is mixed</string>
+    <string name="variations_bulk_update_stock_quantity_success">Updated stock quantity</string>
 
     <!--
         Product images
@@ -1724,15 +1767,17 @@
     <string name="dev_options">Developer Options</string>
 
     <!--
-        Settings
+        Developer Options Screen
     -->
     <string name="enable_card_reader">Enable Simulated Card Reader</string>
+    <string name="simulated_reader_key">Simulated Reader Key</string>
 
     <!--
         WCToggleSingleOptionView
     -->
     <string name="toggle_option_checked">option checked</string>
     <string name="toggle_option_not_checked">option not checked</string>
+    <string name="simulated_reader_toast">Simulated Card Reader has been disabled</string>
     <!--
         Help and support
     -->
@@ -2515,6 +2560,7 @@
     <string name="enter_account_info_for_site">Enter your account information for %1$s.</string>
     <string name="get_started">Get Started</string>
     <string name="lets_get_started">Let\'s get started!</string>
+    <string name="simplified_login_prologue_title">WooCommerce is a customizable, open-source eCommerce platform built on WordPress.</string>
     <string name="check_email">Check email</string>
     <string name="login_text_otp">Text me a code instead</string>
     <string name="login_text_otp_another">Text me another code instead</string>
@@ -2539,7 +2585,7 @@
     <string name="enter_your_site_address">Enter your site address</string>
     <string name="reset_your_password">Reset your password</string>
     <string name="signup_confirmation_title">Signup confirmation</string>
-    <string name="what_is_wordpress_link">&lt;u&gt;What is WordPress.com?&lt;/u&gt;</string>
+    <string name="what_is_wordpress_link">What is WordPress.com?</string>
 
     <string name="login_site_address">Site address</string>
 
@@ -2629,7 +2675,8 @@
     <string name="login_magic_links_sent_label_short">Check your email on this device!</string>
     <string name="login_magic_links_email_sent">We just sent a magic link to</string>
     <string name="login_site_picker_try_another_address">Try another address</string>
-
+    <string name="or_scan_qr_code_to_log_in">Scan QR code to log in</string>
+    <string name="or_use_password_below_qr_code_scan_option">Or log in with password</string>
     <!--
     Stats widgets
     -->
@@ -2640,6 +2687,14 @@
     <string name="stats_today_widget_description">WooCommerce Stats Today</string>
     <string name="stats_widget_error_no_data">Couldn\'t load data</string>
     <string name="stats_widget_last_updated_message">As of %1$s</string>
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
+
+    <!--
+    Store creation
+    -->
+    <string name="store_creation_create_new_store_label">Create a new store</string>
+    <string name="store_creation_cannot_load_store">Couldn\'t load your store.\nPlease try again…</string>
+    <string name="store_creation_in_progress">Creating your store…</string>
+    <string name="store_creation_exit_dialog_title">Do you want to leave?</string>
+    <string name="store_creation_exit_dialog_message">You will lose all your store information.</string>
+    <string name="store_creation_confirm_and_leave">Confirm and leave</string>
 </resources>

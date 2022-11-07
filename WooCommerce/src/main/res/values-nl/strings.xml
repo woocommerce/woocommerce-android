@@ -1,18 +1,46 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2022-10-27 14:54:03+0000
+Translation-Revision-Date: 2022-11-03 16:54:04+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: nl
 -->
 <resources>
-    <string name="hello_blank_fragment">Hoi leeg segment</string>
-    <string name="what_is_wordpress_link">&lt;u&gt;Wat is WordPress.com?&lt;/u&gt;</string>
+    <string name="create_new_store">Maak een nieuwe winkel</string>
+    <string name="analytics_products_list_item_description">Netto verkoop: %@ %1$s</string>
+    <string name="analytics_products_list_header_subtitle">Verkochte artikelen</string>
+    <string name="analytics_products_list_header_title">Producten</string>
+    <string name="analytics_products_card_title">Producten</string>
+    <string name="analytics_products_list_items_sold">Verkochte artikelen</string>
+    <string name="analytics_avg_orders_title">Gemiddelde bestellingswaarde</string>
+    <string name="analytics_total_orders_title">Totaalaantal bestellingen</string>
+    <string name="analytics_orders_card_title">Bestellingen</string>
+    <string name="analytics_net_sales_title">Netto omzet</string>
+    <string name="analytics_total_sales_title">Totale verkopen</string>
+    <string name="analytics_products_no_data">Geen producten voor deze periode</string>
+    <string name="analytics_orders_no_data">Geen bestellingen deze periode</string>
+    <string name="analytics_revenue_no_data">Geen omzet deze periode</string>
+    <string name="analytics_revenue_card_title">Inkomsten</string>
+    <string name="analytics_see_report_button_content_description">Meer rapportdetails inzien</string>
+    <string name="analytics_see_report_button_text">Rapport inzien</string>
+    <string name="analytics_date_range_custom">%1$s - %2$s</string>
+    <string name="analytics_see_more">Meer zien</string>
+    <string name="signup_api_generic_error">Sorry, we konden met de opgegeven gegevens geen account aanmaken. Probeer het met een ander e-mailadres.</string>
+    <string name="signup_password_not_secure_enough">Je wachtwoord voldoet niet aan onze veiligheidsrichtlijnen. Probeer een complexer wachtwoord.</string>
+    <string name="signup_password_too_short">Je wachtwoord is te kort. Kies een wachtwoord met minstens zes tekens.</string>
+    <string name="signup_email_invalid_input">Voer een geldig e-mailadres in.</string>
+    <string name="signup_email_exist_input">Er bestaat al een account met dit e-mailadres.</string>
+    <string name="signup_already_registered">Laten we eerst je account aanmaken. Ben je al geregistreerd? &lt;a href=\'login\'&gt;&lt;u&gt;Log in&lt;/u&gt;&lt;/a&gt;</string>
+    <string name="login_create_an_account">Een account maken</string>
+    <string name="simplified_login_enter_email_address">Voer je e-mailadres in om te starten</string>
+    <string name="login_try_another_email">Probeer een ander adres</string>
+    <string name="date_timeframe_custom_date_range_title">Aangepast datumbereik</string>
+    <string name="date_timeframe_custom">Aangepast</string>
+    <string name="what_is_wordpress_link">Wat is WordPress.com?</string>
     <string name="signup_creating_account_loading_message">Account wordt aangemaakt</string>
     <string name="signup_terms_of_service">Door verder te gaan, ga je akkoord met onze &lt;u&gt;Servicevoorwaarden&lt;/u&gt;</string>
     <string name="signup_password_hint">Kies een wachtwoord</string>
     <string name="signup_email_address_hint">Je e-mailadres</string>
-    <string name="signup_already_registered">Laten we eerst je account aanmaken. Ben je al geregistreerd? Log in</string>
     <string name="signup_get_started_label">Aan de slag \nin minuten</string>
     <string name="signup_get_started_button">Aan de slag</string>
     <string name="login_jetpack_connection_consent">Door op de knop Jetpack verbinden te klikken, ga je akkoord met onze &lt;a href=\'terms\'&gt;Servicevoorwaarden&lt;/a&gt; en met het &lt;a href=\'sync\'&gt;delen van informatie&lt;/a&gt; met WordPress.com.</string>
@@ -65,7 +93,7 @@ Language: nl
     <string name="orderlist_bottom_sheet_simple_payments_moved_button">Begrepen!</string>
     <string name="orderlist_bottom_sheet_simple_payments_moved_description">Nu heb je snel toegang tot Fysieke betalingen en andere functies</string>
     <string name="orderlist_bottom_sheet_simple_payments_moved_title">Betalingen van het tabblad Menu</string>
-    <string name="login_no_wpcom_account_found">De e-mail %1$s wordt niet gebruikt met een WordPress.com-account.</string>
+    <string name="login_no_wpcom_account_found">Je e-mailadres wordt niet gebruikt met een WordPress.com-account.</string>
     <string name="login_non_woo_stores_label">Andere sites</string>
     <string name="login_with_store_address">Log in met je winkeladres</string>
     <string name="more_menu_button_w___admin">WC Admin</string>
@@ -1856,7 +1884,7 @@ Language: nl
     <string name="orderdetail_track_shipment">Verzending tracken</string>
     <string name="login_email_help_desc">In je sitebeheer kun je de e-mail vinden die je gebruikt hebt om verbinding te maken met WordPress.com via het %1$sJetpack-dashboard%2$s onder %3$sVerbindingen &gt; Accountverbinding%4$s</string>
     <string name="login_email_help_title">Welke e-mail moet ik gebruiken om me aan te melden?</string>
-    <string name="login_need_help_finding_email">&lt;u&gt;Heb je hulp nodig bij het vinden van de vereiste e-mail?&lt;/u&gt;</string>
+    <string name="login_need_help_finding_email">Heb je hulp nodig bij het vinden van de vereiste e-mail?</string>
     <string name="login_jetpack_what_is_description">Jetpack is een gratis WordPress-plugin die aan je winkel wordt gekoppeld en je de tools voor de beste mobiele ervaring biedt, waaronder pushmeldingen en statistieken</string>
     <string name="login_jetpack_what_is">Wat is Jetpack?</string>
     <string name="login_view_connected_stores">Aangesloten winkels bekijken</string>
@@ -2235,7 +2263,8 @@ Language: nl
     <string name="all">Alles</string>
     <string name="notification_channel_general_title">Algemeen</string>
     <string name="app_name">WooCommerce</string>
-    <string-array name="date_range_selectors">
+    <string-array name="analytics_date_range_selectors">
+        <item>\@string/date_timeframe_custom</item>
         <item>\@string/date_timeframe_today</item>
         <item>\@string/date_timeframe_yesterday</item>
         <item>\@string/date_timeframe_last_week</item>
