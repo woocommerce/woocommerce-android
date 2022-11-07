@@ -180,7 +180,6 @@ private fun DomainSuggestionList(
     }
 }
 
-
 @Composable
 private fun DomainSuggestionItem(
     domainSuggestion: DomainSuggestionUi,
@@ -192,22 +191,24 @@ private fun DomainSuggestionItem(
             bottom = dimensionResource(id = R.dimen.major_75)
         )
     ) {
-        Text(text = buildAnnotatedString {
-            withStyle(style = MaterialTheme.typography.body2.toParagraphStyle()) {
-                withStyle(style = SpanStyle(color = colorResource(id = R.color.color_on_surface_medium_selector))) {
-                    append(domainSuggestion.domain.substringBefore("."))
-                }
-                if (domainSuggestion.isSelected) {
-                    withStyle(style = SpanStyle(fontWeight = FontWeight.Bold)) {
-                        append(".${domainSuggestion.domain.substringAfter(delimiter = ".")}")
+        Text(
+            text = buildAnnotatedString {
+                withStyle(style = MaterialTheme.typography.body2.toParagraphStyle()) {
+                    withStyle(style = SpanStyle(color = colorResource(id = R.color.color_on_surface_medium_selector))) {
+                        append(domainSuggestion.domain.substringBefore("."))
                     }
-                } else {
-                    withStyle(style = SpanStyle(color = colorResource(id = R.color.color_on_surface_high))) {
-                        append(".${domainSuggestion.domain.substringAfter(delimiter = ".")}")
+                    if (domainSuggestion.isSelected) {
+                        withStyle(style = SpanStyle(fontWeight = FontWeight.Bold)) {
+                            append(".${domainSuggestion.domain.substringAfter(delimiter = ".")}")
+                        }
+                    } else {
+                        withStyle(style = SpanStyle(color = colorResource(id = R.color.color_on_surface_high))) {
+                            append(".${domainSuggestion.domain.substringAfter(delimiter = ".")}")
+                        }
                     }
                 }
             }
-        })
+        )
         if (domainSuggestion.isSelected) {
             Image(
                 modifier = Modifier.padding(start = dimensionResource(id = R.dimen.major_100)),
@@ -249,13 +250,11 @@ fun SiteDomainPickerPreview() {
                     DomainSuggestionUi("whitechristmastrees.business.other"),
                     DomainSuggestionUi("whitechristmastrees.business.scroll"),
                     DomainSuggestionUi("whitechristmastrees.business.other"),
-                    DomainSuggestionUi("whitechristmastrees.business.other"),
-
-                    )
+                    DomainSuggestionUi("whitechristmastrees.business.other")
+                )
             ),
             onContinueClicked = {},
             onDomainQueryChanged = {}
         )
     }
 }
-

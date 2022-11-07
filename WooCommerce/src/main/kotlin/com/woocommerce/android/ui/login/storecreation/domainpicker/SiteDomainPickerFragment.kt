@@ -17,7 +17,6 @@ import dagger.hilt.android.AndroidEntryPoint
 class SiteDomainPickerFragment : BaseFragment() {
     private val viewModel: SiteDomainPickerViewModel by viewModels()
 
-
     override val activityAppBarStatus: AppBarStatus
         get() = AppBarStatus.Hidden
 

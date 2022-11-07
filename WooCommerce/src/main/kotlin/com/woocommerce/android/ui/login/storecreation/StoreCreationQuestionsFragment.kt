@@ -33,7 +33,7 @@ class StoreCreationQuestionsFragment : BaseFragment() {
             setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
             setContent {
                 WooThemeWithBackground {
-                    //TODO add the right content for this step
+                    // TODO add the right content for this step
                     Column(
                         modifier = Modifier
                             .fillMaxHeight()
