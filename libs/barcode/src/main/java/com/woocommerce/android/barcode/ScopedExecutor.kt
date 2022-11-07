@@ -30,10 +30,10 @@ class ScopedExecutor(private val executor: Executor) : Executor {
         if (shutdown.get()) {
             return
         }
-        executor.execute {
+        executor.execute executeAgain@{
             // Check again in case it has been shut down in the mean time.
             if (shutdown.get()) {
-                return@execute
+                return@executeAgain
             }
             command.run()
         }
