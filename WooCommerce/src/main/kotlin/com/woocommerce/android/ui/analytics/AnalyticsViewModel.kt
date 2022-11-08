@@ -198,42 +198,6 @@ class AnalyticsViewModel @Inject constructor(
         updateVisitors(isRefreshing = isRefreshing, showSkeleton = showSkeleton)
     }
 
-    private fun updateVisitors(isRefreshing: Boolean, showSkeleton: Boolean) =
-        launch {
-            if (!FeatureFlag.ANALYTICS_HUB_PRODUCTS_AND_REPORTS.isEnabled()) {
-                return@launch
-            }
-
-            val timePeriod = getSavedTimePeriod()
-            val dateRange = getSavedDateRange()
-            val fetchStrategy = getFetchStrategy(isRefreshing)
-
-            if (showSkeleton) mutableState.value = state.value.copy(visitorsState = LoadingViewState)
-            mutableState.value = state.value.copy(
-                refreshIndicator = if (isRefreshing) ShowIndicator else NotShowIndicator
-            )
-
-            analyticsRepository.fetchVisitsData(dateRange, timePeriod, fetchStrategy)
-                .let {
-                    when (it) {
-                        is VisitorsData -> {
-                            mutableState.value = state.value.copy(
-                                refreshIndicator = NotShowIndicator,
-                                visitorsState = buildVisitorsDataViewState(
-                                    it.visitorsStat.visitorsCount,
-                                    it.visitorsStat.viewsCount
-                                )
-                            )
-                            // submit sentry monitor transaction finished event
-                        }
-                        is VisitorsError -> mutableState.value = state.value.copy(
-                            refreshIndicator = NotShowIndicator,
-                            visitorsState = NoDataState("No visitors data")
-                        )
-                    }
-                }
-        }
-
     private fun updateRevenue(isRefreshing: Boolean, showSkeleton: Boolean) =
         launch {
             val timePeriod = getSavedTimePeriod()
@@ -319,6 +283,52 @@ class AnalyticsViewModel @Inject constructor(
                     }
                 }
         }
+
+
+
+    private fun updateVisitors(isRefreshing: Boolean, showSkeleton: Boolean) =
+        launch {
+            if (!FeatureFlag.ANALYTICS_HUB_PRODUCTS_AND_REPORTS.isEnabled()) {
+                return@launch
+            }
+
+            val timePeriod = getSavedTimePeriod()
+            val dateRange = getSavedDateRange()
+            val fetchStrategy = getFetchStrategy(isRefreshing)
+
+            if (showSkeleton) mutableState.value = state.value.copy(visitorsState = LoadingViewState)
+            mutableState.value = state.value.copy(
+                refreshIndicator = if (isRefreshing) ShowIndicator else NotShowIndicator
+            )
+
+            fetchVisitorsData(dateRange, timePeriod, fetchStrategy)
+        }
+
+    private suspend fun fetchVisitorsData(
+        dateRange: AnalyticsDateRange,
+        timePeriod: AnalyticTimePeriod,
+        fetchStrategy: AnalyticsRepository.FetchStrategy
+    ) {
+        analyticsRepository.fetchVisitsData(dateRange, timePeriod, fetchStrategy)
+            .let {
+                when (it) {
+                    is VisitorsData -> {
+                        mutableState.value = state.value.copy(
+                            refreshIndicator = NotShowIndicator,
+                            visitorsState = buildVisitorsDataViewState(
+                                it.visitorsStat.visitorsCount,
+                                it.visitorsStat.viewsCount
+                            )
+                        )
+                        // submit sentry monitor transaction finished event
+                    }
+                    is VisitorsError -> mutableState.value = state.value.copy(
+                        refreshIndicator = NotShowIndicator,
+                        visitorsState = NoDataState("No visitors data")
+                    )
+                }
+            }
+    }
 
     private fun updateDateSelector() {
         val timePeriod = getSavedTimePeriod()
