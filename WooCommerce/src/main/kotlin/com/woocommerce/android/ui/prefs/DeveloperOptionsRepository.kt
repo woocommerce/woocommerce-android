@@ -20,4 +20,16 @@ class DeveloperOptionsRepository @Inject constructor(
     suspend fun clearSelectedCardReader() {
         clearCardReaderDataAction.invoke()
     }
+
+    fun isAlwaysUpdateSimulatedReaderSelected(): Boolean {
+        return appPrefs.isAlwaysUpdateReaderSelected
+    }
+
+    fun isNeverUpdateSimulatedReaderSelected(): Boolean {
+        return appPrefs.isNeverUpdateReaderSelected
+    }
+
+    fun isRandomlyUpdateSimulatedReaderSelected(): Boolean {
+        return appPrefs.isRandomlyUpdateReaderSelected
+    }
 }

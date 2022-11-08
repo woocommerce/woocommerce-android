@@ -16,6 +16,7 @@ import com.woocommerce.android.viewmodel.ScopedViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import javax.inject.Inject
+import kotlin.reflect.KFunction1
 
 @HiltViewModel
 class DeveloperOptionsViewModel @Inject constructor(
@@ -49,6 +50,7 @@ class DeveloperOptionsViewModel @Inject constructor(
             key = UiStringRes(string.update_simulated_reader_key),
             isEnabled = true,
             onClick = ::onUpdateSimulatedReaderClicked,
+            onSelect = { }
         )
     )
 
@@ -76,24 +78,26 @@ class DeveloperOptionsViewModel @Inject constructor(
                 it.key == UiStringRes(string.simulated_reader_key)
             } as? ToggleableListItem
             )?.let { originalListItem ->
-            val newState = originalListItem.copy(isChecked = isChecked)
-            _viewState.value = currentViewState.copy(
-                rows = currentViewState.rows.map {
-                    if (it.label == newState.label)
-                        newState
-                    else it
-                }
-            )
-        }
+                val newState = originalListItem.copy(isChecked = isChecked)
+                _viewState.value = currentViewState.copy(
+                    rows = currentViewState.rows.map {
+                        if (it.label == newState.label)
+                            newState
+                        else it
+                    }
+                )
+            }
     }
 
     private fun onUpdateSimulatedReaderClicked() {
-
-        TODO("Not yet implemented")
+        triggerEvent(
+            DeveloperOptionsEvents.ShowDialog("blabla")
+        )
     }
 
     sealed class DeveloperOptionsEvents : MultiLiveEvent.Event() {
         data class ShowToastString(val message: Int) : DeveloperOptionsEvents()
+        data class ShowDialog(val options: String) : DeveloperOptionsEvents()
     }
 
     data class DeveloperOptionsViewState(
@@ -127,9 +131,28 @@ class DeveloperOptionsViewModel @Inject constructor(
                 @DrawableRes val endIcon: Int,
                 override val label: UiString,
                 override var isEnabled: Boolean = false,
+                override var key: UiString,
                 val onClick: () -> Unit,
-                override var key: UiString
+                val onSelect: () -> Unit
+
             ) : ListItem()
+        }
+
+        enum class UpdateOptions {
+            ALWAYS,
+            NEVER,
+            RANDOMLY
+        }
+
+        companion object {
+            fun fromString(value: UpdateOptions): String {
+                return when (value) {
+                    UpdateOptions.ALWAYS -> "Always"
+                    UpdateOptions.NEVER -> "Never"
+                    UpdateOptions.RANDOMLY -> "Randomly"
+                }
+            }
         }
     }
 }
+
