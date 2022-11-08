@@ -38,6 +38,8 @@ class VariationsBulkUpdateInventoryFragment :
 
     private var progressDialog: CustomProgressDialog? = null
 
+    private var doneMenuItem: MenuItem? = null
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
@@ -64,6 +66,7 @@ class VariationsBulkUpdateInventoryFragment :
             object : MenuProvider {
                 override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
                     menuInflater.inflate(R.menu.menu_variations_bulk_update, menu)
+                    doneMenuItem = menu.findItem(R.id.done)
                 }
 
                 override fun onMenuItemSelected(item: MenuItem): Boolean {
@@ -108,6 +111,9 @@ class VariationsBulkUpdateInventoryFragment :
             }
             new.isProgressDialogShown.takeIfNotEqualTo(old?.isProgressDialogShown) { isVisible ->
                 updateProgressbarDialogVisibility(isVisible)
+            }
+            new.isDoneEnabled.takeIfNotEqualTo(old?.isDoneEnabled){ isEnabled ->
+                doneMenuItem?.isEnabled = isEnabled
             }
         }
     }

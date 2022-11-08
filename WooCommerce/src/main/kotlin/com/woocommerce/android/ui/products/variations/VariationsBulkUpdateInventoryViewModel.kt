@@ -79,6 +79,7 @@ class VariationsBulkUpdateInventoryViewModel @Inject constructor(
         val stockQuantity: Double? = null,
         val stockQuantityGroupType: ValuesGroupType? = null,
         val isProgressDialogShown: Boolean = false,
+        val isDoneEnabled: Boolean = true
     ) : Parcelable
 
     @Parcelize
