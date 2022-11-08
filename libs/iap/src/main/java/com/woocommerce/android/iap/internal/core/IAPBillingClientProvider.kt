@@ -12,7 +12,6 @@ internal class IAPBillingClientProvider(
         BillingClient
             .newBuilder(context)
             .setListener(listener)
-            .enablePendingPurchases()
             .build()
     )
 }
