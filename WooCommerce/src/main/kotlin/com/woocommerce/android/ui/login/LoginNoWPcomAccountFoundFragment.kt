@@ -15,12 +15,8 @@ import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.R
 import com.woocommerce.android.databinding.FragmentLoginNoWpcomAccountFoundBinding
 import com.woocommerce.android.databinding.ViewLoginEpilogueButtonBarBinding
-import com.woocommerce.android.experiment.SimplifiedLoginExperiment
-import com.woocommerce.android.experiment.SimplifiedLoginExperiment.LoginVariant
-import com.woocommerce.android.extensions.hide
 import com.woocommerce.android.ui.login.UnifiedLoginTracker.Click
 import com.woocommerce.android.ui.login.UnifiedLoginTracker.Step
-import com.woocommerce.android.util.FeatureFlag
 import com.zendesk.util.StringUtils
 import dagger.hilt.android.AndroidEntryPoint
 import org.wordpress.android.login.LoginListener
@@ -55,9 +51,6 @@ class LoginNoWPcomAccountFoundFragment : Fragment(R.layout.fragment_login_no_wpc
     @Inject
     internal lateinit var unifiedLoginTracker: UnifiedLoginTracker
 
-    @Inject
-    lateinit var simplifiedLoginExperiment: SimplifiedLoginExperiment
-
     private lateinit var listener: Listener
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -82,11 +75,7 @@ class LoginNoWPcomAccountFoundFragment : Fragment(R.layout.fragment_login_no_wpc
             it.setDisplayShowTitleEnabled(false)
         }
 
-        when (simplifiedLoginExperiment.getCurrentVariant()) {
-            LoginVariant.CONTROL ->
-                setupButtonsForStandardFlow(btnBinding, appPrefsWrapper.getLoginSiteAddress().isNullOrBlank())
-            LoginVariant.SIMPLIFIED_LOGIN_WPCOM -> setupButtonsForSimplifiedFlow(btnBinding)
-        }
+        setupButtons(btnBinding)
 
         binding.btnLoginWhatIsWordpress.setOnClickListener {
             listener.onWhatIsWordPressLinkNoWpcomAccountScreenClicked()
@@ -97,68 +86,25 @@ class LoginNoWPcomAccountFoundFragment : Fragment(R.layout.fragment_login_no_wpc
         }
     }
 
-    private fun setupButtonsForSimplifiedFlow(btnBinding: ViewLoginEpilogueButtonBarBinding) {
-        if (FeatureFlag.ACCOUNT_CREATION_FLOW.isEnabled()) {
-            with(btnBinding.buttonPrimary) {
-                text = getString(R.string.login_create_an_account)
-                setOnClickListener {
-                    unifiedLoginTracker.trackClick(Click.CREATE_ACCOUNT)
-
-                    listener.onCreateAccountClicked()
-                }
-            }
-        } else {
-            btnBinding.buttonPrimary.hide()
-        }
-
-        with(btnBinding.buttonSecondary) {
-            visibility = View.VISIBLE
-            text = getString(R.string.login_try_another_email)
+    private fun setupButtons(btnBinding: ViewLoginEpilogueButtonBarBinding) {
+        with(btnBinding.buttonPrimary) {
+            text = getString(R.string.login_create_an_account)
             setOnClickListener {
-                unifiedLoginTracker.trackClick(Click.TRY_ANOTHER_ACCOUNT)
+                unifiedLoginTracker.trackClick(Click.CREATE_ACCOUNT)
 
-                loginListener?.startOver()
-            }
-        }
-        btnBinding.buttonTertiary.hide()
-    }
-
-    private fun setupButtonsForStandardFlow(
-        btnBinding: ViewLoginEpilogueButtonBarBinding,
-        showEnterStoreAddressButton: Boolean
-    ) {
-        // Only show "Enter Store Address" button if not coming from the "Enter store address" login flow.
-        if (showEnterStoreAddressButton) {
-            with(btnBinding.buttonPrimary) {
-                text = getString(R.string.login_with_store_address)
-                setOnClickListener {
-                    unifiedLoginTracker.trackClick(Click.LOGIN_WITH_SITE_ADDRESS)
-
-                    loginListener?.loginViaSiteAddress()
-                }
+                listener.onCreateAccountClicked()
             }
 
             with(btnBinding.buttonSecondary) {
                 visibility = View.VISIBLE
-                text = getString(R.string.login_try_another_account)
+                text = getString(R.string.login_try_another_email)
                 setOnClickListener {
                     unifiedLoginTracker.trackClick(Click.TRY_ANOTHER_ACCOUNT)
 
                     loginListener?.startOver()
                 }
             }
-        } else {
-            with(btnBinding.buttonPrimary) {
-                text = getString(R.string.login_try_another_account)
-                setOnClickListener {
-                    unifiedLoginTracker.trackClick(Click.TRY_ANOTHER_ACCOUNT)
-
-                    loginListener?.startOver()
-                }
-            }
-            btnBinding.buttonSecondary.hide()
         }
-        btnBinding.buttonTertiary.hide()
     }
 
     override fun onCreateMenu(menu: Menu, inflater: MenuInflater) {

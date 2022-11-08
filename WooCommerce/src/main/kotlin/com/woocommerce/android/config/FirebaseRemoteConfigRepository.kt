@@ -94,7 +94,10 @@ class FirebaseRemoteConfigRepository @Inject constructor(
             }
 
     override fun getSimplifiedLoginVariant(): LoginVariant {
-        return try {
+        return if (PackageUtils.isTesting()) {
+            // Use control variant to prevent e2e test breakages
+            LoginVariant.CONTROL
+        } else try {
             LoginVariant.valueOf(remoteConfig.getString(SIMPLIFIED_LOGIN_VARIANT_KEY).uppercase())
         } catch (e: IllegalArgumentException) {
             crashLogging.get().recordException(e)

@@ -18,9 +18,17 @@ class UtmProvider(
     val parameters: Map<String, Any?>
         get() {
             return mapOf<String, Any?>(
-                "utm_campaign" to campaign,
+                "utm_campaign" to if (campaign.isNotEmpty()) {
+                    "jitm_group_$campaign"
+                } else {
+                    campaign
+                },
                 "utm_source" to source,
-                "utm_content" to content,
+                "utm_content" to if (!content.isNullOrEmpty()) {
+                    "jitm_$content"
+                } else {
+                    content
+                },
                 "utm_term" to siteId,
                 "utm_medium" to defaultUTMMedium
             )

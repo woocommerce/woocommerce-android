@@ -47,11 +47,13 @@ class WooLoginEmailPasswordFragment : LoginEmailPasswordFragment() {
     private lateinit var onPassWordErrorListener: Listener
     private var loginListener: LoginListener? = null
     private var email: String? = null
+    private var isSocialLogin: Boolean = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        email = arguments?.getString(ARG_EMAIL_ADDRESS)
+        email = requireArguments().getString(ARG_EMAIL_ADDRESS)
+        isSocialLogin = requireArguments().getBoolean(ARG_SOCIAL_LOGIN)
     }
 
     override fun onAttach(context: Context) {

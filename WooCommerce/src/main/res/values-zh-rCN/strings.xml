@@ -1,18 +1,46 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2022-10-27 09:54:03+0000
+Translation-Revision-Date: 2022-11-03 10:54:04+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: zh_CN
 -->
 <resources>
-    <string name="hello_blank_fragment">问候空白片段</string>
-    <string name="what_is_wordpress_link">&lt;u&gt;什么是 WordPress.com？&lt;/u&gt;</string>
+    <string name="create_new_store">创建新的商店</string>
+    <string name="analytics_products_list_item_description">净销售额：%1$s</string>
+    <string name="analytics_products_list_header_subtitle">已售项目</string>
+    <string name="analytics_products_list_header_title">产品</string>
+    <string name="analytics_products_card_title">产品</string>
+    <string name="analytics_products_list_items_sold">已售项目</string>
+    <string name="analytics_avg_orders_title">平均订单价值</string>
+    <string name="analytics_total_orders_title">订单总数</string>
+    <string name="analytics_orders_card_title">订单</string>
+    <string name="analytics_net_sales_title">净销售额</string>
+    <string name="analytics_total_sales_title">总销售额</string>
+    <string name="analytics_products_no_data">本期无产品</string>
+    <string name="analytics_orders_no_data">本期无订单</string>
+    <string name="analytics_revenue_no_data">本期无收益</string>
+    <string name="analytics_revenue_card_title">收益</string>
+    <string name="analytics_see_report_button_content_description">查看更多报告详情</string>
+    <string name="analytics_see_report_button_text">查看报告</string>
+    <string name="analytics_date_range_custom">%1$s - %2$s</string>
+    <string name="analytics_see_more">查看更多</string>
+    <string name="signup_api_generic_error">抱歉，我们无法为所提供的凭证创建账户。 请尝试使用其他电子邮件。</string>
+    <string name="signup_password_not_secure_enough">您的密码不符合我们的安全准则。 请尝试使用更复杂的密码。</string>
+    <string name="signup_password_too_short">您的密码太短。 请选择一个至少包含 6 个字符的密码。</string>
+    <string name="signup_email_invalid_input">请输入有效的电子邮箱地址。</string>
+    <string name="signup_email_exist_input">已存在使用此电子邮件的账户。</string>
+    <string name="signup_already_registered">首先，我们来创建您的账户。 已注册？ &lt;a href=\'login\'&gt;&lt;u&gt;登录&lt;/u&gt;&lt;/a&gt;</string>
+    <string name="login_create_an_account">创建账户</string>
+    <string name="simplified_login_enter_email_address">请输入您的电子邮箱地址以开始</string>
+    <string name="login_try_another_email">尝试其他地址</string>
+    <string name="date_timeframe_custom_date_range_title">自定义日期范围</string>
+    <string name="date_timeframe_custom">自定义</string>
+    <string name="what_is_wordpress_link">什么是 WordPress.com？</string>
     <string name="signup_creating_account_loading_message">正在创建账户</string>
     <string name="signup_terms_of_service">继续即表示您同意我们的&lt;u&gt;服务条款。&lt;/u&gt;</string>
     <string name="signup_password_hint">选择一个密码</string>
     <string name="signup_email_address_hint">您的电子邮箱地址</string>
-    <string name="signup_already_registered">首先，我们来创建您的账户。 已注册？ 登录</string>
     <string name="signup_get_started_label">几分钟内\n即可开始使用</string>
     <string name="signup_get_started_button">开始使用</string>
     <string name="login_jetpack_connection_consent">点击“连接 Jetpack”按钮即表示，您同意遵守我们的&lt;a href=\'terms\'&gt;服务条款&lt;/a&gt;，并与 WordPress.com &lt;a href=\'sync\'&gt;共享详细信息&lt;/a&gt;。</string>
@@ -65,6 +93,7 @@ Language: zh_CN
     <string name="orderlist_bottom_sheet_simple_payments_moved_button">知道了！</string>
     <string name="orderlist_bottom_sheet_simple_payments_moved_description">现在您可轻松快速地使用“现场付款”和其他功能</string>
     <string name="orderlist_bottom_sheet_simple_payments_moved_title">“菜单”选项卡中的“付款”</string>
+    <string name="login_no_wpcom_account_found">您的电子邮件未与 WordPress.com 账户关联。</string>
     <string name="login_non_woo_stores_label">其他站点</string>
     <string name="login_with_store_address">使用商店地址登录</string>
     <string name="more_menu_button_w___admin">WC Admin</string>
@@ -1855,7 +1884,7 @@ Language: zh_CN
     <string name="orderdetail_track_shipment">跟踪配送</string>
     <string name="login_email_help_desc">进行站点管理时，您可以从 %1$sJetpack 控制面板%2$s中找到用于连接 WordPress.com 的电子邮件，具体位于%3$s连接 &gt; 帐户连接%4$s下面</string>
     <string name="login_email_help_title">我用什么电子邮件登录？</string>
-    <string name="login_need_help_finding_email">&lt;u&gt;需要查找所需电子邮件方面的帮助？&lt;/u&gt;</string>
+    <string name="login_need_help_finding_email">需要查找所需电子邮件方面的帮助？</string>
     <string name="login_jetpack_what_is_description">Jetpack 是一款免费的 WordPress 插件，可以将您的商店与所需的工具连接起来，为您提供最佳的移动体验，包括推送通知和统计数据</string>
     <string name="login_jetpack_what_is">Jetpack 是什么？</string>
     <string name="login_view_connected_stores">查看连接的商店</string>
@@ -2234,7 +2263,8 @@ Language: zh_CN
     <string name="all">全部</string>
     <string name="notification_channel_general_title">常规</string>
     <string name="app_name">WooCommerce</string>
-    <string-array name="date_range_selectors">
+    <string-array name="analytics_date_range_selectors">
+        <item>\@string/date_timeframe_custom</item>
         <item>\@string/date_timeframe_today</item>
         <item>\@string/date_timeframe_yesterday</item>
         <item>\@string/date_timeframe_last_week</item>

@@ -2,7 +2,6 @@ import io.github.wzieba.tracks.plugin.TracksExtension
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
-    id 'com.automattic.android.fetchstyle'
     id 'io.gitlab.arturbosch.detekt'
     id 'io.github.wzieba.tracks.plugin'
     id 'com.android.application' apply false
@@ -97,7 +96,7 @@ tasks.register("installGitHooks", Copy) {
 }
 
 ext {
-    fluxCVersion = '2.2.0'
+    fluxCVersion = 'trunk-72aaebeca02b525428092851a6a3eea5a063f6b7'
     glideVersion = '4.13.2'
     coilVersion = '2.1.0'
     constraintLayoutVersion = '1.2.0'
@@ -115,7 +114,7 @@ ext {
     hiltJetpackVersion = '1.0.0'
     wordPressUtilsVersion = '2.6.0'
     mediapickerVersion = '0.1.1'
-    wordPressLoginVersion = '0.20.0'
+    wordPressLoginVersion = '0.21.0'
     aboutAutomatticVersion = '0.0.6'
     workManagerVersion = '2.7.1'
     billingVersion = '5.0.0'

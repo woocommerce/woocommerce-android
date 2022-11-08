@@ -3,24 +3,23 @@ package com.woocommerce.android.ui.mystore
 import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.AppUrls
+import com.woocommerce.android.BuildConfig
 import com.woocommerce.android.R
 import com.woocommerce.android.WooException
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
-import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_JITM
-import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_JITM_COUNT
-import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_SOURCE
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.model.UiString
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.ui.jitm.JitmTracker
+import com.woocommerce.android.ui.mystore.MyStoreViewModel.Companion.UTM_SOURCE
 import com.woocommerce.android.ui.mystore.MyStoreViewModel.MyStoreEvent.OnJitmCtaClicked
 import com.woocommerce.android.ui.mystore.domain.GetStats
 import com.woocommerce.android.ui.mystore.domain.GetTopPerformers
 import com.woocommerce.android.ui.mystore.domain.GetTopPerformers.TopPerformerProduct
 import com.woocommerce.android.ui.payments.banner.BannerState
 import com.woocommerce.android.util.CurrencyFormatter
-import com.woocommerce.android.util.UtmProvider
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import com.woocommerce.android.viewmodel.ResourceProvider
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -31,6 +30,7 @@ import org.junit.Before
 import org.junit.Test
 import org.mockito.ArgumentMatchers.anyBoolean
 import org.mockito.ArgumentMatchers.anyInt
+import org.mockito.ArgumentMatchers.anyString
 import org.mockito.kotlin.any
 import org.mockito.kotlin.argumentCaptor
 import org.mockito.kotlin.eq
@@ -49,6 +49,7 @@ import org.wordpress.android.fluxc.network.rest.wpcom.wc.jitm.JITMCta
 import org.wordpress.android.fluxc.store.JitmStore
 import org.wordpress.android.fluxc.store.WCStatsStore.StatsGranularity
 import org.wordpress.android.fluxc.store.WooCommerceStore
+import java.net.URLEncoder
 import kotlin.test.assertTrue
 
 @ExperimentalCoroutinesApi
@@ -65,7 +66,8 @@ class MyStoreViewModelTest : BaseUnitTest() {
     private val usageTracksEventEmitter: MyStoreStatsUsageTracksEventEmitter = mock()
     private val analyticsTrackerWrapper: AnalyticsTrackerWrapper = mock()
     private val jitmStore: JitmStore = mock()
-    private val utmProvider: UtmProvider = mock()
+    private val jitmTracker: JitmTracker = mock()
+    private val utmProvider: MyStoreUtmProvider = mock()
 
     private lateinit var sut: MyStoreViewModel
 
@@ -417,6 +419,34 @@ class MyStoreViewModelTest : BaseUnitTest() {
 
     // region Just In Time Messages (JITM)
     @Test
+    fun `when viewmodel init, then proper encoded query params are passed to fetch jitm`() {
+        testBlocking {
+            givenNetworkConnectivity(connected = true)
+            whenever(selectedSite.get()).thenReturn(SiteModel())
+            val captor = argumentCaptor<String>()
+
+            whenViewModelIsCreated()
+            verify(jitmStore).fetchJitmMessage(any(), any(), captor.capture())
+
+            if (BuildConfig.DEBUG) {
+                assertThat(captor.firstValue).isEqualTo(
+                    URLEncoder.encode(
+                        "build_type=developer&platform=android&version=${BuildConfig.VERSION_NAME}",
+                        Charsets.UTF_8.name()
+                    )
+                )
+            } else {
+                assertThat(captor.firstValue).isEqualTo(
+                    URLEncoder.encode(
+                        "platform=android&version=${BuildConfig.VERSION_NAME}",
+                        Charsets.UTF_8.name()
+                    )
+                )
+            }
+        }
+    }
+
+    @Test
     fun `given store setup in US, when viewmodel init, then request for jitm with valid message path`() {
         testBlocking {
             givenNetworkConnectivity(connected = true)
@@ -425,7 +455,7 @@ class MyStoreViewModelTest : BaseUnitTest() {
             val captor = argumentCaptor<String>()
 
             whenViewModelIsCreated()
-            verify(jitmStore).fetchJitmMessage(any(), captor.capture())
+            verify(jitmStore).fetchJitmMessage(any(), captor.capture(), any())
 
             assertThat(captor.firstValue).isEqualTo(expectedMessagePath)
         }
@@ -437,7 +467,7 @@ class MyStoreViewModelTest : BaseUnitTest() {
             givenNetworkConnectivity(connected = true)
             whenever(selectedSite.get()).thenReturn(SiteModel())
             whenever(
-                jitmStore.fetchJitmMessage(any(), any())
+                jitmStore.fetchJitmMessage(any(), any(), any())
             ).thenReturn(
                 WooResult(
                     model = arrayOf(provideJitmApiResponse())
@@ -456,7 +486,7 @@ class MyStoreViewModelTest : BaseUnitTest() {
             givenNetworkConnectivity(connected = true)
             whenever(selectedSite.get()).thenReturn(SiteModel())
             whenever(
-                jitmStore.fetchJitmMessage(any(), any())
+                jitmStore.fetchJitmMessage(any(), any(), any())
             ).thenReturn(
                 WooResult(
                     error = WOO_GENERIC_ERROR
@@ -475,7 +505,7 @@ class MyStoreViewModelTest : BaseUnitTest() {
             givenNetworkConnectivity(connected = true)
             whenever(selectedSite.get()).thenReturn(SiteModel())
             whenever(
-                jitmStore.fetchJitmMessage(any(), any())
+                jitmStore.fetchJitmMessage(any(), any(), any())
             ).thenReturn(
                 WooResult(
                     model = emptyArray()
@@ -495,7 +525,7 @@ class MyStoreViewModelTest : BaseUnitTest() {
             whenever(selectedSite.get()).thenReturn(SiteModel())
             val testJitmMessage = "Test jitm message"
             whenever(
-                jitmStore.fetchJitmMessage(any(), any())
+                jitmStore.fetchJitmMessage(any(), any(), any())
             ).thenReturn(
                 WooResult(
                     model = arrayOf(
@@ -523,7 +553,7 @@ class MyStoreViewModelTest : BaseUnitTest() {
             whenever(selectedSite.get()).thenReturn(SiteModel())
             val testJitmDescription = "Test jitm description"
             whenever(
-                jitmStore.fetchJitmMessage(any(), any())
+                jitmStore.fetchJitmMessage(any(), any(), any())
             ).thenReturn(
                 WooResult(
                     model = arrayOf(
@@ -551,7 +581,7 @@ class MyStoreViewModelTest : BaseUnitTest() {
             whenever(selectedSite.get()).thenReturn(SiteModel())
             val testJitmCtaLabel = "Test jitm Cta label"
             whenever(
-                jitmStore.fetchJitmMessage(any(), any())
+                jitmStore.fetchJitmMessage(any(), any(), any())
             ).thenReturn(
                 WooResult(
                     model = arrayOf(
@@ -577,14 +607,23 @@ class MyStoreViewModelTest : BaseUnitTest() {
         testBlocking {
             givenNetworkConnectivity(connected = true)
             whenever(selectedSite.get()).thenReturn(SiteModel())
+            whenever(selectedSite.getIfExists()).thenReturn(SiteModel())
             whenever(
-                jitmStore.fetchJitmMessage(any(), any())
+                jitmStore.fetchJitmMessage(any(), any(), any())
             ).thenReturn(
                 WooResult(
                     model = arrayOf(provideJitmApiResponse())
                 )
             )
-            whenever(utmProvider.getUrlWithUtmParams(any())).thenReturn("")
+            whenever(
+                utmProvider.getUrlWithUtmParams(
+                    anyString(),
+                    anyString(),
+                    anyString(),
+                    any(),
+                    anyString(),
+                )
+            ).thenReturn("")
 
             whenViewModelIsCreated()
             (sut.bannerState.value as BannerState).onPrimaryActionClicked.invoke()
@@ -602,8 +641,9 @@ class MyStoreViewModelTest : BaseUnitTest() {
         testBlocking {
             givenNetworkConnectivity(connected = true)
             whenever(selectedSite.get()).thenReturn(SiteModel())
+            whenever(selectedSite.getIfExists()).thenReturn(SiteModel())
             whenever(
-                jitmStore.fetchJitmMessage(any(), any())
+                jitmStore.fetchJitmMessage(any(), any(), any())
             ).thenReturn(
                 WooResult(
                     model = arrayOf(
@@ -615,7 +655,15 @@ class MyStoreViewModelTest : BaseUnitTest() {
                     )
                 )
             )
-            whenever(utmProvider.getUrlWithUtmParams(any())).thenReturn(
+            whenever(
+                utmProvider.getUrlWithUtmParams(
+                    anyString(),
+                    anyString(),
+                    anyString(),
+                    any(),
+                    anyString(),
+                )
+            ).thenReturn(
                 "${AppUrls.WOOCOMMERCE_PURCHASE_CARD_READER_IN_COUNTRY}US"
             )
 
@@ -635,14 +683,23 @@ class MyStoreViewModelTest : BaseUnitTest() {
         testBlocking {
             givenNetworkConnectivity(connected = true)
             whenever(selectedSite.get()).thenReturn(SiteModel())
+            whenever(selectedSite.getIfExists()).thenReturn(SiteModel())
             whenever(
-                jitmStore.fetchJitmMessage(any(), any())
+                jitmStore.fetchJitmMessage(any(), any(), any())
             ).thenReturn(
                 WooResult(
                     model = arrayOf(provideJitmApiResponse())
                 )
             )
-            whenever(utmProvider.getUrlWithUtmParams(any())).thenReturn(
+            whenever(
+                utmProvider.getUrlWithUtmParams(
+                    anyString(),
+                    anyString(),
+                    anyString(),
+                    any(),
+                    anyString(),
+                )
+            ).thenReturn(
                 ""
             )
 
@@ -663,7 +720,7 @@ class MyStoreViewModelTest : BaseUnitTest() {
             givenNetworkConnectivity(connected = true)
             whenever(selectedSite.get()).thenReturn(SiteModel())
             whenever(
-                jitmStore.fetchJitmMessage(any(), any())
+                jitmStore.fetchJitmMessage(any(), any(), any())
             ).thenReturn(
                 WooResult(
                     model = arrayOf(provideJitmApiResponse())
@@ -685,7 +742,7 @@ class MyStoreViewModelTest : BaseUnitTest() {
             givenNetworkConnectivity(connected = true)
             whenever(selectedSite.get()).thenReturn(SiteModel())
             whenever(
-                jitmStore.fetchJitmMessage(any(), any())
+                jitmStore.fetchJitmMessage(any(), any(), any())
             ).thenReturn(
                 WooResult(
                     model = arrayOf(provideJitmApiResponse())
@@ -694,8 +751,9 @@ class MyStoreViewModelTest : BaseUnitTest() {
 
             whenViewModelIsCreated()
 
-            verify(analyticsTrackerWrapper).track(
-                eq(AnalyticsEvent.JITM_FETCH_SUCCESS),
+            verify(jitmTracker).trackJitmFetchSuccess(
+                any(),
+                any(),
                 any()
             )
         }
@@ -707,7 +765,7 @@ class MyStoreViewModelTest : BaseUnitTest() {
             givenNetworkConnectivity(connected = true)
             whenever(selectedSite.get()).thenReturn(SiteModel())
             whenever(
-                jitmStore.fetchJitmMessage(any(), any())
+                jitmStore.fetchJitmMessage(any(), any(), any())
             ).thenReturn(
                 WooResult(
                     model = arrayOf(provideJitmApiResponse(id = "12345"))
@@ -716,13 +774,10 @@ class MyStoreViewModelTest : BaseUnitTest() {
 
             whenViewModelIsCreated()
 
-            verify(analyticsTrackerWrapper).track(
-                AnalyticsEvent.JITM_FETCH_SUCCESS,
-                mapOf(
-                    KEY_SOURCE to MyStoreViewModel.UTM_SOURCE,
-                    KEY_JITM to "12345",
-                    KEY_JITM_COUNT to 1
-                )
+            verify(jitmTracker).trackJitmFetchSuccess(
+                UTM_SOURCE,
+                "12345",
+                1
             )
         }
     }
@@ -733,7 +788,7 @@ class MyStoreViewModelTest : BaseUnitTest() {
             givenNetworkConnectivity(connected = true)
             whenever(selectedSite.get()).thenReturn(SiteModel())
             whenever(
-                jitmStore.fetchJitmMessage(any(), any())
+                jitmStore.fetchJitmMessage(any(), any(), any())
             ).thenReturn(
                 WooResult(
                     model = arrayOf(
@@ -746,13 +801,10 @@ class MyStoreViewModelTest : BaseUnitTest() {
 
             whenViewModelIsCreated()
 
-            verify(analyticsTrackerWrapper).track(
-                AnalyticsEvent.JITM_FETCH_SUCCESS,
-                mapOf(
-                    KEY_SOURCE to MyStoreViewModel.UTM_SOURCE,
-                    KEY_JITM to "12345",
-                    KEY_JITM_COUNT to 3
-                )
+            verify(jitmTracker).trackJitmFetchSuccess(
+                UTM_SOURCE,
+                "12345",
+                3
             )
         }
     }
@@ -763,7 +815,7 @@ class MyStoreViewModelTest : BaseUnitTest() {
             givenNetworkConnectivity(connected = true)
             whenever(selectedSite.get()).thenReturn(SiteModel())
             whenever(
-                jitmStore.fetchJitmMessage(any(), any())
+                jitmStore.fetchJitmMessage(any(), any(), any())
             ).thenReturn(
                 WooResult(
                     model = arrayOf(provideJitmApiResponse())
@@ -772,8 +824,9 @@ class MyStoreViewModelTest : BaseUnitTest() {
 
             whenViewModelIsCreated()
 
-            verify(analyticsTrackerWrapper).track(
-                eq(AnalyticsEvent.JITM_DISPLAYED),
+            verify(jitmTracker).trackJitmDisplayed(
+                any(),
+                any(),
                 any()
             )
         }
@@ -785,7 +838,7 @@ class MyStoreViewModelTest : BaseUnitTest() {
             givenNetworkConnectivity(connected = true)
             whenever(selectedSite.get()).thenReturn(SiteModel())
             whenever(
-                jitmStore.fetchJitmMessage(any(), any())
+                jitmStore.fetchJitmMessage(any(), any(), any())
             ).thenReturn(
                 WooResult(
                     model = arrayOf(
@@ -799,13 +852,10 @@ class MyStoreViewModelTest : BaseUnitTest() {
 
             whenViewModelIsCreated()
 
-            verify(analyticsTrackerWrapper).track(
-                AnalyticsEvent.JITM_DISPLAYED,
-                mapOf(
-                    AnalyticsTracker.KEY_SOURCE to MyStoreViewModel.UTM_SOURCE,
-                    AnalyticsTracker.JITM_ID to "12345",
-                    AnalyticsTracker.JITM_FEATURE_CLASS to "woomobile_ipp"
-                )
+            verify(jitmTracker).trackJitmDisplayed(
+                UTM_SOURCE,
+                "12345",
+                "woomobile_ipp"
             )
         }
     }
@@ -816,7 +866,7 @@ class MyStoreViewModelTest : BaseUnitTest() {
             givenNetworkConnectivity(connected = true)
             whenever(selectedSite.get()).thenReturn(SiteModel())
             whenever(
-                jitmStore.fetchJitmMessage(any(), any())
+                jitmStore.fetchJitmMessage(any(), any(), any())
             ).thenReturn(
                 WooResult(
                     model = emptyArray()
@@ -825,9 +875,10 @@ class MyStoreViewModelTest : BaseUnitTest() {
 
             whenViewModelIsCreated()
 
-            verify(analyticsTrackerWrapper).track(
-                eq(AnalyticsEvent.JITM_FETCH_SUCCESS),
-                any()
+            verify(jitmTracker).trackJitmFetchSuccess(
+                anyString(),
+                eq(null),
+                anyInt()
             )
         }
     }
@@ -838,7 +889,7 @@ class MyStoreViewModelTest : BaseUnitTest() {
             givenNetworkConnectivity(connected = true)
             whenever(selectedSite.get()).thenReturn(SiteModel())
             whenever(
-                jitmStore.fetchJitmMessage(any(), any())
+                jitmStore.fetchJitmMessage(any(), any(), any())
             ).thenReturn(
                 WooResult(
                     model = emptyArray()
@@ -847,13 +898,10 @@ class MyStoreViewModelTest : BaseUnitTest() {
 
             whenViewModelIsCreated()
 
-            verify(analyticsTrackerWrapper).track(
-                AnalyticsEvent.JITM_FETCH_SUCCESS,
-                mapOf(
-                    KEY_SOURCE to MyStoreViewModel.UTM_SOURCE,
-                    KEY_JITM to null,
-                    KEY_JITM_COUNT to 0
-                )
+            verify(jitmTracker).trackJitmFetchSuccess(
+                UTM_SOURCE,
+                null,
+                0
             )
         }
     }
@@ -864,22 +912,20 @@ class MyStoreViewModelTest : BaseUnitTest() {
             givenNetworkConnectivity(connected = true)
             whenever(selectedSite.get()).thenReturn(SiteModel())
             whenever(
-                jitmStore.fetchJitmMessage(any(), any())
+                jitmStore.fetchJitmMessage(any(), any(), any())
             ).thenReturn(
                 WooResult(
                     WooError(
                         type = WooErrorType.GENERIC_ERROR,
-                        original = BaseRequest.GenericErrorType.NETWORK_ERROR
+                        original = BaseRequest.GenericErrorType.NETWORK_ERROR,
+                        message = ""
                     )
                 )
             )
 
             whenViewModelIsCreated()
 
-            verify(analyticsTrackerWrapper).track(
-                eq(AnalyticsEvent.JITM_FETCH_FAILURE),
-                any()
-            )
+            verify(jitmTracker).trackJitmFetchFailure(anyString(), any(), anyString())
         }
     }
 
@@ -889,7 +935,7 @@ class MyStoreViewModelTest : BaseUnitTest() {
             givenNetworkConnectivity(connected = true)
             whenever(selectedSite.get()).thenReturn(SiteModel())
             whenever(
-                jitmStore.fetchJitmMessage(any(), any())
+                jitmStore.fetchJitmMessage(any(), any(), any())
             ).thenReturn(
                 WooResult(
                     WooError(
@@ -902,13 +948,10 @@ class MyStoreViewModelTest : BaseUnitTest() {
 
             whenViewModelIsCreated()
 
-            verify(analyticsTrackerWrapper).track(
-                AnalyticsEvent.JITM_FETCH_FAILURE,
-                mapOf(
-                    AnalyticsTracker.KEY_SOURCE to MyStoreViewModel.UTM_SOURCE,
-                    AnalyticsTracker.KEY_ERROR_TYPE to WooErrorType.GENERIC_ERROR.name,
-                    AnalyticsTracker.KEY_ERROR_DESC to "Generic error"
-                )
+            verify(jitmTracker).trackJitmFetchFailure(
+                UTM_SOURCE,
+                WooErrorType.GENERIC_ERROR,
+                "Generic error"
             )
         }
     }
@@ -918,20 +961,30 @@ class MyStoreViewModelTest : BaseUnitTest() {
         testBlocking {
             givenNetworkConnectivity(connected = true)
             whenever(selectedSite.get()).thenReturn(SiteModel())
+            whenever(selectedSite.getIfExists()).thenReturn(SiteModel())
             whenever(
-                jitmStore.fetchJitmMessage(any(), any())
+                jitmStore.fetchJitmMessage(any(), any(), any())
             ).thenReturn(
                 WooResult(
                     model = arrayOf(provideJitmApiResponse())
                 )
             )
-            whenever(utmProvider.getUrlWithUtmParams(any())).thenReturn("")
+            whenever(
+                utmProvider.getUrlWithUtmParams(
+                    anyString(),
+                    anyString(),
+                    anyString(),
+                    any(),
+                    anyString(),
+                )
+            ).thenReturn("")
 
             whenViewModelIsCreated()
             (sut.bannerState.value as BannerState).onPrimaryActionClicked.invoke()
 
-            verify(analyticsTrackerWrapper).track(
-                eq(AnalyticsEvent.JITM_CTA_TAPPED),
+            verify(jitmTracker).trackJitmCtaTapped(
+                any(),
+                any(),
                 any()
             )
         }
@@ -942,8 +995,9 @@ class MyStoreViewModelTest : BaseUnitTest() {
         testBlocking {
             givenNetworkConnectivity(connected = true)
             whenever(selectedSite.get()).thenReturn(SiteModel())
+            whenever(selectedSite.getIfExists()).thenReturn(SiteModel())
             whenever(
-                jitmStore.fetchJitmMessage(any(), any())
+                jitmStore.fetchJitmMessage(any(), any(), any())
             ).thenReturn(
                 WooResult(
                     model = arrayOf(
@@ -954,18 +1008,23 @@ class MyStoreViewModelTest : BaseUnitTest() {
                     )
                 )
             )
-            whenever(utmProvider.getUrlWithUtmParams(any())).thenReturn("")
+            whenever(
+                utmProvider.getUrlWithUtmParams(
+                    anyString(),
+                    anyString(),
+                    anyString(),
+                    any(),
+                    anyString(),
+                )
+            ).thenReturn("")
 
             whenViewModelIsCreated()
             (sut.bannerState.value as BannerState).onPrimaryActionClicked.invoke()
 
-            verify(analyticsTrackerWrapper).track(
-                AnalyticsEvent.JITM_CTA_TAPPED,
-                mapOf(
-                    AnalyticsTracker.KEY_SOURCE to MyStoreViewModel.UTM_SOURCE,
-                    AnalyticsTracker.JITM_ID to "12345",
-                    AnalyticsTracker.JITM_FEATURE_CLASS to "woomobile_ipp"
-                )
+            verify(jitmTracker).trackJitmCtaTapped(
+                UTM_SOURCE,
+                "12345",
+                "woomobile_ipp"
             )
         }
     }
@@ -976,7 +1035,7 @@ class MyStoreViewModelTest : BaseUnitTest() {
             givenNetworkConnectivity(connected = true)
             whenever(selectedSite.get()).thenReturn(SiteModel())
             whenever(
-                jitmStore.fetchJitmMessage(any(), any())
+                jitmStore.fetchJitmMessage(any(), any(), any())
             ).thenReturn(
                 WooResult(
                     model = arrayOf(provideJitmApiResponse())
@@ -986,8 +1045,9 @@ class MyStoreViewModelTest : BaseUnitTest() {
             whenViewModelIsCreated()
             (sut.bannerState.value as BannerState).onDismissClicked.invoke()
 
-            verify(analyticsTrackerWrapper).track(
-                eq(AnalyticsEvent.JITM_DISMISS_TAPPED),
+            verify(jitmTracker).trackJitmDismissTapped(
+                any(),
+                any(),
                 any()
             )
         }
@@ -999,7 +1059,7 @@ class MyStoreViewModelTest : BaseUnitTest() {
             givenNetworkConnectivity(connected = true)
             whenever(selectedSite.get()).thenReturn(SiteModel())
             whenever(
-                jitmStore.fetchJitmMessage(any(), any())
+                jitmStore.fetchJitmMessage(any(), any(), any())
             ).thenReturn(
                 WooResult(
                     model = arrayOf(
@@ -1014,13 +1074,10 @@ class MyStoreViewModelTest : BaseUnitTest() {
             whenViewModelIsCreated()
             (sut.bannerState.value as BannerState).onDismissClicked.invoke()
 
-            verify(analyticsTrackerWrapper).track(
-                AnalyticsEvent.JITM_DISMISS_TAPPED,
-                mapOf(
-                    AnalyticsTracker.KEY_SOURCE to MyStoreViewModel.UTM_SOURCE,
-                    AnalyticsTracker.JITM_ID to "12345",
-                    AnalyticsTracker.JITM_FEATURE_CLASS to "woomobile_ipp"
-                )
+            verify(jitmTracker).trackJitmDismissTapped(
+                UTM_SOURCE,
+                "12345",
+                "woomobile_ipp"
             )
         }
     }
@@ -1031,7 +1088,7 @@ class MyStoreViewModelTest : BaseUnitTest() {
             givenNetworkConnectivity(connected = true)
             whenever(selectedSite.get()).thenReturn(SiteModel())
             whenever(
-                jitmStore.fetchJitmMessage(any(), any())
+                jitmStore.fetchJitmMessage(any(), any(), any())
             ).thenReturn(
                 WooResult(
                     model = arrayOf(provideJitmApiResponse())
@@ -1044,8 +1101,9 @@ class MyStoreViewModelTest : BaseUnitTest() {
             whenViewModelIsCreated()
             (sut.bannerState.value as BannerState).onDismissClicked.invoke()
 
-            verify(analyticsTrackerWrapper).track(
-                eq(AnalyticsEvent.JITM_DISMISS_SUCCESS),
+            verify(jitmTracker).trackJitmDismissSuccess(
+                any(),
+                any(),
                 any()
             )
         }
@@ -1057,7 +1115,7 @@ class MyStoreViewModelTest : BaseUnitTest() {
             givenNetworkConnectivity(connected = true)
             whenever(selectedSite.get()).thenReturn(SiteModel())
             whenever(
-                jitmStore.fetchJitmMessage(any(), any())
+                jitmStore.fetchJitmMessage(any(), any(), any())
             ).thenReturn(
                 WooResult(
                     model = arrayOf(
@@ -1075,13 +1133,10 @@ class MyStoreViewModelTest : BaseUnitTest() {
             whenViewModelIsCreated()
             (sut.bannerState.value as BannerState).onDismissClicked.invoke()
 
-            verify(analyticsTrackerWrapper).track(
-                AnalyticsEvent.JITM_DISMISS_SUCCESS,
-                mapOf(
-                    AnalyticsTracker.KEY_SOURCE to MyStoreViewModel.UTM_SOURCE,
-                    AnalyticsTracker.JITM_ID to "12345",
-                    AnalyticsTracker.JITM_FEATURE_CLASS to "woomobile_ipp"
-                )
+            verify(jitmTracker).trackJitmDismissSuccess(
+                UTM_SOURCE,
+                "12345",
+                "woomobile_ipp"
             )
         }
     }
@@ -1092,7 +1147,7 @@ class MyStoreViewModelTest : BaseUnitTest() {
             givenNetworkConnectivity(connected = true)
             whenever(selectedSite.get()).thenReturn(SiteModel())
             whenever(
-                jitmStore.fetchJitmMessage(any(), any())
+                jitmStore.fetchJitmMessage(any(), any(), any())
             ).thenReturn(
                 WooResult(
                     model = arrayOf(provideJitmApiResponse())
@@ -1105,9 +1160,12 @@ class MyStoreViewModelTest : BaseUnitTest() {
             whenViewModelIsCreated()
             (sut.bannerState.value as BannerState).onDismissClicked.invoke()
 
-            verify(analyticsTrackerWrapper).track(
-                eq(AnalyticsEvent.JITM_DISMISS_FAILURE),
-                any()
+            verify(jitmTracker).trackJitmDismissFailure(
+                anyString(),
+                anyString(),
+                anyString(),
+                eq(null),
+                eq(null)
             )
         }
     }
@@ -1118,7 +1176,7 @@ class MyStoreViewModelTest : BaseUnitTest() {
             givenNetworkConnectivity(connected = true)
             whenever(selectedSite.get()).thenReturn(SiteModel())
             whenever(
-                jitmStore.fetchJitmMessage(any(), any())
+                jitmStore.fetchJitmMessage(any(), any(), any())
             ).thenReturn(
                 WooResult(
                     model = arrayOf(provideJitmApiResponse())
@@ -1136,9 +1194,12 @@ class MyStoreViewModelTest : BaseUnitTest() {
             whenViewModelIsCreated()
             (sut.bannerState.value as BannerState).onDismissClicked.invoke()
 
-            verify(analyticsTrackerWrapper).track(
-                eq(AnalyticsEvent.JITM_DISMISS_FAILURE),
-                any()
+            verify(jitmTracker).trackJitmDismissFailure(
+                anyString(),
+                anyString(),
+                anyString(),
+                any(),
+                eq(null)
             )
         }
     }
@@ -1149,7 +1210,7 @@ class MyStoreViewModelTest : BaseUnitTest() {
             givenNetworkConnectivity(connected = true)
             whenever(selectedSite.get()).thenReturn(SiteModel())
             whenever(
-                jitmStore.fetchJitmMessage(any(), any())
+                jitmStore.fetchJitmMessage(any(), any(), any())
             ).thenReturn(
                 WooResult(
                     model = arrayOf(
@@ -1173,15 +1234,12 @@ class MyStoreViewModelTest : BaseUnitTest() {
             whenViewModelIsCreated()
             (sut.bannerState.value as BannerState).onDismissClicked.invoke()
 
-            verify(analyticsTrackerWrapper).track(
-                AnalyticsEvent.JITM_DISMISS_FAILURE,
-                mapOf(
-                    AnalyticsTracker.KEY_SOURCE to MyStoreViewModel.UTM_SOURCE,
-                    AnalyticsTracker.JITM_ID to "12345",
-                    AnalyticsTracker.JITM_FEATURE_CLASS to "woomobile_ipp",
-                    AnalyticsTracker.KEY_ERROR_TYPE to WooErrorType.GENERIC_ERROR.name,
-                    AnalyticsTracker.KEY_ERROR_DESC to "Generic error",
-                )
+            verify(jitmTracker).trackJitmDismissFailure(
+                UTM_SOURCE,
+                "12345",
+                "woomobile_ipp",
+                WooErrorType.GENERIC_ERROR,
+                "Generic error"
             )
         }
     }
@@ -1192,7 +1250,7 @@ class MyStoreViewModelTest : BaseUnitTest() {
             givenNetworkConnectivity(connected = true)
             whenever(selectedSite.get()).thenReturn(SiteModel())
             whenever(
-                jitmStore.fetchJitmMessage(any(), any())
+                jitmStore.fetchJitmMessage(any(), any(), any())
             ).thenReturn(
                 WooResult(
                     model = arrayOf(
@@ -1210,15 +1268,12 @@ class MyStoreViewModelTest : BaseUnitTest() {
             whenViewModelIsCreated()
             (sut.bannerState.value as BannerState).onDismissClicked.invoke()
 
-            verify(analyticsTrackerWrapper).track(
-                AnalyticsEvent.JITM_DISMISS_FAILURE,
-                mapOf(
-                    AnalyticsTracker.KEY_SOURCE to MyStoreViewModel.UTM_SOURCE,
-                    AnalyticsTracker.JITM_ID to "12345",
-                    AnalyticsTracker.JITM_FEATURE_CLASS to "woomobile_ipp",
-                    AnalyticsTracker.KEY_ERROR_TYPE to null,
-                    AnalyticsTracker.KEY_ERROR_DESC to null,
-                )
+            verify(jitmTracker).trackJitmDismissFailure(
+                UTM_SOURCE,
+                "12345",
+                "woomobile_ipp",
+                null,
+                null
             )
         }
     }
@@ -1278,6 +1333,7 @@ class MyStoreViewModelTest : BaseUnitTest() {
             analyticsTrackerWrapper,
             myStoreTransactionLauncher = mock(),
             jitmStore,
+            jitmTracker,
             utmProvider,
         )
     }

@@ -104,7 +104,8 @@ class ProductListRepository @Inject constructor(
         searchQuery: String,
         isSkuSearch: Boolean = false,
         loadMore: Boolean = false,
-        excludedProductIds: List<Long>? = null
+        excludedProductIds: List<Long>? = null,
+        productFilterOptions: Map<ProductFilterOption, String> = emptyMap(),
     ): List<Product>? {
         // cancel any existing load
         loadContinuation.cancel()
@@ -120,7 +121,8 @@ class ProductListRepository @Inject constructor(
                 pageSize = PRODUCT_PAGE_SIZE,
                 offset = offset,
                 sorting = productSortingChoice,
-                excludedProductIds = excludedProductIds
+                excludedProductIds = excludedProductIds,
+                filterOptions = productFilterOptions
             )
             dispatcher.dispatch(WCProductActionBuilder.newSearchProductsAction(payload))
         }
