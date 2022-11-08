@@ -54,12 +54,13 @@ open class LoginPrologueFragment(@LayoutRes layout: Int) : Fragment(layout) {
 
         if (savedInstanceState == null) {
             unifiedLoginTracker.track(Flow.PROLOGUE, Step.PROLOGUE)
+            AppPrefs.setStoreCreationSource(AnalyticsTracker.VALUE_PROLOGUE)
+
             simplifiedLoginExperiment.activate()
         }
 
         binding.buttonGetStarted.setOnClickListener {
             AnalyticsTracker.track(stat = AnalyticsEvent.LOGIN_PROLOGUE_CREATE_SITE_TAPPED)
-            AppPrefs.setStoreCreationSource(AnalyticsTracker.VALUE_PROLOGUE)
             prologueFinishedListener?.onGetStartedClicked()
         }
 
