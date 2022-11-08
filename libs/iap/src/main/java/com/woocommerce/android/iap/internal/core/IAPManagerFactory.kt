@@ -12,7 +12,8 @@ internal object IAPManagerFactory {
         val iapPurchasesUpdatedListener = IAPPurchasesUpdatedListener(logWrapper)
         val iapBillingClientStateHandler = IAPBillingClientStateHandler(
             IAPBillingClientProvider(context, iapPurchasesUpdatedListener),
-            logWrapper
+            iapOutMapper,
+            logWrapper,
         )
         val iapInMapper = IAPInMapper()
         return IAPManager(
@@ -20,6 +21,8 @@ internal object IAPManagerFactory {
             iapOutMapper,
             iapInMapper,
             iapPurchasesUpdatedListener,
+            IAPBillingFlowParamsBuilder(),
+            IAPPeriodicPurchaseStatusChecker(logWrapper),
             logWrapper,
         )
     }
