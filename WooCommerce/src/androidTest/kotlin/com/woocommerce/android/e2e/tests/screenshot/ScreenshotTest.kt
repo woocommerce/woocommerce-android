@@ -16,7 +16,7 @@ import com.woocommerce.android.e2e.screens.orders.CardReaderPaymentScreen
 import com.woocommerce.android.e2e.screens.orders.UnifiedOrderScreen
 import com.woocommerce.android.e2e.screens.products.ProductListScreen
 import com.woocommerce.android.push.WooNotificationBuilder
-import com.woocommerce.android.ui.login.LoginActivity
+import com.woocommerce.android.ui.main.MainActivity
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
 import org.junit.After
@@ -45,7 +45,7 @@ class ScreenshotTest : TestBase(failOnUnmatchedWireMockRequests = false) {
     val localeTestRule = LocaleTestRule()
 
     @get:Rule(order = 4)
-    var activityRule = ActivityScenarioRule(LoginActivity::class.java)
+    var activityRule = ActivityScenarioRule(MainActivity::class.java)
 
     @Inject lateinit var wooNotificationBuilder: WooNotificationBuilder
 
