@@ -427,18 +427,18 @@ class AnalyticsViewModel @Inject constructor(
         visitorsCount: Int,
         viewsCount: Int
     ) = DataViewState(
-        title = "Visitors and Views",
+        title = resourceProvider.getString(R.string.analytics_visitors_and_views_card_title),
         leftSection = AnalyticsInformationSectionViewState(
-            "Visitors",
+            title = resourceProvider.getString(R.string.analytics_visitors_subtitle),
             visitorsCount.toString(),
             null, /** Add delta calculation to Visitors and Views stats **/
             listOf() /** Add charts calculation to Visitors and Views stats **/
         ),
         rightSection = AnalyticsInformationSectionViewState(
-            "Views",
+            resourceProvider.getString(R.string.analytics_views_subtitle),
             viewsCount.toString(),
-            null,
-            listOf()
+            null, /** Add delta calculation to Visitors and Views stats **/
+            listOf() /** Add charts calculation to Visitors and Views stats **/
         )
     )
 
