@@ -193,12 +193,20 @@ class AnalyticsRepository @Inject constructor(
         selectedRange: AnalyticTimePeriod,
         fetchStrategy: FetchStrategy
     ): VisitorsResult {
-        return VisitorsResult.VisitorsData(
-            VisitorsStat(
-                0,
-                0
-            )
-        )
+        return getVisitorsStats(dateRange, getGranularity(selectedRange))
+            .model?.dates?.asSequence()
+            ?.map { Pair(it.visitors, it.views) }
+            ?.fold(Pair(0L, 0L)) { acc, pair -> Pair(acc.first + pair.first, acc.second + pair.second) }
+            ?.let { (visitorsTotal, viewsTotal) ->
+                VisitorsResult.VisitorsData(
+                    VisitorsStat(
+                        visitorsTotal.toInt(),
+                        viewsTotal.toInt()
+                    )
+                )
+            } ?: VisitorsResult.VisitorsError
+
+
     }
 
     fun getRevenueAdminPanelUrl() = getAdminPanelUrl() + ANALYTICS_REVENUE_PATH
