@@ -13,8 +13,6 @@ import com.woocommerce.android.ui.analytics.AnalyticsRepository.RevenueResult.Re
 import com.woocommerce.android.ui.analytics.AnalyticsRepository.RevenueResult.RevenueError
 import com.woocommerce.android.ui.analytics.daterangeselector.AnalyticTimePeriod
 import com.woocommerce.android.ui.analytics.daterangeselector.AnalyticsDateRange
-import com.woocommerce.android.ui.analytics.daterangeselector.AnalyticsDateRange.MultipleDateRange
-import com.woocommerce.android.ui.analytics.daterangeselector.AnalyticsDateRange.SimpleDateRange
 import com.woocommerce.android.ui.mystore.data.StatsRepository
 import com.woocommerce.android.util.CoroutineDispatchers
 import kotlinx.coroutines.Deferred
@@ -194,14 +192,9 @@ class AnalyticsRepository @Inject constructor(
         granularity: StatsGranularity,
         fetchStrategy: FetchStrategy
     ): Result<WCRevenueStatsModel?> = coroutineScope {
-        val startDate = when (dateRange) {
-            is SimpleDateRange -> dateRange.from.formatToYYYYmmDD()
-            is MultipleDateRange -> dateRange.to.from.formatToYYYYmmDD()
-        }
-        val endDate = when (dateRange) {
-            is SimpleDateRange -> dateRange.to.formatToYYYYmmDD()
-            is MultipleDateRange -> dateRange.to.to.formatToYYYYmmDD()
-        }
+        val currentPeriod = dateRange.getSelectedPeriod()
+        val startDate = currentPeriod.from.formatToYYYYmmDD()
+        val endDate = currentPeriod.to.formatToYYYYmmDD()
 
         getCurrentRevenueMutex.withLock {
             if (shouldUpdateCurrentStats(startDate, endDate, fetchStrategy == FetchStrategy.ForceNew)) {
@@ -221,14 +214,9 @@ class AnalyticsRepository @Inject constructor(
         granularity: StatsGranularity,
         fetchStrategy: FetchStrategy
     ): Result<WCRevenueStatsModel?> = coroutineScope {
-        val startDate = when (dateRange) {
-            is SimpleDateRange -> dateRange.from.formatToYYYYmmDD()
-            is MultipleDateRange -> dateRange.from.from.formatToYYYYmmDD()
-        }
-        val endDate = when (dateRange) {
-            is SimpleDateRange -> dateRange.from.formatToYYYYmmDD()
-            is MultipleDateRange -> dateRange.from.to.formatToYYYYmmDD()
-        }
+        val previousPeriod = dateRange.getComparisonPeriod()
+        val startDate = previousPeriod.from.formatToYYYYmmDD()
+        val endDate = previousPeriod.to.formatToYYYYmmDD()
 
         getPreviousRevenueMutex.withLock {
             if (shouldUpdatePreviousStats(startDate, endDate, fetchStrategy == FetchStrategy.ForceNew)) {
@@ -248,14 +236,9 @@ class AnalyticsRepository @Inject constructor(
         fetchStrategy: FetchStrategy,
         quantity: Int
     ): Result<List<TopPerformerProductEntity>> {
-        val startDate = when (dateRange) {
-            is SimpleDateRange -> dateRange.from.formatToYYYYmmDD()
-            is MultipleDateRange -> dateRange.from.from.formatToYYYYmmDD()
-        }
-        val endDate = when (dateRange) {
-            is SimpleDateRange -> dateRange.to.formatToYYYYmmDD()
-            is MultipleDateRange -> dateRange.to.to.formatToYYYYmmDD()
-        }
+        val totalPeriod = dateRange.getAnalyzedPeriod()
+        val startDate = totalPeriod.from.formatToYYYYmmDD()
+        val endDate = totalPeriod.to.formatToYYYYmmDD()
 
         val site = selectedSite.get()
         val startDateFormatted = DateUtils.getStartDateForSite(site, startDate)
