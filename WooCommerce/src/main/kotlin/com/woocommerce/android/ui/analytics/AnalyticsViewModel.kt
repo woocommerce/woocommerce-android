@@ -177,7 +177,7 @@ class AnalyticsViewModel @Inject constructor(
     }
 
     fun onVisitorsSeeReportClick() {
-        //TODO: track visitors click
+        // Add track visitors click
         openReportsView(analyticsRepository.getJetpackStatsPanelUrl())
     }
 
@@ -219,7 +219,7 @@ class AnalyticsViewModel @Inject constructor(
                                     it.visitorsStat.viewsCount
                                 )
                             )
-                            //TODO: submit sentry monitor transaction finished event
+                            // submit sentry monitor transaction finished event
                         }
                         is VisitorsError -> mutableState.value = state.value.copy(
                             refreshIndicator = NotShowIndicator,
@@ -416,8 +416,8 @@ class AnalyticsViewModel @Inject constructor(
         leftSection = AnalyticsInformationSectionViewState(
             "Visitors",
             visitorsCount.toString(),
-            null,
-            listOf()
+            null, /** Add delta calculation to Visitors and Views stats **/
+            listOf() /** Add charts calculation to Visitors and Views stats **/
         ),
         rightSection = AnalyticsInformationSectionViewState(
             "Views",

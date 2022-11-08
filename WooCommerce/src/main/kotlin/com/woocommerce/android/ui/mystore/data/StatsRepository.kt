@@ -52,6 +52,7 @@ class StatsRepository @Inject constructor(
         // /wc-analytics/leaderboards. More info https://github.com/woocommerce/woocommerce-android/issues/6688
         private const val PRODUCT_ONLY_LEADERBOARD_MIN_WC_VERSION = "6.7.0"
         private const val AN_HOUR_IN_MILLIS = 3600000
+        private const val VISITORS_AND_VIEW_FETCH_LIMIT = 15
     }
 
     suspend fun fetchRevenueStats(
@@ -271,7 +272,7 @@ class StatsRepository @Inject constructor(
         val result = visitsAndViewsStore.fetchVisits(
             site,
             granularity,
-            LimitMode.Top(15),
+            LimitMode.Top(VISITORS_AND_VIEW_FETCH_LIMIT),
             forced
         )
 
@@ -280,7 +281,13 @@ class StatsRepository @Inject constructor(
                 DASHBOARD,
                 "$TAG - Error fetching visitor stats: ${result.error.message}"
             )
-            WooResult(WooError(type = WooErrorType.GENERIC_ERROR, message = result.error.message, original = BaseRequest.GenericErrorType.NOT_FOUND))
+            WooResult(
+                WooError(
+                    type = WooErrorType.GENERIC_ERROR,
+                    message = result.error.message,
+                    original = BaseRequest.GenericErrorType.NOT_FOUND
+                )
+            )
         } else {
             WooResult(result.model)
         }

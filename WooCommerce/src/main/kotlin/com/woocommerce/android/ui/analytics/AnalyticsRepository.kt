@@ -202,8 +202,6 @@ class AnalyticsRepository @Inject constructor(
                     )
                 )
             } ?: VisitorsResult.VisitorsError
-
-
     }
 
     fun getRevenueAdminPanelUrl() = getAdminPanelUrl() + ANALYTICS_REVENUE_PATH
