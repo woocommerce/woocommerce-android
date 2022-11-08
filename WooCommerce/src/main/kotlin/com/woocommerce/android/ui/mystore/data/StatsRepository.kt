@@ -33,7 +33,7 @@ import org.wordpress.android.fluxc.store.WooCommerceStore
 import org.wordpress.android.fluxc.store.WooCommerceStore.WooPlugin.WOO_CORE
 import org.wordpress.android.fluxc.store.stats.time.VisitsAndViewsStore
 import org.wordpress.android.fluxc.utils.DateUtils
-import java.util.*
+import java.util.Date
 import javax.inject.Inject
 
 @Suppress("TooManyFunctions")
