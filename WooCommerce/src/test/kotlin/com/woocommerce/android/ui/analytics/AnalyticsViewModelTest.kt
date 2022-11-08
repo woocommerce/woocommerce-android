@@ -19,9 +19,10 @@ import com.woocommerce.android.ui.analytics.RefreshIndicator.NotShowIndicator
 import com.woocommerce.android.ui.analytics.daterangeselector.AnalyticTimePeriod.LAST_YEAR
 import com.woocommerce.android.ui.analytics.daterangeselector.AnalyticTimePeriod.TODAY
 import com.woocommerce.android.ui.analytics.daterangeselector.AnalyticTimePeriod.WEEK_TO_DATE
-import com.woocommerce.android.ui.analytics.daterangeselector.AnalyticsDateRange.MultipleDateRange
-import com.woocommerce.android.ui.analytics.daterangeselector.AnalyticsDateRange.SimpleDateRange
 import com.woocommerce.android.ui.analytics.daterangeselector.AnalyticsDateRangeCalculator
+import com.woocommerce.android.ui.analytics.daterangeselector.AnalyticsDateRangeFormatter
+import com.woocommerce.android.ui.analytics.daterangeselector.MultipleDateRange
+import com.woocommerce.android.ui.analytics.daterangeselector.SimpleDateRange
 import com.woocommerce.android.ui.analytics.informationcard.AnalyticsInformationViewState
 import com.woocommerce.android.ui.analytics.informationcard.AnalyticsInformationViewState.LoadingViewState
 import com.woocommerce.android.ui.analytics.listcard.AnalyticsListViewState
@@ -506,12 +507,20 @@ class AnalyticsViewModelTest : BaseUnitTest() {
         on { getStringArray(any()) } doAnswer { DATE_RANGE_SELECTORS.toTypedArray() }
     }
 
-    private fun givenAViewModel(resourceProvider: ResourceProvider = givenAResourceProvider()) =
-        AnalyticsViewModel(
-            resourceProvider, dateUtil, calculator,
-            currencyFormatter, analyticsRepository,
-            selectedSite, mock(), mock(), savedState
+    private fun givenAViewModel(resourceProvider: ResourceProvider = givenAResourceProvider()): AnalyticsViewModel {
+        val analyticsDateRangeFormatter = AnalyticsDateRangeFormatter(dateUtil, resourceProvider)
+        return AnalyticsViewModel(
+            resourceProvider,
+            calculator,
+            currencyFormatter,
+            analyticsRepository,
+            selectedSite,
+            mock(),
+            mock(),
+            analyticsDateRangeFormatter,
+            savedState
         )
+    }
 
     private fun getRevenueStats(
         totalValue: Double = TOTAL_VALUE,
@@ -519,7 +528,17 @@ class AnalyticsViewModelTest : BaseUnitTest() {
         currencyCode: String = CURRENCY_CODE,
         totalDelta: DeltaPercentage = DeltaPercentage.Value(TOTAL_DELTA.toInt()),
         netDelta: DeltaPercentage = DeltaPercentage.Value(NET_DELTA.toInt()),
-    ) = RevenueData(RevenueStat(totalValue, totalDelta, netValue, netDelta, currencyCode))
+    ) = RevenueData(
+        RevenueStat(
+            totalValue,
+            totalDelta,
+            netValue,
+            netDelta,
+            currencyCode,
+            listOf(TOTAL_VALUE),
+            listOf(NET_VALUE)
+        )
+    )
 
     private fun getOrdersStats(
         ordersCount: Int = ORDERS_COUNT,
@@ -533,7 +552,9 @@ class AnalyticsViewModelTest : BaseUnitTest() {
             DeltaPercentage.Value(ordersCountDelta),
             avgOrderValue,
             DeltaPercentage.Value(avgOrderValueDelta),
-            currencyCode
+            currencyCode,
+            listOf(ORDERS_COUNT.toLong()),
+            listOf(AVG_ORDER_VALUE)
         )
     )
 

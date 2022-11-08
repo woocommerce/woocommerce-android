@@ -95,10 +95,12 @@ class VariationRepository @Inject constructor(
         variationIds: Collection<Long>,
         newRegularPrice: String? = null,
         newSalePrice: String? = null,
+        stockQuantity: Double? = null
     ): Boolean {
         val payloadBuilder = BatchUpdateVariationsPayload.Builder(selectedSite.get(), remoteProductId, variationIds)
         if (newRegularPrice != null) payloadBuilder.regularPrice(newRegularPrice)
         if (newSalePrice != null) payloadBuilder.salePrice(newSalePrice)
+        if (stockQuantity != null) payloadBuilder.stockQuantity(stockQuantity.toInt())
         val result = productStore.batchUpdateVariations(payloadBuilder.build())
         return !result.isError
     }

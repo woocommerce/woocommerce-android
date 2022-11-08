@@ -111,6 +111,12 @@ enum class AnalyticsEvent(val siteless: Boolean = false) {
     LOGIN_WITH_QR_CODE_BUTTON_TAPPED(siteless = true),
     LOGIN_WITH_QR_CODE_SCANNED(siteless = true),
 
+    LOGIN_PROLOGUE_CREATE_SITE_TAPPED(siteless = true),
+    SIGNUP_LOGIN_BUTTON_TAPPED(siteless = true),
+    SIGNUP_SUBMITTED(siteless = true),
+    SIGNUP_SUCCESS(siteless = true),
+    SIGNUP_ERROR(siteless = true),
+
     // -- Site Picker
     SITE_PICKER_STORES_SHOWN(siteless = true),
     SITE_PICKER_CONTINUE_TAPPED(siteless = true),
@@ -127,12 +133,15 @@ enum class AnalyticsEvent(val siteless: Boolean = false) {
     SITE_PICKER_NOT_CONNECTED_JETPACK_REFRESH_APP_LINK_TAPPED(siteless = true),
     SITE_PICKER_NON_WOO_SITE_TAPPED(siteless = true),
     SITE_PICKER_NEW_TO_WOO_TAPPED(siteless = true),
-    SITE_PICKER_ENTER_SITE_ADDRESS_TAPPED(siteless = true),
+    SITE_PICKER_ADD_A_STORE_TAPPED(siteless = true),
+    SITE_PICKER_CONNECT_EXISTING_STORE_TAPPED(siteless = true),
     SITE_PICKER_SITE_DISCOVERY(siteless = true),
     SITE_PICKER_JETPACK_TIMEOUT_ERROR_SHOWN(siteless = true),
     SITE_PICKER_JETPACK_TIMEOUT_CONTACT_SUPPORT_CLICKED(siteless = true),
     SITE_PICKER_CREATE_SITE_TAPPED(siteless = true),
     LOGIN_WOOCOMMERCE_SITE_CREATED(siteless = true),
+    SITE_CREATION_FAILED(siteless = true),
+    SITE_CREATION_DISMISSED(siteless = true),
 
     // -- Dashboard
     DASHBOARD_PULLED_TO_REFRESH,
@@ -559,6 +568,8 @@ enum class AnalyticsEvent(val siteless: Boolean = false) {
     PRODUCT_VARIANTS_BULK_UPDATE_SALE_PRICE_TAPPED,
     PRODUCT_VARIANTS_BULK_UPDATE_REGULAR_PRICE_DONE_TAPPED,
     PRODUCT_VARIANTS_BULK_UPDATE_SALE_PRICE_DONE_TAPPED,
+    PRODUCT_VARIANTS_BULK_UPDATE_STOCK_QUANTITY_TAPPED,
+    PRODUCT_VARIANTS_BULK_UPDATE_STOCK_QUANTITY_DONE_TAPPED,
 
     // -- Product images
     PRODUCT_IMAGE_ADDED,

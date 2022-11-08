@@ -23,11 +23,9 @@ import com.woocommerce.android.ui.analytics.RefreshIndicator.NotShowIndicator
 import com.woocommerce.android.ui.analytics.RefreshIndicator.ShowIndicator
 import com.woocommerce.android.ui.analytics.daterangeselector.AnalyticTimePeriod
 import com.woocommerce.android.ui.analytics.daterangeselector.AnalyticsDateRange
-import com.woocommerce.android.ui.analytics.daterangeselector.AnalyticsDateRange.MultipleDateRange
-import com.woocommerce.android.ui.analytics.daterangeselector.AnalyticsDateRange.SimpleDateRange
 import com.woocommerce.android.ui.analytics.daterangeselector.AnalyticsDateRangeCalculator
+import com.woocommerce.android.ui.analytics.daterangeselector.AnalyticsDateRangeFormatter
 import com.woocommerce.android.ui.analytics.daterangeselector.AnalyticsDateRangeSelectorViewState
-import com.woocommerce.android.ui.analytics.daterangeselector.formatDatesToFriendlyPeriod
 import com.woocommerce.android.ui.analytics.informationcard.AnalyticsInformationSectionViewState
 import com.woocommerce.android.ui.analytics.informationcard.AnalyticsInformationViewState.DataViewState
 import com.woocommerce.android.ui.analytics.informationcard.AnalyticsInformationViewState.LoadingViewState
@@ -35,12 +33,10 @@ import com.woocommerce.android.ui.analytics.informationcard.AnalyticsInformation
 import com.woocommerce.android.ui.analytics.listcard.AnalyticsListCardItemViewState
 import com.woocommerce.android.ui.mystore.MyStoreStatsUsageTracksEventEmitter
 import com.woocommerce.android.util.CurrencyFormatter
-import com.woocommerce.android.util.DateUtils
 import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.viewmodel.ResourceProvider
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.navArgs
-import com.zendesk.util.DateUtils.isSameDay
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -57,13 +53,13 @@ import com.woocommerce.android.ui.analytics.listcard.AnalyticsListViewState.NoDa
 @HiltViewModel
 class AnalyticsViewModel @Inject constructor(
     private val resourceProvider: ResourceProvider,
-    private val dateUtils: DateUtils,
     private val analyticsDateRange: AnalyticsDateRangeCalculator,
     private val currencyFormatter: CurrencyFormatter,
     private val analyticsRepository: AnalyticsRepository,
     private val selectedSite: SelectedSite,
     private val transactionLauncher: AnalyticsHubTransactionLauncher,
     private val usageTracksEventEmitter: MyStoreStatsUsageTracksEventEmitter,
+    private val analyticsDateRangeFormatter: AnalyticsDateRangeFormatter,
     savedState: SavedStateHandle
 ) : ScopedViewModel(savedState) {
 
@@ -85,14 +81,9 @@ class AnalyticsViewModel @Inject constructor(
 
     fun onCustomDateRangeClicked() {
         val savedRange = getSavedDateRange()
-        val fromMillis = when (savedRange) {
-            is SimpleDateRange -> savedRange.from.time
-            is MultipleDateRange -> savedRange.to.from.time
-        }
-        val toMillis = when (savedRange) {
-            is SimpleDateRange -> savedRange.to.time
-            is MultipleDateRange -> savedRange.to.to.time
-        }
+        val currentPeriod = savedRange.getSelectedPeriod()
+        val fromMillis = currentPeriod.from.time
+        val toMillis = currentPeriod.to.time
         triggerEvent(AnalyticsViewEvent.OpenDatePicker(fromMillis, toMillis))
     }
 
@@ -212,12 +203,7 @@ class AnalyticsViewModel @Inject constructor(
                         is RevenueData -> {
                             mutableState.value = state.value.copy(
                                 refreshIndicator = NotShowIndicator,
-                                revenueState = buildRevenueDataViewState(
-                                    formatValue(it.revenueStat.totalValue.toString(), it.revenueStat.currencyCode),
-                                    it.revenueStat.totalDelta,
-                                    formatValue(it.revenueStat.netValue.toString(), it.revenueStat.currencyCode),
-                                    it.revenueStat.netDelta
-                                )
+                                revenueState = buildRevenueDataViewState(it)
                             )
                             transactionLauncher.onRevenueFetched()
                         }
@@ -244,12 +230,7 @@ class AnalyticsViewModel @Inject constructor(
                     when (it) {
                         is OrdersData -> {
                             mutableState.value = state.value.copy(
-                                ordersState = buildOrdersDataViewState(
-                                    it.ordersStat.ordersCount.toString(),
-                                    it.ordersStat.ordersCountDelta,
-                                    formatValue(it.ordersStat.avgOrderValue.toString(), it.ordersStat.currencyCode),
-                                    it.ordersStat.avgOrderDelta
-                                )
+                                ordersState = buildOrdersDataViewState(it)
                             )
                             transactionLauncher.onOrdersFetched()
                         }
@@ -294,65 +275,19 @@ class AnalyticsViewModel @Inject constructor(
     private fun updateDateSelector() {
         val timePeriod = getSavedTimePeriod()
         val dateRange = getSavedDateRange()
+        val timePeriodDescription = getTimePeriodDescription(timePeriod)
         mutableState.value = state.value.copy(
             analyticsDateRangeSelectorState = state.value.analyticsDateRangeSelectorState.copy(
-                fromDatePeriod = calculateFromDatePeriod(dateRange),
-                toDatePeriod = calculateToDatePeriod(timePeriod, dateRange),
+                fromDatePeriod = analyticsDateRangeFormatter.fromDescription(dateRange),
+                toDatePeriod = analyticsDateRangeFormatter.toDescription(dateRange, timePeriodDescription),
                 selectedPeriod = getTimePeriodDescription(timePeriod)
             )
         )
     }
 
-    private fun calculateToDatePeriod(analyticTimeRange: AnalyticTimePeriod, dateRange: AnalyticsDateRange) =
-        when (dateRange) {
-            is SimpleDateRange -> resourceProvider.getString(
-                R.string.analytics_date_range_to_date,
-                getTimePeriodDescription(analyticTimeRange),
-                dateUtils.getShortMonthDayAndYearString(
-                    dateUtils.getYearMonthDayStringFromDate(dateRange.to)
-                ).orEmpty()
-            )
-            is MultipleDateRange ->
-                if (isSameDay(dateRange.to.from, dateRange.to.to)) {
-                    resourceProvider.getString(
-                        R.string.analytics_date_range_to_date,
-                        getTimePeriodDescription(analyticTimeRange),
-                        dateUtils.getShortMonthDayAndYearString(
-                            dateUtils.getYearMonthDayStringFromDate(dateRange.to.from)
-                        ).orEmpty()
-                    )
-                } else {
-                    resourceProvider.getString(
-                        R.string.analytics_date_range_to_date,
-                        getTimePeriodDescription(analyticTimeRange),
-                        dateRange.to.formatDatesToFriendlyPeriod()
-                    )
-                }
-        }
-
-    private fun calculateFromDatePeriod(dateRange: AnalyticsDateRange) = when (dateRange) {
-        is SimpleDateRange -> resourceProvider.getString(
-            R.string.analytics_date_range_from_date,
-            dateUtils.getShortMonthDayAndYearString(dateUtils.getYearMonthDayStringFromDate(dateRange.from)).orEmpty()
-        )
-        is MultipleDateRange ->
-            if (isSameDay(dateRange.from.from, dateRange.from.to)) {
-                resourceProvider.getString(
-                    R.string.analytics_date_range_from_date,
-                    dateUtils.getShortMonthDayAndYearString(
-                        dateUtils.getYearMonthDayStringFromDate(dateRange.from.from)
-                    ).orEmpty()
-                )
-            } else {
-                resourceProvider.getString(
-                    R.string.analytics_date_range_from_date,
-                    dateRange.from.formatDatesToFriendlyPeriod()
-                )
-            }
-    }
-
     private fun getAvailableDateRanges() =
         resourceProvider.getStringArray(R.array.analytics_date_range_selectors).asList()
+
     private fun getDefaultTimePeriod() = navArgs.targetGranularity
 
     private fun getDefaultDateRange() = analyticsDateRange.getAnalyticsDateRangeFrom(getDefaultTimePeriod())
@@ -376,50 +311,58 @@ class AnalyticsViewModel @Inject constructor(
         ?.let { currencyFormatter.formatCurrency(value, it) }
         ?: value
 
-    private fun buildAnalyticsDateRangeSelectorViewState() = AnalyticsDateRangeSelectorViewState(
-        fromDatePeriod = calculateFromDatePeriod(getSavedDateRange()),
-        toDatePeriod = calculateToDatePeriod(getSavedTimePeriod(), getSavedDateRange()),
-        availableRangeDates = getAvailableDateRanges(),
-        selectedPeriod = getTimePeriodDescription(getSavedTimePeriod())
-    )
+    private fun buildAnalyticsDateRangeSelectorViewState(): AnalyticsDateRangeSelectorViewState {
+        val timePeriod = getSavedTimePeriod()
+        val dateRange = getSavedDateRange()
+        val timePeriodDescription = getTimePeriodDescription(timePeriod)
 
-    private fun buildRevenueDataViewState(
-        totalValue: String,
-        totalDelta: DeltaPercentage,
-        netValue: String,
-        netDelta: DeltaPercentage
-    ) =
+        return AnalyticsDateRangeSelectorViewState(
+            fromDatePeriod = analyticsDateRangeFormatter.fromDescription(dateRange),
+            toDatePeriod = analyticsDateRangeFormatter.toDescription(dateRange, timePeriodDescription),
+            availableRangeDates = getAvailableDateRanges(),
+            selectedPeriod = getTimePeriodDescription(getSavedTimePeriod())
+        )
+    }
+
+    private fun buildRevenueDataViewState(data: RevenueData) =
         DataViewState(
             title = resourceProvider.getString(R.string.analytics_revenue_card_title),
             leftSection = AnalyticsInformationSectionViewState(
                 resourceProvider.getString(R.string.analytics_total_sales_title),
-                totalValue,
-                if (totalDelta is DeltaPercentage.Value) totalDelta.value else null
+                formatValue(data.revenueStat.totalValue.toString(), data.revenueStat.currencyCode),
+                if (data.revenueStat.totalDelta is DeltaPercentage.Value) data.revenueStat.totalDelta.value else null,
+                data.revenueStat.totalRevenueByInterval.map { it.toFloat() }
             ),
             rightSection = AnalyticsInformationSectionViewState(
                 resourceProvider.getString(R.string.analytics_net_sales_title),
-                netValue,
-                if (netDelta is DeltaPercentage.Value) netDelta.value else null
-            )
+                formatValue(data.revenueStat.netValue.toString(), data.revenueStat.currencyCode),
+                if (data.revenueStat.netDelta is DeltaPercentage.Value) data.revenueStat.netDelta.value else null,
+                data.revenueStat.netRevenueByInterval.map { it.toFloat() }
+            ),
         )
 
-    private fun buildOrdersDataViewState(
-        totalOrders: String,
-        totalDelta: DeltaPercentage,
-        avgValue: String,
-        avgDelta: DeltaPercentage
-    ) =
+    private fun buildOrdersDataViewState(data: OrdersData) =
         DataViewState(
             title = resourceProvider.getString(R.string.analytics_orders_card_title),
             leftSection = AnalyticsInformationSectionViewState(
                 resourceProvider.getString(R.string.analytics_total_orders_title),
-                totalOrders,
-                if (totalDelta is DeltaPercentage.Value) totalDelta.value else null
+                data.ordersStat.ordersCount.toString(),
+                if (data.ordersStat.ordersCountDelta is DeltaPercentage.Value) {
+                    data.ordersStat.ordersCountDelta.value
+                } else {
+                    null
+                },
+                data.ordersStat.ordersCountByInterval.map { it.toFloat() }
             ),
             rightSection = AnalyticsInformationSectionViewState(
                 resourceProvider.getString(R.string.analytics_avg_orders_title),
-                avgValue,
-                if (avgDelta is DeltaPercentage.Value) avgDelta.value else null
+                formatValue(data.ordersStat.avgOrderValue.toString(), data.ordersStat.currencyCode),
+                if (data.ordersStat.avgOrderDelta is DeltaPercentage.Value) {
+                    data.ordersStat.avgOrderDelta.value
+                } else {
+                    null
+                },
+                data.ordersStat.avgOrderValueByInterval.map { it.toFloat() }
             )
         )
 
@@ -433,14 +376,14 @@ class AnalyticsViewModel @Inject constructor(
             listRightHeader = resourceProvider.getString(R.string.analytics_products_list_header_subtitle),
             items = products
                 .sortedByDescending { it.quantity }
-                .mapIndexed { index, it ->
+                .mapIndexed { index, product ->
                     AnalyticsListCardItemViewState(
-                        it.image,
-                        it.name,
-                        it.quantity.toString(),
+                        product.image,
+                        product.name,
+                        product.quantity.toString(),
                         resourceProvider.getString(
                             R.string.analytics_products_list_item_description,
-                            formatValue(it.netSales.toString(), it.currencyCode)
+                            formatValue(product.netSales.toString(), product.currencyCode)
                         ),
                         index != products.size - 1
                     )

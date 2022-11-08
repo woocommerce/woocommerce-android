@@ -1,18 +1,46 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2022-10-26 12:54:04+0000
+Translation-Revision-Date: 2022-11-03 14:54:08+0000
 Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);
 Generator: GlotPress/2.4.0-alpha
 Language: ru
 -->
 <resources>
-    <string name="hello_blank_fragment">Пустой фрагмент с приветствием</string>
-    <string name="what_is_wordpress_link">&lt;u&gt;Что такое WordPress.com?&lt;/u&gt;</string>
+    <string name="create_new_store">Создать магазин</string>
+    <string name="analytics_products_list_item_description">Чистая выручка: %1$s</string>
+    <string name="analytics_products_list_header_subtitle">Проданные предметы</string>
+    <string name="analytics_products_list_header_title">Товары</string>
+    <string name="analytics_products_card_title">Товары</string>
+    <string name="analytics_products_list_items_sold">Проданные предметы</string>
+    <string name="analytics_avg_orders_title">Средняя стоимость заказа</string>
+    <string name="analytics_total_orders_title">Общее число заказов</string>
+    <string name="analytics_orders_card_title">Заказы</string>
+    <string name="analytics_net_sales_title">Чистая выручка</string>
+    <string name="analytics_total_sales_title">Всего продаж</string>
+    <string name="analytics_products_no_data">Нет товаров за указанный период</string>
+    <string name="analytics_orders_no_data">Нет заказов за указанный период</string>
+    <string name="analytics_revenue_no_data">Нет доходов за указанный период</string>
+    <string name="analytics_revenue_card_title">Доход</string>
+    <string name="analytics_see_report_button_content_description">Смотреть подробные сведения по отчету</string>
+    <string name="analytics_see_report_button_text">Смотреть отчет</string>
+    <string name="analytics_date_range_custom">%1$s — %2$s</string>
+    <string name="analytics_see_more">Подробнее</string>
+    <string name="signup_api_generic_error">К сожалению, не удалось создать учётную запись с указанными учётными данными. Укажите другой адрес эл. почты.</string>
+    <string name="signup_password_not_secure_enough">Указанный пароль не соответствует требованиям безопасности. Пароль должен быть более сложным.</string>
+    <string name="signup_password_too_short">Пароль слишком короткий. Придумайте пароль, состоящий как минимум из шести символов.</string>
+    <string name="signup_email_invalid_input">Введите допустимый адрес электронной почты.</string>
+    <string name="signup_email_exist_input">Учётная запись с этим адресом эл. почты уже существует.</string>
+    <string name="signup_already_registered">Сначала создадим вам учётную запись. Уже зарегистрированы? &lt;a href=\'login\'&gt;&lt;u&gt;Войти&lt;/u&gt;&lt;/a&gt;</string>
+    <string name="login_create_an_account">Создать учётную запись</string>
+    <string name="simplified_login_enter_email_address">Введите ваш адрес электронной почты для начала работы</string>
+    <string name="login_try_another_email">Использовать другой адрес</string>
+    <string name="date_timeframe_custom_date_range_title">Произвольный период</string>
+    <string name="date_timeframe_custom">Произвольный</string>
+    <string name="what_is_wordpress_link">Что такое WordPress.com?</string>
     <string name="signup_creating_account_loading_message">Создание учетной записи</string>
     <string name="signup_terms_of_service">Продолжая, вы принимаете наши &lt;u&gt;Условия предоставления услуг.&lt;/u&gt;</string>
     <string name="signup_password_hint">Выберите пароль</string>
     <string name="signup_email_address_hint">Ваш адрес электронной почты</string>
-    <string name="signup_already_registered">Сначала создадим вам учетную запись. Уже зарегистрированы? Войти</string>
     <string name="signup_get_started_label">Начало работы \nчерез несколько минут</string>
     <string name="signup_get_started_button">Начало работы</string>
     <string name="login_jetpack_connection_consent">Нажимая кнопку «Подключить Jetpack», вы принимаете &lt;a href=\'terms\'&gt;Условия предоставления услуг&lt;/a&gt; и разрешаете &lt;a href=\'sync\'&gt;обмен данными&lt;/a&gt; с WordPress.com.</string>
@@ -65,6 +93,7 @@ Language: ru
     <string name="orderlist_bottom_sheet_simple_payments_moved_button">Понятно!</string>
     <string name="orderlist_bottom_sheet_simple_payments_moved_description">Теперь можно быстро и просто получать доступ к очным платежам и другим функциям</string>
     <string name="orderlist_bottom_sheet_simple_payments_moved_title">Платежи из вкладки меню</string>
+    <string name="login_no_wpcom_account_found">Ваш адрес электронной почты не используется с учётной записью WordPress.com.</string>
     <string name="login_non_woo_stores_label">Другие сайты</string>
     <string name="login_with_store_address">Войти с помощью адреса магазина</string>
     <string name="more_menu_button_w___admin">WC Admin</string>
@@ -1855,7 +1884,7 @@ Language: ru
     <string name="orderdetail_track_shipment">Отследить посылку</string>
     <string name="login_email_help_desc">Чтобы узнать, какой адрес эл. почты вы использовали для подключения к WordPress.com, в режиме управления сайтом в %1$sконсоли Jetpack%2$s перейдите в %3$sПодключения &gt; Подключение учетных записей%4$s</string>
     <string name="login_email_help_title">Какой адрес эл. почты я использую для входа?</string>
-    <string name="login_need_help_finding_email">&lt;u&gt;Не можете вспомнить адрес эл. почты?&lt;/u&gt;</string>
+    <string name="login_need_help_finding_email">Не можете вспомнить адрес электронной почты?</string>
     <string name="login_jetpack_what_is_description">Jetpack — это бесплатный плагин WordPress с дополнительными инструментами, которые обеспечивают удобное управление магазином с мобильных устройств и доступ к расширенным возможностям, например push-уведомлениям и статистике.</string>
     <string name="login_jetpack_what_is">Что такое Jetpack?</string>
     <string name="login_view_connected_stores">Открыть список подключенных магазинов</string>
@@ -2234,7 +2263,8 @@ Language: ru
     <string name="all">Все</string>
     <string name="notification_channel_general_title">Общее</string>
     <string name="app_name">WooCommerce</string>
-    <string-array name="date_range_selectors">
+    <string-array name="analytics_date_range_selectors">
+        <item>\@string/date_timeframe_custom</item>
         <item>\@string/date_timeframe_today</item>
         <item>\@string/date_timeframe_yesterday</item>
         <item>\@string/date_timeframe_last_week</item>
