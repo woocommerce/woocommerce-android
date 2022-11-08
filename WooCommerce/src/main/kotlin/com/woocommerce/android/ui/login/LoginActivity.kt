@@ -929,9 +929,7 @@ class LoginActivity :
         intent.extras?.getString(KEY_LOGIN_HELP_NOTIFICATION)
 
     override fun onCarouselFinished() {
-        lifecycleScope.launchWhenStarted {
-            prologueExperiment.run(::showPrologueFragment, ::showPrologueSurveyFragment)
-        }
+        showPrologueFragment()
     }
 
     override fun onSurveyFinished() {
