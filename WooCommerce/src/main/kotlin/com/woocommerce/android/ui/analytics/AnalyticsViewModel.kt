@@ -201,6 +201,7 @@ class AnalyticsViewModel @Inject constructor(
     private fun updateVisitors(isRefreshing: Boolean, showSkeleton: Boolean) =
         launch {
             val timePeriod = getSavedTimePeriod()
+            val dateRange = getSavedDateRange()
             val fetchStrategy = getFetchStrategy(isRefreshing)
 
             if (showSkeleton) mutableState.value = state.value.copy(visitorsState = LoadingViewState)
@@ -208,7 +209,7 @@ class AnalyticsViewModel @Inject constructor(
                 refreshIndicator = if (isRefreshing) ShowIndicator else NotShowIndicator
             )
 
-            analyticsRepository.fetchVisitsData(timePeriod, fetchStrategy)
+            analyticsRepository.fetchVisitsData(dateRange, timePeriod, fetchStrategy)
                 .let {
                     when (it) {
                         is VisitorsData -> {

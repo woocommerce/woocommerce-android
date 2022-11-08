@@ -33,6 +33,7 @@ import org.wordpress.android.fluxc.store.WooCommerceStore
 import org.wordpress.android.fluxc.store.WooCommerceStore.WooPlugin.WOO_CORE
 import org.wordpress.android.fluxc.store.stats.time.VisitsAndViewsStore
 import org.wordpress.android.fluxc.utils.DateUtils
+import java.util.*
 import javax.inject.Inject
 
 @Suppress("TooManyFunctions")
@@ -264,7 +265,8 @@ class StatsRepository @Inject constructor(
         }
     }
 
-    suspend fun fetchFullVisits(
+    suspend fun fetchViewAndVisitorsStatsWithinRange(
+        endDate: Date,
         granularity: org.wordpress.android.fluxc.network.utils.StatsGranularity,
         forced: Boolean,
         site: SiteModel = selectedSite.get()
@@ -273,6 +275,7 @@ class StatsRepository @Inject constructor(
             site,
             granularity,
             LimitMode.Top(VISITORS_AND_VIEW_FETCH_LIMIT),
+            endDate,
             forced
         )
 

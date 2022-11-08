@@ -189,10 +189,11 @@ class AnalyticsRepository @Inject constructor(
     }
 
     suspend fun fetchVisitsData(
+        dateRange: AnalyticsDateRange,
         selectedRange: AnalyticTimePeriod,
         fetchStrategy: FetchStrategy
     ): VisitorsResult {
-        return getVisitorsStats(getGranularity(selectedRange), fetchStrategy)
+        return getVisitorsStats(dateRange, getGranularity(selectedRange), fetchStrategy)
             .model?.dates?.last()
             ?.let {
                 VisitorsResult.VisitorsData(
@@ -292,12 +293,19 @@ class AnalyticsRepository @Inject constructor(
     }
 
     private suspend fun getVisitorsStats(
+        dateRange: AnalyticsDateRange,
         granularity: StatsGranularity,
         fetchStrategy: FetchStrategy
     ): WooResult<VisitsAndViewsModel> = coroutineScope {
         val site = selectedSite.get()
 
-        statsRepository.fetchFullVisits(
+        val endDate = when (dateRange) {
+            is SimpleDateRange -> dateRange.to
+            is MultipleDateRange -> dateRange.to.to
+        }
+
+        statsRepository.fetchViewAndVisitorsStatsWithinRange(
+            endDate = endDate,
             granularity = granularity.asJetpackGranularity(),
             forced = fetchStrategy is FetchStrategy.ForceNew,
             site = site
