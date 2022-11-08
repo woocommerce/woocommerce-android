@@ -112,7 +112,7 @@ class VariationsBulkUpdateInventoryFragment :
             new.isProgressDialogShown.takeIfNotEqualTo(old?.isProgressDialogShown) { isVisible ->
                 updateProgressbarDialogVisibility(isVisible)
             }
-            new.isDoneEnabled.takeIfNotEqualTo(old?.isDoneEnabled){ isEnabled ->
+            new.isDoneEnabled.takeIfNotEqualTo(old?.isDoneEnabled) { isEnabled ->
                 doneMenuItem?.isEnabled = isEnabled
             }
         }
