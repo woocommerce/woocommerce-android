@@ -42,11 +42,11 @@ class VariationsBulkUpdateInventoryFragment :
         super.onViewCreated(view, savedInstanceState)
 
         _binding = FragmentVariationsBulkUpdateInventoryBinding.bind(view)
-        binding.stockQuantityEditText.editText?.showKeyboardWithDelay()
-        binding.stockQuantityEditText.setOnTextChangedListener {
-            val text = it.toString()
-            val quantity = if (text.isNotBlank()) text.toDouble() else 0.0
-            viewModel.onStockQuantityChanged(quantity)
+        binding.stockQuantityEditText.run {
+            editText?.showKeyboardWithDelay()
+            setOnTextChangedListener { rawQuantity ->
+                viewModel.onStockQuantityChanged(rawQuantity.toString())
+            }
         }
 
         observeViewStateChanges()
