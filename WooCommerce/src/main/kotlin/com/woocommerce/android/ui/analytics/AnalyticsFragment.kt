@@ -55,7 +55,10 @@ class AnalyticsFragment :
             viewModel.onTrackableUIInteraction()
             viewModel.onRefreshRequested()
         }
-        binding.analyticsProductsCard.isVisible = FeatureFlag.ANALYTICS_HUB_PRODUCTS_AND_REPORTS.isEnabled()
+        FeatureFlag.ANALYTICS_HUB_PRODUCTS_AND_REPORTS.isEnabled().let { isFeatureEnabled ->
+            binding.analyticsProductsCard.isVisible = isFeatureEnabled
+            binding.analyticsVisitorsCard.isVisible = isFeatureEnabled
+        }
         binding.scrollView.scrollStartEvents()
             .onEach { viewModel.onTrackableUIInteraction() }
             .launchIn(viewLifecycleOwner.lifecycleScope)
