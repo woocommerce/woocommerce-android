@@ -127,10 +127,10 @@ class WebViewStoreCreationViewModel @Inject constructor(
             // keep fetching the user's sites until the new site is properly configured or the retry limit is reached
             for (retries in 1 .. STORE_LOAD_RETRIES_LIMIT) {
                 val result = getOrFetchNewSite()
-                if (result == STORE_FOUND || result == ERROR || retries == STORE_LOAD_RETRIES_LIMIT) {
+                if (result == STORE_FOUND || result == ERROR) {
                     break
-                } else {
-                    WooLog.d(T.LOGIN, "Maximum retries reached...")
+                } else if (retries == STORE_LOAD_RETRIES_LIMIT) {
+                    WooLog.d(T.LOGIN, "Max number of store load retries reached...")
                     step.value = Step.StoreLoadingError
                 }
             }
