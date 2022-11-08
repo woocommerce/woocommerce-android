@@ -284,8 +284,6 @@ class AnalyticsViewModel @Inject constructor(
                 }
         }
 
-
-
     private fun updateVisitors(isRefreshing: Boolean, showSkeleton: Boolean) =
         launch {
             if (!FeatureFlag.ANALYTICS_HUB_PRODUCTS_AND_REPORTS.isEnabled()) {
