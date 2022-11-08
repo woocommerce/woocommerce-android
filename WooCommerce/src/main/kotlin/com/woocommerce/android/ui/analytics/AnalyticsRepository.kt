@@ -194,14 +194,12 @@ class AnalyticsRepository @Inject constructor(
         fetchStrategy: FetchStrategy
     ): VisitorsResult {
         return getVisitorsStats(dateRange, getGranularity(selectedRange))
-            .model?.dates?.asSequence()
-            ?.map { Pair(it.visitors, it.views) }
-            ?.fold(Pair(0L, 0L)) { acc, pair -> Pair(acc.first + pair.first, acc.second + pair.second) }
-            ?.let { (visitorsTotal, viewsTotal) ->
+            .model?.dates?.last()
+            ?.let {
                 VisitorsResult.VisitorsData(
                     VisitorsStat(
-                        visitorsTotal.toInt(),
-                        viewsTotal.toInt()
+                        it.visitors.toInt(),
+                        it.views.toInt()
                     )
                 )
             } ?: VisitorsResult.VisitorsError
