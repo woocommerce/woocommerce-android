@@ -282,10 +282,7 @@ class AnalyticsRepository @Inject constructor(
     ): WooResult<VisitsAndViewsModel> = coroutineScope {
         val site = selectedSite.get()
 
-        val endDate = when (dateRange) {
-            is SimpleDateRange -> dateRange.to
-            is MultipleDateRange -> dateRange.to.to
-        }
+        val endDate = dateRange.getAnalyzedPeriod().to
 
         statsRepository.fetchViewAndVisitorsStatsWithinRange(
             endDate = endDate,
