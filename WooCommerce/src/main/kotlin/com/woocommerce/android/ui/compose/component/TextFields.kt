@@ -34,6 +34,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
@@ -188,7 +189,10 @@ fun WCSearchField(
     value: String,
     onValueChange: (String) -> Unit,
     modifier: Modifier = Modifier,
-    hint: String = ""
+    hint: String = "",
+    backgroundColor: Color = TextFieldDefaults
+        .textFieldColors()
+        .backgroundColor(enabled = true).value
 ) {
     BasicTextField(
         value = value,
@@ -197,9 +201,7 @@ fun WCSearchField(
         modifier = modifier
             .defaultMinSize(minHeight = dimensionResource(id = R.dimen.major_250))
             .background(
-                TextFieldDefaults
-                    .textFieldColors()
-                    .backgroundColor(enabled = true).value,
+                backgroundColor,
                 RoundedCornerShape(dimensionResource(id = R.dimen.minor_100))
             ),
         decorationBox = { innerTextField ->

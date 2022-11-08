@@ -10,6 +10,7 @@ import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.databinding.DialogSitePickerAddStoreBottomSheetBinding
 import com.woocommerce.android.extensions.navigateSafely
+import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.widgets.WCBottomSheetDialogFragment
 
 class AddStoreBottomSheetFragment : WCBottomSheetDialogFragment(R.layout.dialog_site_picker_add_store_bottom_sheet) {
@@ -24,10 +25,15 @@ class AddStoreBottomSheetFragment : WCBottomSheetDialogFragment(R.layout.dialog_
                 AnalyticsEvent.SITE_PICKER_CREATE_SITE_TAPPED,
                 mapOf(AnalyticsTracker.KEY_SOURCE to navArgs.source)
             )
-
+            val directions = when {
+                FeatureFlag.NATIVE_STORE_CREATION_FLOW.isEnabled() ->
+                    AddStoreBottomSheetFragmentDirections.actionAddStoreBottomSheetFragmentToStoreCreationNativeFlow()
+                else ->
+                    AddStoreBottomSheetFragmentDirections
+                        .actionAddStoreBottomSheetFragmentToWebViewStoreCreationFragment(navArgs.source)
+            }
             findNavController().navigateSafely(
-                directions = AddStoreBottomSheetFragmentDirections
-                    .actionAddStoreBottomSheetFragmentToWebViewStoreCreationFragment(navArgs.source),
+                directions = directions,
                 navOptions = NavOptions.Builder()
                     .setPopUpTo(R.id.sitePickerFragment, false)
                     .build()

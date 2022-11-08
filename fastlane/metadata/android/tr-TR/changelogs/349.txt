@@ -1,2 +1,0 @@
-10.9:
-Bu sürümde, daha kolay oturum açmanıza yardımcı olacak daha fazla tutarlılık düzeltmesi yapıldı. Artık WordPress.com hesabınızı Jetpack ile bağlayabilir ve mağazanıza çok daha hızlı erişebilirsiniz. Bize görüşlerinizi bildirmeye devam edin!

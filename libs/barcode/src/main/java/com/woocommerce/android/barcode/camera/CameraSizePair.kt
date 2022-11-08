@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+@file:Suppress("DEPRECATION")
+
 package com.woocommerce.android.barcode.camera
 
 import android.hardware.Camera
@@ -29,6 +31,7 @@ class CameraSizePair {
     val preview: Size
     val picture: Size?
 
+    @Suppress("DEPRECATION")
     constructor(previewSize: Camera.Size, pictureSize: Camera.Size?) {
         preview = Size(previewSize.width, previewSize.height)
         picture = pictureSize?.let { Size(it.width, it.height) }
