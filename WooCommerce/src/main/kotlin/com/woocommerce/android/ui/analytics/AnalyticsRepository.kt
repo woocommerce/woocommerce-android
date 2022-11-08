@@ -186,7 +186,7 @@ class AnalyticsRepository @Inject constructor(
         )
     }
 
-    suspend fun fetchVisitsData(
+    suspend fun fetchVisitorsData(
         dateRange: AnalyticsDateRange,
         selectedRange: AnalyticTimePeriod,
         fetchStrategy: FetchStrategy
