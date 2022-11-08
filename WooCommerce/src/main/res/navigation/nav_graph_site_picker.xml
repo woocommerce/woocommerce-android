@@ -39,6 +39,9 @@
         <action
             android:id="@+id/action_sitePickerSiteDiscoveryFragment_to_accountMismatchErrorFragment"
             app:destination="@id/accountMismatchErrorFragment" />
+        <action
+            android:id="@+id/action_sitePickerSiteDiscoveryFragment_to_jetpackConfigurationContainerFragment"
+            app:destination="@id/jetpackConfigurationContainerFragment" />
     </fragment>
     <fragment
         android:id="@+id/accountMismatchErrorFragment"
@@ -80,4 +83,8 @@
             app:destination="@id/nav_graph_store_creation" />
         <argument android:name="source" />
     </dialog>
+    <fragment
+        android:id="@+id/jetpackConfigurationContainerFragment"
+        android:name="com.woocommerce.android.ui.login.jetpackinstallation.JetpackConfigurationContainerFragment"
+        android:label="JetpackConfigurationContainerFragment" />
 </navigation>
