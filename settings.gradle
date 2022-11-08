@@ -6,7 +6,19 @@ pluginManagement {
     gradle.ext.navigationVersion = '2.4.1'
 
     repositories {
-
+        exclusiveContent {
+            forRepository {
+                maven {
+                    url = uri("https://a8c-libs.s3.amazonaws.com/android")
+                }
+            }
+            filter {
+                includeGroup "com.automattic.android"
+                includeGroup "com.automattic.android.configure"
+                includeGroup "com.automattic.android.fetchstyle"
+                includeGroup "com.automattic.android.publish-to-s3"
+            }
+        }
         gradlePluginPortal()
         google()
     }
