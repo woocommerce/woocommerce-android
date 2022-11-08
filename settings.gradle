@@ -6,6 +6,7 @@ pluginManagement {
     gradle.ext.navigationVersion = '2.4.1'
 
     repositories {
+
         gradlePluginPortal()
         google()
     }
