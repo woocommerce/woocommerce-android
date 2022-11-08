@@ -2,7 +2,6 @@ import io.github.wzieba.tracks.plugin.TracksExtension
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
-    id 'com.automattic.android.fetchstyle'
     id 'io.gitlab.arturbosch.detekt'
     id 'io.github.wzieba.tracks.plugin'
     id 'com.android.application' apply false
