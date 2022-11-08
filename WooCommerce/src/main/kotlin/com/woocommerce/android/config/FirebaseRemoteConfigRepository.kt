@@ -1,5 +1,6 @@
 package com.woocommerce.android.config
 
+import androidx.annotation.VisibleForTesting
 import com.automattic.android.tracks.crashlogging.CrashLogging
 import com.google.firebase.remoteconfig.FirebaseRemoteConfig
 import com.google.firebase.remoteconfig.ktx.remoteConfigSettings
@@ -92,6 +93,7 @@ class FirebaseRemoteConfigRepository @Inject constructor(
         }
     }
 
-    private fun observeStringRemoteValue(key: String) = changesTrigger
+    @VisibleForTesting
+    fun observeStringRemoteValue(key: String) = changesTrigger
         .map { remoteConfig.getString(key) }
 }
