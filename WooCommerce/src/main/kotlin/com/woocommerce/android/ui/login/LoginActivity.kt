@@ -26,7 +26,6 @@ import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_LOGIN_
 import com.woocommerce.android.analytics.ExperimentTracker
 import com.woocommerce.android.barcode.QrCodeScanningFragment
 import com.woocommerce.android.databinding.ActivityLoginBinding
-import com.woocommerce.android.experiment.PrologueExperiment
 import com.woocommerce.android.extensions.parcelable
 import com.woocommerce.android.support.ZendeskExtraTags
 import com.woocommerce.android.support.ZendeskHelper
@@ -157,7 +156,6 @@ class LoginActivity :
     @Inject internal lateinit var appPrefsWrapper: AppPrefsWrapper
     @Inject internal lateinit var dispatcher: Dispatcher
     @Inject internal lateinit var loginNotificationScheduler: LoginNotificationScheduler
-    @Inject internal lateinit var prologueExperiment: PrologueExperiment
     @Inject internal lateinit var uiMessageResolver: UIMessageResolver
 
     private var loginMode: LoginMode? = null

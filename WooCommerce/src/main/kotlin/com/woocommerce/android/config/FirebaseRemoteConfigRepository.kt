@@ -1,11 +1,9 @@
 package com.woocommerce.android.config
 
-import androidx.annotation.VisibleForTesting
 import com.automattic.android.tracks.crashlogging.CrashLogging
 import com.google.firebase.remoteconfig.FirebaseRemoteConfig
 import com.google.firebase.remoteconfig.ktx.remoteConfigSettings
 import com.woocommerce.android.experiment.JetpackTimeoutExperiment.JetpackTimeoutPolicyVariant
-import com.woocommerce.android.experiment.PrologueExperiment.PrologueVariant
 import com.woocommerce.android.experiment.SimplifiedLoginExperiment.LoginVariant
 import com.woocommerce.android.util.PackageUtils
 import com.woocommerce.android.util.WooLog
@@ -24,8 +22,6 @@ class FirebaseRemoteConfigRepository @Inject constructor(
     private val crashLogging: Provider<CrashLogging>
 ) : RemoteConfigRepository {
     companion object {
-        @VisibleForTesting
-        const val PROLOGUE_VARIANT_KEY = "prologue_variant"
         private const val PERFORMANCE_MONITORING_SAMPLE_RATE_KEY = "wc_android_performance_monitoring_sample_rate"
         private const val JETPACK_TIMEOUT_POLICY_VARIANT_KEY = "jetpack_timeout_policy_variant"
         private const val SIMPLIFIED_LOGIN_VARIANT_KEY = "simplified_login_variant"
@@ -43,7 +39,6 @@ class FirebaseRemoteConfigRepository @Inject constructor(
 
     private val defaultValues by lazy {
         mapOf(
-            PROLOGUE_VARIANT_KEY to PrologueVariant.CONTROL.name,
             JETPACK_TIMEOUT_POLICY_VARIANT_KEY to JetpackTimeoutPolicyVariant.CONTROL.name,
             SIMPLIFIED_LOGIN_VARIANT_KEY to LoginVariant.CONTROL.name
         )
@@ -73,14 +68,6 @@ class FirebaseRemoteConfigRepository @Inject constructor(
                 WooLog.e(T.UTILS, it)
             }
     }
-
-    override fun observePrologueVariant(): Flow<PrologueVariant> =
-        observeStringRemoteValue(PROLOGUE_VARIANT_KEY)
-            .map { PrologueVariant.valueOf(it.uppercase()) }
-            .catch {
-                crashLogging.get().recordException(it)
-                emit(PrologueVariant.valueOf(defaultValues[PROLOGUE_VARIANT_KEY]!!))
-            }
 
     override fun getPerformanceMonitoringSampleRate(): Double =
         remoteConfig.getDouble(PERFORMANCE_MONITORING_SAMPLE_RATE_KEY)
