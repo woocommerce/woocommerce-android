@@ -1,5 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <navigation xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/nav_graph_jetpack_configuration">
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/nav_graph_jetpack_configuration"
+    app:startDestination="@id/jetpackConfigurationFragment">
 
+    <fragment
+        android:id="@+id/jetpackConfigurationFragment"
+        android:name="com.woocommerce.android.ui.login.jetpackinstallation.JetpackConfigurationFragment"
+        android:label="JetpackConfigurationFragment" />
 </navigation>
