@@ -9,6 +9,7 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.AppPrefsWrapper
+import com.woocommerce.android.BuildConfig
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
@@ -62,6 +63,7 @@ import org.wordpress.android.fluxc.store.WooCommerceStore
 import org.wordpress.android.util.FormatUtils
 import org.wordpress.android.util.PhotonUtils
 import java.math.BigDecimal
+import java.net.URLEncoder
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
@@ -125,7 +127,11 @@ class MyStoreViewModel @Inject constructor(
         _topPerformersState.value = TopPerformersState(isLoading = true)
 
         viewModelScope.launch {
-            val response = jitmStore.fetchJitmMessage(selectedSite.get(), JITM_MESSAGE_PATH)
+            val response = jitmStore.fetchJitmMessage(
+                selectedSite.get(),
+                JITM_MESSAGE_PATH,
+                getEncodedQueryParams(),
+            )
             populateResultToUI(response)
         }
         viewModelScope.launch {
@@ -142,6 +148,15 @@ class MyStoreViewModel @Inject constructor(
             }
         }
         observeTopPerformerUpdates()
+    }
+
+    private fun getEncodedQueryParams(): String {
+        val query = if (BuildConfig.DEBUG) {
+            "build_type=developer&platform=android&version=${BuildConfig.VERSION_NAME}"
+        } else {
+            "platform=android&version=${BuildConfig.VERSION_NAME}"
+        }
+        return URLEncoder.encode(query, Charsets.UTF_8.name())
     }
 
     private fun populateResultToUI(response: WooResult<Array<JITMApiResponse>>) {
