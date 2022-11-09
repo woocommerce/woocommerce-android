@@ -1,6 +1,7 @@
 package com.woocommerce.android.ui.analytics
 
 import com.woocommerce.android.extensions.formatToYYYYmmDD
+import com.woocommerce.android.extensions.theDayBeforeIt
 import com.woocommerce.android.model.DeltaPercentage
 import com.woocommerce.android.model.OrdersStat
 import com.woocommerce.android.model.ProductItem
@@ -210,11 +211,7 @@ class AnalyticsRepository @Inject constructor(
         selectedRange: AnalyticTimePeriod,
         fetchStrategy: FetchStrategy
     ): VisitorsResult {
-        val startDate = Calendar.getInstance()
-            .apply { time = dateRange.getSelectedPeriod().from }
-            .apply { add(Calendar.DATE, -1) }
-            .time
-        
+        val startDate = dateRange.getSelectedPeriod().from.theDayBeforeIt()
         val simpleDateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
 
         return getVisitorsStats(dateRange, getGranularity(selectedRange), fetchStrategy, QUARTER_VISITORS_AND_VIEW_FETCH_LIMIT)
