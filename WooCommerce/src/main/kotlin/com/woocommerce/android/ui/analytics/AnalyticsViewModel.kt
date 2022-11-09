@@ -185,11 +185,11 @@ class AnalyticsViewModel @Inject constructor(
         }
     }
 
-    private fun refreshAllAnalyticsAtOnce(isRefreshing: Boolean, showSkeleton: Boolean) {
+    private fun refreshAllAnalyticsAtOnce(isRefreshing: Boolean, showSkeleton: Boolean, isQuarterSelection: Boolean = false) {
         updateRevenue(isRefreshing = isRefreshing, showSkeleton = showSkeleton)
         updateOrders(isRefreshing = isRefreshing, showSkeleton = showSkeleton)
         updateProducts(isRefreshing = isRefreshing, showSkeleton = showSkeleton)
-        updateVisitors(isRefreshing = isRefreshing, showSkeleton = showSkeleton)
+        updateVisitors(isRefreshing = isRefreshing, showSkeleton = showSkeleton, isQuarterSelection = isQuarterSelection)
     }
 
     private fun updateRevenue(isRefreshing: Boolean, showSkeleton: Boolean) =
@@ -278,7 +278,7 @@ class AnalyticsViewModel @Inject constructor(
                 }
         }
 
-    private fun updateVisitors(isRefreshing: Boolean, showSkeleton: Boolean) =
+    private fun updateVisitors(isRefreshing: Boolean, showSkeleton: Boolean, isQuarterSelection: Boolean) =
         launch {
             if (!FeatureFlag.ANALYTICS_HUB_PRODUCTS_AND_REPORTS.isEnabled()) {
                 return@launch
