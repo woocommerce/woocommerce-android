@@ -138,7 +138,7 @@ class DeveloperOptionsViewModel @Inject constructor(
             ) : ListItem()
         }
 
-        enum class UpdateOptions(@StringRes val title: Int){
+        enum class UpdateOptions(@StringRes val title: Int) {
             ALWAYS(string.always_update_reader),
             NEVER(string.never_update_reader),
             RANDOMLY(string.randomly_update_reader)

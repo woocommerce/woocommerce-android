@@ -58,7 +58,7 @@ class DeveloperOptionsFragment : BaseFragment(R.layout.fragment_developer_option
     private fun showUpdateOptionsDialog(
         values: Array<UpdateOptions>,
         onSelected: (UpdateOptions) -> Unit,
-        mapper: (UpdateOptions) -> String = {it.toString()}
+        mapper: (UpdateOptions) -> String = { it.toString() }
     ) {
         val textValues = values.map(mapper).toTypedArray()
         MaterialAlertDialogBuilder(
@@ -73,7 +73,6 @@ class DeveloperOptionsFragment : BaseFragment(R.layout.fragment_developer_option
                 onSelected(values[which])
             }.show()
     }
-
 
 
     private fun observeViewState(binding: FragmentDeveloperOptionsBinding) {
