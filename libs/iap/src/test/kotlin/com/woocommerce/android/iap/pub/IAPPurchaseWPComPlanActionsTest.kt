@@ -21,6 +21,7 @@ import com.woocommerce.android.iap.internal.model.IAPSupportedResult
 import com.woocommerce.android.iap.internal.network.IAPMobilePayAPI
 import com.woocommerce.android.iap.internal.network.model.CreateAndConfirmOrderResponse
 import com.woocommerce.android.iap.internal.planpurchase.IAPPurchaseWPComPlanActionsImpl
+import com.woocommerce.android.iap.internal.planpurchase.IAPPurchaseWpComPlanHandler
 import com.woocommerce.android.iap.pub.model.IAPError
 import com.woocommerce.android.iap.pub.model.WPComIsPurchasedResult
 import com.woocommerce.android.iap.pub.model.WPComProductResult
@@ -34,6 +35,7 @@ import org.junit.Before
 import org.junit.Test
 import org.mockito.kotlin.any
 import org.mockito.kotlin.mock
+import org.mockito.kotlin.verifyNoInteractions
 import org.mockito.kotlin.whenever
 
 private const val REMOTE_SITE_ID = 1L
@@ -313,6 +315,16 @@ class IAPPurchaseWPComPlanActionsTest {
     @Test
     fun `given product query and purchase success, when purchasing plan, then success returned`() = runTest {
         // GIVEN
+        setupPurchaseQuery(
+            responseCode = BillingClient.BillingResponseCode.OK,
+            listOf(
+                buildPurchase(
+                    listOf(iapProduct.productId),
+                    Purchase.PurchaseState.PURCHASED
+                )
+            )
+        )
+
         val purchaseToken = "purchaseToken"
         val responseCode = BillingClient.BillingResponseCode.OK
 
@@ -362,6 +374,16 @@ class IAPPurchaseWPComPlanActionsTest {
     @Test
     fun `given product query error, when purchasing plan, then error returned`() = runTest {
         // GIVEN
+        setupPurchaseQuery(
+            responseCode = BillingClient.BillingResponseCode.OK,
+            listOf(
+                buildPurchase(
+                    listOf(iapProduct.productId),
+                    Purchase.PurchaseState.PURCHASED
+                )
+            )
+        )
+
         val debugMessage = "debug message"
         setupQueryProductDetails(
             responseCode = BillingClient.BillingResponseCode.SERVICE_DISCONNECTED,
@@ -383,6 +405,11 @@ class IAPPurchaseWPComPlanActionsTest {
     @Test
     fun `given product query success and purchase error, when purchasing plan, then error returned`() = runTest {
         // GIVEN
+        setupPurchaseQuery(
+            responseCode = BillingClient.BillingResponseCode.OK,
+            listOf()
+        )
+
         setupQueryProductDetails(responseCode = BillingClient.BillingResponseCode.OK)
 
         val debugMessage = "debug message"
@@ -404,42 +431,65 @@ class IAPPurchaseWPComPlanActionsTest {
     }
 
     @Test
-    fun `given product query and purchase success and network err, when purchasing plan, then error`() = runTest {
-        // GIVEN
-        val purchaseToken = "purchaseToken"
-        val responseCode = BillingClient.BillingResponseCode.OK
-
-        setupQueryProductDetails(responseCode)
-
-        setupMobilePayAPIMock(
-            purchaseToken = purchaseToken,
-            result = CreateAndConfirmOrderResponse.Network
-        )
-
-        // WHEN
-        sut.purchaseWPComPlan(activityWrapperMock)
-        purchasesUpdatedListener.onPurchasesUpdated(
-            buildBillingResult(responseCode),
-            listOf(
-                buildPurchase(
-                    listOf(iapProduct.productId),
-                    Purchase.PurchaseState.PURCHASED,
-                    purchaseToken = purchaseToken
+    fun `given product query and purchase success and network err, when purchasing plan, then error returned`() =
+        runTest {
+            // GIVEN
+            val purchaseToken = "purchaseToken"
+            setupPurchaseQuery(
+                responseCode = BillingClient.BillingResponseCode.OK,
+                listOf(
+                    buildPurchase(
+                        listOf(iapProduct.productId),
+                        Purchase.PurchaseState.PURCHASED,
+                        purchaseToken = purchaseToken,
+                        isAcknowledged = false,
+                    )
                 )
             )
-        )
 
-        // THEN
-        val result = sut.purchaseWpComPlanResult.firstOrNull()
-        assertThat(result).isInstanceOf(WPComPurchaseResult.Error::class.java)
-        assertThat((result as WPComPurchaseResult.Error).errorType).isInstanceOf(
-            IAPError.RemoteCommunication.Network::class.java
-        )
-    }
+            val responseCode = BillingClient.BillingResponseCode.OK
+
+            setupQueryProductDetails(responseCode)
+
+            setupMobilePayAPIMock(
+                purchaseToken = purchaseToken,
+                result = CreateAndConfirmOrderResponse.Network
+            )
+
+            // WHEN
+            sut.purchaseWPComPlan(activityWrapperMock)
+            purchasesUpdatedListener.onPurchasesUpdated(
+                buildBillingResult(responseCode),
+                listOf(
+                    buildPurchase(
+                        listOf(iapProduct.productId),
+                        Purchase.PurchaseState.PURCHASED,
+                        purchaseToken = purchaseToken
+                    )
+                )
+            )
+
+            // THEN
+            val result = sut.purchaseWpComPlanResult.firstOrNull()
+            assertThat(result).isInstanceOf(WPComPurchaseResult.Error::class.java)
+            assertThat((result as WPComPurchaseResult.Error).errorType).isInstanceOf(
+                IAPError.RemoteCommunication.Network::class.java
+            )
+        }
 
     @Test
     fun `given callback didnt respond and periodic task return suc, when purchasing plan, then suc return`() = runTest {
         // GIVEN
+        setupPurchaseQuery(
+            responseCode = BillingClient.BillingResponseCode.OK,
+            listOf(
+                buildPurchase(
+                    listOf(iapProduct.productId),
+                    Purchase.PurchaseState.PURCHASED
+                )
+            )
+        )
+
         val purchaseToken = "purchaseToken"
         val responseCode = BillingClient.BillingResponseCode.OK
 
@@ -473,6 +523,16 @@ class IAPPurchaseWPComPlanActionsTest {
     @Test
     fun `given callback didnt respond and periodic task return err, when purchasing plan, then err return`() = runTest {
         // GIVEN
+        setupPurchaseQuery(
+            responseCode = BillingClient.BillingResponseCode.OK,
+            listOf(
+                buildPurchase(
+                    listOf(),
+                    Purchase.PurchaseState.PURCHASED
+                )
+            )
+        )
+
         val purchaseToken = "purchaseToken"
         val responseCode = BillingClient.BillingResponseCode.OK
 
@@ -499,6 +559,205 @@ class IAPPurchaseWPComPlanActionsTest {
             IAPError.Billing.ServiceTimeout::class.java
         )
     }
+
+    @Test
+    fun `given having unacknowledged purchase and network error, when purchasing plan, then error returned`() =
+        runTest {
+            // GIVEN
+            val purchaseToken = "purchaseToken"
+            setupPurchaseQuery(
+                responseCode = BillingClient.BillingResponseCode.OK,
+                listOf(
+                    buildPurchase(
+                        listOf(iapProduct.productId),
+                        Purchase.PurchaseState.PURCHASED,
+                        purchaseToken = purchaseToken,
+                        isAcknowledged = false
+                    )
+                )
+            )
+
+            val responseCode = BillingClient.BillingResponseCode.OK
+
+            setupQueryProductDetails(responseCode)
+
+            setupMobilePayAPIMock(
+                purchaseToken = purchaseToken,
+                result = CreateAndConfirmOrderResponse.Network
+            )
+
+            // WHEN
+            sut.purchaseWPComPlan(activityWrapperMock)
+            purchasesUpdatedListener.onPurchasesUpdated(
+                buildBillingResult(responseCode),
+                listOf(
+                    buildPurchase(
+                        listOf(iapProduct.productId),
+                        Purchase.PurchaseState.PURCHASED,
+                        purchaseToken = purchaseToken
+                    )
+                )
+            )
+
+            // THEN
+            val result = sut.purchaseWpComPlanResult.firstOrNull()
+            assertThat(result).isInstanceOf(WPComPurchaseResult.Error::class.java)
+            assertThat((result as WPComPurchaseResult.Error).errorType).isInstanceOf(
+                IAPError.RemoteCommunication.Network::class.java
+            )
+        }
+
+    @Test
+    fun `given having unacknowledged purchase and network success, when purchasing plan, then success returned`() =
+        runTest {
+            // GIVEN
+            val purchaseToken = "purchaseToken"
+            setupPurchaseQuery(
+                responseCode = BillingClient.BillingResponseCode.OK,
+                listOf(
+                    buildPurchase(
+                        listOf(iapProduct.productId),
+                        Purchase.PurchaseState.PURCHASED,
+                        purchaseToken = purchaseToken,
+                        isAcknowledged = false
+                    )
+                )
+            )
+
+            val responseCode = BillingClient.BillingResponseCode.OK
+
+            setupQueryProductDetails(responseCode)
+
+            setupMobilePayAPIMock(
+                purchaseToken = purchaseToken,
+                result = CreateAndConfirmOrderResponse.Success(REMOTE_SITE_ID)
+            )
+
+            // WHEN
+            sut.purchaseWPComPlan(activityWrapperMock)
+            purchasesUpdatedListener.onPurchasesUpdated(
+                buildBillingResult(responseCode),
+                listOf(
+                    buildPurchase(
+                        listOf(iapProduct.productId),
+                        Purchase.PurchaseState.PURCHASED,
+                        purchaseToken = purchaseToken
+                    )
+                )
+            )
+
+            // THEN
+            val result = sut.purchaseWpComPlanResult.firstOrNull()
+            assertThat(result).isInstanceOf(WPComPurchaseResult.Success::class.java)
+        }
+
+    @Test
+    fun `given error fetching purchases, when purchasing plan, then error returned`() =
+        runTest {
+            // GIVEN
+            setupPurchaseQuery(
+                responseCode = BillingClient.BillingResponseCode.SERVICE_TIMEOUT,
+                emptyList()
+            )
+
+            // WHEN
+            sut.purchaseWPComPlan(activityWrapperMock)
+
+            // THEN
+            val result = sut.purchaseWpComPlanResult.firstOrNull()
+            assertThat(result).isInstanceOf(WPComPurchaseResult.Error::class.java)
+            assertThat((result as WPComPurchaseResult.Error).errorType).isInstanceOf(
+                IAPError.Billing.ServiceTimeout::class.java
+            )
+        }
+
+    @Test
+    fun `given having acknowledged purchase, when purchasing plan, then success returned`() =
+        runTest {
+            // GIVEN
+            val purchaseToken = "purchaseToken"
+            setupPurchaseQuery(
+                responseCode = BillingClient.BillingResponseCode.OK,
+                listOf(
+                    buildPurchase(
+                        listOf(iapProduct.productId),
+                        Purchase.PurchaseState.PURCHASED,
+                        purchaseToken = purchaseToken,
+                        isAcknowledged = true
+                    )
+                )
+            )
+
+            val responseCode = BillingClient.BillingResponseCode.OK
+
+            setupQueryProductDetails(responseCode)
+
+            setupMobilePayAPIMock(
+                purchaseToken = purchaseToken,
+                result = CreateAndConfirmOrderResponse.Success(REMOTE_SITE_ID)
+            )
+
+            // WHEN
+            sut.purchaseWPComPlan(activityWrapperMock)
+
+            // THEN
+            val result = sut.purchaseWpComPlanResult.firstOrNull()
+            assertThat(result).isInstanceOf(WPComPurchaseResult.Success::class.java)
+        }
+
+    @Test
+    fun `given purchase with not matched id, when purchasing plan, then backend is not called`() =
+        runTest {
+            // GIVEN
+            val purchaseToken = "purchaseToken"
+            setupPurchaseQuery(
+                responseCode = BillingClient.BillingResponseCode.OK,
+                listOf(
+                    buildPurchase(
+                        listOf("not_matched_id"),
+                        Purchase.PurchaseState.PURCHASED,
+                        purchaseToken = purchaseToken,
+                    )
+                )
+            )
+
+            val responseCode = BillingClient.BillingResponseCode.OK
+
+            setupQueryProductDetails(responseCode)
+
+            // WHEN
+            sut.purchaseWPComPlan(activityWrapperMock)
+
+            // THEN
+            verifyNoInteractions(mobilePayAPIMock)
+        }
+
+    @Test
+    fun `given purchase with matched id but not purchased, when purchasing plan, then backend is not called`() =
+        runTest {
+            // GIVEN
+            val purchaseToken = "purchaseToken"
+            setupPurchaseQuery(
+                responseCode = BillingClient.BillingResponseCode.OK,
+                listOf(
+                    buildPurchase(
+                        listOf(iapProduct.productId),
+                        Purchase.PurchaseState.PURCHASED,
+                        purchaseToken = purchaseToken,
+                    )
+                )
+            )
+
+            val responseCode = BillingClient.BillingResponseCode.OK
+
+            setupQueryProductDetails(responseCode)
+
+            // WHEN
+            sut.purchaseWPComPlan(activityWrapperMock)
+
+            // THEN
+            verifyNoInteractions(mobilePayAPIMock)
+        }
     //endregion
 
     private suspend fun setupPurchaseQuery(
@@ -571,8 +830,13 @@ class IAPPurchaseWPComPlanActionsTest {
             outMapper,
             logWrapperMock,
         )
-        sut = IAPPurchaseWPComPlanActionsImpl(
+        val iapManager = buildIapManager(iapBillingClientStateHandler, purchasesUpdatedListener, outMapper)
+        val purchaseWpComPlanHandler = IAPPurchaseWpComPlanHandler(
             iapMobilePayAPI = mobilePayAPIMock,
+            iapManager = iapManager,
+        )
+        sut = IAPPurchaseWPComPlanActionsImpl(
+            purchaseWpComPlanHandler = purchaseWpComPlanHandler,
             iapManager = buildIapManager(iapBillingClientStateHandler, purchasesUpdatedListener, outMapper),
             REMOTE_SITE_ID,
             iapProduct = iapProduct,

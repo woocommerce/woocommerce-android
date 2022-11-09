@@ -24,9 +24,13 @@ class IAPShowcaseViewModel(private val iapManager: PurchaseWPComPlanActions) : V
     private val _iapEvent = SingleLiveEvent<String>()
     val iapEvent: LiveData<String> = _iapEvent
 
+    private val _iapLoading = SingleLiveEvent<Boolean>()
+    val iapLoading: LiveData<Boolean> = _iapLoading
+
     init {
         viewModelScope.launch {
             iapManager.purchaseWpComPlanResult.collectLatest { result ->
+                _iapLoading.value = false
                 when (result) {
                     is WPComPurchaseResult.Success -> _iapEvent.value = "Plan has been successfully purchased"
                     is WPComPurchaseResult.Error -> handleError(result.errorType)
@@ -36,12 +40,19 @@ class IAPShowcaseViewModel(private val iapManager: PurchaseWPComPlanActions) : V
     }
 
     fun purchasePlan(activityWrapper: IAPActivityWrapper) {
-        viewModelScope.launch { iapManager.purchaseWPComPlan(activityWrapper) }
+        viewModelScope.launch {
+            _iapLoading.value = true
+            iapManager.purchaseWPComPlan(activityWrapper)
+        }
     }
 
     fun checkIfWPComPlanPurchased() {
         viewModelScope.launch {
-            when (val response = iapManager.isWPComPlanPurchased()) {
+            _iapLoading.value = true
+            val response = iapManager.isWPComPlanPurchased()
+            _iapLoading.value = false
+
+            when (response) {
                 is WPComIsPurchasedResult.Success -> {
                     _iapEvent.value = if (response.isPlanPurchased) {
                         "Plan has been purchased already"
@@ -56,7 +67,10 @@ class IAPShowcaseViewModel(private val iapManager: PurchaseWPComPlanActions) : V
 
     fun fetchWPComPlanProduct() {
         viewModelScope.launch {
-            when (val response = iapManager.fetchWPComPlanProduct()) {
+            _iapLoading.value = true
+            val response = iapManager.fetchWPComPlanProduct()
+            _iapLoading.value = false
+            when (val response = response) {
                 is WPComProductResult.Success -> _productInfo.value = response.productInfo
                 is WPComProductResult.Error -> handleError(response.errorType)
             }
@@ -65,7 +79,10 @@ class IAPShowcaseViewModel(private val iapManager: PurchaseWPComPlanActions) : V
 
     fun checkIfIAPSupported() {
         viewModelScope.launch {
-            when (val response = iapManager.isIAPSupported()) {
+            _iapLoading.value = true
+            val response = iapManager.isIAPSupported()
+            _iapLoading.value = false
+            when (response) {
                 is IAPSupportedResult.Success -> {
                     _iapEvent.value = if (response.isSupported) {
                         "IAP is supported"

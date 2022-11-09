@@ -48,13 +48,14 @@ fun buildProductDetails(
 fun buildPurchase(
     products: List<String>,
     @PurchaseState purchaseState: Int,
+    isAcknowledged: Boolean = true,
     purchaseToken: String = ""
 ): Purchase {
     return mock {
         on { this.purchaseState }.thenReturn(purchaseState)
         on { this.orderId }.thenReturn("orderId")
         on { this.products }.thenReturn(products)
-        on { this.isAcknowledged }.thenReturn(false)
+        on { this.isAcknowledged }.thenReturn(isAcknowledged)
         on { this.isAutoRenewing }.thenReturn(false)
         on { this.developerPayload }.thenReturn("developerPayload")
         on { this.purchaseToken }.thenReturn(purchaseToken)

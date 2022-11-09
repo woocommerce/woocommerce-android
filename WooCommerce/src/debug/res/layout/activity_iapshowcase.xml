@@ -14,6 +14,13 @@
         android:padding="16dp"
         tools:context="com.woocommerce.android.iapshowcase.IAPShowcaseActivity">
 
+        <com.google.android.material.progressindicator.LinearProgressIndicator
+            android:id="@+id/lpiLoading"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:indeterminate="true"
+            android:visibility="gone" />
+
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
