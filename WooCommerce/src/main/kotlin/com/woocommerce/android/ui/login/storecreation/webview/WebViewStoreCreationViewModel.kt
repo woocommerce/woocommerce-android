@@ -125,7 +125,7 @@ class WebViewStoreCreationViewModel @Inject constructor(
         step.value = Step.StoreLoading
         launch {
             // keep fetching the user's sites until the new site is properly configured or the retry limit is reached
-            for (retries in 1 .. STORE_LOAD_RETRIES_LIMIT) {
+            for (retries in 1..STORE_LOAD_RETRIES_LIMIT) {
                 val result = getOrFetchNewSite()
                 if (result == STORE_FOUND || result == ERROR) {
                     break
