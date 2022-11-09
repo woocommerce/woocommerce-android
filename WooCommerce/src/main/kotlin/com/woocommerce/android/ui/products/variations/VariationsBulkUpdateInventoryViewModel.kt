@@ -65,11 +65,8 @@ class VariationsBulkUpdateInventoryViewModel @Inject constructor(
     }
 
     fun onStockQuantityChanged(rawQuantity: String) {
-        val quantity = rawQuantity.toDoubleOrNull()
-        viewState = if (quantity == null) {
-            viewState.copy(stockQuantity = null, isDoneEnabled = false)
-        } else {
-            viewState.copy(stockQuantity = quantity, isDoneEnabled = true)
+        viewState = rawQuantity.toDoubleOrNull().let { quantity ->
+            viewState.copy(stockQuantity = quantity, isDoneEnabled = quantity != null)
         }
     }
 
