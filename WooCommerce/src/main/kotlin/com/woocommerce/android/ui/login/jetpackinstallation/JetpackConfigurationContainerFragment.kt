@@ -4,7 +4,7 @@ import com.woocommerce.android.R
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.main.AppBarStatus
 
-class JetpackConfigurationContainerFragment: BaseFragment(R.layout.fragment_jetpack_configuration_container) {
+class JetpackConfigurationContainerFragment : BaseFragment(R.layout.fragment_jetpack_configuration_container) {
     companion object {
         const val TAG = "JetpackConfigurationContainerFragment"
     }
