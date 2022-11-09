@@ -4,6 +4,7 @@ import androidx.annotation.VisibleForTesting
 import com.automattic.android.tracks.crashlogging.CrashLogging
 import com.google.firebase.remoteconfig.FirebaseRemoteConfig
 import com.google.firebase.remoteconfig.ktx.remoteConfigSettings
+import com.woocommerce.android.experiment.JetpackInstallationExperiment.JetpackInstallationVariant
 import com.woocommerce.android.experiment.SimplifiedLoginExperiment.LoginVariant
 import com.woocommerce.android.util.PackageUtils
 import com.woocommerce.android.util.WooLog
@@ -22,6 +23,7 @@ class FirebaseRemoteConfigRepository @Inject constructor(
     companion object {
         private const val PERFORMANCE_MONITORING_SAMPLE_RATE_KEY = "wc_android_performance_monitoring_sample_rate"
         private const val SIMPLIFIED_LOGIN_VARIANT_KEY = "simplified_login_variant"
+        private const val JETPACK_INSTALLATION_VARIANT_KEY = "wcandroid_jetpack_installation_variant"
         private const val DEBUG_INTERVAL = 10L
         private const val RELEASE_INTERVAL = 31200L
     }
@@ -77,6 +79,15 @@ class FirebaseRemoteConfigRepository @Inject constructor(
         } catch (e: IllegalArgumentException) {
             crashLogging.get().recordException(e)
             LoginVariant.valueOf(defaultValues[SIMPLIFIED_LOGIN_VARIANT_KEY]!!)
+        }
+    }
+
+    override fun getJetpackInstallationVariant(): JetpackInstallationVariant {
+        return try {
+            JetpackInstallationVariant.valueOf(remoteConfig.getString(JETPACK_INSTALLATION_VARIANT_KEY).uppercase())
+        } catch (e: IllegalArgumentException) {
+            crashLogging.get().recordException(e)
+            JetpackInstallationVariant.valueOf(defaultValues[JETPACK_INSTALLATION_VARIANT_KEY]!!)
         }
     }
 
