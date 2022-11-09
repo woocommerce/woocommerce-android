@@ -189,10 +189,10 @@ class AnalyticsViewModel @Inject constructor(
             .let { AnalyticTimePeriod.from(it) }
             .let { (it == QUARTER_TO_DATE) || (it == LAST_QUARTER) }
 
-        updateRevenue(isRefreshing = isRefreshing, showSkeleton = showSkeleton)
-        updateOrders(isRefreshing = isRefreshing, showSkeleton = showSkeleton)
-        updateProducts(isRefreshing = isRefreshing, showSkeleton = showSkeleton)
-        updateVisitors(isRefreshing = isRefreshing, showSkeleton = showSkeleton, isQuarterSelection = isQuarterSelection)
+        updateRevenue(isRefreshing, showSkeleton)
+        updateOrders(isRefreshing, showSkeleton)
+        updateProducts(isRefreshing, showSkeleton)
+        updateVisitors(isRefreshing, showSkeleton, isQuarterSelection)
     }
 
     private fun updateRevenue(isRefreshing: Boolean, showSkeleton: Boolean) =

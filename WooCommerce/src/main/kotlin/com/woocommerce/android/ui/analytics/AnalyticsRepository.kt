@@ -36,7 +36,7 @@ import org.wordpress.android.fluxc.store.WCStatsStore.StatsGranularity.YEARS
 import org.wordpress.android.fluxc.store.WooCommerceStore
 import org.wordpress.android.fluxc.utils.DateUtils
 import java.text.SimpleDateFormat
-import java.util.*
+import java.util.Locale
 import javax.inject.Inject
 
 @Suppress("TooManyFunctions")
@@ -194,8 +194,12 @@ class AnalyticsRepository @Inject constructor(
         selectedRange: AnalyticTimePeriod,
         fetchStrategy: FetchStrategy
     ): VisitorsResult {
-        return getVisitorsStats(dateRange, getGranularity(selectedRange), fetchStrategy, MOST_RECENT_VISITORS_AND_VIEW_FETCH_LIMIT)
-            .model?.dates?.last()
+        return getVisitorsStats(
+            dateRange,
+            getGranularity(selectedRange),
+            fetchStrategy,
+            MOST_RECENT_VISITORS_AND_VIEW_FETCH_LIMIT
+        ).model?.dates?.last()
             ?.let {
                 VisitorsResult.VisitorsData(
                     VisitorsStat(
@@ -214,8 +218,12 @@ class AnalyticsRepository @Inject constructor(
         val startDate = dateRange.getSelectedPeriod().from.theDayBeforeIt()
         val simpleDateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
 
-        return getVisitorsStats(dateRange, getGranularity(selectedRange), fetchStrategy, QUARTER_VISITORS_AND_VIEW_FETCH_LIMIT)
-            .model?.dates?.asSequence()
+        return getVisitorsStats(
+            dateRange,
+            getGranularity(selectedRange),
+            fetchStrategy,
+            QUARTER_VISITORS_AND_VIEW_FETCH_LIMIT
+        ).model?.dates?.asSequence()
             ?.filter { startDate.before(simpleDateFormat.parse(it.period)) }
             ?.map { Pair(it.visitors, it.views) }
             ?.fold(Pair(0L, 0L)) { acc, pair -> Pair(acc.first + pair.first, acc.second + pair.second) }
