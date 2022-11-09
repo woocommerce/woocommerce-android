@@ -17,6 +17,7 @@ import com.woocommerce.android.ui.analytics.AnalyticsRepository.ProductsResult.P
 import com.woocommerce.android.ui.analytics.AnalyticsRepository.ProductsResult.ProductsError
 import com.woocommerce.android.ui.analytics.AnalyticsRepository.RevenueResult.RevenueData
 import com.woocommerce.android.ui.analytics.AnalyticsRepository.RevenueResult.RevenueError
+import com.woocommerce.android.ui.analytics.AnalyticsRepository.VisitorsResult
 import com.woocommerce.android.ui.analytics.AnalyticsRepository.VisitorsResult.VisitorsData
 import com.woocommerce.android.ui.analytics.AnalyticsRepository.VisitorsResult.VisitorsError
 import com.woocommerce.android.ui.analytics.AnalyticsViewEvent.OpenUrl
@@ -295,33 +296,30 @@ class AnalyticsViewModel @Inject constructor(
                 refreshIndicator = if (isRefreshing) ShowIndicator else NotShowIndicator
             )
 
-            fetchVisitorsData(dateRange, timePeriod, fetchStrategy)
+            if (isQuarterSelection) {
+                analyticsRepository.fetchQuarterVisitorsData(dateRange, timePeriod, fetchStrategy)
+            } else {
+                analyticsRepository.fetchRecentVisitorsData(dateRange, timePeriod, fetchStrategy)
+            }.handleVisitorsResult()
         }
 
-    private suspend fun fetchVisitorsData(
-        dateRange: AnalyticsDateRange,
-        timePeriod: AnalyticTimePeriod,
-        fetchStrategy: AnalyticsRepository.FetchStrategy
-    ) {
-        analyticsRepository.fetchRecentVisitorsData(dateRange, timePeriod, fetchStrategy)
-            .let {
-                when (it) {
-                    is VisitorsData -> {
-                        mutableState.value = state.value.copy(
-                            refreshIndicator = NotShowIndicator,
-                            visitorsState = buildVisitorsDataViewState(
-                                it.visitorsStat.visitorsCount,
-                                it.visitorsStat.viewsCount
-                            )
-                        )
-                        // submit sentry monitor transaction finished event
-                    }
-                    is VisitorsError -> mutableState.value = state.value.copy(
-                        refreshIndicator = NotShowIndicator,
-                        visitorsState = NoDataState("No visitors data")
+    private fun VisitorsResult.handleVisitorsResult() {
+        when (this) {
+            is VisitorsData -> {
+                mutableState.value = state.value.copy(
+                    refreshIndicator = NotShowIndicator,
+                    visitorsState = buildVisitorsDataViewState(
+                        visitorsStat.visitorsCount,
+                        visitorsStat.viewsCount
                     )
-                }
+                )
+                // submit sentry monitor transaction finished event
             }
+            is VisitorsError -> mutableState.value = state.value.copy(
+                refreshIndicator = NotShowIndicator,
+                visitorsState = NoDataState("No visitors data")
+            )
+        }
     }
 
     private fun updateDateSelector() {
