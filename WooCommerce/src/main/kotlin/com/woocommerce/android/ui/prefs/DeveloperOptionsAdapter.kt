@@ -7,8 +7,10 @@ import com.woocommerce.android.ui.prefs.DeveloperOptionsViewModel.DeveloperOptio
 import com.woocommerce.android.ui.prefs.DeveloperOptionsViewModel.DeveloperOptionsViewState.ListItem.NonToggleableListItem
 import com.woocommerce.android.ui.prefs.DeveloperOptionsViewModel.DeveloperOptionsViewState.ListItem.SpinnerListItem
 import com.woocommerce.android.ui.prefs.DeveloperOptionsViewModel.DeveloperOptionsViewState.ListItem.ToggleableListItem
-
-class DeveloperOptionsAdapter :
+import com.woocommerce.android.ui.prefs.DeveloperOptionsViewModel.DeveloperOptionsViewState.UpdateOptions
+class DeveloperOptionsAdapter(
+    private val listener: DeveloperOptionsViewModel
+) :
     ListAdapter<ListItem, DeveloperOptionsViewHolder>(ListItemDiffCallback) {
 
     override fun getItemViewType(position: Int): Int {
@@ -73,5 +75,9 @@ class DeveloperOptionsAdapter :
         const val VIEW_TYPE_NON_TOGGLEABLE = 0
         const val VIEW_TYPE_TOGGLEABLE = 1
         const val VIEW_TYPE_SPINNER = 2
+    }
+
+    interface UpdateOptionsListener{
+        fun onUpdateOptionsChanged(position: Int, option: UpdateOptions)
     }
 }

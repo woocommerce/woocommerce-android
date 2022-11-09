@@ -12,6 +12,7 @@ import com.woocommerce.android.databinding.FragmentDeveloperOptionsBinding
 import com.woocommerce.android.ui.base.BaseFragment
 import dagger.hilt.android.AndroidEntryPoint
 import org.wordpress.android.util.ToastUtils
+import com.woocommerce.android.ui.prefs.DeveloperOptionsViewModel.DeveloperOptionsViewState.UpdateOptions
 
 @AndroidEntryPoint
 class DeveloperOptionsFragment : BaseFragment(R.layout.fragment_developer_options) {
@@ -32,7 +33,7 @@ class DeveloperOptionsFragment : BaseFragment(R.layout.fragment_developer_option
         binding.developerOptionsRv.addItemDecoration(
             DividerItemDecoration(requireContext(), DividerItemDecoration.VERTICAL)
         )
-        binding.developerOptionsRv.adapter = DeveloperOptionsAdapter()
+        binding.developerOptionsRv.adapter = DeveloperOptionsAdapter(viewModel)
     }
 
     private fun observeEvents() {
@@ -45,11 +46,9 @@ class DeveloperOptionsFragment : BaseFragment(R.layout.fragment_developer_option
                 }
                 is DeveloperOptionsViewModel.DeveloperOptionsEvents.ShowDialog -> {
                     showUpdateOptionsDialog(
-                        arrayOf(
-                            DeveloperOptionsViewModel.DeveloperOptionsViewState.UpdateOptions.ALWAYS,
-                            DeveloperOptionsViewModel.DeveloperOptionsViewState.UpdateOptions.NEVER,
-                            DeveloperOptionsViewModel.DeveloperOptionsViewState.UpdateOptions.RANDOMLY
-                        )
+                        values = UpdateOptions.values(),
+                        onSelected = {},
+                        mapper = { requireContext().getString(it.title) }
                     )
                 }
             }
@@ -57,9 +56,9 @@ class DeveloperOptionsFragment : BaseFragment(R.layout.fragment_developer_option
     }
 
     private fun showUpdateOptionsDialog(
-        values: Array<DeveloperOptionsViewModel.DeveloperOptionsViewState.UpdateOptions>,
-//        onSelected: (DeveloperOptionsViewModel.DeveloperOptionsViewState.UpdateOptions) -> Unit,
-        mapper: (DeveloperOptionsViewModel.DeveloperOptionsViewState.UpdateOptions) -> String = {it.toString()}
+        values: Array<UpdateOptions>,
+        onSelected: (UpdateOptions) -> Unit,
+        mapper: (UpdateOptions) -> String = {it.toString()}
     ) {
         val textValues = values.map(mapper).toTypedArray()
         MaterialAlertDialogBuilder(
@@ -71,7 +70,7 @@ class DeveloperOptionsFragment : BaseFragment(R.layout.fragment_developer_option
             .setTitle("Update Simulated Reader")
             .setSingleChoiceItems(textValues, 0) { dialog, which ->
 //                dialog.dismiss()
-//                onSelected(values[which])
+                onSelected(values[which])
             }.show()
     }
 

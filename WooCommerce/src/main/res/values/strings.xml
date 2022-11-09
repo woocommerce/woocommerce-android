@@ -1763,6 +1763,10 @@
     <string name="update_simulated_reader">Update Simulated Card Reader</string>
     <string name="simulated_reader_key">Simulated Reader Key</string>
     <string name="update_simulated_reader_key">Update Simulated Reader Key</string>
+    <string name="always_update_reader">Always</string>
+    <string name="never_update_reader">Never</string>
+    <string name="randomly_update_reader">Randomly</string>
+
 
     <!--
         WCToggleSingleOptionView

@@ -1,6 +1,7 @@
 package com.woocommerce.android.ui.prefs
 
 import androidx.annotation.DrawableRes
+import androidx.annotation.StringRes
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
@@ -137,10 +138,10 @@ class DeveloperOptionsViewModel @Inject constructor(
             ) : ListItem()
         }
 
-        enum class UpdateOptions {
-            ALWAYS,
-            NEVER,
-            RANDOMLY
+        enum class UpdateOptions(@StringRes val title: Int){
+            ALWAYS(string.always_update_reader),
+            NEVER(string.never_update_reader),
+            RANDOMLY(string.randomly_update_reader)
         }
     }
 }

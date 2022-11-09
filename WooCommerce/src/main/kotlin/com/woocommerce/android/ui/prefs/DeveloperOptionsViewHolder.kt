@@ -11,6 +11,7 @@ import com.woocommerce.android.databinding.DeveloperOptionsTogglableItemBinding
 import com.woocommerce.android.ui.prefs.DeveloperOptionsViewModel.DeveloperOptionsViewState.ListItem
 import com.woocommerce.android.ui.prefs.DeveloperOptionsViewModel.DeveloperOptionsViewState.ListItem.SpinnerListItem
 import com.woocommerce.android.ui.prefs.DeveloperOptionsViewModel.DeveloperOptionsViewState.ListItem.ToggleableListItem
+import com.woocommerce.android.ui.prefs.DeveloperOptionsViewModel.DeveloperOptionsViewState.UpdateOptions
 import com.woocommerce.android.util.UiHelpers
 
 abstract class DeveloperOptionsViewHolder(val parent: ViewGroup, @LayoutRes layout: Int) :
@@ -49,6 +50,8 @@ abstract class DeveloperOptionsViewHolder(val parent: ViewGroup, @LayoutRes layo
 
     class SpinnerViewHolder(parent: ViewGroup) :
         DeveloperOptionsViewHolder(parent, R.layout.developer_options_spinner_item) {
+        private val context
+            get() = binding.root.context
         var binding: DeveloperOptionsSpinnerItemBinding = DeveloperOptionsSpinnerItemBinding.bind(itemView)
         override fun onBind(uiState: ListItem) {
             uiState as SpinnerListItem
@@ -61,6 +64,11 @@ abstract class DeveloperOptionsViewHolder(val parent: ViewGroup, @LayoutRes layo
             binding.root.setOnClickListener {
                 uiState.onClick.invoke()
             }
+//            binding.updateOptionsSpinner.setup(
+//                values = UpdateOptions.values(),
+//                onSelected = { },
+//                mapper = {context.getString(it.title)}
+//            )
         }
     }
 }
