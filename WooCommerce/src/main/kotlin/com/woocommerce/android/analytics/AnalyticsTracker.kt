@@ -421,6 +421,7 @@ class AnalyticsTracker private constructor(private val context: Context) {
         const val VALUE_LOGIN_EMAIL_ERROR = "login_email_error"
         const val VALUE_SWITCHING_STORE = "switching_store"
         const val VALUE_PROLOGUE = "prologue"
+        const val VALUE_LOGIN = "login"
         const val VALUE_OTHER = "other"
 
         var sendUsageStats: Boolean = true
