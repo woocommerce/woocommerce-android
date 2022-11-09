@@ -134,8 +134,7 @@ class AnalyticsViewModel @Inject constructor(
         }
     }
 
-    fun onSelectedTimePeriodChanged(newSelection: String) {
-        val selectedTimePeriod: AnalyticTimePeriod = AnalyticTimePeriod.from(newSelection)
+    fun onSelectedTimePeriodChanged(selectedTimePeriod: AnalyticTimePeriod) {
         val dateRange = analyticsDateRange.getAnalyticsDateRangeFrom(selectedTimePeriod)
         saveSelectedTimePeriod(selectedTimePeriod)
         saveSelectedDateRange(dateRange)
