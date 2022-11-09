@@ -216,6 +216,12 @@ class AppPrefsWrapper @Inject constructor() {
 
     fun getIsNewSignUp() = AppPrefs.getIsNewSignUp()
 
+    fun setStoreCreationSource(source: String) {
+        AppPrefs.setStoreCreationSource(source)
+    }
+
+    fun getStoreCreationSource() = AppPrefs.getStoreCreationSource()
+
     /**
      * Card Reader Upsell
      */
