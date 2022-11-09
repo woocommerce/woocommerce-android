@@ -34,6 +34,8 @@ import org.wordpress.android.fluxc.store.WCStatsStore.StatsGranularity.WEEKS
 import org.wordpress.android.fluxc.store.WCStatsStore.StatsGranularity.YEARS
 import org.wordpress.android.fluxc.store.WooCommerceStore
 import org.wordpress.android.fluxc.utils.DateUtils
+import java.text.SimpleDateFormat
+import java.util.*
 import javax.inject.Inject
 
 @Suppress("TooManyFunctions")
@@ -198,6 +200,33 @@ class AnalyticsRepository @Inject constructor(
                     VisitorsStat(
                         it.visitors.toInt(),
                         it.views.toInt()
+                    )
+                )
+            } ?: VisitorsResult.VisitorsError
+    }
+
+    suspend fun fetchQuarterVisitorsData(
+        dateRange: AnalyticsDateRange,
+        selectedRange: AnalyticTimePeriod,
+        fetchStrategy: FetchStrategy
+    ): VisitorsResult {
+        val startDate = Calendar.getInstance()
+            .apply { time = dateRange.getSelectedPeriod().from }
+            .apply { add(Calendar.DATE, -1) }
+            .time
+        
+        val simpleDateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
+
+        return getVisitorsStats(dateRange, getGranularity(selectedRange), fetchStrategy, QUARTER_VISITORS_AND_VIEW_FETCH_LIMIT)
+            .model?.dates?.asSequence()
+            ?.filter { startDate.before(simpleDateFormat.parse(it.period)) }
+            ?.map { Pair(it.visitors, it.views) }
+            ?.fold(Pair(0L, 0L)) { acc, pair -> Pair(acc.first + pair.first, acc.second + pair.second) }
+            ?.let { (visitors, views) ->
+                VisitorsResult.VisitorsData(
+                    VisitorsStat(
+                        visitors.toInt(),
+                        views.toInt()
                     )
                 )
             } ?: VisitorsResult.VisitorsError
