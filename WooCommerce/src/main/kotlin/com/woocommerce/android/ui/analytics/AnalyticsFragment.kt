@@ -99,8 +99,6 @@ class AnalyticsFragment :
         ) { dateSelection ->
             when (val timePeriod = AnalyticTimePeriod.from(dateSelection)) {
                 AnalyticTimePeriod.CUSTOM -> viewModel.onCustomDateRangeClicked()
-                AnalyticTimePeriod.QUARTER_TO_DATE,
-                AnalyticTimePeriod.LAST_QUARTER -> viewModel.onQuarterDateRangeClicked()
                 else -> viewModel.onSelectedTimePeriodChanged(timePeriod)
             }
         }
