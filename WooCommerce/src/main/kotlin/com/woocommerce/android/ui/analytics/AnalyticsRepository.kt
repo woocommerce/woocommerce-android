@@ -354,6 +354,8 @@ class AnalyticsRepository @Inject constructor(
         const val TOP_PRODUCTS_LIST_SIZE = 5
 
         const val VISITORS_AND_VIEW_DEFAULT_FETCH_LIMIT = 15
+        const val MOST_RECENT_VISITORS_AND_VIEW_FETCH_LIMIT = 1
+        const val QUARTER_VISITORS_AND_VIEW_FETCH_LIMIT = 3
     }
 
     sealed class RevenueResult {
