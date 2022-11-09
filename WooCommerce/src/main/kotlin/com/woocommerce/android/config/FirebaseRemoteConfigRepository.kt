@@ -4,7 +4,6 @@ import androidx.annotation.VisibleForTesting
 import com.automattic.android.tracks.crashlogging.CrashLogging
 import com.google.firebase.remoteconfig.FirebaseRemoteConfig
 import com.google.firebase.remoteconfig.ktx.remoteConfigSettings
-import com.woocommerce.android.experiment.JetpackTimeoutExperiment.JetpackTimeoutPolicyVariant
 import com.woocommerce.android.experiment.PrologueExperiment.PrologueVariant
 import com.woocommerce.android.experiment.SimplifiedLoginExperiment.LoginVariant
 import com.woocommerce.android.util.PackageUtils
@@ -27,7 +26,6 @@ class FirebaseRemoteConfigRepository @Inject constructor(
         @VisibleForTesting
         const val PROLOGUE_VARIANT_KEY = "prologue_variant"
         private const val PERFORMANCE_MONITORING_SAMPLE_RATE_KEY = "wc_android_performance_monitoring_sample_rate"
-        private const val JETPACK_TIMEOUT_POLICY_VARIANT_KEY = "jetpack_timeout_policy_variant"
         private const val SIMPLIFIED_LOGIN_VARIANT_KEY = "simplified_login_variant"
         private const val DEBUG_INTERVAL = 10L
         private const val RELEASE_INTERVAL = 31200L
@@ -44,7 +42,6 @@ class FirebaseRemoteConfigRepository @Inject constructor(
     private val defaultValues by lazy {
         mapOf(
             PROLOGUE_VARIANT_KEY to PrologueVariant.CONTROL.name,
-            JETPACK_TIMEOUT_POLICY_VARIANT_KEY to JetpackTimeoutPolicyVariant.CONTROL.name,
             SIMPLIFIED_LOGIN_VARIANT_KEY to LoginVariant.CONTROL.name
         )
     }
@@ -84,14 +81,6 @@ class FirebaseRemoteConfigRepository @Inject constructor(
 
     override fun getPerformanceMonitoringSampleRate(): Double =
         remoteConfig.getDouble(PERFORMANCE_MONITORING_SAMPLE_RATE_KEY)
-
-    override fun observeJetpackTimeoutPolicyVariantVariant(): Flow<JetpackTimeoutPolicyVariant> =
-        observeStringRemoteValue(JETPACK_TIMEOUT_POLICY_VARIANT_KEY)
-            .map { JetpackTimeoutPolicyVariant.valueOf(it.uppercase()) }
-            .catch {
-                crashLogging.get().recordException(it)
-                emit(JetpackTimeoutPolicyVariant.valueOf(defaultValues[JETPACK_TIMEOUT_POLICY_VARIANT_KEY]!!))
-            }
 
     override fun getSimplifiedLoginVariant(): LoginVariant {
         return if (PackageUtils.isTesting()) {
