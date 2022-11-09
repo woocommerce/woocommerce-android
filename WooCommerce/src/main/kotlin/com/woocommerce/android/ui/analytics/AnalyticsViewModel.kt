@@ -298,7 +298,7 @@ class AnalyticsViewModel @Inject constructor(
         timePeriod: AnalyticTimePeriod,
         fetchStrategy: AnalyticsRepository.FetchStrategy
     ) {
-        analyticsRepository.fetchVisitorsData(dateRange, timePeriod, fetchStrategy)
+        analyticsRepository.fetchRecentVisitorsData(dateRange, timePeriod, fetchStrategy)
             .let {
                 when (it) {
                     is VisitorsData -> {

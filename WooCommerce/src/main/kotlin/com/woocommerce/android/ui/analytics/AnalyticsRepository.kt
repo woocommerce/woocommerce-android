@@ -186,7 +186,7 @@ class AnalyticsRepository @Inject constructor(
         )
     }
 
-    suspend fun fetchVisitorsData(
+    suspend fun fetchRecentVisitorsData(
         dateRange: AnalyticsDateRange,
         selectedRange: AnalyticTimePeriod,
         fetchStrategy: FetchStrategy
@@ -278,7 +278,8 @@ class AnalyticsRepository @Inject constructor(
     private suspend fun getVisitorsStats(
         dateRange: AnalyticsDateRange,
         granularity: StatsGranularity,
-        fetchStrategy: FetchStrategy
+        fetchStrategy: FetchStrategy,
+        fetchingAmountLimit: Int = VISITORS_AND_VIEW_DEFAULT_FETCH_LIMIT
     ): WooResult<VisitsAndViewsModel> = coroutineScope {
         val site = selectedSite.get()
 
@@ -288,7 +289,8 @@ class AnalyticsRepository @Inject constructor(
             endDate = endDate,
             granularity = granularity.asJetpackGranularity(),
             forced = fetchStrategy is FetchStrategy.ForceNew,
-            site = site
+            site = site,
+            fetchingAmountLimit
         )
     }
 
@@ -350,6 +352,8 @@ class AnalyticsRepository @Inject constructor(
         const val ONE_H_PERCENT = 100
 
         const val TOP_PRODUCTS_LIST_SIZE = 5
+
+        const val VISITORS_AND_VIEW_DEFAULT_FETCH_LIMIT = 15
     }
 
     sealed class RevenueResult {
