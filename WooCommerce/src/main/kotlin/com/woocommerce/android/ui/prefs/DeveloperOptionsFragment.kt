@@ -13,7 +13,6 @@ import com.woocommerce.android.ui.base.BaseFragment
 import dagger.hilt.android.AndroidEntryPoint
 import org.wordpress.android.util.ToastUtils
 import com.woocommerce.android.ui.prefs.DeveloperOptionsViewModel.DeveloperOptionsViewState.UpdateOptions
-
 @AndroidEntryPoint
 class DeveloperOptionsFragment : BaseFragment(R.layout.fragment_developer_options) {
     val viewModel: DeveloperOptionsViewModel by viewModels()
@@ -33,7 +32,7 @@ class DeveloperOptionsFragment : BaseFragment(R.layout.fragment_developer_option
         binding.developerOptionsRv.addItemDecoration(
             DividerItemDecoration(requireContext(), DividerItemDecoration.VERTICAL)
         )
-        binding.developerOptionsRv.adapter = DeveloperOptionsAdapter(viewModel)
+        binding.developerOptionsRv.adapter = DeveloperOptionsAdapter()
     }
 
     private fun observeEvents() {

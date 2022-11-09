@@ -8,10 +8,9 @@ import com.woocommerce.android.ui.prefs.DeveloperOptionsViewModel.DeveloperOptio
 import com.woocommerce.android.ui.prefs.DeveloperOptionsViewModel.DeveloperOptionsViewState.ListItem.SpinnerListItem
 import com.woocommerce.android.ui.prefs.DeveloperOptionsViewModel.DeveloperOptionsViewState.ListItem.ToggleableListItem
 import com.woocommerce.android.ui.prefs.DeveloperOptionsViewModel.DeveloperOptionsViewState.UpdateOptions
+
 class DeveloperOptionsAdapter(
-    private val listener: DeveloperOptionsViewModel
-) :
-    ListAdapter<ListItem, DeveloperOptionsViewHolder>(ListItemDiffCallback) {
+) : ListAdapter<ListItem, DeveloperOptionsViewHolder>(ListItemDiffCallback) {
 
     override fun getItemViewType(position: Int): Int {
         return when (getItem(position)) {
@@ -77,7 +76,7 @@ class DeveloperOptionsAdapter(
         const val VIEW_TYPE_SPINNER = 2
     }
 
-    interface UpdateOptionsListener{
+    interface UpdateOptionsListener {
         fun onUpdateOptionsChanged(position: Int, option: UpdateOptions)
     }
 }
