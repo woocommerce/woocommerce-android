@@ -137,14 +137,13 @@ class AnalyticsViewModel @Inject constructor(
     }
 
     fun onSelectedTimePeriodChanged(selectedTimePeriod: AnalyticTimePeriod) {
-        val isQuarterSelection = (selectedTimePeriod == QUARTER_TO_DATE) || (selectedTimePeriod == LAST_QUARTER)
         val dateRange = analyticsDateRange.getAnalyticsDateRangeFrom(selectedTimePeriod)
         saveSelectedTimePeriod(selectedTimePeriod)
         saveSelectedDateRange(dateRange)
         updateDateSelector()
         trackSelectedDateRange(selectedTimePeriod)
         viewModelScope.launch {
-            refreshAllAnalyticsAtOnce(isRefreshing = false, showSkeleton = true, isQuarterSelection = isQuarterSelection)
+            refreshAllAnalyticsAtOnce(isRefreshing = false, showSkeleton = true)
         }
     }
 
@@ -184,7 +183,11 @@ class AnalyticsViewModel @Inject constructor(
         }
     }
 
-    private fun refreshAllAnalyticsAtOnce(isRefreshing: Boolean, showSkeleton: Boolean, isQuarterSelection: Boolean = false) {
+    private fun refreshAllAnalyticsAtOnce(isRefreshing: Boolean, showSkeleton: Boolean) {
+        val isQuarterSelection = state.value.analyticsDateRangeSelectorState.selectedPeriod
+            .let { AnalyticTimePeriod.from(it) }
+            .let { (it == QUARTER_TO_DATE) || (it == LAST_QUARTER) }
+
         updateRevenue(isRefreshing = isRefreshing, showSkeleton = showSkeleton)
         updateOrders(isRefreshing = isRefreshing, showSkeleton = showSkeleton)
         updateProducts(isRefreshing = isRefreshing, showSkeleton = showSkeleton)
