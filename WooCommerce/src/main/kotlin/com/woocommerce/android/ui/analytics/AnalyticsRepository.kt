@@ -191,7 +191,7 @@ class AnalyticsRepository @Inject constructor(
         selectedRange: AnalyticTimePeriod,
         fetchStrategy: FetchStrategy
     ): VisitorsResult {
-        return getVisitorsStats(dateRange, getGranularity(selectedRange), fetchStrategy)
+        return getVisitorsStats(dateRange, getGranularity(selectedRange), fetchStrategy, MOST_RECENT_VISITORS_AND_VIEW_FETCH_LIMIT)
             .model?.dates?.last()
             ?.let {
                 VisitorsResult.VisitorsData(
