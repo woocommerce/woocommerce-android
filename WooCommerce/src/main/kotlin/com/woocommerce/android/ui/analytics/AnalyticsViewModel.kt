@@ -146,6 +146,10 @@ class AnalyticsViewModel @Inject constructor(
         }
     }
 
+    fun onQuarterDateRangeClicked() {
+
+    }
+
     fun onDateRangeSelectorClick() {
         onTrackableUIInteraction()
         AnalyticsTracker.track(AnalyticsEvent.ANALYTICS_HUB_DATE_RANGE_BUTTON_TAPPED)

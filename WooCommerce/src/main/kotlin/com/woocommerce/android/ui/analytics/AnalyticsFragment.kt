@@ -97,10 +97,11 @@ class AnalyticsFragment :
             key = KEY_DATE_RANGE_SELECTOR_RESULT,
             entryId = R.id.analytics
         ) { dateSelection ->
-            if (dateSelection == AnalyticTimePeriod.CUSTOM.description) {
-                viewModel.onCustomDateRangeClicked()
-            } else {
-                viewModel.onSelectedTimePeriodChanged(dateSelection)
+            when (AnalyticTimePeriod.from(dateSelection)) {
+                AnalyticTimePeriod.CUSTOM -> viewModel.onCustomDateRangeClicked()
+                AnalyticTimePeriod.QUARTER_TO_DATE,
+                AnalyticTimePeriod.LAST_QUARTER -> viewModel.onQuarterDateRangeClicked()
+                else -> viewModel.onSelectedTimePeriodChanged(dateSelection)
             }
         }
     }
