@@ -16,7 +16,6 @@ import com.woocommerce.android.viewmodel.ScopedViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import javax.inject.Inject
-import kotlin.reflect.KFunction1
 
 @HiltViewModel
 class DeveloperOptionsViewModel @Inject constructor(
@@ -142,16 +141,6 @@ class DeveloperOptionsViewModel @Inject constructor(
             ALWAYS,
             NEVER,
             RANDOMLY
-        }
-
-        companion object {
-            fun fromString(value: UpdateOptions): String {
-                return when (value) {
-                    UpdateOptions.ALWAYS -> "Always"
-                    UpdateOptions.NEVER -> "Never"
-                    UpdateOptions.RANDOMLY -> "Randomly"
-                }
-            }
         }
     }
 }
