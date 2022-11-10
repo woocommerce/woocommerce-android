@@ -10,7 +10,10 @@ import com.automattic.android.tracks.crashlogging.performance.TransactionStatus
 import com.woocommerce.android.analytics.AnalyticsEvent.ANALYTICS_HUB_WAITING_TIME_LOADED
 import com.woocommerce.android.analytics.WaitingTimeTracker
 import com.woocommerce.android.ui.analytics.AnalyticsHubTransactionLauncher.Conditions.ORDERS_FETCHED
+import com.woocommerce.android.ui.analytics.AnalyticsHubTransactionLauncher.Conditions.PRODUCTS_FETCHED
 import com.woocommerce.android.ui.analytics.AnalyticsHubTransactionLauncher.Conditions.REVENUE_FETCHED
+import com.woocommerce.android.ui.analytics.AnalyticsHubTransactionLauncher.Conditions.VISITORS_FETCHED
+
 import com.woocommerce.android.util.CoroutineDispatchers
 import dagger.hilt.android.scopes.ViewModelScoped
 import kotlinx.coroutines.CoroutineScope
@@ -49,12 +52,18 @@ class AnalyticsHubTransactionLauncher @Inject constructor(
 
     private enum class Conditions {
         REVENUE_FETCHED,
-        ORDERS_FETCHED
+        ORDERS_FETCHED,
+        PRODUCTS_FETCHED,
+        VISITORS_FETCHED
     }
 
     fun onRevenueFetched() = satisfyCondition(REVENUE_FETCHED)
 
     fun onOrdersFetched() = satisfyCondition(ORDERS_FETCHED)
+
+    fun onProductsFetched() = satisfyCondition(PRODUCTS_FETCHED)
+
+    fun onVisitorsFetched() = satisfyCondition(VISITORS_FETCHED)
 
     fun clear() {
         validatorScope.cancel()
