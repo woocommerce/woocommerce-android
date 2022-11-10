@@ -20,10 +20,8 @@ import com.google.android.material.snackbar.Snackbar
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
-import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.extensions.NotificationReceivedEvent
 import com.woocommerce.android.model.RequestResult.SUCCESS
-import com.woocommerce.android.model.UiString
 import com.woocommerce.android.network.ConnectionChangeReceiver.ConnectionChangeEvent
 import com.woocommerce.android.push.NotificationChannelType
 import com.woocommerce.android.tools.NetworkStatus
@@ -33,15 +31,10 @@ import com.woocommerce.android.ui.orders.details.OrderDetailRepository
 import com.woocommerce.android.ui.orders.filters.domain.GetSelectedOrderFiltersCount
 import com.woocommerce.android.ui.orders.filters.domain.GetWCOrderListDescriptorWithFilters
 import com.woocommerce.android.ui.orders.filters.domain.GetWCOrderListDescriptorWithFiltersAndSearchQuery
-import com.woocommerce.android.ui.orders.list.OrderListViewModel.OrderListEvent.OpenPurchaseCardReaderLink
 import com.woocommerce.android.ui.orders.list.OrderListViewModel.OrderListEvent.ShowErrorSnack
 import com.woocommerce.android.ui.orders.list.OrderListViewModel.OrderListEvent.ShowOrderFilters
-import com.woocommerce.android.ui.payments.banner.BannerDisplayEligibilityChecker
-import com.woocommerce.android.ui.payments.banner.BannerState
 import com.woocommerce.android.util.CoroutineDispatchers
-import com.woocommerce.android.util.LandscapeChecker
 import com.woocommerce.android.util.ThrottleLiveData
-import com.woocommerce.android.util.UtmProvider
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.viewmodel.LiveDataDelegate
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
@@ -69,7 +62,6 @@ import org.wordpress.android.fluxc.store.WCOrderStore.OnOrderChanged
 import org.wordpress.android.fluxc.store.WCOrderStore.OnOrderSummariesFetched
 import org.wordpress.android.mediapicker.util.filter
 import javax.inject.Inject
-import javax.inject.Named
 
 private const val EMPTY_VIEW_THROTTLE = 250L
 
@@ -95,11 +87,7 @@ class OrderListViewModel @Inject constructor(
     private val getWCOrderListDescriptorWithFilters: GetWCOrderListDescriptorWithFilters,
     private val getWCOrderListDescriptorWithFiltersAndSearchQuery: GetWCOrderListDescriptorWithFiltersAndSearchQuery,
     private val getSelectedOrderFiltersCount: GetSelectedOrderFiltersCount,
-    private val bannerDisplayEligibilityChecker: BannerDisplayEligibilityChecker,
     private val orderListTransactionLauncher: OrderListTransactionLauncher,
-    private val analyticsTrackerWrapper: AnalyticsTrackerWrapper,
-    private val landscapeChecker: LandscapeChecker,
-    @Named("order-list") private val orderListUtmProvider: UtmProvider,
 ) : ScopedViewModel(savedState), LifecycleOwner {
     private val lifecycleRegistry: LifecycleRegistry by lazy {
         LifecycleRegistry(this)
@@ -149,9 +137,6 @@ class OrderListViewModel @Inject constructor(
     }
     val emptyViewType: LiveData<EmptyViewType?> = _emptyViewType
 
-    val shouldShowUpsellCardReaderDismissDialog: MutableLiveData<Boolean> = MutableLiveData(false)
-    val bannerState: MutableLiveData<BannerState> = MutableLiveData()
-
     var isSearching = false
     private var dismissListErrors = false
     var searchQuery = ""
@@ -193,46 +178,6 @@ class OrderListViewModel @Inject constructor(
                     triggerEvent(OrderListEvent.GlanceFirstSwipeAbleItem)
                 }
             }
-        }
-    }
-
-    private suspend fun shouldDisplayBanner(isLandScape: Boolean, isOrderListEmpty: Boolean): Boolean {
-        return bannerDisplayEligibilityChecker.isEligibleForInPersonPayments() &&
-            canShowCardReaderUpsellBanner(System.currentTimeMillis()) &&
-            !isLandScape &&
-            !isOrderListEmpty
-    }
-
-    /**
-     * This method is being used only in the tests. We might remove this logic entirely in the near future
-     * in favor of JITM (Just In Time Messages)
-     * More detail: https://github.com/woocommerce/woocommerce-android/issues/7770
-     */
-    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
-    suspend fun updateBannerState(landscapeChecker: LandscapeChecker, isOrdersListEmpty: Boolean) {
-        bannerState.value = BannerState(
-            shouldDisplayBanner = shouldDisplayBanner(landscapeChecker.isLandscape(), isOrdersListEmpty),
-            onPrimaryActionClicked = {
-                onCtaClicked(AnalyticsTracker.KEY_BANNER_ORDER_LIST)
-            },
-            onDismissClicked = { onDismissClicked() },
-            title = UiString.UiStringRes(R.string.card_reader_upsell_card_reader_banner_title),
-            description = UiString.UiStringRes(R.string.card_reader_upsell_card_reader_banner_description),
-            primaryActionLabel = UiString.UiStringRes(R.string.card_reader_upsell_card_reader_banner_cta),
-            chipLabel = UiString.UiStringRes(R.string.card_reader_upsell_card_reader_banner_new)
-        )
-        trackBannerShownIfDisplayed()
-    }
-
-    private fun trackBannerShownIfDisplayed() {
-        if (bannerState.value?.shouldDisplayBanner == true) {
-            analyticsTrackerWrapper.track(
-                AnalyticsEvent.FEATURE_CARD_SHOWN,
-                mapOf(
-                    AnalyticsTracker.KEY_BANNER_SOURCE to AnalyticsTracker.KEY_BANNER_ORDER_LIST,
-                    AnalyticsTracker.KEY_BANNER_CAMPAIGN_NAME to AnalyticsTracker.KEY_BANNER_UPSELL_CARD_READERS
-                )
-            )
         }
     }
 
@@ -531,48 +476,6 @@ class OrderListViewModel @Inject constructor(
         loadOrders()
     }
 
-    private fun onCtaClicked(source: String) {
-        launch {
-            triggerEvent(
-                OpenPurchaseCardReaderLink(
-                    orderListUtmProvider.getUrlWithUtmParams(
-                        bannerDisplayEligibilityChecker.getPurchaseCardReaderUrl(source)
-                    ),
-                    R.string.card_reader_purchase_card_reader
-                )
-            )
-        }
-    }
-
-    private fun onDismissClicked() {
-        shouldShowUpsellCardReaderDismissDialog.value = true
-        triggerEvent(OrderListEvent.DismissCardReaderUpsellBanner)
-    }
-
-    fun onRemindLaterClicked(currentTimeInMillis: Long, source: String) {
-        shouldShowUpsellCardReaderDismissDialog.value = false
-        bannerDisplayEligibilityChecker.onRemindLaterClicked(currentTimeInMillis, source)
-        triggerEvent(OrderListEvent.DismissCardReaderUpsellBannerViaRemindMeLater)
-    }
-
-    fun onDontShowAgainClicked(source: String) {
-        shouldShowUpsellCardReaderDismissDialog.value = false
-        bannerDisplayEligibilityChecker.onDontShowAgainClicked(source)
-        triggerEvent(OrderListEvent.DismissCardReaderUpsellBannerViaDontShowAgain)
-    }
-
-    fun onBannerAlertDismiss() {
-        shouldShowUpsellCardReaderDismissDialog.value = false
-    }
-
-    private fun canShowCardReaderUpsellBanner(currentTimeInMillis: Long): Boolean {
-        return bannerDisplayEligibilityChecker.canShowCardReaderUpsellBanner(currentTimeInMillis)
-    }
-
-    fun shouldDisplaySimplePaymentsWIPCard(): Boolean {
-        return !canShowCardReaderUpsellBanner(System.currentTimeMillis())
-    }
-
     private fun updateOrderDisplayedStatus(position: Int, status: String) {
         val pagedList = _pagedListData.value ?: return
         (pagedList[position] as OrderListItemUIType.OrderListItemUI).status = status
@@ -683,9 +586,6 @@ class OrderListViewModel @Inject constructor(
     sealed class OrderListEvent : Event() {
         data class ShowErrorSnack(@StringRes val messageRes: Int) : OrderListEvent()
         object ShowOrderFilters : OrderListEvent()
-        object DismissCardReaderUpsellBanner : OrderListEvent()
-        object DismissCardReaderUpsellBannerViaRemindMeLater : OrderListEvent()
-        object DismissCardReaderUpsellBannerViaDontShowAgain : OrderListEvent()
         data class OpenPurchaseCardReaderLink(
             val url: String,
             @StringRes val titleRes: Int,
