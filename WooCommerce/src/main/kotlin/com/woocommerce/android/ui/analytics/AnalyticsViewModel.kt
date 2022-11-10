@@ -303,6 +303,7 @@ class AnalyticsViewModel @Inject constructor(
 
             if (timePeriod == CUSTOM) {
                 mutableState.value = state.value.copy(visitorsState = AnalyticsInformationViewState.HiddenState)
+                transactionLauncher.onVisitorsFetched()
                 return@launch
             }
 
@@ -328,7 +329,7 @@ class AnalyticsViewModel @Inject constructor(
                         visitorsStat.viewsCount
                     )
                 )
-                // submit sentry monitor transaction finished event
+                transactionLauncher.onVisitorsFetched()
             }
             is VisitorsError -> mutableState.value = state.value.copy(
                 refreshIndicator = NotShowIndicator,
