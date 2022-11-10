@@ -2,6 +2,7 @@
 11.2
 -----
 - [*] [Internal] Hide the Upsell card reader banner in the order listing screen [https://github.com/woocommerce/woocommerce-android/pull/7781]
+- [*] [Internal] Login: remove the prologue survey [https://github.com/woocommerce/woocommerce-android/pull/7762]
 
 11.1
 -----

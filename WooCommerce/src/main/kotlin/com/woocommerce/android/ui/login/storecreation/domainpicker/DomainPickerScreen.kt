@@ -51,6 +51,8 @@ import com.woocommerce.android.ui.compose.component.WCSearchField
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.ui.login.storecreation.domainpicker.DomainPickerViewModel.DomainPickerState
 import com.woocommerce.android.ui.login.storecreation.domainpicker.DomainPickerViewModel.DomainSuggestionUi
+import com.woocommerce.android.ui.login.storecreation.domainpicker.DomainPickerViewModel.LoadingState.Idle
+import com.woocommerce.android.ui.login.storecreation.domainpicker.DomainPickerViewModel.LoadingState.Loading
 
 @Composable
 fun DomainPickerScreen(viewModel: DomainPickerViewModel) {
@@ -103,7 +105,7 @@ private fun Toolbar(
 private fun DomainSearchForm(
     state: DomainPickerState,
     onDomainQueryChanged: (String) -> Unit,
-    onDomainSuggestionSelected: (Int) -> Unit,
+    onDomainSuggestionSelected: (String) -> Unit,
     onContinueClicked: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -144,7 +146,7 @@ private fun DomainSearchForm(
                 .weight(1f)
                 .fillMaxWidth()
         ) {
-            if (state.isLoading) {
+            if (state.loadingState == Loading) {
                 CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
             } else if (state.domainSuggestionsUi.isNotEmpty()) {
                 DomainSuggestionList(
@@ -165,7 +167,7 @@ private fun DomainSearchForm(
 @Composable
 private fun DomainSuggestionList(
     suggestions: List<DomainSuggestionUi>,
-    onDomainSuggestionSelected: (Int) -> Unit,
+    onDomainSuggestionSelected: (String) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Column(
@@ -183,7 +185,7 @@ private fun DomainSuggestionList(
                     domainSuggestion = suggestion,
                     modifier = Modifier
                         .fillMaxWidth()
-                        .clickable { onDomainSuggestionSelected(index) }
+                        .clickable { onDomainSuggestionSelected(suggestion.domain) }
                 )
                 if (index < suggestions.lastIndex)
                     Divider(
@@ -248,7 +250,7 @@ fun DomainPickerPreview() {
     WooThemeWithBackground {
         DomainSearchForm(
             state = DomainPickerState(
-                isLoading = false,
+                loadingState = Idle,
                 domain = "White Christmas Tress",
                 domainSuggestionsUi = listOf(
                     DomainSuggestionUi("whitechristmastrees.mywc.mysite"),
