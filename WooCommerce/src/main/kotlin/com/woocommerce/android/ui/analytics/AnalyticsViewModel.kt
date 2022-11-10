@@ -8,6 +8,7 @@ import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.model.DeltaPercentage
 import com.woocommerce.android.model.ProductItem
+import com.woocommerce.android.model.VisitorsStat
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.analytics.AnalyticsRepository.FetchStrategy.ForceNew
 import com.woocommerce.android.ui.analytics.AnalyticsRepository.FetchStrategy.Saved
@@ -317,10 +318,7 @@ class AnalyticsViewModel @Inject constructor(
             is VisitorsData -> {
                 mutableState.value = state.value.copy(
                     refreshIndicator = NotShowIndicator,
-                    visitorsState = buildVisitorsDataViewState(
-                        visitorsStat.visitorsCount,
-                        visitorsStat.viewsCount
-                    )
+                    visitorsState = buildVisitorsDataViewState(visitorsStat)
                 )
                 // submit sentry monitor transaction finished event
             }
@@ -384,20 +382,19 @@ class AnalyticsViewModel @Inject constructor(
     }
 
     private fun buildVisitorsDataViewState(
-        visitorsCount: Int,
-        viewsCount: Int
+        stats: VisitorsStat
     ) = DataViewState(
         title = resourceProvider.getString(R.string.analytics_visitors_and_views_card_title),
         leftSection = AnalyticsInformationSectionViewState(
             title = resourceProvider.getString(R.string.analytics_visitors_subtitle),
-            visitorsCount.toString(),
-            null, /** Add delta calculation to Visitors and Views stats **/
+            stats.visitorsCount.toString(),
+            if (stats.avgVisitorsDelta is DeltaPercentage.Value) stats.avgVisitorsDelta.value else null,
             listOf() /** Add charts calculation to Visitors and Views stats **/
         ),
         rightSection = AnalyticsInformationSectionViewState(
             resourceProvider.getString(R.string.analytics_views_subtitle),
-            viewsCount.toString(),
-            null, /** Add delta calculation to Visitors and Views stats **/
+            stats.viewsCount.toString(),
+            if (stats.avgViewsDelta is DeltaPercentage.Value) stats.avgViewsDelta.value else null,
             listOf() /** Add charts calculation to Visitors and Views stats **/
         )
     )
