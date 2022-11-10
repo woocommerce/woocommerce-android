@@ -82,7 +82,6 @@ class ReceiptPreviewFragment : BaseFragment(R.layout.fragment_receipt_preview), 
     }
 
     private fun initViews(binding: FragmentReceiptPreviewBinding, savedInstanceState: Bundle?) {
-        setHasOptionsMenu(true)
         if (savedInstanceState != null) {
             binding.receiptPreviewPreviewWebview.restoreState(savedInstanceState)
         } else {
