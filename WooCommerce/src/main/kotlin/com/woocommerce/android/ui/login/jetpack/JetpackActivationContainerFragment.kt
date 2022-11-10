@@ -1,10 +1,10 @@
-package com.woocommerce.android.ui.login.jetpackinstallation
+package com.woocommerce.android.ui.login.jetpack
 
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.main.AppBarStatus
 
-class JetpackConfigurationContainerFragment : BaseFragment(R.layout.fragment_jetpack_configuration_container) {
+class JetpackActivationContainerFragment : BaseFragment(R.layout.fragment_login_jetpack_activation_container) {
     companion object {
         const val TAG = "JetpackConfigurationContainerFragment"
     }

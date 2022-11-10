@@ -85,6 +85,6 @@
     </dialog>
     <fragment
         android:id="@+id/jetpackConfigurationContainerFragment"
-        android:name="com.woocommerce.android.ui.login.jetpackinstallation.JetpackConfigurationContainerFragment"
+        android:name="com.woocommerce.android.ui.login.jetpack.JetpackActivationContainerFragment"
         android:label="JetpackConfigurationContainerFragment" />
 </navigation>
