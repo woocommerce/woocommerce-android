@@ -198,12 +198,14 @@ class AnalyticsRepository @Inject constructor(
         selectedRange: AnalyticTimePeriod,
         fetchStrategy: FetchStrategy
     ): VisitorsResult {
-        val previousPeriodStats = getVisitorsStats(
+        val (previousVisitors, previousViews) = getVisitorsStats(
             dateRange.getComparisonPeriod().to,
             getGranularity(selectedRange),
             fetchStrategy,
             MOST_RECENT_VISITORS_AND_VIEW_FETCH_LIMIT
         ).model?.dates?.lastOrNull()
+            ?.let { Pair(it.visitors, it.views) }
+            ?: Pair(0, 0)
 
         val currentPeriodStats = getVisitorsStats(
             dateRange.getSelectedPeriod().to,
@@ -216,7 +218,9 @@ class AnalyticsRepository @Inject constructor(
             VisitorsResult.VisitorsData(
                 VisitorsStat(
                     it.visitors.toInt(),
-                    it.views.toInt()
+                    it.views.toInt(),
+                    calculateDeltaPercentage(previousVisitors.toDouble(), it.visitors.toDouble()),
+                    calculateDeltaPercentage(previousViews.toDouble(), it.views.toDouble())
                 )
             )
         } ?: VisitorsResult.VisitorsError
@@ -242,11 +246,13 @@ class AnalyticsRepository @Inject constructor(
             QUARTER_VISITORS_AND_VIEW_FETCH_LIMIT
         ).model?.dates?.foldStatsWithin(dateRange.getSelectedPeriod())
 
-        return currentPeriodStats?.let { (visitors, views) ->
+        return currentPeriodStats?.let { (currentVisitors, currentViews) ->
             VisitorsResult.VisitorsData(
                 VisitorsStat(
-                    visitors.toInt(),
-                    views.toInt()
+                    currentVisitors.toInt(),
+                    currentViews.toInt(),
+                    calculateDeltaPercentage(previousVisitors.toDouble(), currentVisitors.toDouble()),
+                    calculateDeltaPercentage(previousViews.toDouble(), currentViews.toDouble())
                 )
             )
         } ?: VisitorsResult.VisitorsError
