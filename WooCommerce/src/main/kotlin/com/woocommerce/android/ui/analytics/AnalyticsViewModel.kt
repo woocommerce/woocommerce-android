@@ -292,13 +292,10 @@ class AnalyticsViewModel @Inject constructor(
                 return@launch
             }
 
-            val isQuarterSelection = state.value.analyticsDateRangeSelectorState.selectedPeriod
-                .let { AnalyticTimePeriod.from(it) }
-                .let { (it == QUARTER_TO_DATE) || (it == LAST_QUARTER) }
-
             val timePeriod = getSavedTimePeriod()
             val dateRange = getSavedDateRange()
             val fetchStrategy = getFetchStrategy(isRefreshing)
+            val isQuarterSelection = (timePeriod == QUARTER_TO_DATE) || (timePeriod == LAST_QUARTER)
 
             if (showSkeleton) mutableState.value = state.value.copy(visitorsState = LoadingViewState)
             mutableState.value = state.value.copy(
