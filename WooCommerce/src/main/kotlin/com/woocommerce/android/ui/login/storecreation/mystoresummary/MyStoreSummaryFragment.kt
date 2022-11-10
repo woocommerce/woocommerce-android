@@ -1,4 +1,4 @@
-package com.woocommerce.android.ui.login.storecreation.domainpicker
+package com.woocommerce.android.ui.login.storecreation.mystoresummary
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -8,16 +8,13 @@ import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
-import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.ui.main.AppBarStatus
 import com.woocommerce.android.viewmodel.MultiLiveEvent
-import dagger.hilt.android.AndroidEntryPoint
 
-@AndroidEntryPoint
-class DomainPickerFragment : BaseFragment() {
-    private val viewModel: DomainPickerViewModel by viewModels()
+class MyStoreSummaryFragment : BaseFragment() {
+    private val viewModel: MyStoreSummaryViewModel by viewModels()
 
     override val activityAppBarStatus: AppBarStatus
         get() = AppBarStatus.Hidden
@@ -27,7 +24,7 @@ class DomainPickerFragment : BaseFragment() {
             setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
             setContent {
                 WooThemeWithBackground {
-                    DomainPickerScreen(viewModel = viewModel)
+                    MyStoreSummaryScreen(viewModel = viewModel)
                 }
             }
         }
@@ -42,15 +39,7 @@ class DomainPickerFragment : BaseFragment() {
         viewModel.event.observe(viewLifecycleOwner) { event ->
             when (event) {
                 is MultiLiveEvent.Event.Exit -> findNavController().popBackStack()
-                is DomainPickerViewModel.NavigateToDomainPickerSummary -> navigateToStoreSummaryFragment()
             }
         }
-    }
-
-    private fun navigateToStoreSummaryFragment() {
-        findNavController().navigateSafely(
-            DomainPickerFragmentDirections
-                .actionDomainPickerFragmentToMyStoreSummaryFragment()
-        )
     }
 }
