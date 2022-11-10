@@ -66,9 +66,9 @@ class AnalyticsDateRangeCalculator @Inject constructor(
 
     private fun getDateOfLastDayTwoQuartersAgo() = dateUtils.getDateForLastDayOfPreviousQuarter(2)
 
-    private fun getYesterdayRange() = SimpleDateRange(getDateForYesterday(), getDateForYesterday())
+    private fun getYesterdayRange() = SimpleDateRange(Date(dateUtils.getCurrentDateTimeMinusDays(2)), getDateForYesterday())
 
-    private fun getTodayRange() = SimpleDateRange(dateUtils.getCurrentDate(), dateUtils.getCurrentDate())
+    private fun getTodayRange() = SimpleDateRange(getDateForYesterday(), dateUtils.getCurrentDate())
 
     private fun getDateForYesterday() = Date(dateUtils.getCurrentDateTimeMinusDays(1))
 
