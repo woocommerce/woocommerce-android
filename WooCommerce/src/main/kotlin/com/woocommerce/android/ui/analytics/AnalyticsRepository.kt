@@ -203,24 +203,23 @@ class AnalyticsRepository @Inject constructor(
             getGranularity(selectedRange),
             fetchStrategy,
             MOST_RECENT_VISITORS_AND_VIEW_FETCH_LIMIT
-        )
+        ).model?.dates?.lastOrNull()
 
         val currentPeriodStats = getVisitorsStats(
             dateRange.getSelectedPeriod().to,
             getGranularity(selectedRange),
             fetchStrategy,
             MOST_RECENT_VISITORS_AND_VIEW_FETCH_LIMIT
-        )
+        ).model?.dates?.lastOrNull()
 
-        return currentPeriodStats.model?.dates?.last()
-            ?.let {
-                VisitorsResult.VisitorsData(
-                    VisitorsStat(
-                        it.visitors.toInt(),
-                        it.views.toInt()
-                    )
+        return currentPeriodStats?.let {
+            VisitorsResult.VisitorsData(
+                VisitorsStat(
+                    it.visitors.toInt(),
+                    it.views.toInt()
                 )
-            } ?: VisitorsResult.VisitorsError
+            )
+        } ?: VisitorsResult.VisitorsError
     }
 
     suspend fun fetchQuarterVisitorsData(
@@ -228,12 +227,13 @@ class AnalyticsRepository @Inject constructor(
         selectedRange: AnalyticTimePeriod,
         fetchStrategy: FetchStrategy
     ): VisitorsResult {
-        val previousPeriodStats = getVisitorsStats(
+        val (previousVisitors, previousViews) = getVisitorsStats(
             dateRange.getComparisonPeriod().to,
             getGranularity(selectedRange),
             fetchStrategy,
             QUARTER_VISITORS_AND_VIEW_FETCH_LIMIT
         ).model?.dates?.foldStatsWithin(dateRange.getComparisonPeriod())
+            ?: Pair(0, 0)
 
         val currentPeriodStats = getVisitorsStats(
             dateRange.getSelectedPeriod().to,
