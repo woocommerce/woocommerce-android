@@ -121,15 +121,7 @@ class OrderListViewModel @Inject constructor(
     internal var viewState by viewStateLiveData
 
     private val _pagedListData = MediatorLiveData<PagedOrdersList>()
-    val pagedListData: LiveData<PagedOrdersList>
-        get() {
-            return _pagedListData.map {
-                viewModelScope.launch {
-                    updateBannerState(landscapeChecker, _pagedListData.value.isNullOrEmpty())
-                }
-                it
-            }
-        }
+    val pagedListData: LiveData<PagedOrdersList> = _pagedListData
 
     private val _isLoadingMore = MediatorLiveData<Boolean>()
     val isLoadingMore: LiveData<Boolean> = _isLoadingMore
@@ -212,6 +204,11 @@ class OrderListViewModel @Inject constructor(
             !isOrderListEmpty
     }
 
+    /**
+     * This method is being used only in the tests. We might remove this logic entirely in the near future
+     * in favor of JITM (Just In Time Messages)
+     * More detail: https://github.com/woocommerce/woocommerce-android/issues/7770
+     */
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
     suspend fun updateBannerState(landscapeChecker: LandscapeChecker, isOrdersListEmpty: Boolean) {
         bannerState.value = BannerState(
