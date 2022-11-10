@@ -1,7 +1,11 @@
 package com.woocommerce.android.util
 
 import kotlinx.coroutines.async
+import kotlinx.coroutines.channels.awaitClose
+import kotlinx.coroutines.channels.onFailure
 import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.suspendCancellableCoroutine
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
@@ -41,3 +45,26 @@ suspend inline fun <reified EVENT : Any> Dispatcher.awaitEvent(): EVENT = suspen
         unregister(listener)
     }
 }
+
+inline fun <reified EVENT : Any> Dispatcher.observeEvents(): Flow<EVENT> = callbackFlow {
+    val listener = object {
+        @Subscribe(threadMode = ThreadMode.MAIN)
+        @Suppress("unused")
+        fun onEvent(event: EVENT) {
+            // Since generic types are suppressed at runtime, this listener will be registered using the type Object
+            // But using the reified EVENT type, we can compare the class and ignore unwanted events
+            if (event::class != EVENT::class) return
+
+            trySend(event)
+                .onFailure {
+                    WooLog.w(WooLog.T.UTILS, "Failure to emit EventBus's event $event as Flow, ${it?.toString()}")
+                }
+        }
+    }
+    register(listener)
+
+    awaitClose {
+        unregister(listener)
+    }
+}
+
