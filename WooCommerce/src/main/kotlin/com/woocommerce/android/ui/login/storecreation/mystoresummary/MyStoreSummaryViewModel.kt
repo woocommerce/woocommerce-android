@@ -16,14 +16,27 @@ class MyStoreSummaryViewModel @Inject constructor(
     private val _viewState = MutableLiveData<MyStoreSummaryState>()
     val viewState: LiveData<MyStoreSummaryState> = _viewState
 
+    init {
+        _viewState.value = MyStoreSummaryState(
+            name = "White Christmas Trees",
+            domain = "whitechristmastrees.mywc.mysite",
+            category = "Arts and Crafts",
+            country = "Canada"
+        )
+    }
+
     fun onBackPressed() {
         triggerEvent(MultiLiveEvent.Event.Exit)
     }
 
+    fun onContinueClicked() {
+        // TODO
+    }
+
     data class MyStoreSummaryState(
-        val name: String,
+        val name: String? = null,
         val domain: String,
-        val category: String,
-        val location: String
+        val category: String? = null,
+        val country: String
     )
 }
