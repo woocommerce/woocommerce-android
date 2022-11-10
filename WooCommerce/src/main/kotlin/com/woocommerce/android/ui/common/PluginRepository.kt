@@ -1,15 +1,13 @@
 package com.woocommerce.android.ui.common
 
 import android.os.Parcelable
-import com.woocommerce.android.AppConstants
 import com.woocommerce.android.OnChangedException
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.common.PluginRepository.PluginStatus.PluginActivated
 import com.woocommerce.android.ui.common.PluginRepository.PluginStatus.PluginActivationFailed
 import com.woocommerce.android.ui.common.PluginRepository.PluginStatus.PluginInstallFailed
 import com.woocommerce.android.ui.common.PluginRepository.PluginStatus.PluginInstalled
-import com.woocommerce.android.util.ContinuationWrapper
-import com.woocommerce.android.util.WooLog
+import com.woocommerce.android.util.dispatchAndAwait
 import com.woocommerce.android.util.observeEvents
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
@@ -19,8 +17,6 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.merge
 import kotlinx.coroutines.flow.retryWhen
 import kotlinx.parcelize.Parcelize
-import org.greenrobot.eventbus.Subscribe
-import org.greenrobot.eventbus.ThreadMode
 import org.wordpress.android.fluxc.Dispatcher
 import org.wordpress.android.fluxc.generated.PluginActionBuilder
 import org.wordpress.android.fluxc.model.SiteModel
@@ -45,16 +41,6 @@ class PluginRepository @Inject constructor(
         const val GENERIC_ERROR = "Unknown issue."
         const val ATTEMPT_LIMIT = 2
     }
-
-    init {
-        dispatcher.register(this)
-    }
-
-    fun onCleanup() {
-        dispatcher.unregister(this)
-    }
-
-    private var continuationFetchJetpackSitePlugin = ContinuationWrapper<SitePluginModel?>(WooLog.T.WP)
 
     fun installPlugin(slug: String, name: String): Flow<PluginStatus> = flow {
         val plugin = fetchJetpackSitePlugin(name)
@@ -124,25 +110,15 @@ class PluginRepository @Inject constructor(
 
     private suspend fun fetchJetpackSitePlugin(name: String): SitePluginModel? {
         return if (selectedSite.exists()) {
-            val result = continuationFetchJetpackSitePlugin.callAndWaitUntilTimeout(AppConstants.REQUEST_TIMEOUT) {
-                val payload = FetchJetpackSitePluginPayload(selectedSite.get(), name)
-                dispatcher.dispatch(PluginActionBuilder.newFetchJetpackSitePluginAction(payload))
-            }
-            return when (result) {
-                is ContinuationWrapper.ContinuationResult.Cancellation -> null
-                is ContinuationWrapper.ContinuationResult.Success -> result.value
+            val action = PluginActionBuilder.newFetchJetpackSitePluginAction(
+                FetchJetpackSitePluginPayload(selectedSite.get(), name)
+            )
+            val event: OnJetpackSitePluginFetched = dispatcher.dispatchAndAwait(action)
+            return when {
+                !event.isError -> event.plugin
+                else -> null
             }
         } else null
-    }
-
-    @Suppress("unused")
-    @Subscribe(threadMode = ThreadMode.MAIN)
-    fun onSitePluginFetched(event: OnJetpackSitePluginFetched) {
-        if (!event.isError) {
-            continuationFetchJetpackSitePlugin.continueWith(event.plugin)
-        } else {
-            continuationFetchJetpackSitePlugin.continueWith(null)
-        }
     }
 
     sealed class PluginStatus : Parcelable {
