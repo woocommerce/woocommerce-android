@@ -35,8 +35,6 @@ import org.wordpress.android.fluxc.store.WCStatsStore.StatsGranularity.WEEKS
 import org.wordpress.android.fluxc.store.WCStatsStore.StatsGranularity.YEARS
 import org.wordpress.android.fluxc.store.WooCommerceStore
 import org.wordpress.android.fluxc.utils.DateUtils
-import java.text.SimpleDateFormat
-import java.util.Locale
 import javax.inject.Inject
 
 @Suppress("TooManyFunctions")
