@@ -37,6 +37,7 @@ import org.wordpress.android.fluxc.store.WooCommerceStore
 import org.wordpress.android.fluxc.utils.DateUtils
 import java.text.SimpleDateFormat
 import java.util.Locale
+import java.util.Date
 import javax.inject.Inject
 
 @Suppress("TooManyFunctions")
@@ -195,7 +196,7 @@ class AnalyticsRepository @Inject constructor(
         fetchStrategy: FetchStrategy
     ): VisitorsResult {
         return getVisitorsStats(
-            dateRange,
+            dateRange.getSelectedPeriod().to,
             getGranularity(selectedRange),
             fetchStrategy,
             MOST_RECENT_VISITORS_AND_VIEW_FETCH_LIMIT
@@ -219,7 +220,7 @@ class AnalyticsRepository @Inject constructor(
         val simpleDateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
 
         return getVisitorsStats(
-            dateRange,
+            dateRange.getSelectedPeriod().to,
             getGranularity(selectedRange),
             fetchStrategy,
             QUARTER_VISITORS_AND_VIEW_FETCH_LIMIT
@@ -310,14 +311,12 @@ class AnalyticsRepository @Inject constructor(
     }
 
     private suspend fun getVisitorsStats(
-        dateRange: AnalyticsDateRange,
+        endDate: Date,
         granularity: StatsGranularity,
         fetchStrategy: FetchStrategy,
         fetchingAmountLimit: Int = VISITORS_AND_VIEW_DEFAULT_FETCH_LIMIT
     ): WooResult<VisitsAndViewsModel> = coroutineScope {
         val site = selectedSite.get()
-
-        val endDate = dateRange.getAnalyzedPeriod().to
 
         statsRepository.fetchViewAndVisitorsStatsWithinRange(
             endDate = endDate,
