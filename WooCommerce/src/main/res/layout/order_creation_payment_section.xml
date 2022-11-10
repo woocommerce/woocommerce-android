@@ -26,7 +26,8 @@
                 android:layout_weight="1"
                 android:accessibilityHeading="true"
                 android:text="@string/order_creation_payment"
-                android:textAppearance="?attr/textAppearanceHeadline6" />
+                android:textAppearance="?attr/textAppearanceHeadline6"
+                tools:ignore="UnusedAttribute" />
 
             <ImageView
                 android:id="@+id/lock_icon"

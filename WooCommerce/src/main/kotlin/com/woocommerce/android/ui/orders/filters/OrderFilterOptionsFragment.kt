@@ -42,7 +42,6 @@ class OrderFilterOptionsFragment :
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        setHasOptionsMenu(true)
 
         val binding = FragmentOrderFilterListBinding.bind(view)
         setUpObservers(viewModel)

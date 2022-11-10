@@ -26,7 +26,8 @@
         android:networkSecurityConfig="@xml/network_security_config"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:theme="@style/Theme.Woo.DayNight">
+        android:theme="@style/Theme.Woo.DayNight"
+        tools:ignore="UnusedAttribute">
 
         <!-- TODO: we eventually want to drop support for Apache, but for now it's used by FluxC -->
         <uses-library
@@ -42,6 +43,23 @@
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+
+            <intent-filter android:autoVerify="true">
+                <action android:name="android.intent.action.VIEW" />
+
+                <category android:name="android.intent.category.BROWSABLE" />
+                <category android:name="android.intent.category.DEFAULT" />
+
+                <data
+                    android:scheme="https"
+                    android:host="woocommerce.com"
+                    android:pathPattern="/mobile/orders/details" />
+
+                <data
+                    android:scheme="https"
+                    android:host="woocommerce.com"
+                    android:pathPattern="/mobile/payments" />
             </intent-filter>
         </activity>
         <activity
@@ -89,7 +107,7 @@
             android:label="@string/support_system_status_report"
             android:theme="@style/Theme.Woo.DayNight" />
         <activity
-            android:name=".support.HelpActivity"
+            android:name=".support.help.HelpActivity"
             android:label="@string/support_help"
             android:theme="@style/Theme.Woo.DayNight" />
         <activity
@@ -109,9 +127,6 @@
             android:theme="@style/Theme.Woo.DayNight" />
 
         <!-- Stats today app widget -->
-        <service
-            android:name=".ui.appwidgets.WidgetService"
-            android:permission="android.permission.BIND_REMOTEVIEWS" />
         <meta-data
             android:name="com.google.android.actions"
             android:resource="@xml/stats_today_widget_info" />
@@ -173,6 +188,10 @@
                 android:value="androidx.startup"
                 tools:node="remove" />
         </provider>
+
+        <meta-data
+            android:name="com.google.mlkit.vision.DEPENDENCIES"
+            android:value="barcode" />
     </application>
 
 </manifest>

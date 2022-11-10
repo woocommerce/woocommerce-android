@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
@@ -25,35 +26,40 @@
 
     <com.google.android.material.card.MaterialCardView
         android:id="@+id/bottom_buttons"
-        android:layout_width="match_parent"
         style="@style/Widget.LoginFlow.CardView.BottomBar"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true">
 
-        <LinearLayout
+        <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="@dimen/margin_medium_large"
-            android:layout_marginEnd="@dimen/margin_extra_large"
-            android:layout_marginStart="@dimen/margin_extra_large"
-            android:layout_marginTop="@dimen/margin_medium_large"
-            android:orientation="vertical">
+            android:paddingHorizontal="@dimen/margin_extra_large">
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/bottom_button"
                 style="@style/Widget.LoginFlow.Button.Primary"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="@string/login_continue" />
+                android:layout_marginTop="@dimen/margin_medium_large"
+                android:text="@string/login_continue"
+                app:layout_constraintBottom_toTopOf="@id/bottom_button_magic_link"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_goneMarginBottom="@dimen/margin_medium_large" />
 
+            <!-- this button is intentionally hidden until the password screen is shown -->
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/bottom_button_magic_link"
                 style="@style/Widget.LoginFlow.Button.Secondary"
-                android:visibility="gone"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="@string/login_magic_link_button" />
+                android:layout_marginBottom="@dimen/margin_medium_large"
+                android:text="@string/login_magic_link_button"
+                android:visibility="gone"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/bottom_button"
+                app:layout_goneMarginTop="@dimen/margin_medium_large" />
 
-        </LinearLayout>
+        </androidx.constraintlayout.widget.ConstraintLayout>
     </com.google.android.material.card.MaterialCardView>
 </RelativeLayout>

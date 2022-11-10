@@ -1,16 +1,74 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2022-09-13 10:54:04+0000
+Translation-Revision-Date: 2022-11-02 16:54:04+0000
 Plural-Forms: nplurals=6; plural=n==0 ? 0 : n==1 ? 1 : n==2 ? 2 : n%100>=3 && n%100<=10 ? 3 : n%100>=11 && n%100<=99 ? 4 : 5;
 Generator: GlotPress/2.4.0-alpha
 Language: ar
 -->
 <resources>
+    <string name="create_new_store">إنشاء متجر جديد</string>
+    <string name="analytics_products_list_item_description">صافي المبيعات: ⁦%1$s⁩</string>
+    <string name="analytics_products_list_header_subtitle">العناصر المباعة</string>
+    <string name="analytics_products_list_header_title">المنتجات</string>
+    <string name="analytics_products_card_title">المنتجات</string>
+    <string name="analytics_products_list_items_sold">العناصر المباعة</string>
+    <string name="analytics_avg_orders_title">متوسط قيمة الطلب</string>
+    <string name="analytics_total_orders_title">إجمالي الطلبات</string>
+    <string name="analytics_orders_card_title">الطلبات</string>
+    <string name="analytics_net_sales_title">صافي المبيعات</string>
+    <string name="analytics_total_sales_title">مجموع المبيعات</string>
+    <string name="analytics_products_no_data">لا توجد منتجات في هذه الفترة</string>
+    <string name="analytics_orders_no_data">لا توجد طلبات في هذه الفترة</string>
+    <string name="analytics_revenue_no_data">لا توجد إيرادات في هذه الفترة</string>
+    <string name="analytics_revenue_card_title">الإيرادات</string>
+    <string name="analytics_see_report_button_content_description">رؤية مزيد من تفاصيل التقارير</string>
+    <string name="analytics_see_report_button_text">رؤية التقرير</string>
+    <string name="analytics_date_range_custom">من ⁦%1$s⁩ إلى ⁦%2$s⁩</string>
+    <string name="analytics_see_more">مشاهدة المزيد</string>
+    <string name="signup_api_generic_error">عذرًا، تعذر علينا إنشاء حساب حسب بيانات الاعتماد المقدّمة. ترجى المحاولة ببريد إلكتروني مختلف.</string>
+    <string name="signup_password_not_secure_enough">لا تستوفي كلمة مرورك توجيهات الأمان لدينا. يُرجى محاولة إدخال كلمة مرور أكثر تعقيدًا.</string>
+    <string name="signup_password_too_short">كلمة مرورك قصيرة للغاية. يرجى اختيار كلمة مرور تحتوي على 6 أحرف على الأقل.</string>
+    <string name="signup_email_invalid_input">الرجاء إدخال عنوان بريد إلكتروني صالح.</string>
+    <string name="signup_email_exist_input">يوجد حساب موجود لهذا البريد الإلكتروني بالفعل.</string>
+    <string name="signup_already_registered">لنقم بإنشاء حسابك أولاً. هل تم التسجيل بالفعل. &lt;a href=\'login\'&gt;&lt;u&gt;تسجيل الدخول&lt;/u&gt;&lt;/a&gt;</string>
+    <string name="login_create_an_account">إنشاء حساب</string>
+    <string name="simplified_login_enter_email_address">إدخال عنوان بريدك الإلكتروني للبدء</string>
+    <string name="login_try_another_email">تجربة عنوان آخر</string>
+    <string name="date_timeframe_custom_date_range_title">نطاق تاريخ مخصص</string>
+    <string name="date_timeframe_custom">مخصص</string>
+    <string name="what_is_wordpress_link">ما المقصود بووردبريس.كوم؟</string>
+    <string name="signup_creating_account_loading_message">إنشاء حساب جديد</string>
+    <string name="signup_terms_of_service">يعني الاستمرار أنك توافق على &lt;u&gt;شروط الخدمة التي نقرها.&lt;/u&gt;</string>
+    <string name="signup_password_hint">اختر كلمة مرور</string>
+    <string name="signup_email_address_hint">عنوان بريدك الإلكتروني</string>
+    <string name="signup_get_started_label">بدء \nفي غضون دقائق</string>
+    <string name="signup_get_started_button">بدء</string>
+    <string name="login_jetpack_connection_consent">يعني النقر على زر Connect Jetpack أنك توافق على &lt;a href=\'terms\'&gt;شروط الخدمة&lt;/a&gt; لدينا وعلى &lt;a href=\'sync\'&gt;مشاركة التفاصيل&lt;/a&gt; مع ووردبريس.كوم.</string>
+    <string name="enable_card_reader">تمكين قارئ البطاقات المحاكي</string>
+    <string name="login_account_mismatch_connect_wpcom_dialog_message">يُرجى الاتصال بمالك الموقع للحصول على دعوة إلى الموقع كمدير متجر أو مسؤول استخدام التطبيق.</string>
+    <string name="login_account_mismatch_connect_wpcom_dialog_title">الاتصال بموقع ووردبريس.كوم</string>
+    <string name="login_account_mismatch_connect_wpcom">الاتصال بالموقع</string>
+    <string name="login_account_mismatch_connect_jetpack">ربط Jetpack بحسابك</string>
+    <string name="qr_code_login_edit_camera_permission">تحرير الأذونات</string>
+    <string name="qr_code_login_camera_permission_denied_message">لاستخدام هذه الميزة، يُرجى السماح بالأذونات لاستخدام الكاميرا لديك.</string>
+    <string name="qr_code_login_camera_permission_denied_title">يلزم الوصول إلى الكاميرا</string>
+    <string name="qr_code_login_scanner_title">الماسح الضوئي للكود الشريطي للكاميرا</string>
+    <string name="dev_options">خيارات المطور</string>
+    <string name="login_2fa_not_supported_self_hosted_site">المصادقة الثنائية (2FA) غير مدعومة في المواقع المستضافة ذاتيًا.  يُرجى استخدام كلمة مرور التطبيق.</string>
+    <string name="login_with_qr_code">مسح رمز الاستجابة السريعة لتسجيل الدخول</string>
+    <string name="show_password_content_description">عرض كلمة المرور</string>
+    <string name="hide_password_content_description">إخفاء كلمة المرور</string>
+    <string name="stats_widget_last_updated_message">بدءًا من ⁦%1$s⁩</string>
+    <string name="stats_widget_error_no_data">لا يمكن تحميل البيانات</string>
+    <string name="stats_today_widget_description">إحصاءات WooCommerce اليوم</string>
+    <string name="stats_today_widget_configure_title">إحصاءات المتجر اليوم</string>
+    <string name="stats_widget_availability_message">تحليلات المتجر غير متوافرة! تُرجى الترقية إلى أحدث إصدار من WooCommerce لعرض تحليلات متجرك.</string>
+    <string name="stats_widget_offline_error">شبكتك غير متاحة.\nتحقق من اتصال البيانات أو wifi.</string>
+    <string name="stats_widget_log_in_message">يُرجى تسجيل الدخول إلى تطبيق WooCommerce</string>
     <string name="login_jetpack_connection_url_failed">فشل إحضار بيانات الاتصال…</string>
     <string name="login_jetpack_verify_connection">جارٍ التحقُّق من اتصال Jetpack…</string>
     <string name="login_jetpack_connection_verification_failed">يتعذر التحقُّق من اتصال Jetpack الخاص بك. يرجى المحاولة مرة أخرى.</string>
     <string name="login_simple_wpcom_site">إنَّ الموقع ⁦%1$s⁩ مشترك في الوقت الحالي في خطة ووردبريس لا تدعم تثبيت إضافة. يرجى ترقية خطتك لاستخدام WooCommerce.</string>
-    <string name="login_connect_jetpack_button">ربط Jetpack بحسابك</string>
     <string name="login_jetpack_not_connected">يبدو أنَّ حسابك غير متصل بـ Jetpack الخاص بـ ⁦%1$s⁩</string>
     <string name="card_reader_card_readers_header">قراء البطاقات</string>
     <string name="card_reader_payment_options_header">خيارات الدفع</string>
@@ -35,7 +93,7 @@ Language: ar
     <string name="orderlist_bottom_sheet_simple_payments_moved_button">فهمت!</string>
     <string name="orderlist_bottom_sheet_simple_payments_moved_description">يمكنك الآن الوصول بسرعة إلى المدفوعات الشخصية وغيرها من الميزات بسهولة</string>
     <string name="orderlist_bottom_sheet_simple_payments_moved_title">المدفوعات من علامة التبويب القائمة</string>
-    <string name="login_no_wpcom_account_found">لم يتم استخدام البريد الإلكتروني ⁦%1$s⁩ مع حساب ووردبريس.كوم.</string>
+    <string name="login_no_wpcom_account_found">لم يتم استخدام بريدك الإلكتروني  مع حساب ووردبريس.كوم.</string>
     <string name="login_non_woo_stores_label">مواقع أخرى</string>
     <string name="login_with_store_address">تسجيل الدخول باستخدام عنوان متجرك</string>
     <string name="more_menu_button_w___admin">مسؤول WC</string>
@@ -96,7 +154,7 @@ Language: ar
     <string name="support_system_status_report_share_label">مشاركة تقرير حالة النظام</string>
     <string name="support_system_status_report_copy_label">نسخ تقرير حالة النظام إلى الحافظة</string>
     <string name="card_reader_connect_keep_searching_button">الاستمرار في البحث</string>
-    <string name="card_reader_payment_description_v2">عملية دفع شخصية للطلب رقم %s لـ %s blog_id %s.</string>
+    <string name="card_reader_payment_description_v2">عملية دفع شخصية للطلب رقم ⁦%1$s⁩ لـ ⁦%2$s⁩ blog_id %3$s.</string>
     <string name="card_reader_manage_payment_provider">تغيير مزوِّد الدفع</string>
     <string name="orderdetail_refunded_line_with_info">تم رد المبالغ المدفوعة: ⁦%1$s⁩</string>
     <string name="orderdetail_payment_summary_onhold_plain">بانتظار الدفع</string>
@@ -180,7 +238,7 @@ Language: ar
     <string name="shipping_label_install_wc_shipping_banner_button">الحصول على WooCommerce Shipping</string>
     <string name="shipping_label_install_wc_shipping_banner_description">اطبع الملصقات من هاتفك باستخدام WooCommerce Shipping.</string>
     <string name="shipping_label_install_wc_shipping_banner_title">هل تحتاج إلى ملصق شحن؟</string>
-    <string name="order_creation_change_product_quantity">تغيير كمية المنتج من %d إلى %d</string>
+    <string name="order_creation_change_product_quantity">تغيير كمية المنتج من ⁦%1$d⁩ إلى ⁦%2$d⁩</string>
     <string name="variations_bulk_update_regular_price">تحديث السعر العادي</string>
     <string name="variations_bulk_update_sale_price">تحديث سعر البيع</string>
     <string name="card_reader_onboarding_stripe_unsupported_in_country_header">لا ندعم إضافة WooCommerce Stripe في ⁦%1$s⁩</string>
@@ -313,8 +371,8 @@ Language: ar
     <string name="coupon_list_wip_message_enabled">لقد كنا نعمل على إتاحة عرض القسائم وتحريرها من جهازك!</string>
     <string name="coupon_list_wip_title">عرض القسائم وتحريرها</string>
     <string name="coupon_list_empty_heading">لم يتم العثور على قسائم</string>
-    <string name="coupon_list_item_label_included_and_excluded">%1s من دون %2s</string>
-    <string name="coupon_list_item_label_products_and_categories">%1s و%2s</string>
+    <string name="coupon_list_item_label_included_and_excluded">%1$s من دون %2$s</string>
+    <string name="coupon_list_item_label_products_and_categories">%1$s و%2$s</string>
     <string name="coupon_list_item_label_everything">كل شيء</string>
     <string name="coupon_list_item_label_expired">منتهي الصلاحية</string>
     <string name="coupon_list_item_label_active">نشط</string>
@@ -1383,7 +1441,7 @@ Language: ar
     <string name="product_width">العرض</string>
     <string name="product_length">المدة</string>
     <string name="order_refunds_refund_info_title">المنتجات المستردة</string>
-    <string name="order_refunds_detail_item_description">%s (%s × %d)</string>
+    <string name="order_refunds_detail_item_description">%1$s (%2$s x %3$d)</string>
     <string name="order_refunds_method">%1$s عبر %2$s</string>
     <string name="order_refunds_confirmation">هل تريد بالتأكيد إرسال مبلغ الاسترداد؟ لا يمكن التراجع عن هذا.</string>
     <string name="orderdetail_refunded_products">المنتجات المستردة</string>
@@ -1423,7 +1481,7 @@ Language: ar
     <string name="order_refunds_select_quantity">تحديد الكمية</string>
     <string name="order_refunds_shipping_refund">استرداد أموال الشحن</string>
     <string name="order_refunds_products_refund">استرداد أموال المنتجات</string>
-    <string name="order_refunds_item_description">%s x %s لكل منها</string>
+    <string name="order_refunds_item_description">%1$s x ⁦%2$s⁩ لكل منها</string>
     <string name="order_refunds_items_selected">%d من العناصر المُحدَّدة</string>
     <string name="order_refunds_items_select_none">عدم اختيار أي شيء</string>
     <string name="order_refunds_items_select_all">اختيار الكل</string>
@@ -1434,7 +1492,7 @@ Language: ar
     <string name="image_source_device_chooser">الاختيار من جهاز</string>
     <string name="image_source_title">اختيار طريقة الرفع</string>
     <string name="product_images_upload_channel_title">عمليات الرفع</string>
-    <string name="product_images_uploading_multi_notif_message">جارٍ رفع الصور…%d من أصل %d</string>
+    <string name="product_images_uploading_multi_notif_message">جارٍ رفع الصور…⁦%1$d⁩ من ⁦%2$d⁩</string>
     <string name="product_images_uploading_single_notif_message">جارٍ رفع الصورة…</string>
     <string name="product_images_camera_error">يتعذر الوصول إلى الكاميرا</string>
     <string name="product_image_remove_confirmation">هل تريد بالتأكيد إزالة هذه الصورة؟</string>
@@ -1826,6 +1884,7 @@ Language: ar
     <string name="orderdetail_track_shipment">تعقب الشحنة</string>
     <string name="login_email_help_desc">في مسؤول موقعك، يمكنك العثور على البريد الإلكتروني الذي استخدمته للاتصال بوردبرس.كوم من %1$sلوحة التحكم في Jetpack %2$s أسفل %3$sالاتصالات &gt; الاتصال بالحساب%4$s</string>
     <string name="login_email_help_title">ما البريد الإلكتروني الذي أستخدمه لتسجيل الدخول؟</string>
+    <string name="login_need_help_finding_email">هل تحتاج إلى مساعدة بشأن العثور على البريد الإلكتروني المطلوب؟</string>
     <string name="login_jetpack_what_is_description">Jetpack هو إضافة مجانية على وردبرس تربط متجرك بالأدوات اللازمة لمنحك أفضل تجربة على الهاتف المحمول، بما في ذلك تنبيهات الدفع والإحصاءات.</string>
     <string name="login_jetpack_what_is">ما المقصود بـ Jetpack؟</string>
     <string name="login_view_connected_stores">عرض المتاجر المتصلة</string>
@@ -2155,7 +2214,7 @@ Language: ar
     <string name="login_nostores_content_description">لا توجد متاجر WooCommerce</string>
     <string name="login_avatar_content_description">صورة ملفك الشخصي</string>
     <string name="login_connected_store">المتجر الذي تم الاتصال به</string>
-    <string name="login_configure_link">اقرأ %sتعليمات التكوين%s.</string>
+    <string name="login_configure_link">اقرأ ⁦%1$s⁩إرشادات التكوين⁦%2$s⁩.</string>
     <string name="login_jetpack_required">يتطلب هذا التطبيق اتصال Jetpack بمتجرك.</string>
     <string name="at_username">\@%s</string>
     <string name="enter_site_address">Enter the address of the WooCommerce store you\'d like to connect.</string>
@@ -2204,7 +2263,8 @@ Language: ar
     <string name="all">الكل</string>
     <string name="notification_channel_general_title">عام</string>
     <string name="app_name">WooCommerce</string>
-    <string-array name="date_range_selectors">
+    <string-array name="analytics_date_range_selectors">
+        <item>\@string/date_timeframe_custom</item>
         <item>\@string/date_timeframe_today</item>
         <item>\@string/date_timeframe_yesterday</item>
         <item>\@string/date_timeframe_last_week</item>

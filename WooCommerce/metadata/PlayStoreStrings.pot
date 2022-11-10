@@ -11,17 +11,16 @@ msgstr ""
 "Project-Id-Version: Release Notes & Play Store Descriptions\n"
 
 #. translators: Release notes for this version to be displayed in the Play Store. Limit to 500 characters including spaces and commas!
-msgctxt "release_note_104"
+msgctxt "release_note_111"
 msgid ""
-"10.4:\n"
-"This release contains a handful of minor improvements to make your experience smoother. We hope you notice the love we put into our software.\n"
-"\n"
+"11.1:\n"
+"This release includes a lot of cool things for you to manage your store better! We added the option to bulk update stock quantity of variations. We have also added the option for you login via QR code. We've made various improvements to the orders and products search.\n"
 msgstr ""
 
-msgctxt "release_note_103"
+msgctxt "release_note_110"
 msgid ""
-"10.3:\n"
-"More stability fixes to help you log in much easier. Added the ability to set up Jetpack if it's not connected yet. And we fixed a bug where Jetpack can be incorrectly assumed as unavailable. Please keep your feedback coming!\n"
+"11.0:\n"
+"Good news! We added a new analytics section to the app! Simply click on the See More button under the store stats to check more detailed information on Revenue and Orders. This isn’t the last of it – more updates to come in the next few weeks!\n"
 msgstr ""
 
 #. translators: Short description of the app to be displayed in the Play Store. Limit to 80 characters including spaces and commas!

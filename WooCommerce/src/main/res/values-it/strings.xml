@@ -1,16 +1,74 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2022-09-13 18:54:03+0000
+Translation-Revision-Date: 2022-11-03 14:54:24+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: it
 -->
 <resources>
+    <string name="create_new_store">Crea un nuovo negozio</string>
+    <string name="analytics_products_list_item_description">Vendite nette: %1$s</string>
+    <string name="analytics_products_list_header_subtitle">Elementi venduti</string>
+    <string name="analytics_products_list_header_title">Prodotti</string>
+    <string name="analytics_products_card_title">Prodotti</string>
+    <string name="analytics_products_list_items_sold">Elementi venduti</string>
+    <string name="analytics_avg_orders_title">Valore medio dell\'ordine</string>
+    <string name="analytics_total_orders_title">Ordini totali</string>
+    <string name="analytics_orders_card_title">Ordini</string>
+    <string name="analytics_net_sales_title">Vendite nette</string>
+    <string name="analytics_total_sales_title">Totale delle vendite</string>
+    <string name="analytics_products_no_data">Nessun prodotto per questo periodo</string>
+    <string name="analytics_orders_no_data">Nessun ordine per questo periodo</string>
+    <string name="analytics_revenue_no_data">Nessuna entrata per questo periodo</string>
+    <string name="analytics_revenue_card_title">Guadagno</string>
+    <string name="analytics_see_report_button_content_description">Visualizza più dettagli del report</string>
+    <string name="analytics_see_report_button_text">Visualizza report</string>
+    <string name="analytics_date_range_custom">%1$s - %2$s</string>
+    <string name="analytics_see_more">Scopri di più</string>
+    <string name="signup_api_generic_error">Spiacenti, non è stato possibile creare un account per le credenziali fornite. Prova con un altro indirizzo e-mail.</string>
+    <string name="signup_password_not_secure_enough">La password non è conforme alle nostre linea guida sulla sicurezza. Riprova con una password più complessa.</string>
+    <string name="signup_password_too_short">La password è troppo breve. Per favore scegli una password composta da almeno 6 caratteri.</string>
+    <string name="signup_email_invalid_input">Inserisci un indirizzo e-mail valido.</string>
+    <string name="signup_email_exist_input">Esiste già un account con questa e-mail.</string>
+    <string name="signup_already_registered">Per prima cosa, crea un account. Registrazione già effettuata? &lt;a href=\'login\'&gt;&lt;u&gt;Accesso&lt;/u&gt;&lt;/a&gt;</string>
+    <string name="login_create_an_account">Crea un account</string>
+    <string name="simplified_login_enter_email_address">Inserisci il tuo indirizzo e-mail per iniziare</string>
+    <string name="login_try_another_email">Prova con un altro indirizzo</string>
+    <string name="date_timeframe_custom_date_range_title">Intervallo di date personalizzato</string>
+    <string name="date_timeframe_custom">Personalizza</string>
+    <string name="what_is_wordpress_link">Cos\'è WordPress.com?</string>
+    <string name="signup_creating_account_loading_message">Creazione di un nuovo account</string>
+    <string name="signup_terms_of_service">Continuando, accetti i nostri &lt;u&gt;Termini di servizio.&lt;/u&gt;</string>
+    <string name="signup_password_hint">Scegli una password</string>
+    <string name="signup_email_address_hint">Il tuo indirizzo e-mail</string>
+    <string name="signup_get_started_label">Crea il tuo sito \nin pochi minuti</string>
+    <string name="signup_get_started_button">Crea il tuo sito</string>
+    <string name="login_jetpack_connection_consent">Toccando il pulsante Configura Jetpack, accetti i nostri &lt;a href=\'terms\'&gt;Termini di servizio&lt;/a&gt; e la &lt;a href=\'sync\'&gt;condivisione delle informazioni&lt;/a&gt; con WordPress.com.</string>
+    <string name="enable_card_reader">Attiva il lettore di carte simulato</string>
+    <string name="login_account_mismatch_connect_wpcom_dialog_message">Contatta il proprietario del sito per un invito al sito come gestore del negozio o amministratore per utilizzare l\'app.</string>
+    <string name="login_account_mismatch_connect_wpcom_dialog_title">Connessione a un sito WordPress.com</string>
+    <string name="login_account_mismatch_connect_wpcom">Connetti al sito</string>
+    <string name="login_account_mismatch_connect_jetpack">Connetti Jetpack al tuo account</string>
+    <string name="qr_code_login_edit_camera_permission">Modifica autorizzazioni</string>
+    <string name="qr_code_login_camera_permission_denied_message">Per utilizzare questa funzione, consenti le autorizzazioni per utilizzare la tua fotocamera.</string>
+    <string name="qr_code_login_camera_permission_denied_title">Accesso alla fotocamera richiesto</string>
+    <string name="qr_code_login_scanner_title">Scanner codici a barre fotocamera</string>
+    <string name="dev_options">Opzioni sviluppatore</string>
+    <string name="login_2fa_not_supported_self_hosted_site">2FA non supportato per siti ospitati personalmente. Usa una password dell\'app.</string>
+    <string name="login_with_qr_code">Scansiona codice QR per accedere</string>
+    <string name="show_password_content_description">Mostra password</string>
+    <string name="hide_password_content_description">Nascondi password</string>
+    <string name="stats_widget_last_updated_message">A partire dalle %1$s</string>
+    <string name="stats_widget_error_no_data">Impossibile caricare i dati</string>
+    <string name="stats_today_widget_description">Statistiche WooCommerce oggi</string>
+    <string name="stats_today_widget_configure_title">Statistiche negozio odierne</string>
+    <string name="stats_widget_availability_message">Analisi del negozio non disponibile! Esegui l\'aggiornament all\'ultima versione di WooCommerce per visualizzare le analisi del tuo negozio.</string>
+    <string name="stats_widget_offline_error">La rete non è disponibile.\nControlla la connessione dati o WiFi.</string>
+    <string name="stats_widget_log_in_message">Accedi all\'app WooCommerce</string>
     <string name="login_jetpack_connection_url_failed">Recupero dei dati della connessione non riuscito…</string>
     <string name="login_jetpack_verify_connection">Verifica della connessione a Jetpack…</string>
     <string name="login_jetpack_connection_verification_failed">Impossibile verificare la connessione a Jetpack. Riprova.</string>
     <string name="login_simple_wpcom_site">Il sito %1$s dispone attualmente di un piano WordPress.com che non supporta l\'installazione di plugin. Aggiorna il tuo piano per utilizzare WooCommerce.</string>
-    <string name="login_connect_jetpack_button">Connetti Jetpack al tuo account</string>
     <string name="login_jetpack_not_connected">Sembra che l\'account non sia connesso a Jetpack di %1$s</string>
     <string name="card_reader_card_readers_header">LETTORI DI CARTE</string>
     <string name="card_reader_payment_options_header">OPZIONI DI PAGAMENTO</string>
@@ -35,7 +93,7 @@ Language: it
     <string name="orderlist_bottom_sheet_simple_payments_moved_button">OK!</string>
     <string name="orderlist_bottom_sheet_simple_payments_moved_description">Ora puoi accedere rapidamente e con facilità ai Pagamenti di persona e ad altre funzionalità</string>
     <string name="orderlist_bottom_sheet_simple_payments_moved_title">Pagamenti dalla scheda Menu</string>
-    <string name="login_no_wpcom_account_found">L\'e-mail %1$s non è utilizzata con un account WordPress.com.</string>
+    <string name="login_no_wpcom_account_found">L\'e-mail non è utilizzata con un account WordPress.com.</string>
     <string name="login_non_woo_stores_label">Altri siti</string>
     <string name="login_with_store_address">Accesso con l\'indirizzo del negozio</string>
     <string name="more_menu_button_w___admin">WC Admin</string>
@@ -96,7 +154,7 @@ Language: it
     <string name="support_system_status_report_share_label">Condividi rapporto dello stato del sistema</string>
     <string name="support_system_status_report_copy_label">Copia il rapporto dello stato del sistema negli appunti</string>
     <string name="card_reader_connect_keep_searching_button">Continua a cercare</string>
-    <string name="card_reader_payment_description_v2">Pagamento di persona per l\'ordine #%s per %s blog_id %s.</string>
+    <string name="card_reader_payment_description_v2">Pagamento di persona per l\'ordine #%1$s per %2$s blog_id %3$s.</string>
     <string name="card_reader_manage_payment_provider">Cambia fornitore dei pagamenti</string>
     <string name="orderdetail_refunded_line_with_info">Rimborsato: %1$s</string>
     <string name="orderdetail_payment_summary_onhold_plain">In attesa di pagamento</string>
@@ -180,7 +238,7 @@ Language: it
     <string name="shipping_label_install_wc_shipping_banner_button">Ottieni WooCommerce Shipping</string>
     <string name="shipping_label_install_wc_shipping_banner_description">Stampa etichette dal tuo telefono con WooCommerce Shipping.</string>
     <string name="shipping_label_install_wc_shipping_banner_title">Hai bisogno di un\'etichetta di spedizione?</string>
-    <string name="order_creation_change_product_quantity">Cambia la quantità di prodotto da %d a %d</string>
+    <string name="order_creation_change_product_quantity">Cambia la quantità di prodotto da %1$d a %2$d</string>
     <string name="variations_bulk_update_regular_price">Aggiorna al prezzo standard</string>
     <string name="variations_bulk_update_sale_price">Aggiorna prezzo di vendita</string>
     <string name="card_reader_onboarding_stripe_unsupported_in_country_header">Non supportiamo l\'estensione WooCommerce Stripe in %1$s</string>
@@ -313,8 +371,8 @@ Language: it
     <string name="coupon_list_wip_message_enabled">Abbiamo lavorato per rendere possibile la visualizzazione e la modifica dei coupon sul tuo dispositivo!</string>
     <string name="coupon_list_wip_title">Visualizza e modifica i codici promozionali</string>
     <string name="coupon_list_empty_heading">Non è stato trovato alcun codice promozionale</string>
-    <string name="coupon_list_item_label_included_and_excluded">%1s senza %2s</string>
-    <string name="coupon_list_item_label_products_and_categories">%1s e %2s</string>
+    <string name="coupon_list_item_label_included_and_excluded">%1$s senza %2$s</string>
+    <string name="coupon_list_item_label_products_and_categories">%1$s e %2$s</string>
     <string name="coupon_list_item_label_everything">tutto</string>
     <string name="coupon_list_item_label_expired">Scaduto</string>
     <string name="coupon_list_item_label_active">Attivo</string>
@@ -1383,7 +1441,7 @@ Language: it
     <string name="product_width">Larghezza</string>
     <string name="product_length">Lunghezza</string>
     <string name="order_refunds_refund_info_title">Prodotti rimborsati</string>
-    <string name="order_refunds_detail_item_description">%s (%s x %d)</string>
+    <string name="order_refunds_detail_item_description">%1$s (%2$s x %3$d)</string>
     <string name="order_refunds_method">%1$s tramite %2$s</string>
     <string name="order_refunds_confirmation">Desideri emettere un rimborso? Questo non può essere annullato.</string>
     <string name="orderdetail_refunded_products">Prodotti rimborsati</string>
@@ -1423,7 +1481,7 @@ Language: it
     <string name="order_refunds_select_quantity">Seleziona quantità</string>
     <string name="order_refunds_shipping_refund">Rimborso spedizione</string>
     <string name="order_refunds_products_refund">Rimborso prodotti</string>
-    <string name="order_refunds_item_description">%s x %s ciascuno</string>
+    <string name="order_refunds_item_description">%1$s x %2$s ciascuno</string>
     <string name="order_refunds_items_selected">%d elementi selezionati</string>
     <string name="order_refunds_items_select_none">Non selezionare nessuno</string>
     <string name="order_refunds_items_select_all">Seleziona tutto</string>
@@ -1434,7 +1492,7 @@ Language: it
     <string name="image_source_device_chooser">Scegli da dispositivo</string>
     <string name="image_source_title">Seleziona un metodo di caricamento</string>
     <string name="product_images_upload_channel_title">Carica</string>
-    <string name="product_images_uploading_multi_notif_message">Caricamento delle immagini in corso…%d di %d</string>
+    <string name="product_images_uploading_multi_notif_message">Caricamento delle immagini in corso…%1$d di %2$d</string>
     <string name="product_images_uploading_single_notif_message">Caricamento delle immagini in corso…</string>
     <string name="product_images_camera_error">Impossibile accedere alla fotocamera</string>
     <string name="product_image_remove_confirmation">Desideri rimuovere questa immagine?</string>
@@ -1826,6 +1884,7 @@ Language: it
     <string name="orderdetail_track_shipment">Traccia spedizione</string>
     <string name="login_email_help_desc">Nell\'amministrazione del sito puoi trovare l\'e-mail che hai usato per collegarti a WordPress.com dalla %1$sBacheca di Jetpack%2$s sotto %3$sConnessioni &gt; Connessione dell\'account%4$s</string>
     <string name="login_email_help_title">Quale e-mail uso per accedere?</string>
+    <string name="login_need_help_finding_email">Hai bisogno di aiuto per trovare l\'e-mail richiesta?</string>
     <string name="login_jetpack_what_is_description">Jetpack è un plugin WordPress gratuito che collega il tuo negozio con gli strumenti necessari per assicurarti la migliore esperienza mobile, incluse le notifiche push e le statistiche</string>
     <string name="login_jetpack_what_is">Che cos\'è Jetpack?</string>
     <string name="login_view_connected_stores">Visualizza i negozi collegati</string>
@@ -2155,7 +2214,7 @@ Language: it
     <string name="login_nostores_content_description">Nessun negozio WooCommerce</string>
     <string name="login_avatar_content_description">Foto del profilo</string>
     <string name="login_connected_store">Negozio collegato</string>
-    <string name="login_configure_link">Leggi le %sistruzioni di configurazione%s.</string>
+    <string name="login_configure_link">Leggi le %1$sistruzioni di configurazione%2$s.</string>
     <string name="login_jetpack_required">Questa app richiede che Jetpack sia connesso al tuo negozio.</string>
     <string name="at_username">\@%s</string>
     <string name="enter_site_address">Immetti l\'indirizzo del negozio WooCommerce che desideri connettere.</string>
@@ -2204,7 +2263,8 @@ Language: it
     <string name="all">Tutto</string>
     <string name="notification_channel_general_title">Generale</string>
     <string name="app_name">WooCommerce</string>
-    <string-array name="date_range_selectors">
+    <string-array name="analytics_date_range_selectors">
+        <item>\@string/date_timeframe_custom</item>
         <item>\@string/date_timeframe_today</item>
         <item>\@string/date_timeframe_yesterday</item>
         <item>\@string/date_timeframe_last_week</item>

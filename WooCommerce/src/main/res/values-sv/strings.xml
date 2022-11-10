@@ -1,16 +1,74 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2022-09-12 16:54:03+0000
+Translation-Revision-Date: 2022-11-03 10:54:04+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: sv_SE
 -->
 <resources>
+    <string name="create_new_store">Skapa en ny butik</string>
+    <string name="analytics_products_list_item_description">Nettoförsäljning: %1$s</string>
+    <string name="analytics_products_list_header_subtitle">Sålda artiklar</string>
+    <string name="analytics_products_list_header_title">Produkter</string>
+    <string name="analytics_products_card_title">Produkter</string>
+    <string name="analytics_products_list_items_sold">Sålda artiklar</string>
+    <string name="analytics_avg_orders_title">Genomsnittligt beställningsvärde</string>
+    <string name="analytics_total_orders_title">Totalt antal beställningar</string>
+    <string name="analytics_orders_card_title">Beställningar</string>
+    <string name="analytics_net_sales_title">Nettoförsäljning</string>
+    <string name="analytics_total_sales_title">Total försäljning</string>
+    <string name="analytics_products_no_data">Inga produkter denna period</string>
+    <string name="analytics_orders_no_data">Inga beställningar denna period</string>
+    <string name="analytics_revenue_no_data">Inga intäkter denna period</string>
+    <string name="analytics_revenue_card_title">Intäkt</string>
+    <string name="analytics_see_report_button_content_description">Se mer rapportdetaljer</string>
+    <string name="analytics_see_report_button_text">Se rapport</string>
+    <string name="analytics_date_range_custom">%1$s – %2$s</string>
+    <string name="analytics_see_more">Se mer</string>
+    <string name="signup_api_generic_error">Vi kunde inte skapa ett konto med de angivna autentiseringsuppgifterna. Prova med en annan e-postadress.</string>
+    <string name="signup_password_not_secure_enough">Ditt lösenord uppfyller inte våra säkerhetsriktlinjer. Försök med ett mer komplext lösenord.</string>
+    <string name="signup_password_too_short">Ditt lösenord är för kort. Välj ett lösenord som har minst 6 tecken.</string>
+    <string name="signup_email_invalid_input">Ange en giltig e-postadress.</string>
+    <string name="signup_email_exist_input">Ett konto med denna e-post finns redan.</string>
+    <string name="signup_already_registered">Låt oss först skapa ditt konto. Redan registrerad? &lt;a href=\'login\'&gt;&lt;u&gt;Logga in&lt;/u&gt;&lt;/a&gt;</string>
+    <string name="login_create_an_account">Skapa ett konto</string>
+    <string name="simplified_login_enter_email_address">Ange din e-postadress för att komma igång</string>
+    <string name="login_try_another_email">Försök med en annan adress</string>
+    <string name="date_timeframe_custom_date_range_title">Anpassat datumintervall</string>
+    <string name="date_timeframe_custom">Anpassat</string>
+    <string name="what_is_wordpress_link">Vad är WordPress.com?</string>
+    <string name="signup_creating_account_loading_message">Skapar nytt konto</string>
+    <string name="signup_terms_of_service">Genom att fortsätta godkänner du våra &lt;u&gt;användarvillkor.&lt;/u&gt;</string>
+    <string name="signup_password_hint">Välj ett lösenord</string>
+    <string name="signup_email_address_hint">Din e-postadress</string>
+    <string name="signup_get_started_label">Kom igång \npå några minuter</string>
+    <string name="signup_get_started_button">Kom igång</string>
+    <string name="login_jetpack_connection_consent">Genom att klicka på knappen Anslut Jetpack godkänner du våra &lt;a href=\'terms\'&gt;användarvillkor&lt;/a&gt; och samtycker till att &lt;a href=\'sync\'&gt;dela information&lt;/a&gt; med WordPress.com.</string>
+    <string name="enable_card_reader">Aktivera simulerad kortläsare</string>
+    <string name="login_account_mismatch_connect_wpcom_dialog_message">Kontakta webbplatsens ägare för en inbjudan till webbplatsen som butikschef eller administratör för att använda appen.</string>
+    <string name="login_account_mismatch_connect_wpcom_dialog_title">Ansluter till en WordPress.com-webbplats</string>
+    <string name="login_account_mismatch_connect_wpcom">Anslut till webbplatsen</string>
+    <string name="login_account_mismatch_connect_jetpack">Anslut Jetpack till ditt konto</string>
+    <string name="qr_code_login_edit_camera_permission">Redigera behörigheter</string>
+    <string name="qr_code_login_camera_permission_denied_message">För att använda den här funktionen, tillåt att din kamera används.</string>
+    <string name="qr_code_login_camera_permission_denied_title">Kameraåtkomst krävs</string>
+    <string name="qr_code_login_scanner_title">Kamerastreckkodsskanner</string>
+    <string name="dev_options">Utvecklaralternativ</string>
+    <string name="login_2fa_not_supported_self_hosted_site">2FA stöds inte för webbplatser som drivs på egen server. Använd ett applösenord.</string>
+    <string name="login_with_qr_code">Skanna QR-kod för att logga in</string>
+    <string name="show_password_content_description">Visa lösenord</string>
+    <string name="hide_password_content_description">Dölj lösenord</string>
+    <string name="stats_widget_last_updated_message">Per den %1$s</string>
+    <string name="stats_widget_error_no_data">Det gick inte att ladda data</string>
+    <string name="stats_today_widget_description">WooCommerce-statistik idag</string>
+    <string name="stats_today_widget_configure_title">Dagens butiksstatistik</string>
+    <string name="stats_widget_availability_message">Butiksanalys inte tillgänglig! Uppgradera till den senaste versionen av WooCommerce för att visa din butiksanalys.</string>
+    <string name="stats_widget_offline_error">Ditt nätverk är inte tillgängligt.\nKontrollera din data eller WiFi-anslutning.</string>
+    <string name="stats_widget_log_in_message">Logga in på WooCommerce-appen</string>
     <string name="login_jetpack_connection_url_failed">Det gick inte att hämta anslutningsdata …</string>
     <string name="login_jetpack_verify_connection">Verifierar Jetpack-anslutning …</string>
     <string name="login_jetpack_connection_verification_failed">Kan inte verifiera din Jetpack-anslutning. Försök igen.</string>
     <string name="login_simple_wpcom_site">Webbplatsen %1$s har för närvarande ett WordPress.com-paket som inte stöder installation av tillägg. Uppgradera ditt paket för att använda WooCommerce.</string>
-    <string name="login_connect_jetpack_button">Anslut Jetpack till ditt konto</string>
     <string name="login_jetpack_not_connected">Det verkar som att ditt konto inte är anslutet till Jetpack för %1$s</string>
     <string name="card_reader_card_readers_header">KORTLÄSARE</string>
     <string name="card_reader_payment_options_header">BETALNINGSALTERNATIV</string>
@@ -35,7 +93,7 @@ Language: sv_SE
     <string name="orderlist_bottom_sheet_simple_payments_moved_button">Jag förstår!</string>
     <string name="orderlist_bottom_sheet_simple_payments_moved_description">Now you can quickly access In-Person Payments and other features with ease</string>
     <string name="orderlist_bottom_sheet_simple_payments_moved_title">Betalningar från menyfliken</string>
-    <string name="login_no_wpcom_account_found">E-posten %1$s används inte med ett WordPress.com-konto.</string>
+    <string name="login_no_wpcom_account_found">Din e-post används inte med ett WordPress.com-konto.</string>
     <string name="login_non_woo_stores_label">Andra webbplatser</string>
     <string name="login_with_store_address">Logga in med din butiksadress</string>
     <string name="more_menu_button_w___admin">WC-admin</string>
@@ -96,7 +154,7 @@ Language: sv_SE
     <string name="support_system_status_report_share_label">Dela systemstatusrapport</string>
     <string name="support_system_status_report_copy_label">Kopiera systemstatusrapport till urklipp</string>
     <string name="card_reader_connect_keep_searching_button">Fortsätt söka</string>
-    <string name="card_reader_payment_description_v2">Personlig betalning för beställning nr. %s för %s blog_id %s.</string>
+    <string name="card_reader_payment_description_v2">Personlig betalning för beställning #%1$s för %2$s blog_id %3$s.</string>
     <string name="card_reader_manage_payment_provider">Ändra betalningsleverantör</string>
     <string name="orderdetail_refunded_line_with_info">Återbetalat: %1$s</string>
     <string name="orderdetail_payment_summary_onhold_plain">Inväntar betalning</string>
@@ -180,7 +238,7 @@ Language: sv_SE
     <string name="shipping_label_install_wc_shipping_banner_button">Skaffa WooCommerce Shipping</string>
     <string name="shipping_label_install_wc_shipping_banner_description">Skriv ut etiketter från din telefon, med WooCommerce Shipping.</string>
     <string name="shipping_label_install_wc_shipping_banner_title">Behöver du en fraktetikett?</string>
-    <string name="order_creation_change_product_quantity">Ändra produktantalet från %d till %d</string>
+    <string name="order_creation_change_product_quantity">Ändra produktantalet från %1$d till %2$d</string>
     <string name="variations_bulk_update_regular_price">Uppdatera ordinarie pris</string>
     <string name="variations_bulk_update_sale_price">Uppdatera reapris</string>
     <string name="card_reader_onboarding_stripe_unsupported_in_country_header">Vi stöder inte WooCommerce Stripe-utökningen i %1$s</string>
@@ -313,8 +371,8 @@ Language: sv_SE
     <string name="coupon_list_wip_message_enabled">Vi har arbetat med att göra det möjligt att visa och redigera rabattkoder från din enhet!</string>
     <string name="coupon_list_wip_title">Visa och redigera rabattkoder</string>
     <string name="coupon_list_empty_heading">Inga rabattkoder hittades</string>
-    <string name="coupon_list_item_label_included_and_excluded">%1s exkl. %2s</string>
-    <string name="coupon_list_item_label_products_and_categories">%1s och %2s</string>
+    <string name="coupon_list_item_label_included_and_excluded">%1$s exkl. %2$s</string>
+    <string name="coupon_list_item_label_products_and_categories">%1$s och %2$s</string>
     <string name="coupon_list_item_label_everything">allt</string>
     <string name="coupon_list_item_label_expired">Har löpt ut</string>
     <string name="coupon_list_item_label_active">Aktiva</string>
@@ -1383,7 +1441,7 @@ Language: sv_SE
     <string name="product_width">Bredd</string>
     <string name="product_length">Längd</string>
     <string name="order_refunds_refund_info_title">Återbetalda produkter</string>
-    <string name="order_refunds_detail_item_description">%s (%s x %d)</string>
+    <string name="order_refunds_detail_item_description">%1$s (%2$s x %3$d)</string>
     <string name="order_refunds_method">%1$s via %2$s</string>
     <string name="order_refunds_confirmation">Är du säker på att du vill utfärda en återbetalning? Det här kan inte ångras.</string>
     <string name="orderdetail_refunded_products">Återbetalda produkter</string>
@@ -1423,7 +1481,7 @@ Language: sv_SE
     <string name="order_refunds_select_quantity">Välj kvantitet</string>
     <string name="order_refunds_shipping_refund">Fraktåterbetalning</string>
     <string name="order_refunds_products_refund">Produktåterbetalning</string>
-    <string name="order_refunds_item_description">%s x %s vardera</string>
+    <string name="order_refunds_item_description">%1$s x %2$s vardera</string>
     <string name="order_refunds_items_selected">%d artiklar valda</string>
     <string name="order_refunds_items_select_none">Välj ingen</string>
     <string name="order_refunds_items_select_all">Välj alla</string>
@@ -1434,7 +1492,7 @@ Language: sv_SE
     <string name="image_source_device_chooser">Välj från enheten</string>
     <string name="image_source_title">Välj en uppladdningsmetod</string>
     <string name="product_images_upload_channel_title">Uppladdningar</string>
-    <string name="product_images_uploading_multi_notif_message">Laddar upp bilder…%d av %d</string>
+    <string name="product_images_uploading_multi_notif_message">Laddar upp bilder … %1$d av %2$d</string>
     <string name="product_images_uploading_single_notif_message">Laddar upp bild…</string>
     <string name="product_images_camera_error">Det går inte att komma åt kameran</string>
     <string name="product_image_remove_confirmation">Är du säker på att du vill ta bort den här bilden?</string>
@@ -1826,6 +1884,7 @@ Language: sv_SE
     <string name="orderdetail_track_shipment">Spåra försändelse</string>
     <string name="login_email_help_desc">Du kan hitta e-postadressen som du använder för att ansluta till WordPress.com från din webbplatsadminsitration på %1$sJetpack Dashboard%2$s under %3$sAnslutningar &gt; Kontoanslutning%4$s</string>
     <string name="login_email_help_title">Vilken e-postadress ska jag använda för att logga in?</string>
+    <string name="login_need_help_finding_email">Behöver du hjälp med att hitta e-postmeddelandet?</string>
     <string name="login_jetpack_what_is_description">Jetpack är ett kostnadsfritt tillägg i WordPress som ansluter din butik till de verktyg som behövs för att ge den bästa möjliga mobilupplevelsen, inklusive pushmeddelanden och statistik</string>
     <string name="login_jetpack_what_is">Vad är Jetpack?</string>
     <string name="login_view_connected_stores">Visa anslutna butiker</string>
@@ -2155,7 +2214,7 @@ Language: sv_SE
     <string name="login_nostores_content_description">Inga WooCommerce-butiker</string>
     <string name="login_avatar_content_description">Ditt profilfoto</string>
     <string name="login_connected_store">Ansluten butik</string>
-    <string name="login_configure_link">Läs %skonfigurationsinstruktionerna%s.</string>
+    <string name="login_configure_link">Läs %1$skonfigurationsinstruktionerna%2$s.</string>
     <string name="login_jetpack_required">Denna app kräver Jetpack för att ansluta till din butik.</string>
     <string name="at_username">\@%s</string>
     <string name="enter_site_address">Ange adressen till den WooCommerce-butik som du vill ansluta.</string>
@@ -2204,7 +2263,8 @@ Language: sv_SE
     <string name="all">Alla</string>
     <string name="notification_channel_general_title">Allmänt</string>
     <string name="app_name">WooCommerce</string>
-    <string-array name="date_range_selectors">
+    <string-array name="analytics_date_range_selectors">
+        <item>\@string/date_timeframe_custom</item>
         <item>\@string/date_timeframe_today</item>
         <item>\@string/date_timeframe_yesterday</item>
         <item>\@string/date_timeframe_last_week</item>

@@ -2,7 +2,6 @@ import io.github.wzieba.tracks.plugin.TracksExtension
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
-    id 'com.automattic.android.fetchstyle'
     id 'io.gitlab.arturbosch.detekt'
     id 'io.github.wzieba.tracks.plugin'
     id 'com.android.application' apply false
@@ -44,7 +43,7 @@ subprojects {
     }
 }
 
-tasks.register("detektAll", io.gitlab.arturbosch.detekt.Detekt) {
+def detektAll = tasks.register("detektAll", io.gitlab.arturbosch.detekt.Detekt) {
     description = "Custom DETEKT build for all modules"
     parallel = true
     ignoreFailures = false
@@ -60,6 +59,21 @@ tasks.register("detektAll", io.gitlab.arturbosch.detekt.Detekt) {
         xml.enabled = true
         txt.enabled = false
     }
+}
+
+def detektAutoCorrectPrompt = tasks.register("detektAutoCorrectPrompt") {
+    doLast {
+        def detektTask = detektAll.get()
+        if (detektTask.state.failure != null && !detektTask.autoCorrect) {
+            println ".-----------------------------------------------------------------------------------------------------------------------------------.\n" +
+                    "| 🛠  Did you know: you can ask Detekt to automatically resolve some of the issues by running `./gradlew detektAll --auto-correct` |\n" +
+                    "'-----------------------------------------------------------------------------------------------------------------------------------'"
+        }
+    }
+}
+
+detektAll.configure{
+    finalizedBy detektAutoCorrectPrompt
 }
 
 dependencies {
@@ -82,7 +96,7 @@ tasks.register("installGitHooks", Copy) {
 }
 
 ext {
-    fluxCVersion = '1.54.0'
+    fluxCVersion = 'trunk-72aaebeca02b525428092851a6a3eea5a063f6b7'
     glideVersion = '4.13.2'
     coilVersion = '2.1.0'
     constraintLayoutVersion = '1.2.0'
@@ -99,10 +113,15 @@ ext {
     materialVersion = '1.6.1'
     hiltJetpackVersion = '1.0.0'
     wordPressUtilsVersion = '2.6.0'
-    mediapickerVersion = '0.1.0'
-    wordPressLoginVersion = '0.20.0'
+    mediapickerVersion = '0.1.1'
+    wordPressLoginVersion = '0.21.0'
     aboutAutomatticVersion = '0.0.6'
     workManagerVersion = '2.7.1'
+
+    // Apache
+    commonsText = '1.10.0'
+    commonsIO = '2.11.0'
+    httpClientAndroidVersion = '4.3.5.1'
 
     // Compose and its module versions need to be consistent with each other (for example 'compose-theme-adapter')
     composeVersion = "1.1.1"

@@ -1,68 +1,68 @@
 <ar>
-10.3:
-إصلاحات أكثر استقرارًا لمساعدتك على تسجيل الدخول بشكل أسهل بكثير. تمت إضافة القدرة على إعداد Jetpack إذا لم يتم ربطه بعد. أصلحنا خطأ حيث كان يمكن افتراض أن Jetpack غير متاح بشكل غير صحيح. يرجى مواصلة إرسال ملاحظاتك!
+11.0:
+أخبار جيدة! أضفنا قسم التحليلات الجديد إلى التطبيق! ما عليك سوى النقر على زر "رؤية المزيد" أسفل إحصاءات المتجر للتحقق من مزيد من المعلومات التفصيلية حول الإيرادات والطلبات. هذا ليس آخر شيء - ستتوافر تحديثات إضافية في الأسابيع القليلة المقبلة!
 </ar>
 <de-DE>
-10.3:
-Wir haben weitere Stabilitätsprobleme behoben, wodurch die Anmeldung für dich wesentlich einfacher wird. Es ist jetzt möglich, Jetpack einzurichten, wenn es noch nicht verbunden ist. Den Fehler, dass Jetpack fälschlicherweise als nicht verfügbar angezeigt wird, haben wir ebenfalls behoben. Wir freuen uns auf weiteres Feedback!
+11.0:
+Gute Nachrichten! Wir haben die App um einen neuen Analyse-Abschnitt erweitert! Klicke einfach unter den Shop-Statistiken auf den Button „Mehr anzeigen“, um dir ausführlichere Informationen zu Einnahmen und Bestellungen anzusehen. Das war aber noch nicht alles: In den nächsten Wochen halten wir weitere Updates für dich bereit!
 </de-DE>
 <es-ES>
-10.3:
-Más mejoras de estabilidad para facilitar el acceso. Se ha añadido la posibilidad de configurar Jetpack, aunque todavía no esté conectado. Además, hemos solucionado un error por el que Jetpack podía aparecer de manera incorrecta como no disponible. ¡Sigue enviándonos tus comentarios!
+11.0:
+¡Buenas noticias! Hemos añadido una nueva sección de estadísticas a la aplicación. Para consultar información más detallada sobre ingresos y pedidos, haz clic en el botón para ver más, que encontrarás debajo de las estadísticas de la tienda. Pero eso no es todo, y en las próximas semanas llegarán aún más novedades.
 </es-ES>
 <fr-FR>
-10.3 :
-Nous avons apporté des corrections de stabilité supplémentaires pour faciliter votre connexion. Il est désormais possible de configurer Jetpack si la connexion n’a pas encore été effectuée. Enfin, nous avons corrigé un bogue lors duquel Jetpack pouvait être considéré à tort comme indisponible. Continuez de nous faire part de vos commentaires !
+11.0 :
+Bonne nouvelle ! Nous avons ajouté une nouvelle section d’analyses à l’application. Cliquez simplement sur le bouton En savoir plus sous les statistiques de la boutique pour obtenir plus d’informations sur les revenus et les commandes. Ce n’est pas tout : d’autres mises à jour sont à venir dans les prochaines semaines !
 </fr-FR>
 <iw-IL>
-10.3:
-הוספנו תיקונים ליציבות כדי לעזור לך להתחבר בקלות רבה יותר. הוספנו אפשרות להגדיר את Jetpack אם השירות עדיין לא מחובר. וגם תיקנו באג שזיהה בטעות שהשירות של Jetpack לא זמין. נשמח להמשיך לקבל משוב!
+11.0:
+חדשות טובות! הוספנו מקטע חדש לניתוח סטטיסטי באפליקציה! ניתן ללחוץ על הכפתור 'להציג עוד' מתחת לנתונים הסטטיסטיים של החנות כדי לראות מידע מפורט יותר לגבי 'רווחים' ו'הזמנות'. וזה לא הכול – יש עוד עדכונים בדרך שיושקו בשבועות הקרובים!
 </iw-IL>
 <id>
-10.3:
-Perbaikan stabilitas lanjutan untuk mempermudah login. Penambahan fitur penyiapan Jetpack jika belum terhubung. Kami juga memperbaiki bug penyebab Jetpack dianggap tidak tersedia. Terus kirimkan feedback Anda!
+11.0:
+Kabar baik! Kami menambahkan bagian analitik baru dalam aplikasi! Klik tombol Lihat Selengkapnya di bawah statistik toko untuk melihat informasi terperinci tentang Pendapatan dan Pesanan. Pembaruan ini bukanlah yang terakhir – masih akan ada yang lainnya dalam beberapa minggu ke depan!
 </id>
 <it-IT>
-10.3:
-Più correzioni alla stabilità per aiutarti ad accedere molto più facilmente. Abbiamo aggiunto la possibilità di impostare Jetpack se non si è ancora connessi. Abbiamo inoltre corretto un bug a causa del quale Jetpack può essere erroneamente considerato non disponibile. Mantieni il tuo feedback pronto.
+11.0:
+Buone notizie! Abbiamo aggiunto una nuova sezione di analisi all'app! Basta fare clic sul pulsante Vedi di più sotto le statistiche del negozio per controllare informazioni più dettagliate su Entrate e Ordini. Questa non è l'ultima novità: altri aggiornamenti saranno disponibili nelle prossime settimane.
 </it-IT>
 <ja-JP>
-10.3:
-安定性を高める修正を行い、より簡単にログインできるようになりました。 Jetpack が未接続でも設定ができる機能を追加しました。 また、Jetpack が誤って利用不可と認識されることがある不具合を修正しました。 今後もフィードバックをお聞かせください。
+11.0:
+嬉しいお知らせです ! アプリに新しい分析セクションを追加しました ! ストアの統計の下にある「もっと見る」ボタンをクリックするだけで、収益と注文に関する詳細情報を確認できます。 それだけではありません。今後数週間でさらなる更新を予定しています。
 </ja-JP>
 <ko-KR>
-10.3:
-훨씬 더 쉽게 로그인할 수 있도록 안정성을 더욱 보강했습니다. 젯팩을 아직 연결하지 않은 경우 설정하는 기능을 추가했습니다. 그리고 젯팩을 사용할 수 없다고 잘못 생각할 수 있는 버그를 수정했습니다. 피드백을 계속 보내주세요!
+11.0:
+좋은 소식입니다! 앱에 새 분석 섹션을 추가했습니다! 간단히 스토어 통계 아래의 더 보기 버튼을 클릭하여 수익 및 주문에 대한 더 자세한 내용을 확인하세요. 여기서 끝이 아닙니다. 앞으로 몇 주 동안 더 많은 업데이트가 예정되어 있습니다.
 </ko-KR>
 <nl-NL>
-10.3:
-Stabiliteit verbeterd, zodat je makkelijker in kan loggen. De mogelijkheid toegevoegd om Jetpack in te stellen als deze nog niet verbonden is. We hebben ook een bug verholpen waarbij Jetpack onjuist als niet beschikbaar werd gezien. Blijf ons je feedback sturen!
+11.0:
+Goed nieuws! We hebben een nieuw analyse-gedeelte aan de app toegevoegd! Je klikt gewoon op de knop Meer zien onder de winkelstatistieken om meer gedetailleerde informatie te zien over Omzet en Bestellingen. Dit zijn nog niet de laatste wijzigingen, de komende weken komen er nog meer updates!
 </nl-NL>
 <pt-BR>
-10.3:
-Mais correções de estabilidade para facilitar ainda mais o login. Capacidade de configurar o Jetpack se ele ainda não estiver conectado. Além da correção de um bug que fazia o Jetpack aparecer como indisponível por engano. Continue enviando seu feedback!
+11.0:
+Boas notícias! Incluímos uma nova seção de análise no aplicativo! Basta clicar no botão Ver mais abaixo das estatísticas da loja para conferir informações mais detalhadas de receita e pedidos. E não para por aí: tem mais atualizações a caminho para as próximas semanas!
 </pt-BR>
 <ru-RU>
-10.3:
-Исправлено несколько проблем со стабильностью, что упростило вход. Добавлена возможность настоить Jetpack, если он ещё не подключён. Исправлена ошибка, из-за которой Jetpack считался недоступным. Спасибо за отбратную связь. Продолжайте в том же духе!
+11.0:
+Отличная новость! Мы добавили в приложение новый раздел ― аналитику! Просто нажмите кнопку "Подробнее" в статистике магазина, чтобы открыть подробные сведения о доходе и заказах. Это ещё не всё. Ждите другие обновления в ближайшие недели!
 </ru-RU>
 <sv-SE>
-10.3:
-Fler stabilitetskorrigeringar för att göra det lättare att logga in. Tillägg av möjligheten att konfigurera Jetpack om det inte är anslutet ännu. Vi har dessutom åtgärdat en bugg som gjorde att Jetpack kunde misstas för att vara otillgängligt. Fortsätt att lämna feedback.
+11.0:
+Goda nyheter! Vi har lagt till en ny analyssektion i appen. Det är bara att klicka på knappen Se mer under butiksstatistiken om du vill se mer detaljerad information om intäkter och beställningar. Det här är inte allt – fler uppdateringar är på väg under de kommande veckorna!
 </sv-SE>
 <tr-TR>
-10.3:
-Daha kolay oturum açmanıza yardımcı olacak daha fazla tutarlılık düzeltmesi yapıldı. Henüz bağlı değilse Jetpack kurma özelliği eklendi. Ve Jetpack'i kullanılamıyor olarak gösteren yanlış bir hata düzeltili. Lütfen geri bildirimlerinizi devam edin!
+11.0:
+İyi haber! Uygulamaya yeni bir analiz bölümü ekledik! Gelir ve Siparişler'le ilgili daha ayrıntılı bilgileri kontrol etmek için mağaza istatistiklerinin altındaki Daha Fazlasını Gör düğmesine tıklamanız yeterlidir. Bu son değil - önümüzdeki birkaç hafta içinde daha fazla güncelleme gelecek!
 </tr-TR>
 <zh-CN>
-10.3：
-更多稳定性修复可帮助您更轻松地登录。 添加了在尚未连接时设置 Jetpack 的功能。 我们修复了 Jetpack 可能被错误地假定为不可用的错误。 请尽情提供反馈！
+11.0：
+好消息！ 我们在应用程序中新增了一个分析部分！ 只需点击商店统计信息下的“查看更多”按钮，即可查看更多关于收益和订单的详细信息。 这不是最后一次更新，未来几周还会进行多次更新！
 </zh-CN>
 <zh-TW>
-10.3：
-修正多項錯誤來提高穩定性，讓你更輕鬆登入。 新增未連結仍能設定 Jetpack 的功能。 我們也修正了 Jetpack 可能被誤判為無法使用的錯誤。 歡迎繼續給予我們指教！
+11.0：
+好消息！ 我們將全新分析區段加入應用程式！ 只要按一下商店統計下方的「查看更多」按鈕，即可查看「收益」和「訂單」的詳細資訊。 還沒結束，接下來幾週還會陸續有更多更新！
 </zh-TW>
 <en-US>
-10.3:
-More stability fixes to help you log in much easier. Added the ability to set up Jetpack if it's not connected yet. And we fixed a bug where Jetpack can be incorrectly assumed as unavailable. Please keep your feedback coming!
+11.0:
+Good news! We added a new analytics section to the app! Simply click on the See More button under the store stats to check more detailed information on Revenue and Orders. This isn’t the last of it – more updates to come in the next few weeks!
 </en-US>

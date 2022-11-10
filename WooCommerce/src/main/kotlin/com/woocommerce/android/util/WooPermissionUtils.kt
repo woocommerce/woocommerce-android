@@ -3,12 +3,12 @@ package com.woocommerce.android.util
 import android.Manifest.permission.ACCESS_FINE_LOCATION
 import android.Manifest.permission.BLUETOOTH_CONNECT
 import android.Manifest.permission.BLUETOOTH_SCAN
+import android.Manifest.permission.CAMERA
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.net.Uri
-import android.os.Build
 import android.provider.Settings
 import androidx.activity.result.ActivityResultLauncher
 import androidx.core.app.ActivityCompat
@@ -38,10 +38,10 @@ object WooPermissionUtils {
     }
 
     fun hasBluetoothScanPermission(context: Context) =
-        androidROrLower() || context.checkIfPermissionGiven(BLUETOOTH_SCAN)
+        SystemVersionUtils.isAtMostR() || context.checkIfPermissionGiven(BLUETOOTH_SCAN)
 
     fun hasBluetoothConnectPermission(context: Context) =
-        androidROrLower() || context.checkIfPermissionGiven(BLUETOOTH_CONNECT)
+        SystemVersionUtils.isAtMostR() || context.checkIfPermissionGiven(BLUETOOTH_CONNECT)
 
     fun requestFineLocationPermission(requestPermissionLauncher: ActivityResultLauncher<String>) {
         requestPermissionLauncher.launch(ACCESS_FINE_LOCATION)
@@ -51,8 +51,12 @@ object WooPermissionUtils {
         launcher.launch(arrayOf(BLUETOOTH_SCAN, BLUETOOTH_CONNECT))
     }
 
+    fun hasCameraPermission(context: Context) = context.checkIfPermissionGiven(CAMERA)
+
+    fun requestCameraPermission(launcher: ActivityResultLauncher<String>) {
+        launcher.launch(CAMERA)
+    }
+
     private fun Context.checkIfPermissionGiven(permission: String) =
         ContextCompat.checkSelfPermission(this, permission) == PackageManager.PERMISSION_GRANTED
-
-    private fun androidROrLower() = Build.VERSION.SDK_INT <= Build.VERSION_CODES.R
 }

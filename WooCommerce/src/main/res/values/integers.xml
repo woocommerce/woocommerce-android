@@ -16,6 +16,9 @@
 
     <integer name="activity_transition_duration">300</integer>
 
-    <!-- Specifies how often, in milliseconds, the stats widget should be updated (30min) -->
+    <!-- Specifies how often, in milliseconds, the stats widget should be updated (30min).
+     WorkManager is not working properly on all manufacturers, so we will rely in both methods to
+     refresh the widget data (WorkManager periodic task and updatePeriodMillis)
+     https://issuetracker.google.com/issues/113676489 -->
     <integer name="stats_widget_update_period">1800000</integer>
 </resources>

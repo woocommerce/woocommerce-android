@@ -1,33 +1,28 @@
 package com.woocommerce.android.ui.analytics.daterangeselector
 
-import com.woocommerce.android.ui.analytics.daterangeselector.DateRange.MultipleDateRange
-import com.woocommerce.android.ui.analytics.daterangeselector.DateRange.SimpleDateRange
 import com.woocommerce.android.util.DateUtils
 import java.util.Calendar
 import java.util.Date
 import java.util.Locale
 import javax.inject.Inject
 
-sealed class DateRange {
-    data class SimpleDateRange(val from: Date, val to: Date) : DateRange()
-    data class MultipleDateRange(val from: SimpleDateRange, val to: SimpleDateRange) : DateRange()
-}
-
 class AnalyticsDateRangeCalculator @Inject constructor(
     val dateUtils: DateUtils
 ) {
-    fun getAnalyticsDateRangeFrom(selectionRange: AnalyticsDateRanges): DateRange = when (selectionRange) {
-        AnalyticsDateRanges.TODAY -> getTodayRange()
-        AnalyticsDateRanges.YESTERDAY -> getYesterdayRange()
-        AnalyticsDateRanges.LAST_WEEK -> getLastWeekRange()
-        AnalyticsDateRanges.LAST_MONTH -> getLastMonthRange()
-        AnalyticsDateRanges.LAST_QUARTER -> getLastQuarterRange()
-        AnalyticsDateRanges.LAST_YEAR -> getLastYearRange()
-        AnalyticsDateRanges.WEEK_TO_DATE -> getWeekToDateRange()
-        AnalyticsDateRanges.MONTH_TO_DATE -> getMonthToDateRange()
-        AnalyticsDateRanges.QUARTER_TO_DATE -> getQuarterToRangeDate()
-        AnalyticsDateRanges.YEAR_TO_DATE -> getYearToDateRange()
-    }
+    fun getAnalyticsDateRangeFrom(selectionRange: AnalyticTimePeriod): AnalyticsDateRange =
+        when (selectionRange) {
+            AnalyticTimePeriod.TODAY -> getTodayRange()
+            AnalyticTimePeriod.YESTERDAY -> getYesterdayRange()
+            AnalyticTimePeriod.LAST_WEEK -> getLastWeekRange()
+            AnalyticTimePeriod.LAST_MONTH -> getLastMonthRange()
+            AnalyticTimePeriod.LAST_QUARTER -> getLastQuarterRange()
+            AnalyticTimePeriod.LAST_YEAR -> getLastYearRange()
+            AnalyticTimePeriod.WEEK_TO_DATE -> getWeekToDateRange()
+            AnalyticTimePeriod.MONTH_TO_DATE -> getMonthToDateRange()
+            AnalyticTimePeriod.QUARTER_TO_DATE -> getQuarterToRangeDate()
+            AnalyticTimePeriod.YEAR_TO_DATE -> getYearToDateRange()
+            AnalyticTimePeriod.CUSTOM -> getYearToDateRange() // unused - here for completion
+        }
 
     private fun getYearToDateRange() = MultipleDateRange(
         SimpleDateRange(dateUtils.getDateForFirstDayOfPreviousYear(), getMinusOneYearDate()),
@@ -50,7 +45,7 @@ class AnalyticsDateRangeCalculator @Inject constructor(
     )
 
     private fun getLastYearRange() = MultipleDateRange(
-        SimpleDateRange(dateUtils.getDateForFirstDayOfPreviousYear(TWO), getDateForLastDayOfTwoYearsAgo()),
+        SimpleDateRange(dateUtils.getDateForFirstDayOfPreviousYear(2), getDateForLastDayOfTwoYearsAgo()),
         SimpleDateRange(dateUtils.getDateForFirstDayOfPreviousYear(), dateUtils.getDateForLastDayOfPreviousYear()),
     )
 
@@ -59,21 +54,23 @@ class AnalyticsDateRangeCalculator @Inject constructor(
         SimpleDateRange(getDateOfFirstDayPreviousQuarter(), getDateOfLastDayPreviousQuarter()),
     )
 
+    fun getAnalyticsDateRangeFromCustom(startDate: Date, endDate: Date) = SimpleDateRange(
+        from = startDate, to = endDate
+    )
+
     private fun getDateOfLastDayPreviousQuarter() = dateUtils.getDateForLastDayOfPreviousQuarter()
 
     private fun getDateOfFirstDayPreviousQuarter() = dateUtils.getDateForFirstDayOfPreviousQuarter()
 
-    private fun getDateOFirstDayTwoQuartersAgo() = dateUtils.getDateForFirstDayOfPreviousQuarter(TWO)
+    private fun getDateOFirstDayTwoQuartersAgo() = dateUtils.getDateForFirstDayOfPreviousQuarter(2)
 
-    private fun getDateOfLastDayTwoQuartersAgo() = dateUtils.getDateForLastDayOfPreviousQuarter(TWO)
+    private fun getDateOfLastDayTwoQuartersAgo() = dateUtils.getDateForLastDayOfPreviousQuarter(2)
 
-    private fun getYesterdayRange() = SimpleDateRange(getDateForTwoDaysAgo(), getDateForYesterday())
+    private fun getYesterdayRange() = SimpleDateRange(getDateForYesterday(), getDateForYesterday())
 
-    private fun getDateForTwoDaysAgo() = Date(dateUtils.getCurrentDateTimeMinusDays(TWO))
+    private fun getTodayRange() = SimpleDateRange(dateUtils.getCurrentDate(), dateUtils.getCurrentDate())
 
-    private fun getTodayRange() = SimpleDateRange(getDateForYesterday(), dateUtils.getCurrentDate())
-
-    private fun getDateForYesterday() = Date(dateUtils.getCurrentDateTimeMinusDays(ONE))
+    private fun getDateForYesterday() = Date(dateUtils.getCurrentDateTimeMinusDays(1))
 
     private fun getLastMonthRange() =
         MultipleDateRange(
@@ -85,9 +82,9 @@ class AnalyticsDateRangeCalculator @Inject constructor(
 
     private fun getDateFirstDayPreviousMonth() = dateUtils.getDateForFirstDayOfPreviousMonth()
 
-    private fun getDateLastDayTwoMonthsAgo() = dateUtils.getDateForLastDayOfPreviousMonth(TWO)
+    private fun getDateLastDayTwoMonthsAgo() = dateUtils.getDateForLastDayOfPreviousMonth(2)
 
-    private fun getDateOfFirstDayTwoMonthsAgo() = dateUtils.getDateForFirstDayOfPreviousMonth(TWO)
+    private fun getDateOfFirstDayTwoMonthsAgo() = dateUtils.getDateForFirstDayOfPreviousMonth(2)
 
     private fun getLastWeekRange() = MultipleDateRange(
         SimpleDateRange(getDateOfFirstDayTwoWeeksAgo(), getDateOfLastDayTwoWeeksAgo()),
@@ -98,34 +95,31 @@ class AnalyticsDateRangeCalculator @Inject constructor(
 
     private fun getDateFirstDayOneWeekAgo() = dateUtils.getDateForFirstDayOfPreviousWeek()
 
-    private fun getDateOfLastDayTwoWeeksAgo() = dateUtils.getDateForLastDayOfPreviousWeek(TWO)
+    private fun getDateOfLastDayTwoWeeksAgo() = dateUtils.getDateForLastDayOfPreviousWeek(2)
 
-    private fun getDateOfFirstDayTwoWeeksAgo() = dateUtils.getDateForFirstDayOfPreviousWeek(TWO)
+    private fun getDateOfFirstDayTwoWeeksAgo() = dateUtils.getDateForFirstDayOfPreviousWeek(2)
 
     private fun getMinusOneYearDate() =
-        dateUtils.getDateTimeAppliedOperation(dateUtils.getCurrentDate(), Calendar.YEAR, MINUS_ONE)
+        dateUtils.getDateTimeAppliedOperation(dateUtils.getCurrentDate(), Calendar.YEAR, -1)
 
     private fun getDateMinusQuarter() =
-        dateUtils.getDateTimeAppliedOperation(dateUtils.getCurrentDate(), Calendar.MONTH, MONTHS_IN_QUARTER)
+        dateUtils.getDateTimeAppliedOperation(dateUtils.getCurrentDate(), Calendar.MONTH, -MONTHS_IN_QUARTER)
 
     private fun getDateSevenDaysAgo() =
-        dateUtils.getDateTimeAppliedOperation(dateUtils.getCurrentDate(), Calendar.DAY_OF_YEAR, DAYS_IN_WEEK)
+        dateUtils.getDateTimeAppliedOperation(dateUtils.getCurrentDate(), Calendar.DAY_OF_YEAR, -DAYS_IN_WEEK)
 
     private fun getDateMinusOneMonth() =
-        dateUtils.getDateTimeAppliedOperation(dateUtils.getCurrentDate(), Calendar.MONTH, MINUS_ONE)
+        dateUtils.getDateTimeAppliedOperation(dateUtils.getCurrentDate(), Calendar.MONTH, -1)
 
-    private fun getDateForLastDayOfTwoYearsAgo() = dateUtils.getDateForLastDayOfPreviousYear(TWO)
+    private fun getDateForLastDayOfTwoYearsAgo() = dateUtils.getDateForLastDayOfPreviousYear(2)
 
     companion object {
-        const val DAYS_IN_WEEK = -7
-        const val MONTHS_IN_QUARTER = -3
-        const val MINUS_ONE = -1
-        const val TWO = 2
-        const val ONE = 1
+        const val DAYS_IN_WEEK = 7
+        const val MONTHS_IN_QUARTER = 3
     }
 }
 
-enum class AnalyticsDateRanges(val description: String) {
+enum class AnalyticTimePeriod(val description: String) {
     TODAY("Today"),
     YESTERDAY("Yesterday"),
     LAST_WEEK("Last Week"),
@@ -135,11 +129,12 @@ enum class AnalyticsDateRanges(val description: String) {
     WEEK_TO_DATE("Week to Date"),
     MONTH_TO_DATE("Month to Date"),
     QUARTER_TO_DATE("Quarter to Date"),
-    YEAR_TO_DATE("Year to Date");
+    YEAR_TO_DATE("Year to Date"),
+    CUSTOM("Custom");
 
     companion object {
-        fun from(dateRangeDescription: String): AnalyticsDateRanges = values()
-            .find { it.description == dateRangeDescription } ?: TODAY
+        fun from(datePeriod: String): AnalyticTimePeriod = values()
+            .find { it.description == datePeriod } ?: TODAY
     }
 }
 
@@ -149,38 +144,42 @@ enum class AnalyticsDateRanges(val description: String) {
  */
 @Throws(IllegalArgumentException::class)
 fun SimpleDateRange.formatDatesToFriendlyPeriod(locale: Locale = Locale.getDefault()): String {
-    val calendar: Calendar = let {
+    val firstCalendar: Calendar = let {
         Calendar.getInstance().apply {
             time = it.from
         }
     }
 
-    val anotherCalendar: Calendar = let {
+    val secondCalendar: Calendar = let {
         Calendar.getInstance().apply {
             time = it.to
         }
     }
 
-    val isSameYearAndMonth =
-        calendar.get(Calendar.YEAR) == anotherCalendar.get(Calendar.YEAR) &&
-            calendar.get(Calendar.MONTH) == anotherCalendar.get(Calendar.MONTH)
+    val sortedDates = listOf(firstCalendar, secondCalendar).sorted()
+    val firstDate = sortedDates.first()
+    val secondDate = sortedDates[1]
 
-    val minDay = kotlin.math.min(calendar.get(Calendar.DAY_OF_MONTH), anotherCalendar.get(Calendar.DAY_OF_MONTH))
-    val maxDay = kotlin.math.max(calendar.get(Calendar.DAY_OF_MONTH), anotherCalendar.get(Calendar.DAY_OF_MONTH))
-    val month = calendar.getDisplayName(Calendar.MONTH, Calendar.SHORT, locale)
-    val year = calendar.get(Calendar.YEAR)
+    val isSameYearAndMonth =
+        firstCalendar.get(Calendar.YEAR) == secondCalendar.get(Calendar.YEAR) &&
+            firstCalendar.get(Calendar.MONTH) == secondCalendar.get(Calendar.MONTH)
+
+    val firstCalendarDay = firstDate.get(Calendar.DAY_OF_MONTH)
+    val secondCalendarDay = secondDate.get(Calendar.DAY_OF_MONTH)
+
+    val firstDisplayMonth = firstCalendar.getDisplayName(Calendar.MONTH, Calendar.SHORT, locale)
+    val firstYear = firstCalendar.get(Calendar.YEAR)
 
     return if (isSameYearAndMonth) {
-        "$month $minDay - $maxDay, $year"
+        "$firstDisplayMonth $firstCalendarDay - $secondCalendarDay, $firstYear"
     } else {
-        val isSameYear = calendar.get(Calendar.YEAR) == anotherCalendar.get(Calendar.YEAR)
-        val anotherMonth = anotherCalendar.getDisplayName(Calendar.MONTH, Calendar.SHORT, locale)
-
+        val isSameYear = firstCalendar.get(Calendar.YEAR) == secondCalendar.get(Calendar.YEAR)
+        val secondDisplayMonth = secondDate.getDisplayName(Calendar.MONTH, Calendar.SHORT, locale)
         if (isSameYear) {
-            "$month $minDay - $anotherMonth $maxDay, $year"
+            "$firstDisplayMonth $firstCalendarDay - $secondDisplayMonth $secondCalendarDay, $firstYear"
         } else {
-            val anotherYear = anotherCalendar.get(Calendar.YEAR)
-            "$month $minDay, $year - $anotherMonth $maxDay, $anotherYear"
+            val secondYear = secondCalendar.get(Calendar.YEAR)
+            "$firstDisplayMonth $firstCalendarDay, $firstYear - $secondDisplayMonth $secondCalendarDay, $secondYear"
         }
     }
 }

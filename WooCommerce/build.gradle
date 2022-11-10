@@ -74,9 +74,9 @@ android {
         if (project.hasProperty("versionName")) {
             versionName project.property("versionName")
         } else {
-            versionName "10.4-rc-1"
+            versionName "11.1-rc-1"
         }
-        versionCode 331
+        versionCode 354
 
         minSdkVersion gradle.ext.minSdkVersion
         // Update targetSdkVersion only after reviewing all the OS changes (developer.android.com/about/versions/[ENTER_ANDROID_VERSION]/migration)
@@ -90,7 +90,7 @@ android {
         // TODO remove this once the hilt migration is complete
         javaCompileOptions.annotationProcessorOptions.arguments['dagger.hilt.disableModulesHaveInstallInCheck'] = 'true'
 
-        buildConfigField "boolean", "USE_SIMULATED_READER", project.hasProperty("useSimulatedReader").toString()
+        resValue "bool", "enable_leak_canary", isLeakCanaryEnabled().toString()
 
         packagingOptions {
             exclude 'META-INF/gradle/incremental.annotation.processors'
@@ -161,13 +161,14 @@ android {
         debug.java.srcDirs += 'src/debug/kotlin'
         test.java.srcDirs += 'src/test/kotlin'
         androidTest.java.srcDirs += 'src/androidTest/kotlin'
+
+        if (isLeakCanaryEnabled()) {
+            debug.java.srcDirs += 'src/leakcanary/kotlin'
+        }
     }
 
     lintOptions {
         disable 'InvalidPackage'
-        // TODO remove this after we update AGP, it's a bug that has been fixed in 4.1.1 and later
-        // see: https://issuetracker.google.com/issues/168794947
-        disable "ParcelCreator"
     }
 
     testOptions {
@@ -205,6 +206,7 @@ dependencies {
 
     implementation "androidx.navigation:navigation-fragment-ktx:$gradle.ext.navigationVersion"
     implementation "androidx.navigation:navigation-ui-ktx:$gradle.ext.navigationVersion"
+    api "androidx.navigation:navigation-dynamic-features-fragment:$gradle.ext.navigationVersion"
 
     implementation "androidx.work:work-runtime-ktx:$workManagerVersion"
 
@@ -245,6 +247,7 @@ dependencies {
     }
 
     implementation project(":libs:cardreader")
+    implementation project(":libs:barcode")
 
     implementation 'com.facebook.shimmer:shimmer:0.5.0'
     implementation 'com.github.chrisbanes:PhotoView:2.3.0'
@@ -279,7 +282,10 @@ dependencies {
         // See https://github.com/wordpress-mobile/WordPress-FluxC-Android/issues/919
         exclude group: 'com.squareup.okhttp3'
     }
-    debugImplementation 'com.squareup.leakcanary:leakcanary-android-core:2.9.1'
+
+    if (isLeakCanaryEnabled()) {
+        debugImplementation 'com.squareup.leakcanary:leakcanary-android-core:2.9.1'
+    }
 
     // Dependencies for local unit tests
     testImplementation "junit:junit:$jUnitVersion"
@@ -312,7 +318,7 @@ dependencies {
         exclude group: 'asm', module: 'asm'
         exclude group: 'org.json', module: 'json'
     }
-    androidTestImplementation 'org.apache.httpcomponents:httpclient-android:4.3.5.1'
+    androidTestImplementation "org.apache.httpcomponents:httpclient-android:$httpClientAndroidVersion"
 
     // Resolve conflicts between main and test APK
     androidTestImplementation "androidx.annotation:annotation:1.3.0"
@@ -335,9 +341,8 @@ dependencies {
 
     testImplementation 'app.cash.turbine:turbine:0.8.0'
 
-    // Use caution when updating this, as commons-text 1.9 caused the reviews tab to crash on API 21
-    implementation "org.apache.commons:commons-text:1.8"
-    implementation "commons-io:commons-io:2.11.0"
+    implementation "org.apache.commons:commons-text:$commonsText"
+    implementation "commons-io:commons-io:$commonsIO"
 
     implementation "com.tinder.statemachine:statemachine:$stateMachineVersion"
 
@@ -474,6 +479,10 @@ static def loadPropertiesFromFile(inputFile) {
         properties.load(stream)
     }
     return properties
+}
+
+def isLeakCanaryEnabled() {
+    return project.properties.getOrDefault('enableLeakCanary', 'true') == 'true'
 }
 
 // For app signing

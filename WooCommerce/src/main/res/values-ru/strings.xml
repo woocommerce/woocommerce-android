@@ -1,16 +1,74 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2022-09-13 10:54:04+0000
+Translation-Revision-Date: 2022-11-03 14:54:08+0000
 Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);
 Generator: GlotPress/2.4.0-alpha
 Language: ru
 -->
 <resources>
+    <string name="create_new_store">Создать магазин</string>
+    <string name="analytics_products_list_item_description">Чистая выручка: %1$s</string>
+    <string name="analytics_products_list_header_subtitle">Проданные предметы</string>
+    <string name="analytics_products_list_header_title">Товары</string>
+    <string name="analytics_products_card_title">Товары</string>
+    <string name="analytics_products_list_items_sold">Проданные предметы</string>
+    <string name="analytics_avg_orders_title">Средняя стоимость заказа</string>
+    <string name="analytics_total_orders_title">Общее число заказов</string>
+    <string name="analytics_orders_card_title">Заказы</string>
+    <string name="analytics_net_sales_title">Чистая выручка</string>
+    <string name="analytics_total_sales_title">Всего продаж</string>
+    <string name="analytics_products_no_data">Нет товаров за указанный период</string>
+    <string name="analytics_orders_no_data">Нет заказов за указанный период</string>
+    <string name="analytics_revenue_no_data">Нет доходов за указанный период</string>
+    <string name="analytics_revenue_card_title">Доход</string>
+    <string name="analytics_see_report_button_content_description">Смотреть подробные сведения по отчету</string>
+    <string name="analytics_see_report_button_text">Смотреть отчет</string>
+    <string name="analytics_date_range_custom">%1$s — %2$s</string>
+    <string name="analytics_see_more">Подробнее</string>
+    <string name="signup_api_generic_error">К сожалению, не удалось создать учётную запись с указанными учётными данными. Укажите другой адрес эл. почты.</string>
+    <string name="signup_password_not_secure_enough">Указанный пароль не соответствует требованиям безопасности. Пароль должен быть более сложным.</string>
+    <string name="signup_password_too_short">Пароль слишком короткий. Придумайте пароль, состоящий как минимум из шести символов.</string>
+    <string name="signup_email_invalid_input">Введите допустимый адрес электронной почты.</string>
+    <string name="signup_email_exist_input">Учётная запись с этим адресом эл. почты уже существует.</string>
+    <string name="signup_already_registered">Сначала создадим вам учётную запись. Уже зарегистрированы? &lt;a href=\'login\'&gt;&lt;u&gt;Войти&lt;/u&gt;&lt;/a&gt;</string>
+    <string name="login_create_an_account">Создать учётную запись</string>
+    <string name="simplified_login_enter_email_address">Введите ваш адрес электронной почты для начала работы</string>
+    <string name="login_try_another_email">Использовать другой адрес</string>
+    <string name="date_timeframe_custom_date_range_title">Произвольный период</string>
+    <string name="date_timeframe_custom">Произвольный</string>
+    <string name="what_is_wordpress_link">Что такое WordPress.com?</string>
+    <string name="signup_creating_account_loading_message">Создание учетной записи</string>
+    <string name="signup_terms_of_service">Продолжая, вы принимаете наши &lt;u&gt;Условия предоставления услуг.&lt;/u&gt;</string>
+    <string name="signup_password_hint">Выберите пароль</string>
+    <string name="signup_email_address_hint">Ваш адрес электронной почты</string>
+    <string name="signup_get_started_label">Начало работы \nчерез несколько минут</string>
+    <string name="signup_get_started_button">Начало работы</string>
+    <string name="login_jetpack_connection_consent">Нажимая кнопку «Подключить Jetpack», вы принимаете &lt;a href=\'terms\'&gt;Условия предоставления услуг&lt;/a&gt; и разрешаете &lt;a href=\'sync\'&gt;обмен данными&lt;/a&gt; с WordPress.com.</string>
+    <string name="enable_card_reader">Включить симуляцию устройства чтения карт</string>
+    <string name="login_account_mismatch_connect_wpcom_dialog_message">Чтобы использовать приложение, получите приглашение у владельца сайта, например у директора магазина или администратора.</string>
+    <string name="login_account_mismatch_connect_wpcom_dialog_title">Подключение к сайту WordPress.com</string>
+    <string name="login_account_mismatch_connect_wpcom">Подключить к сайту</string>
+    <string name="login_account_mismatch_connect_jetpack">Подключите Jetpack к учётной записи</string>
+    <string name="qr_code_login_edit_camera_permission">Изменить разрешения</string>
+    <string name="qr_code_login_camera_permission_denied_message">Для работы с этой функцией предоставьте разрешение на использование камеры.</string>
+    <string name="qr_code_login_camera_permission_denied_title">Требуется доступ к камере</string>
+    <string name="qr_code_login_scanner_title">Сканер штрихкодов в камере</string>
+    <string name="dev_options">Параметры разработчика</string>
+    <string name="login_2fa_not_supported_self_hosted_site">Двухфакторная проверка подлинности не поддерживается для автономных сайтов. Используйте пароль приложения.</string>
+    <string name="login_with_qr_code">Отсканируйте QR-код для входа</string>
+    <string name="show_password_content_description">Показать пароль</string>
+    <string name="hide_password_content_description">Скрыть пароль</string>
+    <string name="stats_widget_last_updated_message">На %1$s</string>
+    <string name="stats_widget_error_no_data">Невозможно загрузить данные</string>
+    <string name="stats_today_widget_description">Статистика WooCommerce за сегодня</string>
+    <string name="stats_today_widget_configure_title">Статистика магазина за сегодня</string>
+    <string name="stats_widget_availability_message">Аналитика для магазина недоступна Чтобы просмотреть аналитику для магазина, перейдите на последнюю версию WooCommerce.</string>
+    <string name="stats_widget_offline_error">Ваша сеть недоступна.\nПроверьте свои данные или соединение Wi-Fi.</string>
+    <string name="stats_widget_log_in_message">Войдите в приложение WooCommerce</string>
     <string name="login_jetpack_connection_url_failed">Сбой получения данных о подключении…</string>
     <string name="login_jetpack_verify_connection">Проверка подключения Jetpack…</string>
     <string name="login_jetpack_connection_verification_failed">Не удалось проверить подключение Jetpack. Повторите попытку.</string>
     <string name="login_simple_wpcom_site">Сейчас на сайте %1$s используется план WordPress.com, который не поддерживает установку плагинов. Перейдите на другой план, чтобы использовать WooCommerce.</string>
-    <string name="login_connect_jetpack_button">Подключите Jetpack к учётной записи</string>
     <string name="login_jetpack_not_connected">Похоже, что ваша учётная запись не подключена к Jetpack %1$s</string>
     <string name="card_reader_card_readers_header">УСТРОЙСТВА ЧТЕНИЯ КАРТ</string>
     <string name="card_reader_payment_options_header">СПОСОБЫ ОПЛАТЫ</string>
@@ -35,7 +93,7 @@ Language: ru
     <string name="orderlist_bottom_sheet_simple_payments_moved_button">Понятно!</string>
     <string name="orderlist_bottom_sheet_simple_payments_moved_description">Теперь можно быстро и просто получать доступ к очным платежам и другим функциям</string>
     <string name="orderlist_bottom_sheet_simple_payments_moved_title">Платежи из вкладки меню</string>
-    <string name="login_no_wpcom_account_found">Адрес эл. почты %1$s не используется с учётной записью WordPress.com.</string>
+    <string name="login_no_wpcom_account_found">Ваш адрес электронной почты не используется с учётной записью WordPress.com.</string>
     <string name="login_non_woo_stores_label">Другие сайты</string>
     <string name="login_with_store_address">Войти с помощью адреса магазина</string>
     <string name="more_menu_button_w___admin">WC Admin</string>
@@ -96,7 +154,7 @@ Language: ru
     <string name="support_system_status_report_share_label">Отправить отчёт о состоянии системы</string>
     <string name="support_system_status_report_copy_label">Копировать отчёт о состоянии системы в буфер обмена</string>
     <string name="card_reader_connect_keep_searching_button">Продолжить поиск</string>
-    <string name="card_reader_payment_description_v2">Оплата при получении, заказ № %s для %s blog_id %s.</string>
+    <string name="card_reader_payment_description_v2">Оплата при получении, заказ № %1$s для %2$s blog_id %3$s.</string>
     <string name="card_reader_manage_payment_provider">Изменение платёжного сервиса</string>
     <string name="orderdetail_refunded_line_with_info">Возвращенные средства: %1$s</string>
     <string name="orderdetail_payment_summary_onhold_plain">Ожидание платежа</string>
@@ -180,7 +238,7 @@ Language: ru
     <string name="shipping_label_install_wc_shipping_banner_button">Установить WooCommerce Shipping</string>
     <string name="shipping_label_install_wc_shipping_banner_description">Печатайте транспортные этикетки с телефона, используя WooCommerce Shipping.</string>
     <string name="shipping_label_install_wc_shipping_banner_title">Нужна транспортная этикетка?</string>
-    <string name="order_creation_change_product_quantity">Измените количество товара с %d на %d</string>
+    <string name="order_creation_change_product_quantity">Измените количество товара с %1$d на %2$d</string>
     <string name="variations_bulk_update_regular_price">Обновить обычную цену</string>
     <string name="variations_bulk_update_sale_price">Обновить акционную цену</string>
     <string name="card_reader_onboarding_stripe_unsupported_in_country_header">Расширение WooCommerce Stripe не поддерживается в %1$s</string>
@@ -313,8 +371,8 @@ Language: ru
     <string name="coupon_list_wip_message_enabled">Мы разработали функцию, которая позволяет просматривать и редактировать купоны на вашем устройстве.</string>
     <string name="coupon_list_wip_title">Просмотр и редактирование купонов</string>
     <string name="coupon_list_empty_heading">Купоны не найдены</string>
-    <string name="coupon_list_item_label_included_and_excluded">%1s без учёта %2s</string>
-    <string name="coupon_list_item_label_products_and_categories">%1s и %2s</string>
+    <string name="coupon_list_item_label_included_and_excluded">%1$s без учёта %2$s</string>
+    <string name="coupon_list_item_label_products_and_categories">%1$s и %2$s</string>
     <string name="coupon_list_item_label_everything">всё</string>
     <string name="coupon_list_item_label_expired">Просрочен</string>
     <string name="coupon_list_item_label_active">Активный</string>
@@ -1383,7 +1441,7 @@ Language: ru
     <string name="product_width">Ширина</string>
     <string name="product_length">Длина</string>
     <string name="order_refunds_refund_info_title">Продукты, по которым возвращены средства</string>
-    <string name="order_refunds_detail_item_description">%s (%s x %d)</string>
+    <string name="order_refunds_detail_item_description">%1$s (%2$s x %3$d)</string>
     <string name="order_refunds_method">%1$s с помощью %2$s</string>
     <string name="order_refunds_confirmation">Вы уверены, что хотите вернуть деньги? Это действие нельзя отменить.</string>
     <string name="orderdetail_refunded_products">Продукты, по которым возвращены средства</string>
@@ -1423,7 +1481,7 @@ Language: ru
     <string name="order_refunds_select_quantity">Выбрать количество</string>
     <string name="order_refunds_shipping_refund">Возврат средств за доставку</string>
     <string name="order_refunds_products_refund">Возврат средств за продукты</string>
-    <string name="order_refunds_item_description">%s x %s каждый</string>
+    <string name="order_refunds_item_description">%1$s x %2$s каждый</string>
     <string name="order_refunds_items_selected">Выбрано элементов: %d</string>
     <string name="order_refunds_items_select_none">Ничего не выбирать</string>
     <string name="order_refunds_items_select_all">Выбрать все</string>
@@ -1434,7 +1492,7 @@ Language: ru
     <string name="image_source_device_chooser">Выбрать с устройства</string>
     <string name="image_source_title">Выберите способ загрузки</string>
     <string name="product_images_upload_channel_title">Загрузки</string>
-    <string name="product_images_uploading_multi_notif_message">Загрузка изображений…%d из %d</string>
+    <string name="product_images_uploading_multi_notif_message">Загрузка изображений…%1$d из %2$d</string>
     <string name="product_images_uploading_single_notif_message">Загрузка изображения…</string>
     <string name="product_images_camera_error">Нет доступа к камере</string>
     <string name="product_image_remove_confirmation">Вы уверены, что хотите удалить это изображение?</string>
@@ -1826,6 +1884,7 @@ Language: ru
     <string name="orderdetail_track_shipment">Отследить посылку</string>
     <string name="login_email_help_desc">Чтобы узнать, какой адрес эл. почты вы использовали для подключения к WordPress.com, в режиме управления сайтом в %1$sконсоли Jetpack%2$s перейдите в %3$sПодключения &gt; Подключение учетных записей%4$s</string>
     <string name="login_email_help_title">Какой адрес эл. почты я использую для входа?</string>
+    <string name="login_need_help_finding_email">Не можете вспомнить адрес электронной почты?</string>
     <string name="login_jetpack_what_is_description">Jetpack — это бесплатный плагин WordPress с дополнительными инструментами, которые обеспечивают удобное управление магазином с мобильных устройств и доступ к расширенным возможностям, например push-уведомлениям и статистике.</string>
     <string name="login_jetpack_what_is">Что такое Jetpack?</string>
     <string name="login_view_connected_stores">Открыть список подключенных магазинов</string>
@@ -2155,7 +2214,7 @@ Language: ru
     <string name="login_nostores_content_description">Нет магазинов WooCommerce</string>
     <string name="login_avatar_content_description">Фотография в вашем профиле</string>
     <string name="login_connected_store">Подключенный магазин</string>
-    <string name="login_configure_link">Ознакомьтесь с %sинструкциями по настройке%s.</string>
+    <string name="login_configure_link">Ознакомьтесь с %1$sинструкциями по настройке%2$s.</string>
     <string name="login_jetpack_required">Для подключения к вашему магазину этому приложению требуется Jetpack.</string>
     <string name="at_username">\@%s</string>
     <string name="enter_site_address">Введите адрес магазина WooCommerce, к которому требуется подключиться.</string>
@@ -2204,7 +2263,8 @@ Language: ru
     <string name="all">Все</string>
     <string name="notification_channel_general_title">Общее</string>
     <string name="app_name">WooCommerce</string>
-    <string-array name="date_range_selectors">
+    <string-array name="analytics_date_range_selectors">
+        <item>\@string/date_timeframe_custom</item>
         <item>\@string/date_timeframe_today</item>
         <item>\@string/date_timeframe_yesterday</item>
         <item>\@string/date_timeframe_last_week</item>

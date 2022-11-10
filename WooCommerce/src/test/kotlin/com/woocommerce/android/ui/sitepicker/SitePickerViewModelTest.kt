@@ -8,21 +8,21 @@ import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.analytics.ExperimentTracker
-import com.woocommerce.android.experiment.JetpackTimeoutExperiment
 import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.initSavedStateHandle
-import com.woocommerce.android.support.HelpActivity
+import com.woocommerce.android.support.help.HelpActivity
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.common.UserEligibilityFetcher
 import com.woocommerce.android.ui.login.AccountRepository
 import com.woocommerce.android.ui.login.UnifiedLoginTracker
+import com.woocommerce.android.ui.login.accountmismatch.AccountMismatchErrorViewModel.AccountMismatchPrimaryButton.CONNECT_JETPACK
 import com.woocommerce.android.ui.sitepicker.SitePickerViewModel.SitePickerEvent
 import com.woocommerce.android.ui.sitepicker.SitePickerViewModel.SitePickerEvent.NavigateToAccountMismatchScreen
+import com.woocommerce.android.ui.sitepicker.SitePickerViewModel.SitePickerEvent.NavigateToAddStoreEvent
 import com.woocommerce.android.ui.sitepicker.SitePickerViewModel.SitePickerEvent.NavigateToEmailHelpDialogEvent
 import com.woocommerce.android.ui.sitepicker.SitePickerViewModel.SitePickerEvent.NavigateToHelpFragmentEvent
 import com.woocommerce.android.ui.sitepicker.SitePickerViewModel.SitePickerEvent.NavigateToMainActivityEvent
 import com.woocommerce.android.ui.sitepicker.SitePickerViewModel.SitePickerEvent.NavigateToNewToWooEvent
-import com.woocommerce.android.ui.sitepicker.SitePickerViewModel.SitePickerEvent.NavigateToSiteAddressEvent
 import com.woocommerce.android.ui.sitepicker.SitePickerViewModel.SitePickerEvent.ShowWooUpgradeDialogEvent
 import com.woocommerce.android.ui.sitepicker.SitePickerViewModel.SitePickerState.NoStoreState
 import com.woocommerce.android.ui.sitepicker.SitePickerViewModel.SitePickerState.StoreListState
@@ -56,6 +56,7 @@ import org.wordpress.android.fluxc.network.BaseRequest
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooError
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooErrorType
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooResult
+import org.wordpress.android.fluxc.store.SiteStore.ConnectSiteInfoPayload
 
 @ExperimentalCoroutinesApi
 class SitePickerViewModelTest : BaseUnitTest() {
@@ -75,7 +76,6 @@ class SitePickerViewModelTest : BaseUnitTest() {
     private val accountRepository: AccountRepository = mock()
     private val unifiedLoginTracker: UnifiedLoginTracker = mock()
     private val experimentTracker: ExperimentTracker = mock()
-    private val jetpackTimeoutExperiment: JetpackTimeoutExperiment = mock()
 
     private lateinit var viewModel: SitePickerViewModel
     private lateinit var savedState: SavedStateHandle
@@ -92,7 +92,6 @@ class SitePickerViewModelTest : BaseUnitTest() {
             userEligibilityFetcher = userEligibilityFetcher,
             unifiedLoginTracker = unifiedLoginTracker,
             experimentTracker = experimentTracker,
-            jetpackTimeoutExperiment = jetpackTimeoutExperiment
         )
     }
 
@@ -106,7 +105,7 @@ class SitePickerViewModelTest : BaseUnitTest() {
     }
 
     private suspend fun givenThatSiteVerificationIsCompleted() {
-        whenever(repository.verifySiteWooAPIVersion(any(), any())).thenReturn(
+        whenever(repository.verifySiteWooAPIVersion(any())).thenReturn(
             WooResult(SitePickerTestUtils.apiVerificationResponse)
         )
         whenever(userEligibilityFetcher.fetchUserInfo()).thenReturn(SitePickerTestUtils.userModel)
@@ -317,6 +316,15 @@ class SitePickerViewModelTest : BaseUnitTest() {
     fun `given the site address entered during login does not match the user account, account error is displayed`() =
         testBlocking {
             givenThatUserLoggedInFromEnteringSiteAddress(null)
+            whenever(repository.fetchSiteInfo(any())).thenReturn(
+                Result.success(
+                    ConnectSiteInfoPayload(
+                        url = SitePickerTestUtils.loginSiteAddress,
+                        isWordPress = true,
+                        isWPCom = false
+                    )
+                )
+            )
             whenSitesAreFetched()
             whenViewModelIsCreated()
 
@@ -331,7 +339,7 @@ class SitePickerViewModelTest : BaseUnitTest() {
                 )
             )
 
-            assertThat(viewModel.event.value).isEqualTo(NavigateToAccountMismatchScreen(true))
+            assertThat(viewModel.event.value).isEqualTo(NavigateToAccountMismatchScreen(CONNECT_JETPACK, url, true))
         }
 
     @Test
@@ -375,7 +383,6 @@ class SitePickerViewModelTest : BaseUnitTest() {
 
     @Test
     fun `given that a site is selected, when verification is initiated, then is successful`() = testBlocking {
-        whenever(jetpackTimeoutExperiment.run()).thenReturn(false)
         givenThatSiteVerificationIsCompleted()
         whenSitesAreFetched()
         whenViewModelIsCreated()
@@ -395,7 +402,7 @@ class SitePickerViewModelTest : BaseUnitTest() {
         viewModel.onSiteSelected(selectedSiteModel)
         viewModel.onContinueButtonClick()
 
-        verify(repository, times(1)).verifySiteWooAPIVersion(any(), any())
+        verify(repository, times(1)).verifySiteWooAPIVersion(any())
         verify(selectedSite, times(1)).set(any())
         verify(userEligibilityFetcher, times(1)).fetchUserInfo()
         verify(userEligibilityFetcher, times(1)).updateUserInfo(any())
@@ -408,8 +415,7 @@ class SitePickerViewModelTest : BaseUnitTest() {
     @Test
     fun `given that a site is selected, when verification is initiated, but then returns upgrade error`() =
         testBlocking {
-            whenever(jetpackTimeoutExperiment.run()).thenReturn(false)
-            whenever(repository.verifySiteWooAPIVersion(any(), any())).thenReturn(
+            whenever(repository.verifySiteWooAPIVersion(any())).thenReturn(
                 WooResult(SitePickerTestUtils.errorApiVerificationResponse)
             )
             whenSitesAreFetched()
@@ -430,7 +436,7 @@ class SitePickerViewModelTest : BaseUnitTest() {
             viewModel.onSiteSelected(selectedSiteModel)
             viewModel.onContinueButtonClick()
 
-            verify(repository, times(1)).verifySiteWooAPIVersion(any(), any())
+            verify(repository, times(1)).verifySiteWooAPIVersion(any())
             verify(selectedSite, times(0)).set(any())
             verify(userEligibilityFetcher, times(0)).fetchUserInfo()
             verify(userEligibilityFetcher, times(0)).updateUserInfo(any())
@@ -498,22 +504,22 @@ class SitePickerViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `given there are no sites, when enter site address is tapped, then navigate to site discovery screen`() =
+    fun `given there are no sites, when add a store is tapped, then navigate to site discovery screen`() =
         testBlocking {
             givenTheScreenIsFromLogin(true)
             whenViewModelIsCreated()
 
-            var view: NavigateToSiteAddressEvent? = null
+            var view: NavigateToAddStoreEvent? = null
             viewModel.event.observeForever {
-                if (it is NavigateToSiteAddressEvent) view = it
+                if (it is NavigateToAddStoreEvent) view = it
             }
 
-            viewModel.onEnterSiteAddressClick()
+            viewModel.onAddStoreClick()
 
             verify(analyticsTrackerWrapper, times(1)).track(
-                AnalyticsEvent.SITE_PICKER_ENTER_SITE_ADDRESS_TAPPED
+                AnalyticsEvent.SITE_PICKER_ADD_A_STORE_TAPPED
             )
-            assertThat(view).isEqualTo(NavigateToSiteAddressEvent)
+            assertThat(view).isEqualTo(NavigateToAddStoreEvent(source = "login"))
         }
 
     @Test
@@ -663,8 +669,7 @@ class SitePickerViewModelTest : BaseUnitTest() {
     @Test
     fun `given site verification returns timeout error, when verifying site, timeout dialog is displayed`() =
         testBlocking {
-            whenever(jetpackTimeoutExperiment.run()).thenReturn(false)
-            whenever(repository.verifySiteWooAPIVersion(any(), any())).thenReturn(
+            whenever(repository.verifySiteWooAPIVersion(any())).thenReturn(
                 WooResult(SitePickerTestUtils.timeoutErrorApiVerificationResponse)
             )
             whenSitesAreFetched()
@@ -685,7 +690,7 @@ class SitePickerViewModelTest : BaseUnitTest() {
             viewModel.onSiteSelected(selectedSiteModel)
             viewModel.onContinueButtonClick()
 
-            verify(repository, times(1)).verifySiteWooAPIVersion(any(), any())
+            verify(repository, times(1)).verifySiteWooAPIVersion(any())
             assertThat(view).isInstanceOf(ShowDialog::class.java)
             assertThat(isProgressShown).containsExactly(false, true, false)
         }

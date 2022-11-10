@@ -1,16 +1,74 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2022-09-13 16:54:04+0000
+Translation-Revision-Date: 2022-11-03 16:54:04+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: nl
 -->
 <resources>
+    <string name="create_new_store">Maak een nieuwe winkel</string>
+    <string name="analytics_products_list_item_description">Netto verkoop: %@ %1$s</string>
+    <string name="analytics_products_list_header_subtitle">Verkochte artikelen</string>
+    <string name="analytics_products_list_header_title">Producten</string>
+    <string name="analytics_products_card_title">Producten</string>
+    <string name="analytics_products_list_items_sold">Verkochte artikelen</string>
+    <string name="analytics_avg_orders_title">Gemiddelde bestellingswaarde</string>
+    <string name="analytics_total_orders_title">Totaalaantal bestellingen</string>
+    <string name="analytics_orders_card_title">Bestellingen</string>
+    <string name="analytics_net_sales_title">Netto omzet</string>
+    <string name="analytics_total_sales_title">Totale verkopen</string>
+    <string name="analytics_products_no_data">Geen producten voor deze periode</string>
+    <string name="analytics_orders_no_data">Geen bestellingen deze periode</string>
+    <string name="analytics_revenue_no_data">Geen omzet deze periode</string>
+    <string name="analytics_revenue_card_title">Inkomsten</string>
+    <string name="analytics_see_report_button_content_description">Meer rapportdetails inzien</string>
+    <string name="analytics_see_report_button_text">Rapport inzien</string>
+    <string name="analytics_date_range_custom">%1$s - %2$s</string>
+    <string name="analytics_see_more">Meer zien</string>
+    <string name="signup_api_generic_error">Sorry, we konden met de opgegeven gegevens geen account aanmaken. Probeer het met een ander e-mailadres.</string>
+    <string name="signup_password_not_secure_enough">Je wachtwoord voldoet niet aan onze veiligheidsrichtlijnen. Probeer een complexer wachtwoord.</string>
+    <string name="signup_password_too_short">Je wachtwoord is te kort. Kies een wachtwoord met minstens zes tekens.</string>
+    <string name="signup_email_invalid_input">Voer een geldig e-mailadres in.</string>
+    <string name="signup_email_exist_input">Er bestaat al een account met dit e-mailadres.</string>
+    <string name="signup_already_registered">Laten we eerst je account aanmaken. Ben je al geregistreerd? &lt;a href=\'login\'&gt;&lt;u&gt;Log in&lt;/u&gt;&lt;/a&gt;</string>
+    <string name="login_create_an_account">Een account maken</string>
+    <string name="simplified_login_enter_email_address">Voer je e-mailadres in om te starten</string>
+    <string name="login_try_another_email">Probeer een ander adres</string>
+    <string name="date_timeframe_custom_date_range_title">Aangepast datumbereik</string>
+    <string name="date_timeframe_custom">Aangepast</string>
+    <string name="what_is_wordpress_link">Wat is WordPress.com?</string>
+    <string name="signup_creating_account_loading_message">Account wordt aangemaakt</string>
+    <string name="signup_terms_of_service">Door verder te gaan, ga je akkoord met onze &lt;u&gt;Servicevoorwaarden&lt;/u&gt;</string>
+    <string name="signup_password_hint">Kies een wachtwoord</string>
+    <string name="signup_email_address_hint">Je e-mailadres</string>
+    <string name="signup_get_started_label">Aan de slag \nin minuten</string>
+    <string name="signup_get_started_button">Aan de slag</string>
+    <string name="login_jetpack_connection_consent">Door op de knop Jetpack verbinden te klikken, ga je akkoord met onze &lt;a href=\'terms\'&gt;Servicevoorwaarden&lt;/a&gt; en met het &lt;a href=\'sync\'&gt;delen van informatie&lt;/a&gt; met WordPress.com.</string>
+    <string name="enable_card_reader">Gesimuleerde kaartlezer inschakelen</string>
+    <string name="login_account_mismatch_connect_wpcom_dialog_message">Neem contact op met de eigenaar van de site voor een uitnodiging om als winkelmanager of beheerder de app te gebruiken.</string>
+    <string name="login_account_mismatch_connect_wpcom_dialog_title">Verbinden met een WordPress.com site</string>
+    <string name="login_account_mismatch_connect_wpcom">Koppel je site</string>
+    <string name="login_account_mismatch_connect_jetpack">Koppel Jetpack aan je account</string>
+    <string name="qr_code_login_edit_camera_permission">Machtigingen bewerken</string>
+    <string name="qr_code_login_camera_permission_denied_message">Je moet ons toegang tot je camera geven om deze functie te kunnen gebruiken.</string>
+    <string name="qr_code_login_camera_permission_denied_title">Toegang tot camera is vereist</string>
+    <string name="qr_code_login_scanner_title">Barcodescanner van camera</string>
+    <string name="dev_options">Ontwikkelaarsopties</string>
+    <string name="login_2fa_not_supported_self_hosted_site">2FA wordt niet ondersteund voor zelf-gehoste sites. Gebruik een app-wachtwoord.</string>
+    <string name="login_with_qr_code">Scan de QR-code om in te loggen</string>
+    <string name="show_password_content_description">Wachtwoord weergeven</string>
+    <string name="hide_password_content_description">Wachtwoord verbergen</string>
+    <string name="stats_widget_last_updated_message">Vanaf %1$s</string>
+    <string name="stats_widget_error_no_data">Kan gegevens niet laden</string>
+    <string name="stats_today_widget_description">WooCommerce-statistieken van vandaag</string>
+    <string name="stats_today_widget_configure_title">Winkelstatistieken van vandaag</string>
+    <string name="stats_widget_availability_message">Winkelanalyses zijn niet beschikbaar! Upgrade naar de nieuwste versie van WooCommerce om je winkelanalyses te zien.</string>
+    <string name="stats_widget_offline_error">Je netwerk is niet beschikbaar.\nControleer je data- of wifi-verbinding.</string>
+    <string name="stats_widget_log_in_message">Log in op de WooCommerce-app</string>
     <string name="login_jetpack_connection_url_failed">Ophalen koppelingsgegevens mislukt…</string>
     <string name="login_jetpack_verify_connection">Ophalen koppelingsgegevens mislukt…</string>
     <string name="login_jetpack_connection_verification_failed">Kan je Jetpack-verbinding niet verifiëren. Probeer het nog eens.</string>
     <string name="login_simple_wpcom_site">De site %1$s maakt momenteel gebruik van een WordPress.com-abonnement dat de installatie van plugins niet ondersteunt. Upgrade je abonnement om WooCommerce te kunnen gebruiken</string>
-    <string name="login_connect_jetpack_button">Koppel Jetpack aan je account</string>
     <string name="login_jetpack_not_connected">Het lijkt erop dat je account niet is verbonden met de Jetpack van %1$s</string>
     <string name="card_reader_card_readers_header">KAARTLEZERS</string>
     <string name="card_reader_payment_options_header">BETALINGSOPTIES</string>
@@ -35,7 +93,7 @@ Language: nl
     <string name="orderlist_bottom_sheet_simple_payments_moved_button">Begrepen!</string>
     <string name="orderlist_bottom_sheet_simple_payments_moved_description">Nu heb je snel toegang tot Fysieke betalingen en andere functies</string>
     <string name="orderlist_bottom_sheet_simple_payments_moved_title">Betalingen van het tabblad Menu</string>
-    <string name="login_no_wpcom_account_found">De e-mail %1$s wordt niet gebruikt met een WordPress.com-account.</string>
+    <string name="login_no_wpcom_account_found">Je e-mailadres wordt niet gebruikt met een WordPress.com-account.</string>
     <string name="login_non_woo_stores_label">Andere sites</string>
     <string name="login_with_store_address">Log in met je winkeladres</string>
     <string name="more_menu_button_w___admin">WC Admin</string>
@@ -96,7 +154,7 @@ Language: nl
     <string name="support_system_status_report_share_label">Systeemstatusrapport delen</string>
     <string name="support_system_status_report_copy_label">Systeemstatusrapport kopiëren naar klembord</string>
     <string name="card_reader_connect_keep_searching_button">Verder zoeken</string>
-    <string name="card_reader_payment_description_v2">Fysieke betaling voor bestelnr. %s voor %s blog_id %s.</string>
+    <string name="card_reader_payment_description_v2">Fysieke betaling voor bestelnr. %1$s voor %2$s blog_id %3$s.</string>
     <string name="card_reader_manage_payment_provider">Betaalverwerker wijzigen</string>
     <string name="orderdetail_refunded_line_with_info">Terugbetaald: %1$s</string>
     <string name="orderdetail_payment_summary_onhold_plain">Openstaande betaling</string>
@@ -155,7 +213,7 @@ Language: nl
     <string name="variations_bulk_update_regular_prices_success">Reguliere prijzen bijgewerkt.</string>
     <string name="variations_bulk_update_error">Er is iets fout gegaan. Probeer het nog eens.</string>
     <string name="variations_bulk_update_current_prices_mixed">Huidige prijzen verschillen.</string>
-    <string name="variations_bulk_update_current_price">Huidige prijs is %@. %s</string>
+    <string name="variations_bulk_update_current_price">Huidige prijs is %s.</string>
     <string name="variations_bulk_update_price_info">De prijs wordt bijgewerkt voor %d variaties.</string>
     <string name="variations_bulk_update_dialog_price_mixed">Gecombineerd</string>
     <string name="variations_bulk_update_dialog_price_none">Geen</string>
@@ -180,7 +238,7 @@ Language: nl
     <string name="shipping_label_install_wc_shipping_banner_button">Aan de slag met WooCommerce Shipping</string>
     <string name="shipping_label_install_wc_shipping_banner_description">Druk labels af vanaf je telefoon met WooCommerce Shipping.</string>
     <string name="shipping_label_install_wc_shipping_banner_title">Verzendlabel nodig?</string>
-    <string name="order_creation_change_product_quantity">Verander de producthoeveelheid van %d naar %d</string>
+    <string name="order_creation_change_product_quantity">Verander de producthoeveelheid van %1$d naar %2$d</string>
     <string name="variations_bulk_update_regular_price">Reguliere prijs bijwerken</string>
     <string name="variations_bulk_update_sale_price">Verkoopprijs bijgewerkt</string>
     <string name="card_reader_onboarding_stripe_unsupported_in_country_header">Er is geen ondersteuning voor de WooCommerce Stripe-extensie in %1$s</string>
@@ -313,8 +371,8 @@ Language: nl
     <string name="coupon_list_wip_message_enabled">We hebben hard gewerkt zodat jij coupons vanuit je apparaat kunt bekijken en bewerken!</string>
     <string name="coupon_list_wip_title">Coupons bekijken en bewerken</string>
     <string name="coupon_list_empty_heading">Geen coupons gevonden</string>
-    <string name="coupon_list_item_label_included_and_excluded">%1s excl. %2s</string>
-    <string name="coupon_list_item_label_products_and_categories">%1s en %2s</string>
+    <string name="coupon_list_item_label_included_and_excluded">%1$s excl. %2$s</string>
+    <string name="coupon_list_item_label_products_and_categories">%1$s en %2$s</string>
     <string name="coupon_list_item_label_everything">alles</string>
     <string name="coupon_list_item_label_expired">Verlopen</string>
     <string name="coupon_list_item_label_active">Actief</string>
@@ -1383,7 +1441,7 @@ Language: nl
     <string name="product_width">Breedte</string>
     <string name="product_length">Lengte</string>
     <string name="order_refunds_refund_info_title">Gerestitueerde producten</string>
-    <string name="order_refunds_detail_item_description">%s (%s x %d)</string>
+    <string name="order_refunds_detail_item_description">%1$s (%2$s x %3$d)</string>
     <string name="order_refunds_method">%1$s via %2$s</string>
     <string name="order_refunds_confirmation">Weet je zeker dat je restitutie wilt aanvragen? Dit kan niet ongedaan worden gemaakt.</string>
     <string name="orderdetail_refunded_products">Gerestitueerde producten</string>
@@ -1423,7 +1481,7 @@ Language: nl
     <string name="order_refunds_select_quantity">Selecteer hoeveelheid</string>
     <string name="order_refunds_shipping_refund">Verzendkostenvergoeding</string>
     <string name="order_refunds_products_refund">Productvergoeding</string>
-    <string name="order_refunds_item_description">%s x %s per stuk</string>
+    <string name="order_refunds_item_description">%1$s x %2$s per stuk</string>
     <string name="order_refunds_items_selected">%d items geselecteerd</string>
     <string name="order_refunds_items_select_none">Niets selecteren</string>
     <string name="order_refunds_items_select_all">Alles selecteren</string>
@@ -1434,7 +1492,7 @@ Language: nl
     <string name="image_source_device_chooser">Kiezen op apparaat</string>
     <string name="image_source_title">Selecteer een uploadmethode</string>
     <string name="product_images_upload_channel_title">Uploads</string>
-    <string name="product_images_uploading_multi_notif_message">Bezig met afbeeldingen uploaden…%d van %d</string>
+    <string name="product_images_uploading_multi_notif_message">Bezig met afbeeldingen uploaden…%1$d van %2$d</string>
     <string name="product_images_uploading_single_notif_message">Bezig met afbeeldingen uploaden…</string>
     <string name="product_images_camera_error">Geen toegang tot camera</string>
     <string name="product_image_remove_confirmation">Weet je zeker dat je deze afbeelding wilt verwijderen?</string>
@@ -1826,6 +1884,7 @@ Language: nl
     <string name="orderdetail_track_shipment">Verzending tracken</string>
     <string name="login_email_help_desc">In je sitebeheer kun je de e-mail vinden die je gebruikt hebt om verbinding te maken met WordPress.com via het %1$sJetpack-dashboard%2$s onder %3$sVerbindingen &gt; Accountverbinding%4$s</string>
     <string name="login_email_help_title">Welke e-mail moet ik gebruiken om me aan te melden?</string>
+    <string name="login_need_help_finding_email">Heb je hulp nodig bij het vinden van de vereiste e-mail?</string>
     <string name="login_jetpack_what_is_description">Jetpack is een gratis WordPress-plugin die aan je winkel wordt gekoppeld en je de tools voor de beste mobiele ervaring biedt, waaronder pushmeldingen en statistieken</string>
     <string name="login_jetpack_what_is">Wat is Jetpack?</string>
     <string name="login_view_connected_stores">Aangesloten winkels bekijken</string>
@@ -2155,7 +2214,7 @@ Language: nl
     <string name="login_nostores_content_description">Geen WooCommerce-winkels</string>
     <string name="login_avatar_content_description">Je profielfoto</string>
     <string name="login_connected_store">Gekoppelde winkel</string>
-    <string name="login_configure_link">Lees de %sconfiguratie-instructies%s.</string>
+    <string name="login_configure_link">Lees de %1$sconfiguratie-instructies%2$s.</string>
     <string name="login_jetpack_required">Om deze app te gebruiken, moet Jetpack aan je winkel zijn gekoppeld.</string>
     <string name="at_username">\@%s</string>
     <string name="enter_site_address">Voer het adres van de WooCommerce-winkel die je wilt koppelen in.</string>
@@ -2204,7 +2263,8 @@ Language: nl
     <string name="all">Alles</string>
     <string name="notification_channel_general_title">Algemeen</string>
     <string name="app_name">WooCommerce</string>
-    <string-array name="date_range_selectors">
+    <string-array name="analytics_date_range_selectors">
+        <item>\@string/date_timeframe_custom</item>
         <item>\@string/date_timeframe_today</item>
         <item>\@string/date_timeframe_yesterday</item>
         <item>\@string/date_timeframe_last_week</item>

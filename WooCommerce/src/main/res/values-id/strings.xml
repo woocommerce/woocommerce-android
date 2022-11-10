@@ -1,16 +1,74 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2022-09-13 10:54:04+0000
+Translation-Revision-Date: 2022-11-02 10:54:04+0000
 Plural-Forms: nplurals=2; plural=n > 1;
 Generator: GlotPress/2.4.0-alpha
 Language: id
 -->
 <resources>
+    <string name="create_new_store">Buat toko baru</string>
+    <string name="analytics_products_list_item_description">Penjualan bersih: %1$s</string>
+    <string name="analytics_products_list_header_subtitle">Item terjual</string>
+    <string name="analytics_products_list_header_title">Produk</string>
+    <string name="analytics_products_card_title">Produk</string>
+    <string name="analytics_products_list_items_sold">Item terjual</string>
+    <string name="analytics_avg_orders_title">Nilai Pesanan Rata-Rata</string>
+    <string name="analytics_total_orders_title">Total Pesanan</string>
+    <string name="analytics_orders_card_title">Pesanan</string>
+    <string name="analytics_net_sales_title">Penjualan Bersih</string>
+    <string name="analytics_total_sales_title">Total penjualan</string>
+    <string name="analytics_products_no_data">Tidak ada produk dalam periode ini</string>
+    <string name="analytics_orders_no_data">Tidak ada pesanan dalam periode ini</string>
+    <string name="analytics_revenue_no_data">Tidak ada pendapatan dalam periode ini</string>
+    <string name="analytics_revenue_card_title">Pendapatan</string>
+    <string name="analytics_see_report_button_content_description">Lihat perincian laporan selengkapnya</string>
+    <string name="analytics_see_report_button_text">Lihat laporan</string>
+    <string name="analytics_date_range_custom">%1$s - %2$s</string>
+    <string name="analytics_see_more">Lihat Selengkapnya</string>
+    <string name="signup_api_generic_error">Maaf, kami tidak dapat membuat akun dengan kredensial yang diberikan. Coba alamat email lain.</string>
+    <string name="signup_password_not_secure_enough">Kata sandi Anda tidak memenuhi pedoman keamanan kami. Coba gunakan kata sandi yang lebih rumit.</string>
+    <string name="signup_password_too_short">Kata sandi Anda terlalu pendek. Gunakan kata sandi yang terdiri dari sedikitnya 6 karakter.</string>
+    <string name="signup_email_invalid_input">Masukkan alamat email yang valid.</string>
+    <string name="signup_email_exist_input">Akun dengan email ini sudah ada.</string>
+    <string name="signup_already_registered">Pertama-tama, mari buat akun Anda. Telah terdaftar? &lt;a href=\'login\'&gt;&lt;u&gt;Login&lt;/u&gt;&lt;/a&gt;</string>
+    <string name="login_create_an_account">Buat Akun</string>
+    <string name="simplified_login_enter_email_address">Masukkan alamat email Anda untuk memulai</string>
+    <string name="login_try_another_email">Coba Alamat Lainnya</string>
+    <string name="date_timeframe_custom_date_range_title">Rentang tanggal kustom</string>
+    <string name="date_timeframe_custom">Kustom</string>
+    <string name="what_is_wordpress_link">Apa itu WordPress.com?</string>
+    <string name="signup_creating_account_loading_message">Membuat akun baru</string>
+    <string name="signup_terms_of_service">Dengan melanjutkan, Anda menyetujui &lt;u&gt;Ketentuan Layanan kami.&lt;/u&gt;</string>
+    <string name="signup_password_hint">Pilih kata sandi</string>
+    <string name="signup_email_address_hint">Alamat email Anda</string>
+    <string name="signup_get_started_label">Memulai \ndalam hitungan menit</string>
+    <string name="signup_get_started_button">Mulai</string>
+    <string name="login_jetpack_connection_consent">Dengan mengetuk tombol Hubungkan Jetpack, Anda menyetujui &lt;a href=\'terms\'&gt;Ketentuan Layanan&lt;/a&gt; kami dan bersedia &lt;a href=\'sync\'&gt;membagikan detail&lt;/a&gt; kepada WordPress.com.</string>
+    <string name="enable_card_reader">Aktifkan Pembaca Kartu Simulasi</string>
+    <string name="login_account_mismatch_connect_wpcom_dialog_message">Hubungi pemilik situs untuk menerima undangan ke situs sebagai manajer toko atau administrator untuk menggunakan aplikasi.</string>
+    <string name="login_account_mismatch_connect_wpcom_dialog_title">Menghubungkan ke situs WordPress.com</string>
+    <string name="login_account_mismatch_connect_wpcom">Hubungkan ke situs</string>
+    <string name="login_account_mismatch_connect_jetpack">Hubungkan Jetpack ke akun Anda</string>
+    <string name="qr_code_login_edit_camera_permission">Edit izin</string>
+    <string name="qr_code_login_camera_permission_denied_message">Untuk menggunakan fitur ini, berikan izin untuk menggunakan kamera Anda.</string>
+    <string name="qr_code_login_camera_permission_denied_title">Akses Kamera Diperlukan</string>
+    <string name="qr_code_login_scanner_title">Pemindai Barcode Kamera</string>
+    <string name="dev_options">Pilihan Pengembang</string>
+    <string name="login_2fa_not_supported_self_hosted_site">2FA tidak didukung untuk situs yang dihosting sendiri. Gunakan kata sandi aplikasi.</string>
+    <string name="login_with_qr_code">Pindai kode QR untuk login</string>
+    <string name="show_password_content_description">Tunjukkan kata sandi</string>
+    <string name="hide_password_content_description">Sembunyikan password</string>
+    <string name="stats_widget_last_updated_message">Sejak %1$s</string>
+    <string name="stats_widget_error_no_data">Tidak dapat memuat data</string>
+    <string name="stats_today_widget_description">Statistik WooCommerce Hari Ini</string>
+    <string name="stats_today_widget_configure_title">Statistik toko hari ini</string>
+    <string name="stats_widget_availability_message">Analitik toko tidak tersedia! Harap upgrade ke versi WooCommerce terbaru untuk melihat analitik toko Anda.</string>
+    <string name="stats_widget_offline_error">Jaringan Anda tidak tersedia.\nPeriksa koneksi data atau Wi-Fi Anda.</string>
+    <string name="stats_widget_log_in_message">Silakan login ke aplikasi WooCommerce</string>
     <string name="login_jetpack_connection_url_failed">Gagal mengambil data koneksi…</string>
     <string name="login_jetpack_verify_connection">Memverifikasi koneksi Jetpack…</string>
     <string name="login_jetpack_connection_verification_failed">Tidak dapat memverifikasi koneksi Jetpack Anda. Harap coba lagi.</string>
     <string name="login_simple_wpcom_site">Situs %1$s saat ini menggunakan paket WordPress.com yang tidak mendukung instalasi plugin. Upgrade paket Anda untuk menggunakan WooCommerce.</string>
-    <string name="login_connect_jetpack_button">Hubungkan Jetpack ke akun Anda</string>
     <string name="login_jetpack_not_connected">Sepertinya akun Anda tidak terhubung ke Jetpack %1$s</string>
     <string name="card_reader_card_readers_header">PEMBACA KARTU</string>
     <string name="card_reader_payment_options_header">OPSI PEMBAYARAN</string>
@@ -35,7 +93,7 @@ Language: id
     <string name="orderlist_bottom_sheet_simple_payments_moved_button">Mantap!</string>
     <string name="orderlist_bottom_sheet_simple_payments_moved_description">Sekarang, Anda dapat mengakses Pembayaran Langsung dan fitur-fitur lain dengan cepat dan mudah</string>
     <string name="orderlist_bottom_sheet_simple_payments_moved_title">Pembayaran dari tab Menu</string>
-    <string name="login_no_wpcom_account_found">Email %1$s tidak digunakan dengan akun WordPress.com.</string>
+    <string name="login_no_wpcom_account_found">Email Anda tidak digunakan dengan akun WordPress.com.</string>
     <string name="login_non_woo_stores_label">Situs lain</string>
     <string name="login_with_store_address">Login dengan alamat toko Anda</string>
     <string name="more_menu_button_w___admin">Admin WC</string>
@@ -96,7 +154,7 @@ Language: id
     <string name="support_system_status_report_share_label">Bagikan laporan status sistem</string>
     <string name="support_system_status_report_copy_label">Salin laporan status sistem ke clipboard</string>
     <string name="card_reader_connect_keep_searching_button">Terus Mencari</string>
-    <string name="card_reader_payment_description_v2">Pembayaran Langsung untuk Pesanan #%s di %s blog_id %s.</string>
+    <string name="card_reader_payment_description_v2">Pembayaran Langsung untuk Pesanan #%1$s di %2$s blog_id %3$s.</string>
     <string name="card_reader_manage_payment_provider">Ubah Penyedia Pembayaran</string>
     <string name="orderdetail_refunded_line_with_info">Dana dikembalikan: %1$s</string>
     <string name="orderdetail_payment_summary_onhold_plain">Menunggu pembayaran</string>
@@ -180,7 +238,7 @@ Language: id
     <string name="shipping_label_install_wc_shipping_banner_button">Dapatkan WooCommerce Shipping</string>
     <string name="shipping_label_install_wc_shipping_banner_description">Cetak label dari ponsel dengan WooCommerce Shipping.</string>
     <string name="shipping_label_install_wc_shipping_banner_title">Perlu label pengiriman?</string>
-    <string name="order_creation_change_product_quantity">Ubah jumlah produk dari %d menjadi %d</string>
+    <string name="order_creation_change_product_quantity">Ubah jumlah produk dari %1$d menjadi %2$d</string>
     <string name="variations_bulk_update_regular_price">Perbarui Harga Normal</string>
     <string name="variations_bulk_update_sale_price">Perbarui Harga Obral</string>
     <string name="card_reader_onboarding_stripe_unsupported_in_country_header">Kami tidak mendukung ekstensi WooCommerce Stripe di %1$s</string>
@@ -313,8 +371,8 @@ Language: id
     <string name="coupon_list_wip_message_enabled">Kini Anda dapat melihat dan mengedit kupon dengan perangkat Anda!</string>
     <string name="coupon_list_wip_title">Lihat dan edit kupon</string>
     <string name="coupon_list_empty_heading">Tidak ada kupon ditemukan</string>
-    <string name="coupon_list_item_label_included_and_excluded">%1s excl. %2s</string>
-    <string name="coupon_list_item_label_products_and_categories">%1s dan %2s</string>
+    <string name="coupon_list_item_label_included_and_excluded">%1$s excl. %2$s</string>
+    <string name="coupon_list_item_label_products_and_categories">%1$s dan %2$s</string>
     <string name="coupon_list_item_label_everything">semua</string>
     <string name="coupon_list_item_label_expired">Kedaluwarsa </string>
     <string name="coupon_list_item_label_active">Aktif</string>
@@ -1383,7 +1441,7 @@ Language: id
     <string name="product_width">Lebar</string>
     <string name="product_length">Panjang</string>
     <string name="order_refunds_refund_info_title">Produk yang dananya dikembalikan</string>
-    <string name="order_refunds_detail_item_description">%s (%s x %d)</string>
+    <string name="order_refunds_detail_item_description">%1$s (%2$s x %3$d)</string>
     <string name="order_refunds_method">%1$s melalui %2$s</string>
     <string name="order_refunds_confirmation">Apakah Anda yakin ingin meminta pengembalian dana? Hal ini tidak dapat dibatalkan.</string>
     <string name="orderdetail_refunded_products">Produk yang dananya dikembalikan</string>
@@ -1423,7 +1481,7 @@ Language: id
     <string name="order_refunds_select_quantity">Pilih jumlah</string>
     <string name="order_refunds_shipping_refund">Pengembalian dana pengiriman</string>
     <string name="order_refunds_products_refund">Pengembalian dana produk</string>
-    <string name="order_refunds_item_description">%s x %s tiap buah</string>
+    <string name="order_refunds_item_description">%1$s x %2$s tiap buah</string>
     <string name="order_refunds_items_selected">%d item terpilih</string>
     <string name="order_refunds_items_select_none">Tidak memilih</string>
     <string name="order_refunds_items_select_all">Pilih semua</string>
@@ -1434,7 +1492,7 @@ Language: id
     <string name="image_source_device_chooser">Pilih dari perangkat</string>
     <string name="image_source_title">Pilih metode pengunggahan</string>
     <string name="product_images_upload_channel_title">Unggahan</string>
-    <string name="product_images_uploading_multi_notif_message">Mengunggah gambar…%d dari %d</string>
+    <string name="product_images_uploading_multi_notif_message">Mengunggah gambar…%1$d dari %2$d</string>
     <string name="product_images_uploading_single_notif_message">Mengunggah gambar…</string>
     <string name="product_images_camera_error">Tidak dapat mengakses kamera</string>
     <string name="product_image_remove_confirmation">Anda yakin ingin menghapus gambar ini?</string>
@@ -1826,6 +1884,7 @@ Language: id
     <string name="orderdetail_track_shipment">Lacak pengiriman</string>
     <string name="login_email_help_desc">Di admin situs, Anda bisa menemukan email yang Anda gunakan untuk terhubung ke WordPress.com dari %1$sDasbor Jetpack%2$s di bagian %3$sKoneksi &gt; Koneksi akun%4$s</string>
     <string name="login_email_help_title">Email apa yang saya gunakan untuk masuk?</string>
+    <string name="login_need_help_finding_email">Perlu bantuan untuk menemukan email yang dibutuhkan?</string>
     <string name="login_jetpack_what_is_description">Jetpack merupakan plugin WordPress gratis yang menghubungkan toko Anda dengan peralatan yang diperlukan agar dapat memberikan pengalaman seluler terbaik, mencakup pemberitahuan push dan statistik</string>
     <string name="login_jetpack_what_is">Apa itu Jetpack?</string>
     <string name="login_view_connected_stores">Lihat toko terhubung</string>
@@ -2155,7 +2214,7 @@ Language: id
     <string name="login_nostores_content_description">Tidak ada toko WooCommerce</string>
     <string name="login_avatar_content_description">Foto profil Anda</string>
     <string name="login_connected_store">Toko yang terhubung</string>
-    <string name="login_configure_link">Baca %sinstruksi konfigurasi%s.</string>
+    <string name="login_configure_link">Baca %1$sinstruksi konfigurasi%2$s.</string>
     <string name="login_jetpack_required">Aplikasi ini memerlukan Jetpack agar dapat terhubung ke toko Anda.</string>
     <string name="at_username">\@%s</string>
     <string name="enter_site_address">Masukkan alamat toko WooCommerce yang ingin dihubungkan.</string>
@@ -2204,7 +2263,8 @@ Language: id
     <string name="all">Semua</string>
     <string name="notification_channel_general_title">Umum</string>
     <string name="app_name">WooCommerce</string>
-    <string-array name="date_range_selectors">
+    <string-array name="analytics_date_range_selectors">
+        <item>\@string/date_timeframe_custom</item>
         <item>\@string/date_timeframe_today</item>
         <item>\@string/date_timeframe_yesterday</item>
         <item>\@string/date_timeframe_last_week</item>

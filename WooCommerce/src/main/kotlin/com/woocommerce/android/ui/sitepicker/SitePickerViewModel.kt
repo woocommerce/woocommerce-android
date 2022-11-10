@@ -12,15 +12,17 @@ import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.analytics.ExperimentTracker
-import com.woocommerce.android.experiment.JetpackTimeoutExperiment
 import com.woocommerce.android.extensions.getSiteName
 import com.woocommerce.android.extensions.isSimpleWPComSite
-import com.woocommerce.android.support.HelpActivity
+import com.woocommerce.android.support.help.HelpActivity
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.common.UserEligibilityFetcher
 import com.woocommerce.android.ui.login.AccountRepository
 import com.woocommerce.android.ui.login.UnifiedLoginTracker
+import com.woocommerce.android.ui.login.accountmismatch.AccountMismatchErrorViewModel.AccountMismatchPrimaryButton
 import com.woocommerce.android.ui.sitepicker.SitePickerViewModel.SitePickerEvent.NavigateToAccountMismatchScreen
+import com.woocommerce.android.ui.sitepicker.SitePickerViewModel.SitePickerEvent.NavigateToAddStoreEvent
+import com.woocommerce.android.ui.sitepicker.SitePickerViewModel.SitePickerEvent.NavigateToStoreCreationEvent
 import com.woocommerce.android.ui.sitepicker.SitePickerViewModel.SitePickerEvent.NavigateToWPComWebView
 import com.woocommerce.android.ui.sitepicker.SitePickerViewModel.SitesListItem.Header
 import com.woocommerce.android.ui.sitepicker.SitePickerViewModel.SitesListItem.NonWooSiteUiModel
@@ -61,7 +63,6 @@ class SitePickerViewModel @Inject constructor(
     private val analyticsTrackerWrapper: AnalyticsTrackerWrapper,
     private val userEligibilityFetcher: UserEligibilityFetcher,
     private val experimentTracker: ExperimentTracker,
-    private val jetpackTimeoutExperiment: JetpackTimeoutExperiment,
 ) : ScopedViewModel(savedState) {
     companion object {
         private const val WOOCOMMERCE_INSTALLATION_URL = "https://wordpress.com/plugins/woocommerce/"
@@ -77,11 +78,13 @@ class SitePickerViewModel @Inject constructor(
     val sites: LiveData<List<SitesListItem>> = _sites
 
     private var loginSiteAddress: String?
-        get() = savedState.get("key") ?: appPrefsWrapper.getLoginSiteAddress()
+        get() = savedState["key"] ?: appPrefsWrapper.getLoginSiteAddress()
         set(value) = savedState.set("key", value)
 
     val shouldShowToolbar: Boolean
         get() = !navArgs.openedFromLogin
+
+    private val navSource = getNavigationSource()
 
     init {
         when (navArgs.openedFromLogin) {
@@ -89,12 +92,32 @@ class SitePickerViewModel @Inject constructor(
             false -> loadStorePickerView()
         }
         updateSiteViewDetails()
+        loadAndDisplayUserInfo()
         loadAndDisplaySites()
+        if (appPrefsWrapper.getIsNewSignUp()) startStoreCreationWebFlow()
+    }
+
+    private fun loadAndDisplayUserInfo() = launch {
+        fun getUserInfo() = accountRepository.getUserAccount()?.let {
+            UserInfo(displayName = it.displayName, username = it.userName ?: "", userAvatarUrl = it.avatarUrl)
+        }
+
+        if (accountRepository.getUserAccount() != null) {
+            sitePickerViewState = sitePickerViewState.copy(userInfo = getUserInfo())
+        } else {
+            accountRepository.fetchUserAccount().fold(
+                onSuccess = {
+                    sitePickerViewState = sitePickerViewState.copy(userInfo = getUserInfo())
+                },
+                onFailure = {
+                    triggerEvent(ShowSnackbar(string.error_fetch_my_profile))
+                }
+            )
+        }
     }
 
     private fun updateSiteViewDetails() {
         sitePickerViewState = sitePickerViewState.copy(
-            userInfo = getUserInfo(),
             primaryBtnText = resourceProvider.getString(string.continue_button),
             secondaryBtnText = resourceProvider.getString(string.login_try_another_account),
             currentSitePickerState = SitePickerState.StoreListState
@@ -107,15 +130,16 @@ class SitePickerViewModel @Inject constructor(
             if (sitesInDb.isNotEmpty()) {
                 displaySites(sitesInDb)
             }
-            fetchSitesFromApi(sitesInDb.isEmpty())
+            fetchSitesFromApi(sitesInDb.isEmpty() || !loginSiteAddress.isNullOrEmpty())
         }
     }
 
-    private suspend fun fetchSitesFromApi(showSkeleton: Boolean) {
+    private suspend fun fetchSitesFromApi(showSkeleton: Boolean, delayTime: Long = 0) {
         sitePickerViewState = sitePickerViewState.copy(
             isSkeletonViewVisible = showSkeleton
         )
 
+        delay(delayTime)
         val startTime = System.currentTimeMillis()
         val result = repository.fetchWooCommerceSites()
         val duration = System.currentTimeMillis() - startTime
@@ -212,7 +236,9 @@ class SitePickerViewModel @Inject constructor(
         }
         sitePickerViewState = sitePickerViewState.copy(
             hasConnectedStores = filteredSites.isNotEmpty(),
-            isPrimaryBtnVisible = wooSites.isNotEmpty()
+            isPrimaryBtnVisible = wooSites.isNotEmpty(),
+            isNoStoresViewVisible = false,
+            currentSitePickerState = SitePickerState.StoreListState
         )
         loginSiteAddress?.let { processLoginSiteAddress(it) }
     }
@@ -253,10 +279,9 @@ class SitePickerViewModel @Inject constructor(
         sitePickerViewState = sitePickerViewState.copy(
             isNoStoresViewVisible = true,
             isPrimaryBtnVisible = true,
-            primaryBtnText = resourceProvider.getString(string.login_site_picker_enter_site_address),
+            primaryBtnText = resourceProvider.getString(string.login_site_picker_add_a_store),
             noStoresLabelText = resourceProvider.getString(string.login_no_stores),
-            isNoStoresBtnVisible = true,
-            noStoresBtnText = resourceProvider.getString(string.login_site_picker_new_to_woo),
+            isNoStoresBtnVisible = false,
             currentSitePickerState = SitePickerState.NoStoreState
         )
     }
@@ -266,7 +291,8 @@ class SitePickerViewModel @Inject constructor(
      * to a site that is not connected to the account the user logged
      * in with.
      */
-    private fun showAccountMismatchScreen(url: String) {
+    private fun showAccountMismatchScreen(url: String) = launch {
+        sitePickerViewState = sitePickerViewState.copy(isSkeletonViewVisible = true, isPrimaryBtnVisible = false)
         analyticsTrackerWrapper.track(
             AnalyticsEvent.SITE_PICKER_AUTO_LOGIN_ERROR_NOT_CONNECTED_TO_USER,
             mapOf(
@@ -275,9 +301,30 @@ class SitePickerViewModel @Inject constructor(
             )
         )
         trackLoginEvent(currentStep = UnifiedLoginTracker.Step.WRONG_WP_ACCOUNT)
-        if (event.value !is NavigateToAccountMismatchScreen) {
-            triggerEvent(NavigateToAccountMismatchScreen(sitePickerViewState.hasConnectedStores ?: false))
-        }
+        repository.fetchSiteInfo(url).fold(
+            onSuccess = {
+                val primaryButton = when {
+                    it.isWPCom -> AccountMismatchPrimaryButton.CONNECT_WPCOM_SITE
+                    else -> AccountMismatchPrimaryButton.CONNECT_JETPACK
+                }
+                if (event.value !is NavigateToAccountMismatchScreen) {
+                    // The check is to avoid triggering the navigation multiple times
+                    triggerEvent(
+                        NavigateToAccountMismatchScreen(
+                            primaryButton = primaryButton,
+                            siteUrl = url,
+                            hasConnectedStores = sitePickerViewState.hasConnectedStores ?: false
+                        )
+                    )
+                }
+            },
+            onFailure = {
+                triggerEvent(ShowSnackbar(string.site_picker_error))
+                loginSiteAddress = null
+                loadAndDisplaySites()
+            }
+        )
+        sitePickerViewState = sitePickerViewState.copy(isSkeletonViewVisible = false)
     }
 
     private fun loadWooNotFoundView(site: SiteModel) {
@@ -312,10 +359,6 @@ class SitePickerViewModel @Inject constructor(
             isNoStoresBtnVisible = false,
             currentSitePickerState = SitePickerState.SimpleWPComState
         )
-    }
-
-    private fun getUserInfo() = accountRepository.getUserAccount()?.let {
-        UserInfo(displayName = it.displayName, username = it.userName ?: "", userAvatarUrl = it.avatarUrl)
     }
 
     fun onSiteSelected(siteModel: SiteModel) {
@@ -376,9 +419,21 @@ class SitePickerViewModel @Inject constructor(
         triggerEvent(SitePickerEvent.NavigateToNewToWooEvent)
     }
 
-    fun onEnterSiteAddressClick() {
-        analyticsTrackerWrapper.track(AnalyticsEvent.SITE_PICKER_ENTER_SITE_ADDRESS_TAPPED)
-        triggerEvent(SitePickerEvent.NavigateToSiteAddressEvent)
+    fun onAddStoreClick() {
+        analyticsTrackerWrapper.track(AnalyticsEvent.SITE_PICKER_ADD_A_STORE_TAPPED)
+        triggerEvent(NavigateToAddStoreEvent(navSource))
+    }
+
+    private fun getNavigationSource(): String {
+        return if (navArgs.openedFromLogin) {
+            if (appPrefsWrapper.getIsNewSignUp()) {
+                AnalyticsTracker.VALUE_PROLOGUE
+            } else {
+                AnalyticsTracker.VALUE_LOGIN
+            }
+        } else {
+            AnalyticsTracker.VALUE_SWITCHING_STORE
+        }
     }
 
     fun onTryAnotherAccountButtonClick() {
@@ -429,13 +484,7 @@ class SitePickerViewModel @Inject constructor(
                 sitePickerViewState = sitePickerViewState.copy(isProgressDiaLogVisible = true)
                 launch {
 
-                    // A/B experiment to test what Jetpack timeout policy is more effective for site verification
-
-                    val siteVerificationResult = repository.verifySiteWooAPIVersion(
-                        it.site,
-                        overrideRetryPolicy = jetpackTimeoutExperiment.run()
-                    )
-
+                    val siteVerificationResult = repository.verifySiteWooAPIVersion(it.site)
                     when {
                         siteVerificationResult.isError -> onSiteVerificationError(siteVerificationResult, it)
                         siteVerificationResult.model?.apiVersion == WooCommerceStore.WOO_API_NAMESPACE_V3 -> {
@@ -568,6 +617,16 @@ class SitePickerViewModel @Inject constructor(
         launch { fetchSitesFromApi(showSkeleton = true) }
     }
 
+    fun onJetpackConnected() = launch {
+        // Reload sites
+        fetchSitesFromApi(showSkeleton = true)
+    }
+
+    private fun startStoreCreationWebFlow() {
+        appPrefsWrapper.markAsNewSignUp(false)
+        triggerEvent(NavigateToStoreCreationEvent(navSource))
+    }
+
     private fun trackLoginEvent(
         currentFlow: UnifiedLoginTracker.Flow? = null,
         currentStep: UnifiedLoginTracker.Step? = null,
@@ -628,10 +687,20 @@ class SitePickerViewModel @Inject constructor(
         object NavigateToMainActivityEvent : SitePickerEvent()
         object NavigateToEmailHelpDialogEvent : SitePickerEvent()
         object NavigateToNewToWooEvent : SitePickerEvent()
-        object NavigateToSiteAddressEvent : SitePickerEvent()
+        data class NavigateToAddStoreEvent(val source: String) : SitePickerEvent()
+        data class NavigateToStoreCreationEvent(val source: String) : SitePickerEvent()
         data class NavigateToHelpFragmentEvent(val origin: HelpActivity.Origin) : SitePickerEvent()
-        data class NavigateToWPComWebView(val url: String, val validationUrl: String) : SitePickerEvent()
-        data class NavigateToAccountMismatchScreen(val hasConnectedStores: Boolean) : SitePickerEvent()
+        data class NavigateToWPComWebView(
+            val url: String,
+            val validationUrl: String,
+            val title: String? = null
+        ) : SitePickerEvent()
+
+        data class NavigateToAccountMismatchScreen(
+            val primaryButton: AccountMismatchPrimaryButton,
+            val siteUrl: String,
+            val hasConnectedStores: Boolean
+        ) : SitePickerEvent()
     }
 
     enum class SitePickerState {

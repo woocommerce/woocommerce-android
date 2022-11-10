@@ -6,6 +6,16 @@ pluginManagement {
     gradle.ext.navigationVersion = '2.4.1'
 
     repositories {
+        exclusiveContent {
+            forRepository {
+                maven {
+                    url = uri("https://a8c-libs.s3.amazonaws.com/android")
+                }
+            }
+            filter {
+                includeGroup "com.automattic.android"
+            }
+        }
         gradlePluginPortal()
         google()
     }
@@ -14,7 +24,6 @@ pluginManagement {
         id 'androidx.navigation.safeargs.kotlin' version gradle.ext.navigationVersion
         id 'com.android.application' version gradle.ext.agpVersion
         id 'com.android.library' version gradle.ext.agpVersion
-        id 'com.automattic.android.fetchstyle'
         id 'com.google.gms.google-services' version '4.3.10'
         id 'io.github.wzieba.tracks.plugin' version '1.0.0'
         id 'io.gitlab.arturbosch.detekt' version gradle.ext.detektVersion
@@ -25,15 +34,6 @@ pluginManagement {
         id 'org.jetbrains.kotlin.plugin.parcelize' version gradle.ext.kotlinVersion
         id 'se.bjurr.violations.violation-comments-to-github-gradle-plugin' version '1.69.0'
         id 'com.google.dagger.hilt.android' version gradle.ext.daggerVersion
-    }
-
-    resolutionStrategy {
-        eachPlugin {
-            // TODO: Remove this as soon as fetchstyle starts supporting Plugin Marker Artifacts
-            if (requested.id.id == "com.automattic.android.fetchstyle") {
-                useModule("com.automattic.android:fetchstyle:1.1")
-            }
-        }
     }
 }
 
@@ -69,6 +69,7 @@ gradleEnterprise {
 rootProject.name = 'WCAndroid'
 
 include ':quicklogin'
+include ':libs:barcode'
 include ':libs:cardreader'
 include ':WooCommerce'
 
@@ -84,7 +85,7 @@ gradle.ext.mediaPickerSourceWordPressBinaryPath = "org.wordpress.mediapicker:sou
 gradle.ext {
     compileSdkVersion = 33
     targetSdkVersion = 31
-    minSdkVersion = 21
+    minSdkVersion = 24
 }
 
 def localBuilds = new File('local-builds.gradle')

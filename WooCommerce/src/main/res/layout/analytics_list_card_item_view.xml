@@ -1,0 +1,78 @@
+<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    style="@style/Woo.Card.WithoutPadding"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    app:cardElevation="@dimen/minor_00">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingTop="@dimen/major_75">
+
+        <androidx.appcompat.widget.AppCompatImageView
+            android:id="@+id/analyticsCardListItemImage"
+            android:layout_width="@dimen/image_minor_100"
+            android:layout_height="@dimen/image_major_50"
+            android:layout_marginStart="@dimen/major_100"
+            app:layout_constrainedWidth="true"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:src="@drawable/img_hot_air_balloon" />
+
+        <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/analyticsCardListItemTitle"
+            style="@style/Woo.Card.Title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/minor_00"
+            android:layout_marginTop="@dimen/minor_00"
+            android:layout_marginBottom="@dimen/minor_00"
+            android:textSize="@dimen/text_minor_125"
+            app:layout_constraintBottom_toTopOf="@+id/analyticsCardListItemDescription"
+            app:layout_constraintStart_toStartOf="@+id/analyticsCardListItemDescription"
+            app:layout_constraintTop_toTopOf="@+id/analyticsCardListItemImage"
+            app:lineHeight="@dimen/text_major_50"
+            tools:text="Tabletop Pothos" />
+
+        <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/analyticsCardListItemDescription"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/major_100"
+            android:layout_marginTop="@dimen/minor_00"
+            android:textSize="@dimen/text_minor_125"
+            app:layout_constraintBottom_toBottomOf="@+id/analyticsCardListItemImage"
+            app:layout_constraintStart_toEndOf="@+id/analyticsCardListItemImage"
+            app:layout_constraintTop_toBottomOf="@+id/analyticsCardListItemTitle"
+            app:lineHeight="@dimen/text_major_25"
+            tools:text="Net value: $1,234" />
+
+        <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/analyticsCardListItemValue"
+            style="@style/Woo.Card.Title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="@dimen/major_100"
+            android:textSize="@dimen/text_minor_125"
+            app:layout_constraintBottom_toBottomOf="@+id/analyticsCardListItemDescription"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/analyticsCardListItemTitle"
+            app:lineHeight="@dimen/text_major_50"
+            tools:text="1234" />
+
+        <View
+            android:id="@+id/divider"
+            style="@style/Woo.Divider"
+            android:layout_width="0dp"
+            android:layout_height="@dimen/minor_10"
+            android:layout_marginTop="@dimen/major_75"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="@+id/analyticsCardListItemDescription"
+            app:layout_constraintTop_toBottomOf="@+id/analyticsCardListItemDescription" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</com.google.android.material.card.MaterialCardView>
+

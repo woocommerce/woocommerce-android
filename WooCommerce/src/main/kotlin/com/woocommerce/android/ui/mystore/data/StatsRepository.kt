@@ -1,22 +1,25 @@
 package com.woocommerce.android.ui.mystore.data
 
 import com.woocommerce.android.AppConstants
+import com.woocommerce.android.WooException
 import com.woocommerce.android.extensions.semverCompareTo
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T.DASHBOARD
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.withTimeoutOrNull
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.model.WCRevenueStatsModel
-import org.wordpress.android.fluxc.model.leaderboards.WCTopPerformerProductModel
 import org.wordpress.android.fluxc.network.BaseRequest
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooError
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooErrorType
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooResult
+import org.wordpress.android.fluxc.persistence.entity.TopPerformerProductEntity
 import org.wordpress.android.fluxc.store.WCLeaderboardsStore
 import org.wordpress.android.fluxc.store.WCOrderStore
 import org.wordpress.android.fluxc.store.WCStatsStore
@@ -26,8 +29,10 @@ import org.wordpress.android.fluxc.store.WCStatsStore.OrderStatsError
 import org.wordpress.android.fluxc.store.WCStatsStore.StatsGranularity
 import org.wordpress.android.fluxc.store.WooCommerceStore
 import org.wordpress.android.fluxc.store.WooCommerceStore.WooPlugin.WOO_CORE
+import org.wordpress.android.fluxc.utils.DateUtils
 import javax.inject.Inject
 
+@Suppress("TooManyFunctions")
 class StatsRepository @Inject constructor(
     private val selectedSite: SelectedSite,
     private val wcStatsStore: WCStatsStore,
@@ -42,31 +47,35 @@ class StatsRepository @Inject constructor(
         // Minimum supported version to use /wc-analytics/leaderboards/products instead of slower endpoint
         // /wc-analytics/leaderboards. More info https://github.com/woocommerce/woocommerce-android/issues/6688
         private const val PRODUCT_ONLY_LEADERBOARD_MIN_WC_VERSION = "6.7.0"
+        private const val AN_HOUR_IN_MILLIS = 3600000
     }
 
     suspend fun fetchRevenueStats(
         granularity: StatsGranularity,
-        forced: Boolean
-    ): Flow<Result<WCRevenueStatsModel?>> = flow {
-        val statsPayload = FetchRevenueStatsPayload(selectedSite.get(), granularity, forced = forced)
-        val result = wcStatsStore.fetchRevenueStats(statsPayload)
+        forced: Boolean,
+        startDate: String = "",
+        endDate: String = ""
+    ): Flow<Result<WCRevenueStatsModel?>> =
+        flow {
+            val statsPayload = FetchRevenueStatsPayload(selectedSite.get(), granularity, startDate, endDate, forced)
+            val result = wcStatsStore.fetchRevenueStats(statsPayload)
 
-        if (!result.isError) {
-            val revenueStatsModel = wcStatsStore.getRawRevenueStats(
-                selectedSite.get(), result.granularity, result.startDate!!, result.endDate!!
-            )
-            Result.success(revenueStatsModel)
-            emit(Result.success(revenueStatsModel))
-        } else {
-            val errorMessage = result.error?.message ?: "Timeout"
-            WooLog.e(
-                DASHBOARD,
-                "$TAG - Error fetching revenue stats: $errorMessage"
-            )
-            val exception = StatsException(error = result.error)
-            emit(Result.failure(exception))
+            if (!result.isError) {
+                val revenueStatsModel = wcStatsStore.getRawRevenueStats(
+                    selectedSite.get(), result.granularity, result.startDate!!, result.endDate!!
+                )
+                Result.success(revenueStatsModel)
+                emit(Result.success(revenueStatsModel))
+            } else {
+                val errorMessage = result.error?.message ?: "Timeout"
+                WooLog.e(
+                    DASHBOARD,
+                    "$TAG - Error fetching revenue stats: $errorMessage"
+                )
+                val exception = StatsException(error = result.error)
+                emit(Result.failure(exception))
+            }
         }
-    }
 
     suspend fun fetchVisitorStats(granularity: StatsGranularity, forced: Boolean): Flow<Result<Map<String, Int>>> =
         flow {
@@ -87,35 +96,76 @@ class StatsRepository @Inject constructor(
             }
         }
 
-    suspend fun fetchProductLeaderboards(
+    fun observeTopPerformers(
+        granularity: StatsGranularity,
+    ): Flow<List<TopPerformerProductEntity>> {
+        val siteModel = selectedSite.get()
+        val datePeriod = granularity.datePeriod(siteModel)
+        return wcLeaderboardsStore
+            .observeTopPerformerProducts(siteModel.siteId, datePeriod)
+            .flowOn(Dispatchers.IO)
+    }
+
+    suspend fun getTopPerformers(
+        startDate: String,
+        endDate: String
+    ): List<TopPerformerProductEntity> {
+        val siteModel = selectedSite.get()
+        val datePeriod = DateUtils.getDatePeriod(startDate, endDate)
+        return wcLeaderboardsStore.getCachedTopPerformerProducts(siteModel.siteId, datePeriod)
+    }
+
+    suspend fun fetchTopPerformerProducts(
         forceRefresh: Boolean,
         granularity: StatsGranularity,
         quantity: Int
-    ): Flow<Result<List<WCTopPerformerProductModel>>> = flow {
-        when (forceRefresh) {
-            true -> wcLeaderboardsStore.fetchProductLeaderboards(
-                site = selectedSite.get(),
-                unit = granularity,
+    ): Result<Unit> {
+        val siteModel = selectedSite.get()
+        val startDate = granularity.startDateTime(siteModel)
+        val endDate = granularity.endDateTime(siteModel)
+
+        return fetchTopPerformerProducts(
+            forceRefresh = forceRefresh,
+            startDate = startDate,
+            endDate = endDate,
+            quantity = quantity
+        )
+    }
+
+    suspend fun fetchTopPerformerProducts(
+        forceRefresh: Boolean,
+        startDate: String,
+        endDate: String,
+        quantity: Int
+    ): Result<Unit> {
+        val siteModel = selectedSite.get()
+        val datePeriod = DateUtils.getDatePeriod(startDate, endDate)
+        val cachedTopPerformers = wcLeaderboardsStore.getCachedTopPerformerProducts(
+            siteId = siteModel.siteId,
+            datePeriod = datePeriod
+        )
+        return if (forceRefresh || cachedTopPerformers.isEmpty() || cachedTopPerformers.expired()) {
+            val result = wcLeaderboardsStore.fetchTopPerformerProducts(
+                site = siteModel,
+                startDate = startDate,
+                endDate = endDate,
                 quantity = quantity,
                 addProductsPath = supportsProductOnlyLeaderboardEndpoint(),
                 forceRefresh = forceRefresh
             )
-            false -> wcLeaderboardsStore.fetchCachedProductLeaderboards(
-                site = selectedSite.get(),
-                unit = granularity
-            )
-        }.let { result ->
-            val model = result.model
-            if (result.isError || model == null) {
-                val resultError: Result<List<WCTopPerformerProductModel>> = Result.failure(
-                    Exception(result.error?.message.orEmpty())
-                )
-                emit(resultError)
-            } else {
-                emit(Result.success(model))
+            when {
+                result.isError -> Result.failure(WooException(result.error))
+                else -> Result.success(Unit)
             }
+        } else {
+            Result.success(Unit)
         }
     }
+
+    private fun List<TopPerformerProductEntity>.expired(): Boolean =
+        any { topPerformerProductEntity ->
+            System.currentTimeMillis() - topPerformerProductEntity.millisSinceLastUpdated > AN_HOUR_IN_MILLIS
+        }
 
     suspend fun checkIfStoreHasNoOrders(): Flow<Result<Boolean>> = flow {
         val result = withTimeoutOrNull(AppConstants.REQUEST_TIMEOUT) {
@@ -144,7 +194,11 @@ class StatsRepository @Inject constructor(
     }
 
     data class StatsException(val error: OrderStatsError?) : Exception()
-    data class SiteStats(val revenue: WCRevenueStatsModel?, val visitors: Map<String, Int>?)
+    data class SiteStats(
+        val revenue: WCRevenueStatsModel?,
+        val visitors: Map<String, Int>?,
+        val currencyCode: String
+    )
 
     private suspend fun fetchRevenueStats(
         granularity: StatsGranularity,
@@ -226,6 +280,7 @@ class StatsRepository @Inject constructor(
         }
         val visitorStats = fetchVisitorStats.await()
         val revenueStats = fetchRevenueStats.await()
+        val siteCurrencyCode = wooCommerceStore.getSiteSettings(site)?.currencyCode.orEmpty()
 
         return@coroutineScope if (visitorStats.isError || revenueStats.isError) {
             val error = WooError(
@@ -235,7 +290,13 @@ class StatsRepository @Inject constructor(
             )
             WooResult(error)
         } else {
-            WooResult(SiteStats(revenue = revenueStats.model, visitors = visitorStats.model))
+            WooResult(
+                SiteStats(
+                    revenue = revenueStats.model,
+                    visitors = visitorStats.model,
+                    currencyCode = siteCurrencyCode
+                )
+            )
         }
     }
 
