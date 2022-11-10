@@ -390,6 +390,10 @@ class AnalyticsRepository @Inject constructor(
     private fun getCurrencyCode() = wooCommerceStore.getSiteSettings(selectedSite.get())?.currencyCode
     private fun getAdminPanelUrl() = selectedSite.getIfExists()?.adminUrl
 
+    /***
+     * This method will select all Visitors and Views data within a given date range interval
+     * and fold all this data into a Pair containing the total visitors and total views of that period
+     */
     private fun List<VisitsAndViewsModel.PeriodData>.foldStatsWithin(dateRange: DateRange): Pair<Long, Long> {
         val startDate = dateRange.from.theDayBeforeIt()
 
