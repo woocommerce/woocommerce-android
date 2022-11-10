@@ -15,6 +15,7 @@ import com.woocommerce.android.ui.analytics.AnalyticsRepository.RevenueResult.Re
 import com.woocommerce.android.ui.analytics.AnalyticsRepository.RevenueResult.RevenueError
 import com.woocommerce.android.ui.analytics.daterangeselector.AnalyticTimePeriod
 import com.woocommerce.android.ui.analytics.daterangeselector.AnalyticsDateRange
+import com.woocommerce.android.ui.analytics.daterangeselector.DateRange
 import com.woocommerce.android.ui.mystore.data.StatsRepository
 import com.woocommerce.android.util.CoroutineDispatchers
 import kotlinx.coroutines.Deferred
@@ -52,6 +53,8 @@ class AnalyticsRepository @Inject constructor(
 
     private val getPreviousRevenueMutex = Mutex()
     private var previousRevenueStats: AnalyticsStatsResultWrapper? = null
+
+    private val simpleDateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
 
     suspend fun fetchRevenueData(
         dateRange: AnalyticsDateRange,
@@ -225,40 +228,28 @@ class AnalyticsRepository @Inject constructor(
         selectedRange: AnalyticTimePeriod,
         fetchStrategy: FetchStrategy
     ): VisitorsResult {
-        val startDate = dateRange.getSelectedPeriod().from.theDayBeforeIt()
-        val simpleDateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
-
         val previousPeriodStats = getVisitorsStats(
             dateRange.getComparisonPeriod().to,
             getGranularity(selectedRange),
             fetchStrategy,
             QUARTER_VISITORS_AND_VIEW_FETCH_LIMIT
-        )
+        ).model?.dates?.foldStatsWithin(dateRange.getComparisonPeriod())
 
         val currentPeriodStats = getVisitorsStats(
             dateRange.getSelectedPeriod().to,
             getGranularity(selectedRange),
             fetchStrategy,
             QUARTER_VISITORS_AND_VIEW_FETCH_LIMIT
-        )
+        ).model?.dates?.foldStatsWithin(dateRange.getSelectedPeriod())
 
-        return getVisitorsStats(
-            dateRange.getSelectedPeriod().to,
-            getGranularity(selectedRange),
-            fetchStrategy,
-            QUARTER_VISITORS_AND_VIEW_FETCH_LIMIT
-        ).model?.dates?.asSequence()
-            ?.filter { startDate.before(simpleDateFormat.parse(it.period)) }
-            ?.map { Pair(it.visitors, it.views) }
-            ?.fold(Pair(0L, 0L)) { acc, pair -> Pair(acc.first + pair.first, acc.second + pair.second) }
-            ?.let { (visitors, views) ->
-                VisitorsResult.VisitorsData(
-                    VisitorsStat(
-                        visitors.toInt(),
-                        views.toInt()
-                    )
+        return currentPeriodStats?.let { (visitors, views) ->
+            VisitorsResult.VisitorsData(
+                VisitorsStat(
+                    visitors.toInt(),
+                    views.toInt()
                 )
-            } ?: VisitorsResult.VisitorsError
+            )
+        } ?: VisitorsResult.VisitorsError
     }
 
     fun getRevenueAdminPanelUrl() = getAdminPanelUrl() + ANALYTICS_REVENUE_PATH
@@ -396,6 +387,15 @@ class AnalyticsRepository @Inject constructor(
 
     private fun getCurrencyCode() = wooCommerceStore.getSiteSettings(selectedSite.get())?.currencyCode
     private fun getAdminPanelUrl() = selectedSite.getIfExists()?.adminUrl
+
+    private fun List<VisitsAndViewsModel.PeriodData>.foldStatsWithin(dateRange: DateRange): Pair<Long, Long> {
+        val startDate = dateRange.from.theDayBeforeIt()
+
+        return this.asSequence()
+            .filter { startDate.before(simpleDateFormat.parse(it.period)) }
+            .map { Pair(it.visitors, it.views) }
+            .fold(Pair(0L, 0L)) { acc, pair -> Pair(acc.first + pair.first, acc.second + pair.second) }
+    }
 
     companion object {
         const val ANALYTICS_REVENUE_PATH = "admin.php?page=wc-admin&path=%2Fanalytics%2Frevenue"
