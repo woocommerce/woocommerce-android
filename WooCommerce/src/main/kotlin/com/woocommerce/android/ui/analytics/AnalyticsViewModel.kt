@@ -49,7 +49,6 @@ import com.woocommerce.android.ui.analytics.informationcard.AnalyticsInformation
 import com.woocommerce.android.ui.analytics.listcard.AnalyticsListCardItemViewState
 import com.woocommerce.android.ui.mystore.MyStoreStatsUsageTracksEventEmitter
 import com.woocommerce.android.util.CurrencyFormatter
-import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.viewmodel.ResourceProvider
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.navArgs
