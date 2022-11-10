@@ -271,13 +271,16 @@ class AnalyticsViewModel @Inject constructor(
             analyticsRepository.fetchProductsData(dateRange, timePeriod, fetchStrategy)
                 .let {
                     when (it) {
-                        is ProductsData -> mutableState.value = state.value.copy(
-                            productsState = buildProductsDataState(
-                                it.productsStat.itemsSold,
-                                it.productsStat.itemsSoldDelta,
-                                it.productsStat.products
+                        is ProductsData -> {
+                            mutableState.value = state.value.copy(
+                                productsState = buildProductsDataState(
+                                    it.productsStat.itemsSold,
+                                    it.productsStat.itemsSoldDelta,
+                                    it.productsStat.products
+                                )
                             )
-                        )
+                            transactionLauncher.onProductsFetched()
+                        }
                         ProductsError -> mutableState.value = state.value.copy(
                             productsState = ProductsNoDataState(
                                 resourceProvider.getString(R.string.analytics_products_no_data)
