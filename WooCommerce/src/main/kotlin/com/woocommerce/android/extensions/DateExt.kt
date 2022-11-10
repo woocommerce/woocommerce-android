@@ -82,3 +82,9 @@ val Date.pastTimeDeltaFromNowInDays
         .takeIf { it >= 0 }
         ?.let { TimeUnit.DAYS.convert(it, MILLISECONDS) }
         ?.toInt()
+
+fun Date.theDayBeforeIt() =
+    Calendar.getInstance()
+        .apply { time = this@theDayBeforeIt }
+        .apply { add(Calendar.DATE, -1) }
+        .time

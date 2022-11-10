@@ -1,6 +1,7 @@
 package com.woocommerce.android.ui.analytics
 
 import com.woocommerce.android.extensions.formatToYYYYmmDD
+import com.woocommerce.android.extensions.theDayBeforeIt
 import com.woocommerce.android.model.DeltaPercentage
 import com.woocommerce.android.model.OrdersStat
 import com.woocommerce.android.model.ProductItem
@@ -186,18 +187,48 @@ class AnalyticsRepository @Inject constructor(
         )
     }
 
-    suspend fun fetchVisitorsData(
+    suspend fun fetchRecentVisitorsData(
         dateRange: AnalyticsDateRange,
         selectedRange: AnalyticTimePeriod,
         fetchStrategy: FetchStrategy
     ): VisitorsResult {
-        return getVisitorsStats(dateRange, getGranularity(selectedRange), fetchStrategy)
-            .model?.dates?.last()
+        return getVisitorsStats(
+            dateRange,
+            getGranularity(selectedRange),
+            fetchStrategy,
+            MOST_RECENT_VISITORS_AND_VIEW_FETCH_LIMIT
+        ).model?.dates?.last()
             ?.let {
                 VisitorsResult.VisitorsData(
                     VisitorsStat(
                         it.visitors.toInt(),
                         it.views.toInt()
+                    )
+                )
+            } ?: VisitorsResult.VisitorsError
+    }
+
+    suspend fun fetchQuarterVisitorsData(
+        dateRange: AnalyticsDateRange,
+        selectedRange: AnalyticTimePeriod,
+        fetchStrategy: FetchStrategy
+    ): VisitorsResult {
+        val startDate = dateRange.getSelectedPeriod().from.theDayBeforeIt()
+
+        return getVisitorsStats(
+            dateRange,
+            getGranularity(selectedRange),
+            fetchStrategy,
+            QUARTER_VISITORS_AND_VIEW_FETCH_LIMIT
+        ).model?.dates?.asSequence()
+            ?.filter { startDate.before(DateUtils.getDateFromString(it.period)) }
+            ?.map { Pair(it.visitors, it.views) }
+            ?.fold(Pair(0L, 0L)) { acc, pair -> Pair(acc.first + pair.first, acc.second + pair.second) }
+            ?.let { (visitors, views) ->
+                VisitorsResult.VisitorsData(
+                    VisitorsStat(
+                        visitors.toInt(),
+                        views.toInt()
                     )
                 )
             } ?: VisitorsResult.VisitorsError
@@ -278,7 +309,8 @@ class AnalyticsRepository @Inject constructor(
     private suspend fun getVisitorsStats(
         dateRange: AnalyticsDateRange,
         granularity: StatsGranularity,
-        fetchStrategy: FetchStrategy
+        fetchStrategy: FetchStrategy,
+        fetchingAmountLimit: Int = VISITORS_AND_VIEW_DEFAULT_FETCH_LIMIT
     ): WooResult<VisitsAndViewsModel> = coroutineScope {
         val site = selectedSite.get()
 
@@ -288,7 +320,8 @@ class AnalyticsRepository @Inject constructor(
             endDate = endDate,
             granularity = granularity.asJetpackGranularity(),
             forced = fetchStrategy is FetchStrategy.ForceNew,
-            site = site
+            site = site,
+            fetchingAmountLimit
         )
     }
 
@@ -350,6 +383,10 @@ class AnalyticsRepository @Inject constructor(
         const val ONE_H_PERCENT = 100
 
         const val TOP_PRODUCTS_LIST_SIZE = 5
+
+        const val VISITORS_AND_VIEW_DEFAULT_FETCH_LIMIT = 15
+        const val MOST_RECENT_VISITORS_AND_VIEW_FETCH_LIMIT = 1
+        const val QUARTER_VISITORS_AND_VIEW_FETCH_LIMIT = 3
     }
 
     sealed class RevenueResult {

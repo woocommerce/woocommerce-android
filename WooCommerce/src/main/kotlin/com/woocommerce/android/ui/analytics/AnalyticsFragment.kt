@@ -97,10 +97,9 @@ class AnalyticsFragment :
             key = KEY_DATE_RANGE_SELECTOR_RESULT,
             entryId = R.id.analytics
         ) { dateSelection ->
-            if (dateSelection == AnalyticTimePeriod.CUSTOM.description) {
-                viewModel.onCustomDateRangeClicked()
-            } else {
-                viewModel.onSelectedTimePeriodChanged(dateSelection)
+            when (val timePeriod = AnalyticTimePeriod.from(dateSelection)) {
+                AnalyticTimePeriod.CUSTOM -> viewModel.onCustomDateRangeClicked()
+                else -> viewModel.onSelectedTimePeriodChanged(timePeriod)
             }
         }
     }
