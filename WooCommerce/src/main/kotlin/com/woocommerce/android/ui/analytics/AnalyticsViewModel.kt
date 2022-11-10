@@ -180,7 +180,7 @@ class AnalyticsViewModel @Inject constructor(
     }
 
     fun onVisitorsSeeReportClick() {
-        // Add track visitors click
+        trackSeeReportClicked(AnalyticsTracker.VALUE_VISITORS_CARD_SELECTED)
         openReportsView(analyticsRepository.getJetpackStatsPanelUrl())
     }
 
