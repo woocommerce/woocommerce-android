@@ -13,7 +13,6 @@ import com.woocommerce.android.ui.analytics.AnalyticsHubTransactionLauncher.Cond
 import com.woocommerce.android.ui.analytics.AnalyticsHubTransactionLauncher.Conditions.PRODUCTS_FETCHED
 import com.woocommerce.android.ui.analytics.AnalyticsHubTransactionLauncher.Conditions.REVENUE_FETCHED
 import com.woocommerce.android.ui.analytics.AnalyticsHubTransactionLauncher.Conditions.VISITORS_FETCHED
-
 import com.woocommerce.android.util.CoroutineDispatchers
 import dagger.hilt.android.scopes.ViewModelScoped
 import kotlinx.coroutines.CoroutineScope
