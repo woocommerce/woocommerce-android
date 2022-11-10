@@ -385,13 +385,13 @@ class AnalyticsViewModel @Inject constructor(
         leftSection = AnalyticsInformationSectionViewState(
             title = resourceProvider.getString(R.string.analytics_visitors_subtitle),
             stats.visitorsCount.toString(),
-            if (stats.avgVisitorsDelta is DeltaPercentage.Value) stats.avgVisitorsDelta.value else null,
+            stats.avgVisitorsDelta.run { this as? DeltaPercentage.Value }?.value,
             listOf() /** Add charts calculation to Visitors and Views stats **/
         ),
         rightSection = AnalyticsInformationSectionViewState(
             resourceProvider.getString(R.string.analytics_views_subtitle),
             stats.viewsCount.toString(),
-            if (stats.avgViewsDelta is DeltaPercentage.Value) stats.avgViewsDelta.value else null,
+            stats.avgViewsDelta.run { this as? DeltaPercentage.Value}?.value,
             listOf() /** Add charts calculation to Visitors and Views stats **/
         )
     )
