@@ -41,6 +41,7 @@ import com.woocommerce.android.ui.analytics.daterangeselector.AnalyticsDateRange
 import com.woocommerce.android.ui.analytics.daterangeselector.AnalyticsDateRangeFormatter
 import com.woocommerce.android.ui.analytics.daterangeselector.AnalyticsDateRangeSelectorViewState
 import com.woocommerce.android.ui.analytics.informationcard.AnalyticsInformationSectionViewState
+import com.woocommerce.android.ui.analytics.informationcard.AnalyticsInformationViewState
 import com.woocommerce.android.ui.analytics.informationcard.AnalyticsInformationViewState.DataViewState
 import com.woocommerce.android.ui.analytics.informationcard.AnalyticsInformationViewState.LoadingViewState
 import com.woocommerce.android.ui.analytics.informationcard.AnalyticsInformationViewState.NoDataState
@@ -299,6 +300,11 @@ class AnalyticsViewModel @Inject constructor(
             val timePeriod = getSavedTimePeriod()
             val dateRange = getSavedDateRange()
             val fetchStrategy = getFetchStrategy(isRefreshing)
+
+            if (timePeriod == CUSTOM) {
+                mutableState.value = state.value.copy(visitorsState = AnalyticsInformationViewState.HiddenState)
+                return@launch
+            }
 
             if (showSkeleton) mutableState.value = state.value.copy(visitorsState = LoadingViewState)
             mutableState.value = state.value.copy(
