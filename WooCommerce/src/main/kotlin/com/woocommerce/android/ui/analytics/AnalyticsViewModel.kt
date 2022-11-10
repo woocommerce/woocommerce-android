@@ -185,14 +185,10 @@ class AnalyticsViewModel @Inject constructor(
     }
 
     private fun refreshAllAnalyticsAtOnce(isRefreshing: Boolean, showSkeleton: Boolean) {
-        val isQuarterSelection = state.value.analyticsDateRangeSelectorState.selectedPeriod
-            .let { AnalyticTimePeriod.from(it) }
-            .let { (it == QUARTER_TO_DATE) || (it == LAST_QUARTER) }
-
         updateRevenue(isRefreshing, showSkeleton)
         updateOrders(isRefreshing, showSkeleton)
         updateProducts(isRefreshing, showSkeleton)
-        updateVisitors(isRefreshing, showSkeleton, isQuarterSelection)
+        updateVisitors(isRefreshing, showSkeleton)
     }
 
     private fun updateRevenue(isRefreshing: Boolean, showSkeleton: Boolean) =
@@ -281,11 +277,15 @@ class AnalyticsViewModel @Inject constructor(
                 }
         }
 
-    private fun updateVisitors(isRefreshing: Boolean, showSkeleton: Boolean, isQuarterSelection: Boolean) =
+    private fun updateVisitors(isRefreshing: Boolean, showSkeleton: Boolean) =
         launch {
             if (!FeatureFlag.ANALYTICS_HUB_PRODUCTS_AND_REPORTS.isEnabled()) {
                 return@launch
             }
+
+            val isQuarterSelection = state.value.analyticsDateRangeSelectorState.selectedPeriod
+                .let { AnalyticTimePeriod.from(it) }
+                .let { (it == QUARTER_TO_DATE) || (it == LAST_QUARTER) }
 
             val timePeriod = getSavedTimePeriod()
             val dateRange = getSavedDateRange()
