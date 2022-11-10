@@ -31,8 +31,7 @@ class AddStoreBottomSheetFragment : WCBottomSheetDialogFragment(R.layout.dialog_
                         .actionAddStoreBottomSheetFragmentToWebViewStoreCreationFragment()
             }
             findNavController().navigateSafely(
-                directions = AddStoreBottomSheetFragmentDirections
-                    .actionAddStoreBottomSheetFragmentToWebViewStoreCreationFragment(),
+                directions = directions,
                 navOptions = NavOptions.Builder()
                     .setPopUpTo(R.id.sitePickerFragment, false)
                     .build()
