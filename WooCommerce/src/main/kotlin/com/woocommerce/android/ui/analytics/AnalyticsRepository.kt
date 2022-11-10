@@ -195,12 +195,21 @@ class AnalyticsRepository @Inject constructor(
         selectedRange: AnalyticTimePeriod,
         fetchStrategy: FetchStrategy
     ): VisitorsResult {
-        return getVisitorsStats(
+        val previousPeriodStats = getVisitorsStats(
+            dateRange.getComparisonPeriod().to,
+            getGranularity(selectedRange),
+            fetchStrategy,
+            MOST_RECENT_VISITORS_AND_VIEW_FETCH_LIMIT
+        )
+
+        val currentPeriodStats = getVisitorsStats(
             dateRange.getSelectedPeriod().to,
             getGranularity(selectedRange),
             fetchStrategy,
             MOST_RECENT_VISITORS_AND_VIEW_FETCH_LIMIT
-        ).model?.dates?.last()
+        )
+
+        return currentPeriodStats.model?.dates?.last()
             ?.let {
                 VisitorsResult.VisitorsData(
                     VisitorsStat(
@@ -218,6 +227,20 @@ class AnalyticsRepository @Inject constructor(
     ): VisitorsResult {
         val startDate = dateRange.getSelectedPeriod().from.theDayBeforeIt()
         val simpleDateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
+
+        val previousPeriodStats = getVisitorsStats(
+            dateRange.getComparisonPeriod().to,
+            getGranularity(selectedRange),
+            fetchStrategy,
+            QUARTER_VISITORS_AND_VIEW_FETCH_LIMIT
+        )
+
+        val currentPeriodStats = getVisitorsStats(
+            dateRange.getSelectedPeriod().to,
+            getGranularity(selectedRange),
+            fetchStrategy,
+            QUARTER_VISITORS_AND_VIEW_FETCH_LIMIT
+        )
 
         return getVisitorsStats(
             dateRange.getSelectedPeriod().to,
