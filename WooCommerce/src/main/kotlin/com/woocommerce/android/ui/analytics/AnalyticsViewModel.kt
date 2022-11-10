@@ -8,6 +8,7 @@ import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.model.DeltaPercentage
 import com.woocommerce.android.model.ProductItem
+import com.woocommerce.android.model.VisitorsStat
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.analytics.AnalyticsRepository.FetchStrategy.ForceNew
 import com.woocommerce.android.ui.analytics.AnalyticsRepository.FetchStrategy.Saved
@@ -296,13 +297,10 @@ class AnalyticsViewModel @Inject constructor(
                 return@launch
             }
 
-            val isQuarterSelection = state.value.analyticsDateRangeSelectorState.selectedPeriod
-                .let { AnalyticTimePeriod.from(it) }
-                .let { (it == QUARTER_TO_DATE) || (it == LAST_QUARTER) }
-
             val timePeriod = getSavedTimePeriod()
             val dateRange = getSavedDateRange()
             val fetchStrategy = getFetchStrategy(isRefreshing)
+            val isQuarterSelection = (timePeriod == QUARTER_TO_DATE) || (timePeriod == LAST_QUARTER)
 
             if (timePeriod == CUSTOM) {
                 mutableState.value = state.value.copy(visitorsState = AnalyticsInformationViewState.HiddenState)
@@ -327,10 +325,7 @@ class AnalyticsViewModel @Inject constructor(
             is VisitorsData -> {
                 mutableState.value = state.value.copy(
                     refreshIndicator = NotShowIndicator,
-                    visitorsState = buildVisitorsDataViewState(
-                        visitorsStat.visitorsCount,
-                        visitorsStat.viewsCount
-                    )
+                    visitorsState = buildVisitorsDataViewState(visitorsStat)
                 )
                 transactionLauncher.onVisitorsFetched()
             }
@@ -394,20 +389,19 @@ class AnalyticsViewModel @Inject constructor(
     }
 
     private fun buildVisitorsDataViewState(
-        visitorsCount: Int,
-        viewsCount: Int
+        stats: VisitorsStat
     ) = DataViewState(
         title = resourceProvider.getString(R.string.analytics_visitors_and_views_card_title),
         leftSection = AnalyticsInformationSectionViewState(
             title = resourceProvider.getString(R.string.analytics_visitors_subtitle),
-            visitorsCount.toString(),
-            null, /** Add delta calculation to Visitors and Views stats **/
+            stats.visitorsCount.toString(),
+            stats.avgVisitorsDelta.run { this as? DeltaPercentage.Value }?.value,
             listOf() /** Add charts calculation to Visitors and Views stats **/
         ),
         rightSection = AnalyticsInformationSectionViewState(
             resourceProvider.getString(R.string.analytics_views_subtitle),
-            viewsCount.toString(),
-            null, /** Add delta calculation to Visitors and Views stats **/
+            stats.viewsCount.toString(),
+            stats.avgViewsDelta.run { this as? DeltaPercentage.Value }?.value,
             listOf() /** Add charts calculation to Visitors and Views stats **/
         )
     )
