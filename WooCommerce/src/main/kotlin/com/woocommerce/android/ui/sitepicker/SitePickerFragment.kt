@@ -269,7 +269,7 @@ class SitePickerFragment : BaseFragment(R.layout.fragment_site_picker), LoginEma
             .navigateSafely(SitePickerFragmentDirections.actionSitePickerFragmentToAddStoreBottomSheetFragment())
     }
 
-    private fun navigateToStoreCreation(source: String) {
+    private fun navigateToStoreCreation() {
         when {
             FeatureFlag.NATIVE_STORE_CREATION_FLOW.isEnabled() -> findNavController().navigateSafely(
                 SitePickerFragmentDirections.actionSitePickerFragmentToStoreCreationNativeFlow()
