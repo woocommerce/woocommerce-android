@@ -3,6 +3,12 @@ package com.woocommerce.android.ui.jetpack
 import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.ui.common.PluginRepository
+import com.woocommerce.android.ui.common.PluginRepository.PluginStatus
+import com.woocommerce.android.ui.common.PluginRepository.PluginStatus.PluginActivated
+import com.woocommerce.android.ui.common.PluginRepository.PluginStatus.PluginActivationFailed
+import com.woocommerce.android.ui.common.PluginRepository.PluginStatus.PluginInstallFailed
+import com.woocommerce.android.ui.common.PluginRepository.PluginStatus.PluginInstalled
 import com.woocommerce.android.ui.jetpack.JetpackInstallViewModel.FailureType.ACTIVATION
 import com.woocommerce.android.ui.jetpack.JetpackInstallViewModel.FailureType.CONNECTION
 import com.woocommerce.android.ui.jetpack.JetpackInstallViewModel.FailureType.INSTALLATION
@@ -11,11 +17,6 @@ import com.woocommerce.android.ui.jetpack.JetpackInstallViewModel.InstallStatus.
 import com.woocommerce.android.ui.jetpack.JetpackInstallViewModel.InstallStatus.Failed
 import com.woocommerce.android.ui.jetpack.JetpackInstallViewModel.InstallStatus.Finished
 import com.woocommerce.android.ui.jetpack.JetpackInstallViewModel.InstallStatus.Installing
-import com.woocommerce.android.ui.jetpack.PluginRepository.PluginStatus
-import com.woocommerce.android.ui.jetpack.PluginRepository.PluginStatus.PluginActivated
-import com.woocommerce.android.ui.jetpack.PluginRepository.PluginStatus.PluginActivationFailed
-import com.woocommerce.android.ui.jetpack.PluginRepository.PluginStatus.PluginInstallFailed
-import com.woocommerce.android.ui.jetpack.PluginRepository.PluginStatus.PluginInstalled
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableSharedFlow

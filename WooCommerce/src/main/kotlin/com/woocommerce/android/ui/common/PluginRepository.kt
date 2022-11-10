@@ -1,12 +1,12 @@
-package com.woocommerce.android.ui.jetpack
+package com.woocommerce.android.ui.common
 
 import android.os.Parcelable
 import com.woocommerce.android.AppConstants
 import com.woocommerce.android.tools.SelectedSite
-import com.woocommerce.android.ui.jetpack.PluginRepository.PluginStatus.PluginActivated
-import com.woocommerce.android.ui.jetpack.PluginRepository.PluginStatus.PluginActivationFailed
-import com.woocommerce.android.ui.jetpack.PluginRepository.PluginStatus.PluginInstallFailed
-import com.woocommerce.android.ui.jetpack.PluginRepository.PluginStatus.PluginInstalled
+import com.woocommerce.android.ui.common.PluginRepository.PluginStatus.PluginActivated
+import com.woocommerce.android.ui.common.PluginRepository.PluginStatus.PluginActivationFailed
+import com.woocommerce.android.ui.common.PluginRepository.PluginStatus.PluginInstallFailed
+import com.woocommerce.android.ui.common.PluginRepository.PluginStatus.PluginInstalled
 import com.woocommerce.android.util.ContinuationWrapper
 import com.woocommerce.android.util.WooLog
 import kotlinx.coroutines.channels.ProducerScope
@@ -23,9 +23,15 @@ import org.wordpress.android.fluxc.generated.PluginActionBuilder
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.model.plugin.SitePluginModel
 import org.wordpress.android.fluxc.store.PluginStore
-import org.wordpress.android.fluxc.store.PluginStore.*
+import org.wordpress.android.fluxc.store.PluginStore.ConfigureSitePluginError
+import org.wordpress.android.fluxc.store.PluginStore.ConfigureSitePluginPayload
+import org.wordpress.android.fluxc.store.PluginStore.FetchJetpackSitePluginPayload
+import org.wordpress.android.fluxc.store.PluginStore.InstallSitePluginError
+import org.wordpress.android.fluxc.store.PluginStore.InstallSitePluginPayload
+import org.wordpress.android.fluxc.store.PluginStore.OnJetpackSitePluginFetched
+import org.wordpress.android.fluxc.store.PluginStore.OnSitePluginConfigured
+import org.wordpress.android.fluxc.store.PluginStore.OnSitePluginInstalled
 import org.wordpress.android.fluxc.store.Store
-import java.lang.Exception
 import javax.inject.Inject
 
 class PluginRepository @Inject constructor(
