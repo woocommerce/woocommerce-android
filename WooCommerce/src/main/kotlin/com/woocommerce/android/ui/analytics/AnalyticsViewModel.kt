@@ -25,8 +25,17 @@ import com.woocommerce.android.ui.analytics.AnalyticsViewEvent.OpenWPComWebView
 import com.woocommerce.android.ui.analytics.RefreshIndicator.NotShowIndicator
 import com.woocommerce.android.ui.analytics.RefreshIndicator.ShowIndicator
 import com.woocommerce.android.ui.analytics.daterangeselector.AnalyticTimePeriod
+import com.woocommerce.android.ui.analytics.daterangeselector.AnalyticTimePeriod.CUSTOM
+import com.woocommerce.android.ui.analytics.daterangeselector.AnalyticTimePeriod.LAST_MONTH
 import com.woocommerce.android.ui.analytics.daterangeselector.AnalyticTimePeriod.LAST_QUARTER
+import com.woocommerce.android.ui.analytics.daterangeselector.AnalyticTimePeriod.LAST_WEEK
+import com.woocommerce.android.ui.analytics.daterangeselector.AnalyticTimePeriod.LAST_YEAR
+import com.woocommerce.android.ui.analytics.daterangeselector.AnalyticTimePeriod.MONTH_TO_DATE
 import com.woocommerce.android.ui.analytics.daterangeselector.AnalyticTimePeriod.QUARTER_TO_DATE
+import com.woocommerce.android.ui.analytics.daterangeselector.AnalyticTimePeriod.TODAY
+import com.woocommerce.android.ui.analytics.daterangeselector.AnalyticTimePeriod.WEEK_TO_DATE
+import com.woocommerce.android.ui.analytics.daterangeselector.AnalyticTimePeriod.YEAR_TO_DATE
+import com.woocommerce.android.ui.analytics.daterangeselector.AnalyticTimePeriod.YESTERDAY
 import com.woocommerce.android.ui.analytics.daterangeselector.AnalyticsDateRange
 import com.woocommerce.android.ui.analytics.daterangeselector.AnalyticsDateRangeCalculator
 import com.woocommerce.android.ui.analytics.daterangeselector.AnalyticsDateRangeFormatter
@@ -117,14 +126,14 @@ class AnalyticsViewModel @Inject constructor(
                     toDateStr
                 ),
                 toDatePeriod = resourceProvider.getString(R.string.date_timeframe_custom_date_range_title),
-                selectedPeriod = getTimePeriodDescription(AnalyticTimePeriod.CUSTOM)
+                selectedPeriod = getTimePeriodDescription(CUSTOM)
             )
         )
 
         val dateRange = analyticsDateRange.getAnalyticsDateRangeFromCustom(fromDateUtc, toDateUtc)
         saveSelectedDateRange(dateRange)
-        saveSelectedTimePeriod(AnalyticTimePeriod.CUSTOM)
-        trackSelectedDateRange(AnalyticTimePeriod.CUSTOM)
+        saveSelectedTimePeriod(CUSTOM)
+        trackSelectedDateRange(CUSTOM)
 
         viewModelScope.launch {
             refreshAllAnalyticsAtOnce(isRefreshing = false, showSkeleton = true)
@@ -344,17 +353,17 @@ class AnalyticsViewModel @Inject constructor(
 
     private fun getTimePeriodDescription(analyticTimeRange: AnalyticTimePeriod): String =
         when (analyticTimeRange) {
-            AnalyticTimePeriod.TODAY -> resourceProvider.getString(R.string.date_timeframe_today)
-            AnalyticTimePeriod.YESTERDAY -> resourceProvider.getString(R.string.date_timeframe_yesterday)
-            AnalyticTimePeriod.LAST_WEEK -> resourceProvider.getString(R.string.date_timeframe_last_week)
-            AnalyticTimePeriod.LAST_MONTH -> resourceProvider.getString(R.string.date_timeframe_last_month)
+            TODAY -> resourceProvider.getString(R.string.date_timeframe_today)
+            YESTERDAY -> resourceProvider.getString(R.string.date_timeframe_yesterday)
+            LAST_WEEK -> resourceProvider.getString(R.string.date_timeframe_last_week)
+            LAST_MONTH -> resourceProvider.getString(R.string.date_timeframe_last_month)
             LAST_QUARTER -> resourceProvider.getString(R.string.date_timeframe_last_quarter)
-            AnalyticTimePeriod.LAST_YEAR -> resourceProvider.getString(R.string.date_timeframe_last_year)
-            AnalyticTimePeriod.WEEK_TO_DATE -> resourceProvider.getString(R.string.date_timeframe_week_to_date)
-            AnalyticTimePeriod.MONTH_TO_DATE -> resourceProvider.getString(R.string.date_timeframe_month_to_date)
+            LAST_YEAR -> resourceProvider.getString(R.string.date_timeframe_last_year)
+            WEEK_TO_DATE -> resourceProvider.getString(R.string.date_timeframe_week_to_date)
+            MONTH_TO_DATE -> resourceProvider.getString(R.string.date_timeframe_month_to_date)
             QUARTER_TO_DATE -> resourceProvider.getString(R.string.date_timeframe_quarter_to_date)
-            AnalyticTimePeriod.YEAR_TO_DATE -> resourceProvider.getString(R.string.date_timeframe_year_to_date)
-            AnalyticTimePeriod.CUSTOM -> resourceProvider.getString(R.string.date_timeframe_custom)
+            YEAR_TO_DATE -> resourceProvider.getString(R.string.date_timeframe_year_to_date)
+            CUSTOM -> resourceProvider.getString(R.string.date_timeframe_custom)
         }
 
     private fun formatValue(value: String, currencyCode: String?) = currencyCode
