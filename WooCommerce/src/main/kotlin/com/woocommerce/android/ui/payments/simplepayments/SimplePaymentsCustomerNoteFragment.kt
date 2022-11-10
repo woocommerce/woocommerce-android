@@ -76,7 +76,7 @@ class SimplePaymentsCustomerNoteFragment :
                 )
                 true
             }
-            else -> super.onOptionsItemSelected(item)
+            else -> false
         }
     }
 
