@@ -391,7 +391,7 @@ class AnalyticsViewModel @Inject constructor(
         rightSection = AnalyticsInformationSectionViewState(
             resourceProvider.getString(R.string.analytics_views_subtitle),
             stats.viewsCount.toString(),
-            stats.avgViewsDelta.run { this as? DeltaPercentage.Value}?.value,
+            stats.avgViewsDelta.run { this as? DeltaPercentage.Value }?.value,
             listOf() /** Add charts calculation to Visitors and Views stats **/
         )
     )
