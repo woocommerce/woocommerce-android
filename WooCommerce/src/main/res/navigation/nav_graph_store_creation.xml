@@ -7,6 +7,15 @@
     <fragment
         android:id="@+id/storeCreationQuestionsFragment"
         android:name="com.woocommerce.android.ui.login.storecreation.StoreCreationQuestionsFragment"
-        android:label="fragment_store_creation_questions" />
+        android:label="fragment_store_creation_questions">
+        <action
+            android:id="@+id/action_storeCreationQuestionsFragment_to_domainPickerFragment"
+            app:destination="@id/domainPickerFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/domainPickerFragment"
+        android:name="com.woocommerce.android.ui.login.storecreation.domainpicker.DomainPickerFragment"
+        android:label="fragment_domain_picker" />
 
 </navigation>

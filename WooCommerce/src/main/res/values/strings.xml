@@ -2697,4 +2697,10 @@
     <string name="store_creation_exit_dialog_title">Do you want to leave?</string>
     <string name="store_creation_exit_dialog_message">You will lose all your store information.</string>
     <string name="store_creation_confirm_and_leave">Confirm and leave</string>
+    <string name="store_creation_domain_picker_title">Choose a domain</string>
+    <string name="store_creation_domain_picker_subtitle">This is where people will find you on the Internet. Don\'t worry, you can change it later.</string>
+    <string name="store_creation_domain_picker_hint">Type a domain</string>
+    <string name="store_creation_domain_picker_skip_button">Skip</string>
+    <string name="store_creation_domain_picker_suggestions_title">Suggestions</string>
+
 </resources>
