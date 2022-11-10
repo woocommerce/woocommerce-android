@@ -56,8 +56,9 @@ class SitePickerRepository @Inject constructor(
 
     suspend fun fetchSiteProductSettings(site: SiteModel) = wooCommerceStore.fetchSiteProductSettings(site)
 
-    suspend fun verifySiteWooAPIVersion(site: SiteModel, overrideRetryPolicy: Boolean) =
-        wooCommerceStore.fetchSupportedApiVersion(site, overrideRetryPolicy)
+    // overrideRetryPolicy = true, will set the JetPackTunnel timeout policy to 15s rather than default 30s
+    suspend fun verifySiteWooAPIVersion(site: SiteModel) =
+        wooCommerceStore.fetchSupportedApiVersion(site, overrideRetryPolicy = true)
 
     suspend fun fetchSiteInfo(siteAddress: String): Result<ConnectSiteInfoPayload> {
         val action = SiteActionBuilder.newFetchConnectSiteInfoAction(siteAddress)

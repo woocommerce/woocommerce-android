@@ -26,7 +26,6 @@ import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_LOGIN_
 import com.woocommerce.android.analytics.ExperimentTracker
 import com.woocommerce.android.barcode.QrCodeScanningFragment
 import com.woocommerce.android.databinding.ActivityLoginBinding
-import com.woocommerce.android.experiment.PrologueExperiment
 import com.woocommerce.android.extensions.parcelable
 import com.woocommerce.android.support.ZendeskExtraTags
 import com.woocommerce.android.support.ZendeskHelper
@@ -35,7 +34,6 @@ import com.woocommerce.android.support.help.HelpActivity.Origin
 import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.login.LoginPrologueCarouselFragment.PrologueCarouselListener
 import com.woocommerce.android.ui.login.LoginPrologueFragment.PrologueFinishedListener
-import com.woocommerce.android.ui.login.LoginPrologueSurveyFragment.PrologueSurveyListener
 import com.woocommerce.android.ui.login.UnifiedLoginTracker.Click
 import com.woocommerce.android.ui.login.UnifiedLoginTracker.Flow
 import com.woocommerce.android.ui.login.UnifiedLoginTracker.Flow.LOGIN_SITE_ADDRESS
@@ -113,7 +111,6 @@ class LoginActivity :
     LoginNoJetpackListener,
     LoginEmailHelpDialogFragment.Listener,
     WooLoginEmailFragment.Listener,
-    PrologueSurveyListener,
     WooLoginEmailPasswordFragment.Listener,
     LoginNoWPcomAccountFoundFragment.Listener,
     SignUpFragment.Listener,
@@ -148,17 +145,26 @@ class LoginActivity :
         }
     }
 
-    @Inject internal lateinit var androidInjector: DispatchingAndroidInjector<Any>
-    @Inject internal lateinit var loginAnalyticsListener: LoginAnalyticsListener
-    @Inject internal lateinit var unifiedLoginTracker: UnifiedLoginTracker
-    @Inject internal lateinit var zendeskHelper: ZendeskHelper
-    @Inject internal lateinit var urlUtils: UrlUtils
-    @Inject internal lateinit var experimentTracker: ExperimentTracker
-    @Inject internal lateinit var appPrefsWrapper: AppPrefsWrapper
-    @Inject internal lateinit var dispatcher: Dispatcher
-    @Inject internal lateinit var loginNotificationScheduler: LoginNotificationScheduler
-    @Inject internal lateinit var prologueExperiment: PrologueExperiment
-    @Inject internal lateinit var uiMessageResolver: UIMessageResolver
+    @Inject
+    internal lateinit var androidInjector: DispatchingAndroidInjector<Any>
+    @Inject
+    internal lateinit var loginAnalyticsListener: LoginAnalyticsListener
+    @Inject
+    internal lateinit var unifiedLoginTracker: UnifiedLoginTracker
+    @Inject
+    internal lateinit var zendeskHelper: ZendeskHelper
+    @Inject
+    internal lateinit var urlUtils: UrlUtils
+    @Inject
+    internal lateinit var experimentTracker: ExperimentTracker
+    @Inject
+    internal lateinit var appPrefsWrapper: AppPrefsWrapper
+    @Inject
+    internal lateinit var dispatcher: Dispatcher
+    @Inject
+    internal lateinit var loginNotificationScheduler: LoginNotificationScheduler
+    @Inject
+    internal lateinit var uiMessageResolver: UIMessageResolver
 
     private var loginMode: LoginMode? = null
     private lateinit var binding: ActivityLoginBinding
@@ -325,9 +331,6 @@ class LoginActivity :
     private fun getPrologueFragment(): LoginPrologueFragment? =
         supportFragmentManager.findFragmentByTag(LoginPrologueFragment.TAG) as? LoginPrologueFragment
 
-    private fun getPrologueSurveyFragment(): LoginPrologueSurveyFragment? =
-        supportFragmentManager.findFragmentByTag(LoginPrologueSurveyFragment.TAG) as? LoginPrologueSurveyFragment
-
     private fun getLoginViaSiteAddressFragment(): LoginSiteAddressFragment? =
         supportFragmentManager.findFragmentByTag(LoginSiteAddressFragment.TAG) as? WooLoginSiteAddressFragment
 
@@ -460,11 +463,6 @@ class LoginActivity :
     private fun showPrologueFragment() = lifecycleScope.launchWhenStarted {
         val prologueFragment = getPrologueFragment() ?: LoginPrologueFragment()
         changeFragment(prologueFragment, true, LoginPrologueFragment.TAG)
-    }
-
-    private fun showPrologueSurveyFragment() {
-        val prologueSurveyFragment = getPrologueSurveyFragment() ?: LoginPrologueSurveyFragment()
-        changeFragment(prologueSurveyFragment, true, LoginPrologueSurveyFragment.TAG)
     }
 
     override fun loginViaSocialAccount(
@@ -929,12 +927,6 @@ class LoginActivity :
         intent.extras?.getString(KEY_LOGIN_HELP_NOTIFICATION)
 
     override fun onCarouselFinished() {
-        lifecycleScope.launchWhenStarted {
-            prologueExperiment.run(::showPrologueFragment, ::showPrologueSurveyFragment)
-        }
-    }
-
-    override fun onSurveyFinished() {
         showPrologueFragment()
     }
 
