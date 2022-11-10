@@ -20,7 +20,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
-import com.woocommerce.android.ui.orders.list.OrderListViewModel
 import com.woocommerce.android.ui.payments.SelectPaymentMethodViewModel
 
 @Composable
@@ -32,18 +31,6 @@ fun PaymentsScreenBannerDismissDialog(viewModel: SelectPaymentMethodViewModel) {
         onDismissClick = viewModel::onBannerAlertDismiss,
         showDialog,
         AnalyticsTracker.KEY_BANNER_PAYMENTS
-    )
-}
-
-@Composable
-fun OrderListBannerDismissDialog(viewModel: OrderListViewModel) {
-    val showDialog by viewModel.shouldShowUpsellCardReaderDismissDialog.observeAsState(true)
-    BannerDismissDialog(
-        onRemindLaterClick = viewModel::onRemindLaterClicked,
-        onDontShowAgainClick = viewModel::onDontShowAgainClicked,
-        onDismissClick = viewModel::onBannerAlertDismiss,
-        showDialog,
-        AnalyticsTracker.KEY_BANNER_ORDER_LIST
     )
 }
 
