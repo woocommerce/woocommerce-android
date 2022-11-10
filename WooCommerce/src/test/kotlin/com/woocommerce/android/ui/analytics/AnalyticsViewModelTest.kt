@@ -176,7 +176,7 @@ class AnalyticsViewModelTest : BaseUnitTest() {
             }
 
             sut = givenAViewModel(resourceProvider)
-            sut.onSelectedTimePeriodChanged(LAST_YEAR.description)
+            sut.onSelectedTimePeriodChanged(LAST_YEAR)
 
             with(sut.state.value.analyticsDateRangeSelectorState) {
                 assertEquals(LAST_YEAR.description, selectedPeriod)
@@ -195,7 +195,7 @@ class AnalyticsViewModelTest : BaseUnitTest() {
 
             sut = givenAViewModel()
 
-            sut.onSelectedTimePeriodChanged(LAST_YEAR.description)
+            sut.onSelectedTimePeriodChanged(LAST_YEAR)
 
             val resourceProvider = givenAResourceProvider()
             with(sut.state.value.revenueState) {
@@ -222,7 +222,7 @@ class AnalyticsViewModelTest : BaseUnitTest() {
                 )
 
             sut = givenAViewModel()
-            sut.onSelectedTimePeriodChanged(LAST_YEAR.description)
+            sut.onSelectedTimePeriodChanged(LAST_YEAR)
 
             with(sut.state.value.revenueState) {
                 assertTrue(this is AnalyticsInformationViewState.DataViewState)
@@ -240,7 +240,7 @@ class AnalyticsViewModelTest : BaseUnitTest() {
 
             sut = givenAViewModel()
 
-            sut.onSelectedTimePeriodChanged(LAST_YEAR.description)
+            sut.onSelectedTimePeriodChanged(LAST_YEAR)
 
             with(sut.state.value.refreshIndicator) {
                 assertTrue(this is NotShowIndicator)
@@ -268,7 +268,7 @@ class AnalyticsViewModelTest : BaseUnitTest() {
         }
 
         sut = givenAViewModel()
-        sut.onSelectedTimePeriodChanged(WEEK_TO_DATE.description)
+        sut.onSelectedTimePeriodChanged(WEEK_TO_DATE)
         sut.onRefreshRequested()
 
         val resourceProvider = givenAResourceProvider()
@@ -292,7 +292,7 @@ class AnalyticsViewModelTest : BaseUnitTest() {
             }
 
             sut = givenAViewModel()
-            sut.onSelectedTimePeriodChanged(LAST_YEAR.description)
+            sut.onSelectedTimePeriodChanged(LAST_YEAR)
 
             val resourceProvider = givenAResourceProvider()
             with(sut.state.value.ordersState) {
@@ -315,7 +315,7 @@ class AnalyticsViewModelTest : BaseUnitTest() {
             }
 
             sut = givenAViewModel()
-            sut.onSelectedTimePeriodChanged(LAST_YEAR.description)
+            sut.onSelectedTimePeriodChanged(LAST_YEAR)
 
             val resourceProvider = givenAResourceProvider()
             with(sut.state.value.productsState) {
@@ -354,7 +354,7 @@ class AnalyticsViewModelTest : BaseUnitTest() {
         }
 
         sut = givenAViewModel()
-        sut.onSelectedTimePeriodChanged(WEEK_TO_DATE.description)
+        sut.onSelectedTimePeriodChanged(WEEK_TO_DATE)
         sut.onRefreshRequested()
 
         val resourceProvider = givenAResourceProvider()
@@ -391,7 +391,7 @@ class AnalyticsViewModelTest : BaseUnitTest() {
         }
 
         sut = givenAViewModel()
-        sut.onSelectedTimePeriodChanged(WEEK_TO_DATE.description)
+        sut.onSelectedTimePeriodChanged(WEEK_TO_DATE)
         sut.onRefreshRequested()
 
         with(sut.state.value.revenueState) {
@@ -422,7 +422,7 @@ class AnalyticsViewModelTest : BaseUnitTest() {
         }
 
         sut = givenAViewModel()
-        sut.onSelectedTimePeriodChanged(WEEK_TO_DATE.description)
+        sut.onSelectedTimePeriodChanged(WEEK_TO_DATE)
         sut.onRefreshRequested()
 
         val resourceProvider = givenAResourceProvider()

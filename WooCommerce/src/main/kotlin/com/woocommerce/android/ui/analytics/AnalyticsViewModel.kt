@@ -8,6 +8,7 @@ import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.model.DeltaPercentage
 import com.woocommerce.android.model.ProductItem
+import com.woocommerce.android.model.VisitorsStat
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.analytics.AnalyticsRepository.FetchStrategy.ForceNew
 import com.woocommerce.android.ui.analytics.AnalyticsRepository.FetchStrategy.Saved
@@ -17,16 +18,31 @@ import com.woocommerce.android.ui.analytics.AnalyticsRepository.ProductsResult.P
 import com.woocommerce.android.ui.analytics.AnalyticsRepository.ProductsResult.ProductsError
 import com.woocommerce.android.ui.analytics.AnalyticsRepository.RevenueResult.RevenueData
 import com.woocommerce.android.ui.analytics.AnalyticsRepository.RevenueResult.RevenueError
+import com.woocommerce.android.ui.analytics.AnalyticsRepository.VisitorsResult
+import com.woocommerce.android.ui.analytics.AnalyticsRepository.VisitorsResult.VisitorsData
+import com.woocommerce.android.ui.analytics.AnalyticsRepository.VisitorsResult.VisitorsError
 import com.woocommerce.android.ui.analytics.AnalyticsViewEvent.OpenUrl
 import com.woocommerce.android.ui.analytics.AnalyticsViewEvent.OpenWPComWebView
 import com.woocommerce.android.ui.analytics.RefreshIndicator.NotShowIndicator
 import com.woocommerce.android.ui.analytics.RefreshIndicator.ShowIndicator
 import com.woocommerce.android.ui.analytics.daterangeselector.AnalyticTimePeriod
+import com.woocommerce.android.ui.analytics.daterangeselector.AnalyticTimePeriod.CUSTOM
+import com.woocommerce.android.ui.analytics.daterangeselector.AnalyticTimePeriod.LAST_MONTH
+import com.woocommerce.android.ui.analytics.daterangeselector.AnalyticTimePeriod.LAST_QUARTER
+import com.woocommerce.android.ui.analytics.daterangeselector.AnalyticTimePeriod.LAST_WEEK
+import com.woocommerce.android.ui.analytics.daterangeselector.AnalyticTimePeriod.LAST_YEAR
+import com.woocommerce.android.ui.analytics.daterangeselector.AnalyticTimePeriod.MONTH_TO_DATE
+import com.woocommerce.android.ui.analytics.daterangeselector.AnalyticTimePeriod.QUARTER_TO_DATE
+import com.woocommerce.android.ui.analytics.daterangeselector.AnalyticTimePeriod.TODAY
+import com.woocommerce.android.ui.analytics.daterangeselector.AnalyticTimePeriod.WEEK_TO_DATE
+import com.woocommerce.android.ui.analytics.daterangeselector.AnalyticTimePeriod.YEAR_TO_DATE
+import com.woocommerce.android.ui.analytics.daterangeselector.AnalyticTimePeriod.YESTERDAY
 import com.woocommerce.android.ui.analytics.daterangeselector.AnalyticsDateRange
 import com.woocommerce.android.ui.analytics.daterangeselector.AnalyticsDateRangeCalculator
 import com.woocommerce.android.ui.analytics.daterangeselector.AnalyticsDateRangeFormatter
 import com.woocommerce.android.ui.analytics.daterangeselector.AnalyticsDateRangeSelectorViewState
 import com.woocommerce.android.ui.analytics.informationcard.AnalyticsInformationSectionViewState
+import com.woocommerce.android.ui.analytics.informationcard.AnalyticsInformationViewState
 import com.woocommerce.android.ui.analytics.informationcard.AnalyticsInformationViewState.DataViewState
 import com.woocommerce.android.ui.analytics.informationcard.AnalyticsInformationViewState.LoadingViewState
 import com.woocommerce.android.ui.analytics.informationcard.AnalyticsInformationViewState.NoDataState
@@ -73,11 +89,18 @@ class AnalyticsViewModel @Inject constructor(
             buildAnalyticsDateRangeSelectorViewState(),
             LoadingViewState,
             LoadingViewState,
-            LoadingProductsViewState
+            LoadingProductsViewState,
+            LoadingViewState,
         )
     )
 
     val state: StateFlow<AnalyticsViewState> = mutableState
+
+    init {
+        viewModelScope.launch {
+            refreshAllAnalyticsAtOnce(isRefreshing = false, showSkeleton = true)
+        }
+    }
 
     fun onCustomDateRangeClicked() {
         val savedRange = getSavedDateRange()
@@ -105,49 +128,34 @@ class AnalyticsViewModel @Inject constructor(
                     toDateStr
                 ),
                 toDatePeriod = resourceProvider.getString(R.string.date_timeframe_custom_date_range_title),
-                selectedPeriod = getTimePeriodDescription(AnalyticTimePeriod.CUSTOM)
+                selectedPeriod = getTimePeriodDescription(CUSTOM)
             )
         )
 
         val dateRange = analyticsDateRange.getAnalyticsDateRangeFromCustom(fromDateUtc, toDateUtc)
         saveSelectedDateRange(dateRange)
-        saveSelectedTimePeriod(AnalyticTimePeriod.CUSTOM)
-        trackSelectedDateRange(AnalyticTimePeriod.CUSTOM)
+        saveSelectedTimePeriod(CUSTOM)
+        trackSelectedDateRange(CUSTOM)
 
         viewModelScope.launch {
-            updateRevenue(isRefreshing = false, showSkeleton = true)
-            updateOrders(isRefreshing = false, showSkeleton = true)
-            updateProducts(isRefreshing = false, showSkeleton = true)
-        }
-    }
-
-    init {
-        viewModelScope.launch {
-            updateRevenue(isRefreshing = false, showSkeleton = true)
-            updateOrders(isRefreshing = false, showSkeleton = true)
-            updateProducts(isRefreshing = false, showSkeleton = true)
+            refreshAllAnalyticsAtOnce(isRefreshing = false, showSkeleton = true)
         }
     }
 
     fun onRefreshRequested() {
         viewModelScope.launch {
-            updateRevenue(isRefreshing = true, showSkeleton = false)
-            updateOrders(isRefreshing = true, showSkeleton = false)
-            updateProducts(isRefreshing = true, showSkeleton = false)
+            refreshAllAnalyticsAtOnce(isRefreshing = true, showSkeleton = false)
         }
     }
 
-    fun onSelectedTimePeriodChanged(newSelection: String) {
-        val selectedTimePeriod: AnalyticTimePeriod = AnalyticTimePeriod.from(newSelection)
+    fun onSelectedTimePeriodChanged(selectedTimePeriod: AnalyticTimePeriod) {
         val dateRange = analyticsDateRange.getAnalyticsDateRangeFrom(selectedTimePeriod)
         saveSelectedTimePeriod(selectedTimePeriod)
         saveSelectedDateRange(dateRange)
         updateDateSelector()
         trackSelectedDateRange(selectedTimePeriod)
         viewModelScope.launch {
-            updateRevenue(isRefreshing = false, showSkeleton = true)
-            updateOrders(isRefreshing = false, showSkeleton = true)
-            updateProducts(isRefreshing = false, showSkeleton = true)
+            refreshAllAnalyticsAtOnce(isRefreshing = false, showSkeleton = true)
         }
     }
 
@@ -159,32 +167,40 @@ class AnalyticsViewModel @Inject constructor(
 
     fun onRevenueSeeReportClick() {
         trackSeeReportClicked(AnalyticsTracker.VALUE_REVENUE_CARD_SELECTED)
-        if (selectedSite.getIfExists()?.isWPCom == true || selectedSite.getIfExists()?.isWPComAtomic == true) {
-            triggerEvent(OpenWPComWebView(analyticsRepository.getRevenueAdminPanelUrl()))
-        } else {
-            triggerEvent(OpenUrl(analyticsRepository.getRevenueAdminPanelUrl()))
-        }
+        openReportsView(analyticsRepository.getRevenueAdminPanelUrl())
     }
 
     fun onOrdersSeeReportClick() {
         trackSeeReportClicked(AnalyticsTracker.VALUE_ORDERS_CARD_SELECTED)
-        if (selectedSite.getIfExists()?.isWPCom == true || selectedSite.getIfExists()?.isWPComAtomic == true) {
-            triggerEvent(OpenWPComWebView(analyticsRepository.getOrdersAdminPanelUrl()))
-        } else {
-            triggerEvent(OpenUrl(analyticsRepository.getOrdersAdminPanelUrl()))
-        }
+        openReportsView(analyticsRepository.getOrdersAdminPanelUrl())
     }
 
     fun onProductsSeeReportClick() {
         trackSeeReportClicked(AnalyticsTracker.VALUE_PRODUCTS_CARD_SELECTED)
-        if (selectedSite.getIfExists()?.isWPCom == true || selectedSite.getIfExists()?.isWPComAtomic == true) {
-            triggerEvent(OpenWPComWebView(analyticsRepository.getProductsAdminPanelUrl()))
-        } else {
-            triggerEvent(OpenUrl(analyticsRepository.getProductsAdminPanelUrl()))
-        }
+        openReportsView(analyticsRepository.getProductsAdminPanelUrl())
+    }
+
+    fun onVisitorsSeeReportClick() {
+        // Add track visitors click
+        openReportsView(analyticsRepository.getJetpackStatsPanelUrl())
     }
 
     fun onTrackableUIInteraction() = usageTracksEventEmitter.interacted()
+
+    private fun openReportsView(panelUrl: String) {
+        if (selectedSite.getIfExists()?.isWPCom == true || selectedSite.getIfExists()?.isWPComAtomic == true) {
+            triggerEvent(OpenWPComWebView(panelUrl))
+        } else {
+            triggerEvent(OpenUrl(panelUrl))
+        }
+    }
+
+    private fun refreshAllAnalyticsAtOnce(isRefreshing: Boolean, showSkeleton: Boolean) {
+        updateRevenue(isRefreshing, showSkeleton)
+        updateOrders(isRefreshing, showSkeleton)
+        updateProducts(isRefreshing, showSkeleton)
+        updateVisitors(isRefreshing, showSkeleton)
+    }
 
     private fun updateRevenue(isRefreshing: Boolean, showSkeleton: Boolean) =
         launch {
@@ -272,6 +288,50 @@ class AnalyticsViewModel @Inject constructor(
                 }
         }
 
+    private fun updateVisitors(isRefreshing: Boolean, showSkeleton: Boolean) =
+        launch {
+            if (!FeatureFlag.ANALYTICS_HUB_PRODUCTS_AND_REPORTS.isEnabled()) {
+                return@launch
+            }
+
+            val timePeriod = getSavedTimePeriod()
+            val dateRange = getSavedDateRange()
+            val fetchStrategy = getFetchStrategy(isRefreshing)
+            val isQuarterSelection = (timePeriod == QUARTER_TO_DATE) || (timePeriod == LAST_QUARTER)
+
+            if (timePeriod == CUSTOM) {
+                mutableState.value = state.value.copy(visitorsState = AnalyticsInformationViewState.HiddenState)
+                return@launch
+            }
+
+            if (showSkeleton) mutableState.value = state.value.copy(visitorsState = LoadingViewState)
+            mutableState.value = state.value.copy(
+                refreshIndicator = if (isRefreshing) ShowIndicator else NotShowIndicator
+            )
+
+            if (isQuarterSelection) {
+                analyticsRepository.fetchQuarterVisitorsData(dateRange, timePeriod, fetchStrategy)
+            } else {
+                analyticsRepository.fetchRecentVisitorsData(dateRange, timePeriod, fetchStrategy)
+            }.handleVisitorsResult()
+        }
+
+    private fun VisitorsResult.handleVisitorsResult() {
+        when (this) {
+            is VisitorsData -> {
+                mutableState.value = state.value.copy(
+                    refreshIndicator = NotShowIndicator,
+                    visitorsState = buildVisitorsDataViewState(visitorsStat)
+                )
+                // submit sentry monitor transaction finished event
+            }
+            is VisitorsError -> mutableState.value = state.value.copy(
+                refreshIndicator = NotShowIndicator,
+                visitorsState = NoDataState("No visitors data")
+            )
+        }
+    }
+
     private fun updateDateSelector() {
         val timePeriod = getSavedTimePeriod()
         val dateRange = getSavedDateRange()
@@ -294,17 +354,17 @@ class AnalyticsViewModel @Inject constructor(
 
     private fun getTimePeriodDescription(analyticTimeRange: AnalyticTimePeriod): String =
         when (analyticTimeRange) {
-            AnalyticTimePeriod.TODAY -> resourceProvider.getString(R.string.date_timeframe_today)
-            AnalyticTimePeriod.YESTERDAY -> resourceProvider.getString(R.string.date_timeframe_yesterday)
-            AnalyticTimePeriod.LAST_WEEK -> resourceProvider.getString(R.string.date_timeframe_last_week)
-            AnalyticTimePeriod.LAST_MONTH -> resourceProvider.getString(R.string.date_timeframe_last_month)
-            AnalyticTimePeriod.LAST_QUARTER -> resourceProvider.getString(R.string.date_timeframe_last_quarter)
-            AnalyticTimePeriod.LAST_YEAR -> resourceProvider.getString(R.string.date_timeframe_last_year)
-            AnalyticTimePeriod.WEEK_TO_DATE -> resourceProvider.getString(R.string.date_timeframe_week_to_date)
-            AnalyticTimePeriod.MONTH_TO_DATE -> resourceProvider.getString(R.string.date_timeframe_month_to_date)
-            AnalyticTimePeriod.QUARTER_TO_DATE -> resourceProvider.getString(R.string.date_timeframe_quarter_to_date)
-            AnalyticTimePeriod.YEAR_TO_DATE -> resourceProvider.getString(R.string.date_timeframe_year_to_date)
-            AnalyticTimePeriod.CUSTOM -> resourceProvider.getString(R.string.date_timeframe_custom)
+            TODAY -> resourceProvider.getString(R.string.date_timeframe_today)
+            YESTERDAY -> resourceProvider.getString(R.string.date_timeframe_yesterday)
+            LAST_WEEK -> resourceProvider.getString(R.string.date_timeframe_last_week)
+            LAST_MONTH -> resourceProvider.getString(R.string.date_timeframe_last_month)
+            LAST_QUARTER -> resourceProvider.getString(R.string.date_timeframe_last_quarter)
+            LAST_YEAR -> resourceProvider.getString(R.string.date_timeframe_last_year)
+            WEEK_TO_DATE -> resourceProvider.getString(R.string.date_timeframe_week_to_date)
+            MONTH_TO_DATE -> resourceProvider.getString(R.string.date_timeframe_month_to_date)
+            QUARTER_TO_DATE -> resourceProvider.getString(R.string.date_timeframe_quarter_to_date)
+            YEAR_TO_DATE -> resourceProvider.getString(R.string.date_timeframe_year_to_date)
+            CUSTOM -> resourceProvider.getString(R.string.date_timeframe_custom)
         }
 
     private fun formatValue(value: String, currencyCode: String?) = currencyCode
@@ -323,6 +383,24 @@ class AnalyticsViewModel @Inject constructor(
             selectedPeriod = getTimePeriodDescription(getSavedTimePeriod())
         )
     }
+
+    private fun buildVisitorsDataViewState(
+        stats: VisitorsStat
+    ) = DataViewState(
+        title = resourceProvider.getString(R.string.analytics_visitors_and_views_card_title),
+        leftSection = AnalyticsInformationSectionViewState(
+            title = resourceProvider.getString(R.string.analytics_visitors_subtitle),
+            stats.visitorsCount.toString(),
+            stats.avgVisitorsDelta.run { this as? DeltaPercentage.Value }?.value,
+            listOf() /** Add charts calculation to Visitors and Views stats **/
+        ),
+        rightSection = AnalyticsInformationSectionViewState(
+            resourceProvider.getString(R.string.analytics_views_subtitle),
+            stats.viewsCount.toString(),
+            stats.avgViewsDelta.run { this as? DeltaPercentage.Value }?.value,
+            listOf() /** Add charts calculation to Visitors and Views stats **/
+        )
+    )
 
     private fun buildRevenueDataViewState(data: RevenueData) =
         DataViewState(

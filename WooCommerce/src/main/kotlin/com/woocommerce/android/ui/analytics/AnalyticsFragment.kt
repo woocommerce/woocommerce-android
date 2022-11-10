@@ -55,7 +55,10 @@ class AnalyticsFragment :
             viewModel.onTrackableUIInteraction()
             viewModel.onRefreshRequested()
         }
-        binding.analyticsProductsCard.isVisible = FeatureFlag.ANALYTICS_HUB_PRODUCTS_AND_REPORTS.isEnabled()
+        FeatureFlag.ANALYTICS_HUB_PRODUCTS_AND_REPORTS.isEnabled().let { isFeatureEnabled ->
+            binding.analyticsProductsCard.isVisible = isFeatureEnabled
+            binding.analyticsVisitorsCard.isVisible = isFeatureEnabled
+        }
         binding.scrollView.scrollStartEvents()
             .onEach { viewModel.onTrackableUIInteraction() }
             .launchIn(viewLifecycleOwner.lifecycleScope)
@@ -94,10 +97,9 @@ class AnalyticsFragment :
             key = KEY_DATE_RANGE_SELECTOR_RESULT,
             entryId = R.id.analytics
         ) { dateSelection ->
-            if (dateSelection == AnalyticTimePeriod.CUSTOM.description) {
-                viewModel.onCustomDateRangeClicked()
-            } else {
-                viewModel.onSelectedTimePeriodChanged(dateSelection)
+            when (val timePeriod = AnalyticTimePeriod.from(dateSelection)) {
+                AnalyticTimePeriod.CUSTOM -> viewModel.onCustomDateRangeClicked()
+                else -> viewModel.onSelectedTimePeriodChanged(timePeriod)
             }
         }
     }
@@ -108,6 +110,7 @@ class AnalyticsFragment :
         binding.analyticsRevenueCard.setSeeReportClickListener { viewModel.onRevenueSeeReportClick() }
         binding.analyticsOrdersCard.setSeeReportClickListener { viewModel.onOrdersSeeReportClick() }
         binding.analyticsProductsCard.setSeeReportClickListener { viewModel.onProductsSeeReportClick() }
+        binding.analyticsVisitorsCard.setSeeReportClickListener { viewModel.onVisitorsSeeReportClick() }
     }
 
     private fun handleStateChange(viewState: AnalyticsViewState) {
@@ -116,6 +119,7 @@ class AnalyticsFragment :
         binding.analyticsRevenueCard.updateInformation(viewState.revenueState)
         binding.analyticsOrdersCard.updateInformation(viewState.ordersState)
         binding.analyticsProductsCard.updateInformation(viewState.productsState)
+        binding.analyticsVisitorsCard.updateInformation(viewState.visitorsState)
         binding.analyticsRefreshLayout.isRefreshing = viewState.refreshIndicator == ShowIndicator
     }
 
