@@ -36,9 +36,7 @@ import org.wordpress.android.fluxc.store.WCStatsStore.StatsGranularity.WEEKS
 import org.wordpress.android.fluxc.store.WCStatsStore.StatsGranularity.YEARS
 import org.wordpress.android.fluxc.store.WooCommerceStore
 import org.wordpress.android.fluxc.utils.DateUtils
-import java.text.SimpleDateFormat
 import java.util.Date
-import java.util.Locale
 import javax.inject.Inject
 
 @Suppress("TooManyFunctions")
@@ -53,8 +51,6 @@ class AnalyticsRepository @Inject constructor(
 
     private val getPreviousRevenueMutex = Mutex()
     private var previousRevenueStats: AnalyticsStatsResultWrapper? = null
-
-    private val simpleDateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
 
     suspend fun fetchRevenueData(
         dateRange: AnalyticsDateRange,
@@ -398,7 +394,7 @@ class AnalyticsRepository @Inject constructor(
         val startDate = dateRange.from.theDayBeforeIt()
 
         return this.asSequence()
-            .filter { startDate.before(simpleDateFormat.parse(it.period)) }
+            .filter { startDate.before(DateUtils.getDateFromString(it.period)) }
             .map { Pair(it.visitors, it.views) }
             .fold(Pair(0L, 0L)) { acc, pair -> Pair(acc.first + pair.first, acc.second + pair.second) }
     }
