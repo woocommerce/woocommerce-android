@@ -43,15 +43,17 @@ class AnalyticsDateRangeCalculatorTest : BaseUnitTest() {
     fun `when a any previous days date is given then get the date range for yesterday is the expected`() {
         // Given
         val yesterday = getDateFromString("2022-10-27")
+        val theDayBeforeYesterday = getDateFromString("2022-10-26")
 
-        whenever(dateUtils.getCurrentDateTimeMinusDays(any())).thenReturn(yesterday.time)
+        whenever(dateUtils.getCurrentDateTimeMinusDays(1)).thenReturn(yesterday.time)
+        whenever(dateUtils.getCurrentDateTimeMinusDays(2)).thenReturn(theDayBeforeYesterday.time)
 
         // When
         val result = sut.getAnalyticsDateRangeFrom(AnalyticTimePeriod.YESTERDAY)
 
         // Then
         assertTrue(result is SimpleDateRange)
-        assertEquals(yesterday, result.from)
+        assertEquals(theDayBeforeYesterday, result.from)
         assertEquals(yesterday, result.to)
     }
 
