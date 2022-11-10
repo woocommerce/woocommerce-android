@@ -15,7 +15,7 @@ class JetpackInstallationExperiment @Inject constructor(
 
     fun activate() {
         // Track Firebase's activation event for the A/B testing.
-        experimentTracker.log(ExperimentTracker.NATIVE_JETPACK_INSTALLATION_ELIGIBLE_EVENT)
+        experimentTracker.log(ExperimentTracker.JETPACK_INSTALLATION_ELIGIBLE_EVENT)
 
         // Track used variant
         val variant = getCurrentVariant()
