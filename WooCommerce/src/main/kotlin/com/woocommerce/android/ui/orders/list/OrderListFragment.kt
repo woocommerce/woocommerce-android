@@ -204,6 +204,7 @@ class OrderListFragment :
         binding.orderFiltersCard.setClickListener { viewModel.onFiltersButtonTapped() }
         initCreateOrderFAB(binding.createOrderButton)
         initSwipeBehaviour()
+        displaySimplePaymentsWIPCard(true)
     }
 
     private fun initSwipeBehaviour() {
