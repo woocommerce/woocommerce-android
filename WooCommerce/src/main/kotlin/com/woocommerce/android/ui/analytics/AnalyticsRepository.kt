@@ -216,7 +216,6 @@ class AnalyticsRepository @Inject constructor(
         fetchStrategy: FetchStrategy
     ): VisitorsResult {
         val startDate = dateRange.getSelectedPeriod().from.theDayBeforeIt()
-        val simpleDateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
 
         return getVisitorsStats(
             dateRange,
@@ -224,7 +223,7 @@ class AnalyticsRepository @Inject constructor(
             fetchStrategy,
             QUARTER_VISITORS_AND_VIEW_FETCH_LIMIT
         ).model?.dates?.asSequence()
-            ?.filter { startDate.before(simpleDateFormat.parse(it.period)) }
+            ?.filter { startDate.before(DateUtils.getDateFromString(it.period)) }
             ?.map { Pair(it.visitors, it.views) }
             ?.fold(Pair(0L, 0L)) { acc, pair -> Pair(acc.first + pair.first, acc.second + pair.second) }
             ?.let { (visitors, views) ->
