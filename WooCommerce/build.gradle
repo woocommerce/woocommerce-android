@@ -76,7 +76,7 @@ android {
         } else {
             versionName "11.1-rc-2"
         }
-        versionCode 355
+        versionCode 356
 
         minSdkVersion gradle.ext.minSdkVersion
         // Update targetSdkVersion only after reviewing all the OS changes (developer.android.com/about/versions/[ENTER_ANDROID_VERSION]/migration)
