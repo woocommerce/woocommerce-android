@@ -66,6 +66,7 @@ class SignUpFragment : BaseFragment() {
         super.onCreate(savedInstanceState)
 
         nextStep = requireArguments().serializable(NEXT_STEP_KEY) ?: error("Screen requires passing a NextStep")
+        viewModel.nextStep = nextStep
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
