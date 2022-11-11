@@ -53,11 +53,6 @@ class JetpackInstallViewModel @Inject constructor(
         installJetpackPlugin()
     }
 
-    override fun onCleared() {
-        super.onCleared()
-        repository.onCleanup()
-    }
-
     private fun installJetpackPlugin() {
         launch {
             repository.installPlugin(JETPACK_SLUG, JETPACK_NAME).collect {
