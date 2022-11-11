@@ -25,6 +25,7 @@ class OrdersUITest : TestBase() {
     @get:Rule(order = 0)
     val rule = HiltAndroidRule(this)
 
+    // Only need to initialize once on the first test
     @get:Rule(order = 1)
     val initRule = InitializationRule()
 

@@ -43,7 +43,7 @@ class SingleOrderScreen : Screen {
 
     fun assertSingleOrderScreenWithProduct(order: OrderData): SingleOrderScreen {
         Espresso.onView(withId(TOOLBAR))
-            .check(ViewAssertions.matches(hasDescendant(withText("Order #${order.id}"))))
+            .check(ViewAssertions.matches(hasDescendant(withText("Orders #${order.id}"))))
             .check(ViewAssertions.matches(isDisplayed()))
 
         Espresso.onView(withText(order.productName))

@@ -4,7 +4,6 @@ package com.woocommerce.android.e2e.tests.ui
 
 import androidx.test.rule.ActivityTestRule
 import com.woocommerce.android.BuildConfig
-import com.woocommerce.android.e2e.helpers.InitializationRule
 import com.woocommerce.android.e2e.helpers.TestBase
 import com.woocommerce.android.e2e.helpers.util.MocksReader
 import com.woocommerce.android.e2e.helpers.util.ProductData
@@ -26,9 +25,6 @@ class ProductsUITest : TestBase() {
     val rule = HiltAndroidRule(this)
 
     @get:Rule(order = 1)
-    val initRule = InitializationRule()
-
-    @get:Rule(order = 2)
     var activityRule = ActivityTestRule(LoginActivity::class.java)
 
     @Before
