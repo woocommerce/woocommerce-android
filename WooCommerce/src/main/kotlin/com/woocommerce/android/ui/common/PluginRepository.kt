@@ -2,7 +2,6 @@ package com.woocommerce.android.ui.common
 
 import android.os.Parcelable
 import com.woocommerce.android.OnChangedException
-import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.common.PluginRepository.PluginStatus.PluginActivated
 import com.woocommerce.android.ui.common.PluginRepository.PluginStatus.PluginActivationFailed
 import com.woocommerce.android.ui.common.PluginRepository.PluginStatus.PluginInstallFailed
@@ -37,7 +36,6 @@ import javax.inject.Inject
 
 class PluginRepository @Inject constructor(
     private val dispatcher: Dispatcher,
-    private val selectedSite: SelectedSite,
     @Suppress("unused") private val pluginStore: PluginStore
 ) {
     companion object {
@@ -45,11 +43,11 @@ class PluginRepository @Inject constructor(
         const val ATTEMPT_LIMIT = 2
     }
 
-    suspend fun fetchPlugin(name: String): Result<SitePluginModel?> {
+    suspend fun fetchPlugin(site: SiteModel, name: String): Result<SitePluginModel?> {
         WooLog.d(WooLog.T.PLUGINS, "Fetching plugin $name")
 
         val action = PluginActionBuilder.newFetchSitePluginAction(
-            FetchSitePluginPayload(selectedSite.get(), name)
+            FetchSitePluginPayload(site, name)
         )
         val event: OnSitePluginFetched = dispatcher.dispatchAndAwait(action)
         return when {
@@ -72,23 +70,23 @@ class PluginRepository @Inject constructor(
         }
     }
 
-    fun installPlugin(slug: String, name: String): Flow<PluginStatus> {
+    fun installPlugin(site: SiteModel, slug: String, name: String): Flow<PluginStatus> {
         return flow {
             WooLog.d(WooLog.T.PLUGINS, "Installing plugin Slug: $slug, Name: $name")
-            val plugin = fetchPlugin(name).getOrNull()
+            val plugin = fetchPlugin(site, name).getOrNull()
 
             if (plugin != null) {
                 // Plugin is already installed, proceed to activation
                 WooLog.d(WooLog.T.PLUGINS, "Plugin $slug is already installed, proceed to activation")
-                emit(PluginInstalled(slug, selectedSite.get()))
-                dispatchPluginActivationAction(slug, name)
+                emit(PluginInstalled(slug, site))
+                dispatchPluginActivationAction(site, slug, name)
             } else {
                 // This request will automatically proceed to activating the plugin after the installation
-                val payload = InstallSitePluginPayload(selectedSite.get(), slug)
+                val payload = InstallSitePluginPayload(site, slug)
                 dispatcher.dispatch(PluginActionBuilder.newInstallSitePluginAction(payload))
             }
 
-            val installationEvents = dispatcher.observeInstallationEvents(slug, name)
+            val installationEvents = dispatcher.observeInstallationEvents(site, slug, name)
             val activationEvents = dispatcher.observeActivationEvents(slug, name)
 
             emitAll(merge(installationEvents, activationEvents))
@@ -116,9 +114,9 @@ class PluginRepository @Inject constructor(
         }
     }
 
-    private fun dispatchPluginActivationAction(slug: String, name: String) {
+    private fun dispatchPluginActivationAction(site: SiteModel, slug: String, name: String) {
         val payload = ConfigureSitePluginPayload(
-            selectedSite.get(),
+            site,
             name,
             slug,
             true,
@@ -127,7 +125,7 @@ class PluginRepository @Inject constructor(
         dispatcher.dispatch(PluginActionBuilder.newConfigureSitePluginAction(payload))
     }
 
-    private fun Dispatcher.observeInstallationEvents(slug: String, name: String): Flow<PluginStatus> =
+    private fun Dispatcher.observeInstallationEvents(site: SiteModel, slug: String, name: String): Flow<PluginStatus> =
         observeEvents<OnSitePluginInstalled>()
             .map { event ->
                 if (!event.isError) {
@@ -137,8 +135,8 @@ class PluginRepository @Inject constructor(
                     if (event.error.type == InstallSitePluginErrorType.PLUGIN_ALREADY_INSTALLED) {
                         // The plugin is already installed, this can happen if the plugin fetch failed
                         WooLog.d(WooLog.T.PLUGINS, "Plugin $slug is already installed, proceed to activation")
-                        dispatchPluginActivationAction(slug, name)
-                        PluginInstalled(slug, selectedSite.get())
+                        dispatchPluginActivationAction(site, slug, name)
+                        PluginInstalled(slug, site)
                     } else {
                         WooLog.w(WooLog.T.PLUGINS, "Installation failed for plugin $slug, ${event.error.type}")
                         throw OnChangedException(

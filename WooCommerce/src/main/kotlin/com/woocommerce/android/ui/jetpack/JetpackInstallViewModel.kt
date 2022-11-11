@@ -55,7 +55,7 @@ class JetpackInstallViewModel @Inject constructor(
 
     private fun installJetpackPlugin() {
         launch {
-            repository.installPlugin(JETPACK_SLUG, JETPACK_NAME).collect {
+            repository.installPlugin(selectedSite.get(), JETPACK_SLUG, JETPACK_NAME).collect {
                 when (it) {
                     is PluginInstalled -> {
                         viewState = viewState.copy(installStatus = Activating)
