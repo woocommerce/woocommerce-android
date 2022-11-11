@@ -7,6 +7,7 @@ import com.woocommerce.android.ui.common.PluginRepository.PluginStatus.PluginAct
 import com.woocommerce.android.ui.common.PluginRepository.PluginStatus.PluginActivationFailed
 import com.woocommerce.android.ui.common.PluginRepository.PluginStatus.PluginInstallFailed
 import com.woocommerce.android.ui.common.PluginRepository.PluginStatus.PluginInstalled
+import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.dispatchAndAwait
 import com.woocommerce.android.util.observeEvents
 import kotlinx.coroutines.flow.Flow
@@ -44,24 +45,40 @@ class PluginRepository @Inject constructor(
     }
 
     suspend fun fetchPlugin(name: String): Result<SitePluginModel?> {
+        WooLog.d(WooLog.T.PLUGINS, "Fetching plugin $name")
+
         val action = PluginActionBuilder.newFetchSitePluginAction(
             FetchSitePluginPayload(selectedSite.get(), name)
         )
         val event: OnSitePluginFetched = dispatcher.dispatchAndAwait(action)
         return when {
             !event.isError ||
-                event.error?.type == FetchSitePluginErrorType.PLUGIN_DOES_NOT_EXIST -> Result.success(event.plugin)
-            else -> Result.failure(OnChangedException(event.error))
+                event.error?.type == FetchSitePluginErrorType.PLUGIN_DOES_NOT_EXIST -> {
+                WooLog.d(
+                    WooLog.T.PLUGINS,
+                    "Fetching plugin succeeded, plugin is: ${if (event.plugin != null) "Installed" else "Not Installed"}"
+                )
+                Result.success(event.plugin)
+            }
+            else -> {
+                WooLog.w(
+                    WooLog.T.PLUGINS,
+                    "Fetching plugin failed, ${event.error.type} ${event.error.message}"
+                )
+                Result.failure(OnChangedException(event.error))
+            }
         }
     }
 
     fun installPlugin(slug: String, name: String): Flow<PluginStatus> = flow {
+        WooLog.d(WooLog.T.PLUGINS, "Installing plugin Slug: $slug, Name: $name")
         val plugin = fetchPlugin(name).getOrElse {
             throw it
         }
 
         if (plugin != null) {
             // Plugin is already installed, proceed to activation
+            WooLog.d(WooLog.T.PLUGINS, "Plugin $slug is already installed, proceed to activation")
             emit(PluginInstalled(slug, selectedSite.get()))
             val payload = ConfigureSitePluginPayload(
                 selectedSite.get(),
@@ -81,8 +98,10 @@ class PluginRepository @Inject constructor(
         val installationEvents = dispatcher.observeEvents<OnSitePluginInstalled>()
             .map { event ->
                 if (!event.isError) {
+                    WooLog.d(WooLog.T.PLUGINS, "Plugin $slug installed successfully")
                     PluginInstalled(event.slug, event.site)
                 } else {
+                    WooLog.w(WooLog.T.PLUGINS, "Installation failed for plugin $slug, ${event.error.type}")
                     throw OnChangedException(
                         event.error,
                         event.error.message
@@ -92,9 +111,10 @@ class PluginRepository @Inject constructor(
         val activationEvents = dispatcher.observeEvents<OnSitePluginConfigured>()
             .map { event ->
                 if (!event.isError) {
-                    // If there is no error, we can assume that the configuration (activating in our case) is successful.
+                    WooLog.d(WooLog.T.PLUGINS, "Plugin $slug activated successfully")
                     PluginActivated(event.pluginName, event.site)
                 } else {
+                    WooLog.w(WooLog.T.PLUGINS, "Activation failed for plugin $slug, ${event.error.type}")
                     throw OnChangedException(
                         event.error,
                         event.error.message
@@ -104,7 +124,9 @@ class PluginRepository @Inject constructor(
 
         emitAll(merge(installationEvents, activationEvents))
     }.retryWhen { cause, attempt ->
-        cause is OnChangedException && attempt < ATTEMPT_LIMIT
+        (cause is OnChangedException && attempt < ATTEMPT_LIMIT).also {
+            if (it) WooLog.d(WooLog.T.PLUGINS, "Retry plugin installation")
+        }
     }.catch { cause ->
         if (cause !is OnChangedException) throw cause
         if (cause.error is InstallSitePluginError) {
