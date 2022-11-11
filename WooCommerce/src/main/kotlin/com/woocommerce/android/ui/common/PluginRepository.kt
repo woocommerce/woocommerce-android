@@ -81,47 +81,15 @@ class PluginRepository @Inject constructor(
                 // Plugin is already installed, proceed to activation
                 WooLog.d(WooLog.T.PLUGINS, "Plugin $slug is already installed, proceed to activation")
                 emit(PluginInstalled(slug, selectedSite.get()))
-                dispatchPluginActivationAction(name, slug)
+                dispatchPluginActivationAction(slug, name)
             } else {
                 // This request will automatically proceed to activating the plugin after the installation
                 val payload = InstallSitePluginPayload(selectedSite.get(), slug)
                 dispatcher.dispatch(PluginActionBuilder.newInstallSitePluginAction(payload))
-
             }
 
-            val installationEvents = dispatcher.observeEvents<OnSitePluginInstalled>()
-                .map { event ->
-                    if (!event.isError) {
-                        WooLog.d(WooLog.T.PLUGINS, "Plugin $slug installed successfully")
-                        PluginInstalled(event.slug, event.site)
-                    } else {
-                        if (event.error.type == InstallSitePluginErrorType.PLUGIN_ALREADY_INSTALLED) {
-                            // The plugin is already installed, this can happen if the plugin fetch failed
-                            WooLog.d(WooLog.T.PLUGINS, "Plugin $slug is already installed, proceed to activation")
-                            dispatchPluginActivationAction(name, slug)
-                            PluginInstalled(slug, selectedSite.get())
-                        } else {
-                            WooLog.w(WooLog.T.PLUGINS, "Installation failed for plugin $slug, ${event.error.type}")
-                            throw OnChangedException(
-                                event.error,
-                                event.error.message
-                            )
-                        }
-                    }
-                }
-            val activationEvents = dispatcher.observeEvents<OnSitePluginConfigured>()
-                .map { event ->
-                    if (!event.isError) {
-                        WooLog.d(WooLog.T.PLUGINS, "Plugin $slug activated successfully")
-                        PluginActivated(event.pluginName, event.site)
-                    } else {
-                        WooLog.w(WooLog.T.PLUGINS, "Activation failed for plugin $slug, ${event.error.type}")
-                        throw OnChangedException(
-                            event.error,
-                            event.error.message
-                        )
-                    }
-                }
+            val installationEvents = dispatcher.observeInstallationEvents(slug, name)
+            val activationEvents = dispatcher.observeActivationEvents(slug, name)
 
             emitAll(merge(installationEvents, activationEvents))
         }.retryWhen { cause, attempt ->
@@ -148,7 +116,7 @@ class PluginRepository @Inject constructor(
         }
     }
 
-    private fun dispatchPluginActivationAction(name: String, slug: String) {
+    private fun dispatchPluginActivationAction(slug: String, name: String) {
         val payload = ConfigureSitePluginPayload(
             selectedSite.get(),
             name,
@@ -158,6 +126,43 @@ class PluginRepository @Inject constructor(
         )
         dispatcher.dispatch(PluginActionBuilder.newConfigureSitePluginAction(payload))
     }
+
+    private fun Dispatcher.observeInstallationEvents(slug: String, name: String): Flow<PluginStatus> =
+        observeEvents<OnSitePluginInstalled>()
+            .map { event ->
+                if (!event.isError) {
+                    WooLog.d(WooLog.T.PLUGINS, "Plugin $slug installed successfully")
+                    PluginInstalled(event.slug, event.site)
+                } else {
+                    if (event.error.type == InstallSitePluginErrorType.PLUGIN_ALREADY_INSTALLED) {
+                        // The plugin is already installed, this can happen if the plugin fetch failed
+                        WooLog.d(WooLog.T.PLUGINS, "Plugin $slug is already installed, proceed to activation")
+                        dispatchPluginActivationAction(slug, name)
+                        PluginInstalled(slug, selectedSite.get())
+                    } else {
+                        WooLog.w(WooLog.T.PLUGINS, "Installation failed for plugin $slug, ${event.error.type}")
+                        throw OnChangedException(
+                            event.error,
+                            event.error.message
+                        )
+                    }
+                }
+            }
+
+    private fun Dispatcher.observeActivationEvents(slug: String, name: String): Flow<PluginStatus> =
+        observeEvents<OnSitePluginConfigured>()
+            .map { event ->
+                if (!event.isError) {
+                    WooLog.d(WooLog.T.PLUGINS, "Plugin $slug activated successfully")
+                    PluginActivated(event.pluginName, event.site)
+                } else {
+                    WooLog.w(WooLog.T.PLUGINS, "Activation failed for plugin $slug, ${event.error.type}")
+                    throw OnChangedException(
+                        event.error,
+                        event.error.message
+                    )
+                }
+            }
 
     sealed class PluginStatus : Parcelable {
         @Parcelize
