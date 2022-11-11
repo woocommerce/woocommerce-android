@@ -108,5 +108,4 @@ class DomainPickerViewModel @Inject constructor(
     }
 
     object NavigateToDomainPickerSummary : MultiLiveEvent.Event()
-
 }

@@ -132,8 +132,7 @@ private fun StoreDataSummary(myStoreSummaryState: MyStoreSummaryState) {
     Card(
         elevation = 0.dp,
         shape = RoundedCornerShape(8.dp),
-        modifier = Modifier
-            .fillMaxWidth(),
+        modifier = Modifier.fillMaxWidth(),
         border = BorderStroke(
             dimensionResource(id = R.dimen.minor_10),
             colorResource(id = R.color.divider_color)
@@ -143,17 +142,7 @@ private fun StoreDataSummary(myStoreSummaryState: MyStoreSummaryState) {
             modifier = Modifier.fillMaxWidth(),
             verticalArrangement = Arrangement.spacedBy(dimensionResource(id = R.dimen.major_150))
         ) {
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .background(colorResource(id = R.color.woo_gray_6))
-            ) {
-                Image(
-                    painter = painterResource(id = R.drawable.my_store_summary_header_image),
-                    contentDescription = null,
-                    contentScale = ContentScale.Crop
-                )
-            }
+            CardHeader()
             if (!myStoreSummaryState.name.isNullOrEmpty()) {
                 Column(
                     modifier = Modifier.padding(
@@ -191,6 +180,21 @@ private fun StoreDataSummary(myStoreSummaryState: MyStoreSummaryState) {
                 style = MaterialTheme.typography.body1,
             )
         }
+    }
+}
+
+@Composable
+private fun CardHeader() {
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .background(colorResource(id = R.color.woo_gray_6))
+    ) {
+        Image(
+            painter = painterResource(id = R.drawable.my_store_summary_header_image),
+            contentDescription = null,
+            contentScale = ContentScale.Crop
+        )
     }
 }
 
