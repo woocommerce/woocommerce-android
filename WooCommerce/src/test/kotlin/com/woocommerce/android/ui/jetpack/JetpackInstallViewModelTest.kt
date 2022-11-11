@@ -82,8 +82,8 @@ class JetpackInstallViewModelTest : BaseUnitTest() {
             new.installStatus?.takeIfNotEqualTo(old?.installStatus) { installStates.add(it) }
         }
 
-        installationStateFlow.tryEmit(PluginInstalled(EXAMPLE_SLUG, siteModelMock))
-        installationStateFlow.tryEmit(PluginActivated(EXAMPLE_NAME, siteModelMock))
+        installationStateFlow.tryEmit(PluginInstalled(EXAMPLE_SLUG))
+        installationStateFlow.tryEmit(PluginActivated(EXAMPLE_NAME))
         advanceUntilIdle()
 
         Assertions.assertThat(installStates).containsExactly(
@@ -116,7 +116,7 @@ class JetpackInstallViewModelTest : BaseUnitTest() {
             new.installStatus?.takeIfNotEqualTo(old?.installStatus) { installStates.add(it) }
         }
 
-        installationStateFlow.tryEmit(PluginInstalled(EXAMPLE_NAME, siteModelMock))
+        installationStateFlow.tryEmit(PluginInstalled(EXAMPLE_NAME))
         installationStateFlow.tryEmit(PluginActivationFailed(EXAMPLE_ERROR, EXAMPLE_ERROR))
         advanceUntilIdle()
 
@@ -134,7 +134,7 @@ class JetpackInstallViewModelTest : BaseUnitTest() {
             new.installStatus?.takeIfNotEqualTo(old?.installStatus) { installStates.add(it) }
         }
 
-        installationStateFlow.tryEmit(PluginInstalled(EXAMPLE_NAME, siteModelMock))
+        installationStateFlow.tryEmit(PluginInstalled(EXAMPLE_NAME))
         advanceUntilIdle()
 
         Assertions.assertThat(installStates).containsExactly(
@@ -153,8 +153,8 @@ class JetpackInstallViewModelTest : BaseUnitTest() {
             new.installStatus?.takeIfNotEqualTo(old?.installStatus) { installStates.add(it) }
         }
 
-        installationStateFlow.tryEmit(PluginInstalled(EXAMPLE_SLUG, siteModelMock))
-        installationStateFlow.tryEmit(PluginActivated(EXAMPLE_NAME, siteModelMock))
+        installationStateFlow.tryEmit(PluginInstalled(EXAMPLE_SLUG))
+        installationStateFlow.tryEmit(PluginActivated(EXAMPLE_NAME))
         advanceUntilIdle()
 
         Assertions.assertThat(installStates).containsExactly(

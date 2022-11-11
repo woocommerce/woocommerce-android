@@ -78,7 +78,7 @@ class PluginRepository @Inject constructor(
             if (plugin != null) {
                 // Plugin is already installed, proceed to activation
                 WooLog.d(WooLog.T.PLUGINS, "Plugin $slug is already installed, proceed to activation")
-                emit(PluginInstalled(slug, site))
+                emit(PluginInstalled(slug))
                 dispatchPluginActivationAction(site, slug, name)
             } else {
                 // This request will automatically proceed to activating the plugin after the installation
@@ -93,7 +93,7 @@ class PluginRepository @Inject constructor(
                         // The plugin is already installed, this can happen if the plugin fetch failed earlier
                         WooLog.d(WooLog.T.PLUGINS, "Plugin $slug is already installed, proceed to activation")
                         dispatchPluginActivationAction(site, slug, name)
-                        emit(PluginInstalled(slug, site))
+                        emit(PluginInstalled(slug))
                     } else {
                         throw exception
                     }
@@ -141,7 +141,7 @@ class PluginRepository @Inject constructor(
             .map { event ->
                 if (!event.isError) {
                     WooLog.d(WooLog.T.PLUGINS, "Plugin $slug installed successfully")
-                    PluginInstalled(event.slug, event.site)
+                    PluginInstalled(event.slug)
                 } else {
                     WooLog.w(WooLog.T.PLUGINS, "Installation failed for plugin $slug, ${event.error.type}")
                     throw OnChangedException(
@@ -156,7 +156,7 @@ class PluginRepository @Inject constructor(
             .map { event ->
                 if (!event.isError) {
                     WooLog.d(WooLog.T.PLUGINS, "Plugin $slug activated successfully")
-                    PluginActivated(event.pluginName, event.site)
+                    PluginActivated(event.pluginName)
                 } else {
                     WooLog.w(WooLog.T.PLUGINS, "Activation failed for plugin $slug, ${event.error.type}")
                     throw OnChangedException(
@@ -168,13 +168,13 @@ class PluginRepository @Inject constructor(
 
     sealed class PluginStatus : Parcelable {
         @Parcelize
-        data class PluginInstalled(val slug: String, val site: SiteModel) : PluginStatus()
+        data class PluginInstalled(val slug: String) : PluginStatus()
 
         @Parcelize
         data class PluginInstallFailed(val errorDescription: String, val errorType: String) : PluginStatus()
 
         @Parcelize
-        data class PluginActivated(val name: String, val site: SiteModel) : PluginStatus()
+        data class PluginActivated(val name: String) : PluginStatus()
 
         @Parcelize
         data class PluginActivationFailed(val errorDescription: String, val errorType: String) : PluginStatus()
