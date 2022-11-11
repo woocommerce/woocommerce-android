@@ -86,7 +86,18 @@ class PluginRepository @Inject constructor(
                 dispatcher.dispatch(PluginActionBuilder.newInstallSitePluginAction(payload))
             }
 
-            val installationEvents = dispatcher.observeInstallationEvents(site, slug, name)
+            val installationEvents = dispatcher.observeInstallationEvents(slug, name)
+                .catch { exception ->
+                    val installationError = (exception as? OnChangedException)?.error as? InstallSitePluginError
+                    if (installationError?.type == InstallSitePluginErrorType.PLUGIN_ALREADY_INSTALLED) {
+                        // The plugin is already installed, this can happen if the plugin fetch failed earlier
+                        WooLog.d(WooLog.T.PLUGINS, "Plugin $slug is already installed, proceed to activation")
+                        dispatchPluginActivationAction(site, slug, name)
+                        emit(PluginInstalled(slug, site))
+                    } else {
+                        throw exception
+                    }
+                }
             val activationEvents = dispatcher.observeActivationEvents(slug, name)
 
             emitAll(merge(installationEvents, activationEvents))
@@ -125,25 +136,18 @@ class PluginRepository @Inject constructor(
         dispatcher.dispatch(PluginActionBuilder.newConfigureSitePluginAction(payload))
     }
 
-    private fun Dispatcher.observeInstallationEvents(site: SiteModel, slug: String, name: String): Flow<PluginStatus> =
+    private fun Dispatcher.observeInstallationEvents(slug: String, name: String): Flow<PluginStatus> =
         observeEvents<OnSitePluginInstalled>()
             .map { event ->
                 if (!event.isError) {
                     WooLog.d(WooLog.T.PLUGINS, "Plugin $slug installed successfully")
                     PluginInstalled(event.slug, event.site)
                 } else {
-                    if (event.error.type == InstallSitePluginErrorType.PLUGIN_ALREADY_INSTALLED) {
-                        // The plugin is already installed, this can happen if the plugin fetch failed
-                        WooLog.d(WooLog.T.PLUGINS, "Plugin $slug is already installed, proceed to activation")
-                        dispatchPluginActivationAction(site, slug, name)
-                        PluginInstalled(slug, site)
-                    } else {
-                        WooLog.w(WooLog.T.PLUGINS, "Installation failed for plugin $slug, ${event.error.type}")
-                        throw OnChangedException(
-                            event.error,
-                            event.error.message
-                        )
-                    }
+                    WooLog.w(WooLog.T.PLUGINS, "Installation failed for plugin $slug, ${event.error.type}")
+                    throw OnChangedException(
+                        event.error,
+                        event.error.message
+                    )
                 }
             }
 
