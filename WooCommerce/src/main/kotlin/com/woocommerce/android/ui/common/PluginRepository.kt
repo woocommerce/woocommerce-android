@@ -86,7 +86,7 @@ class PluginRepository @Inject constructor(
                 dispatcher.dispatch(PluginActionBuilder.newInstallSitePluginAction(payload))
             }
 
-            val installationEvents = dispatcher.observeInstallationEvents(slug, name)
+            val installationEvents = dispatcher.observeInstallationEvents(slug)
                 .catch { exception ->
                     val installationError = (exception as? OnChangedException)?.error as? InstallSitePluginError
                     if (installationError?.type == InstallSitePluginErrorType.PLUGIN_ALREADY_INSTALLED) {
@@ -98,7 +98,7 @@ class PluginRepository @Inject constructor(
                         throw exception
                     }
                 }
-            val activationEvents = dispatcher.observeActivationEvents(slug, name)
+            val activationEvents = dispatcher.observeActivationEvents(slug)
 
             emitAll(merge(installationEvents, activationEvents))
         }.retryWhen { cause, attempt ->
@@ -138,7 +138,7 @@ class PluginRepository @Inject constructor(
         dispatcher.dispatch(PluginActionBuilder.newConfigureSitePluginAction(payload))
     }
 
-    private fun Dispatcher.observeInstallationEvents(slug: String, name: String): Flow<PluginStatus> =
+    private fun Dispatcher.observeInstallationEvents(slug: String): Flow<PluginStatus> =
         observeEvents<OnSitePluginInstalled>()
             .map { event ->
                 if (!event.isError) {
@@ -153,7 +153,7 @@ class PluginRepository @Inject constructor(
                 }
             }
 
-    private fun Dispatcher.observeActivationEvents(slug: String, name: String): Flow<PluginStatus> =
+    private fun Dispatcher.observeActivationEvents(slug: String): Flow<PluginStatus> =
         observeEvents<OnSitePluginConfigured>()
             .map { event ->
                 if (!event.isError) {
