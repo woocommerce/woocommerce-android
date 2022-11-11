@@ -111,14 +111,16 @@ class PluginRepository @Inject constructor(
                 emit(
                     PluginInstallFailed(
                         errorDescription = cause.message ?: GENERIC_ERROR,
-                        errorType = cause.error.type.name
+                        errorType = cause.error.type.name,
+                        errorCode = cause.error.errorCode
                     )
                 )
             } else if (cause.error is ConfigureSitePluginError) {
                 emit(
                     PluginActivationFailed(
                         errorDescription = cause.message ?: GENERIC_ERROR,
-                        errorType = cause.error.type.name
+                        errorType = cause.error.type.name,
+                        errorCode = cause.error.errorCode
                     )
                 )
             }
@@ -171,12 +173,20 @@ class PluginRepository @Inject constructor(
         data class PluginInstalled(val slug: String) : PluginStatus()
 
         @Parcelize
-        data class PluginInstallFailed(val errorDescription: String, val errorType: String) : PluginStatus()
+        data class PluginInstallFailed(
+            val errorDescription: String,
+            val errorType: String,
+            val errorCode: Int?
+        ) : PluginStatus()
 
         @Parcelize
         data class PluginActivated(val name: String) : PluginStatus()
 
         @Parcelize
-        data class PluginActivationFailed(val errorDescription: String, val errorType: String) : PluginStatus()
+        data class PluginActivationFailed(
+            val errorDescription: String,
+            val errorType: String,
+            val errorCode: Int?
+        ) : PluginStatus()
     }
 }
