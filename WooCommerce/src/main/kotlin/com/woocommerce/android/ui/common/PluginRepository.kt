@@ -24,11 +24,11 @@ import org.wordpress.android.fluxc.model.plugin.SitePluginModel
 import org.wordpress.android.fluxc.store.PluginStore
 import org.wordpress.android.fluxc.store.PluginStore.ConfigureSitePluginError
 import org.wordpress.android.fluxc.store.PluginStore.ConfigureSitePluginPayload
-import org.wordpress.android.fluxc.store.PluginStore.FetchJetpackSitePluginPayload
+import org.wordpress.android.fluxc.store.PluginStore.FetchSitePluginPayload
 import org.wordpress.android.fluxc.store.PluginStore.InstallSitePluginError
 import org.wordpress.android.fluxc.store.PluginStore.InstallSitePluginPayload
-import org.wordpress.android.fluxc.store.PluginStore.OnJetpackSitePluginFetched
 import org.wordpress.android.fluxc.store.PluginStore.OnSitePluginConfigured
+import org.wordpress.android.fluxc.store.PluginStore.OnSitePluginFetched
 import org.wordpress.android.fluxc.store.PluginStore.OnSitePluginInstalled
 import javax.inject.Inject
 
@@ -110,10 +110,10 @@ class PluginRepository @Inject constructor(
 
     private suspend fun fetchJetpackSitePlugin(name: String): SitePluginModel? {
         return if (selectedSite.exists()) {
-            val action = PluginActionBuilder.newFetchJetpackSitePluginAction(
-                FetchJetpackSitePluginPayload(selectedSite.get(), name)
+            val action = PluginActionBuilder.newFetchSitePluginAction(
+                FetchSitePluginPayload(selectedSite.get(), name)
             )
-            val event: OnJetpackSitePluginFetched = dispatcher.dispatchAndAwait(action)
+            val event: OnSitePluginFetched = dispatcher.dispatchAndAwait(action)
             return when {
                 !event.isError -> event.plugin
                 else -> null
