@@ -1,12 +1,34 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2022-11-03 16:54:04+0000
+Translation-Revision-Date: 2022-11-08 17:54:25+0000
 Plural-Forms: nplurals=2; plural=(n > 1);
 Generator: GlotPress/2.4.0-alpha
 Language: pt_BR
 -->
 <resources>
-    <string name="create_new_store">Criar uma nova loja</string>
+    <string name="store_creation_confirm_and_leave">Confirmar e sair</string>
+    <string name="store_creation_exit_dialog_message">Você perderá todas as informações da sua loja.</string>
+    <string name="store_creation_exit_dialog_title">Deseja sair?</string>
+    <string name="store_creation_in_progress">Criando sua loja…</string>
+    <string name="store_creation_cannot_load_store">Não foi possível carregar a loja.\nTente novamente…</string>
+    <string name="store_creation_create_new_store_label">Criar uma nova loja</string>
+    <string name="or_use_password_below_qr_code_scan_option">Ou fazer login com senha</string>
+    <string name="or_scan_qr_code_to_log_in">Escanear código QR para fazer login</string>
+    <string name="simplified_login_prologue_title">O WooCommerce é uma plataforma de comércio eletrônico open source personalizável que é integrada ao WordPress.</string>
+    <string name="simulated_reader_toast">A simulação de leitor virtual foi desativada</string>
+    <string name="simulated_reader_key">Simulação de chave de leitor</string>
+    <string name="variations_bulk_update_stock_quantity_success">Quantidade de estoque atualizada</string>
+    <string name="variations_bulk_update_current_stock_quantity_mixed">A quantidade de estoque atual está misturada</string>
+    <string name="variations_bulk_update_current_stock_quantity">A quantidade de estoque atual é %d</string>
+    <string name="variations_bulk_update_stock_quantity_dialog_title">Atualizando a quantidade de estoque</string>
+    <string name="variations_bulk_update_stock_quantity_info">A quantidade de estoque de %d variações será atualizada</string>
+    <string name="variations_bulk_update_dialog_inventory_section_title">Inventário</string>
+    <string name="product_search_hint_active_filters">Pesquisar produtos filtrados</string>
+    <string name="orderlist_search_hint_active_filters">Pesquisar pedidos filtrados</string>
+    <string name="site_picker_connect_existing_store">Conectar uma loja existente</string>
+    <string name="site_picker_create_new_store">Criar uma nova loja</string>
+    <string name="login_site_picker_add_a_store">Adicionar uma loja</string>
+    <string name="login_no_stores">Sua conta não está conectada a nenhuma loja do WooCommerce.</string>
     <string name="analytics_products_list_item_description">Vendas líquidas: %1$s</string>
     <string name="analytics_products_list_header_subtitle">Itens vendidos</string>
     <string name="analytics_products_list_header_title">Produtos</string>
@@ -215,8 +237,8 @@ Language: pt_BR
     <string name="variations_bulk_update_current_prices_mixed">Os preços atuais estão misturados</string>
     <string name="variations_bulk_update_current_price">O preço atual é %s</string>
     <string name="variations_bulk_update_price_info">O preço de %d variações será atualizado</string>
-    <string name="variations_bulk_update_dialog_price_mixed">Misturado</string>
-    <string name="variations_bulk_update_dialog_price_none">Nenhum</string>
+    <string name="variations_bulk_update_dialog_mixed">Misturada</string>
+    <string name="variations_bulk_update_dialog_none">Nenhum(a)</string>
     <string name="variations_bulk_update_dialog_sale_price_label">Preço promocional</string>
     <string name="variations_bulk_update_dialog_regular_price_label">Preço regular</string>
     <string name="variations_bulk_update_dialog_price_section_title">Preço</string>
@@ -2209,7 +2231,6 @@ Language: pt_BR
     <string name="dashboard_stats_granularity_months">Meses</string>
     <string name="dashboard_stats_granularity_weeks">Semanas</string>
     <string name="dashboard_stats_granularity_days">Dias</string>
-    <string name="login_no_stores">Não encontramos lojas do WooCommerce conectadas a esta conta.</string>
     <string name="login_with_a_different_account">Fazer login com uma conta diferente</string>
     <string name="login_nostores_content_description">Não há lojas WooCommerce</string>
     <string name="login_avatar_content_description">Sua foto de perfil</string>

@@ -1,12 +1,34 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2022-11-02 10:54:04+0000
+Translation-Revision-Date: 2022-11-08 11:54:03+0000
 Plural-Forms: nplurals=2; plural=n > 1;
 Generator: GlotPress/2.4.0-alpha
 Language: id
 -->
 <resources>
-    <string name="create_new_store">Buat toko baru</string>
+    <string name="store_creation_confirm_and_leave">Konfirmasi lalu keluar</string>
+    <string name="store_creation_exit_dialog_message">Semua data terkait toko akan terhapus.</string>
+    <string name="store_creation_exit_dialog_title">Ingin keluar?</string>
+    <string name="store_creation_in_progress">Membuat toko…</string>
+    <string name="store_creation_cannot_load_store">Toko tidak dapat dimuat.\nHarap coba kembali…</string>
+    <string name="store_creation_create_new_store_label">Buat toko baru</string>
+    <string name="or_use_password_below_qr_code_scan_option">Atau, login dengan kata sandi</string>
+    <string name="or_scan_qr_code_to_log_in">Pindai kode QR untuk login</string>
+    <string name="simplified_login_prologue_title">WooCommerce adalah platform eCommerce open-source yang dapat disesuaikan dan dibuat berdasarkan WordPress.</string>
+    <string name="simulated_reader_toast">Pembaca Kartu Simulasi telah dinonaktifkan</string>
+    <string name="simulated_reader_key">Kunci Pembaca Simulasi</string>
+    <string name="variations_bulk_update_stock_quantity_success">Jumlah stok diperbarui</string>
+    <string name="variations_bulk_update_current_stock_quantity_mixed">Jumlah stok saat ini adalah gabungan</string>
+    <string name="variations_bulk_update_current_stock_quantity">Jumlah stok saat ini adalah %d</string>
+    <string name="variations_bulk_update_stock_quantity_dialog_title">Memperbarui jumlah stok</string>
+    <string name="variations_bulk_update_stock_quantity_info">Jumlah stok untuk %d variasi akan diperbarui</string>
+    <string name="variations_bulk_update_dialog_inventory_section_title">Persediaan</string>
+    <string name="product_search_hint_active_filters">Cari dari produk yang disaring</string>
+    <string name="orderlist_search_hint_active_filters">Cari dari pesanan yang disaring</string>
+    <string name="site_picker_connect_existing_store">Sambungkan toko yang sudah ada</string>
+    <string name="site_picker_create_new_store">Buat toko baru</string>
+    <string name="login_site_picker_add_a_store">Tambahkan Toko</string>
+    <string name="login_no_stores">Akun Anda tidak terhubung ke toko WooCommerce mana pun.</string>
     <string name="analytics_products_list_item_description">Penjualan bersih: %1$s</string>
     <string name="analytics_products_list_header_subtitle">Item terjual</string>
     <string name="analytics_products_list_header_title">Produk</string>
@@ -215,8 +237,8 @@ Language: id
     <string name="variations_bulk_update_current_prices_mixed">Harga saat ini berbeda-beda</string>
     <string name="variations_bulk_update_current_price">Harga saat ini adalah %s</string>
     <string name="variations_bulk_update_price_info">Harga untuk %d variasi akan diperbarui</string>
-    <string name="variations_bulk_update_dialog_price_mixed">Campuran</string>
-    <string name="variations_bulk_update_dialog_price_none">Tidak ada</string>
+    <string name="variations_bulk_update_dialog_mixed">Campuran</string>
+    <string name="variations_bulk_update_dialog_none">TIdak ada</string>
     <string name="variations_bulk_update_dialog_sale_price_label">Harga obral</string>
     <string name="variations_bulk_update_dialog_regular_price_label">Harga normal</string>
     <string name="variations_bulk_update_dialog_price_section_title">Harga</string>
@@ -2209,7 +2231,6 @@ Language: id
     <string name="dashboard_stats_granularity_months">Bulan</string>
     <string name="dashboard_stats_granularity_weeks">Minggu</string>
     <string name="dashboard_stats_granularity_days">Hari</string>
-    <string name="login_no_stores">Kami tidak menemukan toko WooCommerce yang terhubung ke akun ini.</string>
     <string name="login_with_a_different_account">Login dengan akun lain</string>
     <string name="login_nostores_content_description">Tidak ada toko WooCommerce</string>
     <string name="login_avatar_content_description">Foto profil Anda</string>
