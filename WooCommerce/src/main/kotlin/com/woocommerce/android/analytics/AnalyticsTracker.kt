@@ -241,6 +241,7 @@ class AnalyticsTracker private constructor(private val context: Context) {
         const val VALUE_REVENUE_CARD_SELECTED = "revenue"
         const val VALUE_ORDERS_CARD_SELECTED = "orders"
         const val VALUE_PRODUCTS_CARD_SELECTED = "products"
+        const val VALUE_VISITORS_CARD_SELECTED = "visitors"
 
         const val JITM_ID = "jitm_id"
         const val JITM_FEATURE_CLASS = "feature_class"

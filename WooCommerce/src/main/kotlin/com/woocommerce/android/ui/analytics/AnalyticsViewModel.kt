@@ -180,7 +180,7 @@ class AnalyticsViewModel @Inject constructor(
     }
 
     fun onVisitorsSeeReportClick() {
-        // Add track visitors click
+        trackSeeReportClicked(AnalyticsTracker.VALUE_VISITORS_CARD_SELECTED)
         openReportsView(analyticsRepository.getJetpackStatsPanelUrl())
     }
 
@@ -268,13 +268,16 @@ class AnalyticsViewModel @Inject constructor(
             analyticsRepository.fetchProductsData(dateRange, timePeriod, fetchStrategy)
                 .let {
                     when (it) {
-                        is ProductsData -> mutableState.value = state.value.copy(
-                            productsState = buildProductsDataState(
-                                it.productsStat.itemsSold,
-                                it.productsStat.itemsSoldDelta,
-                                it.productsStat.products
+                        is ProductsData -> {
+                            mutableState.value = state.value.copy(
+                                productsState = buildProductsDataState(
+                                    it.productsStat.itemsSold,
+                                    it.productsStat.itemsSoldDelta,
+                                    it.productsStat.products
+                                )
                             )
-                        )
+                            transactionLauncher.onProductsFetched()
+                        }
                         ProductsError -> mutableState.value = state.value.copy(
                             productsState = ProductsNoDataState(
                                 resourceProvider.getString(R.string.analytics_products_no_data)
@@ -293,6 +296,7 @@ class AnalyticsViewModel @Inject constructor(
 
             if (timePeriod == CUSTOM) {
                 mutableState.value = state.value.copy(visitorsState = AnalyticsInformationViewState.HiddenState)
+                transactionLauncher.onVisitorsFetched()
                 return@launch
             }
 
@@ -315,7 +319,7 @@ class AnalyticsViewModel @Inject constructor(
                     refreshIndicator = NotShowIndicator,
                     visitorsState = buildVisitorsDataViewState(visitorsStat)
                 )
-                // submit sentry monitor transaction finished event
+                transactionLauncher.onVisitorsFetched()
             }
             is VisitorsError -> mutableState.value = state.value.copy(
                 refreshIndicator = NotShowIndicator,
