@@ -59,11 +59,9 @@ import com.woocommerce.android.ui.login.qrcode.showCameraPermissionDeniedDialog
 import com.woocommerce.android.ui.login.signup.SignUpFragment
 import com.woocommerce.android.ui.login.signup.SignUpFragment.NextStep.SITE_PICKER
 import com.woocommerce.android.ui.login.signup.SignUpFragment.NextStep.STORE_CREATION
-import com.woocommerce.android.ui.login.storecreation.StoreCreationFragment
 import com.woocommerce.android.ui.main.MainActivity
 import com.woocommerce.android.util.ActivityUtils
 import com.woocommerce.android.util.ChromeCustomTabUtils
-import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.util.UrlUtils
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooPermissionUtils
@@ -940,22 +938,7 @@ class LoginActivity :
     }
 
     override fun onAccountCreated(nextStep: SignUpFragment.NextStep) {
-        when (nextStep) {
-            STORE_CREATION -> {
-                when {
-                    FeatureFlag.NATIVE_STORE_CREATION_FLOW.isEnabled() -> showStoreCreationNextStep()
-                    else -> showMainActivityAndFinish()
-                }
-            }
-            SITE_PICKER -> showMainActivityAndFinish()
-        }
-    }
-
-    private fun showStoreCreationNextStep() {
-        val storeCreationFragment =
-            supportFragmentManager.findFragmentByTag(StoreCreationFragment.TAG) as? StoreCreationFragment
-                ?: StoreCreationFragment()
-        changeFragment(storeCreationFragment, shouldAddToBackStack = true, tag = StoreCreationFragment.TAG)
+        showMainActivityAndFinish()
     }
 
     override fun onLoginClicked() {
