@@ -2,7 +2,6 @@ package com.woocommerce.android.ui.analytics
 
 import android.os.Bundle
 import android.view.View
-import androidx.core.view.isVisible
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
@@ -18,7 +17,6 @@ import com.woocommerce.android.ui.analytics.RefreshIndicator.ShowIndicator
 import com.woocommerce.android.ui.analytics.daterangeselector.AnalyticTimePeriod
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.util.ChromeCustomTabUtils
-import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.launchIn
@@ -54,10 +52,6 @@ class AnalyticsFragment :
             binding.analyticsRefreshLayout.scrollUpChild = binding.scrollView
             viewModel.onTrackableUIInteraction()
             viewModel.onRefreshRequested()
-        }
-        FeatureFlag.ANALYTICS_HUB_PRODUCTS_AND_REPORTS.isEnabled().let { isFeatureEnabled ->
-            binding.analyticsProductsCard.isVisible = isFeatureEnabled
-            binding.analyticsVisitorsCard.isVisible = isFeatureEnabled
         }
         binding.scrollView.scrollStartEvents()
             .onEach { viewModel.onTrackableUIInteraction() }
