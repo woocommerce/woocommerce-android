@@ -24,6 +24,7 @@ import org.wordpress.android.fluxc.model.plugin.SitePluginModel
 import org.wordpress.android.fluxc.store.PluginStore
 import org.wordpress.android.fluxc.store.PluginStore.ConfigureSitePluginError
 import org.wordpress.android.fluxc.store.PluginStore.ConfigureSitePluginPayload
+import org.wordpress.android.fluxc.store.PluginStore.FetchSitePluginErrorType
 import org.wordpress.android.fluxc.store.PluginStore.FetchSitePluginPayload
 import org.wordpress.android.fluxc.store.PluginStore.InstallSitePluginError
 import org.wordpress.android.fluxc.store.PluginStore.InstallSitePluginPayload
@@ -42,8 +43,22 @@ class PluginRepository @Inject constructor(
         const val ATTEMPT_LIMIT = 2
     }
 
+    suspend fun fetchPlugin(name: String): Result<SitePluginModel?> {
+        val action = PluginActionBuilder.newFetchSitePluginAction(
+            FetchSitePluginPayload(selectedSite.get(), name)
+        )
+        val event: OnSitePluginFetched = dispatcher.dispatchAndAwait(action)
+        return when {
+            !event.isError ||
+                event.error?.type == FetchSitePluginErrorType.PLUGIN_DOES_NOT_EXIST -> Result.success(event.plugin)
+            else -> Result.failure(OnChangedException(event.error))
+        }
+    }
+
     fun installPlugin(slug: String, name: String): Flow<PluginStatus> = flow {
-        val plugin = fetchJetpackSitePlugin(name)
+        val plugin = fetchPlugin(name).getOrElse {
+            throw it
+        }
 
         if (plugin != null) {
             // Plugin is already installed, proceed to activation
@@ -60,6 +75,7 @@ class PluginRepository @Inject constructor(
             // This request will automatically proceed to activating the plugin after the installation
             val payload = InstallSitePluginPayload(selectedSite.get(), slug)
             dispatcher.dispatch(PluginActionBuilder.newInstallSitePluginAction(payload))
+
         }
 
         val installationEvents = dispatcher.observeEvents<OnSitePluginInstalled>()
@@ -106,19 +122,6 @@ class PluginRepository @Inject constructor(
                 )
             )
         }
-    }
-
-    private suspend fun fetchJetpackSitePlugin(name: String): SitePluginModel? {
-        return if (selectedSite.exists()) {
-            val action = PluginActionBuilder.newFetchSitePluginAction(
-                FetchSitePluginPayload(selectedSite.get(), name)
-            )
-            val event: OnSitePluginFetched = dispatcher.dispatchAndAwait(action)
-            return when {
-                !event.isError -> event.plugin
-                else -> null
-            }
-        } else null
     }
 
     sealed class PluginStatus : Parcelable {
