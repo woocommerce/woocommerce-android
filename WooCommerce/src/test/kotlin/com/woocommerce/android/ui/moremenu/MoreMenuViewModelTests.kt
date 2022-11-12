@@ -1,6 +1,7 @@
 package com.woocommerce.android.ui.moremenu
 
 import androidx.lifecycle.SavedStateHandle
+import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.R
 import com.woocommerce.android.push.UnseenReviewsCountHandler
 import com.woocommerce.android.tools.SelectedSite
@@ -46,6 +47,8 @@ class MoreMenuViewModelTests : BaseUnitTest() {
         on { moreMenuPaymentsFeatureWasClicked }.thenReturn(flowOf(true))
     }
 
+    private val appPrefsWrapper: AppPrefsWrapper = mock()
+
     private lateinit var viewModel: MoreMenuViewModel
 
     suspend fun setup(setupMocks: suspend () -> Unit) {
@@ -57,6 +60,7 @@ class MoreMenuViewModelTests : BaseUnitTest() {
             moreMenuRepository = moreMenuRepository,
             moreMenuNewFeatureHandler = moreMenuNewFeatureHandler,
             unseenReviewsCountHandler = unseenReviewsCountHandler,
+            appPrefsWrapper = appPrefsWrapper
         )
     }
 

@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.view.View
 import androidx.annotation.LayoutRes
 import androidx.fragment.app.Fragment
+import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
@@ -43,20 +44,24 @@ open class LoginPrologueFragment(@LayoutRes layout: Int) : Fragment(layout) {
 
         binding.buttonLoginStore.setOnClickListener {
             // Login with site address
+            AppPrefs.setStoreCreationSource(AnalyticsTracker.VALUE_LOGIN)
             prologueFinishedListener?.onPrimaryButtonClicked()
         }
 
         binding.buttonLoginWpcom.setOnClickListener {
             // Login with WordPress.com account
+            AppPrefs.setStoreCreationSource(AnalyticsTracker.VALUE_LOGIN)
             prologueFinishedListener?.onSecondaryButtonClicked()
         }
 
         if (savedInstanceState == null) {
             unifiedLoginTracker.track(Flow.PROLOGUE, Step.PROLOGUE)
+
             simplifiedLoginExperiment.activate()
         }
 
         binding.buttonGetStarted.setOnClickListener {
+            AppPrefs.setStoreCreationSource(AnalyticsTracker.VALUE_PROLOGUE)
             AnalyticsTracker.track(stat = AnalyticsEvent.LOGIN_PROLOGUE_CREATE_SITE_TAPPED)
             prologueFinishedListener?.onGetStartedClicked()
         }
