@@ -1,12 +1,34 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2022-11-03 10:54:04+0000
+Translation-Revision-Date: 2022-11-09 14:54:04+0000
 Plural-Forms: nplurals=2; plural=(n > 1);
 Generator: GlotPress/2.4.0-alpha
 Language: tr
 -->
 <resources>
-    <string name="create_new_store">Yeni bir mağaza oluştur</string>
+    <string name="store_creation_confirm_and_leave">Onaylayın ve çıkın</string>
+    <string name="store_creation_exit_dialog_message">Tüm mağaza bilgilerinizi kaybedersiniz.</string>
+    <string name="store_creation_exit_dialog_title">Çıkmak istiyor musunuz?</string>
+    <string name="store_creation_in_progress">Mağazanız oluşturuluyor…</string>
+    <string name="store_creation_cannot_load_store">Mağazanız yüklenemedi.\nLütfen tekrar deneyin…</string>
+    <string name="store_creation_create_new_store_label">Yeni bir mağaza oluştur</string>
+    <string name="or_use_password_below_qr_code_scan_option">Veya şifre ile giriş yapın</string>
+    <string name="or_scan_qr_code_to_log_in">Giriş yapmak için QR kodunu tarayın</string>
+    <string name="simplified_login_prologue_title">WooCommerce; WordPress için oluşturulmuş özelleştirilebilir, açık kaynaklı bir e-ticaret platformudur.</string>
+    <string name="simulated_reader_toast">Simüle Kart Okuyucu devre dışı bırakıldı</string>
+    <string name="simulated_reader_key">Simüle Okuyucu Anahtarı</string>
+    <string name="variations_bulk_update_stock_quantity_success">Güncellenen stok miktarı</string>
+    <string name="variations_bulk_update_current_stock_quantity_mixed">Mevcut stok miktarı karışık</string>
+    <string name="variations_bulk_update_current_stock_quantity">Mevcut stok miktarı %d</string>
+    <string name="variations_bulk_update_stock_quantity_dialog_title">Stok miktarı güncelleniyor</string>
+    <string name="variations_bulk_update_stock_quantity_info">%d varyasyon için stok miktarı güncellenecektir</string>
+    <string name="variations_bulk_update_dialog_inventory_section_title">Stok</string>
+    <string name="product_search_hint_active_filters">Filtrelenmiş ürünleri ara</string>
+    <string name="orderlist_search_hint_active_filters">Filtrelenmiş siparişleri ara</string>
+    <string name="site_picker_connect_existing_store">Mevcut bir mağazayı bağla</string>
+    <string name="site_picker_create_new_store">Yeni bir mağaza oluştur</string>
+    <string name="login_site_picker_add_a_store">Mağaza Ekle</string>
+    <string name="login_no_stores">Hesabınız herhangi bir WooCommerce mağazasına bağlı değil.</string>
     <string name="analytics_products_list_item_description">Net satışlar: %1$s</string>
     <string name="analytics_products_list_header_subtitle">Satılan ürünler</string>
     <string name="analytics_products_list_header_title">Ürünler</string>
@@ -215,8 +237,8 @@ Language: tr
     <string name="variations_bulk_update_current_prices_mixed">Geçerli fiyatlar karışık</string>
     <string name="variations_bulk_update_current_price">Geçerli fiyat: %s</string>
     <string name="variations_bulk_update_price_info">%d varyasyon için fiyat güncellenecek.</string>
-    <string name="variations_bulk_update_dialog_price_mixed">Karışık</string>
-    <string name="variations_bulk_update_dialog_price_none">Hiçbiri</string>
+    <string name="variations_bulk_update_dialog_mixed">Karışık</string>
+    <string name="variations_bulk_update_dialog_none">Hiçbiri</string>
     <string name="variations_bulk_update_dialog_sale_price_label">İndirimli satış fiyatı</string>
     <string name="variations_bulk_update_dialog_regular_price_label">Normal fiyat</string>
     <string name="variations_bulk_update_dialog_price_section_title">Fiyat</string>
@@ -2209,7 +2231,6 @@ Language: tr
     <string name="dashboard_stats_granularity_months">Ay</string>
     <string name="dashboard_stats_granularity_weeks">Hafta</string>
     <string name="dashboard_stats_granularity_days">Gün</string>
-    <string name="login_no_stores">Bu hesaba bağlı WooCommerce mağazası bulamadık.</string>
     <string name="login_with_a_different_account">Farklı bir hesap ile giriş yapın</string>
     <string name="login_nostores_content_description">WooCommerce mağazası bulunmuyor</string>
     <string name="login_avatar_content_description">Profil fotoğrafınız</string>

@@ -1,12 +1,34 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2022-11-03 10:54:04+0000
+Translation-Revision-Date: 2022-11-09 12:54:03+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: sv_SE
 -->
 <resources>
-    <string name="create_new_store">Skapa en ny butik</string>
+    <string name="store_creation_confirm_and_leave">Bekräfta och lämna</string>
+    <string name="store_creation_exit_dialog_message">Du kommer att förlora all din butiksinformation.</string>
+    <string name="store_creation_exit_dialog_title">Vill du lämna?</string>
+    <string name="store_creation_in_progress">rSkapa din butik …</string>
+    <string name="store_creation_cannot_load_store">Kunde inte ladda din butik.\nFörsök igen …</string>
+    <string name="store_creation_create_new_store_label">Skapa en ny butik</string>
+    <string name="or_use_password_below_qr_code_scan_option">Eller logga in med lösenord</string>
+    <string name="or_scan_qr_code_to_log_in">Skanna QR-kod för att logga in</string>
+    <string name="simplified_login_prologue_title">WooCommerce är en anpassningsbar plattform med öppen källkod skapad på WordPress.</string>
+    <string name="simulated_reader_toast">Den simulerade kortläsaren har inaktiverats</string>
+    <string name="simulated_reader_key">Simulerad läsarnyckel</string>
+    <string name="variations_bulk_update_stock_quantity_success">Lagerkvantiteten har uppdaterats</string>
+    <string name="variations_bulk_update_current_stock_quantity_mixed">Den aktuella lagerkvantiteten är blandad</string>
+    <string name="variations_bulk_update_current_stock_quantity">Nuvarande lagerantal är %d</string>
+    <string name="variations_bulk_update_stock_quantity_dialog_title">Uppdaterar lagerkvantiteten</string>
+    <string name="variations_bulk_update_stock_quantity_info">Lagerkvantiteten kommer att uppdateras för %d variationer</string>
+    <string name="variations_bulk_update_dialog_inventory_section_title">Lagersaldo</string>
+    <string name="product_search_hint_active_filters">Sök filtrerade produkter</string>
+    <string name="orderlist_search_hint_active_filters">Sök filtrerade beställningar</string>
+    <string name="site_picker_connect_existing_store">Anslut en befintligt butik</string>
+    <string name="site_picker_create_new_store">Skapa en ny butik</string>
+    <string name="login_site_picker_add_a_store">Lägg till en butik</string>
+    <string name="login_no_stores">Ditt konto är inte ansluten till några WooCommerce-butiker.</string>
     <string name="analytics_products_list_item_description">Nettoförsäljning: %1$s</string>
     <string name="analytics_products_list_header_subtitle">Sålda artiklar</string>
     <string name="analytics_products_list_header_title">Produkter</string>
@@ -215,8 +237,8 @@ Language: sv_SE
     <string name="variations_bulk_update_current_prices_mixed">Nuvarande priser är blandade</string>
     <string name="variations_bulk_update_current_price">Nuvarande pris är %s</string>
     <string name="variations_bulk_update_price_info">Pris kommer att uppdateras för %d varianter</string>
-    <string name="variations_bulk_update_dialog_price_mixed">Blandat</string>
-    <string name="variations_bulk_update_dialog_price_none">Ingen</string>
+    <string name="variations_bulk_update_dialog_mixed">Blandat</string>
+    <string name="variations_bulk_update_dialog_none">Ingen</string>
     <string name="variations_bulk_update_dialog_sale_price_label">Reapris</string>
     <string name="variations_bulk_update_dialog_regular_price_label">Ordinarie pris</string>
     <string name="variations_bulk_update_dialog_price_section_title">Pris</string>
@@ -2209,7 +2231,6 @@ Language: sv_SE
     <string name="dashboard_stats_granularity_months">Månader</string>
     <string name="dashboard_stats_granularity_weeks">Veckor</string>
     <string name="dashboard_stats_granularity_days">Dagar</string>
-    <string name="login_no_stores">Vi hittade inga WooCommerce-butiker anslutna till detta konto.</string>
     <string name="login_with_a_different_account">Logga in med ett annat konto</string>
     <string name="login_nostores_content_description">Inga WooCommerce-butiker</string>
     <string name="login_avatar_content_description">Ditt profilfoto</string>
