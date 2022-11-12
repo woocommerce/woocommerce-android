@@ -1,1 +1,3 @@
-This release includes a lot of cool things for you to manage your store better! We added the option to bulk update stock quantity of variations. We have also added the option for you login via QR code. We've made various improvements to the orders and products search.
+- [*] [Internal] Hide the Upsell card reader banner in the order listing screen [https://github.com/woocommerce/woocommerce-android/pull/7781]
+- [*] [Internal] Login: remove the prologue survey [https://github.com/woocommerce/woocommerce-android/pull/7762]
+
