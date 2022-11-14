@@ -37,7 +37,7 @@ class JetpackInstallViewModelTest : BaseUnitTest() {
     private val savedState: SavedStateHandle = SavedStateHandle()
     private val installationStateFlow = MutableSharedFlow<PluginStatus>(extraBufferCapacity = Int.MAX_VALUE)
     private val pluginRepository: PluginRepository = mock {
-        on { installPlugin(any(), any()) } doReturn installationStateFlow
+        on { installPlugin(any(), any(), any()) } doReturn installationStateFlow
     }
     private lateinit var siteModelMock: SiteModel
     private lateinit var selectedSiteMock: SelectedSite
@@ -49,6 +49,7 @@ class JetpackInstallViewModelTest : BaseUnitTest() {
         const val EXAMPLE_SLUG = "plugin-slug"
         const val EXAMPLE_NAME = "plugin-name"
         const val EXAMPLE_ERROR = "error-message"
+        const val EXAMPLE_ERROR_CODE = 503
         const val CONNECTION_ERROR = "Connection error."
         const val SITE_ID = 1337L
     }
@@ -101,7 +102,7 @@ class JetpackInstallViewModelTest : BaseUnitTest() {
             new.installStatus?.takeIfNotEqualTo(old?.installStatus) { installStates.add(it) }
         }
 
-        installationStateFlow.tryEmit(PluginInstallFailed(EXAMPLE_ERROR, EXAMPLE_ERROR))
+        installationStateFlow.tryEmit(PluginInstallFailed(EXAMPLE_ERROR, EXAMPLE_ERROR, EXAMPLE_ERROR_CODE))
         advanceUntilIdle()
 
         Assertions.assertThat(installStates).contains(
@@ -117,7 +118,7 @@ class JetpackInstallViewModelTest : BaseUnitTest() {
         }
 
         installationStateFlow.tryEmit(PluginInstalled(EXAMPLE_NAME))
-        installationStateFlow.tryEmit(PluginActivationFailed(EXAMPLE_ERROR, EXAMPLE_ERROR))
+        installationStateFlow.tryEmit(PluginActivationFailed(EXAMPLE_ERROR, EXAMPLE_ERROR, EXAMPLE_ERROR_CODE))
         advanceUntilIdle()
 
         Assertions.assertThat(installStates).contains(
