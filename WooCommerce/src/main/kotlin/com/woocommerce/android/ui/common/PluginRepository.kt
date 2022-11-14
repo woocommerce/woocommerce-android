@@ -77,9 +77,10 @@ class PluginRepository @Inject constructor(
 
             if (plugin != null) {
                 if (plugin.isActive) {
-                    // Plugin is already installed, proceed to activation
+                    // Plugin is already active, nothing to do
                     WooLog.d(WooLog.T.PLUGINS, "Plugin $slug is already installed and activated")
                     emit(PluginActivated(slug))
+                    return@flow
                 } else {
                     // Plugin is already installed, proceed to activation
                     WooLog.d(WooLog.T.PLUGINS, "Plugin $slug is already installed, proceed to activation")
