@@ -72,17 +72,16 @@ fun JetpackActivationStartScreen(
                 .weight(1f)
                 .padding(horizontal = dimensionResource(id = R.dimen.major_100))
         ) {
-            val image =
-                Image(
-                    painter = painterResource(
-                        id = if (viewState.isJetpackInstalled) R.drawable.img_connect_jetpack
-                        else R.drawable.img_install_jetpack
-                    ),
-                    contentDescription = null,
-                    modifier = Modifier
-                        .padding(dimensionResource(id = R.dimen.major_100))
-                        .weight(1f, false)
-                )
+            Image(
+                painter = painterResource(
+                    id = if (viewState.isJetpackInstalled) R.drawable.img_connect_jetpack
+                    else R.drawable.img_install_jetpack
+                ),
+                contentDescription = null,
+                modifier = Modifier
+                    .padding(dimensionResource(id = R.dimen.major_100))
+                    .weight(1f, false)
+            )
             Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.major_100)))
             Text(
                 text = annotatedStringRes(
