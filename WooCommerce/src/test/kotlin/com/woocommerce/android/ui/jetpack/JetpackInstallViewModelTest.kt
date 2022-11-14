@@ -39,10 +39,15 @@ class JetpackInstallViewModelTest : BaseUnitTest() {
     private val pluginRepository: PluginRepository = mock {
         on { installPlugin(any(), any(), any()) } doReturn installationStateFlow
     }
-    private lateinit var siteModelMock: SiteModel
-    private lateinit var selectedSiteMock: SelectedSite
+    private val siteModelMock: SiteModel = mock {
+        on { siteId }.doReturn(SITE_ID)
+        on { isJetpackConnected }.doReturn(true)
+    }
+    private val selectedSiteMock: SelectedSite = mock {
+        on { get() }.doReturn(siteModelMock)
+    }
     private val wooCommerceStore: WooCommerceStore = mock()
-    private lateinit var exampleResult: WooResult<List<SiteModel>>
+    private val exampleResult = WooResult(model = listOf(siteModelMock))
     private lateinit var viewModel: JetpackInstallViewModel
 
     companion object {
@@ -56,15 +61,6 @@ class JetpackInstallViewModelTest : BaseUnitTest() {
 
     @Before
     fun setup() {
-        siteModelMock = mock {
-            on { siteId }.doReturn(SITE_ID)
-            on { isJetpackConnected }.doReturn(true)
-        }
-        selectedSiteMock = mock {
-            on { get() }.doReturn(siteModelMock)
-        }
-        exampleResult = WooResult(model = listOf(siteModelMock))
-
         viewModel = JetpackInstallViewModel(
             savedState,
             pluginRepository,
