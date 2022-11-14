@@ -1,7 +1,7 @@
 *** PLEASE FOLLOW THIS FORMAT: [<priority indicator, more stars = higher priority>] <description> [<PR URL>]
 11.3
 -----
-
+- [*] [Internal] Red badge that indicates that payments have moved to the more menu has removed [https://github.com/woocommerce/woocommerce-android/pull/7843]
 
 11.2
 -----
