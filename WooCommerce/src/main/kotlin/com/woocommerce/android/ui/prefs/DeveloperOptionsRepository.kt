@@ -22,7 +22,7 @@ class DeveloperOptionsRepository @Inject constructor(
         clearCardReaderDataAction.invoke()
     }
 
-    private fun updateSimulatedReaderOption(selectedOption: UpdateOptions) {
+    fun updateSimulatedReaderOption(selectedOption: UpdateOptions) {
         appPrefs.setSimulatedReaderOption(selectedOption)
     }
 }
