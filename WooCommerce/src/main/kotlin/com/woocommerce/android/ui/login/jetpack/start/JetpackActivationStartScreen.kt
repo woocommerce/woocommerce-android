@@ -41,12 +41,20 @@ import com.woocommerce.android.util.ChromeCustomTabUtils
 @Composable
 fun JetpackActivationStartScreen(viewModel: JetpackActivationStartViewModel) {
     viewModel.viewState.observeAsState().value?.let {
-        JetpackActivationStartScreen(it)
+        JetpackActivationStartScreen(
+            it,
+            onHelpButtonClick = viewModel::onHelpButtonClick,
+            onBackButtonClick = viewModel::onBackButtonClick
+        )
     }
 }
 
 @Composable
-fun JetpackActivationStartScreen(viewState: JetpackActivationState) {
+fun JetpackActivationStartScreen(
+    viewState: JetpackActivationState,
+    onHelpButtonClick: () -> Unit = {},
+    onBackButtonClick: () -> Unit = {}
+) {
     Column(
         verticalArrangement = Arrangement.spacedBy(dimensionResource(id = R.dimen.major_100)),
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -54,7 +62,7 @@ fun JetpackActivationStartScreen(viewState: JetpackActivationState) {
             .fillMaxSize()
             .background(color = MaterialTheme.colors.surface)
     ) {
-        Toolbar(onHelpButtonClick = { /*TODO*/ }, onBackButtonClick = { /*TODO*/ })
+        Toolbar(onHelpButtonClick = onHelpButtonClick, onBackButtonClick = onBackButtonClick)
 
         Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.major_100)))
         Column(
