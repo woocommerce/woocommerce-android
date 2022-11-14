@@ -38,7 +38,8 @@ class FirebaseRemoteConfigRepository @Inject constructor(
 
     private val defaultValues by lazy {
         mapOf(
-            SIMPLIFIED_LOGIN_VARIANT_KEY to LoginVariant.CONTROL.name
+            SIMPLIFIED_LOGIN_VARIANT_KEY to LoginVariant.CONTROL.name,
+            JETPACK_INSTALLATION_VARIANT_KEY to JetpackInstallationVariant.CONTROL.name
         )
     }
 
