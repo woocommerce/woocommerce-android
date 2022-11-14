@@ -2,10 +2,20 @@
 <navigation xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/nav_graph_jetpack_activation"
-    app:startDestination="@id/jetpackActivationFragment">
+    app:startDestination="@id/jetpackActivationStartFragment">
 
     <fragment
-        android:id="@+id/jetpackActivationFragment"
-        android:name="com.woocommerce.android.ui.login.jetpack.JetpackActivationFragment"
-        android:label="JetpackActivationFragment" />
+        android:id="@+id/jetpackActivationStartFragment"
+        android:name="com.woocommerce.android.ui.login.jetpack.start.JetpackActivationStartFragment"
+        android:label="JetpackActivationStartFragment">
+        <argument
+            android:name="siteUrl"
+            app:argType="string" />
+        <argument
+            android:name="isJetpackInstalled"
+            app:argType="boolean" />
+        <argument
+            android:name="isJetpackConnected"
+            app:argType="boolean" />
+    </fragment>
 </navigation>

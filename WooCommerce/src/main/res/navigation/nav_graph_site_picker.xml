@@ -34,7 +34,7 @@
             app:destination="@id/webViewStoreCreationFragment" />
         <action
             android:id="@+id/action_sitePickerFragment_to_storeCreationNativeFlow"
-            app:destination="@id/nav_graph_store_creation" />
+            app:destination="@id/nav_graph_store_creation"/>
     </fragment>
     <fragment
         android:id="@+id/sitePickerSiteDiscoveryFragment"
@@ -45,7 +45,17 @@
             app:destination="@id/accountMismatchErrorFragment" />
         <action
             android:id="@+id/action_sitePickerSiteDiscoveryFragment_to_jetpackActivation"
-            app:destination="@id/nav_graph_jetpack_activation" />
+            app:destination="@id/nav_graph_jetpack_activation" >
+            <argument
+                android:name="siteUrl"
+                app:argType="string" />
+            <argument
+                android:name="isJetpackInstalled"
+                app:argType="boolean" />
+            <argument
+                android:name="isJetpackConnected"
+                app:argType="boolean" />
+        </action>
     </fragment>
     <fragment
         android:id="@+id/accountMismatchErrorFragment"
