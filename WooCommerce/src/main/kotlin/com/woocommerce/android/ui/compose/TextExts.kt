@@ -26,7 +26,7 @@ const val URL_ANNOTATION_TAG = "url"
  */
 @Composable
 fun annotatedStringRes(@StringRes stringResId: Int, vararg args: Any): AnnotatedString {
-    val string = stringResource(id = stringResId, args)
+    val string = stringResource(id = stringResId, *args)
     val spanned = HtmlCompat.fromHtml(string, HtmlCompat.FROM_HTML_MODE_LEGACY)
 
     return buildAnnotatedString {
