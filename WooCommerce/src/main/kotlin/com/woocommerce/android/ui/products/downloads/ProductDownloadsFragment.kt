@@ -58,7 +58,7 @@ class ProductDownloadsFragment :
 
         _binding = FragmentProductDownloadsListBinding.bind(view)
 
-        requireActivity().addMenuProvider(this, viewLifecycleOwner, Lifecycle.State.RESUMED)
+        requireActivity().addMenuProvider(this, viewLifecycleOwner)
         setupObservers(viewModel)
 
         with(binding.productDownloadsRecycler) {

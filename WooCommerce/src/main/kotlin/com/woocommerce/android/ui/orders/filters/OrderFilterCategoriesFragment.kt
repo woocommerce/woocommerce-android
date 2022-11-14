@@ -54,7 +54,7 @@ class OrderFilterCategoriesFragment :
         super.onViewCreated(view, savedInstanceState)
 
         val binding = FragmentOrderFilterListBinding.bind(view)
-        requireActivity().addMenuProvider(this, viewLifecycleOwner, Lifecycle.State.RESUMED)
+        requireActivity().addMenuProvider(this, viewLifecycleOwner)
         setUpObservers(viewModel)
 
         setUpFiltersRecyclerView(binding)

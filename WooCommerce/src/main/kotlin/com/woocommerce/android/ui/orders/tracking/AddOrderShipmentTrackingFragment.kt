@@ -75,7 +75,7 @@ class AddOrderShipmentTrackingFragment :
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        requireActivity().addMenuProvider(this, viewLifecycleOwner, Lifecycle.State.RESUMED)
+        requireActivity().addMenuProvider(this, viewLifecycleOwner)
 
         val binding = FragmentAddShipmentTrackingBinding.bind(view)
         initUi(binding)

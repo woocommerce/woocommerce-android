@@ -79,8 +79,7 @@ class VariationsBulkUpdateInventoryFragment :
                     }
                 }
             },
-            viewLifecycleOwner,
-            Lifecycle.State.RESUMED
+            viewLifecycleOwner
         )
     }
 

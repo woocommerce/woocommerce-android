@@ -69,7 +69,7 @@ class ShippingCustomsFragment :
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        requireActivity().addMenuProvider(this, viewLifecycleOwner, Lifecycle.State.RESUMED)
+        requireActivity().addMenuProvider(this, viewLifecycleOwner)
 
         val binding = FragmentShippingCustomsBinding.bind(view)
         binding.packagesList.apply {

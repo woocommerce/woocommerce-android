@@ -36,7 +36,7 @@ class OrderCreateEditShippingFragment :
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        requireActivity().addMenuProvider(this, viewLifecycleOwner, Lifecycle.State.RESUMED)
+        requireActivity().addMenuProvider(this, viewLifecycleOwner)
         val binding = FragmentOrderCreateEditShippingBinding.bind(view)
         binding.initUi()
         setupObservers(binding)

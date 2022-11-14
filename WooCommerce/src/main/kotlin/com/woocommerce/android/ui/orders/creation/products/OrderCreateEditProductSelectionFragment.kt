@@ -57,7 +57,7 @@ class OrderCreateEditProductSelectionFragment :
             productsList.layoutManager = LinearLayoutManager(requireActivity())
             setupObserversWith(this)
         }
-        requireActivity().addMenuProvider(this, viewLifecycleOwner, Lifecycle.State.RESUMED)
+        requireActivity().addMenuProvider(this, viewLifecycleOwner)
     }
 
     override fun onDestroyView() {

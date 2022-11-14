@@ -58,7 +58,7 @@ class AddOrderNoteFragment : BaseFragment(R.layout.fragment_add_order_note), Bac
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        requireActivity().addMenuProvider(this, viewLifecycleOwner, Lifecycle.State.RESUMED)
+        requireActivity().addMenuProvider(this, viewLifecycleOwner)
 
         val binding = FragmentAddOrderNoteBinding.bind(view)
         initUi(binding)

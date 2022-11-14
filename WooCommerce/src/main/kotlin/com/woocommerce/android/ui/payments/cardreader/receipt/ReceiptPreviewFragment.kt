@@ -38,7 +38,7 @@ class ReceiptPreviewFragment : BaseFragment(R.layout.fragment_receipt_preview), 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        requireActivity().addMenuProvider(this, viewLifecycleOwner, Lifecycle.State.RESUMED)
+        requireActivity().addMenuProvider(this, viewLifecycleOwner)
 
         _binding = FragmentReceiptPreviewBinding.bind(view)
         initViews(binding, savedInstanceState)

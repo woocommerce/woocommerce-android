@@ -29,7 +29,7 @@ class OrderCreateEditCustomerNoteFragment :
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        requireActivity().addMenuProvider(this, viewLifecycleOwner, Lifecycle.State.RESUMED)
+        requireActivity().addMenuProvider(this, viewLifecycleOwner)
 
         _binding = FragmentOrderCreateEditCustomerNoteBinding.bind(view)
         if (savedInstanceState == null) {

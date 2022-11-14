@@ -50,7 +50,7 @@ class ProductDownloadDetailsFragment :
 
         _binding = FragmentProductDownloadDetailsBinding.bind(view)
 
-        requireActivity().addMenuProvider(this, viewLifecycleOwner, Lifecycle.State.RESUMED)
+        requireActivity().addMenuProvider(this, viewLifecycleOwner)
         setupObservers(viewModel)
     }
 
