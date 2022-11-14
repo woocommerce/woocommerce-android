@@ -55,7 +55,6 @@ class OrdersUITest : TestBase() {
 
             OrderListScreen()
                 .createFABTap()
-                .newOrderTap()
                 .assertNewOrderScreen()
                 .updateOrderStatus(status)
                 .addProductTap()
