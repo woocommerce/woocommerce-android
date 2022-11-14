@@ -9,7 +9,6 @@ import com.woocommerce.android.ui.login.storecreation.domainpicker.DomainPickerV
 import com.woocommerce.android.ui.login.storecreation.domainpicker.DomainPickerViewModel.LoadingState.Loading
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
-import com.woocommerce.android.viewmodel.ResourceProvider
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.getStateFlow
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -27,8 +26,7 @@ import javax.inject.Inject
 @HiltViewModel
 class DomainPickerViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
-    domainSuggestionsRepository: DomainSuggestionsRepository,
-    resourceProvider: ResourceProvider
+    domainSuggestionsRepository: DomainSuggestionsRepository
 ) : ScopedViewModel(savedStateHandle) {
     private val domainQuery = savedState.getStateFlow(this, "")
     private val loadingState = MutableStateFlow(Idle)
@@ -64,10 +62,10 @@ class DomainPickerViewModel @Inject constructor(
                 .filter { it.isNotBlank() }
                 .onEach { loadingState.value = Loading }
                 .debounce { AppConstants.SEARCH_TYPING_DELAY_MS }
-                .collectLatest {
+                .collectLatest { query ->
                     // Make sure the loading state is correctly set after debounce too
                     loadingState.value = Loading
-                    domainSuggestionsRepository.fetchDomainSuggestions(domainQuery.value)
+                    domainSuggestionsRepository.fetchDomainSuggestions(query)
                         .onFailure {
                             triggerEvent(ShowSnackbar(R.string.store_creation_domain_picker_suggestions_error))
                         }
