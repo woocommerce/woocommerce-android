@@ -4,9 +4,12 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.AppConstants
+import com.woocommerce.android.R
 import com.woocommerce.android.ui.login.storecreation.domainpicker.DomainPickerViewModel.LoadingState.Idle
 import com.woocommerce.android.ui.login.storecreation.domainpicker.DomainPickerViewModel.LoadingState.Loading
 import com.woocommerce.android.viewmodel.MultiLiveEvent
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
+import com.woocommerce.android.viewmodel.ResourceProvider
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.getStateFlow
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -24,7 +27,8 @@ import javax.inject.Inject
 @HiltViewModel
 class DomainPickerViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
-    domainSuggestionsRepository: DomainSuggestionsRepository
+    domainSuggestionsRepository: DomainSuggestionsRepository,
+    resourceProvider: ResourceProvider
 ) : ScopedViewModel(savedStateHandle) {
     private val domainQuery = savedState.getStateFlow(this, "")
     private val loadingState = MutableStateFlow(Idle)
@@ -39,7 +43,7 @@ class DomainPickerViewModel @Inject constructor(
     ) { domainQuery, domainSuggestions, loadingState, selectedDomain ->
         DomainPickerState(
             loadingState = loadingState,
-            domain = domainQuery,
+            domainQuery = domainQuery,
             domainSuggestionsUi =
             if (domainQuery.isBlank()) {
                 emptyList()
@@ -65,7 +69,7 @@ class DomainPickerViewModel @Inject constructor(
                     loadingState.value = Loading
                     domainSuggestionsRepository.fetchDomainSuggestions(domainQuery.value)
                         .onFailure {
-                            // TODO handle error cases
+                            triggerEvent(ShowSnackbar(R.string.store_creation_domain_picker_suggestions_error))
                         }
                     loadingState.value = Idle
                 }
@@ -94,8 +98,9 @@ class DomainPickerViewModel @Inject constructor(
 
     data class DomainPickerState(
         val loadingState: LoadingState = Idle,
-        val domain: String = "",
-        val domainSuggestionsUi: List<DomainSuggestionUi> = emptyList()
+        val domainQuery: String = "",
+        val domainSuggestionsUi: List<DomainSuggestionUi> = emptyList(),
+        val error: String? = null
     )
 
     data class DomainSuggestionUi(

@@ -31,9 +31,13 @@ import androidx.compose.material.TopAppBar
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
@@ -109,6 +113,8 @@ private fun DomainSearchForm(
     onContinueClicked: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
+    val focusRequester = remember { FocusRequester() }
+
     Column(
         modifier = modifier
             .background(MaterialTheme.colors.surface)
@@ -126,7 +132,7 @@ private fun DomainSearchForm(
             style = MaterialTheme.typography.body1,
         )
         WCSearchField(
-            value = state.domain,
+            value = state.domainQuery,
             onValueChange = onDomainQueryChanged,
             hint = stringResource(id = R.string.store_creation_domain_picker_hint),
             modifier = Modifier
@@ -138,7 +144,8 @@ private fun DomainSearchForm(
                         color = colorResource(id = R.color.gray_5)
                     ),
                     RoundedCornerShape(dimensionResource(id = R.dimen.minor_100))
-                ),
+                )
+                .focusRequester(focusRequester),
             backgroundColor = TextFieldDefaults.outlinedTextFieldColors().backgroundColor(enabled = true).value
         )
         Box(
@@ -146,10 +153,16 @@ private fun DomainSearchForm(
                 .weight(1f)
                 .fillMaxWidth()
         ) {
-            if (state.loadingState == Loading) {
-                CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
-            } else if (state.domainSuggestionsUi.isNotEmpty()) {
-                DomainSuggestionList(
+            when {
+                state.loadingState == Loading -> CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
+                state.domainSuggestionsUi.isEmpty() && state.domainQuery.isBlank() ->
+                    ShowEmptyImage(modifier = Modifier.align(Alignment.Center))
+                state.domainSuggestionsUi.isEmpty() ->
+                    Text(
+                        modifier = Modifier.align(Alignment.Center),
+                        text = stringResource(id = R.string.store_creation_domain_picker_empty_suggestions)
+                    )
+                else -> DomainSuggestionList(
                     suggestions = state.domainSuggestionsUi,
                     onDomainSuggestionSelected = onDomainSuggestionSelected
                 )
@@ -161,7 +174,18 @@ private fun DomainSearchForm(
         ) {
             Text(text = stringResource(id = R.string.continue_button))
         }
+
+        // Request focus on search field when entering screen
+        LaunchedEffect(Unit) { focusRequester.requestFocus() }
     }
+}
+
+@Composable
+fun ShowEmptyImage(modifier: Modifier) {
+    Image(
+        modifier = modifier,
+        painter = painterResource(R.drawable.domain_example), contentDescription = null
+    )
 }
 
 @Composable
@@ -251,7 +275,7 @@ fun DomainPickerPreview() {
         DomainSearchForm(
             state = DomainPickerState(
                 loadingState = Idle,
-                domain = "White Christmas Tress",
+                domainQuery = "White Christmas Tress",
                 domainSuggestionsUi = listOf(
                     DomainSuggestionUi("whitechristmastrees.mywc.mysite"),
                     DomainSuggestionUi("whitechristmastrees.business.mywc.mysite", isSelected = true),
