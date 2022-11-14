@@ -22,7 +22,7 @@ class DeveloperOptionsRepository @Inject constructor(
         clearCardReaderDataAction.invoke()
     }
 
-    private fun updateSharedPreferences(selectedOption: UpdateOptions) {
+    private fun updateSimulatedReaderOption(selectedOption: UpdateOptions) {
         appPrefs.setSimulatedReaderOption(selectedOption)
     }
 }

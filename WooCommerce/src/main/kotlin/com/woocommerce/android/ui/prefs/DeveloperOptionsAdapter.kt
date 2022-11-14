@@ -75,8 +75,4 @@ class DeveloperOptionsAdapter(
         const val VIEW_TYPE_TOGGLEABLE = 1
         const val VIEW_TYPE_SPINNER = 2
     }
-
-    interface UpdateOptionsListener {
-        fun onUpdateOptionsChanged(position: Int, option: UpdateOptions)
-    }
 }
