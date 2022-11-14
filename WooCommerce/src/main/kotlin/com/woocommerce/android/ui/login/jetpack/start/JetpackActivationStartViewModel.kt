@@ -1,18 +1,26 @@
 package com.woocommerce.android.ui.login.jetpack.start
 
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.viewmodel.ScopedViewModel
+import com.woocommerce.android.viewmodel.navArgs
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.emptyFlow
 import javax.inject.Inject
 
 @HiltViewModel
 class JetpackActivationStartViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle
 ) : ScopedViewModel(savedStateHandle) {
+    private val navArgs: JetpackActivationStartFragmentArgs by savedStateHandle.navArgs()
 
-    val viewState: Flow<JetpackActivationState> = emptyFlow()
+    val viewState: LiveData<JetpackActivationState> = MutableLiveData(
+        JetpackActivationState(
+            url = navArgs.siteUrl,
+            isJetpackInstalled = navArgs.isJetpackInstalled,
+            isJetpackConnected = navArgs.isJetpackConnected
+        )
+    )
 
     data class JetpackActivationState(
         val url: String,
