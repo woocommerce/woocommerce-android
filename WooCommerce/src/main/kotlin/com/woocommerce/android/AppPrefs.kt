@@ -32,6 +32,8 @@ import com.woocommerce.android.extensions.packageInfo
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.payments.cardreader.onboarding.PersistentOnboardingData
 import com.woocommerce.android.ui.payments.cardreader.onboarding.PluginType
+import com.woocommerce.android.AppPrefs.DeletablePrefKey.UPDATE_SIMULATED_READER_OPTION
+import com.woocommerce.android.ui.prefs.DeveloperOptionsViewModel.DeveloperOptionsViewState.UpdateOptions
 import com.woocommerce.android.ui.products.ProductType
 import com.woocommerce.android.ui.promobanner.PromoBannerType
 import com.woocommerce.android.util.PreferenceUtils
@@ -97,6 +99,7 @@ object AppPrefs {
         CARD_READER_DO_NOT_SHOW_CASH_ON_DELIVERY_DISABLED_ONBOARDING_STATE,
         ACTIVE_STATS_GRANULARITY,
         USE_SIMULATED_READER,
+        UPDATE_SIMULATED_READER_OPTION,
         NEW_SIGN_UP
     }
 
@@ -213,6 +216,19 @@ object AppPrefs {
     var isSimulatedReaderEnabled: Boolean
         get() = getBoolean(DeletablePrefKey.USE_SIMULATED_READER, false)
         set(value) = setBoolean(DeletablePrefKey.USE_SIMULATED_READER, value)
+
+    fun setSimulatedReaderOption(option: UpdateOptions) {
+        setString(
+            UPDATE_SIMULATED_READER_OPTION,
+            option.toString()
+        )
+    }
+
+    fun getSimulatedReaderOption(): UpdateOptions {
+        return UpdateOptions.valueOf(
+            UPDATE_SIMULATED_READER_OPTION.name
+        )
+    }
 
     fun getProductSortingChoice(currentSiteId: Int) = getString(getProductSortingKey(currentSiteId)).orNullIfEmpty()
 
