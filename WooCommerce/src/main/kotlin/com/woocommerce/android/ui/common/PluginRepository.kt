@@ -76,10 +76,16 @@ class PluginRepository @Inject constructor(
             val plugin = fetchPlugin(site, name).getOrNull()
 
             if (plugin != null) {
-                // Plugin is already installed, proceed to activation
-                WooLog.d(WooLog.T.PLUGINS, "Plugin $slug is already installed, proceed to activation")
-                emit(PluginInstalled(slug))
-                dispatchPluginActivationAction(site, slug, name)
+                if (plugin.isActive) {
+                    // Plugin is already installed, proceed to activation
+                    WooLog.d(WooLog.T.PLUGINS, "Plugin $slug is already installed and activated")
+                    emit(PluginActivated(slug))
+                } else {
+                    // Plugin is already installed, proceed to activation
+                    WooLog.d(WooLog.T.PLUGINS, "Plugin $slug is already installed, proceed to activation")
+                    emit(PluginInstalled(slug))
+                    dispatchPluginActivationAction(site, slug, name)
+                }
             } else {
                 // This request will automatically proceed to activating the plugin after the installation
                 val payload = InstallSitePluginPayload(site, slug)
