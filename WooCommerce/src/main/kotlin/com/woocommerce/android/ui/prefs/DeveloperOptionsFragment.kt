@@ -7,16 +7,17 @@ import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.R
 import com.woocommerce.android.databinding.FragmentDeveloperOptionsBinding
 import com.woocommerce.android.ui.base.BaseFragment
+import com.woocommerce.android.ui.prefs.DeveloperOptionsViewModel.DeveloperOptionsViewState.UpdateOptions
 import dagger.hilt.android.AndroidEntryPoint
 import org.wordpress.android.util.ToastUtils
-import com.woocommerce.android.ui.prefs.DeveloperOptionsViewModel.DeveloperOptionsViewState.UpdateOptions
+
 @AndroidEntryPoint
-abstract class DeveloperOptionsFragment : BaseFragment(R.layout.fragment_developer_options) {
+class DeveloperOptionsFragment : BaseFragment(R.layout.fragment_developer_options) {
     val viewModel: DeveloperOptionsViewModel by viewModels()
-    abstract val developerOptionsRepository: DeveloperOptionsRepository
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -63,7 +64,7 @@ abstract class DeveloperOptionsFragment : BaseFragment(R.layout.fragment_develop
         val textValues = values.map(mapper).toTypedArray()
         var selectedValue: UpdateOptions = UpdateOptions.NEVER
         val selectedItemIndex = values.first { updateOptions ->
-            updateOptions.name == selectedValue.toString()
+            updateOptions.name == AppPrefs.updateReaderOptionSelected
         }
         MaterialAlertDialogBuilder(
             ContextThemeWrapper(
@@ -72,16 +73,15 @@ abstract class DeveloperOptionsFragment : BaseFragment(R.layout.fragment_develop
             )
         )
             .setOnDismissListener {
-                developerOptionsRepository.updateSimulatedReaderOption(selectedValue)
+                viewModel.onUpdateReaderOptionChanged(selectedValue)
             }
             .setTitle("Update Simulated Reader")
             .setSingleChoiceItems(textValues, selectedItemIndex.ordinal) { dialog, which ->
-//                dialog.dismiss()
                 selectedValue = values[which]
                 onSelected(values[which])
+                dialog.dismiss()
             }.show()
     }
-
 
     private fun observeViewState(binding: FragmentDeveloperOptionsBinding) {
         viewModel.viewState.observe(viewLifecycleOwner) { state ->
