@@ -26,6 +26,7 @@ import com.woocommerce.android.AppPrefs.DeletablePrefKey.ORDER_FILTER_CUSTOM_DAT
 import com.woocommerce.android.AppPrefs.DeletablePrefKey.ORDER_FILTER_PREFIX
 import com.woocommerce.android.AppPrefs.DeletablePrefKey.PRODUCT_SORTING_PREFIX
 import com.woocommerce.android.AppPrefs.DeletablePrefKey.RECEIPT_PREFIX
+import com.woocommerce.android.AppPrefs.DeletablePrefKey.UPDATE_SIMULATED_READER_OPTION
 import com.woocommerce.android.AppPrefs.UndeletablePrefKey.ONBOARDING_CAROUSEL_DISPLAYED
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.extensions.orNullIfEmpty
@@ -33,8 +34,6 @@ import com.woocommerce.android.extensions.packageInfo
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.payments.cardreader.onboarding.PersistentOnboardingData
 import com.woocommerce.android.ui.payments.cardreader.onboarding.PluginType
-import com.woocommerce.android.AppPrefs.DeletablePrefKey.UPDATE_SIMULATED_READER_OPTION
-import com.woocommerce.android.ui.prefs.DeveloperOptionsViewModel.DeveloperOptionsViewState.UpdateOptions
 import com.woocommerce.android.ui.products.ProductType
 import com.woocommerce.android.ui.promobanner.PromoBannerType
 import com.woocommerce.android.util.PreferenceUtils
@@ -215,18 +214,9 @@ object AppPrefs {
         get() = getBoolean(DeletablePrefKey.USE_SIMULATED_READER, false)
         set(value) = setBoolean(DeletablePrefKey.USE_SIMULATED_READER, value)
 
-    fun setSimulatedReaderOption(option: UpdateOptions) {
-        setString(
-            UPDATE_SIMULATED_READER_OPTION,
-            option.toString()
-        )
-    }
-
-    fun getSimulatedReaderOption(): UpdateOptions {
-        return UpdateOptions.valueOf(
-            UPDATE_SIMULATED_READER_OPTION.name
-        )
-    }
+    var updateReaderOptionSelected: String
+        get() = getString(UPDATE_SIMULATED_READER_OPTION, "Never")
+        set(option) = setString(UPDATE_SIMULATED_READER_OPTION, option)
 
     fun getProductSortingChoice(currentSiteId: Int) = getString(getProductSortingKey(currentSiteId)).orNullIfEmpty()
 
