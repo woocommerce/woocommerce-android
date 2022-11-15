@@ -1,18 +1,68 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2022-10-26 09:54:25+0000
+Translation-Revision-Date: 2022-11-08 09:54:04+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: zh_TW
 -->
 <resources>
-    <string name="hello_blank_fragment">Hello 空白片段</string>
-    <string name="what_is_wordpress_link">&lt;u&gt;什麼是 WordPress.com？&lt;/u&gt;</string>
+    <string name="store_creation_confirm_and_leave">確認並離開</string>
+    <string name="store_creation_exit_dialog_message">你將失去所有商店資訊。</string>
+    <string name="store_creation_exit_dialog_title">你想離開嗎？</string>
+    <string name="store_creation_in_progress">正在建立你的商店…</string>
+    <string name="store_creation_cannot_load_store">無法載入你的商店。\n請再試一次…</string>
+    <string name="store_creation_create_new_store_label">建立新商店</string>
+    <string name="or_use_password_below_qr_code_scan_option">或使用密碼登入</string>
+    <string name="or_scan_qr_code_to_log_in">掃描 QR 碼登入</string>
+    <string name="simplified_login_prologue_title">WooCommerce 是可自訂的開放原始碼電子商務平台，架構在 WordPress 上。</string>
+    <string name="simulated_reader_toast">模擬讀卡機已停用</string>
+    <string name="simulated_reader_key">模擬讀卡機金鑰</string>
+    <string name="variations_bulk_update_stock_quantity_success">更新的庫存數量</string>
+    <string name="variations_bulk_update_current_stock_quantity_mixed">目前庫存數量不一</string>
+    <string name="variations_bulk_update_current_stock_quantity">目前庫存數量為 %d</string>
+    <string name="variations_bulk_update_stock_quantity_dialog_title">正在更新庫存數量</string>
+    <string name="variations_bulk_update_stock_quantity_info">%d 個款式的庫存數量將會更新</string>
+    <string name="variations_bulk_update_dialog_inventory_section_title">庫存</string>
+    <string name="product_search_hint_active_filters">搜尋篩選的商品</string>
+    <string name="orderlist_search_hint_active_filters">搜尋篩選的訂單</string>
+    <string name="site_picker_connect_existing_store">連結現有商店</string>
+    <string name="site_picker_create_new_store">建立新商店</string>
+    <string name="login_site_picker_add_a_store">新增商店</string>
+    <string name="login_no_stores">你的帳號未連結至任何 WooCommerce 商店。</string>
+    <string name="analytics_products_list_item_description">淨銷售額：%1$s</string>
+    <string name="analytics_products_list_header_subtitle">售出的項目</string>
+    <string name="analytics_products_list_header_title">產品</string>
+    <string name="analytics_products_card_title">產品</string>
+    <string name="analytics_products_list_items_sold">售出的項目</string>
+    <string name="analytics_avg_orders_title">平均訂單金額</string>
+    <string name="analytics_total_orders_title">訂單總數</string>
+    <string name="analytics_orders_card_title">訂單</string>
+    <string name="analytics_net_sales_title">淨銷售額</string>
+    <string name="analytics_total_sales_title">銷售總計</string>
+    <string name="analytics_products_no_data">本期沒有產品</string>
+    <string name="analytics_orders_no_data">本期沒有訂單</string>
+    <string name="analytics_revenue_no_data">本期沒有收益</string>
+    <string name="analytics_revenue_card_title">收益</string>
+    <string name="analytics_see_report_button_content_description">查看更多報告詳細資訊</string>
+    <string name="analytics_see_report_button_text">查看報告</string>
+    <string name="analytics_date_range_custom">%1$s - %2$s</string>
+    <string name="analytics_see_more">查看更多</string>
+    <string name="signup_api_generic_error">抱歉，無法為提供的憑證建立帳號。 請使用其他電子郵件。</string>
+    <string name="signup_password_not_secure_enough">你的密碼不符合我們的安全性原則。 請使用更複雜的密碼。</string>
+    <string name="signup_password_too_short">你的密碼太短了。 請選擇一個至少含有 6 個字元的密碼。</string>
+    <string name="signup_email_invalid_input">請輸入有效的電子郵件地址。</string>
+    <string name="signup_email_exist_input">已有其他帳號使用此電子郵件。</string>
+    <string name="signup_already_registered">首先來建立你的帳號。 已經註冊了嗎？ &lt;a href=\'login\'&gt;&lt;u&gt;登入&lt;/u&gt;&lt;/a&gt;</string>
+    <string name="login_create_an_account">建立帳號</string>
+    <string name="simplified_login_enter_email_address">輸入你的電子郵件地址以開始</string>
+    <string name="login_try_another_email">嘗試其他地址</string>
+    <string name="date_timeframe_custom_date_range_title">自訂日期範圍</string>
+    <string name="date_timeframe_custom">自訂</string>
+    <string name="what_is_wordpress_link">什麼是 WordPress.com？</string>
     <string name="signup_creating_account_loading_message">建立新帳號</string>
     <string name="signup_terms_of_service">繼續操作即代表你同意我們的&lt;u&gt;服務條款。&lt;/u&gt;</string>
     <string name="signup_password_hint">選擇密碼</string>
     <string name="signup_email_address_hint">你的電子郵件地址</string>
-    <string name="signup_already_registered">首先來建立你的帳號。 已經註冊了嗎？ 登入</string>
     <string name="signup_get_started_label">開始使用 \n設定只要幾分鐘</string>
     <string name="signup_get_started_button">開始使用</string>
     <string name="login_jetpack_connection_consent">點選「連結 Jetpack」按鈕，即表示你同意我們的&lt;a href=\'terms\'&gt;服務條款&lt;/a&gt;，並同意與 WordPress.com &lt;a href=\'sync\'&gt;分享詳細資訊&lt;/a&gt;。</string>
@@ -65,6 +115,7 @@ Language: zh_TW
     <string name="orderlist_bottom_sheet_simple_payments_moved_button">瞭解！</string>
     <string name="orderlist_bottom_sheet_simple_payments_moved_description">你現在可以快速輕鬆存取「親自收款」和其他功能</string>
     <string name="orderlist_bottom_sheet_simple_payments_moved_title">從「選單」分頁使用付款功能</string>
+    <string name="login_no_wpcom_account_found">你的電子郵件並未用於 WordPress.com 帳號。</string>
     <string name="login_non_woo_stores_label">其他網站</string>
     <string name="login_with_store_address">使用你的商店地址登入</string>
     <string name="more_menu_button_w___admin">WC 管理員</string>
@@ -186,8 +237,8 @@ Language: zh_TW
     <string name="variations_bulk_update_current_prices_mixed">目前價格不一</string>
     <string name="variations_bulk_update_current_price">目前價格為 %s</string>
     <string name="variations_bulk_update_price_info">%d 個款式的價格將會更新。</string>
-    <string name="variations_bulk_update_dialog_price_mixed">混合</string>
-    <string name="variations_bulk_update_dialog_price_none">無</string>
+    <string name="variations_bulk_update_dialog_mixed">混合</string>
+    <string name="variations_bulk_update_dialog_none">無</string>
     <string name="variations_bulk_update_dialog_sale_price_label">折扣價</string>
     <string name="variations_bulk_update_dialog_regular_price_label">原價</string>
     <string name="variations_bulk_update_dialog_price_section_title">價格</string>
@@ -1855,7 +1906,7 @@ Language: zh_TW
     <string name="orderdetail_track_shipment">追蹤貨件</string>
     <string name="login_email_help_desc">你可以在網站管理中透過%3$s連結 &gt; 帳號連結%4$s下方的 %1$sJetpack 儀表板%2$s找到用來連結至 WordPress.com 的電子郵件</string>
     <string name="login_email_help_title">我該使用什麼電子郵件登入？</string>
-    <string name="login_need_help_finding_email">&lt;u&gt;需要協助找出所需的電子郵件嗎？&lt;/u&gt;</string>
+    <string name="login_need_help_finding_email">需要協助找出所需電子郵件嗎？</string>
     <string name="login_jetpack_what_is_description">Jetpack 是一款免費的 WordPress 外掛程式，能夠透過所需工具連結你的商店，為你提供最佳行動裝置體驗，包含推播通知和統計資料</string>
     <string name="login_jetpack_what_is">什麼是 Jetpack？</string>
     <string name="login_view_connected_stores">檢視連結的商店</string>
@@ -2180,7 +2231,6 @@ Language: zh_TW
     <string name="dashboard_stats_granularity_months">月</string>
     <string name="dashboard_stats_granularity_weeks">週</string>
     <string name="dashboard_stats_granularity_days">天</string>
-    <string name="login_no_stores">找不到與此帳號連結的 WooCommerce 商店。</string>
     <string name="login_with_a_different_account">使用不同的帳號登入</string>
     <string name="login_nostores_content_description">無 WooCommerce 商店</string>
     <string name="login_avatar_content_description">你的個人檔案照片</string>
@@ -2234,7 +2284,8 @@ Language: zh_TW
     <string name="all">全部</string>
     <string name="notification_channel_general_title">一般</string>
     <string name="app_name">WooCommerce</string>
-    <string-array name="date_range_selectors">
+    <string-array name="analytics_date_range_selectors">
+        <item>\@string/date_timeframe_custom</item>
         <item>\@string/date_timeframe_today</item>
         <item>\@string/date_timeframe_yesterday</item>
         <item>\@string/date_timeframe_last_week</item>

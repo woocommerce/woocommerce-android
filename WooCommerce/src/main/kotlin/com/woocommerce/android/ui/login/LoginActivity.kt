@@ -8,6 +8,7 @@ import android.os.Bundle
 import android.os.Parcelable
 import android.view.MenuItem
 import androidx.activity.OnBackPressedCallback
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
@@ -25,7 +26,6 @@ import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_LOGIN_
 import com.woocommerce.android.analytics.ExperimentTracker
 import com.woocommerce.android.barcode.QrCodeScanningFragment
 import com.woocommerce.android.databinding.ActivityLoginBinding
-import com.woocommerce.android.experiment.PrologueExperiment
 import com.woocommerce.android.extensions.parcelable
 import com.woocommerce.android.support.ZendeskExtraTags
 import com.woocommerce.android.support.ZendeskHelper
@@ -34,7 +34,6 @@ import com.woocommerce.android.support.help.HelpActivity.Origin
 import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.login.LoginPrologueCarouselFragment.PrologueCarouselListener
 import com.woocommerce.android.ui.login.LoginPrologueFragment.PrologueFinishedListener
-import com.woocommerce.android.ui.login.LoginPrologueSurveyFragment.PrologueSurveyListener
 import com.woocommerce.android.ui.login.UnifiedLoginTracker.Click
 import com.woocommerce.android.ui.login.UnifiedLoginTracker.Flow
 import com.woocommerce.android.ui.login.UnifiedLoginTracker.Flow.LOGIN_SITE_ADDRESS
@@ -55,16 +54,17 @@ import com.woocommerce.android.ui.login.localnotifications.LoginNotificationSche
 import com.woocommerce.android.ui.login.overrides.WooLoginEmailFragment
 import com.woocommerce.android.ui.login.overrides.WooLoginEmailPasswordFragment
 import com.woocommerce.android.ui.login.overrides.WooLoginSiteAddressFragment
+import com.woocommerce.android.ui.login.qrcode.QrCodeLoginListener
+import com.woocommerce.android.ui.login.qrcode.showCameraPermissionDeniedDialog
 import com.woocommerce.android.ui.login.signup.SignUpFragment
 import com.woocommerce.android.ui.login.signup.SignUpFragment.NextStep.SITE_PICKER
 import com.woocommerce.android.ui.login.signup.SignUpFragment.NextStep.STORE_CREATION
-import com.woocommerce.android.ui.login.storecreation.StoreCreationFragment
 import com.woocommerce.android.ui.main.MainActivity
 import com.woocommerce.android.util.ActivityUtils
 import com.woocommerce.android.util.ChromeCustomTabUtils
-import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.util.UrlUtils
 import com.woocommerce.android.util.WooLog
+import com.woocommerce.android.util.WooPermissionUtils
 import dagger.android.AndroidInjector
 import dagger.android.DispatchingAndroidInjector
 import dagger.android.HasAndroidInjector
@@ -89,7 +89,6 @@ import org.wordpress.android.login.LoginEmailPasswordFragment
 import org.wordpress.android.login.LoginGoogleFragment
 import org.wordpress.android.login.LoginListener
 import org.wordpress.android.login.LoginMagicLinkRequestFragment
-import org.wordpress.android.login.LoginMagicLinkSentImprovedFragment
 import org.wordpress.android.login.LoginMode
 import org.wordpress.android.login.LoginSiteAddressFragment
 import org.wordpress.android.login.LoginUsernamePasswordFragment
@@ -110,10 +109,10 @@ class LoginActivity :
     LoginNoJetpackListener,
     LoginEmailHelpDialogFragment.Listener,
     WooLoginEmailFragment.Listener,
-    PrologueSurveyListener,
     WooLoginEmailPasswordFragment.Listener,
     LoginNoWPcomAccountFoundFragment.Listener,
-    SignUpFragment.Listener {
+    SignUpFragment.Listener,
+    QrCodeLoginListener {
     companion object {
         private const val FORGOT_PASSWORD_URL_SUFFIX = "wp-login.php?action=lostpassword"
         private const val MAGIC_LOGIN = "magic-login"
@@ -144,17 +143,26 @@ class LoginActivity :
         }
     }
 
-    @Inject internal lateinit var androidInjector: DispatchingAndroidInjector<Any>
-    @Inject internal lateinit var loginAnalyticsListener: LoginAnalyticsListener
-    @Inject internal lateinit var unifiedLoginTracker: UnifiedLoginTracker
-    @Inject internal lateinit var zendeskHelper: ZendeskHelper
-    @Inject internal lateinit var urlUtils: UrlUtils
-    @Inject internal lateinit var experimentTracker: ExperimentTracker
-    @Inject internal lateinit var appPrefsWrapper: AppPrefsWrapper
-    @Inject internal lateinit var dispatcher: Dispatcher
-    @Inject internal lateinit var loginNotificationScheduler: LoginNotificationScheduler
-    @Inject internal lateinit var prologueExperiment: PrologueExperiment
-    @Inject internal lateinit var uiMessageResolver: UIMessageResolver
+    @Inject
+    internal lateinit var androidInjector: DispatchingAndroidInjector<Any>
+    @Inject
+    internal lateinit var loginAnalyticsListener: LoginAnalyticsListener
+    @Inject
+    internal lateinit var unifiedLoginTracker: UnifiedLoginTracker
+    @Inject
+    internal lateinit var zendeskHelper: ZendeskHelper
+    @Inject
+    internal lateinit var urlUtils: UrlUtils
+    @Inject
+    internal lateinit var experimentTracker: ExperimentTracker
+    @Inject
+    internal lateinit var appPrefsWrapper: AppPrefsWrapper
+    @Inject
+    internal lateinit var dispatcher: Dispatcher
+    @Inject
+    internal lateinit var loginNotificationScheduler: LoginNotificationScheduler
+    @Inject
+    internal lateinit var uiMessageResolver: UIMessageResolver
 
     private var loginMode: LoginMode? = null
     private lateinit var binding: ActivityLoginBinding
@@ -321,9 +329,6 @@ class LoginActivity :
     private fun getPrologueFragment(): LoginPrologueFragment? =
         supportFragmentManager.findFragmentByTag(LoginPrologueFragment.TAG) as? LoginPrologueFragment
 
-    private fun getPrologueSurveyFragment(): LoginPrologueSurveyFragment? =
-        supportFragmentManager.findFragmentByTag(LoginPrologueSurveyFragment.TAG) as? LoginPrologueSurveyFragment
-
     private fun getLoginViaSiteAddressFragment(): LoginSiteAddressFragment? =
         supportFragmentManager.findFragmentByTag(LoginSiteAddressFragment.TAG) as? WooLoginSiteAddressFragment
 
@@ -371,7 +376,7 @@ class LoginActivity :
     }
 
     override fun onGetStartedClicked() {
-        changeFragment(SignUpFragment.newInstance(SignUpFragment.NextStep.STORE_CREATION), true, SignUpFragment.TAG)
+        changeFragment(SignUpFragment.newInstance(STORE_CREATION), true, SignUpFragment.TAG)
     }
 
     private fun showMainActivityAndFinish() {
@@ -456,11 +461,6 @@ class LoginActivity :
     private fun showPrologueFragment() = lifecycleScope.launchWhenStarted {
         val prologueFragment = getPrologueFragment() ?: LoginPrologueFragment()
         changeFragment(prologueFragment, true, LoginPrologueFragment.TAG)
-    }
-
-    private fun showPrologueSurveyFragment() {
-        val prologueSurveyFragment = getPrologueSurveyFragment() ?: LoginPrologueSurveyFragment()
-        changeFragment(prologueSurveyFragment, true, LoginPrologueSurveyFragment.TAG)
     }
 
     override fun loginViaSocialAccount(
@@ -918,19 +918,13 @@ class LoginActivity :
     }
 
     override fun onCreateAccountClicked() {
-        changeFragment(SignUpFragment.newInstance(SignUpFragment.NextStep.SITE_PICKER), true, SignUpFragment.TAG)
+        changeFragment(SignUpFragment.newInstance(SITE_PICKER), true, SignUpFragment.TAG)
     }
 
     private fun getLoginHelpNotification(): String? =
         intent.extras?.getString(KEY_LOGIN_HELP_NOTIFICATION)
 
     override fun onCarouselFinished() {
-        lifecycleScope.launchWhenStarted {
-            prologueExperiment.run(::showPrologueFragment, ::showPrologueSurveyFragment)
-        }
-    }
-
-    override fun onSurveyFinished() {
         showPrologueFragment()
     }
 
@@ -943,44 +937,8 @@ class LoginActivity :
         loginNotificationScheduler.scheduleNotification(notificationType)
     }
 
-    override fun onQrCodeLoginClicked() {
-        AnalyticsTracker.track(
-            stat = AnalyticsEvent.LOGIN_WITH_QR_CODE_BUTTON_TAPPED,
-            properties = mapOf(KEY_FLOW to VALUE_LOGIN_WITH_WORDPRESS_COM)
-        )
-        val fragment =
-            supportFragmentManager.findFragmentByTag(QrCodeScanningFragment.TAG) as? QrCodeScanningFragment
-                ?: QrCodeScanningFragment()
-        fragment.setClickListeners(
-            onCodeScanned = { rawValue ->
-                AnalyticsTracker.track(stat = AnalyticsEvent.LOGIN_WITH_QR_CODE_SCANNED)
-                val intent = Intent(Intent.ACTION_VIEW, Uri.parse(rawValue))
-                intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK or
-                    Intent.FLAG_ACTIVITY_CLEAR_TASK
-                startActivity(intent)
-            },
-            onHelpClicked = { viewHelpAndSupport(Origin.LOGIN_WITH_QR_CODE) }
-        )
-        changeFragment(fragment, shouldAddToBackStack = true, tag = QrCodeScanningFragment.TAG)
-    }
-
     override fun onAccountCreated(nextStep: SignUpFragment.NextStep) {
-        when (nextStep) {
-            STORE_CREATION -> {
-                when {
-                    FeatureFlag.NATIVE_STORE_CREATION_FLOW.isEnabled() -> showStoreCreationNextStep()
-                    else -> showMainActivityAndFinish()
-                }
-            }
-            SITE_PICKER -> showMainActivityAndFinish()
-        }
-    }
-
-    private fun showStoreCreationNextStep() {
-        val storeCreationFragment =
-            supportFragmentManager.findFragmentByTag(StoreCreationFragment.TAG) as? StoreCreationFragment
-                ?: StoreCreationFragment()
-        changeFragment(storeCreationFragment, shouldAddToBackStack = true, tag = StoreCreationFragment.TAG)
+        showMainActivityAndFinish()
     }
 
     override fun onLoginClicked() {
@@ -1023,6 +981,44 @@ class LoginActivity :
             }
         }
     }
+
+    override fun onScanQrCodeClicked(source: String) {
+        AnalyticsTracker.track(
+            stat = AnalyticsEvent.LOGIN_WITH_QR_CODE_BUTTON_TAPPED,
+            properties = mapOf(
+                KEY_FLOW to VALUE_LOGIN_WITH_WORDPRESS_COM,
+                KEY_SOURCE to source
+            )
+        )
+        when {
+            WooPermissionUtils.hasCameraPermission(this) -> openQrCodeScannerFragment()
+            else -> WooPermissionUtils.requestCameraPermission(requestPermissionLauncher)
+        }
+    }
+
+    private fun openQrCodeScannerFragment() {
+        val fragment =
+            supportFragmentManager.findFragmentByTag(QrCodeScanningFragment.TAG) as? QrCodeScanningFragment
+                ?: QrCodeScanningFragment()
+        fragment.setClickListeners(
+            onCodeScanned = { rawValue ->
+                AnalyticsTracker.track(stat = AnalyticsEvent.LOGIN_WITH_QR_CODE_SCANNED)
+                val intent = Intent(Intent.ACTION_VIEW, Uri.parse(rawValue))
+                intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK or
+                    Intent.FLAG_ACTIVITY_CLEAR_TASK
+                startActivity(intent)
+            },
+            onHelpClicked = { viewHelpAndSupport(Origin.LOGIN_WITH_QR_CODE) }
+        )
+        changeFragment(fragment, shouldAddToBackStack = true, tag = QrCodeScanningFragment.TAG)
+    }
+
+    private val requestPermissionLauncher =
+        registerForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted: Boolean ->
+            if (isGranted) {
+                openQrCodeScannerFragment()
+            } else showCameraPermissionDeniedDialog(this)
+        }
 
     @Parcelize
     private data class ConnectSiteInfo(

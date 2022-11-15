@@ -7,21 +7,28 @@ import com.woocommerce.android.model.OrdersStat
 import com.woocommerce.android.model.ProductItem
 import com.woocommerce.android.model.ProductsStat
 import com.woocommerce.android.model.RevenueStat
+import com.woocommerce.android.model.VisitorsStat
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.analytics.AnalyticsRepository.FetchStrategy.ForceNew
 import com.woocommerce.android.ui.analytics.AnalyticsRepository.FetchStrategy.Saved
 import com.woocommerce.android.ui.analytics.AnalyticsRepository.OrdersResult.OrdersData
+import com.woocommerce.android.ui.analytics.AnalyticsRepository.OrdersResult.OrdersError
 import com.woocommerce.android.ui.analytics.AnalyticsRepository.ProductsResult.ProductsData
+import com.woocommerce.android.ui.analytics.AnalyticsRepository.ProductsResult.ProductsError
 import com.woocommerce.android.ui.analytics.AnalyticsRepository.RevenueResult.RevenueData
+import com.woocommerce.android.ui.analytics.AnalyticsRepository.RevenueResult.RevenueError
+import com.woocommerce.android.ui.analytics.AnalyticsRepository.VisitorsResult.VisitorsData
+import com.woocommerce.android.ui.analytics.AnalyticsRepository.VisitorsResult.VisitorsError
 import com.woocommerce.android.ui.analytics.AnalyticsViewModel.Companion.DATE_RANGE_SELECTED_KEY
 import com.woocommerce.android.ui.analytics.AnalyticsViewModel.Companion.TIME_PERIOD_SELECTED_KEY
 import com.woocommerce.android.ui.analytics.RefreshIndicator.NotShowIndicator
 import com.woocommerce.android.ui.analytics.daterangeselector.AnalyticTimePeriod.LAST_YEAR
 import com.woocommerce.android.ui.analytics.daterangeselector.AnalyticTimePeriod.TODAY
 import com.woocommerce.android.ui.analytics.daterangeselector.AnalyticTimePeriod.WEEK_TO_DATE
-import com.woocommerce.android.ui.analytics.daterangeselector.AnalyticsDateRange.MultipleDateRange
-import com.woocommerce.android.ui.analytics.daterangeselector.AnalyticsDateRange.SimpleDateRange
 import com.woocommerce.android.ui.analytics.daterangeselector.AnalyticsDateRangeCalculator
+import com.woocommerce.android.ui.analytics.daterangeselector.AnalyticsDateRangeFormatter
+import com.woocommerce.android.ui.analytics.daterangeselector.MultipleDateRange
+import com.woocommerce.android.ui.analytics.daterangeselector.SimpleDateRange
 import com.woocommerce.android.ui.analytics.informationcard.AnalyticsInformationViewState
 import com.woocommerce.android.ui.analytics.informationcard.AnalyticsInformationViewState.LoadingViewState
 import com.woocommerce.android.ui.analytics.listcard.AnalyticsListViewState
@@ -42,6 +49,8 @@ import org.mockito.kotlin.doReturnConsecutively
 import org.mockito.kotlin.eq
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.stub
+import org.mockito.kotlin.times
+import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import org.wordpress.android.fluxc.model.SiteModel
 import java.text.SimpleDateFormat
@@ -87,6 +96,8 @@ class AnalyticsViewModelTest : BaseUnitTest() {
         on { getIfExists() } doReturn siteModel
     }
     private val savedState = AnalyticsFragmentArgs(targetGranularity = TODAY).initSavedStateHandle()
+
+    private val transactionLauncher = mock<AnalyticsHubTransactionLauncher>()
 
     private lateinit var sut: AnalyticsViewModel
 
@@ -175,7 +186,7 @@ class AnalyticsViewModelTest : BaseUnitTest() {
             }
 
             sut = givenAViewModel(resourceProvider)
-            sut.onSelectedTimePeriodChanged(LAST_YEAR.description)
+            sut.onSelectedTimePeriodChanged(LAST_YEAR)
 
             with(sut.state.value.analyticsDateRangeSelectorState) {
                 assertEquals(LAST_YEAR.description, selectedPeriod)
@@ -194,7 +205,7 @@ class AnalyticsViewModelTest : BaseUnitTest() {
 
             sut = givenAViewModel()
 
-            sut.onSelectedTimePeriodChanged(LAST_YEAR.description)
+            sut.onSelectedTimePeriodChanged(LAST_YEAR)
 
             val resourceProvider = givenAResourceProvider()
             with(sut.state.value.revenueState) {
@@ -221,7 +232,7 @@ class AnalyticsViewModelTest : BaseUnitTest() {
                 )
 
             sut = givenAViewModel()
-            sut.onSelectedTimePeriodChanged(LAST_YEAR.description)
+            sut.onSelectedTimePeriodChanged(LAST_YEAR)
 
             with(sut.state.value.revenueState) {
                 assertTrue(this is AnalyticsInformationViewState.DataViewState)
@@ -239,7 +250,7 @@ class AnalyticsViewModelTest : BaseUnitTest() {
 
             sut = givenAViewModel()
 
-            sut.onSelectedTimePeriodChanged(LAST_YEAR.description)
+            sut.onSelectedTimePeriodChanged(LAST_YEAR)
 
             with(sut.state.value.refreshIndicator) {
                 assertTrue(this is NotShowIndicator)
@@ -267,7 +278,7 @@ class AnalyticsViewModelTest : BaseUnitTest() {
         }
 
         sut = givenAViewModel()
-        sut.onSelectedTimePeriodChanged(WEEK_TO_DATE.description)
+        sut.onSelectedTimePeriodChanged(WEEK_TO_DATE)
         sut.onRefreshRequested()
 
         val resourceProvider = givenAResourceProvider()
@@ -291,7 +302,7 @@ class AnalyticsViewModelTest : BaseUnitTest() {
             }
 
             sut = givenAViewModel()
-            sut.onSelectedTimePeriodChanged(LAST_YEAR.description)
+            sut.onSelectedTimePeriodChanged(LAST_YEAR)
 
             val resourceProvider = givenAResourceProvider()
             with(sut.state.value.ordersState) {
@@ -314,7 +325,7 @@ class AnalyticsViewModelTest : BaseUnitTest() {
             }
 
             sut = givenAViewModel()
-            sut.onSelectedTimePeriodChanged(LAST_YEAR.description)
+            sut.onSelectedTimePeriodChanged(LAST_YEAR)
 
             val resourceProvider = givenAResourceProvider()
             with(sut.state.value.productsState) {
@@ -353,7 +364,7 @@ class AnalyticsViewModelTest : BaseUnitTest() {
         }
 
         sut = givenAViewModel()
-        sut.onSelectedTimePeriodChanged(WEEK_TO_DATE.description)
+        sut.onSelectedTimePeriodChanged(WEEK_TO_DATE)
         sut.onRefreshRequested()
 
         val resourceProvider = givenAResourceProvider()
@@ -390,7 +401,7 @@ class AnalyticsViewModelTest : BaseUnitTest() {
         }
 
         sut = givenAViewModel()
-        sut.onSelectedTimePeriodChanged(WEEK_TO_DATE.description)
+        sut.onSelectedTimePeriodChanged(WEEK_TO_DATE)
         sut.onRefreshRequested()
 
         with(sut.state.value.revenueState) {
@@ -421,7 +432,7 @@ class AnalyticsViewModelTest : BaseUnitTest() {
         }
 
         sut = givenAViewModel()
-        sut.onSelectedTimePeriodChanged(WEEK_TO_DATE.description)
+        sut.onSelectedTimePeriodChanged(WEEK_TO_DATE)
         sut.onRefreshRequested()
 
         val resourceProvider = givenAResourceProvider()
@@ -500,18 +511,111 @@ class AnalyticsViewModelTest : BaseUnitTest() {
         assertThat(sut.event.value).isInstanceOf(AnalyticsViewEvent.OpenDatePicker::class.java)
     }
 
+    @Test
+    fun `when all data is fetched successfully then all Sentry conditions are satisfied`() = testBlocking {
+        analyticsRepository.stub {
+            onBlocking { fetchRevenueData(any(), any(), any()) }.doReturn(getRevenueStats())
+            onBlocking { fetchOrdersData(any(), any(), any()) }.doReturn(getOrdersStats())
+            onBlocking { fetchProductsData(any(), any(), any()) }.doReturn(getProductsStats())
+            onBlocking { fetchRecentVisitorsData(any(), any(), any()) }.doReturn(getVisitorStats())
+        }
+
+        sut = givenAViewModel()
+
+        verify(transactionLauncher, times(1)).onRevenueFetched()
+        verify(transactionLauncher, times(1)).onOrdersFetched()
+        verify(transactionLauncher, times(1)).onProductsFetched()
+        verify(transactionLauncher, times(1)).onVisitorsFetched()
+    }
+
+    @Test
+    fun `when fetch revenue fails then Sentry revenue condition is not satisfied`() = testBlocking {
+        analyticsRepository.stub {
+            onBlocking { fetchRevenueData(any(), any(), any()) }.doReturn(RevenueError)
+            onBlocking { fetchOrdersData(any(), any(), any()) }.doReturn(getOrdersStats())
+            onBlocking { fetchProductsData(any(), any(), any()) }.doReturn(getProductsStats())
+            onBlocking { fetchRecentVisitorsData(any(), any(), any()) }.doReturn(getVisitorStats())
+        }
+
+        sut = givenAViewModel()
+
+        verify(transactionLauncher, times(0)).onRevenueFetched()
+        verify(transactionLauncher, times(1)).onOrdersFetched()
+        verify(transactionLauncher, times(1)).onProductsFetched()
+        verify(transactionLauncher, times(1)).onVisitorsFetched()
+    }
+
+    @Test
+    fun `when fetch orders fails then Sentry order condition is not satisfied`() = testBlocking {
+        analyticsRepository.stub {
+            onBlocking { fetchRevenueData(any(), any(), any()) }.doReturn(getRevenueStats())
+            onBlocking { fetchOrdersData(any(), any(), any()) }.doReturn(OrdersError)
+            onBlocking { fetchProductsData(any(), any(), any()) }.doReturn(getProductsStats())
+            onBlocking { fetchRecentVisitorsData(any(), any(), any()) }.doReturn(getVisitorStats())
+        }
+
+        sut = givenAViewModel()
+
+        verify(transactionLauncher, times(1)).onRevenueFetched()
+        verify(transactionLauncher, times(0)).onOrdersFetched()
+        verify(transactionLauncher, times(1)).onProductsFetched()
+        verify(transactionLauncher, times(1)).onVisitorsFetched()
+    }
+
+    @Test
+    fun `when fetch products fails then Sentry products condition is not satisfied`() = testBlocking {
+        analyticsRepository.stub {
+            onBlocking { fetchRevenueData(any(), any(), any()) }.doReturn(getRevenueStats())
+            onBlocking { fetchOrdersData(any(), any(), any()) }.doReturn(getOrdersStats())
+            onBlocking { fetchProductsData(any(), any(), any()) }.doReturn(ProductsError)
+            onBlocking { fetchRecentVisitorsData(any(), any(), any()) }.doReturn(getVisitorStats())
+        }
+
+        sut = givenAViewModel()
+
+        verify(transactionLauncher, times(1)).onRevenueFetched()
+        verify(transactionLauncher, times(1)).onOrdersFetched()
+        verify(transactionLauncher, times(0)).onProductsFetched()
+        verify(transactionLauncher, times(1)).onVisitorsFetched()
+    }
+
+    @Test
+    fun `when fetch visitors fails then Sentry visitors condition is not satisfied`() = testBlocking {
+        analyticsRepository.stub {
+            onBlocking { fetchRevenueData(any(), any(), any()) }.doReturn(getRevenueStats())
+            onBlocking { fetchOrdersData(any(), any(), any()) }.doReturn(getOrdersStats())
+            onBlocking { fetchProductsData(any(), any(), any()) }.doReturn(getProductsStats())
+            onBlocking { fetchRecentVisitorsData(any(), any(), any()) }.doReturn(VisitorsError)
+        }
+
+        sut = givenAViewModel()
+
+        verify(transactionLauncher, times(1)).onRevenueFetched()
+        verify(transactionLauncher, times(1)).onOrdersFetched()
+        verify(transactionLauncher, times(1)).onProductsFetched()
+        verify(transactionLauncher, times(0)).onVisitorsFetched()
+    }
+
     private fun givenAResourceProvider(): ResourceProvider = mock {
         on { getString(any()) } doAnswer { invocationOnMock -> invocationOnMock.arguments[0].toString() }
         on { getString(any(), any()) } doAnswer { invMock -> invMock.arguments[0].toString() }
         on { getStringArray(any()) } doAnswer { DATE_RANGE_SELECTORS.toTypedArray() }
     }
 
-    private fun givenAViewModel(resourceProvider: ResourceProvider = givenAResourceProvider()) =
-        AnalyticsViewModel(
-            resourceProvider, dateUtil, calculator,
-            currencyFormatter, analyticsRepository,
-            selectedSite, mock(), mock(), savedState
+    private fun givenAViewModel(resourceProvider: ResourceProvider = givenAResourceProvider()): AnalyticsViewModel {
+        val analyticsDateRangeFormatter = AnalyticsDateRangeFormatter(dateUtil, resourceProvider)
+        return AnalyticsViewModel(
+            resourceProvider,
+            calculator,
+            currencyFormatter,
+            analyticsRepository,
+            selectedSite,
+            transactionLauncher,
+            mock(),
+            analyticsDateRangeFormatter,
+            savedState
         )
+    }
 
     private fun getRevenueStats(
         totalValue: Double = TOTAL_VALUE,
@@ -519,7 +623,17 @@ class AnalyticsViewModelTest : BaseUnitTest() {
         currencyCode: String = CURRENCY_CODE,
         totalDelta: DeltaPercentage = DeltaPercentage.Value(TOTAL_DELTA.toInt()),
         netDelta: DeltaPercentage = DeltaPercentage.Value(NET_DELTA.toInt()),
-    ) = RevenueData(RevenueStat(totalValue, totalDelta, netValue, netDelta, currencyCode))
+    ) = RevenueData(
+        RevenueStat(
+            totalValue,
+            totalDelta,
+            netValue,
+            netDelta,
+            currencyCode,
+            listOf(TOTAL_VALUE),
+            listOf(NET_VALUE)
+        )
+    )
 
     private fun getOrdersStats(
         ordersCount: Int = ORDERS_COUNT,
@@ -533,7 +647,9 @@ class AnalyticsViewModelTest : BaseUnitTest() {
             DeltaPercentage.Value(ordersCountDelta),
             avgOrderValue,
             DeltaPercentage.Value(avgOrderValueDelta),
-            currencyCode
+            currencyCode,
+            listOf(ORDERS_COUNT.toLong()),
+            listOf(AVG_ORDER_VALUE)
         )
     )
 
@@ -542,6 +658,13 @@ class AnalyticsViewModelTest : BaseUnitTest() {
         itemsSoldDelta: Int = PRODUCT_ITEMS_SOLD_DELTA,
         productList: List<ProductItem> = PRODUCT_LIST
     ) = ProductsData(ProductsStat(itemsSold, DeltaPercentage.Value(itemsSoldDelta), productList))
+
+    private fun getVisitorStats(
+        visitorsCount: Int = DEFAULT_VISITORS_COUNT,
+        viewsCount: Int = DEFAULT_VIEWS_COUNT,
+        avgVisitorsDelta: DeltaPercentage = DeltaPercentage.Value(DEFAULT_AVG_VISITORS_DELTA),
+        avgViewsDelta: DeltaPercentage = DeltaPercentage.Value(DEFAULT_AVG_VIEWS_DELTA)
+    ) = VisitorsData(VisitorsStat(visitorsCount, viewsCount, avgVisitorsDelta, avgViewsDelta))
 
     companion object {
         private const val ANY_DATE_TIME_VALUE = "2021-11-21 00:00:00"
@@ -622,6 +745,11 @@ class AnalyticsViewModelTest : BaseUnitTest() {
                 PRODUCT_CURRENCY_CODE
             )
         ).sortedByDescending { it.quantity }
+
+        private const val DEFAULT_VISITORS_COUNT = 100
+        private const val DEFAULT_VIEWS_COUNT = 100
+        private const val DEFAULT_AVG_VISITORS_DELTA = 10
+        private const val DEFAULT_AVG_VIEWS_DELTA = 34
 
         const val ANY_URL = "https://a8c.com"
         const val ORDERS_COUNT = 5

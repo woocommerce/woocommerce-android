@@ -233,7 +233,7 @@
     <string name="login_avatar_content_description">Your profile photo</string>
     <string name="login_nostores_content_description">No WooCommerce stores</string>
     <string name="login_with_a_different_account">Login with a different account</string>
-    <string name="login_no_stores">We didn\'t find WooCommerce stores connected to this account.</string>
+    <string name="login_no_stores">Your account isn’t connected to any WooCommerce stores.</string>
     <string name="login_wpcom_account_mismatch">It looks like %1$s is connected to a different WordPress.com account.</string>
     <string name="login_jetpack_not_connected">It looks like your account is not connected to %1$s\'s Jetpack</string>
     <string name="login_try_another_account">Log in with another account</string>
@@ -273,6 +273,7 @@
     <string name="user_role_access_error_retry">You don\'t have the correct user role</string>
     <string name="user_access_verifying">Verifying role…</string>
     <string name="login_site_picker_enter_site_address">Enter a site address</string>
+    <string name="login_site_picker_add_a_store">Add a Store</string>
     <string name="site_discovery_postlogin_failure">A failure occurred, please contact support</string>
     <string name="login_site_picker_new_to_woo">New to WooCommerce</string>
     <string name="login_simple_wpcom_site">The site %1$s is currently on a WordPress.com plan that does not support plugin installation. Please upgrade your plan to use WooCommerce.</string>
@@ -287,6 +288,8 @@
     <string name="login_jetpack_connection_consent">By tapping the Connect Jetpack button, you agree to our &lt;a href=\'terms\'&gt;Terms of Service&lt;/a&gt; and to &lt;a href=\'sync\'&gt;share details&lt;/a&gt; with WordPress.com.</string>
     <string name="simplified_login_enter_email_address">Enter your email address to get started</string>
     <string name="login_create_an_account">Create An Account</string>
+    <string name="site_picker_create_new_store">Create a new store</string>
+    <string name="site_picker_connect_existing_store">Connect an existing store</string>
 
     <!--
         My Store View
@@ -356,7 +359,6 @@
         <item translatable="false">@string/date_timeframe_month_to_date</item>
         <item translatable="false">@string/date_timeframe_quarter_to_date</item>
         <item translatable="false">@string/date_timeframe_year_to_date</item>
-        <item translatable="false">@string/date_timeframe_year_to_date</item>
     </string-array>
     <string name="analytics_see_report_button_text">See report</string>e
     <string name="analytics_see_report_button_content_description">See more report details</string>
@@ -375,6 +377,9 @@
     <string name="analytics_products_list_header_title">Products</string>
     <string name="analytics_products_list_header_subtitle">Items sold</string>
     <string name="analytics_products_list_item_description">Net sales: %1$s</string>
+    <string name="analytics_visitors_and_views_card_title">Visitors and Views</string>
+    <string name="analytics_visitors_subtitle">Visitors</string>
+    <string name="analytics_views_subtitle">Views</string>
 
     <!--
         Order List View
@@ -386,6 +391,7 @@
     <string name="orderlist_filter_by">Filter orders by</string>
     <string name="orderlist_filter">Filter</string>
     <string name="orderlist_search_hint">Search orders</string>
+    <string name="orderlist_search_hint_active_filters">Search filtered orders</string>
     <string name="orderlist_filtered" translatable="false">: %1$s</string>
     <string name="orderlist_loading">Looking up your orders…</string>
     <string name="orderlist_no_filters_title">All Orders</string>
@@ -1449,6 +1455,7 @@
     <string name="product_list_filters_show_products">Show products</string>
     <string name="product_list_filters_list_item">Selected filter option</string>
     <string name="product_search_hint">Search products</string>
+    <string name="product_search_hint_active_filters">Search filtered products</string>
     <string name="product_search_all">All products</string>
     <string name="product_search_sku">SKU</string>
     <string name="product_list_sorting_list_item">Selected sorting option</string>
@@ -1619,8 +1626,8 @@
     <string name="variations_bulk_update_dialog_price_section_title">Price</string>
     <string name="variations_bulk_update_dialog_regular_price_label">Regular price</string>
     <string name="variations_bulk_update_dialog_sale_price_label">Sale price</string>
-    <string name="variations_bulk_update_dialog_price_none">None</string>
-    <string name="variations_bulk_update_dialog_price_mixed">Mixed</string>
+    <string name="variations_bulk_update_dialog_none">None</string>
+    <string name="variations_bulk_update_dialog_mixed">Mixed</string>
     <string name="variations_bulk_update_price_info">Price will be updated for %d variations</string>
     <string name="variations_bulk_update_current_price">Current price is %s</string>
     <string name="variations_bulk_update_current_prices_mixed">Current prices are mixed</string>
@@ -1631,6 +1638,13 @@
     <string name="variations_bulk_update_regular_prices_dialog_title">Updating regular prices</string>
     <string name="variations_bulk_update_warning_title">Bulk update limit exceeded</string>
     <string name="variations_bulk_update_warning_message">Currently bulk update is supported for 100 variations maximum.</string>
+    <string name="variations_bulk_update_dialog_inventory_section_title">Inventory</string>
+    <string name="variations_bulk_update_dialog_stock_quantity_label" translatable="false">@string/product_stock_quantity</string>
+    <string name="variations_bulk_update_stock_quantity_info">Stock quantity will be updated for %d variations</string>
+    <string name="variations_bulk_update_stock_quantity_dialog_title">Updating stock quantity</string>
+    <string name="variations_bulk_update_current_stock_quantity">Current stock quantity is %d</string>
+    <string name="variations_bulk_update_current_stock_quantity_mixed">Current stock quantity is mixed</string>
+    <string name="variations_bulk_update_stock_quantity_success">Updated stock quantity</string>
 
     <!--
         Product images
@@ -1756,15 +1770,17 @@
     <string name="dev_options">Developer Options</string>
 
     <!--
-        Settings
+        Developer Options Screen
     -->
     <string name="enable_card_reader">Enable Simulated Card Reader</string>
+    <string name="simulated_reader_key">Simulated Reader Key</string>
 
     <!--
         WCToggleSingleOptionView
     -->
     <string name="toggle_option_checked">option checked</string>
     <string name="toggle_option_not_checked">option not checked</string>
+    <string name="simulated_reader_toast">Simulated Card Reader has been disabled</string>
     <!--
         Help and support
     -->
@@ -2547,6 +2563,7 @@
     <string name="enter_account_info_for_site">Enter your account information for %1$s.</string>
     <string name="get_started">Get Started</string>
     <string name="lets_get_started">Let\'s get started!</string>
+    <string name="simplified_login_prologue_title">WooCommerce is a customizable, open-source eCommerce platform built on WordPress.</string>
     <string name="check_email">Check email</string>
     <string name="login_text_otp">Text me a code instead</string>
     <string name="login_text_otp_another">Text me another code instead</string>
@@ -2661,7 +2678,8 @@
     <string name="login_magic_links_sent_label_short">Check your email on this device!</string>
     <string name="login_magic_links_email_sent">We just sent a magic link to</string>
     <string name="login_site_picker_try_another_address">Try another address</string>
-
+    <string name="or_scan_qr_code_to_log_in">Scan QR code to log in</string>
+    <string name="or_use_password_below_qr_code_scan_option">Or log in with password</string>
     <!--
     Stats widgets
     -->
@@ -2673,6 +2691,19 @@
     <string name="stats_widget_error_no_data">Couldn\'t load data</string>
     <string name="stats_widget_last_updated_message">As of %1$s</string>
 
-    <!-- Store creation -->
-    <string name="create_new_store">Create a new store</string>
+    <!--
+    Store creation
+    -->
+    <string name="store_creation_create_new_store_label">Create a new store</string>
+    <string name="store_creation_cannot_load_store">Couldn\'t load your store.\nPlease try again…</string>
+    <string name="store_creation_in_progress">Creating your store…</string>
+    <string name="store_creation_exit_dialog_title">Do you want to leave?</string>
+    <string name="store_creation_exit_dialog_message">You will lose all your store information.</string>
+    <string name="store_creation_confirm_and_leave">Confirm and leave</string>
+    <string name="store_creation_domain_picker_title">Choose a domain</string>
+    <string name="store_creation_domain_picker_subtitle">This is where people will find you on the Internet. Don\'t worry, you can change it later.</string>
+    <string name="store_creation_domain_picker_hint">Type a domain</string>
+    <string name="store_creation_domain_picker_skip_button">Skip</string>
+    <string name="store_creation_domain_picker_suggestions_title">Suggestions</string>
+
 </resources>

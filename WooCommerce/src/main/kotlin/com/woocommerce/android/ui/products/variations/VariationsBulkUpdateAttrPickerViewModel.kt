@@ -5,10 +5,12 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
 import com.woocommerce.android.analytics.AnalyticsEvent.PRODUCT_VARIANTS_BULK_UPDATE_REGULAR_PRICE_TAPPED
 import com.woocommerce.android.analytics.AnalyticsEvent.PRODUCT_VARIANTS_BULK_UPDATE_SALE_PRICE_TAPPED
+import com.woocommerce.android.analytics.AnalyticsEvent.PRODUCT_VARIANTS_BULK_UPDATE_STOCK_QUANTITY_TAPPED
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.track
 import com.woocommerce.android.model.ProductVariation
 import com.woocommerce.android.ui.products.ParameterRepository
 import com.woocommerce.android.ui.products.models.SiteParameters
+import com.woocommerce.android.ui.products.variations.VariationsBulkUpdateInventoryViewModel.InventoryUpdateData
 import com.woocommerce.android.ui.products.variations.VariationsBulkUpdatePriceViewModel.PriceType
 import com.woocommerce.android.ui.products.variations.VariationsBulkUpdatePriceViewModel.PriceUpdateData
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
@@ -43,9 +45,13 @@ class VariationsBulkUpdateAttrPickerViewModel @Inject constructor(
     init {
         val regularPriceValues = args.variationsToUpdate.asList().map { it.regularPrice }
         val salePriceValues = args.variationsToUpdate.asList().map { it.salePrice }
+        val stockQuantityValues: List<Double> =
+            args.variationsToUpdate.filter { it.isStockManaged }.map { it.stockQuantity }
+
         _viewState.value = _viewState.value.copy(
             regularPriceGroupType = regularPriceValues.groupType(),
             salePriceGroupType = salePriceValues.groupType(),
+            stockQuantityGroupType = stockQuantityValues.groupType()
         )
     }
 
@@ -63,13 +69,31 @@ class VariationsBulkUpdateAttrPickerViewModel @Inject constructor(
         )
     }
 
+    fun onStockQuantityClicked() {
+        track(PRODUCT_VARIANTS_BULK_UPDATE_STOCK_QUANTITY_TAPPED)
+        val stockManagedVariations = args.variationsToUpdate.filter { it.isStockManaged }
+        triggerEvent(
+            OpenVariationsBulkUpdateStockQuantity(
+                InventoryUpdateData(
+                    variationsToUpdate = stockManagedVariations,
+                    stockQuantity = stockManagedVariations.firstOrNull()?.stockQuantity
+                )
+            )
+        )
+    }
+
     data class ViewState(
         val currency: String? = null,
         val regularPriceGroupType: ValuesGroupType = ValuesGroupType.None,
         val salePriceGroupType: ValuesGroupType = ValuesGroupType.None,
+        val stockQuantityGroupType: ValuesGroupType = ValuesGroupType.None
     )
 
     data class OpenVariationsBulkUpdatePrice(
         val data: PriceUpdateData
+    ) : Event()
+
+    data class OpenVariationsBulkUpdateStockQuantity(
+        val data: InventoryUpdateData
     ) : Event()
 }

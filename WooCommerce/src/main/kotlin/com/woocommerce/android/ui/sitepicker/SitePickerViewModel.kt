@@ -12,7 +12,6 @@ import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.analytics.ExperimentTracker
-import com.woocommerce.android.experiment.JetpackTimeoutExperiment
 import com.woocommerce.android.extensions.getSiteName
 import com.woocommerce.android.extensions.isSimpleWPComSite
 import com.woocommerce.android.support.help.HelpActivity
@@ -22,6 +21,7 @@ import com.woocommerce.android.ui.login.AccountRepository
 import com.woocommerce.android.ui.login.UnifiedLoginTracker
 import com.woocommerce.android.ui.login.accountmismatch.AccountMismatchErrorViewModel.AccountMismatchPrimaryButton
 import com.woocommerce.android.ui.sitepicker.SitePickerViewModel.SitePickerEvent.NavigateToAccountMismatchScreen
+import com.woocommerce.android.ui.sitepicker.SitePickerViewModel.SitePickerEvent.NavigateToAddStoreEvent
 import com.woocommerce.android.ui.sitepicker.SitePickerViewModel.SitePickerEvent.NavigateToStoreCreationEvent
 import com.woocommerce.android.ui.sitepicker.SitePickerViewModel.SitePickerEvent.NavigateToWPComWebView
 import com.woocommerce.android.ui.sitepicker.SitePickerViewModel.SitesListItem.Header
@@ -63,7 +63,6 @@ class SitePickerViewModel @Inject constructor(
     private val analyticsTrackerWrapper: AnalyticsTrackerWrapper,
     private val userEligibilityFetcher: UserEligibilityFetcher,
     private val experimentTracker: ExperimentTracker,
-    private val jetpackTimeoutExperiment: JetpackTimeoutExperiment,
 ) : ScopedViewModel(savedState) {
     companion object {
         private const val WOOCOMMERCE_INSTALLATION_URL = "https://wordpress.com/plugins/woocommerce/"
@@ -278,10 +277,9 @@ class SitePickerViewModel @Inject constructor(
         sitePickerViewState = sitePickerViewState.copy(
             isNoStoresViewVisible = true,
             isPrimaryBtnVisible = true,
-            primaryBtnText = resourceProvider.getString(string.login_site_picker_enter_site_address),
+            primaryBtnText = resourceProvider.getString(string.login_site_picker_add_a_store),
             noStoresLabelText = resourceProvider.getString(string.login_no_stores),
-            isNoStoresBtnVisible = true,
-            noStoresBtnText = resourceProvider.getString(string.login_site_picker_new_to_woo),
+            isNoStoresBtnVisible = false,
             currentSitePickerState = SitePickerState.NoStoreState
         )
     }
@@ -419,14 +417,9 @@ class SitePickerViewModel @Inject constructor(
         triggerEvent(SitePickerEvent.NavigateToNewToWooEvent)
     }
 
-    fun onEnterSiteAddressClick() {
-        analyticsTrackerWrapper.track(AnalyticsEvent.SITE_PICKER_ENTER_SITE_ADDRESS_TAPPED)
-        triggerEvent(SitePickerEvent.NavigateToSiteAddressEvent)
-    }
-
-    fun onCreateSiteButtonClick() {
-        analyticsTrackerWrapper.track(AnalyticsEvent.SITE_PICKER_CREATE_SITE_TAPPED)
-        triggerEvent(NavigateToStoreCreationEvent)
+    fun onAddStoreClick() {
+        analyticsTrackerWrapper.track(AnalyticsEvent.SITE_PICKER_ADD_A_STORE_TAPPED)
+        triggerEvent(NavigateToAddStoreEvent)
     }
 
     fun onTryAnotherAccountButtonClick() {
@@ -477,13 +470,7 @@ class SitePickerViewModel @Inject constructor(
                 sitePickerViewState = sitePickerViewState.copy(isProgressDiaLogVisible = true)
                 launch {
 
-                    // A/B experiment to test what Jetpack timeout policy is more effective for site verification
-
-                    val siteVerificationResult = repository.verifySiteWooAPIVersion(
-                        it.site,
-                        overrideRetryPolicy = jetpackTimeoutExperiment.run()
-                    )
-
+                    val siteVerificationResult = repository.verifySiteWooAPIVersion(it.site)
                     when {
                         siteVerificationResult.isError -> onSiteVerificationError(siteVerificationResult, it)
                         siteVerificationResult.model?.apiVersion == WooCommerceStore.WOO_API_NAMESPACE_V3 -> {
@@ -686,7 +673,7 @@ class SitePickerViewModel @Inject constructor(
         object NavigateToMainActivityEvent : SitePickerEvent()
         object NavigateToEmailHelpDialogEvent : SitePickerEvent()
         object NavigateToNewToWooEvent : SitePickerEvent()
-        object NavigateToSiteAddressEvent : SitePickerEvent()
+        object NavigateToAddStoreEvent : SitePickerEvent()
         object NavigateToStoreCreationEvent : SitePickerEvent()
         data class NavigateToHelpFragmentEvent(val origin: HelpActivity.Origin) : SitePickerEvent()
         data class NavigateToWPComWebView(

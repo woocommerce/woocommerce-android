@@ -1,18 +1,68 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2022-10-26 16:54:04+0000
+Translation-Revision-Date: 2022-11-09 14:54:04+0000
 Plural-Forms: nplurals=2; plural=(n > 1);
 Generator: GlotPress/2.4.0-alpha
 Language: tr
 -->
 <resources>
-    <string name="hello_blank_fragment">Merhaba boş parça</string>
-    <string name="what_is_wordpress_link">&lt;u&gt;WordPress.com nedir?&lt;/u&gt;</string>
+    <string name="store_creation_confirm_and_leave">Onaylayın ve çıkın</string>
+    <string name="store_creation_exit_dialog_message">Tüm mağaza bilgilerinizi kaybedersiniz.</string>
+    <string name="store_creation_exit_dialog_title">Çıkmak istiyor musunuz?</string>
+    <string name="store_creation_in_progress">Mağazanız oluşturuluyor…</string>
+    <string name="store_creation_cannot_load_store">Mağazanız yüklenemedi.\nLütfen tekrar deneyin…</string>
+    <string name="store_creation_create_new_store_label">Yeni bir mağaza oluştur</string>
+    <string name="or_use_password_below_qr_code_scan_option">Veya şifre ile giriş yapın</string>
+    <string name="or_scan_qr_code_to_log_in">Giriş yapmak için QR kodunu tarayın</string>
+    <string name="simplified_login_prologue_title">WooCommerce; WordPress için oluşturulmuş özelleştirilebilir, açık kaynaklı bir e-ticaret platformudur.</string>
+    <string name="simulated_reader_toast">Simüle Kart Okuyucu devre dışı bırakıldı</string>
+    <string name="simulated_reader_key">Simüle Okuyucu Anahtarı</string>
+    <string name="variations_bulk_update_stock_quantity_success">Güncellenen stok miktarı</string>
+    <string name="variations_bulk_update_current_stock_quantity_mixed">Mevcut stok miktarı karışık</string>
+    <string name="variations_bulk_update_current_stock_quantity">Mevcut stok miktarı %d</string>
+    <string name="variations_bulk_update_stock_quantity_dialog_title">Stok miktarı güncelleniyor</string>
+    <string name="variations_bulk_update_stock_quantity_info">%d varyasyon için stok miktarı güncellenecektir</string>
+    <string name="variations_bulk_update_dialog_inventory_section_title">Stok</string>
+    <string name="product_search_hint_active_filters">Filtrelenmiş ürünleri ara</string>
+    <string name="orderlist_search_hint_active_filters">Filtrelenmiş siparişleri ara</string>
+    <string name="site_picker_connect_existing_store">Mevcut bir mağazayı bağla</string>
+    <string name="site_picker_create_new_store">Yeni bir mağaza oluştur</string>
+    <string name="login_site_picker_add_a_store">Mağaza Ekle</string>
+    <string name="login_no_stores">Hesabınız herhangi bir WooCommerce mağazasına bağlı değil.</string>
+    <string name="analytics_products_list_item_description">Net satışlar: %1$s</string>
+    <string name="analytics_products_list_header_subtitle">Satılan ürünler</string>
+    <string name="analytics_products_list_header_title">Ürünler</string>
+    <string name="analytics_products_card_title">Ürünler</string>
+    <string name="analytics_products_list_items_sold">Satılan ürünler</string>
+    <string name="analytics_avg_orders_title">Ortalama sipariş değeri</string>
+    <string name="analytics_total_orders_title">Toplam Sipariş</string>
+    <string name="analytics_orders_card_title">Siparişler</string>
+    <string name="analytics_net_sales_title">Net satışlar</string>
+    <string name="analytics_total_sales_title">Toplam satışlar</string>
+    <string name="analytics_products_no_data">Bu dönem ürün yok</string>
+    <string name="analytics_orders_no_data">Bu dönem hiç sipariş yok</string>
+    <string name="analytics_revenue_no_data">Bu dönemde hiç gelir yok</string>
+    <string name="analytics_revenue_card_title">Kazanç</string>
+    <string name="analytics_see_report_button_content_description">Raporla ilgili daha fazla ayrıntıya göz atın</string>
+    <string name="analytics_see_report_button_text">Rapora bakın</string>
+    <string name="analytics_date_range_custom">%1$s - %2$s</string>
+    <string name="analytics_see_more">Daha fazla gör</string>
+    <string name="signup_api_generic_error">Maalesef sağlanan kimlik bilgileri için bir hesap oluşturamadık. Lütfen farklı bir e-posta ile deneyin.</string>
+    <string name="signup_password_not_secure_enough">Şifreniz güvenlik yönergelerimize uymuyor. Lütfen daha karmaşık bir parola deneyin.</string>
+    <string name="signup_password_too_short">Şifreniz çok kısa. Lütfen en az 6 karakterden oluşan bir şifre seçin.</string>
+    <string name="signup_email_invalid_input">Lütfen geçerli bir e-posta adresi girin.</string>
+    <string name="signup_email_exist_input">Bu e-postayla kayıtlı bir hesap zaten var</string>
+    <string name="signup_already_registered"> likle hesabınızı oluşturalım. Zaten kayıtlı mısınız? &lt;a href=\'login\'&gt;&lt;u&gt;Oturum aç&lt;/u&gt;&lt;/a&gt;</string>
+    <string name="login_create_an_account">Bir Hesap Oluşturun</string>
+    <string name="simplified_login_enter_email_address">İşe koyulmak için e-posta adresinizi girin</string>
+    <string name="login_try_another_email">Başka Bir Adres Deneyin</string>
+    <string name="date_timeframe_custom_date_range_title">Özel tarih aralığı</string>
+    <string name="date_timeframe_custom">Özel</string>
+    <string name="what_is_wordpress_link">WordPress.com nedir?</string>
     <string name="signup_creating_account_loading_message">Yeni hesap oluşturma</string>
     <string name="signup_terms_of_service">Devam ederek &lt;u&gt;Hizmet Şartlarımızı kabul etmiş olursunuz.&lt;/u&gt;</string>
     <string name="signup_password_hint">Bir şifre seçin</string>
     <string name="signup_email_address_hint">E-posta adresiniz</string>
-    <string name="signup_already_registered"> likle hesabınızı oluşturalım. Zaten kayıtlı mısınız? Oturum aç</string>
     <string name="signup_get_started_label">Hemen başlayın: \ndakikalar içinde</string>
     <string name="signup_get_started_button">Hemen başlayın</string>
     <string name="login_jetpack_connection_consent">Jetpack\'i Bağla düğmesine dokunarak &lt;a href=\'terms\'&gt;Hizmet Şartlarımızı&lt;/a&gt; ve &lt;a href=\'sync\'&gt;ayrıntıları WordPress.com ile paylaşmayı&lt;/a&gt; kabul etmiş olursunuz.</string>
@@ -65,6 +115,7 @@ Language: tr
     <string name="orderlist_bottom_sheet_simple_payments_moved_button">Anladım!</string>
     <string name="orderlist_bottom_sheet_simple_payments_moved_description">Artık Şahsen Ödemelere ve diğer özelliklere kolayca hızlı bir şekilde erişebilirsiniz.</string>
     <string name="orderlist_bottom_sheet_simple_payments_moved_title">Menü sekmesinden ödemeler</string>
+    <string name="login_no_wpcom_account_found">E-postanız bir WordPress.com hesabıyla kullanılmaz.</string>
     <string name="login_non_woo_stores_label">Diğer siteler</string>
     <string name="login_with_store_address">Mağaza adresinizle oturum açın</string>
     <string name="more_menu_button_w___admin">WC Yöneticisi</string>
@@ -186,8 +237,8 @@ Language: tr
     <string name="variations_bulk_update_current_prices_mixed">Geçerli fiyatlar karışık</string>
     <string name="variations_bulk_update_current_price">Geçerli fiyat: %s</string>
     <string name="variations_bulk_update_price_info">%d varyasyon için fiyat güncellenecek.</string>
-    <string name="variations_bulk_update_dialog_price_mixed">Karışık</string>
-    <string name="variations_bulk_update_dialog_price_none">Hiçbiri</string>
+    <string name="variations_bulk_update_dialog_mixed">Karışık</string>
+    <string name="variations_bulk_update_dialog_none">Hiçbiri</string>
     <string name="variations_bulk_update_dialog_sale_price_label">İndirimli satış fiyatı</string>
     <string name="variations_bulk_update_dialog_regular_price_label">Normal fiyat</string>
     <string name="variations_bulk_update_dialog_price_section_title">Fiyat</string>
@@ -1855,7 +1906,7 @@ Language: tr
     <string name="orderdetail_track_shipment">Gönderimi takip et</string>
     <string name="login_email_help_desc">Site yöneticinizde, %3$sBağlantılar &gt; Hesap bağlantısı %4$s bölümünde yer alan %1$sJetpack Panosu\'ndan%2$s WordPress.com\'a bağlanmak için kullandığınız e-postayı bulabilirsiniz.</string>
     <string name="login_email_help_title">Giriş yapmak için hangi e-postayı kullanmam gerek?</string>
-    <string name="login_need_help_finding_email">&lt;u&gt;Gerekli e-postayı bulmak için yardıma mı ihtiyacınız var?&lt;/u&gt;</string>
+    <string name="login_need_help_finding_email">Gerekli e-postayı bulmak için yardıma mı ihtiyacınız var?</string>
     <string name="login_jetpack_what_is_description">Jetpack, size en iyi mobil deneyimi sunmak için anında bildirimler ve istatistikler dahil olmak üzere gerekli araçlarla sizi mağazaya bağlayan ücretsiz bir WordPress eklentisidir.</string>
     <string name="login_jetpack_what_is">Jetpack nedir?</string>
     <string name="login_view_connected_stores">Bağlanılan mağazaları görüntüle</string>
@@ -2180,7 +2231,6 @@ Language: tr
     <string name="dashboard_stats_granularity_months">Ay</string>
     <string name="dashboard_stats_granularity_weeks">Hafta</string>
     <string name="dashboard_stats_granularity_days">Gün</string>
-    <string name="login_no_stores">Bu hesaba bağlı WooCommerce mağazası bulamadık.</string>
     <string name="login_with_a_different_account">Farklı bir hesap ile giriş yapın</string>
     <string name="login_nostores_content_description">WooCommerce mağazası bulunmuyor</string>
     <string name="login_avatar_content_description">Profil fotoğrafınız</string>
@@ -2234,7 +2284,8 @@ Language: tr
     <string name="all">Tümü</string>
     <string name="notification_channel_general_title">Genel</string>
     <string name="app_name">WooCommerce</string>
-    <string-array name="date_range_selectors">
+    <string-array name="analytics_date_range_selectors">
+        <item>\@string/date_timeframe_custom</item>
         <item>\@string/date_timeframe_today</item>
         <item>\@string/date_timeframe_yesterday</item>
         <item>\@string/date_timeframe_last_week</item>

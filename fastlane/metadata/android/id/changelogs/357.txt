@@ -1,0 +1,2 @@
+11.1:
+Versi ini menghadirkan banyak fitur keren yang memudahkan Anda dalam mengelola toko! Kami menambahkan opsi untuk memperbarui jumlah stok untuk beberapa variasi sekaligus. Kami juga menambahkan fitur login via kode QR. Kami juga telah menambahkan berbagai penyempurnaan untuk pencarian pesanan dan produk.

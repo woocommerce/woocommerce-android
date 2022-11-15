@@ -11,16 +11,16 @@ msgstr ""
 "Project-Id-Version: Release Notes & Play Store Descriptions\n"
 
 #. translators: Release notes for this version to be displayed in the Play Store. Limit to 500 characters including spaces and commas!
-msgctxt "release_note_110"
+msgctxt "release_note_112"
 msgid ""
-"11.0:\n"
-"Good news! We added a new analytics section to the app! Simply click on the See More button under the store stats to check more detailed information on Revenue and Orders. This isn’t the last of it – more updates to come in the next few weeks!\n"
+"11.2:\n"
+"For this release, we focused on polishing a few things and taking care of minor bugs that our team found. Don’t be fooled – we are working on some pretty cool stuff for you all! Keep sharing feedback 💜\n"
 msgstr ""
 
-msgctxt "release_note_109"
+msgctxt "release_note_111"
 msgid ""
-"10.9:\n"
-"This release includes a lot more stability fixes to help you log in much easier. You can now connect your WordPress.com account with Jetpack and access your store that much faster. Keep that feedback coming!\n"
+"11.1:\n"
+"This release includes a lot of cool things for you to manage your store better! We added the option to bulk update stock quantity of variations. We have also added the option for you login via QR code. We've made various improvements to the orders and products search.\n"
 msgstr ""
 
 #. translators: Short description of the app to be displayed in the Play Store. Limit to 80 characters including spaces and commas!

@@ -1,68 +1,68 @@
 <ar>
-10.9:
-يتضمن هذا الإصدار الكثير من إصلاحات الثبات لمساعدتك على تسجيل الدخول بسهولة أكبر. يمكنك الآن ربط حسابك على ووردبريس.كوم مع Jetpack، والوصول إلى متجرك بسرعة أكبر.  استمرار وصول هذه الملاحظات!
+11.1:
+يتضمن هذا الإصدار كثيرًا من الأشياء الرائعة لك لكي تتحكم في متجرك بشكل أفضل! أضفنا خيارًا لتحديث كمية مخزون التباينات بشكل مجمع. أضفنا أيضًا خيارًا يتيح لك تسجيل الدخول عبر رمز الاستجابة السريعة. أجرينا تحسينات متنوعة على البحث عن الطلبات والمنتجات.
 </ar>
 <de-DE>
-10.9:
-In dieser Version haben wir eine Vielzahl an Stabilitätsproblemen behoben, damit du dich einfacher anmelden kannst. Du kannst dein WordPress.com-Konto jetzt mit Jetpack verknüpfen und schneller auf deinen Store zugreifen. Sende uns weiterhin Feedback!
+11.1:
+Diese Version enthält viele tolle Neuerungen, die dir bei der Verwaltung deines Shops helfen! Du kannst jetzt Massenaktualisierungen für die Lagerbestandsmenge von Varianten vornehmen. Darüber hinaus hast du die Option, dich mit einem QR-Code anzumelden. Bei der Suche nach Bestellungen und Produkten haben wir ebenfalls Verbesserungen vorgenommen.
 </de-DE>
 <es-ES>
-10.9:
-Esta versión incluye muchas mejoras de estabilidad que te ayudarán a acceder de manera más fácil. Ahora puedes conectar tu cuenta de WordPress.com con Jetpack y acceder a tu tienda mucho más rápido. ¡Sigue mandándonos tus comentarios!
+11.1:
+Esta versión incorpora muchas funciones interesantes para que puedas gestionar mejor tu tienda. Hemos añadido la opción de actualizar en lote la cantidad de existencias de las variaciones. También hemos añadido la opción de acceder mediante un código QR. Hemos realizado varias mejoras en la búsqueda de pedidos y productos.
 </es-ES>
 <fr-FR>
-10.9 :
-Cette version comprend bien plus de corrections de stabilité pour faciliter votre connexion. Vous pouvez désormais connecter votre compte WordPress.com avec Jetpack et accéder à votre boutique nettement plus rapidement. Continuez de nous envoyer vos commentaires !
+11.1 :
+Cette version comprend de nombreuses fonctionnalités intéressantes pour vous permettre de mieux gérer votre boutique ! Nous avons ajouté une option qui vous permet de mettre à jour de manière groupée la quantité en stock des variations. Vous pouvez également maintenant vous connecter à l’aide d’un code QR. Nous avons apporté diverses améliorations à la recherche de commandes et de produits.
 </fr-FR>
 <iw-IL>
-10.9:
-This release includes a lot more stability fixes to help you log in much easier. You can now connect your WordPress.com account with Jetpack and access your store that much faster. Keep that feedback coming!
+11.1:
+בגרסה הזאת הוספנו המון דברים מגניבים שיעזרו לך לנהל את החנות בצורה טובה יותר! הוספנו אפשרות לבצע עדכון גלובלי של כמות המלאי של סוגים. גם הוספנו אפשרות להתחבר דרך קוד QR. הוספנו כמה שיפורים לחיפוש של הזמנות ומוצרים.
 </iw-IL>
 <id>
-10.9:
-Rilis ini menyertakan perbaikan stabilitas lebih lanjut untuk mempermudah login. Sekarang Anda dapat menghubungkan akun WordPress.com dengan Jetpack, dan mengakses toko Anda lebih cepat. Terus kirimkan feedback Anda!
+11.1:
+Versi ini menghadirkan banyak fitur keren yang memudahkan Anda dalam mengelola toko! Kami menambahkan opsi untuk memperbarui jumlah stok untuk beberapa variasi sekaligus. Kami juga menambahkan fitur login via kode QR. Kami juga telah menambahkan berbagai penyempurnaan untuk pencarian pesanan dan produk.
 </id>
 <it-IT>
-10.9:
-Questa versione include molte più correzioni di stabilità per aiutarti ad accedere molto più facilmente. Ora puoi connettere il tuo account WordPress.com con Jetpack e accedere al tuo negozio molto più velocemente. Conserva quel feedback in arrivo!
+11.1:
+Questo rilascio include molte cose interessanti per gestire al meglio il tuo negozio. Abbiamo aggiunto l'opzione per aggiornare in blocco la quantità in magazzino delle varianti. Abbiamo anche aggiunto l'opzione per l'accesso tramite codice QR. Abbiamo eseguito vari miglioramenti per la ricerca di ordini e prodotti.
 </it-IT>
 <ja-JP>
-10.9:
-このリリースでは安定性を高めるための修正が行われ、より簡単にログインできるようになりました。 WordPress.com アカウントと Jetpack を連携し、今までよりもすばやくストアにアクセスできます。 今後もフィードバックをお待ちしております。
+11.1: 
+このリリースには、ストア管理に役立つ多くの優れた機能強化が含まれています。 バリエーションの在庫数を一括更新するオプションを追加しました。 QR コードからログインするオプションも追加しました。 注文と商品検索機能にさまざまな改善を加えました。
 </ja-JP>
 <ko-KR>
-10.9:
-이 릴리스에는 훨씬 더 쉽게 로그인하는 데 도움이 되는 훨씬 더 많은 안정성 수정 사항이 포함되어 있습니다. 이제 훨씬 더 빠르게 워드프레스닷컴 계정을 젯팩과 연결하고 스토어에 접근할 수 있습니다. 피드백을 계속 보내주세요!
+11.1:
+이 릴리스에는 스토어를 더 잘 관리할 수 있는 멋진 기능이 많이 포함되어 있습니다. 변형의 재고 수량을 대량 업데이트하는 옵션을 추가했습니다. QR 코드를 통해 로그인하는 옵션도 추가했습니다. 주문 및 상품 검색에 다양한 개선 사항을 적용했습니다.
 </ko-KR>
 <nl-NL>
-10.9:
-Deze release bevat een hoop verbeteringen voor de stabiliteit, zodat je makkelijker kunt inloggen. Je kunt nu je WordPress.com-account verbinden met Jetpack en zo veel sneller toegang krijgen tot je winkel. Kom maar door met die feedback!
+11.1:
+Deze release bevat een hoop coole dingen om je te helpen je winkel beter te beheren! We hebben de optie om het aantal op voorraad van variaties in bulk bij te werken. We hebben ook de optie toegevoegd om in te loggen via een QR-code. We hebben verschillende verbeteringen aangebracht aan het zoeken in bestellingen en producten.
 </nl-NL>
 <pt-BR>
-10.9:
-Esta versão inclui bem mais correções de estabilidade para facilitar ainda mais o login. Agora você pode conectar sua conta do WordPress.com ao Jetpack e acessar sua loja muito mais rápido. Continue dando feedback!
+11.1:
+Esta versão inclui várias novidades legais para melhorar o gerenciamento da sua loja. Adicionamos a opção de atualizar em massa a quantidade de variações em estoque. Também incluímos a opção de fazer login usando um código QR. E fizemos várias melhorias na pesquisa de produtos e pedidos.
 </pt-BR>
 <ru-RU>
-10.9:
-В этом выпуске мы исправили проблемы со стабильностью, и пользователям стало проще входить в приложение. Теперь вы можете подключаться к своей учетной записи WordPress.com с помощью Jetpack и получать доступ к своему магазину гораздо быстрее. Скажите, что еще нужно сделать!
+11.1:
+Этот выпуск включает много отличных возможностей для эффективного управления магазином. Добавлена опция группового обновления количества товаров в наличии для вариаций. Появилась возможность входа через QR-код. Внесены различные усовершенствования в функцию поиска по заказам и товарам.
 </ru-RU>
 <sv-SE>
-10.9:
-Den här versionen innehåller en rad stabilitetskorrigeringar som gör det lättare för dig att logga in. Du kan nu ansluta ditt WordPress.com-konto till Jetpack och komma åt din butik mycket snabbare. Fortsätt lämna feedback.
+11.1:
+Den här versionen innehåller en rad häftiga saker som gör det enklare att hantera din butik. Vi har lagt till möjligheten att massuppdatera lagerkvantiteten för variationer. Vi har också lagt till möjligheten att logga in med hjälp av en QR-kod. Vi har gjort en rad olika förbättringar av sökfunktionen för beställningar och produkter.
 </sv-SE>
 <tr-TR>
-10.9:
-Bu sürümde, daha kolay oturum açmanıza yardımcı olacak daha fazla tutarlılık düzeltmesi yapıldı. Artık WordPress.com hesabınızı Jetpack ile bağlayabilir ve mağazanıza çok daha hızlı erişebilirsiniz. Bize görüşlerinizi bildirmeye devam edin!
+11.1:
+Bu sürüm, mağazanızı daha iyi yönetmeniz için birçok harika şey içeriyor! Varyasyonların stok miktarını toplu güncelleme seçeneği ekledik. Ayrıca QR kodu ile giriş yapma seçeneğini de ekledik. Siparişler ve ürün aramasında çeşitli iyileştirmeler yaptık.
 </tr-TR>
 <zh-CN>
-10.9：
-此发布包含许多稳定性修复以帮助您更轻松地登录。 现在，您可以将 WordPress.com 账户与 Jetpack 关联，并以更快的速度访问您的商店。 随时欢迎您提供反馈！
+11.1：
+这一版本中新增了很多炫酷的功能，可以帮助您更好地管理商店！ 我们增加了批量更新库存量变化的选项。 我们还增加了通过二维码登录的选项。 我们多方面改进了订单和产品搜索功能。
 </zh-CN>
 <zh-TW>
-10.9：
-此版本包含許多穩定性方面的修正，有助於讓你登入時更輕鬆。 你現在可以將 WordPress.com 帳號連結至 Jetpack，藉此更快存取你的商店。 歡迎繼續給予我們指教！
+11.1：
+此版本提供許多厲害的項目，讓你能更完善地管理商店！ 我們新增了大量更新款式庫存數量的選項。 同時新增了可讓你透過 QR 碼登入的選項。 我們改善了訂單與商品搜尋功能的許多地方。
 </zh-TW>
 <en-US>
-10.9:
-This release includes a lot more stability fixes to help you log in much easier. You can now connect your WordPress.com account with Jetpack and access your store that much faster. Keep that feedback coming!
+11.1:
+This release includes a lot of cool things for you to manage your store better! We added the option to bulk update stock quantity of variations. We have also added the option for you login via QR code. We've made various improvements to the orders and products search.
 </en-US>

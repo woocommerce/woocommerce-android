@@ -14,6 +14,7 @@ import com.woocommerce.android.databinding.AnalyticsListCardViewBinding
 import com.woocommerce.android.ui.analytics.listcard.AnalyticsListViewState.DataViewState
 import com.woocommerce.android.ui.analytics.listcard.AnalyticsListViewState.LoadingViewState
 import com.woocommerce.android.ui.analytics.listcard.AnalyticsListViewState.NoDataState
+import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.widgets.SkeletonView
 import com.woocommerce.android.widgets.tags.ITag
 import com.woocommerce.android.widgets.tags.TagConfig
@@ -26,6 +27,10 @@ class AnalyticsListCardView @JvmOverloads constructor(
 ) : MaterialCardView(ctx, attrs, defStyleAttr) {
     val binding = AnalyticsListCardViewBinding.inflate(LayoutInflater.from(ctx), this)
     private var skeletonView = SkeletonView()
+
+    init {
+        binding.seeReportText.isVisible = FeatureFlag.ANALYTICS_HUB_PRODUCTS_AND_REPORTS.isEnabled()
+    }
 
     internal fun updateInformation(viewState: AnalyticsListViewState) {
         when (viewState) {
