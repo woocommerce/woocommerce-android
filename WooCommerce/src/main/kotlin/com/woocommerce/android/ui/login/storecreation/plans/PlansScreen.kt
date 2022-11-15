@@ -23,7 +23,7 @@ import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.SideEffect
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -69,13 +69,19 @@ fun PlanScreen(viewModel: PlansViewModel) {
 private fun PlanInformation(
     viewState: PlanState
 ) {
+
     val systemUiController = rememberSystemUiController()
-    val color = colorResource(id = color.woo_purple_90)
-    SideEffect {
+    val wooDarkPurple = colorResource(id = color.woo_purple_90)
+    val statusBarColor = colorResource(id = color.color_status_bar)
+    DisposableEffect(key1 = viewState) {
         systemUiController.setSystemBarsColor(
-            color = color,
-            darkIcons = false
+            color = wooDarkPurple,
         )
+        onDispose {
+            systemUiController.setSystemBarsColor(
+                color = statusBarColor,
+            )
+        }
     }
 
     ConstraintLayout(
