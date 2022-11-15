@@ -22,6 +22,7 @@ import com.woocommerce.android.ui.analytics.AnalyticsRepository.VisitorsResult.V
 import com.woocommerce.android.ui.analytics.AnalyticsViewModel.Companion.DATE_RANGE_SELECTED_KEY
 import com.woocommerce.android.ui.analytics.AnalyticsViewModel.Companion.TIME_PERIOD_SELECTED_KEY
 import com.woocommerce.android.ui.analytics.RefreshIndicator.NotShowIndicator
+import com.woocommerce.android.ui.analytics.daterangeselector.AnalyticTimePeriod.CUSTOM
 import com.woocommerce.android.ui.analytics.daterangeselector.AnalyticTimePeriod.LAST_QUARTER
 import com.woocommerce.android.ui.analytics.daterangeselector.AnalyticTimePeriod.LAST_YEAR
 import com.woocommerce.android.ui.analytics.daterangeselector.AnalyticTimePeriod.QUARTER_TO_DATE
@@ -50,6 +51,7 @@ import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.doReturnConsecutively
 import org.mockito.kotlin.eq
 import org.mockito.kotlin.mock
+import org.mockito.kotlin.never
 import org.mockito.kotlin.stub
 import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
@@ -698,6 +700,32 @@ class AnalyticsViewModelTest : BaseUnitTest() {
             assertEquals(DEFAULT_AVG_VIEWS_DELTA, rightSection.delta)
             assertThat(rightSection.chartInfo).isEmpty()
         }
+    }
+
+    @Test
+    fun `given a custom range is selected, then have no visitors request done`() = testBlocking {
+        val weekToDateRange = MultipleDateRange(
+            SimpleDateRange(ANY_WEEK_DATE, ANY_WEEK_DATE),
+            SimpleDateRange(ANY_WEEK_DATE, ANY_WEEK_DATE),
+        )
+
+        val weekOrdersData = getVisitorStats()
+
+        whenever(calculator.getAnalyticsDateRangeFrom(CUSTOM)) doReturn weekToDateRange
+        analyticsRepository.stub {
+            onBlocking { fetchQuarterVisitorsData(weekToDateRange, CUSTOM, Saved) }.doReturn(weekOrdersData)
+        }
+
+        whenever(calculator.getAnalyticsDateRangeFrom(CUSTOM)) doReturn weekToDateRange
+        analyticsRepository.stub {
+            onBlocking { fetchRecentVisitorsData(weekToDateRange, CUSTOM, Saved) }.doReturn(weekOrdersData)
+        }
+
+        sut = givenAViewModel()
+        sut.onSelectedTimePeriodChanged(CUSTOM)
+
+        verify(analyticsRepository, never()).fetchQuarterVisitorsData(weekToDateRange, CUSTOM, Saved)
+        verify(analyticsRepository, never()).fetchRecentVisitorsData(weekToDateRange, CUSTOM, Saved)
     }
 
     private fun givenAResourceProvider(): ResourceProvider = mock {
