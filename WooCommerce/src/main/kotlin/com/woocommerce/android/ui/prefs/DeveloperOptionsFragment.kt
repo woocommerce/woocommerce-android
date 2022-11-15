@@ -14,8 +14,9 @@ import dagger.hilt.android.AndroidEntryPoint
 import org.wordpress.android.util.ToastUtils
 import com.woocommerce.android.ui.prefs.DeveloperOptionsViewModel.DeveloperOptionsViewState.UpdateOptions
 @AndroidEntryPoint
-class DeveloperOptionsFragment : BaseFragment(R.layout.fragment_developer_options) {
+abstract class DeveloperOptionsFragment : BaseFragment(R.layout.fragment_developer_options) {
     val viewModel: DeveloperOptionsViewModel by viewModels()
+    abstract val developerOptionsRepository: DeveloperOptionsRepository
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -60,15 +61,23 @@ class DeveloperOptionsFragment : BaseFragment(R.layout.fragment_developer_option
         mapper: (UpdateOptions) -> String = { it.toString() }
     ) {
         val textValues = values.map(mapper).toTypedArray()
+        var selectedValue: UpdateOptions = UpdateOptions.NEVER
+        val selectedItemIndex = values.first { updateOptions ->
+            updateOptions.name == selectedValue.toString()
+        }
         MaterialAlertDialogBuilder(
             ContextThemeWrapper(
                 context,
                 R.style.Theme_Woo_DayNight
             )
         )
+            .setOnDismissListener {
+                developerOptionsRepository.updateSimulatedReaderOption(selectedValue)
+            }
             .setTitle("Update Simulated Reader")
-            .setSingleChoiceItems(textValues, 0) { dialog, which ->
+            .setSingleChoiceItems(textValues, selectedItemIndex.ordinal) { dialog, which ->
 //                dialog.dismiss()
+                selectedValue = values[which]
                 onSelected(values[which])
             }.show()
     }
