@@ -26,7 +26,7 @@ class NamePickerFragment : BaseFragment() {
             setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
             setContent {
                 WooThemeWithBackground {
-                    NamePicker(namePickerViewModel = viewModel)
+                    NamePickerScreen(viewModel)
                 }
             }
         }

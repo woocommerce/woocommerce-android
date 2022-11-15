@@ -2,11 +2,20 @@
 <navigation xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/nav_graph_store_creation"
-    app:startDestination="@id/storeCreationQuestionsFragment">
+    app:startDestination="@id/namePickerFragment">
+
+    <fragment
+        android:id="@+id/namePickerFragment"
+        android:name="com.woocommerce.android.ui.login.storecreation.name.NamePickerFragment"
+        android:label="fragment_name_picker">
+        <action
+            android:id="@+id/action_namePickerFragment_to_domainPickerFragment"
+            app:destination="@id/domainPickerFragment" />
+    </fragment>
 
     <fragment
         android:id="@+id/storeCreationQuestionsFragment"
-        android:name="com.woocommerce.android.ui.login.storecreation.StoreCreationQuestionsFragment"
+        android:name="com.woocommerce.android.ui.login.storecreation.profiler.StoreCreationQuestionsFragment"
         android:label="fragment_store_creation_questions">
         <action
             android:id="@+id/action_storeCreationQuestionsFragment_to_domainPickerFragment"
