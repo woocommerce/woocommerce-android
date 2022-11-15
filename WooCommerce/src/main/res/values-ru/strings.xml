@@ -1,12 +1,34 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2022-11-03 14:54:08+0000
+Translation-Revision-Date: 2022-11-09 10:54:04+0000
 Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);
 Generator: GlotPress/2.4.0-alpha
 Language: ru
 -->
 <resources>
-    <string name="create_new_store">Создать магазин</string>
+    <string name="store_creation_confirm_and_leave">Подтвердить и выйти</string>
+    <string name="store_creation_exit_dialog_message">Все сведения о магазине будут утеряны.</string>
+    <string name="store_creation_exit_dialog_title">Покинуть страницу?</string>
+    <string name="store_creation_in_progress">Создание магазина…</string>
+    <string name="store_creation_cannot_load_store">Не удалось загрузить ваш магазин.\nПовторите попытку…</string>
+    <string name="store_creation_create_new_store_label">Создать магазин</string>
+    <string name="or_use_password_below_qr_code_scan_option">Или войти с помощью пароля</string>
+    <string name="or_scan_qr_code_to_log_in">Отсканировать QR-код для входа</string>
+    <string name="simplified_login_prologue_title">WooCommerce — это настраиваемая платформа электронной торговли с отрытым исходным кодом, созданная на WordPress.</string>
+    <string name="simulated_reader_toast">Симуляция устройства чтения карт отключена</string>
+    <string name="simulated_reader_key">Смоделированный ключ устройства чтения</string>
+    <string name="variations_bulk_update_stock_quantity_success">Количество товаров в наличии обновлено</string>
+    <string name="variations_bulk_update_current_stock_quantity_mixed">Текущее количество товаров в наличии смешано</string>
+    <string name="variations_bulk_update_current_stock_quantity">Текущее количество товаров в наличии: %d</string>
+    <string name="variations_bulk_update_stock_quantity_dialog_title">Обновление количества товаров в наличии</string>
+    <string name="variations_bulk_update_stock_quantity_info">Количество товаров в наличии будет обновлено для %d вариаций</string>
+    <string name="variations_bulk_update_dialog_inventory_section_title">Запасы</string>
+    <string name="product_search_hint_active_filters">Поиск по товарам с фильтрацией</string>
+    <string name="orderlist_search_hint_active_filters">Поиск по заказам с фильтрацией</string>
+    <string name="site_picker_connect_existing_store">Подключить существующий магазин</string>
+    <string name="site_picker_create_new_store">Создать магазин</string>
+    <string name="login_site_picker_add_a_store">Добавить магазин</string>
+    <string name="login_no_stores">Ваша учётная запись не подключена к магазинам WooCommerce.</string>
     <string name="analytics_products_list_item_description">Чистая выручка: %1$s</string>
     <string name="analytics_products_list_header_subtitle">Проданные предметы</string>
     <string name="analytics_products_list_header_title">Товары</string>
@@ -215,8 +237,8 @@ Language: ru
     <string name="variations_bulk_update_current_prices_mixed">Текущие цены отличаются друг от друга</string>
     <string name="variations_bulk_update_current_price">Текущая цена: %s</string>
     <string name="variations_bulk_update_price_info">Цена для вариантов (%d) будет обновлена</string>
-    <string name="variations_bulk_update_dialog_price_mixed">Отличающиеся</string>
-    <string name="variations_bulk_update_dialog_price_none">Нет</string>
+    <string name="variations_bulk_update_dialog_mixed">Смешанный</string>
+    <string name="variations_bulk_update_dialog_none">Нет</string>
     <string name="variations_bulk_update_dialog_sale_price_label">Акционная цена</string>
     <string name="variations_bulk_update_dialog_regular_price_label">Обычная цена</string>
     <string name="variations_bulk_update_dialog_price_section_title">Цена</string>
@@ -2209,7 +2231,6 @@ Language: ru
     <string name="dashboard_stats_granularity_months">Мес.</string>
     <string name="dashboard_stats_granularity_weeks">Нед.</string>
     <string name="dashboard_stats_granularity_days">Дн.</string>
-    <string name="login_no_stores">Мы не нашли магазины WooCommerce, подключённые к этой учётной записи.</string>
     <string name="login_with_a_different_account">Войти под другой учётной записью</string>
     <string name="login_nostores_content_description">Нет магазинов WooCommerce</string>
     <string name="login_avatar_content_description">Фотография в вашем профиле</string>

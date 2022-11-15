@@ -9,6 +9,7 @@ import com.google.android.material.card.MaterialCardView
 import com.woocommerce.android.R
 import com.woocommerce.android.databinding.AnalyticsInformationCardViewBinding
 import com.woocommerce.android.ui.analytics.informationcard.AnalyticsInformationViewState.DataViewState
+import com.woocommerce.android.ui.analytics.informationcard.AnalyticsInformationViewState.HiddenState
 import com.woocommerce.android.ui.analytics.informationcard.AnalyticsInformationViewState.LoadingViewState
 import com.woocommerce.android.ui.analytics.informationcard.AnalyticsInformationViewState.NoDataState
 import com.woocommerce.android.util.FeatureFlag
@@ -27,10 +28,12 @@ class AnalyticsInformationCardView @JvmOverloads constructor(
     }
 
     internal fun updateInformation(viewState: AnalyticsInformationViewState) {
+        visibility = if (viewState is HiddenState) View.GONE else View.VISIBLE
         when (viewState) {
             is LoadingViewState -> setSkeleton()
             is DataViewState -> setDataViewState(viewState)
             is NoDataState -> setNoDataViewState(viewState)
+            is HiddenState -> {}
         }
     }
 

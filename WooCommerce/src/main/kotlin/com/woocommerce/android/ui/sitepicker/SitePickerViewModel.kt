@@ -12,7 +12,6 @@ import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.analytics.ExperimentTracker
-import com.woocommerce.android.experiment.JetpackTimeoutExperiment
 import com.woocommerce.android.extensions.getSiteName
 import com.woocommerce.android.extensions.isSimpleWPComSite
 import com.woocommerce.android.support.help.HelpActivity
@@ -64,7 +63,6 @@ class SitePickerViewModel @Inject constructor(
     private val analyticsTrackerWrapper: AnalyticsTrackerWrapper,
     private val userEligibilityFetcher: UserEligibilityFetcher,
     private val experimentTracker: ExperimentTracker,
-    private val jetpackTimeoutExperiment: JetpackTimeoutExperiment,
 ) : ScopedViewModel(savedState) {
     companion object {
         private const val WOOCOMMERCE_INSTALLATION_URL = "https://wordpress.com/plugins/woocommerce/"
@@ -85,8 +83,6 @@ class SitePickerViewModel @Inject constructor(
 
     val shouldShowToolbar: Boolean
         get() = !navArgs.openedFromLogin
-
-    private val navSource = getNavigationSource()
 
     init {
         when (navArgs.openedFromLogin) {
@@ -423,19 +419,7 @@ class SitePickerViewModel @Inject constructor(
 
     fun onAddStoreClick() {
         analyticsTrackerWrapper.track(AnalyticsEvent.SITE_PICKER_ADD_A_STORE_TAPPED)
-        triggerEvent(NavigateToAddStoreEvent(navSource))
-    }
-
-    private fun getNavigationSource(): String {
-        return if (navArgs.openedFromLogin) {
-            if (appPrefsWrapper.getIsNewSignUp()) {
-                AnalyticsTracker.VALUE_PROLOGUE
-            } else {
-                AnalyticsTracker.VALUE_LOGIN
-            }
-        } else {
-            AnalyticsTracker.VALUE_SWITCHING_STORE
-        }
+        triggerEvent(NavigateToAddStoreEvent)
     }
 
     fun onTryAnotherAccountButtonClick() {
@@ -486,13 +470,7 @@ class SitePickerViewModel @Inject constructor(
                 sitePickerViewState = sitePickerViewState.copy(isProgressDiaLogVisible = true)
                 launch {
 
-                    // A/B experiment to test what Jetpack timeout policy is more effective for site verification
-
-                    val siteVerificationResult = repository.verifySiteWooAPIVersion(
-                        it.site,
-                        overrideRetryPolicy = jetpackTimeoutExperiment.run()
-                    )
-
+                    val siteVerificationResult = repository.verifySiteWooAPIVersion(it.site)
                     when {
                         siteVerificationResult.isError -> onSiteVerificationError(siteVerificationResult, it)
                         siteVerificationResult.model?.apiVersion == WooCommerceStore.WOO_API_NAMESPACE_V3 -> {
@@ -632,7 +610,7 @@ class SitePickerViewModel @Inject constructor(
 
     private fun startStoreCreationWebFlow() {
         appPrefsWrapper.markAsNewSignUp(false)
-        triggerEvent(NavigateToStoreCreationEvent(navSource))
+        triggerEvent(NavigateToStoreCreationEvent)
     }
 
     private fun trackLoginEvent(
@@ -695,8 +673,8 @@ class SitePickerViewModel @Inject constructor(
         object NavigateToMainActivityEvent : SitePickerEvent()
         object NavigateToEmailHelpDialogEvent : SitePickerEvent()
         object NavigateToNewToWooEvent : SitePickerEvent()
-        data class NavigateToAddStoreEvent(val source: String) : SitePickerEvent()
-        data class NavigateToStoreCreationEvent(val source: String) : SitePickerEvent()
+        object NavigateToAddStoreEvent : SitePickerEvent()
+        object NavigateToStoreCreationEvent : SitePickerEvent()
         data class NavigateToHelpFragmentEvent(val origin: HelpActivity.Origin) : SitePickerEvent()
         data class NavigateToWPComWebView(
             val url: String,

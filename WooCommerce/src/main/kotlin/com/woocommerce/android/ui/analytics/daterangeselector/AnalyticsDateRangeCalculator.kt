@@ -66,11 +66,9 @@ class AnalyticsDateRangeCalculator @Inject constructor(
 
     private fun getDateOfLastDayTwoQuartersAgo() = dateUtils.getDateForLastDayOfPreviousQuarter(2)
 
-    private fun getYesterdayRange() = SimpleDateRange(getDateForYesterday(), getDateForYesterday())
+    private fun getYesterdayRange() = SimpleDateRange(getCurrentDateTimeMinusDays(2), getDateForYesterday())
 
-    private fun getTodayRange() = SimpleDateRange(dateUtils.getCurrentDate(), dateUtils.getCurrentDate())
-
-    private fun getDateForYesterday() = Date(dateUtils.getCurrentDateTimeMinusDays(1))
+    private fun getTodayRange() = SimpleDateRange(getDateForYesterday(), dateUtils.getCurrentDate())
 
     private fun getLastMonthRange() =
         MultipleDateRange(
@@ -112,6 +110,10 @@ class AnalyticsDateRangeCalculator @Inject constructor(
         dateUtils.getDateTimeAppliedOperation(dateUtils.getCurrentDate(), Calendar.MONTH, -1)
 
     private fun getDateForLastDayOfTwoYearsAgo() = dateUtils.getDateForLastDayOfPreviousYear(2)
+
+    private fun getDateForYesterday() = getCurrentDateTimeMinusDays(1)
+
+    private fun getCurrentDateTimeMinusDays(days: Int) = Date(dateUtils.getCurrentDateTimeMinusDays(days))
 
     companion object {
         const val DAYS_IN_WEEK = 7

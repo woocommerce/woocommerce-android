@@ -1,6 +1,5 @@
 package com.woocommerce.android.ui.login.signup
 
-import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.ui.login.signup.SignUpRepository.SignUpError.EMAIL_EXIST
 import com.woocommerce.android.ui.login.signup.SignUpRepository.SignUpError.EMAIL_INVALID
 import com.woocommerce.android.ui.login.signup.SignUpRepository.SignUpError.PASSWORD_INVALID
@@ -19,7 +18,6 @@ import javax.inject.Inject
 class SignUpRepository @Inject constructor(
     private val signUpStore: SignUpStore,
     private val dispatcher: Dispatcher,
-    private val prefsWrapper: AppPrefsWrapper,
     private val signUpCredentialsValidator: SignUpCredentialsValidator
 ) {
     private companion object {
@@ -86,7 +84,6 @@ class SignUpRepository @Inject constructor(
             }
 
             WooLog.w(WooLog.T.LOGIN, "Success creating new account")
-            prefsWrapper.markAsNewSignUp(true)
             AccountCreationSuccess
         }
     }

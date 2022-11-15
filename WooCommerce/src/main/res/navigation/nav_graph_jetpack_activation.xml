@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/nav_graph_jetpack_activation"
+    app:startDestination="@id/jetpackActivationFragment">
+
+    <fragment
+        android:id="@+id/jetpackActivationFragment"
+        android:name="com.woocommerce.android.ui.login.jetpack.JetpackActivationFragment"
+        android:label="JetpackActivationFragment" />
+</navigation>
