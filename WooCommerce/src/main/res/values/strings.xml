@@ -360,8 +360,6 @@
         <item translatable="false">@string/date_timeframe_quarter_to_date</item>
         <item translatable="false">@string/date_timeframe_year_to_date</item>
     </string-array>
-    <string name="analytics_see_report_button_text">See report</string>e
-    <string name="analytics_see_report_button_content_description">See more report details</string>
     <string name="analytics_revenue_card_title">Revenue</string>
     <string name="analytics_revenue_no_data">No revenue this period</string>
     <string name="analytics_orders_no_data">No orders this period</string>

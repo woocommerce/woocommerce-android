@@ -473,37 +473,6 @@ class AnalyticsViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `given a WPCom site, when see report is clicked, then OpenWPComWebView event is triggered`() {
-        whenever(siteModel.isWPCom).thenReturn(true)
-
-        sut = givenAViewModel()
-        sut.onRevenueSeeReportClick()
-
-        assertThat(sut.event.value).isInstanceOf(AnalyticsViewEvent.OpenWPComWebView::class.java)
-    }
-
-    @Test
-    fun `given a WPComAtomic site, when see report is clicked, then OpenWPComWebView event is triggered`() {
-        whenever(siteModel.isWPComAtomic).thenReturn(true)
-
-        sut = givenAViewModel()
-        sut.onRevenueSeeReportClick()
-
-        assertThat(sut.event.value).isInstanceOf(AnalyticsViewEvent.OpenWPComWebView::class.java)
-    }
-
-    @Test
-    fun `given a no WPComAtomic and no WPCom site, when see report is clicked, then OpenUrl event is triggered`() {
-        whenever(siteModel.isWPComAtomic).thenReturn(false)
-        whenever(siteModel.isWPCom).thenReturn(false)
-
-        sut = givenAViewModel()
-        sut.onRevenueSeeReportClick()
-
-        assertThat(sut.event.value).isInstanceOf(AnalyticsViewEvent.OpenUrl::class.java)
-    }
-
-    @Test
     fun `given a view, when custom date range is clicked, then OpenDatePicker event is triggered`() {
         sut = givenAViewModel()
         sut.onCustomDateRangeClicked()

@@ -101,10 +101,6 @@ class AnalyticsFragment :
     private fun bind(view: View) {
         _binding = FragmentAnalyticsBinding.bind(view)
         binding.analyticsDateSelectorCard.setOnClickListener { viewModel.onDateRangeSelectorClick() }
-        binding.analyticsRevenueCard.setSeeReportClickListener { viewModel.onRevenueSeeReportClick() }
-        binding.analyticsOrdersCard.setSeeReportClickListener { viewModel.onOrdersSeeReportClick() }
-        binding.analyticsProductsCard.setSeeReportClickListener { viewModel.onProductsSeeReportClick() }
-        binding.analyticsVisitorsCard.setSeeReportClickListener { viewModel.onVisitorsSeeReportClick() }
     }
 
     private fun handleStateChange(viewState: AnalyticsViewState) {

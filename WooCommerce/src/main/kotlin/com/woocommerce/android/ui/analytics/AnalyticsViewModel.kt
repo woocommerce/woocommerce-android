@@ -9,7 +9,6 @@ import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.model.DeltaPercentage
 import com.woocommerce.android.model.ProductItem
 import com.woocommerce.android.model.VisitorsStat
-import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.analytics.AnalyticsRepository.FetchStrategy.ForceNew
 import com.woocommerce.android.ui.analytics.AnalyticsRepository.FetchStrategy.Saved
 import com.woocommerce.android.ui.analytics.AnalyticsRepository.OrdersResult.OrdersData
@@ -21,8 +20,6 @@ import com.woocommerce.android.ui.analytics.AnalyticsRepository.RevenueResult.Re
 import com.woocommerce.android.ui.analytics.AnalyticsRepository.VisitorsResult
 import com.woocommerce.android.ui.analytics.AnalyticsRepository.VisitorsResult.VisitorsData
 import com.woocommerce.android.ui.analytics.AnalyticsRepository.VisitorsResult.VisitorsError
-import com.woocommerce.android.ui.analytics.AnalyticsViewEvent.OpenUrl
-import com.woocommerce.android.ui.analytics.AnalyticsViewEvent.OpenWPComWebView
 import com.woocommerce.android.ui.analytics.RefreshIndicator.NotShowIndicator
 import com.woocommerce.android.ui.analytics.RefreshIndicator.ShowIndicator
 import com.woocommerce.android.ui.analytics.daterangeselector.AnalyticTimePeriod
@@ -71,7 +68,6 @@ class AnalyticsViewModel @Inject constructor(
     private val analyticsDateRange: AnalyticsDateRangeCalculator,
     private val currencyFormatter: CurrencyFormatter,
     private val analyticsRepository: AnalyticsRepository,
-    private val selectedSite: SelectedSite,
     private val transactionLauncher: AnalyticsHubTransactionLauncher,
     private val usageTracksEventEmitter: MyStoreStatsUsageTracksEventEmitter,
     private val analyticsDateRangeFormatter: AnalyticsDateRangeFormatter,
@@ -164,35 +160,7 @@ class AnalyticsViewModel @Inject constructor(
         triggerEvent(AnalyticsViewEvent.OpenDateRangeSelector)
     }
 
-    fun onRevenueSeeReportClick() {
-        trackSeeReportClicked(AnalyticsTracker.VALUE_REVENUE_CARD_SELECTED)
-        openReportsView(analyticsRepository.getRevenueAdminPanelUrl())
-    }
-
-    fun onOrdersSeeReportClick() {
-        trackSeeReportClicked(AnalyticsTracker.VALUE_ORDERS_CARD_SELECTED)
-        openReportsView(analyticsRepository.getOrdersAdminPanelUrl())
-    }
-
-    fun onProductsSeeReportClick() {
-        trackSeeReportClicked(AnalyticsTracker.VALUE_PRODUCTS_CARD_SELECTED)
-        openReportsView(analyticsRepository.getProductsAdminPanelUrl())
-    }
-
-    fun onVisitorsSeeReportClick() {
-        trackSeeReportClicked(AnalyticsTracker.VALUE_VISITORS_CARD_SELECTED)
-        openReportsView(analyticsRepository.getJetpackStatsPanelUrl())
-    }
-
     fun onTrackableUIInteraction() = usageTracksEventEmitter.interacted()
-
-    private fun openReportsView(panelUrl: String) {
-        if (selectedSite.getIfExists()?.isWPCom == true || selectedSite.getIfExists()?.isWPComAtomic == true) {
-            triggerEvent(OpenWPComWebView(panelUrl))
-        } else {
-            triggerEvent(OpenUrl(panelUrl))
-        }
-    }
 
     private fun refreshAllAnalyticsAtOnce(isRefreshing: Boolean, showSkeleton: Boolean) {
         updateRevenue(isRefreshing, showSkeleton)
@@ -477,16 +445,6 @@ class AnalyticsViewModel @Inject constructor(
     private fun getSavedDateRange(): AnalyticsDateRange = savedState[DATE_RANGE_SELECTED_KEY] ?: getDefaultDateRange()
     private fun getSavedTimePeriod(): AnalyticTimePeriod = savedState[TIME_PERIOD_SELECTED_KEY]
         ?: getDefaultTimePeriod()
-
-    private fun trackSeeReportClicked(selectedCardType: String) {
-        onTrackableUIInteraction()
-        AnalyticsTracker.track(
-            AnalyticsEvent.ANALYTICS_HUB_SEE_REPORT_TAPPED,
-            mapOf(
-                AnalyticsTracker.KEY_CARD to selectedCardType
-            )
-        )
-    }
 
     private fun trackSelectedDateRange(selectedTimePeriod: AnalyticTimePeriod) {
         onTrackableUIInteraction()
