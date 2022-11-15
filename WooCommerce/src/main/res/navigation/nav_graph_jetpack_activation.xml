@@ -25,5 +25,8 @@
         <argument
             android:name="siteUrl"
             app:argType="string" />
+        <argument
+            android:name="isJetpackInstalled"
+            app:argType="boolean" />
     </fragment>
 </navigation>
