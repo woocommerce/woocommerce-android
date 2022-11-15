@@ -12,6 +12,7 @@ import com.woocommerce.android.model.UiString.UiStringRes
 import com.woocommerce.android.ui.prefs.DeveloperOptionsViewModel.DeveloperOptionsViewState.ListItem
 import com.woocommerce.android.ui.prefs.DeveloperOptionsViewModel.DeveloperOptionsViewState.ListItem.SpinnerListItem
 import com.woocommerce.android.ui.prefs.DeveloperOptionsViewModel.DeveloperOptionsViewState.ListItem.ToggleableListItem
+import com.woocommerce.android.ui.prefs.DeveloperOptionsViewModel.DeveloperOptionsViewState.UpdateOptions
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -93,6 +94,10 @@ class DeveloperOptionsViewModel @Inject constructor(
         triggerEvent(
             DeveloperOptionsEvents.ShowDialog("blabla")
         )
+    }
+
+    fun onUpdateReaderOptionChanged(selectedOption: UpdateOptions){
+        developerOptionsRepository.updateSimulatedReaderOption(selectedOption)
     }
 
     sealed class DeveloperOptionsEvents : MultiLiveEvent.Event() {
