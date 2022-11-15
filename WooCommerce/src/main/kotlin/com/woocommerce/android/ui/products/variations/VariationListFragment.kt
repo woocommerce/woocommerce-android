@@ -40,6 +40,7 @@ import com.woocommerce.android.ui.products.variations.VariationListViewModel.Sho
 import com.woocommerce.android.ui.products.variations.VariationListViewModel.ShowBulkUpdateAttrPicker
 import com.woocommerce.android.ui.products.variations.VariationListViewModel.ShowBulkUpdateLimitExceededWarning
 import com.woocommerce.android.ui.products.variations.VariationListViewModel.ShowVariationDetail
+import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
@@ -107,6 +108,8 @@ class VariationListFragment :
     }
 
     private fun initializeViews(savedInstanceState: Bundle?) {
+        binding.addAllVariationsButton.isVisible = FeatureFlag.GENERATE_ALL_VARIATIONS.isEnabled()
+
         val layoutManager = LinearLayoutManager(activity, RecyclerView.VERTICAL, false)
         this.layoutManager = layoutManager
 
