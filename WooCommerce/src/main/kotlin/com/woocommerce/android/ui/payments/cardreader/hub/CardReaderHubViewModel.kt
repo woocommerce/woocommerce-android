@@ -410,9 +410,9 @@ class CardReaderHubViewModel @Inject constructor(
         )
     }
 
-    enum class CashOnDeliverySource(source: String) {
-        ONBOARDING(source = "onboarding"),
-        PAYMENTS_HUB(source = "payments_hub")
+    enum class CashOnDeliverySource {
+        ONBOARDING,
+        PAYMENTS_HUB
     }
 
     companion object {
