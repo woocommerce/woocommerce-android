@@ -596,6 +596,40 @@ class AnalyticsViewModelTest : BaseUnitTest() {
         verify(transactionLauncher, times(0)).onVisitorsFetched()
     }
 
+    @Test
+    fun `given a date range selected, then has expected visitors values`() = testBlocking {
+        val weekToDateRange = MultipleDateRange(
+            SimpleDateRange(ANY_WEEK_DATE, ANY_WEEK_DATE),
+            SimpleDateRange(ANY_WEEK_DATE, ANY_WEEK_DATE),
+        )
+
+        val weekOrdersData = getVisitorStats()
+
+        whenever(calculator.getAnalyticsDateRangeFrom(WEEK_TO_DATE)) doReturn weekToDateRange
+        analyticsRepository.stub {
+            onBlocking { fetchRecentVisitorsData(weekToDateRange, WEEK_TO_DATE, Saved) }.doReturn(weekOrdersData)
+        }
+
+        sut = givenAViewModel()
+        sut.onSelectedTimePeriodChanged(WEEK_TO_DATE)
+
+        val resourceProvider = givenAResourceProvider()
+        with(sut.state.value.visitorsState) {
+            assertTrue(this is AnalyticsInformationViewState.DataViewState)
+            assertEquals(resourceProvider.getString(R.string.analytics_visitors_and_views_card_title), title)
+
+            assertEquals(resourceProvider.getString(R.string.analytics_visitors_subtitle), leftSection.title)
+            assertEquals(DEFAULT_VISITORS_COUNT.toString(), leftSection.value)
+            assertEquals(DEFAULT_AVG_VISITORS_DELTA, leftSection.delta)
+            assertThat(leftSection.chartInfo).isEmpty()
+
+            assertEquals(resourceProvider.getString(R.string.analytics_views_subtitle), rightSection.title)
+            assertEquals(DEFAULT_VIEWS_COUNT.toString(), rightSection.value)
+            assertEquals(DEFAULT_AVG_VIEWS_DELTA, rightSection.delta)
+            assertThat(rightSection.chartInfo).isEmpty()
+        }
+    }
+
     private fun givenAResourceProvider(): ResourceProvider = mock {
         on { getString(any()) } doAnswer { invocationOnMock -> invocationOnMock.arguments[0].toString() }
         on { getString(any(), any()) } doAnswer { invMock -> invMock.arguments[0].toString() }
