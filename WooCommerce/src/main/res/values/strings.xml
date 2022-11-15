@@ -1611,6 +1611,7 @@
     <string name="variation_detail_price_warning_title">Some variations do not have prices</string>
     <string name="variation_detail_image_add">Add a variation image</string>
     <string name="variation_list_generate_new_variation">Generate new variation</string>
+    <string name="variation_list_generate_all_variations">Generate all variations</string>
     <string name="variation_created_title">Variation Created</string>
     <string name="variation_create_dialog_title">Generating variation</string>
     <string name="variation_loading_dialog_title">Fetching variations…</string>
