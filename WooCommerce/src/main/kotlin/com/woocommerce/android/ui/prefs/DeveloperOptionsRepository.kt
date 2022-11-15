@@ -9,7 +9,6 @@ class DeveloperOptionsRepository @Inject constructor(
     private val appPrefs: AppPrefs,
     private val clearCardReaderDataAction: ClearCardReaderDataAction
 ) {
-
     fun isSimulatedCardReaderEnabled(): Boolean {
         return appPrefs.isSimulatedReaderEnabled
     }
@@ -23,6 +22,6 @@ class DeveloperOptionsRepository @Inject constructor(
     }
 
     fun updateSimulatedReaderOption(selectedOption: UpdateOptions) {
-        appPrefs.setSimulatedReaderOption(selectedOption)
+        appPrefs.updateReaderOptionSelected = selectedOption.toString()
     }
 }
