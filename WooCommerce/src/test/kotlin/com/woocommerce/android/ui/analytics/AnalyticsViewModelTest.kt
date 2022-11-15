@@ -22,6 +22,7 @@ import com.woocommerce.android.ui.analytics.AnalyticsRepository.VisitorsResult.V
 import com.woocommerce.android.ui.analytics.AnalyticsViewModel.Companion.DATE_RANGE_SELECTED_KEY
 import com.woocommerce.android.ui.analytics.AnalyticsViewModel.Companion.TIME_PERIOD_SELECTED_KEY
 import com.woocommerce.android.ui.analytics.RefreshIndicator.NotShowIndicator
+import com.woocommerce.android.ui.analytics.daterangeselector.AnalyticTimePeriod.LAST_QUARTER
 import com.woocommerce.android.ui.analytics.daterangeselector.AnalyticTimePeriod.LAST_YEAR
 import com.woocommerce.android.ui.analytics.daterangeselector.AnalyticTimePeriod.QUARTER_TO_DATE
 import com.woocommerce.android.ui.analytics.daterangeselector.AnalyticTimePeriod.TODAY
@@ -631,8 +632,6 @@ class AnalyticsViewModelTest : BaseUnitTest() {
         }
     }
 
-
-
     @Test
     fun `given a quarter to date range is selected, then has expected visitors values`() = testBlocking {
         val weekToDateRange = MultipleDateRange(
@@ -649,6 +648,40 @@ class AnalyticsViewModelTest : BaseUnitTest() {
 
         sut = givenAViewModel()
         sut.onSelectedTimePeriodChanged(QUARTER_TO_DATE)
+
+        val resourceProvider = givenAResourceProvider()
+        with(sut.state.value.visitorsState) {
+            assertTrue(this is AnalyticsInformationViewState.DataViewState)
+            assertEquals(resourceProvider.getString(R.string.analytics_visitors_and_views_card_title), title)
+
+            assertEquals(resourceProvider.getString(R.string.analytics_visitors_subtitle), leftSection.title)
+            assertEquals(DEFAULT_VISITORS_COUNT.toString(), leftSection.value)
+            assertEquals(DEFAULT_AVG_VISITORS_DELTA, leftSection.delta)
+            assertThat(leftSection.chartInfo).isEmpty()
+
+            assertEquals(resourceProvider.getString(R.string.analytics_views_subtitle), rightSection.title)
+            assertEquals(DEFAULT_VIEWS_COUNT.toString(), rightSection.value)
+            assertEquals(DEFAULT_AVG_VIEWS_DELTA, rightSection.delta)
+            assertThat(rightSection.chartInfo).isEmpty()
+        }
+    }
+
+    @Test
+    fun `given a last quarter range is selected, then has expected visitors values`() = testBlocking {
+        val weekToDateRange = MultipleDateRange(
+            SimpleDateRange(ANY_WEEK_DATE, ANY_WEEK_DATE),
+            SimpleDateRange(ANY_WEEK_DATE, ANY_WEEK_DATE),
+        )
+
+        val weekOrdersData = getVisitorStats()
+
+        whenever(calculator.getAnalyticsDateRangeFrom(LAST_QUARTER)) doReturn weekToDateRange
+        analyticsRepository.stub {
+            onBlocking { fetchQuarterVisitorsData(weekToDateRange, LAST_QUARTER, Saved) }.doReturn(weekOrdersData)
+        }
+
+        sut = givenAViewModel()
+        sut.onSelectedTimePeriodChanged(LAST_QUARTER)
 
         val resourceProvider = givenAResourceProvider()
         with(sut.state.value.visitorsState) {
