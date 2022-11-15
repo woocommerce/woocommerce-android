@@ -163,6 +163,13 @@ class SitePickerSiteDiscoveryViewModel @Inject constructor(
     }
 
     private suspend fun startSiteDiscovery() {
+        // If the site is already connected to the account, go back to site picker
+        if (sitePickRepository.getSiteBySiteUrl(siteAddressFlow.value) != null) {
+            fetchedSiteUrl = siteAddressFlow.value
+            navigateBackToSitePicker()
+            return
+        }
+
         sitePickRepository.fetchSiteInfo(siteAddressFlow.value).fold(
             onSuccess = {
                 val siteAddress = (it.urlAfterRedirects ?: it.url)
