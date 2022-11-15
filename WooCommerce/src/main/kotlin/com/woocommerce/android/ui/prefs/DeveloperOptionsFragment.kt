@@ -76,7 +76,6 @@ class DeveloperOptionsFragment : BaseFragment(R.layout.fragment_developer_option
             .setTitle("Update Simulated Reader")
             .setSingleChoiceItems(textValues, selectedItemIndex.ordinal) { dialog, which ->
                 selectedValue = values[which]
-                dialog.dismiss()
             }.show()
     }
 
