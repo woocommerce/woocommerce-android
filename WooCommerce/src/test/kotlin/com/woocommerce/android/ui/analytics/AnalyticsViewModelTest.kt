@@ -709,18 +709,6 @@ class AnalyticsViewModelTest : BaseUnitTest() {
             SimpleDateRange(ANY_WEEK_DATE, ANY_WEEK_DATE),
         )
 
-        val weekOrdersData = getVisitorStats()
-
-        whenever(calculator.getAnalyticsDateRangeFrom(CUSTOM)) doReturn weekToDateRange
-        analyticsRepository.stub {
-            onBlocking { fetchQuarterVisitorsData(weekToDateRange, CUSTOM, Saved) }.doReturn(weekOrdersData)
-        }
-
-        whenever(calculator.getAnalyticsDateRangeFrom(CUSTOM)) doReturn weekToDateRange
-        analyticsRepository.stub {
-            onBlocking { fetchRecentVisitorsData(weekToDateRange, CUSTOM, Saved) }.doReturn(weekOrdersData)
-        }
-
         sut = givenAViewModel()
         sut.onSelectedTimePeriodChanged(CUSTOM)
 
