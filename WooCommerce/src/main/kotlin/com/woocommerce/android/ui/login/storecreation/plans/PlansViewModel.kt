@@ -15,7 +15,6 @@ import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.getStateFlow
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.parcelize.Parcelize
@@ -39,7 +38,6 @@ class PlansViewModel @Inject constructor(
 
     private fun loadPlan() {
         launch {
-            delay(1000)
             _viewState.update {
                 PlanState(
                     plan = Plan(
@@ -82,7 +80,6 @@ class PlansViewModel @Inject constructor(
                 )
             }
         }
-
     }
 
     private fun onBackPressed() {
@@ -90,10 +87,7 @@ class PlansViewModel @Inject constructor(
     }
 
     private fun onConfirmClicked() {
-    }
-
-    private fun onRetryClicked() {
-        loadPlan()
+        // TODO
     }
 
     sealed interface ViewState : Parcelable {
