@@ -9,6 +9,7 @@ import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
+import com.woocommerce.android.experiment.JetpackInstallationExperiment
 import com.woocommerce.android.ui.login.AccountRepository
 import com.woocommerce.android.ui.sitepicker.SitePickerRepository
 import com.woocommerce.android.viewmodel.MultiLiveEvent
@@ -42,7 +43,8 @@ class SitePickerSiteDiscoveryViewModel @Inject constructor(
     private val sitePickRepository: SitePickerRepository,
     private val accountRepository: AccountRepository,
     private val resourceProvider: ResourceProvider,
-    private val analyticsTracker: AnalyticsTrackerWrapper
+    private val analyticsTracker: AnalyticsTrackerWrapper,
+    private val jetpackInstallationExperiment: JetpackInstallationExperiment
 ) : ScopedViewModel(savedStateHandle) {
     companion object {
         private const val FETCHED_URL_KEY = "fetched_url"
@@ -179,8 +181,10 @@ class SitePickerSiteDiscoveryViewModel @Inject constructor(
                 when {
                     !it.exists -> inlineErrorFlow.value = R.string.invalid_site_url_message
                     !it.isWordPress -> stepFlow.value = Step.NotWordpress
-                    !it.isWPCom && !it.isJetpackActive ->
+                    !it.isWPCom && !it.isJetpackActive -> {
+                        jetpackInstallationExperiment.activate()
                         stepFlow.value = Step.JetpackUnavailable
+                    }
                     !it.isWPCom && !it.isJetpackConnected -> navigateToJetpackConnectionError()
                     else -> navigateBackToSitePicker()
                 }
