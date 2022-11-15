@@ -54,27 +54,6 @@
         app:layout_constraintTop_toTopOf="@+id/leftTitle" />
 
     <View
-        android:id="@+id/button"
-        android:layout_width="@dimen/image_major_72"
-        android:layout_height="@dimen/major_125"
-        android:layout_marginTop="@dimen/major_85"
-        android:layout_marginBottom="@dimen/minor_100"
-        android:background="@color/skeleton_color"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="@+id/leftPlot"
-        app:layout_constraintTop_toBottomOf="@+id/divider" />
-
-    <View
-        android:id="@+id/arrow"
-        android:layout_width="@dimen/major_150"
-        android:layout_height="@dimen/major_125"
-        android:layout_marginEnd="@dimen/major_85"
-        android:background="@color/skeleton_color"
-        app:layout_constraintBottom_toBottomOf="@+id/button"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/button" />
-
-    <View
         android:id="@+id/leftPlot"
         android:layout_width="@dimen/major_300"
         android:layout_height="@dimen/major_150"
@@ -91,15 +70,5 @@
         app:layout_constraintBottom_toBottomOf="@+id/leftPlot"
         app:layout_constraintStart_toStartOf="@+id/rightVal"
         app:layout_constraintTop_toTopOf="@+id/leftPlot" />
-
-
-    <View
-        android:id="@+id/divider"
-        style="@style/Woo.Divider"
-        android:layout_height="@dimen/minor_10"
-        android:layout_marginTop="@dimen/major_100"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/rightPlot" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
