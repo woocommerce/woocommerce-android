@@ -79,15 +79,15 @@ class DeveloperOptionsViewModel @Inject constructor(
                 it.key == UiStringRes(string.simulated_reader_key)
             } as? ToggleableListItem
             )?.let { originalListItem ->
-                val newState = originalListItem.copy(isChecked = isChecked)
-                _viewState.value = currentViewState.copy(
-                    rows = currentViewState.rows.map {
-                        if (it.label == newState.label)
-                            newState
-                        else it
-                    }
-                )
-            }
+            val newState = originalListItem.copy(isChecked = isChecked)
+            _viewState.value = currentViewState.copy(
+                rows = currentViewState.rows.map {
+                    if (it.label == newState.label)
+                        newState
+                    else it
+                }
+            )
+        }
     }
 
     private fun onUpdateSimulatedReaderClicked() {
@@ -96,7 +96,7 @@ class DeveloperOptionsViewModel @Inject constructor(
         )
     }
 
-    fun onUpdateReaderOptionChanged(selectedOption: UpdateOptions){
+    fun onUpdateReaderOptionChanged(selectedOption: UpdateOptions) {
         developerOptionsRepository.updateSimulatedReaderOption(selectedOption)
     }
 
@@ -143,11 +143,10 @@ class DeveloperOptionsViewModel @Inject constructor(
             ) : ListItem()
         }
 
-        enum class UpdateOptions(@StringRes val title: Int){
+        enum class UpdateOptions(@StringRes val title: Int) {
             ALWAYS(string.always_update_reader),
             NEVER(string.never_update_reader),
             RANDOMLY(string.randomly_update_reader)
         }
     }
 }
-
