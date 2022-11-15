@@ -131,7 +131,7 @@ class AnalyticsViewModel @Inject constructor(
             )
         )
 
-        val dateRange = analyticsDateRange.getAnalyticsDateRangeFromCustom(fromDateUtc, toDateUtc)
+        val dateRange = analyticsDateRange.getAnalyticsDateRangeFromCustom(fromDateUtc!!, toDateUtc!!)
         saveSelectedDateRange(dateRange)
         saveSelectedTimePeriod(CUSTOM)
         trackSelectedDateRange(CUSTOM)
