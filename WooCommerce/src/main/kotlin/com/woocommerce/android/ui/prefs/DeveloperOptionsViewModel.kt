@@ -51,7 +51,6 @@ class DeveloperOptionsViewModel @Inject constructor(
             key = UiStringRes(string.update_simulated_reader_key),
             isEnabled = true,
             onClick = ::onUpdateSimulatedReaderClicked,
-            onSelect = { }
         )
     )
 
@@ -138,7 +137,6 @@ class DeveloperOptionsViewModel @Inject constructor(
                 override var isEnabled: Boolean = false,
                 override var key: UiString,
                 val onClick: () -> Unit,
-                val onSelect: () -> Unit
 
             ) : ListItem()
         }

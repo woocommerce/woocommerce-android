@@ -48,7 +48,6 @@ class DeveloperOptionsFragment : BaseFragment(R.layout.fragment_developer_option
                 is DeveloperOptionsViewModel.DeveloperOptionsEvents.ShowDialog -> {
                     showUpdateOptionsDialog(
                         values = UpdateOptions.values(),
-                        onSelected = {},
                         mapper = { requireContext().getString(it.title) }
                     )
                 }
@@ -58,7 +57,6 @@ class DeveloperOptionsFragment : BaseFragment(R.layout.fragment_developer_option
 
     private fun showUpdateOptionsDialog(
         values: Array<UpdateOptions>,
-        onSelected: (UpdateOptions) -> Unit,
         mapper: (UpdateOptions) -> String = { it.toString() }
     ) {
         val textValues = values.map(mapper).toTypedArray()
@@ -78,7 +76,6 @@ class DeveloperOptionsFragment : BaseFragment(R.layout.fragment_developer_option
             .setTitle("Update Simulated Reader")
             .setSingleChoiceItems(textValues, selectedItemIndex.ordinal) { dialog, which ->
                 selectedValue = values[which]
-                onSelected(values[which])
                 dialog.dismiss()
             }.show()
     }
