@@ -37,8 +37,6 @@ class ProductVisibilityFragment : BaseProductSettingsFragment(R.layout.fragment_
 
         _binding = FragmentProductVisibilityBinding.bind(view)
 
-        setHasOptionsMenu(true)
-
         selectedVisibility = savedInstanceState?.getString(ARG_VISIBILITY) ?: navArgs.visibility
         selectedVisibility?.let {
             getButtonForVisibility(it)?.isChecked = true

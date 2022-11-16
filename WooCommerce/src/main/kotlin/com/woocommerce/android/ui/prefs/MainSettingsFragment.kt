@@ -72,11 +72,9 @@ class MainSettingsFragment : Fragment(R.layout.fragment_settings_main), MainSett
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        setHasOptionsMenu(true)
         _binding = FragmentSettingsMainBinding.inflate(inflater, container, false)
 
-        val view = binding.root
-        return view
+        return binding.root
     }
 
     @Suppress("ForbiddenComment", "LongMethod")

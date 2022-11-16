@@ -8,7 +8,6 @@ import com.woocommerce.android.model.ProductItem
 import com.woocommerce.android.model.ProductsStat
 import com.woocommerce.android.model.RevenueStat
 import com.woocommerce.android.model.VisitorsStat
-import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.analytics.AnalyticsRepository.FetchStrategy.ForceNew
 import com.woocommerce.android.ui.analytics.AnalyticsRepository.FetchStrategy.Saved
 import com.woocommerce.android.ui.analytics.AnalyticsRepository.OrdersResult.OrdersData
@@ -48,11 +47,10 @@ import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.doReturnConsecutively
 import org.mockito.kotlin.eq
 import org.mockito.kotlin.mock
+import org.mockito.kotlin.never
 import org.mockito.kotlin.stub
-import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
-import org.wordpress.android.fluxc.model.SiteModel
 import java.text.SimpleDateFormat
 import java.util.Date
 import kotlin.test.assertEquals
@@ -87,14 +85,8 @@ class AnalyticsViewModelTest : BaseUnitTest() {
             OTHER_PRODUCT_CURRENCY_VALUE
     }
 
-    private val analyticsRepository: AnalyticsRepository = mock {
-        on { getRevenueAdminPanelUrl() } doReturn ANY_URL
-    }
+    private val analyticsRepository: AnalyticsRepository = mock()
 
-    private val siteModel: SiteModel = mock()
-    private val selectedSite: SelectedSite = mock {
-        on { getIfExists() } doReturn siteModel
-    }
     private val savedState = AnalyticsFragmentArgs(targetGranularity = TODAY).initSavedStateHandle()
 
     private val transactionLauncher = mock<AnalyticsHubTransactionLauncher>()
@@ -473,37 +465,6 @@ class AnalyticsViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `given a WPCom site, when see report is clicked, then OpenWPComWebView event is triggered`() {
-        whenever(siteModel.isWPCom).thenReturn(true)
-
-        sut = givenAViewModel()
-        sut.onRevenueSeeReportClick()
-
-        assertThat(sut.event.value).isInstanceOf(AnalyticsViewEvent.OpenWPComWebView::class.java)
-    }
-
-    @Test
-    fun `given a WPComAtomic site, when see report is clicked, then OpenWPComWebView event is triggered`() {
-        whenever(siteModel.isWPComAtomic).thenReturn(true)
-
-        sut = givenAViewModel()
-        sut.onRevenueSeeReportClick()
-
-        assertThat(sut.event.value).isInstanceOf(AnalyticsViewEvent.OpenWPComWebView::class.java)
-    }
-
-    @Test
-    fun `given a no WPComAtomic and no WPCom site, when see report is clicked, then OpenUrl event is triggered`() {
-        whenever(siteModel.isWPComAtomic).thenReturn(false)
-        whenever(siteModel.isWPCom).thenReturn(false)
-
-        sut = givenAViewModel()
-        sut.onRevenueSeeReportClick()
-
-        assertThat(sut.event.value).isInstanceOf(AnalyticsViewEvent.OpenUrl::class.java)
-    }
-
-    @Test
     fun `given a view, when custom date range is clicked, then OpenDatePicker event is triggered`() {
         sut = givenAViewModel()
         sut.onCustomDateRangeClicked()
@@ -512,7 +473,7 @@ class AnalyticsViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `when all data is fetched successfully then all Sentry conditions are satisfied`() = testBlocking {
+    fun `when all data is fetched successfully then all transaction conditions are satisfied`() = testBlocking {
         analyticsRepository.stub {
             onBlocking { fetchRevenueData(any(), any(), any()) }.doReturn(getRevenueStats())
             onBlocking { fetchOrdersData(any(), any(), any()) }.doReturn(getOrdersStats())
@@ -522,14 +483,14 @@ class AnalyticsViewModelTest : BaseUnitTest() {
 
         sut = givenAViewModel()
 
-        verify(transactionLauncher, times(1)).onRevenueFetched()
-        verify(transactionLauncher, times(1)).onOrdersFetched()
-        verify(transactionLauncher, times(1)).onProductsFetched()
-        verify(transactionLauncher, times(1)).onVisitorsFetched()
+        verify(transactionLauncher).onRevenueFetched()
+        verify(transactionLauncher).onOrdersFetched()
+        verify(transactionLauncher).onProductsFetched()
+        verify(transactionLauncher).onVisitorsFetched()
     }
 
     @Test
-    fun `when fetch revenue fails then Sentry revenue condition is not satisfied`() = testBlocking {
+    fun `when fetch revenue fails then performance transaction revenue condition is not satisfied`() = testBlocking {
         analyticsRepository.stub {
             onBlocking { fetchRevenueData(any(), any(), any()) }.doReturn(RevenueError)
             onBlocking { fetchOrdersData(any(), any(), any()) }.doReturn(getOrdersStats())
@@ -539,14 +500,14 @@ class AnalyticsViewModelTest : BaseUnitTest() {
 
         sut = givenAViewModel()
 
-        verify(transactionLauncher, times(0)).onRevenueFetched()
-        verify(transactionLauncher, times(1)).onOrdersFetched()
-        verify(transactionLauncher, times(1)).onProductsFetched()
-        verify(transactionLauncher, times(1)).onVisitorsFetched()
+        verify(transactionLauncher, never()).onRevenueFetched()
+        verify(transactionLauncher).onOrdersFetched()
+        verify(transactionLauncher).onProductsFetched()
+        verify(transactionLauncher).onVisitorsFetched()
     }
 
     @Test
-    fun `when fetch orders fails then Sentry order condition is not satisfied`() = testBlocking {
+    fun `when fetch orders fails then performance transaction order condition is not satisfied`() = testBlocking {
         analyticsRepository.stub {
             onBlocking { fetchRevenueData(any(), any(), any()) }.doReturn(getRevenueStats())
             onBlocking { fetchOrdersData(any(), any(), any()) }.doReturn(OrdersError)
@@ -556,14 +517,14 @@ class AnalyticsViewModelTest : BaseUnitTest() {
 
         sut = givenAViewModel()
 
-        verify(transactionLauncher, times(1)).onRevenueFetched()
-        verify(transactionLauncher, times(0)).onOrdersFetched()
-        verify(transactionLauncher, times(1)).onProductsFetched()
-        verify(transactionLauncher, times(1)).onVisitorsFetched()
+        verify(transactionLauncher).onRevenueFetched()
+        verify(transactionLauncher, never()).onOrdersFetched()
+        verify(transactionLauncher).onProductsFetched()
+        verify(transactionLauncher).onVisitorsFetched()
     }
 
     @Test
-    fun `when fetch products fails then Sentry products condition is not satisfied`() = testBlocking {
+    fun `when fetch products fails then performance transaction products condition is not satisfied`() = testBlocking {
         analyticsRepository.stub {
             onBlocking { fetchRevenueData(any(), any(), any()) }.doReturn(getRevenueStats())
             onBlocking { fetchOrdersData(any(), any(), any()) }.doReturn(getOrdersStats())
@@ -573,14 +534,14 @@ class AnalyticsViewModelTest : BaseUnitTest() {
 
         sut = givenAViewModel()
 
-        verify(transactionLauncher, times(1)).onRevenueFetched()
-        verify(transactionLauncher, times(1)).onOrdersFetched()
-        verify(transactionLauncher, times(0)).onProductsFetched()
-        verify(transactionLauncher, times(1)).onVisitorsFetched()
+        verify(transactionLauncher).onRevenueFetched()
+        verify(transactionLauncher).onOrdersFetched()
+        verify(transactionLauncher, never()).onProductsFetched()
+        verify(transactionLauncher).onVisitorsFetched()
     }
 
     @Test
-    fun `when fetch visitors fails then Sentry visitors condition is not satisfied`() = testBlocking {
+    fun `when fetch visitors fails then performance transaction visitors condition is not satisfied`() = testBlocking {
         analyticsRepository.stub {
             onBlocking { fetchRevenueData(any(), any(), any()) }.doReturn(getRevenueStats())
             onBlocking { fetchOrdersData(any(), any(), any()) }.doReturn(getOrdersStats())
@@ -590,10 +551,10 @@ class AnalyticsViewModelTest : BaseUnitTest() {
 
         sut = givenAViewModel()
 
-        verify(transactionLauncher, times(1)).onRevenueFetched()
-        verify(transactionLauncher, times(1)).onOrdersFetched()
-        verify(transactionLauncher, times(1)).onProductsFetched()
-        verify(transactionLauncher, times(0)).onVisitorsFetched()
+        verify(transactionLauncher).onRevenueFetched()
+        verify(transactionLauncher).onOrdersFetched()
+        verify(transactionLauncher).onProductsFetched()
+        verify(transactionLauncher, never()).onVisitorsFetched()
     }
 
     private fun givenAResourceProvider(): ResourceProvider = mock {
@@ -609,7 +570,6 @@ class AnalyticsViewModelTest : BaseUnitTest() {
             calculator,
             currencyFormatter,
             analyticsRepository,
-            selectedSite,
             transactionLauncher,
             mock(),
             analyticsDateRangeFormatter,
