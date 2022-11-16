@@ -25,7 +25,7 @@ class InitializationRule : TestRule {
     private val instrumentation
         get() = InstrumentationRegistry.getInstrumentation()
 
-    override fun apply(base: Statement?, description: Description?): Statement {
+    override fun apply(base: Statement, description: Description): Statement {
         return object : Statement() {
             override fun evaluate() {
                 val application = instrumentation.targetContext.applicationContext as Application
@@ -37,7 +37,7 @@ class InitializationRule : TestRule {
                     instrumentation.runOnMainSync {
                         entryPoint.initializer().init(application)
                     }
-                    base?.evaluate()
+                    base.evaluate()
                 } finally {
                     entryPoint.appCoroutineScope().cancel()
                 }
