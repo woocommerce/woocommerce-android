@@ -31,6 +31,7 @@ import com.woocommerce.android.ui.analytics.daterangeselector.AnalyticsDateRange
 import com.woocommerce.android.ui.analytics.daterangeselector.AnalyticsDateRangeFormatter
 import com.woocommerce.android.ui.analytics.daterangeselector.MultipleDateRange
 import com.woocommerce.android.ui.analytics.daterangeselector.SimpleDateRange
+import com.woocommerce.android.ui.analytics.informationcard.AnalyticsInformationSectionViewState
 import com.woocommerce.android.ui.analytics.informationcard.AnalyticsInformationViewState
 import com.woocommerce.android.ui.analytics.informationcard.AnalyticsInformationViewState.LoadingViewState
 import com.woocommerce.android.ui.analytics.listcard.AnalyticsListViewState
@@ -705,20 +706,23 @@ class AnalyticsViewModelTest : BaseUnitTest() {
 
     private fun assert(visitorState: AnalyticsInformationViewState) {
         val resourceProvider = givenAResourceProvider()
-        with(visitorState) {
-            assertTrue(this is AnalyticsInformationViewState.DataViewState)
-            assertEquals(resourceProvider.getString(R.string.analytics_visitors_and_views_card_title), title)
-
-            assertEquals(resourceProvider.getString(R.string.analytics_visitors_subtitle), leftSection.title)
-            assertEquals(DEFAULT_VISITORS_COUNT.toString(), leftSection.value)
-            assertEquals(DEFAULT_AVG_VISITORS_DELTA, leftSection.delta)
-            assertThat(leftSection.chartInfo).isEmpty()
-
-            assertEquals(resourceProvider.getString(R.string.analytics_views_subtitle), rightSection.title)
-            assertEquals(DEFAULT_VIEWS_COUNT.toString(), rightSection.value)
-            assertEquals(DEFAULT_AVG_VIEWS_DELTA, rightSection.delta)
-            assertThat(rightSection.chartInfo).isEmpty()
-        }
+        assertThat(visitorState).isEqualTo(
+            AnalyticsInformationViewState.DataViewState(
+                title = resourceProvider.getString(R.string.analytics_visitors_and_views_card_title),
+                leftSection = AnalyticsInformationSectionViewState(
+                    title = resourceProvider.getString(R.string.analytics_visitors_subtitle),
+                    value = DEFAULT_VISITORS_COUNT.toString(),
+                    delta = DEFAULT_AVG_VISITORS_DELTA,
+                    chartInfo = emptyList()
+                ),
+                rightSection = AnalyticsInformationSectionViewState(
+                    title = resourceProvider.getString(R.string.analytics_views_subtitle),
+                    value = DEFAULT_VIEWS_COUNT.toString(),
+                    delta = DEFAULT_AVG_VIEWS_DELTA,
+                    chartInfo = emptyList()
+                )
+            )
+        )
     }
 
     companion object {
