@@ -11,7 +11,6 @@ import android.view.ViewGroup
 import androidx.core.view.MenuProvider
 import androidx.core.widget.doOnTextChanged
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.Lifecycle
 import androidx.navigation.fragment.findNavController
 import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.R
