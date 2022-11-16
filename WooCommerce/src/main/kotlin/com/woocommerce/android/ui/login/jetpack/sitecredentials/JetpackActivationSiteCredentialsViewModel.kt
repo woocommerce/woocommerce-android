@@ -10,6 +10,7 @@ import com.woocommerce.android.R
 import com.woocommerce.android.model.UiString.UiStringRes
 import com.woocommerce.android.model.UiString.UiStringText
 import com.woocommerce.android.viewmodel.MultiLiveEvent
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowUiStringSnackbar
 import com.woocommerce.android.viewmodel.ScopedViewModel
@@ -65,7 +66,7 @@ class JetpackActivationSiteCredentialsViewModel @Inject constructor(
     }
 
     fun onCloseClick() {
-        TODO()
+        triggerEvent(Exit)
     }
 
     fun onContinueClick() = launch {

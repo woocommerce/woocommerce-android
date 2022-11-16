@@ -48,7 +48,8 @@ fun JetpackActivationSiteCredentialsScreen(viewModel: JetpackActivationSiteCrede
             viewState = it,
             onUsernameChanged = viewModel::onUsernameChanged,
             onPasswordChanged = viewModel::onPasswordChanged,
-            onContinueClick = viewModel::onContinueClick
+            onContinueClick = viewModel::onContinueClick,
+            onCloseClick = viewModel::onCloseClick
         )
     }
 }
@@ -58,14 +59,15 @@ fun JetpackActivationSiteCredentialsScreen(
     viewState: JetpackActivationSiteCredentialsViewState,
     onUsernameChanged: (String) -> Unit = {},
     onPasswordChanged: (String) -> Unit = {},
-    onContinueClick: () -> Unit = {}
+    onContinueClick: () -> Unit = {},
+    onCloseClick: () -> Unit = {}
 ) {
     Column(
         modifier = Modifier
             .background(MaterialTheme.colors.surface)
             .fillMaxSize(),
     ) {
-        Toolbar(onCloseClick = {})
+        Toolbar(onCloseClick = onCloseClick)
         Column(
             modifier = Modifier
                 .weight(1f)
