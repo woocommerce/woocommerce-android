@@ -30,6 +30,7 @@ object WooLog {
         SITE_PICKER,
         COUPONS,
         JITM,
+        PLUGINS,
     }
 
     // Breaking convention to be consistent with org.wordpress.android.util.AppLog

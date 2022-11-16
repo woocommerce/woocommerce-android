@@ -2,6 +2,7 @@ package com.woocommerce.android.ui.login.storecreation.webview
 
 import androidx.lifecycle.Observer
 import androidx.lifecycle.SavedStateHandle
+import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.ui.common.wpcomwebview.WPComWebViewAuthenticator
 import com.woocommerce.android.ui.login.storecreation.StoreCreationRepository
@@ -28,6 +29,7 @@ class WebViewStoreCreationViewModelTest : BaseUnitTest() {
     private val wpComWebViewAuthenticator: WPComWebViewAuthenticator = mock()
     private val userAgent: UserAgent = mock()
     private val analyticsTrackerWrapper: AnalyticsTrackerWrapper = mock()
+    private val appPrefsWrapper: AppPrefsWrapper = mock()
 
     private lateinit var viewModel: WebViewStoreCreationViewModel
     private var observer: Observer<ViewState> = mock()
@@ -47,10 +49,11 @@ class WebViewStoreCreationViewModelTest : BaseUnitTest() {
     private fun whenViewModelIsCreated() {
         viewModel = WebViewStoreCreationViewModel(
             savedState,
-            repository,
             wpComWebViewAuthenticator,
             userAgent,
-            analyticsTrackerWrapper
+            repository,
+            analyticsTrackerWrapper,
+            appPrefsWrapper
         )
     }
 
@@ -84,7 +87,7 @@ class WebViewStoreCreationViewModelTest : BaseUnitTest() {
             onStoreCreated()
         }
 
-        verify(repository, Mockito.times(11)).getSiteBySiteUrl(site.url)
+        verify(repository, Mockito.times(10)).getSiteBySiteUrl(site.url)
     }
 
     @Test

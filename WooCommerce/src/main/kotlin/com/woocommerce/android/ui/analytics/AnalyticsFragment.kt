@@ -2,7 +2,6 @@ package com.woocommerce.android.ui.analytics
 
 import android.os.Bundle
 import android.view.View
-import androidx.core.view.isVisible
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
@@ -18,7 +17,6 @@ import com.woocommerce.android.ui.analytics.RefreshIndicator.ShowIndicator
 import com.woocommerce.android.ui.analytics.daterangeselector.AnalyticTimePeriod
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.util.ChromeCustomTabUtils
-import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.launchIn
@@ -55,7 +53,6 @@ class AnalyticsFragment :
             viewModel.onTrackableUIInteraction()
             viewModel.onRefreshRequested()
         }
-        binding.analyticsProductsCard.isVisible = FeatureFlag.ANALYTICS_HUB_PRODUCTS_AND_REPORTS.isEnabled()
         binding.scrollView.scrollStartEvents()
             .onEach { viewModel.onTrackableUIInteraction() }
             .launchIn(viewLifecycleOwner.lifecycleScope)
@@ -94,10 +91,9 @@ class AnalyticsFragment :
             key = KEY_DATE_RANGE_SELECTOR_RESULT,
             entryId = R.id.analytics
         ) { dateSelection ->
-            if (dateSelection == AnalyticTimePeriod.CUSTOM.description) {
-                viewModel.onCustomDateRangeClicked()
-            } else {
-                viewModel.onSelectedTimePeriodChanged(dateSelection)
+            when (val timePeriod = AnalyticTimePeriod.from(dateSelection)) {
+                AnalyticTimePeriod.CUSTOM -> viewModel.onCustomDateRangeClicked()
+                else -> viewModel.onSelectedTimePeriodChanged(timePeriod)
             }
         }
     }
@@ -105,9 +101,6 @@ class AnalyticsFragment :
     private fun bind(view: View) {
         _binding = FragmentAnalyticsBinding.bind(view)
         binding.analyticsDateSelectorCard.setOnClickListener { viewModel.onDateRangeSelectorClick() }
-        binding.analyticsRevenueCard.setSeeReportClickListener { viewModel.onRevenueSeeReportClick() }
-        binding.analyticsOrdersCard.setSeeReportClickListener { viewModel.onOrdersSeeReportClick() }
-        binding.analyticsProductsCard.setSeeReportClickListener { viewModel.onProductsSeeReportClick() }
     }
 
     private fun handleStateChange(viewState: AnalyticsViewState) {
@@ -116,6 +109,7 @@ class AnalyticsFragment :
         binding.analyticsRevenueCard.updateInformation(viewState.revenueState)
         binding.analyticsOrdersCard.updateInformation(viewState.ordersState)
         binding.analyticsProductsCard.updateInformation(viewState.productsState)
+        binding.analyticsVisitorsCard.updateInformation(viewState.visitorsState)
         binding.analyticsRefreshLayout.isRefreshing = viewState.refreshIndicator == ShowIndicator
     }
 

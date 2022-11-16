@@ -1,0 +1,2 @@
+11.1:
+Bu sürüm, mağazanızı daha iyi yönetmeniz için birçok harika şey içeriyor! Varyasyonların stok miktarını toplu güncelleme seçeneği ekledik. Ayrıca QR kodu ile giriş yapma seçeneğini de ekledik. Siparişler ve ürün aramasında çeşitli iyileştirmeler yaptık.

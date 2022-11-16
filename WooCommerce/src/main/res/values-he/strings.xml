@@ -1,12 +1,34 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2022-11-03 16:54:04+0000
+Translation-Revision-Date: 2022-11-09 12:54:03+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: he_IL
 -->
 <resources>
-    <string name="create_new_store">ליצור חנות חדשה</string>
+    <string name="store_creation_confirm_and_leave">לאשר ולצאת</string>
+    <string name="store_creation_exit_dialog_message">הפרטים של החנות שלך לא יישמרו.</string>
+    <string name="store_creation_exit_dialog_title">האם ברצונך לצאת?</string>
+    <string name="store_creation_in_progress">יוצר את החנות שלך…</string>
+    <string name="store_creation_cannot_load_store">לא הצלחנו לטעון את החנות שלך.\nכדאי לנסות שוב…</string>
+    <string name="store_creation_create_new_store_label">ליצור חנות חדשה</string>
+    <string name="or_use_password_below_qr_code_scan_option">לחלופין, ניתן להתחבר באמצעות סיסמה</string>
+    <string name="or_scan_qr_code_to_log_in">יש לסרוק את קוד ה-QR כדי להתחבר</string>
+    <string name="simplified_login_prologue_title">הפלטפורמה של WooCommerce היא פלטפורמה עם קוד פתוח למסחר אלקטרוני שניתנת להתאמה אישית ואשר נבנתה על WordPress.</string>
+    <string name="simulated_reader_toast">הסימולציה של קורא הכרטיסים הושבתה</string>
+    <string name="simulated_reader_key">סימולציה של מפתח הקורא</string>
+    <string name="variations_bulk_update_stock_quantity_success">הכמות במלאי מעודכנת</string>
+    <string name="variations_bulk_update_current_stock_quantity_mixed">הכמות הנוכחית במלאי משולבת</string>
+    <string name="variations_bulk_update_current_stock_quantity">הכמות הנוכחית במלאי היא %d</string>
+    <string name="variations_bulk_update_stock_quantity_dialog_title">מעדכן את הכמות במלאי</string>
+    <string name="variations_bulk_update_stock_quantity_info">הכמות במלאי תעודכן עבור %d סוגים</string>
+    <string name="variations_bulk_update_dialog_inventory_section_title">מלאי</string>
+    <string name="product_search_hint_active_filters">חיפוש בין המוצרים שסוננו</string>
+    <string name="orderlist_search_hint_active_filters">חיפוש בין ההזמנות שסוננו</string>
+    <string name="site_picker_connect_existing_store">לחבר חנות קיימת</string>
+    <string name="site_picker_create_new_store">ליצור חנות חדשה</string>
+    <string name="login_site_picker_add_a_store">להוסיף חנות</string>
+    <string name="login_no_stores">החשבון שלך לא מחובר לחנויות של WooCommerce.</string>
     <string name="analytics_products_list_item_description">סכום מכירות נטו: ⁦%1$s⁩</string>
     <string name="analytics_products_list_header_subtitle">פריטים שנמכרו</string>
     <string name="analytics_products_list_header_title">מוצרים</string>
@@ -215,8 +237,8 @@ Language: he_IL
     <string name="variations_bulk_update_current_prices_mixed">המחירים הנוכחיים כוללים ערכים משתנים</string>
     <string name="variations_bulk_update_current_price">המחיר הנוכחי הוא %s</string>
     <string name="variations_bulk_update_price_info">המחיר יעודכן עבור %d סוגים</string>
-    <string name="variations_bulk_update_dialog_price_mixed">משולב</string>
-    <string name="variations_bulk_update_dialog_price_none">ללא</string>
+    <string name="variations_bulk_update_dialog_mixed">משולב</string>
+    <string name="variations_bulk_update_dialog_none">ללא</string>
     <string name="variations_bulk_update_dialog_sale_price_label">מחיר המבצע</string>
     <string name="variations_bulk_update_dialog_regular_price_label">מחיר רגיל</string>
     <string name="variations_bulk_update_dialog_price_section_title">מחיר</string>
@@ -2209,7 +2231,6 @@ Language: he_IL
     <string name="dashboard_stats_granularity_months">חודשים</string>
     <string name="dashboard_stats_granularity_weeks">שבועות</string>
     <string name="dashboard_stats_granularity_days">ימים</string>
-    <string name="login_no_stores">לא מצאנו חנויות של WooCommerce שמקושרות לחשבון זה.</string>
     <string name="login_with_a_different_account">יש להתחבר באמצעות חשבון שונה</string>
     <string name="login_nostores_content_description">אין חנויות WooCommerce</string>
     <string name="login_avatar_content_description">תמונת הפרופיל שלך</string>

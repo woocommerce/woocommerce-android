@@ -2,8 +2,7 @@
 <navigation xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/nav_graph_main"
-    app:startDestination="@id/sitePickerSiteDiscoveryFragment">
+    android:id="@+id/nav_graph_main">
 
     <include app:graph="@navigation/nav_graph_orders" />
     <include app:graph="@navigation/nav_graph_order_filters" />
@@ -13,7 +12,7 @@
     <include app:graph="@navigation/nav_graph_payment_flow" />
     <include app:graph="@navigation/nav_graph_jetpack_install" />
     <include app:graph="@navigation/nav_graph_coupons" />
-    <include app:graph="@navigation/nav_graph_store_creation" />
+    <include app:graph="@navigation/nav_graph_site_picker" />
 
     <fragment
         android:id="@+id/dashboard"
@@ -54,13 +53,6 @@
         <action
             android:id="@+id/action_orderListFragment_to_orderFilterListFragment"
             app:destination="@id/nav_graph_order_filters"
-            app:enterAnim="@anim/activity_fade_in"
-            app:exitAnim="@null"
-            app:popEnterAnim="@null"
-            app:popExitAnim="@anim/activity_fade_out" />
-        <action
-            android:id="@+id/action_orderListFragment_to_orderCreationBottomSheet"
-            app:destination="@id/orderCreationBottomSheetFragment"
             app:enterAnim="@anim/activity_fade_in"
             app:exitAnim="@null"
             app:popEnterAnim="@null"
@@ -337,7 +329,12 @@
         app:popExitAnim="@anim/activity_fade_out" />
     <action
         android:id="@+id/action_global_login_to_sitePickerFragment"
-        app:destination="@id/sitePickerFragment" />
+        app:destination="@id/nav_graph_site_picker" >
+        <argument
+            android:name="openedFromLogin"
+            android:defaultValue="true"
+            app:argType="boolean" />
+    </action>
     <dialog
         android:id="@+id/productTypesBottomSheetFragment"
         android:name="com.woocommerce.android.ui.products.ProductTypesBottomSheetFragment"
@@ -376,26 +373,6 @@
         app:exitAnim="@null"
         app:popEnterAnim="@null"
         app:popExitAnim="@anim/activity_fade_out" />
-    <dialog
-        android:id="@+id/orderCreationBottomSheetFragment"
-        android:name="com.woocommerce.android.ui.orders.list.OrderCreationBottomSheetFragment"
-        tools:layout="@layout/dialog_order_creation_bottom_sheet">
-        <action
-            android:id="@+id/action_orderCreationBottomSheetFragment_to_simplePaymentsMovedBottomSheetFragment"
-            app:destination="@id/simplePaymentsMovedBottomSheetFragment"
-            app:enterAnim="@anim/activity_fade_in"
-            app:exitAnim="@null"
-            app:popEnterAnim="@null"
-            app:popExitAnim="@anim/activity_fade_out" />
-    </dialog>
-    <dialog
-        android:id="@+id/simplePaymentsMovedBottomSheetFragment"
-        android:name="com.woocommerce.android.ui.orders.list.SimplePaymentsMovedBottomSheetFragment"
-        tools:layout="@layout/dialog_order_creation_bottom_sheet" />
-    <dialog
-        android:id="@+id/simplePaymentsMovedButtonSheetFragment"
-        android:name="com.woocommerce.android.ui.orders.list.SimplePaymentsMovedBottomSheetFragment"
-        tools:layout="@layout/dialog_simple_payments_moved_bottom_sheet" />
     <activity
         android:id="@+id/appSettingsActivity"
         android:name="com.woocommerce.android.ui.prefs.AppSettingsActivity"
@@ -404,35 +381,6 @@
         android:id="@+id/inboxFragment"
         android:name="com.woocommerce.android.ui.inbox.InboxFragment"
         android:label="InboxFragment" />
-    <fragment
-        android:id="@+id/sitePickerFragment"
-        android:name="com.woocommerce.android.ui.sitepicker.SitePickerFragment"
-        android:label="fragment_site_picker"
-        tools:layout="@layout/fragment_site_picker">
-        <argument
-            android:name="openedFromLogin"
-            android:defaultValue="true"
-            app:argType="boolean" />
-        <action
-            android:id="@+id/action_sitePickerFragment_to_sitePickerSiteDiscoveryFragment"
-            app:destination="@id/sitePickerSiteDiscoveryFragment" />
-        <action
-            android:id="@+id/action_sitePickerFragment_to_accountMismatchErrorFragment"
-            app:destination="@id/accountMismatchErrorFragment"
-            app:enterAnim="@anim/activity_fade_in"
-            app:exitAnim="@null"
-            app:popEnterAnim="@null"
-            app:popExitAnim="@anim/activity_fade_out" />
-        <action
-            android:id="@+id/action_sitePickerFragment_to_addStoreBottomSheetFragment"
-            app:destination="@id/addStoreBottomSheetFragment" />
-        <action
-            android:id="@+id/action_sitePickerFragment_to_webViewStoreCreationFragment"
-            app:destination="@id/webViewStoreCreationFragment" />
-        <action
-            android:id="@+id/action_sitePickerFragment_to_storeCreationNativeFlow"
-            app:destination="@id/nav_graph_store_creation" />
-    </fragment>
     <fragment
         android:id="@+id/simpleTextEditorFragment"
         android:name="com.woocommerce.android.ui.common.texteditor.SimpleTextEditorFragment"
@@ -455,52 +403,4 @@
     <action
         android:id="@+id/action_global_simpleTextEditorFragment"
         app:destination="@id/simpleTextEditorFragment" />
-    <fragment
-        android:id="@+id/sitePickerSiteDiscoveryFragment"
-        android:name="com.woocommerce.android.ui.sitepicker.sitediscovery.SitePickerSiteDiscoveryFragment"
-        android:label="SitePickerSiteDiscoveryFragment">
-        <action
-            android:id="@+id/action_sitePickerSiteDiscoveryFragment_to_accountMismatchErrorFragment"
-            app:destination="@id/accountMismatchErrorFragment" />
-    </fragment>
-    <fragment
-        android:id="@+id/accountMismatchErrorFragment"
-        android:name="com.woocommerce.android.ui.login.accountmismatch.AccountMismatchErrorFragment"
-        android:label="AccountMismatchErrorFragment">
-        <argument
-            android:name="siteUrl"
-            app:argType="string" />
-        <argument
-            android:name="primaryButton"
-            android:defaultValue="NONE"
-            app:argType="com.woocommerce.android.ui.login.accountmismatch.AccountMismatchErrorViewModel$AccountMismatchPrimaryButton" />
-        <argument
-            android:name="errorType"
-            app:argType="com.woocommerce.android.ui.login.accountmismatch.AccountMismatchErrorViewModel$AccountMismatchErrorType" />
-        <argument
-            android:name="allowBackNavigation"
-            android:defaultValue="true"
-            app:argType="boolean" />
-    </fragment>
-    <fragment
-        android:id="@+id/webViewStoreCreationFragment"
-        android:name="com.woocommerce.android.ui.login.storecreation.webview.WebViewStoreCreationFragment"
-        android:label="WebViewStoreCreationFragment">
-        <argument android:name="source" />
-    </fragment>
-    <dialog
-        android:id="@+id/addStoreBottomSheetFragment"
-        android:name="com.woocommerce.android.ui.sitepicker.AddStoreBottomSheetFragment"
-        android:label="AddSiteBottomSheetFragment">
-        <action
-            android:id="@+id/action_addSiteBottomSheetFragment_to_sitePickerSiteDiscoveryFragment"
-            app:destination="@id/sitePickerSiteDiscoveryFragment" />
-        <action
-            android:id="@+id/action_addStoreBottomSheetFragment_to_webViewStoreCreationFragment"
-            app:destination="@id/webViewStoreCreationFragment" />
-        <action
-            android:id="@+id/action_addStoreBottomSheetFragment_to_storeCreationNativeFlow"
-            app:destination="@id/nav_graph_store_creation" />
-        <argument android:name="source" />
-    </dialog>
 </navigation>

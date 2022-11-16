@@ -241,6 +241,7 @@ class AnalyticsTracker private constructor(private val context: Context) {
         const val VALUE_REVENUE_CARD_SELECTED = "revenue"
         const val VALUE_ORDERS_CARD_SELECTED = "orders"
         const val VALUE_PRODUCTS_CARD_SELECTED = "products"
+        const val VALUE_VISITORS_CARD_SELECTED = "visitors"
 
         const val JITM_ID = "jitm_id"
         const val JITM_FEATURE_CLASS = "feature_class"
@@ -418,9 +419,11 @@ class AnalyticsTracker private constructor(private val context: Context) {
         const val KEY_PATH = "path"
 
         // -- Store creation
-        const val VALUE_LOGIN = "login"
+        const val VALUE_LOGIN_EMAIL_ERROR = "login_email_error"
         const val VALUE_SWITCHING_STORE = "switching_store"
         const val VALUE_PROLOGUE = "prologue"
+        const val VALUE_LOGIN = "login"
+        const val VALUE_OTHER = "other"
 
         var sendUsageStats: Boolean = true
             set(value) {

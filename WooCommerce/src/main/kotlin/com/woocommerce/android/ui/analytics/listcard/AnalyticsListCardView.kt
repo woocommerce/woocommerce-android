@@ -35,10 +35,6 @@ class AnalyticsListCardView @JvmOverloads constructor(
         }
     }
 
-    fun setSeeReportClickListener(onClickListener: (() -> Unit)) {
-        binding.seeReportText.setOnClickListener { onClickListener() }
-    }
-
     private fun setSkeleton() {
         skeletonView.show(
             binding.analyticsCardListContainer,

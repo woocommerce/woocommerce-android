@@ -25,6 +25,15 @@
     <fragment
         android:id="@+id/myStoreSummaryFragment"
         android:name="com.woocommerce.android.ui.login.storecreation.mystoresummary.MyStoreSummaryFragment"
-        android:label="fragment_store_summary" />
+        android:label="fragment_store_summary">
+        <action
+            android:id="@+id/action_myStoreSummaryFragment_to_plansFragment"
+            app:destination="@id/plansFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/plansFragment"
+        android:name="com.woocommerce.android.ui.login.storecreation.plans.PlansFragment"
+        android:label="PlansFragment" />
 
 </navigation>

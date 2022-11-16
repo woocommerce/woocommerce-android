@@ -1,12 +1,34 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2022-11-03 10:54:04+0000
+Translation-Revision-Date: 2022-11-09 10:54:04+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: zh_CN
 -->
 <resources>
-    <string name="create_new_store">创建新的商店</string>
+    <string name="store_creation_confirm_and_leave">确认并离开</string>
+    <string name="store_creation_exit_dialog_message">您将丢失所有商店信息。</string>
+    <string name="store_creation_exit_dialog_title">您要离开吗？</string>
+    <string name="store_creation_in_progress">正在创建您的商店…</string>
+    <string name="store_creation_cannot_load_store">无法加载您的商店。\n请重试…</string>
+    <string name="store_creation_create_new_store_label">创建新的商店</string>
+    <string name="or_use_password_below_qr_code_scan_option">或使用密码登录</string>
+    <string name="or_scan_qr_code_to_log_in">扫描二维码登录</string>
+    <string name="simplified_login_prologue_title">WooCommerce 是一个依托 WordPress 打造的可定制开源电子商务平台。</string>
+    <string name="simulated_reader_toast">已禁用模拟读卡器</string>
+    <string name="simulated_reader_key">模拟读卡器密钥</string>
+    <string name="variations_bulk_update_stock_quantity_success">已更新库存量</string>
+    <string name="variations_bulk_update_current_stock_quantity_mixed">目前库存量为组合库存量</string>
+    <string name="variations_bulk_update_current_stock_quantity">当前库存量为 %d</string>
+    <string name="variations_bulk_update_stock_quantity_dialog_title">正在更新库存量</string>
+    <string name="variations_bulk_update_stock_quantity_info">系统将更新 %d 个变体的库存量</string>
+    <string name="variations_bulk_update_dialog_inventory_section_title">库存</string>
+    <string name="product_search_hint_active_filters">搜索筛选的产品</string>
+    <string name="orderlist_search_hint_active_filters">搜索筛选的订单</string>
+    <string name="site_picker_connect_existing_store">连接现有商店</string>
+    <string name="site_picker_create_new_store">创建新的商店</string>
+    <string name="login_site_picker_add_a_store">添加商店</string>
+    <string name="login_no_stores">您的账户未与任何 WooCommerce 商店连接。</string>
     <string name="analytics_products_list_item_description">净销售额：%1$s</string>
     <string name="analytics_products_list_header_subtitle">已售项目</string>
     <string name="analytics_products_list_header_title">产品</string>
@@ -215,8 +237,8 @@ Language: zh_CN
     <string name="variations_bulk_update_current_prices_mixed">当前价格为组合价格</string>
     <string name="variations_bulk_update_current_price">当前价格为 %s</string>
     <string name="variations_bulk_update_price_info">%d 个变体的价格将更新</string>
-    <string name="variations_bulk_update_dialog_price_mixed">组合</string>
-    <string name="variations_bulk_update_dialog_price_none">无</string>
+    <string name="variations_bulk_update_dialog_mixed">组合</string>
+    <string name="variations_bulk_update_dialog_none">无</string>
     <string name="variations_bulk_update_dialog_sale_price_label">促销价格</string>
     <string name="variations_bulk_update_dialog_regular_price_label">正常价格</string>
     <string name="variations_bulk_update_dialog_price_section_title">价格</string>
@@ -2209,7 +2231,6 @@ Language: zh_CN
     <string name="dashboard_stats_granularity_months">月</string>
     <string name="dashboard_stats_granularity_weeks">周</string>
     <string name="dashboard_stats_granularity_days">日</string>
-    <string name="login_no_stores">我们找不到与此账户连接的 WooCommerce 商店。</string>
     <string name="login_with_a_different_account">使用其他帐户登录</string>
     <string name="login_nostores_content_description">无 WooCommerce 商店</string>
     <string name="login_avatar_content_description">您的个人资料照片</string>

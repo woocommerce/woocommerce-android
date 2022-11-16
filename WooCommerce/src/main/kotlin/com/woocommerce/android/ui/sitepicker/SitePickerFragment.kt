@@ -164,8 +164,8 @@ class SitePickerFragment : BaseFragment(R.layout.fragment_site_picker), LoginEma
                 is ShowWooUpgradeDialogEvent -> showWooUpgradeDialog()
                 is NavigateToHelpFragmentEvent -> navigateToHelpScreen(event.origin)
                 is NavigateToNewToWooEvent -> navigateToNewToWooScreen()
-                is NavigateToAddStoreEvent -> navigateToAddStoreScreen(event.source)
-                is NavigateToStoreCreationEvent -> navigateToStoreCreation(event.source)
+                is NavigateToAddStoreEvent -> navigateToAddStoreScreen()
+                is NavigateToStoreCreationEvent -> navigateToStoreCreation()
                 is NavigateToEmailHelpDialogEvent -> navigateToNeedHelpFindingEmailScreen()
                 is NavigateToWPComWebView -> navigateToWPComWebView(event)
                 is NavigateToAccountMismatchScreen -> navigateToAccountMismatchScreen(event)
@@ -264,19 +264,19 @@ class SitePickerFragment : BaseFragment(R.layout.fragment_site_picker), LoginEma
         ChromeCustomTabUtils.launchUrl(requireContext(), AppUrls.NEW_TO_WOO_DOC)
     }
 
-    private fun navigateToAddStoreScreen(source: String) {
+    private fun navigateToAddStoreScreen() {
         findNavController()
-            .navigateSafely(SitePickerFragmentDirections.actionSitePickerFragmentToAddStoreBottomSheetFragment(source))
+            .navigateSafely(SitePickerFragmentDirections.actionSitePickerFragmentToAddStoreBottomSheetFragment())
     }
 
-    private fun navigateToStoreCreation(source: String) {
+    private fun navigateToStoreCreation() {
         when {
             FeatureFlag.NATIVE_STORE_CREATION_FLOW.isEnabled() -> findNavController().navigateSafely(
                 SitePickerFragmentDirections.actionSitePickerFragmentToStoreCreationNativeFlow()
             )
             else -> findNavController()
                 .navigateSafely(
-                    SitePickerFragmentDirections.actionSitePickerFragmentToWebViewStoreCreationFragment(source)
+                    SitePickerFragmentDirections.actionSitePickerFragmentToWebViewStoreCreationFragment()
                 )
         }
     }
