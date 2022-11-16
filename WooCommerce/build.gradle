@@ -321,7 +321,7 @@ dependencies {
     androidTestImplementation "org.apache.httpcomponents:httpclient-android:$httpClientAndroidVersion"
 
     // Resolve conflicts between main and test APK
-    androidTestImplementation "androidx.annotation:annotation:1.3.0"
+    androidTestImplementation "androidx.annotation:annotation:1.5.0"
 
     implementation ("com.zendesk:support:5.0.8") {
         exclude group: 'com.android.support', module: 'support-annotations'
