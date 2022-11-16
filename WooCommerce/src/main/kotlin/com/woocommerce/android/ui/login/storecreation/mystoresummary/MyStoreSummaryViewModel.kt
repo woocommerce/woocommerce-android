@@ -12,7 +12,7 @@ import javax.inject.Inject
 @HiltViewModel
 class MyStoreSummaryViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
-    private val newStore: NewStore
+    newStore: NewStore
 ) : ScopedViewModel(savedStateHandle) {
 
     val viewState = newStore.store
@@ -31,7 +31,7 @@ class MyStoreSummaryViewModel @Inject constructor(
     }
 
     fun onContinueClicked() {
-        // TODO
+        triggerEvent(NavigateToNextStep)
     }
 
     data class MyStoreSummaryState(
@@ -40,4 +40,6 @@ class MyStoreSummaryViewModel @Inject constructor(
         val category: String? = null,
         val country: String,
     )
+
+    object NavigateToNextStep : MultiLiveEvent.Event()
 }

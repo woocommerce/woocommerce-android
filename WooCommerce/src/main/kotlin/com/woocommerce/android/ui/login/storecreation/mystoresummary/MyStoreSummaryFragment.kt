@@ -8,6 +8,7 @@ import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
+import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.ui.main.AppBarStatus
@@ -41,7 +42,15 @@ class MyStoreSummaryFragment : BaseFragment() {
         viewModel.event.observe(viewLifecycleOwner) { event ->
             when (event) {
                 is MultiLiveEvent.Event.Exit -> findNavController().popBackStack()
+                is MyStoreSummaryViewModel.NavigateToNextStep -> navigateToPlansFragment()
             }
         }
+    }
+
+    private fun navigateToPlansFragment() {
+        findNavController().navigateSafely(
+            MyStoreSummaryFragmentDirections
+                .actionMyStoreSummaryFragmentToPlansFragment()
+        )
     }
 }
