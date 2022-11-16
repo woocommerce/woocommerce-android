@@ -33,11 +33,14 @@ class InitializationRule : TestRule {
                     application,
                     AppEntryPoint::class.java
                 )
-                instrumentation.runOnMainSync {
-                    entryPoint.initializer().init(application)
+                try {
+                    instrumentation.runOnMainSync {
+                        entryPoint.initializer().init(application)
+                    }
+                    base?.evaluate()
+                } finally {
+                    entryPoint.appCoroutineScope().cancel()
                 }
-                base?.evaluate()
-                entryPoint.appCoroutineScope().cancel()
             }
         }
     }
