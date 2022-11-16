@@ -9,6 +9,8 @@ import com.woocommerce.android.cardreader.connection.CardReaderDiscoveryEvents.R
 import com.woocommerce.android.cardreader.connection.CardReaderStatus
 import com.woocommerce.android.cardreader.connection.CardReaderTypesToDiscover
 import com.woocommerce.android.cardreader.connection.SpecificReader
+import com.woocommerce.android.cardreader.connection.event.BatteryStatus
+import com.woocommerce.android.cardreader.connection.event.CardReaderBatteryStatus
 import com.woocommerce.android.cardreader.connection.event.SoftwareUpdateStatus
 import com.woocommerce.android.initSavedStateHandle
 import com.woocommerce.android.model.UiString.UiStringRes
@@ -66,9 +68,11 @@ import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Test
 import org.mockito.ArgumentMatchers.anyBoolean
+import org.mockito.ArgumentMatchers.anyFloat
 import org.mockito.kotlin.any
 import org.mockito.kotlin.argThat
 import org.mockito.kotlin.argumentCaptor
+import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.eq
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.never
@@ -483,6 +487,18 @@ class CardReaderConnectViewModelTest : BaseUnitTest() {
 
             assertThat(viewModel.viewStateData.value).isInstanceOf(ConnectingState::class.java)
         }
+
+    @Test
+    fun `given reader is connected, then track its battery level`() = testBlocking {
+        val readerStatusStateFlow = MutableStateFlow<CardReaderStatus>(CardReaderStatus.Connected(reader))
+        whenever(cardReaderManager.readerStatus).thenReturn(readerStatusStateFlow)
+        val batteryLevel = .5F
+        whenever(reader.currentBatteryLevel) doReturn batteryLevel
+
+        init(scanState = READER_FOUND)
+
+        verify(cardReaderTrackingInfoKeeper).setCardReaderBatteryLevel(batteryLevel)
+    }
 
     @Test
     fun `given last connected reader is matching, when reader found, then auto reconnection event tracked`() =
