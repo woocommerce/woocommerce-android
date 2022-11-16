@@ -61,7 +61,6 @@ import com.woocommerce.android.ui.main.BottomNavigationPosition.MY_STORE
 import com.woocommerce.android.ui.main.BottomNavigationPosition.ORDERS
 import com.woocommerce.android.ui.main.BottomNavigationPosition.PRODUCTS
 import com.woocommerce.android.ui.main.MainActivityViewModel.MoreMenuBadgeState.Hidden
-import com.woocommerce.android.ui.main.MainActivityViewModel.MoreMenuBadgeState.NewFeature
 import com.woocommerce.android.ui.main.MainActivityViewModel.MoreMenuBadgeState.UnseenReviews
 import com.woocommerce.android.ui.main.MainActivityViewModel.RestartActivityForAppLink
 import com.woocommerce.android.ui.main.MainActivityViewModel.RestartActivityForNotification
@@ -738,7 +737,6 @@ class MainActivity :
         viewModel.moreMenuBadgeState.observe(this) { moreMenuBadgeState ->
             when (moreMenuBadgeState) {
                 is UnseenReviews -> binding.bottomNav.showMoreMenuUnseenReviewsBadge(moreMenuBadgeState.count)
-                NewFeature -> binding.bottomNav.showMoreMenuNewFeatureBadge()
                 Hidden -> binding.bottomNav.hideMoreMenuBadge()
             }.exhaustive
         }
@@ -842,11 +840,6 @@ class MainActivity :
             selectedProductCategoryName = productCategoryName
         )
         navController.navigateSafely(action)
-    }
-
-    override fun showMoreMenu() {
-        binding.bottomNav.currentPosition = MORE
-        binding.bottomNav.active(MORE.position)
     }
 
     override fun showOrderDetail(

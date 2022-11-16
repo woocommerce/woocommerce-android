@@ -33,7 +33,6 @@ class MoreMenuViewModel @Inject constructor(
     accountStore: AccountStore,
     private val selectedSite: SelectedSite,
     private val moreMenuRepository: MoreMenuRepository,
-    private val moreMenuNewFeatureHandler: MoreMenuNewFeatureHandler,
     private val appPrefsWrapper: AppPrefsWrapper,
     unseenReviewsCountHandler: UnseenReviewsCountHandler
 ) : ScopedViewModel(savedState) {
@@ -42,13 +41,11 @@ class MoreMenuViewModel @Inject constructor(
             unseenReviewsCountHandler.observeUnseenCount(),
             selectedSite.observe().filterNotNull(),
             moreMenuRepository.observeCouponBetaSwitch(),
-            moreMenuNewFeatureHandler.moreMenuPaymentsFeatureWasClicked,
-        ) { count, selectedSite, isCouponsEnabled, paymentsFeatureWasClicked ->
+        ) { count, selectedSite, isCouponsEnabled ->
             MoreMenuViewState(
                 moreMenuItems = generateMenuButtons(
                     unseenReviewsCount = count,
                     isCouponsEnabled = isCouponsEnabled,
-                    paymentsFeatureWasClicked = paymentsFeatureWasClicked,
                 ),
                 siteName = selectedSite.getSelectedSiteName(),
                 siteUrl = selectedSite.getSelectedSiteAbsoluteUrl(),
@@ -56,19 +53,13 @@ class MoreMenuViewModel @Inject constructor(
             )
         }.asLiveData()
 
-    fun onViewResumed() {
-        moreMenuNewFeatureHandler.markNewFeatureAsSeen()
-    }
-
     private suspend fun generateMenuButtons(
         unseenReviewsCount: Int,
         isCouponsEnabled: Boolean,
-        paymentsFeatureWasClicked: Boolean,
     ) = listOf(
         MenuUiButton(
             text = R.string.more_menu_button_payments,
             icon = R.drawable.ic_more_menu_payments,
-            badgeState = buildPaymentsBadgeState(paymentsFeatureWasClicked),
             onClick = ::onPaymentsButtonClick,
         ),
         MenuUiButton(
@@ -100,15 +91,6 @@ class MoreMenuViewModel @Inject constructor(
             onClick = ::onInboxButtonClick
         )
     )
-
-    private fun buildPaymentsBadgeState(paymentsFeatureWasClicked: Boolean) =
-        if (!paymentsFeatureWasClicked) BadgeState(
-            badgeSize = R.dimen.major_110,
-            backgroundColor = R.color.color_secondary,
-            textColor = R.color.color_on_surface_inverted,
-            textState = TextState("", R.dimen.text_minor_80),
-            animateAppearance = true,
-        ) else null
 
     private fun buildUnseenReviewsBadgeState(unseenReviewsCount: Int) =
         if (unseenReviewsCount > 0) BadgeState(
@@ -147,7 +129,6 @@ class MoreMenuViewModel @Inject constructor(
             VALUE_MORE_MENU_PAYMENTS,
             mapOf(VALUE_MORE_MENU_PAYMENTS_BADGE_VISIBLE to isPaymentBadgeVisible().toString())
         )
-        moreMenuNewFeatureHandler.markPaymentsIconAsClicked()
         triggerEvent(MoreMenuEvent.ViewPayments)
     }
 

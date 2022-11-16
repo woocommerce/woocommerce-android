@@ -366,6 +366,9 @@ dependencies {
     implementation "com.google.android.material:compose-theme-adapter:$composeThemeAdapterVersion"
     androidTestImplementation "androidx.compose.ui:ui-test-junit4:$composeVersion"
     debugImplementation "androidx.compose.ui:ui-test-manifest:$composeVersion"
+    implementation "androidx.constraintlayout:constraintlayout-compose:1.0.1"
+    implementation "com.google.accompanist:accompanist-systemuicontroller:$composeAccompanistVersion"
+
 
     implementation "io.coil-kt:coil-compose:$coilVersion"
 }
