@@ -15,8 +15,8 @@ import com.woocommerce.android.viewmodel.MultiLiveEvent
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
-class NamePickerFragment : BaseFragment() {
-    private val viewModel: NamePickerViewModel by viewModels()
+class StoreNamePickerFragment : BaseFragment() {
+    private val viewModel: StoreNamePickerViewModel by viewModels()
 
     override val activityAppBarStatus: AppBarStatus
         get() = AppBarStatus.Hidden
@@ -26,7 +26,7 @@ class NamePickerFragment : BaseFragment() {
             setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
             setContent {
                 WooThemeWithBackground {
-                    NamePickerScreen(viewModel)
+                    StoreNamePickerScreen(viewModel)
                 }
             }
         }

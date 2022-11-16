@@ -13,7 +13,7 @@ import androidx.compose.ui.unit.dp
 import com.woocommerce.android.R
 
 @Composable
-fun NamePickerScreen(viewModel: NamePickerViewModel) {
+fun StoreNamePickerScreen(viewModel: StoreNamePickerViewModel) {
     viewModel.storeName.observeAsState().value.let { storeName ->
         Scaffold(topBar = {
             Toolbar(
