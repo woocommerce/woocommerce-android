@@ -1,4 +1,4 @@
-package com.woocommerce.android.ui.login.storecreation.domainpicker
+package com.woocommerce.android.ui.login.storecreation.plans
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -8,17 +8,15 @@ import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
-import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
-import com.woocommerce.android.ui.login.storecreation.domainpicker.DomainPickerViewModel.NavigateToNextStep
 import com.woocommerce.android.ui.main.AppBarStatus
-import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
+import com.woocommerce.android.viewmodel.MultiLiveEvent
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
-class DomainPickerFragment : BaseFragment() {
-    private val viewModel: DomainPickerViewModel by viewModels()
+class PlansFragment : BaseFragment() {
+    private val viewModel: PlansViewModel by viewModels()
 
     override val activityAppBarStatus: AppBarStatus
         get() = AppBarStatus.Hidden
@@ -28,7 +26,7 @@ class DomainPickerFragment : BaseFragment() {
             setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
             setContent {
                 WooThemeWithBackground {
-                    DomainPickerScreen(viewModel = viewModel)
+                    PlanScreen(viewModel = viewModel)
                 }
             }
         }
@@ -42,10 +40,7 @@ class DomainPickerFragment : BaseFragment() {
     private fun setupObservers() {
         viewModel.event.observe(viewLifecycleOwner) { event ->
             when (event) {
-                is Exit -> findNavController().popBackStack()
-                is NavigateToNextStep -> findNavController().navigateSafely(
-                    DomainPickerFragmentDirections.actionDomainPickerFragmentToPlansFragment()
-                )
+                is MultiLiveEvent.Event.Exit -> findNavController().popBackStack()
             }
         }
     }
