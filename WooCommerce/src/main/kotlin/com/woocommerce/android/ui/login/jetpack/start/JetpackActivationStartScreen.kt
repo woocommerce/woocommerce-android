@@ -13,6 +13,7 @@ import androidx.compose.foundation.text.ClickableText
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
 import androidx.compose.material.MaterialTheme
+import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
 import androidx.compose.material.TopAppBar
 import androidx.compose.material.icons.Icons.Filled
@@ -55,68 +56,72 @@ fun JetpackActivationStartScreen(
     onHelpButtonClick: () -> Unit = {},
     onBackButtonClick: () -> Unit = {}
 ) {
-    Column(
-        horizontalAlignment = Alignment.CenterHorizontally,
-        modifier = Modifier
-            .fillMaxSize()
-            .background(color = MaterialTheme.colors.surface)
-    ) {
-        Toolbar(onHelpButtonClick = onHelpButtonClick, onBackButtonClick = onBackButtonClick)
-        Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.major_100)))
+    Scaffold(
+        topBar = {
+            Toolbar(onHelpButtonClick = onHelpButtonClick, onBackButtonClick = onBackButtonClick)
+        }
+    ) { paddingValues ->
         Column(
-            verticalArrangement = Arrangement.Center,
+            verticalArrangement = Arrangement.spacedBy(dimensionResource(id = R.dimen.major_100)),
             horizontalAlignment = Alignment.CenterHorizontally,
             modifier = Modifier
-                .weight(1f)
-                .padding(horizontal = dimensionResource(id = R.dimen.major_100))
+                .fillMaxSize()
+                .background(color = MaterialTheme.colors.surface)
+                .padding(paddingValues)
+                .padding(vertical = dimensionResource(id = R.dimen.major_100))
         ) {
-            Image(
-                painter = painterResource(
-                    id = if (viewState.isJetpackInstalled) R.drawable.img_connect_jetpack
-                    else R.drawable.img_install_jetpack
-                ),
-                contentDescription = null,
+            Column(
+                verticalArrangement = Arrangement.Center,
+                horizontalAlignment = Alignment.CenterHorizontally,
                 modifier = Modifier
-                    .padding(dimensionResource(id = R.dimen.major_100))
-                    .weight(1f, false)
-            )
-            Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.major_100)))
-            Text(
-                text = annotatedStringRes(
-                    stringResId = if (viewState.isJetpackInstalled) R.string.login_jetpack_connection_explanation
-                    else R.string.login_jetpack_installation_explanation,
-                    viewState.url
-                ),
-                style = MaterialTheme.typography.body1,
-                textAlign = TextAlign.Center
-            )
-            Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.major_100)))
-            Text(
-                text = stringResource(id = R.string.login_jetpack_installation_credentials_hint),
-                style = MaterialTheme.typography.caption,
-                color = colorResource(id = R.color.color_on_surface_medium),
-                textAlign = TextAlign.Center
-            )
-        }
-        Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.major_100)))
-        WCColoredButton(
-            onClick = { /*TODO*/ },
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = dimensionResource(id = R.dimen.major_100))
-        ) {
-            Text(
-                text = stringResource(
-                    id = if (viewState.isJetpackInstalled) R.string.login_jetpack_connect
-                    else R.string.login_jetpack_install
+                    .weight(1f)
+                    .padding(horizontal = dimensionResource(id = R.dimen.major_100))
+            ) {
+                Image(
+                    painter = painterResource(
+                        id = if (viewState.isJetpackInstalled) R.drawable.img_connect_jetpack
+                        else R.drawable.img_install_jetpack
+                    ),
+                    contentDescription = null,
+                    modifier = Modifier
+                        .padding(dimensionResource(id = R.dimen.major_100))
+                        .weight(1f, false)
                 )
+                Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.major_100)))
+                Text(
+                    text = annotatedStringRes(
+                        stringResId = if (viewState.isJetpackInstalled) R.string.login_jetpack_connection_explanation
+                        else R.string.login_jetpack_installation_explanation,
+                        viewState.url
+                    ),
+                    style = MaterialTheme.typography.body1,
+                    textAlign = TextAlign.Center
+                )
+                Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.major_100)))
+                Text(
+                    text = stringResource(id = R.string.login_jetpack_installation_credentials_hint),
+                    style = MaterialTheme.typography.caption,
+                    color = colorResource(id = R.color.color_on_surface_medium),
+                    textAlign = TextAlign.Center
+                )
+            }
+            WCColoredButton(
+                onClick = { /*TODO*/ },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = dimensionResource(id = R.dimen.major_100))
+            ) {
+                Text(
+                    text = stringResource(
+                        id = if (viewState.isJetpackInstalled) R.string.login_jetpack_connect
+                        else R.string.login_jetpack_install
+                    )
+                )
+            }
+            JetpackConsent(
+                modifier = Modifier.padding(horizontal = dimensionResource(id = R.dimen.major_100))
             )
         }
-        Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.major_100)))
-        JetpackConsent(
-            modifier = Modifier.padding(horizontal = dimensionResource(id = R.dimen.major_100))
-        )
-        Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.major_100)))
     }
 }
 
