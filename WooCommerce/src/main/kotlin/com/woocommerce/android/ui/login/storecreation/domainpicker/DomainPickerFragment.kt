@@ -44,7 +44,7 @@ class DomainPickerFragment : BaseFragment() {
             when (event) {
                 is Exit -> findNavController().popBackStack()
                 is NavigateToNextStep -> findNavController().navigateSafely(
-                    DomainPickerFragmentDirections.actionDomainPickerFragmentToPlansFragment()
+                    DomainPickerFragmentDirections.actionDomainPickerFragmentToMyStoreSummaryFragment()
                 )
             }
         }
