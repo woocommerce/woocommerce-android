@@ -4,7 +4,6 @@ import android.content.res.Configuration
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -37,7 +36,7 @@ import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 
 @Composable
 fun StoreNamePickerScreen(viewModel: StoreNamePickerViewModel) {
-    viewModel.storeName.observeAsState().value.let { storeName ->
+    viewModel.storeName.observeAsState().value?.let { storeName ->
         Scaffold(topBar = {
             Toolbar(
                 onCancelPressed = viewModel::onCancelPressed
@@ -46,7 +45,11 @@ fun StoreNamePickerScreen(viewModel: StoreNamePickerViewModel) {
             NamePickerForm(
                 storeName = storeName,
                 onStoreNameChanged = viewModel::onStoreNameChanged,
-                onContinueClicked = viewModel::onContinueClicked
+                onContinueClicked = viewModel::onContinueClicked,
+                modifier = Modifier
+                    .background(MaterialTheme.colors.surface)
+                    .fillMaxSize()
+                    .padding(dimensionResource(id = R.dimen.major_125))
             )
         }
     }
@@ -79,17 +82,12 @@ private fun NamePickerForm(
 ) {
     val focusRequester = remember { FocusRequester() }
 
-    Column(
-        modifier = modifier
-            .background(MaterialTheme.colors.surface)
-            .fillMaxSize()
-            .padding(dimensionResource(id = R.dimen.major_125)),
-        verticalArrangement = Arrangement.spacedBy(dimensionResource(id = R.dimen.major_100)),
-    ) {
-        Box(
+    Column(modifier = modifier) {
+        Column(
             modifier = Modifier
                 .weight(1f)
-                .fillMaxWidth()
+                .fillMaxWidth(),
+            verticalArrangement = Arrangement.spacedBy(dimensionResource(id = R.dimen.major_100)),
         ) {
             Text(
                 text = stringResource(id = R.string.store_creation_store_name_caption).uppercase(),
@@ -98,15 +96,18 @@ private fun NamePickerForm(
             )
             Text(
                 text = stringResource(id = R.string.store_creation_store_name_title),
-                style = MaterialTheme.typography.h4,
+                style = MaterialTheme.typography.h5,
                 fontWeight = FontWeight.Bold
             )
             Text(
                 text = stringResource(id = R.string.store_creation_store_name_subtitle),
                 style = MaterialTheme.typography.body1,
+                color = colorResource(id = R.color.color_on_surface_medium)
             )
             WCOutlinedTextField(
-                modifier = Modifier.focusRequester(focusRequester),
+                modifier = Modifier
+                    .focusRequester(focusRequester)
+                    .padding(top = dimensionResource(id = R.dimen.major_100)),
                 value = storeName,
                 onValueChange = onStoreNameChanged,
                 label = stringResource(id = R.string.store_creation_store_name_hint),
@@ -117,6 +118,7 @@ private fun NamePickerForm(
         WCColoredButton(
             modifier = Modifier.fillMaxWidth(),
             onClick = onContinueClicked,
+            enabled = storeName.isNotBlank()
         ) {
             Text(text = stringResource(id = R.string.continue_button))
         }

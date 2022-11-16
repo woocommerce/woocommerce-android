@@ -2726,5 +2726,5 @@
     <string name="store_creation_store_name_caption">About your store</string>
     <string name="store_creation_store_name_title">What’s your store name?</string>
     <string name="store_creation_store_name_subtitle">Don’t worry you can always change it later. </string>
-    <string name="store_creation_store_name_hint">Type a name for your store</string>
+    <string name="store_creation_store_name_hint">Store name</string>
 </resources>
