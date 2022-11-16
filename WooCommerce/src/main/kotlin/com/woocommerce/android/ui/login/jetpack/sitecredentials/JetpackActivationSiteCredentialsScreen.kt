@@ -34,6 +34,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.compose.annotatedStringRes
+import com.woocommerce.android.ui.compose.component.ProgressDialog
 import com.woocommerce.android.ui.compose.component.WCColoredButton
 import com.woocommerce.android.ui.compose.component.WCOutlinedTextField
 import com.woocommerce.android.ui.compose.component.WCPasswordField
@@ -117,7 +118,7 @@ fun JetpackActivationSiteCredentialsScreen(
         }
 
         WCColoredButton(
-            onClick = { /*TODO*/ },
+            onClick = onContinueClick,
             enabled = viewState.isValid,
             modifier = Modifier
                 .fillMaxWidth()
@@ -131,6 +132,10 @@ fun JetpackActivationSiteCredentialsScreen(
             )
         }
         Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.major_100)))
+    }
+
+    if (viewState.isLoading) {
+        ProgressDialog(title = "", subtitle = stringResource(id = R.string.logging_in))
     }
 }
 
