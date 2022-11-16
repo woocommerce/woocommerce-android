@@ -165,7 +165,7 @@ class ShippingLabelCreateCustomPackageFragment :
                 viewModel.onCustomFormDoneMenuClicked()
                 true
             }
-            else -> super.onOptionsItemSelected(item)
+            else -> false
         }
     }
 }
