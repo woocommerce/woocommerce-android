@@ -118,8 +118,7 @@ class SitePickerSiteDiscoveryFragment : BaseFragment() {
             SitePickerSiteDiscoveryFragmentDirections
                 .actionSitePickerSiteDiscoveryFragmentToJetpackActivation(
                     siteUrl = event.siteAddress,
-                    isJetpackInstalled = event.isJetpackInstalled,
-                    isJetpackConnected = event.isJetpackConnected
+                    isJetpackInstalled = event.isJetpackInstalled
                 )
         )
     }

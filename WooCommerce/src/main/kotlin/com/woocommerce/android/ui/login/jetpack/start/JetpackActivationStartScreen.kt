@@ -181,8 +181,7 @@ private fun JetpackActivationStartPreview() {
         JetpackActivationStartScreen(
             viewState = JetpackActivationState(
                 url = "reallyniceshirts.com",
-                isJetpackInstalled = false,
-                isJetpackConnected = false
+                isJetpackInstalled = false
             )
         )
     }

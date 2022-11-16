@@ -196,8 +196,7 @@ class SitePickerSiteDiscoveryViewModel @Inject constructor(
                             triggerEvent(
                                 StartNativeJetpackActivation(
                                     siteAddress = siteAddress,
-                                    isJetpackInstalled = false,
-                                    isJetpackConnected = false
+                                    isJetpackInstalled = false
                                 )
                             )
                         } else {
@@ -212,8 +211,7 @@ class SitePickerSiteDiscoveryViewModel @Inject constructor(
                             triggerEvent(
                                 StartNativeJetpackActivation(
                                     siteAddress = siteAddress,
-                                    isJetpackInstalled = true,
-                                    isJetpackConnected = it.isJetpackConnected
+                                    isJetpackInstalled = true
                                 )
                             )
                         } else {
@@ -305,8 +303,7 @@ class SitePickerSiteDiscoveryViewModel @Inject constructor(
     data class StartWebBasedJetpackInstallation(val siteAddress: String) : MultiLiveEvent.Event()
     data class StartNativeJetpackActivation(
         val siteAddress: String,
-        val isJetpackInstalled: Boolean,
-        val isJetpackConnected: Boolean
+        val isJetpackInstalled: Boolean
     ) : MultiLiveEvent.Event()
 
     data class ShowJetpackConnectionError(val siteAddress: String) : MultiLiveEvent.Event()

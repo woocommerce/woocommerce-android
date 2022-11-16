@@ -19,8 +19,7 @@ class JetpackActivationStartViewModel @Inject constructor(
     val viewState: LiveData<JetpackActivationState> = MutableLiveData(
         JetpackActivationState(
             url = navArgs.siteUrl,
-            isJetpackInstalled = navArgs.isJetpackInstalled,
-            isJetpackConnected = navArgs.isJetpackConnected
+            isJetpackInstalled = navArgs.isJetpackInstalled
         )
     )
 
@@ -35,8 +34,6 @@ class JetpackActivationStartViewModel @Inject constructor(
     data class JetpackActivationState(
         val url: String,
         val isJetpackInstalled: Boolean,
-        // This would be true if the site is connected to a different account
-        val isJetpackConnected: Boolean
     )
 
     object NavigateToHelpScreen : MultiLiveEvent.Event()
