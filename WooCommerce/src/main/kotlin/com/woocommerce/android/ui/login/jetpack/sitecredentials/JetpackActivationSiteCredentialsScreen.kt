@@ -43,7 +43,12 @@ import com.woocommerce.android.ui.login.jetpack.sitecredentials.JetpackActivatio
 @Composable
 fun JetpackActivationSiteCredentialsScreen(viewModel: JetpackActivationSiteCredentialsViewModel) {
     viewModel.viewState.observeAsState().value?.let {
-        JetpackActivationSiteCredentialsScreen(it)
+        JetpackActivationSiteCredentialsScreen(
+            viewState = it,
+            onUsernameChanged = viewModel::onUsernameChanged,
+            onPasswordChanged = viewModel::onPasswordChanged,
+            onContinueClick = viewModel::onContinueClick
+        )
     }
 }
 
@@ -52,7 +57,7 @@ fun JetpackActivationSiteCredentialsScreen(
     viewState: JetpackActivationSiteCredentialsViewState,
     onUsernameChanged: (String) -> Unit = {},
     onPasswordChanged: (String) -> Unit = {},
-    onConnectClick: () -> Unit = {}
+    onContinueClick: () -> Unit = {}
 ) {
     Column(
         modifier = Modifier
@@ -92,7 +97,7 @@ fun JetpackActivationSiteCredentialsScreen(
                 helperText = viewState.errorMessage?.let { stringResource(id = it) },
                 keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
                 keyboardActions = KeyboardActions(
-                    onDone = { onConnectClick() }
+                    onDone = { onContinueClick() }
                 )
             )
             Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.major_100)))
@@ -113,6 +118,7 @@ fun JetpackActivationSiteCredentialsScreen(
 
         WCColoredButton(
             onClick = { /*TODO*/ },
+            enabled = viewState.isValid,
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(horizontal = dimensionResource(id = R.dimen.major_100))
