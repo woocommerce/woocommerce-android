@@ -2719,4 +2719,9 @@
     <string name="store_creation_ecommerce_plan_feature_payments">Multiple payment options</string>
     <string name="store_creation_ecommerce_plan_feature_shipping_labels">Shipping labels</string>
     <string name="store_creation_ecommerce_plan_feature_sales">Sales channels</string>
+
+    <string name="store_creation_store_name_caption">About your store</string>
+    <string name="store_creation_store_name_title">What’s your store name?</string>
+    <string name="store_creation_store_name_subtitle">Don’t worry you can always change it later. </string>
+    <string name="store_creation_store_name_hint">Type a name for your store</string>
 </resources>
