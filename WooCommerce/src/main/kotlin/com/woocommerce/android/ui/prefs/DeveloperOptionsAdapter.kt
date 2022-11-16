@@ -37,9 +37,7 @@ class DeveloperOptionsAdapter : ListAdapter<ListItem, DeveloperOptionsViewHolder
             VIEW_TYPE_SPINNER -> {
                 DeveloperOptionsViewHolder.SpinnerViewHolder(parent)
             }
-            else -> {
-                throw error("Unknown section")
-            }
+            else -> error("Unknown section")
         }
     }
 

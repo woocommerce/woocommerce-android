@@ -11,8 +11,10 @@ import androidx.activity.result.ActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AlertDialog
 import androidx.core.text.HtmlCompat
+import androidx.core.view.MenuProvider
 import androidx.core.view.isVisible
 import androidx.hilt.navigation.fragment.hiltNavGraphViewModels
+import androidx.lifecycle.Lifecycle
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
@@ -55,7 +57,7 @@ import javax.inject.Inject
 
 @AndroidEntryPoint
 class ProductImagesFragment :
-    BaseProductEditorFragment(R.layout.fragment_product_images), OnGalleryImageInteractionListener {
+    BaseProductEditorFragment(R.layout.fragment_product_images), OnGalleryImageInteractionListener, MenuProvider {
     private val navArgs: ProductImagesFragmentArgs by navArgs()
     private val viewModel: ProductImagesViewModel by hiltNavGraphViewModels(R.id.nav_graph_image_gallery)
 
@@ -77,7 +79,7 @@ class ProductImagesFragment :
 
         _binding = FragmentProductImagesBinding.bind(view)
 
-        setHasOptionsMenu(true)
+        requireActivity().addMenuProvider(this, viewLifecycleOwner, Lifecycle.State.RESUMED)
 
         setupObservers(viewModel)
         setupViews()
@@ -94,21 +96,20 @@ class ProductImagesFragment :
         imageSourceDialog?.dismiss()
     }
 
-    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+    override fun onCreateMenu(menu: Menu, inflater: MenuInflater) {
         when (viewModel.viewStateData.liveData.value?.productImagesState) {
             is ProductImagesState.Dragging -> {
                 inflater.inflate(R.menu.menu_dragging, menu)
                 setHomeIcon(R.drawable.ic_gridicons_cross_24dp)
             }
             ProductImagesState.Browsing -> {
-                super.onCreateOptionsMenu(menu, inflater)
                 setHomeIcon(R.drawable.ic_back_24dp)
             }
             null -> Unit // Do nothing
         }
     }
 
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+    override fun onMenuItemSelected(item: MenuItem): Boolean {
         return when (viewModel.viewStateData.liveData.value?.productImagesState) {
             is ProductImagesState.Dragging -> {
                 when (item.itemId) {
@@ -119,9 +120,7 @@ class ProductImagesFragment :
                     else -> super.onOptionsItemSelected(item)
                 }
             }
-            else -> {
-                super.onOptionsItemSelected(item)
-            }
+            else -> false
         }
     }
 
