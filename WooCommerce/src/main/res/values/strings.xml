@@ -2704,5 +2704,6 @@
     <string name="store_creation_domain_picker_suggestions_title">Suggestions</string>
     <string name="store_creation_summary_title">My Store</string>
     <string name="store_creation_summary_subtitle">Your store will be created based on the options of your choice!</string>
+    <string name="store_creation_summary_primary_button">Continue to payment</string>
 
 </resources>

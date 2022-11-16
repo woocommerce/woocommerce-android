@@ -121,7 +121,7 @@ private fun MyStoreSummaryScreen(
                     ),
                 onClick = onContinueClicked,
             ) {
-                Text(text = stringResource(id = R.string.continue_button))
+                Text(text = stringResource(id = R.string.store_creation_summary_primary_button))
             }
         }
     }
