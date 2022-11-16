@@ -577,21 +577,7 @@ class AnalyticsViewModelTest : BaseUnitTest() {
         sut = givenAViewModel()
         sut.onSelectedTimePeriodChanged(WEEK_TO_DATE)
 
-        val resourceProvider = givenAResourceProvider()
-        with(sut.state.value.visitorsState) {
-            assertTrue(this is AnalyticsInformationViewState.DataViewState)
-            assertEquals(resourceProvider.getString(R.string.analytics_visitors_and_views_card_title), title)
-
-            assertEquals(resourceProvider.getString(R.string.analytics_visitors_subtitle), leftSection.title)
-            assertEquals(DEFAULT_VISITORS_COUNT.toString(), leftSection.value)
-            assertEquals(DEFAULT_AVG_VISITORS_DELTA, leftSection.delta)
-            assertThat(leftSection.chartInfo).isEmpty()
-
-            assertEquals(resourceProvider.getString(R.string.analytics_views_subtitle), rightSection.title)
-            assertEquals(DEFAULT_VIEWS_COUNT.toString(), rightSection.value)
-            assertEquals(DEFAULT_AVG_VIEWS_DELTA, rightSection.delta)
-            assertThat(rightSection.chartInfo).isEmpty()
-        }
+        assertVisitorState()
     }
 
     @Test
@@ -611,21 +597,7 @@ class AnalyticsViewModelTest : BaseUnitTest() {
         sut = givenAViewModel()
         sut.onSelectedTimePeriodChanged(QUARTER_TO_DATE)
 
-        val resourceProvider = givenAResourceProvider()
-        with(sut.state.value.visitorsState) {
-            assertTrue(this is AnalyticsInformationViewState.DataViewState)
-            assertEquals(resourceProvider.getString(R.string.analytics_visitors_and_views_card_title), title)
-
-            assertEquals(resourceProvider.getString(R.string.analytics_visitors_subtitle), leftSection.title)
-            assertEquals(DEFAULT_VISITORS_COUNT.toString(), leftSection.value)
-            assertEquals(DEFAULT_AVG_VISITORS_DELTA, leftSection.delta)
-            assertThat(leftSection.chartInfo).isEmpty()
-
-            assertEquals(resourceProvider.getString(R.string.analytics_views_subtitle), rightSection.title)
-            assertEquals(DEFAULT_VIEWS_COUNT.toString(), rightSection.value)
-            assertEquals(DEFAULT_AVG_VIEWS_DELTA, rightSection.delta)
-            assertThat(rightSection.chartInfo).isEmpty()
-        }
+        assertVisitorState()
     }
 
     @Test
@@ -645,21 +617,7 @@ class AnalyticsViewModelTest : BaseUnitTest() {
         sut = givenAViewModel()
         sut.onSelectedTimePeriodChanged(LAST_QUARTER)
 
-        val resourceProvider = givenAResourceProvider()
-        with(sut.state.value.visitorsState) {
-            assertTrue(this is AnalyticsInformationViewState.DataViewState)
-            assertEquals(resourceProvider.getString(R.string.analytics_visitors_and_views_card_title), title)
-
-            assertEquals(resourceProvider.getString(R.string.analytics_visitors_subtitle), leftSection.title)
-            assertEquals(DEFAULT_VISITORS_COUNT.toString(), leftSection.value)
-            assertEquals(DEFAULT_AVG_VISITORS_DELTA, leftSection.delta)
-            assertThat(leftSection.chartInfo).isEmpty()
-
-            assertEquals(resourceProvider.getString(R.string.analytics_views_subtitle), rightSection.title)
-            assertEquals(DEFAULT_VIEWS_COUNT.toString(), rightSection.value)
-            assertEquals(DEFAULT_AVG_VIEWS_DELTA, rightSection.delta)
-            assertThat(rightSection.chartInfo).isEmpty()
-        }
+        assertVisitorState()
     }
 
     @Test
@@ -744,6 +702,24 @@ class AnalyticsViewModelTest : BaseUnitTest() {
         avgVisitorsDelta: DeltaPercentage = DeltaPercentage.Value(DEFAULT_AVG_VISITORS_DELTA),
         avgViewsDelta: DeltaPercentage = DeltaPercentage.Value(DEFAULT_AVG_VIEWS_DELTA)
     ) = VisitorsData(VisitorsStat(visitorsCount, viewsCount, avgVisitorsDelta, avgViewsDelta))
+
+    private fun assertVisitorState() {
+        val resourceProvider = givenAResourceProvider()
+        with(sut.state.value.visitorsState) {
+            assertTrue(this is AnalyticsInformationViewState.DataViewState)
+            assertEquals(resourceProvider.getString(R.string.analytics_visitors_and_views_card_title), title)
+
+            assertEquals(resourceProvider.getString(R.string.analytics_visitors_subtitle), leftSection.title)
+            assertEquals(DEFAULT_VISITORS_COUNT.toString(), leftSection.value)
+            assertEquals(DEFAULT_AVG_VISITORS_DELTA, leftSection.delta)
+            assertThat(leftSection.chartInfo).isEmpty()
+
+            assertEquals(resourceProvider.getString(R.string.analytics_views_subtitle), rightSection.title)
+            assertEquals(DEFAULT_VIEWS_COUNT.toString(), rightSection.value)
+            assertEquals(DEFAULT_AVG_VIEWS_DELTA, rightSection.delta)
+            assertThat(rightSection.chartInfo).isEmpty()
+        }
+    }
 
     companion object {
         private const val ANY_DATE_TIME_VALUE = "2021-11-21 00:00:00"
