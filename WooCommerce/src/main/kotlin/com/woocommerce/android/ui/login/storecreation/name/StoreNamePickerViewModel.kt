@@ -18,7 +18,9 @@ class StoreNamePickerViewModel @Inject constructor(
     private val _storeName = MutableLiveData("")
     val storeName: LiveData<String> = _storeName
 
-    fun onCancelPressed() {}
+    fun onCancelPressed() {
+        triggerEvent(MultiLiveEvent.Event.Exit)
+    }
 
     fun onStoreNameChanged(newName: String) {
         _storeName.value = newName
