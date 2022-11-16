@@ -162,7 +162,6 @@ enum class AnalyticsEvent(val siteless: Boolean = false) {
     // -- Analytics Hub
     ANALYTICS_HUB_DATE_RANGE_BUTTON_TAPPED,
     ANALYTICS_HUB_DATE_RANGE_SELECTED,
-    ANALYTICS_HUB_SEE_REPORT_TAPPED,
 
     // -- Orders List
     ORDERS_LIST_FILTER,
