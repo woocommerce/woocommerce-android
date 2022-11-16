@@ -4,7 +4,6 @@ import android.content.Context
 import android.util.AttributeSet
 import android.view.LayoutInflater
 import android.view.View
-import androidx.core.view.isVisible
 import com.google.android.material.card.MaterialCardView
 import com.woocommerce.android.R
 import com.woocommerce.android.databinding.AnalyticsInformationCardViewBinding
@@ -12,7 +11,6 @@ import com.woocommerce.android.ui.analytics.informationcard.AnalyticsInformation
 import com.woocommerce.android.ui.analytics.informationcard.AnalyticsInformationViewState.HiddenState
 import com.woocommerce.android.ui.analytics.informationcard.AnalyticsInformationViewState.LoadingViewState
 import com.woocommerce.android.ui.analytics.informationcard.AnalyticsInformationViewState.NoDataState
-import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.widgets.SkeletonView
 
 class AnalyticsInformationCardView @JvmOverloads constructor(
@@ -22,10 +20,6 @@ class AnalyticsInformationCardView @JvmOverloads constructor(
 ) : MaterialCardView(ctx, attrs, defStyleAttr) {
     val binding = AnalyticsInformationCardViewBinding.inflate(LayoutInflater.from(ctx), this)
     private var skeletonView = SkeletonView()
-
-    init {
-        binding.seeReportText.isVisible = FeatureFlag.ANALYTICS_HUB_PRODUCTS_AND_REPORTS.isEnabled()
-    }
 
     internal fun updateInformation(viewState: AnalyticsInformationViewState) {
         visibility = if (viewState is HiddenState) View.GONE else View.VISIBLE
@@ -44,10 +38,6 @@ class AnalyticsInformationCardView @JvmOverloads constructor(
             delayed = true
         )
         visibility = View.VISIBLE
-    }
-
-    fun setSeeReportClickListener(onClickListener: (() -> Unit)) {
-        binding.seeReportText.setOnClickListener { onClickListener() }
     }
 
     private fun setDataViewState(viewState: DataViewState) {

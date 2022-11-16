@@ -190,14 +190,6 @@ class AppPrefsWrapper @Inject constructor() {
 
     fun getLoginEmail() = AppPrefs.getLoginEmail()
 
-    fun isUserSeenNewFeatureOnMoreScreen() = AppPrefs.isUserSeenNewFeatureOnMoreScreen()
-
-    fun setUserSeenNewFeatureOnMoreScreen() = AppPrefs.setUserSeenNewFeatureOnMoreScreen()
-
-    fun isPaymentsIconWasClickedOnMoreScreen() = AppPrefs.isPaymentsIconWasClickedOnMoreScreen()
-
-    fun setPaymentsIconWasClickedOnMoreScreen() = AppPrefs.setPaymentsIconWasClickedOnMoreScreen()
-
     fun setOnboardingCarouselDisplayed(displayed: Boolean) =
         AppPrefs.setOnboardingCarouselDisplayed(displayed)
 
@@ -215,6 +207,12 @@ class AppPrefsWrapper @Inject constructor() {
     }
 
     fun getIsNewSignUp() = AppPrefs.getIsNewSignUp()
+
+    fun setStoreCreationSource(source: String) {
+        AppPrefs.setStoreCreationSource(source)
+    }
+
+    fun getStoreCreationSource() = AppPrefs.getStoreCreationSource()
 
     /**
      * Card Reader Upsell

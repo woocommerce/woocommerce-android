@@ -360,8 +360,6 @@
         <item translatable="false">@string/date_timeframe_quarter_to_date</item>
         <item translatable="false">@string/date_timeframe_year_to_date</item>
     </string-array>
-    <string name="analytics_see_report_button_text">See report</string>e
-    <string name="analytics_see_report_button_content_description">See more report details</string>
     <string name="analytics_revenue_card_title">Revenue</string>
     <string name="analytics_revenue_no_data">No revenue this period</string>
     <string name="analytics_orders_no_data">No orders this period</string>
@@ -396,8 +394,8 @@
     <string name="orderlist_loading">Looking up your orders…</string>
     <string name="orderlist_no_filters_title">All Orders</string>
     <string name="orderlist_filters_title">Filtered Orders</string>
-    <string name="orderlist_simple_payments_wip_title">Create orders &amp; take payments!</string>
-    <string name="orderlist_simple_payments_wip_message_enabled">We\'ve been working on making it possible to create orders and take payments from your device! You can try these features out by tapping on the "+" button</string>
+    <string name="orderlist_simple_payments_wip_title">Create orders from your device!</string>
+    <string name="orderlist_simple_payments_wip_message_enabled">We\'ve been working on making it possible to create orders from your device! You can try this feature out by tapping on the "+" button</string>
     <string name="orderlist_simple_payments_menu">Simple payment</string>
     <string name="order_card_transition_name">order_card_%1$s</string>
     <string name="order_card_detail_transition_name">order_card_detail</string>
@@ -1611,6 +1609,7 @@
     <string name="variation_detail_price_warning_title">Some variations do not have prices</string>
     <string name="variation_detail_image_add">Add a variation image</string>
     <string name="variation_list_generate_new_variation">Generate new variation</string>
+    <string name="variation_list_generate_all_variations">Generate all variations</string>
     <string name="variation_created_title">Variation Created</string>
     <string name="variation_create_dialog_title">Generating variation</string>
     <string name="variation_loading_dialog_title">Fetching variations…</string>

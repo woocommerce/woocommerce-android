@@ -53,7 +53,6 @@ class ParentCategoryListFragment :
 
         _binding = FragmentProductCategoriesListBinding.bind(view)
 
-        setHasOptionsMenu(true)
         setupObservers(viewModel)
         viewModel.fetchParentCategories()
     }

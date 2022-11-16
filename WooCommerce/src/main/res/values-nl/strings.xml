@@ -1,12 +1,34 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2022-11-03 16:54:04+0000
+Translation-Revision-Date: 2022-11-09 14:54:04+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: nl
 -->
 <resources>
-    <string name="create_new_store">Maak een nieuwe winkel</string>
+    <string name="store_creation_confirm_and_leave">Bevestigen en verlaten</string>
+    <string name="store_creation_exit_dialog_message">Je raakt al je winkelgegevens kwijt.</string>
+    <string name="store_creation_exit_dialog_title">Wil je deze pagina verlaten?</string>
+    <string name="store_creation_in_progress">Je winkel aanmaken…</string>
+    <string name="store_creation_cannot_load_store">Kan je winkel niet laden.\nProbeer nog eens…</string>
+    <string name="store_creation_create_new_store_label">Een nieuwe winkel maken</string>
+    <string name="or_use_password_below_qr_code_scan_option">Of log in met een wachtwoord</string>
+    <string name="or_scan_qr_code_to_log_in">Scan de QR-code om in te loggen</string>
+    <string name="simplified_login_prologue_title">WooCommerce is een aanpasbaar, opensource eCommerce-platform gebaseerd op WordPress.</string>
+    <string name="simulated_reader_toast">Gesimuleerde kaartlezer is uitgeschakeld</string>
+    <string name="simulated_reader_key">Sleutel gesimuleerde lezer</string>
+    <string name="variations_bulk_update_stock_quantity_success">Aantal op voorraad bijgewerkt</string>
+    <string name="variations_bulk_update_current_stock_quantity_mixed">Huidig aantal op voorraad verschilt</string>
+    <string name="variations_bulk_update_current_stock_quantity">Huidig aantal op voorraad is %d</string>
+    <string name="variations_bulk_update_stock_quantity_dialog_title">Aantal op voorraad bijwerken</string>
+    <string name="variations_bulk_update_stock_quantity_info">Aantal op voorraad wordt bijgewerkt voor %d variaties</string>
+    <string name="variations_bulk_update_dialog_inventory_section_title">Inventaris</string>
+    <string name="product_search_hint_active_filters">Gefilterde producten doorzoeken</string>
+    <string name="orderlist_search_hint_active_filters">Gefilterde bestellingen doorzoeken</string>
+    <string name="site_picker_connect_existing_store">Een bestaande winkel koppelen</string>
+    <string name="site_picker_create_new_store">Een nieuwe winkel maken</string>
+    <string name="login_site_picker_add_a_store">Een winkel toevoegen</string>
+    <string name="login_no_stores">Je account is niet gekoppeld aan een WooCommerce-winkel.</string>
     <string name="analytics_products_list_item_description">Netto verkoop: %@ %1$s</string>
     <string name="analytics_products_list_header_subtitle">Verkochte artikelen</string>
     <string name="analytics_products_list_header_title">Producten</string>
@@ -215,8 +237,8 @@ Language: nl
     <string name="variations_bulk_update_current_prices_mixed">Huidige prijzen verschillen.</string>
     <string name="variations_bulk_update_current_price">Huidige prijs is %s.</string>
     <string name="variations_bulk_update_price_info">De prijs wordt bijgewerkt voor %d variaties.</string>
-    <string name="variations_bulk_update_dialog_price_mixed">Gecombineerd</string>
-    <string name="variations_bulk_update_dialog_price_none">Geen</string>
+    <string name="variations_bulk_update_dialog_mixed">Gecombineerd</string>
+    <string name="variations_bulk_update_dialog_none">Geen</string>
     <string name="variations_bulk_update_dialog_sale_price_label">Prijs tijdens de sale: %@</string>
     <string name="variations_bulk_update_dialog_regular_price_label">Reguliere prijs</string>
     <string name="variations_bulk_update_dialog_price_section_title">Prijs</string>
@@ -2209,7 +2231,6 @@ Language: nl
     <string name="dashboard_stats_granularity_months">Maanden</string>
     <string name="dashboard_stats_granularity_weeks">Weken</string>
     <string name="dashboard_stats_granularity_days">Dagen</string>
-    <string name="login_no_stores">We konden geen WooCommerce-winkels vinden die aan dit account zijn gekoppeld.</string>
     <string name="login_with_a_different_account">Log in met een ander account</string>
     <string name="login_nostores_content_description">Geen WooCommerce-winkels</string>
     <string name="login_avatar_content_description">Je profielfoto</string>

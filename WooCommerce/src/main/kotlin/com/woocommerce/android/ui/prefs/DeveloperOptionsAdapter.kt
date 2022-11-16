@@ -30,9 +30,7 @@ class DeveloperOptionsAdapter :
             VIEW_TYPE_NON_TOGGELABLE -> {
                 DeveloperOptionsViewHolder.RowViewHolder(parent)
             }
-            else -> {
-                throw error("Unknown section")
-            }
+            else -> error("Unknown section")
         }
     }
 
