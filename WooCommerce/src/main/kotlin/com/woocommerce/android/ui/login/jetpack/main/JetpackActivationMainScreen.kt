@@ -50,7 +50,10 @@ import com.woocommerce.android.ui.login.jetpack.components.JetpackToWooHeader
 @Composable
 fun JetpackActivationMainScreen(viewModel: JetpackActivationMainViewModel) {
     viewModel.viewState.observeAsState().value?.let {
-        JetpackActivationMainScreen(it)
+        JetpackActivationMainScreen(
+            viewState = it,
+            onCloseClick = viewModel::onCloseClick
+        )
     }
 }
 

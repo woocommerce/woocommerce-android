@@ -6,6 +6,7 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.model.UiString
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.getStateFlow
 import com.woocommerce.android.viewmodel.navArgs
@@ -28,6 +29,10 @@ class JetpackActivationMainViewModel @Inject constructor(
         )
     )
     val viewState = _viewState.asLiveData()
+
+    fun onCloseClick() {
+        triggerEvent(Exit)
+    }
 
     @Parcelize
     data class ViewState(
