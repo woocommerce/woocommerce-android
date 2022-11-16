@@ -60,6 +60,7 @@ class JetpackActivationSiteCredentialsFragment : BaseFragment() {
         }
     }
 
+    @Suppress("UNUSED_PARAMETER")
     private fun navigateToJetpackActivationSteps(event: NavigateToJetpackActivationSteps) {
         Toast.makeText(requireContext(), "TODO", Toast.LENGTH_LONG).show()
     }

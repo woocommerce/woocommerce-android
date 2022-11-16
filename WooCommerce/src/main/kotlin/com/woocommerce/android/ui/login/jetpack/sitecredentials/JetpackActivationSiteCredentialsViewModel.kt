@@ -40,7 +40,8 @@ class JetpackActivationSiteCredentialsViewModel @Inject constructor(
     private val navArgs: JetpackActivationSiteCredentialsFragmentArgs by savedStateHandle.navArgs()
 
     private val _viewState = savedStateHandle.getStateFlow(
-        viewModelScope, JetpackActivationSiteCredentialsViewState(
+        scope = viewModelScope,
+        initialValue = JetpackActivationSiteCredentialsViewState(
             isJetpackInstalled = navArgs.isJetpackInstalled,
             siteUrl = navArgs.siteUrl
         )

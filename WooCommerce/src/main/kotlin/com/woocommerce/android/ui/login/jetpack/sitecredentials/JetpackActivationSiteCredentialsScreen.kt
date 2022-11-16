@@ -84,8 +84,11 @@ fun JetpackActivationSiteCredentialsScreen(
             Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.major_100)))
             Text(
                 text = annotatedStringRes(
-                    stringResId = if (viewState.isJetpackInstalled) R.string.login_jetpack_connection_enter_site_credentials
-                    else R.string.login_jetpack_installation_enter_site_credentials,
+                    stringResId = if (viewState.isJetpackInstalled) {
+                        R.string.login_jetpack_connection_enter_site_credentials
+                    } else {
+                        R.string.login_jetpack_installation_enter_site_credentials
+                    },
                     viewState.siteUrl
                 )
             )
@@ -192,7 +195,6 @@ private fun Toolbar(
         modifier = modifier
     )
 }
-
 
 @Preview
 @Composable
