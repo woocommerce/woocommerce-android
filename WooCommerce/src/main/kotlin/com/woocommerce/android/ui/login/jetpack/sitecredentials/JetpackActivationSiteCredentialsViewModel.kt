@@ -69,6 +69,10 @@ class JetpackActivationSiteCredentialsViewModel @Inject constructor(
         triggerEvent(Exit)
     }
 
+    fun onResetPasswordClick() {
+        triggerEvent(ResetPassword(_viewState.value.siteUrl))
+    }
+
     fun onContinueClick() = launch {
         _viewState.update { it.copy(isLoading = true) }
         val state = _viewState.value
@@ -80,7 +84,7 @@ class JetpackActivationSiteCredentialsViewModel @Inject constructor(
             onSuccess = {
                 triggerEvent(
                     NavigateToJetpackActivationSteps(
-                        navArgs.siteUrl,
+                        state.siteUrl,
                         navArgs.isJetpackInstalled
                     )
                 )
@@ -137,4 +141,6 @@ class JetpackActivationSiteCredentialsViewModel @Inject constructor(
         val siteUrl: String,
         val isJetpackInstalled: Boolean
     ) : MultiLiveEvent.Event()
+
+    data class ResetPassword(val siteUrl: String) : MultiLiveEvent.Event()
 }

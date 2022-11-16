@@ -13,7 +13,9 @@ import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.ui.login.jetpack.sitecredentials.JetpackActivationSiteCredentialsViewModel.NavigateToJetpackActivationSteps
+import com.woocommerce.android.ui.login.jetpack.sitecredentials.JetpackActivationSiteCredentialsViewModel.ResetPassword
 import com.woocommerce.android.ui.main.AppBarStatus
+import com.woocommerce.android.util.ChromeCustomTabUtils
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowUiStringSnackbar
@@ -22,6 +24,10 @@ import javax.inject.Inject
 
 @AndroidEntryPoint
 class JetpackActivationSiteCredentialsFragment : BaseFragment() {
+    companion object {
+        private const val FORGOT_PASSWORD_URL_SUFFIX = "wp-login.php?action=lostpassword"
+    }
+
     private val viewModel: JetpackActivationSiteCredentialsViewModel by viewModels()
 
     override val activityAppBarStatus: AppBarStatus
@@ -46,6 +52,7 @@ class JetpackActivationSiteCredentialsFragment : BaseFragment() {
         viewModel.event.observe(viewLifecycleOwner) { event ->
             when (event) {
                 is NavigateToJetpackActivationSteps -> navigateToJetpackActivationSteps(event)
+                is ResetPassword -> showResetPasswordWebPage(event.siteUrl)
                 Exit -> findNavController().navigateUp()
                 is ShowSnackbar -> uiMessageResolver.showSnack(event.message)
                 is ShowUiStringSnackbar -> uiMessageResolver.showSnack(event.message)
@@ -55,5 +62,9 @@ class JetpackActivationSiteCredentialsFragment : BaseFragment() {
 
     private fun navigateToJetpackActivationSteps(event: NavigateToJetpackActivationSteps) {
         Toast.makeText(requireContext(), "TODO", Toast.LENGTH_LONG).show()
+    }
+
+    private fun showResetPasswordWebPage(siteUrl: String) {
+        ChromeCustomTabUtils.launchUrl(requireActivity(), "${siteUrl.trimEnd('/')}/$FORGOT_PASSWORD_URL_SUFFIX")
     }
 }

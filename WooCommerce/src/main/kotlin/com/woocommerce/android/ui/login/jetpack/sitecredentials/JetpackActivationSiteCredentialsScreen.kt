@@ -38,6 +38,7 @@ import com.woocommerce.android.ui.compose.component.ProgressDialog
 import com.woocommerce.android.ui.compose.component.WCColoredButton
 import com.woocommerce.android.ui.compose.component.WCOutlinedTextField
 import com.woocommerce.android.ui.compose.component.WCPasswordField
+import com.woocommerce.android.ui.compose.component.WCTextButton
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.ui.login.jetpack.sitecredentials.JetpackActivationSiteCredentialsViewModel.JetpackActivationSiteCredentialsViewState
 
@@ -49,6 +50,7 @@ fun JetpackActivationSiteCredentialsScreen(viewModel: JetpackActivationSiteCrede
             onUsernameChanged = viewModel::onUsernameChanged,
             onPasswordChanged = viewModel::onPasswordChanged,
             onContinueClick = viewModel::onContinueClick,
+            onResetPasswordClick = viewModel::onResetPasswordClick,
             onCloseClick = viewModel::onCloseClick
         )
     }
@@ -60,6 +62,7 @@ fun JetpackActivationSiteCredentialsScreen(
     onUsernameChanged: (String) -> Unit = {},
     onPasswordChanged: (String) -> Unit = {},
     onContinueClick: () -> Unit = {},
+    onResetPasswordClick: () -> Unit = {},
     onCloseClick: () -> Unit = {}
 ) {
     Column(
@@ -103,6 +106,9 @@ fun JetpackActivationSiteCredentialsScreen(
                     onDone = { onContinueClick() }
                 )
             )
+            WCTextButton(onClick = onResetPasswordClick) {
+                Text(text = stringResource(id = R.string.reset_your_password))
+            }
             Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.major_100)))
             Row(horizontalArrangement = Arrangement.spacedBy(dimensionResource(id = R.dimen.minor_100))) {
                 Icon(
