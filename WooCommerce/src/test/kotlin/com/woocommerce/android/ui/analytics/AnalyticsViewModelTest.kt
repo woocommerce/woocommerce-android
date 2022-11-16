@@ -577,7 +577,7 @@ class AnalyticsViewModelTest : BaseUnitTest() {
         sut = givenAViewModel()
         sut.onSelectedTimePeriodChanged(WEEK_TO_DATE)
 
-        assertVisitorState()
+        assert(sut.state.value.visitorsState)
     }
 
     @Test
@@ -597,7 +597,7 @@ class AnalyticsViewModelTest : BaseUnitTest() {
         sut = givenAViewModel()
         sut.onSelectedTimePeriodChanged(QUARTER_TO_DATE)
 
-        assertVisitorState()
+        assert(sut.state.value.visitorsState)
     }
 
     @Test
@@ -617,7 +617,7 @@ class AnalyticsViewModelTest : BaseUnitTest() {
         sut = givenAViewModel()
         sut.onSelectedTimePeriodChanged(LAST_QUARTER)
 
-        assertVisitorState()
+        assert(sut.state.value.visitorsState)
     }
 
     @Test
@@ -703,9 +703,9 @@ class AnalyticsViewModelTest : BaseUnitTest() {
         avgViewsDelta: DeltaPercentage = DeltaPercentage.Value(DEFAULT_AVG_VIEWS_DELTA)
     ) = VisitorsData(VisitorsStat(visitorsCount, viewsCount, avgVisitorsDelta, avgViewsDelta))
 
-    private fun assertVisitorState() {
+    private fun assert(visitorState: AnalyticsInformationViewState) {
         val resourceProvider = givenAResourceProvider()
-        with(sut.state.value.visitorsState) {
+        with(visitorState) {
             assertTrue(this is AnalyticsInformationViewState.DataViewState)
             assertEquals(resourceProvider.getString(R.string.analytics_visitors_and_views_card_title), title)
 
