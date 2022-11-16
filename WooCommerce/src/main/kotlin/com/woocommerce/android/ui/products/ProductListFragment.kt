@@ -8,10 +8,12 @@ import android.view.MenuItem.OnActionExpandListener
 import android.view.View
 import androidx.appcompat.widget.SearchView
 import androidx.appcompat.widget.SearchView.OnQueryTextListener
+import androidx.core.view.MenuProvider
 import androidx.core.view.ViewGroupCompat
 import androidx.core.view.doOnPreDraw
 import androidx.core.view.isVisible
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.Lifecycle
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.material.floatingactionbutton.FloatingActionButton
@@ -53,7 +55,8 @@ class ProductListFragment :
     OnLoadMoreListener,
     OnQueryTextListener,
     OnActionExpandListener,
-    WCProductSearchTabView.ProductSearchTypeChangedListener {
+    WCProductSearchTabView.ProductSearchTypeChangedListener,
+    MenuProvider {
     companion object {
         val TAG: String = ProductListFragment::class.java.simpleName
         const val PRODUCT_FILTER_RESULT_KEY = "product_filter_result"
@@ -88,7 +91,7 @@ class ProductListFragment :
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         postponeEnterTransition()
-        setHasOptionsMenu(true)
+        requireActivity().addMenuProvider(this, viewLifecycleOwner, Lifecycle.State.RESUMED)
 
         _binding = FragmentProductListBinding.bind(view)
 
@@ -164,19 +167,16 @@ class ProductListFragment :
         reenterTransition = fadeThroughTransition
     }
 
-    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+    override fun onCreateMenu(menu: Menu, inflater: MenuInflater) {
         inflater.inflate(R.menu.menu_product_list_fragment, menu)
 
         searchMenuItem = menu.findItem(R.id.menu_search)
         searchView = searchMenuItem?.actionView as SearchView?
         searchView?.queryHint = getString(R.string.product_search_hint)
-
-        super.onCreateOptionsMenu(menu, inflater)
     }
 
-    override fun onPrepareOptionsMenu(menu: Menu) {
+    override fun onPrepareMenu(menu: Menu) {
         refreshOptionsMenu()
-        super.onPrepareOptionsMenu(menu)
     }
 
     /**
@@ -219,14 +219,14 @@ class ProductListFragment :
         return !isChildShowing
     }
 
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+    override fun onMenuItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
             R.id.menu_search -> {
                 AnalyticsTracker.track(AnalyticsEvent.PRODUCT_LIST_MENU_SEARCH_TAPPED)
                 enableSearchListeners()
                 true
             }
-            else -> super.onOptionsItemSelected(item)
+            else -> false
         }
     }
 
