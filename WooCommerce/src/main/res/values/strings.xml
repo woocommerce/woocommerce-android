@@ -298,6 +298,7 @@
     <string name="login_jetpack_installation_enter_site_credentials">Log in to &lt;b&gt;%1$s&lt;/b&gt; with your store credentials to install Jetpack.</string>
     <string name="login_jetpack_connection_enter_site_credentials">Log in to &lt;b&gt;%1$s&lt;/b&gt; with your store credentials to connect Jetpack.</string>
     <string name="login_jetpack_connection_approval_hint">We will ask for your approval to complete the Jetpack connection.</string>
+    <string name="login_jetpack_site_credentials_screen_title">Log in to your store</string>
 
     <!--
         My Store View
