@@ -28,5 +28,19 @@
         <argument
             android:name="isJetpackInstalled"
             app:argType="boolean" />
+        <action
+            android:id="@+id/action_jetpackActivationSiteCredentialsFragment_to_jetpackActivationMainFragment"
+            app:destination="@id/jetpackActivationMainFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/jetpackActivationMainFragment"
+        android:name="com.woocommerce.android.ui.login.jetpack.main.JetpackActivationMainFragment"
+        android:label="JetpackActivationMainFragment" >
+        <argument
+            android:name="siteUrl"
+            app:argType="string" />
+        <argument
+            android:name="isJetpackInstalled"
+            app:argType="boolean" />
     </fragment>
 </navigation>
