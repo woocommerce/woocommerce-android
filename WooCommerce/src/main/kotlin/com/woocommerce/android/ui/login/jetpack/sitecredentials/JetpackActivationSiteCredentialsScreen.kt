@@ -1,6 +1,5 @@
 package com.woocommerce.android.ui.login.jetpack.sitecredentials
 
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -26,11 +25,9 @@ import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material.icons.outlined.Info
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.livedata.observeAsState
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.dimensionResource
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.tooling.preview.Preview
@@ -43,6 +40,7 @@ import com.woocommerce.android.ui.compose.component.WCOutlinedTextField
 import com.woocommerce.android.ui.compose.component.WCPasswordField
 import com.woocommerce.android.ui.compose.component.WCTextButton
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
+import com.woocommerce.android.ui.login.jetpack.components.JetpackToWooHeader
 import com.woocommerce.android.ui.login.jetpack.sitecredentials.JetpackActivationSiteCredentialsViewModel.JetpackActivationSiteCredentialsViewState
 
 @Composable
@@ -84,7 +82,7 @@ fun JetpackActivationSiteCredentialsScreen(
                     .verticalScroll(rememberScrollState())
                     .padding(dimensionResource(id = R.dimen.major_100)),
             ) {
-                JetpackToWoo()
+                JetpackToWooHeader()
                 Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.major_100)))
                 Text(
                     text = annotatedStringRes(
@@ -155,28 +153,6 @@ fun JetpackActivationSiteCredentialsScreen(
 
     if (viewState.isLoading) {
         ProgressDialog(title = "", subtitle = stringResource(id = R.string.logging_in))
-    }
-}
-
-@Composable
-private fun JetpackToWoo(modifier: Modifier = Modifier) {
-    Row(
-        horizontalArrangement = Arrangement.spacedBy(dimensionResource(id = R.dimen.minor_100)),
-        verticalAlignment = Alignment.CenterVertically,
-        modifier = modifier
-    ) {
-        val logoModifier = Modifier.size(dimensionResource(id = R.dimen.image_minor_100))
-        Image(
-            painter = painterResource(id = R.drawable.ic_jetpack_logo),
-            contentDescription = null,
-            modifier = logoModifier
-        )
-        Image(painter = painterResource(id = R.drawable.ic_connecting), contentDescription = null)
-        Image(
-            painter = painterResource(id = R.drawable.ic_woo_bubble),
-            contentDescription = null,
-            modifier = logoModifier
-        )
     }
 }
 
