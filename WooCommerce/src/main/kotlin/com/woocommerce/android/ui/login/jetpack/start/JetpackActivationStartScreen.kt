@@ -56,14 +56,12 @@ fun JetpackActivationStartScreen(
     onBackButtonClick: () -> Unit = {}
 ) {
     Column(
-        verticalArrangement = Arrangement.spacedBy(dimensionResource(id = R.dimen.major_100)),
         horizontalAlignment = Alignment.CenterHorizontally,
         modifier = Modifier
             .fillMaxSize()
             .background(color = MaterialTheme.colors.surface)
     ) {
         Toolbar(onHelpButtonClick = onHelpButtonClick, onBackButtonClick = onBackButtonClick)
-
         Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.major_100)))
         Column(
             verticalArrangement = Arrangement.Center,
@@ -100,7 +98,7 @@ fun JetpackActivationStartScreen(
                 textAlign = TextAlign.Center
             )
         }
-
+        Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.major_100)))
         WCColoredButton(
             onClick = { /*TODO*/ },
             modifier = Modifier
@@ -114,6 +112,7 @@ fun JetpackActivationStartScreen(
                 )
             )
         }
+        Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.major_100)))
         JetpackConsent(
             modifier = Modifier.padding(horizontal = dimensionResource(id = R.dimen.major_100))
         )
