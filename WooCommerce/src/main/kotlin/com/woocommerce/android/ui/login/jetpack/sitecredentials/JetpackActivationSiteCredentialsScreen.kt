@@ -18,6 +18,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
 import androidx.compose.material.MaterialTheme
+import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
 import androidx.compose.material.TopAppBar
 import androidx.compose.material.icons.Icons
@@ -67,85 +68,89 @@ fun JetpackActivationSiteCredentialsScreen(
     onResetPasswordClick: () -> Unit = {},
     onCloseClick: () -> Unit = {}
 ) {
-    Column(
-        modifier = Modifier
-            .background(MaterialTheme.colors.surface)
-            .fillMaxSize(),
-    ) {
-        Toolbar(onCloseClick = onCloseClick)
+    Scaffold(
+        topBar = { Toolbar(onCloseClick = onCloseClick) }
+    ) { paddingValues ->
         Column(
             modifier = Modifier
-                .weight(1f)
-                .fillMaxWidth()
-                .verticalScroll(rememberScrollState())
-                .padding(dimensionResource(id = R.dimen.major_100)),
+                .background(MaterialTheme.colors.surface)
+                .padding(paddingValues)
+                .fillMaxSize(),
         ) {
-            JetpackToWoo()
-            Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.major_100)))
-            Text(
-                text = annotatedStringRes(
-                    stringResId = if (viewState.isJetpackInstalled) {
-                        R.string.login_jetpack_connection_enter_site_credentials
-                    } else {
-                        R.string.login_jetpack_installation_enter_site_credentials
-                    },
-                    viewState.siteUrl
-                )
-            )
-            Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.major_100)))
-            WCOutlinedTextField(
-                value = viewState.username,
-                onValueChange = onUsernameChanged,
-                label = stringResource(id = R.string.username),
-                isError = viewState.errorMessage != null,
-                singleLine = true,
-                keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next)
-            )
-            WCPasswordField(
-                value = viewState.password,
-                onValueChange = onPasswordChanged,
-                label = stringResource(id = R.string.password),
-                isError = viewState.errorMessage != null,
-                helperText = viewState.errorMessage?.let { stringResource(id = it) },
-                keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
-                keyboardActions = KeyboardActions(
-                    onDone = { onContinueClick() }
-                )
-            )
-            WCTextButton(onClick = onResetPasswordClick) {
-                Text(text = stringResource(id = R.string.reset_your_password))
-            }
-            Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.major_100)))
-            Row(horizontalArrangement = Arrangement.spacedBy(dimensionResource(id = R.dimen.minor_100))) {
-                Icon(
-                    imageVector = Icons.Outlined.Info,
-                    contentDescription = null,
-                    tint = colorResource(id = R.color.color_on_surface_medium),
-                    modifier = Modifier.size(dimensionResource(id = R.dimen.image_minor_40))
-                )
+            Column(
+                modifier = Modifier
+                    .weight(1f)
+                    .fillMaxWidth()
+                    .verticalScroll(rememberScrollState())
+                    .padding(dimensionResource(id = R.dimen.major_100)),
+            ) {
+                JetpackToWoo()
+                Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.major_100)))
                 Text(
-                    text = stringResource(id = R.string.login_jetpack_connection_approval_hint),
-                    style = MaterialTheme.typography.caption,
-                    color = colorResource(id = R.color.color_on_surface_medium)
+                    text = annotatedStringRes(
+                        stringResId = if (viewState.isJetpackInstalled) {
+                            R.string.login_jetpack_connection_enter_site_credentials
+                        } else {
+                            R.string.login_jetpack_installation_enter_site_credentials
+                        },
+                        viewState.siteUrl
+                    )
+                )
+                Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.major_100)))
+                WCOutlinedTextField(
+                    value = viewState.username,
+                    onValueChange = onUsernameChanged,
+                    label = stringResource(id = R.string.username),
+                    isError = viewState.errorMessage != null,
+                    singleLine = true,
+                    keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next)
+                )
+                WCPasswordField(
+                    value = viewState.password,
+                    onValueChange = onPasswordChanged,
+                    label = stringResource(id = R.string.password),
+                    isError = viewState.errorMessage != null,
+                    helperText = viewState.errorMessage?.let { stringResource(id = it) },
+                    keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
+                    keyboardActions = KeyboardActions(
+                        onDone = { onContinueClick() }
+                    )
+                )
+                WCTextButton(onClick = onResetPasswordClick) {
+                    Text(text = stringResource(id = R.string.reset_your_password))
+                }
+                Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.major_100)))
+                Row(horizontalArrangement = Arrangement.spacedBy(dimensionResource(id = R.dimen.minor_100))) {
+                    Icon(
+                        imageVector = Icons.Outlined.Info,
+                        contentDescription = null,
+                        tint = colorResource(id = R.color.color_on_surface_medium),
+                        modifier = Modifier.size(dimensionResource(id = R.dimen.image_minor_40))
+                    )
+                    Text(
+                        text = stringResource(id = R.string.login_jetpack_connection_approval_hint),
+                        style = MaterialTheme.typography.caption,
+                        color = colorResource(id = R.color.color_on_surface_medium)
+                    )
+                }
+            }
+
+            WCColoredButton(
+                onClick = onContinueClick,
+                enabled = viewState.isValid,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = dimensionResource(id = R.dimen.major_100))
+            ) {
+                Text(
+                    text = stringResource(
+                        id = if (viewState.isJetpackInstalled) R.string.login_jetpack_connect
+                        else R.string.login_jetpack_install
+                    )
                 )
             }
+            Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.major_100)))
         }
-
-        WCColoredButton(
-            onClick = onContinueClick,
-            enabled = viewState.isValid,
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = dimensionResource(id = R.dimen.major_100))
-        ) {
-            Text(
-                text = stringResource(
-                    id = if (viewState.isJetpackInstalled) R.string.login_jetpack_connect
-                    else R.string.login_jetpack_install
-                )
-            )
-        }
-        Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.major_100)))
     }
 
     if (viewState.isLoading) {
