@@ -8,10 +8,12 @@ import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
+import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
+import com.woocommerce.android.ui.login.storecreation.domainpicker.DomainPickerViewModel.NavigateToNextStep
 import com.woocommerce.android.ui.main.AppBarStatus
-import com.woocommerce.android.viewmodel.MultiLiveEvent
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -40,7 +42,10 @@ class DomainPickerFragment : BaseFragment() {
     private fun setupObservers() {
         viewModel.event.observe(viewLifecycleOwner) { event ->
             when (event) {
-                is MultiLiveEvent.Event.Exit -> findNavController().popBackStack()
+                is Exit -> findNavController().popBackStack()
+                is NavigateToNextStep -> findNavController().navigateSafely(
+                    DomainPickerFragmentDirections.actionDomainPickerFragmentToPlansFragment()
+                )
             }
         }
     }

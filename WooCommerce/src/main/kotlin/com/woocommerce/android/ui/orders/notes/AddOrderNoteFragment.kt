@@ -50,10 +50,6 @@ class AddOrderNoteFragment : BaseFragment(R.layout.fragment_add_order_note), Bac
             navigationIcon = R.drawable.ic_gridicons_cross_24dp
         )
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-    }
-
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 

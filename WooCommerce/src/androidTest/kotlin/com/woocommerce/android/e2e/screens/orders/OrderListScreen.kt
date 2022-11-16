@@ -9,8 +9,6 @@ class OrderListScreen : Screen {
         const val LIST_ITEM = R.id.linearLayout
         const val SEARCH_BUTTON = R.id.menu_search
         const val CREATE_ORDER_BUTTON = R.id.createOrderButton
-        const val CREATE_ORDER_OPTION = R.id.order_creation_button
-        const val CREATE_SIMPLE_PAYMENT_OPTION = R.id.simple_payment_button
     }
 
     constructor() : super(LIST_VIEW)
@@ -26,13 +24,8 @@ class OrderListScreen : Screen {
         return OrderSearchScreen()
     }
 
-    fun createFABTap(): OrderListScreen {
+    fun createFABTap(): UnifiedOrderScreen {
         clickOn(CREATE_ORDER_BUTTON)
-        return this
-    }
-
-    fun newOrderTap(): UnifiedOrderScreen {
-        clickOn(CREATE_ORDER_OPTION)
         return UnifiedOrderScreen()
     }
 }
