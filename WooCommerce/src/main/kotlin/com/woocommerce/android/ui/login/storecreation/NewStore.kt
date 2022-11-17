@@ -7,15 +7,7 @@ import javax.inject.Singleton
 @Singleton
 class NewStore @Inject constructor() {
 
-    val store: MutableStateFlow<NewStoreData> = MutableStateFlow(
-        // TODO remove fake initial data
-        NewStoreData(
-            name = "White Christmas Trees",
-            domain = "whitechristmastrees.mywc.mysite",
-            category = "Arts and Crafts",
-            country = "Canada"
-        )
-    )
+    val store: MutableStateFlow<NewStoreData> = MutableStateFlow(NewStoreData())
 
     data class NewStoreData(
         val name: String? = null,
