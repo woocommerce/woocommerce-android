@@ -21,13 +21,17 @@ import com.woocommerce.android.ui.analytics.AnalyticsRepository.VisitorsResult.V
 import com.woocommerce.android.ui.analytics.AnalyticsViewModel.Companion.DATE_RANGE_SELECTED_KEY
 import com.woocommerce.android.ui.analytics.AnalyticsViewModel.Companion.TIME_PERIOD_SELECTED_KEY
 import com.woocommerce.android.ui.analytics.RefreshIndicator.NotShowIndicator
+import com.woocommerce.android.ui.analytics.daterangeselector.AnalyticTimePeriod.CUSTOM
+import com.woocommerce.android.ui.analytics.daterangeselector.AnalyticTimePeriod.LAST_QUARTER
 import com.woocommerce.android.ui.analytics.daterangeselector.AnalyticTimePeriod.LAST_YEAR
+import com.woocommerce.android.ui.analytics.daterangeselector.AnalyticTimePeriod.QUARTER_TO_DATE
 import com.woocommerce.android.ui.analytics.daterangeselector.AnalyticTimePeriod.TODAY
 import com.woocommerce.android.ui.analytics.daterangeselector.AnalyticTimePeriod.WEEK_TO_DATE
 import com.woocommerce.android.ui.analytics.daterangeselector.AnalyticsDateRangeCalculator
 import com.woocommerce.android.ui.analytics.daterangeselector.AnalyticsDateRangeFormatter
 import com.woocommerce.android.ui.analytics.daterangeselector.MultipleDateRange
 import com.woocommerce.android.ui.analytics.daterangeselector.SimpleDateRange
+import com.woocommerce.android.ui.analytics.informationcard.AnalyticsInformationSectionViewState
 import com.woocommerce.android.ui.analytics.informationcard.AnalyticsInformationViewState
 import com.woocommerce.android.ui.analytics.informationcard.AnalyticsInformationViewState.LoadingViewState
 import com.woocommerce.android.ui.analytics.listcard.AnalyticsListViewState
@@ -557,6 +561,80 @@ class AnalyticsViewModelTest : BaseUnitTest() {
         verify(transactionLauncher, never()).onVisitorsFetched()
     }
 
+    @Test
+    fun `given a date range selected, then has expected visitors values`() = testBlocking {
+        val weekToDateRange = MultipleDateRange(
+            SimpleDateRange(ANY_WEEK_DATE, ANY_WEEK_DATE),
+            SimpleDateRange(ANY_WEEK_DATE, ANY_WEEK_DATE),
+        )
+
+        val weekOrdersData = getVisitorStats()
+
+        whenever(calculator.getAnalyticsDateRangeFrom(WEEK_TO_DATE)) doReturn weekToDateRange
+        analyticsRepository.stub {
+            onBlocking { fetchRecentVisitorsData(weekToDateRange, WEEK_TO_DATE, Saved) }.doReturn(weekOrdersData)
+        }
+
+        sut = givenAViewModel()
+        sut.onSelectedTimePeriodChanged(WEEK_TO_DATE)
+
+        assert(sut.state.value.visitorsState)
+    }
+
+    @Test
+    fun `given a quarter to date range is selected, then has expected visitors values`() = testBlocking {
+        val weekToDateRange = MultipleDateRange(
+            SimpleDateRange(ANY_WEEK_DATE, ANY_WEEK_DATE),
+            SimpleDateRange(ANY_WEEK_DATE, ANY_WEEK_DATE),
+        )
+
+        val weekOrdersData = getVisitorStats()
+
+        whenever(calculator.getAnalyticsDateRangeFrom(QUARTER_TO_DATE)) doReturn weekToDateRange
+        analyticsRepository.stub {
+            onBlocking { fetchQuarterVisitorsData(weekToDateRange, QUARTER_TO_DATE, Saved) }.doReturn(weekOrdersData)
+        }
+
+        sut = givenAViewModel()
+        sut.onSelectedTimePeriodChanged(QUARTER_TO_DATE)
+
+        assert(sut.state.value.visitorsState)
+    }
+
+    @Test
+    fun `given a last quarter range is selected, then has expected visitors values`() = testBlocking {
+        val weekToDateRange = MultipleDateRange(
+            SimpleDateRange(ANY_WEEK_DATE, ANY_WEEK_DATE),
+            SimpleDateRange(ANY_WEEK_DATE, ANY_WEEK_DATE),
+        )
+
+        val weekOrdersData = getVisitorStats()
+
+        whenever(calculator.getAnalyticsDateRangeFrom(LAST_QUARTER)) doReturn weekToDateRange
+        analyticsRepository.stub {
+            onBlocking { fetchQuarterVisitorsData(weekToDateRange, LAST_QUARTER, Saved) }.doReturn(weekOrdersData)
+        }
+
+        sut = givenAViewModel()
+        sut.onSelectedTimePeriodChanged(LAST_QUARTER)
+
+        assert(sut.state.value.visitorsState)
+    }
+
+    @Test
+    fun `given a custom range is selected, then have no visitors request done`() = testBlocking {
+        val weekToDateRange = MultipleDateRange(
+            SimpleDateRange(ANY_WEEK_DATE, ANY_WEEK_DATE),
+            SimpleDateRange(ANY_WEEK_DATE, ANY_WEEK_DATE),
+        )
+
+        sut = givenAViewModel()
+        sut.onSelectedTimePeriodChanged(CUSTOM)
+
+        verify(analyticsRepository, never()).fetchQuarterVisitorsData(weekToDateRange, CUSTOM, Saved)
+        verify(analyticsRepository, never()).fetchRecentVisitorsData(weekToDateRange, CUSTOM, Saved)
+    }
+
     private fun givenAResourceProvider(): ResourceProvider = mock {
         on { getString(any()) } doAnswer { invocationOnMock -> invocationOnMock.arguments[0].toString() }
         on { getString(any(), any()) } doAnswer { invMock -> invMock.arguments[0].toString() }
@@ -625,6 +703,27 @@ class AnalyticsViewModelTest : BaseUnitTest() {
         avgVisitorsDelta: DeltaPercentage = DeltaPercentage.Value(DEFAULT_AVG_VISITORS_DELTA),
         avgViewsDelta: DeltaPercentage = DeltaPercentage.Value(DEFAULT_AVG_VIEWS_DELTA)
     ) = VisitorsData(VisitorsStat(visitorsCount, viewsCount, avgVisitorsDelta, avgViewsDelta))
+
+    private fun assert(visitorState: AnalyticsInformationViewState) {
+        val resourceProvider = givenAResourceProvider()
+        assertThat(visitorState).isEqualTo(
+            AnalyticsInformationViewState.DataViewState(
+                title = resourceProvider.getString(R.string.analytics_visitors_and_views_card_title),
+                leftSection = AnalyticsInformationSectionViewState(
+                    title = resourceProvider.getString(R.string.analytics_visitors_subtitle),
+                    value = DEFAULT_VISITORS_COUNT.toString(),
+                    delta = DEFAULT_AVG_VISITORS_DELTA,
+                    chartInfo = emptyList()
+                ),
+                rightSection = AnalyticsInformationSectionViewState(
+                    title = resourceProvider.getString(R.string.analytics_views_subtitle),
+                    value = DEFAULT_VIEWS_COUNT.toString(),
+                    delta = DEFAULT_AVG_VIEWS_DELTA,
+                    chartInfo = emptyList()
+                )
+            )
+        )
+    }
 
     companion object {
         private const val ANY_DATE_TIME_VALUE = "2021-11-21 00:00:00"
