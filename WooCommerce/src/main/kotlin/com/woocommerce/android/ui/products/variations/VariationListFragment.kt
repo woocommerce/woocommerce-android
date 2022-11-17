@@ -39,7 +39,12 @@ import com.woocommerce.android.ui.products.variations.VariationDetailViewModel.D
 import com.woocommerce.android.ui.products.variations.VariationListViewModel.ShowAddAttributeView
 import com.woocommerce.android.ui.products.variations.VariationListViewModel.ShowBulkUpdateAttrPicker
 import com.woocommerce.android.ui.products.variations.VariationListViewModel.ShowBulkUpdateLimitExceededWarning
+import com.woocommerce.android.ui.products.variations.VariationListViewModel.ShowGenerateVariationConfirmation
+import com.woocommerce.android.ui.products.variations.VariationListViewModel.ShowGenerateVariationError
+import com.woocommerce.android.ui.products.variations.VariationListViewModel.ShowGenerateVariationError.LimitExceeded
+import com.woocommerce.android.ui.products.variations.VariationListViewModel.ShowGenerateVariationError.NetworkError
 import com.woocommerce.android.ui.products.variations.VariationListViewModel.ShowVariationDetail
+import com.woocommerce.android.ui.products.variations.domain.VariationCandidate
 import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
@@ -109,6 +114,10 @@ class VariationListFragment :
 
     private fun initializeViews(savedInstanceState: Bundle?) {
         binding.addAllVariationsButton.isVisible = FeatureFlag.GENERATE_ALL_VARIATIONS.isEnabled()
+
+        binding.addAllVariationsButton.setOnClickListener {
+            viewModel.onAddAllVariationsClicked()
+        }
 
         val layoutManager = LinearLayoutManager(activity, RecyclerView.VERTICAL, false)
         this.layoutManager = layoutManager
@@ -182,10 +191,52 @@ class VariationListFragment :
                 is ShowSnackbar -> uiMessageResolver.showSnack(event.message)
                 is ShowBulkUpdateAttrPicker -> openBulkUpdateView(event.variationsToUpdate)
                 is ShowBulkUpdateLimitExceededWarning -> showBulkUpdateLimitExceededWarning()
+                is ShowGenerateVariationConfirmation -> showGenerateVariationConfirmation(event.variationCandidates)
+                is ShowGenerateVariationError -> handleGenerateVariationError(event)
                 is ExitWithResult<*> -> navigateBackWithResult(KEY_VARIATION_LIST_RESULT, event.data)
                 is Exit -> activity?.onBackPressedDispatcher?.onBackPressed()
             }
         }
+    }
+
+    private fun handleGenerateVariationError(event: ShowGenerateVariationError) {
+        when (event) {
+            is LimitExceeded -> showGenerateVariationsLimitExceeded(event.variationCandidates)
+            NetworkError -> showGenerateVariationsNetworkError()
+        }
+    }
+
+    private fun showGenerateVariationConfirmation(variationCandidates: List<VariationCandidate>) {
+        MaterialAlertDialogBuilder(requireActivity())
+            .setTitle(R.string.variations_bulk_creation_confirmation_title)
+            .setMessage(getString(R.string.variations_bulk_creation_confirmation_message, variationCandidates.size))
+            .setPositiveButton(android.R.string.ok) { dialogInterface, _ ->
+                viewModel.onGenerateVariationsConfirmed(variationCandidates)
+                dialogInterface.dismiss()
+            }
+            .setNegativeButton(android.R.string.cancel) { dialogInterface, _ ->
+                dialogInterface.dismiss()
+            }
+            .show()
+    }
+
+    private fun showGenerateVariationsNetworkError() {
+        MaterialAlertDialogBuilder(requireActivity())
+            .setMessage(R.string.error_generic_network)
+            .setPositiveButton(android.R.string.ok) { dialogInterface, _ ->
+                dialogInterface.dismiss()
+            }
+            .show()
+    }
+
+    private fun showGenerateVariationsLimitExceeded(variationCandidates: List<VariationCandidate>) {
+        MaterialAlertDialogBuilder(requireActivity())
+            .setTitle(R.string.variations_bulk_creation_warning_title)
+            .setMessage(getString(R.string.variations_bulk_creation_warning_message, variationCandidates.size))
+            .setPositiveButton(android.R.string.ok) { dialogInterface, _ ->
+                dialogInterface.dismiss()
+            }
+            .show()
     }
 
     private fun showBulkUpdateLimitExceededWarning() {

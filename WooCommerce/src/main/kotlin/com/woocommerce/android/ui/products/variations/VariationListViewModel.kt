@@ -19,6 +19,8 @@ import com.woocommerce.android.model.ProductVariation
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.ui.products.ProductDetailRepository
 import com.woocommerce.android.ui.products.variations.VariationListViewModel.ViewState
+import com.woocommerce.android.ui.products.variations.domain.GenerateVariationCandidates
+import com.woocommerce.android.ui.products.variations.domain.VariationCandidate
 import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.util.WooLog
@@ -29,6 +31,7 @@ import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import kotlinx.parcelize.Parcelize
@@ -60,7 +63,8 @@ class VariationListViewModel @Inject constructor(
     private val productRepository: ProductDetailRepository,
     private val networkStatus: NetworkStatus,
     private val currencyFormatter: CurrencyFormatter,
-    private val dispatchers: CoroutineDispatchers
+    private val dispatchers: CoroutineDispatchers,
+    private val generateVariationCandidates: GenerateVariationCandidates,
 ) : ScopedViewModel(savedState) {
     private var remoteProductId = 0L
 
@@ -271,6 +275,28 @@ class VariationListViewModel @Inject constructor(
         viewState.parentProduct?.let { track(event, mapOf(KEY_PRODUCT_ID to it.remoteId)) }
     }
 
+    fun onAddAllVariationsClicked() {
+        val product = viewState.parentProduct ?: return
+
+        val variationCandidates = generateVariationCandidates.invoke(product)
+
+        if (variationCandidates.size < GenerateVariationCandidates.VARIATION_CREATION_LIMIT) {
+            triggerEvent(ShowGenerateVariationConfirmation(variationCandidates))
+        } else {
+            triggerEvent(ShowGenerateVariationError.LimitExceeded(variationCandidates))
+        }
+    }
+
+    @Suppress("UnusedPrivateMember")
+    fun onGenerateVariationsConfirmed(variationCandidates: List<VariationCandidate>) {
+        viewState = viewState.copy(isProgressDialogShown = true)
+        launch {
+            @Suppress("MagicNumber")
+            delay(4000)
+            viewState = viewState.copy(isProgressDialogShown = false)
+        }
+    }
+
     @Parcelize
     data class ViewState(
         val isSkeletonShown: Boolean? = null,
@@ -302,4 +328,13 @@ class VariationListViewModel @Inject constructor(
      * Informs about exceeded limit of 100 variations bulk update.
      */
     object ShowBulkUpdateLimitExceededWarning : Event()
+
+    data class ShowGenerateVariationConfirmation(val variationCandidates: List<VariationCandidate>) : Event()
+
+    sealed class ShowGenerateVariationError : Event() {
+        data class LimitExceeded(val variationCandidates: List<VariationCandidate>) : ShowGenerateVariationError()
+        object NetworkError : ShowGenerateVariationError()
+    }
+
+    object ShowGenerateVariationProgress : Event()
 }
