@@ -11,6 +11,7 @@ import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.getStateFlow
 import com.woocommerce.android.viewmodel.navArgs
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.map
 import kotlinx.parcelize.Parcelize
 import javax.inject.Inject
 
@@ -20,26 +21,27 @@ class JetpackActivationMainViewModel @Inject constructor(
 ) : ScopedViewModel(savedStateHandle) {
     private val navArgs: JetpackActivationMainFragmentArgs by savedStateHandle.navArgs()
 
-    private val _viewState = savedStateHandle.getStateFlow(
+    private val steps = savedStateHandle.getStateFlow(
         scope = viewModelScope,
-        initialValue = ViewState(
+        initialValue = emptyList<Step>()
+    )
+    val viewState = steps.map {
+        ViewState(
             siteUrl = navArgs.siteUrl,
             isJetpackInstalled = navArgs.isJetpackInstalled,
-            steps = emptyList()
+            steps = it
         )
-    )
-    val viewState = _viewState.asLiveData()
+    }.asLiveData()
 
     fun onCloseClick() {
         triggerEvent(Exit)
     }
 
-    @Parcelize
     data class ViewState(
         val siteUrl: String,
         val isJetpackInstalled: Boolean,
         val steps: List<Step>
-    ) : Parcelable
+    )
 
     @Parcelize
     data class Step(
