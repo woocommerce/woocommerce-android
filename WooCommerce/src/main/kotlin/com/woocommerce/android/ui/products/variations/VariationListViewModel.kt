@@ -31,7 +31,6 @@ import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import kotlinx.parcelize.Parcelize
@@ -292,7 +291,8 @@ class VariationListViewModel @Inject constructor(
         viewState = viewState.copy(isProgressDialogShown = true)
         launch {
             @Suppress("MagicNumber")
-            delay(4000)
+            variationRepository.bulkCreateVariations(remoteProductId, variationCandidates)
+            refreshVariations(remoteProductId)
             viewState = viewState.copy(isProgressDialogShown = false)
         }
     }

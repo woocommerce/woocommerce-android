@@ -11,6 +11,7 @@ import com.woocommerce.android.model.ProductVariation
 import com.woocommerce.android.model.toAppModel
 import com.woocommerce.android.model.toDataModel
 import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.ui.products.variations.domain.VariationCandidate
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import org.wordpress.android.fluxc.model.WCProductVariationModel
@@ -103,6 +104,29 @@ class VariationRepository @Inject constructor(
         if (stockQuantity != null) payloadBuilder.stockQuantity(stockQuantity.toInt())
         val result = productStore.batchUpdateVariations(payloadBuilder.build())
         return !result.isError
+    }
+
+    suspend fun bulkCreateVariations(
+        remoteProductId: Long,
+        variationCandidates: List<VariationCandidate>
+    ) {
+        val payload = WCProductStore.BatchGenerateVariationsPayload.Builder(
+            selectedSite.get(),
+            remoteProductId
+        )
+
+        variationCandidates.forEach { candidate ->
+            candidate.forEach { termAssignment ->
+                payload.addVariationAttribute(
+                    termAssignment.attributeId,
+                    termAssignment.attributeName,
+                    termAssignment.termName
+                )
+            }
+            payload.addVariation()
+        }
+
+        productStore.batchGenerateVariations(payload.build())
     }
 
     private fun WooResult<WCProductVariationModel>.handleVariationCreateResult(

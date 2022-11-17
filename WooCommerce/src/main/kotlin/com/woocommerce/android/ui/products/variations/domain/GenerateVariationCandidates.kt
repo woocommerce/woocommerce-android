@@ -4,7 +4,7 @@ import com.woocommerce.android.model.Product
 import com.woocommerce.android.ui.products.ProductType
 import javax.inject.Inject
 
-data class TermAssignment(val attributeName: String, val termName: String)
+data class TermAssignment(val attributeId: Long, val attributeName: String, val termName: String)
 typealias VariationCandidate = List<TermAssignment>
 
 class GenerateVariationCandidates @Inject constructor() {
@@ -21,7 +21,7 @@ class GenerateVariationCandidates @Inject constructor() {
         val termAssignmentsGroupedByAttribute: List<List<TermAssignment>> = product.attributes.map { productAttribute ->
             productAttribute.terms.map { term ->
                 TermAssignment(
-                    attributeName = productAttribute.name, termName = term
+                    attributeId = productAttribute.id, attributeName = productAttribute.name, termName = term
                 )
             }
         }
