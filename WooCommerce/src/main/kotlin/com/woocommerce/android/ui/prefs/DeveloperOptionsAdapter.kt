@@ -19,7 +19,7 @@ class DeveloperOptionsAdapter : ListAdapter<ListItem, DeveloperOptionsViewHolder
                 VIEW_TYPE_NON_TOGGLEABLE
             }
             is SpinnerListItem -> {
-                VIEW_TYPE_SPINNER
+                VIEW_TYPE_RADIO_BUTTONS_DIALOG
             }
         }
     }
@@ -34,7 +34,7 @@ class DeveloperOptionsAdapter : ListAdapter<ListItem, DeveloperOptionsViewHolder
                 DeveloperOptionsViewHolder.RowViewHolder(parent)
             }
 
-            VIEW_TYPE_SPINNER -> {
+            VIEW_TYPE_RADIO_BUTTONS_DIALOG -> {
                 DeveloperOptionsViewHolder.SpinnerViewHolder(parent)
             }
             else -> error("Unknown section")
@@ -69,6 +69,6 @@ class DeveloperOptionsAdapter : ListAdapter<ListItem, DeveloperOptionsViewHolder
     companion object {
         const val VIEW_TYPE_NON_TOGGLEABLE = 0
         const val VIEW_TYPE_TOGGLEABLE = 1
-        const val VIEW_TYPE_SPINNER = 2
+        const val VIEW_TYPE_RADIO_BUTTONS_DIALOG = 2
     }
 }
