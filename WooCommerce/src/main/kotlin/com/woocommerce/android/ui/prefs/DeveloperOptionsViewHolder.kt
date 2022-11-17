@@ -6,7 +6,7 @@ import androidx.annotation.LayoutRes
 import androidx.recyclerview.widget.RecyclerView
 import com.woocommerce.android.R
 import com.woocommerce.android.databinding.DeveloperOptionsListItemBinding
-import com.woocommerce.android.databinding.DeveloperOptionsSpinnerItemBinding
+import com.woocommerce.android.databinding.DeveloperOptionsUpdateReaderItemBinding
 import com.woocommerce.android.databinding.DeveloperOptionsTogglableItemBinding
 import com.woocommerce.android.ui.prefs.DeveloperOptionsViewModel.DeveloperOptionsViewState.ListItem
 import com.woocommerce.android.ui.prefs.DeveloperOptionsViewModel.DeveloperOptionsViewState.ListItem.SpinnerListItem
@@ -48,8 +48,8 @@ abstract class DeveloperOptionsViewHolder(val parent: ViewGroup, @LayoutRes layo
     }
 
     class SpinnerViewHolder(parent: ViewGroup) :
-        DeveloperOptionsViewHolder(parent, R.layout.`developer_options_update_reader_item.xml`) {
-        var binding: DeveloperOptionsSpinnerItemBinding = DeveloperOptionsSpinnerItemBinding.bind(itemView)
+        DeveloperOptionsViewHolder(parent, R.layout.developer_options_update_reader_item) {
+        var binding: DeveloperOptionsUpdateReaderItemBinding = DeveloperOptionsUpdateReaderItemBinding.bind(itemView)
         override fun onBind(uiState: ListItem) {
             uiState as SpinnerListItem
             binding.developerOptionsSpinnerIcon.setImageResource(uiState.icon)
