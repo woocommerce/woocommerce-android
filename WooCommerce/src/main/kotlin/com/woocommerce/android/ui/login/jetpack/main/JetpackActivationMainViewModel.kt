@@ -12,15 +12,15 @@ import com.woocommerce.android.viewmodel.navArgs
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.async
-import kotlinx.coroutines.flow.MutableSharedFlow
-import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.filter
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.update
 import kotlinx.parcelize.Parcelize
 import org.wordpress.android.fluxc.model.SiteModel
 import javax.inject.Inject
-
-private const val STEPS_SAVED_STATE_KEY = "steps"
 
 @HiltViewModel
 class JetpackActivationMainViewModel @Inject constructor(
@@ -34,23 +34,32 @@ class JetpackActivationMainViewModel @Inject constructor(
                 "Site not cached"
             }
         }
-    private val updateActions = MutableSharedFlow<UpdateStepAction>()
-    private val steps = savedStateHandle.getStateFlow(
+    private val currentStep = savedStateHandle.getStateFlow(
         scope = viewModelScope,
-        initialValue = if (navArgs.isJetpackInstalled) stepsForConnection() else stepsForInstallation(),
-        key = STEPS_SAVED_STATE_KEY
+        initialValue = Step(if (navArgs.isJetpackInstalled) StepType.Connection else StepType.Installation),
     )
-    val viewState = steps.map {
+    val viewState = combine(
+        currentStep,
+        flowOf(if (navArgs.isJetpackInstalled) stepsForConnection() else stepsForInstallation())
+    ) { currentStep, steps ->
         ViewState(
             siteUrl = navArgs.siteUrl,
             isJetpackInstalled = navArgs.isJetpackInstalled,
-            steps = it
+            steps = steps.map { stepType ->
+                Step(
+                    type = stepType,
+                    state = when {
+                        currentStep.type == stepType -> currentStep.state
+                        currentStep.type > stepType -> StepState.Success
+                        else -> StepState.Idle
+                    }
+                )
+            }
         )
     }.asLiveData()
 
     init {
-        monitorActionUpdates()
-        monitorSteps()
+        monitorCurrentStep()
         startNextStep()
     }
 
@@ -58,36 +67,21 @@ class JetpackActivationMainViewModel @Inject constructor(
         triggerEvent(Exit)
     }
 
-    private fun monitorActionUpdates() {
-        updateActions.onEach { action ->
-            steps.update { steps ->
-                steps.map {
-                    if (it.type != action.stepType) return@map it
-                    it.copy(state = action.newState)
+    private fun startNextStep() {
+        currentStep.update { it.copy(state = StepState.Ongoing) }
+    }
+
+    private fun monitorCurrentStep() {
+        currentStep
+            .filter { it.state == StepState.Ongoing }
+            .distinctUntilChanged { step1, step2 -> step1.type == step2.type }
+            .onEach {
+                when (it.type) {
+                    StepType.Installation, StepType.Activation -> startJetpackInstallation()
+                    StepType.Connection -> startJetpackConnection()
+                    StepType.Done -> TODO()
                 }
             }
-        }
-    }
-
-    private fun monitorSteps() {
-        steps.onEach { steps ->
-            val ongoingStep = steps.firstOrNull { it.state == StepState.Ongoing }?.type ?: return@onEach
-            when (ongoingStep) {
-                StepType.Installation, StepType.Activation -> startJetpackInstallation()
-                StepType.Connection -> startJetpackConnection()
-                StepType.Done -> TODO()
-            }
-        }
-    }
-
-    private fun startNextStep() {
-        steps.value.let { steps ->
-            if (steps.any { it.state == StepState.Ongoing }) return@let
-            val failedStep = steps.firstOrNull { it.state is StepState.Error }
-            (failedStep ?: steps.first { it.state == StepState.Idle }).let {
-                updateActions.tryEmit(UpdateStepAction(it.type, StepState.Ongoing))
-            }
-        }
     }
 
     private fun startJetpackInstallation() {
@@ -98,17 +92,9 @@ class JetpackActivationMainViewModel @Inject constructor(
         TODO("Not yet implemented")
     }
 
-    private fun stepsForInstallation() = listOf(
-        Step(type = StepType.Installation),
-        Step(type = StepType.Activation),
-        Step(type = StepType.Connection),
-        Step(type = StepType.Done)
-    )
+    private fun stepsForInstallation() = StepType.values()
 
-    private fun stepsForConnection() = listOf(
-        Step(type = StepType.Connection),
-        Step(type = StepType.Done)
-    )
+    private fun stepsForConnection() = arrayOf(StepType.Connection, StepType.Done)
 
     data class ViewState(
         val siteUrl: String,
@@ -123,6 +109,7 @@ class JetpackActivationMainViewModel @Inject constructor(
     ) : Parcelable
 
     enum class StepType {
+        // The declaration order is important
         Installation, Activation, Connection, Done
     }
 
@@ -139,6 +126,4 @@ class JetpackActivationMainViewModel @Inject constructor(
         @Parcelize
         data class Error(val code: Int) : StepState
     }
-
-    data class UpdateStepAction(val stepType: StepType, val newState: StepState)
 }
