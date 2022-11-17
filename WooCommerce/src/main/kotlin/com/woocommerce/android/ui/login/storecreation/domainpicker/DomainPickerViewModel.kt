@@ -77,11 +77,11 @@ class DomainPickerViewModel @Inject constructor(
     }
 
     fun onSkipPressed() {
-        // TODO
+        triggerEvent(NavigateToNextStep)
     }
 
     fun onContinueClicked() {
-        // TODO
+        triggerEvent(NavigateToNextStep)
     }
 
     fun onDomainSuggestionSelected(clickedDomain: String) {
@@ -106,4 +106,6 @@ class DomainPickerViewModel @Inject constructor(
     enum class LoadingState {
         Idle, Loading
     }
+
+    object NavigateToNextStep : MultiLiveEvent.Event()
 }
