@@ -12,7 +12,10 @@ import com.woocommerce.android.viewmodel.navArgs
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.async
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.update
 import kotlinx.parcelize.Parcelize
 import org.wordpress.android.fluxc.model.SiteModel
 import javax.inject.Inject
@@ -31,6 +34,7 @@ class JetpackActivationMainViewModel @Inject constructor(
                 "Site not cached"
             }
         }
+    private val updateActions = MutableSharedFlow<UpdateStepAction>()
     private val steps = savedStateHandle.getStateFlow(
         scope = viewModelScope,
         initialValue = if (navArgs.isJetpackInstalled) stepsForConnection() else stepsForInstallation(),
@@ -44,8 +48,54 @@ class JetpackActivationMainViewModel @Inject constructor(
         )
     }.asLiveData()
 
+    init {
+        monitorActionUpdates()
+        monitorSteps()
+        startNextStep()
+    }
+
     fun onCloseClick() {
         triggerEvent(Exit)
+    }
+
+    private fun monitorActionUpdates() {
+        updateActions.onEach { action ->
+            steps.update { steps ->
+                steps.map {
+                    if (it.type != action.stepType) return@map it
+                    it.copy(state = action.newState)
+                }
+            }
+        }
+    }
+
+    private fun monitorSteps() {
+        steps.onEach { steps ->
+            val ongoingStep = steps.firstOrNull { it.state == StepState.Ongoing }?.type ?: return@onEach
+            when (ongoingStep) {
+                StepType.Installation, StepType.Activation -> startJetpackInstallation()
+                StepType.Connection -> startJetpackConnection()
+                StepType.Done -> TODO()
+            }
+        }
+    }
+
+    private fun startNextStep() {
+        steps.value.let { steps ->
+            if (steps.any { it.state == StepState.Ongoing }) return@let
+            val failedStep = steps.firstOrNull { it.state is StepState.Error }
+            (failedStep ?: steps.first { it.state == StepState.Idle }).let {
+                updateActions.tryEmit(UpdateStepAction(it.type, StepState.Ongoing))
+            }
+        }
+    }
+
+    private fun startJetpackInstallation() {
+        TODO("Not yet implemented")
+    }
+
+    private fun startJetpackConnection() {
+        TODO("Not yet implemented")
     }
 
     private fun stepsForInstallation() = listOf(
@@ -89,4 +139,6 @@ class JetpackActivationMainViewModel @Inject constructor(
         @Parcelize
         data class Error(val code: Int) : StepState
     }
+
+    data class UpdateStepAction(val stepType: StepType, val newState: StepState)
 }
