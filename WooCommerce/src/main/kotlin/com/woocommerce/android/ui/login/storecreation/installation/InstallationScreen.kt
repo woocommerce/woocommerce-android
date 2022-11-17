@@ -35,10 +35,8 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.compose.ui.viewinterop.AndroidView
 import com.woocommerce.android.R
 import com.woocommerce.android.R.color
@@ -70,17 +68,13 @@ private fun InstallationSummary(url: String, viewModel: InstallationViewModel) {
             .fillMaxSize()
     ) {
         Text(
-            fontWeight = FontWeight.Bold,
             text = stringResource(id = string.store_creation_installation_success),
             color = colorResource(id = color.color_on_surface),
             textAlign = TextAlign.Center,
-            fontSize = 28.sp,
-            lineHeight = 36.sp,
+            style = MaterialTheme.typography.h5,
             modifier = Modifier
                 .padding(
-                    start = dimensionResource(id = R.dimen.major_350),
-                    end = dimensionResource(id = R.dimen.major_350),
-                    top = dimensionResource(id = R.dimen.major_250),
+                    top = dimensionResource(id = R.dimen.major_350)
                 )
         )
 
