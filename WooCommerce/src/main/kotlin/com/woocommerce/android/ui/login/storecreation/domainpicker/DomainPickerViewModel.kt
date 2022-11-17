@@ -70,10 +70,6 @@ class DomainPickerViewModel @Inject constructor(
         triggerEvent(MultiLiveEvent.Event.Exit)
     }
 
-    fun onSkipPressed() {
-        triggerEvent(NavigateToNextStep)
-    }
-
     fun onContinueClicked() {
         triggerEvent(NavigateToNextStep)
     }

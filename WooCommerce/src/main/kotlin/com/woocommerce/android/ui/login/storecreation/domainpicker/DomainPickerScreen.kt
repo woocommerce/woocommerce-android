@@ -25,7 +25,6 @@ import androidx.compose.material.IconButton
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
-import androidx.compose.material.TextButton
 import androidx.compose.material.TextFieldDefaults
 import androidx.compose.material.TopAppBar
 import androidx.compose.material.icons.Icons
@@ -60,7 +59,6 @@ fun DomainPickerScreen(viewModel: DomainPickerViewModel) {
         Scaffold(topBar = {
             Toolbar(
                 onArrowBackPressed = viewModel::onBackPressed,
-                onSkipPressed = viewModel::onSkipPressed
             )
         }) {
             DomainSearchForm(
@@ -77,7 +75,6 @@ fun DomainPickerScreen(viewModel: DomainPickerViewModel) {
 @Composable
 private fun Toolbar(
     onArrowBackPressed: () -> Unit,
-    onSkipPressed: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     TopAppBar(
@@ -89,11 +86,6 @@ private fun Toolbar(
                     Icons.Filled.ArrowBack,
                     contentDescription = stringResource(id = R.string.back)
                 )
-            }
-        },
-        actions = {
-            TextButton(onClick = onSkipPressed) {
-                Text(text = stringResource(id = R.string.store_creation_domain_picker_skip_button))
             }
         },
         elevation = 0.dp,
