@@ -72,7 +72,7 @@ class DomainPickerFragment : BaseFragment() {
         )
     }
 
-    fun Window.getSoftInputMode(): Int {
+    private fun Window.getSoftInputMode(): Int {
         return attributes.softInputMode
     }
 }
