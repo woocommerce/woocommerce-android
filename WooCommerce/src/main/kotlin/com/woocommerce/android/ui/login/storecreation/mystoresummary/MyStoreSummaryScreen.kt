@@ -157,7 +157,6 @@ private fun StoreDataSummary(myStoreSummaryState: MyStoreSummaryState) {
                     Text(
                         text = myStoreSummaryState.domain,
                         style = MaterialTheme.typography.body2,
-                        color = colorResource(id = R.color.color_on_surface_medium_selector)
                     )
                 }
             }
