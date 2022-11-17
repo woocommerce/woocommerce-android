@@ -44,7 +44,7 @@ class DeveloperOptionsFragment : BaseFragment(R.layout.fragment_developer_option
                 is DeveloperOptionsViewModel.DeveloperOptionsEvents.ShowToastString -> {
                     ToastUtils.showToast(context, event.message)
                 }
-                is DeveloperOptionsViewModel.DeveloperOptionsEvents.ShowDialog -> {
+                is DeveloperOptionsViewModel.DeveloperOptionsEvents.ShowUpdateOptionsDialog -> {
                     showUpdateOptionsDialog(
                         values = event.options,
                         mapper = { requireContext().getString(it.title) },
