@@ -7,7 +7,9 @@ import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
 import androidx.annotation.StringRes
+import androidx.core.view.MenuProvider
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.distinctUntilChanged
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -56,7 +58,8 @@ import javax.inject.Inject
 class VariationDetailFragment :
     BaseFragment(R.layout.fragment_variation_detail),
     BackPressListener,
-    OnGalleryImageInteractionListener {
+    OnGalleryImageInteractionListener,
+    MenuProvider {
     companion object {
         private const val LIST_STATE_KEY = "list_state"
         const val KEY_VARIATION_DETAILS_RESULT = "key_variation_details_result"
@@ -88,7 +91,7 @@ class VariationDetailFragment :
 
         _binding = FragmentVariationDetailBinding.bind(view)
 
-        setHasOptionsMenu(true)
+        requireActivity().addMenuProvider(this, viewLifecycleOwner, Lifecycle.State.RESUMED)
         initializeViews(savedInstanceState)
         initializeViewModel()
     }
@@ -110,19 +113,17 @@ class VariationDetailFragment :
         progressDialog?.dismiss()
     }
 
-    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+    override fun onCreateMenu(menu: Menu, inflater: MenuInflater) {
         inflater.inflate(R.menu.menu_variation_detail_fragment, menu)
         doneOrUpdateMenuItem = menu.findItem(R.id.menu_done)
     }
 
-    override fun onPrepareOptionsMenu(menu: Menu) {
-        super.onPrepareOptionsMenu(menu)
-
+    override fun onPrepareMenu(menu: Menu) {
         doneOrUpdateMenuItem?.isVisible = viewModel.variationViewStateData.liveData.value?.isDoneButtonVisible ?: false
         doneOrUpdateMenuItem?.isEnabled = viewModel.variationViewStateData.liveData.value?.isDoneButtonEnabled ?: true
     }
 
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+    override fun onMenuItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
             R.id.menu_done -> {
                 AnalyticsTracker.track(PRODUCT_VARIATION_UPDATE_BUTTON_TAPPED)
@@ -134,7 +135,7 @@ class VariationDetailFragment :
                 viewModel.onDeleteVariationClicked()
                 true
             }
-            else -> super.onOptionsItemSelected(item)
+            else -> false
         }
     }
 

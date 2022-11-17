@@ -9,8 +9,10 @@ import android.view.MenuItem.OnActionExpandListener
 import android.view.View
 import androidx.appcompat.widget.SearchView
 import androidx.appcompat.widget.SearchView.OnQueryTextListener
+import androidx.core.view.MenuProvider
 import androidx.core.view.isVisible
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.Lifecycle
 import androidx.recyclerview.selection.SelectionPredicates
 import androidx.recyclerview.selection.SelectionTracker
 import androidx.recyclerview.selection.StorageStrategy
@@ -38,7 +40,8 @@ class ProductSelectionListFragment :
     OnLoadMoreListener,
     OnActionModeEventListener,
     OnQueryTextListener,
-    OnActionExpandListener {
+    OnActionExpandListener,
+    MenuProvider {
     @Inject lateinit var uiMessageResolver: UIMessageResolver
     @Inject lateinit var currencyFormatter: CurrencyFormatter
 
@@ -82,7 +85,7 @@ class ProductSelectionListFragment :
         super.onViewCreated(view, savedInstanceState)
 
         _binding = FragmentProductListBinding.bind(view)
-        setHasOptionsMenu(true)
+        requireActivity().addMenuProvider(this, viewLifecycleOwner, Lifecycle.State.RESUMED)
 
         setupObservers(viewModel)
 
@@ -142,23 +145,21 @@ class ProductSelectionListFragment :
             })
     }
 
-    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+    override fun onCreateMenu(menu: Menu, inflater: MenuInflater) {
         inflater.inflate(R.menu.menu_product_list_fragment, menu)
 
         searchMenuItem = menu.findItem(R.id.menu_search)
         searchView = searchMenuItem?.actionView as SearchView?
         searchView?.queryHint = getString(R.string.product_search_hint)
-
-        super.onCreateOptionsMenu(menu, inflater)
     }
 
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+    override fun onMenuItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
             R.id.menu_search -> {
                 enableSearchListeners()
                 true
             }
-            else -> super.onOptionsItemSelected(item)
+            else -> false
         }
     }
 
