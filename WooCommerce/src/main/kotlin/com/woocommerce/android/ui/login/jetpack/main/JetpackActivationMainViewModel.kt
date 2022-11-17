@@ -1,14 +1,9 @@
 package com.woocommerce.android.ui.login.jetpack.main
 
 import android.os.Parcelable
-import androidx.annotation.StringRes
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
-import com.woocommerce.android.R
-import com.woocommerce.android.model.UiString
-import com.woocommerce.android.model.UiString.UiStringRes
-import com.woocommerce.android.model.UiString.UiStringText
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.getStateFlow
@@ -31,28 +26,24 @@ class JetpackActivationMainViewModel @Inject constructor(
         // Just for demo
         initialValue = listOf(
             Step(
-                title = R.string.login_jetpack_steps_installing,
+                type = StepType.Installation,
                 state = StepState.Success
             ),
             Step(
-                title = R.string.login_jetpack_steps_activating,
+                type = StepType.Activation,
                 state = StepState.Ongoing
             ),
+            @Suppress("MagicNumber")
             Step(
-                title = R.string.login_jetpack_steps_activating,
-                state = StepState.Error,
-                additionalInfo = UiStringRes(
-                    R.string.login_jetpack_installation_error_code_template,
-                    listOf(UiStringText("403"))
-                )
+                type = StepType.Activation,
+                state = StepState.Error(403)
             ),
             Step(
-                title = R.string.login_jetpack_steps_authorizing,
-                state = StepState.Idle,
-                additionalInfo = UiStringRes(R.string.login_jetpack_steps_authorizing_hint)
+                type = StepType.Connection,
+                state = StepState.Idle
             ),
             Step(
-                title = R.string.login_jetpack_steps_done,
+                type = StepType.Done,
                 state = StepState.Idle
             )
         ),
@@ -78,12 +69,25 @@ class JetpackActivationMainViewModel @Inject constructor(
 
     @Parcelize
     data class Step(
-        @StringRes val title: Int,
-        val state: StepState,
-        val additionalInfo: UiString? = null
+        val type: StepType,
+        val state: StepState
     ) : Parcelable
 
-    enum class StepState {
-        Idle, Ongoing, Success, Error
+    enum class StepType {
+        Installation, Activation, Connection, Done
+    }
+
+    sealed interface StepState : Parcelable {
+        @Parcelize
+        object Idle : StepState
+
+        @Parcelize
+        object Ongoing : StepState
+
+        @Parcelize
+        object Success : StepState
+
+        @Parcelize
+        data class Error(val code: Int) : StepState
     }
 }

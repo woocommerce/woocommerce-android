@@ -40,10 +40,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.woocommerce.android.R
-import com.woocommerce.android.model.UiString.UiStringRes
-import com.woocommerce.android.model.UiString.UiStringText
 import com.woocommerce.android.ui.compose.annotatedStringRes
-import com.woocommerce.android.ui.compose.component.getText
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.ui.login.jetpack.components.JetpackToWooHeader
 
@@ -124,7 +121,7 @@ private fun JetpackActivationStep(step: JetpackActivationMainViewModel.Step, mod
                     modifier = indicatorModifier
                 )
             }
-            JetpackActivationMainViewModel.StepState.Error -> {
+            is JetpackActivationMainViewModel.StepState.Error -> {
                 Icon(
                     painter = painterResource(id = R.drawable.ic_gridicons_notice),
                     contentDescription = null,
@@ -137,7 +134,7 @@ private fun JetpackActivationStep(step: JetpackActivationMainViewModel.Step, mod
         Column {
             val isIdle = step.state == JetpackActivationMainViewModel.StepState.Idle
             Text(
-                text = stringResource(id = step.title),
+                text = stringResource(id = step.type.title),
                 style = MaterialTheme.typography.subtitle1,
                 fontWeight = if (isIdle) FontWeight.Normal
                 else FontWeight.Bold,
@@ -146,26 +143,29 @@ private fun JetpackActivationStep(step: JetpackActivationMainViewModel.Step, mod
                     else R.color.color_on_surface
                 )
             )
-            step.additionalInfo?.let { infoText ->
-                Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.minor_50)))
+
+            if (step.state is JetpackActivationMainViewModel.StepState.Error) {
+                Text(
+                    text = stringResource(
+                        id = R.string.login_jetpack_installation_error_code_template, step.state.code
+                    ),
+                    color = colorResource(id = R.color.color_error),
+                    style = MaterialTheme.typography.caption,
+                    fontWeight = FontWeight.SemiBold
+                )
+            } else if (step.type == JetpackActivationMainViewModel.StepType.Connection) {
                 Row(
                     horizontalArrangement = Arrangement.spacedBy(dimensionResource(id = R.dimen.minor_50)),
                 ) {
-                    val isError = step.state == JetpackActivationMainViewModel.StepState.Error
-                    if (!isError) {
-                        Icon(
-                            imageVector = Icons.Default.Info,
-                            contentDescription = null,
-                            tint = colorResource(id = R.color.woo_orange_50),
-                            modifier = Modifier.size(dimensionResource(id = R.dimen.image_minor_40))
-                        )
-                    }
+                    Icon(
+                        imageVector = Icons.Default.Info,
+                        contentDescription = null,
+                        tint = colorResource(id = R.color.woo_orange_50),
+                        modifier = Modifier.size(dimensionResource(id = R.dimen.image_minor_40))
+                    )
                     Text(
-                        text = infoText.getText(),
-                        color = colorResource(
-                            id = if (isError) R.color.color_error
-                            else R.color.woo_orange_50
-                        ),
+                        text = stringResource(id = R.string.login_jetpack_steps_authorizing_hint),
+                        color = colorResource(R.color.woo_orange_50),
                         style = MaterialTheme.typography.caption,
                         fontWeight = FontWeight.SemiBold
                     )
@@ -189,6 +189,14 @@ private fun IdleCircle(modifier: Modifier = Modifier) {
         )
     }
 }
+
+private val JetpackActivationMainViewModel.StepType.title
+    get() = when (this) {
+        JetpackActivationMainViewModel.StepType.Installation -> R.string.login_jetpack_steps_installing
+        JetpackActivationMainViewModel.StepType.Activation -> R.string.login_jetpack_steps_activating
+        JetpackActivationMainViewModel.StepType.Connection -> R.string.login_jetpack_steps_authorizing
+        JetpackActivationMainViewModel.StepType.Done -> R.string.login_jetpack_steps_done
+    }
 
 @Composable
 private fun Toolbar(
@@ -221,28 +229,23 @@ private fun JetpackActivationMainScreenPreview() {
                 isJetpackInstalled = false,
                 steps = listOf(
                     JetpackActivationMainViewModel.Step(
-                        title = R.string.login_jetpack_steps_installing,
+                        type = JetpackActivationMainViewModel.StepType.Installation,
                         state = JetpackActivationMainViewModel.StepState.Success
                     ),
                     JetpackActivationMainViewModel.Step(
-                        title = R.string.login_jetpack_steps_activating,
+                        type = JetpackActivationMainViewModel.StepType.Activation,
                         state = JetpackActivationMainViewModel.StepState.Ongoing
                     ),
                     JetpackActivationMainViewModel.Step(
-                        title = R.string.login_jetpack_steps_activating,
-                        state = JetpackActivationMainViewModel.StepState.Error,
-                        additionalInfo = UiStringRes(
-                            R.string.login_jetpack_installation_error_code_template,
-                            listOf(UiStringText("403"))
-                        )
+                        type = JetpackActivationMainViewModel.StepType.Activation,
+                        state = JetpackActivationMainViewModel.StepState.Error(403)
                     ),
                     JetpackActivationMainViewModel.Step(
-                        title = R.string.login_jetpack_steps_authorizing,
-                        state = JetpackActivationMainViewModel.StepState.Idle,
-                        additionalInfo = UiStringRes(R.string.login_jetpack_steps_authorizing_hint)
+                        type = JetpackActivationMainViewModel.StepType.Connection,
+                        state = JetpackActivationMainViewModel.StepState.Idle
                     ),
                     JetpackActivationMainViewModel.Step(
-                        title = R.string.login_jetpack_steps_done,
+                        type = JetpackActivationMainViewModel.StepType.Done,
                         state = JetpackActivationMainViewModel.StepState.Idle
                     )
                 )
