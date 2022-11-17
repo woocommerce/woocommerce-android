@@ -4,23 +4,33 @@ import android.os.Parcelable
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
+import com.woocommerce.android.ui.login.jetpack.JetpackActivationRepository
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.getStateFlow
 import com.woocommerce.android.viewmodel.navArgs
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Deferred
+import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.map
 import kotlinx.parcelize.Parcelize
+import org.wordpress.android.fluxc.model.SiteModel
 import javax.inject.Inject
 
 private const val STEPS_SAVED_STATE_KEY = "steps"
 
 @HiltViewModel
 class JetpackActivationMainViewModel @Inject constructor(
-    savedStateHandle: SavedStateHandle
+    savedStateHandle: SavedStateHandle,
+    private val jetpackActivationRepository: JetpackActivationRepository
 ) : ScopedViewModel(savedStateHandle) {
     private val navArgs: JetpackActivationMainFragmentArgs by savedStateHandle.navArgs()
-
+    private val site: Deferred<SiteModel>
+        get() = async {
+            requireNotNull(jetpackActivationRepository.getSiteByUrl(navArgs.siteUrl)) {
+                "Site not cached"
+            }
+        }
     private val steps = savedStateHandle.getStateFlow(
         scope = viewModelScope,
         initialValue = emptyList<Step>(),
