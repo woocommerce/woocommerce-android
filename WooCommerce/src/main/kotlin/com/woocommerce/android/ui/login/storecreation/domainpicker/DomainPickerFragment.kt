@@ -4,6 +4,8 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.Window
+import android.view.WindowManager
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.fragment.app.viewModels
@@ -27,7 +29,12 @@ class DomainPickerFragment : BaseFragment() {
     override val activityAppBarStatus: AppBarStatus
         get() = AppBarStatus.Hidden
 
+    private var originalSoftInputMode: Int? = null
+
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
+        originalSoftInputMode = requireActivity().window.getSoftInputMode()
+        requireActivity().window.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_NOTHING)
+
         return ComposeView(requireContext()).apply {
             setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
             setContent {
@@ -41,6 +48,11 @@ class DomainPickerFragment : BaseFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         setupObservers()
+    }
+
+    override fun onDestroyView() {
+        originalSoftInputMode?.let { requireActivity().window.setSoftInputMode(it) }
+        super.onDestroyView()
     }
 
     private fun setupObservers() {
@@ -58,5 +70,9 @@ class DomainPickerFragment : BaseFragment() {
             DomainPickerFragmentDirections
                 .actionDomainPickerFragmentToMyStoreSummaryFragment()
         )
+    }
+
+    fun Window.getSoftInputMode(): Int {
+        return attributes.softInputMode
     }
 }
