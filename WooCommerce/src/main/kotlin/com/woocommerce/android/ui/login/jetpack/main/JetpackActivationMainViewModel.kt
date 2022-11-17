@@ -33,7 +33,7 @@ class JetpackActivationMainViewModel @Inject constructor(
         }
     private val steps = savedStateHandle.getStateFlow(
         scope = viewModelScope,
-        initialValue = emptyList<Step>(),
+        initialValue = if (navArgs.isJetpackInstalled) stepsForConnection() else stepsForInstallation(),
         key = STEPS_SAVED_STATE_KEY
     )
     val viewState = steps.map {
@@ -48,6 +48,18 @@ class JetpackActivationMainViewModel @Inject constructor(
         triggerEvent(Exit)
     }
 
+    private fun stepsForInstallation() = listOf(
+        Step(type = StepType.Installation),
+        Step(type = StepType.Activation),
+        Step(type = StepType.Connection),
+        Step(type = StepType.Done)
+    )
+
+    private fun stepsForConnection() = listOf(
+        Step(type = StepType.Connection),
+        Step(type = StepType.Done)
+    )
+
     data class ViewState(
         val siteUrl: String,
         val isJetpackInstalled: Boolean,
@@ -57,7 +69,7 @@ class JetpackActivationMainViewModel @Inject constructor(
     @Parcelize
     data class Step(
         val type: StepType,
-        val state: StepState
+        val state: StepState = StepState.Idle
     ) : Parcelable
 
     enum class StepType {
