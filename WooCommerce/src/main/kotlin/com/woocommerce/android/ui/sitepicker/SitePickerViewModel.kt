@@ -84,8 +84,6 @@ class SitePickerViewModel @Inject constructor(
     val shouldShowToolbar: Boolean
         get() = !navArgs.openedFromLogin
 
-    private val navSource = getNavigationSource()
-
     init {
         when (navArgs.openedFromLogin) {
             true -> loadLoginView()
@@ -421,19 +419,7 @@ class SitePickerViewModel @Inject constructor(
 
     fun onAddStoreClick() {
         analyticsTrackerWrapper.track(AnalyticsEvent.SITE_PICKER_ADD_A_STORE_TAPPED)
-        triggerEvent(NavigateToAddStoreEvent(navSource))
-    }
-
-    private fun getNavigationSource(): String {
-        return if (navArgs.openedFromLogin) {
-            if (appPrefsWrapper.getIsNewSignUp()) {
-                AnalyticsTracker.VALUE_PROLOGUE
-            } else {
-                AnalyticsTracker.VALUE_LOGIN
-            }
-        } else {
-            AnalyticsTracker.VALUE_SWITCHING_STORE
-        }
+        triggerEvent(NavigateToAddStoreEvent)
     }
 
     fun onTryAnotherAccountButtonClick() {
@@ -624,7 +610,7 @@ class SitePickerViewModel @Inject constructor(
 
     private fun startStoreCreationWebFlow() {
         appPrefsWrapper.markAsNewSignUp(false)
-        triggerEvent(NavigateToStoreCreationEvent(navSource))
+        triggerEvent(NavigateToStoreCreationEvent)
     }
 
     private fun trackLoginEvent(
@@ -687,8 +673,8 @@ class SitePickerViewModel @Inject constructor(
         object NavigateToMainActivityEvent : SitePickerEvent()
         object NavigateToEmailHelpDialogEvent : SitePickerEvent()
         object NavigateToNewToWooEvent : SitePickerEvent()
-        data class NavigateToAddStoreEvent(val source: String) : SitePickerEvent()
-        data class NavigateToStoreCreationEvent(val source: String) : SitePickerEvent()
+        object NavigateToAddStoreEvent : SitePickerEvent()
+        object NavigateToStoreCreationEvent : SitePickerEvent()
         data class NavigateToHelpFragmentEvent(val origin: HelpActivity.Origin) : SitePickerEvent()
         data class NavigateToWPComWebView(
             val url: String,

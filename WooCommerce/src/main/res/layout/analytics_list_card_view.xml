@@ -115,55 +115,6 @@
             tools:itemCount="6"
             tools:listitem="@layout/analytics_list_card_item_view"/>
 
-        <View
-            android:id="@+id/divider"
-            android:layout_height="1dp"
-            android:layout_width="match_parent"
-            android:background="@color/divider_color"
-            android:layout_marginTop="@dimen/major_75"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/analyticsItemsList" />
-
-        <com.google.android.material.textview.MaterialTextView
-            android:id="@+id/seeReportText"
-            style="@style/Woo.Card.Title"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="@dimen/minor_00"
-            android:layout_marginTop="@dimen/minor_00"
-            android:layout_marginEnd="@dimen/minor_00"
-            android:layout_marginBottom="@dimen/minor_00"
-            android:background="?attr/selectableItemBackground"
-            android:gravity="fill_vertical"
-            android:lineSpacingExtra="@dimen/minor_50"
-            android:paddingStart="@dimen/major_75"
-            android:paddingEnd="@dimen/major_75"
-            android:paddingTop="@dimen/major_85"
-            android:paddingBottom="@dimen/major_85"
-            android:text="@string/analytics_see_report_button_text"
-            android:textSize="@dimen/text_minor_125"
-            android:translationZ="100dp"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/divider" />
-
-        <ImageView
-            android:id="@+id/seeReportArrowImage"
-            android:layout_width="wrap_content"
-            android:layout_height="0dp"
-            android:background="?attr/selectableItemBackground"
-            android:clickable="true"
-            android:contentDescription="@string/analytics_see_report_button_content_description"
-            android:focusable="true"
-            android:paddingEnd="@dimen/major_100"
-            android:paddingStart="@dimen/major_100"
-            app:layout_constraintBottom_toBottomOf="@+id/seeReportText"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="@+id/seeReportText"
-            app:srcCompat="@drawable/ic_arrow_right" />
-
     </androidx.constraintlayout.widget.ConstraintLayout>
 </merge>
 

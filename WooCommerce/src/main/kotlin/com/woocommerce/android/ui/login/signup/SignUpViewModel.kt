@@ -5,10 +5,12 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
+import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.tools.NetworkStatus
+import com.woocommerce.android.ui.login.signup.SignUpFragment.NextStep
 import com.woocommerce.android.ui.login.signup.SignUpRepository.AccountCreationError
 import com.woocommerce.android.ui.login.signup.SignUpRepository.AccountCreationSuccess
 import com.woocommerce.android.ui.login.signup.SignUpRepository.SignUpError
@@ -27,7 +29,10 @@ class SignUpViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
     private val signUpRepository: SignUpRepository,
     private val networkStatus: NetworkStatus,
+    private val appPrefs: AppPrefsWrapper
 ) : ScopedViewModel(savedStateHandle) {
+    lateinit var nextStep: NextStep
+
     private val _viewState = MutableLiveData<SignUpState>()
     val viewState: LiveData<SignUpState> = _viewState
 
@@ -74,6 +79,9 @@ class SignUpViewModel @Inject constructor(
                 AccountCreationSuccess -> {
                     AnalyticsTracker.track(stat = AnalyticsEvent.SIGNUP_SUCCESS)
                     _viewState.value = _viewState.value?.copy(isLoading = false)
+                    if (nextStep == NextStep.STORE_CREATION) {
+                        appPrefs.markAsNewSignUp(true)
+                    }
                     triggerEvent(OnAccountCreated)
                 }
             }
