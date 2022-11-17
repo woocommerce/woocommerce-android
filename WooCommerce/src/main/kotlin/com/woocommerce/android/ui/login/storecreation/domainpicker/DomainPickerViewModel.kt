@@ -5,6 +5,7 @@ import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.AppConstants
 import com.woocommerce.android.R
+import com.woocommerce.android.ui.login.storecreation.NewStore
 import com.woocommerce.android.ui.login.storecreation.domainpicker.DomainPickerViewModel.LoadingState.Idle
 import com.woocommerce.android.ui.login.storecreation.domainpicker.DomainPickerViewModel.LoadingState.Loading
 import com.woocommerce.android.viewmodel.MultiLiveEvent
@@ -26,9 +27,10 @@ import javax.inject.Inject
 @HiltViewModel
 class DomainPickerViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
-    domainSuggestionsRepository: DomainSuggestionsRepository
+    domainSuggestionsRepository: DomainSuggestionsRepository,
+    newStore: NewStore
 ) : ScopedViewModel(savedStateHandle) {
-    private val domainQuery = savedState.getStateFlow(this, "")
+    private val domainQuery = savedState.getStateFlow(this, newStore.store.value.name ?: "")
     private val loadingState = MutableStateFlow(Idle)
     private val domainSuggestionsUi = domainSuggestionsRepository.domainSuggestions
     private val selectedDomain = MutableStateFlow("")
