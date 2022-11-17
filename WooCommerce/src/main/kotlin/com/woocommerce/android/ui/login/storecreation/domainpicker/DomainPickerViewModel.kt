@@ -20,6 +20,7 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -28,7 +29,7 @@ import javax.inject.Inject
 class DomainPickerViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
     domainSuggestionsRepository: DomainSuggestionsRepository,
-    newStore: NewStore
+    private val newStore: NewStore
 ) : ScopedViewModel(savedStateHandle) {
     private val domainQuery = savedState.getStateFlow(this, newStore.store.value.name ?: "")
     private val loadingState = MutableStateFlow(Idle)
@@ -71,6 +72,9 @@ class DomainPickerViewModel @Inject constructor(
     }
 
     fun onContinueClicked() {
+        newStore.store.update {
+            it.copy(domain = selectedDomain.value)
+        }
         triggerEvent(NavigateToNextStep)
     }
 
