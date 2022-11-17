@@ -43,11 +43,10 @@ class PlansFragment : BaseFragment() {
         viewModel.event.observe(viewLifecycleOwner) { event ->
             when (event) {
                 is MultiLiveEvent.Event.Exit -> findNavController().popBackStack()
-                is NavigateToNextStep ->navigateToInstallationFragment()
+                is NavigateToNextStep -> navigateToInstallationFragment()
             }
         }
     }
-
 
     private fun navigateToInstallationFragment() {
         findNavController().navigateSafely(

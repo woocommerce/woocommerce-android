@@ -5,12 +5,11 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
 import com.woocommerce.android.ui.common.wpcomwebview.WPComWebViewAuthenticator
 import com.woocommerce.android.ui.login.storecreation.installation.InstallationViewModel.ViewState.LoadingState
-import com.woocommerce.android.ui.login.storecreation.installation.InstallationViewModel.ViewState.PreviewState
+import com.woocommerce.android.ui.login.storecreation.installation.InstallationViewModel.ViewState.SuccessState
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.getStateFlow
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.parcelize.Parcelize
@@ -30,7 +29,7 @@ class InstallationViewModel @Inject constructor(
 
     init {
         launch {
-            _viewState.update { PreviewState(url) }
+            _viewState.update { SuccessState(url) }
         }
     }
 
@@ -54,7 +53,7 @@ class InstallationViewModel @Inject constructor(
         object ErrorState : ViewState
 
         @Parcelize
-        data class PreviewState(val url: String) : ViewState
+        data class SuccessState(val url: String) : ViewState
     }
 
     data class OpenStore(val url: String) : Event()

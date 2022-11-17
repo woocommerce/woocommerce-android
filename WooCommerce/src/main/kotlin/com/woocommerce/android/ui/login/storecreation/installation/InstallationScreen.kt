@@ -48,23 +48,21 @@ import com.woocommerce.android.ui.compose.component.WCColoredButton
 import com.woocommerce.android.ui.compose.component.WCOutlinedButton
 import com.woocommerce.android.ui.login.storecreation.installation.InstallationViewModel.ViewState.ErrorState
 import com.woocommerce.android.ui.login.storecreation.installation.InstallationViewModel.ViewState.LoadingState
-import com.woocommerce.android.ui.login.storecreation.installation.InstallationViewModel.ViewState.PreviewState
-
+import com.woocommerce.android.ui.login.storecreation.installation.InstallationViewModel.ViewState.SuccessState
 
 @Composable
 fun InstallationScreen(viewModel: InstallationViewModel) {
     viewModel.viewState.observeAsState(LoadingState).value.let { viewState ->
         when (viewState) {
-            is PreviewState -> StorePreview(viewState.url, viewModel)
+            is SuccessState -> InstallationSummary(viewState.url, viewModel)
             is ErrorState -> InstallationError(viewModel)
             LoadingState -> InstallationInProgress()
         }
     }
 }
 
-@SuppressLint("SetJavaScriptEnabled", "ClickableViewAccessibility")
 @Composable
-private fun StorePreview(url: String, viewModel: InstallationViewModel) {
+private fun InstallationSummary(url: String, viewModel: InstallationViewModel) {
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
         modifier = Modifier
@@ -100,68 +98,7 @@ private fun StorePreview(url: String, viewModel: InstallationViewModel) {
                     .height(410.dp)
                     .align(Alignment.Center)
             ) {
-                Box(
-                    modifier = Modifier
-                        .padding(dimensionResource(id = R.dimen.minor_100))
-                        .fillMaxSize()
-                        .clip(RoundedCornerShape(dimensionResource(id = R.dimen.minor_100)))
-                        .border(
-                            BorderStroke(
-                                dimensionResource(id = dimen.minor_10),
-                                colorResource(id = R.color.gray_0)
-                            )
-                        )
-                ) {
-                    var progress by remember { mutableStateOf(0) }
-
-                    CircularProgressIndicator(
-                        progress = (progress / 100f),
-                        modifier = Modifier
-                            .align(Alignment.Center)
-                            .alpha(if (progress == 100) 0f else 1f)
-                    )
-                    AndroidView(
-                        factory = { context ->
-                            WebView(context).apply {
-                                layoutParams = LayoutParams(
-                                    LayoutParams.MATCH_PARENT,
-                                    LayoutParams.MATCH_PARENT
-                                )
-
-                                this.settings.javaScriptEnabled = true
-                                this.settings.useWideViewPort = true
-                                this.settings.loadWithOverviewMode = true
-                                this.setInitialScale(50)
-
-                                this.webViewClient = object : WebViewClient() {
-                                    override fun onPageStarted(view: WebView?, url: String?, favicon: Bitmap?) {
-                                        view?.evaluateJavascript(
-                                            "document.querySelector('meta[name=\"viewport\"]').setAttribute('content', 'width=1280, initial-scale=' + (document.documentElement.clientWidth / 1280));",
-                                            null
-                                        )
-                                    }
-                                }
-
-                                this.webChromeClient = object : WebChromeClient() {
-                                    override fun onProgressChanged(view: WebView?, newProgress: Int) {
-                                        progress = newProgress
-                                        if (progress == 100) {
-                                            view?.settings?.javaScriptEnabled = false
-                                            view?.stopLoading()
-                                        }
-                                    }
-                                }
-
-                                this.setOnTouchListener { _, _ -> true }
-                            }.also {
-                                it.loadUrl(url)
-                            }
-                        },
-                        modifier = Modifier
-                            .padding(dimensionResource(id = R.dimen.minor_50))
-                            .alpha(if (progress == 100) 1f else 0f)
-                    )
-                }
+                PreviewWebView(url)
             }
         }
 
@@ -192,6 +129,75 @@ private fun StorePreview(url: String, viewModel: InstallationViewModel) {
                 text = stringResource(id = string.store_creation_installation_show_preview_button)
             )
         }
+    }
+}
+
+@Composable
+@SuppressLint("SetJavaScriptEnabled", "ClickableViewAccessibility")
+private fun PreviewWebView(url: String) {
+    Box(
+        modifier = Modifier
+            .padding(dimensionResource(id = dimen.minor_100))
+            .fillMaxSize()
+            .clip(RoundedCornerShape(dimensionResource(id = dimen.minor_100)))
+            .border(
+                BorderStroke(
+                    dimensionResource(id = dimen.minor_10),
+                    colorResource(id = color.gray_0)
+                )
+            )
+    ) {
+        var progress by remember { mutableStateOf(0) }
+
+        CircularProgressIndicator(
+            progress = (progress / 100f),
+            modifier = Modifier
+                .align(Alignment.Center)
+                .alpha(if (progress == 100) 0f else 1f)
+        )
+        AndroidView(
+            factory = { context ->
+                WebView(context).apply {
+                    layoutParams = LayoutParams(
+                        LayoutParams.MATCH_PARENT,
+                        LayoutParams.MATCH_PARENT
+                    )
+
+                    this.settings.javaScriptEnabled = true
+                    this.settings.useWideViewPort = true
+                    this.settings.loadWithOverviewMode = true
+                    this.setInitialScale(50)
+
+                    this.webViewClient = object : WebViewClient() {
+                        override fun onPageStarted(view: WebView?, url: String?, favicon: Bitmap?) {
+                            view?.evaluateJavascript(
+                                /* script = */ "document.querySelector('meta[name=\"viewport\"]')" +
+                                    ".setAttribute('content', 'width=1280, initial-scale='" +
+                                    " + (document.documentElement.clientWidth / 1280));",
+                                /* resultCallback = */ null
+                            )
+                        }
+                    }
+
+                    this.webChromeClient = object : WebChromeClient() {
+                        override fun onProgressChanged(view: WebView?, newProgress: Int) {
+                            progress = newProgress
+                            if (progress == 100) {
+                                view?.settings?.javaScriptEnabled = false
+                                view?.stopLoading()
+                            }
+                        }
+                    }
+
+                    this.setOnTouchListener { _, _ -> true }
+                }.also {
+                    it.loadUrl(url)
+                }
+            },
+            modifier = Modifier
+                .padding(dimensionResource(id = dimen.minor_50))
+                .alpha(if (progress == 100) 1f else 0f)
+        )
     }
 }
 
