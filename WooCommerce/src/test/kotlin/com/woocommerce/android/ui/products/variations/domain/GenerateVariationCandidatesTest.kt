@@ -16,9 +16,9 @@ class GenerateVariationCandidatesTest {
         // given
         val product = ProductHelper.getDefaultNewProduct(ProductType.VARIABLE, isVirtual = false).copy(
             attributes = listOf(
-                ProductAttribute(id = 1, name = "Size", terms = listOf("S", "M")),
-                ProductAttribute(id = 2, name = "Color", terms = listOf("Red", "Blue")),
-                ProductAttribute(id = 2, name = "Type", terms = listOf("Sport", "Casual"))
+                ProductAttribute(id = 1, name = "Size", terms = listOf("S", "M"), isVariation = true),
+                ProductAttribute(id = 2, name = "Color", terms = listOf("Red", "Blue"), isVariation = true),
+                ProductAttribute(id = 2, name = "Type", terms = listOf("Sport", "Casual"), isVariation = true)
             )
         )
 
@@ -73,5 +73,35 @@ class GenerateVariationCandidatesTest {
 
         // then
         assertThat(result).isEmpty()
+    }
+
+    @Test
+    fun `should not generate all variation candidates with an attribute that is non variable one`() {
+        // given
+        val product = ProductHelper.getDefaultNewProduct(ProductType.VARIABLE, isVirtual = false).copy(
+            attributes = listOf(
+                ProductAttribute(id = 1, name = "Size", terms = listOf("S", "M"), isVariation = true),
+                ProductAttribute(id = 2, name = "Color", terms = listOf("Red", "Blue"), isVariation = true),
+                ProductAttribute(id = 2, name = "Type", terms = listOf("Sport", "Casual"), isVariation = false)
+            )
+        )
+
+        val expectedVariationCandidates = listOf(
+            Pair("M", "Blue"),
+            Pair("S", "Blue"),
+            Pair("M", "Red"),
+            Pair("S", "Red"),
+        ).map { triple ->
+            listOf(
+                TermAssignment("Size", triple.first),
+                TermAssignment("Color", triple.second),
+            )
+        }
+
+        // when
+        val result = sut.invoke(product)
+
+        // then
+        assertThat(result).containsExactlyInAnyOrderElementsOf(expectedVariationCandidates)
     }
 }

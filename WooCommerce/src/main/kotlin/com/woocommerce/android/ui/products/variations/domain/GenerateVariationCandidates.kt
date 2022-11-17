@@ -1,6 +1,7 @@
 package com.woocommerce.android.ui.products.variations.domain
 
 import com.woocommerce.android.model.Product
+import com.woocommerce.android.model.ProductAttribute
 import com.woocommerce.android.ui.products.ProductType
 
 data class TermAssignment(val attributeName: String, val termName: String)
@@ -13,13 +14,15 @@ class GenerateVariationCandidates {
             return emptyList()
         }
 
-        val termAssignmentsGroupedByAttribute: List<List<TermAssignment>> = product.attributes.map { productAttribute ->
-            productAttribute.terms.map { term ->
-                TermAssignment(
-                    attributeName = productAttribute.name, termName = term
-                )
+        val termAssignmentsGroupedByAttribute: List<List<TermAssignment>> = product.attributes
+            .filter(ProductAttribute::isVariation)
+            .map { productAttribute ->
+                productAttribute.terms.map { term ->
+                    TermAssignment(
+                        attributeName = productAttribute.name, termName = term
+                    )
+                }
             }
-        }
 
         val variationCandidates = cartesianProductForTermAssignments(termAssignmentsGroupedByAttribute)
 
