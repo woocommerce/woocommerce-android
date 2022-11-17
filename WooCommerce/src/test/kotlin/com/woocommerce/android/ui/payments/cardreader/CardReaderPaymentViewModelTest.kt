@@ -5,7 +5,9 @@ import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.R
 import com.woocommerce.android.cardreader.CardReaderManager
 import com.woocommerce.android.cardreader.connection.CardReaderStatus
+import com.woocommerce.android.cardreader.connection.event.BatteryStatus
 import com.woocommerce.android.cardreader.connection.event.BluetoothCardReaderMessages
+import com.woocommerce.android.cardreader.connection.event.CardReaderBatteryStatus
 import com.woocommerce.android.cardreader.payments.CardInteracRefundStatus
 import com.woocommerce.android.cardreader.payments.CardInteracRefundStatus.RefundStatusErrorType.DeclinedByBackendError.CardDeclined
 import com.woocommerce.android.cardreader.payments.CardPaymentStatus
@@ -92,6 +94,7 @@ import org.mockito.kotlin.clearInvocations
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.doSuspendableAnswer
 import org.mockito.kotlin.eq
+import org.mockito.kotlin.inOrder
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.never
 import org.mockito.kotlin.times
@@ -2942,6 +2945,25 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
         }
 
     //endregion - Interac Refund tests
+
+    @Test
+    fun `when new battery status event is received, then tracking is updated with new battery level`() =
+        testBlocking {
+            val batteryLevel1 = .5F
+            val batteryLevel2 = .45F
+            whenever(cardReaderManager.batteryStatus).thenAnswer {
+                flow {
+                    emit(CardReaderBatteryStatus.StatusChanged(batteryLevel1, BatteryStatus.NOMINAL, false))
+                    emit(CardReaderBatteryStatus.StatusChanged(batteryLevel2, BatteryStatus.NOMINAL, false))
+                }
+            }
+
+            viewModel.start()
+
+            val inOrder = inOrder(cardReaderTrackingInfoKeeper)
+            inOrder.verify(cardReaderTrackingInfoKeeper).setCardReaderBatteryLevel(batteryLevel1)
+            inOrder.verify(cardReaderTrackingInfoKeeper).setCardReaderBatteryLevel(batteryLevel2)
+        }
 
     private suspend fun simulateFetchOrderJobState(inProgress: Boolean) {
         if (inProgress) {
