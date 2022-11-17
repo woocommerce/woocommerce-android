@@ -8,10 +8,10 @@
 
     <androidx.appcompat.widget.AppCompatImageView
         android:id="@+id/developerOptionsSpinnerIcon"
-        android:layout_width="100dp"
-        android:layout_height="100dp"
-        android:layout_marginTop="0.5dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:padding="@dimen/major_85"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:srcCompat="@drawable/img_card_reader_update_progress"

@@ -48,7 +48,7 @@ abstract class DeveloperOptionsViewHolder(val parent: ViewGroup, @LayoutRes layo
     }
 
     class SpinnerViewHolder(parent: ViewGroup) :
-        DeveloperOptionsViewHolder(parent, R.layout.developer_options_spinner_item) {
+        DeveloperOptionsViewHolder(parent, R.layout.`developer_options_update_reader_item.xml`) {
         var binding: DeveloperOptionsSpinnerItemBinding = DeveloperOptionsSpinnerItemBinding.bind(itemView)
         override fun onBind(uiState: ListItem) {
             uiState as SpinnerListItem
