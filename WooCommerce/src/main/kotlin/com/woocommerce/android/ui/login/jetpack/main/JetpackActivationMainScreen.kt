@@ -146,9 +146,9 @@ private fun JetpackActivationStep(step: JetpackActivationMainViewModel.Step, mod
 
             if (step.state is JetpackActivationMainViewModel.StepState.Error) {
                 Text(
-                    text = stringResource(
-                        id = R.string.login_jetpack_installation_error_code_template, step.state.code
-                    ),
+                    text = step.state.code?.let {
+                        stringResource(id = R.string.login_jetpack_installation_error_code_template, it)
+                    } ?: "",
                     color = colorResource(id = R.color.color_error),
                     style = MaterialTheme.typography.caption,
                     fontWeight = FontWeight.SemiBold

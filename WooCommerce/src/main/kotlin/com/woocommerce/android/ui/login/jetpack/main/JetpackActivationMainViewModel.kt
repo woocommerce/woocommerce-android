@@ -4,20 +4,29 @@ import android.os.Parcelable
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
+import com.woocommerce.android.ui.common.PluginRepository
+import com.woocommerce.android.ui.common.PluginRepository.PluginStatus.PluginActivated
+import com.woocommerce.android.ui.common.PluginRepository.PluginStatus.PluginActivationFailed
+import com.woocommerce.android.ui.common.PluginRepository.PluginStatus.PluginInstallFailed
+import com.woocommerce.android.ui.common.PluginRepository.PluginStatus.PluginInstalled
 import com.woocommerce.android.ui.login.jetpack.JetpackActivationRepository
+import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.getStateFlow
 import com.woocommerce.android.viewmodel.navArgs
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Deferred
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
 import kotlinx.parcelize.Parcelize
 import org.wordpress.android.fluxc.model.SiteModel
 import javax.inject.Inject
@@ -25,8 +34,14 @@ import javax.inject.Inject
 @HiltViewModel
 class JetpackActivationMainViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
-    private val jetpackActivationRepository: JetpackActivationRepository
+    private val jetpackActivationRepository: JetpackActivationRepository,
+    private val pluginRepository: PluginRepository
 ) : ScopedViewModel(savedStateHandle) {
+    companion object {
+        private const val JETPACK_SLUG = "jetpack"
+        private const val JETPACK_NAME = "jetpack/jetpack"
+    }
+
     private val navArgs: JetpackActivationMainFragmentArgs by savedStateHandle.navArgs()
     private val site: Deferred<SiteModel>
         get() = async {
@@ -34,6 +49,8 @@ class JetpackActivationMainViewModel @Inject constructor(
                 "Site not cached"
             }
         }
+    private var installationJob: Job? = null
+
     private val currentStep = savedStateHandle.getStateFlow(
         scope = viewModelScope,
         initialValue = Step(if (navArgs.isJetpackInstalled) StepType.Connection else StepType.Installation),
@@ -76,20 +93,46 @@ class JetpackActivationMainViewModel @Inject constructor(
             .filter { it.state == StepState.Ongoing }
             .distinctUntilChanged { step1, step2 -> step1.type == step2.type }
             .onEach {
+                WooLog.d(WooLog.T.LOGIN, "Jetpack Activation: handle step: $it")
                 when (it.type) {
                     StepType.Installation, StepType.Activation -> startJetpackInstallation()
                     StepType.Connection -> startJetpackConnection()
                     StepType.Done -> TODO()
                 }
             }
+            .launchIn(viewModelScope)
     }
 
     private fun startJetpackInstallation() {
-        TODO("Not yet implemented")
+        if (installationJob?.isActive == true) return
+        WooLog.d(WooLog.T.LOGIN, "Jetpack Activation: start Jetpack Installation")
+        installationJob = launch {
+            pluginRepository.installPlugin(
+                site = site.await(),
+                slug = JETPACK_SLUG,
+                name = JETPACK_NAME
+            ).collect { status ->
+                when (status) {
+                    is PluginInstalled -> {
+                        currentStep.value = Step(type = StepType.Activation, state = StepState.Ongoing)
+                    }
+                    is PluginInstallFailed -> {
+                        currentStep.value =
+                            Step(type = StepType.Installation, state = StepState.Error(status.errorCode))
+                    }
+                    is PluginActivated -> {
+                        currentStep.value = Step(type = StepType.Connection, state = StepState.Ongoing)
+                    }
+                    is PluginActivationFailed -> {
+                        currentStep.value = Step(type = StepType.Activation, state = StepState.Error(status.errorCode))
+                    }
+                }
+            }
+        }
     }
 
     private fun startJetpackConnection() {
-        TODO("Not yet implemented")
+        WooLog.d(WooLog.T.LOGIN, "Jetpack Activation: start Jetpack Connection")
     }
 
     private fun stepsForInstallation() = StepType.values()
@@ -124,6 +167,6 @@ class JetpackActivationMainViewModel @Inject constructor(
         object Success : StepState
 
         @Parcelize
-        data class Error(val code: Int) : StepState
+        data class Error(val code: Int?) : StepState
     }
 }
