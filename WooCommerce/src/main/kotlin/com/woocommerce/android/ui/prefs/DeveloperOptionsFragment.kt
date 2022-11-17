@@ -7,7 +7,6 @@ import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
-import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.R
 import com.woocommerce.android.databinding.FragmentDeveloperOptionsBinding
 import com.woocommerce.android.ui.base.BaseFragment
@@ -47,8 +46,9 @@ class DeveloperOptionsFragment : BaseFragment(R.layout.fragment_developer_option
                 }
                 is DeveloperOptionsViewModel.DeveloperOptionsEvents.ShowDialog -> {
                     showUpdateOptionsDialog(
-                        values = UpdateOptions.values(),
-                        mapper = { requireContext().getString(it.title) }
+                        values = event.options,
+                        mapper = { requireContext().getString(it.title) },
+                        selectedValue = event.selectedValue
                     )
                 }
             }
@@ -56,14 +56,12 @@ class DeveloperOptionsFragment : BaseFragment(R.layout.fragment_developer_option
     }
 
     private fun showUpdateOptionsDialog(
-        values: Array<UpdateOptions>,
-        mapper: (UpdateOptions) -> String = { it.toString() }
+        values: List<UpdateOptions>,
+        mapper: (UpdateOptions) -> String,
+        selectedValue: UpdateOptions
     ) {
+        var currentlySelectedValue = selectedValue
         val textValues = values.map(mapper).toTypedArray()
-        var selectedValue: UpdateOptions = UpdateOptions.NEVER
-        val selectedItemIndex = values.first { updateOptions ->
-            updateOptions.name == AppPrefs.updateReaderOptionSelected
-        }
         MaterialAlertDialogBuilder(
             ContextThemeWrapper(
                 context,
@@ -71,11 +69,11 @@ class DeveloperOptionsFragment : BaseFragment(R.layout.fragment_developer_option
             )
         )
             .setOnDismissListener {
-                viewModel.onUpdateReaderOptionChanged(selectedValue)
+                viewModel.onUpdateReaderOptionChanged(currentlySelectedValue)
             }
             .setTitle("Update Simulated Reader")
-            .setSingleChoiceItems(textValues, selectedItemIndex.ordinal) { dialog, which ->
-                selectedValue = values[which]
+            .setSingleChoiceItems(textValues, selectedValue.ordinal) { dialog, which ->
+                currentlySelectedValue = values[which]
             }.show()
     }
 

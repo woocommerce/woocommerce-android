@@ -21,6 +21,9 @@ class DeveloperOptionsRepository @Inject constructor(
         clearCardReaderDataAction.invoke()
     }
 
+    fun getUpdateSimulatedReaderOption(): UpdateOptions {
+        return UpdateOptions.valueOf(appPrefs.updateReaderOptionSelected)
+    }
     fun updateSimulatedReaderOption(selectedOption: UpdateOptions) {
         appPrefs.updateReaderOptionSelected = selectedOption.toString()
     }

@@ -91,7 +91,10 @@ class DeveloperOptionsViewModel @Inject constructor(
 
     private fun onUpdateSimulatedReaderClicked() {
         triggerEvent(
-            DeveloperOptionsEvents.ShowDialog("blabla")
+            DeveloperOptionsEvents.ShowDialog(
+                UpdateOptions.values().toList(),
+                developerOptionsRepository.getUpdateSimulatedReaderOption()
+            )
         )
     }
 
@@ -101,7 +104,10 @@ class DeveloperOptionsViewModel @Inject constructor(
 
     sealed class DeveloperOptionsEvents : MultiLiveEvent.Event() {
         data class ShowToastString(val message: Int) : DeveloperOptionsEvents()
-        data class ShowDialog(val options: String) : DeveloperOptionsEvents()
+        data class ShowDialog(
+            val options: List<UpdateOptions>,
+            var selectedValue: UpdateOptions,
+        ) : DeveloperOptionsEvents()
     }
 
     data class DeveloperOptionsViewState(
