@@ -11,6 +11,7 @@ import com.woocommerce.android.ui.login.storecreation.plans.PlansViewModel.Plan.
 import com.woocommerce.android.ui.login.storecreation.plans.PlansViewModel.Plan.Feature
 import com.woocommerce.android.ui.login.storecreation.plans.PlansViewModel.ViewState.LoadingState
 import com.woocommerce.android.ui.login.storecreation.plans.PlansViewModel.ViewState.PlanState
+import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.getStateFlow
@@ -87,7 +88,7 @@ class PlansViewModel @Inject constructor(
     }
 
     private fun onConfirmClicked() {
-        // TODO
+        triggerEvent(NavigateToNextStep)
     }
 
     sealed interface ViewState : Parcelable {
@@ -126,4 +127,6 @@ class PlansViewModel @Inject constructor(
             YEARLY((string.store_creation_ecommerce_plan_period_year))
         }
     }
+
+    object NavigateToNextStep : MultiLiveEvent.Event()
 }
