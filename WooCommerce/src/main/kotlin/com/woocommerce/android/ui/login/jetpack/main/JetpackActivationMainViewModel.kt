@@ -23,30 +23,7 @@ class JetpackActivationMainViewModel @Inject constructor(
 
     private val steps = savedStateHandle.getStateFlow(
         scope = viewModelScope,
-        // Just for demo
-        initialValue = listOf(
-            Step(
-                type = StepType.Installation,
-                state = StepState.Success
-            ),
-            Step(
-                type = StepType.Activation,
-                state = StepState.Ongoing
-            ),
-            @Suppress("MagicNumber")
-            Step(
-                type = StepType.Activation,
-                state = StepState.Error(403)
-            ),
-            Step(
-                type = StepType.Connection,
-                state = StepState.Idle
-            ),
-            Step(
-                type = StepType.Done,
-                state = StepState.Idle
-            )
-        ),
+        initialValue = emptyList<Step>(),
         key = STEPS_SAVED_STATE_KEY
     )
     val viewState = steps.map {
