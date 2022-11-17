@@ -44,17 +44,7 @@ class DomainPickerViewModel @Inject constructor(
         DomainPickerState(
             loadingState = loadingState,
             domainQuery = domainQuery,
-            domainSuggestionsUi =
-            if (domainQuery.isBlank()) {
-                emptyList()
-            } else {
-                domainSuggestions.map { domain ->
-                    DomainSuggestionUi(
-                        isSelected = domain == selectedDomain,
-                        domain = domain
-                    )
-                }
-            }
+            domainSuggestionsUi = processFetchedDomainSuggestions(domainQuery, domainSuggestions, selectedDomain)
         )
     }.asLiveData()
 
@@ -94,6 +84,27 @@ class DomainPickerViewModel @Inject constructor(
 
     fun onDomainChanged(query: String) {
         domainQuery.value = query
+    }
+
+    private fun processFetchedDomainSuggestions(
+        domainQuery: String,
+        domainSuggestions: List<String>,
+        selectedDomain: String
+    ) = when {
+        domainQuery.isBlank() || domainSuggestions.isEmpty() -> emptyList()
+        else -> {
+            val preSelectDomain = selectedDomain.ifBlank {
+                domainSuggestions
+                    .firstOrNull { it.substringBefore(".") == domainQuery }
+                    ?: domainSuggestions.first()
+            }
+            domainSuggestions.map { domain ->
+                DomainSuggestionUi(
+                    isSelected = domain == preSelectDomain,
+                    domain = domain
+                )
+            }
+        }
     }
 
     data class DomainPickerState(
