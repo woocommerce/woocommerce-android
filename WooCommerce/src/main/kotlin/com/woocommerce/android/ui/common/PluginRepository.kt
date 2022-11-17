@@ -16,6 +16,7 @@ import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.merge
 import kotlinx.coroutines.flow.retryWhen
+import kotlinx.coroutines.flow.transformWhile
 import kotlinx.parcelize.Parcelize
 import org.wordpress.android.fluxc.Dispatcher
 import org.wordpress.android.fluxc.generated.PluginActionBuilder
@@ -79,6 +80,7 @@ class PluginRepository @Inject constructor(
                 if (plugin.isActive) {
                     // Plugin is already active, nothing to do
                     WooLog.d(WooLog.T.PLUGINS, "Plugin $slug is already installed and activated")
+                    emit(PluginInstalled(slug))
                     emit(PluginActivated(slug))
                     return@flow
                 } else {
@@ -131,8 +133,13 @@ class PluginRepository @Inject constructor(
                     )
                 )
             }
+        }.transformWhile { status ->
+            emit(status)
+            // Finish the flow unless it's an intermediary event: Installation
+            status is PluginInstalled
         }
     }
+
 
     private fun dispatchPluginActivationAction(site: SiteModel, slug: String, name: String) {
         val payload = ConfigureSitePluginPayload(
