@@ -110,23 +110,19 @@ class VariationRepository @Inject constructor(
         remoteProductId: Long,
         variationCandidates: List<VariationCandidate>
     ) {
-        val payload = WCProductStore.BatchGenerateVariationsPayload.Builder(
+        productStore.batchGenerateVariations(WCProductStore.BatchGenerateVariationsPayload(
             selectedSite.get(),
-            remoteProductId
-        )
-
-        variationCandidates.forEach { candidate ->
-            candidate.forEach { termAssignment ->
-                payload.addVariationAttribute(
-                    termAssignment.attributeId,
-                    termAssignment.attributeName,
-                    termAssignment.termName
-                )
+            remoteProductId,
+            variations = variationCandidates.map { candidate ->
+                candidate.map { variantOption ->
+                    WCProductVariationModel.ProductVariantOption(
+                        id = variantOption.id,
+                        name = variantOption.name,
+                        option = variantOption.option
+                    )
+                }
             }
-            payload.addVariation()
-        }
-
-        productStore.batchGenerateVariations(payload.build())
+        ))
     }
 
     private fun WooResult<WCProductVariationModel>.handleVariationCreateResult(
