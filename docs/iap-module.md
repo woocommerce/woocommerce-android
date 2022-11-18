@@ -18,7 +18,7 @@ To get started, you need to understand the structure of the module.
 
 ![test](/docs/images/iap-module-diagram.webp)
 
-The module is divided into 2 main parts: public and internal
+The module is divided into 2 main parts: *public* and *internal*
 
 ### Public
 The exposed (public) part of the module contains interface and it's parameters.
@@ -59,6 +59,23 @@ Returns if IAP is possible. IAP might be not possible by many reasons, including
 Returns if the plan has been purchased and/or acknowledged already.
 
 ### Internal
+
+Internally the module is splittied into 3 main parts:
+#### 1. WP Com Plan purhase layer
+
+This layer contains the logic that is specific to our current needs, for instance:
+* It determine what product we work with
+* What currency is supported
+* Communicates with Mobile Pay to confirm the purchase
+* Communicates with the layer below which is generic wrapper around google billing library
+
+#### 2. Wrapper around billing library
+Wrapper that makes the API a bit more user friendly. Also, it wrappens types exposed by the library so it'll be easier to replace/update it when needed
+
+The layer also handles different edge cases, e.g. when the purhcae result is not delivered via callback. It polls the result periodically in background
+
+#### 3. Network layer
+The layer that communicates to Mobile Pay, using fluxc
 
 
 
