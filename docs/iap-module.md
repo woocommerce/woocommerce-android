@@ -16,24 +16,22 @@ Currently it supports just one hardcoded in the code product
 ## Structure
 To get started, you need to understand the structure of the module.
 
-![](docs/images/iap-module-diagram.webp)
+![test](/docs/images/iap-module-diagram.webp)
 
 The module is divided into 2 main parts: public and internal
 
-#### Public
+### Public
 The exposed (public) part of the module contains interface and it's parameters.
 
 Currently, there are 5 integration points:
 
-```kotlin
-val purchaseWpComPlanResult: Flow<WPComPurchaseResult>
-```
+#### 1. `val purchaseWpComPlanResult: Flow<WPComPurchaseResult>`
+
 This flow is used to get the result of the purchase. It can be used to show a success or error message to the user.
 Notice, that purchase can be published here even if `purchaseWPComPlan` was not called in the current lifecycle, so you should be subscribed to the flow even if `purchaseWPComPlan` was not invoked.
 
-```kotlin
-suspend fun purchaseWPComPlan(activityWrapper: IAPActivityWrapper)
-```
+#### 2. `suspend fun purchaseWPComPlan(activityWrapper: IAPActivityWrapper)`
+
 `IAPActivityWrapper` is a simple wrapper around activity to make ViewModel unit testable
 
 This method:
@@ -43,26 +41,24 @@ This method:
 * If the result from the UI flow was successful then we hit the backend and it release to a user and acknowledges the purchase on the google side
 * Success result is returned via `purchaseWpComPlanResult`
 
-```kotlin
-suspend fun fetchWPComPlanProduct(): WPComProductResult
-```
+#### 3. `suspend fun fetchWPComPlanProduct(): WPComProductResult`
+
 This method returns information (title, description, price and currency) about product that is on sale
 
-```kotlin
-suspend fun isIAPSupported(): IAPSupportedResult
-```
+#### 4. `suspend fun isIAPSupported(): IAPSupportedResult`
+
 Returns if IAP is possible. IAP might be not possible by many reasons, including:
 * The device does not support IAP due to lack of google play services or not up to date version of it
 * The user is not logged in to google play services
 * We do not support IAP in the user country/currency
 * etc
 
-```kotlin
-suspend fun isWPComPlanPurchased(): WPComIsPurchasedResult
-```
+
+#### 5. `suspend fun isWPComPlanPurchased(): WPComIsPurchasedResult`
+
 Returns if the plan has been purchased and/or acknowledged already.
 
-#### Internal
+### Internal
 
 
 
