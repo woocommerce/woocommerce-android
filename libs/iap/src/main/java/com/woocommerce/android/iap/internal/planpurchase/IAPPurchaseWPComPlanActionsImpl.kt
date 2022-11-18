@@ -2,14 +2,17 @@ package com.woocommerce.android.iap.internal.planpurchase
 
 import com.woocommerce.android.iap.internal.core.IAPManager
 import com.woocommerce.android.iap.internal.core.currencyOfTheFirstPurchasedOffer
+import com.woocommerce.android.iap.internal.core.isProductAcknowledged
 import com.woocommerce.android.iap.internal.core.isProductPurchased
 import com.woocommerce.android.iap.internal.core.priceOfTheFirstPurchasedOfferInMicros
 import com.woocommerce.android.iap.internal.model.IAPProduct
 import com.woocommerce.android.iap.internal.model.IAPProductDetailsResponse
+import com.woocommerce.android.iap.internal.model.IAPPurchase
 import com.woocommerce.android.iap.internal.model.IAPPurchaseResult
 import com.woocommerce.android.iap.internal.model.IAPSupportedResult
 import com.woocommerce.android.iap.pub.IAPActivityWrapper
 import com.woocommerce.android.iap.pub.PurchaseWPComPlanActions
+import com.woocommerce.android.iap.pub.model.PurchaseStatus
 import com.woocommerce.android.iap.pub.model.WPComIsPurchasedResult
 import com.woocommerce.android.iap.pub.model.WPComPlanProduct
 import com.woocommerce.android.iap.pub.model.WPComProductResult
@@ -40,9 +43,10 @@ internal class IAPPurchaseWPComPlanActionsImpl(
 
     override suspend fun isWPComPlanPurchased(): WPComIsPurchasedResult {
         return when (val response = iapManager.fetchPurchases(iapProduct.productType)) {
-            is IAPPurchaseResult.Success -> WPComIsPurchasedResult.Success(
-                response.purchases.isProductPurchased(iapProduct)
-            )
+            is IAPPurchaseResult.Success -> {
+                val purchases = response.purchases
+                WPComIsPurchasedResult.Success(determinePurchaseStatus(purchases))
+            }
             is IAPPurchaseResult.Error -> WPComIsPurchasedResult.Error(response.error)
         }
     }
@@ -82,4 +86,13 @@ internal class IAPPurchaseWPComPlanActionsImpl(
 
     private fun isCurrencySupported(response: IAPProductDetailsResponse.Success) =
         SUPPORTED_CURRENCY.equals(response.productDetails.currencyOfTheFirstPurchasedOffer, ignoreCase = true)
+
+    private fun determinePurchaseStatus(purchases: List<IAPPurchase>?) =
+        if (purchases.isProductPurchased(iapProduct) && purchases.isProductAcknowledged(iapProduct)) {
+            PurchaseStatus.PURCHASED_AND_ACKNOWLEDGED
+        } else if (purchases.isProductPurchased(iapProduct)) {
+            PurchaseStatus.PURCHASED
+        } else {
+            PurchaseStatus.NOT_PURCHASED
+        }
 }

@@ -154,7 +154,7 @@ class IAPPurchaseWPComPlanActionsTest {
 
         // THEN
         assertThat(result).isInstanceOf(WPComIsPurchasedResult.Success::class.java)
-        assertThat((result as WPComIsPurchasedResult.Success).isPlanPurchased).isTrue()
+        assertThat((result as WPComIsPurchasedResult.Success).purchaseStatus).isTrue()
     }
 
     @Test
@@ -200,7 +200,7 @@ class IAPPurchaseWPComPlanActionsTest {
 
             // THEN
             assertThat(result).isInstanceOf(WPComIsPurchasedResult.Success::class.java)
-            assertThat((result as WPComIsPurchasedResult.Success).isPlanPurchased).isFalse()
+            assertThat((result as WPComIsPurchasedResult.Success).purchaseStatus).isFalse()
         }
 
     @Test
@@ -226,7 +226,7 @@ class IAPPurchaseWPComPlanActionsTest {
 
             // THEN
             assertThat(result).isInstanceOf(WPComIsPurchasedResult.Success::class.java)
-            assertThat((result as WPComIsPurchasedResult.Success).isPlanPurchased).isFalse()
+            assertThat((result as WPComIsPurchasedResult.Success).purchaseStatus).isFalse()
         }
 
     @Test
