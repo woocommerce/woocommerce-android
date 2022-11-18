@@ -7,7 +7,9 @@ import androidx.recyclerview.widget.RecyclerView
 import com.woocommerce.android.R
 import com.woocommerce.android.databinding.DeveloperOptionsListItemBinding
 import com.woocommerce.android.databinding.DeveloperOptionsTogglableItemBinding
+import com.woocommerce.android.databinding.DeveloperOptionsUpdateReaderItemBinding
 import com.woocommerce.android.ui.prefs.DeveloperOptionsViewModel.DeveloperOptionsViewState.ListItem
+import com.woocommerce.android.ui.prefs.DeveloperOptionsViewModel.DeveloperOptionsViewState.ListItem.SpinnerListItem
 import com.woocommerce.android.ui.prefs.DeveloperOptionsViewModel.DeveloperOptionsViewState.ListItem.ToggleableListItem
 import com.woocommerce.android.util.UiHelpers
 
@@ -41,6 +43,23 @@ abstract class DeveloperOptionsViewHolder(val parent: ViewGroup, @LayoutRes layo
             }
             binding.root.setOnClickListener {
                 binding.developerOptionsSwitch.isChecked = !uiState.isChecked
+            }
+        }
+    }
+
+    class SpinnerViewHolder(parent: ViewGroup) :
+        DeveloperOptionsViewHolder(parent, R.layout.developer_options_update_reader_item) {
+        var binding: DeveloperOptionsUpdateReaderItemBinding = DeveloperOptionsUpdateReaderItemBinding.bind(itemView)
+        override fun onBind(uiState: ListItem) {
+            uiState as SpinnerListItem
+            binding.developerOptionsSpinnerIcon.setImageResource(uiState.icon)
+            binding.developerOptionsSpinnerEndIcon.setImageResource(uiState.endIcon)
+            binding.developerOptionsSpinnerListItemLabel.text = UiHelpers.getTextOfUiString(
+                itemView.context,
+                uiState.label
+            )
+            binding.root.setOnClickListener {
+                uiState.onClick.invoke()
             }
         }
     }

@@ -17,13 +17,13 @@ import com.woocommerce.android.iap.internal.core.IAPPeriodicPurchaseStatusChecke
 import com.woocommerce.android.iap.internal.core.IAPPurchasesUpdatedListener
 import com.woocommerce.android.iap.internal.core.isSuccess
 import com.woocommerce.android.iap.internal.model.IAPProduct
-import com.woocommerce.android.iap.internal.model.IAPSupportedResult
 import com.woocommerce.android.iap.internal.network.IAPMobilePayAPI
 import com.woocommerce.android.iap.internal.network.model.CreateAndConfirmOrderResponse
 import com.woocommerce.android.iap.internal.planpurchase.IAPPurchaseWPComPlanActionsImpl
 import com.woocommerce.android.iap.internal.planpurchase.IAPPurchaseWpComPlanHandler
 import com.woocommerce.android.iap.pub.model.IAPError
 import com.woocommerce.android.iap.pub.model.PurchaseStatus
+import com.woocommerce.android.iap.pub.model.IAPSupportedResult
 import com.woocommerce.android.iap.pub.model.WPComIsPurchasedResult
 import com.woocommerce.android.iap.pub.model.WPComProductResult
 import com.woocommerce.android.iap.pub.model.WPComPurchaseResult
