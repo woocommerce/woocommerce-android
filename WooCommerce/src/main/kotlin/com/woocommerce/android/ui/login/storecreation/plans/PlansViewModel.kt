@@ -26,7 +26,7 @@ class PlansViewModel @Inject constructor(
 ) : ScopedViewModel(savedStateHandle) {
     companion object {
         private const val ECOMMERCE_PLAN_NAME = "eCommerce"
-        private const val ECOMMERCE_PLAN_PRICE_MONTHLY_USD = "$70"
+        private const val ECOMMERCE_PLAN_PRICE_MONTHLY = "$69.99"
     }
 
     private val _viewState = savedState.getStateFlow<ViewState>(this, LoadingState)
@@ -43,7 +43,7 @@ class PlansViewModel @Inject constructor(
                     plan = Plan(
                         name = ECOMMERCE_PLAN_NAME,
                         billingPeriod = MONTHLY,
-                        formattedPrice = ECOMMERCE_PLAN_PRICE_MONTHLY_USD,
+                        formattedPrice = ECOMMERCE_PLAN_PRICE_MONTHLY,
                         features = listOf(
                             Feature(
                                 iconId = drawable.ic_star,
@@ -74,19 +74,21 @@ class PlansViewModel @Inject constructor(
                                 textId = string.store_creation_ecommerce_plan_feature_sales
                             )
                         )
-                    ),
-                    onCloseButtonClicked = ::onBackPressed,
-                    onConfirmButtonClicked = ::onConfirmClicked
+                    )
                 )
             }
         }
     }
 
-    private fun onBackPressed() {
+    fun onCloseClicked() {
         triggerEvent(Exit)
     }
 
-    private fun onConfirmClicked() {
+    fun onConfirmClicked() {
+        // TODO: Add logic for confirming plan selection
+    }
+
+    fun onRetryClicked() {
         // TODO
     }
 
@@ -95,15 +97,11 @@ class PlansViewModel @Inject constructor(
         object LoadingState : ViewState
 
         @Parcelize
-        data class ErrorState(
-            val onRetryButtonClicked: () -> Unit
-        ) : ViewState
+        object ErrorState : ViewState
 
         @Parcelize
         data class PlanState(
-            val plan: Plan,
-            val onCloseButtonClicked: () -> Unit,
-            val onConfirmButtonClicked: () -> Unit
+            val plan: Plan
         ) : ViewState
     }
 

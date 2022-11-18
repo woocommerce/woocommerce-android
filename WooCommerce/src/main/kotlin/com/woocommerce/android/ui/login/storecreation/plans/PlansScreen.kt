@@ -56,10 +56,8 @@ import com.woocommerce.android.ui.login.storecreation.plans.PlansViewModel.ViewS
 fun PlanScreen(viewModel: PlansViewModel) {
     viewModel.viewState.observeAsState(LoadingState).value.let { viewState ->
         when (viewState) {
-            is PlanState -> PlanInformation(
-                viewState = viewState
-            )
-            is ErrorState -> PlanError(viewState)
+            is PlanState -> PlanInformation(viewState, viewModel::onCloseClicked, viewModel::onConfirmClicked)
+            is ErrorState -> PlanError(viewModel::onRetryClicked)
             LoadingState -> PlanLoading()
         }
     }
@@ -67,7 +65,9 @@ fun PlanScreen(viewModel: PlansViewModel) {
 
 @Composable
 private fun PlanInformation(
-    viewState: PlanState
+    viewState: PlanState,
+    onCloseClicked: () -> Unit,
+    onConfirmClicked: () -> Unit
 ) {
 
     val systemUiController = rememberSystemUiController()
@@ -92,7 +92,7 @@ private fun PlanInformation(
         val (icon, image, title, price, period, features, button) = createRefs()
 
         IconButton(
-            onClick = viewState.onCloseButtonClicked,
+            onClick = onCloseClicked,
             modifier = Modifier.constrainAs(icon) {
                 top.linkTo(parent.top)
                 start.linkTo(parent.start)
@@ -113,7 +113,7 @@ private fun PlanInformation(
                     top.linkTo(parent.top)
                     end.linkTo(parent.end)
                 }
-                .height(174.dp),
+                .height(dimensionResource(id = R.dimen.image_major_200)),
             contentScale = ContentScale.FillHeight
         )
         Text(
@@ -147,22 +147,21 @@ private fun PlanInformation(
             style = MaterialTheme.typography.subtitle1,
             modifier = Modifier
                 .constrainAs(period) {
-                    baseline.linkTo(price.baseline)
-                    start.linkTo(price.end)
+                    top.linkTo(price.bottom)
+                    start.linkTo(price.start)
                 }
                 .padding(
-                    top = dimensionResource(id = R.dimen.major_75),
-                    start = dimensionResource(id = R.dimen.minor_100)
+                    start = dimensionResource(id = R.dimen.major_125)
                 )
         )
 
         Column(
-            verticalArrangement = Arrangement.spacedBy(dimensionResource(id = R.dimen.major_75)),
+            verticalArrangement = Arrangement.spacedBy(dimensionResource(id = R.dimen.minor_100)),
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(dimensionResource(id = R.dimen.major_75))
                 .constrainAs(features) {
-                    top.linkTo(price.bottom)
+                    top.linkTo(period.bottom)
                 }
         ) {
             Divider(
@@ -212,7 +211,6 @@ private fun PlanInformation(
         Column(
             verticalArrangement = Arrangement.spacedBy(dimensionResource(id = R.dimen.major_75)),
             modifier = Modifier
-                .padding(bottom = dimensionResource(id = R.dimen.major_150))
                 .fillMaxWidth()
                 .constrainAs(button) {
                     top.linkTo(features.bottom)
@@ -229,7 +227,7 @@ private fun PlanInformation(
                 modifier = Modifier
                     .padding(horizontal = dimensionResource(id = R.dimen.major_100))
                     .fillMaxWidth(),
-                onClick = viewState.onConfirmButtonClicked
+                onClick = onConfirmClicked
             ) {
                 val periodText = stringResource(id = viewState.plan.billingPeriod.nameId)
                 Text(
@@ -275,7 +273,7 @@ fun PlanFeatureRow(@DrawableRes iconId: Int, @StringRes textId: Int) {
 }
 
 @Composable
-private fun PlanError(viewState: ErrorState) {
+private fun PlanError(onRetryClicked: () -> Unit) {
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center,
@@ -290,7 +288,7 @@ private fun PlanError(viewState: ErrorState) {
         )
 
         WCColoredButton(
-            onClick = viewState.onRetryButtonClicked,
+            onClick = onRetryClicked,
             text = stringResource(id = string.retry),
             modifier = Modifier.padding(dimensionResource(id = R.dimen.major_100))
         )
@@ -307,6 +305,7 @@ private fun PlanLoading() {
     }
 }
 
+
 @Preview
 @Preview()
 @Composable
@@ -316,7 +315,7 @@ fun PreviewPlanInformation() {
             Plan(
                 name = "eCommerce",
                 billingPeriod = MONTHLY,
-                formattedPrice = "$70",
+                formattedPrice = "$69.99",
                 features = listOf(
                     Feature(
                         iconId = drawable.ic_star,
@@ -347,9 +346,9 @@ fun PreviewPlanInformation() {
                         textId = string.store_creation_ecommerce_plan_feature_sales
                     )
                 )
-            ),
-            { },
-            { }
-        )
+            )
+        ),
+        { },
+        { }
     )
 }
