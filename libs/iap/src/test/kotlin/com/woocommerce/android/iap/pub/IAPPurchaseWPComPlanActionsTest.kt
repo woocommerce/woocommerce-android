@@ -23,6 +23,7 @@ import com.woocommerce.android.iap.internal.network.model.CreateAndConfirmOrderR
 import com.woocommerce.android.iap.internal.planpurchase.IAPPurchaseWPComPlanActionsImpl
 import com.woocommerce.android.iap.internal.planpurchase.IAPPurchaseWpComPlanHandler
 import com.woocommerce.android.iap.pub.model.IAPError
+import com.woocommerce.android.iap.pub.model.PurchaseStatus
 import com.woocommerce.android.iap.pub.model.WPComIsPurchasedResult
 import com.woocommerce.android.iap.pub.model.WPComProductResult
 import com.woocommerce.android.iap.pub.model.WPComPurchaseResult
@@ -133,29 +134,62 @@ class IAPPurchaseWPComPlanActionsTest {
     }
 
     @Test
-    fun `given success and product purchased, when iap wp com plan purchase checked, then true returned`() = runTest {
-        // GIVEN
-        val responseCode = BillingClient.BillingResponseCode.OK
-        val debugMessage = "debug message"
+    fun `given success and product purchased, when iap wp com plan purchase checked, then purchased returned`() =
+        runTest {
+            // GIVEN
+            val responseCode = BillingClient.BillingResponseCode.OK
+            val debugMessage = "debug message"
 
-        setupPurchaseQuery(
-            responseCode = responseCode,
-            listOf(
-                buildPurchase(
-                    listOf(iapProduct.productId),
-                    Purchase.PurchaseState.PURCHASED
+            setupPurchaseQuery(
+                responseCode = responseCode,
+                listOf(
+                    buildPurchase(
+                        listOf(iapProduct.productId),
+                        Purchase.PurchaseState.PURCHASED,
+                        isAcknowledged = false,
+                    )
                 )
             )
-        )
-        setupQueryProductDetails(responseCode = BillingClient.BillingResponseCode.OK, debugMessage = debugMessage)
+            setupQueryProductDetails(responseCode = BillingClient.BillingResponseCode.OK, debugMessage = debugMessage)
 
-        // WHEN
-        val result = sut.isWPComPlanPurchased()
+            // WHEN
+            val result = sut.isWPComPlanPurchased()
 
-        // THEN
-        assertThat(result).isInstanceOf(WPComIsPurchasedResult.Success::class.java)
-        assertThat((result as WPComIsPurchasedResult.Success).purchaseStatus).isTrue()
-    }
+            // THEN
+            assertThat(result).isInstanceOf(WPComIsPurchasedResult.Success::class.java)
+            assertThat((result as WPComIsPurchasedResult.Success).purchaseStatus).isEqualTo(
+                PurchaseStatus.PURCHASED
+            )
+        }
+
+    @Test
+    fun `given success and product acknowledged, when iap wp com plan purchase checked, then acknowledged returned`() =
+        runTest {
+            // GIVEN
+            val responseCode = BillingClient.BillingResponseCode.OK
+            val debugMessage = "debug message"
+
+            setupPurchaseQuery(
+                responseCode = responseCode,
+                listOf(
+                    buildPurchase(
+                        listOf(iapProduct.productId),
+                        Purchase.PurchaseState.PURCHASED,
+                        isAcknowledged = true
+                    )
+                )
+            )
+            setupQueryProductDetails(responseCode = BillingClient.BillingResponseCode.OK, debugMessage = debugMessage)
+
+            // WHEN
+            val result = sut.isWPComPlanPurchased()
+
+            // THEN
+            assertThat(result).isInstanceOf(WPComIsPurchasedResult.Success::class.java)
+            assertThat((result as WPComIsPurchasedResult.Success).purchaseStatus).isEqualTo(
+                PurchaseStatus.PURCHASED_AND_ACKNOWLEDGED
+            )
+        }
 
     @Test
     fun `given connection to service failed, when iap wp com plan purchase checked, then true returned`() = runTest {
@@ -175,7 +209,7 @@ class IAPPurchaseWPComPlanActionsTest {
     }
 
     @Test
-    fun `given suc and other product purchased, when iap wp com plan purchase checked, then false returned`() =
+    fun `given suc and other product purchased, when iap wp com plan purchase checked, then not purchased returned`() =
         runTest {
             // GIVEN
             val responseCode = BillingClient.BillingResponseCode.OK
@@ -200,11 +234,13 @@ class IAPPurchaseWPComPlanActionsTest {
 
             // THEN
             assertThat(result).isInstanceOf(WPComIsPurchasedResult.Success::class.java)
-            assertThat((result as WPComIsPurchasedResult.Success).purchaseStatus).isFalse()
+            assertThat((result as WPComIsPurchasedResult.Success).purchaseStatus).isEqualTo(
+                PurchaseStatus.NOT_PURCHASED
+            )
         }
 
     @Test
-    fun `given suc and product not purchased, when iap wp com plan purchase checked, then false returned`() =
+    fun `given suc and product not purchased, when iap wp com plan purchase checked, then not purchased returned`() =
         runTest {
             // GIVEN
             val responseCode = BillingClient.BillingResponseCode.OK
@@ -226,7 +262,9 @@ class IAPPurchaseWPComPlanActionsTest {
 
             // THEN
             assertThat(result).isInstanceOf(WPComIsPurchasedResult.Success::class.java)
-            assertThat((result as WPComIsPurchasedResult.Success).purchaseStatus).isFalse()
+            assertThat((result as WPComIsPurchasedResult.Success).purchaseStatus).isEqualTo(
+                PurchaseStatus.NOT_PURCHASED
+            )
         }
 
     @Test
