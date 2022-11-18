@@ -13,7 +13,7 @@ class GenerateVariationCandidates @Inject constructor(
     val variationRepository: VariationRepository
 ) {
 
-    operator fun invoke(product: Product,): List<VariationCandidate> {
+    operator fun invoke(product: Product): List<VariationCandidate> {
         if (product.type != ProductType.VARIABLE.value) {
             return emptyList()
         }
