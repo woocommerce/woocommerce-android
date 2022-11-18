@@ -1,12 +1,10 @@
 package com.woocommerce.android.ui.login.storecreation.installation
 
 import android.annotation.SuppressLint
-import android.graphics.Bitmap
 import android.view.ViewGroup.LayoutParams
 import android.webkit.WebChromeClient
 import android.webkit.WebView
 import android.webkit.WebViewClient
-import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
@@ -14,10 +12,8 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.Card
 import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.Divider
 import androidx.compose.material.MaterialTheme
@@ -44,6 +40,7 @@ import com.woocommerce.android.R.dimen
 import com.woocommerce.android.R.string
 import com.woocommerce.android.ui.compose.component.WCColoredButton
 import com.woocommerce.android.ui.compose.component.WCOutlinedButton
+import com.woocommerce.android.ui.compose.drawShadow
 import com.woocommerce.android.ui.login.storecreation.installation.InstallationViewModel.ViewState.ErrorState
 import com.woocommerce.android.ui.login.storecreation.installation.InstallationViewModel.ViewState.LoadingState
 import com.woocommerce.android.ui.login.storecreation.installation.InstallationViewModel.ViewState.SuccessState
@@ -79,21 +76,26 @@ private fun InstallationSummary(url: String, viewModel: InstallationViewModel) {
         )
 
         Box(
-            modifier = Modifier.weight(1f)
+            modifier = Modifier
+                .weight(1f)
+                .background(color = colorResource(id = color.color_surface))
+                .clip(RoundedCornerShape(dimensionResource(id = R.dimen.minor_100)))
+                .padding(
+                    horizontal = dimensionResource(id = R.dimen.major_350),
+                    vertical = dimensionResource(id = R.dimen.major_200)
+                )
         ) {
-            Card(
-                elevation = dimensionResource(id = R.dimen.major_100),
-                shape = RoundedCornerShape(dimensionResource(id = R.dimen.minor_100)),
+            PreviewWebView(
+                url = url,
                 modifier = Modifier
-                    .padding(
-                        horizontal = dimensionResource(id = R.dimen.major_350),
-                        vertical = dimensionResource(id = R.dimen.major_200)
-                    )
                     .fillMaxSize()
                     .align(Alignment.Center)
-            ) {
-                PreviewWebView(url)
-            }
+                    .drawShadow(
+                        color = colorResource(id = color.color_on_surface),
+                        backgroundColor = colorResource(id = color.color_surface),
+                        borderRadius = dimensionResource(id = R.dimen.major_100)
+                    )
+            )
         }
 
         Divider(
@@ -115,7 +117,11 @@ private fun InstallationSummary(url: String, viewModel: InstallationViewModel) {
 
         WCOutlinedButton(
             modifier = Modifier
-                .padding(horizontal = dimensionResource(id = R.dimen.major_100))
+                .padding(
+                    start = dimensionResource(id = R.dimen.major_100),
+                    end = dimensionResource(id = R.dimen.major_100),
+                    bottom = dimensionResource(id = R.dimen.major_100)
+                )
                 .fillMaxWidth(),
             onClick = viewModel::onShowPreviewButtonClicked
         ) {
@@ -128,17 +134,16 @@ private fun InstallationSummary(url: String, viewModel: InstallationViewModel) {
 
 @Composable
 @SuppressLint("SetJavaScriptEnabled", "ClickableViewAccessibility")
-private fun PreviewWebView(url: String) {
+private fun PreviewWebView(url: String, modifier: Modifier = Modifier) {
     Box(
-        modifier = Modifier
+        modifier = modifier
             .padding(dimensionResource(id = dimen.minor_100))
             .fillMaxSize()
             .clip(RoundedCornerShape(dimensionResource(id = dimen.minor_100)))
             .border(
-                BorderStroke(
-                    dimensionResource(id = dimen.minor_10),
-                    colorResource(id = color.gray_0)
-                )
+                dimensionResource(id = dimen.minor_10),
+                colorResource(id = color.gray_0),
+                shape = RoundedCornerShape(dimensionResource(id = dimen.minor_100)),
             )
     ) {
         var progress by remember { mutableStateOf(0) }
@@ -162,16 +167,7 @@ private fun PreviewWebView(url: String) {
                     this.settings.loadWithOverviewMode = true
                     this.setInitialScale(50)
 
-                    this.webViewClient = object : WebViewClient() {
-                        override fun onPageStarted(view: WebView?, url: String?, favicon: Bitmap?) {
-                            view?.evaluateJavascript(
-                                /* script = */ "document.querySelector('meta[name=\"viewport\"]')" +
-                                    ".setAttribute('content', 'width=1280, initial-scale='" +
-                                    " + (document.documentElement.clientWidth / 1280));",
-                                /* resultCallback = */ null
-                            )
-                        }
-                    }
+                    this.webViewClient = WebViewClient()
 
                     this.webChromeClient = object : WebChromeClient() {
                         override fun onProgressChanged(view: WebView?, newProgress: Int) {
@@ -189,8 +185,8 @@ private fun PreviewWebView(url: String) {
                 }
             },
             modifier = Modifier
-                .padding(dimensionResource(id = dimen.minor_50))
                 .alpha(if (progress == 100) 1f else 0f)
+                .clip(RoundedCornerShape(dimensionResource(id = dimen.minor_75)))
         )
     }
 }
