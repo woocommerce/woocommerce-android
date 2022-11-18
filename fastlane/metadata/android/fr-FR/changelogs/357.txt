@@ -1,2 +1,0 @@
-11.1 :
-Cette version comprend de nombreuses fonctionnalités intéressantes pour vous permettre de mieux gérer votre boutique ! Nous avons ajouté une option qui vous permet de mettre à jour de manière groupée la quantité en stock des variations. Vous pouvez également maintenant vous connecter à l’aide d’un code QR. Nous avons apporté diverses améliorations à la recherche de commandes et de produits.
