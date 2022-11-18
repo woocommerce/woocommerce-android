@@ -276,7 +276,7 @@ dependencies {
 
     // Debug dependencies
     debugImplementation "com.facebook.flipper:flipper:$flipperVersion"
-    debugImplementation "com.facebook.soloader:soloader:0.10.3"
+    debugImplementation "com.facebook.soloader:soloader:0.10.4"
     debugImplementation("com.facebook.flipper:flipper-network-plugin:$flipperVersion") {
         // Force Flipper to use the okhttp version defined in the fluxc module
         // okhttp versions higher than 3.9.0 break handling for self-signed SSL sites
@@ -367,6 +367,9 @@ dependencies {
     implementation "com.google.android.material:compose-theme-adapter:$composeThemeAdapterVersion"
     androidTestImplementation "androidx.compose.ui:ui-test-junit4:$composeVersion"
     debugImplementation "androidx.compose.ui:ui-test-manifest:$composeVersion"
+    implementation "androidx.constraintlayout:constraintlayout-compose:1.0.1"
+    implementation "com.google.accompanist:accompanist-systemuicontroller:$composeAccompanistVersion"
+
 
     implementation "io.coil-kt:coil-compose:$coilVersion"
 }

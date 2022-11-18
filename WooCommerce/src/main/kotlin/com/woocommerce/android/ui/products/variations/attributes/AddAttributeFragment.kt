@@ -6,7 +6,9 @@ import android.view.Menu
 import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
+import androidx.core.view.MenuProvider
 import androidx.core.view.isVisible
+import androidx.lifecycle.Lifecycle
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -27,7 +29,7 @@ import dagger.hilt.android.AndroidEntryPoint
 import java.util.Locale
 
 @AndroidEntryPoint
-class AddAttributeFragment : BaseProductFragment(R.layout.fragment_add_attribute) {
+class AddAttributeFragment : BaseProductFragment(R.layout.fragment_add_attribute), MenuProvider {
     companion object {
         const val TAG: String = "AddAttributeFragment"
         private const val LIST_STATE_KEY = "list_state"
@@ -48,7 +50,7 @@ class AddAttributeFragment : BaseProductFragment(R.layout.fragment_add_attribute
 
         _binding = FragmentAddAttributeBinding.bind(view)
 
-        setHasOptionsMenu(true)
+        requireActivity().addMenuProvider(this, viewLifecycleOwner, Lifecycle.State.RESUMED)
         initializeViews(savedInstanceState)
         setupObservers()
     }
@@ -75,9 +77,7 @@ class AddAttributeFragment : BaseProductFragment(R.layout.fragment_add_attribute
         }
     }
 
-    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
-        super.onCreateOptionsMenu(menu, inflater)
-
+    override fun onCreateMenu(menu: Menu, inflater: MenuInflater) {
         if (navArgs.isVariationCreation) {
             moveNextMenuItem = menu.add(Menu.FIRST, ID_ADD_ATTRIBUTES, Menu.FIRST, R.string.next).apply {
                 setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS)
@@ -86,7 +86,7 @@ class AddAttributeFragment : BaseProductFragment(R.layout.fragment_add_attribute
         }
     }
 
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+    override fun onMenuItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
             ID_ADD_ATTRIBUTES -> {
                 viewModel.saveAttributeChanges()
@@ -95,7 +95,7 @@ class AddAttributeFragment : BaseProductFragment(R.layout.fragment_add_attribute
                     .run { findNavController().navigateSafely(this) }
                 true
             }
-            else -> super.onOptionsItemSelected(item)
+            else -> false
         }
     }
 
@@ -124,25 +124,23 @@ class AddAttributeFragment : BaseProductFragment(R.layout.fragment_add_attribute
 
     private fun setupObservers() {
         viewModel.globalAttributeList.observe(
-            viewLifecycleOwner,
-            {
-                showAttributes(it)
-            }
-        )
+            viewLifecycleOwner
+        ) {
+            showAttributes(it)
+        }
 
         viewModel.globalAttributeViewStateData.observe(viewLifecycleOwner) { old, new ->
             new.isSkeletonShown?.takeIfNotEqualTo(old?.isSkeletonShown) { showSkeleton(it) }
         }
 
         viewModel.event.observe(
-            viewLifecycleOwner,
-            { event ->
-                when (event) {
-                    is ExitProductAddAttribute -> findNavController().navigateUp()
-                    else -> event.isHandled = false
-                }
+            viewLifecycleOwner
+        ) { event ->
+            when (event) {
+                is ExitProductAddAttribute -> findNavController().navigateUp()
+                else -> event.isHandled = false
             }
-        )
+        }
     }
 
     override fun getFragmentTitle() = getString(R.string.product_add_attribute)

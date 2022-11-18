@@ -842,11 +842,6 @@ class MainActivity :
         navController.navigateSafely(action)
     }
 
-    override fun showMoreMenu() {
-        binding.bottomNav.currentPosition = MORE
-        binding.bottomNav.active(MORE.position)
-    }
-
     override fun showOrderDetail(
         orderId: Long,
         remoteNoteId: Long,

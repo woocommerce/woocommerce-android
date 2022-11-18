@@ -124,6 +124,7 @@ private fun DomainSearchForm(
         Text(
             text = stringResource(id = R.string.store_creation_domain_picker_subtitle),
             style = MaterialTheme.typography.body1,
+            color = colorResource(id = R.color.color_on_surface_medium)
         )
         WCSearchField(
             value = state.domain,
@@ -177,7 +178,7 @@ private fun DomainSuggestionList(
         Text(
             text = stringResource(id = R.string.store_creation_domain_picker_suggestions_title).uppercase(),
             style = MaterialTheme.typography.body2,
-            color = colorResource(id = R.color.color_on_surface_medium_selector)
+            color = colorResource(id = R.color.color_on_surface_medium)
         )
         LazyColumn {
             itemsIndexed(suggestions) { index, suggestion ->

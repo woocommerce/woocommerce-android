@@ -96,7 +96,6 @@ class ScreenshotTest : TestBase(failOnUnmatchedWireMockRequests = false) {
         TabNavComponent()
             .gotoOrdersScreen()
             .createFABTap()
-            .newOrderTap()
             .thenTakeScreenshot<UnifiedOrderScreen>("add-order")
             .goBackToOrdersScreen()
 
