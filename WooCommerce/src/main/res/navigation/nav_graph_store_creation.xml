@@ -43,6 +43,14 @@
     <fragment
         android:id="@+id/plansFragment"
         android:name="com.woocommerce.android.ui.login.storecreation.plans.PlansFragment"
-        android:label="PlansFragment" />
+        android:label="PlansFragment" >
+        <action
+            android:id="@+id/action_plansFragment_to_installationFragment"
+            app:destination="@id/installationFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/installationFragment"
+        android:name="com.woocommerce.android.ui.login.storecreation.installation.InstallationFragment"
+        android:label="InstallationFragment" />
 
 </navigation>

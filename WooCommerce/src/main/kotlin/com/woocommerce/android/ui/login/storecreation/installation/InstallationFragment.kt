@@ -1,4 +1,4 @@
-package com.woocommerce.android.ui.login.storecreation.plans
+package com.woocommerce.android.ui.login.storecreation.installation
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -8,17 +8,17 @@ import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
-import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
-import com.woocommerce.android.ui.login.storecreation.plans.PlansViewModel.NavigateToNextStep
+import com.woocommerce.android.ui.login.storecreation.installation.InstallationViewModel.OpenStore
 import com.woocommerce.android.ui.main.AppBarStatus
+import com.woocommerce.android.util.ChromeCustomTabUtils
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
-class PlansFragment : BaseFragment() {
-    private val viewModel: PlansViewModel by viewModels()
+class InstallationFragment : BaseFragment() {
+    private val viewModel: InstallationViewModel by viewModels()
 
     override val activityAppBarStatus: AppBarStatus
         get() = AppBarStatus.Hidden
@@ -28,7 +28,7 @@ class PlansFragment : BaseFragment() {
             setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
             setContent {
                 WooThemeWithBackground {
-                    PlanScreen(viewModel = viewModel)
+                    InstallationScreen(viewModel = viewModel)
                 }
             }
         }
@@ -43,14 +43,8 @@ class PlansFragment : BaseFragment() {
         viewModel.event.observe(viewLifecycleOwner) { event ->
             when (event) {
                 is MultiLiveEvent.Event.Exit -> findNavController().popBackStack()
-                is NavigateToNextStep -> navigateToInstallationFragment()
+                is OpenStore -> ChromeCustomTabUtils.launchUrl(requireContext(), event.url)
             }
         }
-    }
-
-    private fun navigateToInstallationFragment() {
-        findNavController().navigateSafely(
-            PlansFragmentDirections.actionPlansFragmentToInstallationFragment()
-        )
     }
 }
