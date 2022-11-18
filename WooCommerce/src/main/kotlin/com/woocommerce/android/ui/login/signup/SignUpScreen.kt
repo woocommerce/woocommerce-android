@@ -86,7 +86,9 @@ private fun Toolbar(
 ) {
     TopAppBar(
         backgroundColor = MaterialTheme.colors.surface,
-        title = {},
+        title = {
+            Text(text = stringResource(id = R.string.signup_get_started_button))
+        },
         navigationIcon = {
             IconButton(onClick = onArrowBackPressed) {
                 Icon(
