@@ -290,6 +290,11 @@
     <string name="login_create_an_account">Create An Account</string>
     <string name="site_picker_create_new_store">Create a new store</string>
     <string name="site_picker_connect_existing_store">Connect an existing store</string>
+    <string name="login_jetpack_installation_screen_title">Connect Store</string>
+    <string name="login_jetpack_installation_explanation">To use this app for&lt;br&gt;&lt;b&gt;%1$s&lt;/b&gt;&lt;br&gt;you\'ll need the free Jetpack plugin installed and connected on your store.</string>
+    <string name="login_jetpack_connection_explanation">To use this app for&lt;br&gt;&lt;b&gt;%1$s&lt;/b&gt;&lt;br&gt;you\'ll need to connect your store to Jetpack.</string>
+    <string name="login_jetpack_installation_credentials_hint">You\’ll need your store credentials to begin the installation.</string>
+    <string name="login_jetpack_connect">Connect Jetpack</string>
 
     <!--
         My Store View
@@ -2726,4 +2731,9 @@
     <string name="store_creation_ecommerce_plan_feature_payments">Multiple payment options</string>
     <string name="store_creation_ecommerce_plan_feature_shipping_labels">Shipping labels</string>
     <string name="store_creation_ecommerce_plan_feature_sales">Sales channels</string>
+
+    <string name="store_creation_store_name_caption">About your store</string>
+    <string name="store_creation_store_name_title">What’s your store name?</string>
+    <string name="store_creation_store_name_subtitle">Don’t worry you can always change it later. </string>
+    <string name="store_creation_store_name_hint">Store name</string>
 </resources>
