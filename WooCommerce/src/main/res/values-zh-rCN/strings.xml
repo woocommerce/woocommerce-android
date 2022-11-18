@@ -1,11 +1,19 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2022-11-09 10:54:04+0000
+Translation-Revision-Date: 2022-11-16 09:54:04+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: zh_CN
 -->
 <resources>
+    <string name="store_creation_domain_picker_suggestions_title">建议</string>
+    <string name="store_creation_domain_picker_skip_button">跳过</string>
+    <string name="store_creation_domain_picker_hint">输入域名</string>
+    <string name="store_creation_domain_picker_subtitle">人们可以通过此域名在互联网上找到您。 别担心，您可以稍后进行更改。</string>
+    <string name="store_creation_domain_picker_title">选择域名</string>
+    <string name="analytics_views_subtitle">浏览次数</string>
+    <string name="analytics_visitors_subtitle">访客人数</string>
+    <string name="analytics_visitors_and_views_card_title">访客人数和浏览次数</string>
     <string name="store_creation_confirm_and_leave">确认并离开</string>
     <string name="store_creation_exit_dialog_message">您将丢失所有商店信息。</string>
     <string name="store_creation_exit_dialog_title">您要离开吗？</string>

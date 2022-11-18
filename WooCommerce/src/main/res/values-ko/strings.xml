@@ -1,11 +1,19 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2022-11-08 13:54:04+0000
+Translation-Revision-Date: 2022-11-15 14:54:03+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: ko_KR
 -->
 <resources>
+    <string name="store_creation_domain_picker_suggestions_title">제안</string>
+    <string name="store_creation_domain_picker_skip_button">건너뛰기</string>
+    <string name="store_creation_domain_picker_hint">도메인 입력</string>
+    <string name="store_creation_domain_picker_subtitle">사람들이 인터넷에서 회원님을 찾을 수 있는 곳입니다. 걱정하지 마세요. 나중에 변경할 수 있습니다.</string>
+    <string name="store_creation_domain_picker_title">도메인 선택</string>
+    <string name="analytics_views_subtitle">조회수</string>
+    <string name="analytics_visitors_subtitle">방문자 수</string>
+    <string name="analytics_visitors_and_views_card_title">방문자 수 및 조회수</string>
     <string name="store_creation_confirm_and_leave">확인 및 종료</string>
     <string name="store_creation_exit_dialog_message">모든 스토어 정보가 손실됩니다.</string>
     <string name="store_creation_exit_dialog_title">종료하시겠어요?</string>

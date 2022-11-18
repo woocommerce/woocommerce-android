@@ -1,11 +1,19 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2022-11-08 09:54:04+0000
+Translation-Revision-Date: 2022-11-15 11:54:04+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: zh_TW
 -->
 <resources>
+    <string name="store_creation_domain_picker_suggestions_title">建議</string>
+    <string name="store_creation_domain_picker_skip_button">略過</string>
+    <string name="store_creation_domain_picker_hint">輸入網域</string>
+    <string name="store_creation_domain_picker_subtitle">這是人們在網際網路上找到你的地方。 不用擔心，之後還能修改。</string>
+    <string name="store_creation_domain_picker_title">選擇網域</string>
+    <string name="analytics_views_subtitle">點閱數</string>
+    <string name="analytics_visitors_subtitle">訪客數</string>
+    <string name="analytics_visitors_and_views_card_title">訪客和點閱數</string>
     <string name="store_creation_confirm_and_leave">確認並離開</string>
     <string name="store_creation_exit_dialog_message">你將失去所有商店資訊。</string>
     <string name="store_creation_exit_dialog_title">你想離開嗎？</string>
