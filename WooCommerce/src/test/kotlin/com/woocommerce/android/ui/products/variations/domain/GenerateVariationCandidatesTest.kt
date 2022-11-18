@@ -1,9 +1,12 @@
 package com.woocommerce.android.ui.products.variations.domain
 
 import com.woocommerce.android.model.ProductAttribute
+import com.woocommerce.android.model.ProductVariation
+import com.woocommerce.android.model.VariantOption
 import com.woocommerce.android.ui.products.ProductHelper
 import com.woocommerce.android.ui.products.ProductTestUtils
 import com.woocommerce.android.ui.products.ProductType
+import com.woocommerce.android.ui.products.generateVariation
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 
@@ -33,14 +36,14 @@ class GenerateVariationCandidatesTest {
             Triple("S", "Red", "Casual"),
         ).map { triple ->
             listOf(
-                TermAssignment("Size", triple.first),
-                TermAssignment("Color", triple.second),
-                TermAssignment("Type", triple.third)
+                VariantOption(1, "Size", triple.first),
+                VariantOption(2, "Color", triple.second),
+                VariantOption(3, "Type", triple.third)
             )
         }
 
         // when
-        val result = sut.invoke(product)
+        val result = sut.invoke(product, emptyList())
 
         // then
         assertThat(result).containsExactlyInAnyOrderElementsOf(expectedVariationCandidates)
@@ -53,7 +56,7 @@ class GenerateVariationCandidatesTest {
             ProductHelper.getDefaultNewProduct(ProductType.VARIABLE, isVirtual = false).copy(attributes = emptyList())
 
         // when
-        val result = sut.invoke(product)
+        val result = sut.invoke(product, emptyList())
 
         // then
         assertThat(result).isEmpty()
@@ -69,20 +72,20 @@ class GenerateVariationCandidatesTest {
             ).copy(attributes = ProductTestUtils.generateProductAttributeList())
 
         // when
-        val result = sut.invoke(product)
+        val result = sut.invoke(product, emptyList())
 
         // then
         assertThat(result).isEmpty()
     }
 
     @Test
-    fun `should not generate all variation candidates with an attribute that is non variable one`() {
+    fun `should not generate variation candidates with an attribute that is not a variable one`() {
         // given
         val product = ProductHelper.getDefaultNewProduct(ProductType.VARIABLE, isVirtual = false).copy(
             attributes = listOf(
                 ProductAttribute(id = 1, name = "Size", terms = listOf("S", "M"), isVariation = true),
                 ProductAttribute(id = 2, name = "Color", terms = listOf("Red", "Blue"), isVariation = true),
-                ProductAttribute(id = 2, name = "Type", terms = listOf("Sport", "Casual"), isVariation = false)
+                ProductAttribute(id = 3, name = "Type", terms = listOf("Sport", "Casual"), isVariation = false)
             )
         )
 
@@ -93,15 +96,49 @@ class GenerateVariationCandidatesTest {
             Pair("S", "Red"),
         ).map { triple ->
             listOf(
-                TermAssignment("Size", triple.first),
-                TermAssignment("Color", triple.second),
+                VariantOption(1, "Size", triple.first),
+                VariantOption(2, "Color", triple.second),
             )
         }
 
         // when
-        val result = sut.invoke(product)
+        val result = sut.invoke(product, emptyList())
 
         // then
         assertThat(result).containsExactlyInAnyOrderElementsOf(expectedVariationCandidates)
+    }
+
+    @Test
+    fun `should not generate variation candidate if variation already exists`() {
+        // given
+        val product = ProductHelper.getDefaultNewProduct(ProductType.VARIABLE, isVirtual = false).copy(
+            attributes = listOf(
+                ProductAttribute(id = 1, name = "Size", terms = listOf("S", "M"), isVariation = true),
+                ProductAttribute(id = 2, name = "Color", terms = listOf("Red", "Blue"), isVariation = true),
+                ProductAttribute(id = 3, name = "Type", terms = listOf("Sport", "Casual"), isVariation = true)
+            )
+        )
+
+        val existingVariations: List<ProductVariation> = listOf(
+            Triple("M", "Blue", "Sport"),
+            Triple("M", "Blue", "Casual"),
+            Triple("S", "Red", "Sport"),
+            Triple("S", "Red", "Casual"),
+        ).map { triple ->
+            generateVariation().copy(
+                attributes =
+                arrayOf(
+                    VariantOption(1, "Size", triple.first),
+                    VariantOption(2, "Color", triple.second),
+                    VariantOption(3, "Type", triple.third)
+                )
+            )
+        }
+
+        // when
+        val result = sut.invoke(product, existingVariations)
+
+        // then
+        assertThat(result).doesNotContainAnyElementsOf(existingVariations.map { it.attributes.toList() })
     }
 }
