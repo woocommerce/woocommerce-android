@@ -20,7 +20,7 @@
 
     <com.google.android.material.textview.MaterialTextView
         android:id="@+id/developerOptionsSpinnerListItemLabel"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:textAppearance="@style/TextAppearance.Woo.Body1"
         android:textColor="@color/color_on_surface"
