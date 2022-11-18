@@ -11,9 +11,10 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@id/developerOptionsSpinnerListItemLabel"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.0"
+        app:layout_constraintHorizontal_chainStyle="spread_inside"
         app:srcCompat="@drawable/img_card_reader_update_progress"
         app:tint="@color/color_primary" />
 
@@ -24,6 +25,7 @@
         android:textAppearance="@style/TextAppearance.Woo.Body1"
         android:textColor="@color/color_on_surface"
         app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/developerOptionsSpinnerEndIcon"
         app:layout_constraintStart_toEndOf="@id/developerOptionsSpinnerIcon"
         app:layout_constraintTop_toTopOf="parent"
         tools:text="Enable Simulated Card Reader" />
@@ -36,8 +38,8 @@
         android:paddingEnd="@dimen/major_100"
         app:layout_constraintBottom_toBottomOf="@+id/developerOptionsSpinnerListItemLabel"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@id/developerOptionsSpinnerListItemLabel"
         app:layout_constraintTop_toTopOf="@+id/developerOptionsSpinnerListItemLabel"
-        app:layout_constraintVertical_bias="1.0"
         app:srcCompat="@drawable/ic_arrow_drop_down" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
