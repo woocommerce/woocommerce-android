@@ -89,7 +89,7 @@ private fun InstallationSummary(url: String, viewModel: InstallationViewModel) {
                         horizontal = dimensionResource(id = R.dimen.major_350),
                         vertical = dimensionResource(id = R.dimen.major_200)
                     )
-                    .height(410.dp)
+                    .fillMaxSize()
                     .align(Alignment.Center)
             ) {
                 PreviewWebView(url)
