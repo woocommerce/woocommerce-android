@@ -305,7 +305,6 @@ private fun PlanLoading() {
     }
 }
 
-
 @Preview
 @Preview()
 @Composable

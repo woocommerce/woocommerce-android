@@ -85,7 +85,7 @@ class PlansViewModel @Inject constructor(
     }
 
     fun onConfirmClicked() {
-        // TODO: Add logic for confirming plan selection
+        // TODO
     }
 
     fun onRetryClicked() {
