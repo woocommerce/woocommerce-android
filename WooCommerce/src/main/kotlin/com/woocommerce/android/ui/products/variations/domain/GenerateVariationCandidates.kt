@@ -2,21 +2,23 @@ package com.woocommerce.android.ui.products.variations.domain
 
 import com.woocommerce.android.model.Product
 import com.woocommerce.android.model.ProductAttribute
-import com.woocommerce.android.model.ProductVariation
 import com.woocommerce.android.model.VariantOption
 import com.woocommerce.android.ui.products.ProductType
+import com.woocommerce.android.ui.products.variations.VariationRepository
+import javax.inject.Inject
 
 typealias VariationCandidate = List<VariantOption>
 
-class GenerateVariationCandidates {
+class GenerateVariationCandidates @Inject constructor(
+    val variationRepository: VariationRepository
+) {
 
-    operator fun invoke(
-        product: Product,
-        existingVariations: List<ProductVariation>
-    ): List<VariationCandidate> {
+    operator fun invoke(product: Product,): List<VariationCandidate> {
         if (product.type != ProductType.VARIABLE.value) {
             return emptyList()
         }
+
+        val existingVariations = variationRepository.getProductVariationList(product.remoteId)
 
         val termAssignmentsGroupedByAttribute: List<List<VariantOption>> = product.attributes
             .filter(ProductAttribute::isVariation)

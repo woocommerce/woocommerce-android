@@ -7,12 +7,29 @@ import com.woocommerce.android.ui.products.ProductHelper
 import com.woocommerce.android.ui.products.ProductTestUtils
 import com.woocommerce.android.ui.products.ProductType
 import com.woocommerce.android.ui.products.generateVariation
+import com.woocommerce.android.ui.products.variations.VariationRepository
+import com.woocommerce.android.viewmodel.BaseUnitTest
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.assertj.core.api.Assertions.assertThat
+import org.junit.Before
 import org.junit.Test
+import org.mockito.kotlin.any
+import org.mockito.kotlin.doReturn
+import org.mockito.kotlin.mock
 
-class GenerateVariationCandidatesTest {
+@OptIn(ExperimentalCoroutinesApi::class)
+class GenerateVariationCandidatesTest : BaseUnitTest() {
 
-    val sut = GenerateVariationCandidates()
+    private var mockedVariationRepository: VariationRepository = mock {
+        on { getProductVariationList(any()) } doReturn emptyList()
+    }
+
+    private lateinit var sut: GenerateVariationCandidates
+
+    @Before
+    fun setUp() {
+        initializeSut()
+    }
 
     @Test
     fun `should generate all variation candidates for a product with 3 attributes each with 2 terms`() {
@@ -21,7 +38,7 @@ class GenerateVariationCandidatesTest {
             attributes = listOf(
                 ProductAttribute(id = 1, name = "Size", terms = listOf("S", "M"), isVariation = true),
                 ProductAttribute(id = 2, name = "Color", terms = listOf("Red", "Blue"), isVariation = true),
-                ProductAttribute(id = 2, name = "Type", terms = listOf("Sport", "Casual"), isVariation = true)
+                ProductAttribute(id = 3, name = "Type", terms = listOf("Sport", "Casual"), isVariation = true)
             )
         )
 
@@ -43,7 +60,7 @@ class GenerateVariationCandidatesTest {
         }
 
         // when
-        val result = sut.invoke(product, emptyList())
+        val result = sut.invoke(product)
 
         // then
         assertThat(result).containsExactlyInAnyOrderElementsOf(expectedVariationCandidates)
@@ -56,7 +73,7 @@ class GenerateVariationCandidatesTest {
             ProductHelper.getDefaultNewProduct(ProductType.VARIABLE, isVirtual = false).copy(attributes = emptyList())
 
         // when
-        val result = sut.invoke(product, emptyList())
+        val result = sut.invoke(product)
 
         // then
         assertThat(result).isEmpty()
@@ -72,7 +89,7 @@ class GenerateVariationCandidatesTest {
             ).copy(attributes = ProductTestUtils.generateProductAttributeList())
 
         // when
-        val result = sut.invoke(product, emptyList())
+        val result = sut.invoke(product)
 
         // then
         assertThat(result).isEmpty()
@@ -102,7 +119,7 @@ class GenerateVariationCandidatesTest {
         }
 
         // when
-        val result = sut.invoke(product, emptyList())
+        val result = sut.invoke(product)
 
         // then
         assertThat(result).containsExactlyInAnyOrderElementsOf(expectedVariationCandidates)
@@ -135,10 +152,19 @@ class GenerateVariationCandidatesTest {
             )
         }
 
+        mockedVariationRepository = mock {
+            on { getProductVariationList(product.remoteId) } doReturn existingVariations
+        }
+        initializeSut()
+
         // when
-        val result = sut.invoke(product, existingVariations)
+        val result = sut.invoke(product)
 
         // then
         assertThat(result).doesNotContainAnyElementsOf(existingVariations.map { it.attributes.toList() })
+    }
+
+    private fun initializeSut() {
+        sut = GenerateVariationCandidates(mockedVariationRepository)
     }
 }
