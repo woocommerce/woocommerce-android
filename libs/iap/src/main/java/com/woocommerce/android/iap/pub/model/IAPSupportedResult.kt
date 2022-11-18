@@ -1,6 +1,4 @@
-package com.woocommerce.android.iap.internal.model
-
-import com.woocommerce.android.iap.pub.model.IAPError
+package com.woocommerce.android.iap.pub.model
 
 sealed class IAPSupportedResult {
     data class Success(val isSupported: Boolean) : IAPSupportedResult()
