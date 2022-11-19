@@ -1,1 +1,3 @@
-For this release, we focused on polishing a few things and taking care of minor bugs that our team found. Don’t be fooled – we are working on some pretty cool stuff for you all! Keep sharing feedback 💜
+- [*] [Internal] Remove simple payments from the orders list screen [https://github.com/woocommerce/woocommerce-android/pull/7844]
+- [*] [Internal] Red badge that indicates that payments have moved to the more menu has removed [https://github.com/woocommerce/woocommerce-android/pull/7843]
+
