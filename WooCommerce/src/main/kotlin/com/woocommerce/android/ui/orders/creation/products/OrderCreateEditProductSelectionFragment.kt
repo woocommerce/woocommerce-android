@@ -169,7 +169,7 @@ class OrderCreateEditProductSelectionFragment :
                 registerSearchListeners()
                 true
             }
-            else -> super.onOptionsItemSelected(item)
+            else -> false
         }
     }
 

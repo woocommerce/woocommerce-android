@@ -94,7 +94,6 @@ class OrderCreateEditFormFragment :
     }
 
     override fun onCreateMenu(menu: Menu, inflater: MenuInflater) {
-        super.onCreateOptionsMenu(menu, inflater)
         inflater.inflate(R.menu.menu_order_creation, menu)
 
         createOrderMenuItem = menu.findItem(R.id.menu_create).apply {

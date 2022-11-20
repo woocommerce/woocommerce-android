@@ -117,7 +117,7 @@ class ProductImagesFragment :
                         viewModel.onValidateButtonClicked()
                         true
                     }
-                    else -> super.onOptionsItemSelected(item)
+                    else -> false
                 }
             }
             else -> false
