@@ -77,7 +77,7 @@ class DomainPickerViewModel @Inject constructor(
     }
 
     fun onSkipPressed() {
-        // TODO
+        triggerEvent(NavigateToNextStep)
     }
 
     fun onContinueClicked() {

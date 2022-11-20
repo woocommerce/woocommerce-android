@@ -1,0 +1,2 @@
+11.2:
+Untuk rilis kali ini, kami berfokus pada penyempurnaan beberapa hal dan penanganan bug kecil yang tim kami temukan. Jangan terkecoh – kami sedang menyiapkan sesuatu yang keren untuk Anda! Terus bagikan feedback 💜

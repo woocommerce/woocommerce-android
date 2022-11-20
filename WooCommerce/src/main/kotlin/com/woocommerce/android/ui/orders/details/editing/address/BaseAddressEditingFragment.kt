@@ -1,7 +1,6 @@
 package com.woocommerce.android.ui.orders.details.editing.address
 
 import android.os.Bundle
-import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import androidx.core.view.isVisible
@@ -102,16 +101,6 @@ abstract class BaseAddressEditingFragment :
             ActivityUtils.hideKeyboard(it)
         }
         super.onStop()
-    }
-
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        return when (item.itemId) {
-            R.id.menu_done -> {
-                addressViewModel.onDoneSelected()
-                true
-            }
-            else -> super.onOptionsItemSelected(item)
-        }
     }
 
     override fun onDetach() {

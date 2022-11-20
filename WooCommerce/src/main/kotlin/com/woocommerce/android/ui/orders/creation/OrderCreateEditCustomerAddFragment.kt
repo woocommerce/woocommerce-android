@@ -296,7 +296,7 @@ class OrderCreateEditCustomerAddFragment :
                 addressViewModel.onCustomerSearchClicked()
                 true
             }
-            else -> super.onOptionsItemSelected(item)
+            else -> false
         }
     }
 

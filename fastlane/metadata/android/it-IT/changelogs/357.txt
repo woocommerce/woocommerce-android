@@ -1,2 +1,0 @@
-11.1:
-Questo rilascio include molte cose interessanti per gestire al meglio il tuo negozio. Abbiamo aggiunto l'opzione per aggiornare in blocco la quantità in magazzino delle varianti. Abbiamo anche aggiunto l'opzione per l'accesso tramite codice QR. Abbiamo eseguito vari miglioramenti per la ricerca di ordini e prodotti.

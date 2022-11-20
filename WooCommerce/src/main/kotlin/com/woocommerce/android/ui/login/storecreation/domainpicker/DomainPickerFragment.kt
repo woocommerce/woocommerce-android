@@ -43,10 +43,15 @@ class DomainPickerFragment : BaseFragment() {
         viewModel.event.observe(viewLifecycleOwner) { event ->
             when (event) {
                 is Exit -> findNavController().popBackStack()
-                is NavigateToNextStep -> findNavController().navigateSafely(
-                    DomainPickerFragmentDirections.actionDomainPickerFragmentToPlansFragment()
-                )
+                is NavigateToNextStep -> navigateToStoreSummaryFragment()
             }
         }
+    }
+
+    private fun navigateToStoreSummaryFragment() {
+        findNavController().navigateSafely(
+            DomainPickerFragmentDirections
+                .actionDomainPickerFragmentToMyStoreSummaryFragment()
+        )
     }
 }

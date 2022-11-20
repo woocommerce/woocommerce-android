@@ -27,7 +27,8 @@ import com.woocommerce.android.ui.main.AppBarStatus
 import com.woocommerce.android.ui.sitepicker.sitediscovery.SitePickerSiteDiscoveryViewModel.CreateZendeskTicket
 import com.woocommerce.android.ui.sitepicker.sitediscovery.SitePickerSiteDiscoveryViewModel.NavigateToHelpScreen
 import com.woocommerce.android.ui.sitepicker.sitediscovery.SitePickerSiteDiscoveryViewModel.ShowJetpackConnectionError
-import com.woocommerce.android.ui.sitepicker.sitediscovery.SitePickerSiteDiscoveryViewModel.StartJetpackInstallation
+import com.woocommerce.android.ui.sitepicker.sitediscovery.SitePickerSiteDiscoveryViewModel.StartNativeJetpackActivation
+import com.woocommerce.android.ui.sitepicker.sitediscovery.SitePickerSiteDiscoveryViewModel.StartWebBasedJetpackInstallation
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Logout
@@ -78,7 +79,8 @@ class SitePickerSiteDiscoveryFragment : BaseFragment() {
                 is NavigateToHelpScreen -> {
                     startActivity(HelpActivity.createIntent(requireContext(), Origin.LOGIN_SITE_ADDRESS, null))
                 }
-                is StartJetpackInstallation -> startJetpackInstallation(event.siteAddress)
+                is StartWebBasedJetpackInstallation -> startWebBasedJetpackInstallation(event.siteAddress)
+                is StartNativeJetpackActivation -> startNativeJetpackActivation(event)
                 is ShowJetpackConnectionError -> showJetpackErrorScreen(event.siteAddress)
                 is Logout -> onLogout()
                 is ExitWithResult<*> -> navigateBackWithResult(SITE_PICKER_SITE_ADDRESS_RESULT, event.data)
@@ -96,7 +98,7 @@ class SitePickerSiteDiscoveryFragment : BaseFragment() {
         }
     }
 
-    private fun startJetpackInstallation(siteAddress: String) {
+    private fun startWebBasedJetpackInstallation(siteAddress: String) {
         val url = "$JETPACK_CONNECT_URL?" +
             "url=$siteAddress" +
             "&mobile_redirect=$JETPACK_CONNECTED_REDIRECT_URL" +
@@ -108,6 +110,16 @@ class SitePickerSiteDiscoveryFragment : BaseFragment() {
                 urlToTriggerExit = JETPACK_CONNECTED_REDIRECT_URL,
                 urlComparisonMode = WPComWebViewFragment.UrlComparisonMode.EQUALITY
             )
+        )
+    }
+
+    private fun startNativeJetpackActivation(event: StartNativeJetpackActivation) {
+        findNavController().navigate(
+            SitePickerSiteDiscoveryFragmentDirections
+                .actionSitePickerSiteDiscoveryFragmentToJetpackActivation(
+                    siteUrl = event.siteAddress,
+                    isJetpackInstalled = event.isJetpackInstalled
+                )
         )
     }
 

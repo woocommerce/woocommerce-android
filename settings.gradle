@@ -3,7 +3,7 @@ pluginManagement {
     gradle.ext.daggerVersion = '2.42'
     gradle.ext.detektVersion = '1.19.0'
     gradle.ext.kotlinVersion = '1.6.10'
-    gradle.ext.navigationVersion = '2.4.1'
+    gradle.ext.navigationVersion = '2.5.3'
 
     repositories {
         exclusiveContent {
@@ -71,6 +71,7 @@ rootProject.name = 'WCAndroid'
 include ':quicklogin'
 include ':libs:barcode'
 include ':libs:cardreader'
+include ':libs:iap'
 include ':WooCommerce'
 
 gradle.ext.fluxCBinaryPath = "org.wordpress:fluxc"
