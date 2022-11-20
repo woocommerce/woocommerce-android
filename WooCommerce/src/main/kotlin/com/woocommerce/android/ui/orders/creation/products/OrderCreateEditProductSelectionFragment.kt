@@ -11,7 +11,6 @@ import androidx.appcompat.widget.SearchView
 import androidx.core.view.MenuProvider
 import androidx.fragment.app.viewModels
 import androidx.hilt.navigation.fragment.hiltNavGraphViewModels
-import androidx.lifecycle.Lifecycle
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.woocommerce.android.R
@@ -57,7 +56,7 @@ class OrderCreateEditProductSelectionFragment :
             productsList.layoutManager = LinearLayoutManager(requireActivity())
             setupObserversWith(this)
         }
-        requireActivity().addMenuProvider(this, viewLifecycleOwner, Lifecycle.State.RESUMED)
+        requireActivity().addMenuProvider(this, viewLifecycleOwner)
     }
 
     override fun onDestroyView() {

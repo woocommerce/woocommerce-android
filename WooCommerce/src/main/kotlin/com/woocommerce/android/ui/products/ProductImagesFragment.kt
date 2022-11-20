@@ -14,7 +14,6 @@ import androidx.core.text.HtmlCompat
 import androidx.core.view.MenuProvider
 import androidx.core.view.isVisible
 import androidx.hilt.navigation.fragment.hiltNavGraphViewModels
-import androidx.lifecycle.Lifecycle
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
@@ -79,7 +78,7 @@ class ProductImagesFragment :
 
         _binding = FragmentProductImagesBinding.bind(view)
 
-        requireActivity().addMenuProvider(this, viewLifecycleOwner, Lifecycle.State.RESUMED)
+        requireActivity().addMenuProvider(this, viewLifecycleOwner)
 
         setupObservers(viewModel)
         setupViews()

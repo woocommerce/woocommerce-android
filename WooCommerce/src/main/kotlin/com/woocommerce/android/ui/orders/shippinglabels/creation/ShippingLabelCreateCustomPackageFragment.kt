@@ -8,7 +8,6 @@ import android.view.View
 import androidx.annotation.StringRes
 import androidx.core.view.MenuProvider
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.Lifecycle
 import com.woocommerce.android.R
 import com.woocommerce.android.databinding.FragmentShippingLabelCreateCustomPackageBinding
 import com.woocommerce.android.extensions.takeIfNotEqualTo
@@ -41,7 +40,7 @@ class ShippingLabelCreateCustomPackageFragment :
         super.onViewCreated(view, savedInstanceState)
         _binding = FragmentShippingLabelCreateCustomPackageBinding.bind(view)
 
-        requireActivity().addMenuProvider(this, viewLifecycleOwner, Lifecycle.State.RESUMED)
+        requireActivity().addMenuProvider(this, viewLifecycleOwner)
 
         initializeInputFields()
         setupObservers()
