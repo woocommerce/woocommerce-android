@@ -536,6 +536,8 @@ private object TicketFieldIds {
     const val categoryId = 25176003L
     const val subcategoryId = 25176023L
     const val logs = 10901699622036L
+    // SSR refers to WooCommerce System Status Report
+    const val ssr = 22871957L
     const val networkInformation = 360000086966L
     const val currentSite = 360000103103L
     const val appLanguage = 360008583691L
