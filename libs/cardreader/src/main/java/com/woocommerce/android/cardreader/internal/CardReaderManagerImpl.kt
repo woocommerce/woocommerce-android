@@ -3,6 +3,7 @@ package com.woocommerce.android.cardreader.internal
 import android.app.Application
 import android.content.ComponentCallbacks2
 import android.content.res.Configuration
+import com.stripe.stripeterminal.external.models.SimulateReaderUpdate
 import com.stripe.stripeterminal.log.LogLevel
 import com.woocommerce.android.cardreader.BuildConfig
 import com.woocommerce.android.cardreader.CardReaderManager
@@ -75,7 +76,7 @@ internal class CardReaderManagerImpl(
 
             initStripeTerminal(logLevel)
 
-            terminal.setupSimulator()
+            terminal.setupSimulator(updateFrequency = SimulateReaderUpdate.NONE)
         } else {
             logWrapper.w(TAG, "CardReaderManager is already initialized")
         }
@@ -87,6 +88,22 @@ internal class CardReaderManagerImpl(
     ): Flow<CardReaderDiscoveryEvents> {
         if (!terminal.isInitialized()) throw IllegalStateException("Terminal not initialized")
         return connectionManager.discoverReaders(isSimulated, cardReaderTypesToDiscover)
+    }
+
+    override fun cardReaderUpdateFrequency(selectedOption: String) {
+
+        return when (selectedOption) {
+            "ALWAYS" -> {
+                terminal.setupSimulator(SimulateReaderUpdate.REQUIRED)
+            }
+            "NEVER" -> {
+                terminal.setupSimulator(SimulateReaderUpdate.NONE)
+            }
+            "RANDOMLY" -> {
+                terminal.setupSimulator(SimulateReaderUpdate.RANDOM)
+            }
+            else -> error("Unknown option: $selectedOption")
+        }
     }
 
     override fun startConnectionToReader(cardReader: CardReader, locationId: String) {
