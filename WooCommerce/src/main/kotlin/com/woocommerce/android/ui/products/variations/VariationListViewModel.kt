@@ -18,6 +18,10 @@ import com.woocommerce.android.model.Product
 import com.woocommerce.android.model.ProductVariation
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.ui.products.ProductDetailRepository
+import com.woocommerce.android.ui.products.variations.VariationListViewModel.ProgressDialogState.Hidden
+import com.woocommerce.android.ui.products.variations.VariationListViewModel.ProgressDialogState.Shown
+import com.woocommerce.android.ui.products.variations.VariationListViewModel.ProgressDialogState.Shown.VariationsCardinality.MULTIPLE
+import com.woocommerce.android.ui.products.variations.VariationListViewModel.ProgressDialogState.Shown.VariationsCardinality.SINGLE
 import com.woocommerce.android.ui.products.variations.VariationListViewModel.ViewState
 import com.woocommerce.android.ui.products.variations.domain.GenerateVariationCandidates
 import com.woocommerce.android.ui.products.variations.domain.VariationCandidate
@@ -168,7 +172,7 @@ class VariationListViewModel @Inject constructor(
         openVariationDetails: Boolean = true
     ) = launch {
         viewState = viewState.copy(
-            isProgressDialogShown = true,
+            progressDialogState = Shown(SINGLE),
             isEmptyViewVisible = false
         )
 
@@ -178,7 +182,7 @@ class VariationListViewModel @Inject constructor(
             ?.let {
                 triggerEvent(ShowSnackbar(string.variation_created_title))
                 triggerEvent(ShowVariationDetail(it))
-            }.also { viewState = viewState.copy(isProgressDialogShown = false) }
+            }.also { viewState = viewState.copy(progressDialogState = Hidden) }
     }
 
     private suspend fun Product.createVariation() =
@@ -287,13 +291,13 @@ class VariationListViewModel @Inject constructor(
         }
     }
 
-    @Suppress("UnusedPrivateMember")
     fun onGenerateVariationsConfirmed(variationCandidates: List<VariationCandidate>) {
-        viewState = viewState.copy(isProgressDialogShown = true)
+        variationCandidates.size
+        viewState = viewState.copy(progressDialogState = Shown(MULTIPLE))
         launch {
             @Suppress("MagicNumber")
             delay(4000)
-            viewState = viewState.copy(isProgressDialogShown = false)
+            viewState = viewState.copy(progressDialogState = Hidden)
         }
     }
 
@@ -305,7 +309,7 @@ class VariationListViewModel @Inject constructor(
         val canLoadMore: Boolean? = null,
         val isEmptyViewVisible: Boolean? = null,
         val isWarningVisible: Boolean? = null,
-        val isProgressDialogShown: Boolean? = null,
+        val progressDialogState: ProgressDialogState? = null,
         val parentProduct: Product? = null,
         val isVariationsOptionsMenuEnabled: Boolean = false,
         val isBulkUpdateProgressDialogShown: Boolean = false,
@@ -315,6 +319,17 @@ class VariationListViewModel @Inject constructor(
     data class VariationListData(
         val currentVariationAmount: Int? = null
     ) : Parcelable
+
+    sealed class ProgressDialogState : Parcelable {
+        @Parcelize
+        object Hidden : ProgressDialogState()
+        @Parcelize
+        data class Shown(val cardinality: VariationsCardinality) : ProgressDialogState() {
+            enum class VariationsCardinality {
+                SINGLE, MULTIPLE
+            }
+        }
+    }
 
     data class ShowVariationDetail(val variation: ProductVariation) : Event()
 
