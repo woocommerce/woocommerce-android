@@ -21,7 +21,7 @@ class MyStoreSummaryViewModel @Inject constructor(
                 name = it.name,
                 domain = it.domain ?: "",
                 category = it.category,
-                country = it.country ?: "TODO default value US?"
+                country = it.country ?: "TODO default value locale?"
             )
         }
         .asLiveData()
