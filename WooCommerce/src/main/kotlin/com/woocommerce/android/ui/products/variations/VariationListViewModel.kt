@@ -18,7 +18,13 @@ import com.woocommerce.android.model.Product
 import com.woocommerce.android.model.ProductVariation
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.ui.products.ProductDetailRepository
+import com.woocommerce.android.ui.products.variations.VariationListViewModel.ProgressDialogState.Hidden
+import com.woocommerce.android.ui.products.variations.VariationListViewModel.ProgressDialogState.Shown
+import com.woocommerce.android.ui.products.variations.VariationListViewModel.ProgressDialogState.Shown.VariationsCardinality.MULTIPLE
+import com.woocommerce.android.ui.products.variations.VariationListViewModel.ProgressDialogState.Shown.VariationsCardinality.SINGLE
 import com.woocommerce.android.ui.products.variations.VariationListViewModel.ViewState
+import com.woocommerce.android.ui.products.variations.domain.GenerateVariationCandidates
+import com.woocommerce.android.ui.products.variations.domain.VariationCandidate
 import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.util.WooLog
@@ -29,6 +35,7 @@ import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import kotlinx.parcelize.Parcelize
@@ -60,7 +67,8 @@ class VariationListViewModel @Inject constructor(
     private val productRepository: ProductDetailRepository,
     private val networkStatus: NetworkStatus,
     private val currencyFormatter: CurrencyFormatter,
-    private val dispatchers: CoroutineDispatchers
+    private val dispatchers: CoroutineDispatchers,
+    private val generateVariationCandidates: GenerateVariationCandidates,
 ) : ScopedViewModel(savedState) {
     private var remoteProductId = 0L
 
@@ -164,7 +172,7 @@ class VariationListViewModel @Inject constructor(
         openVariationDetails: Boolean = true
     ) = launch {
         viewState = viewState.copy(
-            isProgressDialogShown = true,
+            progressDialogState = Shown(SINGLE),
             isEmptyViewVisible = false
         )
 
@@ -174,7 +182,7 @@ class VariationListViewModel @Inject constructor(
             ?.let {
                 triggerEvent(ShowSnackbar(string.variation_created_title))
                 triggerEvent(ShowVariationDetail(it))
-            }.also { viewState = viewState.copy(isProgressDialogShown = false) }
+            }.also { viewState = viewState.copy(progressDialogState = Hidden) }
     }
 
     private suspend fun Product.createVariation() =
@@ -271,6 +279,28 @@ class VariationListViewModel @Inject constructor(
         viewState.parentProduct?.let { track(event, mapOf(KEY_PRODUCT_ID to it.remoteId)) }
     }
 
+    fun onAddAllVariationsClicked() {
+        val product = viewState.parentProduct ?: return
+
+        val variationCandidates = generateVariationCandidates.invoke(product)
+
+        if (variationCandidates.size < GenerateVariationCandidates.VARIATION_CREATION_LIMIT) {
+            triggerEvent(ShowGenerateVariationConfirmation(variationCandidates))
+        } else {
+            triggerEvent(ShowGenerateVariationError.LimitExceeded(variationCandidates.size))
+        }
+    }
+
+    fun onGenerateVariationsConfirmed(variationCandidates: List<VariationCandidate>) {
+        variationCandidates.size
+        viewState = viewState.copy(progressDialogState = Shown(MULTIPLE))
+        launch {
+            @Suppress("MagicNumber")
+            delay(4000)
+            viewState = viewState.copy(progressDialogState = Hidden)
+        }
+    }
+
     @Parcelize
     data class ViewState(
         val isSkeletonShown: Boolean? = null,
@@ -279,7 +309,7 @@ class VariationListViewModel @Inject constructor(
         val canLoadMore: Boolean? = null,
         val isEmptyViewVisible: Boolean? = null,
         val isWarningVisible: Boolean? = null,
-        val isProgressDialogShown: Boolean? = null,
+        val progressDialogState: ProgressDialogState? = null,
         val parentProduct: Product? = null,
         val isVariationsOptionsMenuEnabled: Boolean = false,
         val isBulkUpdateProgressDialogShown: Boolean = false,
@@ -289,6 +319,17 @@ class VariationListViewModel @Inject constructor(
     data class VariationListData(
         val currentVariationAmount: Int? = null
     ) : Parcelable
+
+    sealed class ProgressDialogState : Parcelable {
+        @Parcelize
+        object Hidden : ProgressDialogState()
+        @Parcelize
+        data class Shown(val cardinality: VariationsCardinality) : ProgressDialogState() {
+            enum class VariationsCardinality {
+                SINGLE, MULTIPLE
+            }
+        }
+    }
 
     data class ShowVariationDetail(val variation: ProductVariation) : Event()
 
@@ -302,4 +343,11 @@ class VariationListViewModel @Inject constructor(
      * Informs about exceeded limit of 100 variations bulk update.
      */
     object ShowBulkUpdateLimitExceededWarning : Event()
+
+    data class ShowGenerateVariationConfirmation(val variationCandidates: List<VariationCandidate>) : Event()
+
+    sealed class ShowGenerateVariationError : Event() {
+        data class LimitExceeded(val variationCandidatesSize: Int) : ShowGenerateVariationError()
+        object NetworkError : ShowGenerateVariationError()
+    }
 }

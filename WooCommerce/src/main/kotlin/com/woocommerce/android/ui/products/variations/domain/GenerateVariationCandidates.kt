@@ -2,29 +2,46 @@ package com.woocommerce.android.ui.products.variations.domain
 
 import com.woocommerce.android.model.Product
 import com.woocommerce.android.model.ProductAttribute
+import com.woocommerce.android.model.VariantOption
 import com.woocommerce.android.ui.products.ProductType
+import com.woocommerce.android.ui.products.variations.VariationRepository
+import javax.inject.Inject
 
-data class TermAssignment(val attributeName: String, val termName: String)
-typealias VariationCandidate = List<TermAssignment>
+typealias VariationCandidate = List<VariantOption>
 
-class GenerateVariationCandidates {
+class GenerateVariationCandidates @Inject constructor(
+    val variationRepository: VariationRepository
+) {
+
+    companion object {
+        const val VARIATION_CREATION_LIMIT = 100
+    }
 
     operator fun invoke(product: Product): List<VariationCandidate> {
         if (product.type != ProductType.VARIABLE.value) {
             return emptyList()
         }
 
-        val termAssignmentsGroupedByAttribute: List<List<TermAssignment>> = product.attributes
+        val existingVariations = variationRepository.getProductVariationList(product.remoteId)
+
+        val termAssignmentsGroupedByAttribute: List<List<VariantOption>> = product.attributes
             .filter(ProductAttribute::isVariation)
             .map { productAttribute ->
                 productAttribute.terms.map { term ->
-                    TermAssignment(
-                        attributeName = productAttribute.name, termName = term
+                    VariantOption(
+                        id = productAttribute.id,
+                        name = productAttribute.name,
+                        option = term,
                     )
                 }
             }
 
-        val variationCandidates = cartesianProductForTermAssignments(termAssignmentsGroupedByAttribute)
+        val existingVariationsAsCandidates: List<VariationCandidate> =
+            existingVariations.map { it.attributes.toList() }
+
+        val variationCandidates = cartesianProductForTermAssignments(
+            termAssignmentsGroupedByAttribute
+        ).minus(existingVariationsAsCandidates.toSet())
 
         return if (variationCandidates.first().isEmpty()) {
             emptyList()
@@ -34,10 +51,10 @@ class GenerateVariationCandidates {
     }
 
     private fun cartesianProductForTermAssignments(
-        termsGroupedByAttribute: List<List<TermAssignment>>
+        termsGroupedByAttribute: List<List<VariantOption>>
     ): List<VariationCandidate> = termsGroupedByAttribute.fold(
         listOf(emptyList())
-    ) { acc: List<VariationCandidate>, assignmentsGroupedByAttribute: List<TermAssignment> ->
+    ) { acc: List<VariationCandidate>, assignmentsGroupedByAttribute: List<VariantOption> ->
         acc.flatMap { variationCandidate ->
             assignmentsGroupedByAttribute.map { termAssignment ->
                 variationCandidate + termAssignment

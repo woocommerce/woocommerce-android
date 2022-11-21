@@ -295,6 +295,19 @@
     <string name="login_jetpack_connection_explanation">To use this app for&lt;br&gt;&lt;b&gt;%1$s&lt;/b&gt;&lt;br&gt;you\'ll need to connect your store to Jetpack.</string>
     <string name="login_jetpack_installation_credentials_hint">You\’ll need your store credentials to begin the installation.</string>
     <string name="login_jetpack_connect">Connect Jetpack</string>
+    <string name="login_jetpack_installation_enter_site_credentials">Log in to &lt;b&gt;%1$s&lt;/b&gt; with your store credentials to install Jetpack.</string>
+    <string name="login_jetpack_connection_enter_site_credentials">Log in to &lt;b&gt;%1$s&lt;/b&gt; with your store credentials to connect Jetpack.</string>
+    <string name="login_jetpack_connection_approval_hint">We will ask for your approval to complete the Jetpack connection.</string>
+    <string name="login_jetpack_site_credentials_screen_title">Log in to your store</string>
+    <string name="login_jetpack_steps_installing">Installing Jetpack</string>
+    <string name="login_jetpack_steps_activating">Activating</string>
+    <string name="login_jetpack_steps_authorizing">Authorising connection</string>
+    <string name="login_jetpack_steps_authorizing_hint">Approval required</string>
+    <string name="login_jetpack_steps_done">All done</string>
+    <string name="login_jetpack_installation_steps_screen_title">Installing Jetpack</string>
+    <string name="login_jetpack_connection_steps_screen_title">Connecting Jetpack</string>
+    <string name="login_jetpack_steps_screen_subtitle">Please wait while we connect your store &lt;b&gt;%1$s&lt;/b&gt; with Jetpack.</string>
+    <string name="login_jetpack_installation_error_code_template">Error code %1$s</string>
 
     <!--
         My Store View
@@ -1649,6 +1662,11 @@
     <string name="variations_bulk_update_current_stock_quantity">Current stock quantity is %d</string>
     <string name="variations_bulk_update_current_stock_quantity_mixed">Current stock quantity is mixed</string>
     <string name="variations_bulk_update_stock_quantity_success">Updated stock quantity</string>
+    <string name="variations_bulk_creation_warning_title">Generation limit exceeded</string>
+    <string name="variations_bulk_creation_warning_message">Currently creation is supported for %1$d variations maximum. Generating variations for this product would create %2$d variations.</string>
+    <string name="variations_bulk_creation_confirmation_title">Are you sure you want to generate all variations?</string>
+    <string name="variations_bulk_creation_confirmation_message">This will create a new variation for each and every possible combination of variation attributes (%1$d variations).</string>
+    <string name="variations_bulk_creation_progress_title">Generating variations</string>
 
     <!--
         Product images

@@ -21,6 +21,7 @@ import org.mockito.kotlin.any
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.whenever
 
+@Suppress("UNCHECKED_CAST")
 @ExperimentalCoroutinesApi
 class CardReaderManualsViewModelTest : BaseUnitTest() {
     private lateinit var viewModel: CardReaderManualsViewModel

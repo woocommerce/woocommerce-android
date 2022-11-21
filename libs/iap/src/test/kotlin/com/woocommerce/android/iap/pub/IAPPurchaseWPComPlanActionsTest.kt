@@ -879,6 +879,7 @@ class IAPPurchaseWPComPlanActionsTest {
     private fun setupPeriodicJob(purchasesResult: PurchasesResult) {
         whenever(periodicPurchaseStatusCheckerMock.startPeriodicPurchasesCheckJob(any(), any(), any()))
             .thenAnswer {
+                @Suppress("UNCHECKED_CAST")
                 (it.arguments[2] as (PurchasesResult) -> Unit).invoke(purchasesResult)
                 mock<Job>()
             }

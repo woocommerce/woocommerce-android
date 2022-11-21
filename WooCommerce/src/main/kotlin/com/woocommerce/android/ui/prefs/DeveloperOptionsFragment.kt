@@ -72,7 +72,7 @@ class DeveloperOptionsFragment : BaseFragment(R.layout.fragment_developer_option
                 viewModel.onUpdateReaderOptionChanged(currentlySelectedValue)
                 viewModel.onUpdateReaderOptionsSelected(currentlySelectedValue)
             }
-            .setSingleChoiceItems(textValues, selectedValue.ordinal) { dialog, which ->
+            .setSingleChoiceItems(textValues, selectedValue.ordinal) { _, which ->
                 currentlySelectedValue = values[which]
             }.show()
     }

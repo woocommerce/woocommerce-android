@@ -13,6 +13,7 @@
 
         <activity
             android:name="com.android.billingclient.api.ProxyBillingActivity"
+            tools:ignore="MissingClass"
             tools:node="remove" />
 
     </application>

@@ -118,12 +118,11 @@ private fun DomainSearchForm(
     ) {
         Text(
             text = stringResource(id = R.string.store_creation_domain_picker_title),
-            style = MaterialTheme.typography.h4,
-            fontWeight = FontWeight.Bold
+            style = MaterialTheme.typography.h5,
         )
         Text(
             text = stringResource(id = R.string.store_creation_domain_picker_subtitle),
-            style = MaterialTheme.typography.body1,
+            style = MaterialTheme.typography.subtitle1,
             color = colorResource(id = R.color.color_on_surface_medium)
         )
         WCSearchField(
@@ -146,6 +145,7 @@ private fun DomainSearchForm(
             modifier = Modifier
                 .weight(1f)
                 .fillMaxWidth()
+                .padding(top = dimensionResource(id = R.dimen.minor_100))
         ) {
             if (state.loadingState == Loading) {
                 CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
@@ -176,8 +176,8 @@ private fun DomainSuggestionList(
         verticalArrangement = Arrangement.spacedBy(dimensionResource(id = R.dimen.major_100))
     ) {
         Text(
-            text = stringResource(id = R.string.store_creation_domain_picker_suggestions_title).uppercase(),
-            style = MaterialTheme.typography.body2,
+            text = stringResource(id = R.string.store_creation_domain_picker_suggestions_title),
+            style = MaterialTheme.typography.caption,
             color = colorResource(id = R.color.color_on_surface_medium)
         )
         LazyColumn {
