@@ -159,6 +159,8 @@ platform :android do
   lane :update_appstore_strings do |options|
     ensure_git_status_clean
 
+    version = options.fetch(:version, android_get_app_version)
+
     files = {
       release_note: RELEASE_NOTES_PATH,
       play_store_promo: File.join(ORIGINALS_METADATA_DIR_PATH, 'short_description.txt'),
@@ -176,13 +178,13 @@ platform :android do
     an_update_metadata_source(
       po_file_path: po_path,
       source_files: files,
-      release_version: options[:version]
+      release_version: version
     )
 
     git_add(path: po_path)
     git_commit(
       path: po_path,
-      message: "Update `PlayStoreStrings.po` for #{options[:version]}",
+      message: "Update `PlayStoreStrings.po` for #{version}",
       allow_nothing_to_commit: true
     )
   end
