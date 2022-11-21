@@ -2,9 +2,9 @@ package com.woocommerce.android.ui.payments.cardreader.manuals
 
 import com.woocommerce.android.R.drawable
 import com.woocommerce.android.R.string
-import com.woocommerce.android.cardreader.connection.SpecificReader
 import com.woocommerce.android.cardreader.config.CardReaderConfigForCanada
 import com.woocommerce.android.cardreader.config.CardReaderConfigForUSA
+import com.woocommerce.android.cardreader.connection.SpecificReader
 import com.woocommerce.android.ui.payments.cardreader.manuals.CardReaderManualsViewModel.ManualItem
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
