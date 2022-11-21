@@ -153,25 +153,49 @@ private fun JetpackActivationStep(step: JetpackActivationMainViewModel.Step, mod
                     style = MaterialTheme.typography.caption,
                     fontWeight = FontWeight.SemiBold
                 )
-            } else if (step.type == JetpackActivationMainViewModel.StepType.Connection) {
-                Row(
-                    horizontalArrangement = Arrangement.spacedBy(dimensionResource(id = R.dimen.minor_50)),
-                ) {
-                    Icon(
-                        imageVector = Icons.Default.Info,
-                        contentDescription = null,
-                        tint = colorResource(id = R.color.woo_orange_50),
-                        modifier = Modifier.size(dimensionResource(id = R.dimen.image_minor_40))
-                    )
-                    Text(
-                        text = stringResource(id = R.string.login_jetpack_steps_authorizing_hint),
-                        color = colorResource(R.color.woo_orange_50),
-                        style = MaterialTheme.typography.caption,
-                        fontWeight = FontWeight.SemiBold
-                    )
-                }
+            } else if (step.type is JetpackActivationMainViewModel.StepType.Connection) {
+                ConnectionStepHint(step.type.connectionStep)
             }
         }
+    }
+}
+
+@Composable
+private fun ConnectionStepHint(connectionStep: JetpackActivationMainViewModel.ConnectionStep) {
+    Row(
+        horizontalArrangement = Arrangement.spacedBy(dimensionResource(id = R.dimen.minor_50)),
+    ) {
+        if (connectionStep == JetpackActivationMainViewModel.ConnectionStep.PreConnection) {
+            Icon(
+                imageVector = Icons.Default.Info,
+                contentDescription = null,
+                tint = colorResource(id = R.color.woo_orange_50),
+                modifier = Modifier.size(dimensionResource(id = R.dimen.image_minor_40))
+            )
+        }
+        val (text, color) = when (connectionStep) {
+            JetpackActivationMainViewModel.ConnectionStep.PreConnection ->
+                Pair(
+                    R.string.login_jetpack_steps_authorizing_hint,
+                    R.color.woo_orange_50
+                )
+            JetpackActivationMainViewModel.ConnectionStep.Validation ->
+                Pair(
+                    R.string.login_jetpack_steps_authorizing_validation,
+                    R.color.color_on_surface_medium
+                )
+            JetpackActivationMainViewModel.ConnectionStep.Approved ->
+                Pair(
+                    R.string.login_jetpack_steps_authorizing_done,
+                    R.color.woo_green_50
+                )
+        }
+        Text(
+            text = stringResource(id = text),
+            color = colorResource(id = color),
+            style = MaterialTheme.typography.caption,
+            fontWeight = FontWeight.SemiBold
+        )
     }
 }
 
@@ -194,7 +218,7 @@ private val JetpackActivationMainViewModel.StepType.title
     get() = when (this) {
         JetpackActivationMainViewModel.StepType.Installation -> R.string.login_jetpack_steps_installing
         JetpackActivationMainViewModel.StepType.Activation -> R.string.login_jetpack_steps_activating
-        JetpackActivationMainViewModel.StepType.Connection -> R.string.login_jetpack_steps_authorizing
+        is JetpackActivationMainViewModel.StepType.Connection -> R.string.login_jetpack_steps_authorizing
         JetpackActivationMainViewModel.StepType.Done -> R.string.login_jetpack_steps_done
     }
 
@@ -241,7 +265,7 @@ private fun JetpackActivationMainScreenPreview() {
                         state = JetpackActivationMainViewModel.StepState.Error(403)
                     ),
                     JetpackActivationMainViewModel.Step(
-                        type = JetpackActivationMainViewModel.StepType.Connection,
+                        type = JetpackActivationMainViewModel.StepType.Connection(),
                         state = JetpackActivationMainViewModel.StepState.Idle
                     ),
                     JetpackActivationMainViewModel.Step(
