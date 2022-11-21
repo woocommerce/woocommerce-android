@@ -1,3 +1,5 @@
+@file:OptIn(ExperimentalComposeUiApi::class)
+
 package com.woocommerce.android.ui.login.storecreation.domainpicker
 
 import android.content.res.Configuration
@@ -18,6 +20,8 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.Divider
 import androidx.compose.material.Icon
@@ -32,7 +36,10 @@ import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
+import androidx.compose.ui.platform.SoftwareKeyboardController
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
@@ -40,6 +47,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Devices
 import androidx.compose.ui.tooling.preview.Preview
@@ -101,6 +109,8 @@ private fun DomainSearchForm(
     onContinueClicked: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
+    val keyboardController = LocalSoftwareKeyboardController.current
+
     Column(
         modifier = modifier
             .background(MaterialTheme.colors.surface)
@@ -132,7 +142,9 @@ private fun DomainSearchForm(
                     ),
                     RoundedCornerShape(dimensionResource(id = R.dimen.minor_100))
                 ),
-            backgroundColor = TextFieldDefaults.outlinedTextFieldColors().backgroundColor(enabled = true).value
+            backgroundColor = TextFieldDefaults.outlinedTextFieldColors().backgroundColor(enabled = true).value,
+            keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
+            keyboardActions = KeyboardActions(onDone = { keyboardController?.hide() })
         )
         Box(
             modifier = Modifier
@@ -150,7 +162,8 @@ private fun DomainSearchForm(
                     )
                 else -> DomainSuggestionList(
                     suggestions = state.domainSuggestionsUi,
-                    onDomainSuggestionSelected = onDomainSuggestionSelected
+                    onDomainSuggestionSelected = onDomainSuggestionSelected,
+                    keyboardController = keyboardController
                 )
             }
         }
@@ -175,6 +188,7 @@ fun ShowEmptyImage(modifier: Modifier) {
 private fun DomainSuggestionList(
     suggestions: List<DomainSuggestionUi>,
     onDomainSuggestionSelected: (String) -> Unit,
+    keyboardController: SoftwareKeyboardController?,
     modifier: Modifier = Modifier,
 ) {
     Column(
@@ -192,7 +206,10 @@ private fun DomainSuggestionList(
                     domainSuggestion = suggestion,
                     modifier = Modifier
                         .fillMaxWidth()
-                        .clickable { onDomainSuggestionSelected(suggestion.domain) }
+                        .clickable {
+                            keyboardController?.hide()
+                            onDomainSuggestionSelected(suggestion.domain)
+                        }
                 )
                 if (index < suggestions.lastIndex)
                     Divider(
