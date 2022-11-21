@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@color/color_surface">
+
+    <androidx.appcompat.widget.AppCompatImageView
+        android:id="@+id/developerOptionsSpinnerIcon"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@id/developerOptionsSpinnerListItemLabel"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintHorizontal_chainStyle="spread_inside"
+        app:srcCompat="@drawable/img_card_reader_update_progress"
+        app:tint="@color/color_primary" />
+
+    <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/developerOptionsSpinnerListItemLabel"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:textAppearance="@style/TextAppearance.Woo.Body1"
+        android:textColor="@color/color_on_surface"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/developerOptionsSpinnerEndIcon"
+        app:layout_constraintStart_toEndOf="@id/developerOptionsSpinnerIcon"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:text="Enable Simulated Card Reader" />
+
+    <androidx.appcompat.widget.AppCompatImageView
+        android:id="@+id/developerOptionsSpinnerEndIcon"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:paddingStart="@dimen/major_100"
+        android:paddingEnd="@dimen/major_100"
+        app:layout_constraintBottom_toBottomOf="@+id/developerOptionsSpinnerListItemLabel"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@id/developerOptionsSpinnerListItemLabel"
+        app:layout_constraintTop_toTopOf="@+id/developerOptionsSpinnerListItemLabel"
+        app:srcCompat="@drawable/ic_arrow_drop_down"/>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

@@ -1,11 +1,19 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2022-11-09 12:54:03+0000
+Translation-Revision-Date: 2022-11-15 14:54:03+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: sv_SE
 -->
 <resources>
+    <string name="store_creation_domain_picker_suggestions_title">Förslag</string>
+    <string name="store_creation_domain_picker_skip_button">Hoppa över</string>
+    <string name="store_creation_domain_picker_hint">Skriv en domän</string>
+    <string name="store_creation_domain_picker_subtitle">Det är här människor kommer hitta dig på Internet. Oroa dig inte, du kan ändra detta senare.</string>
+    <string name="store_creation_domain_picker_title">Välj en domän</string>
+    <string name="analytics_views_subtitle">Visningar</string>
+    <string name="analytics_visitors_subtitle">Besökare</string>
+    <string name="analytics_visitors_and_views_card_title">Besökare och visningar</string>
     <string name="store_creation_confirm_and_leave">Bekräfta och lämna</string>
     <string name="store_creation_exit_dialog_message">Du kommer att förlora all din butiksinformation.</string>
     <string name="store_creation_exit_dialog_title">Vill du lämna?</string>

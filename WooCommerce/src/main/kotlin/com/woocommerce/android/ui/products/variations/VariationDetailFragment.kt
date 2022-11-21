@@ -9,7 +9,6 @@ import android.view.View
 import androidx.annotation.StringRes
 import androidx.core.view.MenuProvider
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.distinctUntilChanged
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -91,7 +90,7 @@ class VariationDetailFragment :
 
         _binding = FragmentVariationDetailBinding.bind(view)
 
-        requireActivity().addMenuProvider(this, viewLifecycleOwner, Lifecycle.State.RESUMED)
+        requireActivity().addMenuProvider(this, viewLifecycleOwner)
         initializeViews(savedInstanceState)
         initializeViewModel()
     }

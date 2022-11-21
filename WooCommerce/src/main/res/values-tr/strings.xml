@@ -1,11 +1,19 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2022-11-09 14:54:04+0000
+Translation-Revision-Date: 2022-11-15 14:54:04+0000
 Plural-Forms: nplurals=2; plural=(n > 1);
 Generator: GlotPress/2.4.0-alpha
 Language: tr
 -->
 <resources>
+    <string name="store_creation_domain_picker_suggestions_title">Öneriler</string>
+    <string name="store_creation_domain_picker_skip_button">Atla</string>
+    <string name="store_creation_domain_picker_hint">Bir alan adı yaz</string>
+    <string name="store_creation_domain_picker_subtitle">Bu, insanların sizi internette bulacakları yerdir. Endişelenmeyin, daha sonra değiştirebilirsiniz.</string>
+    <string name="store_creation_domain_picker_title">Bir alan adı seç</string>
+    <string name="analytics_views_subtitle">Görüntülemeler</string>
+    <string name="analytics_visitors_subtitle">Ziyaretçiler</string>
+    <string name="analytics_visitors_and_views_card_title">Görüntülemeler ve Ziyaretçiler</string>
     <string name="store_creation_confirm_and_leave">Onaylayın ve çıkın</string>
     <string name="store_creation_exit_dialog_message">Tüm mağaza bilgilerinizi kaybedersiniz.</string>
     <string name="store_creation_exit_dialog_title">Çıkmak istiyor musunuz?</string>

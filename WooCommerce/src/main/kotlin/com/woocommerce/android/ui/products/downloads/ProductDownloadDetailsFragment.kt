@@ -8,7 +8,6 @@ import android.view.View
 import androidx.core.view.MenuProvider
 import androidx.fragment.app.viewModels
 import androidx.hilt.navigation.fragment.hiltNavGraphViewModels
-import androidx.lifecycle.Lifecycle
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import com.woocommerce.android.R
@@ -50,7 +49,7 @@ class ProductDownloadDetailsFragment :
 
         _binding = FragmentProductDownloadDetailsBinding.bind(view)
 
-        requireActivity().addMenuProvider(this, viewLifecycleOwner, Lifecycle.State.RESUMED)
+        requireActivity().addMenuProvider(this, viewLifecycleOwner)
         setupObservers(viewModel)
     }
 

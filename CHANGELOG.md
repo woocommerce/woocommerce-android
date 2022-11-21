@@ -1,6 +1,9 @@
 <!--
 Contains editorialized release notes. Raw release notes should go into `RELEASE-NOTES.txt`.
 -->
+## 11.3
+This release has several fixes that makes it easier for you to manage your store from the app. Please continue to send us feedback – we are listening! 
+
 ## 11.2
 
 For this release, we focused on polishing a few things and taking care of minor bugs that our team found. Don’t be fooled – we are working on some pretty cool stuff for you all! Keep sharing feedback 💜

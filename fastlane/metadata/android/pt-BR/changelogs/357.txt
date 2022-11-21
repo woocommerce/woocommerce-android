@@ -1,2 +1,0 @@
-11.1:
-Esta versão inclui várias novidades legais para melhorar o gerenciamento da sua loja. Adicionamos a opção de atualizar em massa a quantidade de variações em estoque. Também incluímos a opção de fazer login usando um código QR. E fizemos várias melhorias na pesquisa de produtos e pedidos.
