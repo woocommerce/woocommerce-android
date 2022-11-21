@@ -70,7 +70,7 @@ class IAPShowcaseViewModel(private val iapManager: PurchaseWPComPlanActions) : V
             _iapLoading.value = true
             val response = iapManager.fetchWPComPlanProduct()
             _iapLoading.value = false
-            when (val response = response) {
+            when (response) {
                 is WPComProductResult.Success -> _productInfo.value = response.productInfo
                 is WPComProductResult.Error -> handleError(response.errorType)
             }

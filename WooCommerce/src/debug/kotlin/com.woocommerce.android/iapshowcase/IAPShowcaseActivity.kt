@@ -21,6 +21,7 @@ private const val REMOTE_SITE_ID = 1L
 class IAPShowcaseActivity : AppCompatActivity() {
     private val viewModel: IAPShowcaseViewModel by viewModels(null) {
         object : ViewModelProvider.Factory {
+            @Suppress("UNCHECKED_CAST")
             override fun <T : ViewModel> create(modelClass: Class<T>) =
                 IAPShowcaseViewModel(
                     IAPSitePurchasePlanFactory.createIAPSitePurchasePlan(
