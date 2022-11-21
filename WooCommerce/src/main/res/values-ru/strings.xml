@@ -1,11 +1,19 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2022-11-09 10:54:04+0000
+Translation-Revision-Date: 2022-11-14 14:54:04+0000
 Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);
 Generator: GlotPress/2.4.0-alpha
 Language: ru
 -->
 <resources>
+    <string name="store_creation_domain_picker_suggestions_title">Варианты</string>
+    <string name="store_creation_domain_picker_skip_button">Пропустить</string>
+    <string name="store_creation_domain_picker_hint">Укажите домен</string>
+    <string name="store_creation_domain_picker_subtitle">Это место, где люди найдут вас в Интернете. Не беспокойтесь, вы сможете изменить это позднее.</string>
+    <string name="store_creation_domain_picker_title">Выберите домен.</string>
+    <string name="analytics_views_subtitle">Просмотры</string>
+    <string name="analytics_visitors_subtitle">Посетители</string>
+    <string name="analytics_visitors_and_views_card_title">Посетители и просмотры</string>
     <string name="store_creation_confirm_and_leave">Подтвердить и выйти</string>
     <string name="store_creation_exit_dialog_message">Все сведения о магазине будут утеряны.</string>
     <string name="store_creation_exit_dialog_title">Покинуть страницу?</string>

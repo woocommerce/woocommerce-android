@@ -9,7 +9,6 @@ import android.view.View
 import androidx.core.view.MenuProvider
 import androidx.core.view.isVisible
 import androidx.hilt.navigation.fragment.hiltNavGraphViewModels
-import androidx.lifecycle.Lifecycle
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.DefaultItemAnimator
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -85,7 +84,7 @@ class OrderCreateEditFormFragment :
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        requireActivity().addMenuProvider(this, viewLifecycleOwner, Lifecycle.State.RESUMED)
+        requireActivity().addMenuProvider(this, viewLifecycleOwner)
         with(FragmentOrderCreateEditFormBinding.bind(view)) {
             setupObserversWith(this)
             setupHandleResults()
@@ -94,7 +93,6 @@ class OrderCreateEditFormFragment :
     }
 
     override fun onCreateMenu(menu: Menu, inflater: MenuInflater) {
-        super.onCreateOptionsMenu(menu, inflater)
         inflater.inflate(R.menu.menu_order_creation, menu)
 
         createOrderMenuItem = menu.findItem(R.id.menu_create).apply {

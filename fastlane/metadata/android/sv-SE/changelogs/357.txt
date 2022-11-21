@@ -1,2 +1,0 @@
-11.1:
-Den här versionen innehåller en rad häftiga saker som gör det enklare att hantera din butik. Vi har lagt till möjligheten att massuppdatera lagerkvantiteten för variationer. Vi har också lagt till möjligheten att logga in med hjälp av en QR-kod. Vi har gjort en rad olika förbättringar av sökfunktionen för beställningar och produkter.

@@ -1,2 +1,0 @@
-11.1:
-Deze release bevat een hoop coole dingen om je te helpen je winkel beter te beheren! We hebben de optie om het aantal op voorraad van variaties in bulk bij te werken. We hebben ook de optie toegevoegd om in te loggen via een QR-code. We hebben verschillende verbeteringen aangebracht aan het zoeken in bestellingen en producten.

@@ -11,6 +11,7 @@ import com.woocommerce.android.ui.login.storecreation.plans.PlansViewModel.Plan.
 import com.woocommerce.android.ui.login.storecreation.plans.PlansViewModel.Plan.Feature
 import com.woocommerce.android.ui.login.storecreation.plans.PlansViewModel.ViewState.LoadingState
 import com.woocommerce.android.ui.login.storecreation.plans.PlansViewModel.ViewState.PlanState
+import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.getStateFlow
@@ -26,7 +27,7 @@ class PlansViewModel @Inject constructor(
 ) : ScopedViewModel(savedStateHandle) {
     companion object {
         private const val ECOMMERCE_PLAN_NAME = "eCommerce"
-        private const val ECOMMERCE_PLAN_PRICE_MONTHLY_USD = "$70"
+        private const val ECOMMERCE_PLAN_PRICE_MONTHLY = "$69.99"
     }
 
     private val _viewState = savedState.getStateFlow<ViewState>(this, LoadingState)
@@ -43,7 +44,7 @@ class PlansViewModel @Inject constructor(
                     plan = Plan(
                         name = ECOMMERCE_PLAN_NAME,
                         billingPeriod = MONTHLY,
-                        formattedPrice = ECOMMERCE_PLAN_PRICE_MONTHLY_USD,
+                        formattedPrice = ECOMMERCE_PLAN_PRICE_MONTHLY,
                         features = listOf(
                             Feature(
                                 iconId = drawable.ic_star,
@@ -74,19 +75,21 @@ class PlansViewModel @Inject constructor(
                                 textId = string.store_creation_ecommerce_plan_feature_sales
                             )
                         )
-                    ),
-                    onCloseButtonClicked = ::onBackPressed,
-                    onConfirmButtonClicked = ::onConfirmClicked
+                    )
                 )
             }
         }
     }
 
-    private fun onBackPressed() {
+    fun onCloseClicked() {
         triggerEvent(Exit)
     }
 
-    private fun onConfirmClicked() {
+    fun onConfirmClicked() {
+        triggerEvent(NavigateToNextStep)
+    }
+
+    fun onRetryClicked() {
         // TODO
     }
 
@@ -95,15 +98,11 @@ class PlansViewModel @Inject constructor(
         object LoadingState : ViewState
 
         @Parcelize
-        data class ErrorState(
-            val onRetryButtonClicked: () -> Unit
-        ) : ViewState
+        object ErrorState : ViewState
 
         @Parcelize
         data class PlanState(
-            val plan: Plan,
-            val onCloseButtonClicked: () -> Unit,
-            val onConfirmButtonClicked: () -> Unit
+            val plan: Plan
         ) : ViewState
     }
 
@@ -126,4 +125,6 @@ class PlansViewModel @Inject constructor(
             YEARLY((string.store_creation_ecommerce_plan_period_year))
         }
     }
+
+    object NavigateToNextStep : MultiLiveEvent.Event()
 }

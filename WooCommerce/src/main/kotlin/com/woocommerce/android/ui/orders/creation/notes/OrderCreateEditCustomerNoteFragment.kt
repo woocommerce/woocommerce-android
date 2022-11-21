@@ -8,7 +8,6 @@ import android.view.View
 import androidx.core.view.MenuProvider
 import androidx.core.widget.doAfterTextChanged
 import androidx.hilt.navigation.fragment.hiltNavGraphViewModels
-import androidx.lifecycle.Lifecycle
 import androidx.navigation.fragment.findNavController
 import com.woocommerce.android.R
 import com.woocommerce.android.databinding.FragmentOrderCreateEditCustomerNoteBinding
@@ -29,7 +28,7 @@ class OrderCreateEditCustomerNoteFragment :
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        requireActivity().addMenuProvider(this, viewLifecycleOwner, Lifecycle.State.RESUMED)
+        requireActivity().addMenuProvider(this, viewLifecycleOwner)
 
         _binding = FragmentOrderCreateEditCustomerNoteBinding.bind(view)
         if (savedInstanceState == null) {

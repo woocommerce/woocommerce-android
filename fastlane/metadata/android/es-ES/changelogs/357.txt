@@ -1,2 +1,0 @@
-11.1:
-Esta versión incorpora muchas funciones interesantes para que puedas gestionar mejor tu tienda. Hemos añadido la opción de actualizar en lote la cantidad de existencias de las variaciones. También hemos añadido la opción de acceder mediante un código QR. Hemos realizado varias mejoras en la búsqueda de pedidos y productos.

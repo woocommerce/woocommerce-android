@@ -1,11 +1,19 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2022-11-10 11:54:03+0000
+Translation-Revision-Date: 2022-11-17 09:54:03+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: ja_JP
 -->
 <resources>
+    <string name="store_creation_domain_picker_suggestions_title">提案</string>
+    <string name="store_creation_domain_picker_skip_button">スキップ</string>
+    <string name="store_creation_domain_picker_hint">ドメインを入力</string>
+    <string name="store_creation_domain_picker_subtitle">ドメインとは、インターネット上で閲覧者があなたを見つける場所です。 後からでも変更できます。</string>
+    <string name="store_creation_domain_picker_title">ドメインを選択</string>
+    <string name="analytics_views_subtitle">表示数</string>
+    <string name="analytics_visitors_subtitle">訪問者</string>
+    <string name="analytics_visitors_and_views_card_title">表示数と訪問者数</string>
     <string name="store_creation_confirm_and_leave">確認してページを離れる</string>
     <string name="store_creation_exit_dialog_message">ストアの情報がすべて失われます。</string>
     <string name="store_creation_exit_dialog_title">ページを離れますか ?</string>
