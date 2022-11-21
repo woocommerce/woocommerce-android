@@ -13,6 +13,10 @@ class GenerateVariationCandidates @Inject constructor(
     val variationRepository: VariationRepository
 ) {
 
+    companion object {
+        const val VARIATION_CREATION_LIMIT = 100
+    }
+
     operator fun invoke(product: Product): List<VariationCandidate> {
         if (product.type != ProductType.VARIABLE.value) {
             return emptyList()

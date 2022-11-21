@@ -37,10 +37,20 @@ import com.woocommerce.android.ui.main.MainActivity.Companion.BackPressListener
 import com.woocommerce.android.ui.products.OnLoadMoreListener
 import com.woocommerce.android.ui.products.variations.VariationDetailFragment.Companion.KEY_VARIATION_DETAILS_RESULT
 import com.woocommerce.android.ui.products.variations.VariationDetailViewModel.DeletedVariationData
+import com.woocommerce.android.ui.products.variations.VariationListViewModel.ProgressDialogState.Hidden
+import com.woocommerce.android.ui.products.variations.VariationListViewModel.ProgressDialogState.Shown
+import com.woocommerce.android.ui.products.variations.VariationListViewModel.ProgressDialogState.Shown.VariationsCardinality.MULTIPLE
+import com.woocommerce.android.ui.products.variations.VariationListViewModel.ProgressDialogState.Shown.VariationsCardinality.SINGLE
 import com.woocommerce.android.ui.products.variations.VariationListViewModel.ShowAddAttributeView
 import com.woocommerce.android.ui.products.variations.VariationListViewModel.ShowBulkUpdateAttrPicker
 import com.woocommerce.android.ui.products.variations.VariationListViewModel.ShowBulkUpdateLimitExceededWarning
+import com.woocommerce.android.ui.products.variations.VariationListViewModel.ShowGenerateVariationConfirmation
+import com.woocommerce.android.ui.products.variations.VariationListViewModel.ShowGenerateVariationError
+import com.woocommerce.android.ui.products.variations.VariationListViewModel.ShowGenerateVariationError.LimitExceeded
+import com.woocommerce.android.ui.products.variations.VariationListViewModel.ShowGenerateVariationError.NetworkError
 import com.woocommerce.android.ui.products.variations.VariationListViewModel.ShowVariationDetail
+import com.woocommerce.android.ui.products.variations.domain.GenerateVariationCandidates
+import com.woocommerce.android.ui.products.variations.domain.VariationCandidate
 import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
@@ -63,7 +73,8 @@ class VariationListFragment :
         private const val LIST_STATE_KEY = "list_state"
     }
 
-    @Inject lateinit var uiMessageResolver: UIMessageResolver
+    @Inject
+    lateinit var uiMessageResolver: UIMessageResolver
 
     private val viewModel: VariationListViewModel by viewModels()
 
@@ -111,6 +122,10 @@ class VariationListFragment :
 
     private fun initializeViews(savedInstanceState: Bundle?) {
         binding.addAllVariationsButton.isVisible = FeatureFlag.GENERATE_ALL_VARIATIONS.isEnabled()
+
+        binding.addAllVariationsButton.setOnClickListener {
+            viewModel.onAddAllVariationsClicked()
+        }
 
         val layoutManager = LinearLayoutManager(activity, RecyclerView.VERTICAL, false)
         this.layoutManager = layoutManager
@@ -160,16 +175,18 @@ class VariationListFragment :
                 binding.loadMoreProgress.isVisible = it
             }
             new.isEmptyViewVisible?.takeIfNotEqualTo(old?.isEmptyViewVisible, ::handleEmptyViewChanges)
-            new.isProgressDialogShown?.takeIfNotEqualTo(old?.isProgressDialogShown) {
-                hideProgressDialog()
-                showProgressDialog(it, R.string.variation_create_dialog_title)
+            new.progressDialogState?.takeIfNotEqualTo(old?.progressDialogState) { progressDialogState ->
+                handleProgressDialogState(progressDialogState)
             }
             new.isVariationsOptionsMenuEnabled.takeIfNotEqualTo(old?.isVariationsOptionsMenuEnabled) {
                 requireActivity().invalidateOptionsMenu()
             }
-            new.isBulkUpdateProgressDialogShown.takeIfNotEqualTo(old?.isBulkUpdateProgressDialogShown) {
-                hideProgressDialog()
-                showProgressDialog(it, R.string.variation_loading_dialog_title)
+            new.isBulkUpdateProgressDialogShown.takeIfNotEqualTo(old?.isBulkUpdateProgressDialogShown) { dialogShown ->
+                if (dialogShown) {
+                    showProgressDialog(R.string.variation_loading_dialog_title)
+                } else {
+                    hideProgressDialog()
+                }
             }
         }
 
@@ -184,10 +201,72 @@ class VariationListFragment :
                 is ShowSnackbar -> uiMessageResolver.showSnack(event.message)
                 is ShowBulkUpdateAttrPicker -> openBulkUpdateView(event.variationsToUpdate)
                 is ShowBulkUpdateLimitExceededWarning -> showBulkUpdateLimitExceededWarning()
+                is ShowGenerateVariationConfirmation -> showGenerateVariationConfirmation(event.variationCandidates)
+                is ShowGenerateVariationError -> handleGenerateVariationError(event)
                 is ExitWithResult<*> -> navigateBackWithResult(KEY_VARIATION_LIST_RESULT, event.data)
                 is Exit -> activity?.onBackPressedDispatcher?.onBackPressed()
             }
         }
+    }
+
+    private fun handleProgressDialogState(progressDialogState: VariationListViewModel.ProgressDialogState) {
+        when (progressDialogState) {
+            Hidden -> {
+                hideProgressDialog()
+            }
+            is Shown -> {
+                val dialogLabel = when (progressDialogState.cardinality) {
+                    SINGLE -> R.string.variation_create_dialog_title
+                    MULTIPLE -> R.string.variations_bulk_creation_progress_title
+                }
+                showProgressDialog(dialogLabel)
+            }
+        }
+    }
+
+    private fun handleGenerateVariationError(event: ShowGenerateVariationError) {
+        when (event) {
+            is LimitExceeded -> showGenerateVariationsLimitExceeded(event.variationCandidatesSize)
+            NetworkError -> showGenerateVariationsNetworkError()
+        }
+    }
+
+    private fun showGenerateVariationConfirmation(variationCandidates: List<VariationCandidate>) {
+        MaterialAlertDialogBuilder(requireActivity())
+            .setTitle(R.string.variations_bulk_creation_confirmation_title)
+            .setMessage(getString(R.string.variations_bulk_creation_confirmation_message, variationCandidates.size))
+            .setPositiveButton(android.R.string.ok) { dialogInterface, _ ->
+                viewModel.onGenerateVariationsConfirmed(variationCandidates)
+                dialogInterface.dismiss()
+            }
+            .setNegativeButton(android.R.string.cancel) { dialogInterface, _ ->
+                dialogInterface.dismiss()
+            }
+            .show()
+    }
+
+    private fun showGenerateVariationsNetworkError() {
+        MaterialAlertDialogBuilder(requireActivity())
+            .setMessage(R.string.error_generic_network)
+            .setPositiveButton(android.R.string.ok) { dialogInterface, _ ->
+                dialogInterface.dismiss()
+            }
+            .show()
+    }
+
+    private fun showGenerateVariationsLimitExceeded(variationCandidatesSize: Int) {
+        MaterialAlertDialogBuilder(requireActivity())
+            .setTitle(R.string.variations_bulk_creation_warning_title)
+            .setMessage(
+                getString(
+                    R.string.variations_bulk_creation_warning_message,
+                    GenerateVariationCandidates.VARIATION_CREATION_LIMIT, variationCandidatesSize
+                )
+            )
+            .setPositiveButton(android.R.string.ok) { dialogInterface, _ ->
+                dialogInterface.dismiss()
+            }
+            .show()
     }
 
     private fun showBulkUpdateLimitExceededWarning() {
@@ -264,17 +343,13 @@ class VariationListFragment :
         requireActivity().invalidateOptionsMenu()
     }
 
-    private fun showProgressDialog(show: Boolean, @StringRes title: Int) {
-        if (show) {
-            hideProgressDialog()
-            progressDialog = CustomProgressDialog.show(
-                getString(title),
-                getString(R.string.product_update_dialog_message)
-            ).also { it.show(parentFragmentManager, CustomProgressDialog.TAG) }
-            progressDialog?.isCancelable = false
-        } else {
-            hideProgressDialog()
-        }
+    private fun showProgressDialog(@StringRes title: Int) {
+        hideProgressDialog()
+        progressDialog = CustomProgressDialog.show(
+            getString(title),
+            getString(R.string.product_update_dialog_message)
+        ).also { it.show(parentFragmentManager, CustomProgressDialog.TAG) }
+        progressDialog?.isCancelable = false
     }
 
     private fun hideProgressDialog() {
