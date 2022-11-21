@@ -5,6 +5,11 @@
     app:startDestination="@id/storeNamePickerFragment">
 
     <fragment
+        android:id="@+id/checkIapEligibilityFragment"
+        android:name="com.woocommerce.android.ui.login.storecreation.installation.InstallationFragment"
+        android:label="InstallationFragment" />
+
+    <fragment
         android:id="@+id/storeNamePickerFragment"
         android:name="com.woocommerce.android.ui.login.storecreation.name.StoreNamePickerFragment"
         android:label="fragment_store_name_picker">
@@ -43,7 +48,7 @@
     <fragment
         android:id="@+id/plansFragment"
         android:name="com.woocommerce.android.ui.login.storecreation.plans.PlansFragment"
-        android:label="PlansFragment" >
+        android:label="PlansFragment">
         <action
             android:id="@+id/action_plansFragment_to_installationFragment"
             app:destination="@id/installationFragment" />
