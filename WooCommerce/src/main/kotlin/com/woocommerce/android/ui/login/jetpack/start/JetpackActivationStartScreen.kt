@@ -44,6 +44,7 @@ fun JetpackActivationStartScreen(viewModel: JetpackActivationStartViewModel) {
     viewModel.viewState.observeAsState().value?.let {
         JetpackActivationStartScreen(
             it,
+            onContinueButtonClick = viewModel::onContinueButtonClick,
             onHelpButtonClick = viewModel::onHelpButtonClick,
             onBackButtonClick = viewModel::onBackButtonClick
         )
@@ -53,6 +54,7 @@ fun JetpackActivationStartScreen(viewModel: JetpackActivationStartViewModel) {
 @Composable
 fun JetpackActivationStartScreen(
     viewState: JetpackActivationState,
+    onContinueButtonClick: () -> Unit = {},
     onHelpButtonClick: () -> Unit = {},
     onBackButtonClick: () -> Unit = {}
 ) {
@@ -106,7 +108,7 @@ fun JetpackActivationStartScreen(
                 )
             }
             WCColoredButton(
-                onClick = { /*TODO*/ },
+                onClick = onContinueButtonClick,
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(horizontal = dimensionResource(id = R.dimen.major_100))

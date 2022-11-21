@@ -31,7 +31,6 @@ import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Devices
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -95,15 +94,17 @@ private fun MyStoreSummaryScreen(
         ) {
             Text(
                 text = stringResource(id = R.string.store_creation_summary_title),
-                style = MaterialTheme.typography.h4,
-                fontWeight = FontWeight.Bold
+                style = MaterialTheme.typography.h5,
             )
             Text(
                 text = stringResource(id = R.string.store_creation_summary_subtitle),
-                style = MaterialTheme.typography.body1,
+                style = MaterialTheme.typography.subtitle1,
                 color = colorResource(id = R.color.color_on_surface_medium)
             )
-            StoreDataSummary(myStoreSummaryState)
+            StoreDataSummary(
+                myStoreSummaryState,
+                modifier = Modifier.padding(top = dimensionResource(id = R.dimen.major_150))
+            )
         }
         Column(modifier = Modifier.align(Alignment.BottomCenter)) {
             Divider(
@@ -128,66 +129,60 @@ private fun MyStoreSummaryScreen(
 }
 
 @Composable
-private fun StoreDataSummary(myStoreSummaryState: MyStoreSummaryState) {
+private fun StoreDataSummary(
+    myStoreSummaryState: MyStoreSummaryState,
+    modifier: Modifier = Modifier
+) {
     Card(
         elevation = 0.dp,
         shape = RoundedCornerShape(8.dp),
-        modifier = Modifier.fillMaxWidth(),
+        modifier = modifier.fillMaxWidth(),
         border = BorderStroke(
             dimensionResource(id = R.dimen.minor_10),
             colorResource(id = R.color.divider_color)
         )
     ) {
-        Column(
-            modifier = Modifier.fillMaxWidth(),
-            verticalArrangement = Arrangement.spacedBy(dimensionResource(id = R.dimen.major_150))
-        ) {
-            CardHeader()
-            if (!myStoreSummaryState.name.isNullOrEmpty()) {
-                Column(
-                    modifier = Modifier.padding(
-                        start = dimensionResource(id = R.dimen.major_100)
-                    )
-                ) {
-                    Text(
-                        text = myStoreSummaryState.name,
-                        style = MaterialTheme.typography.subtitle1,
-                        fontWeight = FontWeight.Bold,
-                    )
-                    Text(
-                        text = myStoreSummaryState.domain,
-                        style = MaterialTheme.typography.body2,
+        Column(modifier = Modifier.fillMaxWidth()) {
+            CardHeader(
+                modifier = Modifier
+                    .background(colorResource(id = R.color.woo_gray_6))
+                    .padding(top = dimensionResource(id = R.dimen.major_150))
+            )
+            Column(
+                modifier = Modifier.padding(dimensionResource(id = R.dimen.major_100)),
+                verticalArrangement = Arrangement.spacedBy(dimensionResource(id = R.dimen.major_100))
+            ) {
+                if (!myStoreSummaryState.name.isNullOrEmpty()) {
+                    Column {
+                        Text(
+                            text = myStoreSummaryState.name,
+                            style = MaterialTheme.typography.h6,
+                        )
+                        Text(
+                            text = myStoreSummaryState.domain,
+                            style = MaterialTheme.typography.subtitle1,
                     )
                 }
             }
-            if (!myStoreSummaryState.category.isNullOrEmpty()) {
-                Text(
-                    modifier = Modifier.padding(
-                        start = dimensionResource(id = R.dimen.major_100)
-                    ),
-                    text = myStoreSummaryState.category,
-                    style = MaterialTheme.typography.body1,
-                )
-            }
-
             Text(
-                modifier = Modifier.padding(
-                    start = dimensionResource(id = R.dimen.major_100),
-                    bottom = dimensionResource(id = R.dimen.major_150),
-                ),
-                text = myStoreSummaryState.country,
-                style = MaterialTheme.typography.body1,
-            )
+                    text = myStoreSummaryState.country,
+                    style = MaterialTheme.typography.subtitle1,
+                )
+                if (!myStoreSummaryState.category.isNullOrEmpty()) {
+                    Text(
+                        text = myStoreSummaryState.category,
+                        style = MaterialTheme.typography.subtitle1,
+                    )
+                }
+            }
         }
     }
 }
 
 @Composable
-private fun CardHeader() {
+private fun CardHeader(modifier: Modifier) {
     Box(
-        modifier = Modifier
-            .fillMaxWidth()
-            .background(colorResource(id = R.color.woo_gray_6))
+        modifier = modifier.fillMaxWidth()
     ) {
         Image(
             painter = painterResource(id = R.drawable.my_store_summary_header_image),
