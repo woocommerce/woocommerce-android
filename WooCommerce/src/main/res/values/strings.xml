@@ -1645,7 +1645,7 @@
     <string name="variations_bulk_update_current_stock_quantity_mixed">Current stock quantity is mixed</string>
     <string name="variations_bulk_update_stock_quantity_success">Updated stock quantity</string>
     <string name="variations_bulk_creation_warning_title">Generation limit exceeded</string>
-    <string name="variations_bulk_creation_warning_message">Currently creation is supported for 100 variations maximum. Generating variations for this product would create %1$d variations.</string>
+    <string name="variations_bulk_creation_warning_message">Currently creation is supported for %1$d variations maximum. Generating variations for this product would create %2$d variations.</string>
     <string name="variations_bulk_creation_confirmation_title">Are you sure you want to generate all variations?</string>
     <string name="variations_bulk_creation_confirmation_message">This will create a new variation for each and every possible combination of variation attributes (%1$d variations).</string>
 

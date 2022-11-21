@@ -283,7 +283,7 @@ class VariationListViewModel @Inject constructor(
         if (variationCandidates.size < GenerateVariationCandidates.VARIATION_CREATION_LIMIT) {
             triggerEvent(ShowGenerateVariationConfirmation(variationCandidates))
         } else {
-            triggerEvent(ShowGenerateVariationError.LimitExceeded(variationCandidates))
+            triggerEvent(ShowGenerateVariationError.LimitExceeded(variationCandidates.size))
         }
     }
 
@@ -332,9 +332,7 @@ class VariationListViewModel @Inject constructor(
     data class ShowGenerateVariationConfirmation(val variationCandidates: List<VariationCandidate>) : Event()
 
     sealed class ShowGenerateVariationError : Event() {
-        data class LimitExceeded(val variationCandidates: List<VariationCandidate>) : ShowGenerateVariationError()
+        data class LimitExceeded(val variationCandidatesSize: Int) : ShowGenerateVariationError()
         object NetworkError : ShowGenerateVariationError()
     }
-
-    object ShowGenerateVariationProgress : Event()
 }

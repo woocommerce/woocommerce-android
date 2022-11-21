@@ -46,6 +46,7 @@ import com.woocommerce.android.ui.products.variations.VariationListViewModel.Sho
 import com.woocommerce.android.ui.products.variations.VariationListViewModel.ShowGenerateVariationError.LimitExceeded
 import com.woocommerce.android.ui.products.variations.VariationListViewModel.ShowGenerateVariationError.NetworkError
 import com.woocommerce.android.ui.products.variations.VariationListViewModel.ShowVariationDetail
+import com.woocommerce.android.ui.products.variations.domain.GenerateVariationCandidates
 import com.woocommerce.android.ui.products.variations.domain.VariationCandidate
 import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
@@ -69,7 +70,8 @@ class VariationListFragment :
         private const val LIST_STATE_KEY = "list_state"
     }
 
-    @Inject lateinit var uiMessageResolver: UIMessageResolver
+    @Inject
+    lateinit var uiMessageResolver: UIMessageResolver
 
     private val viewModel: VariationListViewModel by viewModels()
 
@@ -204,7 +206,7 @@ class VariationListFragment :
 
     private fun handleGenerateVariationError(event: ShowGenerateVariationError) {
         when (event) {
-            is LimitExceeded -> showGenerateVariationsLimitExceeded(event.variationCandidates)
+            is LimitExceeded -> showGenerateVariationsLimitExceeded(event.variationCandidatesSize)
             NetworkError -> showGenerateVariationsNetworkError()
         }
     }
@@ -232,10 +234,15 @@ class VariationListFragment :
             .show()
     }
 
-    private fun showGenerateVariationsLimitExceeded(variationCandidates: List<VariationCandidate>) {
+    private fun showGenerateVariationsLimitExceeded(variationCandidatesSize: Int) {
         MaterialAlertDialogBuilder(requireActivity())
             .setTitle(R.string.variations_bulk_creation_warning_title)
-            .setMessage(getString(R.string.variations_bulk_creation_warning_message, variationCandidates.size))
+            .setMessage(
+                getString(
+                    R.string.variations_bulk_creation_warning_message,
+                    GenerateVariationCandidates.VARIATION_CREATION_LIMIT, variationCandidatesSize
+                )
+            )
             .setPositiveButton(android.R.string.ok) { dialogInterface, _ ->
                 dialogInterface.dismiss()
             }
