@@ -3,6 +3,7 @@ package com.woocommerce.android.ui.products
 import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.R.string
 import com.woocommerce.android.analytics.AnalyticsEvent
+import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.model.ProductVariation
@@ -20,6 +21,7 @@ import org.junit.Before
 import org.junit.Test
 import org.mockito.kotlin.any
 import org.mockito.kotlin.doReturn
+import org.mockito.kotlin.eq
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.never
 import org.mockito.kotlin.spy
@@ -153,7 +155,10 @@ class VariationListViewModelTest : BaseUnitTest() {
         viewModel.onAddAllVariationsClicked()
 
         // Then variation limit error is tracked
-        verify(tracker).track(AnalyticsEvent.PRODUCT_VARIATION_GENERATION_LIMIT_REACHED)
+        verify(tracker).track(
+            AnalyticsEvent.PRODUCT_VARIATION_GENERATION_LIMIT_REACHED,
+            mapOf(AnalyticsTracker.KEY_VARIATIONS_COUNT to variationsLimit.size)
+        )
     }
 
     @Test
@@ -172,6 +177,6 @@ class VariationListViewModelTest : BaseUnitTest() {
         viewModel.onAddAllVariationsClicked()
 
         // Then variation limit error is not tracked / sent
-        verify(tracker, never()).track(AnalyticsEvent.PRODUCT_VARIATION_GENERATION_LIMIT_REACHED)
+        verify(tracker, never()).track(eq(AnalyticsEvent.PRODUCT_VARIATION_GENERATION_LIMIT_REACHED), any())
     }
 }

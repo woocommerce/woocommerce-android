@@ -10,6 +10,7 @@ import com.woocommerce.android.R.string
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsEvent.PRODUCT_VARIANTS_BULK_UPDATE_TAPPED
 import com.woocommerce.android.analytics.AnalyticsEvent.PRODUCT_VARIATION_VIEW_VARIATION_DETAIL_TAPPED
+import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_PRODUCT_ID
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.extensions.isNotSet
@@ -288,7 +289,10 @@ class VariationListViewModel @Inject constructor(
         if (variationCandidates.size < GenerateVariationCandidates.VARIATION_CREATION_LIMIT) {
             triggerEvent(ShowGenerateVariationConfirmation(variationCandidates))
         } else {
-            tracker.track(AnalyticsEvent.PRODUCT_VARIATION_GENERATION_LIMIT_REACHED)
+            tracker.track(
+                stat = AnalyticsEvent.PRODUCT_VARIATION_GENERATION_LIMIT_REACHED,
+                properties = mapOf(AnalyticsTracker.KEY_VARIATIONS_COUNT to variationCandidates.size)
+            )
             triggerEvent(ShowGenerateVariationError.LimitExceeded(variationCandidates.size))
         }
     }
@@ -326,6 +330,7 @@ class VariationListViewModel @Inject constructor(
     sealed class ProgressDialogState : Parcelable {
         @Parcelize
         object Hidden : ProgressDialogState()
+
         @Parcelize
         data class Shown(val cardinality: VariationsCardinality) : ProgressDialogState() {
             enum class VariationsCardinality {
