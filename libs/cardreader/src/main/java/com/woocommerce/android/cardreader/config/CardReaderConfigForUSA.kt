@@ -1,7 +1,7 @@
 package com.woocommerce.android.cardreader.config
 
-import com.stripe.stripeterminal.external.models.PaymentMethodType
 import com.woocommerce.android.cardreader.connection.SpecificReader
+import com.woocommerce.android.cardreader.payments.CardPaymentStatus.PaymentMethodType
 import kotlinx.parcelize.Parcelize
 
 @Parcelize
@@ -9,7 +9,7 @@ object CardReaderConfigForUSA : CardReaderConfigForSupportedCountry(
     currency = "USD",
     countryCode = "US",
     supportedReaders = listOf(SpecificReader.Chipper2X, SpecificReader.StripeM2),
-    paymentMethodType = listOf(PaymentMethodType.CARD_PRESENT),
+    paymentMethodTypes = listOf(PaymentMethodType.CARD_PRESENT),
     supportedExtensions = listOf(
         SupportedExtension(
             type = SupportedExtensionType.STRIPE,

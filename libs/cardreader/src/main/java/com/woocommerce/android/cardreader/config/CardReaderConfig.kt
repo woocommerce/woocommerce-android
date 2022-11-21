@@ -1,8 +1,8 @@
 package com.woocommerce.android.cardreader.config
 
 import android.os.Parcelable
-import com.stripe.stripeterminal.external.models.PaymentMethodType
 import com.woocommerce.android.cardreader.connection.SpecificReader
+import com.woocommerce.android.cardreader.payments.CardPaymentStatus.PaymentMethodType
 import kotlinx.parcelize.Parcelize
 
 sealed class CardReaderConfig : Parcelable
@@ -12,7 +12,7 @@ sealed class CardReaderConfigForSupportedCountry(
     val currency: String,
     val countryCode: String,
     val supportedReaders: List<SpecificReader>,
-    val paymentMethodType: List<PaymentMethodType>,
+    val paymentMethodTypes: List<PaymentMethodType>,
     val supportedExtensions: List<SupportedExtension>,
 ) : CardReaderConfig()
 
