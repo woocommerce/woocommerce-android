@@ -299,6 +299,15 @@
     <string name="login_jetpack_connection_enter_site_credentials">Log in to &lt;b&gt;%1$s&lt;/b&gt; with your store credentials to connect Jetpack.</string>
     <string name="login_jetpack_connection_approval_hint">We will ask for your approval to complete the Jetpack connection.</string>
     <string name="login_jetpack_site_credentials_screen_title">Log in to your store</string>
+    <string name="login_jetpack_steps_installing">Installing Jetpack</string>
+    <string name="login_jetpack_steps_activating">Activating</string>
+    <string name="login_jetpack_steps_authorizing">Authorising connection</string>
+    <string name="login_jetpack_steps_authorizing_hint">Approval required</string>
+    <string name="login_jetpack_steps_done">All done</string>
+    <string name="login_jetpack_installation_steps_screen_title">Installing Jetpack</string>
+    <string name="login_jetpack_connection_steps_screen_title">Connecting Jetpack</string>
+    <string name="login_jetpack_steps_screen_subtitle">Please wait while we connect your store &lt;b&gt;%1$s&lt;/b&gt; with Jetpack.</string>
+    <string name="login_jetpack_installation_error_code_template">Error code %1$s</string>
 
     <!--
         My Store View

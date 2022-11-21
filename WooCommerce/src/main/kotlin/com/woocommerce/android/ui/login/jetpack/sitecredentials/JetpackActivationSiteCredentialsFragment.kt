@@ -4,11 +4,11 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
+import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
@@ -62,7 +62,13 @@ class JetpackActivationSiteCredentialsFragment : BaseFragment() {
 
     @Suppress("UNUSED_PARAMETER")
     private fun navigateToJetpackActivationSteps(event: NavigateToJetpackActivationSteps) {
-        Toast.makeText(requireContext(), "TODO", Toast.LENGTH_LONG).show()
+        findNavController().navigateSafely(
+            JetpackActivationSiteCredentialsFragmentDirections
+                .actionJetpackActivationSiteCredentialsFragmentToJetpackActivationMainFragment(
+                    siteUrl = event.siteUrl,
+                    isJetpackInstalled = event.isJetpackInstalled
+                )
+        )
     }
 
     private fun showResetPasswordWebPage(siteUrl: String) {
