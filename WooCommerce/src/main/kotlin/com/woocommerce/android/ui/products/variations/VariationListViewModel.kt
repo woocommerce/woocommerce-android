@@ -11,7 +11,7 @@ import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsEvent.PRODUCT_VARIANTS_BULK_UPDATE_TAPPED
 import com.woocommerce.android.analytics.AnalyticsEvent.PRODUCT_VARIATION_VIEW_VARIATION_DETAIL_TAPPED
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_PRODUCT_ID
-import com.woocommerce.android.analytics.AnalyticsTracker.Companion.track
+import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.extensions.isNotSet
 import com.woocommerce.android.extensions.isSet
 import com.woocommerce.android.model.Product
@@ -69,6 +69,7 @@ class VariationListViewModel @Inject constructor(
     private val currencyFormatter: CurrencyFormatter,
     private val dispatchers: CoroutineDispatchers,
     private val generateVariationCandidates: GenerateVariationCandidates,
+    private val tracker: AnalyticsTrackerWrapper
 ) : ScopedViewModel(savedState) {
     private var remoteProductId = 0L
 
@@ -287,11 +288,13 @@ class VariationListViewModel @Inject constructor(
         if (variationCandidates.size < GenerateVariationCandidates.VARIATION_CREATION_LIMIT) {
             triggerEvent(ShowGenerateVariationConfirmation(variationCandidates))
         } else {
+            tracker.track(AnalyticsEvent.PRODUCT_VARIATION_GENERATION_LIMIT_REACHED)
             triggerEvent(ShowGenerateVariationError.LimitExceeded(variationCandidates.size))
         }
     }
 
     fun onGenerateVariationsConfirmed(variationCandidates: List<VariationCandidate>) {
+        tracker.track(AnalyticsEvent.PRODUCT_VARIATION_GENERATION_REQUESTED)
         variationCandidates.size
         viewState = viewState.copy(progressDialogState = Shown(MULTIPLE))
         launch {
