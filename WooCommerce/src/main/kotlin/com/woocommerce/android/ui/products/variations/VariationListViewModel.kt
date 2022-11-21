@@ -108,7 +108,7 @@ class VariationListViewModel @Inject constructor(
     }
 
     fun onBulkUpdateClicked() {
-        track(PRODUCT_VARIANTS_BULK_UPDATE_TAPPED)
+        tracker.track(PRODUCT_VARIANTS_BULK_UPDATE_TAPPED)
 
         val variationsCount = viewState.parentProduct?.numVariations ?: return
 
@@ -127,7 +127,7 @@ class VariationListViewModel @Inject constructor(
     }
 
     fun onItemClick(variation: ProductVariation) {
-        track(PRODUCT_VARIATION_VIEW_VARIATION_DETAIL_TAPPED)
+        tracker.track(PRODUCT_VARIATION_VIEW_VARIATION_DETAIL_TAPPED)
         triggerEvent(ShowVariationDetail(variation))
     }
 
@@ -277,7 +277,7 @@ class VariationListViewModel @Inject constructor(
     }
 
     private fun trackWithProductId(event: AnalyticsEvent) {
-        viewState.parentProduct?.let { track(event, mapOf(KEY_PRODUCT_ID to it.remoteId)) }
+        viewState.parentProduct?.let { tracker.track(event, mapOf(KEY_PRODUCT_ID to it.remoteId)) }
     }
 
     fun onAddAllVariationsClicked() {
