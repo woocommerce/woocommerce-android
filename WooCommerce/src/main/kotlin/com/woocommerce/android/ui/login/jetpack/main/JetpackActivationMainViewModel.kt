@@ -10,6 +10,7 @@ import com.woocommerce.android.ui.common.PluginRepository.PluginStatus.PluginAct
 import com.woocommerce.android.ui.common.PluginRepository.PluginStatus.PluginActivationFailed
 import com.woocommerce.android.ui.common.PluginRepository.PluginStatus.PluginInstallFailed
 import com.woocommerce.android.ui.common.PluginRepository.PluginStatus.PluginInstalled
+import com.woocommerce.android.ui.login.AccountRepository
 import com.woocommerce.android.ui.login.jetpack.JetpackActivationRepository
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.viewmodel.MultiLiveEvent
@@ -21,24 +22,28 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.async
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.filter
-import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.parcelize.Parcelize
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.store.JetpackStore.JetpackConnectionUrlError
+import org.wordpress.android.fluxc.store.JetpackStore.JetpackUserError
 import javax.inject.Inject
 
 @HiltViewModel
 class JetpackActivationMainViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
     private val jetpackActivationRepository: JetpackActivationRepository,
-    private val pluginRepository: PluginRepository
+    private val pluginRepository: PluginRepository,
+    private val accountRepository: AccountRepository
 ) : ScopedViewModel(savedStateHandle) {
     companion object {
         private const val JETPACK_SLUG = "jetpack"
@@ -58,18 +63,27 @@ class JetpackActivationMainViewModel @Inject constructor(
         scope = viewModelScope,
         initialValue = Step(if (navArgs.isJetpackInstalled) StepType.Connection() else StepType.Installation),
     )
+    private val stepTypes = flow {
+        var stepTypes = if (navArgs.isJetpackInstalled) stepsForConnection() else stepsForInstallation()
+        currentStep.map { it.type }.collect { currentStepType ->
+            stepTypes = stepTypes.map { stepType ->
+                if (stepType.order == currentStepType.order) currentStepType else stepType
+            }
+            emit(stepTypes)
+        }
+    }
     val viewState = combine(
         currentStep,
-        flowOf(if (navArgs.isJetpackInstalled) stepsForConnection() else stepsForInstallation())
-    ) { currentStep, steps ->
+        stepTypes
+    ) { currentStep, stepTypes ->
         ViewState(
             siteUrl = navArgs.siteUrl,
             isJetpackInstalled = navArgs.isJetpackInstalled,
-            steps = steps.map { stepType ->
+            steps = stepTypes.map { stepType ->
                 Step(
-                    type = stepType,
+                    type = if (currentStep.type.order == stepType.order) currentStep.type else stepType,
                     state = when {
-                        currentStep.type == stepType -> currentStep.state
+                        currentStep.type.order == stepType.order -> currentStep.state
                         currentStep.type.order > stepType.order -> StepState.Success
                         else -> StepState.Idle
                     }
@@ -110,10 +124,19 @@ class JetpackActivationMainViewModel @Inject constructor(
                         when (it.type.connectionStep) {
                             ConnectionStep.PreConnection -> startJetpackConnection()
                             ConnectionStep.Validation -> startJetpackValidation()
-                            ConnectionStep.Approved -> TODO()
+                            ConnectionStep.Approved -> {
+                                delay(500)
+                                currentStep.value = Step(
+                                    type = StepType.Done,
+                                    state = StepState.Ongoing
+                                )
+                            }
                         }
                     }
-                    StepType.Done -> TODO()
+                    StepType.Done -> currentStep.value = Step(
+                        type = StepType.Done,
+                        state = StepState.Success
+                    )
                 }
             }
             .launchIn(viewModelScope)
@@ -163,8 +186,23 @@ class JetpackActivationMainViewModel @Inject constructor(
         )
     }
 
-    private fun startJetpackValidation() {
-        TODO("Not yet implemented")
+    private fun startJetpackValidation() = launch {
+        WooLog.d(WooLog.T.LOGIN, "Jetpack Activation: start Jetpack Connection validation")
+        jetpackActivationRepository.fetchJetpackConnectedEmail(site.await()).fold(
+            onSuccess = { email ->
+                if (accountRepository.getUserAccount()?.email != email) {
+                    TODO("Handle the edge case of connection using a different account")
+                }
+                currentStep.value = Step(
+                    type = StepType.Connection(ConnectionStep.Approved),
+                    state = StepState.Ongoing
+                )
+            },
+            onFailure = {
+                val errorCode = ((it as? OnChangedException)?.error as? JetpackUserError)?.errorCode
+                currentStep.update { state -> state.copy(state = StepState.Error(errorCode)) }
+            }
+        )
     }
 
     private fun stepsForInstallation() = listOf(
