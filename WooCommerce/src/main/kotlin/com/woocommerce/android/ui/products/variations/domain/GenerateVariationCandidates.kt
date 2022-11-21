@@ -15,6 +15,9 @@ class GenerateVariationCandidates @Inject constructor(
 
     companion object {
         const val VARIATION_CREATION_LIMIT = 100
+
+        private val initialAccumulator
+            get() = listOf(emptyList<VariationCandidate>())
     }
 
     operator fun invoke(product: Product): List<VariationCandidate> {
@@ -43,7 +46,7 @@ class GenerateVariationCandidates @Inject constructor(
             termAssignmentsGroupedByAttribute
         ).minus(existingVariationsAsCandidates.toSet())
 
-        return if (variationCandidates.first().isEmpty()) {
+        return if (variationCandidates == initialAccumulator) {
             emptyList()
         } else {
             variationCandidates
