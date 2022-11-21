@@ -6,7 +6,7 @@ import com.woocommerce.android.cardreader.connection.SpecificReader
 import com.woocommerce.android.cardreader.connection.SpecificReader.Chipper2X
 import com.woocommerce.android.cardreader.connection.SpecificReader.StripeM2
 import com.woocommerce.android.cardreader.connection.SpecificReader.WisePade3
-import com.woocommerce.android.cardreader.internal.config.CardReaderConfigForSupportedCountry
+import com.woocommerce.android.cardreader.config.CardReaderConfigForSupportedCountry
 import com.woocommerce.android.ui.payments.cardreader.manuals.CardReaderManualsViewModel.ManualItem
 import javax.inject.Inject
 

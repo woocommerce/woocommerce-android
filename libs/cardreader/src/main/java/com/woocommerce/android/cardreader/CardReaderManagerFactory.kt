@@ -3,7 +3,7 @@ package com.woocommerce.android.cardreader
 import android.app.Application
 import com.woocommerce.android.cardreader.internal.CardReaderManagerImpl
 import com.woocommerce.android.cardreader.internal.TokenProvider
-import com.woocommerce.android.cardreader.internal.config.CardReaderConfigFactory
+import com.woocommerce.android.cardreader.config.CardReaderConfigFactory
 import com.woocommerce.android.cardreader.internal.connection.BluetoothReaderListenerImpl
 import com.woocommerce.android.cardreader.internal.connection.ConnectionManager
 import com.woocommerce.android.cardreader.internal.connection.TerminalListenerImpl

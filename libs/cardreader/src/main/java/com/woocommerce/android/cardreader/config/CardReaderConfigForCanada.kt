@@ -1,4 +1,4 @@
-package com.woocommerce.android.cardreader.internal.config
+package com.woocommerce.android.cardreader.config
 
 import com.stripe.stripeterminal.external.models.PaymentMethodType
 import com.woocommerce.android.cardreader.connection.SpecificReader

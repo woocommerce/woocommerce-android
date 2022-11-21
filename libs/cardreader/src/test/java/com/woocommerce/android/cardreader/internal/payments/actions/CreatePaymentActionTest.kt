@@ -6,9 +6,9 @@ import com.stripe.stripeterminal.external.models.PaymentIntentParameters
 import com.stripe.stripeterminal.external.models.PaymentMethodType
 import com.woocommerce.android.cardreader.connection.CardReader
 import com.woocommerce.android.cardreader.internal.CardReaderBaseUnitTest
-import com.woocommerce.android.cardreader.internal.config.CardReaderConfigFactory
-import com.woocommerce.android.cardreader.internal.config.CardReaderConfigForCanada
-import com.woocommerce.android.cardreader.internal.config.CardReaderConfigForUSA
+import com.woocommerce.android.cardreader.config.CardReaderConfigFactory
+import com.woocommerce.android.cardreader.config.CardReaderConfigForCanada
+import com.woocommerce.android.cardreader.config.CardReaderConfigForUSA
 import com.woocommerce.android.cardreader.internal.payments.MetaDataKeys
 import com.woocommerce.android.cardreader.internal.payments.PaymentUtils
 import com.woocommerce.android.cardreader.internal.payments.actions.CreatePaymentAction.CreatePaymentStatus
@@ -54,7 +54,9 @@ internal class CreatePaymentActionTest : CardReaderBaseUnitTest() {
         whenever(intentParametersBuilder.setDescription(any())).thenReturn(intentParametersBuilder)
         whenever(intentParametersBuilder.setMetadata(any())).thenReturn(intentParametersBuilder)
         whenever(intentParametersBuilder.build()).thenReturn(mock())
-        whenever(cardReaderConfigFactory.getCardReaderConfigFor(any())).thenReturn(CardReaderConfigForUSA)
+        whenever(cardReaderConfigFactory.getCardReaderConfigFor(any())).thenReturn(
+            CardReaderConfigForUSA
+        )
 
         whenever(terminal.createPaymentIntent(any(), any())).thenAnswer {
             (it.arguments[1] as PaymentIntentCallback).onSuccess(mock())
