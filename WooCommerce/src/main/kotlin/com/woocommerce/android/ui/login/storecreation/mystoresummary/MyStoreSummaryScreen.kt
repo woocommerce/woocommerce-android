@@ -161,10 +161,10 @@ private fun StoreDataSummary(
                         Text(
                             text = myStoreSummaryState.domain,
                             style = MaterialTheme.typography.subtitle1,
-                    )
+                        )
+                    }
                 }
-            }
-            Text(
+                Text(
                     text = myStoreSummaryState.country,
                     style = MaterialTheme.typography.subtitle1,
                 )
