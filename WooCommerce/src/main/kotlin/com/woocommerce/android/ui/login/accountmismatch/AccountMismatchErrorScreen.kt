@@ -222,7 +222,10 @@ fun AccountMismatchErrorScreen(viewState: ViewState.MainState, modifier: Modifie
             val context = LocalContext.current
             ClickableText(
                 text = consent,
-                style = MaterialTheme.typography.caption.copy(textAlign = TextAlign.Center)
+                style = MaterialTheme.typography.caption.copy(
+                    textAlign = TextAlign.Center,
+                    color = MaterialTheme.colors.onSurface
+                )
             ) {
                 consent.getStringAnnotations(tag = URL_ANNOTATION_TAG, start = it, end = it)
                     .firstOrNull()

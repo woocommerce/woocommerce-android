@@ -837,7 +837,8 @@ platform :android do
     upload_path = upload_to_s3(
       bucket: 'a8c-apps-public-artifacts',
       key: "woocommerce-installable-build-#{generate_installable_build_number}.apk",
-      file: lane_context[SharedValues::GRADLE_APK_OUTPUT_PATH]
+      file: lane_context[SharedValues::GRADLE_APK_OUTPUT_PATH],
+      skip_if_exists: true
     )
 
     install_url = "#{INSTALLABLE_BUILD_DOMAIN}/#{upload_path}"
