@@ -4,6 +4,7 @@ import android.os.Parcelable
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
+import com.woocommerce.android.OnChangedException
 import com.woocommerce.android.ui.common.PluginRepository
 import com.woocommerce.android.ui.common.PluginRepository.PluginStatus.PluginActivated
 import com.woocommerce.android.ui.common.PluginRepository.PluginStatus.PluginActivationFailed
@@ -11,6 +12,7 @@ import com.woocommerce.android.ui.common.PluginRepository.PluginStatus.PluginIns
 import com.woocommerce.android.ui.common.PluginRepository.PluginStatus.PluginInstalled
 import com.woocommerce.android.ui.login.jetpack.JetpackActivationRepository
 import com.woocommerce.android.util.WooLog
+import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.getStateFlow
@@ -29,6 +31,7 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.parcelize.Parcelize
 import org.wordpress.android.fluxc.model.SiteModel
+import org.wordpress.android.fluxc.store.JetpackStore.JetpackConnectionUrlError
 import javax.inject.Inject
 
 @HiltViewModel
@@ -84,6 +87,10 @@ class JetpackActivationMainViewModel @Inject constructor(
         triggerEvent(Exit)
     }
 
+    fun onJetpackConnected() {
+        println("Jetpack Connected")
+    }
+
     private fun startNextStep() {
         currentStep.update { it.copy(state = StepState.Ongoing) }
     }
@@ -104,7 +111,11 @@ class JetpackActivationMainViewModel @Inject constructor(
     }
 
     private fun startJetpackInstallation() {
-        if (installationJob?.isActive == true) return
+        if (installationJob?.isActive == true) {
+            // The installation and activation use the same function, check if one is already made to avoid triggering
+            // two requests
+            return
+        }
         WooLog.d(WooLog.T.LOGIN, "Jetpack Activation: start Jetpack Installation")
         installationJob = launch {
             pluginRepository.installPlugin(
@@ -131,8 +142,17 @@ class JetpackActivationMainViewModel @Inject constructor(
         }
     }
 
-    private fun startJetpackConnection() {
+    private fun startJetpackConnection() = launch {
         WooLog.d(WooLog.T.LOGIN, "Jetpack Activation: start Jetpack Connection")
+        jetpackActivationRepository.fetchJetpackConnectionUrl(site.await()).fold(
+            onSuccess = { connectionUrl ->
+                triggerEvent(ShowJetpackConnectionWebView(connectionUrl))
+            },
+            onFailure = {
+                val errorCode = ((it as? OnChangedException)?.error as? JetpackConnectionUrlError)?.errorCode
+                currentStep.value = Step(type = StepType.Connection, state = StepState.Error(errorCode))
+            }
+        )
     }
 
     private fun stepsForInstallation() = StepType.values()
@@ -169,4 +189,6 @@ class JetpackActivationMainViewModel @Inject constructor(
         @Parcelize
         data class Error(val code: Int?) : StepState
     }
+
+    data class ShowJetpackConnectionWebView(val url: String) : MultiLiveEvent.Event()
 }
