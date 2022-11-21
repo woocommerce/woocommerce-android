@@ -1,6 +1,7 @@
 package com.woocommerce.android.support.help
 
 import androidx.lifecycle.SavedStateHandle
+import com.woocommerce.android.extensions.formatResult
 import com.woocommerce.android.support.TicketType
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.util.WooLog
@@ -36,7 +37,7 @@ class HelpViewModel @Inject constructor(
             } else {
                 wooLogWrapper.i(WooLog.T.SUPPORT, "SSR fetched successfully")
             }
-            ssr = result.model?.toString()
+            ssr = result.model?.formatResult()
         }
     }
 
