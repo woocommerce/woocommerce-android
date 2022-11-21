@@ -218,7 +218,7 @@
         android:label="CardReaderManualsFragment" >
         <argument
             android:name="cardReaderConfig"
-            app:argType="com.woocommerce.android.cardreader.internal.config.CardReaderConfigForSupportedCountry"
+            app:argType="com.woocommerce.android.cardreader.config.CardReaderConfigForSupportedCountry"
             app:nullable="false" />
     </fragment>
 
