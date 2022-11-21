@@ -1,11 +1,19 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2022-11-09 14:54:04+0000
+Translation-Revision-Date: 2022-11-16 09:54:04+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: nl
 -->
 <resources>
+    <string name="store_creation_domain_picker_suggestions_title">Suggesties</string>
+    <string name="store_creation_domain_picker_skip_button">Overslaan</string>
+    <string name="store_creation_domain_picker_hint">Typ een domein</string>
+    <string name="store_creation_domain_picker_subtitle">Dit is de plek waar mensen je online kunnen vinden. Maak je geen zorgen, je kan dit later altijd veranderen.</string>
+    <string name="store_creation_domain_picker_title">Kies een domein</string>
+    <string name="analytics_views_subtitle">Weergaven</string>
+    <string name="analytics_visitors_subtitle">Bezoekers</string>
+    <string name="analytics_visitors_and_views_card_title">Bezoekers en weergaven</string>
     <string name="store_creation_confirm_and_leave">Bevestigen en verlaten</string>
     <string name="store_creation_exit_dialog_message">Je raakt al je winkelgegevens kwijt.</string>
     <string name="store_creation_exit_dialog_title">Wil je deze pagina verlaten?</string>

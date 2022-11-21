@@ -27,8 +27,7 @@ allprojects {
     tasks.withType(KotlinCompile).all {
         kotlinOptions {
             jvmTarget = JavaVersion.VERSION_1_8
-            // TODO fix all the warnings and change to true before end of 2022
-            allWarningsAsErrors = false
+            allWarningsAsErrors = true
             freeCompilerArgs += [
                     "-Xopt-in=kotlin.RequiresOptIn",
                     "-Xjvm-default=all-compatibility",
@@ -117,6 +116,7 @@ ext {
     wordPressLoginVersion = '0.21.0'
     aboutAutomatticVersion = '0.0.6'
     workManagerVersion = '2.7.1'
+    billingVersion = '5.0.0'
 
     // Apache
     commonsText = '1.10.0'

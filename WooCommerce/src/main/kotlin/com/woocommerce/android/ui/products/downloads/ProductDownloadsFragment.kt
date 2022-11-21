@@ -6,7 +6,6 @@ import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
 import androidx.core.view.MenuProvider
-import androidx.lifecycle.Lifecycle
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.ItemTouchHelper.DOWN
 import androidx.recyclerview.widget.ItemTouchHelper.UP
@@ -58,7 +57,7 @@ class ProductDownloadsFragment :
 
         _binding = FragmentProductDownloadsListBinding.bind(view)
 
-        requireActivity().addMenuProvider(this, viewLifecycleOwner, Lifecycle.State.RESUMED)
+        requireActivity().addMenuProvider(this, viewLifecycleOwner)
         setupObservers(viewModel)
 
         with(binding.productDownloadsRecycler) {

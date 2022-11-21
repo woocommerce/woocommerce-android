@@ -1,2 +1,0 @@
-11.1:
-Diese Version enthält viele tolle Neuerungen, die dir bei der Verwaltung deines Shops helfen! Du kannst jetzt Massenaktualisierungen für die Lagerbestandsmenge von Varianten vornehmen. Darüber hinaus hast du die Option, dich mit einem QR-Code anzumelden. Bei der Suche nach Bestellungen und Produkten haben wir ebenfalls Verbesserungen vorgenommen.

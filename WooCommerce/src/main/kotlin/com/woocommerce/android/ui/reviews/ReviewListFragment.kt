@@ -11,7 +11,6 @@ import androidx.core.view.ViewGroupCompat
 import androidx.core.view.doOnPreDraw
 import androidx.core.view.isVisible
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.Lifecycle
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.transition.MaterialFadeThrough
@@ -80,7 +79,7 @@ class ReviewListFragment :
         super.onViewCreated(view, savedInstanceState)
         postponeEnterTransition()
 
-        requireActivity().addMenuProvider(this, viewLifecycleOwner, Lifecycle.State.RESUMED)
+        requireActivity().addMenuProvider(this, viewLifecycleOwner)
 
         _binding = FragmentReviewsListBinding.bind(view)
         view.doOnPreDraw { startPostponedEnterTransition() }

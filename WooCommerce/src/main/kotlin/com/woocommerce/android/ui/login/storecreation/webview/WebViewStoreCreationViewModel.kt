@@ -72,7 +72,7 @@ class WebViewStoreCreationViewModel @Inject constructor(
         exitTriggerKeyword = WEBVIEW_EXIT_TRIGGER_KEYWORD,
         onStoreCreated = ::onStoreCreated,
         onSiteAddressFound = ::onSiteAddressFound,
-        onExitTriggered = ::exitStoreCreation
+        onExitTriggered = ::onExitTriggered
     )
 
     private fun prepareErrorState() = ErrorState(
@@ -80,14 +80,8 @@ class WebViewStoreCreationViewModel @Inject constructor(
     )
 
     private fun setDialogState(isVisible: Boolean) = DialogState(
-        isDialogVisible = isVisible,
-        onExitConfirmed = ::exitStoreCreation,
-        onDialogDismissed = ::onDialogDismissed
+        isDialogVisible = isVisible
     )
-
-    private fun onDialogDismissed() {
-        _dialogViewState.value = setDialogState(isVisible = false)
-    }
 
     private suspend fun getOrFetchNewSite(): StoreLoadResult {
         val newSite = possibleStoreUrls.firstNotNullOfOrNull { url -> repository.getSiteBySiteUrl(url) }
@@ -142,7 +136,11 @@ class WebViewStoreCreationViewModel @Inject constructor(
         possibleStoreUrls.add(url)
     }
 
-    private fun exitStoreCreation() {
+    fun onDialogDismissed() {
+        _dialogViewState.value = setDialogState(isVisible = false)
+    }
+
+    fun onExitTriggered() {
         analyticsTrackerWrapper.track(
             AnalyticsEvent.SITE_CREATION_DISMISSED,
             mapOf(
@@ -178,9 +176,7 @@ class WebViewStoreCreationViewModel @Inject constructor(
 
     @Parcelize
     data class DialogState(
-        val isDialogVisible: Boolean,
-        val onExitConfirmed: () -> Unit,
-        val onDialogDismissed: () -> Unit
+        val isDialogVisible: Boolean
     ) : Parcelable
 
     object NavigateToNewStore : MultiLiveEvent.Event()

@@ -11,7 +11,6 @@ import androidx.appcompat.widget.Toolbar
 import androidx.core.text.HtmlCompat
 import androidx.core.view.MenuProvider
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.Lifecycle
 import com.woocommerce.android.R
 import com.woocommerce.android.R.layout
 import com.woocommerce.android.analytics.AnalyticsEvent
@@ -58,7 +57,8 @@ class LoginDiscoveryErrorFragment : Fragment(layout.fragment_login_discovery_err
 
     private var loginListener: LoginListener? = null
     private var jetpackLoginListener: LoginNoJetpackListener? = null
-    @Inject internal lateinit var unifiedLoginTracker: UnifiedLoginTracker
+    @Inject
+    internal lateinit var unifiedLoginTracker: UnifiedLoginTracker
 
     private var errorMessage: Int? = null
 
@@ -121,7 +121,7 @@ class LoginDiscoveryErrorFragment : Fragment(layout.fragment_login_discovery_err
                 )
             }
         }
-        requireActivity().addMenuProvider(this, viewLifecycleOwner, Lifecycle.State.RESUMED)
+        requireActivity().addMenuProvider(this, viewLifecycleOwner)
     }
 
     override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {

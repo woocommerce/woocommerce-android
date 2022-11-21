@@ -1,11 +1,19 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2022-11-09 14:54:04+0000
+Translation-Revision-Date: 2022-11-16 09:54:04+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: it
 -->
 <resources>
+    <string name="store_creation_domain_picker_suggestions_title">Suggerimenti</string>
+    <string name="store_creation_domain_picker_skip_button">Salta</string>
+    <string name="store_creation_domain_picker_hint">Digita un dominio</string>
+    <string name="store_creation_domain_picker_subtitle">Ecco dove gli utenti ti troveranno su Internet. Non preoccuparti. Puoi cambiarlo più tardi.</string>
+    <string name="store_creation_domain_picker_title">Scegli un dominio</string>
+    <string name="analytics_views_subtitle">Visualizzazioni</string>
+    <string name="analytics_visitors_subtitle">Visitatori</string>
+    <string name="analytics_visitors_and_views_card_title">Visitatori e visualizzazioni</string>
     <string name="store_creation_confirm_and_leave">Conferma ed esci</string>
     <string name="store_creation_exit_dialog_message">Perderai tutte le informazioni del negozio.</string>
     <string name="store_creation_exit_dialog_title">Desideri uscire?</string>

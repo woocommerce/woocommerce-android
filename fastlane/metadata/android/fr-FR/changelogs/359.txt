@@ -1,0 +1,2 @@
+11.2 :
+Pour cette version, nous nous sommes concentrés sur l’apport d’améliorations et la résolution de bogues mineurs détectés par notre équipe. Mais rassurez-vous : il y aura des nouveautés intéressantes pour tout le monde ! Keep sharing feedback 💜

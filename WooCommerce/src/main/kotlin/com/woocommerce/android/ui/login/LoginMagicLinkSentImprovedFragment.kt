@@ -10,7 +10,6 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import androidx.core.view.MenuProvider
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.Lifecycle
 import com.woocommerce.android.R
 import com.woocommerce.android.databinding.FragmentLoginMagicLinkSentImprovedBinding
 import com.woocommerce.android.ui.login.qrcode.QrCodeLoginListener
@@ -66,13 +65,14 @@ class LoginMagicLinkSentImprovedFragment : Fragment(R.layout.fragment_login_magi
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        requireActivity().addMenuProvider(this, viewLifecycleOwner, Lifecycle.State.RESUMED)
-
         val toolbar = view.findViewById(R.id.toolbar) as Toolbar
         (activity as AppCompatActivity).setSupportActionBar(toolbar)
         (activity as AppCompatActivity).supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
         val binding = FragmentLoginMagicLinkSentImprovedBinding.bind(view)
+
+        requireActivity().addMenuProvider(this, viewLifecycleOwner)
+
         binding.loginOpenEmailClient.setOnClickListener { mLoginListener?.openEmailClient(true) }
         with(binding.loginEnterPassword) {
             visibility = if (mAllowPassword) View.VISIBLE else View.GONE
