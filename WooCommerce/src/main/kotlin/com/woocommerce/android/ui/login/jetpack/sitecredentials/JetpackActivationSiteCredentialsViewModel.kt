@@ -76,6 +76,7 @@ class JetpackActivationSiteCredentialsViewModel @Inject constructor(
 
     fun onContinueClick() = launch {
         _viewState.update { it.copy(isLoading = true) }
+
         val state = _viewState.value
         wpApiSiteRepository.login(
             url = state.siteUrl,
@@ -91,9 +92,6 @@ class JetpackActivationSiteCredentialsViewModel @Inject constructor(
                 )
             },
             onFailure = { exception ->
-                _viewState.update { state ->
-                    state.copy(isLoading = false)
-                }
                 if (exception is OnChangedException && exception.error is AuthenticationError) {
                     val errorMessage = exception.error.toErrorMessage()
                     if (errorMessage == null) {
@@ -109,6 +107,8 @@ class JetpackActivationSiteCredentialsViewModel @Inject constructor(
                 }
             }
         )
+
+        _viewState.update { it.copy(isLoading = false) }
     }
 
     private fun AuthenticationError.toErrorMessage() = when (type) {
