@@ -34,13 +34,13 @@ import org.mockito.kotlin.whenever
 @ExperimentalCoroutinesApi
 class VariationListViewModelTest : BaseUnitTest() {
     private val networkStatus: NetworkStatus = mock()
-    lateinit var variationRepository: VariationRepository
+    private lateinit var variationRepository: VariationRepository
     private val currencyFormatter: CurrencyFormatter = mock()
     private val productRepository: ProductDetailRepository = mock()
     private val generateVariationCandidates: GenerateVariationCandidates = mock()
 
     private val productRemoteId = 1L
-    private val procut =
+    private val product =
         ProductHelper.getDefaultNewProduct(ProductType.VARIABLE, false).copy(remoteId = productRemoteId)
     private lateinit var viewModel: VariationListViewModel
     private val variations = ProductTestUtils.generateProductVariationList(productRemoteId)
@@ -49,7 +49,7 @@ class VariationListViewModelTest : BaseUnitTest() {
     @Before
     fun setup() {
         doReturn(true).whenever(networkStatus).isConnected()
-        whenever(productRepository.getProduct(productRemoteId)).thenReturn(procut)
+        whenever(productRepository.getProduct(productRemoteId)).thenReturn(product)
 
         variationRepository = mock {
             onBlocking { bulkCreateVariations(any(), any()) } doReturn RequestResult.SUCCESS
@@ -221,7 +221,7 @@ class VariationListViewModelTest : BaseUnitTest() {
                         isEmptyViewVisible = true,
                         isWarningVisible = null,
                         progressDialogState = ProgressDialogState.Hidden,
-                        parentProduct = procut,
+                        parentProduct = product,
                         isVariationsOptionsMenuEnabled = false,
                         isBulkUpdateProgressDialogShown = false
                     )
@@ -261,7 +261,7 @@ class VariationListViewModelTest : BaseUnitTest() {
                         isEmptyViewVisible = true,
                         isWarningVisible = null,
                         progressDialogState = ProgressDialogState.Hidden,
-                        parentProduct = procut,
+                        parentProduct = product,
                         isVariationsOptionsMenuEnabled = false,
                         isBulkUpdateProgressDialogShown = false
                     )
