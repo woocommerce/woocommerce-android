@@ -288,9 +288,9 @@ class VariationListViewModelTest : BaseUnitTest() {
 
     @Test
     fun `When user reach variations limits then variations limit error is tracked`() = testBlocking {
-        // Given a variation candidates list with a size of [limit]
+        // Given a variation candidates list with a size of [limit + 1]
         val variationsLimit =
-            List(GenerateVariationCandidates.VARIATION_CREATION_LIMIT) { id ->
+            List(GenerateVariationCandidates.VARIATION_CREATION_LIMIT + 1) { id ->
                 listOf(VariantOption(id.toLong(), "Number", id.toString()))
             }
 
@@ -311,9 +311,9 @@ class VariationListViewModelTest : BaseUnitTest() {
 
     @Test
     fun `When user almost reach variations limits then variations limit error is NOT tracked`() = testBlocking {
-        // Given a variation candidates list with a size of [limit - 1]
+        // Given a variation candidates list with a size of [limit]
         val almostReachVariationsLimit =
-            List(GenerateVariationCandidates.VARIATION_CREATION_LIMIT - 1) { id ->
+            List(GenerateVariationCandidates.VARIATION_CREATION_LIMIT) { id ->
                 listOf(VariantOption(id.toLong(), "Number", id.toString()))
             }
         doReturn(almostReachVariationsLimit).whenever(generateVariationCandidates).invoke(any())
