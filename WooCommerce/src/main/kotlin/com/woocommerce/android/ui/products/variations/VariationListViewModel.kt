@@ -284,7 +284,7 @@ class VariationListViewModel @Inject constructor(
 
         val variationCandidates = generateVariationCandidates.invoke(product)
 
-        if (variationCandidates.size < GenerateVariationCandidates.VARIATION_CREATION_LIMIT) {
+        if (variationCandidates.size <= GenerateVariationCandidates.VARIATION_CREATION_LIMIT) {
             triggerEvent(ShowGenerateVariationConfirmation(variationCandidates))
         } else {
             triggerEvent(ShowGenerateVariationsError.LimitExceeded(variationCandidates.size))

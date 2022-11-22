@@ -10,7 +10,7 @@ import javax.inject.Inject
 typealias VariationCandidate = List<VariantOption>
 
 class GenerateVariationCandidates @Inject constructor(
-    val variationRepository: VariationRepository
+    private val variationRepository: VariationRepository
 ) {
 
     companion object {
