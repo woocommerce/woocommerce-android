@@ -71,6 +71,7 @@ class PluginRepository @Inject constructor(
         }
     }
 
+    @Suppress("LongMethod")
     fun installPlugin(site: SiteModel, slug: String, name: String): Flow<PluginStatus> {
         return flow {
             WooLog.d(WooLog.T.PLUGINS, "Installing plugin Slug: $slug, Name: $name")
@@ -139,7 +140,6 @@ class PluginRepository @Inject constructor(
             status is PluginInstalled
         }
     }
-
 
     private fun dispatchPluginActivationAction(site: SiteModel, slug: String, name: String) {
         val payload = ConfigureSitePluginPayload(

@@ -51,6 +51,7 @@ class JetpackActivationMainViewModel @Inject constructor(
     companion object {
         private const val JETPACK_SLUG = "jetpack"
         private const val JETPACK_NAME = "jetpack/jetpack"
+        private const val DELAY_AFTER_CONNECTION_MS = 500L
     }
 
     private val navArgs: JetpackActivationMainFragmentArgs by savedStateHandle.navArgs()
@@ -150,7 +151,7 @@ class JetpackActivationMainViewModel @Inject constructor(
                                         type = StepType.Connection,
                                         state = StepState.Success
                                     )
-                                    delay(500)
+                                    delay(DELAY_AFTER_CONNECTION_MS)
                                     currentStep.value = Step(
                                         type = StepType.Done,
                                         state = StepState.Ongoing

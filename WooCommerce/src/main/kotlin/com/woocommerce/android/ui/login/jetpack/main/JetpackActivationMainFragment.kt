@@ -74,7 +74,7 @@ class JetpackActivationMainFragment : BaseFragment() {
             viewModel.onJetpackConnected()
         }
         handleNotice(WPComWebViewFragment.WEBVIEW_DISMISSED) {
-            // TODO: setup dismiss state in parent screen
+            // TODO setup dismiss state in parent screen
             findNavController().navigateUp()
         }
     }
