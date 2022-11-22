@@ -19,11 +19,12 @@ import androidx.compose.ui.res.stringResource
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import com.woocommerce.android.R
+import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
-import com.woocommerce.android.ui.login.storecreation.mystoresummary.MyStoreSummaryViewModel
+import com.woocommerce.android.ui.login.storecreation.iapeligibility.IapEligibilityViewModel.IapEligibilityEvent.NavigateToNativeStoreCreation
+import com.woocommerce.android.ui.login.storecreation.iapeligibility.IapEligibilityViewModel.IapEligibilityEvent.NavigateToWebStoreCreation
 import com.woocommerce.android.ui.main.AppBarStatus
-import com.woocommerce.android.viewmodel.MultiLiveEvent
 
 
 class CheckIapEligibilityFragment : BaseFragment() {
@@ -54,7 +55,6 @@ class CheckIapEligibilityFragment : BaseFragment() {
                             color = colorResource(id = R.color.color_on_surface_medium)
                         )
                     }
-
                 }
             }
         }
@@ -68,10 +68,24 @@ class CheckIapEligibilityFragment : BaseFragment() {
     private fun setupObservers() {
         viewModel.event.observe(viewLifecycleOwner) { event ->
             when (event) {
-                is MultiLiveEvent.Event.Exit -> findNavController().popBackStack()
-                is MyStoreSummaryViewModel.NavigateToNextStep -> navigateToPlansFragment()
+                is NavigateToWebStoreCreation -> navigateToStoreCreationWeb()
+                is NavigateToNativeStoreCreation -> navigateToStoreCreationNative()
             }
         }
+    }
+
+    private fun navigateToStoreCreationNative() {
+        findNavController()
+            .navigateSafely(
+                CheckIapEligibilityFragmentDirections.actionCheckIapEligibilityFragmentToWebViewStoreCreationFragment()
+            )
+    }
+
+    private fun navigateToStoreCreationWeb() {
+        findNavController()
+            .navigateSafely(
+                CheckIapEligibilityFragmentDirections.actionCheckIapEligibilityFragmentToStoreNamePickerFragment()
+            )
     }
 }
 
