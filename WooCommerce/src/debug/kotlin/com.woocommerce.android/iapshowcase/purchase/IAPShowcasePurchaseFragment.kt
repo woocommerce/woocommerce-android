@@ -52,7 +52,7 @@ class IAPShowcasePurchaseFragment : Fragment(R.layout.fragment_iap_showcase_purc
     }
 
     private fun setupToolbar(view: View) {
-        with (view.findViewById<Toolbar>(R.id.tbBack)) {
+        with(view.findViewById<Toolbar>(R.id.tbBack)) {
             setNavigationOnClickListener {
                 this@IAPShowcasePurchaseFragment.requireActivity().onBackPressedDispatcher.onBackPressed()
             }
