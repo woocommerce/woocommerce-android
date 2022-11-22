@@ -18,6 +18,7 @@ import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextAlign
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import com.woocommerce.android.R
@@ -51,9 +52,10 @@ class CheckIapEligibilityFragment : BaseFragment() {
                     {
                         CircularProgressIndicator()
                         Text(
-                            modifier = Modifier.padding(top = dimensionResource(id = R.dimen.major_150)),
+                            modifier = Modifier.padding(top = dimensionResource(id = R.dimen.major_200)),
                             text = stringResource(id = R.string.store_creation_iap_eligibility_loading_title),
                             style = MaterialTheme.typography.h6,
+                            textAlign = TextAlign.Center,
                         )
                         Text(
                             modifier = Modifier.padding(top = dimensionResource(id = R.dimen.major_100)),

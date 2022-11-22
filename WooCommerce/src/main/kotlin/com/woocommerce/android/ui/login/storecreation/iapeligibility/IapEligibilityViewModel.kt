@@ -4,6 +4,7 @@ import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.iap.pub.PurchaseWpComPlanSupportChecker
 import com.woocommerce.android.iap.pub.model.IAPSupportedResult
 import com.woocommerce.android.ui.login.storecreation.iapeligibility.IapEligibilityViewModel.IapEligibilityEvent.NavigateToNativeStoreCreation
+import com.woocommerce.android.ui.login.storecreation.iapeligibility.IapEligibilityViewModel.IapEligibilityEvent.NavigateToWebStoreCreation
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -19,7 +20,7 @@ class IapEligibilityViewModel @Inject constructor(
         launch {
             val event = when (planSupportChecker.isIAPSupported()) {
                 is IAPSupportedResult.Success -> NavigateToNativeStoreCreation
-                is IAPSupportedResult.Error -> NavigateToNativeStoreCreation
+                is IAPSupportedResult.Error -> NavigateToWebStoreCreation
             }
             triggerEvent(event)
         }
