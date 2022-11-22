@@ -45,9 +45,9 @@ import com.woocommerce.android.ui.products.variations.VariationListViewModel.Sho
 import com.woocommerce.android.ui.products.variations.VariationListViewModel.ShowBulkUpdateAttrPicker
 import com.woocommerce.android.ui.products.variations.VariationListViewModel.ShowBulkUpdateLimitExceededWarning
 import com.woocommerce.android.ui.products.variations.VariationListViewModel.ShowGenerateVariationConfirmation
-import com.woocommerce.android.ui.products.variations.VariationListViewModel.ShowGenerateVariationError
-import com.woocommerce.android.ui.products.variations.VariationListViewModel.ShowGenerateVariationError.LimitExceeded
-import com.woocommerce.android.ui.products.variations.VariationListViewModel.ShowGenerateVariationError.NetworkError
+import com.woocommerce.android.ui.products.variations.VariationListViewModel.ShowGenerateVariationsError
+import com.woocommerce.android.ui.products.variations.VariationListViewModel.ShowGenerateVariationsError.LimitExceeded
+import com.woocommerce.android.ui.products.variations.VariationListViewModel.ShowGenerateVariationsError.NetworkError
 import com.woocommerce.android.ui.products.variations.VariationListViewModel.ShowVariationDetail
 import com.woocommerce.android.ui.products.variations.domain.GenerateVariationCandidates
 import com.woocommerce.android.ui.products.variations.domain.VariationCandidate
@@ -202,7 +202,7 @@ class VariationListFragment :
                 is ShowBulkUpdateAttrPicker -> openBulkUpdateView(event.variationsToUpdate)
                 is ShowBulkUpdateLimitExceededWarning -> showBulkUpdateLimitExceededWarning()
                 is ShowGenerateVariationConfirmation -> showGenerateVariationConfirmation(event.variationCandidates)
-                is ShowGenerateVariationError -> handleGenerateVariationError(event)
+                is ShowGenerateVariationsError -> handleGenerateVariationError(event)
                 is ExitWithResult<*> -> navigateBackWithResult(KEY_VARIATION_LIST_RESULT, event.data)
                 is Exit -> activity?.onBackPressedDispatcher?.onBackPressed()
             }
@@ -224,7 +224,7 @@ class VariationListFragment :
         }
     }
 
-    private fun handleGenerateVariationError(event: ShowGenerateVariationError) {
+    private fun handleGenerateVariationError(event: ShowGenerateVariationsError) {
         when (event) {
             is LimitExceeded -> showGenerateVariationsLimitExceeded(event.variationCandidatesSize)
             NetworkError -> showGenerateVariationsNetworkError()

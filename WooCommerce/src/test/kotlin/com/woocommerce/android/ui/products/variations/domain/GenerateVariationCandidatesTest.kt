@@ -197,7 +197,7 @@ class GenerateVariationCandidatesTest : BaseUnitTest() {
         // when
         val result = sut.invoke(product)
 
-        //then
+        // then
         assertThat(result).isEmpty()
     }
 

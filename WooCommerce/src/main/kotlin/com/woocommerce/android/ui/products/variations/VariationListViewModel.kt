@@ -16,6 +16,7 @@ import com.woocommerce.android.extensions.isNotSet
 import com.woocommerce.android.extensions.isSet
 import com.woocommerce.android.model.Product
 import com.woocommerce.android.model.ProductVariation
+import com.woocommerce.android.model.RequestResult
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.ui.products.ProductDetailRepository
 import com.woocommerce.android.ui.products.variations.VariationListViewModel.ProgressDialogState.Hidden
@@ -286,18 +287,24 @@ class VariationListViewModel @Inject constructor(
         if (variationCandidates.size < GenerateVariationCandidates.VARIATION_CREATION_LIMIT) {
             triggerEvent(ShowGenerateVariationConfirmation(variationCandidates))
         } else {
-            triggerEvent(ShowGenerateVariationError.LimitExceeded(variationCandidates.size))
+            triggerEvent(ShowGenerateVariationsError.LimitExceeded(variationCandidates.size))
         }
     }
 
     fun onGenerateVariationsConfirmed(variationCandidates: List<VariationCandidate>) {
-        variationCandidates.size
-        viewState = viewState.copy(progressDialogState = Shown(MULTIPLE))
         launch {
-            @Suppress("MagicNumber")
-            variationRepository.bulkCreateVariations(remoteProductId, variationCandidates)
-            refreshVariations(remoteProductId)
-            viewState = viewState.copy(progressDialogState = Hidden)
+            viewState = viewState.copy(progressDialogState = Shown(MULTIPLE))
+
+            when (variationRepository.bulkCreateVariations(remoteProductId, variationCandidates)) {
+                RequestResult.SUCCESS -> {
+                    refreshVariations(remoteProductId)
+                    viewState = viewState.copy(progressDialogState = Hidden)
+                }
+                else -> {
+                    viewState = viewState.copy(progressDialogState = Hidden)
+                    triggerEvent(ShowGenerateVariationsError.NetworkError)
+                }
+            }
         }
     }
 
@@ -346,8 +353,8 @@ class VariationListViewModel @Inject constructor(
 
     data class ShowGenerateVariationConfirmation(val variationCandidates: List<VariationCandidate>) : Event()
 
-    sealed class ShowGenerateVariationError : Event() {
-        data class LimitExceeded(val variationCandidatesSize: Int) : ShowGenerateVariationError()
-        object NetworkError : ShowGenerateVariationError()
+    sealed class ShowGenerateVariationsError : Event() {
+        data class LimitExceeded(val variationCandidatesSize: Int) : ShowGenerateVariationsError()
+        object NetworkError : ShowGenerateVariationsError()
     }
 }
