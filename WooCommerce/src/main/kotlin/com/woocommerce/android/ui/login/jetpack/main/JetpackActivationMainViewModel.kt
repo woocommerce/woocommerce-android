@@ -20,12 +20,13 @@ import com.woocommerce.android.viewmodel.getStateFlow
 import com.woocommerce.android.viewmodel.navArgs
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Deferred
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.async
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.filter
-import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
@@ -58,34 +59,31 @@ class JetpackActivationMainViewModel @Inject constructor(
 
     private val currentStep = savedStateHandle.getStateFlow(
         scope = viewModelScope,
-        initialValue = Step(if (navArgs.isJetpackInstalled) StepType.Connection() else StepType.Installation),
+        initialValue = Step(if (navArgs.isJetpackInstalled) StepType.Connection else StepType.Installation),
     )
-    private val stepTypes = flow {
-        var stepTypes = if (navArgs.isJetpackInstalled) stepsForConnection() else stepsForInstallation()
-        currentStep.map { it.type }.collect { currentStepType ->
-            stepTypes = stepTypes.map { stepType ->
-                if (stepType.order == currentStepType.order) currentStepType else stepType
-            }
-            emit(stepTypes)
-        }
-    }
+    private val connectionStep = savedStateHandle.getStateFlow(
+        scope = viewModelScope,
+        initialValue = ConnectionStep.PreConnection
+    )
     val viewState = combine(
         currentStep,
-        stepTypes
-    ) { currentStep, stepTypes ->
+        connectionStep,
+        flowOf(if (navArgs.isJetpackInstalled) stepsForConnection() else stepsForInstallation())
+    ) { currentStep, connectionStep, stepTypes ->
         ViewState(
             siteUrl = navArgs.siteUrl,
             isJetpackInstalled = navArgs.isJetpackInstalled,
             steps = stepTypes.map { stepType ->
                 Step(
-                    type = if (currentStep.type.order == stepType.order) currentStep.type else stepType,
+                    type = stepType,
                     state = when {
-                        currentStep.type.order == stepType.order -> currentStep.state
-                        currentStep.type.order > stepType.order -> StepState.Success
+                        currentStep.type == stepType -> currentStep.state
+                        currentStep.type > stepType -> StepState.Success
                         else -> StepState.Idle
                     }
                 )
-            }
+            },
+            connectionStep = connectionStep
         )
     }.asLiveData()
 
@@ -103,10 +101,7 @@ class JetpackActivationMainViewModel @Inject constructor(
     }
 
     fun onJetpackConnected() {
-        currentStep.value = Step(
-            type = StepType.Connection(connectionStep = ConnectionStep.Validation),
-            state = StepState.Ongoing
-        )
+        connectionStep.value = ConnectionStep.Validation
     }
 
     private fun startNextStep() {
@@ -126,22 +121,31 @@ class JetpackActivationMainViewModel @Inject constructor(
                 }
             }
             .distinctUntilChanged { type1, type2 -> type1 == type2 }
-            .onEach {
-                WooLog.d(WooLog.T.LOGIN, "Jetpack Activation: handle step: $it")
-                when (it) {
+            .onEach { stepType ->
+                WooLog.d(WooLog.T.LOGIN, "Jetpack Activation: handle step: $stepType")
+                when (stepType) {
                     StepType.Installation -> startJetpackInstallation()
-                    is StepType.Connection -> {
-                        when (it.connectionStep) {
-                            ConnectionStep.PreConnection -> startJetpackConnection()
-                            ConnectionStep.Validation -> startJetpackValidation()
-                            ConnectionStep.Approved -> {
-                                delay(500)
-                                currentStep.value = Step(
-                                    type = StepType.Done,
-                                    state = StepState.Ongoing
-                                )
+                    StepType.Connection -> {
+                        var connectionStepJob: Job? = null
+                        connectionStepJob = connectionStep.onEach { connectionStep ->
+                            when(connectionStep) {
+                                ConnectionStep.PreConnection -> startJetpackConnection()
+                                ConnectionStep.Validation -> startJetpackValidation()
+                                ConnectionStep.Approved -> {
+                                    currentStep.value = Step(
+                                        type = StepType.Connection,
+                                        state = StepState.Success
+                                    )
+                                    delay(500)
+                                    currentStep.value = Step(
+                                        type = StepType.Done,
+                                        state = StepState.Ongoing
+                                    )
+                                    // Cancel collection to move to next steps
+                                    connectionStepJob?.cancel()
+                                }
                             }
-                        }
+                        }.launchIn(viewModelScope)
                     }
                     StepType.Done -> currentStep.value = Step(
                         type = StepType.Done,
@@ -168,7 +172,7 @@ class JetpackActivationMainViewModel @Inject constructor(
                     currentStep.update { state -> state.copy(state = StepState.Error(status.errorCode)) }
                 }
                 is PluginActivated -> {
-                    currentStep.value = Step(type = StepType.Connection(), state = StepState.Ongoing)
+                    currentStep.value = Step(type = StepType.Connection, state = StepState.Ongoing)
                 }
                 is PluginActivationFailed -> {
                     currentStep.update { state -> state.copy(state = StepState.Error(status.errorCode)) }
@@ -210,10 +214,7 @@ class JetpackActivationMainViewModel @Inject constructor(
         WooLog.d(WooLog.T.LOGIN, "Jetpack Activation: fetch sites and confirm site connection")
         jetpackActivationRepository.checkSiteConnection(navArgs.siteUrl).fold(
             onSuccess = {
-                currentStep.value = Step(
-                    type = StepType.Connection(ConnectionStep.Approved),
-                    state = StepState.Ongoing
-                )
+                connectionStep.value = ConnectionStep.Approved
             },
             onFailure = {
                 currentStep.update { state -> state.copy(state = StepState.Error(null)) }
@@ -221,18 +222,15 @@ class JetpackActivationMainViewModel @Inject constructor(
         )
     }
 
-    private fun stepsForInstallation() = listOf(
-        StepType.Installation, StepType.Activation, StepType.Connection(), StepType.Done
-    )
+    private fun stepsForInstallation() = StepType.values()
 
-    private fun stepsForConnection() = listOf(
-        StepType.Connection(), StepType.Done
-    )
+    private fun stepsForConnection() = arrayOf(StepType.Connection, StepType.Done)
 
     data class ViewState(
         val siteUrl: String,
         val isJetpackInstalled: Boolean,
-        val steps: List<Step>
+        val steps: List<Step>,
+        val connectionStep: ConnectionStep
     ) {
         val isDone = steps.all { it.state == StepState.Success }
     }
@@ -243,19 +241,9 @@ class JetpackActivationMainViewModel @Inject constructor(
         val state: StepState = StepState.Idle
     ) : Parcelable
 
-    sealed class StepType(val order: Int) : Parcelable {
-
-        @Parcelize
-        object Installation : StepType(order = 1)
-
-        @Parcelize
-        object Activation : StepType(order = 2)
-
-        @Parcelize
-        data class Connection(val connectionStep: ConnectionStep = ConnectionStep.PreConnection) : StepType(order = 3)
-
-        @Parcelize
-        object Done : StepType(order = 4)
+    enum class StepType {
+        // The declaration order is important
+        Installation, Activation, Connection, Done
     }
 
     sealed interface StepState : Parcelable {

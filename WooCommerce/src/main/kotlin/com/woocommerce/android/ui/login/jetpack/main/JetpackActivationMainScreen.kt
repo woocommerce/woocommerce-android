@@ -48,6 +48,7 @@ import com.woocommerce.android.ui.compose.annotatedStringRes
 import com.woocommerce.android.ui.compose.component.WCColoredButton
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.ui.login.jetpack.components.JetpackToWooHeader
+import com.woocommerce.android.ui.login.jetpack.main.JetpackActivationMainViewModel.ConnectionStep
 
 @Composable
 fun JetpackActivationMainScreen(viewModel: JetpackActivationMainViewModel) {
@@ -105,6 +106,7 @@ fun JetpackActivationMainScreen(
             viewState.steps.forEach { step ->
                 JetpackActivationStep(
                     step,
+                    viewState.connectionStep,
                     modifier = Modifier.padding(vertical = dimensionResource(id = R.dimen.minor_100))
                 )
             }
@@ -123,7 +125,11 @@ fun JetpackActivationMainScreen(
 }
 
 @Composable
-private fun JetpackActivationStep(step: JetpackActivationMainViewModel.Step, modifier: Modifier = Modifier) {
+private fun JetpackActivationStep(
+    step: JetpackActivationMainViewModel.Step,
+    connectionStep: JetpackActivationMainViewModel.ConnectionStep,
+    modifier: Modifier = Modifier
+) {
     Row(
         horizontalArrangement = Arrangement.spacedBy(dimensionResource(id = R.dimen.major_100)),
         verticalAlignment = Alignment.CenterVertically,
@@ -176,8 +182,8 @@ private fun JetpackActivationStep(step: JetpackActivationMainViewModel.Step, mod
                     style = MaterialTheme.typography.caption,
                     fontWeight = FontWeight.SemiBold
                 )
-            } else if (step.type is JetpackActivationMainViewModel.StepType.Connection) {
-                ConnectionStepHint(step.type.connectionStep)
+            } else if (step.type == JetpackActivationMainViewModel.StepType.Connection) {
+                ConnectionStepHint(connectionStep)
             }
         }
     }
@@ -241,7 +247,7 @@ private val JetpackActivationMainViewModel.StepType.title
     get() = when (this) {
         JetpackActivationMainViewModel.StepType.Installation -> R.string.login_jetpack_steps_installing
         JetpackActivationMainViewModel.StepType.Activation -> R.string.login_jetpack_steps_activating
-        is JetpackActivationMainViewModel.StepType.Connection -> R.string.login_jetpack_steps_authorizing
+        JetpackActivationMainViewModel.StepType.Connection -> R.string.login_jetpack_steps_authorizing
         JetpackActivationMainViewModel.StepType.Done -> R.string.login_jetpack_steps_done
     }
 
@@ -288,14 +294,15 @@ private fun JetpackActivationMainScreenPreview() {
                         state = JetpackActivationMainViewModel.StepState.Error(403)
                     ),
                     JetpackActivationMainViewModel.Step(
-                        type = JetpackActivationMainViewModel.StepType.Connection(),
+                        type = JetpackActivationMainViewModel.StepType.Connection,
                         state = JetpackActivationMainViewModel.StepState.Idle
                     ),
                     JetpackActivationMainViewModel.Step(
                         type = JetpackActivationMainViewModel.StepType.Done,
                         state = JetpackActivationMainViewModel.StepState.Idle
                     )
-                )
+                ),
+                connectionStep = ConnectionStep.PreConnection
             )
         )
     }
