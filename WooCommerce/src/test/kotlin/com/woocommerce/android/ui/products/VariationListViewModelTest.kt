@@ -1,12 +1,13 @@
 package com.woocommerce.android.ui.products
 
-import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.R.string
 import com.woocommerce.android.extensions.takeIfNotEqualTo
+import com.woocommerce.android.initSavedStateHandle
 import com.woocommerce.android.model.ProductVariation
 import com.woocommerce.android.model.RequestResult
 import com.woocommerce.android.model.VariantOption
 import com.woocommerce.android.tools.NetworkStatus
+import com.woocommerce.android.ui.products.variations.VariationListFragmentArgs
 import com.woocommerce.android.ui.products.variations.VariationListViewModel
 import com.woocommerce.android.ui.products.variations.VariationListViewModel.ProgressDialogState
 import com.woocommerce.android.ui.products.variations.VariationListViewModel.ShowGenerateVariationConfirmation
@@ -27,6 +28,7 @@ import org.mockito.kotlin.any
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.spy
+import org.mockito.kotlin.stub
 import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
@@ -44,7 +46,7 @@ class VariationListViewModelTest : BaseUnitTest() {
         ProductHelper.getDefaultNewProduct(ProductType.VARIABLE, false).copy(remoteId = productRemoteId)
     private lateinit var viewModel: VariationListViewModel
     private val variations = ProductTestUtils.generateProductVariationList(productRemoteId)
-    private val savedState = SavedStateHandle()
+    private val savedState = VariationListFragmentArgs(remoteProductId = productRemoteId).initSavedStateHandle()
 
     @Before
     fun setup() {
@@ -52,6 +54,7 @@ class VariationListViewModelTest : BaseUnitTest() {
         whenever(productRepository.getProduct(productRemoteId)).thenReturn(product)
 
         variationRepository = mock {
+            onBlocking { fetchProductVariations(any(), any()) } doReturn emptyList()
             onBlocking { bulkCreateVariations(any(), any()) } doReturn RequestResult.SUCCESS
         }
     }
@@ -79,7 +82,7 @@ class VariationListViewModelTest : BaseUnitTest() {
         val fetchedVariationList = ArrayList<ProductVariation>()
         viewModel.variationList.observeForever { it?.let { fetchedVariationList.addAll(it) } }
 
-        viewModel.start(productRemoteId)
+        viewModel.start()
         assertThat(fetchedVariationList).isEqualTo(variations)
     }
 
@@ -95,7 +98,7 @@ class VariationListViewModelTest : BaseUnitTest() {
                 if (it is ShowSnackbar) snackbar = it
             }
 
-            viewModel.start(productRemoteId)
+            viewModel.start()
 
             verify(variationRepository, times(1)).getProductVariationList(productRemoteId)
             verify(variationRepository, times(0)).fetchProductVariations(productRemoteId)
@@ -115,14 +118,14 @@ class VariationListViewModelTest : BaseUnitTest() {
             new.isSkeletonShown?.takeIfNotEqualTo(old?.isSkeletonShown) { isSkeletonShown.add(it) }
         }
 
-        viewModel.start(productRemoteId)
+        viewModel.start()
         assertThat(isSkeletonShown).containsExactly(true, false)
     }
 
     @Test
     fun `Display empty view on fetch product variations error`() = testBlocking {
-        whenever(variationRepository.fetchProductVariations(productRemoteId)).thenReturn(null)
-        whenever(variationRepository.getProductVariationList(productRemoteId)).thenReturn(null)
+        whenever(variationRepository.fetchProductVariations(productRemoteId)).thenReturn(emptyList())
+        whenever(variationRepository.getProductVariationList(productRemoteId)).thenReturn(emptyList())
 
         createViewModel()
 
@@ -131,7 +134,7 @@ class VariationListViewModelTest : BaseUnitTest() {
             new.isSkeletonShown?.takeIfNotEqualTo(old?.isSkeletonShown) { showEmptyView.add(it) }
         }
 
-        viewModel.start(productRemoteId)
+        viewModel.start()
 
         verify(variationRepository, times(1)).fetchProductVariations(productRemoteId)
         assertThat(showEmptyView).containsExactly(true, false)
@@ -155,7 +158,7 @@ class VariationListViewModelTest : BaseUnitTest() {
         viewModel.event.observeForever { event -> events.add(event) }
 
         // when
-        viewModel.start(productRemoteId)
+        viewModel.start()
         viewModel.onAddAllVariationsClicked()
 
         // then
@@ -185,7 +188,7 @@ class VariationListViewModelTest : BaseUnitTest() {
         viewModel.event.observeForever { event -> events.add(event) }
 
         // when
-        viewModel.start(productRemoteId)
+        viewModel.start()
         viewModel.onAddAllVariationsClicked()
 
         // then
@@ -204,7 +207,7 @@ class VariationListViewModelTest : BaseUnitTest() {
         viewModel.viewStateLiveData.observeForever { _, new -> states.add(new) }
 
         // when
-        viewModel.start(productRemoteId)
+        viewModel.start()
         viewModel.onGenerateVariationsConfirmed(emptyList())
 
         // then
@@ -232,7 +235,7 @@ class VariationListViewModelTest : BaseUnitTest() {
     @Test
     fun `Show error and hide progress bar if variation generation failed`() = testBlocking {
         // given
-        variationRepository = mock {
+        variationRepository.stub {
             onBlocking { bulkCreateVariations(any(), any()) } doReturn RequestResult.ERROR
         }
         createViewModel()
@@ -242,7 +245,7 @@ class VariationListViewModelTest : BaseUnitTest() {
         viewModel.event.observeForever { event -> events.add(event) }
 
         // when
-        viewModel.start(productRemoteId)
+        viewModel.start()
         viewModel.onGenerateVariationsConfirmed(emptyList())
 
         // then

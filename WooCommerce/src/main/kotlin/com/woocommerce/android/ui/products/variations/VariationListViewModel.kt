@@ -98,7 +98,7 @@ class VariationListViewModel @Inject constructor(
     val isEmpty
         get() = _variationList.value?.isEmpty() ?: true
 
-    fun start(remoteProductId: Long) {
+    fun start() {
         productRepository.getProduct(remoteProductId)?.let {
             viewState = viewState.copy(parentProduct = it)
             handleVariationLoading(remoteProductId)
@@ -220,7 +220,7 @@ class VariationListViewModel @Inject constructor(
                 // if this is the initial load, first get the product variations from the db and if there are any show
                 // them immediately, otherwise make sure the skeleton shows
                 val variationsInDb = variationRepository.getProductVariationList(remoteProductId)
-                if (variationsInDb.isNullOrEmpty()) {
+                if (variationsInDb.isEmpty()) {
                     viewState = viewState.copy(isSkeletonShown = withSkeletonView)
                 } else {
                     _variationList.value = combineData(variationsInDb)
@@ -234,7 +234,7 @@ class VariationListViewModel @Inject constructor(
     private suspend fun fetchVariations(remoteProductId: Long, loadMore: Boolean = false) {
         if (networkStatus.isConnected()) {
             val fetchedVariations = variationRepository.fetchProductVariations(remoteProductId, loadMore)
-            if (fetchedVariations.isNullOrEmpty()) {
+            if (fetchedVariations.isEmpty()) {
                 if (!loadMore) {
                     _variationList.value = emptyList()
                     viewState = viewState.copy(isEmptyViewVisible = true, isVariationsOptionsMenuEnabled = false)

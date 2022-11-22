@@ -162,7 +162,7 @@ class VariationListFragment :
     private fun initializeViewModel() {
         setupObservers(viewModel)
         setupResultHandlers(viewModel)
-        viewModel.start(navArgs.remoteProductId)
+        viewModel.start()
     }
 
     private fun setupObservers(viewModel: VariationListViewModel) {
