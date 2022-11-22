@@ -316,6 +316,10 @@
             android:name="displayMode"
             android:defaultValue="REGULAR"
             app:argType="com.woocommerce.android.ui.common.wpcomwebview.WPComWebViewViewModel$DisplayMode" />
+        <argument
+            android:name="captureBackButton"
+            android:defaultValue="true"
+            app:argType="boolean" />
     </fragment>
     <action
         android:id="@+id/action_global_WPComWebViewFragment"

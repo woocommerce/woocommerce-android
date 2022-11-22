@@ -54,6 +54,7 @@ fun WPComWebViewScreen(
             userAgent = userAgent,
             wpComAuthenticator = wpcomWebViewAuthenticator,
             onUrlLoaded = onUrlLoaded,
+            captureBackPresses = viewState.captureBackButton,
             modifier = Modifier
                 .padding(paddingValues)
                 .fillMaxSize()

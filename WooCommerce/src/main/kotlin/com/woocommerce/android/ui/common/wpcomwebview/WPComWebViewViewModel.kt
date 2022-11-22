@@ -23,7 +23,8 @@ class WPComWebViewViewModel @Inject constructor(
         ViewState(
             urlToLoad = it.urlToLoad,
             title = it.title,
-            displayMode = it.displayMode
+            displayMode = it.displayMode,
+            captureBackButton = it.captureBackButton
         )
     }
 
@@ -45,7 +46,8 @@ class WPComWebViewViewModel @Inject constructor(
     data class ViewState(
         val urlToLoad: String,
         val title: String?,
-        val displayMode: DisplayMode
+        val displayMode: DisplayMode,
+        val captureBackButton: Boolean
     )
 
     enum class UrlComparisonMode {
