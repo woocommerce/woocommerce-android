@@ -283,6 +283,7 @@ class VariationListViewModel @Inject constructor(
     }
 
     fun onAddAllVariationsClicked() {
+        tracker.track(AnalyticsEvent.PRODUCT_VARIATION_GENERATION_REQUESTED)
         val product = viewState.parentProduct ?: return
 
         val variationCandidates = generateVariationCandidates.invoke(product)
@@ -299,16 +300,18 @@ class VariationListViewModel @Inject constructor(
     }
 
     fun onGenerateVariationsConfirmed(variationCandidates: List<VariationCandidate>) {
-        tracker.track(AnalyticsEvent.PRODUCT_VARIATION_GENERATION_REQUESTED)
+        tracker.track(AnalyticsEvent.PRODUCT_VARIATION_GENERATION_CONFIRMED)
         launch {
             viewState = viewState.copy(progressDialogState = Shown(MULTIPLE))
 
             when (variationRepository.bulkCreateVariations(remoteProductId, variationCandidates)) {
                 RequestResult.SUCCESS -> {
+                    tracker.track(AnalyticsEvent.PRODUCT_VARIATION_GENERATION_SUCCESS)
                     refreshVariations(remoteProductId)
                     viewState = viewState.copy(progressDialogState = Hidden)
                 }
                 else -> {
+                    tracker.track(AnalyticsEvent.PRODUCT_VARIATION_GENERATION_FAILURE)
                     viewState = viewState.copy(progressDialogState = Hidden)
                     triggerEvent(ShowGenerateVariationsError.NetworkError)
                 }
