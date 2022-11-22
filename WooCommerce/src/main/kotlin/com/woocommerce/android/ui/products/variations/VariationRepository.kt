@@ -8,9 +8,12 @@ import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_ERROR_DE
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_PRODUCT_ID
 import com.woocommerce.android.model.Product
 import com.woocommerce.android.model.ProductVariation
+import com.woocommerce.android.model.RequestResult
 import com.woocommerce.android.model.toAppModel
 import com.woocommerce.android.model.toDataModel
 import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.ui.products.variations.domain.VariationCandidate
+import com.woocommerce.android.util.CoroutineDispatchers
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import org.wordpress.android.fluxc.model.WCProductVariationModel
@@ -23,7 +26,8 @@ import javax.inject.Inject
 class VariationRepository @Inject constructor(
     private val productStore: WCProductStore,
     private val wooCommerceStore: WooCommerceStore,
-    private val selectedSite: SelectedSite
+    private val selectedSite: SelectedSite,
+    private val dispatchers: CoroutineDispatchers,
 ) {
     companion object {
         private const val PRODUCT_VARIATIONS_PAGE_SIZE = WCProductStore.DEFAULT_PRODUCT_VARIATIONS_PAGE_SIZE
@@ -103,6 +107,33 @@ class VariationRepository @Inject constructor(
         if (stockQuantity != null) payloadBuilder.stockQuantity(stockQuantity.toInt())
         val result = productStore.batchUpdateVariations(payloadBuilder.build())
         return !result.isError
+    }
+
+    suspend fun bulkCreateVariations(
+        remoteProductId: Long,
+        variationCandidates: List<VariationCandidate>
+    ): RequestResult = withContext(dispatchers.io) {
+        productStore.batchGenerateVariations(
+            WCProductStore.BatchGenerateVariationsPayload(
+                selectedSite.get(),
+                remoteProductId,
+                variations = variationCandidates.map { candidate ->
+                    candidate.map { variantOption ->
+                        WCProductVariationModel.ProductVariantOption(
+                            id = variantOption.id,
+                            name = variantOption.name,
+                            option = variantOption.option
+                        )
+                    }
+                }
+            )
+        ).let {
+            if (it.isError) {
+                RequestResult.ERROR
+            } else {
+                RequestResult.SUCCESS
+            }
+        }
     }
 
     private fun WooResult<WCProductVariationModel>.handleVariationCreateResult(

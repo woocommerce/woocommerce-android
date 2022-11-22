@@ -1,19 +1,27 @@
 package com.woocommerce.android.ui.products
 
-import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.R.string
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.extensions.takeIfNotEqualTo
+import com.woocommerce.android.initSavedStateHandle
 import com.woocommerce.android.model.ProductVariation
+import com.woocommerce.android.model.RequestResult
 import com.woocommerce.android.model.VariantOption
 import com.woocommerce.android.tools.NetworkStatus
+import com.woocommerce.android.ui.products.variations.VariationListFragmentArgs
 import com.woocommerce.android.ui.products.variations.VariationListViewModel
+import com.woocommerce.android.ui.products.variations.VariationListViewModel.ProgressDialogState
+import com.woocommerce.android.ui.products.variations.VariationListViewModel.ShowGenerateVariationConfirmation
+import com.woocommerce.android.ui.products.variations.VariationListViewModel.ShowGenerateVariationsError
+import com.woocommerce.android.ui.products.variations.VariationListViewModel.ShowGenerateVariationsError.LimitExceeded
+import com.woocommerce.android.ui.products.variations.VariationListViewModel.ViewState
 import com.woocommerce.android.ui.products.variations.VariationRepository
 import com.woocommerce.android.ui.products.variations.domain.GenerateVariationCandidates
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.viewmodel.BaseUnitTest
+import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.assertj.core.api.Assertions.assertThat
@@ -25,6 +33,7 @@ import org.mockito.kotlin.eq
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.never
 import org.mockito.kotlin.spy
+import org.mockito.kotlin.stub
 import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
@@ -32,21 +41,28 @@ import org.mockito.kotlin.whenever
 @ExperimentalCoroutinesApi
 class VariationListViewModelTest : BaseUnitTest() {
     private val networkStatus: NetworkStatus = mock()
-    private val variationRepository: VariationRepository = mock()
+    private lateinit var variationRepository: VariationRepository
     private val currencyFormatter: CurrencyFormatter = mock()
     private val productRepository: ProductDetailRepository = mock()
     private val generateVariationCandidates: GenerateVariationCandidates = mock()
     private val tracker: AnalyticsTrackerWrapper = mock()
 
     private val productRemoteId = 1L
+    private val product =
+        ProductHelper.getDefaultNewProduct(ProductType.VARIABLE, false).copy(remoteId = productRemoteId)
     private lateinit var viewModel: VariationListViewModel
     private val variations = ProductTestUtils.generateProductVariationList(productRemoteId)
-    private val savedState = SavedStateHandle()
+    private val savedState = VariationListFragmentArgs(remoteProductId = productRemoteId).initSavedStateHandle()
 
     @Before
     fun setup() {
         doReturn(true).whenever(networkStatus).isConnected()
-        whenever(productRepository.getProduct(productRemoteId)).thenReturn(mock())
+        whenever(productRepository.getProduct(productRemoteId)).thenReturn(product)
+
+        variationRepository = mock {
+            onBlocking { fetchProductVariations(any(), any()) } doReturn emptyList()
+            onBlocking { bulkCreateVariations(any(), any()) } doReturn RequestResult.SUCCESS
+        }
     }
 
     private fun createViewModel() {
@@ -73,7 +89,7 @@ class VariationListViewModelTest : BaseUnitTest() {
         val fetchedVariationList = ArrayList<ProductVariation>()
         viewModel.variationList.observeForever { it?.let { fetchedVariationList.addAll(it) } }
 
-        viewModel.start(productRemoteId)
+        viewModel.start()
         assertThat(fetchedVariationList).isEqualTo(variations)
     }
 
@@ -89,7 +105,7 @@ class VariationListViewModelTest : BaseUnitTest() {
                 if (it is ShowSnackbar) snackbar = it
             }
 
-            viewModel.start(productRemoteId)
+            viewModel.start()
 
             verify(variationRepository, times(1)).getProductVariationList(productRemoteId)
             verify(variationRepository, times(0)).fetchProductVariations(productRemoteId)
@@ -109,14 +125,14 @@ class VariationListViewModelTest : BaseUnitTest() {
             new.isSkeletonShown?.takeIfNotEqualTo(old?.isSkeletonShown) { isSkeletonShown.add(it) }
         }
 
-        viewModel.start(productRemoteId)
+        viewModel.start()
         assertThat(isSkeletonShown).containsExactly(true, false)
     }
 
     @Test
     fun `Display empty view on fetch product variations error`() = testBlocking {
-        whenever(variationRepository.fetchProductVariations(productRemoteId)).thenReturn(null)
-        whenever(variationRepository.getProductVariationList(productRemoteId)).thenReturn(null)
+        whenever(variationRepository.fetchProductVariations(productRemoteId)).thenReturn(emptyList())
+        whenever(variationRepository.getProductVariationList(productRemoteId)).thenReturn(emptyList())
 
         createViewModel()
 
@@ -125,10 +141,142 @@ class VariationListViewModelTest : BaseUnitTest() {
             new.isSkeletonShown?.takeIfNotEqualTo(old?.isSkeletonShown) { showEmptyView.add(it) }
         }
 
-        viewModel.start(productRemoteId)
+        viewModel.start()
 
         verify(variationRepository, times(1)).fetchProductVariations(productRemoteId)
         assertThat(showEmptyView).containsExactly(true, false)
+    }
+
+    @Test
+    fun `Display confirmation dialog if user requested variations generation and generated variations are in limits`() {
+        // given
+        val variationCandidates = listOf(
+            listOf(
+                VariantOption(
+                    1,
+                    "Size",
+                    "S"
+                )
+            )
+        )
+        whenever(generateVariationCandidates.invoke(any())).thenReturn(variationCandidates)
+        createViewModel()
+        val events = mutableListOf<MultiLiveEvent.Event>()
+        viewModel.event.observeForever { event -> events.add(event) }
+
+        // when
+        viewModel.start()
+        viewModel.onAddAllVariationsClicked()
+
+        // then
+        events
+            .last()
+            .let { lastEvent ->
+                assertThat(lastEvent).isEqualTo(ShowGenerateVariationConfirmation(variationCandidates))
+            }
+    }
+
+    @Test
+    fun `Display limit exceeded error if user requested variations generation above the limit`() {
+        // given
+        val variationCandidatesAboveLimit =
+            (0..GenerateVariationCandidates.VARIATION_CREATION_LIMIT).map {
+                listOf(
+                    VariantOption(
+                        1,
+                        "Size",
+                        "S"
+                    )
+                )
+            }
+        whenever(generateVariationCandidates.invoke(any())).thenReturn(variationCandidatesAboveLimit)
+        createViewModel()
+        val events = mutableListOf<MultiLiveEvent.Event>()
+        viewModel.event.observeForever { event -> events.add(event) }
+
+        // when
+        viewModel.start()
+        viewModel.onAddAllVariationsClicked()
+
+        // then
+        events
+            .last()
+            .let { lastEvent ->
+                assertThat(lastEvent).isEqualTo(LimitExceeded(variationCandidatesAboveLimit.size))
+            }
+    }
+
+    @Test
+    fun `Refresh variations list and hide progress bar if variation generation is successful`() = testBlocking {
+        // given
+        createViewModel()
+        val states = mutableListOf<ViewState>()
+        viewModel.viewStateLiveData.observeForever { _, new -> states.add(new) }
+
+        // when
+        viewModel.start()
+        viewModel.onGenerateVariationsConfirmed(emptyList())
+
+        // then
+        verify(variationRepository, times(2)).getProductVariationList(productRemoteId)
+        states
+            .last()
+            .let { lastState ->
+                assertThat(lastState).isEqualTo(
+                    ViewState(
+                        isSkeletonShown = false,
+                        isRefreshing = false,
+                        isLoadingMore = false,
+                        canLoadMore = null,
+                        isEmptyViewVisible = true,
+                        isWarningVisible = null,
+                        progressDialogState = ProgressDialogState.Hidden,
+                        parentProduct = product,
+                        isVariationsOptionsMenuEnabled = false,
+                        isBulkUpdateProgressDialogShown = false
+                    )
+                )
+            }
+    }
+
+    @Test
+    fun `Show error and hide progress bar if variation generation failed`() = testBlocking {
+        // given
+        variationRepository.stub {
+            onBlocking { bulkCreateVariations(any(), any()) } doReturn RequestResult.ERROR
+        }
+        createViewModel()
+        val states = mutableListOf<ViewState>()
+        viewModel.viewStateLiveData.observeForever { _, new -> states.add(new) }
+        val events = mutableListOf<MultiLiveEvent.Event>()
+        viewModel.event.observeForever { event -> events.add(event) }
+
+        // when
+        viewModel.start()
+        viewModel.onGenerateVariationsConfirmed(emptyList())
+
+        // then
+        events.last()
+            .let { lastEvent -> assertThat(lastEvent).isEqualTo(ShowGenerateVariationsError.NetworkError) }
+
+        states
+            .last()
+            .let { lastState ->
+                assertThat(lastState).isEqualTo(
+                    ViewState(
+                        isSkeletonShown = false,
+                        isRefreshing = false,
+                        isLoadingMore = false,
+                        canLoadMore = null,
+                        isEmptyViewVisible = true,
+                        isWarningVisible = null,
+                        progressDialogState = ProgressDialogState.Hidden,
+                        parentProduct = product,
+                        isVariationsOptionsMenuEnabled = false,
+                        isBulkUpdateProgressDialogShown = false
+                    )
+                )
+            }
     }
 
     @Test
@@ -149,7 +297,7 @@ class VariationListViewModelTest : BaseUnitTest() {
         doReturn(variationsLimit).whenever(generateVariationCandidates).invoke(any())
         doReturn(variations).whenever(variationRepository).getProductVariationList(productRemoteId)
         createViewModel()
-        viewModel.start(productRemoteId)
+        viewModel.start()
 
         // When AddAllVariations is Clicked
         viewModel.onAddAllVariationsClicked()
@@ -171,7 +319,7 @@ class VariationListViewModelTest : BaseUnitTest() {
         doReturn(almostReachVariationsLimit).whenever(generateVariationCandidates).invoke(any())
         doReturn(variations).whenever(variationRepository).getProductVariationList(productRemoteId)
         createViewModel()
-        viewModel.start(productRemoteId)
+        viewModel.start()
 
         // When AddAllVariations is Clicked
         viewModel.onAddAllVariationsClicked()

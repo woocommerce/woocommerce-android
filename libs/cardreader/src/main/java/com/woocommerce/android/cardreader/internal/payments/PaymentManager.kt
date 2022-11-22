@@ -5,8 +5,8 @@ import com.stripe.stripeterminal.external.models.PaymentIntentStatus
 import com.stripe.stripeterminal.external.models.PaymentIntentStatus.CANCELED
 import com.woocommerce.android.cardreader.CardReaderStore
 import com.woocommerce.android.cardreader.CardReaderStore.CapturePaymentResponse
-import com.woocommerce.android.cardreader.internal.config.CardReaderConfigFactory
-import com.woocommerce.android.cardreader.internal.config.CardReaderConfigForSupportedCountry
+import com.woocommerce.android.cardreader.config.CardReaderConfigFactory
+import com.woocommerce.android.cardreader.config.CardReaderConfigForSupportedCountry
 import com.woocommerce.android.cardreader.internal.payments.actions.CancelPaymentAction
 import com.woocommerce.android.cardreader.internal.payments.actions.CollectPaymentAction
 import com.woocommerce.android.cardreader.internal.payments.actions.CollectPaymentAction.CollectPaymentStatus
@@ -23,7 +23,6 @@ import com.woocommerce.android.cardreader.payments.PaymentData
 import com.woocommerce.android.cardreader.payments.PaymentInfo
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.FlowCollector
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.flow
 
 @Suppress("LongParameterList")

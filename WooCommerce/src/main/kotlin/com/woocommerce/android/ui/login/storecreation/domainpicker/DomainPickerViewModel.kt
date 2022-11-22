@@ -4,9 +4,12 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.AppConstants
+import com.woocommerce.android.R
+import com.woocommerce.android.ui.login.storecreation.NewStore
 import com.woocommerce.android.ui.login.storecreation.domainpicker.DomainPickerViewModel.LoadingState.Idle
 import com.woocommerce.android.ui.login.storecreation.domainpicker.DomainPickerViewModel.LoadingState.Loading
 import com.woocommerce.android.viewmodel.MultiLiveEvent
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.getStateFlow
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -17,6 +20,7 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -24,9 +28,10 @@ import javax.inject.Inject
 @HiltViewModel
 class DomainPickerViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
-    domainSuggestionsRepository: DomainSuggestionsRepository
+    domainSuggestionsRepository: DomainSuggestionsRepository,
+    private val newStore: NewStore
 ) : ScopedViewModel(savedStateHandle) {
-    private val domainQuery = savedState.getStateFlow(this, "")
+    private val domainQuery = savedState.getStateFlow(this, newStore.store.value.name ?: "")
     private val loadingState = MutableStateFlow(Idle)
     private val domainSuggestionsUi = domainSuggestionsRepository.domainSuggestions
     private val selectedDomain = MutableStateFlow("")
@@ -39,18 +44,8 @@ class DomainPickerViewModel @Inject constructor(
     ) { domainQuery, domainSuggestions, loadingState, selectedDomain ->
         DomainPickerState(
             loadingState = loadingState,
-            domain = domainQuery,
-            domainSuggestionsUi =
-            if (domainQuery.isBlank()) {
-                emptyList()
-            } else {
-                domainSuggestions.map { domain ->
-                    DomainSuggestionUi(
-                        isSelected = domain == selectedDomain,
-                        domain = domain
-                    )
-                }
-            }
+            domainQuery = domainQuery,
+            domainSuggestionsUi = processFetchedDomainSuggestions(domainQuery, domainSuggestions, selectedDomain)
         )
     }.asLiveData()
 
@@ -60,12 +55,12 @@ class DomainPickerViewModel @Inject constructor(
                 .filter { it.isNotBlank() }
                 .onEach { loadingState.value = Loading }
                 .debounce { AppConstants.SEARCH_TYPING_DELAY_MS }
-                .collectLatest {
+                .collectLatest { query ->
                     // Make sure the loading state is correctly set after debounce too
                     loadingState.value = Loading
-                    domainSuggestionsRepository.fetchDomainSuggestions(domainQuery.value)
+                    domainSuggestionsRepository.fetchDomainSuggestions(query)
                         .onFailure {
-                            // TODO handle error cases
+                            triggerEvent(ShowSnackbar(R.string.store_creation_domain_picker_suggestions_error))
                         }
                     loadingState.value = Idle
                 }
@@ -76,11 +71,10 @@ class DomainPickerViewModel @Inject constructor(
         triggerEvent(MultiLiveEvent.Event.Exit)
     }
 
-    fun onSkipPressed() {
-        triggerEvent(NavigateToNextStep)
-    }
-
     fun onContinueClicked() {
+        newStore.store.update {
+            it.copy(domain = selectedDomain.value)
+        }
         triggerEvent(NavigateToNextStep)
     }
 
@@ -92,10 +86,32 @@ class DomainPickerViewModel @Inject constructor(
         domainQuery.value = query
     }
 
+    private fun processFetchedDomainSuggestions(
+        domainQuery: String,
+        domainSuggestions: List<String>,
+        selectedDomain: String
+    ) = when {
+        domainQuery.isBlank() || domainSuggestions.isEmpty() -> emptyList()
+        else -> {
+            val preSelectDomain = selectedDomain.ifBlank {
+                domainSuggestions
+                    .firstOrNull { it.substringBefore(".") == domainQuery }
+                    ?: domainSuggestions.first()
+            }
+            domainSuggestions.map { domain ->
+                DomainSuggestionUi(
+                    isSelected = domain == preSelectDomain,
+                    domain = domain
+                )
+            }
+        }
+    }
+
     data class DomainPickerState(
         val loadingState: LoadingState = Idle,
-        val domain: String = "",
-        val domainSuggestionsUi: List<DomainSuggestionUi> = emptyList()
+        val domainQuery: String = "",
+        val domainSuggestionsUi: List<DomainSuggestionUi> = emptyList(),
+        val error: String? = null
     )
 
     data class DomainSuggestionUi(

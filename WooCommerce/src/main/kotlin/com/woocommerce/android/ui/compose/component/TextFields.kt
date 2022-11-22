@@ -192,7 +192,9 @@ fun WCSearchField(
     hint: String = "",
     backgroundColor: Color = TextFieldDefaults
         .textFieldColors()
-        .backgroundColor(enabled = true).value
+        .backgroundColor(enabled = true).value,
+    keyboardOptions: KeyboardOptions = KeyboardOptions.Default,
+    keyboardActions: KeyboardActions = KeyboardActions.Default,
 ) {
     BasicTextField(
         value = value,
@@ -242,7 +244,9 @@ fun WCSearchField(
                     }
                 }
             }
-        }
+        },
+        keyboardActions = keyboardActions,
+        keyboardOptions = keyboardOptions
     )
 }
 

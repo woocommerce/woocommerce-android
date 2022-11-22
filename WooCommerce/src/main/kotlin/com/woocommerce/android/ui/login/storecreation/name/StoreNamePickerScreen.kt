@@ -24,7 +24,6 @@ import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.tooling.preview.Devices
 import androidx.compose.ui.tooling.preview.Preview
@@ -97,11 +96,10 @@ private fun NamePickerForm(
             Text(
                 text = stringResource(id = R.string.store_creation_store_name_title),
                 style = MaterialTheme.typography.h5,
-                fontWeight = FontWeight.Bold
             )
             Text(
                 text = stringResource(id = R.string.store_creation_store_name_subtitle),
-                style = MaterialTheme.typography.body1,
+                style = MaterialTheme.typography.subtitle1,
                 color = colorResource(id = R.color.color_on_surface_medium)
             )
             WCOutlinedTextField(
