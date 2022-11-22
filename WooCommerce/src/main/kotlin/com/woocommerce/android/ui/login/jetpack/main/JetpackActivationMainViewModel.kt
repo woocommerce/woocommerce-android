@@ -51,6 +51,7 @@ class JetpackActivationMainViewModel @Inject constructor(
     companion object {
         private const val JETPACK_SLUG = "jetpack"
         private const val JETPACK_NAME = "jetpack/jetpack"
+        private const val JETPACK_PLANS_URL = "wordpress.com/jetpack/connect/plans"
         private const val DELAY_AFTER_CONNECTION_MS = 500L
     }
 
@@ -200,7 +201,12 @@ class JetpackActivationMainViewModel @Inject constructor(
         WooLog.d(WooLog.T.LOGIN, "Jetpack Activation: start Jetpack Connection")
         jetpackActivationRepository.fetchJetpackConnectionUrl(site.await()).fold(
             onSuccess = { connectionUrl ->
-                triggerEvent(ShowJetpackConnectionWebView(connectionUrl))
+                triggerEvent(
+                    ShowJetpackConnectionWebView(
+                        url = connectionUrl,
+                        connectionValidationUrls = listOf(JETPACK_PLANS_URL, navArgs.siteUrl)
+                    )
+                )
             },
             onFailure = {
                 val errorCode = ((it as? OnChangedException)?.error as? JetpackConnectionUrlError)?.errorCode
@@ -279,6 +285,10 @@ class JetpackActivationMainViewModel @Inject constructor(
         PreConnection, Validation, Approved
     }
 
-    data class ShowJetpackConnectionWebView(val url: String) : MultiLiveEvent.Event()
+    data class ShowJetpackConnectionWebView(
+        val url: String,
+        val connectionValidationUrls: List<String>
+    ) : MultiLiveEvent.Event()
+
     object GoToStore : MultiLiveEvent.Event()
 }

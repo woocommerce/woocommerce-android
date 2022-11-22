@@ -8,12 +8,15 @@ import android.view.ViewGroup
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.fragment.app.viewModels
+import androidx.navigation.NavOptions
 import androidx.navigation.fragment.findNavController
 import com.woocommerce.android.NavGraphMainDirections
+import com.woocommerce.android.R
 import com.woocommerce.android.extensions.handleNotice
 import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.common.wpcomwebview.WPComWebViewFragment
+import com.woocommerce.android.ui.common.wpcomwebview.WPComWebViewViewModel.DisplayMode
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.ui.login.jetpack.main.JetpackActivationMainViewModel.GoToStore
 import com.woocommerce.android.ui.login.jetpack.main.JetpackActivationMainViewModel.ShowJetpackConnectionWebView
@@ -24,10 +27,6 @@ import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class JetpackActivationMainFragment : BaseFragment() {
-    companion object {
-        private const val JETPACK_PLANS_URL = "wordpress.com/jetpack/connect/plans"
-    }
-
     private val viewModel: JetpackActivationMainViewModel by viewModels()
 
     override val activityAppBarStatus: AppBarStatus
@@ -53,7 +52,7 @@ class JetpackActivationMainFragment : BaseFragment() {
     private fun setupObservers() {
         viewModel.event.observe(viewLifecycleOwner) { event ->
             when (event) {
-                is ShowJetpackConnectionWebView -> showConnectionWebView(event.url)
+                is ShowJetpackConnectionWebView -> showConnectionWebView(event)
                 is GoToStore -> goToStore()
                 is Exit -> findNavController().navigateUp()
             }
@@ -79,14 +78,18 @@ class JetpackActivationMainFragment : BaseFragment() {
         }
     }
 
-    private fun showConnectionWebView(connectionUrl: String) {
+    private fun showConnectionWebView(event: ShowJetpackConnectionWebView) {
         findNavController().navigateSafely(
-            NavGraphMainDirections.actionGlobalWPComWebViewFragment(
-                urlToLoad = connectionUrl,
-                // TODO trigger exit using the site's URL too, depends on:
-                //  https://github.com/woocommerce/woocommerce-android/issues/7797
-                urlsToTriggerExit = arrayOf(JETPACK_PLANS_URL)
-            )
+            directions = NavGraphMainDirections.actionGlobalWPComWebViewFragment(
+                urlToLoad = event.url,
+                urlsToTriggerExit = event.connectionValidationUrls.toTypedArray(),
+                title = getString(R.string.login_jetpack_installation_approve_connection),
+                displayMode = DisplayMode.MODAL
+            ),
+            navOptions = NavOptions.Builder()
+                .setEnterAnim(R.anim.slide_in_up)
+                .setPopExitAnim(R.anim.slide_out_down)
+                .build()
         )
     }
 }
