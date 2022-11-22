@@ -73,4 +73,13 @@ internal class IAPPurchaseWPComPlanActionsImpl(
     override fun close() {
         iapManager.disconnect()
     }
+
+    private fun determinePurchaseStatus(purchases: List<IAPPurchase>?) =
+        if (purchases.isProductPurchased(iapProduct) && purchases.isProductAcknowledged(iapProduct)) {
+            PurchaseStatus.PURCHASED_AND_ACKNOWLEDGED
+        } else if (purchases.isProductPurchased(iapProduct)) {
+            PurchaseStatus.PURCHASED
+        } else {
+            PurchaseStatus.NOT_PURCHASED
+        }
 }
