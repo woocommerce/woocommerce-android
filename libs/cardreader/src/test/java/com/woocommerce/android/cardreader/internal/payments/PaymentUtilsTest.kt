@@ -1,8 +1,8 @@
 package com.woocommerce.android.cardreader.internal.payments
 
+import com.woocommerce.android.cardreader.config.CardReaderConfigForCanada
+import com.woocommerce.android.cardreader.config.CardReaderConfigForUSA
 import com.woocommerce.android.cardreader.internal.CardReaderBaseUnitTest
-import com.woocommerce.android.cardreader.internal.config.CardReaderConfigForCanada
-import com.woocommerce.android.cardreader.internal.config.CardReaderConfigForUSA
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test

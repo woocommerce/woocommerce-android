@@ -1,9 +1,9 @@
 package com.woocommerce.android.ui.payments.cardreader
 
-import com.woocommerce.android.cardreader.internal.config.CardReaderConfigFactory
-import com.woocommerce.android.cardreader.internal.config.CardReaderConfigForCanada
-import com.woocommerce.android.cardreader.internal.config.CardReaderConfigForUSA
-import com.woocommerce.android.cardreader.internal.config.CardReaderConfigForUnsupportedCountry
+import com.woocommerce.android.cardreader.config.CardReaderConfigFactory
+import com.woocommerce.android.cardreader.config.CardReaderConfigForCanada
+import com.woocommerce.android.cardreader.config.CardReaderConfigForUSA
+import com.woocommerce.android.cardreader.config.CardReaderConfigForUnsupportedCountry
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 import org.mockito.kotlin.mock
@@ -20,7 +20,9 @@ class CardReaderCountryConfigProviderTest {
     fun `given CA and factory returns canada, when config provide, then Canada returned`() {
         // GIVEN
         val countryCode = "CA"
-        whenever(cardReaderConfigFactory.getCardReaderConfigFor(countryCode)).thenReturn(CardReaderConfigForCanada)
+        whenever(cardReaderConfigFactory.getCardReaderConfigFor(countryCode)).thenReturn(
+            CardReaderConfigForCanada
+        )
 
         // WHEN
         val config = cardReaderCountryConfigProvider.provideCountryConfigFor(countryCode)
@@ -33,7 +35,9 @@ class CardReaderCountryConfigProviderTest {
     fun `given US and factory returns USA, when config provide, then USA returned`() {
         // GIVEN
         val countryCode = "US"
-        whenever(cardReaderConfigFactory.getCardReaderConfigFor(countryCode)).thenReturn(CardReaderConfigForUSA)
+        whenever(cardReaderConfigFactory.getCardReaderConfigFor(countryCode)).thenReturn(
+            CardReaderConfigForUSA
+        )
 
         // WHEN
         val config = cardReaderCountryConfigProvider.provideCountryConfigFor(countryCode)
