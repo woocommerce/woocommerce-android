@@ -177,7 +177,7 @@ private fun JetpackActivationStep(
                 Text(
                     text = step.state.code?.let {
                         stringResource(id = R.string.login_jetpack_installation_error_code_template, it)
-                    } ?: "",
+                    } ?: stringResource(id = R.string.error_generic),
                     color = colorResource(id = R.color.color_error),
                     style = MaterialTheme.typography.caption,
                     fontWeight = FontWeight.SemiBold
