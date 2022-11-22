@@ -27,8 +27,9 @@ import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.ui.login.storecreation.iapeligibility.IapEligibilityViewModel.IapEligibilityEvent.NavigateToNativeStoreCreation
 import com.woocommerce.android.ui.login.storecreation.iapeligibility.IapEligibilityViewModel.IapEligibilityEvent.NavigateToWebStoreCreation
 import com.woocommerce.android.ui.main.AppBarStatus
+import dagger.hilt.android.AndroidEntryPoint
 
-
+@AndroidEntryPoint
 class CheckIapEligibilityFragment : BaseFragment() {
     private val viewModel: IapEligibilityViewModel by viewModels()
 
