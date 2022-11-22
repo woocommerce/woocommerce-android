@@ -135,7 +135,7 @@ class JetpackActivationMainViewModel @Inject constructor(
                     } else it
                 }
             }
-            .distinctUntilChanged { type1, type2 -> type1 == type2 }
+            .distinctUntilChanged()
             .onEach { stepType ->
                 WooLog.d(WooLog.T.LOGIN, "Jetpack Activation: handle step: $stepType")
                 when (stepType) {
