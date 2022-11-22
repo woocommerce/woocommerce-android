@@ -13,6 +13,10 @@ internal class IAPPurchaseWpComPlanSupportCheckerImpl(
     private val iapManager: IAPManager,
     private val iapProduct: IAPProduct = IAPProduct.WPPremiumPlanTesting,
 ) : PurchaseWpComPlanSupportChecker {
+    init {
+        iapManager.connect()
+    }
+
     override suspend fun isIAPSupported(): IAPSupportedResult {
         return when (val response = iapManager.fetchIAPProductDetails(iapProduct)) {
             is IAPProductDetailsResponse.Success -> IAPSupportedResult.Success(isCurrencySupported(response))
