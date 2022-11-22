@@ -31,7 +31,6 @@ import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.update
-import kotlinx.coroutines.launch
 import kotlinx.parcelize.Parcelize
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.store.JetpackStore.JetpackConnectionUrlError
@@ -57,7 +56,6 @@ class JetpackActivationMainViewModel @Inject constructor(
                 "Site not cached"
             }
         }
-    private var installationJob: Job? = null
 
     private val currentStep = savedStateHandle.getStateFlow(
         scope = viewModelScope,
@@ -115,13 +113,22 @@ class JetpackActivationMainViewModel @Inject constructor(
     private fun monitorCurrentStep() {
         currentStep
             .filter { it.state == StepState.Ongoing }
-            .distinctUntilChanged { step1, step2 -> step1.type == step2.type }
+            .map { step ->
+                step.type.let {
+                    if (it == StepType.Activation) {
+                        // To allow restarting the Jetpack installation after process-death, consider the Activation
+                        // same as the Installation events
+                        StepType.Installation
+                    } else it
+                }
+            }
+            .distinctUntilChanged { type1, type2 -> type1 == type2 }
             .onEach {
                 WooLog.d(WooLog.T.LOGIN, "Jetpack Activation: handle step: $it")
-                when (it.type) {
-                    StepType.Installation, StepType.Activation -> startJetpackInstallation()
+                when (it) {
+                    StepType.Installation -> startJetpackInstallation()
                     is StepType.Connection -> {
-                        when (it.type.connectionStep) {
+                        when (it.connectionStep) {
                             ConnectionStep.PreConnection -> startJetpackConnection()
                             ConnectionStep.Validation -> startJetpackValidation()
                             ConnectionStep.Approved -> {
@@ -137,43 +144,37 @@ class JetpackActivationMainViewModel @Inject constructor(
                         type = StepType.Done,
                         state = StepState.Success
                     )
+                    StepType.Activation -> error("Type Activation is not expected here")
                 }
             }
             .launchIn(viewModelScope)
     }
 
-    private fun startJetpackInstallation() {
-        if (installationJob?.isActive == true) {
-            // The installation and activation use the same function, check if one is already made to avoid triggering
-            // two requests
-            return
-        }
+    private suspend fun startJetpackInstallation() {
         WooLog.d(WooLog.T.LOGIN, "Jetpack Activation: start Jetpack Installation")
-        installationJob = launch {
-            pluginRepository.installPlugin(
-                site = site.await(),
-                slug = JETPACK_SLUG,
-                name = JETPACK_NAME
-            ).collect { status ->
-                when (status) {
-                    is PluginInstalled -> {
-                        currentStep.value = Step(type = StepType.Activation, state = StepState.Ongoing)
-                    }
-                    is PluginInstallFailed -> {
-                        currentStep.update { state -> state.copy(state = StepState.Error(status.errorCode)) }
-                    }
-                    is PluginActivated -> {
-                        currentStep.value = Step(type = StepType.Connection(), state = StepState.Ongoing)
-                    }
-                    is PluginActivationFailed -> {
-                        currentStep.update { state -> state.copy(state = StepState.Error(status.errorCode)) }
-                    }
+        pluginRepository.installPlugin(
+            site = site.await(),
+            slug = JETPACK_SLUG,
+            name = JETPACK_NAME
+        ).collect { status ->
+            when (status) {
+                is PluginInstalled -> {
+                    currentStep.value = Step(type = StepType.Activation, state = StepState.Ongoing)
+                }
+                is PluginInstallFailed -> {
+                    currentStep.update { state -> state.copy(state = StepState.Error(status.errorCode)) }
+                }
+                is PluginActivated -> {
+                    currentStep.value = Step(type = StepType.Connection(), state = StepState.Ongoing)
+                }
+                is PluginActivationFailed -> {
+                    currentStep.update { state -> state.copy(state = StepState.Error(status.errorCode)) }
                 }
             }
         }
     }
 
-    private fun startJetpackConnection() = launch {
+    private suspend fun startJetpackConnection() {
         WooLog.d(WooLog.T.LOGIN, "Jetpack Activation: start Jetpack Connection")
         jetpackActivationRepository.fetchJetpackConnectionUrl(site.await()).fold(
             onSuccess = { connectionUrl ->
@@ -186,7 +187,7 @@ class JetpackActivationMainViewModel @Inject constructor(
         )
     }
 
-    private fun startJetpackValidation() = launch {
+    private suspend fun startJetpackValidation() {
         WooLog.d(WooLog.T.LOGIN, "Jetpack Activation: start Jetpack Connection validation")
         jetpackActivationRepository.fetchJetpackConnectedEmail(site.await()).fold(
             onSuccess = { email ->
