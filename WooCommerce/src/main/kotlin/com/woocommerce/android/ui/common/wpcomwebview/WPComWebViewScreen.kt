@@ -19,23 +19,32 @@ import com.woocommerce.android.ui.compose.component.WCWebView
 import org.wordpress.android.fluxc.network.UserAgent
 
 @Composable
+fun WPComWebViewScreen(viewViewModel: WPComWebViewViewModel) {
+    WPComWebViewScreen(
+        viewState = viewViewModel.viewState,
+        wpcomWebViewAuthenticator = viewViewModel.wpComWebViewAuthenticator,
+        userAgent = viewViewModel.userAgent,
+        onUrlLoaded = viewViewModel::onUrlLoaded,
+        onClose = viewViewModel::onClose
+    )
+}
+
+@Composable
 fun WPComWebViewScreen(
-    navArgs: WPComWebViewFragmentArgs,
+    viewState: WPComWebViewViewModel.ViewState,
     wpcomWebViewAuthenticator: WPComWebViewAuthenticator,
     userAgent: UserAgent,
     onUrlLoaded: (String) -> Unit,
     onClose: () -> Unit
 ) {
     Scaffold(
-        topBar = { Toolbar(navArgs, onClose) }
+        topBar = { Toolbar(viewState.title.orEmpty(), onClose) }
     ) { paddingValues ->
         WCWebView(
-            url = navArgs.urlToLoad,
+            url = viewState.urlToLoad,
             userAgent = userAgent,
             wpComAuthenticator = wpcomWebViewAuthenticator,
-            onUrlLoaded = {
-                TODO()
-            },
+            onUrlLoaded = onUrlLoaded,
             modifier = Modifier
                 .padding(paddingValues)
                 .fillMaxSize()
@@ -45,13 +54,13 @@ fun WPComWebViewScreen(
 
 @Composable
 private fun Toolbar(
-    navArgs: WPComWebViewFragmentArgs,
+    title: String,
     onCloseClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     TopAppBar(
         backgroundColor = MaterialTheme.colors.surface,
-        title = { Text(navArgs.title ?: "") },
+        title = { Text(title) },
         navigationIcon = {
             IconButton(onClick = onCloseClick) {
                 Icon(

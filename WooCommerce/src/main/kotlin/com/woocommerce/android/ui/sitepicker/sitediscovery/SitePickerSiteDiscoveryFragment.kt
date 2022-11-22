@@ -18,6 +18,7 @@ import com.woocommerce.android.support.help.HelpActivity
 import com.woocommerce.android.support.help.HelpActivity.Origin
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.common.wpcomwebview.WPComWebViewFragment
+import com.woocommerce.android.ui.common.wpcomwebview.WPComWebViewViewModel
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.ui.login.LoginActivity
 import com.woocommerce.android.ui.login.accountmismatch.AccountMismatchErrorFragment
@@ -108,7 +109,7 @@ class SitePickerSiteDiscoveryFragment : BaseFragment() {
             NavGraphMainDirections.actionGlobalWPComWebViewFragment(
                 urlToLoad = url,
                 urlToTriggerExit = JETPACK_CONNECTED_REDIRECT_URL,
-                urlComparisonMode = WPComWebViewFragment.UrlComparisonMode.EQUALITY
+                urlComparisonMode = WPComWebViewViewModel.UrlComparisonMode.EQUALITY
             )
         )
     }

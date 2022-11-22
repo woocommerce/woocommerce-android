@@ -306,7 +306,7 @@
         <argument
             android:name="urlComparisonMode"
             android:defaultValue="PARTIAL"
-            app:argType="com.woocommerce.android.ui.common.wpcomwebview.WPComWebViewFragment$UrlComparisonMode" />
+            app:argType="com.woocommerce.android.ui.common.wpcomwebview.WPComWebViewViewModel$UrlComparisonMode" />
         <argument
             android:name="title"
             android:defaultValue="@null"
