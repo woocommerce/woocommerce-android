@@ -31,10 +31,23 @@ class JetpackActivationStartViewModel @Inject constructor(
         triggerEvent(Exit)
     }
 
+    fun onContinueButtonClick() {
+        triggerEvent(
+            NavigateToSiteCredentialsScreen(
+                siteUrl = navArgs.siteUrl,
+                isJetpackInstalled = navArgs.isJetpackInstalled
+            )
+        )
+    }
+
     data class JetpackActivationState(
         val url: String,
         val isJetpackInstalled: Boolean,
     )
 
     object NavigateToHelpScreen : MultiLiveEvent.Event()
+    data class NavigateToSiteCredentialsScreen(
+        val siteUrl: String,
+        val isJetpackInstalled: Boolean
+    ) : MultiLiveEvent.Event()
 }

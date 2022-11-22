@@ -8,10 +8,12 @@ import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
+import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.support.help.HelpActivity
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.ui.login.jetpack.start.JetpackActivationStartViewModel.NavigateToHelpScreen
+import com.woocommerce.android.ui.login.jetpack.start.JetpackActivationStartViewModel.NavigateToSiteCredentialsScreen
 import com.woocommerce.android.ui.main.AppBarStatus
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import dagger.hilt.android.AndroidEntryPoint
@@ -43,10 +45,21 @@ class JetpackActivationStartFragment : BaseFragment() {
     private fun setupObservers() {
         viewModel.event.observe(viewLifecycleOwner) { event ->
             when (event) {
+                is NavigateToSiteCredentialsScreen -> navigateToSiteCredentialsScreen(event)
                 NavigateToHelpScreen -> navigateToHelpScreen()
                 Exit -> findNavController().navigateUp()
             }
         }
+    }
+
+    private fun navigateToSiteCredentialsScreen(event: NavigateToSiteCredentialsScreen) {
+        findNavController().navigateSafely(
+            JetpackActivationStartFragmentDirections
+                .actionJetpackActivationStartFragmentToJetpackActivationSiteCredentialsFragment(
+                    siteUrl = event.siteUrl,
+                    isJetpackInstalled = event.isJetpackInstalled
+                )
+        )
     }
 
     private fun navigateToHelpScreen() {

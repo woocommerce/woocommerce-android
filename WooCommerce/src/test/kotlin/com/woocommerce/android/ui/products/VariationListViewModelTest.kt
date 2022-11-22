@@ -47,7 +47,8 @@ class VariationListViewModelTest : BaseUnitTest() {
                 productRepository,
                 networkStatus,
                 currencyFormatter,
-                coroutinesTestRule.testDispatchers
+                coroutinesTestRule.testDispatchers,
+                mock(),
             )
         )
     }
