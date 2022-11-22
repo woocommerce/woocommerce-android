@@ -534,7 +534,8 @@ class SitePickerViewModel @Inject constructor(
             triggerEvent(
                 NavigateToWPComWebView(
                     url = "$WOOCOMMERCE_INSTALLATION_URL$it",
-                    validationUrl = WOOCOMMERCE_INSTALLATION_DONE_URL
+                    validationUrl = WOOCOMMERCE_INSTALLATION_DONE_URL,
+                    title = resourceProvider.getString(string.login_install_woo)
                 )
             )
         }
