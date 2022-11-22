@@ -87,8 +87,10 @@ class JetpackActivationMainFragment : BaseFragment() {
                 displayMode = DisplayMode.MODAL
             ),
             navOptions = NavOptions.Builder()
-                .setEnterAnim(R.anim.slide_in_up)
-                .setPopExitAnim(R.anim.slide_out_down)
+                .setEnterAnim(R.anim.slide_up)
+                .setExitAnim(R.anim.no_anime)
+                .setPopEnterAnim(R.anim.no_anime)
+                .setPopExitAnim(R.anim.slide_down)
                 .build()
         )
     }
