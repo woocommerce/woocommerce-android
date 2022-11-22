@@ -7,6 +7,7 @@ import android.view.ViewGroup
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
@@ -15,6 +16,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.compose.ui.res.colorResource
+import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
@@ -39,17 +41,21 @@ class CheckIapEligibilityFragment : BaseFragment() {
             setContent {
                 WooThemeWithBackground {
                     Column(
-                        modifier = Modifier.fillMaxSize(),
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .padding(dimensionResource(id = R.dimen.major_100)),
                         verticalArrangement = Arrangement.Center,
                         horizontalAlignment = Alignment.CenterHorizontally
                     )
                     {
                         CircularProgressIndicator()
                         Text(
+                            modifier = Modifier.padding(top = dimensionResource(id = R.dimen.major_150)),
                             text = stringResource(id = R.string.store_creation_iap_eligibility_loading_title),
                             style = MaterialTheme.typography.h6,
                         )
                         Text(
+                            modifier = Modifier.padding(top = dimensionResource(id = R.dimen.major_100)),
                             text = stringResource(id = R.string.store_creation_iap_eligibility_loading_subtitle),
                             style = MaterialTheme.typography.subtitle1,
                             color = colorResource(id = R.color.color_on_surface_medium)
@@ -74,14 +80,14 @@ class CheckIapEligibilityFragment : BaseFragment() {
         }
     }
 
-    private fun navigateToStoreCreationNative() {
+    private fun navigateToStoreCreationWeb() {
         findNavController()
             .navigateSafely(
                 CheckIapEligibilityFragmentDirections.actionCheckIapEligibilityFragmentToWebViewStoreCreationFragment()
             )
     }
 
-    private fun navigateToStoreCreationWeb() {
+    private fun navigateToStoreCreationNative() {
         findNavController()
             .navigateSafely(
                 CheckIapEligibilityFragmentDirections.actionCheckIapEligibilityFragmentToStoreNamePickerFragment()
