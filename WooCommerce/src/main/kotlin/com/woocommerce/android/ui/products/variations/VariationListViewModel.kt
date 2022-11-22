@@ -34,6 +34,7 @@ import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.viewmodel.ScopedViewModel
+import com.woocommerce.android.viewmodel.navArgs
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
@@ -70,7 +71,9 @@ class VariationListViewModel @Inject constructor(
     private val dispatchers: CoroutineDispatchers,
     private val generateVariationCandidates: GenerateVariationCandidates,
 ) : ScopedViewModel(savedState) {
-    private var remoteProductId = 0L
+
+    private val navArgs: VariationListFragmentArgs by savedState.navArgs()
+    private val remoteProductId = navArgs.remoteProductId
 
     private val _variationList = MutableLiveData<List<ProductVariation>>()
     val variationList: LiveData<List<ProductVariation>> = Transformations.map(_variationList) { variations ->
@@ -210,8 +213,6 @@ class VariationListViewModel @Inject constructor(
             WooLog.d(WooLog.T.PRODUCTS, "already loading product variations")
             return
         }
-
-        this.remoteProductId = remoteProductId
 
         loadingJob = launch {
             viewState = viewState.copy(isLoadingMore = loadMore)
