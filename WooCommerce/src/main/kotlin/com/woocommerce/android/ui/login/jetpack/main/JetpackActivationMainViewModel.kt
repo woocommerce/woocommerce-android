@@ -5,6 +5,8 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.OnChangedException
+import com.woocommerce.android.extensions.isNotNullOrEmpty
+import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.common.PluginRepository
 import com.woocommerce.android.ui.common.PluginRepository.PluginStatus.PluginActivated
 import com.woocommerce.android.ui.common.PluginRepository.PluginStatus.PluginActivationFailed
@@ -31,6 +33,7 @@ import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
 import kotlinx.parcelize.Parcelize
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.store.JetpackStore.JetpackConnectionUrlError
@@ -42,7 +45,8 @@ class JetpackActivationMainViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
     private val jetpackActivationRepository: JetpackActivationRepository,
     private val pluginRepository: PluginRepository,
-    private val accountRepository: AccountRepository
+    private val accountRepository: AccountRepository,
+    private val selectedSite: SelectedSite
 ) : ScopedViewModel(savedStateHandle) {
     companion object {
         private const val JETPACK_SLUG = "jetpack"
@@ -52,7 +56,14 @@ class JetpackActivationMainViewModel @Inject constructor(
     private val navArgs: JetpackActivationMainFragmentArgs by savedStateHandle.navArgs()
     private val site: Deferred<SiteModel>
         get() = async {
-            requireNotNull(jetpackActivationRepository.getSiteByUrl(navArgs.siteUrl)) {
+            val site = jetpackActivationRepository.getSiteByUrl(navArgs.siteUrl)?.takeIf {
+                val hasCredentials = it.username.isNotNullOrEmpty() && it.password.isNotNullOrEmpty()
+                if (!hasCredentials) {
+                    WooLog.w(WooLog.T.LOGIN, "The found site for jetpack activation doesn't have credentials")
+                }
+                hasCredentials
+            }
+            requireNotNull(site) {
                 "Site not cached"
             }
         }
@@ -96,8 +107,11 @@ class JetpackActivationMainViewModel @Inject constructor(
         triggerEvent(Exit)
     }
 
-    fun onContinueClick() {
-        TODO()
+    fun onContinueClick() = launch {
+        val site = jetpackActivationRepository.getSiteByUrl(navArgs.siteUrl)
+        requireNotNull(site) { "Illegal state, the button shouldn't be visible before fetching the site" }
+        selectedSite.set(site)
+        triggerEvent(GoToStore)
     }
 
     fun onJetpackConnected() {
@@ -128,7 +142,7 @@ class JetpackActivationMainViewModel @Inject constructor(
                     StepType.Connection -> {
                         var connectionStepJob: Job? = null
                         connectionStepJob = connectionStep.onEach { connectionStep ->
-                            when(connectionStep) {
+                            when (connectionStep) {
                                 ConnectionStep.PreConnection -> startJetpackConnection()
                                 ConnectionStep.Validation -> startJetpackValidation()
                                 ConnectionStep.Approved -> {
@@ -265,4 +279,5 @@ class JetpackActivationMainViewModel @Inject constructor(
     }
 
     data class ShowJetpackConnectionWebView(val url: String) : MultiLiveEvent.Event()
+    object GoToStore : MultiLiveEvent.Event()
 }

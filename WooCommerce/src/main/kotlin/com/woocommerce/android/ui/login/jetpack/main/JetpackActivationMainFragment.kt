@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.login.jetpack.main
 
+import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -14,8 +15,10 @@ import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.common.wpcomwebview.WPComWebViewFragment
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
+import com.woocommerce.android.ui.login.jetpack.main.JetpackActivationMainViewModel.GoToStore
 import com.woocommerce.android.ui.login.jetpack.main.JetpackActivationMainViewModel.ShowJetpackConnectionWebView
 import com.woocommerce.android.ui.main.AppBarStatus
+import com.woocommerce.android.ui.main.MainActivity
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -51,8 +54,18 @@ class JetpackActivationMainFragment : BaseFragment() {
         viewModel.event.observe(viewLifecycleOwner) { event ->
             when (event) {
                 is ShowJetpackConnectionWebView -> showConnectionWebView(event.url)
+                is GoToStore -> goToStore()
                 is Exit -> findNavController().navigateUp()
             }
+        }
+    }
+
+    private fun goToStore() {
+        (requireActivity() as? MainActivity)?.handleSitePickerResult() ?: run {
+            val intent = Intent(requireActivity(), MainActivity::class.java).apply {
+                addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK)
+            }
+            startActivity(intent)
         }
     }
 
