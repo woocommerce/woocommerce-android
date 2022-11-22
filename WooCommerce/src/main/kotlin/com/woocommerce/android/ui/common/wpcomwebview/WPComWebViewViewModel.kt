@@ -22,7 +22,8 @@ class WPComWebViewViewModel @Inject constructor(
     val viewState = navArgs.let {
         ViewState(
             urlToLoad = it.urlToLoad,
-            title = it.title
+            title = it.title,
+            displayMode = it.displayMode
         )
     }
 
@@ -43,10 +44,15 @@ class WPComWebViewViewModel @Inject constructor(
 
     data class ViewState(
         val urlToLoad: String,
-        val title: String?
+        val title: String?,
+        val displayMode: DisplayMode
     )
 
     enum class UrlComparisonMode {
         PARTIAL, EQUALITY
+    }
+
+    enum class DisplayMode {
+        REGULAR, MODAL
     }
 }

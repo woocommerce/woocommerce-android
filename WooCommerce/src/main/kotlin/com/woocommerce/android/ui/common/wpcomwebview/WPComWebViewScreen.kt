@@ -8,13 +8,16 @@ import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
 import androidx.compose.material.TopAppBar
-import androidx.compose.material.icons.Icons.Filled
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Clear
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.woocommerce.android.R.string
+import com.woocommerce.android.ui.common.wpcomwebview.WPComWebViewViewModel.DisplayMode.MODAL
+import com.woocommerce.android.ui.common.wpcomwebview.WPComWebViewViewModel.DisplayMode.REGULAR
 import com.woocommerce.android.ui.compose.component.WCWebView
 import org.wordpress.android.fluxc.network.UserAgent
 
@@ -38,7 +41,13 @@ fun WPComWebViewScreen(
     onClose: () -> Unit
 ) {
     Scaffold(
-        topBar = { Toolbar(viewState.title.orEmpty(), onClose) }
+        topBar = {
+            Toolbar(
+                title = viewState.title.orEmpty(),
+                displayMode = viewState.displayMode,
+                onCloseClick = onClose
+            )
+        }
     ) { paddingValues ->
         WCWebView(
             url = viewState.urlToLoad,
@@ -55,6 +64,7 @@ fun WPComWebViewScreen(
 @Composable
 private fun Toolbar(
     title: String,
+    displayMode: WPComWebViewViewModel.DisplayMode,
     onCloseClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -64,7 +74,10 @@ private fun Toolbar(
         navigationIcon = {
             IconButton(onClick = onCloseClick) {
                 Icon(
-                    Filled.Clear,
+                    imageVector = when (displayMode) {
+                        REGULAR -> Icons.Filled.ArrowBack
+                        MODAL -> Icons.Filled.Clear
+                    },
                     contentDescription = stringResource(id = string.back)
                 )
             }
