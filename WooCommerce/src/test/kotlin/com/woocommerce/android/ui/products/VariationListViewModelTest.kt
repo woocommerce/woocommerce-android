@@ -280,13 +280,6 @@ class VariationListViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `When user generate variations then generate variations is tracked`() = testBlocking {
-        createViewModel()
-        viewModel.onGenerateVariationsConfirmed(emptyList())
-        verify(tracker).track(AnalyticsEvent.PRODUCT_VARIATION_GENERATION_REQUESTED)
-    }
-
-    @Test
     fun `When user reach variations limits then variations limit error is tracked`() = testBlocking {
         // Given a variation candidates list with a size of [limit + 1]
         val variationsLimit =
@@ -302,6 +295,8 @@ class VariationListViewModelTest : BaseUnitTest() {
         // When AddAllVariations is Clicked
         viewModel.onAddAllVariationsClicked()
 
+        // Then variation request is tracked
+        verify(tracker).track(AnalyticsEvent.PRODUCT_VARIATION_GENERATION_REQUESTED)
         // Then variation limit error is tracked
         verify(tracker).track(
             AnalyticsEvent.PRODUCT_VARIATION_GENERATION_LIMIT_REACHED,
@@ -324,7 +319,48 @@ class VariationListViewModelTest : BaseUnitTest() {
         // When AddAllVariations is Clicked
         viewModel.onAddAllVariationsClicked()
 
+        // Then variation request is tracked
+        verify(tracker).track(AnalyticsEvent.PRODUCT_VARIATION_GENERATION_REQUESTED)
         // Then variation limit error is not tracked / sent
         verify(tracker, never()).track(eq(AnalyticsEvent.PRODUCT_VARIATION_GENERATION_LIMIT_REACHED), any())
+    }
+
+    @Test
+    fun `When generated variations are successfully created then success event is tracked`() = testBlocking {
+        // Given a variation candidates list with a size of [limit]
+        createViewModel()
+        val variationCandidates = List(5) { id ->
+            listOf(VariantOption(id.toLong(), "Number", id.toString()))
+        }
+        viewModel.start()
+
+        // When AddAllVariations succeed
+        viewModel.onGenerateVariationsConfirmed(variationCandidates)
+
+        // Then variation confirmed event is tracked
+        verify(tracker).track(AnalyticsEvent.PRODUCT_VARIATION_GENERATION_CONFIRMED)
+        // Then variation limit error is not tracked / sent
+        verify(tracker).track(AnalyticsEvent.PRODUCT_VARIATION_GENERATION_SUCCESS)
+    }
+
+    @Test
+    fun `When generated variations failed then failure event is tracked`() = testBlocking {
+        // Given a variation candidates list with a size of [5]
+        createViewModel()
+        val variationCandidates = List(5) { id ->
+            listOf(VariantOption(id.toLong(), "Number", id.toString()))
+        }
+        viewModel.start()
+
+        // When AddAllVariations fails
+        variationRepository.stub {
+            onBlocking { bulkCreateVariations(any(), any()) } doReturn RequestResult.ERROR
+        }
+        viewModel.onGenerateVariationsConfirmed(variationCandidates)
+
+        // Then variation confirmed event is tracked
+        verify(tracker).track(AnalyticsEvent.PRODUCT_VARIATION_GENERATION_CONFIRMED)
+        // Then variation limit error is not tracked / sent
+        verify(tracker).track(AnalyticsEvent.PRODUCT_VARIATION_GENERATION_FAILURE)
     }
 }
