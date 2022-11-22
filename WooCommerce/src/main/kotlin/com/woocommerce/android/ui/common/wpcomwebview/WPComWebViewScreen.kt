@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.common.wpcomwebview
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.Icon
@@ -40,6 +41,7 @@ fun WPComWebViewScreen(
     onUrlLoaded: (String) -> Unit,
     onClose: () -> Unit
 ) {
+    BackHandler(onBack = onClose)
     Scaffold(
         topBar = {
             Toolbar(
