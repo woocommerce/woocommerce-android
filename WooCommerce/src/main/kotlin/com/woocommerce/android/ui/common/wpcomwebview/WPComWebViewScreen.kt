@@ -16,7 +16,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import com.woocommerce.android.R.string
+import com.woocommerce.android.R
 import com.woocommerce.android.ui.common.wpcomwebview.WPComWebViewViewModel.DisplayMode.MODAL
 import com.woocommerce.android.ui.common.wpcomwebview.WPComWebViewViewModel.DisplayMode.REGULAR
 import com.woocommerce.android.ui.compose.component.WCWebView
@@ -45,7 +45,7 @@ fun WPComWebViewScreen(
     Scaffold(
         topBar = {
             Toolbar(
-                title = viewState.title.orEmpty(),
+                title = viewState.title ?: stringResource(id = R.string.app_name),
                 displayMode = viewState.displayMode,
                 onCloseClick = onClose
             )
@@ -81,7 +81,7 @@ private fun Toolbar(
                         REGULAR -> Icons.Filled.ArrowBack
                         MODAL -> Icons.Filled.Clear
                     },
-                    contentDescription = stringResource(id = string.back)
+                    contentDescription = stringResource(id = R.string.back)
                 )
             }
         },
