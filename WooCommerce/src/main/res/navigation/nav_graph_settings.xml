@@ -94,8 +94,8 @@
             android:name="urlToLoad"
             app:argType="string" />
         <argument
-            android:name="urlToTriggerExit"
-            app:argType="string"
+            android:name="urlsToTriggerExit"
+            app:argType="string[]"
             app:nullable="true"
             android:defaultValue="@null"/>
         <argument

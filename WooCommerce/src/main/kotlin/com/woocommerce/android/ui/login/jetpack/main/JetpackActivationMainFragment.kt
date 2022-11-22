@@ -85,7 +85,7 @@ class JetpackActivationMainFragment : BaseFragment() {
                 urlToLoad = connectionUrl,
                 // TODO trigger exit using the site's URL too, depends on:
                 //  https://github.com/woocommerce/woocommerce-android/issues/7797
-                urlToTriggerExit = JETPACK_PLANS_URL
+                urlsToTriggerExit = arrayOf(JETPACK_PLANS_URL)
             )
         )
     }

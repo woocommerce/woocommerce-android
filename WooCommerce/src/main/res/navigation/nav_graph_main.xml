@@ -299,9 +299,9 @@
             android:name="urlToLoad"
             app:argType="string" />
         <argument
-            android:name="urlToTriggerExit"
+            android:name="urlsToTriggerExit"
             android:defaultValue="@null"
-            app:argType="string"
+            app:argType="string[]"
             app:nullable="true" />
         <argument
             android:name="urlComparisonMode"

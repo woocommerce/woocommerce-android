@@ -32,7 +32,7 @@ class WPComWebViewViewModel @Inject constructor(
             EQUALITY -> equals(url, ignoreCase = true)
         }
 
-        if (navArgs.urlToTriggerExit?.matchesUrl(url) == true) {
+        if (navArgs.urlsToTriggerExit?.any { it.matchesUrl(url) } == true) {
             triggerEvent(ExitWithResult(Unit))
         }
     }

@@ -295,7 +295,7 @@ class SitePickerFragment : BaseFragment(R.layout.fragment_site_picker), LoginEma
         findNavController().navigate(
             NavGraphMainDirections.actionGlobalWPComWebViewFragment(
                 urlToLoad = event.url,
-                urlToTriggerExit = event.validationUrl,
+                urlsToTriggerExit = arrayOf(event.validationUrl),
                 title = event.title
             )
         )
