@@ -1,4 +1,4 @@
-package com.woocommerce.android.iapshowcase
+package com.woocommerce.android.iapshowcase.purchase
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -8,7 +8,6 @@ import com.woocommerce.android.extensions.exhaustive
 import com.woocommerce.android.iap.pub.IAPActivityWrapper
 import com.woocommerce.android.iap.pub.PurchaseWPComPlanActions
 import com.woocommerce.android.iap.pub.model.IAPError
-import com.woocommerce.android.iap.pub.model.IAPSupportedResult
 import com.woocommerce.android.iap.pub.model.PurchaseStatus
 import com.woocommerce.android.iap.pub.model.WPComIsPurchasedResult
 import com.woocommerce.android.iap.pub.model.WPComPlanProduct
@@ -18,7 +17,7 @@ import com.woocommerce.android.viewmodel.SingleLiveEvent
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
-class IAPShowcaseViewModel(private val iapManager: PurchaseWPComPlanActions) : ViewModel(iapManager) {
+class IAPShowcasePurchaseViewModel(private val iapManager: PurchaseWPComPlanActions) : ViewModel(iapManager) {
     private val _productInfo = MutableLiveData<WPComPlanProduct>()
     val productInfo: LiveData<WPComPlanProduct> = _productInfo
 
@@ -74,24 +73,6 @@ class IAPShowcaseViewModel(private val iapManager: PurchaseWPComPlanActions) : V
             when (response) {
                 is WPComProductResult.Success -> _productInfo.value = response.productInfo
                 is WPComProductResult.Error -> handleError(response.errorType)
-            }
-        }
-    }
-
-    fun checkIfIAPSupported() {
-        viewModelScope.launch {
-            _iapLoading.value = true
-            val response = iapManager.isIAPSupported()
-            _iapLoading.value = false
-            when (response) {
-                is IAPSupportedResult.Success -> {
-                    _iapEvent.value = if (response.isSupported) {
-                        "IAP is supported"
-                    } else {
-                        "IAP is not supported"
-                    }
-                }
-                is IAPSupportedResult.Error -> handleError(response.errorType)
             }
         }
     }
