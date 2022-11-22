@@ -1,5 +1,8 @@
 package com.woocommerce.android.ui.login.jetpack.main
 
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.slideInVertically
+import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -9,6 +12,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -41,6 +45,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.compose.annotatedStringRes
+import com.woocommerce.android.ui.compose.component.WCColoredButton
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.ui.login.jetpack.components.JetpackToWooHeader
 
@@ -49,7 +54,8 @@ fun JetpackActivationMainScreen(viewModel: JetpackActivationMainViewModel) {
     viewModel.viewState.observeAsState().value?.let {
         JetpackActivationMainScreen(
             viewState = it,
-            onCloseClick = viewModel::onCloseClick
+            onCloseClick = viewModel::onCloseClick,
+            onContinueClick = viewModel::onContinueClick
         )
     }
 }
@@ -57,7 +63,8 @@ fun JetpackActivationMainScreen(viewModel: JetpackActivationMainViewModel) {
 @Composable
 fun JetpackActivationMainScreen(
     viewState: JetpackActivationMainViewModel.ViewState,
-    onCloseClick: () -> Unit = {}
+    onCloseClick: () -> Unit = {},
+    onContinueClick: () -> Unit = {}
 ) {
     Scaffold(
         topBar = { Toolbar(onCloseClick) }
@@ -72,20 +79,26 @@ fun JetpackActivationMainScreen(
         ) {
             JetpackToWooHeader()
             Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.major_200)))
+            val title = if (viewState.isDone) {
+                if (viewState.isJetpackInstalled) R.string.login_jetpack_connection_steps_screen_title_done
+                else R.string.login_jetpack_installation_steps_screen_title_done
+            } else {
+                if (viewState.isJetpackInstalled) R.string.login_jetpack_connection_steps_screen_title
+                else R.string.login_jetpack_installation_steps_screen_title
+            }
             Text(
-                text = stringResource(
-                    id = if (viewState.isJetpackInstalled) R.string.login_jetpack_connection_steps_screen_title
-                    else R.string.login_jetpack_installation_steps_screen_title
-                ),
+                text = stringResource(id = title),
                 style = MaterialTheme.typography.h4,
                 fontWeight = FontWeight.Bold
             )
             Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.minor_100)))
+            val subtitle = if (viewState.isDone) {
+                R.string.login_jetpack_steps_screen_subtitle_done
+            } else {
+                R.string.login_jetpack_steps_screen_subtitle
+            }
             Text(
-                text = annotatedStringRes(
-                    stringResId = R.string.login_jetpack_steps_screen_subtitle,
-                    viewState.siteUrl
-                ),
+                text = annotatedStringRes(stringResId = subtitle, viewState.siteUrl),
                 style = MaterialTheme.typography.body1
             )
             Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.major_100)))
@@ -94,6 +107,16 @@ fun JetpackActivationMainScreen(
                     step,
                     modifier = Modifier.padding(vertical = dimensionResource(id = R.dimen.minor_100))
                 )
+            }
+            Spacer(modifier = Modifier.weight(1f))
+            AnimatedVisibility(
+                visible = viewState.isDone,
+                enter = slideInVertically { fullHeight -> fullHeight },
+                exit = slideOutVertically { fullHeight -> fullHeight }
+            ) {
+                WCColoredButton(onClick = onContinueClick, modifier = Modifier.fillMaxWidth()) {
+                    Text(text = stringResource(id = R.string.login_jetpack_installation_go_to_store_button))
+                }
             }
         }
     }

@@ -20,7 +20,6 @@ import com.woocommerce.android.viewmodel.getStateFlow
 import com.woocommerce.android.viewmodel.navArgs
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Deferred
-import kotlinx.coroutines.Job
 import kotlinx.coroutines.async
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.combine
@@ -97,6 +96,10 @@ class JetpackActivationMainViewModel @Inject constructor(
 
     fun onCloseClick() {
         triggerEvent(Exit)
+    }
+
+    fun onContinueClick() {
+        TODO()
     }
 
     fun onJetpackConnected() {
@@ -218,7 +221,9 @@ class JetpackActivationMainViewModel @Inject constructor(
         val siteUrl: String,
         val isJetpackInstalled: Boolean,
         val steps: List<Step>
-    )
+    ) {
+        val isDone = steps.all { it.state == StepState.Success }
+    }
 
     @Parcelize
     data class Step(

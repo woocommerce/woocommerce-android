@@ -308,8 +308,12 @@
     <string name="login_jetpack_steps_done">All done</string>
     <string name="login_jetpack_installation_steps_screen_title">Installing Jetpack</string>
     <string name="login_jetpack_connection_steps_screen_title">Connecting Jetpack</string>
+    <string name="login_jetpack_connection_steps_screen_title_done">Connected Jetpack</string>
+    <string name="login_jetpack_installation_steps_screen_title_done">Installed Jetpack</string>
     <string name="login_jetpack_steps_screen_subtitle">Please wait while we connect your store &lt;b&gt;%1$s&lt;/b&gt; with Jetpack.</string>
+    <string name="login_jetpack_steps_screen_subtitle_done">Your store &lt;b&gt;%1$s&lt;/b&gt; is now connected to Jetpack.</string>
     <string name="login_jetpack_installation_error_code_template">Error code %1$s</string>
+    <string name="login_jetpack_installation_go_to_store_button">Go to Store</string>
 
     <!--
         My Store View
