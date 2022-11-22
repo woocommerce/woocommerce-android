@@ -20,6 +20,8 @@ To get started, you need to understand the structure of the module.
 
 ![test](/docs/images/iap-module-diagram.webp)
 
+Notice that currently `isIAPSupported` is placed into a separate class.
+
 The module is divided into 2 main parts: *public* and *internal*
 
 ### Public
@@ -63,7 +65,7 @@ Returns if the plan has been purchased and/or acknowledged already.
 ### Internal
 
 Internally the module is splitting into 3 main parts:
-#### 1. WP Com Plan purhase layer
+#### 1. WP Com Plan purchase layer
 
 This layer contains the logic that is specific to our current needs, for instance:
 * It determines what product we work with
@@ -80,6 +82,8 @@ The layer also handles different edge cases, e.g. when the purchase result is no
 The layer that communicates to Mobile Pay, using Fluxc
 
 ## Proposed flow
+
+Both public classes available to the client must confirm to the ViewModel lifecycle. Also, make sure to pass them as a parameter to the ViewModel constructor, so it'll automatically will "close" them ViewModel is getting destroyed.
 
 * `isIAPSupported` has to be called first to determine if IAP flow can be used. If an error is returned, then depending on it we might consider showing to a user a specific UI, suggesting different steps. E.g. if a version of Google Service is outdated then we might need to ask a user to update them
 * Subscribe to the flow exposed by `purchaseWpComPlanResult` to get up-to-date information about the purchase status
