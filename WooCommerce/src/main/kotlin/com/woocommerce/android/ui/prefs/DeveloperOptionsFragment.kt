@@ -70,7 +70,6 @@ class DeveloperOptionsFragment : BaseFragment(R.layout.fragment_developer_option
         )
             .setOnDismissListener {
                 viewModel.onUpdateReaderOptionChanged(currentlySelectedValue)
-                viewModel.onUpdateReaderOptionsSelected(currentlySelectedValue)
             }
             .setSingleChoiceItems(textValues, selectedValue.ordinal) { _, which ->
                 currentlySelectedValue = values[which]

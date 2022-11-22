@@ -1,6 +1,5 @@
 package com.woocommerce.android.cardreader
 
-import com.stripe.stripeterminal.external.models.SimulateReaderUpdate
 import com.woocommerce.android.cardreader.connection.CardReader
 import com.woocommerce.android.cardreader.connection.CardReaderDiscoveryEvents
 import com.woocommerce.android.cardreader.connection.CardReaderStatus
@@ -34,8 +33,6 @@ interface CardReaderManager {
         isSimulated: Boolean,
         cardReaderTypesToDiscover: CardReaderTypesToDiscover,
     ): Flow<CardReaderDiscoveryEvents>
-
-    fun cardReaderUpdateFrequency(selectedOption: String)
 
     fun startConnectionToReader(cardReader: CardReader, locationId: String)
     suspend fun disconnectReader(): Boolean

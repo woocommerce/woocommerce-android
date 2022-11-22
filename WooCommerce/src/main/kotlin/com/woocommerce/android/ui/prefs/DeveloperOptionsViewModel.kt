@@ -7,7 +7,6 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.R.drawable
 import com.woocommerce.android.R.string
-import com.woocommerce.android.cardreader.CardReaderManager
 import com.woocommerce.android.model.UiString
 import com.woocommerce.android.model.UiString.UiStringRes
 import com.woocommerce.android.ui.prefs.DeveloperOptionsViewModel.DeveloperOptionsViewState.ListItem
@@ -24,7 +23,6 @@ import javax.inject.Inject
 class DeveloperOptionsViewModel @Inject constructor(
     savedState: SavedStateHandle,
     private val developerOptionsRepository: DeveloperOptionsRepository,
-    private val cardReaderManager: CardReaderManager,
 ) : ScopedViewModel(savedState) {
 
     private val _viewState = MutableLiveData(
@@ -53,7 +51,6 @@ class DeveloperOptionsViewModel @Inject constructor(
             key = UiStringRes(string.update_simulated_reader_key),
             isEnabled = true,
             onClick = ::onUpdateSimulatedReaderClicked,
-            onSelect = {}
         )
     )
 
@@ -105,11 +102,6 @@ class DeveloperOptionsViewModel @Inject constructor(
         developerOptionsRepository.updateSimulatedReaderOption(selectedOption)
     }
 
-    fun onUpdateReaderOptionsSelected(selectedOption: UpdateOptions) {
-
-        cardReaderManager.cardReaderUpdateFrequency(selectedOption.toString())
-    }
-
     sealed class DeveloperOptionsEvents : MultiLiveEvent.Event() {
         data class ShowToastString(val message: Int) : DeveloperOptionsEvents()
         data class ShowUpdateOptionsDialog(
@@ -151,7 +143,6 @@ class DeveloperOptionsViewModel @Inject constructor(
                 override var isEnabled: Boolean = false,
                 override var key: UiString,
                 val onClick: () -> Unit,
-                val onSelect: () -> Unit
 
             ) : ListItem()
         }
