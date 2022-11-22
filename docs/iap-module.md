@@ -87,6 +87,6 @@ Both public classes available to the client must confirm to the ViewModel lifecy
 
 * `isIAPSupported` has to be called first to determine if IAP flow can be used. If an error is returned, then depending on it we might consider showing to a user a specific UI, suggesting different steps. E.g. if a version of Google Service is outdated then we might need to ask a user to update them
 * Subscribe to the flow exposed by `purchaseWpComPlanResult` to get up-to-date information about the purchase status
-* We might need to check `isWPComPlanPurchased`. If purchased and acknowledged then we might let a user in right away. If purchased, but not acknowledged, then consider calling `purchaseWpComPlanResult`, so it will hit the backend internally and the backend on its own will release the purchase and acknowledge the purchase
+* We might need to check `isWPComPlanPurchased`. If purchased and acknowledged then we might let a user in right away. If purchased, but not acknowledged, then consider calling `purchaseWPComPlan`, so it will hit the backend internally and the backend on its own will release the purchase and acknowledge the purchase
 * If the plan is not purchased yet, then call `fetchWPComPlanProduct` to get information about the product. Show this information to a user with the "purchase" button
 * Click on the button should invoke the `purchaseWPComPlan` method. It will start the IAP flow

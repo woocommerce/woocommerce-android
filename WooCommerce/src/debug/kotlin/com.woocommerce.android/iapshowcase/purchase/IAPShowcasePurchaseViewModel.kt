@@ -53,10 +53,10 @@ class IAPShowcasePurchaseViewModel(private val iapManager: PurchaseWPComPlanActi
 
             when (response) {
                 is WPComIsPurchasedResult.Success -> {
-                    _iapEvent.value = if (response.isPlanPurchased) {
-                        "Plan has been purchased already"
-                    } else {
-                        "Plan hasn't been purchased yet"
+                    _iapEvent.value = when (response.purchaseStatus) {
+                        PurchaseStatus.PURCHASED_AND_ACKNOWLEDGED -> "Plan has been purchased acknowledged already"
+                        PurchaseStatus.PURCHASED -> "Plan has been purchased, but not acknowledged"
+                        PurchaseStatus.NOT_PURCHASED -> "Plan hasn't been purchased yet"
                     }
                 }
                 is WPComIsPurchasedResult.Error -> handleError(response.errorType)

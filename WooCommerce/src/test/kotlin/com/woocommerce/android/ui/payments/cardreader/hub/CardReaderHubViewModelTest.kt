@@ -6,9 +6,9 @@ import com.woocommerce.android.AppUrls.WOOCOMMERCE_PURCHASE_CARD_READER_IN_COUNT
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
-import com.woocommerce.android.cardreader.internal.config.CardReaderConfig
-import com.woocommerce.android.cardreader.internal.config.CardReaderConfigForUSA
-import com.woocommerce.android.cardreader.internal.config.CardReaderConfigForUnsupportedCountry
+import com.woocommerce.android.cardreader.config.CardReaderConfig
+import com.woocommerce.android.cardreader.config.CardReaderConfigForUSA
+import com.woocommerce.android.cardreader.config.CardReaderConfigForUnsupportedCountry
 import com.woocommerce.android.initSavedStateHandle
 import com.woocommerce.android.model.UiString
 import com.woocommerce.android.tools.SelectedSite
