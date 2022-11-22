@@ -11,6 +11,7 @@ import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import com.woocommerce.android.NavGraphMainDirections
+import com.woocommerce.android.R
 import com.woocommerce.android.extensions.handleNotice
 import com.woocommerce.android.extensions.navigateBackWithResult
 import com.woocommerce.android.support.ZendeskHelper
@@ -109,7 +110,8 @@ class SitePickerSiteDiscoveryFragment : BaseFragment() {
             NavGraphMainDirections.actionGlobalWPComWebViewFragment(
                 urlToLoad = url,
                 urlsToTriggerExit = arrayOf(JETPACK_CONNECTED_REDIRECT_URL),
-                urlComparisonMode = WPComWebViewViewModel.UrlComparisonMode.EQUALITY
+                urlComparisonMode = WPComWebViewViewModel.UrlComparisonMode.EQUALITY,
+                title = getString(R.string.login_jetpack_install)
             )
         )
     }

@@ -191,7 +191,8 @@ class EditShippingLabelPaymentFragment :
                     findNavController().navigateSafely(
                         NavGraphMainDirections.actionGlobalWPComWebViewFragment(
                             urlToLoad = AppUrls.WPCOM_ADD_PAYMENT_METHOD,
-                            urlsToTriggerExit = arrayOf(FETCH_PAYMENT_METHOD_URL_PATH)
+                            urlsToTriggerExit = arrayOf(FETCH_PAYMENT_METHOD_URL_PATH),
+                            title = getFragmentTitle()
                         )
                     )
                 }
