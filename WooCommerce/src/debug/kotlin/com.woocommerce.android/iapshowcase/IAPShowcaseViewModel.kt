@@ -9,6 +9,7 @@ import com.woocommerce.android.iap.pub.IAPActivityWrapper
 import com.woocommerce.android.iap.pub.PurchaseWPComPlanActions
 import com.woocommerce.android.iap.pub.model.IAPError
 import com.woocommerce.android.iap.pub.model.IAPSupportedResult
+import com.woocommerce.android.iap.pub.model.PurchaseStatus
 import com.woocommerce.android.iap.pub.model.WPComIsPurchasedResult
 import com.woocommerce.android.iap.pub.model.WPComPlanProduct
 import com.woocommerce.android.iap.pub.model.WPComProductResult
@@ -54,10 +55,10 @@ class IAPShowcaseViewModel(private val iapManager: PurchaseWPComPlanActions) : V
 
             when (response) {
                 is WPComIsPurchasedResult.Success -> {
-                    _iapEvent.value = if (response.isPlanPurchased) {
-                        "Plan has been purchased already"
-                    } else {
-                        "Plan hasn't been purchased yet"
+                    _iapEvent.value = when (response.purchaseStatus) {
+                        PurchaseStatus.PURCHASED_AND_ACKNOWLEDGED -> "Plan has been purchased acknowledged already"
+                        PurchaseStatus.PURCHASED -> "Plan has been purchased, but not acknowledged"
+                        PurchaseStatus.NOT_PURCHASED -> "Plan hasn't been purchased yet"
                     }
                 }
                 is WPComIsPurchasedResult.Error -> handleError(response.errorType)
