@@ -18,6 +18,7 @@ import com.woocommerce.android.iap.internal.network.model.CreateAndConfirmOrderR
 import com.woocommerce.android.iap.internal.planpurchase.IAPPurchaseWPComPlanActionsImpl
 import com.woocommerce.android.iap.internal.planpurchase.IAPPurchaseWpComPlanHandler
 import com.woocommerce.android.iap.pub.model.IAPError
+import com.woocommerce.android.iap.pub.model.PurchaseStatus
 import com.woocommerce.android.iap.pub.model.WPComIsPurchasedResult
 import com.woocommerce.android.iap.pub.model.WPComProductResult
 import com.woocommerce.android.iap.pub.model.WPComPurchaseResult
@@ -80,7 +81,10 @@ class IAPPurchaseWPComPlanActionsTest {
                     )
                 )
             )
-            setupQueryProductDetails(responseCode = BillingClient.BillingResponseCode.OK, debugMessage = debugMessage)
+            testPreparationHelper.setupQueryProductDetails(
+                responseCode = BillingClient.BillingResponseCode.OK,
+                debugMessage = debugMessage
+            )
 
             // WHEN
             val result = sut.isWPComPlanPurchased()
@@ -110,9 +114,9 @@ class IAPPurchaseWPComPlanActionsTest {
                 )
             )
             testPreparationHelper.setupQueryProductDetails(
-            responseCode = BillingClient.BillingResponseCode.OK,
-            debugMessage = debugMessage
-        )
+                responseCode = BillingClient.BillingResponseCode.OK,
+                debugMessage = debugMessage
+            )
 
             // WHEN
             val result = sut.isWPComPlanPurchased()
