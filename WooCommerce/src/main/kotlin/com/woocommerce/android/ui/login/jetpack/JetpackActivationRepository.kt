@@ -1,6 +1,7 @@
 package com.woocommerce.android.ui.login.jetpack
 
 import com.woocommerce.android.OnChangedException
+import com.woocommerce.android.WooException
 import com.woocommerce.android.extensions.isNotNullOrEmpty
 import com.woocommerce.android.util.WooLog
 import kotlinx.coroutines.Dispatchers
@@ -8,12 +9,14 @@ import kotlinx.coroutines.withContext
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.store.JetpackStore
 import org.wordpress.android.fluxc.store.SiteStore
+import org.wordpress.android.fluxc.store.WooCommerceStore
 import org.wordpress.android.login.util.SiteUtils
 import javax.inject.Inject
 
 class JetpackActivationRepository @Inject constructor(
     private val siteStore: SiteStore,
-    private val jetpackStore: JetpackStore
+    private val jetpackStore: JetpackStore,
+    private val wooCommerceStore: WooCommerceStore
 ) {
     suspend fun getSiteByUrl(url: String): SiteModel? = withContext(Dispatchers.IO) {
         SiteUtils.getSiteByMatchingUrl(siteStore, url)
@@ -57,6 +60,28 @@ class JetpackActivationRepository @Inject constructor(
                 WooLog.d(WooLog.T.LOGIN, "Jetpack User fetched successfully")
                 Result.success(result.user!!.wpcomEmail)
             }
+        }
+    }
+
+    suspend fun checkSiteConnection(siteUrl: String): Result<Unit> {
+        WooLog.d(WooLog.T.LOGIN, "Jetpack Activation: Fetch WooCommerce Stores to confirm Jetpack Connection")
+        wooCommerceStore.fetchWooCommerceSites().let { result ->
+            if (result.isError) {
+                WooLog.d(
+                    WooLog.T.LOGIN,
+                    "Jetpack Activation: Fetching WooCommerce Stores failed: ${result.error.message}"
+                )
+                return Result.failure(WooException(result.error))
+            }
+
+            val site = withContext(Dispatchers.IO) {
+                SiteUtils.getSiteByMatchingUrl(siteStore, siteUrl)
+            }?.takeIf { it.siteId != 0L }
+
+            return if (site == null) {
+                WooLog.d(WooLog.T.LOGIN, "Jetpack Activation: Site $siteUrl is missing from account sites")
+                Result.failure(IllegalStateException("Site missing"))
+            } else Result.success(Unit)
         }
     }
 }

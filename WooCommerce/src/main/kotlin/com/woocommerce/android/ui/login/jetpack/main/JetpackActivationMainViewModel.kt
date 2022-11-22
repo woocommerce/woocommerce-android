@@ -197,14 +197,26 @@ class JetpackActivationMainViewModel @Inject constructor(
                 if (accountRepository.getUserAccount()?.email != email) {
                     TODO("Handle the edge case of connection using a different account")
                 }
+                confirmSiteConnection()
+            },
+            onFailure = {
+                val errorCode = ((it as? OnChangedException)?.error as? JetpackUserError)?.errorCode
+                currentStep.update { state -> state.copy(state = StepState.Error(errorCode)) }
+            }
+        )
+    }
+
+    private suspend fun confirmSiteConnection() {
+        WooLog.d(WooLog.T.LOGIN, "Jetpack Activation: fetch sites and confirm site connection")
+        jetpackActivationRepository.checkSiteConnection(navArgs.siteUrl).fold(
+            onSuccess = {
                 currentStep.value = Step(
                     type = StepType.Connection(ConnectionStep.Approved),
                     state = StepState.Ongoing
                 )
             },
             onFailure = {
-                val errorCode = ((it as? OnChangedException)?.error as? JetpackUserError)?.errorCode
-                currentStep.update { state -> state.copy(state = StepState.Error(errorCode)) }
+                currentStep.update { state -> state.copy(state = StepState.Error(null)) }
             }
         )
     }
