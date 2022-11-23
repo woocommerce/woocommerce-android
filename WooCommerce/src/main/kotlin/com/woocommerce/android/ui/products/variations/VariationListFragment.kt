@@ -213,7 +213,7 @@ class VariationListFragment :
                 is ShowSnackbar -> uiMessageResolver.showSnack(event.message)
                 is ShowBulkUpdateAttrPicker -> openBulkUpdateView(event.variationsToUpdate)
                 is ShowBulkUpdateLimitExceededWarning -> showBulkUpdateLimitExceededWarning()
-                is ShowGenerateVariationConfirmation -> showGenerateVariationConfirmation(event.variationCandidates)
+                is ShowGenerateVariationConfirmation -> showGenerateVariationConfirmation(event.variationCandidatesSize)
                 is ShowGenerateVariationsError -> handleGenerateVariationError(event)
                 is ExitWithResult<*> -> navigateBackWithResult(KEY_VARIATION_LIST_RESULT, event.data)
                 is Exit -> activity?.onBackPressedDispatcher?.onBackPressed()
@@ -244,12 +244,12 @@ class VariationListFragment :
         }
     }
 
-    private fun showGenerateVariationConfirmation(variationCandidates: List<VariationCandidate>) {
+    private fun showGenerateVariationConfirmation(variationCandidatesSize: Int) {
         MaterialAlertDialogBuilder(requireActivity())
             .setTitle(R.string.variations_bulk_creation_confirmation_title)
-            .setMessage(getString(R.string.variations_bulk_creation_confirmation_message, variationCandidates.size))
+            .setMessage(getString(R.string.variations_bulk_creation_confirmation_message, variationCandidatesSize))
             .setPositiveButton(android.R.string.ok) { dialogInterface, _ ->
-                viewModel.onGenerateVariationsConfirmed(variationCandidates)
+                viewModel.onGenerateVariationsConfirmed()
                 dialogInterface.dismiss()
             }
             .setNegativeButton(android.R.string.cancel) { dialogInterface, _ ->

@@ -301,11 +301,12 @@ class VariationListViewModel @Inject constructor(
         }
     }
 
-    fun onGenerateVariationsConfirmed(variationCandidates: List<VariationCandidate>) {
+    fun onGenerateVariationsConfirmed() {
+        val candidates = variationCandidates ?: return
         launch {
             viewState = viewState.copy(progressDialogState = Shown(MULTIPLE))
 
-            when (variationRepository.bulkCreateVariations(remoteProductId, variationCandidates)) {
+            when (variationRepository.bulkCreateVariations(remoteProductId, candidates)) {
                 RequestResult.SUCCESS -> {
                     refreshVariations(remoteProductId)
                     viewState = viewState.copy(progressDialogState = Hidden)
