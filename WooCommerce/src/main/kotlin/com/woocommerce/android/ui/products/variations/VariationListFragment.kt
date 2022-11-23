@@ -104,6 +104,10 @@ class VariationListFragment :
         skeletonView.hide()
         super.onDestroyView()
         _binding = null
+        generateVariationPickerDialog = null
+        progressDialog = null
+        layoutManager = null
+
     }
 
     override fun onResume() {
