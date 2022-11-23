@@ -144,17 +144,18 @@ class JetpackActivationMainViewModel @Inject constructor(
 
     private fun monitorCurrentStep() {
         currentStep
-            .filter { it.state == StepState.Ongoing }
             .map { step ->
-                step.type.let {
-                    if (it == StepType.Activation) {
+                step.copy(
+                    type = if (step.type == StepType.Activation) {
                         // To allow restarting the Jetpack installation after process-death, consider the Activation
                         // same as the Installation events
                         StepType.Installation
-                    } else it
-                }
+                    } else step.type
+                )
             }
             .distinctUntilChanged()
+            .filter { it.state == StepState.Ongoing }
+            .map { it.type }
             .onEach { stepType ->
                 WooLog.d(WooLog.T.LOGIN, "Jetpack Activation: handle step: $stepType")
                 when (stepType) {
@@ -330,4 +331,5 @@ class JetpackActivationMainViewModel @Inject constructor(
     ) : MultiLiveEvent.Event()
 
     object GoToStore : MultiLiveEvent.Event()
+    object ShowHelpScreen : MultiLiveEvent.Event()
 }
