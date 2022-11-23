@@ -54,6 +54,7 @@ class JetpackActivationMainViewModel @Inject constructor(
         private const val JETPACK_NAME = "jetpack/jetpack"
         private const val JETPACK_PLANS_URL = "wordpress.com/jetpack/connect/plans"
         private const val DELAY_AFTER_CONNECTION_MS = 500L
+        private const val DELAY_BEFORE_SHOWING_ERROR_STATE_MS = 1000L
     }
 
     private val navArgs: JetpackActivationMainFragmentArgs by savedStateHandle.navArgs()
@@ -112,6 +113,7 @@ class JetpackActivationMainViewModel @Inject constructor(
 
     init {
         monitorCurrentStep()
+        handleErrorStates()
         startNextStep()
     }
 
@@ -181,6 +183,18 @@ class JetpackActivationMainViewModel @Inject constructor(
                 }
             }
             .launchIn(viewModelScope)
+    }
+
+    private fun handleErrorStates() {
+        currentStep.onEach { step ->
+            when (step.state) {
+                is Error -> {
+                    delay(DELAY_BEFORE_SHOWING_ERROR_STATE_MS)
+                    isShowingErrorState.value = true
+                }
+                else -> isShowingErrorState.value = false
+            }
+        }.launchIn(viewModelScope)
     }
 
     private suspend fun startJetpackInstallation() {
@@ -273,6 +287,7 @@ class JetpackActivationMainViewModel @Inject constructor(
             val errorCode: Int?
         ) : ViewState
     }
+
 
     @Parcelize
     data class Step(
