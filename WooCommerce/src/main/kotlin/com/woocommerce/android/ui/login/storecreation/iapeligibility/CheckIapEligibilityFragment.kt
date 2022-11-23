@@ -48,8 +48,7 @@ class CheckIapEligibilityFragment : BaseFragment() {
                             .padding(dimensionResource(id = R.dimen.major_100)),
                         verticalArrangement = Arrangement.Center,
                         horizontalAlignment = Alignment.CenterHorizontally
-                    )
-                    {
+                    ) {
                         CircularProgressIndicator()
                         Text(
                             modifier = Modifier.padding(top = dimensionResource(id = R.dimen.major_200)),
@@ -97,4 +96,3 @@ class CheckIapEligibilityFragment : BaseFragment() {
             )
     }
 }
-
