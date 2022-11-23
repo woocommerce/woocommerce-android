@@ -338,7 +338,10 @@ class VariationListViewModelTest : BaseUnitTest() {
         viewModel.onGenerateVariationsConfirmed(variationCandidates)
 
         // Then variation confirmed event is tracked
-        verify(tracker).track(AnalyticsEvent.PRODUCT_VARIATION_GENERATION_CONFIRMED)
+        verify(tracker).track(
+            AnalyticsEvent.PRODUCT_VARIATION_GENERATION_CONFIRMED,
+            mapOf(AnalyticsTracker.KEY_VARIATIONS_COUNT to variationCandidates.size)
+        )
         // Then variation success is tracked
         verify(tracker).track(AnalyticsEvent.PRODUCT_VARIATION_GENERATION_SUCCESS)
     }
@@ -359,7 +362,10 @@ class VariationListViewModelTest : BaseUnitTest() {
         viewModel.onGenerateVariationsConfirmed(variationCandidates)
 
         // Then variation confirmed event is tracked
-        verify(tracker).track(AnalyticsEvent.PRODUCT_VARIATION_GENERATION_CONFIRMED)
+        verify(tracker).track(
+            AnalyticsEvent.PRODUCT_VARIATION_GENERATION_CONFIRMED,
+            mapOf(AnalyticsTracker.KEY_VARIATIONS_COUNT to variationCandidates.size)
+        )
         // Then variation limit error is tracked
         verify(tracker).track(AnalyticsEvent.PRODUCT_VARIATION_GENERATION_FAILURE)
     }
