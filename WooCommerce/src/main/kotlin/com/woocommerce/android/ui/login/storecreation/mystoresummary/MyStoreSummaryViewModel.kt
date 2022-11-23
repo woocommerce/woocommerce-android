@@ -25,7 +25,7 @@ class MyStoreSummaryViewModel @Inject constructor(
                 name = it.name,
                 domain = it.domain ?: "",
                 category = it.category,
-                country = it.country ?: "TODO default value locale?"
+                country = it.country
             )
         }
         .asLiveData()
@@ -51,7 +51,7 @@ class MyStoreSummaryViewModel @Inject constructor(
         val name: String? = null,
         val domain: String,
         val category: String? = null,
-        val country: String,
+        val country: String? = null,
     )
 
     object NavigateToNextStep : MultiLiveEvent.Event()
