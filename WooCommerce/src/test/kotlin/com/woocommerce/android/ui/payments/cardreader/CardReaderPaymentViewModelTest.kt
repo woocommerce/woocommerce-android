@@ -87,6 +87,7 @@ import kotlinx.coroutines.test.advanceUntilIdle
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Test
+import org.mockito.ArgumentMatchers.anyFloat
 import org.mockito.kotlin.any
 import org.mockito.kotlin.anyOrNull
 import org.mockito.kotlin.argumentCaptor
@@ -2963,6 +2964,21 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
             val inOrder = inOrder(cardReaderTrackingInfoKeeper)
             inOrder.verify(cardReaderTrackingInfoKeeper).setCardReaderBatteryLevel(batteryLevel1)
             inOrder.verify(cardReaderTrackingInfoKeeper).setCardReaderBatteryLevel(batteryLevel2)
+        }
+
+    @Test
+    fun `when new battery status event is received, then tracking is not updated if the battery level didn't change`() =
+        testBlocking {
+            whenever(cardReaderManager.batteryStatus).thenAnswer {
+                flow {
+                    emit(CardReaderBatteryStatus.Unknown)
+                    emit(CardReaderBatteryStatus.Warning)
+                }
+            }
+
+            viewModel.start()
+
+            verify(cardReaderTrackingInfoKeeper, never()).setCardReaderBatteryLevel(anyFloat())
         }
 
     private suspend fun simulateFetchOrderJobState(inProgress: Boolean) {
