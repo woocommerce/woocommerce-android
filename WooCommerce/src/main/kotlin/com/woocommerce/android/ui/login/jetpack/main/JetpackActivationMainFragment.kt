@@ -14,11 +14,14 @@ import com.woocommerce.android.NavGraphMainDirections
 import com.woocommerce.android.R
 import com.woocommerce.android.extensions.handleNotice
 import com.woocommerce.android.extensions.navigateSafely
+import com.woocommerce.android.support.help.HelpActivity
+import com.woocommerce.android.support.help.HelpActivity.Origin
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.common.wpcomwebview.WPComWebViewFragment
 import com.woocommerce.android.ui.common.wpcomwebview.WPComWebViewViewModel.DisplayMode
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.ui.login.jetpack.main.JetpackActivationMainViewModel.GoToStore
+import com.woocommerce.android.ui.login.jetpack.main.JetpackActivationMainViewModel.ShowHelpScreen
 import com.woocommerce.android.ui.login.jetpack.main.JetpackActivationMainViewModel.ShowJetpackConnectionWebView
 import com.woocommerce.android.ui.main.AppBarStatus
 import com.woocommerce.android.ui.main.MainActivity
@@ -54,9 +57,14 @@ class JetpackActivationMainFragment : BaseFragment() {
             when (event) {
                 is ShowJetpackConnectionWebView -> showConnectionWebView(event)
                 is GoToStore -> goToStore()
+                is ShowHelpScreen -> openHelpActivity()
                 is Exit -> findNavController().navigateUp()
             }
         }
+    }
+
+    private fun openHelpActivity() {
+        startActivity(HelpActivity.createIntent(requireContext(), Origin.JETPACK_INSTALLATION, null))
     }
 
     private fun goToStore() {

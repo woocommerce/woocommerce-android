@@ -62,7 +62,9 @@ fun JetpackActivationMainScreen(viewModel: JetpackActivationMainViewModel) {
         JetpackActivationMainScreen(
             viewState = it,
             onCloseClick = viewModel::onCloseClick,
-            onContinueClick = viewModel::onContinueClick
+            onContinueClick = viewModel::onContinueClick,
+            onGetHelpClick = viewModel::onGetHelpClick,
+            onRetryClick = viewModel::onRetryClick
         )
     }
 }

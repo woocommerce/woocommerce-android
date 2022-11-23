@@ -132,6 +132,12 @@ class JetpackActivationMainViewModel @Inject constructor(
         connectionStep.value = ConnectionStep.Validation
     }
 
+    fun onRetryClick() = startNextStep()
+
+    fun onGetHelpClick() {
+        triggerEvent(ShowHelpScreen)
+    }
+
     private fun startNextStep() {
         currentStep.update { it.copy(state = StepState.Ongoing) }
     }
