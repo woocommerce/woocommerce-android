@@ -52,6 +52,8 @@ import org.mockito.kotlin.never
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import org.wordpress.android.fluxc.model.SiteModel
+import kotlin.test.assertFalse
+import kotlin.test.assertNull
 
 @ExperimentalCoroutinesApi
 class CardReaderTrackerTest : BaseUnitTest() {
@@ -99,6 +101,17 @@ class CardReaderTrackerTest : BaseUnitTest() {
                 eq(CARD_PRESENT_ONBOARDING_LEARN_MORE_TAPPED),
                 any()
             )
+        }
+
+    @Test
+    fun `given battery level is null, when event is tracked, then it shouldn't contain battery level property`() =
+        testBlocking {
+            assertNull(cardReaderTrackingInfoProvider.trackingInfo.cardReaderBatteryLevel)
+
+            val props = mutableMapOf<String, Any>()
+            cardReaderTracker.track(CARD_PRESENT_COLLECT_PAYMENT_SUCCESS, props)
+
+            assertFalse(props.containsKey("card_reader_battery_level"))
         }
 
     @Test
