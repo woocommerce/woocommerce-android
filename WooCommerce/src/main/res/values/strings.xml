@@ -1627,13 +1627,17 @@
     <string name="variation_detail_price_warning_title">Some variations do not have prices</string>
     <string name="variation_detail_image_add">Add a variation image</string>
     <string name="variation_list_generate_new_variation">Generate new variation</string>
-    <string name="variation_list_generate_all_variations">Generate all variations</string>
+    <string name="variation_list_add">Add variation</string>
     <string name="variation_created_title">Variation Created</string>
     <string name="variation_create_dialog_title">Generating variation</string>
     <string name="variation_loading_dialog_title">Fetching variations…</string>
     <string name="variation_confirm_delete">Do you want to delete this Variation?</string>
     <string name="variation_list_menu_bulk_update">Bulk update…</string>
     <string name="variations_bulk_limit_exceeded_button_ok">OK</string>
+    <string name="variation_add_new">Add new variation</string>
+    <string name="variation_add_new_description">Creates one new variation. Manually set the attributes.</string>
+    <string name="variation_add_all">Generate all %1$d variations</string>
+    <string name="variation_add_all_description">Creates variations for all combinations of your attributes.</string>
 
     <!--
         Variations bulk update
