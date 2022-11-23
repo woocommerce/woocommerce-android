@@ -98,6 +98,7 @@ class PlansViewModel @Inject constructor(
     fun onConfirmClicked() {
         triggerEvent(NavigateToNextStep)
         // TODO add tracking for login_woocommerce_site_created and site_creation_failed once we have the result
+        // TODO wipe out data from "NewStore" singlenton once store is created successfully
     }
 
     fun onRetryClicked() {
