@@ -93,9 +93,8 @@ class CardReaderTracker @Inject constructor(
     }
 
     private fun addCardReaderBatteryLevelProperty(properties: MutableMap<String, Any>) {
-        val cardReaderBatteryStatus = cardReaderTrackingInfoProvider.trackingInfo.cardReaderBatteryLevel
-        if (cardReaderBatteryStatus != null) {
-            properties["card_reader_battery_level"] = cardReaderBatteryStatus
+        cardReaderTrackingInfoProvider.trackingInfo.cardReaderBatteryLevelPercent?.let { batteryLevelPercent ->
+            properties["card_reader_battery_level"] = "$batteryLevelPercent %"
         }
     }
 
