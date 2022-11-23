@@ -20,6 +20,8 @@ import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.common.wpcomwebview.WPComWebViewFragment
 import com.woocommerce.android.ui.common.wpcomwebview.WPComWebViewViewModel.DisplayMode
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
+import com.woocommerce.android.ui.login.LoginActivity
+import com.woocommerce.android.ui.login.jetpack.main.JetpackActivationMainViewModel.GoToPasswordScreen
 import com.woocommerce.android.ui.login.jetpack.main.JetpackActivationMainViewModel.GoToStore
 import com.woocommerce.android.ui.login.jetpack.main.JetpackActivationMainViewModel.ShowHelpScreen
 import com.woocommerce.android.ui.login.jetpack.main.JetpackActivationMainViewModel.ShowJetpackConnectionWebView
@@ -27,6 +29,7 @@ import com.woocommerce.android.ui.main.AppBarStatus
 import com.woocommerce.android.ui.main.MainActivity
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import dagger.hilt.android.AndroidEntryPoint
+import org.wordpress.android.login.LoginMode
 
 @AndroidEntryPoint
 class JetpackActivationMainFragment : BaseFragment() {
@@ -58,6 +61,7 @@ class JetpackActivationMainFragment : BaseFragment() {
                 is ShowJetpackConnectionWebView -> showConnectionWebView(event)
                 is GoToStore -> goToStore()
                 is ShowHelpScreen -> openHelpActivity()
+                is GoToPasswordScreen -> openPasswordScreen(event.email)
                 is Exit -> findNavController().navigateUp()
             }
         }
@@ -65,6 +69,16 @@ class JetpackActivationMainFragment : BaseFragment() {
 
     private fun openHelpActivity() {
         startActivity(HelpActivity.createIntent(requireContext(), Origin.JETPACK_INSTALLATION, null))
+    }
+
+    private fun openPasswordScreen(email: String) {
+        val intent = Intent(requireActivity(), LoginActivity::class.java).apply {
+            addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK)
+            action = LoginActivity.LOGIN_WITH_WPCOM_EMAIL_ACTION
+            putExtra(LoginActivity.EMAIL_PARAMETER, email)
+            LoginMode.WOO_LOGIN_MODE.putInto(this)
+        }
+        startActivity(intent)
     }
 
     private fun goToStore() {

@@ -39,6 +39,7 @@ import kotlinx.parcelize.Parcelize
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.store.JetpackStore.JetpackConnectionUrlError
 import org.wordpress.android.fluxc.store.JetpackStore.JetpackUserError
+import java.util.StringJoiner
 import javax.inject.Inject
 
 @HiltViewModel
@@ -103,6 +104,7 @@ class JetpackActivationMainViewModel @Inject constructor(
                 },
                 connectionStep = connectionStep
             )
+
             true -> ViewState.ErrorViewState(
                 stepType = currentStep.type,
                 errorCode = (currentStep.state as? StepState.Error)?.code
@@ -181,10 +183,12 @@ class JetpackActivationMainViewModel @Inject constructor(
                             }
                         }.launchIn(viewModelScope)
                     }
+
                     StepType.Done -> currentStep.value = Step(
                         type = StepType.Done,
                         state = StepState.Success
                     )
+
                     StepType.Activation -> error("Type Activation is not expected here")
                 }
             }
@@ -198,6 +202,7 @@ class JetpackActivationMainViewModel @Inject constructor(
                     delay(DELAY_BEFORE_SHOWING_ERROR_STATE_MS)
                     isShowingErrorState.value = true
                 }
+
                 else -> isShowingErrorState.value = false
             }
         }.launchIn(viewModelScope)
@@ -214,12 +219,15 @@ class JetpackActivationMainViewModel @Inject constructor(
                 is PluginInstalled -> {
                     currentStep.value = Step(type = StepType.Activation, state = StepState.Ongoing)
                 }
+
                 is PluginInstallFailed -> {
                     currentStep.update { state -> state.copy(state = StepState.Error(status.errorCode)) }
                 }
+
                 is PluginActivated -> {
                     currentStep.value = Step(type = StepType.Connection, state = StepState.Ongoing)
                 }
+
                 is PluginActivationFailed -> {
                     currentStep.update { state -> state.copy(state = StepState.Error(status.errorCode)) }
                 }
@@ -250,7 +258,11 @@ class JetpackActivationMainViewModel @Inject constructor(
         jetpackActivationRepository.fetchJetpackConnectedEmail(site.await()).fold(
             onSuccess = { email ->
                 if (accountRepository.getUserAccount()?.email != email) {
-                    TODO("Handle the edge case of connection using a different account")
+                    WooLog.d(
+                        WooLog.T.LOGIN,
+                        "Jetpack Activation: connection made using a different email than the logged in one"
+                    )
+                    triggerEvent(GoToPasswordScreen(email))
                 }
                 confirmSiteConnection()
             },
@@ -328,5 +340,6 @@ class JetpackActivationMainViewModel @Inject constructor(
     ) : MultiLiveEvent.Event()
 
     object GoToStore : MultiLiveEvent.Event()
+    data class GoToPasswordScreen(val email: String) : MultiLiveEvent.Event()
     object ShowHelpScreen : MultiLiveEvent.Event()
 }
