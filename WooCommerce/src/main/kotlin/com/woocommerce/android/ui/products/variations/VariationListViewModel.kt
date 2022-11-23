@@ -319,10 +319,12 @@ class VariationListViewModel @Inject constructor(
 
             when (variationRepository.bulkCreateVariations(remoteProductId, candidates)) {
                 RequestResult.SUCCESS -> {
+                    tracker.track(AnalyticsEvent.PRODUCT_VARIATION_GENERATION_SUCCESS)
                     refreshVariations(remoteProductId)
                     viewState = viewState.copy(progressDialogState = Hidden)
                 }
                 else -> {
+                    tracker.track(AnalyticsEvent.PRODUCT_VARIATION_GENERATION_FAILURE)
                     viewState = viewState.copy(progressDialogState = Hidden)
                     triggerEvent(ShowGenerateVariationsError.NetworkError)
                 }

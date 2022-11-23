@@ -172,7 +172,7 @@ class VariationListViewModelTest : BaseUnitTest() {
         events
             .last()
             .let { lastEvent ->
-                assertThat(lastEvent).isEqualTo(ShowGenerateVariationConfirmation(variationCandidates))
+                assertThat(lastEvent).isEqualTo(ShowGenerateVariationConfirmation(variationCandidates.size))
             }
     }
 
@@ -215,7 +215,7 @@ class VariationListViewModelTest : BaseUnitTest() {
 
         // when
         viewModel.start()
-        viewModel.onGenerateVariationsConfirmed(emptyList())
+        viewModel.onGenerateVariationsConfirmed()
 
         // then
         verify(variationRepository, times(2)).getProductVariationList(productRemoteId)
@@ -253,7 +253,7 @@ class VariationListViewModelTest : BaseUnitTest() {
 
         // when
         viewModel.start()
-        viewModel.onGenerateVariationsConfirmed(emptyList())
+        viewModel.onGenerateVariationsConfirmed()
 
         // then
         events.last()
@@ -328,14 +328,15 @@ class VariationListViewModelTest : BaseUnitTest() {
     @Test
     fun `When generated variations are successfully created then success event is tracked`() = testBlocking {
         // Given a valid variation candidates list
-        createViewModel()
         val variationCandidates = List(5) { id ->
             listOf(VariantOption(id.toLong(), "Number", id.toString()))
         }
+        doReturn(variationCandidates).whenever(generateVariationCandidates).invoke(any())
+        createViewModel()
         viewModel.start()
 
         // When AddAllVariations succeed
-        viewModel.onGenerateVariationsConfirmed(variationCandidates)
+        viewModel.onGenerateVariationsConfirmed()
 
         // Then variation confirmed event is tracked
         verify(tracker).track(
@@ -349,17 +350,19 @@ class VariationListViewModelTest : BaseUnitTest() {
     @Test
     fun `When generated variations failed then failure event is tracked`() = testBlocking {
         // Given a variation candidates list with a size of [5]
-        createViewModel()
         val variationCandidates = List(5) { id ->
             listOf(VariantOption(id.toLong(), "Number", id.toString()))
         }
+        doReturn(variationCandidates).whenever(generateVariationCandidates).invoke(any())
+        createViewModel()
         viewModel.start()
+        viewModel.onAddVariationsClicked()
 
         // When AddAllVariations fails
         variationRepository.stub {
             onBlocking { bulkCreateVariations(any(), any()) } doReturn RequestResult.ERROR
         }
-        viewModel.onGenerateVariationsConfirmed(variationCandidates)
+        viewModel.onGenerateVariationsConfirmed()
 
         // Then variation confirmed event is tracked
         verify(tracker).track(
