@@ -730,4 +730,5 @@ enum class AnalyticsEvent(val siteless: Boolean = false) {
     // Site creation native flow
     SITE_CREATION_FAILED(siteless = true),
     SITE_CREATION_DISMISSED(siteless = true),
+    SITE_CREATION_SITE_PREVIEWED,
 }
