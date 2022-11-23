@@ -10,8 +10,9 @@ import com.woocommerce.android.R.string
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsEvent.PRODUCT_VARIANTS_BULK_UPDATE_TAPPED
 import com.woocommerce.android.analytics.AnalyticsEvent.PRODUCT_VARIATION_VIEW_VARIATION_DETAIL_TAPPED
+import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_PRODUCT_ID
-import com.woocommerce.android.analytics.AnalyticsTracker.Companion.track
+import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.extensions.isNotSet
 import com.woocommerce.android.extensions.isSet
 import com.woocommerce.android.model.Product
@@ -70,6 +71,7 @@ class VariationListViewModel @Inject constructor(
     private val currencyFormatter: CurrencyFormatter,
     private val dispatchers: CoroutineDispatchers,
     private val generateVariationCandidates: GenerateVariationCandidates,
+    private val tracker: AnalyticsTrackerWrapper
 ) : ScopedViewModel(savedState) {
 
     private val navArgs: VariationListFragmentArgs by savedState.navArgs()
@@ -113,7 +115,7 @@ class VariationListViewModel @Inject constructor(
     }
 
     fun onBulkUpdateClicked() {
-        track(PRODUCT_VARIANTS_BULK_UPDATE_TAPPED)
+        tracker.track(PRODUCT_VARIANTS_BULK_UPDATE_TAPPED)
 
         val variationsCount = viewState.parentProduct?.numVariations ?: return
 
@@ -132,7 +134,7 @@ class VariationListViewModel @Inject constructor(
     }
 
     fun onItemClick(variation: ProductVariation) {
-        track(PRODUCT_VARIATION_VIEW_VARIATION_DETAIL_TAPPED)
+        tracker.track(PRODUCT_VARIATION_VIEW_VARIATION_DETAIL_TAPPED)
         triggerEvent(ShowVariationDetail(variation))
     }
 
@@ -280,7 +282,7 @@ class VariationListViewModel @Inject constructor(
     }
 
     private fun trackWithProductId(event: AnalyticsEvent) {
-        viewState.parentProduct?.let { track(event, mapOf(KEY_PRODUCT_ID to it.remoteId)) }
+        viewState.parentProduct?.let { tracker.track(event, mapOf(KEY_PRODUCT_ID to it.remoteId)) }
     }
 
     fun onAddVariationsClicked() {
@@ -293,16 +295,25 @@ class VariationListViewModel @Inject constructor(
     }
 
     fun onAddAllVariationsClicked() {
+        tracker.track(AnalyticsEvent.PRODUCT_VARIATION_GENERATION_REQUESTED)
         val candidates = variationCandidates ?: return
         if (candidates.size <= GenerateVariationCandidates.VARIATION_CREATION_LIMIT) {
             triggerEvent(ShowGenerateVariationConfirmation(candidates.size))
         } else {
+            tracker.track(
+                stat = AnalyticsEvent.PRODUCT_VARIATION_GENERATION_LIMIT_REACHED,
+                properties = mapOf(AnalyticsTracker.KEY_VARIATIONS_COUNT to candidates.size)
+            )
             triggerEvent(ShowGenerateVariationsError.LimitExceeded(candidates.size))
         }
     }
 
     fun onGenerateVariationsConfirmed() {
         val candidates = variationCandidates ?: return
+        tracker.track(
+            stat = AnalyticsEvent.PRODUCT_VARIATION_GENERATION_CONFIRMED,
+            properties = mapOf(AnalyticsTracker.KEY_VARIATIONS_COUNT to candidates.size)
+        )
         launch {
             viewState = viewState.copy(progressDialogState = Shown(MULTIPLE))
 
