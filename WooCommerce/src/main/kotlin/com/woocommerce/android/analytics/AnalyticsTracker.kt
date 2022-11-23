@@ -424,6 +424,8 @@ class AnalyticsTracker private constructor(private val context: Context) {
         const val VALUE_PROLOGUE = "prologue"
         const val VALUE_LOGIN = "login"
         const val VALUE_OTHER = "other"
+        const val VALUE_WEB = "web"
+        const val VALUE_NATIVE = "native"
 
         var sendUsageStats: Boolean = true
             set(value) {
