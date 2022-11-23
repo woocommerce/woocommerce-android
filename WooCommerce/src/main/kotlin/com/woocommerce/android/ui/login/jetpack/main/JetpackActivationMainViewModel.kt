@@ -108,7 +108,6 @@ class JetpackActivationMainViewModel @Inject constructor(
                 errorCode = (currentStep.state as? StepState.Error)?.code
             )
         }
-
     }.asLiveData()
 
     init {
@@ -278,7 +277,6 @@ class JetpackActivationMainViewModel @Inject constructor(
 
     private fun stepsForConnection() = arrayOf(StepType.Connection, StepType.Done)
 
-
     sealed interface ViewState {
         data class ProgressViewState(
             val siteUrl: String,
@@ -294,7 +292,6 @@ class JetpackActivationMainViewModel @Inject constructor(
             val errorCode: Int?
         ) : ViewState
     }
-
 
     @Parcelize
     data class Step(

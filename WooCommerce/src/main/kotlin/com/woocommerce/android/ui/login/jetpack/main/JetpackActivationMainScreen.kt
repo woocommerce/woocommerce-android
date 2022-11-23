@@ -159,6 +159,7 @@ private fun ProgressState(
 }
 
 @Composable
+@Suppress("ComplexMethod")
 private fun ErrorState(
     viewState: JetpackActivationMainViewModel.ViewState.ErrorViewState,
     onGetHelpClick: () -> Unit,
@@ -233,9 +234,12 @@ private fun ErrorState(
         Spacer(modifier = Modifier.weight(1f))
         if (viewState.errorCode != FORBIDDEN_ERROR_CODE) {
             val retryButton = when (viewState.stepType) {
-                JetpackActivationMainViewModel.StepType.Installation -> R.string.login_jetpack_installation_retry_installing
-                JetpackActivationMainViewModel.StepType.Activation -> R.string.login_jetpack_installation_retry_activating
-                JetpackActivationMainViewModel.StepType.Connection -> R.string.login_jetpack_installation_retry_authorizing
+                JetpackActivationMainViewModel.StepType.Installation ->
+                    R.string.login_jetpack_installation_retry_installing
+                JetpackActivationMainViewModel.StepType.Activation ->
+                    R.string.login_jetpack_installation_retry_activating
+                JetpackActivationMainViewModel.StepType.Connection ->
+                    R.string.login_jetpack_installation_retry_authorizing
                 else -> null
             }
             retryButton?.let {
