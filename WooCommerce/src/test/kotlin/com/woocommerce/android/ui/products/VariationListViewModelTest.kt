@@ -372,4 +372,42 @@ class VariationListViewModelTest : BaseUnitTest() {
         // Then variation limit error is tracked
         verify(tracker).track(AnalyticsEvent.PRODUCT_VARIATION_GENERATION_FAILURE)
     }
+
+    @Test
+    fun `When merchant enters the generation flow then we use the saved candidates`() = testBlocking {
+        // Given a variation candidates list with a size of [5]
+        val variationCandidates = List(5) { id ->
+            listOf(VariantOption(id.toLong(), "Number", id.toString()))
+        }
+        doReturn(variationCandidates).whenever(generateVariationCandidates).invoke(any())
+        createViewModel()
+        viewModel.start()
+
+        // When merchant enters the generation flow
+        viewModel.onAddVariationsClicked()
+        viewModel.onAddAllVariationsClicked()
+        viewModel.onGenerateVariationsConfirmed()
+
+        // Then we generate the candidates only once
+        verify(generateVariationCandidates).invoke(any())
+    }
+
+    @Test
+    fun `When merchant enters the generation flow skipping one step then we use the saved generated candidates`() =
+        testBlocking {
+            // Given a variation candidates list with a size of [5]
+            val variationCandidates = List(5) { id ->
+                listOf(VariantOption(id.toLong(), "Number", id.toString()))
+            }
+            doReturn(variationCandidates).whenever(generateVariationCandidates).invoke(any())
+            createViewModel()
+            viewModel.start()
+
+            // When merchant enters the generation flow skipping one step
+            viewModel.onAddAllVariationsClicked()
+            viewModel.onGenerateVariationsConfirmed()
+
+            // Then we recover from failure but still generate the candidates only once
+            verify(generateVariationCandidates).invoke(any())
+        }
 }

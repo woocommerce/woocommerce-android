@@ -101,7 +101,11 @@ class VariationListViewModel @Inject constructor(
         get() = _variationList.value?.isEmpty() ?: true
 
     private var variationCandidates: List<VariationCandidate>? = null
-        get() = field ?: viewState.parentProduct?.let { generateVariationCandidates.invoke(it) }
+        get() = field ?: viewState.parentProduct?.let {
+            generateVariationCandidates.invoke(it).also { candidates ->
+                field = candidates
+            }
+        }
 
     fun start() {
         productRepository.getProduct(remoteProductId)?.let {
@@ -354,6 +358,7 @@ class VariationListViewModel @Inject constructor(
     sealed class ProgressDialogState : Parcelable {
         @Parcelize
         object Hidden : ProgressDialogState()
+
         @Parcelize
         data class Shown(val cardinality: VariationsCardinality) : ProgressDialogState() {
             enum class VariationsCardinality {
