@@ -300,7 +300,10 @@ class VariationListViewModel @Inject constructor(
     }
 
     fun onGenerateVariationsConfirmed(variationCandidates: List<VariationCandidate>) {
-        tracker.track(AnalyticsEvent.PRODUCT_VARIATION_GENERATION_CONFIRMED)
+        tracker.track(
+            stat = AnalyticsEvent.PRODUCT_VARIATION_GENERATION_CONFIRMED)
+            properties = mapOf(AnalyticsTracker.KEY_VARIATIONS_COUNT to variationCandidates.size)
+        )
         launch {
             viewState = viewState.copy(progressDialogState = Shown(MULTIPLE))
 
