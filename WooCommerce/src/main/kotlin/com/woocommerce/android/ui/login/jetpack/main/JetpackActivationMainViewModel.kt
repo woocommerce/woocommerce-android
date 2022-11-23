@@ -39,7 +39,6 @@ import kotlinx.parcelize.Parcelize
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.store.JetpackStore.JetpackConnectionUrlError
 import org.wordpress.android.fluxc.store.JetpackStore.JetpackUserError
-import java.util.StringJoiner
 import javax.inject.Inject
 
 @HiltViewModel

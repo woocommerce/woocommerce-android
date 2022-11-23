@@ -85,6 +85,7 @@ class JetpackActivationRepository @Inject constructor(
         }
     }
 
+    @Suppress("ReturnCount", "MagicNumber")
     private suspend fun <T> runWithRetry(
         maxAttempts: Int = DEFAULT_MAX_RETRY,
         block: suspend () -> Result<T>
