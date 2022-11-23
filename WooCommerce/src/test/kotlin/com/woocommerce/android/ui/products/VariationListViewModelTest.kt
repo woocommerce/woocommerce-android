@@ -280,14 +280,14 @@ class VariationListViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `When user reach variations limits then variations limit error is tracked`() = testBlocking {
+    fun `When user exceed variations limits then variations limit error is tracked`() = testBlocking {
         // Given a variation candidates list with a size of [limit + 1]
-        val variationsLimit =
+        val exceedVariationsLimit =
             List(GenerateVariationCandidates.VARIATION_CREATION_LIMIT + 1) { id ->
                 listOf(VariantOption(id.toLong(), "Number", id.toString()))
             }
 
-        doReturn(variationsLimit).whenever(generateVariationCandidates).invoke(any())
+        doReturn(exceedVariationsLimit).whenever(generateVariationCandidates).invoke(any())
         doReturn(variations).whenever(variationRepository).getProductVariationList(productRemoteId)
         createViewModel()
         viewModel.start()
@@ -300,18 +300,18 @@ class VariationListViewModelTest : BaseUnitTest() {
         // Then variation limit error is tracked
         verify(tracker).track(
             AnalyticsEvent.PRODUCT_VARIATION_GENERATION_LIMIT_REACHED,
-            mapOf(AnalyticsTracker.KEY_VARIATIONS_COUNT to variationsLimit.size)
+            mapOf(AnalyticsTracker.KEY_VARIATIONS_COUNT to exceedVariationsLimit.size)
         )
     }
 
     @Test
-    fun `When user almost reach variations limits then variations limit error is NOT tracked`() = testBlocking {
+    fun `When user reach variations limits then variations limit error is NOT tracked`() = testBlocking {
         // Given a variation candidates list with a size of [limit]
-        val almostReachVariationsLimit =
+        val reachVariationsLimit =
             List(GenerateVariationCandidates.VARIATION_CREATION_LIMIT) { id ->
                 listOf(VariantOption(id.toLong(), "Number", id.toString()))
             }
-        doReturn(almostReachVariationsLimit).whenever(generateVariationCandidates).invoke(any())
+        doReturn(reachVariationsLimit).whenever(generateVariationCandidates).invoke(any())
         doReturn(variations).whenever(variationRepository).getProductVariationList(productRemoteId)
         createViewModel()
         viewModel.start()
@@ -321,13 +321,13 @@ class VariationListViewModelTest : BaseUnitTest() {
 
         // Then variation request is tracked
         verify(tracker).track(AnalyticsEvent.PRODUCT_VARIATION_GENERATION_REQUESTED)
-        // Then variation limit error is not tracked / sent
+        // Then variation limit error is NOT tracked
         verify(tracker, never()).track(eq(AnalyticsEvent.PRODUCT_VARIATION_GENERATION_LIMIT_REACHED), any())
     }
 
     @Test
     fun `When generated variations are successfully created then success event is tracked`() = testBlocking {
-        // Given a variation candidates list with a size of [limit]
+        // Given a valid variation candidates list
         createViewModel()
         val variationCandidates = List(5) { id ->
             listOf(VariantOption(id.toLong(), "Number", id.toString()))
@@ -339,7 +339,7 @@ class VariationListViewModelTest : BaseUnitTest() {
 
         // Then variation confirmed event is tracked
         verify(tracker).track(AnalyticsEvent.PRODUCT_VARIATION_GENERATION_CONFIRMED)
-        // Then variation limit error is not tracked / sent
+        // Then variation success is tracked
         verify(tracker).track(AnalyticsEvent.PRODUCT_VARIATION_GENERATION_SUCCESS)
     }
 
@@ -360,7 +360,7 @@ class VariationListViewModelTest : BaseUnitTest() {
 
         // Then variation confirmed event is tracked
         verify(tracker).track(AnalyticsEvent.PRODUCT_VARIATION_GENERATION_CONFIRMED)
-        // Then variation limit error is not tracked / sent
+        // Then variation limit error is tracked
         verify(tracker).track(AnalyticsEvent.PRODUCT_VARIATION_GENERATION_FAILURE)
     }
 }
