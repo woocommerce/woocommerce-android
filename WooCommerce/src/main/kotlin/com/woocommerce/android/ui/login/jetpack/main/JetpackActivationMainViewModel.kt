@@ -188,7 +188,7 @@ class JetpackActivationMainViewModel @Inject constructor(
     private fun handleErrorStates() {
         currentStep.onEach { step ->
             when (step.state) {
-                is Error -> {
+                is StepState.Error -> {
                     delay(DELAY_BEFORE_SHOWING_ERROR_STATE_MS)
                     isShowingErrorState.value = true
                 }
