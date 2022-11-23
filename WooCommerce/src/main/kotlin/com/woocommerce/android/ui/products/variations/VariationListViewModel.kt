@@ -301,7 +301,7 @@ class VariationListViewModel @Inject constructor(
 
     fun onGenerateVariationsConfirmed(variationCandidates: List<VariationCandidate>) {
         tracker.track(
-            stat = AnalyticsEvent.PRODUCT_VARIATION_GENERATION_CONFIRMED)
+            stat = AnalyticsEvent.PRODUCT_VARIATION_GENERATION_CONFIRMED,
             properties = mapOf(AnalyticsTracker.KEY_VARIATIONS_COUNT to variationCandidates.size)
         )
         launch {
