@@ -107,7 +107,6 @@ class VariationListFragment :
         generateVariationPickerDialog = null
         progressDialog = null
         layoutManager = null
-
     }
 
     override fun onResume() {
