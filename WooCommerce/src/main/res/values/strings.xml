@@ -315,6 +315,19 @@
     <string name="login_jetpack_installation_error_code_template">Error code %1$s</string>
     <string name="login_jetpack_installation_go_to_store_button">Go to Store</string>
     <string name="login_jetpack_installation_approve_connection">Approve Connection</string>
+    <string name="login_jetpack_installation_error_installing">Error installing Jetpack</string>
+    <string name="login_jetpack_installation_error_activating">Error activating Jetpack</string>
+    <string name="login_jetpack_installation_error_authorizing">Error authorising connection to Jetpack</string>
+    <string name="login_jetpack_installation_error_plugin_permission_message">You don’t have permission to manage plugins on this store</string>
+    <string name="login_jetpack_installation_error_generic_message">There was an error communicating with your site.</string>
+    <string name="login_jetpack_installation_retry_or_contact_support">Please try again and contact support if this error continues.</string>
+    <string name="login_jetpack_installation_get_support">Get support</string>
+    <string name="login_jetpack_installation_retry_installing">Try Installing Again</string>
+    <string name="login_jetpack_installation_retry_activating">Try Activating Again</string>
+    <string name="login_jetpack_installation_retry_authorizing">Try Authorising Again</string>
+    <string name="login_jetpack_installation_cancel">Cancel Installation</string>
+    <string name="login_jetpack_installation_error_forbidden_suggestion">Please contact your shop manager or administrator for help.</string>
+    <string name="login_jetpack_installation_error_connection_permission_message">You don’t have permission to connect to Jetpack on this store</string>
 
     <!--
         My Store View

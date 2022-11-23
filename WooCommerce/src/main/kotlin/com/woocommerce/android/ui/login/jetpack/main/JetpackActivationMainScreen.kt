@@ -8,6 +8,7 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.defaultMinSize
@@ -18,6 +19,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
@@ -40,14 +42,19 @@ import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.compose.annotatedStringRes
 import com.woocommerce.android.ui.compose.component.WCColoredButton
+import com.woocommerce.android.ui.compose.component.WCOutlinedButton
+import com.woocommerce.android.ui.compose.component.WCTextButton
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.ui.login.jetpack.components.JetpackToWooHeader
+
+private const val FORBIDDEN_ERROR_CODE = 403
 
 @Composable
 fun JetpackActivationMainScreen(viewModel: JetpackActivationMainViewModel) {
@@ -64,13 +71,15 @@ fun JetpackActivationMainScreen(viewModel: JetpackActivationMainViewModel) {
 fun JetpackActivationMainScreen(
     viewState: JetpackActivationMainViewModel.ViewState,
     onCloseClick: () -> Unit = {},
-    onContinueClick: () -> Unit = {}
+    onContinueClick: () -> Unit = {},
+    onGetHelpClick: () -> Unit = {},
+    onRetryClick: () -> Unit = {}
 ) {
     Scaffold(
-        topBar = { Toolbar(onCloseClick) },
-        modifier = Modifier.background(MaterialTheme.colors.surface)
+        topBar = { Toolbar(onCloseClick) }
     ) { paddingValues ->
         val modifier = Modifier
+            .background(MaterialTheme.colors.surface)
             .fillMaxSize()
             .padding(paddingValues)
             .padding(dimensionResource(id = R.dimen.major_100))
@@ -82,7 +91,13 @@ fun JetpackActivationMainScreen(
                 onContinueClick = onContinueClick,
                 modifier = modifier
             )
-            is JetpackActivationMainViewModel.ViewState.ErrorViewState -> TODO()
+            is JetpackActivationMainViewModel.ViewState.ErrorViewState -> ErrorState(
+                viewState = viewState,
+                onGetHelpClick = onGetHelpClick,
+                onRetryClick = onRetryClick,
+                onCancelClick = onCloseClick,
+                modifier = modifier
+            )
         }
     }
 }
@@ -137,6 +152,98 @@ private fun ProgressState(
             WCColoredButton(onClick = onContinueClick, modifier = Modifier.fillMaxWidth()) {
                 Text(text = stringResource(id = R.string.login_jetpack_installation_go_to_store_button))
             }
+        }
+    }
+}
+
+@Composable
+private fun ErrorState(
+    viewState: JetpackActivationMainViewModel.ViewState.ErrorViewState,
+    onGetHelpClick: () -> Unit,
+    onRetryClick: () -> Unit,
+    onCancelClick: () -> Unit,
+    modifier: Modifier
+) {
+    Column(
+        modifier = modifier
+    ) {
+        JetpackToWooHeader(isError = true)
+        Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.major_200)))
+        val title = when (viewState.stepType) {
+            JetpackActivationMainViewModel.StepType.Installation -> R.string.login_jetpack_installation_error_installing
+            JetpackActivationMainViewModel.StepType.Activation -> R.string.login_jetpack_installation_error_activating
+            JetpackActivationMainViewModel.StepType.Connection -> R.string.login_jetpack_installation_error_authorizing
+            else -> null
+        }
+        title?.let {
+            Text(
+                text = stringResource(id = it),
+                style = MaterialTheme.typography.h4,
+                fontWeight = FontWeight.Bold
+            )
+        }
+        Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.major_100)))
+        val subtitle = when {
+            viewState.errorCode == FORBIDDEN_ERROR_CODE &&
+                viewState.stepType == JetpackActivationMainViewModel.StepType.Connection ->
+                R.string.login_jetpack_installation_error_connection_permission_message
+            viewState.errorCode == FORBIDDEN_ERROR_CODE ->
+                R.string.login_jetpack_installation_error_plugin_permission_message
+            else -> R.string.login_jetpack_installation_error_generic_message
+        }
+        Text(
+            text = stringResource(id = subtitle),
+            style = MaterialTheme.typography.body1
+        )
+        Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.minor_100)))
+        val suggestion = if (viewState.errorCode == FORBIDDEN_ERROR_CODE) {
+            R.string.login_jetpack_installation_error_forbidden_suggestion
+        } else {
+            R.string.login_jetpack_installation_retry_or_contact_support
+        }
+        Text(
+            text = stringResource(id = suggestion),
+            style = MaterialTheme.typography.body2
+        )
+        viewState.errorCode?.let {
+            Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.major_150)))
+            Text(
+                text = stringResource(id = R.string.login_jetpack_installation_error_code_template, it),
+                style = MaterialTheme.typography.caption,
+                color = colorResource(id = R.color.color_on_surface_medium),
+                fontWeight = FontWeight.SemiBold
+            )
+        }
+        Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.major_150)))
+        WCTextButton(
+            onClick = onGetHelpClick,
+            colors = ButtonDefaults.textButtonColors(contentColor = colorResource(id = R.color.color_accent_3)),
+            contentPadding = PaddingValues(vertical = dimensionResource(id = R.dimen.minor_100))
+        ) {
+            Row(
+                horizontalArrangement = Arrangement.spacedBy(dimensionResource(id = R.dimen.minor_100)),
+                modifier = Modifier.semantics(mergeDescendants = true) {}
+            ) {
+                Icon(painter = painterResource(id = R.drawable.ic_help_24dp), contentDescription = null)
+                Text(text = stringResource(id = R.string.login_jetpack_installation_get_support))
+            }
+        }
+        Spacer(modifier = Modifier.weight(1f))
+        if (viewState.errorCode != FORBIDDEN_ERROR_CODE) {
+            val retryButton = when (viewState.stepType) {
+                JetpackActivationMainViewModel.StepType.Installation -> R.string.login_jetpack_installation_retry_installing
+                JetpackActivationMainViewModel.StepType.Activation -> R.string.login_jetpack_installation_retry_activating
+                JetpackActivationMainViewModel.StepType.Connection -> R.string.login_jetpack_installation_retry_authorizing
+                else -> null
+            }
+            retryButton?.let {
+                WCColoredButton(onClick = onRetryClick, modifier = Modifier.fillMaxWidth()) {
+                    Text(text = stringResource(id = it))
+                }
+            }
+        }
+        WCOutlinedButton(onClick = onCancelClick, modifier = Modifier.fillMaxWidth()) {
+            Text(text = stringResource(id = R.string.login_jetpack_installation_cancel))
         }
     }
 }
@@ -320,6 +427,19 @@ private fun JetpackActivationMainScreenPreview() {
                     )
                 ),
                 connectionStep = JetpackActivationMainViewModel.ConnectionStep.PreConnection
+            )
+        )
+    }
+}
+
+@Composable
+@Preview
+private fun JetpackActivationErrorStatePreview() {
+    WooThemeWithBackground {
+        JetpackActivationMainScreen(
+            viewState = JetpackActivationMainViewModel.ViewState.ErrorViewState(
+                stepType = JetpackActivationMainViewModel.StepType.Installation,
+                errorCode = 503
             )
         )
     }
