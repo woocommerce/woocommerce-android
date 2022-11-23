@@ -48,7 +48,6 @@ import com.woocommerce.android.ui.compose.annotatedStringRes
 import com.woocommerce.android.ui.compose.component.WCColoredButton
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.ui.login.jetpack.components.JetpackToWooHeader
-import com.woocommerce.android.ui.login.jetpack.main.JetpackActivationMainViewModel.ConnectionStep
 
 @Composable
 fun JetpackActivationMainScreen(viewModel: JetpackActivationMainViewModel) {
@@ -68,57 +67,75 @@ fun JetpackActivationMainScreen(
     onContinueClick: () -> Unit = {}
 ) {
     Scaffold(
-        topBar = { Toolbar(onCloseClick) }
+        topBar = { Toolbar(onCloseClick) },
+        modifier = Modifier.background(MaterialTheme.colors.surface)
     ) { paddingValues ->
-        Column(
-            modifier = Modifier
-                .background(MaterialTheme.colors.surface)
-                .fillMaxSize()
-                .padding(paddingValues)
-                .padding(dimensionResource(id = R.dimen.major_100))
-                .verticalScroll(rememberScrollState())
+        val modifier = Modifier
+            .fillMaxSize()
+            .padding(paddingValues)
+            .padding(dimensionResource(id = R.dimen.major_100))
+            .verticalScroll(rememberScrollState())
+
+        when (viewState) {
+            is JetpackActivationMainViewModel.ViewState.ProgressViewState -> ProgressState(
+                viewState = viewState,
+                onContinueClick = onContinueClick,
+                modifier = modifier
+            )
+            is JetpackActivationMainViewModel.ViewState.ErrorViewState -> TODO()
+        }
+    }
+}
+
+@Composable
+private fun ProgressState(
+    viewState: JetpackActivationMainViewModel.ViewState.ProgressViewState,
+    onContinueClick: () -> Unit,
+    modifier: Modifier
+) {
+    Column(
+        modifier = modifier
+    ) {
+        JetpackToWooHeader()
+        Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.major_200)))
+        val title = if (viewState.isDone) {
+            if (viewState.isJetpackInstalled) R.string.login_jetpack_connection_steps_screen_title_done
+            else R.string.login_jetpack_installation_steps_screen_title_done
+        } else {
+            if (viewState.isJetpackInstalled) R.string.login_jetpack_connection_steps_screen_title
+            else R.string.login_jetpack_installation_steps_screen_title
+        }
+        Text(
+            text = stringResource(id = title),
+            style = MaterialTheme.typography.h4,
+            fontWeight = FontWeight.Bold
+        )
+        Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.minor_100)))
+        val subtitle = if (viewState.isDone) {
+            R.string.login_jetpack_steps_screen_subtitle_done
+        } else {
+            R.string.login_jetpack_steps_screen_subtitle
+        }
+        Text(
+            text = annotatedStringRes(stringResId = subtitle, viewState.siteUrl),
+            style = MaterialTheme.typography.body1
+        )
+        Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.major_100)))
+        viewState.steps.forEach { step ->
+            JetpackActivationStep(
+                step,
+                viewState.connectionStep,
+                modifier = Modifier.padding(vertical = dimensionResource(id = R.dimen.minor_100))
+            )
+        }
+        Spacer(modifier = Modifier.weight(1f))
+        AnimatedVisibility(
+            visible = viewState.isDone,
+            enter = slideInVertically { fullHeight -> fullHeight },
+            exit = slideOutVertically { fullHeight -> fullHeight }
         ) {
-            JetpackToWooHeader()
-            Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.major_200)))
-            val title = if (viewState.isDone) {
-                if (viewState.isJetpackInstalled) R.string.login_jetpack_connection_steps_screen_title_done
-                else R.string.login_jetpack_installation_steps_screen_title_done
-            } else {
-                if (viewState.isJetpackInstalled) R.string.login_jetpack_connection_steps_screen_title
-                else R.string.login_jetpack_installation_steps_screen_title
-            }
-            Text(
-                text = stringResource(id = title),
-                style = MaterialTheme.typography.h4,
-                fontWeight = FontWeight.Bold
-            )
-            Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.minor_100)))
-            val subtitle = if (viewState.isDone) {
-                R.string.login_jetpack_steps_screen_subtitle_done
-            } else {
-                R.string.login_jetpack_steps_screen_subtitle
-            }
-            Text(
-                text = annotatedStringRes(stringResId = subtitle, viewState.siteUrl),
-                style = MaterialTheme.typography.body1
-            )
-            Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.major_100)))
-            viewState.steps.forEach { step ->
-                JetpackActivationStep(
-                    step,
-                    viewState.connectionStep,
-                    modifier = Modifier.padding(vertical = dimensionResource(id = R.dimen.minor_100))
-                )
-            }
-            Spacer(modifier = Modifier.weight(1f))
-            AnimatedVisibility(
-                visible = viewState.isDone,
-                enter = slideInVertically { fullHeight -> fullHeight },
-                exit = slideOutVertically { fullHeight -> fullHeight }
-            ) {
-                WCColoredButton(onClick = onContinueClick, modifier = Modifier.fillMaxWidth()) {
-                    Text(text = stringResource(id = R.string.login_jetpack_installation_go_to_store_button))
-                }
+            WCColoredButton(onClick = onContinueClick, modifier = Modifier.fillMaxWidth()) {
+                Text(text = stringResource(id = R.string.login_jetpack_installation_go_to_store_button))
             }
         }
     }
@@ -277,7 +294,7 @@ private fun Toolbar(
 private fun JetpackActivationMainScreenPreview() {
     WooThemeWithBackground {
         JetpackActivationMainScreen(
-            viewState = JetpackActivationMainViewModel.ViewState(
+            viewState = JetpackActivationMainViewModel.ViewState.ProgressViewState(
                 siteUrl = "reallyniceshirts.com",
                 isJetpackInstalled = false,
                 steps = listOf(
@@ -302,7 +319,7 @@ private fun JetpackActivationMainScreenPreview() {
                         state = JetpackActivationMainViewModel.StepState.Idle
                     )
                 ),
-                connectionStep = ConnectionStep.PreConnection
+                connectionStep = JetpackActivationMainViewModel.ConnectionStep.PreConnection
             )
         )
     }

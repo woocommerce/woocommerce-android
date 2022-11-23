@@ -25,6 +25,7 @@ import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.async
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.filter
@@ -78,26 +79,35 @@ class JetpackActivationMainViewModel @Inject constructor(
         scope = viewModelScope,
         initialValue = ConnectionStep.PreConnection
     )
+    private var isShowingErrorState = MutableStateFlow(false)
     val viewState = combine(
         currentStep,
         connectionStep,
-        flowOf(if (navArgs.isJetpackInstalled) stepsForConnection() else stepsForInstallation())
-    ) { currentStep, connectionStep, stepTypes ->
-        ViewState(
-            siteUrl = navArgs.siteUrl,
-            isJetpackInstalled = navArgs.isJetpackInstalled,
-            steps = stepTypes.map { stepType ->
-                Step(
-                    type = stepType,
-                    state = when {
-                        currentStep.type == stepType -> currentStep.state
-                        currentStep.type > stepType -> StepState.Success
-                        else -> StepState.Idle
-                    }
-                )
-            },
-            connectionStep = connectionStep
-        )
+        flowOf(if (navArgs.isJetpackInstalled) stepsForConnection() else stepsForInstallation()),
+        isShowingErrorState
+    ) { currentStep, connectionStep, stepTypes, isShowingErrorState ->
+        when (isShowingErrorState) {
+            false -> ViewState.ProgressViewState(
+                siteUrl = navArgs.siteUrl,
+                isJetpackInstalled = navArgs.isJetpackInstalled,
+                steps = stepTypes.map { stepType ->
+                    Step(
+                        type = stepType,
+                        state = when {
+                            currentStep.type == stepType -> currentStep.state
+                            currentStep.type > stepType -> StepState.Success
+                            else -> StepState.Idle
+                        }
+                    )
+                },
+                connectionStep = connectionStep
+            )
+            true -> ViewState.ErrorViewState(
+                stepType = currentStep.type,
+                errorCode = (currentStep.state as? StepState.Error)?.code
+            )
+        }
+
     }.asLiveData()
 
     init {
@@ -247,13 +257,21 @@ class JetpackActivationMainViewModel @Inject constructor(
 
     private fun stepsForConnection() = arrayOf(StepType.Connection, StepType.Done)
 
-    data class ViewState(
-        val siteUrl: String,
-        val isJetpackInstalled: Boolean,
-        val steps: List<Step>,
-        val connectionStep: ConnectionStep
-    ) {
-        val isDone = steps.all { it.state == StepState.Success }
+
+    sealed interface ViewState {
+        data class ProgressViewState(
+            val siteUrl: String,
+            val isJetpackInstalled: Boolean,
+            val steps: List<Step>,
+            val connectionStep: ConnectionStep
+        ) : ViewState {
+            val isDone = steps.all { it.state == StepState.Success }
+        }
+
+        data class ErrorViewState(
+            val stepType: StepType,
+            val errorCode: Int?
+        ) : ViewState
     }
 
     @Parcelize
