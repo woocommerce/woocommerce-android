@@ -55,6 +55,7 @@ class JetpackActivationMainViewModel @Inject constructor(
         private const val JETPACK_PLANS_URL = "wordpress.com/jetpack/connect/plans"
         private const val DELAY_AFTER_CONNECTION_MS = 500L
         private const val DELAY_BEFORE_SHOWING_ERROR_STATE_MS = 1000L
+        private const val CONNECTED_EMAIL_KEY = "connected-email"
     }
 
     private val navArgs: JetpackActivationMainFragmentArgs by savedStateHandle.navArgs()
@@ -71,6 +72,9 @@ class JetpackActivationMainViewModel @Inject constructor(
                 "Site not cached"
             }
         }
+    private var jetpackConnectedEmail
+        get() = savedState.get<String>(CONNECTED_EMAIL_KEY).orEmpty()
+        set(value) = savedState.set(CONNECTED_EMAIL_KEY, value)
 
     private val currentStep = savedStateHandle.getStateFlow(
         scope = viewModelScope,
@@ -122,10 +126,15 @@ class JetpackActivationMainViewModel @Inject constructor(
     }
 
     fun onContinueClick() = launch {
-        val site = jetpackActivationRepository.getSiteByUrl(navArgs.siteUrl)
-        requireNotNull(site) { "Illegal state, the button shouldn't be visible before fetching the site" }
-        selectedSite.set(site)
-        triggerEvent(GoToStore)
+        val loggedInEmail = accountRepository.getUserAccount()?.email
+        if (jetpackConnectedEmail == loggedInEmail) {
+            val site = jetpackActivationRepository.getSiteByUrl(navArgs.siteUrl)
+            requireNotNull(site) { "Illegal state, the button shouldn't be visible before fetching the site" }
+            selectedSite.set(site)
+            triggerEvent(GoToStore)
+        } else {
+            triggerEvent(GoToPasswordScreen(jetpackConnectedEmail))
+        }
     }
 
     fun onJetpackConnected() {
@@ -256,14 +265,16 @@ class JetpackActivationMainViewModel @Inject constructor(
         WooLog.d(WooLog.T.LOGIN, "Jetpack Activation: start Jetpack Connection validation")
         jetpackActivationRepository.fetchJetpackConnectedEmail(site.await()).fold(
             onSuccess = { email ->
+                jetpackConnectedEmail = email
                 if (accountRepository.getUserAccount()?.email != email) {
                     WooLog.d(
                         WooLog.T.LOGIN,
                         "Jetpack Activation: connection made using a different email than the logged in one"
                     )
-                    triggerEvent(GoToPasswordScreen(email))
+                    connectionStep.value = ConnectionStep.Approved
+                } else {
+                    confirmSiteConnection()
                 }
-                confirmSiteConnection()
             },
             onFailure = {
                 val errorCode = ((it as? OnChangedException)?.error as? JetpackUserError)?.errorCode
