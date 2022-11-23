@@ -13,6 +13,7 @@ import androidx.navigation.fragment.findNavController
 import com.woocommerce.android.NavGraphMainDirections
 import com.woocommerce.android.R
 import com.woocommerce.android.extensions.handleNotice
+import com.woocommerce.android.extensions.navigateBackWithNotice
 import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.support.help.HelpActivity
 import com.woocommerce.android.support.help.HelpActivity.Origin
@@ -33,6 +34,10 @@ import org.wordpress.android.login.LoginMode
 
 @AndroidEntryPoint
 class JetpackActivationMainFragment : BaseFragment() {
+    companion object {
+        const val CONNECTION_DISMISSED_RESULT = "connection-dismissed"
+    }
+
     private val viewModel: JetpackActivationMainViewModel by viewModels()
 
     override val activityAppBarStatus: AppBarStatus
@@ -95,8 +100,7 @@ class JetpackActivationMainFragment : BaseFragment() {
             viewModel.onJetpackConnected()
         }
         handleNotice(WPComWebViewFragment.WEBVIEW_DISMISSED) {
-            // TODO setup dismiss state in parent screen
-            findNavController().navigateUp()
+            navigateBackWithNotice(CONNECTION_DISMISSED_RESULT)
         }
     }
 
