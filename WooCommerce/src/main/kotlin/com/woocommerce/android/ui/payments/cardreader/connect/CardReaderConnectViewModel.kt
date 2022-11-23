@@ -4,6 +4,7 @@ import androidx.annotation.DrawableRes
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
+import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.R
 import com.woocommerce.android.cardreader.CardReaderManager
@@ -74,7 +75,8 @@ class CardReaderConnectViewModel @Inject constructor(
     savedState: SavedStateHandle,
     private val dispatchers: CoroutineDispatchers,
     private val tracker: CardReaderTracker,
-    private val appPrefs: AppPrefsWrapper,
+    private val appPrefsWrapper: AppPrefsWrapper,
+    private val appPrefs: AppPrefs,
     private val developerOptionsRepository: DeveloperOptionsRepository,
     private val locationRepository: CardReaderLocationRepository,
     private val selectedSite: SelectedSite,
@@ -391,7 +393,7 @@ class CardReaderConnectViewModel @Inject constructor(
         }
     }
 
-    private fun getPaymentPluginType(): PluginType = appPrefs.getCardReaderPreferredPlugin(
+    private fun getPaymentPluginType(): PluginType = appPrefsWrapper.getCardReaderPreferredPlugin(
         selectedSite.get().id,
         selectedSite.get().siteId,
         selectedSite.get().selfHostedSiteId
@@ -471,11 +473,11 @@ class CardReaderConnectViewModel @Inject constructor(
     }
 
     private fun storeConnectedReader(cardReader: CardReader) {
-        cardReader.id?.let { id -> appPrefs.setLastConnectedCardReaderId(id) }
+        cardReader.id?.let { id -> appPrefsWrapper.setLastConnectedCardReaderId(id) }
     }
 
     private fun findLastKnowReader(readers: List<CardReader>): CardReader? {
-        return readers.find { it.id == appPrefs.getLastConnectedCardReaderId() }
+        return readers.find { it.id == appPrefsWrapper.getLastConnectedCardReaderId() }
     }
 
     private fun trackLocationFailureFetching(errorDescription: String?) {
