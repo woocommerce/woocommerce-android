@@ -419,6 +419,7 @@ class AnalyticsTracker private constructor(private val context: Context) {
         const val KEY_PATH = "path"
 
         // -- Store creation
+        const val KEY_IAP_ELIGIBLE = "isEligible"
         const val VALUE_LOGIN_EMAIL_ERROR = "login_email_error"
         const val VALUE_SWITCHING_STORE = "switching_store"
         const val VALUE_PROLOGUE = "prologue"

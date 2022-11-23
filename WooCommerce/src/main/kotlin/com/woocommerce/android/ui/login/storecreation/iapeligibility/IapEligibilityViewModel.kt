@@ -1,6 +1,9 @@
 package com.woocommerce.android.ui.login.storecreation.iapeligibility
 
 import androidx.lifecycle.SavedStateHandle
+import com.woocommerce.android.analytics.AnalyticsEvent
+import com.woocommerce.android.analytics.AnalyticsTracker
+import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.iap.pub.PurchaseWpComPlanSupportChecker
 import com.woocommerce.android.iap.pub.model.IAPSupportedResult
 import com.woocommerce.android.ui.login.storecreation.iapeligibility.IapEligibilityViewModel.IapEligibilityEvent.NavigateToNativeStoreCreation
@@ -14,16 +17,36 @@ import javax.inject.Inject
 @HiltViewModel
 class IapEligibilityViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
-    private val planSupportChecker: PurchaseWpComPlanSupportChecker
+    private val planSupportChecker: PurchaseWpComPlanSupportChecker,
+    private val analyticsTrackerWrapper: AnalyticsTrackerWrapper
 ) : ScopedViewModel(savedStateHandle) {
     init {
         launch {
-            val event = when (planSupportChecker.isIAPSupported()) {
-                is IAPSupportedResult.Success -> NavigateToNativeStoreCreation
-                is IAPSupportedResult.Error -> NavigateToWebStoreCreation
+            when (val result = planSupportChecker.isIAPSupported()) {
+                is IAPSupportedResult.Success -> onSuccess(result)
+                is IAPSupportedResult.Error -> onError(result)
             }
-            triggerEvent(event)
         }
+    }
+
+    private fun onError(result: IAPSupportedResult.Error) {
+        analyticsTrackerWrapper.track(
+            AnalyticsEvent.SITE_CREATION_IAP_ERROR,
+            mapOf(AnalyticsTracker.KEY_ERROR_TYPE to result.errorType.toString())
+        )
+        triggerEvent(NavigateToWebStoreCreation)
+    }
+
+    private fun onSuccess(result: IAPSupportedResult.Success) {
+        analyticsTrackerWrapper.track(
+            AnalyticsEvent.SITE_CREATION_IAP_ELIGIBILITY,
+            mapOf(AnalyticsTracker.KEY_IAP_ELIGIBLE to result.isSupported)
+        )
+        val navEvent = when {
+            result.isSupported -> NavigateToNativeStoreCreation
+            else -> NavigateToWebStoreCreation
+        }
+        triggerEvent(navEvent)
     }
 
     sealed class IapEligibilityEvent : MultiLiveEvent.Event() {

@@ -727,5 +727,9 @@ enum class AnalyticsEvent(val siteless: Boolean = false) {
     UNIVERSAL_LINK_FAILED,
 
     // Analytics Hub
-    ANALYTICS_HUB_WAITING_TIME_LOADED
+    ANALYTICS_HUB_WAITING_TIME_LOADED,
+
+    // Site creation native flow
+    SITE_CREATION_IAP_ELIGIBILITY(siteless = true),
+    SITE_CREATION_IAP_ERROR(siteless = true)
 }
