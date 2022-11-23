@@ -3,6 +3,7 @@ package com.woocommerce.android.cardreader.internal
 import android.app.Application
 import android.content.ComponentCallbacks2
 import android.content.res.Configuration
+import com.stripe.stripeterminal.external.models.SimulateReaderUpdate
 import com.stripe.stripeterminal.log.LogLevel
 import com.woocommerce.android.cardreader.BuildConfig
 import com.woocommerce.android.cardreader.CardReaderManager
@@ -75,7 +76,8 @@ internal class CardReaderManagerImpl(
 
             initStripeTerminal(logLevel)
 
-            terminal.setupSimulator()
+            setupSimulator()
+
         } else {
             logWrapper.w(TAG, "CardReaderManager is already initialized")
         }
@@ -87,6 +89,11 @@ internal class CardReaderManagerImpl(
     ): Flow<CardReaderDiscoveryEvents> {
         if (!terminal.isInitialized()) throw IllegalStateException("Terminal not initialized")
         return connectionManager.discoverReaders(isSimulated, cardReaderTypesToDiscover)
+    }
+
+    override fun setupSimulator() {
+        val updateFrequency = TODO()
+        terminal.setupSimulator(updateFrequency)
     }
 
     override fun startConnectionToReader(cardReader: CardReader, locationId: String) {
