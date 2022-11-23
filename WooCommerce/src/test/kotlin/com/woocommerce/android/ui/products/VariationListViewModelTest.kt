@@ -180,7 +180,7 @@ class VariationListViewModelTest : BaseUnitTest() {
     fun `Display limit exceeded error if user requested variations generation above the limit`() {
         // given
         val variationCandidatesAboveLimit =
-            (0..GenerateVariationCandidates.VARIATION_CREATION_LIMIT).map {
+            List(GenerateVariationCandidates.VARIATION_CREATION_LIMIT + 1) {
                 listOf(
                     VariantOption(
                         1,

@@ -119,11 +119,7 @@ class VariationRepository @Inject constructor(
                 remoteProductId,
                 variations = variationCandidates.map { candidate ->
                     candidate.map { variantOption ->
-                        WCProductVariationModel.ProductVariantOption(
-                            id = variantOption.id,
-                            name = variantOption.name,
-                            option = variantOption.option
-                        )
+                        variantOption.asSourceModel()
                     }
                 }
             )
