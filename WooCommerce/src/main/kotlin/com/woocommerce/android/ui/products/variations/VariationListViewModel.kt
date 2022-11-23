@@ -98,6 +98,9 @@ class VariationListViewModel @Inject constructor(
     val isEmpty
         get() = _variationList.value?.isEmpty() ?: true
 
+    private var variationCandidates: List<VariationCandidate>? = null
+        get() = field ?: viewState.parentProduct?.let { generateVariationCandidates.invoke(it) }
+
     fun start() {
         productRepository.getProduct(remoteProductId)?.let {
             viewState = viewState.copy(parentProduct = it)
@@ -280,15 +283,21 @@ class VariationListViewModel @Inject constructor(
         viewState.parentProduct?.let { track(event, mapOf(KEY_PRODUCT_ID to it.remoteId)) }
     }
 
-    fun onAddAllVariationsClicked() {
+    fun onAddVariationsClicked() {
         val product = viewState.parentProduct ?: return
+        // Always generate the list of candidates and save it on variationCandidates var
+        generateVariationCandidates.invoke(product).let { candidates ->
+            variationCandidates = candidates
+            triggerEvent(ShowVariationDialog(variationCandidatesSize = candidates.size))
+        }
+    }
 
-        val variationCandidates = generateVariationCandidates.invoke(product)
-
-        if (variationCandidates.size <= GenerateVariationCandidates.VARIATION_CREATION_LIMIT) {
-            triggerEvent(ShowGenerateVariationConfirmation(variationCandidates))
+    fun onAddAllVariationsClicked() {
+        val candidates = variationCandidates ?: return
+        if (candidates.size <= GenerateVariationCandidates.VARIATION_CREATION_LIMIT) {
+            triggerEvent(ShowGenerateVariationConfirmation(candidates.size))
         } else {
-            triggerEvent(ShowGenerateVariationsError.LimitExceeded(variationCandidates.size))
+            triggerEvent(ShowGenerateVariationsError.LimitExceeded(candidates.size))
         }
     }
 
@@ -352,7 +361,9 @@ class VariationListViewModel @Inject constructor(
      */
     object ShowBulkUpdateLimitExceededWarning : Event()
 
-    data class ShowGenerateVariationConfirmation(val variationCandidates: List<VariationCandidate>) : Event()
+    data class ShowVariationDialog(val variationCandidatesSize: Int) : Event()
+
+    data class ShowGenerateVariationConfirmation(val variationCandidatesSize: Int) : Event()
 
     sealed class ShowGenerateVariationsError : Event() {
         data class LimitExceeded(val variationCandidatesSize: Int) : ShowGenerateVariationsError()
