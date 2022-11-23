@@ -426,6 +426,12 @@ class AnalyticsTracker private constructor(private val context: Context) {
         const val VALUE_OTHER = "other"
         const val VALUE_WEB = "web"
         const val VALUE_NATIVE = "native"
+        const val VALUE_STEP_STORE_NAME = "store_name"
+        const val VALUE_STEP_STORE_PROFILER = "store_profiler"
+        const val VALUE_STEP_DOMAIN_PICKER = "domain_picker"
+        const val VALUE_STEP_STORE_SUMMARY = "store_summary"
+        const val VALUE_STEP_PLAN_PURCHASE = "plan_purchase"
+        const val VALUE_STEP_STORE_CREATED = "store_created"
 
         var sendUsageStats: Boolean = true
             set(value) {

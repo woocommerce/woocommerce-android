@@ -731,4 +731,5 @@ enum class AnalyticsEvent(val siteless: Boolean = false) {
     SITE_CREATION_FAILED(siteless = true),
     SITE_CREATION_DISMISSED(siteless = true),
     SITE_CREATION_SITE_PREVIEWED,
+    SITE_CREATION_STEP(siteless = true),
 }

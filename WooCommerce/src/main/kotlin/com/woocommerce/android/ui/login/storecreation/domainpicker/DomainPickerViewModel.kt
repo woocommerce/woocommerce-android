@@ -5,6 +5,9 @@ import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.AppConstants
 import com.woocommerce.android.R
+import com.woocommerce.android.analytics.AnalyticsEvent
+import com.woocommerce.android.analytics.AnalyticsTracker
+import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.ui.login.storecreation.NewStore
 import com.woocommerce.android.ui.login.storecreation.domainpicker.DomainPickerViewModel.LoadingState.Idle
 import com.woocommerce.android.ui.login.storecreation.domainpicker.DomainPickerViewModel.LoadingState.Loading
@@ -29,7 +32,8 @@ import javax.inject.Inject
 class DomainPickerViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
     domainSuggestionsRepository: DomainSuggestionsRepository,
-    private val newStore: NewStore
+    private val newStore: NewStore,
+    val analyticsTrackerWrapper: AnalyticsTrackerWrapper
 ) : ScopedViewModel(savedStateHandle) {
     private val domainQuery = savedState.getStateFlow(this, newStore.store.value.name ?: "")
     private val loadingState = MutableStateFlow(Idle)
@@ -50,6 +54,12 @@ class DomainPickerViewModel @Inject constructor(
     }.asLiveData()
 
     init {
+        analyticsTrackerWrapper.track(
+            AnalyticsEvent.SITE_CREATION_STEP,
+            mapOf(
+                AnalyticsTracker.KEY_STEP to AnalyticsTracker.VALUE_STEP_DOMAIN_PICKER
+            )
+        )
         viewModelScope.launch {
             domainQuery
                 .filter { it.isNotBlank() }
