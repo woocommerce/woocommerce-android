@@ -1,6 +1,7 @@
 package com.woocommerce.android.ui.sitepicker.views
 
 import android.content.Context
+import android.graphics.drawable.Drawable
 import android.util.AttributeSet
 import android.view.LayoutInflater
 import android.view.View
@@ -25,6 +26,12 @@ class LoginNoStoresView @JvmOverloads constructor(
         get() = binding.btnSecondaryAction.text.toString()
         set(value) {
             binding.btnSecondaryAction.text = value
+        }
+
+    var illustration: Drawable?
+        get() = binding.noStoresViewIllustration?.drawable
+        set(value) {
+            binding.noStoresViewIllustration?.setImageDrawable(value)
         }
 
     var isNoStoresBtnVisible by binding.btnSecondaryAction::isVisible

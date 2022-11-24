@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <merge xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content">
 
@@ -10,6 +11,14 @@
         android:orientation="vertical"
         android:background="@color/color_surface">
 
+        <androidx.appcompat.widget.AppCompatImageView
+            android:id="@+id/no_stores_view_illustration"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:srcCompat="@drawable/img_woo_no_stores"
+            android:layout_marginTop="@dimen/major_100"
+            app:srcCompat="@drawable/img_site_picker_no_stores" />
+
         <com.google.android.material.textview.MaterialTextView
             android:id="@+id/no_stores_view_text"
             style="@style/Woo.TextView.Subtitle1"
@@ -19,8 +28,6 @@
             android:layout_marginTop="@dimen/major_100"
             android:layout_marginEnd="@dimen/major_100"
             android:layout_marginBottom="0dp"
-            android:drawableTop="@drawable/img_woo_no_stores"
-            android:drawablePadding="@dimen/major_100"
             android:gravity="center_horizontal"
             android:lineSpacingExtra="@dimen/line_spacing_extra_50"
             android:text="@string/login_no_stores"

@@ -4,6 +4,7 @@ import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
 import android.view.View
+import androidx.appcompat.content.res.AppCompatResources
 import androidx.core.view.isVisible
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
@@ -202,6 +203,10 @@ class SitePickerFragment : BaseFragment(R.layout.fragment_site_picker), LoginEma
     }
 
     private fun updateNoStoresView() {
+        binding.noStoresView.illustration = AppCompatResources.getDrawable(
+            requireActivity(),
+            R.drawable.img_site_picker_no_stores
+        )
         binding.loginEpilogueButtonBar.buttonPrimary.setOnClickListener {
             viewModel.onAddStoreClick()
         }
@@ -211,6 +216,10 @@ class SitePickerFragment : BaseFragment(R.layout.fragment_site_picker), LoginEma
     }
 
     private fun updateWooNotFoundView() {
+        binding.noStoresView.illustration = AppCompatResources.getDrawable(
+            requireActivity(),
+            R.drawable.img_woo_no_stores
+        )
         binding.loginEpilogueButtonBar.buttonPrimary.setOnClickListener {
             AnalyticsTracker.track(AnalyticsEvent.LOGIN_WOOCOMMERCE_SETUP_BUTTON_TAPPED)
             viewModel.onInstallWooClicked()
@@ -221,6 +230,10 @@ class SitePickerFragment : BaseFragment(R.layout.fragment_site_picker), LoginEma
     }
 
     private fun updateSimpleWPComView() {
+        binding.noStoresView.illustration = AppCompatResources.getDrawable(
+            requireActivity(),
+            R.drawable.img_woo_no_stores
+        )
         binding.loginEpilogueButtonBar.buttonPrimary.setOnClickListener {
             viewModel.onViewConnectedStoresButtonClick()
         }
