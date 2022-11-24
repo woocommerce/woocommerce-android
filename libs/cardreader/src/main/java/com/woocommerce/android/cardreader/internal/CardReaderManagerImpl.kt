@@ -3,7 +3,6 @@ package com.woocommerce.android.cardreader.internal
 import android.app.Application
 import android.content.ComponentCallbacks2
 import android.content.res.Configuration
-import com.stripe.stripeterminal.external.models.SimulateReaderUpdate
 import com.stripe.stripeterminal.log.LogLevel
 import com.woocommerce.android.cardreader.BuildConfig
 import com.woocommerce.android.cardreader.CardReaderManager
