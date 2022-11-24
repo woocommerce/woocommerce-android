@@ -1485,7 +1485,7 @@
     <string name="product_wip_message_m3">You can now edit grouped, external and variable products, change product type and update categories and tags.</string>
     <string name="product_bullet" translatable="false"> \u2022 </string>
     <string name="product_variant_list_empty">Adding options like size and color is currently available only on the web. These will show up as options on the product page of your site.</string>
-    <string name="product_variant_list_add_first_variation">Add your first variation</string>
+    <string name="product_variant_list_add_first_variation">Create your first variation</string>
     <string name="product_variant_list_empty_action">Add Variation</string>
     <string name="product_description_hint_no_title">Describe your product to your future customers…</string>
     <string name="product_description_hint_with_title">Tell us more about %s…</string>
@@ -1635,7 +1635,7 @@
     <string name="variation_list_menu_bulk_update">Bulk update…</string>
     <string name="variations_bulk_limit_exceeded_button_ok">OK</string>
     <string name="variation_add_new">Add new variation</string>
-    <string name="variation_add_new_description">Creates one new variation. Manually set the attributes.</string>
+    <string name="variation_add_new_description">Create one new variation. Manually set which attributes belong to the variable product.</string>
     <string name="variation_add_all">Generate all %1$d variations</string>
     <string name="variation_add_all_description">Creates variations for all combinations of your attributes.</string>
 
@@ -1668,7 +1668,7 @@
     <string name="variations_bulk_update_stock_quantity_success">Updated stock quantity</string>
     <string name="variations_bulk_creation_warning_title">Generation limit exceeded</string>
     <string name="variations_bulk_creation_warning_message">Currently creation is supported for %1$d variations maximum. Generating variations for this product would create %2$d variations.</string>
-    <string name="variations_bulk_creation_confirmation_title">Are you sure you want to generate all variations?</string>
+    <string name="variations_bulk_creation_confirmation_title">Generate all variations?</string>
     <string name="variations_bulk_creation_confirmation_message">This will create a new variation for each and every possible combination of variation attributes (%1$d variations).</string>
     <string name="variations_bulk_creation_progress_title">Generating variations</string>
 
