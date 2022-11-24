@@ -150,12 +150,12 @@ class VariationListViewModel @Inject constructor(
         }
     }
 
-    fun createEmptyVariation() {
+    private fun createEmptyVariation() {
         trackWithProductId(AnalyticsEvent.PRODUCT_VARIATION_ADD_MORE_TAPPED)
         handleVariationCreation()
     }
 
-    fun createFirstVariation() {
+    private fun createFirstVariation() {
         trackWithProductId(AnalyticsEvent.PRODUCT_VARIATION_ADD_FIRST_TAPPED)
         viewState.parentProduct
             ?.variationEnabledAttributes
