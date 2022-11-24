@@ -13,8 +13,6 @@ import com.woocommerce.android.iap.internal.core.IAPManager
 import com.woocommerce.android.iap.internal.core.IAPOutMapper
 import com.woocommerce.android.iap.internal.core.IAPPeriodicPurchaseStatusChecker
 import com.woocommerce.android.iap.internal.core.IAPPurchasesUpdatedListener
-import com.woocommerce.android.iap.internal.network.IAPMobilePayAPI
-import com.woocommerce.android.iap.internal.network.model.CreateAndConfirmOrderResponse
 import com.woocommerce.android.iap.internal.planpurchase.IAPPurchaseWPComPlanActionsImpl
 import com.woocommerce.android.iap.internal.planpurchase.IAPPurchaseWpComPlanHandler
 import com.woocommerce.android.iap.pub.model.IAPError
@@ -22,6 +20,8 @@ import com.woocommerce.android.iap.pub.model.PurchaseStatus
 import com.woocommerce.android.iap.pub.model.WPComIsPurchasedResult
 import com.woocommerce.android.iap.pub.model.WPComProductResult
 import com.woocommerce.android.iap.pub.model.WPComPurchaseResult
+import com.woocommerce.android.iap.pub.network.IAPMobilePayAPI
+import com.woocommerce.android.iap.pub.network.model.CreateAndConfirmOrderResponse
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.async

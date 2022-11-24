@@ -1,6 +1,6 @@
-package com.woocommerce.android.iap.internal.network.model
+package com.woocommerce.android.iap.pub.network.model
 
-internal sealed class CreateAndConfirmOrderResponse {
+sealed class CreateAndConfirmOrderResponse {
     data class Success(val orderId: Long) : CreateAndConfirmOrderResponse()
 
     object Network : CreateAndConfirmOrderResponse()
