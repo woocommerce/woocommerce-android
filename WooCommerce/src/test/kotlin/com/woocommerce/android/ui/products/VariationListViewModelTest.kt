@@ -159,14 +159,13 @@ class VariationListViewModelTest : BaseUnitTest() {
                 )
             )
         )
-        whenever(generateVariationCandidates.invoke(any())).thenReturn(variationCandidates)
         createViewModel()
         val events = mutableListOf<MultiLiveEvent.Event>()
         viewModel.event.observeForever { event -> events.add(event) }
 
         // when
         viewModel.start()
-        viewModel.onAddAllVariationsClicked()
+        viewModel.onAddAllVariationsClicked(variationCandidates)
 
         // then
         events
@@ -189,14 +188,13 @@ class VariationListViewModelTest : BaseUnitTest() {
                     )
                 )
             }
-        whenever(generateVariationCandidates.invoke(any())).thenReturn(variationCandidatesAboveLimit)
         createViewModel()
         val events = mutableListOf<MultiLiveEvent.Event>()
         viewModel.event.observeForever { event -> events.add(event) }
 
         // when
         viewModel.start()
-        viewModel.onAddAllVariationsClicked()
+        viewModel.onAddAllVariationsClicked(variationCandidatesAboveLimit)
 
         // then
         events
@@ -209,13 +207,16 @@ class VariationListViewModelTest : BaseUnitTest() {
     @Test
     fun `Refresh variations list and hide progress bar if variation generation is successful`() = testBlocking {
         // given
+        val variationCandidates = List(5) { id ->
+            listOf(VariantOption(id.toLong(), "Number", id.toString()))
+        }
         createViewModel()
         val states = mutableListOf<ViewState>()
         viewModel.viewStateLiveData.observeForever { _, new -> states.add(new) }
 
         // when
         viewModel.start()
-        viewModel.onGenerateVariationsConfirmed(emptyList())
+        viewModel.onGenerateVariationsConfirmed(variationCandidates)
 
         // then
         verify(variationRepository, times(2)).getProductVariationList(productRemoteId)
@@ -245,6 +246,9 @@ class VariationListViewModelTest : BaseUnitTest() {
         variationRepository.stub {
             onBlocking { bulkCreateVariations(any(), any()) } doReturn RequestResult.ERROR
         }
+        val variationCandidates = List(5) { id ->
+            listOf(VariantOption(id.toLong(), "Number", id.toString()))
+        }
         createViewModel()
         val states = mutableListOf<ViewState>()
         viewModel.viewStateLiveData.observeForever { _, new -> states.add(new) }
@@ -253,7 +257,7 @@ class VariationListViewModelTest : BaseUnitTest() {
 
         // when
         viewModel.start()
-        viewModel.onGenerateVariationsConfirmed(emptyList())
+        viewModel.onGenerateVariationsConfirmed(variationCandidates)
 
         // then
         events.last()
@@ -286,14 +290,12 @@ class VariationListViewModelTest : BaseUnitTest() {
             List(GenerateVariationCandidates.VARIATION_CREATION_LIMIT + 1) { id ->
                 listOf(VariantOption(id.toLong(), "Number", id.toString()))
             }
-
-        doReturn(exceedVariationsLimit).whenever(generateVariationCandidates).invoke(any())
         doReturn(variations).whenever(variationRepository).getProductVariationList(productRemoteId)
         createViewModel()
         viewModel.start()
 
         // When AddAllVariations is Clicked
-        viewModel.onAddAllVariationsClicked()
+        viewModel.onAddAllVariationsClicked(exceedVariationsLimit)
 
         // Then variation request is tracked
         verify(tracker).track(AnalyticsEvent.PRODUCT_VARIATION_GENERATION_REQUESTED)
@@ -311,13 +313,12 @@ class VariationListViewModelTest : BaseUnitTest() {
             List(GenerateVariationCandidates.VARIATION_CREATION_LIMIT) { id ->
                 listOf(VariantOption(id.toLong(), "Number", id.toString()))
             }
-        doReturn(reachVariationsLimit).whenever(generateVariationCandidates).invoke(any())
         doReturn(variations).whenever(variationRepository).getProductVariationList(productRemoteId)
         createViewModel()
         viewModel.start()
 
         // When AddAllVariations is Clicked
-        viewModel.onAddAllVariationsClicked()
+        viewModel.onAddAllVariationsClicked(reachVariationsLimit)
 
         // Then variation request is tracked
         verify(tracker).track(AnalyticsEvent.PRODUCT_VARIATION_GENERATION_REQUESTED)
@@ -328,10 +329,10 @@ class VariationListViewModelTest : BaseUnitTest() {
     @Test
     fun `When generated variations are successfully created then success event is tracked`() = testBlocking {
         // Given a valid variation candidates list
-        createViewModel()
         val variationCandidates = List(5) { id ->
             listOf(VariantOption(id.toLong(), "Number", id.toString()))
         }
+        createViewModel()
         viewModel.start()
 
         // When AddAllVariations succeed
@@ -349,11 +350,13 @@ class VariationListViewModelTest : BaseUnitTest() {
     @Test
     fun `When generated variations failed then failure event is tracked`() = testBlocking {
         // Given a variation candidates list with a size of [5]
-        createViewModel()
         val variationCandidates = List(5) { id ->
             listOf(VariantOption(id.toLong(), "Number", id.toString()))
         }
+        doReturn(variationCandidates).whenever(generateVariationCandidates).invoke(any())
+        createViewModel()
         viewModel.start()
+        viewModel.onAddVariationsClicked()
 
         // When AddAllVariations fails
         variationRepository.stub {
