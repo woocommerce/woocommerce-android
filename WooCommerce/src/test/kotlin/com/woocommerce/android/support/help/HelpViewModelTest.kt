@@ -3,9 +3,9 @@ package com.woocommerce.android.support.help
 import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.support.TicketType
 import com.woocommerce.android.tools.SelectedSite
-import com.woocommerce.android.util.WooLogWrapper
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.runBlocking
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 import org.mockito.kotlin.any
@@ -28,17 +28,21 @@ class HelpViewModelTest : BaseUnitTest() {
         on { exists() }.thenReturn(true)
     }
     private val wooStore: WooCommerceStore = mock()
-    private val wooLogWrapper: WooLogWrapper = mock()
-    private val viewModel = HelpViewModel(
-        savedState,
-        wooStore,
-        selectedSite,
-        wooLogWrapper
-    )
+
+    fun initViewModel() = runBlocking {
+        whenever(wooStore.fetchSSR(any())).thenReturn(WooResult(WooError(mock(), mock())))
+        return@runBlocking HelpViewModel(
+            savedState,
+            wooStore,
+            selectedSite,
+            mock()
+        )
+    }
 
     @Test
     fun `given site doesnt exist, when on contact clicked, then create event triggered`() {
         // GIVEN
+        val viewModel = initViewModel()
         whenever(selectedSite.exists()).thenReturn(false)
 
         // WHEN
@@ -56,6 +60,7 @@ class HelpViewModelTest : BaseUnitTest() {
     @Test
     fun `given site exists, when on contact clicked, then loading event triggered`() {
         // GIVEN
+        val viewModel = initViewModel()
         whenever(selectedSite.exists()).thenReturn(true)
 
         // WHEN
@@ -69,6 +74,7 @@ class HelpViewModelTest : BaseUnitTest() {
     fun `given woo store returns error general, when on contact clicked, then create event triggered with error tag`() =
         testBlocking {
             // GIVEN
+            val viewModel = initViewModel()
             whenever(wooStore.fetchSitePlugins(siteModel)).thenReturn(
                 WooResult(
                     WooError(
@@ -94,6 +100,7 @@ class HelpViewModelTest : BaseUnitTest() {
     fun `given woo store returns error pay, when on contact clicked, then create event triggered with error tag`() =
         testBlocking {
             // GIVEN
+            val viewModel = initViewModel()
             whenever(wooStore.fetchSitePlugins(siteModel)).thenReturn(
                 WooResult(
                     WooError(
@@ -119,6 +126,7 @@ class HelpViewModelTest : BaseUnitTest() {
     fun `given store success with no plugins, when on contact clicked, then event triggered with no plugins tag`() =
         testBlocking {
             // GIVEN
+            val viewModel = initViewModel()
             whenever(wooStore.fetchSitePlugins(siteModel)).thenReturn(WooResult(emptyList()))
             whenever(wooStore.getSitePlugin(any(), any())).thenReturn(null)
 
@@ -141,6 +149,7 @@ class HelpViewModelTest : BaseUnitTest() {
     fun `given store success with wcpay installed, when on contact clicked, then event triggered with wcpay tag`() =
         testBlocking {
             // GIVEN
+            val viewModel = initViewModel()
             whenever(wooStore.fetchSitePlugins(siteModel)).thenReturn(WooResult(emptyList()))
             whenever(wooStore.getSitePlugin(siteModel, WooCommerceStore.WooPlugin.WOO_PAYMENTS))
                 .thenReturn(mock())
@@ -164,6 +173,7 @@ class HelpViewModelTest : BaseUnitTest() {
     fun `given store success with wcpay installed and act, when on contact clicked, then event triggered wcpay tag`() =
         testBlocking {
             // GIVEN
+            val viewModel = initViewModel()
             whenever(wooStore.fetchSitePlugins(siteModel)).thenReturn(WooResult(emptyList()))
             val wcpayPluginModel = mock<SitePluginModel> {
                 on { isActive }.thenReturn(true)
@@ -190,6 +200,7 @@ class HelpViewModelTest : BaseUnitTest() {
     fun `given store success with stripe installed, when on contact clicked, then event triggered with stripe tag`() =
         testBlocking {
             // GIVEN
+            val viewModel = initViewModel()
             whenever(wooStore.fetchSitePlugins(siteModel)).thenReturn(WooResult(emptyList()))
             whenever(wooStore.getSitePlugin(siteModel, WooCommerceStore.WooPlugin.WOO_STRIPE_GATEWAY))
                 .thenReturn(mock())
@@ -213,6 +224,7 @@ class HelpViewModelTest : BaseUnitTest() {
     fun `given store success with stripe ins and act, when on contact clicked, then event triggered with tag`() =
         testBlocking {
             // GIVEN
+            val viewModel = initViewModel()
             whenever(wooStore.fetchSitePlugins(siteModel)).thenReturn(WooResult(emptyList()))
             val stripePluginModel = mock<SitePluginModel> {
                 on { isActive }.thenReturn(true)
@@ -239,6 +251,7 @@ class HelpViewModelTest : BaseUnitTest() {
     fun `given store success with wc and stripe installed, when on contact clicked, then event triggered tag`() =
         testBlocking {
             // GIVEN
+            val viewModel = initViewModel()
             whenever(wooStore.fetchSitePlugins(siteModel)).thenReturn(WooResult(emptyList()))
             val wcpayPluginModel = mock<SitePluginModel>()
             whenever(wooStore.getSitePlugin(siteModel, WooCommerceStore.WooPlugin.WOO_PAYMENTS))
@@ -266,6 +279,7 @@ class HelpViewModelTest : BaseUnitTest() {
     fun `given store success with wc inst and act and stripe ins, when on contact clicked, then event triggered tag`() =
         testBlocking {
             // GIVEN
+            val viewModel = initViewModel()
             whenever(wooStore.fetchSitePlugins(siteModel)).thenReturn(WooResult(emptyList()))
             val wcpayPluginModel = mock<SitePluginModel> {
                 on { isActive }.thenReturn(true)
@@ -295,6 +309,7 @@ class HelpViewModelTest : BaseUnitTest() {
     fun `given store success with wc inst and stripe ins and act, when on contact clicked, then event triggered tag`() =
         testBlocking {
             // GIVEN
+            val viewModel = initViewModel()
             whenever(wooStore.fetchSitePlugins(siteModel)).thenReturn(WooResult(emptyList()))
             val wcpayPluginModel = mock<SitePluginModel>()
             whenever(wooStore.getSitePlugin(siteModel, WooCommerceStore.WooPlugin.WOO_PAYMENTS))
@@ -324,6 +339,7 @@ class HelpViewModelTest : BaseUnitTest() {
     fun `given store success with wc and stripe inst and act, when on contact clicked, then event triggered tag`() =
         testBlocking {
             // GIVEN
+            val viewModel = initViewModel()
             whenever(wooStore.fetchSitePlugins(siteModel)).thenReturn(WooResult(emptyList()))
             val wcpayPluginModel = mock<SitePluginModel> {
                 on { isActive }.thenReturn(true)
