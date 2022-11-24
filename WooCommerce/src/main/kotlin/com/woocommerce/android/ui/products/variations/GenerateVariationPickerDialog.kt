@@ -8,11 +8,10 @@ import com.woocommerce.android.R
 import com.woocommerce.android.databinding.DialogGenerateVariationsBinding
 
 class GenerateVariationPickerDialog(context: Context) : BottomSheetDialog(context) {
-    private var _binding: DialogGenerateVariationsBinding? = null
-    private val binding get() = _binding!!
+    private var binding: DialogGenerateVariationsBinding =
+        DialogGenerateVariationsBinding.inflate(LayoutInflater.from(context))
 
     init {
-        _binding = DialogGenerateVariationsBinding.inflate(LayoutInflater.from(context))
         setContentView(binding.root)
         binding.allVariation.setOnClickListener {
             listener?.onGenerateAllVariations()
