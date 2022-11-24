@@ -7,10 +7,7 @@ import org.wordpress.android.fluxc.store.MobilePayStore
 import javax.inject.Inject
 
 class IAPShowcaseMobilePayAPIProvider @Inject constructor(private val mobilePayStore: MobilePayStore) {
-    fun providerMobilePayAPI(): IAPMobilePayAPI {
-    }
-
-    private fun buildRealMobilePayAPI() = object : IAPMobilePayAPI {
+    fun buildMobilePayAPI(customUrl: String?) = object : IAPMobilePayAPI {
         override suspend fun createAndConfirmOrder(
             remoteSiteId: Long,
             productIdentifier: String,
@@ -25,7 +22,8 @@ class IAPShowcaseMobilePayAPIProvider @Inject constructor(private val mobilePayS
                 currency,
                 purchaseToken,
                 appId,
-                remoteSiteId
+                remoteSiteId,
+                customUrl = customUrl
             )
             return when (response) {
                 is MobilePayRestClient.CreateOrderResponse.Success -> {
@@ -40,7 +38,6 @@ class IAPShowcaseMobilePayAPIProvider @Inject constructor(private val mobilePayS
                             CreateAndConfirmOrderResponse.Server(response.message ?: "Reason is not provided")
                         MobilePayRestClient.CreateOrderErrorType.TIMEOUT -> CreateAndConfirmOrderResponse.Network
                     }
-
                 }
             }
         }

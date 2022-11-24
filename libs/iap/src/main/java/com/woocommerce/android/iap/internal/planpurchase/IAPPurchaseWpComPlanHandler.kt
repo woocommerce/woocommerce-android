@@ -6,12 +6,11 @@ import com.woocommerce.android.iap.internal.model.IAPProduct
 import com.woocommerce.android.iap.internal.model.IAPProductDetailsResponse
 import com.woocommerce.android.iap.internal.model.IAPPurchase
 import com.woocommerce.android.iap.internal.model.IAPPurchaseResult
-import com.woocommerce.android.iap.internal.network.IAPMobilePayAPI
-import com.woocommerce.android.iap.pub.network.model.CreateAndConfirmOrderResponse
 import com.woocommerce.android.iap.pub.IAPActivityWrapper
 import com.woocommerce.android.iap.pub.model.IAPError
 import com.woocommerce.android.iap.pub.model.WPComPurchaseResult
 import com.woocommerce.android.iap.pub.network.IAPMobilePayAPI
+import com.woocommerce.android.iap.pub.network.model.CreateAndConfirmOrderResponse
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.mapNotNull

@@ -28,6 +28,9 @@ class IAPShowcasePurchaseFragment : Fragment(R.layout.fragment_iap_showcase_purc
     @Inject
     lateinit var mobilePayAPIProvider: IAPShowcaseMobilePayAPIProvider
 
+    @Inject
+    lateinit var debugLogWrapper: IAPDebugLogWrapper
+
     private val viewModel: IAPShowcasePurchaseViewModel by viewModels {
         object : ViewModelProvider.Factory {
             @Suppress("UNCHECKED_CAST")
@@ -36,8 +39,8 @@ class IAPShowcasePurchaseFragment : Fragment(R.layout.fragment_iap_showcase_purc
                     IAPSitePurchasePlanFactory.createIAPSitePurchasePlan(
                         this@IAPShowcasePurchaseFragment.requireActivity().application,
                         REMOTE_SITE_ID,
-                        mobilePayAPIProvider.providerMobilePayAPI(),
-                        IAPDebugLogWrapper(),
+                        debugLogWrapper,
+                        mobilePayAPIProvider::buildMobilePayAPI,
                     )
                 ) as T
             }
