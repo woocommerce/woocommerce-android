@@ -2745,6 +2745,9 @@
     <string name="store_creation_summary_primary_button">Continue to payment</string>
 
     <string name="store_creation_ecommerce_plan_error">Couldn\'t load the plan information…</string>
+    <string name="store_creation_ecommerce_site_creation_error">Couldn\'t create a new site…</string>
+    <string name="store_creation_ecommerce_plan_purchase_error">Couldn\'t complete the purchase…</string>
+    <string name="store_creation_ecommerce_store_loading_error">Couldn\'t load your new store. Please wait a bit and try again…</string>
     <string name="store_creation_ecommerce_plan_features_tagline">All the features you need, already built in.</string>
     <string name="store_creation_ecommerce_plan_powered_by">Powered by</string>
     <string name="store_creation_ecommerce_plan_wordpress" translatable="false">WordPress.com</string>
