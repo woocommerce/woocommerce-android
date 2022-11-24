@@ -4,6 +4,7 @@ import android.os.Parcelable
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
+import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.OnChangedException
 import com.woocommerce.android.extensions.isNotNullOrEmpty
 import com.woocommerce.android.tools.SelectedSite
@@ -47,7 +48,8 @@ class JetpackActivationMainViewModel @Inject constructor(
     private val jetpackActivationRepository: JetpackActivationRepository,
     private val pluginRepository: PluginRepository,
     private val accountRepository: AccountRepository,
-    private val selectedSite: SelectedSite
+    private val selectedSite: SelectedSite,
+    private val appPrefsWrapper: AppPrefsWrapper
 ) : ScopedViewModel(savedStateHandle) {
     companion object {
         private const val JETPACK_SLUG = "jetpack"
@@ -133,6 +135,8 @@ class JetpackActivationMainViewModel @Inject constructor(
             selectedSite.set(site)
             triggerEvent(GoToStore)
         } else {
+            // Persist the site address to allow auto-login after password verification
+            appPrefsWrapper.setLoginSiteAddress(navArgs.siteUrl)
             triggerEvent(GoToPasswordScreen(jetpackConnectedEmail))
         }
     }
