@@ -1,6 +1,5 @@
 package com.woocommerce.android.cardreader
 
-import com.stripe.stripeterminal.external.models.SimulateReaderUpdate
 import com.woocommerce.android.cardreader.connection.CardReader
 import com.woocommerce.android.cardreader.connection.CardReaderDiscoveryEvents
 import com.woocommerce.android.cardreader.connection.CardReaderStatus
@@ -29,7 +28,7 @@ interface CardReaderManager {
     val batteryStatus: Flow<CardReaderBatteryStatus>
     val displayBluetoothCardReaderMessages: Flow<BluetoothCardReaderMessages>
 
-    fun initialize(updateFrequency: SimulatorUpdateFrequency = SimulatorUpdateFrequency.RANDOMLY)
+    fun initialize(updateFrequency: SimulatorUpdateFrequency = SimulatorUpdateFrequency.RANDOM)
     fun discoverReaders(
         isSimulated: Boolean,
         cardReaderTypesToDiscover: CardReaderTypesToDiscover,
@@ -37,8 +36,6 @@ interface CardReaderManager {
 
     fun startConnectionToReader(cardReader: CardReader, locationId: String)
     suspend fun disconnectReader(): Boolean
-
-//    fun blah(updateFrequency: SimulatorUpdateFrequency)
 
     suspend fun collectPayment(paymentInfo: PaymentInfo): Flow<CardPaymentStatus>
     suspend fun refundInteracPayment(refundParams: RefundParams): Flow<CardInteracRefundStatus>
@@ -51,8 +48,8 @@ interface CardReaderManager {
     fun cancelOngoingFirmwareUpdate()
 
     enum class SimulatorUpdateFrequency {
-        ALWAYS,
-        NEVER,
-        RANDOMLY
+        NONE,
+        REQUIRED,
+        RANDOM
     }
 }
