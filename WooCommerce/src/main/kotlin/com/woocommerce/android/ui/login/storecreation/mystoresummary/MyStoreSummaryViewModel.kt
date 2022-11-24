@@ -6,7 +6,7 @@ import com.woocommerce.android.ui.login.storecreation.NewStore
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.MutableStateFlow
 import javax.inject.Inject
 
 @HiltViewModel
@@ -15,16 +15,14 @@ class MyStoreSummaryViewModel @Inject constructor(
     newStore: NewStore
 ) : ScopedViewModel(savedStateHandle) {
 
-    val viewState = newStore.store
-        .map {
-            MyStoreSummaryState(
-                name = it.name,
-                domain = it.domain ?: "",
-                category = it.category,
-                country = it.country ?: "TODO default value locale?"
-            )
-        }
-        .asLiveData()
+    val viewState = MutableStateFlow(
+        MyStoreSummaryState(
+            name = newStore.data.name,
+            domain = newStore.data.domain ?: "",
+            category = newStore.data.category,
+            country = newStore.data.country ?: "TODO default value locale?"
+        )
+    ).asLiveData()
 
     fun onBackPressed() {
         triggerEvent(MultiLiveEvent.Event.Exit)

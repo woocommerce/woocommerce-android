@@ -8,7 +8,6 @@ import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.getStateFlow
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.update
 import javax.inject.Inject
 
 @HiltViewModel
@@ -28,9 +27,7 @@ class StoreNamePickerViewModel @Inject constructor(
     }
 
     fun onContinueClicked() {
-        newStore.store.update {
-            it.copy(name = storeName.value)
-        }
+        newStore.update(name = storeName.value)
         triggerEvent(NavigateToNextStep)
     }
 
