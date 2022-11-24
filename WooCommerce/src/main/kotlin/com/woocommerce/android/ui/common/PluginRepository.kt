@@ -9,6 +9,7 @@ import com.woocommerce.android.ui.common.PluginRepository.PluginStatus.PluginIns
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.dispatchAndAwait
 import com.woocommerce.android.util.observeEvents
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.emitAll
@@ -40,8 +41,9 @@ class PluginRepository @Inject constructor(
     @Suppress("unused") private val pluginStore: PluginStore
 ) {
     companion object {
-        const val GENERIC_ERROR = "Unknown issue."
-        const val ATTEMPT_LIMIT = 2
+        private const val GENERIC_ERROR = "Unknown issue."
+        private const val ATTEMPT_LIMIT = 2
+        private const val DELAY_BEFORE_RETRY = 500L
     }
 
     suspend fun fetchPlugin(site: SiteModel, name: String): Result<SitePluginModel?> {
@@ -113,7 +115,10 @@ class PluginRepository @Inject constructor(
             emitAll(merge(installationEvents, activationEvents))
         }.retryWhen { cause, attempt ->
             (cause is OnChangedException && attempt < ATTEMPT_LIMIT).also {
-                if (it) WooLog.d(WooLog.T.PLUGINS, "Retry plugin installation")
+                if (it) {
+                    delay(DELAY_BEFORE_RETRY)
+                    WooLog.d(WooLog.T.PLUGINS, "Retry plugin installation")
+                }
             }
         }.catch { cause ->
             if (cause !is OnChangedException) throw cause
