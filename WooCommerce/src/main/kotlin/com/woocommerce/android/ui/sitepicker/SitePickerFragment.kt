@@ -221,7 +221,7 @@ class SitePickerFragment : BaseFragment(R.layout.fragment_site_picker), LoginEma
     private fun updateWooNotFoundView() {
         binding.noStoresView.illustration = AppCompatResources.getDrawable(
             requireActivity(),
-            R.drawable.img_woo_no_stores
+            R.drawable.img_woo_generic_error
         )
         binding.loginEpilogueButtonBar.buttonPrimary.setOnClickListener {
             AnalyticsTracker.track(AnalyticsEvent.LOGIN_WOOCOMMERCE_SETUP_BUTTON_TAPPED)
@@ -235,7 +235,7 @@ class SitePickerFragment : BaseFragment(R.layout.fragment_site_picker), LoginEma
     private fun updateSimpleWPComView() {
         binding.noStoresView.illustration = AppCompatResources.getDrawable(
             requireActivity(),
-            R.drawable.img_woo_no_stores
+            R.drawable.img_woo_generic_error
         )
         binding.loginEpilogueButtonBar.buttonPrimary.setOnClickListener {
             viewModel.onViewConnectedStoresButtonClick()
