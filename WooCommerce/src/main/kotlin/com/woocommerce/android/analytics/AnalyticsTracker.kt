@@ -142,6 +142,7 @@ class AnalyticsTracker private constructor(private val context: Context) {
         const val KEY_ERROR_CONTEXT = "error_context"
         const val KEY_ERROR_DESC = "error_description"
         const val KEY_ERROR_TYPE = "error_type"
+        const val KEY_ERROR_CODE = "error_code"
         const val KEY_ERROR_MESSAGE = "error_message"
         const val KEY_FROM = "from"
         const val KEY_HAS_UNFULFILLED_ORDERS = "has_unfulfilled_orders"
