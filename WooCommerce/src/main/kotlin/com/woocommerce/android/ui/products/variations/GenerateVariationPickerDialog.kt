@@ -6,6 +6,7 @@ import android.view.View
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.woocommerce.android.R
 import com.woocommerce.android.databinding.DialogGenerateVariationsBinding
+import com.woocommerce.android.ui.products.variations.domain.VariationCandidate
 
 class GenerateVariationPickerDialog(context: Context) : BottomSheetDialog(context) {
     private var binding: DialogGenerateVariationsBinding =
@@ -14,7 +15,7 @@ class GenerateVariationPickerDialog(context: Context) : BottomSheetDialog(contex
     init {
         setContentView(binding.root)
         binding.allVariation.setOnClickListener {
-            listener?.onGenerateAllVariations()
+            listener?.onGenerateAllVariations(variationCandidates)
             dismiss()
         }
         binding.newVariation.setOnClickListener {
@@ -23,19 +24,19 @@ class GenerateVariationPickerDialog(context: Context) : BottomSheetDialog(contex
         }
     }
 
-    var totalVariations: Int = 0
+    var variationCandidates: List<VariationCandidate> = emptyList()
         set(value) {
             field = value
-            binding.allVariation.visibility = if (value > 0) View.VISIBLE else View.GONE
-            if (value > 0) {
-                binding.allVariationTitle.text = context.getString(R.string.variation_add_all, value)
+            binding.allVariation.visibility = if (variationCandidates.isEmpty()) View.VISIBLE else View.GONE
+            if (variationCandidates.isEmpty()) {
+                binding.allVariationTitle.text = context.getString(R.string.variation_add_all, variationCandidates.size)
             }
         }
 
     var listener: GenerateVariationPickerDialogListener? = null
 
     interface GenerateVariationPickerDialogListener {
-        fun onGenerateAllVariations()
+        fun onGenerateAllVariations(variationCandidates: List<VariationCandidate>)
         fun onGenerateNewVariation()
     }
 }

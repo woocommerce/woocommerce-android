@@ -51,6 +51,7 @@ import com.woocommerce.android.ui.products.variations.VariationListViewModel.Sho
 import com.woocommerce.android.ui.products.variations.VariationListViewModel.ShowVariationDetail
 import com.woocommerce.android.ui.products.variations.VariationListViewModel.ShowVariationDialog
 import com.woocommerce.android.ui.products.variations.domain.GenerateVariationCandidates
+import com.woocommerce.android.ui.products.variations.domain.VariationCandidate
 import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
@@ -212,11 +213,11 @@ class VariationListFragment :
                 is ShowSnackbar -> uiMessageResolver.showSnack(event.message)
                 is ShowBulkUpdateAttrPicker -> openBulkUpdateView(event.variationsToUpdate)
                 is ShowBulkUpdateLimitExceededWarning -> showBulkUpdateLimitExceededWarning()
-                is ShowGenerateVariationConfirmation -> showGenerateVariationConfirmation(event.variationCandidatesSize)
+                is ShowGenerateVariationConfirmation -> showGenerateVariationConfirmation(event.variationCandidates)
                 is ShowGenerateVariationsError -> handleGenerateVariationError(event)
                 is ExitWithResult<*> -> navigateBackWithResult(KEY_VARIATION_LIST_RESULT, event.data)
                 is Exit -> activity?.onBackPressedDispatcher?.onBackPressed()
-                is ShowVariationDialog -> showAddVariationSelectDialog(event.variationCandidatesSize)
+                is ShowVariationDialog -> showAddVariationSelectDialog(event.variationCandidates)
             }
         }
     }
@@ -243,12 +244,12 @@ class VariationListFragment :
         }
     }
 
-    private fun showGenerateVariationConfirmation(variationCandidatesSize: Int) {
+    private fun showGenerateVariationConfirmation(variationCandidatesSize: List<VariationCandidate>) {
         MaterialAlertDialogBuilder(requireActivity())
             .setTitle(R.string.variations_bulk_creation_confirmation_title)
-            .setMessage(getString(R.string.variations_bulk_creation_confirmation_message, variationCandidatesSize))
+            .setMessage(getString(R.string.variations_bulk_creation_confirmation_message, variationCandidatesSize.size))
             .setPositiveButton(android.R.string.ok) { dialogInterface, _ ->
-                viewModel.onGenerateVariationsConfirmed()
+                viewModel.onGenerateVariationsConfirmed(variationCandidatesSize)
                 dialogInterface.dismiss()
             }
             .setNegativeButton(android.R.string.cancel) { dialogInterface, _ ->
@@ -281,12 +282,12 @@ class VariationListFragment :
             .show()
     }
 
-    private fun showAddVariationSelectDialog(totalVariationsCandidates: Int) {
+    private fun showAddVariationSelectDialog(variationCandidates: List<VariationCandidate>) {
         val dialog = generateVariationPickerDialog ?: GenerateVariationPickerDialog(requireContext()).apply {
             listener = this@VariationListFragment
         }
         dialog.run {
-            totalVariations = totalVariationsCandidates
+            this.variationCandidates = variationCandidates
             show()
         }
     }
@@ -404,8 +405,8 @@ class VariationListFragment :
         }
     }
 
-    override fun onGenerateAllVariations() {
-        viewModel.onAddAllVariationsClicked()
+    override fun onGenerateAllVariations(variationCandidates: List<VariationCandidate>) {
+        viewModel.onAddAllVariationsClicked(variationCandidates)
     }
 
     override fun onGenerateNewVariation() {
