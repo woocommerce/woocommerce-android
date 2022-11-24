@@ -164,6 +164,43 @@ class GenerateVariationCandidatesTest : BaseUnitTest() {
         assertThat(result).doesNotContainAnyElementsOf(existingVariations.map { it.attributes.toList() })
     }
 
+    @Test
+    fun `should return empty list if there's no generated candidates`() {
+        // given
+        val product = ProductHelper.getDefaultNewProduct(ProductType.VARIABLE, isVirtual = false).copy(
+            attributes = listOf(
+                ProductAttribute(id = 1, name = "Size", terms = listOf("S", "M"), isVariation = true),
+                ProductAttribute(id = 2, name = "Color", terms = listOf("Red", "Blue"), isVariation = true),
+            ),
+        )
+
+        val existingVariations = listOf(
+            Pair("M", "Blue"),
+            Pair("S", "Blue"),
+            Pair("M", "Red"),
+            Pair("S", "Red"),
+        ).map { triple ->
+            generateVariation().copy(
+                attributes =
+                arrayOf(
+                    VariantOption(1, "Size", triple.first),
+                    VariantOption(2, "Color", triple.second),
+                )
+            )
+        }
+
+        mockedVariationRepository = mock {
+            on { getProductVariationList(product.remoteId) } doReturn existingVariations
+        }
+        initializeSut()
+
+        // when
+        val result = sut.invoke(product)
+
+        // then
+        assertThat(result).isEmpty()
+    }
+
     private fun initializeSut() {
         sut = GenerateVariationCandidates(mockedVariationRepository)
     }

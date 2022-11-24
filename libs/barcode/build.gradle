@@ -28,7 +28,7 @@ android {
 
 dependencies {
     implementation "androidx.core:core-ktx:$coreKtxVersion"
-    implementation "androidx.annotation:annotation:1.4.0"
+    implementation "androidx.annotation:annotation:1.5.0"
     implementation "androidx.interpolator:interpolator:1.0.0"
     implementation "com.google.android.material:material:$materialVersion"
     implementation 'androidx.preference:preference-ktx:1.2.0'

@@ -45,7 +45,7 @@
         app:layout_constraintBottom_toTopOf="@+id/prologueTitle"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        android:src="@drawable/img_prologue_reviews" />
+        android:src="@drawable/img_prologue" />
 
     <com.google.android.material.textview.MaterialTextView
         android:id="@+id/prologueTitle"

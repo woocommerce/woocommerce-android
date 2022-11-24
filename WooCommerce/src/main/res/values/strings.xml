@@ -1668,6 +1668,11 @@
     <string name="variations_bulk_update_current_stock_quantity">Current stock quantity is %d</string>
     <string name="variations_bulk_update_current_stock_quantity_mixed">Current stock quantity is mixed</string>
     <string name="variations_bulk_update_stock_quantity_success">Updated stock quantity</string>
+    <string name="variations_bulk_creation_warning_title">Generation limit exceeded</string>
+    <string name="variations_bulk_creation_warning_message">Currently creation is supported for %1$d variations maximum. Generating variations for this product would create %2$d variations.</string>
+    <string name="variations_bulk_creation_confirmation_title">Are you sure you want to generate all variations?</string>
+    <string name="variations_bulk_creation_confirmation_message">This will create a new variation for each and every possible combination of variation attributes (%1$d variations).</string>
+    <string name="variations_bulk_creation_progress_title">Generating variations</string>
 
     <!--
         Product images
@@ -2729,14 +2734,18 @@
     <string name="store_creation_exit_dialog_title">Do you want to leave?</string>
     <string name="store_creation_exit_dialog_message">You will lose all your store information.</string>
     <string name="store_creation_confirm_and_leave">Confirm and leave</string>
+
     <string name="store_creation_domain_picker_title">Choose a domain</string>
     <string name="store_creation_domain_picker_subtitle">This is where people will find you on the Internet. Don\'t worry, you can change it later.</string>
     <string name="store_creation_domain_picker_hint">Type a domain</string>
-    <string name="store_creation_domain_picker_skip_button">Skip</string>
     <string name="store_creation_domain_picker_suggestions_title">Suggestions</string>
+    <string name="store_creation_domain_picker_empty_suggestions">No available domains for this search</string>
+    <string name="store_creation_domain_picker_suggestions_error">Unable to load domain suggestions</string>
+
     <string name="store_creation_summary_title">My Store</string>
     <string name="store_creation_summary_subtitle">Your store will be created based on the options of your choice!</string>
     <string name="store_creation_summary_primary_button">Continue to payment</string>
+
     <string name="store_creation_ecommerce_plan_error">Couldn\'t load the plan information…</string>
     <string name="store_creation_ecommerce_plan_features_tagline">All the features you need, already built in.</string>
     <string name="store_creation_ecommerce_plan_powered_by">Powered by</string>
