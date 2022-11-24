@@ -100,13 +100,6 @@ class VariationListViewModel @Inject constructor(
     val isEmpty
         get() = _variationList.value?.isEmpty() ?: true
 
-    private var variationCandidates: List<VariationCandidate>? = null
-        get() = field ?: viewState.parentProduct?.let {
-            generateVariationCandidates.invoke(it).also { candidates ->
-                field = candidates
-            }
-        }
-
     fun start() {
         productRepository.getProduct(remoteProductId)?.let {
             viewState = viewState.copy(parentProduct = it)
@@ -299,37 +292,31 @@ class VariationListViewModel @Inject constructor(
 
     fun onAddVariationsClicked() {
         val product = viewState.parentProduct ?: return
-        // Always generate the list of candidates and save it on variationCandidates var
-        generateVariationCandidates.invoke(product).let { candidates ->
-            variationCandidates = candidates
-            triggerEvent(ShowVariationDialog(variationCandidatesSize = candidates.size))
-        }
+        triggerEvent(ShowVariationDialog(generateVariationCandidates.invoke(product)))
     }
 
-    fun onAddAllVariationsClicked() {
+    fun onAddAllVariationsClicked(variationCandidates: List<VariationCandidate>) {
         tracker.track(AnalyticsEvent.PRODUCT_VARIATION_GENERATION_REQUESTED)
-        val candidates = variationCandidates ?: return
-        if (candidates.size <= GenerateVariationCandidates.VARIATION_CREATION_LIMIT) {
-            triggerEvent(ShowGenerateVariationConfirmation(candidates.size))
+        if (variationCandidates.size <= GenerateVariationCandidates.VARIATION_CREATION_LIMIT) {
+            triggerEvent(ShowGenerateVariationConfirmation(variationCandidates))
         } else {
             tracker.track(
                 stat = AnalyticsEvent.PRODUCT_VARIATION_GENERATION_LIMIT_REACHED,
-                properties = mapOf(AnalyticsTracker.KEY_VARIATIONS_COUNT to candidates.size)
+                properties = mapOf(AnalyticsTracker.KEY_VARIATIONS_COUNT to variationCandidates.size)
             )
-            triggerEvent(ShowGenerateVariationsError.LimitExceeded(candidates.size))
+            triggerEvent(ShowGenerateVariationsError.LimitExceeded(variationCandidates.size))
         }
     }
 
-    fun onGenerateVariationsConfirmed() {
-        val candidates = variationCandidates ?: return
+    fun onGenerateVariationsConfirmed(variationCandidates: List<VariationCandidate>) {
         tracker.track(
             stat = AnalyticsEvent.PRODUCT_VARIATION_GENERATION_CONFIRMED,
-            properties = mapOf(AnalyticsTracker.KEY_VARIATIONS_COUNT to candidates.size)
+            properties = mapOf(AnalyticsTracker.KEY_VARIATIONS_COUNT to variationCandidates.size)
         )
         launch {
             viewState = viewState.copy(progressDialogState = Shown(MULTIPLE))
 
-            when (variationRepository.bulkCreateVariations(remoteProductId, candidates)) {
+            when (variationRepository.bulkCreateVariations(remoteProductId, variationCandidates)) {
                 RequestResult.SUCCESS -> {
                     tracker.track(AnalyticsEvent.PRODUCT_VARIATION_GENERATION_SUCCESS)
                     refreshVariations(remoteProductId)
@@ -388,9 +375,9 @@ class VariationListViewModel @Inject constructor(
      */
     object ShowBulkUpdateLimitExceededWarning : Event()
 
-    data class ShowVariationDialog(val variationCandidatesSize: Int) : Event()
+    data class ShowVariationDialog(val variationCandidates: List<VariationCandidate>) : Event()
 
-    data class ShowGenerateVariationConfirmation(val variationCandidatesSize: Int) : Event()
+    data class ShowGenerateVariationConfirmation(val variationCandidates: List<VariationCandidate>) : Event()
 
     sealed class ShowGenerateVariationsError : Event() {
         data class LimitExceeded(val variationCandidatesSize: Int) : ShowGenerateVariationsError()
