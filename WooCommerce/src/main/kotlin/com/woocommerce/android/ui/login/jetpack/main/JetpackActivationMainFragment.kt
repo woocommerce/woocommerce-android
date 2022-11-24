@@ -77,6 +77,15 @@ class JetpackActivationMainFragment : BaseFragment() {
         }
     }
 
+    private fun setupResultHandlers() {
+        handleNotice(WPComWebViewFragment.WEBVIEW_RESULT) {
+            viewModel.onJetpackConnected()
+        }
+        handleNotice(WPComWebViewFragment.WEBVIEW_DISMISSED) {
+            navigateBackWithNotice(CONNECTION_DISMISSED_RESULT)
+        }
+    }
+
     private fun openHelpActivity() {
         startActivity(HelpActivity.createIntent(requireContext(), Origin.JETPACK_INSTALLATION, null))
     }
@@ -115,15 +124,6 @@ class JetpackActivationMainFragment : BaseFragment() {
                 addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK)
             }
             startActivity(intent)
-        }
-    }
-
-    private fun setupResultHandlers() {
-        handleNotice(WPComWebViewFragment.WEBVIEW_RESULT) {
-            viewModel.onJetpackConnected()
-        }
-        handleNotice(WPComWebViewFragment.WEBVIEW_DISMISSED) {
-            navigateBackWithNotice(CONNECTION_DISMISSED_RESULT)
         }
     }
 
