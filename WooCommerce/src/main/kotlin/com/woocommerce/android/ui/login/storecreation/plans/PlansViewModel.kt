@@ -27,7 +27,7 @@ class PlansViewModel @Inject constructor(
 ) : ScopedViewModel(savedStateHandle) {
     companion object {
         private const val ECOMMERCE_PLAN_NAME = "eCommerce"
-        private const val ECOMMERCE_PLAN_PRICE_MONTHLY = "$69.99"
+        private const val ECOMMERCE_PLAN_PRICE_MONTHLY = "$70"
     }
 
     private val _viewState = savedState.getStateFlow<ViewState>(this, LoadingState)

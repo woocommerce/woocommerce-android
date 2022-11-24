@@ -21,7 +21,7 @@ import androidx.compose.material.IconButton
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Close
+import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.livedata.observeAsState
@@ -99,7 +99,7 @@ private fun PlanInformation(
             }
         ) {
             Icon(
-                Icons.Filled.Close,
+                Icons.Filled.ArrowBack,
                 contentDescription = stringResource(id = R.string.back),
                 tint = colorResource(id = R.color.white)
             )
@@ -290,7 +290,8 @@ private fun PlanError(onRetryClicked: () -> Unit) {
         WCColoredButton(
             onClick = onRetryClicked,
             text = stringResource(id = string.retry),
-            modifier = Modifier.padding(dimensionResource(id = R.dimen.major_100))
+            modifier = Modifier
+                .padding(dimensionResource(id = R.dimen.major_100))
         )
     }
 }
