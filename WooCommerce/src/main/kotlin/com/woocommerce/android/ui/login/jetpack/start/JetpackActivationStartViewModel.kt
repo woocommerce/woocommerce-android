@@ -4,6 +4,8 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
+import com.woocommerce.android.analytics.AnalyticsEvent
+import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.ScopedViewModel
@@ -15,7 +17,8 @@ import javax.inject.Inject
 
 @HiltViewModel
 class JetpackActivationStartViewModel @Inject constructor(
-    savedStateHandle: SavedStateHandle
+    savedStateHandle: SavedStateHandle,
+    private val analyticsTrackerWrapper: AnalyticsTrackerWrapper
 ) : ScopedViewModel(savedStateHandle) {
     companion object {
         private const val CONNECTION_DISMISSED_KEY = "connection-dismissed"
@@ -36,6 +39,13 @@ class JetpackActivationStartViewModel @Inject constructor(
             isConnectionDismissed = isConnectionDismissed
         )
     }.asLiveData()
+
+    init {
+        analyticsTrackerWrapper.track(
+            stat = if (navArgs.isJetpackInstalled) AnalyticsEvent.LOGIN_JETPACK_CONNECTION_ERROR_SHOWN
+            else AnalyticsEvent.LOGIN_JETPACK_REQUIRED_SCREEN_VIEWED
+        )
+    }
 
     fun onHelpButtonClick() {
         triggerEvent(NavigateToHelpScreen)
@@ -58,6 +68,10 @@ class JetpackActivationStartViewModel @Inject constructor(
                 )
             )
         } else {
+            analyticsTrackerWrapper.track(
+                stat = if (navArgs.isJetpackInstalled) AnalyticsEvent.LOGIN_JETPACK_CONNECT_BUTTON_TAPPED
+                else AnalyticsEvent.LOGIN_JETPACK_SETUP_BUTTON_TAPPED
+            )
             triggerEvent(
                 NavigateToSiteCredentialsScreen(
                     siteUrl = navArgs.siteUrl,
