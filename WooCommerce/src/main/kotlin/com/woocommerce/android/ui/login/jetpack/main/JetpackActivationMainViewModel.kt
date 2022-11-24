@@ -218,7 +218,6 @@ class JetpackActivationMainViewModel @Inject constructor(
                     delay(DELAY_BEFORE_SHOWING_ERROR_STATE_MS)
                     isShowingErrorState.value = true
                 }
-
                 else -> isShowingErrorState.value = false
             }
         }.launchIn(viewModelScope)
