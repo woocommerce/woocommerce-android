@@ -4,7 +4,6 @@ import android.os.Parcelable
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
 import com.woocommerce.android.analytics.AnalyticsEvent
-import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.ui.common.wpcomwebview.WPComWebViewAuthenticator
 import com.woocommerce.android.ui.login.storecreation.installation.InstallationViewModel.ViewState.LoadingState
@@ -35,12 +34,6 @@ class InstallationViewModel @Inject constructor(
         launch {
             _viewState.update { SuccessState(url) }
         }
-        analyticsTrackerWrapper.track(
-            AnalyticsEvent.SITE_CREATION_STEP,
-            mapOf(
-                AnalyticsTracker.KEY_STEP to AnalyticsTracker.VALUE_STEP_STORE_CREATED
-            )
-        )
     }
 
     fun onShowPreviewButtonClicked() {
