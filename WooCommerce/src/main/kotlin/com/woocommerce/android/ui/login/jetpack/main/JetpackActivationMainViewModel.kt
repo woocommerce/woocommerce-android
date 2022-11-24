@@ -132,8 +132,12 @@ class JetpackActivationMainViewModel @Inject constructor(
         if (jetpackConnectedEmail == loggedInEmail) {
             val site = jetpackActivationRepository.getSiteByUrl(navArgs.siteUrl)
             requireNotNull(site) { "Illegal state, the button shouldn't be visible before fetching the site" }
-            selectedSite.set(site)
-            triggerEvent(GoToStore)
+            if (site.hasWooCommerce) {
+                selectedSite.set(site)
+                triggerEvent(GoToStore)
+            } else {
+                triggerEvent(ShowWooNotInstalledScreen(navArgs.siteUrl))
+            }
         } else {
             // Persist the site address to allow auto-login after password verification
             appPrefsWrapper.setLoginSiteAddress(navArgs.siteUrl)
@@ -355,5 +359,6 @@ class JetpackActivationMainViewModel @Inject constructor(
 
     object GoToStore : MultiLiveEvent.Event()
     data class GoToPasswordScreen(val email: String) : MultiLiveEvent.Event()
+    data class ShowWooNotInstalledScreen(val siteUrl: String) : MultiLiveEvent.Event()
     object ShowHelpScreen : MultiLiveEvent.Event()
 }
