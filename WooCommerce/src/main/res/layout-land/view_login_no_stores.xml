@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <merge xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content">
 
@@ -26,8 +27,22 @@
             android:drawablePadding="@dimen/major_100"
             android:gravity="center_horizontal"
             android:lineSpacingExtra="@dimen/line_spacing_extra_50"
-            android:text="@string/login_no_stores"
+            android:text="@string/login_no_stores_header"
             android:textStyle="bold" />
+
+        <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/no_stores_view_subtext"
+            style="@style/Woo.TextView.Body2"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/minor_100"
+            android:layout_marginHorizontal="@dimen/major_100"
+            android:layout_marginBottom="0dp"
+            android:gravity="center_horizontal"
+            android:lineSpacingExtra="@dimen/line_spacing_extra_50"
+            android:text="@string/login_no_stores_subtitle"
+            android:visibility="gone"
+            tools:visibility="visible" />
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/btn_secondary_action"

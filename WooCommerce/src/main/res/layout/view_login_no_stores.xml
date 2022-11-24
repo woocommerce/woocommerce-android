@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <merge xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content">
 
@@ -8,14 +9,14 @@
         android:id="@+id/no_stores_view"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:background="@color/color_surface">
+        android:background="@color/color_surface"
+        android:orientation="vertical">
 
         <androidx.appcompat.widget.AppCompatImageView
             android:id="@+id/no_stores_view_illustration"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            app:srcCompat="@drawable/img_woo_no_stores"
+            android:layout_marginHorizontal="@dimen/major_100"
             android:layout_marginTop="@dimen/major_100"
             app:srcCompat="@drawable/img_site_picker_no_stores" />
 
@@ -30,8 +31,22 @@
             android:layout_marginBottom="0dp"
             android:gravity="center_horizontal"
             android:lineSpacingExtra="@dimen/line_spacing_extra_50"
-            android:text="@string/login_no_stores"
+            android:text="@string/login_no_stores_header"
             android:textStyle="bold" />
+
+        <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/no_stores_view_subtext"
+            style="@style/Woo.TextView.Body2"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/minor_100"
+            android:layout_marginHorizontal="@dimen/major_100"
+            android:layout_marginBottom="0dp"
+            android:gravity="center_horizontal"
+            android:lineSpacingExtra="@dimen/line_spacing_extra_50"
+            android:text="@string/login_no_stores_subtitle"
+            android:visibility="gone"
+            tools:visibility="visible" />
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/btn_secondary_action"

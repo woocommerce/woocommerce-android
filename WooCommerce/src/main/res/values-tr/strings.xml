@@ -36,7 +36,7 @@ Language: tr
     <string name="site_picker_connect_existing_store">Mevcut bir mağazayı bağla</string>
     <string name="site_picker_create_new_store">Yeni bir mağaza oluştur</string>
     <string name="login_site_picker_add_a_store">Mağaza Ekle</string>
-    <string name="login_no_stores">Hesabınız herhangi bir WooCommerce mağazasına bağlı değil.</string>
+    <string name="login_no_stores_header">Hesabınız herhangi bir WooCommerce mağazasına bağlı değil.</string>
     <string name="analytics_products_list_item_description">Net satışlar: %1$s</string>
     <string name="analytics_products_list_header_subtitle">Satılan ürünler</string>
     <string name="analytics_products_list_header_title">Ürünler</string>

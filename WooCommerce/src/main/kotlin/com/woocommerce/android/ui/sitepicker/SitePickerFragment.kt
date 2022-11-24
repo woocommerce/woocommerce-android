@@ -136,8 +136,11 @@ class SitePickerFragment : BaseFragment(R.layout.fragment_site_picker), LoginEma
             new.isNoStoresBtnVisible.takeIfNotEqualTo(old?.isNoStoresBtnVisible) {
                 binding.noStoresView.isNoStoresBtnVisible = it
             }
-            new.noStoresLabelText?.takeIfNotEqualTo(old?.noStoresLabelText) {
-                binding.noStoresView.noStoresText = it
+            new.noStoresLabelText.takeIfNotEqualTo(old?.noStoresLabelText) {
+                binding.noStoresView.noStoresText = it.orEmpty()
+            }
+            new.noStoresSubText.takeIfNotEqualTo(old?.noStoresSubText) {
+                binding.noStoresView.noStoresSubtext = it.orEmpty()
             }
             new.isSkeletonViewVisible.takeIfNotEqualTo(old?.isSkeletonViewVisible) {
                 updateSkeletonView(it)

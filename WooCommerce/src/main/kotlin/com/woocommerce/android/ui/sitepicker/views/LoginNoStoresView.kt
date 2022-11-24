@@ -22,6 +22,13 @@ class LoginNoStoresView @JvmOverloads constructor(
             binding.noStoresViewText.text = value
         }
 
+    var noStoresSubtext: String
+        get() = binding.noStoresViewSubtext.text.toString()
+        set(value) {
+            binding.noStoresViewSubtext.text = value
+            binding.noStoresViewSubtext.isVisible = value.isNotEmpty()
+        }
+
     var noStoresBtnText: String
         get() = binding.btnSecondaryAction.text.toString()
         set(value) {
