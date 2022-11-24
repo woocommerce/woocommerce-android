@@ -47,6 +47,7 @@ import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooErrorType
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooResult
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.system.WCApiVersionResponse
 import org.wordpress.android.fluxc.store.WooCommerceStore
+import org.wordpress.android.util.UrlUtils
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 import kotlin.text.RegexOption.IGNORE_CASE
@@ -533,7 +534,7 @@ class SitePickerViewModel @Inject constructor(
         loginSiteAddress?.let {
             triggerEvent(
                 NavigateToWPComWebView(
-                    url = "$WOOCOMMERCE_INSTALLATION_URL$it",
+                    url = "$WOOCOMMERCE_INSTALLATION_URL${UrlUtils.removeScheme(it)}",
                     validationUrl = WOOCOMMERCE_INSTALLATION_DONE_URL,
                     title = resourceProvider.getString(string.login_install_woo)
                 )
