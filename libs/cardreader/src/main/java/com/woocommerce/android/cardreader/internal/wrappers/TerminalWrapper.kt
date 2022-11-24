@@ -20,6 +20,7 @@ import com.stripe.stripeterminal.external.models.RefundParameters
 import com.stripe.stripeterminal.external.models.SimulateReaderUpdate
 import com.stripe.stripeterminal.external.models.SimulatorConfiguration
 import com.stripe.stripeterminal.log.LogLevel
+import com.woocommerce.android.cardreader.CardReaderManager
 import com.woocommerce.android.cardreader.connection.CardReader
 import com.woocommerce.android.cardreader.connection.CardReaderImpl
 
@@ -79,9 +80,13 @@ internal class TerminalWrapper {
 
     fun getConnectedReader(): CardReader? = Terminal.getInstance().connectedReader?.let { CardReaderImpl(it) }
 
-    fun setupSimulator(updateFrequency: SimulateReaderUpdate) {
+    fun setupSimulator(updateFrequency: CardReaderManager.SimulatorUpdateFrequency) {
         Terminal.getInstance().simulatorConfiguration = SimulatorConfiguration(
-            update = updateFrequency
+            update = mapper(updateFrequency)
         )
+    }
+
+    private fun mapper(updateFrequency: CardReaderManager.SimulatorUpdateFrequency): SimulateReaderUpdate {
+        return SimulateReaderUpdate.valueOf(updateFrequency.name)
     }
 }

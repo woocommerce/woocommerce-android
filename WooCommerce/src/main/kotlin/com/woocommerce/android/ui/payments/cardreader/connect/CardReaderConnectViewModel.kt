@@ -4,7 +4,6 @@ import androidx.annotation.DrawableRes
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
-import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.R
 import com.woocommerce.android.cardreader.CardReaderManager
@@ -75,8 +74,7 @@ class CardReaderConnectViewModel @Inject constructor(
     savedState: SavedStateHandle,
     private val dispatchers: CoroutineDispatchers,
     private val tracker: CardReaderTracker,
-    private val appPrefsWrapper: AppPrefsWrapper,
-    private val appPrefs: AppPrefs,
+    private val appPrefs: AppPrefsWrapper,
     private val developerOptionsRepository: DeveloperOptionsRepository,
     private val locationRepository: CardReaderLocationRepository,
     private val selectedSite: SelectedSite,
@@ -234,11 +232,15 @@ class CardReaderConnectViewModel @Inject constructor(
 
     private fun onReadyToStartScanning() {
         if (!cardReaderManager.initialized) {
-            cardReaderManager.initialize()
+            cardReaderManager.initialize(mapper(appPrefs.getReaderOptionsSelected()))
         }
         launch {
             startScanningIfNotStarted()
         }
+    }
+
+    private fun mapper(updateFrequency: String): CardReaderManager.SimulatorUpdateFrequency {
+        return CardReaderManager.SimulatorUpdateFrequency.valueOf(updateFrequency)
     }
 
     private suspend fun startScanningIfNotStarted() {
@@ -393,7 +395,7 @@ class CardReaderConnectViewModel @Inject constructor(
         }
     }
 
-    private fun getPaymentPluginType(): PluginType = appPrefsWrapper.getCardReaderPreferredPlugin(
+    private fun getPaymentPluginType(): PluginType = appPrefs.getCardReaderPreferredPlugin(
         selectedSite.get().id,
         selectedSite.get().siteId,
         selectedSite.get().selfHostedSiteId
@@ -473,11 +475,11 @@ class CardReaderConnectViewModel @Inject constructor(
     }
 
     private fun storeConnectedReader(cardReader: CardReader) {
-        cardReader.id?.let { id -> appPrefsWrapper.setLastConnectedCardReaderId(id) }
+        cardReader.id?.let { id -> appPrefs.setLastConnectedCardReaderId(id) }
     }
 
     private fun findLastKnowReader(readers: List<CardReader>): CardReader? {
-        return readers.find { it.id == appPrefsWrapper.getLastConnectedCardReaderId() }
+        return readers.find { it.id == appPrefs.getLastConnectedCardReaderId() }
     }
 
     private fun trackLocationFailureFetching(errorDescription: String?) {
