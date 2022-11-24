@@ -46,14 +46,17 @@ import org.mockito.kotlin.any
 import org.mockito.kotlin.anyOrNull
 import org.mockito.kotlin.argumentCaptor
 import org.mockito.kotlin.check
+import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.eq
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.never
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import org.wordpress.android.fluxc.model.SiteModel
+import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 import kotlin.test.assertNull
+import kotlin.test.assertTrue
 
 @ExperimentalCoroutinesApi
 class CardReaderTrackerTest : BaseUnitTest() {
@@ -112,6 +115,22 @@ class CardReaderTrackerTest : BaseUnitTest() {
             cardReaderTracker.track(CARD_PRESENT_COLLECT_PAYMENT_SUCCESS, props)
 
             assertFalse(props.containsKey("card_reader_battery_level"))
+        }
+
+    @Test
+    fun `given battery level is not null, when event is tracked, then it should contain battery level property`() =
+        testBlocking {
+            val cardReaderTrackingInfo: TrackingInfo = mock {
+                on { cardReaderBatteryLevel } doReturn 0.5F // 50 %
+            }
+            whenever(cardReaderTrackingInfoProvider.trackingInfo).thenReturn(cardReaderTrackingInfo)
+            val props = mutableMapOf<String, Any>()
+
+            cardReaderTracker.track(CARD_PRESENT_COLLECT_PAYMENT_SUCCESS, props)
+
+            assertTrue(props.containsKey("card_reader_battery_level"))
+            val batteryLevelProperty = props["card_reader_battery_level"]
+            assertEquals("50 %", batteryLevelProperty)
         }
 
     @Test
