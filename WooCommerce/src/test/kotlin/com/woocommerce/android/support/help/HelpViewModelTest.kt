@@ -3,6 +3,7 @@ package com.woocommerce.android.support.help
 import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.support.TicketType
 import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.util.WooLogWrapper
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.assertj.core.api.Assertions.assertThat
@@ -27,10 +28,12 @@ class HelpViewModelTest : BaseUnitTest() {
         on { exists() }.thenReturn(true)
     }
     private val wooStore: WooCommerceStore = mock()
+    private val wooLogWrapper: WooLogWrapper = mock()
     private val viewModel = HelpViewModel(
         savedState,
         wooStore,
         selectedSite,
+        wooLogWrapper
     )
 
     @Test
