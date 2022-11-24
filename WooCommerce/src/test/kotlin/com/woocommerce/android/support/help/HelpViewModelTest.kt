@@ -3,6 +3,7 @@ package com.woocommerce.android.support.help
 import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.support.TicketType
 import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.util.WooLogWrapper
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.assertj.core.api.Assertions.assertThat
@@ -27,10 +28,12 @@ class HelpViewModelTest : BaseUnitTest() {
         on { exists() }.thenReturn(true)
     }
     private val wooStore: WooCommerceStore = mock()
-    private val viewModel = HelpViewModel(
+    private val wooLogWrapper: WooLogWrapper = mock()
+    private var viewModel = HelpViewModel(
         savedState,
         wooStore,
         selectedSite,
+        wooLogWrapper,
     )
 
     @Test
@@ -60,6 +63,26 @@ class HelpViewModelTest : BaseUnitTest() {
 
         // THEN
         assertThat(viewModel.event.value).isEqualTo(HelpViewModel.ContactPaymentsSupportClickEvent.ShowLoading)
+    }
+
+    @Test
+    fun `given woo store returns error, when help screen accessed, then create event triggered with error tag`() {
+        testBlocking {
+            // GIVEN
+            whenever(wooStore.fetchSSR((siteModel))).thenReturn(
+                WooResult(
+                    WooError(
+                        WooErrorType.API_ERROR,
+                        BaseRequest.GenericErrorType.NETWORK_ERROR
+                    )
+                )
+            )
+
+            // WHEN
+
+
+        }
+
     }
 
     @Test
@@ -347,4 +370,12 @@ class HelpViewModelTest : BaseUnitTest() {
                 )
             )
         }
+    private fun initViewModel(savedState: SavedStateHandle) {
+        viewModel = HelpViewModel(
+            savedState,
+            wooStore,
+            selectedSite,
+            wooLogWrapper,
+        )
+    }
 }
