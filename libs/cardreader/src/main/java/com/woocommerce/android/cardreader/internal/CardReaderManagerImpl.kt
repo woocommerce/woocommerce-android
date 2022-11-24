@@ -91,14 +91,6 @@ internal class CardReaderManagerImpl(
         return connectionManager.discoverReaders(isSimulated, cardReaderTypesToDiscover)
     }
 
-//    override fun blah(updateFrequency: CardReaderManager.SimulatorUpdateFrequency) {
-//        when(updateFrequency) {
-//            CardReaderManager.SimulatorUpdateFrequency.ALWAYS -> terminal.setupSimulator()
-//            CardReaderManager.SimulatorUpdateFrequency.NEVER -> terminal.setupSimulator(CardReaderManager.SimulatorUpdateFrequency.NEVER)
-//            CardReaderManager.SimulatorUpdateFrequency.RANDOMLY -> terminal.setupSimulator(CardReaderManager.SimulatorUpdateFrequency.RANDOMLY)
-//        }
-//    }
-
     override fun startConnectionToReader(cardReader: CardReader, locationId: String) {
         if (!terminal.isInitialized()) throw IllegalStateException("Terminal not initialized")
         connectionManager.startConnectionToReader(cardReader, locationId)
