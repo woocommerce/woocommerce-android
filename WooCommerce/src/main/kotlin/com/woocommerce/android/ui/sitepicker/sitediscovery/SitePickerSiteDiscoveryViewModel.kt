@@ -182,7 +182,9 @@ class SitePickerSiteDiscoveryViewModel @Inject constructor(
                     properties = mapOf(
                         "has_wordpress" to it.isWordPress,
                         "is_wpcom" to it.isWPCom,
-                        "has_valid_jetpack" to (it.isJetpackActive && it.isJetpackConnected)
+                        "is_jetpack_installed" to it.hasJetpack,
+                        "is_jetpack_active" to it.isJetpackActive,
+                        "is_jetpack_connected" to it.isJetpackConnected
                     )
                 )
 
