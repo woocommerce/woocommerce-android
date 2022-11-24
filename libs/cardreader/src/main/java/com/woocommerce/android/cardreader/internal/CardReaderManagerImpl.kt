@@ -3,7 +3,6 @@ package com.woocommerce.android.cardreader.internal
 import android.app.Application
 import android.content.ComponentCallbacks2
 import android.content.res.Configuration
-import com.stripe.stripeterminal.external.models.SimulateReaderUpdate
 import com.stripe.stripeterminal.log.LogLevel
 import com.woocommerce.android.cardreader.BuildConfig
 import com.woocommerce.android.cardreader.CardReaderManager
@@ -90,14 +89,6 @@ internal class CardReaderManagerImpl(
         if (!terminal.isInitialized()) throw IllegalStateException("Terminal not initialized")
         return connectionManager.discoverReaders(isSimulated, cardReaderTypesToDiscover)
     }
-
-//    override fun blah(updateFrequency: CardReaderManager.SimulatorUpdateFrequency) {
-//        when(updateFrequency) {
-//            CardReaderManager.SimulatorUpdateFrequency.ALWAYS -> terminal.setupSimulator()
-//            CardReaderManager.SimulatorUpdateFrequency.NEVER -> terminal.setupSimulator(CardReaderManager.SimulatorUpdateFrequency.NEVER)
-//            CardReaderManager.SimulatorUpdateFrequency.RANDOMLY -> terminal.setupSimulator(CardReaderManager.SimulatorUpdateFrequency.RANDOMLY)
-//        }
-//    }
 
     override fun startConnectionToReader(cardReader: CardReader, locationId: String) {
         if (!terminal.isInitialized()) throw IllegalStateException("Terminal not initialized")
