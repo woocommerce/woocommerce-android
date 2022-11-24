@@ -102,12 +102,6 @@ class DeveloperOptionsViewModel @Inject constructor(
 
     fun onUpdateReaderOptionChanged(selectedOption: UpdateOptions) {
         developerOptionsRepository.updateSimulatedReaderOption(selectedOption)
-        onUpdateReaderOptionSelected(mapper(selectedOption))
-    }
-
-    private fun onUpdateReaderOptionSelected(selectedOption: CardReaderManager.SimulatorUpdateFrequency) {
-
-        cardReaderManager.blah(selectedOption)
     }
 
     sealed class DeveloperOptionsEvents : MultiLiveEvent.Event() {
@@ -160,9 +154,5 @@ class DeveloperOptionsViewModel @Inject constructor(
             NEVER(string.never_update_reader),
             RANDOMLY(string.randomly_update_reader)
         }
-    }
-
-    private fun mapper(selectedOption: UpdateOptions): CardReaderManager.SimulatorUpdateFrequency {
-        return CardReaderManager.SimulatorUpdateFrequency.valueOf(selectedOption.name)
     }
 }
