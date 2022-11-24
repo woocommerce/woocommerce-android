@@ -36,6 +36,7 @@ import org.mockito.kotlin.argumentCaptor
 import org.mockito.kotlin.eq
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.never
+import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import org.wordpress.android.fluxc.model.SiteModel
@@ -418,6 +419,20 @@ class MyStoreViewModelTest : BaseUnitTest() {
         }
 
     // region Just In Time Messages (JITM)
+    @Test
+    fun `Given network connection, When on swipe to refresh, then fetch JITMS`() {
+        testBlocking {
+            givenNetworkConnectivity(connected = true)
+            whenever(selectedSite.get()).thenReturn(SiteModel())
+            whenViewModelIsCreated()
+
+            sut.onSwipeToRefresh()
+
+            // called twice, on view model init and on pull to refresh
+            verify(jitmStore, times(2)).fetchJitmMessage(any(), any(), any())
+        }
+    }
+
     @Test
     fun `when viewmodel init, then proper encoded query params are passed to fetch jitm`() {
         testBlocking {
