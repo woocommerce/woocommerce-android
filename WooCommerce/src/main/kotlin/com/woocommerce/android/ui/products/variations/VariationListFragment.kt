@@ -159,12 +159,12 @@ class VariationListFragment :
             }
         } else {
             binding.firstVariationView.setOnClickListener {
-                viewModel.onCreateFirstVariationRequested()
+                viewModel.createFirstVariation()
             }
             binding.addVariationButton.run {
                 text = getString(R.string.variation_list_generate_new_variation)
                 setOnClickListener {
-                    viewModel.onCreateEmptyVariationClick()
+                    viewModel.createEmptyVariation()
                 }
             }
         }
@@ -409,6 +409,6 @@ class VariationListFragment :
     }
 
     override fun onGenerateNewVariation() {
-        viewModel.onCreateEmptyVariationClick()
+        viewModel.onNewVariationClicked()
     }
 }
