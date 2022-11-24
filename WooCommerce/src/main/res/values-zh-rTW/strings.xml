@@ -1,12 +1,42 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2022-11-02 12:54:04+0000
+Translation-Revision-Date: 2022-11-15 11:54:04+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: zh_TW
 -->
 <resources>
-    <string name="create_new_store">建立新商店</string>
+    <string name="store_creation_domain_picker_suggestions_title">建議</string>
+    <string name="store_creation_domain_picker_skip_button">略過</string>
+    <string name="store_creation_domain_picker_hint">輸入網域</string>
+    <string name="store_creation_domain_picker_subtitle">這是人們在網際網路上找到你的地方。 不用擔心，之後還能修改。</string>
+    <string name="store_creation_domain_picker_title">選擇網域</string>
+    <string name="analytics_views_subtitle">點閱數</string>
+    <string name="analytics_visitors_subtitle">訪客數</string>
+    <string name="analytics_visitors_and_views_card_title">訪客和點閱數</string>
+    <string name="store_creation_confirm_and_leave">確認並離開</string>
+    <string name="store_creation_exit_dialog_message">你將失去所有商店資訊。</string>
+    <string name="store_creation_exit_dialog_title">你想離開嗎？</string>
+    <string name="store_creation_in_progress">正在建立你的商店…</string>
+    <string name="store_creation_cannot_load_store">無法載入你的商店。\n請再試一次…</string>
+    <string name="store_creation_create_new_store_label">建立新商店</string>
+    <string name="or_use_password_below_qr_code_scan_option">或使用密碼登入</string>
+    <string name="or_scan_qr_code_to_log_in">掃描 QR 碼登入</string>
+    <string name="simplified_login_prologue_title">WooCommerce 是可自訂的開放原始碼電子商務平台，架構在 WordPress 上。</string>
+    <string name="simulated_reader_toast">模擬讀卡機已停用</string>
+    <string name="simulated_reader_key">模擬讀卡機金鑰</string>
+    <string name="variations_bulk_update_stock_quantity_success">更新的庫存數量</string>
+    <string name="variations_bulk_update_current_stock_quantity_mixed">目前庫存數量不一</string>
+    <string name="variations_bulk_update_current_stock_quantity">目前庫存數量為 %d</string>
+    <string name="variations_bulk_update_stock_quantity_dialog_title">正在更新庫存數量</string>
+    <string name="variations_bulk_update_stock_quantity_info">%d 個款式的庫存數量將會更新</string>
+    <string name="variations_bulk_update_dialog_inventory_section_title">庫存</string>
+    <string name="product_search_hint_active_filters">搜尋篩選的商品</string>
+    <string name="orderlist_search_hint_active_filters">搜尋篩選的訂單</string>
+    <string name="site_picker_connect_existing_store">連結現有商店</string>
+    <string name="site_picker_create_new_store">建立新商店</string>
+    <string name="login_site_picker_add_a_store">新增商店</string>
+    <string name="login_no_stores">你的帳號未連結至任何 WooCommerce 商店。</string>
     <string name="analytics_products_list_item_description">淨銷售額：%1$s</string>
     <string name="analytics_products_list_header_subtitle">售出的項目</string>
     <string name="analytics_products_list_header_title">產品</string>
@@ -215,8 +245,8 @@ Language: zh_TW
     <string name="variations_bulk_update_current_prices_mixed">目前價格不一</string>
     <string name="variations_bulk_update_current_price">目前價格為 %s</string>
     <string name="variations_bulk_update_price_info">%d 個款式的價格將會更新。</string>
-    <string name="variations_bulk_update_dialog_price_mixed">混合</string>
-    <string name="variations_bulk_update_dialog_price_none">無</string>
+    <string name="variations_bulk_update_dialog_mixed">混合</string>
+    <string name="variations_bulk_update_dialog_none">無</string>
     <string name="variations_bulk_update_dialog_sale_price_label">折扣價</string>
     <string name="variations_bulk_update_dialog_regular_price_label">原價</string>
     <string name="variations_bulk_update_dialog_price_section_title">價格</string>
@@ -2209,7 +2239,6 @@ Language: zh_TW
     <string name="dashboard_stats_granularity_months">月</string>
     <string name="dashboard_stats_granularity_weeks">週</string>
     <string name="dashboard_stats_granularity_days">天</string>
-    <string name="login_no_stores">找不到與此帳號連結的 WooCommerce 商店。</string>
     <string name="login_with_a_different_account">使用不同的帳號登入</string>
     <string name="login_nostores_content_description">無 WooCommerce 商店</string>
     <string name="login_avatar_content_description">你的個人檔案照片</string>

@@ -3,6 +3,12 @@ package com.woocommerce.android.ui.jetpack
 import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.ui.common.PluginRepository
+import com.woocommerce.android.ui.common.PluginRepository.PluginStatus
+import com.woocommerce.android.ui.common.PluginRepository.PluginStatus.PluginActivated
+import com.woocommerce.android.ui.common.PluginRepository.PluginStatus.PluginActivationFailed
+import com.woocommerce.android.ui.common.PluginRepository.PluginStatus.PluginInstallFailed
+import com.woocommerce.android.ui.common.PluginRepository.PluginStatus.PluginInstalled
 import com.woocommerce.android.ui.jetpack.JetpackInstallViewModel.FailureType.ACTIVATION
 import com.woocommerce.android.ui.jetpack.JetpackInstallViewModel.FailureType.CONNECTION
 import com.woocommerce.android.ui.jetpack.JetpackInstallViewModel.FailureType.INSTALLATION
@@ -11,11 +17,6 @@ import com.woocommerce.android.ui.jetpack.JetpackInstallViewModel.InstallStatus.
 import com.woocommerce.android.ui.jetpack.JetpackInstallViewModel.InstallStatus.Failed
 import com.woocommerce.android.ui.jetpack.JetpackInstallViewModel.InstallStatus.Finished
 import com.woocommerce.android.ui.jetpack.JetpackInstallViewModel.InstallStatus.Installing
-import com.woocommerce.android.ui.jetpack.PluginRepository.PluginStatus
-import com.woocommerce.android.ui.jetpack.PluginRepository.PluginStatus.PluginActivated
-import com.woocommerce.android.ui.jetpack.PluginRepository.PluginStatus.PluginActivationFailed
-import com.woocommerce.android.ui.jetpack.PluginRepository.PluginStatus.PluginInstallFailed
-import com.woocommerce.android.ui.jetpack.PluginRepository.PluginStatus.PluginInstalled
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -36,33 +37,30 @@ class JetpackInstallViewModelTest : BaseUnitTest() {
     private val savedState: SavedStateHandle = SavedStateHandle()
     private val installationStateFlow = MutableSharedFlow<PluginStatus>(extraBufferCapacity = Int.MAX_VALUE)
     private val pluginRepository: PluginRepository = mock {
-        on { installPlugin(any(), any()) } doReturn installationStateFlow
+        on { installPlugin(any(), any(), any()) } doReturn installationStateFlow
     }
-    private lateinit var siteModelMock: SiteModel
-    private lateinit var selectedSiteMock: SelectedSite
+    private val siteModelMock: SiteModel = mock {
+        on { siteId }.doReturn(SITE_ID)
+        on { isJetpackConnected }.doReturn(true)
+    }
+    private val selectedSiteMock: SelectedSite = mock {
+        on { get() }.doReturn(siteModelMock)
+    }
     private val wooCommerceStore: WooCommerceStore = mock()
-    private lateinit var exampleResult: WooResult<List<SiteModel>>
+    private val exampleResult = WooResult(model = listOf(siteModelMock))
     private lateinit var viewModel: JetpackInstallViewModel
 
     companion object {
         const val EXAMPLE_SLUG = "plugin-slug"
         const val EXAMPLE_NAME = "plugin-name"
         const val EXAMPLE_ERROR = "error-message"
+        const val EXAMPLE_ERROR_CODE = 503
         const val CONNECTION_ERROR = "Connection error."
         const val SITE_ID = 1337L
     }
 
     @Before
     fun setup() {
-        siteModelMock = mock {
-            on { siteId }.doReturn(SITE_ID)
-            on { isJetpackConnected }.doReturn(true)
-        }
-        selectedSiteMock = mock {
-            on { get() }.doReturn(siteModelMock)
-        }
-        exampleResult = WooResult(model = listOf(siteModelMock))
-
         viewModel = JetpackInstallViewModel(
             savedState,
             pluginRepository,
@@ -81,8 +79,8 @@ class JetpackInstallViewModelTest : BaseUnitTest() {
             new.installStatus?.takeIfNotEqualTo(old?.installStatus) { installStates.add(it) }
         }
 
-        installationStateFlow.tryEmit(PluginInstalled(EXAMPLE_SLUG, siteModelMock))
-        installationStateFlow.tryEmit(PluginActivated(EXAMPLE_NAME, siteModelMock))
+        installationStateFlow.tryEmit(PluginInstalled(EXAMPLE_SLUG))
+        installationStateFlow.tryEmit(PluginActivated(EXAMPLE_NAME))
         advanceUntilIdle()
 
         Assertions.assertThat(installStates).containsExactly(
@@ -100,7 +98,7 @@ class JetpackInstallViewModelTest : BaseUnitTest() {
             new.installStatus?.takeIfNotEqualTo(old?.installStatus) { installStates.add(it) }
         }
 
-        installationStateFlow.tryEmit(PluginInstallFailed(EXAMPLE_ERROR, EXAMPLE_ERROR))
+        installationStateFlow.tryEmit(PluginInstallFailed(EXAMPLE_ERROR, EXAMPLE_ERROR, EXAMPLE_ERROR_CODE))
         advanceUntilIdle()
 
         Assertions.assertThat(installStates).contains(
@@ -115,8 +113,8 @@ class JetpackInstallViewModelTest : BaseUnitTest() {
             new.installStatus?.takeIfNotEqualTo(old?.installStatus) { installStates.add(it) }
         }
 
-        installationStateFlow.tryEmit(PluginInstalled(EXAMPLE_NAME, siteModelMock))
-        installationStateFlow.tryEmit(PluginActivationFailed(EXAMPLE_ERROR, EXAMPLE_ERROR))
+        installationStateFlow.tryEmit(PluginInstalled(EXAMPLE_NAME))
+        installationStateFlow.tryEmit(PluginActivationFailed(EXAMPLE_ERROR, EXAMPLE_ERROR, EXAMPLE_ERROR_CODE))
         advanceUntilIdle()
 
         Assertions.assertThat(installStates).contains(
@@ -133,7 +131,7 @@ class JetpackInstallViewModelTest : BaseUnitTest() {
             new.installStatus?.takeIfNotEqualTo(old?.installStatus) { installStates.add(it) }
         }
 
-        installationStateFlow.tryEmit(PluginInstalled(EXAMPLE_NAME, siteModelMock))
+        installationStateFlow.tryEmit(PluginInstalled(EXAMPLE_NAME))
         advanceUntilIdle()
 
         Assertions.assertThat(installStates).containsExactly(
@@ -152,8 +150,8 @@ class JetpackInstallViewModelTest : BaseUnitTest() {
             new.installStatus?.takeIfNotEqualTo(old?.installStatus) { installStates.add(it) }
         }
 
-        installationStateFlow.tryEmit(PluginInstalled(EXAMPLE_SLUG, siteModelMock))
-        installationStateFlow.tryEmit(PluginActivated(EXAMPLE_NAME, siteModelMock))
+        installationStateFlow.tryEmit(PluginInstalled(EXAMPLE_SLUG))
+        installationStateFlow.tryEmit(PluginActivated(EXAMPLE_NAME))
         advanceUntilIdle()
 
         Assertions.assertThat(installStates).containsExactly(

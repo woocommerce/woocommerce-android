@@ -27,8 +27,7 @@ allprojects {
     tasks.withType(KotlinCompile).all {
         kotlinOptions {
             jvmTarget = JavaVersion.VERSION_1_8
-            // TODO fix all the warnings and change to true before end of 2022
-            allWarningsAsErrors = false
+            allWarningsAsErrors = true
             freeCompilerArgs += [
                     "-Xopt-in=kotlin.RequiresOptIn",
                     "-Xjvm-default=all-compatibility",
@@ -96,14 +95,14 @@ tasks.register("installGitHooks", Copy) {
 }
 
 ext {
-    fluxCVersion = 'trunk-72aaebeca02b525428092851a6a3eea5a063f6b7'
+    fluxCVersion = 'trunk-f11f4856e973a5fd02d04a239d377d052b5e05f0'
     glideVersion = '4.13.2'
     coilVersion = '2.1.0'
     constraintLayoutVersion = '1.2.0'
     libaddressinputVersion = '0.0.2'
     eventBusVersion = '3.3.1'
     googlePlayCoreVersion = '1.10.3'
-    coroutinesVersion = '1.6.1'
+    coroutinesVersion = '1.6.4'
     lifecycleVersion = '2.5.1'
     aztecVersion = 'v1.3.45'
     flipperVersion = '0.154.0'
@@ -117,6 +116,7 @@ ext {
     wordPressLoginVersion = '0.21.0'
     aboutAutomatticVersion = '0.0.6'
     workManagerVersion = '2.7.1'
+    billingVersion = '5.0.0'
 
     // Apache
     commonsText = '1.10.0'

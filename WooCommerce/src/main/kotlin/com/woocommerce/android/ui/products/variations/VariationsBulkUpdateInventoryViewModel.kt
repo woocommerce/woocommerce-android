@@ -64,8 +64,10 @@ class VariationsBulkUpdateInventoryViewModel @Inject constructor(
         }
     }
 
-    fun onStockQuantityChanged(quantity: Double) {
-        viewState = viewState.copy(stockQuantity = quantity)
+    fun onStockQuantityChanged(rawQuantity: String) {
+        viewState = rawQuantity.toDoubleOrNull().let { quantity ->
+            viewState.copy(stockQuantity = quantity, isDoneEnabled = quantity != null)
+        }
     }
 
     @Parcelize
@@ -74,6 +76,7 @@ class VariationsBulkUpdateInventoryViewModel @Inject constructor(
         val stockQuantity: Double? = null,
         val stockQuantityGroupType: ValuesGroupType? = null,
         val isProgressDialogShown: Boolean = false,
+        val isDoneEnabled: Boolean = true
     ) : Parcelable
 
     @Parcelize

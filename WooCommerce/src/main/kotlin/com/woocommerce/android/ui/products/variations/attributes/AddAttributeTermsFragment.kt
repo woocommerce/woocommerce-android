@@ -7,6 +7,7 @@ import android.view.Menu
 import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
+import androidx.core.view.MenuProvider
 import androidx.core.view.isVisible
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
@@ -34,7 +35,7 @@ import dagger.hilt.android.AndroidEntryPoint
  * local (product-based) attributes, the second is a list of terms from global (store-wide) attributes
  */
 @AndroidEntryPoint
-class AddAttributeTermsFragment : BaseProductFragment(R.layout.fragment_add_attribute_terms) {
+class AddAttributeTermsFragment : BaseProductFragment(R.layout.fragment_add_attribute_terms), MenuProvider {
     companion object {
         const val TAG: String = "AddAttributeTermsFragment"
         private const val LIST_STATE_KEY_ASSIGNED = "list_state_assigned"
@@ -135,7 +136,7 @@ class AddAttributeTermsFragment : BaseProductFragment(R.layout.fragment_add_attr
         setupResultHandlers()
         getAttributeTerms()
 
-        setHasOptionsMenu(true)
+        requireActivity().addMenuProvider(this, viewLifecycleOwner)
 
         savedInstanceState?.let { bundle ->
             if (bundle.getBoolean(KEY_IS_CONFIRM_REMOVE_DIALOG_SHOWING)) {
@@ -163,14 +164,11 @@ class AddAttributeTermsFragment : BaseProductFragment(R.layout.fragment_add_attr
         _binding = null
     }
 
-    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
-        super.onCreateOptionsMenu(menu, inflater)
+    override fun onCreateMenu(menu: Menu, inflater: MenuInflater) {
         inflater.inflate(R.menu.menu_attribute_terms, menu)
     }
 
-    override fun onPrepareOptionsMenu(menu: Menu) {
-        super.onPrepareOptionsMenu(menu)
-
+    override fun onPrepareMenu(menu: Menu) {
         /**
          * we only want to show the Next menu item if we're under the creation of
          * the first variation for a Variable Product
@@ -191,7 +189,7 @@ class AddAttributeTermsFragment : BaseProductFragment(R.layout.fragment_add_attr
             !navArgs.isVariationCreation
     }
 
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+    override fun onMenuItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
             R.id.menu_remove -> {
                 confirmRemoveAttribute()
@@ -208,7 +206,7 @@ class AddAttributeTermsFragment : BaseProductFragment(R.layout.fragment_add_attr
                 ).run { findNavController().navigateSafely(this) }
                 true
             }
-            else -> super.onOptionsItemSelected(item)
+            else -> false
         }
     }
 

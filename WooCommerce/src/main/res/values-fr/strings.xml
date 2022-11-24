@@ -1,12 +1,42 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2022-11-03 19:54:03+0000
+Translation-Revision-Date: 2022-11-18 10:00:28+0000
 Plural-Forms: nplurals=2; plural=n > 1;
 Generator: GlotPress/2.4.0-alpha
 Language: fr
 -->
 <resources>
-    <string name="create_new_store">Créer une nouvelle boutique</string>
+    <string name="store_creation_domain_picker_suggestions_title">Suggestions</string>
+    <string name="store_creation_domain_picker_skip_button">Skip</string>
+    <string name="store_creation_domain_picker_hint">Type a domain</string>
+    <string name="store_creation_domain_picker_subtitle">C\'est ici que les internautes vous trouveront sur Internet. Pas d’inquiétude, vous pourrez modifier ceci ultérieurement.</string>
+    <string name="store_creation_domain_picker_title">Choisir le domaine</string>
+    <string name="analytics_views_subtitle">Vues</string>
+    <string name="analytics_visitors_subtitle">Visiteurs</string>
+    <string name="analytics_visitors_and_views_card_title">Visitors and Views</string>
+    <string name="store_creation_confirm_and_leave">Confirmer et quitter</string>
+    <string name="store_creation_exit_dialog_message">Vous allez perdre toutes les informations liées à votre boutique.</string>
+    <string name="store_creation_exit_dialog_title">Voulez-vous quitter ?</string>
+    <string name="store_creation_in_progress">Création de votre boutique en cours.</string>
+    <string name="store_creation_cannot_load_store">Votre boutique n’a pas pu être chargée.\nVeuillez réessayer.</string>
+    <string name="store_creation_create_new_store_label">Créer une nouvelle boutique</string>
+    <string name="or_use_password_below_qr_code_scan_option">Ou connectez-vous avec un mot de passe</string>
+    <string name="or_scan_qr_code_to_log_in">Scannez le code QR pour vous connecter</string>
+    <string name="simplified_login_prologue_title">WooCommerce est une plateforme d’e-commerce open-source personnalisable basée sur WordPress.</string>
+    <string name="simulated_reader_toast">Le simulateur de lecteur de carte a été désactivé</string>
+    <string name="simulated_reader_key">Simulateur de lecteur de carte</string>
+    <string name="variations_bulk_update_stock_quantity_success">Mise à jour de la quantité en stock</string>
+    <string name="variations_bulk_update_current_stock_quantity_mixed">La quantité actuelle en stock est définie sur « Variable »</string>
+    <string name="variations_bulk_update_current_stock_quantity">La quantité en stock actuelle est de %d</string>
+    <string name="variations_bulk_update_stock_quantity_dialog_title">Mise à jour de la quantité en stock</string>
+    <string name="variations_bulk_update_stock_quantity_info">La quantité en stock sera mise à jour pour %d variations</string>
+    <string name="variations_bulk_update_dialog_inventory_section_title">Inventaire</string>
+    <string name="product_search_hint_active_filters">Recherche filtrée de produits</string>
+    <string name="orderlist_search_hint_active_filters">Recherche filtrée de commandes</string>
+    <string name="site_picker_connect_existing_store">Associer une boutique existante</string>
+    <string name="site_picker_create_new_store">Créer une nouvelle boutique</string>
+    <string name="login_site_picker_add_a_store">Ajouter une boutique</string>
+    <string name="login_no_stores">Votre compte n’est associé à aucune boutique WooCommerce.</string>
     <string name="analytics_products_list_item_description">Ventes nettes : %1$s</string>
     <string name="analytics_products_list_header_subtitle">Articles vendus</string>
     <string name="analytics_products_list_header_title">Produits</string>
@@ -215,8 +245,8 @@ Language: fr
     <string name="variations_bulk_update_current_prices_mixed">Les prix actuels sont variables</string>
     <string name="variations_bulk_update_current_price">Le prix actuel est %s</string>
     <string name="variations_bulk_update_price_info">Le prix sera mis à jour pour %d variantes</string>
-    <string name="variations_bulk_update_dialog_price_mixed">Variable</string>
-    <string name="variations_bulk_update_dialog_price_none">Aucun</string>
+    <string name="variations_bulk_update_dialog_mixed">Variable</string>
+    <string name="variations_bulk_update_dialog_none">Aucune</string>
     <string name="variations_bulk_update_dialog_sale_price_label">Tarif promotionnel</string>
     <string name="variations_bulk_update_dialog_regular_price_label">Tarif standard</string>
     <string name="variations_bulk_update_dialog_price_section_title">Prix</string>
@@ -2209,7 +2239,6 @@ Language: fr
     <string name="dashboard_stats_granularity_months">Mois</string>
     <string name="dashboard_stats_granularity_weeks">Semaines</string>
     <string name="dashboard_stats_granularity_days">Jours</string>
-    <string name="login_no_stores">Boutiques WooCommerce connectées à ce compte introuvables.</string>
     <string name="login_with_a_different_account">Se connecter avec un compte différent</string>
     <string name="login_nostores_content_description">Aucune boutique WooCommerce</string>
     <string name="login_avatar_content_description">Votre photo de profil</string>

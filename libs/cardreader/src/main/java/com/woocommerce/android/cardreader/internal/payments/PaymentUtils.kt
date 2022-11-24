@@ -1,6 +1,6 @@
 package com.woocommerce.android.cardreader.internal.payments
 
-import com.woocommerce.android.cardreader.internal.config.CardReaderConfigForSupportedCountry
+import com.woocommerce.android.cardreader.config.CardReaderConfigForSupportedCountry
 import java.math.BigDecimal
 import java.math.RoundingMode
 

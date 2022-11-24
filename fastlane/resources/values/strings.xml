@@ -290,6 +290,11 @@
     <string name="login_create_an_account">Create An Account</string>
     <string name="site_picker_create_new_store">Create a new store</string>
     <string name="site_picker_connect_existing_store">Connect an existing store</string>
+    <string name="login_jetpack_installation_screen_title">Connect Store</string>
+    <string name="login_jetpack_installation_explanation">To use this app for&lt;br&gt;&lt;b&gt;%1$s&lt;/b&gt;&lt;br&gt;you\'ll need the free Jetpack plugin installed and connected on your store.</string>
+    <string name="login_jetpack_connection_explanation">To use this app for&lt;br&gt;&lt;b&gt;%1$s&lt;/b&gt;&lt;br&gt;you\'ll need to connect your store to Jetpack.</string>
+    <string name="login_jetpack_installation_credentials_hint">You\’ll need your store credentials to begin the installation.</string>
+    <string name="login_jetpack_connect">Connect Jetpack</string>
 
     <!--
         My Store View
@@ -360,8 +365,6 @@
         <item translatable="false">@string/date_timeframe_quarter_to_date</item>
         <item translatable="false">@string/date_timeframe_year_to_date</item>
     </string-array>
-    <string name="analytics_see_report_button_text">See report</string>e
-    <string name="analytics_see_report_button_content_description">See more report details</string>
     <string name="analytics_revenue_card_title">Revenue</string>
     <string name="analytics_revenue_no_data">No revenue this period</string>
     <string name="analytics_orders_no_data">No orders this period</string>
@@ -377,6 +380,9 @@
     <string name="analytics_products_list_header_title">Products</string>
     <string name="analytics_products_list_header_subtitle">Items sold</string>
     <string name="analytics_products_list_item_description">Net sales: %1$s</string>
+    <string name="analytics_visitors_and_views_card_title">Visitors and Views</string>
+    <string name="analytics_visitors_subtitle">Visitors</string>
+    <string name="analytics_views_subtitle">Views</string>
 
     <!--
         Order List View
@@ -393,8 +399,8 @@
     <string name="orderlist_loading">Looking up your orders…</string>
     <string name="orderlist_no_filters_title">All Orders</string>
     <string name="orderlist_filters_title">Filtered Orders</string>
-    <string name="orderlist_simple_payments_wip_title">Create orders &amp; take payments!</string>
-    <string name="orderlist_simple_payments_wip_message_enabled">We\'ve been working on making it possible to create orders and take payments from your device! You can try these features out by tapping on the "+" button</string>
+    <string name="orderlist_simple_payments_wip_title">Create orders from your device!</string>
+    <string name="orderlist_simple_payments_wip_message_enabled">We\'ve been working on making it possible to create orders from your device! You can try this feature out by tapping on the "+" button</string>
     <string name="orderlist_simple_payments_menu">Simple payment</string>
     <string name="order_card_transition_name">order_card_%1$s</string>
     <string name="order_card_detail_transition_name">order_card_detail</string>
@@ -1608,6 +1614,7 @@
     <string name="variation_detail_price_warning_title">Some variations do not have prices</string>
     <string name="variation_detail_image_add">Add a variation image</string>
     <string name="variation_list_generate_new_variation">Generate new variation</string>
+    <string name="variation_list_generate_all_variations">Generate all variations</string>
     <string name="variation_created_title">Variation Created</string>
     <string name="variation_create_dialog_title">Generating variation</string>
     <string name="variation_loading_dialog_title">Fetching variations…</string>
@@ -1770,7 +1777,13 @@
         Developer Options Screen
     -->
     <string name="enable_card_reader">Enable Simulated Card Reader</string>
+    <string name="update_simulated_reader">Update Simulated Card Reader</string>
     <string name="simulated_reader_key">Simulated Reader Key</string>
+    <string name="update_simulated_reader_key">Update Simulated Reader Key</string>
+    <string name="always_update_reader">Always</string>
+    <string name="never_update_reader">Never</string>
+    <string name="randomly_update_reader">Randomly</string>
+
 
     <!--
         WCToggleSingleOptionView
@@ -2697,4 +2710,35 @@
     <string name="store_creation_exit_dialog_title">Do you want to leave?</string>
     <string name="store_creation_exit_dialog_message">You will lose all your store information.</string>
     <string name="store_creation_confirm_and_leave">Confirm and leave</string>
+    <string name="store_creation_domain_picker_title">Choose a domain</string>
+    <string name="store_creation_domain_picker_subtitle">This is where people will find you on the Internet. Don\'t worry, you can change it later.</string>
+    <string name="store_creation_domain_picker_hint">Type a domain</string>
+    <string name="store_creation_domain_picker_skip_button">Skip</string>
+    <string name="store_creation_domain_picker_suggestions_title">Suggestions</string>
+    <string name="store_creation_summary_title">My Store</string>
+    <string name="store_creation_summary_subtitle">Your store will be created based on the options of your choice!</string>
+    <string name="store_creation_summary_primary_button">Continue to payment</string>
+    <string name="store_creation_ecommerce_plan_error">Couldn\'t load the plan information…</string>
+    <string name="store_creation_ecommerce_plan_features_tagline">All the features you need, already built in.</string>
+    <string name="store_creation_ecommerce_plan_powered_by">Powered by</string>
+    <string name="store_creation_ecommerce_plan_wordpress" translatable="false">WordPress.com</string>
+    <string name="store_creation_ecommerce_plan_purchase_button_title">Create Store for %1$s</string>
+    <string name="store_creation_ecommerce_plan_refund_reminder">There\'s no risk, you can cancel for a full refund within 30 days.</string>
+    <string name="store_creation_ecommerce_plan_period_month">month</string>
+    <string name="store_creation_ecommerce_plan_period_year">year</string>
+    <string name="store_creation_ecommerce_plan_feature_themes">Premium themes</string>
+    <string name="store_creation_ecommerce_plan_feature_products">Unlimited products</string>
+    <string name="store_creation_ecommerce_plan_feature_subscriptions">Subscriptions &amp; giftcards</string>
+    <string name="store_creation_ecommerce_plan_feature_reports">Ecommerce reports</string>
+    <string name="store_creation_ecommerce_plan_feature_payments">Multiple payment options</string>
+    <string name="store_creation_ecommerce_plan_feature_shipping_labels">Shipping labels</string>
+    <string name="store_creation_ecommerce_plan_feature_sales">Sales channels</string>
+    <string name="store_creation_installation_error">An error occurred during installation, please try again…</string>
+    <string name="store_creation_installation_success">Your store has been created!</string>
+    <string name="store_creation_installation_manage_store_button">Manage my store</string>
+    <string name="store_creation_installation_show_preview_button">Store preview</string>
+    <string name="store_creation_store_name_caption">About your store</string>
+    <string name="store_creation_store_name_title">What’s your store name?</string>
+    <string name="store_creation_store_name_subtitle">Don’t worry you can always change it later. </string>
+    <string name="store_creation_store_name_hint">Store name</string>
 </resources>

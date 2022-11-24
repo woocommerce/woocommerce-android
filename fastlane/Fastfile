@@ -143,21 +143,15 @@ platform :android do
     trigger_release_build(branch_to_build: "release/#{new_version}")
   end
 
-  #####################################################################################
-  # update_appstore_strings
-  # -----------------------------------------------------------------------------------
-  # This lane gets the data from the txt files in the WooCommerce/metadata/ folder
-  # and updates the .pot file that is then picked by GlotPress for translations.
-  # -----------------------------------------------------------------------------------
-  # Usage:
-  # fastlane update_appstore_strings version:<version>
+  # Updates the `PlayStoreStrings.pot` file with the latest content from the `release_notes.txt` files and the other text sources.
   #
-  # Example:
-  # fastlane update_appstore_strings version:1.1
-  #####################################################################################
+  # @option [String] version The current `x.y` version of the app. Optional. Used to derive the `release_notes_xy` key to use in the `.pot` file.
+  #
   desc "Updates the PlayStoreStrings.pot file"
   lane :update_appstore_strings do |options|
     ensure_git_status_clean
+
+    version = options.fetch(:version, android_get_app_version)
 
     files = {
       release_note: RELEASE_NOTES_PATH,
@@ -176,13 +170,13 @@ platform :android do
     an_update_metadata_source(
       po_file_path: po_path,
       source_files: files,
-      release_version: options[:version]
+      release_version: version
     )
 
     git_add(path: po_path)
     git_commit(
       path: po_path,
-      message: "Update `PlayStoreStrings.po` for #{options[:version]}",
+      message: "Update `PlayStoreStrings.po` for #{version}",
       allow_nothing_to_commit: true
     )
   end
@@ -375,7 +369,9 @@ platform :android do
     skip_upload_changelogs: true,
     skip_upload_images: true,
     skip_upload_screenshots: true,
-    json_key: UPLOAD_TO_PLAY_STORE_JSON_KEY
+    json_key: UPLOAD_TO_PLAY_STORE_JSON_KEY,
+    # Retain the build for v10.9.2 which is the latest one supporting Android 5/6
+    version_codes_to_retain: [356],
   )
 
   create_gh_release(version: version) if options[:create_release]
@@ -835,7 +831,8 @@ platform :android do
     upload_path = upload_to_s3(
       bucket: 'a8c-apps-public-artifacts',
       key: "woocommerce-installable-build-#{generate_installable_build_number}.apk",
-      file: lane_context[SharedValues::GRADLE_APK_OUTPUT_PATH]
+      file: lane_context[SharedValues::GRADLE_APK_OUTPUT_PATH],
+      skip_if_exists: true
     )
 
     install_url = "#{INSTALLABLE_BUILD_DOMAIN}/#{upload_path}"

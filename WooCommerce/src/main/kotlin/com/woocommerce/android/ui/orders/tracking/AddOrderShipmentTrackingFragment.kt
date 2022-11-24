@@ -8,6 +8,7 @@ import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.view.MenuProvider
 import androidx.core.widget.doOnTextChanged
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
@@ -42,7 +43,9 @@ import org.wordpress.android.fluxc.utils.DateUtils as FluxCDateUtils
 
 @AndroidEntryPoint
 class AddOrderShipmentTrackingFragment :
-    BaseFragment(R.layout.fragment_add_shipment_tracking), BackPressListener {
+    BaseFragment(R.layout.fragment_add_shipment_tracking),
+    BackPressListener,
+    MenuProvider {
     companion object {
         const val KEY_ADD_SHIPMENT_TRACKING_RESULT = "key_add_shipment_tracking_result"
     }
@@ -62,11 +65,6 @@ class AddOrderShipmentTrackingFragment :
             navigationIcon = R.drawable.ic_gridicons_cross_24dp
         )
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setHasOptionsMenu(true)
-    }
-
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         return inflater.inflate(R.layout.fragment_add_shipment_tracking, container, false)
     }
@@ -75,6 +73,8 @@ class AddOrderShipmentTrackingFragment :
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        requireActivity().addMenuProvider(this, viewLifecycleOwner)
 
         val binding = FragmentAddShipmentTrackingBinding.bind(view)
         initUi(binding)
@@ -160,7 +160,7 @@ class AddOrderShipmentTrackingFragment :
             val calendar = FluxCDateUtils.getCalendarInstance(viewModel.currentSelectedDate)
             dateShippedPickerDialog = DatePickerDialog(
                 requireActivity(),
-                DatePickerDialog.OnDateSetListener { _, year, month, dayOfMonth ->
+                { _, year, month, dayOfMonth ->
                     viewModel.onDateChanged("$year-${month + 1}-$dayOfMonth")
                 },
                 calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.get(Calendar.DAY_OF_MONTH)
@@ -198,12 +198,11 @@ class AddOrderShipmentTrackingFragment :
     /**
      * Reusing the same menu used for adding order notes
      */
-    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+    override fun onCreateMenu(menu: Menu, inflater: MenuInflater) {
         inflater.inflate(R.menu.menu_add, menu)
-        super.onCreateOptionsMenu(menu, inflater)
     }
 
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+    override fun onMenuItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
             R.id.menu_add -> {
                 activity?.let {
@@ -213,7 +212,7 @@ class AddOrderShipmentTrackingFragment :
                 viewModel.onAddButtonTapped()
                 true
             }
-            else -> super.onOptionsItemSelected(item)
+            else -> false
         }
     }
 

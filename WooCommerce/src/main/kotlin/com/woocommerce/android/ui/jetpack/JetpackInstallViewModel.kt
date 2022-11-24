@@ -5,14 +5,23 @@ import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.tools.SelectedSite
-import com.woocommerce.android.ui.jetpack.JetpackInstallViewModel.FailureType.*
-import com.woocommerce.android.ui.jetpack.JetpackInstallViewModel.InstallStatus.*
-import com.woocommerce.android.ui.jetpack.PluginRepository.PluginStatus.*
+import com.woocommerce.android.ui.common.PluginRepository
+import com.woocommerce.android.ui.common.PluginRepository.PluginStatus.PluginActivated
+import com.woocommerce.android.ui.common.PluginRepository.PluginStatus.PluginActivationFailed
+import com.woocommerce.android.ui.common.PluginRepository.PluginStatus.PluginInstallFailed
+import com.woocommerce.android.ui.common.PluginRepository.PluginStatus.PluginInstalled
+import com.woocommerce.android.ui.jetpack.JetpackInstallViewModel.FailureType.ACTIVATION
+import com.woocommerce.android.ui.jetpack.JetpackInstallViewModel.FailureType.CONNECTION
+import com.woocommerce.android.ui.jetpack.JetpackInstallViewModel.FailureType.INSTALLATION
+import com.woocommerce.android.ui.jetpack.JetpackInstallViewModel.InstallStatus.Activating
+import com.woocommerce.android.ui.jetpack.JetpackInstallViewModel.InstallStatus.Connecting
+import com.woocommerce.android.ui.jetpack.JetpackInstallViewModel.InstallStatus.Failed
+import com.woocommerce.android.ui.jetpack.JetpackInstallViewModel.InstallStatus.Finished
+import com.woocommerce.android.ui.jetpack.JetpackInstallViewModel.InstallStatus.Installing
 import com.woocommerce.android.viewmodel.LiveDataDelegate
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import kotlinx.parcelize.Parcelize
 import org.wordpress.android.fluxc.store.WooCommerceStore
@@ -44,14 +53,9 @@ class JetpackInstallViewModel @Inject constructor(
         installJetpackPlugin()
     }
 
-    override fun onCleared() {
-        super.onCleared()
-        repository.onCleanup()
-    }
-
     private fun installJetpackPlugin() {
         launch {
-            repository.installPlugin(JETPACK_SLUG, JETPACK_NAME).collect {
+            repository.installPlugin(selectedSite.get(), JETPACK_SLUG, JETPACK_NAME).collect {
                 when (it) {
                     is PluginInstalled -> {
                         viewState = viewState.copy(installStatus = Activating)

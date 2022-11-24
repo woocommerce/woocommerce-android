@@ -32,7 +32,6 @@ import com.woocommerce.android.ui.common.wpcomwebview.WPComWebViewAuthenticator
 import com.woocommerce.android.ui.compose.component.AlertDialog
 import com.woocommerce.android.ui.compose.component.WCColoredButton
 import com.woocommerce.android.ui.compose.component.WCWebView
-import com.woocommerce.android.ui.login.storecreation.webview.WebViewStoreCreationViewModel.DialogState
 import com.woocommerce.android.ui.login.storecreation.webview.WebViewStoreCreationViewModel.ViewState.ErrorState
 import com.woocommerce.android.ui.login.storecreation.webview.WebViewStoreCreationViewModel.ViewState.StoreCreationState
 import com.woocommerce.android.ui.login.storecreation.webview.WebViewStoreCreationViewModel.ViewState.StoreLoadingState
@@ -77,7 +76,7 @@ fun WebViewStoreCreationScreen(viewModel: WebViewStoreCreationViewModel) {
 
     viewModel.dialogViewState.observeAsState().value?.let {
         if (it.isDialogVisible) {
-            ConfirmExitDialog(it)
+            ConfirmExitDialog(viewModel)
         }
     }
 }
@@ -162,9 +161,9 @@ private fun StoreCreationInProgress() {
 }
 
 @Composable
-private fun ConfirmExitDialog(viewState: DialogState) {
+private fun ConfirmExitDialog(viewModel: WebViewStoreCreationViewModel) {
     AlertDialog(
-        onDismissRequest = { viewState.onDialogDismissed() },
+        onDismissRequest = { viewModel.onDialogDismissed() },
         title = {
             Text(text = stringResource(id = string.store_creation_exit_dialog_title))
         },
@@ -172,12 +171,12 @@ private fun ConfirmExitDialog(viewState: DialogState) {
             Text(text = stringResource(id = string.store_creation_exit_dialog_message))
         },
         confirmButton = {
-            TextButton(onClick = { viewState.onExitConfirmed() }) {
+            TextButton(onClick = { viewModel.onExitTriggered() }) {
                 Text(stringResource(id = string.store_creation_confirm_and_leave))
             }
         },
         dismissButton = {
-            TextButton(onClick = { viewState.onDialogDismissed() }) {
+            TextButton(onClick = { viewModel.onDialogDismissed() }) {
                 Text(stringResource(id = string.cancel))
             }
         },

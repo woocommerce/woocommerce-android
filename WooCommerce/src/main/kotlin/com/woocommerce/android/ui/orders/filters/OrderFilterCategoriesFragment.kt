@@ -7,7 +7,6 @@ import android.view.MenuItem
 import android.view.View
 import androidx.core.view.MenuProvider
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.Lifecycle
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -54,7 +53,7 @@ class OrderFilterCategoriesFragment :
         super.onViewCreated(view, savedInstanceState)
 
         val binding = FragmentOrderFilterListBinding.bind(view)
-        requireActivity().addMenuProvider(this, viewLifecycleOwner, Lifecycle.State.RESUMED)
+        requireActivity().addMenuProvider(this, viewLifecycleOwner)
         setUpObservers(viewModel)
 
         setUpFiltersRecyclerView(binding)

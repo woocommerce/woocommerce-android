@@ -1,12 +1,42 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2022-11-02 16:54:04+0000
+Translation-Revision-Date: 2022-11-15 14:54:03+0000
 Plural-Forms: nplurals=6; plural=n==0 ? 0 : n==1 ? 1 : n==2 ? 2 : n%100>=3 && n%100<=10 ? 3 : n%100>=11 && n%100<=99 ? 4 : 5;
 Generator: GlotPress/2.4.0-alpha
 Language: ar
 -->
 <resources>
-    <string name="create_new_store">إنشاء متجر جديد</string>
+    <string name="store_creation_domain_picker_suggestions_title">اقتراحات</string>
+    <string name="store_creation_domain_picker_skip_button">تخطٍ</string>
+    <string name="store_creation_domain_picker_hint">كتابة نطاق</string>
+    <string name="store_creation_domain_picker_subtitle">هذا هو المكان الذي سيجدك فيه الأشخاص على الإنترنت. لا داعي للقلق، يمكنك تغييرها لاحقًا.</string>
+    <string name="store_creation_domain_picker_title">اختيار نطاق</string>
+    <string name="analytics_views_subtitle"> المشاهدات</string>
+    <string name="analytics_visitors_subtitle">الزائرون</string>
+    <string name="analytics_visitors_and_views_card_title">الزائرون والمشاهدات</string>
+    <string name="store_creation_confirm_and_leave">تأكيد ومغادرة</string>
+    <string name="store_creation_exit_dialog_message">ستفقد كل معلومات المتجر الخاصة بك.</string>
+    <string name="store_creation_exit_dialog_title">هل تريد المغادرة؟</string>
+    <string name="store_creation_in_progress">جارٍ إنشاء متجرك…</string>
+    <string name="store_creation_cannot_load_store">يتعذر تحميل متجرك.\nترجى المحاولة مجددًا…</string>
+    <string name="store_creation_create_new_store_label">إنشاء متجر جديد</string>
+    <string name="or_use_password_below_qr_code_scan_option">أو تسجيل الدخول باستخدام كلمة المرور</string>
+    <string name="or_scan_qr_code_to_log_in">مسح رمز الاستجابة السريعة ضوئيًا لتسجيل الدخول</string>
+    <string name="simplified_login_prologue_title">WooCommerce هو منصة تجارة إلكترونية قابلة للتخصيص ومفتوحة المصدر ومدمجة في ووردبريس.</string>
+    <string name="simulated_reader_toast">تم تعطيل قارئ البطاقات المحاكي</string>
+    <string name="simulated_reader_key">مفتاح القارئ المحاكي</string>
+    <string name="variations_bulk_update_stock_quantity_success">كمية المخزون التي تم تحديثها</string>
+    <string name="variations_bulk_update_current_stock_quantity_mixed">كمية المخزون الحالية مختلطة</string>
+    <string name="variations_bulk_update_current_stock_quantity">كمية المخزون الحالية هي %d</string>
+    <string name="variations_bulk_update_stock_quantity_dialog_title">تحديث كمية المخزون</string>
+    <string name="variations_bulk_update_stock_quantity_info">سيتم تحديث كمية المخزون مقابل %d من التباينات</string>
+    <string name="variations_bulk_update_dialog_inventory_section_title">المخزون</string>
+    <string name="product_search_hint_active_filters">البحث عن المنتجات التي تمت تصفيتها</string>
+    <string name="orderlist_search_hint_active_filters">البحث عن الطلبات التي تمت تصفيتها</string>
+    <string name="site_picker_connect_existing_store">الاتصال بمتجر موجود</string>
+    <string name="site_picker_create_new_store">إنشاء متجر جديد</string>
+    <string name="login_site_picker_add_a_store">إضافة متجر</string>
+    <string name="login_no_stores">حسابك غير متصل بأي متجر من متاجر WooCommerce.</string>
     <string name="analytics_products_list_item_description">صافي المبيعات: ⁦%1$s⁩</string>
     <string name="analytics_products_list_header_subtitle">العناصر المباعة</string>
     <string name="analytics_products_list_header_title">المنتجات</string>
@@ -215,8 +245,8 @@ Language: ar
     <string name="variations_bulk_update_current_prices_mixed">الأسعار الحالية متفاوتة</string>
     <string name="variations_bulk_update_current_price">يبلغ السعر الحالي %s</string>
     <string name="variations_bulk_update_price_info">سيتم تحديث السعر لـ %d من المجموعات</string>
-    <string name="variations_bulk_update_dialog_price_mixed">مختلط</string>
-    <string name="variations_bulk_update_dialog_price_none">لا شيء</string>
+    <string name="variations_bulk_update_dialog_mixed">مختلط</string>
+    <string name="variations_bulk_update_dialog_none">لا شيء</string>
     <string name="variations_bulk_update_dialog_sale_price_label">سعر البيع</string>
     <string name="variations_bulk_update_dialog_regular_price_label">السعر العادي</string>
     <string name="variations_bulk_update_dialog_price_section_title">السعر</string>
@@ -2209,7 +2239,6 @@ Language: ar
     <string name="dashboard_stats_granularity_months">شهور</string>
     <string name="dashboard_stats_granularity_weeks">أسابيع</string>
     <string name="dashboard_stats_granularity_days">أيام</string>
-    <string name="login_no_stores">لم نعثر على مخازن WooCommerce مرتبطة بهذا الحساب.</string>
     <string name="login_with_a_different_account">تسجيل الدخول بحساب مختلف</string>
     <string name="login_nostores_content_description">لا توجد متاجر WooCommerce</string>
     <string name="login_avatar_content_description">صورة ملفك الشخصي</string>

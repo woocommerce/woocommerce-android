@@ -7,6 +7,7 @@ import android.view.MenuItem
 import android.view.View
 import android.webkit.WebView
 import android.webkit.WebViewClient
+import androidx.core.view.MenuProvider
 import androidx.fragment.app.viewModels
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
@@ -24,7 +25,7 @@ import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
 @AndroidEntryPoint
-class ReceiptPreviewFragment : BaseFragment(R.layout.fragment_receipt_preview) {
+class ReceiptPreviewFragment : BaseFragment(R.layout.fragment_receipt_preview), MenuProvider {
     val viewModel: ReceiptPreviewViewModel by viewModels()
 
     @Inject lateinit var printHtmlHelper: PrintHtmlHelper
@@ -35,17 +36,19 @@ class ReceiptPreviewFragment : BaseFragment(R.layout.fragment_receipt_preview) {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        requireActivity().addMenuProvider(this, viewLifecycleOwner)
+
         _binding = FragmentReceiptPreviewBinding.bind(view)
         initViews(binding, savedInstanceState)
         initObservers(binding)
     }
 
-    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+    override fun onCreateMenu(menu: Menu, inflater: MenuInflater) {
         inflater.inflate(R.menu.menu_receipt_preview, menu)
-        super.onCreateOptionsMenu(menu, inflater)
     }
 
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+    override fun onMenuItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
             R.id.menu_print -> {
                 viewModel.onPrintClicked()
@@ -55,7 +58,7 @@ class ReceiptPreviewFragment : BaseFragment(R.layout.fragment_receipt_preview) {
                 viewModel.onSendEmailClicked()
                 true
             }
-            else -> super.onOptionsItemSelected(item)
+            else -> false
         }
     }
 
@@ -78,7 +81,6 @@ class ReceiptPreviewFragment : BaseFragment(R.layout.fragment_receipt_preview) {
     }
 
     private fun initViews(binding: FragmentReceiptPreviewBinding, savedInstanceState: Bundle?) {
-        setHasOptionsMenu(true)
         if (savedInstanceState != null) {
             binding.receiptPreviewPreviewWebview.restoreState(savedInstanceState)
         } else {

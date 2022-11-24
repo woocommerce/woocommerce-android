@@ -6,6 +6,7 @@ import android.view.Menu
 import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
+import androidx.core.view.MenuProvider
 import androidx.core.view.ViewGroupCompat
 import androidx.core.view.doOnPreDraw
 import androidx.core.view.isVisible
@@ -40,10 +41,10 @@ class ReviewListFragment :
     BaseFragment(R.layout.fragment_reviews_list),
     ItemDecorationListener,
     ReviewListAdapter.OnReviewClickListener,
-    ReviewModerationUi {
+    ReviewModerationUi,
+    MenuProvider {
     companion object {
         const val TAG = "ReviewListFragment"
-        const val KEY_NEW_DATA_AVAILABLE = "new-data-available"
 
         fun newInstance() = ReviewListFragment()
     }
@@ -67,7 +68,6 @@ class ReviewListFragment :
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setHasOptionsMenu(true)
         val transitionDuration = resources.getInteger(R.integer.default_fragment_transition).toLong()
         val fadeThroughTransition = MaterialFadeThrough().apply { duration = transitionDuration }
         enterTransition = fadeThroughTransition
@@ -78,7 +78,8 @@ class ReviewListFragment :
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         postponeEnterTransition()
-        setHasOptionsMenu(true)
+
+        requireActivity().addMenuProvider(this, viewLifecycleOwner)
 
         _binding = FragmentReviewsListBinding.bind(view)
         view.doOnPreDraw { startPostponedEnterTransition() }
@@ -129,25 +130,23 @@ class ReviewListFragment :
         viewModel.start()
     }
 
-    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+    override fun onCreateMenu(menu: Menu, inflater: MenuInflater) {
         inflater.inflate(R.menu.menu_reviews_list_fragment, menu)
         menuMarkAllRead = menu.findItem(R.id.menu_mark_all_read)
-        super.onCreateOptionsMenu(menu, inflater)
     }
 
-    override fun onPrepareOptionsMenu(menu: Menu) {
+    override fun onPrepareMenu(menu: Menu) {
         viewModel.checkForUnreadReviews()
-        super.onPrepareOptionsMenu(menu)
     }
 
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+    override fun onMenuItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
             R.id.menu_mark_all_read -> {
                 AnalyticsTracker.track(AnalyticsEvent.REVIEWS_LIST_MENU_MARK_READ_BUTTON_TAPPED)
                 viewModel.markAllReviewsAsRead()
                 true
             }
-            else -> return super.onOptionsItemSelected(item)
+            else -> false
         }
     }
 

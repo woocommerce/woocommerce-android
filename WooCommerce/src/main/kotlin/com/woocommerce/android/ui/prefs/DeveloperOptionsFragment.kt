@@ -1,13 +1,16 @@
 package com.woocommerce.android.ui.prefs
 
 import android.os.Bundle
+import android.view.ContextThemeWrapper
 import android.view.View
 import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.woocommerce.android.R
 import com.woocommerce.android.databinding.FragmentDeveloperOptionsBinding
 import com.woocommerce.android.ui.base.BaseFragment
+import com.woocommerce.android.ui.prefs.DeveloperOptionsViewModel.DeveloperOptionsViewState.UpdateOptions
 import dagger.hilt.android.AndroidEntryPoint
 import org.wordpress.android.util.ToastUtils
 
@@ -41,8 +44,36 @@ class DeveloperOptionsFragment : BaseFragment(R.layout.fragment_developer_option
                 is DeveloperOptionsViewModel.DeveloperOptionsEvents.ShowToastString -> {
                     ToastUtils.showToast(context, event.message)
                 }
+                is DeveloperOptionsViewModel.DeveloperOptionsEvents.ShowUpdateOptionsDialog -> {
+                    showUpdateOptionsDialog(
+                        values = event.options,
+                        mapper = { requireContext().getString(it.title) },
+                        selectedValue = event.selectedValue
+                    )
+                }
             }
         }
+    }
+
+    private fun showUpdateOptionsDialog(
+        values: List<UpdateOptions>,
+        mapper: (UpdateOptions) -> String,
+        selectedValue: UpdateOptions
+    ) {
+        var currentlySelectedValue = selectedValue
+        val textValues = values.map(mapper).toTypedArray()
+        MaterialAlertDialogBuilder(
+            ContextThemeWrapper(
+                context,
+                R.style.Theme_Woo_DayNight
+            )
+        )
+            .setOnDismissListener {
+                viewModel.onUpdateReaderOptionChanged(currentlySelectedValue)
+            }
+            .setSingleChoiceItems(textValues, selectedValue.ordinal) { _, which ->
+                currentlySelectedValue = values[which]
+            }.show()
     }
 
     private fun observeViewState(binding: FragmentDeveloperOptionsBinding) {

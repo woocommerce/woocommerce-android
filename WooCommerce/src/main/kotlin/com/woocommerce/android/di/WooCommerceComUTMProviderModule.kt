@@ -1,7 +1,6 @@
 package com.woocommerce.android.di
 
 import com.woocommerce.android.tools.SelectedSite
-import com.woocommerce.android.ui.orders.list.OrderListViewModel
 import com.woocommerce.android.ui.payments.SelectPaymentMethodViewModel
 import com.woocommerce.android.ui.payments.cardreader.hub.CardReaderHubViewModel
 import com.woocommerce.android.util.UtmProvider
@@ -15,18 +14,6 @@ import javax.inject.Singleton
 @InstallIn(SingletonComponent::class)
 @Module
 class WooCommerceComUTMProviderModule {
-    @Provides
-    @Singleton
-    @Named("order-list")
-    fun provideOrderListUpsellCardReaderUtm(
-        selectedSite: SelectedSite
-    ) = UtmProvider(
-        campaign = OrderListViewModel.UTM_CAMPAIGN,
-        source = OrderListViewModel.UTM_SOURCE,
-        content = OrderListViewModel.UTM_CONTENT,
-        siteId = selectedSite.getIfExists()?.siteId
-    )
-
     @Provides
     @Singleton
     @Named("select-payment")

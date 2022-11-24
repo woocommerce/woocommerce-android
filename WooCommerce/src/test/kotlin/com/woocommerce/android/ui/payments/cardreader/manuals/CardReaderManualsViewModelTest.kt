@@ -4,13 +4,13 @@ import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.AppUrls
 import com.woocommerce.android.R.drawable
 import com.woocommerce.android.R.string
+import com.woocommerce.android.cardreader.config.CardReaderConfigForCanada
+import com.woocommerce.android.cardreader.config.CardReaderConfigForSupportedCountry
+import com.woocommerce.android.cardreader.config.CardReaderConfigForUSA
 import com.woocommerce.android.cardreader.connection.SpecificReader
 import com.woocommerce.android.cardreader.connection.SpecificReader.Chipper2X
 import com.woocommerce.android.cardreader.connection.SpecificReader.StripeM2
 import com.woocommerce.android.cardreader.connection.SpecificReader.WisePade3
-import com.woocommerce.android.cardreader.internal.config.CardReaderConfigForCanada
-import com.woocommerce.android.cardreader.internal.config.CardReaderConfigForSupportedCountry
-import com.woocommerce.android.cardreader.internal.config.CardReaderConfigForUSA
 import com.woocommerce.android.initSavedStateHandle
 import com.woocommerce.android.ui.payments.cardreader.manuals.CardReaderManualsViewModel.ManualItem
 import com.woocommerce.android.viewmodel.BaseUnitTest
@@ -21,6 +21,7 @@ import org.mockito.kotlin.any
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.whenever
 
+@Suppress("UNCHECKED_CAST")
 @ExperimentalCoroutinesApi
 class CardReaderManualsViewModelTest : BaseUnitTest() {
     private lateinit var viewModel: CardReaderManualsViewModel

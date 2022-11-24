@@ -6,6 +6,7 @@ import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
 import androidx.annotation.StringRes
+import androidx.core.view.MenuProvider
 import androidx.core.view.isVisible
 import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -25,7 +26,8 @@ import javax.inject.Inject
 
 @AndroidEntryPoint
 class ShippingLabelCreateServicePackageFragment :
-    BaseFragment(R.layout.fragment_shipping_label_create_service_package) {
+    BaseFragment(R.layout.fragment_shipping_label_create_service_package),
+    MenuProvider {
     @Inject lateinit var uiMessageResolver: UIMessageResolver
     private val skeletonView: SkeletonView = SkeletonView()
     private var progressDialog: CustomProgressDialog? = null
@@ -34,13 +36,7 @@ class ShippingLabelCreateServicePackageFragment :
     private val parentViewModel: ShippingLabelCreatePackageViewModel by viewModels({ requireParentFragment() })
     val viewModel: ShippingLabelCreateServicePackageViewModel by viewModels()
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setHasOptionsMenu(true)
-    }
-
-    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
-        super.onCreateOptionsMenu(menu, inflater)
+    override fun onCreateMenu(menu: Menu, inflater: MenuInflater) {
         menu.clear()
         inflater.inflate(R.menu.menu_done, menu)
         doneMenuItem = menu.findItem(R.id.menu_done)
@@ -49,6 +45,9 @@ class ShippingLabelCreateServicePackageFragment :
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        requireActivity().addMenuProvider(this, viewLifecycleOwner)
+
         val binding = FragmentShippingLabelCreateServicePackageBinding.bind(view)
         val packagesAdapter = ShippingLabelServicePackageAdapter(
             viewModel::onPackageSelected,
@@ -116,14 +115,14 @@ class ShippingLabelCreateServicePackageFragment :
         }
     }
 
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+    override fun onMenuItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
             R.id.menu_done -> {
                 ActivityUtils.hideKeyboard(activity)
                 viewModel.onCustomFormDoneMenuClicked()
                 true
             }
-            else -> super.onOptionsItemSelected(item)
+            else -> false
         }
     }
 

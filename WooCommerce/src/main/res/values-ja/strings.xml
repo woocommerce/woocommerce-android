@@ -1,12 +1,42 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2022-11-03 10:54:04+0000
+Translation-Revision-Date: 2022-11-17 09:54:03+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: ja_JP
 -->
 <resources>
-    <string name="create_new_store">新しいストアを作成する</string>
+    <string name="store_creation_domain_picker_suggestions_title">提案</string>
+    <string name="store_creation_domain_picker_skip_button">スキップ</string>
+    <string name="store_creation_domain_picker_hint">ドメインを入力</string>
+    <string name="store_creation_domain_picker_subtitle">ドメインとは、インターネット上で閲覧者があなたを見つける場所です。 後からでも変更できます。</string>
+    <string name="store_creation_domain_picker_title">ドメインを選択</string>
+    <string name="analytics_views_subtitle">表示数</string>
+    <string name="analytics_visitors_subtitle">訪問者</string>
+    <string name="analytics_visitors_and_views_card_title">表示数と訪問者数</string>
+    <string name="store_creation_confirm_and_leave">確認してページを離れる</string>
+    <string name="store_creation_exit_dialog_message">ストアの情報がすべて失われます。</string>
+    <string name="store_creation_exit_dialog_title">ページを離れますか ?</string>
+    <string name="store_creation_in_progress">ストアを作成しています…</string>
+    <string name="store_creation_cannot_load_store">ストアを読み込めませんでした。\nもう一度お試しください…</string>
+    <string name="store_creation_create_new_store_label">新しいストアを作成</string>
+    <string name="or_use_password_below_qr_code_scan_option">またはパスワードでログイン</string>
+    <string name="or_scan_qr_code_to_log_in">QR コードをスキャンしてログイン</string>
+    <string name="simplified_login_prologue_title">WooCommerce は WordPress に構築された、カスタマイズ可能かつオープンソースの eコマースプラットフォームです。</string>
+    <string name="simulated_reader_toast">シミュレートされたカードリーダーは無効になりました</string>
+    <string name="simulated_reader_key">シミュレートされたリーダーキー</string>
+    <string name="variations_bulk_update_stock_quantity_success">更新された在庫数</string>
+    <string name="variations_bulk_update_current_stock_quantity_mixed">現在、さまざまな在庫数が混在しています</string>
+    <string name="variations_bulk_update_current_stock_quantity">現在の在庫数は%dです</string>
+    <string name="variations_bulk_update_stock_quantity_dialog_title">在庫数を更新しています</string>
+    <string name="variations_bulk_update_stock_quantity_info">%d個のバリエーションで在庫数が更新されます</string>
+    <string name="variations_bulk_update_dialog_inventory_section_title">在庫</string>
+    <string name="product_search_hint_active_filters">絞り込んだ商品を検索</string>
+    <string name="orderlist_search_hint_active_filters">絞り込んだ注文を検索</string>
+    <string name="site_picker_connect_existing_store">既存のストアを連携</string>
+    <string name="site_picker_create_new_store">新しいストアを作成</string>
+    <string name="login_site_picker_add_a_store">ストアを追加</string>
+    <string name="login_no_stores">アカウントが WooCommerce ストアと連携されていません。</string>
     <string name="analytics_products_list_item_description">純売上高: %1$s</string>
     <string name="analytics_products_list_header_subtitle">販売済み商品</string>
     <string name="analytics_products_list_header_title">商品</string>
@@ -215,8 +245,8 @@ Language: ja_JP
     <string name="variations_bulk_update_current_prices_mixed">現在、さまざまな価格が混在しています</string>
     <string name="variations_bulk_update_current_price">現在の価格は %sです。</string>
     <string name="variations_bulk_update_price_info">%d件のバリエーションの価格が更新されます。</string>
-    <string name="variations_bulk_update_dialog_price_mixed">混合</string>
-    <string name="variations_bulk_update_dialog_price_none">なし</string>
+    <string name="variations_bulk_update_dialog_mixed">混合</string>
+    <string name="variations_bulk_update_dialog_none">なし</string>
     <string name="variations_bulk_update_dialog_sale_price_label">セール価格</string>
     <string name="variations_bulk_update_dialog_regular_price_label">標準価格</string>
     <string name="variations_bulk_update_dialog_price_section_title">価格</string>
@@ -2209,7 +2239,6 @@ Language: ja_JP
     <string name="dashboard_stats_granularity_months">月</string>
     <string name="dashboard_stats_granularity_weeks">週</string>
     <string name="dashboard_stats_granularity_days">日</string>
-    <string name="login_no_stores">このアカウントに連携している WooCommerce ストアが見つかりません</string>
     <string name="login_with_a_different_account">別のアカウントでログインします</string>
     <string name="login_nostores_content_description">WooCommerce ストアがありません</string>
     <string name="login_avatar_content_description">自分のプロフィール写真</string>

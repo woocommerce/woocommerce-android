@@ -1,6 +1,13 @@
 <!--
 Contains editorialized release notes. Raw release notes should go into `RELEASE-NOTES.txt`.
 -->
+## 11.3
+This release has several fixes that makes it easier for you to manage your store from the app. Please continue to send us feedback – we are listening! 
+
+## 11.2
+
+For this release, we focused on polishing a few things and taking care of minor bugs that our team found. Don’t be fooled – we are working on some pretty cool stuff for you all! Keep sharing feedback 💜
+
 ## 11.1
 
 This release includes a lot of cool things for you to manage your store better! We added the option to bulk update stock quantity of variations. We have also added the option for you login via QR code. We've made various improvements to the orders and products search. 

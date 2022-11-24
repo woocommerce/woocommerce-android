@@ -1,6 +1,5 @@
 package com.woocommerce.android.ui.login.signup
 
-import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.FakeDispatcher
 import com.woocommerce.android.ui.login.signup.SignUpRepository.SignUpError
 import com.woocommerce.android.viewmodel.BaseUnitTest
@@ -38,13 +37,11 @@ class SignUpRepositoryTest : BaseUnitTest() {
 
     private val signUpStore: SignUpStore = mock()
     private val dispatcher: Dispatcher = FakeDispatcher()
-    private val prefsWrapper: AppPrefsWrapper = mock()
     private val signUpCredentialsValidator: SignUpCredentialsValidator = mock()
 
     private val sut: SignUpRepository = SignUpRepository(
         signUpStore,
         dispatcher,
-        prefsWrapper,
         signUpCredentialsValidator
     )
 

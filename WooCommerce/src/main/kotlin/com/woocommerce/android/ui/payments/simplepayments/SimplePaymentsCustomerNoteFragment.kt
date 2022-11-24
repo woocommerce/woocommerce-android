@@ -5,6 +5,7 @@ import android.view.Menu
 import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
+import androidx.core.view.MenuProvider
 import androidx.core.widget.doAfterTextChanged
 import androidx.navigation.fragment.navArgs
 import com.woocommerce.android.R
@@ -15,7 +16,9 @@ import com.woocommerce.android.ui.base.BaseFragment
 import org.wordpress.android.util.ActivityUtils
 import org.wordpress.android.util.DisplayUtils
 
-class SimplePaymentsCustomerNoteFragment : BaseFragment(R.layout.fragment_order_create_edit_customer_note) {
+class SimplePaymentsCustomerNoteFragment :
+    BaseFragment(R.layout.fragment_order_create_edit_customer_note),
+    MenuProvider {
     private var _binding: FragmentOrderCreateEditCustomerNoteBinding? = null
     val binding
         get() = _binding!!
@@ -25,7 +28,7 @@ class SimplePaymentsCustomerNoteFragment : BaseFragment(R.layout.fragment_order_
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        setHasOptionsMenu(true)
+        requireActivity().addMenuProvider(this, viewLifecycleOwner)
 
         _binding = FragmentOrderCreateEditCustomerNoteBinding.bind(view)
         if (savedInstanceState == null) {
@@ -56,15 +59,14 @@ class SimplePaymentsCustomerNoteFragment : BaseFragment(R.layout.fragment_order_
         _binding = null
     }
 
-    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
-        super.onCreateOptionsMenu(menu, inflater)
+    override fun onCreateMenu(menu: Menu, inflater: MenuInflater) {
         menu.clear()
         inflater.inflate(R.menu.menu_done, menu)
         doneMenuItem = menu.findItem(R.id.menu_done)
         doneMenuItem.isEnabled = hasChanges()
     }
 
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+    override fun onMenuItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
             R.id.menu_done -> {
                 navigateBackWithResult(
@@ -73,7 +75,7 @@ class SimplePaymentsCustomerNoteFragment : BaseFragment(R.layout.fragment_order_
                 )
                 true
             }
-            else -> super.onOptionsItemSelected(item)
+            else -> false
         }
     }
 

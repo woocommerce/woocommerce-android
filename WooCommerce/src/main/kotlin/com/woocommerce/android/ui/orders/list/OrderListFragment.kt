@@ -12,13 +12,11 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.widget.SearchView
 import androidx.appcompat.widget.SearchView.OnQueryTextListener
-import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.core.view.MenuProvider
 import androidx.core.view.ViewGroupCompat
 import androidx.core.view.doOnPreDraw
 import androidx.core.view.isVisible
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.Lifecycle
 import androidx.navigation.fragment.findNavController
 import androidx.paging.PagedList
 import androidx.recyclerview.widget.ItemTouchHelper
@@ -33,7 +31,6 @@ import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.databinding.FragmentOrderListBinding
-import com.woocommerce.android.extensions.handleDialogResult
 import com.woocommerce.android.extensions.handleResult
 import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.extensions.pinFabAboveBottomNavigationBar
@@ -44,22 +41,13 @@ import com.woocommerce.android.model.FeatureFeedbackSettings.FeedbackState
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.base.TopLevelFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
-import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.ui.feedback.SurveyType
 import com.woocommerce.android.ui.main.MainActivity
 import com.woocommerce.android.ui.main.MainNavigationRouter
 import com.woocommerce.android.ui.orders.OrderStatusUpdateSource
 import com.woocommerce.android.ui.orders.creation.OrderCreateEditViewModel
-import com.woocommerce.android.ui.orders.list.OrderCreationBottomSheetFragment.Companion.KEY_ORDER_CREATION_ACTION_RESULT
-import com.woocommerce.android.ui.orders.list.OrderCreationBottomSheetFragment.OrderCreationAction
-import com.woocommerce.android.ui.orders.list.OrderListViewModel.OrderListEvent.DismissCardReaderUpsellBanner
-import com.woocommerce.android.ui.orders.list.OrderListViewModel.OrderListEvent.DismissCardReaderUpsellBannerViaDontShowAgain
-import com.woocommerce.android.ui.orders.list.OrderListViewModel.OrderListEvent.DismissCardReaderUpsellBannerViaRemindMeLater
 import com.woocommerce.android.ui.orders.list.OrderListViewModel.OrderListEvent.ShowErrorSnack
 import com.woocommerce.android.ui.orders.list.OrderListViewModel.OrderListEvent.ShowOrderFilters
-import com.woocommerce.android.ui.payments.banner.Banner
-import com.woocommerce.android.ui.payments.banner.BannerState
-import com.woocommerce.android.ui.payments.banner.OrderListBannerDismissDialog
 import com.woocommerce.android.util.ChromeCustomTabUtils
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.viewmodel.MultiLiveEvent
@@ -179,7 +167,7 @@ class OrderListFragment :
         super.onViewCreated(view, savedInstanceState)
         postponeEnterTransition()
 
-        requireActivity().addMenuProvider(this, viewLifecycleOwner, Lifecycle.State.RESUMED)
+        requireActivity().addMenuProvider(this, viewLifecycleOwner)
 
         view.doOnPreDraw { startPostponedEnterTransition() }
 
@@ -204,6 +192,7 @@ class OrderListFragment :
         binding.orderFiltersCard.setClickListener { viewModel.onFiltersButtonTapped() }
         initCreateOrderFAB(binding.createOrderButton)
         initSwipeBehaviour()
+        displaySimplePaymentsWIPCard(true)
     }
 
     private fun initSwipeBehaviour() {
@@ -231,46 +220,6 @@ class OrderListFragment :
         searchMenuItem = null
         super.onDestroyView()
         _binding = null
-    }
-
-    private fun bannerDisplayViewLogic(
-        bannerState: BannerState
-    ) {
-        if (!bannerState.shouldDisplayBanner) {
-            binding.upsellCardReaderComposeView.upsellCardReaderBannerView.visibility = View.GONE
-            displaySimplePaymentsWIPCard(true)
-        } else {
-            if (viewModel.shouldShowUpsellCardReaderDismissDialog.value == true) {
-                applyBannerDismissDialogComposeUI()
-            }
-            applyBannerComposeUI(bannerState)
-            displaySimplePaymentsWIPCard(false)
-        }
-    }
-
-    private fun applyBannerComposeUI(state: BannerState) {
-        binding.upsellCardReaderComposeView.upsellCardReaderBannerView.apply {
-            // Dispose of the Composition when the view's LifecycleOwner is destroyed
-            visibility = View.VISIBLE
-            setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
-            setContent {
-                WooThemeWithBackground {
-                    Banner(bannerState = state)
-                }
-            }
-        }
-    }
-
-    private fun applyBannerDismissDialogComposeUI() {
-        binding.upsellCardReaderComposeView.upsellCardReaderDismissView.apply {
-            // Dispose of the Composition when the view's LifecycleOwner is destroyed
-            setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
-            setContent {
-                WooThemeWithBackground {
-                    OrderListBannerDismissDialog(viewModel)
-                }
-            }
-        }
     }
 
     /**
@@ -304,7 +253,7 @@ class OrderListFragment :
     }
 
     private fun initCreateOrderFAB(fabButton: FloatingActionButton) {
-        fabButton.setOnClickListener { showOrderCreationBottomSheet() }
+        fabButton.setOnClickListener { openOrderCreationFragment() }
         pinFabAboveBottomNavigationBar(fabButton)
     }
 
@@ -348,10 +297,6 @@ class OrderListFragment :
             updatePagedListData(it)
         }
 
-        viewModel.bannerState.observe(viewLifecycleOwner) { state ->
-            bannerDisplayViewLogic(state)
-        }
-
         viewModel.event.observe(viewLifecycleOwner) { event ->
             when (event) {
                 is ShowErrorSnack -> {
@@ -359,17 +304,6 @@ class OrderListFragment :
                     binding.orderRefreshLayout.isRefreshing = false
                 }
                 is ShowOrderFilters -> showOrderFilters()
-                DismissCardReaderUpsellBanner -> {
-                    applyBannerDismissDialogComposeUI()
-                }
-                DismissCardReaderUpsellBannerViaRemindMeLater -> {
-                    binding.upsellCardReaderComposeView.upsellCardReaderBannerView.visibility = View.GONE
-                    binding.upsellCardReaderComposeView.upsellCardReaderDismissView.visibility = View.GONE
-                }
-                DismissCardReaderUpsellBannerViaDontShowAgain -> {
-                    binding.upsellCardReaderComposeView.upsellCardReaderBannerView.visibility = View.GONE
-                    binding.upsellCardReaderComposeView.upsellCardReaderDismissView.visibility = View.GONE
-                }
                 is OrderListViewModel.OrderListEvent.OpenPurchaseCardReaderLink -> {
                     findNavController().navigate(
                         NavGraphMainDirections.actionGlobalWPComWebViewFragment(
@@ -443,29 +377,10 @@ class OrderListFragment :
         handleResult<String>(FILTER_CHANGE_NOTICE_KEY) {
             viewModel.loadOrders()
         }
-        handleDialogResult<OrderCreationAction>(KEY_ORDER_CREATION_ACTION_RESULT, R.id.orders) {
-            binding.orderListView.post {
-                when (it) {
-                    OrderCreationAction.CREATE_ORDER -> openOrderCreationFragment()
-                    OrderCreationAction.SIMPLE_PAYMENT -> showSimplePaymentsDialog()
-                }
-            }
-        }
     }
 
     private fun showOrderFilters() {
         findNavController().navigateSafely(R.id.action_orderListFragment_to_orderFilterListFragment)
-    }
-
-    private fun showSimplePaymentsDialog() {
-        AnalyticsTracker.track(AnalyticsEvent.SIMPLE_PAYMENTS_FLOW_STARTED)
-        // Temporary flow to teach merchants about placement of the Payments feature
-        (requireActivity() as MainNavigationRouter).showMoreMenu()
-    }
-
-    private fun showOrderCreationBottomSheet() {
-        OrderListFragmentDirections.actionOrderListFragmentToOrderCreationBottomSheet()
-            .let { findNavController().navigateSafely(it) }
     }
 
     private fun openOrderCreationFragment() {
