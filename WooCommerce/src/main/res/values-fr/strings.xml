@@ -36,7 +36,7 @@ Language: fr
     <string name="site_picker_connect_existing_store">Associer une boutique existante</string>
     <string name="site_picker_create_new_store">Créer une nouvelle boutique</string>
     <string name="login_site_picker_add_a_store">Ajouter une boutique</string>
-    <string name="login_no_stores">Votre compte n’est associé à aucune boutique WooCommerce.</string>
+    <string name="login_no_stores_header">Votre compte n’est associé à aucune boutique WooCommerce.</string>
     <string name="analytics_products_list_item_description">Ventes nettes : %1$s</string>
     <string name="analytics_products_list_header_subtitle">Articles vendus</string>
     <string name="analytics_products_list_header_title">Produits</string>

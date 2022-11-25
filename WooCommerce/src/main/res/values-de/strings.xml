@@ -36,7 +36,7 @@ Language: de
     <string name="site_picker_connect_existing_store">Bestehenden Shop verbinden</string>
     <string name="site_picker_create_new_store">Neuen Shop einrichten</string>
     <string name="login_site_picker_add_a_store">Shop hinzufügen</string>
-    <string name="login_no_stores">Dein Konto ist mit keinem WooCommerce-Shop verbunden.</string>
+    <string name="login_no_stores_header">Dein Konto ist mit keinem WooCommerce-Shop verbunden.</string>
     <string name="analytics_products_list_item_description">Nettoumsatz: %1$s</string>
     <string name="analytics_products_list_header_subtitle">Verkaufte Artikel</string>
     <string name="analytics_products_list_header_title">Produkte</string>

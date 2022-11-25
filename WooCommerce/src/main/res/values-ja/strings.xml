@@ -36,7 +36,7 @@ Language: ja_JP
     <string name="site_picker_connect_existing_store">既存のストアを連携</string>
     <string name="site_picker_create_new_store">新しいストアを作成</string>
     <string name="login_site_picker_add_a_store">ストアを追加</string>
-    <string name="login_no_stores">アカウントが WooCommerce ストアと連携されていません。</string>
+    <string name="login_no_stores_header">アカウントが WooCommerce ストアと連携されていません。</string>
     <string name="analytics_products_list_item_description">純売上高: %1$s</string>
     <string name="analytics_products_list_header_subtitle">販売済み商品</string>
     <string name="analytics_products_list_header_title">商品</string>

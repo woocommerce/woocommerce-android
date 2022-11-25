@@ -36,7 +36,7 @@ Language: zh_CN
     <string name="site_picker_connect_existing_store">连接现有商店</string>
     <string name="site_picker_create_new_store">创建新的商店</string>
     <string name="login_site_picker_add_a_store">添加商店</string>
-    <string name="login_no_stores">您的账户未与任何 WooCommerce 商店连接。</string>
+    <string name="login_no_stores_header">您的账户未与任何 WooCommerce 商店连接。</string>
     <string name="analytics_products_list_item_description">净销售额：%1$s</string>
     <string name="analytics_products_list_header_subtitle">已售项目</string>
     <string name="analytics_products_list_header_title">产品</string>

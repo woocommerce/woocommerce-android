@@ -36,7 +36,7 @@ Language: ko_KR
     <string name="site_picker_connect_existing_store">기존 스토어 연결</string>
     <string name="site_picker_create_new_store">새 스토어 생성</string>
     <string name="login_site_picker_add_a_store">스토어 추가</string>
-    <string name="login_no_stores">계정이 어떠한 우커머스 스토어에도 연결되지 않았습니다.</string>
+    <string name="login_no_stores_header">계정이 어떠한 우커머스 스토어에도 연결되지 않았습니다.</string>
     <string name="analytics_products_list_item_description">순매출액: %1$s</string>
     <string name="analytics_products_list_header_subtitle">판매된 아이템</string>
     <string name="analytics_products_list_header_title">상품</string>

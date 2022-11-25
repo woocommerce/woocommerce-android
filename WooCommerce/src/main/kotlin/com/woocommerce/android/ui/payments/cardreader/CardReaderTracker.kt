@@ -76,6 +76,7 @@ class CardReaderTracker @Inject constructor(
         addCurrencyProperty(properties)
         addPaymentMethodTypeProperty(properties)
         addCardReaderModelProperty(properties)
+        addCardReaderBatteryLevelProperty(properties)
 
         val isError = !errorType.isNullOrBlank() || !errorDescription.isNullOrEmpty()
         if (isError) {
@@ -88,6 +89,12 @@ class CardReaderTracker @Inject constructor(
             )
         } else {
             trackerWrapper.track(stat, properties)
+        }
+    }
+
+    private fun addCardReaderBatteryLevelProperty(properties: MutableMap<String, Any>) {
+        cardReaderTrackingInfoProvider.trackingInfo.cardReaderBatteryLevelPercent?.let { batteryLevelPercent ->
+            properties["card_reader_battery_level"] = "$batteryLevelPercent %"
         }
     }
 

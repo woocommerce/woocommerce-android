@@ -36,7 +36,7 @@ Language: ru
     <string name="site_picker_connect_existing_store">Подключить существующий магазин</string>
     <string name="site_picker_create_new_store">Создать магазин</string>
     <string name="login_site_picker_add_a_store">Добавить магазин</string>
-    <string name="login_no_stores">Ваша учётная запись не подключена к магазинам WooCommerce.</string>
+    <string name="login_no_stores_header">Ваша учётная запись не подключена к магазинам WooCommerce.</string>
     <string name="analytics_products_list_item_description">Чистая выручка: %1$s</string>
     <string name="analytics_products_list_header_subtitle">Проданные предметы</string>
     <string name="analytics_products_list_header_title">Товары</string>
