@@ -227,7 +227,6 @@ private fun SiteUrlAndIcon(
     }
 }
 
-
 @Composable
 private fun Toolbar(
     isConnectionDismissed: Boolean,

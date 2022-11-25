@@ -15,7 +15,6 @@ import com.woocommerce.android.viewmodel.getStateFlow
 import com.woocommerce.android.viewmodel.navArgs
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.map
-import java.net.URL
 import javax.inject.Inject
 
 @HiltViewModel
