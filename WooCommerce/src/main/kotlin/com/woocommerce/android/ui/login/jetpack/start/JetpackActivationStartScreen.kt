@@ -212,6 +212,8 @@ private fun SiteUrlAndIcon(
             model = ImageRequest.Builder(LocalContext.current)
                 .data(faviconUrl)
                 .crossfade(true)
+                .placeholder(R.drawable.ic_globe)
+                .error(R.drawable.ic_globe)
                 .build(),
             contentDescription = null,
             modifier = Modifier.size(dimensionResource(id = R.dimen.image_minor_40))
