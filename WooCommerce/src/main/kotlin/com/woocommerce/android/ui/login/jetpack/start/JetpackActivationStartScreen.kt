@@ -93,7 +93,7 @@ fun JetpackActivationStartScreen(
             ) {
                 when (viewState.isConnectionDismissed) {
                     false -> StartState(viewState.isJetpackInstalled, viewState.url, viewState.faviconUrl)
-                    true -> ConnectionDismissedState()
+                    true -> ConnectionDismissedState(viewState.url, viewState.faviconUrl)
                 }
             }
             Spacer(Modifier.height(dimensionResource(id = R.dimen.major_100)))
@@ -120,7 +120,7 @@ fun JetpackActivationStartScreen(
                         .fillMaxWidth()
                         .padding(horizontal = dimensionResource(id = R.dimen.major_100))
                 ) {
-                    Text(stringResource(id = R.string.login_jetpack_installation_cancel))
+                    Text(stringResource(id = R.string.login_jetpack_installation_exit_without_connection))
                 }
             } else {
                 JetpackConsent(
@@ -168,7 +168,10 @@ private fun ColumnScope.StartState(
 }
 
 @Composable
-private fun ColumnScope.ConnectionDismissedState() {
+private fun ColumnScope.ConnectionDismissedState(
+    siteUrl: String,
+    faviconUrl: String
+) {
     Image(
         painter = painterResource(
             id = R.drawable.img_jetpack_connection_dismissed
@@ -178,13 +181,16 @@ private fun ColumnScope.ConnectionDismissedState() {
             .padding(dimensionResource(id = R.dimen.major_100))
             .weight(1f, false)
     )
-    Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.major_100)))
+    Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.major_200)))
+    SiteUrlAndIcon(siteUrl = siteUrl, faviconUrl = faviconUrl, modifier = Modifier.fillMaxWidth())
+    Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.major_200)))
     Text(
         text = stringResource(id = R.string.login_jetpack_installation_connection_dismissed),
-        style = MaterialTheme.typography.body1,
+        style = MaterialTheme.typography.h6,
         textAlign = TextAlign.Center,
         fontWeight = FontWeight.SemiBold
     )
+    Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.major_200)))
     Text(
         text = stringResource(id = R.string.login_jetpack_installation_connection_dismissed_explanation),
         style = MaterialTheme.typography.body1,

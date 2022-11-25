@@ -329,9 +329,10 @@
     <string name="login_jetpack_installation_cancel">Cancel installation</string>
     <string name="login_jetpack_installation_error_forbidden_suggestion">Please contact your shop manager or administrator for help.</string>
     <string name="login_jetpack_installation_error_connection_permission_message">You don’t have permission to connect to Jetpack on this store</string>
-    <string name="login_jetpack_installation_connection_dismissed">You interrupted the connection.</string>
-    <string name="login_jetpack_installation_connection_dismissed_explanation">Jetpack is installed, but not connected.\n\nPlease continue the connection process to access your store.</string>
+    <string name="login_jetpack_installation_connection_dismissed">Jetpack is installed, but not connected.</string>
+    <string name="login_jetpack_installation_connection_dismissed_explanation">Try connecting again to access your store.</string>
     <string name="login_jetpack_installation_continue_connection">Continue connection</string>
+    <string name="login_jetpack_installation_exit_without_connection">Exit Without Connecting</string>
 
     <!--
         My Store View
