@@ -89,7 +89,7 @@ class WebViewStoreCreationViewModelTest : BaseUnitTest() {
         }
 
         advanceUntilIdle()
-        
+
         verify(repository, Mockito.times(10)).getSiteBySiteUrl(site.url)
     }
 

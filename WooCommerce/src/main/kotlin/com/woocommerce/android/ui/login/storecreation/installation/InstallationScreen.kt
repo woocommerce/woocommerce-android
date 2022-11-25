@@ -82,7 +82,8 @@ private fun WebViewPayment(
     onStoreCreated: () -> Unit,
     onExitTriggered: () -> Unit
 ) {
-    var storeCreationTriggered = false
+    var storeCreationTriggered by remember { mutableStateOf(false) }
+
     WCWebView(
         url = viewState.startUrl,
         wpComAuthenticator = authenticator,
