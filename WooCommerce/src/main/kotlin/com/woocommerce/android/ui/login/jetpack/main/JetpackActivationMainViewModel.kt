@@ -160,7 +160,10 @@ class JetpackActivationMainViewModel @Inject constructor(
     }
 
     fun onRetryClick() {
-        analyticsTrackerWrapper.track(AnalyticsEvent.LOGIN_JETPACK_SETUP_TRY_AGAIN_BUTTON_TAPPED)
+        analyticsTrackerWrapper.track(
+            stat = AnalyticsEvent.LOGIN_JETPACK_SETUP_TRY_AGAIN_BUTTON_TAPPED,
+            properties = mapOf(AnalyticsTracker.KEY_JETPACK_INSTALLATION_STEP to currentStep.value.type.analyticsName)
+        )
         startNextStep()
     }
 
