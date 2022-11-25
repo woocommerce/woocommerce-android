@@ -23,6 +23,7 @@ class HelpViewModel @Inject constructor(
     private val wooLogWrapper: WooLogWrapper
 ) : ScopedViewModel(savedState) {
     var ssr: String? = null
+        private set
 
     init {
         fetchSSR()
