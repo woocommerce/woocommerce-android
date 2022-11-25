@@ -57,8 +57,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.tooling.preview.PreviewParameter
-import androidx.compose.ui.tooling.preview.PreviewParameterProvider
 import androidx.compose.ui.unit.dp
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.compose.annotatedStringRes
@@ -467,6 +465,56 @@ private fun JetpackActivationErrorStatePreview() {
                 stepType = JetpackActivationMainViewModel.StepType.Installation,
                 errorCode = 503
             )
+        )
+    }
+}
+
+@Composable
+@Preview
+private fun JetpackActivationProgressToErrorPreview() {
+    val defaultState = JetpackActivationMainViewModel.ViewState.ProgressViewState(
+        siteUrl = "reallyniceshirts.com",
+        isJetpackInstalled = false,
+        steps = listOf(
+            JetpackActivationMainViewModel.Step(
+                type = JetpackActivationMainViewModel.StepType.Installation,
+                state = JetpackActivationMainViewModel.StepState.Success
+            ),
+            JetpackActivationMainViewModel.Step(
+                type = JetpackActivationMainViewModel.StepType.Activation,
+                state = JetpackActivationMainViewModel.StepState.Error(503)
+            ),
+            JetpackActivationMainViewModel.Step(
+                type = JetpackActivationMainViewModel.StepType.Connection,
+                state = JetpackActivationMainViewModel.StepState.Idle
+            ),
+            JetpackActivationMainViewModel.Step(
+                type = JetpackActivationMainViewModel.StepType.Done,
+                state = JetpackActivationMainViewModel.StepState.Idle
+            )
+        ),
+        connectionStep = JetpackActivationMainViewModel.ConnectionStep.PreConnection
+    )
+    val errorState = JetpackActivationMainViewModel.ViewState.ErrorViewState(
+        stepType = JetpackActivationMainViewModel.StepType.Activation,
+        errorCode = 503
+    )
+
+    var state: JetpackActivationMainViewModel.ViewState by remember { mutableStateOf(defaultState) }
+    var retryTrigger by remember { mutableStateOf(false) }
+
+    LaunchedEffect(retryTrigger) {
+        delay(1000)
+        state = errorState
+    }
+
+    WooThemeWithBackground {
+        JetpackActivationMainScreen(
+            viewState = state,
+            onRetryClick = {
+                state = defaultState
+                retryTrigger = !retryTrigger
+            }
         )
     }
 }
