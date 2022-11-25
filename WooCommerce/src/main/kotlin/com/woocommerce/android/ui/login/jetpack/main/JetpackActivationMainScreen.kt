@@ -51,6 +51,7 @@ import com.woocommerce.android.ui.compose.component.WCOutlinedButton
 import com.woocommerce.android.ui.compose.component.WCTextButton
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.ui.login.jetpack.components.JetpackToWooHeader
+import kotlinx.coroutines.delay
 
 private const val FORBIDDEN_ERROR_CODE = 403
 
@@ -67,6 +68,7 @@ fun JetpackActivationMainScreen(viewModel: JetpackActivationMainViewModel) {
     }
 }
 
+@OptIn(ExperimentalAnimationApi::class)
 @Composable
 fun JetpackActivationMainScreen(
     viewState: JetpackActivationMainViewModel.ViewState,
@@ -78,26 +80,32 @@ fun JetpackActivationMainScreen(
     Scaffold(
         topBar = { Toolbar(onCloseClick) }
     ) { paddingValues ->
-        val modifier = Modifier
-            .background(MaterialTheme.colors.surface)
-            .fillMaxSize()
-            .padding(paddingValues)
-            .padding(dimensionResource(id = R.dimen.major_100))
-            .verticalScroll(rememberScrollState())
+        Column(
+            modifier = Modifier
+                .background(MaterialTheme.colors.surface)
+                .fillMaxSize()
+                .padding(paddingValues)
+                .padding(dimensionResource(id = R.dimen.major_100))
+                .verticalScroll(rememberScrollState())
+        ) {
+            JetpackToWooHeader(isError = viewState is JetpackActivationMainViewModel.ViewState.ErrorViewState)
 
-        when (viewState) {
-            is JetpackActivationMainViewModel.ViewState.ProgressViewState -> ProgressState(
-                viewState = viewState,
-                onContinueClick = onContinueClick,
-                modifier = modifier
-            )
-            is JetpackActivationMainViewModel.ViewState.ErrorViewState -> ErrorState(
-                viewState = viewState,
-                onGetHelpClick = onGetHelpClick,
-                onRetryClick = onRetryClick,
-                onCancelClick = onCloseClick,
-                modifier = modifier
-            )
+            Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.major_200)))
+
+            when (viewState) {
+                is JetpackActivationMainViewModel.ViewState.ProgressViewState -> ProgressState(
+                    viewState = viewState,
+                    onContinueClick = onContinueClick,
+                    modifier = Modifier.weight(1f)
+                )
+                is JetpackActivationMainViewModel.ViewState.ErrorViewState -> ErrorState(
+                    viewState = viewState,
+                    onGetHelpClick = onGetHelpClick,
+                    onRetryClick = onRetryClick,
+                    onCancelClick = onCloseClick,
+                    modifier = Modifier.weight(1f)
+                )
+            }
         }
     }
 }
@@ -106,13 +114,11 @@ fun JetpackActivationMainScreen(
 private fun ProgressState(
     viewState: JetpackActivationMainViewModel.ViewState.ProgressViewState,
     onContinueClick: () -> Unit,
-    modifier: Modifier
+    modifier: Modifier = Modifier
 ) {
     Column(
         modifier = modifier
     ) {
-        JetpackToWooHeader()
-        Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.major_200)))
         val title = if (viewState.isDone) {
             if (viewState.isJetpackInstalled) R.string.login_jetpack_connection_steps_screen_title_done
             else R.string.login_jetpack_installation_steps_screen_title_done
@@ -163,13 +169,11 @@ private fun ErrorState(
     onGetHelpClick: () -> Unit,
     onRetryClick: () -> Unit,
     onCancelClick: () -> Unit,
-    modifier: Modifier
+    modifier: Modifier = Modifier
 ) {
     Column(
         modifier = modifier
     ) {
-        JetpackToWooHeader(isError = true)
-        Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.major_200)))
         val title = when (viewState.stepType) {
             JetpackActivationMainViewModel.StepType.Installation -> R.string.login_jetpack_installation_error_installing
             JetpackActivationMainViewModel.StepType.Activation -> R.string.login_jetpack_installation_error_activating
