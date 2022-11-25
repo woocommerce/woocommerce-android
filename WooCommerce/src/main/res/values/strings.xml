@@ -304,7 +304,7 @@
     <string name="login_jetpack_steps_authorizing">Authorising connection</string>
     <string name="login_jetpack_steps_authorizing_hint">Approval required</string>
     <string name="login_jetpack_steps_authorizing_validation">Validating</string>
-    <string name="login_jetpack_steps_authorizing_done">Connection approved</string>
+    <string name="login_jetpack_steps_authorizing_done">Connected</string>
     <string name="login_jetpack_steps_done">All done</string>
     <string name="login_jetpack_installation_steps_screen_title">Installing Jetpack</string>
     <string name="login_jetpack_connection_steps_screen_title">Connecting Jetpack</string>
