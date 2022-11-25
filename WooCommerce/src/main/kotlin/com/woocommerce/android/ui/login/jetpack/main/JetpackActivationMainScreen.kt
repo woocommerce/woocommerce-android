@@ -57,6 +57,8 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.tooling.preview.PreviewParameter
+import androidx.compose.ui.tooling.preview.PreviewParameterProvider
 import androidx.compose.ui.unit.dp
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.compose.annotatedStringRes
@@ -420,12 +422,11 @@ private fun Toolbar(
     )
 }
 
-@Composable
-@Preview
-private fun JetpackActivationMainScreenPreview() {
-    WooThemeWithBackground {
-        JetpackActivationMainScreen(
-            viewState = JetpackActivationMainViewModel.ViewState.ProgressViewState(
+@Suppress("MagicNumber")
+private class ViewStatePreviewProvider : PreviewParameterProvider<JetpackActivationMainViewModel.ViewState> {
+    override val values: Sequence<JetpackActivationMainViewModel.ViewState>
+        get() = sequenceOf(
+            JetpackActivationMainViewModel.ViewState.ProgressViewState(
                 siteUrl = "reallyniceshirts.com",
                 isJetpackInstalled = false,
                 steps = listOf(
@@ -451,20 +452,22 @@ private fun JetpackActivationMainScreenPreview() {
                     )
                 ),
                 connectionStep = JetpackActivationMainViewModel.ConnectionStep.PreConnection
+            ),
+            JetpackActivationMainViewModel.ViewState.ErrorViewState(
+                stepType = JetpackActivationMainViewModel.StepType.Installation,
+                errorCode = 503
             )
         )
-    }
 }
 
 @Composable
 @Preview
-private fun JetpackActivationErrorStatePreview() {
+private fun JetpackActivationPreview(
+    @PreviewParameter(provider = ViewStatePreviewProvider::class) state: JetpackActivationMainViewModel.ViewState
+) {
     WooThemeWithBackground {
         JetpackActivationMainScreen(
-            viewState = JetpackActivationMainViewModel.ViewState.ErrorViewState(
-                stepType = JetpackActivationMainViewModel.StepType.Installation,
-                errorCode = 503
-            )
+            viewState = state
         )
     }
 }
