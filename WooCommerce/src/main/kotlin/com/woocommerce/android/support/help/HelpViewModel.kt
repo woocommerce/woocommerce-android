@@ -22,7 +22,7 @@ class HelpViewModel @Inject constructor(
     private val selectedSite: SelectedSite,
     private val wooLogWrapper: WooLogWrapper
 ) : ScopedViewModel(savedState) {
-    private var ssr: String? = null
+    var ssr: String? = null
 
     init {
         fetchSSR()
