@@ -4,6 +4,7 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -27,6 +28,7 @@ import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -35,6 +37,7 @@ import com.woocommerce.android.R
 import com.woocommerce.android.ui.compose.URL_ANNOTATION_TAG
 import com.woocommerce.android.ui.compose.annotatedStringRes
 import com.woocommerce.android.ui.compose.component.WCColoredButton
+import com.woocommerce.android.ui.compose.component.WCOutlinedButton
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.ui.login.jetpack.start.JetpackActivationStartViewModel.JetpackActivationState
 import com.woocommerce.android.util.ChromeCustomTabUtils
@@ -60,11 +63,14 @@ fun JetpackActivationStartScreen(
 ) {
     Scaffold(
         topBar = {
-            Toolbar(onHelpButtonClick = onHelpButtonClick, onBackButtonClick = onBackButtonClick)
+            Toolbar(
+                isConnectionDismissed = viewState.isConnectionDismissed,
+                onHelpButtonClick = onHelpButtonClick,
+                onBackButtonClick = onBackButtonClick
+            )
         }
     ) { paddingValues ->
         Column(
-            verticalArrangement = Arrangement.spacedBy(dimensionResource(id = R.dimen.major_100)),
             horizontalAlignment = Alignment.CenterHorizontally,
             modifier = Modifier
                 .fillMaxSize()
@@ -79,34 +85,12 @@ fun JetpackActivationStartScreen(
                     .weight(1f)
                     .padding(horizontal = dimensionResource(id = R.dimen.major_100))
             ) {
-                Image(
-                    painter = painterResource(
-                        id = if (viewState.isJetpackInstalled) R.drawable.img_connect_jetpack
-                        else R.drawable.img_install_jetpack
-                    ),
-                    contentDescription = null,
-                    modifier = Modifier
-                        .padding(dimensionResource(id = R.dimen.major_100))
-                        .weight(1f, false)
-                )
-                Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.major_100)))
-                Text(
-                    text = annotatedStringRes(
-                        stringResId = if (viewState.isJetpackInstalled) R.string.login_jetpack_connection_explanation
-                        else R.string.login_jetpack_installation_explanation,
-                        viewState.url
-                    ),
-                    style = MaterialTheme.typography.body1,
-                    textAlign = TextAlign.Center
-                )
-                Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.major_100)))
-                Text(
-                    text = stringResource(id = R.string.login_jetpack_installation_credentials_hint),
-                    style = MaterialTheme.typography.caption,
-                    color = colorResource(id = R.color.color_on_surface_medium),
-                    textAlign = TextAlign.Center
-                )
+                when (viewState.isConnectionDismissed) {
+                    false -> StartState(viewState.isJetpackInstalled, viewState.url)
+                    true -> ConnectionDismissedState()
+                }
             }
+            Spacer(Modifier.height(dimensionResource(id = R.dimen.major_100)))
             WCColoredButton(
                 onClick = onContinueButtonClick,
                 modifier = Modifier
@@ -115,33 +99,110 @@ fun JetpackActivationStartScreen(
             ) {
                 Text(
                     text = stringResource(
-                        id = if (viewState.isJetpackInstalled) R.string.login_jetpack_connect
-                        else R.string.login_jetpack_install
+                        id = when {
+                            viewState.isConnectionDismissed -> R.string.login_jetpack_installation_continue_connection
+                            viewState.isJetpackInstalled -> R.string.login_jetpack_connect
+                            else -> R.string.login_jetpack_install
+                        }
                     )
                 )
             }
-            JetpackConsent(
-                modifier = Modifier.padding(horizontal = dimensionResource(id = R.dimen.major_100))
-            )
+            if (viewState.isConnectionDismissed) {
+                WCOutlinedButton(
+                    onClick = onBackButtonClick,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = dimensionResource(id = R.dimen.major_100))
+                ) {
+                    Text(stringResource(id = R.string.login_jetpack_installation_cancel))
+                }
+            } else {
+                JetpackConsent(
+                    modifier = Modifier.padding(horizontal = dimensionResource(id = R.dimen.major_100))
+                )
+            }
         }
     }
 }
 
 @Composable
+private fun ColumnScope.StartState(isJetpackInstalled: Boolean, siteUrl: String) {
+    Image(
+        painter = painterResource(
+            id = if (isJetpackInstalled) R.drawable.img_connect_jetpack
+            else R.drawable.img_install_jetpack
+        ),
+        contentDescription = null,
+        modifier = Modifier
+            .padding(dimensionResource(id = R.dimen.major_100))
+            .weight(1f, false)
+    )
+    Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.major_100)))
+    Text(
+        text = annotatedStringRes(
+            stringResId = if (isJetpackInstalled) R.string.login_jetpack_connection_explanation
+            else R.string.login_jetpack_installation_explanation,
+            siteUrl
+        ),
+        style = MaterialTheme.typography.body1,
+        textAlign = TextAlign.Center
+    )
+    Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.major_100)))
+    Text(
+        text = stringResource(id = R.string.login_jetpack_installation_credentials_hint),
+        style = MaterialTheme.typography.caption,
+        color = colorResource(id = R.color.color_on_surface_medium),
+        textAlign = TextAlign.Center
+    )
+}
+
+@Composable
+private fun ColumnScope.ConnectionDismissedState() {
+    Image(
+        painter = painterResource(
+            id = R.drawable.img_jetpack_connection_dismissed
+        ),
+        contentDescription = null,
+        modifier = Modifier
+            .padding(dimensionResource(id = R.dimen.major_100))
+            .weight(1f, false)
+    )
+    Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.major_100)))
+    Text(
+        text = stringResource(id = R.string.login_jetpack_installation_connection_dismissed),
+        style = MaterialTheme.typography.body1,
+        textAlign = TextAlign.Center,
+        fontWeight = FontWeight.SemiBold
+    )
+    Text(
+        text = stringResource(id = R.string.login_jetpack_installation_connection_dismissed_explanation),
+        style = MaterialTheme.typography.body1,
+        textAlign = TextAlign.Center
+    )
+}
+
+@Composable
 private fun Toolbar(
+    isConnectionDismissed: Boolean,
     onHelpButtonClick: () -> Unit,
     onBackButtonClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     TopAppBar(
         backgroundColor = MaterialTheme.colors.surface,
-        title = { Text(stringResource(id = R.string.login_jetpack_installation_screen_title)) },
+        title = {
+            if (!isConnectionDismissed) {
+                Text(stringResource(id = R.string.login_jetpack_installation_screen_title))
+            }
+        },
         navigationIcon = {
-            IconButton(onClick = onBackButtonClick) {
-                Icon(
-                    Filled.ArrowBack,
-                    contentDescription = stringResource(id = R.string.back)
-                )
+            if (!isConnectionDismissed) {
+                IconButton(onClick = onBackButtonClick) {
+                    Icon(
+                        Filled.ArrowBack,
+                        contentDescription = stringResource(id = R.string.back)
+                    )
+                }
             }
         },
         actions = {
@@ -187,7 +248,22 @@ private fun JetpackActivationStartPreview() {
         JetpackActivationStartScreen(
             viewState = JetpackActivationState(
                 url = "reallyniceshirts.com",
-                isJetpackInstalled = false
+                isJetpackInstalled = false,
+                isConnectionDismissed = false
+            )
+        )
+    }
+}
+
+@Composable
+@Preview
+private fun JetpackConnectionDismissPreview() {
+    WooThemeWithBackground {
+        JetpackActivationStartScreen(
+            viewState = JetpackActivationState(
+                url = "reallyniceshirts.com",
+                isJetpackInstalled = false,
+                isConnectionDismissed = true
             )
         )
     }

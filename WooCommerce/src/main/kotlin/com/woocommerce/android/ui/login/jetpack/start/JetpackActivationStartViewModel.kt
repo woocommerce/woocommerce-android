@@ -1,27 +1,41 @@
 package com.woocommerce.android.ui.login.jetpack.start
 
 import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
+import androidx.lifecycle.asLiveData
+import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.ScopedViewModel
+import com.woocommerce.android.viewmodel.getStateFlow
 import com.woocommerce.android.viewmodel.navArgs
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.map
 import javax.inject.Inject
 
 @HiltViewModel
 class JetpackActivationStartViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle
 ) : ScopedViewModel(savedStateHandle) {
+    companion object {
+        private const val CONNECTION_DISMISSED_KEY = "connection-dismissed"
+    }
+
     private val navArgs: JetpackActivationStartFragmentArgs by savedStateHandle.navArgs()
 
-    val viewState: LiveData<JetpackActivationState> = MutableLiveData(
+    private val isConnectionDismissed = savedStateHandle.getStateFlow(
+        scope = viewModelScope,
+        initialValue = false,
+        key = CONNECTION_DISMISSED_KEY
+    )
+
+    val viewState: LiveData<JetpackActivationState> = isConnectionDismissed.map { isConnectionDismissed ->
         JetpackActivationState(
             url = navArgs.siteUrl,
-            isJetpackInstalled = navArgs.isJetpackInstalled
+            isJetpackInstalled = navArgs.isJetpackInstalled,
+            isConnectionDismissed = isConnectionDismissed
         )
-    )
+    }.asLiveData()
 
     fun onHelpButtonClick() {
         triggerEvent(NavigateToHelpScreen)
@@ -31,18 +45,32 @@ class JetpackActivationStartViewModel @Inject constructor(
         triggerEvent(Exit)
     }
 
+    fun onConnectionDismissed() {
+        isConnectionDismissed.value = true
+    }
+
     fun onContinueButtonClick() {
-        triggerEvent(
-            NavigateToSiteCredentialsScreen(
-                siteUrl = navArgs.siteUrl,
-                isJetpackInstalled = navArgs.isJetpackInstalled
+        if (isConnectionDismissed.value) {
+            isConnectionDismissed.value = false
+            triggerEvent(
+                ContinueJetpackConnection(
+                    siteUrl = navArgs.siteUrl
+                )
             )
-        )
+        } else {
+            triggerEvent(
+                NavigateToSiteCredentialsScreen(
+                    siteUrl = navArgs.siteUrl,
+                    isJetpackInstalled = navArgs.isJetpackInstalled
+                )
+            )
+        }
     }
 
     data class JetpackActivationState(
         val url: String,
         val isJetpackInstalled: Boolean,
+        val isConnectionDismissed: Boolean
     )
 
     object NavigateToHelpScreen : MultiLiveEvent.Event()
@@ -50,4 +78,6 @@ class JetpackActivationStartViewModel @Inject constructor(
         val siteUrl: String,
         val isJetpackInstalled: Boolean
     ) : MultiLiveEvent.Event()
+
+    data class ContinueJetpackConnection(val siteUrl: String) : MultiLiveEvent.Event()
 }
