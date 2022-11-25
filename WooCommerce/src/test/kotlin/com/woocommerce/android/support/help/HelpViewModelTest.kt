@@ -3,10 +3,10 @@ package com.woocommerce.android.support.help
 import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.support.TicketType
 import com.woocommerce.android.tools.SelectedSite
-import com.woocommerce.android.util.WooLogWrapper
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.assertj.core.api.Assertions.assertThat
+import org.junit.Before
 import org.junit.Test
 import org.mockito.kotlin.any
 import org.mockito.kotlin.mock
@@ -27,14 +27,21 @@ class HelpViewModelTest : BaseUnitTest() {
         on { get() }.thenReturn(siteModel)
         on { exists() }.thenReturn(true)
     }
-    private val wooStore: WooCommerceStore = mock()
-    private val wooLogWrapper: WooLogWrapper = mock()
-    private val viewModel = HelpViewModel(
-        savedState,
-        wooStore,
-        selectedSite,
-        wooLogWrapper
-    )
+    private val wooStore: WooCommerceStore = mock {
+        onBlocking { fetchSSR(any()) }.thenReturn(WooResult(WooError(mock(), mock())))
+    }
+
+    private lateinit var viewModel: HelpViewModel
+
+    @Before
+    fun initViewModel() {
+        viewModel = HelpViewModel(
+            savedState,
+            wooStore,
+            selectedSite,
+            mock()
+        )
+    }
 
     @Test
     fun `given site doesnt exist, when on contact clicked, then create event triggered`() {
