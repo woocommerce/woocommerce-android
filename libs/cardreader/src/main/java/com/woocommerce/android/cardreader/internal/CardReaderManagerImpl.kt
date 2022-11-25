@@ -76,7 +76,6 @@ internal class CardReaderManagerImpl(
             initStripeTerminal(logLevel)
 
             terminal.setupSimulator(updateFrequency)
-
         } else {
             logWrapper.w(TAG, "CardReaderManager is already initialized")
         }
