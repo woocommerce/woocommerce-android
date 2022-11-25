@@ -36,7 +36,7 @@ Language: id
     <string name="site_picker_connect_existing_store">Sambungkan toko yang sudah ada</string>
     <string name="site_picker_create_new_store">Buat toko baru</string>
     <string name="login_site_picker_add_a_store">Tambahkan Toko</string>
-    <string name="login_no_stores">Akun Anda tidak terhubung ke toko WooCommerce mana pun.</string>
+    <string name="login_no_stores_header">Akun Anda tidak terhubung ke toko WooCommerce mana pun.</string>
     <string name="analytics_products_list_item_description">Penjualan bersih: %1$s</string>
     <string name="analytics_products_list_header_subtitle">Item terjual</string>
     <string name="analytics_products_list_header_title">Produk</string>

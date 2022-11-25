@@ -9,6 +9,7 @@ import com.woocommerce.android.ui.common.PluginRepository.PluginStatus.PluginIns
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.dispatchAndAwait
 import com.woocommerce.android.util.observeEvents
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.emitAll
@@ -16,6 +17,7 @@ import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.merge
 import kotlinx.coroutines.flow.retryWhen
+import kotlinx.coroutines.flow.transformWhile
 import kotlinx.parcelize.Parcelize
 import org.wordpress.android.fluxc.Dispatcher
 import org.wordpress.android.fluxc.generated.PluginActionBuilder
@@ -39,8 +41,9 @@ class PluginRepository @Inject constructor(
     @Suppress("unused") private val pluginStore: PluginStore
 ) {
     companion object {
-        const val GENERIC_ERROR = "Unknown issue."
-        const val ATTEMPT_LIMIT = 2
+        private const val GENERIC_ERROR = "Unknown issue."
+        private const val ATTEMPT_LIMIT = 2
+        private const val DELAY_BEFORE_RETRY = 500L
     }
 
     suspend fun fetchPlugin(site: SiteModel, name: String): Result<SitePluginModel?> {
@@ -70,6 +73,7 @@ class PluginRepository @Inject constructor(
         }
     }
 
+    @Suppress("LongMethod")
     fun installPlugin(site: SiteModel, slug: String, name: String): Flow<PluginStatus> {
         return flow {
             WooLog.d(WooLog.T.PLUGINS, "Installing plugin Slug: $slug, Name: $name")
@@ -79,6 +83,7 @@ class PluginRepository @Inject constructor(
                 if (plugin.isActive) {
                     // Plugin is already active, nothing to do
                     WooLog.d(WooLog.T.PLUGINS, "Plugin $slug is already installed and activated")
+                    emit(PluginInstalled(slug))
                     emit(PluginActivated(slug))
                     return@flow
                 } else {
@@ -110,7 +115,10 @@ class PluginRepository @Inject constructor(
             emitAll(merge(installationEvents, activationEvents))
         }.retryWhen { cause, attempt ->
             (cause is OnChangedException && attempt < ATTEMPT_LIMIT).also {
-                if (it) WooLog.d(WooLog.T.PLUGINS, "Retry plugin installation")
+                if (it) {
+                    delay(DELAY_BEFORE_RETRY)
+                    WooLog.d(WooLog.T.PLUGINS, "Retry plugin installation")
+                }
             }
         }.catch { cause ->
             if (cause !is OnChangedException) throw cause
@@ -131,6 +139,10 @@ class PluginRepository @Inject constructor(
                     )
                 )
             }
+        }.transformWhile { status ->
+            emit(status)
+            // Finish the flow unless it's an intermediary event: Installation
+            status is PluginInstalled
         }
     }
 

@@ -36,7 +36,7 @@ Language: it
     <string name="site_picker_connect_existing_store">Connetti un negozio esistente</string>
     <string name="site_picker_create_new_store">Crea un nuovo negozio</string>
     <string name="login_site_picker_add_a_store">Aggiungi un negozio</string>
-    <string name="login_no_stores">Il tuo account non è connesso ad alcun negozio WooCommerce.</string>
+    <string name="login_no_stores_header">Il tuo account non è connesso ad alcun negozio WooCommerce.</string>
     <string name="analytics_products_list_item_description">Vendite nette: %1$s</string>
     <string name="analytics_products_list_header_subtitle">Elementi venduti</string>
     <string name="analytics_products_list_header_title">Prodotti</string>

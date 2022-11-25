@@ -160,6 +160,8 @@ class AppPrefsWrapper @Inject constructor() {
 
     fun getUnifiedLoginLastSource() = AppPrefs.getUnifiedLoginLastSource()
 
+    fun setLoginSiteAddress(loginSiteAddress: String) = AppPrefs.setLoginSiteAddress(loginSiteAddress)
+
     fun removeLoginSiteAddress() = AppPrefs.removeLoginSiteAddress()
 
     fun getLoginSiteAddress() = AppPrefs.getLoginSiteAddress().takeIf { it.isNotEmpty() }

@@ -2,6 +2,8 @@
 11.4
 -----
 [**] Adds a feature of generating all variations from existing attributes. [https://github.com/woocommerce/woocommerce-android/pull/7944]
+- [*] [Internal] JITM: Make an api call to fetch JITMs on pull to refresh in the MyStore screen [https://github.com/woocommerce/woocommerce-android/pull/7938]
+- [*] [Internal] Add support for installing and connecting Jetpack natively, still behind an AB test [https://github.com/woocommerce/woocommerce-android/pull/7889]
 
 11.3
 -----

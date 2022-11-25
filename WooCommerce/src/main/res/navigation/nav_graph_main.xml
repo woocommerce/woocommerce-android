@@ -299,19 +299,27 @@
             android:name="urlToLoad"
             app:argType="string" />
         <argument
-            android:name="urlToTriggerExit"
-            android:defaultValue="@null"
-            app:argType="string"
-            app:nullable="true" />
-        <argument
-            android:name="urlComparisonMode"
-            android:defaultValue="PARTIAL"
-            app:argType="com.woocommerce.android.ui.common.wpcomwebview.WPComWebViewFragment$UrlComparisonMode" />
-        <argument
             android:name="title"
             android:defaultValue="@null"
             app:argType="string"
             app:nullable="true" />
+        <argument
+            android:name="urlsToTriggerExit"
+            android:defaultValue="@null"
+            app:argType="string[]"
+            app:nullable="true" />
+        <argument
+            android:name="captureBackButton"
+            android:defaultValue="true"
+            app:argType="boolean" />
+        <argument
+            android:name="displayMode"
+            android:defaultValue="REGULAR"
+            app:argType="com.woocommerce.android.ui.common.wpcomwebview.WPComWebViewViewModel$DisplayMode" />
+        <argument
+            android:name="urlComparisonMode"
+            android:defaultValue="PARTIAL"
+            app:argType="com.woocommerce.android.ui.common.wpcomwebview.WPComWebViewViewModel$UrlComparisonMode" />
     </fragment>
     <action
         android:id="@+id/action_global_WPComWebViewFragment"

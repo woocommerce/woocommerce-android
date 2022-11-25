@@ -27,8 +27,8 @@ class GenerateVariationPickerDialog(context: Context) : BottomSheetDialog(contex
     var variationCandidates: List<VariationCandidate> = emptyList()
         set(value) {
             field = value
-            binding.allVariation.visibility = if (variationCandidates.isEmpty()) View.VISIBLE else View.GONE
-            if (variationCandidates.isEmpty()) {
+            binding.allVariation.visibility = if (variationCandidates.isNotEmpty()) View.VISIBLE else View.GONE
+            if (variationCandidates.isNotEmpty()) {
                 binding.allVariationTitle.text = context.getString(R.string.variation_add_all, variationCandidates.size)
             }
         }

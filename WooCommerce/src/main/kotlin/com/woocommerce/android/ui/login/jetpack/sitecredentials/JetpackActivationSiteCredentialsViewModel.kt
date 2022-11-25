@@ -7,6 +7,8 @@ import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.OnChangedException
 import com.woocommerce.android.R
+import com.woocommerce.android.analytics.AnalyticsEvent
+import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.model.UiString.UiStringRes
 import com.woocommerce.android.model.UiString.UiStringText
 import com.woocommerce.android.viewmodel.MultiLiveEvent
@@ -23,6 +25,7 @@ import kotlinx.parcelize.IgnoredOnParcel
 import kotlinx.parcelize.Parcelize
 import org.wordpress.android.fluxc.network.xmlrpc.XMLRPCRequest.XmlRpcErrorType.AUTH_REQUIRED
 import org.wordpress.android.fluxc.store.AccountStore.AuthenticationError
+import org.wordpress.android.fluxc.store.AccountStore.AuthenticationErrorType
 import org.wordpress.android.fluxc.store.AccountStore.AuthenticationErrorType.AUTHORIZATION_REQUIRED
 import org.wordpress.android.fluxc.store.AccountStore.AuthenticationErrorType.HTTP_AUTH_ERROR
 import org.wordpress.android.fluxc.store.AccountStore.AuthenticationErrorType.INCORRECT_USERNAME_OR_PASSWORD
@@ -30,12 +33,14 @@ import org.wordpress.android.fluxc.store.AccountStore.AuthenticationErrorType.IN
 import org.wordpress.android.fluxc.store.AccountStore.AuthenticationErrorType.INVALID_TOKEN
 import org.wordpress.android.fluxc.store.AccountStore.AuthenticationErrorType.NEEDS_2FA
 import org.wordpress.android.fluxc.store.AccountStore.AuthenticationErrorType.NOT_AUTHENTICATED
+import org.wordpress.android.util.UrlUtils
 import javax.inject.Inject
 
 @HiltViewModel
 class JetpackActivationSiteCredentialsViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
-    private val wpApiSiteRepository: WPApiSiteRepository
+    private val wpApiSiteRepository: WPApiSiteRepository,
+    private val analyticsTrackerWrapper: AnalyticsTrackerWrapper
 ) : ScopedViewModel(savedStateHandle) {
     private val navArgs: JetpackActivationSiteCredentialsFragmentArgs by savedStateHandle.navArgs()
 
@@ -43,10 +48,14 @@ class JetpackActivationSiteCredentialsViewModel @Inject constructor(
         scope = viewModelScope,
         initialValue = JetpackActivationSiteCredentialsViewState(
             isJetpackInstalled = navArgs.isJetpackInstalled,
-            siteUrl = navArgs.siteUrl
+            siteUrl = UrlUtils.removeScheme(navArgs.siteUrl)
         )
     )
     val viewState = _viewState.asLiveData()
+
+    init {
+        analyticsTrackerWrapper.track(AnalyticsEvent.LOGIN_JETPACK_SITE_CREDENTIAL_SCREEN_VIEWED)
+    }
 
     fun onUsernameChanged(username: String) {
         _viewState.update { state ->
@@ -67,32 +76,39 @@ class JetpackActivationSiteCredentialsViewModel @Inject constructor(
     }
 
     fun onCloseClick() {
+        analyticsTrackerWrapper.track(AnalyticsEvent.LOGIN_JETPACK_SITE_CREDENTIAL_SCREEN_DISMISSED)
         triggerEvent(Exit)
     }
 
     fun onResetPasswordClick() {
-        triggerEvent(ResetPassword(_viewState.value.siteUrl))
+        analyticsTrackerWrapper.track(AnalyticsEvent.LOGIN_JETPACK_SITE_CREDENTIAL_RESET_PASSWORD_BUTTON_TAPPED)
+        triggerEvent(ResetPassword(navArgs.siteUrl))
     }
 
     fun onContinueClick() = launch {
+        analyticsTrackerWrapper.track(AnalyticsEvent.LOGIN_JETPACK_SITE_CREDENTIAL_INSTALL_BUTTON_TAPPED)
         _viewState.update { it.copy(isLoading = true) }
 
         val state = _viewState.value
         wpApiSiteRepository.login(
-            url = state.siteUrl,
+            url = navArgs.siteUrl,
             username = state.username,
             password = state.password
         ).fold(
             onSuccess = {
+                analyticsTrackerWrapper.track(AnalyticsEvent.LOGIN_JETPACK_SITE_CREDENTIAL_DID_FINISH_LOGIN)
                 triggerEvent(
                     NavigateToJetpackActivationSteps(
-                        state.siteUrl,
+                        navArgs.siteUrl,
                         navArgs.isJetpackInstalled
                     )
                 )
             },
             onFailure = { exception ->
+                var errorType: AuthenticationErrorType? = null
+
                 if (exception is OnChangedException && exception.error is AuthenticationError) {
+                    errorType = exception.error.type
                     val errorMessage = exception.error.toErrorMessage()
                     if (errorMessage == null) {
                         val message = exception.error.message?.takeIf { it.isNotEmpty() }
@@ -105,6 +121,12 @@ class JetpackActivationSiteCredentialsViewModel @Inject constructor(
                 } else {
                     triggerEvent(ShowSnackbar(R.string.error_generic))
                 }
+                analyticsTrackerWrapper.track(
+                    stat = AnalyticsEvent.LOGIN_JETPACK_SITE_CREDENTIAL_DID_SHOW_ERROR_ALERT,
+                    errorContext = this@JetpackActivationSiteCredentialsViewModel.javaClass.simpleName,
+                    errorType = errorType?.name ?: exception::class.simpleName,
+                    errorDescription = exception.message
+                )
             }
         )
 
@@ -118,8 +140,10 @@ class JetpackActivationSiteCredentialsViewModel @Inject constructor(
             } else {
                 R.string.username_or_password_incorrect
             }
+
         INVALID_OTP, INVALID_TOKEN, AUTHORIZATION_REQUIRED, NEEDS_2FA ->
             R.string.login_2fa_not_supported_self_hosted_site
+
         else -> {
             null
         }
