@@ -38,7 +38,7 @@ class StoreNamePickerViewModel @Inject constructor(
         analyticsTrackerWrapper.track(
             AnalyticsEvent.SITE_CREATION_DISMISSED,
             mapOf(
-                AnalyticsTracker.KEY_STEP to AnalyticsTracker.VALUE_STEP_STORE_CREATED,
+                AnalyticsTracker.KEY_STEP to AnalyticsTracker.VALUE_STEP_STORE_NAME,
                 AnalyticsTracker.KEY_FLOW to AnalyticsTracker.VALUE_NATIVE,
                 AnalyticsTracker.KEY_SOURCE to prefsWrapper.getStoreCreationSource()
             )
