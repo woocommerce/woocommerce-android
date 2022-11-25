@@ -7,6 +7,9 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
 import com.woocommerce.android.R.drawable
 import com.woocommerce.android.R.string
+import com.woocommerce.android.analytics.AnalyticsEvent
+import com.woocommerce.android.analytics.AnalyticsTracker
+import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.ui.login.storecreation.plans.PlansViewModel.Plan.BillingPeriod.MONTHLY
 import com.woocommerce.android.ui.login.storecreation.plans.PlansViewModel.Plan.Feature
 import com.woocommerce.android.ui.login.storecreation.plans.PlansViewModel.ViewState.LoadingState
@@ -23,7 +26,8 @@ import javax.inject.Inject
 
 @HiltViewModel
 class PlansViewModel @Inject constructor(
-    savedStateHandle: SavedStateHandle
+    savedStateHandle: SavedStateHandle,
+    val analyticsTrackerWrapper: AnalyticsTrackerWrapper
 ) : ScopedViewModel(savedStateHandle) {
     companion object {
         private const val ECOMMERCE_PLAN_NAME = "eCommerce"
@@ -35,6 +39,12 @@ class PlansViewModel @Inject constructor(
 
     init {
         loadPlan()
+        analyticsTrackerWrapper.track(
+            AnalyticsEvent.SITE_CREATION_STEP,
+            mapOf(
+                AnalyticsTracker.KEY_STEP to AnalyticsTracker.VALUE_STEP_PLAN_PURCHASE
+            )
+        )
     }
 
     private fun loadPlan() {
@@ -87,6 +97,8 @@ class PlansViewModel @Inject constructor(
 
     fun onConfirmClicked() {
         triggerEvent(NavigateToNextStep)
+        // TODO add tracking for login_woocommerce_site_created and site_creation_failed once we have the result
+        // TODO wipe out data from "NewStore" singlenton once store is created successfully
     }
 
     fun onRetryClicked() {

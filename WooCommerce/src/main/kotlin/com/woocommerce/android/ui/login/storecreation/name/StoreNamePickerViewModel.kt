@@ -3,6 +3,10 @@ package com.woocommerce.android.ui.login.storecreation.name
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
+import com.woocommerce.android.AppPrefsWrapper
+import com.woocommerce.android.analytics.AnalyticsEvent
+import com.woocommerce.android.analytics.AnalyticsTracker
+import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.ui.login.storecreation.NewStore
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.ScopedViewModel
@@ -14,12 +18,31 @@ import javax.inject.Inject
 @HiltViewModel
 class StoreNamePickerViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
-    private val newStore: NewStore
+    private val newStore: NewStore,
+    private val analyticsTrackerWrapper: AnalyticsTrackerWrapper,
+    private val prefsWrapper: AppPrefsWrapper
 ) : ScopedViewModel(savedStateHandle) {
     private val _storeName = savedState.getStateFlow(scope = this, initialValue = "")
     val storeName: LiveData<String> = _storeName.asLiveData()
 
+    init {
+        analyticsTrackerWrapper.track(
+            AnalyticsEvent.SITE_CREATION_STEP,
+            mapOf(
+                AnalyticsTracker.KEY_STEP to AnalyticsTracker.VALUE_STEP_STORE_NAME
+            )
+        )
+    }
+
     fun onCancelPressed() {
+        analyticsTrackerWrapper.track(
+            AnalyticsEvent.SITE_CREATION_DISMISSED,
+            mapOf(
+                AnalyticsTracker.KEY_STEP to AnalyticsTracker.VALUE_STEP_STORE_NAME,
+                AnalyticsTracker.KEY_FLOW to AnalyticsTracker.VALUE_NATIVE,
+                AnalyticsTracker.KEY_SOURCE to prefsWrapper.getStoreCreationSource()
+            )
+        )
         triggerEvent(MultiLiveEvent.Event.Exit)
     }
 

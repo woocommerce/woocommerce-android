@@ -164,10 +164,12 @@ private fun StoreDataSummary(
                         )
                     }
                 }
-                Text(
-                    text = myStoreSummaryState.country,
-                    style = MaterialTheme.typography.subtitle1,
-                )
+                if (!myStoreSummaryState.country.isNullOrEmpty()) {
+                    Text(
+                        text = myStoreSummaryState.country,
+                        style = MaterialTheme.typography.subtitle1,
+                    )
+                }
                 if (!myStoreSummaryState.category.isNullOrEmpty()) {
                     Text(
                         text = myStoreSummaryState.category,

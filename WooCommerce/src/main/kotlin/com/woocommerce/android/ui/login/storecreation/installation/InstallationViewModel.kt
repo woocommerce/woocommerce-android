@@ -3,6 +3,8 @@ package com.woocommerce.android.ui.login.storecreation.installation
 import android.os.Parcelable
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
+import com.woocommerce.android.analytics.AnalyticsEvent
+import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.ui.common.wpcomwebview.WPComWebViewAuthenticator
 import com.woocommerce.android.ui.login.storecreation.installation.InstallationViewModel.ViewState.LoadingState
 import com.woocommerce.android.ui.login.storecreation.installation.InstallationViewModel.ViewState.SuccessState
@@ -21,6 +23,7 @@ class InstallationViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
     val wpComWebViewAuthenticator: WPComWebViewAuthenticator,
     val userAgent: UserAgent,
+    val analyticsTrackerWrapper: AnalyticsTrackerWrapper
 ) : ScopedViewModel(savedStateHandle) {
     private val _viewState = savedState.getStateFlow<ViewState>(this, LoadingState)
     val viewState = _viewState.asLiveData()
@@ -34,6 +37,7 @@ class InstallationViewModel @Inject constructor(
     }
 
     fun onShowPreviewButtonClicked() {
+        analyticsTrackerWrapper.track(AnalyticsEvent.SITE_CREATION_SITE_PREVIEWED)
         triggerEvent(OpenStore(url))
     }
 
