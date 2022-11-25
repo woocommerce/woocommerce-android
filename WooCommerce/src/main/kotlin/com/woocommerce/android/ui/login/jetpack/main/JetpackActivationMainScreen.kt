@@ -1,8 +1,17 @@
 package com.woocommerce.android.ui.login.jetpack.main
 
+import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.AnimatedVisibilityScope
+import androidx.compose.animation.ExperimentalAnimationApi
+import androidx.compose.animation.core.AnimationConstants.DefaultDurationMillis
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.core.updateTransition
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
 import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
+import androidx.compose.animation.with
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -30,7 +39,12 @@ import androidx.compose.material.TopAppBar
 import androidx.compose.material.icons.Icons.Filled
 import androidx.compose.material.icons.filled.Clear
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.StrokeCap
@@ -43,6 +57,8 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.tooling.preview.PreviewParameter
+import androidx.compose.ui.tooling.preview.PreviewParameterProvider
 import androidx.compose.ui.unit.dp
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.compose.annotatedStringRes
@@ -80,6 +96,8 @@ fun JetpackActivationMainScreen(
     Scaffold(
         topBar = { Toolbar(onCloseClick) }
     ) { paddingValues ->
+        val transition = updateTransition(targetState = viewState, label = "State Transition")
+
         Column(
             modifier = Modifier
                 .background(MaterialTheme.colors.surface)
@@ -92,19 +110,26 @@ fun JetpackActivationMainScreen(
 
             Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.major_200)))
 
-            when (viewState) {
-                is JetpackActivationMainViewModel.ViewState.ProgressViewState -> ProgressState(
-                    viewState = viewState,
-                    onContinueClick = onContinueClick,
-                    modifier = Modifier.weight(1f)
-                )
-                is JetpackActivationMainViewModel.ViewState.ErrorViewState -> ErrorState(
-                    viewState = viewState,
-                    onGetHelpClick = onGetHelpClick,
-                    onRetryClick = onRetryClick,
-                    onCancelClick = onCloseClick,
-                    modifier = Modifier.weight(1f)
-                )
+            transition.AnimatedContent(
+                contentKey = { it is JetpackActivationMainViewModel.ViewState.ErrorViewState },
+                transitionSpec = {
+                    fadeIn(animationSpec = tween(DefaultDurationMillis, delayMillis = DefaultDurationMillis)) with
+                        fadeOut(animationSpec = tween(DefaultDurationMillis))
+                },
+                modifier = Modifier.weight(1f)
+            ) { targetState ->
+                when (targetState) {
+                    is JetpackActivationMainViewModel.ViewState.ProgressViewState -> ProgressState(
+                        viewState = targetState,
+                        onContinueClick = onContinueClick
+                    )
+                    is JetpackActivationMainViewModel.ViewState.ErrorViewState -> ErrorState(
+                        viewState = targetState,
+                        onGetHelpClick = onGetHelpClick,
+                        onRetryClick = onRetryClick,
+                        onCancelClick = onCloseClick
+                    )
+                }
             }
         }
     }
@@ -162,9 +187,10 @@ private fun ProgressState(
     }
 }
 
+@OptIn(ExperimentalAnimationApi::class)
 @Composable
 @Suppress("ComplexMethod")
-private fun ErrorState(
+private fun AnimatedVisibilityScope.ErrorState(
     viewState: JetpackActivationMainViewModel.ViewState.ErrorViewState,
     onGetHelpClick: () -> Unit,
     onRetryClick: () -> Unit,
@@ -234,6 +260,14 @@ private fun ErrorState(
             }
         }
         Spacer(modifier = Modifier.weight(1f))
+        val buttonsModifier = Modifier
+            .fillMaxWidth()
+            .animateEnterExit(
+                enter = slideInVertically(animationSpec = tween(delayMillis = DefaultDurationMillis)) { fullHeight ->
+                    fullHeight
+                },
+                exit = slideOutVertically { fullHeight -> fullHeight }
+            )
         if (viewState.errorCode != FORBIDDEN_ERROR_CODE) {
             val retryButton = when (viewState.stepType) {
                 JetpackActivationMainViewModel.StepType.Installation ->
@@ -245,12 +279,12 @@ private fun ErrorState(
                 else -> null
             }
             retryButton?.let {
-                WCColoredButton(onClick = onRetryClick, modifier = Modifier.fillMaxWidth()) {
+                WCColoredButton(onClick = onRetryClick, modifier = buttonsModifier) {
                     Text(text = stringResource(id = it))
                 }
             }
         }
-        WCOutlinedButton(onClick = onCancelClick, modifier = Modifier.fillMaxWidth()) {
+        WCOutlinedButton(onClick = onCancelClick, modifier = buttonsModifier) {
             Text(text = stringResource(id = R.string.login_jetpack_installation_cancel))
         }
     }
