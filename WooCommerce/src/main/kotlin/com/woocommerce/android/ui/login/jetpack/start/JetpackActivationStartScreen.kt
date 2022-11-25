@@ -2,14 +2,17 @@ package com.woocommerce.android.ui.login.jetpack.start
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.text.ClickableText
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
@@ -28,10 +31,13 @@ import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import coil.compose.AsyncImage
+import coil.request.ImageRequest
 import com.woocommerce.android.AppUrls
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.compose.URL_ANNOTATION_TAG
@@ -86,8 +92,8 @@ fun JetpackActivationStartScreen(
                     .padding(horizontal = dimensionResource(id = R.dimen.major_100))
             ) {
                 when (viewState.isConnectionDismissed) {
-                    false -> StartState(viewState.isJetpackInstalled, viewState.url)
-                    true -> ConnectionDismissedState()
+                    false -> StartState(viewState.isJetpackInstalled, viewState.url, viewState.faviconUrl)
+                    true -> ConnectionDismissedState(viewState.url, viewState.faviconUrl)
                 }
             }
             Spacer(Modifier.height(dimensionResource(id = R.dimen.major_100)))
@@ -114,7 +120,7 @@ fun JetpackActivationStartScreen(
                         .fillMaxWidth()
                         .padding(horizontal = dimensionResource(id = R.dimen.major_100))
                 ) {
-                    Text(stringResource(id = R.string.login_jetpack_installation_cancel))
+                    Text(stringResource(id = R.string.login_jetpack_installation_exit_without_connection))
                 }
             } else {
                 JetpackConsent(
@@ -126,7 +132,11 @@ fun JetpackActivationStartScreen(
 }
 
 @Composable
-private fun ColumnScope.StartState(isJetpackInstalled: Boolean, siteUrl: String) {
+private fun ColumnScope.StartState(
+    isJetpackInstalled: Boolean,
+    siteUrl: String,
+    faviconUrl: String
+) {
     Image(
         painter = painterResource(
             id = if (isJetpackInstalled) R.drawable.img_connect_jetpack
@@ -137,12 +147,13 @@ private fun ColumnScope.StartState(isJetpackInstalled: Boolean, siteUrl: String)
             .padding(dimensionResource(id = R.dimen.major_100))
             .weight(1f, false)
     )
-    Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.major_100)))
+    Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.major_200)))
+    SiteUrlAndIcon(siteUrl = siteUrl, faviconUrl = faviconUrl, modifier = Modifier.fillMaxWidth())
+    Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.major_200)))
     Text(
-        text = annotatedStringRes(
-            stringResId = if (isJetpackInstalled) R.string.login_jetpack_connection_explanation
-            else R.string.login_jetpack_installation_explanation,
-            siteUrl
+        text = stringResource(
+            id = if (isJetpackInstalled) R.string.login_jetpack_connection_explanation
+            else R.string.login_jetpack_installation_explanation
         ),
         style = MaterialTheme.typography.body1,
         textAlign = TextAlign.Center
@@ -157,7 +168,10 @@ private fun ColumnScope.StartState(isJetpackInstalled: Boolean, siteUrl: String)
 }
 
 @Composable
-private fun ColumnScope.ConnectionDismissedState() {
+private fun ColumnScope.ConnectionDismissedState(
+    siteUrl: String,
+    faviconUrl: String
+) {
     Image(
         painter = painterResource(
             id = R.drawable.img_jetpack_connection_dismissed
@@ -167,18 +181,56 @@ private fun ColumnScope.ConnectionDismissedState() {
             .padding(dimensionResource(id = R.dimen.major_100))
             .weight(1f, false)
     )
-    Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.major_100)))
+    Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.major_200)))
+    SiteUrlAndIcon(siteUrl = siteUrl, faviconUrl = faviconUrl, modifier = Modifier.fillMaxWidth())
+    Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.major_200)))
     Text(
         text = stringResource(id = R.string.login_jetpack_installation_connection_dismissed),
-        style = MaterialTheme.typography.body1,
+        style = MaterialTheme.typography.h6,
         textAlign = TextAlign.Center,
         fontWeight = FontWeight.SemiBold
     )
+    Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.major_200)))
     Text(
         text = stringResource(id = R.string.login_jetpack_installation_connection_dismissed_explanation),
         style = MaterialTheme.typography.body1,
         textAlign = TextAlign.Center
     )
+}
+
+@Composable
+private fun SiteUrlAndIcon(
+    siteUrl: String,
+    faviconUrl: String,
+    modifier: Modifier = Modifier
+) {
+    Row(
+        horizontalArrangement = Arrangement.spacedBy(
+            dimensionResource(id = R.dimen.major_100),
+            Alignment.CenterHorizontally
+        ),
+        verticalAlignment = Alignment.CenterVertically,
+        modifier = modifier
+            .border(1.dp, color = colorResource(id = R.color.divider_color), shape = MaterialTheme.shapes.medium)
+            .semantics(mergeDescendants = true) {}
+            .padding(dimensionResource(id = R.dimen.major_100))
+    ) {
+        AsyncImage(
+            model = ImageRequest.Builder(LocalContext.current)
+                .data(faviconUrl)
+                .crossfade(true)
+                .placeholder(R.drawable.ic_globe)
+                .error(R.drawable.ic_globe)
+                .build(),
+            contentDescription = null,
+            modifier = Modifier.size(dimensionResource(id = R.dimen.image_minor_40))
+        )
+        Text(
+            text = siteUrl,
+            style = MaterialTheme.typography.subtitle1,
+            fontWeight = FontWeight.SemiBold
+        )
+    }
 }
 
 @Composable
@@ -248,6 +300,7 @@ private fun JetpackActivationStartPreview() {
         JetpackActivationStartScreen(
             viewState = JetpackActivationState(
                 url = "reallyniceshirts.com",
+                faviconUrl = "wordpress.com/favicon.ico",
                 isJetpackInstalled = false,
                 isConnectionDismissed = false
             )
@@ -262,6 +315,7 @@ private fun JetpackConnectionDismissPreview() {
         JetpackActivationStartScreen(
             viewState = JetpackActivationState(
                 url = "reallyniceshirts.com",
+                faviconUrl = "",
                 isJetpackInstalled = false,
                 isConnectionDismissed = true
             )

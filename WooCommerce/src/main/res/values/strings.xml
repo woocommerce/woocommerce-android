@@ -292,9 +292,9 @@
     <string name="site_picker_create_new_store">Create a new store</string>
     <string name="site_picker_connect_existing_store">Connect an existing store</string>
     <string name="login_jetpack_installation_screen_title">Connect store</string>
-    <string name="login_jetpack_installation_explanation">To use this app for&lt;br&gt;&lt;b&gt;%1$s&lt;/b&gt;&lt;br&gt;you\'ll need the free Jetpack plugin installed and connected on your store.</string>
-    <string name="login_jetpack_connection_explanation">To use this app for&lt;br&gt;&lt;b&gt;%1$s&lt;/b&gt;&lt;br&gt;you\'ll need to connect your store to Jetpack.</string>
-    <string name="login_jetpack_installation_credentials_hint">You\’ll need your store credentials to begin the installation.</string>
+    <string name="login_jetpack_installation_explanation">Please install the free Jetpack plugin to access your store on this app.</string>
+    <string name="login_jetpack_connection_explanation">Please connect your store to Jetpack to access it on this app.</string>
+    <string name="login_jetpack_installation_credentials_hint">Have your store credentials ready.</string>
     <string name="login_jetpack_connect">Connect Jetpack</string>
     <string name="login_jetpack_installation_enter_site_credentials">Log in to &lt;b&gt;%1$s&lt;/b&gt; with your store credentials to install Jetpack.</string>
     <string name="login_jetpack_connection_enter_site_credentials">Log in to &lt;b&gt;%1$s&lt;/b&gt; with your store credentials to connect Jetpack.</string>
@@ -329,9 +329,10 @@
     <string name="login_jetpack_installation_cancel">Cancel installation</string>
     <string name="login_jetpack_installation_error_forbidden_suggestion">Please contact your shop manager or administrator for help.</string>
     <string name="login_jetpack_installation_error_connection_permission_message">You don’t have permission to connect to Jetpack on this store</string>
-    <string name="login_jetpack_installation_connection_dismissed">You interrupted the connection.</string>
-    <string name="login_jetpack_installation_connection_dismissed_explanation">Jetpack is installed, but not connected.\n\nPlease continue the connection process to access your store.</string>
+    <string name="login_jetpack_installation_connection_dismissed">Jetpack is installed, but not connected.</string>
+    <string name="login_jetpack_installation_connection_dismissed_explanation">Try connecting again to access your store.</string>
     <string name="login_jetpack_installation_continue_connection">Continue connection</string>
+    <string name="login_jetpack_installation_exit_without_connection">Exit Without Connecting</string>
 
     <!--
         My Store View

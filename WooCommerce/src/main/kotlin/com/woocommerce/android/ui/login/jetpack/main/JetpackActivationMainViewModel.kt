@@ -43,6 +43,7 @@ import kotlinx.parcelize.Parcelize
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.store.JetpackStore.JetpackConnectionUrlError
 import org.wordpress.android.fluxc.store.JetpackStore.JetpackUserError
+import org.wordpress.android.util.UrlUtils
 import javax.inject.Inject
 
 @HiltViewModel
@@ -99,7 +100,7 @@ class JetpackActivationMainViewModel @Inject constructor(
     ) { currentStep, connectionStep, stepTypes, isShowingErrorState ->
         when (isShowingErrorState) {
             false -> ViewState.ProgressViewState(
-                siteUrl = navArgs.siteUrl,
+                siteUrl = UrlUtils.removeScheme(navArgs.siteUrl),
                 isJetpackInstalled = navArgs.isJetpackInstalled,
                 steps = stepTypes.map { stepType ->
                     Step(
