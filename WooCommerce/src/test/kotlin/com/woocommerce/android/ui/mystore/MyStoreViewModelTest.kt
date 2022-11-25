@@ -79,7 +79,7 @@ class MyStoreViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `Given there is network connectivity, When view model is created, stats are fetched`() =
+    fun `given there is network connectivity, when view model is created, stats are fetched`() =
         testBlocking {
             givenNetworkConnectivity(connected = true)
 
@@ -94,7 +94,7 @@ class MyStoreViewModelTest : BaseUnitTest() {
         }
 
     @Test
-    fun `Given there is no network, When view model is created, stats are marked as refresh pending`() =
+    fun `given there is no network, when view model is created, stats are marked as refresh pending`() =
         testBlocking {
             givenNetworkConnectivity(connected = false)
 
@@ -105,7 +105,7 @@ class MyStoreViewModelTest : BaseUnitTest() {
         }
 
     @Test
-    fun `Given there is no network, When view model is created, stats are not fetched from API`() =
+    fun `given there is no network, when view model is created, stats are not fetched from API`() =
         testBlocking {
             givenNetworkConnectivity(connected = false)
 
@@ -116,7 +116,7 @@ class MyStoreViewModelTest : BaseUnitTest() {
         }
 
     @Test
-    fun `Given there is no network, When granularity changed, stats are marked as refresh pending`() =
+    fun `given there is no network, when granularity changed, stats are marked as refresh pending`() =
         testBlocking {
             whenViewModelIsCreated()
             givenNetworkConnectivity(connected = false)
@@ -128,7 +128,7 @@ class MyStoreViewModelTest : BaseUnitTest() {
         }
 
     @Test
-    fun `Given there is no network, When granularity changed, stats are not fetched from API`() =
+    fun `given there is no network, when granularity changed, stats are not fetched from API`() =
         testBlocking {
             whenViewModelIsCreated()
             givenNetworkConnectivity(connected = false)
@@ -140,7 +140,7 @@ class MyStoreViewModelTest : BaseUnitTest() {
         }
 
     @Test
-    fun `Given cached stats, When stats granularity changes, Then load stats for given granularity from cache`() =
+    fun `given cached stats, when stats granularity changes, then load stats for given granularity from cache`() =
         testBlocking {
             whenViewModelIsCreated()
             givenNetworkConnectivity(connected = true)
@@ -157,7 +157,7 @@ class MyStoreViewModelTest : BaseUnitTest() {
         }
 
     @Test
-    fun `Given no cached stats, When stats granularity changes, Then load stats forcing refresh from API`() =
+    fun `given no cached stats, when stats granularity changes, then load stats forcing refresh from API`() =
         testBlocking {
             whenViewModelIsCreated()
             givenNetworkConnectivity(connected = true)
@@ -174,7 +174,7 @@ class MyStoreViewModelTest : BaseUnitTest() {
         }
 
     @Test
-    fun `Given network connection, When on swipe to refresh, Then stats are refreshed for selected granularity`() =
+    fun `given network connection, when on swipe to refresh, then stats are refreshed for selected granularity`() =
         testBlocking {
             whenViewModelIsCreated()
             givenNetworkConnectivity(connected = true)
@@ -190,7 +190,7 @@ class MyStoreViewModelTest : BaseUnitTest() {
         }
 
     @Test
-    fun `Given network connection, When on swipe to refresh, Then analytics is tracked`() =
+    fun `given network connection, when on swipe to refresh, then analytics is tracked`() =
         testBlocking {
             whenViewModelIsCreated()
             givenNetworkConnectivity(connected = true)
@@ -201,7 +201,7 @@ class MyStoreViewModelTest : BaseUnitTest() {
         }
 
     @Test
-    fun `Given success loading revenue, When stats granularity changes, Then UI is updated with revenue stats`() =
+    fun `given success loading revenue, when stats granularity changes, then UI is updated with revenue stats`() =
         testBlocking {
             whenViewModelIsCreated()
             givenNetworkConnectivity(connected = true)
@@ -218,7 +218,7 @@ class MyStoreViewModelTest : BaseUnitTest() {
         }
 
     @Test
-    fun `Given success loading revenue, When stats granularity changes, Then analytics is tracked`() =
+    fun `given success loading revenue, when stats granularity changes, then analytics is tracked`() =
         testBlocking {
             whenViewModelIsCreated()
             givenNetworkConnectivity(connected = true)
@@ -233,7 +233,7 @@ class MyStoreViewModelTest : BaseUnitTest() {
         }
 
     @Test
-    fun `Given stats loaded, when stats granularity changes, then selected option is saved into prefs`() =
+    fun `given stats loaded, when stats granularity changes, then selected option is saved into prefs`() =
         testBlocking {
             whenViewModelIsCreated()
             givenNetworkConnectivity(connected = true)
@@ -248,7 +248,7 @@ class MyStoreViewModelTest : BaseUnitTest() {
         }
 
     @Test
-    fun `Given stats granularity previously selected, when view model is created, stats are retrieved from prefs`() =
+    fun `given stats granularity previously selected, when view model is created, stats are retrieved from prefs`() =
         testBlocking {
             whenever(appPrefsWrapper.getActiveStatsGranularity(anyInt()))
                 .thenReturn(ANY_SELECTED_STATS_GRANULARITY.name)
@@ -259,7 +259,7 @@ class MyStoreViewModelTest : BaseUnitTest() {
         }
 
     @Test
-    fun `Given error loading revenue, When stats granularity changes, Then UI is updated with error`() =
+    fun `given error loading revenue, when stats granularity changes, then UI is updated with error`() =
         testBlocking {
             whenViewModelIsCreated()
             givenNetworkConnectivity(connected = true)
@@ -273,7 +273,7 @@ class MyStoreViewModelTest : BaseUnitTest() {
         }
 
     @Test
-    fun `Given jetpack plugin not active, When stats granularity changes, Then UI is updated with jetpack error`() =
+    fun `given jetpack plugin not active, when stats granularity changes, then UI is updated with jetpack error`() =
         testBlocking {
             whenViewModelIsCreated()
             givenNetworkConnectivity(connected = true)
@@ -287,7 +287,7 @@ class MyStoreViewModelTest : BaseUnitTest() {
         }
 
     @Test
-    fun `Given success loading visitor stats, When stats granularity changes, Then UI is updated with visitor stats`() =
+    fun `given success loading visitor stats, when stats granularity changes, then UI is updated with visitor stats`() =
         testBlocking {
             whenViewModelIsCreated()
             givenNetworkConnectivity(connected = true)
@@ -301,7 +301,7 @@ class MyStoreViewModelTest : BaseUnitTest() {
         }
 
     @Test
-    fun `Given error loading visitor stats, When stats granularity changes, Then UI is updated with error`() =
+    fun `given error loading visitor stats, when stats granularity changes, then UI is updated with error`() =
         testBlocking {
             whenViewModelIsCreated()
             givenNetworkConnectivity(connected = true)
@@ -315,7 +315,7 @@ class MyStoreViewModelTest : BaseUnitTest() {
         }
 
     @Test
-    fun `Given jetpack CP connected, When stats granularity changes, Then show jetpack CP connected state`() =
+    fun `given jetpack CP connected, when stats granularity changes, then show jetpack CP connected state`() =
         testBlocking {
             whenViewModelIsCreated()
             givenNetworkConnectivity(connected = true)
@@ -328,7 +328,7 @@ class MyStoreViewModelTest : BaseUnitTest() {
         }
 
     @Test
-    fun `Given store has orders, When stats granularity changes, Then UI is updated with has orders state`() =
+    fun `given store has orders, when stats granularity changes, then UI is updated with has orders state`() =
         testBlocking {
             whenViewModelIsCreated()
             givenNetworkConnectivity(connected = true)
@@ -342,7 +342,7 @@ class MyStoreViewModelTest : BaseUnitTest() {
         }
 
     @Test
-    fun `Given store has no orders, When stats granularity changes, Then UI is updated with no orders state`() =
+    fun `given store has no orders, when stats granularity changes, then UI is updated with no orders state`() =
         testBlocking {
             whenViewModelIsCreated()
             givenNetworkConnectivity(connected = true)
@@ -356,7 +356,7 @@ class MyStoreViewModelTest : BaseUnitTest() {
         }
 
     @Test
-    fun `Given top performers load success, When clicked, Then analytics is tracked`() =
+    fun `given top performers load success, when clicked, then analytics is tracked`() =
         testBlocking {
             givenCurrencyFormatter(TOP_PERFORMER_PRODUCT.total, TOP_PERFORMER_PRODUCT.currency)
             givenResourceProvider()
@@ -371,7 +371,7 @@ class MyStoreViewModelTest : BaseUnitTest() {
         }
 
     @Test
-    fun `Given top performers load success, When stats granularity changes, Then analytics is tracked`() =
+    fun `given top performers load success, when stats granularity changes, then analytics is tracked`() =
         testBlocking {
             whenViewModelIsCreated()
             givenNetworkConnectivity(connected = true)
@@ -386,7 +386,7 @@ class MyStoreViewModelTest : BaseUnitTest() {
         }
 
     @Test
-    fun `Given top performers error, When stats granularity changes, Then UI is updated with top performers error`() =
+    fun `given top performers error, when stats granularity changes, then UI is updated with top performers error`() =
         testBlocking {
             whenViewModelIsCreated()
             givenNetworkConnectivity(connected = true)
@@ -398,7 +398,7 @@ class MyStoreViewModelTest : BaseUnitTest() {
         }
 
     @Test
-    fun `Given successful Jetpack installation, When user returns to My Store, Then UI is updated with no JP banner`() =
+    fun `given successful Jetpack installation, when user returns to My Store, then UI is updated with no JP banner`() =
         testBlocking {
             val siteBeforeInstallation = SiteModel().apply { setIsJetpackCPConnected(true) }
             val siteAfterInstallation = SiteModel().apply { setIsJetpackConnected(true) }
@@ -420,7 +420,7 @@ class MyStoreViewModelTest : BaseUnitTest() {
 
     // region Just In Time Messages (JITM)
     @Test
-    fun `Given network connection, When on swipe to refresh, then fetch JITMS`() {
+    fun `given network connection, when on swipe to refresh, then fetch JITMS`() {
         testBlocking {
             givenNetworkConnectivity(connected = true)
             whenever(selectedSite.get()).thenReturn(SiteModel())
