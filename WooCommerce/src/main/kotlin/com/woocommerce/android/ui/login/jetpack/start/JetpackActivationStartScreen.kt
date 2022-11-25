@@ -203,6 +203,7 @@ private fun SiteUrlAndIcon(
             dimensionResource(id = R.dimen.major_100),
             Alignment.CenterHorizontally
         ),
+        verticalAlignment = Alignment.CenterVertically,
         modifier = modifier
             .border(1.dp, color = colorResource(id = R.color.divider_color))
             .semantics(mergeDescendants = true) {}
