@@ -147,13 +147,13 @@ private fun ColumnScope.StartState(
             .padding(dimensionResource(id = R.dimen.major_100))
             .weight(1f, false)
     )
-    Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.major_100)))
+    Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.major_200)))
     SiteUrlAndIcon(siteUrl = siteUrl, faviconUrl = faviconUrl, modifier = Modifier.fillMaxWidth())
+    Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.major_200)))
     Text(
-        text = annotatedStringRes(
-            stringResId = if (isJetpackInstalled) R.string.login_jetpack_connection_explanation
-            else R.string.login_jetpack_installation_explanation,
-            siteUrl
+        text = stringResource(
+            id = if (isJetpackInstalled) R.string.login_jetpack_connection_explanation
+            else R.string.login_jetpack_installation_explanation
         ),
         style = MaterialTheme.typography.body1,
         textAlign = TextAlign.Center
