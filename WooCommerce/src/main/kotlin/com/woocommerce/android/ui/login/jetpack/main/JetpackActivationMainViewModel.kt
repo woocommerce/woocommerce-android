@@ -162,6 +162,10 @@ class JetpackActivationMainViewModel @Inject constructor(
     fun onRetryClick() = startNextStep()
 
     fun onGetHelpClick() {
+        analyticsTrackerWrapper.track(
+            stat = AnalyticsEvent.LOGIN_JETPACK_SETUP_GET_SUPPORT_BUTTON_TAPPED,
+            properties = mapOf(AnalyticsTracker.KEY_JETPACK_INSTALLATION_STEP to currentStep.value.type.name),
+        )
         triggerEvent(ShowHelpScreen)
     }
 

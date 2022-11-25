@@ -164,6 +164,7 @@ enum class AnalyticsEvent(val siteless: Boolean = false) {
     LOGIN_JETPACK_SETUP_ERROR_CHECKING_JETPACK_CONNECTION(siteless = true),
     LOGIN_JETPACK_SETUP_GO_TO_STORE_BUTTON_TAPPED(siteless = true),
     LOGIN_JETPACK_FETCHING_WPCOM_SITES_FAILED(siteless = true),
+    LOGIN_JETPACK_SETUP_GET_SUPPORT_BUTTON_TAPPED(siteless = true),
 
     // -- Dashboard
     DASHBOARD_PULLED_TO_REFRESH,
