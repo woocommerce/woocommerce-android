@@ -36,7 +36,7 @@ Language: he_IL
     <string name="site_picker_connect_existing_store">לחבר חנות קיימת</string>
     <string name="site_picker_create_new_store">ליצור חנות חדשה</string>
     <string name="login_site_picker_add_a_store">להוסיף חנות</string>
-    <string name="login_no_stores">החשבון שלך לא מחובר לחנויות של WooCommerce.</string>
+    <string name="login_no_stores_header">החשבון שלך לא מחובר לחנויות של WooCommerce.</string>
     <string name="analytics_products_list_item_description">סכום מכירות נטו: ⁦%1$s⁩</string>
     <string name="analytics_products_list_header_subtitle">פריטים שנמכרו</string>
     <string name="analytics_products_list_header_title">מוצרים</string>

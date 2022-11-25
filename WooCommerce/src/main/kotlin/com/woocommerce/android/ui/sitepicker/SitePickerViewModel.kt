@@ -279,7 +279,8 @@ class SitePickerViewModel @Inject constructor(
             isNoStoresViewVisible = true,
             isPrimaryBtnVisible = true,
             primaryBtnText = resourceProvider.getString(string.login_site_picker_add_a_store),
-            noStoresLabelText = resourceProvider.getString(string.login_no_stores),
+            noStoresLabelText = resourceProvider.getString(string.login_no_stores_header),
+            noStoresSubText = resourceProvider.getString(string.login_no_stores_subtitle),
             isNoStoresBtnVisible = false,
             currentSitePickerState = SitePickerState.NoStoreState
         )
@@ -343,6 +344,7 @@ class SitePickerViewModel @Inject constructor(
             isPrimaryBtnVisible = isWooInstallationEnabled,
             primaryBtnText = resourceProvider.getString(string.login_install_woo),
             noStoresLabelText = resourceProvider.getString(string.login_not_woo_store, site.url),
+            noStoresSubText = null,
             isNoStoresBtnVisible = true,
             noStoresBtnText = resourceProvider.getString(string.login_view_connected_stores),
             currentSitePickerState = SitePickerState.WooNotFoundState
@@ -355,6 +357,7 @@ class SitePickerViewModel @Inject constructor(
             isPrimaryBtnVisible = sitePickerViewState.hasConnectedStores == true,
             primaryBtnText = resourceProvider.getString(string.login_view_connected_stores),
             noStoresLabelText = resourceProvider.getString(string.login_simple_wpcom_site, site.url),
+            noStoresSubText = null,
             isNoStoresBtnVisible = false,
             currentSitePickerState = SitePickerState.SimpleWPComState
         )
@@ -641,6 +644,7 @@ class SitePickerViewModel @Inject constructor(
         val secondaryBtnText: String? = null,
         val isNoStoresViewVisible: Boolean = false,
         val noStoresLabelText: String? = null,
+        val noStoresSubText: String? = null,
         val noStoresBtnText: String? = null,
         val isHelpBtnVisible: Boolean = false,
         val isSkeletonViewVisible: Boolean = false,

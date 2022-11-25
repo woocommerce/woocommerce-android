@@ -4,6 +4,10 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
+import com.woocommerce.android.analytics.AnalyticsEvent
+import com.woocommerce.android.analytics.AnalyticsTracker
+import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
+import com.woocommerce.android.ui.login.jetpack.main.JetpackActivationMainViewModel
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.ScopedViewModel
@@ -15,7 +19,8 @@ import javax.inject.Inject
 
 @HiltViewModel
 class JetpackActivationStartViewModel @Inject constructor(
-    savedStateHandle: SavedStateHandle
+    savedStateHandle: SavedStateHandle,
+    private val analyticsTrackerWrapper: AnalyticsTrackerWrapper
 ) : ScopedViewModel(savedStateHandle) {
     companion object {
         private const val CONNECTION_DISMISSED_KEY = "connection-dismissed"
@@ -37,7 +42,21 @@ class JetpackActivationStartViewModel @Inject constructor(
         )
     }.asLiveData()
 
+    init {
+        analyticsTrackerWrapper.track(
+            stat = if (navArgs.isJetpackInstalled) AnalyticsEvent.LOGIN_JETPACK_CONNECTION_ERROR_SHOWN
+            else AnalyticsEvent.LOGIN_JETPACK_REQUIRED_SCREEN_VIEWED
+        )
+    }
+
     fun onHelpButtonClick() {
+        analyticsTrackerWrapper.track(
+            stat = AnalyticsEvent.LOGIN_JETPACK_SETUP_GET_SUPPORT_BUTTON_TAPPED,
+            properties = mapOf(
+                AnalyticsTracker.KEY_JETPACK_INSTALLATION_STEP to
+                    JetpackActivationMainViewModel.StepType.Connection.analyticsName
+            ),
+        )
         triggerEvent(NavigateToHelpScreen)
     }
 
@@ -46,11 +65,19 @@ class JetpackActivationStartViewModel @Inject constructor(
     }
 
     fun onConnectionDismissed() {
+        analyticsTrackerWrapper.track(AnalyticsEvent.LOGIN_JETPACK_CONNECT_DISMISSED)
         isConnectionDismissed.value = true
     }
 
     fun onContinueButtonClick() {
         if (isConnectionDismissed.value) {
+            analyticsTrackerWrapper.track(
+                stat = AnalyticsEvent.LOGIN_JETPACK_SETUP_TRY_AGAIN_BUTTON_TAPPED,
+                properties = mapOf(
+                    AnalyticsTracker.KEY_JETPACK_INSTALLATION_STEP to
+                        JetpackActivationMainViewModel.StepType.Connection.analyticsName
+                )
+            )
             isConnectionDismissed.value = false
             triggerEvent(
                 ContinueJetpackConnection(
@@ -58,6 +85,10 @@ class JetpackActivationStartViewModel @Inject constructor(
                 )
             )
         } else {
+            analyticsTrackerWrapper.track(
+                stat = if (navArgs.isJetpackInstalled) AnalyticsEvent.LOGIN_JETPACK_CONNECT_BUTTON_TAPPED
+                else AnalyticsEvent.LOGIN_JETPACK_SETUP_BUTTON_TAPPED
+            )
             triggerEvent(
                 NavigateToSiteCredentialsScreen(
                     siteUrl = navArgs.siteUrl,

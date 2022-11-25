@@ -233,7 +233,8 @@
     <string name="login_avatar_content_description">Your profile photo</string>
     <string name="login_nostores_content_description">No WooCommerce stores</string>
     <string name="login_with_a_different_account">Login with a different account</string>
-    <string name="login_no_stores">Your account isn’t connected to any WooCommerce stores.</string>
+    <string name="login_no_stores_header">Create your first store</string>
+    <string name="login_no_stores_subtitle">Quickly get up and selling with a beautiful online store.</string>
     <string name="login_wpcom_account_mismatch">It looks like %1$s is connected to a different WordPress.com account.</string>
     <string name="login_jetpack_not_connected">It looks like your account is not connected to %1$s\'s Jetpack</string>
     <string name="login_try_another_account">Log in with another account</string>
