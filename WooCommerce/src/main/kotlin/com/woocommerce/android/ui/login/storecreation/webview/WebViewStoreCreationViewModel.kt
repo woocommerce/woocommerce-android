@@ -131,8 +131,8 @@ class WebViewStoreCreationViewModel @Inject constructor(
                 }
                 delay(SITE_CHECK_DEBOUNCE)
             }
+            WooLog.d(T.LOGIN, "Store creation done...")
         }
-        WooLog.d(T.LOGIN, "Store creation done...")
     }
 
     private fun onSiteAddressFound(url: String) {

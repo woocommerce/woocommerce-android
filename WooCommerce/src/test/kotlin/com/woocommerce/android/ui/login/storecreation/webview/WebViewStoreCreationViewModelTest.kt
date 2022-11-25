@@ -11,6 +11,7 @@ import com.woocommerce.android.ui.login.storecreation.webview.WebViewStoreCreati
 import com.woocommerce.android.ui.login.storecreation.webview.WebViewStoreCreationViewModel.ViewState.StoreCreationState
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.test.advanceUntilIdle
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Test
@@ -87,6 +88,8 @@ class WebViewStoreCreationViewModelTest : BaseUnitTest() {
             onStoreCreated()
         }
 
+        advanceUntilIdle()
+        
         verify(repository, Mockito.times(10)).getSiteBySiteUrl(site.url)
     }
 
@@ -119,6 +122,8 @@ class WebViewStoreCreationViewModelTest : BaseUnitTest() {
             onStoreCreated()
         }
 
+        advanceUntilIdle()
+
         verify(repository, Mockito.times(1)).fetchSitesAfterCreation()
         verify(observer, Mockito.times(3)).onChanged(captor.capture())
 
@@ -135,6 +140,8 @@ class WebViewStoreCreationViewModelTest : BaseUnitTest() {
         (captor.firstValue as StoreCreationState).apply {
             onStoreCreated()
         }
+
+        advanceUntilIdle()
 
         verify(repository, Mockito.times(10)).fetchSitesAfterCreation()
         verify(observer, Mockito.times(3)).onChanged(captor.capture())
