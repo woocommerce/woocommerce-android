@@ -117,20 +117,6 @@ fun JetpackActivationSiteCredentialsScreen(
                 WCTextButton(onClick = onResetPasswordClick) {
                     Text(text = stringResource(id = R.string.reset_your_password))
                 }
-                Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.major_100)))
-                Row(horizontalArrangement = Arrangement.spacedBy(dimensionResource(id = R.dimen.minor_100))) {
-                    Icon(
-                        imageVector = Icons.Outlined.Info,
-                        contentDescription = null,
-                        tint = colorResource(id = R.color.color_on_surface_medium),
-                        modifier = Modifier.size(dimensionResource(id = R.dimen.image_minor_40))
-                    )
-                    Text(
-                        text = stringResource(id = R.string.login_jetpack_connection_approval_hint),
-                        style = MaterialTheme.typography.caption,
-                        color = colorResource(id = R.color.color_on_surface_medium)
-                    )
-                }
             }
 
             WCColoredButton(
