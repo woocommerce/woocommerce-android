@@ -1,7 +1,6 @@
 package com.woocommerce.android.ui.login.jetpack.components
 
 import androidx.compose.animation.Crossfade
-import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
