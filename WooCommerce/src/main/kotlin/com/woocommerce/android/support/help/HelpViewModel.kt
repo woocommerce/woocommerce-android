@@ -20,13 +20,15 @@ class HelpViewModel @Inject constructor(
     savedState: SavedStateHandle,
     private val wooStore: WooCommerceStore,
     private val selectedSite: SelectedSite,
-    private val wooLogWrapper: WooLogWrapper
+    private val wooLogWrapper: WooLogWrapper,
 ) : ScopedViewModel(savedState) {
     var ssr: String? = null
         private set
 
     init {
-        fetchSSR()
+        if(selectedSite.getIfExists() != null) {
+            fetchSSR()
+        }
     }
 
     private fun fetchSSR() {
