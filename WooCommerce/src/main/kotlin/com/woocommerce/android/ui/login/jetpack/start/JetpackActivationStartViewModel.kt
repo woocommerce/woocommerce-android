@@ -64,6 +64,7 @@ class JetpackActivationStartViewModel @Inject constructor(
     }
 
     fun onConnectionDismissed() {
+        analyticsTrackerWrapper.track(AnalyticsEvent.LOGIN_JETPACK_CONNECT_DISMISSED)
         isConnectionDismissed.value = true
     }
 
