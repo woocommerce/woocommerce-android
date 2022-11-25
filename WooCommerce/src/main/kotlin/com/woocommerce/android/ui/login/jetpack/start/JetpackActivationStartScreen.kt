@@ -205,7 +205,7 @@ private fun SiteUrlAndIcon(
         ),
         verticalAlignment = Alignment.CenterVertically,
         modifier = modifier
-            .border(1.dp, color = colorResource(id = R.color.divider_color))
+            .border(1.dp, color = colorResource(id = R.color.divider_color), shape = MaterialTheme.shapes.medium)
             .semantics(mergeDescendants = true) {}
             .padding(dimensionResource(id = R.dimen.major_100))
     ) {
