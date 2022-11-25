@@ -129,7 +129,10 @@ class JetpackActivationMainViewModel @Inject constructor(
     }
 
     fun onCloseClick() {
-        analyticsTrackerWrapper.track(AnalyticsEvent.LOGIN_JETPACK_SETUP_SCREEN_DISMISSED)
+        analyticsTrackerWrapper.track(
+            stat = AnalyticsEvent.LOGIN_JETPACK_SETUP_SCREEN_DISMISSED,
+            properties = mapOf(AnalyticsTracker.KEY_JETPACK_INSTALLATION_STEP to currentStep.value.type.name),
+        )
         triggerEvent(Exit)
     }
 

@@ -340,6 +340,7 @@ class AnalyticsTracker private constructor(private val context: Context) {
         const val KEY_FETCH_SITES_DURATION = "duration"
         const val KEY_JETPACK_BENEFITS_BANNER_ACTION = "action"
         const val KEY_JETPACK_INSTALLATION_SOURCE = "source"
+        const val KEY_JETPACK_INSTALLATION_STEP = "jetpack_install_step"
 
         private const val PREFKEY_SEND_USAGE_STATS = "wc_pref_send_usage_stats"
 
