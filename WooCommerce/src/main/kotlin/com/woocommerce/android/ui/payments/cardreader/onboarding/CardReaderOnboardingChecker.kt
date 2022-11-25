@@ -6,10 +6,10 @@ import com.woocommerce.android.AppPrefs.CardReaderOnboardingStatus.CARD_READER_O
 import com.woocommerce.android.AppPrefs.CardReaderOnboardingStatus.CARD_READER_ONBOARDING_NOT_COMPLETED
 import com.woocommerce.android.AppPrefs.CardReaderOnboardingStatus.CARD_READER_ONBOARDING_PENDING
 import com.woocommerce.android.AppPrefsWrapper
-import com.woocommerce.android.cardreader.internal.config.CardReaderConfigForSupportedCountry
-import com.woocommerce.android.cardreader.internal.config.SupportedExtensionType
-import com.woocommerce.android.cardreader.internal.config.isExtensionSupported
-import com.woocommerce.android.cardreader.internal.config.minSupportedVersionForExtension
+import com.woocommerce.android.cardreader.config.CardReaderConfigForSupportedCountry
+import com.woocommerce.android.cardreader.config.SupportedExtensionType
+import com.woocommerce.android.cardreader.config.isExtensionSupported
+import com.woocommerce.android.cardreader.config.minSupportedVersionForExtension
 import com.woocommerce.android.extensions.semverCompareTo
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.SelectedSite

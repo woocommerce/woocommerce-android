@@ -161,14 +161,15 @@ private fun StoreDataSummary(
                         Text(
                             text = myStoreSummaryState.domain,
                             style = MaterialTheme.typography.subtitle1,
-                            color = colorResource(id = R.color.color_on_surface_medium_selector)
                         )
                     }
                 }
-                Text(
-                    text = myStoreSummaryState.country,
-                    style = MaterialTheme.typography.subtitle1,
-                )
+                if (!myStoreSummaryState.country.isNullOrEmpty()) {
+                    Text(
+                        text = myStoreSummaryState.country,
+                        style = MaterialTheme.typography.subtitle1,
+                    )
+                }
                 if (!myStoreSummaryState.category.isNullOrEmpty()) {
                     Text(
                         text = myStoreSummaryState.category,

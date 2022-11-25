@@ -36,7 +36,7 @@ Language: sv_SE
     <string name="site_picker_connect_existing_store">Anslut en befintligt butik</string>
     <string name="site_picker_create_new_store">Skapa en ny butik</string>
     <string name="login_site_picker_add_a_store">Lägg till en butik</string>
-    <string name="login_no_stores">Ditt konto är inte ansluten till några WooCommerce-butiker.</string>
+    <string name="login_no_stores_header">Ditt konto är inte ansluten till några WooCommerce-butiker.</string>
     <string name="analytics_products_list_item_description">Nettoförsäljning: %1$s</string>
     <string name="analytics_products_list_header_subtitle">Sålda artiklar</string>
     <string name="analytics_products_list_header_title">Produkter</string>

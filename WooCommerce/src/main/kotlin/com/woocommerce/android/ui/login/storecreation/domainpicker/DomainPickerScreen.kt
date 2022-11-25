@@ -1,3 +1,5 @@
+@file:OptIn(ExperimentalComposeUiApi::class)
+
 package com.woocommerce.android.ui.login.storecreation.domainpicker
 
 import android.content.res.Configuration
@@ -18,6 +20,8 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.Divider
 import androidx.compose.material.Icon
@@ -25,7 +29,6 @@ import androidx.compose.material.IconButton
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
-import androidx.compose.material.TextButton
 import androidx.compose.material.TextFieldDefaults
 import androidx.compose.material.TopAppBar
 import androidx.compose.material.icons.Icons
@@ -33,7 +36,10 @@ import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
+import androidx.compose.ui.platform.SoftwareKeyboardController
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
@@ -41,6 +47,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Devices
 import androidx.compose.ui.tooling.preview.Preview
@@ -60,7 +67,6 @@ fun DomainPickerScreen(viewModel: DomainPickerViewModel) {
         Scaffold(topBar = {
             Toolbar(
                 onArrowBackPressed = viewModel::onBackPressed,
-                onSkipPressed = viewModel::onSkipPressed
             )
         }) {
             DomainSearchForm(
@@ -77,7 +83,6 @@ fun DomainPickerScreen(viewModel: DomainPickerViewModel) {
 @Composable
 private fun Toolbar(
     onArrowBackPressed: () -> Unit,
-    onSkipPressed: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     TopAppBar(
@@ -89,11 +94,6 @@ private fun Toolbar(
                     Icons.Filled.ArrowBack,
                     contentDescription = stringResource(id = R.string.back)
                 )
-            }
-        },
-        actions = {
-            TextButton(onClick = onSkipPressed) {
-                Text(text = stringResource(id = R.string.store_creation_domain_picker_skip_button))
             }
         },
         elevation = 0.dp,
@@ -109,6 +109,8 @@ private fun DomainSearchForm(
     onContinueClicked: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
+    val keyboardController = LocalSoftwareKeyboardController.current
+
     Column(
         modifier = modifier
             .background(MaterialTheme.colors.surface)
@@ -126,7 +128,7 @@ private fun DomainSearchForm(
             color = colorResource(id = R.color.color_on_surface_medium)
         )
         WCSearchField(
-            value = state.domain,
+            value = state.domainQuery,
             onValueChange = onDomainQueryChanged,
             hint = stringResource(id = R.string.store_creation_domain_picker_hint),
             modifier = Modifier
@@ -139,7 +141,9 @@ private fun DomainSearchForm(
                     ),
                     RoundedCornerShape(dimensionResource(id = R.dimen.minor_100))
                 ),
-            backgroundColor = TextFieldDefaults.outlinedTextFieldColors().backgroundColor(enabled = true).value
+            backgroundColor = TextFieldDefaults.outlinedTextFieldColors().backgroundColor(enabled = true).value,
+            keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
+            keyboardActions = KeyboardActions(onDone = { keyboardController?.hide() })
         )
         Box(
             modifier = Modifier
@@ -147,12 +151,19 @@ private fun DomainSearchForm(
                 .fillMaxWidth()
                 .padding(top = dimensionResource(id = R.dimen.minor_100))
         ) {
-            if (state.loadingState == Loading) {
-                CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
-            } else if (state.domainSuggestionsUi.isNotEmpty()) {
-                DomainSuggestionList(
+            when {
+                state.loadingState == Loading -> CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
+                state.domainSuggestionsUi.isEmpty() && state.domainQuery.isBlank() ->
+                    ShowEmptyImage(modifier = Modifier.align(Alignment.Center))
+                state.domainSuggestionsUi.isEmpty() ->
+                    Text(
+                        modifier = Modifier.align(Alignment.Center),
+                        text = stringResource(id = R.string.store_creation_domain_picker_empty_suggestions)
+                    )
+                else -> DomainSuggestionList(
                     suggestions = state.domainSuggestionsUi,
-                    onDomainSuggestionSelected = onDomainSuggestionSelected
+                    onDomainSuggestionSelected = onDomainSuggestionSelected,
+                    keyboardController = keyboardController
                 )
             }
         }
@@ -166,9 +177,18 @@ private fun DomainSearchForm(
 }
 
 @Composable
+fun ShowEmptyImage(modifier: Modifier) {
+    Image(
+        modifier = modifier,
+        painter = painterResource(R.drawable.domain_example), contentDescription = null
+    )
+}
+
+@Composable
 private fun DomainSuggestionList(
     suggestions: List<DomainSuggestionUi>,
     onDomainSuggestionSelected: (String) -> Unit,
+    keyboardController: SoftwareKeyboardController?,
     modifier: Modifier = Modifier,
 ) {
     Column(
@@ -186,7 +206,10 @@ private fun DomainSuggestionList(
                     domainSuggestion = suggestion,
                     modifier = Modifier
                         .fillMaxWidth()
-                        .clickable { onDomainSuggestionSelected(suggestion.domain) }
+                        .clickable {
+                            keyboardController?.hide()
+                            onDomainSuggestionSelected(suggestion.domain)
+                        }
                 )
                 if (index < suggestions.lastIndex)
                     Divider(
@@ -252,7 +275,7 @@ fun DomainPickerPreview() {
         DomainSearchForm(
             state = DomainPickerState(
                 loadingState = Idle,
-                domain = "White Christmas Tress",
+                domainQuery = "White Christmas Tress",
                 domainSuggestionsUi = listOf(
                     DomainSuggestionUi("whitechristmastrees.mywc.mysite"),
                     DomainSuggestionUi("whitechristmastrees.business.mywc.mysite", isSelected = true),

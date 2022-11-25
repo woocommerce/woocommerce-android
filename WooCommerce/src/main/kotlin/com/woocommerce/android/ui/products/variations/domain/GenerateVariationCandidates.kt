@@ -10,11 +10,14 @@ import javax.inject.Inject
 typealias VariationCandidate = List<VariantOption>
 
 class GenerateVariationCandidates @Inject constructor(
-    val variationRepository: VariationRepository
+    private val variationRepository: VariationRepository
 ) {
 
     companion object {
         const val VARIATION_CREATION_LIMIT = 100
+
+        private val initialAccumulator
+            get() = listOf(emptyList<VariationCandidate>())
     }
 
     operator fun invoke(product: Product): List<VariationCandidate> {
@@ -43,7 +46,7 @@ class GenerateVariationCandidates @Inject constructor(
             termAssignmentsGroupedByAttribute
         ).minus(existingVariationsAsCandidates.toSet())
 
-        return if (variationCandidates.first().isEmpty()) {
+        return if (variationCandidates == initialAccumulator) {
             emptyList()
         } else {
             variationCandidates

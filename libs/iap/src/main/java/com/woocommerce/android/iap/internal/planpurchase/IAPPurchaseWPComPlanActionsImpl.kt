@@ -2,14 +2,16 @@ package com.woocommerce.android.iap.internal.planpurchase
 
 import com.woocommerce.android.iap.internal.core.IAPManager
 import com.woocommerce.android.iap.internal.core.currencyOfTheFirstPurchasedOffer
+import com.woocommerce.android.iap.internal.core.isProductAcknowledged
 import com.woocommerce.android.iap.internal.core.isProductPurchased
 import com.woocommerce.android.iap.internal.core.priceOfTheFirstPurchasedOfferInMicros
 import com.woocommerce.android.iap.internal.model.IAPProduct
 import com.woocommerce.android.iap.internal.model.IAPProductDetailsResponse
+import com.woocommerce.android.iap.internal.model.IAPPurchase
 import com.woocommerce.android.iap.internal.model.IAPPurchaseResult
 import com.woocommerce.android.iap.pub.IAPActivityWrapper
 import com.woocommerce.android.iap.pub.PurchaseWPComPlanActions
-import com.woocommerce.android.iap.pub.model.IAPSupportedResult
+import com.woocommerce.android.iap.pub.model.PurchaseStatus
 import com.woocommerce.android.iap.pub.model.WPComIsPurchasedResult
 import com.woocommerce.android.iap.pub.model.WPComPlanProduct
 import com.woocommerce.android.iap.pub.model.WPComProductResult
@@ -18,17 +20,12 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.merge
 
-private const val SUPPORTED_CURRENCY = "USD"
-
 internal class IAPPurchaseWPComPlanActionsImpl(
     private val purchaseWpComPlanHandler: IAPPurchaseWpComPlanHandler,
     private val iapManager: IAPManager,
     private val remoteSiteId: Long,
     private val iapProduct: IAPProduct = IAPProduct.WPPremiumPlanTesting
 ) : PurchaseWPComPlanActions {
-    @Volatile
-    private var isPurchaseInProgress = false
-
     init {
         iapManager.connect()
     }
@@ -40,19 +37,16 @@ internal class IAPPurchaseWPComPlanActionsImpl(
 
     override suspend fun isWPComPlanPurchased(): WPComIsPurchasedResult {
         return when (val response = iapManager.fetchPurchases(iapProduct.productType)) {
-            is IAPPurchaseResult.Success -> WPComIsPurchasedResult.Success(
-                response.purchases.isProductPurchased(iapProduct)
-            )
+            is IAPPurchaseResult.Success -> {
+                val purchases = response.purchases
+                WPComIsPurchasedResult.Success(determinePurchaseStatus(purchases))
+            }
             is IAPPurchaseResult.Error -> WPComIsPurchasedResult.Error(response.error)
         }
     }
 
     override suspend fun purchaseWPComPlan(activityWrapper: IAPActivityWrapper) {
-        if (isPurchaseInProgress) return
-
-        isPurchaseInProgress = true
         purchaseWpComPlanHandler.purchaseWPComPlan(activityWrapper, iapProduct, remoteSiteId)
-        isPurchaseInProgress = false
     }
 
     override suspend fun fetchWPComPlanProduct(): WPComProductResult {
@@ -69,17 +63,16 @@ internal class IAPPurchaseWPComPlanActionsImpl(
         }
     }
 
-    override suspend fun isIAPSupported(): IAPSupportedResult {
-        return when (val response = iapManager.fetchIAPProductDetails(iapProduct)) {
-            is IAPProductDetailsResponse.Success -> IAPSupportedResult.Success(isCurrencySupported(response))
-            is IAPProductDetailsResponse.Error -> IAPSupportedResult.Error(response.error)
-        }
-    }
-
     override fun close() {
         iapManager.disconnect()
     }
 
-    private fun isCurrencySupported(response: IAPProductDetailsResponse.Success) =
-        SUPPORTED_CURRENCY.equals(response.productDetails.currencyOfTheFirstPurchasedOffer, ignoreCase = true)
+    private fun determinePurchaseStatus(purchases: List<IAPPurchase>?) =
+        if (purchases.isProductPurchased(iapProduct) && purchases.isProductAcknowledged(iapProduct)) {
+            PurchaseStatus.PURCHASED_AND_ACKNOWLEDGED
+        } else if (purchases.isProductPurchased(iapProduct)) {
+            PurchaseStatus.PURCHASED
+        } else {
+            PurchaseStatus.NOT_PURCHASED
+        }
 }
