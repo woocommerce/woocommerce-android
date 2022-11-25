@@ -36,7 +36,7 @@ Language: pt_BR
     <string name="site_picker_connect_existing_store">Conectar uma loja existente</string>
     <string name="site_picker_create_new_store">Criar uma nova loja</string>
     <string name="login_site_picker_add_a_store">Adicionar uma loja</string>
-    <string name="login_no_stores">Sua conta não está conectada a nenhuma loja do WooCommerce.</string>
+    <string name="login_no_stores_header">Sua conta não está conectada a nenhuma loja do WooCommerce.</string>
     <string name="analytics_products_list_item_description">Vendas líquidas: %1$s</string>
     <string name="analytics_products_list_header_subtitle">Itens vendidos</string>
     <string name="analytics_products_list_header_title">Produtos</string>

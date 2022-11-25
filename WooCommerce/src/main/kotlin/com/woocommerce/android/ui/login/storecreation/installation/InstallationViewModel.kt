@@ -3,6 +3,8 @@ package com.woocommerce.android.ui.login.storecreation.installation
 import android.os.Parcelable
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
+import com.woocommerce.android.analytics.AnalyticsEvent
+import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.ui.common.wpcomwebview.WPComWebViewAuthenticator
 import com.woocommerce.android.ui.login.storecreation.NewStore
 import com.woocommerce.android.ui.login.storecreation.StoreCreationRepository
@@ -40,6 +42,7 @@ class InstallationViewModel @Inject constructor(
     val userAgent: UserAgent,
     private val repository: StoreCreationRepository,
     private val newStore: NewStore,
+    private val analyticsTrackerWrapper: AnalyticsTrackerWrapper
 ) : ScopedViewModel(savedStateHandle) {
     companion object {
         private const val NEW_SITE_LANGUAGE_ID = "en"
@@ -141,6 +144,7 @@ class InstallationViewModel @Inject constructor(
     }
 
     fun onShowPreviewButtonClicked() {
+        analyticsTrackerWrapper.track(AnalyticsEvent.SITE_CREATION_SITE_PREVIEWED)
         triggerEvent(OpenStore("https://${newStore.data.domain!!}"))
     }
 

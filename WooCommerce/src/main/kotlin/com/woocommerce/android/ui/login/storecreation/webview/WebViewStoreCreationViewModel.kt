@@ -92,11 +92,12 @@ class WebViewStoreCreationViewModel @Inject constructor(
             repository.selectSite(newSite)
             triggerEvent(NavigateToNewStore)
 
-            val args = mapOf<String, String>(
+            val properties = mapOf<String, String>(
                 AnalyticsTracker.KEY_SOURCE to navigationSource,
-                AnalyticsTracker.KEY_URL to newSite.url
+                AnalyticsTracker.KEY_URL to newSite.url,
+                AnalyticsTracker.KEY_FLOW to AnalyticsTracker.VALUE_WEB
             )
-            analyticsTrackerWrapper.track(AnalyticsEvent.LOGIN_WOOCOMMERCE_SITE_CREATED, args)
+            analyticsTrackerWrapper.track(AnalyticsEvent.LOGIN_WOOCOMMERCE_SITE_CREATED, properties)
             STORE_FOUND
         } else {
             WooLog.d(T.LOGIN, "New site not found, retrying...")
@@ -107,7 +108,8 @@ class WebViewStoreCreationViewModel @Inject constructor(
                 analyticsTrackerWrapper.track(
                     AnalyticsEvent.SITE_CREATION_FAILED,
                     mapOf(
-                        AnalyticsTracker.KEY_SOURCE to navigationSource
+                        AnalyticsTracker.KEY_SOURCE to navigationSource,
+                        AnalyticsTracker.KEY_FLOW to AnalyticsTracker.VALUE_WEB
                     )
                 )
                 ERROR
@@ -147,7 +149,8 @@ class WebViewStoreCreationViewModel @Inject constructor(
         analyticsTrackerWrapper.track(
             AnalyticsEvent.SITE_CREATION_DISMISSED,
             mapOf(
-                AnalyticsTracker.KEY_SOURCE to navigationSource
+                AnalyticsTracker.KEY_SOURCE to navigationSource,
+                AnalyticsTracker.KEY_FLOW to AnalyticsTracker.VALUE_WEB
             )
         )
 

@@ -36,7 +36,7 @@ Language: ar
     <string name="site_picker_connect_existing_store">الاتصال بمتجر موجود</string>
     <string name="site_picker_create_new_store">إنشاء متجر جديد</string>
     <string name="login_site_picker_add_a_store">إضافة متجر</string>
-    <string name="login_no_stores">حسابك غير متصل بأي متجر من متاجر WooCommerce.</string>
+    <string name="login_no_stores_header">حسابك غير متصل بأي متجر من متاجر WooCommerce.</string>
     <string name="analytics_products_list_item_description">صافي المبيعات: ⁦%1$s⁩</string>
     <string name="analytics_products_list_header_subtitle">العناصر المباعة</string>
     <string name="analytics_products_list_header_title">المنتجات</string>

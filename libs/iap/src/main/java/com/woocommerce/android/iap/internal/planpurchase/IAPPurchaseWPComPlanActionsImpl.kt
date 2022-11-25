@@ -26,9 +26,6 @@ internal class IAPPurchaseWPComPlanActionsImpl(
     private val remoteSiteId: Long,
     private val iapProduct: IAPProduct = IAPProduct.WPPremiumPlanTesting
 ) : PurchaseWPComPlanActions {
-    @Volatile
-    private var isPurchaseInProgress = false
-
     init {
         iapManager.connect()
     }
@@ -49,11 +46,7 @@ internal class IAPPurchaseWPComPlanActionsImpl(
     }
 
     override suspend fun purchaseWPComPlan(activityWrapper: IAPActivityWrapper) {
-        if (isPurchaseInProgress) return
-
-        isPurchaseInProgress = true
         purchaseWpComPlanHandler.purchaseWPComPlan(activityWrapper, iapProduct, remoteSiteId)
-        isPurchaseInProgress = false
     }
 
     override suspend fun fetchWPComPlanProduct(): WPComProductResult {

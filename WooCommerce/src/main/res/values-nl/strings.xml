@@ -36,7 +36,7 @@ Language: nl
     <string name="site_picker_connect_existing_store">Een bestaande winkel koppelen</string>
     <string name="site_picker_create_new_store">Een nieuwe winkel maken</string>
     <string name="login_site_picker_add_a_store">Een winkel toevoegen</string>
-    <string name="login_no_stores">Je account is niet gekoppeld aan een WooCommerce-winkel.</string>
+    <string name="login_no_stores_header">Je account is niet gekoppeld aan een WooCommerce-winkel.</string>
     <string name="analytics_products_list_item_description">Netto verkoop: %@ %1$s</string>
     <string name="analytics_products_list_header_subtitle">Verkochte artikelen</string>
     <string name="analytics_products_list_header_title">Producten</string>
