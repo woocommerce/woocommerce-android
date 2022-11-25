@@ -151,7 +151,7 @@ class SitePickerSiteDiscoveryViewModel @Inject constructor(
             ViewState.ErrorState(
                 siteAddress = siteAddressFlow.value,
                 message = resourceProvider.getString(R.string.login_not_wordpress_site_v2),
-                imageResourceId = R.drawable.img_woo_no_stores,
+                imageResourceId = R.drawable.img_woo_generic_error,
                 primaryButtonText = resourceProvider.getString(R.string.login_try_another_store),
                 primaryButtonAction = {
                     stepFlow.value = Step.AddressInput
