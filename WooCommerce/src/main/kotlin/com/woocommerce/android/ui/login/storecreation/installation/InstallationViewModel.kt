@@ -3,7 +3,9 @@ package com.woocommerce.android.ui.login.storecreation.installation
 import android.os.Parcelable
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
+import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.analytics.AnalyticsEvent
+import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.ui.common.wpcomwebview.WPComWebViewAuthenticator
 import com.woocommerce.android.ui.login.storecreation.NewStore
@@ -42,7 +44,8 @@ class InstallationViewModel @Inject constructor(
     val userAgent: UserAgent,
     private val repository: StoreCreationRepository,
     private val newStore: NewStore,
-    private val analyticsTrackerWrapper: AnalyticsTrackerWrapper
+    private val analyticsTrackerWrapper: AnalyticsTrackerWrapper,
+    private val appPrefsWrapper: AppPrefsWrapper
 ) : ScopedViewModel(savedStateHandle) {
     companion object {
         private const val NEW_SITE_LANGUAGE_ID = "en"
@@ -63,9 +66,14 @@ class InstallationViewModel @Inject constructor(
             }
         }.asLiveData()
 
-//    private val navigationSource by lazy {
-//        appPrefsWrapper.getStoreCreationSource()
-//    }
+    init {
+        analyticsTrackerWrapper.track(
+            AnalyticsEvent.SITE_CREATION_STEP,
+            mapOf(
+                AnalyticsTracker.KEY_STEP to AnalyticsTracker.VALUE_STEP_STORE_INSTALLATION
+            )
+        )
+    }
 
     private fun launchInstallation() {
         suspend fun <T : Any?> handleErrorOrProceed(
@@ -124,21 +132,25 @@ class InstallationViewModel @Inject constructor(
 
     private fun onStoreCreationFinished(isStoreReady: Boolean) {
         if (isStoreReady) {
-//            analyticsTrackerWrapper.track(
-//                AnalyticsEvent.SITE_CREATION_STEP,
-//                mapOf(
-//                    AnalyticsTracker.KEY_STEP to AnalyticsTracker.VALUE_STEP_STORE_CREATED
-//                )
-//            )
+            repository.selectSite(newStore.data.siteId!!)
+
+            val properties = mapOf(
+                AnalyticsTracker.KEY_SOURCE to appPrefsWrapper.getStoreCreationSource(),
+                AnalyticsTracker.KEY_URL to newStore.data.domain!!,
+                AnalyticsTracker.KEY_FLOW to AnalyticsTracker.VALUE_NATIVE
+            )
+            analyticsTrackerWrapper.track(AnalyticsEvent.LOGIN_WOOCOMMERCE_SITE_CREATED, properties)
+
             _viewState.update { SuccessState("https://${newStore.data.domain!!}") }
         } else {
-//            analyticsTrackerWrapper.track(
-//                AnalyticsEvent.SITE_CREATION_FAILED,
-//                mapOf(
-//                    AnalyticsTracker.KEY_SOURCE to navigationSource,
-//                    AnalyticsTracker.KEY_FLOW to AnalyticsTracker.VALUE_NATIVE
-//                )
-//            )
+            analyticsTrackerWrapper.track(
+                AnalyticsEvent.SITE_CREATION_FAILED,
+                mapOf(
+                    AnalyticsTracker.KEY_SOURCE to appPrefsWrapper.getStoreCreationSource(),
+                    AnalyticsTracker.KEY_FLOW to AnalyticsTracker.VALUE_NATIVE
+                )
+            )
+
             _viewState.update { ErrorState(STORE_LOADING_FAILED) }
         }
     }
@@ -149,11 +161,12 @@ class InstallationViewModel @Inject constructor(
     }
 
     fun onManageStoreButtonClicked() {
-        repository.selectSite(newStore.data.siteId!!)
+        analyticsTrackerWrapper.track(AnalyticsEvent.SITE_CREATION_STORE_MANAGEMENT_OPENED)
         triggerEvent(NavigateToNewStore)
     }
 
     fun onRetryButtonClicked() {
+        analyticsTrackerWrapper.track(AnalyticsEvent.SITE_CREATION_SITE_LOADING_RETRIED)
         onStoreCreated()
     }
 

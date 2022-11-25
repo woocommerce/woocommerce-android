@@ -102,7 +102,7 @@ private fun StoreCreationWebView(
     }
 
     var storeCreationTriggered by remember { mutableStateOf(false) }
-    
+
     WCWebView(
         url = viewState.storeCreationUrl,
         wpComAuthenticator = wpComWebViewAuthenticator,
