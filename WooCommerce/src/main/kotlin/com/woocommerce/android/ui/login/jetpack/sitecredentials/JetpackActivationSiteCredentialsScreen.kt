@@ -149,7 +149,7 @@ private fun Toolbar(
 ) {
     TopAppBar(
         backgroundColor = MaterialTheme.colors.surface,
-        title = { Text(stringResource(id = R.string.login_jetpack_site_credentials_screen_title)) },
+        title = { /* Intentionally empty */ },
         navigationIcon = {
             IconButton(onClick = onCloseClick) {
                 Icon(
