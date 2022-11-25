@@ -131,7 +131,7 @@ class JetpackActivationMainViewModel @Inject constructor(
     fun onCloseClick() {
         analyticsTrackerWrapper.track(
             stat = AnalyticsEvent.LOGIN_JETPACK_SETUP_SCREEN_DISMISSED,
-            properties = mapOf(AnalyticsTracker.KEY_JETPACK_INSTALLATION_STEP to currentStep.value.type.name),
+            properties = mapOf(AnalyticsTracker.KEY_JETPACK_INSTALLATION_STEP to currentStep.value.type.analyticsName),
         )
         triggerEvent(Exit)
     }
@@ -167,7 +167,7 @@ class JetpackActivationMainViewModel @Inject constructor(
     fun onGetHelpClick() {
         analyticsTrackerWrapper.track(
             stat = AnalyticsEvent.LOGIN_JETPACK_SETUP_GET_SUPPORT_BUTTON_TAPPED,
-            properties = mapOf(AnalyticsTracker.KEY_JETPACK_INSTALLATION_STEP to currentStep.value.type.name),
+            properties = mapOf(AnalyticsTracker.KEY_JETPACK_INSTALLATION_STEP to currentStep.value.type.analyticsName),
         )
         triggerEvent(ShowHelpScreen)
     }
@@ -390,9 +390,12 @@ class JetpackActivationMainViewModel @Inject constructor(
         val state: StepState = StepState.Idle
     ) : Parcelable
 
-    enum class StepType {
+    enum class StepType(val analyticsName: String) {
         // The declaration order is important
-        Installation, Activation, Connection, Done
+        Installation("installation"),
+        Activation("activation"),
+        Connection("connection"),
+        Done("all_done")
     }
 
     sealed interface StepState : Parcelable {

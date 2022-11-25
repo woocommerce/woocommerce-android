@@ -53,7 +53,8 @@ class JetpackActivationStartViewModel @Inject constructor(
         analyticsTrackerWrapper.track(
             stat = AnalyticsEvent.LOGIN_JETPACK_SETUP_GET_SUPPORT_BUTTON_TAPPED,
             properties = mapOf(
-                AnalyticsTracker.KEY_JETPACK_INSTALLATION_STEP to JetpackActivationMainViewModel.StepType.Connection
+                AnalyticsTracker.KEY_JETPACK_INSTALLATION_STEP to
+                    JetpackActivationMainViewModel.StepType.Connection.analyticsName
             ),
         )
         triggerEvent(NavigateToHelpScreen)
