@@ -301,7 +301,7 @@
     <string name="login_jetpack_site_credentials_screen_title">Log in to your store</string>
     <string name="login_jetpack_steps_installing">Installing Jetpack</string>
     <string name="login_jetpack_steps_activating">Activating</string>
-    <string name="login_jetpack_steps_authorizing">Authorising connection</string>
+    <string name="login_jetpack_steps_authorizing">Connect store to Jetpack</string>
     <string name="login_jetpack_steps_authorizing_hint">Approval required</string>
     <string name="login_jetpack_steps_authorizing_validation">Validating</string>
     <string name="login_jetpack_steps_authorizing_done">Connected</string>
