@@ -1,5 +1,8 @@
 package com.woocommerce.android.ui.login.jetpack.main
 
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.slideInVertically
+import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -9,6 +12,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -41,15 +45,18 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.compose.annotatedStringRes
+import com.woocommerce.android.ui.compose.component.WCColoredButton
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.ui.login.jetpack.components.JetpackToWooHeader
+import com.woocommerce.android.ui.login.jetpack.main.JetpackActivationMainViewModel.ConnectionStep
 
 @Composable
 fun JetpackActivationMainScreen(viewModel: JetpackActivationMainViewModel) {
     viewModel.viewState.observeAsState().value?.let {
         JetpackActivationMainScreen(
             viewState = it,
-            onCloseClick = viewModel::onCloseClick
+            onCloseClick = viewModel::onCloseClick,
+            onContinueClick = viewModel::onContinueClick
         )
     }
 }
@@ -57,7 +64,8 @@ fun JetpackActivationMainScreen(viewModel: JetpackActivationMainViewModel) {
 @Composable
 fun JetpackActivationMainScreen(
     viewState: JetpackActivationMainViewModel.ViewState,
-    onCloseClick: () -> Unit = {}
+    onCloseClick: () -> Unit = {},
+    onContinueClick: () -> Unit = {}
 ) {
     Scaffold(
         topBar = { Toolbar(onCloseClick) }
@@ -72,35 +80,56 @@ fun JetpackActivationMainScreen(
         ) {
             JetpackToWooHeader()
             Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.major_200)))
+            val title = if (viewState.isDone) {
+                if (viewState.isJetpackInstalled) R.string.login_jetpack_connection_steps_screen_title_done
+                else R.string.login_jetpack_installation_steps_screen_title_done
+            } else {
+                if (viewState.isJetpackInstalled) R.string.login_jetpack_connection_steps_screen_title
+                else R.string.login_jetpack_installation_steps_screen_title
+            }
             Text(
-                text = stringResource(
-                    id = if (viewState.isJetpackInstalled) R.string.login_jetpack_connection_steps_screen_title
-                    else R.string.login_jetpack_installation_steps_screen_title
-                ),
+                text = stringResource(id = title),
                 style = MaterialTheme.typography.h4,
                 fontWeight = FontWeight.Bold
             )
             Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.minor_100)))
+            val subtitle = if (viewState.isDone) {
+                R.string.login_jetpack_steps_screen_subtitle_done
+            } else {
+                R.string.login_jetpack_steps_screen_subtitle
+            }
             Text(
-                text = annotatedStringRes(
-                    stringResId = R.string.login_jetpack_steps_screen_subtitle,
-                    viewState.siteUrl
-                ),
+                text = annotatedStringRes(stringResId = subtitle, viewState.siteUrl),
                 style = MaterialTheme.typography.body1
             )
             Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.major_100)))
             viewState.steps.forEach { step ->
                 JetpackActivationStep(
                     step,
+                    viewState.connectionStep,
                     modifier = Modifier.padding(vertical = dimensionResource(id = R.dimen.minor_100))
                 )
+            }
+            Spacer(modifier = Modifier.weight(1f))
+            AnimatedVisibility(
+                visible = viewState.isDone,
+                enter = slideInVertically { fullHeight -> fullHeight },
+                exit = slideOutVertically { fullHeight -> fullHeight }
+            ) {
+                WCColoredButton(onClick = onContinueClick, modifier = Modifier.fillMaxWidth()) {
+                    Text(text = stringResource(id = R.string.login_jetpack_installation_go_to_store_button))
+                }
             }
         }
     }
 }
 
 @Composable
-private fun JetpackActivationStep(step: JetpackActivationMainViewModel.Step, modifier: Modifier = Modifier) {
+private fun JetpackActivationStep(
+    step: JetpackActivationMainViewModel.Step,
+    connectionStep: JetpackActivationMainViewModel.ConnectionStep,
+    modifier: Modifier = Modifier
+) {
     Row(
         horizontalArrangement = Arrangement.spacedBy(dimensionResource(id = R.dimen.major_100)),
         verticalAlignment = Alignment.CenterVertically,
@@ -146,32 +175,56 @@ private fun JetpackActivationStep(step: JetpackActivationMainViewModel.Step, mod
 
             if (step.state is JetpackActivationMainViewModel.StepState.Error) {
                 Text(
-                    text = stringResource(
-                        id = R.string.login_jetpack_installation_error_code_template, step.state.code
-                    ),
+                    text = step.state.code?.let {
+                        stringResource(id = R.string.login_jetpack_installation_error_code_template, it)
+                    } ?: stringResource(id = R.string.error_generic),
                     color = colorResource(id = R.color.color_error),
                     style = MaterialTheme.typography.caption,
                     fontWeight = FontWeight.SemiBold
                 )
             } else if (step.type == JetpackActivationMainViewModel.StepType.Connection) {
-                Row(
-                    horizontalArrangement = Arrangement.spacedBy(dimensionResource(id = R.dimen.minor_50)),
-                ) {
-                    Icon(
-                        imageVector = Icons.Default.Info,
-                        contentDescription = null,
-                        tint = colorResource(id = R.color.woo_orange_50),
-                        modifier = Modifier.size(dimensionResource(id = R.dimen.image_minor_40))
-                    )
-                    Text(
-                        text = stringResource(id = R.string.login_jetpack_steps_authorizing_hint),
-                        color = colorResource(R.color.woo_orange_50),
-                        style = MaterialTheme.typography.caption,
-                        fontWeight = FontWeight.SemiBold
-                    )
-                }
+                ConnectionStepHint(connectionStep)
             }
         }
+    }
+}
+
+@Composable
+private fun ConnectionStepHint(connectionStep: JetpackActivationMainViewModel.ConnectionStep) {
+    Row(
+        horizontalArrangement = Arrangement.spacedBy(dimensionResource(id = R.dimen.minor_50)),
+    ) {
+        if (connectionStep == JetpackActivationMainViewModel.ConnectionStep.PreConnection) {
+            Icon(
+                imageVector = Icons.Default.Info,
+                contentDescription = null,
+                tint = colorResource(id = R.color.woo_orange_50),
+                modifier = Modifier.size(dimensionResource(id = R.dimen.image_minor_40))
+            )
+        }
+        val (text, color) = when (connectionStep) {
+            JetpackActivationMainViewModel.ConnectionStep.PreConnection ->
+                Pair(
+                    R.string.login_jetpack_steps_authorizing_hint,
+                    R.color.woo_orange_50
+                )
+            JetpackActivationMainViewModel.ConnectionStep.Validation ->
+                Pair(
+                    R.string.login_jetpack_steps_authorizing_validation,
+                    R.color.color_on_surface_medium
+                )
+            JetpackActivationMainViewModel.ConnectionStep.Approved ->
+                Pair(
+                    R.string.login_jetpack_steps_authorizing_done,
+                    R.color.woo_green_50
+                )
+        }
+        Text(
+            text = stringResource(id = text),
+            color = colorResource(id = color),
+            style = MaterialTheme.typography.caption,
+            fontWeight = FontWeight.SemiBold
+        )
     }
 }
 
@@ -248,7 +301,8 @@ private fun JetpackActivationMainScreenPreview() {
                         type = JetpackActivationMainViewModel.StepType.Done,
                         state = JetpackActivationMainViewModel.StepState.Idle
                     )
-                )
+                ),
+                connectionStep = ConnectionStep.PreConnection
             )
         )
     }

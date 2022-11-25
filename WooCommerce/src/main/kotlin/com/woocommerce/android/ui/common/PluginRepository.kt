@@ -16,6 +16,7 @@ import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.merge
 import kotlinx.coroutines.flow.retryWhen
+import kotlinx.coroutines.flow.transformWhile
 import kotlinx.parcelize.Parcelize
 import org.wordpress.android.fluxc.Dispatcher
 import org.wordpress.android.fluxc.generated.PluginActionBuilder
@@ -70,6 +71,7 @@ class PluginRepository @Inject constructor(
         }
     }
 
+    @Suppress("LongMethod")
     fun installPlugin(site: SiteModel, slug: String, name: String): Flow<PluginStatus> {
         return flow {
             WooLog.d(WooLog.T.PLUGINS, "Installing plugin Slug: $slug, Name: $name")
@@ -79,6 +81,7 @@ class PluginRepository @Inject constructor(
                 if (plugin.isActive) {
                     // Plugin is already active, nothing to do
                     WooLog.d(WooLog.T.PLUGINS, "Plugin $slug is already installed and activated")
+                    emit(PluginInstalled(slug))
                     emit(PluginActivated(slug))
                     return@flow
                 } else {
@@ -131,6 +134,10 @@ class PluginRepository @Inject constructor(
                     )
                 )
             }
+        }.transformWhile { status ->
+            emit(status)
+            // Finish the flow unless it's an intermediary event: Installation
+            status is PluginInstalled
         }
     }
 
