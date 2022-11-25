@@ -159,7 +159,10 @@ class JetpackActivationMainViewModel @Inject constructor(
         connectionStep.value = ConnectionStep.Validation
     }
 
-    fun onRetryClick() = startNextStep()
+    fun onRetryClick() {
+        analyticsTrackerWrapper.track(AnalyticsEvent.LOGIN_JETPACK_SETUP_TRY_AGAIN_BUTTON_TAPPED)
+        startNextStep()
+    }
 
     fun onGetHelpClick() {
         analyticsTrackerWrapper.track(
