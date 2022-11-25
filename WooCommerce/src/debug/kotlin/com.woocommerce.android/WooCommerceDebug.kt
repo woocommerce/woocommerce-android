@@ -31,7 +31,6 @@ class WooCommerceDebug : WooCommerce() {
         }
 
         WebView.setWebContentsDebuggingEnabled(true)
-        
         super.onCreate()
         enableStrictMode()
     }
