@@ -11,6 +11,7 @@ import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import com.woocommerce.android.NavGraphMainDirections
+import com.woocommerce.android.R
 import com.woocommerce.android.extensions.handleNotice
 import com.woocommerce.android.extensions.navigateBackWithResult
 import com.woocommerce.android.support.ZendeskHelper
@@ -18,6 +19,7 @@ import com.woocommerce.android.support.help.HelpActivity
 import com.woocommerce.android.support.help.HelpActivity.Origin
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.common.wpcomwebview.WPComWebViewFragment
+import com.woocommerce.android.ui.common.wpcomwebview.WPComWebViewViewModel
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.ui.login.LoginActivity
 import com.woocommerce.android.ui.login.accountmismatch.AccountMismatchErrorFragment
@@ -107,8 +109,9 @@ class SitePickerSiteDiscoveryFragment : BaseFragment() {
         findNavController().navigate(
             NavGraphMainDirections.actionGlobalWPComWebViewFragment(
                 urlToLoad = url,
-                urlToTriggerExit = JETPACK_CONNECTED_REDIRECT_URL,
-                urlComparisonMode = WPComWebViewFragment.UrlComparisonMode.EQUALITY
+                urlsToTriggerExit = arrayOf(JETPACK_CONNECTED_REDIRECT_URL),
+                urlComparisonMode = WPComWebViewViewModel.UrlComparisonMode.EQUALITY,
+                title = getString(R.string.login_jetpack_install)
             )
         )
     }

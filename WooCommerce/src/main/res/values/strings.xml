@@ -314,6 +314,7 @@
     <string name="login_jetpack_steps_screen_subtitle_done">Your store &lt;b&gt;%1$s&lt;/b&gt; is now connected to Jetpack.</string>
     <string name="login_jetpack_installation_error_code_template">Error code %1$s</string>
     <string name="login_jetpack_installation_go_to_store_button">Go to Store</string>
+    <string name="login_jetpack_installation_approve_connection">Approve Connection</string>
 
     <!--
         My Store View

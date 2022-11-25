@@ -786,8 +786,8 @@ theme across the entire app. Overridden versions should be added to the styles.x
     </style>
 
     <style name="Woo.Animations.Dialog">
-        <item name="android:windowEnterAnimation">@anim/slide_in_up</item>
-        <item name="android:windowExitAnimation">@anim/slide_out_down</item>
+        <item name="android:windowEnterAnimation">@anim/slide_up_fade_in</item>
+        <item name="android:windowExitAnimation">@anim/slide_down_fade_out</item>
     </style>
 
     <style name="Woo.Theme.BottomSheetDialog" parent="Theme.Design.Light.BottomSheetDialog">
