@@ -5,7 +5,9 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.analytics.AnalyticsEvent
+import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
+import com.woocommerce.android.ui.login.jetpack.main.JetpackActivationMainViewModel
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.ScopedViewModel
@@ -48,6 +50,12 @@ class JetpackActivationStartViewModel @Inject constructor(
     }
 
     fun onHelpButtonClick() {
+        analyticsTrackerWrapper.track(
+            stat = AnalyticsEvent.LOGIN_JETPACK_SETUP_GET_SUPPORT_BUTTON_TAPPED,
+            properties = mapOf(
+                AnalyticsTracker.KEY_JETPACK_INSTALLATION_STEP to JetpackActivationMainViewModel.StepType.Connection
+            ),
+        )
         triggerEvent(NavigateToHelpScreen)
     }
 
