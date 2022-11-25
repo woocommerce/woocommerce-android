@@ -455,6 +455,7 @@ class CardReaderConnectViewModel @Inject constructor(
     }
 
     private fun onReaderConnected(cardReader: CardReader) {
+        cardReaderTrackingInfoKeeper.setCardReaderBatteryLevel(cardReader.currentBatteryLevel)
         tracker.trackConnectionSucceeded()
         WooLog.e(WooLog.T.CARD_READER, "Connecting to reader succeeded.")
         storeConnectedReader(cardReader)

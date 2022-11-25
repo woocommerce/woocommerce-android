@@ -1,4 +1,4 @@
-package com.woocommerce.android.cardreader.internal.config
+package com.woocommerce.android.cardreader.config
 
 class CardReaderConfigFactory {
     fun getCardReaderConfigFor(countryCode: String?): CardReaderConfig {

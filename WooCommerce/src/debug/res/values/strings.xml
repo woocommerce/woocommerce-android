@@ -5,4 +5,5 @@
     <string name="showcase_iap_check_if_iap_supported">Check if IAP supported</string>
     <string name="showcase_iap_fetch_product_info">Fetch Plan info</string>
     <string name="showcase_iap_remote_blog_id">Remote Blog Id</string>
+    <string name="showcase_iap_start_purchase_flow">Start Purchase Flow</string>
 </resources>

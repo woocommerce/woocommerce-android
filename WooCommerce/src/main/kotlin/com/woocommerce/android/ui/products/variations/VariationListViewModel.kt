@@ -10,12 +10,14 @@ import com.woocommerce.android.R.string
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsEvent.PRODUCT_VARIANTS_BULK_UPDATE_TAPPED
 import com.woocommerce.android.analytics.AnalyticsEvent.PRODUCT_VARIATION_VIEW_VARIATION_DETAIL_TAPPED
+import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_PRODUCT_ID
-import com.woocommerce.android.analytics.AnalyticsTracker.Companion.track
+import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.extensions.isNotSet
 import com.woocommerce.android.extensions.isSet
 import com.woocommerce.android.model.Product
 import com.woocommerce.android.model.ProductVariation
+import com.woocommerce.android.model.RequestResult
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.ui.products.ProductDetailRepository
 import com.woocommerce.android.ui.products.variations.VariationListViewModel.ProgressDialogState.Hidden
@@ -33,9 +35,9 @@ import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.viewmodel.ScopedViewModel
+import com.woocommerce.android.viewmodel.navArgs
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import kotlinx.parcelize.Parcelize
@@ -69,8 +71,11 @@ class VariationListViewModel @Inject constructor(
     private val currencyFormatter: CurrencyFormatter,
     private val dispatchers: CoroutineDispatchers,
     private val generateVariationCandidates: GenerateVariationCandidates,
+    private val tracker: AnalyticsTrackerWrapper
 ) : ScopedViewModel(savedState) {
-    private var remoteProductId = 0L
+
+    private val navArgs: VariationListFragmentArgs by savedState.navArgs()
+    private val remoteProductId = navArgs.remoteProductId
 
     private val _variationList = MutableLiveData<List<ProductVariation>>()
     val variationList: LiveData<List<ProductVariation>> = Transformations.map(_variationList) { variations ->
@@ -95,7 +100,7 @@ class VariationListViewModel @Inject constructor(
     val isEmpty
         get() = _variationList.value?.isEmpty() ?: true
 
-    fun start(remoteProductId: Long) {
+    fun start() {
         productRepository.getProduct(remoteProductId)?.let {
             viewState = viewState.copy(parentProduct = it)
             handleVariationLoading(remoteProductId)
@@ -107,7 +112,7 @@ class VariationListViewModel @Inject constructor(
     }
 
     fun onBulkUpdateClicked() {
-        track(PRODUCT_VARIANTS_BULK_UPDATE_TAPPED)
+        tracker.track(PRODUCT_VARIANTS_BULK_UPDATE_TAPPED)
 
         val variationsCount = viewState.parentProduct?.numVariations ?: return
 
@@ -126,16 +131,24 @@ class VariationListViewModel @Inject constructor(
     }
 
     fun onItemClick(variation: ProductVariation) {
-        track(PRODUCT_VARIATION_VIEW_VARIATION_DETAIL_TAPPED)
+        tracker.track(PRODUCT_VARIATION_VIEW_VARIATION_DETAIL_TAPPED)
         triggerEvent(ShowVariationDetail(variation))
     }
 
-    fun onCreateEmptyVariationClick() {
+    fun onNewVariationClicked() {
+        if (isEmpty) {
+            createFirstVariation()
+        } else {
+            createEmptyVariation()
+        }
+    }
+
+    fun createEmptyVariation() {
         trackWithProductId(AnalyticsEvent.PRODUCT_VARIATION_ADD_MORE_TAPPED)
         handleVariationCreation()
     }
 
-    fun onCreateFirstVariationRequested() {
+    fun createFirstVariation() {
         trackWithProductId(AnalyticsEvent.PRODUCT_VARIATION_ADD_FIRST_TAPPED)
         viewState.parentProduct
             ?.variationEnabledAttributes
@@ -211,15 +224,13 @@ class VariationListViewModel @Inject constructor(
             return
         }
 
-        this.remoteProductId = remoteProductId
-
         loadingJob = launch {
             viewState = viewState.copy(isLoadingMore = loadMore)
             if (!loadMore) {
                 // if this is the initial load, first get the product variations from the db and if there are any show
                 // them immediately, otherwise make sure the skeleton shows
                 val variationsInDb = variationRepository.getProductVariationList(remoteProductId)
-                if (variationsInDb.isNullOrEmpty()) {
+                if (variationsInDb.isEmpty()) {
                     viewState = viewState.copy(isSkeletonShown = withSkeletonView)
                 } else {
                     _variationList.value = combineData(variationsInDb)
@@ -233,7 +244,7 @@ class VariationListViewModel @Inject constructor(
     private suspend fun fetchVariations(remoteProductId: Long, loadMore: Boolean = false) {
         if (networkStatus.isConnected()) {
             val fetchedVariations = variationRepository.fetchProductVariations(remoteProductId, loadMore)
-            if (fetchedVariations.isNullOrEmpty()) {
+            if (fetchedVariations.isEmpty()) {
                 if (!loadMore) {
                     _variationList.value = emptyList()
                     viewState = viewState.copy(isEmptyViewVisible = true, isVariationsOptionsMenuEnabled = false)
@@ -276,28 +287,47 @@ class VariationListViewModel @Inject constructor(
     }
 
     private fun trackWithProductId(event: AnalyticsEvent) {
-        viewState.parentProduct?.let { track(event, mapOf(KEY_PRODUCT_ID to it.remoteId)) }
+        viewState.parentProduct?.let { tracker.track(event, mapOf(KEY_PRODUCT_ID to it.remoteId)) }
     }
 
-    fun onAddAllVariationsClicked() {
+    fun onAddVariationsClicked() {
         val product = viewState.parentProduct ?: return
+        triggerEvent(ShowVariationDialog(generateVariationCandidates.invoke(product)))
+    }
 
-        val variationCandidates = generateVariationCandidates.invoke(product)
-
-        if (variationCandidates.size < GenerateVariationCandidates.VARIATION_CREATION_LIMIT) {
+    fun onAddAllVariationsClicked(variationCandidates: List<VariationCandidate>) {
+        tracker.track(AnalyticsEvent.PRODUCT_VARIATION_GENERATION_REQUESTED)
+        if (variationCandidates.size <= GenerateVariationCandidates.VARIATION_CREATION_LIMIT) {
             triggerEvent(ShowGenerateVariationConfirmation(variationCandidates))
         } else {
-            triggerEvent(ShowGenerateVariationError.LimitExceeded(variationCandidates.size))
+            tracker.track(
+                stat = AnalyticsEvent.PRODUCT_VARIATION_GENERATION_LIMIT_REACHED,
+                properties = mapOf(AnalyticsTracker.KEY_VARIATIONS_COUNT to variationCandidates.size)
+            )
+            triggerEvent(ShowGenerateVariationsError.LimitExceeded(variationCandidates.size))
         }
     }
 
     fun onGenerateVariationsConfirmed(variationCandidates: List<VariationCandidate>) {
-        variationCandidates.size
-        viewState = viewState.copy(progressDialogState = Shown(MULTIPLE))
+        tracker.track(
+            stat = AnalyticsEvent.PRODUCT_VARIATION_GENERATION_CONFIRMED,
+            properties = mapOf(AnalyticsTracker.KEY_VARIATIONS_COUNT to variationCandidates.size)
+        )
         launch {
-            @Suppress("MagicNumber")
-            delay(4000)
-            viewState = viewState.copy(progressDialogState = Hidden)
+            viewState = viewState.copy(progressDialogState = Shown(MULTIPLE))
+
+            when (variationRepository.bulkCreateVariations(remoteProductId, variationCandidates)) {
+                RequestResult.SUCCESS -> {
+                    tracker.track(AnalyticsEvent.PRODUCT_VARIATION_GENERATION_SUCCESS)
+                    refreshVariations(remoteProductId)
+                    viewState = viewState.copy(progressDialogState = Hidden)
+                }
+                else -> {
+                    tracker.track(AnalyticsEvent.PRODUCT_VARIATION_GENERATION_FAILURE)
+                    viewState = viewState.copy(progressDialogState = Hidden)
+                    triggerEvent(ShowGenerateVariationsError.NetworkError)
+                }
+            }
         }
     }
 
@@ -323,6 +353,7 @@ class VariationListViewModel @Inject constructor(
     sealed class ProgressDialogState : Parcelable {
         @Parcelize
         object Hidden : ProgressDialogState()
+
         @Parcelize
         data class Shown(val cardinality: VariationsCardinality) : ProgressDialogState() {
             enum class VariationsCardinality {
@@ -344,10 +375,12 @@ class VariationListViewModel @Inject constructor(
      */
     object ShowBulkUpdateLimitExceededWarning : Event()
 
+    data class ShowVariationDialog(val variationCandidates: List<VariationCandidate>) : Event()
+
     data class ShowGenerateVariationConfirmation(val variationCandidates: List<VariationCandidate>) : Event()
 
-    sealed class ShowGenerateVariationError : Event() {
-        data class LimitExceeded(val variationCandidatesSize: Int) : ShowGenerateVariationError()
-        object NetworkError : ShowGenerateVariationError()
+    sealed class ShowGenerateVariationsError : Event() {
+        data class LimitExceeded(val variationCandidatesSize: Int) : ShowGenerateVariationsError()
+        object NetworkError : ShowGenerateVariationsError()
     }
 }

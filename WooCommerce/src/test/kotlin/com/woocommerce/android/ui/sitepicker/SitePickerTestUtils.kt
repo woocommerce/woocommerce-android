@@ -66,7 +66,8 @@ object SitePickerTestUtils {
         isNoStoresViewVisible = true,
         isPrimaryBtnVisible = true,
         primaryBtnText = resourceProvider.getString(R.string.login_site_picker_add_a_store),
-        noStoresLabelText = resourceProvider.getString(R.string.login_no_stores),
+        noStoresLabelText = resourceProvider.getString(R.string.login_no_stores_header),
+        noStoresSubText = resourceProvider.getString(R.string.login_no_stores_subtitle),
         noStoresBtnText = null
     )
 

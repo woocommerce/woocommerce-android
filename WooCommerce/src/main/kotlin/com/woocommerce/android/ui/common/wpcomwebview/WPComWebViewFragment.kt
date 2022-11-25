@@ -1,82 +1,54 @@
 package com.woocommerce.android.ui.common.wpcomwebview
 
-import android.annotation.SuppressLint
 import android.os.Bundle
+import android.view.LayoutInflater
 import android.view.View
-import android.webkit.WebChromeClient
-import android.webkit.WebView
-import androidx.core.view.isVisible
-import androidx.navigation.fragment.navArgs
+import android.view.ViewGroup
+import androidx.compose.ui.platform.ComposeView
+import androidx.compose.ui.platform.ViewCompositionStrategy
+import androidx.fragment.app.viewModels
 import com.woocommerce.android.R
-import com.woocommerce.android.databinding.FragmentWpcomWebviewBinding
 import com.woocommerce.android.extensions.navigateBackWithNotice
 import com.woocommerce.android.ui.base.BaseFragment
-import com.woocommerce.android.ui.common.wpcomwebview.WPComWebViewFragment.UrlComparisonMode.EQUALITY
-import com.woocommerce.android.ui.common.wpcomwebview.WPComWebViewFragment.UrlComparisonMode.PARTIAL
-import com.woocommerce.android.ui.main.MainActivity.Companion.BackPressListener
+import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
+import com.woocommerce.android.ui.main.AppBarStatus
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
 import dagger.hilt.android.AndroidEntryPoint
-import org.wordpress.android.fluxc.network.UserAgent
-import javax.inject.Inject
 
 /**
  * This fragments allows loading specific pages from WordPress.com with the current user logged in.
- * It accepts two parameters:
- * urlToLoad: the initial URL to load
- * urlToTriggerExit: optional URL or part of URL to trigger exit with notice when loaded.
  */
 @AndroidEntryPoint
-class WPComWebViewFragment : BaseFragment(R.layout.fragment_wpcom_webview), UrlInterceptor, BackPressListener {
+class WPComWebViewFragment : BaseFragment(R.layout.fragment_wpcom_webview) {
     companion object {
         const val WEBVIEW_RESULT = "webview-result"
         const val WEBVIEW_DISMISSED = "webview-dismissed"
     }
 
-    private val webViewClient by lazy { WPComWebViewClient(this) }
-    private val navArgs: WPComWebViewFragmentArgs by navArgs()
+    override val activityAppBarStatus: AppBarStatus
+        get() = AppBarStatus.Hidden
 
-    @Inject lateinit var wpcomWebViewAuthenticator: WPComWebViewAuthenticator
+    private val viewModel: WPComWebViewViewModel by viewModels()
 
-    @Inject lateinit var userAgent: UserAgent
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
+        return ComposeView(requireContext()).apply {
+            setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
 
-    @SuppressLint("SetJavaScriptEnabled")
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-        val binding = FragmentWpcomWebviewBinding.bind(view)
-        with(binding.webView) {
-            this.webViewClient = this@WPComWebViewFragment.webViewClient
-            this.webChromeClient = object : WebChromeClient() {
-                @Suppress("MagicNumber")
-                override fun onProgressChanged(view: WebView?, newProgress: Int) {
-                    binding.progressBar.isVisible = progress != 100
-                    binding.progressBar.progress = progress
+            setContent {
+                WooThemeWithBackground {
+                    WPComWebViewScreen(viewModel)
                 }
             }
-            this.settings.javaScriptEnabled = true
-            settings.userAgentString = userAgent.userAgent
-        }
-
-        wpcomWebViewAuthenticator.authenticateAndLoadUrl(binding.webView, navArgs.urlToLoad)
-    }
-
-    override fun onLoadUrl(url: String) {
-        fun String.matchesUrl(url: String) = when (navArgs.urlComparisonMode) {
-            PARTIAL -> url.contains(this, ignoreCase = true)
-            EQUALITY -> equals(url, ignoreCase = true)
-        }
-
-        if (isAdded && navArgs.urlToTriggerExit?.matchesUrl(url) == true) {
-            navigateBackWithNotice(WEBVIEW_RESULT)
         }
     }
 
-    override fun getFragmentTitle() = navArgs.title ?: super.getFragmentTitle()
-
-    override fun onRequestAllowBackPress(): Boolean {
-        navigateBackWithNotice(WEBVIEW_DISMISSED)
-        return false
-    }
-
-    enum class UrlComparisonMode {
-        PARTIAL, EQUALITY
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        viewModel.event.observe(viewLifecycleOwner) { event ->
+            when (event) {
+                is ExitWithResult<*> -> navigateBackWithNotice(WEBVIEW_RESULT)
+                is Exit -> navigateBackWithNotice(WEBVIEW_DISMISSED)
+            }
+        }
     }
 }

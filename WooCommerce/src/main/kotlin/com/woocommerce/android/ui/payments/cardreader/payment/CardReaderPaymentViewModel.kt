@@ -5,11 +5,13 @@ import androidx.annotation.VisibleForTesting
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
+import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.R
 import com.woocommerce.android.cardreader.CardReaderManager
 import com.woocommerce.android.cardreader.connection.CardReaderStatus
 import com.woocommerce.android.cardreader.connection.event.BluetoothCardReaderMessages
+import com.woocommerce.android.cardreader.connection.event.CardReaderBatteryStatus
 import com.woocommerce.android.cardreader.payments.CardInteracRefundStatus
 import com.woocommerce.android.cardreader.payments.CardInteracRefundStatus.CollectingInteracRefund
 import com.woocommerce.android.cardreader.payments.CardInteracRefundStatus.InitializingInteracRefund
@@ -146,6 +148,18 @@ class CardReaderPaymentViewModel
             }
         } else {
             exitWithSnackbar(R.string.card_reader_payment_reader_not_connected)
+        }
+
+        viewModelScope.launch {
+            listenToCardReaderBatteryChanges()
+        }
+    }
+
+    private suspend fun listenToCardReaderBatteryChanges() {
+        cardReaderManager.batteryStatus.collect { batteryStatus ->
+            if (batteryStatus is CardReaderBatteryStatus.StatusChanged) {
+                cardReaderTrackingInfoKeeper.setCardReaderBatteryLevel(batteryStatus.batteryLevel)
+            }
         }
     }
 

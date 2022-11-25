@@ -38,7 +38,6 @@ import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.tooling.preview.Devices
 import androidx.compose.ui.tooling.preview.Preview
@@ -87,7 +86,9 @@ private fun Toolbar(
 ) {
     TopAppBar(
         backgroundColor = MaterialTheme.colors.surface,
-        title = {},
+        title = {
+            Text(text = stringResource(id = R.string.signup_get_started_button))
+        },
         navigationIcon = {
             IconButton(onClick = onArrowBackPressed) {
                 Icon(
@@ -123,8 +124,7 @@ private fun SignUpForm(
     ) {
         Text(
             text = stringResource(id = R.string.signup_get_started_label),
-            style = MaterialTheme.typography.h4,
-            fontWeight = FontWeight.Bold
+            style = MaterialTheme.typography.h5,
         )
         LoginToExistingAccountText(onLoginClicked)
         Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.major_100)))
@@ -174,7 +174,7 @@ private fun TermsOfServiceText(modifier: Modifier = Modifier) {
                 stringResource(id = R.string.signup_terms_of_service),
                 HtmlCompat.FROM_HTML_MODE_LEGACY
             ).toAnnotatedString(),
-        style = MaterialTheme.typography.body2,
+        style = MaterialTheme.typography.caption,
         modifier = modifier,
     )
 }

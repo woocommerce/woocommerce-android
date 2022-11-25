@@ -6,7 +6,10 @@ import com.android.billingclient.api.BillingResult
 import com.android.billingclient.api.ProductDetails
 import com.android.billingclient.api.Purchase
 import com.android.billingclient.api.Purchase.PurchaseState
+import com.woocommerce.android.iap.internal.model.IAPProduct
 import org.mockito.kotlin.mock
+
+internal val iapProduct: IAPProduct = IAPProduct.WPPremiumPlanTesting
 
 fun buildProductDetails(
     productId: String,
