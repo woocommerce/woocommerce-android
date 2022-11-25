@@ -15,6 +15,7 @@ import com.woocommerce.android.viewmodel.getStateFlow
 import com.woocommerce.android.viewmodel.navArgs
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.map
+import org.wordpress.android.util.UrlUtils
 import javax.inject.Inject
 
 @HiltViewModel
@@ -36,7 +37,8 @@ class JetpackActivationStartViewModel @Inject constructor(
 
     val viewState: LiveData<JetpackActivationState> = isConnectionDismissed.map { isConnectionDismissed ->
         JetpackActivationState(
-            url = navArgs.siteUrl,
+            url = UrlUtils.removeScheme(navArgs.siteUrl),
+            faviconUrl = "${navArgs.siteUrl.trimEnd('/')}/favicon.ico",
             isJetpackInstalled = navArgs.isJetpackInstalled,
             isConnectionDismissed = isConnectionDismissed
         )
@@ -100,6 +102,7 @@ class JetpackActivationStartViewModel @Inject constructor(
 
     data class JetpackActivationState(
         val url: String,
+        val faviconUrl: String,
         val isJetpackInstalled: Boolean,
         val isConnectionDismissed: Boolean
     )

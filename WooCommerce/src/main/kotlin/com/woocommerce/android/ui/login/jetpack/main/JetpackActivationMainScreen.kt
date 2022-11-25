@@ -27,10 +27,8 @@ import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
 import androidx.compose.material.TopAppBar
-import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.Icons.Filled
 import androidx.compose.material.icons.filled.Clear
-import androidx.compose.material.icons.filled.Info
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
@@ -305,9 +303,7 @@ private fun JetpackActivationStep(
 
             if (step.state is JetpackActivationMainViewModel.StepState.Error) {
                 Text(
-                    text = step.state.code?.let {
-                        stringResource(id = R.string.login_jetpack_installation_error_code_template, it)
-                    } ?: stringResource(id = R.string.error_generic),
+                    text = stringResource(id = R.string.login_jetpack_installation_error),
                     color = colorResource(id = R.color.color_error),
                     style = MaterialTheme.typography.caption,
                     fontWeight = FontWeight.SemiBold
@@ -321,29 +317,15 @@ private fun JetpackActivationStep(
 
 @Composable
 private fun ConnectionStepHint(connectionStep: JetpackActivationMainViewModel.ConnectionStep) {
-    Row(
-        horizontalArrangement = Arrangement.spacedBy(dimensionResource(id = R.dimen.minor_50)),
-    ) {
-        if (connectionStep == JetpackActivationMainViewModel.ConnectionStep.PreConnection) {
-            Icon(
-                imageVector = Icons.Default.Info,
-                contentDescription = null,
-                tint = colorResource(id = R.color.woo_orange_50),
-                modifier = Modifier.size(dimensionResource(id = R.dimen.image_minor_40))
-            )
-        }
+    // Show no hint for PreConnection step
+    if (connectionStep != JetpackActivationMainViewModel.ConnectionStep.PreConnection) {
         val (text, color) = when (connectionStep) {
-            JetpackActivationMainViewModel.ConnectionStep.PreConnection ->
-                Pair(
-                    R.string.login_jetpack_steps_authorizing_hint,
-                    R.color.woo_orange_50
-                )
             JetpackActivationMainViewModel.ConnectionStep.Validation ->
                 Pair(
                     R.string.login_jetpack_steps_authorizing_validation,
                     R.color.color_on_surface_medium
                 )
-            JetpackActivationMainViewModel.ConnectionStep.Approved ->
+            else ->
                 Pair(
                     R.string.login_jetpack_steps_authorizing_done,
                     R.color.woo_green_50
