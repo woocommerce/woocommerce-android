@@ -26,7 +26,7 @@ class HelpViewModel @Inject constructor(
         private set
 
     init {
-        if(selectedSite.getIfExists() != null) {
+        if (selectedSite.getIfExists() != null) {
             fetchSSR()
         }
     }
