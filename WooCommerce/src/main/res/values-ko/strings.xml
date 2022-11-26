@@ -39,8 +39,6 @@ Language: ko_KR
     <string name="variation_list_generate_all_variations">모든 변형 생성</string>
     <string name="login_jetpack_connect">젯팩 연결</string>
     <string name="login_jetpack_installation_credentials_hint">설치를 시작하려면 스토어 자격 증명이 필요합니다.</string>
-    <string name="login_jetpack_connection_explanation">이 앱을 사용하려면&lt;br&gt;&lt;b&gt;%1$s&lt;/b&gt;&lt;br&gt;스토어를 젯팩에 연결해야 합니다.</string>
-    <string name="login_jetpack_installation_explanation">이 앱을 사용하려면&lt;br&gt;&lt;b&gt;%1$s&lt;/b&gt;&lt;br&gt;스토어에 설치되고 연결된 무료 젯팩 플러그인이 필요합니다.</string>
     <string name="login_jetpack_installation_screen_title">스토어 연결</string>
     <string name="store_creation_domain_picker_suggestions_title">제안</string>
     <string name="store_creation_domain_picker_skip_button">건너뛰기</string>

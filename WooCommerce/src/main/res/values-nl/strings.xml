@@ -39,8 +39,6 @@ Language: nl
     <string name="variation_list_generate_all_variations">Alle variaties genereren</string>
     <string name="login_jetpack_connect">Verbinden met Jetpack</string>
     <string name="login_jetpack_installation_credentials_hint">Je hebt de inloggegevens van je winkel nodig om de installatie te beginnen.</string>
-    <string name="login_jetpack_connection_explanation">om deze app te gebruiken voor&lt;br&gt;&lt;b&gt;%1$s&lt;/b&gt;&lt;br&gt;, moet je je winkel koppelen aan Jetpack.</string>
-    <string name="login_jetpack_installation_explanation">Om deze app te gebruiken voor&lt;br&gt;&lt;b&gt;%1$s&lt;/b&gt;&lt;br&gt;, moet de gratis Jetpack-plugin geïnstalleerd en gekoppeld zijn aan je winkel.</string>
     <string name="login_jetpack_installation_screen_title">Winkel koppelen</string>
     <string name="store_creation_domain_picker_suggestions_title">Suggesties</string>
     <string name="store_creation_domain_picker_skip_button">Overslaan</string>

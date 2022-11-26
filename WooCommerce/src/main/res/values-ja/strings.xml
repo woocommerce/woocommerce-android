@@ -39,8 +39,6 @@ Language: ja_JP
     <string name="variation_list_generate_all_variations">すべてのバリエーションを生成</string>
     <string name="login_jetpack_connect">Jetpack を連携</string>
     <string name="login_jetpack_installation_credentials_hint">インストールを開始するにはストアのログイン情報が必要です。</string>
-    <string name="login_jetpack_connection_explanation">&lt;br&gt;&lt;b&gt;%1$s&lt;/b&gt;&lt;br&gt; にこのアプリを使用するには、Jetpack をストアと連携する必要があります。</string>
-    <string name="login_jetpack_installation_explanation">&lt;br&gt;&lt;b&gt;%1$s&lt;/b&gt;&lt;br&gt; にこのアプリを使用するには、Jetpack プラグインをインストールし、ストアと連携する必要があります。</string>
     <string name="login_jetpack_installation_screen_title">ストアを連携</string>
     <string name="store_creation_domain_picker_suggestions_title">提案</string>
     <string name="store_creation_domain_picker_skip_button">スキップ</string>

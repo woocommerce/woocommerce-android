@@ -39,8 +39,6 @@ Language: es
     <string name="variation_list_generate_all_variations">Generar todas las variaciones</string>
     <string name="login_jetpack_connect">Conectar Jetpack</string>
     <string name="login_jetpack_installation_credentials_hint">Necesitarás las credenciales de tu tienda para comenzar la instalación.</string>
-    <string name="login_jetpack_connection_explanation">Para usar esta aplicación para&lt;br&gt;&lt;b&gt;%1$s&lt;/b&gt;&lt;br&gt;deberás conectar tu tienda con Jetpack.</string>
-    <string name="login_jetpack_installation_explanation">Para usar esta aplicación para&lt;br&gt;&lt;b&gt;%1$s&lt;/b&gt;&lt;br&gt;deberás tener el plugin gratuito de Jetpack instalado y conectado en tu tienda.</string>
     <string name="login_jetpack_installation_screen_title">Conectar tienda</string>
     <string name="store_creation_domain_picker_suggestions_title">Sugerencias</string>
     <string name="store_creation_domain_picker_skip_button">Omitir</string>

@@ -39,8 +39,6 @@ Language: zh_CN
     <string name="variation_list_generate_all_variations">生成所有变体</string>
     <string name="login_jetpack_connect">连接 Jetpack</string>
     <string name="login_jetpack_installation_credentials_hint">我们需要您的商店凭据才能开始安装。</string>
-    <string name="login_jetpack_connection_explanation">要为 &lt;br&gt;&lt;b&gt;%1$s&lt;/b&gt;&lt;br&gt; 使用此应用程序，您需要将商店连接至 Jetpack。</string>
-    <string name="login_jetpack_installation_explanation">要为 &lt;br&gt;&lt;b&gt;%1$s&lt;/b&gt;&lt;br&gt; 使用此应用程序，您需要在商店内安装并连接免费的 Jetpack 插件。</string>
     <string name="login_jetpack_installation_screen_title">连接商店</string>
     <string name="store_creation_domain_picker_suggestions_title">建议</string>
     <string name="store_creation_domain_picker_skip_button">跳过</string>

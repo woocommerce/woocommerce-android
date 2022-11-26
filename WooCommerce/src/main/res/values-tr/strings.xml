@@ -39,8 +39,6 @@ Language: tr
     <string name="variation_list_generate_all_variations">Tüm varyasyonları oluştur</string>
     <string name="login_jetpack_connect">Jetpack\'e bağlan</string>
     <string name="login_jetpack_installation_credentials_hint">Kurulumu başlatmak için mağaza kimlik bilgilerinize ihtiyacınız olacaktır.</string>
-    <string name="login_jetpack_connection_explanation">Bu uygulamayı&lt;br&gt;&lt;b&gt;%1$s&lt;/b&gt;&lt;br&gt;için kullanmak üzere mağazanızı Jetpack\'e bağlamanız gerekir.</string>
-    <string name="login_jetpack_installation_explanation">Bu uygulamayı&lt;br&gt;&lt;b&gt;%1$s&lt;/b&gt;&lt;br&gt;için kullanmak üzere ücretsiz Jetpack eklentisini yüklemeniz ve mağazanıza bağlamanız gerekir.</string>
     <string name="login_jetpack_installation_screen_title">Mağazayı Bağla</string>
     <string name="store_creation_domain_picker_suggestions_title">Öneriler</string>
     <string name="store_creation_domain_picker_skip_button">Atla</string>
