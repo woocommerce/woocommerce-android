@@ -1,8 +1,17 @@
 package com.woocommerce.android.ui.login.jetpack.main
 
+import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.AnimatedVisibilityScope
+import androidx.compose.animation.ExperimentalAnimationApi
+import androidx.compose.animation.core.AnimationConstants.DefaultDurationMillis
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.core.updateTransition
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
 import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
+import androidx.compose.animation.with
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -30,7 +39,12 @@ import androidx.compose.material.TopAppBar
 import androidx.compose.material.icons.Icons.Filled
 import androidx.compose.material.icons.filled.Clear
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.StrokeCap
@@ -43,6 +57,8 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.tooling.preview.PreviewParameter
+import androidx.compose.ui.tooling.preview.PreviewParameterProvider
 import androidx.compose.ui.unit.dp
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.compose.annotatedStringRes
@@ -51,6 +67,7 @@ import com.woocommerce.android.ui.compose.component.WCOutlinedButton
 import com.woocommerce.android.ui.compose.component.WCTextButton
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.ui.login.jetpack.components.JetpackToWooHeader
+import kotlinx.coroutines.delay
 
 private const val FORBIDDEN_ERROR_CODE = 403
 
@@ -67,6 +84,7 @@ fun JetpackActivationMainScreen(viewModel: JetpackActivationMainViewModel) {
     }
 }
 
+@OptIn(ExperimentalAnimationApi::class)
 @Composable
 fun JetpackActivationMainScreen(
     viewState: JetpackActivationMainViewModel.ViewState,
@@ -78,26 +96,41 @@ fun JetpackActivationMainScreen(
     Scaffold(
         topBar = { Toolbar(onCloseClick) }
     ) { paddingValues ->
-        val modifier = Modifier
-            .background(MaterialTheme.colors.surface)
-            .fillMaxSize()
-            .padding(paddingValues)
-            .padding(dimensionResource(id = R.dimen.major_100))
-            .verticalScroll(rememberScrollState())
+        val transition = updateTransition(targetState = viewState, label = "State Transition")
 
-        when (viewState) {
-            is JetpackActivationMainViewModel.ViewState.ProgressViewState -> ProgressState(
-                viewState = viewState,
-                onContinueClick = onContinueClick,
-                modifier = modifier
-            )
-            is JetpackActivationMainViewModel.ViewState.ErrorViewState -> ErrorState(
-                viewState = viewState,
-                onGetHelpClick = onGetHelpClick,
-                onRetryClick = onRetryClick,
-                onCancelClick = onCloseClick,
-                modifier = modifier
-            )
+        Column(
+            modifier = Modifier
+                .background(MaterialTheme.colors.surface)
+                .fillMaxSize()
+                .padding(paddingValues)
+                .padding(dimensionResource(id = R.dimen.major_100))
+                .verticalScroll(rememberScrollState())
+        ) {
+            JetpackToWooHeader(isError = viewState is JetpackActivationMainViewModel.ViewState.ErrorViewState)
+
+            Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.major_200)))
+
+            transition.AnimatedContent(
+                contentKey = { it is JetpackActivationMainViewModel.ViewState.ErrorViewState },
+                transitionSpec = {
+                    fadeIn(animationSpec = tween(DefaultDurationMillis, delayMillis = DefaultDurationMillis)) with
+                        fadeOut(animationSpec = tween(DefaultDurationMillis))
+                },
+                modifier = Modifier.weight(1f)
+            ) { targetState ->
+                when (targetState) {
+                    is JetpackActivationMainViewModel.ViewState.ProgressViewState -> ProgressState(
+                        viewState = targetState,
+                        onContinueClick = onContinueClick
+                    )
+                    is JetpackActivationMainViewModel.ViewState.ErrorViewState -> ErrorState(
+                        viewState = targetState,
+                        onGetHelpClick = onGetHelpClick,
+                        onRetryClick = onRetryClick,
+                        onCancelClick = onCloseClick
+                    )
+                }
+            }
         }
     }
 }
@@ -106,13 +139,11 @@ fun JetpackActivationMainScreen(
 private fun ProgressState(
     viewState: JetpackActivationMainViewModel.ViewState.ProgressViewState,
     onContinueClick: () -> Unit,
-    modifier: Modifier
+    modifier: Modifier = Modifier
 ) {
     Column(
         modifier = modifier
     ) {
-        JetpackToWooHeader()
-        Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.major_200)))
         val title = if (viewState.isDone) {
             if (viewState.isJetpackInstalled) R.string.login_jetpack_connection_steps_screen_title_done
             else R.string.login_jetpack_installation_steps_screen_title_done
@@ -156,20 +187,19 @@ private fun ProgressState(
     }
 }
 
+@OptIn(ExperimentalAnimationApi::class)
 @Composable
 @Suppress("ComplexMethod")
-private fun ErrorState(
+private fun AnimatedVisibilityScope.ErrorState(
     viewState: JetpackActivationMainViewModel.ViewState.ErrorViewState,
     onGetHelpClick: () -> Unit,
     onRetryClick: () -> Unit,
     onCancelClick: () -> Unit,
-    modifier: Modifier
+    modifier: Modifier = Modifier
 ) {
     Column(
         modifier = modifier
     ) {
-        JetpackToWooHeader(isError = true)
-        Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.major_200)))
         val title = when (viewState.stepType) {
             JetpackActivationMainViewModel.StepType.Installation -> R.string.login_jetpack_installation_error_installing
             JetpackActivationMainViewModel.StepType.Activation -> R.string.login_jetpack_installation_error_activating
@@ -230,6 +260,14 @@ private fun ErrorState(
             }
         }
         Spacer(modifier = Modifier.weight(1f))
+        val buttonsModifier = Modifier
+            .fillMaxWidth()
+            .animateEnterExit(
+                enter = slideInVertically(animationSpec = tween(delayMillis = DefaultDurationMillis)) { fullHeight ->
+                    fullHeight
+                },
+                exit = slideOutVertically { fullHeight -> fullHeight }
+            )
         if (viewState.errorCode != FORBIDDEN_ERROR_CODE) {
             val retryButton = when (viewState.stepType) {
                 JetpackActivationMainViewModel.StepType.Installation ->
@@ -241,12 +279,12 @@ private fun ErrorState(
                 else -> null
             }
             retryButton?.let {
-                WCColoredButton(onClick = onRetryClick, modifier = Modifier.fillMaxWidth()) {
+                WCColoredButton(onClick = onRetryClick, modifier = buttonsModifier) {
                     Text(text = stringResource(id = it))
                 }
             }
         }
-        WCOutlinedButton(onClick = onCancelClick, modifier = Modifier.fillMaxWidth()) {
+        WCOutlinedButton(onClick = onCancelClick, modifier = buttonsModifier) {
             Text(text = stringResource(id = R.string.login_jetpack_installation_cancel))
         }
     }
@@ -384,12 +422,11 @@ private fun Toolbar(
     )
 }
 
-@Composable
-@Preview
-private fun JetpackActivationMainScreenPreview() {
-    WooThemeWithBackground {
-        JetpackActivationMainScreen(
-            viewState = JetpackActivationMainViewModel.ViewState.ProgressViewState(
+@Suppress("MagicNumber")
+private class ViewStatePreviewProvider : PreviewParameterProvider<JetpackActivationMainViewModel.ViewState> {
+    override val values: Sequence<JetpackActivationMainViewModel.ViewState>
+        get() = sequenceOf(
+            JetpackActivationMainViewModel.ViewState.ProgressViewState(
                 siteUrl = "reallyniceshirts.com",
                 isJetpackInstalled = false,
                 steps = listOf(
@@ -415,20 +452,72 @@ private fun JetpackActivationMainScreenPreview() {
                     )
                 ),
                 connectionStep = JetpackActivationMainViewModel.ConnectionStep.PreConnection
+            ),
+            JetpackActivationMainViewModel.ViewState.ErrorViewState(
+                stepType = JetpackActivationMainViewModel.StepType.Installation,
+                errorCode = 503
             )
+        )
+}
+
+@Composable
+@Preview
+private fun JetpackActivationPreview(
+    @PreviewParameter(provider = ViewStatePreviewProvider::class) state: JetpackActivationMainViewModel.ViewState
+) {
+    WooThemeWithBackground {
+        JetpackActivationMainScreen(
+            viewState = state
         )
     }
 }
 
 @Composable
 @Preview
-private fun JetpackActivationErrorStatePreview() {
+private fun JetpackActivationProgressToErrorPreview() {
+    val defaultState = JetpackActivationMainViewModel.ViewState.ProgressViewState(
+        siteUrl = "reallyniceshirts.com",
+        isJetpackInstalled = false,
+        steps = listOf(
+            JetpackActivationMainViewModel.Step(
+                type = JetpackActivationMainViewModel.StepType.Installation,
+                state = JetpackActivationMainViewModel.StepState.Success
+            ),
+            JetpackActivationMainViewModel.Step(
+                type = JetpackActivationMainViewModel.StepType.Activation,
+                state = JetpackActivationMainViewModel.StepState.Error(503)
+            ),
+            JetpackActivationMainViewModel.Step(
+                type = JetpackActivationMainViewModel.StepType.Connection,
+                state = JetpackActivationMainViewModel.StepState.Idle
+            ),
+            JetpackActivationMainViewModel.Step(
+                type = JetpackActivationMainViewModel.StepType.Done,
+                state = JetpackActivationMainViewModel.StepState.Idle
+            )
+        ),
+        connectionStep = JetpackActivationMainViewModel.ConnectionStep.PreConnection
+    )
+    val errorState = JetpackActivationMainViewModel.ViewState.ErrorViewState(
+        stepType = JetpackActivationMainViewModel.StepType.Activation,
+        errorCode = 503
+    )
+
+    var state: JetpackActivationMainViewModel.ViewState by remember { mutableStateOf(defaultState) }
+    var retryTrigger by remember { mutableStateOf(false) }
+
+    LaunchedEffect(retryTrigger) {
+        delay(1000)
+        state = errorState
+    }
+
     WooThemeWithBackground {
         JetpackActivationMainScreen(
-            viewState = JetpackActivationMainViewModel.ViewState.ErrorViewState(
-                stepType = JetpackActivationMainViewModel.StepType.Installation,
-                errorCode = 503
-            )
+            viewState = state,
+            onRetryClick = {
+                state = defaultState
+                retryTrigger = !retryTrigger
+            }
         )
     }
 }
