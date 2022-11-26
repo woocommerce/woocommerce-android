@@ -39,8 +39,6 @@ Language: ru
     <string name="variation_list_generate_all_variations">Создать все варианты</string>
     <string name="login_jetpack_connect">Подключить Jetpack</string>
     <string name="login_jetpack_installation_credentials_hint">Чтобы начать установку, нужны учётные данные магазина.</string>
-    <string name="login_jetpack_connection_explanation">Чтобы использовать это приложение с &lt;br&gt;&lt;b&gt;%1$s&lt;/b&gt;&lt;br&gt;, нужно подключить магазин к Jetpack.</string>
-    <string name="login_jetpack_installation_explanation">Чтобы использовать это приложение с &lt;br&gt;&lt;b&gt;%1$s&lt;/b&gt;&lt;br&gt;, нужно установить и подключить к магазину бесплатный плагин Jetpack.</string>
     <string name="login_jetpack_installation_screen_title">Подключение магазина</string>
     <string name="store_creation_domain_picker_suggestions_title">Варианты</string>
     <string name="store_creation_domain_picker_skip_button">Пропустить</string>

@@ -39,8 +39,6 @@ Language: fr
     <string name="variation_list_generate_all_variations">Générer toutes les variantes</string>
     <string name="login_jetpack_connect">Connecter Jetpack</string>
     <string name="login_jetpack_installation_credentials_hint">Vous aurez besoin des identifiants de connexion de votre boutique pour lancer l’installation.</string>
-    <string name="login_jetpack_connection_explanation">Pour utiliser cette application pour &lt;br&gt;&lt;b&gt;%1$s&lt;/b&gt;&lt;br&gt;, vous devez associer votre boutique à Jetpack.</string>
-    <string name="login_jetpack_installation_explanation">Pour utiliser cette application pour &lt;br&gt;&lt;b&gt;%1$s&lt;/b&gt;&lt;br&gt;, l’extension Jetpack doit être installée et connectée sur votre boutique.</string>
     <string name="login_jetpack_installation_screen_title">Associer la boutique</string>
     <string name="store_creation_domain_picker_suggestions_title">Suggestions</string>
     <string name="store_creation_domain_picker_skip_button">Skip</string>

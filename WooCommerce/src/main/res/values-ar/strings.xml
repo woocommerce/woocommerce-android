@@ -39,8 +39,6 @@ Language: ar
     <string name="variation_list_generate_all_variations">إنشاء كل التباينات</string>
     <string name="login_jetpack_connect">الاتصال بـ Jetpack</string>
     <string name="login_jetpack_installation_credentials_hint">ستحتاج إلى بيانات اعتماد متجرك لبدء التثبيت.</string>
-    <string name="login_jetpack_connection_explanation">لاستخدام هذا التطبيق الخاص بـ &lt;br&gt;&lt;b&gt;%1$s&lt;/b&gt;&lt;br&gt;، سيتعين عليك ربط متجرك بـ Jetpack.</string>
-    <string name="login_jetpack_installation_explanation">لاستخدام هذا التطبيق مقابل&lt;br&gt;&lt;b&gt;%1$s&lt;/b&gt;&lt;br&gt;، سيتعين عليك تثبيت إضافة Jetpack المجانية وربطها بمتجرك.</string>
     <string name="login_jetpack_installation_screen_title">ربط المتجر</string>
     <string name="store_creation_domain_picker_suggestions_title">اقتراحات</string>
     <string name="store_creation_domain_picker_skip_button">تخطٍ</string>

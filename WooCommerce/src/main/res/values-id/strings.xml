@@ -39,8 +39,6 @@ Language: id
     <string name="variation_list_generate_all_variations">Buat semua variasi</string>
     <string name="login_jetpack_connect">Sambungkan ke Jetpack</string>
     <string name="login_jetpack_installation_credentials_hint">Anda memerlukan kredensial toko untuk memulai instalasi.</string>
-    <string name="login_jetpack_connection_explanation">Agar dapat menggunakan aplikasi ini untuk&lt;br&gt;&lt;b&gt;%1$s&lt;/b&gt;&lt;br&gt;, Anda perlu menghubungkan toko Anda ke Jetpack.</string>
-    <string name="login_jetpack_installation_explanation">Agar dapat menggunakan aplikasi ini untuk &lt;br&gt;&lt;b&gt;%1$s&lt;/b&gt;&lt;br&gt;, Anda perlu menginstal dan menghubungkan plugin Jetpack gratis ke toko Anda.</string>
     <string name="login_jetpack_installation_screen_title">Hubungkan Toko</string>
     <string name="store_creation_domain_picker_suggestions_title">Saran</string>
     <string name="store_creation_domain_picker_skip_button">Lewati</string>

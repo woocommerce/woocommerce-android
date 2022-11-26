@@ -39,8 +39,6 @@ Language: pt_BR
     <string name="variation_list_generate_all_variations">Gerar todas as variações</string>
     <string name="login_jetpack_connect">Conectar o Jetpack</string>
     <string name="login_jetpack_installation_credentials_hint">Você precisará das credenciais da sua loja para começar a instalação.</string>
-    <string name="login_jetpack_connection_explanation">Para usar este aplicativo para &lt;br&gt;&lt;b&gt;%1$s,&lt;/b&gt;&lt;br&gt;você precisa conectar sua loja ao Jetpack.</string>
-    <string name="login_jetpack_installation_explanation">Para usar este aplicativo para &lt;br&gt;&lt;b&gt;%1$s,&lt;/b&gt;&lt;br&gt;será necessário ter o plugin gratuito do Jetpack instalado e conectado à sua loja.</string>
     <string name="login_jetpack_installation_screen_title">Conectar loja</string>
     <string name="store_creation_domain_picker_suggestions_title">Sugestões</string>
     <string name="store_creation_domain_picker_skip_button">Pular</string>
