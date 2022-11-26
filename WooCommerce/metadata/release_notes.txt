@@ -1,3 +1,1 @@
-- [*] [Internal] JITM: Make an api call to fetch JITMs on pull to refresh in the MyStore screen [https://github.com/woocommerce/woocommerce-android/pull/7938]
-- [*] [Internal] Add support for installing and connecting Jetpack natively, still behind an AB test [https://github.com/woocommerce/woocommerce-android/pull/7889]
-
+We focused on some stability and performance issues to make your experience smoother. Please keep sharing feedback. We read every one of them.
