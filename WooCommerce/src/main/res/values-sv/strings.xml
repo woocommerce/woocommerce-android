@@ -1,11 +1,47 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2022-11-15 14:54:03+0000
+Translation-Revision-Date: 2022-11-24 09:54:23+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: sv_SE
 -->
 <resources>
+    <string name="store_creation_store_name_hint">Butiksnamn</string>
+    <string name="store_creation_store_name_subtitle">Oroa dig inte, du kan alltid ändra det senare. </string>
+    <string name="store_creation_store_name_title">Vilket är ditt butiksnamn?</string>
+    <string name="store_creation_store_name_caption">Om din butik</string>
+    <string name="store_creation_installation_show_preview_button">Butiksförhandsgranskning</string>
+    <string name="store_creation_installation_manage_store_button">Hantera min butik</string>
+    <string name="store_creation_installation_success">Din butik har skapats!</string>
+    <string name="store_creation_installation_error">Ett fel uppstod under installationen. Försök igen …</string>
+    <string name="store_creation_ecommerce_plan_feature_sales">Försäljningskanaler</string>
+    <string name="store_creation_ecommerce_plan_feature_shipping_labels">Fraktsedlar</string>
+    <string name="store_creation_ecommerce_plan_feature_payments">Flera betalningsalternativ</string>
+    <string name="store_creation_ecommerce_plan_feature_reports">E-handelsrapporter</string>
+    <string name="store_creation_ecommerce_plan_feature_subscriptions">Prenumerationer och presentkort</string>
+    <string name="store_creation_ecommerce_plan_feature_products">Obegränsat antal produkter</string>
+    <string name="store_creation_ecommerce_plan_feature_themes">Premium-teman</string>
+    <string name="store_creation_ecommerce_plan_period_year">år</string>
+    <string name="store_creation_ecommerce_plan_period_month">månad</string>
+    <string name="store_creation_ecommerce_plan_refund_reminder">Det finns ingen risk. Om du avbryter inom 30 dagar får du en fullständig återbetalning.</string>
+    <string name="store_creation_ecommerce_plan_purchase_button_title">Skapa butik för %1$s</string>
+    <string name="store_creation_ecommerce_plan_powered_by">Drivs med</string>
+    <string name="store_creation_ecommerce_plan_features_tagline">Alla funktioner du behöver, redan inbyggda.</string>
+    <string name="store_creation_ecommerce_plan_error">Det gick inte att läsa in paketinformationen …</string>
+    <string name="store_creation_summary_primary_button">Fortsätt till betalning</string>
+    <string name="store_creation_summary_subtitle">Din butik kommer att skapas utifrån de alternativ du väljer.</string>
+    <string name="store_creation_summary_title">Min butik</string>
+    <string name="randomly_update_reader">Slumpmässigt</string>
+    <string name="never_update_reader">Aldrig</string>
+    <string name="always_update_reader">Alltid</string>
+    <string name="update_simulated_reader_key">Uppdatera simulerad läsarnyckel</string>
+    <string name="update_simulated_reader">Uppdatera simulerad kortläsare</string>
+    <string name="variation_list_generate_all_variations">Generera alla variationer</string>
+    <string name="login_jetpack_connect">Anslut Jetpack</string>
+    <string name="login_jetpack_installation_credentials_hint">Du behöver autentiseringsuppgifterna för din butik för att påbörja installationen.</string>
+    <string name="login_jetpack_connection_explanation">För att använda den här appen för &lt;br&gt;&lt;b&gt;%1$s&lt;/b&gt;&lt;br&gt; behöver du ansluta din butik till Jetpack.</string>
+    <string name="login_jetpack_installation_explanation">För att använda den här appen för &lt;br&gt;&lt;b&gt;%1$s&lt;/b&gt;&lt;br&gt; behöver du ha installerat och anslutit det kostnadsfria Jetpack-tillägget för din butik.</string>
+    <string name="login_jetpack_installation_screen_title">Anslut butik</string>
     <string name="store_creation_domain_picker_suggestions_title">Förslag</string>
     <string name="store_creation_domain_picker_skip_button">Hoppa över</string>
     <string name="store_creation_domain_picker_hint">Skriv en domän</string>
@@ -51,8 +87,6 @@ Language: sv_SE
     <string name="analytics_orders_no_data">Inga beställningar denna period</string>
     <string name="analytics_revenue_no_data">Inga intäkter denna period</string>
     <string name="analytics_revenue_card_title">Intäkt</string>
-    <string name="analytics_see_report_button_content_description">Se mer rapportdetaljer</string>
-    <string name="analytics_see_report_button_text">Se rapport</string>
     <string name="analytics_date_range_custom">%1$s – %2$s</string>
     <string name="analytics_see_more">Se mer</string>
     <string name="signup_api_generic_error">Vi kunde inte skapa ett konto med de angivna autentiseringsuppgifterna. Prova med en annan e-postadress.</string>
@@ -420,8 +454,7 @@ Language: sv_SE
     <string name="product_ratings_count_one">\u2022  en godkänd recension</string>
     <string name="product_ratings_count">\u2022  %d godkända recensioner</string>
     <string name="tax_name_with_tax_percent">%1$s (%2$s%%)</string>
-    <string name="orderlist_simple_payments_wip_message_enabled">Vi har jobbat på att göra det möjligt att skapa beställningar och ta emot betalningar från din enhet. Du kan prova dessa funktioner genom att trycka på \"+\"-knappen</string>
-    <string name="orderlist_simple_payments_wip_title">Skapa beställningar och ta emot betalningar.</string>
+    <string name="orderlist_simple_payments_wip_message_enabled">Vi har jobbat på att göra det möjligt att skapa beställningar från din enhet. Du kan prova den här funktionen genom att trycka på \"+\"-knappen</string>
     <string name="empty_inbox_description">Kom tillbaka snart för fler tips och insikter om hur du får din butik att växa</string>
     <string name="empty_inbox_title">Grattis, du har läst allt!</string>
     <string name="orderstatus_contentDesc_withStatus">Beställningsstatus: %s</string>
@@ -614,6 +647,7 @@ Language: sv_SE
     <string name="simple_payments_enter_amount">Ange belopp</string>
     <string name="simple_payments_dialog_title">Ta emot betalning</string>
     <string name="orderlist_simple_payments_menu">Enkel betalning</string>
+    <string name="orderlist_simple_payments_wip_title">Skapa beställningar från din enhet!</string>
     <string name="analytics">Analys</string>
     <string name="jetpack_install_progress_step_four_message">Allt klart</string>
     <string name="jetpack_install_progress_step_three_message">Ansluter din butik</string>

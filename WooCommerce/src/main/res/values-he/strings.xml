@@ -51,8 +51,6 @@ Language: he_IL
     <string name="analytics_orders_no_data">אין הזמנות בתקופה זאת</string>
     <string name="analytics_revenue_no_data">אין רווחים בתקופה זאת</string>
     <string name="analytics_revenue_card_title">רווחים</string>
-    <string name="analytics_see_report_button_content_description">להציג פרטים נוספים של הדוח</string>
-    <string name="analytics_see_report_button_text">להציג את הדוח</string>
     <string name="analytics_date_range_custom">%1$s – %2$s</string>
     <string name="analytics_see_more">להציג עוד</string>
     <string name="signup_api_generic_error">מצטערים, לא הצלחנו ליצור חשבון עבור פרטי הכניסה שסופקו. יש לנסות שוב עם אימייל שונה.</string>
@@ -420,8 +418,6 @@ Language: he_IL
     <string name="product_ratings_count_one">\u2022  ביקורת אחת אושרה</string>
     <string name="product_ratings_count">\u2022  %d ביקורות אושרו</string>
     <string name="tax_name_with_tax_percent">%1$s (%2$s%%)</string>
-    <string name="orderlist_simple_payments_wip_message_enabled">אנחנו כרגע עובדים על אפשרות ליצור הזמנות ולקבל תשלומים מהמכשיר שלך! אפשר לנסות את האפשרויות האלו על ידי הקשה על הכפתור +</string>
-    <string name="orderlist_simple_payments_wip_title">ליצור הזמנות ולקבל תשלומים!</string>
     <string name="empty_inbox_description">כדאי לחזור בקרוב כדי לקבל עצות ותובנות נוספות להגדלת החנות שלך</string>
     <string name="empty_inbox_title">ברכותינו, קראת הכול!</string>
     <string name="orderstatus_contentDesc_withStatus">סטטוס הזמנה: %s</string>
