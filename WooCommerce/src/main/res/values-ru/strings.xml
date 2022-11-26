@@ -1,11 +1,47 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2022-11-14 14:54:04+0000
+Translation-Revision-Date: 2022-11-23 16:54:03+0000
 Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);
 Generator: GlotPress/2.4.0-alpha
 Language: ru
 -->
 <resources>
+    <string name="store_creation_store_name_hint">Название магазина</string>
+    <string name="store_creation_store_name_subtitle">Не беспокойтесь, вы сможете изменить его позднее. </string>
+    <string name="store_creation_store_name_title">Как называется ваш магазин?</string>
+    <string name="store_creation_store_name_caption">О магазине</string>
+    <string name="store_creation_installation_show_preview_button">Предварительный просмотр магазина</string>
+    <string name="store_creation_installation_manage_store_button">Управление магазином</string>
+    <string name="store_creation_installation_success">Магазин создан.</string>
+    <string name="store_creation_installation_error">Во время установки произошла ошибка, повторите попытку…</string>
+    <string name="store_creation_ecommerce_plan_feature_sales">Каналы продаж</string>
+    <string name="store_creation_ecommerce_plan_feature_shipping_labels">Транспортные этикетки</string>
+    <string name="store_creation_ecommerce_plan_feature_payments">Несколько способов оплаты</string>
+    <string name="store_creation_ecommerce_plan_feature_reports">Отчёты eCommerce</string>
+    <string name="store_creation_ecommerce_plan_feature_subscriptions">Подписки и подарочные карты</string>
+    <string name="store_creation_ecommerce_plan_feature_products">Неограниченное количество продуктов</string>
+    <string name="store_creation_ecommerce_plan_feature_themes">Премиум-темы</string>
+    <string name="store_creation_ecommerce_plan_period_year">год</string>
+    <string name="store_creation_ecommerce_plan_period_month">месяц</string>
+    <string name="store_creation_ecommerce_plan_refund_reminder">Никаких рисков: можно отменить подписку в течение 30 дней и получить полную компенсацию.</string>
+    <string name="store_creation_ecommerce_plan_purchase_button_title">Создать магазин за %1$s</string>
+    <string name="store_creation_ecommerce_plan_powered_by">При поддержке</string>
+    <string name="store_creation_ecommerce_plan_features_tagline">Все необходимые функции к вашим услугам.</string>
+    <string name="store_creation_ecommerce_plan_error">Не удалось загрузить информацию о тарифном плане…</string>
+    <string name="store_creation_summary_primary_button">Перейти к оплате</string>
+    <string name="store_creation_summary_subtitle">При создании магазина будут учтены выбранные опции!</string>
+    <string name="store_creation_summary_title">Мой магазин</string>
+    <string name="randomly_update_reader">Случайно</string>
+    <string name="never_update_reader">Никогда</string>
+    <string name="always_update_reader">Всегда</string>
+    <string name="update_simulated_reader_key">Обновить смоделированный ключ устройства чтения</string>
+    <string name="update_simulated_reader">Обновить смоделированное устройство чтения карт</string>
+    <string name="variation_list_generate_all_variations">Создать все варианты</string>
+    <string name="login_jetpack_connect">Подключить Jetpack</string>
+    <string name="login_jetpack_installation_credentials_hint">Чтобы начать установку, нужны учётные данные магазина.</string>
+    <string name="login_jetpack_connection_explanation">Чтобы использовать это приложение с &lt;br&gt;&lt;b&gt;%1$s&lt;/b&gt;&lt;br&gt;, нужно подключить магазин к Jetpack.</string>
+    <string name="login_jetpack_installation_explanation">Чтобы использовать это приложение с &lt;br&gt;&lt;b&gt;%1$s&lt;/b&gt;&lt;br&gt;, нужно установить и подключить к магазину бесплатный плагин Jetpack.</string>
+    <string name="login_jetpack_installation_screen_title">Подключение магазина</string>
     <string name="store_creation_domain_picker_suggestions_title">Варианты</string>
     <string name="store_creation_domain_picker_skip_button">Пропустить</string>
     <string name="store_creation_domain_picker_hint">Укажите домен</string>
@@ -51,8 +87,6 @@ Language: ru
     <string name="analytics_orders_no_data">Нет заказов за указанный период</string>
     <string name="analytics_revenue_no_data">Нет доходов за указанный период</string>
     <string name="analytics_revenue_card_title">Доход</string>
-    <string name="analytics_see_report_button_content_description">Смотреть подробные сведения по отчету</string>
-    <string name="analytics_see_report_button_text">Смотреть отчет</string>
     <string name="analytics_date_range_custom">%1$s — %2$s</string>
     <string name="analytics_see_more">Подробнее</string>
     <string name="signup_api_generic_error">К сожалению, не удалось создать учётную запись с указанными учётными данными. Укажите другой адрес эл. почты.</string>
@@ -420,8 +454,7 @@ Language: ru
     <string name="product_ratings_count_one">\u2022  один подтверждённый отзыв</string>
     <string name="product_ratings_count">\u2022 подтверждённые отзывы:  %d</string>
     <string name="tax_name_with_tax_percent">%1$s (%2$s%%)</string>
-    <string name="orderlist_simple_payments_wip_message_enabled">Мы работаем над функцией, которая поможет создавать заказы и принимать платежи на вашем устройстве! Эти возможности можно испытать, нажав кнопку \"+\"</string>
-    <string name="orderlist_simple_payments_wip_title">Создавайте заказы и принимайте платежи!</string>
+    <string name="orderlist_simple_payments_wip_message_enabled">Мы работаем над функцией, которая поможет создавать заказы на вашем устройстве! Вы можете попробовать эту функцию, нажав кнопку «+»</string>
     <string name="empty_inbox_description">Зайдите позже, чтобы узнать больше советов и идей по развитию вашего магазина</string>
     <string name="empty_inbox_title">Поздравляем, вы прочитали все примечания!</string>
     <string name="orderstatus_contentDesc_withStatus">Статус заказа: %s</string>
@@ -614,6 +647,7 @@ Language: ru
     <string name="simple_payments_enter_amount">Введите сумму</string>
     <string name="simple_payments_dialog_title">Получить оплату</string>
     <string name="orderlist_simple_payments_menu">Платёж без хлопот</string>
+    <string name="orderlist_simple_payments_wip_title">Создавайте заказы на своём устройстве!</string>
     <string name="analytics">Аналитика</string>
     <string name="jetpack_install_progress_step_four_message">Все готово</string>
     <string name="jetpack_install_progress_step_three_message">Подключение вашего магазина</string>

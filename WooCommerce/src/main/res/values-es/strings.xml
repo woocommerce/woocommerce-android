@@ -1,11 +1,47 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2022-11-16 16:54:04+0000
+Translation-Revision-Date: 2022-11-24 09:54:22+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: es
 -->
 <resources>
+    <string name="store_creation_store_name_hint">Nombre de la tienda</string>
+    <string name="store_creation_store_name_subtitle">No te preocupes, si quieres, podrás cambiarlo más adelante. </string>
+    <string name="store_creation_store_name_title">¿Cómo se llama tu tienda?</string>
+    <string name="store_creation_store_name_caption">Acerca de tu tienda</string>
+    <string name="store_creation_installation_show_preview_button">Vista previa de la tienda</string>
+    <string name="store_creation_installation_manage_store_button">Gestionar mi tienda</string>
+    <string name="store_creation_installation_success">¡Se ha creado tu tienda!</string>
+    <string name="store_creation_installation_error">Ha ocurrido un error durante la instalación. Inténtalo de nuevo…</string>
+    <string name="store_creation_ecommerce_plan_feature_sales">Canales de venta</string>
+    <string name="store_creation_ecommerce_plan_feature_shipping_labels">Etiquetas de envío</string>
+    <string name="store_creation_ecommerce_plan_feature_payments">Varias opciones de pago</string>
+    <string name="store_creation_ecommerce_plan_feature_reports">Informes de eCommerce</string>
+    <string name="store_creation_ecommerce_plan_feature_subscriptions">Suscripciones y tarjetas regalo</string>
+    <string name="store_creation_ecommerce_plan_feature_products">Productos ilimitados</string>
+    <string name="store_creation_ecommerce_plan_feature_themes">Temas Premium</string>
+    <string name="store_creation_ecommerce_plan_period_year">año</string>
+    <string name="store_creation_ecommerce_plan_period_month">mes</string>
+    <string name="store_creation_ecommerce_plan_refund_reminder">No hay riesgo, puedes cancelar para un reembolso total durante 30 días.</string>
+    <string name="store_creation_ecommerce_plan_purchase_button_title">Crear una tienda por %1$s</string>
+    <string name="store_creation_ecommerce_plan_powered_by">Usa la tecnología de</string>
+    <string name="store_creation_ecommerce_plan_features_tagline">Todas las funciones que necesitas ya están diseñadas.</string>
+    <string name="store_creation_ecommerce_plan_error">No se ha podido cargar la información del plan…</string>
+    <string name="store_creation_summary_primary_button">Continuar con el pago</string>
+    <string name="store_creation_summary_subtitle">Tu tienda se creará en función de las opciones que elijas.</string>
+    <string name="store_creation_summary_title">Mi tienda</string>
+    <string name="randomly_update_reader">Aleatoriamente</string>
+    <string name="never_update_reader">Nunca</string>
+    <string name="always_update_reader">Siempre</string>
+    <string name="update_simulated_reader_key">Actualizar clave del lector simulado</string>
+    <string name="update_simulated_reader">Actualizar lector de tarjeta simulado</string>
+    <string name="variation_list_generate_all_variations">Generar todas las variaciones</string>
+    <string name="login_jetpack_connect">Conectar Jetpack</string>
+    <string name="login_jetpack_installation_credentials_hint">Necesitarás las credenciales de tu tienda para comenzar la instalación.</string>
+    <string name="login_jetpack_connection_explanation">Para usar esta aplicación para&lt;br&gt;&lt;b&gt;%1$s&lt;/b&gt;&lt;br&gt;deberás conectar tu tienda con Jetpack.</string>
+    <string name="login_jetpack_installation_explanation">Para usar esta aplicación para&lt;br&gt;&lt;b&gt;%1$s&lt;/b&gt;&lt;br&gt;deberás tener el plugin gratuito de Jetpack instalado y conectado en tu tienda.</string>
+    <string name="login_jetpack_installation_screen_title">Conectar tienda</string>
     <string name="store_creation_domain_picker_suggestions_title">Sugerencias</string>
     <string name="store_creation_domain_picker_skip_button">Omitir</string>
     <string name="store_creation_domain_picker_hint">Introduce un dominio</string>
@@ -51,8 +87,6 @@ Language: es
     <string name="analytics_orders_no_data">Sin pedidos en este periodo</string>
     <string name="analytics_revenue_no_data">Sin ingresos en este periodo</string>
     <string name="analytics_revenue_card_title">Ingresos</string>
-    <string name="analytics_see_report_button_content_description">Ver más detalles del informe</string>
-    <string name="analytics_see_report_button_text">Ver informe</string>
     <string name="analytics_date_range_custom">%1$s - %2$s</string>
     <string name="analytics_see_more">Ver más</string>
     <string name="signup_api_generic_error">No hemos podido crear una cuenta con las credenciales proporcionadas. Inténtalo con otra dirección de correo electrónico.</string>
@@ -420,8 +454,7 @@ Language: es
     <string name="product_ratings_count_one">\u2022  una reseña aprobada</string>
     <string name="product_ratings_count">\u2022  %d reseñas aprobadas</string>
     <string name="tax_name_with_tax_percent">%1$s (%2$s%%)</string>
-    <string name="orderlist_simple_payments_wip_message_enabled">Estamos trabajando para que sea posible crear pedidos y aceptar pagos desde tu dispositivo. Puedes probar estas funciones tocando el botón \"+\"</string>
-    <string name="orderlist_simple_payments_wip_title">¡Crea pedidos y acepta pagos!</string>
+    <string name="orderlist_simple_payments_wip_message_enabled">Hemos estado trabajando para que puedas crear pedidos desde tu dispositivo. Puedes probar esta función tocando el botón \"+\"</string>
     <string name="empty_inbox_description">Pronto encontrarás más consejos e información para que tu tienda siga creciendo. ¡Te esperamos!</string>
     <string name="empty_inbox_title">¡Enhorabuena, has leído todo!</string>
     <string name="orderstatus_contentDesc_withStatus">Estado del pedido: %s</string>
@@ -614,6 +647,7 @@ Language: es
     <string name="simple_payments_enter_amount">Introducir importe</string>
     <string name="simple_payments_dialog_title">Aceptar pago</string>
     <string name="orderlist_simple_payments_menu">Pago simple</string>
+    <string name="orderlist_simple_payments_wip_title">¡Crea pedidos desde tu dispositivo!</string>
     <string name="analytics">Análisis</string>
     <string name="jetpack_install_progress_step_four_message">Todo listo</string>
     <string name="jetpack_install_progress_step_three_message">Conectando tu tienda</string>
