@@ -11,16 +11,16 @@ msgstr ""
 "Project-Id-Version: Release Notes & Play Store Descriptions\n"
 
 #. translators: Release notes for this version to be displayed in the Play Store. Limit to 500 characters including spaces and commas!
+msgctxt "release_note_114"
+msgid ""
+"11.4:\n"
+"We focused on some stability and performance issues to make your experience smoother. Please keep sharing feedback. We read every one of them.\n"
+msgstr ""
+
 msgctxt "release_note_113"
 msgid ""
 "11.3:\n"
 "This release has several fixes that makes it easier for you to manage your store from the app. Please continue to send us feedback – we are listening!\n"
-msgstr ""
-
-msgctxt "release_note_112"
-msgid ""
-"11.2:\n"
-"For this release, we focused on polishing a few things and taking care of minor bugs that our team found. Don’t be fooled – we are working on some pretty cool stuff for you all! Keep sharing feedback 💜\n"
 msgstr ""
 
 #. translators: Short description of the app to be displayed in the Play Store. Limit to 80 characters including spaces and commas!

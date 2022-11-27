@@ -1,11 +1,45 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2022-11-16 09:54:04+0000
+Translation-Revision-Date: 2022-11-24 15:54:18+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: nl
 -->
 <resources>
+    <string name="store_creation_store_name_hint">Winkelnaam</string>
+    <string name="store_creation_store_name_subtitle">Maak je geen zorgen, je kunt dit later altijd nog wijzigen. </string>
+    <string name="store_creation_store_name_title">Wat is de naam van je winkel?</string>
+    <string name="store_creation_store_name_caption">Over je winkel</string>
+    <string name="store_creation_installation_show_preview_button">Voorbeeldweergave winkel</string>
+    <string name="store_creation_installation_manage_store_button">Mijn winkel beheren</string>
+    <string name="store_creation_installation_success">Je winkel is gemaakt!</string>
+    <string name="store_creation_installation_error">Er is een fout opgetreden tijdens de installatie. Probeer opnieuw.</string>
+    <string name="store_creation_ecommerce_plan_feature_sales">Verkoopkanalen</string>
+    <string name="store_creation_ecommerce_plan_feature_shipping_labels">Verzendlabels</string>
+    <string name="store_creation_ecommerce_plan_feature_payments">Meerdere betaalopties</string>
+    <string name="store_creation_ecommerce_plan_feature_reports">Ecommerce-rapporten</string>
+    <string name="store_creation_ecommerce_plan_feature_subscriptions">Abonnementen en cadeaubonnen</string>
+    <string name="store_creation_ecommerce_plan_feature_products">Onbeperkte producten</string>
+    <string name="store_creation_ecommerce_plan_feature_themes">Premium-thema\'s</string>
+    <string name="store_creation_ecommerce_plan_period_year">jaar</string>
+    <string name="store_creation_ecommerce_plan_period_month">maand</string>
+    <string name="store_creation_ecommerce_plan_refund_reminder">Er is geen risico, je kan binnen 30 dagen annuleren voor een volledige terugbetaling.</string>
+    <string name="store_creation_ecommerce_plan_purchase_button_title">Winkel aanmaken voor %1$s</string>
+    <string name="store_creation_ecommerce_plan_powered_by">Mogelijk gemaakt door</string>
+    <string name="store_creation_ecommerce_plan_features_tagline">Alle functies die je nodig hebt, zijn al geïntegreerd.</string>
+    <string name="store_creation_ecommerce_plan_error">Kon de abonnementsinformatie niet laden…</string>
+    <string name="store_creation_summary_primary_button">Doorgaan naar betaling</string>
+    <string name="store_creation_summary_subtitle">Je winkel wordt aangemaakt op basis van de opties die jij kiest!</string>
+    <string name="store_creation_summary_title">Mijn winkel</string>
+    <string name="randomly_update_reader">Willekeurig</string>
+    <string name="never_update_reader">Nooit</string>
+    <string name="always_update_reader">Altijd</string>
+    <string name="update_simulated_reader_key">Sleutel gesimuleerde lezer bijwerken</string>
+    <string name="update_simulated_reader">Gesimuleerde kaartlezer bijwerken</string>
+    <string name="variation_list_generate_all_variations">Alle variaties genereren</string>
+    <string name="login_jetpack_connect">Verbinden met Jetpack</string>
+    <string name="login_jetpack_installation_credentials_hint">Je hebt de inloggegevens van je winkel nodig om de installatie te beginnen.</string>
+    <string name="login_jetpack_installation_screen_title">Winkel koppelen</string>
     <string name="store_creation_domain_picker_suggestions_title">Suggesties</string>
     <string name="store_creation_domain_picker_skip_button">Overslaan</string>
     <string name="store_creation_domain_picker_hint">Typ een domein</string>
@@ -51,8 +85,6 @@ Language: nl
     <string name="analytics_orders_no_data">Geen bestellingen deze periode</string>
     <string name="analytics_revenue_no_data">Geen omzet deze periode</string>
     <string name="analytics_revenue_card_title">Inkomsten</string>
-    <string name="analytics_see_report_button_content_description">Meer rapportdetails inzien</string>
-    <string name="analytics_see_report_button_text">Rapport inzien</string>
     <string name="analytics_date_range_custom">%1$s - %2$s</string>
     <string name="analytics_see_more">Meer zien</string>
     <string name="signup_api_generic_error">Sorry, we konden met de opgegeven gegevens geen account aanmaken. Probeer het met een ander e-mailadres.</string>
@@ -420,8 +452,7 @@ Language: nl
     <string name="product_ratings_count_one">\u2022  één goedgekeurde beoordeling</string>
     <string name="product_ratings_count">\u2022  %d goedgekeurde beoordelingen</string>
     <string name="tax_name_with_tax_percent">%1$s %2$s%%()</string>
-    <string name="orderlist_simple_payments_wip_message_enabled">We hebben hard gewerkt zodat je bestellingen kunt aanmaken en betalingen kunt aannemen vanaf je apparaat! Je kunt deze functies uitproberen door op de + knop te klikken</string>
-    <string name="orderlist_simple_payments_wip_title">Maak bestellingen aan en neem betalingen aan!</string>
+    <string name="orderlist_simple_payments_wip_message_enabled">We hebben hard gewerkt zodat jij vanaf je apparaat bestellingen aan kunt maken! Je kunt deze functie uitproberen door op de + knop te klikken</string>
     <string name="empty_inbox_description">We zien je snel weer terug voor meer tips en kennis over hoe je je winkel kunt laten groeien</string>
     <string name="empty_inbox_title">Gefeliciteerd, je hebt alles gelezen!</string>
     <string name="orderstatus_contentDesc_withStatus">Bestelstatus: %s</string>
@@ -614,6 +645,7 @@ Language: nl
     <string name="simple_payments_enter_amount">Voer bedrag in</string>
     <string name="simple_payments_dialog_title">Betaling ontvangen</string>
     <string name="orderlist_simple_payments_menu">Eenvoudige betaling</string>
+    <string name="orderlist_simple_payments_wip_title">Maak bestellingen aan vanaf je apparaat!</string>
     <string name="analytics">Analytische gegevens</string>
     <string name="jetpack_install_progress_step_four_message">Klaar</string>
     <string name="jetpack_install_progress_step_three_message">Je winkel koppelen</string>

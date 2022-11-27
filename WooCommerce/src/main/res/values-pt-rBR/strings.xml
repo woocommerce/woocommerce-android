@@ -1,11 +1,45 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2022-11-16 18:54:03+0000
+Translation-Revision-Date: 2022-11-24 15:54:18+0000
 Plural-Forms: nplurals=2; plural=(n > 1);
 Generator: GlotPress/2.4.0-alpha
 Language: pt_BR
 -->
 <resources>
+    <string name="store_creation_store_name_hint">Nome da loja</string>
+    <string name="store_creation_store_name_subtitle">Não se preocupe, você pode mudar isso mais tarde. </string>
+    <string name="store_creation_store_name_title">Qual o nome de sua loja?</string>
+    <string name="store_creation_store_name_caption">Sobre sua loja</string>
+    <string name="store_creation_installation_show_preview_button">Visualização da loja</string>
+    <string name="store_creation_installation_manage_store_button">Gerenciar minha loja</string>
+    <string name="store_creation_installation_success">Sua loja foi criada!</string>
+    <string name="store_creation_installation_error">Ocorreu um erro durante a instalação. Tente novamente…</string>
+    <string name="store_creation_ecommerce_plan_feature_sales">Canais de vendas</string>
+    <string name="store_creation_ecommerce_plan_feature_shipping_labels">Etiquetas de envio</string>
+    <string name="store_creation_ecommerce_plan_feature_payments">Várias opções de pagamento</string>
+    <string name="store_creation_ecommerce_plan_feature_reports">Relatórios de comércio eletrônico</string>
+    <string name="store_creation_ecommerce_plan_feature_subscriptions">Assinaturas e vales-presente</string>
+    <string name="store_creation_ecommerce_plan_feature_products">Produtos ilimitados</string>
+    <string name="store_creation_ecommerce_plan_feature_themes">Temas premium</string>
+    <string name="store_creation_ecommerce_plan_period_year">ano</string>
+    <string name="store_creation_ecommerce_plan_period_month">mês</string>
+    <string name="store_creation_ecommerce_plan_refund_reminder">Não tem risco. Você pode cancelar e receber um reembolso integral em até 30 dias.</string>
+    <string name="store_creation_ecommerce_plan_purchase_button_title">Criar loja para %1$s</string>
+    <string name="store_creation_ecommerce_plan_powered_by">Com tecnologia</string>
+    <string name="store_creation_ecommerce_plan_features_tagline">Todas as funcionalidades de que você precisa já integradas.</string>
+    <string name="store_creation_ecommerce_plan_error">Não foi possível carregar as informações do plano…</string>
+    <string name="store_creation_summary_primary_button">Continuar para o pagamento</string>
+    <string name="store_creation_summary_subtitle">Sua loja será criada com base nas suas escolhas!</string>
+    <string name="store_creation_summary_title">Minha loja</string>
+    <string name="randomly_update_reader">Aleatoriamente</string>
+    <string name="never_update_reader">Nunca</string>
+    <string name="always_update_reader">Sempre</string>
+    <string name="update_simulated_reader_key">Atualizar simulação de chave de leitor</string>
+    <string name="update_simulated_reader">Atualizar simulação de leitor de cartão</string>
+    <string name="variation_list_generate_all_variations">Gerar todas as variações</string>
+    <string name="login_jetpack_connect">Conectar o Jetpack</string>
+    <string name="login_jetpack_installation_credentials_hint">Você precisará das credenciais da sua loja para começar a instalação.</string>
+    <string name="login_jetpack_installation_screen_title">Conectar loja</string>
     <string name="store_creation_domain_picker_suggestions_title">Sugestões</string>
     <string name="store_creation_domain_picker_skip_button">Pular</string>
     <string name="store_creation_domain_picker_hint">Digite um domínio</string>
@@ -51,8 +85,6 @@ Language: pt_BR
     <string name="analytics_orders_no_data">Nenhum pedido neste período</string>
     <string name="analytics_revenue_no_data">Nenhuma receita neste período</string>
     <string name="analytics_revenue_card_title">Receita</string>
-    <string name="analytics_see_report_button_content_description">Ver mais detalhes de relatório</string>
-    <string name="analytics_see_report_button_text">Ver relatório</string>
     <string name="analytics_date_range_custom">%1$s - %2$s</string>
     <string name="analytics_see_more">Ver mais</string>
     <string name="signup_api_generic_error">Não foi possível criar uma conta com as credenciais fornecidas. Tente outro e-mail.</string>
@@ -420,8 +452,7 @@ Language: pt_BR
     <string name="product_ratings_count_one">\u2022  uma avaliação aprovada</string>
     <string name="product_ratings_count">\u2022  %d avaliações aprovadas</string>
     <string name="tax_name_with_tax_percent">%1$s (%2$s%%)</string>
-    <string name="orderlist_simple_payments_wip_message_enabled">Estamos trabalhando para permitir a criação de pedidos e o recebimento de pagamentos no seu dispositivo. Clique no botão \"+\" para experimentar essas funcionalidades</string>
-    <string name="orderlist_simple_payments_wip_title">Crie pedidos e receba pagamentos!</string>
+    <string name="orderlist_simple_payments_wip_message_enabled">Estamos trabalhando para permitir a criação de pedidos no seu dispositivo. Clique no botão \"+\" para experimentar essa funcionalidade</string>
     <string name="empty_inbox_description">Volte mais tarde para ver outras dicas e informações sobre como ampliar sua loja</string>
     <string name="empty_inbox_title">Parabéns, você leu tudo!</string>
     <string name="orderstatus_contentDesc_withStatus">Status do pedido: %s</string>
@@ -614,6 +645,7 @@ Language: pt_BR
     <string name="simple_payments_enter_amount">Inserir valor</string>
     <string name="simple_payments_dialog_title">Aceitar pagamento</string>
     <string name="orderlist_simple_payments_menu">Pagamento simples</string>
+    <string name="orderlist_simple_payments_wip_title">Crie pedidos no seu dispositivo!</string>
     <string name="analytics">Análises</string>
     <string name="jetpack_install_progress_step_four_message">Tudo pronto</string>
     <string name="jetpack_install_progress_step_three_message">Conectando sua loja</string>

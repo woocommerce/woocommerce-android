@@ -23,7 +23,6 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.onEach
-import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -35,7 +34,7 @@ class DomainPickerViewModel @Inject constructor(
     private val newStore: NewStore,
     val analyticsTrackerWrapper: AnalyticsTrackerWrapper
 ) : ScopedViewModel(savedStateHandle) {
-    private val domainQuery = savedState.getStateFlow(this, newStore.store.value.name ?: "")
+    private val domainQuery = savedState.getStateFlow(this, newStore.data.name ?: "")
     private val loadingState = MutableStateFlow(Idle)
     private val domainSuggestionsUi = domainSuggestionsRepository.domainSuggestions
     private val selectedDomain = MutableStateFlow("")
@@ -82,13 +81,11 @@ class DomainPickerViewModel @Inject constructor(
     }
 
     fun onContinueClicked() {
-        newStore.store.update {
-            it.copy(domain = selectedDomain.value)
-        }
         triggerEvent(NavigateToNextStep)
     }
 
     fun onDomainSuggestionSelected(clickedDomain: String) {
+        newStore.update(domain = clickedDomain)
         selectedDomain.value = clickedDomain
     }
 
@@ -108,6 +105,8 @@ class DomainPickerViewModel @Inject constructor(
                     .firstOrNull { it.substringBefore(".") == domainQuery }
                     ?: domainSuggestions.first()
             }
+            newStore.update(domain = preSelectDomain)
+
             domainSuggestions.map { domain ->
                 DomainSuggestionUi(
                     isSelected = domain == preSelectDomain,
@@ -121,6 +120,7 @@ class DomainPickerViewModel @Inject constructor(
         val loadingState: LoadingState = Idle,
         val domainQuery: String = "",
         val domainSuggestionsUi: List<DomainSuggestionUi> = emptyList(),
+        val selectedDomain: String = "",
         val error: String? = null
     )
 
