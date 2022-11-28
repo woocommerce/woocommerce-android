@@ -27,7 +27,11 @@ class DeveloperOptionsViewModel @Inject constructor(
 
     private val _viewState = MutableLiveData(
         DeveloperOptionsViewState(
-            rows = createDeveloperOptionsList()
+            rows = if(developerOptionsRepository.isSimulatedCardReaderEnabled()){
+                createDeveloperOptionsList() + createAdditionalItemWhenReaderEnabled()
+            } else {
+                createDeveloperOptionsList()
+            }
         )
     )
 
@@ -42,27 +46,27 @@ class DeveloperOptionsViewModel @Inject constructor(
             isChecked = developerOptionsRepository.isSimulatedCardReaderEnabled(),
             onToggled = ::onSimulatedReaderToggled
         ),
-    ).apply {
-        if (developerOptionsRepository.isSimulatedCardReaderEnabled()) {
-            add(
-                SpinnerListItem(
-                    icon = drawable.img_card_reader_update_progress,
-                    endIcon = drawable.ic_arrow_drop_down,
-                    label = UiStringRes(string.update_simulated_reader),
-                    key = UiStringRes(string.update_simulated_reader_key),
-                    isEnabled = true,
-                    onClick = ::onUpdateSimulatedReaderClicked,
-                )
-            )
-        }
-    }
+    )
+
+    private fun createAdditionalItemWhenReaderEnabled() =
+        SpinnerListItem(
+            icon = drawable.img_card_reader_update_progress,
+            endIcon = drawable.ic_arrow_drop_down,
+            label = UiStringRes(string.update_simulated_reader),
+            key = UiStringRes(string.update_simulated_reader_key),
+            isEnabled = true,
+            onClick = ::onUpdateSimulatedReaderClicked,
+        )
 
     private fun onSimulatedReaderToggled(isChecked: Boolean) {
         if (!isChecked) {
+            viewState.value?.rows = createDeveloperOptionsList()
             disconnectAndClearSelectedCardReader()
             triggerEvent(
                 DeveloperOptionsEvents.ShowToastString(string.simulated_reader_toast)
             )
+        } else {
+            viewState.value?.rows = createDeveloperOptionsList() + createAdditionalItemWhenReaderEnabled()
         }
         simulatedReaderStateChanged(isChecked)
     }
