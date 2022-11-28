@@ -27,15 +27,13 @@ class DeveloperOptionsViewModel @Inject constructor(
 
     private val _viewState = MutableLiveData(
         DeveloperOptionsViewState(
-            rows = (
-                createDeveloperOptionsList()
-                )
+            rows = createDeveloperOptionsList()
         )
     )
 
     val viewState: LiveData<DeveloperOptionsViewState> = _viewState
 
-    private fun createDeveloperOptionsList(): List<ListItem> = mutableListOf(
+    private fun createDeveloperOptionsList(): List<ListItem> = mutableListOf<ListItem>(
         ToggleableListItem(
             icon = drawable.img_card_reader_connecting,
             label = UiStringRes(string.enable_card_reader),
@@ -44,15 +42,20 @@ class DeveloperOptionsViewModel @Inject constructor(
             isChecked = developerOptionsRepository.isSimulatedCardReaderEnabled(),
             onToggled = ::onSimulatedReaderToggled
         ),
-        SpinnerListItem(
-            icon = drawable.img_card_reader_update_progress,
-            endIcon = drawable.ic_arrow_drop_down,
-            label = UiStringRes(string.update_simulated_reader),
-            key = UiStringRes(string.update_simulated_reader_key),
-            isEnabled = true,
-            onClick = ::onUpdateSimulatedReaderClicked,
-        )
-    )
+    ).apply {
+        if (developerOptionsRepository.isSimulatedCardReaderEnabled()) {
+            add(
+                SpinnerListItem(
+                    icon = drawable.img_card_reader_update_progress,
+                    endIcon = drawable.ic_arrow_drop_down,
+                    label = UiStringRes(string.update_simulated_reader),
+                    key = UiStringRes(string.update_simulated_reader_key),
+                    isEnabled = true,
+                    onClick = ::onUpdateSimulatedReaderClicked,
+                )
+            )
+        }
+    }
 
     private fun onSimulatedReaderToggled(isChecked: Boolean) {
         if (!isChecked) {
@@ -92,7 +95,7 @@ class DeveloperOptionsViewModel @Inject constructor(
     private fun onUpdateSimulatedReaderClicked() {
         triggerEvent(
             DeveloperOptionsEvents.ShowUpdateOptionsDialog(
-                UpdateOptions.values().toList(),
+                DeveloperOptionsViewState.UpdateOptions.values().toList(),
                 developerOptionsRepository.getUpdateSimulatedReaderOption()
             )
         )
@@ -111,7 +114,7 @@ class DeveloperOptionsViewModel @Inject constructor(
     }
 
     data class DeveloperOptionsViewState(
-        val rows: List<ListItem>
+        var rows: List<ListItem>
     ) {
         sealed class ListItem {
             abstract val label: UiString
