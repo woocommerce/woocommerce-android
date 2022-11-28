@@ -357,7 +357,6 @@ class VariationListViewModelTest : BaseUnitTest() {
         val variationCandidates = List(5) { id ->
             listOf(VariantOption(id.toLong(), "Number", id.toString()))
         }
-        doReturn(variationCandidates).whenever(generateVariationCandidates).invoke(any())
         createViewModel()
         viewModel.start()
         viewModel.onAddVariationsClicked()
@@ -375,5 +374,38 @@ class VariationListViewModelTest : BaseUnitTest() {
         )
         // Then variation limit error is tracked
         verify(tracker).track(AnalyticsEvent.PRODUCT_VARIATION_GENERATION_FAILURE)
+    }
+
+    @Test
+    fun `When user requested variation generation but there are no candidates, show error`() {
+        // given
+        whenever(generateVariationCandidates(product)).thenReturn(emptyList())
+        createViewModel()
+        val events = mutableListOf<MultiLiveEvent.Event>()
+        viewModel.event.observeForever { event -> events.add(event) }
+        viewModel.start()
+
+        // when
+        viewModel.onAddAllVariationsClicked()
+
+        // then
+        events
+            .last()
+            .let { lastEvent ->
+                assertThat(lastEvent).isEqualTo(ShowGenerateVariationsError.NoCandidates)
+            }
+    }
+
+    @Test
+    fun `When user requested variation generation fetch all variations beforehand`() = testBlocking {
+        // given
+        createViewModel()
+        viewModel.start()
+
+        // when
+        viewModel.onAddAllVariationsClicked()
+
+        // then
+        verify(variationRepository).getAllVariations(productRemoteId)
     }
 }
