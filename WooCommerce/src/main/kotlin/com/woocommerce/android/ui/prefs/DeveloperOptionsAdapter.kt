@@ -64,6 +64,10 @@ class DeveloperOptionsAdapter : ListAdapter<ListItem, DeveloperOptionsViewHolder
         override fun areContentsTheSame(oldItem: ListItem, newItem: ListItem): Boolean {
             return oldItem == newItem
         }
+
+        override fun getChangePayload(oldItem: ListItem, newItem: ListItem): Any {
+            return false
+        }
     }
 
     companion object {
