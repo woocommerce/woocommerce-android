@@ -132,6 +132,13 @@ class VariationRepository @Inject constructor(
         }
     }
 
+    suspend fun getAllVariations(remoteProductId: Long): Collection<ProductVariation> = withContext(dispatchers.io) {
+        while (canLoadMoreProductVariations) {
+            fetchProductVariations(remoteProductId, true)
+        }
+        getProductVariationList(remoteProductId)
+    }
+
     private fun WooResult<WCProductVariationModel>.handleVariationCreateResult(
         product: Product
     ) = if (isError) {

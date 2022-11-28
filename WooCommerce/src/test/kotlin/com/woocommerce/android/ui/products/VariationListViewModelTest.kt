@@ -162,10 +162,11 @@ class VariationListViewModelTest : BaseUnitTest() {
         createViewModel()
         val events = mutableListOf<MultiLiveEvent.Event>()
         viewModel.event.observeForever { event -> events.add(event) }
+        whenever(generateVariationCandidates(product)).thenReturn(variationCandidates)
 
         // when
         viewModel.start()
-        viewModel.onAddAllVariationsClicked(variationCandidates)
+        viewModel.onAddAllVariationsClicked()
 
         // then
         events
@@ -191,10 +192,11 @@ class VariationListViewModelTest : BaseUnitTest() {
         createViewModel()
         val events = mutableListOf<MultiLiveEvent.Event>()
         viewModel.event.observeForever { event -> events.add(event) }
+        whenever(generateVariationCandidates(product)).thenReturn(variationCandidatesAboveLimit)
 
         // when
         viewModel.start()
-        viewModel.onAddAllVariationsClicked(variationCandidatesAboveLimit)
+        viewModel.onAddAllVariationsClicked()
 
         // then
         events
@@ -292,10 +294,11 @@ class VariationListViewModelTest : BaseUnitTest() {
             }
         doReturn(variations).whenever(variationRepository).getProductVariationList(productRemoteId)
         createViewModel()
-        viewModel.start()
+        whenever(generateVariationCandidates(product)).thenReturn(exceedVariationsLimit)
 
         // When AddAllVariations is Clicked
-        viewModel.onAddAllVariationsClicked(exceedVariationsLimit)
+        viewModel.start()
+        viewModel.onAddAllVariationsClicked()
 
         // Then variation request is tracked
         verify(tracker).track(AnalyticsEvent.PRODUCT_VARIATION_GENERATION_REQUESTED)
@@ -315,10 +318,11 @@ class VariationListViewModelTest : BaseUnitTest() {
             }
         doReturn(variations).whenever(variationRepository).getProductVariationList(productRemoteId)
         createViewModel()
-        viewModel.start()
+        whenever(generateVariationCandidates(product)).thenReturn(reachVariationsLimit)
 
         // When AddAllVariations is Clicked
-        viewModel.onAddAllVariationsClicked(reachVariationsLimit)
+        viewModel.start()
+        viewModel.onAddAllVariationsClicked()
 
         // Then variation request is tracked
         verify(tracker).track(AnalyticsEvent.PRODUCT_VARIATION_GENERATION_REQUESTED)
