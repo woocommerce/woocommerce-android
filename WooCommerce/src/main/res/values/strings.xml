@@ -233,7 +233,8 @@
     <string name="login_avatar_content_description">Your profile photo</string>
     <string name="login_nostores_content_description">No WooCommerce stores</string>
     <string name="login_with_a_different_account">Login with a different account</string>
-    <string name="login_no_stores">Your account isn’t connected to any WooCommerce stores.</string>
+    <string name="login_no_stores_header">Create your first store</string>
+    <string name="login_no_stores_subtitle">Quickly get up and selling with a beautiful online store.</string>
     <string name="login_wpcom_account_mismatch">It looks like %1$s is connected to a different WordPress.com account.</string>
     <string name="login_jetpack_not_connected">It looks like your account is not connected to %1$s\'s Jetpack</string>
     <string name="login_try_another_account">Log in with another account</string>
@@ -290,24 +291,46 @@
     <string name="login_create_an_account">Create An Account</string>
     <string name="site_picker_create_new_store">Create a new store</string>
     <string name="site_picker_connect_existing_store">Connect an existing store</string>
-    <string name="login_jetpack_installation_screen_title">Connect Store</string>
-    <string name="login_jetpack_installation_explanation">To use this app for&lt;br&gt;&lt;b&gt;%1$s&lt;/b&gt;&lt;br&gt;you\'ll need the free Jetpack plugin installed and connected on your store.</string>
-    <string name="login_jetpack_connection_explanation">To use this app for&lt;br&gt;&lt;b&gt;%1$s&lt;/b&gt;&lt;br&gt;you\'ll need to connect your store to Jetpack.</string>
-    <string name="login_jetpack_installation_credentials_hint">You\’ll need your store credentials to begin the installation.</string>
+    <string name="login_jetpack_installation_screen_title">Connect store</string>
+    <string name="login_jetpack_installation_explanation">Please install the free Jetpack plugin to access your store on this app.</string>
+    <string name="login_jetpack_connection_explanation">Please connect your store to Jetpack to access it on this app.</string>
+    <string name="login_jetpack_installation_credentials_hint">Have your store credentials ready.</string>
     <string name="login_jetpack_connect">Connect Jetpack</string>
     <string name="login_jetpack_installation_enter_site_credentials">Log in to &lt;b&gt;%1$s&lt;/b&gt; with your store credentials to install Jetpack.</string>
     <string name="login_jetpack_connection_enter_site_credentials">Log in to &lt;b&gt;%1$s&lt;/b&gt; with your store credentials to connect Jetpack.</string>
-    <string name="login_jetpack_connection_approval_hint">We will ask for your approval to complete the Jetpack connection.</string>
-    <string name="login_jetpack_site_credentials_screen_title">Log in to your store</string>
     <string name="login_jetpack_steps_installing">Installing Jetpack</string>
     <string name="login_jetpack_steps_activating">Activating</string>
-    <string name="login_jetpack_steps_authorizing">Authorising connection</string>
-    <string name="login_jetpack_steps_authorizing_hint">Approval required</string>
+    <string name="login_jetpack_steps_authorizing">Connect store to Jetpack</string>
+    <string name="login_jetpack_steps_authorizing_validation">Validating</string>
+    <string name="login_jetpack_steps_authorizing_done">Connected</string>
     <string name="login_jetpack_steps_done">All done</string>
     <string name="login_jetpack_installation_steps_screen_title">Installing Jetpack</string>
     <string name="login_jetpack_connection_steps_screen_title">Connecting Jetpack</string>
+    <string name="login_jetpack_connection_steps_screen_title_done">Connected Jetpack</string>
+    <string name="login_jetpack_installation_steps_screen_title_done">Installed Jetpack</string>
     <string name="login_jetpack_steps_screen_subtitle">Please wait while we connect your store &lt;b&gt;%1$s&lt;/b&gt; with Jetpack.</string>
+    <string name="login_jetpack_steps_screen_subtitle_done">Your store &lt;b&gt;%1$s&lt;/b&gt; is now connected to Jetpack.</string>
     <string name="login_jetpack_installation_error_code_template">Error code %1$s</string>
+    <string name="login_jetpack_installation_error">Error</string>
+    <string name="login_jetpack_installation_go_to_store_button">Go to store</string>
+    <string name="login_jetpack_installation_approve_connection">Connect Jetpack</string>
+    <string name="login_jetpack_installation_error_installing">Error installing Jetpack</string>
+    <string name="login_jetpack_installation_error_activating">Error activating Jetpack</string>
+    <string name="login_jetpack_installation_error_authorizing">Error authorising connection to Jetpack</string>
+    <string name="login_jetpack_installation_error_plugin_permission_message">You don’t have permission to manage plugins on this store</string>
+    <string name="login_jetpack_installation_error_generic_message">There was an error communicating with your site.</string>
+    <string name="login_jetpack_installation_retry_or_contact_support">Please try again and contact support if this error continues.</string>
+    <string name="login_jetpack_installation_get_support">Get support</string>
+    <string name="login_jetpack_installation_retry_installing">Try installing again</string>
+    <string name="login_jetpack_installation_retry_activating">Try activating again</string>
+    <string name="login_jetpack_installation_retry_authorizing">Try authorising again</string>
+    <string name="login_jetpack_installation_cancel">Cancel installation</string>
+    <string name="login_jetpack_installation_error_forbidden_suggestion">Please contact your shop manager or administrator for help.</string>
+    <string name="login_jetpack_installation_error_connection_permission_message">You don’t have permission to connect to Jetpack on this store</string>
+    <string name="login_jetpack_installation_connection_dismissed">Jetpack is installed, but not connected.</string>
+    <string name="login_jetpack_installation_connection_dismissed_explanation">Try connecting again to access your store.</string>
+    <string name="login_jetpack_installation_continue_connection">Continue connection</string>
+    <string name="login_jetpack_installation_exit_without_connection">Exit Without Connecting</string>
 
     <!--
         My Store View
@@ -1485,7 +1508,7 @@
     <string name="product_wip_message_m3">You can now edit grouped, external and variable products, change product type and update categories and tags.</string>
     <string name="product_bullet" translatable="false"> \u2022 </string>
     <string name="product_variant_list_empty">Adding options like size and color is currently available only on the web. These will show up as options on the product page of your site.</string>
-    <string name="product_variant_list_add_first_variation">Add your first variation</string>
+    <string name="product_variant_list_add_first_variation">Create your first variation</string>
     <string name="product_variant_list_empty_action">Add Variation</string>
     <string name="product_description_hint_no_title">Describe your product to your future customers…</string>
     <string name="product_description_hint_with_title">Tell us more about %s…</string>
@@ -1627,13 +1650,17 @@
     <string name="variation_detail_price_warning_title">Some variations do not have prices</string>
     <string name="variation_detail_image_add">Add a variation image</string>
     <string name="variation_list_generate_new_variation">Generate new variation</string>
-    <string name="variation_list_generate_all_variations">Generate all variations</string>
+    <string name="variation_list_add">Add variation</string>
     <string name="variation_created_title">Variation Created</string>
     <string name="variation_create_dialog_title">Generating variation</string>
     <string name="variation_loading_dialog_title">Fetching variations…</string>
     <string name="variation_confirm_delete">Do you want to delete this Variation?</string>
     <string name="variation_list_menu_bulk_update">Bulk update…</string>
     <string name="variations_bulk_limit_exceeded_button_ok">OK</string>
+    <string name="variation_add_new">Add new variation</string>
+    <string name="variation_add_new_description">Create one new variation. Manually set which attributes belong to the variable product.</string>
+    <string name="variation_add_all">Generate all %1$d variations</string>
+    <string name="variation_add_all_description">Creates variations for all combinations of your attributes.</string>
 
     <!--
         Variations bulk update
@@ -1664,7 +1691,7 @@
     <string name="variations_bulk_update_stock_quantity_success">Updated stock quantity</string>
     <string name="variations_bulk_creation_warning_title">Generation limit exceeded</string>
     <string name="variations_bulk_creation_warning_message">Currently creation is supported for %1$d variations maximum. Generating variations for this product would create %2$d variations.</string>
-    <string name="variations_bulk_creation_confirmation_title">Are you sure you want to generate all variations?</string>
+    <string name="variations_bulk_creation_confirmation_title">Generate all variations?</string>
     <string name="variations_bulk_creation_confirmation_message">This will create a new variation for each and every possible combination of variation attributes (%1$d variations).</string>
     <string name="variations_bulk_creation_progress_title">Generating variations</string>
 
@@ -2741,6 +2768,9 @@
     <string name="store_creation_summary_primary_button">Continue to payment</string>
 
     <string name="store_creation_ecommerce_plan_error">Couldn\'t load the plan information…</string>
+    <string name="store_creation_ecommerce_site_creation_error">Couldn\'t create a new site…</string>
+    <string name="store_creation_ecommerce_plan_purchase_error">Couldn\'t complete the purchase…</string>
+    <string name="store_creation_ecommerce_store_loading_error">Couldn\'t load your new store. Please wait a bit and try again…</string>
     <string name="store_creation_ecommerce_plan_features_tagline">All the features you need, already built in.</string>
     <string name="store_creation_ecommerce_plan_powered_by">Powered by</string>
     <string name="store_creation_ecommerce_plan_wordpress" translatable="false">WordPress.com</string>

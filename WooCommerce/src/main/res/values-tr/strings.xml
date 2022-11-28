@@ -1,11 +1,45 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2022-11-15 14:54:04+0000
+Translation-Revision-Date: 2022-11-25 12:54:04+0000
 Plural-Forms: nplurals=2; plural=(n > 1);
 Generator: GlotPress/2.4.0-alpha
 Language: tr
 -->
 <resources>
+    <string name="store_creation_store_name_hint">Mağaza adı</string>
+    <string name="store_creation_store_name_subtitle">Endişelenmeyin, daha sonra istediğiniz zaman değiştirebilirsiniz. </string>
+    <string name="store_creation_store_name_title">Mağazanızın adı nedir?</string>
+    <string name="store_creation_store_name_caption">Mağazanız hakkında</string>
+    <string name="store_creation_installation_show_preview_button">Mağaza önizlemesi</string>
+    <string name="store_creation_installation_manage_store_button">Mağazamı yönet</string>
+    <string name="store_creation_installation_success">Mağazanız oluşturuldu!</string>
+    <string name="store_creation_installation_error">Kurulum sırasında bir hata oldu, lütfen tekrar deneyin…</string>
+    <string name="store_creation_ecommerce_plan_feature_sales">Satış kanalları</string>
+    <string name="store_creation_ecommerce_plan_feature_shipping_labels">Gönderim etiketleri</string>
+    <string name="store_creation_ecommerce_plan_feature_payments">Çoklu ödeme seçenekleri</string>
+    <string name="store_creation_ecommerce_plan_feature_reports">E-ticaret raporları</string>
+    <string name="store_creation_ecommerce_plan_feature_subscriptions">Abonelikler ve hediye kartları </string>
+    <string name="store_creation_ecommerce_plan_feature_products">Sınırsız ürünler</string>
+    <string name="store_creation_ecommerce_plan_feature_themes">Premium temalar</string>
+    <string name="store_creation_ecommerce_plan_period_year">yıl</string>
+    <string name="store_creation_ecommerce_plan_period_month">ay</string>
+    <string name="store_creation_ecommerce_plan_refund_reminder">Risk yok, 30 gün içinde iptal edip tam geri ödeme alabilirsiniz.</string>
+    <string name="store_creation_ecommerce_plan_purchase_button_title">%1$s için Mağaza oluştur</string>
+    <string name="store_creation_ecommerce_plan_powered_by">Destekleyen:</string>
+    <string name="store_creation_ecommerce_plan_features_tagline">İhtiyacınız olan tüm özelliklerle birlikte.</string>
+    <string name="store_creation_ecommerce_plan_error">Paket bilgileri yüklenemedi…</string>
+    <string name="store_creation_summary_primary_button">Ödeme adımına geç</string>
+    <string name="store_creation_summary_subtitle">Mağazanız tercih ettiğiniz seçeneklere göre oluşturulacaktır!</string>
+    <string name="store_creation_summary_title">Mağazam</string>
+    <string name="randomly_update_reader">Rastgele olarak</string>
+    <string name="never_update_reader">Hiçbir zaman</string>
+    <string name="always_update_reader">Her zaman</string>
+    <string name="update_simulated_reader_key">Simüle Okuyucu Anahtarını Güncelle</string>
+    <string name="update_simulated_reader">Simüle Kart Okuyucuyu Güncelle</string>
+    <string name="variation_list_generate_all_variations">Tüm varyasyonları oluştur</string>
+    <string name="login_jetpack_connect">Jetpack\'e bağlan</string>
+    <string name="login_jetpack_installation_credentials_hint">Kurulumu başlatmak için mağaza kimlik bilgilerinize ihtiyacınız olacaktır.</string>
+    <string name="login_jetpack_installation_screen_title">Mağazayı Bağla</string>
     <string name="store_creation_domain_picker_suggestions_title">Öneriler</string>
     <string name="store_creation_domain_picker_skip_button">Atla</string>
     <string name="store_creation_domain_picker_hint">Bir alan adı yaz</string>
@@ -36,7 +70,7 @@ Language: tr
     <string name="site_picker_connect_existing_store">Mevcut bir mağazayı bağla</string>
     <string name="site_picker_create_new_store">Yeni bir mağaza oluştur</string>
     <string name="login_site_picker_add_a_store">Mağaza Ekle</string>
-    <string name="login_no_stores">Hesabınız herhangi bir WooCommerce mağazasına bağlı değil.</string>
+    <string name="login_no_stores_header">Hesabınız herhangi bir WooCommerce mağazasına bağlı değil.</string>
     <string name="analytics_products_list_item_description">Net satışlar: %1$s</string>
     <string name="analytics_products_list_header_subtitle">Satılan ürünler</string>
     <string name="analytics_products_list_header_title">Ürünler</string>
@@ -51,8 +85,6 @@ Language: tr
     <string name="analytics_orders_no_data">Bu dönem hiç sipariş yok</string>
     <string name="analytics_revenue_no_data">Bu dönemde hiç gelir yok</string>
     <string name="analytics_revenue_card_title">Kazanç</string>
-    <string name="analytics_see_report_button_content_description">Raporla ilgili daha fazla ayrıntıya göz atın</string>
-    <string name="analytics_see_report_button_text">Rapora bakın</string>
     <string name="analytics_date_range_custom">%1$s - %2$s</string>
     <string name="analytics_see_more">Daha fazla gör</string>
     <string name="signup_api_generic_error">Maalesef sağlanan kimlik bilgileri için bir hesap oluşturamadık. Lütfen farklı bir e-posta ile deneyin.</string>
@@ -420,8 +452,7 @@ Language: tr
     <string name="product_ratings_count_one">\u2022  bir onaylanmış yorum</string>
     <string name="product_ratings_count">\u2022  %d onaylanmış yorum</string>
     <string name="tax_name_with_tax_percent">%1$s (%2$s%%)</string>
-    <string name="orderlist_simple_payments_wip_message_enabled">Cihazınızdan sipariş oluşturmanızı ve ödeme almanızı sağlamak için çalışıyoruz! \"+\" düğmesine dokunarak bu özellikleri deneyebilirsiniz.</string>
-    <string name="orderlist_simple_payments_wip_title">Sipariş oluşturun ve ödeme alın!</string>
+    <string name="orderlist_simple_payments_wip_message_enabled">Cihazınızdan sipariş oluşturmanızı sağlamak için çalışıyoruz! \"+\" düğmesine dokunarak bu özelliği deneyebilirsiniz</string>
     <string name="empty_inbox_description">Mağazanızı büyütmekle ilgili daha fazla ipucu ve bilgi için kısa süre sonra tekrar gelin</string>
     <string name="empty_inbox_title">Tebrikler, her şeyi okudunuz!</string>
     <string name="orderstatus_contentDesc_withStatus">Sipariş durumu: %s</string>
@@ -614,6 +645,7 @@ Language: tr
     <string name="simple_payments_enter_amount">Miktar gir</string>
     <string name="simple_payments_dialog_title">Ödeme al</string>
     <string name="orderlist_simple_payments_menu">Basit ödeme</string>
+    <string name="orderlist_simple_payments_wip_title">Siparişleri cihazınızdan oluşturun!</string>
     <string name="analytics">Analiz</string>
     <string name="jetpack_install_progress_step_four_message">Her şey hazır</string>
     <string name="jetpack_install_progress_step_three_message">Mağazanızı bağlama</string>

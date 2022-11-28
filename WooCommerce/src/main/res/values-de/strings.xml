@@ -1,11 +1,45 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2022-11-16 11:54:03+0000
+Translation-Revision-Date: 2022-11-23 14:54:04+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: de
 -->
 <resources>
+    <string name="store_creation_store_name_hint">Name des Shops</string>
+    <string name="store_creation_store_name_subtitle">Keine Sorge, du kannst das später noch ändern. </string>
+    <string name="store_creation_store_name_title">Wie lautet der Name deines Shops?</string>
+    <string name="store_creation_store_name_caption">Infos zu deinem Shop</string>
+    <string name="store_creation_installation_show_preview_button">Shop-Vorschau</string>
+    <string name="store_creation_installation_manage_store_button">Meinen Shop verwalten</string>
+    <string name="store_creation_installation_success">Dein Shop wurde eingerichtet!</string>
+    <string name="store_creation_installation_error">Während der Installation ist ein Fehler aufgetreten. Bitte versuche es erneut …</string>
+    <string name="store_creation_ecommerce_plan_feature_sales">Vertriebskanäle</string>
+    <string name="store_creation_ecommerce_plan_feature_shipping_labels">Versandetiketten</string>
+    <string name="store_creation_ecommerce_plan_feature_payments">Mehrere Zahlungsoptionen</string>
+    <string name="store_creation_ecommerce_plan_feature_reports">E-Commerce-Berichte</string>
+    <string name="store_creation_ecommerce_plan_feature_subscriptions">Abonnements und Geschenkkarten</string>
+    <string name="store_creation_ecommerce_plan_feature_products">Unbegrenzte Produkte</string>
+    <string name="store_creation_ecommerce_plan_feature_themes">Premium-Themes</string>
+    <string name="store_creation_ecommerce_plan_period_year">Jahr</string>
+    <string name="store_creation_ecommerce_plan_period_month">Monat</string>
+    <string name="store_creation_ecommerce_plan_refund_reminder">Es besteht kein Risiko. Du kannst innerhalb von 30 Tagen kündigen und erhältst eine vollständige Rückerstattung.</string>
+    <string name="store_creation_ecommerce_plan_purchase_button_title">Shop für %1$s einrichten</string>
+    <string name="store_creation_ecommerce_plan_powered_by">Mit Unterstützung von</string>
+    <string name="store_creation_ecommerce_plan_features_tagline">Alle Funktionen, die du brauchst, sind bereits integriert.</string>
+    <string name="store_creation_ecommerce_plan_error">Informationen zum Tarif konnten nicht geladen werden …</string>
+    <string name="store_creation_summary_primary_button">Weiter zur Bezahlung</string>
+    <string name="store_creation_summary_subtitle">Dein Shop wird basierend auf deinen ausgewählten Optionen eingerichtet!</string>
+    <string name="store_creation_summary_title">Mein Shop</string>
+    <string name="randomly_update_reader">Zufällig</string>
+    <string name="never_update_reader">Nie</string>
+    <string name="always_update_reader">Immer</string>
+    <string name="update_simulated_reader_key">Schlüssel des simulierten Lesegeräts aktualisieren</string>
+    <string name="update_simulated_reader">Simuliertes Kartenlesegerät aktivieren</string>
+    <string name="variation_list_generate_all_variations">Alle Varianten erstellen</string>
+    <string name="login_jetpack_connect">Jetpack verbinden</string>
+    <string name="login_jetpack_installation_credentials_hint">Du benötigst deine Shop-Anmeldedaten, um mit der Installation zu beginnen.</string>
+    <string name="login_jetpack_installation_screen_title">Shop verbinden</string>
     <string name="store_creation_domain_picker_suggestions_title">Vorschläge</string>
     <string name="store_creation_domain_picker_skip_button">Überspringen</string>
     <string name="store_creation_domain_picker_hint">Gib eine Domain ein</string>
@@ -36,7 +70,7 @@ Language: de
     <string name="site_picker_connect_existing_store">Bestehenden Shop verbinden</string>
     <string name="site_picker_create_new_store">Neuen Shop einrichten</string>
     <string name="login_site_picker_add_a_store">Shop hinzufügen</string>
-    <string name="login_no_stores">Dein Konto ist mit keinem WooCommerce-Shop verbunden.</string>
+    <string name="login_no_stores_header">Dein Konto ist mit keinem WooCommerce-Shop verbunden.</string>
     <string name="analytics_products_list_item_description">Nettoumsatz: %1$s</string>
     <string name="analytics_products_list_header_subtitle">Verkaufte Artikel</string>
     <string name="analytics_products_list_header_title">Produkte</string>
@@ -51,8 +85,6 @@ Language: de
     <string name="analytics_orders_no_data">Keine Bestellungen in diesem Zeitraum</string>
     <string name="analytics_revenue_no_data">Keine Einnahmen in diesem Zeitraum</string>
     <string name="analytics_revenue_card_title">Einnahmen</string>
-    <string name="analytics_see_report_button_content_description">Mehr Berichtsdetails anzeigen</string>
-    <string name="analytics_see_report_button_text">Bericht anzeigen</string>
     <string name="analytics_date_range_custom">%1$s – %2$s</string>
     <string name="analytics_see_more">Mehr anzeigen</string>
     <string name="signup_api_generic_error">Wir konnten leider kein Konto für die angegebenen Anmeldedaten erstellen. Versuche es bitte mit einer anderen E-Mail-Adresse.</string>
@@ -420,8 +452,7 @@ Language: de
     <string name="product_ratings_count_one">\u2022  eine genehmigte Rezension</string>
     <string name="product_ratings_count">\u2022  %d genehmigte Rezensionen</string>
     <string name="tax_name_with_tax_percent">%1$s (%2$s%%)</string>
-    <string name="orderlist_simple_payments_wip_message_enabled">Wir haben daran gearbeitet, das Erstellen von Bestellungen und Annehmen von Zahlungen auf deinem Gerät zu ermöglichen! Du kannst diese Funktionen durch Tippen auf den „+“-Button ausprobieren</string>
-    <string name="orderlist_simple_payments_wip_title">Erstelle Bestellungen und nimm Zahlungen an!</string>
+    <string name="orderlist_simple_payments_wip_message_enabled">Wir haben daran gearbeitet, das Erstellen von Bestellungen auf deinem Gerät zu ermöglichen! Du kannst diese Funktion durch Tippen auf den „+“-Button ausprobieren</string>
     <string name="empty_inbox_description">In Kürze bekommst du weitere Tipps und Einsichten zum Ausbau deines Shops</string>
     <string name="empty_inbox_title">Glückwunsch, du hast alles gelesen!</string>
     <string name="orderstatus_contentDesc_withStatus">Bestellstatus: %s</string>
@@ -614,6 +645,7 @@ Language: de
     <string name="simple_payments_enter_amount">Betrag eingeben</string>
     <string name="simple_payments_dialog_title">Zahlung erhalten</string>
     <string name="orderlist_simple_payments_menu">Einfaches Bezahlen</string>
+    <string name="orderlist_simple_payments_wip_title">Erstelle Bestellungen auf deinem Gerät!</string>
     <string name="analytics">Statistiken</string>
     <string name="jetpack_install_progress_step_four_message">Erledigt</string>
     <string name="jetpack_install_progress_step_three_message">Dein Store wird verbunden</string>

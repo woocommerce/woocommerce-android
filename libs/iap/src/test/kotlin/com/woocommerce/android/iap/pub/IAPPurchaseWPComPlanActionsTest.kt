@@ -24,8 +24,6 @@ import com.woocommerce.android.iap.pub.network.IAPMobilePayAPI
 import com.woocommerce.android.iap.pub.network.model.CreateAndConfirmOrderResponse
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.Job
-import kotlinx.coroutines.async
-import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.test.runTest
 import org.assertj.core.api.Assertions.assertThat
@@ -33,8 +31,6 @@ import org.junit.Before
 import org.junit.Test
 import org.mockito.kotlin.any
 import org.mockito.kotlin.mock
-import org.mockito.kotlin.times
-import org.mockito.kotlin.verify
 import org.mockito.kotlin.verifyNoInteractions
 import org.mockito.kotlin.whenever
 
@@ -407,26 +403,6 @@ class IAPPurchaseWPComPlanActionsTest {
             IAPError.Billing.ServiceDisconnected::class.java
         )
         assertThat((result.errorType as IAPError.Billing).debugMessage).isEqualTo(debugMessage)
-    }
-
-    @Test
-    fun `given double invocation, when purchasing plan, then only one proceeds`() = runTest {
-        // GIVEN
-        setupPurchaseQuery(
-            responseCode = BillingClient.BillingResponseCode.OK,
-            listOf()
-        )
-
-        testPreparationHelper.setupQueryProductDetails(responseCode = BillingClient.BillingResponseCode.OK)
-
-        // WHEN
-        awaitAll(
-            async { sut.purchaseWPComPlan(activityWrapperMock) },
-            async { sut.purchaseWPComPlan(activityWrapperMock) }
-        )
-
-        // THEN
-        verify(billingClientMock, times(1)).queryPurchasesAsync(any())
     }
 
     @Test
