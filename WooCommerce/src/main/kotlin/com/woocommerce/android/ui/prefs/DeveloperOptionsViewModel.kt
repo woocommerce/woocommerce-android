@@ -27,7 +27,7 @@ class DeveloperOptionsViewModel @Inject constructor(
 
     private val _viewState = MutableLiveData(
         DeveloperOptionsViewState(
-            rows = if(developerOptionsRepository.isSimulatedCardReaderEnabled()){
+            rows = if (developerOptionsRepository.isSimulatedCardReaderEnabled()) {
                 createDeveloperOptionsList() + createAdditionalItemWhenReaderEnabled()
             } else {
                 createDeveloperOptionsList()
