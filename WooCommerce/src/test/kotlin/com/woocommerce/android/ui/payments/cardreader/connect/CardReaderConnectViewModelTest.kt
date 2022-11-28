@@ -107,8 +107,11 @@ class CardReaderConnectViewModelTest : BaseUnitTest() {
     @Before
     fun setUp() = testBlocking {
         viewModel = initVM()
-        whenever(appPrefs.getReaderOptionsSelected()).thenReturn(
-            DeveloperOptionsViewModel.DeveloperOptionsViewState.UpdateOptions.RANDOM.name)
+        whenever(
+            appPrefs.getReaderOptionsSelected()
+        ).thenReturn(
+            DeveloperOptionsViewModel.DeveloperOptionsViewState.UpdateOptions.RANDOM.name
+        )
     }
 
     @Test
