@@ -181,8 +181,7 @@ class MyStoreViewModel @Inject constructor(
                 model.id,
                 model.featureClass
             )
-            _bannerState.value = BannerState(
-                shouldDisplayBanner = true,
+            _bannerState.value = BannerState.DisplayBannerState(
                 onPrimaryActionClicked = {
                     onJitmCtaClicked(
                         id = model.id,
@@ -201,7 +200,10 @@ class MyStoreViewModel @Inject constructor(
                 primaryActionLabel = UiString.UiStringText(model.cta.message),
                 chipLabel = UiString.UiStringRes(R.string.card_reader_upsell_card_reader_banner_new)
             )
-        } ?: WooLog.i(WooLog.T.JITM, "No JITM Campaign in progress")
+        } ?: run {
+            _bannerState.value = BannerState.HideBannerState
+            WooLog.i(WooLog.T.JITM, "No JITM Campaign in progress")
+        }
     }
 
     private fun onJitmCtaClicked(
@@ -228,7 +230,7 @@ class MyStoreViewModel @Inject constructor(
     }
 
     private fun onJitmDismissClicked(jitmId: String, featureClass: String) {
-        _bannerState.value = _bannerState.value?.copy(shouldDisplayBanner = false)
+        _bannerState.value = BannerState.HideBannerState
         jitmTracker.trackJitmDismissTapped(UTM_SOURCE, jitmId, featureClass)
         viewModelScope.launch {
             jitmStore.dismissJitmMessage(selectedSite.get(), jitmId, featureClass).also { response ->
