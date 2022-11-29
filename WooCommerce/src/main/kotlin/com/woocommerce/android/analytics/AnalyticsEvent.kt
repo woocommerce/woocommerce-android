@@ -139,9 +139,7 @@ enum class AnalyticsEvent(val siteless: Boolean = false) {
     SITE_PICKER_JETPACK_TIMEOUT_ERROR_SHOWN(siteless = true),
     SITE_PICKER_JETPACK_TIMEOUT_CONTACT_SUPPORT_CLICKED(siteless = true),
     SITE_PICKER_CREATE_SITE_TAPPED(siteless = true),
-    LOGIN_WOOCOMMERCE_SITE_CREATED(siteless = true),
-    SITE_CREATION_FAILED(siteless = true),
-    SITE_CREATION_DISMISSED(siteless = true),
+    LOGIN_WOOCOMMERCE_SITE_CREATED,
 
     // -- Jetpack Installation for Login
     LOGIN_JETPACK_SITE_CREDENTIAL_SCREEN_VIEWED(siteless = true),
@@ -756,5 +754,13 @@ enum class AnalyticsEvent(val siteless: Boolean = false) {
     UNIVERSAL_LINK_FAILED,
 
     // Analytics Hub
-    ANALYTICS_HUB_WAITING_TIME_LOADED
+    ANALYTICS_HUB_WAITING_TIME_LOADED,
+
+    // Site creation native flow
+    SITE_CREATION_FAILED(siteless = true),
+    SITE_CREATION_DISMISSED(siteless = true),
+    SITE_CREATION_SITE_LOADING_RETRIED(siteless = true),
+    SITE_CREATION_SITE_PREVIEWED,
+    SITE_CREATION_STORE_MANAGEMENT_OPENED,
+    SITE_CREATION_STEP(siteless = true),
 }

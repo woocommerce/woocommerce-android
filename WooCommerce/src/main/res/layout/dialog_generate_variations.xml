@@ -8,15 +8,15 @@
         style="@style/Woo.Card.Header"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:textColor="@color/color_on_surface_medium"
-        android:text="@string/product_detail_add_variations"/>
+        android:text="@string/product_detail_add_variations"
+        android:textColor="@color/color_on_surface_medium" />
 
     <androidx.appcompat.widget.LinearLayoutCompat
         android:id="@+id/new_variation"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
         android:background="?selectableItemBackground"
+        android:orientation="vertical"
         android:paddingBottom="@dimen/major_100">
 
         <com.google.android.material.textview.MaterialTextView
@@ -25,8 +25,8 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="@dimen/major_100"
             android:layout_marginTop="@dimen/major_100"
-            android:textColor="@color/color_on_surface_high_selector"
-            android:text="@string/variation_add_new" />
+            android:text="@string/variation_add_new"
+            android:textColor="@color/color_on_surface_high_selector" />
 
         <com.google.android.material.textview.MaterialTextView
             style="@style/Woo.Card.Body"
@@ -36,8 +36,8 @@
             android:ellipsize="end"
             android:lineSpacingExtra="@dimen/minor_25"
             android:paddingTop="@dimen/minor_50"
-            android:textColor="@color/color_on_surface_medium_selector"
-            android:text="@string/variation_add_new_description" />
+            android:text="@string/variation_add_new_description"
+            android:textColor="@color/color_on_surface_medium_selector" />
     </androidx.appcompat.widget.LinearLayoutCompat>
 
     <View
@@ -49,8 +49,8 @@
         android:id="@+id/all_variation"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
         android:background="?selectableItemBackground"
+        android:orientation="vertical"
         android:paddingBottom="@dimen/major_100">
 
         <com.google.android.material.textview.MaterialTextView
@@ -60,7 +60,8 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="@dimen/major_100"
             android:layout_marginTop="@dimen/major_100"
-            android:textColor="@color/color_on_surface_high_selector"/>
+            android:text="@string/variation_add_all"
+            android:textColor="@color/color_on_surface_high_selector" />
 
         <com.google.android.material.textview.MaterialTextView
             style="@style/Woo.Card.Body"
@@ -70,7 +71,7 @@
             android:ellipsize="end"
             android:lineSpacingExtra="@dimen/minor_25"
             android:paddingTop="@dimen/minor_50"
-            android:textColor="@color/color_on_surface_medium_selector"
-            android:text="@string/variation_add_all_description" />
+            android:text="@string/variation_add_all_description"
+            android:textColor="@color/color_on_surface_medium_selector" />
     </androidx.appcompat.widget.LinearLayoutCompat>
 </LinearLayout>

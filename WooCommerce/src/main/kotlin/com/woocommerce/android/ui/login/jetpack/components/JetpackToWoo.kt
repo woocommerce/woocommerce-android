@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.login.jetpack.components
 
+import androidx.compose.animation.Crossfade
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
@@ -31,19 +32,21 @@ fun JetpackToWooHeader(
             modifier = logoModifier.padding(dimensionResource(id = R.dimen.minor_50))
         )
         Image(painter = painterResource(id = R.drawable.ic_connecting), contentDescription = null)
-        if (!isError) {
-            Image(
-                painter = painterResource(id = R.drawable.ic_woo_bubble),
-                contentDescription = null,
-                modifier = logoModifier.padding(dimensionResource(id = R.dimen.minor_50))
-            )
-        } else {
-            Icon(
-                painter = painterResource(id = R.drawable.ic_gridicons_notice),
-                contentDescription = null,
-                tint = colorResource(id = R.color.color_error),
-                modifier = logoModifier
-            )
+        Crossfade(targetState = isError) { isError ->
+            if (!isError) {
+                Image(
+                    painter = painterResource(id = R.drawable.ic_woo_bubble),
+                    contentDescription = null,
+                    modifier = logoModifier.padding(dimensionResource(id = R.dimen.minor_50))
+                )
+            } else {
+                Icon(
+                    painter = painterResource(id = R.drawable.ic_gridicons_notice),
+                    contentDescription = null,
+                    tint = colorResource(id = R.color.color_error),
+                    modifier = logoModifier
+                )
+            }
         }
     }
 }

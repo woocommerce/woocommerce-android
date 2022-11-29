@@ -1,11 +1,45 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2022-11-15 09:54:04+0000
+Translation-Revision-Date: 2022-11-24 09:54:22+0000
 Plural-Forms: nplurals=2; plural=n > 1;
 Generator: GlotPress/2.4.0-alpha
 Language: id
 -->
 <resources>
+    <string name="store_creation_store_name_hint">Nama toko</string>
+    <string name="store_creation_store_name_subtitle">Jangan khawatir, Anda bebas mengubahnya di lain waktu. </string>
+    <string name="store_creation_store_name_title">Apa nama toko Anda?</string>
+    <string name="store_creation_store_name_caption">Tentang toko Anda</string>
+    <string name="store_creation_installation_show_preview_button">Pratinjau toko</string>
+    <string name="store_creation_installation_manage_store_button">Kelola toko saya</string>
+    <string name="store_creation_installation_success">Toko Anda telah dibuat!</string>
+    <string name="store_creation_installation_error">Terjadi kesalahan selama instalasi, silakan coba lagi…</string>
+    <string name="store_creation_ecommerce_plan_feature_sales">Kanal penjualan</string>
+    <string name="store_creation_ecommerce_plan_feature_shipping_labels">Label pengiriman</string>
+    <string name="store_creation_ecommerce_plan_feature_payments">Beberapa pilihan pembayaran </string>
+    <string name="store_creation_ecommerce_plan_feature_reports">Laporan eCommerce</string>
+    <string name="store_creation_ecommerce_plan_feature_subscriptions">Langganan &amp; kartu hadiah</string>
+    <string name="store_creation_ecommerce_plan_feature_products">Produk tanpa batas</string>
+    <string name="store_creation_ecommerce_plan_feature_themes">Tema Premium</string>
+    <string name="store_creation_ecommerce_plan_period_year">tahun</string>
+    <string name="store_creation_ecommerce_plan_period_month">bulan</string>
+    <string name="store_creation_ecommerce_plan_refund_reminder">Bebas risiko, Anda dapat membatalkan paket dan mendapat pengembalian dana penuh dalam 30 hari.</string>
+    <string name="store_creation_ecommerce_plan_purchase_button_title">Buat Toko untuk %1$s</string>
+    <string name="store_creation_ecommerce_plan_powered_by">Didukung oleh</string>
+    <string name="store_creation_ecommerce_plan_features_tagline">Semua fitur yang Anda butuhkan, sudah bawaan.</string>
+    <string name="store_creation_ecommerce_plan_error">Tidak dapat memuat informasi paket…</string>
+    <string name="store_creation_summary_primary_button">Lanjutkan ke pembayaran</string>
+    <string name="store_creation_summary_subtitle">Toko akan dibuat berdasarkan pilihan yang Anda tentukan! </string>
+    <string name="store_creation_summary_title">Toko Saya</string>
+    <string name="randomly_update_reader">Secara acak</string>
+    <string name="never_update_reader">Tidak pernah</string>
+    <string name="always_update_reader">Selalu</string>
+    <string name="update_simulated_reader_key">Perbarui Kunci Pembaca Simulasi</string>
+    <string name="update_simulated_reader">Perbarui Pembaca Kartu Simulasi</string>
+    <string name="variation_list_generate_all_variations">Buat semua variasi</string>
+    <string name="login_jetpack_connect">Sambungkan ke Jetpack</string>
+    <string name="login_jetpack_installation_credentials_hint">Anda memerlukan kredensial toko untuk memulai instalasi.</string>
+    <string name="login_jetpack_installation_screen_title">Hubungkan Toko</string>
     <string name="store_creation_domain_picker_suggestions_title">Saran</string>
     <string name="store_creation_domain_picker_skip_button">Lewati</string>
     <string name="store_creation_domain_picker_hint">Ketik domain</string>
@@ -51,8 +85,6 @@ Language: id
     <string name="analytics_orders_no_data">Tidak ada pesanan dalam periode ini</string>
     <string name="analytics_revenue_no_data">Tidak ada pendapatan dalam periode ini</string>
     <string name="analytics_revenue_card_title">Pendapatan</string>
-    <string name="analytics_see_report_button_content_description">Lihat perincian laporan selengkapnya</string>
-    <string name="analytics_see_report_button_text">Lihat laporan</string>
     <string name="analytics_date_range_custom">%1$s - %2$s</string>
     <string name="analytics_see_more">Lihat Selengkapnya</string>
     <string name="signup_api_generic_error">Maaf, kami tidak dapat membuat akun dengan kredensial yang diberikan. Coba alamat email lain.</string>
@@ -420,8 +452,7 @@ Language: id
     <string name="product_ratings_count_one">\u2022  satu ulasan disetujui</string>
     <string name="product_ratings_count">\u2022  %d ulasan disetujui</string>
     <string name="tax_name_with_tax_percent">%1$s (%2$s%%)</string>
-    <string name="orderlist_simple_payments_wip_message_enabled">Kami sudah mengupayakan agar pesanan dan pembayaran dapat dilakukan dari perangkat Anda! Anda dapat mecoba fitur ini dengan tap tombol \"+\"</string>
-    <string name="orderlist_simple_payments_wip_title">Buat pesanan &amp; lakukan pembayaran!</string>
+    <string name="orderlist_simple_payments_wip_message_enabled">Kini Anda dapat membuat pesanan dengan perangkat Anda! Anda dapat mencoba fitur ini dengan mengetuk tombol \"+\"</string>
     <string name="empty_inbox_description">Kembali lagi nanti untuk mendapatkan lebih banyak tips dan wawasan tentang cara mengembangkan toko Anda</string>
     <string name="empty_inbox_title">Selamat, Anda telah membaca semuanya!</string>
     <string name="orderstatus_contentDesc_withStatus">Status pesanan: %s</string>
@@ -614,6 +645,7 @@ Language: id
     <string name="simple_payments_enter_amount">Masukkan jumlah</string>
     <string name="simple_payments_dialog_title">Terima pembayaran</string>
     <string name="orderlist_simple_payments_menu">Simple payment</string>
+    <string name="orderlist_simple_payments_wip_title">Buat pesanan dari perangkat Anda!</string>
     <string name="analytics">Analytics</string>
     <string name="jetpack_install_progress_step_four_message">Semua selesai</string>
     <string name="jetpack_install_progress_step_three_message">Menyambungkan ke toko Anda</string>

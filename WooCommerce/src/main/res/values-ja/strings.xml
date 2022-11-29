@@ -1,11 +1,45 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2022-11-17 09:54:03+0000
+Translation-Revision-Date: 2022-11-23 12:54:04+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: ja_JP
 -->
 <resources>
+    <string name="store_creation_store_name_hint">ストア名</string>
+    <string name="store_creation_store_name_subtitle">変更はいつでも可能です。 </string>
+    <string name="store_creation_store_name_title">ストア名を教えてください。</string>
+    <string name="store_creation_store_name_caption">ストアについて</string>
+    <string name="store_creation_installation_show_preview_button">ストアのプレビュー</string>
+    <string name="store_creation_installation_manage_store_button">自分のストアを管理</string>
+    <string name="store_creation_installation_success">ストアが作成されました。</string>
+    <string name="store_creation_installation_error">インストール中にエラーが発生しました。もう一度お試しください…</string>
+    <string name="store_creation_ecommerce_plan_feature_sales">販売経路</string>
+    <string name="store_creation_ecommerce_plan_feature_shipping_labels">配送ラベル</string>
+    <string name="store_creation_ecommerce_plan_feature_payments">複数の支払いオプション</string>
+    <string name="store_creation_ecommerce_plan_feature_reports">eコマースレポート</string>
+    <string name="store_creation_ecommerce_plan_feature_subscriptions">サブスクリプション &amp; ギフトカード</string>
+    <string name="store_creation_ecommerce_plan_feature_products">無制限の製品</string>
+    <string name="store_creation_ecommerce_plan_feature_themes">プレミアムテーマ</string>
+    <string name="store_creation_ecommerce_plan_period_year">年</string>
+    <string name="store_creation_ecommerce_plan_period_month">月</string>
+    <string name="store_creation_ecommerce_plan_refund_reminder">リスクは一切ありません。30日以内にキャンセルすれば全額が返金されます。</string>
+    <string name="store_creation_ecommerce_plan_purchase_button_title">%1$sでストアを作成</string>
+    <string name="store_creation_ecommerce_plan_powered_by">提供</string>
+    <string name="store_creation_ecommerce_plan_features_tagline">必要なすべての機能がすでに組み込まれています。</string>
+    <string name="store_creation_ecommerce_plan_error">プランの情報を読み込めませんでした…</string>
+    <string name="store_creation_summary_primary_button">支払いに進む</string>
+    <string name="store_creation_summary_subtitle">選択したオプションに基づいてストアが作成されます。</string>
+    <string name="store_creation_summary_title">自分のストア</string>
+    <string name="randomly_update_reader">ランダム</string>
+    <string name="never_update_reader">なし</string>
+    <string name="always_update_reader">常に</string>
+    <string name="update_simulated_reader_key">シミュレートされたリーダーキーを更新</string>
+    <string name="update_simulated_reader">シミュレートされたカードリーダーを更新</string>
+    <string name="variation_list_generate_all_variations">すべてのバリエーションを生成</string>
+    <string name="login_jetpack_connect">Jetpack を連携</string>
+    <string name="login_jetpack_installation_credentials_hint">インストールを開始するにはストアのログイン情報が必要です。</string>
+    <string name="login_jetpack_installation_screen_title">ストアを連携</string>
     <string name="store_creation_domain_picker_suggestions_title">提案</string>
     <string name="store_creation_domain_picker_skip_button">スキップ</string>
     <string name="store_creation_domain_picker_hint">ドメインを入力</string>
@@ -51,8 +85,6 @@ Language: ja_JP
     <string name="analytics_orders_no_data">この期間には注文がありません</string>
     <string name="analytics_revenue_no_data">この期間には収益がありません</string>
     <string name="analytics_revenue_card_title">収益</string>
-    <string name="analytics_see_report_button_content_description">レポートの詳細をもっと見る</string>
-    <string name="analytics_see_report_button_text">レポートを見る</string>
     <string name="analytics_date_range_custom">%1$s - %2$s</string>
     <string name="analytics_see_more">もっと見る</string>
     <string name="signup_api_generic_error">提供されたログイン情報でアカウントを作成できませんでした。 別のメールアドレスでお試しください。</string>
@@ -420,8 +452,7 @@ Language: ja_JP
     <string name="product_ratings_count_one">\u2022  1件の承認済みのレビュー</string>
     <string name="product_ratings_count">\u2022  %d件の承認済みのレビュー</string>
     <string name="tax_name_with_tax_percent">%1$s (%2$s%%)</string>
-    <string name="orderlist_simple_payments_wip_message_enabled">デバイスから注文を作成し、支払いを受け取れるようにする機能を開発中です ! 「+」ボタンをタップしてこれらの機能を試すことができます</string>
-    <string name="orderlist_simple_payments_wip_title">注文を作成して支払いを受け取りましょう !</string>
+    <string name="orderlist_simple_payments_wip_message_enabled">デバイスから注文を作成できるようにする機能を開発中です。 「+」ボタンをタップしてこの機能を試すことができます</string>
     <string name="empty_inbox_description">ストアの成長に役立つその他のヒントやインサイトは今後も増えていきますので、ぜひまた訪問してください</string>
     <string name="empty_inbox_title">すべて読み終えました !</string>
     <string name="orderstatus_contentDesc_withStatus">注文ステータス: %s</string>
@@ -614,6 +645,7 @@ Language: ja_JP
     <string name="simple_payments_enter_amount">金額を入力</string>
     <string name="simple_payments_dialog_title">支払いを受け取る</string>
     <string name="orderlist_simple_payments_menu">シンプルペイメント</string>
+    <string name="orderlist_simple_payments_wip_title">デバイスから注文を作成しましょう。</string>
     <string name="analytics">アナリティクス</string>
     <string name="jetpack_install_progress_step_four_message">すべて完了</string>
     <string name="jetpack_install_progress_step_three_message">ストアを接続しています</string>

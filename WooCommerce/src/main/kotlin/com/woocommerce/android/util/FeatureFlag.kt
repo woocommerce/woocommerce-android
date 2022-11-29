@@ -25,8 +25,8 @@ enum class FeatureFlag {
             ORDER_CREATION_CUSTOMER_SEARCH,
             UNIFIED_ORDER_EDITING -> true
             MORE_MENU_INBOX,
-            WC_SHIPPING_BANNER,
-            NATIVE_STORE_CREATION_FLOW -> PackageUtils.isDebugBuild()
+            WC_SHIPPING_BANNER -> PackageUtils.isDebugBuild()
+            NATIVE_STORE_CREATION_FLOW -> true
         }
     }
 }
