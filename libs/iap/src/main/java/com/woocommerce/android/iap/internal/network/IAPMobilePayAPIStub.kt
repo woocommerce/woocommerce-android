@@ -1,23 +1,12 @@
 package com.woocommerce.android.iap.internal.network
 
-import com.woocommerce.android.iap.internal.network.model.CreateAndConfirmOrderResponse
 import com.woocommerce.android.iap.pub.IAPLogWrapper
 import com.woocommerce.android.iap.pub.IAP_LOG_TAG
+import com.woocommerce.android.iap.pub.network.IAPMobilePayAPI
+import com.woocommerce.android.iap.pub.network.model.CreateAndConfirmOrderResponse
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.withContext
-
-internal interface IAPMobilePayAPI {
-    @Suppress("LongParameterList")
-    suspend fun createAndConfirmOrder(
-        remoteSiteId: Long,
-        productIdentifier: String,
-        priceInCents: Int,
-        currency: String,
-        purchaseToken: String,
-        appId: String,
-    ): CreateAndConfirmOrderResponse
-}
 
 @Suppress("MagicNumber")
 internal class IAPMobilePayAPIStub(private val iapLogWrapper: IAPLogWrapper) : IAPMobilePayAPI {
