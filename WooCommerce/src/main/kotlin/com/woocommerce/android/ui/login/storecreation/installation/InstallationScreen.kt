@@ -5,6 +5,7 @@ import android.view.ViewGroup.LayoutParams
 import android.webkit.WebChromeClient
 import android.webkit.WebView
 import android.webkit.WebViewClient
+import androidx.compose.animation.Crossfade
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
@@ -38,68 +39,26 @@ import com.woocommerce.android.R
 import com.woocommerce.android.R.color
 import com.woocommerce.android.R.dimen
 import com.woocommerce.android.R.string
-import com.woocommerce.android.ui.common.wpcomwebview.WPComWebViewAuthenticator
 import com.woocommerce.android.ui.compose.component.WCColoredButton
 import com.woocommerce.android.ui.compose.component.WCOutlinedButton
-import com.woocommerce.android.ui.compose.component.WCWebView
 import com.woocommerce.android.ui.compose.drawShadow
-import com.woocommerce.android.ui.login.storecreation.installation.InstallationViewModel.ViewState.CheckoutState
 import com.woocommerce.android.ui.login.storecreation.installation.InstallationViewModel.ViewState.ErrorState
-import com.woocommerce.android.ui.login.storecreation.installation.InstallationViewModel.ViewState.ErrorState.Error.PLAN_PURCHASE_FAILED
-import com.woocommerce.android.ui.login.storecreation.installation.InstallationViewModel.ViewState.ErrorState.Error.SITE_CREATION_FAILED
 import com.woocommerce.android.ui.login.storecreation.installation.InstallationViewModel.ViewState.ErrorState.Error.STORE_LOADING_FAILED
-import com.woocommerce.android.ui.login.storecreation.installation.InstallationViewModel.ViewState.InitializationState
+import com.woocommerce.android.ui.login.storecreation.installation.InstallationViewModel.ViewState.InitialState
 import com.woocommerce.android.ui.login.storecreation.installation.InstallationViewModel.ViewState.LoadingState
 import com.woocommerce.android.ui.login.storecreation.installation.InstallationViewModel.ViewState.SuccessState
-import com.woocommerce.android.util.WooLog
-import com.woocommerce.android.util.WooLog.T.LOGIN
-import org.wordpress.android.fluxc.network.UserAgent
 
 @Composable
 fun InstallationScreen(viewModel: InstallationViewModel) {
-    viewModel.viewState.observeAsState(LoadingState()).value.let { viewState ->
-        when (viewState) {
-            is SuccessState -> InstallationSummary(viewState.url, viewModel)
-            is ErrorState -> InstallationError(viewState, viewModel::onRetryButtonClicked)
-            is CheckoutState -> WebViewPayment(
-                viewState,
-                viewModel.wpComWebViewAuthenticator,
-                viewModel.userAgent,
-                viewModel::onStoreCreated,
-                viewModel::onExitTriggered
-            )
-            is LoadingState -> LoadingView(viewState.isMessageShown)
-            InitializationState -> LoadingView(false)
+    viewModel.viewState.observeAsState(InitialState).value.let { state ->
+        Crossfade(targetState = state) { viewState ->
+            when (viewState) {
+                is SuccessState -> InstallationSummary(viewState.url, viewModel)
+                is ErrorState -> InstallationError(viewState, viewModel::onRetryButtonClicked)
+                is InitialState, LoadingState -> LoadingView()
+            }
         }
     }
-}
-
-@Composable
-private fun WebViewPayment(
-    viewState: CheckoutState,
-    authenticator: WPComWebViewAuthenticator,
-    userAgent: UserAgent,
-    onStoreCreated: () -> Unit,
-    onExitTriggered: () -> Unit
-) {
-    var storeCreationTriggered by remember { mutableStateOf(false) }
-
-    WCWebView(
-        url = viewState.startUrl,
-        wpComAuthenticator = authenticator,
-        userAgent = userAgent,
-        onUrlLoaded = { url: String ->
-            WooLog.d(LOGIN, url)
-
-            if (url.contains(viewState.successTriggerKeyword, ignoreCase = true) && !storeCreationTriggered) {
-                storeCreationTriggered = true
-                onStoreCreated()
-            } else if (url == viewState.exitTriggerKeyword) {
-                onExitTriggered()
-            }
-        },
-        modifier = Modifier.fillMaxSize()
-    )
 }
 
 @Composable
@@ -247,8 +206,6 @@ private fun InstallationError(errorState: ErrorState, onRetryButtonClicked: () -
             .fillMaxSize()
     ) {
         val (message, isRetryVisible) = when (errorState.error) {
-            SITE_CREATION_FAILED -> string.store_creation_ecommerce_site_creation_error to false
-            PLAN_PURCHASE_FAILED -> string.store_creation_ecommerce_plan_purchase_error to false
             STORE_LOADING_FAILED -> string.store_creation_ecommerce_store_loading_error to true
         }
         Text(
@@ -278,7 +235,7 @@ private fun InstallationError(errorState: ErrorState, onRetryButtonClicked: () -
 }
 
 @Composable
-private fun LoadingView(isMessageShown: Boolean) {
+private fun LoadingView() {
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center,
@@ -288,12 +245,10 @@ private fun LoadingView(isMessageShown: Boolean) {
     ) {
         CircularProgressIndicator(modifier = Modifier.padding(16.dp))
 
-        if (isMessageShown) {
-            Text(
-                text = stringResource(id = string.store_creation_in_progress),
-                style = MaterialTheme.typography.h6,
-                modifier = Modifier.padding(16.dp)
-            )
-        }
+        Text(
+            text = stringResource(id = string.store_creation_in_progress),
+            style = MaterialTheme.typography.h6,
+            modifier = Modifier.padding(16.dp)
+        )
     }
 }
