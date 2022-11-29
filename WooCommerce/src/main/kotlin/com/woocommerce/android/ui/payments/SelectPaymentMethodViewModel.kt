@@ -93,27 +93,29 @@ class SelectPaymentMethodViewModel @Inject constructor(
                             paymentUrl = order.paymentUrl,
                             orderTotal = currencyFormatter.formatCurrency(order.total, currencyCode),
                             isPaymentCollectableWithCardReader = isPaymentCollectableWithCardReader,
-                            bannerState = BannerState(
-                                shouldDisplayBanner =
-                                (
+                            bannerState = if (
                                     canShowCardReaderUpsellBanner(System.currentTimeMillis()) &&
                                         isPaymentCollectableWithCardReader
+                                    ) {
+                                BannerState.DisplayBannerState(
+                                    onPrimaryActionClicked = { onCtaClicked(AnalyticsTracker.KEY_BANNER_PAYMENTS) },
+                                    onDismissClicked = { onDismissClicked() },
+                                    title = UiString.UiStringRes(
+                                        R.string.card_reader_upsell_card_reader_banner_title
                                     ),
-                                onPrimaryActionClicked = { onCtaClicked(AnalyticsTracker.KEY_BANNER_PAYMENTS) },
-                                onDismissClicked = { onDismissClicked() },
-                                title = UiString.UiStringRes(
-                                    R.string.card_reader_upsell_card_reader_banner_title
-                                ),
-                                description = UiString.UiStringRes(
-                                    R.string.card_reader_upsell_card_reader_banner_description
-                                ),
-                                primaryActionLabel = UiString.UiStringRes(
-                                    R.string.card_reader_upsell_card_reader_banner_cta
-                                ),
-                                chipLabel = UiString.UiStringRes(
-                                    R.string.card_reader_upsell_card_reader_banner_new
+                                    description = UiString.UiStringRes(
+                                        R.string.card_reader_upsell_card_reader_banner_description
+                                    ),
+                                    primaryActionLabel = UiString.UiStringRes(
+                                        R.string.card_reader_upsell_card_reader_banner_cta
+                                    ),
+                                    chipLabel = UiString.UiStringRes(
+                                        R.string.card_reader_upsell_card_reader_banner_new
+                                    )
                                 )
-                            )
+                            } else {
+                                BannerState.HideBannerState
+                            }
                         )
                         trackBannerShownIfDisplayed()
                     }
@@ -124,7 +126,7 @@ class SelectPaymentMethodViewModel @Inject constructor(
     }
 
     private fun trackBannerShownIfDisplayed() {
-        if ((viewState.value as? TakePaymentViewState.Success)?.bannerState?.shouldDisplayBanner == true) {
+        if ((viewState.value as? TakePaymentViewState.Success)?.bannerState is BannerState.DisplayBannerState) {
             analyticsTrackerWrapper.track(
                 AnalyticsEvent.FEATURE_CARD_SHOWN,
                 mapOf(
