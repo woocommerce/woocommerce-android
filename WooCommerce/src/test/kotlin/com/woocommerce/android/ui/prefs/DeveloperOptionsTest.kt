@@ -34,16 +34,6 @@ class DeveloperOptionsTest : BaseUnitTest() {
     }
 
     @Test
-    fun `when dev options screen accessed, then update simulated reader label is displayed`() {
-
-        val simulatedReaderRow = viewModel.viewState.value?.rows?.find {
-            it.label == UiString.UiStringRes(R.string.update_simulated_reader)
-        }
-
-        assertThat(simulatedReaderRow).isNotNull
-    }
-
-    @Test
     fun `when dev options screen accessed, then enable simulated reader icon is displayed`() {
 
         val simulatedReaderRow = viewModel.viewState.value?.rows?.find {
@@ -51,27 +41,6 @@ class DeveloperOptionsTest : BaseUnitTest() {
         }
 
         assertThat(simulatedReaderRow).isNotNull
-    }
-
-    @Test
-    fun `when dev options screen accessed, then update simulated reader icon is displayed`() {
-
-        val simulatedReaderIcon = viewModel.viewState.value?.rows?.find {
-            it.icon == R.drawable.img_card_reader_update_progress
-        }
-
-        assertThat(simulatedReaderIcon).isNotNull
-    }
-
-    @Test
-    fun `when dev options screen accessed, then update simulated reader end icon is displayed`() {
-        val simulatedReaderEndIcon = (
-            viewModel.viewState.value?.rows?.find {
-                it.icon == R.drawable.img_card_reader_update_progress
-            } as DeveloperOptionsViewModel.DeveloperOptionsViewState.ListItem.SpinnerListItem
-            ).endIcon
-
-        assertThat(simulatedReaderEndIcon).isEqualTo(R.drawable.ic_arrow_drop_down)
     }
 
     @Test
@@ -106,6 +75,31 @@ class DeveloperOptionsTest : BaseUnitTest() {
                     ).isChecked
             ).isFalse()
         }
+    }
+
+    @Test
+    fun `given reader enabled, when dev options screen accessed, then update simulated reader row displayed`() {
+
+        whenever(developerOptionsRepository.isSimulatedCardReaderEnabled()).thenReturn(true)
+
+        initViewModel()
+
+        assertThat(viewModel.viewState.value?.rows)
+            .anyMatch {
+                it.label == UiString.UiStringRes(R.string.update_simulated_reader)
+            }
+    }
+
+    @Test
+    fun `given reader disabled, when dev options screen accessed, then update reader row not displayes`() {
+        whenever(developerOptionsRepository.isSimulatedCardReaderEnabled()).thenReturn(false)
+
+        initViewModel()
+
+        assertThat(viewModel.viewState.value?.rows)
+            .noneMatch {
+                it.label == UiString.UiStringRes(R.string.update_simulated_reader)
+            }
     }
 
     private fun initViewModel() {
