@@ -12,11 +12,13 @@ import kotlinx.parcelize.Parcelize
 import org.wordpress.android.fluxc.Dispatcher
 import org.wordpress.android.fluxc.generated.SiteActionBuilder
 import org.wordpress.android.fluxc.model.SiteModel
+import org.wordpress.android.fluxc.model.plans.full.Plan
 import org.wordpress.android.fluxc.network.BaseRequest.GenericErrorType.UNKNOWN
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooError
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooErrorType.GENERIC_ERROR
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooResult
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.storecreation.ShoppingCartStore
+import org.wordpress.android.fluxc.store.PlansStore
 import org.wordpress.android.fluxc.store.SiteStore
 import org.wordpress.android.fluxc.store.SiteStore.NewSitePayload
 import org.wordpress.android.fluxc.store.SiteStore.OnNewSiteCreated
@@ -32,8 +34,13 @@ class StoreCreationRepository @Inject constructor(
     private val wooCommerceStore: WooCommerceStore,
     private val siteStore: SiteStore,
     private val shoppingCartStore: ShoppingCartStore,
-    private val dispatcher: Dispatcher
+    private val dispatcher: Dispatcher,
+    private val plansStore: PlansStore
 ) {
+    companion object {
+        private const val ECOMMMERCE_MONTHLY_PLAN_SLUG = "ecommerce-bundle-monthly"
+    }
+
     fun selectSite(site: SiteModel) {
         selectedSite.set(site)
     }
@@ -65,6 +72,23 @@ class StoreCreationRepository @Inject constructor(
         } else {
             val isSiteReady = siteStore.getSiteBySiteId(siteId)?.isJetpackConnected ?: false
             Result.success(isSiteReady)
+        }
+    }
+
+    suspend fun fetchWooPlan(): Plan? {
+        val fetchResult = plansStore.fetchPlans()
+        return when {
+            fetchResult.isError -> {
+                WooLog.e(LOGIN, "Error fetching plans: ${fetchResult.error.message}")
+                null
+            }
+            fetchResult.plans == null -> {
+                WooLog.e(LOGIN, "Error fetching plans: null response")
+                null
+            }
+            else -> {
+                fetchResult.plans!!.firstOrNull { it.productSlug == ECOMMMERCE_MONTHLY_PLAN_SLUG }
+            }
         }
     }
 

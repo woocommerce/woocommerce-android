@@ -72,16 +72,18 @@ class PlansViewModel @Inject constructor(
     }
 
     private fun loadPlan() {
+        _viewState.update { LoadingState }
+
         launch {
+            val plan = repository.fetchWooPlan()
             _viewState.update {
                 PlanState(
-                    plan = Plan(
-                        name = ECOMMERCE_PLAN_NAME,
-                        billingPeriod = MONTHLY,
-                        formattedPrice = ECOMMERCE_PLAN_PRICE_MONTHLY,
+                    plan = PlanInfo(
+                        name = plan?.productShortName ?: ECOMMERCE_PLAN_NAME,
+                        billingPeriod = if (plan?.billPeriod == 365) YEARLY else MONTHLY,
+                        formattedPrice = plan?.formattedPrice ?: ECOMMERCE_PLAN_PRICE_MONTHLY,
                         features = listOf(
-                            Feature(
-                                iconId = drawable.ic_star,
+                            Feature(iconId = drawable.ic_star,
                                 textId = string.store_creation_ecommerce_plan_feature_themes
                             ),
                             Feature(
