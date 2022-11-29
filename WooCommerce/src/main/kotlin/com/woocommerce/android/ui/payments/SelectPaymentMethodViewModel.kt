@@ -94,9 +94,9 @@ class SelectPaymentMethodViewModel @Inject constructor(
                             orderTotal = currencyFormatter.formatCurrency(order.total, currencyCode),
                             isPaymentCollectableWithCardReader = isPaymentCollectableWithCardReader,
                             bannerState = if (
-                                    canShowCardReaderUpsellBanner(System.currentTimeMillis()) &&
-                                        isPaymentCollectableWithCardReader
-                                    ) {
+                                canShowCardReaderUpsellBanner(System.currentTimeMillis()) &&
+                                isPaymentCollectableWithCardReader
+                            ) {
                                 BannerState.DisplayBannerState(
                                     onPrimaryActionClicked = { onCtaClicked(AnalyticsTracker.KEY_BANNER_PAYMENTS) },
                                     onDismissClicked = { onDismissClicked() },
