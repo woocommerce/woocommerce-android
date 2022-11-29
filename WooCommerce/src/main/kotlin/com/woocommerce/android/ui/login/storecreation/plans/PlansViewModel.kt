@@ -15,8 +15,7 @@ import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.ui.login.storecreation.NewStore
 import com.woocommerce.android.ui.login.storecreation.StoreCreationRepository
 import com.woocommerce.android.ui.login.storecreation.StoreCreationRepository.SiteCreationData
-import com.woocommerce.android.ui.login.storecreation.plans.PlansViewModel.PlanInfo.BillingPeriod.MONTHLY
-import com.woocommerce.android.ui.login.storecreation.plans.PlansViewModel.PlanInfo.BillingPeriod.YEARLY
+import com.woocommerce.android.ui.login.storecreation.plans.PlansViewModel.PlanInfo.BillingPeriod
 import com.woocommerce.android.ui.login.storecreation.plans.PlansViewModel.PlanInfo.Feature
 import com.woocommerce.android.ui.login.storecreation.plans.PlansViewModel.ViewState.CheckoutState
 import com.woocommerce.android.ui.login.storecreation.plans.PlansViewModel.ViewState.ErrorState
@@ -52,6 +51,8 @@ class PlansViewModel @Inject constructor(
         private const val WEBVIEW_EXIT_TRIGGER_KEYWORD = "https://woocommerce.com/"
         private const val ECOMMERCE_PLAN_NAME = "eCommerce"
         private const val ECOMMERCE_PLAN_PRICE_MONTHLY = "$70"
+        private const val YEARLY_BILLING_PERIOD = 365
+        private const val BIYEARLY_BILLING_PERIOD = 730
     }
 
     private val _viewState = savedState.getStateFlow<ViewState>(this, LoadingState)
@@ -63,12 +64,7 @@ class PlansViewModel @Inject constructor(
     }
 
     private fun trackStep(step: String) {
-        analyticsTrackerWrapper.track(
-            SITE_CREATION_STEP,
-            mapOf(
-                AnalyticsTracker.KEY_STEP to step
-            )
-        )
+        analyticsTrackerWrapper.track(SITE_CREATION_STEP, mapOf(AnalyticsTracker.KEY_STEP to step))
     }
 
     private fun loadPlan() {
@@ -80,10 +76,11 @@ class PlansViewModel @Inject constructor(
                 PlanState(
                     plan = PlanInfo(
                         name = plan?.productShortName ?: ECOMMERCE_PLAN_NAME,
-                        billingPeriod = if (plan?.billPeriod == 365) YEARLY else MONTHLY,
+                        billingPeriod = BillingPeriod.fromPeriodValue(plan?.billPeriod),
                         formattedPrice = plan?.formattedPrice ?: ECOMMERCE_PLAN_PRICE_MONTHLY,
                         features = listOf(
-                            Feature(iconId = drawable.ic_star,
+                            Feature(
+                                iconId = drawable.ic_star,
                                 textId = string.store_creation_ecommerce_plan_feature_themes
                             ),
                             Feature(
@@ -120,7 +117,7 @@ class PlansViewModel @Inject constructor(
     private fun showCheckoutWebsite() {
         _viewState.update {
             CheckoutState(
-                startUrl = "${CART_URL}/${newStore.data.domain}",
+                startUrl = "$CART_URL/${newStore.data.domain!!}",
                 successTriggerKeyword = WEBVIEW_SUCCESS_TRIGGER_KEYWORD,
                 exitTriggerKeyword = WEBVIEW_EXIT_TRIGGER_KEYWORD
             )
@@ -228,7 +225,18 @@ class PlansViewModel @Inject constructor(
 
         enum class BillingPeriod(@StringRes val nameId: Int) {
             MONTHLY(string.store_creation_ecommerce_plan_period_month),
-            YEARLY((string.store_creation_ecommerce_plan_period_year))
+            YEARLY(string.store_creation_ecommerce_plan_period_year),
+            BIYEARLY(string.store_creation_ecommerce_plan_period_year);
+
+            companion object {
+                fun fromPeriodValue(periodValue: Int?): BillingPeriod {
+                    return when (periodValue) {
+                        YEARLY_BILLING_PERIOD -> YEARLY
+                        BIYEARLY_BILLING_PERIOD -> BIYEARLY
+                        else -> MONTHLY
+                    }
+                }
+            }
         }
     }
 

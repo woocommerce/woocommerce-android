@@ -2780,6 +2780,7 @@
     <string name="store_creation_ecommerce_plan_refund_reminder">There\'s no risk, you can cancel for a full refund within 30 days.</string>
     <string name="store_creation_ecommerce_plan_period_month">month</string>
     <string name="store_creation_ecommerce_plan_period_year">year</string>
+    <string name="store_creation_ecommerce_plan_period_two_years">2 years</string>
     <string name="store_creation_ecommerce_plan_feature_themes">Premium themes</string>
     <string name="store_creation_ecommerce_plan_feature_products">Unlimited products</string>
     <string name="store_creation_ecommerce_plan_feature_subscriptions">Subscriptions &amp; giftcards</string>
