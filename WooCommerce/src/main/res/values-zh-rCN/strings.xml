@@ -1,11 +1,45 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2022-11-16 09:54:04+0000
+Translation-Revision-Date: 2022-11-24 09:54:37+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: zh_CN
 -->
 <resources>
+    <string name="store_creation_store_name_hint">商店名称</string>
+    <string name="store_creation_store_name_subtitle">别担心，您日后可以随时进行更改。 </string>
+    <string name="store_creation_store_name_title">商店名称是什么？</string>
+    <string name="store_creation_store_name_caption">关于您的商店</string>
+    <string name="store_creation_installation_show_preview_button">商店预览</string>
+    <string name="store_creation_installation_manage_store_button">管理我的商店</string>
+    <string name="store_creation_installation_success">您的商店已创建！</string>
+    <string name="store_creation_installation_error">安装过程中出现错误，请重试…</string>
+    <string name="store_creation_ecommerce_plan_feature_sales">销售渠道</string>
+    <string name="store_creation_ecommerce_plan_feature_shipping_labels">货运标签</string>
+    <string name="store_creation_ecommerce_plan_feature_payments">多种付款选项</string>
+    <string name="store_creation_ecommerce_plan_feature_reports">电子商务报告</string>
+    <string name="store_creation_ecommerce_plan_feature_subscriptions">订阅和礼品卡</string>
+    <string name="store_creation_ecommerce_plan_feature_products">无限量产品</string>
+    <string name="store_creation_ecommerce_plan_feature_themes">高级版主题</string>
+    <string name="store_creation_ecommerce_plan_period_year">年</string>
+    <string name="store_creation_ecommerce_plan_period_month">月</string>
+    <string name="store_creation_ecommerce_plan_refund_reminder">无任何风险，在 30 天内取消可获得全额退款。</string>
+    <string name="store_creation_ecommerce_plan_purchase_button_title">创建商店，支付 %1$s</string>
+    <string name="store_creation_ecommerce_plan_powered_by">提供支持：</string>
+    <string name="store_creation_ecommerce_plan_features_tagline">您需要的所有功能，皆已内置其中。</string>
+    <string name="store_creation_ecommerce_plan_error">无法加载套餐信息…</string>
+    <string name="store_creation_summary_primary_button">继续付款</string>
+    <string name="store_creation_summary_subtitle">您的商店根据您选择的选项创建！</string>
+    <string name="store_creation_summary_title">我的商店</string>
+    <string name="randomly_update_reader">随机</string>
+    <string name="never_update_reader">从不</string>
+    <string name="always_update_reader">总是</string>
+    <string name="update_simulated_reader_key">更新模拟读卡器密钥</string>
+    <string name="update_simulated_reader">更新模拟读卡器</string>
+    <string name="variation_list_generate_all_variations">生成所有变体</string>
+    <string name="login_jetpack_connect">连接 Jetpack</string>
+    <string name="login_jetpack_installation_credentials_hint">我们需要您的商店凭据才能开始安装。</string>
+    <string name="login_jetpack_installation_screen_title">连接商店</string>
     <string name="store_creation_domain_picker_suggestions_title">建议</string>
     <string name="store_creation_domain_picker_skip_button">跳过</string>
     <string name="store_creation_domain_picker_hint">输入域名</string>
@@ -36,7 +70,7 @@ Language: zh_CN
     <string name="site_picker_connect_existing_store">连接现有商店</string>
     <string name="site_picker_create_new_store">创建新的商店</string>
     <string name="login_site_picker_add_a_store">添加商店</string>
-    <string name="login_no_stores">您的账户未与任何 WooCommerce 商店连接。</string>
+    <string name="login_no_stores_header">您的账户未与任何 WooCommerce 商店连接。</string>
     <string name="analytics_products_list_item_description">净销售额：%1$s</string>
     <string name="analytics_products_list_header_subtitle">已售项目</string>
     <string name="analytics_products_list_header_title">产品</string>
@@ -51,8 +85,6 @@ Language: zh_CN
     <string name="analytics_orders_no_data">本期无订单</string>
     <string name="analytics_revenue_no_data">本期无收益</string>
     <string name="analytics_revenue_card_title">收益</string>
-    <string name="analytics_see_report_button_content_description">查看更多报告详情</string>
-    <string name="analytics_see_report_button_text">查看报告</string>
     <string name="analytics_date_range_custom">%1$s - %2$s</string>
     <string name="analytics_see_more">查看更多</string>
     <string name="signup_api_generic_error">抱歉，我们无法为所提供的凭证创建账户。 请尝试使用其他电子邮件。</string>
@@ -420,8 +452,7 @@ Language: zh_CN
     <string name="product_ratings_count_one">\u2022  一条已批准的评论</string>
     <string name="product_ratings_count">\u2022  %d 条已批准的评论</string>
     <string name="tax_name_with_tax_percent">%1$s (%2$s%%)</string>
-    <string name="orderlist_simple_payments_wip_message_enabled">我们一直在努力，旨在助力您直接通过您的设备创建订单并收款！ 您可以轻点“+”按钮，试用这些功能。</string>
-    <string name="orderlist_simple_payments_wip_title">创建订单并收款！</string>
+    <string name="orderlist_simple_payments_wip_message_enabled">我们一直在努力，让您能够通过您的设备创建订单！ 您可以轻点“+”按钮，试用此功能</string>
     <string name="empty_inbox_description">请稍后回来查看，届时将提供更多关于发展您商店的贴士和数据分析</string>
     <string name="empty_inbox_title">恭喜您，已全部阅读！</string>
     <string name="orderstatus_contentDesc_withStatus">订单状态： %s</string>
@@ -614,6 +645,7 @@ Language: zh_CN
     <string name="simple_payments_enter_amount">输入金额</string>
     <string name="simple_payments_dialog_title">收款</string>
     <string name="orderlist_simple_payments_menu">简单付款</string>
+    <string name="orderlist_simple_payments_wip_title">通过您的设备上创建订单</string>
     <string name="analytics">分析</string>
     <string name="jetpack_install_progress_step_four_message">全部完成</string>
     <string name="jetpack_install_progress_step_three_message">正在关联您的商店</string>

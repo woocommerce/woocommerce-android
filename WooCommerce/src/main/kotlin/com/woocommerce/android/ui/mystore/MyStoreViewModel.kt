@@ -126,14 +126,7 @@ class MyStoreViewModel @Inject constructor(
 
         _topPerformersState.value = TopPerformersState(isLoading = true)
 
-        viewModelScope.launch {
-            val response = jitmStore.fetchJitmMessage(
-                selectedSite.get(),
-                JITM_MESSAGE_PATH,
-                getEncodedQueryParams(),
-            )
-            populateResultToUI(response)
-        }
+        fetchJitms()
         viewModelScope.launch {
             combine(
                 _activeStatsGranularity,
@@ -148,6 +141,17 @@ class MyStoreViewModel @Inject constructor(
             }
         }
         observeTopPerformerUpdates()
+    }
+
+    private fun fetchJitms() {
+        viewModelScope.launch {
+            val response = jitmStore.fetchJitmMessage(
+                selectedSite.get(),
+                JITM_MESSAGE_PATH,
+                getEncodedQueryParams(),
+            )
+            populateResultToUI(response)
+        }
     }
 
     private fun getEncodedQueryParams(): String {
@@ -272,6 +276,7 @@ class MyStoreViewModel @Inject constructor(
     }
 
     fun onSwipeToRefresh() {
+        fetchJitms()
         usageTracksEventEmitter.interacted()
         analyticsTrackerWrapper.track(AnalyticsEvent.DASHBOARD_PULLED_TO_REFRESH)
         resetForceRefresh()

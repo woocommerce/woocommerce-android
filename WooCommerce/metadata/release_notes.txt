@@ -1,1 +1,1 @@
-This release has several fixes that makes it easier for you to manage your store from the app. Please continue to send us feedback – we are listening!
+We focused on some stability and performance issues to make your experience smoother. Please keep sharing feedback. We read every one of them.

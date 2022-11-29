@@ -153,6 +153,7 @@ class ZendeskHelper(
         selectedSite: SiteModel?,
         extraTags: List<String>? = null,
         ticketType: TicketType = TicketType.General,
+        ssr: String? = null
     ) {
         require(isZendeskEnabled) {
             zendeskNeedsToBeEnabledError
@@ -164,7 +165,8 @@ class ZendeskHelper(
                 siteStore.sites,
                 origin,
                 selectedSite,
-                extraTags
+                extraTags,
+                ssr,
             )
             RequestActivity.builder().show(context, config)
         }
@@ -372,9 +374,10 @@ private fun buildZendeskConfig(
     allSites: List<SiteModel>?,
     origin: Origin?,
     selectedSite: SiteModel? = null,
-    extraTags: List<String>? = null
+    extraTags: List<String>? = null,
+    ssr: String? = null
 ): Configuration {
-    val customFields = buildZendeskCustomFields(context, ticketType, allSites, selectedSite)
+    val customFields = buildZendeskCustomFields(context, ticketType, allSites, selectedSite, ssr)
     val extraTagsWithTicketTypeTags = (extraTags ?: emptyList()) + ticketType.tags
     return RequestActivity.builder()
         .withTicketForm(ticketType.form, customFields)
@@ -399,7 +402,8 @@ private fun buildZendeskCustomFields(
     context: Context,
     ticketType: TicketType,
     allSites: List<SiteModel>?,
-    selectedSite: SiteModel?
+    selectedSite: SiteModel?,
+    ssr: String? = null
 ): List<CustomField> {
     val currentSiteInformation = if (selectedSite != null) {
         "${getHomeURLOrHostName(selectedSite)} (${selectedSite.stateLogInformation})"
@@ -414,6 +418,7 @@ private fun buildZendeskCustomFields(
         CustomField(TicketFieldIds.currentSite, currentSiteInformation),
         CustomField(TicketFieldIds.deviceFreeSpace, DeviceUtils.getTotalAvailableMemorySize()),
         CustomField(TicketFieldIds.logs, WooLog.toString().takeLast(maxLogfileLength)),
+        CustomField(TicketFieldIds.ssr, ssr),
         CustomField(TicketFieldIds.networkInformation, getNetworkInformation(context)),
         CustomField(TicketFieldIds.appLanguage, Locale.getDefault().language),
         CustomField(TicketFieldIds.sourcePlatform, ZendeskConstants.sourcePlatform)
@@ -535,7 +540,9 @@ private object TicketFieldIds {
     const val formPayments = 189946L
     const val categoryId = 25176003L
     const val subcategoryId = 25176023L
-    const val logs = 22871957L
+    const val logs = 10901699622036L
+    // SSR refers to WooCommerce System Status Report
+    const val ssr = 22871957L
     const val networkInformation = 360000086966L
     const val currentSite = 360000103103L
     const val appLanguage = 360008583691L

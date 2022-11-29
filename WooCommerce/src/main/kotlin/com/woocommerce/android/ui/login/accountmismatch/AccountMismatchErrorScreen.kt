@@ -255,7 +255,7 @@ private fun MainContent(
         }
 
         Image(
-            painter = painterResource(id = R.drawable.img_woo_no_stores),
+            painter = painterResource(id = R.drawable.img_woo_generic_error),
             contentDescription = null,
             modifier = Modifier
                 .padding(dimensionResource(id = R.dimen.major_100))

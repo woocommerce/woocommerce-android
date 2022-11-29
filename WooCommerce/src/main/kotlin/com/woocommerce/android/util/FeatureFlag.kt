@@ -28,9 +28,9 @@ enum class FeatureFlag {
             UNIFIED_ORDER_EDITING -> true
             MORE_MENU_INBOX,
             WC_SHIPPING_BANNER,
-            NATIVE_STORE_CREATION_FLOW,
             GENERATE_ALL_VARIATIONS,
             PRODUCTS_BULK_EDITING -> PackageUtils.isDebugBuild()
+            NATIVE_STORE_CREATION_FLOW -> true
         }
     }
 }

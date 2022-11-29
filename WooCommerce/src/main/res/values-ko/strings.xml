@@ -1,11 +1,45 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2022-11-15 14:54:03+0000
+Translation-Revision-Date: 2022-11-24 15:54:04+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: ko_KR
 -->
 <resources>
+    <string name="store_creation_store_name_hint">스토어 이름</string>
+    <string name="store_creation_store_name_subtitle">나중에 언제든지 변경할 수 있으니 걱정하지 마세요. </string>
+    <string name="store_creation_store_name_title">스토어 이름은 무엇인가요?</string>
+    <string name="store_creation_store_name_caption">스토어 소개</string>
+    <string name="store_creation_installation_show_preview_button">스토어 미리보기</string>
+    <string name="store_creation_installation_manage_store_button">내 스토어 관리</string>
+    <string name="store_creation_installation_success">스토어가 생성되었습니다!</string>
+    <string name="store_creation_installation_error">설치 중 오류가 발생했습니다. 다시 시도하세요…</string>
+    <string name="store_creation_ecommerce_plan_feature_sales">판매 채널</string>
+    <string name="store_creation_ecommerce_plan_feature_shipping_labels">배송 레이블</string>
+    <string name="store_creation_ecommerce_plan_feature_payments">여러 가지 결제 옵션</string>
+    <string name="store_creation_ecommerce_plan_feature_reports">전자상거래 보고서</string>
+    <string name="store_creation_ecommerce_plan_feature_subscriptions">구독 및 상품권</string>
+    <string name="store_creation_ecommerce_plan_feature_products">무제한 상품</string>
+    <string name="store_creation_ecommerce_plan_feature_themes">프리미엄 테마</string>
+    <string name="store_creation_ecommerce_plan_period_year">년</string>
+    <string name="store_creation_ecommerce_plan_period_month">월</string>
+    <string name="store_creation_ecommerce_plan_refund_reminder">30일 이내에 취소하면 전액 환불받을 수 있으며 손해가 발생하지 않습니다.</string>
+    <string name="store_creation_ecommerce_plan_purchase_button_title">%1$s에 스토어 생성</string>
+    <string name="store_creation_ecommerce_plan_powered_by">제공:</string>
+    <string name="store_creation_ecommerce_plan_features_tagline">필요한 모든 기능이 이미 구축되어 있습니다.</string>
+    <string name="store_creation_ecommerce_plan_error">요금제 정보를 로드할 수 없습니다…</string>
+    <string name="store_creation_summary_primary_button">결제 계속</string>
+    <string name="store_creation_summary_subtitle">선택하신 옵션에 따라 스토어가 생성되었습니다!</string>
+    <string name="store_creation_summary_title">내 스토어</string>
+    <string name="randomly_update_reader">무작위로</string>
+    <string name="never_update_reader">안 함</string>
+    <string name="always_update_reader">항상</string>
+    <string name="update_simulated_reader_key">시뮬레이션한 리더 키 업데이트</string>
+    <string name="update_simulated_reader">시뮬레이션한 카드 리더 업데이트</string>
+    <string name="variation_list_generate_all_variations">모든 변형 생성</string>
+    <string name="login_jetpack_connect">젯팩 연결</string>
+    <string name="login_jetpack_installation_credentials_hint">설치를 시작하려면 스토어 자격 증명이 필요합니다.</string>
+    <string name="login_jetpack_installation_screen_title">스토어 연결</string>
     <string name="store_creation_domain_picker_suggestions_title">제안</string>
     <string name="store_creation_domain_picker_skip_button">건너뛰기</string>
     <string name="store_creation_domain_picker_hint">도메인 입력</string>
@@ -36,7 +70,7 @@ Language: ko_KR
     <string name="site_picker_connect_existing_store">기존 스토어 연결</string>
     <string name="site_picker_create_new_store">새 스토어 생성</string>
     <string name="login_site_picker_add_a_store">스토어 추가</string>
-    <string name="login_no_stores">계정이 어떠한 우커머스 스토어에도 연결되지 않았습니다.</string>
+    <string name="login_no_stores_header">계정이 어떠한 우커머스 스토어에도 연결되지 않았습니다.</string>
     <string name="analytics_products_list_item_description">순매출액: %1$s</string>
     <string name="analytics_products_list_header_subtitle">판매된 아이템</string>
     <string name="analytics_products_list_header_title">상품</string>
@@ -51,8 +85,6 @@ Language: ko_KR
     <string name="analytics_orders_no_data">이 기간의 주문 없음</string>
     <string name="analytics_revenue_no_data">이 기간의 수익 없음</string>
     <string name="analytics_revenue_card_title">수익</string>
-    <string name="analytics_see_report_button_content_description">보고서 상세 정보 더 보기</string>
-    <string name="analytics_see_report_button_text">보고서 보기</string>
     <string name="analytics_date_range_custom">%1$s-%2$s</string>
     <string name="analytics_see_more">더 보기</string>
     <string name="signup_api_generic_error">죄송합니다. 제공된 자격 증명에 대한 계정을 만들 수 없습니다. 다른 이메일로 시도해 보세요.</string>
@@ -420,8 +452,7 @@ Language: ko_KR
     <string name="product_ratings_count_one">\u2022  승인한 리뷰 1개</string>
     <string name="product_ratings_count">\u2022  %d개 승인한 리뷰</string>
     <string name="tax_name_with_tax_percent">%1$s(%2$s%%)</string>
-    <string name="orderlist_simple_payments_wip_message_enabled">기기에서 주문을 생성하고 결제를 진행할 수 있도록 작업하고 있습니다! \"+\" 버튼을 눌러 이러한 기능을 체험하실 수 있습니다.</string>
-    <string name="orderlist_simple_payments_wip_title">주문을 생성하고 결제를 진행하세요!</string>
+    <string name="orderlist_simple_payments_wip_message_enabled">기기에서 주문을 생성할 수 있도록 작업하고 있습니다! \"+\" 버튼을 눌러 이 기능을 체험하실 수 있습니다.</string>
     <string name="empty_inbox_description">곧 다시 오셔서 더 많은 스토어 성장 팁과 인사이트를 확인하세요.</string>
     <string name="empty_inbox_title">수고하셨습니다. 다 읽으셨습니다!</string>
     <string name="orderstatus_contentDesc_withStatus">주문 상태: %s</string>
@@ -614,6 +645,7 @@ Language: ko_KR
     <string name="simple_payments_enter_amount">금액 입력</string>
     <string name="simple_payments_dialog_title">결제하기</string>
     <string name="orderlist_simple_payments_menu">간편한 결제</string>
+    <string name="orderlist_simple_payments_wip_title">기기에서 주문을 생성하세요!</string>
     <string name="analytics">분석</string>
     <string name="jetpack_install_progress_step_four_message">모두 완료</string>
     <string name="jetpack_install_progress_step_three_message">스토어 연결 중</string>

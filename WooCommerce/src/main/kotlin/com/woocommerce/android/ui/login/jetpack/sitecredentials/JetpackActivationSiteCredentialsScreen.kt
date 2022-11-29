@@ -1,15 +1,12 @@
 package com.woocommerce.android.ui.login.jetpack.sitecredentials
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
@@ -22,13 +19,12 @@ import androidx.compose.material.Text
 import androidx.compose.material.TopAppBar
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Clear
-import androidx.compose.material.icons.outlined.Info
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -83,7 +79,18 @@ fun JetpackActivationSiteCredentialsScreen(
                     .padding(dimensionResource(id = R.dimen.major_100)),
             ) {
                 JetpackToWooHeader()
-                Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.major_100)))
+                Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.major_200)))
+                val title = if (viewState.isJetpackInstalled) {
+                    R.string.login_jetpack_connect
+                } else {
+                    R.string.login_jetpack_install
+                }
+                Text(
+                    text = stringResource(id = title),
+                    style = MaterialTheme.typography.h4,
+                    fontWeight = FontWeight.Bold
+                )
+                Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.minor_100)))
                 Text(
                     text = annotatedStringRes(
                         stringResId = if (viewState.isJetpackInstalled) {
@@ -117,20 +124,6 @@ fun JetpackActivationSiteCredentialsScreen(
                 WCTextButton(onClick = onResetPasswordClick) {
                     Text(text = stringResource(id = R.string.reset_your_password))
                 }
-                Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.major_100)))
-                Row(horizontalArrangement = Arrangement.spacedBy(dimensionResource(id = R.dimen.minor_100))) {
-                    Icon(
-                        imageVector = Icons.Outlined.Info,
-                        contentDescription = null,
-                        tint = colorResource(id = R.color.color_on_surface_medium),
-                        modifier = Modifier.size(dimensionResource(id = R.dimen.image_minor_40))
-                    )
-                    Text(
-                        text = stringResource(id = R.string.login_jetpack_connection_approval_hint),
-                        style = MaterialTheme.typography.caption,
-                        color = colorResource(id = R.color.color_on_surface_medium)
-                    )
-                }
             }
 
             WCColoredButton(
@@ -163,7 +156,7 @@ private fun Toolbar(
 ) {
     TopAppBar(
         backgroundColor = MaterialTheme.colors.surface,
-        title = { Text(stringResource(id = R.string.login_jetpack_site_credentials_screen_title)) },
+        title = { /* Intentionally empty */ },
         navigationIcon = {
             IconButton(onClick = onCloseClick) {
                 Icon(

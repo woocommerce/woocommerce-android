@@ -49,6 +49,7 @@ import com.woocommerce.android.ui.products.variations.VariationListViewModel.Sho
 import com.woocommerce.android.ui.products.variations.VariationListViewModel.ShowGenerateVariationsError.LimitExceeded
 import com.woocommerce.android.ui.products.variations.VariationListViewModel.ShowGenerateVariationsError.NetworkError
 import com.woocommerce.android.ui.products.variations.VariationListViewModel.ShowVariationDetail
+import com.woocommerce.android.ui.products.variations.VariationListViewModel.ShowVariationDialog
 import com.woocommerce.android.ui.products.variations.domain.GenerateVariationCandidates
 import com.woocommerce.android.ui.products.variations.domain.VariationCandidate
 import com.woocommerce.android.util.FeatureFlag
@@ -66,6 +67,7 @@ class VariationListFragment :
     BaseFragment(R.layout.fragment_variation_list),
     BackPressListener,
     OnLoadMoreListener,
+    GenerateVariationPickerDialog.GenerateVariationPickerDialogListener,
     MenuProvider {
     companion object {
         const val TAG: String = "VariationListFragment"
@@ -87,6 +89,8 @@ class VariationListFragment :
     private var _binding: FragmentVariationListBinding? = null
     private val binding get() = _binding!!
 
+    private var generateVariationPickerDialog: GenerateVariationPickerDialog? = null
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
@@ -101,6 +105,9 @@ class VariationListFragment :
         skeletonView.hide()
         super.onDestroyView()
         _binding = null
+        generateVariationPickerDialog = null
+        progressDialog = null
+        layoutManager = null
     }
 
     override fun onResume() {
@@ -121,12 +128,6 @@ class VariationListFragment :
     }
 
     private fun initializeViews(savedInstanceState: Bundle?) {
-        binding.addAllVariationsButton.isVisible = FeatureFlag.GENERATE_ALL_VARIATIONS.isEnabled()
-
-        binding.addAllVariationsButton.setOnClickListener {
-            viewModel.onAddAllVariationsClicked()
-        }
-
         val layoutManager = LinearLayoutManager(activity, RecyclerView.VERTICAL, false)
         this.layoutManager = layoutManager
 
@@ -149,13 +150,24 @@ class VariationListFragment :
                 viewModel.refreshVariations(navArgs.remoteProductId)
             }
         }
-
-        binding.firstVariationView.setOnClickListener {
-            viewModel.onCreateFirstVariationRequested()
-        }
-
-        binding.addVariationButton.setOnClickListener {
-            viewModel.onCreateEmptyVariationClick()
+        if (FeatureFlag.GENERATE_ALL_VARIATIONS.isEnabled()) {
+            binding.addVariationButton.text = getString(R.string.variation_list_add)
+            binding.firstVariationView.setOnClickListener {
+                viewModel.onAddVariationsClicked()
+            }
+            binding.addVariationButton.setOnClickListener {
+                viewModel.onAddVariationsClicked()
+            }
+        } else {
+            binding.firstVariationView.setOnClickListener {
+                viewModel.createFirstVariation()
+            }
+            binding.addVariationButton.run {
+                text = getString(R.string.variation_list_generate_new_variation)
+                setOnClickListener {
+                    viewModel.createEmptyVariation()
+                }
+            }
         }
     }
 
@@ -205,6 +217,7 @@ class VariationListFragment :
                 is ShowGenerateVariationsError -> handleGenerateVariationError(event)
                 is ExitWithResult<*> -> navigateBackWithResult(KEY_VARIATION_LIST_RESULT, event.data)
                 is Exit -> activity?.onBackPressedDispatcher?.onBackPressed()
+                is ShowVariationDialog -> showAddVariationSelectDialog(event.variationCandidates)
             }
         }
     }
@@ -231,12 +244,12 @@ class VariationListFragment :
         }
     }
 
-    private fun showGenerateVariationConfirmation(variationCandidates: List<VariationCandidate>) {
+    private fun showGenerateVariationConfirmation(variationCandidatesSize: List<VariationCandidate>) {
         MaterialAlertDialogBuilder(requireActivity())
             .setTitle(R.string.variations_bulk_creation_confirmation_title)
-            .setMessage(getString(R.string.variations_bulk_creation_confirmation_message, variationCandidates.size))
+            .setMessage(getString(R.string.variations_bulk_creation_confirmation_message, variationCandidatesSize.size))
             .setPositiveButton(android.R.string.ok) { dialogInterface, _ ->
-                viewModel.onGenerateVariationsConfirmed(variationCandidates)
+                viewModel.onGenerateVariationsConfirmed(variationCandidatesSize)
                 dialogInterface.dismiss()
             }
             .setNegativeButton(android.R.string.cancel) { dialogInterface, _ ->
@@ -267,6 +280,16 @@ class VariationListFragment :
                 dialogInterface.dismiss()
             }
             .show()
+    }
+
+    private fun showAddVariationSelectDialog(variationCandidates: List<VariationCandidate>) {
+        val dialog = generateVariationPickerDialog ?: GenerateVariationPickerDialog(requireContext()).apply {
+            listener = this@VariationListFragment
+        }
+        dialog.run {
+            this.variationCandidates = variationCandidates
+            show()
+        }
     }
 
     private fun showBulkUpdateLimitExceededWarning() {
@@ -380,5 +403,13 @@ class VariationListFragment :
             }
             else -> false
         }
+    }
+
+    override fun onGenerateAllVariations(variationCandidates: List<VariationCandidate>) {
+        viewModel.onAddAllVariationsClicked(variationCandidates)
+    }
+
+    override fun onGenerateNewVariation() {
+        viewModel.onNewVariationClicked()
     }
 }

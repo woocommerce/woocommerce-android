@@ -135,12 +135,20 @@ class VariationListViewModel @Inject constructor(
         triggerEvent(ShowVariationDetail(variation))
     }
 
-    fun onCreateEmptyVariationClick() {
+    fun onNewVariationClicked() {
+        if (isEmpty) {
+            createFirstVariation()
+        } else {
+            createEmptyVariation()
+        }
+    }
+
+    fun createEmptyVariation() {
         trackWithProductId(AnalyticsEvent.PRODUCT_VARIATION_ADD_MORE_TAPPED)
         handleVariationCreation()
     }
 
-    fun onCreateFirstVariationRequested() {
+    fun createFirstVariation() {
         trackWithProductId(AnalyticsEvent.PRODUCT_VARIATION_ADD_FIRST_TAPPED)
         viewState.parentProduct
             ?.variationEnabledAttributes
@@ -282,12 +290,13 @@ class VariationListViewModel @Inject constructor(
         viewState.parentProduct?.let { tracker.track(event, mapOf(KEY_PRODUCT_ID to it.remoteId)) }
     }
 
-    fun onAddAllVariationsClicked() {
-        tracker.track(AnalyticsEvent.PRODUCT_VARIATION_GENERATION_REQUESTED)
+    fun onAddVariationsClicked() {
         val product = viewState.parentProduct ?: return
+        triggerEvent(ShowVariationDialog(generateVariationCandidates.invoke(product)))
+    }
 
-        val variationCandidates = generateVariationCandidates.invoke(product)
-
+    fun onAddAllVariationsClicked(variationCandidates: List<VariationCandidate>) {
+        tracker.track(AnalyticsEvent.PRODUCT_VARIATION_GENERATION_REQUESTED)
         if (variationCandidates.size <= GenerateVariationCandidates.VARIATION_CREATION_LIMIT) {
             triggerEvent(ShowGenerateVariationConfirmation(variationCandidates))
         } else {
@@ -344,6 +353,7 @@ class VariationListViewModel @Inject constructor(
     sealed class ProgressDialogState : Parcelable {
         @Parcelize
         object Hidden : ProgressDialogState()
+
         @Parcelize
         data class Shown(val cardinality: VariationsCardinality) : ProgressDialogState() {
             enum class VariationsCardinality {
@@ -364,6 +374,8 @@ class VariationListViewModel @Inject constructor(
      * Informs about exceeded limit of 100 variations bulk update.
      */
     object ShowBulkUpdateLimitExceededWarning : Event()
+
+    data class ShowVariationDialog(val variationCandidates: List<VariationCandidate>) : Event()
 
     data class ShowGenerateVariationConfirmation(val variationCandidates: List<VariationCandidate>) : Event()
 
