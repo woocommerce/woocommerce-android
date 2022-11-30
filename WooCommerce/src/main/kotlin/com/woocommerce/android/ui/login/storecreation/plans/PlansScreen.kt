@@ -52,13 +52,12 @@ import com.woocommerce.android.R.string
 import com.woocommerce.android.ui.common.wpcomwebview.WPComWebViewAuthenticator
 import com.woocommerce.android.ui.compose.component.WCColoredButton
 import com.woocommerce.android.ui.compose.component.WCWebView
+import com.woocommerce.android.ui.login.storecreation.StoreCreationError
 import com.woocommerce.android.ui.login.storecreation.plans.PlansViewModel.PlanInfo
 import com.woocommerce.android.ui.login.storecreation.plans.PlansViewModel.PlanInfo.BillingPeriod.MONTHLY
 import com.woocommerce.android.ui.login.storecreation.plans.PlansViewModel.PlanInfo.Feature
 import com.woocommerce.android.ui.login.storecreation.plans.PlansViewModel.ViewState.CheckoutState
 import com.woocommerce.android.ui.login.storecreation.plans.PlansViewModel.ViewState.ErrorState
-import com.woocommerce.android.ui.login.storecreation.plans.PlansViewModel.ViewState.ErrorState.PlanPurchaseError.PLAN_PURCHASE_FAILED
-import com.woocommerce.android.ui.login.storecreation.plans.PlansViewModel.ViewState.ErrorState.PlanPurchaseError.SITE_CREATION_FAILED
 import com.woocommerce.android.ui.login.storecreation.plans.PlansViewModel.ViewState.LoadingState
 import com.woocommerce.android.ui.login.storecreation.plans.PlansViewModel.ViewState.PlanState
 import com.woocommerce.android.util.WooLog
@@ -71,7 +70,7 @@ fun PlanScreen(viewModel: PlansViewModel, authenticator: WPComWebViewAuthenticat
         Crossfade(targetState = state) { viewState ->
             when (viewState) {
                 is PlanState -> PlanInformation(viewState, viewModel::onExitTriggered, viewModel::onConfirmClicked)
-                is ErrorState -> InstallationError(viewState)
+                is ErrorState -> StoreCreationError(viewState.errorType, viewModel::onExitTriggered, viewState.message)
                 LoadingState -> PlanLoading()
                 is CheckoutState -> WebViewPayment(
                     viewState,
@@ -240,15 +239,27 @@ private fun PlanInformation(
                     start.linkTo(parent.start)
                     end.linkTo(parent.end)
                 }
+                .padding(bottom = dimensionResource(id = R.dimen.major_125))
         ) {
             Divider(
                 color = colorResource(id = R.color.woo_white_alpha_008),
                 thickness = dimensionResource(id = R.dimen.minor_10),
             )
-            WCColoredButton(
+
+            Text(
                 modifier = Modifier
                     .padding(horizontal = dimensionResource(id = R.dimen.major_100))
                     .fillMaxWidth(),
+                text = stringResource(id = string.store_creation_ecommerce_plan_refund_reminder),
+                color = colorResource(id = R.color.woo_purple_dark_secondary),
+                fontSize = 14.sp,
+                textAlign = TextAlign.Center
+            )
+
+            WCColoredButton(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = dimensionResource(id = R.dimen.major_100)),
                 onClick = onConfirmClicked
             ) {
                 val periodText = stringResource(id = viewState.plan.billingPeriod.nameId)
@@ -259,15 +270,6 @@ private fun PlanInformation(
                     )
                 )
             }
-            Text(
-                modifier = Modifier
-                    .padding(horizontal = dimensionResource(id = R.dimen.major_100))
-                    .fillMaxWidth(),
-                text = stringResource(id = string.store_creation_ecommerce_plan_refund_reminder),
-                color = colorResource(id = R.color.woo_purple_dark_secondary),
-                fontSize = 14.sp,
-                textAlign = TextAlign.Center
-            )
         }
     }
 }
@@ -323,48 +325,25 @@ private fun WebViewPayment(
 }
 
 @Composable
-private fun InstallationError(errorState: ErrorState) {
-    Column(
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center,
-        modifier = Modifier
-            .background(MaterialTheme.colors.surface)
-            .fillMaxSize()
-    ) {
-        val message = when (errorState.error) {
-            SITE_CREATION_FAILED -> string.store_creation_ecommerce_site_creation_error
-            PLAN_PURCHASE_FAILED -> string.store_creation_ecommerce_plan_purchase_error
-        }
-        Text(
-            text = stringResource(id = message),
-            style = MaterialTheme.typography.h6,
-            modifier = Modifier.padding(dimensionResource(id = R.dimen.major_100)),
-            textAlign = TextAlign.Center
-        )
-
-        if (errorState.message != null) {
-            Text(
-                text = errorState.message,
-                style = MaterialTheme.typography.h6,
-                modifier = Modifier.padding(dimensionResource(id = R.dimen.major_100)),
-                textAlign = TextAlign.Center
-            )
-        }
-    }
-}
-
-@Composable
 private fun PlanLoading() {
+    val systemUiController = rememberSystemUiController()
+    val wooDarkPurple = colorResource(id = color.woo_purple_90)
+    systemUiController.setSystemBarsColor(
+        color = wooDarkPurple
+    )
+
     Box(
         contentAlignment = Alignment.Center,
-        modifier = Modifier.fillMaxSize()
+        modifier = Modifier
+            .background(colorResource(id = R.color.woo_purple_90))
+            .fillMaxSize()
     ) {
-        CircularProgressIndicator()
+        CircularProgressIndicator(color = colorResource(id = R.color.white))
     }
 }
 
 @Preview
-@Preview()
+@Preview
 @Composable
 fun PreviewPlanInformation() {
     PlanInformation(

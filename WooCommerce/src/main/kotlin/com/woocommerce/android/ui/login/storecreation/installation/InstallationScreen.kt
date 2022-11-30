@@ -42,8 +42,8 @@ import com.woocommerce.android.R.string
 import com.woocommerce.android.ui.compose.component.WCColoredButton
 import com.woocommerce.android.ui.compose.component.WCOutlinedButton
 import com.woocommerce.android.ui.compose.drawShadow
+import com.woocommerce.android.ui.login.storecreation.StoreCreationError
 import com.woocommerce.android.ui.login.storecreation.installation.InstallationViewModel.ViewState.ErrorState
-import com.woocommerce.android.ui.login.storecreation.installation.InstallationViewModel.ViewState.ErrorState.Error.STORE_LOADING_FAILED
 import com.woocommerce.android.ui.login.storecreation.installation.InstallationViewModel.ViewState.InitialState
 import com.woocommerce.android.ui.login.storecreation.installation.InstallationViewModel.ViewState.LoadingState
 import com.woocommerce.android.ui.login.storecreation.installation.InstallationViewModel.ViewState.SuccessState
@@ -54,7 +54,12 @@ fun InstallationScreen(viewModel: InstallationViewModel) {
         Crossfade(targetState = state) { viewState ->
             when (viewState) {
                 is SuccessState -> InstallationSummary(viewState.url, viewModel)
-                is ErrorState -> InstallationError(viewState, viewModel::onRetryButtonClicked)
+                is ErrorState -> StoreCreationError(
+                    viewState.errorType,
+                    viewModel::onBackPressed,
+                    viewState.message,
+                    viewModel::onRetryButtonClicked
+                )
                 is InitialState, LoadingState -> LoadingView()
             }
         }
@@ -168,18 +173,16 @@ private fun PreviewWebView(url: String, modifier: Modifier = Modifier) {
                     )
 
                     this.settings.javaScriptEnabled = true
-                    this.settings.useWideViewPort = true
                     this.settings.loadWithOverviewMode = true
-                    this.setInitialScale(50)
+                    this.setInitialScale(140)
 
                     this.webViewClient = WebViewClient()
-
-                    this.webChromeClient = object : WebChromeClient() {
+                    this.webChromeClient = object : WebChromeClient()
+                    {
                         override fun onProgressChanged(view: WebView?, newProgress: Int) {
                             progress = newProgress
                             if (progress == 100) {
                                 view?.settings?.javaScriptEnabled = false
-                                view?.stopLoading()
                             }
                         }
                     }
@@ -193,44 +196,6 @@ private fun PreviewWebView(url: String, modifier: Modifier = Modifier) {
                 .alpha(if (progress == 100) 1f else 0f)
                 .clip(RoundedCornerShape(dimensionResource(id = dimen.minor_75)))
         )
-    }
-}
-
-@Composable
-private fun InstallationError(errorState: ErrorState, onRetryButtonClicked: () -> Unit) {
-    Column(
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center,
-        modifier = Modifier
-            .background(MaterialTheme.colors.surface)
-            .fillMaxSize()
-    ) {
-        val (message, isRetryVisible) = when (errorState.error) {
-            STORE_LOADING_FAILED -> string.store_creation_ecommerce_store_loading_error to true
-        }
-        Text(
-            text = stringResource(id = message),
-            style = MaterialTheme.typography.h6,
-            modifier = Modifier.padding(dimensionResource(id = R.dimen.major_100)),
-            textAlign = TextAlign.Center
-        )
-
-        if (errorState.message != null) {
-            Text(
-                text = errorState.message,
-                style = MaterialTheme.typography.h6,
-                modifier = Modifier.padding(dimensionResource(id = R.dimen.major_100)),
-                textAlign = TextAlign.Center
-            )
-        }
-
-        if (isRetryVisible) {
-            WCColoredButton(
-                onClick = onRetryButtonClicked,
-                text = stringResource(id = string.retry),
-                modifier = Modifier.padding(dimensionResource(id = R.dimen.major_100))
-            )
-        }
     }
 }
 
