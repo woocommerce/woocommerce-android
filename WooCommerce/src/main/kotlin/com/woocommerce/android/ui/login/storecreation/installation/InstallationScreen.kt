@@ -177,8 +177,7 @@ private fun PreviewWebView(url: String, modifier: Modifier = Modifier) {
                     this.setInitialScale(140)
 
                     this.webViewClient = WebViewClient()
-                    this.webChromeClient = object : WebChromeClient()
-                    {
+                    this.webChromeClient = object : WebChromeClient() {
                         override fun onProgressChanged(view: WebView?, newProgress: Int) {
                             progress = newProgress
                             if (progress == 100) {

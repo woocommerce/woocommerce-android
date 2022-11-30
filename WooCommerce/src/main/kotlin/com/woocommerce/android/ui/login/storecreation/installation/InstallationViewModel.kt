@@ -100,7 +100,8 @@ class InstallationViewModel @Inject constructor(
                 val result = repository.fetchSiteAfterCreation(newStore.data.siteId!!)
                 if (result is Success || // Woo store is ready
                     (result as Failure).type == STORE_LOADING_FAILED || // permanent error
-                    retries == STORE_LOAD_RETRIES_LIMIT) { // site found but is not ready & retry limit reached
+                    retries == STORE_LOAD_RETRIES_LIMIT // site found but is not ready & retry limit reached
+                ) {
                     processStoreCreationResult(result)
                     break
                 }
