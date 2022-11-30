@@ -8,15 +8,18 @@ import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.ui.login.storecreation.NewStore
+import com.woocommerce.android.ui.login.storecreation.StoreCreationErrorType
+import com.woocommerce.android.ui.login.storecreation.StoreCreationErrorType.STORE_LOADING_FAILED
 import com.woocommerce.android.ui.login.storecreation.StoreCreationRepository
+import com.woocommerce.android.ui.login.storecreation.StoreCreationResult
+import com.woocommerce.android.ui.login.storecreation.StoreCreationResult.Failure
+import com.woocommerce.android.ui.login.storecreation.StoreCreationResult.Success
 import com.woocommerce.android.ui.login.storecreation.installation.InstallationViewModel.ViewState.ErrorState
-import com.woocommerce.android.ui.login.storecreation.installation.InstallationViewModel.ViewState.ErrorState.Error.STORE_LOADING_FAILED
 import com.woocommerce.android.ui.login.storecreation.installation.InstallationViewModel.ViewState.InitialState
 import com.woocommerce.android.ui.login.storecreation.installation.InstallationViewModel.ViewState.LoadingState
 import com.woocommerce.android.ui.login.storecreation.installation.InstallationViewModel.ViewState.SuccessState
-import com.woocommerce.android.util.WooLog
-import com.woocommerce.android.util.WooLog.T
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.getStateFlow
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -58,33 +61,34 @@ class InstallationViewModel @Inject constructor(
         )
     }
 
-    private fun onStoreCreationFinished(isStoreReady: Boolean) {
-        if (isStoreReady) {
-            repository.selectSite(newStore.data.siteId!!)
+    private fun loadNewStore() {
+        fun processStoreCreationResult(result: StoreCreationResult<Unit>) {
+            if (result is Success) {
+                repository.selectSite(newStore.data.siteId!!)
 
-            val properties = mapOf(
-                AnalyticsTracker.KEY_SOURCE to appPrefsWrapper.getStoreCreationSource(),
-                AnalyticsTracker.KEY_URL to newStore.data.domain!!,
-                AnalyticsTracker.KEY_FLOW to AnalyticsTracker.VALUE_NATIVE
-            )
-            analyticsTrackerWrapper.track(AnalyticsEvent.LOGIN_WOOCOMMERCE_SITE_CREATED, properties)
-
-            _viewState.update { SuccessState("https://${newStore.data.domain!!}") }
-        } else {
-            analyticsTrackerWrapper.track(
-                AnalyticsEvent.SITE_CREATION_FAILED,
-                mapOf(
+                val properties = mapOf(
                     AnalyticsTracker.KEY_SOURCE to appPrefsWrapper.getStoreCreationSource(),
+                    AnalyticsTracker.KEY_URL to newStore.data.domain!!,
                     AnalyticsTracker.KEY_FLOW to AnalyticsTracker.VALUE_NATIVE
                 )
-            )
+                analyticsTrackerWrapper.track(AnalyticsEvent.LOGIN_WOOCOMMERCE_SITE_CREATED, properties)
 
-            _viewState.update { ErrorState(STORE_LOADING_FAILED) }
-            newStore.clear()
+                _viewState.update { SuccessState("https://${newStore.data.domain!!}") }
+            } else {
+                analyticsTrackerWrapper.track(
+                    AnalyticsEvent.SITE_CREATION_FAILED,
+                    mapOf(
+                        AnalyticsTracker.KEY_SOURCE to appPrefsWrapper.getStoreCreationSource(),
+                        AnalyticsTracker.KEY_FLOW to AnalyticsTracker.VALUE_NATIVE
+                    )
+                )
+
+                val error = result as Failure
+                _viewState.update { ErrorState(error.type, error.message) }
+                newStore.clear()
+            }
         }
-    }
 
-    private fun loadNewStore() {
         launch {
             _viewState.update { LoadingState }
 
@@ -94,17 +98,20 @@ class InstallationViewModel @Inject constructor(
             // keep fetching the user's sites until the new site is properly configured or the retry limit is reached
             for (retries in 1..STORE_LOAD_RETRIES_LIMIT) {
                 val result = repository.fetchSiteAfterCreation(newStore.data.siteId!!)
-                val isStoreReady = result.getOrNull() == true
-                if (isStoreReady || result.isFailure) {
-                    onStoreCreationFinished(isStoreReady)
+                if (result is Success || // Woo store is ready
+                    (result as Failure).type == STORE_LOADING_FAILED || // permanent error
+                    retries == STORE_LOAD_RETRIES_LIMIT) { // site found but is not ready & retry limit reached
+                    processStoreCreationResult(result)
                     break
-                } else if (retries == STORE_LOAD_RETRIES_LIMIT) {
-                    WooLog.d(T.LOGIN, "Max number of store load retries reached...")
-                    onStoreCreationFinished(false)
                 }
+
                 delay(SITE_CHECK_DEBOUNCE)
             }
         }
+    }
+
+    fun onBackPressed() {
+        triggerEvent(Exit)
     }
 
     fun onShowPreviewButtonClicked() {
@@ -131,11 +138,7 @@ class InstallationViewModel @Inject constructor(
         object LoadingState : ViewState
 
         @Parcelize
-        data class ErrorState(val error: Error, val message: String? = null) : ViewState {
-            enum class Error {
-                STORE_LOADING_FAILED
-            }
-        }
+        data class ErrorState(val errorType: StoreCreationErrorType, val message: String? = null) : ViewState
 
         @Parcelize
         data class SuccessState(val url: String) : ViewState

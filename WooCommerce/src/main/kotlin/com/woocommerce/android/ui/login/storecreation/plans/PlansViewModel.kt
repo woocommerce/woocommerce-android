@@ -13,15 +13,17 @@ import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_STEP_P
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_STEP_WEB_CHECKOUT
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.ui.login.storecreation.NewStore
+import com.woocommerce.android.ui.login.storecreation.StoreCreationErrorType
+import com.woocommerce.android.ui.login.storecreation.StoreCreationErrorType.SITE_ADDRESS_ALREADY_EXISTS
 import com.woocommerce.android.ui.login.storecreation.StoreCreationRepository
 import com.woocommerce.android.ui.login.storecreation.StoreCreationRepository.SiteCreationData
+import com.woocommerce.android.ui.login.storecreation.StoreCreationResult
+import com.woocommerce.android.ui.login.storecreation.StoreCreationResult.Failure
+import com.woocommerce.android.ui.login.storecreation.StoreCreationResult.Success
 import com.woocommerce.android.ui.login.storecreation.plans.PlansViewModel.PlanInfo.BillingPeriod
 import com.woocommerce.android.ui.login.storecreation.plans.PlansViewModel.PlanInfo.Feature
 import com.woocommerce.android.ui.login.storecreation.plans.PlansViewModel.ViewState.CheckoutState
 import com.woocommerce.android.ui.login.storecreation.plans.PlansViewModel.ViewState.ErrorState
-import com.woocommerce.android.ui.login.storecreation.plans.PlansViewModel.ViewState.ErrorState.PlanPurchaseError
-import com.woocommerce.android.ui.login.storecreation.plans.PlansViewModel.ViewState.ErrorState.PlanPurchaseError.PLAN_PURCHASE_FAILED
-import com.woocommerce.android.ui.login.storecreation.plans.PlansViewModel.ViewState.ErrorState.PlanPurchaseError.SITE_CREATION_FAILED
 import com.woocommerce.android.ui.login.storecreation.plans.PlansViewModel.ViewState.LoadingState
 import com.woocommerce.android.ui.login.storecreation.plans.PlansViewModel.ViewState.PlanState
 import com.woocommerce.android.viewmodel.MultiLiveEvent
@@ -32,7 +34,6 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.parcelize.Parcelize
-import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooResult
 import java.util.TimeZone
 import javax.inject.Inject
 
@@ -126,35 +127,39 @@ class PlansViewModel @Inject constructor(
     }
 
     private fun launchInstallation() {
-        suspend fun <T : Any?> handleErrorOrProceed(
-            result: WooResult<T>,
-            error: PlanPurchaseError,
-            successAction: suspend () -> Unit
+        suspend fun <T : Any?> StoreCreationResult<T>.ifSuccessfulThen(
+            successAction: suspend (T) -> Unit
         ) {
-            when {
-                result.isError -> {
-                    _viewState.update { ErrorState(error, result.error.message) }
-                }
-                result.model == null -> _viewState.update { ErrorState(error) }
-                else -> successAction()
+            when (this) {
+                is Success -> successAction(this.data)
+                is Failure -> _viewState.update { ErrorState(this.type, this.message) }
             }
         }
 
         _viewState.update { LoadingState }
 
         launch {
-            val siteCreationResult = createSite()
-            handleErrorOrProceed(siteCreationResult, SITE_CREATION_FAILED) {
-                val cartCreationResult = repository.addPlanToCart(newStore.data.siteId!!)
-                handleErrorOrProceed(cartCreationResult, PLAN_PURCHASE_FAILED) {
+            createSite().ifSuccessfulThen { siteId ->
+                newStore.update(siteId = siteId)
+                repository.addPlanToCart(newStore.data.siteId!!).ifSuccessfulThen {
                     showCheckoutWebsite()
                 }
             }
         }
     }
 
-    private suspend fun createSite(): WooResult<Long> {
-        val result = repository.createNewSite(
+    private suspend fun createSite(): StoreCreationResult<Long> {
+        suspend fun StoreCreationResult<Long>.recoverIfSiteExists(): StoreCreationResult<Long> {
+            return if ((this as? Failure<Long>)?.type == SITE_ADDRESS_ALREADY_EXISTS) {
+                repository.getSiteByUrl(newStore.data.domain!!)?.let { site ->
+                    Success(site.siteId)
+                } ?: this
+            } else {
+                this
+            }
+        }
+
+        return repository.createNewSite(
             SiteCreationData(
                 siteDesign = NEW_SITE_THEME,
                 domain = newStore.data.domain,
@@ -163,13 +168,7 @@ class PlansViewModel @Inject constructor(
             ),
             NEW_SITE_LANGUAGE_ID,
             TimeZone.getDefault().id
-        )
-
-        if (!result.isError) {
-            newStore.update(siteId = result.model)
-        }
-
-        return result
+        ).recoverIfSiteExists()
     }
 
     fun onExitTriggered() {
@@ -189,12 +188,7 @@ class PlansViewModel @Inject constructor(
         object LoadingState : ViewState
 
         @Parcelize
-        data class ErrorState(val error: PlanPurchaseError, val message: String? = null) : ViewState {
-            enum class PlanPurchaseError {
-                SITE_CREATION_FAILED,
-                PLAN_PURCHASE_FAILED
-            }
-        }
+        data class ErrorState(val errorType: StoreCreationErrorType, val message: String? = null) : ViewState
 
         @Parcelize
         data class CheckoutState(
