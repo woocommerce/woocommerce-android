@@ -48,8 +48,8 @@ interface CardReaderManager {
     fun cancelOngoingFirmwareUpdate()
 
     enum class SimulatorUpdateFrequency {
-        NONE,
-        REQUIRED,
+        NEVER,
+        ALWAYS,
         RANDOM
     }
 }

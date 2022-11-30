@@ -82,11 +82,15 @@ internal class TerminalWrapper {
 
     fun setupSimulator(updateFrequency: CardReaderManager.SimulatorUpdateFrequency) {
         Terminal.getInstance().simulatorConfiguration = SimulatorConfiguration(
-            update = mapper(updateFrequency)
+            update = mapFrequencyOptions(updateFrequency)
         )
     }
 
-    private fun mapper(updateFrequency: CardReaderManager.SimulatorUpdateFrequency): SimulateReaderUpdate {
-        return SimulateReaderUpdate.valueOf(updateFrequency.name)
+    private fun mapFrequencyOptions(updateFrequency: CardReaderManager.SimulatorUpdateFrequency): SimulateReaderUpdate {
+        return when(updateFrequency) {
+            CardReaderManager.SimulatorUpdateFrequency.NEVER -> SimulateReaderUpdate.NONE
+            CardReaderManager.SimulatorUpdateFrequency.ALWAYS -> SimulateReaderUpdate.REQUIRED
+            CardReaderManager.SimulatorUpdateFrequency.RANDOM -> SimulateReaderUpdate.RANDOM
+        }
     }
 }
