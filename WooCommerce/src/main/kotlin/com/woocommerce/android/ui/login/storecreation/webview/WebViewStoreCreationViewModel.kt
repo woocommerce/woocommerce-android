@@ -24,6 +24,7 @@ import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.getStateFlow
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
@@ -46,6 +47,7 @@ class WebViewStoreCreationViewModel @Inject constructor(
         private const val WEBVIEW_SUCCESS_TRIGGER_KEYWORD = "calypso/images/wpcom-ecommerce"
         private const val WEBVIEW_EXIT_TRIGGER_KEYWORD = "https://woocommerce.com/"
         private const val STORE_LOAD_RETRIES_LIMIT = 10
+        private const val SITE_CHECK_DEBOUNCE = 5000L
     }
 
     private val _dialogViewState = savedStateHandle.getStateFlow(viewModelScope, setDialogState(isVisible = false))
@@ -90,11 +92,12 @@ class WebViewStoreCreationViewModel @Inject constructor(
             repository.selectSite(newSite)
             triggerEvent(NavigateToNewStore)
 
-            val args = mapOf<String, String>(
+            val properties = mapOf<String, String>(
                 AnalyticsTracker.KEY_SOURCE to navigationSource,
-                AnalyticsTracker.KEY_URL to newSite.url
+                AnalyticsTracker.KEY_URL to newSite.url,
+                AnalyticsTracker.KEY_FLOW to AnalyticsTracker.VALUE_WEB
             )
-            analyticsTrackerWrapper.track(AnalyticsEvent.LOGIN_WOOCOMMERCE_SITE_CREATED, args)
+            analyticsTrackerWrapper.track(AnalyticsEvent.LOGIN_WOOCOMMERCE_SITE_CREATED, properties)
             STORE_FOUND
         } else {
             WooLog.d(T.LOGIN, "New site not found, retrying...")
@@ -105,7 +108,8 @@ class WebViewStoreCreationViewModel @Inject constructor(
                 analyticsTrackerWrapper.track(
                     AnalyticsEvent.SITE_CREATION_FAILED,
                     mapOf(
-                        AnalyticsTracker.KEY_SOURCE to navigationSource
+                        AnalyticsTracker.KEY_SOURCE to navigationSource,
+                        AnalyticsTracker.KEY_FLOW to AnalyticsTracker.VALUE_WEB
                     )
                 )
                 ERROR
@@ -127,9 +131,10 @@ class WebViewStoreCreationViewModel @Inject constructor(
                     WooLog.d(T.LOGIN, "Max number of store load retries reached...")
                     step.value = Step.StoreLoadingError
                 }
+                delay(SITE_CHECK_DEBOUNCE)
             }
+            WooLog.d(T.LOGIN, "Store creation done...")
         }
-        WooLog.d(T.LOGIN, "Store creation done...")
     }
 
     private fun onSiteAddressFound(url: String) {
@@ -144,7 +149,8 @@ class WebViewStoreCreationViewModel @Inject constructor(
         analyticsTrackerWrapper.track(
             AnalyticsEvent.SITE_CREATION_DISMISSED,
             mapOf(
-                AnalyticsTracker.KEY_SOURCE to navigationSource
+                AnalyticsTracker.KEY_SOURCE to navigationSource,
+                AnalyticsTracker.KEY_FLOW to AnalyticsTracker.VALUE_WEB
             )
         )
 

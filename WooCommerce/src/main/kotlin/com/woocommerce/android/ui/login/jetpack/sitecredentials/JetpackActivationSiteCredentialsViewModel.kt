@@ -33,6 +33,7 @@ import org.wordpress.android.fluxc.store.AccountStore.AuthenticationErrorType.IN
 import org.wordpress.android.fluxc.store.AccountStore.AuthenticationErrorType.INVALID_TOKEN
 import org.wordpress.android.fluxc.store.AccountStore.AuthenticationErrorType.NEEDS_2FA
 import org.wordpress.android.fluxc.store.AccountStore.AuthenticationErrorType.NOT_AUTHENTICATED
+import org.wordpress.android.util.UrlUtils
 import javax.inject.Inject
 
 @HiltViewModel
@@ -47,7 +48,7 @@ class JetpackActivationSiteCredentialsViewModel @Inject constructor(
         scope = viewModelScope,
         initialValue = JetpackActivationSiteCredentialsViewState(
             isJetpackInstalled = navArgs.isJetpackInstalled,
-            siteUrl = navArgs.siteUrl
+            siteUrl = UrlUtils.removeScheme(navArgs.siteUrl)
         )
     )
     val viewState = _viewState.asLiveData()
@@ -81,7 +82,7 @@ class JetpackActivationSiteCredentialsViewModel @Inject constructor(
 
     fun onResetPasswordClick() {
         analyticsTrackerWrapper.track(AnalyticsEvent.LOGIN_JETPACK_SITE_CREDENTIAL_RESET_PASSWORD_BUTTON_TAPPED)
-        triggerEvent(ResetPassword(_viewState.value.siteUrl))
+        triggerEvent(ResetPassword(navArgs.siteUrl))
     }
 
     fun onContinueClick() = launch {
@@ -90,7 +91,7 @@ class JetpackActivationSiteCredentialsViewModel @Inject constructor(
 
         val state = _viewState.value
         wpApiSiteRepository.login(
-            url = state.siteUrl,
+            url = navArgs.siteUrl,
             username = state.username,
             password = state.password
         ).fold(
@@ -98,7 +99,7 @@ class JetpackActivationSiteCredentialsViewModel @Inject constructor(
                 analyticsTrackerWrapper.track(AnalyticsEvent.LOGIN_JETPACK_SITE_CREDENTIAL_DID_FINISH_LOGIN)
                 triggerEvent(
                     NavigateToJetpackActivationSteps(
-                        state.siteUrl,
+                        navArgs.siteUrl,
                         navArgs.isJetpackInstalled
                     )
                 )

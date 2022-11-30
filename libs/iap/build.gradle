@@ -25,6 +25,12 @@ android {
     }
 }
 
+android.buildTypes.all { buildType ->
+    buildConfigField "String",
+            "IAP_TESTING_SANDBOX_URL",
+            "\"${project.properties.getOrDefault('iap_testing_sandbox_url', '')}\""
+}
+
 dependencies {
     implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:$coroutinesVersion"
     implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:$coroutinesVersion"

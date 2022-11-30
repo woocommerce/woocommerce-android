@@ -171,6 +171,7 @@ class HelpActivity : AppCompatActivity() {
             selectedSite = selectedSiteOrNull(),
             extraTags = extraTags + extraTagsFromExtras.orEmpty(),
             ticketType = ticketType,
+            ssr = viewModel.ssr
         )
     }
 

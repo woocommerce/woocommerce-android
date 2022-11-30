@@ -1,11 +1,45 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2022-11-16 09:54:04+0000
+Translation-Revision-Date: 2022-11-23 18:54:18+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: it
 -->
 <resources>
+    <string name="store_creation_store_name_hint">Nome del negozio</string>
+    <string name="store_creation_store_name_subtitle">Non preoccuparti, puoi modificarlo in un secondo momento. </string>
+    <string name="store_creation_store_name_title">Qual è il nome del tuo negozio?</string>
+    <string name="store_creation_store_name_caption">Informazioni sul tuo negozio</string>
+    <string name="store_creation_installation_show_preview_button">Anteprima negozio</string>
+    <string name="store_creation_installation_manage_store_button">Gestisci il mio negozio</string>
+    <string name="store_creation_installation_success">Il tuo negozio è stato creato!</string>
+    <string name="store_creation_installation_error">Si è verificato un errore durante l\'installazione, riprova…</string>
+    <string name="store_creation_ecommerce_plan_feature_sales">Canali di vendita</string>
+    <string name="store_creation_ecommerce_plan_feature_shipping_labels">Etichette di spedizione</string>
+    <string name="store_creation_ecommerce_plan_feature_payments">Opzioni di pagamento multiple</string>
+    <string name="store_creation_ecommerce_plan_feature_reports">Rapporti di eCommerce</string>
+    <string name="store_creation_ecommerce_plan_feature_subscriptions">Abbonamenti e giftcard</string>
+    <string name="store_creation_ecommerce_plan_feature_products">Prodotti illimitati</string>
+    <string name="store_creation_ecommerce_plan_feature_themes">Temi premium</string>
+    <string name="store_creation_ecommerce_plan_period_year">anno</string>
+    <string name="store_creation_ecommerce_plan_period_month">mese</string>
+    <string name="store_creation_ecommerce_plan_refund_reminder">Non corri alcun rischio, puoi annullare per un rimborso completo entro 30 giorni.</string>
+    <string name="store_creation_ecommerce_plan_purchase_button_title">Crea negozio per %1$s</string>
+    <string name="store_creation_ecommerce_plan_powered_by">Con tecnologia</string>
+    <string name="store_creation_ecommerce_plan_features_tagline">Tutte le funzionalità di cui hai bisogno, già integrate.</string>
+    <string name="store_creation_ecommerce_plan_error">Impossibile caricare le informazioni sul piano…</string>
+    <string name="store_creation_summary_primary_button">Vai al pagamento</string>
+    <string name="store_creation_summary_subtitle">Il tuo negozio verrà creato in base alle opzioni che hai scelto!</string>
+    <string name="store_creation_summary_title">Il mio negozio</string>
+    <string name="randomly_update_reader">Casuale</string>
+    <string name="never_update_reader">Mai</string>
+    <string name="always_update_reader">Sempre</string>
+    <string name="update_simulated_reader_key">Aggiorna Chiave del lettore simulato</string>
+    <string name="update_simulated_reader">Aggiorna il lettore di carte simulato</string>
+    <string name="variation_list_generate_all_variations">Genera tutte le varianti</string>
+    <string name="login_jetpack_connect">Collega Jetpack</string>
+    <string name="login_jetpack_installation_credentials_hint">Avrai bisogno delle credenziali del tuo negozio per iniziare l\'installazione.</string>
+    <string name="login_jetpack_installation_screen_title">Collega negozio</string>
     <string name="store_creation_domain_picker_suggestions_title">Suggerimenti</string>
     <string name="store_creation_domain_picker_skip_button">Salta</string>
     <string name="store_creation_domain_picker_hint">Digita un dominio</string>
@@ -51,8 +85,6 @@ Language: it
     <string name="analytics_orders_no_data">Nessun ordine per questo periodo</string>
     <string name="analytics_revenue_no_data">Nessuna entrata per questo periodo</string>
     <string name="analytics_revenue_card_title">Guadagno</string>
-    <string name="analytics_see_report_button_content_description">Visualizza più dettagli del report</string>
-    <string name="analytics_see_report_button_text">Visualizza report</string>
     <string name="analytics_date_range_custom">%1$s - %2$s</string>
     <string name="analytics_see_more">Scopri di più</string>
     <string name="signup_api_generic_error">Spiacenti, non è stato possibile creare un account per le credenziali fornite. Prova con un altro indirizzo e-mail.</string>
@@ -420,8 +452,7 @@ Language: it
     <string name="product_ratings_count_one">\u2022  una recensione approvata</string>
     <string name="product_ratings_count">\u2022  %drecensioni approvate</string>
     <string name="tax_name_with_tax_percent">%1$s (%2$s%%)</string>
-    <string name="orderlist_simple_payments_wip_message_enabled">Abbiamo lavorato per permetterti di creare ordini e ricevere pagamenti dal tuo dispositivo. Puoi provare queste funzionalità toccando il pulsante \"+\"</string>
-    <string name="orderlist_simple_payments_wip_title">Crea ordini e ricevi pagamenti!</string>
+    <string name="orderlist_simple_payments_wip_message_enabled">Abbiamo lavorato per permetterti di creare ordini dal tuo dispositivo. Puoi provare questa funzionalità toccando il pulsante \"+\"</string>
     <string name="empty_inbox_description">Torna presto per ulteriori suggerimenti e per la panoramica sulla crescita del tuo negozio</string>
     <string name="empty_inbox_title">Congratulazioni, hai letto tutto.</string>
     <string name="orderstatus_contentDesc_withStatus">Stato ordine: %s</string>
@@ -614,6 +645,7 @@ Language: it
     <string name="simple_payments_enter_amount">Inserisci quantità</string>
     <string name="simple_payments_dialog_title">Ricevi il pagamento</string>
     <string name="orderlist_simple_payments_menu">Pagamento facile</string>
+    <string name="orderlist_simple_payments_wip_title">Crea ordini dal tuo dispositivo!</string>
     <string name="analytics">Dati analizzati</string>
     <string name="jetpack_install_progress_step_four_message">Fatto</string>
     <string name="jetpack_install_progress_step_three_message">Connessione del tuo negozio</string>

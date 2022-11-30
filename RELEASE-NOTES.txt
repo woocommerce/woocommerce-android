@@ -3,6 +3,7 @@
 -----
 - [*][Internal] JITM: Dismiss irrelevant JITM Banner when pull to refresh in the MyStore screen [https://github.com/woocommerce/woocommerce-android/pull/7966]
 
+
 11.4
 -----
 - [*] [Internal] JITM: Make an api call to fetch JITMs on pull to refresh in the MyStore screen [https://github.com/woocommerce/woocommerce-android/pull/7938]
