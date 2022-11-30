@@ -18,7 +18,7 @@ The easiest way to get started with the module is to look into the showcase loca
 ## Structure
 To get started, you need to understand the structure of the module.
 
-![test](/docs/images/iap-module-diagram.webp)
+![module-diagram](/docs/images/iap-module-diagram.webp)
 
 Notice that currently `isIAPSupported` is placed into a separate class.
 
@@ -90,3 +90,5 @@ Both public classes available to the client must confirm to the ViewModel lifecy
 * We might need to check `isWPComPlanPurchased`. If purchased and acknowledged then we might let a user in right away. If purchased, but not acknowledged, then consider calling `purchaseWPComPlan`, so it will hit the backend internally and the backend on its own will release the purchase and acknowledge the purchase
 * If the plan is not purchased yet, then call `fetchWPComPlanProduct` to get information about the product. Show this information to a user with the "purchase" button
 * Click on the button should invoke the `purchaseWPComPlan` method. It will start the IAP flow
+
+![flow-diagram](/docs/images/iap-flow.png)
