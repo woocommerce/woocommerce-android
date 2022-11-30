@@ -105,7 +105,6 @@ class CardReaderConnectViewModelTest : BaseUnitTest() {
     private val locationId = "location_id"
     private val updateFrequency = CardReaderManager.SimulatorUpdateFrequency.RANDOM
 
-
     @Before
     fun setUp() = testBlocking {
         viewModel = initVM()
