@@ -87,7 +87,7 @@ internal class TerminalWrapper {
     }
 
     private fun mapFrequencyOptions(updateFrequency: CardReaderManager.SimulatorUpdateFrequency): SimulateReaderUpdate {
-        return when(updateFrequency) {
+        return when (updateFrequency) {
             CardReaderManager.SimulatorUpdateFrequency.NEVER -> SimulateReaderUpdate.NONE
             CardReaderManager.SimulatorUpdateFrequency.ALWAYS -> SimulateReaderUpdate.REQUIRED
             CardReaderManager.SimulatorUpdateFrequency.RANDOM -> SimulateReaderUpdate.RANDOM
