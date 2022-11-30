@@ -103,6 +103,8 @@ class CardReaderConnectViewModelTest : BaseUnitTest() {
     private val cardReaderTrackingInfoKeeper: CardReaderTrackingInfoKeeper = mock()
     private val learnMoreUrlProvider: LearnMoreUrlProvider = mock()
     private val locationId = "location_id"
+    private val updateFrequency = CardReaderManager.SimulatorUpdateFrequency.RANDOM
+
 
     @Before
     fun setUp() = testBlocking {
@@ -316,7 +318,6 @@ class CardReaderConnectViewModelTest : BaseUnitTest() {
     @Test
     fun `given request accepted, when enable-bluetooth requested, then card manager initialized`() =
         testBlocking {
-            val updateFrequency = CardReaderManager.SimulatorUpdateFrequency.RANDOM
 
             (viewModel.event.value as CheckLocationPermissions).onLocationPermissionsCheckResult(true, false)
             (viewModel.event.value as CheckLocationEnabled).onLocationEnabledCheckResult(true)
@@ -330,7 +331,6 @@ class CardReaderConnectViewModelTest : BaseUnitTest() {
     @Test
     fun `given request accepted, when bt permissions requested, then card manager initialized`() =
         testBlocking {
-            val updateFrequency = CardReaderManager.SimulatorUpdateFrequency.RANDOM
 
             (viewModel.event.value as CheckLocationPermissions).onLocationPermissionsCheckResult(true, false)
             (viewModel.event.value as CheckLocationEnabled).onLocationEnabledCheckResult(true)
@@ -345,7 +345,6 @@ class CardReaderConnectViewModelTest : BaseUnitTest() {
     @Test
     fun `given request not accepted, when bt permissions requested, then card manager not initialized`() =
         testBlocking {
-            val updateFrequency = CardReaderManager.SimulatorUpdateFrequency.RANDOM
 
             (viewModel.event.value as CheckLocationPermissions).onLocationPermissionsCheckResult(true, false)
             (viewModel.event.value as CheckLocationEnabled).onLocationEnabledCheckResult(true)
@@ -359,7 +358,6 @@ class CardReaderConnectViewModelTest : BaseUnitTest() {
     @Test
     fun `given request accepted and manager init, when enable-bluetooth requested, then manager is not initialized`() =
         testBlocking {
-            val updateFrequency = CardReaderManager.SimulatorUpdateFrequency.RANDOM
 
             whenever(cardReaderManager.initialized).thenReturn(true)
             (viewModel.event.value as CheckLocationPermissions).onLocationPermissionsCheckResult(true, false)
