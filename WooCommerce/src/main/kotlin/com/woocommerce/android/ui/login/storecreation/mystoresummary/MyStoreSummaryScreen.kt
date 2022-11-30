@@ -118,7 +118,7 @@ private fun MyStoreSummaryScreen(
                         top = dimensionResource(id = R.dimen.major_100),
                         start = dimensionResource(id = R.dimen.major_100),
                         end = dimensionResource(id = R.dimen.major_100),
-                        bottom = dimensionResource(id = R.dimen.major_150)
+                        bottom = dimensionResource(id = R.dimen.major_125)
                     ),
                 onClick = onContinueClicked,
             ) {
