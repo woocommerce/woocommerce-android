@@ -219,7 +219,6 @@ class PlansViewModel @Inject constructor(
             @DrawableRes val iconId: Int,
             @StringRes val textId: Int
         ) : Parcelable
-
     }
 
     object NavigateToNextStep : MultiLiveEvent.Event()

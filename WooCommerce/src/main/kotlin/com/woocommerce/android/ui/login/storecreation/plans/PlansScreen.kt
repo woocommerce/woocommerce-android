@@ -52,8 +52,8 @@ import com.woocommerce.android.ui.compose.component.WCColoredButton
 import com.woocommerce.android.ui.compose.component.WCWebView
 import com.woocommerce.android.ui.login.storecreation.ProgressIndicator
 import com.woocommerce.android.ui.login.storecreation.StoreCreationError
-import com.woocommerce.android.ui.login.storecreation.plans.PlansViewModel.PlanInfo
 import com.woocommerce.android.ui.login.storecreation.plans.BillingPeriod.ECOMMERCE_MONTHLY
+import com.woocommerce.android.ui.login.storecreation.plans.PlansViewModel.PlanInfo
 import com.woocommerce.android.ui.login.storecreation.plans.PlansViewModel.PlanInfo.Feature
 import com.woocommerce.android.ui.login.storecreation.plans.PlansViewModel.ViewState.CheckoutState
 import com.woocommerce.android.ui.login.storecreation.plans.PlansViewModel.ViewState.ErrorState

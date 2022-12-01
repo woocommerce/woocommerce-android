@@ -110,8 +110,10 @@ class StoreCreationRepository @Inject constructor(
 
     suspend fun addPlanToCart(planProductId: Int?, planPathSlug: String?, siteId: Long?): StoreCreationResult<Unit> {
         if (planProductId == null || planPathSlug == null || siteId == null) {
-            WooLog.e(LOGIN, "Missing plan purchase data: " +
-                "productId=$planProductId, pathSlug=$planPathSlug, siteId=$siteId")
+            WooLog.e(
+                tag = LOGIN,
+                message = "Missing plan purchase data: productId=$planProductId, pathSlug=$planPathSlug, siteId=$siteId"
+            )
             return Failure(PLAN_PURCHASE_FAILED)
         } else {
             val eCommerceProduct = CartProduct(
