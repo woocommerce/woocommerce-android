@@ -99,7 +99,7 @@ class DeveloperOptionsViewModel @Inject constructor(
     private fun onUpdateSimulatedReaderClicked() {
         triggerEvent(
             DeveloperOptionsEvents.ShowUpdateOptionsDialog(
-                DeveloperOptionsViewState.UpdateOptions.values().toList(),
+                UpdateOptions.values().toList(),
                 developerOptionsRepository.getUpdateSimulatedReaderOption()
             )
         )
