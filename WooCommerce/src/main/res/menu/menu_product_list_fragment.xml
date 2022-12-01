@@ -3,6 +3,13 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <item
+        android:id="@+id/menu_multiselect"
+        android:icon="@drawable/ic_multiselect"
+        android:title="@string/product_list_multiselect"
+        android:visible="false"
+        app:showAsAction="always|collapseActionView" />
+
+    <item
         android:id="@+id/menu_search"
         android:icon="@drawable/ic_search_24dp"
         android:title="@string/search"

@@ -1629,6 +1629,7 @@
     <string name="product_category_selector_search_hint">Search Categories</string>
     <string name="product_category_selector_loading_failed">Loading product categories failed</string>
     <string name="product_category_selector_search_failed">Searching product categories failed</string>
+    <string name="product_list_multiselect">Select multiple</string>
     <!--
         Product Add more details Bottom sheet
     -->
