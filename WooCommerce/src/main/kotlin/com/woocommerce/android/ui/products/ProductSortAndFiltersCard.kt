@@ -24,7 +24,7 @@ class ProductSortAndFiltersCard @JvmOverloads constructor(
         binding.btnProductSorting.setOnClickListener { listener.onSortOptionSelected() }
     }
 
-    fun isEnabled(value: Boolean){
+    fun isEnabled(value: Boolean) {
         binding.btnProductFilter.isEnabled = value
         binding.btnProductSorting.isEnabled = value
     }
