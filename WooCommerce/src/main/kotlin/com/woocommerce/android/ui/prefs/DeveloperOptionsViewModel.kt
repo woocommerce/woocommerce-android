@@ -112,7 +112,7 @@ class DeveloperOptionsViewModel @Inject constructor(
         cardReaderManager.initializeOnUpdateFrequencyChange(mapUpdateOptions(selectedOption))
     }
 
-    private fun mapUpdateOptions(updateFrequency: UpdateOptions): CardReaderManager.SimulatorUpdateFrequency  {
+    private fun mapUpdateOptions(updateFrequency: UpdateOptions): CardReaderManager.SimulatorUpdateFrequency {
         return when (updateFrequency) {
             UpdateOptions.ALWAYS -> CardReaderManager.SimulatorUpdateFrequency.ALWAYS
             UpdateOptions.NEVER -> CardReaderManager.SimulatorUpdateFrequency.NEVER
