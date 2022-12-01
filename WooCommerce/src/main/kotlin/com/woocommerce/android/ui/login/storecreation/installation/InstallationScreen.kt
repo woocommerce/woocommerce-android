@@ -36,10 +36,10 @@ import androidx.compose.ui.viewinterop.AndroidView
 import com.woocommerce.android.R.color
 import com.woocommerce.android.R.dimen
 import com.woocommerce.android.R.string
+import com.woocommerce.android.ui.compose.component.ProgressIndicator
 import com.woocommerce.android.ui.compose.component.WCColoredButton
 import com.woocommerce.android.ui.compose.component.WCOutlinedButton
 import com.woocommerce.android.ui.compose.drawShadow
-import com.woocommerce.android.ui.login.storecreation.ProgressIndicator
 import com.woocommerce.android.ui.login.storecreation.StoreCreationErrorScreen
 import com.woocommerce.android.ui.login.storecreation.installation.InstallationViewModel.ViewState.ErrorState
 import com.woocommerce.android.ui.login.storecreation.installation.InstallationViewModel.ViewState.InitialState

@@ -48,9 +48,9 @@ import com.woocommerce.android.R.color
 import com.woocommerce.android.R.drawable
 import com.woocommerce.android.R.string
 import com.woocommerce.android.ui.common.wpcomwebview.WPComWebViewAuthenticator
+import com.woocommerce.android.ui.compose.component.ProgressIndicator
 import com.woocommerce.android.ui.compose.component.WCColoredButton
 import com.woocommerce.android.ui.compose.component.WCWebView
-import com.woocommerce.android.ui.login.storecreation.ProgressIndicator
 import com.woocommerce.android.ui.login.storecreation.StoreCreationErrorScreen
 import com.woocommerce.android.ui.login.storecreation.plans.PlansViewModel.PlanInfo
 import com.woocommerce.android.ui.login.storecreation.plans.PlansViewModel.PlanInfo.BillingPeriod.MONTHLY
@@ -67,7 +67,11 @@ fun PlanScreen(viewModel: PlansViewModel, authenticator: WPComWebViewAuthenticat
         Crossfade(targetState = state) { viewState ->
             when (viewState) {
                 is PlanState -> PlanInformation(viewState, viewModel::onExitTriggered, viewModel::onConfirmClicked)
-                is ErrorState -> StoreCreationErrorScreen(viewState.errorType, viewModel::onExitTriggered, viewState.message)
+                is ErrorState -> StoreCreationErrorScreen(
+                    viewState.errorType,
+                    viewModel::onExitTriggered,
+                    viewState.message
+                )
                 LoadingState -> ProgressIndicator()
                 is CheckoutState -> WebViewPayment(
                     viewState,
