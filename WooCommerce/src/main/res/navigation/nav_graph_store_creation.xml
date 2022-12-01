@@ -9,16 +9,16 @@
         android:name="com.woocommerce.android.ui.login.storecreation.name.StoreNamePickerFragment"
         android:label="fragment_store_name_picker">
         <action
-            android:id="@+id/action_storeNamePickerFragment_to_domainPickerFragment"
-            app:destination="@id/domainPickerFragment" />
+            android:id="@+id/action_storeNamePickerFragment_to_storeProfilerCategoryFragment"
+            app:destination="@id/storeProfilerCategoryFragment" />
     </fragment>
 
     <fragment
-        android:id="@+id/storeCreationQuestionsFragment"
-        android:name="com.woocommerce.android.ui.login.storecreation.profiler.StoreCreationQuestionsFragment"
-        android:label="fragment_store_creation_questions">
+        android:id="@+id/storeProfilerCategoryFragment"
+        android:name="com.woocommerce.android.ui.login.storecreation.profiler.StoreProfilerCategoryFragment"
+        android:label="fragment_store_profiler_category">
         <action
-            android:id="@+id/action_storeCreationQuestionsFragment_to_domainPickerFragment"
+            android:id="@+id/action_storeProfilerCategoryFragment_to_domainPickerFragment"
             app:destination="@id/domainPickerFragment" />
     </fragment>
 
@@ -43,7 +43,7 @@
     <fragment
         android:id="@+id/plansFragment"
         android:name="com.woocommerce.android.ui.login.storecreation.plans.PlansFragment"
-        android:label="PlansFragment" >
+        android:label="PlansFragment">
         <action
             android:id="@+id/action_plansFragment_to_installationFragment"
             app:destination="@id/installationFragment" />
