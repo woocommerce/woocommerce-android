@@ -1,6 +1,5 @@
 package com.woocommerce.android.ui.products
 
-import android.view.MotionEvent
 import androidx.core.view.ViewCompat
 import androidx.core.view.isVisible
 import androidx.recyclerview.selection.ItemDetailsLookup
@@ -49,6 +48,6 @@ class ProductItemViewHolder(val viewBinding: ProductListItemBinding) :
             @Suppress("DEPRECATION")
             override fun getPosition() = adapterPosition
             override fun getSelectionKey() = itemId
-            override fun inSelectionHotspot(e: MotionEvent) = true
+            // TODO create a different version for product list
         }
 }
