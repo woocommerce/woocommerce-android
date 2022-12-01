@@ -7,11 +7,23 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
 import com.woocommerce.android.R.drawable
 import com.woocommerce.android.R.string
-import com.woocommerce.android.analytics.AnalyticsEvent
+import com.woocommerce.android.analytics.AnalyticsEvent.SITE_CREATION_STEP
 import com.woocommerce.android.analytics.AnalyticsTracker
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_STEP_PLAN_PURCHASE
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_STEP_WEB_CHECKOUT
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
-import com.woocommerce.android.ui.login.storecreation.plans.PlansViewModel.Plan.BillingPeriod.MONTHLY
-import com.woocommerce.android.ui.login.storecreation.plans.PlansViewModel.Plan.Feature
+import com.woocommerce.android.ui.login.storecreation.NewStore
+import com.woocommerce.android.ui.login.storecreation.StoreCreationErrorType
+import com.woocommerce.android.ui.login.storecreation.StoreCreationErrorType.SITE_ADDRESS_ALREADY_EXISTS
+import com.woocommerce.android.ui.login.storecreation.StoreCreationRepository
+import com.woocommerce.android.ui.login.storecreation.StoreCreationRepository.SiteCreationData
+import com.woocommerce.android.ui.login.storecreation.StoreCreationResult
+import com.woocommerce.android.ui.login.storecreation.StoreCreationResult.Failure
+import com.woocommerce.android.ui.login.storecreation.StoreCreationResult.Success
+import com.woocommerce.android.ui.login.storecreation.plans.PlansViewModel.PlanInfo.BillingPeriod
+import com.woocommerce.android.ui.login.storecreation.plans.PlansViewModel.PlanInfo.Feature
+import com.woocommerce.android.ui.login.storecreation.plans.PlansViewModel.ViewState.CheckoutState
+import com.woocommerce.android.ui.login.storecreation.plans.PlansViewModel.ViewState.ErrorState
 import com.woocommerce.android.ui.login.storecreation.plans.PlansViewModel.ViewState.LoadingState
 import com.woocommerce.android.ui.login.storecreation.plans.PlansViewModel.ViewState.PlanState
 import com.woocommerce.android.viewmodel.MultiLiveEvent
@@ -22,16 +34,26 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.parcelize.Parcelize
+import java.util.TimeZone
 import javax.inject.Inject
 
 @HiltViewModel
 class PlansViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
-    val analyticsTrackerWrapper: AnalyticsTrackerWrapper
+    private val analyticsTrackerWrapper: AnalyticsTrackerWrapper,
+    private val newStore: NewStore,
+    private val repository: StoreCreationRepository
 ) : ScopedViewModel(savedStateHandle) {
     companion object {
+        private const val NEW_SITE_LANGUAGE_ID = "en"
+        private const val NEW_SITE_THEME = "pub/zoologist"
+        private const val CART_URL = "https://wordpress.com/checkout"
+        private const val WEBVIEW_SUCCESS_TRIGGER_KEYWORD = "https://wordpress.com/checkout/thank-you/"
+        private const val WEBVIEW_EXIT_TRIGGER_KEYWORD = "https://woocommerce.com/"
         private const val ECOMMERCE_PLAN_NAME = "eCommerce"
         private const val ECOMMERCE_PLAN_PRICE_MONTHLY = "$70"
+        private const val YEARLY_BILLING_PERIOD = 365
+        private const val BIYEARLY_BILLING_PERIOD = 730
     }
 
     private val _viewState = savedState.getStateFlow<ViewState>(this, LoadingState)
@@ -39,22 +61,24 @@ class PlansViewModel @Inject constructor(
 
     init {
         loadPlan()
-        analyticsTrackerWrapper.track(
-            AnalyticsEvent.SITE_CREATION_STEP,
-            mapOf(
-                AnalyticsTracker.KEY_STEP to AnalyticsTracker.VALUE_STEP_PLAN_PURCHASE
-            )
-        )
+        trackStep(VALUE_STEP_PLAN_PURCHASE)
+    }
+
+    private fun trackStep(step: String) {
+        analyticsTrackerWrapper.track(SITE_CREATION_STEP, mapOf(AnalyticsTracker.KEY_STEP to step))
     }
 
     private fun loadPlan() {
+        _viewState.update { LoadingState }
+
         launch {
+            val plan = repository.fetchWooPlan()
             _viewState.update {
                 PlanState(
-                    plan = Plan(
-                        name = ECOMMERCE_PLAN_NAME,
-                        billingPeriod = MONTHLY,
-                        formattedPrice = ECOMMERCE_PLAN_PRICE_MONTHLY,
+                    plan = PlanInfo(
+                        name = plan?.productShortName ?: ECOMMERCE_PLAN_NAME,
+                        billingPeriod = BillingPeriod.fromPeriodValue(plan?.billPeriod),
+                        formattedPrice = plan?.formattedPrice ?: ECOMMERCE_PLAN_PRICE_MONTHLY,
                         features = listOf(
                             Feature(
                                 iconId = drawable.ic_star,
@@ -91,18 +115,72 @@ class PlansViewModel @Inject constructor(
         }
     }
 
-    fun onCloseClicked() {
+    private fun showCheckoutWebsite() {
+        _viewState.update {
+            CheckoutState(
+                startUrl = "$CART_URL/${newStore.data.domain ?: newStore.data.siteId}",
+                successTriggerKeyword = WEBVIEW_SUCCESS_TRIGGER_KEYWORD,
+                exitTriggerKeyword = WEBVIEW_EXIT_TRIGGER_KEYWORD
+            )
+        }
+        trackStep(VALUE_STEP_WEB_CHECKOUT)
+    }
+
+    private fun launchInstallation() {
+        suspend fun <T : Any?> StoreCreationResult<T>.ifSuccessfulThen(
+            successAction: suspend (T) -> Unit
+        ) {
+            when (this) {
+                is Success -> successAction(this.data)
+                is Failure -> _viewState.update { ErrorState(this.type, this.message) }
+            }
+        }
+
+        _viewState.update { LoadingState }
+
+        launch {
+            createSite().ifSuccessfulThen { siteId ->
+                newStore.update(siteId = siteId)
+                repository.addPlanToCart(newStore.data.siteId!!).ifSuccessfulThen {
+                    showCheckoutWebsite()
+                }
+            }
+        }
+    }
+
+    private suspend fun createSite(): StoreCreationResult<Long> {
+        suspend fun StoreCreationResult<Long>.recoverIfSiteExists(): StoreCreationResult<Long> {
+            return if ((this as? Failure<Long>)?.type == SITE_ADDRESS_ALREADY_EXISTS) {
+                repository.getSiteByUrl(newStore.data.domain)?.let { site ->
+                    Success(site.siteId)
+                } ?: this
+            } else {
+                this
+            }
+        }
+
+        return repository.createNewSite(
+            SiteCreationData(
+                siteDesign = NEW_SITE_THEME,
+                domain = newStore.data.domain,
+                title = newStore.data.name,
+                segmentId = null
+            ),
+            NEW_SITE_LANGUAGE_ID,
+            TimeZone.getDefault().id
+        ).recoverIfSiteExists()
+    }
+
+    fun onExitTriggered() {
         triggerEvent(Exit)
     }
 
     fun onConfirmClicked() {
-        triggerEvent(NavigateToNextStep)
-        // TODO add tracking for login_woocommerce_site_created and site_creation_failed once we have the result
-        // TODO wipe out data from "NewStore" singlenton once store is created successfully
+        launchInstallation()
     }
 
-    fun onRetryClicked() {
-        // TODO
+    fun onStoreCreated() {
+        triggerEvent(NavigateToNextStep)
     }
 
     sealed interface ViewState : Parcelable {
@@ -110,16 +188,23 @@ class PlansViewModel @Inject constructor(
         object LoadingState : ViewState
 
         @Parcelize
-        object ErrorState : ViewState
+        data class ErrorState(val errorType: StoreCreationErrorType, val message: String? = null) : ViewState
+
+        @Parcelize
+        data class CheckoutState(
+            val startUrl: String,
+            val successTriggerKeyword: String,
+            val exitTriggerKeyword: String
+        ) : ViewState
 
         @Parcelize
         data class PlanState(
-            val plan: Plan
+            val plan: PlanInfo
         ) : ViewState
     }
 
     @Parcelize
-    data class Plan(
+    data class PlanInfo(
         val name: String,
         val billingPeriod: BillingPeriod,
         val formattedPrice: String,
@@ -134,7 +219,18 @@ class PlansViewModel @Inject constructor(
 
         enum class BillingPeriod(@StringRes val nameId: Int) {
             MONTHLY(string.store_creation_ecommerce_plan_period_month),
-            YEARLY((string.store_creation_ecommerce_plan_period_year))
+            YEARLY(string.store_creation_ecommerce_plan_period_year),
+            BIYEARLY(string.store_creation_ecommerce_plan_period_year);
+
+            companion object {
+                fun fromPeriodValue(periodValue: Int?): BillingPeriod {
+                    return when (periodValue) {
+                        YEARLY_BILLING_PERIOD -> YEARLY
+                        BIYEARLY_BILLING_PERIOD -> BIYEARLY
+                        else -> MONTHLY
+                    }
+                }
+            }
         }
     }
 
