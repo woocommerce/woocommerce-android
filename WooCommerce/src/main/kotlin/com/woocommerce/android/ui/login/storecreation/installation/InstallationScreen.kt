@@ -36,11 +36,11 @@ import androidx.compose.ui.viewinterop.AndroidView
 import com.woocommerce.android.R.color
 import com.woocommerce.android.R.dimen
 import com.woocommerce.android.R.string
+import com.woocommerce.android.ui.compose.component.ProgressIndicator
 import com.woocommerce.android.ui.compose.component.WCColoredButton
 import com.woocommerce.android.ui.compose.component.WCOutlinedButton
 import com.woocommerce.android.ui.compose.drawShadow
-import com.woocommerce.android.ui.login.storecreation.ProgressIndicator
-import com.woocommerce.android.ui.login.storecreation.StoreCreationError
+import com.woocommerce.android.ui.login.storecreation.StoreCreationErrorScreen
 import com.woocommerce.android.ui.login.storecreation.installation.InstallationViewModel.ViewState.ErrorState
 import com.woocommerce.android.ui.login.storecreation.installation.InstallationViewModel.ViewState.InitialState
 import com.woocommerce.android.ui.login.storecreation.installation.InstallationViewModel.ViewState.LoadingState
@@ -51,8 +51,12 @@ fun InstallationScreen(viewModel: InstallationViewModel) {
     viewModel.viewState.observeAsState(InitialState).value.let { state ->
         Crossfade(targetState = state) { viewState ->
             when (viewState) {
-                is SuccessState -> InstallationSummary(viewState.url, viewModel)
-                is ErrorState -> StoreCreationError(
+                is SuccessState -> InstallationSummary(
+                    viewState.url,
+                    viewModel::onManageStoreButtonClicked,
+                    viewModel::onShowPreviewButtonClicked
+                )
+                is ErrorState -> StoreCreationErrorScreen(
                     viewState.errorType,
                     viewModel::onBackPressed,
                     viewState.message,
@@ -67,7 +71,11 @@ fun InstallationScreen(viewModel: InstallationViewModel) {
 }
 
 @Composable
-private fun InstallationSummary(url: String, viewModel: InstallationViewModel) {
+private fun InstallationSummary(
+    url: String,
+    onManageStoreButtonClicked: () -> Unit,
+    onShowPreviewButtonClicked: () -> Unit
+) {
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
         modifier = Modifier
@@ -118,7 +126,7 @@ private fun InstallationSummary(url: String, viewModel: InstallationViewModel) {
             modifier = Modifier
                 .padding(horizontal = dimensionResource(id = dimen.major_100))
                 .fillMaxWidth(),
-            onClick = viewModel::onManageStoreButtonClicked
+            onClick = onManageStoreButtonClicked
         ) {
             Text(
                 text = stringResource(id = string.store_creation_installation_manage_store_button)
@@ -133,7 +141,7 @@ private fun InstallationSummary(url: String, viewModel: InstallationViewModel) {
                     bottom = dimensionResource(id = dimen.major_100)
                 )
                 .fillMaxWidth(),
-            onClick = viewModel::onShowPreviewButtonClicked
+            onClick = onShowPreviewButtonClicked
         ) {
             Text(
                 text = stringResource(id = string.store_creation_installation_show_preview_button)
