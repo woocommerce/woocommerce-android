@@ -2,6 +2,7 @@
 11.5
 -----
 - [**] Adds a feature of generating all variations from existing attributes. [https://github.com/woocommerce/woocommerce-android/pull/7944]
+- [*][Internal] JITM: Dismiss irrelevant JITM Banner when pull to refresh in the MyStore screen [https://github.com/woocommerce/woocommerce-android/pull/7966]
 
 11.4
 -----
