@@ -18,7 +18,7 @@ class WooRequestFormatterTest {
         )
 
         assertThat(result).isEqualTo(
-            "https://test.com/?path=/wc/v2/shipment-trackings/&_method=get&json=truezzz" // Forced test failure to test FTL failure reporting
+            "https://test.com/?path=/wc/v2/shipment-trackings/&_method=get&json=true"
         )
     }
 
