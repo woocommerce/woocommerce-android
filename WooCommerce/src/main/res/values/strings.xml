@@ -1597,6 +1597,9 @@
     <string name="grouped_product_empty">Add products to the group</string>
     <string name="product_selection_count">%d products selected</string>
     <string name="product_selection_count_single">%d product selected</string>
+    <string name="product_selection_menu_update_status">Update status</string>
+    <string name="product_selection_menu_update_price">Update price</string>
+    <string name="product_selection_menu_select_all">Select all</string>
     <string name="product_detail_save_as_draft">Save as draft</string>
     <string name="product_detail_linked_products">Linked products</string>
     <string name="upsells_label">Upsells</string>
