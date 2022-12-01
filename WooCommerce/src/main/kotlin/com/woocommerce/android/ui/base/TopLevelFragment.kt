@@ -40,11 +40,9 @@ abstract class TopLevelFragment : BaseFragment, TopLevelFragmentView {
             if (isActive) {
                 it.enableToolbarExpansion(false)
                 it.expandToolbar(false, false)
-                it.hideBottomNav()
             } else {
                 it.enableToolbarExpansion(true)
                 it.expandToolbar(true, true)
-                it.showBottomNav()
             }
         }
     }

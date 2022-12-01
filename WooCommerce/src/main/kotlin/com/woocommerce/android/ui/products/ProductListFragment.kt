@@ -134,14 +134,19 @@ class ProductListFragment :
 
         initAddProductFab(binding.addProductButton)
 
-        if (viewModel.isSearching()) {
-            binding.productsSearchTabView.isVisible = true
-            binding.productsSearchTabView.show(this, viewModel.isSkuSearch())
-        } else {
-            viewModel.reloadProductsFromDb(excludeProductId = pendingTrashProductId)
-        }
-
         addSelectionTracker()
+
+        when{
+            viewModel.isSearching() -> {
+                binding.productsSearchTabView.isVisible = true
+                binding.productsSearchTabView.show(this, viewModel.isSkuSearch())
+            }
+            // Do nothing on selection mode
+            viewModel.isSelecting() -> {}
+            else ->{
+                viewModel.reloadProductsFromDb(excludeProductId = pendingTrashProductId)
+            }
+        }
     }
 
     private fun addSelectionTracker() {
@@ -162,10 +167,14 @@ class ProductListFragment :
                 override fun onSelectionChanged() {
                     val selectionCount = tracker?.selection?.size() ?: 0
                     if (selectionCount > 0 && actionMode == null) {
+                        viewModel.enterSelectionMode()
                         actionMode = requireActivity().startActionMode(this@ProductListFragment)
                     }
                     when (selectionCount) {
-                        0 -> actionMode?.finish()
+                        0 -> {
+                            viewModel.exitSelectionMode()
+                            actionMode?.finish()
+                        }
                         else -> {
                             actionMode?.title = StringUtils.getQuantityString(
                                 context = requireContext(),
@@ -414,6 +423,9 @@ class ProductListFragment :
             new.isSearchActive.takeIfNotEqualTo(old?.isSearchActive) {
                 refreshOptionsMenu()
             }
+            new.productListState.takeIfNotEqualTo(old?.productListState){
+                handleListState(it)
+            }
         }
 
         viewModel.productList.observe(viewLifecycleOwner) {
@@ -434,6 +446,21 @@ class ProductListFragment :
                 )
                 is ShowProductSortingBottomSheet -> showProductSortingBottomSheet()
                 else -> event.isHandled = false
+            }
+        }
+    }
+
+    private fun handleListState(productListState: ProductListViewModel.ProductListState) {
+        when(productListState){
+            ProductListViewModel.ProductListState.Selecting -> {
+                onListSelectionActiveChanged(true)
+                enableProductsRefresh(false)
+                enableProductSortAndFiltersCard(false)
+            }
+            ProductListViewModel.ProductListState.Browsing ->{
+                onListSelectionActiveChanged(false)
+                enableProductsRefresh(true)
+                enableProductSortAndFiltersCard(true)
             }
         }
     }
@@ -656,18 +683,15 @@ class ProductListFragment :
     }
 
     override fun shouldExpandToolbar(): Boolean {
-        return binding.productsRecycler.computeVerticalScrollOffset() == 0 && !viewModel.isSearching()
+        return binding.productsRecycler.computeVerticalScrollOffset() == 0
+            && !viewModel.isSearching()
+            && !viewModel.isSelecting()
     }
 
     override fun onCreateActionMode(mode: ActionMode, menu: Menu): Boolean {
         mode.menuInflater.inflate(R.menu.menu_action_mode_products_list, menu)
-        // TODO fix menu style & keep hidden controls after configuration change
         menu.iterator().forEach { item -> item.setShowAsAction(MenuItem.SHOW_AS_ACTION_NEVER) }
         MenuCompat.setGroupDividerEnabled(menu, true)
-        onListSelectionActiveChanged(true)
-        enableProductsRefresh(false)
-        showAddProductButton(false)
-        enableProductSortAndFiltersCard(false)
         return true
     }
 
@@ -690,9 +714,5 @@ class ProductListFragment :
     override fun onDestroyActionMode(mode: ActionMode) {
         tracker?.clearSelection()
         actionMode = null
-        onListSelectionActiveChanged(false)
-        enableProductsRefresh(true)
-        showAddProductButton(true)
-        enableProductSortAndFiltersCard(true)
     }
 }

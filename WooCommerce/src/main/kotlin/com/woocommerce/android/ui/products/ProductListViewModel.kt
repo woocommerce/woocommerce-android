@@ -82,6 +82,8 @@ class ProductListViewModel @Inject constructor(
 
     fun isSearching() = viewState.isSearchActive == true
 
+    fun isSelecting() = viewState.productListState == ProductListState.Selecting
+
     fun isSkuSearch() = isSearching() && viewState.isSkuSearch
 
     private fun isLoading() = viewState.isLoading == true
@@ -197,6 +199,7 @@ class ProductListViewModel @Inject constructor(
     }
 
     fun onLoadMoreRequested() {
+        if(isSelecting()) return
         loadProducts(loadMore = true)
     }
 
@@ -368,6 +371,20 @@ class ProductListViewModel @Inject constructor(
         }
     }
 
+    fun enterSelectionMode(){
+        viewState = viewState.copy(
+            productListState = ProductListState.Selecting,
+            isAddProductButtonVisible = false
+        )
+    }
+
+    fun exitSelectionMode(){
+        viewState = viewState.copy(
+            productListState = ProductListState.Browsing,
+            isAddProductButtonVisible = true
+        )
+    }
+
     fun refreshProducts(scrollToTop: Boolean = false) {
         if (checkConnection()) {
             loadProducts(scrollToTop = scrollToTop, isRefreshing = true)
@@ -477,9 +494,10 @@ class ProductListViewModel @Inject constructor(
         val sortingTitleResource: Int? = null,
         val displaySortAndFilterCard: Boolean? = null,
         val isAddProductButtonVisible: Boolean? = null,
+        val productListState: ProductListState = ProductListState.Browsing
     ) : Parcelable {
         @IgnoredOnParcel
-        val isBottomNavBarVisible = isSearchActive != true
+        val isBottomNavBarVisible = isSearchActive != true && productListState != ProductListState.Selecting
         @IgnoredOnParcel
         val isFilteringActive = filterCount != null && filterCount > 0
     }
@@ -495,5 +513,12 @@ class ProductListViewModel @Inject constructor(
             val productCategoryFilter: String?,
             val selectedCategoryName: String?
         ) : ProductListEvent()
+    }
+
+    sealed class ProductListState : Parcelable {
+        @Parcelize
+        object Selecting : ProductListState()
+        @Parcelize
+        object Browsing : ProductListState()
     }
 }
