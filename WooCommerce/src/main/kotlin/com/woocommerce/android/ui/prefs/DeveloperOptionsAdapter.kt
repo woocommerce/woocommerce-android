@@ -65,6 +65,7 @@ class DeveloperOptionsAdapter : ListAdapter<ListItem, DeveloperOptionsViewHolder
             return oldItem == newItem
         }
 
+        // Remove the Recyclerview animation to avoid rows blinking
         override fun getChangePayload(oldItem: ListItem, newItem: ListItem): Any {
             return false
         }
