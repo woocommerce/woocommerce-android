@@ -64,6 +64,11 @@ class DeveloperOptionsAdapter : ListAdapter<ListItem, DeveloperOptionsViewHolder
         override fun areContentsTheSame(oldItem: ListItem, newItem: ListItem): Boolean {
             return oldItem == newItem
         }
+
+        // Remove the Recyclerview animation to avoid rows blinking
+        override fun getChangePayload(oldItem: ListItem, newItem: ListItem): Any {
+            return false
+        }
     }
 
     companion object {
