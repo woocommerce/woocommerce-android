@@ -51,7 +51,11 @@ fun InstallationScreen(viewModel: InstallationViewModel) {
     viewModel.viewState.observeAsState(InitialState).value.let { state ->
         Crossfade(targetState = state) { viewState ->
             when (viewState) {
-                is SuccessState -> InstallationSummary(viewState.url, viewModel)
+                is SuccessState -> InstallationSummary(
+                    viewState.url,
+                    viewModel::onManageStoreButtonClicked,
+                    viewModel::onShowPreviewButtonClicked
+                )
                 is ErrorState -> StoreCreationErrorScreen(
                     viewState.errorType,
                     viewModel::onBackPressed,
@@ -67,7 +71,11 @@ fun InstallationScreen(viewModel: InstallationViewModel) {
 }
 
 @Composable
-private fun InstallationSummary(url: String, viewModel: InstallationViewModel) {
+private fun InstallationSummary(
+    url: String,
+    onManageStoreButtonClicked: () -> Unit,
+    onShowPreviewButtonClicked: () -> Unit
+) {
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
         modifier = Modifier
@@ -118,7 +126,7 @@ private fun InstallationSummary(url: String, viewModel: InstallationViewModel) {
             modifier = Modifier
                 .padding(horizontal = dimensionResource(id = dimen.major_100))
                 .fillMaxWidth(),
-            onClick = viewModel::onManageStoreButtonClicked
+            onClick = onManageStoreButtonClicked
         ) {
             Text(
                 text = stringResource(id = string.store_creation_installation_manage_store_button)
@@ -133,7 +141,7 @@ private fun InstallationSummary(url: String, viewModel: InstallationViewModel) {
                     bottom = dimensionResource(id = dimen.major_100)
                 )
                 .fillMaxWidth(),
-            onClick = viewModel::onShowPreviewButtonClicked
+            onClick = onShowPreviewButtonClicked
         ) {
             Text(
                 text = stringResource(id = string.store_creation_installation_show_preview_button)
