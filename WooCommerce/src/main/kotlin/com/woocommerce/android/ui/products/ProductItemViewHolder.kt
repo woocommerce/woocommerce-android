@@ -1,9 +1,7 @@
 package com.woocommerce.android.ui.products
 
-import android.view.MotionEvent
 import androidx.core.view.ViewCompat
 import androidx.core.view.isVisible
-import androidx.recyclerview.selection.ItemDetailsLookup
 import androidx.recyclerview.widget.RecyclerView
 import com.woocommerce.android.R
 import com.woocommerce.android.databinding.ProductListItemBinding
@@ -40,15 +38,4 @@ class ProductItemViewHolder(val viewBinding: ProductListItemBinding) :
             setOnClickListener { onItemDeleted.invoke(product) }
         }
     }
-
-    /**
-     * Method to return details associated with a user selection
-     */
-    fun getItemDetails() =
-        object : ItemDetailsLookup.ItemDetails<Long>() {
-            @Suppress("DEPRECATION")
-            override fun getPosition() = adapterPosition
-            override fun getSelectionKey() = itemId
-            override fun inSelectionHotspot(e: MotionEvent) = true
-        }
 }

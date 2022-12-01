@@ -149,7 +149,7 @@ class ProductListFragment :
             "productSelection", // a string to identity our selection in the context of this fragment
             binding.productsRecycler, // the RecyclerView where we will apply the tracker
             ProductSelectionItemKeyProvider(binding.productsRecycler), // the source of selection keys
-            ProductSelectionListItemLookup(binding.productsRecycler), // the source of information about recycler items
+            DefaultProductListItemLookup(binding.productsRecycler), // the source of information about recycler items
             StorageStrategy.createLongStorage() // strategy for type-safe storage of the selection state
         ).withSelectionPredicate(
             SelectionPredicates.createSelectAnything() // allows multiple items to be selected without any restriction
