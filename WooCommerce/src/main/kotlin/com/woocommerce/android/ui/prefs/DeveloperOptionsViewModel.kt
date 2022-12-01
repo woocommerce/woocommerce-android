@@ -28,7 +28,7 @@ class DeveloperOptionsViewModel @Inject constructor(
     private val _viewState = MutableLiveData(
         DeveloperOptionsViewState(
             rows = if (developerOptionsRepository.isSimulatedCardReaderEnabled()) {
-                createDeveloperOptionsList() + createAdditionalItemWhenReaderEnabled()
+                createDeveloperOptionsList() + createReaderUpdateFrequencyItem()
             } else {
                 createDeveloperOptionsList()
             }
@@ -48,7 +48,7 @@ class DeveloperOptionsViewModel @Inject constructor(
         ),
     )
 
-    private fun createAdditionalItemWhenReaderEnabled() =
+    private fun createReaderUpdateFrequencyItem() =
         SpinnerListItem(
             icon = drawable.img_card_reader_update_progress,
             endIcon = drawable.ic_arrow_drop_down,
@@ -66,7 +66,7 @@ class DeveloperOptionsViewModel @Inject constructor(
                 DeveloperOptionsEvents.ShowToastString(string.simulated_reader_toast)
             )
         } else {
-            viewState.value?.rows = createDeveloperOptionsList() + createAdditionalItemWhenReaderEnabled()
+            viewState.value?.rows = createDeveloperOptionsList() + createReaderUpdateFrequencyItem()
         }
         simulatedReaderStateChanged(isChecked)
     }
