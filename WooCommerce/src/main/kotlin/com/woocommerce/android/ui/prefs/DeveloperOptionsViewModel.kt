@@ -148,8 +148,8 @@ class DeveloperOptionsViewModel @Inject constructor(
         }
 
         enum class UpdateOptions(@StringRes val title: Int) {
-            REQUIRED(string.always_update_reader),
-            NONE(string.never_update_reader),
+            ALWAYS(string.always_update_reader),
+            NEVER(string.never_update_reader),
             RANDOM(string.randomly_update_reader)
         }
     }
