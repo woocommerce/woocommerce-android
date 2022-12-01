@@ -38,7 +38,7 @@ import com.woocommerce.android.util.UiHelpers
 
 @Composable
 fun Banner(bannerState: BannerState) {
-    if (bannerState.shouldDisplayBanner) {
+    if (bannerState is BannerState.DisplayBannerState) {
         Card(
             modifier = Modifier.fillMaxWidth(),
         ) {
@@ -147,8 +147,7 @@ fun Banner(bannerState: BannerState) {
 fun PaymentScreenBannerPreview() {
     WooThemeWithBackground {
         Banner(
-            BannerState(
-                shouldDisplayBanner = true,
+            BannerState.DisplayBannerState(
                 onPrimaryActionClicked = {},
                 onDismissClicked = {},
                 title = UiString.UiStringRes(R.string.card_reader_upsell_card_reader_banner_title),

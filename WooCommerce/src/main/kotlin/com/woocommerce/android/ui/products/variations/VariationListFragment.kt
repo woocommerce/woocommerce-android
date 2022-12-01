@@ -48,6 +48,7 @@ import com.woocommerce.android.ui.products.variations.VariationListViewModel.Sho
 import com.woocommerce.android.ui.products.variations.VariationListViewModel.ShowGenerateVariationsError
 import com.woocommerce.android.ui.products.variations.VariationListViewModel.ShowGenerateVariationsError.LimitExceeded
 import com.woocommerce.android.ui.products.variations.VariationListViewModel.ShowGenerateVariationsError.NetworkError
+import com.woocommerce.android.ui.products.variations.VariationListViewModel.ShowGenerateVariationsError.NoCandidates
 import com.woocommerce.android.ui.products.variations.VariationListViewModel.ShowVariationDetail
 import com.woocommerce.android.ui.products.variations.VariationListViewModel.ShowVariationDialog
 import com.woocommerce.android.ui.products.variations.domain.GenerateVariationCandidates
@@ -215,9 +216,9 @@ class VariationListFragment :
                 is ShowBulkUpdateLimitExceededWarning -> showBulkUpdateLimitExceededWarning()
                 is ShowGenerateVariationConfirmation -> showGenerateVariationConfirmation(event.variationCandidates)
                 is ShowGenerateVariationsError -> handleGenerateVariationError(event)
+                is ShowVariationDialog -> showAddVariationSelectDialog()
                 is ExitWithResult<*> -> navigateBackWithResult(KEY_VARIATION_LIST_RESULT, event.data)
                 is Exit -> activity?.onBackPressedDispatcher?.onBackPressed()
-                is ShowVariationDialog -> showAddVariationSelectDialog(event.variationCandidates)
             }
         }
     }
@@ -241,6 +242,7 @@ class VariationListFragment :
         when (event) {
             is LimitExceeded -> showGenerateVariationsLimitExceeded(event.variationCandidatesSize)
             NetworkError -> showGenerateVariationsNetworkError()
+            NoCandidates -> showNoVariationCandidatesError()
         }
     }
 
@@ -253,6 +255,16 @@ class VariationListFragment :
                 dialogInterface.dismiss()
             }
             .setNegativeButton(android.R.string.cancel) { dialogInterface, _ ->
+                dialogInterface.dismiss()
+            }
+            .show()
+    }
+
+    private fun showNoVariationCandidatesError() {
+        MaterialAlertDialogBuilder(requireActivity())
+            .setTitle(R.string.variations_bulk_creation_no_candidates_title)
+            .setMessage(R.string.variations_bulk_creation_no_candidates_message)
+            .setPositiveButton(android.R.string.ok) { dialogInterface, _ ->
                 dialogInterface.dismiss()
             }
             .show()
@@ -282,12 +294,11 @@ class VariationListFragment :
             .show()
     }
 
-    private fun showAddVariationSelectDialog(variationCandidates: List<VariationCandidate>) {
+    private fun showAddVariationSelectDialog() {
         val dialog = generateVariationPickerDialog ?: GenerateVariationPickerDialog(requireContext()).apply {
             listener = this@VariationListFragment
         }
         dialog.run {
-            this.variationCandidates = variationCandidates
             show()
         }
     }
@@ -405,8 +416,8 @@ class VariationListFragment :
         }
     }
 
-    override fun onGenerateAllVariations(variationCandidates: List<VariationCandidate>) {
-        viewModel.onAddAllVariationsClicked(variationCandidates)
+    override fun onGenerateAllVariations() {
+        viewModel.onAddAllVariationsClicked()
     }
 
     override fun onGenerateNewVariation() {
