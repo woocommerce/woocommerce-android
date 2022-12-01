@@ -56,6 +56,7 @@ import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderFlowP
 import com.woocommerce.android.ui.payments.cardreader.onboarding.PluginType
 import com.woocommerce.android.ui.payments.cardreader.update.CardReaderUpdateViewModel
 import com.woocommerce.android.ui.prefs.DeveloperOptionsRepository
+import com.woocommerce.android.ui.prefs.DeveloperOptionsViewModel
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -102,10 +103,16 @@ class CardReaderConnectViewModelTest : BaseUnitTest() {
     private val cardReaderTrackingInfoKeeper: CardReaderTrackingInfoKeeper = mock()
     private val learnMoreUrlProvider: LearnMoreUrlProvider = mock()
     private val locationId = "location_id"
+    private val updateFrequency = CardReaderManager.SimulatorUpdateFrequency.RANDOM
 
     @Before
     fun setUp() = testBlocking {
         viewModel = initVM()
+        whenever(
+            appPrefs.selectedUpdateReaderOption()
+        ).thenReturn(
+            DeveloperOptionsViewModel.DeveloperOptionsViewState.UpdateOptions.RANDOM.name
+        )
     }
 
     @Test
@@ -310,18 +317,20 @@ class CardReaderConnectViewModelTest : BaseUnitTest() {
     @Test
     fun `given request accepted, when enable-bluetooth requested, then card manager initialized`() =
         testBlocking {
+
             (viewModel.event.value as CheckLocationPermissions).onLocationPermissionsCheckResult(true, false)
             (viewModel.event.value as CheckLocationEnabled).onLocationEnabledCheckResult(true)
             (viewModel.event.value as CheckBluetoothPermissionsGiven).onBluetoothPermissionsGivenCheckResult(true)
             (viewModel.event.value as CheckBluetoothEnabled).onBluetoothCheckResult(false)
             (viewModel.event.value as RequestEnableBluetooth).onEnableBluetoothRequestResult(true)
 
-            verify(cardReaderManager).initialize()
+            verify(cardReaderManager).initialize(updateFrequency)
         }
 
     @Test
     fun `given request accepted, when bt permissions requested, then card manager initialized`() =
         testBlocking {
+
             (viewModel.event.value as CheckLocationPermissions).onLocationPermissionsCheckResult(true, false)
             (viewModel.event.value as CheckLocationEnabled).onLocationEnabledCheckResult(true)
             (viewModel.event.value as CheckBluetoothPermissionsGiven).onBluetoothPermissionsGivenCheckResult(false)
@@ -329,24 +338,26 @@ class CardReaderConnectViewModelTest : BaseUnitTest() {
                 .onBluetoothRuntimePermissionsRequestResult(true)
             (viewModel.event.value as CheckBluetoothEnabled).onBluetoothCheckResult(true)
 
-            verify(cardReaderManager).initialize()
+            verify(cardReaderManager).initialize(updateFrequency)
         }
 
     @Test
     fun `given request not accepted, when bt permissions requested, then card manager not initialized`() =
         testBlocking {
+
             (viewModel.event.value as CheckLocationPermissions).onLocationPermissionsCheckResult(true, false)
             (viewModel.event.value as CheckLocationEnabled).onLocationEnabledCheckResult(true)
             (viewModel.event.value as CheckBluetoothPermissionsGiven).onBluetoothPermissionsGivenCheckResult(false)
             (viewModel.event.value as RequestBluetoothRuntimePermissions)
                 .onBluetoothRuntimePermissionsRequestResult(false)
 
-            verify(cardReaderManager, never()).initialize()
+            verify(cardReaderManager, never()).initialize(updateFrequency)
         }
 
     @Test
     fun `given request accepted and manager init, when enable-bluetooth requested, then manager is not initialized`() =
         testBlocking {
+
             whenever(cardReaderManager.initialized).thenReturn(true)
             (viewModel.event.value as CheckLocationPermissions).onLocationPermissionsCheckResult(true, false)
             (viewModel.event.value as CheckLocationEnabled).onLocationEnabledCheckResult(true)
@@ -355,7 +366,7 @@ class CardReaderConnectViewModelTest : BaseUnitTest() {
 
             (viewModel.event.value as RequestEnableBluetooth).onEnableBluetoothRequestResult(true)
 
-            verify(cardReaderManager, never()).initialize()
+            verify(cardReaderManager, never()).initialize(updateFrequency)
         }
 
     @Test

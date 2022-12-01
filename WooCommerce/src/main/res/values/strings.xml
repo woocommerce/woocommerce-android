@@ -1660,7 +1660,7 @@
     <string name="variations_bulk_limit_exceeded_button_ok">OK</string>
     <string name="variation_add_new">Add new variation</string>
     <string name="variation_add_new_description">Create one new variation. Manually set which attributes belong to the variable product.</string>
-    <string name="variation_add_all">Generate all %1$d variations</string>
+    <string name="variation_add_all">Generate all variations</string>
     <string name="variation_add_all_description">Creates variations for all combinations of your attributes.</string>
 
     <!--
@@ -1695,6 +1695,8 @@
     <string name="variations_bulk_creation_confirmation_title">Generate all variations?</string>
     <string name="variations_bulk_creation_confirmation_message">This will create a new variation for each and every possible combination of variation attributes (%1$d variations).</string>
     <string name="variations_bulk_creation_progress_title">Generating variations</string>
+    <string name="variations_bulk_creation_no_candidates_title">No variations to generate</string>
+    <string name="variations_bulk_creation_no_candidates_message">All variations are already generated.</string>
 
     <!--
         Product images

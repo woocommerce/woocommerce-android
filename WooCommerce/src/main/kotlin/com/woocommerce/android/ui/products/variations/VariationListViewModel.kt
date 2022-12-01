@@ -120,8 +120,8 @@ class VariationListViewModel @Inject constructor(
             triggerEvent(ShowBulkUpdateLimitExceededWarning)
         } else {
             viewState = viewState.copy(isBulkUpdateProgressDialogShown = true)
-            viewModelScope.launch(dispatchers.io) {
-                val variations = getAllVariations(remoteProductId)
+            viewModelScope.launch {
+                val variations = variationRepository.getAllVariations(remoteProductId)
                 withContext(dispatchers.main) {
                     triggerEvent(ShowBulkUpdateAttrPicker(variations))
                     viewState = viewState.copy(isBulkUpdateProgressDialogShown = false)
@@ -143,12 +143,12 @@ class VariationListViewModel @Inject constructor(
         }
     }
 
-    fun createEmptyVariation() {
+    private fun createEmptyVariation() {
         trackWithProductId(AnalyticsEvent.PRODUCT_VARIATION_ADD_MORE_TAPPED)
         handleVariationCreation()
     }
 
-    fun createFirstVariation() {
+    private fun createFirstVariation() {
         trackWithProductId(AnalyticsEvent.PRODUCT_VARIATION_ADD_FIRST_TAPPED)
         viewState.parentProduct
             ?.variationEnabledAttributes
@@ -262,14 +262,6 @@ class VariationListViewModel @Inject constructor(
             isLoadingMore = false
         )
     }
-
-    private suspend fun getAllVariations(remoteProductId: Long): Collection<ProductVariation> {
-        while (variationRepository.canLoadMoreProductVariations) {
-            variationRepository.fetchProductVariations(remoteProductId, true)
-        }
-        return variationRepository.getProductVariationList(remoteProductId)
-    }
-
     private fun combineData(variations: List<ProductVariation>): List<ProductVariation> {
         val currencyCode = variationRepository.getCurrencyCode()
         variations.map { variation ->
@@ -291,20 +283,36 @@ class VariationListViewModel @Inject constructor(
     }
 
     fun onAddVariationsClicked() {
-        val product = viewState.parentProduct ?: return
-        triggerEvent(ShowVariationDialog(generateVariationCandidates.invoke(product)))
+        triggerEvent(ShowVariationDialog)
     }
 
-    fun onAddAllVariationsClicked(variationCandidates: List<VariationCandidate>) {
+    fun onAddAllVariationsClicked() {
         tracker.track(AnalyticsEvent.PRODUCT_VARIATION_GENERATION_REQUESTED)
-        if (variationCandidates.size <= GenerateVariationCandidates.VARIATION_CREATION_LIMIT) {
-            triggerEvent(ShowGenerateVariationConfirmation(variationCandidates))
-        } else {
-            tracker.track(
-                stat = AnalyticsEvent.PRODUCT_VARIATION_GENERATION_LIMIT_REACHED,
-                properties = mapOf(AnalyticsTracker.KEY_VARIATIONS_COUNT to variationCandidates.size)
-            )
-            triggerEvent(ShowGenerateVariationsError.LimitExceeded(variationCandidates.size))
+
+        launch {
+            viewState = viewState.copy(isBulkUpdateProgressDialogShown = true)
+            variationRepository.getAllVariations(remoteProductId)
+            viewState = viewState.copy(isBulkUpdateProgressDialogShown = false)
+
+            val variationCandidates = viewState.parentProduct?.let {
+                generateVariationCandidates.invoke(it)
+            }.orEmpty()
+
+            when {
+                variationCandidates.isEmpty() -> {
+                    triggerEvent(ShowGenerateVariationsError.NoCandidates)
+                }
+                variationCandidates.size <= GenerateVariationCandidates.VARIATION_CREATION_LIMIT -> {
+                    triggerEvent(ShowGenerateVariationConfirmation(variationCandidates))
+                }
+                else -> {
+                    tracker.track(
+                        stat = AnalyticsEvent.PRODUCT_VARIATION_GENERATION_LIMIT_REACHED,
+                        properties = mapOf(AnalyticsTracker.KEY_VARIATIONS_COUNT to variationCandidates.size)
+                    )
+                    triggerEvent(ShowGenerateVariationsError.LimitExceeded(variationCandidates.size))
+                }
+            }
         }
     }
 
@@ -375,12 +383,13 @@ class VariationListViewModel @Inject constructor(
      */
     object ShowBulkUpdateLimitExceededWarning : Event()
 
-    data class ShowVariationDialog(val variationCandidates: List<VariationCandidate>) : Event()
+    object ShowVariationDialog : Event()
 
     data class ShowGenerateVariationConfirmation(val variationCandidates: List<VariationCandidate>) : Event()
 
     sealed class ShowGenerateVariationsError : Event() {
         data class LimitExceeded(val variationCandidatesSize: Int) : ShowGenerateVariationsError()
         object NetworkError : ShowGenerateVariationsError()
+        object NoCandidates : ShowGenerateVariationsError()
     }
 }

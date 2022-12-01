@@ -95,7 +95,7 @@ class ProductFilterOptionListFragment :
         viewModel.event.observe(viewLifecycleOwner) { event ->
             when (event) {
                 is ExitWithResult<*> -> {
-                    navigateBackWithResult(ProductListFragment.PRODUCT_FILTER_RESULT_KEY, event.data)
+                    navigateBackWithResult(ProductListFragment.PRODUCT_FILTER_RESULT_KEY, event.data, R.id.products)
                 }
                 else -> event.isHandled = false
             }
