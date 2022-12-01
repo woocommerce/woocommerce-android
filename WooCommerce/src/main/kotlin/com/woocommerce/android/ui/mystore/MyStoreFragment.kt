@@ -29,6 +29,7 @@ import com.woocommerce.android.extensions.hide
 import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.extensions.scrollStartEvents
 import com.woocommerce.android.extensions.setClickableText
+import com.woocommerce.android.extensions.show
 import com.woocommerce.android.extensions.startHelpActivity
 import com.woocommerce.android.extensions.verticalOffsetChanges
 import com.woocommerce.android.support.help.HelpActivity.Origin
@@ -179,8 +180,9 @@ class MyStoreFragment : TopLevelFragment(R.layout.fragment_my_store) {
     }
 
     private fun applyBannerComposeUI(state: BannerState) {
-        if (state.shouldDisplayBanner) {
+        if (state is BannerState.DisplayBannerState) {
             binding.jitmView.apply {
+                binding.jitmView.show()
                 // Dispose of the Composition when the view's LifecycleOwner is destroyed
                 setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
                 setContent {
