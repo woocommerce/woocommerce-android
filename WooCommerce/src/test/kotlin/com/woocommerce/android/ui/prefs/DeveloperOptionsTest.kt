@@ -34,6 +34,16 @@ class DeveloperOptionsTest : BaseUnitTest() {
     }
 
     @Test
+    fun `when dev options screen accessed, then update simulated reader label is displayed`() {
+
+        val simulatedReaderRow = viewModel.viewState.value?.rows?.find {
+            it.label == UiString.UiStringRes(R.string.update_simulated_reader)
+        }
+
+        assertThat(simulatedReaderRow).isNotNull
+    }
+
+    @Test
     fun `when dev options screen accessed, then enable simulated reader icon is displayed`() {
 
         val simulatedReaderRow = viewModel.viewState.value?.rows?.find {
@@ -41,6 +51,27 @@ class DeveloperOptionsTest : BaseUnitTest() {
         }
 
         assertThat(simulatedReaderRow).isNotNull
+    }
+
+    @Test
+    fun `when dev options screen accessed, then update simulated reader icon is displayed`() {
+
+        val simulatedReaderIcon = viewModel.viewState.value?.rows?.find {
+            it.icon == R.drawable.img_card_reader_update_progress
+        }
+
+        assertThat(simulatedReaderIcon).isNotNull
+    }
+
+    @Test
+    fun `when dev options screen accessed, then update simulated reader end icon is displayed`() {
+        val simulatedReaderEndIcon = (
+            viewModel.viewState.value?.rows?.find {
+                it.icon == R.drawable.img_card_reader_update_progress
+            } as DeveloperOptionsViewModel.DeveloperOptionsViewState.ListItem.SpinnerListItem
+            ).endIcon
+
+        assertThat(simulatedReaderEndIcon).isEqualTo(R.drawable.ic_arrow_drop_down)
     }
 
     @Test
