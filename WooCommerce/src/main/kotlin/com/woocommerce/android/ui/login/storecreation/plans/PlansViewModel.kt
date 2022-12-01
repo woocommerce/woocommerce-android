@@ -118,7 +118,7 @@ class PlansViewModel @Inject constructor(
     private fun showCheckoutWebsite() {
         _viewState.update {
             CheckoutState(
-                startUrl = "$CART_URL/${newStore.data.domain!!}",
+                startUrl = "$CART_URL/${newStore.data.domain ?: newStore.data.siteId}",
                 successTriggerKeyword = WEBVIEW_SUCCESS_TRIGGER_KEYWORD,
                 exitTriggerKeyword = WEBVIEW_EXIT_TRIGGER_KEYWORD
             )
@@ -151,7 +151,7 @@ class PlansViewModel @Inject constructor(
     private suspend fun createSite(): StoreCreationResult<Long> {
         suspend fun StoreCreationResult<Long>.recoverIfSiteExists(): StoreCreationResult<Long> {
             return if ((this as? Failure<Long>)?.type == SITE_ADDRESS_ALREADY_EXISTS) {
-                repository.getSiteByUrl(newStore.data.domain!!)?.let { site ->
+                repository.getSiteByUrl(newStore.data.domain)?.let { site ->
                     Success(site.siteId)
                 } ?: this
             } else {

@@ -65,9 +65,11 @@ class StoreCreationRepository @Inject constructor(
         else Result.success(result.model ?: emptyList())
     }
 
-    suspend fun getSiteByUrl(url: String): SiteModel? {
+    suspend fun getSiteByUrl(url: String?): SiteModel? {
         siteStore.fetchSites(FetchSitesPayload(listOf(WPCOM)))
-        return siteStore.getSitesByNameOrUrlMatching(url).firstOrNull()
+        return url?.let {
+            siteStore.getSitesByNameOrUrlMatching(url).firstOrNull()
+        }
     }
 
     suspend fun fetchSiteAfterCreation(siteId: Long): StoreCreationResult<Unit> {
