@@ -52,8 +52,6 @@ class PlansViewModel @Inject constructor(
         private const val WEBVIEW_EXIT_TRIGGER_KEYWORD = "https://woocommerce.com/"
         private const val ECOMMERCE_PLAN_NAME = "eCommerce"
         private const val ECOMMERCE_PLAN_PRICE_MONTHLY = "$70"
-        private const val YEARLY_BILLING_PERIOD = 365
-        private const val BIYEARLY_BILLING_PERIOD = 730
     }
 
     private val _viewState = savedState.getStateFlow<ViewState>(this, LoadingState)
@@ -217,21 +215,6 @@ class PlansViewModel @Inject constructor(
             @StringRes val textId: Int
         ) : Parcelable
 
-        enum class BillingPeriod(@StringRes val nameId: Int) {
-            MONTHLY(string.store_creation_ecommerce_plan_period_month),
-            YEARLY(string.store_creation_ecommerce_plan_period_year),
-            BIYEARLY(string.store_creation_ecommerce_plan_period_year);
-
-            companion object {
-                fun fromPeriodValue(periodValue: Int?): BillingPeriod {
-                    return when (periodValue) {
-                        YEARLY_BILLING_PERIOD -> YEARLY
-                        BIYEARLY_BILLING_PERIOD -> BIYEARLY
-                        else -> MONTHLY
-                    }
-                }
-            }
-        }
     }
 
     object NavigateToNextStep : MultiLiveEvent.Event()
