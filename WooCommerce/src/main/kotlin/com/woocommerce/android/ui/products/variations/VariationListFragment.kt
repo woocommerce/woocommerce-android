@@ -53,7 +53,6 @@ import com.woocommerce.android.ui.products.variations.VariationListViewModel.Sho
 import com.woocommerce.android.ui.products.variations.VariationListViewModel.ShowVariationDialog
 import com.woocommerce.android.ui.products.variations.domain.GenerateVariationCandidates
 import com.woocommerce.android.ui.products.variations.domain.VariationCandidate
-import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
@@ -151,24 +150,12 @@ class VariationListFragment :
                 viewModel.refreshVariations(navArgs.remoteProductId)
             }
         }
-        if (FeatureFlag.GENERATE_ALL_VARIATIONS.isEnabled()) {
-            binding.addVariationButton.text = getString(R.string.variation_list_add)
-            binding.firstVariationView.setOnClickListener {
-                viewModel.onAddVariationsClicked()
-            }
-            binding.addVariationButton.setOnClickListener {
-                viewModel.onAddVariationsClicked()
-            }
-        } else {
-            binding.firstVariationView.setOnClickListener {
-                viewModel.createFirstVariation()
-            }
-            binding.addVariationButton.run {
-                text = getString(R.string.variation_list_generate_new_variation)
-                setOnClickListener {
-                    viewModel.createEmptyVariation()
-                }
-            }
+        binding.addVariationButton.text = getString(R.string.variation_list_add)
+        binding.firstVariationView.setOnClickListener {
+            viewModel.onAddVariationsClicked()
+        }
+        binding.addVariationButton.setOnClickListener {
+            viewModel.onAddVariationsClicked()
         }
     }
 
