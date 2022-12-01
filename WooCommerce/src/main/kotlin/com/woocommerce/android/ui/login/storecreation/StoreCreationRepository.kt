@@ -10,6 +10,7 @@ import com.woocommerce.android.ui.login.storecreation.StoreCreationErrorType.STO
 import com.woocommerce.android.ui.login.storecreation.StoreCreationErrorType.STORE_NOT_READY
 import com.woocommerce.android.ui.login.storecreation.StoreCreationResult.Failure
 import com.woocommerce.android.ui.login.storecreation.StoreCreationResult.Success
+import com.woocommerce.android.ui.login.storecreation.plans.BillingPeriod
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T.LOGIN
 import com.woocommerce.android.util.dispatchAndAwait
@@ -20,6 +21,7 @@ import org.wordpress.android.fluxc.Dispatcher
 import org.wordpress.android.fluxc.generated.SiteActionBuilder
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.model.plans.full.Plan
+import org.wordpress.android.fluxc.network.rest.wpcom.wc.storecreation.ShoppingCartRestClient.ShoppingCart.CartProduct
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.storecreation.ShoppingCartStore
 import org.wordpress.android.fluxc.store.PlansStore
 import org.wordpress.android.fluxc.store.SiteStore
@@ -43,10 +45,6 @@ class StoreCreationRepository @Inject constructor(
     private val dispatcher: Dispatcher,
     private val plansStore: PlansStore
 ) {
-    companion object {
-        private const val ECOMMMERCE_MONTHLY_PLAN_SLUG = "ecommerce-bundle-monthly"
-    }
-
     fun selectSite(site: SiteModel) {
         selectedSite.set(site)
     }
@@ -88,7 +86,7 @@ class StoreCreationRepository @Inject constructor(
         }
     }
 
-    suspend fun fetchWooPlan(): Plan? {
+    suspend fun fetchPlan(period: BillingPeriod): Plan? {
         val fetchResult = plansStore.fetchPlans()
         return when {
             fetchResult.isError -> {
@@ -100,7 +98,7 @@ class StoreCreationRepository @Inject constructor(
                 null
             }
             else -> {
-                fetchResult.plans!!.firstOrNull { it.productSlug == ECOMMMERCE_MONTHLY_PLAN_SLUG }
+                fetchResult.plans!!.firstOrNull { it.productSlug == period.slug }
             }
         }
     }
@@ -110,15 +108,29 @@ class StoreCreationRepository @Inject constructor(
         it?.origin == SiteModel.ORIGIN_WPCOM_REST
     }
 
-    suspend fun addPlanToCart(siteId: Long): StoreCreationResult<Unit> {
-        shoppingCartStore.addWooCommercePlanToCart(siteId).let { result ->
-            return when {
-                result.isError -> {
-                    WooLog.e(LOGIN, "Error adding eCommerce plan to cart: ${result.error.message}")
-                    Failure(PLAN_PURCHASE_FAILED, result.error.message)
+    suspend fun addPlanToCart(planProductId: Int?, planPathSlug: String?, siteId: Long?): StoreCreationResult<Unit> {
+        if (planProductId == null || planPathSlug == null || siteId == null) {
+            WooLog.e(LOGIN, "Missing plan purchase data: " +
+                "productId=$planProductId, pathSlug=$planPathSlug, siteId=$siteId")
+            return Failure(PLAN_PURCHASE_FAILED)
+        } else {
+            val eCommerceProduct = CartProduct(
+                productId = planProductId,
+                extra = mapOf(
+                    "context" to "signup",
+                    "signup_flow" to planPathSlug
+                )
+            )
+
+            shoppingCartStore.addProductToCart(siteId, eCommerceProduct).let { result ->
+                return when {
+                    result.isError -> {
+                        WooLog.e(LOGIN, "Error adding eCommerce plan to cart: ${result.error.message}")
+                        Failure(PLAN_PURCHASE_FAILED, result.error.message)
+                    }
+                    result.model != null -> Success(Unit)
+                    else -> Failure(PLAN_PURCHASE_FAILED, "Null response")
                 }
-                result.model != null -> Success(Unit)
-                else -> Failure(PLAN_PURCHASE_FAILED, "Null response")
             }
         }
     }
