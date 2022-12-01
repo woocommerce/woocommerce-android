@@ -42,6 +42,7 @@ import com.woocommerce.android.ui.feedback.SurveyType
 import com.woocommerce.android.ui.main.MainActivity
 import com.woocommerce.android.ui.main.MainNavigationRouter
 import com.woocommerce.android.ui.products.ProductListViewModel.ProductListEvent.ScrollToTop
+import com.woocommerce.android.ui.products.ProductListViewModel.ProductListEvent.SelectProducts
 import com.woocommerce.android.ui.products.ProductListViewModel.ProductListEvent.ShowAddProductBottomSheet
 import com.woocommerce.android.ui.products.ProductListViewModel.ProductListEvent.ShowProductFilterScreen
 import com.woocommerce.android.ui.products.ProductListViewModel.ProductListEvent.ShowProductSortingBottomSheet
@@ -136,14 +137,14 @@ class ProductListFragment :
 
         addSelectionTracker()
 
-        when{
+        when {
             viewModel.isSearching() -> {
                 binding.productsSearchTabView.isVisible = true
                 binding.productsSearchTabView.show(this, viewModel.isSkuSearch())
             }
             // Do nothing on selection mode
             viewModel.isSelecting() -> {}
-            else ->{
+            else -> {
                 viewModel.reloadProductsFromDb(excludeProductId = pendingTrashProductId)
             }
         }
@@ -317,9 +318,7 @@ class ProductListFragment :
                 true
             }
             R.id.menu_multiselect -> {
-                viewModel.productList.value?.first()?.let {
-                    tracker?.setItemsSelected(listOf(it.remoteId), true)
-                }
+                viewModel.onSelectProductsClicked()
                 true
             }
             else -> false
@@ -423,7 +422,7 @@ class ProductListFragment :
             new.isSearchActive.takeIfNotEqualTo(old?.isSearchActive) {
                 refreshOptionsMenu()
             }
-            new.productListState.takeIfNotEqualTo(old?.productListState){
+            new.productListState.takeIfNotEqualTo(old?.productListState) {
                 handleListState(it)
             }
         }
@@ -445,19 +444,20 @@ class ProductListFragment :
                     event.selectedCategoryName
                 )
                 is ShowProductSortingBottomSheet -> showProductSortingBottomSheet()
+                is SelectProducts -> tracker?.setItemsSelected(event.productsIds, true)
                 else -> event.isHandled = false
             }
         }
     }
 
     private fun handleListState(productListState: ProductListViewModel.ProductListState) {
-        when(productListState){
+        when (productListState) {
             ProductListViewModel.ProductListState.Selecting -> {
                 onListSelectionActiveChanged(true)
                 enableProductsRefresh(false)
                 enableProductSortAndFiltersCard(false)
             }
-            ProductListViewModel.ProductListState.Browsing ->{
+            ProductListViewModel.ProductListState.Browsing -> {
                 onListSelectionActiveChanged(false)
                 enableProductsRefresh(true)
                 enableProductSortAndFiltersCard(true)
@@ -683,9 +683,9 @@ class ProductListFragment :
     }
 
     override fun shouldExpandToolbar(): Boolean {
-        return binding.productsRecycler.computeVerticalScrollOffset() == 0
-            && !viewModel.isSearching()
-            && !viewModel.isSelecting()
+        val isNotSearching = !viewModel.isSearching()
+        val isNotSelecting = !viewModel.isSelecting()
+        return binding.productsRecycler.computeVerticalScrollOffset() == 0 && isNotSearching && isNotSelecting
     }
 
     override fun onCreateActionMode(mode: ActionMode, menu: Menu): Boolean {
@@ -702,9 +702,7 @@ class ProductListFragment :
             R.id.menu_update_status -> true
             R.id.menu_update_price -> true
             R.id.menu_select_all -> {
-                viewModel.productList.value?.map { it.remoteId }?.let { allLoadedProductsIds ->
-                    tracker?.setItemsSelected(allLoadedProductsIds, true)
-                }
+                viewModel.onSelectAllProductsClicked()
                 true
             }
             else -> false

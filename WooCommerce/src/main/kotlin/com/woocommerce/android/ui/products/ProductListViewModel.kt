@@ -123,7 +123,7 @@ class ProductListViewModel @Inject constructor(
             productStatus?.let { productFilterOptions[ProductFilterOption.STATUS] = it }
             productType?.let { productFilterOptions[ProductFilterOption.TYPE] = it }
             productCategory?.let { productFilterOptions[ProductFilterOption.CATEGORY] = it }
-            productCategoryName?. let {
+            productCategoryName?.let {
                 selectedCategoryName = it
                 savedState[KEY_PRODUCT_FILTER_SELECTED_CATEGORY_NAME] = it
             }
@@ -199,7 +199,7 @@ class ProductListViewModel @Inject constructor(
     }
 
     fun onLoadMoreRequested() {
-        if(isSelecting()) return
+        if (isSelecting()) return
         loadProducts(loadMore = true)
     }
 
@@ -371,14 +371,26 @@ class ProductListViewModel @Inject constructor(
         }
     }
 
-    fun enterSelectionMode(){
+    fun onSelectProductsClicked() {
+        productList.value?.first()?.let { product ->
+            triggerEvent(SelectProducts(listOf(product.remoteId)))
+        }
+    }
+
+    fun onSelectAllProductsClicked() {
+        productList.value?.map { it.remoteId }?.let { allLoadedProductsIds ->
+            triggerEvent(SelectProducts(allLoadedProductsIds))
+        }
+    }
+
+    fun enterSelectionMode() {
         viewState = viewState.copy(
             productListState = ProductListState.Selecting,
             isAddProductButtonVisible = false
         )
     }
 
-    fun exitSelectionMode(){
+    fun exitSelectionMode() {
         viewState = viewState.copy(
             productListState = ProductListState.Browsing,
             isAddProductButtonVisible = true
@@ -498,6 +510,7 @@ class ProductListViewModel @Inject constructor(
     ) : Parcelable {
         @IgnoredOnParcel
         val isBottomNavBarVisible = isSearchActive != true && productListState != ProductListState.Selecting
+
         @IgnoredOnParcel
         val isFilteringActive = filterCount != null && filterCount > 0
     }
@@ -513,11 +526,14 @@ class ProductListViewModel @Inject constructor(
             val productCategoryFilter: String?,
             val selectedCategoryName: String?
         ) : ProductListEvent()
+
+        data class SelectProducts(val productsIds: List<Long>) : ProductListEvent()
     }
 
     sealed class ProductListState : Parcelable {
         @Parcelize
         object Selecting : ProductListState()
+
         @Parcelize
         object Browsing : ProductListState()
     }
