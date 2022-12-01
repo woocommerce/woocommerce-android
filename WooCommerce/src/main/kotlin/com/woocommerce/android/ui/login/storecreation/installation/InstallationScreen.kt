@@ -33,7 +33,6 @@ import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.viewinterop.AndroidView
-import com.woocommerce.android.R
 import com.woocommerce.android.R.color
 import com.woocommerce.android.R.dimen
 import com.woocommerce.android.R.string
@@ -90,10 +89,10 @@ private fun InstallationSummary(url: String, viewModel: InstallationViewModel) {
             modifier = Modifier
                 .weight(1f)
                 .background(color = colorResource(id = color.color_surface))
-                .clip(RoundedCornerShape(dimensionResource(id = R.dimen.minor_100)))
+                .clip(RoundedCornerShape(dimensionResource(id = dimen.minor_100)))
                 .padding(
                     horizontal = dimensionResource(id = dimen.major_350),
-                    vertical = dimensionResource(id = R.dimen.major_200)
+                    vertical = dimensionResource(id = dimen.major_200)
                 )
         ) {
             PreviewWebView(
@@ -104,7 +103,7 @@ private fun InstallationSummary(url: String, viewModel: InstallationViewModel) {
                     .drawShadow(
                         color = colorResource(id = color.color_on_surface),
                         backgroundColor = colorResource(id = color.color_surface),
-                        borderRadius = dimensionResource(id = R.dimen.major_100)
+                        borderRadius = dimensionResource(id = dimen.major_100)
                     )
             )
         }
@@ -112,12 +111,12 @@ private fun InstallationSummary(url: String, viewModel: InstallationViewModel) {
         Divider(
             color = colorResource(id = color.divider_color),
             thickness = dimensionResource(id = dimen.minor_10),
-            modifier = Modifier.padding(bottom = dimensionResource(id = R.dimen.major_100))
+            modifier = Modifier.padding(bottom = dimensionResource(id = dimen.major_100))
         )
 
         WCColoredButton(
             modifier = Modifier
-                .padding(horizontal = dimensionResource(id = R.dimen.major_100))
+                .padding(horizontal = dimensionResource(id = dimen.major_100))
                 .fillMaxWidth(),
             onClick = viewModel::onManageStoreButtonClicked
         ) {
@@ -129,9 +128,9 @@ private fun InstallationSummary(url: String, viewModel: InstallationViewModel) {
         WCOutlinedButton(
             modifier = Modifier
                 .padding(
-                    start = dimensionResource(id = R.dimen.major_100),
-                    end = dimensionResource(id = R.dimen.major_100),
-                    bottom = dimensionResource(id = R.dimen.major_100)
+                    start = dimensionResource(id = dimen.major_100),
+                    end = dimensionResource(id = dimen.major_100),
+                    bottom = dimensionResource(id = dimen.major_100)
                 )
                 .fillMaxWidth(),
             onClick = viewModel::onShowPreviewButtonClicked
