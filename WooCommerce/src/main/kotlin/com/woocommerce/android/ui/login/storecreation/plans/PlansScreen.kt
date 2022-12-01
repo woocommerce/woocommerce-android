@@ -6,7 +6,6 @@ import androidx.compose.animation.Crossfade
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
@@ -15,7 +14,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.Divider
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
@@ -52,6 +50,7 @@ import com.woocommerce.android.R.string
 import com.woocommerce.android.ui.common.wpcomwebview.WPComWebViewAuthenticator
 import com.woocommerce.android.ui.compose.component.WCColoredButton
 import com.woocommerce.android.ui.compose.component.WCWebView
+import com.woocommerce.android.ui.login.storecreation.ProgressIndicator
 import com.woocommerce.android.ui.login.storecreation.StoreCreationError
 import com.woocommerce.android.ui.login.storecreation.plans.PlansViewModel.PlanInfo
 import com.woocommerce.android.ui.login.storecreation.plans.PlansViewModel.PlanInfo.BillingPeriod.MONTHLY
@@ -60,8 +59,6 @@ import com.woocommerce.android.ui.login.storecreation.plans.PlansViewModel.ViewS
 import com.woocommerce.android.ui.login.storecreation.plans.PlansViewModel.ViewState.ErrorState
 import com.woocommerce.android.ui.login.storecreation.plans.PlansViewModel.ViewState.LoadingState
 import com.woocommerce.android.ui.login.storecreation.plans.PlansViewModel.ViewState.PlanState
-import com.woocommerce.android.util.WooLog
-import com.woocommerce.android.util.WooLog.T.LOGIN
 import org.wordpress.android.fluxc.network.UserAgent
 
 @Composable
@@ -71,7 +68,7 @@ fun PlanScreen(viewModel: PlansViewModel, authenticator: WPComWebViewAuthenticat
             when (viewState) {
                 is PlanState -> PlanInformation(viewState, viewModel::onExitTriggered, viewModel::onConfirmClicked)
                 is ErrorState -> StoreCreationError(viewState.errorType, viewModel::onExitTriggered, viewState.message)
-                LoadingState -> PlanLoading()
+                LoadingState -> ProgressIndicator()
                 is CheckoutState -> WebViewPayment(
                     viewState,
                     authenticator,
@@ -311,8 +308,6 @@ private fun WebViewPayment(
         wpComAuthenticator = authenticator,
         userAgent = userAgent,
         onUrlLoaded = { url: String ->
-            WooLog.d(LOGIN, url)
-
             if (url.contains(viewState.successTriggerKeyword, ignoreCase = true) && !storeCreationTriggered) {
                 storeCreationTriggered = true
                 onStoreCreated()
@@ -322,24 +317,6 @@ private fun WebViewPayment(
         },
         modifier = Modifier.fillMaxSize()
     )
-}
-
-@Composable
-private fun PlanLoading() {
-    val systemUiController = rememberSystemUiController()
-    val wooDarkPurple = colorResource(id = color.woo_purple_90)
-    systemUiController.setSystemBarsColor(
-        color = wooDarkPurple
-    )
-
-    Box(
-        contentAlignment = Alignment.Center,
-        modifier = Modifier
-            .background(colorResource(id = R.color.woo_purple_90))
-            .fillMaxSize()
-    ) {
-        CircularProgressIndicator(color = colorResource(id = R.color.white))
-    }
 }
 
 @Preview

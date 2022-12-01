@@ -8,7 +8,6 @@ import android.webkit.WebViewClient
 import androidx.compose.animation.Crossfade
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -33,7 +32,6 @@ import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import com.woocommerce.android.R
 import com.woocommerce.android.R.color
@@ -42,6 +40,7 @@ import com.woocommerce.android.R.string
 import com.woocommerce.android.ui.compose.component.WCColoredButton
 import com.woocommerce.android.ui.compose.component.WCOutlinedButton
 import com.woocommerce.android.ui.compose.drawShadow
+import com.woocommerce.android.ui.login.storecreation.ProgressIndicator
 import com.woocommerce.android.ui.login.storecreation.StoreCreationError
 import com.woocommerce.android.ui.login.storecreation.installation.InstallationViewModel.ViewState.ErrorState
 import com.woocommerce.android.ui.login.storecreation.installation.InstallationViewModel.ViewState.InitialState
@@ -60,7 +59,9 @@ fun InstallationScreen(viewModel: InstallationViewModel) {
                     viewState.message,
                     viewModel::onRetryButtonClicked
                 )
-                is InitialState, LoadingState -> LoadingView()
+                is InitialState, LoadingState -> {
+                    ProgressIndicator(stringResource(id = string.store_creation_in_progress))
+                }
             }
         }
     }
@@ -194,25 +195,6 @@ private fun PreviewWebView(url: String, modifier: Modifier = Modifier) {
             modifier = Modifier
                 .alpha(if (progress == 100) 1f else 0f)
                 .clip(RoundedCornerShape(dimensionResource(id = dimen.minor_75)))
-        )
-    }
-}
-
-@Composable
-private fun LoadingView() {
-    Column(
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center,
-        modifier = Modifier
-            .background(MaterialTheme.colors.surface)
-            .fillMaxSize()
-    ) {
-        CircularProgressIndicator(modifier = Modifier.padding(16.dp))
-
-        Text(
-            text = stringResource(id = string.store_creation_in_progress),
-            style = MaterialTheme.typography.h6,
-            modifier = Modifier.padding(16.dp)
         )
     }
 }
