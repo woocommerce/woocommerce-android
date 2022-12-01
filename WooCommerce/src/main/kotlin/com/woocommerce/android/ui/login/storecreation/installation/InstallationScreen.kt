@@ -40,7 +40,7 @@ import com.woocommerce.android.ui.compose.component.WCColoredButton
 import com.woocommerce.android.ui.compose.component.WCOutlinedButton
 import com.woocommerce.android.ui.compose.drawShadow
 import com.woocommerce.android.ui.login.storecreation.ProgressIndicator
-import com.woocommerce.android.ui.login.storecreation.StoreCreationError
+import com.woocommerce.android.ui.login.storecreation.StoreCreationErrorScreen
 import com.woocommerce.android.ui.login.storecreation.installation.InstallationViewModel.ViewState.ErrorState
 import com.woocommerce.android.ui.login.storecreation.installation.InstallationViewModel.ViewState.InitialState
 import com.woocommerce.android.ui.login.storecreation.installation.InstallationViewModel.ViewState.LoadingState
@@ -52,7 +52,7 @@ fun InstallationScreen(viewModel: InstallationViewModel) {
         Crossfade(targetState = state) { viewState ->
             when (viewState) {
                 is SuccessState -> InstallationSummary(viewState.url, viewModel)
-                is ErrorState -> StoreCreationError(
+                is ErrorState -> StoreCreationErrorScreen(
                     viewState.errorType,
                     viewModel::onBackPressed,
                     viewState.message,

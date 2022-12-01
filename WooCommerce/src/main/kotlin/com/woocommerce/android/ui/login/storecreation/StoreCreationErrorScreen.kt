@@ -28,7 +28,7 @@ import com.woocommerce.android.R.string
 import com.woocommerce.android.ui.compose.component.WCColoredButton
 
 @Composable
-fun StoreCreationError(
+fun StoreCreationErrorScreen(
     errorType: StoreCreationErrorType,
     onArrowBackPressed: (() -> Unit),
     message: String? = null,
