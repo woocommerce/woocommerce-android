@@ -232,14 +232,14 @@ class CardReaderConnectViewModel @Inject constructor(
 
     private fun onReadyToStartScanning() {
         if (!cardReaderManager.initialized) {
-            cardReaderManager.initialize(mapper(appPrefs.getReaderOptionsSelected()))
+            cardReaderManager.initialize(mapUpdateOptions(appPrefs.selectedUpdateReaderOption()))
         }
         launch {
             startScanningIfNotStarted()
         }
     }
 
-    private fun mapper(updateFrequency: String): CardReaderManager.SimulatorUpdateFrequency {
+    private fun mapUpdateOptions(updateFrequency: String): CardReaderManager.SimulatorUpdateFrequency {
         return CardReaderManager.SimulatorUpdateFrequency.valueOf(updateFrequency)
     }
 
