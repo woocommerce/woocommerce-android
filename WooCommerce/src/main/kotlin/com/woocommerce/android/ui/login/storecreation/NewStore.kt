@@ -24,6 +24,10 @@ class NewStore @Inject constructor() {
         )
     }
 
+    fun clear() {
+        data = NewStoreData()
+    }
+
     data class NewStoreData(
         val name: String? = null,
         val domain: String? = null,

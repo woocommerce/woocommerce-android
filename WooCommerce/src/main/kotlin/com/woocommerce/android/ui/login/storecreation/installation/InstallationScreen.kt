@@ -5,9 +5,9 @@ import android.view.ViewGroup.LayoutParams
 import android.webkit.WebChromeClient
 import android.webkit.WebView
 import android.webkit.WebViewClient
+import androidx.compose.animation.Crossfade
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -32,78 +32,50 @@ import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
-import com.woocommerce.android.R
 import com.woocommerce.android.R.color
 import com.woocommerce.android.R.dimen
 import com.woocommerce.android.R.string
-import com.woocommerce.android.ui.common.wpcomwebview.WPComWebViewAuthenticator
+import com.woocommerce.android.ui.compose.component.ProgressIndicator
 import com.woocommerce.android.ui.compose.component.WCColoredButton
 import com.woocommerce.android.ui.compose.component.WCOutlinedButton
-import com.woocommerce.android.ui.compose.component.WCWebView
 import com.woocommerce.android.ui.compose.drawShadow
-import com.woocommerce.android.ui.login.storecreation.installation.InstallationViewModel.ViewState.CheckoutState
+import com.woocommerce.android.ui.login.storecreation.StoreCreationErrorScreen
 import com.woocommerce.android.ui.login.storecreation.installation.InstallationViewModel.ViewState.ErrorState
-import com.woocommerce.android.ui.login.storecreation.installation.InstallationViewModel.ViewState.ErrorState.Error.PLAN_PURCHASE_FAILED
-import com.woocommerce.android.ui.login.storecreation.installation.InstallationViewModel.ViewState.ErrorState.Error.SITE_CREATION_FAILED
-import com.woocommerce.android.ui.login.storecreation.installation.InstallationViewModel.ViewState.ErrorState.Error.STORE_LOADING_FAILED
-import com.woocommerce.android.ui.login.storecreation.installation.InstallationViewModel.ViewState.InitializationState
+import com.woocommerce.android.ui.login.storecreation.installation.InstallationViewModel.ViewState.InitialState
 import com.woocommerce.android.ui.login.storecreation.installation.InstallationViewModel.ViewState.LoadingState
 import com.woocommerce.android.ui.login.storecreation.installation.InstallationViewModel.ViewState.SuccessState
-import com.woocommerce.android.util.WooLog
-import com.woocommerce.android.util.WooLog.T.LOGIN
-import org.wordpress.android.fluxc.network.UserAgent
 
 @Composable
 fun InstallationScreen(viewModel: InstallationViewModel) {
-    viewModel.viewState.observeAsState(LoadingState()).value.let { viewState ->
-        when (viewState) {
-            is SuccessState -> InstallationSummary(viewState.url, viewModel)
-            is ErrorState -> InstallationError(viewState, viewModel::onRetryButtonClicked)
-            is CheckoutState -> WebViewPayment(
-                viewState,
-                viewModel.wpComWebViewAuthenticator,
-                viewModel.userAgent,
-                viewModel::onStoreCreated,
-                viewModel::onExitTriggered
-            )
-            is LoadingState -> LoadingView(viewState.isMessageShown)
-            InitializationState -> LoadingView(false)
+    viewModel.viewState.observeAsState(InitialState).value.let { state ->
+        Crossfade(targetState = state) { viewState ->
+            when (viewState) {
+                is SuccessState -> InstallationSummary(
+                    viewState.url,
+                    viewModel::onManageStoreButtonClicked,
+                    viewModel::onShowPreviewButtonClicked
+                )
+                is ErrorState -> StoreCreationErrorScreen(
+                    viewState.errorType,
+                    viewModel::onBackPressed,
+                    viewState.message,
+                    viewModel::onRetryButtonClicked
+                )
+                is InitialState, LoadingState -> {
+                    ProgressIndicator(stringResource(id = string.store_creation_in_progress))
+                }
+            }
         }
     }
 }
 
 @Composable
-private fun WebViewPayment(
-    viewState: CheckoutState,
-    authenticator: WPComWebViewAuthenticator,
-    userAgent: UserAgent,
-    onStoreCreated: () -> Unit,
-    onExitTriggered: () -> Unit
+private fun InstallationSummary(
+    url: String,
+    onManageStoreButtonClicked: () -> Unit,
+    onShowPreviewButtonClicked: () -> Unit
 ) {
-    var storeCreationTriggered by remember { mutableStateOf(false) }
-
-    WCWebView(
-        url = viewState.startUrl,
-        wpComAuthenticator = authenticator,
-        userAgent = userAgent,
-        onUrlLoaded = { url: String ->
-            WooLog.d(LOGIN, url)
-
-            if (url.contains(viewState.successTriggerKeyword, ignoreCase = true) && !storeCreationTriggered) {
-                storeCreationTriggered = true
-                onStoreCreated()
-            } else if (url == viewState.exitTriggerKeyword) {
-                onExitTriggered()
-            }
-        },
-        modifier = Modifier.fillMaxSize()
-    )
-}
-
-@Composable
-private fun InstallationSummary(url: String, viewModel: InstallationViewModel) {
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
         modifier = Modifier
@@ -125,10 +97,10 @@ private fun InstallationSummary(url: String, viewModel: InstallationViewModel) {
             modifier = Modifier
                 .weight(1f)
                 .background(color = colorResource(id = color.color_surface))
-                .clip(RoundedCornerShape(dimensionResource(id = R.dimen.minor_100)))
+                .clip(RoundedCornerShape(dimensionResource(id = dimen.minor_100)))
                 .padding(
                     horizontal = dimensionResource(id = dimen.major_350),
-                    vertical = dimensionResource(id = R.dimen.major_200)
+                    vertical = dimensionResource(id = dimen.major_200)
                 )
         ) {
             PreviewWebView(
@@ -139,7 +111,7 @@ private fun InstallationSummary(url: String, viewModel: InstallationViewModel) {
                     .drawShadow(
                         color = colorResource(id = color.color_on_surface),
                         backgroundColor = colorResource(id = color.color_surface),
-                        borderRadius = dimensionResource(id = R.dimen.major_100)
+                        borderRadius = dimensionResource(id = dimen.major_100)
                     )
             )
         }
@@ -147,14 +119,14 @@ private fun InstallationSummary(url: String, viewModel: InstallationViewModel) {
         Divider(
             color = colorResource(id = color.divider_color),
             thickness = dimensionResource(id = dimen.minor_10),
-            modifier = Modifier.padding(bottom = dimensionResource(id = R.dimen.major_100))
+            modifier = Modifier.padding(bottom = dimensionResource(id = dimen.major_100))
         )
 
         WCColoredButton(
             modifier = Modifier
-                .padding(horizontal = dimensionResource(id = R.dimen.major_100))
+                .padding(horizontal = dimensionResource(id = dimen.major_100))
                 .fillMaxWidth(),
-            onClick = viewModel::onManageStoreButtonClicked
+            onClick = onManageStoreButtonClicked
         ) {
             Text(
                 text = stringResource(id = string.store_creation_installation_manage_store_button)
@@ -164,12 +136,12 @@ private fun InstallationSummary(url: String, viewModel: InstallationViewModel) {
         WCOutlinedButton(
             modifier = Modifier
                 .padding(
-                    start = dimensionResource(id = R.dimen.major_100),
-                    end = dimensionResource(id = R.dimen.major_100),
-                    bottom = dimensionResource(id = R.dimen.major_100)
+                    start = dimensionResource(id = dimen.major_100),
+                    end = dimensionResource(id = dimen.major_100),
+                    bottom = dimensionResource(id = dimen.major_100)
                 )
                 .fillMaxWidth(),
-            onClick = viewModel::onShowPreviewButtonClicked
+            onClick = onShowPreviewButtonClicked
         ) {
             Text(
                 text = stringResource(id = string.store_creation_installation_show_preview_button)
@@ -209,18 +181,15 @@ private fun PreviewWebView(url: String, modifier: Modifier = Modifier) {
                     )
 
                     this.settings.javaScriptEnabled = true
-                    this.settings.useWideViewPort = true
                     this.settings.loadWithOverviewMode = true
-                    this.setInitialScale(50)
+                    this.setInitialScale(140)
 
                     this.webViewClient = WebViewClient()
-
                     this.webChromeClient = object : WebChromeClient() {
                         override fun onProgressChanged(view: WebView?, newProgress: Int) {
                             progress = newProgress
                             if (progress == 100) {
                                 view?.settings?.javaScriptEnabled = false
-                                view?.stopLoading()
                             }
                         }
                     }
@@ -234,66 +203,5 @@ private fun PreviewWebView(url: String, modifier: Modifier = Modifier) {
                 .alpha(if (progress == 100) 1f else 0f)
                 .clip(RoundedCornerShape(dimensionResource(id = dimen.minor_75)))
         )
-    }
-}
-
-@Composable
-private fun InstallationError(errorState: ErrorState, onRetryButtonClicked: () -> Unit) {
-    Column(
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center,
-        modifier = Modifier
-            .background(MaterialTheme.colors.surface)
-            .fillMaxSize()
-    ) {
-        val (message, isRetryVisible) = when (errorState.error) {
-            SITE_CREATION_FAILED -> string.store_creation_ecommerce_site_creation_error to false
-            PLAN_PURCHASE_FAILED -> string.store_creation_ecommerce_plan_purchase_error to false
-            STORE_LOADING_FAILED -> string.store_creation_ecommerce_store_loading_error to true
-        }
-        Text(
-            text = stringResource(id = message),
-            style = MaterialTheme.typography.h6,
-            modifier = Modifier.padding(dimensionResource(id = R.dimen.major_100)),
-            textAlign = TextAlign.Center
-        )
-
-        if (errorState.message != null) {
-            Text(
-                text = errorState.message,
-                style = MaterialTheme.typography.h6,
-                modifier = Modifier.padding(dimensionResource(id = R.dimen.major_100)),
-                textAlign = TextAlign.Center
-            )
-        }
-
-        if (isRetryVisible) {
-            WCColoredButton(
-                onClick = onRetryButtonClicked,
-                text = stringResource(id = string.retry),
-                modifier = Modifier.padding(dimensionResource(id = R.dimen.major_100))
-            )
-        }
-    }
-}
-
-@Composable
-private fun LoadingView(isMessageShown: Boolean) {
-    Column(
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center,
-        modifier = Modifier
-            .background(MaterialTheme.colors.surface)
-            .fillMaxSize()
-    ) {
-        CircularProgressIndicator(modifier = Modifier.padding(16.dp))
-
-        if (isMessageShown) {
-            Text(
-                text = stringResource(id = string.store_creation_in_progress),
-                style = MaterialTheme.typography.h6,
-                modifier = Modifier.padding(16.dp)
-            )
-        }
     }
 }
