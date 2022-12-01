@@ -96,4 +96,21 @@ fun StoreCreationErrorScreen(
             }
         }
     }
+
+@Preview(name = "dark", uiMode = Configuration.UI_MODE_NIGHT_YES)
+@Preview(name = "light", uiMode = Configuration.UI_MODE_NIGHT_NO)
+@Preview(name = "small screen", device = Devices.PIXEL)
+@Preview(name = "mid screen", device = Devices.PIXEL_4)
+@Preview(name = "large screen", device = Devices.NEXUS_10)
+@Composable
+fun StoreCreationErrorPreview() {
+    WooThemeWithBackground {
+        StoreCreationError(
+            errorType = StoreCreationErrorType.SITE_CREATION_FAILED,
+            onArrowBackPressed = {},
+            message = "Error creating store",
+            onRetryButtonClicked = {}
+        )
+    }
 }
+
