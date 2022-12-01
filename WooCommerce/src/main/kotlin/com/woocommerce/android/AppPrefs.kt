@@ -216,7 +216,7 @@ object AppPrefs {
         set(value) = setBoolean(DeletablePrefKey.USE_SIMULATED_READER, value)
 
     var updateReaderOptionSelected: String
-        get() = getString(UPDATE_SIMULATED_READER_OPTION, UpdateOptions.NEVER.toString())
+        get() = getString(UPDATE_SIMULATED_READER_OPTION, UpdateOptions.RANDOM.toString())
         set(option) = setString(UPDATE_SIMULATED_READER_OPTION, option)
 
     fun getProductSortingChoice(currentSiteId: Int) = getString(getProductSortingKey(currentSiteId)).orNullIfEmpty()

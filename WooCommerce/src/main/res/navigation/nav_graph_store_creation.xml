@@ -46,7 +46,8 @@
         android:label="PlansFragment" >
         <action
             android:id="@+id/action_plansFragment_to_installationFragment"
-            app:destination="@id/installationFragment" />
+            app:destination="@id/installationFragment"
+            app:popUpTo="@id/nav_graph_store_creation" />
     </fragment>
     <fragment
         android:id="@+id/installationFragment"

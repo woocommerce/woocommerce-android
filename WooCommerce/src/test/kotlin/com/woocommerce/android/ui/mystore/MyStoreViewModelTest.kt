@@ -515,7 +515,7 @@ class MyStoreViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `given jitm empty response, when viewmodel init, then banner state event is not triggered`() {
+    fun `given jitm empty response, when viewmodel init, then banner state hide event is triggered`() {
         testBlocking {
             givenNetworkConnectivity(connected = true)
             whenever(selectedSite.get()).thenReturn(SiteModel())
@@ -529,7 +529,7 @@ class MyStoreViewModelTest : BaseUnitTest() {
 
             whenViewModelIsCreated()
 
-            assertThat(sut.bannerState.value).isNull()
+            assertThat(sut.bannerState.value).isInstanceOf(BannerState.HideBannerState::class.java)
         }
     }
 
@@ -554,7 +554,9 @@ class MyStoreViewModelTest : BaseUnitTest() {
             whenViewModelIsCreated()
 
             assertThat(
-                (sut.bannerState.value as BannerState).title
+                (
+                    (sut.bannerState.value as BannerState) as BannerState.DisplayBannerState
+                    ).title
             ).isEqualTo(
                 UiString.UiStringText(text = testJitmMessage, containsHtml = false)
             )
@@ -582,7 +584,9 @@ class MyStoreViewModelTest : BaseUnitTest() {
             whenViewModelIsCreated()
 
             assertThat(
-                (sut.bannerState.value as BannerState).description
+                (
+                    (sut.bannerState.value as BannerState) as BannerState.DisplayBannerState
+                    ).description
             ).isEqualTo(
                 UiString.UiStringText(text = testJitmDescription, containsHtml = false)
             )
@@ -610,7 +614,9 @@ class MyStoreViewModelTest : BaseUnitTest() {
             whenViewModelIsCreated()
 
             assertThat(
-                (sut.bannerState.value as BannerState).primaryActionLabel
+                (
+                    (sut.bannerState.value as BannerState) as BannerState.DisplayBannerState
+                    ).primaryActionLabel
             ).isEqualTo(
                 UiString.UiStringText(text = testJitmCtaLabel, containsHtml = false)
             )
@@ -641,7 +647,9 @@ class MyStoreViewModelTest : BaseUnitTest() {
             ).thenReturn("")
 
             whenViewModelIsCreated()
-            (sut.bannerState.value as BannerState).onPrimaryActionClicked.invoke()
+            (
+                (sut.bannerState.value as BannerState) as BannerState.DisplayBannerState
+                ).onPrimaryActionClicked.invoke()
 
             assertThat(
                 sut.event.value
@@ -683,7 +691,9 @@ class MyStoreViewModelTest : BaseUnitTest() {
             )
 
             whenViewModelIsCreated()
-            (sut.bannerState.value as BannerState).onPrimaryActionClicked.invoke()
+            (
+                (sut.bannerState.value as BannerState) as BannerState.DisplayBannerState
+                ).onPrimaryActionClicked.invoke()
 
             assertThat(
                 (sut.event.value as OnJitmCtaClicked).url
@@ -719,7 +729,9 @@ class MyStoreViewModelTest : BaseUnitTest() {
             )
 
             whenViewModelIsCreated()
-            (sut.bannerState.value as BannerState).onPrimaryActionClicked.invoke()
+            (
+                (sut.bannerState.value as BannerState) as BannerState.DisplayBannerState
+                ).onPrimaryActionClicked.invoke()
 
             assertThat(
                 (sut.event.value as OnJitmCtaClicked).titleRes
@@ -743,11 +755,11 @@ class MyStoreViewModelTest : BaseUnitTest() {
             )
 
             whenViewModelIsCreated()
-            (sut.bannerState.value as BannerState).onDismissClicked.invoke()
+            (
+                (sut.bannerState.value as BannerState) as BannerState.DisplayBannerState
+                ).onDismissClicked.invoke()
 
-            assertThat(
-                (sut.bannerState.value as BannerState).shouldDisplayBanner
-            ).isEqualTo(false)
+            assertThat(sut.bannerState.value).isInstanceOf(BannerState.HideBannerState::class.java)
         }
     }
 
@@ -995,7 +1007,9 @@ class MyStoreViewModelTest : BaseUnitTest() {
             ).thenReturn("")
 
             whenViewModelIsCreated()
-            (sut.bannerState.value as BannerState).onPrimaryActionClicked.invoke()
+            (
+                (sut.bannerState.value as BannerState) as BannerState.DisplayBannerState
+                ).onPrimaryActionClicked.invoke()
 
             verify(jitmTracker).trackJitmCtaTapped(
                 any(),
@@ -1034,7 +1048,9 @@ class MyStoreViewModelTest : BaseUnitTest() {
             ).thenReturn("")
 
             whenViewModelIsCreated()
-            (sut.bannerState.value as BannerState).onPrimaryActionClicked.invoke()
+            (
+                (sut.bannerState.value as BannerState) as BannerState.DisplayBannerState
+                ).onPrimaryActionClicked.invoke()
 
             verify(jitmTracker).trackJitmCtaTapped(
                 UTM_SOURCE,
@@ -1058,7 +1074,9 @@ class MyStoreViewModelTest : BaseUnitTest() {
             )
 
             whenViewModelIsCreated()
-            (sut.bannerState.value as BannerState).onDismissClicked.invoke()
+            (
+                (sut.bannerState.value as BannerState) as BannerState.DisplayBannerState
+                ).onDismissClicked.invoke()
 
             verify(jitmTracker).trackJitmDismissTapped(
                 any(),
@@ -1087,7 +1105,9 @@ class MyStoreViewModelTest : BaseUnitTest() {
             )
 
             whenViewModelIsCreated()
-            (sut.bannerState.value as BannerState).onDismissClicked.invoke()
+            (
+                (sut.bannerState.value as BannerState) as BannerState.DisplayBannerState
+                ).onDismissClicked.invoke()
 
             verify(jitmTracker).trackJitmDismissTapped(
                 UTM_SOURCE,
@@ -1114,7 +1134,9 @@ class MyStoreViewModelTest : BaseUnitTest() {
             )
 
             whenViewModelIsCreated()
-            (sut.bannerState.value as BannerState).onDismissClicked.invoke()
+            (
+                (sut.bannerState.value as BannerState) as BannerState.DisplayBannerState
+                ).onDismissClicked.invoke()
 
             verify(jitmTracker).trackJitmDismissSuccess(
                 any(),
@@ -1146,7 +1168,9 @@ class MyStoreViewModelTest : BaseUnitTest() {
             )
 
             whenViewModelIsCreated()
-            (sut.bannerState.value as BannerState).onDismissClicked.invoke()
+            (
+                (sut.bannerState.value as BannerState) as BannerState.DisplayBannerState
+                ).onDismissClicked.invoke()
 
             verify(jitmTracker).trackJitmDismissSuccess(
                 UTM_SOURCE,
@@ -1173,7 +1197,9 @@ class MyStoreViewModelTest : BaseUnitTest() {
             )
 
             whenViewModelIsCreated()
-            (sut.bannerState.value as BannerState).onDismissClicked.invoke()
+            (
+                (sut.bannerState.value as BannerState) as BannerState.DisplayBannerState
+                ).onDismissClicked.invoke()
 
             verify(jitmTracker).trackJitmDismissFailure(
                 anyString(),
@@ -1207,7 +1233,9 @@ class MyStoreViewModelTest : BaseUnitTest() {
             )
 
             whenViewModelIsCreated()
-            (sut.bannerState.value as BannerState).onDismissClicked.invoke()
+            (
+                (sut.bannerState.value as BannerState) as BannerState.DisplayBannerState
+                ).onDismissClicked.invoke()
 
             verify(jitmTracker).trackJitmDismissFailure(
                 anyString(),
@@ -1247,7 +1275,9 @@ class MyStoreViewModelTest : BaseUnitTest() {
             )
 
             whenViewModelIsCreated()
-            (sut.bannerState.value as BannerState).onDismissClicked.invoke()
+            (
+                (sut.bannerState.value as BannerState) as BannerState.DisplayBannerState
+                ).onDismissClicked.invoke()
 
             verify(jitmTracker).trackJitmDismissFailure(
                 UTM_SOURCE,
@@ -1281,7 +1311,9 @@ class MyStoreViewModelTest : BaseUnitTest() {
             )
 
             whenViewModelIsCreated()
-            (sut.bannerState.value as BannerState).onDismissClicked.invoke()
+            (
+                (sut.bannerState.value as BannerState) as BannerState.DisplayBannerState
+                ).onDismissClicked.invoke()
 
             verify(jitmTracker).trackJitmDismissFailure(
                 UTM_SOURCE,

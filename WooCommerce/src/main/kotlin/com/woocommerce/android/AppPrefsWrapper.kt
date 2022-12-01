@@ -49,6 +49,8 @@ class AppPrefsWrapper @Inject constructor() {
         preferredPlugin
     )
 
+    fun selectedUpdateReaderOption() = AppPrefs.updateReaderOptionSelected
+
     fun setCardReaderOnboardingData(
         localSiteId: Int,
         remoteSiteId: Long,

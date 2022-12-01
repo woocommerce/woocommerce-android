@@ -209,6 +209,8 @@ class ProductListFragment :
         _productAdapter = null
         actionMode = null
         tracker = null
+        searchMenuItem = null
+        multiSelectMenuItem = null
         binding.productsSearchTabView.hide()
         super.onDestroyView()
         _binding = null
