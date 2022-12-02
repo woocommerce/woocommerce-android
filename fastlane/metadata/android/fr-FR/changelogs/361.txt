@@ -1,2 +1,0 @@
-11.3:
-This release has several fixes that makes it easier for you to manage your store from the app. Please continue to send us feedback – we are listening!

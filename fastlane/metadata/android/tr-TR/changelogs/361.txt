@@ -1,2 +1,0 @@
-11.3:
-Bu sürümdeki birkaç düzeltmeyle mağazanızı uygulama içinden kolayca yönetebilirsiniz. Lütfen bize geri bildirim göndermeye devam edin; söyleyeceklerinizi dikkate alıyoruz!

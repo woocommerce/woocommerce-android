@@ -1,11 +1,66 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2022-11-23 10:54:03+0000
+Translation-Revision-Date: 2022-11-29 10:54:05+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: zh_TW
 -->
 <resources>
+    <string name="store_creation_ecommerce_store_loading_error">無法載入你的新商店。 請稍待一會兒，然後再試一次…</string>
+    <string name="store_creation_ecommerce_plan_purchase_error">無法完成購買…</string>
+    <string name="store_creation_ecommerce_site_creation_error">無法建立新網站…</string>
+    <string name="store_creation_domain_picker_suggestions_error">無法載入網域建議</string>
+    <string name="store_creation_domain_picker_empty_suggestions">此搜尋字詞查無網域</string>
+    <string name="variations_bulk_creation_progress_title">正在產生款式</string>
+    <string name="variations_bulk_creation_confirmation_message">這將為每個可能的款式屬性組合建立新的款式 (%1$d 個款式)。</string>
+    <string name="variations_bulk_creation_confirmation_title">要產生所有款式嗎？</string>
+    <string name="variations_bulk_creation_warning_message">目前最多支援 %1$d 個款式的建立。 為此產品產生款式將建立 %2$d 個款式。</string>
+    <string name="variations_bulk_creation_warning_title">超過產生上限</string>
+    <string name="variation_add_all_description">為屬性的所有組合建立款式。</string>
+    <string name="variation_add_all">產生所有 %1$d 個款式</string>
+    <string name="variation_add_new_description">建立一個新款式。 手動設定哪些屬性屬於子類產品。</string>
+    <string name="variation_add_new">新增款式</string>
+    <string name="variation_list_add">新增款式</string>
+    <string name="login_jetpack_installation_exit_without_connection">結束而不要連結</string>
+    <string name="login_jetpack_installation_continue_connection">繼續連結</string>
+    <string name="login_jetpack_installation_connection_dismissed_explanation">嘗試重新連結以存取商店。</string>
+    <string name="login_jetpack_installation_connection_dismissed">已安裝 Jetpack，但未連結。</string>
+    <string name="login_jetpack_installation_error_connection_permission_message">你無權連接到此商店中的 Jetpack</string>
+    <string name="login_jetpack_installation_error_forbidden_suggestion">請聯絡商店經理或管理員尋求協助。</string>
+    <string name="login_jetpack_installation_cancel">取消安裝</string>
+    <string name="login_jetpack_installation_retry_authorizing">嘗試重新授權</string>
+    <string name="login_jetpack_installation_retry_activating">嘗試重新啟用</string>
+    <string name="login_jetpack_installation_retry_installing">嘗試重新安裝</string>
+    <string name="login_jetpack_installation_get_support">取得支援</string>
+    <string name="login_jetpack_installation_retry_or_contact_support">請再試一次；如果持續發生此錯誤，請聯絡支援團隊。</string>
+    <string name="login_jetpack_installation_error_generic_message">與你的網站通訊時發生錯誤。</string>
+    <string name="login_jetpack_installation_error_plugin_permission_message">你無權管理此商店的外掛程式</string>
+    <string name="login_jetpack_installation_error_authorizing">授權連結到 Jetpack 時發生錯誤</string>
+    <string name="login_jetpack_installation_error_activating">啟用 Jetpack 時發生錯誤</string>
+    <string name="login_jetpack_installation_error_installing">安裝 Jetpack 時發生錯誤</string>
+    <string name="login_jetpack_installation_approve_connection">連結 Jetpack</string>
+    <string name="login_jetpack_installation_go_to_store_button">前往商店</string>
+    <string name="login_jetpack_installation_error">錯誤</string>
+    <string name="login_jetpack_installation_error_code_template">錯誤代碼 %1$s</string>
+    <string name="login_jetpack_steps_screen_subtitle_done">你的商店 &lt;b&gt;%1$s&lt;/b&gt; 現已連結到 Jetpack。</string>
+    <string name="login_jetpack_steps_screen_subtitle">我們正在連結你的網站 &lt;b&gt;%1$s&lt;/b&gt; 與 Jetpack，請稍候。</string>
+    <string name="login_jetpack_installation_steps_screen_title_done">已安裝 Jetpack</string>
+    <string name="login_jetpack_connection_steps_screen_title_done">已連結 Jetpack </string>
+    <string name="login_jetpack_connection_steps_screen_title">正在連結 Jetpack</string>
+    <string name="login_jetpack_installation_steps_screen_title">正在安裝 Jetpack</string>
+    <string name="login_jetpack_steps_done">全部完成</string>
+    <string name="login_jetpack_steps_authorizing_done">已連結</string>
+    <string name="login_jetpack_steps_authorizing_validation">驗證中</string>
+    <string name="login_jetpack_steps_authorizing">將商店連結至 Jetpack</string>
+    <string name="login_jetpack_steps_activating">正在啟用</string>
+    <string name="login_jetpack_steps_installing">正在安裝 Jetpack</string>
+    <string name="login_jetpack_connection_enter_site_credentials">使用你的商店憑證登入 &lt;b&gt;%1$s&lt;/b&gt; 以連結 Jetpack。</string>
+    <string name="login_jetpack_installation_enter_site_credentials">使用你的商店憑證登入 &lt;b&gt;%1$s&lt;/b&gt; 以安裝 Jetpack。</string>
+    <string name="login_jetpack_installation_credentials_hint">準備好你的商店憑證。</string>
+    <string name="login_jetpack_connection_explanation">請將你的商店連結到 Jetpack，以在此應用程式上存取你的商店。</string>
+    <string name="login_jetpack_installation_explanation">請安裝免費的 Jetpack 外掛程式，以在此應用程式上存取你的商店。</string>
+    <string name="login_no_stores_subtitle">快速上手並透過精美的線上商店銷售。</string>
+    <string name="login_no_stores_header">建立你的第一個商店</string>
     <string name="store_creation_store_name_hint">商店名稱</string>
     <string name="store_creation_store_name_subtitle">(之後隨時都能修改，不用擔心。) </string>
     <string name="store_creation_store_name_title">你的商店名稱為何？</string>
@@ -36,12 +91,9 @@ Language: zh_TW
     <string name="always_update_reader">總是</string>
     <string name="update_simulated_reader_key">更新模擬讀卡機金鑰</string>
     <string name="update_simulated_reader">更新模擬讀卡機</string>
-    <string name="variation_list_generate_all_variations">產生款式</string>
     <string name="login_jetpack_connect">連結 Jetpack</string>
-    <string name="login_jetpack_installation_credentials_hint">需要商店憑證才能開始安裝。</string>
     <string name="login_jetpack_installation_screen_title">連結商店</string>
     <string name="store_creation_domain_picker_suggestions_title">建議</string>
-    <string name="store_creation_domain_picker_skip_button">略過</string>
     <string name="store_creation_domain_picker_hint">輸入網域</string>
     <string name="store_creation_domain_picker_subtitle">這是人們在網際網路上找到你的地方。 不用擔心，之後還能修改。</string>
     <string name="store_creation_domain_picker_title">選擇網域</string>
@@ -70,7 +122,6 @@ Language: zh_TW
     <string name="site_picker_connect_existing_store">連結現有商店</string>
     <string name="site_picker_create_new_store">建立新商店</string>
     <string name="login_site_picker_add_a_store">新增商店</string>
-    <string name="login_no_stores_header">你的帳號未連結至任何 WooCommerce 商店。</string>
     <string name="analytics_products_list_item_description">淨銷售額：%1$s</string>
     <string name="analytics_products_list_header_subtitle">售出的項目</string>
     <string name="analytics_products_list_header_title">產品</string>
@@ -1057,7 +1108,7 @@ Language: zh_TW
     <string name="shipping_label_payments_cant_edit_warning">僅限網站擁有者管理運送標籤付款方式。 請聯絡商店擁有者 %1$s (%2$s) 管理付款方式。</string>
     <string name="product_detail_add_variations">新增款式</string>
     <string name="product_variant_list_empty_action">新增款式</string>
-    <string name="product_variant_list_add_first_variation">新增第一個款式</string>
+    <string name="product_variant_list_add_first_variation">建立第一個款式</string>
     <string name="shipping_label_selected_rates_total_description">總計 %s</string>
     <string name="shipping_label_selected_rates_description">已選取 %s 個費率</string>
     <string name="shipping_label_rate_included_options_signature_required_free">符合免費要求簽名資格</string>
