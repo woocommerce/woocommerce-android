@@ -364,6 +364,7 @@ class SitePickerViewModel @Inject constructor(
     }
 
     fun onSiteSelected(siteModel: SiteModel) {
+        selectedSite.set(siteModel)
         val updatedSites = _sites.value?.map {
             when (it) {
                 is WooSiteUiModel -> it.copy(isSelected = it.site.id == siteModel.id)
