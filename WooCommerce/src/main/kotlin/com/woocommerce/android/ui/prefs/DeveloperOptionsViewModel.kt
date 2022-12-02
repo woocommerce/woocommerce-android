@@ -24,7 +24,7 @@ import javax.inject.Inject
 class DeveloperOptionsViewModel @Inject constructor(
     savedState: SavedStateHandle,
     private val developerOptionsRepository: DeveloperOptionsRepository,
-    private val cardReaderManager: CardReaderManager
+    private val cardReaderManager: CardReaderManager,
 ) : ScopedViewModel(savedState) {
 
     private val _viewState = MutableLiveData(
