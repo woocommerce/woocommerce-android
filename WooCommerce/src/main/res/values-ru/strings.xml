@@ -17,7 +17,6 @@ Language: ru
     <string name="variations_bulk_creation_warning_message">Текущее максимальное количество создаваемых вариантов: %1$d. Количество вариантов, которые можно создать для этого продукта: %2$d.</string>
     <string name="variations_bulk_creation_warning_title">Превышено максимальное количество вариантов</string>
     <string name="variation_add_all_description">Создание вариантов для всех комбинаций ваших атрибутов.</string>
-    <string name="variation_add_all">Создать все варианты (%1$d)</string>
     <string name="variation_add_new_description">Создайте один новый вариант. Вручную выберите, какие атрибуты относятся к варианту продукта.</string>
     <string name="variation_add_new">Добавить новый вариант</string>
     <string name="variation_list_add">Добавить вариацию</string>

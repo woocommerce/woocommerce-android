@@ -17,7 +17,6 @@ Language: id
     <string name="variations_bulk_creation_warning_message">Saat ini, pembuatan mendukung maksimal %1$d variasi. Pembuatan variasi untuk produk ini akan membuat %2$d variasi.</string>
     <string name="variations_bulk_creation_warning_title">Melebihi batas pembuatan</string>
     <string name="variation_add_all_description">Membuat variasi untuk semua kombinasi atribut Anda.</string>
-    <string name="variation_add_all">Buat semua %1$d variasi</string>
     <string name="variation_add_new_description">Buat satu variasi baru. Menetapkan atribut yang termasuk dalam produk variabel secara manual.</string>
     <string name="variation_add_new">Tambah variasi baru</string>
     <string name="variation_list_add">Tambah variasi</string>

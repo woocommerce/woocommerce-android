@@ -17,7 +17,6 @@ Language: fr
     <string name="variations_bulk_creation_warning_message">Actuellement, la création est disponible pour %1$d variantes maximum. Générer des variantes pour ce produit créerait %2$d variantes.</string>
     <string name="variations_bulk_creation_warning_title">Limite de génération dépassée</string>
     <string name="variation_add_all_description">Crée des variantes pour toutes les combinaisons de vos attributs.</string>
-    <string name="variation_add_all">Générer toutes les %1$d variantes</string>
     <string name="variation_add_new_description">Créez une nouvelle variante. Définissez manuellement quels attributs appartiennent au produit variable.</string>
     <string name="variation_add_new">Ajouter une nouvelle variante</string>
     <string name="variation_list_add">Ajouter une variante</string>

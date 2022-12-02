@@ -17,7 +17,6 @@ Language: ar
     <string name="variations_bulk_creation_warning_message">يكون الإنشاء مدعومًا حاليًا لـ ⁦%1$d⁩ من التباينات بحد أقصى. سيؤدي إنشاء التباينات لهذا المنتج إلى إنشاء ⁦%2$d⁩ من التباينات.</string>
     <string name="variations_bulk_creation_warning_title">تم تجاوز حد الإنشاء</string>
     <string name="variation_add_all_description">إنشاء تباينات لكل مجموعات السمات لديك.</string>
-    <string name="variation_add_all">إنشاء كل التباينات الـ ⁦%1$d⁩</string>
     <string name="variation_add_new_description">أنشئ تباينًا واحدًا جديدًا. قم بتعيين السمات التي تنتمي إلى المنتج المتغير يدويًا.</string>
     <string name="variation_add_new">إضافة تباين جديد</string>
     <string name="variation_list_add">إضافة نوع</string>
