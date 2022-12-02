@@ -324,7 +324,6 @@ private fun WebViewPayment(
 }
 
 @Preview
-@Preview
 @Composable
 fun PreviewPlanInformation() {
     PlanInformation(
