@@ -17,7 +17,6 @@ Language: de
     <string name="variations_bulk_creation_warning_message">Derzeit können maximal %1$d Varianten erstellt werden. Bei diesem Produkt würden %2$d Varianten erstellt werden.</string>
     <string name="variations_bulk_creation_warning_title">Maximale Anzahl an Varianten überschritten</string>
     <string name="variation_add_all_description">Erstellt Varianten für alle Kombinationen deiner Attribute.</string>
-    <string name="variation_add_all">Alle %1$d Varianten erstellen</string>
     <string name="variation_add_new_description">Erstelle eine neue Variante. Lege manuell fest, welche Attribute zu dem variablen Produkt gehören.</string>
     <string name="variation_add_new">Neue Variante hinzufügen</string>
     <string name="variation_list_add">Variante hinzufügen</string>

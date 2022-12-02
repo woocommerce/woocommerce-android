@@ -17,7 +17,6 @@ Language: he_IL
     <string name="variations_bulk_creation_warning_message">נכון לעכשיו, אנחנו תומכים ביצירה של ⁦%1$d⁩ סוגים לכל היותר. פעולת היצירה של סוגים למוצר הזה תיצור ⁦%2$d⁩ סוגים.</string>
     <string name="variations_bulk_creation_warning_title">חרגת ממגבלת היצירה</string>
     <string name="variation_add_all_description">הפעולה יוצרת סוגים עבור כל השילובים של המאפיינים שציינת.</string>
-    <string name="variation_add_all">ליצור את כל ⁦%1$d⁩ הסוגים</string>
     <string name="variation_add_new_description">ליצור סוג אחד חדש. להגדיר באופן ידני אילו מאפיינים שייכים למוצר עם הסוגים.</string>
     <string name="variation_add_new">להוסיף סוג חדש</string>
     <string name="variation_list_add">להוסיף סוג</string>

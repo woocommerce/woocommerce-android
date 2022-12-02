@@ -17,7 +17,6 @@ Language: pt_BR
     <string name="variations_bulk_creation_warning_message">Atualmente, a criação é compatível com, no máximo, %1$d variações. Gerar variações para este produto criaria %2$d variações.</string>
     <string name="variations_bulk_creation_warning_title">Limite de geração excedido</string>
     <string name="variation_add_all_description">Cria variações para todas as combinações de seus atributos.</string>
-    <string name="variation_add_all">Gerar todas as %1$d variações</string>
     <string name="variation_add_new_description">Crie uma nova variação. Defina manualmente quais atributos pertencem ao produto variável.</string>
     <string name="variation_add_new">Adicionar nova variação</string>
     <string name="variation_list_add">Adicionar variação</string>

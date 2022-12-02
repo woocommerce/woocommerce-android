@@ -17,7 +17,6 @@ Language: nl
     <string name="variations_bulk_creation_warning_message">Aanmaken wordt momenteel ondersteund voor maximaal %1$d variaties. Het genereren van variaties voor dit product leidt tot het aanmaken van %2$d variaties.</string>
     <string name="variations_bulk_creation_warning_title">Generatielimiet overschreden</string>
     <string name="variation_add_all_description">Maakt variaties aan voor alle combinaties van je eigenschappen.</string>
-    <string name="variation_add_all">Alle %1$d variaties genereren</string>
     <string name="variation_add_new_description">Eén nieuwe variatie aanmaken. Handmatig instellen welke eigenschappen bij het variabele product horen.</string>
     <string name="variation_add_new">Nieuwe variatie toevoegen</string>
     <string name="variation_list_add">Variatie toevoegen</string>

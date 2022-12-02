@@ -17,7 +17,6 @@ Language: tr
     <string name="variations_bulk_creation_warning_message">Şu anda oluşturma en fazla %1$d varyasyon için desteklenmektedir. Bu ürün için varyasyon oluşturmak %2$d varyasyon oluşturur.</string>
     <string name="variations_bulk_creation_warning_title">Oluşturma sınırı aşıldı</string>
     <string name="variation_add_all_description">Niteliklerinizin tüm kombinasyonları için varyasyonlar oluşturur.</string>
-    <string name="variation_add_all">Tüm %1$d varyasyonları oluştur</string>
     <string name="variation_add_new_description">Yeni bir varyasyon oluşturun. Hangi niteliklerin değişken ürüne ait olduğunu manuel olarak ayarlayın.</string>
     <string name="variation_add_new">Yeni varyasyon ekle</string>
     <string name="variation_list_add">Varyasyon ekle</string>

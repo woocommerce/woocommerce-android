@@ -17,7 +17,6 @@ Language: ja_JP
     <string name="variations_bulk_creation_warning_message">現在、作成がサポートされているのは、最大%1$d件のバリエーションです。 この商品のバリエーションを生成すると、%2$d件のバリエーションが作成されます。</string>
     <string name="variations_bulk_creation_warning_title">生成の上限を超えました</string>
     <string name="variation_add_all_description">属性のすべての組み合わせについてバリエーションを作成します。</string>
-    <string name="variation_add_all">%1$d件のすべてのバリエーションを生成</string>
     <string name="variation_add_new_description">新しいバリエーションを1つ作成します。 バリエーションのある商品の属性を手動で設定します。</string>
     <string name="variation_add_new">新しいバリエーションを追加</string>
     <string name="variation_list_add">バリエーションを追加</string>
