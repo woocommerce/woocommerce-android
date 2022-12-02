@@ -319,6 +319,13 @@ theme across the entire app. Overridden versions should be added to the styles.x
         <item name="android:gravity">center_vertical</item>
     </style>
 
+    <style name="Woo.ActionMode.Style" parent="Widget.Woo.Toolbar">
+        <item name="background">?attr/colorSurface</item>
+        <item name="height">?attr/actionBarSize</item>
+        <item name="android:elevation">@dimen/appbar_elevation</item>
+        <item name="android:tint">@color/black</item>
+    </style>
+
     <!--
         SearchView Styles
     -->
