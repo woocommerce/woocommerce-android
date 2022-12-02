@@ -1,11 +1,40 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2022-11-24 09:54:23+0000
+Translation-Revision-Date: 2022-11-29 12:16:59+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: sv_SE
 -->
 <resources>
+    <string name="store_creation_ecommerce_store_loading_error">Det gick inte att ladda din nya butik. Vänta en stund och försök igen …</string>
+    <string name="store_creation_ecommerce_plan_purchase_error">Kunde inte slutföra köpet …</string>
+    <string name="store_creation_ecommerce_site_creation_error">Kunde inte skapa en ny webbplats …</string>
+    <string name="store_creation_domain_picker_suggestions_error">Det gick inte att ladda domänförslag</string>
+    <string name="store_creation_domain_picker_empty_suggestions">Inga tillgängliga domäner för denna sökning</string>
+    <string name="variations_bulk_creation_progress_title">Genererar varianter</string>
+    <string name="variations_bulk_creation_confirmation_title">Generera alla varianter?</string>
+    <string name="login_jetpack_installation_cancel">Avbryt installation</string>
+    <string name="login_jetpack_installation_retry_authorizing">Försök auktorisera igen</string>
+    <string name="login_jetpack_installation_retry_activating">Försök att aktivera igen</string>
+    <string name="login_jetpack_installation_retry_installing">Försök installera igen</string>
+    <string name="login_jetpack_installation_get_support">Skaffa support</string>
+    <string name="login_jetpack_installation_retry_or_contact_support">Försök igen och kontakta supporten om detta fel fortsätter.</string>
+    <string name="login_jetpack_installation_error_plugin_permission_message">Du har inte behörighet att hantera tillägg på denna butik</string>
+    <string name="login_jetpack_installation_approve_connection">Anslut Jetpack</string>
+    <string name="login_jetpack_installation_go_to_store_button">Gå till butik</string>
+    <string name="login_jetpack_installation_error">Fel</string>
+    <string name="login_jetpack_installation_error_code_template">Felkod %1$s</string>
+    <string name="login_jetpack_steps_screen_subtitle_done">Din butik &lt;b&gt;%1$s&lt;/b&gt; är nu ansluten till Jetpack.</string>
+    <string name="login_jetpack_steps_screen_subtitle">Vänta medan vi ansluter din butik &lt;b&gt;%1$s&lt;/b&gt; med Jetpack.</string>
+    <string name="login_jetpack_connection_steps_screen_title">Ansluter Jetpack</string>
+    <string name="login_jetpack_installation_steps_screen_title">Installerar Jetpack</string>
+    <string name="login_jetpack_steps_done">Allt klart</string>
+    <string name="login_jetpack_steps_authorizing_validation">Validerar</string>
+    <string name="login_jetpack_steps_authorizing">Anslut butik till Jetpack</string>
+    <string name="login_jetpack_steps_activating">Aktiverar</string>
+    <string name="login_jetpack_steps_installing">Installerar Jetpack</string>
+    <string name="login_jetpack_connection_explanation">Anslut din butik till Jetpack för att komma åt den på denna app.</string>
+    <string name="login_no_stores_header">Skapa din första butik</string>
     <string name="store_creation_store_name_hint">Butiksnamn</string>
     <string name="store_creation_store_name_subtitle">Oroa dig inte, du kan alltid ändra det senare. </string>
     <string name="store_creation_store_name_title">Vilket är ditt butiksnamn?</string>
@@ -36,12 +65,9 @@ Language: sv_SE
     <string name="always_update_reader">Alltid</string>
     <string name="update_simulated_reader_key">Uppdatera simulerad läsarnyckel</string>
     <string name="update_simulated_reader">Uppdatera simulerad kortläsare</string>
-    <string name="variation_list_generate_all_variations">Generera alla variationer</string>
     <string name="login_jetpack_connect">Anslut Jetpack</string>
-    <string name="login_jetpack_installation_credentials_hint">Du behöver autentiseringsuppgifterna för din butik för att påbörja installationen.</string>
     <string name="login_jetpack_installation_screen_title">Anslut butik</string>
     <string name="store_creation_domain_picker_suggestions_title">Förslag</string>
-    <string name="store_creation_domain_picker_skip_button">Hoppa över</string>
     <string name="store_creation_domain_picker_hint">Skriv en domän</string>
     <string name="store_creation_domain_picker_subtitle">Det är här människor kommer hitta dig på Internet. Oroa dig inte, du kan ändra detta senare.</string>
     <string name="store_creation_domain_picker_title">Välj en domän</string>
@@ -70,7 +96,6 @@ Language: sv_SE
     <string name="site_picker_connect_existing_store">Anslut en befintligt butik</string>
     <string name="site_picker_create_new_store">Skapa en ny butik</string>
     <string name="login_site_picker_add_a_store">Lägg till en butik</string>
-    <string name="login_no_stores_header">Ditt konto är inte ansluten till några WooCommerce-butiker.</string>
     <string name="analytics_products_list_item_description">Nettoförsäljning: %1$s</string>
     <string name="analytics_products_list_header_subtitle">Sålda artiklar</string>
     <string name="analytics_products_list_header_title">Produkter</string>
@@ -1057,7 +1082,7 @@ Language: sv_SE
     <string name="shipping_label_payments_cant_edit_warning">Det är bara webbplatsens ägare som kan hantera betalningsmetoderna för fraktetiketter. Kontakta butiksägaren %1$s (%2$s) för att hantera betalningsmetoder.</string>
     <string name="product_detail_add_variations">Lägg till variationer</string>
     <string name="product_variant_list_empty_action">Lägg till variation</string>
-    <string name="product_variant_list_add_first_variation">Lägg till din första variation</string>
+    <string name="product_variant_list_add_first_variation">Lägg till din första variant</string>
     <string name="shipping_label_selected_rates_total_description">%s totalt</string>
     <string name="shipping_label_selected_rates_description">%s avgifter valda</string>
     <string name="shipping_label_rate_included_options_signature_required_free">Berättigar till gratis signaturkrav</string>

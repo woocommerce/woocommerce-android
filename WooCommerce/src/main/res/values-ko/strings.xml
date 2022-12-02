@@ -1,11 +1,66 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2022-11-24 15:54:04+0000
+Translation-Revision-Date: 2022-11-29 12:54:04+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: ko_KR
 -->
 <resources>
+    <string name="store_creation_ecommerce_store_loading_error">스토어를 로드할 수 없습니다. 잠시 후에 다시 시도하세요…</string>
+    <string name="store_creation_ecommerce_plan_purchase_error">구매를 완료할 수 없습니다…</string>
+    <string name="store_creation_ecommerce_site_creation_error">새 사이트를 생성할 수 없습니다…</string>
+    <string name="store_creation_domain_picker_suggestions_error">도메인 제안을 로드할 수 없음</string>
+    <string name="store_creation_domain_picker_empty_suggestions">이 검색에 대해 제공되는 도메인 없음</string>
+    <string name="variations_bulk_creation_progress_title">변형 생성 중</string>
+    <string name="variations_bulk_creation_confirmation_message">각각의 새 변형과 변형 속성의 가능한 모든 조합이 생성됩니다(%1$d개 변형).</string>
+    <string name="variations_bulk_creation_confirmation_title">모든 변형 생성 여부</string>
+    <string name="variations_bulk_creation_warning_message">현재 최대 %1$d개 변형의 생성이 지원됩니다. 이 상품의 변형을 생성하면 %2$d개 변형이 생성됩니다.</string>
+    <string name="variations_bulk_creation_warning_title">생성 한도 초과됨</string>
+    <string name="variation_add_all_description">속성의 모든 조합에 대한 변형을 생성합니다.</string>
+    <string name="variation_add_all">%1$d개 변형 모두 생성</string>
+    <string name="variation_add_new_description">새 변형 하나를 생성합니다. 변형 가능한 상품에 속하는 속성을 수동으로 설정합니다.</string>
+    <string name="variation_add_new">새 변형 추가</string>
+    <string name="variation_list_add">변형 추가</string>
+    <string name="login_jetpack_installation_exit_without_connection">연결하지 않고 종료</string>
+    <string name="login_jetpack_installation_continue_connection">연결 계속</string>
+    <string name="login_jetpack_installation_connection_dismissed_explanation">스토어에 접근하려면 다시 연결해 보세요.</string>
+    <string name="login_jetpack_installation_connection_dismissed">젯팩이 설치되었지만 연결되지 않았습니다.</string>
+    <string name="login_jetpack_installation_error_connection_permission_message">이 스토어의 젯팩에 연결하는 권한이 없습니다.</string>
+    <string name="login_jetpack_installation_error_forbidden_suggestion">도움말은 매장 관리자에게 문의하세요.</string>
+    <string name="login_jetpack_installation_cancel">설치 취소</string>
+    <string name="login_jetpack_installation_retry_authorizing">다시 권한 부여 시도</string>
+    <string name="login_jetpack_installation_retry_activating">다시 활성화 시도</string>
+    <string name="login_jetpack_installation_retry_installing">다시 설치 시도</string>
+    <string name="login_jetpack_installation_get_support">지원받기</string>
+    <string name="login_jetpack_installation_retry_or_contact_support">다시 시도하고 이 오류가 계속 발생하면 지원팀에 문의하세요.</string>
+    <string name="login_jetpack_installation_error_generic_message">사이트와 통신 중 오류가 발생했습니다.</string>
+    <string name="login_jetpack_installation_error_plugin_permission_message">이 스토어의 플러그인을 관리할 권한이 없습니다.</string>
+    <string name="login_jetpack_installation_error_authorizing">젯팩에 연결하는 권한 부여 중 오류 발생</string>
+    <string name="login_jetpack_installation_error_activating">젯팩 활성화 중 오류 발생</string>
+    <string name="login_jetpack_installation_error_installing">젯팩 설치 중 오류 발생</string>
+    <string name="login_jetpack_installation_approve_connection">젯팩 연결</string>
+    <string name="login_jetpack_installation_go_to_store_button">스토어로 이동</string>
+    <string name="login_jetpack_installation_error">오류</string>
+    <string name="login_jetpack_installation_error_code_template">오류 코드 %1$s</string>
+    <string name="login_jetpack_steps_screen_subtitle_done">&lt;b&gt;%1$s&lt;/b&gt; 스토어가 이제 젯팩에 연결되었습니다.</string>
+    <string name="login_jetpack_steps_screen_subtitle">&lt;b&gt;%1$s&lt;/b&gt; 스토어를 젯팩과 연결하는 동안 기다려 주세요.</string>
+    <string name="login_jetpack_installation_steps_screen_title_done">설치한 젯팩</string>
+    <string name="login_jetpack_connection_steps_screen_title_done">연결한 젯팩</string>
+    <string name="login_jetpack_connection_steps_screen_title">젯팩 연결하기</string>
+    <string name="login_jetpack_installation_steps_screen_title">젯팩 설치하기</string>
+    <string name="login_jetpack_steps_done">모두 완료</string>
+    <string name="login_jetpack_steps_authorizing_done">연결됨</string>
+    <string name="login_jetpack_steps_authorizing_validation">확인 중</string>
+    <string name="login_jetpack_steps_authorizing">젯팩에 스토어 연결</string>
+    <string name="login_jetpack_steps_activating">활성화하기</string>
+    <string name="login_jetpack_steps_installing">젯팩 설치하기</string>
+    <string name="login_jetpack_connection_enter_site_credentials">젯팩을 연결하려면 스토어 자격 증명으로 &lt;b&gt;%1$s&lt;/b&gt;에 로그인하세요.</string>
+    <string name="login_jetpack_installation_enter_site_credentials">젯팩을 설치하려면 스토어 자격 증명으로 &lt;b&gt;%1$s&lt;/b&gt;에 로그인하세요.</string>
+    <string name="login_jetpack_installation_credentials_hint">스토어 자격 증명을 준비하세요.</string>
+    <string name="login_jetpack_connection_explanation">이 앱에서 스토어에 접근하려면 해당 스토어를 젯팩에 연결하세요.</string>
+    <string name="login_jetpack_installation_explanation">이 앱에서 스토어에 접근하려면 무료 젯팩 플러그인을 설치하세요.</string>
+    <string name="login_no_stores_subtitle">아름다운 온라인 스토어로 빠르게 시작하고 판매하세요.</string>
+    <string name="login_no_stores_header">첫 번째 스토어 생성</string>
     <string name="store_creation_store_name_hint">스토어 이름</string>
     <string name="store_creation_store_name_subtitle">나중에 언제든지 변경할 수 있으니 걱정하지 마세요. </string>
     <string name="store_creation_store_name_title">스토어 이름은 무엇인가요?</string>
@@ -36,12 +91,9 @@ Language: ko_KR
     <string name="always_update_reader">항상</string>
     <string name="update_simulated_reader_key">시뮬레이션한 리더 키 업데이트</string>
     <string name="update_simulated_reader">시뮬레이션한 카드 리더 업데이트</string>
-    <string name="variation_list_generate_all_variations">모든 변형 생성</string>
     <string name="login_jetpack_connect">젯팩 연결</string>
-    <string name="login_jetpack_installation_credentials_hint">설치를 시작하려면 스토어 자격 증명이 필요합니다.</string>
     <string name="login_jetpack_installation_screen_title">스토어 연결</string>
     <string name="store_creation_domain_picker_suggestions_title">제안</string>
-    <string name="store_creation_domain_picker_skip_button">건너뛰기</string>
     <string name="store_creation_domain_picker_hint">도메인 입력</string>
     <string name="store_creation_domain_picker_subtitle">사람들이 인터넷에서 회원님을 찾을 수 있는 곳입니다. 걱정하지 마세요. 나중에 변경할 수 있습니다.</string>
     <string name="store_creation_domain_picker_title">도메인 선택</string>
@@ -70,7 +122,6 @@ Language: ko_KR
     <string name="site_picker_connect_existing_store">기존 스토어 연결</string>
     <string name="site_picker_create_new_store">새 스토어 생성</string>
     <string name="login_site_picker_add_a_store">스토어 추가</string>
-    <string name="login_no_stores_header">계정이 어떠한 우커머스 스토어에도 연결되지 않았습니다.</string>
     <string name="analytics_products_list_item_description">순매출액: %1$s</string>
     <string name="analytics_products_list_header_subtitle">판매된 아이템</string>
     <string name="analytics_products_list_header_title">상품</string>
@@ -1057,7 +1108,7 @@ Language: ko_KR
     <string name="shipping_label_payments_cant_edit_warning">사이트 소유자만 배송 레이블 결제 수단을 관리할 수 있습니다. 결제 수단을 관리하려면 스토어 소유자 %1$s(%2$s)에게 문의하세요.</string>
     <string name="product_detail_add_variations">변형 추가</string>
     <string name="product_variant_list_empty_action">변형 추가</string>
-    <string name="product_variant_list_add_first_variation">첫 번째 변형 추가</string>
+    <string name="product_variant_list_add_first_variation">첫 번째 변형 생성</string>
     <string name="shipping_label_selected_rates_total_description">%s 합계</string>
     <string name="shipping_label_selected_rates_description">%s개 요금 선택됨</string>
     <string name="shipping_label_rate_included_options_signature_required_free">무료 서명 요건에 적합</string>
