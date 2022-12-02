@@ -1,12 +1,13 @@
 package com.woocommerce.android.ui.products
 
 import android.os.Bundle
-import android.view.ActionMode
 import android.view.Menu
 import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.MenuItem.OnActionExpandListener
 import android.view.View
+import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.view.ActionMode
 import androidx.appcompat.widget.SearchView
 import androidx.appcompat.widget.SearchView.OnQueryTextListener
 import androidx.core.view.MenuCompat
@@ -169,7 +170,8 @@ class ProductListFragment :
                     val selectionCount = tracker?.selection?.size() ?: 0
                     if (selectionCount > 0 && actionMode == null) {
                         viewModel.enterSelectionMode()
-                        actionMode = requireActivity().startActionMode(this@ProductListFragment)
+                        actionMode = (requireActivity() as AppCompatActivity)
+                            .startSupportActionMode(this@ProductListFragment)
                     }
                     when (selectionCount) {
                         0 -> {
@@ -235,7 +237,7 @@ class ProductListFragment :
         tracker?.run {
             onRestoreInstanceState(savedInstanceState)
             if (hasSelection()) {
-                actionMode = requireActivity().startActionMode(this@ProductListFragment)
+                actionMode = (requireActivity() as AppCompatActivity).startSupportActionMode(this@ProductListFragment)
                 actionMode?.title = StringUtils.getQuantityString(
                     context = requireContext(),
                     quantity = selection.size(),
