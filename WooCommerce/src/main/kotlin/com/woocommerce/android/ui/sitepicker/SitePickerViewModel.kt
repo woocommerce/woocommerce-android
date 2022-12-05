@@ -48,6 +48,7 @@ import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooResult
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.system.WCApiVersionResponse
 import org.wordpress.android.fluxc.store.WooCommerceStore
 import org.wordpress.android.util.UrlUtils
+import java.util.Objects
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 import kotlin.text.RegexOption.IGNORE_CASE
@@ -667,12 +668,25 @@ class SitePickerViewModel @Inject constructor(
         data class WooSiteUiModel(
             val site: SiteModel,
             val isSelected: Boolean
-        ) : SitesListItem
+        ) : SitesListItem {
+            override fun equals(other: Any?): Boolean = other is WooSiteUiModel &&
+                other.site.name == site.name &&
+                other.isSelected == isSelected &&
+                other.site.url == site.url
+
+            override fun hashCode(): Int = Objects.hash(site.siteId, site.selfHostedSiteId, site.url, isSelected)
+        }
 
         @Parcelize
         data class NonWooSiteUiModel(
             val site: SiteModel
-        ) : SitesListItem
+        ) : SitesListItem {
+            override fun equals(other: Any?): Boolean = other is NonWooSiteUiModel &&
+                other.site.name == site.name &&
+                other.site.url == site.url
+
+            override fun hashCode(): Int = Objects.hash(site.siteId, site.selfHostedSiteId, site.url)
+        }
     }
 
     sealed class SitePickerEvent : MultiLiveEvent.Event() {
