@@ -1,11 +1,65 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2022-11-23 14:54:04+0000
+Translation-Revision-Date: 2022-11-29 14:54:03+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: de
 -->
 <resources>
+    <string name="store_creation_ecommerce_store_loading_error">Dein neuer Shop konnte nicht geladen werden. Bitte warte ein wenig und versuche es dann erneut …</string>
+    <string name="store_creation_ecommerce_plan_purchase_error">Der Kauf konnte nicht abgeschlossen werden …</string>
+    <string name="store_creation_ecommerce_site_creation_error">Es konnte keine neue Website erstellt werden …</string>
+    <string name="store_creation_domain_picker_suggestions_error">Domain-Vorschläge konnten nicht geladen werden</string>
+    <string name="store_creation_domain_picker_empty_suggestions">Für diese Suche sind keine Domains verfügbar</string>
+    <string name="variations_bulk_creation_progress_title">Varianten erstellen</string>
+    <string name="variations_bulk_creation_confirmation_message">Dadurch wird eine neue Variante für jede mögliche Kombination von Variantenattributen erstellt (%1$d Varianten).</string>
+    <string name="variations_bulk_creation_confirmation_title">Alle Varianten erstellen?</string>
+    <string name="variations_bulk_creation_warning_message">Derzeit können maximal %1$d Varianten erstellt werden. Bei diesem Produkt würden %2$d Varianten erstellt werden.</string>
+    <string name="variations_bulk_creation_warning_title">Maximale Anzahl an Varianten überschritten</string>
+    <string name="variation_add_all_description">Erstellt Varianten für alle Kombinationen deiner Attribute.</string>
+    <string name="variation_add_new_description">Erstelle eine neue Variante. Lege manuell fest, welche Attribute zu dem variablen Produkt gehören.</string>
+    <string name="variation_add_new">Neue Variante hinzufügen</string>
+    <string name="variation_list_add">Variante hinzufügen</string>
+    <string name="login_jetpack_installation_exit_without_connection">Ohne Verbindung beenden</string>
+    <string name="login_jetpack_installation_continue_connection">Mit der Verbindung fortfahren</string>
+    <string name="login_jetpack_installation_connection_dismissed_explanation">Versuche erneut, eine Verbindung herzustellen, um auf deinen Shop zuzugreifen.</string>
+    <string name="login_jetpack_installation_connection_dismissed">Jetpack ist installiert, aber nicht verbunden.</string>
+    <string name="login_jetpack_installation_error_connection_permission_message">Du bist nicht berechtigt, diesen Shop mit Jetpack zu verbinden</string>
+    <string name="login_jetpack_installation_error_forbidden_suggestion">Wende dich an deinen Shop-Manager oder Administrator, um Hilfe zu erhalten.</string>
+    <string name="login_jetpack_installation_cancel">Installation abbrechen</string>
+    <string name="login_jetpack_installation_retry_authorizing">Autorisierung erneut versuchen</string>
+    <string name="login_jetpack_installation_retry_activating">Aktivierung erneut versuchen</string>
+    <string name="login_jetpack_installation_retry_installing">Installation erneut versuchen</string>
+    <string name="login_jetpack_installation_get_support">Unterstützung erhalten</string>
+    <string name="login_jetpack_installation_retry_or_contact_support">Versuche es erneut und wende dich an den Support, falls dieser Fehler weiterhin auftritt.</string>
+    <string name="login_jetpack_installation_error_generic_message">Bei der Kommunikation mit deiner Website ist ein Fehler aufgetreten.</string>
+    <string name="login_jetpack_installation_error_plugin_permission_message">Du bist nicht berechtigt, Plugins in diesem Shop zu verwalten</string>
+    <string name="login_jetpack_installation_error_authorizing">Fehler beim Autorisieren der Verbindung mit Jetpack</string>
+    <string name="login_jetpack_installation_error_activating">Fehler beim Aktivieren von Jetpack</string>
+    <string name="login_jetpack_installation_error_installing">Fehler beim Installieren von Jetpack</string>
+    <string name="login_jetpack_installation_approve_connection">Jetpack verbinden</string>
+    <string name="login_jetpack_installation_go_to_store_button">Shop aufrufen</string>
+    <string name="login_jetpack_installation_error">Fehler</string>
+    <string name="login_jetpack_installation_error_code_template">Fehlercode %1$s</string>
+    <string name="login_jetpack_steps_screen_subtitle_done">Dein Shop &lt;b&gt;%1$s&lt;/b&gt; ist jetzt mit Jetpack verbunden.</string>
+    <string name="login_jetpack_steps_screen_subtitle">Bitte warten, dein Shop &lt;b&gt;%1$s&lt;/b&gt; wird mit Jetpack verbunden.</string>
+    <string name="login_jetpack_installation_steps_screen_title_done">Jetpack installiert</string>
+    <string name="login_jetpack_connection_steps_screen_title_done">Jetpack verbunden</string>
+    <string name="login_jetpack_connection_steps_screen_title">Jetpack wird verbunden</string>
+    <string name="login_jetpack_installation_steps_screen_title">Jetpack wird installiert</string>
+    <string name="login_jetpack_steps_done">Erledigt</string>
+    <string name="login_jetpack_steps_authorizing_done">Verbunden</string>
+    <string name="login_jetpack_steps_authorizing_validation">Überprüfung läuft.</string>
+    <string name="login_jetpack_steps_authorizing">Shop mit Jetpack verbinden</string>
+    <string name="login_jetpack_steps_activating">Wird aktiviert</string>
+    <string name="login_jetpack_steps_installing">Jetpack wird installiert</string>
+    <string name="login_jetpack_connection_enter_site_credentials">Melde dich mit deinen Shop-Anmeldedaten bei &lt;b&gt;%1$s&lt;/b&gt; an, um Jetpack zu verbinden.</string>
+    <string name="login_jetpack_installation_enter_site_credentials">Melde dich mit deinen Shop-Anmeldedaten bei &lt;b&gt;%1$s&lt;/b&gt; an, um Jetpack zu installieren.</string>
+    <string name="login_jetpack_installation_credentials_hint">Halte deine Shop-Anmeldedaten griffbereit.</string>
+    <string name="login_jetpack_connection_explanation">Bitte verbinde deinen Shop mit Jetpack, um in dieser App darauf zuzugreifen.</string>
+    <string name="login_jetpack_installation_explanation">Bitte installiere das kostenlose Jetpack-Plugin, um in dieser App auf deinen Shop zuzugreifen.</string>
+    <string name="login_no_stores_subtitle">Richte einen attraktiven Onlineshop ein und starte mit dem Verkauf – einfach und schnell.</string>
+    <string name="login_no_stores_header">Erstelle deinen ersten Shop</string>
     <string name="store_creation_store_name_hint">Name des Shops</string>
     <string name="store_creation_store_name_subtitle">Keine Sorge, du kannst das später noch ändern. </string>
     <string name="store_creation_store_name_title">Wie lautet der Name deines Shops?</string>
@@ -36,12 +90,9 @@ Language: de
     <string name="always_update_reader">Immer</string>
     <string name="update_simulated_reader_key">Schlüssel des simulierten Lesegeräts aktualisieren</string>
     <string name="update_simulated_reader">Simuliertes Kartenlesegerät aktivieren</string>
-    <string name="variation_list_generate_all_variations">Alle Varianten erstellen</string>
     <string name="login_jetpack_connect">Jetpack verbinden</string>
-    <string name="login_jetpack_installation_credentials_hint">Du benötigst deine Shop-Anmeldedaten, um mit der Installation zu beginnen.</string>
     <string name="login_jetpack_installation_screen_title">Shop verbinden</string>
     <string name="store_creation_domain_picker_suggestions_title">Vorschläge</string>
-    <string name="store_creation_domain_picker_skip_button">Überspringen</string>
     <string name="store_creation_domain_picker_hint">Gib eine Domain ein</string>
     <string name="store_creation_domain_picker_subtitle">Hier finden dich Benutzer im Internet. Keine Sorge, du kannst das später noch ändern.</string>
     <string name="store_creation_domain_picker_title">Wähle eine Domain</string>
@@ -70,7 +121,6 @@ Language: de
     <string name="site_picker_connect_existing_store">Bestehenden Shop verbinden</string>
     <string name="site_picker_create_new_store">Neuen Shop einrichten</string>
     <string name="login_site_picker_add_a_store">Shop hinzufügen</string>
-    <string name="login_no_stores_header">Dein Konto ist mit keinem WooCommerce-Shop verbunden.</string>
     <string name="analytics_products_list_item_description">Nettoumsatz: %1$s</string>
     <string name="analytics_products_list_header_subtitle">Verkaufte Artikel</string>
     <string name="analytics_products_list_header_title">Produkte</string>
@@ -1057,7 +1107,7 @@ Language: de
     <string name="shipping_label_payments_cant_edit_warning">Nur der Website-Betreiber kann die Zahlungsmethoden für Versandetiketten verwalten. Wende dich zur Verwaltung der Zahlungsmethoden bitte an den Website-Betreiber %1$s (%2$s).</string>
     <string name="product_detail_add_variations">Varianten hinzufügen</string>
     <string name="product_variant_list_empty_action">Variante hinzufügen</string>
-    <string name="product_variant_list_add_first_variation">Erste Variante hinzufügen</string>
+    <string name="product_variant_list_add_first_variation">Erste Variante erstellen</string>
     <string name="shipping_label_selected_rates_total_description">Insgesamt %s</string>
     <string name="shipping_label_selected_rates_description">%s Preise ausgewählt</string>
     <string name="shipping_label_rate_included_options_signature_required_free">Für kostenlose Signaturanforderung berechtigt</string>

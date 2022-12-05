@@ -16,8 +16,7 @@ fun PromoBanner(
     onDismissClick: () -> Unit
 ) {
     Banner(
-        BannerState(
-            shouldDisplayBanner = true,
+        BannerState.DisplayBannerState(
             onPrimaryActionClicked = onCtaClick,
             onDismissClicked = onDismissClick,
             title = UiString.UiStringRes(bannerType.titleRes),

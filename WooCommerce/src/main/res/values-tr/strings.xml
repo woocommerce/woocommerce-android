@@ -1,11 +1,65 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2022-11-25 12:54:04+0000
+Translation-Revision-Date: 2022-11-29 16:54:05+0000
 Plural-Forms: nplurals=2; plural=(n > 1);
 Generator: GlotPress/2.4.0-alpha
 Language: tr
 -->
 <resources>
+    <string name="store_creation_ecommerce_store_loading_error">Mağazanız yüklenemedi. Lütfen biraz bekleyin ve tekrar deneyin…</string>
+    <string name="store_creation_ecommerce_plan_purchase_error">Satın alma işlemi tamamlanamadı…</string>
+    <string name="store_creation_ecommerce_site_creation_error">Yeni bir site oluşturulamadı…</string>
+    <string name="store_creation_domain_picker_suggestions_error">Alan adı önerileri yüklenemiyor</string>
+    <string name="store_creation_domain_picker_empty_suggestions">Bu arama için uygun alan adı yok</string>
+    <string name="variations_bulk_creation_progress_title">Varyasyon oluşturma</string>
+    <string name="variations_bulk_creation_confirmation_message">Bu işlem, varyasyon niteliklerinin her olası kombinasyonu için yeni bir varyasyon oluşturur. (%1$d varyasyon)</string>
+    <string name="variations_bulk_creation_confirmation_title">Tüm varyasyonlar oluşturulsun mu?</string>
+    <string name="variations_bulk_creation_warning_message">Şu anda oluşturma en fazla %1$d varyasyon için desteklenmektedir. Bu ürün için varyasyon oluşturmak %2$d varyasyon oluşturur.</string>
+    <string name="variations_bulk_creation_warning_title">Oluşturma sınırı aşıldı</string>
+    <string name="variation_add_all_description">Niteliklerinizin tüm kombinasyonları için varyasyonlar oluşturur.</string>
+    <string name="variation_add_new_description">Yeni bir varyasyon oluşturun. Hangi niteliklerin değişken ürüne ait olduğunu manuel olarak ayarlayın.</string>
+    <string name="variation_add_new">Yeni varyasyon ekle</string>
+    <string name="variation_list_add">Varyasyon ekle</string>
+    <string name="login_jetpack_installation_exit_without_connection">Bağlanmadan Çıkış Yap</string>
+    <string name="login_jetpack_installation_continue_connection">Bağlantıya devam et</string>
+    <string name="login_jetpack_installation_connection_dismissed_explanation">Mağazanıza erişmek için tekrar bağlanmayı deneyin.</string>
+    <string name="login_jetpack_installation_connection_dismissed">Jetpack yüklendi, ancak bağlı değil.</string>
+    <string name="login_jetpack_installation_error_connection_permission_message">Bu mağazada Jetpack\'e bağlanma izniniz yok</string>
+    <string name="login_jetpack_installation_error_forbidden_suggestion">Lütfen yardım için mağaza yöneticinizle veya site yöneticisiyle iletişime geçin.</string>
+    <string name="login_jetpack_installation_cancel">Kurulumu iptal edin</string>
+    <string name="login_jetpack_installation_retry_authorizing">Tekrar yetkilendirmeyi deneyin</string>
+    <string name="login_jetpack_installation_retry_activating">Tekrar etkinleştirmeyi deneyin</string>
+    <string name="login_jetpack_installation_retry_installing">Tekrar kurmayı deneyin</string>
+    <string name="login_jetpack_installation_get_support">Destek alın</string>
+    <string name="login_jetpack_installation_retry_or_contact_support">Lütfen tekrar deneyin ve bu hata devam ederse destekle iletişime geçin.</string>
+    <string name="login_jetpack_installation_error_generic_message">Sitenizle iletişim kurmada bir hata yaşandı:</string>
+    <string name="login_jetpack_installation_error_plugin_permission_message">Bu mağazada eklentileri yönetme izniniz yok.</string>
+    <string name="login_jetpack_installation_error_authorizing">Jetpack\'e bağlantı yetkisi verilirken hata oluştu</string>
+    <string name="login_jetpack_installation_error_activating">Jetpack\'i etkinleştirirken hata oluştu</string>
+    <string name="login_jetpack_installation_error_installing">Jetpack yüklenirken hata oluştu</string>
+    <string name="login_jetpack_installation_approve_connection">Jetpack\'e bağlan</string>
+    <string name="login_jetpack_installation_go_to_store_button">Mağazaya git</string>
+    <string name="login_jetpack_installation_error">Hata</string>
+    <string name="login_jetpack_installation_error_code_template">Hata kodu %1$s</string>
+    <string name="login_jetpack_steps_screen_subtitle_done">Mağazanız &lt;b&gt;%1$s&lt;/b&gt; artık Jetpack\'e bağlı.</string>
+    <string name="login_jetpack_steps_screen_subtitle">Mağazanız &lt;b&gt;%1$s&lt;/b&gt; Jetpack ile bağlanırken lütfen bekleyin.</string>
+    <string name="login_jetpack_installation_steps_screen_title_done">Jetpack yüklendi</string>
+    <string name="login_jetpack_connection_steps_screen_title_done">Jetpack\'e bağlanıldı</string>
+    <string name="login_jetpack_connection_steps_screen_title">Jetpack\'e bağlanıyor</string>
+    <string name="login_jetpack_installation_steps_screen_title">Jetpack yükleniyor</string>
+    <string name="login_jetpack_steps_done">Her şey hazır</string>
+    <string name="login_jetpack_steps_authorizing_done">Bağlı</string>
+    <string name="login_jetpack_steps_authorizing_validation">Doğrulanıyor</string>
+    <string name="login_jetpack_steps_authorizing">Mağazayı Jetpack’e bağlayın</string>
+    <string name="login_jetpack_steps_activating">Etkinleştiriliyor</string>
+    <string name="login_jetpack_steps_installing">Jetpack yükleniyor</string>
+    <string name="login_jetpack_connection_enter_site_credentials">Jetpack\'e bağlanmak için mağaza kimlik bilgilerinizle &lt;b&gt;%1$s&lt;/b&gt; oturumu açın.</string>
+    <string name="login_jetpack_installation_enter_site_credentials">Jetpack\'i yüklemek için mağaza kimlik bilgilerinizle &lt;b&gt;%1$s&lt;/b&gt; oturumu açın.</string>
+    <string name="login_jetpack_installation_credentials_hint">Mağaza kimlik bilgilerinizi hazırlayın.</string>
+    <string name="login_jetpack_connection_explanation">Bu uygulamada mağazanıza erişmek için lütfen mağazanızı Jetpack\'e bağlayın.</string>
+    <string name="login_jetpack_installation_explanation">Bu uygulamada mağazanıza erişmek için lütfen ücretsiz Jetpack eklentisini yükleyin.</string>
+    <string name="login_no_stores_subtitle">Güzel bir çevrimiçi mağaza ile hızla işinizi kurup satış yapın.</string>
+    <string name="login_no_stores_header">İlk mağazanızı oluşturun</string>
     <string name="store_creation_store_name_hint">Mağaza adı</string>
     <string name="store_creation_store_name_subtitle">Endişelenmeyin, daha sonra istediğiniz zaman değiştirebilirsiniz. </string>
     <string name="store_creation_store_name_title">Mağazanızın adı nedir?</string>
@@ -36,12 +90,9 @@ Language: tr
     <string name="always_update_reader">Her zaman</string>
     <string name="update_simulated_reader_key">Simüle Okuyucu Anahtarını Güncelle</string>
     <string name="update_simulated_reader">Simüle Kart Okuyucuyu Güncelle</string>
-    <string name="variation_list_generate_all_variations">Tüm varyasyonları oluştur</string>
     <string name="login_jetpack_connect">Jetpack\'e bağlan</string>
-    <string name="login_jetpack_installation_credentials_hint">Kurulumu başlatmak için mağaza kimlik bilgilerinize ihtiyacınız olacaktır.</string>
     <string name="login_jetpack_installation_screen_title">Mağazayı Bağla</string>
     <string name="store_creation_domain_picker_suggestions_title">Öneriler</string>
-    <string name="store_creation_domain_picker_skip_button">Atla</string>
     <string name="store_creation_domain_picker_hint">Bir alan adı yaz</string>
     <string name="store_creation_domain_picker_subtitle">Bu, insanların sizi internette bulacakları yerdir. Endişelenmeyin, daha sonra değiştirebilirsiniz.</string>
     <string name="store_creation_domain_picker_title">Bir alan adı seç</string>
@@ -70,7 +121,6 @@ Language: tr
     <string name="site_picker_connect_existing_store">Mevcut bir mağazayı bağla</string>
     <string name="site_picker_create_new_store">Yeni bir mağaza oluştur</string>
     <string name="login_site_picker_add_a_store">Mağaza Ekle</string>
-    <string name="login_no_stores_header">Hesabınız herhangi bir WooCommerce mağazasına bağlı değil.</string>
     <string name="analytics_products_list_item_description">Net satışlar: %1$s</string>
     <string name="analytics_products_list_header_subtitle">Satılan ürünler</string>
     <string name="analytics_products_list_header_title">Ürünler</string>
@@ -1057,7 +1107,7 @@ Language: tr
     <string name="shipping_label_payments_cant_edit_warning">Gönderim etiketi ödeme yöntemlerini yalnızca site sahibi yönetebilir. Ödeme yöntemlerini yönetmek için lütfen Mağaza Sahibi %1$s (%2$s) ile iletişime geçin</string>
     <string name="product_detail_add_variations">Varyasyon ekle</string>
     <string name="product_variant_list_empty_action">Varyasyon Ekle</string>
-    <string name="product_variant_list_add_first_variation">İlk varyasyonunuzu ekleyin</string>
+    <string name="product_variant_list_add_first_variation">İlk varyasyonunuzu oluşturun</string>
     <string name="shipping_label_selected_rates_total_description">toplam %s</string>
     <string name="shipping_label_selected_rates_description">%s ücret seçildi</string>
     <string name="shipping_label_rate_included_options_signature_required_free">Ücretsiz imza şartına uygun</string>

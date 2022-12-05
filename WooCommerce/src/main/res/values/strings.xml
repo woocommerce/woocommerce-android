@@ -1629,6 +1629,7 @@
     <string name="product_category_selector_search_hint">Search Categories</string>
     <string name="product_category_selector_loading_failed">Loading product categories failed</string>
     <string name="product_category_selector_search_failed">Searching product categories failed</string>
+    <string name="product_list_multiselect">Select multiple</string>
     <!--
         Product Add more details Bottom sheet
     -->
@@ -1659,7 +1660,7 @@
     <string name="variations_bulk_limit_exceeded_button_ok">OK</string>
     <string name="variation_add_new">Add new variation</string>
     <string name="variation_add_new_description">Create one new variation. Manually set which attributes belong to the variable product.</string>
-    <string name="variation_add_all">Generate all %1$d variations</string>
+    <string name="variation_add_all">Generate all variations</string>
     <string name="variation_add_all_description">Creates variations for all combinations of your attributes.</string>
 
     <!--
@@ -1694,6 +1695,8 @@
     <string name="variations_bulk_creation_confirmation_title">Generate all variations?</string>
     <string name="variations_bulk_creation_confirmation_message">This will create a new variation for each and every possible combination of variation attributes (%1$d variations).</string>
     <string name="variations_bulk_creation_progress_title">Generating variations</string>
+    <string name="variations_bulk_creation_no_candidates_title">No variations to generate</string>
+    <string name="variations_bulk_creation_no_candidates_message">All variations are already generated.</string>
 
     <!--
         Product images
@@ -2768,9 +2771,9 @@
     <string name="store_creation_summary_primary_button">Continue to payment</string>
 
     <string name="store_creation_ecommerce_plan_error">Couldn\'t load the plan information…</string>
-    <string name="store_creation_ecommerce_site_creation_error">Couldn\'t create a new site…</string>
     <string name="store_creation_ecommerce_plan_purchase_error">Couldn\'t complete the purchase…</string>
     <string name="store_creation_ecommerce_store_loading_error">Couldn\'t load your new store. Please wait a bit and try again…</string>
+    <string name="store_creation_ecommerce_store_loading_permanent_error">Something went wrong during store installation…</string>
     <string name="store_creation_ecommerce_plan_features_tagline">All the features you need, already built in.</string>
     <string name="store_creation_ecommerce_plan_powered_by">Powered by</string>
     <string name="store_creation_ecommerce_plan_wordpress" translatable="false">WordPress.com</string>
@@ -2778,6 +2781,7 @@
     <string name="store_creation_ecommerce_plan_refund_reminder">There\'s no risk, you can cancel for a full refund within 30 days.</string>
     <string name="store_creation_ecommerce_plan_period_month">month</string>
     <string name="store_creation_ecommerce_plan_period_year">year</string>
+    <string name="store_creation_ecommerce_plan_period_two_years">2 years</string>
     <string name="store_creation_ecommerce_plan_feature_themes">Premium themes</string>
     <string name="store_creation_ecommerce_plan_feature_products">Unlimited products</string>
     <string name="store_creation_ecommerce_plan_feature_subscriptions">Subscriptions &amp; giftcards</string>

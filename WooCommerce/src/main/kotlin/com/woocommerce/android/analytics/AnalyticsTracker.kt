@@ -436,6 +436,7 @@ class AnalyticsTracker private constructor(private val context: Context) {
         const val VALUE_STEP_DOMAIN_PICKER = "domain_picker"
         const val VALUE_STEP_STORE_SUMMARY = "store_summary"
         const val VALUE_STEP_PLAN_PURCHASE = "plan_purchase"
+        const val VALUE_STEP_WEB_CHECKOUT = "web_checkout"
         const val VALUE_STEP_STORE_INSTALLATION = "store_installation"
 
         var sendUsageStats: Boolean = true
