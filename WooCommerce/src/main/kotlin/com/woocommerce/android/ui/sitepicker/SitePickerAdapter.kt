@@ -143,6 +143,14 @@ class SitePickerAdapter(
         override fun areContentsTheSame(
             oldItem: SitesListItem,
             newItem: SitesListItem
-        ): Boolean = oldItem == newItem
+        ): Boolean = when {
+            oldItem is WooSiteUiModel && newItem is WooSiteUiModel -> {
+                oldItem.site.getSiteName() == newItem.site.getSiteName()
+            }
+            oldItem is NonWooSiteUiModel && newItem is NonWooSiteUiModel -> {
+                oldItem.site.getSiteName() == newItem.site.getSiteName()
+            }
+            else -> oldItem == newItem
+        }
     }
 }
