@@ -79,6 +79,8 @@ class SitePickerViewModel @Inject constructor(
     private val _sites = MutableLiveData<List<SitesListItem>>()
     val sites: LiveData<List<SitesListItem>> = _sites
 
+    private val selectedSiteId: MutableLiveData<Int> = MutableLiveData()
+
     private var loginSiteAddress: String?
         get() = savedState["key"] ?: appPrefsWrapper.getLoginSiteAddress()
         set(value) = savedState.set("key", value)
@@ -95,6 +97,8 @@ class SitePickerViewModel @Inject constructor(
         loadAndDisplayUserInfo()
         loadAndDisplaySites()
         if (appPrefsWrapper.getIsNewSignUp()) startStoreCreationWebFlow()
+        val selectedSiteId = selectedSite.getSelectedSiteId()
+        if (selectedSiteId != -1) this.selectedSiteId.value = selectedSiteId
     }
 
     private fun loadAndDisplayUserInfo() = launch {
@@ -203,7 +207,6 @@ class SitePickerViewModel @Inject constructor(
 
         val wooSites = filteredSites.filter { it.hasWooCommerce }
         val nonWooSites = filteredSites.filter { !it.hasWooCommerce }
-        val selectedSite = selectedSite.getIfExists() ?: wooSites.getOrNull(0)
 
         if (_sites.value == null) {
             // Track events only on the first call
@@ -216,7 +219,7 @@ class SitePickerViewModel @Inject constructor(
                 )
             )
         }
-
+        val selectedSiteId = selectedSiteId.value ?: wooSites.getOrNull(0)?.id
         _sites.value = buildList {
             if (wooSites.isNotEmpty()) {
                 add(Header(R.string.login_pick_store))
@@ -224,7 +227,7 @@ class SitePickerViewModel @Inject constructor(
                     wooSites.map {
                         WooSiteUiModel(
                             site = it,
-                            isSelected = selectedSite?.id == it.id
+                            isSelected = selectedSiteId == it.id
                         )
                     }
                 )
@@ -365,7 +368,7 @@ class SitePickerViewModel @Inject constructor(
     }
 
     fun onSiteSelected(siteModel: SiteModel) {
-        selectedSite.set(siteModel)
+        selectedSiteId.value = siteModel.id
         val updatedSites = _sites.value?.map {
             when (it) {
                 is WooSiteUiModel -> it.copy(isSelected = it.site.id == siteModel.id)
