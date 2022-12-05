@@ -18,7 +18,6 @@ import androidx.core.view.isVisible
 import androidx.core.view.iterator
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
-import androidx.recyclerview.selection.SelectionPredicates
 import androidx.recyclerview.selection.SelectionTracker
 import androidx.recyclerview.selection.StorageStrategy
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -82,6 +81,7 @@ class ProductListFragment :
 
     private var tracker: SelectionTracker<Long>? = null
     private var actionMode: ActionMode? = null
+    private val selectionPredicate = MutableMultipleSelectionPredicate<Long>()
 
     private val viewModel: ProductListViewModel by viewModels()
 
@@ -158,9 +158,8 @@ class ProductListFragment :
             ProductSelectionItemKeyProvider(binding.productsRecycler), // the source of selection keys
             DefaultProductListItemLookup(binding.productsRecycler), // the source of information about recycler items
             StorageStrategy.createLongStorage() // strategy for type-safe storage of the selection state
-        ).withSelectionPredicate(
-            SelectionPredicates.createSelectAnything() // allows multiple items to be selected without any restriction
-        ).build()
+        ).withSelectionPredicate(selectionPredicate)
+            .build() // allows multiple items to be selected without any restriction
 
         productAdapter.tracker = tracker
 
@@ -457,6 +456,7 @@ class ProductListFragment :
     private fun handleListState(productListState: ProductListViewModel.ProductListState) {
         when (productListState) {
             ProductListViewModel.ProductListState.Selecting -> {
+                delayMultiSelection()
                 onListSelectionActiveChanged(true)
                 enableProductsRefresh(false)
                 enableProductSortAndFiltersCard(false)
@@ -466,6 +466,13 @@ class ProductListFragment :
                 enableProductsRefresh(true)
                 enableProductSortAndFiltersCard(true)
             }
+        }
+    }
+
+    private fun delayMultiSelection() {
+        selectionPredicate.selectMultiple = false
+        binding.productsRecycler.post {
+            selectionPredicate.selectMultiple = true
         }
     }
 
