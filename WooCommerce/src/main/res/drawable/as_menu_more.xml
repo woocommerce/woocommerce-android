@@ -5,19 +5,19 @@
 
     <item
         android:state_focused="true"
-        android:drawable="@drawable/ic_more_menu">
+        android:drawable="@drawable/ic_menu_more">
     </item>
 
     <item
         android:id="@+id/selected"
         android:state_selected="true"
-        android:drawable="@drawable/ic_more_menu">
+        android:drawable="@drawable/ic_menu_more">
     </item>
 
     <item
         android:id="@+id/unselected"
         android:state_selected="false"
-        android:drawable="@drawable/ic_more_menu">
+        android:drawable="@drawable/ic_menu_more">
     </item>
 
 </animated-selector>
