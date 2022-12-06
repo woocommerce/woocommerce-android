@@ -9,25 +9,37 @@ import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.model.Product
+import com.woocommerce.android.model.RequestResult
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.ui.media.MediaFileUploadHandler
-import com.woocommerce.android.ui.products.ProductListViewModel.ProductListEvent.*
+import com.woocommerce.android.ui.products.ProductListViewModel.ProductListEvent.ScrollToTop
+import com.woocommerce.android.ui.products.ProductListViewModel.ProductListEvent.SelectProducts
+import com.woocommerce.android.ui.products.ProductListViewModel.ProductListEvent.ShowAddProductBottomSheet
+import com.woocommerce.android.ui.products.ProductListViewModel.ProductListEvent.ShowProductFilterScreen
+import com.woocommerce.android.ui.products.ProductListViewModel.ProductListEvent.ShowProductSortingBottomSheet
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.viewmodel.LiveDataDelegate
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.*
+import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.cancelAndJoin
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.launch
 import kotlinx.parcelize.IgnoredOnParcel
 import kotlinx.parcelize.Parcelize
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
 import org.wordpress.android.fluxc.store.WCProductStore.ProductFilterOption
-import org.wordpress.android.fluxc.store.WCProductStore.ProductSorting.*
+import org.wordpress.android.fluxc.store.WCProductStore.ProductSorting.DATE_ASC
+import org.wordpress.android.fluxc.store.WCProductStore.ProductSorting.DATE_DESC
+import org.wordpress.android.fluxc.store.WCProductStore.ProductSorting.TITLE_ASC
+import org.wordpress.android.fluxc.store.WCProductStore.ProductSorting.TITLE_DESC
 import javax.inject.Inject
 
 @HiltViewModel
@@ -487,6 +499,23 @@ class ProductListViewModel @Inject constructor(
     fun onRefreshProducts(event: OnProductSortingChanged) {
         viewState = viewState.copy(sortingTitleResource = getSortingTitle())
         refreshProducts(scrollToTop = true)
+    }
+
+    fun onUpdatePriceClicked(
+        selectedProductsRemoteIds: List<Long>,
+        newPrice: String,
+    ) {
+        launch {
+            when (productRepository.bulkUpdateProductsPrice(selectedProductsRemoteIds, newPrice)) {
+                RequestResult.SUCCESS -> {
+                    refreshProducts()
+                    exitSelectionMode()
+                }
+                else -> {
+                    exitSelectionMode()
+                }
+            }
+        }
     }
 
     object OnProductSortingChanged
