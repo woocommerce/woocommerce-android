@@ -17,6 +17,7 @@ import androidx.core.view.ViewGroupCompat
 import androidx.core.view.doOnPreDraw
 import androidx.core.view.isVisible
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.Lifecycle
 import androidx.navigation.fragment.findNavController
 import androidx.paging.PagedList
 import androidx.recyclerview.widget.ItemTouchHelper
@@ -167,7 +168,7 @@ class OrderListFragment :
         super.onViewCreated(view, savedInstanceState)
         postponeEnterTransition()
 
-        requireActivity().addMenuProvider(this, viewLifecycleOwner)
+        requireActivity().addMenuProvider(this, viewLifecycleOwner, Lifecycle.State.RESUMED)
 
         view.doOnPreDraw { startPostponedEnterTransition() }
 
