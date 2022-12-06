@@ -108,11 +108,10 @@ class DeveloperOptionsViewModel @Inject constructor(
     }
 
     fun onUpdateReaderOptionChanged(selectedOption: UpdateOptions) {
-        developerOptionsRepository.updateSimulatedReaderOption(selectedOption)
-        if (!cardReaderManager.initialized) {
-            cardReaderManager.initialize(mapUpdateOptions(selectedOption))
+        if (cardReaderManager.initialized) {
+            cardReaderManager.initializeOnUpdateFrequencyChange(mapUpdateOptions(selectedOption))
         }
-        cardReaderManager.initializeOnUpdateFrequencyChange(mapUpdateOptions(selectedOption))
+        developerOptionsRepository.updateSimulatedReaderOption(selectedOption)
     }
 
     private fun mapUpdateOptions(updateFrequency: UpdateOptions): CardReaderManager.SimulatorUpdateFrequency {
