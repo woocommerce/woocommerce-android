@@ -1,13 +1,98 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2022-11-16 11:54:04+0000
+Translation-Revision-Date: 2022-11-30 09:54:05+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: he_IL
 -->
 <resources>
+    <string name="store_creation_ecommerce_store_loading_error">לא הצלחנו לטעון את החנות החדשה שלך. כדאי להמתין קצת ולנסות שוב…</string>
+    <string name="store_creation_ecommerce_plan_purchase_error">לא הצלחנו להשלים את הרכישה…</string>
+    <string name="store_creation_ecommerce_site_creation_error">לא הצלחנו ליצור אתר חדש…</string>
+    <string name="store_creation_domain_picker_suggestions_error">לא ניתן לטעון את ההצעות לדומיינים</string>
+    <string name="store_creation_domain_picker_empty_suggestions">אין דומיינים זמינים לחיפוש זה</string>
+    <string name="variations_bulk_creation_progress_title">יוצר סוגים</string>
+    <string name="variations_bulk_creation_confirmation_message">פעולה זו תיצור סוג חדש עבור כל שילוב אפשרי של מאפייני הסוג (עד ⁦%1$d⁩ סוגים).</string>
+    <string name="variations_bulk_creation_confirmation_title">האם ליצור את כל הסוגים?</string>
+    <string name="variations_bulk_creation_warning_message">נכון לעכשיו, אנחנו תומכים ביצירה של ⁦%1$d⁩ סוגים לכל היותר. פעולת היצירה של סוגים למוצר הזה תיצור ⁦%2$d⁩ סוגים.</string>
+    <string name="variations_bulk_creation_warning_title">חרגת ממגבלת היצירה</string>
+    <string name="variation_add_all_description">הפעולה יוצרת סוגים עבור כל השילובים של המאפיינים שציינת.</string>
+    <string name="variation_add_new_description">ליצור סוג אחד חדש. להגדיר באופן ידני אילו מאפיינים שייכים למוצר עם הסוגים.</string>
+    <string name="variation_add_new">להוסיף סוג חדש</string>
+    <string name="variation_list_add">להוסיף סוג</string>
+    <string name="login_jetpack_installation_exit_without_connection">לצאת בלי להתחבר</string>
+    <string name="login_jetpack_installation_continue_connection">להמשיך בחיבור</string>
+    <string name="login_jetpack_installation_connection_dismissed_explanation">יש לנסות להתחבר שוב כדי לגשת לחנות שלך.</string>
+    <string name="login_jetpack_installation_connection_dismissed">השירות של Jetpack מותקן אך לא מחובר.</string>
+    <string name="login_jetpack_installation_error_connection_permission_message">אין לך הרשאה לחבר את Jetpack לחנות הזאת</string>
+    <string name="login_jetpack_installation_error_forbidden_suggestion">יש ליצור קשר עם מנהל החנות או מנהל המערכת לקבלת עזרה.</string>
+    <string name="login_jetpack_installation_cancel">לבטל את ההתקנה</string>
+    <string name="login_jetpack_installation_retry_authorizing">יש לנסות לאשר שוב</string>
+    <string name="login_jetpack_installation_retry_activating">יש לנסות להפעיל שוב</string>
+    <string name="login_jetpack_installation_retry_installing">יש לנסות להתקין שוב</string>
+    <string name="login_jetpack_installation_get_support">לקבלת תמיכה</string>
+    <string name="login_jetpack_installation_retry_or_contact_support">יש לנסות שוב ולפנות לתמיכה אם השגיאה ממשיכה להופיע.</string>
+    <string name="login_jetpack_installation_error_generic_message">אירעה שגיאה בתקשורת עם האתר שלך.</string>
+    <string name="login_jetpack_installation_error_plugin_permission_message">אין לך הרשאה לניהול התוספים בחנות הזאת</string>
+    <string name="login_jetpack_installation_error_authorizing">אירעה שגיאה באישור החיבור אל Jetpack</string>
+    <string name="login_jetpack_installation_error_activating">שגיאה בהפעלת Jetpack</string>
+    <string name="login_jetpack_installation_error_installing">אירעה שגיאה בהתקנה של Jetpack</string>
+    <string name="login_jetpack_installation_approve_connection">לחבר את Jetpack</string>
+    <string name="login_jetpack_installation_go_to_store_button">מעבר לחנות</string>
+    <string name="login_jetpack_installation_error">שגיאה</string>
+    <string name="login_jetpack_installation_error_code_template">קוד שגיאה ⁦%1$s⁩</string>
+    <string name="login_jetpack_steps_screen_subtitle_done">החנות &lt;b&gt;%1$s&lt;/b&gt; לא מחוברת אל Jetpack.</string>
+    <string name="login_jetpack_steps_screen_subtitle">רק רגע, אנחנו מחברים את החנות &lt;b&gt;%1$s&lt;/b&gt; אל Jetpack.</string>
+    <string name="login_jetpack_installation_steps_screen_title_done">השירות של Jetpack הותקן</string>
+    <string name="login_jetpack_connection_steps_screen_title_done">השירות של Jetpack חובר</string>
+    <string name="login_jetpack_connection_steps_screen_title">מחבר את Jetpack</string>
+    <string name="login_jetpack_installation_steps_screen_title">מתקין את Jetpack</string>
+    <string name="login_jetpack_steps_done">סיימת</string>
+    <string name="login_jetpack_steps_authorizing_done">מחובר</string>
+    <string name="login_jetpack_steps_authorizing_validation">מאמת</string>
+    <string name="login_jetpack_steps_authorizing">לחבר את החנות שלך אל Jetpack</string>
+    <string name="login_jetpack_steps_activating">מפעיל</string>
+    <string name="login_jetpack_steps_installing">מתקין את Jetpack</string>
+    <string name="login_jetpack_connection_enter_site_credentials">יש להתחבר אל &lt;b&gt;%1$s&lt;/b&gt; עם פרטי הכניסה של החנות שלך כדי לחבר את Jetpack.</string>
+    <string name="login_jetpack_installation_enter_site_credentials">יש להתחבר אל &lt;b&gt;%1$s&lt;/b&gt; עם פרטי הכניסה של החנות שלך כדי להתקין את Jetpack.</string>
+    <string name="login_jetpack_installation_credentials_hint">יש לוודא שפרטי הכניסה לחנות זמינים לך.</string>
+    <string name="login_jetpack_connection_explanation">יש לחבר את החנות שלך אל Jetpack כדי לגשת אליה באפליקציה הזאת.</string>
+    <string name="login_jetpack_installation_explanation">יש להתקין את התוסף החינמי של Jetpack כדי לגשת לחנות באפליקציה הזאת.</string>
+    <string name="login_no_stores_subtitle">להקים חנות מקוונת יפה ולהתחיל למכור מהר.</string>
+    <string name="login_no_stores_header">ליצור את החנות הראשונה שלך</string>
+    <string name="store_creation_store_name_hint">שם החנות</string>
+    <string name="store_creation_store_name_subtitle">אל דאגה, תמיד אפשר לבצע שינויים מאוחר יותר. </string>
+    <string name="store_creation_store_name_title">מה השם של החנות שלך?</string>
+    <string name="store_creation_store_name_caption">מידע לגבי החנות שלך</string>
+    <string name="store_creation_installation_show_preview_button">תצוגה מקדימה של החנות</string>
+    <string name="store_creation_installation_manage_store_button">ניהול החנות שלי</string>
+    <string name="store_creation_installation_success">החנות שלך נוצרה!</string>
+    <string name="store_creation_installation_error">ארעה שגיאה במהלך ההתקנה יש לנסות שוב…</string>
+    <string name="store_creation_ecommerce_plan_feature_sales">ערוצי מכירות</string>
+    <string name="store_creation_ecommerce_plan_feature_shipping_labels">תוויות משלוח</string>
+    <string name="store_creation_ecommerce_plan_feature_payments">מספר תוכניות של תשלומים</string>
+    <string name="store_creation_ecommerce_plan_feature_reports">דוחות של מסחר אלקטרוני</string>
+    <string name="store_creation_ecommerce_plan_feature_subscriptions">מינויים ושוברי מתנה</string>
+    <string name="store_creation_ecommerce_plan_feature_products">מוצרים ללא הגבלה</string>
+    <string name="store_creation_ecommerce_plan_feature_themes">ערכות פרימיום</string>
+    <string name="store_creation_ecommerce_plan_period_year">שנה</string>
+    <string name="store_creation_ecommerce_plan_period_month">חודש</string>
+    <string name="store_creation_ecommerce_plan_refund_reminder">אין שום סיכון, אפשר לבטל תוך 30 יום ולקבל החזר כספי מלא.</string>
+    <string name="store_creation_ecommerce_plan_purchase_button_title">ליצור חנות עבור ⁦%1$s⁩</string>
+    <string name="store_creation_ecommerce_plan_powered_by">מופעל באמצעות</string>
+    <string name="store_creation_ecommerce_plan_features_tagline">כל האפשרויות שצריך מובנות ישירות בשירות.</string>
+    <string name="store_creation_ecommerce_plan_error">לא ניתן היה לטעון את פרטי התוכנית…</string>
+    <string name="store_creation_summary_primary_button">להמשיך לתשלום</string>
+    <string name="store_creation_summary_subtitle">החנות שלך תיווצר לפי האפשרויות שבחרת!</string>
+    <string name="store_creation_summary_title">החנות שלי</string>
+    <string name="randomly_update_reader">באופן אקראי</string>
+    <string name="never_update_reader">לעולם לא</string>
+    <string name="always_update_reader">תמיד</string>
+    <string name="update_simulated_reader_key">לעדכן סימולציה של מפתח הקורא</string>
+    <string name="update_simulated_reader">לעדכן את הסימולציה של קורא הכרטיסים</string>
+    <string name="login_jetpack_connect">לחבר את Jetpack</string>
+    <string name="login_jetpack_installation_screen_title">לחבר את החנות</string>
     <string name="store_creation_domain_picker_suggestions_title">הצעות</string>
-    <string name="store_creation_domain_picker_skip_button">לדלג</string>
     <string name="store_creation_domain_picker_hint">יש להקליד דומיין</string>
     <string name="store_creation_domain_picker_subtitle">כאן הגולשים ימצאו אותך באינטרנט. אל דאגה, אפשר לשנות את ההגדרות מאוחר יותר.</string>
     <string name="store_creation_domain_picker_title">לבחור דומיין</string>
@@ -36,7 +121,6 @@ Language: he_IL
     <string name="site_picker_connect_existing_store">לחבר חנות קיימת</string>
     <string name="site_picker_create_new_store">ליצור חנות חדשה</string>
     <string name="login_site_picker_add_a_store">להוסיף חנות</string>
-    <string name="login_no_stores_header">החשבון שלך לא מחובר לחנויות של WooCommerce.</string>
     <string name="analytics_products_list_item_description">סכום מכירות נטו: ⁦%1$s⁩</string>
     <string name="analytics_products_list_header_subtitle">פריטים שנמכרו</string>
     <string name="analytics_products_list_header_title">מוצרים</string>
@@ -418,6 +502,7 @@ Language: he_IL
     <string name="product_ratings_count_one">\u2022  ביקורת אחת אושרה</string>
     <string name="product_ratings_count">\u2022  %d ביקורות אושרו</string>
     <string name="tax_name_with_tax_percent">%1$s (%2$s%%)</string>
+    <string name="orderlist_simple_payments_wip_message_enabled">אנחנו כרגע עובדים על אפשרות ליצור הזמנות מהמכשיר שלך! אפשר לנסות את האפשרות הזאת על ידי הקשה על הכפתור \'+\'</string>
     <string name="empty_inbox_description">כדאי לחזור בקרוב כדי לקבל עצות ותובנות נוספות להגדלת החנות שלך</string>
     <string name="empty_inbox_title">ברכותינו, קראת הכול!</string>
     <string name="orderstatus_contentDesc_withStatus">סטטוס הזמנה: %s</string>
@@ -610,6 +695,7 @@ Language: he_IL
     <string name="simple_payments_enter_amount">להזין סכום</string>
     <string name="simple_payments_dialog_title">לגבות תשלום</string>
     <string name="orderlist_simple_payments_menu">תשלום פשוט</string>
+    <string name="orderlist_simple_payments_wip_title">ליצור הזמנות דרך המכשיר שלך!</string>
     <string name="analytics">נתונים אנליטיים</string>
     <string name="jetpack_install_progress_step_four_message">סיימת</string>
     <string name="jetpack_install_progress_step_three_message">מחבר את החנות שלך</string>
@@ -1021,7 +1107,7 @@ Language: he_IL
     <string name="shipping_label_payments_cant_edit_warning">רק בעלי האתר יכולים לנהל את אמצעי התשלום של תוויות המשלוח. יש ליצור קשר עם הבעלים של החנות ⁦%1$s⁩ (⁦%2$s⁩) כדי לנהל את אמצעי התשלום.</string>
     <string name="product_detail_add_variations">להוסיף סוגים</string>
     <string name="product_variant_list_empty_action">להוסיף סוג</string>
-    <string name="product_variant_list_add_first_variation">להוסיף את הסוג הראשון שלך</string>
+    <string name="product_variant_list_add_first_variation">ליצור את הסוג הראשון שלך</string>
     <string name="shipping_label_selected_rates_total_description">סך הכול %s</string>
     <string name="shipping_label_selected_rates_description">נבחרו %s תעריפים</string>
     <string name="shipping_label_rate_included_options_signature_required_free">זכאי לדרישת חתימה בחינם</string>

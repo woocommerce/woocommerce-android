@@ -1,11 +1,65 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2022-11-23 16:54:03+0000
+Translation-Revision-Date: 2022-11-29 14:54:03+0000
 Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);
 Generator: GlotPress/2.4.0-alpha
 Language: ru
 -->
 <resources>
+    <string name="store_creation_ecommerce_store_loading_error">Не удалось загрузить новый магазин. Повторите попытку позже…</string>
+    <string name="store_creation_ecommerce_plan_purchase_error">Не удалось завершить покупку…</string>
+    <string name="store_creation_ecommerce_site_creation_error">Не удалось создать новый сайт…</string>
+    <string name="store_creation_domain_picker_suggestions_error">Не удалось загрузить предлагаемые домены</string>
+    <string name="store_creation_domain_picker_empty_suggestions">Нет доступных доменов по этому запросу</string>
+    <string name="variations_bulk_creation_progress_title">Создание вариантов</string>
+    <string name="variations_bulk_creation_confirmation_message">Будет создан вариант для каждой возможной комбинации атрибутов (всего: %1$d)</string>
+    <string name="variations_bulk_creation_confirmation_title">Создать все варианты?</string>
+    <string name="variations_bulk_creation_warning_message">Текущее максимальное количество создаваемых вариантов: %1$d. Количество вариантов, которые можно создать для этого продукта: %2$d.</string>
+    <string name="variations_bulk_creation_warning_title">Превышено максимальное количество вариантов</string>
+    <string name="variation_add_all_description">Создание вариантов для всех комбинаций ваших атрибутов.</string>
+    <string name="variation_add_new_description">Создайте один новый вариант. Вручную выберите, какие атрибуты относятся к варианту продукта.</string>
+    <string name="variation_add_new">Добавить новый вариант</string>
+    <string name="variation_list_add">Добавить вариацию</string>
+    <string name="login_jetpack_installation_exit_without_connection">Выйти без подключения</string>
+    <string name="login_jetpack_installation_continue_connection">Продолжить подключение</string>
+    <string name="login_jetpack_installation_connection_dismissed_explanation">Попробуйте подключиться ещё раз, чтобы войти в магазин.</string>
+    <string name="login_jetpack_installation_connection_dismissed">Jetpack установлен, но не подключён.</string>
+    <string name="login_jetpack_installation_error_connection_permission_message">У вас нет разрешения на подключение Jetpack к этому магазину</string>
+    <string name="login_jetpack_installation_error_forbidden_suggestion">Обратитесь к менеджеру магазина или администратору.</string>
+    <string name="login_jetpack_installation_cancel">Отменить установку</string>
+    <string name="login_jetpack_installation_retry_authorizing">Повторить авторизацию</string>
+    <string name="login_jetpack_installation_retry_activating">Повторить активацию</string>
+    <string name="login_jetpack_installation_retry_installing">Повторить установку</string>
+    <string name="login_jetpack_installation_get_support">Получить поддержку</string>
+    <string name="login_jetpack_installation_retry_or_contact_support">Повторите попытку и обратитесь в службу поддержки, если эта ошибка произойдёт снова.</string>
+    <string name="login_jetpack_installation_error_generic_message">Во время обмена данными с вашим веб-сайтом произошла ошибка.</string>
+    <string name="login_jetpack_installation_error_plugin_permission_message">У вас нет разрешения на управление плагинами в этом магазине</string>
+    <string name="login_jetpack_installation_error_authorizing">Ошибка при авторизации подключения к Jetpack</string>
+    <string name="login_jetpack_installation_error_activating">Ошибка при активации Jetpack</string>
+    <string name="login_jetpack_installation_error_installing">Ошибка при установке Jetpack</string>
+    <string name="login_jetpack_installation_approve_connection">Подключить Jetpack</string>
+    <string name="login_jetpack_installation_go_to_store_button">Перейти в магазин</string>
+    <string name="login_jetpack_installation_error">Ошибка</string>
+    <string name="login_jetpack_installation_error_code_template">Код ошибки %1$s</string>
+    <string name="login_jetpack_steps_screen_subtitle_done">Теперь ваш магазин &lt;b&gt;%1$s&lt;/b&gt; подключён к Jetpack.</string>
+    <string name="login_jetpack_steps_screen_subtitle">Подождите, мы подключаем магазин &lt;b&gt;%1$s&lt;/b&gt; к Jetpack.</string>
+    <string name="login_jetpack_installation_steps_screen_title_done">Jetpack установлен</string>
+    <string name="login_jetpack_connection_steps_screen_title_done">Jetpack подключён</string>
+    <string name="login_jetpack_connection_steps_screen_title">Выполняется подключение Jetpack</string>
+    <string name="login_jetpack_installation_steps_screen_title">Выполняется установка Jetpack</string>
+    <string name="login_jetpack_steps_done">Все готово</string>
+    <string name="login_jetpack_steps_authorizing_done">Подключено</string>
+    <string name="login_jetpack_steps_authorizing_validation">Выполняется проверка</string>
+    <string name="login_jetpack_steps_authorizing">Подключите магазин к Jetpack</string>
+    <string name="login_jetpack_steps_activating">Активация</string>
+    <string name="login_jetpack_steps_installing">Выполняется установка Jetpack</string>
+    <string name="login_jetpack_connection_enter_site_credentials">Войдите в &lt;b&gt;%1$s&lt;/b&gt;, введя учётные данные магазина, чтобы подключить Jetpack.</string>
+    <string name="login_jetpack_installation_enter_site_credentials">Войдите в &lt;b&gt;%1$s&lt;/b&gt;, введя учётные данные магазина, чтобы установить Jetpack.</string>
+    <string name="login_jetpack_installation_credentials_hint">Подготовьте учётные данные магазина.</string>
+    <string name="login_jetpack_connection_explanation">Подключите магазин к Jetpack, чтобы работать с ним в этом приложении.</string>
+    <string name="login_jetpack_installation_explanation">Установите бесплатный плагин Jetpack, чтобы работать с магазином в этом приложении.</string>
+    <string name="login_no_stores_subtitle">Создайте онлайн-магазин и начните продажи в кротчайшие сроки.</string>
+    <string name="login_no_stores_header">Создайте свой первый магазин</string>
     <string name="store_creation_store_name_hint">Название магазина</string>
     <string name="store_creation_store_name_subtitle">Не беспокойтесь, вы сможете изменить его позднее. </string>
     <string name="store_creation_store_name_title">Как называется ваш магазин?</string>
@@ -36,12 +90,9 @@ Language: ru
     <string name="always_update_reader">Всегда</string>
     <string name="update_simulated_reader_key">Обновить смоделированный ключ устройства чтения</string>
     <string name="update_simulated_reader">Обновить смоделированное устройство чтения карт</string>
-    <string name="variation_list_generate_all_variations">Создать все варианты</string>
     <string name="login_jetpack_connect">Подключить Jetpack</string>
-    <string name="login_jetpack_installation_credentials_hint">Чтобы начать установку, нужны учётные данные магазина.</string>
     <string name="login_jetpack_installation_screen_title">Подключение магазина</string>
     <string name="store_creation_domain_picker_suggestions_title">Варианты</string>
-    <string name="store_creation_domain_picker_skip_button">Пропустить</string>
     <string name="store_creation_domain_picker_hint">Укажите домен</string>
     <string name="store_creation_domain_picker_subtitle">Это место, где люди найдут вас в Интернете. Не беспокойтесь, вы сможете изменить это позднее.</string>
     <string name="store_creation_domain_picker_title">Выберите домен.</string>
@@ -70,7 +121,6 @@ Language: ru
     <string name="site_picker_connect_existing_store">Подключить существующий магазин</string>
     <string name="site_picker_create_new_store">Создать магазин</string>
     <string name="login_site_picker_add_a_store">Добавить магазин</string>
-    <string name="login_no_stores_header">Ваша учётная запись не подключена к магазинам WooCommerce.</string>
     <string name="analytics_products_list_item_description">Чистая выручка: %1$s</string>
     <string name="analytics_products_list_header_subtitle">Проданные предметы</string>
     <string name="analytics_products_list_header_title">Товары</string>
@@ -1057,7 +1107,7 @@ Language: ru
     <string name="shipping_label_payments_cant_edit_warning">Только владелец сайта может управлять способами оплаты транспортных этикеток. Чтобы управлять способами оплаты, свяжитесь с владельцем магазина %1$s (%2$s).</string>
     <string name="product_detail_add_variations">Добавить варианты</string>
     <string name="product_variant_list_empty_action">Добавить вариант</string>
-    <string name="product_variant_list_add_first_variation">Добавьте первый вариант</string>
+    <string name="product_variant_list_add_first_variation">Создайте первый вариант</string>
     <string name="shipping_label_selected_rates_total_description">Итого %s</string>
     <string name="shipping_label_selected_rates_description">Выбрано %s ставок</string>
     <string name="shipping_label_rate_included_options_signature_required_free">Подходит для бесплатной подписи</string>

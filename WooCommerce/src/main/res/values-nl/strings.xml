@@ -1,11 +1,65 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2022-11-24 15:54:18+0000
+Translation-Revision-Date: 2022-12-01 17:29:22+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: nl
 -->
 <resources>
+    <string name="store_creation_ecommerce_store_loading_error">Kon je nieuwe winkel niet laden. Wacht even en probeer het opnieuw…</string>
+    <string name="store_creation_ecommerce_plan_purchase_error">Kon de aankoop niet voltooien…</string>
+    <string name="store_creation_ecommerce_site_creation_error">Kon geen nieuwe site aanmaken…</string>
+    <string name="store_creation_domain_picker_suggestions_error">Kon domeinsuggesties niet laden</string>
+    <string name="store_creation_domain_picker_empty_suggestions">Geen beschikbare domeinen voor deze zoekopdracht</string>
+    <string name="variations_bulk_creation_progress_title">Variaties aan het genereren</string>
+    <string name="variations_bulk_creation_confirmation_message">Dit voegt een nieuwe variatie toe voor elke mogelijke combinatie van variatie-eigenschappen (%1$d variaties).</string>
+    <string name="variations_bulk_creation_confirmation_title">Alle variaties genereren?</string>
+    <string name="variations_bulk_creation_warning_message">Aanmaken wordt momenteel ondersteund voor maximaal %1$d variaties. Het genereren van variaties voor dit product leidt tot het aanmaken van %2$d variaties.</string>
+    <string name="variations_bulk_creation_warning_title">Generatielimiet overschreden</string>
+    <string name="variation_add_all_description">Maakt variaties aan voor alle combinaties van je eigenschappen.</string>
+    <string name="variation_add_new_description">Eén nieuwe variatie aanmaken. Handmatig instellen welke eigenschappen bij het variabele product horen.</string>
+    <string name="variation_add_new">Nieuwe variatie toevoegen</string>
+    <string name="variation_list_add">Variatie toevoegen</string>
+    <string name="login_jetpack_installation_exit_without_connection">Afsluiten zonder te verbinden</string>
+    <string name="login_jetpack_installation_continue_connection">Verbinding behouden</string>
+    <string name="login_jetpack_installation_connection_dismissed_explanation">Probeer opnieuw verbinding te maken om toegang te krijgen tot je winkel.</string>
+    <string name="login_jetpack_installation_connection_dismissed">Jetpack is geïnstalleerd, maar niet verbonden.</string>
+    <string name="login_jetpack_installation_error_connection_permission_message">Je hebt geen toestemming om Jetpack te verbinden met deze winkel</string>
+    <string name="login_jetpack_installation_error_forbidden_suggestion">Neem contact op met je winkelmanager of beheerder voor hulp.</string>
+    <string name="login_jetpack_installation_cancel">Installatie annuleren</string>
+    <string name="login_jetpack_installation_retry_authorizing">Probeer opnieuw te autoriseren</string>
+    <string name="login_jetpack_installation_retry_activating">Probeer opnieuw te activeren</string>
+    <string name="login_jetpack_installation_retry_installing">Probeer opnieuw te installeren</string>
+    <string name="login_jetpack_installation_get_support">Vraag ondersteuning</string>
+    <string name="login_jetpack_installation_retry_or_contact_support">Probeer het opnieuw en neem contact op met ondersteuning als het probleem aanhoudt.</string>
+    <string name="login_jetpack_installation_error_generic_message">Er is een fout opgetreden tijdens het communiceren met je site.</string>
+    <string name="login_jetpack_installation_error_plugin_permission_message">Je hebt geen toestemming om plugins te beheren op deze winkel.</string>
+    <string name="login_jetpack_installation_error_authorizing">Fout bij het autoriseren van de verbinding met Jetpack</string>
+    <string name="login_jetpack_installation_error_activating">Fout tijdens activeren van Jetpack</string>
+    <string name="login_jetpack_installation_error_installing">Fout tijdens installeren van Jetpack</string>
+    <string name="login_jetpack_installation_approve_connection">Jetpack inschakelen</string>
+    <string name="login_jetpack_installation_go_to_store_button">Ga naar winkel</string>
+    <string name="login_jetpack_installation_error">Fout</string>
+    <string name="login_jetpack_installation_error_code_template">Foutmelding %1$s</string>
+    <string name="login_jetpack_steps_screen_subtitle_done">Je winkel &lt;b&gt;%1$s&lt;/b&gt; is nu verbonden met Jetpack.</string>
+    <string name="login_jetpack_steps_screen_subtitle">Een moment geduld, we zijn bezig je winkel &lt;b&gt;%1$s&lt;/b&gt; te verbinden met Jetpack.</string>
+    <string name="login_jetpack_installation_steps_screen_title_done">Jetpack geïnstalleerd</string>
+    <string name="login_jetpack_connection_steps_screen_title_done">Jetpack verbonden</string>
+    <string name="login_jetpack_connection_steps_screen_title">Verbinden met Jetpack</string>
+    <string name="login_jetpack_installation_steps_screen_title">Jetpack installeren</string>
+    <string name="login_jetpack_steps_done">Klaar</string>
+    <string name="login_jetpack_steps_authorizing_done">Verbonden</string>
+    <string name="login_jetpack_steps_authorizing_validation">Wordt gevalideerd</string>
+    <string name="login_jetpack_steps_authorizing">Koppel je winkel met Jetpack</string>
+    <string name="login_jetpack_steps_activating">Activeren</string>
+    <string name="login_jetpack_steps_installing">Jetpack installeren</string>
+    <string name="login_jetpack_connection_enter_site_credentials">Log in bij &lt;b&gt;%1$s&lt;/b&gt; met de inloggegevens van je winkel om Jetpack te koppelen.</string>
+    <string name="login_jetpack_installation_enter_site_credentials">Log in bij &lt;b&gt;%1$s&lt;/b&gt; met de inloggegevens van je winkel om Jetpack te installeren.</string>
+    <string name="login_jetpack_installation_credentials_hint">Houd je inloggegevens van je winkel bij de hand.</string>
+    <string name="login_jetpack_connection_explanation">Verbind je winkel met Jetpack om er toegang tot te krijgen op deze app.</string>
+    <string name="login_jetpack_installation_explanation">Installeer de gratis Jetpack-plugin om toegang te krijgen tot je winkel op deze app.</string>
+    <string name="login_no_stores_subtitle">Begin snel met verkopen met een mooie webwinkel.</string>
+    <string name="login_no_stores_header">Maak je eerste winkel aan</string>
     <string name="store_creation_store_name_hint">Winkelnaam</string>
     <string name="store_creation_store_name_subtitle">Maak je geen zorgen, je kunt dit later altijd nog wijzigen. </string>
     <string name="store_creation_store_name_title">Wat is de naam van je winkel?</string>
@@ -36,12 +90,9 @@ Language: nl
     <string name="always_update_reader">Altijd</string>
     <string name="update_simulated_reader_key">Sleutel gesimuleerde lezer bijwerken</string>
     <string name="update_simulated_reader">Gesimuleerde kaartlezer bijwerken</string>
-    <string name="variation_list_generate_all_variations">Alle variaties genereren</string>
     <string name="login_jetpack_connect">Verbinden met Jetpack</string>
-    <string name="login_jetpack_installation_credentials_hint">Je hebt de inloggegevens van je winkel nodig om de installatie te beginnen.</string>
     <string name="login_jetpack_installation_screen_title">Winkel koppelen</string>
     <string name="store_creation_domain_picker_suggestions_title">Suggesties</string>
-    <string name="store_creation_domain_picker_skip_button">Overslaan</string>
     <string name="store_creation_domain_picker_hint">Typ een domein</string>
     <string name="store_creation_domain_picker_subtitle">Dit is de plek waar mensen je online kunnen vinden. Maak je geen zorgen, je kan dit later altijd veranderen.</string>
     <string name="store_creation_domain_picker_title">Kies een domein</string>
@@ -70,8 +121,7 @@ Language: nl
     <string name="site_picker_connect_existing_store">Een bestaande winkel koppelen</string>
     <string name="site_picker_create_new_store">Een nieuwe winkel maken</string>
     <string name="login_site_picker_add_a_store">Een winkel toevoegen</string>
-    <string name="login_no_stores_header">Je account is niet gekoppeld aan een WooCommerce-winkel.</string>
-    <string name="analytics_products_list_item_description">Netto verkoop: %@ %1$s</string>
+    <string name="analytics_products_list_item_description">Netto verkoop: %1$s</string>
     <string name="analytics_products_list_header_subtitle">Verkochte artikelen</string>
     <string name="analytics_products_list_header_title">Producten</string>
     <string name="analytics_products_card_title">Producten</string>
@@ -1057,7 +1107,7 @@ Language: nl
     <string name="shipping_label_payments_cant_edit_warning">Alleen de site-eigenaar kan de betalingsmethoden voor verzendlabels beheren. Neem contact op met winkeleigenaar %1$s (%2$s) om betalingsmethoden te beheren.</string>
     <string name="product_detail_add_variations">Variaties toevoegen</string>
     <string name="product_variant_list_empty_action">Variatie toevoegen</string>
-    <string name="product_variant_list_add_first_variation">Voeg je eerste variatie toe</string>
+    <string name="product_variant_list_add_first_variation">Je eerste variatie maken</string>
     <string name="shipping_label_selected_rates_total_description">%s totaal</string>
     <string name="shipping_label_selected_rates_description">%s tarieven geselecteerd</string>
     <string name="shipping_label_rate_included_options_signature_required_free">Geschikt voor gratis handtekeningvereiste</string>

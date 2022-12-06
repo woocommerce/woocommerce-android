@@ -1,2 +1,0 @@
-11,3:
-Deze release bevat meerdere reparaties waardoor je je winkel eenvoudiger kunt beheren vanuit de app. Blijf ons feedback sturen – wij luisteren!
