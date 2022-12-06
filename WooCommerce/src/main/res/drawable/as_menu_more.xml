@@ -20,4 +20,64 @@
         android:drawable="@drawable/ic_menu_more">
     </item>
 
+    <transition
+        android:fromId="@id/unselected"
+        android:toId="@id/selected">
+
+        <!--suppress AndroidElementNotAllowed -->
+        <animated-vector
+            android:drawable="@drawable/ic_menu_more">
+
+            <!--suppress AndroidElementNotAllowed -->
+            <target
+                android:name="top_left_clip"
+                android:animation="@animator/ic_menu_more_top_left_clip">
+            </target>
+
+            <!--suppress AndroidElementNotAllowed -->
+            <target
+                android:name="top_left_path"
+                android:animation="@animator/ic_menu_more_top_left_path">
+            </target>
+
+            <!--suppress AndroidElementNotAllowed -->
+            <target
+                android:name="top_right_clip"
+                android:animation="@animator/ic_menu_more_top_right_clip">
+            </target>
+
+            <!--suppress AndroidElementNotAllowed -->
+            <target
+                android:name="top_right_path"
+                android:animation="@animator/ic_menu_more_top_right_path">
+            </target>
+
+            <!--suppress AndroidElementNotAllowed -->
+            <target
+                android:name="bottom_right_clip"
+                android:animation="@animator/ic_menu_more_bottom_right_clip">
+            </target>
+
+            <!--suppress AndroidElementNotAllowed -->
+            <target
+                android:name="bottom_right_path"
+                android:animation="@animator/ic_menu_more_bottom_right_path">
+            </target>
+
+            <!--suppress AndroidElementNotAllowed -->
+            <target
+                android:name="bottom_left_clip"
+                android:animation="@animator/ic_menu_more_bottom_left_clip">
+            </target>
+
+            <!--suppress AndroidElementNotAllowed -->
+            <target
+                android:name="bottom_left_path"
+                android:animation="@animator/ic_menu_more_bottom_left_path">
+            </target>
+
+        </animated-vector>
+
+    </transition>
+
 </animated-selector>
