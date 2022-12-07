@@ -462,6 +462,7 @@ class ProductListFragment :
                 enableProductSortAndFiltersCard(false)
             }
             ProductListViewModel.ProductListState.Browsing -> {
+                tracker?.clearSelection()
                 onListSelectionActiveChanged(false)
                 enableProductsRefresh(true)
                 enableProductSortAndFiltersCard(true)
