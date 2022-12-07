@@ -41,8 +41,6 @@ class ProductFilterListFragment :
 
     private lateinit var productFilterListAdapter: ProductFilterListAdapter
 
-    private var clearAllMenuItem: MenuItem? = null
-
     override val activityAppBarStatus: AppBarStatus
         get() = AppBarStatus.Visible(
             navigationIcon = R.drawable.ic_gridicons_cross_24dp,
@@ -85,9 +83,11 @@ class ProductFilterListFragment :
     }
 
     override fun onCreateMenu(menu: Menu, inflater: MenuInflater) {
-        menu.clear()
         inflater.inflate(R.menu.menu_clear, menu)
-        clearAllMenuItem = menu.findItem(R.id.menu_clear)
+    }
+
+    override fun onPrepareMenu(menu: Menu) {
+        updateClearButtonVisibility(menu.findItem(R.id.menu_clear))
     }
 
     override fun onMenuItemSelected(item: MenuItem): Boolean {
@@ -95,6 +95,7 @@ class ProductFilterListFragment :
             R.id.menu_clear -> {
                 AnalyticsTracker.track(AnalyticsEvent.PRODUCT_FILTER_LIST_CLEAR_MENU_BUTTON_TAPPED)
                 viewModel.onClearFilterSelected()
+                updateClearButtonVisibility(item)
                 true
             }
             else -> false
@@ -104,7 +105,6 @@ class ProductFilterListFragment :
     private fun setupObservers(viewModel: ProductFilterListViewModel) {
         viewModel.productFilterListViewStateData.observe(viewLifecycleOwner) { old, new ->
             new.screenTitle.takeIfNotEqualTo(old?.screenTitle) { requireActivity().title = it }
-            new.displayClearButton?.takeIfNotEqualTo(old?.displayClearButton) { showClearAllAction(it) }
         }
         viewModel.filterListItems.observe(viewLifecycleOwner) {
             showProductFilterList(it)
@@ -127,10 +127,6 @@ class ProductFilterListFragment :
         productFilterListAdapter.filterList = productFilterList
     }
 
-    private fun showClearAllAction(show: Boolean) {
-        view?.post { clearAllMenuItem?.isVisible = show }
-    }
-
     override fun onProductFilterClick(selectedFilterPosition: Int) {
         val action = ProductFilterListFragmentDirections
             .actionProductFilterListFragmentToProductFilterOptionListFragment(selectedFilterPosition)
@@ -142,5 +138,10 @@ class ProductFilterListFragment :
     override fun onResume() {
         super.onResume()
         AnalyticsTracker.trackViewShown(this)
+    }
+
+    private fun updateClearButtonVisibility(clearMenuItem: MenuItem) {
+        clearMenuItem.isVisible =
+            viewModel.productFilterListViewStateData.liveData.value?.displayClearButton ?: false
     }
 }
