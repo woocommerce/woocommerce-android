@@ -199,7 +199,6 @@ class ProductListViewModel @Inject constructor(
     }
 
     fun onLoadMoreRequested() {
-        if (isSelecting()) return
         loadProducts(loadMore = true)
     }
 
@@ -334,7 +333,7 @@ class ProductListViewModel @Inject constructor(
                     else -> false
                 }
             } else {
-                !isSearching()
+                !isSearching() && !isSelecting()
             }
 
         val shouldShowEmptyView = if (isSearching()) {

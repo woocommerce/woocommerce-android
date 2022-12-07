@@ -143,8 +143,6 @@ class ProductListFragment :
                 binding.productsSearchTabView.isVisible = true
                 binding.productsSearchTabView.show(this, viewModel.isSkuSearch())
             }
-            // Do nothing on selection mode
-            viewModel.isSelecting() -> {}
             else -> {
                 viewModel.reloadProductsFromDb(excludeProductId = pendingTrashProductId)
             }
