@@ -544,11 +544,5 @@ class ProductListViewModel @Inject constructor(
         data class SelectProducts(val productsIds: List<Long>) : ProductListEvent()
     }
 
-    sealed class ProductListState : Parcelable {
-        @Parcelize
-        object Selecting : ProductListState()
-
-        @Parcelize
-        object Browsing : ProductListState()
-    }
+    enum class ProductListState  { Selecting , Browsing }
 }
