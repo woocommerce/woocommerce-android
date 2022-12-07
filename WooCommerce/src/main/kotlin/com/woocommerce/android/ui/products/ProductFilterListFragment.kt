@@ -87,8 +87,7 @@ class ProductFilterListFragment :
     }
 
     override fun onPrepareMenu(menu: Menu) {
-        menu.findItem(R.id.menu_clear).isVisible =
-            viewModel.productFilterListViewStateData.liveData.value?.displayClearButton ?: false
+        updateClearButtonVisibility(menu.findItem(R.id.menu_clear))
     }
 
     override fun onMenuItemSelected(item: MenuItem): Boolean {
@@ -96,6 +95,7 @@ class ProductFilterListFragment :
             R.id.menu_clear -> {
                 AnalyticsTracker.track(AnalyticsEvent.PRODUCT_FILTER_LIST_CLEAR_MENU_BUTTON_TAPPED)
                 viewModel.onClearFilterSelected()
+                updateClearButtonVisibility(item)
                 true
             }
             else -> false
@@ -138,5 +138,10 @@ class ProductFilterListFragment :
     override fun onResume() {
         super.onResume()
         AnalyticsTracker.trackViewShown(this)
+    }
+
+    private fun updateClearButtonVisibility(clearMenuItem: MenuItem) {
+        clearMenuItem.isVisible =
+            viewModel.productFilterListViewStateData.liveData.value?.displayClearButton ?: false
     }
 }
