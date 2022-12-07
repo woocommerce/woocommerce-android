@@ -8,17 +8,18 @@ import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.network.rest.wpapi.WPAPINetworkError
-import org.wordpress.android.fluxc.network.rest.wpapi.applicationpasswords.ApplicationPasswordsUnavailableListener
+import org.wordpress.android.fluxc.network.rest.wpapi.applicationpasswords.ApplicationPasswordsListener
 import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
-class ApplicationPasswordsUnavailableNotifier @Inject constructor(
+class ApplicationPasswordsNotifier @Inject constructor(
     private val analyticsTrackerWrapper: AnalyticsTrackerWrapper
-) : ApplicationPasswordsUnavailableListener {
-    private val events = MutableSharedFlow<WPAPINetworkError>(extraBufferCapacity = 1)
+) : ApplicationPasswordsListener {
+    private val _featureUnavailableEvents = MutableSharedFlow<WPAPINetworkError>(extraBufferCapacity = 1)
+    val featureUnavailableEvents: Flow<WPAPINetworkError> = _featureUnavailableEvents.asSharedFlow()
 
-    override fun featureIsUnavailable(siteModel: SiteModel, networkError: WPAPINetworkError) {
+    override fun onFeatureUnavailable(siteModel: SiteModel, networkError: WPAPINetworkError) {
         analyticsTrackerWrapper.track(
             stat = AnalyticsEvent.APPLICATION_PASSWORDS_NOT_AVAILABLE,
             properties = mapOf(
@@ -27,8 +28,10 @@ class ApplicationPasswordsUnavailableNotifier @Inject constructor(
                 AnalyticsTracker.KEY_ERROR_MESSAGE to networkError.message
             )
         )
-        events.tryEmit(networkError)
+        _featureUnavailableEvents.tryEmit(networkError)
     }
 
-    fun observe(): Flow<WPAPINetworkError> = events.asSharedFlow()
+    override fun onNewPasswordCreated() {
+        analyticsTrackerWrapper.track(stat = AnalyticsEvent.APPLICATION_PASSWORDS_NEW_PASSWORD_CREATED)
+    }
 }
