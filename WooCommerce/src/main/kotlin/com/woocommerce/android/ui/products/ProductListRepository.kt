@@ -7,6 +7,7 @@ import com.woocommerce.android.analytics.AnalyticsEvent.PRODUCT_LIST_LOAD_ERROR
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.model.Product
 import com.woocommerce.android.model.toAppModel
+import com.woocommerce.android.model.toDataModel
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.util.ContinuationWrapper
 import com.woocommerce.android.util.ContinuationWrapper.ContinuationResult.Cancellation
@@ -24,6 +25,7 @@ import org.wordpress.android.fluxc.store.WCProductStore.OnProductsSearched
 import org.wordpress.android.fluxc.store.WCProductStore.ProductFilterOption
 import org.wordpress.android.fluxc.store.WCProductStore.ProductSorting
 import org.wordpress.android.fluxc.store.WCProductStore.ProductSorting.TITLE_ASC
+import java.math.BigDecimal
 import javax.inject.Inject
 
 class ProductListRepository @Inject constructor(
@@ -215,5 +217,36 @@ class ProductListRepository @Inject constructor(
             val products = event.searchResults.map { it.toAppModel() }
             searchContinuation.continueWith(products)
         }
+    }
+
+    suspend fun updateProductsStatus(
+        productsToUpdateStatus: List<Product>,
+        newStatus: ProductStatus
+    ) {
+        val updatedProducts = productsToUpdateStatus.map {
+            it.copy(status = newStatus)
+        }
+        updateProducts(updatedProducts)
+    }
+
+    suspend fun updateProductsRegularPrice(
+        productsToUpdatePriceFor: List<Product>,
+        newRegularPrice: BigDecimal
+    ) {
+        val updatedProducts = productsToUpdatePriceFor.map {
+            it.copy(regularPrice = newRegularPrice)
+        }
+        updateProducts(updatedProducts)
+    }
+
+    private suspend fun updateProducts(updatedProducts: List<Product>) {
+        productStore.batchUpdateProducts(
+            WCProductStore.BatchUpdateProductsPayload(
+                site = selectedSite.get(),
+                updatedProducts = updatedProducts.map { updatedProduct ->
+                    updatedProduct.toDataModel()
+                }
+            )
+        )
     }
 }
