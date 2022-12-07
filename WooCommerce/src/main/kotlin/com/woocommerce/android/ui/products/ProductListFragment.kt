@@ -218,13 +218,7 @@ class ProductListFragment :
         tracker?.run {
             onRestoreInstanceState(savedInstanceState)
             if (hasSelection()) {
-                actionMode = (requireActivity() as AppCompatActivity).startSupportActionMode(this@ProductListFragment)
-                actionMode?.title = StringUtils.getQuantityString(
-                    context = requireContext(),
-                    quantity = selection.size(),
-                    default = R.string.product_selection_count,
-                    one = R.string.product_selection_count_single
-                )
+                viewModel.onRestoreSelection(selection.toList())
             }
         }
 

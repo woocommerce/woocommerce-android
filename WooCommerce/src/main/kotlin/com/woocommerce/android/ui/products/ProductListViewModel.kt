@@ -385,6 +385,10 @@ class ProductListViewModel @Inject constructor(
         }
     }
 
+    fun onRestoreSelection(selectedProductsIds: List<Long>){
+        triggerEvent(SelectProducts(selectedProductsIds))
+    }
+
     fun onSelectAllProductsClicked() {
         productList.value?.map { it.remoteId }?.let { allLoadedProductsIds ->
             triggerEvent(SelectProducts(allLoadedProductsIds))
