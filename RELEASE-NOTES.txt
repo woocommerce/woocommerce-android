@@ -1,7 +1,7 @@
 *** PLEASE FOLLOW THIS FORMAT: [<priority indicator, more stars = higher priority>] <description> [<PR URL>]
 11.6
 -----
-
+- [*][Internal] Integrate changes from FluxC to check for Application Passwords support and collect metrics [https://github.com/woocommerce/woocommerce-android/pull/7989]
 
 11.5
 -----
