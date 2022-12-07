@@ -402,7 +402,7 @@ class ProductListFragment :
             new.productListState?.takeIfNotEqualTo(old?.productListState) {
                 handleListState(it)
             }
-            new.selectionCount?.takeIfNotEqualTo(old?.selectionCount){ count ->
+            new.selectionCount?.takeIfNotEqualTo(old?.selectionCount) { count ->
                 actionMode?.title = StringUtils.getQuantityString(
                     context = requireContext(),
                     quantity = count,

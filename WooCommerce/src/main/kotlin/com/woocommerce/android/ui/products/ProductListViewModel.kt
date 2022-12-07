@@ -376,7 +376,7 @@ class ProductListViewModel @Inject constructor(
         }
     }
 
-    fun onSelectionChanged(count: Int){
+    fun onSelectionChanged(count: Int) {
         when {
             count == 0 -> exitSelectionMode()
             count > 0 && !isSelecting() -> enterSelectionMode(count)
@@ -384,7 +384,7 @@ class ProductListViewModel @Inject constructor(
         }
     }
 
-    fun onRestoreSelection(selectedProductsIds: List<Long>){
+    fun onRestoreSelection(selectedProductsIds: List<Long>) {
         triggerEvent(SelectProducts(selectedProductsIds))
     }
 
@@ -543,5 +543,5 @@ class ProductListViewModel @Inject constructor(
         data class SelectProducts(val productsIds: List<Long>) : ProductListEvent()
     }
 
-    enum class ProductListState  { Selecting , Browsing }
+    enum class ProductListState { Selecting, Browsing }
 }
