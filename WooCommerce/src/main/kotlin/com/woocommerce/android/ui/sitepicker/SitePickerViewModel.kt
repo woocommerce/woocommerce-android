@@ -673,11 +673,12 @@ class SitePickerViewModel @Inject constructor(
             val isSelected: Boolean
         ) : SitesListItem {
             override fun equals(other: Any?): Boolean = other is WooSiteUiModel &&
+                other.site.siteId == site.siteId &&
                 other.site.name == site.name &&
                 other.isSelected == isSelected &&
                 other.site.url == site.url
 
-            override fun hashCode(): Int = Objects.hash(site.siteId, site.selfHostedSiteId, site.url, isSelected)
+            override fun hashCode(): Int = Objects.hash(site.siteId, site.name, isSelected, site.url)
         }
 
         @Parcelize
@@ -685,10 +686,11 @@ class SitePickerViewModel @Inject constructor(
             val site: SiteModel
         ) : SitesListItem {
             override fun equals(other: Any?): Boolean = other is NonWooSiteUiModel &&
+                other.site.siteId == site.siteId &&
                 other.site.name == site.name &&
                 other.site.url == site.url
 
-            override fun hashCode(): Int = Objects.hash(site.siteId, site.selfHostedSiteId, site.url)
+            override fun hashCode(): Int = Objects.hash(site.siteId, site.name, site.url)
         }
     }
 
