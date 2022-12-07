@@ -167,25 +167,7 @@ class ProductListFragment :
             object : SelectionTracker.SelectionObserver<Long>() {
                 override fun onSelectionChanged() {
                     val selectionCount = tracker?.selection?.size() ?: 0
-                    if (selectionCount > 0 && actionMode == null) {
-                        viewModel.enterSelectionMode()
-                        actionMode = (requireActivity() as AppCompatActivity)
-                            .startSupportActionMode(this@ProductListFragment)
-                    }
-                    when (selectionCount) {
-                        0 -> {
-                            viewModel.exitSelectionMode()
-                            actionMode?.finish()
-                        }
-                        else -> {
-                            actionMode?.title = StringUtils.getQuantityString(
-                                context = requireContext(),
-                                quantity = selectionCount,
-                                default = R.string.product_selection_count,
-                                one = R.string.product_selection_count_single
-                            )
-                        }
-                    }
+                    viewModel.onSelectionChanged(selectionCount)
                     super.onSelectionChanged()
                 }
             })
@@ -425,8 +407,16 @@ class ProductListFragment :
             new.isSearchActive.takeIfNotEqualTo(old?.isSearchActive) {
                 refreshOptionsMenu()
             }
-            new.productListState.takeIfNotEqualTo(old?.productListState) {
+            new.productListState?.takeIfNotEqualTo(old?.productListState) {
                 handleListState(it)
+            }
+            new.selectionCount?.takeIfNotEqualTo(old?.selectionCount){ count ->
+                actionMode?.title = StringUtils.getQuantityString(
+                    context = requireContext(),
+                    quantity = count,
+                    default = R.string.product_selection_count,
+                    one = R.string.product_selection_count_single
+                )
             }
         }
 
@@ -456,13 +446,15 @@ class ProductListFragment :
     private fun handleListState(productListState: ProductListViewModel.ProductListState) {
         when (productListState) {
             ProductListViewModel.ProductListState.Selecting -> {
+                actionMode = (requireActivity() as AppCompatActivity)
+                    .startSupportActionMode(this@ProductListFragment)
                 delayMultiSelection()
                 onListSelectionActiveChanged(true)
                 enableProductsRefresh(false)
                 enableProductSortAndFiltersCard(false)
             }
             ProductListViewModel.ProductListState.Browsing -> {
-                tracker?.clearSelection()
+                actionMode?.finish()
                 onListSelectionActiveChanged(false)
                 enableProductsRefresh(true)
                 enableProductSortAndFiltersCard(true)
