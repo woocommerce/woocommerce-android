@@ -237,7 +237,7 @@ class ProductListViewModel @Inject constructor(
         viewState = viewState.copy(
             isEmptyViewVisible = products.isEmpty() && viewState.isSkeletonShown != true,
             /* if there are no products, hide Add Product button and use the empty view's button instead. */
-            isAddProductButtonVisible = products.isNotEmpty(),
+            isAddProductButtonVisible = products.isNotEmpty() && !isSelecting(),
             displaySortAndFilterCard = products.isNotEmpty() || productFilterOptions.isNotEmpty()
         )
     }
