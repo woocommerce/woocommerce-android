@@ -79,7 +79,7 @@ class SitePickerViewModel @Inject constructor(
     private val _sites = MutableLiveData<List<SitesListItem>>()
     val sites: LiveData<List<SitesListItem>> = _sites
 
-    private val selectedSiteId: MutableLiveData<Int> = MutableLiveData()
+    private val selectedSiteId: MutableLiveData<Int> = savedState.getLiveData("selected-site-id")
 
     private var loginSiteAddress: String?
         get() = savedState["key"] ?: appPrefsWrapper.getLoginSiteAddress()
@@ -97,8 +97,9 @@ class SitePickerViewModel @Inject constructor(
         loadAndDisplayUserInfo()
         loadAndDisplaySites()
         if (appPrefsWrapper.getIsNewSignUp()) startStoreCreationWebFlow()
-        val selectedSiteId = selectedSite.getSelectedSiteId()
-        if (selectedSiteId != -1) this.selectedSiteId.value = selectedSiteId
+        if (selectedSiteId.value == null && selectedSite.exists()) {
+            selectedSiteId.value = selectedSite.getSelectedSiteId()
+        }
     }
 
     private fun loadAndDisplayUserInfo() = launch {
