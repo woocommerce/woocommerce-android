@@ -15,6 +15,7 @@ import com.woocommerce.android.ui.media.MediaFileUploadHandler
 import com.woocommerce.android.ui.products.ProductListViewModel.ProductListEvent.ScrollToTop
 import com.woocommerce.android.ui.products.ProductListViewModel.ProductListEvent.SelectProducts
 import com.woocommerce.android.ui.products.ProductListViewModel.ProductListEvent.ShowAddProductBottomSheet
+import com.woocommerce.android.ui.products.ProductListViewModel.ProductListEvent.ShowBulkProductPriceUpdateDialog
 import com.woocommerce.android.ui.products.ProductListViewModel.ProductListEvent.ShowProductFilterScreen
 import com.woocommerce.android.ui.products.ProductListViewModel.ProductListEvent.ShowProductSortingBottomSheet
 import com.woocommerce.android.util.WooLog
@@ -520,6 +521,10 @@ class ProductListViewModel @Inject constructor(
         }
     }
 
+    fun onBulkUpdatePriceClicked(selectedProductsRemoteIds: List<Long>) {
+        triggerEvent(ShowBulkProductPriceUpdateDialog(selectedProductsRemoteIds))
+    }
+
     object OnProductSortingChanged
 
     @Parcelize
@@ -559,6 +564,8 @@ class ProductListViewModel @Inject constructor(
         ) : ProductListEvent()
 
         data class SelectProducts(val productsIds: List<Long>) : ProductListEvent()
+
+        data class ShowBulkProductPriceUpdateDialog(val productIds: List<Long>) : ProductListEvent()
     }
 
     sealed class ProductListState : Parcelable {

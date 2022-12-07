@@ -47,6 +47,7 @@ import com.woocommerce.android.ui.main.MainNavigationRouter
 import com.woocommerce.android.ui.products.ProductListViewModel.ProductListEvent.ScrollToTop
 import com.woocommerce.android.ui.products.ProductListViewModel.ProductListEvent.SelectProducts
 import com.woocommerce.android.ui.products.ProductListViewModel.ProductListEvent.ShowAddProductBottomSheet
+import com.woocommerce.android.ui.products.ProductListViewModel.ProductListEvent.ShowBulkProductPriceUpdateDialog
 import com.woocommerce.android.ui.products.ProductListViewModel.ProductListEvent.ShowProductFilterScreen
 import com.woocommerce.android.ui.products.ProductListViewModel.ProductListEvent.ShowProductSortingBottomSheet
 import com.woocommerce.android.ui.products.ProductSortAndFiltersCard.ProductSortAndFilterListener
@@ -451,14 +452,13 @@ class ProductListFragment :
                 )
                 is ShowProductSortingBottomSheet -> showProductSortingBottomSheet()
                 is SelectProducts -> tracker?.setItemsSelected(event.productsIds, true)
+                is ShowBulkProductPriceUpdateDialog -> showBulkUpdatePriceDialog(event.productIds)
                 else -> event.isHandled = false
             }
         }
     }
 
-    private fun showBulkUpdatePriceDialog(
-        productRemoteIdsToUpdate: List<Long>
-    ) {
+    private fun showBulkUpdatePriceDialog(productRemoteIdsToUpdate: List<Long>) {
         val dialogBinding = DialogProductListBulkPriceUpdateBinding.inflate(layoutInflater)
         MaterialAlertDialogBuilder(requireActivity())
             .setTitle(getString(R.string.product_bulk_update_regular_price))
@@ -737,7 +737,7 @@ class ProductListFragment :
         return when (item.itemId) {
             R.id.menu_update_status -> true
             R.id.menu_update_price -> {
-                showBulkUpdatePriceDialog(tracker?.selection?.toList().orEmpty())
+                viewModel.onBulkUpdatePriceClicked(tracker?.selection?.toList().orEmpty())
                 true
             }
             R.id.menu_select_all -> {
