@@ -510,9 +510,11 @@ class ProductListViewModel @Inject constructor(
                 RequestResult.SUCCESS -> {
                     refreshProducts()
                     exitSelectionMode()
+                    triggerEvent(ShowSnackbar(R.string.product_bulk_update_price_updated))
                 }
                 else -> {
                     exitSelectionMode()
+                    triggerEvent(ShowSnackbar(R.string.error_generic))
                 }
             }
         }
