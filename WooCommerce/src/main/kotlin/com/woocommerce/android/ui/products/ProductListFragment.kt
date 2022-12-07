@@ -476,7 +476,7 @@ class ProductListFragment :
             .setPositiveButton(android.R.string.ok) { _, _ ->
                 viewModel.onBulkUpdatePriceClicked(productRemoteIdsToUpdate, dialogBinding.priceInputLayout.getText())
             }
-            .setNegativeButton(android.R.string.cancel) { _, _ -> }
+            .setNegativeButton(android.R.string.cancel, null)
             .show()
 
         dialogBinding.priceInputLayout.post {
@@ -496,12 +496,14 @@ class ProductListFragment :
                 -1, null
             )
             .setPositiveButton(android.R.string.ok) { dialog, _ ->
-                viewModel.onBulkUpdateStatusClicked(
-                    productRemoteIdsToUpdate,
-                    statuses[
-                        (dialog as AlertDialog).listView.checkedItemPosition
-                    ]
-                )
+                val checkedItemPosition = (dialog as AlertDialog).listView.checkedItemPosition
+                if (checkedItemPosition < statuses.size && checkedItemPosition >= 0) {
+                    val newStatus = statuses[checkedItemPosition]
+                    viewModel.onBulkUpdateStatusClicked(
+                        productRemoteIdsToUpdate,
+                        newStatus
+                    )
+                }
             }
             .setNegativeButton(android.R.string.cancel, null)
             .show()
