@@ -1,6 +1,7 @@
 package com.woocommerce.android.ui.products
 
 import android.os.Parcelable
+import androidx.annotation.StringRes
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
@@ -15,9 +16,9 @@ import com.woocommerce.android.ui.media.MediaFileUploadHandler
 import com.woocommerce.android.ui.products.ProductListViewModel.ProductListEvent.ScrollToTop
 import com.woocommerce.android.ui.products.ProductListViewModel.ProductListEvent.SelectProducts
 import com.woocommerce.android.ui.products.ProductListViewModel.ProductListEvent.ShowAddProductBottomSheet
-import com.woocommerce.android.ui.products.ProductListViewModel.ProductListEvent.ShowBulkProductPriceUpdateDialog
 import com.woocommerce.android.ui.products.ProductListViewModel.ProductListEvent.ShowProductFilterScreen
 import com.woocommerce.android.ui.products.ProductListViewModel.ProductListEvent.ShowProductSortingBottomSheet
+import com.woocommerce.android.ui.products.ProductListViewModel.ProductListEvent.ShowUpdateDialog
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.viewmodel.LiveDataDelegate
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
@@ -502,16 +503,36 @@ class ProductListViewModel @Inject constructor(
         refreshProducts(scrollToTop = true)
     }
 
-    fun onUpdatePriceClicked(
+    fun onBulkUpdateStatusClicked(
+        selectedProductsRemoteIds: List<Long>,
+        newStatus: ProductStatus,
+    ) {
+        bulkUpdateProducts(
+            update = { productRepository.bulkUpdateProductsStatus(selectedProductsRemoteIds, newStatus) },
+            successMessage = R.string.product_bulk_update_status_updated
+        )
+    }
+
+    fun onBulkUpdatePriceClicked(
         selectedProductsRemoteIds: List<Long>,
         newPrice: String,
     ) {
+        bulkUpdateProducts(
+            update = { productRepository.bulkUpdateProductsPrice(selectedProductsRemoteIds, newPrice) },
+            successMessage = R.string.product_bulk_update_price_updated
+        )
+    }
+
+    private fun bulkUpdateProducts(
+        update: suspend () -> RequestResult,
+        @StringRes successMessage: Int
+    ) {
         launch {
-            when (productRepository.bulkUpdateProductsPrice(selectedProductsRemoteIds, newPrice)) {
+            when (update.invoke()) {
                 RequestResult.SUCCESS -> {
                     refreshProducts()
                     exitSelectionMode()
-                    triggerEvent(ShowSnackbar(R.string.product_bulk_update_price_updated))
+                    triggerEvent(ShowSnackbar(successMessage))
                 }
                 else -> {
                     exitSelectionMode()
@@ -522,7 +543,11 @@ class ProductListViewModel @Inject constructor(
     }
 
     fun onBulkUpdatePriceClicked(selectedProductsRemoteIds: List<Long>) {
-        triggerEvent(ShowBulkProductPriceUpdateDialog(selectedProductsRemoteIds))
+        triggerEvent(ShowUpdateDialog.Price(selectedProductsRemoteIds))
+    }
+
+    fun onBulkUpdateStatusClicked(selectedProductsRemoteIds: List<Long>) {
+        triggerEvent(ShowUpdateDialog.Status(selectedProductsRemoteIds))
     }
 
     object OnProductSortingChanged
@@ -564,8 +589,12 @@ class ProductListViewModel @Inject constructor(
         ) : ProductListEvent()
 
         data class SelectProducts(val productsIds: List<Long>) : ProductListEvent()
+        sealed class ShowUpdateDialog : ProductListEvent() {
+            abstract val productsIds: List<Long>
 
-        data class ShowBulkProductPriceUpdateDialog(val productIds: List<Long>) : ProductListEvent()
+            data class Price(override val productsIds: List<Long>) : ShowUpdateDialog()
+            data class Status(override val productsIds: List<Long>) : ShowUpdateDialog()
+        }
     }
 
     sealed class ProductListState : Parcelable {

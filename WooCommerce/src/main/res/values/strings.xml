@@ -88,6 +88,8 @@
     <string name="product_attribute_remove">Remove this attribute?</string>
     <string name="product_bulk_update_regular_price">Update regular price</string>
     <string name="product_bulk_update_price_updated">Price updated!</string>
+    <string name="product_bulk_update_status">Update status</string>
+    <string name="product_bulk_update_status_updated">Status updated!</string>
     <string name="review_notifications">Reviews</string>
     <string name="more_menu">Menu</string>
     <string name="more_menu_button_woo_admin">WooCommerce Admin</string>

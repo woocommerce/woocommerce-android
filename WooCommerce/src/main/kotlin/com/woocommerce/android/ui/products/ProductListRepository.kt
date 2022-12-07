@@ -21,6 +21,7 @@ import org.wordpress.android.fluxc.Dispatcher
 import org.wordpress.android.fluxc.action.WCProductAction.DELETED_PRODUCT
 import org.wordpress.android.fluxc.action.WCProductAction.FETCH_PRODUCTS
 import org.wordpress.android.fluxc.generated.WCProductActionBuilder
+import org.wordpress.android.fluxc.model.WCProductModel
 import org.wordpress.android.fluxc.store.WCProductStore
 import org.wordpress.android.fluxc.store.WCProductStore.OnProductChanged
 import org.wordpress.android.fluxc.store.WCProductStore.OnProductsSearched
@@ -221,11 +222,26 @@ class ProductListRepository @Inject constructor(
         }
     }
 
+    suspend fun bulkUpdateProductsStatus(
+        productsIds: Collection<Long>,
+        newStatus: ProductStatus,
+    ): RequestResult = withContext(dispatchers.io) {
+        val updatedProducts = productStore.getProductsByRemoteIds(
+            site = selectedSite.get(),
+            remoteProductIds = productsIds.toList()
+        ).map {
+            it.apply {
+                status = newStatus.toString()
+            }
+        }
+
+        bulkUpdateProducts(updatedProducts)
+    }
+
     suspend fun bulkUpdateProductsPrice(
         productsIds: Collection<Long>,
         newRegularPrice: String,
-    ) = withContext(dispatchers.io) {
-
+    ): RequestResult = withContext(dispatchers.io) {
         val updatedProducts = productStore.getProductsByRemoteIds(
             site = selectedSite.get(),
             remoteProductIds = productsIds.toList()
@@ -235,6 +251,10 @@ class ProductListRepository @Inject constructor(
             }
         }
 
+        bulkUpdateProducts(updatedProducts)
+    }
+
+    private suspend fun bulkUpdateProducts(updatedProducts: List<WCProductModel>) =
         productStore.batchUpdateProducts(
             WCProductStore.BatchUpdateProductsPayload(
                 selectedSite.get(),
@@ -247,5 +267,4 @@ class ProductListRepository @Inject constructor(
                 RequestResult.SUCCESS
             }
         }
-    }
 }
