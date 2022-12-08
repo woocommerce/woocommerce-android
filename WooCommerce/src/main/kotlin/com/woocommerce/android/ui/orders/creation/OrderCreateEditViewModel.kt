@@ -145,6 +145,8 @@ class OrderCreateEditViewModel @Inject constructor(
     val currentDraft
         get() = _orderDraft.value
 
+    private val orderCreationStatus = Order.Status.Custom(Order.Status.AUTO_DRAFT)
+
     init {
         when (mode) {
             Mode.Creation -> {
@@ -317,9 +319,9 @@ class OrderCreateEditViewModel @Inject constructor(
     }
 
     fun onCreateOrderClicked(order: Order) {
-        trackCreateOrderButtonClick()
         when (mode) {
             Mode.Creation -> viewModelScope.launch {
+                trackCreateOrderButtonClick()
                 viewState = viewState.copy(isProgressDialogShown = true)
                 orderCreateEditRepository.placeOrder(order).fold(
                     onSuccess = {
@@ -370,7 +372,15 @@ class OrderCreateEditViewModel @Inject constructor(
      */
     private fun monitorOrderChanges() {
         viewModelScope.launch {
-            val changes = if (mode is Mode.Edit) _orderDraft.drop(1) else _orderDraft
+            val changes =
+                if (mode is Mode.Edit) {
+                    _orderDraft.drop(1)
+                } else {
+                    // When we are in the order creation flow, we need to keep the order status as auto-draft.
+                    // In this way, when the draft of the created order needs to synchronize the price modifiers,
+                    // the application does not send notifications or synchronize its status on other devices.
+                    _orderDraft.map { order -> order.copy(status = orderCreationStatus) }
+                }
             syncStrategy.syncOrderChanges(changes, retryOrderDraftUpdateTrigger)
                 .collect { updateStatus ->
                     when (updateStatus) {
@@ -390,8 +400,13 @@ class OrderCreateEditViewModel @Inject constructor(
                                 multipleLinesContext = determineMultipleLinesContext(updateStatus.order)
                             )
                             _orderDraft.update { currentDraft ->
-                                // Keep the user's selected status
-                                updateStatus.order.copy(status = currentDraft.status)
+                                if (mode is Mode.Creation) {
+                                    // Once the order is synced, revert the auto-draft status and keep
+                                    // the user's selected one
+                                    updateStatus.order.copy(status = currentDraft.status)
+                                } else {
+                                    updateStatus.order
+                                }
                             }
                         }
                     }
@@ -411,7 +426,7 @@ class OrderCreateEditViewModel @Inject constructor(
     }
 
     private fun trackCreateOrderButtonClick() {
-        AnalyticsTracker.track(
+        tracker.track(
             ORDER_CREATE_BUTTON_TAPPED,
             mapOf(
                 KEY_STATUS to _orderDraft.value.status,

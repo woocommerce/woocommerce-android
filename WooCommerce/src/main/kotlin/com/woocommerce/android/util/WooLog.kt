@@ -28,7 +28,9 @@ object WooLog {
         MEDIA,
         CARD_READER,
         SITE_PICKER,
-        COUPONS
+        COUPONS,
+        JITM,
+        PLUGINS,
     }
 
     // Breaking convention to be consistent with org.wordpress.android.util.AppLog

@@ -2,17 +2,16 @@
 common_params:
   # Common plugin settings to use with the `plugins` key.
   - &common_plugins
-    - automattic/bash-cache#2.5.0
+    - automattic/bash-cache#2.11.0
 
 steps:
-  - label: "checkstyle"
+  - label: "Gradle Wrapper Validation"
     command: |
-      echo "--- 🧹 Linting"
-      cp -v gradle.properties-example gradle.properties
-      ./gradlew checkstyle
+      validate_gradle_wrapper
     plugins: *common_plugins
-    artifact_paths:
-      - "**/build/reports/checkstyle/checkstyle.*"
+
+  # Wait for Gradle Wrapper to be validated before running any other jobs
+  - wait
 
   - label: "detekt"
     command: |
@@ -43,7 +42,7 @@ steps:
     command: |
       echo "--- 🧪 Testing"
       cp gradle.properties-example gradle.properties
-      ./gradlew testJalapenoDebug lib:cardreader:testDebug
+      ./gradlew testJalapenoDebug lib:cardreader:testDebug lib:iap:testDebug
       echo "--- ⚒️ Generating and uploading code coverage"
       ./gradlew jacocoTestReport
       .buildkite/commands/upload-code-coverage.sh

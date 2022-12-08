@@ -1,7 +1,6 @@
 package com.woocommerce.android.ui.products
 
 import com.woocommerce.android.AppConstants
-import com.woocommerce.android.analytics.AnalyticsEvent.PRODUCT_DETAIL_LOADED
 import com.woocommerce.android.analytics.AnalyticsEvent.PRODUCT_DETAIL_UPDATE_ERROR
 import com.woocommerce.android.analytics.AnalyticsEvent.PRODUCT_DETAIL_UPDATE_SUCCESS
 import com.woocommerce.android.analytics.AnalyticsTracker
@@ -84,8 +83,6 @@ class ProductDetailRepository @Inject constructor(
 
         if (result.isError) {
             lastFetchProductErrorType = result.error.type
-        } else {
-            AnalyticsTracker.track(PRODUCT_DETAIL_LOADED)
         }
 
         return getProduct(remoteProductId)

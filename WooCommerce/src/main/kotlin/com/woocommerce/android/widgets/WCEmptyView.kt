@@ -17,6 +17,7 @@ import com.woocommerce.android.util.WooAnimUtils
 import com.woocommerce.android.util.WooAnimUtils.Duration
 import com.woocommerce.android.widgets.WCEmptyView.EmptyViewType.DASHBOARD
 import com.woocommerce.android.widgets.WCEmptyView.EmptyViewType.FILTER_RESULTS
+import com.woocommerce.android.widgets.WCEmptyView.EmptyViewType.GROUPED_PRODUCT_LIST
 import com.woocommerce.android.widgets.WCEmptyView.EmptyViewType.NETWORK_ERROR
 import com.woocommerce.android.widgets.WCEmptyView.EmptyViewType.NETWORK_OFFLINE
 import com.woocommerce.android.widgets.WCEmptyView.EmptyViewType.ORDER_LIST
@@ -36,6 +37,7 @@ class WCEmptyView @JvmOverloads constructor(ctx: Context, attrs: AttributeSet? =
 
     enum class EmptyViewType {
         DASHBOARD,
+        GROUPED_PRODUCT_LIST,
         ORDER_LIST,
         ORDER_LIST_LOADING,
         ORDER_LIST_FILTERED,
@@ -84,7 +86,7 @@ class WCEmptyView @JvmOverloads constructor(ctx: Context, attrs: AttributeSet? =
             return
         }
 
-        val title: String
+        val title: String?
         val message: String?
         val buttonText: String?
         val isTitleBold: Boolean
@@ -97,6 +99,13 @@ class WCEmptyView @JvmOverloads constructor(ctx: Context, attrs: AttributeSet? =
                 message = context.getString(R.string.share_your_store_message)
                 buttonText = context.getString(R.string.share_store_button)
                 drawableId = R.drawable.img_empty_my_store
+            }
+            GROUPED_PRODUCT_LIST -> {
+                isTitleBold = false
+                title = null
+                message = context.getString(R.string.product_list_empty)
+                buttonText = null
+                drawableId = R.drawable.img_empty_products
             }
             ORDER_LIST -> {
                 isTitleBold = true
@@ -192,13 +201,18 @@ class WCEmptyView @JvmOverloads constructor(ctx: Context, attrs: AttributeSet? =
             }
         }
 
-        val titleHtml = if (isTitleBold) {
-            "<strong>$title</strong>"
+        if (title.isNullOrEmpty()) {
+            binding.emptyViewTitle.isVisible = false
         } else {
-            title
+            val titleHtml = if (isTitleBold) {
+                "<strong>$title</strong>"
+            } else {
+                title
+            }
+            binding.emptyViewTitle.isVisible = true
+            binding.emptyViewTitle.text = HtmlCompat.fromHtml(titleHtml, HtmlCompat.FROM_HTML_MODE_LEGACY)
         }
 
-        binding.emptyViewTitle.text = HtmlCompat.fromHtml(titleHtml, HtmlCompat.FROM_HTML_MODE_LEGACY)
         binding.emptyViewImage.setImageDrawable(AppCompatResources.getDrawable(context, drawableId))
         if (message != null) {
             binding.emptyViewMessage.text = HtmlCompat.fromHtml(message, HtmlCompat.FROM_HTML_MODE_LEGACY)

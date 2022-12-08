@@ -6,15 +6,17 @@ import com.woocommerce.android.AppPrefs.CardReaderOnboardingStatus.CARD_READER_O
 import com.woocommerce.android.AppPrefs.CardReaderOnboardingStatus.CARD_READER_ONBOARDING_NOT_COMPLETED
 import com.woocommerce.android.AppPrefs.CardReaderOnboardingStatus.CARD_READER_ONBOARDING_PENDING
 import com.woocommerce.android.AppPrefsWrapper
-import com.woocommerce.android.cardreader.internal.config.CardReaderConfigForSupportedCountry
-import com.woocommerce.android.cardreader.internal.config.SupportedExtensionType
-import com.woocommerce.android.cardreader.internal.config.isExtensionSupported
-import com.woocommerce.android.cardreader.internal.config.minSupportedVersionForExtension
+import com.woocommerce.android.cardreader.config.CardReaderConfigForSupportedCountry
+import com.woocommerce.android.cardreader.config.SupportedExtensionType
+import com.woocommerce.android.cardreader.config.isExtensionSupported
+import com.woocommerce.android.cardreader.config.minSupportedVersionForExtension
 import com.woocommerce.android.extensions.semverCompareTo
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.payments.cardreader.CardReaderCountryConfigProvider
 import com.woocommerce.android.ui.payments.cardreader.CardReaderTrackingInfoKeeper
+import com.woocommerce.android.ui.payments.cardreader.CashOnDeliverySettingsRepository
+import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboardingState.CashOnDeliveryDisabled
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboardingState.ChoosePaymentGatewayProvider
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboardingState.GenericError
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboardingState.NoConnectionError
@@ -73,6 +75,7 @@ class CardReaderOnboardingChecker @Inject constructor(
     private val networkStatus: NetworkStatus,
     private val cardReaderTrackingInfoKeeper: CardReaderTrackingInfoKeeper,
     private val cardReaderCountryConfigProvider: CardReaderCountryConfigProvider,
+    private val cashOnDeliverySettingsRepository: CashOnDeliverySettingsRepository,
 ) {
     suspend fun getOnboardingState(pluginType: PluginType? = null): CardReaderOnboardingState {
         if (!networkStatus.isConnected()) return NoConnectionError
@@ -81,6 +84,7 @@ class CardReaderOnboardingChecker @Inject constructor(
             .also {
                 val (status, version) = when (it) {
                     is OnboardingCompleted -> CARD_READER_ONBOARDING_COMPLETED to it.version
+                    is CashOnDeliveryDisabled -> CARD_READER_ONBOARDING_PENDING to it.version
                     is StripeAccountPendingRequirement -> CARD_READER_ONBOARDING_PENDING to it.version
                     else -> {
                         updatePluginExplicitlySelectedFlag(false)
@@ -191,10 +195,28 @@ class CardReaderOnboardingChecker @Inject constructor(
         if (isStripeAccountRejected(paymentAccount)) return StripeAccountRejected(preferredPlugin.type)
         if (isInUndefinedState(paymentAccount)) return GenericError
 
+        if (
+            !isCashOnDeliveryDisabledStateSkipped() &&
+            !cashOnDeliverySettingsRepository.isCashOnDeliveryEnabled()
+        ) return CashOnDeliveryDisabled(
+            requireNotNull(countryCode),
+            preferredPlugin.type,
+            preferredPlugin.info?.version
+        )
+
         return OnboardingCompleted(
             preferredPlugin.type,
             preferredPlugin.info?.version,
             requireNotNull(countryCode)
+        )
+    }
+
+    private fun isCashOnDeliveryDisabledStateSkipped(): Boolean {
+        val site = selectedSite.get()
+        return appPrefsWrapper.isCashOnDeliveryDisabledStateSkipped(
+            localSiteId = site.id,
+            remoteSiteId = site.siteId,
+            selfHostedSiteId = site.selfHostedSiteId,
         )
     }
 
@@ -514,6 +536,16 @@ sealed class CardReaderOnboardingState(
      */
     @Parcelize
     object NoConnectionError : CardReaderOnboardingState()
+
+    /**
+     * Payment type Cash on Delivery is disabled on the store.
+     */
+    @Parcelize
+    data class CashOnDeliveryDisabled(
+        val countryCode: String,
+        override val preferredPlugin: PluginType,
+        val version: String?,
+    ) : CardReaderOnboardingState()
 }
 
 sealed class PreferredPluginResult {

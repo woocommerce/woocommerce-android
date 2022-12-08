@@ -7,6 +7,7 @@ import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
 import androidx.annotation.StringRes
+import androidx.core.view.MenuProvider
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.distinctUntilChanged
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -21,6 +22,7 @@ import com.woocommerce.android.databinding.FragmentVariationDetailBinding
 import com.woocommerce.android.extensions.handleResult
 import com.woocommerce.android.extensions.hide
 import com.woocommerce.android.extensions.navigateBackWithResult
+import com.woocommerce.android.extensions.parcelable
 import com.woocommerce.android.extensions.show
 import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.model.Product.Image
@@ -55,7 +57,8 @@ import javax.inject.Inject
 class VariationDetailFragment :
     BaseFragment(R.layout.fragment_variation_detail),
     BackPressListener,
-    OnGalleryImageInteractionListener {
+    OnGalleryImageInteractionListener,
+    MenuProvider {
     companion object {
         private const val LIST_STATE_KEY = "list_state"
         const val KEY_VARIATION_DETAILS_RESULT = "key_variation_details_result"
@@ -87,7 +90,7 @@ class VariationDetailFragment :
 
         _binding = FragmentVariationDetailBinding.bind(view)
 
-        setHasOptionsMenu(true)
+        requireActivity().addMenuProvider(this, viewLifecycleOwner)
         initializeViews(savedInstanceState)
         initializeViewModel()
     }
@@ -109,19 +112,17 @@ class VariationDetailFragment :
         progressDialog?.dismiss()
     }
 
-    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+    override fun onCreateMenu(menu: Menu, inflater: MenuInflater) {
         inflater.inflate(R.menu.menu_variation_detail_fragment, menu)
         doneOrUpdateMenuItem = menu.findItem(R.id.menu_done)
     }
 
-    override fun onPrepareOptionsMenu(menu: Menu) {
-        super.onPrepareOptionsMenu(menu)
-
+    override fun onPrepareMenu(menu: Menu) {
         doneOrUpdateMenuItem?.isVisible = viewModel.variationViewStateData.liveData.value?.isDoneButtonVisible ?: false
         doneOrUpdateMenuItem?.isEnabled = viewModel.variationViewStateData.liveData.value?.isDoneButtonEnabled ?: true
     }
 
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+    override fun onMenuItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
             R.id.menu_done -> {
                 AnalyticsTracker.track(PRODUCT_VARIATION_UPDATE_BUTTON_TAPPED)
@@ -133,7 +134,7 @@ class VariationDetailFragment :
                 viewModel.onDeleteVariationClicked()
                 true
             }
-            else -> super.onOptionsItemSelected(item)
+            else -> false
         }
     }
 
@@ -141,7 +142,7 @@ class VariationDetailFragment :
         val layoutManager = LinearLayoutManager(activity, RecyclerView.VERTICAL, false)
         this.layoutManager = layoutManager
 
-        savedInstanceState?.getParcelable<Parcelable>(LIST_STATE_KEY)?.let {
+        savedInstanceState?.parcelable<Parcelable>(LIST_STATE_KEY)?.let {
             layoutManager.onRestoreInstanceState(it)
         }
         binding.cardsRecyclerView.layoutManager = layoutManager
@@ -247,7 +248,7 @@ class VariationDetailFragment :
                 }
                 is ExitWithResult<*> -> navigateBackWithResult(KEY_VARIATION_DETAILS_RESULT, event.data)
                 is ShowDialog -> event.showDialog()
-                is Exit -> requireActivity().onBackPressed()
+                is Exit -> requireActivity().onBackPressedDispatcher.onBackPressed()
                 else -> event.isHandled = false
             }
         }

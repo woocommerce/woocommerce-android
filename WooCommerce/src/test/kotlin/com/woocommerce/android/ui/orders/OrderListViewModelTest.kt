@@ -1,9 +1,8 @@
+@file:Suppress("MaxLineLength")
 package com.woocommerce.android.ui.orders
 
 import androidx.lifecycle.SavedStateHandle
-import com.woocommerce.android.AppUrls
 import com.woocommerce.android.R
-import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_BANNER_PAYMENTS
 import com.woocommerce.android.extensions.NotificationReceivedEvent
 import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.model.RequestResult
@@ -13,19 +12,16 @@ import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.orders.details.OrderDetailRepository
 import com.woocommerce.android.ui.orders.filters.domain.GetSelectedOrderFiltersCount
 import com.woocommerce.android.ui.orders.filters.domain.GetWCOrderListDescriptorWithFilters
+import com.woocommerce.android.ui.orders.filters.domain.GetWCOrderListDescriptorWithFiltersAndSearchQuery
 import com.woocommerce.android.ui.orders.list.OrderListItemIdentifier
 import com.woocommerce.android.ui.orders.list.OrderListItemUIType
 import com.woocommerce.android.ui.orders.list.OrderListRepository
 import com.woocommerce.android.ui.orders.list.OrderListViewModel
-import com.woocommerce.android.ui.orders.list.OrderListViewModel.OrderListEvent.DismissCardReaderUpsellBanner
-import com.woocommerce.android.ui.orders.list.OrderListViewModel.OrderListEvent.DismissCardReaderUpsellBannerViaDontShowAgain
-import com.woocommerce.android.ui.orders.list.OrderListViewModel.OrderListEvent.DismissCardReaderUpsellBannerViaRemindMeLater
-import com.woocommerce.android.ui.orders.list.OrderListViewModel.OrderListEvent.OpenPurchaseCardReaderLink
 import com.woocommerce.android.ui.orders.list.OrderListViewModel.OrderListEvent.ShowErrorSnack
-import com.woocommerce.android.ui.payments.banner.BannerDisplayEligibilityChecker
 import com.woocommerce.android.util.getOrAwaitValue
 import com.woocommerce.android.util.observeForTesting
 import com.woocommerce.android.viewmodel.BaseUnitTest
+import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.ResourceProvider
 import com.woocommerce.android.widgets.WCEmptyView.EmptyViewType.NETWORK_ERROR
 import com.woocommerce.android.widgets.WCEmptyView.EmptyViewType.NETWORK_OFFLINE
@@ -34,11 +30,13 @@ import com.woocommerce.android.widgets.WCEmptyView.EmptyViewType.ORDER_LIST_LOAD
 import com.woocommerce.android.widgets.WCEmptyView.EmptyViewType.SEARCH_RESULTS
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.InternalCoroutinesApi
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.test.advanceTimeBy
 import kotlinx.coroutines.test.advanceUntilIdle
-import kotlinx.coroutines.test.runTest
-import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Test
+import org.mockito.ArgumentMatchers.anyString
 import org.mockito.kotlin.any
 import org.mockito.kotlin.clearInvocations
 import org.mockito.kotlin.doReturn
@@ -48,9 +46,9 @@ import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import org.wordpress.android.fluxc.Dispatcher
-import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.model.WCOrderListDescriptor
 import org.wordpress.android.fluxc.model.list.PagedListWrapper
+import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.CoreOrderStatus
 import org.wordpress.android.fluxc.store.ListStore
 import org.wordpress.android.fluxc.store.WCOrderFetcher
 import org.wordpress.android.fluxc.store.WCOrderStore
@@ -78,12 +76,13 @@ class OrderListViewModelTest : BaseUnitTest() {
     private val pagedListWrapper: PagedListWrapper<OrderListItemUIType> = mock()
     private val orderFetcher: WCOrderFetcher = mock()
     private val getWCOrderListDescriptorWithFilters: GetWCOrderListDescriptorWithFilters = mock()
+    private val getWCOrderListDescriptorWithFiltersAndSearchQuery: GetWCOrderListDescriptorWithFiltersAndSearchQuery = mock()
     private val getSelectedOrderFiltersCount: GetSelectedOrderFiltersCount = mock()
-    private val bannerDisplayEligibilityChecker: BannerDisplayEligibilityChecker = mock()
 
     @Before
     fun setup() = testBlocking {
         whenever(getWCOrderListDescriptorWithFilters.invoke()).thenReturn(WCOrderListDescriptor(site = mock()))
+        whenever(getWCOrderListDescriptorWithFiltersAndSearchQuery.invoke(anyString())).thenReturn(WCOrderListDescriptor(site = mock()))
         whenever(pagedListWrapper.listError).doReturn(mock())
         whenever(pagedListWrapper.isEmpty).doReturn(mock())
         whenever(pagedListWrapper.isFetchingFirstPage).doReturn(mock())
@@ -97,7 +96,6 @@ class OrderListViewModelTest : BaseUnitTest() {
             )
         ).doReturn(pagedListWrapper)
         doReturn(true).whenever(networkStatus).isConnected()
-        doReturn(SiteModel()).whenever(selectedSite).get()
 
         viewModel = OrderListViewModel(
             savedState = savedStateHandle,
@@ -112,8 +110,9 @@ class OrderListViewModelTest : BaseUnitTest() {
             fetcher = orderFetcher,
             resourceProvider = resourceProvider,
             getWCOrderListDescriptorWithFilters = getWCOrderListDescriptorWithFilters,
+            getWCOrderListDescriptorWithFiltersAndSearchQuery = getWCOrderListDescriptorWithFiltersAndSearchQuery,
             getSelectedOrderFiltersCount = getSelectedOrderFiltersCount,
-            bannerDisplayEligibilityChecker = bannerDisplayEligibilityChecker,
+            orderListTransactionLauncher = mock(),
         )
     }
 
@@ -433,117 +432,73 @@ class OrderListViewModelTest : BaseUnitTest() {
         verify(viewModel.activePagedListWrapper)?.fetchFirstPage()
     }
 
-    //region Card Reader Upsell
     @Test
-    fun `given upsell banner, when purchase reader clicked, then trigger proper event`() {
-        runTest {
-            // GIVEN
-            whenever(
-                bannerDisplayEligibilityChecker.getPurchaseCardReaderUrl(KEY_BANNER_PAYMENTS)
-            ).thenReturn(
-                "${AppUrls.WOOCOMMERCE_PURCHASE_CARD_READER_IN_COUNTRY}US"
-            )
+    fun `when the order is swiped then the status is changed optimistically`() = testBlocking {
+        // Given that updateOrderStatus will success
+        val order = OrderTestUtils.generateOrder()
+        val position = 1
+        val gesture = OrderStatusUpdateSource.SwipeToCompleteGesture(order.orderId, position, order.status)
+        val result = WCOrderStore.OnOrderChanged()
 
-            // WHEN
-            viewModel.onCtaClicked(KEY_BANNER_PAYMENTS)
-
-            // Then
-            assertThat(
-                viewModel.event.value
-            ).isInstanceOf(OpenPurchaseCardReaderLink::class.java)
+        val updateFlow = flow {
+            emit(WCOrderStore.UpdateOrderResult.OptimisticUpdateResult(WCOrderStore.OnOrderChanged()))
+            delay(1_000)
+            emit(WCOrderStore.UpdateOrderResult.RemoteUpdateResult(result))
         }
+
+        whenever(resourceProvider.getString(R.string.orderlist_mark_completed_success, order.orderId))
+            .thenReturn("Order #${order.orderId} marked as completed")
+        whenever(orderDetailRepository.updateOrderStatus(order.orderId, CoreOrderStatus.COMPLETED.value))
+            .thenReturn(updateFlow)
+
+        // When the order is swiped
+        viewModel.onSwipeStatusUpdate(gesture)
+
+        // Then the order status is changed optimistically
+        val optimisticChangeEvent = viewModel.event.getOrAwaitValue()
+        assertTrue(optimisticChangeEvent is MultiLiveEvent.Event.ShowUndoSnackbar)
+
+        advanceTimeBy(1_001)
+
+        // Then when the order status changed nothing happens because it was already handled optimistically
+        val resultEvent = viewModel.event.getOrAwaitValue()
+        assertEquals(optimisticChangeEvent, resultEvent)
     }
 
     @Test
-    fun `given upsell banner, when banner is dismissed, then trigger DismissCardReaderUpsellBanner event`() {
-        // WHEN
-        viewModel.onDismissClicked()
+    fun `when the order is swiped but the change fails, then a retry message is shown`() = testBlocking {
+        // Given that updateOrderStatus will fail
+        val order = OrderTestUtils.generateOrder()
+        val position = 1
+        val gesture = OrderStatusUpdateSource.SwipeToCompleteGesture(order.orderId, position, order.status)
+        val result = WCOrderStore.OnOrderChanged(orderError = WCOrderStore.OrderError())
 
-        // Then
-        assertThat(
-            viewModel.event.value
-        ).isEqualTo(DismissCardReaderUpsellBanner)
-    }
-
-    @Test
-    fun `given upsell banner, when banner is dismissed via remind later, then trigger proper event`() {
-        // WHEN
-        viewModel.onRemindLaterClicked(0L, KEY_BANNER_PAYMENTS)
-
-        // Then
-        assertThat(viewModel.event.value).isEqualTo(
-            DismissCardReaderUpsellBannerViaRemindMeLater
-        )
-    }
-
-    @Test
-    fun `given upsell banner, when banner is dismissed via don't show again, then trigger proper event`() {
-        // WHEN
-        viewModel.onDontShowAgainClicked(KEY_BANNER_PAYMENTS)
-
-        // Then
-        assertThat(viewModel.event.value).isEqualTo(
-            DismissCardReaderUpsellBannerViaDontShowAgain
-        )
-    }
-
-    @Test
-    fun `given card reader banner has dismissed, then update dialogShow state to true`() {
-        viewModel.onDismissClicked()
-
-        assertThat(viewModel.shouldShowUpsellCardReaderDismissDialog.value).isTrue
-    }
-
-    @Test
-    fun `given card reader banner has dismissed via remind later, then update dialogShow state to false`() {
-        viewModel.onRemindLaterClicked(0L, KEY_BANNER_PAYMENTS)
-
-        assertThat(viewModel.shouldShowUpsellCardReaderDismissDialog.value).isFalse
-    }
-
-    @Test
-    fun `given card reader banner has dismissed via don't show again, then update dialogShow state to false`() {
-        viewModel.onDontShowAgainClicked(KEY_BANNER_PAYMENTS)
-
-        assertThat(viewModel.shouldShowUpsellCardReaderDismissDialog.value).isFalse
-    }
-
-    @Test
-    fun `given view model init, then update dialogShow state to false`() {
-        assertThat(viewModel.shouldShowUpsellCardReaderDismissDialog.value).isFalse
-    }
-
-    @Test
-    fun `given store not eligible for IPP, then isEligibleForInPersonPayments is false`() {
-        runTest {
-            whenever(bannerDisplayEligibilityChecker.isEligibleForInPersonPayments()).thenReturn(false)
-            whenever(selectedSite.exists()).thenReturn(true)
-
-            setup()
-
-            assertThat(viewModel.isEligibleForInPersonPayments.value).isFalse
+        val updateFlow = flow {
+            emit(WCOrderStore.UpdateOrderResult.OptimisticUpdateResult(WCOrderStore.OnOrderChanged()))
+            delay(1_000)
+            emit(WCOrderStore.UpdateOrderResult.RemoteUpdateResult(result))
         }
+
+        whenever(resourceProvider.getString(R.string.orderlist_mark_completed_success, order.orderId))
+            .thenReturn("Order #${order.orderId} marked as completed")
+        whenever(resourceProvider.getString(R.string.orderlist_updating_order_error, order.orderId))
+            .thenReturn("Error updating Order #${order.orderId}")
+        whenever(orderDetailRepository.updateOrderStatus(order.orderId, CoreOrderStatus.COMPLETED.value))
+            .thenReturn(updateFlow)
+
+        // When the order is swiped
+        viewModel.onSwipeStatusUpdate(gesture)
+
+        // Then the order status is changed optimistically
+        val optimisticChangeEvent = viewModel.event.getOrAwaitValue()
+        assertTrue(optimisticChangeEvent is MultiLiveEvent.Event.ShowUndoSnackbar)
+
+        advanceTimeBy(1_001)
+
+        // Then when the order status change fails, the retry message is shown
+        val resultEvent = viewModel.event.getOrAwaitValue()
+        assertTrue(resultEvent is OrderListViewModel.OrderListEvent.ShowRetryErrorSnack)
     }
-
-    @Test
-    fun `given store eligible for IPP, then isEligibleForInPersonPayments is true`() {
-        runTest {
-            whenever(bannerDisplayEligibilityChecker.isEligibleForInPersonPayments()).thenReturn(true)
-            whenever(selectedSite.exists()).thenReturn(true)
-
-            setup()
-
-            assertThat(viewModel.isEligibleForInPersonPayments.value).isTrue
-        }
-    }
-
-    @Test
-    fun `when alert dialog dismissed by pressing back, then shouldShowUpsellCardReaderDismissDialog set to false`() {
-        viewModel.onBannerAlertDismiss()
-
-        assertThat(viewModel.shouldShowUpsellCardReaderDismissDialog.value).isFalse
-    }
-    //endregion
 
     private companion object {
         const val ANY_SEARCH_QUERY = "search query"

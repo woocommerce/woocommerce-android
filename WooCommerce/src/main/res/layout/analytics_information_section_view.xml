@@ -1,0 +1,65 @@
+<merge xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingTop="@dimen/major_100"
+        android:paddingStart="@dimen/major_100"
+        android:paddingEnd="@dimen/major_100"
+        android:paddingBottom="@dimen/major_100">
+
+        <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/cardInformationSectionTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:lineHeight="@dimen/text_major_25"
+            tools:text="Total Sales" />
+
+        <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/cardInformationSectionValue"
+            style="@style/Woo.Card.Title"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/minor_00"
+            android:layout_marginTop="@dimen/major_100"
+            android:textSize="@dimen/text_major_50"
+            app:layout_constraintBottom_toTopOf="@+id/cardInformationSectionDeltaTag"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/cardInformationSectionTitle"
+            tools:text="$359,687.50" />
+
+        <com.woocommerce.android.widgets.tags.TagView
+            android:id="@+id/cardInformationSectionDeltaTag"
+            android:layout_width="wrap_content"
+            android:layout_height="@dimen/text_major_50"
+            android:textSize="@dimen/text_minor_80"
+            android:layout_marginTop="@dimen/major_100"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="@+id/cardInformationSectionValue"
+            app:layout_constraintTop_toBottomOf="@+id/cardInformationSectionValue"
+            app:tagTextColor="@color/woo_white"
+            tools:tagColor="#69B56E"
+            tools:tagText="+1000%" />
+
+        <androidx.compose.ui.platform.ComposeView
+            android:id="@+id/cardInformationChart"
+            android:layout_width="0dp"
+            android:layout_height="@dimen/analytics_chart_height"
+            android:layout_marginTop="@dimen/major_100"
+            android:layout_marginStart="@dimen/minor_100"
+            app:layout_constraintWidth_max="@dimen/analytics_max_chart_width"
+            app:layout_constraintStart_toEndOf="@+id/cardInformationSectionDeltaTag"
+            app:layout_constraintTop_toBottomOf="@+id/cardInformationSectionValue"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintHorizontal_bias="1"
+            app:layout_constraintEnd_toEndOf="parent"/>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</merge>
+

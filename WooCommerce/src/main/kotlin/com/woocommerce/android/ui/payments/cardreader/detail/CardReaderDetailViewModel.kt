@@ -22,12 +22,14 @@ import com.woocommerce.android.model.UiString.UiStringRes
 import com.woocommerce.android.model.UiString.UiStringText
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.payments.cardreader.CardReaderTracker
+import com.woocommerce.android.ui.payments.cardreader.buildBatteryLevelUiString
 import com.woocommerce.android.ui.payments.cardreader.detail.CardReaderDetailViewModel.CardReaderDetailEvent.NavigateToUrlInGenericWebView
 import com.woocommerce.android.ui.payments.cardreader.detail.CardReaderDetailViewModel.NavigationTarget.CardReaderConnectScreen
 import com.woocommerce.android.ui.payments.cardreader.detail.CardReaderDetailViewModel.ViewState.ConnectedState
 import com.woocommerce.android.ui.payments.cardreader.detail.CardReaderDetailViewModel.ViewState.ConnectedState.ButtonState
 import com.woocommerce.android.ui.payments.cardreader.detail.CardReaderDetailViewModel.ViewState.Loading
 import com.woocommerce.android.ui.payments.cardreader.detail.CardReaderDetailViewModel.ViewState.NotConnectedState
+import com.woocommerce.android.ui.payments.cardreader.getReadersBatteryLevel
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderFlowParam
 import com.woocommerce.android.ui.payments.cardreader.onboarding.PluginType.STRIPE_EXTENSION_GATEWAY
 import com.woocommerce.android.ui.payments.cardreader.onboarding.PluginType.WOOCOMMERCE_PAYMENTS
@@ -42,9 +44,6 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import javax.inject.Inject
-import kotlin.math.roundToInt
-
-private const val PERCENT_100 = 100
 
 @HiltViewModel
 class CardReaderDetailViewModel @Inject constructor(
@@ -297,16 +296,9 @@ private fun CardReader.getReadersName(): UiString {
     }
 }
 
-private fun CardReader.getReadersBatteryLevel(): UiString? = currentBatteryLevel?.let { buildBatteryLevelUiString(it) }
-
 private fun CardReader.getReaderFirmwareVersion(): UiString {
     return UiStringRes(
         R.string.card_reader_detail_connected_firmware_version,
         listOf(UiStringText(firmwareVersion))
     )
 }
-
-private fun buildBatteryLevelUiString(batteryLevel: Float) = UiStringRes(
-    R.string.card_reader_detail_connected_battery_percentage,
-    listOf(UiStringText((batteryLevel * PERCENT_100).roundToInt().toString()))
-)

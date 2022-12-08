@@ -142,16 +142,21 @@ class AnalyticsTracker private constructor(private val context: Context) {
         const val KEY_ERROR_CONTEXT = "error_context"
         const val KEY_ERROR_DESC = "error_description"
         const val KEY_ERROR_TYPE = "error_type"
+        const val KEY_ERROR_CODE = "error_code"
+        const val KEY_NETWORK_STATUS_CODE = "network_status_code"
+        const val KEY_ERROR_MESSAGE = "error_message"
         const val KEY_FROM = "from"
         const val KEY_HAS_UNFULFILLED_ORDERS = "has_unfulfilled_orders"
         const val KEY_ID = "id"
         const val KEY_ORDER_ID = "order_id"
         const val KEY_PRODUCT_ID = "product_id"
         const val KEY_PRODUCT_COUNT = "product_count"
+        const val KEY_HAS_LINKED_PRODUCTS = "has_linked_products"
         const val KEY_IS_LOADING_MORE = "is_loading_more"
         const val KEY_IS_WPCOM_STORE = "is_wpcom_store"
         const val KEY_NAME = "name"
         const val KEY_NUMBER_OF_STORES = "number_of_stores"
+        const val KEY_NUMBER_OF_NON_WOO_SITES = "number_of_non_woo_sites"
         const val KEY_PARENT_ID = "parent_id"
         const val KEY_RANGE = "range"
         const val KEY_RESULT = "result"
@@ -161,6 +166,7 @@ class AnalyticsTracker private constructor(private val context: Context) {
         const val KEY_STATUS = "status"
         const val KEY_TOTAL_DURATION = "total_duration"
         const val KEY_SEARCH = "search"
+        const val KEY_SEARCH_FILTER = "filter"
         const val KEY_TO = "to"
         const val KEY_TYPE = "type"
         const val KEY_CARRIER = "carrier"
@@ -181,6 +187,8 @@ class AnalyticsTracker private constructor(private val context: Context) {
         const val KEY_SOURCE = "source"
         const val KEY_CUSTOM_FIELDS_COUNT = "custom_fields_count"
         const val KEY_CUSTOM_FIELDS_SIZE = "custom_fields_size"
+        const val KEY_WAITING_TIME = "waiting_time"
+        const val KEY_IS_NON_ATOMIC = "is_non_atomic"
 
         const val KEY_SORT_ORDER = "order"
         const val VALUE_SORT_NAME_ASC = "name,ascending"
@@ -212,6 +220,8 @@ class AnalyticsTracker private constructor(private val context: Context) {
         const val VALUE_PURCHASE_FAILED = "purchase_failed"
         const val VALUE_PURCHASE_SUCCEEDED = "purchase_succeeded"
         const val VALUE_PURCHASE_READY = "purchase_ready"
+        const val VALUE_SEARCH_ALL = "all"
+        const val VALUE_SEARCH_SKU = "sku"
 
         const val KEY_FLOW = "flow"
         const val KEY_HAS_DIFFERENT_SHIPPING_DETAILS = "has_different_shipping_details"
@@ -220,6 +230,7 @@ class AnalyticsTracker private constructor(private val context: Context) {
         const val KEY_HAS_SHIPPING_METHOD = "has_shipping_method"
         const val VALUE_FLOW_CREATION = "creation"
         const val VALUE_FLOW_EDITING = "editing"
+        const val VALUE_FLOW_LIST = "list"
 
         const val ORDER_EDIT_CUSTOMER_NOTE = "customer_note"
         const val ORDER_EDIT_SHIPPING_ADDRESS = "shipping_address"
@@ -227,6 +238,15 @@ class AnalyticsTracker private constructor(private val context: Context) {
 
         const val KEY_HAS_MULTIPLE_SHIPPING_LINES = "has_multiple_shipping_lines"
         const val KEY_HAS_MULTIPLE_FEE_LINES = "has_multiple_fee_lines"
+
+        const val KEY_CARD = "card"
+        const val VALUE_REVENUE_CARD_SELECTED = "revenue"
+        const val VALUE_ORDERS_CARD_SELECTED = "orders"
+        const val VALUE_PRODUCTS_CARD_SELECTED = "products"
+        const val VALUE_VISITORS_CARD_SELECTED = "visitors"
+
+        const val JITM_ID = "jitm_id"
+        const val JITM_FEATURE_CLASS = "feature_class"
 
         enum class OrderNoteType(val value: String) {
             CUSTOMER("customer"),
@@ -266,6 +286,9 @@ class AnalyticsTracker private constructor(private val context: Context) {
         const val VALUE_SIMPLE_PAYMENTS_SOURCE_PAYMENT_METHOD = "payment_method"
 
         const val VALUE_ORDER_PAYMENTS_FLOW = "order_payment"
+
+        const val KEY_JITM = "jitm"
+        const val KEY_JITM_COUNT = "count"
 
         // -- Downloadable Files
         const val KEY_DOWNLOADABLE_FILE_ACTION = "action"
@@ -318,8 +341,12 @@ class AnalyticsTracker private constructor(private val context: Context) {
         const val KEY_FETCH_SITES_DURATION = "duration"
         const val KEY_JETPACK_BENEFITS_BANNER_ACTION = "action"
         const val KEY_JETPACK_INSTALLATION_SOURCE = "source"
+        const val KEY_JETPACK_INSTALLATION_STEP = "jetpack_install_step"
 
         private const val PREFKEY_SEND_USAGE_STATS = "wc_pref_send_usage_stats"
+
+        // -- Product Variations
+        const val KEY_VARIATIONS_COUNT = "variations_count"
 
         // -- Feature Announcement / What's New
         const val KEY_ANNOUNCEMENT_VIEW_SOURCE = "source"
@@ -332,6 +359,9 @@ class AnalyticsTracker private constructor(private val context: Context) {
         const val VALUE_MORE_MENU_REVIEWS = "reviews"
         const val VALUE_MORE_MENU_INBOX = "inbox"
         const val VALUE_MORE_MENU_COUPONS = "coupons"
+        const val VALUE_MORE_MENU_PAYMENTS = "payments"
+
+        const val VALUE_MORE_MENU_PAYMENTS_BADGE_VISIBLE = "badge_visible"
 
         // -- Inbox note actions
         const val KEY_INBOX_NOTE_ACTION = "action"
@@ -361,6 +391,9 @@ class AnalyticsTracker private constructor(private val context: Context) {
         const val VALUE_JETPACK_INSTALLATION_SOURCE_WEB = "web"
         const val VALUE_JETPACK_INSTALLATION_SOURCE_NATIVE = "native"
 
+        // -- Login with WordPress.com account flow
+        const val VALUE_LOGIN_WITH_WORDPRESS_COM = "wordpress_com"
+
         // -- Upsell banner
         const val KEY_BANNER_SOURCE = "source"
         const val KEY_BANNER_PAYMENTS = "payment_methods"
@@ -369,9 +402,43 @@ class AnalyticsTracker private constructor(private val context: Context) {
         const val KEY_BANNER_CAMPAIGN_NAME = "campaign_name"
         const val KEY_BANNER_UPSELL_CARD_READERS = "upsell_card_readers"
         const val KEY_BANNER_REMIND_LATER = "remind_later"
+        const val KEY_BANNER_LINKED_PRODUCTS_PROMO = "linked_products_promo"
+
+        const val SOURCE_PRODUCT_DETAIL = "product_detail"
+
+        // -- Cash on Delivery
+        const val KEY_IS_ENABLED = "is_enabled"
+        const val KEY_CASH_ON_DELIVERY_SOURCE = "source"
 
         // -- Experiments
-        const val KEY_SITE_CREDENTIALS_EXPERIMENT_VARIANT = "site_credentials_experiment_variant"
+        const val KEY_EXPERIMENT_VARIANT = "experiment_variant"
+
+        // -- Help Center
+        const val KEY_SOURCE_FLOW = "source_flow"
+        const val KEY_SOURCE_STEP = "source_step"
+        const val KEY_HELP_CONTENT_URL = "help_content_url"
+
+        // Widgets
+        const val KEY_WIDGETS = "widgets"
+
+        // -- App links
+        const val KEY_PATH = "path"
+
+        // -- Store creation
+        const val VALUE_LOGIN_EMAIL_ERROR = "login_email_error"
+        const val VALUE_SWITCHING_STORE = "switching_store"
+        const val VALUE_PROLOGUE = "prologue"
+        const val VALUE_LOGIN = "login"
+        const val VALUE_OTHER = "other"
+        const val VALUE_WEB = "web"
+        const val VALUE_NATIVE = "native"
+        const val VALUE_STEP_STORE_NAME = "store_name"
+        const val VALUE_STEP_STORE_PROFILER = "store_profiler"
+        const val VALUE_STEP_DOMAIN_PICKER = "domain_picker"
+        const val VALUE_STEP_STORE_SUMMARY = "store_summary"
+        const val VALUE_STEP_PLAN_PURCHASE = "plan_purchase"
+        const val VALUE_STEP_WEB_CHECKOUT = "web_checkout"
+        const val VALUE_STEP_STORE_INSTALLATION = "store_installation"
 
         var sendUsageStats: Boolean = true
             set(value) {

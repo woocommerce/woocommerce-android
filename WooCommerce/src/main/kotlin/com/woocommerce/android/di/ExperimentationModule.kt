@@ -22,7 +22,7 @@ class ExperimentationModule {
         @AppCoroutineScope appCoroutineScope: CoroutineScope,
     ) = ExPlat(
         platform = ExperimentStore.Platform.WOOCOMMERCE_ANDROID,
-        experiments = setOf(),
+        experiments = emptySet(),
         experimentStore = experimentStore,
         appLogWrapper = appLogWrapper,
         coroutineScope = appCoroutineScope,

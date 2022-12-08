@@ -15,6 +15,7 @@ import androidx.core.widget.doAfterTextChanged
 import com.google.android.material.textfield.TextInputLayout
 import com.woocommerce.android.R
 import com.woocommerce.android.databinding.ViewMaterialOutlinedEdittextBinding
+import com.woocommerce.android.extensions.parcelable
 import org.wordpress.android.util.ActivityUtils
 
 /**
@@ -164,7 +165,7 @@ class WCMaterialOutlinedEditTextView @JvmOverloads constructor(
     }
 
     override fun onRestoreInstanceState(state: Parcelable?) {
-        val bundle = (state as? Bundle)?.getParcelable<WCSavedState>(KEY_SUPER_STATE)?.let {
+        val bundle = (state as? Bundle)?.parcelable<WCSavedState>(KEY_SUPER_STATE)?.let {
             restoreViewState(it)
         } ?: state
         super.onRestoreInstanceState(bundle)

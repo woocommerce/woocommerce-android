@@ -7,6 +7,7 @@ import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
 import androidx.core.content.ContextCompat
+import androidx.core.view.MenuProvider
 import androidx.core.view.ViewCompat
 import androidx.core.view.isVisible
 import androidx.fragment.app.viewModels
@@ -51,7 +52,7 @@ import com.woocommerce.android.ui.main.MainNavigationRouter
 import com.woocommerce.android.ui.orders.OrderNavigationTarget
 import com.woocommerce.android.ui.orders.OrderNavigator
 import com.woocommerce.android.ui.orders.OrderProductActionListener
-import com.woocommerce.android.ui.orders.details.OrderDetailViewModel.OrderStatusUpdateSource
+import com.woocommerce.android.ui.orders.OrderStatusUpdateSource
 import com.woocommerce.android.ui.orders.details.adapter.OrderDetailShippingLabelsAdapter.OnShippingLabelClickListener
 import com.woocommerce.android.ui.orders.details.editing.OrderEditingViewModel
 import com.woocommerce.android.ui.orders.details.views.OrderDetailOrderStatusView.Mode
@@ -73,7 +74,10 @@ import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
 @AndroidEntryPoint
-class OrderDetailFragment : BaseFragment(R.layout.fragment_order_detail), OrderProductActionListener {
+class OrderDetailFragment :
+    BaseFragment(R.layout.fragment_order_detail),
+    OrderProductActionListener,
+    MenuProvider {
     companion object {
         val TAG: String = OrderDetailFragment::class.java.simpleName
     }
@@ -115,6 +119,7 @@ class OrderDetailFragment : BaseFragment(R.layout.fragment_order_detail), OrderP
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        lifecycle.addObserver(viewModel.performanceObserver)
         super.onCreate(savedInstanceState)
         val transitionDuration = resources.getInteger(R.integer.default_fragment_transition).toLong()
         val backgroundColor = ContextCompat.getColor(requireContext(), R.color.default_window_background)
@@ -134,7 +139,7 @@ class OrderDetailFragment : BaseFragment(R.layout.fragment_order_detail), OrderP
 
         _binding = FragmentOrderDetailBinding.bind(view)
 
-        setHasOptionsMenu(true)
+        requireActivity().addMenuProvider(this, viewLifecycleOwner)
         setupObservers(viewModel)
         setupOrderEditingObservers(orderEditingViewModel)
         setupResultHandlers(viewModel)
@@ -146,7 +151,7 @@ class OrderDetailFragment : BaseFragment(R.layout.fragment_order_detail), OrderP
             scrollUpChild = binding.scrollView
             setOnRefreshListener { viewModel.onRefreshRequested() }
         }
-        binding.customFieldsButton.setOnClickListener {
+        binding.customFieldsCard.customFieldsButton.setOnClickListener {
             viewModel.onCustomFieldsButtonClicked()
         }
 
@@ -161,21 +166,26 @@ class OrderDetailFragment : BaseFragment(R.layout.fragment_order_detail), OrderP
         _binding = null
     }
 
-    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
-        super.onCreateOptionsMenu(menu, inflater)
+    override fun onCreateMenu(menu: Menu, inflater: MenuInflater) {
         inflater.inflate(R.menu.menu_order_detail, menu)
         val menuEditOrder = menu.findItem(R.id.menu_edit_order)
         menuEditOrder.isVisible = FeatureFlag.UNIFIED_ORDER_EDITING.isEnabled()
     }
 
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+    override fun onPrepareMenu(menu: Menu) {
+        menu.findItem(R.id.menu_edit_order)?.let {
+            it.isEnabled = viewModel.hasOrder()
+        }
+    }
+
+    override fun onMenuItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
             R.id.menu_edit_order -> {
                 viewModel.onEditClicked()
                 true
             }
             else -> {
-                super.onOptionsItemSelected(item)
+                false
             }
         }
     }
@@ -194,6 +204,7 @@ class OrderDetailFragment : BaseFragment(R.layout.fragment_order_detail), OrderP
         viewModel.viewStateData.observe(viewLifecycleOwner) { old, new ->
             new.orderInfo?.takeIfNotEqualTo(old?.orderInfo) {
                 showOrderDetail(it.order!!, it.isPaymentCollectableWithCardReader, it.isReceiptButtonsVisible)
+                requireActivity().invalidateOptionsMenu()
             }
             new.orderStatus?.takeIfNotEqualTo(old?.orderStatus) { showOrderStatus(it) }
             new.isMarkOrderCompleteButtonVisible?.takeIfNotEqualTo(old?.isMarkOrderCompleteButtonVisible) {
@@ -334,8 +345,7 @@ class OrderDetailFragment : BaseFragment(R.layout.fragment_order_detail), OrderP
         binding.orderDetailCustomerInfo.updateCustomerInfo(
             order = order,
             isVirtualOrder = viewModel.hasVirtualProductsOnly(),
-            // Customer Info is read-only in UOE
-            isReadOnly = FeatureFlag.UNIFIED_ORDER_EDITING.isEnabled()
+            isReadOnly = false
         )
         binding.orderDetailPaymentInfo.updatePaymentInfo(
             order = order,

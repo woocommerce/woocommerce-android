@@ -40,7 +40,7 @@ abstract class BaseProductFragment : BaseFragment, BackPressListener {
         viewModel.event.observe(viewLifecycleOwner) { event ->
             when (event) {
                 is ShowSnackbar -> uiMessageResolver.showSnack(event.message)
-                is Exit -> requireActivity().onBackPressed()
+                is Exit -> requireActivity().onBackPressedDispatcher.onBackPressed()
                 is ShowDialog -> WooDialog.showDialog(
                     requireActivity(),
                     event.positiveBtnAction,

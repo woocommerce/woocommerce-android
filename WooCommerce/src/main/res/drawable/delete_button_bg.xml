@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layer-list
-    xmlns:tools="http://schemas.android.com/tools"
     xmlns:android="http://schemas.android.com/apk/res/android">
 
     <item
@@ -15,6 +14,5 @@
         android:top="@dimen/minor_75"
         android:bottom="@dimen/minor_75"
         android:drawable="@drawable/ic_close"
-        android:gravity="center"
-        tools:targetApi="m"/>
+        android:gravity="center"/>
 </layer-list>

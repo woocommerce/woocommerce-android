@@ -9,8 +9,11 @@ import com.woocommerce.android.analytics.AnalyticsEvent.CARD_PRESENT_COLLECT_INT
 import com.woocommerce.android.analytics.AnalyticsEvent.CARD_PRESENT_COLLECT_PAYMENT_CANCELLED
 import com.woocommerce.android.analytics.AnalyticsEvent.CARD_PRESENT_COLLECT_PAYMENT_FAILED
 import com.woocommerce.android.analytics.AnalyticsEvent.CARD_PRESENT_COLLECT_PAYMENT_SUCCESS
+import com.woocommerce.android.analytics.AnalyticsEvent.CARD_PRESENT_CONNECTION_LEARN_MORE_TAPPED
+import com.woocommerce.android.analytics.AnalyticsEvent.CARD_PRESENT_ONBOARDING_CTA_TAPPED
 import com.woocommerce.android.analytics.AnalyticsEvent.CARD_PRESENT_ONBOARDING_LEARN_MORE_TAPPED
 import com.woocommerce.android.analytics.AnalyticsEvent.CARD_PRESENT_ONBOARDING_NOT_COMPLETED
+import com.woocommerce.android.analytics.AnalyticsEvent.CARD_PRESENT_ONBOARDING_STEP_SKIPPED
 import com.woocommerce.android.analytics.AnalyticsEvent.CARD_READER_AUTO_CONNECTION_STARTED
 import com.woocommerce.android.analytics.AnalyticsEvent.CARD_READER_CONNECTION_FAILED
 import com.woocommerce.android.analytics.AnalyticsEvent.CARD_READER_CONNECTION_SUCCESS
@@ -25,7 +28,13 @@ import com.woocommerce.android.analytics.AnalyticsEvent.CARD_READER_LOCATION_SUC
 import com.woocommerce.android.analytics.AnalyticsEvent.CARD_READER_SOFTWARE_UPDATE_FAILED
 import com.woocommerce.android.analytics.AnalyticsEvent.CARD_READER_SOFTWARE_UPDATE_STARTED
 import com.woocommerce.android.analytics.AnalyticsEvent.CARD_READER_SOFTWARE_UPDATE_SUCCESS
+import com.woocommerce.android.analytics.AnalyticsEvent.DISABLE_CASH_ON_DELIVERY_FAILED
+import com.woocommerce.android.analytics.AnalyticsEvent.DISABLE_CASH_ON_DELIVERY_SUCCESS
+import com.woocommerce.android.analytics.AnalyticsEvent.ENABLE_CASH_ON_DELIVERY_FAILED
+import com.woocommerce.android.analytics.AnalyticsEvent.ENABLE_CASH_ON_DELIVERY_SUCCESS
 import com.woocommerce.android.analytics.AnalyticsEvent.PAYMENTS_FLOW_ORDER_COLLECT_PAYMENT_TAPPED
+import com.woocommerce.android.analytics.AnalyticsEvent.PAYMENTS_HUB_CASH_ON_DELIVERY_TOGGLED
+import com.woocommerce.android.analytics.AnalyticsEvent.PAYMENTS_HUB_CASH_ON_DELIVERY_TOGGLED_LEARN_MORE_TAPPED
 import com.woocommerce.android.analytics.AnalyticsEvent.RECEIPT_EMAIL_FAILED
 import com.woocommerce.android.analytics.AnalyticsEvent.RECEIPT_EMAIL_TAPPED
 import com.woocommerce.android.analytics.AnalyticsEvent.RECEIPT_PRINT_CANCELED
@@ -33,6 +42,8 @@ import com.woocommerce.android.analytics.AnalyticsEvent.RECEIPT_PRINT_FAILED
 import com.woocommerce.android.analytics.AnalyticsEvent.RECEIPT_PRINT_SUCCESS
 import com.woocommerce.android.analytics.AnalyticsEvent.RECEIPT_PRINT_TAPPED
 import com.woocommerce.android.analytics.AnalyticsTracker
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_CASH_ON_DELIVERY_SOURCE
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_IS_ENABLED
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_PAYMENT_GATEWAY
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.cardreader.connection.event.SoftwareUpdateStatus.Failed
@@ -40,6 +51,7 @@ import com.woocommerce.android.cardreader.payments.CardInteracRefundStatus.Refun
 import com.woocommerce.android.cardreader.payments.CardPaymentStatus.CardPaymentStatusErrorType
 import com.woocommerce.android.cardreader.payments.CardPaymentStatus.CardPaymentStatusErrorType.Generic
 import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.ui.payments.cardreader.hub.CardReaderHubViewModel.CashOnDeliverySource
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboardingState
 import com.woocommerce.android.ui.payments.cardreader.onboarding.PluginType
 import com.woocommerce.android.ui.payments.cardreader.onboarding.PluginType.STRIPE_EXTENSION_GATEWAY
@@ -64,6 +76,7 @@ class CardReaderTracker @Inject constructor(
         addCurrencyProperty(properties)
         addPaymentMethodTypeProperty(properties)
         addCardReaderModelProperty(properties)
+        addCardReaderBatteryLevelProperty(properties)
 
         val isError = !errorType.isNullOrBlank() || !errorDescription.isNullOrEmpty()
         if (isError) {
@@ -76,6 +89,12 @@ class CardReaderTracker @Inject constructor(
             )
         } else {
             trackerWrapper.track(stat, properties)
+        }
+    }
+
+    private fun addCardReaderBatteryLevelProperty(properties: MutableMap<String, Any>) {
+        cardReaderTrackingInfoProvider.trackingInfo.cardReaderBatteryLevelPercent?.let { batteryLevelPercent ->
+            properties["card_reader_battery_level"] = "$batteryLevelPercent %"
         }
     }
 
@@ -142,6 +161,7 @@ class CardReaderTracker @Inject constructor(
             is CardReaderOnboardingState.NoConnectionError -> "no_connection_error"
             CardReaderOnboardingState.ChoosePaymentGatewayProvider ->
                 "multiple_payment_providers_conflict"
+            is CardReaderOnboardingState.CashOnDeliveryDisabled -> "cash_on_delivery_disabled"
         }
 
     private fun getPluginNameReasonPrefix(pluginType: PluginType): String {
@@ -159,6 +179,80 @@ class CardReaderTracker @Inject constructor(
         getOnboardingNotCompletedReason(state)?.let {
             track(CARD_PRESENT_ONBOARDING_NOT_COMPLETED, mutableMapOf("reason" to it))
         }
+    }
+
+    fun trackOnboardingSkippedState(state: CardReaderOnboardingState) {
+        getOnboardingNotCompletedReason(state)?.let {
+            track(
+                CARD_PRESENT_ONBOARDING_STEP_SKIPPED,
+                mutableMapOf(
+                    "reason" to it,
+                    "remind_later" to false
+                )
+            )
+        }
+    }
+
+    fun trackOnboardingCtaTappedState(state: CardReaderOnboardingState) {
+        getOnboardingNotCompletedReason(state)?.let {
+            track(
+                CARD_PRESENT_ONBOARDING_CTA_TAPPED,
+                mutableMapOf(
+                    "reason" to it,
+                )
+            )
+        }
+    }
+
+    fun trackCashOnDeliveryToggled(isEnabled: Boolean) {
+        track(
+            PAYMENTS_HUB_CASH_ON_DELIVERY_TOGGLED,
+            mutableMapOf(
+                KEY_IS_ENABLED to isEnabled
+            )
+        )
+    }
+
+    fun trackCashOnDeliveryEnabledSuccess(source: CashOnDeliverySource) {
+        track(
+            ENABLE_CASH_ON_DELIVERY_SUCCESS,
+            mutableMapOf(
+                KEY_CASH_ON_DELIVERY_SOURCE to source.toString()
+            )
+        )
+    }
+
+    fun trackCashOnDeliveryEnabledFailure(source: CashOnDeliverySource, errorMessage: String?) {
+        track(
+            ENABLE_CASH_ON_DELIVERY_FAILED,
+            errorDescription = errorMessage,
+            properties = mutableMapOf(
+                KEY_CASH_ON_DELIVERY_SOURCE to source.toString()
+            )
+        )
+    }
+
+    fun trackCashOnDeliveryDisabledSuccess(source: CashOnDeliverySource) {
+        track(
+            DISABLE_CASH_ON_DELIVERY_SUCCESS,
+            mutableMapOf(
+                KEY_CASH_ON_DELIVERY_SOURCE to source.toString()
+            )
+        )
+    }
+
+    fun trackCashOnDeliveryDisabledFailure(source: CashOnDeliverySource, errorMessage: String?) {
+        track(
+            DISABLE_CASH_ON_DELIVERY_FAILED,
+            errorDescription = errorMessage,
+            properties = mutableMapOf(
+                KEY_CASH_ON_DELIVERY_SOURCE to source.toString()
+            )
+        )
+    }
+
+    fun trackCashOnDeliveryLearnMoreTapped() {
+        track(PAYMENTS_HUB_CASH_ON_DELIVERY_TOGGLED_LEARN_MORE_TAPPED)
     }
 
     fun trackPaymentGatewaySelected(pluginType: PluginType) {
@@ -336,6 +430,10 @@ class CardReaderTracker @Inject constructor(
             CARD_PRESENT_COLLECT_INTERAC_REFUND_CANCELLED,
             errorDescription = "User manually cancelled the payment during state $currentRefundState"
         )
+    }
+
+    fun trackLearnMoreConnectionClicked() {
+        track(CARD_PRESENT_CONNECTION_LEARN_MORE_TAPPED)
     }
 
     companion object {

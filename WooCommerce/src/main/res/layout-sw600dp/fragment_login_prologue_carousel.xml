@@ -41,6 +41,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/image_prologue"
+        android:layout_marginBottom="@dimen/major_150"
         tools:background="@color/blue_dark" />
 
     <com.woocommerce.android.widgets.WCViewPagerIndicator
@@ -68,7 +69,7 @@
 
     <com.google.android.material.button.MaterialButton
         android:id="@+id/button_skip"
-        style="@style/Woo.Button.Colored.White"
+        style="@style/Woo.Button.TextButton"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="@dimen/major_100"

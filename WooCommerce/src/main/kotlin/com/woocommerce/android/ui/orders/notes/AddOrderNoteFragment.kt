@@ -5,6 +5,7 @@ import android.view.Menu
 import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
+import androidx.core.view.MenuProvider
 import androidx.core.view.isVisible
 import androidx.core.widget.doOnTextChanged
 import androidx.fragment.app.viewModels
@@ -30,7 +31,7 @@ import org.wordpress.android.util.ActivityUtils
 import javax.inject.Inject
 
 @AndroidEntryPoint
-class AddOrderNoteFragment : BaseFragment(R.layout.fragment_add_order_note), BackPressListener {
+class AddOrderNoteFragment : BaseFragment(R.layout.fragment_add_order_note), BackPressListener, MenuProvider {
     companion object {
         const val TAG = "AddOrderNoteFragment"
         const val KEY_ADD_NOTE_RESULT = "key_add_note_result"
@@ -49,13 +50,10 @@ class AddOrderNoteFragment : BaseFragment(R.layout.fragment_add_order_note), Bac
             navigationIcon = R.drawable.ic_gridicons_cross_24dp
         )
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setHasOptionsMenu(true)
-    }
-
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        requireActivity().addMenuProvider(this, viewLifecycleOwner)
 
         val binding = FragmentAddOrderNoteBinding.bind(view)
         initUi(binding)
@@ -82,14 +80,14 @@ class AddOrderNoteFragment : BaseFragment(R.layout.fragment_add_order_note), Bac
         }
     }
 
-    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+    override fun onCreateMenu(menu: Menu, inflater: MenuInflater) {
         menu.clear()
         inflater.inflate(R.menu.menu_add, menu)
         addMenuItem = menu.findItem(R.id.menu_add)
         addMenuItem!!.isVisible = viewModel.shouldShowAddButton
     }
 
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+    override fun onMenuItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
             R.id.menu_add -> {
                 AnalyticsTracker.track(ADD_ORDER_NOTE_ADD_BUTTON_TAPPED)
@@ -99,7 +97,7 @@ class AddOrderNoteFragment : BaseFragment(R.layout.fragment_add_order_note), Bac
                 viewModel.pushOrderNote()
                 true
             }
-            else -> super.onOptionsItemSelected(item)
+            else -> false
         }
     }
 

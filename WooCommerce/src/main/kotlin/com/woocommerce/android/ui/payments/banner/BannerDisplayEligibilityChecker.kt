@@ -5,7 +5,7 @@ import com.woocommerce.android.AppUrls
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
-import com.woocommerce.android.cardreader.internal.config.CardReaderConfigForSupportedCountry
+import com.woocommerce.android.cardreader.config.CardReaderConfigForSupportedCountry
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.payments.cardreader.CardReaderCountryConfigProvider
 import com.woocommerce.android.ui.payments.cardreader.payment.CardReaderPaymentCurrencySupportedChecker
@@ -71,7 +71,7 @@ class BannerDisplayEligibilityChecker @Inject constructor(
         )
     }
 
-    fun isCardReaderUpsellBannerDismissedForever(): Boolean {
+    private fun isCardReaderUpsellBannerDismissedForever(): Boolean {
         val site = selectedSite.get()
         return appPrefsWrapper.isCardReaderUpsellBannerDismissedForever(
             localSiteId = site.id,
@@ -98,24 +98,14 @@ class BannerDisplayEligibilityChecker @Inject constructor(
         return getCardReaderUpsellBannerLastDismissed() != 0L
     }
 
-    fun canShowCardReaderUpsellBanner(currentTimeInMillis: Long, source: String): Boolean {
+    fun canShowCardReaderUpsellBanner(currentTimeInMillis: Long): Boolean {
         return (
             !isCardReaderUpsellBannerDismissedForever() &&
                 (
                     !hasTheMerchantDismissedBannerViaRemindMeLater() ||
                         isLastDialogDismissedMoreThan14DaysAgo(currentTimeInMillis)
                     )
-            ).also { trackable ->
-            if (trackable) {
-                analyticsTrackerWrapper.track(
-                    AnalyticsEvent.FEATURE_CARD_SHOWN,
-                    mapOf(
-                        AnalyticsTracker.KEY_BANNER_SOURCE to source,
-                        AnalyticsTracker.KEY_BANNER_CAMPAIGN_NAME to AnalyticsTracker.KEY_BANNER_UPSELL_CARD_READERS
-                    )
-                )
-            }
-        }
+            )
     }
 
     suspend fun isEligibleForInPersonPayments(): Boolean {

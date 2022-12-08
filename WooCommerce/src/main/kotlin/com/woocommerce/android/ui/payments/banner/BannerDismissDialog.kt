@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.payments.banner
 
+import android.content.res.Configuration
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -19,9 +20,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
-import com.woocommerce.android.ui.orders.list.OrderListViewModel
 import com.woocommerce.android.ui.payments.SelectPaymentMethodViewModel
-import com.woocommerce.android.ui.prefs.MainSettingsContract
 
 @Composable
 fun PaymentsScreenBannerDismissDialog(viewModel: SelectPaymentMethodViewModel) {
@@ -32,30 +31,6 @@ fun PaymentsScreenBannerDismissDialog(viewModel: SelectPaymentMethodViewModel) {
         onDismissClick = viewModel::onBannerAlertDismiss,
         showDialog,
         AnalyticsTracker.KEY_BANNER_PAYMENTS
-    )
-}
-
-@Composable
-fun OrderListBannerDismissDialog(viewModel: OrderListViewModel) {
-    val showDialog by viewModel.shouldShowUpsellCardReaderDismissDialog.observeAsState(true)
-    BannerDismissDialog(
-        onRemindLaterClick = viewModel::onRemindLaterClicked,
-        onDontShowAgainClick = viewModel::onDontShowAgainClicked,
-        onDismissClick = viewModel::onBannerAlertDismiss,
-        showDialog,
-        AnalyticsTracker.KEY_BANNER_ORDER_LIST
-    )
-}
-
-@Composable
-fun SettingsBannerDismissDialog(presenter: MainSettingsContract.Presenter) {
-    val showDialog by presenter.shouldShowUpsellCardReaderDismissDialog.observeAsState(true)
-    BannerDismissDialog(
-        onRemindLaterClick = presenter::onRemindLaterClicked,
-        onDontShowAgainClick = presenter::onDontShowAgainClicked,
-        onDismissClick = presenter::onBannerAlertDismiss,
-        showDialog,
-        AnalyticsTracker.KEY_BANNER_SETTINGS
     )
 }
 
@@ -75,18 +50,20 @@ fun BannerDismissDialog(
 ) {
     if (showDialog) {
         AlertDialog(
+            backgroundColor = colorResource(id = R.color.color_surface_elevated),
             onDismissRequest = onDismissClick,
             title = {
                 Text(
                     text = title,
                     style = MaterialTheme.typography.h6,
+                    color = colorResource(id = R.color.color_on_surface)
                 )
             },
             text = {
                 Text(
                     text = description,
                     style = MaterialTheme.typography.subtitle1,
-                    color = colorResource(id = R.color.woo_black_90)
+                    color = colorResource(id = R.color.color_on_surface)
                 )
             },
             buttons = {
@@ -108,7 +85,7 @@ fun BannerDismissDialog(
                     ) {
                         Text(
                             text = stringResource(id = R.string.card_reader_upsell_card_reader_banner_remind_me_later),
-                            color = colorResource(id = R.color.woo_purple_60),
+                            color = colorResource(id = R.color.color_secondary),
                             style = MaterialTheme.typography.subtitle2,
                             fontWeight = FontWeight.Bold,
                         )
@@ -126,7 +103,7 @@ fun BannerDismissDialog(
                     ) {
                         Text(
                             text = stringResource(id = R.string.card_reader_upsell_card_reader_banner_dont_show_again),
-                            color = colorResource(id = R.color.woo_purple_60),
+                            color = colorResource(id = R.color.color_secondary),
                             style = MaterialTheme.typography.subtitle2,
                             fontWeight = FontWeight.Bold,
                         )
@@ -137,7 +114,8 @@ fun BannerDismissDialog(
     }
 }
 
-@Preview
+@Preview(name = "Light mode")
+@Preview(name = "Dark mode", uiMode = Configuration.UI_MODE_NIGHT_YES)
 @Composable
 fun BannerDismissDialogPreview() {
     BannerDismissDialog(

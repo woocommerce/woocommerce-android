@@ -15,6 +15,7 @@ import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.tools.SelectedSite.SelectedSiteChangedEvent
 import com.woocommerce.android.ui.payments.cardreader.ClearCardReaderDataAction
 import com.woocommerce.android.util.WooLog
+import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.launch
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
@@ -60,7 +61,7 @@ class MainPresenter @Inject constructor(
             selectedSite.getIfExists()?.let { siteModel ->
                 wcOrderStore.observeOrderCountForSite(
                     siteModel, listOf(PROCESSING.value)
-                ).collect { count ->
+                ).distinctUntilChanged().collect { count ->
                     AnalyticsTracker.track(
                         AnalyticsEvent.UNFULFILLED_ORDERS_LOADED,
                         mapOf(AnalyticsTracker.KEY_HAS_UNFULFILLED_ORDERS to count)
@@ -103,6 +104,8 @@ class MainPresenter @Inject constructor(
                 .newFetchOrderStatusOptionsAction(FetchOrderStatusOptionsPayload(site))
         )
         coroutineScope.launch { clearCardReaderDataAction() }
+
+        updateStatsWidgets()
     }
 
     override fun fetchUnfilledOrderCount() {
@@ -141,8 +144,6 @@ class MainPresenter @Inject constructor(
             // In all other login cases, this logic is handled by the login library
             mainView?.notifyTokenUpdated()
             dispatcher.dispatch(AccountActionBuilder.newFetchAccountAction())
-        } else {
-            mainView?.showLoginScreen()
         }
     }
 
@@ -218,5 +219,10 @@ class MainPresenter @Inject constructor(
         if (pendingUnfilledOrderCountCheck) {
             fetchUnfilledOrderCount()
         }
+        updateStatsWidgets()
+    }
+
+    override fun updateStatsWidgets() {
+        mainView?.updateStatsWidgets()
     }
 }

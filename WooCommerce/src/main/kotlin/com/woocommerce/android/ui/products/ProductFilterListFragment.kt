@@ -5,6 +5,7 @@ import android.view.Menu
 import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
+import androidx.core.view.MenuProvider
 import androidx.hilt.navigation.fragment.hiltNavGraphViewModels
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.DividerItemDecoration
@@ -30,7 +31,8 @@ import dagger.hilt.android.AndroidEntryPoint
 class ProductFilterListFragment :
     BaseFragment(R.layout.fragment_product_filter_list),
     OnProductFilterClickListener,
-    BackPressListener {
+    BackPressListener,
+    MenuProvider {
     companion object {
         const val TAG = "ProductFilterListFragment"
     }
@@ -38,8 +40,6 @@ class ProductFilterListFragment :
     private val viewModel: ProductFilterListViewModel by hiltNavGraphViewModels(R.id.nav_graph_product_filters)
 
     private lateinit var productFilterListAdapter: ProductFilterListAdapter
-
-    private var clearAllMenuItem: MenuItem? = null
 
     override val activityAppBarStatus: AppBarStatus
         get() = AppBarStatus.Visible(
@@ -53,7 +53,7 @@ class ProductFilterListFragment :
 
         val binding = FragmentProductFilterListBinding.bind(view)
 
-        setHasOptionsMenu(true)
+        requireActivity().addMenuProvider(this, viewLifecycleOwner)
         setupObservers(viewModel)
 
         productFilterListAdapter = ProductFilterListAdapter(this)
@@ -82,28 +82,29 @@ class ProductFilterListFragment :
         }
     }
 
-    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
-        menu.clear()
+    override fun onCreateMenu(menu: Menu, inflater: MenuInflater) {
         inflater.inflate(R.menu.menu_clear, menu)
-        clearAllMenuItem = menu.findItem(R.id.menu_clear)
-        super.onCreateOptionsMenu(menu, inflater)
     }
 
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+    override fun onPrepareMenu(menu: Menu) {
+        updateClearButtonVisibility(menu.findItem(R.id.menu_clear))
+    }
+
+    override fun onMenuItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
             R.id.menu_clear -> {
                 AnalyticsTracker.track(AnalyticsEvent.PRODUCT_FILTER_LIST_CLEAR_MENU_BUTTON_TAPPED)
                 viewModel.onClearFilterSelected()
+                updateClearButtonVisibility(item)
                 true
             }
-            else -> super.onOptionsItemSelected(item)
+            else -> false
         }
     }
 
     private fun setupObservers(viewModel: ProductFilterListViewModel) {
         viewModel.productFilterListViewStateData.observe(viewLifecycleOwner) { old, new ->
             new.screenTitle.takeIfNotEqualTo(old?.screenTitle) { requireActivity().title = it }
-            new.displayClearButton?.takeIfNotEqualTo(old?.displayClearButton) { showClearAllAction(it) }
         }
         viewModel.filterListItems.observe(viewLifecycleOwner) {
             showProductFilterList(it)
@@ -126,10 +127,6 @@ class ProductFilterListFragment :
         productFilterListAdapter.filterList = productFilterList
     }
 
-    private fun showClearAllAction(show: Boolean) {
-        view?.post { clearAllMenuItem?.isVisible = show }
-    }
-
     override fun onProductFilterClick(selectedFilterPosition: Int) {
         val action = ProductFilterListFragmentDirections
             .actionProductFilterListFragmentToProductFilterOptionListFragment(selectedFilterPosition)
@@ -141,5 +138,10 @@ class ProductFilterListFragment :
     override fun onResume() {
         super.onResume()
         AnalyticsTracker.trackViewShown(this)
+    }
+
+    private fun updateClearButtonVisibility(clearMenuItem: MenuItem) {
+        clearMenuItem.isVisible =
+            viewModel.productFilterListViewStateData.liveData.value?.displayClearButton ?: false
     }
 }

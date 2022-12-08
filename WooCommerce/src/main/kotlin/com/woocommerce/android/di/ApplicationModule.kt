@@ -1,9 +1,11 @@
 package com.woocommerce.android.di
 
 import android.content.Context
+import com.google.firebase.ktx.Firebase
+import com.google.firebase.remoteconfig.ktx.remoteConfig
 import com.woocommerce.android.analytics.ExperimentTracker
 import com.woocommerce.android.analytics.FirebaseTracker
-import com.woocommerce.android.config.DataStoreRemoteConfigRepository
+import com.woocommerce.android.config.FirebaseRemoteConfigRepository
 import com.woocommerce.android.config.RemoteConfigRepository
 import com.woocommerce.android.tracker.DataStoreTrackerRepository
 import com.woocommerce.android.tracker.TrackerRepository
@@ -42,7 +44,7 @@ abstract class ApplicationModule {
     abstract fun bindTrackerRepository(repository: DataStoreTrackerRepository): TrackerRepository
 
     @Binds
-    abstract fun bindRemoteConfigRepository(repository: DataStoreRemoteConfigRepository): RemoteConfigRepository
+    abstract fun bindRemoteConfigRepository(repository: FirebaseRemoteConfigRepository): RemoteConfigRepository
 
     @Binds
     abstract fun bindFirebaseTracker(tracker: FirebaseTracker): ExperimentTracker
@@ -58,6 +60,9 @@ abstract class ApplicationModule {
         fun provideBackgroundDispatcher(): CoroutineDispatcher {
             return Dispatchers.Default
         }
+
+        @Provides
+        fun providesFirebaseRemoteConfig() = Firebase.remoteConfig
     }
 }
 

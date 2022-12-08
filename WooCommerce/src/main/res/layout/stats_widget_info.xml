@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/widget_info"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@drawable/bg_rectangle_radius_6dp"
+    android:orientation="vertical">
+
+    <TextView
+        android:id="@+id/widget_revenue_title"
+        style="@style/Woo.StatsWidgetKey"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentTop="true"
+        android:padding="@dimen/margin_medium"
+        android:text="@string/dashboard_stats_revenue" />
+
+    <TextView
+        android:id="@+id/widget_revenue_value"
+        style="@style/Woo.StatsWidgetValue"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentEnd="true"
+        android:layout_toEndOf="@+id/widget_revenue_title"
+        android:padding="@dimen/margin_medium"
+        android:visibility="invisible" />
+
+    <ImageView
+        android:id="@+id/widget_revenue_skeleton"
+        android:layout_width="160dp"
+        android:layout_height="@dimen/skeleton_text_height_75"
+        android:layout_alignTop="@+id/widget_revenue_value"
+        android:layout_alignEnd="@+id/widget_revenue_value"
+        android:layout_alignBottom="@+id/widget_revenue_value"
+        android:layout_margin="@dimen/margin_medium"
+        android:background="@drawable/skeleton_background"
+        android:importantForAccessibility="no" />
+
+
+    <TextView
+        android:id="@+id/widget_orders_title"
+        style="@style/Woo.StatsWidgetKey"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/widget_revenue_value"
+        android:layout_alignParentStart="true"
+        android:padding="@dimen/margin_medium"
+        android:text="@string/dashboard_stats_orders" />
+
+    <TextView
+        android:id="@+id/widget_orders_value"
+        style="@style/Woo.StatsWidgetValue"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBottom="@+id/widget_orders_title"
+        android:layout_alignParentEnd="true"
+        android:layout_toEndOf="@+id/widget_orders_title"
+        android:padding="@dimen/margin_medium"
+        android:visibility="invisible" />
+
+    <ImageView
+        android:id="@+id/widget_orders_skeleton"
+        android:layout_width="100dp"
+        android:layout_height="@dimen/skeleton_text_height_75"
+        android:layout_alignTop="@+id/widget_orders_value"
+        android:layout_alignEnd="@+id/widget_orders_value"
+        android:layout_alignBottom="@+id/widget_orders_value"
+        android:layout_marginStart="@dimen/margin_medium"
+        android:layout_marginTop="@dimen/margin_medium"
+        android:layout_marginEnd="@dimen/margin_medium"
+        android:layout_marginBottom="@dimen/margin_medium"
+        android:background="@drawable/skeleton_background"
+        android:importantForAccessibility="no" />
+
+    <TextView
+        android:id="@+id/widget_visitors_title"
+        style="@style/Woo.StatsWidgetKey"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/widget_orders_value"
+        android:layout_alignParentStart="true"
+        android:padding="@dimen/margin_medium"
+        android:text="@string/dashboard_stats_visitors" />
+
+    <TextView
+        android:id="@+id/widget_visitors_value"
+        style="@style/Woo.StatsWidgetValue"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBottom="@+id/widget_visitors_title"
+        android:layout_alignParentEnd="true"
+        android:layout_toEndOf="@+id/widget_visitors_title"
+        android:padding="@dimen/margin_medium"
+        android:visibility="invisible" />
+
+    <ImageView
+        android:id="@+id/widget_visitors_skeleton"
+        android:layout_width="120dp"
+        android:layout_height="@dimen/skeleton_text_height_75"
+        android:layout_alignTop="@+id/widget_visitors_value"
+        android:layout_alignEnd="@+id/widget_visitors_value"
+        android:layout_alignBottom="@+id/widget_visitors_value"
+        android:layout_margin="@dimen/margin_medium"
+        android:background="@drawable/skeleton_background"
+        android:importantForAccessibility="no" />
+
+</RelativeLayout>

@@ -3,37 +3,36 @@
 package com.woocommerce.android.ui.orders.list
 
 import android.os.Parcelable
+import android.view.View
 import androidx.annotation.StringRes
 import androidx.annotation.VisibleForTesting
 import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleObserver
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.LifecycleRegistry
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
+import androidx.lifecycle.map
 import androidx.paging.PagedList
+import com.google.android.material.snackbar.Snackbar
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
-import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_CUSTOM_FIELDS_COUNT
-import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_CUSTOM_FIELDS_SIZE
-import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_ID
-import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_STATUS
-import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_TOTAL_DURATION
 import com.woocommerce.android.extensions.NotificationReceivedEvent
 import com.woocommerce.android.model.RequestResult.SUCCESS
 import com.woocommerce.android.network.ConnectionChangeReceiver.ConnectionChangeEvent
 import com.woocommerce.android.push.NotificationChannelType
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.ui.orders.OrderStatusUpdateSource
 import com.woocommerce.android.ui.orders.details.OrderDetailRepository
 import com.woocommerce.android.ui.orders.filters.domain.GetSelectedOrderFiltersCount
 import com.woocommerce.android.ui.orders.filters.domain.GetWCOrderListDescriptorWithFilters
-import com.woocommerce.android.ui.orders.list.OrderListViewModel.OrderListEvent.OpenPurchaseCardReaderLink
+import com.woocommerce.android.ui.orders.filters.domain.GetWCOrderListDescriptorWithFiltersAndSearchQuery
 import com.woocommerce.android.ui.orders.list.OrderListViewModel.OrderListEvent.ShowErrorSnack
 import com.woocommerce.android.ui.orders.list.OrderListViewModel.OrderListEvent.ShowOrderFilters
-import com.woocommerce.android.ui.payments.banner.BannerDisplayEligibilityChecker
 import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.util.ThrottleLiveData
 import com.woocommerce.android.util.WooLog
@@ -43,7 +42,10 @@ import com.woocommerce.android.viewmodel.ResourceProvider
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.widgets.WCEmptyView.EmptyViewType
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import kotlinx.parcelize.IgnoredOnParcel
 import kotlinx.parcelize.Parcelize
 import okio.utf8Size
 import org.greenrobot.eventbus.EventBus
@@ -51,7 +53,6 @@ import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode.MAIN
 import org.wordpress.android.fluxc.Dispatcher
 import org.wordpress.android.fluxc.action.WCOrderAction.UPDATE_ORDER_STATUS
-import org.wordpress.android.fluxc.model.WCOrderListDescriptor
 import org.wordpress.android.fluxc.model.WCOrderStatusModel
 import org.wordpress.android.fluxc.model.list.PagedListWrapper
 import org.wordpress.android.fluxc.store.ListStore
@@ -59,11 +60,16 @@ import org.wordpress.android.fluxc.store.WCOrderFetcher
 import org.wordpress.android.fluxc.store.WCOrderStore
 import org.wordpress.android.fluxc.store.WCOrderStore.OnOrderChanged
 import org.wordpress.android.fluxc.store.WCOrderStore.OnOrderSummariesFetched
+import org.wordpress.android.mediapicker.util.filter
 import javax.inject.Inject
 
 private const val EMPTY_VIEW_THROTTLE = 250L
+
+// Small delay before triggering the glance animation event
+private const val DELAY_GLANCE_DURATION = 500L
 typealias PagedOrdersList = PagedList<OrderListItemUIType>
 
+@OptIn(ExperimentalCoroutinesApi::class)
 @Suppress("LeakingThis")
 @HiltViewModel
 class OrderListViewModel @Inject constructor(
@@ -79,12 +85,15 @@ class OrderListViewModel @Inject constructor(
     private val fetcher: WCOrderFetcher,
     private val resourceProvider: ResourceProvider,
     private val getWCOrderListDescriptorWithFilters: GetWCOrderListDescriptorWithFilters,
+    private val getWCOrderListDescriptorWithFiltersAndSearchQuery: GetWCOrderListDescriptorWithFiltersAndSearchQuery,
     private val getSelectedOrderFiltersCount: GetSelectedOrderFiltersCount,
-    private val bannerDisplayEligibilityChecker: BannerDisplayEligibilityChecker,
+    private val orderListTransactionLauncher: OrderListTransactionLauncher,
 ) : ScopedViewModel(savedState), LifecycleOwner {
-    protected val lifecycleRegistry: LifecycleRegistry by lazy {
+    private val lifecycleRegistry: LifecycleRegistry by lazy {
         LifecycleRegistry(this)
     }
+
+    val performanceObserver: LifecycleObserver = orderListTransactionLauncher
 
     override fun getLifecycle(): Lifecycle = lifecycleRegistry
 
@@ -95,7 +104,7 @@ class OrderListViewModel @Inject constructor(
         OrderListItemDataSource(dispatcher, orderStore, networkStatus, fetcher, resourceProvider)
     }
 
-    final val viewStateLiveData = LiveDataDelegate(savedState, ViewState(filterCount = getSelectedOrderFiltersCount()))
+    val viewStateLiveData = LiveDataDelegate(savedState, ViewState(filterCount = getSelectedOrderFiltersCount()))
     internal var viewState by viewStateLiveData
 
     private val _pagedListData = MediatorLiveData<PagedOrdersList>()
@@ -105,7 +114,12 @@ class OrderListViewModel @Inject constructor(
     val isLoadingMore: LiveData<Boolean> = _isLoadingMore
 
     private val _isFetchingFirstPage = MediatorLiveData<Boolean>()
-    val isFetchingFirstPage: LiveData<Boolean> = _isFetchingFirstPage
+    val isFetchingFirstPage: LiveData<Boolean> = _isFetchingFirstPage.map {
+        if (it == false) {
+            orderListTransactionLauncher.onListFetched()
+        }
+        it
+    }
 
     private val _orderStatusOptions = MutableLiveData<Map<String, WCOrderStatusModel>>()
     val orderStatusOptions: LiveData<Map<String, WCOrderStatusModel>> = _orderStatusOptions
@@ -123,10 +137,8 @@ class OrderListViewModel @Inject constructor(
     }
     val emptyViewType: LiveData<EmptyViewType?> = _emptyViewType
 
-    val shouldShowUpsellCardReaderDismissDialog: MutableLiveData<Boolean> = MutableLiveData(false)
-    val isEligibleForInPersonPayments: MutableLiveData<Boolean> = MutableLiveData(false)
-
     var isSearching = false
+    private var dismissListErrors = false
     var searchQuery = ""
 
     init {
@@ -144,7 +156,6 @@ class OrderListViewModel @Inject constructor(
             _emptyViewType.postValue(EmptyViewType.ORDER_LIST_LOADING)
             if (selectedSite.exists()) {
                 loadOrders()
-                isEligibleForInPersonPayments()
             } else {
                 WooLog.w(
                     WooLog.T.ORDERS,
@@ -153,10 +164,21 @@ class OrderListViewModel @Inject constructor(
                 )
             }
         }
+
+        shouldGlanceFirstSwipeAbleItem()
     }
 
-    private suspend fun isEligibleForInPersonPayments() {
-        isEligibleForInPersonPayments.value = bannerDisplayEligibilityChecker.isEligibleForInPersonPayments()
+    private fun shouldGlanceFirstSwipeAbleItem() {
+        isFetchingFirstPage.observe(this) { isFetching ->
+            if (!isFetching && InAppLifecycleMemory.shouldGlanceFirstSwipeAbleItem) {
+                launch {
+                    // Wait for the list to be draw
+                    delay(DELAY_GLANCE_DURATION)
+                    InAppLifecycleMemory.shouldGlanceFirstSwipeAbleItem = false
+                    triggerEvent(OrderListEvent.GlanceFirstSwipeAbleItem)
+                }
+            }
+        }
     }
 
     fun loadOrders() {
@@ -174,10 +196,7 @@ class OrderListViewModel @Inject constructor(
      * processing list will always use the same [processingPagedListWrapper].
      */
     fun submitSearchOrFilter(searchQuery: String) {
-        val listDescriptor = WCOrderListDescriptor(
-            selectedSite.get(),
-            searchQuery = sanitizeSearchQuery(searchQuery)
-        )
+        val listDescriptor = getWCOrderListDescriptorWithFiltersAndSearchQuery(sanitizeSearchQuery(searchQuery))
         val pagedListWrapper = listStore.getList(listDescriptor, dataSource, lifecycle)
         activatePagedListWrapper(pagedListWrapper, isFirstInit = true)
     }
@@ -263,10 +282,10 @@ class OrderListViewModel @Inject constructor(
         AnalyticsTracker.track(
             AnalyticsEvent.ORDER_OPEN,
             mapOf(
-                KEY_ID to orderId,
-                KEY_STATUS to orderStatus,
-                KEY_CUSTOM_FIELDS_COUNT to customFieldsCount,
-                KEY_CUSTOM_FIELDS_SIZE to customFieldsSize
+                AnalyticsTracker.KEY_ID to orderId,
+                AnalyticsTracker.KEY_STATUS to orderStatus,
+                AnalyticsTracker.KEY_CUSTOM_FIELDS_COUNT to customFieldsCount,
+                AnalyticsTracker.KEY_CUSTOM_FIELDS_SIZE to customFieldsSize
             )
         )
     }
@@ -289,6 +308,7 @@ class OrderListViewModel @Inject constructor(
 
         _pagedListData.addSource(pagedListWrapper.data) { pagedList ->
             pagedList?.let {
+
                 _pagedListData.value = it
             }
         }
@@ -302,10 +322,10 @@ class OrderListViewModel @Inject constructor(
             _isLoadingMore.value = it
         }
 
-        pagedListWrapper.listError.observe(this) {
-            it?.let {
-                triggerEvent(ShowErrorSnack(R.string.orderlist_error_fetch_generic))
-            }
+        pagedListWrapper.listError.filter { error ->
+            !dismissListErrors && error != null
+        }.observe(this) {
+            triggerEvent(ShowErrorSnack(R.string.orderlist_error_fetch_generic))
         }
         this.activePagedListWrapper = pagedListWrapper
 
@@ -384,6 +404,7 @@ class OrderListViewModel @Inject constructor(
         EventBus.getDefault().unregister(this)
         dispatcher.unregister(this)
         orderListRepository.onCleanup()
+        orderListTransactionLauncher.clear()
         super.onCleared()
     }
 
@@ -440,8 +461,8 @@ class OrderListViewModel @Inject constructor(
         AnalyticsTracker.track(
             AnalyticsEvent.ORDERS_LIST_LOADED,
             mapOf(
-                KEY_TOTAL_DURATION to totalDurationInSeconds,
-                KEY_STATUS to event.listDescriptor.statusFilter
+                AnalyticsTracker.KEY_TOTAL_DURATION to totalDurationInSeconds,
+                AnalyticsTracker.KEY_STATUS to event.listDescriptor.statusFilter
             )
         )
     }
@@ -455,46 +476,127 @@ class OrderListViewModel @Inject constructor(
         loadOrders()
     }
 
-    fun onCtaClicked(source: String) {
-        launch {
-            triggerEvent(
-                OpenPurchaseCardReaderLink(bannerDisplayEligibilityChecker.getPurchaseCardReaderUrl(source))
+    private fun updateOrderDisplayedStatus(position: Int, status: String) {
+        val pagedList = _pagedListData.value ?: return
+        (pagedList[position] as OrderListItemUIType.OrderListItemUI).status = status
+        triggerEvent(OrderListEvent.NotifyOrderChanged(position))
+    }
+
+    fun onSwipeStatusUpdate(gestureSource: OrderStatusUpdateSource.SwipeToCompleteGesture) {
+        dismissListErrors = true
+
+        AnalyticsTracker.track(
+            AnalyticsEvent.ORDER_STATUS_CHANGE,
+            mapOf(
+                AnalyticsTracker.KEY_ID to gestureSource.orderId,
+                AnalyticsTracker.KEY_FROM to gestureSource.oldStatus,
+                AnalyticsTracker.KEY_TO to gestureSource.newStatus,
+                AnalyticsTracker.KEY_FLOW to AnalyticsTracker.VALUE_FLOW_LIST
             )
+        )
+
+        optimisticUpdateOrderStatus(
+            orderId = gestureSource.orderId,
+            status = gestureSource.newStatus,
+            onOptimisticSuccess = { swipeStatusUpdateOptimisticSuccess(gestureSource) },
+            onFail = { swipeStatusUpdateFails(gestureSource) }
+        )
+    }
+
+    private fun swipeStatusUpdateOptimisticSuccess(gestureSource: OrderStatusUpdateSource.SwipeToCompleteGesture) {
+        val dismissAction = object : Snackbar.Callback() {
+            override fun onDismissed(transientBottomBar: Snackbar?, event: Int) {
+                super.onDismissed(transientBottomBar, event)
+                if (event != DISMISS_EVENT_ACTION && event != DISMISS_EVENT_CONSECUTIVE) {
+                    dismissListErrors = false
+                }
+            }
         }
+
+        updateOrderDisplayedStatus(gestureSource.orderPosition, gestureSource.newStatus)
+        triggerEvent(
+            Event.ShowUndoSnackbar(
+                message = resourceProvider.getString(
+                    R.string.orderlist_mark_completed_success,
+                    gestureSource.orderId
+                ),
+                undoAction = { undoSwipeStatusUpdate(gestureSource) },
+                dismissAction = dismissAction
+            )
+        )
     }
 
-    fun onDismissClicked() {
-        shouldShowUpsellCardReaderDismissDialog.value = true
-        triggerEvent(OrderListEvent.DismissCardReaderUpsellBanner)
+    private fun swipeStatusUpdateFails(gestureSource: OrderStatusUpdateSource.SwipeToCompleteGesture) {
+        triggerEvent(OrderListEvent.NotifyOrderChanged(gestureSource.orderPosition))
+        triggerEvent(
+            OrderListEvent.ShowRetryErrorSnack(
+                message = resourceProvider.getString(
+                    R.string.orderlist_updating_order_error,
+                    gestureSource.orderId
+                ),
+                retry = { onSwipeStatusUpdate(gestureSource) }
+            )
+        )
     }
 
-    fun onRemindLaterClicked(currentTimeInMillis: Long, source: String) {
-        shouldShowUpsellCardReaderDismissDialog.value = false
-        bannerDisplayEligibilityChecker.onRemindLaterClicked(currentTimeInMillis, source)
-        triggerEvent(OrderListEvent.DismissCardReaderUpsellBannerViaRemindMeLater)
+    private fun undoSwipeStatusUpdate(gestureSource: OrderStatusUpdateSource.SwipeToCompleteGesture) {
+        dismissListErrors = true
+        optimisticUpdateOrderStatus(
+            orderId = gestureSource.orderId,
+            status = gestureSource.oldStatus,
+            onOptimisticSuccess = {
+                updateOrderDisplayedStatus(gestureSource.orderPosition, gestureSource.oldStatus)
+            },
+            onFail = {
+                triggerEvent(OrderListEvent.NotifyOrderChanged(gestureSource.orderPosition))
+                triggerEvent(
+                    OrderListEvent.ShowRetryErrorSnack(
+                        message = resourceProvider.getString(
+                            R.string.orderlist_updating_order_error,
+                            gestureSource.orderId
+                        ),
+                        retry = { undoSwipeStatusUpdate(gestureSource) }
+                    )
+                )
+            },
+            onSuccess = {
+                dismissListErrors = false
+            }
+        )
     }
 
-    fun onDontShowAgainClicked(source: String) {
-        shouldShowUpsellCardReaderDismissDialog.value = false
-        bannerDisplayEligibilityChecker.onDontShowAgainClicked(source)
-        triggerEvent(OrderListEvent.DismissCardReaderUpsellBannerViaDontShowAgain)
-    }
-
-    fun onBannerAlertDismiss() {
-        shouldShowUpsellCardReaderDismissDialog.value = false
-    }
-
-    fun canShowCardReaderUpsellBanner(currentTimeInMillis: Long, source: String): Boolean {
-        return bannerDisplayEligibilityChecker.canShowCardReaderUpsellBanner(currentTimeInMillis, source)
+    private fun optimisticUpdateOrderStatus(
+        orderId: Long,
+        status: String,
+        onOptimisticSuccess: () -> Unit = {},
+        onFail: () -> Unit = {},
+        onSuccess: () -> Unit = {}
+    ) {
+        launch {
+            orderDetailRepository.updateOrderStatus(orderId, status).collect { result ->
+                when {
+                    result is WCOrderStore.UpdateOrderResult.OptimisticUpdateResult -> onOptimisticSuccess()
+                    result is WCOrderStore.UpdateOrderResult.RemoteUpdateResult && result.event.isError -> onFail()
+                    result is WCOrderStore.UpdateOrderResult.RemoteUpdateResult && !result.event.isError -> onSuccess()
+                }
+            }
+        }
     }
 
     sealed class OrderListEvent : Event() {
         data class ShowErrorSnack(@StringRes val messageRes: Int) : OrderListEvent()
         object ShowOrderFilters : OrderListEvent()
-        object DismissCardReaderUpsellBanner : OrderListEvent()
-        object DismissCardReaderUpsellBannerViaRemindMeLater : OrderListEvent()
-        object DismissCardReaderUpsellBannerViaDontShowAgain : OrderListEvent()
-        data class OpenPurchaseCardReaderLink(val url: String) : OrderListEvent()
+        data class OpenPurchaseCardReaderLink(
+            val url: String,
+            @StringRes val titleRes: Int,
+        ) : OrderListEvent()
+        data class ShowRetryErrorSnack(
+            val message: String,
+            val retry: View.OnClickListener
+        ) : OrderListEvent()
+
+        data class NotifyOrderChanged(val position: Int) : OrderListEvent()
+        object GlanceFirstSwipeAbleItem : OrderListEvent()
     }
 
     @Parcelize
@@ -502,5 +604,18 @@ class OrderListViewModel @Inject constructor(
         val isRefreshPending: Boolean = false,
         val arePaymentGatewaysFetched: Boolean = false,
         val filterCount: Int = 0
-    ) : Parcelable
+    ) : Parcelable {
+        @IgnoredOnParcel
+        val isFilteringActive = filterCount > 0
+    }
+
+    companion object {
+        const val UTM_CAMPAIGN = "feature_announcement_card"
+        const val UTM_SOURCE = "orders_list"
+        const val UTM_CONTENT = "upsell_card_readers"
+    }
+}
+
+object InAppLifecycleMemory {
+    var shouldGlanceFirstSwipeAbleItem = true
 }

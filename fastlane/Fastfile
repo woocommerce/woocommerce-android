@@ -143,21 +143,15 @@ platform :android do
     trigger_release_build(branch_to_build: "release/#{new_version}")
   end
 
-  #####################################################################################
-  # update_appstore_strings
-  # -----------------------------------------------------------------------------------
-  # This lane gets the data from the txt files in the WooCommerce/metadata/ folder
-  # and updates the .pot file that is then picked by GlotPress for translations.
-  # -----------------------------------------------------------------------------------
-  # Usage:
-  # fastlane update_appstore_strings version:<version>
+  # Updates the `PlayStoreStrings.pot` file with the latest content from the `release_notes.txt` files and the other text sources.
   #
-  # Example:
-  # fastlane update_appstore_strings version:1.1
-  #####################################################################################
+  # @option [String] version The current `x.y` version of the app. Optional. Used to derive the `release_notes_xy` key to use in the `.pot` file.
+  #
   desc "Updates the PlayStoreStrings.pot file"
   lane :update_appstore_strings do |options|
     ensure_git_status_clean
+
+    version = options.fetch(:version, android_get_app_version)
 
     files = {
       release_note: RELEASE_NOTES_PATH,
@@ -176,13 +170,13 @@ platform :android do
     an_update_metadata_source(
       po_file_path: po_path,
       source_files: files,
-      release_version: options[:version]
+      release_version: version
     )
 
     git_add(path: po_path)
     git_commit(
       path: po_path,
-      message: "Update `PlayStoreStrings.po` for #{options[:version]}",
+      message: "Update `PlayStoreStrings.po` for #{version}",
       allow_nothing_to_commit: true
     )
   end
@@ -302,7 +296,7 @@ platform :android do
     # Wrap up
     removebranchprotection(repository:GHHELPER_REPO, branch: "release/#{version["name"]}")
     setfrozentag(repository:GHHELPER_REPO, milestone: version["name"], freeze: false)
-    create_new_milestone(repository:GHHELPER_REPO)
+    create_new_milestone(repository:GHHELPER_REPO, need_appstore_submission: true, milestone_duration:7, number_of_days_from_code_freeze_to_release: 10)
     close_milestone(repository:GHHELPER_REPO, milestone: version["name"])
 
     trigger_release_build(branch_to_build: "release/#{version["name"]}")
@@ -375,7 +369,9 @@ platform :android do
     skip_upload_changelogs: true,
     skip_upload_images: true,
     skip_upload_screenshots: true,
-    json_key: UPLOAD_TO_PLAY_STORE_JSON_KEY
+    json_key: UPLOAD_TO_PLAY_STORE_JSON_KEY,
+    # Retain the build for v10.9.2 which is the latest one supporting Android 5/6
+    version_codes_to_retain: [356],
   )
 
   create_gh_release(version: version) if options[:create_release]
@@ -738,15 +734,27 @@ platform :android do
 
     apk_dir = File.join(PROJECT_ROOT_FOLDER, 'WooCommerce', 'build', 'outputs', 'apk')
 
-    android_firebase_test(
+    test_succeeded = android_firebase_test(
       project_id: firebase_secret(name: 'project_id'),
       key_file: GOOGLE_FIREBASE_SECRETS_PATH,
-      model: 'Nexus5',
-      version: 23,
+      model: 'Pixel2.arm',
+      version: 30,
       test_apk_path: File.join(apk_dir, 'androidTest', 'vanilla', 'debug', 'WooCommerce-vanilla-debug-androidTest.apk'),
       apk_path: File.join(apk_dir, 'vanilla', 'debug', 'WooCommerce-vanilla-debug.apk'),
-      results_output_dir: File.join(PROJECT_ROOT_FOLDER, 'build', 'instrumented-tests')
-     )
+      test_targets: 'notPackage com.woocommerce.android.e2e.tests.screenshot',
+      results_output_dir: File.join(PROJECT_ROOT_FOLDER, 'build', 'instrumented-tests'),
+      crash_on_test_failure: false
+    )
+
+    annotation_ctx = 'firebase-test-woocommerce-vanilla-debug'
+    if test_succeeded
+      sh("buildkite-agent annotation remove --context '#{annotation_ctx}' || true") if is_ci?
+    else
+      details_url = lane_context[SharedValues::FIREBASE_TEST_MORE_DETAILS_URL]
+      message = "Firebase Tests failed. Failure details can be seen [here in Firebase Console](#{details_url})"
+      sh('buildkite-agent', 'annotate', message, '--style', 'error', '--context', annotation_ctx) if is_ci?
+      UI.test_failure!(message)
+    end
   end
 
   #####################################################################################
@@ -834,7 +842,8 @@ platform :android do
     upload_path = upload_to_s3(
       bucket: 'a8c-apps-public-artifacts',
       key: "woocommerce-installable-build-#{generate_installable_build_number}.apk",
-      file: lane_context[SharedValues::GRADLE_APK_OUTPUT_PATH]
+      file: lane_context[SharedValues::GRADLE_APK_OUTPUT_PATH],
+      skip_if_exists: true
     )
 
     install_url = "#{INSTALLABLE_BUILD_DOMAIN}/#{upload_path}"

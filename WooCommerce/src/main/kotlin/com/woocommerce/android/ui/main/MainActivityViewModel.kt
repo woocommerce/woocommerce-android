@@ -1,10 +1,12 @@
 package com.woocommerce.android.ui.main
 
+import android.net.Uri
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
 import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsEvent
+import com.woocommerce.android.analytics.AnalyticsEvent.REVIEW_OPEN
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.model.FeatureAnnouncement
@@ -13,6 +15,8 @@ import com.woocommerce.android.push.NotificationChannelType
 import com.woocommerce.android.push.NotificationMessageHandler
 import com.woocommerce.android.push.UnseenReviewsCountHandler
 import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.ui.main.MainActivityViewModel.MoreMenuBadgeState.Hidden
+import com.woocommerce.android.ui.main.MainActivityViewModel.MoreMenuBadgeState.UnseenReviews
 import com.woocommerce.android.ui.whatsnew.FeatureAnnouncementRepository
 import com.woocommerce.android.util.BuildConfigWrapper
 import com.woocommerce.android.util.WooLog
@@ -20,6 +24,7 @@ import com.woocommerce.android.util.WooLog.T
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import org.wordpress.android.fluxc.store.SiteStore
 import javax.inject.Inject
@@ -34,7 +39,8 @@ class MainActivityViewModel @Inject constructor(
     private val buildConfigWrapper: BuildConfigWrapper,
     private val prefs: AppPrefs,
     private val analyticsTrackerWrapper: AnalyticsTrackerWrapper,
-    unseenReviewsCountHandler: UnseenReviewsCountHandler
+    private val resolveAppLink: ResolveAppLink,
+    unseenReviewsCountHandler: UnseenReviewsCountHandler,
 ) : ScopedViewModel(savedState) {
     init {
         launch {
@@ -42,9 +48,11 @@ class MainActivityViewModel @Inject constructor(
         }
     }
 
-    val startDestination = if (selectedSite.exists()) R.id.dashboard else R.id.sitePickerFragment
+    val startDestination = if (selectedSite.exists()) R.id.dashboard else R.id.nav_graph_site_picker
 
-    val unseenReviewsCount = unseenReviewsCountHandler.observeUnseenCount().asLiveData()
+    val moreMenuBadgeState = unseenReviewsCountHandler.observeUnseenCount().map { reviewsCount ->
+        determineMenuBadgeState(reviewsCount)
+    }.asLiveData()
 
     fun removeOrderNotifications() {
         notificationHandler.removeNotificationsOfTypeFromSystemsBar(
@@ -58,15 +66,7 @@ class MainActivityViewModel @Inject constructor(
             val currentSite = selectedSite.get()
             val isSiteSpecificNotification = it.remoteSiteId != 0L
             if (isSiteSpecificNotification && it.remoteSiteId != currentSite.siteId) {
-                // Update selected store
-                siteStore.getSiteBySiteId(it.remoteSiteId)?.let { updatedSite ->
-                    selectedSite.set(updatedSite)
-                    // Recreate activity before showing notification
-                    triggerEvent(RestartActivityForNotification(localPushId, notification))
-                } ?: run {
-                    // If for any reason we can't get the store, show the default screen
-                    triggerEvent(ViewMyStoreStats)
-                }
+                changeSiteAndRestart(it.remoteSiteId, RestartActivityForNotification(localPushId, notification))
             } else {
                 when (localPushId) {
                     it.getGroupPushId() -> onGroupMessageOpened(it.channelType, it.remoteSiteId)
@@ -75,6 +75,38 @@ class MainActivityViewModel @Inject constructor(
                 }
             }
         } ?: run {
+            triggerEvent(ViewMyStoreStats)
+        }
+    }
+
+    fun handleIncomingAppLink(uri: Uri?) {
+        when (val event = resolveAppLink(uri)) {
+            is ResolveAppLink.Action.ChangeSiteAndRestart -> {
+                changeSiteAndRestart(event.siteId, RestartActivityForAppLink(event.uri))
+            }
+            is ResolveAppLink.Action.ViewOrderDetail -> {
+                triggerEvent(ViewOrderDetail(uniqueId = event.orderId, remoteNoteId = 0L))
+            }
+            ResolveAppLink.Action.ViewStats -> {
+                triggerEvent(ViewMyStoreStats)
+            }
+            ResolveAppLink.Action.ViewPayments -> {
+                triggerEvent(ViewPayments)
+            }
+            ResolveAppLink.Action.DoNothing -> {
+                // no-op
+            }
+        }
+    }
+
+    private fun changeSiteAndRestart(remoteSiteId: Long, restartEvent: Event) {
+        // Update selected store
+        siteStore.getSiteBySiteId(remoteSiteId)?.let { updatedSite ->
+            selectedSite.set(updatedSite)
+            // Recreate activity before showing notification
+            triggerEvent(restartEvent)
+        } ?: run {
+            // If for any reason we can't get the store, show the default screen
             triggerEvent(ViewMyStoreStats)
         }
     }
@@ -99,6 +131,7 @@ class MainActivityViewModel @Inject constructor(
         notificationHandler.markNotificationTapped(notification.remoteNoteId)
         notificationHandler.removeNotificationByPushIdFromSystemsBar(localPushId)
         if (notification.channelType == NotificationChannelType.REVIEW) {
+            analyticsTrackerWrapper.track(REVIEW_OPEN)
             triggerEvent(ViewReviewDetail(notification.uniqueId))
         } else if (notification.channelType == NotificationChannelType.NEW_ORDER) {
             if (siteStore.getSiteBySiteId(notification.remoteSiteId) != null) {
@@ -109,6 +142,8 @@ class MainActivityViewModel @Inject constructor(
             }
         }
     }
+
+    private fun determineMenuBadgeState(reviews: Int) = if (reviews > 0) UnseenReviews(reviews) else Hidden
 
     fun showFeatureAnnouncementIfNeeded() {
         launch {
@@ -139,8 +174,15 @@ class MainActivityViewModel @Inject constructor(
     object ViewReviewList : Event()
     object ViewMyStoreStats : Event()
     object ViewZendeskTickets : Event()
+    object ViewPayments : Event()
     data class RestartActivityForNotification(val pushId: Int, val notification: Notification) : Event()
+    data class RestartActivityForAppLink(val data: Uri) : Event()
     data class ShowFeatureAnnouncement(val announcement: FeatureAnnouncement) : Event()
     data class ViewReviewDetail(val uniqueId: Long) : Event()
     data class ViewOrderDetail(val uniqueId: Long, val remoteNoteId: Long) : Event()
+
+    sealed class MoreMenuBadgeState {
+        data class UnseenReviews(val count: Int) : MoreMenuBadgeState()
+        object Hidden : MoreMenuBadgeState()
+    }
 }

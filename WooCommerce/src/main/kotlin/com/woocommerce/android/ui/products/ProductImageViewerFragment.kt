@@ -14,6 +14,7 @@ import androidx.appcompat.app.AlertDialog
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.hilt.navigation.fragment.hiltNavGraphViewModels
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import androidx.viewpager2.adapter.FragmentStateAdapter
@@ -31,6 +32,8 @@ import com.woocommerce.android.ui.main.MainActivity.Companion.BackPressListener
 import com.woocommerce.android.ui.products.ImageViewerFragment.Companion.ImageViewerListener
 import com.woocommerce.android.util.WooAnimUtils
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -66,8 +69,6 @@ class ProductImageViewerFragment :
         super.onCreate(savedInstanceState)
 
         remoteMediaId = savedInstanceState?.getLong(KEY_REMOTE_MEDIA_ID) ?: navArgs.mediaId
-
-        setHasOptionsMenu(false)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -103,10 +104,11 @@ class ProductImageViewerFragment :
         // which would prevent the previous fragment's view from getting destroyed, this causes an issue where the
         // Toolbar doesn't get restored when navigating back.
         // This seems like a bug in the fragment library.
-        view.postDelayed({
+        viewLifecycleOwner.lifecycleScope.launch {
+            delay(500)
             @Suppress("DEPRECATION")
             requireActivity().window.addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN)
-        }, 500)
+        }
     }
 
     override fun onDestroyView() {

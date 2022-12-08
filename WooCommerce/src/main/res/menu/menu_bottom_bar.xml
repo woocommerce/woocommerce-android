@@ -7,12 +7,6 @@
         android:title="@string/my_store" />
 
     <item
-        android:id="@+id/analytics"
-        android:icon="@drawable/as_menu_analytics"
-        android:title="@string/analytics"
-        android:visible="false"/>
-
-    <item
         android:id="@+id/orders"
         android:icon="@drawable/as_menu_orders_list"
         android:title="@string/orders" />

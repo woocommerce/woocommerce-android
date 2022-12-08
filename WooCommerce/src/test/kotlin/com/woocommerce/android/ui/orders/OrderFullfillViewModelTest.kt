@@ -12,7 +12,6 @@ import com.woocommerce.android.model.Refund
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.orders.details.OrderDetailRepository
-import com.woocommerce.android.ui.orders.details.OrderDetailViewModel
 import com.woocommerce.android.ui.orders.fulfill.OrderFulfillFragmentArgs
 import com.woocommerce.android.ui.orders.fulfill.OrderFulfillViewModel
 import com.woocommerce.android.ui.orders.fulfill.OrderFulfillViewModel.ViewState
@@ -222,7 +221,7 @@ class OrderFullfillViewModelTest : BaseUnitTest() {
 
         assertThat(exit).isEqualTo(
             ExitWithResult(
-                OrderDetailViewModel.OrderStatusUpdateSource.FullFillScreen(order.status.value),
+                OrderStatusUpdateSource.FullFillScreen(order.status.value),
                 OrderFulfillViewModel.KEY_ORDER_FULFILL_RESULT
             )
         )

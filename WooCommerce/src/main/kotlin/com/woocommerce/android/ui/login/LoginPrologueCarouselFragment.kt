@@ -41,6 +41,13 @@ class LoginPrologueCarouselFragment : Fragment(R.layout.fragment_login_prologue_
         val binding = FragmentLoginPrologueCarouselBinding.bind(view)
         val adapter = LoginPrologueAdapter(this)
 
+        binding.buttonSkip.setOnClickListener {
+            prologueCarouselListener?.onCarouselFinished()
+            analyticsTrackerWrapper.track(LOGIN_ONBOARDING_SKIP_BUTTON_TAPPED)
+
+            appPrefsWrapper.setOnboardingCarouselDisplayed(true)
+        }
+
         binding.buttonNext.setOnClickListener {
             if (binding.viewPager.currentItem == adapter.itemCount - 1) {
                 prologueCarouselListener?.onCarouselFinished()
@@ -57,13 +64,6 @@ class LoginPrologueCarouselFragment : Fragment(R.layout.fragment_login_prologue_
                     mapOf(Pair(AnalyticsTracker.VALUE_LOGIN_ONBOARDING_IS_FINAL_PAGE, false))
                 )
             }
-        }
-
-        binding.buttonSkip.setOnClickListener {
-            prologueCarouselListener?.onCarouselFinished()
-            analyticsTrackerWrapper.track(LOGIN_ONBOARDING_SKIP_BUTTON_TAPPED)
-
-            appPrefsWrapper.setOnboardingCarouselDisplayed(true)
         }
 
         binding.viewPager.adapter = adapter

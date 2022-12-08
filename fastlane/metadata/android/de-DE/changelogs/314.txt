@@ -1,4 +1,0 @@
-9.6:
-Diese Version enthält die Möglichkeit, für alle unbezahlten Bestellungen Zahlungen in bar, per Karte oder per Zahlungslink zu empfangen. Du kannst auch ein bevorzugtes Zahlungs-Gateway auswählen, wenn mehrere Erweiterungen im Shop installiert sind.
-
-Wir haben außerdem noch ein paar andere Optimierungen vorgenommen. Danke an alle für euer hervorragendes Feedback. Weiter so!

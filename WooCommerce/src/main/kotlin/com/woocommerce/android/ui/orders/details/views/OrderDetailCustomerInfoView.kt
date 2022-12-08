@@ -17,6 +17,7 @@ import com.woocommerce.android.extensions.collapse
 import com.woocommerce.android.extensions.expand
 import com.woocommerce.android.extensions.hide
 import com.woocommerce.android.extensions.navigateSafely
+import com.woocommerce.android.extensions.parcelable
 import com.woocommerce.android.extensions.show
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.ui.orders.OrderCustomerHelper
@@ -48,7 +49,7 @@ class OrderDetailCustomerInfoView @JvmOverloads constructor(
         var viewState = state
         if (state is Bundle) {
             isCustomerInfoViewExpanded = state.getBoolean(KEY_IS_CUSTOMER_INFO_VIEW_EXPANDED)
-            viewState = state.getParcelable(KEY_SUPER_STATE)
+            viewState = state.parcelable(KEY_SUPER_STATE)
         }
         super.onRestoreInstanceState(viewState)
     }

@@ -6,6 +6,7 @@ import android.view.Menu
 import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
+import androidx.core.view.MenuProvider
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -15,6 +16,7 @@ import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.databinding.FragmentAttributeListBinding
 import com.woocommerce.android.extensions.navigateSafely
+import com.woocommerce.android.extensions.parcelable
 import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.model.ProductAttribute
 import com.woocommerce.android.ui.products.BaseProductFragment
@@ -23,7 +25,7 @@ import com.woocommerce.android.widgets.CustomProgressDialog
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
-class AttributeListFragment : BaseProductFragment(R.layout.fragment_attribute_list) {
+class AttributeListFragment : BaseProductFragment(R.layout.fragment_attribute_list), MenuProvider {
     companion object {
         const val TAG: String = "AttributeListFragment"
         private const val LIST_STATE_KEY = "list_state"
@@ -47,7 +49,7 @@ class AttributeListFragment : BaseProductFragment(R.layout.fragment_attribute_li
 
         _binding = FragmentAttributeListBinding.bind(view)
 
-        setHasOptionsMenu(true)
+        requireActivity().addMenuProvider(this, viewLifecycleOwner)
         initializeViews(savedInstanceState)
         setupObservers()
     }
@@ -65,9 +67,7 @@ class AttributeListFragment : BaseProductFragment(R.layout.fragment_attribute_li
         }
     }
 
-    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
-        super.onCreateOptionsMenu(menu, inflater)
-
+    override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
         if (navArgs.isVariationCreation) {
             nextMenuItem = menu.add(Menu.FIRST, ID_ATTRIBUTE_LIST, Menu.FIRST, R.string.next).apply {
                 setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS)
@@ -76,14 +76,14 @@ class AttributeListFragment : BaseProductFragment(R.layout.fragment_attribute_li
         }
     }
 
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+    override fun onMenuItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
             ID_ATTRIBUTE_LIST -> {
                 AttributeListFragmentDirections.actionAttributeListFragmentToAttributesAddedFragment()
                     .apply { findNavController().navigateSafely(this) }
                 true
             }
-            else -> super.onOptionsItemSelected(item)
+            else -> false
         }
     }
 
@@ -91,7 +91,7 @@ class AttributeListFragment : BaseProductFragment(R.layout.fragment_attribute_li
         val layoutManager = LinearLayoutManager(activity, RecyclerView.VERTICAL, false)
         this.layoutManager = layoutManager
 
-        savedInstanceState?.getParcelable<Parcelable>(LIST_STATE_KEY)?.let {
+        savedInstanceState?.parcelable<Parcelable>(LIST_STATE_KEY)?.let {
             layoutManager.onRestoreInstanceState(it)
         }
 

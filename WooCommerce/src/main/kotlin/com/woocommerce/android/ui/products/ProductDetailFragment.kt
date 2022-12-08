@@ -12,6 +12,7 @@ import android.view.MenuItem
 import android.view.View
 import androidx.annotation.StringRes
 import androidx.core.content.ContextCompat
+import androidx.core.view.MenuProvider
 import androidx.core.view.ViewCompat
 import androidx.core.view.isVisible
 import androidx.navigation.fragment.findNavController
@@ -31,17 +32,20 @@ import com.woocommerce.android.extensions.handleNotice
 import com.woocommerce.android.extensions.handleResult
 import com.woocommerce.android.extensions.hide
 import com.woocommerce.android.extensions.navigateBackWithResult
+import com.woocommerce.android.extensions.parcelable
 import com.woocommerce.android.extensions.show
 import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.model.Product
 import com.woocommerce.android.model.Product.Image
 import com.woocommerce.android.ui.aztec.AztecEditorFragment
 import com.woocommerce.android.ui.aztec.AztecEditorFragment.Companion.ARG_AZTEC_EDITOR_TEXT
+import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.ui.dialog.WooDialog
 import com.woocommerce.android.ui.main.AppBarStatus
 import com.woocommerce.android.ui.products.ProductDetailViewModel.HideImageUploadErrorSnackbar
 import com.woocommerce.android.ui.products.ProductDetailViewModel.MenuButtonsState
 import com.woocommerce.android.ui.products.ProductDetailViewModel.RefreshMenu
+import com.woocommerce.android.ui.products.ProductDetailViewModel.ShowLinkedProductPromoBanner
 import com.woocommerce.android.ui.products.ProductInventoryViewModel.InventoryData
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductDetailBottomSheet
 import com.woocommerce.android.ui.products.ProductPricingViewModel.PricingData
@@ -52,7 +56,10 @@ import com.woocommerce.android.ui.products.models.ProductPropertyCard
 import com.woocommerce.android.ui.products.reviews.ProductReviewsFragment
 import com.woocommerce.android.ui.products.variations.VariationListFragment
 import com.woocommerce.android.ui.products.variations.VariationListViewModel.VariationListData
+import com.woocommerce.android.ui.promobanner.PromoBanner
+import com.woocommerce.android.ui.promobanner.PromoBannerType
 import com.woocommerce.android.util.ChromeCustomTabUtils
+import com.woocommerce.android.util.WooAnimUtils
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.LaunchUrlInChromeTab
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowActionSnackbar
@@ -66,7 +73,8 @@ import javax.inject.Inject
 @AndroidEntryPoint
 class ProductDetailFragment :
     BaseProductFragment(R.layout.fragment_product_detail),
-    OnGalleryImageInteractionListener {
+    OnGalleryImageInteractionListener,
+    MenuProvider {
     companion object {
         private const val LIST_STATE_KEY = "list_state"
 
@@ -124,7 +132,7 @@ class ProductDetailFragment :
         super.onViewCreated(view, savedInstanceState)
 
         _binding = FragmentProductDetailBinding.bind(view)
-        setHasOptionsMenu(true)
+        requireActivity().addMenuProvider(this, viewLifecycleOwner)
 
         ViewCompat.setTransitionName(
             binding.root,
@@ -160,7 +168,7 @@ class ProductDetailFragment :
         val layoutManager = LinearLayoutManager(activity, RecyclerView.VERTICAL, false)
         this.layoutManager = layoutManager
 
-        savedInstanceState?.getParcelable<Parcelable>(LIST_STATE_KEY)?.let {
+        savedInstanceState?.parcelable<Parcelable>(LIST_STATE_KEY)?.let {
             layoutManager.onRestoreInstanceState(it)
         }
         binding.cardsRecyclerView.layoutManager = layoutManager
@@ -285,6 +293,8 @@ class ProductDetailFragment :
                 }
                 is ShowActionSnackbar -> displayProductImageUploadErrorSnackBar(event.message, event.action)
                 is HideImageUploadErrorSnackbar -> imageUploadErrorsSnackbar?.dismiss()
+                is ShowLinkedProductPromoBanner -> showLinkedProductPromoBanner()
+
                 else -> event.isHandled = false
             }
         }
@@ -294,6 +304,9 @@ class ProductDetailFragment :
         }
     }
 
+    /**
+     *  Triggered when the view modal updates or creates an order that doesn't already have linked products
+     */
     private fun showProductDetails(product: Product) {
         productName = updateProductNameFromDetails(product)
         productId = product.remoteId
@@ -347,13 +360,13 @@ class ProductDetailFragment :
         }
     }
 
-    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+    override fun onCreateMenu(menu: Menu, inflater: MenuInflater) {
         menu.clear()
         inflater.inflate(R.menu.menu_product_detail_fragment, menu)
     }
 
     @SuppressLint("ResourceAsColor")
-    override fun onPrepareOptionsMenu(menu: Menu) {
+    override fun onPrepareMenu(menu: Menu) {
         // change the font color of the trash menu item to red, and only show it if it should be enabled
         with(menu.findItem(R.id.menu_trash_product)) {
             if (this == null) return@with
@@ -378,7 +391,7 @@ class ProductDetailFragment :
         }
     }
 
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+    override fun onMenuItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
             R.id.menu_publish -> {
                 ActivityUtils.hideKeyboard(activity)
@@ -417,7 +430,7 @@ class ProductDetailFragment :
                 true
             }
 
-            else -> super.onOptionsItemSelected(item)
+            else -> false
         }
     }
 
@@ -455,6 +468,29 @@ class ProductDetailFragment :
         val recyclerViewState = binding.cardsRecyclerView.layoutManager?.onSaveInstanceState()
         adapter.update(cards)
         binding.cardsRecyclerView.layoutManager?.onRestoreInstanceState(recyclerViewState)
+    }
+
+    private fun showLinkedProductPromoBanner() {
+        if (binding.promoComposableContainer.isVisible.not()) {
+            if (binding.promoComposable.hasComposition.not()) {
+                binding.promoComposable.setContent {
+                    WooThemeWithBackground {
+                        PromoBanner(
+                            bannerType = PromoBannerType.LINKED_PRODUCTS,
+                            onCtaClick = {
+                                WooAnimUtils.scaleOut(binding.promoComposableContainer)
+                                viewModel.onLinkedProductPromoClicked()
+                            },
+                            onDismissClick = {
+                                WooAnimUtils.scaleOut(binding.promoComposableContainer)
+                                viewModel.onLinkedProductPromoDismissed()
+                            }
+                        )
+                    }
+                }
+            }
+            WooAnimUtils.scaleIn(binding.promoComposableContainer, WooAnimUtils.Duration.MEDIUM)
+        }
     }
 
     override fun onSaveInstanceState(outState: Bundle) {

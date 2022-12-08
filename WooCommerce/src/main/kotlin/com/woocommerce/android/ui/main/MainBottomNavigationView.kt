@@ -17,7 +17,6 @@ import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.navigation.NavigationBarView.OnItemReselectedListener
 import com.google.android.material.navigation.NavigationBarView.OnItemSelectedListener
 import com.woocommerce.android.R
-import com.woocommerce.android.util.FeatureFlag
 import java.lang.ref.WeakReference
 
 class MainBottomNavigationView @JvmOverloads constructor(
@@ -48,7 +47,6 @@ class MainBottomNavigationView @JvmOverloads constructor(
 
         addTopDivider()
         createBadges()
-        updateVisibilities()
 
         assignNavigationListeners(true)
         val weakReference = WeakReference(this)
@@ -81,7 +79,6 @@ class MainBottomNavigationView @JvmOverloads constructor(
 
         moreMenuBadge = getOrCreateBadge(R.id.moreMenu)
         moreMenuBadge.isVisible = false
-        moreMenuBadge.backgroundColor = ContextCompat.getColor(context, R.color.color_primary)
     }
 
     /**
@@ -111,20 +108,22 @@ class MainBottomNavigationView @JvmOverloads constructor(
         assignNavigationListeners(true)
     }
 
-    fun showMoreMenuBadge(count: Int) {
-        showBadge(moreMenuBadge, count)
+    fun showMoreMenuUnseenReviewsBadge(count: Int) {
+        moreMenuBadge.backgroundColor = ContextCompat.getColor(context, R.color.color_primary)
+        moreMenuBadge.number = count
+        moreMenuBadge.isVisible = true
+    }
+
+    fun hideMoreMenuBadge() {
+        moreMenuBadge.isVisible = false
     }
 
     fun setOrderBadgeCount(count: Int) {
-        showBadge(ordersBadge, count)
-    }
-
-    private fun showBadge(badgeDrawable: BadgeDrawable, count: Int) {
         if (count > 0) {
-            badgeDrawable.number = count
-            badgeDrawable.isVisible = true
+            ordersBadge.number = count
+            ordersBadge.isVisible = true
         } else {
-            badgeDrawable.isVisible = false
+            ordersBadge.isVisible = false
         }
     }
 
@@ -149,12 +148,6 @@ class MainBottomNavigationView @JvmOverloads constructor(
     private fun assignNavigationListeners(assign: Boolean) {
         setOnItemSelectedListener(if (assign) this else null)
         setOnItemReselectedListener(if (assign) this else null)
-    }
-
-    private fun updateVisibilities() {
-        if (FeatureFlag.ANALYTICS_HUB.isEnabled()) {
-            menu.findItem(R.id.analytics).isVisible = true
-        }
     }
 
     private fun NavDestination.matchDestination(@IdRes destId: Int): Boolean =

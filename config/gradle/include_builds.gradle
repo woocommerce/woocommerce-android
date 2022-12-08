@@ -1,0 +1,46 @@
+def localBuilds = new File("${rootDir}/local-builds.gradle")
+if (localBuilds.exists()) {
+    apply from: localBuilds
+
+    /*
+    In order to add a new included build:
+    1. Define a property for its path in the `local-builds.gradle-example` file.
+    2. Check if that property exists in `ext` since it may be commented out.
+    3. Include the build using the property.
+    4. Add dependencySubstitution block and substitute the binary module with the project.
+    Note that `project` dependencies are resolved in the context of the included build.
+    https://docs.gradle.org/current/javadoc/org/gradle/api/initialization/ConfigurableIncludedBuild.html#dependencySubstitution-org.gradle.api.Action-
+    */
+
+    if (ext.has("localFluxCPath")) {
+        includeBuild(ext.localFluxCPath) {
+            dependencySubstitution {
+                println "Substituting fluxc with the local build"
+                substitute module(gradle.ext.fluxCBinaryPath) with project(':fluxc')
+                substitute module(gradle.ext.fluxCWooCommercePluginBinaryPath) with project(':plugins:woocommerce')
+            }
+        }
+    }
+
+    if (ext.has("localLoginFlowPath")) {
+        includeBuild(ext.localLoginFlowPath) {
+            dependencySubstitution {
+                println "Substituting login-flow with the local build"
+                substitute module("$gradle.ext.loginFlowBinaryPath") with project(':WordPressLoginFlow')
+            }
+        }
+    }
+
+    if (ext.has("localMediaPickerPath")) {
+        includeBuild(ext.localMediaPickerPath) {
+            dependencySubstitution {
+                println "Substituting media-picker with the local build"
+                substitute module("$gradle.ext.mediaPickerBinaryPath") with project(':mediapicker')
+                substitute module("$gradle.ext.mediaPickerDomainBinaryPath") with project(':mediapicker:domain')
+                substitute module("$gradle.ext.mediaPickerSourceDeviceBinaryPath") with project(':mediapicker:source-device')
+                substitute module("$gradle.ext.mediaPickerSourceGifBinaryPath") with project(':mediapicker:source-gif')
+                substitute module("$gradle.ext.mediaPickerSourceWordPressBinaryPath") with project(':mediapicker:source-wordpress')
+            }
+        }
+    }
+}

@@ -3,6 +3,7 @@ package com.woocommerce.android.ui.orders.details
 import android.content.Context
 import android.os.Parcelable
 import androidx.annotation.StringRes
+import androidx.lifecycle.LifecycleObserver
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
@@ -34,6 +35,7 @@ import com.woocommerce.android.model.OrderShipmentTracking
 import com.woocommerce.android.model.Refund
 import com.woocommerce.android.model.RequestResult.SUCCESS
 import com.woocommerce.android.model.ShippingLabel
+import com.woocommerce.android.model.WooPlugin
 import com.woocommerce.android.model.getNonRefundedProducts
 import com.woocommerce.android.model.loadProducts
 import com.woocommerce.android.tools.NetworkStatus
@@ -56,6 +58,7 @@ import com.woocommerce.android.ui.orders.OrderNavigationTarget.ViewOrderedAddons
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.ViewPrintCustomsForm
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.ViewPrintingInstructions
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.ViewRefundedProducts
+import com.woocommerce.android.ui.orders.OrderStatusUpdateSource
 import com.woocommerce.android.ui.orders.details.customfields.CustomOrderFieldsHelper
 import com.woocommerce.android.ui.payments.cardreader.CardReaderTracker
 import com.woocommerce.android.ui.payments.cardreader.payment.CardReaderPaymentCollectibilityChecker
@@ -81,6 +84,7 @@ import org.wordpress.android.fluxc.persistence.entity.OrderMetaDataEntity
 import org.wordpress.android.fluxc.store.WCOrderStore.OnOrderChanged
 import org.wordpress.android.fluxc.store.WCOrderStore.UpdateOrderResult.OptimisticUpdateResult
 import org.wordpress.android.fluxc.store.WCOrderStore.UpdateOrderResult.RemoteUpdateResult
+import org.wordpress.android.fluxc.store.WooCommerceStore
 import javax.inject.Inject
 
 @HiltViewModel
@@ -98,8 +102,11 @@ class OrderDetailViewModel @Inject constructor(
     private val cardReaderTracker: CardReaderTracker,
     private val trackerWrapper: AnalyticsTrackerWrapper,
     private val shippingLabelOnboardingRepository: ShippingLabelOnboardingRepository,
+    private val orderDetailsTransactionLauncher: OrderDetailsTransactionLauncher
 ) : ScopedViewModel(savedState), OnProductFetchedListener {
     private val navArgs: OrderDetailFragmentArgs by savedState.navArgs()
+
+    val performanceObserver: LifecycleObserver = orderDetailsTransactionLauncher
 
     var order: Order
         get() = requireNotNull(viewState.orderInfo?.order)
@@ -135,13 +142,21 @@ class OrderDetailViewModel @Inject constructor(
     private val _shippingLabels = MutableLiveData<List<ShippingLabel>>()
     val shippingLabels: LiveData<List<ShippingLabel>> = _shippingLabels
 
+    private var isFetchingData = false
+
     override fun onCleared() {
         super.onCleared()
         productImageMap.unsubscribeFromOnProductFetchedEvents(this)
+        orderDetailsTransactionLauncher.clear()
     }
+
+    private var pluginsInformation: Map<String, WooPlugin> = HashMap()
 
     init {
         productImageMap.subscribeToOnProductFetchedEvents(this)
+        launch {
+            pluginsInformation = orderDetailRepository.getOrderDetailsPluginsInfo()
+        }
     }
 
     fun start() {
@@ -154,13 +169,7 @@ class OrderDetailViewModel @Inject constructor(
         }
     }
 
-    private suspend fun fetchAndDisplayOrderDetails() {
-        fetchOrderNotes()
-        fetchProductAndShippingDetails()
-        launch {
-            displayOrderDetails()
-        }
-    }
+    fun hasOrder() = viewState.orderInfo?.order != null
 
     private suspend fun displayOrderDetails() {
         updateOrderState()
@@ -170,24 +179,33 @@ class OrderDetailViewModel @Inject constructor(
     }
 
     private suspend fun fetchOrder(showSkeleton: Boolean) {
+        // Prevent re-fetch data when a fetching request is ongoing
+        if (isFetchingData) return
+
         if (networkStatus.isConnected()) {
             viewState = viewState.copy(
                 isOrderDetailSkeletonShown = showSkeleton
             )
-            val fetchedOrder = orderDetailRepository.fetchOrderById(navArgs.orderId)
-            if (fetchedOrder != null) {
-                order = fetchedOrder
-                fetchAndDisplayOrderDetails()
-            } else {
-                triggerEvent(ShowSnackbar(string.order_error_fetch_generic))
-            }
+
+            isFetchingData = true
+            awaitAll(
+                fetchOrderAsync(),
+                fetchOrderNotesAsync(),
+                fetchOrderShippingLabelsAsync(),
+                fetchShipmentTrackingAsync(),
+                fetchOrderRefundsAsync(),
+                fetchSLCreationEligibilityAsync()
+            )
+            isFetchingData = false
+
+            if (hasOrder()) displayOrderDetails()
+
             viewState = viewState.copy(
                 isOrderDetailSkeletonShown = false,
                 isRefreshing = false
             )
         } else {
             triggerEvent(ShowSnackbar(string.offline_error))
-            viewState = viewState.copy(isOrderDetailSkeletonShown = false)
             viewState = viewState.copy(
                 isOrderDetailSkeletonShown = false,
                 isRefreshing = false
@@ -195,12 +213,10 @@ class OrderDetailViewModel @Inject constructor(
         }
     }
 
-    private fun checkOrderMetaData() {
-        launch {
-            viewState = viewState.copy(
-                isCustomFieldsButtonShown = orderDetailRepository.orderHasMetadata(navArgs.orderId)
-            )
-        }
+    private suspend fun checkOrderMetaData() {
+        viewState = viewState.copy(
+            isCustomFieldsButtonShown = orderDetailRepository.orderHasMetadata(navArgs.orderId)
+        )
     }
 
     /**
@@ -390,8 +406,8 @@ class OrderDetailViewModel @Inject constructor(
         )
 
         val snackbarMessage = when (updateSource) {
-            is OrderStatusUpdateSource.Dialog -> string.order_status_updated
             is OrderStatusUpdateSource.FullFillScreen -> string.order_fulfill_completed
+            else -> string.order_status_updated
         }
 
         triggerEvent(
@@ -548,14 +564,22 @@ class OrderDetailViewModel @Inject constructor(
         }
     }
 
-    private fun fetchOrderNotes() {
-        launch {
-            if (!orderDetailRepository.fetchOrderNotes(navArgs.orderId)) {
-                triggerEvent(ShowSnackbar(string.order_error_fetch_notes_generic))
-            }
-            // fetch order notes from the local db and hide the skeleton view
-            _orderNotes.value = orderDetailRepository.getOrderNotes(navArgs.orderId)
+    private fun fetchOrderAsync() = async {
+        val fetchedOrder = orderDetailRepository.fetchOrderById(navArgs.orderId)
+        orderDetailsTransactionLauncher.onOrderFetched()
+        if (fetchedOrder != null) {
+            order = fetchedOrder
+            fetchOrderProducts()
+        } else {
+            triggerEvent(ShowSnackbar(string.order_error_fetch_generic))
         }
+    }
+
+    private fun fetchOrderNotesAsync() = async {
+        if (!orderDetailRepository.fetchOrderNotes(navArgs.orderId)) {
+            triggerEvent(ShowSnackbar(string.order_error_fetch_notes_generic))
+        }
+        orderDetailsTransactionLauncher.onNotesFetched()
     }
 
     private fun loadOrderRefunds(): ListInfo<Refund> {
@@ -577,7 +601,7 @@ class OrderDetailViewModel @Inject constructor(
     }
 
     // the database might be missing certain products, so we need to fetch the ones we don't have
-    private fun fetchOrderProductsAsync() = async {
+    private suspend fun fetchOrderProducts() {
         val productIds = order.getProductIds()
         val numLocalProducts = orderDetailRepository.getProductCountForOrder(productIds)
         if (numLocalProducts != order.items.size) {
@@ -587,12 +611,13 @@ class OrderDetailViewModel @Inject constructor(
 
     private fun fetchSLCreationEligibilityAsync() = async {
         if (shippingLabelOnboardingRepository.isShippingPluginReady) {
-            orderDetailRepository.fetchSLCreationEligibility(order.id)
+            orderDetailRepository.fetchSLCreationEligibility(navArgs.orderId)
         }
+        orderDetailsTransactionLauncher.onPackageCreationEligibleFetched()
     }
 
     private fun loadShipmentTracking(shippingLabels: ListInfo<ShippingLabel>): ListInfo<OrderShipmentTracking> {
-        val trackingList = orderDetailRepository.getOrderShipmentTrackings(order.id)
+        val trackingList = orderDetailRepository.getOrderShipmentTrackings(navArgs.orderId)
         return if (!appPrefs.isTrackingExtensionAvailable() || shippingLabels.isVisible || hasVirtualProductsOnly()) {
             ListInfo(isVisible = false)
         } else {
@@ -602,15 +627,27 @@ class OrderDetailViewModel @Inject constructor(
 
     private fun fetchOrderRefundsAsync() = async {
         orderDetailRepository.fetchOrderRefunds(navArgs.orderId)
+        orderDetailsTransactionLauncher.onRefundsFetched()
     }
 
     private fun fetchShipmentTrackingAsync() = async {
-        val result = orderDetailRepository.fetchOrderShipmentTrackingList(navArgs.orderId)
-        appPrefs.setTrackingExtensionAvailable(result == SUCCESS)
+        val plugin = pluginsInformation[WooCommerceStore.WooPlugin.WOO_SHIPMENT_TRACKING.pluginName]
+
+        if (plugin == null || plugin.isOperational) {
+            val result = orderDetailRepository.fetchOrderShipmentTrackingList(navArgs.orderId)
+            appPrefs.setTrackingExtensionAvailable(result == SUCCESS)
+        }
+
+        orderDetailsTransactionLauncher.onShipmentTrackingFetchingCompleted()
     }
 
     private fun fetchOrderShippingLabelsAsync() = async {
-        orderDetailRepository.fetchOrderShippingLabels(navArgs.orderId)
+        val plugin = pluginsInformation[WooCommerceStore.WooPlugin.WOO_SERVICES.pluginName]
+
+        if (plugin == null || plugin.isOperational) {
+            orderDetailRepository.fetchOrderShippingLabels(navArgs.orderId)
+        }
+        orderDetailsTransactionLauncher.onShippingLabelFetchingCompleted()
     }
 
     private fun loadOrderShippingLabels(): ListInfo<ShippingLabel> {
@@ -620,16 +657,6 @@ class OrderDetailViewModel @Inject constructor(
                 return ListInfo(list = it)
             }
         return ListInfo(isVisible = false)
-    }
-
-    private suspend fun fetchProductAndShippingDetails() {
-        awaitAll(
-            fetchOrderShippingLabelsAsync(),
-            fetchShipmentTrackingAsync(),
-            fetchOrderRefundsAsync(),
-            fetchOrderProductsAsync(),
-            fetchSLCreationEligibilityAsync()
-        )
     }
 
     private fun displayProductAndShippingDetails() {
@@ -744,20 +771,6 @@ class OrderDetailViewModel @Inject constructor(
         val isPaymentCollectableWithCardReader: Boolean = false,
         val isReceiptButtonsVisible: Boolean = false
     ) : Parcelable
-
-    sealed class OrderStatusUpdateSource(open val oldStatus: String, open val newStatus: String) : Parcelable {
-        @Parcelize
-        data class FullFillScreen(override val oldStatus: String) : OrderStatusUpdateSource(
-            oldStatus = oldStatus,
-            newStatus = CoreOrderStatus.COMPLETED.value
-        )
-
-        @Parcelize
-        data class Dialog(
-            override val oldStatus: String,
-            override val newStatus: String
-        ) : OrderStatusUpdateSource(oldStatus, newStatus)
-    }
 
     data class ListInfo<T>(val isVisible: Boolean = true, val list: List<T> = emptyList())
 }

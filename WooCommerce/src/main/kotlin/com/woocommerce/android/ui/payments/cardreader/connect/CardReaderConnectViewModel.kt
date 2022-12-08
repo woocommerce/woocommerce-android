@@ -5,7 +5,6 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.AppPrefsWrapper
-import com.woocommerce.android.BuildConfig
 import com.woocommerce.android.R
 import com.woocommerce.android.cardreader.CardReaderManager
 import com.woocommerce.android.cardreader.connection.CardReader
@@ -24,6 +23,8 @@ import com.woocommerce.android.model.UiString.UiStringRes
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.payments.cardreader.CardReaderTracker
 import com.woocommerce.android.ui.payments.cardreader.CardReaderTrackingInfoKeeper
+import com.woocommerce.android.ui.payments.cardreader.LearnMoreUrlProvider
+import com.woocommerce.android.ui.payments.cardreader.LearnMoreUrlProvider.LearnMoreUrlType.IN_PERSON_PAYMENTS
 import com.woocommerce.android.ui.payments.cardreader.connect.CardReaderConnectEvent.CheckBluetoothEnabled
 import com.woocommerce.android.ui.payments.cardreader.connect.CardReaderConnectEvent.CheckBluetoothPermissionsGiven
 import com.woocommerce.android.ui.payments.cardreader.connect.CardReaderConnectEvent.CheckLocationEnabled
@@ -54,6 +55,7 @@ import com.woocommerce.android.ui.payments.cardreader.connect.CardReaderConnectV
 import com.woocommerce.android.ui.payments.cardreader.connect.CardReaderConnectViewState.ScanningState
 import com.woocommerce.android.ui.payments.cardreader.onboarding.PluginType
 import com.woocommerce.android.ui.payments.cardreader.update.CardReaderUpdateViewModel
+import com.woocommerce.android.ui.prefs.DeveloperOptionsRepository
 import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
@@ -73,10 +75,12 @@ class CardReaderConnectViewModel @Inject constructor(
     private val dispatchers: CoroutineDispatchers,
     private val tracker: CardReaderTracker,
     private val appPrefs: AppPrefsWrapper,
+    private val developerOptionsRepository: DeveloperOptionsRepository,
     private val locationRepository: CardReaderLocationRepository,
     private val selectedSite: SelectedSite,
     private val cardReaderManager: CardReaderManager,
     private val cardReaderTrackingInfoKeeper: CardReaderTrackingInfoKeeper,
+    private val learnMoreUrlProvider: LearnMoreUrlProvider,
 ) : ScopedViewModel(savedState) {
     private val arguments: CardReaderConnectDialogFragmentArgs by savedState.navArgs()
 
@@ -95,7 +99,12 @@ class CardReaderConnectViewModel @Inject constructor(
     override val event: LiveData<Event> = _event
 
     // The app shouldn't store the state as connection flow gets canceled when the vm dies
-    private val viewState = MutableLiveData<CardReaderConnectViewState>(ScanningState(::onCancelClicked))
+    private val viewState = MutableLiveData<CardReaderConnectViewState>(
+        ScanningState(
+            ::onCancelClicked,
+            ::onLearnMoreClicked
+        )
+    )
     private var requiredUpdateStarted: Boolean = false
     private var connectionStarted: Boolean = false
 
@@ -106,7 +115,7 @@ class CardReaderConnectViewModel @Inject constructor(
     }
 
     private fun startFlow() {
-        viewState.value = ScanningState(::onCancelClicked)
+        viewState.value = ScanningState(::onCancelClicked, ::onLearnMoreClicked)
         triggerEvent(CheckLocationPermissions(::onCheckLocationPermissionsResult))
     }
 
@@ -136,6 +145,7 @@ class CardReaderConnectViewModel @Inject constructor(
     private fun onLocationPermissionRationaleConfirmed() {
         triggerEvent(RequestLocationPermissions(::onRequestLocationPermissionsResult))
     }
+
     private fun onRequestLocationPermissionsResult(granted: Boolean) {
         if (granted) {
             onLocationPermissionsVerified()
@@ -222,11 +232,15 @@ class CardReaderConnectViewModel @Inject constructor(
 
     private fun onReadyToStartScanning() {
         if (!cardReaderManager.initialized) {
-            cardReaderManager.initialize()
+            cardReaderManager.initialize(mapUpdateOptions(appPrefs.selectedUpdateReaderOption()))
         }
         launch {
             startScanningIfNotStarted()
         }
+    }
+
+    private fun mapUpdateOptions(updateFrequency: String): CardReaderManager.SimulatorUpdateFrequency {
+        return CardReaderManager.SimulatorUpdateFrequency.valueOf(updateFrequency)
     }
 
     private suspend fun startScanningIfNotStarted() {
@@ -236,7 +250,7 @@ class CardReaderConnectViewModel @Inject constructor(
         if (cardReaderManager.readerStatus.value !is CardReaderStatus.Connecting) {
             cardReaderManager
                 .discoverReaders(
-                    isSimulated = BuildConfig.USE_SIMULATED_READER,
+                    isSimulated = developerOptionsRepository.isSimulatedCardReaderEnabled(),
                     cardReaderTypesToDiscover = CardReaderTypesToDiscover.SpecificReaders(
                         listOf(SpecificReader.Chipper2X, SpecificReader.StripeM2, SpecificReader.WisePade3)
                     )
@@ -283,7 +297,7 @@ class CardReaderConnectViewModel @Inject constructor(
         when (discoveryEvent) {
             Started -> {
                 if (viewState.value !is ScanningState) {
-                    viewState.value = ScanningState(::onCancelClicked)
+                    viewState.value = ScanningState(::onCancelClicked, ::onLearnMoreClicked)
                 }
             }
             is ReadersFound -> {
@@ -322,7 +336,7 @@ class CardReaderConnectViewModel @Inject constructor(
             connectToReader(lastKnownReader)
         } else {
             viewState.value = when {
-                availableReaders.isEmpty() -> ScanningState(::onCancelClicked)
+                availableReaders.isEmpty() -> ScanningState(::onCancelClicked, ::onLearnMoreClicked)
                 availableReaders.size == 1 -> buildSingleReaderFoundState(availableReaders[0])
                 availableReaders.size > 1 -> buildMultipleReadersFoundState(availableReaders)
                 else -> throw IllegalStateException("Unreachable code")
@@ -431,7 +445,7 @@ class CardReaderConnectViewModel @Inject constructor(
     }
 
     private fun onKeepSearchingClicked() {
-        viewState.value = ScanningState(::onCancelClicked)
+        viewState.value = ScanningState(::onCancelClicked, ::onLearnMoreClicked)
     }
 
     private fun onCancelClicked() {
@@ -439,7 +453,13 @@ class CardReaderConnectViewModel @Inject constructor(
         exitFlow(connected = false)
     }
 
+    private fun onLearnMoreClicked() {
+        tracker.trackLearnMoreConnectionClicked()
+        triggerEvent(OpenGenericWebView(learnMoreUrlProvider.provideLearnMoreUrlFor(IN_PERSON_PAYMENTS)))
+    }
+
     private fun onReaderConnected(cardReader: CardReader) {
+        cardReaderTrackingInfoKeeper.setCardReaderBatteryLevel(cardReader.currentBatteryLevel)
         tracker.trackConnectionSucceeded()
         WooLog.e(WooLog.T.CARD_READER, "Connecting to reader succeeded.")
         storeConnectedReader(cardReader)

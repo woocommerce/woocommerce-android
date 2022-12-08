@@ -1,7 +1,7 @@
 package com.woocommerce.android.ui.products
 
 import androidx.lifecycle.SavedStateHandle
-import com.woocommerce.android.AppPrefs
+import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.R
 import com.woocommerce.android.initSavedStateHandle
 import com.woocommerce.android.media.MediaFilesRepository
@@ -16,7 +16,6 @@ import com.woocommerce.android.ui.products.categories.ProductCategoriesRepositor
 import com.woocommerce.android.ui.products.models.ProductProperty.ComplexProperty
 import com.woocommerce.android.ui.products.models.ProductProperty.Editable
 import com.woocommerce.android.ui.products.models.ProductProperty.PropertyGroup
-import com.woocommerce.android.ui.products.models.ProductProperty.RatingBar
 import com.woocommerce.android.ui.products.models.ProductPropertyCard
 import com.woocommerce.android.ui.products.models.SiteParameters
 import com.woocommerce.android.ui.products.tags.ProductTagsRepository
@@ -91,7 +90,7 @@ class ProductDetailViewModel_AddFlowTest : BaseUnitTest() {
         on(it.getParameters(any(), any<SavedStateHandle>())).thenReturn(siteParams)
     }
 
-    private val prefs: AppPrefs = mock {
+    private val prefs: AppPrefsWrapper = mock {
         on(it.getSelectedProductType()).then { "simple" }
     }
     private val addonRepository: AddonRepository = mock {
@@ -106,7 +105,7 @@ class ProductDetailViewModel_AddFlowTest : BaseUnitTest() {
     private val defaultPricingGroup: Map<String, String> =
         mapOf("" to resources.getString(R.string.product_price_empty))
 
-    private val expectedCards = listOf(
+    private val addNewProductExpectedCards = listOf(
         ProductPropertyCard(
             type = ProductPropertyCard.Type.PRIMARY,
             properties = listOf(
@@ -126,12 +125,6 @@ class ProductDetailViewModel_AddFlowTest : BaseUnitTest() {
                     defaultPricingGroup,
                     R.drawable.ic_gridicons_money,
                     showTitle = false
-                ),
-                RatingBar(
-                    R.string.product_reviews,
-                    resources.getString(R.string.product_ratings_count_zero),
-                    0F,
-                    R.drawable.ic_reviews
                 ),
                 PropertyGroup(
                     R.string.product_inventory,
@@ -173,7 +166,7 @@ class ProductDetailViewModel_AddFlowTest : BaseUnitTest() {
                 variationRepository,
                 mediaFileUploadHandler,
                 prefs,
-                addonRepository,
+                addonRepository
             )
         )
 
@@ -191,7 +184,7 @@ class ProductDetailViewModel_AddFlowTest : BaseUnitTest() {
     }
 
     @Test
-    fun `Displays the product detail properties correctly`() = testBlocking {
+    fun `Displays the product detail properties correctly in add new product flow`() = testBlocking {
         viewModel.productDetailViewStateData.observeForever { _, _ -> }
 
         var cards: List<ProductPropertyCard>? = null
@@ -199,9 +192,7 @@ class ProductDetailViewModel_AddFlowTest : BaseUnitTest() {
             cards = it.map { card -> productUtils.stripCallbacks(card) }
         }
 
-        viewModel.start()
-
-        assertThat(cards).isEqualTo(expectedCards)
+        assertThat(cards).isEqualTo(addNewProductExpectedCards)
     }
 
     @Test

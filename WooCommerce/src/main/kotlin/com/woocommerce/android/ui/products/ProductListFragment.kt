@@ -8,10 +8,12 @@ import android.view.MenuItem.OnActionExpandListener
 import android.view.View
 import androidx.appcompat.widget.SearchView
 import androidx.appcompat.widget.SearchView.OnQueryTextListener
+import androidx.core.view.MenuProvider
 import androidx.core.view.ViewGroupCompat
 import androidx.core.view.doOnPreDraw
 import androidx.core.view.isVisible
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.Lifecycle
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.material.floatingactionbutton.FloatingActionButton
@@ -40,6 +42,7 @@ import com.woocommerce.android.ui.products.ProductListViewModel.ProductListEvent
 import com.woocommerce.android.ui.products.ProductListViewModel.ProductListEvent.ShowProductSortingBottomSheet
 import com.woocommerce.android.ui.products.ProductSortAndFiltersCard.ProductSortAndFilterListener
 import com.woocommerce.android.util.CurrencyFormatter
+import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.widgets.SkeletonView
 import com.woocommerce.android.widgets.WCEmptyView.EmptyViewType
@@ -53,7 +56,8 @@ class ProductListFragment :
     OnLoadMoreListener,
     OnQueryTextListener,
     OnActionExpandListener,
-    WCProductSearchTabView.ProductSearchTypeChangedListener {
+    WCProductSearchTabView.ProductSearchTypeChangedListener,
+    MenuProvider {
     companion object {
         val TAG: String = ProductListFragment::class.java.simpleName
         const val PRODUCT_FILTER_RESULT_KEY = "product_filter_result"
@@ -72,6 +76,7 @@ class ProductListFragment :
     private val skeletonView = SkeletonView()
 
     private var searchMenuItem: MenuItem? = null
+    private var multiSelectMenuItem: MenuItem? = null
     private var searchView: SearchView? = null
 
     private var trashProductUndoSnack: Snackbar? = null
@@ -88,10 +93,12 @@ class ProductListFragment :
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         postponeEnterTransition()
-        setHasOptionsMenu(true)
+        requireActivity().addMenuProvider(this, viewLifecycleOwner, Lifecycle.State.RESUMED)
 
         _binding = FragmentProductListBinding.bind(view)
+
         view.doOnPreDraw { startPostponedEnterTransition() }
+
         setupObservers(viewModel)
         setupResultHandlers()
         ViewGroupCompat.setTransitionGroup(binding.productsRefreshLayout, true)
@@ -138,6 +145,8 @@ class ProductListFragment :
         disableSearchListeners()
         searchView = null
         _productAdapter = null
+        searchMenuItem = null
+        multiSelectMenuItem = null
         binding.productsSearchTabView.hide()
         super.onDestroyView()
         _binding = null
@@ -162,19 +171,19 @@ class ProductListFragment :
         reenterTransition = fadeThroughTransition
     }
 
-    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+    override fun onCreateMenu(menu: Menu, inflater: MenuInflater) {
         inflater.inflate(R.menu.menu_product_list_fragment, menu)
 
         searchMenuItem = menu.findItem(R.id.menu_search)
         searchView = searchMenuItem?.actionView as SearchView?
         searchView?.queryHint = getString(R.string.product_search_hint)
 
-        super.onCreateOptionsMenu(menu, inflater)
+        multiSelectMenuItem = menu.findItem(R.id.menu_multiselect)
+        multiSelectMenuItem?.isVisible = FeatureFlag.PRODUCTS_BULK_EDITING.isEnabled()
     }
 
-    override fun onPrepareOptionsMenu(menu: Menu) {
+    override fun onPrepareMenu(menu: Menu) {
         refreshOptionsMenu()
-        super.onPrepareOptionsMenu(menu)
     }
 
     /**
@@ -191,11 +200,21 @@ class ProductListFragment :
                 if (isSearchActive) {
                     menuItem.expandActionView()
                     searchView?.setQuery(viewModel.viewStateLiveData.liveData.value?.query, false)
+                    val queryHint = getSearchQueryHint()
+                    searchView?.queryHint = queryHint
                 } else {
                     menuItem.collapseActionView()
                 }
                 enableSearchListeners()
             }
+        }
+    }
+
+    private fun getSearchQueryHint(): String {
+        return if (viewModel.viewStateLiveData.liveData.value?.isFilteringActive == true) {
+            getString(R.string.product_search_hint_active_filters)
+        } else {
+            getString(R.string.product_search_hint)
         }
     }
 
@@ -207,14 +226,14 @@ class ProductListFragment :
         return !isChildShowing
     }
 
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+    override fun onMenuItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
             R.id.menu_search -> {
                 AnalyticsTracker.track(AnalyticsEvent.PRODUCT_LIST_MENU_SEARCH_TAPPED)
                 enableSearchListeners()
                 true
             }
-            else -> super.onOptionsItemSelected(item)
+            else -> false
         }
     }
 
@@ -253,6 +272,7 @@ class ProductListFragment :
         viewModel.onSearchOpened()
         onSearchViewActiveChanged(isActive = true)
         binding.productsSearchTabView.show(this)
+        multiSelectMenuItem?.isVisible = false
         return true
     }
 
@@ -261,6 +281,7 @@ class ProductListFragment :
         closeSearchView()
         onSearchViewActiveChanged(isActive = false)
         binding.productsSearchTabView.hide()
+        multiSelectMenuItem?.isVisible = FeatureFlag.PRODUCTS_BULK_EDITING.isEnabled()
         return true
     }
 
@@ -309,6 +330,9 @@ class ProductListFragment :
             }
             new.isBottomNavBarVisible.takeIfNotEqualTo(old?.isBottomNavBarVisible) { isBottomNavBarVisible ->
                 showBottomNavBar(isVisible = isBottomNavBarVisible)
+            }
+            new.isSearchActive.takeIfNotEqualTo(old?.isSearchActive) {
+                refreshOptionsMenu()
             }
         }
 
@@ -453,8 +477,14 @@ class ProductListFragment :
 
     private fun showAddProductButton(show: Boolean) {
         when (show) {
-            true -> binding.addProductButton.show()
-            else -> binding.addProductButton.hide()
+            true -> {
+                uiMessageResolver.anchorViewId = binding.addProductButton.id
+                binding.addProductButton.show()
+            }
+            else -> {
+                uiMessageResolver.anchorViewId = null
+                binding.addProductButton.hide()
+            }
         }
     }
 

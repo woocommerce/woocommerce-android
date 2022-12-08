@@ -8,9 +8,12 @@ import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_ERROR_DE
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_PRODUCT_ID
 import com.woocommerce.android.model.Product
 import com.woocommerce.android.model.ProductVariation
+import com.woocommerce.android.model.RequestResult
 import com.woocommerce.android.model.toAppModel
 import com.woocommerce.android.model.toDataModel
 import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.ui.products.variations.domain.VariationCandidate
+import com.woocommerce.android.util.CoroutineDispatchers
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import org.wordpress.android.fluxc.model.WCProductVariationModel
@@ -23,7 +26,8 @@ import javax.inject.Inject
 class VariationRepository @Inject constructor(
     private val productStore: WCProductStore,
     private val wooCommerceStore: WooCommerceStore,
-    private val selectedSite: SelectedSite
+    private val selectedSite: SelectedSite,
+    private val dispatchers: CoroutineDispatchers,
 ) {
     companion object {
         private const val PRODUCT_VARIATIONS_PAGE_SIZE = WCProductStore.DEFAULT_PRODUCT_VARIATIONS_PAGE_SIZE
@@ -95,12 +99,44 @@ class VariationRepository @Inject constructor(
         variationIds: Collection<Long>,
         newRegularPrice: String? = null,
         newSalePrice: String? = null,
+        stockQuantity: Double? = null
     ): Boolean {
         val payloadBuilder = BatchUpdateVariationsPayload.Builder(selectedSite.get(), remoteProductId, variationIds)
         if (newRegularPrice != null) payloadBuilder.regularPrice(newRegularPrice)
         if (newSalePrice != null) payloadBuilder.salePrice(newSalePrice)
+        if (stockQuantity != null) payloadBuilder.stockQuantity(stockQuantity.toInt())
         val result = productStore.batchUpdateVariations(payloadBuilder.build())
         return !result.isError
+    }
+
+    suspend fun bulkCreateVariations(
+        remoteProductId: Long,
+        variationCandidates: List<VariationCandidate>
+    ): RequestResult = withContext(dispatchers.io) {
+        productStore.batchGenerateVariations(
+            WCProductStore.BatchGenerateVariationsPayload(
+                selectedSite.get(),
+                remoteProductId,
+                variations = variationCandidates.map { candidate ->
+                    candidate.map { variantOption ->
+                        variantOption.asSourceModel()
+                    }
+                }
+            )
+        ).let {
+            if (it.isError) {
+                RequestResult.ERROR
+            } else {
+                RequestResult.SUCCESS
+            }
+        }
+    }
+
+    suspend fun getAllVariations(remoteProductId: Long): Collection<ProductVariation> = withContext(dispatchers.io) {
+        while (canLoadMoreProductVariations) {
+            fetchProductVariations(remoteProductId, true)
+        }
+        getProductVariationList(remoteProductId)
     }
 
     private fun WooResult<WCProductVariationModel>.handleVariationCreateResult(

@@ -1,0 +1,18 @@
+{
+    "request": {
+        "method": "GET",
+        "urlPathPattern": "/wpcom/v2/experiments/0.1.0/assignments/woocommerceandroid/(.*)",
+        "queryParameters": {
+        }
+    },
+    "response": {
+        "status": 401,
+        "jsonBody": {
+            "code": "oauth2_invalid_token",
+            "message": "The OAuth2 token is invalid.",
+            "data": {
+                "status": 401
+            }
+        }
+    }
+}

@@ -9,7 +9,11 @@ import com.woocommerce.android.push.NotificationTestUtils.TEST_ORDER_NOTE_FULL_D
 import com.woocommerce.android.push.NotificationTestUtils.TEST_REVIEW_NOTE_FULL_DATA_2
 import com.woocommerce.android.push.NotificationTestUtils.TEST_REVIEW_NOTE_FULL_DATA_SITE_2
 import com.woocommerce.android.support.ZendeskHelper
-import com.woocommerce.android.util.*
+import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.util.Base64Decoder
+import com.woocommerce.android.util.NotificationsParser
+import com.woocommerce.android.util.WooLog
+import com.woocommerce.android.util.WooLogWrapper
 import com.woocommerce.android.viewmodel.ResourceProvider
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
@@ -25,6 +29,7 @@ import org.mockito.kotlin.mock
 import org.mockito.kotlin.never
 import org.mockito.kotlin.only
 import org.mockito.kotlin.verify
+import org.mockito.kotlin.verifyNoInteractions
 import org.mockito.kotlin.whenever
 import org.wordpress.android.fluxc.Dispatcher
 import org.wordpress.android.fluxc.annotations.action.Action
@@ -35,9 +40,14 @@ import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.CoreOrderStatus
 import org.wordpress.android.fluxc.store.AccountStore
 import org.wordpress.android.fluxc.store.NotificationStore.FetchNotificationPayload
 import org.wordpress.android.fluxc.store.SiteStore
+import org.wordpress.android.fluxc.store.WCLeaderboardsStore
 import org.wordpress.android.fluxc.store.WCOrderStore.FetchOrderListPayload
 
 class NotificationMessageHandlerTest {
+    companion object {
+        val SITE_MODEL = SiteModel()
+    }
+
     private lateinit var notificationMessageHandler: NotificationMessageHandler
 
     private val accountModel = AccountModel().apply { userId = 12345 }
@@ -64,6 +74,10 @@ class NotificationMessageHandlerTest {
         }
     }
     private val notificationsParser: NotificationsParser = NotificationsParser(jvmBase64Decoder)
+    private val selectedSite: SelectedSite = mock {
+        on { exists() }.thenReturn(true)
+    }
+    private val topPerformersStore: WCLeaderboardsStore = mock()
 
     private val orderNotificationPayload = NotificationTestUtils.generateTestNewOrderNotificationPayload(
         userId = accountModel.userId
@@ -91,6 +105,8 @@ class NotificationMessageHandlerTest {
             analyticsTracker = notificationAnalyticsTracker,
             zendeskHelper = zendeskHelper,
             notificationsParser = notificationsParser,
+            selectedSite = selectedSite,
+            topPerformersStore = topPerformersStore,
         )
 
         doReturn(true).whenever(accountStore).hasAccessToken()
@@ -109,6 +125,16 @@ class NotificationMessageHandlerTest {
         notificationMessageHandler.onNewMessageReceived(emptyMap(), mock())
         verify(accountStore, atLeastOnce()).hasAccessToken()
         verify(wooLogWrapper, only()).e(eq(WooLog.T.NOTIFS), eq("User is not logged in!"))
+    }
+
+    @Test
+    fun `given site is not selected, when new message received, then do not process the incoming notification`() {
+        doReturn(false).whenever(accountStore).hasAccessToken()
+        doReturn(false).whenever(selectedSite).exists()
+
+        notificationMessageHandler.onNewMessageReceived(emptyMap(), mock())
+
+        verifyNoInteractions(notificationBuilder)
     }
 
     @Test
@@ -566,5 +592,12 @@ class NotificationMessageHandlerTest {
         verify(notificationAnalyticsTracker, atLeastOnce()).trackNotificationAnalytics(
             eq(AnalyticsEvent.PUSH_NOTIFICATION_TAPPED), eq(orderNotification)
         )
+    }
+
+    @Test
+    fun `when new order notifications is received, then top performers cache should be invalidated`() {
+        notificationMessageHandler.onNewMessageReceived(orderNotificationPayload, mock())
+
+        verify(topPerformersStore).invalidateTopPerformers(any())
     }
 }

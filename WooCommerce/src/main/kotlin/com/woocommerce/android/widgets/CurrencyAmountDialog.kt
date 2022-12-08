@@ -14,6 +14,7 @@ import androidx.fragment.app.DialogFragment
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.woocommerce.android.R
 import com.woocommerce.android.extensions.filterNotNull
+import com.woocommerce.android.extensions.serializable
 import org.wordpress.android.util.ActivityUtils
 import java.math.BigDecimal
 
@@ -46,9 +47,9 @@ open class CurrencyAmountDialog : DialogFragment(), DialogInterface.OnClickListe
         val args = arguments
         if (args != null) {
             headerText.text = args.getString(TITLE_KEY, "")
-            currentValue = args.getSerializable(CURRENT_VALUE_KEY) as? BigDecimal ?: BigDecimal.ZERO
-            maxValue = args.getSerializable(MAX_VALUE_KEY) as? BigDecimal ?: BigDecimal(Double.MAX_VALUE)
-            minValue = args.getSerializable(MIN_VALUE_KEY) as? BigDecimal ?: BigDecimal(Double.MIN_VALUE)
+            currentValue = args.serializable(CURRENT_VALUE_KEY) ?: BigDecimal.ZERO
+            maxValue = args.serializable(MAX_VALUE_KEY) ?: BigDecimal(Double.MAX_VALUE)
+            minValue = args.serializable(MIN_VALUE_KEY) ?: BigDecimal(Double.MIN_VALUE)
             messageText.text = args.getString(MESSAGE_KEY, "")
         }
 

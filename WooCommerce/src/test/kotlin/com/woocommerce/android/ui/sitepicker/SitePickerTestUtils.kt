@@ -5,6 +5,9 @@ import com.woocommerce.android.viewmodel.ResourceProvider
 import org.wordpress.android.fluxc.model.AccountModel
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.model.user.WCUserModel
+import org.wordpress.android.fluxc.network.BaseRequest
+import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooError
+import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooErrorType
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.system.WCApiVersionResponse
 import org.wordpress.android.fluxc.store.WooCommerceStore
 
@@ -33,22 +36,28 @@ object SitePickerTestUtils {
         apiVersion = WooCommerceStore.WOO_API_NAMESPACE_V1
     )
 
+    val timeoutErrorApiVerificationResponse = WooError(
+        WooErrorType.TIMEOUT,
+        BaseRequest.GenericErrorType.UNKNOWN
+    )
+
     val userModel = WCUserModel()
 
     fun getDefaultLoginViewState(defaultViewState: SitePickerViewModel.SitePickerViewState) = defaultViewState.copy(
-        isToolbarVisible = false,
         isHelpBtnVisible = true,
         isSecondaryBtnVisible = true,
         isPrimaryBtnVisible = true
     )
 
-    fun getDefaultSwitchStoreViewState(defaultViewState: SitePickerViewModel.SitePickerViewState) =
-        defaultViewState.copy(
-            isToolbarVisible = true,
-            isHelpBtnVisible = false,
-            isSecondaryBtnVisible = false,
-            isPrimaryBtnVisible = true
-        )
+    fun getDefaultSwitchStoreViewState(
+        defaultViewState: SitePickerViewModel.SitePickerViewState,
+        resourceProvider: ResourceProvider
+    ) = defaultViewState.copy(
+        toolbarTitle = resourceProvider.getString(R.string.site_picker_title),
+        isHelpBtnVisible = false,
+        isSecondaryBtnVisible = false,
+        isPrimaryBtnVisible = true
+    )
 
     fun getEmptyViewState(
         defaultViewState: SitePickerViewModel.SitePickerViewState,
@@ -56,9 +65,10 @@ object SitePickerTestUtils {
     ) = defaultViewState.copy(
         isNoStoresViewVisible = true,
         isPrimaryBtnVisible = true,
-        primaryBtnText = resourceProvider.getString(R.string.login_jetpack_view_instructions_alt),
-        noStoresLabelText = resourceProvider.getString(R.string.login_no_stores),
-        noStoresBtnText = resourceProvider.getString(R.string.login_jetpack_what_is)
+        primaryBtnText = resourceProvider.getString(R.string.login_site_picker_add_a_store),
+        noStoresLabelText = resourceProvider.getString(R.string.login_no_stores_header),
+        noStoresSubText = resourceProvider.getString(R.string.login_no_stores_subtitle),
+        noStoresBtnText = null
     )
 
     fun generateStores(totalCount: Int = 5): List<SiteModel> {

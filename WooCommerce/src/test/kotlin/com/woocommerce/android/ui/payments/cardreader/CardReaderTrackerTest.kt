@@ -5,8 +5,10 @@ import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsEvent.CARD_PRESENT_COLLECT_PAYMENT_CANCELLED
 import com.woocommerce.android.analytics.AnalyticsEvent.CARD_PRESENT_COLLECT_PAYMENT_FAILED
 import com.woocommerce.android.analytics.AnalyticsEvent.CARD_PRESENT_COLLECT_PAYMENT_SUCCESS
+import com.woocommerce.android.analytics.AnalyticsEvent.CARD_PRESENT_ONBOARDING_CTA_TAPPED
 import com.woocommerce.android.analytics.AnalyticsEvent.CARD_PRESENT_ONBOARDING_LEARN_MORE_TAPPED
 import com.woocommerce.android.analytics.AnalyticsEvent.CARD_PRESENT_ONBOARDING_NOT_COMPLETED
+import com.woocommerce.android.analytics.AnalyticsEvent.CARD_PRESENT_ONBOARDING_STEP_SKIPPED
 import com.woocommerce.android.analytics.AnalyticsEvent.CARD_READER_AUTO_CONNECTION_STARTED
 import com.woocommerce.android.analytics.AnalyticsEvent.CARD_READER_DISCOVERY_FAILED
 import com.woocommerce.android.analytics.AnalyticsEvent.CARD_READER_DISCOVERY_READER_DISCOVERED
@@ -14,6 +16,9 @@ import com.woocommerce.android.analytics.AnalyticsEvent.CARD_READER_LOCATION_FAI
 import com.woocommerce.android.analytics.AnalyticsEvent.CARD_READER_LOCATION_SUCCESS
 import com.woocommerce.android.analytics.AnalyticsEvent.CARD_READER_SOFTWARE_UPDATE_FAILED
 import com.woocommerce.android.analytics.AnalyticsEvent.CARD_READER_SOFTWARE_UPDATE_STARTED
+import com.woocommerce.android.analytics.AnalyticsEvent.DISABLE_CASH_ON_DELIVERY_FAILED
+import com.woocommerce.android.analytics.AnalyticsEvent.ENABLE_CASH_ON_DELIVERY_FAILED
+import com.woocommerce.android.analytics.AnalyticsEvent.ENABLE_CASH_ON_DELIVERY_SUCCESS
 import com.woocommerce.android.analytics.AnalyticsEvent.PAYMENTS_FLOW_ORDER_COLLECT_PAYMENT_TAPPED
 import com.woocommerce.android.analytics.AnalyticsEvent.RECEIPT_EMAIL_TAPPED
 import com.woocommerce.android.analytics.AnalyticsEvent.RECEIPT_PRINT_CANCELED
@@ -21,9 +26,12 @@ import com.woocommerce.android.analytics.AnalyticsEvent.RECEIPT_PRINT_FAILED
 import com.woocommerce.android.analytics.AnalyticsEvent.RECEIPT_PRINT_SUCCESS
 import com.woocommerce.android.analytics.AnalyticsEvent.RECEIPT_PRINT_TAPPED
 import com.woocommerce.android.analytics.AnalyticsTracker
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_CASH_ON_DELIVERY_SOURCE
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.cardreader.connection.event.SoftwareUpdateStatus.Failed
 import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.ui.payments.cardreader.hub.CardReaderHubViewModel.CashOnDeliverySource.ONBOARDING
+import com.woocommerce.android.ui.payments.cardreader.hub.CardReaderHubViewModel.CashOnDeliverySource.PAYMENTS_HUB
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboardingState
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboardingState.ChoosePaymentGatewayProvider
 import com.woocommerce.android.ui.payments.cardreader.onboarding.PluginType.STRIPE_EXTENSION_GATEWAY
@@ -38,12 +46,17 @@ import org.mockito.kotlin.any
 import org.mockito.kotlin.anyOrNull
 import org.mockito.kotlin.argumentCaptor
 import org.mockito.kotlin.check
+import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.eq
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.never
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import org.wordpress.android.fluxc.model.SiteModel
+import kotlin.test.assertEquals
+import kotlin.test.assertFalse
+import kotlin.test.assertNull
+import kotlin.test.assertTrue
 
 @ExperimentalCoroutinesApi
 class CardReaderTrackerTest : BaseUnitTest() {
@@ -94,6 +107,33 @@ class CardReaderTrackerTest : BaseUnitTest() {
         }
 
     @Test
+    fun `given battery level is null, when event is tracked, then it shouldn't contain battery level property`() =
+        testBlocking {
+            assertNull(cardReaderTrackingInfoProvider.trackingInfo.cardReaderBatteryLevel)
+
+            val props = mutableMapOf<String, Any>()
+            cardReaderTracker.track(CARD_PRESENT_COLLECT_PAYMENT_SUCCESS, props)
+
+            assertFalse(props.containsKey("card_reader_battery_level"))
+        }
+
+    @Test
+    fun `given battery level is not null, when event is tracked, then it should contain battery level property`() =
+        testBlocking {
+            val cardReaderTrackingInfo: TrackingInfo = mock {
+                on { cardReaderBatteryLevel } doReturn 0.5F // 50 %
+            }
+            whenever(cardReaderTrackingInfoProvider.trackingInfo).thenReturn(cardReaderTrackingInfo)
+            val props = mutableMapOf<String, Any>()
+
+            cardReaderTracker.track(CARD_PRESENT_COLLECT_PAYMENT_SUCCESS, props)
+
+            assertTrue(props.containsKey("card_reader_battery_level"))
+            val batteryLevelProperty = props["card_reader_battery_level"]
+            assertEquals("50 %", batteryLevelProperty)
+        }
+
+    @Test
     fun `when track payment gateway invoked with wcpay, then track event with proper gateway`() =
         testBlocking {
             cardReaderTracker.trackPaymentGatewaySelected(WOOCOMMERCE_PAYMENTS)
@@ -112,6 +152,233 @@ class CardReaderTrackerTest : BaseUnitTest() {
             verify(trackerWrapper).track(
                 eq(AnalyticsEvent.CARD_PRESENT_PAYMENT_GATEWAY_SELECTED),
                 check { assertThat(it[AnalyticsTracker.KEY_PAYMENT_GATEWAY]).isEqualTo("woocommerce-stripe-gateway") }
+            )
+        }
+
+    @Test
+    fun `given cod disabled state, when skip is tapped, then CARD_PRESENT_ONBOARDING_STEP_SKIPPED tracked`() =
+        testBlocking {
+            cardReaderTracker.trackOnboardingSkippedState(
+                CardReaderOnboardingState.CashOnDeliveryDisabled(
+                    countryCode = "US",
+                    preferredPlugin = WOOCOMMERCE_PAYMENTS,
+                    version = "4.0.0"
+                )
+            )
+
+            verify(trackerWrapper).track(
+                eq(CARD_PRESENT_ONBOARDING_STEP_SKIPPED),
+                check {
+                    assertThat(it["reason"]).isEqualTo("cash_on_delivery_disabled")
+                    assertThat(it["remind_later"]).isEqualTo(false)
+                }
+            )
+        }
+
+    @Test
+    fun `given cod disabled state, when enable cod is tapped, then CARD_PRESENT_ONBOARDING_CTA_TAPPED tracked`() =
+        testBlocking {
+            cardReaderTracker.trackOnboardingCtaTappedState(
+                CardReaderOnboardingState.CashOnDeliveryDisabled(
+                    countryCode = "US",
+                    preferredPlugin = WOOCOMMERCE_PAYMENTS,
+                    version = "4.0.0"
+                )
+            )
+
+            verify(trackerWrapper).track(
+                eq(CARD_PRESENT_ONBOARDING_CTA_TAPPED),
+                check { assertThat(it["reason"]).isEqualTo("cash_on_delivery_disabled") }
+            )
+        }
+
+    @Test
+    fun `given enable cod is tapped, when success, then ENABLE_CASH_ON_DELIVERY_SUCCESS tracked`() =
+        testBlocking {
+            cardReaderTracker.trackCashOnDeliveryEnabledSuccess(
+                ONBOARDING
+            )
+
+            verify(trackerWrapper).track(eq(ENABLE_CASH_ON_DELIVERY_SUCCESS), any())
+        }
+
+    @Test
+    fun `given enable cod is tapped from onboarding, when success, then proper source is tracked`() =
+        testBlocking {
+            cardReaderTracker.trackCashOnDeliveryEnabledSuccess(
+                ONBOARDING
+            )
+            val captor = argumentCaptor<Map<String, String>>()
+
+            verify(trackerWrapper).track(
+                eq(ENABLE_CASH_ON_DELIVERY_SUCCESS),
+                captor.capture()
+            )
+            assertThat(captor.firstValue[KEY_CASH_ON_DELIVERY_SOURCE]).isEqualTo(ONBOARDING.toString())
+        }
+
+    @Test
+    fun `given enable cod is tapped from payments hub, when success, then then proper source is tracked`() =
+        testBlocking {
+            cardReaderTracker.trackCashOnDeliveryEnabledSuccess(
+                PAYMENTS_HUB
+            )
+            val captor = argumentCaptor<Map<String, String>>()
+
+            verify(trackerWrapper).track(
+                eq(ENABLE_CASH_ON_DELIVERY_SUCCESS),
+                captor.capture()
+            )
+            assertThat(captor.firstValue[KEY_CASH_ON_DELIVERY_SOURCE]).isEqualTo(PAYMENTS_HUB.toString())
+        }
+
+    @Test
+    fun `given enable cod is tapped, when failure, then ENABLE_CASH_ON_DELIVERY_FAILED tracked`() =
+        testBlocking {
+            cardReaderTracker.trackCashOnDeliveryEnabledFailure(
+                ONBOARDING,
+                "COD failed. Please try again later."
+            )
+
+            verify(trackerWrapper).track(
+                stat = eq(ENABLE_CASH_ON_DELIVERY_FAILED),
+                properties = any(),
+                errorType = any(),
+                errorContext = eq(null),
+                errorDescription = eq("COD failed. Please try again later.")
+            )
+        }
+
+    @Test
+    fun `given track cod toggled invoked, then PAYMENTS_HUB_CASH_ON_DELIVERY_TOGGLED tracked`() =
+        testBlocking {
+            cardReaderTracker.trackCashOnDeliveryToggled(isEnabled = true)
+
+            verify(trackerWrapper).track(
+                eq(AnalyticsEvent.PAYMENTS_HUB_CASH_ON_DELIVERY_TOGGLED),
+                any()
+            )
+        }
+
+    @Test
+    fun `given track cod toggled invoked with true, then PAYMENTS_HUB_CASH_ON_DELIVERY_TOGGLED tracked`() =
+        testBlocking {
+            cardReaderTracker.trackCashOnDeliveryToggled(isEnabled = true)
+            val captor = argumentCaptor<Map<String, Boolean>>()
+
+            verify(trackerWrapper).track(
+                eq(AnalyticsEvent.PAYMENTS_HUB_CASH_ON_DELIVERY_TOGGLED),
+                captor.capture()
+            )
+            assertThat(captor.firstValue[AnalyticsTracker.KEY_IS_ENABLED]).isEqualTo(true)
+        }
+
+    @Test
+    fun `given track cod toggled invoked with false, then PAYMENTS_HUB_CASH_ON_DELIVERY_TOGGLED tracked`() =
+        testBlocking {
+            cardReaderTracker.trackCashOnDeliveryToggled(isEnabled = false)
+            val captor = argumentCaptor<Map<String, Boolean>>()
+
+            verify(trackerWrapper).track(
+                eq(AnalyticsEvent.PAYMENTS_HUB_CASH_ON_DELIVERY_TOGGLED),
+                captor.capture()
+            )
+            assertThat(captor.firstValue[AnalyticsTracker.KEY_IS_ENABLED]).isEqualTo(false)
+        }
+
+    @Test
+    fun `given disable cod method is invoked, when success, then DISABLE_CASH_ON_DELIVERY_SUCCESS tracked`() =
+        testBlocking {
+            cardReaderTracker.trackCashOnDeliveryDisabledSuccess(
+                ONBOARDING
+            )
+
+            verify(trackerWrapper).track(
+                eq(AnalyticsEvent.DISABLE_CASH_ON_DELIVERY_SUCCESS),
+                any()
+            )
+        }
+
+    @Test
+    fun `given disable cod method is invoked, when success & source is payments_hub, then event tracked`() =
+        testBlocking {
+            cardReaderTracker.trackCashOnDeliveryDisabledSuccess(
+                PAYMENTS_HUB
+            )
+            val captor = argumentCaptor<Map<String, String>>()
+
+            verify(trackerWrapper).track(
+                eq(AnalyticsEvent.DISABLE_CASH_ON_DELIVERY_SUCCESS),
+                captor.capture()
+            )
+            assertThat(captor.firstValue[KEY_CASH_ON_DELIVERY_SOURCE]).isEqualTo(
+                PAYMENTS_HUB.toString()
+            )
+        }
+
+    @Test
+    fun `given disable cod method is invoked, when failure, then DISABLE_CASH_ON_DELIVERY_FAILED tracked`() =
+        testBlocking {
+            cardReaderTracker.trackCashOnDeliveryDisabledFailure(
+                ONBOARDING,
+                "Disabling COD failed. Please try again later."
+            )
+
+            verify(trackerWrapper).track(
+                stat = eq(DISABLE_CASH_ON_DELIVERY_FAILED),
+                properties = any(),
+                errorType = any(),
+                errorContext = eq(null),
+                errorDescription = eq("Disabling COD failed. Please try again later.")
+            )
+        }
+
+    @Test
+    fun `given disable cod method is invoked, when failure & source is payments_hub, then event tracked`() =
+        testBlocking {
+            cardReaderTracker.trackCashOnDeliveryDisabledFailure(
+                PAYMENTS_HUB,
+                "Disabling COD failed. Please try again later."
+            )
+            val captor = argumentCaptor<Map<String, String>>()
+
+            verify(trackerWrapper).track(
+                eq(DISABLE_CASH_ON_DELIVERY_FAILED),
+                captor.capture(),
+                errorType = any(),
+                errorContext = eq(null),
+                errorDescription = eq("Disabling COD failed. Please try again later.")
+            )
+            assertThat(captor.firstValue[KEY_CASH_ON_DELIVERY_SOURCE]).isEqualTo(
+                PAYMENTS_HUB.toString()
+            )
+        }
+
+    @Test
+    fun `given learn more cod method is invoked, then proper event is tracked`() =
+        testBlocking {
+            cardReaderTracker.trackCashOnDeliveryLearnMoreTapped()
+
+            verify(trackerWrapper).track(
+                eq(AnalyticsEvent.PAYMENTS_HUB_CASH_ON_DELIVERY_TOGGLED_LEARN_MORE_TAPPED),
+                any()
+            )
+        }
+
+    @Test
+    fun `when onboarding state cod disabled, then reason=cash_on_delivery tracked`() =
+        testBlocking {
+            cardReaderTracker.trackOnboardingState(
+                CardReaderOnboardingState.CashOnDeliveryDisabled(
+                    countryCode = "US",
+                    preferredPlugin = WOOCOMMERCE_PAYMENTS,
+                    version = "4.0.0"
+                )
+            )
+
+            verify(trackerWrapper).track(
+                eq(CARD_PRESENT_ONBOARDING_NOT_COMPLETED),
+                check { assertThat(it["reason"]).isEqualTo("cash_on_delivery_disabled") }
             )
         }
 

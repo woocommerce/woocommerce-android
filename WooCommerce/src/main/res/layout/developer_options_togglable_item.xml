@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@color/color_surface">
+
+    <androidx.appcompat.widget.AppCompatImageView
+        android:id="@+id/developerOptionsToggleableIcon"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:layout_marginTop="0.5dp"
+        android:padding="@dimen/major_85"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/img_card_reader_connecting" />
+
+    <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/developerOptionsToggleableListItemLabel"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="@style/TextAppearance.Woo.Body1"
+        android:textColor="@color/color_on_surface"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toEndOf="@id/developerOptionsToggleableIcon"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:text="Enable Simulated Card Reader" />
+
+    <androidx.appcompat.widget.SwitchCompat
+        android:id="@+id/developerOptionsSwitch"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:paddingStart="@dimen/major_100"
+        android:paddingEnd="@dimen/major_100"
+        android:textColor="@color/color_on_surface"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+</androidx.constraintlayout.widget.ConstraintLayout>

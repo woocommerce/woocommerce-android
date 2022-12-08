@@ -26,13 +26,22 @@ class UnifiedLoginTracker
     var currentStep: Step? = null
         private set
 
+    // Saves the previous step before going to the Help step.
+    // Used for tracking purposes on the Login Help Center feature.
+    var previousStepBeforeHelpStep: Step? = null
+        private set
+
     @JvmOverloads
     fun track(
         flow: Flow? = currentFlow,
         step: Step
     ) {
         currentFlow = flow
+        if (step == Step.HELP) {
+            previousStepBeforeHelpStep = currentStep
+        }
         currentStep = step
+
         if (currentFlow != null && currentStep != null) {
             analyticsTracker.track(
                 stat = AnalyticsEvent.UNIFIED_LOGIN_STEP,
@@ -145,8 +154,8 @@ class UnifiedLoginTracker
     }
 
     enum class Step(val value: String) {
-        PROLOGUE_CAROUSEL("prologue"),
-        PROLOGUE("prologue_carousel"),
+        PROLOGUE_CAROUSEL("prologue_carousel"),
+        PROLOGUE("prologue"),
         START("start"),
         MAGIC_LINK_REQUESTED("magic_link_requested"),
         ENTER_SITE_ADDRESS("enter_site_address"),
@@ -196,7 +205,9 @@ class UnifiedLoginTracker
         REFRESH_APP("refresh_app"),
         HELP_TROUBLESHOOTING_TIPS("help_troubleshooting_tips"),
         TRY_AGAIN("try_again"),
-        WHAT_IS_WORDPRESS_COM("what_is_wordpress_com")
+        WHAT_IS_WORDPRESS_COM("what_is_wordpress_com"),
+        WHAT_IS_WORDPRESS_COM_ON_INVALID_EMAIL_SCREEN("what_is_wordpress_com_on_invalid_email_screen"),
+        CREATE_ACCOUNT("create_account")
     }
 
     companion object {

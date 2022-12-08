@@ -10,7 +10,7 @@ import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.extensions.navigateBackWithResult
 import com.woocommerce.android.model.Order
-import com.woocommerce.android.ui.orders.details.OrderDetailViewModel.*
+import com.woocommerce.android.ui.orders.OrderStatusUpdateSource
 
 /**
  * Dialog displays a list of order statuses and allows for selecting a single order status for

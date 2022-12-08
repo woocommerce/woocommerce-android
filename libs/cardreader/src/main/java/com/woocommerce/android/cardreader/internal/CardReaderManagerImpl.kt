@@ -57,7 +57,7 @@ internal class CardReaderManagerImpl(
 
     override val displayBluetoothCardReaderMessages = connectionManager.displayBluetoothCardReaderMessages
 
-    override fun initialize() {
+    override fun initialize(updateFrequency: CardReaderManager.SimulatorUpdateFrequency) {
         if (!terminal.isInitialized()) {
             terminal.getLifecycleObserver().onCreate(application)
 
@@ -75,10 +75,14 @@ internal class CardReaderManagerImpl(
 
             initStripeTerminal(logLevel)
 
-            terminal.setupSimulator()
+            terminal.setupSimulator(updateFrequency)
         } else {
             logWrapper.w(TAG, "CardReaderManager is already initialized")
         }
+    }
+
+    override fun initializeOnUpdateFrequencyChange(updateFrequency: CardReaderManager.SimulatorUpdateFrequency) {
+        terminal.setupSimulator(updateFrequency)
     }
 
     override fun discoverReaders(

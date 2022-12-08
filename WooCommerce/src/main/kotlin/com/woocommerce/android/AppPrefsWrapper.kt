@@ -3,6 +3,7 @@ package com.woocommerce.android
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener
 import com.woocommerce.android.ui.payments.cardreader.onboarding.PersistentOnboardingData
 import com.woocommerce.android.ui.payments.cardreader.onboarding.PluginType
+import com.woocommerce.android.ui.promobanner.PromoBannerType
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
@@ -48,6 +49,8 @@ class AppPrefsWrapper @Inject constructor() {
         preferredPlugin
     )
 
+    fun selectedUpdateReaderOption() = AppPrefs.updateReaderOptionSelected
+
     fun setCardReaderOnboardingData(
         localSiteId: Int,
         remoteSiteId: Long,
@@ -88,6 +91,24 @@ class AppPrefsWrapper @Inject constructor() {
         remoteSiteId: Long,
         selfHostedSiteId: Long
     ) = AppPrefs.getCardReaderStatementDescriptor(localSiteId, remoteSiteId, selfHostedSiteId)
+
+    fun isCashOnDeliveryDisabledStateSkipped(
+        localSiteId: Int,
+        remoteSiteId: Long,
+        selfHostedSiteId: Long
+    ) = AppPrefs.isCashOnDeliveryDisabledStateSkipped(localSiteId, remoteSiteId, selfHostedSiteId)
+
+    fun setCashOnDeliveryDisabledStateSkipped(
+        localSiteId: Int,
+        remoteSiteId: Long,
+        selfHostedSiteId: Long,
+        isSkipped: Boolean
+    ) = AppPrefs.setCashOnDeliveryDisabledStateSkipped(
+        localSiteId,
+        remoteSiteId,
+        selfHostedSiteId,
+        isSkipped
+    )
 
     fun setLastConnectedCardReaderId(readerId: String) = AppPrefs.setLastConnectedCardReaderId(readerId)
 
@@ -141,6 +162,8 @@ class AppPrefsWrapper @Inject constructor() {
 
     fun getUnifiedLoginLastSource() = AppPrefs.getUnifiedLoginLastSource()
 
+    fun setLoginSiteAddress(loginSiteAddress: String) = AppPrefs.setLoginSiteAddress(loginSiteAddress)
+
     fun removeLoginSiteAddress() = AppPrefs.removeLoginSiteAddress()
 
     fun getLoginSiteAddress() = AppPrefs.getLoginSiteAddress().takeIf { it.isNotEmpty() }
@@ -158,13 +181,42 @@ class AppPrefsWrapper @Inject constructor() {
 
     fun hasPreLoginNotificationBeenDisplayed() = AppPrefs.isPreLoginNotificationBeenDisplayed()
 
+    fun setPreLoginNotificationDisplayedType(notificationType: String) =
+        AppPrefs.setPreLoginNotificationDisplayedType(notificationType)
+
+    fun getPreLoginNotificationDisplayedType() = AppPrefs.getPreLoginNotificationDisplayedType()
+
     fun setPreLoginNotificationDisplayed(displayed: Boolean) =
         AppPrefs.setPreLoginNotificationDisplayed(displayed)
+
+    fun setLoginEmail(email: String) =
+        AppPrefs.setLoginEmail(email)
+
+    fun getLoginEmail() = AppPrefs.getLoginEmail()
 
     fun setOnboardingCarouselDisplayed(displayed: Boolean) =
         AppPrefs.setOnboardingCarouselDisplayed(displayed)
 
     fun hasOnboardingCarouselBeenDisplayed(): Boolean = AppPrefs.hasOnboardingCarouselBeenDisplayed()
+
+    fun setActiveStatsGranularity(currentSiteId: Int, statsGranularity: String) {
+        AppPrefs.setActiveStatsGranularity(currentSiteId, statsGranularity)
+    }
+
+    fun getActiveStatsGranularity(currentSiteId: Int) =
+        AppPrefs.getActiveStatsGranularity(currentSiteId)
+
+    fun markAsNewSignUp(newSignUp: Boolean) {
+        AppPrefs.markAsNewSignUp(newSignUp)
+    }
+
+    fun getIsNewSignUp() = AppPrefs.getIsNewSignUp()
+
+    fun setStoreCreationSource(source: String) {
+        AppPrefs.setStoreCreationSource(source)
+    }
+
+    fun getStoreCreationSource() = AppPrefs.getStoreCreationSource()
 
     /**
      * Card Reader Upsell
@@ -212,6 +264,18 @@ class AppPrefsWrapper @Inject constructor() {
         remoteSiteId,
         selfHostedSiteId
     )
+
+    fun getSelectedProductType() = AppPrefs.getSelectedProductType()
+
+    fun isSelectedProductVirtual() = AppPrefs.isSelectedProductVirtual()
+
+    fun isPromoBannerShown(bannerType: PromoBannerType) = AppPrefs.isPromoBannerShown(bannerType)
+
+    fun setPromoBannerShown(bannerType: PromoBannerType, shown: Boolean) {
+        AppPrefs.setPromoBannerShown(bannerType, shown)
+    }
+
+    fun isV4StatsSupported() = AppPrefs.isV4StatsSupported()
 
     /**
      * Observes changes to the preferences

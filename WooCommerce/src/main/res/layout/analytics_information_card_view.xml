@@ -1,0 +1,70 @@
+<merge xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    tools:context=".ui.analytics.informationcard.AnalyticsInformationCardView">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/analyticsCardDataContainer"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingTop="@dimen/major_100">
+
+        <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/noDataText"
+            style="@style/Woo.Card.Header"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/major_300"
+            android:layout_marginBottom="@dimen/major_350"
+            app:layout_constraintBottom_toTopOf="@+id/divider"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/analyticsCardTitle"
+            tools:text="No revenue this period"
+            tools:visibility="visible" />
+
+        <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/analyticsCardTitle"
+            style="@style/Woo.Card.Title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/minor_00"
+            android:textSize="@dimen/text_minor_125"
+            android:textStyle="bold"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:lineHeight="@dimen/text_major_50"
+            tools:text="Sales"
+            tools:visibility="visible" />
+
+        <com.woocommerce.android.ui.analytics.informationcard.AnalyticsInformationSectionView
+            android:id="@+id/leftAnalyticsSection"
+            style="@style/Woo.Card.WithoutPadding"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            app:cardElevation="@dimen/minor_00"
+            app:layout_constraintEnd_toStartOf="@+id/rightAnalyticsSection"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/analyticsCardTitle"
+            app:layout_constraintWidth_default="percent"
+            app:layout_constraintWidth_percent="0.5"
+            tools:visibility="visible" />
+
+        <com.woocommerce.android.ui.analytics.informationcard.AnalyticsInformationSectionView
+            android:id="@+id/rightAnalyticsSection"
+            style="@style/Woo.Card.WithoutPadding"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            app:cardElevation="@dimen/minor_00"
+            app:layout_constraintBottom_toBottomOf="@+id/leftAnalyticsSection"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/leftAnalyticsSection"
+            app:layout_constraintTop_toTopOf="@+id/leftAnalyticsSection"
+            app:layout_constraintWidth_default="percent"
+            app:layout_constraintWidth_percent="0.5" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</merge>
+

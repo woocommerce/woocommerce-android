@@ -11,6 +11,7 @@ import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.tooling.preview.Preview
@@ -37,8 +38,13 @@ fun ProgressDialog(
                         vertical = dimensionResource(id = R.dimen.major_150)
                     )
             ) {
-                Text(text = title, style = MaterialTheme.typography.h6)
-                Row(horizontalArrangement = Arrangement.spacedBy(dimensionResource(id = R.dimen.major_150))) {
+                if (title.isNotBlank()) {
+                    Text(text = title, style = MaterialTheme.typography.h6)
+                }
+                Row(
+                    horizontalArrangement = Arrangement.spacedBy(dimensionResource(id = R.dimen.major_150)),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
                     CircularProgressIndicator()
                     Text(text = subtitle, style = MaterialTheme.typography.body2)
                 }

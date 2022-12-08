@@ -12,15 +12,6 @@
 
         <View style="@style/Woo.Divider" />
 
-        <include
-            android:id="@+id/upsellCardReaderComposeView"
-            layout="@layout/fragment_card_reader_upsell_banner"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"/>
-
-        <View style="@style/Woo.Divider"
-            android:background="@color/woo_black_90_alpha_020"/>
-
         <!--
             Help & support
         -->
@@ -29,6 +20,14 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             app:optionTitle="@string/support_help" />
+
+        <View style="@style/Woo.Divider" />
+
+        <com.woocommerce.android.ui.prefs.WCSettingsOptionValueView
+            android:id="@+id/option_developers"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:optionTitle="@string/dev_options" />
 
         <LinearLayout
             android:id="@+id/store_settings_container"
@@ -44,14 +43,6 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="@string/settings_store" />
-            <!--
-                Card Reader
-            -->
-            <com.woocommerce.android.ui.prefs.WCSettingsOptionValueView
-                android:id="@+id/option_card_reader_payments"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                app:optionTitle="@string/settings_card_reader_payments" />
 
             <!--
                 Install Jetpack

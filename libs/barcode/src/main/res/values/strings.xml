@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="cd_close_button">Close scanner</string>
+    <string name="cd_hel_button">Help</string>
+    <string name="prompt_point_at_a_barcode">Point your camera at the code</string>
+    <string name="prompt_move_camera_closer">Move closer to search</string>
+    <string name="prompt_searching">Scanning&#8230;</string>
+    <string name="not_a_valid_qr_code">Scanned Qr code is not a WooCommerce code</string>
+
+    <!-- Strings for camera settings. -->
+    <string name="pref_key_rear_camera_preview_size" translatable="false">rcpvs</string>
+    <string name="pref_key_rear_camera_picture_size" translatable="false">rcpts</string>
+</resources>

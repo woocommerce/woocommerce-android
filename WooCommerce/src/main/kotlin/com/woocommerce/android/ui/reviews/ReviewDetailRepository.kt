@@ -3,9 +3,12 @@ package com.woocommerce.android.ui.reviews
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.extensions.getCommentId
-import com.woocommerce.android.model.*
+import com.woocommerce.android.model.ProductReview
+import com.woocommerce.android.model.RequestResult
 import com.woocommerce.android.model.RequestResult.ERROR
 import com.woocommerce.android.model.RequestResult.SUCCESS
+import com.woocommerce.android.model.toAppModel
+import com.woocommerce.android.model.toProductReviewProductModel
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T.REVIEWS
@@ -60,9 +63,11 @@ class ReviewDetailRepository @Inject constructor(
 
     suspend fun markNotificationAsRead(notification: NotificationModel, remoteReviewId: Long) {
         if (!notification.read) {
-            notification.read = true
-            trackMarkNotificationAsReadStarted(notification, remoteReviewId)
-            val result = notificationStore.markNotificationsRead(MarkNotificationsReadPayload(listOf(notification)))
+            val updatedNotification = notification.copy(read = true)
+            trackMarkNotificationAsReadStarted(updatedNotification, remoteReviewId)
+            val result = notificationStore.markNotificationsRead(
+                payload = MarkNotificationsReadPayload(listOf(updatedNotification))
+            )
             trackMarkNotificationReadResult(result)
         }
     }

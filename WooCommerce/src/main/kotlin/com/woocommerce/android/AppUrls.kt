@@ -1,10 +1,13 @@
 package com.woocommerce.android
 
+import com.woocommerce.android.support.help.HelpActivity.Origin.LOGIN_EMAIL
+import com.woocommerce.android.support.help.HelpActivity.Origin.LOGIN_SITE_ADDRESS
+import com.woocommerce.android.support.help.HelpActivity.Origin.LOGIN_USERNAME_PASSWORD
+
 object AppUrls {
     const val APP_HELP_CENTER = "https://docs.woocommerce.com/document/android/"
     const val APP_FEATURE_REQUEST = "http://ideas.woocommerce.com/forums/133476-woocommerce?category_id=84283"
 
-    const val AUTOMATTIC_HOME = "https://www.automattic.com/"
     const val AUTOMATTIC_TOS = "https://woocommerce.com/terms-conditions/"
     const val AUTOMATTIC_PRIVACY_POLICY = "https://www.automattic.com/privacy"
     const val AUTOMATTIC_PRIVACY_POLICY_CA = "https://automattic.com/privacy/#california-consumer-privacy-act-ccpa"
@@ -35,8 +38,6 @@ object AppUrls {
 
     const val ADDONS_SURVEY = "https://automattic.survey.fm/woo-app-addons-production"
 
-    const val COUPONS_SURVEY_DEBUG = "https://automattic.survey.fm/woo-app-coupon-management-testing"
-
     // Will be used later when the feature is fully launched.
     const val COUPONS_SURVEY = "https://automattic.survey.fm/woo-app-coupon-management-production"
 
@@ -52,21 +53,33 @@ object AppUrls {
     const val STRIPE_LEARN_MORE_ABOUT_PAYMENTS =
         "https://docs.woocommerce.com/document/stripe/accept-in-person-payments-with-stripe/"
 
-    const val WOOCOMMERCE_M2_PURCHASE_CARD_READER = "https://woocommerce.com/products/m2-card-reader/"
-    const val STRIPE_M2_PURCHASE_CARD_READER = "https://stripe.com/terminal/stripe-reader"
+    const val WOOCOMMERCE_LEARN_MORE_ABOUT_PAYMENTS_CASH_ON_DELIVERY =
+        "https://docs.woocommerce.com/document/getting-started-with-in-person-payments-with-woocommerce-payments/" +
+            "#add-cod-payment-method"
+    const val STRIPE_LEARN_MORE_ABOUT_PAYMENTS_CASH_ON_DELIVERY =
+        "https://docs.woocommerce.com/document/stripe/accept-in-person-payments-with-stripe/#section-8"
+
     const val WOOCOMMERCE_PURCHASE_CARD_READER_IN_COUNTRY = "https://woocommerce.com/products/hardware/"
 
     const val BBPOS_MANUAL_CARD_READER =
-        "https://stripe.com/files/docs/terminal/c2xbt_product_sheet.pdf"
-    const val M2_MANUAL_CARD_READER = "https://stripe.com/files/docs/terminal/m2_product_sheet.pdf"
-    const val WISEPAD_3_MANUAL_CARD_READER = "https://stripe.com/files/docs/terminal/wp3_product_sheet.pdf"
+        "https://woocommerce.com/wp-content/uploads/2022/12/c2xbt_product_sheet.pdf"
+    const val M2_MANUAL_CARD_READER = "https://woocommerce.com/wp-content/uploads/2022/12/m2_product_sheet.pdf"
+    const val WISEPAD_3_MANUAL_CARD_READER = "https://woocommerce.com/wp-content/uploads/2022/12/wp3_product_sheet.pdf"
 
     const val PLAY_STORE_APP_PREFIX = "http://play.google.com/store/apps/details?id="
-
-    const val PLUGIN_MANAGEMENT_SUFFIX = "/wp-admin/plugins.php"
 
     const val LOGIN_WITH_EMAIL_WHAT_IS_WORDPRESS_COM_ACCOUNT =
         "https://woocommerce.com/document/what-is-a-wordpress-com-account/"
 
-    const val NEW_TO_WOO_DOC = "https://woocommerce.com/document/woocommerce-features"
+    const val NEW_TO_WOO_DOC = "https://woocommerce.com/woocommerce-features"
+
+    const val WORPRESS_COM_TERMS = "https://wordpress.com/tos"
+    const val JETPACK_SYNC_POLICY = "https://jetpack.com/support/what-data-does-jetpack-sync"
+
+    private const val LOGIN_HELP_CENTER = "https://woocommerce.com/document/android-ios-apps-login-help-faq/"
+    val LOGIN_HELP_CENTER_URLS = mapOf(
+        LOGIN_EMAIL to "$LOGIN_HELP_CENTER#enter-wordpress-com-email-address-login-using-store-address-flow",
+        LOGIN_SITE_ADDRESS to "$LOGIN_HELP_CENTER#enter-store-address",
+        LOGIN_USERNAME_PASSWORD to "$LOGIN_HELP_CENTER#enter-store-credentials",
+    )
 }

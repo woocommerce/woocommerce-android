@@ -20,8 +20,6 @@ class InfoScreenFragment : Fragment(R.layout.fragment_info_screen) {
     private val navArgs: InfoScreenFragmentArgs by navArgs()
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        setHasOptionsMenu(true)
-
         val binding = FragmentInfoScreenBinding.bind(view)
         binding.infoHeading.showTextOrHide(navArgs.heading)
         binding.infoMessage.showTextOrHide(navArgs.message)

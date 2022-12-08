@@ -10,6 +10,7 @@ import androidx.preference.PreferenceManager
 import com.woocommerce.android.AppPrefs.CardReaderOnboardingStatus.CARD_READER_ONBOARDING_COMPLETED
 import com.woocommerce.android.AppPrefs.CardReaderOnboardingStatus.CARD_READER_ONBOARDING_NOT_COMPLETED
 import com.woocommerce.android.AppPrefs.CardReaderOnboardingStatus.valueOf
+import com.woocommerce.android.AppPrefs.DeletablePrefKey.CARD_READER_DO_NOT_SHOW_CASH_ON_DELIVERY_DISABLED_ONBOARDING_STATE
 import com.woocommerce.android.AppPrefs.DeletablePrefKey.CARD_READER_IS_PLUGIN_EXPLICITLY_SELECTED
 import com.woocommerce.android.AppPrefs.DeletablePrefKey.CARD_READER_ONBOARDING_COMPLETED_STATUS_V2
 import com.woocommerce.android.AppPrefs.DeletablePrefKey.CARD_READER_PREFERRED_PLUGIN
@@ -25,12 +26,17 @@ import com.woocommerce.android.AppPrefs.DeletablePrefKey.ORDER_FILTER_CUSTOM_DAT
 import com.woocommerce.android.AppPrefs.DeletablePrefKey.ORDER_FILTER_PREFIX
 import com.woocommerce.android.AppPrefs.DeletablePrefKey.PRODUCT_SORTING_PREFIX
 import com.woocommerce.android.AppPrefs.DeletablePrefKey.RECEIPT_PREFIX
+import com.woocommerce.android.AppPrefs.DeletablePrefKey.UPDATE_SIMULATED_READER_OPTION
 import com.woocommerce.android.AppPrefs.UndeletablePrefKey.ONBOARDING_CAROUSEL_DISPLAYED
+import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.extensions.orNullIfEmpty
+import com.woocommerce.android.extensions.packageInfo
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.payments.cardreader.onboarding.PersistentOnboardingData
 import com.woocommerce.android.ui.payments.cardreader.onboarding.PluginType
+import com.woocommerce.android.ui.prefs.DeveloperOptionsViewModel.DeveloperOptionsViewState.UpdateOptions
 import com.woocommerce.android.ui.products.ProductType
+import com.woocommerce.android.ui.promobanner.PromoBannerType
 import com.woocommerce.android.util.PreferenceUtils
 import com.woocommerce.android.util.ThemeOption
 import com.woocommerce.android.util.ThemeOption.DEFAULT
@@ -41,6 +47,7 @@ import java.util.Date
 
 // Guaranteed to hold a reference to the application context, which is safe
 @SuppressLint("StaticFieldLeak")
+@SuppressWarnings("LargeClass")
 object AppPrefs {
     interface PrefKey
 
@@ -86,8 +93,16 @@ object AppPrefs {
         PRODUCT_SORTING_PREFIX,
         PRE_LOGIN_NOTIFICATION_WORK_REQUEST,
         PRE_LOGIN_NOTIFICATION_DISPLAYED,
+        PRE_LOGIN_NOTIFICATION_DISPLAYED_TYPE,
+        LOGIN_EMAIL,
         CARD_READER_UPSELL_BANNER_DIALOG_DISMISSED_FOREVER,
         CARD_READER_UPSELL_BANNER_DIALOG_DISMISSED_REMIND_ME_LATER,
+        CARD_READER_DO_NOT_SHOW_CASH_ON_DELIVERY_DISABLED_ONBOARDING_STATE,
+        ACTIVE_STATS_GRANULARITY,
+        USE_SIMULATED_READER,
+        NEW_SIGN_UP,
+        STORE_CREATION_SOURCE,
+        UPDATE_SIMULATED_READER_OPTION,
     }
 
     /**
@@ -147,7 +162,7 @@ object AppPrefs {
         // Hide banner in order detail to install WC Shipping plugin
         WC_SHIPPING_BANNER_DISMISSED,
 
-        ONBOARDING_CAROUSEL_DISPLAYED
+        ONBOARDING_CAROUSEL_DISPLAYED,
     }
 
     fun init(context: Context) {
@@ -163,9 +178,10 @@ object AppPrefs {
         get() = try {
             context
                 .packageManager
-                .getPackageInfo(context.packageName, 0)
-                .firstInstallTime
-                .let { Date(it) }
+                .packageInfo(context.packageName, 0)
+                .firstInstallTime.let {
+                    Date(it)
+                }
         } catch (ex: Throwable) {
             relativeInstallationDate
         }
@@ -194,6 +210,14 @@ object AppPrefs {
     var isCouponsEnabled: Boolean
         get() = getBoolean(IS_COUPONS_ENABLED, false)
         set(value) = setBoolean(IS_COUPONS_ENABLED, value)
+
+    var isSimulatedReaderEnabled: Boolean
+        get() = getBoolean(DeletablePrefKey.USE_SIMULATED_READER, false)
+        set(value) = setBoolean(DeletablePrefKey.USE_SIMULATED_READER, value)
+
+    var updateReaderOptionSelected: String
+        get() = getString(UPDATE_SIMULATED_READER_OPTION, UpdateOptions.RANDOM.toString())
+        set(option) = setString(UPDATE_SIMULATED_READER_OPTION, option)
 
     fun getProductSortingChoice(currentSiteId: Int) = getString(getProductSortingKey(currentSiteId)).orNullIfEmpty()
 
@@ -355,6 +379,17 @@ object AppPrefs {
 
     private fun getReceiptKey(localSiteId: Int, remoteSiteId: Long, selfHostedSiteId: Long, orderId: Long) =
         PrefKeyString("$RECEIPT_PREFIX:$localSiteId:$remoteSiteId:$selfHostedSiteId:$orderId")
+
+    private fun getPromoBannerKey(bannerType: PromoBannerType) =
+        PrefKeyString("PROMO_BANNER_SHOWN_${bannerType.name}")
+
+    fun isPromoBannerShown(bannerType: PromoBannerType): Boolean {
+        return getBoolean(getPromoBannerKey(bannerType), false)
+    }
+
+    fun setPromoBannerShown(bannerType: PromoBannerType, shown: Boolean) {
+        setBoolean(getPromoBannerKey(bannerType), shown)
+    }
 
     fun setLastConnectedCardReaderId(readerId: String) =
         setString(UndeletablePrefKey.LAST_CONNECTED_CARD_READER_ID, readerId)
@@ -535,6 +570,29 @@ object AppPrefs {
         setString(DeletablePrefKey.UNIFIED_LOGIN_LAST_ACTIVE_FLOW, flow)
     }
 
+    fun isCashOnDeliveryDisabledStateSkipped(
+        localSiteId: Int,
+        remoteSiteId: Long,
+        selfHostedSiteId: Long,
+    ): Boolean {
+        return getBoolean(
+            getCashOnDeliveryDisabledStateSkippedStatusKey(localSiteId, remoteSiteId, selfHostedSiteId),
+            false
+        )
+    }
+
+    fun setCashOnDeliveryDisabledStateSkipped(
+        localSiteId: Int,
+        remoteSiteId: Long,
+        selfHostedSiteId: Long,
+        isSkipped: Boolean
+    ) {
+        setBoolean(
+            getCashOnDeliveryDisabledStateSkippedStatusKey(localSiteId, remoteSiteId, selfHostedSiteId),
+            isSkipped
+        )
+    }
+
     fun getCardReaderOnboardingStatus(
         localSiteId: Int,
         remoteSiteId: Long,
@@ -646,6 +704,15 @@ object AppPrefs {
             isPluginExplicitlySelected
         )
     }
+
+    private fun getCashOnDeliveryDisabledStateSkippedStatusKey(
+        localSiteId: Int,
+        remoteSiteId: Long,
+        selfHostedSiteId: Long
+    ) = PrefKeyString(
+        "$CARD_READER_DO_NOT_SHOW_CASH_ON_DELIVERY_DISABLED_ONBOARDING_STATE:" +
+            "$localSiteId:$remoteSiteId:$selfHostedSiteId"
+    )
 
     private fun getCardReaderOnboardingStatusKey(
         localSiteId: Int,
@@ -769,6 +836,12 @@ object AppPrefs {
         setString(DeletablePrefKey.PRE_LOGIN_NOTIFICATION_WORK_REQUEST, workRequestId)
     }
 
+    fun getPreLoginNotificationDisplayedType() = getString(DeletablePrefKey.PRE_LOGIN_NOTIFICATION_DISPLAYED_TYPE)
+
+    fun setPreLoginNotificationDisplayedType(notificationType: String) {
+        setString(DeletablePrefKey.PRE_LOGIN_NOTIFICATION_DISPLAYED_TYPE, notificationType)
+    }
+
     fun setPreLoginNotificationDisplayed(displayed: Boolean) {
         setBoolean(DeletablePrefKey.PRE_LOGIN_NOTIFICATION_DISPLAYED, displayed)
     }
@@ -776,12 +849,41 @@ object AppPrefs {
     fun isPreLoginNotificationBeenDisplayed(): Boolean =
         getBoolean(DeletablePrefKey.PRE_LOGIN_NOTIFICATION_DISPLAYED, false)
 
+    fun getLoginEmail() = getString(DeletablePrefKey.LOGIN_EMAIL)
+
+    fun setLoginEmail(email: String) {
+        setString(DeletablePrefKey.LOGIN_EMAIL, email)
+    }
+
     fun setOnboardingCarouselDisplayed(displayed: Boolean) {
         setBoolean(ONBOARDING_CAROUSEL_DISPLAYED, displayed)
     }
 
     fun hasOnboardingCarouselBeenDisplayed(): Boolean =
         getBoolean(ONBOARDING_CAROUSEL_DISPLAYED, false)
+
+    fun setActiveStatsGranularity(currentSiteId: Int, activeStatsGranularity: String) {
+        setString(getActiveStatsGranularityFilterKey(currentSiteId), activeStatsGranularity)
+    }
+
+    fun getActiveStatsGranularity(currentSiteId: Int) = getString(
+        getActiveStatsGranularityFilterKey(currentSiteId)
+    )
+
+    fun markAsNewSignUp(newSignUp: Boolean) {
+        setBoolean(DeletablePrefKey.NEW_SIGN_UP, newSignUp)
+    }
+
+    fun getIsNewSignUp() = getBoolean(DeletablePrefKey.NEW_SIGN_UP, false)
+
+    fun setStoreCreationSource(source: String) {
+        setString(DeletablePrefKey.STORE_CREATION_SOURCE, source)
+    }
+
+    fun getStoreCreationSource() = getString(DeletablePrefKey.STORE_CREATION_SOURCE, AnalyticsTracker.VALUE_OTHER)
+
+    private fun getActiveStatsGranularityFilterKey(currentSiteId: Int) =
+        PrefKeyString("${DeletablePrefKey.ACTIVE_STATS_GRANULARITY}:$currentSiteId")
 
     /**
      * Remove all user and site-related preferences.
@@ -827,17 +929,30 @@ object AppPrefs {
         PreferenceUtils.setInt(getPreferences(), key.toString(), value)
 
     private fun getLong(key: PrefKey, default: Long = 0L) =
-        PreferenceUtils.getLong(getPreferences(), key.toString(), default)
+        getLong(key.toString(), default)
+
+    private fun getLong(keyName: String, default: Long = 0L) =
+        PreferenceUtils.getLong(getPreferences(), keyName, default)
 
     private fun setLong(key: PrefKey, value: Long) =
-        PreferenceUtils.setLong(getPreferences(), key.toString(), value)
+        setLong(key.toString(), value)
+
+    private fun setLong(keyName: String, value: Long) =
+        PreferenceUtils.setLong(getPreferences(), keyName, value)
 
     private fun getString(key: PrefKey, defaultValue: String = ""): String {
-        return PreferenceUtils.getString(getPreferences(), key.toString(), defaultValue) ?: defaultValue
+        return getString(key.toString(), defaultValue)
+    }
+
+    private fun getString(keyName: String, defaultValue: String = ""): String {
+        return PreferenceUtils.getString(getPreferences(), keyName, defaultValue) ?: defaultValue
     }
 
     private fun setString(key: PrefKey, value: String) =
-        PreferenceUtils.setString(getPreferences(), key.toString(), value)
+        setString(key.toString(), value)
+
+    private fun setString(keyName: String, value: String) =
+        PreferenceUtils.setString(getPreferences(), keyName, value)
 
     fun getBoolean(key: PrefKey, default: Boolean) =
         PreferenceUtils.getBoolean(getPreferences(), key.toString(), default)
@@ -848,7 +963,11 @@ object AppPrefs {
     fun getPreferences() = PreferenceManager.getDefaultSharedPreferences(context)
 
     private fun remove(key: PrefKey) {
-        getPreferences().edit().remove(key.toString()).apply()
+        remove(key.toString())
+    }
+
+    private fun remove(keyName: String) {
+        getPreferences().edit().remove(keyName).apply()
     }
 
     fun exists(key: PrefKey) = getPreferences().contains(key.toString())

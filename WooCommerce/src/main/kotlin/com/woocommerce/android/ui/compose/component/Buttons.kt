@@ -7,7 +7,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -58,7 +57,7 @@ fun WCColoredButton(
         elevation = null,
         interactionSource = interactionSource,
         contentPadding = contentPadding,
-        modifier = modifier.defaultMinSize(minHeight = dimensionResource(id = R.dimen.min_tap_target)),
+        modifier = modifier
     ) {
         ProvideTextStyle(
             value = MaterialTheme.typography.subtitle2
@@ -119,7 +118,7 @@ fun WCOutlinedButton(
         colors = colors,
         contentPadding = contentPadding,
         interactionSource = interactionSource,
-        modifier = modifier.defaultMinSize(minHeight = dimensionResource(id = R.dimen.min_tap_target)),
+        modifier = modifier,
     ) {
         ProvideTextStyle(
             value = MaterialTheme.typography.subtitle2
@@ -195,7 +194,7 @@ fun WCTextButton(
 ) {
     TextButton(
         onClick = onClick,
-        modifier = modifier.defaultMinSize(minHeight = dimensionResource(id = R.dimen.min_tap_target)),
+        modifier = modifier,
         enabled = enabled,
         contentPadding = contentPadding,
         interactionSource = interactionSource,

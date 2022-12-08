@@ -25,8 +25,7 @@
             android:layout_height="wrap_content"
             android:nestedScrollingEnabled="false"
             tools:itemCount="2"
-            tools:listitem="@layout/refund_shipping_list_item"
-            tools:targetApi="lollipop" />
+            tools:listitem="@layout/refund_shipping_list_item" />
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"

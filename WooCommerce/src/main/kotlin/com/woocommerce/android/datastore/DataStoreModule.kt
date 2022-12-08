@@ -5,7 +5,6 @@ import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.PreferenceDataStoreFactory
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.preferencesDataStoreFile
-import com.woocommerce.android.datastore.DataStoreType.REMOTE_CONFIG
 import com.woocommerce.android.datastore.DataStoreType.TRACKER
 import com.woocommerce.android.di.AppCoroutineScope
 import dagger.Module
@@ -28,19 +27,6 @@ class DataStoreModule {
     ): DataStore<Preferences> = PreferenceDataStoreFactory.create(
         produceFile = {
             appContext.preferencesDataStoreFile("tracker")
-        },
-        scope = CoroutineScope(appCoroutineScope.coroutineContext + Dispatchers.IO)
-    )
-
-    @Provides
-    @Singleton
-    @DataStoreQualifier(REMOTE_CONFIG)
-    fun provideRemoteConfigDataStore(
-        appContext: Context,
-        @AppCoroutineScope appCoroutineScope: CoroutineScope
-    ): DataStore<Preferences> = PreferenceDataStoreFactory.create(
-        produceFile = {
-            appContext.preferencesDataStoreFile("remote_config")
         },
         scope = CoroutineScope(appCoroutineScope.coroutineContext + Dispatchers.IO)
     )

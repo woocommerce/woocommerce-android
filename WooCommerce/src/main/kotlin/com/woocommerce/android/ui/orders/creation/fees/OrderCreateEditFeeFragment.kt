@@ -9,6 +9,7 @@ import android.view.Menu
 import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
+import androidx.core.view.MenuProvider
 import androidx.core.view.isVisible
 import androidx.fragment.app.viewModels
 import androidx.hilt.navigation.fragment.hiltNavGraphViewModels
@@ -32,7 +33,8 @@ import javax.inject.Inject
 
 @AndroidEntryPoint
 class OrderCreateEditFeeFragment :
-    BaseFragment(R.layout.fragment_order_create_edit_fee) {
+    BaseFragment(R.layout.fragment_order_create_edit_fee),
+    MenuProvider {
     private val sharedViewModel by hiltNavGraphViewModels<OrderCreateEditViewModel>(R.id.nav_graph_order_creations)
     private val editFeeViewModel by viewModels<OrderCreateEditFeeViewModel>()
 
@@ -42,7 +44,7 @@ class OrderCreateEditFeeFragment :
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        setHasOptionsMenu(true)
+        requireActivity().addMenuProvider(this, viewLifecycleOwner)
         with(FragmentOrderCreateEditFeeBinding.bind(view)) {
             bindViews()
             observeEvents()
@@ -54,18 +56,17 @@ class OrderCreateEditFeeFragment :
         }
     }
 
-    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
-        super.onCreateOptionsMenu(menu, inflater)
+    override fun onCreateMenu(menu: Menu, inflater: MenuInflater) {
         menu.clear()
         inflater.inflate(R.menu.menu_done, menu)
         doneMenuItem = menu.findItem(R.id.menu_done)
         doneMenuItem?.isEnabled = editFeeViewModel.viewStateData.liveData.value?.isDoneButtonEnabled ?: false
     }
 
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+    override fun onMenuItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
             R.id.menu_done -> editFeeViewModel.onDoneSelected().let { true }
-            else -> super.onOptionsItemSelected(item)
+            else -> false
         }
     }
 

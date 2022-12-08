@@ -7,12 +7,12 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.ui.platform.ViewCompositionStrategy
-import androidx.compose.ui.res.stringResource
 import androidx.core.view.isVisible
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import com.google.android.material.snackbar.BaseTransientBottomBar
 import com.google.android.material.snackbar.Snackbar
+import com.woocommerce.android.NavGraphMainDirections
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.databinding.FragmentTakePaymentBinding
@@ -24,18 +24,19 @@ import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.ui.dialog.WooDialog
 import com.woocommerce.android.ui.main.MainActivity.Companion.BackPressListener
+import com.woocommerce.android.ui.payments.SelectPaymentMethodViewModel.NavigateBackToHub
+import com.woocommerce.android.ui.payments.SelectPaymentMethodViewModel.NavigateBackToOrderList
 import com.woocommerce.android.ui.payments.SelectPaymentMethodViewModel.NavigateToCardReaderHubFlow
 import com.woocommerce.android.ui.payments.SelectPaymentMethodViewModel.NavigateToCardReaderPaymentFlow
 import com.woocommerce.android.ui.payments.SelectPaymentMethodViewModel.NavigateToCardReaderRefundFlow
 import com.woocommerce.android.ui.payments.SelectPaymentMethodViewModel.SharePaymentUrl
 import com.woocommerce.android.ui.payments.SelectPaymentMethodViewModel.TakePaymentViewState.Loading
 import com.woocommerce.android.ui.payments.SelectPaymentMethodViewModel.TakePaymentViewState.Success
-import com.woocommerce.android.ui.payments.banner.PaymentsScreenBanner
+import com.woocommerce.android.ui.payments.banner.Banner
+import com.woocommerce.android.ui.payments.banner.BannerState
 import com.woocommerce.android.ui.payments.banner.PaymentsScreenBannerDismissDialog
 import com.woocommerce.android.ui.payments.cardreader.connect.CardReaderConnectDialogFragment
 import com.woocommerce.android.ui.payments.cardreader.payment.CardReaderPaymentDialogFragment
-import com.woocommerce.android.util.ChromeCustomTabUtils
-import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowDialog
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import dagger.hilt.android.AndroidEntryPoint
@@ -63,7 +64,6 @@ class SelectPaymentMethodFragment : BaseFragment(R.layout.fragment_take_payment)
         if (viewModel.shouldShowUpsellCardReaderDismissDialog.value == true) {
             applyBannerDismissDialogComposeUI()
         }
-        applyBannerComposeUI()
         return view
     }
 
@@ -73,18 +73,13 @@ class SelectPaymentMethodFragment : BaseFragment(R.layout.fragment_take_payment)
         setupResultHandlers()
     }
 
-    private fun applyBannerComposeUI() {
+    private fun applyBannerComposeUI(state: BannerState) {
         binding.upsellCardReaderComposeView.upsellCardReaderBannerView.apply {
             // Dispose of the Composition when the view's LifecycleOwner is destroyed
             setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
             setContent {
                 WooThemeWithBackground {
-                    PaymentsScreenBanner(
-                        viewModel = viewModel,
-                        title = stringResource(id = R.string.card_reader_upsell_card_reader_banner_title),
-                        subtitle = stringResource(id = R.string.card_reader_upsell_card_reader_banner_description),
-                        ctaLabel = stringResource(id = R.string.card_reader_upsell_card_reader_banner_cta)
-                    )
+                    Banner(bannerState = state)
                 }
             }
         }
@@ -149,6 +144,7 @@ class SelectPaymentMethodFragment : BaseFragment(R.layout.fragment_take_payment)
                 viewModel.onSharePaymentUrlClicked()
             }
         }
+        applyBannerComposeUI(state.bannerState)
     }
 
     @Suppress("LongMethod")
@@ -166,10 +162,6 @@ class SelectPaymentMethodFragment : BaseFragment(R.layout.fragment_take_payment)
                         event.message,
                         BaseTransientBottomBar.LENGTH_LONG
                     ).show()
-                }
-                is Exit -> {
-                    val action = SelectPaymentMethodFragmentDirections.actionSelectPaymentMethodFragmentToOrderList()
-                    findNavController().navigateSafely(action)
                 }
                 is SharePaymentUrl -> {
                     sharePaymentUrl(event.storeName, event.paymentUrl)
@@ -195,6 +187,17 @@ class SelectPaymentMethodFragment : BaseFragment(R.layout.fragment_take_payment)
                         )
                     findNavController().navigate(action)
                 }
+                is NavigateBackToOrderList -> {
+                    val action = SelectPaymentMethodFragmentDirections.actionSelectPaymentMethodFragmentToOrderList()
+                    findNavController().navigateSafely(action)
+                }
+                is NavigateBackToHub -> {
+                    val action = SelectPaymentMethodFragmentDirections
+                        .actionSelectPaymentMethodFragmentToCardReaderHubFragment(
+                            event.cardReaderFlowParam
+                        )
+                    findNavController().navigateSafely(action)
+                }
                 SelectPaymentMethodViewModel.DismissCardReaderUpsellBanner -> {
                     applyBannerDismissDialogComposeUI()
                 }
@@ -207,7 +210,12 @@ class SelectPaymentMethodFragment : BaseFragment(R.layout.fragment_take_payment)
                     binding.upsellCardReaderComposeView.upsellCardReaderDismissView.visibility = View.GONE
                 }
                 is SelectPaymentMethodViewModel.OpenPurchaseCardReaderLink -> {
-                    ChromeCustomTabUtils.launchUrl(requireContext(), event.url)
+                    findNavController().navigate(
+                        NavGraphMainDirections.actionGlobalWPComWebViewFragment(
+                            urlToLoad = event.url,
+                            title = resources.getString(event.titleRes)
+                        )
+                    )
                 }
             }
         }

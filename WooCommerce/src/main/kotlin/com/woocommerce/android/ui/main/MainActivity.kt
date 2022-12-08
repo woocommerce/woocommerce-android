@@ -41,33 +41,41 @@ import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.databinding.ActivityMainBinding
 import com.woocommerce.android.extensions.active
 import com.woocommerce.android.extensions.collapse
+import com.woocommerce.android.extensions.exhaustive
 import com.woocommerce.android.extensions.expand
 import com.woocommerce.android.extensions.hide
 import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.model.Notification
-import com.woocommerce.android.support.HelpActivity
-import com.woocommerce.android.support.HelpActivity.Origin
+import com.woocommerce.android.support.help.HelpActivity
+import com.woocommerce.android.support.help.HelpActivity.Origin
 import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.ui.analytics.daterangeselector.AnalyticTimePeriod
+import com.woocommerce.android.ui.appwidgets.WidgetUpdater
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.base.TopLevelFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.feedback.SurveyType
 import com.woocommerce.android.ui.login.LoginActivity
-import com.woocommerce.android.ui.main.BottomNavigationPosition.ANALYTICS
 import com.woocommerce.android.ui.main.BottomNavigationPosition.MORE
 import com.woocommerce.android.ui.main.BottomNavigationPosition.MY_STORE
 import com.woocommerce.android.ui.main.BottomNavigationPosition.ORDERS
 import com.woocommerce.android.ui.main.BottomNavigationPosition.PRODUCTS
+import com.woocommerce.android.ui.main.MainActivityViewModel.MoreMenuBadgeState.Hidden
+import com.woocommerce.android.ui.main.MainActivityViewModel.MoreMenuBadgeState.UnseenReviews
+import com.woocommerce.android.ui.main.MainActivityViewModel.RestartActivityForAppLink
 import com.woocommerce.android.ui.main.MainActivityViewModel.RestartActivityForNotification
 import com.woocommerce.android.ui.main.MainActivityViewModel.ShowFeatureAnnouncement
 import com.woocommerce.android.ui.main.MainActivityViewModel.ViewMyStoreStats
 import com.woocommerce.android.ui.main.MainActivityViewModel.ViewOrderDetail
 import com.woocommerce.android.ui.main.MainActivityViewModel.ViewOrderList
+import com.woocommerce.android.ui.main.MainActivityViewModel.ViewPayments
 import com.woocommerce.android.ui.main.MainActivityViewModel.ViewReviewDetail
 import com.woocommerce.android.ui.main.MainActivityViewModel.ViewReviewList
 import com.woocommerce.android.ui.main.MainActivityViewModel.ViewZendeskTickets
 import com.woocommerce.android.ui.moremenu.MoreMenuFragmentDirections
+import com.woocommerce.android.ui.mystore.MyStoreFragmentDirections
 import com.woocommerce.android.ui.orders.list.OrderListFragmentDirections
+import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderFlowParam
 import com.woocommerce.android.ui.prefs.AppSettingsActivity
 import com.woocommerce.android.ui.products.ProductListFragmentDirections
 import com.woocommerce.android.ui.reviews.ReviewListFragmentDirections
@@ -103,6 +111,10 @@ class MainActivity :
         const val FIELD_REMOTE_NOTIFICATION = "remote-notification"
         const val FIELD_PUSH_ID = "local-push-id"
 
+        // widget-related constants
+        const val FIELD_OPENED_FROM_WIDGET = "opened-from-push-widget"
+        const val FIELD_WIDGET_NAME = "widget-name"
+
         interface BackPressListener {
             fun onRequestAllowBackPress(): Boolean
         }
@@ -117,6 +129,7 @@ class MainActivity :
     @Inject lateinit var selectedSite: SelectedSite
     @Inject lateinit var uiMessageResolver: UIMessageResolver
     @Inject lateinit var crashLogging: CrashLogging
+    @Inject lateinit var appWidgetUpdaters: WidgetUpdater.StatsWidgetUpdaters
 
     private val viewModel: MainActivityViewModel by viewModels()
 
@@ -161,9 +174,7 @@ class MainActivity :
 
     private val fragmentLifecycleObserver: FragmentLifecycleCallbacks = object : FragmentLifecycleCallbacks() {
         override fun onFragmentViewCreated(fm: FragmentManager, f: Fragment, v: View, savedInstanceState: Bundle?) {
-            val currentDestination = navController.currentDestination!!
-            val isDialogDestination = currentDestination.navigatorName == DIALOG_NAVIGATOR_NAME
-            if (isDialogDestination) return
+            if (isDialogDestination(navController.currentDestination!!)) return
 
             when (val appBarStatus = (f as? BaseFragment)?.activityAppBarStatus ?: AppBarStatus.Visible()) {
                 is AppBarStatus.Visible -> {
@@ -275,6 +286,8 @@ class MainActivity :
         if (!BuildConfig.DEBUG) {
             checkForAppUpdates()
         }
+
+        viewModel.handleIncomingAppLink(intent?.data)
     }
 
     override fun hideProgressDialog() {
@@ -295,6 +308,9 @@ class MainActivity :
         super.onResume()
         AnalyticsTracker.trackViewShown(this)
 
+        // Track if App was opened from a widget
+        trackIfOpenedFromWidget()
+
         if (selectedSite.exists()) {
             updateOrderBadge(false)
         }
@@ -313,6 +329,8 @@ class MainActivity :
 
         setIntent(intent)
         initFragment(null)
+
+        viewModel.handleIncomingAppLink(intent?.data)
     }
 
     public override fun onDestroy() {
@@ -341,19 +359,13 @@ class MainActivity :
     override fun onBackPressed() {
         AnalyticsTracker.trackBackPressed(this)
 
-        if (!isAtNavigationRoot()) {
-            // go no further if active fragment doesn't allow back press - we use this so fragments can
-            // provide confirmation before discarding the current action, such as adding an order note
-            getActiveChildFragment()?.let { fragment ->
-                if (fragment is BackPressListener && !(fragment as BackPressListener).onRequestAllowBackPress()) {
-                    return
-                }
+        getActiveChildFragment()?.let { fragment ->
+            if (fragment is BackPressListener && !(fragment as BackPressListener).onRequestAllowBackPress()) {
+                return
             }
-            navController.navigateUp()
-            return
-        } else {
-            super.onBackPressed()
         }
+
+        super.onBackPressed()
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
@@ -431,6 +443,7 @@ class MainActivity :
     }
 
     private fun hideToolbar() {
+        if (binding.collapsingToolbar.layoutParams.height == 0) return
         restoreToolbarHeight = binding.collapsingToolbar.layoutParams.height
         binding.collapsingToolbar.updateLayoutParams { height = 0 }
     }
@@ -559,6 +572,11 @@ class MainActivity :
         startActivityForResult(intent, RequestCodes.SETTINGS)
     }
 
+    override fun showAnalytics(targetPeriod: AnalyticTimePeriod) {
+        val action = MyStoreFragmentDirections.actionMyStoreToAnalytics(targetPeriod)
+        navController.navigateSafely(action)
+    }
+
     override fun updateSelectedSite() {
         hideProgressDialog()
 
@@ -616,14 +634,9 @@ class MainActivity :
         binding.bottomNav.setOrderBadgeCount(0)
     }
 
-    private fun showMoreMenuBadge(count: Int) {
-        binding.bottomNav.showMoreMenuBadge(count)
-    }
-
     override fun onNavItemSelected(navPos: BottomNavigationPosition) {
         val stat = when (navPos) {
             MY_STORE -> AnalyticsEvent.MAIN_TAB_DASHBOARD_SELECTED
-            ANALYTICS -> AnalyticsEvent.MAIN_TAB_ANALYTICS_SELECTED
             ORDERS -> AnalyticsEvent.MAIN_TAB_ORDERS_SELECTED
             PRODUCTS -> AnalyticsEvent.MAIN_TAB_PRODUCTS_SELECTED
             MORE -> AnalyticsEvent.MAIN_TAB_HUB_MENU_SELECTED
@@ -638,22 +651,21 @@ class MainActivity :
     override fun onNavItemReselected(navPos: BottomNavigationPosition) {
         val stat = when (navPos) {
             MY_STORE -> AnalyticsEvent.MAIN_TAB_DASHBOARD_RESELECTED
-            ANALYTICS -> AnalyticsEvent.MAIN_TAB_ANALYTICS_RESELECTED
             ORDERS -> AnalyticsEvent.MAIN_TAB_ORDERS_RESELECTED
             PRODUCTS -> AnalyticsEvent.MAIN_TAB_PRODUCTS_RESELECTED
             MORE -> AnalyticsEvent.MAIN_TAB_HUB_MENU_RESELECTED
         }
         AnalyticsTracker.track(stat)
 
-        // if we're at the root scroll the active fragment to the top, otherwise clear the nav backstack
+        // if we're at the root scroll the active fragment to the top
+        // TODO bring back clearing the backstack when the navgraphs are fixed to support multiple backstacks:
+        // https://github.com/woocommerce/woocommerce-android/issues/7183
         if (isAtNavigationRoot()) {
             // If the fragment's view is not yet created, do nothing
             if (getActiveTopLevelFragment()?.view != null) {
                 getActiveTopLevelFragment()?.scrollToTop()
                 expandToolbar(expand = true, animate = true)
             }
-        } else {
-            navController.navigate(binding.bottomNav.currentPosition.id)
         }
     }
     // endregion
@@ -692,6 +704,7 @@ class MainActivity :
                     startActivity(HelpActivity.createIntent(this, Origin.ZENDESK_NOTIFICATION, null))
                 }
                 is ViewOrderDetail -> {
+                    intent.data = null
                     showOrderDetail(
                         orderId = event.uniqueId,
                         remoteNoteId = event.remoteNoteId,
@@ -709,15 +722,23 @@ class MainActivity :
                     intent.putExtra(FIELD_PUSH_ID, event.pushId)
                     restart()
                 }
+                is RestartActivityForAppLink -> {
+                    intent.data = event.data
+                    restart()
+                }
                 is ShowFeatureAnnouncement -> {
                     val action = NavGraphMainDirections.actionOpenWhatsnewFromMain(event.announcement)
                     navController.navigateSafely(action)
                 }
+                ViewPayments -> showPayments()
             }
         }
 
-        viewModel.unseenReviewsCount.observe(this) { count ->
-            showMoreMenuBadge(count)
+        viewModel.moreMenuBadgeState.observe(this) { moreMenuBadgeState ->
+            when (moreMenuBadgeState) {
+                is UnseenReviews -> binding.bottomNav.showMoreMenuUnseenReviewsBadge(moreMenuBadgeState.count)
+                Hidden -> binding.bottomNav.hideMoreMenuBadge()
+            }.exhaustive
         }
     }
 
@@ -777,6 +798,14 @@ class MainActivity :
             tempStatus = tempStatus,
             launchedFromNotification = launchedFromNotification
         )
+        navController.navigateSafely(action)
+    }
+
+    private fun showPayments() {
+        showBottomNav()
+        binding.bottomNav.currentPosition = MORE
+        binding.bottomNav.active(MORE.position)
+        val action = MoreMenuFragmentDirections.actionMoreMenuToPaymentFlow(CardReaderFlowParam.CardReadersHub)
         navController.navigateSafely(action)
     }
 
@@ -891,5 +920,22 @@ class MainActivity :
             actionListener = actionListener
         )
             .show()
+    }
+
+    override fun updateStatsWidgets() {
+        appWidgetUpdaters.updateTodayWidget()
+    }
+
+    private fun trackIfOpenedFromWidget() {
+        if (intent.getBooleanExtra(FIELD_OPENED_FROM_WIDGET, false)) {
+            val widgetName = intent.getStringExtra(FIELD_WIDGET_NAME)
+            AnalyticsTracker.track(
+                stat = AnalyticsEvent.WIDGET_TAPPED,
+                properties = mapOf(AnalyticsTracker.KEY_NAME to widgetName)
+            )
+            // Reset these flag now that they have being processed
+            intent.removeExtra(FIELD_OPENED_FROM_WIDGET)
+            intent.removeExtra(FIELD_WIDGET_NAME)
+        }
     }
 }

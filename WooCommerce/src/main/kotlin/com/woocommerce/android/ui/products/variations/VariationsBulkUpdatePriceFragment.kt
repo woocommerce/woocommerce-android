@@ -6,6 +6,7 @@ import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
 import androidx.annotation.StringRes
+import androidx.core.view.MenuProvider
 import androidx.fragment.app.viewModels
 import com.woocommerce.android.R
 import com.woocommerce.android.databinding.FragmentVariationsBulkUpdatePriceBinding
@@ -29,7 +30,9 @@ import java.math.BigDecimal
 import javax.inject.Inject
 
 @AndroidEntryPoint
-class VariationsBulkUpdatePriceFragment : BaseFragment(R.layout.fragment_variations_bulk_update_price) {
+class VariationsBulkUpdatePriceFragment :
+    BaseFragment(R.layout.fragment_variations_bulk_update_price),
+    MenuProvider {
     @Inject lateinit var uiMessageResolver: UIMessageResolver
     @Inject lateinit var currencyFormatter: CurrencyFormatter
 
@@ -43,7 +46,7 @@ class VariationsBulkUpdatePriceFragment : BaseFragment(R.layout.fragment_variati
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        setHasOptionsMenu(true)
+        requireActivity().addMenuProvider(this, viewLifecycleOwner)
         _binding = FragmentVariationsBulkUpdatePriceBinding.bind(view)
         binding.price.value.filterNotNull().observe(viewLifecycleOwner) { viewModel.onPriceEntered(it.toString()) }
         binding.price.editText.showKeyboardWithDelay()
@@ -51,11 +54,16 @@ class VariationsBulkUpdatePriceFragment : BaseFragment(R.layout.fragment_variati
         observeEvents()
     }
 
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
+    }
+
     private fun observeEvents() {
         viewModel.event.observe(viewLifecycleOwner) { event ->
             when (event) {
                 is ShowSnackbar -> uiMessageResolver.showSnack(event.message)
-                is Exit -> requireActivity().onBackPressed()
+                is Exit -> requireActivity().onBackPressedDispatcher.onBackPressed()
             }
         }
     }
@@ -128,18 +136,18 @@ class VariationsBulkUpdatePriceFragment : BaseFragment(R.layout.fragment_variati
         }
     }
 
-    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+    override fun onCreateMenu(menu: Menu, inflater: MenuInflater) {
         menu.clear()
         inflater.inflate(R.menu.menu_variations_bulk_update, menu)
     }
 
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+    override fun onMenuItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
             R.id.done -> {
                 viewModel.onDoneClicked()
                 true
             }
-            else -> super.onOptionsItemSelected(item)
+            else -> false
         }
     }
 

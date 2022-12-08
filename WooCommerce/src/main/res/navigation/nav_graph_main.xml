@@ -9,9 +9,10 @@
     <include app:graph="@navigation/nav_graph_products" />
     <include app:graph="@navigation/nav_graph_product_filters" />
     <include app:graph="@navigation/nav_graph_order_creations" />
-    <include app:graph="@navigation/nav_graph_simple_payments" />
+    <include app:graph="@navigation/nav_graph_payment_flow" />
     <include app:graph="@navigation/nav_graph_jetpack_install" />
     <include app:graph="@navigation/nav_graph_coupons" />
+    <include app:graph="@navigation/nav_graph_site_picker" />
 
     <fragment
         android:id="@+id/dashboard"
@@ -21,6 +22,17 @@
         <action
             android:id="@+id/action_myStore_to_jetpackBenefitsDialog"
             app:destination="@id/nav_graph_jetpack_install" />
+        <action
+            android:id="@+id/action_myStore_to_analytics"
+            app:destination="@id/analytics"
+            app:enterAnim="@anim/activity_fade_in"
+            app:exitAnim="@null"
+            app:popEnterAnim="@null"
+            app:popExitAnim="@anim/activity_fade_out">
+            <argument
+                android:name="targetGranularity"
+                app:argType="com.woocommerce.android.ui.analytics.daterangeselector.AnalyticTimePeriod" />
+        </action>
     </fragment>
     <fragment
         android:id="@+id/orders"
@@ -46,26 +58,12 @@
             app:popEnterAnim="@null"
             app:popExitAnim="@anim/activity_fade_out" />
         <action
-            android:id="@+id/action_orderListFragment_to_simplePayments"
-            app:destination="@id/nav_graph_simple_payments"
-            app:enterAnim="@anim/activity_fade_in"
-            app:exitAnim="@null"
-            app:popEnterAnim="@null"
-            app:popExitAnim="@anim/activity_fade_out" />
-        <action
-            android:id="@+id/action_orderListFragment_to_orderCreationBottomSheet"
-            app:destination="@id/orderCreationBottomSheetFragment"
-            app:enterAnim="@anim/activity_fade_in"
-            app:exitAnim="@null"
-            app:popEnterAnim="@null"
-            app:popExitAnim="@anim/activity_fade_out" />
-        <action
             android:id="@+id/action_orderListFragment_to_orderCreationFragment"
             app:destination="@id/nav_graph_order_creations"
             app:enterAnim="@anim/activity_fade_in"
             app:exitAnim="@null"
             app:popEnterAnim="@null"
-            app:popExitAnim="@anim/activity_fade_out" >
+            app:popExitAnim="@anim/activity_fade_out">
             <argument
                 android:name="mode"
                 app:argType="com.woocommerce.android.ui.orders.creation.OrderCreateEditViewModel$Mode" />
@@ -131,6 +129,9 @@
         android:name="com.woocommerce.android.ui.analytics.AnalyticsFragment"
         android:label="fragment_analytics"
         tools:layout="@layout/fragment_analytics">
+        <argument
+            android:name="targetGranularity"
+            app:argType="com.woocommerce.android.ui.analytics.daterangeselector.AnalyticTimePeriod" />
         <action
             android:id="@+id/action_AnalyticsFragment_to_DateRangeSelector"
             app:destination="@id/analyticsDateRangeSelectorDialog" />
@@ -177,6 +178,14 @@
         <action
             android:id="@+id/action_moreMenu_to_couponListFragment"
             app:destination="@id/nav_graph_coupons" />
+        <action
+            android:id="@+id/action_moreMenu_to_paymentFlow"
+            app:destination="@id/paymentFlow">
+            <argument
+                android:name="cardReaderFlowParam"
+                app:argType="com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderFlowParam"
+                app:nullable="false" />
+        </action>
     </fragment>
     <fragment
         android:id="@+id/feedbackSurveyFragment"
@@ -290,10 +299,27 @@
             android:name="urlToLoad"
             app:argType="string" />
         <argument
-            android:name="urlToTriggerExit"
+            android:name="title"
             android:defaultValue="@null"
             app:argType="string"
             app:nullable="true" />
+        <argument
+            android:name="urlsToTriggerExit"
+            android:defaultValue="@null"
+            app:argType="string[]"
+            app:nullable="true" />
+        <argument
+            android:name="captureBackButton"
+            android:defaultValue="true"
+            app:argType="boolean" />
+        <argument
+            android:name="displayMode"
+            android:defaultValue="REGULAR"
+            app:argType="com.woocommerce.android.ui.common.wpcomwebview.WPComWebViewViewModel$DisplayMode" />
+        <argument
+            android:name="urlComparisonMode"
+            android:defaultValue="PARTIAL"
+            app:argType="com.woocommerce.android.ui.common.wpcomwebview.WPComWebViewViewModel$UrlComparisonMode" />
     </fragment>
     <action
         android:id="@+id/action_global_WPComWebViewFragment"
@@ -311,7 +337,12 @@
         app:popExitAnim="@anim/activity_fade_out" />
     <action
         android:id="@+id/action_global_login_to_sitePickerFragment"
-        app:destination="@id/sitePickerFragment" />
+        app:destination="@id/nav_graph_site_picker" >
+        <argument
+            android:name="openedFromLogin"
+            android:defaultValue="true"
+            app:argType="boolean" />
+    </action>
     <dialog
         android:id="@+id/productTypesBottomSheetFragment"
         android:name="com.woocommerce.android.ui.products.ProductTypesBottomSheetFragment"
@@ -350,10 +381,6 @@
         app:exitAnim="@null"
         app:popEnterAnim="@null"
         app:popExitAnim="@anim/activity_fade_out" />
-    <dialog
-        android:id="@+id/orderCreationBottomSheetFragment"
-        android:name="com.woocommerce.android.ui.orders.list.OrderCreationBottomSheetFragment"
-        tools:layout="@layout/dialog_order_creation_bottom_sheet" />
     <activity
         android:id="@+id/appSettingsActivity"
         android:name="com.woocommerce.android.ui.prefs.AppSettingsActivity"
@@ -362,16 +389,6 @@
         android:id="@+id/inboxFragment"
         android:name="com.woocommerce.android.ui.inbox.InboxFragment"
         android:label="InboxFragment" />
-    <fragment
-        android:id="@+id/sitePickerFragment"
-        android:name="com.woocommerce.android.ui.sitepicker.SitePickerFragment"
-        android:label="fragment_site_picker"
-        tools:layout="@layout/fragment_site_picker">
-        <argument
-            android:name="openedFromLogin"
-            android:defaultValue="true"
-            app:argType="boolean" />
-    </fragment>
     <fragment
         android:id="@+id/simpleTextEditorFragment"
         android:name="com.woocommerce.android.ui.common.texteditor.SimpleTextEditorFragment"

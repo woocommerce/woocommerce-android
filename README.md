@@ -67,7 +67,6 @@ $ ./gradlew :WooCommerce:connectedVanillaDebugAndroidTest # assemble, install an
 - Project Overview
     - [OAuth2 Authentication](docs/project-overview.md#oauth2-authentication)
     - [Configuration Files](docs/project-overview.md#configuration-files)
-    - [Setting up Checkstyle](docs/project-overview.md#setting-up-checkstyle)
     - [Using Detekt](docs/project-overview.md#using-detekt)
     - [Google Configuration](docs/project-overview.md#google-configuration)
 - Development Practices

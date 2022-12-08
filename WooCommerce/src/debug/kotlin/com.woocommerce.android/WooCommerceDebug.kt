@@ -3,6 +3,7 @@ package com.woocommerce.android
 import android.os.StrictMode
 import android.os.StrictMode.ThreadPolicy
 import android.os.StrictMode.VmPolicy
+import android.webkit.WebView
 import com.facebook.flipper.android.AndroidFlipperClient
 import com.facebook.flipper.android.utils.FlipperUtils
 import com.facebook.flipper.plugins.databases.DatabasesFlipperPlugin
@@ -19,9 +20,7 @@ import dagger.hilt.android.HiltAndroidApp
 @HiltAndroidApp
 class WooCommerceDebug : WooCommerce() {
     override fun onCreate() {
-        if (FlipperUtils.shouldEnableFlipper(this) &&
-            SystemVersionUtils.isAtLeastM()
-        ) {
+        if (FlipperUtils.shouldEnableFlipper(this)) {
             SoLoader.init(this, false)
             AndroidFlipperClient.getInstance(this).apply {
                 addPlugin(InspectorFlipperPlugin(applicationContext, DescriptorMapping.withDefaults()))
@@ -30,6 +29,8 @@ class WooCommerceDebug : WooCommerce() {
                 addPlugin(SharedPreferencesFlipperPlugin(this@WooCommerceDebug))
             }.start()
         }
+
+        WebView.setWebContentsDebuggingEnabled(true)
         super.onCreate()
         enableStrictMode()
     }
