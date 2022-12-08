@@ -515,7 +515,7 @@ class ProductListViewModel @Inject constructor(
         refreshProducts(scrollToTop = true)
     }
 
-    fun onUpdatePriceClicked(
+    fun onUpdatePriceConfirmed(
         selectedProductsRemoteIds: List<Long>,
         newPrice: String,
     ) {

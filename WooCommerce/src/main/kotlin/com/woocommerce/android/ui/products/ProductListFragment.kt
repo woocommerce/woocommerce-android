@@ -446,7 +446,7 @@ class ProductListFragment :
             .setTitle(getString(R.string.product_bulk_update_regular_price))
             .setView(dialogBinding.root)
             .setPositiveButton(android.R.string.ok) { _, _ ->
-                viewModel.onUpdatePriceClicked(productRemoteIdsToUpdate, dialogBinding.priceInputLayout.getText())
+                viewModel.onUpdatePriceConfirmed(productRemoteIdsToUpdate, dialogBinding.priceInputLayout.getText())
             }
             .setNegativeButton(android.R.string.cancel) { _, _ -> }
             .show()
