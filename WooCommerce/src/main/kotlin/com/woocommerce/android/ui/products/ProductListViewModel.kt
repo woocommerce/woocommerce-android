@@ -94,7 +94,7 @@ class ProductListViewModel @Inject constructor(
         query: String,
     ) {
         // If the view is not searching, ignore this change
-        if(!isSearching()) return
+        if (!isSearching()) return
         viewState = viewState.copy(
             query = query,
             isEmptyViewVisible = false
