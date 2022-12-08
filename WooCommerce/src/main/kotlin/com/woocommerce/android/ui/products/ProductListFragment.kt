@@ -429,13 +429,13 @@ class ProductListFragment :
                 actionMode = (requireActivity() as AppCompatActivity)
                     .startSupportActionMode(this@ProductListFragment)
                 delayMultiSelection()
-                onListSelectionActiveChanged(true)
+                onListSelectionActiveChanged(isActive = true, expandToolbar = false)
                 enableProductsRefresh(false)
                 enableProductSortAndFiltersCard(false)
             }
             ProductListViewModel.ProductListState.Browsing -> {
                 actionMode?.finish()
-                onListSelectionActiveChanged(false)
+                onListSelectionActiveChanged(isActive = false, expandToolbar = !viewModel.isSearching())
                 enableProductsRefresh(true)
                 enableProductSortAndFiltersCard(true)
             }

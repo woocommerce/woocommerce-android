@@ -35,14 +35,14 @@ abstract class TopLevelFragment : BaseFragment, TopLevelFragmentView {
         }
     }
 
-    fun onListSelectionActiveChanged(isActive: Boolean) {
+    fun onListSelectionActiveChanged(isActive: Boolean, expandToolbar: Boolean) {
         (activity as? MainActivity)?.let {
             if (isActive) {
                 it.enableToolbarExpansion(false)
-                it.expandToolbar(false, false)
+                it.expandToolbar(expand = false, animate = false)
             } else {
-                it.enableToolbarExpansion(true)
-                it.expandToolbar(true, true)
+                it.enableToolbarExpansion(expandToolbar)
+                it.expandToolbar(expand = expandToolbar, expandToolbar)
             }
         }
     }
