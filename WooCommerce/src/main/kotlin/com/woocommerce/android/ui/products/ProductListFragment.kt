@@ -15,7 +15,6 @@ import androidx.core.view.MenuProvider
 import androidx.core.view.ViewGroupCompat
 import androidx.core.view.doOnPreDraw
 import androidx.core.view.isVisible
-import androidx.core.view.iterator
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.selection.SelectionTracker
@@ -686,7 +685,6 @@ class ProductListFragment :
 
     override fun onCreateActionMode(mode: ActionMode, menu: Menu): Boolean {
         mode.menuInflater.inflate(R.menu.menu_action_mode_products_list, menu)
-        menu.iterator().forEach { item -> item.setShowAsAction(MenuItem.SHOW_AS_ACTION_NEVER) }
         MenuCompat.setGroupDividerEnabled(menu, true)
         return true
     }
