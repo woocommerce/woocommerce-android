@@ -50,7 +50,8 @@ class ProductListViewModelTest : BaseUnitTest() {
                 savedStateHandle,
                 productRepository,
                 networkStatus,
-                mediaFileUploadHandler
+                mediaFileUploadHandler,
+                mock()
             )
         )
     }

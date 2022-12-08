@@ -11,6 +11,7 @@ import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsEvent.PRODUCT_LIST_BULK_UPDATE_CONFIRMED
 import com.woocommerce.android.analytics.AnalyticsEvent.PRODUCT_LIST_BULK_UPDATE_FAILURE
 import com.woocommerce.android.analytics.AnalyticsEvent.PRODUCT_LIST_BULK_UPDATE_REQUESTED
+import com.woocommerce.android.analytics.AnalyticsEvent.PRODUCT_LIST_BULK_UPDATE_SELECT_ALL_TAPPED
 import com.woocommerce.android.analytics.AnalyticsEvent.PRODUCT_LIST_BULK_UPDATE_SUCCESS
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_PROPERTY
@@ -413,6 +414,7 @@ class ProductListViewModel @Inject constructor(
     }
 
     fun onSelectAllProductsClicked() {
+        analyticsTracker.track(PRODUCT_LIST_BULK_UPDATE_SELECT_ALL_TAPPED)
         productList.value?.map { it.remoteId }?.let { allLoadedProductsIds ->
             triggerEvent(SelectProducts(allLoadedProductsIds))
         }
