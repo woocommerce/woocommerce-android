@@ -7,6 +7,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.R.drawable
 import com.woocommerce.android.R.string
+import com.woocommerce.android.cardreader.CardReaderManager
 import com.woocommerce.android.model.UiString
 import com.woocommerce.android.model.UiString.UiStringRes
 import com.woocommerce.android.ui.prefs.DeveloperOptionsViewModel.DeveloperOptionsViewState.ListItem
@@ -23,6 +24,7 @@ import javax.inject.Inject
 class DeveloperOptionsViewModel @Inject constructor(
     savedState: SavedStateHandle,
     private val developerOptionsRepository: DeveloperOptionsRepository,
+    private val cardReaderManager: CardReaderManager,
 ) : ScopedViewModel(savedState) {
 
     private val _viewState = MutableLiveData(
@@ -99,14 +101,25 @@ class DeveloperOptionsViewModel @Inject constructor(
     private fun onUpdateSimulatedReaderClicked() {
         triggerEvent(
             DeveloperOptionsEvents.ShowUpdateOptionsDialog(
-                DeveloperOptionsViewState.UpdateOptions.values().toList(),
+                UpdateOptions.values().toList(),
                 developerOptionsRepository.getUpdateSimulatedReaderOption()
             )
         )
     }
 
     fun onUpdateReaderOptionChanged(selectedOption: UpdateOptions) {
+        if (cardReaderManager.initialized) {
+            cardReaderManager.initializeOnUpdateFrequencyChange(mapUpdateOptions(selectedOption))
+        }
         developerOptionsRepository.updateSimulatedReaderOption(selectedOption)
+    }
+
+    private fun mapUpdateOptions(updateFrequency: UpdateOptions): CardReaderManager.SimulatorUpdateFrequency {
+        return when (updateFrequency) {
+            UpdateOptions.ALWAYS -> CardReaderManager.SimulatorUpdateFrequency.ALWAYS
+            UpdateOptions.NEVER -> CardReaderManager.SimulatorUpdateFrequency.NEVER
+            UpdateOptions.RANDOM -> CardReaderManager.SimulatorUpdateFrequency.RANDOM
+        }
     }
 
     sealed class DeveloperOptionsEvents : MultiLiveEvent.Event() {
