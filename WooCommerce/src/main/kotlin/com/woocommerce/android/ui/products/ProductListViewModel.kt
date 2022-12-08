@@ -526,7 +526,7 @@ class ProductListViewModel @Inject constructor(
         )
     }
 
-    fun onBulkUpdateStatusClicked(
+    fun onUpdateStatusConfirmed(
         selectedProductsRemoteIds: List<Long>,
         newStatus: ProductStatus,
     ) {

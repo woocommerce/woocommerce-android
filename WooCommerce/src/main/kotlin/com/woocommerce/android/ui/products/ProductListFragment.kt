@@ -481,7 +481,7 @@ class ProductListFragment :
                 val checkedItemPosition = (dialog as AlertDialog).listView.checkedItemPosition
                 if (checkedItemPosition < statuses.size && checkedItemPosition >= 0) {
                     val newStatus = statuses[checkedItemPosition]
-                    viewModel.onBulkUpdateStatusClicked(
+                    viewModel.onUpdateStatusConfirmed(
                         productRemoteIdsToUpdate,
                         newStatus
                     )
