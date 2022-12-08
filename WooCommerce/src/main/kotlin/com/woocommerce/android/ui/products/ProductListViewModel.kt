@@ -93,6 +93,8 @@ class ProductListViewModel @Inject constructor(
     fun onSearchQueryChanged(
         query: String,
     ) {
+        // If the view is not searching, ignore this change
+        if(!isSearching()) return
         viewState = viewState.copy(
             query = query,
             isEmptyViewVisible = false
