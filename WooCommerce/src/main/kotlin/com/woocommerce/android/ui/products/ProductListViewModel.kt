@@ -213,7 +213,6 @@ class ProductListViewModel @Inject constructor(
     }
 
     fun onLoadMoreRequested() {
-        if (isSelecting()) return
         loadProducts(loadMore = true)
     }
 
@@ -252,7 +251,7 @@ class ProductListViewModel @Inject constructor(
         viewState = viewState.copy(
             isEmptyViewVisible = products.isEmpty() && viewState.isSkeletonShown != true,
             /* if there are no products, hide Add Product button and use the empty view's button instead. */
-            isAddProductButtonVisible = products.isNotEmpty(),
+            isAddProductButtonVisible = products.isNotEmpty() && !isSelecting(),
             displaySortAndFilterCard = products.isNotEmpty() || productFilterOptions.isNotEmpty()
         )
     }
@@ -348,7 +347,7 @@ class ProductListViewModel @Inject constructor(
                     else -> false
                 }
             } else {
-                !isSearching()
+                !isSearching() && !isSelecting()
             }
 
         val shouldShowEmptyView = if (isSearching()) {
@@ -391,23 +390,37 @@ class ProductListViewModel @Inject constructor(
         }
     }
 
+    fun onSelectionChanged(count: Int) {
+        when {
+            count == 0 -> exitSelectionMode()
+            count > 0 && !isSelecting() -> enterSelectionMode(count)
+            count > 0 -> viewState = viewState.copy(selectionCount = count)
+        }
+    }
+
+    fun onRestoreSelection(selectedProductsIds: List<Long>) {
+        triggerEvent(SelectProducts(selectedProductsIds))
+    }
+
     fun onSelectAllProductsClicked() {
         productList.value?.map { it.remoteId }?.let { allLoadedProductsIds ->
             triggerEvent(SelectProducts(allLoadedProductsIds))
         }
     }
 
-    fun enterSelectionMode() {
+    fun enterSelectionMode(count: Int) {
         viewState = viewState.copy(
             productListState = ProductListState.Selecting,
-            isAddProductButtonVisible = false
+            isAddProductButtonVisible = false,
+            selectionCount = count
         )
     }
 
     fun exitSelectionMode() {
         viewState = viewState.copy(
             productListState = ProductListState.Browsing,
-            isAddProductButtonVisible = true
+            isAddProductButtonVisible = true,
+            selectionCount = null
         )
     }
 
@@ -503,6 +516,16 @@ class ProductListViewModel @Inject constructor(
         refreshProducts(scrollToTop = true)
     }
 
+    fun onUpdatePriceConfirmed(
+        selectedProductsRemoteIds: List<Long>,
+        newPrice: String,
+    ) {
+        bulkUpdateProducts(
+            update = { productRepository.bulkUpdateProductsPrice(selectedProductsRemoteIds, newPrice) },
+            successMessage = R.string.product_bulk_update_price_updated
+        )
+    }
+
     fun onBulkUpdateStatusClicked(
         selectedProductsRemoteIds: List<Long>,
         newStatus: ProductStatus,
@@ -510,16 +533,6 @@ class ProductListViewModel @Inject constructor(
         bulkUpdateProducts(
             update = { productRepository.bulkUpdateProductsStatus(selectedProductsRemoteIds, newStatus) },
             successMessage = R.string.product_bulk_update_status_updated
-        )
-    }
-
-    fun onBulkUpdatePriceClicked(
-        selectedProductsRemoteIds: List<Long>,
-        newPrice: String,
-    ) {
-        bulkUpdateProducts(
-            update = { productRepository.bulkUpdateProductsPrice(selectedProductsRemoteIds, newPrice) },
-            successMessage = R.string.product_bulk_update_price_updated
         )
     }
 
@@ -567,7 +580,8 @@ class ProductListViewModel @Inject constructor(
         val sortingTitleResource: Int? = null,
         val displaySortAndFilterCard: Boolean? = null,
         val isAddProductButtonVisible: Boolean? = null,
-        val productListState: ProductListState = ProductListState.Browsing
+        val productListState: ProductListState? = null,
+        val selectionCount: Int? = null
     ) : Parcelable {
         @IgnoredOnParcel
         val isBottomNavBarVisible = isSearchActive != true && productListState != ProductListState.Selecting
@@ -587,7 +601,6 @@ class ProductListViewModel @Inject constructor(
             val productCategoryFilter: String?,
             val selectedCategoryName: String?
         ) : ProductListEvent()
-
         data class SelectProducts(val productsIds: List<Long>) : ProductListEvent()
         sealed class ShowUpdateDialog : ProductListEvent() {
             abstract val productsIds: List<Long>
@@ -597,11 +610,5 @@ class ProductListViewModel @Inject constructor(
         }
     }
 
-    sealed class ProductListState : Parcelable {
-        @Parcelize
-        object Selecting : ProductListState()
-
-        @Parcelize
-        object Browsing : ProductListState()
-    }
+    enum class ProductListState { Selecting, Browsing }
 }
