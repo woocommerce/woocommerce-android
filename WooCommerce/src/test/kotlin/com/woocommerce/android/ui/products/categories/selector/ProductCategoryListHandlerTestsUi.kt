@@ -12,12 +12,11 @@ import org.mockito.kotlin.any
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.eq
 import org.mockito.kotlin.mock
-import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 
 @ExperimentalCoroutinesApi
-class ProductCategoryListHandlerTests : BaseUnitTest() {
+class ProductCategoryListHandlerTestsUi : BaseUnitTest() {
     private lateinit var listHandler: ProductCategoryListHandler
 
     private val repository: ProductCategorySelectorRepository = mock {
