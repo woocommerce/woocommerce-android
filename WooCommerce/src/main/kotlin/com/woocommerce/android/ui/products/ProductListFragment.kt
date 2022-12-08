@@ -262,8 +262,6 @@ class ProductListFragment :
                     searchView?.setQuery(viewModel.viewStateLiveData.liveData.value?.query, false)
                     val queryHint = getSearchQueryHint()
                     searchView?.queryHint = queryHint
-                } else {
-                    menuItem.collapseActionView()
                 }
                 enableSearchListeners()
             }
@@ -301,12 +299,6 @@ class ProductListFragment :
         }
     }
 
-    private fun closeSearchView() {
-        disableSearchListeners()
-        updateActivityTitle()
-        searchMenuItem?.collapseActionView()
-    }
-
     private fun disableSearchListeners() {
         searchMenuItem?.setOnActionExpandListener(null)
         searchView?.setOnQueryTextListener(null)
@@ -342,7 +334,7 @@ class ProductListFragment :
 
     override fun onMenuItemActionCollapse(item: MenuItem): Boolean {
         viewModel.onSearchClosed()
-        closeSearchView()
+        updateActivityTitle()
         onSearchViewActiveChanged(isActive = false)
         binding.productsSearchTabView.hide()
         multiSelectMenuItem?.isVisible = FeatureFlag.PRODUCTS_BULK_EDITING.isEnabled()
@@ -394,9 +386,6 @@ class ProductListFragment :
             }
             new.isBottomNavBarVisible.takeIfNotEqualTo(old?.isBottomNavBarVisible) { isBottomNavBarVisible ->
                 showBottomNavBar(isVisible = isBottomNavBarVisible)
-            }
-            new.isSearchActive.takeIfNotEqualTo(old?.isSearchActive) {
-                refreshOptionsMenu()
             }
             new.productListState?.takeIfNotEqualTo(old?.productListState) {
                 handleListState(it)
