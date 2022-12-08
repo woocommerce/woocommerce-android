@@ -8,7 +8,16 @@ import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.AppConstants
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsEvent
+import com.woocommerce.android.analytics.AnalyticsEvent.PRODUCT_LIST_BULK_UPDATE_CONFIRMED
+import com.woocommerce.android.analytics.AnalyticsEvent.PRODUCT_LIST_BULK_UPDATE_FAILURE
+import com.woocommerce.android.analytics.AnalyticsEvent.PRODUCT_LIST_BULK_UPDATE_REQUESTED
+import com.woocommerce.android.analytics.AnalyticsEvent.PRODUCT_LIST_BULK_UPDATE_SUCCESS
 import com.woocommerce.android.analytics.AnalyticsTracker
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_PROPERTY
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_SELECTED_PRODUCTS_COUNT
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_PRICE
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_STATUS
+import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.model.Product
 import com.woocommerce.android.model.RequestResult
 import com.woocommerce.android.tools.NetworkStatus
@@ -49,7 +58,8 @@ class ProductListViewModel @Inject constructor(
     savedState: SavedStateHandle,
     private val productRepository: ProductListRepository,
     private val networkStatus: NetworkStatus,
-    mediaFileUploadHandler: MediaFileUploadHandler
+    mediaFileUploadHandler: MediaFileUploadHandler,
+    private val analyticsTracker: AnalyticsTrackerWrapper
 ) : ScopedViewModel(savedState) {
     companion object {
         private const val KEY_PRODUCT_FILTER_OPTIONS = "key_product_filter_options"
@@ -516,39 +526,81 @@ class ProductListViewModel @Inject constructor(
         refreshProducts(scrollToTop = true)
     }
 
-    fun onUpdatePriceConfirmed(
-        selectedProductsRemoteIds: List<Long>,
-        newPrice: String,
-    ) {
-        bulkUpdateProducts(
-            update = { productRepository.bulkUpdateProductsPrice(selectedProductsRemoteIds, newPrice) },
-            successMessage = R.string.product_bulk_update_price_updated
-        )
-    }
-
     fun onUpdateStatusConfirmed(
         selectedProductsRemoteIds: List<Long>,
         newStatus: ProductStatus,
     ) {
+        analyticsTracker.track(
+            PRODUCT_LIST_BULK_UPDATE_CONFIRMED,
+            mapOf(
+                KEY_PROPERTY to VALUE_STATUS,
+                KEY_SELECTED_PRODUCTS_COUNT to selectedProductsRemoteIds.size
+            )
+        )
         bulkUpdateProducts(
             update = { productRepository.bulkUpdateProductsStatus(selectedProductsRemoteIds, newStatus) },
+            onSuccess = {
+                analyticsTracker.track(
+                    PRODUCT_LIST_BULK_UPDATE_SUCCESS,
+                    mapOf(KEY_PROPERTY to VALUE_STATUS)
+                )
+            },
+            onFailure = {
+                analyticsTracker.track(
+                    PRODUCT_LIST_BULK_UPDATE_FAILURE,
+                    mapOf(KEY_PROPERTY to VALUE_STATUS)
+                )
+            },
             successMessage = R.string.product_bulk_update_status_updated
+        )
+    }
+
+    fun onUpdatePriceConfirmed(
+        selectedProductsRemoteIds: List<Long>,
+        newPrice: String,
+    ) {
+        analyticsTracker.track(
+            PRODUCT_LIST_BULK_UPDATE_CONFIRMED,
+            mapOf(
+                KEY_PROPERTY to VALUE_PRICE,
+                KEY_SELECTED_PRODUCTS_COUNT to selectedProductsRemoteIds.size
+            )
+        )
+        bulkUpdateProducts(
+            update = { productRepository.bulkUpdateProductsPrice(selectedProductsRemoteIds, newPrice) },
+            onSuccess = {
+                analyticsTracker.track(
+                    PRODUCT_LIST_BULK_UPDATE_SUCCESS,
+                    mapOf(KEY_PROPERTY to VALUE_PRICE)
+                )
+            },
+            onFailure = {
+                analyticsTracker.track(
+                    PRODUCT_LIST_BULK_UPDATE_FAILURE,
+                    mapOf(KEY_PROPERTY to VALUE_PRICE)
+                )
+            },
+            successMessage = R.string.product_bulk_update_price_updated
         )
     }
 
     private fun bulkUpdateProducts(
         update: suspend () -> RequestResult,
+        onSuccess: () -> Unit,
+        onFailure: () -> Unit,
         @StringRes successMessage: Int
     ) {
         launch {
             when (update.invoke()) {
                 RequestResult.SUCCESS -> {
+                    onSuccess()
                     refreshProducts()
                     exitSelectionMode()
                     triggerEvent(ShowSnackbar(successMessage))
                 }
                 else -> {
                     exitSelectionMode()
+                    onFailure()
                     triggerEvent(ShowSnackbar(R.string.error_generic))
                 }
             }
@@ -556,10 +608,24 @@ class ProductListViewModel @Inject constructor(
     }
 
     fun onBulkUpdatePriceClicked(selectedProductsRemoteIds: List<Long>) {
+        analyticsTracker.track(
+            PRODUCT_LIST_BULK_UPDATE_REQUESTED,
+            mapOf(
+                KEY_PROPERTY to VALUE_PRICE,
+                KEY_SELECTED_PRODUCTS_COUNT to selectedProductsRemoteIds.size
+            )
+        )
         triggerEvent(ShowUpdateDialog.Price(selectedProductsRemoteIds))
     }
 
     fun onBulkUpdateStatusClicked(selectedProductsRemoteIds: List<Long>) {
+        analyticsTracker.track(
+            PRODUCT_LIST_BULK_UPDATE_REQUESTED,
+            mapOf(
+                KEY_PROPERTY to VALUE_STATUS,
+                KEY_SELECTED_PRODUCTS_COUNT to selectedProductsRemoteIds.size
+            )
+        )
         triggerEvent(ShowUpdateDialog.Status(selectedProductsRemoteIds))
     }
 
