@@ -239,7 +239,7 @@ class ProductListFragment :
         searchView?.queryHint = getString(R.string.product_search_hint)
 
         multiSelectMenuItem = menu.findItem(R.id.menu_multiselect)
-        multiSelectMenuItem?.isVisible = FeatureFlag.PRODUCTS_BULK_EDITING.isEnabled()
+        multiSelectMenuItem?.isVisible = FeatureFlag.PRODUCTS_BULK_EDITING.isEnabled() && !viewModel.isSearching()
     }
 
     override fun onPrepareMenu(menu: Menu) {
