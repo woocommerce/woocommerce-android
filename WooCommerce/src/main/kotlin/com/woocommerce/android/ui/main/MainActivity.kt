@@ -8,6 +8,7 @@ import android.app.ProgressDialog
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
+import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
@@ -30,6 +31,8 @@ import androidx.navigation.fragment.FragmentNavigatorExtras
 import androidx.navigation.fragment.NavHostFragment
 import com.automattic.android.tracks.crashlogging.CrashLogging
 import com.google.android.material.appbar.AppBarLayout
+import com.google.firebase.dynamiclinks.FirebaseDynamicLinks
+import com.google.firebase.dynamiclinks.PendingDynamicLinkData
 import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.BuildConfig
 import com.woocommerce.android.NavGraphMainDirections
@@ -82,6 +85,7 @@ import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderFlowP
 import com.woocommerce.android.ui.prefs.AppSettingsActivity
 import com.woocommerce.android.ui.products.ProductListFragmentDirections
 import com.woocommerce.android.ui.reviews.ReviewListFragmentDirections
+import com.woocommerce.android.util.ChromeCustomTabUtils
 import com.woocommerce.android.util.WooAnimUtils
 import com.woocommerce.android.util.WooAnimUtils.Duration
 import com.woocommerce.android.widgets.AppRatingDialog
@@ -204,6 +208,7 @@ class MainActivity :
                     } else 0f
                     binding.appBarDivider.isVisible = appBarStatus.hasDivider
                 }
+
                 AppBarStatus.Hidden -> hideToolbar()
             }
 
@@ -224,6 +229,22 @@ class MainActivity :
         installSplashScreen()
 
         super.onCreate(savedInstanceState)
+
+        FirebaseDynamicLinks
+            .getInstance()
+            .getDynamicLink(intent)
+            .addOnSuccessListener(this) { pendingDynamicLinkData: PendingDynamicLinkData? ->
+                // Get deep link from result (may be null if no link is found)
+                var magicLoginLink: Uri? = null
+                if (pendingDynamicLinkData != null) {
+                    magicLoginLink = pendingDynamicLinkData.link
+                }
+
+                if (magicLoginLink != null) {
+                    ChromeCustomTabUtils.launchUrl(this, magicLoginLink.toString())
+                }
+            }
+            .addOnFailureListener(this) { e -> Log.w("MainActivity", "getDynamicLink:onFailure", e) }
 
         // Verify authenticated session
         if (!presenter.userIsLoggedIn()) {
@@ -362,6 +383,7 @@ class MainActivity :
                 onBackPressed()
                 true
             }
+
             else -> super.onOptionsItemSelected(item)
         }
     }
@@ -523,6 +545,7 @@ class MainActivity :
                 }
                 return
             }
+
             RequestCodes.SETTINGS -> {
                 // beta features have changed. Restart activity for changes to take effect
                 if (resultCode == AppSettingsActivity.RESULT_CODE_BETA_OPTIONS_CHANGED) {
