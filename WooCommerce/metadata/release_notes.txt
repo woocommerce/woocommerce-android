@@ -1,4 +1,1 @@
-- [*][Internal] Integrate changes from FluxC to check for Application Passwords support and collect metrics [https://github.com/woocommerce/woocommerce-android/pull/7989]
-- [*] Clear button is visible on the products filter screen [https://github.com/woocommerce/woocommerce-android/pull/7998]
-- [*] Fix for the broken card reader manuals links [https://github.com/woocommerce/woocommerce-android/pull/8002]
-
+This release includes a handful of minor improvements and bug fixes that our team found. Don't be fooled though – we're working on some exciting new features for you! Stay tuned!
