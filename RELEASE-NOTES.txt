@@ -6,12 +6,12 @@
 
 11.5
 -----
-- [**] [Internal] Store creation flow was improved with native implementation. It is available from the login prologue (`Get Started` CTA), login email error screen, and store picker (`Add a store` CTA from the empty stores screen or at the bottom of the store list). [Example testing steps in https://github.com/woocommerce/woocommerce-android/pull/7947]
 - [**] Adds a feature of generating all variations from existing attributes. [https://github.com/woocommerce/woocommerce-android/pull/7944]
 - [*][Internal] JITM: Dismiss irrelevant JITM Banner when pull to refresh in the MyStore screen [https://github.com/woocommerce/woocommerce-android/pull/7966]
 
 11.4
 -----
+- [**] [Internal] Store creation flow was improved with native implementation. It is available from the login prologue (`Get Started` CTA), login email error screen, and store picker (`Add a store` CTA from the empty stores screen or at the bottom of the store list). [Example testing steps in https://github.com/woocommerce/woocommerce-android/pull/7947]
 - [*] [Internal] JITM: Make an api call to fetch JITMs on pull to refresh in the MyStore screen [https://github.com/woocommerce/woocommerce-android/pull/7938]
 - [*] [Internal] Add support for installing and connecting Jetpack natively, still behind an AB test [https://github.com/woocommerce/woocommerce-android/pull/7889]
 
