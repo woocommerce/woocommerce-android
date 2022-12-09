@@ -1,14 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2022-11-30 09:54:24+0000
+Translation-Revision-Date: 2022-12-06 11:54:06+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: ja_JP
 -->
 <resources>
+    <string name="store_creation_ecommerce_plan_period_two_years">2年間</string>
+    <string name="store_creation_ecommerce_store_loading_permanent_error">ストアのインストール中にエラーが発生しました…</string>
+    <string name="variations_bulk_creation_no_candidates_message">すべてのバリエーションはすでに生成されています。</string>
+    <string name="variations_bulk_creation_no_candidates_title">生成するバリエーションはありません</string>
+    <string name="product_list_multiselect">複数選択</string>
     <string name="store_creation_ecommerce_store_loading_error">新しいストアを読み込めませんでした。 しばらく待ってから、もう一度お試しください…</string>
     <string name="store_creation_ecommerce_plan_purchase_error">購入を完了できませんでした…</string>
-    <string name="store_creation_ecommerce_site_creation_error">新しいサイトを作成できませんでした…</string>
     <string name="store_creation_domain_picker_suggestions_error">ドメインの提案を読み込めません</string>
     <string name="store_creation_domain_picker_empty_suggestions">この検索で利用できるドメインがありません</string>
     <string name="variations_bulk_creation_progress_title">バリエーションを生成しています</string>
@@ -17,6 +21,7 @@ Language: ja_JP
     <string name="variations_bulk_creation_warning_message">現在、作成がサポートされているのは、最大%1$d件のバリエーションです。 この商品のバリエーションを生成すると、%2$d件のバリエーションが作成されます。</string>
     <string name="variations_bulk_creation_warning_title">生成の上限を超えました</string>
     <string name="variation_add_all_description">属性のすべての組み合わせについてバリエーションを作成します。</string>
+    <string name="variation_add_all">すべてのバリエーションを生成</string>
     <string name="variation_add_new_description">新しいバリエーションを1つ作成します。 バリエーションのある商品の属性を手動で設定します。</string>
     <string name="variation_add_new">新しいバリエーションを追加</string>
     <string name="variation_list_add">バリエーションを追加</string>
