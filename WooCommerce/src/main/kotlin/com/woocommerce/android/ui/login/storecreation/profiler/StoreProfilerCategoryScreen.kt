@@ -2,13 +2,16 @@ package com.woocommerce.android.ui.login.storecreation.profiler
 
 import android.content.res.Configuration
 import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
 import androidx.compose.material.MaterialTheme
@@ -127,7 +130,24 @@ private fun CategoryList(
 ) {
     LazyColumn(modifier = modifier) {
         itemsIndexed(categories) { _, category ->
-            Text(text = category.name)
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(
+                        top = dimensionResource(id = R.dimen.major_75),
+                        bottom = dimensionResource(id = R.dimen.major_75)
+                    )
+                    .border(
+                        width = dimensionResource(id = R.dimen.minor_10),
+                        color = colorResource(id = R.color.divider_color),
+                        shape = RoundedCornerShape(dimensionResource(id = R.dimen.minor_100))
+                    )
+            ) {
+                Text(
+                    text = category.name,
+                    modifier = Modifier.padding(dimensionResource(id = R.dimen.major_100))
+                )
+            }
         }
     }
 }
