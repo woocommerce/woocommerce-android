@@ -43,7 +43,6 @@ class StoreProfilerViewModel @Inject constructor(
         triggerEvent(NavigateToNextStep)
     }
 
-
     fun onArrowBackPressed() {
         triggerEvent(MultiLiveEvent.Event.Exit)
     }
