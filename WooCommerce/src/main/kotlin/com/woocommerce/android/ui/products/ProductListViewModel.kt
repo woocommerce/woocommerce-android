@@ -8,6 +8,7 @@ import com.woocommerce.android.AppConstants
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
+import com.woocommerce.android.extensions.EXPAND_COLLAPSE_ANIMATION_DURATION_MILLIS
 import com.woocommerce.android.model.Product
 import com.woocommerce.android.model.RequestResult
 import com.woocommerce.android.tools.NetworkStatus
@@ -525,11 +526,17 @@ class ProductListViewModel @Inject constructor(
                 RequestResult.SUCCESS -> {
                     refreshProducts()
                     exitSelectionMode()
-                    triggerEvent(ShowSnackbar(R.string.product_bulk_update_price_updated))
+                    triggerEventWithDelay(
+                        event = ShowSnackbar(R.string.product_bulk_update_price_updated),
+                        delay = EXPAND_COLLAPSE_ANIMATION_DURATION_MILLIS
+                    )
                 }
                 else -> {
                     exitSelectionMode()
-                    triggerEvent(ShowSnackbar(R.string.error_generic))
+                    triggerEventWithDelay(
+                        event = ShowSnackbar(R.string.error_generic),
+                        delay = EXPAND_COLLAPSE_ANIMATION_DURATION_MILLIS
+                    )
                 }
             }
             viewState = viewState.copy(isRefreshing = false)
@@ -578,6 +585,7 @@ class ProductListViewModel @Inject constructor(
             val productCategoryFilter: String?,
             val selectedCategoryName: String?
         ) : ProductListEvent()
+
         data class SelectProducts(val productsIds: List<Long>) : ProductListEvent()
 
         data class ShowBulkProductPriceUpdateDialog(val productIds: List<Long>) : ProductListEvent()

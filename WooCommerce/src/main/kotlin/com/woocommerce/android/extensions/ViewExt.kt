@@ -27,7 +27,7 @@ import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.map
 
-private const val EXPAND_COLLAPSE_ANIMATION_DURATION_MILLIS = 300L
+const val EXPAND_COLLAPSE_ANIMATION_DURATION_MILLIS = 300L
 
 fun View.show() {
     this.visibility = View.VISIBLE
