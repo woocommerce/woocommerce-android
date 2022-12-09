@@ -2,6 +2,16 @@ package com.woocommerce.android.ui.products
 
 import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.R
+import com.woocommerce.android.analytics.AnalyticsEvent.PRODUCT_LIST_BULK_UPDATE_CONFIRMED
+import com.woocommerce.android.analytics.AnalyticsEvent.PRODUCT_LIST_BULK_UPDATE_FAILURE
+import com.woocommerce.android.analytics.AnalyticsEvent.PRODUCT_LIST_BULK_UPDATE_REQUESTED
+import com.woocommerce.android.analytics.AnalyticsEvent.PRODUCT_LIST_BULK_UPDATE_SELECT_ALL_TAPPED
+import com.woocommerce.android.analytics.AnalyticsEvent.PRODUCT_LIST_BULK_UPDATE_SUCCESS
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_PROPERTY
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_SELECTED_PRODUCTS_COUNT
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_PRICE
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_STATUS
+import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.model.Product
 import com.woocommerce.android.model.RequestResult
@@ -24,6 +34,7 @@ import org.mockito.kotlin.any
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.spy
+import org.mockito.kotlin.stub
 import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
@@ -34,6 +45,7 @@ class ProductListViewModelTest : BaseUnitTest() {
     private val networkStatus: NetworkStatus = mock()
     private val productRepository: ProductListRepository = mock()
     private val mediaFileUploadHandler: MediaFileUploadHandler = mock()
+    private val analyticsTracker: AnalyticsTrackerWrapper = mock()
 
     private val savedStateHandle: SavedStateHandle = SavedStateHandle()
 
@@ -52,7 +64,8 @@ class ProductListViewModelTest : BaseUnitTest() {
                 savedStateHandle,
                 productRepository,
                 networkStatus,
-                mediaFileUploadHandler
+                mediaFileUploadHandler,
+                analyticsTracker
             )
         )
     }
@@ -186,7 +199,8 @@ class ProductListViewModelTest : BaseUnitTest() {
             assertThat(isAddProductButtonVisible).containsExactly(false)
         }
 
-    @Test /* We show the Add Product FAB after searching is completed. */
+    @Test
+    /* We show the Add Product FAB after searching is completed. */
     fun `Shows add product button after opening and closing search`() =
         testBlocking {
             // when
@@ -209,7 +223,8 @@ class ProductListViewModelTest : BaseUnitTest() {
             assertThat(isAddProductButtonVisible).containsExactly(false, true, false)
         }
 
-    @Test /* We hide the filters when searching. */
+    @Test
+    /* We hide the filters when searching. */
     fun `Hides filters buttons when searching`() =
         testBlocking {
             // when
@@ -349,6 +364,158 @@ class ProductListViewModelTest : BaseUnitTest() {
     }
 
     @Test
+    fun `Should track user actions when user requests bulk price update`() {
+        // given
+        createViewModel()
+        val selectedProducts = listOf(1L, 2L)
+
+        // when
+        viewModel.onBulkUpdatePriceClicked(selectedProducts)
+
+        // then
+        verify(analyticsTracker).track(
+            PRODUCT_LIST_BULK_UPDATE_REQUESTED,
+            mapOf(KEY_PROPERTY to VALUE_PRICE, KEY_SELECTED_PRODUCTS_COUNT to selectedProducts.size)
+        )
+    }
+
+    @Test
+    fun `Should track user actions when user requests bulk status update`() {
+        // given
+        createViewModel()
+        val selectedProducts = listOf(1L, 2L)
+
+        // when
+        viewModel.onBulkUpdateStatusClicked(selectedProducts)
+
+        // then
+        verify(analyticsTracker).track(
+            PRODUCT_LIST_BULK_UPDATE_REQUESTED,
+            mapOf(KEY_PROPERTY to VALUE_STATUS, KEY_SELECTED_PRODUCTS_COUNT to selectedProducts.size)
+        )
+    }
+
+    @Test
+    fun `Should track user actions when user confirmed bulk price update`() {
+        // given
+        createViewModel()
+        val selectedProducts = listOf(1L, 2L)
+
+        // when
+        viewModel.onUpdatePriceConfirmed(selectedProducts, "123")
+
+        // then
+        verify(analyticsTracker).track(
+            PRODUCT_LIST_BULK_UPDATE_CONFIRMED,
+            mapOf(KEY_PROPERTY to VALUE_PRICE, KEY_SELECTED_PRODUCTS_COUNT to selectedProducts.size)
+        )
+    }
+
+    @Test
+    fun `Should track user actions when user confirmed bulk status update`() {
+        // given
+        createViewModel()
+        val selectedProducts = listOf(1L, 2L)
+
+        // when
+        viewModel.onUpdateStatusConfirmed(selectedProducts, ProductStatus.DRAFT)
+
+        // then
+        verify(analyticsTracker).track(
+            PRODUCT_LIST_BULK_UPDATE_CONFIRMED,
+            mapOf(KEY_PROPERTY to VALUE_STATUS, KEY_SELECTED_PRODUCTS_COUNT to selectedProducts.size)
+        )
+    }
+
+    @Test
+    fun `Should track if bulk price update succeeded`() {
+        // given
+        createViewModel()
+        val selectedProducts = listOf(1L, 2L)
+        productRepository.stub {
+            onBlocking { bulkUpdateProductsPrice(any(), any()) } doReturn RequestResult.SUCCESS
+        }
+
+        // when
+        viewModel.onUpdatePriceConfirmed(selectedProducts, "123")
+
+        // then
+        verify(analyticsTracker).track(
+            PRODUCT_LIST_BULK_UPDATE_SUCCESS,
+            mapOf(KEY_PROPERTY to VALUE_PRICE)
+        )
+    }
+
+    @Test
+    fun `Should track if bulk price update failed`() {
+        // given
+        createViewModel()
+        val selectedProducts = listOf(1L, 2L)
+        productRepository.stub {
+            onBlocking { bulkUpdateProductsPrice(any(), any()) } doReturn RequestResult.ERROR
+        }
+
+        // when
+        viewModel.onUpdatePriceConfirmed(selectedProducts, "123")
+
+        // then
+        verify(analyticsTracker).track(
+            PRODUCT_LIST_BULK_UPDATE_FAILURE,
+            mapOf(KEY_PROPERTY to VALUE_PRICE)
+        )
+    }
+
+    @Test
+    fun `Should track if bulk status update succeeded`() {
+        // given
+        createViewModel()
+        val selectedProducts = listOf(1L, 2L)
+        productRepository.stub {
+            onBlocking { bulkUpdateProductsStatus(any(), any()) } doReturn RequestResult.SUCCESS
+        }
+
+        // when
+        viewModel.onUpdateStatusConfirmed(selectedProducts, ProductStatus.DRAFT)
+
+        // then
+        verify(analyticsTracker).track(
+            PRODUCT_LIST_BULK_UPDATE_SUCCESS,
+            mapOf(KEY_PROPERTY to VALUE_STATUS)
+        )
+    }
+
+    @Test
+    fun `Should track if bulk status update failed`() {
+        // given
+        createViewModel()
+        val selectedProducts = listOf(1L, 2L)
+        productRepository.stub {
+            onBlocking { bulkUpdateProductsStatus(any(), any()) } doReturn RequestResult.ERROR
+        }
+
+        // when
+        viewModel.onUpdateStatusConfirmed(selectedProducts, ProductStatus.DRAFT)
+
+        // then
+        verify(analyticsTracker).track(
+            PRODUCT_LIST_BULK_UPDATE_FAILURE,
+            mapOf(KEY_PROPERTY to VALUE_STATUS)
+        )
+    }
+
+    @Test
+    fun `Should track if user pressed select all option`() {
+        // given
+        createViewModel()
+
+        // when
+        viewModel.onSelectAllProductsClicked()
+
+        // then
+        verify(analyticsTracker).track(PRODUCT_LIST_BULK_UPDATE_SELECT_ALL_TAPPED)
+    }
+
+    @Test
     fun `Shows success message when bulk update product's price completes`() = testBlocking {
         val productIds = listOf(1L, 2L, 3L)
         val price = "24.45"
@@ -383,6 +550,46 @@ class ProductListViewModelTest : BaseUnitTest() {
         }
 
         viewModel.onUpdatePriceConfirmed(productIds, price)
+        // We delayed the message waiting the resume animation to complete
+        advanceUntilIdle()
+        assertThat(snackbar).isEqualTo(ShowSnackbar(R.string.error_generic))
+    }
+
+    @Test
+    fun `Shows success message when bulk update product's status completes`() = testBlocking {
+        val productIds = listOf(1L, 2L, 3L)
+        val status = ProductStatus.PUBLISH
+
+        doReturn(RequestResult.SUCCESS).whenever(productRepository).bulkUpdateProductsStatus(productIds, status)
+
+        createViewModel()
+
+        var snackbar: ShowSnackbar? = null
+        viewModel.event.observeForever {
+            if (it is ShowSnackbar) snackbar = it
+        }
+
+        viewModel.onUpdateStatusConfirmed(productIds, status)
+        // We delayed the message waiting the resume animation to complete
+        advanceUntilIdle()
+        assertThat(snackbar).isEqualTo(ShowSnackbar(R.string.product_bulk_update_status_updated))
+    }
+
+    @Test
+    fun `Shows error message when bulk update product's status fails`() = testBlocking {
+        val productIds = listOf(1L, 2L, 3L)
+        val status = ProductStatus.PUBLISH
+
+        doReturn(RequestResult.ERROR).whenever(productRepository).bulkUpdateProductsStatus(productIds, status)
+
+        createViewModel()
+
+        var snackbar: ShowSnackbar? = null
+        viewModel.event.observeForever {
+            if (it is ShowSnackbar) snackbar = it
+        }
+
+        viewModel.onUpdateStatusConfirmed(productIds, status)
         // We delayed the message waiting the resume animation to complete
         advanceUntilIdle()
         assertThat(snackbar).isEqualTo(ShowSnackbar(R.string.error_generic))
