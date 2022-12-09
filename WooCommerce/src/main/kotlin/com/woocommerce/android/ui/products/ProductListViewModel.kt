@@ -1,13 +1,24 @@
 package com.woocommerce.android.ui.products
 
 import android.os.Parcelable
+import androidx.annotation.StringRes
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.AppConstants
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsEvent
+import com.woocommerce.android.analytics.AnalyticsEvent.PRODUCT_LIST_BULK_UPDATE_CONFIRMED
+import com.woocommerce.android.analytics.AnalyticsEvent.PRODUCT_LIST_BULK_UPDATE_FAILURE
+import com.woocommerce.android.analytics.AnalyticsEvent.PRODUCT_LIST_BULK_UPDATE_REQUESTED
+import com.woocommerce.android.analytics.AnalyticsEvent.PRODUCT_LIST_BULK_UPDATE_SELECT_ALL_TAPPED
+import com.woocommerce.android.analytics.AnalyticsEvent.PRODUCT_LIST_BULK_UPDATE_SUCCESS
 import com.woocommerce.android.analytics.AnalyticsTracker
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_PROPERTY
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_SELECTED_PRODUCTS_COUNT
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_PRICE
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_STATUS
+import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.extensions.EXPAND_COLLAPSE_ANIMATION_DURATION_MILLIS
 import com.woocommerce.android.model.Product
 import com.woocommerce.android.model.RequestResult
@@ -16,9 +27,9 @@ import com.woocommerce.android.ui.media.MediaFileUploadHandler
 import com.woocommerce.android.ui.products.ProductListViewModel.ProductListEvent.ScrollToTop
 import com.woocommerce.android.ui.products.ProductListViewModel.ProductListEvent.SelectProducts
 import com.woocommerce.android.ui.products.ProductListViewModel.ProductListEvent.ShowAddProductBottomSheet
-import com.woocommerce.android.ui.products.ProductListViewModel.ProductListEvent.ShowBulkProductPriceUpdateDialog
 import com.woocommerce.android.ui.products.ProductListViewModel.ProductListEvent.ShowProductFilterScreen
 import com.woocommerce.android.ui.products.ProductListViewModel.ProductListEvent.ShowProductSortingBottomSheet
+import com.woocommerce.android.ui.products.ProductListViewModel.ProductListEvent.ShowUpdateDialog
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.viewmodel.LiveDataDelegate
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
@@ -49,7 +60,8 @@ class ProductListViewModel @Inject constructor(
     savedState: SavedStateHandle,
     private val productRepository: ProductListRepository,
     private val networkStatus: NetworkStatus,
-    mediaFileUploadHandler: MediaFileUploadHandler
+    mediaFileUploadHandler: MediaFileUploadHandler,
+    private val analyticsTracker: AnalyticsTrackerWrapper
 ) : ScopedViewModel(savedState) {
     companion object {
         private const val KEY_PRODUCT_FILTER_OPTIONS = "key_product_filter_options"
@@ -403,6 +415,7 @@ class ProductListViewModel @Inject constructor(
     }
 
     fun onSelectAllProductsClicked() {
+        analyticsTracker.track(PRODUCT_LIST_BULK_UPDATE_SELECT_ALL_TAPPED)
         productList.value?.map { it.remoteId }?.let { allLoadedProductsIds ->
             triggerEvent(SelectProducts(allLoadedProductsIds))
         }
@@ -516,23 +529,85 @@ class ProductListViewModel @Inject constructor(
         refreshProducts(scrollToTop = true)
     }
 
+    fun onUpdateStatusConfirmed(
+        selectedProductsRemoteIds: List<Long>,
+        newStatus: ProductStatus,
+    ) {
+        analyticsTracker.track(
+            PRODUCT_LIST_BULK_UPDATE_CONFIRMED,
+            mapOf(
+                KEY_PROPERTY to VALUE_STATUS,
+                KEY_SELECTED_PRODUCTS_COUNT to selectedProductsRemoteIds.size
+            )
+        )
+        bulkUpdateProducts(
+            update = { productRepository.bulkUpdateProductsStatus(selectedProductsRemoteIds, newStatus) },
+            onSuccess = {
+                analyticsTracker.track(
+                    PRODUCT_LIST_BULK_UPDATE_SUCCESS,
+                    mapOf(KEY_PROPERTY to VALUE_STATUS)
+                )
+            },
+            onFailure = {
+                analyticsTracker.track(
+                    PRODUCT_LIST_BULK_UPDATE_FAILURE,
+                    mapOf(KEY_PROPERTY to VALUE_STATUS)
+                )
+            },
+            successMessage = R.string.product_bulk_update_status_updated
+        )
+    }
+
     fun onUpdatePriceConfirmed(
         selectedProductsRemoteIds: List<Long>,
         newPrice: String,
     ) {
+        analyticsTracker.track(
+            PRODUCT_LIST_BULK_UPDATE_CONFIRMED,
+            mapOf(
+                KEY_PROPERTY to VALUE_PRICE,
+                KEY_SELECTED_PRODUCTS_COUNT to selectedProductsRemoteIds.size
+            )
+        )
+        bulkUpdateProducts(
+            update = { productRepository.bulkUpdateProductsPrice(selectedProductsRemoteIds, newPrice) },
+            onSuccess = {
+                analyticsTracker.track(
+                    PRODUCT_LIST_BULK_UPDATE_SUCCESS,
+                    mapOf(KEY_PROPERTY to VALUE_PRICE)
+                )
+            },
+            onFailure = {
+                analyticsTracker.track(
+                    PRODUCT_LIST_BULK_UPDATE_FAILURE,
+                    mapOf(KEY_PROPERTY to VALUE_PRICE)
+                )
+            },
+            successMessage = R.string.product_bulk_update_price_updated
+        )
+    }
+
+    private fun bulkUpdateProducts(
+        update: suspend () -> RequestResult,
+        onSuccess: () -> Unit,
+        onFailure: () -> Unit,
+        @StringRes successMessage: Int
+    ) {
         launch {
             viewState = viewState.copy(isRefreshing = true)
-            when (productRepository.bulkUpdateProductsPrice(selectedProductsRemoteIds, newPrice)) {
+            when (update.invoke()) {
                 RequestResult.SUCCESS -> {
+                    onSuccess()
                     refreshProducts()
                     exitSelectionMode()
                     triggerEventWithDelay(
-                        event = ShowSnackbar(R.string.product_bulk_update_price_updated),
+                        event = ShowSnackbar(successMessage),
                         delay = EXPAND_COLLAPSE_ANIMATION_DURATION_MILLIS
                     )
                 }
                 else -> {
                     exitSelectionMode()
+                    onFailure()
                     triggerEventWithDelay(
                         event = ShowSnackbar(R.string.error_generic),
                         delay = EXPAND_COLLAPSE_ANIMATION_DURATION_MILLIS
@@ -544,7 +619,25 @@ class ProductListViewModel @Inject constructor(
     }
 
     fun onBulkUpdatePriceClicked(selectedProductsRemoteIds: List<Long>) {
-        triggerEvent(ShowBulkProductPriceUpdateDialog(selectedProductsRemoteIds))
+        analyticsTracker.track(
+            PRODUCT_LIST_BULK_UPDATE_REQUESTED,
+            mapOf(
+                KEY_PROPERTY to VALUE_PRICE,
+                KEY_SELECTED_PRODUCTS_COUNT to selectedProductsRemoteIds.size
+            )
+        )
+        triggerEvent(ShowUpdateDialog.Price(selectedProductsRemoteIds))
+    }
+
+    fun onBulkUpdateStatusClicked(selectedProductsRemoteIds: List<Long>) {
+        analyticsTracker.track(
+            PRODUCT_LIST_BULK_UPDATE_REQUESTED,
+            mapOf(
+                KEY_PROPERTY to VALUE_STATUS,
+                KEY_SELECTED_PRODUCTS_COUNT to selectedProductsRemoteIds.size
+            )
+        )
+        triggerEvent(ShowUpdateDialog.Status(selectedProductsRemoteIds))
     }
 
     object OnProductSortingChanged
@@ -585,10 +678,13 @@ class ProductListViewModel @Inject constructor(
             val productCategoryFilter: String?,
             val selectedCategoryName: String?
         ) : ProductListEvent()
-
         data class SelectProducts(val productsIds: List<Long>) : ProductListEvent()
+        sealed class ShowUpdateDialog : ProductListEvent() {
+            abstract val productsIds: List<Long>
 
-        data class ShowBulkProductPriceUpdateDialog(val productIds: List<Long>) : ProductListEvent()
+            data class Price(override val productsIds: List<Long>) : ShowUpdateDialog()
+            data class Status(override val productsIds: List<Long>) : ShowUpdateDialog()
+        }
     }
 
     enum class ProductListState { Selecting, Browsing }

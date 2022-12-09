@@ -6,6 +6,7 @@ import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.MenuItem.OnActionExpandListener
 import android.view.View
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.view.ActionMode
 import androidx.appcompat.widget.SearchView
@@ -47,9 +48,9 @@ import com.woocommerce.android.ui.main.MainNavigationRouter
 import com.woocommerce.android.ui.products.ProductListViewModel.ProductListEvent.ScrollToTop
 import com.woocommerce.android.ui.products.ProductListViewModel.ProductListEvent.SelectProducts
 import com.woocommerce.android.ui.products.ProductListViewModel.ProductListEvent.ShowAddProductBottomSheet
-import com.woocommerce.android.ui.products.ProductListViewModel.ProductListEvent.ShowBulkProductPriceUpdateDialog
 import com.woocommerce.android.ui.products.ProductListViewModel.ProductListEvent.ShowProductFilterScreen
 import com.woocommerce.android.ui.products.ProductListViewModel.ProductListEvent.ShowProductSortingBottomSheet
+import com.woocommerce.android.ui.products.ProductListViewModel.ProductListEvent.ShowUpdateDialog
 import com.woocommerce.android.ui.products.ProductSortAndFiltersCard.ProductSortAndFilterListener
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.util.FeatureFlag
@@ -75,9 +76,11 @@ class ProductListFragment :
         const val PRODUCT_FILTER_RESULT_KEY = "product_filter_result"
     }
 
-    @Inject lateinit var uiMessageResolver: UIMessageResolver
+    @Inject
+    lateinit var uiMessageResolver: UIMessageResolver
 
-    @Inject lateinit var currencyFormatter: CurrencyFormatter
+    @Inject
+    lateinit var currencyFormatter: CurrencyFormatter
 
     private var _productAdapter: ProductListAdapter? = null
     private val productAdapter: ProductListAdapter
@@ -434,9 +437,16 @@ class ProductListFragment :
                 )
                 is ShowProductSortingBottomSheet -> showProductSortingBottomSheet()
                 is SelectProducts -> tracker?.setItemsSelected(event.productsIds, true)
-                is ShowBulkProductPriceUpdateDialog -> showBulkUpdatePriceDialog(event.productIds)
+                is ShowUpdateDialog -> handleUpdateDialogs(event)
                 else -> event.isHandled = false
             }
+        }
+    }
+
+    private fun handleUpdateDialogs(event: ShowUpdateDialog) {
+        when (event) {
+            is ShowUpdateDialog.Price -> showBulkUpdatePriceDialog(event.productsIds)
+            is ShowUpdateDialog.Status -> showBulkUpdateStatusDialog(event.productsIds)
         }
     }
 
@@ -448,7 +458,7 @@ class ProductListFragment :
             .setPositiveButton(android.R.string.ok) { _, _ ->
                 viewModel.onUpdatePriceConfirmed(productRemoteIdsToUpdate, dialogBinding.priceInputLayout.getText())
             }
-            .setNegativeButton(android.R.string.cancel) { _, _ -> }
+            .setNegativeButton(android.R.string.cancel, null)
             .show()
 
         dialogBinding.priceInputLayout.post {
@@ -457,6 +467,26 @@ class ProductListFragment :
                 showKeyboardWithDelay()
             }
         }
+    }
+
+    private fun showBulkUpdateStatusDialog(productRemoteIdsToUpdate: List<Long>) {
+        val statuses = ProductStatus.values()
+        val statusItems = statuses.map { it.toLocalizedString(requireActivity(), long = true) }.toTypedArray()
+        MaterialAlertDialogBuilder(requireActivity())
+            .setTitle(getString(R.string.product_bulk_update_status))
+            .setSingleChoiceItems(statusItems, -1, null)
+            .setPositiveButton(android.R.string.ok) { dialog, _ ->
+                val checkedItemPosition = (dialog as AlertDialog).listView.checkedItemPosition
+                if (checkedItemPosition < statuses.size && checkedItemPosition >= 0) {
+                    val newStatus = statuses[checkedItemPosition]
+                    viewModel.onUpdateStatusConfirmed(
+                        productRemoteIdsToUpdate,
+                        newStatus
+                    )
+                }
+            }
+            .setNegativeButton(android.R.string.cancel, null)
+            .show()
     }
 
     private fun handleListState(productListState: ProductListViewModel.ProductListState) {
@@ -719,7 +749,10 @@ class ProductListFragment :
 
     override fun onActionItemClicked(mode: ActionMode, item: MenuItem): Boolean {
         return when (item.itemId) {
-            R.id.menu_update_status -> true
+            R.id.menu_update_status -> {
+                viewModel.onBulkUpdateStatusClicked(tracker?.selection?.toList().orEmpty())
+                true
+            }
             R.id.menu_update_price -> {
                 viewModel.onBulkUpdatePriceClicked(tracker?.selection?.toList().orEmpty())
                 true
