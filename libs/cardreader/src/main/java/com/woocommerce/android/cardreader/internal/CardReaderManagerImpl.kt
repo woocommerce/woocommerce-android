@@ -81,6 +81,10 @@ internal class CardReaderManagerImpl(
         }
     }
 
+    override fun initializeOnUpdateFrequencyChange(updateFrequency: CardReaderManager.SimulatorUpdateFrequency) {
+        terminal.setupSimulator(updateFrequency)
+    }
+
     override fun discoverReaders(
         isSimulated: Boolean,
         cardReaderTypesToDiscover: CardReaderTypesToDiscover,
