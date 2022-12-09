@@ -20,7 +20,7 @@ import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 
 @ExperimentalCoroutinesApi
-class ProductCategorySelectorViewModelTestsUi : BaseUnitTest() {
+class ProductCategorySelectorViewModelTests : BaseUnitTest() {
     private lateinit var viewModel: ProductCategorySelectorViewModel
 
     private val categoriesStateFlow = MutableStateFlow(emptyList<ProductCategoryTreeItem>())

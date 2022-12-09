@@ -16,7 +16,7 @@ import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 
 @ExperimentalCoroutinesApi
-class ProductCategoryListHandlerTestsUi : BaseUnitTest() {
+class ProductCategoryListHandlerTests : BaseUnitTest() {
     private lateinit var listHandler: ProductCategoryListHandler
 
     private val repository: ProductCategorySelectorRepository = mock {
