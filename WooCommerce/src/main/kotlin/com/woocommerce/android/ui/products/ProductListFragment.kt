@@ -6,6 +6,7 @@ import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.MenuItem.OnActionExpandListener
 import android.view.View
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.view.ActionMode
 import androidx.appcompat.widget.SearchView
@@ -20,6 +21,7 @@ import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.selection.SelectionTracker
 import androidx.recyclerview.selection.StorageStrategy
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.transition.MaterialFadeThrough
@@ -28,10 +30,12 @@ import com.woocommerce.android.NavGraphMainDirections
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
+import com.woocommerce.android.databinding.DialogProductListBulkPriceUpdateBinding
 import com.woocommerce.android.databinding.FragmentProductListBinding
 import com.woocommerce.android.extensions.handleResult
 import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.extensions.pinFabAboveBottomNavigationBar
+import com.woocommerce.android.extensions.showKeyboardWithDelay
 import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.model.FeatureFeedbackSettings
 import com.woocommerce.android.model.Product
@@ -45,6 +49,7 @@ import com.woocommerce.android.ui.products.ProductListViewModel.ProductListEvent
 import com.woocommerce.android.ui.products.ProductListViewModel.ProductListEvent.ShowAddProductBottomSheet
 import com.woocommerce.android.ui.products.ProductListViewModel.ProductListEvent.ShowProductFilterScreen
 import com.woocommerce.android.ui.products.ProductListViewModel.ProductListEvent.ShowProductSortingBottomSheet
+import com.woocommerce.android.ui.products.ProductListViewModel.ProductListEvent.ShowUpdateDialog
 import com.woocommerce.android.ui.products.ProductSortAndFiltersCard.ProductSortAndFilterListener
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.util.FeatureFlag
@@ -420,9 +425,56 @@ class ProductListFragment :
                 )
                 is ShowProductSortingBottomSheet -> showProductSortingBottomSheet()
                 is SelectProducts -> tracker?.setItemsSelected(event.productsIds, true)
+                is ShowUpdateDialog -> handleUpdateDialogs(event)
                 else -> event.isHandled = false
             }
         }
+    }
+
+    private fun handleUpdateDialogs(event: ShowUpdateDialog) {
+        when (event) {
+            is ShowUpdateDialog.Price -> showBulkUpdatePriceDialog(event.productsIds)
+            is ShowUpdateDialog.Status -> showBulkUpdateStatusDialog(event.productsIds)
+        }
+    }
+
+    private fun showBulkUpdatePriceDialog(productRemoteIdsToUpdate: List<Long>) {
+        val dialogBinding = DialogProductListBulkPriceUpdateBinding.inflate(layoutInflater)
+        MaterialAlertDialogBuilder(requireActivity())
+            .setTitle(getString(R.string.product_bulk_update_regular_price))
+            .setView(dialogBinding.root)
+            .setPositiveButton(android.R.string.ok) { _, _ ->
+                viewModel.onUpdatePriceConfirmed(productRemoteIdsToUpdate, dialogBinding.priceInputLayout.getText())
+            }
+            .setNegativeButton(android.R.string.cancel, null)
+            .show()
+
+        dialogBinding.priceInputLayout.post {
+            dialogBinding.priceInputLayout.editText.apply {
+                requestFocus()
+                showKeyboardWithDelay()
+            }
+        }
+    }
+
+    private fun showBulkUpdateStatusDialog(productRemoteIdsToUpdate: List<Long>) {
+        val statuses = ProductStatus.values()
+        val statusItems = statuses.map { it.toLocalizedString(requireActivity(), long = true) }.toTypedArray()
+        MaterialAlertDialogBuilder(requireActivity())
+            .setTitle(getString(R.string.product_bulk_update_status))
+            .setSingleChoiceItems(statusItems, -1, null)
+            .setPositiveButton(android.R.string.ok) { dialog, _ ->
+                val checkedItemPosition = (dialog as AlertDialog).listView.checkedItemPosition
+                if (checkedItemPosition < statuses.size && checkedItemPosition >= 0) {
+                    val newStatus = statuses[checkedItemPosition]
+                    viewModel.onUpdateStatusConfirmed(
+                        productRemoteIdsToUpdate,
+                        newStatus
+                    )
+                }
+            }
+            .setNegativeButton(android.R.string.cancel, null)
+            .show()
     }
 
     private fun handleListState(productListState: ProductListViewModel.ProductListState) {
@@ -685,8 +737,14 @@ class ProductListFragment :
 
     override fun onActionItemClicked(mode: ActionMode, item: MenuItem): Boolean {
         return when (item.itemId) {
-            R.id.menu_update_status -> true
-            R.id.menu_update_price -> true
+            R.id.menu_update_status -> {
+                viewModel.onBulkUpdateStatusClicked(tracker?.selection?.toList().orEmpty())
+                true
+            }
+            R.id.menu_update_price -> {
+                viewModel.onBulkUpdatePriceClicked(tracker?.selection?.toList().orEmpty())
+                true
+            }
             R.id.menu_select_all -> {
                 viewModel.onSelectAllProductsClicked()
                 true

@@ -27,7 +27,7 @@ import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.map
 
-private const val EXPAND_COLLAPSE_ANIMATION_DURATION_MILLIS = 300L
+const val EXPAND_COLLAPSE_ANIMATION_DURATION_MILLIS = 300L
 
 fun View.show() {
     this.visibility = View.VISIBLE
@@ -37,7 +37,7 @@ fun View.hide() {
     this.visibility = View.GONE
 }
 
-fun View.expand(duration: Long = 300L) {
+fun View.expand(duration: Long = EXPAND_COLLAPSE_ANIMATION_DURATION_MILLIS) {
     if (!this.isVisible) {
         this.visibility = View.VISIBLE
         this.measure(
@@ -68,7 +68,7 @@ fun View.expand(duration: Long = 300L) {
     }
 }
 
-fun View.collapse(duration: Long = 300L) {
+fun View.collapse(duration: Long = EXPAND_COLLAPSE_ANIMATION_DURATION_MILLIS) {
     if (this.isVisible) {
         val initialHeight = this.measuredHeight
         val view = this
