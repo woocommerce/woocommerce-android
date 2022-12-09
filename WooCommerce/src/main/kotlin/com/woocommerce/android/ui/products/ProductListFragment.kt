@@ -70,9 +70,11 @@ class ProductListFragment :
         const val PRODUCT_FILTER_RESULT_KEY = "product_filter_result"
     }
 
-    @Inject lateinit var uiMessageResolver: UIMessageResolver
+    @Inject
+    lateinit var uiMessageResolver: UIMessageResolver
 
-    @Inject lateinit var currencyFormatter: CurrencyFormatter
+    @Inject
+    lateinit var currencyFormatter: CurrencyFormatter
 
     private var _productAdapter: ProductListAdapter? = null
     private val productAdapter: ProductListAdapter
@@ -584,6 +586,7 @@ class ProductListFragment :
     }
 
     private fun onProductClick(remoteProductId: Long, sharedView: View?) {
+        if (viewModel.isSelecting()) return
         (activity as? MainNavigationRouter)?.let { router ->
             if (sharedView == null) {
                 router.showProductDetail(remoteProductId, enableTrash = true)
