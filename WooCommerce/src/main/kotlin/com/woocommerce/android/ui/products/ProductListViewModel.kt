@@ -19,6 +19,7 @@ import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_SELECTED
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_PRICE
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_STATUS
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
+import com.woocommerce.android.extensions.EXPAND_COLLAPSE_ANIMATION_DURATION_MILLIS
 import com.woocommerce.android.model.Product
 import com.woocommerce.android.model.RequestResult
 import com.woocommerce.android.tools.NetworkStatus
@@ -593,19 +594,27 @@ class ProductListViewModel @Inject constructor(
         @StringRes successMessage: Int
     ) {
         launch {
+            viewState = viewState.copy(isRefreshing = true)
             when (update.invoke()) {
                 RequestResult.SUCCESS -> {
                     onSuccess()
                     refreshProducts()
                     exitSelectionMode()
-                    triggerEvent(ShowSnackbar(successMessage))
+                    triggerEventWithDelay(
+                        event = ShowSnackbar(successMessage),
+                        delay = EXPAND_COLLAPSE_ANIMATION_DURATION_MILLIS
+                    )
                 }
                 else -> {
                     exitSelectionMode()
                     onFailure()
-                    triggerEvent(ShowSnackbar(R.string.error_generic))
+                    triggerEventWithDelay(
+                        event = ShowSnackbar(R.string.error_generic),
+                        delay = EXPAND_COLLAPSE_ANIMATION_DURATION_MILLIS
+                    )
                 }
             }
+            viewState = viewState.copy(isRefreshing = false)
         }
     }
 

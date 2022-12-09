@@ -25,6 +25,7 @@ import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.test.advanceUntilIdle
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Test
@@ -512,5 +513,85 @@ class ProductListViewModelTest : BaseUnitTest() {
 
         // then
         verify(analyticsTracker).track(PRODUCT_LIST_BULK_UPDATE_SELECT_ALL_TAPPED)
+    }
+
+    @Test
+    fun `Shows success message when bulk update product's price completes`() = testBlocking {
+        val productIds = listOf(1L, 2L, 3L)
+        val price = "24.45"
+
+        doReturn(RequestResult.SUCCESS).whenever(productRepository).bulkUpdateProductsPrice(productIds, price)
+
+        createViewModel()
+
+        var snackbar: ShowSnackbar? = null
+        viewModel.event.observeForever {
+            if (it is ShowSnackbar) snackbar = it
+        }
+
+        viewModel.onUpdatePriceConfirmed(productIds, price)
+        // We delayed the message waiting the resume animation to complete
+        advanceUntilIdle()
+        assertThat(snackbar).isEqualTo(ShowSnackbar(R.string.product_bulk_update_price_updated))
+    }
+
+    @Test
+    fun `Shows error message when bulk update product's price fails`() = testBlocking {
+        val productIds = listOf(1L, 2L, 3L)
+        val price = "24.45"
+
+        doReturn(RequestResult.ERROR).whenever(productRepository).bulkUpdateProductsPrice(productIds, price)
+
+        createViewModel()
+
+        var snackbar: ShowSnackbar? = null
+        viewModel.event.observeForever {
+            if (it is ShowSnackbar) snackbar = it
+        }
+
+        viewModel.onUpdatePriceConfirmed(productIds, price)
+        // We delayed the message waiting the resume animation to complete
+        advanceUntilIdle()
+        assertThat(snackbar).isEqualTo(ShowSnackbar(R.string.error_generic))
+    }
+
+    @Test
+    fun `Shows success message when bulk update product's status completes`() = testBlocking {
+        val productIds = listOf(1L, 2L, 3L)
+        val status = ProductStatus.PUBLISH
+
+        doReturn(RequestResult.SUCCESS).whenever(productRepository).bulkUpdateProductsStatus(productIds, status)
+
+        createViewModel()
+
+        var snackbar: ShowSnackbar? = null
+        viewModel.event.observeForever {
+            if (it is ShowSnackbar) snackbar = it
+        }
+
+        viewModel.onUpdateStatusConfirmed(productIds, status)
+        // We delayed the message waiting the resume animation to complete
+        advanceUntilIdle()
+        assertThat(snackbar).isEqualTo(ShowSnackbar(R.string.product_bulk_update_status_updated))
+    }
+
+    @Test
+    fun `Shows error message when bulk update product's status fails`() = testBlocking {
+        val productIds = listOf(1L, 2L, 3L)
+        val status = ProductStatus.PUBLISH
+
+        doReturn(RequestResult.ERROR).whenever(productRepository).bulkUpdateProductsStatus(productIds, status)
+
+        createViewModel()
+
+        var snackbar: ShowSnackbar? = null
+        viewModel.event.observeForever {
+            if (it is ShowSnackbar) snackbar = it
+        }
+
+        viewModel.onUpdateStatusConfirmed(productIds, status)
+        // We delayed the message waiting the resume animation to complete
+        advanceUntilIdle()
+        assertThat(snackbar).isEqualTo(ShowSnackbar(R.string.error_generic))
     }
 }
