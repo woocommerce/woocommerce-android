@@ -1,14 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2022-11-29 12:54:04+0000
+Translation-Revision-Date: 2022-12-06 14:54:04+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: ko_KR
 -->
 <resources>
+    <string name="store_creation_ecommerce_plan_period_two_years">2년</string>
+    <string name="store_creation_ecommerce_store_loading_permanent_error">스토어 설치 중 문제가 발생했습니다…</string>
+    <string name="variations_bulk_creation_no_candidates_message">모든 변형이 이미 생성되었습니다.</string>
+    <string name="variations_bulk_creation_no_candidates_title">생성할 변형 없음</string>
+    <string name="product_list_multiselect">다수 선택</string>
     <string name="store_creation_ecommerce_store_loading_error">스토어를 로드할 수 없습니다. 잠시 후에 다시 시도하세요…</string>
     <string name="store_creation_ecommerce_plan_purchase_error">구매를 완료할 수 없습니다…</string>
-    <string name="store_creation_ecommerce_site_creation_error">새 사이트를 생성할 수 없습니다…</string>
     <string name="store_creation_domain_picker_suggestions_error">도메인 제안을 로드할 수 없음</string>
     <string name="store_creation_domain_picker_empty_suggestions">이 검색에 대해 제공되는 도메인 없음</string>
     <string name="variations_bulk_creation_progress_title">변형 생성 중</string>
@@ -17,6 +21,7 @@ Language: ko_KR
     <string name="variations_bulk_creation_warning_message">현재 최대 %1$d개 변형의 생성이 지원됩니다. 이 상품의 변형을 생성하면 %2$d개 변형이 생성됩니다.</string>
     <string name="variations_bulk_creation_warning_title">생성 한도 초과됨</string>
     <string name="variation_add_all_description">속성의 모든 조합에 대한 변형을 생성합니다.</string>
+    <string name="variation_add_all">모든 변형 생성</string>
     <string name="variation_add_new_description">새 변형 하나를 생성합니다. 변형 가능한 상품에 속하는 속성을 수동으로 설정합니다.</string>
     <string name="variation_add_new">새 변형 추가</string>
     <string name="variation_list_add">변형 추가</string>
