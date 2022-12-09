@@ -439,6 +439,12 @@ class AnalyticsTracker private constructor(private val context: Context) {
         const val VALUE_STEP_WEB_CHECKOUT = "web_checkout"
         const val VALUE_STEP_STORE_INSTALLATION = "store_installation"
 
+        // -- Products bulk update
+        const val KEY_PROPERTY = "property"
+        const val VALUE_PRICE = "price"
+        const val VALUE_STATUS = "status"
+        const val KEY_SELECTED_PRODUCTS_COUNT = "selected_products_count"
+
         var sendUsageStats: Boolean = true
             set(value) {
                 if (value != field) {

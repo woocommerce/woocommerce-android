@@ -6,33 +6,36 @@ import com.woocommerce.android.analytics.AnalyticsEvent.PRODUCT_LIST_LOADED
 import com.woocommerce.android.analytics.AnalyticsEvent.PRODUCT_LIST_LOAD_ERROR
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.model.Product
+import com.woocommerce.android.model.RequestResult
 import com.woocommerce.android.model.toAppModel
-import com.woocommerce.android.model.toDataModel
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.util.ContinuationWrapper
 import com.woocommerce.android.util.ContinuationWrapper.ContinuationResult.Cancellation
 import com.woocommerce.android.util.ContinuationWrapper.ContinuationResult.Success
+import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.util.WooLog
+import kotlinx.coroutines.withContext
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
 import org.wordpress.android.fluxc.Dispatcher
 import org.wordpress.android.fluxc.action.WCProductAction.DELETED_PRODUCT
 import org.wordpress.android.fluxc.action.WCProductAction.FETCH_PRODUCTS
 import org.wordpress.android.fluxc.generated.WCProductActionBuilder
+import org.wordpress.android.fluxc.model.WCProductModel
 import org.wordpress.android.fluxc.store.WCProductStore
 import org.wordpress.android.fluxc.store.WCProductStore.OnProductChanged
 import org.wordpress.android.fluxc.store.WCProductStore.OnProductsSearched
 import org.wordpress.android.fluxc.store.WCProductStore.ProductFilterOption
 import org.wordpress.android.fluxc.store.WCProductStore.ProductSorting
 import org.wordpress.android.fluxc.store.WCProductStore.ProductSorting.TITLE_ASC
-import java.math.BigDecimal
 import javax.inject.Inject
 
 class ProductListRepository @Inject constructor(
     private val appPrefsWrapper: AppPrefsWrapper,
     private val dispatcher: Dispatcher,
     private val productStore: WCProductStore,
-    private val selectedSite: SelectedSite
+    private val selectedSite: SelectedSite,
+    private val dispatchers: CoroutineDispatchers,
 ) {
     companion object {
         private const val PRODUCT_PAGE_SIZE = WCProductStore.DEFAULT_PRODUCT_PAGE_SIZE
@@ -219,34 +222,49 @@ class ProductListRepository @Inject constructor(
         }
     }
 
-    suspend fun updateProductsStatus(
-        productsToUpdateStatus: List<Product>,
-        newStatus: ProductStatus
-    ) {
-        val updatedProducts = productsToUpdateStatus.map {
-            it.copy(status = newStatus)
+    suspend fun bulkUpdateProductsStatus(
+        productsIds: Collection<Long>,
+        newStatus: ProductStatus,
+    ): RequestResult = withContext(dispatchers.io) {
+        val updatedProducts = productStore.getProductsByRemoteIds(
+            site = selectedSite.get(),
+            remoteProductIds = productsIds.toList()
+        ).map {
+            it.apply {
+                status = newStatus.toString()
+            }
         }
-        updateProducts(updatedProducts)
+
+        bulkUpdateProducts(updatedProducts)
     }
 
-    suspend fun updateProductsRegularPrice(
-        productsToUpdatePriceFor: List<Product>,
-        newRegularPrice: BigDecimal
-    ) {
-        val updatedProducts = productsToUpdatePriceFor.map {
-            it.copy(regularPrice = newRegularPrice)
+    suspend fun bulkUpdateProductsPrice(
+        productsIds: List<Long>,
+        newRegularPrice: String,
+    ): RequestResult = withContext(dispatchers.io) {
+        val updatedProducts = productStore.getProductsByRemoteIds(
+            site = selectedSite.get(),
+            remoteProductIds = productsIds
+        ).map {
+            it.apply {
+                regularPrice = newRegularPrice
+            }
         }
-        updateProducts(updatedProducts)
+
+        bulkUpdateProducts(updatedProducts)
     }
 
-    private suspend fun updateProducts(updatedProducts: List<Product>) {
+    private suspend fun bulkUpdateProducts(updatedProducts: List<WCProductModel>) =
         productStore.batchUpdateProducts(
             WCProductStore.BatchUpdateProductsPayload(
-                site = selectedSite.get(),
-                updatedProducts = updatedProducts.map { updatedProduct ->
-                    updatedProduct.toDataModel()
-                }
+                selectedSite.get(),
+                updatedProducts
             )
-        )
-    }
+        ).let {
+            if (it.isError) {
+                RequestResult.ERROR
+            } else {
+                RequestResult.SUCCESS
+            }
+        }
 }
