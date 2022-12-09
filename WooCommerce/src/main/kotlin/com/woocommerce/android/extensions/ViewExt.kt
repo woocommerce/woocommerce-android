@@ -37,7 +37,7 @@ fun View.hide() {
     this.visibility = View.GONE
 }
 
-fun View.expand(duration: Long = 300L) {
+fun View.expand(duration: Long = EXPAND_COLLAPSE_ANIMATION_DURATION_MILLIS) {
     if (!this.isVisible) {
         this.visibility = View.VISIBLE
         this.measure(
@@ -68,7 +68,7 @@ fun View.expand(duration: Long = 300L) {
     }
 }
 
-fun View.collapse(duration: Long = 300L) {
+fun View.collapse(duration: Long = EXPAND_COLLAPSE_ANIMATION_DURATION_MILLIS) {
     if (this.isVisible) {
         val initialHeight = this.measuredHeight
         val view = this
