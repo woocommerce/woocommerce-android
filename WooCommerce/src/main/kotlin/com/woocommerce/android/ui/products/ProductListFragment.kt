@@ -471,12 +471,10 @@ class ProductListFragment :
 
     private fun showBulkUpdateStatusDialog(productRemoteIdsToUpdate: List<Long>) {
         val statuses = ProductStatus.values()
+        val statusItems = statuses.map { it.toLocalizedString(requireActivity(), long = true) }.toTypedArray()
         MaterialAlertDialogBuilder(requireActivity())
             .setTitle(getString(R.string.product_bulk_update_status))
-            .setSingleChoiceItems(
-                statuses.map { it.toLocalizedString(requireActivity(), long = true) }.toTypedArray(),
-                -1, null
-            )
+            .setSingleChoiceItems(statusItems, -1, null)
             .setPositiveButton(android.R.string.ok) { dialog, _ ->
                 val checkedItemPosition = (dialog as AlertDialog).listView.checkedItemPosition
                 if (checkedItemPosition < statuses.size && checkedItemPosition >= 0) {
