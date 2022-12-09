@@ -222,13 +222,13 @@ class ProductListRepository @Inject constructor(
     }
 
     suspend fun bulkUpdateProductsPrice(
-        productsIds: Collection<Long>,
+        productsIds: List<Long>,
         newRegularPrice: String,
     ) = withContext(dispatchers.io) {
 
         val updatedProducts = productStore.getProductsByRemoteIds(
             site = selectedSite.get(),
-            remoteProductIds = productsIds.toList()
+            remoteProductIds = productsIds
         ).map {
             it.apply {
                 regularPrice = newRegularPrice
