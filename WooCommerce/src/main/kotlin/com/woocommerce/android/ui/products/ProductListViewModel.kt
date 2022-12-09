@@ -520,6 +520,7 @@ class ProductListViewModel @Inject constructor(
         newPrice: String,
     ) {
         launch {
+            viewState = viewState.copy(isRefreshing = true)
             when (productRepository.bulkUpdateProductsPrice(selectedProductsRemoteIds, newPrice)) {
                 RequestResult.SUCCESS -> {
                     refreshProducts()
@@ -531,6 +532,7 @@ class ProductListViewModel @Inject constructor(
                     triggerEvent(ShowSnackbar(R.string.error_generic))
                 }
             }
+            viewState = viewState.copy(isRefreshing = false)
         }
     }
 
