@@ -387,4 +387,44 @@ class ProductListViewModelTest : BaseUnitTest() {
         advanceUntilIdle()
         assertThat(snackbar).isEqualTo(ShowSnackbar(R.string.error_generic))
     }
+
+    @Test
+    fun `Shows success message when bulk update product's status completes`() = testBlocking {
+        val productIds = listOf(1L, 2L, 3L)
+        val status = ProductStatus.PUBLISH
+
+        doReturn(RequestResult.SUCCESS).whenever(productRepository).bulkUpdateProductsStatus(productIds, status)
+
+        createViewModel()
+
+        var snackbar: ShowSnackbar? = null
+        viewModel.event.observeForever {
+            if (it is ShowSnackbar) snackbar = it
+        }
+
+        viewModel.onUpdateStatusConfirmed(productIds, status)
+        // We delayed the message waiting the resume animation to complete
+        advanceUntilIdle()
+        assertThat(snackbar).isEqualTo(ShowSnackbar(R.string.product_bulk_update_status_updated))
+    }
+
+    @Test
+    fun `Shows error message when bulk update product's status fails`() = testBlocking {
+        val productIds = listOf(1L, 2L, 3L)
+        val status = ProductStatus.PUBLISH
+
+        doReturn(RequestResult.ERROR).whenever(productRepository).bulkUpdateProductsStatus(productIds, status)
+
+        createViewModel()
+
+        var snackbar: ShowSnackbar? = null
+        viewModel.event.observeForever {
+            if (it is ShowSnackbar) snackbar = it
+        }
+
+        viewModel.onUpdateStatusConfirmed(productIds, status)
+        // We delayed the message waiting the resume animation to complete
+        advanceUntilIdle()
+        assertThat(snackbar).isEqualTo(ShowSnackbar(R.string.error_generic))
+    }
 }
