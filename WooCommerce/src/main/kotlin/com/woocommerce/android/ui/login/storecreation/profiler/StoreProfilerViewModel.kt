@@ -25,7 +25,6 @@ class StoreProfilerViewModel @Inject constructor(
         scope = this,
         initialValue = StoreProfilerState(
             storeName = newStore.data.name ?: "",
-            selectedCategory = null,
             categories = CATEGORIES
         )
     )
@@ -53,10 +52,22 @@ class StoreProfilerViewModel @Inject constructor(
 
     }
 
+    fun onCategorySelected(category: StoreCategoryUi) {
+        val updatedCategories = _storeProfilerState.value.categories.map {
+            if (it == category) {
+                it.copy(isSelected = true)
+            } else {
+                it.copy(isSelected = false)
+            }
+        }
+        _storeProfilerState.value = _storeProfilerState.value.copy(
+            categories = updatedCategories
+        )
+    }
+
     @Parcelize
     data class StoreProfilerState(
         val storeName: String,
-        val selectedCategory: String? = null,
         val categories: List<StoreCategoryUi> = emptyList()
     ) : Parcelable
 

@@ -2,7 +2,10 @@ package com.woocommerce.android.ui.login.storecreation.profiler
 
 import android.content.res.Configuration
 import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -12,6 +15,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.Divider
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
 import androidx.compose.material.MaterialTheme
@@ -24,6 +28,7 @@ import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
@@ -48,7 +53,8 @@ fun StoreProfilerCategoryScreen(viewModel: StoreProfilerViewModel) {
                 storeName = state.storeName,
                 storeCategories = state.categories,
                 onContinueClicked = viewModel::onContinueClicked,
-                modifier = Modifier.padding(dimensionResource(id = R.dimen.major_100))
+                onCategorySelected = viewModel::onCategorySelected,
+                modifier = Modifier.background(MaterialTheme.colors.surface)
             )
         }
     }
@@ -85,12 +91,16 @@ private fun Toolbar(
 private fun CategoriesContent(
     storeName: String,
     storeCategories: List<StoreCategoryUi>,
+    onCategorySelected: (StoreCategoryUi) -> Unit,
     onContinueClicked: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     Column(modifier = modifier) {
         Column(
-            modifier = Modifier.fillMaxSize(),
+            modifier = Modifier
+                .fillMaxSize()
+                .weight(1f)
+                .padding(dimensionResource(id = R.dimen.major_100)),
             verticalArrangement = Arrangement.spacedBy(dimensionResource(id = R.dimen.major_100)),
         ) {
             Text(
@@ -109,16 +119,22 @@ private fun CategoriesContent(
             )
             CategoryList(
                 categories = storeCategories,
+                onCategorySelected = onCategorySelected,
                 modifier = Modifier
-                    .weight(1f)
                     .fillMaxWidth()
             )
-            WCColoredButton(
-                modifier = Modifier.fillMaxWidth(),
-                onClick = onContinueClicked,
-            ) {
-                Text(text = stringResource(id = R.string.continue_button))
-            }
+        }
+        Divider(
+            color = colorResource(id = R.color.divider_color),
+            thickness = dimensionResource(id = R.dimen.minor_10)
+        )
+        WCColoredButton(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(dimensionResource(id = R.dimen.major_100)),
+            onClick = onContinueClicked,
+        ) {
+            Text(text = stringResource(id = R.string.continue_button))
         }
     }
 }
@@ -126,29 +142,56 @@ private fun CategoriesContent(
 @Composable
 private fun CategoryList(
     categories: List<StoreCategoryUi>,
+    onCategorySelected: (StoreCategoryUi) -> Unit,
     modifier: Modifier = Modifier
 ) {
     LazyColumn(modifier = modifier) {
         itemsIndexed(categories) { _, category ->
-            Box(
+            CategoryItem(
+                category = category,
+                onCategorySelected = onCategorySelected,
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(
-                        top = dimensionResource(id = R.dimen.major_75),
-                        bottom = dimensionResource(id = R.dimen.major_75)
-                    )
-                    .border(
-                        width = dimensionResource(id = R.dimen.minor_10),
-                        color = colorResource(id = R.color.divider_color),
-                        shape = RoundedCornerShape(dimensionResource(id = R.dimen.minor_100))
-                    )
-            ) {
-                Text(
-                    text = category.name,
-                    modifier = Modifier.padding(dimensionResource(id = R.dimen.major_100))
-                )
-            }
+                    .padding(bottom = dimensionResource(id = R.dimen.major_100))
+            )
         }
+    }
+}
+
+@Composable
+private fun CategoryItem(
+    category: StoreCategoryUi,
+    onCategorySelected: (StoreCategoryUi) -> Unit,
+    modifier: Modifier = Modifier
+) {
+    Box(
+        modifier = modifier
+            .border(
+                width = dimensionResource(id = if (category.isSelected) R.dimen.minor_25 else R.dimen.minor_10),
+                color = colorResource(
+                    if (category.isSelected) R.color.color_primary else R.color.divider_color
+                ),
+                shape = RoundedCornerShape(dimensionResource(id = R.dimen.minor_100))
+            )
+            .clip(shape = RoundedCornerShape(dimensionResource(id = R.dimen.minor_100)))
+            .background(
+                color = colorResource(
+                    id = if (category.isSelected)
+                        if (isSystemInDarkTheme()) R.color.color_on_primary_surface else R.color.woo_purple_10
+                    else R.color.color_surface
+                )
+            )
+            .clickable { onCategorySelected(category) }
+    ) {
+        Text(
+            text = category.name,
+            modifier = Modifier.padding(
+                start = dimensionResource(id = R.dimen.major_100),
+                top = dimensionResource(id = R.dimen.major_75),
+                bottom = dimensionResource(id = R.dimen.major_75),
+                end = dimensionResource(id = R.dimen.major_100),
+            )
+        )
     }
 }
 
@@ -164,7 +207,8 @@ fun CategoriesContentPreview() {
         CategoriesContent(
             storeName = "White Christmas Tress",
             storeCategories = CATEGORIES,
-            onContinueClicked = {}
+            onContinueClicked = {},
+            onCategorySelected = {}
         )
     }
 }
@@ -200,11 +244,19 @@ val CATEGORIES = listOf(
         isSelected = false
     ),
     StoreCategoryUi(
-        name = "Books & Magazines",
-        isSelected = true
+        name = "Books & Magazines 2",
+        isSelected = false
     ),
     StoreCategoryUi(
-        name = "Electronics and Software",
+        name = "Electronics and Software 2",
         isSelected = false
-    )
+    ),
+    StoreCategoryUi(
+        name = "Design & Marketing 2",
+        isSelected = false
+    ),
+    StoreCategoryUi(
+        name = "Fashion and Apparel 2",
+        isSelected = false
+    ),
 )
