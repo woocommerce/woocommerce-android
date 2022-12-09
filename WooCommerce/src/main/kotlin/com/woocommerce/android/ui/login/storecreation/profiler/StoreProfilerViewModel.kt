@@ -18,7 +18,7 @@ import javax.inject.Inject
 @HiltViewModel
 class StoreProfilerViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
-    newStore: NewStore,
+    private val newStore: NewStore,
     analyticsTrackerWrapper: AnalyticsTrackerWrapper,
 ) : ScopedViewModel(savedStateHandle) {
     private val _storeProfilerState = savedState.getStateFlow(
@@ -49,7 +49,13 @@ class StoreProfilerViewModel @Inject constructor(
     }
 
     fun onContinueClicked() {
-
+        _storeProfilerState.value.categories
+            .firstOrNull { it.isSelected }
+            ?.name
+            ?.let {
+                newStore.update(category = it)
+            }
+        triggerEvent(NavigateToNextStep)
     }
 
     fun onCategorySelected(category: StoreCategoryUi) {

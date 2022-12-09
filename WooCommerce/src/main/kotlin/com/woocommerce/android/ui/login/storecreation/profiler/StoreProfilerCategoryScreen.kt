@@ -133,6 +133,7 @@ private fun CategoriesContent(
                 .fillMaxWidth()
                 .padding(dimensionResource(id = R.dimen.major_100)),
             onClick = onContinueClicked,
+            enabled = storeCategories.any { it.isSelected }
         ) {
             Text(text = stringResource(id = R.string.continue_button))
         }
@@ -221,7 +222,7 @@ val CATEGORIES = listOf(
     ),
     StoreCategoryUi(
         name = "Books & Magazines",
-        isSelected = true
+        isSelected = false
     ),
     StoreCategoryUi(
         name = "Electronics and Software",
