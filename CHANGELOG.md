@@ -1,6 +1,12 @@
 <!--
 Contains editorialized release notes. Raw release notes should go into `RELEASE-NOTES.txt`.
 -->
+## 11.6
+This release includes a handful of minor improvements and bug fixes that our team found. Don't be fooled though – we're working on some exciting new features for you! Stay tuned!
+
+## 11.5
+Exciting news! It's possible to generate every variation combinations from your attributes. Please try it out and share your feedback!
+
 ## 11.4
 We focused on some stability and performance issues to make your experience smoother. Please keep sharing feedback. We read every one of them.
 

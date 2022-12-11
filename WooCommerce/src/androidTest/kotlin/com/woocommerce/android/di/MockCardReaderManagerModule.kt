@@ -63,6 +63,7 @@ class MockCardReaderManagerModule {
             get() = emptyFlow()
 
         override fun initialize(updateFrequency: CardReaderManager.SimulatorUpdateFrequency) {}
+        override fun initializeOnUpdateFrequencyChange(updateFrequency: CardReaderManager.SimulatorUpdateFrequency) {}
 
         override fun discoverReaders(
             isSimulated: Boolean,

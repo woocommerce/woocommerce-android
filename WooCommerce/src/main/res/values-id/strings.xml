@@ -1,11 +1,70 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2022-11-24 09:54:22+0000
+Translation-Revision-Date: 2022-12-05 19:54:06+0000
 Plural-Forms: nplurals=2; plural=n > 1;
 Generator: GlotPress/2.4.0-alpha
 Language: id
 -->
 <resources>
+    <string name="store_creation_ecommerce_plan_period_two_years">2 tahun</string>
+    <string name="store_creation_ecommerce_store_loading_permanent_error">Terjadi kesalahan selama instalasi toko…</string>
+    <string name="variations_bulk_creation_no_candidates_message">Semua variasi telah dibuat.</string>
+    <string name="variations_bulk_creation_no_candidates_title">Tidak ada variasi yang bisa dibuat</string>
+    <string name="product_list_multiselect">Pilih beberapa sekaligus</string>
+    <string name="store_creation_ecommerce_store_loading_error">Toko baru tidak dapat dimuat. Harap tunggu lalu coba lagi…</string>
+    <string name="store_creation_ecommerce_plan_purchase_error">Pembelian tidak dapat diselesaikan…</string>
+    <string name="store_creation_domain_picker_suggestions_error">Saran domain tidak dapat dimuat</string>
+    <string name="store_creation_domain_picker_empty_suggestions">Tidak ada domain tersedia untuk pencarian ini</string>
+    <string name="variations_bulk_creation_progress_title">Membuat variasi</string>
+    <string name="variations_bulk_creation_confirmation_message">Ini akan membuat variasi baru untuk setiap kemungkinan kombinasi atribut variasi (%1$d variasi).</string>
+    <string name="variations_bulk_creation_confirmation_title">Buat semua variasi?</string>
+    <string name="variations_bulk_creation_warning_message">Saat ini, pembuatan mendukung maksimal %1$d variasi. Pembuatan variasi untuk produk ini akan membuat %2$d variasi.</string>
+    <string name="variations_bulk_creation_warning_title">Melebihi batas pembuatan</string>
+    <string name="variation_add_all_description">Membuat variasi untuk semua kombinasi atribut Anda.</string>
+    <string name="variation_add_all">Buat semua variasi</string>
+    <string name="variation_add_new_description">Buat satu variasi baru. Menetapkan atribut yang termasuk dalam produk variabel secara manual.</string>
+    <string name="variation_add_new">Tambah variasi baru</string>
+    <string name="variation_list_add">Tambah variasi</string>
+    <string name="login_jetpack_installation_exit_without_connection">Keluar Tanpa Menyambungkan</string>
+    <string name="login_jetpack_installation_continue_connection">Lanjutkan penyambungan</string>
+    <string name="login_jetpack_installation_connection_dismissed_explanation">Coba sambungkan lagi untuk mengakses toko Anda.</string>
+    <string name="login_jetpack_installation_connection_dismissed">Jetpack sudah terinstal tetapi belum tersambung.</string>
+    <string name="login_jetpack_installation_error_connection_permission_message">Anda tidak memiliki izin untuk menyambungkan ke Jetpack di toko ini</string>
+    <string name="login_jetpack_installation_error_forbidden_suggestion">Hubungi manajer atau administrator toko Anda untuk mendapatkan bantuan.</string>
+    <string name="login_jetpack_installation_cancel">Batalkan instalasi</string>
+    <string name="login_jetpack_installation_retry_authorizing">Coba beri izin lagi</string>
+    <string name="login_jetpack_installation_retry_activating">Coba aktifkan ulang</string>
+    <string name="login_jetpack_installation_retry_installing">Coba instal ulang</string>
+    <string name="login_jetpack_installation_get_support">Dapatkan dukungan</string>
+    <string name="login_jetpack_installation_retry_or_contact_support">Harap coba lagi dan hubungi dukungan jika error ini berlanjut.</string>
+    <string name="login_jetpack_installation_error_generic_message">Terjadi error saat berkomunikasi dengan situs Anda.</string>
+    <string name="login_jetpack_installation_error_plugin_permission_message">Anda tidak memiliki izin untuk mengelola plugin di toko ini</string>
+    <string name="login_jetpack_installation_error_authorizing">Terjadi error saat memberi izin penyambungan ke Jetpack</string>
+    <string name="login_jetpack_installation_error_activating">Terjadi error saat mengaktifkan Jetpack</string>
+    <string name="login_jetpack_installation_error_installing">Terjadi error saat menginstal Jetpack</string>
+    <string name="login_jetpack_installation_approve_connection">Sambungkan ke Jetpack</string>
+    <string name="login_jetpack_installation_go_to_store_button">Kunjungi toko</string>
+    <string name="login_jetpack_installation_error">Error</string>
+    <string name="login_jetpack_installation_error_code_template">Kode error %1$s</string>
+    <string name="login_jetpack_steps_screen_subtitle_done">Sekarang toko &lt;b&gt;%1$s&lt;/b&gt; Anda tersambung ke Jetpack.</string>
+    <string name="login_jetpack_steps_screen_subtitle">Harap tunggu sembari kami menyambungkan toko &lt;b&gt;%1$s&lt;/b&gt; Anda dengan Jetpack.</string>
+    <string name="login_jetpack_installation_steps_screen_title_done">Jetpack Terinstal</string>
+    <string name="login_jetpack_connection_steps_screen_title_done">Jetpack Tersambung</string>
+    <string name="login_jetpack_connection_steps_screen_title">Menyambungkan Jetpack</string>
+    <string name="login_jetpack_installation_steps_screen_title">Menginstal Jetpack</string>
+    <string name="login_jetpack_steps_done">Semua selesai</string>
+    <string name="login_jetpack_steps_authorizing_done">Tersambung</string>
+    <string name="login_jetpack_steps_authorizing_validation">Memvalidasi</string>
+    <string name="login_jetpack_steps_authorizing">Sambungkan toko ke Jetpack</string>
+    <string name="login_jetpack_steps_activating">Mengaktifkan</string>
+    <string name="login_jetpack_steps_installing">Menginstal Jetpack</string>
+    <string name="login_jetpack_connection_enter_site_credentials">Login ke &lt;b&gt;%1$s&lt;/b&gt; dengan kredensial toko Anda untuk menyambungkan Jetpack.</string>
+    <string name="login_jetpack_installation_enter_site_credentials">Login ke &lt;b&gt;%1$s&lt;/b&gt; dengan kredensial toko Anda untuk menginstal Jetpack.</string>
+    <string name="login_jetpack_installation_credentials_hint">Siapkan kredensial toko Anda.</string>
+    <string name="login_jetpack_connection_explanation">Sambungkan toko Anda ke Jetpack untuk mengaksesnya di aplikasi ini.</string>
+    <string name="login_jetpack_installation_explanation">Instal plugin Jetpack gratis untuk mengakses toko Anda di aplikasi ini.</string>
+    <string name="login_no_stores_subtitle">Bangun dan jual produk dengan cepat menggunakan toko online yang menawan.</string>
+    <string name="login_no_stores_header">Buat toko pertama Anda</string>
     <string name="store_creation_store_name_hint">Nama toko</string>
     <string name="store_creation_store_name_subtitle">Jangan khawatir, Anda bebas mengubahnya di lain waktu. </string>
     <string name="store_creation_store_name_title">Apa nama toko Anda?</string>
@@ -36,12 +95,9 @@ Language: id
     <string name="always_update_reader">Selalu</string>
     <string name="update_simulated_reader_key">Perbarui Kunci Pembaca Simulasi</string>
     <string name="update_simulated_reader">Perbarui Pembaca Kartu Simulasi</string>
-    <string name="variation_list_generate_all_variations">Buat semua variasi</string>
     <string name="login_jetpack_connect">Sambungkan ke Jetpack</string>
-    <string name="login_jetpack_installation_credentials_hint">Anda memerlukan kredensial toko untuk memulai instalasi.</string>
     <string name="login_jetpack_installation_screen_title">Hubungkan Toko</string>
     <string name="store_creation_domain_picker_suggestions_title">Saran</string>
-    <string name="store_creation_domain_picker_skip_button">Lewati</string>
     <string name="store_creation_domain_picker_hint">Ketik domain</string>
     <string name="store_creation_domain_picker_subtitle">Di sinilah orang akan menemukan Anda di Internet. Jangan khawatir! Anda dapat mengubahnya kembali.</string>
     <string name="store_creation_domain_picker_title">Pilih domain</string>
@@ -70,7 +126,6 @@ Language: id
     <string name="site_picker_connect_existing_store">Sambungkan toko yang sudah ada</string>
     <string name="site_picker_create_new_store">Buat toko baru</string>
     <string name="login_site_picker_add_a_store">Tambahkan Toko</string>
-    <string name="login_no_stores_header">Akun Anda tidak terhubung ke toko WooCommerce mana pun.</string>
     <string name="analytics_products_list_item_description">Penjualan bersih: %1$s</string>
     <string name="analytics_products_list_header_subtitle">Item terjual</string>
     <string name="analytics_products_list_header_title">Produk</string>
@@ -1057,7 +1112,7 @@ Language: id
     <string name="shipping_label_payments_cant_edit_warning">Hanya pemilik situs yang dapat mengelola metode pembayaran label pengiriman. Silakan hubungi Pemilik Toko %1$s (%2$s) untuk mengelola metode pembayaran.</string>
     <string name="product_detail_add_variations">Tambah variasi</string>
     <string name="product_variant_list_empty_action">Tambahkan Variasi</string>
-    <string name="product_variant_list_add_first_variation">Tambahkan variasi pertama Anda</string>
+    <string name="product_variant_list_add_first_variation">Buat variasi pertama Anda</string>
     <string name="shipping_label_selected_rates_total_description">Total %s</string>
     <string name="shipping_label_selected_rates_description">%s tarif dipilih</string>
     <string name="shipping_label_rate_included_options_signature_required_free">Memenuhi syarat untuk diproses tanpa tanda tangan</string>
