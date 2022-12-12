@@ -5,10 +5,6 @@
 
 11.6
 -----
-
-
-11.6
------
 - [*][Internal] Disconnect from a reader if a user clicks on "cancel" during connection flow
 - [*][Internal] Integrate changes from FluxC to check for Application Passwords support and collect metrics [https://github.com/woocommerce/woocommerce-android/pull/7989]
 - [*] Clear button is visible on the products filter screen [https://github.com/woocommerce/woocommerce-android/pull/7998]
