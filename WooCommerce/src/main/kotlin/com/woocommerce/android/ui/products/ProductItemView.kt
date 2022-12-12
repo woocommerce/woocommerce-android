@@ -38,7 +38,6 @@ class ProductItemView @JvmOverloads constructor(
     private val bullet = "\u2022"
     private val statusColor = ContextCompat.getColor(context, R.color.product_status_fg_other)
     private val statusPendingColor = ContextCompat.getColor(context, R.color.product_status_fg_pending)
-    private val selectedBackgroundColor = ContextCompat.getColor(context, R.color.color_primary)
     private val unSelectedBackgroundColor = ContextCompat.getColor(context, R.color.color_on_primary_high)
 
     fun bind(
@@ -108,11 +107,6 @@ class ProductItemView @JvmOverloads constructor(
     ) {
         val size: Int
         when {
-            isActivated -> {
-                size = imageSize / 2
-                binding.productImage.setImageResource(R.drawable.ic_menu_action_mode_check)
-                binding.productImageFrame.setBackgroundColor(selectedBackgroundColor)
-            }
             imageUrl.isNullOrEmpty() -> {
                 size = imageSize / 2
                 binding.productImageFrame.setBackgroundColor(unSelectedBackgroundColor)
@@ -128,7 +122,7 @@ class ProductItemView @JvmOverloads constructor(
                     .into(binding.productImage)
             }
         }
-
+        binding.productImageSelected.visibility = if(isActivated) View.VISIBLE else View.GONE
         binding.productImage.layoutParams.apply {
             height = size
             width = size

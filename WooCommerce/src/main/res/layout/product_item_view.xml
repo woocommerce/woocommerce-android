@@ -28,6 +28,18 @@
             android:importantForAccessibility="no"
             android:scaleType="centerCrop"
             tools:src="@drawable/ic_product" />
+
+        <ImageView
+            android:id="@+id/productImageSelected"
+            android:layout_width="@dimen/image_minor_100"
+            android:layout_height="@dimen/image_minor_100"
+            android:layout_gravity="center"
+            android:background="@color/color_primary"
+            android:importantForAccessibility="no"
+            android:scaleType="centerCrop"
+            android:padding="@dimen/minor_100"
+            android:alpha="@dimen/alpha_emphasis_high"
+            android:src="@drawable/ic_menu_action_mode_check" />
     </FrameLayout>
 
     <!--
