@@ -156,6 +156,7 @@ class ProductListFragment :
     }
 
     private fun addSelectionTracker() {
+        if (!FeatureFlag.PRODUCTS_BULK_EDITING.isEnabled()) return
         tracker = SelectionTracker.Builder(
             "productSelection", // a string to identity our selection in the context of this fragment
             binding.productsRecycler, // the RecyclerView where we will apply the tracker
