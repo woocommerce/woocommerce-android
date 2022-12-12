@@ -1,14 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2022-11-29 14:54:03+0000
+Translation-Revision-Date: 2022-12-06 16:54:03+0000
 Plural-Forms: nplurals=2; plural=(n > 1);
 Generator: GlotPress/2.4.0-alpha
 Language: pt_BR
 -->
 <resources>
+    <string name="store_creation_ecommerce_plan_period_two_years">2 anos</string>
+    <string name="store_creation_ecommerce_store_loading_permanent_error">Ocorreu um erro durante a instalação da loja…</string>
+    <string name="variations_bulk_creation_no_candidates_message">Todas as variações já foram geradas.</string>
+    <string name="variations_bulk_creation_no_candidates_title">Nenhuma variação a ser gerada</string>
+    <string name="product_list_multiselect">Selecionar várias</string>
     <string name="store_creation_ecommerce_store_loading_error">Não foi possível carregar sua loja nova. Aguarde um momento e tente novamente…</string>
     <string name="store_creation_ecommerce_plan_purchase_error">Não foi possível concluir a compra…</string>
-    <string name="store_creation_ecommerce_site_creation_error">Não foi possível criar um novo site…</string>
     <string name="store_creation_domain_picker_suggestions_error">Não foi possível carregar sugestões de domínio</string>
     <string name="store_creation_domain_picker_empty_suggestions">Nenhum domínio disponível para esta pesquisa</string>
     <string name="variations_bulk_creation_progress_title">Gerando variações</string>
@@ -17,6 +21,7 @@ Language: pt_BR
     <string name="variations_bulk_creation_warning_message">Atualmente, a criação é compatível com, no máximo, %1$d variações. Gerar variações para este produto criaria %2$d variações.</string>
     <string name="variations_bulk_creation_warning_title">Limite de geração excedido</string>
     <string name="variation_add_all_description">Cria variações para todas as combinações de seus atributos.</string>
+    <string name="variation_add_all">Gerar todas as variações</string>
     <string name="variation_add_new_description">Crie uma nova variação. Defina manualmente quais atributos pertencem ao produto variável.</string>
     <string name="variation_add_new">Adicionar nova variação</string>
     <string name="variation_list_add">Adicionar variação</string>

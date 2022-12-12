@@ -2,6 +2,7 @@ package com.woocommerce.android.ui.prefs
 
 import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.R
+import com.woocommerce.android.cardreader.CardReaderManager
 import com.woocommerce.android.model.UiString
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -17,6 +18,7 @@ class DeveloperOptionsTest : BaseUnitTest() {
 
     private val savedStateHandle: SavedStateHandle = SavedStateHandle()
     private val developerOptionsRepository: DeveloperOptionsRepository = mock()
+    private val cardReaderManager: CardReaderManager = mock()
 
     @Before
     fun setup() {
@@ -105,7 +107,8 @@ class DeveloperOptionsTest : BaseUnitTest() {
     private fun initViewModel() {
         viewModel = DeveloperOptionsViewModel(
             savedStateHandle,
-            developerOptionsRepository
+            developerOptionsRepository,
+            cardReaderManager,
         )
     }
 }

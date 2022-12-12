@@ -1,14 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2022-11-29 10:54:05+0000
+Translation-Revision-Date: 2022-12-06 11:54:03+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: zh_CN
 -->
 <resources>
+    <string name="store_creation_ecommerce_plan_period_two_years">2 年</string>
+    <string name="store_creation_ecommerce_store_loading_permanent_error">商店安装时出错了…</string>
+    <string name="variations_bulk_creation_no_candidates_message">所有变体都已生成。</string>
+    <string name="variations_bulk_creation_no_candidates_title">没有要生成的变体</string>
+    <string name="product_list_multiselect">选择多项</string>
     <string name="store_creation_ecommerce_store_loading_error">无法加载您的商店。 请稍后重试…</string>
     <string name="store_creation_ecommerce_plan_purchase_error">无法完成购买…</string>
-    <string name="store_creation_ecommerce_site_creation_error">无法创建新的站点…</string>
     <string name="store_creation_domain_picker_suggestions_error">无法加载域名建议</string>
     <string name="store_creation_domain_picker_empty_suggestions">没有搜索到可用的域名</string>
     <string name="variations_bulk_creation_progress_title">正在生成变体</string>
@@ -17,6 +21,7 @@ Language: zh_CN
     <string name="variations_bulk_creation_warning_message">目前最多支持创建 %1$d 个变体。 为此产品生成变体会创建 %2$d 个变体。</string>
     <string name="variations_bulk_creation_warning_title">超出了生成限制</string>
     <string name="variation_add_all_description">为属性的所有组合创建变体。</string>
+    <string name="variation_add_all">生成所有变体</string>
     <string name="variation_add_new_description">创建一个新变体。 手动设置属于可变产品的属性。</string>
     <string name="variation_add_new">添加新变体</string>
     <string name="variation_list_add">添加变体</string>
