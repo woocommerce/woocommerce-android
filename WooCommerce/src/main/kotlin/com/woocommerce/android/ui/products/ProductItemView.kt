@@ -122,7 +122,7 @@ class ProductItemView @JvmOverloads constructor(
                     .into(binding.productImage)
             }
         }
-        binding.productImageSelected.visibility = if(isActivated) View.VISIBLE else View.GONE
+        binding.productImageSelected.visibility = if (isActivated) View.VISIBLE else View.GONE
         binding.productImage.layoutParams.apply {
             height = size
             width = size
