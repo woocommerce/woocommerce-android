@@ -2,10 +2,11 @@
 11.7
 -----
 - [**] Adds a feature of bulk updating products from the product's list. [https://github.com/woocommerce/woocommerce-android/pull/8020]
+- [*][Internal] Disconnect from a reader if a user clicks on "cancel" during connection flow [https://github.com/woocommerce/woocommerce-android/pull/7995]
+- [*] Fix for the create a new order button jerky animation [https://github.com/woocommerce/woocommerce-android/pull/7987]
 
 11.6
 -----
-- [*][Internal] Disconnect from a reader if a user clicks on "cancel" during connection flow
 - [*][Internal] Integrate changes from FluxC to check for Application Passwords support and collect metrics [https://github.com/woocommerce/woocommerce-android/pull/7989]
 - [*] Clear button is visible on the products filter screen [https://github.com/woocommerce/woocommerce-android/pull/7998]
 - [*] Fix for the broken card reader manuals links [https://github.com/woocommerce/woocommerce-android/pull/8002]
