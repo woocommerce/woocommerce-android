@@ -64,17 +64,21 @@ import com.woocommerce.android.ui.login.storecreation.domainpicker.DomainPickerV
 @Composable
 fun DomainPickerScreen(viewModel: DomainPickerViewModel) {
     viewModel.viewState.observeAsState(DomainPickerState()).value.let { viewState ->
-        Scaffold(topBar = {
-            Toolbar(
-                onArrowBackPressed = viewModel::onBackPressed,
-            )
-        }) {
+        Scaffold(
+            topBar = {
+                Toolbar(
+                    onArrowBackPressed = viewModel::onBackPressed,
+                )
+            },
+            modifier = Modifier
+                .padding(dimensionResource(id = R.dimen.major_125))
+        ) { padding ->
             DomainSearchForm(
                 state = viewState,
                 onDomainQueryChanged = viewModel::onDomainChanged,
                 onDomainSuggestionSelected = viewModel::onDomainSuggestionSelected,
                 onContinueClicked = viewModel::onContinueClicked,
-                modifier = Modifier.fillMaxSize()
+                modifier = Modifier.fillMaxSize().padding(padding)
             )
         }
     }
@@ -107,15 +111,14 @@ private fun DomainSearchForm(
     onDomainQueryChanged: (String) -> Unit,
     onDomainSuggestionSelected: (String) -> Unit,
     onContinueClicked: () -> Unit,
-    modifier: Modifier = Modifier,
+    modifier: Modifier = Modifier
 ) {
     val keyboardController = LocalSoftwareKeyboardController.current
 
     Column(
         modifier = modifier
             .background(MaterialTheme.colors.surface)
-            .fillMaxSize()
-            .padding(dimensionResource(id = R.dimen.major_125)),
+            .fillMaxSize(),
         verticalArrangement = Arrangement.spacedBy(dimensionResource(id = R.dimen.major_100)),
     ) {
         Text(
@@ -232,10 +235,12 @@ private fun DomainSuggestionItem(
             bottom = dimensionResource(id = R.dimen.major_75)
         )
     ) {
+        val surfaceOnMediumColor = colorResource(id = R.color.color_on_surface_medium_selector)
+        val surfaceOnHighColor = colorResource(id = R.color.color_on_surface_high)
         Text(
             text = buildAnnotatedString {
                 withStyle(style = MaterialTheme.typography.body2.toParagraphStyle()) {
-                    withStyle(style = SpanStyle(color = colorResource(id = R.color.color_on_surface_medium_selector))) {
+                    withStyle(style = SpanStyle(color = surfaceOnMediumColor)) {
                         append(domainSuggestion.domain.substringBefore("."))
                     }
                     if (domainSuggestion.isSelected) {
@@ -243,7 +248,7 @@ private fun DomainSuggestionItem(
                             append(".${domainSuggestion.domain.substringAfter(delimiter = ".")}")
                         }
                     } else {
-                        withStyle(style = SpanStyle(color = colorResource(id = R.color.color_on_surface_high))) {
+                        withStyle(style = SpanStyle(color = surfaceOnHighColor)) {
                             append(".${domainSuggestion.domain.substringAfter(delimiter = ".")}")
                         }
                     }

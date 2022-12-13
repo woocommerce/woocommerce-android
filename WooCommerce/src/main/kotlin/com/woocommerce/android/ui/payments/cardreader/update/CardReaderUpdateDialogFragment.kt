@@ -34,6 +34,7 @@ class CardReaderUpdateDialogFragment : DialogFragment(R.layout.card_reader_updat
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
         return object : Dialog(requireContext(), theme) {
+            @Deprecated("This method will be removed in a future release")
             override fun onBackPressed() {
                 viewModel.onBackPressed()
             }

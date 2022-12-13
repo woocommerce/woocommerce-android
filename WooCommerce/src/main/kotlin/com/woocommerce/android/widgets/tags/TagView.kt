@@ -18,6 +18,7 @@ import com.woocommerce.android.util.getDensityPixel
  * @attr ref com.woocommerce.android.R.styleable#tagColor
  * @attr ref com.woocommerce.android.R.styleable#tagBorderColor
  */
+@Suppress("DEPRECATION")
 class TagView @JvmOverloads constructor(
     ctx: Context,
     attrs: AttributeSet? = null,

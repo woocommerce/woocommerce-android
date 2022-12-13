@@ -6,6 +6,7 @@ import androidx.annotation.StyleRes
 import com.google.android.material.textview.MaterialTextView
 import com.woocommerce.android.R
 
+@Suppress("DEPRECATION")
 class WCSettingsCategoryHeaderView @JvmOverloads constructor(
     ctx: Context,
     attrs: AttributeSet? = null,

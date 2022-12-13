@@ -35,6 +35,7 @@ class SimplePaymentsDialog : DialogFragment(R.layout.dialog_simple_payments) {
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
         return object : Dialog(requireContext(), theme) {
+            @Deprecated("This method will be removed in a future release")
             override fun onBackPressed() {
                 cancelDialog()
             }

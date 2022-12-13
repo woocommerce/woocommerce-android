@@ -51,6 +51,7 @@ class CardReaderPaymentDialogFragment : DialogFragment(R.layout.card_reader_paym
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
         viewModel.onViewCreated()
         return object : Dialog(requireContext(), theme) {
+            @Deprecated("This method will be removed in a future release")
             override fun onBackPressed() {
                 viewModel.onBackPressed()
             }
