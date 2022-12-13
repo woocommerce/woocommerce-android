@@ -1,14 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2022-11-29 12:54:03+0000
+Translation-Revision-Date: 2022-12-06 11:54:03+0000
 Plural-Forms: nplurals=2; plural=n > 1;
 Generator: GlotPress/2.4.0-alpha
 Language: fr
 -->
 <resources>
+    <string name="store_creation_ecommerce_plan_period_two_years">2 ans</string>
+    <string name="store_creation_ecommerce_store_loading_permanent_error">Un problème est survenu lors de l’installation de la boutique…</string>
+    <string name="variations_bulk_creation_no_candidates_message">Toutes les variantes ont déjà été créées.</string>
+    <string name="variations_bulk_creation_no_candidates_title">Aucune variante à créer</string>
+    <string name="product_list_multiselect">Sélectionner plusieurs</string>
     <string name="store_creation_ecommerce_store_loading_error">Impossible de charger votre nouvelle boutique. Veuillez patienter et réessayer…</string>
     <string name="store_creation_ecommerce_plan_purchase_error">Impossible de finaliser l’achat.</string>
-    <string name="store_creation_ecommerce_site_creation_error">Impossible de créer un nouveau site…</string>
     <string name="store_creation_domain_picker_suggestions_error">Impossible de charger les suggestions de domaine</string>
     <string name="store_creation_domain_picker_empty_suggestions">Aucun domaine disponible pour cette recherche</string>
     <string name="variations_bulk_creation_progress_title">Génération des variantes</string>
@@ -17,6 +21,7 @@ Language: fr
     <string name="variations_bulk_creation_warning_message">Actuellement, la création est disponible pour %1$d variantes maximum. Générer des variantes pour ce produit créerait %2$d variantes.</string>
     <string name="variations_bulk_creation_warning_title">Limite de génération dépassée</string>
     <string name="variation_add_all_description">Crée des variantes pour toutes les combinaisons de vos attributs.</string>
+    <string name="variation_add_all">Générer toutes les variantes</string>
     <string name="variation_add_new_description">Créez une nouvelle variante. Définissez manuellement quels attributs appartiennent au produit variable.</string>
     <string name="variation_add_new">Ajouter une nouvelle variante</string>
     <string name="variation_list_add">Ajouter une variante</string>

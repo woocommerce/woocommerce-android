@@ -1,14 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2022-12-01 17:29:22+0000
+Translation-Revision-Date: 2022-12-06 14:54:04+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: nl
 -->
 <resources>
+    <string name="store_creation_ecommerce_plan_period_two_years">2 jaar</string>
+    <string name="store_creation_ecommerce_store_loading_permanent_error">Er is iets fout gegaan tijdens de installatie van je winkel…</string>
+    <string name="variations_bulk_creation_no_candidates_message">Alle variaties zijn al gegenereerd.</string>
+    <string name="variations_bulk_creation_no_candidates_title">Geen variaties om te genereren</string>
+    <string name="product_list_multiselect">Selecteer meerdere</string>
     <string name="store_creation_ecommerce_store_loading_error">Kon je nieuwe winkel niet laden. Wacht even en probeer het opnieuw…</string>
     <string name="store_creation_ecommerce_plan_purchase_error">Kon de aankoop niet voltooien…</string>
-    <string name="store_creation_ecommerce_site_creation_error">Kon geen nieuwe site aanmaken…</string>
     <string name="store_creation_domain_picker_suggestions_error">Kon domeinsuggesties niet laden</string>
     <string name="store_creation_domain_picker_empty_suggestions">Geen beschikbare domeinen voor deze zoekopdracht</string>
     <string name="variations_bulk_creation_progress_title">Variaties aan het genereren</string>
@@ -17,6 +21,7 @@ Language: nl
     <string name="variations_bulk_creation_warning_message">Aanmaken wordt momenteel ondersteund voor maximaal %1$d variaties. Het genereren van variaties voor dit product leidt tot het aanmaken van %2$d variaties.</string>
     <string name="variations_bulk_creation_warning_title">Generatielimiet overschreden</string>
     <string name="variation_add_all_description">Maakt variaties aan voor alle combinaties van je eigenschappen.</string>
+    <string name="variation_add_all">Alle variaties genereren</string>
     <string name="variation_add_new_description">Eén nieuwe variatie aanmaken. Handmatig instellen welke eigenschappen bij het variabele product horen.</string>
     <string name="variation_add_new">Nieuwe variatie toevoegen</string>
     <string name="variation_list_add">Variatie toevoegen</string>

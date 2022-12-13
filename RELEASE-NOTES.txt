@@ -1,7 +1,14 @@
 *** PLEASE FOLLOW THIS FORMAT: [<priority indicator, more stars = higher priority>] <description> [<PR URL>]
+11.7
+-----
+- [*][Internal] Disconnect from a reader if a user clicks on "cancel" during connection flow [https://github.com/woocommerce/woocommerce-android/pull/7995]
+
 11.6
 -----
 - [*] Fix for the new order and new order button laggy animation
+- [*][Internal] Integrate changes from FluxC to check for Application Passwords support and collect metrics [https://github.com/woocommerce/woocommerce-android/pull/7989]
+- [*] Clear button is visible on the products filter screen [https://github.com/woocommerce/woocommerce-android/pull/7998]
+- [*] Fix for the broken card reader manuals links [https://github.com/woocommerce/woocommerce-android/pull/8002]
 
 11.5
 -----
@@ -10,6 +17,7 @@
 
 11.4
 -----
+- [**] [Internal] Store creation flow was improved with native implementation. It is available from the login prologue (`Get Started` CTA), login email error screen, and store picker (`Add a store` CTA from the empty stores screen or at the bottom of the store list). [Example testing steps in https://github.com/woocommerce/woocommerce-android/pull/7947]
 - [*] [Internal] JITM: Make an api call to fetch JITMs on pull to refresh in the MyStore screen [https://github.com/woocommerce/woocommerce-android/pull/7938]
 - [*] [Internal] Add support for installing and connecting Jetpack natively, still behind an AB test [https://github.com/woocommerce/woocommerce-android/pull/7889]
 
