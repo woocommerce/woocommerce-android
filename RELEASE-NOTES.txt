@@ -2,6 +2,7 @@
 11.7
 -----
 - [*][Internal] Disconnect from a reader if a user clicks on "cancel" during connection flow [https://github.com/woocommerce/woocommerce-android/pull/7995]
+- [*] Fix for the create a new order button jerky animation [https://github.com/woocommerce/woocommerce-android/pull/7987]
 
 11.6
 -----
