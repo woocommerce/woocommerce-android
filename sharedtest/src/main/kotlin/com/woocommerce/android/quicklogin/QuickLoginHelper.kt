@@ -3,13 +3,19 @@ package com.woocommerce.android.quicklogin
 import android.content.ClipboardManager
 import android.content.Context
 import android.content.Intent
+import android.os.Build
+import android.util.Log
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.uiautomator.By
 import androidx.test.uiautomator.Direction.DOWN
 import androidx.test.uiautomator.UiDevice
+import androidx.test.uiautomator.UiObject
 import androidx.test.uiautomator.UiObject2
+import androidx.test.uiautomator.UiObjectNotFoundException
+import androidx.test.uiautomator.UiSelector
 import androidx.test.uiautomator.Until
+
 
 private const val SHORT_TIMEOUT = 2000L
 private const val TIMEOUT = 5000L
@@ -29,6 +35,7 @@ class QuickLoginHelper(private val packageName: String) {
         webSite: String,
     ) {
         startTheApp()
+        skipPrologue()
         chooseWpComLogin()
         enterEmail(email)
         enterPassword(password)
@@ -36,13 +43,26 @@ class QuickLoginHelper(private val packageName: String) {
         selectSiteIfProvided(webSite)
     }
 
+    fun allowPermissionsIfNeeded() {
+        if (Build.VERSION.SDK_INT >= 23) {
+            val allowPermissions: UiObject = device.findObject(UiSelector().text("Allow"))
+            if (allowPermissions.exists()) {
+                try {
+                    allowPermissions.click()
+                } catch (e: UiObjectNotFoundException) {
+                    Log.i("Macrobenchmark","There is no permissions dialog to interact with", e)
+                }
+            }
+        }
+    }
+
     fun isLoggedIn(): Boolean {
         startTheApp()
 
-        val loginWithWpButton = device
-            .wait(Until.findObject(By.res(packageName, "button_login_wpcom")), TIMEOUT)
+        val skipButton = device
+            .wait(Until.findObject(By.res(packageName, "button_skip")), TIMEOUT)
 
-        return loginWithWpButton == null
+        return skipButton == null
     }
 
     private fun startTheApp() {
@@ -58,6 +78,13 @@ class QuickLoginHelper(private val packageName: String) {
             Until.hasObject(By.pkg(packageName).depth(0)),
             TIMEOUT
         )
+    }
+
+    private fun skipPrologue() {
+        val skipButton = device
+            .wait(Until.findObject(By.res(packageName, "button_skip")), TIMEOUT)
+
+        skipButton.click()
     }
 
     private fun chooseWpComLogin() {
