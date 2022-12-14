@@ -45,6 +45,9 @@ class SwipeToComplete(
         color = Color.WHITE
         textSize = messageSize
     }
+    private val nonSwipeAbleBackgroundPaint = Paint().apply { color = noSwipeAbleColor }
+    private val swipeAbleBackgroundPaint = Paint().apply { color = swipeAbleColor }
+
     private val margin = context.resources.getDimension(R.dimen.major_100).toInt()
 
     override fun onMove(
@@ -117,7 +120,13 @@ class SwipeToComplete(
     ) {
         val maxDX = (width * NO_SWIPE_ABLE_SCREEN_PERCENT).toFloat()
         val shrinkDX = if (dX > 0) dX.coerceAtMost(maxDX) else dX.coerceAtLeast(-maxDX)
-        canvas.drawColor(noSwipeAbleColor)
+        val background = Rect(
+            viewHolder.itemView.left,
+            viewHolder.itemView.top,
+            viewHolder.itemView.right,
+            viewHolder.itemView.bottom
+        )
+        canvas.drawRect(background, nonSwipeAbleBackgroundPaint)
         super.onChildDraw(canvas, recyclerView, viewHolder, shrinkDX, dY, actionState, isCurrentlyActive)
     }
 
@@ -132,7 +141,13 @@ class SwipeToComplete(
         isCurrentlyActive: Boolean
     ) {
         // Draw background
-        canvas.drawColor(swipeAbleColor)
+        val background = Rect(
+            viewHolder.itemView.left,
+            viewHolder.itemView.top,
+            viewHolder.itemView.right,
+            viewHolder.itemView.bottom
+        )
+        canvas.drawRect(background, swipeAbleBackgroundPaint)
         val isSwipingRight = dX > 0
 
         // Select the longest line to measure the text width
