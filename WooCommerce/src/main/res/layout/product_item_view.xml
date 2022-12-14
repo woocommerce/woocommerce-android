@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/linearLayout"
@@ -13,34 +12,33 @@
         android:layout_height="@dimen/image_minor_100"
         android:layout_margin="@dimen/major_100"
         android:background="@drawable/picture_frame"
-        android:padding="1dp"
-        app:layout_constraintVertical_bias="0.50"
+        android:padding="@dimen/image_frame_stroke_width"
         app:layout_constraintBottom_toTopOf="@+id/divider"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.50">
 
         <ImageView
             android:id="@+id/productImage"
             android:layout_width="@dimen/image_minor_100"
             android:layout_height="@dimen/image_minor_100"
             android:layout_gravity="center"
-            android:background="@drawable/picture_corners"
             android:importantForAccessibility="no"
-            android:scaleType="centerCrop"
+            android:padding="@dimen/image_frame_stroke_width"
             tools:src="@drawable/ic_product" />
-
-        <ImageView
-            android:id="@+id/productImageSelected"
-            android:layout_width="@dimen/image_minor_100"
-            android:layout_height="@dimen/image_minor_100"
-            android:layout_gravity="center"
-            android:background="@color/color_primary"
-            android:importantForAccessibility="no"
-            android:scaleType="centerCrop"
-            android:padding="@dimen/minor_100"
-            android:alpha="@dimen/alpha_emphasis_high"
-            android:src="@drawable/ic_menu_action_mode_check" />
     </FrameLayout>
+
+    <ImageView
+        android:id="@+id/productImageSelected"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:alpha="@dimen/alpha_emphasis_high"
+        android:importantForAccessibility="no"
+        android:src="@drawable/product_selected_overlay"
+        app:layout_constraintTop_toTopOf="@+id/productImageFrame"
+        app:layout_constraintStart_toStartOf="@+id/productImageFrame"
+        app:layout_constraintEnd_toEndOf="@+id/productImageFrame"
+        app:layout_constraintBottom_toBottomOf="@+id/productImageFrame"/>
 
     <!--
         LinearLayout is necessary to ensure the contents will always center properly in the
@@ -91,14 +89,14 @@
     <ImageButton
         android:id="@+id/product_btnDelete"
         style="@style/Woo.ImageButton.Close"
+        android:layout_margin="@dimen/minor_100"
         android:contentDescription="@string/grouped_product_btn_delete"
         android:scaleType="centerInside"
-        android:layout_margin="@dimen/minor_100"
+        android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        android:visibility="gone"
-        tools:visibility="visible"/>
+        tools:visibility="visible" />
 
     <View
         android:id="@+id/divider"
@@ -108,6 +106,6 @@
         android:layout_marginBottom="@dimen/minor_00"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="@+id/productInfoContainer"/>
+        app:layout_constraintStart_toStartOf="@+id/productInfoContainer" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
