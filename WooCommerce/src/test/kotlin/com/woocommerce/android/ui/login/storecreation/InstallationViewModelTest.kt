@@ -4,7 +4,6 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
-import com.woocommerce.android.ui.login.storecreation.StoreCreationErrorType.SITE_CREATION_FAILED
 import com.woocommerce.android.ui.login.storecreation.StoreCreationErrorType.STORE_LOADING_FAILED
 import com.woocommerce.android.ui.login.storecreation.StoreCreationErrorType.STORE_NOT_READY
 import com.woocommerce.android.ui.login.storecreation.StoreCreationResult.Failure
