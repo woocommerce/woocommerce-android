@@ -364,10 +364,8 @@ class AnalyticsRepository @Inject constructor(
     private fun calculateDeltaPercentage(previousVal: Double, currentVal: Double): DeltaPercentage = when {
         previousVal <= ZERO_VALUE -> DeltaPercentage.NotExist
         currentVal <= ZERO_VALUE -> DeltaPercentage.Value((MINUS_ONE * ONE_H_PERCENT))
-        else -> {
-            val rounded = round((currentVal - previousVal) / previousVal * ONE_H_PERCENT)
-            DeltaPercentage.Value(rounded.toInt())
-        }
+        else -> round((currentVal - previousVal) / previousVal * ONE_H_PERCENT)
+            .let { DeltaPercentage.Value(it.toInt()) }
     }
 
     private fun shouldUpdatePreviousStats(startDate: String, endDate: String, forceUpdate: Boolean) =
