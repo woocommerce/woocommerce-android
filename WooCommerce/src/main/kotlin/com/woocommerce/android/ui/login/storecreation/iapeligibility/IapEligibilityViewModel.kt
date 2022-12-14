@@ -20,7 +20,7 @@ class IapEligibilityViewModel @Inject constructor(
     private val planSupportChecker: PurchaseWpComPlanSupportChecker,
     private val analyticsTrackerWrapper: AnalyticsTrackerWrapper
 ) : ScopedViewModel(savedStateHandle) {
-    init {
+    fun checkIapEligibility() {
         launch {
             when (val result = planSupportChecker.isIAPSupported()) {
                 is IAPSupportedResult.Success -> onSuccess(result)

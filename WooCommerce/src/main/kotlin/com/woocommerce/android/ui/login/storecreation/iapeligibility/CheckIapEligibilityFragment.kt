@@ -71,6 +71,7 @@ class CheckIapEligibilityFragment : BaseFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         setupObservers()
+        viewModel.checkIapEligibility()
     }
 
     private fun setupObservers() {
