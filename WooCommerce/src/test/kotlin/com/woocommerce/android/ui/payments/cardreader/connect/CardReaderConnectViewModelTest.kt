@@ -1058,6 +1058,16 @@ class CardReaderConnectViewModelTest : BaseUnitTest() {
         }
 
     @Test
+    fun `given app in reader found state, when user clicks on cancel, then disconnect called`() =
+        testBlocking {
+            init(scanState = READER_FOUND)
+
+            (viewModel.viewStateData.value as ReaderFoundState).onTertiaryActionClicked.invoke()
+
+            verify(cardReaderManager).disconnectReader()
+        }
+
+    @Test
     fun `given app in connecting state, when user clicks on cancel, then flow finishes`() =
         testBlocking {
             init(scanState = READER_FOUND)
