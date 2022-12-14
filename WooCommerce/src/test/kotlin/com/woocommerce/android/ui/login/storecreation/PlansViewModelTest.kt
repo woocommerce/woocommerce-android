@@ -1,13 +1,10 @@
-package com.woocommerce.android.ui.login.storecreation.webview
+package com.woocommerce.android.ui.login.storecreation
 
 import androidx.lifecycle.Observer
 import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
-import com.woocommerce.android.ui.login.storecreation.NewStore
 import com.woocommerce.android.ui.login.storecreation.StoreCreationErrorType.SITE_ADDRESS_ALREADY_EXISTS
-import com.woocommerce.android.ui.login.storecreation.StoreCreationRepository
 import com.woocommerce.android.ui.login.storecreation.StoreCreationRepository.SiteCreationData
-import com.woocommerce.android.ui.login.storecreation.StoreCreationResult
 import com.woocommerce.android.ui.login.storecreation.plans.BillingPeriod.ECOMMERCE_MONTHLY
 import com.woocommerce.android.ui.login.storecreation.plans.PlansViewModel
 import com.woocommerce.android.ui.login.storecreation.plans.PlansViewModel.PlanInfo
@@ -40,7 +37,7 @@ class PlansViewModelTest : BaseUnitTest() {
     private val captor = argumentCaptor<ViewState>()
 
     companion object {
-        private val SITE_ID = 123L
+        private const val SITE_ID = 123L
     }
 
     private val siteData = SiteCreationData(
@@ -66,11 +63,6 @@ class PlansViewModelTest : BaseUnitTest() {
         billingPeriod = ECOMMERCE_MONTHLY,
         features = emptyList()
     )
-
-//    @Before
-//    fun setup() {
-//        reset(repository)
-//    }
 
     private fun whenViewModelIsCreated() {
         viewModel = PlansViewModel(
@@ -106,7 +98,7 @@ class PlansViewModelTest : BaseUnitTest() {
         viewModel.viewState.observeForever(observer)
         verify(observer).onChanged(captor.capture())
 
-        val observedPlan = captor.firstValue as PlanState
+        val observedPlan = captor.firstValue as? PlanState
         assertNotNull(observedPlan)
 
         assertEquals(planInfo.name, observedPlan.plan.name)
@@ -129,7 +121,7 @@ class PlansViewModelTest : BaseUnitTest() {
             viewModel.viewState.observeForever(observer)
             verify(observer).onChanged(captor.capture())
 
-            val observedState = captor.firstValue as CheckoutState
+            val observedState = captor.firstValue as? CheckoutState
             assertNotNull(observedState)
 
             assertEquals(observedState, checkoutState)
@@ -152,7 +144,7 @@ class PlansViewModelTest : BaseUnitTest() {
             viewModel.viewState.observeForever(observer)
             verify(observer).onChanged(captor.capture())
 
-            val observedState = captor.firstValue as CheckoutState
+            val observedState = captor.firstValue as? CheckoutState
             assertNotNull(observedState)
 
             assertEquals(observedState, checkoutState)
@@ -175,7 +167,7 @@ class PlansViewModelTest : BaseUnitTest() {
             viewModel.viewState.observeForever(observer)
             verify(observer).onChanged(captor.capture())
 
-            val observedState = captor.firstValue as ErrorState
+            val observedState = captor.firstValue as? ErrorState
             assertNotNull(observedState)
 
             assertEquals(observedState.errorType, SITE_ADDRESS_ALREADY_EXISTS)
