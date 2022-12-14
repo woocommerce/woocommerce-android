@@ -54,6 +54,23 @@ class MainActivityViewModel @Inject constructor(
         determineMenuBadgeState(reviewsCount)
     }.asLiveData()
 
+    fun handleShortcutAction(action: String?) {
+        when (action) {
+            SHORTCUT_PAYMENTS -> {
+                triggerEvent(ViewPayments)
+            }
+            SHORTCUT_VIEW_STORE -> {
+                triggerEvent(OpenInBrowser(selectedSite.get().url))
+            }
+            SHORTCUT_SWITCH_STORE -> {
+                triggerEvent(StartSitePicker)
+            }
+            SHORTCUT_VIEW_STORE_ADMIN -> {
+                triggerEvent(OpenInBrowser(selectedSite.get().adminUrl))
+            }
+        }
+    }
+
     fun removeOrderNotifications() {
         notificationHandler.removeNotificationsOfTypeFromSystemsBar(
             NotificationChannelType.NEW_ORDER, selectedSite.get().siteId
@@ -175,14 +192,23 @@ class MainActivityViewModel @Inject constructor(
     object ViewMyStoreStats : Event()
     object ViewZendeskTickets : Event()
     object ViewPayments : Event()
+    object StartSitePicker : Event()
     data class RestartActivityForNotification(val pushId: Int, val notification: Notification) : Event()
     data class RestartActivityForAppLink(val data: Uri) : Event()
     data class ShowFeatureAnnouncement(val announcement: FeatureAnnouncement) : Event()
     data class ViewReviewDetail(val uniqueId: Long) : Event()
     data class ViewOrderDetail(val uniqueId: Long, val remoteNoteId: Long) : Event()
+    data class OpenInBrowser(val url: String) : Event()
 
     sealed class MoreMenuBadgeState {
         data class UnseenReviews(val count: Int) : MoreMenuBadgeState()
         object Hidden : MoreMenuBadgeState()
+    }
+
+    companion object {
+        val SHORTCUT_PAYMENTS = "com.woocommerce.android.payments"
+        val SHORTCUT_VIEW_STORE = "com.woocommerce.android.viewstore"
+        val SHORTCUT_SWITCH_STORE = "com.woocommerce.android.switchstore"
+        val SHORTCUT_VIEW_STORE_ADMIN = "com.woocommerce.android.storeadmin"
     }
 }

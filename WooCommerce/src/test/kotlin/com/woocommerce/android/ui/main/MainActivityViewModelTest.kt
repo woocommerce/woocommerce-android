@@ -16,11 +16,14 @@ import com.woocommerce.android.push.WooNotificationType
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.main.MainActivityViewModel.MoreMenuBadgeState.Hidden
 import com.woocommerce.android.ui.main.MainActivityViewModel.MoreMenuBadgeState.UnseenReviews
+import com.woocommerce.android.ui.main.MainActivityViewModel.OpenInBrowser
 import com.woocommerce.android.ui.main.MainActivityViewModel.RestartActivityForNotification
 import com.woocommerce.android.ui.main.MainActivityViewModel.ShowFeatureAnnouncement
+import com.woocommerce.android.ui.main.MainActivityViewModel.StartSitePicker
 import com.woocommerce.android.ui.main.MainActivityViewModel.ViewMyStoreStats
 import com.woocommerce.android.ui.main.MainActivityViewModel.ViewOrderDetail
 import com.woocommerce.android.ui.main.MainActivityViewModel.ViewOrderList
+import com.woocommerce.android.ui.main.MainActivityViewModel.ViewPayments
 import com.woocommerce.android.ui.main.MainActivityViewModel.ViewReviewDetail
 import com.woocommerce.android.ui.main.MainActivityViewModel.ViewReviewList
 import com.woocommerce.android.ui.main.MainActivityViewModel.ViewZendeskTickets
@@ -72,6 +75,8 @@ class MainActivityViewModelTest : BaseUnitTest() {
     private val siteModel: SiteModel = SiteModel().apply {
         id = 1
         siteId = TEST_REMOTE_SITE_ID_1
+        url = "https://www.testurl.com"
+        adminUrl = "https://www.testadminurl.com"
     }
 
     private val notificationMessageHandler: NotificationMessageHandler = mock()
@@ -398,6 +403,115 @@ class MainActivityViewModelTest : BaseUnitTest() {
             // THEN
             assertThat(viewModel.moreMenuBadgeState.value).isEqualTo(UnseenReviews(1))
         }
+
+    // region Shortcuts
+    @Test
+    fun `given payments shortcut, when app opened, then trigger ViewPayments event`() {
+        testBlocking {
+            // GIVEN
+            createViewModel()
+
+            // WHEN
+            viewModel.handleShortcutAction("com.woocommerce.android.payments")
+
+            // THEN
+            assertThat(viewModel.event.value).isInstanceOf(ViewPayments::class.java)
+        }
+    }
+
+    @Test
+    fun `given view store shortcut, when app opened, then trigger OpenInBrowser event`() {
+        testBlocking {
+            // GIVEN
+            createViewModel()
+            whenever(selectedSite.get()).thenReturn(siteModel)
+
+            // WHEN
+            viewModel.handleShortcutAction("com.woocommerce.android.viewstore")
+
+            // THEN
+            assertThat(viewModel.event.value).isInstanceOf(OpenInBrowser::class.java)
+        }
+    }
+
+    @Test
+    fun `given view store shortcut, when app opened, then trigger OpenInBrowser event with correct url`() {
+        testBlocking {
+            // GIVEN
+            createViewModel()
+            whenever(selectedSite.get()).thenReturn(siteModel)
+            val siteUrl = "https://www.testurl.com"
+
+            // WHEN
+            viewModel.handleShortcutAction("com.woocommerce.android.viewstore")
+
+            // THEN
+            assertThat(viewModel.event.value).isEqualTo(
+                OpenInBrowser(siteUrl)
+            )
+        }
+    }
+
+    @Test
+    fun `given view store admin shortcut, when app opened, then trigger OpenInBrowser event`() {
+        testBlocking {
+            // GIVEN
+            createViewModel()
+            whenever(selectedSite.get()).thenReturn(siteModel)
+
+            // WHEN
+            viewModel.handleShortcutAction("com.woocommerce.android.storeadmin")
+
+            // THEN
+            assertThat(viewModel.event.value).isInstanceOf(OpenInBrowser::class.java)
+        }
+    }
+
+    @Test
+    fun `given view store admin shortcut, when app opened, then trigger OpenInBrowser event with correct url`() {
+        testBlocking {
+            // GIVEN
+            createViewModel()
+            whenever(selectedSite.get()).thenReturn(siteModel)
+            val siteUrl = "https://www.testadminurl.com"
+
+            // WHEN
+            viewModel.handleShortcutAction("com.woocommerce.android.storeadmin")
+
+            // THEN
+            assertThat(viewModel.event.value).isEqualTo(
+                OpenInBrowser(siteUrl)
+            )
+        }
+    }
+
+    @Test
+    fun `given switch store shortcut, when app opened, then trigger StartSitePicker event`() {
+        testBlocking {
+            // GIVEN
+            createViewModel()
+
+            // WHEN
+            viewModel.handleShortcutAction("com.woocommerce.android.switchstore")
+
+            // THEN
+            assertThat(viewModel.event.value).isInstanceOf(StartSitePicker::class.java)
+        }
+    }
+
+    @Test
+    fun `given irrelevant shortcut, when app opened, then do not trigger any event`() {
+        testBlocking {
+            // GIVEN
+            createViewModel()
+
+            // WHEN
+            viewModel.handleShortcutAction("com.woocommerce.android.irrelevant")
+
+            // THEN
+            assertThat(viewModel.event.value).isNull()
+        }
+    }
 
     private fun createViewModel() {
         viewModel = spy(
