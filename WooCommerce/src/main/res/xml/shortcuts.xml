@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<shortcuts xmlns:android="http://schemas.android.com/apk/res/android">
+    <shortcut
+        android:shortcutId="Payments"
+        android:enabled="true"
+        android:icon="@drawable/ic_more_menu_payments"
+        android:shortcutShortLabel="@string/more_menu_button_payments"
+        android:shortcutLongLabel="@string/more_menu_button_payments"
+        android:shortcutDisabledMessage="@string/more_menu_button_payments">
+        <intent
+            android:action="com.woocommerce.android.payments"
+            android:targetPackage="com.woocommerce.android"
+            android:targetClass="com.woocommerce.android.ui.main.MainActivity" />
+    </shortcut>
+
+    <shortcut
+        android:shortcutId="SwitchStore"
+        android:enabled="true"
+        android:icon="@drawable/ic_more_menu_store"
+        android:shortcutShortLabel="@string/settings_switch_store"
+        android:shortcutLongLabel="@string/settings_switch_store"
+        android:shortcutDisabledMessage="@string/settings_switch_store">
+        <intent
+            android:action="com.woocommerce.android.switchstore"
+            android:targetPackage="com.woocommerce.android"
+            android:targetClass="com.woocommerce.android.ui.main.MainActivity" />
+    </shortcut>
+
+    <shortcut
+        android:shortcutId="ViewStore"
+        android:enabled="true"
+        android:icon="@drawable/ic_more_menu_store"
+        android:shortcutShortLabel="@string/more_menu_button_store"
+        android:shortcutLongLabel="@string/more_menu_button_store"
+        android:shortcutDisabledMessage="@string/more_menu_button_store">
+        <intent
+            android:action="com.woocommerce.android.viewstore"
+            android:targetPackage="com.woocommerce.android"
+            android:targetClass="com.woocommerce.android.ui.main.MainActivity" />
+    </shortcut>
+
+    <shortcut
+        android:shortcutId="StoreAdmin"
+        android:enabled="true"
+        android:icon="@drawable/ic_more_menu_wp_admin"
+        android:shortcutShortLabel="@string/more_menu_button_wс_admin"
+        android:shortcutLongLabel="@string/more_menu_button_wс_admin"
+        android:shortcutDisabledMessage="@string/more_menu_button_wс_admin">
+        <intent
+            android:action="com.woocommerce.android.storeadmin"
+            android:targetPackage="com.woocommerce.android"
+            android:targetClass="com.woocommerce.android.ui.main.MainActivity" />
+    </shortcut>
+</shortcuts>
