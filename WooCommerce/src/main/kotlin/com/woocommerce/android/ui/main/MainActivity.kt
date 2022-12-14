@@ -62,9 +62,11 @@ import com.woocommerce.android.ui.main.BottomNavigationPosition.ORDERS
 import com.woocommerce.android.ui.main.BottomNavigationPosition.PRODUCTS
 import com.woocommerce.android.ui.main.MainActivityViewModel.MoreMenuBadgeState.Hidden
 import com.woocommerce.android.ui.main.MainActivityViewModel.MoreMenuBadgeState.UnseenReviews
+import com.woocommerce.android.ui.main.MainActivityViewModel.OpenInBrowser
 import com.woocommerce.android.ui.main.MainActivityViewModel.RestartActivityForAppLink
 import com.woocommerce.android.ui.main.MainActivityViewModel.RestartActivityForNotification
 import com.woocommerce.android.ui.main.MainActivityViewModel.ShowFeatureAnnouncement
+import com.woocommerce.android.ui.main.MainActivityViewModel.StartSitePicker
 import com.woocommerce.android.ui.main.MainActivityViewModel.ViewMyStoreStats
 import com.woocommerce.android.ui.main.MainActivityViewModel.ViewOrderDetail
 import com.woocommerce.android.ui.main.MainActivityViewModel.ViewOrderList
@@ -79,6 +81,7 @@ import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderFlowP
 import com.woocommerce.android.ui.prefs.AppSettingsActivity
 import com.woocommerce.android.ui.products.ProductListFragmentDirections
 import com.woocommerce.android.ui.reviews.ReviewListFragmentDirections
+import com.woocommerce.android.util.ChromeCustomTabUtils
 import com.woocommerce.android.util.WooAnimUtils
 import com.woocommerce.android.util.WooAnimUtils.Duration
 import com.woocommerce.android.widgets.AppRatingDialog
@@ -288,6 +291,11 @@ class MainActivity :
         }
 
         viewModel.handleIncomingAppLink(intent?.data)
+        viewModel.handleShortcutAction(intent?.action?.toLowerCase())
+    }
+
+    private fun openInBrowser(url: String) {
+        ChromeCustomTabUtils.launchUrl(this, url)
     }
 
     override fun hideProgressDialog() {
@@ -729,6 +737,12 @@ class MainActivity :
                 is ShowFeatureAnnouncement -> {
                     val action = NavGraphMainDirections.actionOpenWhatsnewFromMain(event.announcement)
                     navController.navigateSafely(action)
+                }
+                is OpenInBrowser -> {
+                    openInBrowser(event.url)
+                }
+                StartSitePicker -> {
+                    startSitePicker()
                 }
                 ViewPayments -> showPayments()
             }
