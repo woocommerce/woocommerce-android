@@ -20,7 +20,7 @@ class JetpackInstallationExperiment @Inject constructor(
         // Track used variant
         val variant = getCurrentVariant()
         analyticsTrackerWrapper.track(
-            AnalyticsEvent.SIMPLIFIED_LOGIN_EXPERIMENT,
+            AnalyticsEvent.JETPACK_INSTALLATION_EXPERIMENT,
             mapOf(Pair(AnalyticsTracker.KEY_EXPERIMENT_VARIANT, variant.name))
         )
     }

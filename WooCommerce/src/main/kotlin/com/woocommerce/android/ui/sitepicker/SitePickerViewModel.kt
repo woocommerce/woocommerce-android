@@ -47,6 +47,8 @@ import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooErrorType
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooResult
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.system.WCApiVersionResponse
 import org.wordpress.android.fluxc.store.WooCommerceStore
+import org.wordpress.android.util.UrlUtils
+import java.util.Objects
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 import kotlin.text.RegexOption.IGNORE_CASE
@@ -77,6 +79,8 @@ class SitePickerViewModel @Inject constructor(
     private val _sites = MutableLiveData<List<SitesListItem>>()
     val sites: LiveData<List<SitesListItem>> = _sites
 
+    private val selectedSiteId: MutableLiveData<Int> = savedState.getLiveData("selected-site-id")
+
     private var loginSiteAddress: String?
         get() = savedState["key"] ?: appPrefsWrapper.getLoginSiteAddress()
         set(value) = savedState.set("key", value)
@@ -93,6 +97,9 @@ class SitePickerViewModel @Inject constructor(
         loadAndDisplayUserInfo()
         loadAndDisplaySites()
         if (appPrefsWrapper.getIsNewSignUp()) startStoreCreationWebFlow()
+        if (selectedSiteId.value == null && selectedSite.exists()) {
+            selectedSiteId.value = selectedSite.getSelectedSiteId()
+        }
     }
 
     private fun loadAndDisplayUserInfo() = launch {
@@ -201,7 +208,6 @@ class SitePickerViewModel @Inject constructor(
 
         val wooSites = filteredSites.filter { it.hasWooCommerce }
         val nonWooSites = filteredSites.filter { !it.hasWooCommerce }
-        val selectedSite = selectedSite.getIfExists() ?: wooSites.getOrNull(0)
 
         if (_sites.value == null) {
             // Track events only on the first call
@@ -214,7 +220,7 @@ class SitePickerViewModel @Inject constructor(
                 )
             )
         }
-
+        val selectedSiteId = selectedSiteId.value ?: wooSites.getOrNull(0)?.id
         _sites.value = buildList {
             if (wooSites.isNotEmpty()) {
                 add(Header(R.string.login_pick_store))
@@ -222,7 +228,7 @@ class SitePickerViewModel @Inject constructor(
                     wooSites.map {
                         WooSiteUiModel(
                             site = it,
-                            isSelected = selectedSite?.id == it.id
+                            isSelected = selectedSiteId == it.id
                         )
                     }
                 )
@@ -278,7 +284,8 @@ class SitePickerViewModel @Inject constructor(
             isNoStoresViewVisible = true,
             isPrimaryBtnVisible = true,
             primaryBtnText = resourceProvider.getString(string.login_site_picker_add_a_store),
-            noStoresLabelText = resourceProvider.getString(string.login_no_stores),
+            noStoresLabelText = resourceProvider.getString(string.login_no_stores_header),
+            noStoresSubText = resourceProvider.getString(string.login_no_stores_subtitle),
             isNoStoresBtnVisible = false,
             currentSitePickerState = SitePickerState.NoStoreState
         )
@@ -342,6 +349,7 @@ class SitePickerViewModel @Inject constructor(
             isPrimaryBtnVisible = isWooInstallationEnabled,
             primaryBtnText = resourceProvider.getString(string.login_install_woo),
             noStoresLabelText = resourceProvider.getString(string.login_not_woo_store, site.url),
+            noStoresSubText = null,
             isNoStoresBtnVisible = true,
             noStoresBtnText = resourceProvider.getString(string.login_view_connected_stores),
             currentSitePickerState = SitePickerState.WooNotFoundState
@@ -354,12 +362,14 @@ class SitePickerViewModel @Inject constructor(
             isPrimaryBtnVisible = sitePickerViewState.hasConnectedStores == true,
             primaryBtnText = resourceProvider.getString(string.login_view_connected_stores),
             noStoresLabelText = resourceProvider.getString(string.login_simple_wpcom_site, site.url),
+            noStoresSubText = null,
             isNoStoresBtnVisible = false,
             currentSitePickerState = SitePickerState.SimpleWPComState
         )
     }
 
     fun onSiteSelected(siteModel: SiteModel) {
+        selectedSiteId.value = siteModel.id
         val updatedSites = _sites.value?.map {
             when (it) {
                 is WooSiteUiModel -> it.copy(isSelected = it.site.id == siteModel.id)
@@ -533,8 +543,9 @@ class SitePickerViewModel @Inject constructor(
         loginSiteAddress?.let {
             triggerEvent(
                 NavigateToWPComWebView(
-                    url = "$WOOCOMMERCE_INSTALLATION_URL$it",
-                    validationUrl = WOOCOMMERCE_INSTALLATION_DONE_URL
+                    url = "$WOOCOMMERCE_INSTALLATION_URL${UrlUtils.removeScheme(it)}",
+                    validationUrl = WOOCOMMERCE_INSTALLATION_DONE_URL,
+                    title = resourceProvider.getString(string.login_install_woo)
                 )
             )
         }
@@ -639,6 +650,7 @@ class SitePickerViewModel @Inject constructor(
         val secondaryBtnText: String? = null,
         val isNoStoresViewVisible: Boolean = false,
         val noStoresLabelText: String? = null,
+        val noStoresSubText: String? = null,
         val noStoresBtnText: String? = null,
         val isHelpBtnVisible: Boolean = false,
         val isSkeletonViewVisible: Boolean = false,
@@ -660,12 +672,27 @@ class SitePickerViewModel @Inject constructor(
         data class WooSiteUiModel(
             val site: SiteModel,
             val isSelected: Boolean
-        ) : SitesListItem
+        ) : SitesListItem {
+            override fun equals(other: Any?): Boolean = other is WooSiteUiModel &&
+                other.site.siteId == site.siteId &&
+                other.site.name == site.name &&
+                other.isSelected == isSelected &&
+                other.site.url == site.url
+
+            override fun hashCode(): Int = Objects.hash(site.siteId, site.name, isSelected, site.url)
+        }
 
         @Parcelize
         data class NonWooSiteUiModel(
             val site: SiteModel
-        ) : SitesListItem
+        ) : SitesListItem {
+            override fun equals(other: Any?): Boolean = other is NonWooSiteUiModel &&
+                other.site.siteId == site.siteId &&
+                other.site.name == site.name &&
+                other.site.url == site.url
+
+            override fun hashCode(): Int = Objects.hash(site.siteId, site.name, site.url)
+        }
     }
 
     sealed class SitePickerEvent : MultiLiveEvent.Event() {

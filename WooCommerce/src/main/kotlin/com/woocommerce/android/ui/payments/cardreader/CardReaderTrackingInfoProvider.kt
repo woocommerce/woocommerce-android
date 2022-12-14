@@ -16,6 +16,7 @@ interface CardReaderTrackingInfoKeeper {
     fun setCurrency(currency: String)
     fun setPaymentMethodType(paymentMethodType: String?)
     fun setCardReaderModel(cardReaderModel: String?)
+    fun setCardReaderBatteryLevel(batteryLevel: Float?)
 }
 
 @Singleton
@@ -41,6 +42,10 @@ class CardReaderTrackingInfoImpl @Inject constructor() : CardReaderTrackingInfoP
     override fun setCardReaderModel(cardReaderModel: String?) {
         trackingInfoInternal = trackingInfoInternal.copy(cardReaderModel = cardReaderModel)
     }
+
+    override fun setCardReaderBatteryLevel(batteryLevel: Float?) {
+        trackingInfoInternal = trackingInfoInternal.copy(cardReaderBatteryLevel = batteryLevel)
+    }
 }
 
 data class TrackingInfo(
@@ -48,6 +53,7 @@ data class TrackingInfo(
     val currency: String? = null,
     val paymentMethodType: String? = null,
     val cardReaderModel: String? = null,
+    val cardReaderBatteryLevel: Float? = null,
 )
 
 @InstallIn(SingletonComponent::class)

@@ -33,18 +33,6 @@
                 android:text="@string/variation_list_generate_new_variation"
                 android:textAllCaps="true" />
 
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/addAllVariationsButton"
-                style="@style/Woo.Button.Outlined"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="@dimen/margin_extra_large"
-                android:layout_marginEnd="@dimen/margin_extra_large"
-                android:text="@string/variation_list_generate_all_variations"
-                android:textAllCaps="true"
-                android:visibility="gone"
-                tools:visibility="visible" />
-
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/variationList"
                 android:layout_width="match_parent"

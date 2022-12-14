@@ -7,6 +7,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.R.drawable
 import com.woocommerce.android.R.string
+import com.woocommerce.android.cardreader.CardReaderManager
 import com.woocommerce.android.model.UiString
 import com.woocommerce.android.model.UiString.UiStringRes
 import com.woocommerce.android.ui.prefs.DeveloperOptionsViewModel.DeveloperOptionsViewState.ListItem
@@ -23,19 +24,22 @@ import javax.inject.Inject
 class DeveloperOptionsViewModel @Inject constructor(
     savedState: SavedStateHandle,
     private val developerOptionsRepository: DeveloperOptionsRepository,
+    private val cardReaderManager: CardReaderManager,
 ) : ScopedViewModel(savedState) {
 
     private val _viewState = MutableLiveData(
         DeveloperOptionsViewState(
-            rows = (
+            rows = if (developerOptionsRepository.isSimulatedCardReaderEnabled()) {
+                createDeveloperOptionsList() + createReaderUpdateFrequencyItem()
+            } else {
                 createDeveloperOptionsList()
-                )
+            }
         )
     )
 
     val viewState: LiveData<DeveloperOptionsViewState> = _viewState
 
-    private fun createDeveloperOptionsList(): List<ListItem> = mutableListOf(
+    private fun createDeveloperOptionsList(): List<ListItem> = mutableListOf<ListItem>(
         ToggleableListItem(
             icon = drawable.img_card_reader_connecting,
             label = UiStringRes(string.enable_card_reader),
@@ -44,6 +48,9 @@ class DeveloperOptionsViewModel @Inject constructor(
             isChecked = developerOptionsRepository.isSimulatedCardReaderEnabled(),
             onToggled = ::onSimulatedReaderToggled
         ),
+    )
+
+    private fun createReaderUpdateFrequencyItem() =
         SpinnerListItem(
             icon = drawable.img_card_reader_update_progress,
             endIcon = drawable.ic_arrow_drop_down,
@@ -52,14 +59,16 @@ class DeveloperOptionsViewModel @Inject constructor(
             isEnabled = true,
             onClick = ::onUpdateSimulatedReaderClicked,
         )
-    )
 
     private fun onSimulatedReaderToggled(isChecked: Boolean) {
         if (!isChecked) {
+            viewState.value?.rows = createDeveloperOptionsList()
             disconnectAndClearSelectedCardReader()
             triggerEvent(
                 DeveloperOptionsEvents.ShowToastString(string.simulated_reader_toast)
             )
+        } else {
+            viewState.value?.rows = createDeveloperOptionsList() + createReaderUpdateFrequencyItem()
         }
         simulatedReaderStateChanged(isChecked)
     }
@@ -99,7 +108,18 @@ class DeveloperOptionsViewModel @Inject constructor(
     }
 
     fun onUpdateReaderOptionChanged(selectedOption: UpdateOptions) {
+        if (cardReaderManager.initialized) {
+            cardReaderManager.initializeOnUpdateFrequencyChange(mapUpdateOptions(selectedOption))
+        }
         developerOptionsRepository.updateSimulatedReaderOption(selectedOption)
+    }
+
+    private fun mapUpdateOptions(updateFrequency: UpdateOptions): CardReaderManager.SimulatorUpdateFrequency {
+        return when (updateFrequency) {
+            UpdateOptions.ALWAYS -> CardReaderManager.SimulatorUpdateFrequency.ALWAYS
+            UpdateOptions.NEVER -> CardReaderManager.SimulatorUpdateFrequency.NEVER
+            UpdateOptions.RANDOM -> CardReaderManager.SimulatorUpdateFrequency.RANDOM
+        }
     }
 
     sealed class DeveloperOptionsEvents : MultiLiveEvent.Event() {
@@ -111,7 +131,7 @@ class DeveloperOptionsViewModel @Inject constructor(
     }
 
     data class DeveloperOptionsViewState(
-        val rows: List<ListItem>
+        var rows: List<ListItem>
     ) {
         sealed class ListItem {
             abstract val label: UiString
@@ -150,7 +170,7 @@ class DeveloperOptionsViewModel @Inject constructor(
         enum class UpdateOptions(@StringRes val title: Int) {
             ALWAYS(string.always_update_reader),
             NEVER(string.never_update_reader),
-            RANDOMLY(string.randomly_update_reader)
+            RANDOM(string.randomly_update_reader)
         }
     }
 }

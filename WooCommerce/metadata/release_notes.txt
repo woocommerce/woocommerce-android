@@ -1,1 +1,1 @@
-This release has several fixes that makes it easier for you to manage your store from the app. Please continue to send us feedback – we are listening!
+This release includes a handful of minor improvements and bug fixes that our team found. Don't be fooled though – we're working on some exciting new features for you! Stay tuned!

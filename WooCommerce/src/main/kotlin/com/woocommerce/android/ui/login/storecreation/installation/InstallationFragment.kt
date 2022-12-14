@@ -10,10 +10,12 @@ import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
+import com.woocommerce.android.ui.login.storecreation.installation.InstallationViewModel.NavigateToNewStore
 import com.woocommerce.android.ui.login.storecreation.installation.InstallationViewModel.OpenStore
 import com.woocommerce.android.ui.main.AppBarStatus
+import com.woocommerce.android.ui.main.MainActivity
 import com.woocommerce.android.util.ChromeCustomTabUtils
-import com.woocommerce.android.viewmodel.MultiLiveEvent
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -42,8 +44,9 @@ class InstallationFragment : BaseFragment() {
     private fun setupObservers() {
         viewModel.event.observe(viewLifecycleOwner) { event ->
             when (event) {
-                is MultiLiveEvent.Event.Exit -> findNavController().popBackStack()
+                is Exit -> findNavController().popBackStack()
                 is OpenStore -> ChromeCustomTabUtils.launchUrl(requireContext(), event.url)
+                NavigateToNewStore -> (activity as? MainActivity)?.handleSitePickerResult()
             }
         }
     }

@@ -1,13 +1,103 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2022-11-16 09:54:04+0000
+Translation-Revision-Date: 2022-12-06 11:54:03+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: zh_CN
 -->
 <resources>
+    <string name="store_creation_ecommerce_plan_period_two_years">2 年</string>
+    <string name="store_creation_ecommerce_store_loading_permanent_error">商店安装时出错了…</string>
+    <string name="variations_bulk_creation_no_candidates_message">所有变体都已生成。</string>
+    <string name="variations_bulk_creation_no_candidates_title">没有要生成的变体</string>
+    <string name="product_list_multiselect">选择多项</string>
+    <string name="store_creation_ecommerce_store_loading_error">无法加载您的商店。 请稍后重试…</string>
+    <string name="store_creation_ecommerce_plan_purchase_error">无法完成购买…</string>
+    <string name="store_creation_domain_picker_suggestions_error">无法加载域名建议</string>
+    <string name="store_creation_domain_picker_empty_suggestions">没有搜索到可用的域名</string>
+    <string name="variations_bulk_creation_progress_title">正在生成变体</string>
+    <string name="variations_bulk_creation_confirmation_message">这将为每一个和每一个可能的变体属性组合创建一个新的变体产品（%1$d 个变体）。</string>
+    <string name="variations_bulk_creation_confirmation_title">生成所有变体？</string>
+    <string name="variations_bulk_creation_warning_message">目前最多支持创建 %1$d 个变体。 为此产品生成变体会创建 %2$d 个变体。</string>
+    <string name="variations_bulk_creation_warning_title">超出了生成限制</string>
+    <string name="variation_add_all_description">为属性的所有组合创建变体。</string>
+    <string name="variation_add_all">生成所有变体</string>
+    <string name="variation_add_new_description">创建一个新变体。 手动设置属于可变产品的属性。</string>
+    <string name="variation_add_new">添加新变体</string>
+    <string name="variation_list_add">添加变体</string>
+    <string name="login_jetpack_installation_exit_without_connection">直接退出，不连接</string>
+    <string name="login_jetpack_installation_continue_connection">继续连接</string>
+    <string name="login_jetpack_installation_connection_dismissed_explanation">请尝试再次连接以访问您的商店。</string>
+    <string name="login_jetpack_installation_connection_dismissed">Jetpack 已安装，但未连接。</string>
+    <string name="login_jetpack_installation_error_connection_permission_message">您没有在此商店中连接 Jetpack 的权限</string>
+    <string name="login_jetpack_installation_error_forbidden_suggestion">请联系您的商店经理或管理员寻求帮助。</string>
+    <string name="login_jetpack_installation_cancel">取消安装</string>
+    <string name="login_jetpack_installation_retry_authorizing">再次尝试授权</string>
+    <string name="login_jetpack_installation_retry_activating">再次尝试启用</string>
+    <string name="login_jetpack_installation_retry_installing">再次尝试安装</string>
+    <string name="login_jetpack_installation_get_support">获取支持</string>
+    <string name="login_jetpack_installation_retry_or_contact_support">如果此错误仍然存在，请重试并联系支持人员。</string>
+    <string name="login_jetpack_installation_error_generic_message">与您的站点通信时发生错误。</string>
+    <string name="login_jetpack_installation_error_plugin_permission_message">您没有在此商店中管理插件的权限</string>
+    <string name="login_jetpack_installation_error_authorizing">授权连接 Jetpack 时发生错误</string>
+    <string name="login_jetpack_installation_error_activating">启用 Jetpack 时发生错误</string>
+    <string name="login_jetpack_installation_error_installing">安装 Jetpack 时发生错误</string>
+    <string name="login_jetpack_installation_approve_connection">连接 Jetpack</string>
+    <string name="login_jetpack_installation_go_to_store_button">前往商店</string>
+    <string name="login_jetpack_installation_error">错误</string>
+    <string name="login_jetpack_installation_error_code_template">错误代码 %1$s</string>
+    <string name="login_jetpack_steps_screen_subtitle_done">您的商店 &lt;b&gt;%1$s&lt;/b&gt; 现已连接 Jetpack。</string>
+    <string name="login_jetpack_steps_screen_subtitle">正在将您的商店 &lt;b&gt;%1$s&lt;/b&gt; 连接到 Jetpack，请稍候。</string>
+    <string name="login_jetpack_installation_steps_screen_title_done">已安装的 Jetpack</string>
+    <string name="login_jetpack_connection_steps_screen_title_done">已连接的 Jetpack</string>
+    <string name="login_jetpack_connection_steps_screen_title">正在连接 Jetpack</string>
+    <string name="login_jetpack_installation_steps_screen_title">正在安装 Jetpack</string>
+    <string name="login_jetpack_steps_done">全部完成</string>
+    <string name="login_jetpack_steps_authorizing_done">已连接</string>
+    <string name="login_jetpack_steps_authorizing_validation">正在验证</string>
+    <string name="login_jetpack_steps_authorizing">将您的商店连接到 Jetpack</string>
+    <string name="login_jetpack_steps_activating">正在启用</string>
+    <string name="login_jetpack_steps_installing">正在安装 Jetpack</string>
+    <string name="login_jetpack_connection_enter_site_credentials">使用您的商店凭据登录 &lt;b&gt;%1$s&lt;/b&gt;，以连接 Jetpack。</string>
+    <string name="login_jetpack_installation_enter_site_credentials">使用您的商店凭据登录 &lt;b&gt;%1$s&lt;/b&gt;，以安装 Jetpack。</string>
+    <string name="login_jetpack_installation_credentials_hint">准备好您的商店凭据。</string>
+    <string name="login_jetpack_connection_explanation">请将您的商店连接到 Jetpack，以便在此应用程序上访问商店。</string>
+    <string name="login_jetpack_installation_explanation">请安装免费 Jetpack 插件以在此应用程序上访问您的商店。</string>
+    <string name="login_no_stores_subtitle">快速设置美观的在线商店并开始销售。</string>
+    <string name="login_no_stores_header">创建您的首个商店</string>
+    <string name="store_creation_store_name_hint">商店名称</string>
+    <string name="store_creation_store_name_subtitle">别担心，您日后可以随时进行更改。 </string>
+    <string name="store_creation_store_name_title">商店名称是什么？</string>
+    <string name="store_creation_store_name_caption">关于您的商店</string>
+    <string name="store_creation_installation_show_preview_button">商店预览</string>
+    <string name="store_creation_installation_manage_store_button">管理我的商店</string>
+    <string name="store_creation_installation_success">您的商店已创建！</string>
+    <string name="store_creation_installation_error">安装过程中出现错误，请重试…</string>
+    <string name="store_creation_ecommerce_plan_feature_sales">销售渠道</string>
+    <string name="store_creation_ecommerce_plan_feature_shipping_labels">货运标签</string>
+    <string name="store_creation_ecommerce_plan_feature_payments">多种付款选项</string>
+    <string name="store_creation_ecommerce_plan_feature_reports">电子商务报告</string>
+    <string name="store_creation_ecommerce_plan_feature_subscriptions">订阅和礼品卡</string>
+    <string name="store_creation_ecommerce_plan_feature_products">无限量产品</string>
+    <string name="store_creation_ecommerce_plan_feature_themes">高级版主题</string>
+    <string name="store_creation_ecommerce_plan_period_year">年</string>
+    <string name="store_creation_ecommerce_plan_period_month">月</string>
+    <string name="store_creation_ecommerce_plan_refund_reminder">无任何风险，在 30 天内取消可获得全额退款。</string>
+    <string name="store_creation_ecommerce_plan_purchase_button_title">创建商店，支付 %1$s</string>
+    <string name="store_creation_ecommerce_plan_powered_by">提供支持：</string>
+    <string name="store_creation_ecommerce_plan_features_tagline">您需要的所有功能，皆已内置其中。</string>
+    <string name="store_creation_ecommerce_plan_error">无法加载套餐信息…</string>
+    <string name="store_creation_summary_primary_button">继续付款</string>
+    <string name="store_creation_summary_subtitle">您的商店根据您选择的选项创建！</string>
+    <string name="store_creation_summary_title">我的商店</string>
+    <string name="randomly_update_reader">随机</string>
+    <string name="never_update_reader">从不</string>
+    <string name="always_update_reader">总是</string>
+    <string name="update_simulated_reader_key">更新模拟读卡器密钥</string>
+    <string name="update_simulated_reader">更新模拟读卡器</string>
+    <string name="login_jetpack_connect">连接 Jetpack</string>
+    <string name="login_jetpack_installation_screen_title">连接商店</string>
     <string name="store_creation_domain_picker_suggestions_title">建议</string>
-    <string name="store_creation_domain_picker_skip_button">跳过</string>
     <string name="store_creation_domain_picker_hint">输入域名</string>
     <string name="store_creation_domain_picker_subtitle">人们可以通过此域名在互联网上找到您。 别担心，您可以稍后进行更改。</string>
     <string name="store_creation_domain_picker_title">选择域名</string>
@@ -36,7 +126,6 @@ Language: zh_CN
     <string name="site_picker_connect_existing_store">连接现有商店</string>
     <string name="site_picker_create_new_store">创建新的商店</string>
     <string name="login_site_picker_add_a_store">添加商店</string>
-    <string name="login_no_stores">您的账户未与任何 WooCommerce 商店连接。</string>
     <string name="analytics_products_list_item_description">净销售额：%1$s</string>
     <string name="analytics_products_list_header_subtitle">已售项目</string>
     <string name="analytics_products_list_header_title">产品</string>
@@ -51,8 +140,6 @@ Language: zh_CN
     <string name="analytics_orders_no_data">本期无订单</string>
     <string name="analytics_revenue_no_data">本期无收益</string>
     <string name="analytics_revenue_card_title">收益</string>
-    <string name="analytics_see_report_button_content_description">查看更多报告详情</string>
-    <string name="analytics_see_report_button_text">查看报告</string>
     <string name="analytics_date_range_custom">%1$s - %2$s</string>
     <string name="analytics_see_more">查看更多</string>
     <string name="signup_api_generic_error">抱歉，我们无法为所提供的凭证创建账户。 请尝试使用其他电子邮件。</string>
@@ -420,8 +507,7 @@ Language: zh_CN
     <string name="product_ratings_count_one">\u2022  一条已批准的评论</string>
     <string name="product_ratings_count">\u2022  %d 条已批准的评论</string>
     <string name="tax_name_with_tax_percent">%1$s (%2$s%%)</string>
-    <string name="orderlist_simple_payments_wip_message_enabled">我们一直在努力，旨在助力您直接通过您的设备创建订单并收款！ 您可以轻点“+”按钮，试用这些功能。</string>
-    <string name="orderlist_simple_payments_wip_title">创建订单并收款！</string>
+    <string name="orderlist_simple_payments_wip_message_enabled">我们一直在努力，让您能够通过您的设备创建订单！ 您可以轻点“+”按钮，试用此功能</string>
     <string name="empty_inbox_description">请稍后回来查看，届时将提供更多关于发展您商店的贴士和数据分析</string>
     <string name="empty_inbox_title">恭喜您，已全部阅读！</string>
     <string name="orderstatus_contentDesc_withStatus">订单状态： %s</string>
@@ -614,6 +700,7 @@ Language: zh_CN
     <string name="simple_payments_enter_amount">输入金额</string>
     <string name="simple_payments_dialog_title">收款</string>
     <string name="orderlist_simple_payments_menu">简单付款</string>
+    <string name="orderlist_simple_payments_wip_title">通过您的设备上创建订单</string>
     <string name="analytics">分析</string>
     <string name="jetpack_install_progress_step_four_message">全部完成</string>
     <string name="jetpack_install_progress_step_three_message">正在关联您的商店</string>
@@ -1025,7 +1112,7 @@ Language: zh_CN
     <string name="shipping_label_payments_cant_edit_warning">只有站点所有者可以管理配送标签付款方式。 请联系商店所有者 %1$s (%2$s) 以管理付款方式。</string>
     <string name="product_detail_add_variations">添加变体</string>
     <string name="product_variant_list_empty_action">添加变体</string>
-    <string name="product_variant_list_add_first_variation">添加您的第一个变体</string>
+    <string name="product_variant_list_add_first_variation">创建您的第一个变体</string>
     <string name="shipping_label_selected_rates_total_description">总计 %s</string>
     <string name="shipping_label_selected_rates_description">已选择 %s 收费标准</string>
     <string name="shipping_label_rate_included_options_signature_required_free">适用于免费签收要求</string>

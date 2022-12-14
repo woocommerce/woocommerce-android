@@ -1,13 +1,103 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2022-11-15 14:54:03+0000
+Translation-Revision-Date: 2022-12-05 15:54:04+0000
 Plural-Forms: nplurals=6; plural=n==0 ? 0 : n==1 ? 1 : n==2 ? 2 : n%100>=3 && n%100<=10 ? 3 : n%100>=11 && n%100<=99 ? 4 : 5;
 Generator: GlotPress/2.4.0-alpha
 Language: ar
 -->
 <resources>
+    <string name="store_creation_ecommerce_plan_period_two_years">عامان</string>
+    <string name="store_creation_ecommerce_store_loading_permanent_error">حدث خطأ ما في أثناء تثبيت المتجر…</string>
+    <string name="variations_bulk_creation_no_candidates_message">يتم إنشاء كل التباينات بالفعل.</string>
+    <string name="variations_bulk_creation_no_candidates_title">لا توجد تباينات مطلوب إنشائها</string>
+    <string name="product_list_multiselect">تحديد متعدد</string>
+    <string name="store_creation_ecommerce_store_loading_error">يتعذر تحميل متجرك الجديد. يرجى الانتظار قليلاً والمحاولة مرة أخرى…</string>
+    <string name="store_creation_ecommerce_plan_purchase_error">يتعذر إكمال عملية الشراء…</string>
+    <string name="store_creation_domain_picker_suggestions_error">يتعذر تحميل اقتراحات النطاق</string>
+    <string name="store_creation_domain_picker_empty_suggestions">لا تتوافر نطاقات لهذا البحث</string>
+    <string name="variations_bulk_creation_progress_title">إنشاء تباينات</string>
+    <string name="variations_bulk_creation_confirmation_message">سيؤدي ذلك إلى إنشاء تباين جديد لكل مجموعة محتملة من سمات التباين (⁦%1$d⁩ من التباينات).</string>
+    <string name="variations_bulk_creation_confirmation_title">هل تريد إنشاء كل التباينات؟</string>
+    <string name="variations_bulk_creation_warning_message">يكون الإنشاء مدعومًا حاليًا لـ ⁦%1$d⁩ من التباينات بحد أقصى. سيؤدي إنشاء التباينات لهذا المنتج إلى إنشاء ⁦%2$d⁩ من التباينات.</string>
+    <string name="variations_bulk_creation_warning_title">تم تجاوز حد الإنشاء</string>
+    <string name="variation_add_all_description">إنشاء تباينات لكل مجموعات السمات لديك.</string>
+    <string name="variation_add_all">إنشاء كل التباينات</string>
+    <string name="variation_add_new_description">أنشئ تباينًا واحدًا جديدًا. قم بتعيين السمات التي تنتمي إلى المنتج المتغير يدويًا.</string>
+    <string name="variation_add_new">إضافة تباين جديد</string>
+    <string name="variation_list_add">إضافة نوع</string>
+    <string name="login_jetpack_installation_exit_without_connection">الإنهاء من دون اتصال</string>
+    <string name="login_jetpack_installation_continue_connection">استمرار الاتصال</string>
+    <string name="login_jetpack_installation_connection_dismissed_explanation">حاول الاتصال مجددًا للوصول إلى متجرك.</string>
+    <string name="login_jetpack_installation_connection_dismissed">تم تثبيت Jetpack، ولكن من دون اتصال.</string>
+    <string name="login_jetpack_installation_error_connection_permission_message">ليس لديك إذن للاتصال بـ Jetpack على هذا المتجر</string>
+    <string name="login_jetpack_installation_error_forbidden_suggestion">يرجى الاتصال بمدير متجرك أو المسؤول لديك للمساعدة.</string>
+    <string name="login_jetpack_installation_cancel">إلغاء التثبيت</string>
+    <string name="login_jetpack_installation_retry_authorizing">محاولة التخويل مجددًا</string>
+    <string name="login_jetpack_installation_retry_activating">محاولة التفعيل مجددًا</string>
+    <string name="login_jetpack_installation_retry_installing">محاولة التثبيت مجددًا</string>
+    <string name="login_jetpack_installation_get_support">الحصول على الدعم</string>
+    <string name="login_jetpack_installation_retry_or_contact_support">ترجى المحاولة مجددًا والاتصال بالدعم إذا استمر هذا الخطأ.</string>
+    <string name="login_jetpack_installation_error_generic_message">حدث خطأ في أثناء الاتصال بموقعك.</string>
+    <string name="login_jetpack_installation_error_plugin_permission_message">ليس لديك الإذن اللازم لإدارة الإضافات على هذا المتجر</string>
+    <string name="login_jetpack_installation_error_authorizing">حدث خطأ في أثناء تخويل الاتصال بـ Jetpack</string>
+    <string name="login_jetpack_installation_error_activating">حدث خطأ في أثناء تفعيل Jetpack</string>
+    <string name="login_jetpack_installation_error_installing">حدث خطأ في أثناء تثبيت Jetpack</string>
+    <string name="login_jetpack_installation_approve_connection">الاتصال بـ Jetpack</string>
+    <string name="login_jetpack_installation_go_to_store_button">الانتقال إلى المتجر</string>
+    <string name="login_jetpack_installation_error">خطأ</string>
+    <string name="login_jetpack_installation_error_code_template">كود الخطأ ⁦%1$s⁩</string>
+    <string name="login_jetpack_steps_screen_subtitle_done">أصبح متجرك &lt;b&gt;%1$s&lt;/b&gt; متصلاً الآن بـ Jetpack.</string>
+    <string name="login_jetpack_steps_screen_subtitle">يرجى الانتظار بينما نربط متجرك &lt;b&gt;%1$s&lt;/b&gt; بـ Jetpack.</string>
+    <string name="login_jetpack_installation_steps_screen_title_done">Jetpack المثبَّت</string>
+    <string name="login_jetpack_connection_steps_screen_title_done">Jetpack متصل</string>
+    <string name="login_jetpack_connection_steps_screen_title">اتصال Jetpack</string>
+    <string name="login_jetpack_installation_steps_screen_title">تثبيت Jetpack</string>
+    <string name="login_jetpack_steps_done">كل شيء جاهز</string>
+    <string name="login_jetpack_steps_authorizing_done">متصل</string>
+    <string name="login_jetpack_steps_authorizing_validation">جارٍ التحقق</string>
+    <string name="login_jetpack_steps_authorizing">ربط المتجر بـ Jetpack</string>
+    <string name="login_jetpack_steps_activating">التفعيل</string>
+    <string name="login_jetpack_steps_installing">تثبيت Jetpack</string>
+    <string name="login_jetpack_connection_enter_site_credentials">سجّل الدخول إلى &lt;b&gt;%1$s&lt;/b&gt; باستخدام بيانات اعتماد متجرك للاتصال بـ Jetpack.</string>
+    <string name="login_jetpack_installation_enter_site_credentials">سجّل الدخول إلى &lt;b&gt;%1$s&lt;/b&gt; باستخدام بيانات اعتماد متجرك لتثبيت Jetpack.</string>
+    <string name="login_jetpack_installation_credentials_hint">اجعل بيانات اعتماد متجرك جاهزة.</string>
+    <string name="login_jetpack_connection_explanation">يرجى ربط متجرك بـ Jetpack للوصول إليه على هذا التطبيق.</string>
+    <string name="login_jetpack_installation_explanation">يرجى تثبيت إضافة Jetpack المجانية للوصول إلى متجرك على هذا التطبيق.</string>
+    <string name="login_no_stores_subtitle">انهض وقم بالبيع سريعًا من خلال متجر رائع على الإنترنت. </string>
+    <string name="login_no_stores_header">إنشاء متجرك الأول</string>
+    <string name="store_creation_store_name_hint">اسم المتجر</string>
+    <string name="store_creation_store_name_subtitle">لا داعي للقلق، يمكنك دائمًا تغييره لاحقًا. </string>
+    <string name="store_creation_store_name_title">ما اسم متجرك؟</string>
+    <string name="store_creation_store_name_caption">نبذة عن متجرك</string>
+    <string name="store_creation_installation_show_preview_button">معاينة المتجر</string>
+    <string name="store_creation_installation_manage_store_button">إدارة متجري</string>
+    <string name="store_creation_installation_success">تم إنشاء متجرك!</string>
+    <string name="store_creation_installation_error">حدث خطأ في أثناء التثبيت، ترجى المحاولة مجددًا…</string>
+    <string name="store_creation_ecommerce_plan_feature_sales">قنوات المبيعات</string>
+    <string name="store_creation_ecommerce_plan_feature_shipping_labels">بطاقات الشحن</string>
+    <string name="store_creation_ecommerce_plan_feature_payments">خيارات الدفع المتعددة</string>
+    <string name="store_creation_ecommerce_plan_feature_reports">تقارير التجارة الإلكترونية</string>
+    <string name="store_creation_ecommerce_plan_feature_subscriptions">الاشتراكات وبطاقات الهدايا</string>
+    <string name="store_creation_ecommerce_plan_feature_products">منتجات غير محدودة</string>
+    <string name="store_creation_ecommerce_plan_feature_themes">قوالب مميزة</string>
+    <string name="store_creation_ecommerce_plan_period_year">سنة</string>
+    <string name="store_creation_ecommerce_plan_period_month">شهر</string>
+    <string name="store_creation_ecommerce_plan_refund_reminder">لا يوجد خطر، يمكنك الإلغاء لاسترداد الأموال بالكامل في غضون 30 يومًا.</string>
+    <string name="store_creation_ecommerce_plan_purchase_button_title">إنشاء متجر لـ ⁦%1$s⁩</string>
+    <string name="store_creation_ecommerce_plan_powered_by">مدعوم من</string>
+    <string name="store_creation_ecommerce_plan_features_tagline">كل الميزات التي تحتاج إليها مدمجة بالفعل.</string>
+    <string name="store_creation_ecommerce_plan_error">يتعذر تحميل معلومات الخطة…</string>
+    <string name="store_creation_summary_primary_button">المواصلة إلى الدفع</string>
+    <string name="store_creation_summary_subtitle">سيتم إنشاء متجرك استنادًا إلى الخيارات التي تحددها!</string>
+    <string name="store_creation_summary_title">مخزني</string>
+    <string name="randomly_update_reader">بشكل عشوائي</string>
+    <string name="never_update_reader">أبدًا</string>
+    <string name="always_update_reader">دائمًا</string>
+    <string name="update_simulated_reader_key">تحديث مفتاح القارئ المحاكي</string>
+    <string name="update_simulated_reader">تحديث قارئ البطاقة المحاكي</string>
+    <string name="login_jetpack_connect">الاتصال بـ Jetpack</string>
+    <string name="login_jetpack_installation_screen_title">ربط المتجر</string>
     <string name="store_creation_domain_picker_suggestions_title">اقتراحات</string>
-    <string name="store_creation_domain_picker_skip_button">تخطٍ</string>
     <string name="store_creation_domain_picker_hint">كتابة نطاق</string>
     <string name="store_creation_domain_picker_subtitle">هذا هو المكان الذي سيجدك فيه الأشخاص على الإنترنت. لا داعي للقلق، يمكنك تغييرها لاحقًا.</string>
     <string name="store_creation_domain_picker_title">اختيار نطاق</string>
@@ -36,7 +126,6 @@ Language: ar
     <string name="site_picker_connect_existing_store">الاتصال بمتجر موجود</string>
     <string name="site_picker_create_new_store">إنشاء متجر جديد</string>
     <string name="login_site_picker_add_a_store">إضافة متجر</string>
-    <string name="login_no_stores">حسابك غير متصل بأي متجر من متاجر WooCommerce.</string>
     <string name="analytics_products_list_item_description">صافي المبيعات: ⁦%1$s⁩</string>
     <string name="analytics_products_list_header_subtitle">العناصر المباعة</string>
     <string name="analytics_products_list_header_title">المنتجات</string>
@@ -51,8 +140,6 @@ Language: ar
     <string name="analytics_orders_no_data">لا توجد طلبات في هذه الفترة</string>
     <string name="analytics_revenue_no_data">لا توجد إيرادات في هذه الفترة</string>
     <string name="analytics_revenue_card_title">الإيرادات</string>
-    <string name="analytics_see_report_button_content_description">رؤية مزيد من تفاصيل التقارير</string>
-    <string name="analytics_see_report_button_text">رؤية التقرير</string>
     <string name="analytics_date_range_custom">من ⁦%1$s⁩ إلى ⁦%2$s⁩</string>
     <string name="analytics_see_more">مشاهدة المزيد</string>
     <string name="signup_api_generic_error">عذرًا، تعذر علينا إنشاء حساب حسب بيانات الاعتماد المقدّمة. ترجى المحاولة ببريد إلكتروني مختلف.</string>
@@ -420,8 +507,7 @@ Language: ar
     <string name="product_ratings_count_one">\u2022  مراجعة واحدة تمت الموافقة عليها</string>
     <string name="product_ratings_count">\u2022  %d من المراجعات التي تمت الموافقة عليها</string>
     <string name="tax_name_with_tax_percent">%1$s (%2$s%%)</string>
-    <string name="orderlist_simple_payments_wip_message_enabled">نعمل على إتاحة إمكانية إنشاء الطلبات وتحصيل المدفوعات من جهازك! يمكنك تجربة هذه الميزات عن طريق الضغط على زر \"+\"</string>
-    <string name="orderlist_simple_payments_wip_title">إنشاء الطلبات وتحصيل المدفوعات!</string>
+    <string name="orderlist_simple_payments_wip_message_enabled">نعمل على إتاحة إمكانية إنشاء الطلبات من جهازك! يمكنك تجربة هذه الميزة عن طريق الضغط على زر \"+\"</string>
     <string name="empty_inbox_description">عد قريبًا للحصول على مزيد من النصائح والرؤى بشأن تكبير متجرك</string>
     <string name="empty_inbox_title">تهانينا، لقد قرأت كل شيء!</string>
     <string name="orderstatus_contentDesc_withStatus">حالة الطلب: %s</string>
@@ -614,6 +700,7 @@ Language: ar
     <string name="simple_payments_enter_amount">إدخال المبلغ</string>
     <string name="simple_payments_dialog_title">تحصيل الدفع</string>
     <string name="orderlist_simple_payments_menu">عملية دفع بسيطة</string>
+    <string name="orderlist_simple_payments_wip_title">إنشاء الطلبات من جهازك!</string>
     <string name="analytics">التحليلات</string>
     <string name="jetpack_install_progress_step_four_message">كل شيء جاهز</string>
     <string name="jetpack_install_progress_step_three_message">الاتصال بمتجرك</string>
@@ -1025,7 +1112,7 @@ Language: ar
     <string name="shipping_label_payments_cant_edit_warning">يمكن لمالك الموقع فقط إدارة طرق دفع ملصقات الشحن. يرجى الاتصال بمالك المخزن ⁦%1$s⁩ (⁦%2$s⁩) لإدارة طرق الدفع.</string>
     <string name="product_detail_add_variations">إضافة أنواع</string>
     <string name="product_variant_list_empty_action">إضافة نوع</string>
-    <string name="product_variant_list_add_first_variation">إضافة نوعك الأول</string>
+    <string name="product_variant_list_add_first_variation">إنشاء مجموعتك المتنوعة الأولى</string>
     <string name="shipping_label_selected_rates_total_description">إجمالي %s</string>
     <string name="shipping_label_selected_rates_description">تم تحديد %s من الأسعار </string>
     <string name="shipping_label_rate_included_options_signature_required_free">مؤهل لمتطلبات التوقيع المجاني</string>

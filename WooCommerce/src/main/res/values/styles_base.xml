@@ -319,6 +319,13 @@ theme across the entire app. Overridden versions should be added to the styles.x
         <item name="android:gravity">center_vertical</item>
     </style>
 
+    <style name="Woo.ActionMode.Style" parent="Widget.Woo.Toolbar">
+        <item name="background">?attr/colorSurface</item>
+        <item name="height">?attr/actionBarSize</item>
+        <item name="android:elevation">@dimen/appbar_elevation</item>
+        <item name="android:tint">@color/black</item>
+    </style>
+
     <!--
         SearchView Styles
     -->
@@ -786,8 +793,8 @@ theme across the entire app. Overridden versions should be added to the styles.x
     </style>
 
     <style name="Woo.Animations.Dialog">
-        <item name="android:windowEnterAnimation">@anim/slide_in_up</item>
-        <item name="android:windowExitAnimation">@anim/slide_out_down</item>
+        <item name="android:windowEnterAnimation">@anim/slide_up_fade_in</item>
+        <item name="android:windowExitAnimation">@anim/slide_down_fade_out</item>
     </style>
 
     <style name="Woo.Theme.BottomSheetDialog" parent="Theme.Design.Light.BottomSheetDialog">

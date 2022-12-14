@@ -142,6 +142,8 @@ class AnalyticsTracker private constructor(private val context: Context) {
         const val KEY_ERROR_CONTEXT = "error_context"
         const val KEY_ERROR_DESC = "error_description"
         const val KEY_ERROR_TYPE = "error_type"
+        const val KEY_ERROR_CODE = "error_code"
+        const val KEY_NETWORK_STATUS_CODE = "network_status_code"
         const val KEY_ERROR_MESSAGE = "error_message"
         const val KEY_FROM = "from"
         const val KEY_HAS_UNFULFILLED_ORDERS = "has_unfulfilled_orders"
@@ -339,8 +341,12 @@ class AnalyticsTracker private constructor(private val context: Context) {
         const val KEY_FETCH_SITES_DURATION = "duration"
         const val KEY_JETPACK_BENEFITS_BANNER_ACTION = "action"
         const val KEY_JETPACK_INSTALLATION_SOURCE = "source"
+        const val KEY_JETPACK_INSTALLATION_STEP = "jetpack_install_step"
 
         private const val PREFKEY_SEND_USAGE_STATS = "wc_pref_send_usage_stats"
+
+        // -- Product Variations
+        const val KEY_VARIATIONS_COUNT = "variations_count"
 
         // -- Feature Announcement / What's New
         const val KEY_ANNOUNCEMENT_VIEW_SOURCE = "source"
@@ -425,6 +431,21 @@ class AnalyticsTracker private constructor(private val context: Context) {
         const val VALUE_PROLOGUE = "prologue"
         const val VALUE_LOGIN = "login"
         const val VALUE_OTHER = "other"
+        const val VALUE_WEB = "web"
+        const val VALUE_NATIVE = "native"
+        const val VALUE_STEP_STORE_NAME = "store_name"
+        const val VALUE_STEP_STORE_PROFILER_CATEGORY = "store_profiler_category"
+        const val VALUE_STEP_DOMAIN_PICKER = "domain_picker"
+        const val VALUE_STEP_STORE_SUMMARY = "store_summary"
+        const val VALUE_STEP_PLAN_PURCHASE = "plan_purchase"
+        const val VALUE_STEP_WEB_CHECKOUT = "web_checkout"
+        const val VALUE_STEP_STORE_INSTALLATION = "store_installation"
+
+        // -- Products bulk update
+        const val KEY_PROPERTY = "property"
+        const val VALUE_PRICE = "price"
+        const val VALUE_STATUS = "status"
+        const val KEY_SELECTED_PRODUCTS_COUNT = "selected_products_count"
 
         var sendUsageStats: Boolean = true
             set(value) {

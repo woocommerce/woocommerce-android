@@ -57,7 +57,7 @@ internal class CardReaderManagerImpl(
 
     override val displayBluetoothCardReaderMessages = connectionManager.displayBluetoothCardReaderMessages
 
-    override fun initialize() {
+    override fun initialize(updateFrequency: CardReaderManager.SimulatorUpdateFrequency) {
         if (!terminal.isInitialized()) {
             terminal.getLifecycleObserver().onCreate(application)
 
@@ -75,27 +75,31 @@ internal class CardReaderManagerImpl(
 
             initStripeTerminal(logLevel)
 
-            terminal.setupSimulator()
+            terminal.setupSimulator(updateFrequency)
         } else {
             logWrapper.w(TAG, "CardReaderManager is already initialized")
         }
+    }
+
+    override fun initializeOnUpdateFrequencyChange(updateFrequency: CardReaderManager.SimulatorUpdateFrequency) {
+        terminal.setupSimulator(updateFrequency)
     }
 
     override fun discoverReaders(
         isSimulated: Boolean,
         cardReaderTypesToDiscover: CardReaderTypesToDiscover,
     ): Flow<CardReaderDiscoveryEvents> {
-        if (!terminal.isInitialized()) throw IllegalStateException("Terminal not initialized")
+        if (!terminal.isInitialized()) error("Terminal not initialized")
         return connectionManager.discoverReaders(isSimulated, cardReaderTypesToDiscover)
     }
 
     override fun startConnectionToReader(cardReader: CardReader, locationId: String) {
-        if (!terminal.isInitialized()) throw IllegalStateException("Terminal not initialized")
+        if (!terminal.isInitialized()) error("Terminal not initialized")
         connectionManager.startConnectionToReader(cardReader, locationId)
     }
 
     override suspend fun disconnectReader(): Boolean {
-        if (!terminal.isInitialized()) throw IllegalStateException("Terminal not initialized")
+        if (!terminal.isInitialized()) error("Terminal not initialized")
         if (terminal.getConnectedReader() == null) return false
         return connectionManager.disconnectReader()
     }
@@ -106,7 +110,7 @@ internal class CardReaderManagerImpl(
     }
 
     override suspend fun refundInteracPayment(refundParams: RefundParams): Flow<CardInteracRefundStatus> {
-        if (!terminal.isInitialized()) throw IllegalStateException("Terminal not initialized")
+        if (!terminal.isInitialized()) error("Terminal not initialized")
         resetBluetoothDisplayMessage()
         return interacRefundManager.refundInteracPayment(refundParams)
     }
@@ -125,12 +129,12 @@ internal class CardReaderManagerImpl(
     }
 
     override suspend fun startAsyncSoftwareUpdate() {
-        if (!terminal.isInitialized()) throw IllegalStateException("Terminal not initialized")
+        if (!terminal.isInitialized()) error("Terminal not initialized")
         softwareUpdateManager.startAsyncSoftwareUpdate()
     }
 
     override suspend fun clearCachedCredentials() {
-        if (!terminal.isInitialized()) throw IllegalStateException("Terminal not initialized")
+        if (!terminal.isInitialized()) error("Terminal not initialized")
         terminal.clearCachedCredentials()
     }
 

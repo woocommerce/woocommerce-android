@@ -49,6 +49,8 @@ class AppPrefsWrapper @Inject constructor() {
         preferredPlugin
     )
 
+    fun selectedUpdateReaderOption() = AppPrefs.updateReaderOptionSelected
+
     fun setCardReaderOnboardingData(
         localSiteId: Int,
         remoteSiteId: Long,
@@ -159,6 +161,8 @@ class AppPrefsWrapper @Inject constructor() {
     fun setProductSortingChoice(siteId: Int, value: String) = AppPrefs.setProductSortingChoice(siteId, value)
 
     fun getUnifiedLoginLastSource() = AppPrefs.getUnifiedLoginLastSource()
+
+    fun setLoginSiteAddress(loginSiteAddress: String) = AppPrefs.setLoginSiteAddress(loginSiteAddress)
 
     fun removeLoginSiteAddress() = AppPrefs.removeLoginSiteAddress()
 

@@ -118,7 +118,7 @@ private fun MyStoreSummaryScreen(
                         top = dimensionResource(id = R.dimen.major_100),
                         start = dimensionResource(id = R.dimen.major_100),
                         end = dimensionResource(id = R.dimen.major_100),
-                        bottom = dimensionResource(id = R.dimen.major_150)
+                        bottom = dimensionResource(id = R.dimen.major_125)
                     ),
                 onClick = onContinueClicked,
             ) {
@@ -164,10 +164,12 @@ private fun StoreDataSummary(
                         )
                     }
                 }
-                Text(
-                    text = myStoreSummaryState.country,
-                    style = MaterialTheme.typography.subtitle1,
-                )
+                if (!myStoreSummaryState.country.isNullOrEmpty()) {
+                    Text(
+                        text = myStoreSummaryState.country,
+                        style = MaterialTheme.typography.subtitle1,
+                    )
+                }
                 if (!myStoreSummaryState.category.isNullOrEmpty()) {
                     Text(
                         text = myStoreSummaryState.category,

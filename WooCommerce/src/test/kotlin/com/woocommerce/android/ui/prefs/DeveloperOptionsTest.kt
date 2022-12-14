@@ -2,6 +2,7 @@ package com.woocommerce.android.ui.prefs
 
 import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.R
+import com.woocommerce.android.cardreader.CardReaderManager
 import com.woocommerce.android.model.UiString
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -17,6 +18,7 @@ class DeveloperOptionsTest : BaseUnitTest() {
 
     private val savedStateHandle: SavedStateHandle = SavedStateHandle()
     private val developerOptionsRepository: DeveloperOptionsRepository = mock()
+    private val cardReaderManager: CardReaderManager = mock()
 
     @Before
     fun setup() {
@@ -77,10 +79,36 @@ class DeveloperOptionsTest : BaseUnitTest() {
         }
     }
 
+    @Test
+    fun `given reader enabled, when dev options screen accessed, then update simulated reader row displayed`() {
+
+        whenever(developerOptionsRepository.isSimulatedCardReaderEnabled()).thenReturn(true)
+
+        initViewModel()
+
+        assertThat(viewModel.viewState.value?.rows)
+            .anyMatch {
+                it.label == UiString.UiStringRes(R.string.update_simulated_reader)
+            }
+    }
+
+    @Test
+    fun `given reader disabled, when dev options screen accessed, then update reader row not displayes`() {
+        whenever(developerOptionsRepository.isSimulatedCardReaderEnabled()).thenReturn(false)
+
+        initViewModel()
+
+        assertThat(viewModel.viewState.value?.rows)
+            .noneMatch {
+                it.label == UiString.UiStringRes(R.string.update_simulated_reader)
+            }
+    }
+
     private fun initViewModel() {
         viewModel = DeveloperOptionsViewModel(
             savedStateHandle,
-            developerOptionsRepository
+            developerOptionsRepository,
+            cardReaderManager,
         )
     }
 }

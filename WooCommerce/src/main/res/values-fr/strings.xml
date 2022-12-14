@@ -1,13 +1,103 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2022-11-18 10:00:28+0000
+Translation-Revision-Date: 2022-12-06 11:54:03+0000
 Plural-Forms: nplurals=2; plural=n > 1;
 Generator: GlotPress/2.4.0-alpha
 Language: fr
 -->
 <resources>
+    <string name="store_creation_ecommerce_plan_period_two_years">2 ans</string>
+    <string name="store_creation_ecommerce_store_loading_permanent_error">Un problème est survenu lors de l’installation de la boutique…</string>
+    <string name="variations_bulk_creation_no_candidates_message">Toutes les variantes ont déjà été créées.</string>
+    <string name="variations_bulk_creation_no_candidates_title">Aucune variante à créer</string>
+    <string name="product_list_multiselect">Sélectionner plusieurs</string>
+    <string name="store_creation_ecommerce_store_loading_error">Impossible de charger votre nouvelle boutique. Veuillez patienter et réessayer…</string>
+    <string name="store_creation_ecommerce_plan_purchase_error">Impossible de finaliser l’achat.</string>
+    <string name="store_creation_domain_picker_suggestions_error">Impossible de charger les suggestions de domaine</string>
+    <string name="store_creation_domain_picker_empty_suggestions">Aucun domaine disponible pour cette recherche</string>
+    <string name="variations_bulk_creation_progress_title">Génération des variantes</string>
+    <string name="variations_bulk_creation_confirmation_message">Cette opération créera une nouvelle variante pour chaque combinaison possible d’attributs de variantes (%1$d variantes).</string>
+    <string name="variations_bulk_creation_confirmation_title">Générer toutes les variantes ?</string>
+    <string name="variations_bulk_creation_warning_message">Actuellement, la création est disponible pour %1$d variantes maximum. Générer des variantes pour ce produit créerait %2$d variantes.</string>
+    <string name="variations_bulk_creation_warning_title">Limite de génération dépassée</string>
+    <string name="variation_add_all_description">Crée des variantes pour toutes les combinaisons de vos attributs.</string>
+    <string name="variation_add_all">Générer toutes les variantes</string>
+    <string name="variation_add_new_description">Créez une nouvelle variante. Définissez manuellement quels attributs appartiennent au produit variable.</string>
+    <string name="variation_add_new">Ajouter une nouvelle variante</string>
+    <string name="variation_list_add">Ajouter une variante</string>
+    <string name="login_jetpack_installation_exit_without_connection">Quitter sans connecter</string>
+    <string name="login_jetpack_installation_continue_connection">Poursuivre la connexion</string>
+    <string name="login_jetpack_installation_connection_dismissed_explanation">Essayez de vous reconnecter pour accéder à votre boutique.</string>
+    <string name="login_jetpack_installation_connection_dismissed">Jetpack est installé, mais pas connecté.</string>
+    <string name="login_jetpack_installation_error_connection_permission_message">Vous n’êtes pas autorisé à connecter Jetpack à cette boutique</string>
+    <string name="login_jetpack_installation_error_forbidden_suggestion">Veuillez contacter le gérant ou l’administrateur de votre boutique pour obtenir de l’aide.</string>
+    <string name="login_jetpack_installation_cancel">Annuler l’installation</string>
+    <string name="login_jetpack_installation_retry_authorizing">Réessayer d’autoriser</string>
+    <string name="login_jetpack_installation_retry_activating">Réessayer d’activer</string>
+    <string name="login_jetpack_installation_retry_installing">Réessayer d’installer</string>
+    <string name="login_jetpack_installation_get_support">Obtenir de l’aide</string>
+    <string name="login_jetpack_installation_retry_or_contact_support">Veuillez réessayer. Si le problème persiste, contactez l’assistance.</string>
+    <string name="login_jetpack_installation_error_generic_message">Une erreur est survenue lors de la communication avec votre site.</string>
+    <string name="login_jetpack_installation_error_plugin_permission_message">Vous n’êtes pas autorisé à gérer les extensions sur cette boutique.</string>
+    <string name="login_jetpack_installation_error_authorizing">Erreur lors de l’autorisation de la connexion à Jetpack</string>
+    <string name="login_jetpack_installation_error_activating">Erreur lors de l’activation de Jetpack</string>
+    <string name="login_jetpack_installation_error_installing">Erreur lors de l’installation de Jetpack</string>
+    <string name="login_jetpack_installation_approve_connection">Connecter Jetpack</string>
+    <string name="login_jetpack_installation_go_to_store_button">Accéder à la boutique</string>
+    <string name="login_jetpack_installation_error">Erreur</string>
+    <string name="login_jetpack_installation_error_code_template">Code d’erreur %1$s</string>
+    <string name="login_jetpack_steps_screen_subtitle_done">Votre boutique &lt;b&gt;%1$s&lt;/b&gt; est maintenant connectée à Jetpack.</string>
+    <string name="login_jetpack_steps_screen_subtitle">Veuillez patienter pendant que nous connectons votre boutique &lt;b&gt;%1$s&lt;/b&gt; à Jetpack.</string>
+    <string name="login_jetpack_installation_steps_screen_title_done">Jetpack installé</string>
+    <string name="login_jetpack_connection_steps_screen_title_done">Jetpack connecté</string>
+    <string name="login_jetpack_connection_steps_screen_title">Connexion de Jetpack</string>
+    <string name="login_jetpack_installation_steps_screen_title">Installation de Jetpack</string>
+    <string name="login_jetpack_steps_done">Terminé</string>
+    <string name="login_jetpack_steps_authorizing_done">Connecté</string>
+    <string name="login_jetpack_steps_authorizing_validation">Validation</string>
+    <string name="login_jetpack_steps_authorizing">Connecter la boutique à Jetpack</string>
+    <string name="login_jetpack_steps_activating">Activation</string>
+    <string name="login_jetpack_steps_installing">Installation de Jetpack</string>
+    <string name="login_jetpack_connection_enter_site_credentials">Connectez-vous à &lt;b&gt;%1$s&lt;/b&gt; avec les identifiants de connexion de votre boutique pour connecter Jetpack.</string>
+    <string name="login_jetpack_installation_enter_site_credentials">Connectez-vous à &lt;b&gt;%1$s&lt;/b&gt; avec les identifiants de connexion de votre boutique pour installer Jetpack.</string>
+    <string name="login_jetpack_installation_credentials_hint">Préparez les identifiants de connexion de votre boutique.</string>
+    <string name="login_jetpack_connection_explanation">Veuillez connecter votre boutique à Jetpack pour y accéder dans cette application.</string>
+    <string name="login_jetpack_installation_explanation">Veuillez installer l’extension Jetpack gratuite pour accéder à votre boutique dans cette application.</string>
+    <string name="login_no_stores_subtitle">Devenez rapidement opérationnel et vendez vos produits grâce à une belle boutique en ligne.</string>
+    <string name="login_no_stores_header">Créer votre première boutique</string>
+    <string name="store_creation_store_name_hint">Nom de la boutique</string>
+    <string name="store_creation_store_name_subtitle">Ne vous inquiétez pas, vous pourrez toujours le modifier ultérieurement. </string>
+    <string name="store_creation_store_name_title">Quel est le nom de votre boutique ?</string>
+    <string name="store_creation_store_name_caption">À propos de votre boutique</string>
+    <string name="store_creation_installation_show_preview_button">Aperçu de la boutique</string>
+    <string name="store_creation_installation_manage_store_button">Gérer ma boutique</string>
+    <string name="store_creation_installation_success">Votre boutique a été créée !</string>
+    <string name="store_creation_installation_error">Une erreur inconnue s’est produite lors de l’installation. Veuillez réessayer…</string>
+    <string name="store_creation_ecommerce_plan_feature_sales">Canaux de vente</string>
+    <string name="store_creation_ecommerce_plan_feature_shipping_labels">Étiquettes de livraison</string>
+    <string name="store_creation_ecommerce_plan_feature_payments">Options de paiement multiples</string>
+    <string name="store_creation_ecommerce_plan_feature_reports">Rapports eCommerce</string>
+    <string name="store_creation_ecommerce_plan_feature_subscriptions">Abonnements et cartes-cadeaux</string>
+    <string name="store_creation_ecommerce_plan_feature_products">Produits illimités</string>
+    <string name="store_creation_ecommerce_plan_feature_themes">Thèmes premium</string>
+    <string name="store_creation_ecommerce_plan_period_year">année</string>
+    <string name="store_creation_ecommerce_plan_period_month">mois</string>
+    <string name="store_creation_ecommerce_plan_refund_reminder">Il n’y a aucun risque : vous pouvez annuler et obtenir un remboursement complet dans les 30 jours.</string>
+    <string name="store_creation_ecommerce_plan_purchase_button_title">Créer une boutique pour %1$s</string>
+    <string name="store_creation_ecommerce_plan_powered_by">Propulsé par</string>
+    <string name="store_creation_ecommerce_plan_features_tagline">Toutes les fonctionnalités dont vous avez besoin sont déjà intégrées.</string>
+    <string name="store_creation_ecommerce_plan_error">Impossible de charger les informations du plan…</string>
+    <string name="store_creation_summary_primary_button">Continuer vers le paiement</string>
+    <string name="store_creation_summary_subtitle">Votre boutique sera créée en fonction des options que vous choisissez.</string>
+    <string name="store_creation_summary_title">Ma boutique</string>
+    <string name="randomly_update_reader">Aléatoirement</string>
+    <string name="never_update_reader">Jamais</string>
+    <string name="always_update_reader">Toujours</string>
+    <string name="update_simulated_reader_key">Mettre à jour le simulateur de lecteur de clé</string>
+    <string name="update_simulated_reader">Mettre à jour le simulateur de lecteur de carte</string>
+    <string name="login_jetpack_connect">Connecter Jetpack</string>
+    <string name="login_jetpack_installation_screen_title">Associer la boutique</string>
     <string name="store_creation_domain_picker_suggestions_title">Suggestions</string>
-    <string name="store_creation_domain_picker_skip_button">Skip</string>
     <string name="store_creation_domain_picker_hint">Type a domain</string>
     <string name="store_creation_domain_picker_subtitle">C\'est ici que les internautes vous trouveront sur Internet. Pas d’inquiétude, vous pourrez modifier ceci ultérieurement.</string>
     <string name="store_creation_domain_picker_title">Choisir le domaine</string>
@@ -36,7 +126,6 @@ Language: fr
     <string name="site_picker_connect_existing_store">Associer une boutique existante</string>
     <string name="site_picker_create_new_store">Créer une nouvelle boutique</string>
     <string name="login_site_picker_add_a_store">Ajouter une boutique</string>
-    <string name="login_no_stores">Votre compte n’est associé à aucune boutique WooCommerce.</string>
     <string name="analytics_products_list_item_description">Ventes nettes : %1$s</string>
     <string name="analytics_products_list_header_subtitle">Articles vendus</string>
     <string name="analytics_products_list_header_title">Produits</string>
@@ -51,8 +140,6 @@ Language: fr
     <string name="analytics_orders_no_data">Aucune commande pour cette période</string>
     <string name="analytics_revenue_no_data">Pas de revenus durant cette période</string>
     <string name="analytics_revenue_card_title">Revenu</string>
-    <string name="analytics_see_report_button_content_description">Obtenez plus de détails sur le rapport</string>
-    <string name="analytics_see_report_button_text">Voir le rapport</string>
     <string name="analytics_date_range_custom">%1$s - %2$s</string>
     <string name="analytics_see_more">En savoir plus</string>
     <string name="signup_api_generic_error">Désolé, nous n’avons pas pu créer un compte pour les identifiants de connexion fournis. Veuillez essayer avec une autre adresse e-mail.</string>
@@ -420,8 +507,7 @@ Language: fr
     <string name="product_ratings_count_one">\u2022  un avis approuvé</string>
     <string name="product_ratings_count">\u2022  %d avis approuvés</string>
     <string name="tax_name_with_tax_percent"> %1$s (%2$s%%)</string>
-    <string name="orderlist_simple_payments_wip_message_enabled">Nous avons fait en sorte qu’il soit possible de créer des commandes et de recevoir des paiements depuis votre appareil ! Vous pouvez essayer ces fonctionnalités en appuyant sur le bouton « + »</string>
-    <string name="orderlist_simple_payments_wip_title">Créez des commandes et recevez des paiements !</string>
+    <string name="orderlist_simple_payments_wip_message_enabled">Nous avons fait en sorte qu’il soit possible de créer des commandes depuis votre appareil ! Vous pouvez essayer cette fonctionnalité en appuyant sur le bouton « + »</string>
     <string name="empty_inbox_description">Revenez bientôt pour découvrir d’autres conseils et idées sur le développement de votre boutique.</string>
     <string name="empty_inbox_title">Féliciations, vous avez tout lu !</string>
     <string name="orderstatus_contentDesc_withStatus">État de la commande : %s</string>
@@ -614,6 +700,7 @@ Language: fr
     <string name="simple_payments_enter_amount">Saisir le montant</string>
     <string name="simple_payments_dialog_title">Accepter le paiement</string>
     <string name="orderlist_simple_payments_menu">Paiement simplifié</string>
+    <string name="orderlist_simple_payments_wip_title">Créez des commandes depuis votre appareil !</string>
     <string name="analytics">Statistiques</string>
     <string name="jetpack_install_progress_step_four_message">Terminé</string>
     <string name="jetpack_install_progress_step_three_message">Connexion à votre boutique</string>
@@ -1025,7 +1112,7 @@ Language: fr
     <string name="shipping_label_payments_cant_edit_warning">Seul le propriétaire du site peut gérer les moyens de paiement des étiquettes d’expédition. Veuillez contacter le propriétaire de la boutique %1$s (%2$s) pour gérer les moyens de paiement.</string>
     <string name="product_detail_add_variations">Ajouter des variantes</string>
     <string name="product_variant_list_empty_action">Ajouter une variante</string>
-    <string name="product_variant_list_add_first_variation">Ajouter votre première variante</string>
+    <string name="product_variant_list_add_first_variation">Créer votre première variante</string>
     <string name="shipping_label_selected_rates_total_description">%s au total</string>
     <string name="shipping_label_selected_rates_description">%s tarifs sélectionnés</string>
     <string name="shipping_label_rate_included_options_signature_required_free">Éligible au prérequis de signature gratuite</string>

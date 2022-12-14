@@ -232,11 +232,15 @@ class CardReaderConnectViewModel @Inject constructor(
 
     private fun onReadyToStartScanning() {
         if (!cardReaderManager.initialized) {
-            cardReaderManager.initialize()
+            cardReaderManager.initialize(mapUpdateOptions(appPrefs.selectedUpdateReaderOption()))
         }
         launch {
             startScanningIfNotStarted()
         }
+    }
+
+    private fun mapUpdateOptions(updateFrequency: String): CardReaderManager.SimulatorUpdateFrequency {
+        return CardReaderManager.SimulatorUpdateFrequency.valueOf(updateFrequency)
     }
 
     private suspend fun startScanningIfNotStarted() {
@@ -446,6 +450,7 @@ class CardReaderConnectViewModel @Inject constructor(
 
     private fun onCancelClicked() {
         WooLog.e(WooLog.T.CARD_READER, "Connection flow interrupted by the user.")
+        launch { cardReaderManager.disconnectReader() }
         exitFlow(connected = false)
     }
 
@@ -455,6 +460,7 @@ class CardReaderConnectViewModel @Inject constructor(
     }
 
     private fun onReaderConnected(cardReader: CardReader) {
+        cardReaderTrackingInfoKeeper.setCardReaderBatteryLevel(cardReader.currentBatteryLevel)
         tracker.trackConnectionSucceeded()
         WooLog.e(WooLog.T.CARD_READER, "Connecting to reader succeeded.")
         storeConnectedReader(cardReader)
