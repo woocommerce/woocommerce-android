@@ -8,7 +8,7 @@ import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
-import org.wordpress.android.fluxc.module.ApplicationPasswordClientId
+import org.wordpress.android.fluxc.module.ApplicationPasswordsClientId
 import org.wordpress.android.fluxc.network.rest.wpapi.applicationpasswords.ApplicationPasswordsListener
 
 @Module
@@ -21,7 +21,7 @@ interface ApplicationPasswordsModule {
 
     companion object {
         @Provides
-        @ApplicationPasswordClientId
+        @ApplicationPasswordsClientId
         fun providesApplicationPasswordClientId() =
             "${BuildConfig.APPLICATION_ID}.app-client.${DeviceInfo.name.replace(' ', '-')}"
     }
