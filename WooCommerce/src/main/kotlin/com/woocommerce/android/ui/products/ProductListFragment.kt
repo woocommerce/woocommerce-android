@@ -53,6 +53,7 @@ import com.woocommerce.android.ui.products.ProductListViewModel.ProductListEvent
 import com.woocommerce.android.ui.products.ProductListViewModel.ProductListEvent.ShowUpdateDialog
 import com.woocommerce.android.ui.products.ProductSortAndFiltersCard.ProductSortAndFilterListener
 import com.woocommerce.android.util.CurrencyFormatter
+import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.util.StringUtils
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.widgets.SkeletonView
@@ -155,6 +156,7 @@ class ProductListFragment :
     }
 
     private fun addSelectionTracker() {
+        if (!FeatureFlag.PRODUCTS_BULK_EDITING.isEnabled()) return
         tracker = SelectionTracker.Builder(
             "productSelection", // a string to identity our selection in the context of this fragment
             binding.productsRecycler, // the RecyclerView where we will apply the tracker
