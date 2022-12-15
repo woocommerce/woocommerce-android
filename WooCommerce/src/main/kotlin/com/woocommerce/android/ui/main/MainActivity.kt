@@ -707,53 +707,61 @@ class MainActivity :
             when (event) {
                 is ViewMyStoreStats -> binding.bottomNav.currentPosition = MY_STORE
                 is ViewOrderList -> binding.bottomNav.currentPosition = ORDERS
-                is ViewZendeskTickets -> {
-                    binding.bottomNav.currentPosition = MY_STORE
-                    startActivity(HelpActivity.createIntent(this, Origin.ZENDESK_NOTIFICATION, null))
-                }
-                is ViewOrderDetail -> {
-                    intent.data = null
-                    showOrderDetail(
-                        orderId = event.uniqueId,
-                        remoteNoteId = event.remoteNoteId,
-                        launchedFromNotification = true
-                    )
-                }
-                is ViewReviewDetail -> {
-                    showReviewDetail(event.uniqueId, launchedFromNotification = true)
-                }
+                is ViewZendeskTickets -> startZendeskActivity()
+                is ViewOrderDetail -> showOrderDetail(event)
+                is ViewReviewDetail -> showReviewDetail(event.uniqueId, launchedFromNotification = true)
                 is ViewReviewList -> showReviewList()
-                is RestartActivityForNotification -> {
-                    // Add flags for handling the push notification after restart
-                    intent.putExtra(FIELD_OPENED_FROM_PUSH, true)
-                    intent.putExtra(FIELD_REMOTE_NOTIFICATION, event.notification)
-                    intent.putExtra(FIELD_PUSH_ID, event.pushId)
-                    restart()
-                }
-                is RestartActivityForAppLink -> {
-                    intent.data = event.data
-                    restart()
-                }
-                is ShowFeatureAnnouncement -> {
-                    val action = NavGraphMainDirections.actionOpenWhatsnewFromMain(event.announcement)
-                    navController.navigateSafely(action)
-                }
-                is OpenInBrowser -> {
-                    openInBrowser(event.url)
-                }
-                StartSitePicker -> {
-                    startSitePicker()
-                }
+                is RestartActivityForNotification -> restartActivityForNotification(event)
+                is RestartActivityForAppLink -> restartActivityForAppLink(event)
+                is ShowFeatureAnnouncement -> navigateToFeratureAnnouncement(event)
+                is OpenInBrowser -> openInBrowser(event.url)
+                StartSitePicker -> startSitePicker()
                 ViewPayments -> showPayments()
             }
         }
 
+        observeMoreMenuBadgeStateEvent()
+    }
+
+    private fun observeMoreMenuBadgeStateEvent() {
         viewModel.moreMenuBadgeState.observe(this) { moreMenuBadgeState ->
             when (moreMenuBadgeState) {
                 is UnseenReviews -> binding.bottomNav.showMoreMenuUnseenReviewsBadge(moreMenuBadgeState.count)
                 Hidden -> binding.bottomNav.hideMoreMenuBadge()
             }.exhaustive
         }
+    }
+
+    private fun navigateToFeratureAnnouncement(event: ShowFeatureAnnouncement) {
+        val action = NavGraphMainDirections.actionOpenWhatsnewFromMain(event.announcement)
+        navController.navigateSafely(action)
+    }
+
+    private fun showOrderDetail(event: ViewOrderDetail) {
+        intent.data = null
+        showOrderDetail(
+            orderId = event.uniqueId,
+            remoteNoteId = event.remoteNoteId,
+            launchedFromNotification = true
+        )
+    }
+
+    private fun startZendeskActivity() {
+        binding.bottomNav.currentPosition = MY_STORE
+        startActivity(HelpActivity.createIntent(this, Origin.ZENDESK_NOTIFICATION, null))
+    }
+
+    private fun restartActivityForAppLink(event: RestartActivityForAppLink) {
+        intent.data = event.data
+        restart()
+    }
+
+    private fun restartActivityForNotification(event: RestartActivityForNotification) {
+        // Add flags for handling the push notification after restart
+        intent.putExtra(FIELD_OPENED_FROM_PUSH, true)
+        intent.putExtra(FIELD_REMOTE_NOTIFICATION, event.notification)
+        intent.putExtra(FIELD_PUSH_ID, event.pushId)
+        restart()
     }
 
     override fun showProductDetail(remoteProductId: Long, enableTrash: Boolean) {
