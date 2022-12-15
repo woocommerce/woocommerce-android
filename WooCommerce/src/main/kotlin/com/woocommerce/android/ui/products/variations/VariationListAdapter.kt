@@ -21,7 +21,9 @@ import com.woocommerce.android.extensions.isSet
 import com.woocommerce.android.model.Product
 import com.woocommerce.android.model.ProductVariation
 import com.woocommerce.android.ui.products.OnLoadMoreListener
-import com.woocommerce.android.ui.products.ProductStockStatus.*
+import com.woocommerce.android.ui.products.ProductStockStatus.InStock
+import com.woocommerce.android.ui.products.ProductStockStatus.OnBackorder
+import com.woocommerce.android.ui.products.ProductStockStatus.OutOfStock
 import com.woocommerce.android.ui.products.variations.VariationListAdapter.VariationViewHolder
 import org.wordpress.android.util.PhotonUtils
 
