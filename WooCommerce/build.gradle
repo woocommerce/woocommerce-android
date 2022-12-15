@@ -99,7 +99,9 @@ android {
             pickFirst 'META-INF/LGPL2.1'
         }
 
-        resConfigs("en", "ar", "de", "es", "fr", "he", "id", "in", "it", "iw", "ja", "ko")
+        resConfigs(
+                "en", "ar", "de", "es", "fr", "he", "id", "in", "it", "iw", "ja", "ko", "nl", "pt-rBR", "ru", "sv", "tr", "zh-rCN", "zh-rTW"
+        )
     }
 
     buildFeatures {
