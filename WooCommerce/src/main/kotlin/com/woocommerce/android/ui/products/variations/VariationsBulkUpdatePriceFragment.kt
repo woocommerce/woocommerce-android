@@ -1,71 +1,45 @@
 package com.woocommerce.android.ui.products.variations
 
 import android.os.Bundle
-import android.view.Menu
-import android.view.MenuInflater
-import android.view.MenuItem
 import android.view.View
-import androidx.annotation.StringRes
-import androidx.core.view.MenuProvider
 import androidx.fragment.app.viewModels
 import com.woocommerce.android.R
 import com.woocommerce.android.databinding.FragmentVariationsBulkUpdatePriceBinding
 import com.woocommerce.android.extensions.filterNotNull
 import com.woocommerce.android.extensions.showKeyboardWithDelay
 import com.woocommerce.android.extensions.takeIfNotEqualTo
-import com.woocommerce.android.ui.base.BaseFragment
-import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.products.variations.ValuesGroupType.Common
 import com.woocommerce.android.ui.products.variations.ValuesGroupType.Mixed
 import com.woocommerce.android.ui.products.variations.ValuesGroupType.None
 import com.woocommerce.android.ui.products.variations.VariationsBulkUpdatePriceViewModel.PriceType.Regular
 import com.woocommerce.android.ui.products.variations.VariationsBulkUpdatePriceViewModel.PriceType.Sale
 import com.woocommerce.android.util.CurrencyFormatter
-import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
-import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
-import com.woocommerce.android.widgets.CustomProgressDialog
 import dagger.hilt.android.AndroidEntryPoint
-import org.wordpress.android.util.ActivityUtils.hideKeyboard
 import java.math.BigDecimal
 import javax.inject.Inject
 
 @AndroidEntryPoint
 class VariationsBulkUpdatePriceFragment :
-    BaseFragment(R.layout.fragment_variations_bulk_update_price),
-    MenuProvider {
-    @Inject lateinit var uiMessageResolver: UIMessageResolver
+    VariationsBulkUpdateBaseFragment(R.layout.fragment_variations_bulk_update_price) {
     @Inject lateinit var currencyFormatter: CurrencyFormatter
 
-    private val viewModel: VariationsBulkUpdatePriceViewModel by viewModels()
+    override val viewModel: VariationsBulkUpdatePriceViewModel by viewModels()
 
     private var _binding: FragmentVariationsBulkUpdatePriceBinding? = null
     private val binding get() = _binding!!
 
-    private var progressDialog: CustomProgressDialog? = null
-
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        requireActivity().addMenuProvider(this, viewLifecycleOwner)
         _binding = FragmentVariationsBulkUpdatePriceBinding.bind(view)
         binding.price.value.filterNotNull().observe(viewLifecycleOwner) { viewModel.onPriceEntered(it.toString()) }
         binding.price.editText.showKeyboardWithDelay()
         observeViewStateChanges()
-        observeEvents()
     }
 
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
-    }
-
-    private fun observeEvents() {
-        viewModel.event.observe(viewLifecycleOwner) { event ->
-            when (event) {
-                is ShowSnackbar -> uiMessageResolver.showSnack(event.message)
-                is Exit -> requireActivity().onBackPressedDispatcher.onBackPressed()
-            }
-        }
     }
 
     private fun observeViewStateChanges() {
@@ -98,24 +72,6 @@ class VariationsBulkUpdatePriceFragment :
         }
     }
 
-    private fun updateProgressbarDialogVisibility(visible: Boolean, @StringRes title: Int) {
-        if (visible) {
-            hideProgressDialog()
-            progressDialog = CustomProgressDialog.show(
-                getString(title),
-                getString(R.string.product_update_dialog_message)
-            ).also { it.show(parentFragmentManager, CustomProgressDialog.TAG) }
-            progressDialog?.isCancelable = false
-        } else {
-            hideProgressDialog()
-        }
-    }
-
-    private fun hideProgressDialog() {
-        progressDialog?.dismiss()
-        progressDialog = null
-    }
-
     private fun updateCurrentPricesLabel(
         pricesGroupType: ValuesGroupType,
         viewState: VariationsBulkUpdatePriceViewModel.ViewState
@@ -135,26 +91,5 @@ class VariationsBulkUpdatePriceFragment :
                 }
             }
         }
-    }
-
-    override fun onCreateMenu(menu: Menu, inflater: MenuInflater) {
-        menu.clear()
-        inflater.inflate(R.menu.menu_variations_bulk_update, menu)
-    }
-
-    override fun onMenuItemSelected(item: MenuItem): Boolean {
-        return when (item.itemId) {
-            R.id.done -> {
-                viewModel.onDoneClicked()
-                true
-            }
-            else -> false
-        }
-    }
-
-    override fun onPause() {
-        super.onPause()
-        hideProgressDialog()
-        hideKeyboard(requireActivity())
     }
 }
