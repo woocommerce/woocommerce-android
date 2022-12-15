@@ -77,7 +77,7 @@ class CheckIapEligibilityFragment : BaseFragment() {
     private fun setupObservers() {
         viewModel.event.observe(viewLifecycleOwner) { event ->
             when (event) {
-                is NavigateToWebStoreCreation -> navigateToStoreCreationWeb()
+                is NavigateToWebStoreCreation -> navigateToStoreCreationNative() //TODO REMOVE BEFORE MERGING
                 is NavigateToNativeStoreCreation -> navigateToStoreCreationNative()
             }
         }
