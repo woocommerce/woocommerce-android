@@ -93,7 +93,8 @@ class CheckIapEligibilityFragment : BaseFragment() {
     private fun navigateToStoreCreationNative() {
         findNavController()
             .navigateSafely(
-                CheckIapEligibilityFragmentDirections.actionCheckIapEligibilityFragmentToStoreNamePickerFragment()
+                CheckIapEligibilityFragmentDirections.actionCheckIapEligibilityFragmentToStoreNamePickerFragment(),
+                skipThrottling = true
             )
     }
 }

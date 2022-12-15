@@ -8,6 +8,7 @@ import com.woocommerce.android.iap.pub.PurchaseWpComPlanSupportChecker
 import com.woocommerce.android.iap.pub.model.IAPSupportedResult
 import com.woocommerce.android.ui.login.storecreation.iapeligibility.IapEligibilityViewModel.IapEligibilityEvent.NavigateToNativeStoreCreation
 import com.woocommerce.android.ui.login.storecreation.iapeligibility.IapEligibilityViewModel.IapEligibilityEvent.NavigateToWebStoreCreation
+import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -21,11 +22,15 @@ class IapEligibilityViewModel @Inject constructor(
     private val analyticsTrackerWrapper: AnalyticsTrackerWrapper
 ) : ScopedViewModel(savedStateHandle) {
     fun checkIapEligibility() {
-        launch {
-            when (val result = planSupportChecker.isIAPSupported()) {
-                is IAPSupportedResult.Success -> onSuccess(result)
-                is IAPSupportedResult.Error -> onError(result)
+        if (FeatureFlag.IAP_FOR_STORE_CREATION.isEnabled()) {
+            launch {
+                when (val result = planSupportChecker.isIAPSupported()) {
+                    is IAPSupportedResult.Success -> onSuccess(result)
+                    is IAPSupportedResult.Error -> onError(result)
+                }
             }
+        } else {
+            triggerEvent(NavigateToNativeStoreCreation)
         }
     }
 
