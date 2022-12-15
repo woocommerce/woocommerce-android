@@ -206,9 +206,9 @@ class MainActivityViewModel @Inject constructor(
     }
 
     companion object {
-        val SHORTCUT_PAYMENTS = "com.woocommerce.android.payments"
-        val SHORTCUT_VIEW_STORE = "com.woocommerce.android.viewstore"
-        val SHORTCUT_SWITCH_STORE = "com.woocommerce.android.switchstore"
-        val SHORTCUT_VIEW_STORE_ADMIN = "com.woocommerce.android.storeadmin"
+        const val SHORTCUT_PAYMENTS = "com.woocommerce.android.payments"
+        const val SHORTCUT_VIEW_STORE = "com.woocommerce.android.viewstore"
+        const val SHORTCUT_SWITCH_STORE = "com.woocommerce.android.switchstore"
+        const val SHORTCUT_VIEW_STORE_ADMIN = "com.woocommerce.android.storeadmin"
     }
 }
