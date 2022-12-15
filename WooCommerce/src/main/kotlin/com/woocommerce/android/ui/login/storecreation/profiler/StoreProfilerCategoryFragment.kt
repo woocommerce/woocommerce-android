@@ -1,4 +1,4 @@
-package com.woocommerce.android.ui.login.storecreation.name
+package com.woocommerce.android.ui.login.storecreation.profiler
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -12,13 +12,12 @@ import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.ui.main.AppBarStatus
-import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
-class StoreNamePickerFragment : BaseFragment() {
-    private val viewModel: StoreNamePickerViewModel by viewModels()
+class StoreProfilerCategoryFragment : BaseFragment() {
+    private val viewModel: StoreProfilerViewModel by viewModels()
 
     override val activityAppBarStatus: AppBarStatus
         get() = AppBarStatus.Hidden
@@ -28,7 +27,7 @@ class StoreNamePickerFragment : BaseFragment() {
             setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
             setContent {
                 WooThemeWithBackground {
-                    StoreNamePickerScreen(viewModel)
+                    StoreProfilerCategoryScreen(viewModel)
                 }
             }
         }
@@ -43,17 +42,14 @@ class StoreNamePickerFragment : BaseFragment() {
         viewModel.event.observe(viewLifecycleOwner) { event ->
             when (event) {
                 is MultiLiveEvent.Event.Exit -> findNavController().popBackStack()
-                is StoreNamePickerViewModel.NavigateToNextStep -> navigateToStoreProfilerCategoryFragment()
+                is StoreProfilerViewModel.NavigateToNextStep -> navigateToDomainPickerStep()
             }
         }
     }
 
-    private fun navigateToStoreProfilerCategoryFragment() {
-        val directions = if (FeatureFlag.STORE_PROFILER_FLOW.isEnabled()) {
-            StoreNamePickerFragmentDirections.actionStoreNamePickerFragmentToStoreProfilerCategoryFragment()
-        } else {
-            StoreNamePickerFragmentDirections.actionStoreNamePickerFragmentToDomainPickerFragment()
-        }
-        findNavController().navigateSafely(directions)
+    private fun navigateToDomainPickerStep() {
+        findNavController().navigateSafely(
+            StoreProfilerCategoryFragmentDirections.actionStoreProfilerCategoryFragmentToDomainPickerFragment()
+        )
     }
 }

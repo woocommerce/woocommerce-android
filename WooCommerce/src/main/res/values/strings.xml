@@ -2804,4 +2804,9 @@
     <string name="store_creation_store_name_title">What’s your store name?</string>
     <string name="store_creation_store_name_subtitle">Don’t worry you can always change it later. </string>
     <string name="store_creation_store_name_hint">Store name</string>
+
+    <string name="store_creation_store_categories_title">What’s your business about?</string>
+    <string name="store_creation_store_categories_subtitle">Choose a category that defines
+your business the best.</string>
+
 </resources>
