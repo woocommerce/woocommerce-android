@@ -87,13 +87,14 @@ class VariationsBulkUpdatePriceFragment :
             new.pricesGroupType?.takeIfNotEqualTo(old?.pricesGroupType) {
                 updateCurrentPricesLabel(new.pricesGroupType, new)
             }
-            new.isProgressDialogShown.takeIfNotEqualTo(old?.isProgressDialogShown) { isVisible ->
-                val title = when (new.priceType) {
-                    Sale -> R.string.variations_bulk_update_sale_prices_dialog_title
-                    Regular -> R.string.variations_bulk_update_regular_prices_dialog_title
-                }
-                updateProgressbarDialogVisibility(isVisible, title)
+        }
+        viewModel.isProgressDialogShown.observe(viewLifecycleOwner) { isShown ->
+            val priceType = viewModel.viewStateData.liveData.value?.priceType ?: return@observe
+            val title = when (priceType) {
+                Sale -> R.string.variations_bulk_update_sale_prices_dialog_title
+                Regular -> R.string.variations_bulk_update_regular_prices_dialog_title
             }
+            updateProgressbarDialogVisibility(isShown, title)
         }
     }
 

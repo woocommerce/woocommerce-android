@@ -107,12 +107,12 @@ class VariationsBulkUpdateInventoryFragment :
             new.stockQuantityGroupType?.takeIfNotEqualTo(old?.stockQuantityGroupType) {
                 updateCurrentStockQuantityLabel(new.stockQuantityGroupType, new)
             }
-            new.isProgressDialogShown.takeIfNotEqualTo(old?.isProgressDialogShown) { isVisible ->
-                updateProgressbarDialogVisibility(isVisible)
-            }
             new.isDoneEnabled.takeIfNotEqualTo(old?.isDoneEnabled) { isEnabled ->
                 doneMenuItem?.isEnabled = isEnabled
             }
+        }
+        viewModel.isProgressDialogShown.observe(viewLifecycleOwner) { isVisible ->
+            updateProgressbarDialogVisibility(isVisible)
         }
     }
 
