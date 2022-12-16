@@ -2,6 +2,7 @@ package com.woocommerce.android.ui.analytics.ranges
 
 import com.woocommerce.android.extensions.endOfToday
 import com.woocommerce.android.extensions.startOfToday
+import com.woocommerce.android.ui.analytics.ranges.AnalyticsHubRangeSelectionType.LAST_WEEK
 import com.woocommerce.android.ui.analytics.ranges.AnalyticsHubRangeSelectionType.TODAY
 import com.woocommerce.android.ui.analytics.ranges.AnalyticsHubRangeSelectionType.YESTERDAY
 import org.assertj.core.api.Assertions.assertThat
@@ -19,6 +20,30 @@ internal class AnalyticsHubDateRangeSelectionTest {
     fun setUp() {
         testTimeZone = TimeZone.getTimeZone("UTC")
         testCalendar = Calendar.getInstance(testTimeZone)
+    }
+
+    @Test
+    fun `when selection type is last week, then generate expected date information`() {
+        // Given
+        val today = midDayFrom("2022-07-01")
+        val expectedCurrentRange = AnalyticsHubTimeRange(
+            start = dayStartFrom("2022-06-20"),
+            end = dayEndFrom("2022-06-26")
+        )
+        val expectedPreviousRange = AnalyticsHubTimeRange(
+            start = dayStartFrom("2022-06-13"),
+            end = dayEndFrom("2022-06-19")
+        )
+
+        // When
+        val sut = AnalyticsHubDateRangeSelection(
+            selectionType = LAST_WEEK,
+            currentDate = today
+        )
+
+        // Then
+        assertThat(sut.currentRange).isEqualTo(expectedCurrentRange)
+        assertThat(sut.previousRange).isEqualTo(expectedPreviousRange)
     }
 
     @Test
