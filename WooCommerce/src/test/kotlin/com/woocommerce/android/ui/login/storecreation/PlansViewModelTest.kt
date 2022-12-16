@@ -107,7 +107,7 @@ class PlansViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `when a site is created, a plan with is added to site's checkout cart and a WebView is launched`() =
+    fun `when a site is created, a plan is added to site's checkout cart and a WebView is launched`() =
         testBlocking {
             whenever(repository.createNewSite(siteData, PlansViewModel.NEW_SITE_LANGUAGE_ID, TimeZone.getDefault().id))
                 .thenReturn(StoreCreationResult.Success(SITE_ID))
