@@ -102,14 +102,12 @@ class PlansViewModel @Inject constructor(
 
     fun onConfirmClicked() {
         launch {
-            val currentPlanData = _viewState.value
-            _viewState.update { LoadingState }
+            _viewState.update { (_viewState.value as PlanState).copy(isCreatingSite = true) }
             createSite().ifSuccessfulThen { siteId ->
                 if (FeatureFlag.IAP_FOR_STORE_CREATION.isEnabled()) {
                     _viewState.update { currentPlanData }
                     iapManager.purchaseWPComPlan(iapActivityWrapper)
                 } else {
-
                     newStore.update(siteId = siteId)
                     repository.addPlanToCart(
                         newStore.data.planProductId,
@@ -191,6 +189,7 @@ class PlansViewModel @Inject constructor(
     }
 
     private fun onInAppPurchaseError(result: WPComPurchaseResult.Error) {
+        _viewState.update { (_viewState.value as PlanState).copy(isCreatingSite = false) }
         Log.i("IAP TEST", "ERROR on purchase flow${result.errorType}")
     }
 
@@ -242,7 +241,8 @@ class PlansViewModel @Inject constructor(
 
         @Parcelize
         data class PlanState(
-            val plan: PlanInfo
+            val plan: PlanInfo,
+            val isCreatingSite: Boolean = false
         ) : ViewState
     }
 

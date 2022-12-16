@@ -12,8 +12,10 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.Divider
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
@@ -66,12 +68,18 @@ fun PlanScreen(viewModel: PlansViewModel, authenticator: WPComWebViewAuthenticat
     viewModel.viewState.observeAsState(LoadingState).value.let { state ->
         Crossfade(targetState = state) { viewState ->
             when (viewState) {
-                is PlanState -> PlanInformation(viewState, viewModel::onExitTriggered, viewModel::onConfirmClicked)
+                is PlanState -> PlanInformation(
+                    viewState,
+                    viewModel::onExitTriggered,
+                    viewModel::onConfirmClicked
+                )
+
                 is ErrorState -> StoreCreationErrorScreen(
                     viewState.errorType,
                     viewModel::onExitTriggered,
                     viewState.message
                 )
+
                 LoadingState -> ProgressIndicator()
                 is CheckoutState -> WebViewPayment(
                     viewState,
@@ -87,14 +95,14 @@ fun PlanScreen(viewModel: PlansViewModel, authenticator: WPComWebViewAuthenticat
 
 @Composable
 private fun PlanInformation(
-    viewState: PlanState,
+    planState: PlanState,
     onExitTriggered: () -> Unit,
     onConfirmClicked: () -> Unit
 ) {
     val systemUiController = rememberSystemUiController()
     val wooDarkPurple = colorResource(id = color.woo_purple_90)
     val statusBarColor = colorResource(id = color.color_status_bar)
-    DisposableEffect(key1 = viewState) {
+    DisposableEffect(key1 = planState) {
         systemUiController.setSystemBarsColor(
             color = wooDarkPurple,
         )
@@ -139,7 +147,7 @@ private fun PlanInformation(
             contentScale = ContentScale.FillHeight
         )
         Text(
-            text = viewState.plan.name,
+            text = planState.plan.name,
             fontWeight = FontWeight.Bold,
             color = colorResource(id = R.color.white),
             fontSize = 20.sp,
@@ -152,7 +160,7 @@ private fun PlanInformation(
                 .padding(start = dimensionResource(id = R.dimen.major_125))
         )
         Text(
-            text = viewState.plan.formattedPrice,
+            text = planState.plan.formattedPrice,
             color = colorResource(id = R.color.white),
             fontSize = 40.sp,
             fontWeight = FontWeight.Bold,
@@ -164,7 +172,7 @@ private fun PlanInformation(
                 .padding(start = dimensionResource(id = R.dimen.major_125))
         )
         Text(
-            text = "/${stringResource(viewState.plan.billingPeriod.nameId)}",
+            text = "/${stringResource(planState.plan.billingPeriod.nameId)}",
             color = colorResource(id = R.color.woo_purple_dark_secondary),
             style = MaterialTheme.typography.subtitle1,
             modifier = Modifier
@@ -225,7 +233,7 @@ private fun PlanInformation(
                     style = MaterialTheme.typography.caption
                 )
             }
-            viewState.plan.features.forEach {
+            planState.plan.features.forEach {
                 PlanFeatureRow(iconId = it.iconId, textId = it.textId)
             }
         }
@@ -261,15 +269,23 @@ private fun PlanInformation(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(horizontal = dimensionResource(id = R.dimen.major_100)),
-                onClick = onConfirmClicked
+                onClick = onConfirmClicked,
+                enabled = !planState.isCreatingSite
             ) {
-                val periodText = stringResource(id = viewState.plan.billingPeriod.nameId)
-                Text(
-                    text = stringResource(
-                        id = string.store_creation_ecommerce_plan_purchase_button_title,
-                        "${viewState.plan.formattedPrice}/$periodText"
+                if (planState.isCreatingSite) {
+                    CircularProgressIndicator(
+                        modifier = Modifier.size(size = dimensionResource(id = R.dimen.major_150)),
+                        color = colorResource(id = R.color.color_on_primary_surface)
                     )
-                )
+                } else {
+                    val periodText = stringResource(id = planState.plan.billingPeriod.nameId)
+                    Text(
+                        text = stringResource(
+                            id = string.store_creation_ecommerce_plan_purchase_button_title,
+                            "${planState.plan.formattedPrice}/$periodText"
+                        )
+                    )
+                }
             }
         }
     }
