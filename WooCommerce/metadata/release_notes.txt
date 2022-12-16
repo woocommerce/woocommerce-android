@@ -1,4 +1,3 @@
-- [*] Adds a feature of bulk updating products from the product's list. [https://github.com/woocommerce/woocommerce-android/pull/8020]
-- [*][Internal] Disconnect from a reader if a user clicks on "cancel" during connection flow [https://github.com/woocommerce/woocommerce-android/pull/7995]
-- [*] Fix for the create a new order button jerky animation [https://github.com/woocommerce/woocommerce-android/pull/7987]
+Exciting news! Now you can edit products in bulk. We also focused on polishing a few things with in person payments and order creation. Please check it out and share your feedback!
 
+Keep your feedback rolling in; it helps us figure out what to work on next.
