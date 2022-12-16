@@ -10,6 +10,7 @@ import com.woocommerce.android.ui.analytics.ranges.AnalyticsHubRangeSelectionTyp
 import com.woocommerce.android.ui.analytics.ranges.AnalyticsHubRangeSelectionType.QUARTER_TO_DATE
 import com.woocommerce.android.ui.analytics.ranges.AnalyticsHubRangeSelectionType.TODAY
 import com.woocommerce.android.ui.analytics.ranges.AnalyticsHubRangeSelectionType.WEEK_TO_DATE
+import com.woocommerce.android.ui.analytics.ranges.AnalyticsHubRangeSelectionType.YEAR_TO_DATE
 import com.woocommerce.android.ui.analytics.ranges.AnalyticsHubRangeSelectionType.YESTERDAY
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
@@ -26,6 +27,30 @@ internal class AnalyticsHubDateRangeSelectionTest {
     fun setUp() {
         testTimeZone = TimeZone.getTimeZone("UTC")
         testCalendar = Calendar.getInstance(testTimeZone)
+    }
+
+    @Test
+    fun `when selection type is year to date, then generate expected date information`() {
+        // Given
+        val today = midDayFrom("2020-02-29")
+        val expectedCurrentRange = AnalyticsHubTimeRange(
+            start = dayStartFrom("2020-01-01"),
+            end = today
+        )
+        val expectedPreviousRange = AnalyticsHubTimeRange(
+            start = dayStartFrom("2019-01-01"),
+            end = midDayFrom("2019-02-28")
+        )
+
+        // When
+        val sut = AnalyticsHubDateRangeSelection(
+            selectionType = YEAR_TO_DATE,
+            currentDate = today
+        )
+
+        // Then
+        assertThat(sut.currentRange).isEqualTo(expectedCurrentRange)
+        assertThat(sut.previousRange).isEqualTo(expectedPreviousRange)
     }
 
     @Test
