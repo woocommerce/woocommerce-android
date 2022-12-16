@@ -26,6 +26,30 @@ internal class AnalyticsHubDateRangeSelectionTest {
     }
 
     @Test
+    fun `when selection type is last quarter, then generate expected date information`() {
+        // Given
+        val today = midDayFrom("2022-05-15")
+        val expectedCurrentRange = AnalyticsHubTimeRange(
+            start = dayStartFrom("2012-01-01"),
+            end = dayEndFrom("2022-03-31")
+        )
+        val expectedPreviousRange = AnalyticsHubTimeRange(
+            start = dayStartFrom("2021-10-01"),
+            end = dayEndFrom("2021-12-31")
+        )
+
+        // When
+        val sut = AnalyticsHubDateRangeSelection(
+            selectionType = LAST_MONTH,
+            currentDate = today
+        )
+
+        // Then
+        assertThat(sut.currentRange).isEqualTo(expectedCurrentRange)
+        assertThat(sut.previousRange).isEqualTo(expectedPreviousRange)
+    }
+
+    @Test
     fun `when selection type is month to date, then generate expected date information`() {
         // Given
         val today = midDayFrom("2010-07-31")
