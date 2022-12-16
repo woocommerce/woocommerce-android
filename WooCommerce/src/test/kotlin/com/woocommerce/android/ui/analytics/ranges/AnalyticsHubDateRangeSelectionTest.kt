@@ -3,8 +3,10 @@ package com.woocommerce.android.ui.analytics.ranges
 import com.woocommerce.android.extensions.endOfToday
 import com.woocommerce.android.extensions.startOfToday
 import com.woocommerce.android.ui.analytics.ranges.AnalyticsHubRangeSelectionType.LAST_MONTH
+import com.woocommerce.android.ui.analytics.ranges.AnalyticsHubRangeSelectionType.LAST_QUARTER
 import com.woocommerce.android.ui.analytics.ranges.AnalyticsHubRangeSelectionType.LAST_WEEK
 import com.woocommerce.android.ui.analytics.ranges.AnalyticsHubRangeSelectionType.MONTH_TO_DATE
+import com.woocommerce.android.ui.analytics.ranges.AnalyticsHubRangeSelectionType.QUARTER_TO_DATE
 import com.woocommerce.android.ui.analytics.ranges.AnalyticsHubRangeSelectionType.TODAY
 import com.woocommerce.android.ui.analytics.ranges.AnalyticsHubRangeSelectionType.WEEK_TO_DATE
 import com.woocommerce.android.ui.analytics.ranges.AnalyticsHubRangeSelectionType.YESTERDAY
@@ -26,6 +28,30 @@ internal class AnalyticsHubDateRangeSelectionTest {
     }
 
     @Test
+    fun `when selection type is quarter to date, then generate expected date information`() {
+        // Given
+        val today = midDayFrom("2022-02-15")
+        val expectedCurrentRange = AnalyticsHubTimeRange(
+            start = dayStartFrom("2022-01-01"),
+            end = today
+        )
+        val expectedPreviousRange = AnalyticsHubTimeRange(
+            start = dayStartFrom("2021-10-01"),
+            end = midDayFrom("2021-11-15")
+        )
+
+        // When
+        val sut = AnalyticsHubDateRangeSelection(
+            selectionType = QUARTER_TO_DATE,
+            currentDate = today
+        )
+
+        // Then
+        assertThat(sut.currentRange).isEqualTo(expectedCurrentRange)
+        assertThat(sut.previousRange).isEqualTo(expectedPreviousRange)
+    }
+
+    @Test
     fun `when selection type is last quarter, then generate expected date information`() {
         // Given
         val today = midDayFrom("2022-05-15")
@@ -40,7 +66,7 @@ internal class AnalyticsHubDateRangeSelectionTest {
 
         // When
         val sut = AnalyticsHubDateRangeSelection(
-            selectionType = LAST_MONTH,
+            selectionType = LAST_QUARTER,
             currentDate = today
         )
 
