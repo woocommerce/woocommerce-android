@@ -2,6 +2,7 @@ package com.woocommerce.android.ui.analytics.ranges
 
 import com.woocommerce.android.extensions.endOfToday
 import com.woocommerce.android.extensions.startOfToday
+import com.woocommerce.android.ui.analytics.ranges.AnalyticsHubRangeSelectionType.LAST_MONTH
 import com.woocommerce.android.ui.analytics.ranges.AnalyticsHubRangeSelectionType.LAST_WEEK
 import com.woocommerce.android.ui.analytics.ranges.AnalyticsHubRangeSelectionType.TODAY
 import com.woocommerce.android.ui.analytics.ranges.AnalyticsHubRangeSelectionType.WEEK_TO_DATE
@@ -21,6 +22,30 @@ internal class AnalyticsHubDateRangeSelectionTest {
     fun setUp() {
         testTimeZone = TimeZone.getTimeZone("UTC")
         testCalendar = Calendar.getInstance(testTimeZone)
+    }
+
+    @Test
+    fun `when selection type is last month, then generate expected date information`() {
+        // Given
+        val today = midDayFrom("2010-07-15")
+        val expectedCurrentRange = AnalyticsHubTimeRange(
+            start = dayStartFrom("2010-06-01"),
+            end = dayEndFrom("2010-06-30")
+        )
+        val expectedPreviousRange = AnalyticsHubTimeRange(
+            start = dayStartFrom("2010-05-01"),
+            end = dayEndFrom("2010-05-31")
+        )
+
+        // When
+        val sut = AnalyticsHubDateRangeSelection(
+            selectionType = LAST_MONTH,
+            currentDate = today
+        )
+
+        // Then
+        assertThat(sut.currentRange).isEqualTo(expectedCurrentRange)
+        assertThat(sut.previousRange).isEqualTo(expectedPreviousRange)
     }
 
     @Test
