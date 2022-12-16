@@ -4,6 +4,7 @@ import android.net.Uri
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
 import com.woocommerce.android.AppPrefs
+import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsEvent.REVIEW_OPEN
@@ -39,6 +40,7 @@ class MainActivityViewModel @Inject constructor(
     private val buildConfigWrapper: BuildConfigWrapper,
     private val prefs: AppPrefs,
     private val analyticsTrackerWrapper: AnalyticsTrackerWrapper,
+    private val appPrefsWrapper: AppPrefsWrapper,
     private val resolveAppLink: ResolveAppLink,
     unseenReviewsCountHandler: UnseenReviewsCountHandler,
 ) : ScopedViewModel(savedState) {
@@ -57,15 +59,28 @@ class MainActivityViewModel @Inject constructor(
     fun handleShortcutAction(action: String?) {
         when (action) {
             SHORTCUT_PAYMENTS -> {
+                analyticsTrackerWrapper.track(
+                    AnalyticsEvent.SHORTCUT_PAYMENTS_TAPPED
+                )
                 triggerEvent(ViewPayments)
             }
             SHORTCUT_VIEW_STORE -> {
+                analyticsTrackerWrapper.track(
+                    AnalyticsEvent.SHORTCUT_VIEW_STORE_TAPPED
+                )
                 triggerEvent(OpenInBrowser(selectedSite.get().url))
             }
             SHORTCUT_SWITCH_STORE -> {
+                analyticsTrackerWrapper.track(
+                    AnalyticsEvent.SHORTCUT_SWITCH_STORE_TAPPED
+                )
+                appPrefsWrapper.setStoreCreationSource(AnalyticsTracker.VALUE_SWITCHING_STORE)
                 triggerEvent(StartSitePicker)
             }
             SHORTCUT_VIEW_STORE_ADMIN -> {
+                analyticsTrackerWrapper.track(
+                    AnalyticsEvent.SHORTCUT_VIEW_STORE_ADMIN_TAPPED
+                )
                 triggerEvent(OpenInBrowser(selectedSite.get().adminUrl))
             }
         }

@@ -2,6 +2,7 @@ package com.woocommerce.android.ui.main
 
 import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.AppPrefs
+import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsEvent.REVIEW_OPEN
 import com.woocommerce.android.analytics.AnalyticsTracker
@@ -70,6 +71,7 @@ class MainActivityViewModelTest : BaseUnitTest() {
     private val savedStateHandle: SavedStateHandle = SavedStateHandle()
     private val selectedSite: SelectedSite = mock()
     private val analyticsTrackerWrapper: AnalyticsTrackerWrapper = mock()
+    private val appPrefsWrapper: AppPrefsWrapper = mock()
 
     private val siteStore: SiteStore = mock()
     private val siteModel: SiteModel = SiteModel().apply {
@@ -513,6 +515,90 @@ class MainActivityViewModelTest : BaseUnitTest() {
         }
     }
 
+    @Test
+    fun `given payments shortcut, when app opened, then track payments opened event`() {
+        testBlocking {
+            // GIVEN
+            createViewModel()
+
+            // WHEN
+            viewModel.handleShortcutAction("com.woocommerce.android.payments")
+
+            // THEN
+            verify(analyticsTrackerWrapper).track(
+                AnalyticsEvent.SHORTCUT_PAYMENTS_TAPPED
+            )
+        }
+    }
+
+    @Test
+    fun `given view store shortcut, when app opened, then track SHORTCUT_VIEW_STORE_TAPPED event`() {
+        testBlocking {
+            // GIVEN
+            createViewModel()
+            whenever(selectedSite.get()).thenReturn(siteModel)
+
+            // WHEN
+            viewModel.handleShortcutAction("com.woocommerce.android.viewstore")
+
+            // THEN
+            verify(analyticsTrackerWrapper).track(
+                AnalyticsEvent.SHORTCUT_VIEW_STORE_TAPPED
+            )
+        }
+    }
+
+    @Test
+    fun `given view store admin shortcut, when app opened, then track SHORTCUT_VIEW_STORE_ADMIN_TAPPED event`() {
+        testBlocking {
+            // GIVEN
+            createViewModel()
+            whenever(selectedSite.get()).thenReturn(siteModel)
+
+            // WHEN
+            viewModel.handleShortcutAction("com.woocommerce.android.storeadmin")
+
+            // THEN
+            verify(analyticsTrackerWrapper).track(
+                AnalyticsEvent.SHORTCUT_VIEW_STORE_ADMIN_TAPPED
+            )
+        }
+    }
+
+    @Test
+    fun `given switch store admin shortcut, when app opened, then track SHORTCUT_SWITCH_STORE_TAPPED event`() {
+        testBlocking {
+            // GIVEN
+            createViewModel()
+
+            // WHEN
+            viewModel.handleShortcutAction("com.woocommerce.android.switchstore")
+
+            // THEN
+            verify(analyticsTrackerWrapper).track(
+                AnalyticsEvent.SHORTCUT_SWITCH_STORE_TAPPED
+            )
+        }
+    }
+
+    @Test
+    fun `given switch store admin shortcut, when app opened, then set store creation source`() {
+        testBlocking {
+            // GIVEN
+            createViewModel()
+
+            // WHEN
+            viewModel.handleShortcutAction("com.woocommerce.android.switchstore")
+
+            // THEN
+            verify(appPrefsWrapper).setStoreCreationSource(
+                AnalyticsTracker.VALUE_SWITCHING_STORE
+            )
+        }
+    }
+
+    //endregion
+
     private fun createViewModel() {
         viewModel = spy(
             MainActivityViewModel(
@@ -524,6 +610,7 @@ class MainActivityViewModelTest : BaseUnitTest() {
                 buildConfigWrapper,
                 prefs,
                 analyticsTrackerWrapper,
+                appPrefsWrapper,
                 mock(),
                 unseenReviewsCountHandler,
             )
