@@ -6,8 +6,8 @@ class AnalyticsHubDateRangeSelection(
     private val selectionType: AnalyticsHubRangeSelectionType,
     private val currentDate: Date = Date()
 ) {
-    private val currentRange: AnalyticsHubTimeRange?
-    private val previousRange: AnalyticsHubTimeRange?
+    val currentRange: AnalyticsHubTimeRange?
+    val previousRange: AnalyticsHubTimeRange?
 
     init {
         val rangeData = selectionType.generateTimeRangeData(currentDate)
