@@ -16,8 +16,8 @@ enum class AnalyticsHubRangeSelectionType {
     YEAR_TO_DATE,
     CUSTOM;
 
-    fun generateTimeRangeData(referenceDate: Date): AnalyticsHubTimeRangeData {
-        return AnalyticsHubTodayRangeData(referenceDate)
+    fun generateTimeRangeData(referenceDate: Date, calendar: Calendar): AnalyticsHubTimeRangeData {
+        return AnalyticsHubTodayRangeData(referenceDate, calendar)
 //        return when (this) {
 //            TODAY -> AnalyticsHubTodayTimeRangeData()
 //            YESTERDAY -> AnalyticsHubYesterdayTimeRangeData()
