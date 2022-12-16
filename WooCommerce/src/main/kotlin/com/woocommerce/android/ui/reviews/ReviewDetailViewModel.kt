@@ -9,6 +9,7 @@ import com.woocommerce.android.model.ProductReview
 import com.woocommerce.android.model.RequestResult
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.ui.reviews.ReviewDetailViewModel.ReviewDetailEvent.NavigateBackFromNotification
+import com.woocommerce.android.ui.reviews.ReviewDetailViewModel.ReviewDetailEvent.Reply
 import com.woocommerce.android.ui.reviews.domain.MarkReviewAsSeen
 import com.woocommerce.android.viewmodel.LiveDataDelegate
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
@@ -18,6 +19,7 @@ import com.woocommerce.android.viewmodel.ScopedViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import kotlinx.parcelize.Parcelize
+import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooResult
 import javax.inject.Inject
 
 @HiltViewModel
@@ -126,6 +128,23 @@ class ReviewDetailViewModel @Inject constructor(
         return false
     }
 
+    fun onReviewReplied(reviewReply: String) {
+        launch {
+            val result: WooResult<Unit> = repository.reply(
+                remoteReviewId,
+                reviewReply
+            )
+
+            val resultMessage = if (result.isError) R.string.review_reply_failure else R.string.review_reply_success
+
+            triggerEvent(ShowSnackbar(resultMessage))
+        }
+    }
+
+    fun onReplyClicked() {
+        triggerEvent(Reply)
+    }
+
     @Parcelize
     data class ViewState(
         val productReview: ProductReview? = null,
@@ -133,6 +152,7 @@ class ReviewDetailViewModel @Inject constructor(
     ) : Parcelable
 
     sealed class ReviewDetailEvent : Event() {
+        object Reply : ReviewDetailEvent()
         object NavigateBackFromNotification : ReviewDetailEvent()
     }
 }

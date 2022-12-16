@@ -72,6 +72,17 @@ class ReviewDetailRepository @Inject constructor(
         }
     }
 
+    suspend fun reply(productReviewId: Long, content: String) =
+        withContext(Dispatchers.IO) {
+            productStore.replyToReview(
+                WCProductStore.PostReviewReply(
+                    site = selectedSite.get(),
+                    productReviewId = productReviewId,
+                    replyContent = content
+                )
+            )
+        }
+
     private fun trackMarkNotificationAsReadStarted(notification: NotificationModel, remoteReviewId: Long) {
         AnalyticsTracker.track(
             AnalyticsEvent.REVIEW_MARK_READ,
