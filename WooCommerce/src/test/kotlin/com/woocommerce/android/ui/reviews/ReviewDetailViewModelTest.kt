@@ -52,7 +52,8 @@ class ReviewDetailViewModelTest : BaseUnitTest() {
             networkStatus,
             repository,
             markReviewAsSeen,
-            reviewModerationHandler
+            reviewModerationHandler,
+            mock()
         )
     }
 

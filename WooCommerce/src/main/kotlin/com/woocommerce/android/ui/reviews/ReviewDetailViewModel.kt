@@ -4,7 +4,11 @@ import android.os.Parcelable
 import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsEvent
+import com.woocommerce.android.analytics.AnalyticsEvent.REVIEW_REPLY_SEND
+import com.woocommerce.android.analytics.AnalyticsEvent.REVIEW_REPLY_SEND_FAILED
+import com.woocommerce.android.analytics.AnalyticsEvent.REVIEW_REPLY_SEND_SUCCESS
 import com.woocommerce.android.analytics.AnalyticsTracker
+import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.model.ProductReview
 import com.woocommerce.android.model.RequestResult
 import com.woocommerce.android.tools.NetworkStatus
@@ -28,7 +32,8 @@ class ReviewDetailViewModel @Inject constructor(
     private val networkStatus: NetworkStatus,
     private val repository: ReviewDetailRepository,
     private val markReviewAsSeen: MarkReviewAsSeen,
-    private val reviewModerationHandler: ReviewModerationHandler
+    private val reviewModerationHandler: ReviewModerationHandler,
+    private val analyticsTracker: AnalyticsTrackerWrapper
 ) : ScopedViewModel(savedState) {
     private var remoteReviewId = 0L
 
@@ -129,15 +134,20 @@ class ReviewDetailViewModel @Inject constructor(
     }
 
     fun onReviewReplied(reviewReply: String) {
+        analyticsTracker.track(REVIEW_REPLY_SEND)
         launch {
             val result: WooResult<Unit> = repository.reply(
                 remoteReviewId,
                 reviewReply
             )
 
-            val resultMessage = if (result.isError) R.string.review_reply_failure else R.string.review_reply_success
-
-            triggerEvent(ShowSnackbar(resultMessage))
+            if (result.isError) {
+                analyticsTracker.track(REVIEW_REPLY_SEND_FAILED)
+                triggerEvent(ShowSnackbar(R.string.review_reply_failure))
+            } else {
+                analyticsTracker.track(REVIEW_REPLY_SEND_SUCCESS)
+                triggerEvent(ShowSnackbar(R.string.review_reply_success))
+            }
         }
     }
 
