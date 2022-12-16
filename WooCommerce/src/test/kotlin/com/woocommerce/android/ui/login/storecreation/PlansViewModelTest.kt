@@ -162,9 +162,6 @@ class PlansViewModelTest : BaseUnitTest() {
             whenever(repository.getSiteByUrl(newStore.data.domain!!))
                 .thenReturn(null)
 
-            whenever(repository.addPlanToCart(newStore.data.planProductId, newStore.data.planPathSlug, SITE_ID))
-                .thenReturn(StoreCreationResult.Success(Unit))
-
             whenViewModelIsCreated()
 
             viewModel.onConfirmClicked()
