@@ -111,7 +111,7 @@ class PlansViewModelTest : BaseUnitTest() {
         testBlocking {
             whenever(repository.createNewSite(siteData, PlansViewModel.NEW_SITE_LANGUAGE_ID, TimeZone.getDefault().id))
                 .thenReturn(StoreCreationResult.Success(SITE_ID))
-            
+
             whenever(repository.addPlanToCart(newStore.data.planProductId, newStore.data.planPathSlug, SITE_ID))
                 .thenReturn(StoreCreationResult.Success(Unit))
 
@@ -157,7 +157,7 @@ class PlansViewModelTest : BaseUnitTest() {
     fun `when a site already exists and and it doesn't belong to the user, the flow fails`() =
         testBlocking {
             whenever(repository.createNewSite(siteData, PlansViewModel.NEW_SITE_LANGUAGE_ID, TimeZone.getDefault().id))
-                .thenReturn(StoreCreationResult.Failure(SITE_ADDRESS_ALREADY_EXISTS)
+                .thenReturn(StoreCreationResult.Failure(SITE_ADDRESS_ALREADY_EXISTS))
 
             whenever(repository.getSiteByUrl(newStore.data.domain!!))
                 .thenReturn(null)
