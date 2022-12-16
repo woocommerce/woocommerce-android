@@ -1,10 +1,12 @@
 package com.woocommerce.android.ui.login.storecreation.plans
 
 import android.os.Parcelable
+import android.util.Log
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
+import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.R.drawable
 import com.woocommerce.android.R.string
 import com.woocommerce.android.analytics.AnalyticsEvent.SITE_CREATION_STEP
@@ -12,6 +14,10 @@ import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_STEP_PLAN_PURCHASE
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_STEP_WEB_CHECKOUT
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
+import com.woocommerce.android.extensions.exhaustive
+import com.woocommerce.android.iap.pub.IAPActivityWrapper
+import com.woocommerce.android.iap.pub.PurchaseWPComPlanActions
+import com.woocommerce.android.iap.pub.model.WPComPurchaseResult
 import com.woocommerce.android.ui.login.storecreation.NewStore
 import com.woocommerce.android.ui.login.storecreation.StoreCreationErrorType
 import com.woocommerce.android.ui.login.storecreation.StoreCreationErrorType.SITE_ADDRESS_ALREADY_EXISTS
@@ -26,11 +32,13 @@ import com.woocommerce.android.ui.login.storecreation.plans.PlansViewModel.ViewS
 import com.woocommerce.android.ui.login.storecreation.plans.PlansViewModel.ViewState.ErrorState
 import com.woocommerce.android.ui.login.storecreation.plans.PlansViewModel.ViewState.LoadingState
 import com.woocommerce.android.ui.login.storecreation.plans.PlansViewModel.ViewState.PlanState
+import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.getStateFlow
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.parcelize.Parcelize
@@ -42,7 +50,8 @@ class PlansViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
     private val analyticsTrackerWrapper: AnalyticsTrackerWrapper,
     private val newStore: NewStore,
-    private val repository: StoreCreationRepository
+    private val repository: StoreCreationRepository,
+    private val iapManager: PurchaseWPComPlanActions
 ) : ScopedViewModel(savedStateHandle) {
     companion object {
         private const val NEW_SITE_LANGUAGE_ID = "en"
@@ -57,9 +66,61 @@ class PlansViewModel @Inject constructor(
     private val _viewState = savedState.getStateFlow<ViewState>(this, LoadingState)
     val viewState = _viewState.asLiveData()
 
+    private lateinit var iapActivityWrapper: IAPActivityWrapper
+
     init {
         loadPlan()
         trackStep(VALUE_STEP_PLAN_PURCHASE)
+
+        if (FeatureFlag.IAP_FOR_STORE_CREATION.isEnabled()) {
+            viewModelScope.launch {
+                iapManager.purchaseWpComPlanResult.collectLatest { result ->
+                    when (result) {
+                        is WPComPurchaseResult.Success -> {
+                            _viewState.update { LoadingState }
+                            createSite().ifSuccessfulThen { siteId ->
+                                newStore.update(siteId = siteId)
+                                onStoreCreated()
+                            }
+                        }
+
+                        is WPComPurchaseResult.Error -> onInAppPurchaseError(result)
+                    }.exhaustive
+                }
+            }
+        }
+    }
+
+    fun setIAPActivityWrapper(wrapper: IAPActivityWrapper) {
+        iapActivityWrapper = wrapper
+    }
+
+    fun onExitTriggered() {
+        triggerEvent(Exit)
+    }
+
+    fun onConfirmClicked() {
+        if (FeatureFlag.IAP_FOR_STORE_CREATION.isEnabled()) {
+            showInAppPurchaseFlow()
+        } else {
+            _viewState.update { LoadingState }
+            launch {
+                createSite().ifSuccessfulThen { siteId ->
+                    newStore.update(siteId = siteId)
+                    repository.addPlanToCart(
+                        newStore.data.planProductId,
+                        newStore.data.planPathSlug,
+                        newStore.data.siteId
+                    ).ifSuccessfulThen {
+                        showCheckoutWebsite()
+                    }
+                }
+            }
+        }
+    }
+
+    fun onStoreCreated() {
+        triggerEvent(NavigateToNextStep)
     }
 
     private fun trackStep(step: String) {
@@ -125,30 +186,14 @@ class PlansViewModel @Inject constructor(
         trackStep(VALUE_STEP_WEB_CHECKOUT)
     }
 
-    private fun launchInstallation() {
-        suspend fun <T : Any?> StoreCreationResult<T>.ifSuccessfulThen(
-            successAction: suspend (T) -> Unit
-        ) {
-            when (this) {
-                is Success -> successAction(this.data)
-                is Failure -> _viewState.update { ErrorState(this.type, this.message) }
-            }
-        }
-
-        _viewState.update { LoadingState }
-
+    private fun showInAppPurchaseFlow() {
         launch {
-            createSite().ifSuccessfulThen { siteId ->
-                newStore.update(siteId = siteId)
-                repository.addPlanToCart(
-                    newStore.data.planProductId,
-                    newStore.data.planPathSlug,
-                    newStore.data.siteId
-                ).ifSuccessfulThen {
-                    showCheckoutWebsite()
-                }
-            }
+            iapManager.purchaseWPComPlan(iapActivityWrapper)
         }
+    }
+
+    private fun onInAppPurchaseError(result: WPComPurchaseResult.Error) {
+        Log.i("IAP error", "${result.errorType}")
     }
 
     private suspend fun createSite(): StoreCreationResult<Long> {
@@ -174,16 +219,13 @@ class PlansViewModel @Inject constructor(
         ).recoverIfSiteExists()
     }
 
-    fun onExitTriggered() {
-        triggerEvent(Exit)
-    }
-
-    fun onConfirmClicked() {
-        launchInstallation()
-    }
-
-    fun onStoreCreated() {
-        triggerEvent(NavigateToNextStep)
+    private suspend fun <T : Any?> StoreCreationResult<T>.ifSuccessfulThen(
+        successAction: suspend (T) -> Unit
+    ) {
+        when (this) {
+            is Success -> successAction(this.data)
+            is Failure -> _viewState.update { ErrorState(this.type, this.message) }
+        }
     }
 
     sealed interface ViewState : Parcelable {
