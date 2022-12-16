@@ -50,6 +50,7 @@ class AccountRepository @Inject constructor(
                 true
             }
         } else {
+            // TODO send a request to delete the application password
             selectedSite.reset()
             true
         }
