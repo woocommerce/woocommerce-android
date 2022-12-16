@@ -7,7 +7,7 @@ import com.woocommerce.android.tools.SelectedSite
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import org.wordpress.android.fluxc.network.rest.wpapi.WPAPIResponse
-import org.wordpress.android.fluxc.network.rest.wpapi.applicationpasswords.ApplicationPasswordNetwork
+import org.wordpress.android.fluxc.network.rest.wpapi.applicationpasswords.ApplicationPasswordsNetwork
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -18,7 +18,7 @@ import javax.inject.Singleton
 @Singleton
 class ApplicationPasswordsTester @Inject constructor(
     @AppCoroutineScope private val coroutineScope: CoroutineScope,
-    private val network: ApplicationPasswordNetwork,
+    private val network: ApplicationPasswordsNetwork,
     private val selectedSite: SelectedSite,
     private val analyticsTrackerWrapper: AnalyticsTrackerWrapper
 ) {
