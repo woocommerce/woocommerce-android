@@ -31,13 +31,9 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.Icon
-import androidx.compose.material.IconButton
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
-import androidx.compose.material.TopAppBar
-import androidx.compose.material.icons.Icons.Filled
-import androidx.compose.material.icons.filled.Clear
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -59,9 +55,9 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.PreviewParameterProvider
-import androidx.compose.ui.unit.dp
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.compose.annotatedStringRes
+import com.woocommerce.android.ui.compose.component.Toolbar
 import com.woocommerce.android.ui.compose.component.WCColoredButton
 import com.woocommerce.android.ui.compose.component.WCOutlinedButton
 import com.woocommerce.android.ui.compose.component.WCTextButton
@@ -400,27 +396,6 @@ private val JetpackActivationMainViewModel.StepType.title
         JetpackActivationMainViewModel.StepType.Connection -> R.string.login_jetpack_steps_authorizing
         JetpackActivationMainViewModel.StepType.Done -> R.string.login_jetpack_steps_done
     }
-
-@Composable
-private fun Toolbar(
-    onCloseClick: () -> Unit,
-    modifier: Modifier = Modifier
-) {
-    TopAppBar(
-        backgroundColor = MaterialTheme.colors.surface,
-        title = {},
-        navigationIcon = {
-            IconButton(onClick = onCloseClick) {
-                Icon(
-                    Filled.Clear,
-                    contentDescription = stringResource(id = R.string.back)
-                )
-            }
-        },
-        elevation = 0.dp,
-        modifier = modifier
-    )
-}
 
 @Suppress("MagicNumber")
 private class ViewStatePreviewProvider : PreviewParameterProvider<JetpackActivationMainViewModel.ViewState> {

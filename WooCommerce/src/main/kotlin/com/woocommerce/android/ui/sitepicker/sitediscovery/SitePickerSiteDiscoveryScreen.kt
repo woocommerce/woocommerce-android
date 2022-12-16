@@ -14,14 +14,9 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.Icon
-import androidx.compose.material.IconButton
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
-import androidx.compose.material.TopAppBar
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
@@ -32,11 +27,11 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.compose.component.DialogButtonsRowLayout
 import com.woocommerce.android.ui.compose.component.ProgressDialog
+import com.woocommerce.android.ui.compose.component.Toolbar
 import com.woocommerce.android.ui.compose.component.WCColoredButton
 import com.woocommerce.android.ui.compose.component.WCOutlinedButton
 import com.woocommerce.android.ui.compose.component.WCOutlinedTextField
@@ -51,8 +46,9 @@ fun SitePickerSiteDiscoveryScreen(viewModel: SitePickerSiteDiscoveryViewModel) {
     viewModel.viewState.observeAsState().value?.let { viewState ->
         Scaffold(topBar = {
             Toolbar(
-                onHelpButtonClick = viewModel::onHelpButtonClick,
-                onBackButtonClick = viewModel::onBackButtonClick
+                onCloseButtonClick = viewModel::onBackButtonClick,
+                onActionButtonClick = viewModel::onHelpButtonClick,
+                title = stringResource(id = R.string.login_site_picker_enter_site_address)
             )
         }) { paddingValues ->
             val transition = updateTransition(viewState, label = "ViewStateTransition")
@@ -185,36 +181,6 @@ fun ErrorView(viewState: ErrorState, modifier: Modifier = Modifier) {
             Text(text = viewState.secondaryButtonText)
         }
     }
-}
-
-@Composable
-private fun Toolbar(
-    onHelpButtonClick: () -> Unit,
-    onBackButtonClick: () -> Unit,
-    modifier: Modifier = Modifier
-) {
-    TopAppBar(
-        backgroundColor = MaterialTheme.colors.surface,
-        title = { Text(stringResource(id = R.string.login_site_picker_enter_site_address)) },
-        navigationIcon = {
-            IconButton(onClick = onBackButtonClick) {
-                Icon(
-                    Icons.Filled.ArrowBack,
-                    contentDescription = stringResource(id = R.string.back)
-                )
-            }
-        },
-        actions = {
-            IconButton(onClick = onHelpButtonClick) {
-                Icon(
-                    painter = painterResource(id = R.drawable.ic_help_24dp),
-                    contentDescription = stringResource(id = R.string.help)
-                )
-            }
-        },
-        elevation = 0.dp,
-        modifier = modifier
-    )
 }
 
 @Composable

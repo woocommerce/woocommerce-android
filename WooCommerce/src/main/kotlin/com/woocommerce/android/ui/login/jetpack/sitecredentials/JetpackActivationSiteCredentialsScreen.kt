@@ -11,12 +11,9 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.Icon
-import androidx.compose.material.IconButton
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
-import androidx.compose.material.TopAppBar
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Clear
 import androidx.compose.runtime.Composable
@@ -27,10 +24,10 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.compose.annotatedStringRes
 import com.woocommerce.android.ui.compose.component.ProgressDialog
+import com.woocommerce.android.ui.compose.component.Toolbar
 import com.woocommerce.android.ui.compose.component.WCColoredButton
 import com.woocommerce.android.ui.compose.component.WCOutlinedTextField
 import com.woocommerce.android.ui.compose.component.WCPasswordField
@@ -63,7 +60,12 @@ fun JetpackActivationSiteCredentialsScreen(
     onCloseClick: () -> Unit = {}
 ) {
     Scaffold(
-        topBar = { Toolbar(onCloseClick = onCloseClick) }
+        topBar = {
+            Toolbar(
+                onCloseButtonClick = onCloseClick,
+                closeButtonIcon = Icons.Filled.Clear
+            )
+        }
     ) { paddingValues ->
         Column(
             modifier = Modifier
@@ -147,27 +149,6 @@ fun JetpackActivationSiteCredentialsScreen(
     if (viewState.isLoading) {
         ProgressDialog(title = "", subtitle = stringResource(id = R.string.logging_in))
     }
-}
-
-@Composable
-private fun Toolbar(
-    onCloseClick: () -> Unit,
-    modifier: Modifier = Modifier
-) {
-    TopAppBar(
-        backgroundColor = MaterialTheme.colors.surface,
-        title = { /* Intentionally empty */ },
-        navigationIcon = {
-            IconButton(onClick = onCloseClick) {
-                Icon(
-                    Icons.Filled.Clear,
-                    contentDescription = stringResource(id = R.string.back)
-                )
-            }
-        },
-        elevation = 0.dp,
-        modifier = modifier
-    )
 }
 
 @Preview

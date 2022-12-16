@@ -17,14 +17,9 @@ import androidx.compose.foundation.text.ClickableText
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.Icon
-import androidx.compose.material.IconButton
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
-import androidx.compose.material.TopAppBar
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -41,13 +36,13 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.tooling.preview.Devices
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
 import androidx.core.text.HtmlCompat
 import com.woocommerce.android.R
 import com.woocommerce.android.compose.utils.toAnnotatedString
 import com.woocommerce.android.ui.compose.URL_ANNOTATION_TAG
 import com.woocommerce.android.ui.compose.annotatedStringRes
 import com.woocommerce.android.ui.compose.component.ProgressDialog
+import com.woocommerce.android.ui.compose.component.Toolbar
 import com.woocommerce.android.ui.compose.component.WCColoredButton
 import com.woocommerce.android.ui.compose.component.WCOutlinedTextField
 import com.woocommerce.android.ui.compose.component.WCPasswordField
@@ -61,7 +56,10 @@ fun SignUpScreen(viewModel: SignUpViewModel) {
 
     BackHandler(onBack = viewModel::onBackPressed)
     Scaffold(topBar = {
-        Toolbar(onArrowBackPressed = viewModel::onBackPressed)
+        Toolbar(
+            onCloseButtonClick = viewModel::onBackPressed,
+            title = stringResource(id = R.string.signup_get_started_button)
+        )
     }) {
         when {
             state.isLoading ->
@@ -77,29 +75,6 @@ fun SignUpScreen(viewModel: SignUpViewModel) {
             )
         }
     }
-}
-
-@Composable
-private fun Toolbar(
-    onArrowBackPressed: () -> Unit,
-    modifier: Modifier = Modifier
-) {
-    TopAppBar(
-        backgroundColor = MaterialTheme.colors.surface,
-        title = {
-            Text(text = stringResource(id = R.string.signup_get_started_button))
-        },
-        navigationIcon = {
-            IconButton(onClick = onArrowBackPressed) {
-                Icon(
-                    Icons.Filled.ArrowBack,
-                    contentDescription = stringResource(id = R.string.back)
-                )
-            }
-        },
-        elevation = 0.dp,
-        modifier = modifier
-    )
 }
 
 @Composable

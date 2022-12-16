@@ -45,6 +45,10 @@ class StoreNamePickerViewModel @Inject constructor(
         triggerEvent(MultiLiveEvent.Event.Exit)
     }
 
+    fun onHelpPressed() {
+        triggerEvent(MultiLiveEvent.Event.Exit)
+    }
+
     fun onStoreNameChanged(newName: String) {
         _storeName.value = newName
     }

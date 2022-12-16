@@ -12,8 +12,6 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
-import androidx.compose.material.TextButton
-import androidx.compose.material.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.livedata.observeAsState
@@ -27,8 +25,8 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.tooling.preview.Devices
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
 import com.woocommerce.android.R
+import com.woocommerce.android.ui.compose.component.Toolbar
 import com.woocommerce.android.ui.compose.component.WCColoredButton
 import com.woocommerce.android.ui.compose.component.WCOutlinedTextField
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
@@ -38,7 +36,8 @@ fun StoreNamePickerScreen(viewModel: StoreNamePickerViewModel) {
     viewModel.storeName.observeAsState().value?.let { storeName ->
         Scaffold(topBar = {
             Toolbar(
-                onCancelPressed = viewModel::onCancelPressed
+                onCloseButtonClick = viewModel::onCancelPressed,
+                onActionButtonClick = viewModel::onHelpPressed,
             )
         }) {
             NamePickerForm(
@@ -52,24 +51,6 @@ fun StoreNamePickerScreen(viewModel: StoreNamePickerViewModel) {
             )
         }
     }
-}
-
-@Composable
-private fun Toolbar(
-    onCancelPressed: () -> Unit,
-    modifier: Modifier = Modifier
-) {
-    TopAppBar(
-        backgroundColor = MaterialTheme.colors.surface,
-        title = {},
-        navigationIcon = {
-            TextButton(onClick = onCancelPressed) {
-                Text(text = stringResource(id = R.string.cancel))
-            }
-        },
-        elevation = 0.dp,
-        modifier = modifier
-    )
 }
 
 @Composable
