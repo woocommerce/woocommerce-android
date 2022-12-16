@@ -1,14 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2022-11-30 09:54:05+0000
+Translation-Revision-Date: 2022-12-06 18:54:23+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: he_IL
 -->
 <resources>
+    <string name="store_creation_ecommerce_plan_period_two_years">שנתיים</string>
+    <string name="store_creation_ecommerce_store_loading_permanent_error">משהו השתבש במהלך התקנת החנות…</string>
+    <string name="variations_bulk_creation_no_candidates_message">כל הסוגים כבר נוצרו.</string>
+    <string name="variations_bulk_creation_no_candidates_title">אין סוגים שניתן ליצור</string>
+    <string name="product_list_multiselect">בחירה מרובה</string>
     <string name="store_creation_ecommerce_store_loading_error">לא הצלחנו לטעון את החנות החדשה שלך. כדאי להמתין קצת ולנסות שוב…</string>
     <string name="store_creation_ecommerce_plan_purchase_error">לא הצלחנו להשלים את הרכישה…</string>
-    <string name="store_creation_ecommerce_site_creation_error">לא הצלחנו ליצור אתר חדש…</string>
     <string name="store_creation_domain_picker_suggestions_error">לא ניתן לטעון את ההצעות לדומיינים</string>
     <string name="store_creation_domain_picker_empty_suggestions">אין דומיינים זמינים לחיפוש זה</string>
     <string name="variations_bulk_creation_progress_title">יוצר סוגים</string>
@@ -17,6 +21,7 @@ Language: he_IL
     <string name="variations_bulk_creation_warning_message">נכון לעכשיו, אנחנו תומכים ביצירה של ⁦%1$d⁩ סוגים לכל היותר. פעולת היצירה של סוגים למוצר הזה תיצור ⁦%2$d⁩ סוגים.</string>
     <string name="variations_bulk_creation_warning_title">חרגת ממגבלת היצירה</string>
     <string name="variation_add_all_description">הפעולה יוצרת סוגים עבור כל השילובים של המאפיינים שציינת.</string>
+    <string name="variation_add_all">ליצור את כל הסוגים</string>
     <string name="variation_add_new_description">ליצור סוג אחד חדש. להגדיר באופן ידני אילו מאפיינים שייכים למוצר עם הסוגים.</string>
     <string name="variation_add_new">להוסיף סוג חדש</string>
     <string name="variation_list_add">להוסיף סוג</string>

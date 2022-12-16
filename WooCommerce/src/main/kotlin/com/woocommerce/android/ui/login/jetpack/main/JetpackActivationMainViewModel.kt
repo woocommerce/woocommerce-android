@@ -307,7 +307,7 @@ class JetpackActivationMainViewModel @Inject constructor(
             onFailure = {
                 val error = (it as? OnChangedException)?.error as? JetpackConnectionUrlError
                 analyticsTrackerWrapper.track(
-                    stat = AnalyticsEvent.LOGIN_JETPACK_SETUP_ACTIVATION_FAILED,
+                    stat = AnalyticsEvent.LOGIN_JETPACK_SETUP_FETCH_JETPACK_CONNECTION_URL_FAILED,
                     properties = mapOf(AnalyticsTracker.KEY_ERROR_CODE to error?.errorCode.toString()),
                     errorContext = this@JetpackActivationMainViewModel::class.simpleName,
                     errorType = it::class.simpleName,

@@ -89,17 +89,17 @@ internal class CardReaderManagerImpl(
         isSimulated: Boolean,
         cardReaderTypesToDiscover: CardReaderTypesToDiscover,
     ): Flow<CardReaderDiscoveryEvents> {
-        if (!terminal.isInitialized()) throw IllegalStateException("Terminal not initialized")
+        if (!terminal.isInitialized()) error("Terminal not initialized")
         return connectionManager.discoverReaders(isSimulated, cardReaderTypesToDiscover)
     }
 
     override fun startConnectionToReader(cardReader: CardReader, locationId: String) {
-        if (!terminal.isInitialized()) throw IllegalStateException("Terminal not initialized")
+        if (!terminal.isInitialized()) error("Terminal not initialized")
         connectionManager.startConnectionToReader(cardReader, locationId)
     }
 
     override suspend fun disconnectReader(): Boolean {
-        if (!terminal.isInitialized()) throw IllegalStateException("Terminal not initialized")
+        if (!terminal.isInitialized()) error("Terminal not initialized")
         if (terminal.getConnectedReader() == null) return false
         return connectionManager.disconnectReader()
     }
@@ -110,7 +110,7 @@ internal class CardReaderManagerImpl(
     }
 
     override suspend fun refundInteracPayment(refundParams: RefundParams): Flow<CardInteracRefundStatus> {
-        if (!terminal.isInitialized()) throw IllegalStateException("Terminal not initialized")
+        if (!terminal.isInitialized()) error("Terminal not initialized")
         resetBluetoothDisplayMessage()
         return interacRefundManager.refundInteracPayment(refundParams)
     }
@@ -129,12 +129,12 @@ internal class CardReaderManagerImpl(
     }
 
     override suspend fun startAsyncSoftwareUpdate() {
-        if (!terminal.isInitialized()) throw IllegalStateException("Terminal not initialized")
+        if (!terminal.isInitialized()) error("Terminal not initialized")
         softwareUpdateManager.startAsyncSoftwareUpdate()
     }
 
     override suspend fun clearCachedCredentials() {
-        if (!terminal.isInitialized()) throw IllegalStateException("Terminal not initialized")
+        if (!terminal.isInitialized()) error("Terminal not initialized")
         terminal.clearCachedCredentials()
     }
 
