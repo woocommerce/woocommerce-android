@@ -3,24 +3,42 @@ package com.woocommerce.android.ui.analytics.ranges
 import com.woocommerce.android.extensions.endOfToday
 import com.woocommerce.android.extensions.startOfToday
 import com.woocommerce.android.ui.analytics.ranges.AnalyticsHubRangeSelectionType.TODAY
+import org.assertj.core.api.Assertions.assertThat
+import org.junit.Before
 import org.junit.Test
 import java.text.SimpleDateFormat
 import java.util.*
 
 internal class AnalyticsHubDateRangeSelectionTest {
-    private val testTimeZone: TimeZone by lazy {
-        TimeZone.getTimeZone("UTC")
-    }
+    private lateinit var testTimeZone: TimeZone
 
-    private val testCalendar: Calendar by lazy {
-        Calendar.getInstance(testTimeZone)
+    private lateinit var testCalendar: Calendar
+
+    @Before
+    fun setUp() {
+        testTimeZone = TimeZone.getTimeZone("UTC")
+        testCalendar = Calendar.getInstance(testTimeZone)
     }
 
     @Test
     fun `when selection type is today, then generate expected date information`() {
-        val today = Date()
+        // Given
+        val today = midDayFrom("2022-07-01")
+        val expectedCurrentRange = AnalyticsHubTimeRange(
+            start = dayStartFrom("2022-07-01"),
+            end = today
+        )
+        val expectedPreviousRange = AnalyticsHubTimeRange(
+            start = dayStartFrom("2022-06-30"),
+            end = midDayFrom("2022-06-30")
+        )
+
+        // When
         val sut = AnalyticsHubDateRangeSelection(selectionType = TODAY)
 
+        // Then
+        assertThat(sut.currentRange).isEqualTo(expectedCurrentRange)
+        assertThat(sut.previousRange).isEqualTo(expectedPreviousRange)
     }
 
     private fun midDayFrom(date: String): Date {
@@ -35,7 +53,7 @@ internal class AnalyticsHubDateRangeSelectionTest {
         formatter.timeZone = testTimeZone
         val referenceDate = formatter.parse(date)!!
         testCalendar.time = referenceDate
-        return testCalendar.startOfToday()
+        return testCalendar.endOfToday()
     }
 
     private fun dayStartFrom(date: String): Date {
@@ -43,7 +61,7 @@ internal class AnalyticsHubDateRangeSelectionTest {
         formatter.timeZone = testTimeZone
         val referenceDate = formatter.parse(date)!!
         testCalendar.time = referenceDate
-        return testCalendar.endOfToday()
+        return testCalendar.startOfToday()
 
     }
 }
