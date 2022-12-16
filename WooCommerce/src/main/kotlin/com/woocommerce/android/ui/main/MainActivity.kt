@@ -594,6 +594,8 @@ class MainActivity :
     }
 
     fun startSitePicker() {
+        binding.bottomNav.currentPosition = MORE
+        binding.bottomNav.active(MORE.position)
         navController.navigateSafely(
             MoreMenuFragmentDirections.actionGlobalLoginToSitePickerFragment(openedFromLogin = false)
         )
