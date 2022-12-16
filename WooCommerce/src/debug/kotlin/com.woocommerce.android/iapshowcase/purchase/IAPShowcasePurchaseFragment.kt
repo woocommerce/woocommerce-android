@@ -20,7 +20,6 @@ import com.woocommerce.android.iapshowcase.IAPDebugLogWrapper
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
-private const val REMOTE_SITE_ID = 1L
 private const val MILLION = 1_000_000.0
 
 @AndroidEntryPoint
@@ -38,7 +37,6 @@ class IAPShowcasePurchaseFragment : Fragment(R.layout.fragment_iap_showcase_purc
                 return IAPShowcasePurchaseViewModel(
                     IAPSitePurchasePlanFactory.createIAPSitePurchasePlan(
                         this@IAPShowcasePurchaseFragment.requireActivity().application,
-                        REMOTE_SITE_ID,
                         debugLogWrapper,
                         mobilePayAPIProvider::buildMobilePayAPI,
                     )

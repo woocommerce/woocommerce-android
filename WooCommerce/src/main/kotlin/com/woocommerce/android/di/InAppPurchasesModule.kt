@@ -21,7 +21,6 @@ class InAppPurchasesModule {
     ): PurchaseWPComPlanActions =
         IAPSitePurchasePlanFactory.createIAPSitePurchasePlan(
             context,
-            1L,
             IAPDebugLogWrapper(),
             mobilePayAPIProvider::buildMobilePayAPI
         )

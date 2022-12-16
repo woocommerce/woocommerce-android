@@ -71,25 +71,6 @@ class PlansViewModel @Inject constructor(
     init {
         loadPlan()
         trackStep(VALUE_STEP_PLAN_PURCHASE)
-
-        if (FeatureFlag.IAP_FOR_STORE_CREATION.isEnabled()) {
-            viewModelScope.launch {
-                iapManager.purchaseWpComPlanResult.collectLatest { result ->
-                    when (result) {
-                        is WPComPurchaseResult.Success -> {
-                            Log.i("IAP TEST", "PAYMENT SUCCESS. proceed to create site")
-                            _viewState.update { LoadingState }
-                            createSite().ifSuccessfulThen { siteId ->
-                                newStore.update(siteId = siteId)
-                                onStoreCreated()
-                            }
-                        }
-
-                        is WPComPurchaseResult.Error -> onInAppPurchaseError(result)
-                    }.exhaustive
-                }
-            }
-        }
     }
 
     fun setIAPActivityWrapper(wrapper: IAPActivityWrapper) {
@@ -105,8 +86,8 @@ class PlansViewModel @Inject constructor(
             _viewState.update { (_viewState.value as PlanState).copy(isCreatingSite = true) }
             createSite().ifSuccessfulThen { siteId ->
                 if (FeatureFlag.IAP_FOR_STORE_CREATION.isEnabled()) {
-                    _viewState.update { currentPlanData }
-                    iapManager.purchaseWPComPlan(iapActivityWrapper)
+                    observeInAppPurchasesResult(siteId)
+                    iapManager.purchaseWPComPlan(iapActivityWrapper, siteId)
                 } else {
                     newStore.update(siteId = siteId)
                     repository.addPlanToCart(
@@ -191,6 +172,23 @@ class PlansViewModel @Inject constructor(
     private fun onInAppPurchaseError(result: WPComPurchaseResult.Error) {
         _viewState.update { (_viewState.value as PlanState).copy(isCreatingSite = false) }
         Log.i("IAP TEST", "ERROR on purchase flow${result.errorType}")
+    }
+
+    private fun observeInAppPurchasesResult(remoteSiteId: Long) {
+        if (FeatureFlag.IAP_FOR_STORE_CREATION.isEnabled()) {
+            viewModelScope.launch {
+                iapManager.getPurchaseWpComPlanResult(remoteSiteId = remoteSiteId).collectLatest { result ->
+                    when (result) {
+                        is WPComPurchaseResult.Success -> {
+                            Log.i("IAP TEST", "PAYMENT SUCCESS. proceed to create site")
+                            onStoreCreated()
+                        }
+
+                        is WPComPurchaseResult.Error -> onInAppPurchaseError(result)
+                    }.exhaustive
+                }
+            }
+        }
     }
 
     private suspend fun createSite(): StoreCreationResult<Long> {

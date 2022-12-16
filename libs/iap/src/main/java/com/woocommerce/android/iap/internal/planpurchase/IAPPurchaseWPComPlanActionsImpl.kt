@@ -23,14 +23,13 @@ import kotlinx.coroutines.flow.merge
 internal class IAPPurchaseWPComPlanActionsImpl(
     private val purchaseWpComPlanHandler: IAPPurchaseWpComPlanHandler,
     private val iapManager: IAPManager,
-    private val remoteSiteId: Long,
     private val iapProduct: IAPProduct = IAPProduct.WPPremiumPlanTesting
 ) : PurchaseWPComPlanActions {
     init {
         iapManager.connect()
     }
 
-    override val purchaseWpComPlanResult: Flow<WPComPurchaseResult> = merge(
+    override fun getPurchaseWpComPlanResult(remoteSiteId: Long): Flow<WPComPurchaseResult> = merge(
         purchaseWpComPlanHandler.purchaseWpComProductResult,
         iapManager.iapPurchaseResult.map { purchaseWpComPlanHandler.handleNewPurchaseResultEvent(it, remoteSiteId) },
     )
@@ -45,7 +44,7 @@ internal class IAPPurchaseWPComPlanActionsImpl(
         }
     }
 
-    override suspend fun purchaseWPComPlan(activityWrapper: IAPActivityWrapper) {
+    override suspend fun purchaseWPComPlan(activityWrapper: IAPActivityWrapper, remoteSiteId: Long) {
         purchaseWpComPlanHandler.purchaseWPComPlan(activityWrapper, iapProduct, remoteSiteId)
     }
 
