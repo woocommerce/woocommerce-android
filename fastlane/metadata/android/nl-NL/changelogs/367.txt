@@ -1,0 +1,2 @@
+11.6:
+Deze release omvat een aantal kleine verbeteringen en bugfixes die ons team heeft gevonden. Don't be fooled though – we're working on some exciting new features for you! Nog even geduld!

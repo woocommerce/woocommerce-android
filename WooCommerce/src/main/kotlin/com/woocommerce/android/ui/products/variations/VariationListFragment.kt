@@ -285,9 +285,7 @@ class VariationListFragment :
         val dialog = generateVariationPickerDialog ?: GenerateVariationPickerDialog(requireContext()).apply {
             listener = this@VariationListFragment
         }
-        dialog.run {
-            show()
-        }
+        dialog.show()
     }
 
     private fun showBulkUpdateLimitExceededWarning() {
