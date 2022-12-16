@@ -1,7 +1,7 @@
 package com.woocommerce.android.ui.analytics.ranges
 
-import com.woocommerce.android.extensions.endOfToday
-import com.woocommerce.android.extensions.startOfToday
+import com.woocommerce.android.extensions.endOfCurrentDay
+import com.woocommerce.android.extensions.startOfCurrentDay
 import com.woocommerce.android.ui.analytics.ranges.AnalyticsHubRangeSelectionType.LAST_MONTH
 import com.woocommerce.android.ui.analytics.ranges.AnalyticsHubRangeSelectionType.LAST_QUARTER
 import com.woocommerce.android.ui.analytics.ranges.AnalyticsHubRangeSelectionType.LAST_WEEK
@@ -281,7 +281,7 @@ internal class AnalyticsHubDateRangeSelectionTest {
         formatter.timeZone = testTimeZone
         val referenceDate = formatter.parse(date)!!
         testCalendar.time = referenceDate
-        return testCalendar.endOfToday()
+        return testCalendar.endOfCurrentDay()
     }
 
     private fun dayStartFrom(date: String): Date {
@@ -289,7 +289,7 @@ internal class AnalyticsHubDateRangeSelectionTest {
         formatter.timeZone = testTimeZone
         val referenceDate = formatter.parse(date)!!
         testCalendar.time = referenceDate
-        return testCalendar.startOfToday()
+        return testCalendar.startOfCurrentDay()
 
     }
 }

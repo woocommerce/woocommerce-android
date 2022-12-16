@@ -90,7 +90,7 @@ fun Date.theDayBeforeIt() =
         .apply { add(Calendar.DATE, -1) }
         .time
 
-fun Calendar.startOfToday(): Date =
+fun Calendar.startOfCurrentDay(): Date =
     apply {
         clear(Calendar.MILLISECOND)
         clear(Calendar.SECOND)
@@ -98,7 +98,7 @@ fun Calendar.startOfToday(): Date =
         set(Calendar.HOUR_OF_DAY, DateUtils.ZERO)
     }.time
 
-fun Calendar.endOfToday(): Date =
+fun Calendar.endOfCurrentDay(): Date =
     apply {
         set(Calendar.SECOND, getMaximum(Calendar.SECOND))
         set(Calendar.MINUTE, getMaximum(Calendar.MINUTE))
