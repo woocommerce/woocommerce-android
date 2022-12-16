@@ -7,9 +7,11 @@ import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
+import com.woocommerce.android.support.help.HelpActivity.Origin.JETPACK_INSTALLATION
 import com.woocommerce.android.ui.login.jetpack.main.JetpackActivationMainViewModel
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.NavigateToHelpScreen
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.getStateFlow
 import com.woocommerce.android.viewmodel.navArgs
@@ -59,7 +61,7 @@ class JetpackActivationStartViewModel @Inject constructor(
                     JetpackActivationMainViewModel.StepType.Connection.analyticsName
             ),
         )
-        triggerEvent(NavigateToHelpScreen)
+        triggerEvent(NavigateToHelpScreen(JETPACK_INSTALLATION))
     }
 
     fun onBackButtonClick() {
@@ -107,7 +109,6 @@ class JetpackActivationStartViewModel @Inject constructor(
         val isConnectionDismissed: Boolean
     )
 
-    object NavigateToHelpScreen : MultiLiveEvent.Event()
     data class NavigateToSiteCredentialsScreen(
         val siteUrl: String,
         val isJetpackInstalled: Boolean

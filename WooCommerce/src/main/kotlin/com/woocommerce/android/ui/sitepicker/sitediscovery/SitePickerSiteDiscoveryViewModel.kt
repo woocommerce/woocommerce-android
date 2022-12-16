@@ -11,12 +11,14 @@ import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.experiment.JetpackInstallationExperiment
 import com.woocommerce.android.experiment.JetpackInstallationExperiment.JetpackInstallationVariant
+import com.woocommerce.android.support.help.HelpActivity.Origin.LOGIN_SITE_ADDRESS
 import com.woocommerce.android.ui.login.AccountRepository
 import com.woocommerce.android.ui.sitepicker.SitePickerRepository
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Logout
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.NavigateToHelpScreen
 import com.woocommerce.android.viewmodel.ResourceProvider
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.getStateFlow
@@ -234,7 +236,7 @@ class SitePickerSiteDiscoveryViewModel @Inject constructor(
     }
 
     fun onHelpButtonClick() {
-        triggerEvent(NavigateToHelpScreen)
+        triggerEvent(NavigateToHelpScreen(LOGIN_SITE_ADDRESS))
     }
 
     fun onJetpackInstalled() {
@@ -301,7 +303,6 @@ class SitePickerSiteDiscoveryViewModel @Inject constructor(
     }
 
     object CreateZendeskTicket : MultiLiveEvent.Event()
-    object NavigateToHelpScreen : MultiLiveEvent.Event()
     data class StartWebBasedJetpackInstallation(val siteAddress: String) : MultiLiveEvent.Event()
     data class StartNativeJetpackActivation(
         val siteAddress: String,

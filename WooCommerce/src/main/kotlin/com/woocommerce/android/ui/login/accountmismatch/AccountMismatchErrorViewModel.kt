@@ -13,6 +13,7 @@ import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.model.UiString.UiStringRes
 import com.woocommerce.android.model.UiString.UiStringText
+import com.woocommerce.android.support.help.HelpActivity.Origin.LOGIN_SITE_ADDRESS
 import com.woocommerce.android.ui.common.wpcomwebview.WPComWebViewAuthenticator
 import com.woocommerce.android.ui.login.AccountRepository
 import com.woocommerce.android.ui.login.UnifiedLoginTracker
@@ -20,6 +21,7 @@ import com.woocommerce.android.ui.login.accountmismatch.AccountMismatchErrorView
 import com.woocommerce.android.ui.login.accountmismatch.AccountMismatchRepository.JetpackConnectionStatus
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.NavigateToHelpScreen
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowDialog
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowUiStringSnackbar
@@ -285,7 +287,7 @@ class AccountMismatchErrorViewModel @Inject constructor(
     }
 
     fun onHelpButtonClick() {
-        triggerEvent(NavigateToHelpScreen)
+        triggerEvent(NavigateToHelpScreen(LOGIN_SITE_ADDRESS))
     }
 
     private fun AuthenticationError.toErrorMessage() = when (type) {
@@ -356,7 +358,6 @@ class AccountMismatchErrorViewModel @Inject constructor(
         val username: String
     )
 
-    object NavigateToHelpScreen : MultiLiveEvent.Event()
     object NavigateToEmailHelpDialogEvent : MultiLiveEvent.Event()
     object NavigateToLoginScreen : MultiLiveEvent.Event()
     data class OnJetpackConnectedEvent(val email: String, val isAuthenticated: Boolean) : MultiLiveEvent.Event()

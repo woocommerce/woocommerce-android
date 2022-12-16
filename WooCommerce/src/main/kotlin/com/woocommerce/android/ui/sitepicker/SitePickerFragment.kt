@@ -297,10 +297,6 @@ class SitePickerFragment : BaseFragment(R.layout.fragment_site_picker), LoginEma
         }
     }
 
-    private fun navigateToHelpScreen(origin: HelpActivity.Origin) {
-        startActivity(HelpActivity.createIntent(requireContext(), origin, null))
-    }
-
     private fun navigateToNeedHelpFindingEmailScreen() {
         LoginEmailHelpDialogFragment.newInstance(this).also {
             it.show(parentFragmentManager, LoginEmailHelpDialogFragment.TAG)
