@@ -77,6 +77,7 @@ class PlansViewModel @Inject constructor(
                 iapManager.purchaseWpComPlanResult.collectLatest { result ->
                     when (result) {
                         is WPComPurchaseResult.Success -> {
+                            Log.i("IAP TEST", "PAYMENT SUCCESS. proceed to create site")
                             _viewState.update { LoadingState }
                             createSite().ifSuccessfulThen { siteId ->
                                 newStore.update(siteId = siteId)
@@ -100,12 +101,15 @@ class PlansViewModel @Inject constructor(
     }
 
     fun onConfirmClicked() {
-        if (FeatureFlag.IAP_FOR_STORE_CREATION.isEnabled()) {
-            showInAppPurchaseFlow()
-        } else {
+        launch {
+            val currentPlanData = _viewState.value
             _viewState.update { LoadingState }
-            launch {
-                createSite().ifSuccessfulThen { siteId ->
+            createSite().ifSuccessfulThen { siteId ->
+                if (FeatureFlag.IAP_FOR_STORE_CREATION.isEnabled()) {
+                    _viewState.update { currentPlanData }
+                    iapManager.purchaseWPComPlan(iapActivityWrapper)
+                } else {
+
                     newStore.update(siteId = siteId)
                     repository.addPlanToCart(
                         newStore.data.planProductId,
@@ -186,14 +190,8 @@ class PlansViewModel @Inject constructor(
         trackStep(VALUE_STEP_WEB_CHECKOUT)
     }
 
-    private fun showInAppPurchaseFlow() {
-        launch {
-            iapManager.purchaseWPComPlan(iapActivityWrapper)
-        }
-    }
-
     private fun onInAppPurchaseError(result: WPComPurchaseResult.Error) {
-        Log.i("IAP error", "${result.errorType}")
+        Log.i("IAP TEST", "ERROR on purchase flow${result.errorType}")
     }
 
     private suspend fun createSite(): StoreCreationResult<Long> {
