@@ -11,7 +11,7 @@ import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.experiment.JetpackInstallationExperiment
 import com.woocommerce.android.experiment.JetpackInstallationExperiment.JetpackInstallationVariant
-import com.woocommerce.android.support.help.HelpActivity.Origin.LOGIN_SITE_ADDRESS
+import com.woocommerce.android.support.help.HelpOrigin.LOGIN_SITE_ADDRESS
 import com.woocommerce.android.ui.login.AccountRepository
 import com.woocommerce.android.ui.sitepicker.SitePickerRepository
 import com.woocommerce.android.viewmodel.MultiLiveEvent

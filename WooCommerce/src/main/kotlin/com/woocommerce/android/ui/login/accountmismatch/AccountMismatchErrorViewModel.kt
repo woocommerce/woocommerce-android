@@ -13,7 +13,7 @@ import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.model.UiString.UiStringRes
 import com.woocommerce.android.model.UiString.UiStringText
-import com.woocommerce.android.support.help.HelpActivity.Origin.LOGIN_SITE_ADDRESS
+import com.woocommerce.android.support.help.HelpOrigin.LOGIN_SITE_ADDRESS
 import com.woocommerce.android.ui.common.wpcomwebview.WPComWebViewAuthenticator
 import com.woocommerce.android.ui.login.AccountRepository
 import com.woocommerce.android.ui.login.UnifiedLoginTracker

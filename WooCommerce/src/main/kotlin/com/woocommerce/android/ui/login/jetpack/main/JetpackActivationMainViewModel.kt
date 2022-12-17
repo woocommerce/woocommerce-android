@@ -10,7 +10,7 @@ import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.extensions.isNotNullOrEmpty
-import com.woocommerce.android.support.help.HelpActivity.Origin.JETPACK_INSTALLATION
+import com.woocommerce.android.support.help.HelpOrigin.JETPACK_INSTALLATION
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.common.PluginRepository
 import com.woocommerce.android.ui.common.PluginRepository.PluginStatus.PluginActivated

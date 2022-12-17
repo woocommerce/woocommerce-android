@@ -4,7 +4,7 @@ import androidx.annotation.CallSuper
 import androidx.annotation.LayoutRes
 import androidx.fragment.app.Fragment
 import com.woocommerce.android.support.help.HelpActivity
-import com.woocommerce.android.support.help.HelpActivity.Origin
+import com.woocommerce.android.support.help.HelpOrigin
 import com.woocommerce.android.ui.dialog.WooDialog
 import com.woocommerce.android.ui.main.AppBarStatus
 import com.woocommerce.android.ui.main.MainActivity
@@ -68,7 +68,7 @@ open class BaseFragment : Fragment, BaseFragmentView {
         )
     }
 
-    fun navigateToHelpScreen(origin: Origin) {
+    fun navigateToHelpScreen(origin: HelpOrigin) {
         startActivity(
             HelpActivity.createIntent(
                 context = requireContext(),

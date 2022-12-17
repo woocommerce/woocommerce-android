@@ -15,7 +15,7 @@ import com.woocommerce.android.R
 import com.woocommerce.android.extensions.handleNotice
 import com.woocommerce.android.extensions.navigateBackWithResult
 import com.woocommerce.android.support.ZendeskHelper
-import com.woocommerce.android.support.help.HelpActivity.Origin
+import com.woocommerce.android.support.help.HelpOrigin
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.common.wpcomwebview.WPComWebViewFragment
 import com.woocommerce.android.ui.common.wpcomwebview.WPComWebViewViewModel
@@ -75,7 +75,7 @@ class SitePickerSiteDiscoveryFragment : BaseFragment() {
         viewModel.event.observe(viewLifecycleOwner) { event ->
             when (event) {
                 CreateZendeskTicket -> {
-                    zendeskHelper.createNewTicket(requireActivity(), Origin.LOGIN_SITE_ADDRESS, null)
+                    zendeskHelper.createNewTicket(requireActivity(), HelpOrigin.LOGIN_SITE_ADDRESS, null)
                 }
                 is NavigateToHelpScreen -> navigateToHelpScreen(event.origin)
                 is StartWebBasedJetpackInstallation -> startWebBasedJetpackInstallation(event.siteAddress)

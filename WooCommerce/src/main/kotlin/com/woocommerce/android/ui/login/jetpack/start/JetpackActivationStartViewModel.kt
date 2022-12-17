@@ -7,7 +7,7 @@ import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
-import com.woocommerce.android.support.help.HelpActivity.Origin.JETPACK_INSTALLATION
+import com.woocommerce.android.support.help.HelpOrigin.JETPACK_INSTALLATION
 import com.woocommerce.android.ui.login.jetpack.main.JetpackActivationMainViewModel
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit

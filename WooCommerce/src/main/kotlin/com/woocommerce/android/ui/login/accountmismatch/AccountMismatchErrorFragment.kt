@@ -11,6 +11,7 @@ import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import com.woocommerce.android.extensions.navigateBackWithNotice
 import com.woocommerce.android.support.help.HelpActivity
+import com.woocommerce.android.support.help.HelpOrigin
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
@@ -115,7 +116,7 @@ class AccountMismatchErrorFragment : BaseFragment(), Listener {
         startActivity(
             HelpActivity.createIntent(
                 context = requireContext(),
-                origin = HelpActivity.Origin.LOGIN_CONNECTED_EMAIL_HELP,
+                origin = HelpOrigin.LOGIN_CONNECTED_EMAIL_HELP,
                 extraSupportTags = null
             )
         )

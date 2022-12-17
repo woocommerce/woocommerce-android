@@ -32,7 +32,7 @@ import com.woocommerce.android.extensions.setClickableText
 import com.woocommerce.android.extensions.show
 import com.woocommerce.android.extensions.startHelpActivity
 import com.woocommerce.android.extensions.verticalOffsetChanges
-import com.woocommerce.android.support.help.HelpActivity.Origin
+import com.woocommerce.android.support.help.HelpOrigin
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.base.TopLevelFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
@@ -162,7 +162,7 @@ class MyStoreFragment : TopLevelFragment(R.layout.fragment_my_store) {
         binding.myStoreStatsAvailabilityMessage.setClickableText(
             content = getString(R.string.my_store_stats_availability_description, contactUsText),
             clickableContent = contactUsText,
-            clickAction = WooClickableSpan { activity?.startHelpActivity(Origin.MY_STORE) }
+            clickAction = WooClickableSpan { activity?.startHelpActivity(HelpOrigin.MY_STORE) }
         )
 
         prepareJetpackBenefitsBanner()

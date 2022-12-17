@@ -10,7 +10,7 @@ import androidx.lifecycle.Observer
 import com.google.android.material.snackbar.Snackbar
 import com.woocommerce.android.R.string
 import com.woocommerce.android.model.UiString
-import com.woocommerce.android.support.help.HelpActivity.Origin
+import com.woocommerce.android.support.help.HelpOrigin
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import java.util.concurrent.atomic.AtomicBoolean
 
@@ -120,7 +120,7 @@ open class MultiLiveEvent<T : Event> : MutableLiveData<T>() {
         object Logout : Event()
         object Exit : Event()
 
-        data class NavigateToHelpScreen(val origin: Origin) : Event()
+        data class NavigateToHelpScreen(val origin: HelpOrigin) : Event()
 
         data class ExitWithResult<out T>(val data: T, val key: String? = null) : Event()
 

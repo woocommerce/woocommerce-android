@@ -20,6 +20,7 @@ import com.woocommerce.android.extensions.handleResult
 import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.support.help.HelpActivity
+import com.woocommerce.android.support.help.HelpOrigin
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.common.wpcomwebview.WPComWebViewFragment
@@ -333,6 +334,6 @@ class SitePickerFragment : BaseFragment(R.layout.fragment_site_picker), LoginEma
     }
 
     override fun onEmailNeedMoreHelpClicked() {
-        startActivity(HelpActivity.createIntent(requireContext(), HelpActivity.Origin.LOGIN_CONNECTED_EMAIL_HELP, null))
+        startActivity(HelpActivity.createIntent(requireContext(), HelpOrigin.LOGIN_CONNECTED_EMAIL_HELP, null))
     }
 }
