@@ -44,6 +44,7 @@ class StoreNamePickerFragment : BaseFragment() {
             when (event) {
                 is MultiLiveEvent.Event.Exit -> findNavController().popBackStack()
                 is StoreNamePickerViewModel.NavigateToNextStep -> navigateToStoreProfilerCategoryFragment()
+                is MultiLiveEvent.Event.NavigateToHelpScreen -> navigateToHelpScreen(event.origin)
             }
         }
     }

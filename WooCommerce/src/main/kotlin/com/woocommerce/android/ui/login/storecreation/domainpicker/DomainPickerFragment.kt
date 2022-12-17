@@ -61,6 +61,7 @@ class DomainPickerFragment : BaseFragment() {
                 is Exit -> findNavController().popBackStack()
                 is NavigateToNextStep -> navigateToStoreSummaryFragment()
                 is MultiLiveEvent.Event.ShowSnackbar -> uiMessageResolver.showSnack(event.message)
+                is MultiLiveEvent.Event.NavigateToHelpScreen -> navigateToHelpScreen(event.origin)
             }
         }
     }

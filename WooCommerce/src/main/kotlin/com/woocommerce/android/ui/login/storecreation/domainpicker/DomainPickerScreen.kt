@@ -62,7 +62,8 @@ fun DomainPickerScreen(viewModel: DomainPickerViewModel) {
     viewModel.viewState.observeAsState(DomainPickerState()).value.let { viewState ->
         Scaffold(topBar = {
             Toolbar(
-                onCloseButtonClick = viewModel::onBackPressed
+                onCloseButtonClick = viewModel::onBackPressed,
+                onActionButtonClick = viewModel::onHelpPressed,
             )
         }) {
             DomainSearchForm(

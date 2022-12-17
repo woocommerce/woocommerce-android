@@ -40,7 +40,8 @@ fun MyStoreSummaryScreen(viewModel: MyStoreSummaryViewModel) {
     viewModel.viewState.observeAsState().value?.let { viewState ->
         Scaffold(topBar = {
             Toolbar(
-                onCloseButtonClick = viewModel::onBackPressed
+                onCloseButtonClick = viewModel::onBackPressed,
+                onActionButtonClick = viewModel::onHelpPressed,
             )
         }) {
             MyStoreSummaryScreen(

@@ -43,6 +43,7 @@ class MyStoreSummaryFragment : BaseFragment() {
             when (event) {
                 is MultiLiveEvent.Event.Exit -> findNavController().popBackStack()
                 is MyStoreSummaryViewModel.NavigateToNextStep -> navigateToPlansFragment()
+                is MultiLiveEvent.Event.NavigateToHelpScreen -> navigateToHelpScreen(event.origin)
             }
         }
     }
