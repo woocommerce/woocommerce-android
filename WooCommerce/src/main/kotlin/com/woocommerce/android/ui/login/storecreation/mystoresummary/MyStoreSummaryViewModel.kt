@@ -5,7 +5,6 @@ import androidx.lifecycle.asLiveData
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
-import com.woocommerce.android.support.help.HelpOrigin.STORE_CREATION_DOMAIN_PICKER
 import com.woocommerce.android.support.help.HelpOrigin.STORE_CREATION_SUMMARY
 import com.woocommerce.android.ui.login.storecreation.NewStore
 import com.woocommerce.android.viewmodel.MultiLiveEvent
