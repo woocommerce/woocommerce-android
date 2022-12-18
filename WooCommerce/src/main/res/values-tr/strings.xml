@@ -1,14 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2022-11-29 16:54:05+0000
+Translation-Revision-Date: 2022-12-06 16:54:03+0000
 Plural-Forms: nplurals=2; plural=(n > 1);
 Generator: GlotPress/2.4.0-alpha
 Language: tr
 -->
 <resources>
+    <string name="store_creation_ecommerce_plan_period_two_years">2 yıl</string>
+    <string name="store_creation_ecommerce_store_loading_permanent_error">Mağaza kurulumu sırasında bir şeyler ters gitti…</string>
+    <string name="variations_bulk_creation_no_candidates_message">Tüm varyasyonlar zaten oluşturuldu.</string>
+    <string name="variations_bulk_creation_no_candidates_title">Oluşturulacak varyasyon yok</string>
+    <string name="product_list_multiselect">Çoklu seç</string>
     <string name="store_creation_ecommerce_store_loading_error">Mağazanız yüklenemedi. Lütfen biraz bekleyin ve tekrar deneyin…</string>
     <string name="store_creation_ecommerce_plan_purchase_error">Satın alma işlemi tamamlanamadı…</string>
-    <string name="store_creation_ecommerce_site_creation_error">Yeni bir site oluşturulamadı…</string>
     <string name="store_creation_domain_picker_suggestions_error">Alan adı önerileri yüklenemiyor</string>
     <string name="store_creation_domain_picker_empty_suggestions">Bu arama için uygun alan adı yok</string>
     <string name="variations_bulk_creation_progress_title">Varyasyon oluşturma</string>
@@ -17,6 +21,7 @@ Language: tr
     <string name="variations_bulk_creation_warning_message">Şu anda oluşturma en fazla %1$d varyasyon için desteklenmektedir. Bu ürün için varyasyon oluşturmak %2$d varyasyon oluşturur.</string>
     <string name="variations_bulk_creation_warning_title">Oluşturma sınırı aşıldı</string>
     <string name="variation_add_all_description">Niteliklerinizin tüm kombinasyonları için varyasyonlar oluşturur.</string>
+    <string name="variation_add_all">Tüm varyasyonları oluştur</string>
     <string name="variation_add_new_description">Yeni bir varyasyon oluşturun. Hangi niteliklerin değişken ürüne ait olduğunu manuel olarak ayarlayın.</string>
     <string name="variation_add_new">Yeni varyasyon ekle</string>
     <string name="variation_list_add">Varyasyon ekle</string>

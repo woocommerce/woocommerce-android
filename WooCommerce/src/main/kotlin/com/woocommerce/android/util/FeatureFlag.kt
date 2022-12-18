@@ -14,20 +14,23 @@ enum class FeatureFlag {
     UNIFIED_ORDER_EDITING,
     ORDER_CREATION_CUSTOMER_SEARCH,
     NATIVE_STORE_CREATION_FLOW,
-    PRODUCTS_BULK_EDITING;
+    STORE_PROFILER_FLOW;
 
     fun isEnabled(context: Context? = null): Boolean {
         return when (this) {
             DB_DOWNGRADE -> {
                 PackageUtils.isDebugBuild() || context != null && PackageUtils.isBetaBuild(context)
             }
+
             COUPONS_M2,
             JETPACK_CP,
             ORDER_CREATION_CUSTOMER_SEARCH,
             UNIFIED_ORDER_EDITING -> true
+
             MORE_MENU_INBOX,
             WC_SHIPPING_BANNER,
-            PRODUCTS_BULK_EDITING -> PackageUtils.isDebugBuild()
+            STORE_PROFILER_FLOW -> PackageUtils.isDebugBuild()
+
             NATIVE_STORE_CREATION_FLOW -> true
         }
     }

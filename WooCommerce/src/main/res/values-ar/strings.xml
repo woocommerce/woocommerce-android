@@ -1,14 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2022-11-29 10:54:05+0000
+Translation-Revision-Date: 2022-12-05 15:54:04+0000
 Plural-Forms: nplurals=6; plural=n==0 ? 0 : n==1 ? 1 : n==2 ? 2 : n%100>=3 && n%100<=10 ? 3 : n%100>=11 && n%100<=99 ? 4 : 5;
 Generator: GlotPress/2.4.0-alpha
 Language: ar
 -->
 <resources>
+    <string name="store_creation_ecommerce_plan_period_two_years">عامان</string>
+    <string name="store_creation_ecommerce_store_loading_permanent_error">حدث خطأ ما في أثناء تثبيت المتجر…</string>
+    <string name="variations_bulk_creation_no_candidates_message">يتم إنشاء كل التباينات بالفعل.</string>
+    <string name="variations_bulk_creation_no_candidates_title">لا توجد تباينات مطلوب إنشائها</string>
+    <string name="product_list_multiselect">تحديد متعدد</string>
     <string name="store_creation_ecommerce_store_loading_error">يتعذر تحميل متجرك الجديد. يرجى الانتظار قليلاً والمحاولة مرة أخرى…</string>
     <string name="store_creation_ecommerce_plan_purchase_error">يتعذر إكمال عملية الشراء…</string>
-    <string name="store_creation_ecommerce_site_creation_error">يتعذر إنشاء موقع جديد…</string>
     <string name="store_creation_domain_picker_suggestions_error">يتعذر تحميل اقتراحات النطاق</string>
     <string name="store_creation_domain_picker_empty_suggestions">لا تتوافر نطاقات لهذا البحث</string>
     <string name="variations_bulk_creation_progress_title">إنشاء تباينات</string>
@@ -17,6 +21,7 @@ Language: ar
     <string name="variations_bulk_creation_warning_message">يكون الإنشاء مدعومًا حاليًا لـ ⁦%1$d⁩ من التباينات بحد أقصى. سيؤدي إنشاء التباينات لهذا المنتج إلى إنشاء ⁦%2$d⁩ من التباينات.</string>
     <string name="variations_bulk_creation_warning_title">تم تجاوز حد الإنشاء</string>
     <string name="variation_add_all_description">إنشاء تباينات لكل مجموعات السمات لديك.</string>
+    <string name="variation_add_all">إنشاء كل التباينات</string>
     <string name="variation_add_new_description">أنشئ تباينًا واحدًا جديدًا. قم بتعيين السمات التي تنتمي إلى المنتج المتغير يدويًا.</string>
     <string name="variation_add_new">إضافة تباين جديد</string>
     <string name="variation_list_add">إضافة نوع</string>

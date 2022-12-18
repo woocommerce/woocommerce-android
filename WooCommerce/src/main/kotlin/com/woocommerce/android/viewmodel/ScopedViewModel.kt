@@ -7,9 +7,11 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.launch
 import kotlin.coroutines.CoroutineContext
 
 /**
@@ -30,6 +32,13 @@ abstract class ScopedViewModel(
     protected fun triggerEvent(event: Event) {
         event.isHandled = false
         _event.value = event
+    }
+
+    protected fun triggerEventWithDelay(event: Event, delay: Long) {
+        launch {
+            delay(delay)
+            triggerEvent(event)
+        }
     }
 
     /**

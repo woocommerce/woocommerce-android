@@ -450,6 +450,7 @@ class CardReaderConnectViewModel @Inject constructor(
 
     private fun onCancelClicked() {
         WooLog.e(WooLog.T.CARD_READER, "Connection flow interrupted by the user.")
+        launch { cardReaderManager.disconnectReader() }
         exitFlow(connected = false)
     }
 

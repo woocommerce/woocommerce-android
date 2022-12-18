@@ -1,14 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2022-11-29 12:54:27+0000
+Translation-Revision-Date: 2022-12-05 19:54:06+0000
 Plural-Forms: nplurals=2; plural=n > 1;
 Generator: GlotPress/2.4.0-alpha
 Language: id
 -->
 <resources>
+    <string name="store_creation_ecommerce_plan_period_two_years">2 tahun</string>
+    <string name="store_creation_ecommerce_store_loading_permanent_error">Terjadi kesalahan selama instalasi toko…</string>
+    <string name="variations_bulk_creation_no_candidates_message">Semua variasi telah dibuat.</string>
+    <string name="variations_bulk_creation_no_candidates_title">Tidak ada variasi yang bisa dibuat</string>
+    <string name="product_list_multiselect">Pilih beberapa sekaligus</string>
     <string name="store_creation_ecommerce_store_loading_error">Toko baru tidak dapat dimuat. Harap tunggu lalu coba lagi…</string>
     <string name="store_creation_ecommerce_plan_purchase_error">Pembelian tidak dapat diselesaikan…</string>
-    <string name="store_creation_ecommerce_site_creation_error">Situs baru tidak dapat dibuat…</string>
     <string name="store_creation_domain_picker_suggestions_error">Saran domain tidak dapat dimuat</string>
     <string name="store_creation_domain_picker_empty_suggestions">Tidak ada domain tersedia untuk pencarian ini</string>
     <string name="variations_bulk_creation_progress_title">Membuat variasi</string>
@@ -17,6 +21,7 @@ Language: id
     <string name="variations_bulk_creation_warning_message">Saat ini, pembuatan mendukung maksimal %1$d variasi. Pembuatan variasi untuk produk ini akan membuat %2$d variasi.</string>
     <string name="variations_bulk_creation_warning_title">Melebihi batas pembuatan</string>
     <string name="variation_add_all_description">Membuat variasi untuk semua kombinasi atribut Anda.</string>
+    <string name="variation_add_all">Buat semua variasi</string>
     <string name="variation_add_new_description">Buat satu variasi baru. Menetapkan atribut yang termasuk dalam produk variabel secara manual.</string>
     <string name="variation_add_new">Tambah variasi baru</string>
     <string name="variation_list_add">Tambah variasi</string>

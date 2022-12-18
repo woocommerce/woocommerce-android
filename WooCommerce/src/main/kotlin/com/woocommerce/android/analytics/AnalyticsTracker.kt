@@ -433,12 +433,18 @@ class AnalyticsTracker private constructor(private val context: Context) {
         const val VALUE_WEB = "web"
         const val VALUE_NATIVE = "native"
         const val VALUE_STEP_STORE_NAME = "store_name"
-        const val VALUE_STEP_STORE_PROFILER = "store_profiler"
+        const val VALUE_STEP_STORE_PROFILER_CATEGORY = "store_profiler_category"
         const val VALUE_STEP_DOMAIN_PICKER = "domain_picker"
         const val VALUE_STEP_STORE_SUMMARY = "store_summary"
         const val VALUE_STEP_PLAN_PURCHASE = "plan_purchase"
         const val VALUE_STEP_WEB_CHECKOUT = "web_checkout"
         const val VALUE_STEP_STORE_INSTALLATION = "store_installation"
+
+        // -- Products bulk update
+        const val KEY_PROPERTY = "property"
+        const val VALUE_PRICE = "price"
+        const val VALUE_STATUS = "status"
+        const val KEY_SELECTED_PRODUCTS_COUNT = "selected_products_count"
 
         var sendUsageStats: Boolean = true
             set(value) {
