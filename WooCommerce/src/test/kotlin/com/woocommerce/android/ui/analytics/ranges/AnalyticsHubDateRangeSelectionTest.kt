@@ -26,7 +26,8 @@ internal class AnalyticsHubDateRangeSelectionTest {
     @Before
     fun setUp() {
         testTimeZone = TimeZone.getTimeZone("UTC")
-        testCalendar = Calendar.getInstance(testTimeZone)
+        testCalendar = Calendar.getInstance()
+        testCalendar.timeZone = testTimeZone
     }
 
     @Test
@@ -45,7 +46,8 @@ internal class AnalyticsHubDateRangeSelectionTest {
         // When
         val sut = AnalyticsHubDateRangeSelection(
             selectionType = YEAR_TO_DATE,
-            currentDate = today
+            currentDate = today,
+            calendar = testCalendar
         )
 
         // Then
@@ -69,7 +71,8 @@ internal class AnalyticsHubDateRangeSelectionTest {
         // When
         val sut = AnalyticsHubDateRangeSelection(
             selectionType = LAST_YEAR,
-            currentDate = today
+            currentDate = today,
+            calendar = testCalendar
         )
 
         // Then
@@ -93,7 +96,8 @@ internal class AnalyticsHubDateRangeSelectionTest {
         // When
         val sut = AnalyticsHubDateRangeSelection(
             selectionType = QUARTER_TO_DATE,
-            currentDate = today
+            currentDate = today,
+            calendar = testCalendar
         )
 
         // Then
@@ -117,7 +121,8 @@ internal class AnalyticsHubDateRangeSelectionTest {
         // When
         val sut = AnalyticsHubDateRangeSelection(
             selectionType = LAST_QUARTER,
-            currentDate = today
+            currentDate = today,
+            calendar = testCalendar
         )
 
         // Then
@@ -141,7 +146,8 @@ internal class AnalyticsHubDateRangeSelectionTest {
         // When
         val sut = AnalyticsHubDateRangeSelection(
             selectionType = MONTH_TO_DATE,
-            currentDate = today
+            currentDate = today,
+            calendar = testCalendar
         )
 
         // Then
@@ -165,7 +171,8 @@ internal class AnalyticsHubDateRangeSelectionTest {
         // When
         val sut = AnalyticsHubDateRangeSelection(
             selectionType = LAST_MONTH,
-            currentDate = today
+            currentDate = today,
+            calendar = testCalendar
         )
 
         // Then
@@ -189,7 +196,8 @@ internal class AnalyticsHubDateRangeSelectionTest {
         // When
         val sut = AnalyticsHubDateRangeSelection(
             selectionType = WEEK_TO_DATE,
-            currentDate = today
+            currentDate = today,
+            calendar = testCalendar
         )
 
         // Then
@@ -213,7 +221,8 @@ internal class AnalyticsHubDateRangeSelectionTest {
         // When
         val sut = AnalyticsHubDateRangeSelection(
             selectionType = LAST_WEEK,
-            currentDate = today
+            currentDate = today,
+            calendar = testCalendar
         )
 
         // Then
@@ -237,7 +246,8 @@ internal class AnalyticsHubDateRangeSelectionTest {
         // When
         val sut = AnalyticsHubDateRangeSelection(
             selectionType = TODAY,
-            currentDate = today
+            currentDate = today,
+            calendar = testCalendar
         )
 
         // Then
@@ -261,7 +271,8 @@ internal class AnalyticsHubDateRangeSelectionTest {
         // When
         val sut = AnalyticsHubDateRangeSelection(
             selectionType = YESTERDAY,
-            currentDate = today
+            currentDate = today,
+            calendar = testCalendar
         )
 
         // Then
@@ -273,7 +284,7 @@ internal class AnalyticsHubDateRangeSelectionTest {
         val formatter = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ")
         formatter.timeZone = testTimeZone
         formatter.calendar = testCalendar
-        return formatter.parse(date)!!
+        return formatter.parse(date + "T12:00:00+0000")!!
     }
 
     private fun dayEndFrom(date: String): Date {
