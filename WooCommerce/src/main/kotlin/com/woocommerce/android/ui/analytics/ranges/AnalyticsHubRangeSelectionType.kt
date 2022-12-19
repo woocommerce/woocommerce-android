@@ -1,6 +1,7 @@
 package com.woocommerce.android.ui.analytics.ranges
 
 import com.woocommerce.android.ui.analytics.ranges.data.AnalyticsHubTodayRangeData
+import com.woocommerce.android.ui.analytics.ranges.data.AnalyticsHubYesterdayRangeData
 import java.util.*
 
 enum class AnalyticsHubRangeSelectionType {
@@ -17,7 +18,12 @@ enum class AnalyticsHubRangeSelectionType {
     CUSTOM;
 
     fun generateTimeRangeData(referenceDate: Date, calendar: Calendar): AnalyticsHubTimeRangeData {
-        return AnalyticsHubTodayRangeData(referenceDate, calendar)
+        return when (this) {
+            TODAY -> AnalyticsHubTodayRangeData(referenceDate, calendar)
+            YESTERDAY -> AnalyticsHubYesterdayRangeData(referenceDate, calendar)
+            else -> AnalyticsHubTodayRangeData(referenceDate, calendar)
+
+        }
 //        return when (this) {
 //            TODAY -> AnalyticsHubTodayTimeRangeData()
 //            YESTERDAY -> AnalyticsHubYesterdayTimeRangeData()
