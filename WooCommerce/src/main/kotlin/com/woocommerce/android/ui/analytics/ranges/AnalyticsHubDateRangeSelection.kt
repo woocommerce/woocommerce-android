@@ -1,6 +1,7 @@
 package com.woocommerce.android.ui.analytics.ranges
 
-import java.util.*
+import java.util.Calendar
+import java.util.Date
 
 class AnalyticsHubDateRangeSelection(
     selectionType: AnalyticsHubRangeSelectionType,

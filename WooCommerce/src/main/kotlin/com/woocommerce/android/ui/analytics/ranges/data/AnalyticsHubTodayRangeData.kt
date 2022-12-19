@@ -1,15 +1,16 @@
 package com.woocommerce.android.ui.analytics.ranges.data
 
-import com.woocommerce.android.extensions.startOfCurrentDay
 import com.woocommerce.android.extensions.oneDayAgo
+import com.woocommerce.android.extensions.startOfCurrentDay
 import com.woocommerce.android.ui.analytics.ranges.AnalyticsHubTimeRange
 import com.woocommerce.android.ui.analytics.ranges.AnalyticsHubTimeRangeData
-import java.util.*
+import java.util.Calendar
+import java.util.Date
 
 class AnalyticsHubTodayRangeData(
     referenceDate: Date,
     calendar: Calendar
-): AnalyticsHubTimeRangeData {
+) : AnalyticsHubTimeRangeData {
     override val currentRange: AnalyticsHubTimeRange
 
     override val previousRange: AnalyticsHubTimeRange

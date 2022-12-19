@@ -1,7 +1,8 @@
 package com.woocommerce.android.extensions
 
 import com.woocommerce.android.util.DateUtils
-import java.util.*
+import java.util.Calendar
+import java.util.Date
 
 fun Calendar.startOfCurrentDay(): Date =
     apply {

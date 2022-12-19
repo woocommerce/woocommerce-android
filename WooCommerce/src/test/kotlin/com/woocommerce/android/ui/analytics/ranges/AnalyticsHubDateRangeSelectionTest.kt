@@ -16,7 +16,9 @@ import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Test
 import java.text.SimpleDateFormat
-import java.util.*
+import java.util.Calendar
+import java.util.Date
+import java.util.TimeZone
 
 internal class AnalyticsHubDateRangeSelectionTest {
     private lateinit var testTimeZone: TimeZone
@@ -301,6 +303,5 @@ internal class AnalyticsHubDateRangeSelectionTest {
         val referenceDate = formatter.parse(date)!!
         testCalendar.time = referenceDate
         return testCalendar.startOfCurrentDay()
-
     }
 }

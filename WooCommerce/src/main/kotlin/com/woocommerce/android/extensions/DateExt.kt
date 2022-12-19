@@ -2,7 +2,6 @@ package com.woocommerce.android.extensions
 
 import android.content.Context
 import android.text.format.DateFormat
-import com.woocommerce.android.util.DateUtils
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T
 import org.apache.commons.lang3.time.DateUtils.isSameDay
