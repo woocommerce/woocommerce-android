@@ -1,7 +1,7 @@
 package com.woocommerce.android.ui.analytics.ranges.data
 
 import com.woocommerce.android.extensions.startOfCurrentDay
-import com.woocommerce.android.extensions.theDayBeforeIt
+import com.woocommerce.android.extensions.oneDayAgo
 import com.woocommerce.android.ui.analytics.ranges.AnalyticsHubTimeRange
 import com.woocommerce.android.ui.analytics.ranges.AnalyticsHubTimeRangeData
 import java.util.*
@@ -21,7 +21,7 @@ class AnalyticsHubTodayRangeData(
             end = referenceDate
         )
 
-        val yesterday = referenceDate.theDayBeforeIt(calendar)
+        val yesterday = referenceDate.oneDayAgo(calendar)
         calendar.time = yesterday
         previousRange = AnalyticsHubTimeRange(
             start = calendar.startOfCurrentDay(),
