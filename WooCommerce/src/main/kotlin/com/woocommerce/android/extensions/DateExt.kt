@@ -93,18 +93,3 @@ fun Date.oneWeekAgo(calendar: Calendar = Calendar.getInstance()): Date =
     calendar.apply { time = this@oneWeekAgo }
         .apply { add(Calendar.DATE, -7) }
         .time
-
-fun Calendar.startOfCurrentDay(): Date =
-    apply {
-        clear(Calendar.MILLISECOND)
-        clear(Calendar.SECOND)
-        clear(Calendar.MINUTE)
-        set(Calendar.HOUR_OF_DAY, DateUtils.ZERO)
-    }.time
-
-fun Calendar.endOfCurrentDay(): Date =
-    apply {
-        set(Calendar.SECOND, getMaximum(Calendar.SECOND))
-        set(Calendar.MINUTE, getMaximum(Calendar.MINUTE))
-        set(Calendar.HOUR_OF_DAY, getMaximum(Calendar.HOUR_OF_DAY))
-    }.time
