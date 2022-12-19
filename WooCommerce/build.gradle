@@ -248,7 +248,6 @@ dependencies {
 
     implementation project(":libs:cardreader")
     implementation project(":libs:iap")
-    implementation project(":libs:barcode")
 
     implementation 'com.facebook.shimmer:shimmer:0.5.0'
     implementation 'com.github.chrisbanes:PhotoView:2.3.0'
