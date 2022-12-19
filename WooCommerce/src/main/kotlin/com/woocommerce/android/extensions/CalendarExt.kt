@@ -34,6 +34,8 @@ fun Calendar.endOfCurrentWeek(): Date =
         clear(Calendar.SECOND)
         clear(Calendar.MINUTE)
         set(Calendar.HOUR_OF_DAY, DateUtils.ZERO)
-        add(Calendar.WEEK_OF_YEAR, -1)
         set(Calendar.DAY_OF_WEEK, firstDayOfWeek + DateUtils.DAYS_TAIL_IN_WEEK)
+        set(Calendar.SECOND, getMaximum(Calendar.SECOND))
+        set(Calendar.MINUTE, getMaximum(Calendar.MINUTE))
+        set(Calendar.HOUR_OF_DAY, getMaximum(Calendar.HOUR_OF_DAY))
     }.time
