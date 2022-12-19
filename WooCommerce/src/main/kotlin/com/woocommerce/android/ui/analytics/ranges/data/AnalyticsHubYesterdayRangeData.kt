@@ -7,18 +7,25 @@ import com.woocommerce.android.ui.analytics.ranges.AnalyticsHubTimeRangeData
 import java.util.*
 
 class AnalyticsHubYesterdayRangeData(
-    private val referenceDate: Date,
-    private val calendar: Calendar
+    referenceDate: Date,
+    calendar: Calendar
 ): AnalyticsHubTimeRangeData {
     override val currentRange: AnalyticsHubTimeRange
-        get() {
-            val yesterday = referenceDate.theDayBeforeIt()
-            calendar.time = yesterday
-            return AnalyticsHubTimeRange(
-                start = calendar.startOfCurrentDay(),
-                end = yesterday
-            )
-        }
     override val previousRange: AnalyticsHubTimeRange
-        get() = TODO("Not yet implemented")
+
+    init {
+        val yesterday = referenceDate.theDayBeforeIt()
+        calendar.time = yesterday
+        currentRange = AnalyticsHubTimeRange(
+            start = calendar.startOfCurrentDay(),
+            end = yesterday
+        )
+
+        val dayBeforeYesterday = yesterday.theDayBeforeIt(calendar)
+        calendar.time = dayBeforeYesterday
+        previousRange = AnalyticsHubTimeRange(
+            start = calendar.startOfCurrentDay(),
+            end = dayBeforeYesterday
+        )
+    }
 }
