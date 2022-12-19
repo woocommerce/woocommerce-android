@@ -1,6 +1,11 @@
 <!--
 Contains editorialized release notes. Raw release notes should go into `RELEASE-NOTES.txt`.
 -->
+## 11.7
+Exciting news! Now you can edit products in bulk. We also focused on polishing a few things with in person payments and order creation. Please check it out and share your feedback!
+
+Keep your feedback rolling in; it helps us figure out what to work on next.
+
 ## 11.6
 This release includes a handful of minor improvements and bug fixes that our team found. Don't be fooled though – we're working on some exciting new features for you! Stay tuned!
 
