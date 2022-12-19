@@ -18,6 +18,7 @@ import org.junit.Test
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Date
+import java.util.Locale
 import java.util.TimeZone
 
 internal class AnalyticsHubDateRangeSelectionTest {
@@ -28,8 +29,8 @@ internal class AnalyticsHubDateRangeSelectionTest {
     @Before
     fun setUp() {
         testTimeZone = TimeZone.getTimeZone("UTC")
-        testCalendar = Calendar.getInstance()
-        testCalendar.timeZone = testTimeZone
+        testCalendar = Calendar.getInstance(Locale.UK)
+        testCalendar.firstDayOfWeek = Calendar.MONDAY
     }
 
     @Test
