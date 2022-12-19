@@ -1,6 +1,11 @@
 package com.woocommerce.android.ui.analytics.ranges
 
-interface AnalyticsHubTimeRangeData {
-    val currentRange: AnalyticsHubTimeRange
-    val previousRange: AnalyticsHubTimeRange
+import com.woocommerce.android.util.DateUtils
+import java.util.*
+
+abstract class AnalyticsHubTimeRangeData(
+    dateUtils: DateUtils
+) {
+    abstract val currentRange: AnalyticsHubTimeRange
+    abstract val previousRange: AnalyticsHubTimeRange
 }
