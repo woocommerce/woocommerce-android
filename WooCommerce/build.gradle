@@ -74,9 +74,9 @@ android {
         if (project.hasProperty("versionName")) {
             versionName project.property("versionName")
         } else {
-            versionName "11.6"
+            versionName "11.7-rc-2"
         }
-        versionCode 367
+        versionCode 370
 
         minSdkVersion gradle.ext.minSdkVersion
         // Update targetSdkVersion only after reviewing all the OS changes (developer.android.com/about/versions/[ENTER_ANDROID_VERSION]/migration)
@@ -216,6 +216,8 @@ dependencies {
 
     implementation "androidx.work:work-runtime-ktx:$workManagerVersion"
 
+    implementation 'androidx.core:core-splashscreen:1.0.0'
+
     implementation("org.wordpress:utils:$wordPressUtilsVersion") {
         exclude group: "com.mcxiaoke.volley"
         exclude group: "com.android.support"
@@ -267,7 +269,7 @@ dependencies {
     implementation "androidx.hilt:hilt-common:$hiltJetpackVersion"
     implementation "androidx.hilt:hilt-work:$hiltJetpackVersion"
 
-    kapt"androidx.hilt:hilt-compiler:$hiltJetpackVersion"
+    kapt "androidx.hilt:hilt-compiler:$hiltJetpackVersion"
     kapt "com.google.dagger:hilt-compiler:$gradle.ext.daggerVersion"
     implementation "com.google.dagger:dagger-android-support:$gradle.ext.daggerVersion"
     kapt "com.google.dagger:dagger-android-processor:$gradle.ext.daggerVersion"
@@ -330,7 +332,7 @@ dependencies {
     // Resolve conflicts between main and test APK
     androidTestImplementation "androidx.annotation:annotation:1.5.0"
 
-    implementation ("com.zendesk:support:5.0.8") {
+    implementation("com.zendesk:support:5.0.8") {
         exclude group: 'com.android.support', module: 'support-annotations'
     }
 

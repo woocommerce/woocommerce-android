@@ -86,6 +86,10 @@
     <string name="product_attribute_error_renaming">Error while renaming your attribute</string>
     <string name="product_attributes_error_saving">Error while saving your attributes</string>
     <string name="product_attribute_remove">Remove this attribute?</string>
+    <string name="product_bulk_update_regular_price">Update regular price</string>
+    <string name="product_bulk_update_price_updated">Price updated!</string>
+    <string name="product_bulk_update_status">Update status</string>
+    <string name="product_bulk_update_status_updated">Status updated!</string>
     <string name="review_notifications">Reviews</string>
     <string name="more_menu">Menu</string>
     <string name="more_menu_button_woo_admin">WooCommerce Admin</string>
@@ -1597,6 +1601,9 @@
     <string name="grouped_product_empty">Add products to the group</string>
     <string name="product_selection_count">%d products selected</string>
     <string name="product_selection_count_single">%d product selected</string>
+    <string name="product_selection_menu_update_status">Update status</string>
+    <string name="product_selection_menu_update_price">Update price</string>
+    <string name="product_selection_menu_select_all">Select all</string>
     <string name="product_detail_save_as_draft">Save as draft</string>
     <string name="product_detail_linked_products">Linked products</string>
     <string name="upsells_label">Upsells</string>
@@ -2797,4 +2804,9 @@
     <string name="store_creation_store_name_title">What’s your store name?</string>
     <string name="store_creation_store_name_subtitle">Don’t worry you can always change it later. </string>
     <string name="store_creation_store_name_hint">Store name</string>
+
+    <string name="store_creation_store_categories_title">What’s your business about?</string>
+    <string name="store_creation_store_categories_subtitle">Choose a category that defines
+your business the best.</string>
+
 </resources>
