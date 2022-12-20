@@ -54,6 +54,7 @@ import com.woocommerce.android.ui.login.localnotifications.LoginNotificationSche
 import com.woocommerce.android.ui.login.overrides.WooLoginEmailFragment
 import com.woocommerce.android.ui.login.overrides.WooLoginEmailPasswordFragment
 import com.woocommerce.android.ui.login.overrides.WooLoginSiteAddressFragment
+import com.woocommerce.android.ui.login.overrides.WooLoginUsernamePasswordFragment
 import com.woocommerce.android.ui.login.qrcode.QrCodeLoginListener
 import com.woocommerce.android.ui.login.qrcode.showCameraPermissionDeniedDialog
 import com.woocommerce.android.ui.login.signup.SignUpFragment
@@ -91,7 +92,6 @@ import org.wordpress.android.login.LoginListener
 import org.wordpress.android.login.LoginMagicLinkRequestFragment
 import org.wordpress.android.login.LoginMode
 import org.wordpress.android.login.LoginSiteAddressFragment
-import org.wordpress.android.login.LoginUsernamePasswordFragment
 import org.wordpress.android.util.ToastUtils
 import javax.inject.Inject
 import kotlin.text.RegexOption.IGNORE_CASE
@@ -391,10 +391,10 @@ class LoginActivity :
     }
 
     private fun jumpToUsernamePassword(username: String?, password: String?) {
-        val loginUsernamePasswordFragment = LoginUsernamePasswordFragment.newInstance(
+        val loginUsernamePasswordFragment = WooLoginUsernamePasswordFragment.newInstance(
             "wordpress.com", "wordpress.com", username, password, true
         )
-        changeFragment(loginUsernamePasswordFragment, true, LoginUsernamePasswordFragment.TAG)
+        changeFragment(loginUsernamePasswordFragment, true, WooLoginUsernamePasswordFragment.TAG)
     }
 
     private fun startLoginViaWPCom() {
@@ -595,10 +595,10 @@ class LoginActivity :
         // logs into the app.
         inputSiteAddress?.let { AppPrefs.setLoginSiteAddress(it) }
 
-        val loginUsernamePasswordFragment = LoginUsernamePasswordFragment.newInstance(
+        val loginUsernamePasswordFragment = WooLoginUsernamePasswordFragment.newInstance(
             inputSiteAddress, endpointAddress, null, null, false
         )
-        changeFragment(loginUsernamePasswordFragment, true, LoginUsernamePasswordFragment.TAG)
+        changeFragment(loginUsernamePasswordFragment, true, WooLoginUsernamePasswordFragment.TAG)
     }
 
     override fun handleSslCertificateError(
@@ -829,10 +829,10 @@ class LoginActivity :
         inputUsername: String?,
         inputPassword: String?
     ) {
-        val loginUsernamePasswordFragment = LoginUsernamePasswordFragment.newInstance(
+        val loginUsernamePasswordFragment = WooLoginUsernamePasswordFragment.newInstance(
             siteAddress, endpointAddress, inputUsername, inputPassword, false
         )
-        changeFragment(loginUsernamePasswordFragment, true, LoginUsernamePasswordFragment.TAG)
+        changeFragment(loginUsernamePasswordFragment, true, WooLoginUsernamePasswordFragment.TAG)
     }
 
     override fun startJetpackInstall(siteAddress: String?) {

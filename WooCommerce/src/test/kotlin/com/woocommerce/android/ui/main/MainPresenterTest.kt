@@ -3,6 +3,7 @@ package com.woocommerce.android.ui.main
 import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.tools.ProductImageMap
 import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.ui.login.AccountRepository
 import com.woocommerce.android.ui.payments.cardreader.ClearCardReaderDataAction
 import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.viewmodel.BaseUnitTest
@@ -30,7 +31,6 @@ import org.wordpress.android.fluxc.annotations.action.Action
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooResult
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.CoreOrderStatus
-import org.wordpress.android.fluxc.store.AccountStore
 import org.wordpress.android.fluxc.store.AccountStore.OnAccountChanged
 import org.wordpress.android.fluxc.store.AccountStore.OnAuthenticationChanged
 import org.wordpress.android.fluxc.store.WCOrderStore
@@ -46,7 +46,6 @@ class MainPresenterTest : BaseUnitTest() {
     private val mainContractView: MainContract.View = mock()
 
     private val dispatcher: Dispatcher = mock()
-    private val accountStore: AccountStore = mock()
     private val wooCommerceStore: WooCommerceStore = mock()
     private val selectedSite: SelectedSite = mock {
         val siteModel = SiteModel()
@@ -61,6 +60,7 @@ class MainPresenterTest : BaseUnitTest() {
     private val wcOrderStore: WCOrderStore = mock {
         on { observeOrderCountForSite(any(), any()) } doReturn emptyFlow()
     }
+    private val accountRepository: AccountRepository = mock()
 
     private lateinit var mainPresenter: MainPresenter
 
@@ -71,13 +71,13 @@ class MainPresenterTest : BaseUnitTest() {
         mainPresenter = spy(
             MainPresenter(
                 dispatcher,
-                accountStore,
                 wooCommerceStore,
                 selectedSite,
                 productImageMap,
                 appPrefs,
                 wcOrderStore,
-                clearCardReaderDataAction
+                clearCardReaderDataAction,
+                accountRepository
             )
         )
         actionCaptor = argumentCaptor()
@@ -85,9 +85,10 @@ class MainPresenterTest : BaseUnitTest() {
 
     @Test
     fun `Reports AccountStore token status correctly`() {
+        doReturn(false).whenever(accountRepository).isUserLoggedIn()
         assertFalse(mainPresenter.userIsLoggedIn())
 
-        doReturn(true).whenever(accountStore).hasAccessToken()
+        doReturn(true).whenever(accountRepository).isUserLoggedIn()
         assertTrue(mainPresenter.userIsLoggedIn())
     }
 
@@ -100,7 +101,7 @@ class MainPresenterTest : BaseUnitTest() {
         assertEquals(AccountAction.UPDATE_ACCESS_TOKEN, actionCaptor.firstValue.type)
 
         // Pretend the token has been stored
-        doReturn(true).whenever(accountStore).hasAccessToken()
+        doReturn(true).whenever(accountRepository).isUserLoggedIn()
 
         // Check that the resulting OnAuthenticationChanged ends up notifying the View
         mainPresenter.onAuthenticationChanged(OnAuthenticationChanged())

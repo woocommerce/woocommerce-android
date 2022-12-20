@@ -14,8 +14,8 @@ enum class FeatureFlag {
     UNIFIED_ORDER_EDITING,
     ORDER_CREATION_CUSTOMER_SEARCH,
     NATIVE_STORE_CREATION_FLOW,
-    PRODUCTS_BULK_EDITING,
     STORE_PROFILER_FLOW,
+    REST_API,
     IAP_FOR_STORE_CREATION;
 
     fun isEnabled(context: Context? = null): Boolean {
@@ -32,8 +32,8 @@ enum class FeatureFlag {
 
             MORE_MENU_INBOX,
             WC_SHIPPING_BANNER,
-            PRODUCTS_BULK_EDITING,
             STORE_PROFILER_FLOW,
+            REST_API,
             IAP_FOR_STORE_CREATION -> PackageUtils.isDebugBuild()
         }
     }
