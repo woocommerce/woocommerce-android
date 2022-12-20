@@ -22,6 +22,7 @@ private const val LONG_TIMEOUT = 60000L
 
 private const val SECOND_FACTOR_LENGTH = 6
 private const val SITE_FLINGS_COUNT = 10
+private const val VERSION_13 = 13
 
 class QuickLoginHelper(private val packageName: String) {
     private val instrumentation = InstrumentationRegistry.getInstrumentation()
@@ -43,7 +44,7 @@ class QuickLoginHelper(private val packageName: String) {
     }
 
     fun allowPermissionsIfNeeded() {
-        if (Build.VERSION.SDK_INT >= 23) {
+        if (Build.VERSION.SDK_INT >= VERSION_13) {
             val allowPermissions: UiObject = device.findObject(UiSelector().text("Allow"))
             if (allowPermissions.exists()) {
                 try {
