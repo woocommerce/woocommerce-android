@@ -10,10 +10,12 @@ import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.components.ViewModelComponent
+import dagger.hilt.android.scopes.ViewModelScoped
 
 @InstallIn(ViewModelComponent::class)
 @Module
 class InAppPurchasesModule {
+    @ViewModelScoped
     @Provides
     fun providePurchaseWPComPlanActions(
         context: Application,
@@ -25,6 +27,7 @@ class InAppPurchasesModule {
             mobilePayAPIProvider::buildMobilePayAPI
         )
 
+    @ViewModelScoped
     @Provides
     fun providePurchaseWpComPlanSupportChecker(application: Application): PurchaseWpComPlanSupportChecker =
         IAPSitePurchasePlanFactory.createIAPPurchaseWpComPlanSupportChecker(
