@@ -9,9 +9,9 @@ import com.woocommerce.android.iapshowcase.purchase.IAPShowcaseMobilePayAPIProvi
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
-import dagger.hilt.components.SingletonComponent
+import dagger.hilt.android.components.ViewModelComponent
 
-@InstallIn(SingletonComponent::class)
+@InstallIn(ViewModelComponent::class)
 @Module
 class InAppPurchasesModule {
     @Provides
