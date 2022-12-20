@@ -22,7 +22,6 @@ import com.woocommerce.android.ui.analytics.ranges.data.AnalyticsHubTodayRangeDa
 import com.woocommerce.android.ui.analytics.ranges.data.AnalyticsHubWeekToDateRangeData
 import com.woocommerce.android.ui.analytics.ranges.data.AnalyticsHubYearToDateRangeData
 import com.woocommerce.android.ui.analytics.ranges.data.AnalyticsHubYesterdayRangeData
-import com.woocommerce.android.viewmodel.ResourceProvider
 import java.util.Calendar
 import java.util.Date
 
@@ -39,10 +38,6 @@ class AnalyticsHubDateRangeSelection(
         currentRange = rangeData.currentRange
         previousRange = rangeData.previousRange
     }
-
-    fun generateRangeDescription(
-        resourceProvider: ResourceProvider
-    ) = resourceProvider.getString(selectionType.localizedResourceId)
 
     private fun generateTimeRangeData(
         selectionType: SelectionType,
