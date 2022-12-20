@@ -11,11 +11,7 @@ fun Calendar.startOfCurrentDay(): Date =
     }.time
 
 fun Calendar.endOfCurrentDay(): Date =
-    apply {
-        set(Calendar.SECOND, getMaximum(Calendar.SECOND))
-        set(Calendar.MINUTE, getMaximum(Calendar.MINUTE))
-        set(Calendar.HOUR_OF_DAY, getMaximum(Calendar.HOUR_OF_DAY))
-    }.time
+    apply { setToDayLastSecond() }.time
 
 fun Calendar.startOfCurrentWeek(): Date =
     apply {
@@ -29,16 +25,13 @@ fun Calendar.endOfCurrentWeek(): Date =
         clearMinutesAndSeconds()
         set(Calendar.HOUR_OF_DAY, DateUtils.ZERO)
         set(Calendar.DAY_OF_WEEK, firstDayOfWeek + DateUtils.DAYS_TAIL_IN_WEEK)
-        set(Calendar.SECOND, getMaximum(Calendar.SECOND))
-        set(Calendar.MINUTE, getMaximum(Calendar.MINUTE))
-        set(Calendar.HOUR_OF_DAY, getMaximum(Calendar.HOUR_OF_DAY))
+        setToDayLastSecond()
     }.time
 
 fun Calendar.startOfCurrentMonth(): Date =
     apply {
         clearMinutesAndSeconds()
-        set(Calendar.HOUR_OF_DAY, DateUtils.ZERO)
-        set(Calendar.DAY_OF_MONTH, DateUtils.ONE)
+        setToDayFirstSecond()
     }.time
 
 fun Calendar.endOfCurrentMonth(): Date =
@@ -46,36 +39,27 @@ fun Calendar.endOfCurrentMonth(): Date =
         clearMinutesAndSeconds()
         set(Calendar.HOUR_OF_DAY, DateUtils.ZERO)
         set(Calendar.DAY_OF_MONTH, getActualMaximum(Calendar.DAY_OF_MONTH))
-        set(Calendar.SECOND, getMaximum(Calendar.SECOND))
-        set(Calendar.MINUTE, getMaximum(Calendar.MINUTE))
-        set(Calendar.HOUR_OF_DAY, getMaximum(Calendar.HOUR_OF_DAY))
+        setToDayLastSecond()
     }.time
 
 fun Calendar.startOfCurrentQuarter(): Date =
     apply {
         clearMinutesAndSeconds()
-        set(Calendar.HOUR_OF_DAY, DateUtils.ZERO)
-        set(Calendar.DAY_OF_MONTH, DateUtils.ONE)
+        setToDayFirstSecond()
         set(Calendar.MONTH, get(Calendar.MONTH) / DateUtils.THREE * DateUtils.THREE)
     }.time
 
 fun Calendar.endOfCurrentQuarter(): Date =
     apply {
         clearMinutesAndSeconds()
-        set(Calendar.HOUR_OF_DAY, DateUtils.ZERO)
-        set(Calendar.DAY_OF_MONTH, DateUtils.ONE)
         set(Calendar.MONTH, get(Calendar.MONTH) / DateUtils.THREE * DateUtils.THREE + 2)
         set(Calendar.DAY_OF_MONTH, getActualMaximum(Calendar.DAY_OF_MONTH))
-        set(Calendar.SECOND, getMaximum(Calendar.SECOND))
-        set(Calendar.MINUTE, getMaximum(Calendar.MINUTE))
-        set(Calendar.HOUR_OF_DAY, getMaximum(Calendar.HOUR_OF_DAY))
+        setToDayLastSecond()
     }.time
 
 fun Calendar.startOfCurrentYear(): Date =
     apply {
-        clear(Calendar.MILLISECOND)
-        clear(Calendar.SECOND)
-        clear(Calendar.MINUTE)
+        clearMinutesAndSeconds()
         set(Calendar.HOUR_OF_DAY, DateUtils.ZERO)
         set(Calendar.DAY_OF_YEAR, DateUtils.ONE)
     }.time
@@ -85,10 +69,19 @@ fun Calendar.endOfCurrentYear(): Date =
         clearMinutesAndSeconds()
         set(Calendar.HOUR_OF_DAY, DateUtils.ZERO)
         set(Calendar.DAY_OF_YEAR, getActualMaximum(Calendar.DAY_OF_YEAR))
-        set(Calendar.SECOND, getMaximum(Calendar.SECOND))
-        set(Calendar.MINUTE, getMaximum(Calendar.MINUTE))
-        set(Calendar.HOUR_OF_DAY, getMaximum(Calendar.HOUR_OF_DAY))
+        setToDayLastSecond()
     }.time
+
+private fun Calendar.setToDayFirstSecond() {
+    set(Calendar.HOUR_OF_DAY, DateUtils.ZERO)
+    set(Calendar.DAY_OF_MONTH, DateUtils.ONE)
+}
+
+private fun Calendar.setToDayLastSecond() {
+    set(Calendar.SECOND, getMaximum(Calendar.SECOND))
+    set(Calendar.MINUTE, getMaximum(Calendar.MINUTE))
+    set(Calendar.HOUR_OF_DAY, getMaximum(Calendar.HOUR_OF_DAY))
+}
 
 private fun Calendar.clearMinutesAndSeconds() {
     clear(Calendar.MILLISECOND)
