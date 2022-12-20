@@ -1,9 +1,11 @@
 package com.woocommerce.android.ui.analytics.ranges
 
 import com.woocommerce.android.ui.analytics.ranges.data.AnalyticsHubLastMonthRangeData
+import com.woocommerce.android.ui.analytics.ranges.data.AnalyticsHubLastQuarterRangeData
 import com.woocommerce.android.ui.analytics.ranges.data.AnalyticsHubLastWeekRangeData
 import com.woocommerce.android.ui.analytics.ranges.data.AnalyticsHubLastYearRangeData
 import com.woocommerce.android.ui.analytics.ranges.data.AnalyticsHubMonthToDateRangeData
+import com.woocommerce.android.ui.analytics.ranges.data.AnalyticsHubQuarterToDateRangeData
 import com.woocommerce.android.ui.analytics.ranges.data.AnalyticsHubTodayRangeData
 import com.woocommerce.android.ui.analytics.ranges.data.AnalyticsHubWeekToDateRangeData
 import com.woocommerce.android.ui.analytics.ranges.data.AnalyticsHubYearToDateRangeData
@@ -32,22 +34,11 @@ enum class AnalyticsHubRangeSelectionType {
             LAST_WEEK -> AnalyticsHubLastWeekRangeData(referenceDate, calendar)
             MONTH_TO_DATE -> AnalyticsHubMonthToDateRangeData(referenceDate, calendar)
             LAST_MONTH -> AnalyticsHubLastMonthRangeData(referenceDate, calendar)
+            QUARTER_TO_DATE -> AnalyticsHubQuarterToDateRangeData(referenceDate, calendar)
+            LAST_QUARTER -> AnalyticsHubLastQuarterRangeData(referenceDate, calendar)
             YEAR_TO_DATE -> AnalyticsHubYearToDateRangeData(referenceDate, calendar)
             LAST_YEAR -> AnalyticsHubLastYearRangeData(referenceDate, calendar)
             else -> AnalyticsHubTodayRangeData(referenceDate, calendar)
         }
-//        return when (this) {
-//            TODAY -> AnalyticsHubTodayTimeRangeData()
-//            YESTERDAY -> AnalyticsHubYesterdayTimeRangeData()
-//            LAST_WEEK -> AnalyticsHubLastWeekTimeRangeData()
-//            LAST_MONTH -> AnalyticsHubLastMonthTimeRangeData()
-//            LAST_QUARTER -> AnalyticsHubLastQuarterTimeRangeData()
-//            LAST_YEAR -> AnalyticsHubLastYearTimeRangeData()
-//            WEEK_TO_DATE -> AnalyticsHubWeekToDateRangeData()
-//            MONTH_TO_DATE -> AnalyticsHubMonthToDateRangeData()
-//            QUARTER_TO_DATE -> AnalyticsHubQuarterToDateRangeData()
-//            YEAR_TO_DATE -> AnalyticsHubYearToDateRangeData()
-//            CUSTOM -> AnalyticsHubCustomTimeRangeData()
-//        }
     }
 }
