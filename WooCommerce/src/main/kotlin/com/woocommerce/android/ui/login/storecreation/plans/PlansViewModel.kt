@@ -85,11 +85,11 @@ class PlansViewModel @Inject constructor(
         launch {
             _viewState.update { (_viewState.value as PlanState).copy(isCreatingSite = true) }
             createSite().ifSuccessfulThen { siteId ->
+                newStore.update(siteId = siteId)
                 if (FeatureFlag.IAP_FOR_STORE_CREATION.isEnabled()) {
                     observeInAppPurchasesResult(siteId)
                     iapManager.purchaseWPComPlan(iapActivityWrapper, siteId)
                 } else {
-                    newStore.update(siteId = siteId)
                     repository.addPlanToCart(
                         newStore.data.planProductId,
                         newStore.data.planPathSlug,
