@@ -28,20 +28,21 @@ import java.util.Date
 
 class AnalyticsHubDateRangeSelection(
     val selectionType: SelectionType,
-    resourceProvider: ResourceProvider,
     currentDate: Date = Date(),
     calendar: Calendar = Calendar.getInstance()
 ) {
     val currentRange: AnalyticsHubTimeRange
     val previousRange: AnalyticsHubTimeRange
-    val description: String
 
     init {
         val rangeData = generateTimeRangeData(selectionType, currentDate, calendar)
         currentRange = rangeData.currentRange
         previousRange = rangeData.previousRange
-        description = generateRangeDescription(selectionType, resourceProvider)
     }
+
+    fun generateRangeDescription(
+        resourceProvider: ResourceProvider
+    ) = resourceProvider.getString(selectionType.localizedResourceId)
 
     private fun generateTimeRangeData(
         selectionType: SelectionType,
@@ -64,35 +65,18 @@ class AnalyticsHubDateRangeSelection(
         }
     }
 
-    private fun generateRangeDescription(
-        selectionType: SelectionType,
-        resourceProvider: ResourceProvider
-    ) = when (selectionType) {
-        TODAY -> resourceProvider.getString(R.string.date_timeframe_today)
-        YESTERDAY -> resourceProvider.getString(R.string.date_timeframe_yesterday)
-        LAST_WEEK -> resourceProvider.getString(R.string.date_timeframe_last_week)
-        LAST_MONTH -> resourceProvider.getString(R.string.date_timeframe_last_month)
-        LAST_QUARTER -> resourceProvider.getString(R.string.date_timeframe_last_quarter)
-        LAST_YEAR -> resourceProvider.getString(R.string.date_timeframe_last_year)
-        WEEK_TO_DATE -> resourceProvider.getString(R.string.date_timeframe_week_to_date)
-        MONTH_TO_DATE -> resourceProvider.getString(R.string.date_timeframe_month_to_date)
-        QUARTER_TO_DATE -> resourceProvider.getString(R.string.date_timeframe_quarter_to_date)
-        YEAR_TO_DATE -> resourceProvider.getString(R.string.date_timeframe_year_to_date)
-        CUSTOM -> resourceProvider.getString(R.string.date_timeframe_custom)
-    }
-
-    enum class SelectionType(val description: String) {
-        TODAY("Today"),
-        YESTERDAY("Yesterday"),
-        LAST_WEEK("Last Week"),
-        LAST_MONTH("Last Month"),
-        LAST_QUARTER("Last Quarter"),
-        LAST_YEAR("Last Year"),
-        WEEK_TO_DATE("Week to Date"),
-        MONTH_TO_DATE("Month to Date"),
-        QUARTER_TO_DATE("Quarter to Date"),
-        YEAR_TO_DATE("Year to Date"),
-        CUSTOM("Custom");
+    enum class SelectionType(val description: String, val localizedResourceId: Int) {
+        TODAY("Today", R.string.date_timeframe_today),
+        YESTERDAY("Yesterday", R.string.date_timeframe_yesterday),
+        LAST_WEEK("Last Week", R.string.date_timeframe_last_week),
+        LAST_MONTH("Last Month", R.string.date_timeframe_last_month),
+        LAST_QUARTER("Last Quarter", R.string.date_timeframe_last_quarter),
+        LAST_YEAR("Last Year", R.string.date_timeframe_last_year),
+        WEEK_TO_DATE("Week to Date", R.string.date_timeframe_week_to_date),
+        MONTH_TO_DATE("Month to Date", R.string.date_timeframe_month_to_date),
+        QUARTER_TO_DATE("Quarter to Date", R.string.date_timeframe_quarter_to_date),
+        YEAR_TO_DATE("Year to Date", R.string.date_timeframe_year_to_date),
+        CUSTOM("Custom", R.string.date_timeframe_custom);
 
         companion object {
             fun from(datePeriod: String): SelectionType = values()
