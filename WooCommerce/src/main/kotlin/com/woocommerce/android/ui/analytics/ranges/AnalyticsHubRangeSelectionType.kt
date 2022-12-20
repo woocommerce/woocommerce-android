@@ -2,9 +2,11 @@ package com.woocommerce.android.ui.analytics.ranges
 
 import com.woocommerce.android.ui.analytics.ranges.data.AnalyticsHubLastMonthRangeData
 import com.woocommerce.android.ui.analytics.ranges.data.AnalyticsHubLastWeekRangeData
+import com.woocommerce.android.ui.analytics.ranges.data.AnalyticsHubLastYearRangeData
 import com.woocommerce.android.ui.analytics.ranges.data.AnalyticsHubMonthToDateRangeData
 import com.woocommerce.android.ui.analytics.ranges.data.AnalyticsHubTodayRangeData
 import com.woocommerce.android.ui.analytics.ranges.data.AnalyticsHubWeekToDateRangeData
+import com.woocommerce.android.ui.analytics.ranges.data.AnalyticsHubYearToDateRangeData
 import com.woocommerce.android.ui.analytics.ranges.data.AnalyticsHubYesterdayRangeData
 import java.util.Calendar
 import java.util.Date
@@ -30,6 +32,8 @@ enum class AnalyticsHubRangeSelectionType {
             LAST_WEEK -> AnalyticsHubLastWeekRangeData(referenceDate, calendar)
             MONTH_TO_DATE -> AnalyticsHubMonthToDateRangeData(referenceDate, calendar)
             LAST_MONTH -> AnalyticsHubLastMonthRangeData(referenceDate, calendar)
+            YEAR_TO_DATE -> AnalyticsHubYearToDateRangeData(referenceDate, calendar)
+            LAST_YEAR -> AnalyticsHubLastYearRangeData(referenceDate, calendar)
             else -> AnalyticsHubTodayRangeData(referenceDate, calendar)
         }
 //        return when (this) {
