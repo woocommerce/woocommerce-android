@@ -11,7 +11,7 @@ import java.util.Date
 class AnalyticsHubLastWeekRangeData(
     referenceDate: Date,
     calendar: Calendar
-): AnalyticsHubTimeRangeData {
+) : AnalyticsHubTimeRangeData {
     override val currentRange: AnalyticsHubTimeRange
     override val previousRange: AnalyticsHubTimeRange
 
