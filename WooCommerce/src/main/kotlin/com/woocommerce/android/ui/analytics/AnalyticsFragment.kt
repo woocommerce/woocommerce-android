@@ -47,7 +47,7 @@ class AnalyticsFragment :
         super.onViewCreated(view, savedInstanceState)
         bind(view)
         setupResultHandlers(viewModel)
-        lifecycleScope.launchWhenStarted { viewModel.state.collect { newState -> handleStateChange(newState) } }
+        lifecycleScope.launchWhenStarted { viewModel.viewState.collect { newState -> handleStateChange(newState) } }
         viewModel.event.observe(viewLifecycleOwner) { event -> handleEvent(event) }
         binding.analyticsRefreshLayout.setOnRefreshListener {
             binding.analyticsRefreshLayout.scrollUpChild = binding.scrollView
@@ -115,7 +115,7 @@ class AnalyticsFragment :
         binding.analyticsRefreshLayout.isRefreshing = viewState.refreshIndicator == ShowIndicator
     }
 
-    private fun getDateRangeSelectorViewState() = viewModel.state.value.analyticsDateRangeSelectorState
+    private fun getDateRangeSelectorViewState() = viewModel.viewState.value.analyticsDateRangeSelectorState
 
     private fun showDateRangePicker(fromMillis: Long, toMillis: Long) {
         val datePicker =

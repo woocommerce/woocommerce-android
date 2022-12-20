@@ -46,7 +46,6 @@ import javax.inject.Inject
 import com.woocommerce.android.ui.analytics.listcard.AnalyticsListViewState as ProductsViewState
 import com.woocommerce.android.ui.analytics.listcard.AnalyticsListViewState.LoadingViewState as LoadingProductsViewState
 import com.woocommerce.android.ui.analytics.listcard.AnalyticsListViewState.NoDataState as ProductsNoDataState
-import androidx.lifecycle.asLiveData
 import com.woocommerce.android.ui.analytics.ranges.AnalyticsHubDateRangeSelection
 import com.woocommerce.android.ui.analytics.ranges.AnalyticsHubDateRangeSelection.SelectionType
 import com.woocommerce.android.ui.analytics.ranges.AnalyticsHubDateRangeSelection.SelectionType.*
@@ -67,6 +66,21 @@ class AnalyticsViewModel @Inject constructor(
 
     val performanceObserver: LifecycleObserver = transactionLauncher
 
+    private val selectionTypeState = savedState.getStateFlow(viewModelScope, navArgs.targetGranularity)
+
+    private val rangeSelectionState = selectionTypeState
+        .map { AnalyticsHubDateRangeSelection(it) }
+        .toStateFlow(AnalyticsHubDateRangeSelection(selectionTypeState.value))
+
+    private val ranges
+        get() = rangeSelectionState.value
+
+    private val currentRange
+        get() = ranges.currentRange
+
+    private val previousRange
+        get() = ranges.previousRange
+
     private val mutableState = MutableStateFlow(
         AnalyticsViewState(
             NotShowIndicator,
@@ -77,29 +91,18 @@ class AnalyticsViewModel @Inject constructor(
             LoadingViewState,
         )
     )
-    val state: StateFlow<AnalyticsViewState> = mutableState
-
-    private val selectionTypeState = savedState.getStateFlow(viewModelScope, navArgs.targetGranularity)
-    val selectionType = selectionTypeState.asLiveData()
-
-    private val selectionDataState = selectionTypeState
-        .map { AnalyticsHubDateRangeSelection(it) }
-        .toStateFlow(AnalyticsHubDateRangeSelection(selectionTypeState.value))
-    val rangeSelection = selectionDataState.asLiveData()
-
-    private val selectionData
-        get() = selectionDataState.value
-
-    private val currentRange
-        get() = selectionData.currentRange
-
-    private val previousRange
-        get() = selectionData.previousRange
+    val viewState: StateFlow<AnalyticsViewState> = mutableState
 
     init {
         viewModelScope.launch {
-            refreshAllAnalyticsAtOnce(isRefreshing = false, showSkeleton = true)
+            rangeSelectionState.collect {
+                refreshAllAnalyticsAtOnce(isRefreshing = false, showSkeleton = true)
+            }
         }
+    }
+
+    fun onNewRangeSelection(selectionType: SelectionType) {
+        selectionTypeState.value = selectionType
     }
 
     fun onCustomDateRangeClicked() {
@@ -116,15 +119,15 @@ class AnalyticsViewModel @Inject constructor(
 
         dateFormat.timeZone = TimeZone.getDefault()
 
-        mutableState.value = state.value.copy(
-            analyticsDateRangeSelectorState = state.value.analyticsDateRangeSelectorState.copy(
+        mutableState.value = viewState.value.copy(
+            analyticsDateRangeSelectorState = viewState.value.analyticsDateRangeSelectorState.copy(
                 fromDatePeriod = resourceProvider.getString(
                     R.string.analytics_date_range_custom,
                     fromDateStr,
                     toDateStr
                 ),
                 toDatePeriod = resourceProvider.getString(R.string.date_timeframe_custom_date_range_title),
-                selectedPeriod = resourceProvider.getString(selectionData.selectionType.localizedResourceId)
+                selectedPeriod = resourceProvider.getString(ranges.selectionType.localizedResourceId)
             )
         )
 
@@ -168,22 +171,22 @@ class AnalyticsViewModel @Inject constructor(
         launch {
             val fetchStrategy = getFetchStrategy(isRefreshing)
 
-            if (showSkeleton) mutableState.value = state.value.copy(revenueState = LoadingViewState)
-            mutableState.value = state.value.copy(
+            if (showSkeleton) mutableState.value = viewState.value.copy(revenueState = LoadingViewState)
+            mutableState.value = viewState.value.copy(
                 refreshIndicator = if (isRefreshing) ShowIndicator else NotShowIndicator
             )
 
-            analyticsRepository.fetchRevenueData(selectionDataState.value, fetchStrategy)
+            analyticsRepository.fetchRevenueData(rangeSelectionState.value, fetchStrategy)
                 .let {
                     when (it) {
                         is RevenueData -> {
-                            mutableState.value = state.value.copy(
+                            mutableState.value = viewState.value.copy(
                                 refreshIndicator = NotShowIndicator,
                                 revenueState = buildRevenueDataViewState(it)
                             )
                             transactionLauncher.onRevenueFetched()
                         }
-                        is RevenueError -> mutableState.value = state.value.copy(
+                        is RevenueError -> mutableState.value = viewState.value.copy(
                             refreshIndicator = NotShowIndicator,
                             revenueState = NoDataState(resourceProvider.getString(R.string.analytics_revenue_no_data))
                         )
@@ -195,20 +198,20 @@ class AnalyticsViewModel @Inject constructor(
         launch {
             val fetchStrategy = getFetchStrategy(isRefreshing)
 
-            if (showSkeleton) mutableState.value = state.value.copy(ordersState = LoadingViewState)
-            mutableState.value = state.value.copy(
+            if (showSkeleton) mutableState.value = viewState.value.copy(ordersState = LoadingViewState)
+            mutableState.value = viewState.value.copy(
                 refreshIndicator = if (isRefreshing) ShowIndicator else NotShowIndicator
             )
-            analyticsRepository.fetchOrdersData(selectionDataState.value, fetchStrategy)
+            analyticsRepository.fetchOrdersData(rangeSelectionState.value, fetchStrategy)
                 .let {
                     when (it) {
                         is OrdersData -> {
-                            mutableState.value = state.value.copy(
+                            mutableState.value = viewState.value.copy(
                                 ordersState = buildOrdersDataViewState(it)
                             )
                             transactionLauncher.onOrdersFetched()
                         }
-                        is OrdersError -> mutableState.value = state.value.copy(
+                        is OrdersError -> mutableState.value = viewState.value.copy(
                             ordersState = NoDataState(resourceProvider.getString(R.string.analytics_orders_no_data))
                         )
                     }
@@ -218,15 +221,15 @@ class AnalyticsViewModel @Inject constructor(
     private fun updateProducts(isRefreshing: Boolean, showSkeleton: Boolean) =
         launch {
             val fetchStrategy = getFetchStrategy(isRefreshing)
-            if (showSkeleton) mutableState.value = state.value.copy(productsState = LoadingProductsViewState)
-            mutableState.value = state.value.copy(
+            if (showSkeleton) mutableState.value = viewState.value.copy(productsState = LoadingProductsViewState)
+            mutableState.value = viewState.value.copy(
                 refreshIndicator = if (isRefreshing) ShowIndicator else NotShowIndicator
             )
-            analyticsRepository.fetchProductsData(selectionDataState.value, fetchStrategy)
+            analyticsRepository.fetchProductsData(rangeSelectionState.value, fetchStrategy)
                 .let {
                     when (it) {
                         is ProductsData -> {
-                            mutableState.value = state.value.copy(
+                            mutableState.value = viewState.value.copy(
                                 productsState = buildProductsDataState(
                                     it.productsStat.itemsSold,
                                     it.productsStat.itemsSoldDelta,
@@ -235,7 +238,7 @@ class AnalyticsViewModel @Inject constructor(
                             )
                             transactionLauncher.onProductsFetched()
                         }
-                        ProductsError -> mutableState.value = state.value.copy(
+                        ProductsError -> mutableState.value = viewState.value.copy(
                             productsState = ProductsNoDataState(
                                 resourceProvider.getString(R.string.analytics_products_no_data)
                             )
@@ -251,33 +254,33 @@ class AnalyticsViewModel @Inject constructor(
             val isQuarterSelection = (timePeriod == QUARTER_TO_DATE) || (timePeriod == LAST_QUARTER)
 
             if (timePeriod == SelectionType.CUSTOM) {
-                mutableState.value = state.value.copy(visitorsState = AnalyticsInformationViewState.HiddenState)
+                mutableState.value = viewState.value.copy(visitorsState = AnalyticsInformationViewState.HiddenState)
                 transactionLauncher.onVisitorsFetched()
                 return@launch
             }
 
-            if (showSkeleton) mutableState.value = state.value.copy(visitorsState = LoadingViewState)
-            mutableState.value = state.value.copy(
+            if (showSkeleton) mutableState.value = viewState.value.copy(visitorsState = LoadingViewState)
+            mutableState.value = viewState.value.copy(
                 refreshIndicator = if (isRefreshing) ShowIndicator else NotShowIndicator
             )
 
             if (isQuarterSelection) {
-                analyticsRepository.fetchQuarterVisitorsData(selectionDataState.value, fetchStrategy)
+                analyticsRepository.fetchQuarterVisitorsData(rangeSelectionState.value, fetchStrategy)
             } else {
-                analyticsRepository.fetchRecentVisitorsData(selectionDataState.value, fetchStrategy)
+                analyticsRepository.fetchRecentVisitorsData(rangeSelectionState.value, fetchStrategy)
             }.handleVisitorsResult()
         }
 
     private fun VisitorsResult.handleVisitorsResult() {
         when (this) {
             is VisitorsData -> {
-                mutableState.value = state.value.copy(
+                mutableState.value = viewState.value.copy(
                     refreshIndicator = NotShowIndicator,
                     visitorsState = buildVisitorsDataViewState(visitorsStat)
                 )
                 transactionLauncher.onVisitorsFetched()
             }
-            is VisitorsError -> mutableState.value = state.value.copy(
+            is VisitorsError -> mutableState.value = viewState.value.copy(
                 refreshIndicator = NotShowIndicator,
                 visitorsState = NoDataState("No visitors data")
             )
@@ -286,8 +289,8 @@ class AnalyticsViewModel @Inject constructor(
 
     private fun updateDateSelector() {
         //TODO: populate the date range selector with the correct values
-        mutableState.value = state.value.copy(
-            analyticsDateRangeSelectorState = state.value.analyticsDateRangeSelectorState.copy(
+        mutableState.value = viewState.value.copy(
+            analyticsDateRangeSelectorState = viewState.value.analyticsDateRangeSelectorState.copy(
                 fromDatePeriod = "",
                 toDatePeriod = "",
                 selectedPeriod = ""
@@ -398,12 +401,11 @@ class AnalyticsViewModel @Inject constructor(
     private fun getFetchStrategy(isRefreshing: Boolean) = if (isRefreshing) ForceNew else Saved
 
     private fun trackSelectedDateRange() {
-        val rangeDescription = selectionDataState.value.selectionType.description
         onTrackableUIInteraction()
         AnalyticsTracker.track(
             AnalyticsEvent.ANALYTICS_HUB_DATE_RANGE_SELECTED,
             mapOf(
-                AnalyticsTracker.KEY_OPTION to rangeDescription
+                AnalyticsTracker.KEY_OPTION to ranges.selectionType.description
             )
         )
     }
