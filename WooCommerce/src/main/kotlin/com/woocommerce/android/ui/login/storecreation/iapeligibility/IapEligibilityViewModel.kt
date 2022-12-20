@@ -20,7 +20,7 @@ class IapEligibilityViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
     private val planSupportChecker: PurchaseWpComPlanSupportChecker,
     private val analyticsTrackerWrapper: AnalyticsTrackerWrapper
-) : ScopedViewModel(savedStateHandle) {
+) : ScopedViewModel(savedStateHandle, planSupportChecker) {
     fun checkIapEligibility() {
         if (FeatureFlag.IAP_FOR_STORE_CREATION.isEnabled()) {
             launch {

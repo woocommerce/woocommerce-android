@@ -52,7 +52,7 @@ class PlansViewModel @Inject constructor(
     private val newStore: NewStore,
     private val repository: StoreCreationRepository,
     private val iapManager: PurchaseWPComPlanActions
-) : ScopedViewModel(savedStateHandle) {
+) : ScopedViewModel(savedStateHandle, iapManager) {
     companion object {
         private const val NEW_SITE_LANGUAGE_ID = "en"
         private const val NEW_SITE_THEME = "pub/zoologist"
