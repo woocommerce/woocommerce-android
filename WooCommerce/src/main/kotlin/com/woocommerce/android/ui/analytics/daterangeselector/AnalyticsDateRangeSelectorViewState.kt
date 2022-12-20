@@ -5,4 +5,13 @@ data class AnalyticsDateRangeSelectorViewState(
     val fromDatePeriod: String,
     val availableRangeDates: List<String>,
     val selectedPeriod: String
-)
+) {
+    companion object {
+        val EMPTY = AnalyticsDateRangeSelectorViewState(
+            toDatePeriod = "",
+            fromDatePeriod = "",
+            availableRangeDates = emptyList(),
+            selectedPeriod = ""
+        )
+    }
+}

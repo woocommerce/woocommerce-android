@@ -22,7 +22,6 @@ import com.woocommerce.android.ui.analytics.AnalyticsRepository.VisitorsResult.V
 import com.woocommerce.android.ui.analytics.AnalyticsRepository.VisitorsResult.VisitorsError
 import com.woocommerce.android.ui.analytics.RefreshIndicator.NotShowIndicator
 import com.woocommerce.android.ui.analytics.RefreshIndicator.ShowIndicator
-import com.woocommerce.android.ui.analytics.daterangeselector.AnalyticsDateRangeSelectorViewState
 import com.woocommerce.android.ui.analytics.informationcard.AnalyticsInformationSectionViewState
 import com.woocommerce.android.ui.analytics.informationcard.AnalyticsInformationViewState
 import com.woocommerce.android.ui.analytics.informationcard.AnalyticsInformationViewState.DataViewState
@@ -46,6 +45,7 @@ import javax.inject.Inject
 import com.woocommerce.android.ui.analytics.listcard.AnalyticsListViewState as ProductsViewState
 import com.woocommerce.android.ui.analytics.listcard.AnalyticsListViewState.LoadingViewState as LoadingProductsViewState
 import com.woocommerce.android.ui.analytics.listcard.AnalyticsListViewState.NoDataState as ProductsNoDataState
+import com.woocommerce.android.ui.analytics.daterangeselector.AnalyticsDateRangeSelectorViewState
 import com.woocommerce.android.ui.analytics.ranges.AnalyticsHubDateRangeSelection
 import com.woocommerce.android.ui.analytics.ranges.AnalyticsHubDateRangeSelection.SelectionType
 import com.woocommerce.android.ui.analytics.ranges.AnalyticsHubDateRangeSelection.SelectionType.*
@@ -75,16 +75,10 @@ class AnalyticsViewModel @Inject constructor(
     private val ranges
         get() = rangeSelectionState.value
 
-    private val currentRange
-        get() = ranges.currentRange
-
-    private val previousRange
-        get() = ranges.previousRange
-
     private val mutableState = MutableStateFlow(
         AnalyticsViewState(
             NotShowIndicator,
-            buildAnalyticsDateRangeSelectorViewState(),
+            AnalyticsDateRangeSelectorViewState.EMPTY,
             LoadingViewState,
             LoadingViewState,
             LoadingProductsViewState,
@@ -93,9 +87,17 @@ class AnalyticsViewModel @Inject constructor(
     )
     val viewState: StateFlow<AnalyticsViewState> = mutableState
 
+    val selectableRangeOptions by lazy {
+        SelectionType.values()
+            .map { resourceProvider.getString(it.localizedResourceId) }
+            .toTypedArray()
+    }
+
     init {
         viewModelScope.launch {
             rangeSelectionState.collect {
+                updateDateSelector()
+                trackSelectedDateRange()
                 refreshAllAnalyticsAtOnce(isRefreshing = false, showSkeleton = true)
             }
         }
@@ -106,8 +108,8 @@ class AnalyticsViewModel @Inject constructor(
     }
 
     fun onCustomDateRangeClicked() {
-        val fromMillis = currentRange.start.time
-        val toMillis = currentRange.end.time
+        val fromMillis = ranges.currentRange.start.time
+        val toMillis = ranges.currentRange.end.time
         triggerEvent(AnalyticsViewEvent.OpenDatePicker(fromMillis, toMillis))
     }
 
@@ -141,14 +143,6 @@ class AnalyticsViewModel @Inject constructor(
     fun onRefreshRequested() {
         viewModelScope.launch {
             refreshAllAnalyticsAtOnce(isRefreshing = true, showSkeleton = false)
-        }
-    }
-
-    fun onSelectedTimePeriodChanged() {
-        updateDateSelector()
-        trackSelectedDateRange()
-        viewModelScope.launch {
-            refreshAllAnalyticsAtOnce(isRefreshing = false, showSkeleton = true)
         }
     }
 
@@ -288,12 +282,11 @@ class AnalyticsViewModel @Inject constructor(
     }
 
     private fun updateDateSelector() {
-        //TODO: populate the date range selector with the correct values
         mutableState.value = viewState.value.copy(
             analyticsDateRangeSelectorState = viewState.value.analyticsDateRangeSelectorState.copy(
-                fromDatePeriod = "",
-                toDatePeriod = "",
-                selectedPeriod = ""
+                fromDatePeriod = ranges.currentRange.description,
+                toDatePeriod = ranges.previousRange.description,
+                selectedPeriod = resourceProvider.getString(ranges.selectionType.localizedResourceId)
             )
         )
     }
@@ -301,18 +294,6 @@ class AnalyticsViewModel @Inject constructor(
     private fun formatValue(value: String, currencyCode: String?) = currencyCode
         ?.let { currencyFormatter.formatCurrency(value, it) }
         ?: value
-
-    private fun buildAnalyticsDateRangeSelectorViewState(): AnalyticsDateRangeSelectorViewState {
-        val rangeOptions = values().map { it.description }
-
-        //TODO: populate the date range selector with the correct values
-        return AnalyticsDateRangeSelectorViewState(
-            fromDatePeriod = "from date period",
-            toDatePeriod = "to date period",
-            availableRangeDates = rangeOptions,
-            selectedPeriod = ""
-        )
-    }
 
     private fun buildVisitorsDataViewState(
         stats: VisitorsStat

@@ -15,7 +15,6 @@ import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.extensions.scrollStartEvents
 import com.woocommerce.android.ui.analytics.RefreshIndicator.ShowIndicator
 import com.woocommerce.android.ui.analytics.ranges.AnalyticsHubDateRangeSelection
-import com.woocommerce.android.ui.analytics.ranges.AnalyticsHubDateRangeSelection.SelectionType.*
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.util.ChromeCustomTabUtils
 import com.woocommerce.android.viewmodel.MultiLiveEvent
@@ -78,25 +77,19 @@ class AnalyticsFragment :
     private fun openDateRangeSelector() = findNavController().navigateSafely(buildDialogDateRangeSelectorArguments())
 
     private fun buildDialogDateRangeSelectorArguments() =
-        getDateRangeSelectorViewState().availableRangeDates.toTypedArray().let { ranges ->
-            AnalyticsFragmentDirections.actionAnalyticsFragmentToDateRangeSelector(
-                requestKey = KEY_DATE_RANGE_SELECTOR_RESULT,
-                keys = ranges,
-                values = ranges,
-                selectedItem = getDateRangeSelectorViewState().selectedPeriod
-            )
-        }
+        AnalyticsFragmentDirections.actionAnalyticsFragmentToDateRangeSelector(
+            requestKey = KEY_DATE_RANGE_SELECTOR_RESULT,
+            keys = viewModel.selectableRangeOptions,
+            values = viewModel.selectableRangeOptions,
+            selectedItem = getDateRangeSelectorViewState().selectedPeriod
+        )
 
     private fun setupResultHandlers(viewModel: AnalyticsViewModel) {
         handleDialogResult<String>(
             key = KEY_DATE_RANGE_SELECTOR_RESULT,
             entryId = R.id.analytics
         ) { dateSelection ->
-            when (AnalyticsHubDateRangeSelection.SelectionType.from(dateSelection)) {
-                //TODO : update view model with new selected type
-                CUSTOM -> viewModel.onCustomDateRangeClicked()
-                else -> viewModel.onSelectedTimePeriodChanged()
-            }
+            viewModel.onNewRangeSelection(AnalyticsHubDateRangeSelection.SelectionType.from(dateSelection))
         }
     }
 
