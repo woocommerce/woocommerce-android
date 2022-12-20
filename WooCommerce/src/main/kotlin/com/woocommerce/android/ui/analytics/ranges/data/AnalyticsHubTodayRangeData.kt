@@ -18,7 +18,7 @@ import java.util.Date
 class AnalyticsHubTodayRangeData(
     referenceDate: Date,
     calendar: Calendar
-): AnalyticsHubTimeRangeData {
+) : AnalyticsHubTimeRangeData {
     override val currentRange: AnalyticsHubTimeRange
 
     override val previousRange: AnalyticsHubTimeRange

@@ -4,7 +4,8 @@ import com.woocommerce.android.extensions.startOfCurrentDay
 import com.woocommerce.android.extensions.theDayBeforeIt
 import com.woocommerce.android.ui.analytics.ranges.AnalyticsHubTimeRange
 import com.woocommerce.android.ui.analytics.ranges.AnalyticsHubTimeRangeData
-import java.util.*
+import java.util.Calendar
+import java.util.Date
 
 // Responsible for defining two ranges of data, one starting from the the first second of yesterday
 // until the last minute of  the same day and the previous one, starting from the first second of
@@ -17,7 +18,7 @@ import java.util.*
 class AnalyticsHubYesterdayRangeData(
     referenceDate: Date,
     calendar: Calendar
-): AnalyticsHubTimeRangeData {
+) : AnalyticsHubTimeRangeData {
     override val currentRange: AnalyticsHubTimeRange
     override val previousRange: AnalyticsHubTimeRange
 

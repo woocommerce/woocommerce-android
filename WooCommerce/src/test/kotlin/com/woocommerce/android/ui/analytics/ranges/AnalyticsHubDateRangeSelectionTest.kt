@@ -1,14 +1,13 @@
 package com.woocommerce.android.ui.analytics.ranges
 
-import com.woocommerce.android.extensions.endOfCurrentDay
 import com.woocommerce.android.extensions.startOfCurrentDay
-import com.woocommerce.android.ui.analytics.ranges.AnalyticsHubDateRangeSelection.AnalyticsHubRangeSelectionType.TODAY
-import com.woocommerce.android.ui.analytics.ranges.AnalyticsHubDateRangeSelection.AnalyticsHubRangeSelectionType.YESTERDAY
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Test
 import java.text.SimpleDateFormat
-import java.util.*
+import java.util.Calendar
+import java.util.Date
+import java.util.TimeZone
 
 internal class AnalyticsHubDateRangeSelectionTest {
     private lateinit var testTimeZone: TimeZone
@@ -37,7 +36,7 @@ internal class AnalyticsHubDateRangeSelectionTest {
 
         // When
         val sut = AnalyticsHubDateRangeSelection(
-            selectionType = TODAY,
+            selectionType = AnalyticsHubDateRangeSelection.AnalyticsHubRangeSelectionType.TODAY,
             currentDate = today,
             calendar = testCalendar
         )
@@ -62,7 +61,7 @@ internal class AnalyticsHubDateRangeSelectionTest {
 
         // When
         val sut = AnalyticsHubDateRangeSelection(
-            selectionType = YESTERDAY,
+            selectionType = AnalyticsHubDateRangeSelection.AnalyticsHubRangeSelectionType.YESTERDAY,
             currentDate = today,
             calendar = testCalendar
         )
@@ -79,20 +78,11 @@ internal class AnalyticsHubDateRangeSelectionTest {
         return formatter.parse(date + "T12:00:00+0000")!!
     }
 
-    private fun dayEndFrom(date: String): Date {
-        val formatter = SimpleDateFormat("yyyy-MM-dd")
-        formatter.timeZone = testTimeZone
-        val referenceDate = formatter.parse(date)!!
-        testCalendar.time = referenceDate
-        return testCalendar.endOfCurrentDay()
-    }
-
     private fun dayStartFrom(date: String): Date {
         val formatter = SimpleDateFormat("yyyy-MM-dd")
         formatter.timeZone = testTimeZone
         val referenceDate = formatter.parse(date)!!
         testCalendar.time = referenceDate
         return testCalendar.startOfCurrentDay()
-
     }
 }

@@ -4,7 +4,8 @@ import com.woocommerce.android.ui.analytics.ranges.AnalyticsHubDateRangeSelectio
 import com.woocommerce.android.ui.analytics.ranges.AnalyticsHubDateRangeSelection.AnalyticsHubRangeSelectionType.YESTERDAY
 import com.woocommerce.android.ui.analytics.ranges.data.AnalyticsHubTodayRangeData
 import com.woocommerce.android.ui.analytics.ranges.data.AnalyticsHubYesterdayRangeData
-import java.util.*
+import java.util.Calendar
+import java.util.Date
 
 class AnalyticsHubDateRangeSelection(
     selectionType: AnalyticsHubRangeSelectionType,
