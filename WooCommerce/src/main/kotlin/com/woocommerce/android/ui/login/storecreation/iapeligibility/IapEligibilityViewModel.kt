@@ -6,7 +6,7 @@ import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.iap.pub.PurchaseWpComPlanSupportChecker
 import com.woocommerce.android.iap.pub.model.IAPSupportedResult
-import com.woocommerce.android.ui.login.storecreation.iapeligibility.IapEligibilityViewModel.IapEligibilityEvent.NavigateToNativeStoreCreation
+import com.woocommerce.android.ui.login.storecreation.iapeligibility.IapEligibilityViewModel.IapEligibilityEvent.NavigateToNextStep
 import com.woocommerce.android.ui.login.storecreation.iapeligibility.IapEligibilityViewModel.IapEligibilityEvent.NavigateToWebStoreCreation
 import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.viewmodel.MultiLiveEvent
@@ -30,7 +30,7 @@ class IapEligibilityViewModel @Inject constructor(
                 }
             }
         } else {
-            triggerEvent(NavigateToNativeStoreCreation)
+            triggerEvent(NavigateToNextStep)
         }
     }
 
@@ -48,14 +48,14 @@ class IapEligibilityViewModel @Inject constructor(
             mapOf(AnalyticsTracker.KEY_IAP_ELIGIBLE to result.isSupported)
         )
         val navEvent = when {
-            result.isSupported -> NavigateToNativeStoreCreation
+            result.isSupported -> NavigateToNextStep
             else -> NavigateToWebStoreCreation
         }
         triggerEvent(navEvent)
     }
 
     sealed class IapEligibilityEvent : MultiLiveEvent.Event() {
-        object NavigateToNativeStoreCreation : IapEligibilityEvent()
+        object NavigateToNextStep : IapEligibilityEvent()
         object NavigateToWebStoreCreation : IapEligibilityEvent()
     }
 }
