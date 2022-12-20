@@ -265,11 +265,11 @@ internal class AnalyticsHubDateRangeSelectionTest {
         val today = midDayFrom("2022-07-01")
         val expectedCurrentRange = AnalyticsHubTimeRange(
             start = dayStartFrom("2022-06-30"),
-            end = midDayFrom("2022-06-30")
+            end = dayEndFrom("2022-06-30")
         )
         val expectedPreviousRange = AnalyticsHubTimeRange(
             start = dayStartFrom("2022-06-29"),
-            end = midDayFrom("2022-06-29")
+            end = dayEndFrom("2022-06-29")
         )
 
         // When
