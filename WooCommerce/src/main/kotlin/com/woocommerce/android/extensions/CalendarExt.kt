@@ -39,3 +39,24 @@ fun Calendar.endOfCurrentWeek(): Date =
         set(Calendar.MINUTE, getMaximum(Calendar.MINUTE))
         set(Calendar.HOUR_OF_DAY, getMaximum(Calendar.HOUR_OF_DAY))
     }.time
+
+fun Calendar.startOfCurrentMonth(): Date =
+    apply {
+        clear(Calendar.MILLISECOND)
+        clear(Calendar.SECOND)
+        clear(Calendar.MINUTE)
+        set(Calendar.HOUR_OF_DAY, DateUtils.ZERO)
+        set(Calendar.DAY_OF_MONTH, DateUtils.ONE)
+    }.time
+
+fun Calendar.endOfCurrentMonth(): Date =
+    apply {
+        clear(Calendar.MILLISECOND)
+        clear(Calendar.SECOND)
+        clear(Calendar.MINUTE)
+        set(Calendar.HOUR_OF_DAY, DateUtils.ZERO)
+        set(Calendar.DAY_OF_MONTH, getActualMaximum(Calendar.DAY_OF_MONTH))
+        set(Calendar.SECOND, getMaximum(Calendar.SECOND))
+        set(Calendar.MINUTE, getMaximum(Calendar.MINUTE))
+        set(Calendar.HOUR_OF_DAY, getMaximum(Calendar.HOUR_OF_DAY))
+    }.time

@@ -92,3 +92,8 @@ fun Date.oneWeekAgo(calendar: Calendar = Calendar.getInstance()): Date =
     calendar.apply { time = this@oneWeekAgo }
         .apply { add(Calendar.DATE, -7) }
         .time
+
+fun Date.oneMonthAgo(calendar: Calendar = Calendar.getInstance()): Date =
+    calendar.apply { time = this@oneMonthAgo }
+        .apply { add(Calendar.MONTH, -1) }
+        .time
