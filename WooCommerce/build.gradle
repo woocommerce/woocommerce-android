@@ -250,7 +250,6 @@ dependencies {
 
     implementation project(":libs:cardreader")
     implementation project(":libs:iap")
-    implementation project(":libs:barcode")
 
     implementation 'com.facebook.shimmer:shimmer:0.5.0'
     implementation 'com.github.chrisbanes:PhotoView:2.3.0'
@@ -275,6 +274,8 @@ dependencies {
     implementation "com.github.bumptech.glide:volley-integration:$glideVersion@aar"
     implementation "org.greenrobot:eventbus:$eventBusVersion"
     implementation "com.google.android.play:core:$googlePlayCoreVersion"
+
+    implementation 'com.google.android.gms:play-services-code-scanner:16.0.0-beta3'
 
     // Debug dependencies
     debugImplementation "com.facebook.flipper:flipper:$flipperVersion"
@@ -322,9 +323,6 @@ dependencies {
         exclude group: 'org.json', module: 'json'
     }
     androidTestImplementation "org.apache.httpcomponents:httpclient-android:$httpClientAndroidVersion"
-
-    // Resolve conflicts between main and test APK
-    androidTestImplementation "androidx.annotation:annotation:1.5.0"
 
     implementation("com.zendesk:support:5.0.8") {
         exclude group: 'com.android.support', module: 'support-annotations'
