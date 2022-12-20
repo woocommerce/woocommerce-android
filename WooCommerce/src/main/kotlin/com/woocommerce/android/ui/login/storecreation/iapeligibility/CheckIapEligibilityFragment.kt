@@ -28,6 +28,8 @@ import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.ui.login.storecreation.iapeligibility.IapEligibilityViewModel.IapEligibilityEvent.NavigateToNextStep
 import com.woocommerce.android.ui.login.storecreation.iapeligibility.IapEligibilityViewModel.IapEligibilityEvent.NavigateToWebStoreCreation
 import com.woocommerce.android.ui.main.AppBarStatus
+import com.woocommerce.android.viewmodel.MultiLiveEvent
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -79,6 +81,8 @@ class CheckIapEligibilityFragment : BaseFragment() {
             when (event) {
                 is NavigateToWebStoreCreation -> navigateToStoreCreationWeb()
                 is NavigateToNextStep -> navigateToStoreCreationNative()
+                is Exit -> findNavController().popBackStack()
+                is MultiLiveEvent.Event.ShowDialog -> event.showDialog()
             }
         }
     }
