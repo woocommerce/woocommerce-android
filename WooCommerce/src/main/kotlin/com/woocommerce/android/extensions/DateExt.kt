@@ -101,3 +101,9 @@ fun Date.oneMonthAgo(calendar: Calendar = Calendar.getInstance()): Date =
         time = this@oneMonthAgo
         add(Calendar.MONTH, -1)
     }.time
+
+fun Date.oneYearAgo(calendar: Calendar = Calendar.getInstance()): Date =
+    calendar.apply {
+        time = this@oneYearAgo
+        add(Calendar.YEAR, -1)
+    }.time
