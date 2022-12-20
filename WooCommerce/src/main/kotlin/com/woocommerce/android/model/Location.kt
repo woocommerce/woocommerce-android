@@ -29,6 +29,12 @@ sealed class AmbiguousLocation : Parcelable {
 
     abstract fun isNotEmpty(): Boolean
 
+    val nameOrRaw
+        get() = when (this) {
+            is Defined -> this.value.name
+            is Raw -> this.value
+        }
+
     val codeOrRaw
         get() = when (this) {
             is Defined -> this.value.code
