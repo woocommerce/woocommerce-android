@@ -22,21 +22,7 @@ import com.woocommerce.android.ui.analytics.AnalyticsRepository.VisitorsResult.V
 import com.woocommerce.android.ui.analytics.AnalyticsRepository.VisitorsResult.VisitorsError
 import com.woocommerce.android.ui.analytics.RefreshIndicator.NotShowIndicator
 import com.woocommerce.android.ui.analytics.RefreshIndicator.ShowIndicator
-import com.woocommerce.android.ui.analytics.daterangeselector.AnalyticTimePeriod
-import com.woocommerce.android.ui.analytics.daterangeselector.AnalyticTimePeriod.CUSTOM
-import com.woocommerce.android.ui.analytics.daterangeselector.AnalyticTimePeriod.LAST_MONTH
-import com.woocommerce.android.ui.analytics.daterangeselector.AnalyticTimePeriod.LAST_QUARTER
-import com.woocommerce.android.ui.analytics.daterangeselector.AnalyticTimePeriod.LAST_WEEK
-import com.woocommerce.android.ui.analytics.daterangeselector.AnalyticTimePeriod.LAST_YEAR
-import com.woocommerce.android.ui.analytics.daterangeselector.AnalyticTimePeriod.MONTH_TO_DATE
-import com.woocommerce.android.ui.analytics.daterangeselector.AnalyticTimePeriod.QUARTER_TO_DATE
-import com.woocommerce.android.ui.analytics.daterangeselector.AnalyticTimePeriod.TODAY
-import com.woocommerce.android.ui.analytics.daterangeselector.AnalyticTimePeriod.WEEK_TO_DATE
-import com.woocommerce.android.ui.analytics.daterangeselector.AnalyticTimePeriod.YEAR_TO_DATE
-import com.woocommerce.android.ui.analytics.daterangeselector.AnalyticTimePeriod.YESTERDAY
-import com.woocommerce.android.ui.analytics.daterangeselector.AnalyticsDateRange
 import com.woocommerce.android.ui.analytics.daterangeselector.AnalyticsDateRangeCalculator
-import com.woocommerce.android.ui.analytics.daterangeselector.AnalyticsDateRangeFormatter
 import com.woocommerce.android.ui.analytics.daterangeselector.AnalyticsDateRangeSelectorViewState
 import com.woocommerce.android.ui.analytics.informationcard.AnalyticsInformationSectionViewState
 import com.woocommerce.android.ui.analytics.informationcard.AnalyticsInformationViewState
@@ -61,6 +47,13 @@ import javax.inject.Inject
 import com.woocommerce.android.ui.analytics.listcard.AnalyticsListViewState as ProductsViewState
 import com.woocommerce.android.ui.analytics.listcard.AnalyticsListViewState.LoadingViewState as LoadingProductsViewState
 import com.woocommerce.android.ui.analytics.listcard.AnalyticsListViewState.NoDataState as ProductsNoDataState
+import androidx.lifecycle.asLiveData
+import com.woocommerce.android.ui.analytics.ranges.AnalyticsHubDateRangeSelection
+import com.woocommerce.android.ui.analytics.ranges.AnalyticsHubDateRangeSelection.SelectionType
+import com.woocommerce.android.ui.analytics.ranges.AnalyticsHubDateRangeSelection.SelectionType.*
+import com.woocommerce.android.ui.analytics.ranges.AnalyticsHubTimeRange
+import com.woocommerce.android.viewmodel.getStateFlow
+import kotlinx.coroutines.flow.map
 
 @HiltViewModel
 class AnalyticsViewModel @Inject constructor(
@@ -70,7 +63,6 @@ class AnalyticsViewModel @Inject constructor(
     private val analyticsRepository: AnalyticsRepository,
     private val transactionLauncher: AnalyticsHubTransactionLauncher,
     private val usageTracksEventEmitter: MyStoreStatsUsageTracksEventEmitter,
-    private val analyticsDateRangeFormatter: AnalyticsDateRangeFormatter,
     savedState: SavedStateHandle
 ) : ScopedViewModel(savedState) {
 
@@ -91,6 +83,24 @@ class AnalyticsViewModel @Inject constructor(
 
     val state: StateFlow<AnalyticsViewState> = mutableState
 
+    private val selectionTypeState = savedState.getStateFlow(viewModelScope, YEAR_TO_DATE)
+    val selectionType = selectionTypeState.asLiveData()
+
+    private val selectionDataState = selectionTypeState
+        .map { AnalyticsHubDateRangeSelection(it, resourceProvider) }
+        .toStateFlow(
+            AnalyticsHubDateRangeSelection(
+            selectionType = selectionTypeState.value,
+            resourceProvider = resourceProvider
+        ))
+    val selectionData = selectionDataState.asLiveData()
+
+    private val currentRange: AnalyticsHubTimeRange
+        get() = selectionDataState.value.currentRange
+
+    private val previousRange: AnalyticsHubTimeRange
+        get() = selectionDataState.value.previousRange
+
     init {
         viewModelScope.launch {
             refreshAllAnalyticsAtOnce(isRefreshing = false, showSkeleton = true)
@@ -98,10 +108,8 @@ class AnalyticsViewModel @Inject constructor(
     }
 
     fun onCustomDateRangeClicked() {
-        val savedRange = getSavedDateRange()
-        val currentPeriod = savedRange.getSelectedPeriod()
-        val fromMillis = currentPeriod.from.time
-        val toMillis = currentPeriod.to.time
+        val fromMillis = currentRange.start.time
+        val toMillis = currentRange.end.time
         triggerEvent(AnalyticsViewEvent.OpenDatePicker(fromMillis, toMillis))
     }
 
@@ -123,14 +131,11 @@ class AnalyticsViewModel @Inject constructor(
                     toDateStr
                 ),
                 toDatePeriod = resourceProvider.getString(R.string.date_timeframe_custom_date_range_title),
-                selectedPeriod = getTimePeriodDescription(CUSTOM)
+                selectedPeriod = selectionDataState.value.description
             )
         )
 
-        val dateRange = analyticsDateRange.getAnalyticsDateRangeFromCustom(fromDateUtc!!, toDateUtc!!)
-        saveSelectedDateRange(dateRange)
-        saveSelectedTimePeriod(CUSTOM)
-        trackSelectedDateRange(CUSTOM)
+        trackSelectedDateRange()
 
         viewModelScope.launch {
             refreshAllAnalyticsAtOnce(isRefreshing = false, showSkeleton = true)
@@ -143,12 +148,9 @@ class AnalyticsViewModel @Inject constructor(
         }
     }
 
-    fun onSelectedTimePeriodChanged(selectedTimePeriod: AnalyticTimePeriod) {
-        val dateRange = analyticsDateRange.getAnalyticsDateRangeFrom(selectedTimePeriod)
-        saveSelectedTimePeriod(selectedTimePeriod)
-        saveSelectedDateRange(dateRange)
+    fun onSelectedTimePeriodChanged() {
         updateDateSelector()
-        trackSelectedDateRange(selectedTimePeriod)
+        trackSelectedDateRange()
         viewModelScope.launch {
             refreshAllAnalyticsAtOnce(isRefreshing = false, showSkeleton = true)
         }
@@ -171,8 +173,6 @@ class AnalyticsViewModel @Inject constructor(
 
     private fun updateRevenue(isRefreshing: Boolean, showSkeleton: Boolean) =
         launch {
-            val timePeriod = getSavedTimePeriod()
-            val dateRange = getSavedDateRange()
             val fetchStrategy = getFetchStrategy(isRefreshing)
 
             if (showSkeleton) mutableState.value = state.value.copy(revenueState = LoadingViewState)
@@ -180,7 +180,7 @@ class AnalyticsViewModel @Inject constructor(
                 refreshIndicator = if (isRefreshing) ShowIndicator else NotShowIndicator
             )
 
-            analyticsRepository.fetchRevenueData(dateRange, timePeriod, fetchStrategy)
+            analyticsRepository.fetchRevenueData(selectionDataState.value, fetchStrategy)
                 .let {
                     when (it) {
                         is RevenueData -> {
@@ -200,15 +200,13 @@ class AnalyticsViewModel @Inject constructor(
 
     private fun updateOrders(isRefreshing: Boolean, showSkeleton: Boolean) =
         launch {
-            val timePeriod = getSavedTimePeriod()
-            val dateRange = getSavedDateRange()
             val fetchStrategy = getFetchStrategy(isRefreshing)
 
             if (showSkeleton) mutableState.value = state.value.copy(ordersState = LoadingViewState)
             mutableState.value = state.value.copy(
                 refreshIndicator = if (isRefreshing) ShowIndicator else NotShowIndicator
             )
-            analyticsRepository.fetchOrdersData(dateRange, timePeriod, fetchStrategy)
+            analyticsRepository.fetchOrdersData(selectionDataState.value, fetchStrategy)
                 .let {
                     when (it) {
                         is OrdersData -> {
@@ -226,14 +224,12 @@ class AnalyticsViewModel @Inject constructor(
 
     private fun updateProducts(isRefreshing: Boolean, showSkeleton: Boolean) =
         launch {
-            val timePeriod = getSavedTimePeriod()
-            val dateRange = getSavedDateRange()
             val fetchStrategy = getFetchStrategy(isRefreshing)
             if (showSkeleton) mutableState.value = state.value.copy(productsState = LoadingProductsViewState)
             mutableState.value = state.value.copy(
                 refreshIndicator = if (isRefreshing) ShowIndicator else NotShowIndicator
             )
-            analyticsRepository.fetchProductsData(dateRange, timePeriod, fetchStrategy)
+            analyticsRepository.fetchProductsData(selectionDataState.value, fetchStrategy)
                 .let {
                     when (it) {
                         is ProductsData -> {
@@ -257,12 +253,11 @@ class AnalyticsViewModel @Inject constructor(
 
     private fun updateVisitors(isRefreshing: Boolean, showSkeleton: Boolean) =
         launch {
-            val timePeriod = getSavedTimePeriod()
-            val dateRange = getSavedDateRange()
+            val timePeriod = selectionTypeState.value
             val fetchStrategy = getFetchStrategy(isRefreshing)
             val isQuarterSelection = (timePeriod == QUARTER_TO_DATE) || (timePeriod == LAST_QUARTER)
 
-            if (timePeriod == CUSTOM) {
+            if (timePeriod == SelectionType.CUSTOM) {
                 mutableState.value = state.value.copy(visitorsState = AnalyticsInformationViewState.HiddenState)
                 transactionLauncher.onVisitorsFetched()
                 return@launch
@@ -274,9 +269,9 @@ class AnalyticsViewModel @Inject constructor(
             )
 
             if (isQuarterSelection) {
-                analyticsRepository.fetchQuarterVisitorsData(dateRange, timePeriod, fetchStrategy)
+                analyticsRepository.fetchQuarterVisitorsData(selectionDataState.value, fetchStrategy)
             } else {
-                analyticsRepository.fetchRecentVisitorsData(dateRange, timePeriod, fetchStrategy)
+                analyticsRepository.fetchRecentVisitorsData(selectionDataState.value, fetchStrategy)
             }.handleVisitorsResult()
         }
 
@@ -297,14 +292,12 @@ class AnalyticsViewModel @Inject constructor(
     }
 
     private fun updateDateSelector() {
-        val timePeriod = getSavedTimePeriod()
-        val dateRange = getSavedDateRange()
-        val timePeriodDescription = getTimePeriodDescription(timePeriod)
+        //TODO: populate the date range selector with the correct values
         mutableState.value = state.value.copy(
             analyticsDateRangeSelectorState = state.value.analyticsDateRangeSelectorState.copy(
-                fromDatePeriod = analyticsDateRangeFormatter.fromDescription(dateRange),
-                toDatePeriod = analyticsDateRangeFormatter.toDescription(dateRange, timePeriodDescription),
-                selectedPeriod = getTimePeriodDescription(timePeriod)
+                fromDatePeriod = "",
+                toDatePeriod = "",
+                selectedPeriod = ""
             )
         )
     }
@@ -316,35 +309,19 @@ class AnalyticsViewModel @Inject constructor(
 
     private fun getDefaultDateRange() = analyticsDateRange.getAnalyticsDateRangeFrom(getDefaultTimePeriod())
 
-    private fun getTimePeriodDescription(analyticTimeRange: AnalyticTimePeriod): String =
-        when (analyticTimeRange) {
-            TODAY -> resourceProvider.getString(R.string.date_timeframe_today)
-            YESTERDAY -> resourceProvider.getString(R.string.date_timeframe_yesterday)
-            LAST_WEEK -> resourceProvider.getString(R.string.date_timeframe_last_week)
-            LAST_MONTH -> resourceProvider.getString(R.string.date_timeframe_last_month)
-            LAST_QUARTER -> resourceProvider.getString(R.string.date_timeframe_last_quarter)
-            LAST_YEAR -> resourceProvider.getString(R.string.date_timeframe_last_year)
-            WEEK_TO_DATE -> resourceProvider.getString(R.string.date_timeframe_week_to_date)
-            MONTH_TO_DATE -> resourceProvider.getString(R.string.date_timeframe_month_to_date)
-            QUARTER_TO_DATE -> resourceProvider.getString(R.string.date_timeframe_quarter_to_date)
-            YEAR_TO_DATE -> resourceProvider.getString(R.string.date_timeframe_year_to_date)
-            CUSTOM -> resourceProvider.getString(R.string.date_timeframe_custom)
-        }
-
     private fun formatValue(value: String, currencyCode: String?) = currencyCode
         ?.let { currencyFormatter.formatCurrency(value, it) }
         ?: value
 
     private fun buildAnalyticsDateRangeSelectorViewState(): AnalyticsDateRangeSelectorViewState {
-        val timePeriod = getSavedTimePeriod()
-        val dateRange = getSavedDateRange()
-        val timePeriodDescription = getTimePeriodDescription(timePeriod)
+        val rangeOptions = values().map { it.toString() }
 
+        //TODO: populate the date range selector with the correct values
         return AnalyticsDateRangeSelectorViewState(
-            fromDatePeriod = analyticsDateRangeFormatter.fromDescription(dateRange),
-            toDatePeriod = analyticsDateRangeFormatter.toDescription(dateRange, timePeriodDescription),
-            availableRangeDates = getAvailableDateRanges(),
-            selectedPeriod = getTimePeriodDescription(getSavedTimePeriod())
+            fromDatePeriod = "",
+            toDatePeriod = "",
+            availableRangeDates = rangeOptions,
+            selectedPeriod = selectionDataState.value.description
         )
     }
 
@@ -434,24 +411,13 @@ class AnalyticsViewModel @Inject constructor(
 
     private fun getFetchStrategy(isRefreshing: Boolean) = if (isRefreshing) ForceNew else Saved
 
-    private fun saveSelectedTimePeriod(range: AnalyticTimePeriod) {
-        savedState[TIME_PERIOD_SELECTED_KEY] = range
-    }
-
-    private fun saveSelectedDateRange(dateRange: AnalyticsDateRange) {
-        savedState[DATE_RANGE_SELECTED_KEY] = dateRange
-    }
-
-    private fun getSavedDateRange(): AnalyticsDateRange = savedState[DATE_RANGE_SELECTED_KEY] ?: getDefaultDateRange()
-    private fun getSavedTimePeriod(): AnalyticTimePeriod = savedState[TIME_PERIOD_SELECTED_KEY]
-        ?: getDefaultTimePeriod()
-
-    private fun trackSelectedDateRange(selectedTimePeriod: AnalyticTimePeriod) {
+    private fun trackSelectedDateRange() {
+        val rangeDescription = selectionDataState.value.description
         onTrackableUIInteraction()
         AnalyticsTracker.track(
             AnalyticsEvent.ANALYTICS_HUB_DATE_RANGE_SELECTED,
             mapOf(
-                AnalyticsTracker.KEY_OPTION to selectedTimePeriod.description
+                AnalyticsTracker.KEY_OPTION to rangeDescription
             )
         )
     }
