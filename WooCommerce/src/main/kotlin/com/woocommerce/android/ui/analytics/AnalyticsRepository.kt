@@ -13,9 +13,9 @@ import com.woocommerce.android.ui.analytics.AnalyticsRepository.OrdersResult.Ord
 import com.woocommerce.android.ui.analytics.AnalyticsRepository.ProductsResult.ProductsError
 import com.woocommerce.android.ui.analytics.AnalyticsRepository.RevenueResult.RevenueData
 import com.woocommerce.android.ui.analytics.AnalyticsRepository.RevenueResult.RevenueError
-import com.woocommerce.android.ui.analytics.daterangeselector.AnalyticTimePeriod
-import com.woocommerce.android.ui.analytics.daterangeselector.AnalyticsDateRange
-import com.woocommerce.android.ui.analytics.daterangeselector.DateRange
+import com.woocommerce.android.ui.analytics.ranges.AnalyticsHubDateRangeSelection
+import com.woocommerce.android.ui.analytics.ranges.AnalyticsHubDateRangeSelection.SelectionType
+import com.woocommerce.android.ui.analytics.ranges.AnalyticsHubTimeRange
 import com.woocommerce.android.ui.mystore.data.StatsRepository
 import com.woocommerce.android.util.CoroutineDispatchers
 import kotlinx.coroutines.Deferred
@@ -54,13 +54,11 @@ class AnalyticsRepository @Inject constructor(
     private var previousRevenueStats: AnalyticsStatsResultWrapper? = null
 
     suspend fun fetchRevenueData(
-        dateRange: AnalyticsDateRange,
-        selectedRange: AnalyticTimePeriod,
+        rangeSelection: AnalyticsHubDateRangeSelection,
         fetchStrategy: FetchStrategy
     ): RevenueResult {
-        val granularity = getGranularity(selectedRange)
-        val currentPeriod = getCurrentPeriodStats(dateRange, granularity, fetchStrategy).getOrNull()
-        val previousPeriod = getPreviousPeriodStats(dateRange, granularity, fetchStrategy).getOrNull()
+        val currentPeriod = getCurrentPeriodStats(rangeSelection, fetchStrategy).getOrNull()
+        val previousPeriod = getPreviousPeriodStats(rangeSelection, fetchStrategy).getOrNull()
 
         val currentPeriodTotalRevenue = currentPeriod?.parseTotal()
         val previousPeriodTotalRevenue = previousPeriod?.parseTotal()
@@ -101,14 +99,11 @@ class AnalyticsRepository @Inject constructor(
     }
 
     suspend fun fetchOrdersData(
-        dateRange: AnalyticsDateRange,
-        selectedRange: AnalyticTimePeriod,
+        rangeSelection: AnalyticsHubDateRangeSelection,
         fetchStrategy: FetchStrategy
     ): OrdersResult {
-        val granularity = getGranularity(selectedRange)
-
-        val currentPeriod = getCurrentPeriodStats(dateRange, granularity, fetchStrategy).getOrNull()
-        val previousPeriod = getPreviousPeriodStats(dateRange, granularity, fetchStrategy).getOrNull()
+        val currentPeriod = getCurrentPeriodStats(rangeSelection, fetchStrategy).getOrNull()
+        val previousPeriod = getPreviousPeriodStats(rangeSelection, fetchStrategy).getOrNull()
 
         val currentPeriodTotalRevenue = currentPeriod?.parseTotal()
         val previousPeriodTotalRevenue = previousPeriod?.parseTotal()
@@ -149,18 +144,15 @@ class AnalyticsRepository @Inject constructor(
     }
 
     suspend fun fetchProductsData(
-        dateRange: AnalyticsDateRange,
-        selectedRange: AnalyticTimePeriod,
+        rangeSelection: AnalyticsHubDateRangeSelection,
         fetchStrategy: FetchStrategy
     ): ProductsResult {
-        val granularity = getGranularity(selectedRange)
-
-        val currentPeriod = getCurrentPeriodStats(dateRange, granularity, fetchStrategy).getOrNull()
-        val previousPeriod = getPreviousPeriodStats(dateRange, granularity, fetchStrategy).getOrNull()
+        val currentPeriod = getCurrentPeriodStats(rangeSelection, fetchStrategy).getOrNull()
+        val previousPeriod = getPreviousPeriodStats(rangeSelection, fetchStrategy).getOrNull()
         val currentPeriodTotalRevenue = currentPeriod?.parseTotal()
         val previousPeriodTotalRevenue = previousPeriod?.parseTotal()
 
-        val productsStats = getProductStats(dateRange, fetchStrategy, TOP_PRODUCTS_LIST_SIZE).getOrNull()
+        val productsStats = getProductStats(rangeSelection, fetchStrategy, TOP_PRODUCTS_LIST_SIZE).getOrNull()
 
         if (listOf(currentPeriodTotalRevenue, previousPeriodTotalRevenue, productsStats).any { it == null } ||
             currentPeriodTotalRevenue?.itemsSold == null ||
@@ -191,13 +183,12 @@ class AnalyticsRepository @Inject constructor(
     }
 
     suspend fun fetchRecentVisitorsData(
-        dateRange: AnalyticsDateRange,
-        selectedRange: AnalyticTimePeriod,
+        rangeSelection: AnalyticsHubDateRangeSelection,
         fetchStrategy: FetchStrategy
     ): VisitorsResult {
         val (previousVisitors, previousViews) = getVisitorsStats(
-            dateRange.getComparisonPeriod().to,
-            getGranularity(selectedRange),
+            rangeSelection.previousRange.end,
+            getGranularity(rangeSelection.selectionType),
             fetchStrategy,
             MOST_RECENT_VISITORS_AND_VIEW_FETCH_LIMIT
         ).model?.dates?.lastOrNull()
@@ -205,8 +196,8 @@ class AnalyticsRepository @Inject constructor(
             ?: Pair(0, 0)
 
         val currentPeriodStats = getVisitorsStats(
-            dateRange.getSelectedPeriod().to,
-            getGranularity(selectedRange),
+            rangeSelection.previousRange.end,
+            getGranularity(rangeSelection.selectionType),
             fetchStrategy,
             MOST_RECENT_VISITORS_AND_VIEW_FETCH_LIMIT
         ).model?.dates?.lastOrNull()
@@ -224,24 +215,23 @@ class AnalyticsRepository @Inject constructor(
     }
 
     suspend fun fetchQuarterVisitorsData(
-        dateRange: AnalyticsDateRange,
-        selectedRange: AnalyticTimePeriod,
+        rangeSelection: AnalyticsHubDateRangeSelection,
         fetchStrategy: FetchStrategy
     ): VisitorsResult {
         val (previousVisitors, previousViews) = getVisitorsStats(
-            dateRange.getComparisonPeriod().to,
-            getGranularity(selectedRange),
+            rangeSelection.previousRange.end,
+            getGranularity(rangeSelection.selectionType),
             fetchStrategy,
             QUARTER_VISITORS_AND_VIEW_FETCH_LIMIT
-        ).model?.dates?.foldStatsWithin(dateRange.getComparisonPeriod())
+        ).model?.dates?.foldStatsWithin(rangeSelection.previousRange)
             ?: Pair(0, 0)
 
         val currentPeriodStats = getVisitorsStats(
-            dateRange.getSelectedPeriod().to,
-            getGranularity(selectedRange),
+            rangeSelection.previousRange.end,
+            getGranularity(rangeSelection.selectionType),
             fetchStrategy,
             QUARTER_VISITORS_AND_VIEW_FETCH_LIMIT
-        ).model?.dates?.foldStatsWithin(dateRange.getSelectedPeriod())
+        ).model?.dates?.foldStatsWithin(rangeSelection.previousRange)
 
         return currentPeriodStats?.let { (currentVisitors, currentViews) ->
             VisitorsResult.VisitorsData(
@@ -261,13 +251,13 @@ class AnalyticsRepository @Inject constructor(
     fun getJetpackStatsPanelUrl() = getAdminPanelUrl() + ANALYTICS_JETPACK_STATS_PATH
 
     private suspend fun getCurrentPeriodStats(
-        dateRange: AnalyticsDateRange,
-        granularity: StatsGranularity,
+        rangeSelection: AnalyticsHubDateRangeSelection,
         fetchStrategy: FetchStrategy
     ): Result<WCRevenueStatsModel?> = coroutineScope {
-        val currentPeriod = dateRange.getSelectedPeriod()
-        val startDate = currentPeriod.from.formatToYYYYmmDD()
-        val endDate = currentPeriod.to.formatToYYYYmmDD()
+        val granularity = getGranularity(rangeSelection.selectionType)
+        val currentPeriod = rangeSelection.currentRange
+        val startDate = currentPeriod.start.formatToYYYYmmDD()
+        val endDate = currentPeriod.end.formatToYYYYmmDD()
 
         getCurrentRevenueMutex.withLock {
             if (shouldUpdateCurrentStats(startDate, endDate, fetchStrategy == FetchStrategy.ForceNew)) {
@@ -283,13 +273,13 @@ class AnalyticsRepository @Inject constructor(
     }
 
     private suspend fun getPreviousPeriodStats(
-        dateRange: AnalyticsDateRange,
-        granularity: StatsGranularity,
+        rangeSelection: AnalyticsHubDateRangeSelection,
         fetchStrategy: FetchStrategy
     ): Result<WCRevenueStatsModel?> = coroutineScope {
-        val previousPeriod = dateRange.getComparisonPeriod()
-        val startDate = previousPeriod.from.formatToYYYYmmDD()
-        val endDate = previousPeriod.to.formatToYYYYmmDD()
+        val granularity = getGranularity(rangeSelection.selectionType)
+        val previousPeriod = rangeSelection.previousRange
+        val startDate = previousPeriod.start.formatToYYYYmmDD()
+        val endDate = previousPeriod.end.formatToYYYYmmDD()
 
         getPreviousRevenueMutex.withLock {
             if (shouldUpdatePreviousStats(startDate, endDate, fetchStrategy == FetchStrategy.ForceNew)) {
@@ -305,13 +295,13 @@ class AnalyticsRepository @Inject constructor(
     }
 
     private suspend fun getProductStats(
-        dateRange: AnalyticsDateRange,
+        rangeSelection: AnalyticsHubDateRangeSelection,
         fetchStrategy: FetchStrategy,
         quantity: Int
     ): Result<List<TopPerformerProductEntity>> {
-        val totalPeriod = dateRange.getAnalyzedPeriod()
-        val startDate = totalPeriod.from.formatToYYYYmmDD()
-        val endDate = totalPeriod.to.formatToYYYYmmDD()
+        val totalPeriod = rangeSelection.currentRange
+        val startDate = totalPeriod.start.formatToYYYYmmDD()
+        val endDate = totalPeriod.end.formatToYYYYmmDD()
 
         val site = selectedSite.get()
         val startDateFormatted = DateUtils.getStartDateForSite(site, startDate)
@@ -344,14 +334,14 @@ class AnalyticsRepository @Inject constructor(
         )
     }
 
-    private fun getGranularity(selectedRange: AnalyticTimePeriod) =
-        when (selectedRange) {
-            AnalyticTimePeriod.TODAY, AnalyticTimePeriod.YESTERDAY -> DAYS
-            AnalyticTimePeriod.LAST_WEEK, AnalyticTimePeriod.WEEK_TO_DATE -> WEEKS
-            AnalyticTimePeriod.LAST_MONTH, AnalyticTimePeriod.MONTH_TO_DATE -> MONTHS
-            AnalyticTimePeriod.LAST_QUARTER, AnalyticTimePeriod.QUARTER_TO_DATE -> MONTHS
-            AnalyticTimePeriod.LAST_YEAR, AnalyticTimePeriod.YEAR_TO_DATE -> YEARS
-            AnalyticTimePeriod.CUSTOM -> DAYS
+    private fun getGranularity(selectionType: SelectionType) =
+        when (selectionType) {
+            SelectionType.TODAY, SelectionType.YESTERDAY -> DAYS
+            SelectionType.LAST_WEEK, SelectionType.WEEK_TO_DATE -> WEEKS
+            SelectionType.LAST_MONTH, SelectionType.MONTH_TO_DATE -> MONTHS
+            SelectionType.LAST_QUARTER, SelectionType.QUARTER_TO_DATE -> MONTHS
+            SelectionType.LAST_YEAR, SelectionType.YEAR_TO_DATE -> YEARS
+            SelectionType.CUSTOM -> DAYS
         }
 
     private fun StatsGranularity.asJetpackGranularity() = when (this) {
@@ -396,8 +386,8 @@ class AnalyticsRepository @Inject constructor(
      * This method will select all Visitors and Views data within a given date range interval
      * and fold all this data into a Pair containing the total visitors and total views of that period
      */
-    private fun List<VisitsAndViewsModel.PeriodData>.foldStatsWithin(dateRange: DateRange): Pair<Long, Long> {
-        val startDate = dateRange.from.oneDayAgo()
+    private fun List<VisitsAndViewsModel.PeriodData>.foldStatsWithin(dateRange: AnalyticsHubTimeRange): Pair<Long, Long> {
+        val startDate = dateRange.start.oneDayAgo()
 
         return this.asSequence()
             .filter { startDate.before(DateUtils.getDateFromString(it.period)) }
