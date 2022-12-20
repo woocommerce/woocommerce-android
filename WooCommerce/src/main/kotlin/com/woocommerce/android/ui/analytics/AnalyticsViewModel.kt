@@ -81,7 +81,7 @@ class AnalyticsViewModel @Inject constructor(
 
     val state: StateFlow<AnalyticsViewState> = mutableState
 
-    private val selectionTypeState = savedState.getStateFlow(viewModelScope, YEAR_TO_DATE)
+    private val selectionTypeState = savedState.getStateFlow(viewModelScope, navArgs.targetGranularity)
     val selectionType = selectionTypeState.asLiveData()
 
     private val selectionDataState = selectionTypeState
@@ -307,10 +307,10 @@ class AnalyticsViewModel @Inject constructor(
 
         //TODO: populate the date range selector with the correct values
         return AnalyticsDateRangeSelectorViewState(
-            fromDatePeriod = "",
-            toDatePeriod = "",
+            fromDatePeriod = "from date period",
+            toDatePeriod = "to date period",
             availableRangeDates = rangeOptions,
-            selectedPeriod = selectionDataState.value.description
+            selectedPeriod = ""
         )
     }
 
