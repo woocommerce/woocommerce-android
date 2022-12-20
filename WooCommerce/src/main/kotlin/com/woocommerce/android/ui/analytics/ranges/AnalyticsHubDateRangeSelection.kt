@@ -37,7 +37,7 @@ class AnalyticsHubDateRangeSelection(
         this.previousRange = rangeData.previousRange
     }
 
-    fun generateTimeRangeData(
+    private fun generateTimeRangeData(
         selectionType: SelectionType,
         referenceDate: Date,
         calendar: Calendar
@@ -53,7 +53,6 @@ class AnalyticsHubDateRangeSelection(
             LAST_QUARTER -> AnalyticsHubLastQuarterRangeData(referenceDate, calendar)
             YEAR_TO_DATE -> AnalyticsHubYearToDateRangeData(referenceDate, calendar)
             LAST_YEAR -> AnalyticsHubLastYearRangeData(referenceDate, calendar)
-            else -> AnalyticsHubTodayRangeData(referenceDate, calendar)
         }
     }
 
@@ -67,7 +66,6 @@ class AnalyticsHubDateRangeSelection(
         WEEK_TO_DATE,
         MONTH_TO_DATE,
         QUARTER_TO_DATE,
-        YEAR_TO_DATE,
-        CUSTOM;
+        YEAR_TO_DATE;
     }
 }
