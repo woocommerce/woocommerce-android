@@ -12,6 +12,7 @@ import com.woocommerce.android.ui.analytics.ranges.AnalyticsHubDateRangeSelectio
 import com.woocommerce.android.ui.analytics.ranges.AnalyticsHubDateRangeSelection.SelectionType.WEEK_TO_DATE
 import com.woocommerce.android.ui.analytics.ranges.AnalyticsHubDateRangeSelection.SelectionType.YEAR_TO_DATE
 import com.woocommerce.android.ui.analytics.ranges.AnalyticsHubDateRangeSelection.SelectionType.YESTERDAY
+import com.woocommerce.android.viewmodel.ResourceProvider
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Test
@@ -20,11 +21,14 @@ import java.util.Calendar
 import java.util.Date
 import java.util.Locale
 import java.util.TimeZone
+import org.mockito.kotlin.any
+import org.mockito.kotlin.doReturn
+import org.mockito.kotlin.mock
 
 internal class AnalyticsHubDateRangeSelectionTest {
     private lateinit var testTimeZone: TimeZone
-
     private lateinit var testCalendar: Calendar
+    private lateinit var resourceProviderMock: ResourceProvider
 
     @Before
     fun setUp() {
@@ -32,6 +36,9 @@ internal class AnalyticsHubDateRangeSelectionTest {
         testCalendar = Calendar.getInstance(Locale.UK)
         testCalendar.timeZone = testTimeZone
         testCalendar.firstDayOfWeek = Calendar.MONDAY
+        resourceProviderMock = mock {
+            on { getString(any()) } doReturn "test"
+        }
     }
 
     @Test
@@ -50,6 +57,7 @@ internal class AnalyticsHubDateRangeSelectionTest {
         // When
         val sut = AnalyticsHubDateRangeSelection(
             selectionType = YEAR_TO_DATE,
+            resourceProvider = resourceProviderMock,
             currentDate = today,
             calendar = testCalendar
         )
@@ -75,6 +83,7 @@ internal class AnalyticsHubDateRangeSelectionTest {
         // When
         val sut = AnalyticsHubDateRangeSelection(
             selectionType = LAST_YEAR,
+            resourceProvider = resourceProviderMock,
             currentDate = today,
             calendar = testCalendar
         )
@@ -100,6 +109,7 @@ internal class AnalyticsHubDateRangeSelectionTest {
         // When
         val sut = AnalyticsHubDateRangeSelection(
             selectionType = QUARTER_TO_DATE,
+            resourceProvider = resourceProviderMock,
             currentDate = today,
             calendar = testCalendar
         )
@@ -125,6 +135,7 @@ internal class AnalyticsHubDateRangeSelectionTest {
         // When
         val sut = AnalyticsHubDateRangeSelection(
             selectionType = LAST_QUARTER,
+            resourceProvider = resourceProviderMock,
             currentDate = today,
             calendar = testCalendar
         )
@@ -150,6 +161,7 @@ internal class AnalyticsHubDateRangeSelectionTest {
         // When
         val sut = AnalyticsHubDateRangeSelection(
             selectionType = MONTH_TO_DATE,
+            resourceProvider = resourceProviderMock,
             currentDate = today,
             calendar = testCalendar
         )
@@ -175,6 +187,7 @@ internal class AnalyticsHubDateRangeSelectionTest {
         // When
         val sut = AnalyticsHubDateRangeSelection(
             selectionType = LAST_MONTH,
+            resourceProvider = resourceProviderMock,
             currentDate = today,
             calendar = testCalendar
         )
@@ -200,6 +213,7 @@ internal class AnalyticsHubDateRangeSelectionTest {
         // When
         val sut = AnalyticsHubDateRangeSelection(
             selectionType = WEEK_TO_DATE,
+            resourceProvider = resourceProviderMock,
             currentDate = today,
             calendar = testCalendar
         )
@@ -225,6 +239,7 @@ internal class AnalyticsHubDateRangeSelectionTest {
         // When
         val sut = AnalyticsHubDateRangeSelection(
             selectionType = LAST_WEEK,
+            resourceProvider = resourceProviderMock,
             currentDate = today,
             calendar = testCalendar
         )
@@ -250,6 +265,7 @@ internal class AnalyticsHubDateRangeSelectionTest {
         // When
         val sut = AnalyticsHubDateRangeSelection(
             selectionType = TODAY,
+            resourceProvider = resourceProviderMock,
             currentDate = today,
             calendar = testCalendar
         )
@@ -275,6 +291,7 @@ internal class AnalyticsHubDateRangeSelectionTest {
         // When
         val sut = AnalyticsHubDateRangeSelection(
             selectionType = YESTERDAY,
+            resourceProvider = resourceProviderMock,
             currentDate = today,
             calendar = testCalendar
         )
