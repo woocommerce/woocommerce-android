@@ -22,7 +22,6 @@ import com.woocommerce.android.ui.analytics.AnalyticsRepository.VisitorsResult.V
 import com.woocommerce.android.ui.analytics.AnalyticsRepository.VisitorsResult.VisitorsError
 import com.woocommerce.android.ui.analytics.RefreshIndicator.NotShowIndicator
 import com.woocommerce.android.ui.analytics.RefreshIndicator.ShowIndicator
-import com.woocommerce.android.ui.analytics.daterangeselector.AnalyticsDateRangeCalculator
 import com.woocommerce.android.ui.analytics.daterangeselector.AnalyticsDateRangeSelectorViewState
 import com.woocommerce.android.ui.analytics.informationcard.AnalyticsInformationSectionViewState
 import com.woocommerce.android.ui.analytics.informationcard.AnalyticsInformationViewState
@@ -58,7 +57,6 @@ import kotlinx.coroutines.flow.map
 @HiltViewModel
 class AnalyticsViewModel @Inject constructor(
     private val resourceProvider: ResourceProvider,
-    private val analyticsDateRange: AnalyticsDateRangeCalculator,
     private val currencyFormatter: CurrencyFormatter,
     private val analyticsRepository: AnalyticsRepository,
     private val transactionLauncher: AnalyticsHubTransactionLauncher,
@@ -120,8 +118,6 @@ class AnalyticsViewModel @Inject constructor(
         val toDateStr = dateFormat.format(Date(toMillis))
 
         dateFormat.timeZone = TimeZone.getDefault()
-        val fromDateUtc = dateFormat.parse(fromDateStr)
-        val toDateUtc = dateFormat.parse(toDateStr)
 
         mutableState.value = state.value.copy(
             analyticsDateRangeSelectorState = state.value.analyticsDateRangeSelectorState.copy(
@@ -301,13 +297,6 @@ class AnalyticsViewModel @Inject constructor(
             )
         )
     }
-
-    private fun getAvailableDateRanges() =
-        resourceProvider.getStringArray(R.array.analytics_date_range_selectors).asList()
-
-    private fun getDefaultTimePeriod() = navArgs.targetGranularity
-
-    private fun getDefaultDateRange() = analyticsDateRange.getAnalyticsDateRangeFrom(getDefaultTimePeriod())
 
     private fun formatValue(value: String, currencyCode: String?) = currencyCode
         ?.let { currencyFormatter.formatCurrency(value, it) }

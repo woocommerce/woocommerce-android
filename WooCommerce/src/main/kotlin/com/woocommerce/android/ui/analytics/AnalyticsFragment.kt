@@ -92,7 +92,7 @@ class AnalyticsFragment :
             key = KEY_DATE_RANGE_SELECTOR_RESULT,
             entryId = R.id.analytics
         ) { dateSelection ->
-            when (val timePeriod = AnalyticsHubDateRangeSelection.SelectionType.from(dateSelection)) {
+            when (AnalyticsHubDateRangeSelection.SelectionType.from(dateSelection)) {
                 //TODO : update view model with new selected type
                 CUSTOM -> viewModel.onCustomDateRangeClicked()
                 else -> viewModel.onSelectedTimePeriodChanged()
