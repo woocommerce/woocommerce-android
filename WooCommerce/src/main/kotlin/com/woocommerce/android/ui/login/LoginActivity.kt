@@ -8,7 +8,6 @@ import android.os.Bundle
 import android.os.Parcelable
 import android.view.MenuItem
 import androidx.activity.OnBackPressedCallback
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
@@ -55,7 +54,6 @@ import com.woocommerce.android.ui.login.overrides.WooLoginEmailFragment
 import com.woocommerce.android.ui.login.overrides.WooLoginEmailPasswordFragment
 import com.woocommerce.android.ui.login.overrides.WooLoginSiteAddressFragment
 import com.woocommerce.android.ui.login.qrcode.QrCodeLoginListener
-import com.woocommerce.android.ui.login.qrcode.showCameraPermissionDeniedDialog
 import com.woocommerce.android.ui.login.signup.SignUpFragment
 import com.woocommerce.android.ui.login.signup.SignUpFragment.NextStep.SITE_PICKER
 import com.woocommerce.android.ui.login.signup.SignUpFragment.NextStep.STORE_CREATION
@@ -64,7 +62,6 @@ import com.woocommerce.android.util.ActivityUtils
 import com.woocommerce.android.util.ChromeCustomTabUtils
 import com.woocommerce.android.util.UrlUtils
 import com.woocommerce.android.util.WooLog
-import com.woocommerce.android.util.WooPermissionUtils
 import dagger.android.AndroidInjector
 import dagger.android.DispatchingAndroidInjector
 import dagger.android.HasAndroidInjector
@@ -990,10 +987,7 @@ class LoginActivity :
                 KEY_SOURCE to source
             )
         )
-        when {
-            WooPermissionUtils.hasCameraPermission(this) -> openQrCodeScannerFragment()
-            else -> WooPermissionUtils.requestCameraPermission(requestPermissionLauncher)
-        }
+        openQrCodeScannerFragment()
     }
 
     private fun openQrCodeScannerFragment() {
@@ -1006,13 +1000,6 @@ class LoginActivity :
                 startActivity(intent)
             }
     }
-
-    private val requestPermissionLauncher =
-        registerForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted: Boolean ->
-            if (isGranted) {
-                openQrCodeScannerFragment()
-            } else showCameraPermissionDeniedDialog(this)
-        }
 
     @Parcelize
     private data class ConnectSiteInfo(
