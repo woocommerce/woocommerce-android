@@ -113,128 +113,133 @@ private fun PlanInformation(
         }
     }
 
-    ConstraintLayout(
+    Column(
         modifier = Modifier
             .fillMaxSize()
             .background(colorResource(id = R.color.woo_purple_90))
-            .verticalScroll(rememberScrollState())
     ) {
-        val (icon, image, title, price, period, features, button) = createRefs()
-
-        IconButton(
-            onClick = onExitTriggered,
-            modifier = Modifier.constrainAs(icon) {
-                top.linkTo(parent.top)
-                start.linkTo(parent.start)
-            }
+        ConstraintLayout(
+            modifier = Modifier
+                .weight(1f)
+                .fillMaxWidth()
+                .verticalScroll(rememberScrollState())
         ) {
-            Icon(
-                Icons.Filled.ArrowBack,
-                contentDescription = stringResource(id = R.string.back),
-                tint = colorResource(id = R.color.white)
-            )
-        }
+            val (icon, image, title, price, period, features) = createRefs()
 
-        Image(
-            painter = painterResource(id = drawable.img_plan),
-            contentDescription = "Plan illustration",
-            modifier = Modifier
-                .constrainAs(image) {
+            IconButton(
+                onClick = onExitTriggered,
+                modifier = Modifier.constrainAs(icon) {
                     top.linkTo(parent.top)
-                    end.linkTo(parent.end)
-                }
-                .height(dimensionResource(id = R.dimen.image_major_200)),
-            contentScale = ContentScale.FillHeight
-        )
-        Text(
-            text = planState.plan.name,
-            fontWeight = FontWeight.Bold,
-            color = colorResource(id = R.color.white),
-            fontSize = 20.sp,
-            modifier = Modifier
-                .constrainAs(title) {
-                    top.linkTo(image.top)
-                    bottom.linkTo(image.bottom)
                     start.linkTo(parent.start)
                 }
-                .padding(start = dimensionResource(id = R.dimen.major_125))
-        )
-        Text(
-            text = planState.plan.formattedPrice,
-            color = colorResource(id = R.color.white),
-            fontSize = 40.sp,
-            fontWeight = FontWeight.Bold,
-            modifier = Modifier
-                .constrainAs(price) {
-                    top.linkTo(title.bottom)
-                    start.linkTo(title.start)
-                }
-                .padding(start = dimensionResource(id = R.dimen.major_125))
-        )
-        Text(
-            text = "/${stringResource(planState.plan.billingPeriod.nameId)}",
-            color = colorResource(id = R.color.woo_purple_dark_secondary),
-            style = MaterialTheme.typography.subtitle1,
-            modifier = Modifier
-                .constrainAs(period) {
-                    top.linkTo(price.bottom)
-                    start.linkTo(price.start)
-                }
-                .padding(
-                    start = dimensionResource(id = R.dimen.major_125)
+            ) {
+                Icon(
+                    Icons.Filled.ArrowBack,
+                    contentDescription = stringResource(id = R.string.back),
+                    tint = colorResource(id = R.color.white)
                 )
-        )
+            }
 
-        Column(
-            verticalArrangement = Arrangement.spacedBy(dimensionResource(id = R.dimen.minor_100)),
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(dimensionResource(id = R.dimen.major_75))
-                .constrainAs(features) {
-                    top.linkTo(period.bottom)
-                }
-        ) {
-            Divider(
-                color = colorResource(id = R.color.woo_gray_40),
-                thickness = dimensionResource(id = R.dimen.minor_10),
-                modifier = Modifier.padding(vertical = dimensionResource(id = R.dimen.major_75))
+            Image(
+                painter = painterResource(id = drawable.img_plan),
+                contentDescription = "Plan illustration",
+                modifier = Modifier
+                    .constrainAs(image) {
+                        top.linkTo(parent.top)
+                        end.linkTo(parent.end)
+                    }
+                    .height(dimensionResource(id = R.dimen.image_major_200)),
+                contentScale = ContentScale.FillHeight
             )
             Text(
+                text = planState.plan.name,
                 fontWeight = FontWeight.Bold,
-                text = stringResource(id = string.store_creation_ecommerce_plan_features_tagline),
                 color = colorResource(id = R.color.white),
-                fontSize = 28.sp,
-                lineHeight = 36.sp
+                fontSize = 20.sp,
+                modifier = Modifier
+                    .constrainAs(title) {
+                        top.linkTo(image.top)
+                        bottom.linkTo(image.bottom)
+                        start.linkTo(parent.start)
+                    }
+                    .padding(start = dimensionResource(id = R.dimen.major_125))
             )
-            Row(
-                modifier = Modifier.padding(
-                    top = dimensionResource(id = R.dimen.minor_50),
-                    bottom = dimensionResource(id = R.dimen.major_75)
-                )
+            Text(
+                text = planState.plan.formattedPrice,
+                color = colorResource(id = R.color.white),
+                fontSize = 40.sp,
+                fontWeight = FontWeight.Bold,
+                modifier = Modifier
+                    .constrainAs(price) {
+                        top.linkTo(title.bottom)
+                        start.linkTo(title.start)
+                    }
+                    .padding(start = dimensionResource(id = R.dimen.major_125))
+            )
+            Text(
+                text = "/${stringResource(planState.plan.billingPeriod.nameId)}",
+                color = colorResource(id = R.color.woo_purple_dark_secondary),
+                style = MaterialTheme.typography.subtitle1,
+                modifier = Modifier
+                    .constrainAs(period) {
+                        top.linkTo(price.bottom)
+                        start.linkTo(price.start)
+                    }
+                    .padding(
+                        start = dimensionResource(id = R.dimen.major_125)
+                    )
+            )
+            Column(
+                verticalArrangement = Arrangement.spacedBy(dimensionResource(id = R.dimen.minor_100)),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(dimensionResource(id = R.dimen.major_75))
+                    .constrainAs(features) {
+                        top.linkTo(period.bottom)
+                    }
             ) {
-                Text(
-                    text = stringResource(id = string.store_creation_ecommerce_plan_powered_by),
-                    color = colorResource(id = R.color.woo_purple_dark_secondary),
-                    style = MaterialTheme.typography.caption
-                )
-                Image(
-                    painter = painterResource(id = drawable.ic_wordpress),
-                    contentDescription = "WordPress logo",
-                    modifier = Modifier
-                        .height(dimensionResource(id = R.dimen.major_110))
-                        .padding(horizontal = dimensionResource(id = R.dimen.minor_50)),
-                    contentScale = ContentScale.FillHeight,
-                    colorFilter = ColorFilter.tint(color = colorResource(id = R.color.woo_purple_dark_secondary))
+                Divider(
+                    color = colorResource(id = R.color.woo_gray_40),
+                    thickness = dimensionResource(id = R.dimen.minor_10),
+                    modifier = Modifier.padding(vertical = dimensionResource(id = R.dimen.major_75))
                 )
                 Text(
                     fontWeight = FontWeight.Bold,
-                    text = stringResource(id = string.store_creation_ecommerce_plan_wordpress),
-                    color = colorResource(id = R.color.woo_purple_dark_secondary),
-                    style = MaterialTheme.typography.caption
+                    text = stringResource(id = string.store_creation_ecommerce_plan_features_tagline),
+                    color = colorResource(id = R.color.white),
+                    fontSize = 28.sp,
+                    lineHeight = 36.sp
                 )
-            }
-            planState.plan.features.forEach {
-                PlanFeatureRow(iconId = it.iconId, textId = it.textId)
+                Row(
+                    modifier = Modifier.padding(
+                        top = dimensionResource(id = R.dimen.minor_50),
+                        bottom = dimensionResource(id = R.dimen.major_75)
+                    )
+                ) {
+                    Text(
+                        text = stringResource(id = string.store_creation_ecommerce_plan_powered_by),
+                        color = colorResource(id = R.color.woo_purple_dark_secondary),
+                        style = MaterialTheme.typography.caption
+                    )
+                    Image(
+                        painter = painterResource(id = drawable.ic_wordpress),
+                        contentDescription = "WordPress logo",
+                        modifier = Modifier
+                            .height(dimensionResource(id = R.dimen.major_110))
+                            .padding(horizontal = dimensionResource(id = R.dimen.minor_50)),
+                        contentScale = ContentScale.FillHeight,
+                        colorFilter = ColorFilter.tint(color = colorResource(id = R.color.woo_purple_dark_secondary))
+                    )
+                    Text(
+                        fontWeight = FontWeight.Bold,
+                        text = stringResource(id = string.store_creation_ecommerce_plan_wordpress),
+                        color = colorResource(id = R.color.woo_purple_dark_secondary),
+                        style = MaterialTheme.typography.caption
+                    )
+                }
+                planState.plan.features.forEach {
+                    PlanFeatureRow(iconId = it.iconId, textId = it.textId)
+                }
             }
         }
 
@@ -242,12 +247,6 @@ private fun PlanInformation(
             verticalArrangement = Arrangement.spacedBy(dimensionResource(id = R.dimen.major_75)),
             modifier = Modifier
                 .fillMaxWidth()
-                .constrainAs(button) {
-                    top.linkTo(features.bottom)
-                    bottom.linkTo(parent.bottom)
-                    start.linkTo(parent.start)
-                    end.linkTo(parent.end)
-                }
                 .padding(bottom = dimensionResource(id = R.dimen.major_125))
         ) {
             Divider(
