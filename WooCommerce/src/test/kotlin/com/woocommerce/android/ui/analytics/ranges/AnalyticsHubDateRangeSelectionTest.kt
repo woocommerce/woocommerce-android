@@ -2,6 +2,12 @@ package com.woocommerce.android.ui.analytics.ranges
 
 import com.woocommerce.android.extensions.endOfCurrentDay
 import com.woocommerce.android.extensions.startOfCurrentDay
+import com.woocommerce.android.ui.analytics.ranges.AnalyticsHubDateRangeSelection.AnalyticsHubRangeSelectionType.LAST_MONTH
+import com.woocommerce.android.ui.analytics.ranges.AnalyticsHubDateRangeSelection.AnalyticsHubRangeSelectionType.LAST_WEEK
+import com.woocommerce.android.ui.analytics.ranges.AnalyticsHubDateRangeSelection.AnalyticsHubRangeSelectionType.MONTH_TO_DATE
+import com.woocommerce.android.ui.analytics.ranges.AnalyticsHubDateRangeSelection.AnalyticsHubRangeSelectionType.TODAY
+import com.woocommerce.android.ui.analytics.ranges.AnalyticsHubDateRangeSelection.AnalyticsHubRangeSelectionType.WEEK_TO_DATE
+import com.woocommerce.android.ui.analytics.ranges.AnalyticsHubDateRangeSelection.AnalyticsHubRangeSelectionType.YESTERDAY
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Test
@@ -39,7 +45,7 @@ internal class AnalyticsHubDateRangeSelectionTest {
 
         // When
         val sut = AnalyticsHubDateRangeSelection(
-            selectionType = AnalyticsHubRangeSelectionType.MONTH_TO_DATE,
+            selectionType = MONTH_TO_DATE,
             currentDate = today,
             calendar = testCalendar
         )
@@ -64,7 +70,7 @@ internal class AnalyticsHubDateRangeSelectionTest {
 
         // When
         val sut = AnalyticsHubDateRangeSelection(
-            selectionType = AnalyticsHubRangeSelectionType.LAST_MONTH,
+            selectionType = LAST_MONTH,
             currentDate = today,
             calendar = testCalendar
         )
@@ -89,7 +95,7 @@ internal class AnalyticsHubDateRangeSelectionTest {
 
         // When
         val sut = AnalyticsHubDateRangeSelection(
-            selectionType = AnalyticsHubRangeSelectionType.WEEK_TO_DATE,
+            selectionType = WEEK_TO_DATE,
             currentDate = today,
             calendar = testCalendar
         )
@@ -114,7 +120,7 @@ internal class AnalyticsHubDateRangeSelectionTest {
 
         // When
         val sut = AnalyticsHubDateRangeSelection(
-            selectionType = AnalyticsHubRangeSelectionType.LAST_WEEK,
+            selectionType = LAST_WEEK,
             currentDate = today,
             calendar = testCalendar
         )
@@ -139,7 +145,7 @@ internal class AnalyticsHubDateRangeSelectionTest {
 
         // When
         val sut = AnalyticsHubDateRangeSelection(
-            selectionType = AnalyticsHubDateRangeSelection.AnalyticsHubRangeSelectionType.TODAY,
+            selectionType = TODAY,
             currentDate = today,
             calendar = testCalendar
         )
@@ -164,7 +170,7 @@ internal class AnalyticsHubDateRangeSelectionTest {
 
         // When
         val sut = AnalyticsHubDateRangeSelection(
-            selectionType = AnalyticsHubDateRangeSelection.AnalyticsHubRangeSelectionType.YESTERDAY,
+            selectionType = YESTERDAY,
             currentDate = today,
             calendar = testCalendar
         )
