@@ -28,7 +28,6 @@ import com.woocommerce.android.ui.analytics.daterangeselector.AnalyticTimePeriod
 import com.woocommerce.android.ui.analytics.daterangeselector.AnalyticTimePeriod.TODAY
 import com.woocommerce.android.ui.analytics.daterangeselector.AnalyticTimePeriod.WEEK_TO_DATE
 import com.woocommerce.android.ui.analytics.daterangeselector.AnalyticsDateRangeCalculator
-import com.woocommerce.android.ui.analytics.daterangeselector.AnalyticsDateRangeFormatter
 import com.woocommerce.android.ui.analytics.daterangeselector.MultipleDateRange
 import com.woocommerce.android.ui.analytics.daterangeselector.SimpleDateRange
 import com.woocommerce.android.ui.analytics.informationcard.AnalyticsInformationSectionViewState
@@ -108,26 +107,26 @@ class AnalyticsViewModelTest : BaseUnitTest() {
 
             sut = givenAViewModel(resourceProvider)
 
-            with(sut.state.value.analyticsDateRangeSelectorState) {
+            with(sut.viewState.value.analyticsDateRangeSelectorState) {
                 assertEquals(ANY_VALUE, selectedPeriod)
                 assertEquals(ANY_DATE_RANGE_EXPECTED_DATE_MESSAGE, fromDatePeriod)
                 assertEquals(ANY_DATE_RANGE_EXPECTED_DATE_MESSAGE, toDatePeriod)
                 assertEquals(DATE_RANGE_SELECTORS, availableRangeDates)
             }
 
-            with(sut.state.value.revenueState) {
+            with(sut.viewState.value.revenueState) {
                 assertTrue(this is LoadingViewState)
             }
 
-            with(sut.state.value.ordersState) {
+            with(sut.viewState.value.ordersState) {
                 assertTrue(this is LoadingViewState)
             }
 
-            with(sut.state.value.productsState) {
+            with(sut.viewState.value.productsState) {
                 assertTrue(this is AnalyticsListViewState.LoadingViewState)
             }
 
-            with(sut.state.value.refreshIndicator) {
+            with(sut.viewState.value.refreshIndicator) {
                 assertTrue(this is NotShowIndicator)
             }
         }
@@ -157,7 +156,7 @@ class AnalyticsViewModelTest : BaseUnitTest() {
 
             sut = givenAViewModel(resourceProvider)
 
-            with(sut.state.value.analyticsDateRangeSelectorState) {
+            with(sut.viewState.value.analyticsDateRangeSelectorState) {
                 assertEquals(ANY_SAVED_VALUE, selectedPeriod)
                 assertEquals(ANY_SAVED_RANGE_EXPECTED_DATE_MESSAGE, fromDatePeriod)
                 assertEquals(ANY_SAVED_RANGE_EXPECTED_DATE_MESSAGE, toDatePeriod)
@@ -184,7 +183,7 @@ class AnalyticsViewModelTest : BaseUnitTest() {
             sut = givenAViewModel(resourceProvider)
             sut.onSelectedTimePeriodChanged(LAST_YEAR)
 
-            with(sut.state.value.analyticsDateRangeSelectorState) {
+            with(sut.viewState.value.analyticsDateRangeSelectorState) {
                 assertEquals(LAST_YEAR.description, selectedPeriod)
                 assertEquals(ANY_OTHER_RANGE_EXPECTED_DATE_MESSAGE, fromDatePeriod)
                 assertEquals(ANY_OTHER_RANGE_EXPECTED_DATE_MESSAGE, toDatePeriod)
@@ -204,7 +203,7 @@ class AnalyticsViewModelTest : BaseUnitTest() {
             sut.onSelectedTimePeriodChanged(LAST_YEAR)
 
             val resourceProvider = givenAResourceProvider()
-            with(sut.state.value.revenueState) {
+            with(sut.viewState.value.revenueState) {
                 assertTrue(this is AnalyticsInformationViewState.DataViewState)
                 assertEquals(resourceProvider.getString(R.string.analytics_revenue_card_title), title)
                 assertEquals(resourceProvider.getString(R.string.analytics_total_sales_title), leftSection.title)
@@ -230,7 +229,7 @@ class AnalyticsViewModelTest : BaseUnitTest() {
             sut = givenAViewModel()
             sut.onSelectedTimePeriodChanged(LAST_YEAR)
 
-            with(sut.state.value.revenueState) {
+            with(sut.viewState.value.revenueState) {
                 assertTrue(this is AnalyticsInformationViewState.DataViewState)
                 assertTrue(leftSection.delta == null)
                 assertTrue(rightSection.delta == null)
@@ -248,7 +247,7 @@ class AnalyticsViewModelTest : BaseUnitTest() {
 
             sut.onSelectedTimePeriodChanged(LAST_YEAR)
 
-            with(sut.state.value.refreshIndicator) {
+            with(sut.viewState.value.refreshIndicator) {
                 assertTrue(this is NotShowIndicator)
             }
         }
@@ -278,7 +277,7 @@ class AnalyticsViewModelTest : BaseUnitTest() {
         sut.onRefreshRequested()
 
         val resourceProvider = givenAResourceProvider()
-        with(sut.state.value.revenueState) {
+        with(sut.viewState.value.revenueState) {
             assertTrue(this is AnalyticsInformationViewState.DataViewState)
             assertEquals(resourceProvider.getString(R.string.analytics_revenue_card_title), title)
             assertEquals(resourceProvider.getString(R.string.analytics_total_sales_title), leftSection.title)
@@ -301,7 +300,7 @@ class AnalyticsViewModelTest : BaseUnitTest() {
             sut.onSelectedTimePeriodChanged(LAST_YEAR)
 
             val resourceProvider = givenAResourceProvider()
-            with(sut.state.value.ordersState) {
+            with(sut.viewState.value.ordersState) {
                 assertTrue(this is AnalyticsInformationViewState.DataViewState)
                 assertEquals(resourceProvider.getString(R.string.analytics_orders_card_title), title)
                 assertEquals(resourceProvider.getString(R.string.analytics_total_orders_title), leftSection.title)
@@ -324,7 +323,7 @@ class AnalyticsViewModelTest : BaseUnitTest() {
             sut.onSelectedTimePeriodChanged(LAST_YEAR)
 
             val resourceProvider = givenAResourceProvider()
-            with(sut.state.value.productsState) {
+            with(sut.viewState.value.productsState) {
                 assertTrue(this is AnalyticsListViewState.DataViewState)
                 assertEquals(resourceProvider.getString(R.string.analytics_products_card_title), title)
                 assertEquals(PRODUCT_ITEMS_SOLD_DELTA, delta)
@@ -364,7 +363,7 @@ class AnalyticsViewModelTest : BaseUnitTest() {
         sut.onRefreshRequested()
 
         val resourceProvider = givenAResourceProvider()
-        with(sut.state.value.ordersState) {
+        with(sut.viewState.value.ordersState) {
             assertTrue(this is AnalyticsInformationViewState.DataViewState)
             assertEquals(resourceProvider.getString(R.string.analytics_orders_card_title), title)
             assertEquals(resourceProvider.getString(R.string.analytics_total_orders_title), leftSection.title)
@@ -400,7 +399,7 @@ class AnalyticsViewModelTest : BaseUnitTest() {
         sut.onSelectedTimePeriodChanged(WEEK_TO_DATE)
         sut.onRefreshRequested()
 
-        with(sut.state.value.revenueState) {
+        with(sut.viewState.value.revenueState) {
             assertTrue(this is AnalyticsInformationViewState.DataViewState)
             assertEquals(OTHER_TOTAL_CURRENCY_VALUE, leftSection.value)
             assertEquals(OTHER_TOTAL_DELTA, leftSection.delta)
@@ -432,7 +431,7 @@ class AnalyticsViewModelTest : BaseUnitTest() {
         sut.onRefreshRequested()
 
         val resourceProvider = givenAResourceProvider()
-        with(sut.state.value.productsState) {
+        with(sut.viewState.value.productsState) {
             assertTrue(this is AnalyticsListViewState.DataViewState)
             assertEquals(resourceProvider.getString(R.string.analytics_products_card_title), title)
             assertEquals(OTHER_PRODUCT_ITEMS_SOLD_DELTA, delta)
@@ -457,7 +456,7 @@ class AnalyticsViewModelTest : BaseUnitTest() {
 
         sut = givenAViewModel()
         val states = mutableListOf<AnalyticsViewState>()
-        val getShowIndicatorStatesJob = launch { sut.state.toList(states) }
+        val getShowIndicatorStatesJob = launch { sut.viewState.toList(states) }
         sut.onRefreshRequested()
 
         assertThat(states.map(AnalyticsViewState::refreshIndicator)).containsExactly(
@@ -578,7 +577,7 @@ class AnalyticsViewModelTest : BaseUnitTest() {
         sut = givenAViewModel()
         sut.onSelectedTimePeriodChanged(WEEK_TO_DATE)
 
-        assert(sut.state.value.visitorsState)
+        assert(sut.viewState.value.visitorsState)
     }
 
     @Test
@@ -598,7 +597,7 @@ class AnalyticsViewModelTest : BaseUnitTest() {
         sut = givenAViewModel()
         sut.onSelectedTimePeriodChanged(QUARTER_TO_DATE)
 
-        assert(sut.state.value.visitorsState)
+        assert(sut.viewState.value.visitorsState)
     }
 
     @Test
@@ -618,7 +617,7 @@ class AnalyticsViewModelTest : BaseUnitTest() {
         sut = givenAViewModel()
         sut.onSelectedTimePeriodChanged(LAST_QUARTER)
 
-        assert(sut.state.value.visitorsState)
+        assert(sut.viewState.value.visitorsState)
     }
 
     @Test
