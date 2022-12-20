@@ -16,7 +16,6 @@ import androidx.test.uiautomator.UiObjectNotFoundException
 import androidx.test.uiautomator.UiSelector
 import androidx.test.uiautomator.Until
 
-
 private const val SHORT_TIMEOUT = 2000L
 private const val TIMEOUT = 5000L
 private const val LONG_TIMEOUT = 60000L
@@ -50,7 +49,7 @@ class QuickLoginHelper(private val packageName: String) {
                 try {
                     allowPermissions.click()
                 } catch (e: UiObjectNotFoundException) {
-                    Log.i("Macrobenchmark","There is no permissions dialog to interact with", e)
+                    Log.i("Macrobenchmark", "There is no permissions dialog to interact with", e)
                 }
             }
         }
