@@ -27,13 +27,13 @@ import java.util.Calendar
 import java.util.Date
 
 class AnalyticsHubDateRangeSelection(
-    selectionType: SelectionType,
+    val selectionType: SelectionType,
     resourceProvider: ResourceProvider,
     currentDate: Date = Date(),
     calendar: Calendar = Calendar.getInstance()
 ) {
-    val currentRange: AnalyticsHubTimeRange?
-    val previousRange: AnalyticsHubTimeRange?
+    val currentRange: AnalyticsHubTimeRange
+    val previousRange: AnalyticsHubTimeRange
     val description: String
 
     init {
