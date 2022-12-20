@@ -81,17 +81,22 @@ class AnalyticsHubDateRangeSelection(
         CUSTOM -> resourceProvider.getString(R.string.date_timeframe_custom)
     }
 
-    enum class SelectionType {
-        TODAY,
-        YESTERDAY,
-        LAST_WEEK,
-        LAST_MONTH,
-        LAST_QUARTER,
-        LAST_YEAR,
-        WEEK_TO_DATE,
-        MONTH_TO_DATE,
-        QUARTER_TO_DATE,
-        YEAR_TO_DATE,
-        CUSTOM;
+    enum class SelectionType(val description: String) {
+        TODAY("Today"),
+        YESTERDAY("Yesterday"),
+        LAST_WEEK("Last Week"),
+        LAST_MONTH("Last Month"),
+        LAST_QUARTER("Last Quarter"),
+        LAST_YEAR("Last Year"),
+        WEEK_TO_DATE("Week to Date"),
+        MONTH_TO_DATE("Month to Date"),
+        QUARTER_TO_DATE("Quarter to Date"),
+        YEAR_TO_DATE("Year to Date"),
+        CUSTOM("Custom");
+
+        companion object {
+            fun from(datePeriod: String): SelectionType = values()
+                .find { it.description == datePeriod } ?: TODAY
+        }
     }
 }
