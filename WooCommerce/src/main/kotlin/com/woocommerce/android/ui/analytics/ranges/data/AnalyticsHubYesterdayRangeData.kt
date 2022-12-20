@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.analytics.ranges.data
 
+import com.woocommerce.android.extensions.endOfCurrentDay
 import com.woocommerce.android.extensions.oneDayAgo
 import com.woocommerce.android.extensions.startOfCurrentDay
 import com.woocommerce.android.ui.analytics.ranges.AnalyticsHubTimeRange
@@ -19,14 +20,14 @@ class AnalyticsHubYesterdayRangeData(
         calendar.time = yesterday
         currentRange = AnalyticsHubTimeRange(
             start = calendar.startOfCurrentDay(),
-            end = yesterday
+            end = calendar.endOfCurrentDay()
         )
 
         val dayBeforeYesterday = yesterday.oneDayAgo(calendar)
         calendar.time = dayBeforeYesterday
         previousRange = AnalyticsHubTimeRange(
             start = calendar.startOfCurrentDay(),
-            end = dayBeforeYesterday
+            end = calendar.endOfCurrentDay()
         )
     }
 }
