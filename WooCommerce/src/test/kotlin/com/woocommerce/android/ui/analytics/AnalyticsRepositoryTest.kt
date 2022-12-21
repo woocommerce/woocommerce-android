@@ -15,6 +15,7 @@ import com.woocommerce.android.ui.analytics.AnalyticsRepository.ProductsResult.P
 import com.woocommerce.android.ui.analytics.AnalyticsRepository.RevenueResult.RevenueData
 import com.woocommerce.android.ui.analytics.AnalyticsRepository.RevenueResult.RevenueError
 import com.woocommerce.android.ui.analytics.ranges.AnalyticsHubDateRangeSelection
+import com.woocommerce.android.ui.analytics.ranges.AnalyticsHubDateRangeSelection.SelectionType.CUSTOM
 import com.woocommerce.android.ui.mystore.data.StatsRepository
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -65,7 +66,7 @@ class AnalyticsRepositoryTest : BaseUnitTest() {
 
         // When
         val result = sut.fetchRevenueData(
-            AnalyticsHubDateRangeSelection(previousDate, currentDate),
+            CUSTOM.generateSelectionData(previousDate, currentDate),
             anyFetchStrategy
         )
 
@@ -85,7 +86,7 @@ class AnalyticsRepositoryTest : BaseUnitTest() {
 
         // When
         val result = sut.fetchOrdersData(
-            AnalyticsHubDateRangeSelection(previousDate, currentDate),
+            CUSTOM.generateSelectionData(previousDate, currentDate),
             anyFetchStrategy
         )
 
@@ -105,7 +106,7 @@ class AnalyticsRepositoryTest : BaseUnitTest() {
 
         // When
         val result = sut.fetchRevenueData(
-            AnalyticsHubDateRangeSelection(previousDate, currentDate),
+            CUSTOM.generateSelectionData(previousDate, currentDate),
             anyFetchStrategy
         )
 
@@ -126,7 +127,7 @@ class AnalyticsRepositoryTest : BaseUnitTest() {
 
             // When
             val result = sut.fetchOrdersData(
-                AnalyticsHubDateRangeSelection(previousDate, currentDate),
+                CUSTOM.generateSelectionData(previousDate, currentDate),
                 anyFetchStrategy
             )
 
@@ -156,7 +157,7 @@ class AnalyticsRepositoryTest : BaseUnitTest() {
 
             // When
             val result = sut.fetchRevenueData(
-                AnalyticsHubDateRangeSelection(previousDate, currentDate),
+                CUSTOM.generateSelectionData(previousDate, currentDate),
                 anyFetchStrategy
             )
 
@@ -198,7 +199,7 @@ class AnalyticsRepositoryTest : BaseUnitTest() {
 
             // When
             val result = sut.fetchRevenueData(
-                AnalyticsHubDateRangeSelection(previousDate, currentDate),
+                CUSTOM.generateSelectionData(previousDate, currentDate),
                 anyFetchStrategy
             )
 
@@ -232,7 +233,7 @@ class AnalyticsRepositoryTest : BaseUnitTest() {
 
             // When
             val result = sut.fetchRevenueData(
-                AnalyticsHubDateRangeSelection(previousDate, currentDate),
+                CUSTOM.generateSelectionData(previousDate, currentDate),
                 anyFetchStrategy
             )
 
@@ -258,7 +259,7 @@ class AnalyticsRepositoryTest : BaseUnitTest() {
 
             // When
             val result = sut.fetchRevenueData(
-                AnalyticsHubDateRangeSelection(previousDate, currentDate),
+                CUSTOM.generateSelectionData(previousDate, currentDate),
                 anyFetchStrategy
             )
             // Then
@@ -280,7 +281,7 @@ class AnalyticsRepositoryTest : BaseUnitTest() {
 
             // When
             val result = sut.fetchOrdersData(
-                AnalyticsHubDateRangeSelection(previousDate, currentDate),
+                CUSTOM.generateSelectionData(previousDate, currentDate),
                 anyFetchStrategy
             )
 
@@ -305,7 +306,7 @@ class AnalyticsRepositoryTest : BaseUnitTest() {
 
             // When
             val result = sut.fetchOrdersData(
-                AnalyticsHubDateRangeSelection(previousDate, currentDate),
+                CUSTOM.generateSelectionData(previousDate, currentDate),
                 anyFetchStrategy
             )
 
@@ -329,7 +330,7 @@ class AnalyticsRepositoryTest : BaseUnitTest() {
 
             // When
             val result = sut.fetchRevenueData(
-                AnalyticsHubDateRangeSelection(previousDate, currentDate),
+                CUSTOM.generateSelectionData(previousDate, currentDate),
                 anyFetchStrategy
             )
 
@@ -354,7 +355,7 @@ class AnalyticsRepositoryTest : BaseUnitTest() {
 
             // When
             val result = sut.fetchOrdersData(
-                AnalyticsHubDateRangeSelection(previousDate, currentDate),
+                CUSTOM.generateSelectionData(previousDate, currentDate),
                 anyFetchStrategy
             )
 
@@ -380,7 +381,7 @@ class AnalyticsRepositoryTest : BaseUnitTest() {
 
             // When
             val result = sut.fetchRevenueData(
-                AnalyticsHubDateRangeSelection(previousDate, currentDate),
+                CUSTOM.generateSelectionData(previousDate, currentDate),
                 anyFetchStrategy
             )
 
@@ -404,7 +405,7 @@ class AnalyticsRepositoryTest : BaseUnitTest() {
 
             // When
             val result = sut.fetchOrdersData(
-                AnalyticsHubDateRangeSelection(previousDate, currentDate),
+                CUSTOM.generateSelectionData(previousDate, currentDate),
                 anyFetchStrategy
             )
 
@@ -428,7 +429,7 @@ class AnalyticsRepositoryTest : BaseUnitTest() {
 
             // When
             val result = sut.fetchRevenueData(
-                AnalyticsHubDateRangeSelection(previousDate, currentDate),
+                CUSTOM.generateSelectionData(previousDate, currentDate),
                 anyFetchStrategy
             )
 
@@ -451,7 +452,7 @@ class AnalyticsRepositoryTest : BaseUnitTest() {
 
             // When
             val result = sut.fetchOrdersData(
-                AnalyticsHubDateRangeSelection(previousDate, currentDate),
+                CUSTOM.generateSelectionData(previousDate, currentDate),
                 anyFetchStrategy
             )
 
@@ -475,7 +476,7 @@ class AnalyticsRepositoryTest : BaseUnitTest() {
 
             // When
             val result = sut.fetchRevenueData(
-                AnalyticsHubDateRangeSelection(previousDate, currentDate),
+                CUSTOM.generateSelectionData(previousDate, currentDate),
                 anyFetchStrategy
             )
 
@@ -499,7 +500,7 @@ class AnalyticsRepositoryTest : BaseUnitTest() {
 
             // When
             val result = sut.fetchOrdersData(
-                AnalyticsHubDateRangeSelection(previousDate, currentDate),
+                CUSTOM.generateSelectionData(previousDate, currentDate),
                 anyFetchStrategy
             )
 
@@ -522,7 +523,7 @@ class AnalyticsRepositoryTest : BaseUnitTest() {
 
             // When
             val result = sut.fetchRevenueData(
-                AnalyticsHubDateRangeSelection(previousDate, currentDate),
+                CUSTOM.generateSelectionData(previousDate, currentDate),
                 anyFetchStrategy
             )
 
@@ -546,7 +547,7 @@ class AnalyticsRepositoryTest : BaseUnitTest() {
 
             // When
             val result = sut.fetchOrdersData(
-                AnalyticsHubDateRangeSelection(previousDate, currentDate),
+                CUSTOM.generateSelectionData(previousDate, currentDate),
                 anyFetchStrategy
             )
 
@@ -579,7 +580,7 @@ class AnalyticsRepositoryTest : BaseUnitTest() {
 
             // When
             val result = sut.fetchProductsData(
-                AnalyticsHubDateRangeSelection(previousDate, currentDate),
+                CUSTOM.generateSelectionData(previousDate, currentDate),
                 anyFetchStrategy
             )
 
@@ -610,7 +611,7 @@ class AnalyticsRepositoryTest : BaseUnitTest() {
 
             // When
             val result = sut.fetchProductsData(
-                AnalyticsHubDateRangeSelection(previousDate, currentDate),
+                CUSTOM.generateSelectionData(previousDate, currentDate),
                 anyFetchStrategy
             )
 
@@ -641,7 +642,7 @@ class AnalyticsRepositoryTest : BaseUnitTest() {
 
             // When
             val result = sut.fetchProductsData(
-                AnalyticsHubDateRangeSelection(previousDate, currentDate),
+                CUSTOM.generateSelectionData(previousDate, currentDate),
                 anyFetchStrategy
             )
 
@@ -673,7 +674,7 @@ class AnalyticsRepositoryTest : BaseUnitTest() {
 
             // When
             val result = sut.fetchProductsData(
-                AnalyticsHubDateRangeSelection(previousDate, currentDate),
+                CUSTOM.generateSelectionData(previousDate, currentDate),
                 anyFetchStrategy
             )
 
@@ -697,7 +698,7 @@ class AnalyticsRepositoryTest : BaseUnitTest() {
 
             // When
             val result = sut.fetchProductsData(
-                AnalyticsHubDateRangeSelection(previousDate, currentDate),
+                CUSTOM.generateSelectionData(previousDate, currentDate),
                 anyFetchStrategy
             )
 
@@ -725,7 +726,7 @@ class AnalyticsRepositoryTest : BaseUnitTest() {
 
             // When
             val result = sut.fetchProductsData(
-                AnalyticsHubDateRangeSelection(previousDate, currentDate),
+                CUSTOM.generateSelectionData(previousDate, currentDate),
                 anyFetchStrategy
             )
 
@@ -756,12 +757,12 @@ class AnalyticsRepositoryTest : BaseUnitTest() {
 
             // When
             sut.fetchRevenueData(
-                AnalyticsHubDateRangeSelection(previousDate, currentDate),
+                CUSTOM.generateSelectionData(previousDate, currentDate),
                 AnalyticsRepository.FetchStrategy.Saved
             )
 
             sut.fetchProductsData(
-                AnalyticsHubDateRangeSelection(previousDate, currentDate),
+                CUSTOM.generateSelectionData(previousDate, currentDate),
                 AnalyticsRepository.FetchStrategy.Saved
             )
 
@@ -790,12 +791,12 @@ class AnalyticsRepositoryTest : BaseUnitTest() {
 
             // When
             sut.fetchRevenueData(
-                AnalyticsHubDateRangeSelection(previousDate, currentDate),
+                CUSTOM.generateSelectionData(previousDate, currentDate),
                 ForceNew
             )
 
             sut.fetchProductsData(
-                AnalyticsHubDateRangeSelection(previousDate, currentDate),
+                CUSTOM.generateSelectionData(previousDate, currentDate),
                 ForceNew
             )
 

@@ -55,9 +55,8 @@ internal class AnalyticsHubDateRangeSelectionTest {
         )
 
         // When
-        val sut = AnalyticsHubDateRangeSelection(
-            selectionType = YEAR_TO_DATE,
-            currentDate = today,
+        val sut = YEAR_TO_DATE.generateSelectionData(
+            referenceStart = today,
             calendar = testCalendar
         )
 
@@ -80,9 +79,8 @@ internal class AnalyticsHubDateRangeSelectionTest {
         )
 
         // When
-        val sut = AnalyticsHubDateRangeSelection(
-            selectionType = LAST_YEAR,
-            currentDate = today,
+        val sut = LAST_YEAR.generateSelectionData(
+            referenceStart = today,
             calendar = testCalendar
         )
 
@@ -105,9 +103,8 @@ internal class AnalyticsHubDateRangeSelectionTest {
         )
 
         // When
-        val sut = AnalyticsHubDateRangeSelection(
-            selectionType = QUARTER_TO_DATE,
-            currentDate = today,
+        val sut = QUARTER_TO_DATE.generateSelectionData(
+            referenceStart = today,
             calendar = testCalendar
         )
 
@@ -130,9 +127,8 @@ internal class AnalyticsHubDateRangeSelectionTest {
         )
 
         // When
-        val sut = AnalyticsHubDateRangeSelection(
-            selectionType = LAST_QUARTER,
-            currentDate = today,
+        val sut = LAST_QUARTER.generateSelectionData(
+            referenceStart = today,
             calendar = testCalendar
         )
 
@@ -155,9 +151,8 @@ internal class AnalyticsHubDateRangeSelectionTest {
         )
 
         // When
-        val sut = AnalyticsHubDateRangeSelection(
-            selectionType = MONTH_TO_DATE,
-            currentDate = today,
+        val sut = MONTH_TO_DATE.generateSelectionData(
+            referenceStart = today,
             calendar = testCalendar
         )
 
@@ -180,9 +175,8 @@ internal class AnalyticsHubDateRangeSelectionTest {
         )
 
         // When
-        val sut = AnalyticsHubDateRangeSelection(
-            selectionType = LAST_MONTH,
-            currentDate = today,
+        val sut = LAST_MONTH.generateSelectionData(
+            referenceStart = today,
             calendar = testCalendar
         )
 
@@ -205,9 +199,8 @@ internal class AnalyticsHubDateRangeSelectionTest {
         )
 
         // When
-        val sut = AnalyticsHubDateRangeSelection(
-            selectionType = WEEK_TO_DATE,
-            currentDate = today,
+        val sut = WEEK_TO_DATE.generateSelectionData(
+            referenceStart = today,
             calendar = testCalendar
         )
 
@@ -230,9 +223,8 @@ internal class AnalyticsHubDateRangeSelectionTest {
         )
 
         // When
-        val sut = AnalyticsHubDateRangeSelection(
-            selectionType = LAST_WEEK,
-            currentDate = today,
+        val sut = LAST_WEEK.generateSelectionData(
+            referenceStart = today,
             calendar = testCalendar
         )
 
@@ -255,9 +247,8 @@ internal class AnalyticsHubDateRangeSelectionTest {
         )
 
         // When
-        val sut = AnalyticsHubDateRangeSelection(
-            selectionType = TODAY,
-            currentDate = today,
+        val sut = TODAY.generateSelectionData(
+            referenceStart = today,
             calendar = testCalendar
         )
 
@@ -280,9 +271,8 @@ internal class AnalyticsHubDateRangeSelectionTest {
         )
 
         // When
-        val sut = AnalyticsHubDateRangeSelection(
-            selectionType = YESTERDAY,
-            currentDate = today,
+        val sut = YESTERDAY.generateSelectionData(
+            referenceStart = today,
             calendar = testCalendar
         )
 
