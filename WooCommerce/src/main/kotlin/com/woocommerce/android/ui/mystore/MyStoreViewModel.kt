@@ -33,6 +33,7 @@ import com.woocommerce.android.ui.mystore.domain.GetTopPerformers
 import com.woocommerce.android.ui.mystore.domain.GetTopPerformers.TopPerformerProduct
 import com.woocommerce.android.ui.payments.banner.BannerState
 import com.woocommerce.android.util.CurrencyFormatter
+import com.woocommerce.android.util.QueryParamsEncoder
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.ResourceProvider
@@ -84,6 +85,7 @@ class MyStoreViewModel @Inject constructor(
     private val jitmStore: JitmStore,
     private val jitmTracker: JitmTracker,
     private val myStoreUtmProvider: MyStoreUtmProvider,
+    private val queryParamsEncoder: QueryParamsEncoder,
 ) : ScopedViewModel(savedState) {
     companion object {
         private const val DAYS_TO_REDISPLAY_JP_BENEFITS_BANNER = 5
@@ -148,19 +150,10 @@ class MyStoreViewModel @Inject constructor(
             val response = jitmStore.fetchJitmMessage(
                 selectedSite.get(),
                 JITM_MESSAGE_PATH,
-                getEncodedQueryParams(),
+                queryParamsEncoder.getEncodedQueryParams(),
             )
             populateResultToUI(response)
         }
-    }
-
-    private fun getEncodedQueryParams(): String {
-        val query = if (BuildConfig.DEBUG) {
-            "build_type=developer&platform=android&version=${BuildConfig.VERSION_NAME}"
-        } else {
-            "platform=android&version=${BuildConfig.VERSION_NAME}"
-        }
-        return URLEncoder.encode(query, Charsets.UTF_8.name())
     }
 
     private fun populateResultToUI(response: WooResult<Array<JITMApiResponse>>) {
