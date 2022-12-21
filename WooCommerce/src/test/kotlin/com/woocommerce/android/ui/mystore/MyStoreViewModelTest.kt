@@ -20,6 +20,7 @@ import com.woocommerce.android.ui.mystore.domain.GetTopPerformers
 import com.woocommerce.android.ui.mystore.domain.GetTopPerformers.TopPerformerProduct
 import com.woocommerce.android.ui.payments.banner.BannerState
 import com.woocommerce.android.util.CurrencyFormatter
+import com.woocommerce.android.util.QueryParamsEncoder
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import com.woocommerce.android.viewmodel.ResourceProvider
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -69,6 +70,7 @@ class MyStoreViewModelTest : BaseUnitTest() {
     private val jitmStore: JitmStore = mock()
     private val jitmTracker: JitmTracker = mock()
     private val utmProvider: MyStoreUtmProvider = mock()
+    private val queryParamsEncoder: QueryParamsEncoder = mock()
 
     private lateinit var sut: MyStoreViewModel
 
@@ -76,6 +78,9 @@ class MyStoreViewModelTest : BaseUnitTest() {
     fun setup() = testBlocking {
         givenStatsLoadingResult(GetStats.LoadStatsResult.VisitorsStatsError)
         givenFetchTopPerformersResult(Result.failure(WooException(WOO_GENERIC_ERROR)))
+        whenever(queryParamsEncoder.getEncodedQueryParams()).thenReturn(
+            "build_type=developer&platform=android&version=${BuildConfig.VERSION_NAME}"
+        )
     }
 
     @Test
@@ -430,34 +435,6 @@ class MyStoreViewModelTest : BaseUnitTest() {
 
             // called twice, on view model init and on pull to refresh
             verify(jitmStore, times(2)).fetchJitmMessage(any(), any(), any())
-        }
-    }
-
-    @Test
-    fun `when viewmodel init, then proper encoded query params are passed to fetch jitm`() {
-        testBlocking {
-            givenNetworkConnectivity(connected = true)
-            whenever(selectedSite.get()).thenReturn(SiteModel())
-            val captor = argumentCaptor<String>()
-
-            whenViewModelIsCreated()
-            verify(jitmStore).fetchJitmMessage(any(), any(), captor.capture())
-
-            if (BuildConfig.DEBUG) {
-                assertThat(captor.firstValue).isEqualTo(
-                    URLEncoder.encode(
-                        "build_type=developer&platform=android&version=${BuildConfig.VERSION_NAME}",
-                        Charsets.UTF_8.name()
-                    )
-                )
-            } else {
-                assertThat(captor.firstValue).isEqualTo(
-                    URLEncoder.encode(
-                        "platform=android&version=${BuildConfig.VERSION_NAME}",
-                        Charsets.UTF_8.name()
-                    )
-                )
-            }
         }
     }
 
@@ -1382,6 +1359,7 @@ class MyStoreViewModelTest : BaseUnitTest() {
             jitmStore,
             jitmTracker,
             utmProvider,
+            queryParamsEncoder
         )
     }
 
