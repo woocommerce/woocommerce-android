@@ -14,9 +14,7 @@ import com.woocommerce.android.ui.analytics.AnalyticsRepository.ProductsResult.P
 import com.woocommerce.android.ui.analytics.AnalyticsRepository.ProductsResult.ProductsError
 import com.woocommerce.android.ui.analytics.AnalyticsRepository.RevenueResult.RevenueData
 import com.woocommerce.android.ui.analytics.AnalyticsRepository.RevenueResult.RevenueError
-import com.woocommerce.android.ui.analytics.daterangeselector.AnalyticTimePeriod
-import com.woocommerce.android.ui.analytics.daterangeselector.MultipleDateRange
-import com.woocommerce.android.ui.analytics.daterangeselector.SimpleDateRange
+import com.woocommerce.android.ui.analytics.ranges.AnalyticsHubDateRangeSelection
 import com.woocommerce.android.ui.mystore.data.StatsRepository
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -67,8 +65,7 @@ class AnalyticsRepositoryTest : BaseUnitTest() {
 
         // When
         val result = sut.fetchRevenueData(
-            SimpleDateRange(previousDate, currentDate),
-            ANY_RANGE,
+            AnalyticsHubDateRangeSelection(previousDate, currentDate),
             anyFetchStrategy
         )
 
@@ -88,8 +85,7 @@ class AnalyticsRepositoryTest : BaseUnitTest() {
 
         // When
         val result = sut.fetchOrdersData(
-            SimpleDateRange(previousDate, currentDate),
-            ANY_RANGE,
+            AnalyticsHubDateRangeSelection(previousDate, currentDate),
             anyFetchStrategy
         )
 
@@ -109,8 +105,7 @@ class AnalyticsRepositoryTest : BaseUnitTest() {
 
         // When
         val result = sut.fetchRevenueData(
-            SimpleDateRange(previousDate, currentDate),
-            ANY_RANGE,
+            AnalyticsHubDateRangeSelection(previousDate, currentDate),
             anyFetchStrategy
         )
 
@@ -131,8 +126,7 @@ class AnalyticsRepositoryTest : BaseUnitTest() {
 
             // When
             val result = sut.fetchOrdersData(
-                SimpleDateRange(previousDate, currentDate),
-                ANY_RANGE,
+                AnalyticsHubDateRangeSelection(previousDate, currentDate),
                 anyFetchStrategy
             )
 
@@ -162,8 +156,7 @@ class AnalyticsRepositoryTest : BaseUnitTest() {
 
             // When
             val result = sut.fetchRevenueData(
-                SimpleDateRange(previousDate, currentDate),
-                ANY_RANGE,
+                AnalyticsHubDateRangeSelection(previousDate, currentDate),
                 anyFetchStrategy
             )
 
@@ -205,8 +198,7 @@ class AnalyticsRepositoryTest : BaseUnitTest() {
 
             // When
             val result = sut.fetchRevenueData(
-                SimpleDateRange(previousDate, currentDate),
-                ANY_RANGE,
+                AnalyticsHubDateRangeSelection(previousDate, currentDate),
                 anyFetchStrategy
             )
 
@@ -240,8 +232,7 @@ class AnalyticsRepositoryTest : BaseUnitTest() {
 
             // When
             val result = sut.fetchRevenueData(
-                SimpleDateRange(previousDate, currentDate),
-                ANY_RANGE,
+                AnalyticsHubDateRangeSelection(previousDate, currentDate),
                 anyFetchStrategy
             )
 
@@ -267,11 +258,9 @@ class AnalyticsRepositoryTest : BaseUnitTest() {
 
             // When
             val result = sut.fetchRevenueData(
-                SimpleDateRange(previousDate, currentDate),
-                ANY_RANGE,
+                AnalyticsHubDateRangeSelection(previousDate, currentDate),
                 anyFetchStrategy
             )
-
             // Then
             assertTrue(result is RevenueData)
             assertTrue(result.revenueStat.totalDelta is DeltaPercentage.NotExist)
@@ -291,8 +280,7 @@ class AnalyticsRepositoryTest : BaseUnitTest() {
 
             // When
             val result = sut.fetchOrdersData(
-                SimpleDateRange(previousDate, currentDate),
-                ANY_RANGE,
+                AnalyticsHubDateRangeSelection(previousDate, currentDate),
                 anyFetchStrategy
             )
 
@@ -317,8 +305,7 @@ class AnalyticsRepositoryTest : BaseUnitTest() {
 
             // When
             val result = sut.fetchOrdersData(
-                SimpleDateRange(previousDate, currentDate),
-                ANY_RANGE,
+                AnalyticsHubDateRangeSelection(previousDate, currentDate),
                 anyFetchStrategy
             )
 
@@ -342,8 +329,7 @@ class AnalyticsRepositoryTest : BaseUnitTest() {
 
             // When
             val result = sut.fetchRevenueData(
-                SimpleDateRange(previousDate, currentDate),
-                ANY_RANGE,
+                AnalyticsHubDateRangeSelection(previousDate, currentDate),
                 anyFetchStrategy
             )
 
@@ -368,8 +354,7 @@ class AnalyticsRepositoryTest : BaseUnitTest() {
 
             // When
             val result = sut.fetchOrdersData(
-                SimpleDateRange(previousDate, currentDate),
-                ANY_RANGE,
+                AnalyticsHubDateRangeSelection(previousDate, currentDate),
                 anyFetchStrategy
             )
 
@@ -395,8 +380,7 @@ class AnalyticsRepositoryTest : BaseUnitTest() {
 
             // When
             val result = sut.fetchRevenueData(
-                SimpleDateRange(previousDate, currentDate),
-                ANY_RANGE,
+                AnalyticsHubDateRangeSelection(previousDate, currentDate),
                 anyFetchStrategy
             )
 
@@ -420,8 +404,7 @@ class AnalyticsRepositoryTest : BaseUnitTest() {
 
             // When
             val result = sut.fetchOrdersData(
-                SimpleDateRange(previousDate, currentDate),
-                ANY_RANGE,
+                AnalyticsHubDateRangeSelection(previousDate, currentDate),
                 anyFetchStrategy
             )
 
@@ -445,8 +428,7 @@ class AnalyticsRepositoryTest : BaseUnitTest() {
 
             // When
             val result = sut.fetchRevenueData(
-                SimpleDateRange(previousDate, currentDate),
-                ANY_RANGE,
+                AnalyticsHubDateRangeSelection(previousDate, currentDate),
                 anyFetchStrategy
             )
 
@@ -469,8 +451,7 @@ class AnalyticsRepositoryTest : BaseUnitTest() {
 
             // When
             val result = sut.fetchOrdersData(
-                SimpleDateRange(previousDate, currentDate),
-                ANY_RANGE,
+                AnalyticsHubDateRangeSelection(previousDate, currentDate),
                 anyFetchStrategy
             )
 
@@ -494,8 +475,7 @@ class AnalyticsRepositoryTest : BaseUnitTest() {
 
             // When
             val result = sut.fetchRevenueData(
-                SimpleDateRange(previousDate, currentDate),
-                ANY_RANGE,
+                AnalyticsHubDateRangeSelection(previousDate, currentDate),
                 anyFetchStrategy
             )
 
@@ -519,8 +499,7 @@ class AnalyticsRepositoryTest : BaseUnitTest() {
 
             // When
             val result = sut.fetchOrdersData(
-                SimpleDateRange(previousDate, currentDate),
-                ANY_RANGE,
+                AnalyticsHubDateRangeSelection(previousDate, currentDate),
                 anyFetchStrategy
             )
 
@@ -543,11 +522,7 @@ class AnalyticsRepositoryTest : BaseUnitTest() {
 
             // When
             val result = sut.fetchRevenueData(
-                MultipleDateRange(
-                    SimpleDateRange(previousDate, previousDate),
-                    SimpleDateRange(currentDate, currentDate)
-                ),
-                ANY_RANGE,
+                AnalyticsHubDateRangeSelection(previousDate, currentDate),
                 anyFetchStrategy
             )
 
@@ -571,11 +546,7 @@ class AnalyticsRepositoryTest : BaseUnitTest() {
 
             // When
             val result = sut.fetchOrdersData(
-                MultipleDateRange(
-                    SimpleDateRange(previousDate, previousDate),
-                    SimpleDateRange(currentDate, currentDate)
-                ),
-                ANY_RANGE,
+                AnalyticsHubDateRangeSelection(previousDate, currentDate),
                 anyFetchStrategy
             )
 
@@ -608,8 +579,7 @@ class AnalyticsRepositoryTest : BaseUnitTest() {
 
             // When
             val result = sut.fetchProductsData(
-                SimpleDateRange(previousDate, currentDate),
-                ANY_RANGE,
+                AnalyticsHubDateRangeSelection(previousDate, currentDate),
                 anyFetchStrategy
             )
 
@@ -640,8 +610,7 @@ class AnalyticsRepositoryTest : BaseUnitTest() {
 
             // When
             val result = sut.fetchProductsData(
-                SimpleDateRange(previousDate, currentDate),
-                ANY_RANGE,
+                AnalyticsHubDateRangeSelection(previousDate, currentDate),
                 anyFetchStrategy
             )
 
@@ -672,8 +641,7 @@ class AnalyticsRepositoryTest : BaseUnitTest() {
 
             // When
             val result = sut.fetchProductsData(
-                SimpleDateRange(previousDate, currentDate),
-                ANY_RANGE,
+                AnalyticsHubDateRangeSelection(previousDate, currentDate),
                 anyFetchStrategy
             )
 
@@ -705,8 +673,7 @@ class AnalyticsRepositoryTest : BaseUnitTest() {
 
             // When
             val result = sut.fetchProductsData(
-                SimpleDateRange(previousDate, currentDate),
-                ANY_RANGE,
+                AnalyticsHubDateRangeSelection(previousDate, currentDate),
                 anyFetchStrategy
             )
 
@@ -730,8 +697,7 @@ class AnalyticsRepositoryTest : BaseUnitTest() {
 
             // When
             val result = sut.fetchProductsData(
-                SimpleDateRange(previousDate, currentDate),
-                ANY_RANGE,
+                AnalyticsHubDateRangeSelection(previousDate, currentDate),
                 anyFetchStrategy
             )
 
@@ -759,8 +725,7 @@ class AnalyticsRepositoryTest : BaseUnitTest() {
 
             // When
             val result = sut.fetchProductsData(
-                SimpleDateRange(previousDate, currentDate),
-                ANY_RANGE,
+                AnalyticsHubDateRangeSelection(previousDate, currentDate),
                 anyFetchStrategy
             )
 
@@ -791,20 +756,12 @@ class AnalyticsRepositoryTest : BaseUnitTest() {
 
             // When
             sut.fetchRevenueData(
-                MultipleDateRange(
-                    SimpleDateRange(previousDate, previousDate),
-                    SimpleDateRange(currentDate, currentDate)
-                ),
-                ANY_RANGE,
+                AnalyticsHubDateRangeSelection(previousDate, currentDate),
                 AnalyticsRepository.FetchStrategy.Saved
             )
 
             sut.fetchProductsData(
-                MultipleDateRange(
-                    SimpleDateRange(previousDate, previousDate),
-                    SimpleDateRange(currentDate, currentDate)
-                ),
-                ANY_RANGE,
+                AnalyticsHubDateRangeSelection(previousDate, currentDate),
                 AnalyticsRepository.FetchStrategy.Saved
             )
 
@@ -833,20 +790,12 @@ class AnalyticsRepositoryTest : BaseUnitTest() {
 
             // When
             sut.fetchRevenueData(
-                MultipleDateRange(
-                    SimpleDateRange(previousDate, previousDate),
-                    SimpleDateRange(currentDate, currentDate)
-                ),
-                ANY_RANGE,
+                AnalyticsHubDateRangeSelection(previousDate, currentDate),
                 ForceNew
             )
 
             sut.fetchProductsData(
-                MultipleDateRange(
-                    SimpleDateRange(previousDate, previousDate),
-                    SimpleDateRange(currentDate, currentDate)
-                ),
-                ANY_RANGE,
+                AnalyticsHubDateRangeSelection(previousDate, currentDate),
                 ForceNew
             )
 
@@ -945,7 +894,7 @@ class AnalyticsRepositoryTest : BaseUnitTest() {
         const val ANY_URL = "https://a8c.com"
         val anyFetchStrategy = ForceNew
 
-        val ANY_RANGE = AnalyticTimePeriod.LAST_YEAR
+        val ANY_RANGE = AnalyticsHubDateRangeSelection.SelectionType.LAST_YEAR
         val previousDate: Date = DateUtils.getDateFromString(PREVIOUS_DATE)
         val currentDate: Date = DateUtils.getDateFromString(CURRENT_DATE)
         const val CURRENCY = "EUR"
