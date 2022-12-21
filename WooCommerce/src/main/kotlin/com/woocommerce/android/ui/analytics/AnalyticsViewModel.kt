@@ -46,7 +46,6 @@ import com.woocommerce.android.ui.analytics.listcard.AnalyticsListViewState as P
 import com.woocommerce.android.ui.analytics.listcard.AnalyticsListViewState.LoadingViewState as LoadingProductsViewState
 import com.woocommerce.android.ui.analytics.listcard.AnalyticsListViewState.NoDataState as ProductsNoDataState
 import com.woocommerce.android.ui.analytics.daterangeselector.AnalyticsDateRangeSelectorViewState
-import com.woocommerce.android.ui.analytics.ranges.AnalyticsHubDateRangeSelection
 import com.woocommerce.android.ui.analytics.ranges.AnalyticsHubDateRangeSelection.SelectionType
 import com.woocommerce.android.ui.analytics.ranges.AnalyticsHubDateRangeSelection.SelectionType.*
 import com.woocommerce.android.viewmodel.getStateFlow
@@ -69,8 +68,8 @@ class AnalyticsViewModel @Inject constructor(
     private val selectionTypeState = savedState.getStateFlow(viewModelScope, navArgs.targetGranularity)
 
     private val rangeSelectionState = selectionTypeState
-        .map { AnalyticsHubDateRangeSelection(it) }
-        .toStateFlow(AnalyticsHubDateRangeSelection(selectionTypeState.value))
+        .map { it.generateSelectionData() }
+        .toStateFlow(selectionTypeState.value.generateSelectionData())
 
     private val ranges
         get() = rangeSelectionState.value
