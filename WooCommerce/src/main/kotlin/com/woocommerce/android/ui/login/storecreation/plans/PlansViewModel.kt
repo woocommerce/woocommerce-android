@@ -17,6 +17,7 @@ import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.extensions.exhaustive
 import com.woocommerce.android.iap.pub.IAPActivityWrapper
 import com.woocommerce.android.iap.pub.PurchaseWPComPlanActions
+import com.woocommerce.android.iap.pub.model.WPComProductResult
 import com.woocommerce.android.iap.pub.model.WPComPurchaseResult
 import com.woocommerce.android.ui.login.storecreation.NewStore
 import com.woocommerce.android.ui.login.storecreation.StoreCreationErrorType
@@ -28,10 +29,9 @@ import com.woocommerce.android.ui.login.storecreation.StoreCreationResult.Failur
 import com.woocommerce.android.ui.login.storecreation.StoreCreationResult.Success
 import com.woocommerce.android.ui.login.storecreation.plans.BillingPeriod.ECOMMERCE_MONTHLY
 import com.woocommerce.android.ui.login.storecreation.plans.PlansViewModel.PlanInfo.Feature
-import com.woocommerce.android.ui.login.storecreation.plans.PlansViewModel.ViewState.CheckoutState
 import com.woocommerce.android.ui.login.storecreation.plans.PlansViewModel.ViewState.ErrorState
 import com.woocommerce.android.ui.login.storecreation.plans.PlansViewModel.ViewState.LoadingState
-import com.woocommerce.android.ui.login.storecreation.plans.PlansViewModel.ViewState.PlanState
+import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
@@ -42,6 +42,7 @@ import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.parcelize.Parcelize
+import org.wordpress.android.fluxc.model.plans.full.Plan
 import java.util.TimeZone
 import javax.inject.Inject
 
@@ -51,7 +52,8 @@ class PlansViewModel @Inject constructor(
     private val analyticsTrackerWrapper: AnalyticsTrackerWrapper,
     private val newStore: NewStore,
     private val repository: StoreCreationRepository,
-    private val iapManager: PurchaseWPComPlanActions
+    private val iapManager: PurchaseWPComPlanActions,
+    private val currencyFormatter: CurrencyFormatter,
 ) : ScopedViewModel(savedStateHandle, iapManager) {
     companion object {
         const val NEW_SITE_LANGUAGE_ID = "en"
@@ -61,6 +63,7 @@ class PlansViewModel @Inject constructor(
         const val WEBVIEW_EXIT_TRIGGER_KEYWORD = "https://woocommerce.com/"
         const val ECOMMERCE_PLAN_NAME = "eCommerce"
         const val ECOMMERCE_PLAN_PRICE_MONTHLY = "$70"
+        private const val MILLION = 1_000_000.0
     }
 
     private val _viewState = savedState.getStateFlow<ViewState>(this, LoadingState)
@@ -83,7 +86,7 @@ class PlansViewModel @Inject constructor(
 
     fun onConfirmClicked() {
         launch {
-            _viewState.update { (_viewState.value as PlanState).copy(isCreatingSite = true) }
+            _viewState.update { (_viewState.value as ViewState.PlanState).copy(isCreatingSite = true) }
             createSite().ifSuccessfulThen { siteId ->
                 newStore.update(siteId = siteId)
                 if (FeatureFlag.IAP_FOR_STORE_CREATION.isEnabled()) {
@@ -113,11 +116,16 @@ class PlansViewModel @Inject constructor(
     private fun loadPlan() = launch {
         _viewState.update { LoadingState }
 
-        val plan = repository.fetchPlan(ECOMMERCE_MONTHLY)
+        var plan = repository.fetchPlan(ECOMMERCE_MONTHLY)
+
+        if (FeatureFlag.IAP_FOR_STORE_CREATION.isEnabled()) {
+            plan = updatePlanWithIAPProductInfo(plan)
+        }
+
         if (plan != null) {
             newStore.update(planProductId = plan.productId, planPathSlug = plan.pathSlug)
             _viewState.update {
-                PlanState(
+                ViewState.PlanState(
                     plan = PlanInfo(
                         name = plan.productShortName ?: ECOMMERCE_PLAN_NAME,
                         billingPeriod = BillingPeriod.fromPeriodValue(plan.billPeriod),
@@ -158,9 +166,22 @@ class PlansViewModel @Inject constructor(
         }
     }
 
+    private suspend fun updatePlanWithIAPProductInfo(plan: Plan?): Plan? {
+        val iapPlanDataResult = iapManager.fetchWPComPlanProduct()
+        return if (iapPlanDataResult is WPComProductResult.Success) {
+            plan?.copy(
+                productShortName = iapPlanDataResult.productInfo.localizedTitle,
+                formattedPrice = currencyFormatter.formatCurrency(
+                    (iapPlanDataResult.productInfo.price / MILLION).toBigDecimal(),
+                    iapPlanDataResult.productInfo.currency
+                )
+            )
+        } else plan
+    }
+
     private fun showCheckoutWebsite() {
         _viewState.update {
-            CheckoutState(
+            ViewState.CheckoutState(
                 startUrl = "$CART_URL/${newStore.data.domain ?: newStore.data.siteId}",
                 successTriggerKeyword = WEBVIEW_SUCCESS_TRIGGER_KEYWORD,
                 exitTriggerKeyword = WEBVIEW_EXIT_TRIGGER_KEYWORD
@@ -170,7 +191,7 @@ class PlansViewModel @Inject constructor(
     }
 
     private fun onInAppPurchaseError(result: WPComPurchaseResult.Error) {
-        _viewState.update { (_viewState.value as PlanState).copy(isCreatingSite = false) }
+        _viewState.update { (_viewState.value as ViewState.PlanState).copy(isCreatingSite = false) }
         Log.i("IAP TEST", "ERROR on purchase flow${result.errorType}")
     }
 
