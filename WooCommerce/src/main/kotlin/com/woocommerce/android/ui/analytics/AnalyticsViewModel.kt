@@ -49,7 +49,6 @@ import com.woocommerce.android.ui.analytics.daterangeselector.AnalyticsDateRange
 import com.woocommerce.android.ui.analytics.ranges.AnalyticsHubDateRangeSelection.SelectionType
 import com.woocommerce.android.ui.analytics.ranges.AnalyticsHubDateRangeSelection.SelectionType.*
 import com.woocommerce.android.viewmodel.getStateFlow
-import kotlinx.coroutines.flow.map
 
 @HiltViewModel
 class AnalyticsViewModel @Inject constructor(
@@ -65,11 +64,10 @@ class AnalyticsViewModel @Inject constructor(
 
     val performanceObserver: LifecycleObserver = transactionLauncher
 
-    private val selectionTypeState = savedState.getStateFlow(viewModelScope, navArgs.targetGranularity)
-
-    private val rangeSelectionState = selectionTypeState
-        .map { it.generateSelectionData() }
-        .toStateFlow(selectionTypeState.value.generateSelectionData())
+    private val rangeSelectionState = savedState.getStateFlow(
+        scope = viewModelScope,
+        initialValue = navArgs.targetGranularity.generateSelectionData()
+    )
 
     private val ranges
         get() = rangeSelectionState.value
@@ -103,7 +101,7 @@ class AnalyticsViewModel @Inject constructor(
     }
 
     fun onNewRangeSelection(selectionType: SelectionType) {
-        selectionTypeState.value = selectionType
+        rangeSelectionState.value = selectionType.generateSelectionData()
     }
 
     fun onCustomDateRangeClicked() {
@@ -242,7 +240,7 @@ class AnalyticsViewModel @Inject constructor(
 
     private fun updateVisitors(isRefreshing: Boolean, showSkeleton: Boolean) =
         launch {
-            val timePeriod = selectionTypeState.value
+            val timePeriod = ranges.selectionType
             val fetchStrategy = getFetchStrategy(isRefreshing)
             val isQuarterSelection = (timePeriod == QUARTER_TO_DATE) || (timePeriod == LAST_QUARTER)
 
