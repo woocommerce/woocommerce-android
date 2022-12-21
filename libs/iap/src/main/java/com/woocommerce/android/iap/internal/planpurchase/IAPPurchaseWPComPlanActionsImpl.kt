@@ -25,6 +25,10 @@ internal class IAPPurchaseWPComPlanActionsImpl(
     private val iapManager: IAPManager,
     private val iapProduct: IAPProduct = IAPProduct.WPPremiumPlanTesting
 ) : PurchaseWPComPlanActions {
+    private companion object {
+        private const val MILLION = 1_000_000.0
+    }
+
     init {
         iapManager.connect()
     }
@@ -40,6 +44,7 @@ internal class IAPPurchaseWPComPlanActionsImpl(
                 val purchases = response.purchases
                 WPComIsPurchasedResult.Success(determinePurchaseStatus(purchases))
             }
+
             is IAPPurchaseResult.Error -> WPComIsPurchasedResult.Error(response.error)
         }
     }
@@ -54,10 +59,11 @@ internal class IAPPurchaseWPComPlanActionsImpl(
                 WPComPlanProduct(
                     localizedTitle = response.productDetails.title,
                     localizedDescription = response.productDetails.description,
-                    price = response.productDetails.priceOfTheFirstPurchasedOfferInMicros,
+                    price = response.productDetails.priceOfTheFirstPurchasedOfferInMicros / MILLION,
                     currency = response.productDetails.currencyOfTheFirstPurchasedOffer,
                 )
             )
+
             is IAPProductDetailsResponse.Error -> WPComProductResult.Error(response.error)
         }
     }

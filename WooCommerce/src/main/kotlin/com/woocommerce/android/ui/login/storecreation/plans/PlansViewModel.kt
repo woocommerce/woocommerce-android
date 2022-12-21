@@ -63,7 +63,6 @@ class PlansViewModel @Inject constructor(
         const val WEBVIEW_EXIT_TRIGGER_KEYWORD = "https://woocommerce.com/"
         const val ECOMMERCE_PLAN_NAME = "eCommerce"
         const val ECOMMERCE_PLAN_PRICE_MONTHLY = "$70"
-        private const val MILLION = 1_000_000.0
     }
 
     private val _viewState = savedState.getStateFlow<ViewState>(this, LoadingState)
@@ -172,7 +171,7 @@ class PlansViewModel @Inject constructor(
             plan?.copy(
                 productShortName = iapPlanDataResult.productInfo.localizedTitle,
                 formattedPrice = currencyFormatter.formatCurrency(
-                    (iapPlanDataResult.productInfo.price / MILLION).toBigDecimal(),
+                    iapPlanDataResult.productInfo.price.toBigDecimal(),
                     iapPlanDataResult.productInfo.currency
                 )
             )
