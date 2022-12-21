@@ -176,11 +176,7 @@ class PlansViewModel @Inject constructor(
         val iapPlanDataResult = iapManager.fetchWPComPlanProduct()
         return if (iapPlanDataResult is WPComProductResult.Success) {
             plan?.copy(
-                productShortName = iapPlanDataResult.productInfo.localizedTitle,
-                formattedPrice = currencyFormatter.formatCurrency(
-                    iapPlanDataResult.productInfo.price.toBigDecimal(),
-                    iapPlanDataResult.productInfo.currency
-                )
+                productShortName = iapPlanDataResult.productInfo.localizedTitle
             )
         } else plan
     }
