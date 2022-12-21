@@ -12,6 +12,7 @@ import com.woocommerce.android.ui.analytics.ranges.AnalyticsHubDateRangeSelectio
 import com.woocommerce.android.ui.analytics.ranges.AnalyticsHubDateRangeSelection.SelectionType.WEEK_TO_DATE
 import com.woocommerce.android.ui.analytics.ranges.AnalyticsHubDateRangeSelection.SelectionType.YEAR_TO_DATE
 import com.woocommerce.android.ui.analytics.ranges.AnalyticsHubDateRangeSelection.SelectionType.YESTERDAY
+import com.woocommerce.android.ui.analytics.ranges.data.AnalyticsHubCustomRangeData
 import com.woocommerce.android.ui.analytics.ranges.data.AnalyticsHubLastMonthRangeData
 import com.woocommerce.android.ui.analytics.ranges.data.AnalyticsHubLastQuarterRangeData
 import com.woocommerce.android.ui.analytics.ranges.data.AnalyticsHubLastWeekRangeData
@@ -25,16 +26,27 @@ import com.woocommerce.android.ui.analytics.ranges.data.AnalyticsHubYesterdayRan
 import java.util.Calendar
 import java.util.Date
 
-class AnalyticsHubDateRangeSelection(
-    val selectionType: SelectionType,
-    currentDate: Date = Date(),
-    calendar: Calendar = Calendar.getInstance()
-) {
-    val currentRange: AnalyticsHubTimeRange
-    val previousRange: AnalyticsHubTimeRange
+class AnalyticsHubDateRangeSelection {
+    val selectionType: SelectionType
+    var currentRange: AnalyticsHubTimeRange
+        private set
+    var previousRange: AnalyticsHubTimeRange
+        private set
 
-    init {
+    constructor(
+        selectionType: SelectionType,
+        currentDate: Date = Date(),
+        calendar: Calendar = Calendar.getInstance()
+    ) {
+        this.selectionType = selectionType
         val rangeData = generateTimeRangeData(selectionType, currentDate, calendar)
+        currentRange = rangeData.currentRange
+        previousRange = rangeData.previousRange
+    }
+
+    constructor(customStart: Date, customEnd: Date) {
+        this.selectionType = CUSTOM
+        val rangeData = AnalyticsHubCustomRangeData(customStart, customEnd)
         currentRange = rangeData.currentRange
         previousRange = rangeData.previousRange
     }
