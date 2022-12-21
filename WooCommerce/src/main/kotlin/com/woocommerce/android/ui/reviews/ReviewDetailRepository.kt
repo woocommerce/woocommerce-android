@@ -14,6 +14,7 @@ import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T.REVIEWS
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import org.wordpress.android.fluxc.model.LocalOrRemoteId.RemoteId
 import org.wordpress.android.fluxc.model.WCProductModel
 import org.wordpress.android.fluxc.model.WCProductReviewModel
 import org.wordpress.android.fluxc.model.notification.NotificationModel
@@ -72,12 +73,13 @@ class ReviewDetailRepository @Inject constructor(
         }
     }
 
-    suspend fun reply(productReviewId: Long, content: String) =
+    suspend fun reply(productId: RemoteId, reviewId: RemoteId, content: String) =
         withContext(Dispatchers.IO) {
             productStore.replyToReview(
                 WCProductStore.PostReviewReply(
                     site = selectedSite.get(),
-                    productReviewId = productReviewId,
+                    productId = productId,
+                    reviewId = reviewId,
                     replyContent = content
                 )
             )

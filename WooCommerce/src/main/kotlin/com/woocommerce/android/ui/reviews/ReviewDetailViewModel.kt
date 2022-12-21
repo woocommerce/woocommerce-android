@@ -23,6 +23,7 @@ import com.woocommerce.android.viewmodel.ScopedViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import kotlinx.parcelize.Parcelize
+import org.wordpress.android.fluxc.model.LocalOrRemoteId.RemoteId
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooResult
 import javax.inject.Inject
 
@@ -136,17 +137,20 @@ class ReviewDetailViewModel @Inject constructor(
     fun onReviewReplied(reviewReply: String) {
         analyticsTracker.track(REVIEW_REPLY_SEND)
         launch {
-            val result: WooResult<Unit> = repository.reply(
-                remoteReviewId,
-                reviewReply
-            )
+            viewState.productReview?.let {
+                val result: WooResult<Unit> = repository.reply(
+                    RemoteId(it.remoteProductId),
+                    RemoteId(it.remoteId),
+                    reviewReply
+                )
 
-            if (result.isError) {
-                analyticsTracker.track(REVIEW_REPLY_SEND_FAILED)
-                triggerEvent(ShowSnackbar(R.string.review_reply_failure))
-            } else {
-                analyticsTracker.track(REVIEW_REPLY_SEND_SUCCESS)
-                triggerEvent(ShowSnackbar(R.string.review_reply_success))
+                if (result.isError) {
+                    analyticsTracker.track(REVIEW_REPLY_SEND_FAILED)
+                    triggerEvent(ShowSnackbar(R.string.review_reply_failure))
+                } else {
+                    analyticsTracker.track(REVIEW_REPLY_SEND_SUCCESS)
+                    triggerEvent(ShowSnackbar(R.string.review_reply_success))
+                }
             }
         }
     }

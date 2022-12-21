@@ -213,10 +213,12 @@ class ReviewDetailViewModelTest : BaseUnitTest() {
         val events = mutableListOf<MultiLiveEvent.Event>()
         viewModel.event.observeForever(events::add)
         repository.stub {
-            onBlocking { reply(any(), any()) } doReturn WooResult()
+            onBlocking { reply(any(), any(), any()) } doReturn WooResult()
+            onBlocking { getCachedProductReview(review.remoteId) } doReturn review
         }
 
         // when
+        viewModel.start(REVIEW_ID, false)
         viewModel.onReviewReplied("reply")
 
         // then
@@ -231,10 +233,12 @@ class ReviewDetailViewModelTest : BaseUnitTest() {
         val events = mutableListOf<MultiLiveEvent.Event>()
         viewModel.event.observeForever(events::add)
         repository.stub {
-            onBlocking { reply(any(), any()) } doReturn WooResult(WooError(GENERIC_ERROR, UNKNOWN))
+            onBlocking { reply(any(), any(), any()) } doReturn WooResult(WooError(GENERIC_ERROR, UNKNOWN))
+            onBlocking { getCachedProductReview(review.remoteId) } doReturn review
         }
 
         // when
+        viewModel.start(REVIEW_ID, false)
         viewModel.onReviewReplied("reply")
 
         // then
