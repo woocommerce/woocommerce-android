@@ -15,10 +15,12 @@ import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.extensions.scrollStartEvents
 import com.woocommerce.android.ui.analytics.RefreshIndicator.ShowIndicator
 import com.woocommerce.android.ui.analytics.ranges.AnalyticsHubDateRangeSelection
+import com.woocommerce.android.ui.analytics.ranges.AnalyticsHubDateRangeSelection.SelectionType.CUSTOM
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.util.ChromeCustomTabUtils
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import dagger.hilt.android.AndroidEntryPoint
+import java.util.Date
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 
@@ -89,7 +91,10 @@ class AnalyticsFragment :
             key = KEY_DATE_RANGE_SELECTOR_RESULT,
             entryId = R.id.analytics
         ) { dateSelection ->
-            viewModel.onNewRangeSelection(AnalyticsHubDateRangeSelection.SelectionType.from(dateSelection))
+            AnalyticsHubDateRangeSelection.SelectionType.from(dateSelection)
+                .takeIf { it != CUSTOM }
+                ?.let { viewModel.onNewRangeSelection(it) }
+                ?: viewModel.onCustomDateRangeClicked()
         }
     }
 
@@ -123,7 +128,7 @@ class AnalyticsFragment :
                 .build()
         datePicker.show(parentFragmentManager, DATE_PICKER_FRAGMENT_TAG)
         datePicker.addOnPositiveButtonClickListener {
-            viewModel.onCustomDateRangeChanged(it?.first ?: 0L, it.second ?: 0L)
+            viewModel.onCustomRangeSelected(Date(it?.first ?: 0L), Date(it.second ?: 0L))
         }
     }
 }
