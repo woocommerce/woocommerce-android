@@ -54,13 +54,13 @@ class PlansViewModel @Inject constructor(
     private val iapManager: PurchaseWPComPlanActions
 ) : ScopedViewModel(savedStateHandle, iapManager) {
     companion object {
-        private const val NEW_SITE_LANGUAGE_ID = "en"
-        private const val NEW_SITE_THEME = "pub/zoologist"
-        private const val CART_URL = "https://wordpress.com/checkout"
-        private const val WEBVIEW_SUCCESS_TRIGGER_KEYWORD = "https://wordpress.com/checkout/thank-you/"
-        private const val WEBVIEW_EXIT_TRIGGER_KEYWORD = "https://woocommerce.com/"
-        private const val ECOMMERCE_PLAN_NAME = "eCommerce"
-        private const val ECOMMERCE_PLAN_PRICE_MONTHLY = "$70"
+        const val NEW_SITE_LANGUAGE_ID = "en"
+        const val NEW_SITE_THEME = "pub/zoologist"
+        const val CART_URL = "https://wordpress.com/checkout"
+        const val WEBVIEW_SUCCESS_TRIGGER_KEYWORD = "https://wordpress.com/checkout/thank-you/"
+        const val WEBVIEW_EXIT_TRIGGER_KEYWORD = "https://woocommerce.com/"
+        const val ECOMMERCE_PLAN_NAME = "eCommerce"
+        const val ECOMMERCE_PLAN_PRICE_MONTHLY = "$70"
     }
 
     private val _viewState = savedState.getStateFlow<ViewState>(this, LoadingState)

@@ -184,6 +184,49 @@ class AnalyticsRepositoryTest : BaseUnitTest() {
         }
 
     @Test
+    fun `given previous and current period revenue, when fetchRevenueData, then delta values are rounded`() =
+        runTest {
+            // Given
+            val previousRevenue = givenARevenue(
+                totalSales = 100.0,
+                netValue = 80.0,
+                itemsSold = 10
+            )
+            val currentRevenue = givenARevenue(
+                totalSales = 199.5,
+                netValue = 159.4,
+                itemsSold = 12
+            )
+            whenever(statsRepository.fetchRevenueStats(any(), any(), eq(PREVIOUS_DATE), eq(CURRENT_DATE)))
+                .thenReturn(listOf(Result.success(currentRevenue)).asFlow())
+
+            whenever(statsRepository.fetchRevenueStats(any(), any(), eq(PREVIOUS_DATE), eq(PREVIOUS_DATE)))
+                .thenReturn(listOf(Result.success(previousRevenue)).asFlow())
+
+            // When
+            val result = sut.fetchRevenueData(
+                SimpleDateRange(previousDate, currentDate),
+                ANY_RANGE,
+                anyFetchStrategy
+            )
+
+            // Then
+            assertThat(result).isEqualTo(
+                RevenueData(
+                    RevenueStat(
+                        totalValue = 199.5,
+                        netValue = 159.4,
+                        totalDelta = DeltaPercentage.Value(100),
+                        netDelta = DeltaPercentage.Value(99),
+                        currencyCode = null,
+                        totalRevenueByInterval = listOf(199.5),
+                        netRevenueByInterval = listOf(159.4)
+                    )
+                )
+            )
+        }
+
+    @Test
     fun `given previous revenue and current zero revenue, when fetchRevenueData, then deltas are the expected`() =
         runTest {
             // Given
