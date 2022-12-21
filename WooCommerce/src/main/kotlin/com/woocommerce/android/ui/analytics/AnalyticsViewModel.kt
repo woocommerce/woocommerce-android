@@ -37,10 +37,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
-import java.text.SimpleDateFormat
 import java.util.Date
-import java.util.Locale
-import java.util.TimeZone
 import javax.inject.Inject
 import com.woocommerce.android.ui.analytics.listcard.AnalyticsListViewState as ProductsViewState
 import com.woocommerce.android.ui.analytics.listcard.AnalyticsListViewState.LoadingViewState as LoadingProductsViewState
@@ -104,37 +101,14 @@ class AnalyticsViewModel @Inject constructor(
         rangeSelectionState.value = selectionType.generateSelectionData()
     }
 
+    fun onCustomRangeSelected(startDate: Date, endDate: Date) {
+        rangeSelectionState.value = CUSTOM.generateSelectionData(startDate, endDate)
+    }
+
     fun onCustomDateRangeClicked() {
         val fromMillis = ranges.currentRange.start.time
         val toMillis = ranges.currentRange.end.time
         triggerEvent(AnalyticsViewEvent.OpenDatePicker(fromMillis, toMillis))
-    }
-
-    fun onCustomDateRangeChanged(fromMillis: Long, toMillis: Long) {
-        val dateFormat = SimpleDateFormat("EEE, LLL d, yy", Locale.getDefault())
-        dateFormat.timeZone = TimeZone.getTimeZone("UTC")
-        val fromDateStr = dateFormat.format(Date(fromMillis))
-        val toDateStr = dateFormat.format(Date(toMillis))
-
-        dateFormat.timeZone = TimeZone.getDefault()
-
-        mutableState.value = viewState.value.copy(
-            analyticsDateRangeSelectorState = viewState.value.analyticsDateRangeSelectorState.copy(
-                fromDatePeriod = resourceProvider.getString(
-                    R.string.analytics_date_range_custom,
-                    fromDateStr,
-                    toDateStr
-                ),
-                toDatePeriod = resourceProvider.getString(R.string.date_timeframe_custom_date_range_title),
-                selectedPeriod = resourceProvider.getString(ranges.selectionType.localizedResourceId)
-            )
-        )
-
-        trackSelectedDateRange()
-
-        viewModelScope.launch {
-            refreshAllAnalyticsAtOnce(isRefreshing = false, showSkeleton = true)
-        }
     }
 
     fun onRefreshRequested() {
