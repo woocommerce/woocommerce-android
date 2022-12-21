@@ -19,6 +19,7 @@ import com.woocommerce.android.iap.pub.IAPActivityWrapper
 import com.woocommerce.android.iap.pub.PurchaseWPComPlanActions
 import com.woocommerce.android.iap.pub.model.WPComProductResult
 import com.woocommerce.android.iap.pub.model.WPComPurchaseResult
+import com.woocommerce.android.ui.login.storecreation.IsIAPEnabled
 import com.woocommerce.android.ui.login.storecreation.NewStore
 import com.woocommerce.android.ui.login.storecreation.StoreCreationErrorType
 import com.woocommerce.android.ui.login.storecreation.StoreCreationErrorType.SITE_ADDRESS_ALREADY_EXISTS
@@ -32,7 +33,6 @@ import com.woocommerce.android.ui.login.storecreation.plans.PlansViewModel.PlanI
 import com.woocommerce.android.ui.login.storecreation.plans.PlansViewModel.ViewState.ErrorState
 import com.woocommerce.android.ui.login.storecreation.plans.PlansViewModel.ViewState.LoadingState
 import com.woocommerce.android.util.CurrencyFormatter
-import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.ScopedViewModel
@@ -54,6 +54,7 @@ class PlansViewModel @Inject constructor(
     private val repository: StoreCreationRepository,
     private val iapManager: PurchaseWPComPlanActions,
     private val currencyFormatter: CurrencyFormatter,
+    private val isIAPEnabled: IsIAPEnabled
 ) : ScopedViewModel(savedStateHandle, iapManager) {
     companion object {
         const val NEW_SITE_LANGUAGE_ID = "en"
@@ -85,23 +86,31 @@ class PlansViewModel @Inject constructor(
 
     fun onConfirmClicked() {
         launch {
-            _viewState.update { (_viewState.value as ViewState.PlanState).copy(isCreatingSite = true) }
+            val currentState = _viewState.value
+            if (currentState is ViewState.PlanState) {
+                _viewState.update { currentState.copy(showMainButtonLoading = true) }
+            }
             createSite().ifSuccessfulThen { siteId ->
                 newStore.update(siteId = siteId)
-                if (FeatureFlag.IAP_FOR_STORE_CREATION.isEnabled()) {
-                    observeInAppPurchasesResult(siteId)
-                    iapManager.purchaseWPComPlan(iapActivityWrapper, siteId)
-                } else {
-                    repository.addPlanToCart(
-                        newStore.data.planProductId,
-                        newStore.data.planPathSlug,
-                        newStore.data.siteId
-                    ).ifSuccessfulThen {
-                        showCheckoutWebsite()
+                when {
+                    isIAPEnabled() -> subscribeToPlanUsingIAP(siteId)
+                    else -> {
+                        repository.addPlanToCart(
+                            newStore.data.planProductId,
+                            newStore.data.planPathSlug,
+                            newStore.data.siteId
+                        ).ifSuccessfulThen {
+                            showCheckoutWebsite()
+                        }
                     }
                 }
             }
         }
+    }
+
+    private suspend fun subscribeToPlanUsingIAP(siteId: Long) {
+        observeInAppPurchasesResult(siteId)
+        iapManager.purchaseWPComPlan(iapActivityWrapper, siteId)
     }
 
     fun onStoreCreated() {
@@ -114,10 +123,8 @@ class PlansViewModel @Inject constructor(
 
     private fun loadPlan() = launch {
         _viewState.update { LoadingState }
-
         var plan = repository.fetchPlan(ECOMMERCE_MONTHLY)
-
-        if (FeatureFlag.IAP_FOR_STORE_CREATION.isEnabled()) {
+        if (isIAPEnabled()) {
             plan = updatePlanWithIAPProductInfo(plan)
         }
 
@@ -190,23 +197,18 @@ class PlansViewModel @Inject constructor(
     }
 
     private fun onInAppPurchaseError(result: WPComPurchaseResult.Error) {
-        _viewState.update { (_viewState.value as ViewState.PlanState).copy(isCreatingSite = false) }
-        Log.i("IAP TEST", "ERROR on purchase flow${result.errorType}")
+        // TODO track IAP error
+        Log.i("IAP TEST", "Error processing IAP purchase ${result.errorType}")
+        _viewState.update { (_viewState.value as ViewState.PlanState).copy(showMainButtonLoading = false) }
     }
 
     private fun observeInAppPurchasesResult(remoteSiteId: Long) {
-        if (FeatureFlag.IAP_FOR_STORE_CREATION.isEnabled()) {
-            viewModelScope.launch {
-                iapManager.getPurchaseWpComPlanResult(remoteSiteId = remoteSiteId).collectLatest { result ->
-                    when (result) {
-                        is WPComPurchaseResult.Success -> {
-                            Log.i("IAP TEST", "PAYMENT SUCCESS. proceed to create site")
-                            onStoreCreated()
-                        }
-
-                        is WPComPurchaseResult.Error -> onInAppPurchaseError(result)
-                    }.exhaustive
-                }
+        viewModelScope.launch {
+            iapManager.getPurchaseWpComPlanResult(remoteSiteId = remoteSiteId).collectLatest { result ->
+                when (result) {
+                    is WPComPurchaseResult.Success -> onStoreCreated()
+                    is WPComPurchaseResult.Error -> onInAppPurchaseError(result)
+                }.exhaustive
             }
         }
     }
@@ -260,7 +262,7 @@ class PlansViewModel @Inject constructor(
         @Parcelize
         data class PlanState(
             val plan: PlanInfo,
-            val isCreatingSite: Boolean = false
+            val showMainButtonLoading: Boolean = false
         ) : ViewState
     }
 

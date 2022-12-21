@@ -269,12 +269,12 @@ private fun PlanInformation(
                     .fillMaxWidth()
                     .padding(horizontal = dimensionResource(id = R.dimen.major_100)),
                 onClick = onConfirmClicked,
-                enabled = !planState.isCreatingSite
+                enabled = !planState.showMainButtonLoading
             ) {
-                if (planState.isCreatingSite) {
+                if (planState.showMainButtonLoading) {
                     CircularProgressIndicator(
                         modifier = Modifier.size(size = dimensionResource(id = R.dimen.major_150)),
-                        color = colorResource(id = R.color.color_on_primary_surface)
+                        color = colorResource(id = R.color.color_on_primary_surface),
                     )
                 } else {
                     val periodText = stringResource(id = planState.plan.billingPeriod.nameId)
