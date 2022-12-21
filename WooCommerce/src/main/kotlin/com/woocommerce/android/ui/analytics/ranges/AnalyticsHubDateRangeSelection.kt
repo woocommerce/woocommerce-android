@@ -23,10 +23,11 @@ import com.woocommerce.android.ui.analytics.ranges.data.AnalyticsHubTodayRangeDa
 import com.woocommerce.android.ui.analytics.ranges.data.AnalyticsHubWeekToDateRangeData
 import com.woocommerce.android.ui.analytics.ranges.data.AnalyticsHubYearToDateRangeData
 import com.woocommerce.android.ui.analytics.ranges.data.AnalyticsHubYesterdayRangeData
+import java.io.Serializable
 import java.util.Calendar
 import java.util.Date
 
-class AnalyticsHubDateRangeSelection {
+class AnalyticsHubDateRangeSelection: Serializable {
     val selectionType: SelectionType
     var currentRange: AnalyticsHubTimeRange
         private set
