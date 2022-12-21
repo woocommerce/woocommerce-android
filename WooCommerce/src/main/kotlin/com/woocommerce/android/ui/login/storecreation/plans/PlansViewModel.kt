@@ -32,7 +32,6 @@ import com.woocommerce.android.ui.login.storecreation.plans.BillingPeriod.ECOMME
 import com.woocommerce.android.ui.login.storecreation.plans.PlansViewModel.PlanInfo.Feature
 import com.woocommerce.android.ui.login.storecreation.plans.PlansViewModel.ViewState.ErrorState
 import com.woocommerce.android.ui.login.storecreation.plans.PlansViewModel.ViewState.LoadingState
-import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.ScopedViewModel
@@ -43,6 +42,8 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.parcelize.Parcelize
 import org.wordpress.android.fluxc.model.plans.full.Plan
+import java.text.NumberFormat
+import java.util.Currency
 import java.util.TimeZone
 import javax.inject.Inject
 
@@ -53,7 +54,6 @@ class PlansViewModel @Inject constructor(
     private val newStore: NewStore,
     private val repository: StoreCreationRepository,
     private val iapManager: PurchaseWPComPlanActions,
-    private val currencyFormatter: CurrencyFormatter,
     private val isIAPEnabled: IsIAPEnabled
 ) : ScopedViewModel(savedStateHandle, iapManager) {
     companion object {
@@ -176,9 +176,21 @@ class PlansViewModel @Inject constructor(
         val iapPlanDataResult = iapManager.fetchWPComPlanProduct()
         return if (iapPlanDataResult is WPComProductResult.Success) {
             plan?.copy(
-                productShortName = iapPlanDataResult.productInfo.localizedTitle
+                productShortName = iapPlanDataResult.productInfo.localizedTitle,
+                formattedPrice = formatPrice(
+                    iapPlanDataResult.productInfo.currency,
+                    iapPlanDataResult.productInfo.price
+                )
             )
         } else plan
+    }
+
+    // At this point we don't have a site created yet, we can't use CurrencyFormatter class that relies on site settings
+    // so we'll use device settings to format the price
+    private fun formatPrice(currencyCode: String, price: Double): String {
+        val formatter: NumberFormat = NumberFormat.getCurrencyInstance()
+        formatter.currency = Currency.getInstance(currencyCode)
+        return formatter.format(price)
     }
 
     private fun showCheckoutWebsite() {
