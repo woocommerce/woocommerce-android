@@ -33,10 +33,10 @@ class AnalyticsHubDateRangeSelection {
     var previousRange: AnalyticsHubTimeRange
         private set
 
-    constructor(
+    private constructor(
         selectionType: SelectionType,
-        currentDate: Date = Date(),
-        calendar: Calendar = Calendar.getInstance()
+        currentDate: Date,
+        calendar: Calendar
     ) {
         this.selectionType = selectionType
         val rangeData = generateTimeRangeData(selectionType, currentDate, calendar)
@@ -44,7 +44,7 @@ class AnalyticsHubDateRangeSelection {
         previousRange = rangeData.previousRange
     }
 
-    constructor(customStart: Date, customEnd: Date) {
+    private constructor(customStart: Date, customEnd: Date) {
         this.selectionType = CUSTOM
         val rangeData = AnalyticsHubCustomRangeData(customStart, customEnd)
         currentRange = rangeData.currentRange
@@ -84,6 +84,25 @@ class AnalyticsHubDateRangeSelection {
         QUARTER_TO_DATE("Quarter to Date", R.string.date_timeframe_quarter_to_date),
         YEAR_TO_DATE("Year to Date", R.string.date_timeframe_year_to_date),
         CUSTOM("Custom", R.string.date_timeframe_custom);
+
+        fun generateSelectionData(
+            referenceStart: Date = Date(),
+            referenceEnd: Date = Date(),
+            calendar: Calendar = Calendar.getInstance()
+        ): AnalyticsHubDateRangeSelection {
+            return if (this == CUSTOM) {
+                AnalyticsHubDateRangeSelection(
+                    customStart = referenceStart,
+                    customEnd = referenceEnd
+                )
+            } else {
+                AnalyticsHubDateRangeSelection(
+                    selectionType = this,
+                    currentDate = referenceStart,
+                    calendar = calendar
+                )
+            }
+        }
 
         companion object {
             fun from(datePeriod: String): SelectionType = values()
