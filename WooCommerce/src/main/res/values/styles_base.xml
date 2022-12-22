@@ -323,7 +323,7 @@ theme across the entire app. Overridden versions should be added to the styles.x
         <item name="background">?attr/colorSurface</item>
         <item name="height">?attr/actionBarSize</item>
         <item name="android:elevation">@dimen/appbar_elevation</item>
-        <item name="android:tint">@color/black</item>
+        <item name="android:tint">@color/woo_black</item>
     </style>
 
     <!--
