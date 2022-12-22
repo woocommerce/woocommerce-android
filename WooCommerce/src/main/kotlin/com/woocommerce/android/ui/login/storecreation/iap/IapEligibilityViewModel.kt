@@ -1,6 +1,8 @@
 package com.woocommerce.android.ui.login.storecreation.iap
 
+import androidx.lifecycle.LiveData
 import androidx.lifecycle.SavedStateHandle
+import androidx.lifecycle.asLiveData
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
@@ -11,6 +13,7 @@ import com.woocommerce.android.ui.login.storecreation.iap.IapEligibilityViewMode
 import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.ScopedViewModel
+import com.woocommerce.android.viewmodel.getStateFlow
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -21,6 +24,9 @@ class IapEligibilityViewModel @Inject constructor(
     private val planSupportChecker: PurchaseWpComPlanSupportChecker,
     private val analyticsTrackerWrapper: AnalyticsTrackerWrapper
 ) : ScopedViewModel(savedStateHandle) {
+    private val _isCheckingIapEligibility = savedState.getStateFlow(scope = this, initialValue = true)
+    val isCheckingIapEligibility: LiveData<Boolean> = _isCheckingIapEligibility.asLiveData()
+
     fun checkIapEligibility() {
         if (FeatureFlag.IAP_FOR_STORE_CREATION.isEnabled()) {
             launch {
@@ -43,6 +49,7 @@ class IapEligibilityViewModel @Inject constructor(
     }
 
     private fun onUserNotEligibleForIAP() {
+        _isCheckingIapEligibility.value = false
         triggerEvent(
             MultiLiveEvent.Event.ShowDialog(
                 titleId = R.string.store_creation_iap_eligibility_check_error_title,
