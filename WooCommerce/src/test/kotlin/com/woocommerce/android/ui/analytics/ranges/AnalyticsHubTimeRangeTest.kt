@@ -9,6 +9,7 @@ import java.util.Locale
 import java.util.TimeZone
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
+import org.junit.Test
 
 internal class AnalyticsHubTimeRangeTest {
     private lateinit var testTimeZone: TimeZone
@@ -22,6 +23,7 @@ internal class AnalyticsHubTimeRangeTest {
         testCalendar.firstDayOfWeek = Calendar.MONDAY
     }
 
+    @Test
     fun `when time range format is simplified then describes only first date`() {
         // Given
         val sut = AnalyticsHubTimeRange(
@@ -36,6 +38,7 @@ internal class AnalyticsHubTimeRangeTest {
         assertThat(description).isEqualTo("Jul 1, 2022")
     }
 
+    @Test
     fun `when time range format is in different months then describes both dates`() {
         // Given
         val sut = AnalyticsHubTimeRange(
@@ -50,6 +53,7 @@ internal class AnalyticsHubTimeRangeTest {
         assertThat(description).isEqualTo("Jul 1 - Aug 2, 2022")
     }
 
+    @Test
     fun `when time range is in the same month then describe month only in the start date`() {
         // Given
         val sut = AnalyticsHubTimeRange(
@@ -64,6 +68,7 @@ internal class AnalyticsHubTimeRangeTest {
         assertThat(description).isEqualTo("Jul 1 - 5, 2022")
     }
 
+    @Test
     fun `when time range is in different years then fully describe both dates`() {
         // Given
         val sut = AnalyticsHubTimeRange(
@@ -76,13 +81,6 @@ internal class AnalyticsHubTimeRangeTest {
 
         //Then
         assertThat(description).isEqualTo("Apr 15, 2021 - Apr 15, 2022")
-    }
-
-    private fun midDayFrom(date: String): Date {
-        val formatter = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ")
-        formatter.timeZone = testTimeZone
-        formatter.calendar = testCalendar
-        return formatter.parse(date + "T12:00:00+0000")!!
     }
 
     private fun dayEndFrom(date: String): Date {
