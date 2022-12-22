@@ -1,4 +1,4 @@
-package com.woocommerce.android.ui.login.storecreation
+package com.woocommerce.android.ui.login.storecreation.iap
 
 import com.woocommerce.android.util.FeatureFlag
 import javax.inject.Inject
