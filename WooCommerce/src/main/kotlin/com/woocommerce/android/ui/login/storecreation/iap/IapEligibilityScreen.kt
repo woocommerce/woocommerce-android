@@ -27,21 +27,25 @@ fun IapEligibilityScreen(viewModel: IapEligibilityViewModel) {
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            if (isLoading) {
+            if (isLoading)
                 CircularProgressIndicator()
-                Text(
-                    modifier = Modifier.padding(top = dimensionResource(id = R.dimen.major_200)),
-                    text = stringResource(id = R.string.store_creation_iap_eligibility_loading_title),
-                    style = MaterialTheme.typography.h6,
-                    textAlign = TextAlign.Center,
-                )
+            Text(
+                modifier = Modifier.padding(top = dimensionResource(id = R.dimen.major_200)),
+                text =
+                stringResource(
+                    id = if (isLoading) R.string.store_creation_iap_eligibility_loading_title
+                    else R.string.store_creation_iap_eligibility_check_error_title
+                ),
+                style = MaterialTheme.typography.h6,
+                textAlign = TextAlign.Center,
+            )
+            if (isLoading)
                 Text(
                     modifier = Modifier.padding(top = dimensionResource(id = R.dimen.major_100)),
                     text = stringResource(id = R.string.store_creation_iap_eligibility_loading_subtitle),
                     style = MaterialTheme.typography.subtitle1,
                     color = colorResource(id = R.color.color_on_surface_medium)
                 )
-            }
         }
     }
 }
