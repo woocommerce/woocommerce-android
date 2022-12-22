@@ -7,6 +7,7 @@ import java.util.Calendar
 import java.util.Date
 import java.util.Locale
 import java.util.TimeZone
+import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 
 internal class AnalyticsHubTimeRangeTest {
@@ -35,7 +36,17 @@ internal class AnalyticsHubTimeRangeTest {
 //    }
 
     fun `when time range format is simplified then describes only first date`() {
+        // Given
+        val sut = AnalyticsHubTimeRange(
+            start = dayStartFrom("2022-07-01"),
+            end = dayEndFrom("2022-07-02")
+        )
 
+        // When
+        val description = sut.generateDescription(simplified = true)
+
+        //Then
+        assertThat(description).isEqualTo("Jul 1, 2022")
     }
 //
 //    func test_when_time_range_format_is_in_different_months_then_describes_both_dates() {
