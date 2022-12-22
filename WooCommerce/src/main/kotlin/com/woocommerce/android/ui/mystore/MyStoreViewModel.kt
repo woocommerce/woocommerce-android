@@ -20,6 +20,7 @@ import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.analytics.daterangeselector.AnalyticTimePeriod
 import com.woocommerce.android.ui.jitm.JitmTracker
+import com.woocommerce.android.ui.jitm.QueryParamsEncoder
 import com.woocommerce.android.ui.mystore.domain.GetStats
 import com.woocommerce.android.ui.mystore.domain.GetStats.LoadStatsResult.HasOrders
 import com.woocommerce.android.ui.mystore.domain.GetStats.LoadStatsResult.IsJetPackCPEnabled
@@ -32,7 +33,6 @@ import com.woocommerce.android.ui.mystore.domain.GetTopPerformers
 import com.woocommerce.android.ui.mystore.domain.GetTopPerformers.TopPerformerProduct
 import com.woocommerce.android.ui.payments.banner.BannerState
 import com.woocommerce.android.util.CurrencyFormatter
-import com.woocommerce.android.ui.jitm.QueryParamsEncoder
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.ResourceProvider

@@ -13,6 +13,7 @@ import com.woocommerce.android.model.UiString
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.jitm.JitmTracker
+import com.woocommerce.android.ui.jitm.QueryParamsEncoder
 import com.woocommerce.android.ui.mystore.MyStoreViewModel.Companion.UTM_SOURCE
 import com.woocommerce.android.ui.mystore.MyStoreViewModel.MyStoreEvent.OnJitmCtaClicked
 import com.woocommerce.android.ui.mystore.domain.GetStats
@@ -20,7 +21,6 @@ import com.woocommerce.android.ui.mystore.domain.GetTopPerformers
 import com.woocommerce.android.ui.mystore.domain.GetTopPerformers.TopPerformerProduct
 import com.woocommerce.android.ui.payments.banner.BannerState
 import com.woocommerce.android.util.CurrencyFormatter
-import com.woocommerce.android.ui.jitm.QueryParamsEncoder
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import com.woocommerce.android.viewmodel.ResourceProvider
 import kotlinx.coroutines.ExperimentalCoroutinesApi
