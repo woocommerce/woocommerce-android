@@ -9,7 +9,6 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.AppPrefsWrapper
-import com.woocommerce.android.BuildConfig
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
@@ -21,6 +20,7 @@ import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.analytics.daterangeselector.AnalyticTimePeriod
 import com.woocommerce.android.ui.jitm.JitmTracker
+import com.woocommerce.android.ui.jitm.QueryParamsEncoder
 import com.woocommerce.android.ui.mystore.domain.GetStats
 import com.woocommerce.android.ui.mystore.domain.GetStats.LoadStatsResult.HasOrders
 import com.woocommerce.android.ui.mystore.domain.GetStats.LoadStatsResult.IsJetPackCPEnabled
@@ -63,7 +63,6 @@ import org.wordpress.android.fluxc.store.WooCommerceStore
 import org.wordpress.android.util.FormatUtils
 import org.wordpress.android.util.PhotonUtils
 import java.math.BigDecimal
-import java.net.URLEncoder
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
@@ -84,6 +83,7 @@ class MyStoreViewModel @Inject constructor(
     private val jitmStore: JitmStore,
     private val jitmTracker: JitmTracker,
     private val myStoreUtmProvider: MyStoreUtmProvider,
+    private val queryParamsEncoder: QueryParamsEncoder,
 ) : ScopedViewModel(savedState) {
     companion object {
         private const val DAYS_TO_REDISPLAY_JP_BENEFITS_BANNER = 5
@@ -148,19 +148,10 @@ class MyStoreViewModel @Inject constructor(
             val response = jitmStore.fetchJitmMessage(
                 selectedSite.get(),
                 JITM_MESSAGE_PATH,
-                getEncodedQueryParams(),
+                queryParamsEncoder.getEncodedQueryParams(),
             )
             populateResultToUI(response)
         }
-    }
-
-    private fun getEncodedQueryParams(): String {
-        val query = if (BuildConfig.DEBUG) {
-            "build_type=developer&platform=android&version=${BuildConfig.VERSION_NAME}"
-        } else {
-            "platform=android&version=${BuildConfig.VERSION_NAME}"
-        }
-        return URLEncoder.encode(query, Charsets.UTF_8.name())
     }
 
     private fun populateResultToUI(response: WooResult<Array<JITMApiResponse>>) {

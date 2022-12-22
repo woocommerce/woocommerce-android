@@ -13,6 +13,7 @@ import com.woocommerce.android.model.UiString
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.jitm.JitmTracker
+import com.woocommerce.android.ui.jitm.QueryParamsEncoder
 import com.woocommerce.android.ui.mystore.MyStoreViewModel.Companion.UTM_SOURCE
 import com.woocommerce.android.ui.mystore.MyStoreViewModel.MyStoreEvent.OnJitmCtaClicked
 import com.woocommerce.android.ui.mystore.domain.GetStats
@@ -50,7 +51,6 @@ import org.wordpress.android.fluxc.network.rest.wpcom.wc.jitm.JITMCta
 import org.wordpress.android.fluxc.store.JitmStore
 import org.wordpress.android.fluxc.store.WCStatsStore.StatsGranularity
 import org.wordpress.android.fluxc.store.WooCommerceStore
-import java.net.URLEncoder
 import kotlin.test.assertTrue
 
 @ExperimentalCoroutinesApi
@@ -69,6 +69,7 @@ class MyStoreViewModelTest : BaseUnitTest() {
     private val jitmStore: JitmStore = mock()
     private val jitmTracker: JitmTracker = mock()
     private val utmProvider: MyStoreUtmProvider = mock()
+    private val queryParamsEncoder: QueryParamsEncoder = mock()
 
     private lateinit var sut: MyStoreViewModel
 
@@ -76,6 +77,9 @@ class MyStoreViewModelTest : BaseUnitTest() {
     fun setup() = testBlocking {
         givenStatsLoadingResult(GetStats.LoadStatsResult.VisitorsStatsError)
         givenFetchTopPerformersResult(Result.failure(WooException(WOO_GENERIC_ERROR)))
+        whenever(queryParamsEncoder.getEncodedQueryParams()).thenReturn(
+            "build_type=developer&platform=android&version=${BuildConfig.VERSION_NAME}"
+        )
     }
 
     @Test
@@ -430,34 +434,6 @@ class MyStoreViewModelTest : BaseUnitTest() {
 
             // called twice, on view model init and on pull to refresh
             verify(jitmStore, times(2)).fetchJitmMessage(any(), any(), any())
-        }
-    }
-
-    @Test
-    fun `when viewmodel init, then proper encoded query params are passed to fetch jitm`() {
-        testBlocking {
-            givenNetworkConnectivity(connected = true)
-            whenever(selectedSite.get()).thenReturn(SiteModel())
-            val captor = argumentCaptor<String>()
-
-            whenViewModelIsCreated()
-            verify(jitmStore).fetchJitmMessage(any(), any(), captor.capture())
-
-            if (BuildConfig.DEBUG) {
-                assertThat(captor.firstValue).isEqualTo(
-                    URLEncoder.encode(
-                        "build_type=developer&platform=android&version=${BuildConfig.VERSION_NAME}",
-                        Charsets.UTF_8.name()
-                    )
-                )
-            } else {
-                assertThat(captor.firstValue).isEqualTo(
-                    URLEncoder.encode(
-                        "platform=android&version=${BuildConfig.VERSION_NAME}",
-                        Charsets.UTF_8.name()
-                    )
-                )
-            }
         }
     }
 
@@ -1382,6 +1358,7 @@ class MyStoreViewModelTest : BaseUnitTest() {
             jitmStore,
             jitmTracker,
             utmProvider,
+            queryParamsEncoder
         )
     }
 
