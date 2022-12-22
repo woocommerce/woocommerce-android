@@ -46,9 +46,6 @@ import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import com.woocommerce.android.R
-import com.woocommerce.android.R.color
-import com.woocommerce.android.R.drawable
-import com.woocommerce.android.R.string
 import com.woocommerce.android.ui.common.wpcomwebview.WPComWebViewAuthenticator
 import com.woocommerce.android.ui.compose.component.ProgressIndicator
 import com.woocommerce.android.ui.compose.component.WCColoredButton
@@ -100,8 +97,8 @@ private fun PlanInformation(
     onConfirmClicked: () -> Unit
 ) {
     val systemUiController = rememberSystemUiController()
-    val wooDarkPurple = colorResource(id = color.woo_purple_90)
-    val statusBarColor = colorResource(id = color.color_status_bar)
+    val wooDarkPurple = colorResource(id = R.color.woo_purple_90)
+    val statusBarColor = colorResource(id = R.color.color_status_bar)
     DisposableEffect(key1 = planState) {
         systemUiController.setSystemBarsColor(
             color = wooDarkPurple,
@@ -141,7 +138,7 @@ private fun PlanInformation(
             }
 
             Image(
-                painter = painterResource(id = drawable.img_plan),
+                painter = painterResource(id = R.drawable.img_plan),
                 contentDescription = "Plan illustration",
                 modifier = Modifier
                     .constrainAs(image) {
@@ -205,7 +202,7 @@ private fun PlanInformation(
                 )
                 Text(
                     fontWeight = FontWeight.Bold,
-                    text = stringResource(id = string.store_creation_ecommerce_plan_features_tagline),
+                    text = stringResource(id = R.string.store_creation_ecommerce_plan_features_tagline),
                     color = colorResource(id = R.color.white),
                     fontSize = 28.sp,
                     lineHeight = 36.sp
@@ -217,12 +214,12 @@ private fun PlanInformation(
                     )
                 ) {
                     Text(
-                        text = stringResource(id = string.store_creation_ecommerce_plan_powered_by),
+                        text = stringResource(id = R.string.store_creation_ecommerce_plan_powered_by),
                         color = colorResource(id = R.color.woo_purple_dark_secondary),
                         style = MaterialTheme.typography.caption
                     )
                     Image(
-                        painter = painterResource(id = drawable.ic_wordpress),
+                        painter = painterResource(id = R.drawable.ic_wordpress),
                         contentDescription = "WordPress logo",
                         modifier = Modifier
                             .height(dimensionResource(id = R.dimen.major_110))
@@ -232,7 +229,7 @@ private fun PlanInformation(
                     )
                     Text(
                         fontWeight = FontWeight.Bold,
-                        text = stringResource(id = string.store_creation_ecommerce_plan_wordpress),
+                        text = stringResource(id = R.string.store_creation_ecommerce_plan_wordpress),
                         color = colorResource(id = R.color.woo_purple_dark_secondary),
                         style = MaterialTheme.typography.caption
                     )
@@ -258,7 +255,7 @@ private fun PlanInformation(
                 modifier = Modifier
                     .padding(horizontal = dimensionResource(id = R.dimen.major_100))
                     .fillMaxWidth(),
-                text = stringResource(id = string.store_creation_ecommerce_plan_refund_reminder),
+                text = stringResource(id = R.string.store_creation_ecommerce_plan_refund_reminder),
                 color = colorResource(id = R.color.woo_purple_dark_secondary),
                 fontSize = 14.sp,
                 textAlign = TextAlign.Center
@@ -280,7 +277,7 @@ private fun PlanInformation(
                     val periodText = stringResource(id = planState.plan.billingPeriod.nameId)
                     Text(
                         text = stringResource(
-                            id = string.store_creation_ecommerce_plan_purchase_button_title,
+                            id = R.string.store_creation_ecommerce_plan_purchase_button_title,
                             "${planState.plan.formattedPrice}/$periodText"
                         )
                     )
@@ -349,32 +346,32 @@ fun PreviewPlanInformation() {
                 formattedPrice = "$69.99",
                 features = listOf(
                     Feature(
-                        iconId = drawable.ic_star,
-                        textId = string.store_creation_ecommerce_plan_feature_themes
+                        iconId = R.drawable.ic_star,
+                        textId = R.string.store_creation_ecommerce_plan_feature_themes
                     ),
                     Feature(
-                        iconId = drawable.ic_box,
-                        textId = string.store_creation_ecommerce_plan_feature_products
+                        iconId = R.drawable.ic_box,
+                        textId = R.string.store_creation_ecommerce_plan_feature_products
                     ),
                     Feature(
-                        iconId = drawable.ic_present,
-                        textId = string.store_creation_ecommerce_plan_feature_subscriptions
+                        iconId = R.drawable.ic_present,
+                        textId = R.string.store_creation_ecommerce_plan_feature_subscriptions
                     ),
                     Feature(
-                        iconId = drawable.ic_chart,
-                        textId = string.store_creation_ecommerce_plan_feature_reports
+                        iconId = R.drawable.ic_chart,
+                        textId = R.string.store_creation_ecommerce_plan_feature_reports
                     ),
                     Feature(
-                        iconId = drawable.ic_dollar,
-                        textId = string.store_creation_ecommerce_plan_feature_payments
+                        iconId = R.drawable.ic_dollar,
+                        textId = R.string.store_creation_ecommerce_plan_feature_payments
                     ),
                     Feature(
-                        iconId = drawable.ic_truck,
-                        textId = string.store_creation_ecommerce_plan_feature_shipping_labels
+                        iconId = R.drawable.ic_truck,
+                        textId = R.string.store_creation_ecommerce_plan_feature_shipping_labels
                     ),
                     Feature(
-                        iconId = drawable.ic_megaphone,
-                        textId = string.store_creation_ecommerce_plan_feature_sales
+                        iconId = R.drawable.ic_megaphone,
+                        textId = R.string.store_creation_ecommerce_plan_feature_sales
                     )
                 )
             )
