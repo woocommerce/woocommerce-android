@@ -42,7 +42,7 @@ class IapEligibilityViewModel @Inject constructor(
 
     private fun onError(result: IAPSupportedResult.Error) {
         analyticsTrackerWrapper.track(
-            AnalyticsEvent.SITE_CREATION_IAP_ERROR,
+            AnalyticsEvent.SITE_CREATION_IAP_ELIGIBILITY_ERROR,
             mapOf(AnalyticsTracker.KEY_ERROR_TYPE to result.errorType.toString())
         )
         onUserNotEligibleForIAP()

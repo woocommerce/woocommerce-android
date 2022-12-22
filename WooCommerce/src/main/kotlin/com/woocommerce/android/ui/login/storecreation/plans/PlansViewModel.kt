@@ -1,7 +1,6 @@
 package com.woocommerce.android.ui.login.storecreation.plans
 
 import android.os.Parcelable
-import android.util.Log
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
 import androidx.lifecycle.SavedStateHandle
@@ -9,6 +8,7 @@ import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.R.drawable
 import com.woocommerce.android.R.string
+import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsEvent.SITE_CREATION_STEP
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_STEP_PLAN_PURCHASE
@@ -90,21 +90,24 @@ class PlansViewModel @Inject constructor(
             if (currentState is ViewState.PlanState) {
                 _viewState.update { currentState.copy(showMainButtonLoading = true) }
             }
-            createSite().ifSuccessfulThen { siteId ->
-                newStore.update(siteId = siteId)
-                when {
-                    isIAPEnabled() -> subscribeToPlanUsingIAP(siteId)
-                    else -> {
-                        repository.addPlanToCart(
-                            newStore.data.planProductId,
-                            newStore.data.planPathSlug,
-                            newStore.data.siteId
-                        ).ifSuccessfulThen {
-                            showCheckoutWebsite()
-                        }
+            createSite()
+                .ifSuccessfulThen { siteId ->
+                    newStore.update(siteId = siteId)
+                    when {
+                        isIAPEnabled() -> subscribeToPlanUsingIAP(siteId)
+                        else -> proceedToWebviewCheckout()
                     }
                 }
-            }
+        }
+    }
+
+    private suspend fun proceedToWebviewCheckout() {
+        repository.addPlanToCart(
+            newStore.data.planProductId,
+            newStore.data.planPathSlug,
+            newStore.data.siteId
+        ).ifSuccessfulThen {
+            showCheckoutWebsite()
         }
     }
 
@@ -113,7 +116,8 @@ class PlansViewModel @Inject constructor(
         iapManager.purchaseWPComPlan(iapActivityWrapper, siteId)
     }
 
-    fun onStoreCreated() {
+    fun onIapPurchaseSuccess() {
+        analyticsTrackerWrapper.track(AnalyticsEvent.SITE_CREATION_IAP_PURCHASE_SUCCESS)
         triggerEvent(NavigateToNextStep)
     }
 
@@ -185,8 +189,8 @@ class PlansViewModel @Inject constructor(
         } else plan
     }
 
-    // At this point we don't have a site created yet, we can't use CurrencyFormatter class that relies on site settings
-    // so we'll use device settings to format the price
+    // In store creation we don't have a site created yet, we can't use CurrencyFormatter class as it relies on
+    // existing site settings. We'll use device locale settings to format the price
     private fun formatPrice(currencyCode: String, price: Double): String {
         val formatter: NumberFormat = NumberFormat.getCurrencyInstance()
         formatter.currency = Currency.getInstance(currencyCode)
@@ -205,8 +209,10 @@ class PlansViewModel @Inject constructor(
     }
 
     private fun onInAppPurchaseError(result: WPComPurchaseResult.Error) {
-        // TODO track IAP error
-        Log.i("IAP TEST", "Error processing IAP purchase ${result.errorType}")
+        analyticsTrackerWrapper.track(
+            AnalyticsEvent.SITE_CREATION_IAP_PURCHASE_ERROR,
+            mapOf(AnalyticsTracker.KEY_ERROR_TYPE to result.errorType.toString())
+        )
         _viewState.update { (_viewState.value as ViewState.PlanState).copy(showMainButtonLoading = false) }
     }
 
@@ -214,7 +220,7 @@ class PlansViewModel @Inject constructor(
         viewModelScope.launch {
             iapManager.getPurchaseWpComPlanResult(remoteSiteId = remoteSiteId).collectLatest { result ->
                 when (result) {
-                    is WPComPurchaseResult.Success -> onStoreCreated()
+                    is WPComPurchaseResult.Success -> onIapPurchaseSuccess()
                     is WPComPurchaseResult.Error -> onInAppPurchaseError(result)
                 }.exhaustive
             }

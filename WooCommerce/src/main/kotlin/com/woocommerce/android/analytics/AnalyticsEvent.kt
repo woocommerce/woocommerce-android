@@ -770,7 +770,9 @@ enum class AnalyticsEvent(val siteless: Boolean = false) {
     SITE_CREATION_STORE_MANAGEMENT_OPENED,
     SITE_CREATION_STEP(siteless = true),
     SITE_CREATION_IAP_ELIGIBILITY(siteless = true),
-    SITE_CREATION_IAP_ERROR(siteless = true),
+    SITE_CREATION_IAP_ELIGIBILITY_ERROR(siteless = true),
+    SITE_CREATION_IAP_PURCHASE_SUCCESS(siteless = true),
+    SITE_CREATION_IAP_PURCHASE_ERROR(siteless = true),
 
     APPLICATION_PASSWORDS_NEW_PASSWORD_CREATED,
     APPLICATION_PASSWORDS_TEST_INITIATED,

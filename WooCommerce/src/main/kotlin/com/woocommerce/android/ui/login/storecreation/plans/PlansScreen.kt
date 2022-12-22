@@ -85,7 +85,7 @@ fun PlanScreen(viewModel: PlansViewModel, authenticator: WPComWebViewAuthenticat
                     viewState,
                     authenticator,
                     userAgent,
-                    viewModel::onStoreCreated,
+                    viewModel::onIapPurchaseSuccess,
                     viewModel::onExitTriggered
                 )
             }
