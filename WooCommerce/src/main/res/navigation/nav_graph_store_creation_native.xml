@@ -8,7 +8,7 @@
 
     <fragment
         android:id="@+id/checkIapEligibilityFragment"
-        android:name="com.woocommerce.android.ui.login.storecreation.iapeligibility.CheckIapEligibilityFragment"
+        android:name="com.woocommerce.android.ui.login.storecreation.iap.CheckIapEligibilityFragment"
         android:label="InstallationFragment">
         <action
             android:id="@+id/action_checkIapEligibilityFragment_to_webViewStoreCreationFragment"

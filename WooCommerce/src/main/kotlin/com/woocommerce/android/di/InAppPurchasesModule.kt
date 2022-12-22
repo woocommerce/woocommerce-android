@@ -4,8 +4,8 @@ import android.app.Application
 import com.woocommerce.android.iap.pub.IAPSitePurchasePlanFactory
 import com.woocommerce.android.iap.pub.PurchaseWPComPlanActions
 import com.woocommerce.android.iap.pub.PurchaseWpComPlanSupportChecker
-import com.woocommerce.android.iapshowcase.IAPDebugLogWrapper
 import com.woocommerce.android.iapshowcase.purchase.IAPShowcaseMobilePayAPIProvider
+import com.woocommerce.android.ui.login.storecreation.iap.WooIapLogWrapper
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -22,7 +22,7 @@ class InAppPurchasesModule {
         IAPSitePurchasePlanFactory.createIAPSitePurchasePlan(
             context,
             1L,
-            IAPDebugLogWrapper(),
+            WooIapLogWrapper(),
             mobilePayAPIProvider::buildMobilePayAPI
         )
 
@@ -30,6 +30,6 @@ class InAppPurchasesModule {
     fun providePurchaseWpComPlanSupportChecker(application: Application): PurchaseWpComPlanSupportChecker =
         IAPSitePurchasePlanFactory.createIAPPurchaseWpComPlanSupportChecker(
             application,
-            IAPDebugLogWrapper(),
+            WooIapLogWrapper(),
         )
 }
