@@ -68,8 +68,7 @@ class AnalyticsHubDateRangeSelection: Serializable {
             LAST_QUARTER -> AnalyticsHubLastQuarterRangeData(referenceDate, calendar)
             YEAR_TO_DATE -> AnalyticsHubYearToDateRangeData(referenceDate, calendar)
             LAST_YEAR -> AnalyticsHubLastYearRangeData(referenceDate, calendar)
-            // TODO: support custom range
-            else -> AnalyticsHubTodayRangeData(referenceDate, calendar)
+            else -> throw java.lang.IllegalStateException("Custom selection type should use the correct constructor")
         }
     }
 
