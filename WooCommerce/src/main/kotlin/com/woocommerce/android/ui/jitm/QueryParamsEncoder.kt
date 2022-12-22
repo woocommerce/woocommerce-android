@@ -1,6 +1,7 @@
-package com.woocommerce.android.util
+package com.woocommerce.android.ui.jitm
 
 import com.woocommerce.android.BuildConfig
+import com.woocommerce.android.util.BuildConfigWrapper
 import java.net.URLEncoder
 import javax.inject.Inject
 

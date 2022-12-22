@@ -1,6 +1,7 @@
 package com.woocommerce.android.util
 
 import com.woocommerce.android.BuildConfig
+import com.woocommerce.android.ui.jitm.QueryParamsEncoder
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 import org.mockito.kotlin.mock
