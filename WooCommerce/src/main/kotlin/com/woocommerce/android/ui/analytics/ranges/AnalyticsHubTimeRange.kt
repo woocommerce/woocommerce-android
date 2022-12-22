@@ -9,4 +9,8 @@ data class AnalyticsHubTimeRange(
 ): Serializable {
     val description: String
         get() = "$start - $end"
+
+    fun generateDescription(simplified: Boolean): String {
+        return description
+    }
 }
