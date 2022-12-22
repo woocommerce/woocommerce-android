@@ -24,6 +24,7 @@ import com.woocommerce.android.ui.analytics.ranges.data.AnalyticsHubWeekToDateRa
 import com.woocommerce.android.ui.analytics.ranges.data.AnalyticsHubYearToDateRangeData
 import com.woocommerce.android.ui.analytics.ranges.data.AnalyticsHubYesterdayRangeData
 import java.io.Serializable
+import java.lang.IllegalStateException
 import java.util.Calendar
 import java.util.Date
 
@@ -36,11 +37,11 @@ class AnalyticsHubDateRangeSelection: Serializable {
 
     private constructor(
         selectionType: SelectionType,
-        currentDate: Date,
+        referenceDate: Date,
         calendar: Calendar
     ) {
         this.selectionType = selectionType
-        val rangeData = generateTimeRangeData(selectionType, currentDate, calendar)
+        val rangeData = generateTimeRangeData(selectionType, referenceDate, calendar)
         currentRange = rangeData.currentRange
         previousRange = rangeData.previousRange
     }
@@ -68,7 +69,7 @@ class AnalyticsHubDateRangeSelection: Serializable {
             LAST_QUARTER -> AnalyticsHubLastQuarterRangeData(referenceDate, calendar)
             YEAR_TO_DATE -> AnalyticsHubYearToDateRangeData(referenceDate, calendar)
             LAST_YEAR -> AnalyticsHubLastYearRangeData(referenceDate, calendar)
-            else -> throw java.lang.IllegalStateException("Custom selection type should use the correct constructor")
+            else -> throw IllegalStateException("Custom selection type should use the correct constructor")
         }
     }
 
@@ -86,19 +87,19 @@ class AnalyticsHubDateRangeSelection: Serializable {
         CUSTOM("Custom", R.string.date_timeframe_custom);
 
         fun generateSelectionData(
-            referenceStart: Date = Date(),
-            referenceEnd: Date = Date(),
+            referenceStartDate: Date = Date(),
+            referenceEndDate: Date = Date(),
             calendar: Calendar = Calendar.getInstance()
         ): AnalyticsHubDateRangeSelection {
             return if (this == CUSTOM) {
                 AnalyticsHubDateRangeSelection(
-                    customStart = referenceStart,
-                    customEnd = referenceEnd
+                    customStart = referenceStartDate,
+                    customEnd = referenceEndDate
                 )
             } else {
                 AnalyticsHubDateRangeSelection(
                     selectionType = this,
-                    currentDate = referenceStart,
+                    referenceDate = referenceStartDate,
                     calendar = calendar
                 )
             }
