@@ -26,6 +26,7 @@ class IapEligibilityViewModel @Inject constructor(
 ) : ScopedViewModel(savedStateHandle, planSupportChecker) {
     private val _isCheckingIapEligibility = savedState.getStateFlow(scope = this, initialValue = true)
     val isCheckingIapEligibility: LiveData<Boolean> = _isCheckingIapEligibility.asLiveData()
+
     fun checkIapEligibility() {
         if (isIAPEnabled()) {
             launch {
