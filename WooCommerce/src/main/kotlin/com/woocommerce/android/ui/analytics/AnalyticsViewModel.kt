@@ -255,8 +255,8 @@ class AnalyticsViewModel @Inject constructor(
     private fun updateDateSelector() {
         mutableState.value = viewState.value.copy(
             analyticsDateRangeSelectorState = viewState.value.analyticsDateRangeSelectorState.copy(
-                fromDatePeriod = ranges.currentRange.description,
-                toDatePeriod = ranges.previousRange.description,
+                fromDatePeriod = ranges.previousRangeDescription,
+                toDatePeriod = ranges.currentRangeDescription,
                 selectedPeriod = resourceProvider.getString(ranges.selectionType.localizedResourceId)
             )
         )

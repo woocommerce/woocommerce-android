@@ -14,9 +14,6 @@ data class AnalyticsHubTimeRange(
     val start: Date,
     val end: Date
 ): Serializable {
-    val description: String
-        get() = "$start - $end"
-
     fun generateDescription(simplified: Boolean, locale: Locale, calendar: Calendar): String {
         if (simplified) {
             return start.formatToMMMddYYYY(locale)
