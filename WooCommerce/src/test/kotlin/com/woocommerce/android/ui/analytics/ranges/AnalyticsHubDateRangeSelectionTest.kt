@@ -27,7 +27,7 @@ internal class AnalyticsHubDateRangeSelectionTest {
 
     @Before
     fun setUp() {
-        testTimeZone = TimeZone.getTimeZone("UTC")
+        testTimeZone = TimeZone.getDefault()
         testCalendar = Calendar.getInstance(Locale.UK)
         testCalendar.timeZone = testTimeZone
         testCalendar.firstDayOfWeek = Calendar.MONDAY

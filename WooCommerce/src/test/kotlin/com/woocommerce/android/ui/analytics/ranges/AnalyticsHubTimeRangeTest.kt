@@ -14,11 +14,13 @@ import org.junit.Test
 internal class AnalyticsHubTimeRangeTest {
     private lateinit var testTimeZone: TimeZone
     private lateinit var testCalendar: Calendar
+    private lateinit var testLocale: Locale
 
     @Before
     fun setUp() {
-        testTimeZone = TimeZone.getTimeZone("UTC")
-        testCalendar = Calendar.getInstance(Locale.UK)
+        testLocale = Locale.US
+        testTimeZone = TimeZone.getDefault()
+        testCalendar = Calendar.getInstance(testLocale)
         testCalendar.timeZone = testTimeZone
         testCalendar.firstDayOfWeek = Calendar.MONDAY
     }
@@ -32,7 +34,7 @@ internal class AnalyticsHubTimeRangeTest {
         )
 
         // When
-        val description = sut.generateDescription(simplified = true, testCalendar)
+        val description = sut.generateDescription(simplified = true, testLocale)
 
         //Then
         assertThat(description).isEqualTo("Jul 1, 2022")
@@ -47,7 +49,7 @@ internal class AnalyticsHubTimeRangeTest {
         )
 
         // When
-        val description = sut.generateDescription(simplified = false, testCalendar)
+        val description = sut.generateDescription(simplified = false, testLocale)
 
         //Then
         assertThat(description).isEqualTo("Jul 1 - Aug 2, 2022")
@@ -62,7 +64,7 @@ internal class AnalyticsHubTimeRangeTest {
         )
 
         // When
-        val description = sut.generateDescription(simplified = false, testCalendar)
+        val description = sut.generateDescription(simplified = false, testLocale)
 
         //Then
         assertThat(description).isEqualTo("Jul 1 - 5, 2022")
@@ -77,7 +79,7 @@ internal class AnalyticsHubTimeRangeTest {
         )
 
         // When
-        val description = sut.generateDescription(simplified = false, testCalendar)
+        val description = sut.generateDescription(simplified = false, testLocale)
 
         //Then
         assertThat(description).isEqualTo("Apr 15, 2021 - Apr 15, 2022")
