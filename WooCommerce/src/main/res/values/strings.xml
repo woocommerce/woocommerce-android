@@ -2759,6 +2759,10 @@
     <!--
     Store creation
     -->
+    <string name="store_creation_iap_eligibility_loading_title">We are getting ready for your store creation</string>
+    <string name="store_creation_iap_eligibility_loading_subtitle">Please remain connected.</string>
+    <string name="store_creation_iap_eligibility_check_error_title">Store Creation Unavailable </string>
+    <string name="store_creation_iap_eligibility_check_error_description">Store creation from the mobile app is currently unavailable for your country.</string>
     <string name="store_creation_create_new_store_label">Create a new store</string>
     <string name="store_creation_cannot_load_store">Couldn\'t load your store.\nPlease try again…</string>
     <string name="store_creation_in_progress">Creating your store…</string>
@@ -2806,8 +2810,5 @@
     <string name="store_creation_store_name_hint">Store name</string>
 
     <string name="store_creation_store_categories_title">What’s your business about?</string>
-    <string name="store_creation_store_categories_subtitle">Choose a category that defines
-your business the best.</string>
-    <string name="not_a_valid_qr_code">Scanned Qr code is not a WooCommerce code</string>
-
+    <string name="store_creation_store_categories_subtitle">Choose a category that defines your business the best.</string><string name="not_a_valid_qr_code">Scanned Qr code is not a WooCommerce code</string>
 </resources>
