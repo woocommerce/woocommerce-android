@@ -49,6 +49,10 @@ fun Date.formatToMMMddYYYYhhmm(locale: Locale = Locale.getDefault()): String = S
     "MMM d, yyyy hh:mm a", locale
 ).format(this)
 
+fun Date.formatToDDyyyy(locale: Locale): String = SimpleDateFormat(
+    "d, yyyy", locale
+).format(this)
+
 fun Date.formatToEEEEMMMddhha(locale: Locale): String {
     val symbols = DateFormatSymbols(locale)
     symbols.amPmStrings = arrayOf("am", "pm")
@@ -113,18 +117,6 @@ fun Date.oneYearAgo(calendar: Calendar = Calendar.getInstance()): Date =
         time = this@oneYearAgo
         add(Calendar.YEAR, -1)
     }.time
-
-fun Date.formatToDayMonthYear(locale: Locale) = SimpleDateFormat(
-    "MMM d, yyyy", locale
-).format(this)
-
-fun Date.formatToDayYear(locale: Locale) = SimpleDateFormat(
-    "d, yyyy", locale
-).format(this)
-
-fun Date.formatToDayMonth(locale: Locale) = SimpleDateFormat(
-    "MMM d", locale
-).format(this)
 
 fun Date.isInSameYearAs(other: Date, calendar: Calendar): Boolean {
     calendar.time = this
