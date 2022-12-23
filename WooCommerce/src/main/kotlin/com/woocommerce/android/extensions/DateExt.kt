@@ -125,3 +125,19 @@ fun Date.formatToDayYear(locale: Locale) = SimpleDateFormat(
 fun Date.formatToDayMonth(locale: Locale) = SimpleDateFormat(
     "MMM d", locale
 ).format(this)
+
+fun Date.isInSameYearAs(other: Date, calendar: Calendar): Boolean {
+    calendar.time = this
+    val thisYear = calendar.get(Calendar.YEAR)
+    calendar.time = other
+    val otherYear = calendar.get(Calendar.YEAR)
+    return thisYear == otherYear
+}
+
+fun Date.isInSameMonthAs(other: Date, calendar: Calendar): Boolean {
+    calendar.time = this
+    val thisMonth = calendar.get(Calendar.MONTH)
+    calendar.time = other
+    val otherMonth = calendar.get(Calendar.MONTH)
+    return thisMonth == otherMonth
+}
