@@ -27,6 +27,7 @@ import java.io.Serializable
 import java.lang.IllegalStateException
 import java.util.Calendar
 import java.util.Date
+import java.util.Locale
 
 class AnalyticsHubDateRangeSelection: Serializable {
     val selectionType: SelectionType
@@ -34,23 +35,39 @@ class AnalyticsHubDateRangeSelection: Serializable {
         private set
     var previousRange: AnalyticsHubTimeRange
         private set
+    val currentRangeDescription: String
+    val previousRangeDescription: String
 
     private constructor(
         selectionType: SelectionType,
         referenceDate: Date,
-        calendar: Calendar
+        calendar: Calendar,
+        locale: Locale
     ) {
         this.selectionType = selectionType
         val rangeData = generateTimeRangeData(selectionType, referenceDate, calendar)
         currentRange = rangeData.currentRange
         previousRange = rangeData.previousRange
+
+        val simplifiedDescription = selectionType == TODAY || selectionType == YESTERDAY
+        currentRangeDescription = currentRange.generateDescription(simplifiedDescription, locale, calendar)
+        previousRangeDescription = previousRange.generateDescription(simplifiedDescription, locale, calendar)
     }
 
-    private constructor(customStart: Date, customEnd: Date) {
+    private constructor(
+        customStart: Date,
+        customEnd: Date,
+        calendar: Calendar,
+        locale: Locale,
+    ) {
         this.selectionType = CUSTOM
         val rangeData = AnalyticsHubCustomRangeData(customStart, customEnd)
         currentRange = rangeData.currentRange
         previousRange = rangeData.previousRange
+
+        val simplifiedDescription = selectionType == TODAY || selectionType == YESTERDAY
+        currentRangeDescription = currentRange.generateDescription(simplifiedDescription, locale, calendar)
+        previousRangeDescription = previousRange.generateDescription(simplifiedDescription, locale, calendar)
     }
 
     private fun generateTimeRangeData(
@@ -89,18 +106,22 @@ class AnalyticsHubDateRangeSelection: Serializable {
         fun generateSelectionData(
             referenceStartDate: Date = Date(),
             referenceEndDate: Date = Date(),
-            calendar: Calendar = Calendar.getInstance()
+            calendar: Calendar = Calendar.getInstance(),
+            locale: Locale = Locale.getDefault()
         ): AnalyticsHubDateRangeSelection {
             return if (this == CUSTOM) {
                 AnalyticsHubDateRangeSelection(
                     customStart = referenceStartDate,
-                    customEnd = referenceEndDate
+                    customEnd = referenceEndDate,
+                    calendar = calendar,
+                    locale = locale
                 )
             } else {
                 AnalyticsHubDateRangeSelection(
                     selectionType = this,
                     referenceDate = referenceStartDate,
-                    calendar = calendar
+                    calendar = calendar,
+                    locale = locale
                 )
             }
         }
