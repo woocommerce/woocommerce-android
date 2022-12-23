@@ -113,3 +113,15 @@ fun Date.oneYearAgo(calendar: Calendar = Calendar.getInstance()): Date =
         time = this@oneYearAgo
         add(Calendar.YEAR, -1)
     }.time
+
+fun Date.formatToDayMonthYear(locale: Locale) = SimpleDateFormat(
+    "MMM d, yyyy", locale
+).format(this)
+
+fun Date.formatToDayYear(locale: Locale) = SimpleDateFormat(
+    "d, yyyy", locale
+).format(this)
+
+fun Date.formatToDayMonth(locale: Locale) = SimpleDateFormat(
+    "MMM d", locale
+).format(this)
