@@ -13,6 +13,8 @@ import org.mockito.ArgumentMatchers.anyInt
 import org.mockito.kotlin.any
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.whenever
+import org.wordpress.android.fluxc.model.LocalOrRemoteId.LocalId
+import org.wordpress.android.fluxc.model.LocalOrRemoteId.RemoteId
 import org.wordpress.android.fluxc.network.BaseRequest
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooError
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooErrorType
@@ -94,9 +96,9 @@ class GetTopPerformersTest : BaseUnitTest() {
         val WOO_GENERIC_ERROR = WooError(WooErrorType.GENERIC_ERROR, BaseRequest.GenericErrorType.UNKNOWN)
         val EXPECTED_TOP_PERFORMERS_ENTITY_LIST = listOf(
             TopPerformerProductEntity(
-                siteId = 1234,
+                localSiteId = LocalId(1234),
                 datePeriod = "2021-01-01-2021-01-02",
-                productId = 134,
+                productId = RemoteId(134),
                 name = "Shirt",
                 imageUrl = "",
                 quantity = 4,

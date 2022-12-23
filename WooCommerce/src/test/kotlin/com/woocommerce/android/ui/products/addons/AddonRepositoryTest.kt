@@ -39,9 +39,8 @@ class AddonRepositoryTest : BaseUnitTest() {
     private lateinit var productStoreMock: WCProductStore
     private lateinit var addonStoreMock: WCAddonsStore
     private lateinit var selectedSiteMock: SelectedSite
-    private lateinit var siteModelMock: SiteModel
+    private lateinit var testSite: SiteModel
 
-    private val localSiteID = 321
     private val remoteOrderID = 123L
     private val remoteProductID = 333L
 
@@ -53,11 +52,9 @@ class AddonRepositoryTest : BaseUnitTest() {
 
     @Before
     fun setUp() {
-        siteModelMock = mock {
-            on { siteId }.doReturn(321)
-        }
+        testSite = SiteModel()
         selectedSiteMock = mock {
-            on { get() }.doReturn(siteModelMock)
+            on { get() }.doReturn(testSite)
         }
         orderStoreMock = mock()
         productStoreMock = mock()
@@ -80,10 +77,10 @@ class AddonRepositoryTest : BaseUnitTest() {
             ?.let { (productAddons, orderAddons) ->
 
                 verify(orderStoreMock, times(1))
-                    .getOrderByIdAndSite(123L, siteModelMock)
+                    .getOrderByIdAndSite(123L, testSite)
 
                 verify(productStoreMock, times(1))
-                    .getProductByRemoteId(siteModelMock, 333)
+                    .getProductByRemoteId(testSite, 333)
 
                 assertThat(productAddons).isNotEmpty
                 assertThat(orderAddons).isNotEmpty
@@ -101,10 +98,10 @@ class AddonRepositoryTest : BaseUnitTest() {
             ?.let { (_, orderAddons) ->
 
                 verify(orderStoreMock, times(1))
-                    .getOrderByIdAndSite(123L, siteModelMock)
+                    .getOrderByIdAndSite(123L, testSite)
 
                 verify(productStoreMock, times(1))
-                    .getProductByRemoteId(siteModelMock, 333)
+                    .getProductByRemoteId(testSite, 333)
 
                 assertThat(orderAddons).isEqualTo(expectedAddons)
             } ?: fail("non-null Pair with valid data was expected")
@@ -121,10 +118,10 @@ class AddonRepositoryTest : BaseUnitTest() {
             ?.let { (productAddons, _) ->
 
                 verify(productStoreMock, times(1))
-                    .getProductByRemoteId(siteModelMock, 333)
+                    .getProductByRemoteId(testSite, 333)
 
                 verify(addonStoreMock, times(1))
-                    .observeAllAddonsForProduct(siteModelMock.siteId, defaultWCProductModel)
+                    .observeAllAddonsForProduct(testSite, defaultWCProductModel)
 
                 assertThat(productAddons).isEqualTo(expectedAddons)
             } ?: fail("non-null Pair with valid data was expected")
@@ -194,7 +191,7 @@ class AddonRepositoryTest : BaseUnitTest() {
             whenever(getLineItemList()).thenReturn(defaultWCOrderItemList)
         }.let {
             whenever(
-                orderStoreMock.getOrderByIdAndSite(remoteOrderID, siteModelMock)
+                orderStoreMock.getOrderByIdAndSite(remoteOrderID, testSite)
             ).thenReturn(it)
         }
     }
@@ -202,12 +199,12 @@ class AddonRepositoryTest : BaseUnitTest() {
     private fun configureSuccessfulAddonResponse() {
         whenever(
             productStoreMock.getProductByRemoteId(
-                siteModelMock, remoteProductID
+                testSite, remoteProductID
             )
         ).thenReturn(defaultWCProductModel)
 
         whenever(
-            addonStoreMock.observeAllAddonsForProduct(localSiteID.toLong(), defaultWCProductModel)
+            addonStoreMock.observeAllAddonsForProduct(testSite, defaultWCProductModel)
         ).thenReturn(MutableStateFlow(defaultAddonsList))
     }
 }
