@@ -29,6 +29,12 @@ import java.util.Calendar
 import java.util.Date
 import java.util.Locale
 
+/**
+ * This class represents the date range selection for the Analytics Hub
+ *
+ * You should create it through the [AnalyticsHubDateRangeSelection.SelectionType.generateSelectionData]
+ * function since it will return the correct data for the given selection type
+ */
 class AnalyticsHubDateRangeSelection: Serializable {
     val selectionType: SelectionType
     var currentRange: AnalyticsHubTimeRange
@@ -38,6 +44,20 @@ class AnalyticsHubDateRangeSelection: Serializable {
     val currentRangeDescription: String
     val previousRangeDescription: String
 
+    constructor(
+        rangeStart: Date,
+        rangeEnd: Date,
+        calendar: Calendar,
+        locale: Locale,
+    ) {
+        this.selectionType = CUSTOM
+        val rangeData = AnalyticsHubCustomRangeData(rangeStart, rangeEnd)
+        currentRange = rangeData.currentRange
+        previousRange = rangeData.previousRange
+        currentRangeDescription = currentRange.generateDescription(false, locale, calendar)
+        previousRangeDescription = previousRange.generateDescription(false, locale, calendar)
+    }
+
     private constructor(
         selectionType: SelectionType,
         referenceDate: Date,
@@ -46,22 +66,6 @@ class AnalyticsHubDateRangeSelection: Serializable {
     ) {
         this.selectionType = selectionType
         val rangeData = generateTimeRangeData(selectionType, referenceDate, calendar)
-        currentRange = rangeData.currentRange
-        previousRange = rangeData.previousRange
-
-        val simplifiedDescription = selectionType == TODAY || selectionType == YESTERDAY
-        currentRangeDescription = currentRange.generateDescription(simplifiedDescription, locale, calendar)
-        previousRangeDescription = previousRange.generateDescription(simplifiedDescription, locale, calendar)
-    }
-
-    private constructor(
-        customStart: Date,
-        customEnd: Date,
-        calendar: Calendar,
-        locale: Locale,
-    ) {
-        this.selectionType = CUSTOM
-        val rangeData = AnalyticsHubCustomRangeData(customStart, customEnd)
         currentRange = rangeData.currentRange
         previousRange = rangeData.previousRange
 
@@ -111,8 +115,8 @@ class AnalyticsHubDateRangeSelection: Serializable {
         ): AnalyticsHubDateRangeSelection {
             return if (this == CUSTOM) {
                 AnalyticsHubDateRangeSelection(
-                    customStart = referenceStartDate,
-                    customEnd = referenceEndDate,
+                    rangeStart = referenceStartDate,
+                    rangeEnd = referenceEndDate,
                     calendar = calendar,
                     locale = locale
                 )
