@@ -131,5 +131,5 @@ fun Date.isInSameMonthAs(other: Date, calendar: Calendar): Boolean {
     val thisMonth = calendar.get(Calendar.MONTH)
     calendar.time = other
     val otherMonth = calendar.get(Calendar.MONTH)
-    return thisMonth == otherMonth
+    return thisMonth == otherMonth && isInSameYearAs(other, calendar)
 }
