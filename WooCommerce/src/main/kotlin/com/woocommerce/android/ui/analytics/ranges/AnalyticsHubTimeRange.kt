@@ -1,8 +1,8 @@
 package com.woocommerce.android.ui.analytics.ranges
 
-import com.woocommerce.android.extensions.formatToDayMonth
-import com.woocommerce.android.extensions.formatToDayMonthYear
-import com.woocommerce.android.extensions.formatToDayYear
+import com.woocommerce.android.extensions.formatToDDyyyy
+import com.woocommerce.android.extensions.formatToMMMdd
+import com.woocommerce.android.extensions.formatToMMMddYYYY
 import com.woocommerce.android.extensions.isInSameMonthAs
 import com.woocommerce.android.extensions.isInSameYearAs
 import java.io.Serializable
@@ -19,19 +19,19 @@ data class AnalyticsHubTimeRange(
 
     fun generateDescription(simplified: Boolean, locale: Locale, calendar: Calendar): String {
         if (simplified) {
-            return start.formatToDayMonthYear(locale)
+            return start.formatToMMMddYYYY(locale)
         }
 
         val formattedStartDate = if (start.isInSameYearAs(end, calendar)) {
-            start.formatToDayMonth(locale)
+            start.formatToMMMdd(locale)
         } else {
-            start.formatToDayMonthYear(locale)
+            start.formatToMMMddYYYY(locale)
         }
 
         val formattedEndDate = if (start.isInSameMonthAs(end, calendar)) {
-            end.formatToDayYear(locale)
+            end.formatToDDyyyy(locale)
         } else {
-            end.formatToDayMonthYear(locale)
+            end.formatToMMMddYYYY(locale)
         }
 
         return "$formattedStartDate - $formattedEndDate"
