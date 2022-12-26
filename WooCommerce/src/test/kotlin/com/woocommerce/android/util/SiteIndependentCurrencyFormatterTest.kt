@@ -1,7 +1,6 @@
 package com.woocommerce.android.util
 
 import com.woocommerce.android.util.locale.LocaleProvider
-
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.assertj.core.api.Assertions
