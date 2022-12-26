@@ -39,6 +39,7 @@ import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.getStateFlow
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -72,6 +73,7 @@ class PlansViewModel @Inject constructor(
     val viewState = _viewState.asLiveData()
 
     private var iapActivityWrapper: IAPActivityWrapper? = null
+    private var iapPurchaseFlow: Flow<WPComPurchaseResult>? = null
 
     init {
         loadPlan()
@@ -101,7 +103,7 @@ class PlansViewModel @Inject constructor(
                 .ifSuccessfulThen { siteId ->
                     newStore.update(siteId = siteId)
                     when {
-                        isIAPEnabled() -> subscribeToPlanUsingIAP(siteId)
+                        isIAPEnabled() -> purchasePlanUsingIAP(siteId)
                         else -> proceedToWebviewCheckout()
                     }
                 }
@@ -118,7 +120,7 @@ class PlansViewModel @Inject constructor(
         }
     }
 
-    private suspend fun subscribeToPlanUsingIAP(siteId: Long) {
+    private suspend fun purchasePlanUsingIAP(siteId: Long) {
         val nonNullableActivityWrapper =
             checkNotNull(iapActivityWrapper) { "iapActivityWrapper must not be null when triggering iap purchase flow" }
         observeInAppPurchasesResult(siteId)
@@ -226,12 +228,15 @@ class PlansViewModel @Inject constructor(
     }
 
     private fun observeInAppPurchasesResult(remoteSiteId: Long) {
-        viewModelScope.launch {
-            iapManager.getPurchaseWpComPlanResult(remoteSiteId = remoteSiteId).collectLatest { result ->
-                when (result) {
-                    is WPComPurchaseResult.Success -> onIapPurchaseSuccess()
-                    is WPComPurchaseResult.Error -> onInAppPurchaseError(result)
-                }.exhaustive
+        if (iapPurchaseFlow == null) {
+            iapPurchaseFlow = iapManager.getPurchaseWpComPlanResult(remoteSiteId)
+            viewModelScope.launch {
+                iapPurchaseFlow?.collectLatest { result ->
+                    when (result) {
+                        is WPComPurchaseResult.Success -> onIapPurchaseSuccess()
+                        is WPComPurchaseResult.Error -> onInAppPurchaseError(result)
+                    }.exhaustive
+                }
             }
         }
     }
