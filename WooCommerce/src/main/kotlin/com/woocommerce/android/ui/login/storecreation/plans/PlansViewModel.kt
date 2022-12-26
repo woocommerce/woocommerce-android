@@ -19,6 +19,7 @@ import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.extensions.exhaustive
 import com.woocommerce.android.iap.pub.IAPActivityWrapper
 import com.woocommerce.android.iap.pub.PurchaseWPComPlanActions
+import com.woocommerce.android.iap.pub.model.IAPError
 import com.woocommerce.android.iap.pub.model.WPComProductResult
 import com.woocommerce.android.iap.pub.model.WPComPurchaseResult
 import com.woocommerce.android.ui.login.storecreation.NewStore
@@ -35,6 +36,7 @@ import com.woocommerce.android.ui.login.storecreation.plans.PlansViewModel.PlanI
 import com.woocommerce.android.ui.login.storecreation.plans.PlansViewModel.ViewState.ErrorState
 import com.woocommerce.android.ui.login.storecreation.plans.PlansViewModel.ViewState.LoadingState
 import com.woocommerce.android.util.SiteIndependentCurrencyFormatter
+import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.ScopedViewModel
@@ -211,10 +213,18 @@ class PlansViewModel @Inject constructor(
         trackStep(VALUE_STEP_WEB_CHECKOUT)
     }
 
-    private fun onInAppPurchaseError(result: WPComPurchaseResult.Error) {
+    private fun onInAppPurchaseError(error: WPComPurchaseResult.Error) {
+        val errorType = error.errorType
+        val reason = if (errorType is IAPError.RemoteCommunication.Server) {
+            errorType.reason
+        } else ""
+        WooLog.i(WooLog.T.IAP, "Error processing eCommerce plan: $errorType reason: $reason")
         analyticsTrackerWrapper.track(
             AnalyticsEvent.SITE_CREATION_IAP_PURCHASE_ERROR,
-            mapOf(AnalyticsTracker.KEY_ERROR_TYPE to result.errorType.toString())
+            mapOf(
+                AnalyticsTracker.KEY_ERROR_TYPE to errorType.toString(),
+                AnalyticsTracker.KEY_ERROR_DESC to reason
+            )
         )
         _viewState.update { (_viewState.value as ViewState.PlanState).copy(showMainButtonLoading = false) }
     }
