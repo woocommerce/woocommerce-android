@@ -17,6 +17,7 @@ import com.woocommerce.android.ui.login.storecreation.plans.PlansViewModel.ViewS
 import com.woocommerce.android.ui.login.storecreation.plans.PlansViewModel.ViewState.CheckoutState
 import com.woocommerce.android.ui.login.storecreation.plans.PlansViewModel.ViewState.ErrorState
 import com.woocommerce.android.ui.login.storecreation.plans.PlansViewModel.ViewState.PlanState
+import com.woocommerce.android.util.SiteIndependentCurrencyFormatter
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.junit.Test
@@ -39,6 +40,7 @@ class PlansViewModelTest : BaseUnitTest() {
     private val iapManager: PurchaseWPComPlanActions = mock()
     private val isIAPEnabled: IsIAPEnabled = mock()
     private val iapActivityWrapper: IAPActivityWrapper = mock()
+    private val siteIndependentCurrencyFormatter: SiteIndependentCurrencyFormatter = mock()
 
     private lateinit var viewModel: PlansViewModel
 
@@ -88,7 +90,8 @@ class PlansViewModelTest : BaseUnitTest() {
             newStore,
             repository,
             iapManager,
-            isIAPEnabled
+            isIAPEnabled,
+            siteIndependentCurrencyFormatter
         )
     }
 
@@ -128,6 +131,12 @@ class PlansViewModelTest : BaseUnitTest() {
     fun `given IAP enabled, when view model is created, eCommerce plan is updated with IAP product info`() =
         testBlocking {
             givenIsIAPEnabled(true)
+            whenever(
+                siteIndependentCurrencyFormatter.formatAmountWithCurrency(
+                    iapProduct.price,
+                    iapProduct.currency
+                )
+            ).thenReturn(EXPECTED_FORMATTED_PRICE)
             whenever(repository.fetchPlan(ECOMMERCE_MONTHLY)).thenReturn(plan)
             whenever(iapManager.fetchWPComPlanProduct()).thenReturn(WPComProductResult.Success(iapProduct))
 

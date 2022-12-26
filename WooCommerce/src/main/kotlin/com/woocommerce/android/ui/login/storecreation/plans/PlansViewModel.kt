@@ -34,6 +34,7 @@ import com.woocommerce.android.ui.login.storecreation.plans.BillingPeriod.ECOMME
 import com.woocommerce.android.ui.login.storecreation.plans.PlansViewModel.PlanInfo.Feature
 import com.woocommerce.android.ui.login.storecreation.plans.PlansViewModel.ViewState.ErrorState
 import com.woocommerce.android.ui.login.storecreation.plans.PlansViewModel.ViewState.LoadingState
+import com.woocommerce.android.util.SiteIndependentCurrencyFormatter
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.ScopedViewModel
@@ -45,8 +46,6 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.parcelize.Parcelize
 import org.wordpress.android.fluxc.model.plans.full.Plan
-import java.text.NumberFormat
-import java.util.Currency
 import java.util.TimeZone
 import javax.inject.Inject
 
@@ -57,7 +56,8 @@ class PlansViewModel @Inject constructor(
     private val newStore: NewStore,
     private val repository: StoreCreationRepository,
     private val iapManager: PurchaseWPComPlanActions,
-    private val isIAPEnabled: IsIAPEnabled
+    private val isIAPEnabled: IsIAPEnabled,
+    private val siteIndependentCurrencyFormatter: SiteIndependentCurrencyFormatter
 ) : ScopedViewModel(savedStateHandle, iapManager), DefaultLifecycleObserver {
     companion object {
         const val NEW_SITE_LANGUAGE_ID = "en"
@@ -192,20 +192,12 @@ class PlansViewModel @Inject constructor(
         return if (iapPlanDataResult is WPComProductResult.Success) {
             plan?.copy(
                 productShortName = iapPlanDataResult.productInfo.localizedTitle,
-                formattedPrice = formatPrice(
-                    iapPlanDataResult.productInfo.currency,
-                    iapPlanDataResult.productInfo.price
+                formattedPrice = siteIndependentCurrencyFormatter.formatAmountWithCurrency(
+                    amount = iapPlanDataResult.productInfo.price,
+                    currencyCode = iapPlanDataResult.productInfo.currency
                 )
             )
         } else plan
-    }
-
-    // In store creation we don't have a site created yet, we can't use CurrencyFormatter class as it relies on
-    // existing site settings. We'll use device locale settings to format the price
-    private fun formatPrice(currencyCode: String, price: Double): String {
-        val formatter: NumberFormat = NumberFormat.getCurrencyInstance()
-        formatter.currency = Currency.getInstance(currencyCode)
-        return formatter.format(price)
     }
 
     private fun showCheckoutWebsite() {
