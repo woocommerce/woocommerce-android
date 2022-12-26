@@ -31,6 +31,11 @@ class PlansFragment : BaseFragment() {
     override val activityAppBarStatus: AppBarStatus
         get() = AppBarStatus.Hidden
 
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        lifecycle.addObserver(viewModel)
+    }
+
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         return ComposeView(requireContext()).apply {
             setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
@@ -44,8 +49,17 @@ class PlansFragment : BaseFragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        viewModel.setIAPActivityWrapper(IAPActivityWrapper(requireActivity() as AppCompatActivity))
         setupObservers()
+    }
+
+    override fun onStart() {
+        super.onStart()
+        viewModel.setIAPActivityWrapper(IAPActivityWrapper(requireActivity() as AppCompatActivity))
+    }
+
+    override fun onDestroy() {
+        lifecycle.removeObserver(viewModel)
+        super.onDestroy()
     }
 
     private fun setupObservers() {

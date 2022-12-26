@@ -3,6 +3,8 @@ package com.woocommerce.android.ui.login.storecreation.plans
 import android.os.Parcelable
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
+import androidx.lifecycle.DefaultLifecycleObserver
+import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
@@ -55,7 +57,7 @@ class PlansViewModel @Inject constructor(
     private val repository: StoreCreationRepository,
     private val iapManager: PurchaseWPComPlanActions,
     private val isIAPEnabled: IsIAPEnabled
-) : ScopedViewModel(savedStateHandle, iapManager) {
+) : ScopedViewModel(savedStateHandle, iapManager), DefaultLifecycleObserver {
     companion object {
         const val NEW_SITE_LANGUAGE_ID = "en"
         const val NEW_SITE_THEME = "pub/zoologist"
@@ -69,11 +71,16 @@ class PlansViewModel @Inject constructor(
     private val _viewState = savedState.getStateFlow<ViewState>(this, LoadingState)
     val viewState = _viewState.asLiveData()
 
-    private lateinit var iapActivityWrapper: IAPActivityWrapper
+    private var iapActivityWrapper: IAPActivityWrapper? = null
 
     init {
         loadPlan()
         trackStep(VALUE_STEP_PLAN_PURCHASE)
+    }
+
+    override fun onStop(owner: LifecycleOwner) {
+        iapActivityWrapper = null
+        super.onStop(owner)
     }
 
     fun setIAPActivityWrapper(wrapper: IAPActivityWrapper) {
@@ -112,8 +119,10 @@ class PlansViewModel @Inject constructor(
     }
 
     private suspend fun subscribeToPlanUsingIAP(siteId: Long) {
+        val nonNullableActivityWrapper =
+            checkNotNull(iapActivityWrapper) { "iapActivityWrapper must not be null when triggering iap purchase flow" }
         observeInAppPurchasesResult(siteId)
-        iapManager.purchaseWPComPlan(iapActivityWrapper, siteId)
+        iapManager.purchaseWPComPlan(nonNullableActivityWrapper, siteId)
     }
 
     fun onIapPurchaseSuccess() {
