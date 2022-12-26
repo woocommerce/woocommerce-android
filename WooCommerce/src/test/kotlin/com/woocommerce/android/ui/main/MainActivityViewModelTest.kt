@@ -2,7 +2,6 @@ package com.woocommerce.android.ui.main
 
 import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.AppPrefs
-import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsEvent.REVIEW_OPEN
 import com.woocommerce.android.analytics.AnalyticsTracker
@@ -70,7 +69,6 @@ class MainActivityViewModelTest : BaseUnitTest() {
     private val savedStateHandle: SavedStateHandle = SavedStateHandle()
     private val selectedSite: SelectedSite = mock()
     private val analyticsTrackerWrapper: AnalyticsTrackerWrapper = mock()
-    private val appPrefsWrapper: AppPrefsWrapper = mock()
 
     private val siteStore: SiteStore = mock()
     private val siteModel: SiteModel = SiteModel().apply {
@@ -493,7 +491,6 @@ class MainActivityViewModelTest : BaseUnitTest() {
                 buildConfigWrapper,
                 prefs,
                 analyticsTrackerWrapper,
-                appPrefsWrapper,
                 mock(),
                 unseenReviewsCountHandler,
             )
