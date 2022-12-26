@@ -14,40 +14,14 @@
     </shortcut>
 
     <shortcut
-        android:shortcutId="SwitchStore"
+        android:shortcutId="Create Order"
         android:enabled="true"
-        android:icon="@drawable/ic_more_menu_store"
-        android:shortcutShortLabel="@string/settings_switch_store"
-        android:shortcutLongLabel="@string/settings_switch_store"
-        android:shortcutDisabledMessage="@string/settings_switch_store">
+        android:icon="@drawable/ic_menu_orders_list"
+        android:shortcutShortLabel="@string/orderlist_create_order_button_description"
+        android:shortcutLongLabel="@string/orderlist_create_order_button_description"
+        android:shortcutDisabledMessage="@string/orderlist_create_order_button_description">
         <intent
-            android:action="com.woocommerce.android.switchstore"
-            android:targetPackage="com.woocommerce.android"
-            android:targetClass="com.woocommerce.android.ui.main.MainActivity" />
-    </shortcut>
-
-    <shortcut
-        android:shortcutId="ViewStore"
-        android:enabled="true"
-        android:icon="@drawable/ic_more_menu_store"
-        android:shortcutShortLabel="@string/more_menu_button_store"
-        android:shortcutLongLabel="@string/more_menu_button_store"
-        android:shortcutDisabledMessage="@string/more_menu_button_store">
-        <intent
-            android:action="com.woocommerce.android.viewstore"
-            android:targetPackage="com.woocommerce.android"
-            android:targetClass="com.woocommerce.android.ui.main.MainActivity" />
-    </shortcut>
-
-    <shortcut
-        android:shortcutId="StoreAdmin"
-        android:enabled="true"
-        android:icon="@drawable/ic_more_menu_wp_admin"
-        android:shortcutShortLabel="@string/more_menu_button_wс_admin"
-        android:shortcutLongLabel="@string/more_menu_button_wс_admin"
-        android:shortcutDisabledMessage="@string/more_menu_button_wс_admin">
-        <intent
-            android:action="com.woocommerce.android.storeadmin"
+            android:action="com.woocommerce.android.ordercreation"
             android:targetPackage="com.woocommerce.android"
             android:targetClass="com.woocommerce.android.ui.main.MainActivity" />
     </shortcut>
