@@ -63,6 +63,7 @@ import com.woocommerce.android.ui.main.BottomNavigationPosition.PRODUCTS
 import com.woocommerce.android.ui.main.MainActivityViewModel.MoreMenuBadgeState.Hidden
 import com.woocommerce.android.ui.main.MainActivityViewModel.MoreMenuBadgeState.UnseenReviews
 import com.woocommerce.android.ui.main.MainActivityViewModel.OpenInBrowser
+import com.woocommerce.android.ui.main.MainActivityViewModel.OpenOrderCreation
 import com.woocommerce.android.ui.main.MainActivityViewModel.RestartActivityForAppLink
 import com.woocommerce.android.ui.main.MainActivityViewModel.RestartActivityForNotification
 import com.woocommerce.android.ui.main.MainActivityViewModel.ShowFeatureAnnouncement
@@ -76,6 +77,7 @@ import com.woocommerce.android.ui.main.MainActivityViewModel.ViewReviewList
 import com.woocommerce.android.ui.main.MainActivityViewModel.ViewZendeskTickets
 import com.woocommerce.android.ui.moremenu.MoreMenuFragmentDirections
 import com.woocommerce.android.ui.mystore.MyStoreFragmentDirections
+import com.woocommerce.android.ui.orders.creation.OrderCreateEditViewModel
 import com.woocommerce.android.ui.orders.list.OrderListFragmentDirections
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderFlowParam
 import com.woocommerce.android.ui.prefs.AppSettingsActivity
@@ -719,6 +721,7 @@ class MainActivity :
                 is OpenInBrowser -> openInBrowser(event.url)
                 StartSitePicker -> startSitePicker()
                 ViewPayments -> showPayments()
+                OpenOrderCreation -> openOrderCreation()
             }
         }
 
@@ -821,6 +824,15 @@ class MainActivity :
             remoteReviewId = remoteReviewId,
             tempStatus = tempStatus,
             launchedFromNotification = launchedFromNotification
+        )
+        navController.navigateSafely(action)
+    }
+
+    private fun openOrderCreation() {
+        binding.bottomNav.currentPosition = ORDERS
+        binding.bottomNav.active(ORDERS.position)
+        val action = OrderListFragmentDirections.actionOrderListFragmentToOrderCreationFragment(
+            OrderCreateEditViewModel.Mode.Creation
         )
         navController.navigateSafely(action)
     }
