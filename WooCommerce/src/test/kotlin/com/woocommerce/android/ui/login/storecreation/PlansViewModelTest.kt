@@ -130,7 +130,7 @@ class PlansViewModelTest : BaseUnitTest() {
     @Test
     fun `given IAP enabled, when view model is created, eCommerce plan is updated with IAP product info`() =
         testBlocking {
-            givenIsIAPEnabled(true)
+            givenIsIAPEnabled()
             whenever(
                 siteIndependentCurrencyFormatter.formatAmountWithCurrency(
                     iapProduct.price,
@@ -176,7 +176,7 @@ class PlansViewModelTest : BaseUnitTest() {
     @Test
     fun `given IAP enabled, when a site is created, IAP flow is triggered and button set to loading`() =
         testBlocking {
-            givenIsIAPEnabled(true)
+            givenIsIAPEnabled()
             whenever(repository.fetchPlan(ECOMMERCE_MONTHLY)).thenReturn(plan)
             whenever(repository.createNewSite(siteData, PlansViewModel.NEW_SITE_LANGUAGE_ID, TimeZone.getDefault().id))
                 .thenReturn(StoreCreationResult.Success(SITE_ID))
@@ -241,7 +241,7 @@ class PlansViewModelTest : BaseUnitTest() {
             assertEquals(observedState.errorType, SITE_ADDRESS_ALREADY_EXISTS)
         }
 
-    private fun givenIsIAPEnabled(enabled: Boolean) {
-        whenever(isIAPEnabled.invoke()).thenReturn(enabled)
+    private fun givenIsIAPEnabled() {
+        whenever(isIAPEnabled.invoke()).thenReturn(true)
     }
 }
