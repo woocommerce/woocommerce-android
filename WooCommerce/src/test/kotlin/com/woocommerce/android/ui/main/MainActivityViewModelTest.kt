@@ -17,10 +17,9 @@ import com.woocommerce.android.push.WooNotificationType
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.main.MainActivityViewModel.MoreMenuBadgeState.Hidden
 import com.woocommerce.android.ui.main.MainActivityViewModel.MoreMenuBadgeState.UnseenReviews
-import com.woocommerce.android.ui.main.MainActivityViewModel.OpenInBrowser
+import com.woocommerce.android.ui.main.MainActivityViewModel.OpenOrderCreation
 import com.woocommerce.android.ui.main.MainActivityViewModel.RestartActivityForNotification
 import com.woocommerce.android.ui.main.MainActivityViewModel.ShowFeatureAnnouncement
-import com.woocommerce.android.ui.main.MainActivityViewModel.StartSitePicker
 import com.woocommerce.android.ui.main.MainActivityViewModel.ViewMyStoreStats
 import com.woocommerce.android.ui.main.MainActivityViewModel.ViewOrderDetail
 import com.woocommerce.android.ui.main.MainActivityViewModel.ViewOrderList
@@ -422,82 +421,16 @@ class MainActivityViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `given view store shortcut, when app opened, then trigger OpenInBrowser event`() {
-        testBlocking {
-            // GIVEN
-            createViewModel()
-            whenever(selectedSite.get()).thenReturn(siteModel)
-
-            // WHEN
-            viewModel.handleShortcutAction("com.woocommerce.android.viewstore")
-
-            // THEN
-            assertThat(viewModel.event.value).isInstanceOf(OpenInBrowser::class.java)
-        }
-    }
-
-    @Test
-    fun `given view store shortcut, when app opened, then trigger OpenInBrowser event with correct url`() {
-        testBlocking {
-            // GIVEN
-            createViewModel()
-            whenever(selectedSite.get()).thenReturn(siteModel)
-            val siteUrl = "https://www.testurl.com"
-
-            // WHEN
-            viewModel.handleShortcutAction("com.woocommerce.android.viewstore")
-
-            // THEN
-            assertThat(viewModel.event.value).isEqualTo(
-                OpenInBrowser(siteUrl)
-            )
-        }
-    }
-
-    @Test
-    fun `given view store admin shortcut, when app opened, then trigger OpenInBrowser event`() {
-        testBlocking {
-            // GIVEN
-            createViewModel()
-            whenever(selectedSite.get()).thenReturn(siteModel)
-
-            // WHEN
-            viewModel.handleShortcutAction("com.woocommerce.android.storeadmin")
-
-            // THEN
-            assertThat(viewModel.event.value).isInstanceOf(OpenInBrowser::class.java)
-        }
-    }
-
-    @Test
-    fun `given view store admin shortcut, when app opened, then trigger OpenInBrowser event with correct url`() {
-        testBlocking {
-            // GIVEN
-            createViewModel()
-            whenever(selectedSite.get()).thenReturn(siteModel)
-            val siteUrl = "https://www.testadminurl.com"
-
-            // WHEN
-            viewModel.handleShortcutAction("com.woocommerce.android.storeadmin")
-
-            // THEN
-            assertThat(viewModel.event.value).isEqualTo(
-                OpenInBrowser(siteUrl)
-            )
-        }
-    }
-
-    @Test
-    fun `given switch store shortcut, when app opened, then trigger StartSitePicker event`() {
+    fun `given order creation shortcut, when app opened, then trigger OpenOrderCreation event`() {
         testBlocking {
             // GIVEN
             createViewModel()
 
             // WHEN
-            viewModel.handleShortcutAction("com.woocommerce.android.switchstore")
+            viewModel.handleShortcutAction("com.woocommerce.android.ordercreation")
 
             // THEN
-            assertThat(viewModel.event.value).isInstanceOf(StartSitePicker::class.java)
+            assertThat(viewModel.event.value).isInstanceOf(OpenOrderCreation::class.java)
         }
     }
 
@@ -532,72 +465,22 @@ class MainActivityViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `given view store shortcut, when app opened, then track SHORTCUT_VIEW_STORE_TAPPED event`() {
+    fun `given order creation shortcut, when app opened, then track orders add new event`() {
         testBlocking {
             // GIVEN
             createViewModel()
-            whenever(selectedSite.get()).thenReturn(siteModel)
 
             // WHEN
-            viewModel.handleShortcutAction("com.woocommerce.android.viewstore")
+            viewModel.handleShortcutAction("com.woocommerce.android.ordercreation")
 
             // THEN
             verify(analyticsTrackerWrapper).track(
-                AnalyticsEvent.SHORTCUT_VIEW_STORE_TAPPED
+                AnalyticsEvent.SHORTCUT_ORDERS_ADD_NEW
             )
         }
     }
 
-    @Test
-    fun `given view store admin shortcut, when app opened, then track SHORTCUT_VIEW_STORE_ADMIN_TAPPED event`() {
-        testBlocking {
-            // GIVEN
-            createViewModel()
-            whenever(selectedSite.get()).thenReturn(siteModel)
-
-            // WHEN
-            viewModel.handleShortcutAction("com.woocommerce.android.storeadmin")
-
-            // THEN
-            verify(analyticsTrackerWrapper).track(
-                AnalyticsEvent.SHORTCUT_VIEW_STORE_ADMIN_TAPPED
-            )
-        }
-    }
-
-    @Test
-    fun `given switch store admin shortcut, when app opened, then track SHORTCUT_SWITCH_STORE_TAPPED event`() {
-        testBlocking {
-            // GIVEN
-            createViewModel()
-
-            // WHEN
-            viewModel.handleShortcutAction("com.woocommerce.android.switchstore")
-
-            // THEN
-            verify(analyticsTrackerWrapper).track(
-                AnalyticsEvent.SHORTCUT_SWITCH_STORE_TAPPED
-            )
-        }
-    }
-
-    @Test
-    fun `given switch store admin shortcut, when app opened, then set store creation source`() {
-        testBlocking {
-            // GIVEN
-            createViewModel()
-
-            // WHEN
-            viewModel.handleShortcutAction("com.woocommerce.android.switchstore")
-
-            // THEN
-            verify(appPrefsWrapper).setStoreCreationSource(
-                AnalyticsTracker.VALUE_SWITCHING_STORE
-            )
-        }
-    }
-
-    //endregion
+//endregion
 
     private fun createViewModel() {
         viewModel = spy(

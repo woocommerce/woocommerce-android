@@ -64,24 +64,11 @@ class MainActivityViewModel @Inject constructor(
                 )
                 triggerEvent(ViewPayments)
             }
-            SHORTCUT_VIEW_STORE -> {
+            SHORTCUT_OPEN_ORDER_CREATION -> {
                 analyticsTrackerWrapper.track(
-                    AnalyticsEvent.SHORTCUT_VIEW_STORE_TAPPED
+                    AnalyticsEvent.SHORTCUT_ORDERS_ADD_NEW
                 )
-                triggerEvent(OpenInBrowser(selectedSite.get().url))
-            }
-            SHORTCUT_SWITCH_STORE -> {
-                analyticsTrackerWrapper.track(
-                    AnalyticsEvent.SHORTCUT_SWITCH_STORE_TAPPED
-                )
-                appPrefsWrapper.setStoreCreationSource(AnalyticsTracker.VALUE_SWITCHING_STORE)
-                triggerEvent(StartSitePicker)
-            }
-            SHORTCUT_VIEW_STORE_ADMIN -> {
-                analyticsTrackerWrapper.track(
-                    AnalyticsEvent.SHORTCUT_VIEW_STORE_ADMIN_TAPPED
-                )
-                triggerEvent(OpenInBrowser(selectedSite.get().adminUrl))
+                triggerEvent(OpenOrderCreation)
             }
         }
     }
@@ -208,6 +195,7 @@ class MainActivityViewModel @Inject constructor(
     object ViewZendeskTickets : Event()
     object ViewPayments : Event()
     object StartSitePicker : Event()
+    object OpenOrderCreation : Event()
     data class RestartActivityForNotification(val pushId: Int, val notification: Notification) : Event()
     data class RestartActivityForAppLink(val data: Uri) : Event()
     data class ShowFeatureAnnouncement(val announcement: FeatureAnnouncement) : Event()
@@ -222,8 +210,6 @@ class MainActivityViewModel @Inject constructor(
 
     companion object {
         const val SHORTCUT_PAYMENTS = "com.woocommerce.android.payments"
-        const val SHORTCUT_VIEW_STORE = "com.woocommerce.android.viewstore"
-        const val SHORTCUT_SWITCH_STORE = "com.woocommerce.android.switchstore"
-        const val SHORTCUT_VIEW_STORE_ADMIN = "com.woocommerce.android.storeadmin"
+        const val SHORTCUT_OPEN_ORDER_CREATION = "com.woocommerce.android.ordercreation"
     }
 }
