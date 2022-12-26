@@ -715,10 +715,8 @@ enum class AnalyticsEvent(val siteless: Boolean = false) {
     HUB_MENU_SETTINGS_TAPPED,
 
     // Shortcuts
-    SHORTCUT_VIEW_STORE_TAPPED,
-    SHORTCUT_SWITCH_STORE_TAPPED,
-    SHORTCUT_VIEW_STORE_ADMIN_TAPPED,
     SHORTCUT_PAYMENTS_TAPPED,
+    SHORTCUT_ORDERS_ADD_NEW,
 
     // Inbox
     INBOX_NOTES_LOADED,
