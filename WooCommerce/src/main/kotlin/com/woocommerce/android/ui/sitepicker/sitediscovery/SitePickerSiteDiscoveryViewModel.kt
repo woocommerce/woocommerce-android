@@ -13,6 +13,7 @@ import com.woocommerce.android.experiment.JetpackInstallationExperiment
 import com.woocommerce.android.experiment.JetpackInstallationExperiment.JetpackInstallationVariant
 import com.woocommerce.android.ui.login.AccountRepository
 import com.woocommerce.android.ui.sitepicker.SitePickerRepository
+import com.woocommerce.android.util.sanitiseUrl
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
@@ -35,8 +36,6 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.transformLatest
 import kotlinx.coroutines.flow.zip
 import kotlinx.coroutines.launch
-import org.wordpress.android.fluxc.network.discovery.DiscoveryUtils
-import org.wordpress.android.util.UrlUtils
 import javax.inject.Inject
 import kotlin.text.RegexOption.IGNORE_CASE
 
@@ -269,22 +268,6 @@ class SitePickerSiteDiscoveryViewModel @Inject constructor(
                 }
             }
         }
-    }
-
-    /**
-     * Basic sanitization of the URL based on the same logic we use in the XMLRPC discovery
-     * see: https://github.com/wordpress-mobile/WordPress-FluxC-Android/blob/94601a5d4c1c98068adde0352ecc25e6d0046f35/fluxc/src/main/java/org/wordpress/android/fluxc/network/discovery/SelfHostedEndpointFinder.java#L292
-     */
-    private fun String.sanitiseUrl(): String {
-        return trim()
-            .trimEnd('/')
-            .let {
-                // Convert IDN names to punycode if necessary
-                UrlUtils.convertUrlToPunycodeIfNeeded(it)
-            }.let {
-                // Strip url from known usual trailing paths
-                DiscoveryUtils.stripKnownPaths(it)
-            }
     }
 
     private enum class Step {

@@ -65,6 +65,7 @@ import com.woocommerce.android.util.ActivityUtils
 import com.woocommerce.android.util.ChromeCustomTabUtils
 import com.woocommerce.android.util.UrlUtils
 import com.woocommerce.android.util.WooLog
+import com.woocommerce.android.util.sanitiseUrl
 import dagger.android.AndroidInjector
 import dagger.android.DispatchingAndroidInjector
 import dagger.android.HasAndroidInjector
@@ -144,22 +145,31 @@ class LoginActivity :
 
     @Inject
     internal lateinit var androidInjector: DispatchingAndroidInjector<Any>
+
     @Inject
     internal lateinit var loginAnalyticsListener: LoginAnalyticsListener
+
     @Inject
     internal lateinit var unifiedLoginTracker: UnifiedLoginTracker
+
     @Inject
     internal lateinit var zendeskHelper: ZendeskHelper
+
     @Inject
     internal lateinit var urlUtils: UrlUtils
+
     @Inject
     internal lateinit var experimentTracker: ExperimentTracker
+
     @Inject
     internal lateinit var appPrefsWrapper: AppPrefsWrapper
+
     @Inject
     internal lateinit var dispatcher: Dispatcher
+
     @Inject
     internal lateinit var loginNotificationScheduler: LoginNotificationScheduler
+
     @Inject
     internal lateinit var uiMessageResolver: UIMessageResolver
 
@@ -193,6 +203,7 @@ class LoginActivity :
                 val email = intent.extras!!.getString(EMAIL_PARAMETER)
                 gotWpcomEmail(email, verifyEmail = true, null)
             }
+
             hasJetpackConnectedIntent() -> {
                 AnalyticsTracker.track(
                     stat = AnalyticsEvent.LOGIN_JETPACK_SETUP_COMPLETED,
@@ -200,12 +211,15 @@ class LoginActivity :
                 )
                 startLoginViaWPCom()
             }
+
             hasMagicLinkLoginIntent() -> {
                 getAuthTokenFromIntent()?.let { showMagicLinkInterceptFragment(it) }
             }
+
             !loginHelpNotification.isNullOrBlank() -> {
                 processLoginHelpNotification(loginHelpNotification)
             }
+
             savedInstanceState == null -> {
                 loginAnalyticsListener.trackLoginAccessed()
                 showPrologue()
@@ -556,7 +570,7 @@ class LoginActivity :
     override fun gotConnectedSiteInfo(siteAddress: String, redirectUrl: String?, hasJetpack: Boolean) {
         // If the redirect url is available, use that as the preferred url. Pass this url to the other fragments
         // with the protocol since it is needed for initiating forgot password flow etc in the login process.
-        val inputSiteAddress = redirectUrl ?: siteAddress
+        val inputSiteAddress = (redirectUrl ?: siteAddress).sanitiseUrl()
 
         // Save site address to app prefs so it's available to MainActivity regardless of how the user
         // logs into the app. Strip the protocol from this url string prior to saving to AppPrefs since it's
@@ -931,6 +945,7 @@ class LoginActivity :
         val notificationType = when {
             !appPrefsWrapper.getLoginSiteAddress()
                 .isNullOrBlank() -> LOGIN_SITE_ADDRESS_PASSWORD_ERROR
+
             else -> LOGIN_WPCOM_PASSWORD_ERROR
         }
         loginNotificationScheduler.scheduleNotification(notificationType)
@@ -949,6 +964,7 @@ class LoginActivity :
             LOGIN_SITE_ADDRESS_ERROR -> startLoginViaWPCom()
             LOGIN_SITE_ADDRESS_PASSWORD_ERROR,
             LOGIN_WPCOM_PASSWORD_ERROR -> useMagicLinkInstead(appPrefsWrapper.getLoginEmail(), verifyEmail = false)
+
             LOGIN_WPCOM_EMAIL_ERROR,
             LOGIN_SITE_ADDRESS_EMAIL_ERROR,
             DEFAULT_HELP ->
