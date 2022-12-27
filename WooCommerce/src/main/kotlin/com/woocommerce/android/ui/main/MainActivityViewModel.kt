@@ -199,7 +199,6 @@ class MainActivityViewModel @Inject constructor(
     data class ShowFeatureAnnouncement(val announcement: FeatureAnnouncement) : Event()
     data class ViewReviewDetail(val uniqueId: Long) : Event()
     data class ViewOrderDetail(val uniqueId: Long, val remoteNoteId: Long) : Event()
-    data class OpenInBrowser(val url: String) : Event()
 
     sealed class MoreMenuBadgeState {
         data class UnseenReviews(val count: Int) : MoreMenuBadgeState()
