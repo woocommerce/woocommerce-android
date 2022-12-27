@@ -36,7 +36,6 @@ import com.woocommerce.android.ui.login.storecreation.plans.PlansViewModel.PlanI
 import com.woocommerce.android.ui.login.storecreation.plans.PlansViewModel.ViewState.ErrorState
 import com.woocommerce.android.ui.login.storecreation.plans.PlansViewModel.ViewState.LoadingState
 import com.woocommerce.android.util.SiteIndependentCurrencyFormatter
-import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.ScopedViewModel
@@ -48,7 +47,7 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.parcelize.Parcelize
 import org.wordpress.android.fluxc.model.plans.full.Plan
-import java.util.TimeZone
+import java.util.*
 import javax.inject.Inject
 
 @HiltViewModel
@@ -218,7 +217,6 @@ class PlansViewModel @Inject constructor(
         val reason = if (errorType is IAPError.RemoteCommunication.Server) {
             errorType.reason
         } else ""
-        WooLog.i(WooLog.T.IAP, "Error processing eCommerce plan: $errorType reason: $reason")
         analyticsTrackerWrapper.track(
             AnalyticsEvent.SITE_CREATION_IAP_PURCHASE_ERROR,
             mapOf(
