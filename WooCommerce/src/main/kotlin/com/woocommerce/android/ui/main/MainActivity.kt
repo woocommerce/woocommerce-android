@@ -66,7 +66,6 @@ import com.woocommerce.android.ui.main.MainActivityViewModel.OpenOrderCreation
 import com.woocommerce.android.ui.main.MainActivityViewModel.RestartActivityForAppLink
 import com.woocommerce.android.ui.main.MainActivityViewModel.RestartActivityForNotification
 import com.woocommerce.android.ui.main.MainActivityViewModel.ShowFeatureAnnouncement
-import com.woocommerce.android.ui.main.MainActivityViewModel.StartSitePicker
 import com.woocommerce.android.ui.main.MainActivityViewModel.ViewMyStoreStats
 import com.woocommerce.android.ui.main.MainActivityViewModel.ViewOrderDetail
 import com.woocommerce.android.ui.main.MainActivityViewModel.ViewOrderList
@@ -712,7 +711,6 @@ class MainActivity :
                 is RestartActivityForNotification -> restartActivityForNotification(event)
                 is RestartActivityForAppLink -> restartActivityForAppLink(event)
                 is ShowFeatureAnnouncement -> navigateToFeratureAnnouncement(event)
-                StartSitePicker -> startSitePicker()
                 ViewPayments -> showPayments()
                 OpenOrderCreation -> openOrderCreation()
             }

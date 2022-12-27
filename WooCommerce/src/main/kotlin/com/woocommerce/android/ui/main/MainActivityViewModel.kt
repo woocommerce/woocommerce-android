@@ -192,7 +192,6 @@ class MainActivityViewModel @Inject constructor(
     object ViewMyStoreStats : Event()
     object ViewZendeskTickets : Event()
     object ViewPayments : Event()
-    object StartSitePicker : Event()
     object OpenOrderCreation : Event()
     data class RestartActivityForNotification(val pushId: Int, val notification: Notification) : Event()
     data class RestartActivityForAppLink(val data: Uri) : Event()
