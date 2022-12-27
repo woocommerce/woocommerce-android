@@ -74,8 +74,6 @@ class MainActivityViewModelTest : BaseUnitTest() {
     private val siteModel: SiteModel = SiteModel().apply {
         id = 1
         siteId = TEST_REMOTE_SITE_ID_1
-        url = "https://www.testurl.com"
-        adminUrl = "https://www.testadminurl.com"
     }
 
     private val notificationMessageHandler: NotificationMessageHandler = mock()
