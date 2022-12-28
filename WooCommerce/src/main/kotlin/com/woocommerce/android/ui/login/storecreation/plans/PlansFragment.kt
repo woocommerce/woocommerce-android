@@ -5,12 +5,12 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.app.AppCompatActivity
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import com.woocommerce.android.extensions.navigateSafely
-import com.woocommerce.android.iap.pub.IAPActivityWrapper
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.common.wpcomwebview.WPComWebViewAuthenticator
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
@@ -31,17 +31,14 @@ class PlansFragment : BaseFragment() {
     override val activityAppBarStatus: AppBarStatus
         get() = AppBarStatus.Hidden
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        lifecycle.addObserver(viewModel)
-    }
-
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         return ComposeView(requireContext()).apply {
             setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
             setContent {
-                WooThemeWithBackground {
-                    PlanScreen(viewModel = viewModel, authenticator, userAgent)
+                CompositionLocalProvider(LocalActivity provides requireActivity() as AppCompatActivity) {
+                    WooThemeWithBackground {
+                        PlanScreen(viewModel = viewModel, authenticator, userAgent)
+                    }
                 }
             }
         }
@@ -50,16 +47,6 @@ class PlansFragment : BaseFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         setupObservers()
-    }
-
-    override fun onStart() {
-        super.onStart()
-        viewModel.setIAPActivityWrapper(IAPActivityWrapper(requireActivity() as AppCompatActivity))
-    }
-
-    override fun onDestroy() {
-        lifecycle.removeObserver(viewModel)
-        super.onDestroy()
     }
 
     private fun setupObservers() {

@@ -2,6 +2,7 @@ package com.woocommerce.android.ui.login.storecreation.plans
 
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
+import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.animation.Crossfade
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -25,6 +26,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.compositionLocalOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
@@ -46,6 +48,7 @@ import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import com.woocommerce.android.R
+import com.woocommerce.android.iap.pub.IAPActivityWrapper
 import com.woocommerce.android.ui.common.wpcomwebview.WPComWebViewAuthenticator
 import com.woocommerce.android.ui.compose.component.ProgressIndicator
 import com.woocommerce.android.ui.compose.component.WCColoredButton
@@ -59,6 +62,8 @@ import com.woocommerce.android.ui.login.storecreation.plans.PlansViewModel.ViewS
 import com.woocommerce.android.ui.login.storecreation.plans.PlansViewModel.ViewState.LoadingState
 import com.woocommerce.android.ui.login.storecreation.plans.PlansViewModel.ViewState.PlanState
 import org.wordpress.android.fluxc.network.UserAgent
+
+val LocalActivity = compositionLocalOf { AppCompatActivity() }
 
 @Composable
 fun PlanScreen(viewModel: PlansViewModel, authenticator: WPComWebViewAuthenticator, userAgent: UserAgent) {
@@ -94,8 +99,9 @@ fun PlanScreen(viewModel: PlansViewModel, authenticator: WPComWebViewAuthenticat
 private fun PlanInformation(
     planState: PlanState,
     onExitTriggered: () -> Unit,
-    onConfirmClicked: () -> Unit
+    onConfirmClicked: (IAPActivityWrapper) -> Unit
 ) {
+    val currentActivity = LocalActivity.current
     val systemUiController = rememberSystemUiController()
     val wooDarkPurple = colorResource(id = R.color.woo_purple_90)
     val statusBarColor = colorResource(id = R.color.color_status_bar)
@@ -265,7 +271,7 @@ private fun PlanInformation(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(horizontal = dimensionResource(id = R.dimen.major_100)),
-                onClick = onConfirmClicked,
+                onClick = { onConfirmClicked(IAPActivityWrapper(currentActivity)) },
                 enabled = !planState.showMainButtonLoading
             ) {
                 if (planState.showMainButtonLoading) {

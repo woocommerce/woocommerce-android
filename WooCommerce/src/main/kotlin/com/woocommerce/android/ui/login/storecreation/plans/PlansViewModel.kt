@@ -3,8 +3,6 @@ package com.woocommerce.android.ui.login.storecreation.plans
 import android.os.Parcelable
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
-import androidx.lifecycle.DefaultLifecycleObserver
-import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
@@ -47,7 +45,7 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.parcelize.Parcelize
 import org.wordpress.android.fluxc.model.plans.full.Plan
-import java.util.*
+import java.util.TimeZone
 import javax.inject.Inject
 
 @HiltViewModel
@@ -59,7 +57,7 @@ class PlansViewModel @Inject constructor(
     private val iapManager: PurchaseWPComPlanActions,
     private val isIAPEnabled: IsIAPEnabled,
     private val siteIndependentCurrencyFormatter: SiteIndependentCurrencyFormatter
-) : ScopedViewModel(savedStateHandle, iapManager), DefaultLifecycleObserver {
+) : ScopedViewModel(savedStateHandle, iapManager) {
     companion object {
         const val NEW_SITE_LANGUAGE_ID = "en"
         const val NEW_SITE_THEME = "pub/zoologist"
@@ -73,7 +71,6 @@ class PlansViewModel @Inject constructor(
     private val _viewState = savedState.getStateFlow<ViewState>(this, LoadingState)
     val viewState = _viewState.asLiveData()
 
-    private var iapActivityWrapper: IAPActivityWrapper? = null
     private var iapPurchaseFlow: Flow<WPComPurchaseResult>? = null
 
     init {
@@ -81,20 +78,11 @@ class PlansViewModel @Inject constructor(
         trackStep(VALUE_STEP_PLAN_PURCHASE)
     }
 
-    override fun onStop(owner: LifecycleOwner) {
-        iapActivityWrapper = null
-        super.onStop(owner)
-    }
-
-    fun setIAPActivityWrapper(wrapper: IAPActivityWrapper) {
-        iapActivityWrapper = wrapper
-    }
-
     fun onExitTriggered() {
         triggerEvent(Exit)
     }
 
-    fun onConfirmClicked() {
+    fun onConfirmClicked(activityWrapper: IAPActivityWrapper) {
         launch {
             val currentState = _viewState.value
             if (currentState is ViewState.PlanState) {
@@ -104,7 +92,7 @@ class PlansViewModel @Inject constructor(
                 .ifSuccessfulThen { siteId ->
                     newStore.update(siteId = siteId)
                     when {
-                        isIAPEnabled() -> purchasePlanUsingIAP(siteId)
+                        isIAPEnabled() -> purchasePlanUsingIAP(siteId, activityWrapper)
                         else -> proceedToWebviewCheckout()
                     }
                 }
@@ -121,11 +109,9 @@ class PlansViewModel @Inject constructor(
         }
     }
 
-    private suspend fun purchasePlanUsingIAP(siteId: Long) {
-        val nonNullableActivityWrapper =
-            checkNotNull(iapActivityWrapper) { "iapActivityWrapper must not be null when triggering iap purchase flow" }
+    private suspend fun purchasePlanUsingIAP(siteId: Long, activityWrapper: IAPActivityWrapper) {
         observeInAppPurchasesResult(siteId)
-        iapManager.purchaseWPComPlan(nonNullableActivityWrapper, siteId)
+        iapManager.purchaseWPComPlan(activityWrapper, siteId)
     }
 
     fun onIapPurchaseSuccess() {

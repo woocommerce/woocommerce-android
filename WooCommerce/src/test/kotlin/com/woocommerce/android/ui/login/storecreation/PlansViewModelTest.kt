@@ -162,7 +162,7 @@ class PlansViewModelTest : BaseUnitTest() {
 
             whenViewModelIsCreated()
 
-            viewModel.onConfirmClicked()
+            viewModel.onConfirmClicked(iapActivityWrapper)
 
             viewModel.viewState.observeForever(observer)
             verify(observer).onChanged(captor.capture())
@@ -182,8 +182,7 @@ class PlansViewModelTest : BaseUnitTest() {
                 .thenReturn(StoreCreationResult.Success(SITE_ID))
 
             whenViewModelIsCreated()
-            viewModel.setIAPActivityWrapper(iapActivityWrapper)
-            viewModel.onConfirmClicked()
+            viewModel.onConfirmClicked(iapActivityWrapper)
             viewModel.viewState.observeForever(observer)
             verify(observer).onChanged(captor.capture())
 
@@ -208,7 +207,7 @@ class PlansViewModelTest : BaseUnitTest() {
 
             whenViewModelIsCreated()
 
-            viewModel.onConfirmClicked()
+            viewModel.onConfirmClicked(iapActivityWrapper)
 
             viewModel.viewState.observeForever(observer)
             verify(observer).onChanged(captor.capture())
@@ -230,7 +229,7 @@ class PlansViewModelTest : BaseUnitTest() {
 
             whenViewModelIsCreated()
 
-            viewModel.onConfirmClicked()
+            viewModel.onConfirmClicked(iapActivityWrapper)
 
             viewModel.viewState.observeForever(observer)
             verify(observer).onChanged(captor.capture())
