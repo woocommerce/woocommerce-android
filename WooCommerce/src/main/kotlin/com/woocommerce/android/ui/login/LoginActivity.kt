@@ -143,35 +143,16 @@ class LoginActivity :
         }
     }
 
-    @Inject
-    internal lateinit var androidInjector: DispatchingAndroidInjector<Any>
-
-    @Inject
-    internal lateinit var loginAnalyticsListener: LoginAnalyticsListener
-
-    @Inject
-    internal lateinit var unifiedLoginTracker: UnifiedLoginTracker
-
-    @Inject
-    internal lateinit var zendeskHelper: ZendeskHelper
-
-    @Inject
-    internal lateinit var urlUtils: UrlUtils
-
-    @Inject
-    internal lateinit var experimentTracker: ExperimentTracker
-
-    @Inject
-    internal lateinit var appPrefsWrapper: AppPrefsWrapper
-
-    @Inject
-    internal lateinit var dispatcher: Dispatcher
-
-    @Inject
-    internal lateinit var loginNotificationScheduler: LoginNotificationScheduler
-
-    @Inject
-    internal lateinit var uiMessageResolver: UIMessageResolver
+    @Inject internal lateinit var androidInjector: DispatchingAndroidInjector<Any>
+    @Inject internal lateinit var loginAnalyticsListener: LoginAnalyticsListener
+    @Inject internal lateinit var unifiedLoginTracker: UnifiedLoginTracker
+    @Inject internal lateinit var zendeskHelper: ZendeskHelper
+    @Inject internal lateinit var urlUtils: UrlUtils
+    @Inject internal lateinit var experimentTracker: ExperimentTracker
+    @Inject internal lateinit var appPrefsWrapper: AppPrefsWrapper
+    @Inject internal lateinit var dispatcher: Dispatcher
+    @Inject internal lateinit var loginNotificationScheduler: LoginNotificationScheduler
+    @Inject internal lateinit var uiMessageResolver: UIMessageResolver
 
     private var loginMode: LoginMode? = null
     private lateinit var binding: ActivityLoginBinding
@@ -203,7 +184,6 @@ class LoginActivity :
                 val email = intent.extras!!.getString(EMAIL_PARAMETER)
                 gotWpcomEmail(email, verifyEmail = true, null)
             }
-
             hasJetpackConnectedIntent() -> {
                 AnalyticsTracker.track(
                     stat = AnalyticsEvent.LOGIN_JETPACK_SETUP_COMPLETED,
@@ -211,15 +191,12 @@ class LoginActivity :
                 )
                 startLoginViaWPCom()
             }
-
             hasMagicLinkLoginIntent() -> {
                 getAuthTokenFromIntent()?.let { showMagicLinkInterceptFragment(it) }
             }
-
             !loginHelpNotification.isNullOrBlank() -> {
                 processLoginHelpNotification(loginHelpNotification)
             }
-
             savedInstanceState == null -> {
                 loginAnalyticsListener.trackLoginAccessed()
                 showPrologue()
