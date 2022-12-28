@@ -115,7 +115,7 @@ android {
     }
 
     composeOptions {
-        kotlinCompilerExtensionVersion composeVersion
+        kotlinCompilerExtensionVersion composeCompilerVersion
     }
 
     flavorDimensions "buildType"
@@ -361,18 +361,19 @@ dependencies {
     }
 
     // Jetpack Compose
-    implementation 'androidx.activity:activity-compose:1.4.0'
-    implementation "com.google.accompanist:accompanist-swiperefresh:$composeAccompanistVersion"
-    implementation "androidx.compose.material:material:$composeVersion"
-    implementation "androidx.compose.animation:animation:$composeVersion"
-    implementation "androidx.compose.ui:ui-tooling:$composeVersion"
-    implementation "androidx.lifecycle:lifecycle-viewmodel-compose:$lifecycleViewmodelComposeVersion"
-    implementation "androidx.compose.runtime:runtime-livedata:$composeVersion"
+    implementation platform('androidx.compose:compose-bom:2022.12.00')
+    implementation 'androidx.activity:activity-compose'
+    implementation 'androidx.compose.material:material'
+    implementation 'androidx.compose.animation:animation'
+    implementation 'androidx.compose.ui:ui-tooling'
+    implementation 'androidx.lifecycle:lifecycle-viewmodel-compose'
+    implementation 'androidx.compose.runtime:runtime-livedata'
+    implementation 'androidx.constraintlayout:constraintlayout-compose:1.0.1'
     implementation "com.google.android.material:compose-theme-adapter:$composeThemeAdapterVersion"
-    androidTestImplementation "androidx.compose.ui:ui-test-junit4:$composeVersion"
-    debugImplementation "androidx.compose.ui:ui-test-manifest:$composeVersion"
-    implementation "androidx.constraintlayout:constraintlayout-compose:1.0.1"
+    implementation "com.google.accompanist:accompanist-swiperefresh:$composeAccompanistVersion"
     implementation "com.google.accompanist:accompanist-systemuicontroller:$composeAccompanistVersion"
+    androidTestImplementation 'androidx.compose.ui:ui-test-junit4'
+    debugImplementation 'androidx.compose.ui:ui-test-manifest'
 
 
     implementation "io.coil-kt:coil-compose:$coilVersion"
