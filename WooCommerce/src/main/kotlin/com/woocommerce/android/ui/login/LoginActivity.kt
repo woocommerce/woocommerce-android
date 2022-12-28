@@ -65,7 +65,6 @@ import com.woocommerce.android.util.ActivityUtils
 import com.woocommerce.android.util.ChromeCustomTabUtils
 import com.woocommerce.android.util.UrlUtils
 import com.woocommerce.android.util.WooLog
-import com.woocommerce.android.util.sanitiseUrl
 import dagger.android.AndroidInjector
 import dagger.android.DispatchingAndroidInjector
 import dagger.android.HasAndroidInjector
@@ -547,7 +546,7 @@ class LoginActivity :
     override fun gotConnectedSiteInfo(siteAddress: String, redirectUrl: String?, hasJetpack: Boolean) {
         // If the redirect url is available, use that as the preferred url. Pass this url to the other fragments
         // with the protocol since it is needed for initiating forgot password flow etc in the login process.
-        val inputSiteAddress = (redirectUrl ?: siteAddress).sanitiseUrl()
+        val inputSiteAddress = urlUtils.sanitiseUrl(redirectUrl ?: siteAddress)
 
         // Save site address to app prefs so it's available to MainActivity regardless of how the user
         // logs into the app. Strip the protocol from this url string prior to saving to AppPrefs since it's
