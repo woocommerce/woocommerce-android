@@ -226,6 +226,8 @@ private fun DomainSuggestionItem(
     domainSuggestion: DomainSuggestionUi,
     modifier: Modifier = Modifier
 ) {
+    val domainTextHighlightedColor = colorResource(id = R.color.color_on_surface_high)
+    val domainTextColor = colorResource(id = R.color.color_on_surface_medium_selector)
     Row(
         modifier = modifier.padding(
             top = dimensionResource(id = R.dimen.major_75),
@@ -235,7 +237,7 @@ private fun DomainSuggestionItem(
         Text(
             text = buildAnnotatedString {
                 withStyle(style = MaterialTheme.typography.body2.toParagraphStyle()) {
-                    withStyle(style = SpanStyle(color = colorResource(id = R.color.color_on_surface_medium_selector))) {
+                    withStyle(style = SpanStyle(color = domainTextColor)) {
                         append(domainSuggestion.domain.substringBefore("."))
                     }
                     if (domainSuggestion.isSelected) {
@@ -243,7 +245,7 @@ private fun DomainSuggestionItem(
                             append(".${domainSuggestion.domain.substringAfter(delimiter = ".")}")
                         }
                     } else {
-                        withStyle(style = SpanStyle(color = colorResource(id = R.color.color_on_surface_high))) {
+                        withStyle(style = SpanStyle(color = domainTextHighlightedColor)) {
                             append(".${domainSuggestion.domain.substringAfter(delimiter = ".")}")
                         }
                     }
