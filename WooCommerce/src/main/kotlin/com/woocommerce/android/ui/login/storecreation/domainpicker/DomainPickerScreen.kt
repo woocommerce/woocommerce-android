@@ -68,13 +68,15 @@ fun DomainPickerScreen(viewModel: DomainPickerViewModel) {
             Toolbar(
                 onArrowBackPressed = viewModel::onBackPressed,
             )
-        }) {
+        }) { padding ->
             DomainSearchForm(
                 state = viewState,
                 onDomainQueryChanged = viewModel::onDomainChanged,
                 onDomainSuggestionSelected = viewModel::onDomainSuggestionSelected,
                 onContinueClicked = viewModel::onContinueClicked,
-                modifier = Modifier.fillMaxSize()
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(padding)
             )
         }
     }

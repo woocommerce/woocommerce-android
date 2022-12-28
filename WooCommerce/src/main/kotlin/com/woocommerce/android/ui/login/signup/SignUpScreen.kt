@@ -62,7 +62,7 @@ fun SignUpScreen(viewModel: SignUpViewModel) {
     BackHandler(onBack = viewModel::onBackPressed)
     Scaffold(topBar = {
         Toolbar(onArrowBackPressed = viewModel::onBackPressed)
-    }) {
+    }) { padding ->
         when {
             state.isLoading ->
                 ProgressDialog(
@@ -73,7 +73,8 @@ fun SignUpScreen(viewModel: SignUpViewModel) {
                 termsOfServiceClicked = viewModel::onTermsOfServiceClicked,
                 onPrimaryButtonClicked = viewModel::onGetStartedCLicked,
                 onLoginClicked = viewModel::onLoginClicked,
-                signUpState = state
+                signUpState = state,
+                modifier = Modifier.padding(padding)
             )
         }
     }
