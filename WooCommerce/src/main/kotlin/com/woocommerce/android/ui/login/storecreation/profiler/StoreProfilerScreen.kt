@@ -178,7 +178,7 @@ private fun CategoryItem(
             .background(
                 color = colorResource(
                     id = if (category.isSelected)
-                        if (isSystemInDarkTheme()) R.color.color_on_primary_surface else R.color.woo_purple_10
+                        if (isSystemInDarkTheme()) R.color.color_surface else R.color.woo_purple_10
                     else R.color.color_surface
                 )
             )
@@ -186,6 +186,10 @@ private fun CategoryItem(
     ) {
         Text(
             text = category.name,
+            color = colorResource(
+                id = if (isSystemInDarkTheme() && category.isSelected) R.color.color_primary
+                else R.color.color_on_surface
+            ),
             modifier = Modifier.padding(
                 start = dimensionResource(id = R.dimen.major_100),
                 top = dimensionResource(id = R.dimen.major_75),
