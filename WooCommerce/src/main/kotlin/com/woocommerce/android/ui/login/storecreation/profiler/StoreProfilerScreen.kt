@@ -53,7 +53,7 @@ fun StoreProfilerScreen(viewModel: StoreProfilerViewModel) {
             )
         }) {
             when (state) {
-                StoreProfilerViewModel.Loading -> ProgressIndicator()
+                StoreProfilerViewModel.LoadingState -> ProgressIndicator()
                 is StoreProfilerContent -> ProfilerContent(
                     profilerStepContent = state,
                     onContinueClicked = viewModel::onContinueClicked,

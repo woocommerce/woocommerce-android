@@ -17,6 +17,9 @@ import com.woocommerce.android.viewmodel.ResourceProvider
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.getStateFlow
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.parcelize.Parcelize
 import javax.inject.Inject
@@ -29,13 +32,24 @@ class StoreProfilerViewModel @Inject constructor(
     private val newStore: NewStore,
     private val resourceProvider: ResourceProvider,
 ) : ScopedViewModel(savedStateHandle) {
-    private var allOptions: List<StoreProfilerOptionUi> = emptyList()
-    private val _storeProfilerContent = savedState.getStateFlow<ViewState>(
-        scope = this,
-        initialValue = Loading
-    )
+    private val allOptions = MutableStateFlow(emptyList<StoreProfilerOptionUi>())
+    private val currentProfilerStepType = savedState.getStateFlow(this, SITE_CATEGORY)
 
-    val storeProfilerContent: LiveData<ViewState> = _storeProfilerContent.asLiveData()
+    val storeProfilerContent: LiveData<ViewState> = combine(
+        allOptions,
+        currentProfilerStepType
+    ) { allOptions, currentStep ->
+        if (allOptions.isEmpty()) {
+            LoadingState
+        } else {
+            StoreProfilerContent(
+                storeName = newStore.data.name ?: "",
+                title = resourceProvider.getString(getProfilerStepTitle(currentStep)),
+                description = resourceProvider.getString(getProfilerStepDescription(currentStep)),
+                options = allOptions.filter { it.type == currentStep }
+            )
+        }
+    }.asLiveData()
 
     init {
         analyticsTrackerWrapper.track(
@@ -45,13 +59,13 @@ class StoreProfilerViewModel @Inject constructor(
             )
         )
         launch {
-            loadProfilerOptions(storeProfilerRepository)
-            _storeProfilerContent.value = StoreProfilerContent(
-                storeName = newStore.data.name ?: "",
-                title = resourceProvider.getString(R.string.store_creation_store_categories_title),
-                description = resourceProvider.getString(R.string.store_creation_store_categories_subtitle),
-                options = allOptions.filter { it.type == SITE_CATEGORY }
-            )
+            val fetchedOptions = storeProfilerRepository.fetchProfilerOptions()
+            allOptions.update {
+                fetchedOptions.industries.map { it.toStoreProfilerOptionUi() } +
+                    fetchedOptions.aboutMerchant.map { it.toStoreProfilerOptionUi() } +
+                    fetchedOptions.aboutMerchant.first { it.platforms != null }.platforms!!
+                        .map { it.toStoreProfilerOptionUi() }
+            }
         }
     }
 
@@ -64,37 +78,44 @@ class StoreProfilerViewModel @Inject constructor(
     }
 
     fun onContinueClicked() {
-        triggerEvent(NavigateToNextStep)
+        when (currentProfilerStepType.value) {
+            SITE_CATEGORY -> currentProfilerStepType.update { COMMERCE_JOURNEY }
+            COMMERCE_JOURNEY -> currentProfilerStepType.update { ECOMMERCE_PLATFORM }
+            ECOMMERCE_PLATFORM -> triggerEvent(NavigateToNextStep)
+        }
     }
 
     fun onOptionSelected(option: StoreProfilerOptionUi) {
-        allOptions = allOptions.map {
-            if (it.type == option.type) {
-                if (it.name == option.name) it.copy(isSelected = true)
-                else it.copy(isSelected = false)
-            } else {
-                it
-            }
+        allOptions.update {
+            allOptions.value
+                .map {
+                    if (it.type == option.type) {
+                        if (it.name == option.name) it.copy(isSelected = true)
+                        else it.copy(isSelected = false)
+                    } else {
+                        it
+                    }
+                }
         }
-        _storeProfilerContent.value = StoreProfilerContent(
-            storeName = newStore.data.name ?: "",
-            title = resourceProvider.getString(R.string.store_creation_store_categories_title),
-            description = resourceProvider.getString(R.string.store_creation_store_categories_subtitle),
-            options = allOptions
-        )
     }
 
-    private suspend fun loadProfilerOptions(storeProfilerRepository: StoreProfilerRepository) {
-        val profilerOptions = storeProfilerRepository.fetchProfilerOptions()
-
-        allOptions =
-            profilerOptions.industries.map { it.toStoreProfilerOptionUi() } +
-                profilerOptions.aboutMerchant.map { it.toStoreProfilerOptionUi() } +
-                profilerOptions.aboutMerchant.first { it.platforms != null }
-                    .platforms!!
-                    .map { it.toStoreProfilerOptionUi() }
+    private fun getProfilerStepDescription(currentStep: ProfilerOptionType): Int {
+        val description = when (currentStep) {
+            SITE_CATEGORY -> R.string.store_creation_store_profiler_industries_description
+            COMMERCE_JOURNEY -> R.string.store_creation_store_profiler_journey_description
+            ECOMMERCE_PLATFORM -> R.string.store_creation_store_profiler_platforms_description
+        }
+        return description
     }
 
+    private fun getProfilerStepTitle(currentStep: ProfilerOptionType): Int {
+        val title = when (currentStep) {
+            SITE_CATEGORY -> R.string.store_creation_store_profiler_industries_title
+            COMMERCE_JOURNEY -> R.string.store_creation_store_profiler_journey_title
+            ECOMMERCE_PLATFORM -> R.string.store_creation_store_profiler_platforms_title
+        }
+        return title
+    }
 
     private fun Industry.toStoreProfilerOptionUi() =
         StoreProfilerOptionUi(
@@ -120,7 +141,7 @@ class StoreProfilerViewModel @Inject constructor(
     sealed class ViewState : Parcelable
 
     @Parcelize
-    object Loading : ViewState()
+    object LoadingState : ViewState()
 
     @Parcelize
     data class StoreProfilerContent(
