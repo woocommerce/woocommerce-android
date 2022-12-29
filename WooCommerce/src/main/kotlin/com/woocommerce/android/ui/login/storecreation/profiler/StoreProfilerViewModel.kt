@@ -97,6 +97,11 @@ class StoreProfilerViewModel @Inject constructor(
                     }
                 }
         }
+        when (option.type) {
+            SITE_CATEGORY -> newStore.update(category = option.name)
+            COMMERCE_JOURNEY -> TODO()
+            ECOMMERCE_PLATFORM -> TODO()
+        }
     }
 
     private fun getProfilerStepDescription(currentStep: ProfilerOptionType): Int {
