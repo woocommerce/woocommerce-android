@@ -64,14 +64,6 @@ class StoreProfilerViewModel @Inject constructor(
     }
 
     fun onContinueClicked() {
-//        _storeProfilerContent.value.options
-//            .firstOrNull { it.isSelected }
-//            ?.name
-//            ?.let {
-//                newStore.update(category = it)
-//            }
-//
-
         triggerEvent(NavigateToNextStep)
     }
 
