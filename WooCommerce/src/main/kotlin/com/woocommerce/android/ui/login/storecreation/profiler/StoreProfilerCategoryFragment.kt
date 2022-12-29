@@ -27,7 +27,7 @@ class StoreProfilerCategoryFragment : BaseFragment() {
             setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
             setContent {
                 WooThemeWithBackground {
-                    StoreProfilerCategoryScreen(viewModel)
+                    StoreProfilerScreen(viewModel)
                 }
             }
         }

@@ -38,10 +38,12 @@ import androidx.compose.ui.unit.dp
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.compose.component.WCColoredButton
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
-import com.woocommerce.android.ui.login.storecreation.profiler.StoreProfilerViewModel.StoreCategoryUi
+import com.woocommerce.android.ui.login.storecreation.profiler.StoreProfilerViewModel.ProfilerOptionType.SITE_CATEGORY
+import com.woocommerce.android.ui.login.storecreation.profiler.StoreProfilerViewModel.StoreProfilerOptionUi
+import com.woocommerce.android.ui.login.storecreation.profiler.StoreProfilerViewModel.StoreProfilerState
 
 @Composable
-fun StoreProfilerCategoryScreen(viewModel: StoreProfilerViewModel) {
+fun StoreProfilerScreen(viewModel: StoreProfilerViewModel) {
     viewModel.storeProfilerState.observeAsState().value?.let { state ->
         Scaffold(topBar = {
             Toolbar(
@@ -49,9 +51,8 @@ fun StoreProfilerCategoryScreen(viewModel: StoreProfilerViewModel) {
                 onSkipPressed = viewModel::onSkipPressed
             )
         }) {
-            CategoriesContent(
-                storeName = state.storeName,
-                storeCategories = state.categories,
+            ProfilerContent(
+                profilerStepContent = state,
                 onContinueClicked = viewModel::onContinueClicked,
                 onCategorySelected = viewModel::onCategorySelected,
                 modifier = Modifier.background(MaterialTheme.colors.surface)
@@ -88,10 +89,9 @@ private fun Toolbar(
 }
 
 @Composable
-private fun CategoriesContent(
-    storeName: String,
-    storeCategories: List<StoreCategoryUi>,
-    onCategorySelected: (StoreCategoryUi) -> Unit,
+private fun ProfilerContent(
+    profilerStepContent: StoreProfilerState,
+    onCategorySelected: (StoreProfilerOptionUi) -> Unit,
     onContinueClicked: () -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -104,21 +104,21 @@ private fun CategoriesContent(
             verticalArrangement = Arrangement.spacedBy(dimensionResource(id = R.dimen.major_100)),
         ) {
             Text(
-                text = storeName.uppercase(),
+                text = profilerStepContent.storeName.uppercase(),
                 style = MaterialTheme.typography.caption,
                 color = colorResource(id = R.color.color_on_surface_medium)
             )
             Text(
-                text = stringResource(id = R.string.store_creation_store_categories_title),
+                text = profilerStepContent.title,
                 style = MaterialTheme.typography.h5,
             )
             Text(
-                text = stringResource(id = R.string.store_creation_store_categories_subtitle),
+                text = profilerStepContent.description,
                 style = MaterialTheme.typography.subtitle1,
                 color = colorResource(id = R.color.color_on_surface_medium)
             )
             CategoryList(
-                categories = storeCategories,
+                categories = profilerStepContent.options,
                 onCategorySelected = onCategorySelected,
                 modifier = Modifier
                     .fillMaxWidth()
@@ -133,7 +133,7 @@ private fun CategoriesContent(
                 .fillMaxWidth()
                 .padding(dimensionResource(id = R.dimen.major_100)),
             onClick = onContinueClicked,
-            enabled = storeCategories.any { it.isSelected }
+            enabled = profilerStepContent.options.any { it.isSelected }
         ) {
             Text(text = stringResource(id = R.string.continue_button))
         }
@@ -142,8 +142,8 @@ private fun CategoriesContent(
 
 @Composable
 private fun CategoryList(
-    categories: List<StoreCategoryUi>,
-    onCategorySelected: (StoreCategoryUi) -> Unit,
+    categories: List<StoreProfilerOptionUi>,
+    onCategorySelected: (StoreProfilerOptionUi) -> Unit,
     modifier: Modifier = Modifier
 ) {
     LazyColumn(modifier = modifier) {
@@ -161,8 +161,8 @@ private fun CategoryList(
 
 @Composable
 private fun CategoryItem(
-    category: StoreCategoryUi,
-    onCategorySelected: (StoreCategoryUi) -> Unit,
+    category: StoreProfilerOptionUi,
+    onCategorySelected: (StoreProfilerOptionUi) -> Unit,
     modifier: Modifier = Modifier
 ) {
     Box(
@@ -205,9 +205,13 @@ private fun CategoryItem(
 @Composable
 fun CategoriesContentPreview() {
     WooThemeWithBackground {
-        CategoriesContent(
-            storeName = "White Christmas Tress",
-            storeCategories = CATEGORIES,
+        ProfilerContent(
+            profilerStepContent = StoreProfilerState(
+                storeName = "White Christmas Tree",
+                title = "What’s your business about?",
+                description = "Choose a category that defines your business the best.",
+                options = CATEGORIES
+            ),
             onContinueClicked = {},
             onCategorySelected = {}
         )
@@ -216,47 +220,58 @@ fun CategoriesContentPreview() {
 
 // TODO remove when this are available from API
 val CATEGORIES = listOf(
-    StoreCategoryUi(
+    StoreProfilerOptionUi(
+        SITE_CATEGORY,
         name = "Art & Photography",
         isSelected = false
     ),
-    StoreCategoryUi(
+    StoreProfilerOptionUi(
+        SITE_CATEGORY,
         name = "Books & Magazines",
         isSelected = false
     ),
-    StoreCategoryUi(
+    StoreProfilerOptionUi(
+        SITE_CATEGORY,
         name = "Electronics and Software",
         isSelected = false
     ),
-    StoreCategoryUi(
+    StoreProfilerOptionUi(
+        SITE_CATEGORY,
         name = "Construction & Industrial",
         isSelected = false
     ),
-    StoreCategoryUi(
+    StoreProfilerOptionUi(
+        SITE_CATEGORY,
         name = "Design & Marketing",
         isSelected = false
     ),
-    StoreCategoryUi(
+    StoreProfilerOptionUi(
+        SITE_CATEGORY,
         name = "Fashion and Apparel",
         isSelected = false
     ),
-    StoreCategoryUi(
+    StoreProfilerOptionUi(
+        SITE_CATEGORY,
         name = "Food and Drink",
         isSelected = false
     ),
-    StoreCategoryUi(
+    StoreProfilerOptionUi(
+        SITE_CATEGORY,
         name = "Books & Magazines 2",
         isSelected = false
     ),
-    StoreCategoryUi(
+    StoreProfilerOptionUi(
+        SITE_CATEGORY,
         name = "Electronics and Software 2",
         isSelected = false
     ),
-    StoreCategoryUi(
+    StoreProfilerOptionUi(
+        SITE_CATEGORY,
         name = "Design & Marketing 2",
         isSelected = false
     ),
-    StoreCategoryUi(
+    StoreProfilerOptionUi(
+        SITE_CATEGORY,
         name = "Fashion and Apparel 2",
         isSelected = false
     ),
