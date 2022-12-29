@@ -36,7 +36,7 @@
 
     <fragment
         android:id="@+id/storeProfilerCategoryFragment"
-        android:name="com.woocommerce.android.ui.login.storecreation.profiler.StoreProfilerCategoryFragment"
+        android:name="com.woocommerce.android.ui.login.storecreation.profiler.StoreProfilerFragment"
         android:label="fragment_store_profiler_category">
         <action
             android:id="@+id/action_storeProfilerCategoryFragment_to_domainPickerFragment"

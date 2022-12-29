@@ -16,7 +16,7 @@ import com.woocommerce.android.viewmodel.MultiLiveEvent
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
-class StoreProfilerCategoryFragment : BaseFragment() {
+class StoreProfilerFragment : BaseFragment() {
     private val viewModel: StoreProfilerViewModel by viewModels()
 
     override val activityAppBarStatus: AppBarStatus
@@ -49,7 +49,7 @@ class StoreProfilerCategoryFragment : BaseFragment() {
 
     private fun navigateToDomainPickerStep() {
         findNavController().navigateSafely(
-            StoreProfilerCategoryFragmentDirections.actionStoreProfilerCategoryFragmentToDomainPickerFragment()
+            StoreProfilerFragmentDirections.actionStoreProfilerCategoryFragmentToDomainPickerFragment()
         )
     }
 }

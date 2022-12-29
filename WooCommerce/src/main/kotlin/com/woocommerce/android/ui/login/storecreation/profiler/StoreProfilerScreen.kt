@@ -36,27 +36,31 @@ import androidx.compose.ui.tooling.preview.Devices
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.woocommerce.android.R
+import com.woocommerce.android.ui.compose.component.ProgressIndicator
 import com.woocommerce.android.ui.compose.component.WCColoredButton
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.ui.login.storecreation.profiler.StoreProfilerViewModel.ProfilerOptionType.SITE_CATEGORY
+import com.woocommerce.android.ui.login.storecreation.profiler.StoreProfilerViewModel.StoreProfilerContent
 import com.woocommerce.android.ui.login.storecreation.profiler.StoreProfilerViewModel.StoreProfilerOptionUi
-import com.woocommerce.android.ui.login.storecreation.profiler.StoreProfilerViewModel.StoreProfilerState
 
 @Composable
 fun StoreProfilerScreen(viewModel: StoreProfilerViewModel) {
-    viewModel.storeProfilerState.observeAsState().value?.let { state ->
+    viewModel.storeProfilerContent.observeAsState().value?.let { state ->
         Scaffold(topBar = {
             Toolbar(
                 onArrowBackPressed = viewModel::onArrowBackPressed,
                 onSkipPressed = viewModel::onSkipPressed
             )
         }) {
-            ProfilerContent(
-                profilerStepContent = state,
-                onContinueClicked = viewModel::onContinueClicked,
-                onCategorySelected = viewModel::onCategorySelected,
-                modifier = Modifier.background(MaterialTheme.colors.surface)
-            )
+            when (state) {
+                StoreProfilerViewModel.Loading -> ProgressIndicator()
+                is StoreProfilerContent -> ProfilerContent(
+                    profilerStepContent = state,
+                    onContinueClicked = viewModel::onContinueClicked,
+                    onCategorySelected = viewModel::onOptionSelected,
+                    modifier = Modifier.background(MaterialTheme.colors.surface)
+                )
+            }
         }
     }
 }
@@ -90,7 +94,7 @@ private fun Toolbar(
 
 @Composable
 private fun ProfilerContent(
-    profilerStepContent: StoreProfilerState,
+    profilerStepContent: StoreProfilerContent,
     onCategorySelected: (StoreProfilerOptionUi) -> Unit,
     onContinueClicked: () -> Unit,
     modifier: Modifier = Modifier
@@ -210,73 +214,45 @@ private fun CategoryItem(
 fun CategoriesContentPreview() {
     WooThemeWithBackground {
         ProfilerContent(
-            profilerStepContent = StoreProfilerState(
+            profilerStepContent = StoreProfilerContent(
                 storeName = "White Christmas Tree",
                 title = "What’s your business about?",
                 description = "Choose a category that defines your business the best.",
-                options = CATEGORIES
+                options = listOf(
+                    StoreProfilerOptionUi(
+                        SITE_CATEGORY,
+                        name = "Art & Photography",
+                        isSelected = false
+                    ),
+                    StoreProfilerOptionUi(
+                        SITE_CATEGORY,
+                        name = "Books & Magazines",
+                        isSelected = false
+                    ),
+                    StoreProfilerOptionUi(
+                        SITE_CATEGORY,
+                        name = "Electronics and Software",
+                        isSelected = false
+                    ),
+                    StoreProfilerOptionUi(
+                        SITE_CATEGORY,
+                        name = "Construction & Industrial",
+                        isSelected = false
+                    ),
+                    StoreProfilerOptionUi(
+                        SITE_CATEGORY,
+                        name = "Design & Marketing",
+                        isSelected = false
+                    ),
+                    StoreProfilerOptionUi(
+                        SITE_CATEGORY,
+                        name = "Fashion and Apparel",
+                        isSelected = false
+                    )
+                )
             ),
             onContinueClicked = {},
             onCategorySelected = {}
         )
     }
 }
-
-// TODO remove when this are available from API
-val CATEGORIES = listOf(
-    StoreProfilerOptionUi(
-        SITE_CATEGORY,
-        name = "Art & Photography",
-        isSelected = false
-    ),
-    StoreProfilerOptionUi(
-        SITE_CATEGORY,
-        name = "Books & Magazines",
-        isSelected = false
-    ),
-    StoreProfilerOptionUi(
-        SITE_CATEGORY,
-        name = "Electronics and Software",
-        isSelected = false
-    ),
-    StoreProfilerOptionUi(
-        SITE_CATEGORY,
-        name = "Construction & Industrial",
-        isSelected = false
-    ),
-    StoreProfilerOptionUi(
-        SITE_CATEGORY,
-        name = "Design & Marketing",
-        isSelected = false
-    ),
-    StoreProfilerOptionUi(
-        SITE_CATEGORY,
-        name = "Fashion and Apparel",
-        isSelected = false
-    ),
-    StoreProfilerOptionUi(
-        SITE_CATEGORY,
-        name = "Food and Drink",
-        isSelected = false
-    ),
-    StoreProfilerOptionUi(
-        SITE_CATEGORY,
-        name = "Books & Magazines 2",
-        isSelected = false
-    ),
-    StoreProfilerOptionUi(
-        SITE_CATEGORY,
-        name = "Electronics and Software 2",
-        isSelected = false
-    ),
-    StoreProfilerOptionUi(
-        SITE_CATEGORY,
-        name = "Design & Marketing 2",
-        isSelected = false
-    ),
-    StoreProfilerOptionUi(
-        SITE_CATEGORY,
-        name = "Fashion and Apparel 2",
-        isSelected = false
-    ),
-)

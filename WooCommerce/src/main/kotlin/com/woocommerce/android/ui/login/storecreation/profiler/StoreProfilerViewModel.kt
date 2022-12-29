@@ -9,32 +9,33 @@ import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.ui.login.storecreation.NewStore
+import com.woocommerce.android.ui.login.storecreation.profiler.StoreProfilerViewModel.ProfilerOptionType.COMMERCE_JOURNEY
+import com.woocommerce.android.ui.login.storecreation.profiler.StoreProfilerViewModel.ProfilerOptionType.ECOMMERCE_PLATFORM
+import com.woocommerce.android.ui.login.storecreation.profiler.StoreProfilerViewModel.ProfilerOptionType.SITE_CATEGORY
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.ResourceProvider
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.getStateFlow
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.launch
 import kotlinx.parcelize.Parcelize
 import javax.inject.Inject
 
 @HiltViewModel
 class StoreProfilerViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
-    private val newStore: NewStore,
     analyticsTrackerWrapper: AnalyticsTrackerWrapper,
-    resourceProvider: ResourceProvider
+    storeProfilerRepository: StoreProfilerRepository,
+    private val newStore: NewStore,
+    private val resourceProvider: ResourceProvider,
 ) : ScopedViewModel(savedStateHandle) {
-    private val _storeProfilerState = savedState.getStateFlow(
+    private var allOptions: List<StoreProfilerOptionUi> = emptyList()
+    private val _storeProfilerContent = savedState.getStateFlow<ViewState>(
         scope = this,
-        initialValue = StoreProfilerState(
-            storeName = newStore.data.name ?: "",
-            title = resourceProvider.getString(R.string.store_creation_store_categories_title),
-            description = resourceProvider.getString(R.string.store_creation_store_categories_subtitle),
-            options = CATEGORIES
-        )
+        initialValue = Loading
     )
 
-    val storeProfilerState: LiveData<StoreProfilerState> = _storeProfilerState.asLiveData()
+    val storeProfilerContent: LiveData<ViewState> = _storeProfilerContent.asLiveData()
 
     init {
         analyticsTrackerWrapper.track(
@@ -43,6 +44,15 @@ class StoreProfilerViewModel @Inject constructor(
                 AnalyticsTracker.KEY_STEP to AnalyticsTracker.VALUE_STEP_STORE_PROFILER_CATEGORY
             )
         )
+        launch {
+            loadProfilerOptions(storeProfilerRepository)
+            _storeProfilerContent.value = StoreProfilerContent(
+                storeName = newStore.data.name ?: "",
+                title = resourceProvider.getString(R.string.store_creation_store_categories_title),
+                description = resourceProvider.getString(R.string.store_creation_store_categories_subtitle),
+                options = allOptions.filter { it.type == SITE_CATEGORY }
+            )
+        }
     }
 
     fun onSkipPressed() {
@@ -54,35 +64,79 @@ class StoreProfilerViewModel @Inject constructor(
     }
 
     fun onContinueClicked() {
-        _storeProfilerState.value.options
-            .firstOrNull { it.isSelected }
-            ?.name
-            ?.let {
-                newStore.update(category = it)
-            }
+//        _storeProfilerContent.value.options
+//            .firstOrNull { it.isSelected }
+//            ?.name
+//            ?.let {
+//                newStore.update(category = it)
+//            }
+//
+
         triggerEvent(NavigateToNextStep)
     }
 
-    fun onCategorySelected(category: StoreProfilerOptionUi) {
-        val updatedCategories = _storeProfilerState.value.options.map {
-            if (it == category) {
-                it.copy(isSelected = true)
+    fun onOptionSelected(option: StoreProfilerOptionUi) {
+        allOptions = allOptions.map {
+            if (it.type == option.type) {
+                if (it.name == option.name) it.copy(isSelected = true)
+                else it.copy(isSelected = false)
             } else {
-                it.copy(isSelected = false)
+                it
             }
         }
-        _storeProfilerState.value = _storeProfilerState.value.copy(
-            options = updatedCategories
+        _storeProfilerContent.value = StoreProfilerContent(
+            storeName = newStore.data.name ?: "",
+            title = resourceProvider.getString(R.string.store_creation_store_categories_title),
+            description = resourceProvider.getString(R.string.store_creation_store_categories_subtitle),
+            options = allOptions
         )
     }
 
+    private suspend fun loadProfilerOptions(storeProfilerRepository: StoreProfilerRepository) {
+        val profilerOptions = storeProfilerRepository.fetchProfilerOptions()
+
+        allOptions =
+            profilerOptions.industries.map { it.toStoreProfilerOptionUi() } +
+                profilerOptions.aboutMerchant.map { it.toStoreProfilerOptionUi() } +
+                profilerOptions.aboutMerchant.first { it.platforms != null }
+                    .platforms!!
+                    .map { it.toStoreProfilerOptionUi() }
+    }
+
+
+    private fun Industry.toStoreProfilerOptionUi() =
+        StoreProfilerOptionUi(
+            type = SITE_CATEGORY,
+            name = label,
+            isSelected = false
+        )
+
+    private fun AboutMerchant.toStoreProfilerOptionUi() =
+        StoreProfilerOptionUi(
+            type = COMMERCE_JOURNEY,
+            name = value,
+            isSelected = false
+        )
+
+    private fun Platform.toStoreProfilerOptionUi() =
+        StoreProfilerOptionUi(
+            type = ECOMMERCE_PLATFORM,
+            name = label,
+            isSelected = false
+        )
+
+    sealed class ViewState : Parcelable
+
     @Parcelize
-    data class StoreProfilerState(
+    object Loading : ViewState()
+
+    @Parcelize
+    data class StoreProfilerContent(
         val storeName: String,
         val title: String,
         val description: String,
         val options: List<StoreProfilerOptionUi> = emptyList()
-    ) : Parcelable
+    ) : ViewState(), Parcelable
 
     @Parcelize
     data class StoreProfilerOptionUi(
