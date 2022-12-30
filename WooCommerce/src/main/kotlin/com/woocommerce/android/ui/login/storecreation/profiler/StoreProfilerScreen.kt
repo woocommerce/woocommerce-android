@@ -39,12 +39,12 @@ import com.woocommerce.android.R
 import com.woocommerce.android.ui.compose.component.ProgressIndicator
 import com.woocommerce.android.ui.compose.component.WCColoredButton
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
-import com.woocommerce.android.ui.login.storecreation.profiler.StoreProfilerViewModel.ProfilerOptionType.SITE_CATEGORY
-import com.woocommerce.android.ui.login.storecreation.profiler.StoreProfilerViewModel.StoreProfilerContent
-import com.woocommerce.android.ui.login.storecreation.profiler.StoreProfilerViewModel.StoreProfilerOptionUi
+import com.woocommerce.android.ui.login.storecreation.profiler.BaseStoreProfilerViewModel.ProfilerOptionType.SITE_INDUSTRY
+import com.woocommerce.android.ui.login.storecreation.profiler.BaseStoreProfilerViewModel.StoreProfilerContent
+import com.woocommerce.android.ui.login.storecreation.profiler.BaseStoreProfilerViewModel.StoreProfilerOptionUi
 
 @Composable
-fun StoreProfilerScreen(viewModel: StoreProfilerViewModel) {
+fun StoreProfilerScreen(viewModel: BaseStoreProfilerViewModel) {
     viewModel.storeProfilerContent.observeAsState().value?.let { state ->
         Scaffold(topBar = {
             Toolbar(
@@ -53,7 +53,7 @@ fun StoreProfilerScreen(viewModel: StoreProfilerViewModel) {
             )
         }) {
             when (state) {
-                StoreProfilerViewModel.LoadingState -> ProgressIndicator()
+                BaseStoreProfilerViewModel.LoadingState -> ProgressIndicator()
                 is StoreProfilerContent -> ProfilerContent(
                     profilerStepContent = state,
                     onContinueClicked = viewModel::onContinueClicked,
@@ -220,32 +220,32 @@ fun CategoriesContentPreview() {
                 description = "Choose a category that defines your business the best.",
                 options = listOf(
                     StoreProfilerOptionUi(
-                        SITE_CATEGORY,
+                        SITE_INDUSTRY,
                         name = "Art & Photography",
                         isSelected = false
                     ),
                     StoreProfilerOptionUi(
-                        SITE_CATEGORY,
+                        SITE_INDUSTRY,
                         name = "Books & Magazines",
                         isSelected = false
                     ),
                     StoreProfilerOptionUi(
-                        SITE_CATEGORY,
+                        SITE_INDUSTRY,
                         name = "Electronics and Software",
                         isSelected = false
                     ),
                     StoreProfilerOptionUi(
-                        SITE_CATEGORY,
+                        SITE_INDUSTRY,
                         name = "Construction & Industrial",
                         isSelected = false
                     ),
                     StoreProfilerOptionUi(
-                        SITE_CATEGORY,
+                        SITE_INDUSTRY,
                         name = "Design & Marketing",
                         isSelected = false
                     ),
                     StoreProfilerOptionUi(
-                        SITE_CATEGORY,
+                        SITE_INDUSTRY,
                         name = "Fashion and Apparel",
                         isSelected = false
                     )

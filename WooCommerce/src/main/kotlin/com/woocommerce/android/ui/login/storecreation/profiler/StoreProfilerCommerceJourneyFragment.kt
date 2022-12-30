@@ -6,18 +6,20 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
-import androidx.fragment.app.viewModels
+import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
 import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
+import com.woocommerce.android.ui.login.storecreation.profiler.BaseStoreProfilerViewModel.NavigateToDomainPickerStep
+import com.woocommerce.android.ui.login.storecreation.profiler.BaseStoreProfilerViewModel.NavigateToEcommercePlatformsStep
 import com.woocommerce.android.ui.main.AppBarStatus
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
-class StoreProfilerFragment : BaseFragment() {
-    private val viewModel: StoreProfilerViewModel by viewModels()
+class StoreProfilerCommerceJourneyFragment : BaseFragment() {
+    private val viewModel: StoreProfilerCommerceJourneyViewModel by activityViewModels()
 
     override val activityAppBarStatus: AppBarStatus
         get() = AppBarStatus.Hidden
@@ -42,14 +44,23 @@ class StoreProfilerFragment : BaseFragment() {
         viewModel.event.observe(viewLifecycleOwner) { event ->
             when (event) {
                 is MultiLiveEvent.Event.Exit -> findNavController().popBackStack()
-                is StoreProfilerViewModel.NavigateToNextStep -> navigateToDomainPickerStep()
+                is NavigateToDomainPickerStep -> navigateToDomainPickerStep()
+                is NavigateToEcommercePlatformsStep -> navigateToProfilerEcommercePlatformsStep()
             }
         }
     }
 
     private fun navigateToDomainPickerStep() {
         findNavController().navigateSafely(
-            StoreProfilerFragmentDirections.actionStoreProfilerCategoryFragmentToDomainPickerFragment()
+            StoreProfilerCommerceJourneyFragmentDirections
+                .actionStoreProfilerCommerceJourneyFragmentToDomainPickerFragment()
+        )
+    }
+
+    private fun navigateToProfilerEcommercePlatformsStep() {
+        findNavController().navigateSafely(
+            StoreProfilerCommerceJourneyFragmentDirections
+                .actionStoreProfilerCommerceJourneyFragmentToStoreProfilerEcommercePlatformsFragment()
         )
     }
 }
