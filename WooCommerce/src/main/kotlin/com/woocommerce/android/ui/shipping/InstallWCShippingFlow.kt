@@ -213,7 +213,7 @@ private fun AnimatedVisibilityScope.InstallationContent(viewState: InstallationO
                     else -> 180f
                 }
             }
-            val isShowingLoadingIndicator by derivedStateOf { alpha == 0f }
+            val isShowingLoadingIndicator by remember { derivedStateOf { alpha == 0f } }
 
             Box {
                 InstallationLoadingIndicator(
