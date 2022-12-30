@@ -2,6 +2,7 @@ package com.woocommerce.android.ui.login.storecreation.plans
 
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
+import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.animation.Crossfade
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -12,8 +13,10 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.Divider
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
@@ -23,6 +26,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.compositionLocalOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
@@ -44,9 +48,7 @@ import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import com.woocommerce.android.R
-import com.woocommerce.android.R.color
-import com.woocommerce.android.R.drawable
-import com.woocommerce.android.R.string
+import com.woocommerce.android.iap.pub.IAPActivityWrapper
 import com.woocommerce.android.ui.common.wpcomwebview.WPComWebViewAuthenticator
 import com.woocommerce.android.ui.compose.component.ProgressIndicator
 import com.woocommerce.android.ui.compose.component.WCColoredButton
@@ -61,23 +63,31 @@ import com.woocommerce.android.ui.login.storecreation.plans.PlansViewModel.ViewS
 import com.woocommerce.android.ui.login.storecreation.plans.PlansViewModel.ViewState.PlanState
 import org.wordpress.android.fluxc.network.UserAgent
 
+val LocalActivity = compositionLocalOf { AppCompatActivity() }
+
 @Composable
 fun PlanScreen(viewModel: PlansViewModel, authenticator: WPComWebViewAuthenticator, userAgent: UserAgent) {
     viewModel.viewState.observeAsState(LoadingState).value.let { state ->
         Crossfade(targetState = state) { viewState ->
             when (viewState) {
-                is PlanState -> PlanInformation(viewState, viewModel::onExitTriggered, viewModel::onConfirmClicked)
+                is PlanState -> PlanInformation(
+                    viewState,
+                    viewModel::onExitTriggered,
+                    viewModel::onConfirmClicked
+                )
+
                 is ErrorState -> StoreCreationErrorScreen(
                     viewState.errorType,
                     viewModel::onExitTriggered,
                     viewState.message
                 )
+
                 LoadingState -> ProgressIndicator()
                 is CheckoutState -> WebViewPayment(
                     viewState,
                     authenticator,
                     userAgent,
-                    viewModel::onStoreCreated,
+                    viewModel::onIapPurchaseSuccess,
                     viewModel::onExitTriggered
                 )
             }
@@ -87,14 +97,15 @@ fun PlanScreen(viewModel: PlansViewModel, authenticator: WPComWebViewAuthenticat
 
 @Composable
 private fun PlanInformation(
-    viewState: PlanState,
+    planState: PlanState,
     onExitTriggered: () -> Unit,
-    onConfirmClicked: () -> Unit
+    onConfirmClicked: (IAPActivityWrapper) -> Unit
 ) {
+    val currentActivity = LocalActivity.current
     val systemUiController = rememberSystemUiController()
-    val wooDarkPurple = colorResource(id = color.woo_purple_90)
-    val statusBarColor = colorResource(id = color.color_status_bar)
-    DisposableEffect(key1 = viewState) {
+    val wooDarkPurple = colorResource(id = R.color.woo_purple_90)
+    val statusBarColor = colorResource(id = R.color.color_status_bar)
+    DisposableEffect(key1 = planState) {
         systemUiController.setSystemBarsColor(
             color = wooDarkPurple,
         )
@@ -105,128 +116,133 @@ private fun PlanInformation(
         }
     }
 
-    ConstraintLayout(
+    Column(
         modifier = Modifier
             .fillMaxSize()
             .background(colorResource(id = R.color.woo_purple_90))
-            .verticalScroll(rememberScrollState())
     ) {
-        val (icon, image, title, price, period, features, button) = createRefs()
-
-        IconButton(
-            onClick = onExitTriggered,
-            modifier = Modifier.constrainAs(icon) {
-                top.linkTo(parent.top)
-                start.linkTo(parent.start)
-            }
+        ConstraintLayout(
+            modifier = Modifier
+                .weight(1f)
+                .fillMaxWidth()
+                .verticalScroll(rememberScrollState())
         ) {
-            Icon(
-                Icons.Filled.ArrowBack,
-                contentDescription = stringResource(id = R.string.back),
-                tint = colorResource(id = R.color.white)
-            )
-        }
+            val (icon, image, title, price, period, features) = createRefs()
 
-        Image(
-            painter = painterResource(id = drawable.img_plan),
-            contentDescription = "Plan illustration",
-            modifier = Modifier
-                .constrainAs(image) {
+            IconButton(
+                onClick = onExitTriggered,
+                modifier = Modifier.constrainAs(icon) {
                     top.linkTo(parent.top)
-                    end.linkTo(parent.end)
-                }
-                .height(dimensionResource(id = R.dimen.image_major_200)),
-            contentScale = ContentScale.FillHeight
-        )
-        Text(
-            text = viewState.plan.name,
-            fontWeight = FontWeight.Bold,
-            color = colorResource(id = R.color.white),
-            fontSize = 20.sp,
-            modifier = Modifier
-                .constrainAs(title) {
-                    top.linkTo(image.top)
-                    bottom.linkTo(image.bottom)
                     start.linkTo(parent.start)
                 }
-                .padding(start = dimensionResource(id = R.dimen.major_125))
-        )
-        Text(
-            text = viewState.plan.formattedPrice,
-            color = colorResource(id = R.color.white),
-            fontSize = 40.sp,
-            fontWeight = FontWeight.Bold,
-            modifier = Modifier
-                .constrainAs(price) {
-                    top.linkTo(title.bottom)
-                    start.linkTo(title.start)
-                }
-                .padding(start = dimensionResource(id = R.dimen.major_125))
-        )
-        Text(
-            text = "/${stringResource(viewState.plan.billingPeriod.nameId)}",
-            color = colorResource(id = R.color.woo_purple_dark_secondary),
-            style = MaterialTheme.typography.subtitle1,
-            modifier = Modifier
-                .constrainAs(period) {
-                    top.linkTo(price.bottom)
-                    start.linkTo(price.start)
-                }
-                .padding(
-                    start = dimensionResource(id = R.dimen.major_125)
+            ) {
+                Icon(
+                    Icons.Filled.ArrowBack,
+                    contentDescription = stringResource(id = R.string.back),
+                    tint = colorResource(id = R.color.white)
                 )
-        )
+            }
 
-        Column(
-            verticalArrangement = Arrangement.spacedBy(dimensionResource(id = R.dimen.minor_100)),
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(dimensionResource(id = R.dimen.major_75))
-                .constrainAs(features) {
-                    top.linkTo(period.bottom)
-                }
-        ) {
-            Divider(
-                color = colorResource(id = R.color.woo_gray_40),
-                thickness = dimensionResource(id = R.dimen.minor_10),
-                modifier = Modifier.padding(vertical = dimensionResource(id = R.dimen.major_75))
+            Image(
+                painter = painterResource(id = R.drawable.img_plan),
+                contentDescription = "Plan illustration",
+                modifier = Modifier
+                    .constrainAs(image) {
+                        top.linkTo(parent.top)
+                        end.linkTo(parent.end)
+                    }
+                    .height(dimensionResource(id = R.dimen.image_major_200)),
+                contentScale = ContentScale.FillHeight
             )
             Text(
+                text = planState.plan.name,
                 fontWeight = FontWeight.Bold,
-                text = stringResource(id = string.store_creation_ecommerce_plan_features_tagline),
                 color = colorResource(id = R.color.white),
-                fontSize = 28.sp,
-                lineHeight = 36.sp
+                fontSize = 20.sp,
+                modifier = Modifier
+                    .constrainAs(title) {
+                        top.linkTo(image.top)
+                        bottom.linkTo(image.bottom)
+                        start.linkTo(parent.start)
+                    }
+                    .padding(start = dimensionResource(id = R.dimen.major_125))
             )
-            Row(
-                modifier = Modifier.padding(
-                    top = dimensionResource(id = R.dimen.minor_50),
-                    bottom = dimensionResource(id = R.dimen.major_75)
-                )
+            Text(
+                text = planState.plan.formattedPrice,
+                color = colorResource(id = R.color.white),
+                fontSize = 40.sp,
+                fontWeight = FontWeight.Bold,
+                modifier = Modifier
+                    .constrainAs(price) {
+                        top.linkTo(title.bottom)
+                        start.linkTo(title.start)
+                    }
+                    .padding(start = dimensionResource(id = R.dimen.major_125))
+            )
+            Text(
+                text = "/${stringResource(planState.plan.billingPeriod.nameId)}",
+                color = colorResource(id = R.color.woo_purple_dark_secondary),
+                style = MaterialTheme.typography.subtitle1,
+                modifier = Modifier
+                    .constrainAs(period) {
+                        top.linkTo(price.bottom)
+                        start.linkTo(price.start)
+                    }
+                    .padding(
+                        start = dimensionResource(id = R.dimen.major_125)
+                    )
+            )
+            Column(
+                verticalArrangement = Arrangement.spacedBy(dimensionResource(id = R.dimen.minor_100)),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(dimensionResource(id = R.dimen.major_75))
+                    .constrainAs(features) {
+                        top.linkTo(period.bottom)
+                    }
             ) {
-                Text(
-                    text = stringResource(id = string.store_creation_ecommerce_plan_powered_by),
-                    color = colorResource(id = R.color.woo_purple_dark_secondary),
-                    style = MaterialTheme.typography.caption
-                )
-                Image(
-                    painter = painterResource(id = drawable.ic_wordpress),
-                    contentDescription = "WordPress logo",
-                    modifier = Modifier
-                        .height(dimensionResource(id = R.dimen.major_110))
-                        .padding(horizontal = dimensionResource(id = R.dimen.minor_50)),
-                    contentScale = ContentScale.FillHeight,
-                    colorFilter = ColorFilter.tint(color = colorResource(id = R.color.woo_purple_dark_secondary))
+                Divider(
+                    color = colorResource(id = R.color.woo_gray_40),
+                    thickness = dimensionResource(id = R.dimen.minor_10),
+                    modifier = Modifier.padding(vertical = dimensionResource(id = R.dimen.major_75))
                 )
                 Text(
                     fontWeight = FontWeight.Bold,
-                    text = stringResource(id = string.store_creation_ecommerce_plan_wordpress),
-                    color = colorResource(id = R.color.woo_purple_dark_secondary),
-                    style = MaterialTheme.typography.caption
+                    text = stringResource(id = R.string.store_creation_ecommerce_plan_features_tagline),
+                    color = colorResource(id = R.color.white),
+                    fontSize = 28.sp,
+                    lineHeight = 36.sp
                 )
-            }
-            viewState.plan.features.forEach {
-                PlanFeatureRow(iconId = it.iconId, textId = it.textId)
+                Row(
+                    modifier = Modifier.padding(
+                        top = dimensionResource(id = R.dimen.minor_50),
+                        bottom = dimensionResource(id = R.dimen.major_75)
+                    )
+                ) {
+                    Text(
+                        text = stringResource(id = R.string.store_creation_ecommerce_plan_powered_by),
+                        color = colorResource(id = R.color.woo_purple_dark_secondary),
+                        style = MaterialTheme.typography.caption
+                    )
+                    Image(
+                        painter = painterResource(id = R.drawable.ic_wordpress),
+                        contentDescription = "WordPress logo",
+                        modifier = Modifier
+                            .height(dimensionResource(id = R.dimen.major_110))
+                            .padding(horizontal = dimensionResource(id = R.dimen.minor_50)),
+                        contentScale = ContentScale.FillHeight,
+                        colorFilter = ColorFilter.tint(color = colorResource(id = R.color.woo_purple_dark_secondary))
+                    )
+                    Text(
+                        fontWeight = FontWeight.Bold,
+                        text = stringResource(id = R.string.store_creation_ecommerce_plan_wordpress),
+                        color = colorResource(id = R.color.woo_purple_dark_secondary),
+                        style = MaterialTheme.typography.caption
+                    )
+                }
+                planState.plan.features.forEach {
+                    PlanFeatureRow(iconId = it.iconId, textId = it.textId)
+                }
             }
         }
 
@@ -234,12 +250,6 @@ private fun PlanInformation(
             verticalArrangement = Arrangement.spacedBy(dimensionResource(id = R.dimen.major_75)),
             modifier = Modifier
                 .fillMaxWidth()
-                .constrainAs(button) {
-                    top.linkTo(features.bottom)
-                    bottom.linkTo(parent.bottom)
-                    start.linkTo(parent.start)
-                    end.linkTo(parent.end)
-                }
                 .padding(bottom = dimensionResource(id = R.dimen.major_125))
         ) {
             Divider(
@@ -251,7 +261,7 @@ private fun PlanInformation(
                 modifier = Modifier
                     .padding(horizontal = dimensionResource(id = R.dimen.major_100))
                     .fillMaxWidth(),
-                text = stringResource(id = string.store_creation_ecommerce_plan_refund_reminder),
+                text = stringResource(id = R.string.store_creation_ecommerce_plan_refund_reminder),
                 color = colorResource(id = R.color.woo_purple_dark_secondary),
                 fontSize = 14.sp,
                 textAlign = TextAlign.Center
@@ -261,15 +271,23 @@ private fun PlanInformation(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(horizontal = dimensionResource(id = R.dimen.major_100)),
-                onClick = onConfirmClicked
+                onClick = { onConfirmClicked(IAPActivityWrapper(currentActivity)) },
+                enabled = !planState.showMainButtonLoading
             ) {
-                val periodText = stringResource(id = viewState.plan.billingPeriod.nameId)
-                Text(
-                    text = stringResource(
-                        id = string.store_creation_ecommerce_plan_purchase_button_title,
-                        "${viewState.plan.formattedPrice}/$periodText"
+                if (planState.showMainButtonLoading) {
+                    CircularProgressIndicator(
+                        modifier = Modifier.size(size = dimensionResource(id = R.dimen.major_150)),
+                        color = colorResource(id = R.color.color_on_primary_surface),
                     )
-                )
+                } else {
+                    val periodText = stringResource(id = planState.plan.billingPeriod.nameId)
+                    Text(
+                        text = stringResource(
+                            id = R.string.store_creation_ecommerce_plan_purchase_button_title,
+                            "${planState.plan.formattedPrice}/$periodText"
+                        )
+                    )
+                }
             }
         }
     }
@@ -334,32 +352,32 @@ fun PreviewPlanInformation() {
                 formattedPrice = "$69.99",
                 features = listOf(
                     Feature(
-                        iconId = drawable.ic_star,
-                        textId = string.store_creation_ecommerce_plan_feature_themes
+                        iconId = R.drawable.ic_star,
+                        textId = R.string.store_creation_ecommerce_plan_feature_themes
                     ),
                     Feature(
-                        iconId = drawable.ic_box,
-                        textId = string.store_creation_ecommerce_plan_feature_products
+                        iconId = R.drawable.ic_box,
+                        textId = R.string.store_creation_ecommerce_plan_feature_products
                     ),
                     Feature(
-                        iconId = drawable.ic_present,
-                        textId = string.store_creation_ecommerce_plan_feature_subscriptions
+                        iconId = R.drawable.ic_present,
+                        textId = R.string.store_creation_ecommerce_plan_feature_subscriptions
                     ),
                     Feature(
-                        iconId = drawable.ic_chart,
-                        textId = string.store_creation_ecommerce_plan_feature_reports
+                        iconId = R.drawable.ic_chart,
+                        textId = R.string.store_creation_ecommerce_plan_feature_reports
                     ),
                     Feature(
-                        iconId = drawable.ic_dollar,
-                        textId = string.store_creation_ecommerce_plan_feature_payments
+                        iconId = R.drawable.ic_dollar,
+                        textId = R.string.store_creation_ecommerce_plan_feature_payments
                     ),
                     Feature(
-                        iconId = drawable.ic_truck,
-                        textId = string.store_creation_ecommerce_plan_feature_shipping_labels
+                        iconId = R.drawable.ic_truck,
+                        textId = R.string.store_creation_ecommerce_plan_feature_shipping_labels
                     ),
                     Feature(
-                        iconId = drawable.ic_megaphone,
-                        textId = string.store_creation_ecommerce_plan_feature_sales
+                        iconId = R.drawable.ic_megaphone,
+                        textId = R.string.store_creation_ecommerce_plan_feature_sales
                     )
                 )
             )

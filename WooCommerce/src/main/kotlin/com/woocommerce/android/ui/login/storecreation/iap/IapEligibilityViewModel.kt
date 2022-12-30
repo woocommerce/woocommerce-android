@@ -10,7 +10,6 @@ import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.iap.pub.PurchaseWpComPlanSupportChecker
 import com.woocommerce.android.iap.pub.model.IAPSupportedResult
 import com.woocommerce.android.ui.login.storecreation.iap.IapEligibilityViewModel.IapEligibilityEvent.NavigateToNextStep
-import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.getStateFlow
@@ -22,13 +21,14 @@ import javax.inject.Inject
 class IapEligibilityViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
     private val planSupportChecker: PurchaseWpComPlanSupportChecker,
-    private val analyticsTrackerWrapper: AnalyticsTrackerWrapper
-) : ScopedViewModel(savedStateHandle) {
+    private val analyticsTrackerWrapper: AnalyticsTrackerWrapper,
+    private val isIAPEnabled: IsIAPEnabled
+) : ScopedViewModel(savedStateHandle, planSupportChecker) {
     private val _isCheckingIapEligibility = savedState.getStateFlow(scope = this, initialValue = true)
     val isCheckingIapEligibility: LiveData<Boolean> = _isCheckingIapEligibility.asLiveData()
 
     fun checkIapEligibility() {
-        if (FeatureFlag.IAP_FOR_STORE_CREATION.isEnabled()) {
+        if (isIAPEnabled()) {
             launch {
                 when (val result = planSupportChecker.isIAPSupported()) {
                     is IAPSupportedResult.Success -> onSuccess(result)
@@ -42,7 +42,7 @@ class IapEligibilityViewModel @Inject constructor(
 
     private fun onError(result: IAPSupportedResult.Error) {
         analyticsTrackerWrapper.track(
-            AnalyticsEvent.SITE_CREATION_IAP_ERROR,
+            AnalyticsEvent.SITE_CREATION_IAP_ELIGIBILITY_ERROR,
             mapOf(AnalyticsTracker.KEY_ERROR_TYPE to result.errorType.toString())
         )
         onUserNotEligibleForIAP()
