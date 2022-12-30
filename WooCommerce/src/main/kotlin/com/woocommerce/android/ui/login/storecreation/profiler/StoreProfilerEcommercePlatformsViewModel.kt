@@ -2,6 +2,9 @@ package com.woocommerce.android.ui.login.storecreation.profiler
 
 import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.R
+import com.woocommerce.android.analytics.AnalyticsEvent
+import com.woocommerce.android.analytics.AnalyticsTracker
+import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.ui.login.storecreation.NewStore
 import com.woocommerce.android.ui.login.storecreation.profiler.BaseStoreProfilerViewModel.ProfilerOptionType.COMMERCE_JOURNEY
 import com.woocommerce.android.ui.login.storecreation.profiler.BaseStoreProfilerViewModel.ProfilerOptionType.ECOMMERCE_PLATFORM
@@ -14,6 +17,7 @@ import javax.inject.Inject
 @HiltViewModel
 class StoreProfilerEcommercePlatformsViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
+    analyticsTracker: AnalyticsTrackerWrapper,
     private val newStore: NewStore,
     private val storeProfilerRepository: StoreProfilerRepository,
     private val resourceProvider: ResourceProvider,
@@ -21,6 +25,12 @@ class StoreProfilerEcommercePlatformsViewModel @Inject constructor(
     override val profilerStep: ProfilerOptionType = COMMERCE_JOURNEY
 
     init {
+        analyticsTracker.track(
+            AnalyticsEvent.SITE_CREATION_STEP,
+            mapOf(
+                AnalyticsTracker.KEY_STEP to AnalyticsTracker.VALUE_STEP_STORE_PROFILER_ECOMMERCE_PLATFORMS
+            )
+        )
         launch {
             val fetchedOptions = storeProfilerRepository.fetchProfilerOptions()
             profilerOptions.update {
