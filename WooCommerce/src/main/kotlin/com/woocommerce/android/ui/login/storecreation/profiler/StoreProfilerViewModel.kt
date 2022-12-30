@@ -98,9 +98,9 @@ class StoreProfilerViewModel @Inject constructor(
                 }
         }
         when (option.type) {
-            SITE_CATEGORY -> newStore.update(category = option.name)
-            COMMERCE_JOURNEY -> TODO()
-            ECOMMERCE_PLATFORM -> TODO()
+            SITE_CATEGORY -> newStore.update(industry = option.name)
+            COMMERCE_JOURNEY -> newStore.update(commercJourney = option.name)
+            ECOMMERCE_PLATFORM -> newStore.update(eCommercePlatform = option.name)
         }
     }
 
