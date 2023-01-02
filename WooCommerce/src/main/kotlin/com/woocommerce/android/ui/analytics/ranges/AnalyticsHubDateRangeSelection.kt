@@ -51,7 +51,7 @@ class AnalyticsHubDateRangeSelection: Serializable {
         locale: Locale,
     ) {
         this.selectionType = CUSTOM
-        val rangeData = AnalyticsHubCustomRangeData(rangeStart, rangeEnd)
+        val rangeData = AnalyticsHubCustomRangeData(rangeStart, rangeEnd, calendar)
         currentRange = rangeData.currentRange
         previousRange = rangeData.previousRange
         currentRangeDescription = currentRange.generateDescription(false, locale, calendar)
