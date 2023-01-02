@@ -80,6 +80,7 @@ class CustomerListViewModel @Inject constructor(
 
                 triggerEvent(
                     CustomerSelected(
+                        customerId = customerRemoteId,
                         shippingAddress = shippingAddress.toAddressModel(shippingCountry, shippingState),
                         billingAddress = billingAddress.toAddressModel(billingCountry, billingState)
                     )
@@ -169,6 +170,7 @@ class CustomerListViewModel @Inject constructor(
     ) : Parcelable
 
     data class CustomerSelected(
+        val customerId: Long,
         val billingAddress: Address,
         val shippingAddress: Address
     ) : MultiLiveEvent.Event()

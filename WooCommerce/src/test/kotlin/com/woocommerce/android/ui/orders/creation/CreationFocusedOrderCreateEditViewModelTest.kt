@@ -41,6 +41,10 @@ class CreationFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTes
     override val mode: Mode = Creation
     override val tracksFlow: String = VALUE_FLOW_CREATION
 
+    companion object {
+        private const val DEFAULT_CUSTOMER_ID = 0L
+    }
+
     override fun initMocksForAnalyticsWithOrder(order: Order) {
         createUpdateOrderUseCase = mock {
             onBlocking { invoke(any(), any()) } doReturn flowOf(Succeeded(order))
@@ -93,7 +97,7 @@ class CreationFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTes
         val defaultBillingAddress = Address.EMPTY.copy(firstName = "Test", lastName = "Billing")
         val defaultShippingAddress = Address.EMPTY.copy(firstName = "Test", lastName = "Shipping")
 
-        sut.onCustomerAddressEdited(defaultBillingAddress, defaultShippingAddress)
+        sut.onCustomerAddressEdited(DEFAULT_CUSTOMER_ID, defaultBillingAddress, defaultShippingAddress)
 
         assertThat(orderDraft?.billingAddress).isEqualTo(defaultBillingAddress)
         assertThat(orderDraft?.shippingAddress).isEqualTo(defaultShippingAddress)
@@ -108,7 +112,7 @@ class CreationFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTes
         val defaultBillingAddress = Address.EMPTY.copy(firstName = "Test", lastName = "Billing")
         val defaultShippingAddress = Address.EMPTY
 
-        sut.onCustomerAddressEdited(defaultBillingAddress, defaultShippingAddress)
+        sut.onCustomerAddressEdited(DEFAULT_CUSTOMER_ID, defaultBillingAddress, defaultShippingAddress)
 
         assertThat(orderDraft?.billingAddress).isEqualTo(defaultBillingAddress)
         assertThat(orderDraft?.shippingAddress).isEqualTo(defaultBillingAddress)
