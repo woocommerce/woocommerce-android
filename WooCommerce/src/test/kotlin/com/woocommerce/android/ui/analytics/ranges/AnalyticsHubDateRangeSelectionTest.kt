@@ -278,12 +278,12 @@ internal class AnalyticsHubDateRangeSelectionTest {
     fun `when selection type is custom, then generate expected date information`() {
         // Given
         val expectedCurrentRange = AnalyticsHubTimeRange(
-            start = dayStartFrom("2022-12-05"),
-            end = dayEndFrom("2022-12-07")
+            start = midDayFrom("2022-12-05"),
+            end = midDayFrom("2022-12-07")
         )
         val expectedPreviousRange = AnalyticsHubTimeRange(
-            start = dayStartFrom("2022-12-02"),
-            end = dayEndFrom("2022-12-04")
+            start = midDayFrom("2022-12-02"),
+            end = midDayFrom("2022-12-04")
         )
 
         // When
