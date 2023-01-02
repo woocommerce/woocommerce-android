@@ -2,6 +2,7 @@ package com.woocommerce.android.ui.analytics.ranges
 
 import com.woocommerce.android.extensions.endOfCurrentDay
 import com.woocommerce.android.extensions.startOfCurrentDay
+import com.woocommerce.android.ui.analytics.ranges.AnalyticsHubDateRangeSelection.SelectionType.CUSTOM
 import com.woocommerce.android.ui.analytics.ranges.AnalyticsHubDateRangeSelection.SelectionType.LAST_MONTH
 import com.woocommerce.android.ui.analytics.ranges.AnalyticsHubDateRangeSelection.SelectionType.LAST_QUARTER
 import com.woocommerce.android.ui.analytics.ranges.AnalyticsHubDateRangeSelection.SelectionType.LAST_WEEK
@@ -271,6 +272,30 @@ internal class AnalyticsHubDateRangeSelectionTest {
         // Then
         assertThat(sut.currentRange).isEqualTo(expectedCurrentRange)
         assertThat(sut.previousRange).isEqualTo(expectedPreviousRange)
+    }
+
+    @Test
+    fun `when selection type is custom, then generate expected date information`() {
+        // Given
+        val expectedCurrentRange = AnalyticsHubTimeRange(
+            start = dayStartFrom("2022-12-05"),
+            end = dayEndFrom("2022-12-07")
+        )
+        val expectedPreviousRange = AnalyticsHubTimeRange(
+            start = dayStartFrom("2022-12-02"),
+            end = dayEndFrom("2022-12-04")
+        )
+
+        // When
+        val sut = CUSTOM.generateSelectionData(
+            referenceStartDate = midDayFrom("2022-12-05"),
+            referenceEndDate = midDayFrom("2022-12-07")
+        )
+
+        // Then
+        assertThat(sut.currentRange).isEqualTo(expectedCurrentRange)
+        assertThat(sut.previousRange).isEqualTo(expectedPreviousRange)
+
     }
 
     private fun midDayFrom(date: String): Date {
