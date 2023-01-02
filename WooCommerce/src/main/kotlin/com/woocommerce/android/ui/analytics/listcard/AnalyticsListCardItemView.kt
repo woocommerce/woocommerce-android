@@ -30,6 +30,7 @@ class AnalyticsListCardItemView @JvmOverloads constructor(
                     .bitmapTransform(RoundedCorners(resources.getDimension(R.dimen.corner_radius_medium).toInt()))
             )
             .load(viewState.imageUri)
+            .placeholder(R.drawable.ic_product)
             .into(binding.analyticsCardListItemImage)
     }
 }
