@@ -16,13 +16,13 @@ import com.woocommerce.android.push.WooNotificationType
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.main.MainActivityViewModel.MoreMenuBadgeState.Hidden
 import com.woocommerce.android.ui.main.MainActivityViewModel.MoreMenuBadgeState.UnseenReviews
-import com.woocommerce.android.ui.main.MainActivityViewModel.OpenOrderCreation
 import com.woocommerce.android.ui.main.MainActivityViewModel.RestartActivityForNotification
+import com.woocommerce.android.ui.main.MainActivityViewModel.ShortcutOpenOrderCreation
+import com.woocommerce.android.ui.main.MainActivityViewModel.ShortcutOpenPayments
 import com.woocommerce.android.ui.main.MainActivityViewModel.ShowFeatureAnnouncement
 import com.woocommerce.android.ui.main.MainActivityViewModel.ViewMyStoreStats
 import com.woocommerce.android.ui.main.MainActivityViewModel.ViewOrderDetail
 import com.woocommerce.android.ui.main.MainActivityViewModel.ViewOrderList
-import com.woocommerce.android.ui.main.MainActivityViewModel.ViewPayments
 import com.woocommerce.android.ui.main.MainActivityViewModel.ViewReviewDetail
 import com.woocommerce.android.ui.main.MainActivityViewModel.ViewReviewList
 import com.woocommerce.android.ui.main.MainActivityViewModel.ViewZendeskTickets
@@ -412,7 +412,7 @@ class MainActivityViewModelTest : BaseUnitTest() {
             viewModel.handleShortcutAction("com.woocommerce.android.payments")
 
             // THEN
-            assertThat(viewModel.event.value).isInstanceOf(ViewPayments::class.java)
+            assertThat(viewModel.event.value).isInstanceOf(ShortcutOpenPayments::class.java)
         }
     }
 
@@ -426,7 +426,7 @@ class MainActivityViewModelTest : BaseUnitTest() {
             viewModel.handleShortcutAction("com.woocommerce.android.ordercreation")
 
             // THEN
-            assertThat(viewModel.event.value).isInstanceOf(OpenOrderCreation::class.java)
+            assertThat(viewModel.event.value).isInstanceOf(ShortcutOpenOrderCreation::class.java)
         }
     }
 

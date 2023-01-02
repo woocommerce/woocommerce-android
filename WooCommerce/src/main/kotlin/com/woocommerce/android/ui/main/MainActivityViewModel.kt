@@ -60,13 +60,13 @@ class MainActivityViewModel @Inject constructor(
                 analyticsTrackerWrapper.track(
                     AnalyticsEvent.SHORTCUT_PAYMENTS_TAPPED
                 )
-                triggerEvent(ViewPayments)
+                triggerEvent(ShortcutOpenPayments)
             }
             SHORTCUT_OPEN_ORDER_CREATION -> {
                 analyticsTrackerWrapper.track(
                     AnalyticsEvent.SHORTCUT_ORDERS_ADD_NEW
                 )
-                triggerEvent(OpenOrderCreation)
+                triggerEvent(ShortcutOpenOrderCreation)
             }
         }
     }
@@ -192,7 +192,8 @@ class MainActivityViewModel @Inject constructor(
     object ViewMyStoreStats : Event()
     object ViewZendeskTickets : Event()
     object ViewPayments : Event()
-    object OpenOrderCreation : Event()
+    object ShortcutOpenPayments : Event()
+    object ShortcutOpenOrderCreation : Event()
     data class RestartActivityForNotification(val pushId: Int, val notification: Notification) : Event()
     data class RestartActivityForAppLink(val data: Uri) : Event()
     data class ShowFeatureAnnouncement(val announcement: FeatureAnnouncement) : Event()

@@ -62,9 +62,10 @@ import com.woocommerce.android.ui.main.BottomNavigationPosition.ORDERS
 import com.woocommerce.android.ui.main.BottomNavigationPosition.PRODUCTS
 import com.woocommerce.android.ui.main.MainActivityViewModel.MoreMenuBadgeState.Hidden
 import com.woocommerce.android.ui.main.MainActivityViewModel.MoreMenuBadgeState.UnseenReviews
-import com.woocommerce.android.ui.main.MainActivityViewModel.OpenOrderCreation
 import com.woocommerce.android.ui.main.MainActivityViewModel.RestartActivityForAppLink
 import com.woocommerce.android.ui.main.MainActivityViewModel.RestartActivityForNotification
+import com.woocommerce.android.ui.main.MainActivityViewModel.ShortcutOpenOrderCreation
+import com.woocommerce.android.ui.main.MainActivityViewModel.ShortcutOpenPayments
 import com.woocommerce.android.ui.main.MainActivityViewModel.ShowFeatureAnnouncement
 import com.woocommerce.android.ui.main.MainActivityViewModel.ViewMyStoreStats
 import com.woocommerce.android.ui.main.MainActivityViewModel.ViewOrderDetail
@@ -710,7 +711,8 @@ class MainActivity :
                 is RestartActivityForAppLink -> restartActivityForAppLink(event)
                 is ShowFeatureAnnouncement -> navigateToFeratureAnnouncement(event)
                 ViewPayments -> showPayments()
-                OpenOrderCreation -> openOrderCreation()
+                ShortcutOpenPayments -> shortcutShowPayments()
+                ShortcutOpenOrderCreation -> shortcutOpenOrderCreation()
             }
         }
 
@@ -817,13 +819,45 @@ class MainActivity :
         navController.navigateSafely(action)
     }
 
-    private fun openOrderCreation() {
+    private fun shortcutOpenOrderCreation() {
+        /**
+         * set the intent action to null so that when the OS recreates the activity
+         * by redelivering the same intent, it won't redirect to the shortcut screen.
+         *
+         * Example:
+         * 1. Open the payments shortcut by long pressing the app icon
+         * 2. Navigate back from the payments screen into the main screen (MyStore screen)
+         * 3. Rotate the device.
+         * 6. The OS redelivers the intent with the intent action set to payments shortcut and as a result
+         * the app redirects to the payments screen as soon as the app is opened.
+         *
+         * Setting the intent action to null avoids this subtle bug.
+         */
+        intent.action = null
         binding.bottomNav.currentPosition = ORDERS
         binding.bottomNav.active(ORDERS.position)
         val action = OrderListFragmentDirections.actionOrderListFragmentToOrderCreationFragment(
             OrderCreateEditViewModel.Mode.Creation
         )
         navController.navigateSafely(action)
+    }
+
+    private fun shortcutShowPayments() {
+        /**
+         * set the intent action to null so that when the OS recreates the activity
+         * by redelivering the same intent, it won't redirect to the shortcut screen.
+         *
+         * Example:
+         * 1. Open the payments shortcut by long pressing the app icon
+         * 2. Navigate back from the payments screen into the main screen (MyStore screen)
+         * 3. Rotate the device.
+         * 6. The OS redelivers the intent with the intent action set to payments shortcut and as a result
+         * the app redirects to the payments screen as soon as the app is opened.
+         *
+         * Setting the intent action to null avoids this bug.
+         */
+        intent.action = null
+        showPayments()
     }
 
     private fun showPayments() {
