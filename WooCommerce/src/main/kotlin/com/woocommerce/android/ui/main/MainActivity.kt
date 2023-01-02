@@ -828,8 +828,8 @@ class MainActivity :
          * 1. Open the payments shortcut by long pressing the app icon
          * 2. Navigate back from the payments screen into the main screen (MyStore screen)
          * 3. Rotate the device.
-         * 6. The OS redelivers the intent with the intent action set to payments shortcut and as a result
-         * the app redirects to the payments screen as soon as the app is opened.
+         * 6. The OS redelivers the intent with the intent action set to order creation shortcut and as a result
+         * the app redirects to the order creation screen as soon as the app is opened.
          *
          * Setting the intent action to null avoids this subtle bug.
          */
