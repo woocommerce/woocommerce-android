@@ -20,9 +20,6 @@ import com.woocommerce.android.iapshowcase.IAPDebugLogWrapper
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
-private const val REMOTE_SITE_ID = 1L
-private const val MILLION = 1_000_000.0
-
 @AndroidEntryPoint
 class IAPShowcasePurchaseFragment : Fragment(R.layout.fragment_iap_showcase_purchase) {
     @Inject
@@ -38,7 +35,6 @@ class IAPShowcasePurchaseFragment : Fragment(R.layout.fragment_iap_showcase_purc
                 return IAPShowcasePurchaseViewModel(
                     IAPSitePurchasePlanFactory.createIAPSitePurchasePlan(
                         this@IAPShowcasePurchaseFragment.requireActivity().application,
-                        REMOTE_SITE_ID,
                         debugLogWrapper,
                         mobilePayAPIProvider::buildMobilePayAPI,
                     )
@@ -74,7 +70,7 @@ class IAPShowcasePurchaseFragment : Fragment(R.layout.fragment_iap_showcase_purc
         viewModel.productInfo.observe(viewLifecycleOwner) {
             view.findViewById<TextView>(R.id.tvProductInfoTitle).text = it.localizedTitle
             view.findViewById<TextView>(R.id.tvProductInfoDescription).text = it.localizedDescription
-            view.findViewById<TextView>(R.id.tvProductInfoPrice).text = "${it.price / MILLION} ${it.currency}"
+            view.findViewById<TextView>(R.id.tvProductInfoPrice).text = "${it.price} ${it.currency}"
         }
         viewModel.iapEvent.observe(viewLifecycleOwner) {
             Log.w("IAP_SHOWCASE", it)
