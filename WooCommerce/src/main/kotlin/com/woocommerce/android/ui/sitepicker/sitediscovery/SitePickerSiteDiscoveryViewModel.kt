@@ -35,6 +35,8 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.transformLatest
 import kotlinx.coroutines.flow.zip
 import kotlinx.coroutines.launch
+import org.wordpress.android.fluxc.network.discovery.DiscoveryUtils
+import org.wordpress.android.util.UrlUtils
 import javax.inject.Inject
 import kotlin.text.RegexOption.IGNORE_CASE
 
@@ -172,7 +174,7 @@ class SitePickerSiteDiscoveryViewModel @Inject constructor(
 
         sitePickRepository.fetchSiteInfo(siteAddressFlow.value).fold(
             onSuccess = {
-                val siteAddress = (it.urlAfterRedirects ?: it.url)
+                val siteAddress = (it.urlAfterRedirects ?: it.url).sanitiseUrl()
                 // Remove protocol prefix
                 val protocolRegex = Regex("^(http[s]?://)", IGNORE_CASE)
                 fetchedSiteUrl = siteAddress.replaceFirst(protocolRegex, "")
@@ -267,6 +269,22 @@ class SitePickerSiteDiscoveryViewModel @Inject constructor(
                 }
             }
         }
+    }
+
+    /**
+     * Basic sanitization of the URL based on the same logic we use in the XMLRPC discovery
+     * see: https://github.com/wordpress-mobile/WordPress-FluxC-Android/blob/94601a5d4c1c98068adde0352ecc25e6d0046f35/fluxc/src/main/java/org/wordpress/android/fluxc/network/discovery/SelfHostedEndpointFinder.java#L292
+     */
+    private fun String.sanitiseUrl(): String {
+        return trim()
+            .trimEnd('/')
+            .let {
+                // Convert IDN names to punycode if necessary
+                UrlUtils.convertUrlToPunycodeIfNeeded(it)
+            }.let {
+                // Strip url from known usual trailing paths
+                DiscoveryUtils.stripKnownPaths(it)
+            }
     }
 
     private enum class Step {
