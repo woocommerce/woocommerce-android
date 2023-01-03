@@ -227,7 +227,7 @@ class AnalyticsViewModelTest : BaseUnitTest() {
         )
 
         analyticsRepository.stub {
-            onBlocking { fetchRevenueData(any(), ForceNew) }.doReturn(weekRevenueStats)
+            onBlocking { fetchRevenueData(any(), eq(ForceNew)) }.doReturn(weekRevenueStats)
         }
 
         sut = givenAViewModel()
@@ -307,7 +307,7 @@ class AnalyticsViewModelTest : BaseUnitTest() {
         )
 
         analyticsRepository.stub {
-            onBlocking { fetchOrdersData(any(), ForceNew) }.doReturn(weekOrdersData)
+            onBlocking { fetchOrdersData(any(), eq(ForceNew)) }.doReturn(weekOrdersData)
         }
 
         sut = givenAViewModel()
@@ -338,7 +338,7 @@ class AnalyticsViewModelTest : BaseUnitTest() {
         )
 
         analyticsRepository.stub {
-            onBlocking { fetchRevenueData(any(), ForceNew) }.doReturn(weekRevenueStats)
+            onBlocking { fetchRevenueData(any(), eq(ForceNew)) }.doReturn(weekRevenueStats)
         }
 
         sut = givenAViewModel()
@@ -363,7 +363,7 @@ class AnalyticsViewModelTest : BaseUnitTest() {
         )
 
         analyticsRepository.stub {
-            onBlocking { fetchProductsData(any(), ForceNew) }.doReturn(weekOrdersData)
+            onBlocking { fetchProductsData(any(), eq(ForceNew)) }.doReturn(weekOrdersData)
         }
 
         sut = givenAViewModel()
@@ -505,7 +505,7 @@ class AnalyticsViewModelTest : BaseUnitTest() {
         val weekOrdersData = getVisitorStats()
 
         analyticsRepository.stub {
-            onBlocking { fetchRecentVisitorsData(any(), Saved) }.doReturn(weekOrdersData)
+            onBlocking { fetchRecentVisitorsData(any(), eq(Saved)) }.doReturn(weekOrdersData)
         }
 
         sut = givenAViewModel()
@@ -519,7 +519,7 @@ class AnalyticsViewModelTest : BaseUnitTest() {
         val weekOrdersData = getVisitorStats()
 
         analyticsRepository.stub {
-            onBlocking { fetchQuarterVisitorsData(any(), Saved) }.doReturn(weekOrdersData)
+            onBlocking { fetchQuarterVisitorsData(any(), eq(Saved)) }.doReturn(weekOrdersData)
         }
 
         sut = givenAViewModel()
@@ -533,7 +533,7 @@ class AnalyticsViewModelTest : BaseUnitTest() {
         val weekOrdersData = getVisitorStats()
 
         analyticsRepository.stub {
-            onBlocking { fetchQuarterVisitorsData(any(), Saved) }.doReturn(weekOrdersData)
+            onBlocking { fetchQuarterVisitorsData(any(), eq(Saved)) }.doReturn(weekOrdersData)
         }
 
         sut = givenAViewModel()
@@ -547,8 +547,8 @@ class AnalyticsViewModelTest : BaseUnitTest() {
         sut = givenAViewModel()
         sut.onNewRangeSelection(CUSTOM)
 
-        verify(analyticsRepository, never()).fetchQuarterVisitorsData(any(), Saved)
-        verify(analyticsRepository, never()).fetchRecentVisitorsData(any(), Saved)
+        verify(analyticsRepository, never()).fetchQuarterVisitorsData(any(), eq(Saved))
+        verify(analyticsRepository, never()).fetchRecentVisitorsData(any(), eq(Saved))
     }
 
     private fun givenAResourceProvider(): ResourceProvider = mock {
@@ -647,17 +647,9 @@ class AnalyticsViewModelTest : BaseUnitTest() {
         private const val ANY_SORT_FORMAT_VALUE = "21 Nov, 2021"
 
         private const val ANY_VALUE = "Today"
-        private const val ANY_SAVED_VALUE = "Other year"
         private const val ANY_OTHER_VALUE = "Last year"
 
-        private const val ANY_DATE_RANGE_EXPECTED_DATE_MESSAGE = "$ANY_VALUE ($ANY_SORT_FORMAT_VALUE)"
-        private const val ANY_OTHER_RANGE_EXPECTED_DATE_MESSAGE = "$ANY_OTHER_VALUE ($ANY_SORT_FORMAT_VALUE)"
-        private const val ANY_SAVED_RANGE_EXPECTED_DATE_MESSAGE = "$ANY_OTHER_VALUE ($ANY_SORT_FORMAT_VALUE)"
-
         private val sdf = SimpleDateFormat("yyyy-MM-dd HH:mm:ss")
-        private val ANY_DATE: Date = sdf.parse(ANY_DATE_TIME_VALUE)!!
-        private val ANY_OTHER_DATE: Date = sdf.parse(ANY_OTHER_DATE_TIME_VALUE)!!
-        private val ANY_WEEK_DATE: Date = sdf.parse(ANY_WEEK_DATE_TIME_VALUE)!!
         private val DATE_RANGE_SELECTORS = listOf(ANY_VALUE, ANY_OTHER_VALUE)
 
         const val TOTAL_VALUE = 10.0
@@ -723,7 +715,6 @@ class AnalyticsViewModelTest : BaseUnitTest() {
         private const val DEFAULT_AVG_VISITORS_DELTA = 10
         private const val DEFAULT_AVG_VIEWS_DELTA = 34
 
-        const val ANY_URL = "https://a8c.com"
         const val ORDERS_COUNT = 5
         const val OTHER_ORDERS_COUNT = 50
         const val ORDERS_COUNT_DELTA = 20
