@@ -30,7 +30,7 @@ class AnalyticsHubYesterdayRangeData(
             end = yesterday
         )
 
-        val dayBeforeYesterday = yesterday.theDayBeforeIt(calendar)
+        val dayBeforeYesterday = yesterday.theDayBeforeIt()
         calendar.time = dayBeforeYesterday
         previousRange = AnalyticsHubTimeRange(
             start = calendar.startOfCurrentDay(),
