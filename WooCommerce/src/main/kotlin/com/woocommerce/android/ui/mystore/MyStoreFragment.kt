@@ -173,9 +173,6 @@ class MyStoreFragment : TopLevelFragment(R.layout.fragment_my_store) {
             .onEach { usageTracksEventEmitter.interacted() }
             .launchIn(viewLifecycleOwner.lifecycleScope)
 
-        // Successful event for Simplified Login A/B testing.
-        experimentTracker.log(ExperimentTracker.SIMPLIFIED_LOGIN_SUCCESSFUL_EVENT)
-
         setupStateObservers()
     }
 
