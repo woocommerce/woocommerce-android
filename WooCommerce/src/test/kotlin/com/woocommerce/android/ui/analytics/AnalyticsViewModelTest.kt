@@ -38,7 +38,6 @@ import kotlinx.coroutines.launch
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 import org.mockito.kotlin.any
-import org.mockito.kotlin.anyVararg
 import org.mockito.kotlin.doAnswer
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.doReturnConsecutively
@@ -79,18 +78,17 @@ class AnalyticsViewModelTest : BaseUnitTest() {
     fun `given an init viewState, when view model is created, then has the expected values`() =
         testBlocking {
             val resourceProvider: ResourceProvider = mock {
-                on { getString(any()) } doReturn ANY_VALUE
-                on { getString(any(), anyVararg()) } doReturn ANY_DATE_RANGE_EXPECTED_DATE_MESSAGE
-                on { getStringArray(any()) } doAnswer { DATE_RANGE_SELECTORS.toTypedArray() }
+                on { getString(any()) } doReturn TODAY.description
             }
 
             sut = givenAViewModel(resourceProvider)
 
+            val expectedSelection = TODAY.generateSelectionData()
+
             with(sut.viewState.value.analyticsDateRangeSelectorState) {
-                assertEquals(ANY_VALUE, selectedPeriod)
-                assertEquals(ANY_DATE_RANGE_EXPECTED_DATE_MESSAGE, fromDatePeriod)
-                assertEquals(ANY_DATE_RANGE_EXPECTED_DATE_MESSAGE, toDatePeriod)
-                assertEquals(DATE_RANGE_SELECTORS, availableRangeDates)
+                assertEquals(expectedSelection.selectionType.description, selectedPeriod)
+                assertEquals(expectedSelection.currentRangeDescription, toDatePeriod)
+                assertEquals(expectedSelection.previousRangeDescription, fromDatePeriod)
             }
 
             with(sut.viewState.value.revenueState) {
@@ -119,18 +117,17 @@ class AnalyticsViewModelTest : BaseUnitTest() {
             }
 
             val resourceProvider: ResourceProvider = mock {
-                on { getString(any()) } doReturn ANY_SAVED_VALUE
-                on { getString(any(), anyVararg()) } doReturn ANY_SAVED_RANGE_EXPECTED_DATE_MESSAGE
-                on { getStringArray(any()) } doAnswer { DATE_RANGE_SELECTORS.toTypedArray() }
+                on { getString(any()) } doReturn TODAY.description
             }
 
             sut = givenAViewModel(resourceProvider)
 
+            val expectedSelection = TODAY.generateSelectionData()
+
             with(sut.viewState.value.analyticsDateRangeSelectorState) {
-                assertEquals(ANY_SAVED_VALUE, selectedPeriod)
-                assertEquals(ANY_SAVED_RANGE_EXPECTED_DATE_MESSAGE, fromDatePeriod)
-                assertEquals(ANY_SAVED_RANGE_EXPECTED_DATE_MESSAGE, toDatePeriod)
-                assertEquals(DATE_RANGE_SELECTORS, availableRangeDates)
+                assertEquals(expectedSelection.selectionType.description, selectedPeriod)
+                assertEquals(expectedSelection.currentRangeDescription, toDatePeriod)
+                assertEquals(expectedSelection.previousRangeDescription, fromDatePeriod)
             }
         }
 
@@ -145,19 +142,17 @@ class AnalyticsViewModelTest : BaseUnitTest() {
             val resourceProvider: ResourceProvider = mock {
                 on { getString(any()) } doReturnConsecutively
                     listOf(ANY_VALUE, LAST_YEAR.description)
-                on { getString(any(), anyVararg()) } doReturnConsecutively
-                    listOf(ANY_DATE_RANGE_EXPECTED_DATE_MESSAGE, ANY_OTHER_RANGE_EXPECTED_DATE_MESSAGE)
-                on { getStringArray(any()) } doAnswer { DATE_RANGE_SELECTORS.toTypedArray() }
             }
 
             sut = givenAViewModel(resourceProvider)
             sut.onNewRangeSelection(LAST_YEAR)
 
+            val expectedSelection = LAST_YEAR.generateSelectionData()
+
             with(sut.viewState.value.analyticsDateRangeSelectorState) {
-                assertEquals(LAST_YEAR.description, selectedPeriod)
-                assertEquals(ANY_OTHER_RANGE_EXPECTED_DATE_MESSAGE, fromDatePeriod)
-                assertEquals(ANY_OTHER_RANGE_EXPECTED_DATE_MESSAGE, toDatePeriod)
-                assertEquals(DATE_RANGE_SELECTORS, availableRangeDates)
+                assertEquals(expectedSelection.selectionType.description, selectedPeriod)
+                assertEquals(expectedSelection.currentRangeDescription, toDatePeriod)
+                assertEquals(expectedSelection.previousRangeDescription, fromDatePeriod)
             }
         }
 
