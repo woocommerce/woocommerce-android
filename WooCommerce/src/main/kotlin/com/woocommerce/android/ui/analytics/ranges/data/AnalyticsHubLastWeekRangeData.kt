@@ -16,14 +16,14 @@ class AnalyticsHubLastWeekRangeData(
     override val previousRange: AnalyticsHubTimeRange
 
     init {
-        val oneWeekAgo = referenceDate.oneWeekAgo(calendar)
+        val oneWeekAgo = referenceDate.oneWeekAgo()
         calendar.time = oneWeekAgo
         currentRange = AnalyticsHubTimeRange(
             start = calendar.startOfCurrentWeek(),
             end = calendar.endOfCurrentWeek()
         )
 
-        val twoWeeksAgo = oneWeekAgo.oneWeekAgo(calendar)
+        val twoWeeksAgo = oneWeekAgo.oneWeekAgo()
         calendar.time = twoWeeksAgo
         previousRange = AnalyticsHubTimeRange(
             start = calendar.startOfCurrentWeek(),

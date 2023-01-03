@@ -16,14 +16,14 @@ class AnalyticsHubLastYearRangeData(
     override val previousRange: AnalyticsHubTimeRange
 
     init {
-        val oneYearAgo = referenceDate.oneYearAgo(calendar)
+        val oneYearAgo = referenceDate.oneYearAgo()
         calendar.time = oneYearAgo
         currentRange = AnalyticsHubTimeRange(
             start = calendar.startOfCurrentYear(),
             end = calendar.endOfCurrentYear()
         )
 
-        val twoYearsAgo = oneYearAgo.oneYearAgo(calendar)
+        val twoYearsAgo = oneYearAgo.oneYearAgo()
         calendar.time = twoYearsAgo
         previousRange = AnalyticsHubTimeRange(
             start = calendar.startOfCurrentYear(),
