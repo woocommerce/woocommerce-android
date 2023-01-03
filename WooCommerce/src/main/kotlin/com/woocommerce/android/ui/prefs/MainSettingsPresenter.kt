@@ -1,6 +1,7 @@
 package com.woocommerce.android.ui.prefs
 
 import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.tools.SiteConnectionType
 import com.woocommerce.android.ui.whatsnew.FeatureAnnouncementRepository
 import com.woocommerce.android.util.BuildConfigWrapper
 import com.woocommerce.android.util.StringUtils
@@ -54,9 +55,10 @@ class MainSettingsPresenter @Inject constructor(
     }
 
     override fun setupJetpackInstallOption() {
-        appSettingsFragmentView?.handleJetpackInstallOption(selectedSite.get().isJetpackCPConnected)
+        val isJetpackCPConnection = selectedSite.connectionType == SiteConnectionType.JetpackConnectionPackage
+        appSettingsFragmentView?.handleJetpackInstallOption(isJetpackCPSite = isJetpackCPConnection)
         jetpackMonitoringJob?.cancel()
-        if (selectedSite.get().isJetpackCPConnected) {
+        if (isJetpackCPConnection) {
             jetpackMonitoringJob = coroutineScope.launch {
                 selectedSite.observe()
                     .filter { it?.isJetpackConnected == true }
