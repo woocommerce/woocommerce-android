@@ -24,14 +24,14 @@ class AnalyticsHubLastMonthRangeData(
     override val previousRange: AnalyticsHubTimeRange
 
     init {
-        val oneMonthAgo = referenceDate.oneMonthAgo(calendar)
+        val oneMonthAgo = referenceDate.oneMonthAgo()
         calendar.time = oneMonthAgo
         currentRange = AnalyticsHubTimeRange(
             start = calendar.startOfCurrentMonth(),
             end = calendar.endOfCurrentMonth()
         )
 
-        val twoMonthsAgo = oneMonthAgo.oneMonthAgo(calendar)
+        val twoMonthsAgo = oneMonthAgo.oneMonthAgo()
         calendar.time = twoMonthsAgo
         previousRange = AnalyticsHubTimeRange(
             start = calendar.startOfCurrentMonth(),

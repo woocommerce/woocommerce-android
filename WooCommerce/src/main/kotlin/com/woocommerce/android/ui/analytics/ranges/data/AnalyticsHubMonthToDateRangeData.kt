@@ -29,7 +29,7 @@ class AnalyticsHubMonthToDateRangeData(
             end = referenceDate
         )
 
-        val oneMonthAgo = referenceDate.oneMonthAgo(calendar)
+        val oneMonthAgo = referenceDate.oneMonthAgo()
         calendar.time = oneMonthAgo
         previousRange = AnalyticsHubTimeRange(
             start = calendar.startOfCurrentMonth(),

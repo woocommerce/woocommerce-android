@@ -30,7 +30,7 @@ class AnalyticsHubWeekToDateRangeData(
             end = referenceDate
         )
 
-        val oneWeekAgo = referenceDate.oneWeekAgo(calendar)
+        val oneWeekAgo = referenceDate.oneWeekAgo()
         calendar.time = oneWeekAgo
         val startOfPreviousWeek = calendar.startOfCurrentWeek()
         previousRange = AnalyticsHubTimeRange(
