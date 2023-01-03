@@ -1,6 +1,8 @@
 package com.woocommerce.android.ui.analytics.ranges.data
 
+import com.woocommerce.android.extensions.endOfCurrentDay
 import com.woocommerce.android.extensions.oneDayAgo
+import com.woocommerce.android.extensions.startOfCurrentDay
 import com.woocommerce.android.ui.analytics.ranges.AnalyticsHubTimeRange
 import com.woocommerce.android.ui.analytics.ranges.AnalyticsHubTimeRangeData
 import java.util.Calendar
@@ -15,14 +17,24 @@ class AnalyticsHubCustomRangeData(
     override val previousRange: AnalyticsHubTimeRange
 
     init {
-        val dayDifference = Date(endDate.time - startDate.time)
-        val previousEnd = startDate.oneDayAgo(calendar)
-        val previousStart = Date(previousEnd.time - dayDifference.time)
+        calendar.time = startDate
+        val currentStart = calendar.startOfCurrentDay()
+
+        calendar.time = endDate
+        val currentEnd = calendar.endOfCurrentDay()
 
         currentRange = AnalyticsHubTimeRange(
-            start = startDate,
-            end = endDate
+            start = currentStart,
+            end = currentEnd
         )
+
+        val dayDifference = Date(endDate.time - startDate.time)
+
+        calendar.time = startDate.oneDayAgo(calendar)
+        val previousEnd = calendar.endOfCurrentDay()
+
+        calendar.time = Date(previousEnd.time - dayDifference.time)
+        val previousStart = calendar.startOfCurrentDay()
 
         previousRange = AnalyticsHubTimeRange(
             start = previousStart,
