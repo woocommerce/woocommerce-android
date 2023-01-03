@@ -7,9 +7,8 @@ import kotlinx.coroutines.flow.Flow
 import java.io.Closeable
 
 interface PurchaseWPComPlanActions : Closeable {
-    val purchaseWpComPlanResult: Flow<WPComPurchaseResult>
-
+    fun getPurchaseWpComPlanResult(remoteSiteId: Long): Flow<WPComPurchaseResult>
     suspend fun isWPComPlanPurchased(): WPComIsPurchasedResult
-    suspend fun purchaseWPComPlan(activityWrapper: IAPActivityWrapper)
+    suspend fun purchaseWPComPlan(activityWrapper: IAPActivityWrapper, remoteSiteId: Long)
     suspend fun fetchWPComPlanProduct(): WPComProductResult
 }

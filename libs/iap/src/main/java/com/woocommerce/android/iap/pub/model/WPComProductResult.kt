@@ -8,6 +8,6 @@ sealed class WPComProductResult {
 data class WPComPlanProduct(
     val localizedTitle: String,
     val localizedDescription: String,
-    val price: Long,
+    val price: Double,
     val currency: String,
 )

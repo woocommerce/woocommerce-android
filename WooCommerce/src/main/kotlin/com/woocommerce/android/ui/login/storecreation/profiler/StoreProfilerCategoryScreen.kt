@@ -48,13 +48,15 @@ fun StoreProfilerCategoryScreen(viewModel: StoreProfilerViewModel) {
                 onArrowBackPressed = viewModel::onArrowBackPressed,
                 onSkipPressed = viewModel::onSkipPressed
             )
-        }) {
+        }) { padding ->
             CategoriesContent(
                 storeName = state.storeName,
                 storeCategories = state.categories,
                 onContinueClicked = viewModel::onContinueClicked,
                 onCategorySelected = viewModel::onCategorySelected,
-                modifier = Modifier.background(MaterialTheme.colors.surface)
+                modifier = Modifier
+                    .background(MaterialTheme.colors.surface)
+                    .padding(padding)
             )
         }
     }
