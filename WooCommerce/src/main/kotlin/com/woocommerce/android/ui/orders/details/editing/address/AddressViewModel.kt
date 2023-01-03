@@ -262,7 +262,7 @@ class AddressViewModel @Inject constructor(
 
     @Parcelize
     data class ViewState(
-        val customerId: Long = 0,
+        val customerId: Long? = null,
         val addressSelectionStates: Map<AddressType, AddressSelectionState> = emptyMap(),
         val isLoading: Boolean = false,
     ) : Parcelable
@@ -292,7 +292,7 @@ class AddressViewModel @Inject constructor(
     ) : MultiLiveEvent.Event()
 
     data class Exit(
-        val customerId: Long,
+        val customerId: Long?,
         val addresses: Map<AddressType, Address>
     ) : MultiLiveEvent.Event()
 

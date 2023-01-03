@@ -248,7 +248,7 @@ class OrderCreateEditViewModel @Inject constructor(
         }
     }
 
-    fun onCustomerAddressEdited(customerId: Long, billingAddress: Address, shippingAddress: Address) {
+    fun onCustomerAddressEdited(customerId: Long?, billingAddress: Address, shippingAddress: Address) {
         val hasDifferentShippingDetails = _orderDraft.value.shippingAddress != _orderDraft.value.billingAddress
         tracker.track(
             ORDER_CUSTOMER_ADD,
