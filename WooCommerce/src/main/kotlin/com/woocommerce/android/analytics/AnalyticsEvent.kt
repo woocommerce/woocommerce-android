@@ -752,7 +752,6 @@ enum class AnalyticsEvent(val siteless: Boolean = false) {
     // Experiments (A/B test variants)
     PROLOGUE_EXPERIMENT,
     JETPACK_TIMEOUT_EXPERIMENT,
-    SIMPLIFIED_LOGIN_EXPERIMENT,
     JETPACK_INSTALLATION_EXPERIMENT,
 
     // Widgets
