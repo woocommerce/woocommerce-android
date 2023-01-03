@@ -46,13 +46,14 @@ fun MyStoreSummaryScreen(viewModel: MyStoreSummaryViewModel) {
             Toolbar(
                 onArrowBackPressed = viewModel::onBackPressed,
             )
-        }) {
+        }) { padding ->
             MyStoreSummaryScreen(
                 myStoreSummaryState = viewState,
                 onContinueClicked = viewModel::onContinueClicked,
                 modifier = Modifier
                     .fillMaxSize()
                     .background(MaterialTheme.colors.surface)
+                    .padding(padding)
             )
         }
     }
