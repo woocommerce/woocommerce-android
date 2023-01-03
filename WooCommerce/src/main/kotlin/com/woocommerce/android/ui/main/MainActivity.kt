@@ -831,7 +831,7 @@ class MainActivity :
          * 6. The OS redelivers the intent with the intent action set to order creation shortcut and as a result
          * the app redirects to the order creation screen as soon as the app is opened.
          *
-         * Setting the intent action to null avoids this subtle bug.
+         * Setting the intent action to null avoids this bug.
          */
         intent.action = null
         binding.bottomNav.currentPosition = ORDERS
