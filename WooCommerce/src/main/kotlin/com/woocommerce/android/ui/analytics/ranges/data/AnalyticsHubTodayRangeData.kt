@@ -7,7 +7,7 @@ import com.woocommerce.android.ui.analytics.ranges.AnalyticsHubTimeRangeData
 import java.util.Calendar
 import java.util.Date
 
-// Responsible for defining two ranges of data, one starting from the the first second of the current day
+// Responsible for defining two ranges of data, one starting from the first second of the current day
 // until the same day in the current timezone and the previous day, starting from the first second of
 // yesterday until the same time of that day. E. g.
 //
