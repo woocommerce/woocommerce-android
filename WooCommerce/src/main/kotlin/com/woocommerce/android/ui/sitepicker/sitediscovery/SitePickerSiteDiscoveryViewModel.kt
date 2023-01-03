@@ -189,25 +189,14 @@ class SitePickerSiteDiscoveryViewModel @Inject constructor(
                     )
                 )
 
-                // TODO simplify the checks when the jetpack installation experiment is over
                 when {
                     !it.exists -> inlineErrorFlow.value = R.string.invalid_site_url_message
                     !it.isWordPress -> stepFlow.value = Step.NotWordpress
-                    !it.isWPCom && !it.isJetpackActive -> {
-                        triggerEvent(
-                            StartNativeJetpackActivation(
-                                siteAddress = siteAddress,
-                                isJetpackInstalled = false
-                            )
-                        )
-                    }
                     !it.isWPCom -> {
-                        // This means a self-hosted site that has Jetpack and yet wasn't included in the user's sites
-                        // So start the Jetpack connection flow
                         triggerEvent(
                             StartNativeJetpackActivation(
                                 siteAddress = siteAddress,
-                                isJetpackInstalled = true
+                                isJetpackInstalled = it.isJetpackActive
                             )
                         )
                     }
