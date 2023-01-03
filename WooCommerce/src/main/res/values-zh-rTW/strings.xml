@@ -149,7 +149,6 @@ Language: zh_TW
     <string name="signup_email_exist_input">已有其他帳號使用此電子郵件。</string>
     <string name="signup_already_registered">首先來建立你的帳號。 已經註冊了嗎？ &lt;a href=\'login\'&gt;&lt;u&gt;登入&lt;/u&gt;&lt;/a&gt;</string>
     <string name="login_create_an_account">建立帳號</string>
-    <string name="simplified_login_enter_email_address">輸入你的電子郵件地址以開始</string>
     <string name="login_try_another_email">嘗試其他地址</string>
     <string name="date_timeframe_custom_date_range_title">自訂日期範圍</string>
     <string name="date_timeframe_custom">自訂</string>
