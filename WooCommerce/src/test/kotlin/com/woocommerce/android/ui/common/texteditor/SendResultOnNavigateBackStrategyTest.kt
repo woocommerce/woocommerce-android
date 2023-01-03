@@ -1,9 +1,8 @@
 package com.woocommerce.android.ui.common.texteditor
 
-import com.woocommerce.android.initSavedStateHandle
+import com.woocommerce.android.ui.common.texteditor.SimpleTextEditorStrategy.SEND_RESULT_ON_NAVIGATE_BACK
 import com.woocommerce.android.ui.common.texteditor.SimpleTextEditorViewModel.SimpleTextEditorResult
 import com.woocommerce.android.util.captureValues
-import com.woocommerce.android.viewmodel.BaseUnitTest
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -11,18 +10,9 @@ import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 
 @ExperimentalCoroutinesApi
-class SimpleTextEditorViewModelTests : BaseUnitTest() {
-    private lateinit var viewModel: SimpleTextEditorViewModel
+class SendResultOnNavigateBackStrategyTest : SimpleTextEditorViewModelTe() {
 
-    private val defaultArgs = SimpleTextEditorFragmentArgs(
-        currentText = "text",
-        screenTitle = "title",
-        hint = "hint"
-    )
-
-    fun setup(args: SimpleTextEditorFragmentArgs = defaultArgs) {
-        viewModel = SimpleTextEditorViewModel(args.initSavedStateHandle())
-    }
+    override val defaultArgs = super.defaultArgs.copy(strategy = SEND_RESULT_ON_NAVIGATE_BACK)
 
     @Test
     fun `when the screen is loaded, then init viewstate correctly`() {
