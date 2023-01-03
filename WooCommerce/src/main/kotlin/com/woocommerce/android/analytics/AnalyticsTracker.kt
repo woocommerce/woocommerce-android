@@ -425,6 +425,7 @@ class AnalyticsTracker private constructor(private val context: Context) {
         const val KEY_PATH = "path"
 
         // -- Store creation
+        const val KEY_IAP_ELIGIBLE = "is_eligible"
         const val VALUE_LOGIN_EMAIL_ERROR = "login_email_error"
         const val VALUE_SWITCHING_STORE = "switching_store"
         const val VALUE_PROLOGUE = "prologue"
@@ -433,7 +434,7 @@ class AnalyticsTracker private constructor(private val context: Context) {
         const val VALUE_WEB = "web"
         const val VALUE_NATIVE = "native"
         const val VALUE_STEP_STORE_NAME = "store_name"
-        const val VALUE_STEP_STORE_PROFILER = "store_profiler"
+        const val VALUE_STEP_STORE_PROFILER_CATEGORY = "store_profiler_category"
         const val VALUE_STEP_DOMAIN_PICKER = "domain_picker"
         const val VALUE_STEP_STORE_SUMMARY = "store_summary"
         const val VALUE_STEP_PLAN_PURCHASE = "plan_purchase"

@@ -337,7 +337,7 @@
         app:popExitAnim="@anim/activity_fade_out" />
     <action
         android:id="@+id/action_global_login_to_sitePickerFragment"
-        app:destination="@id/nav_graph_site_picker" >
+        app:destination="@id/nav_graph_site_picker">
         <argument
             android:name="openedFromLogin"
             android:defaultValue="true"
@@ -407,6 +407,10 @@
             android:name="requestCode"
             android:defaultValue="-1"
             app:argType="integer" />
+        <argument
+            android:name="strategy"
+            app:argType="com.woocommerce.android.ui.common.texteditor.SimpleTextEditorStrategy"
+            app:nullable="false" />
     </fragment>
     <action
         android:id="@+id/action_global_simpleTextEditorFragment"

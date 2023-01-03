@@ -74,9 +74,9 @@ android {
         if (project.hasProperty("versionName")) {
             versionName project.property("versionName")
         } else {
-            versionName "11.6-rc-1"
+            versionName "11.7-rc-2"
         }
-        versionCode 366
+        versionCode 370
 
         minSdkVersion gradle.ext.minSdkVersion
         // Update targetSdkVersion only after reviewing all the OS changes (developer.android.com/about/versions/[ENTER_ANDROID_VERSION]/migration)
@@ -99,7 +99,9 @@ android {
             pickFirst 'META-INF/LGPL2.1'
         }
 
-        resConfigs("en", "ar", "de", "es", "fr", "he", "id", "in", "it", "iw", "ja", "ko")
+        resConfigs(
+                "en", "ar", "de", "es", "fr", "he", "id", "in", "it", "iw", "ja", "ko", "nl", "pt-rBR", "ru", "sv", "tr", "zh-rCN", "zh-rTW"
+        )
     }
 
     buildFeatures {
@@ -212,6 +214,8 @@ dependencies {
 
     implementation "androidx.work:work-runtime-ktx:$workManagerVersion"
 
+    implementation 'androidx.core:core-splashscreen:1.0.0'
+
     implementation("org.wordpress:utils:$wordPressUtilsVersion") {
         exclude group: "com.mcxiaoke.volley"
         exclude group: "com.android.support"
@@ -250,7 +254,6 @@ dependencies {
 
     implementation project(":libs:cardreader")
     implementation project(":libs:iap")
-    implementation project(":libs:barcode")
 
     implementation 'com.facebook.shimmer:shimmer:0.5.0'
     implementation 'com.github.chrisbanes:PhotoView:2.3.0'
@@ -263,7 +266,7 @@ dependencies {
     implementation "androidx.hilt:hilt-common:$hiltJetpackVersion"
     implementation "androidx.hilt:hilt-work:$hiltJetpackVersion"
 
-    kapt"androidx.hilt:hilt-compiler:$hiltJetpackVersion"
+    kapt "androidx.hilt:hilt-compiler:$hiltJetpackVersion"
     kapt "com.google.dagger:hilt-compiler:$gradle.ext.daggerVersion"
     implementation "com.google.dagger:dagger-android-support:$gradle.ext.daggerVersion"
     kapt "com.google.dagger:dagger-android-processor:$gradle.ext.daggerVersion"
@@ -275,6 +278,8 @@ dependencies {
     implementation "com.github.bumptech.glide:volley-integration:$glideVersion@aar"
     implementation "org.greenrobot:eventbus:$eventBusVersion"
     implementation "com.google.android.play:core:$googlePlayCoreVersion"
+
+    implementation 'com.google.android.gms:play-services-code-scanner:16.0.0-beta3'
 
     // Debug dependencies
     debugImplementation "com.facebook.flipper:flipper:$flipperVersion"
@@ -323,10 +328,7 @@ dependencies {
     }
     androidTestImplementation "org.apache.httpcomponents:httpclient-android:$httpClientAndroidVersion"
 
-    // Resolve conflicts between main and test APK
-    androidTestImplementation "androidx.annotation:annotation:1.5.0"
-
-    implementation ("com.zendesk:support:5.0.8") {
+    implementation("com.zendesk:support:5.0.8") {
         exclude group: 'com.android.support', module: 'support-annotations'
     }
 

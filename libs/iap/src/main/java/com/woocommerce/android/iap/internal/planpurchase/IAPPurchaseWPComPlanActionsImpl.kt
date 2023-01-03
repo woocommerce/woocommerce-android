@@ -23,14 +23,17 @@ import kotlinx.coroutines.flow.merge
 internal class IAPPurchaseWPComPlanActionsImpl(
     private val purchaseWpComPlanHandler: IAPPurchaseWpComPlanHandler,
     private val iapManager: IAPManager,
-    private val remoteSiteId: Long,
     private val iapProduct: IAPProduct = IAPProduct.WPPremiumPlanTesting
 ) : PurchaseWPComPlanActions {
+    private companion object {
+        private const val MILLION = 1_000_000.0
+    }
+
     init {
         iapManager.connect()
     }
 
-    override val purchaseWpComPlanResult: Flow<WPComPurchaseResult> = merge(
+    override fun getPurchaseWpComPlanResult(remoteSiteId: Long): Flow<WPComPurchaseResult> = merge(
         purchaseWpComPlanHandler.purchaseWpComProductResult,
         iapManager.iapPurchaseResult.map { purchaseWpComPlanHandler.handleNewPurchaseResultEvent(it, remoteSiteId) },
     )
@@ -41,11 +44,12 @@ internal class IAPPurchaseWPComPlanActionsImpl(
                 val purchases = response.purchases
                 WPComIsPurchasedResult.Success(determinePurchaseStatus(purchases))
             }
+
             is IAPPurchaseResult.Error -> WPComIsPurchasedResult.Error(response.error)
         }
     }
 
-    override suspend fun purchaseWPComPlan(activityWrapper: IAPActivityWrapper) {
+    override suspend fun purchaseWPComPlan(activityWrapper: IAPActivityWrapper, remoteSiteId: Long) {
         purchaseWpComPlanHandler.purchaseWPComPlan(activityWrapper, iapProduct, remoteSiteId)
     }
 
@@ -55,10 +59,11 @@ internal class IAPPurchaseWPComPlanActionsImpl(
                 WPComPlanProduct(
                     localizedTitle = response.productDetails.title,
                     localizedDescription = response.productDetails.description,
-                    price = response.productDetails.priceOfTheFirstPurchasedOfferInMicros,
+                    price = response.productDetails.priceOfTheFirstPurchasedOfferInMicros / MILLION,
                     currency = response.productDetails.currencyOfTheFirstPurchasedOffer,
                 )
             )
+
             is IAPProductDetailsResponse.Error -> WPComProductResult.Error(response.error)
         }
     }

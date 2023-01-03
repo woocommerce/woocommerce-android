@@ -69,7 +69,6 @@ gradleEnterprise {
 rootProject.name = 'WCAndroid'
 
 include ':quicklogin'
-include ':libs:barcode'
 include ':libs:cardreader'
 include ':libs:iap'
 include ':WooCommerce'
