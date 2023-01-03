@@ -72,14 +72,20 @@ fun WooLogViewerScreen(
                 }
             )
         }
-    ) {
-        LogViewerEntries(entries)
+    ) { padding ->
+        LogViewerEntries(
+            entries,
+            modifier = Modifier.padding(padding)
+        )
     }
 }
 
 @Composable
-fun LogViewerEntries(entries: RollingLogEntries) {
-    LazyColumn {
+fun LogViewerEntries(
+    entries: RollingLogEntries,
+    modifier: Modifier = Modifier
+) {
+    LazyColumn(modifier = modifier) {
         itemsIndexed(entries) { index, entry ->
             LogViewerEntry(index, entry)
             if (index < entries.lastIndex) {
