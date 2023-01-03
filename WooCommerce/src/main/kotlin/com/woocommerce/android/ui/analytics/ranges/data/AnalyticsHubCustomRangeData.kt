@@ -28,12 +28,12 @@ class AnalyticsHubCustomRangeData(
             end = currentEnd
         )
 
-        val dayDifference = Date(endDate.time - startDate.time)
+        val dayDifference = endDate.time - startDate.time
 
         calendar.time = startDate.oneDayAgo(calendar)
         val previousEnd = calendar.endOfCurrentDay()
 
-        calendar.time = Date(previousEnd.time - dayDifference.time)
+        calendar.time = Date(previousEnd.time - dayDifference)
         val previousStart = calendar.startOfCurrentDay()
 
         previousRange = AnalyticsHubTimeRange(
