@@ -9,6 +9,7 @@ import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import androidx.core.text.HtmlCompat
+import androidx.core.view.MenuProvider
 import androidx.fragment.app.Fragment
 import com.woocommerce.android.R
 import com.woocommerce.android.R.layout
@@ -22,7 +23,7 @@ import org.wordpress.android.login.LoginListener
 import javax.inject.Inject
 
 @AndroidEntryPoint
-class LoginDiscoveryErrorFragment : Fragment(layout.fragment_login_discovery_error) {
+class LoginDiscoveryErrorFragment : Fragment(layout.fragment_login_discovery_error), MenuProvider {
     companion object {
         const val TAG = "LoginDiscoveryErrorFragment"
         const val ARG_SITE_ADDRESS = "SITE-ARG_SITE_ADDRESS"
@@ -56,7 +57,8 @@ class LoginDiscoveryErrorFragment : Fragment(layout.fragment_login_discovery_err
 
     private var loginListener: LoginListener? = null
     private var jetpackLoginListener: LoginNoJetpackListener? = null
-    @Inject internal lateinit var unifiedLoginTracker: UnifiedLoginTracker
+    @Inject
+    internal lateinit var unifiedLoginTracker: UnifiedLoginTracker
 
     private var errorMessage: Int? = null
 
@@ -81,8 +83,6 @@ class LoginDiscoveryErrorFragment : Fragment(layout.fragment_login_discovery_err
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        setHasOptionsMenu(true)
-
         val binding = FragmentLoginDiscoveryErrorBinding.bind(view)
         val toolbar = view.findViewById(R.id.toolbar) as Toolbar
         (activity as AppCompatActivity).setSupportActionBar(toolbar)
@@ -121,15 +121,15 @@ class LoginDiscoveryErrorFragment : Fragment(layout.fragment_login_discovery_err
                 )
             }
         }
+        requireActivity().addMenuProvider(this, viewLifecycleOwner)
     }
 
-    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
-        super.onCreateOptionsMenu(menu, inflater)
-        inflater.inflate(R.menu.menu_login, menu)
+    override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
+        menuInflater.inflate(R.menu.menu_login, menu)
     }
 
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        if (item.itemId == R.id.help) {
+    override fun onMenuItemSelected(menuItem: MenuItem): Boolean {
+        if (menuItem.itemId == R.id.help) {
             AnalyticsTracker.track(AnalyticsEvent.LOGIN_DISCOVERY_ERROR_MENU_HELP_TAPPED)
             loginListener?.helpSiteAddress(siteAddress)
             return true

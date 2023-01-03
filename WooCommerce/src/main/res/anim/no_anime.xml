@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<!-- This animation is useful for fragment transitions if we want one fragment to stay visible while
+    the other fragment is animating, for example for a slide over animation -->
+
+<alpha xmlns:android="http://schemas.android.com/apk/res/android"
+    android:duration="@integer/activity_transition_duration"
+    android:fromAlpha="1"
+    android:toAlpha="1" />
+

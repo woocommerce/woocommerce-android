@@ -5,6 +5,7 @@ import android.view.Menu
 import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
+import androidx.core.view.MenuProvider
 import androidx.core.view.isVisible
 import androidx.fragment.app.viewModels
 import androidx.hilt.navigation.fragment.hiltNavGraphViewModels
@@ -24,7 +25,9 @@ import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
 @AndroidEntryPoint
-class OrderCreateEditShippingFragment : BaseFragment(R.layout.fragment_order_create_edit_shipping) {
+class OrderCreateEditShippingFragment :
+    BaseFragment(R.layout.fragment_order_create_edit_shipping),
+    MenuProvider {
     private val viewModel: OrderCreateEditShippingViewModel by viewModels()
     private val sharedViewModel: OrderCreateEditViewModel by hiltNavGraphViewModels(R.id.nav_graph_order_creations)
 
@@ -32,7 +35,7 @@ class OrderCreateEditShippingFragment : BaseFragment(R.layout.fragment_order_cre
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        setHasOptionsMenu(true)
+        requireActivity().addMenuProvider(this, viewLifecycleOwner)
         val binding = FragmentOrderCreateEditShippingBinding.bind(view)
         binding.initUi()
         setupObservers(binding)
@@ -42,17 +45,16 @@ class OrderCreateEditShippingFragment : BaseFragment(R.layout.fragment_order_cre
         }
     }
 
-    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
-        super.onCreateOptionsMenu(menu, inflater)
+    override fun onCreateMenu(menu: Menu, inflater: MenuInflater) {
         inflater.inflate(R.menu.menu_done, menu)
     }
 
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+    override fun onMenuItemSelected(item: MenuItem): Boolean {
         return if (item.itemId == R.id.menu_done) {
             viewModel.onDoneButtonClicked()
             true
         } else {
-            super.onOptionsItemSelected(item)
+            false
         }
     }
 

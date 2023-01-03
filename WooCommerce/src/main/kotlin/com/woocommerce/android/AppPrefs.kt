@@ -26,11 +26,15 @@ import com.woocommerce.android.AppPrefs.DeletablePrefKey.ORDER_FILTER_CUSTOM_DAT
 import com.woocommerce.android.AppPrefs.DeletablePrefKey.ORDER_FILTER_PREFIX
 import com.woocommerce.android.AppPrefs.DeletablePrefKey.PRODUCT_SORTING_PREFIX
 import com.woocommerce.android.AppPrefs.DeletablePrefKey.RECEIPT_PREFIX
+import com.woocommerce.android.AppPrefs.DeletablePrefKey.UPDATE_SIMULATED_READER_OPTION
 import com.woocommerce.android.AppPrefs.UndeletablePrefKey.ONBOARDING_CAROUSEL_DISPLAYED
+import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.extensions.orNullIfEmpty
+import com.woocommerce.android.extensions.packageInfo
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.payments.cardreader.onboarding.PersistentOnboardingData
 import com.woocommerce.android.ui.payments.cardreader.onboarding.PluginType
+import com.woocommerce.android.ui.prefs.DeveloperOptionsViewModel.DeveloperOptionsViewState.UpdateOptions
 import com.woocommerce.android.ui.products.ProductType
 import com.woocommerce.android.ui.promobanner.PromoBannerType
 import com.woocommerce.android.util.PreferenceUtils
@@ -95,6 +99,10 @@ object AppPrefs {
         CARD_READER_UPSELL_BANNER_DIALOG_DISMISSED_REMIND_ME_LATER,
         CARD_READER_DO_NOT_SHOW_CASH_ON_DELIVERY_DISABLED_ONBOARDING_STATE,
         ACTIVE_STATS_GRANULARITY,
+        USE_SIMULATED_READER,
+        NEW_SIGN_UP,
+        STORE_CREATION_SOURCE,
+        UPDATE_SIMULATED_READER_OPTION,
     }
 
     /**
@@ -155,10 +163,6 @@ object AppPrefs {
         WC_SHIPPING_BANNER_DISMISSED,
 
         ONBOARDING_CAROUSEL_DISPLAYED,
-
-        USER_SEEN_NEW_FEATURE_MORE_SCREEN,
-
-        USER_CLICKED_ON_PAYMENTS_MORE_SCREEN,
     }
 
     fun init(context: Context) {
@@ -174,9 +178,10 @@ object AppPrefs {
         get() = try {
             context
                 .packageManager
-                .getPackageInfo(context.packageName, 0)
-                .firstInstallTime
-                .let { Date(it) }
+                .packageInfo(context.packageName, 0)
+                .firstInstallTime.let {
+                    Date(it)
+                }
         } catch (ex: Throwable) {
             relativeInstallationDate
         }
@@ -205,6 +210,14 @@ object AppPrefs {
     var isCouponsEnabled: Boolean
         get() = getBoolean(IS_COUPONS_ENABLED, false)
         set(value) = setBoolean(IS_COUPONS_ENABLED, value)
+
+    var isSimulatedReaderEnabled: Boolean
+        get() = getBoolean(DeletablePrefKey.USE_SIMULATED_READER, false)
+        set(value) = setBoolean(DeletablePrefKey.USE_SIMULATED_READER, value)
+
+    var updateReaderOptionSelected: String
+        get() = getString(UPDATE_SIMULATED_READER_OPTION, UpdateOptions.RANDOM.toString())
+        set(option) = setString(UPDATE_SIMULATED_READER_OPTION, option)
 
     fun getProductSortingChoice(currentSiteId: Int) = getString(getProductSortingKey(currentSiteId)).orNullIfEmpty()
 
@@ -849,20 +862,6 @@ object AppPrefs {
     fun hasOnboardingCarouselBeenDisplayed(): Boolean =
         getBoolean(ONBOARDING_CAROUSEL_DISPLAYED, false)
 
-    fun isUserSeenNewFeatureOnMoreScreen(): Boolean =
-        getBoolean(UndeletablePrefKey.USER_SEEN_NEW_FEATURE_MORE_SCREEN, false)
-
-    fun setUserSeenNewFeatureOnMoreScreen() {
-        setBoolean(UndeletablePrefKey.USER_SEEN_NEW_FEATURE_MORE_SCREEN, true)
-    }
-
-    fun isPaymentsIconWasClickedOnMoreScreen(): Boolean =
-        getBoolean(UndeletablePrefKey.USER_CLICKED_ON_PAYMENTS_MORE_SCREEN, false)
-
-    fun setPaymentsIconWasClickedOnMoreScreen() {
-        setBoolean(UndeletablePrefKey.USER_CLICKED_ON_PAYMENTS_MORE_SCREEN, true)
-    }
-
     fun setActiveStatsGranularity(currentSiteId: Int, activeStatsGranularity: String) {
         setString(getActiveStatsGranularityFilterKey(currentSiteId), activeStatsGranularity)
     }
@@ -870,6 +869,18 @@ object AppPrefs {
     fun getActiveStatsGranularity(currentSiteId: Int) = getString(
         getActiveStatsGranularityFilterKey(currentSiteId)
     )
+
+    fun markAsNewSignUp(newSignUp: Boolean) {
+        setBoolean(DeletablePrefKey.NEW_SIGN_UP, newSignUp)
+    }
+
+    fun getIsNewSignUp() = getBoolean(DeletablePrefKey.NEW_SIGN_UP, false)
+
+    fun setStoreCreationSource(source: String) {
+        setString(DeletablePrefKey.STORE_CREATION_SOURCE, source)
+    }
+
+    fun getStoreCreationSource() = getString(DeletablePrefKey.STORE_CREATION_SOURCE, AnalyticsTracker.VALUE_OTHER)
 
     private fun getActiveStatsGranularityFilterKey(currentSiteId: Int) =
         PrefKeyString("${DeletablePrefKey.ACTIVE_STATS_GRANULARITY}:$currentSiteId")
@@ -918,17 +929,30 @@ object AppPrefs {
         PreferenceUtils.setInt(getPreferences(), key.toString(), value)
 
     private fun getLong(key: PrefKey, default: Long = 0L) =
-        PreferenceUtils.getLong(getPreferences(), key.toString(), default)
+        getLong(key.toString(), default)
+
+    private fun getLong(keyName: String, default: Long = 0L) =
+        PreferenceUtils.getLong(getPreferences(), keyName, default)
 
     private fun setLong(key: PrefKey, value: Long) =
-        PreferenceUtils.setLong(getPreferences(), key.toString(), value)
+        setLong(key.toString(), value)
+
+    private fun setLong(keyName: String, value: Long) =
+        PreferenceUtils.setLong(getPreferences(), keyName, value)
 
     private fun getString(key: PrefKey, defaultValue: String = ""): String {
-        return PreferenceUtils.getString(getPreferences(), key.toString(), defaultValue) ?: defaultValue
+        return getString(key.toString(), defaultValue)
+    }
+
+    private fun getString(keyName: String, defaultValue: String = ""): String {
+        return PreferenceUtils.getString(getPreferences(), keyName, defaultValue) ?: defaultValue
     }
 
     private fun setString(key: PrefKey, value: String) =
-        PreferenceUtils.setString(getPreferences(), key.toString(), value)
+        setString(key.toString(), value)
+
+    private fun setString(keyName: String, value: String) =
+        PreferenceUtils.setString(getPreferences(), keyName, value)
 
     fun getBoolean(key: PrefKey, default: Boolean) =
         PreferenceUtils.getBoolean(getPreferences(), key.toString(), default)
@@ -939,7 +963,11 @@ object AppPrefs {
     fun getPreferences() = PreferenceManager.getDefaultSharedPreferences(context)
 
     private fun remove(key: PrefKey) {
-        getPreferences().edit().remove(key.toString()).apply()
+        remove(key.toString())
+    }
+
+    private fun remove(keyName: String) {
+        getPreferences().edit().remove(keyName).apply()
     }
 
     fun exists(key: PrefKey) = getPreferences().contains(key.toString())

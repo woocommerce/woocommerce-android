@@ -49,6 +49,8 @@ class AppPrefsWrapper @Inject constructor() {
         preferredPlugin
     )
 
+    fun selectedUpdateReaderOption() = AppPrefs.updateReaderOptionSelected
+
     fun setCardReaderOnboardingData(
         localSiteId: Int,
         remoteSiteId: Long,
@@ -160,6 +162,8 @@ class AppPrefsWrapper @Inject constructor() {
 
     fun getUnifiedLoginLastSource() = AppPrefs.getUnifiedLoginLastSource()
 
+    fun setLoginSiteAddress(loginSiteAddress: String) = AppPrefs.setLoginSiteAddress(loginSiteAddress)
+
     fun removeLoginSiteAddress() = AppPrefs.removeLoginSiteAddress()
 
     fun getLoginSiteAddress() = AppPrefs.getLoginSiteAddress().takeIf { it.isNotEmpty() }
@@ -190,14 +194,6 @@ class AppPrefsWrapper @Inject constructor() {
 
     fun getLoginEmail() = AppPrefs.getLoginEmail()
 
-    fun isUserSeenNewFeatureOnMoreScreen() = AppPrefs.isUserSeenNewFeatureOnMoreScreen()
-
-    fun setUserSeenNewFeatureOnMoreScreen() = AppPrefs.setUserSeenNewFeatureOnMoreScreen()
-
-    fun isPaymentsIconWasClickedOnMoreScreen() = AppPrefs.isPaymentsIconWasClickedOnMoreScreen()
-
-    fun setPaymentsIconWasClickedOnMoreScreen() = AppPrefs.setPaymentsIconWasClickedOnMoreScreen()
-
     fun setOnboardingCarouselDisplayed(displayed: Boolean) =
         AppPrefs.setOnboardingCarouselDisplayed(displayed)
 
@@ -209,6 +205,18 @@ class AppPrefsWrapper @Inject constructor() {
 
     fun getActiveStatsGranularity(currentSiteId: Int) =
         AppPrefs.getActiveStatsGranularity(currentSiteId)
+
+    fun markAsNewSignUp(newSignUp: Boolean) {
+        AppPrefs.markAsNewSignUp(newSignUp)
+    }
+
+    fun getIsNewSignUp() = AppPrefs.getIsNewSignUp()
+
+    fun setStoreCreationSource(source: String) {
+        AppPrefs.setStoreCreationSource(source)
+    }
+
+    fun getStoreCreationSource() = AppPrefs.getStoreCreationSource()
 
     /**
      * Card Reader Upsell
@@ -266,6 +274,8 @@ class AppPrefsWrapper @Inject constructor() {
     fun setPromoBannerShown(bannerType: PromoBannerType, shown: Boolean) {
         AppPrefs.setPromoBannerShown(bannerType, shown)
     }
+
+    fun isV4StatsSupported() = AppPrefs.isV4StatsSupported()
 
     /**
      * Observes changes to the preferences

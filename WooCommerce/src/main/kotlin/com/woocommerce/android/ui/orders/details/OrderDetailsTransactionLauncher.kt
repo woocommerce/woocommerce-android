@@ -56,13 +56,13 @@ class OrderDetailsTransactionLauncher @Inject constructor(
 
     fun onOrderFetched() = satisfyCondition(Conditions.ORDER_FETCHED)
 
-    fun onShippingLabelFetched() = satisfyCondition(Conditions.SHIPPING_LABEL_FETCHED)
+    fun onShippingLabelFetchingCompleted() = satisfyCondition(Conditions.SHIPPING_LABEL_FETCHED)
 
     fun onNotesFetched() = satisfyCondition(Conditions.NOTES_FETCHED)
 
     fun onRefundsFetched() = satisfyCondition(Conditions.REFUNDS_FETCHED)
 
-    fun onShipmentTrackingFetched() = satisfyCondition(Conditions.SHIPMENT_TRACKINGS_FETCHED)
+    fun onShipmentTrackingFetchingCompleted() = satisfyCondition(Conditions.SHIPMENT_TRACKINGS_FETCHED)
 
     fun onPackageCreationEligibleFetched() = satisfyCondition(Conditions.PACKAGE_CREATION_ELIGIBLE_FETCHED)
 

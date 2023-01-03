@@ -215,7 +215,12 @@
     <fragment
         android:id="@+id/cardReaderManualsFragment"
         android:name="com.woocommerce.android.ui.payments.cardreader.manuals.CardReaderManualsFragment"
-        android:label="CardReaderManualsFragment" />
+        android:label="CardReaderManualsFragment" >
+        <argument
+            android:name="cardReaderConfig"
+            app:argType="com.woocommerce.android.cardreader.config.CardReaderConfigForSupportedCountry"
+            app:nullable="false" />
+    </fragment>
 
     <dialog
         android:id="@+id/simplePaymentsDialog"

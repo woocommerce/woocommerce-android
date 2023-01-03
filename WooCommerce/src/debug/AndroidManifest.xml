@@ -32,9 +32,16 @@
         android:name=".WooCommerceDebug"
         tools:replace="android:name">
         <provider
+            android:enabled="@bool/enable_leak_canary"
             android:name=".LeakCanaryInstaller"
             android:authorities="${applicationId}.leakcanary-installer"
             android:exported="false" />
+
+        <activity
+            android:name="com.woocommerce.android.iapshowcase.IAPShowcaseActivity"
+            android:exported="true"
+            android:theme="@style/Theme.Woo" />
+
     </application>
 
 </manifest>

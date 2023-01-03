@@ -2,7 +2,6 @@ package com.woocommerce.android.util
 
 import com.woocommerce.android.di.AppCoroutineScope
 import com.woocommerce.android.tools.SelectedSite
-import com.woocommerce.android.util.locale.LocaleProvider
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.filterNotNull
@@ -14,9 +13,6 @@ import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.store.WooCommerceStore
 import java.math.BigDecimal
 import java.text.DecimalFormat
-import java.text.NumberFormat
-import java.util.Currency
-import java.util.Locale
 import javax.inject.Inject
 import javax.inject.Singleton
 import kotlin.math.absoluteValue
@@ -26,7 +22,7 @@ import kotlin.math.roundToInt
 class CurrencyFormatter @Inject constructor(
     private val wcStore: WooCommerceStore,
     private val selectedSite: SelectedSite,
-    private val localeProvider: LocaleProvider,
+    private val siteIndependentCurrencyFormatter: SiteIndependentCurrencyFormatter,
     @AppCoroutineScope private val appCoroutineScope: CoroutineScope,
     private val dispatchers: CoroutineDispatchers
 ) {
@@ -166,14 +162,16 @@ class CurrencyFormatter @Inject constructor(
     /**
      * Returns formatted amount with currency symbol - eg. $113.5 for EN/USD or 113,5€ for FR/EUR.
      */
-    fun formatAmountWithCurrency(amount: Double, currencyCode: String = defaultCurrencyCode): String {
-        val locale = localeProvider.provideLocale() ?: Locale.getDefault()
-        val formatter = NumberFormat.getCurrencyInstance(locale)
-        formatter.currency = if (currencyCode.isEmpty()) {
-            Currency.getInstance(locale)
+    fun formatAmountWithCurrency(amount: Double, currencyCode: String = defaultCurrencyCode): String =
+        siteIndependentCurrencyFormatter.formatAmountWithCurrency(amount, currencyCode)
+
+    /**
+     * Returns formatted amount with currency symbol with 0.0 rounded to 0
+     */
+    fun getFormattedAmountZeroRounded(revenue: Double, currencyCode: String) =
+        if (revenue == 0.0) {
+            formatCurrencyRounded(revenue, currencyCode)
         } else {
-            Currency.getInstance(currencyCode)
+            formatCurrency(revenue.toBigDecimal(), currencyCode)
         }
-        return formatter.format(amount)
-    }
 }

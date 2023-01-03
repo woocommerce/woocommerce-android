@@ -31,11 +31,12 @@ import com.woocommerce.android.databinding.FragmentSettingsMainBinding
 import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.extensions.show
 import com.woocommerce.android.model.FeatureAnnouncement
-import com.woocommerce.android.support.HelpActivity
-import com.woocommerce.android.support.HelpActivity.Origin
+import com.woocommerce.android.support.help.HelpActivity
+import com.woocommerce.android.support.help.HelpActivity.Origin
 import com.woocommerce.android.util.AnalyticsUtils
 import com.woocommerce.android.util.AppThemeUtils
 import com.woocommerce.android.util.ChromeCustomTabUtils
+import com.woocommerce.android.util.PackageUtils
 import com.woocommerce.android.util.SystemVersionUtils
 import com.woocommerce.android.util.ThemeOption
 import com.woocommerce.android.util.WooLog
@@ -71,11 +72,9 @@ class MainSettingsFragment : Fragment(R.layout.fragment_settings_main), MainSett
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        setHasOptionsMenu(true)
         _binding = FragmentSettingsMainBinding.inflate(inflater, container, false)
 
-        val view = binding.root
-        return view
+        return binding.root
     }
 
     @Suppress("ForbiddenComment", "LongMethod")
@@ -161,6 +160,15 @@ class MainSettingsFragment : Fragment(R.layout.fragment_settings_main), MainSett
                 trackSettingToggled(SETTING_NOTIFS_TONE, isChecked)
                 AppPrefs.setOrderNotificationsChaChingEnabled(isChecked)
             }
+        }
+
+        if (PackageUtils.isDebugBuild()) {
+            binding.optionDevelopers.visibility = View.VISIBLE
+            binding.optionDevelopers.setOnClickListener {
+                findNavController().navigateSafely(R.id.action_mainSettingsFragment_to_developerOptionsFragment)
+            }
+        } else {
+            binding.optionDevelopers.visibility = View.GONE
         }
 
         binding.optionBetaFeatures.setOnClickListener {

@@ -2,6 +2,10 @@ package com.woocommerce.android.ui.reviews
 
 import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.R
+import com.woocommerce.android.analytics.AnalyticsEvent.REVIEW_REPLY_SEND
+import com.woocommerce.android.analytics.AnalyticsEvent.REVIEW_REPLY_SEND_FAILED
+import com.woocommerce.android.analytics.AnalyticsEvent.REVIEW_REPLY_SEND_SUCCESS
+import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.model.ProductReview
 import com.woocommerce.android.model.RequestResult
@@ -10,18 +14,25 @@ import com.woocommerce.android.ui.reviews.ProductReviewStatus.SPAM
 import com.woocommerce.android.ui.reviews.ReviewDetailViewModel.ReviewDetailEvent.NavigateBackFromNotification
 import com.woocommerce.android.ui.reviews.domain.MarkReviewAsSeen
 import com.woocommerce.android.viewmodel.BaseUnitTest
+import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.assertj.core.api.Assertions
+import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Test
 import org.mockito.kotlin.any
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.mock
+import org.mockito.kotlin.stub
 import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
+import org.wordpress.android.fluxc.network.BaseRequest.GenericErrorType.UNKNOWN
+import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooError
+import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooErrorType.GENERIC_ERROR
+import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooResult
 import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 
@@ -40,6 +51,7 @@ class ReviewDetailViewModelTest : BaseUnitTest() {
     private val savedState = SavedStateHandle()
     private val markReviewAsSeen: MarkReviewAsSeen = mock()
     private val reviewModerationHandler: ReviewModerationHandler = mock()
+    private val analyticsTracker: AnalyticsTrackerWrapper = mock()
 
     private val review = ProductReviewTestUtils.generateProductReview(id = REVIEW_ID, productId = PRODUCT_ID)
     private lateinit var viewModel: ReviewDetailViewModel
@@ -52,7 +64,8 @@ class ReviewDetailViewModelTest : BaseUnitTest() {
             networkStatus,
             repository,
             markReviewAsSeen,
-            reviewModerationHandler
+            reviewModerationHandler,
+            analyticsTracker
         )
     }
 
@@ -179,5 +192,58 @@ class ReviewDetailViewModelTest : BaseUnitTest() {
         viewModel.onBackPressed()
 
         Assertions.assertThat(viewModel.event.value).isEqualTo(Exit)
+    }
+
+    @Test
+    fun `When review reply button is pressed, open reply view`() {
+        // given
+        val events = mutableListOf<MultiLiveEvent.Event>()
+        viewModel.event.observeForever(events::add)
+
+        // when
+        viewModel.onReplyClicked()
+
+        // then
+        assertThat(events).last().isEqualTo(ReviewDetailViewModel.ReviewDetailEvent.Reply)
+    }
+
+    @Test
+    fun `When review reply is requested and successful, track analytics event and show snackbar`() {
+        // given
+        val events = mutableListOf<MultiLiveEvent.Event>()
+        viewModel.event.observeForever(events::add)
+        repository.stub {
+            onBlocking { reply(any(), any(), any()) } doReturn WooResult()
+            onBlocking { getCachedProductReview(review.remoteId) } doReturn review
+        }
+
+        // when
+        viewModel.start(REVIEW_ID, false)
+        viewModel.onReviewReplied("reply")
+
+        // then
+        verify(analyticsTracker).track(REVIEW_REPLY_SEND)
+        verify(analyticsTracker).track(REVIEW_REPLY_SEND_SUCCESS)
+        assertThat(events).last().isEqualTo(ShowSnackbar(R.string.review_reply_success))
+    }
+
+    @Test
+    fun `When review reply is requested and failed, track analytics event and show snackbar`() {
+        // given
+        val events = mutableListOf<MultiLiveEvent.Event>()
+        viewModel.event.observeForever(events::add)
+        repository.stub {
+            onBlocking { reply(any(), any(), any()) } doReturn WooResult(WooError(GENERIC_ERROR, UNKNOWN))
+            onBlocking { getCachedProductReview(review.remoteId) } doReturn review
+        }
+
+        // when
+        viewModel.start(REVIEW_ID, false)
+        viewModel.onReviewReplied("reply")
+
+        // then
+        verify(analyticsTracker).track(REVIEW_REPLY_SEND)
+        verify(analyticsTracker).track(REVIEW_REPLY_SEND_FAILED)
+        assertThat(events).last().isEqualTo(ShowSnackbar(R.string.review_reply_failure))
     }
 }

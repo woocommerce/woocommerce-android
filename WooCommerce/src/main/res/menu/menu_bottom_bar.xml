@@ -7,12 +7,6 @@
         android:title="@string/my_store" />
 
     <item
-        android:id="@+id/analytics"
-        android:icon="@drawable/as_menu_analytics"
-        android:title="@string/analytics"
-        android:visible="false"/>
-
-    <item
         android:id="@+id/orders"
         android:icon="@drawable/as_menu_orders_list"
         android:title="@string/orders" />
@@ -24,6 +18,6 @@
 
     <item
         android:id="@+id/moreMenu"
-        android:icon="@drawable/ic_more_menu"
+        android:icon="@drawable/as_menu_more"
         android:title="@string/more_menu" />
 </menu>

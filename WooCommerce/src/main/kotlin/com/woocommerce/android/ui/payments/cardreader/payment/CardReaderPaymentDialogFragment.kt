@@ -10,6 +10,8 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.Window
+import androidx.activity.ComponentDialog
+import androidx.activity.addCallback
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.viewModels
 import com.google.android.material.snackbar.BaseTransientBottomBar
@@ -50,11 +52,11 @@ class CardReaderPaymentDialogFragment : DialogFragment(R.layout.card_reader_paym
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
         viewModel.onViewCreated()
-        return object : Dialog(requireContext(), theme) {
-            override fun onBackPressed() {
-                viewModel.onBackPressed()
-            }
+        val dialog = ComponentDialog(requireContext(), theme)
+        dialog.onBackPressedDispatcher.addCallback(dialog) {
+            viewModel.onBackPressed()
         }
+        return dialog
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -155,8 +157,9 @@ class CardReaderPaymentDialogFragment : DialogFragment(R.layout.card_reader_paym
     }
 
     private fun composeEmail(address: String, subject: UiString, content: UiString) {
-        val success = ActivityUtils.composeEmail(requireActivity(), address, subject, content)
-        if (!success) viewModel.onEmailActivityNotFound()
+        ActivityUtils.sendEmail(requireActivity(), address, subject, content) {
+            viewModel.onEmailActivityNotFound()
+        }
     }
 
     override fun onResume() {

@@ -1,4 +1,5 @@
 @file:OptIn(ExperimentalAnimationApi::class)
+
 package com.woocommerce.android.ui.shipping
 
 import androidx.compose.animation.AnimatedContent
@@ -212,7 +213,7 @@ private fun AnimatedVisibilityScope.InstallationContent(viewState: InstallationO
                     else -> 180f
                 }
             }
-            val isShowingLoadingIndicator by derivedStateOf { alpha == 0f }
+            val isShowingLoadingIndicator by remember { derivedStateOf { alpha == 0f } }
 
             Box {
                 InstallationLoadingIndicator(

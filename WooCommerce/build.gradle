@@ -74,9 +74,9 @@ android {
         if (project.hasProperty("versionName")) {
             versionName project.property("versionName")
         } else {
-            versionName "10.2-rc-1"
+            versionName "11.7-rc-2"
         }
-        versionCode 327
+        versionCode 370
 
         minSdkVersion gradle.ext.minSdkVersion
         // Update targetSdkVersion only after reviewing all the OS changes (developer.android.com/about/versions/[ENTER_ANDROID_VERSION]/migration)
@@ -90,7 +90,7 @@ android {
         // TODO remove this once the hilt migration is complete
         javaCompileOptions.annotationProcessorOptions.arguments['dagger.hilt.disableModulesHaveInstallInCheck'] = 'true'
 
-        buildConfigField "boolean", "USE_SIMULATED_READER", project.hasProperty("useSimulatedReader").toString()
+        resValue "bool", "enable_leak_canary", isLeakCanaryEnabled().toString()
 
         packagingOptions {
             exclude 'META-INF/gradle/incremental.annotation.processors'
@@ -98,6 +98,10 @@ android {
             pickFirst 'META-INF/AL2.0'
             pickFirst 'META-INF/LGPL2.1'
         }
+
+        resConfigs(
+                "en", "ar", "de", "es", "fr", "he", "id", "in", "it", "iw", "ja", "ko", "nl", "pt-rBR", "ru", "sv", "tr", "zh-rCN", "zh-rTW"
+        )
     }
 
     buildFeatures {
@@ -111,7 +115,7 @@ android {
     }
 
     composeOptions {
-        kotlinCompilerExtensionVersion composeVersion
+        kotlinCompilerExtensionVersion composeCompilerVersion
     }
 
     flavorDimensions "buildType"
@@ -161,13 +165,14 @@ android {
         debug.java.srcDirs += 'src/debug/kotlin'
         test.java.srcDirs += 'src/test/kotlin'
         androidTest.java.srcDirs += 'src/androidTest/kotlin'
+
+        if (isLeakCanaryEnabled()) {
+            debug.java.srcDirs += 'src/leakcanary/kotlin'
+        }
     }
 
     lintOptions {
         disable 'InvalidPackage'
-        // TODO remove this after we update AGP, it's a bug that has been fixed in 4.1.1 and later
-        // see: https://issuetracker.google.com/issues/168794947
-        disable "ParcelCreator"
     }
 
     testOptions {
@@ -205,8 +210,11 @@ dependencies {
 
     implementation "androidx.navigation:navigation-fragment-ktx:$gradle.ext.navigationVersion"
     implementation "androidx.navigation:navigation-ui-ktx:$gradle.ext.navigationVersion"
+    api "androidx.navigation:navigation-dynamic-features-fragment:$gradle.ext.navigationVersion"
 
     implementation "androidx.work:work-runtime-ktx:$workManagerVersion"
+
+    implementation 'androidx.core:core-splashscreen:1.0.0'
 
     implementation("org.wordpress:utils:$wordPressUtilsVersion") {
         exclude group: "com.mcxiaoke.volley"
@@ -245,6 +253,7 @@ dependencies {
     }
 
     implementation project(":libs:cardreader")
+    implementation project(":libs:iap")
 
     implementation 'com.facebook.shimmer:shimmer:0.5.0'
     implementation 'com.github.chrisbanes:PhotoView:2.3.0'
@@ -257,7 +266,7 @@ dependencies {
     implementation "androidx.hilt:hilt-common:$hiltJetpackVersion"
     implementation "androidx.hilt:hilt-work:$hiltJetpackVersion"
 
-    kapt"androidx.hilt:hilt-compiler:$hiltJetpackVersion"
+    kapt "androidx.hilt:hilt-compiler:$hiltJetpackVersion"
     kapt "com.google.dagger:hilt-compiler:$gradle.ext.daggerVersion"
     implementation "com.google.dagger:dagger-android-support:$gradle.ext.daggerVersion"
     kapt "com.google.dagger:dagger-android-processor:$gradle.ext.daggerVersion"
@@ -270,16 +279,21 @@ dependencies {
     implementation "org.greenrobot:eventbus:$eventBusVersion"
     implementation "com.google.android.play:core:$googlePlayCoreVersion"
 
+    implementation 'com.google.android.gms:play-services-code-scanner:16.0.0-beta3'
+
     // Debug dependencies
     debugImplementation "com.facebook.flipper:flipper:$flipperVersion"
-    debugImplementation "com.facebook.soloader:soloader:0.10.3"
+    debugImplementation "com.facebook.soloader:soloader:0.10.4"
     debugImplementation("com.facebook.flipper:flipper-network-plugin:$flipperVersion") {
         // Force Flipper to use the okhttp version defined in the fluxc module
         // okhttp versions higher than 3.9.0 break handling for self-signed SSL sites
         // See https://github.com/wordpress-mobile/WordPress-FluxC-Android/issues/919
         exclude group: 'com.squareup.okhttp3'
     }
-    debugImplementation 'com.squareup.leakcanary:leakcanary-android-core:2.9.1'
+
+    if (isLeakCanaryEnabled()) {
+        debugImplementation 'com.squareup.leakcanary:leakcanary-android-core:2.9.1'
+    }
 
     // Dependencies for local unit tests
     testImplementation "junit:junit:$jUnitVersion"
@@ -312,12 +326,9 @@ dependencies {
         exclude group: 'asm', module: 'asm'
         exclude group: 'org.json', module: 'json'
     }
-    androidTestImplementation 'org.apache.httpcomponents:httpclient-android:4.3.5.1'
+    androidTestImplementation "org.apache.httpcomponents:httpclient-android:$httpClientAndroidVersion"
 
-    // Resolve conflicts between main and test APK
-    androidTestImplementation "androidx.annotation:annotation:1.3.0"
-
-    implementation ("com.zendesk:support:5.0.8") {
+    implementation("com.zendesk:support:5.0.8") {
         exclude group: 'com.android.support', module: 'support-annotations'
     }
 
@@ -335,9 +346,8 @@ dependencies {
 
     testImplementation 'app.cash.turbine:turbine:0.8.0'
 
-    // Use caution when updating this, as commons-text 1.9 caused the reviews tab to crash on API 21
-    implementation "org.apache.commons:commons-text:1.8"
-    implementation "commons-io:commons-io:2.11.0"
+    implementation "org.apache.commons:commons-text:$commonsText"
+    implementation "commons-io:commons-io:$commonsIO"
 
     implementation "com.tinder.statemachine:statemachine:$stateMachineVersion"
 
@@ -351,18 +361,23 @@ dependencies {
     }
 
     // Jetpack Compose
-    implementation 'androidx.activity:activity-compose:1.4.0'
-    implementation "com.google.accompanist:accompanist-swiperefresh:$composeAccompanistVersion"
-    implementation "androidx.compose.material:material:$composeVersion"
-    implementation "androidx.compose.animation:animation:$composeVersion"
-    implementation "androidx.compose.ui:ui-tooling:$composeVersion"
-    implementation "androidx.lifecycle:lifecycle-viewmodel-compose:$lifecycleViewmodelComposeVersion"
-    implementation "androidx.compose.runtime:runtime-livedata:$composeVersion"
-    implementation "com.google.android.material:compose-theme-adapter:$composeThemeAdapterVersion"
-    androidTestImplementation "androidx.compose.ui:ui-test-junit4:$composeVersion"
-    debugImplementation "androidx.compose.ui:ui-test-manifest:$composeVersion"
+    implementation platform("androidx.compose:compose-bom:$composeBOMVersion")
+    // Dependencies managed by BOM
+    implementation 'androidx.activity:activity-compose'
+    implementation 'androidx.compose.material:material'
+    implementation 'androidx.compose.animation:animation'
+    implementation 'androidx.compose.ui:ui-tooling'
+    implementation 'androidx.compose.runtime:runtime-livedata'
 
+    implementation 'androidx.constraintlayout:constraintlayout-compose:1.0.1'
+    implementation 'androidx.lifecycle:lifecycle-viewmodel-compose:2.4.1'
+    implementation "com.google.android.material:compose-theme-adapter:$composeThemeAdapterVersion"
+    implementation "com.google.accompanist:accompanist-swiperefresh:$composeAccompanistVersion"
+    implementation "com.google.accompanist:accompanist-systemuicontroller:$composeAccompanistVersion"
     implementation "io.coil-kt:coil-compose:$coilVersion"
+
+    androidTestImplementation 'androidx.compose.ui:ui-test-junit4:1.3.2'
+    debugImplementation 'androidx.compose.ui:ui-test-manifest'
 }
 
 task copyGoogleServicesExampleFile(type: Copy) {
@@ -474,6 +489,10 @@ static def loadPropertiesFromFile(inputFile) {
         properties.load(stream)
     }
     return properties
+}
+
+def isLeakCanaryEnabled() {
+    return project.properties.getOrDefault('enableLeakCanary', 'true') == 'true'
 }
 
 // For app signing

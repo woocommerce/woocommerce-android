@@ -1,7 +1,99 @@
 *** PLEASE FOLLOW THIS FORMAT: [<priority indicator, more stars = higher priority>] <description> [<PR URL>]
+11.8
+- [*] Add variations bottom sheet is fully visible right after showing up in the landscape mode [https://github.com/woocommerce/woocommerce-android/pull/8043]
+- [*] Add a feature of replying to customer reviews [https://github.com/woocommerce/woocommerce-android/pull/8045]
+
+11.7
+-----
+- [*] Adds a feature of bulk updating products from the product's list. [https://github.com/woocommerce/woocommerce-android/pull/8020]
+- [*][Internal] Disconnect from a reader if a user clicks on "cancel" during connection flow [https://github.com/woocommerce/woocommerce-android/pull/7995]
+- [*] Fix for the create a new order button jerky animation [https://github.com/woocommerce/woocommerce-android/pull/7987]
+
+11.6
+-----
+- [*][Internal] Integrate changes from FluxC to check for Application Passwords support and collect metrics [https://github.com/woocommerce/woocommerce-android/pull/7989]
+- [*] Clear button is visible on the products filter screen [https://github.com/woocommerce/woocommerce-android/pull/7998]
+- [*] Fix for the broken card reader manuals links [https://github.com/woocommerce/woocommerce-android/pull/8002]
+
+11.5
+-----
+- [**] Adds a feature of generating all variations from existing attributes. [https://github.com/woocommerce/woocommerce-android/pull/7944]
+- [*][Internal] JITM: Dismiss irrelevant JITM Banner when pull to refresh in the MyStore screen [https://github.com/woocommerce/woocommerce-android/pull/7966]
+
+11.4
+-----
+- [**] [Internal] Store creation flow was improved with native implementation. It is available from the login prologue (`Get Started` CTA), login email error screen, and store picker (`Add a store` CTA from the empty stores screen or at the bottom of the store list). [Example testing steps in https://github.com/woocommerce/woocommerce-android/pull/7947]
+- [*] [Internal] JITM: Make an api call to fetch JITMs on pull to refresh in the MyStore screen [https://github.com/woocommerce/woocommerce-android/pull/7938]
+- [*] [Internal] Add support for installing and connecting Jetpack natively, still behind an AB test [https://github.com/woocommerce/woocommerce-android/pull/7889]
+
+11.3
+-----
+- [*] [Internal] Remove simple payments from the orders list screen [https://github.com/woocommerce/woocommerce-android/pull/7844]
+- [*] [Internal] Red badge that indicates that payments have moved to the more menu has removed [https://github.com/woocommerce/woocommerce-android/pull/7843]
+
+11.2
+-----
+- [*] [Internal] Hide the Upsell card reader banner in the order listing screen [https://github.com/woocommerce/woocommerce-android/pull/7781]
+- [*] [Internal] Login: remove the prologue survey [https://github.com/woocommerce/woocommerce-android/pull/7762]
+
+11.1
+-----
+- [***] We added a new Analytics Hub inside the My Store area of the app. Simply click on the See More button under the store stats to check more detailed information on Revenue and Orders. (https://github.com/woocommerce/woocommerce-android/pull/7556)
+- [*] [Internal] Removes the hardcoded UTM params and instead uses the fields from the JITM fetch API response as UTM params [https://github.com/woocommerce/woocommerce-android/pull/7718]
+- [*] [Internal] Simplified login: update prologue screen layout [https://github.com/woocommerce/woocommerce-android/pull/7634]
+- [*] We improved products search behavior. In case there are filters set on Products page, the search results will be filtered accordingly. [https://github.com/woocommerce/woocommerce-android/pull/7696]
+- [*] [Internal] Simplified login: update the site picker design [https://github.com/woocommerce/woocommerce-android/pull/7677]
+- [*] [Internal] Simplified login: update the password sceen [https://github.com/woocommerce/woocommerce-android/pull/7711]
+- [*] We improved orders search behavior. In case there are filters set on Orders page, the search results will be filtered accordingly. [https://github.com/woocommerce/woocommerce-android/pull/7728]
+- [*] Adds new CTA to scan QR code from magic link email sent screen. [https://github.com/woocommerce/woocommerce-android/pull/7740]
+- [*] Bulk updating of product variations stock quantity is now supported [https://github.com/woocommerce/woocommerce-android/pull/7736]
+- [*] [Internal] Add encoded query params and phone locale while fetching JITM [https://github.com/woocommerce/woocommerce-android/pull/7737]
+
+11.0
+-----
+- [*] Fixed a bug caused by statement descriptor value too long or containing illegal chars [https://github.com/woocommerce/woocommerce-android/pull/7595]
+- [*] [Internal] Simplified login: update email screen layout [https://github.com/woocommerce/woocommerce-android/pull/7619]
+- [*] [Internal] Simplified login: update the "WP Account not found" screen [https://github.com/woocommerce/woocommerce-android/pull/7639]
+- [**] Display Just In Time Message (JITM) related to card reader purchase on the MyStore screen [https://github.com/woocommerce/woocommerce-android/pull/7652]
+- [*] [Internal] IPP plugins statuses added as zendesk tags [https://github.com/woocommerce/woocommerce-android/pull/7624]
+- [***] We added a new Analytics Hub inside the My Store area of the app. Simply click on the See More button under the store stats to check more detailed information on Revenue and Orders. (https://github.com/woocommerce/woocommerce-android/pull/7556)
+
+10.9
+-----
+- [**] Login: add support for Jetpack connection to sites that have Jetpack but don't have any connected accounts [https://github.com/woocommerce/woocommerce-android/pull/7545]
+- [*] [Internal] In-Person Payments: add UTM parameters to card reader purchase URLs to allow attribution [https://github.com/woocommerce/woocommerce-android/pull/7554]
+
+10.8
+-----
+[*] [Internal] Signed-in card reader purchase from upsell banner both from the orders list and selection of a payment method [https://github.com/woocommerce/woocommerce-android/pull/7535]
+
+10.7
+-----
+- [*] Improved autofill capabilities for the login flow [https://github.com/woocommerce/woocommerce-android/pull/7461]
+- [*] Adds a new option to log in scanning the QR code embedded in the magic link email [https://github.com/woocommerce/woocommerce-android/pull/7481]
+- [**] Login: Add ability to connect Jetpack when signing with WPCom account to a site that has Jetpack but not connected yet [https://github.com/woocommerce/woocommerce-android/pull/7471]
+- [*] Fixes bug with visitor stats discrepancies between monthly and yearly granularities [https://github.com/wordpress-mobile/WordPress-FluxC-Android/pull/2535]
+- [*] Show an explanation when getting an account mismatch using a WP.com site [https://github.com/woocommerce/woocommerce-android/pull/7491]
+
+10.6
+-----
+- [*] Fixed a bug that caused having duplicate when uploading multiple images [https://github.com/woocommerce/woocommerce-android/pull/7459]
+- [*] Improved autofill capabilities for the login flow [https://github.com/woocommerce/woocommerce-android/pull/7461]
+
+
+10.5
+-----
+- [**] Fixed a bug that caused new products to default to one per order [https://github.com/woocommerce/woocommerce-android/pull/7450]
+- [*] We redesigned the today's stats widget [https://github.com/woocommerce/woocommerce-android/pull/7442]
+
+10.4
+-----
+- [***] We added a today's stats app widget. Simply long press on the WooCommerce icon, tap Widgets, then drag the Today widget to your home screen. (https://github.com/woocommerce/woocommerce-android/pull/7393)
+
 10.3
 -----
-
+- [*] Login: fix an issue where the app shows that Jetpack is not installed when connecting using wrong account [https://github.com/woocommerce/woocommerce-android/pull/7330]
+- [**] Login: Add ability to connect Jetpack when signing with site credentials to a site that has Jetpack but not connected yet [https://github.com/woocommerce/woocommerce-android/pull/7375]
 
 10.2
 -----

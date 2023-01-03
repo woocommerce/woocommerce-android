@@ -8,27 +8,33 @@ import android.content.Context
 enum class FeatureFlag {
     DB_DOWNGRADE,
     JETPACK_CP,
-    ANALYTICS_HUB,
     MORE_MENU_INBOX,
     COUPONS_M2,
     WC_SHIPPING_BANNER,
     UNIFIED_ORDER_EDITING,
     ORDER_CREATION_CUSTOMER_SEARCH,
-    PRE_LOGIN_NOTIFICATIONS;
+    NATIVE_STORE_CREATION_FLOW,
+    STORE_PROFILER_FLOW,
+    REST_API,
+    IAP_FOR_STORE_CREATION;
 
     fun isEnabled(context: Context? = null): Boolean {
         return when (this) {
             DB_DOWNGRADE -> {
                 PackageUtils.isDebugBuild() || context != null && PackageUtils.isBetaBuild(context)
             }
+
             COUPONS_M2,
             JETPACK_CP,
             ORDER_CREATION_CUSTOMER_SEARCH,
-            UNIFIED_ORDER_EDITING -> true
-            ANALYTICS_HUB,
+            UNIFIED_ORDER_EDITING,
+            NATIVE_STORE_CREATION_FLOW -> true
+
             MORE_MENU_INBOX,
             WC_SHIPPING_BANNER,
-            PRE_LOGIN_NOTIFICATIONS -> PackageUtils.isDebugBuild()
+            STORE_PROFILER_FLOW,
+            REST_API,
+            IAP_FOR_STORE_CREATION -> PackageUtils.isDebugBuild()
         }
     }
 }

@@ -2,39 +2,40 @@ package com.woocommerce.android.ui.reviews
 
 import android.content.Context
 import android.graphics.Color
-import android.graphics.drawable.LayerDrawable
-import android.os.Build
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.CompoundButton.OnCheckedChangeListener
 import androidx.core.content.ContextCompat
-import androidx.core.graphics.BlendModeColorFilterCompat
-import androidx.core.graphics.BlendModeCompat
 import androidx.core.view.ViewCompat
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import com.google.android.material.transition.MaterialContainerTransform
+import com.woocommerce.android.NavGraphMainDirections
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.databinding.FragmentReviewDetailBinding
 import com.woocommerce.android.di.GlideApp
 import com.woocommerce.android.extensions.fastStripHtml
+import com.woocommerce.android.extensions.handleResult
 import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.model.ProductReview
 import com.woocommerce.android.tools.ProductImageMap
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
+import com.woocommerce.android.ui.common.texteditor.SimpleTextEditorFragment
+import com.woocommerce.android.ui.common.texteditor.SimpleTextEditorStrategy.SEND_RESULT_ON_CONFIRMATION
 import com.woocommerce.android.ui.main.MainActivity.Companion.BackPressListener
 import com.woocommerce.android.ui.reviews.ProductReviewStatus.APPROVED
 import com.woocommerce.android.ui.reviews.ProductReviewStatus.HOLD
 import com.woocommerce.android.ui.reviews.ProductReviewStatus.SPAM
 import com.woocommerce.android.ui.reviews.ProductReviewStatus.TRASH
 import com.woocommerce.android.ui.reviews.ReviewDetailViewModel.ReviewDetailEvent.NavigateBackFromNotification
+import com.woocommerce.android.ui.reviews.ReviewDetailViewModel.ReviewDetailEvent.Reply
 import com.woocommerce.android.util.ChromeCustomTabUtils
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T.REVIEWS
@@ -97,6 +98,10 @@ class ReviewDetailFragment :
         )
 
         initializeViewModel()
+
+        handleResult<String>(SimpleTextEditorFragment.SIMPLE_TEXT_EDITOR_RESULT) {
+            viewModel.onReviewReplied(it)
+        }
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -150,7 +155,19 @@ class ReviewDetailFragment :
                 is ShowSnackbar -> uiMessageResolver.showSnack(event.message)
                 is Exit -> exitDetailView()
                 is NavigateBackFromNotification -> exitReviewDetailOpenedFromNotification()
+                is Reply -> navigateToReply()
             }
+        }
+    }
+
+    private fun navigateToReply() {
+        NavGraphMainDirections.actionGlobalSimpleTextEditorFragment(
+            currentText = "",
+            screenTitle = "Answer review",
+            hint = "Answer review",
+            strategy = SEND_RESULT_ON_CONFIRMATION
+        ).let {
+            findNavController().navigateSafely(it)
         }
     }
 
@@ -193,19 +210,15 @@ class ReviewDetailFragment :
             binding.reviewRatingBar.visibility = View.GONE
         }
 
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
-            val stars = binding.reviewRatingBar.progressDrawable as? LayerDrawable
-            stars?.getDrawable(2)?.colorFilter = BlendModeColorFilterCompat.createBlendModeColorFilterCompat(
-                ContextCompat.getColor(requireContext(), R.color.woo_yellow_30),
-                BlendModeCompat.SRC_ATOP
-            )
-        }
-
         // Set the review text
         binding.reviewDescription.text = HtmlUtils.fromHtml(review.review)
 
         // Initialize the moderation buttons and set review status
         configureModerationButtons(ProductReviewStatus.fromString(review.status))
+
+        binding.reviewReply.setOnClickListener {
+            viewModel.onReplyClicked()
+        }
     }
 
     private fun refreshProductImage(remoteProductId: Long) {

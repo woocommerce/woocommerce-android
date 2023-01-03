@@ -1,19 +1,14 @@
 package com.woocommerce.android.ui.orders.list
 
-import android.animation.ValueAnimator
 import android.content.Context
 import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.Paint
 import android.graphics.Rect
-import android.os.Build
-import android.os.SystemClock
 import android.text.Layout
 import android.text.StaticLayout
 import android.text.TextPaint
 import android.util.TypedValue
-import android.view.MotionEvent
-import androidx.core.animation.doOnEnd
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.RecyclerView
@@ -31,6 +26,8 @@ class SwipeToComplete(
     companion object {
         private const val NO_SWIPE_ABLE_SCREEN_PERCENT = 0.10
         const val OLD_STATUS = "old_status"
+        const val SWIPE_THRESHOLD = .5F
+        const val SWIPE_VELOCITY_THRESHOLD = 0F
     }
 
     private val displayMetrics = context.resources.displayMetrics
@@ -48,6 +45,9 @@ class SwipeToComplete(
         color = Color.WHITE
         textSize = messageSize
     }
+    private val nonSwipeAbleBackgroundPaint = Paint().apply { color = noSwipeAbleColor }
+    private val swipeAbleBackgroundPaint = Paint().apply { color = swipeAbleColor }
+
     private val margin = context.resources.getDimension(R.dimen.major_100).toInt()
 
     override fun onMove(
@@ -57,6 +57,10 @@ class SwipeToComplete(
     ): Boolean {
         return false
     }
+
+    override fun getSwipeThreshold(viewHolder: RecyclerView.ViewHolder) = SWIPE_THRESHOLD
+    override fun getSwipeEscapeVelocity(defaultValue: Float) = SWIPE_VELOCITY_THRESHOLD
+    override fun getSwipeVelocityThreshold(defaultValue: Float) = SWIPE_VELOCITY_THRESHOLD
 
     override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
         val pos = viewHolder.absoluteAdapterPosition
@@ -116,7 +120,13 @@ class SwipeToComplete(
     ) {
         val maxDX = (width * NO_SWIPE_ABLE_SCREEN_PERCENT).toFloat()
         val shrinkDX = if (dX > 0) dX.coerceAtMost(maxDX) else dX.coerceAtLeast(-maxDX)
-        canvas.drawColor(noSwipeAbleColor)
+        val background = Rect(
+            viewHolder.itemView.left,
+            viewHolder.itemView.top,
+            viewHolder.itemView.right,
+            viewHolder.itemView.bottom
+        )
+        canvas.drawRect(background, nonSwipeAbleBackgroundPaint)
         super.onChildDraw(canvas, recyclerView, viewHolder, shrinkDX, dY, actionState, isCurrentlyActive)
     }
 
@@ -131,7 +141,13 @@ class SwipeToComplete(
         isCurrentlyActive: Boolean
     ) {
         // Draw background
-        canvas.drawColor(swipeAbleColor)
+        val background = Rect(
+            viewHolder.itemView.left,
+            viewHolder.itemView.top,
+            viewHolder.itemView.right,
+            viewHolder.itemView.bottom
+        )
+        canvas.drawRect(background, swipeAbleBackgroundPaint)
         val isSwipingRight = dX > 0
 
         // Select the longest line to measure the text width
@@ -185,23 +201,10 @@ class SwipeToComplete(
         super.onChildDraw(canvas, recyclerView, viewHolder, dX, dY, actionState, isCurrentlyActive)
     }
 
-    @Suppress("deprecation")
     private fun getTextStaticLayout(width: Int): StaticLayout {
-        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            StaticLayout.Builder.obtain(message, 0, message.length, messagePaint, width)
-                .setAlignment(Layout.Alignment.ALIGN_CENTER)
-                .build()
-        } else {
-            StaticLayout(
-                message,
-                messagePaint,
-                width,
-                Layout.Alignment.ALIGN_CENTER,
-                1f,
-                0f,
-                false
-            )
-        }
+        return StaticLayout.Builder.obtain(message, 0, message.length, messagePaint, width)
+            .setAlignment(Layout.Alignment.ALIGN_CENTER)
+            .build()
     }
 
     interface SwipeAbleViewHolder {
@@ -224,73 +227,4 @@ class SwipeToComplete(
             toFloat(),
             context.resources.displayMetrics
         ).roundToInt()
-}
-
-/**
- *  Glance animation built using three main MotionEvent.
- *  MotionEvent.ACTION_DOWN -> to simulate the list item is pressed
- *  MotionEvent. ACTION_MOVE -> to simulate the list item is been dragging (ACTION_DOWN + ACTION_MOVE)
- *  MotionEvent.ACTION_UP -> to simulate the list item is released, so it can return to its start position
- */
-fun RecyclerView.glanceSwipeAbleItem(
-    index: Int,
-    direction: Int,
-    time: Long,
-    distance: Int
-) {
-    val childView = this.getChildAt(index) ?: return
-
-    val x = childView.width / 2F
-    val listCoordinates = IntArray(2)
-    val viewCoordinates = IntArray(2)
-
-    childView.getLocationInWindow(viewCoordinates)
-    this.getLocationInWindow(listCoordinates)
-    // Position the y coordinate relative to the list position (viewCoordinates[1] - listCoordinates[1])
-    // and then in the middle of the list item by dividing the list item height by 2 (childView.height / 2F)
-    val y = (viewCoordinates[1] - listCoordinates[1]) + (childView.height / 2F)
-    val downTime = SystemClock.uptimeMillis()
-    this.dispatchTouchEvent(
-        MotionEvent.obtain(
-            downTime,
-            downTime,
-            MotionEvent.ACTION_DOWN,
-            x,
-            y,
-            0
-        )
-    )
-    ValueAnimator.ofInt(0, distance).apply {
-        doOnEnd {
-            this@glanceSwipeAbleItem.dispatchTouchEvent(
-                MotionEvent.obtain(
-                    downTime,
-                    downTime,
-                    MotionEvent.ACTION_UP,
-                    x,
-                    y,
-                    0
-                )
-            )
-        }
-        duration = time
-        addUpdateListener {
-            val dX = it.animatedValue as Int
-            val mX = when (direction) {
-                ItemTouchHelper.END -> x + dX
-                ItemTouchHelper.START -> x - dX
-                else -> 0F
-            }
-            this@glanceSwipeAbleItem.dispatchTouchEvent(
-                MotionEvent.obtain(
-                    downTime,
-                    SystemClock.uptimeMillis(),
-                    MotionEvent.ACTION_MOVE,
-                    mX,
-                    y,
-                    0
-                )
-            )
-        }
-    }.start()
 }

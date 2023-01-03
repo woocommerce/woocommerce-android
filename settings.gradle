@@ -2,10 +2,20 @@ pluginManagement {
     gradle.ext.agpVersion = '7.2.1'
     gradle.ext.daggerVersion = '2.42'
     gradle.ext.detektVersion = '1.19.0'
-    gradle.ext.kotlinVersion = '1.6.10'
-    gradle.ext.navigationVersion = '2.4.1'
+    gradle.ext.kotlinVersion = '1.7.20'
+    gradle.ext.navigationVersion = '2.5.3'
 
     repositories {
+        exclusiveContent {
+            forRepository {
+                maven {
+                    url = uri("https://a8c-libs.s3.amazonaws.com/android")
+                }
+            }
+            filter {
+                includeGroup "com.automattic.android"
+            }
+        }
         gradlePluginPortal()
         google()
     }
@@ -14,7 +24,6 @@ pluginManagement {
         id 'androidx.navigation.safeargs.kotlin' version gradle.ext.navigationVersion
         id 'com.android.application' version gradle.ext.agpVersion
         id 'com.android.library' version gradle.ext.agpVersion
-        id 'com.automattic.android.fetchstyle'
         id 'com.google.gms.google-services' version '4.3.10'
         id 'io.github.wzieba.tracks.plugin' version '1.0.0'
         id 'io.gitlab.arturbosch.detekt' version gradle.ext.detektVersion
@@ -25,15 +34,6 @@ pluginManagement {
         id 'org.jetbrains.kotlin.plugin.parcelize' version gradle.ext.kotlinVersion
         id 'se.bjurr.violations.violation-comments-to-github-gradle-plugin' version '1.69.0'
         id 'com.google.dagger.hilt.android' version gradle.ext.daggerVersion
-    }
-
-    resolutionStrategy {
-        eachPlugin {
-            // TODO: Remove this as soon as fetchstyle starts supporting Plugin Marker Artifacts
-            if (requested.id.id == "com.automattic.android.fetchstyle") {
-                useModule("com.automattic.android:fetchstyle:1.1")
-            }
-        }
     }
 }
 
@@ -70,6 +70,7 @@ rootProject.name = 'WCAndroid'
 
 include ':quicklogin'
 include ':libs:cardreader'
+include ':libs:iap'
 include ':WooCommerce'
 
 gradle.ext.fluxCBinaryPath = "org.wordpress:fluxc"
@@ -84,52 +85,7 @@ gradle.ext.mediaPickerSourceWordPressBinaryPath = "org.wordpress.mediapicker:sou
 gradle.ext {
     compileSdkVersion = 33
     targetSdkVersion = 31
-    minSdkVersion = 21
+    minSdkVersion = 24
 }
 
-def localBuilds = new File('local-builds.gradle')
-if (localBuilds.exists()) {
-    apply from: localBuilds
-
-    /*
-    In order to add a new included build:
-    1. Define a property for its path in the `local-builds.gradle-example` file.
-    2. Check if that property exists in `ext` since it may be commented out.
-    3. Include the build using the property.
-    4. Add dependencySubstitution block and substitute the binary module with the project.
-    Note that `project` dependencies are resolved in the context of the included build.
-    https://docs.gradle.org/current/javadoc/org/gradle/api/initialization/ConfigurableIncludedBuild.html#dependencySubstitution-org.gradle.api.Action-
-    */
-
-    if (ext.has("localFluxCPath")) {
-        includeBuild(ext.localFluxCPath) {
-            dependencySubstitution {
-                println "Substituting fluxc with the local build"
-                substitute module(gradle.ext.fluxCBinaryPath) with project(':fluxc')
-                substitute module(gradle.ext.fluxCWooCommercePluginBinaryPath) with project(':plugins:woocommerce')
-            }
-        }
-    }
-
-    if (ext.has("localLoginFlowPath")) {
-        includeBuild(ext.localLoginFlowPath) {
-            dependencySubstitution {
-                println "Substituting login-flow with the local build"
-                substitute module("$gradle.ext.loginFlowBinaryPath") with project(':WordPressLoginFlow')
-            }
-        }
-    }
-
-    if (ext.has("localMediaPickerPath")) {
-        includeBuild(ext.localMediaPickerPath) {
-            dependencySubstitution {
-                println "Substituting media-picker with the local build"
-                substitute module("$gradle.ext.mediaPickerBinaryPath") with project(':mediapicker')
-                substitute module("$gradle.ext.mediaPickerDomainBinaryPath") with project(':mediapicker:domain')
-                substitute module("$gradle.ext.mediaPickerSourceDeviceBinaryPath") with project(':mediapicker:source-device')
-                substitute module("$gradle.ext.mediaPickerSourceGifBinaryPath") with project(':mediapicker:source-gif')
-                substitute module("$gradle.ext.mediaPickerSourceWordPressBinaryPath") with project(':mediapicker:source-wordpress')
-            }
-        }
-    }
-}
+apply from: './config/gradle/include_builds.gradle'

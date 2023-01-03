@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.payments
 
+import androidx.annotation.StringRes
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
@@ -13,6 +14,7 @@ import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.extensions.exhaustive
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.model.OrderMapper
+import com.woocommerce.android.model.UiString
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.payments.SelectPaymentMethodViewModel.TakePaymentViewState.Loading
@@ -27,6 +29,7 @@ import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderFlowP
 import com.woocommerce.android.ui.payments.cardreader.payment.CardReaderPaymentCollectibilityChecker
 import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.util.CurrencyFormatter
+import com.woocommerce.android.util.UtmProvider
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.navArgs
@@ -39,6 +42,7 @@ import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.CoreOrderStatus
 import org.wordpress.android.fluxc.store.WCOrderStore
 import org.wordpress.android.fluxc.store.WooCommerceStore
 import javax.inject.Inject
+import javax.inject.Named
 
 @HiltViewModel
 class SelectPaymentMethodViewModel @Inject constructor(
@@ -53,6 +57,7 @@ class SelectPaymentMethodViewModel @Inject constructor(
     private val analyticsTrackerWrapper: AnalyticsTrackerWrapper,
     private val cardPaymentCollectibilityChecker: CardReaderPaymentCollectibilityChecker,
     private val bannerDisplayEligibilityChecker: BannerDisplayEligibilityChecker,
+    @Named("select-payment") private val selectPaymentUtmProvider: UtmProvider,
 ) : ScopedViewModel(savedState) {
     private val navArgs: SelectPaymentMethodFragmentArgs by savedState.navArgs()
     val shouldShowUpsellCardReaderDismissDialog: MutableLiveData<Boolean> = MutableLiveData(false)
@@ -88,19 +93,29 @@ class SelectPaymentMethodViewModel @Inject constructor(
                             paymentUrl = order.paymentUrl,
                             orderTotal = currencyFormatter.formatCurrency(order.total, currencyCode),
                             isPaymentCollectableWithCardReader = isPaymentCollectableWithCardReader,
-                            bannerState = BannerState(
-                                shouldDisplayBanner =
-                                (
-                                    canShowCardReaderUpsellBanner(System.currentTimeMillis()) &&
-                                        isPaymentCollectableWithCardReader
+                            bannerState = if (
+                                canShowCardReaderUpsellBanner(System.currentTimeMillis()) &&
+                                isPaymentCollectableWithCardReader
+                            ) {
+                                BannerState.DisplayBannerState(
+                                    onPrimaryActionClicked = { onCtaClicked(AnalyticsTracker.KEY_BANNER_PAYMENTS) },
+                                    onDismissClicked = { onDismissClicked() },
+                                    title = UiString.UiStringRes(
+                                        R.string.card_reader_upsell_card_reader_banner_title
                                     ),
-                                onPrimaryActionClicked = { onCtaClicked(AnalyticsTracker.KEY_BANNER_PAYMENTS) },
-                                onDismissClicked = { onDismissClicked() },
-                                title = R.string.card_reader_upsell_card_reader_banner_title,
-                                description = R.string.card_reader_upsell_card_reader_banner_description,
-                                primaryActionLabel = R.string.card_reader_upsell_card_reader_banner_cta,
-                                chipLabel = R.string.card_reader_upsell_card_reader_banner_new
-                            )
+                                    description = UiString.UiStringRes(
+                                        R.string.card_reader_upsell_card_reader_banner_description
+                                    ),
+                                    primaryActionLabel = UiString.UiStringRes(
+                                        R.string.card_reader_upsell_card_reader_banner_cta
+                                    ),
+                                    chipLabel = UiString.UiStringRes(
+                                        R.string.card_reader_upsell_card_reader_banner_new
+                                    )
+                                )
+                            } else {
+                                BannerState.HideBannerState
+                            }
                         )
                         trackBannerShownIfDisplayed()
                     }
@@ -111,7 +126,7 @@ class SelectPaymentMethodViewModel @Inject constructor(
     }
 
     private fun trackBannerShownIfDisplayed() {
-        if ((viewState.value as? TakePaymentViewState.Success)?.bannerState?.shouldDisplayBanner == true) {
+        if ((viewState.value as? TakePaymentViewState.Success)?.bannerState is BannerState.DisplayBannerState) {
             analyticsTrackerWrapper.track(
                 AnalyticsEvent.FEATURE_CARD_SHOWN,
                 mapOf(
@@ -304,7 +319,12 @@ class SelectPaymentMethodViewModel @Inject constructor(
     private fun onCtaClicked(source: String) {
         launch {
             triggerEvent(
-                OpenPurchaseCardReaderLink(bannerDisplayEligibilityChecker.getPurchaseCardReaderUrl(source))
+                OpenPurchaseCardReaderLink(
+                    selectPaymentUtmProvider.getUrlWithUtmParams(
+                        bannerDisplayEligibilityChecker.getPurchaseCardReaderUrl(source)
+                    ),
+                    R.string.card_reader_purchase_card_reader
+                )
             )
         }
     }
@@ -347,7 +367,10 @@ class SelectPaymentMethodViewModel @Inject constructor(
     object DismissCardReaderUpsellBanner : MultiLiveEvent.Event()
     object DismissCardReaderUpsellBannerViaRemindMeLater : MultiLiveEvent.Event()
     object DismissCardReaderUpsellBannerViaDontShowAgain : MultiLiveEvent.Event()
-    data class OpenPurchaseCardReaderLink(val url: String) : MultiLiveEvent.Event()
+    data class OpenPurchaseCardReaderLink(
+        val url: String,
+        @StringRes val titleRes: Int,
+    ) : MultiLiveEvent.Event()
 
     data class SharePaymentUrl(
         val storeName: String,
@@ -374,5 +397,8 @@ class SelectPaymentMethodViewModel @Inject constructor(
 
     companion object {
         private const val DELAY_MS = 1L
+        const val UTM_CAMPAIGN = "feature_announcement_card"
+        const val UTM_SOURCE = "payment_method"
+        const val UTM_CONTENT = "upsell_card_readers"
     }
 }

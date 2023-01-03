@@ -55,6 +55,8 @@ import com.woocommerce.android.ui.payments.cardreader.connect.CardReaderConnectV
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderFlowParam
 import com.woocommerce.android.ui.payments.cardreader.onboarding.PluginType
 import com.woocommerce.android.ui.payments.cardreader.update.CardReaderUpdateViewModel
+import com.woocommerce.android.ui.prefs.DeveloperOptionsRepository
+import com.woocommerce.android.ui.prefs.DeveloperOptionsViewModel
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -68,6 +70,7 @@ import org.mockito.ArgumentMatchers.anyBoolean
 import org.mockito.kotlin.any
 import org.mockito.kotlin.argThat
 import org.mockito.kotlin.argumentCaptor
+import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.eq
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.never
@@ -91,6 +94,7 @@ class CardReaderConnectViewModelTest : BaseUnitTest() {
     private val reader = mock<CardReader>().also { whenever(it.id).thenReturn("Dummy1") }
     private val reader2 = mock<CardReader>().also { whenever(it.id).thenReturn("Dummy2") }
     private val locationRepository: CardReaderLocationRepository = mock()
+    private val developerOptionsRepository: DeveloperOptionsRepository = mock()
     private val siteModel: SiteModel = mock()
     private val selectedSite: SelectedSite = mock {
         on { getIfExists() }.thenReturn(siteModel)
@@ -99,10 +103,16 @@ class CardReaderConnectViewModelTest : BaseUnitTest() {
     private val cardReaderTrackingInfoKeeper: CardReaderTrackingInfoKeeper = mock()
     private val learnMoreUrlProvider: LearnMoreUrlProvider = mock()
     private val locationId = "location_id"
+    private val updateFrequency = CardReaderManager.SimulatorUpdateFrequency.RANDOM
 
     @Before
     fun setUp() = testBlocking {
         viewModel = initVM()
+        whenever(
+            appPrefs.selectedUpdateReaderOption()
+        ).thenReturn(
+            DeveloperOptionsViewModel.DeveloperOptionsViewState.UpdateOptions.RANDOM.name
+        )
     }
 
     @Test
@@ -307,18 +317,20 @@ class CardReaderConnectViewModelTest : BaseUnitTest() {
     @Test
     fun `given request accepted, when enable-bluetooth requested, then card manager initialized`() =
         testBlocking {
+
             (viewModel.event.value as CheckLocationPermissions).onLocationPermissionsCheckResult(true, false)
             (viewModel.event.value as CheckLocationEnabled).onLocationEnabledCheckResult(true)
             (viewModel.event.value as CheckBluetoothPermissionsGiven).onBluetoothPermissionsGivenCheckResult(true)
             (viewModel.event.value as CheckBluetoothEnabled).onBluetoothCheckResult(false)
             (viewModel.event.value as RequestEnableBluetooth).onEnableBluetoothRequestResult(true)
 
-            verify(cardReaderManager).initialize()
+            verify(cardReaderManager).initialize(updateFrequency)
         }
 
     @Test
     fun `given request accepted, when bt permissions requested, then card manager initialized`() =
         testBlocking {
+
             (viewModel.event.value as CheckLocationPermissions).onLocationPermissionsCheckResult(true, false)
             (viewModel.event.value as CheckLocationEnabled).onLocationEnabledCheckResult(true)
             (viewModel.event.value as CheckBluetoothPermissionsGiven).onBluetoothPermissionsGivenCheckResult(false)
@@ -326,24 +338,26 @@ class CardReaderConnectViewModelTest : BaseUnitTest() {
                 .onBluetoothRuntimePermissionsRequestResult(true)
             (viewModel.event.value as CheckBluetoothEnabled).onBluetoothCheckResult(true)
 
-            verify(cardReaderManager).initialize()
+            verify(cardReaderManager).initialize(updateFrequency)
         }
 
     @Test
     fun `given request not accepted, when bt permissions requested, then card manager not initialized`() =
         testBlocking {
+
             (viewModel.event.value as CheckLocationPermissions).onLocationPermissionsCheckResult(true, false)
             (viewModel.event.value as CheckLocationEnabled).onLocationEnabledCheckResult(true)
             (viewModel.event.value as CheckBluetoothPermissionsGiven).onBluetoothPermissionsGivenCheckResult(false)
             (viewModel.event.value as RequestBluetoothRuntimePermissions)
                 .onBluetoothRuntimePermissionsRequestResult(false)
 
-            verify(cardReaderManager, never()).initialize()
+            verify(cardReaderManager, never()).initialize(updateFrequency)
         }
 
     @Test
     fun `given request accepted and manager init, when enable-bluetooth requested, then manager is not initialized`() =
         testBlocking {
+
             whenever(cardReaderManager.initialized).thenReturn(true)
             (viewModel.event.value as CheckLocationPermissions).onLocationPermissionsCheckResult(true, false)
             (viewModel.event.value as CheckLocationEnabled).onLocationEnabledCheckResult(true)
@@ -352,7 +366,7 @@ class CardReaderConnectViewModelTest : BaseUnitTest() {
 
             (viewModel.event.value as RequestEnableBluetooth).onEnableBluetoothRequestResult(true)
 
-            verify(cardReaderManager, never()).initialize()
+            verify(cardReaderManager, never()).initialize(updateFrequency)
         }
 
     @Test
@@ -481,6 +495,18 @@ class CardReaderConnectViewModelTest : BaseUnitTest() {
 
             assertThat(viewModel.viewStateData.value).isInstanceOf(ConnectingState::class.java)
         }
+
+    @Test
+    fun `given reader is connected, then track its battery level`() = testBlocking {
+        val readerStatusStateFlow = MutableStateFlow<CardReaderStatus>(CardReaderStatus.Connected(reader))
+        whenever(cardReaderManager.readerStatus).thenReturn(readerStatusStateFlow)
+        val batteryLevel = .5F
+        whenever(reader.currentBatteryLevel) doReturn batteryLevel
+
+        init(scanState = READER_FOUND)
+
+        verify(cardReaderTrackingInfoKeeper).setCardReaderBatteryLevel(batteryLevel)
+    }
 
     @Test
     fun `given last connected reader is matching, when reader found, then auto reconnection event tracked`() =
@@ -1032,6 +1058,16 @@ class CardReaderConnectViewModelTest : BaseUnitTest() {
         }
 
     @Test
+    fun `given app in reader found state, when user clicks on cancel, then disconnect called`() =
+        testBlocking {
+            init(scanState = READER_FOUND)
+
+            (viewModel.viewStateData.value as ReaderFoundState).onTertiaryActionClicked.invoke()
+
+            verify(cardReaderManager).disconnectReader()
+        }
+
+    @Test
     fun `given app in connecting state, when user clicks on cancel, then flow finishes`() =
         testBlocking {
             init(scanState = READER_FOUND)
@@ -1428,6 +1464,7 @@ class CardReaderConnectViewModelTest : BaseUnitTest() {
             coroutinesTestRule.testDispatchers,
             tracker,
             appPrefs,
+            developerOptionsRepository,
             locationRepository,
             selectedSite,
             cardReaderManager,

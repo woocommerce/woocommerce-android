@@ -7,9 +7,12 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.launch
+import java.io.Closeable
 import kotlin.coroutines.CoroutineContext
 
 /**
@@ -19,8 +22,10 @@ import kotlin.coroutines.CoroutineContext
  * When the ViewModel is destroyed, the coroutine job is cancelled and any running coroutine tied to it is stopped.
  */
 abstract class ScopedViewModel(
-    protected val savedState: SavedStateHandle
-) : ViewModel(), CoroutineScope {
+    protected val savedState: SavedStateHandle,
+    closeable: Closeable? = null,
+) : ViewModel(closeable), CoroutineScope {
+
     protected open val _event: MutableLiveData<Event> = MultiLiveEvent()
     open val event: LiveData<Event> = _event
 
@@ -30,6 +35,13 @@ abstract class ScopedViewModel(
     protected fun triggerEvent(event: Event) {
         event.isHandled = false
         _event.value = event
+    }
+
+    protected fun triggerEventWithDelay(event: Event, delay: Long) {
+        launch {
+            delay(delay)
+            triggerEvent(event)
+        }
     }
 
     /**

@@ -7,6 +7,8 @@ import android.view.View
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.ContextCompat
 import androidx.core.text.HtmlCompat
+import com.bumptech.glide.load.resource.bitmap.CenterCrop
+import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.woocommerce.android.R
 import com.woocommerce.android.databinding.ProductItemViewBinding
 import com.woocommerce.android.di.GlideApp
@@ -35,11 +37,10 @@ class ProductItemView @JvmOverloads constructor(
     val binding = ProductItemViewBinding.inflate(LayoutInflater.from(context), this, true)
 
     private val imageSize = context.resources.getDimensionPixelSize(R.dimen.image_minor_100)
+    private val imageCornerRadius = context.resources.getDimensionPixelSize(R.dimen.corner_radius_image)
     private val bullet = "\u2022"
     private val statusColor = ContextCompat.getColor(context, R.color.product_status_fg_other)
     private val statusPendingColor = ContextCompat.getColor(context, R.color.product_status_fg_pending)
-    private val selectedBackgroundColor = ContextCompat.getColor(context, R.color.color_primary)
-    private val unSelectedBackgroundColor = ContextCompat.getColor(context, R.color.white)
 
     fun bind(
         product: Product,
@@ -108,27 +109,21 @@ class ProductItemView @JvmOverloads constructor(
     ) {
         val size: Int
         when {
-            isActivated -> {
-                size = imageSize / 2
-                binding.productImage.setImageResource(R.drawable.ic_menu_action_mode_check)
-                binding.productImageFrame.setBackgroundColor(selectedBackgroundColor)
-            }
             imageUrl.isNullOrEmpty() -> {
                 size = imageSize / 2
-                binding.productImageFrame.setBackgroundColor(unSelectedBackgroundColor)
                 binding.productImage.setImageResource(R.drawable.ic_product)
             }
             else -> {
                 size = imageSize
-                binding.productImageFrame.setBackgroundColor(unSelectedBackgroundColor)
                 val photonUrl = PhotonUtils.getPhotonImageUrl(imageUrl, imageSize, imageSize)
                 GlideApp.with(context)
                     .load(photonUrl)
+                    .transform(CenterCrop(), RoundedCorners(imageCornerRadius))
                     .placeholder(R.drawable.ic_product)
                     .into(binding.productImage)
             }
         }
-
+        binding.productImageSelected.visibility = if (isActivated) View.VISIBLE else View.GONE
         binding.productImage.layoutParams.apply {
             height = size
             width = size

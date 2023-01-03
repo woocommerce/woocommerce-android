@@ -40,9 +40,14 @@ import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.CoreOrderStatus
 import org.wordpress.android.fluxc.store.AccountStore
 import org.wordpress.android.fluxc.store.NotificationStore.FetchNotificationPayload
 import org.wordpress.android.fluxc.store.SiteStore
+import org.wordpress.android.fluxc.store.WCLeaderboardsStore
 import org.wordpress.android.fluxc.store.WCOrderStore.FetchOrderListPayload
 
 class NotificationMessageHandlerTest {
+    companion object {
+        val SITE_MODEL = SiteModel()
+    }
+
     private lateinit var notificationMessageHandler: NotificationMessageHandler
 
     private val accountModel = AccountModel().apply { userId = 12345 }
@@ -72,6 +77,7 @@ class NotificationMessageHandlerTest {
     private val selectedSite: SelectedSite = mock {
         on { exists() }.thenReturn(true)
     }
+    private val topPerformersStore: WCLeaderboardsStore = mock()
 
     private val orderNotificationPayload = NotificationTestUtils.generateTestNewOrderNotificationPayload(
         userId = accountModel.userId
@@ -100,6 +106,7 @@ class NotificationMessageHandlerTest {
             zendeskHelper = zendeskHelper,
             notificationsParser = notificationsParser,
             selectedSite = selectedSite,
+            topPerformersStore = topPerformersStore,
         )
 
         doReturn(true).whenever(accountStore).hasAccessToken()
@@ -585,5 +592,12 @@ class NotificationMessageHandlerTest {
         verify(notificationAnalyticsTracker, atLeastOnce()).trackNotificationAnalytics(
             eq(AnalyticsEvent.PUSH_NOTIFICATION_TAPPED), eq(orderNotification)
         )
+    }
+
+    @Test
+    fun `when new order notifications is received, then top performers cache should be invalidated`() {
+        notificationMessageHandler.onNewMessageReceived(orderNotificationPayload, mock())
+
+        verify(topPerformersStore).invalidateTopPerformers(any())
     }
 }

@@ -6,6 +6,7 @@ import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
 import androidx.annotation.StringRes
+import androidx.core.view.MenuProvider
 import androidx.fragment.app.viewModels
 import com.woocommerce.android.R
 import com.woocommerce.android.databinding.FragmentShippingLabelCreateCustomPackageBinding
@@ -22,7 +23,8 @@ import org.wordpress.android.util.ActivityUtils
 import javax.inject.Inject
 
 @AndroidEntryPoint
-class ShippingLabelCreateCustomPackageFragment : BaseFragment(R.layout.fragment_shipping_label_create_custom_package) {
+class ShippingLabelCreateCustomPackageFragment :
+    BaseFragment(R.layout.fragment_shipping_label_create_custom_package), MenuProvider {
     @Inject lateinit var uiMessageResolver: UIMessageResolver
 
     private var progressDialog: CustomProgressDialog? = null
@@ -38,18 +40,13 @@ class ShippingLabelCreateCustomPackageFragment : BaseFragment(R.layout.fragment_
         super.onViewCreated(view, savedInstanceState)
         _binding = FragmentShippingLabelCreateCustomPackageBinding.bind(view)
 
+        requireActivity().addMenuProvider(this, viewLifecycleOwner)
+
         initializeInputFields()
         setupObservers()
     }
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setHasOptionsMenu(true)
-    }
-
-    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
-        super.onCreateOptionsMenu(menu, inflater)
-
+    override fun onCreateMenu(menu: Menu, inflater: MenuInflater) {
         inflater.inflate(R.menu.menu_done, menu)
     }
 
@@ -160,14 +157,14 @@ class ShippingLabelCreateCustomPackageFragment : BaseFragment(R.layout.fragment_
         progressDialog = null
     }
 
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+    override fun onMenuItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
             R.id.menu_done -> {
                 ActivityUtils.hideKeyboard(activity)
                 viewModel.onCustomFormDoneMenuClicked()
                 true
             }
-            else -> super.onOptionsItemSelected(item)
+            else -> false
         }
     }
 }

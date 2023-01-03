@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/nav_graph_store_creation"
+    app:startDestination="@id/checkIapEligibilityFragment">
+
+    <include app:graph="@navigation/nav_graph_store_creation_web" />
+
+    <fragment
+        android:id="@+id/checkIapEligibilityFragment"
+        android:name="com.woocommerce.android.ui.login.storecreation.iap.CheckIapEligibilityFragment"
+        android:label="InstallationFragment">
+        <action
+            android:id="@+id/action_checkIapEligibilityFragment_to_webViewStoreCreationFragment"
+            app:destination="@id/nav_graph_store_creation_web"
+            app:popUpTo="@+id/sitePickerFragment"
+            app:popUpToInclusive="false" />
+        <action
+            android:id="@+id/action_checkIapEligibilityFragment_to_storeNamePickerFragment"
+            app:destination="@id/storeNamePickerFragment"
+            app:popUpTo="@+id/sitePickerFragment"
+            app:popUpToInclusive="false" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/storeNamePickerFragment"
+        android:name="com.woocommerce.android.ui.login.storecreation.name.StoreNamePickerFragment"
+        android:label="fragment_store_name_picker">
+        <action
+            android:id="@+id/action_storeNamePickerFragment_to_storeProfilerCategoryFragment"
+            app:destination="@id/storeProfilerCategoryFragment" />
+        <action
+            android:id="@+id/action_storeNamePickerFragment_to_domainPickerFragment"
+            app:destination="@id/domainPickerFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/storeProfilerCategoryFragment"
+        android:name="com.woocommerce.android.ui.login.storecreation.profiler.StoreProfilerCategoryFragment"
+        android:label="fragment_store_profiler_category">
+        <action
+            android:id="@+id/action_storeProfilerCategoryFragment_to_domainPickerFragment"
+            app:destination="@id/domainPickerFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/domainPickerFragment"
+        android:name="com.woocommerce.android.ui.login.storecreation.domainpicker.DomainPickerFragment"
+        android:label="fragment_domain_picker">
+        <action
+            android:id="@+id/action_domainPickerFragment_to_myStoreSummaryFragment"
+            app:destination="@id/myStoreSummaryFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/myStoreSummaryFragment"
+        android:name="com.woocommerce.android.ui.login.storecreation.mystoresummary.MyStoreSummaryFragment"
+        android:label="fragment_store_summary">
+        <action
+            android:id="@+id/action_myStoreSummaryFragment_to_plansFragment"
+            app:destination="@id/plansFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/plansFragment"
+        android:name="com.woocommerce.android.ui.login.storecreation.plans.PlansFragment"
+        android:label="PlansFragment">
+        <action
+            android:id="@+id/action_plansFragment_to_installationFragment"
+            app:destination="@id/installationFragment"
+            app:popUpTo="@id/nav_graph_store_creation" />
+    </fragment>
+    <fragment
+        android:id="@+id/installationFragment"
+        android:name="com.woocommerce.android.ui.login.storecreation.installation.InstallationFragment"
+        android:label="InstallationFragment" />
+
+</navigation>

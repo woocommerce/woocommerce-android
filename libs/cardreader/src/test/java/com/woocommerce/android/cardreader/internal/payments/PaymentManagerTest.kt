@@ -12,9 +12,9 @@ import com.stripe.stripeterminal.external.models.PaymentIntentStatus.SUCCEEDED
 import com.stripe.stripeterminal.external.models.PaymentMethodDetails
 import com.woocommerce.android.cardreader.CardReaderStore
 import com.woocommerce.android.cardreader.CardReaderStore.CapturePaymentResponse
+import com.woocommerce.android.cardreader.config.CardReaderConfigFactory
+import com.woocommerce.android.cardreader.config.CardReaderConfigForUSA
 import com.woocommerce.android.cardreader.internal.CardReaderBaseUnitTest
-import com.woocommerce.android.cardreader.internal.config.CardReaderConfigFactory
-import com.woocommerce.android.cardreader.internal.config.CardReaderConfigForUSA
 import com.woocommerce.android.cardreader.internal.payments.actions.CancelPaymentAction
 import com.woocommerce.android.cardreader.internal.payments.actions.CollectPaymentAction
 import com.woocommerce.android.cardreader.internal.payments.actions.CollectPaymentAction.CollectPaymentStatus
@@ -33,6 +33,7 @@ import com.woocommerce.android.cardreader.payments.CardPaymentStatus.PaymentMeth
 import com.woocommerce.android.cardreader.payments.CardPaymentStatus.ProcessingPayment
 import com.woocommerce.android.cardreader.payments.CardPaymentStatus.ProcessingPaymentCompleted
 import com.woocommerce.android.cardreader.payments.PaymentInfo
+import com.woocommerce.android.cardreader.payments.StatementDescriptor
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
@@ -125,7 +126,9 @@ class PaymentManagerTest : CardReaderBaseUnitTest() {
             .thenReturn(PaymentFailed(CardPaymentStatusErrorType.Generic, null, ""))
         whenever(paymentErrorMapper.mapError(anyOrNull(), anyOrNull()))
             .thenReturn(PaymentFailed(CardPaymentStatusErrorType.Generic, null, ""))
-        whenever(cardReaderConfigFactory.getCardReaderConfigFor(any())).thenReturn(CardReaderConfigForUSA)
+        whenever(cardReaderConfigFactory.getCardReaderConfigFor(any())).thenReturn(
+            CardReaderConfigForUSA
+        )
         whenever(paymentUtils.isSupportedCurrency(any(), any())).thenReturn(true)
     }
 
@@ -636,7 +639,7 @@ class PaymentManagerTest : CardReaderBaseUnitTest() {
             storeName = storeName,
             siteUrl = siteUrl,
             orderKey = orderKey,
-            statementDescriptor = statementDescriptor,
+            statementDescriptor = StatementDescriptor(statementDescriptor),
             countryCode = countryCode,
             feeAmount = feeAmount,
         )

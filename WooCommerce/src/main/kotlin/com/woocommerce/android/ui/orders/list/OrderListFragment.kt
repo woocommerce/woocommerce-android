@@ -1,6 +1,5 @@
 package com.woocommerce.android.ui.orders.list
 
-import android.content.Context
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
@@ -13,12 +12,12 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.widget.SearchView
 import androidx.appcompat.widget.SearchView.OnQueryTextListener
-import androidx.compose.ui.platform.ViewCompositionStrategy
+import androidx.core.view.MenuProvider
 import androidx.core.view.ViewGroupCompat
 import androidx.core.view.doOnPreDraw
 import androidx.core.view.isVisible
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.Lifecycle
 import androidx.navigation.fragment.findNavController
 import androidx.paging.PagedList
 import androidx.recyclerview.widget.ItemTouchHelper
@@ -33,7 +32,6 @@ import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.databinding.FragmentOrderListBinding
-import com.woocommerce.android.extensions.handleDialogResult
 import com.woocommerce.android.extensions.handleResult
 import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.extensions.pinFabAboveBottomNavigationBar
@@ -44,28 +42,18 @@ import com.woocommerce.android.model.FeatureFeedbackSettings.FeedbackState
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.base.TopLevelFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
-import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.ui.feedback.SurveyType
 import com.woocommerce.android.ui.main.MainActivity
 import com.woocommerce.android.ui.main.MainNavigationRouter
 import com.woocommerce.android.ui.orders.OrderStatusUpdateSource
 import com.woocommerce.android.ui.orders.creation.OrderCreateEditViewModel
-import com.woocommerce.android.ui.orders.list.OrderCreationBottomSheetFragment.Companion.KEY_ORDER_CREATION_ACTION_RESULT
-import com.woocommerce.android.ui.orders.list.OrderCreationBottomSheetFragment.OrderCreationAction
-import com.woocommerce.android.ui.orders.list.OrderListViewModel.OrderListEvent.DismissCardReaderUpsellBanner
-import com.woocommerce.android.ui.orders.list.OrderListViewModel.OrderListEvent.DismissCardReaderUpsellBannerViaDontShowAgain
-import com.woocommerce.android.ui.orders.list.OrderListViewModel.OrderListEvent.DismissCardReaderUpsellBannerViaRemindMeLater
 import com.woocommerce.android.ui.orders.list.OrderListViewModel.OrderListEvent.ShowErrorSnack
 import com.woocommerce.android.ui.orders.list.OrderListViewModel.OrderListEvent.ShowOrderFilters
-import com.woocommerce.android.ui.payments.banner.Banner
-import com.woocommerce.android.ui.payments.banner.BannerState
-import com.woocommerce.android.ui.payments.banner.OrderListBannerDismissDialog
 import com.woocommerce.android.util.ChromeCustomTabUtils
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.widgets.WCEmptyView.EmptyViewType
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.launch
 import org.wordpress.android.util.DisplayUtils
 import javax.inject.Inject
 import org.wordpress.android.util.ActivityUtils as WPActivityUtils
@@ -76,7 +64,8 @@ class OrderListFragment :
     OnQueryTextListener,
     OnActionExpandListener,
     OrderListListener,
-    SwipeToComplete.OnSwipeListener {
+    SwipeToComplete.OnSwipeListener,
+    MenuProvider {
     companion object {
         const val TAG: String = "OrderListFragment"
         const val STATE_KEY_SEARCH_QUERY = "search-query"
@@ -144,20 +133,25 @@ class OrderListFragment :
         reenterTransition = fadeThroughTransition
     }
 
-    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+    override fun onCreateMenu(menu: Menu, inflater: MenuInflater) {
         inflater.inflate(R.menu.menu_order_list_fragment, menu)
 
         orderListMenu = menu
         searchMenuItem = menu.findItem(R.id.menu_search)
         searchView = searchMenuItem?.actionView as SearchView?
-        searchView?.queryHint = getString(R.string.orderlist_search_hint)
-
-        super.onCreateOptionsMenu(menu, inflater)
+        searchView?.queryHint = getSearchQueryHint()
     }
 
-    override fun onPrepareOptionsMenu(menu: Menu) {
+    private fun getSearchQueryHint(): String {
+        return if (viewModel.viewState.isFilteringActive) {
+            getString(R.string.orderlist_search_hint_active_filters)
+        } else {
+            getString(R.string.orderlist_search_hint)
+        }
+    }
+
+    override fun onPrepareMenu(menu: Menu) {
         refreshOptionsMenu()
-        super.onPrepareOptionsMenu(menu)
     }
 
     override fun onCreateView(
@@ -165,7 +159,6 @@ class OrderListFragment :
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        setHasOptionsMenu(true)
         _binding = FragmentOrderListBinding.inflate(inflater, container, false)
 
         return binding.root
@@ -175,9 +168,11 @@ class OrderListFragment :
         super.onViewCreated(view, savedInstanceState)
         postponeEnterTransition()
 
-        setHasOptionsMenu(true)
+        requireActivity().addMenuProvider(this, viewLifecycleOwner, Lifecycle.State.RESUMED)
 
         view.doOnPreDraw { startPostponedEnterTransition() }
+
+        uiMessageResolver.anchorViewId = binding.createOrderButton.id
 
         binding.orderListView.init(currencyFormatter = currencyFormatter, orderListListener = this)
         ViewGroupCompat.setTransitionGroup(binding.orderRefreshLayout, true)
@@ -198,12 +193,7 @@ class OrderListFragment :
         binding.orderFiltersCard.setClickListener { viewModel.onFiltersButtonTapped() }
         initCreateOrderFAB(binding.createOrderButton)
         initSwipeBehaviour()
-        val isLandscape = DisplayUtils.isLandscape(context)
-        if (!isLandscape) {
-            lifecycleScope.launch {
-                viewModel.updateBannerState()
-            }
-        }
+        displaySimplePaymentsWIPCard(true)
     }
 
     private fun initSwipeBehaviour() {
@@ -233,56 +223,6 @@ class OrderListFragment :
         _binding = null
     }
 
-    private fun bannerDisplayViewLogic(
-        context: Context,
-        shouldDisplayBanner: Boolean,
-        bannerState: BannerState
-    ) {
-        if (!shouldDisplayBanner) {
-            binding.upsellCardReaderComposeView.upsellCardReaderBannerView.visibility = View.GONE
-        } else {
-            if (viewModel.shouldShowUpsellCardReaderDismissDialog.value == true) {
-                applyBannerDismissDialogComposeUI()
-            }
-            val isLandscape = DisplayUtils.isLandscape(context)
-            /**
-             * We are hiding the upsell card reader banner in the landscape mode since it becomes impossible for
-             * the merchants to scroll the order list. More info here: pdfdoF-12d-p2
-             */
-            if (!isLandscape) {
-                applyBannerComposeUI(bannerState)
-            }
-            if (viewModel.shouldDisplaySimplePaymentsWIPCard() || isLandscape) {
-                displaySimplePaymentsWIPCard(true)
-            }
-        }
-    }
-
-    private fun applyBannerComposeUI(state: BannerState) {
-        binding.upsellCardReaderComposeView.upsellCardReaderBannerView.apply {
-            // Dispose of the Composition when the view's LifecycleOwner is destroyed
-            visibility = View.VISIBLE
-            setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
-            setContent {
-                WooThemeWithBackground {
-                    Banner(bannerState = state)
-                }
-            }
-        }
-    }
-
-    private fun applyBannerDismissDialogComposeUI() {
-        binding.upsellCardReaderComposeView.upsellCardReaderDismissView.apply {
-            // Dispose of the Composition when the view's LifecycleOwner is destroyed
-            setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
-            setContent {
-                WooThemeWithBackground {
-                    OrderListBannerDismissDialog(viewModel)
-                }
-            }
-        }
-    }
-
     /**
      * This is a replacement for activity?.invalidateOptionsMenu() since that causes the
      * search menu item to collapse
@@ -302,19 +242,19 @@ class OrderListFragment :
         }
     }
 
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+    override fun onMenuItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
             R.id.menu_search -> {
                 AnalyticsTracker.track(AnalyticsEvent.ORDERS_LIST_MENU_SEARCH_TAPPED)
                 enableSearchListeners()
                 true
             }
-            else -> super.onOptionsItemSelected(item)
+            else -> false
         }
     }
 
     private fun initCreateOrderFAB(fabButton: FloatingActionButton) {
-        fabButton.setOnClickListener { showOrderCreationBottomSheet() }
+        fabButton.setOnClickListener { openOrderCreationFragment() }
         pinFabAboveBottomNavigationBar(fabButton)
     }
 
@@ -355,22 +295,7 @@ class OrderListFragment :
         }
 
         viewModel.pagedListData.observe(viewLifecycleOwner) {
-            viewModel.bannerState.value?.let { state ->
-                bannerDisplayViewLogic(
-                    binding.root.context,
-                    it.size > 0,
-                    state
-                )
-            }
             updatePagedListData(it)
-        }
-
-        viewModel.bannerState.observe(viewLifecycleOwner) { state ->
-            bannerDisplayViewLogic(
-                binding.root.context,
-                true,
-                state
-            )
         }
 
         viewModel.event.observe(viewLifecycleOwner) { event ->
@@ -380,19 +305,13 @@ class OrderListFragment :
                     binding.orderRefreshLayout.isRefreshing = false
                 }
                 is ShowOrderFilters -> showOrderFilters()
-                DismissCardReaderUpsellBanner -> {
-                    applyBannerDismissDialogComposeUI()
-                }
-                DismissCardReaderUpsellBannerViaRemindMeLater -> {
-                    binding.upsellCardReaderComposeView.upsellCardReaderBannerView.visibility = View.GONE
-                    binding.upsellCardReaderComposeView.upsellCardReaderDismissView.visibility = View.GONE
-                }
-                DismissCardReaderUpsellBannerViaDontShowAgain -> {
-                    binding.upsellCardReaderComposeView.upsellCardReaderBannerView.visibility = View.GONE
-                    binding.upsellCardReaderComposeView.upsellCardReaderDismissView.visibility = View.GONE
-                }
                 is OrderListViewModel.OrderListEvent.OpenPurchaseCardReaderLink -> {
-                    ChromeCustomTabUtils.launchUrl(requireContext(), event.url)
+                    findNavController().navigate(
+                        NavGraphMainDirections.actionGlobalWPComWebViewFragment(
+                            urlToLoad = event.url,
+                            title = resources.getString(event.titleRes)
+                        )
+                    )
                 }
                 is OrderListViewModel.OrderListEvent.NotifyOrderChanged -> {
                     binding.orderListView.ordersList.adapter?.notifyItemChanged(event.position)
@@ -414,9 +333,6 @@ class OrderListFragment :
                         it.show()
                     }
                     binding.orderRefreshLayout.isRefreshing = false
-                }
-                is OrderListViewModel.OrderListEvent.GlanceFirstSwipeAbleItem -> {
-                    glanceFirstSwipeAbleListItem()
                 }
                 else -> event.isHandled = false
             }
@@ -459,29 +375,10 @@ class OrderListFragment :
         handleResult<String>(FILTER_CHANGE_NOTICE_KEY) {
             viewModel.loadOrders()
         }
-        handleDialogResult<OrderCreationAction>(KEY_ORDER_CREATION_ACTION_RESULT, R.id.orders) {
-            binding.orderListView.post {
-                when (it) {
-                    OrderCreationAction.CREATE_ORDER -> openOrderCreationFragment()
-                    OrderCreationAction.SIMPLE_PAYMENT -> showSimplePaymentsDialog()
-                }
-            }
-        }
     }
 
     private fun showOrderFilters() {
         findNavController().navigateSafely(R.id.action_orderListFragment_to_orderFilterListFragment)
-    }
-
-    private fun showSimplePaymentsDialog() {
-        AnalyticsTracker.track(AnalyticsEvent.SIMPLE_PAYMENTS_FLOW_STARTED)
-        // Temporary flow to teach merchants about placement of the Payments feature
-        (requireActivity() as MainNavigationRouter).showMoreMenu()
-    }
-
-    private fun showOrderCreationBottomSheet() {
-        OrderListFragmentDirections.actionOrderListFragmentToOrderCreationBottomSheet()
-            .let { findNavController().navigateSafely(it) }
     }
 
     private fun openOrderCreationFragment() {
@@ -501,17 +398,6 @@ class OrderListFragment :
         binding.orderListView.submitPagedList(pagedListData)
     }
 
-    /**
-     * We use this to clear the options menu when navigating to a child destination - otherwise this
-     * fragment's menu will continue to appear when the child is shown
-     */
-    private fun showOptionsMenu(show: Boolean) {
-        setHasOptionsMenu(show)
-        if (show) {
-            refreshOptionsMenu()
-        }
-    }
-
     override fun openOrderDetail(orderId: Long, orderStatus: String, sharedView: View?) {
         viewModel.trackOrderClickEvent(orderId, orderStatus)
 
@@ -524,7 +410,6 @@ class OrderListFragment :
             searchQuery = savedSearch
             isSearching = true
         }
-        showOptionsMenu(false)
         (activity as? MainNavigationRouter)?.run {
             if (sharedView != null) {
                 showOrderDetailWithSharedTransition(
@@ -717,25 +602,5 @@ class OrderListFragment :
 
     override fun onSwiped(gestureSource: OrderStatusUpdateSource.SwipeToCompleteGesture) {
         viewModel.onSwipeStatusUpdate(gestureSource)
-    }
-
-    private fun glanceFirstSwipeAbleListItem() {
-        val recyclerView = binding.orderListView.ordersList
-        val distance = resources.getDimensionPixelSize(R.dimen.swipeable_glance_distance)
-        // Iterate only on visible swipeable orders
-        for (i in 0 until recyclerView.childCount) {
-            val childView = recyclerView.getChildAt(i)
-            val viewHolder =
-                (recyclerView.getChildViewHolder(childView) as? SwipeToComplete.SwipeAbleViewHolder) ?: continue
-            if (viewHolder.isSwipeAble()) {
-                recyclerView.glanceSwipeAbleItem(
-                    index = i,
-                    direction = ItemTouchHelper.START,
-                    time = SWIPE_GLANCE_ANIMATION_DURATION_MILLIS,
-                    distance = distance
-                )
-                return
-            }
-        }
     }
 }

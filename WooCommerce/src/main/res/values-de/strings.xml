@@ -1,11 +1,198 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2022-08-30 11:54:02+0000
+Translation-Revision-Date: 2022-12-06 11:54:03+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: de
 -->
 <resources>
+    <string name="store_creation_ecommerce_plan_period_two_years">2 Jahre</string>
+    <string name="store_creation_ecommerce_store_loading_permanent_error">Während der Installation des Shops ist etwas schiefgelaufen …</string>
+    <string name="variations_bulk_creation_no_candidates_message">Alle Varianten wurden bereits erstellt.</string>
+    <string name="variations_bulk_creation_no_candidates_title">Keine zu erstellenden Varianten</string>
+    <string name="product_list_multiselect">Mehrere auswählen</string>
+    <string name="store_creation_ecommerce_store_loading_error">Dein neuer Shop konnte nicht geladen werden. Bitte warte ein wenig und versuche es dann erneut …</string>
+    <string name="store_creation_ecommerce_plan_purchase_error">Der Kauf konnte nicht abgeschlossen werden …</string>
+    <string name="store_creation_domain_picker_suggestions_error">Domain-Vorschläge konnten nicht geladen werden</string>
+    <string name="store_creation_domain_picker_empty_suggestions">Für diese Suche sind keine Domains verfügbar</string>
+    <string name="variations_bulk_creation_progress_title">Varianten erstellen</string>
+    <string name="variations_bulk_creation_confirmation_message">Dadurch wird eine neue Variante für jede mögliche Kombination von Variantenattributen erstellt (%1$d Varianten).</string>
+    <string name="variations_bulk_creation_confirmation_title">Alle Varianten erstellen?</string>
+    <string name="variations_bulk_creation_warning_message">Derzeit können maximal %1$d Varianten erstellt werden. Bei diesem Produkt würden %2$d Varianten erstellt werden.</string>
+    <string name="variations_bulk_creation_warning_title">Maximale Anzahl an Varianten überschritten</string>
+    <string name="variation_add_all_description">Erstellt Varianten für alle Kombinationen deiner Attribute.</string>
+    <string name="variation_add_all">Alle Varianten erstellen</string>
+    <string name="variation_add_new_description">Erstelle eine neue Variante. Lege manuell fest, welche Attribute zu dem variablen Produkt gehören.</string>
+    <string name="variation_add_new">Neue Variante hinzufügen</string>
+    <string name="variation_list_add">Variante hinzufügen</string>
+    <string name="login_jetpack_installation_exit_without_connection">Ohne Verbindung beenden</string>
+    <string name="login_jetpack_installation_continue_connection">Mit der Verbindung fortfahren</string>
+    <string name="login_jetpack_installation_connection_dismissed_explanation">Versuche erneut, eine Verbindung herzustellen, um auf deinen Shop zuzugreifen.</string>
+    <string name="login_jetpack_installation_connection_dismissed">Jetpack ist installiert, aber nicht verbunden.</string>
+    <string name="login_jetpack_installation_error_connection_permission_message">Du bist nicht berechtigt, diesen Shop mit Jetpack zu verbinden</string>
+    <string name="login_jetpack_installation_error_forbidden_suggestion">Wende dich an deinen Shop-Manager oder Administrator, um Hilfe zu erhalten.</string>
+    <string name="login_jetpack_installation_cancel">Installation abbrechen</string>
+    <string name="login_jetpack_installation_retry_authorizing">Autorisierung erneut versuchen</string>
+    <string name="login_jetpack_installation_retry_activating">Aktivierung erneut versuchen</string>
+    <string name="login_jetpack_installation_retry_installing">Installation erneut versuchen</string>
+    <string name="login_jetpack_installation_get_support">Unterstützung erhalten</string>
+    <string name="login_jetpack_installation_retry_or_contact_support">Versuche es erneut und wende dich an den Support, falls dieser Fehler weiterhin auftritt.</string>
+    <string name="login_jetpack_installation_error_generic_message">Bei der Kommunikation mit deiner Website ist ein Fehler aufgetreten.</string>
+    <string name="login_jetpack_installation_error_plugin_permission_message">Du bist nicht berechtigt, Plugins in diesem Shop zu verwalten</string>
+    <string name="login_jetpack_installation_error_authorizing">Fehler beim Autorisieren der Verbindung mit Jetpack</string>
+    <string name="login_jetpack_installation_error_activating">Fehler beim Aktivieren von Jetpack</string>
+    <string name="login_jetpack_installation_error_installing">Fehler beim Installieren von Jetpack</string>
+    <string name="login_jetpack_installation_approve_connection">Jetpack verbinden</string>
+    <string name="login_jetpack_installation_go_to_store_button">Shop aufrufen</string>
+    <string name="login_jetpack_installation_error">Fehler</string>
+    <string name="login_jetpack_installation_error_code_template">Fehlercode %1$s</string>
+    <string name="login_jetpack_steps_screen_subtitle_done">Dein Shop &lt;b&gt;%1$s&lt;/b&gt; ist jetzt mit Jetpack verbunden.</string>
+    <string name="login_jetpack_steps_screen_subtitle">Bitte warten, dein Shop &lt;b&gt;%1$s&lt;/b&gt; wird mit Jetpack verbunden.</string>
+    <string name="login_jetpack_installation_steps_screen_title_done">Jetpack installiert</string>
+    <string name="login_jetpack_connection_steps_screen_title_done">Jetpack verbunden</string>
+    <string name="login_jetpack_connection_steps_screen_title">Jetpack wird verbunden</string>
+    <string name="login_jetpack_installation_steps_screen_title">Jetpack wird installiert</string>
+    <string name="login_jetpack_steps_done">Erledigt</string>
+    <string name="login_jetpack_steps_authorizing_done">Verbunden</string>
+    <string name="login_jetpack_steps_authorizing_validation">Überprüfung läuft.</string>
+    <string name="login_jetpack_steps_authorizing">Shop mit Jetpack verbinden</string>
+    <string name="login_jetpack_steps_activating">Wird aktiviert</string>
+    <string name="login_jetpack_steps_installing">Jetpack wird installiert</string>
+    <string name="login_jetpack_connection_enter_site_credentials">Melde dich mit deinen Shop-Anmeldedaten bei &lt;b&gt;%1$s&lt;/b&gt; an, um Jetpack zu verbinden.</string>
+    <string name="login_jetpack_installation_enter_site_credentials">Melde dich mit deinen Shop-Anmeldedaten bei &lt;b&gt;%1$s&lt;/b&gt; an, um Jetpack zu installieren.</string>
+    <string name="login_jetpack_installation_credentials_hint">Halte deine Shop-Anmeldedaten griffbereit.</string>
+    <string name="login_jetpack_connection_explanation">Bitte verbinde deinen Shop mit Jetpack, um in dieser App darauf zuzugreifen.</string>
+    <string name="login_jetpack_installation_explanation">Bitte installiere das kostenlose Jetpack-Plugin, um in dieser App auf deinen Shop zuzugreifen.</string>
+    <string name="login_no_stores_subtitle">Richte einen attraktiven Onlineshop ein und starte mit dem Verkauf – einfach und schnell.</string>
+    <string name="login_no_stores_header">Erstelle deinen ersten Shop</string>
+    <string name="store_creation_store_name_hint">Name des Shops</string>
+    <string name="store_creation_store_name_subtitle">Keine Sorge, du kannst das später noch ändern. </string>
+    <string name="store_creation_store_name_title">Wie lautet der Name deines Shops?</string>
+    <string name="store_creation_store_name_caption">Infos zu deinem Shop</string>
+    <string name="store_creation_installation_show_preview_button">Shop-Vorschau</string>
+    <string name="store_creation_installation_manage_store_button">Meinen Shop verwalten</string>
+    <string name="store_creation_installation_success">Dein Shop wurde eingerichtet!</string>
+    <string name="store_creation_installation_error">Während der Installation ist ein Fehler aufgetreten. Bitte versuche es erneut …</string>
+    <string name="store_creation_ecommerce_plan_feature_sales">Vertriebskanäle</string>
+    <string name="store_creation_ecommerce_plan_feature_shipping_labels">Versandetiketten</string>
+    <string name="store_creation_ecommerce_plan_feature_payments">Mehrere Zahlungsoptionen</string>
+    <string name="store_creation_ecommerce_plan_feature_reports">E-Commerce-Berichte</string>
+    <string name="store_creation_ecommerce_plan_feature_subscriptions">Abonnements und Geschenkkarten</string>
+    <string name="store_creation_ecommerce_plan_feature_products">Unbegrenzte Produkte</string>
+    <string name="store_creation_ecommerce_plan_feature_themes">Premium-Themes</string>
+    <string name="store_creation_ecommerce_plan_period_year">Jahr</string>
+    <string name="store_creation_ecommerce_plan_period_month">Monat</string>
+    <string name="store_creation_ecommerce_plan_refund_reminder">Es besteht kein Risiko. Du kannst innerhalb von 30 Tagen kündigen und erhältst eine vollständige Rückerstattung.</string>
+    <string name="store_creation_ecommerce_plan_purchase_button_title">Shop für %1$s einrichten</string>
+    <string name="store_creation_ecommerce_plan_powered_by">Mit Unterstützung von</string>
+    <string name="store_creation_ecommerce_plan_features_tagline">Alle Funktionen, die du brauchst, sind bereits integriert.</string>
+    <string name="store_creation_ecommerce_plan_error">Informationen zum Tarif konnten nicht geladen werden …</string>
+    <string name="store_creation_summary_primary_button">Weiter zur Bezahlung</string>
+    <string name="store_creation_summary_subtitle">Dein Shop wird basierend auf deinen ausgewählten Optionen eingerichtet!</string>
+    <string name="store_creation_summary_title">Mein Shop</string>
+    <string name="randomly_update_reader">Zufällig</string>
+    <string name="never_update_reader">Nie</string>
+    <string name="always_update_reader">Immer</string>
+    <string name="update_simulated_reader_key">Schlüssel des simulierten Lesegeräts aktualisieren</string>
+    <string name="update_simulated_reader">Simuliertes Kartenlesegerät aktivieren</string>
+    <string name="login_jetpack_connect">Jetpack verbinden</string>
+    <string name="login_jetpack_installation_screen_title">Shop verbinden</string>
+    <string name="store_creation_domain_picker_suggestions_title">Vorschläge</string>
+    <string name="store_creation_domain_picker_hint">Gib eine Domain ein</string>
+    <string name="store_creation_domain_picker_subtitle">Hier finden dich Benutzer im Internet. Keine Sorge, du kannst das später noch ändern.</string>
+    <string name="store_creation_domain_picker_title">Wähle eine Domain</string>
+    <string name="analytics_views_subtitle">Aufrufe</string>
+    <string name="analytics_visitors_subtitle">Besucher</string>
+    <string name="analytics_visitors_and_views_card_title">Besucher und Aufrufe</string>
+    <string name="store_creation_confirm_and_leave">Bestätigen und verlassen</string>
+    <string name="store_creation_exit_dialog_message">Alle Informationen zu deinem Shop gehen dann verloren.</string>
+    <string name="store_creation_exit_dialog_title">Möchtest du die Seite verlassen?</string>
+    <string name="store_creation_in_progress">Dein Shop wird erstellt …</string>
+    <string name="store_creation_cannot_load_store">Dein Shop konnte nicht geladen werden.\nBitte versuche es erneut …</string>
+    <string name="store_creation_create_new_store_label">Neuen Shop einrichten</string>
+    <string name="or_use_password_below_qr_code_scan_option">Oder mit Passwort anmelden</string>
+    <string name="or_scan_qr_code_to_log_in">Zum Anmelden den QR-Code scannen</string>
+    <string name="simplified_login_prologue_title">WooCommerce ist eine anpassbare Open-Source-E-Commerce-Plattform, die auf WordPress basiert.</string>
+    <string name="simulated_reader_toast">Simuliertes Kartenlesegerät wurde deaktiviert</string>
+    <string name="simulated_reader_key">Schlüssel des simulierten Lesegeräts</string>
+    <string name="variations_bulk_update_stock_quantity_success">Aktualisierte Lagerbestandsmenge</string>
+    <string name="variations_bulk_update_current_stock_quantity_mixed">Die aktuelle Lagerbestandsmenge ist eine gemischte Zahl</string>
+    <string name="variations_bulk_update_current_stock_quantity">Aktuelle Lagerbestandsmenge: %d</string>
+    <string name="variations_bulk_update_stock_quantity_dialog_title">Lagerbestandsmenge wird aktualisiert</string>
+    <string name="variations_bulk_update_stock_quantity_info">Die Lagerbestandsmenge wird für %d Varianten aktualisiert</string>
+    <string name="variations_bulk_update_dialog_inventory_section_title">Lagerbestand</string>
+    <string name="product_search_hint_active_filters">Herausgefilterte Produkte suchen</string>
+    <string name="orderlist_search_hint_active_filters">Herausgefilterte Bestellungen suchen</string>
+    <string name="site_picker_connect_existing_store">Bestehenden Shop verbinden</string>
+    <string name="site_picker_create_new_store">Neuen Shop einrichten</string>
+    <string name="login_site_picker_add_a_store">Shop hinzufügen</string>
+    <string name="analytics_products_list_item_description">Nettoumsatz: %1$s</string>
+    <string name="analytics_products_list_header_subtitle">Verkaufte Artikel</string>
+    <string name="analytics_products_list_header_title">Produkte</string>
+    <string name="analytics_products_card_title">Produkte</string>
+    <string name="analytics_products_list_items_sold">Verkaufte Artikel</string>
+    <string name="analytics_avg_orders_title">Durchschnittlicher Bestellwert</string>
+    <string name="analytics_total_orders_title">Bestellungen gesamt</string>
+    <string name="analytics_orders_card_title">Bestellungen</string>
+    <string name="analytics_net_sales_title">Nettoumsatz</string>
+    <string name="analytics_total_sales_title">Gesamtumsatz</string>
+    <string name="analytics_products_no_data">Keine Produkte in diesem Zeitraum</string>
+    <string name="analytics_orders_no_data">Keine Bestellungen in diesem Zeitraum</string>
+    <string name="analytics_revenue_no_data">Keine Einnahmen in diesem Zeitraum</string>
+    <string name="analytics_revenue_card_title">Einnahmen</string>
+    <string name="analytics_date_range_custom">%1$s – %2$s</string>
+    <string name="analytics_see_more">Mehr anzeigen</string>
+    <string name="signup_api_generic_error">Wir konnten leider kein Konto für die angegebenen Anmeldedaten erstellen. Versuche es bitte mit einer anderen E-Mail-Adresse.</string>
+    <string name="signup_password_not_secure_enough">Dein Passwort entspricht nicht unseren Sicherheitsrichtlinien. Bitte versuche es mit einem komplexeren Passwort.</string>
+    <string name="signup_password_too_short">Dein Passwort ist zu kurz. Bitte wähle ein Passwort mit mindestens 6 Zeichen.</string>
+    <string name="signup_email_invalid_input">Bitte gib eine gültige E-Mail-Adresse ein.</string>
+    <string name="signup_email_exist_input">Es ist bereits ein Konto mit dieser E-Mail-Adresse vorhanden.</string>
+    <string name="signup_already_registered">Erstellen wir zuerst dein Konto. Bist du bereits registriert? &lt;a href=\'login\'&gt;&lt;u&gt;Anmelden&lt;/u&gt;&lt;/a&gt;</string>
+    <string name="login_create_an_account">Konto erstellen</string>
+    <string name="simplified_login_enter_email_address">Gib als Erstes deine E-Mail-Adresse ein</string>
+    <string name="login_try_another_email">Andere Adresse versuchen</string>
+    <string name="date_timeframe_custom_date_range_title">Angepasster Zeitraum</string>
+    <string name="date_timeframe_custom">Angepasst</string>
+    <string name="what_is_wordpress_link">Was ist WordPress.com?</string>
+    <string name="signup_creating_account_loading_message">Neues Konto wird erstellt</string>
+    <string name="signup_terms_of_service">Indem du fortfährst, stimmst du unseren &lt;u&gt;Geschäftsbedingungen zu&lt;/u&gt;</string>
+    <string name="signup_password_hint">Wähle ein Passwort</string>
+    <string name="signup_email_address_hint">Deine E-Mail-Adresse</string>
+    <string name="signup_get_started_label">Los geht’s \nin Minuten</string>
+    <string name="signup_get_started_button">Los geht’s</string>
+    <string name="login_jetpack_connection_consent">Durch Tippen auf den Button „Jetpack verbinden“ stimmst du unseren &lt;a href=\'terms\'&gt;Geschäftsbedingungen&lt;/a&gt; und dem &lt;a href=\'sync\'&gt;Teilen von Daten&lt;/a&gt; mit WordPress.com zu.</string>
+    <string name="enable_card_reader">Simuliertes Kartenlesegerät aktivieren</string>
+    <string name="login_account_mismatch_connect_wpcom_dialog_message">Bitte kontaktiere den Website-Betreiber, um eine Einladung zur Website als Shop-Manager oder Administrator zu erhalten und die App verwenden zu können.</string>
+    <string name="login_account_mismatch_connect_wpcom_dialog_title">Mit einer WordPress.com-Website verbinden</string>
+    <string name="login_account_mismatch_connect_wpcom">Mit der Website verbinden</string>
+    <string name="login_account_mismatch_connect_jetpack">Verbinde Jetpack mit deinem Konto</string>
+    <string name="qr_code_login_edit_camera_permission">Berechtigungen bearbeiten</string>
+    <string name="qr_code_login_camera_permission_denied_message">Gewähre zum Verwenden dieser Funktion bitte Berechtigungen zur Nutzung deiner Kamera.</string>
+    <string name="qr_code_login_camera_permission_denied_title">Kamerazugriff erforderlich</string>
+    <string name="qr_code_login_scanner_title">Barcode-Scanner der Kamera</string>
+    <string name="dev_options">Entwickleroptionen</string>
+    <string name="login_2fa_not_supported_self_hosted_site">2FA wird für selbst gehostete Websites nicht unterstützt. Bitte verwende ein App-Passwort.</string>
+    <string name="login_with_qr_code">Zum Anmelden den QR-Code scannen</string>
+    <string name="show_password_content_description">Passwort anzeigen</string>
+    <string name="hide_password_content_description">Passwort verbergen</string>
+    <string name="stats_widget_last_updated_message">Stand: %1$s</string>
+    <string name="stats_widget_error_no_data">Daten konnten nicht geladen werden</string>
+    <string name="stats_today_widget_description">Heutige WooCommerce-Statistiken</string>
+    <string name="stats_today_widget_configure_title">Heutige Shop-Statistiken</string>
+    <string name="stats_widget_availability_message">Es sind keine Shop-Statistiken verfügbar! Bitte führe ein Upgrade auf die neueste Version von WooCommerce durch, um deine Shop-Statistiken anzuzeigen.</string>
+    <string name="stats_widget_offline_error">Dein Netzwerk ist nicht verfügbar.\nPrüfe deine Daten- oder WLAN-Verbindung.</string>
+    <string name="stats_widget_log_in_message">Bitte melde dich in der WooCommerce-App an</string>
+    <string name="login_jetpack_connection_url_failed">Das Abrufen von Verbindungsdaten ist fehlgeschlagen …</string>
+    <string name="login_jetpack_verify_connection">Die Jetpack-Verbindung wird überprüft …</string>
+    <string name="login_jetpack_connection_verification_failed">Deine Jetpack-Verbindung kann nicht überprüft werden. Bitte versuche es erneut.</string>
+    <string name="login_simple_wpcom_site">Für die Website %1$s gilt derzeit ein WordPress.com-Tarif, in dem das Installieren von Plugins nicht möglich ist. Bitte führe ein Tarif-Upgrade durch, um WooCommerce nutzen zu können.</string>
+    <string name="login_jetpack_not_connected">Offenbar ist dein Konto nicht mit Jetpack von %1$s verbunden</string>
+    <string name="card_reader_card_readers_header">KARTENLESEGERÄTE</string>
+    <string name="card_reader_payment_options_header">ZAHLUNGSOPTIONEN</string>
+    <string name="card_reader_enable_pay_in_person_description">Mit der Bezahloption „Persönliche Zahlung“ kannst du bei Abholung oder Zustellung von Bestellungen auf deiner Website Zahlungen annehmen. &lt;a href=\'\'&gt;Weitere Informationen&lt;/a&gt;</string>
+    <string name="card_reader_enable_pay_in_person">Persönliche Zahlung</string>
+    <string name="login_verifying_site_jetpack_timeout_error_description">Es konnte keine Verbindung zu deiner Website hergestellt werden. Bitte wende dich an den Support um das Problem zu beheben.</string>
+    <string name="login_verifying_site_jetpack_timeout_error_title">Verbindungsfehler</string>
     <string name="card_reader_onboarding_with_pending_requirements">Ein Problem erfordert deine Aufmerksamkeit. Bitte &lt;a href=\'\'&gt;schau es dir an&lt;/a&gt;</string>
     <string name="login_site_picker_try_another_address">Andere Adresse versuchen</string>
     <string name="card_reader_onboarding_cash_on_delivery_enable_failure">Bezahlung per Nachnahme konnte nicht aktiviert werden. Versuch es später noch einmal.</string>
@@ -23,7 +210,7 @@ Language: de
     <string name="orderlist_bottom_sheet_simple_payments_moved_button">Verstanden!</string>
     <string name="orderlist_bottom_sheet_simple_payments_moved_description">Jetzt kannst du schnell und einfach auf Persönliche Zahlungen und andere Funktionen zugreifen</string>
     <string name="orderlist_bottom_sheet_simple_payments_moved_title">Zahlungen über den Tab „Menü“</string>
-    <string name="login_no_wpcom_account_found">Die E-Mail %1$s wird nicht mit einem WordPress.com-Konto verwendet.</string>
+    <string name="login_no_wpcom_account_found">Deine E-Mail-Adresse wird nicht mit einem WordPress.com-Konto verwendet.</string>
     <string name="login_non_woo_stores_label">Andere Websites</string>
     <string name="login_with_store_address">Melde dich mit deiner Shop-Adresse an</string>
     <string name="more_menu_button_w___admin">WC Admin</string>
@@ -84,7 +271,7 @@ Language: de
     <string name="support_system_status_report_share_label">Bericht zum Systemstatus teilen</string>
     <string name="support_system_status_report_copy_label">Bericht zum Systemstatus in die Zwischenablage kopieren</string>
     <string name="card_reader_connect_keep_searching_button">Weiter suchen</string>
-    <string name="card_reader_payment_description_v2">Persönliche Zahlung für Bestellung #%s für %s blog_id %s.</string>
+    <string name="card_reader_payment_description_v2">Persönliche Zahlung für Bestellung #%1$s für %2$s blog_id %3$s.</string>
     <string name="card_reader_manage_payment_provider">Zahlungsanbieter ändern</string>
     <string name="orderdetail_refunded_line_with_info">Rückerstattet: %1$s</string>
     <string name="orderdetail_payment_summary_onhold_plain">Warten auf Zahlung</string>
@@ -145,8 +332,8 @@ Language: de
     <string name="variations_bulk_update_current_prices_mixed">Aktuelle Preise sind unterschiedlich</string>
     <string name="variations_bulk_update_current_price">Aktueller Preis ist %s</string>
     <string name="variations_bulk_update_price_info">Der Preis von %d Varianten wird aktualisiert</string>
-    <string name="variations_bulk_update_dialog_price_mixed">Unterschiedlich</string>
-    <string name="variations_bulk_update_dialog_price_none">Keine</string>
+    <string name="variations_bulk_update_dialog_mixed">Gemischte Zahl</string>
+    <string name="variations_bulk_update_dialog_none">Kein Preis</string>
     <string name="variations_bulk_update_dialog_sale_price_label">Verkaufspreis</string>
     <string name="variations_bulk_update_dialog_regular_price_label">Regulärer Preis</string>
     <string name="variations_bulk_update_dialog_price_section_title">Preis</string>
@@ -168,7 +355,7 @@ Language: de
     <string name="shipping_label_install_wc_shipping_banner_button">WooCommerce Shipping installieren</string>
     <string name="shipping_label_install_wc_shipping_banner_description">Drucke Etiketten über dein Mobiltelefon aus – WooCommerce Shipping macht es möglich.</string>
     <string name="shipping_label_install_wc_shipping_banner_title">Du brauchst ein Versandetikett?</string>
-    <string name="order_creation_change_product_quantity">Ändere die Produktmenge von %d zu %d</string>
+    <string name="order_creation_change_product_quantity">Ändere die Produktmenge von %1$d zu %2$d</string>
     <string name="variations_bulk_update_regular_price">Regulären Preis aktualisieren</string>
     <string name="variations_bulk_update_sale_price">Verkaufspreis aktualisieren</string>
     <string name="card_reader_onboarding_stripe_unsupported_in_country_header">Die WooCommerce Stripe-Erweiterung wird in %1$s nicht unterstützt</string>
@@ -301,8 +488,8 @@ Language: de
     <string name="coupon_list_wip_message_enabled">Wir haben daran gearbeitet, das Anzeigen und Bearbeiten von Gutscheinen von deinem Gerät aus zu ermöglichen!</string>
     <string name="coupon_list_wip_title">Gutscheine anzeigen und bearbeiten</string>
     <string name="coupon_list_empty_heading">Keine Gutscheine gefunden</string>
-    <string name="coupon_list_item_label_included_and_excluded">%1s außer %2s</string>
-    <string name="coupon_list_item_label_products_and_categories">%1s und %2s</string>
+    <string name="coupon_list_item_label_included_and_excluded">%1$s außer %2$s</string>
+    <string name="coupon_list_item_label_products_and_categories">%1$s und %2$s</string>
     <string name="coupon_list_item_label_everything">alles</string>
     <string name="coupon_list_item_label_expired">Abgelaufen</string>
     <string name="coupon_list_item_label_active">Aktiv</string>
@@ -320,8 +507,7 @@ Language: de
     <string name="product_ratings_count_one">\u2022  eine genehmigte Rezension</string>
     <string name="product_ratings_count">\u2022  %d genehmigte Rezensionen</string>
     <string name="tax_name_with_tax_percent">%1$s (%2$s%%)</string>
-    <string name="orderlist_simple_payments_wip_message_enabled">Wir haben daran gearbeitet, das Erstellen von Bestellungen und Annehmen von Zahlungen auf deinem Gerät zu ermöglichen! Du kannst diese Funktionen durch Tippen auf den „+“-Button ausprobieren</string>
-    <string name="orderlist_simple_payments_wip_title">Erstelle Bestellungen und nimm Zahlungen an!</string>
+    <string name="orderlist_simple_payments_wip_message_enabled">Wir haben daran gearbeitet, das Erstellen von Bestellungen auf deinem Gerät zu ermöglichen! Du kannst diese Funktion durch Tippen auf den „+“-Button ausprobieren</string>
     <string name="empty_inbox_description">In Kürze bekommst du weitere Tipps und Einsichten zum Ausbau deines Shops</string>
     <string name="empty_inbox_title">Glückwunsch, du hast alles gelesen!</string>
     <string name="orderstatus_contentDesc_withStatus">Bestellstatus: %s</string>
@@ -514,6 +700,7 @@ Language: de
     <string name="simple_payments_enter_amount">Betrag eingeben</string>
     <string name="simple_payments_dialog_title">Zahlung erhalten</string>
     <string name="orderlist_simple_payments_menu">Einfaches Bezahlen</string>
+    <string name="orderlist_simple_payments_wip_title">Erstelle Bestellungen auf deinem Gerät!</string>
     <string name="analytics">Statistiken</string>
     <string name="jetpack_install_progress_step_four_message">Erledigt</string>
     <string name="jetpack_install_progress_step_three_message">Dein Store wird verbunden</string>
@@ -925,7 +1112,7 @@ Language: de
     <string name="shipping_label_payments_cant_edit_warning">Nur der Website-Betreiber kann die Zahlungsmethoden für Versandetiketten verwalten. Wende dich zur Verwaltung der Zahlungsmethoden bitte an den Website-Betreiber %1$s (%2$s).</string>
     <string name="product_detail_add_variations">Varianten hinzufügen</string>
     <string name="product_variant_list_empty_action">Variante hinzufügen</string>
-    <string name="product_variant_list_add_first_variation">Erste Variante hinzufügen</string>
+    <string name="product_variant_list_add_first_variation">Erste Variante erstellen</string>
     <string name="shipping_label_selected_rates_total_description">Insgesamt %s</string>
     <string name="shipping_label_selected_rates_description">%s Preise ausgewählt</string>
     <string name="shipping_label_rate_included_options_signature_required_free">Für kostenlose Signaturanforderung berechtigt</string>
@@ -1371,7 +1558,7 @@ Language: de
     <string name="product_width">Breite</string>
     <string name="product_length">Länge</string>
     <string name="order_refunds_refund_info_title">Erstattete Produkte</string>
-    <string name="order_refunds_detail_item_description">%s (%s x %d)</string>
+    <string name="order_refunds_detail_item_description">%1$s (%2$s x %3$d)</string>
     <string name="order_refunds_method">%1$s per %2$s</string>
     <string name="order_refunds_confirmation">Möchtest du wirklich eine Rückerstattung ausstellen? Dies kann nicht rückgängig gemacht werden.</string>
     <string name="orderdetail_refunded_products">Erstattete Produkte</string>
@@ -1411,7 +1598,7 @@ Language: de
     <string name="order_refunds_select_quantity">Menge wählen</string>
     <string name="order_refunds_shipping_refund">Versandrückerstattung</string>
     <string name="order_refunds_products_refund">Rückerstattung für Produkt</string>
-    <string name="order_refunds_item_description">Je %s x %s</string>
+    <string name="order_refunds_item_description">Je %1$s x %2$s</string>
     <string name="order_refunds_items_selected">%d Artikel ausgewählt</string>
     <string name="order_refunds_items_select_none">Keine auswählen</string>
     <string name="order_refunds_items_select_all">Alle auswählen</string>
@@ -1422,7 +1609,7 @@ Language: de
     <string name="image_source_device_chooser">Von Gerät auswählen</string>
     <string name="image_source_title">Upload-Methode wählen</string>
     <string name="product_images_upload_channel_title">Uploads</string>
-    <string name="product_images_uploading_multi_notif_message">Bilder werden hochgeladen …%d von %d</string>
+    <string name="product_images_uploading_multi_notif_message">Bilder werden hochgeladen …%1$d von %2$d</string>
     <string name="product_images_uploading_single_notif_message">Bild wird hochgeladen …</string>
     <string name="product_images_camera_error">Auf die Kamera kann nicht zugegriffen werden</string>
     <string name="product_image_remove_confirmation">Möchtest du dieses Bild wirklich entfernen?</string>
@@ -1814,10 +2001,11 @@ Language: de
     <string name="orderdetail_track_shipment">Sendung verfolgen</string>
     <string name="login_email_help_desc">In deiner Website-Administration kannst du über das %1$sJetpack-Dashboard%2$s unter %3$sVerbindungen &gt; Kontoverbindung%4$s die E-Mail-Adresse finden, mit der du dich mit WordPress.com verbunden hast.</string>
     <string name="login_email_help_title">Mit welcher E-Mail-Adresse melde ich mich an?</string>
+    <string name="login_need_help_finding_email">Benötigst du Hilfe bei der Suche nach der erforderlichen E-Mail-Adresse?</string>
     <string name="login_jetpack_what_is_description">Jetpack ist ein kostenloses WordPress-Plugin, das deinen Shop mit den Tools verbindet, die du für ein bestmögliches mobiles Erlebnis benötigst, einschließlich Push-Benachrichtigungen und Statistiken.</string>
     <string name="login_jetpack_what_is">Was ist Jetpack?</string>
     <string name="login_view_connected_stores">Verbundene Shops anzeigen</string>
-    <string name="login_not_connected_to_account">%1$s ist offenbar mit einem anderen WordPress.com-Konto verbunden.</string>
+    <string name="login_wpcom_account_mismatch">Offenbar ist %1$s mit einem anderen WordPress.com-Konto verbunden.</string>
     <string name="keep_editing">Weiter bearbeiten</string>
     <string name="notification_wpcom_username_needed">Bitte melde dich mit deinem Benutzernamen und deinem Passwort an.</string>
     <string name="error_user_username_instead_of_email">Bitte melde dich mit deinem WordPress.com-Benutzernamen anstelle deiner E-Mail-Adresse an.</string>
@@ -2138,12 +2326,11 @@ Language: de
     <string name="dashboard_stats_granularity_months">Monate</string>
     <string name="dashboard_stats_granularity_weeks">Wochen</string>
     <string name="dashboard_stats_granularity_days">Tage</string>
-    <string name="login_no_stores">Wir konnten keine WooCommerce-Shops finden, die mit diesem Konto verknüpft sind.</string>
     <string name="login_with_a_different_account">Mit einem anderen Konto anmelden</string>
     <string name="login_nostores_content_description">Keine WooCommerce-Shops</string>
     <string name="login_avatar_content_description">Dein Profilfoto</string>
     <string name="login_connected_store">Verbundener Shop</string>
-    <string name="login_configure_link">Lies die %sKonfigurationsanleitung%s.</string>
+    <string name="login_configure_link">Lies die %1$sKonfigurationsanleitung%2$s.</string>
     <string name="login_jetpack_required">Für diese App muss Jetpack mit deinem Shop verbunden sein.</string>
     <string name="at_username">\@%s</string>
     <string name="enter_site_address">Gib die Adresse des WooCommerce-Shops ein, den du verbinden möchtest.</string>
@@ -2192,8 +2379,9 @@ Language: de
     <string name="all">Alle</string>
     <string name="notification_channel_general_title">Allgemein</string>
     <string name="app_name">WooCommerce</string>
-    <string-array name="date_range_selectors">
-        <item>0@string/date_timeframe_today</item>
+    <string-array name="analytics_date_range_selectors">
+        <item>\@string/date_timeframe_custom</item>
+        <item>\@string/date_timeframe_today</item>
         <item>\@string/date_timeframe_yesterday</item>
         <item>\@string/date_timeframe_last_week</item>
         <item>\@string/date_timeframe_last_month</item>

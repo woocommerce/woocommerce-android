@@ -20,7 +20,6 @@ import com.google.android.material.snackbar.Snackbar
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
-import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.extensions.NotificationReceivedEvent
 import com.woocommerce.android.model.RequestResult.SUCCESS
 import com.woocommerce.android.network.ConnectionChangeReceiver.ConnectionChangeEvent
@@ -31,11 +30,9 @@ import com.woocommerce.android.ui.orders.OrderStatusUpdateSource
 import com.woocommerce.android.ui.orders.details.OrderDetailRepository
 import com.woocommerce.android.ui.orders.filters.domain.GetSelectedOrderFiltersCount
 import com.woocommerce.android.ui.orders.filters.domain.GetWCOrderListDescriptorWithFilters
-import com.woocommerce.android.ui.orders.list.OrderListViewModel.OrderListEvent.OpenPurchaseCardReaderLink
+import com.woocommerce.android.ui.orders.filters.domain.GetWCOrderListDescriptorWithFiltersAndSearchQuery
 import com.woocommerce.android.ui.orders.list.OrderListViewModel.OrderListEvent.ShowErrorSnack
 import com.woocommerce.android.ui.orders.list.OrderListViewModel.OrderListEvent.ShowOrderFilters
-import com.woocommerce.android.ui.payments.banner.BannerDisplayEligibilityChecker
-import com.woocommerce.android.ui.payments.banner.BannerState
 import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.util.ThrottleLiveData
 import com.woocommerce.android.util.WooLog
@@ -46,8 +43,8 @@ import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.widgets.WCEmptyView.EmptyViewType
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import kotlinx.parcelize.IgnoredOnParcel
 import kotlinx.parcelize.Parcelize
 import okio.utf8Size
 import org.greenrobot.eventbus.EventBus
@@ -55,7 +52,6 @@ import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode.MAIN
 import org.wordpress.android.fluxc.Dispatcher
 import org.wordpress.android.fluxc.action.WCOrderAction.UPDATE_ORDER_STATUS
-import org.wordpress.android.fluxc.model.WCOrderListDescriptor
 import org.wordpress.android.fluxc.model.WCOrderStatusModel
 import org.wordpress.android.fluxc.model.list.PagedListWrapper
 import org.wordpress.android.fluxc.store.ListStore
@@ -68,8 +64,6 @@ import javax.inject.Inject
 
 private const val EMPTY_VIEW_THROTTLE = 250L
 
-// Small delay before triggering the glance animation event
-private const val DELAY_GLANCE_DURATION = 500L
 typealias PagedOrdersList = PagedList<OrderListItemUIType>
 
 @OptIn(ExperimentalCoroutinesApi::class)
@@ -88,10 +82,9 @@ class OrderListViewModel @Inject constructor(
     private val fetcher: WCOrderFetcher,
     private val resourceProvider: ResourceProvider,
     private val getWCOrderListDescriptorWithFilters: GetWCOrderListDescriptorWithFilters,
+    private val getWCOrderListDescriptorWithFiltersAndSearchQuery: GetWCOrderListDescriptorWithFiltersAndSearchQuery,
     private val getSelectedOrderFiltersCount: GetSelectedOrderFiltersCount,
-    private val bannerDisplayEligibilityChecker: BannerDisplayEligibilityChecker,
     private val orderListTransactionLauncher: OrderListTransactionLauncher,
-    private val analyticsTrackerWrapper: AnalyticsTrackerWrapper
 ) : ScopedViewModel(savedState), LifecycleOwner {
     private val lifecycleRegistry: LifecycleRegistry by lazy {
         LifecycleRegistry(this)
@@ -141,9 +134,6 @@ class OrderListViewModel @Inject constructor(
     }
     val emptyViewType: LiveData<EmptyViewType?> = _emptyViewType
 
-    val shouldShowUpsellCardReaderDismissDialog: MutableLiveData<Boolean> = MutableLiveData(false)
-    val bannerState: MutableLiveData<BannerState> = MutableLiveData()
-
     var isSearching = false
     private var dismissListErrors = false
     var searchQuery = ""
@@ -171,50 +161,6 @@ class OrderListViewModel @Inject constructor(
                 )
             }
         }
-
-        shouldGlanceFirstSwipeAbleItem()
-    }
-
-    private fun shouldGlanceFirstSwipeAbleItem() {
-        isFetchingFirstPage.observe(this) { isFetching ->
-            if (!isFetching && InAppLifecycleMemory.shouldGlanceFirstSwipeAbleItem) {
-                launch {
-                    // Wait for the list to be draw
-                    delay(DELAY_GLANCE_DURATION)
-                    InAppLifecycleMemory.shouldGlanceFirstSwipeAbleItem = false
-                    triggerEvent(OrderListEvent.GlanceFirstSwipeAbleItem)
-                }
-            }
-        }
-    }
-
-    suspend fun updateBannerState() {
-        bannerState.value = BannerState(
-            shouldDisplayBanner =
-            bannerDisplayEligibilityChecker.isEligibleForInPersonPayments() &&
-                canShowCardReaderUpsellBanner(System.currentTimeMillis()),
-            onPrimaryActionClicked = {
-                onCtaClicked(AnalyticsTracker.KEY_BANNER_ORDER_LIST)
-            },
-            onDismissClicked = { onDismissClicked() },
-            title = R.string.card_reader_upsell_card_reader_banner_title,
-            description = R.string.card_reader_upsell_card_reader_banner_description,
-            primaryActionLabel = R.string.card_reader_upsell_card_reader_banner_cta,
-            chipLabel = R.string.card_reader_upsell_card_reader_banner_new
-        )
-        trackBannerShownIfDisplayed()
-    }
-
-    private fun trackBannerShownIfDisplayed() {
-        if (bannerState.value?.shouldDisplayBanner == true) {
-            analyticsTrackerWrapper.track(
-                AnalyticsEvent.FEATURE_CARD_SHOWN,
-                mapOf(
-                    AnalyticsTracker.KEY_BANNER_SOURCE to AnalyticsTracker.KEY_BANNER_ORDER_LIST,
-                    AnalyticsTracker.KEY_BANNER_CAMPAIGN_NAME to AnalyticsTracker.KEY_BANNER_UPSELL_CARD_READERS
-                )
-            )
-        }
     }
 
     fun loadOrders() {
@@ -232,10 +178,7 @@ class OrderListViewModel @Inject constructor(
      * processing list will always use the same [processingPagedListWrapper].
      */
     fun submitSearchOrFilter(searchQuery: String) {
-        val listDescriptor = WCOrderListDescriptor(
-            selectedSite.get(),
-            searchQuery = sanitizeSearchQuery(searchQuery)
-        )
+        val listDescriptor = getWCOrderListDescriptorWithFiltersAndSearchQuery(sanitizeSearchQuery(searchQuery))
         val pagedListWrapper = listStore.getList(listDescriptor, dataSource, lifecycle)
         activatePagedListWrapper(pagedListWrapper, isFirstInit = true)
     }
@@ -347,6 +290,7 @@ class OrderListViewModel @Inject constructor(
 
         _pagedListData.addSource(pagedListWrapper.data) { pagedList ->
             pagedList?.let {
+
                 _pagedListData.value = it
             }
         }
@@ -514,43 +458,6 @@ class OrderListViewModel @Inject constructor(
         loadOrders()
     }
 
-    private fun onCtaClicked(source: String) {
-        launch {
-            triggerEvent(
-                OpenPurchaseCardReaderLink(bannerDisplayEligibilityChecker.getPurchaseCardReaderUrl(source))
-            )
-        }
-    }
-
-    private fun onDismissClicked() {
-        shouldShowUpsellCardReaderDismissDialog.value = true
-        triggerEvent(OrderListEvent.DismissCardReaderUpsellBanner)
-    }
-
-    fun onRemindLaterClicked(currentTimeInMillis: Long, source: String) {
-        shouldShowUpsellCardReaderDismissDialog.value = false
-        bannerDisplayEligibilityChecker.onRemindLaterClicked(currentTimeInMillis, source)
-        triggerEvent(OrderListEvent.DismissCardReaderUpsellBannerViaRemindMeLater)
-    }
-
-    fun onDontShowAgainClicked(source: String) {
-        shouldShowUpsellCardReaderDismissDialog.value = false
-        bannerDisplayEligibilityChecker.onDontShowAgainClicked(source)
-        triggerEvent(OrderListEvent.DismissCardReaderUpsellBannerViaDontShowAgain)
-    }
-
-    fun onBannerAlertDismiss() {
-        shouldShowUpsellCardReaderDismissDialog.value = false
-    }
-
-    private fun canShowCardReaderUpsellBanner(currentTimeInMillis: Long): Boolean {
-        return bannerDisplayEligibilityChecker.canShowCardReaderUpsellBanner(currentTimeInMillis)
-    }
-
-    fun shouldDisplaySimplePaymentsWIPCard(): Boolean {
-        return !canShowCardReaderUpsellBanner(System.currentTimeMillis())
-    }
-
     private fun updateOrderDisplayedStatus(position: Int, status: String) {
         val pagedList = _pagedListData.value ?: return
         (pagedList[position] as OrderListItemUIType.OrderListItemUI).status = status
@@ -661,17 +568,16 @@ class OrderListViewModel @Inject constructor(
     sealed class OrderListEvent : Event() {
         data class ShowErrorSnack(@StringRes val messageRes: Int) : OrderListEvent()
         object ShowOrderFilters : OrderListEvent()
-        object DismissCardReaderUpsellBanner : OrderListEvent()
-        object DismissCardReaderUpsellBannerViaRemindMeLater : OrderListEvent()
-        object DismissCardReaderUpsellBannerViaDontShowAgain : OrderListEvent()
-        data class OpenPurchaseCardReaderLink(val url: String) : OrderListEvent()
+        data class OpenPurchaseCardReaderLink(
+            val url: String,
+            @StringRes val titleRes: Int,
+        ) : OrderListEvent()
         data class ShowRetryErrorSnack(
             val message: String,
             val retry: View.OnClickListener
         ) : OrderListEvent()
 
         data class NotifyOrderChanged(val position: Int) : OrderListEvent()
-        object GlanceFirstSwipeAbleItem : OrderListEvent()
     }
 
     @Parcelize
@@ -679,9 +585,14 @@ class OrderListViewModel @Inject constructor(
         val isRefreshPending: Boolean = false,
         val arePaymentGatewaysFetched: Boolean = false,
         val filterCount: Int = 0
-    ) : Parcelable
-}
+    ) : Parcelable {
+        @IgnoredOnParcel
+        val isFilteringActive = filterCount > 0
+    }
 
-object InAppLifecycleMemory {
-    var shouldGlanceFirstSwipeAbleItem = true
+    companion object {
+        const val UTM_CAMPAIGN = "feature_announcement_card"
+        const val UTM_SOURCE = "orders_list"
+        const val UTM_CONTENT = "upsell_card_readers"
+    }
 }

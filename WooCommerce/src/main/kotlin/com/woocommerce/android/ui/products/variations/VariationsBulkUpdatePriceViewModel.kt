@@ -5,18 +5,13 @@ import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsEvent.PRODUCT_VARIANTS_BULK_UPDATE_REGULAR_PRICE_DONE_TAPPED
 import com.woocommerce.android.analytics.AnalyticsEvent.PRODUCT_VARIANTS_BULK_UPDATE_SALE_PRICE_DONE_TAPPED
-import com.woocommerce.android.analytics.AnalyticsTracker.Companion.track
 import com.woocommerce.android.model.ProductVariation
 import com.woocommerce.android.ui.products.ParameterRepository
 import com.woocommerce.android.ui.products.models.SiteParameters
 import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.viewmodel.LiveDataDelegate
-import com.woocommerce.android.viewmodel.MultiLiveEvent
-import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.navArgs
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import kotlinx.parcelize.Parcelize
 import java.math.BigDecimal
 import javax.inject.Inject
@@ -26,8 +21,9 @@ class VariationsBulkUpdatePriceViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
     parameterRepository: ParameterRepository,
     private val variationRepository: VariationRepository,
-    private val dispatchers: CoroutineDispatchers,
-) : ScopedViewModel(savedStateHandle) {
+    dispatchers: CoroutineDispatchers,
+) : VariationsBulkUpdateBaseViewModel(savedStateHandle, dispatchers) {
+
     private val args: VariationsBulkUpdatePriceFragmentArgs by savedStateHandle.navArgs()
     private val data: PriceUpdateData = args.priceUpdateData
     private val variationsToUpdate: List<ProductVariation> = args.priceUpdateData.variationsToUpdate
@@ -37,7 +33,7 @@ class VariationsBulkUpdatePriceViewModel @Inject constructor(
     }
 
     val viewStateData = LiveDataDelegate(savedState, ViewState(priceType = data.priceType))
-    private var viewState by viewStateData
+    private var viewState: ViewState by viewStateData
 
     init {
         viewState = viewState.copy(
@@ -48,49 +44,36 @@ class VariationsBulkUpdatePriceViewModel @Inject constructor(
         )
     }
 
-    fun onDoneClicked() {
-        track(getDoneClickedAnalyticsEvent())
-
-        viewState = viewState.copy(isProgressDialogShown = true)
-        launch(dispatchers.io) {
-            val productId = variationsToUpdate.first().remoteProductId
-            val variationsIds = variationsToUpdate.map { it.remoteVariationId }
-            val result = when (viewState.priceType) {
-                PriceType.Regular -> variationRepository.bulkUpdateVariations(
-                    productId,
-                    variationsIds,
-                    newRegularPrice = viewState.price ?: ""
-                )
-                PriceType.Sale -> variationRepository.bulkUpdateVariations(
-                    productId,
-                    variationsIds,
-                    newSalePrice = viewState.price ?: ""
-                )
-            }
-            val snackText = if (result) {
-                when (viewState.priceType) {
-                    PriceType.Regular -> R.string.variations_bulk_update_regular_prices_success
-                    PriceType.Sale -> R.string.variations_bulk_update_sale_prices_success
-                }
-            } else {
-                R.string.variations_bulk_update_error
-            }
-
-            withContext(dispatchers.main) {
-                viewState = viewState.copy(isProgressDialogShown = false)
-                triggerEvent(MultiLiveEvent.Event.ShowSnackbar(snackText))
-                if (result) triggerEvent(MultiLiveEvent.Event.Exit)
-            }
-        }
-    }
-
     fun onPriceEntered(price: String) {
         viewState = viewState.copy(price = price)
     }
 
-    private fun getDoneClickedAnalyticsEvent() = when (data.priceType) {
+    override fun getDoneClickedAnalyticsEvent() = when (data.priceType) {
         PriceType.Regular -> PRODUCT_VARIANTS_BULK_UPDATE_REGULAR_PRICE_DONE_TAPPED
         PriceType.Sale -> PRODUCT_VARIANTS_BULK_UPDATE_SALE_PRICE_DONE_TAPPED
+    }
+
+    override fun getSnackbarSuccessMessageTextRes(): Int = when (viewState.priceType) {
+        PriceType.Regular -> R.string.variations_bulk_update_regular_prices_success
+        PriceType.Sale -> R.string.variations_bulk_update_sale_prices_success
+    }
+
+    override suspend fun performBulkUpdate(): Boolean {
+        val productId = variationsToUpdate.first().remoteProductId
+        val variationsIds = variationsToUpdate.map { it.remoteVariationId }
+        val result = when (viewState.priceType) {
+            PriceType.Regular -> variationRepository.bulkUpdateVariations(
+                productId,
+                variationsIds,
+                newRegularPrice = viewState.price ?: ""
+            )
+            PriceType.Sale -> variationRepository.bulkUpdateVariations(
+                productId,
+                variationsIds,
+                newSalePrice = viewState.price ?: ""
+            )
+        }
+        return result
     }
 
     @Parcelize
@@ -100,7 +83,6 @@ class VariationsBulkUpdatePriceViewModel @Inject constructor(
         val priceType: PriceType,
         val pricesGroupType: ValuesGroupType? = null,
         val variationsToUpdateCount: Int? = null,
-        val isProgressDialogShown: Boolean = false,
     ) : Parcelable
 
     @Parcelize
