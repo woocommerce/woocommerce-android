@@ -47,7 +47,6 @@ import org.mockito.kotlin.never
 import org.mockito.kotlin.stub
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
-import java.text.SimpleDateFormat
 import java.util.Date
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
@@ -646,17 +645,9 @@ class AnalyticsViewModelTest : BaseUnitTest() {
     }
 
     companion object {
-        private const val ANY_DATE_TIME_VALUE = "2021-11-21 00:00:00"
-        private const val ANY_OTHER_DATE_TIME_VALUE = "2021-11-20 00:00:00"
-        private const val ANY_WEEK_DATE_TIME_VALUE = "2010-11-20 00:00:00"
-
-        private const val ANY_YEAR_VALUE = "2021-11-21"
-        private const val ANY_SORT_FORMAT_VALUE = "21 Nov, 2021"
-
         private const val ANY_VALUE = "Today"
         private const val ANY_OTHER_VALUE = "Last year"
 
-        private val sdf = SimpleDateFormat("yyyy-MM-dd HH:mm:ss")
         private val DATE_RANGE_SELECTORS = listOf(ANY_VALUE, ANY_OTHER_VALUE)
 
         const val TOTAL_VALUE = 10.0
