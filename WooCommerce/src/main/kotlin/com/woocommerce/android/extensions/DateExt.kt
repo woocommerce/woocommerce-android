@@ -2,6 +2,7 @@ package com.woocommerce.android.extensions
 
 import android.content.Context
 import android.text.format.DateFormat
+import com.woocommerce.android.util.DateUtils
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T
 import org.apache.commons.lang3.time.DateUtils.isSameDay
@@ -84,7 +85,21 @@ val Date.pastTimeDeltaFromNowInDays
         ?.toInt()
 
 fun Date.theDayBeforeIt() =
-    Calendar.getInstance()
-        .apply { time = this@theDayBeforeIt }
+    Calendar.getInstance().apply { time = this@theDayBeforeIt }
         .apply { add(Calendar.DATE, -1) }
         .time
+
+fun Calendar.startOfCurrentDay(): Date =
+    apply {
+        clear(Calendar.MILLISECOND)
+        clear(Calendar.SECOND)
+        clear(Calendar.MINUTE)
+        set(Calendar.HOUR_OF_DAY, DateUtils.ZERO)
+    }.time
+
+fun Calendar.endOfCurrentDay(): Date =
+    apply {
+        set(Calendar.SECOND, getMaximum(Calendar.SECOND))
+        set(Calendar.MINUTE, getMaximum(Calendar.MINUTE))
+        set(Calendar.HOUR_OF_DAY, getMaximum(Calendar.HOUR_OF_DAY))
+    }.time
