@@ -9,8 +9,6 @@ import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
-import com.woocommerce.android.experiment.JetpackInstallationExperiment
-import com.woocommerce.android.experiment.JetpackInstallationExperiment.JetpackInstallationVariant
 import com.woocommerce.android.support.help.HelpOrigin.LOGIN_SITE_ADDRESS
 import com.woocommerce.android.ui.login.AccountRepository
 import com.woocommerce.android.ui.sitepicker.SitePickerRepository
@@ -48,7 +46,6 @@ class SitePickerSiteDiscoveryViewModel @Inject constructor(
     private val accountRepository: AccountRepository,
     private val resourceProvider: ResourceProvider,
     private val analyticsTracker: AnalyticsTrackerWrapper,
-    private val jetpackInstallationExperiment: JetpackInstallationExperiment,
     private val urlUtils: UrlUtils
 ) : ScopedViewModel(savedStateHandle) {
     companion object {
@@ -197,32 +194,22 @@ class SitePickerSiteDiscoveryViewModel @Inject constructor(
                     !it.exists -> inlineErrorFlow.value = R.string.invalid_site_url_message
                     !it.isWordPress -> stepFlow.value = Step.NotWordpress
                     !it.isWPCom && !it.isJetpackActive -> {
-                        jetpackInstallationExperiment.activate()
-                        if (jetpackInstallationExperiment.getCurrentVariant() == JetpackInstallationVariant.NATIVE) {
-                            triggerEvent(
-                                StartNativeJetpackActivation(
-                                    siteAddress = siteAddress,
-                                    isJetpackInstalled = false
-                                )
+                        triggerEvent(
+                            StartNativeJetpackActivation(
+                                siteAddress = siteAddress,
+                                isJetpackInstalled = false
                             )
-                        } else {
-                            stepFlow.value = Step.JetpackUnavailable
-                        }
+                        )
                     }
                     !it.isWPCom -> {
                         // This means a self-hosted site that has Jetpack and yet wasn't included in the user's sites
                         // So start the Jetpack connection flow
-                        jetpackInstallationExperiment.activate()
-                        if (jetpackInstallationExperiment.getCurrentVariant() == JetpackInstallationVariant.NATIVE) {
-                            triggerEvent(
-                                StartNativeJetpackActivation(
-                                    siteAddress = siteAddress,
-                                    isJetpackInstalled = true
-                                )
+                        triggerEvent(
+                            StartNativeJetpackActivation(
+                                siteAddress = siteAddress,
+                                isJetpackInstalled = true
                             )
-                        } else {
-                            navigateToJetpackConnectionError()
-                        }
+                        )
                     }
                     else -> navigateBackToSitePicker()
                 }
