@@ -544,8 +544,15 @@ class AnalyticsViewModelTest : BaseUnitTest() {
 
     @Test
     fun `given a custom range is selected, then have no visitors request done`() = testBlocking {
-        sut = givenAViewModel()
-        sut.onNewRangeSelection(CUSTOM)
+        sut = AnalyticsViewModel(
+            givenAResourceProvider(),
+            currencyFormatter,
+            analyticsRepository,
+            transactionLauncher,
+            mock(),
+            AnalyticsFragmentArgs(targetGranularity = CUSTOM).initSavedStateHandle()
+        )
+        sut.onCustomRangeSelected(Date(), Date())
 
         verify(analyticsRepository, never()).fetchQuarterVisitorsData(any(), eq(Saved))
         verify(analyticsRepository, never()).fetchRecentVisitorsData(any(), eq(Saved))
