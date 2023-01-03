@@ -9,18 +9,18 @@ import java.util.Calendar
 import java.util.Date
 
 class AnalyticsHubCustomRangeData(
-    startDate: Date,
-    endDate: Date,
+    selectedStartDate: Date,
+    selectedEndDate: Date,
     calendar: Calendar
 ) : AnalyticsHubTimeRangeData {
     override val currentRange: AnalyticsHubTimeRange
     override val previousRange: AnalyticsHubTimeRange
 
     init {
-        calendar.time = startDate
+        calendar.time = selectedStartDate
         val currentStart = calendar.startOfCurrentDay()
 
-        calendar.time = endDate
+        calendar.time = selectedEndDate
         val currentEnd = calendar.endOfCurrentDay()
 
         currentRange = AnalyticsHubTimeRange(
@@ -28,9 +28,9 @@ class AnalyticsHubCustomRangeData(
             end = currentEnd
         )
 
-        val dayDifference = endDate.time - startDate.time
+        val dayDifference = selectedEndDate.time - selectedStartDate.time
 
-        calendar.time = startDate.oneDayAgo(calendar)
+        calendar.time = selectedStartDate.oneDayAgo(calendar)
         val previousEnd = calendar.endOfCurrentDay()
 
         calendar.time = Date(previousEnd.time - dayDifference)
