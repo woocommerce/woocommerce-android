@@ -8,13 +8,14 @@ import com.woocommerce.android.ui.analytics.ranges.AnalyticsHubTimeRangeData
 import java.util.Calendar
 import java.util.Date
 
-// Responsible for defining two ranges of data, one starting from the first day of the last week
+// Responsible for defining two ranges of data, the current one, starting from the first day of the last week
 // until the final day of that week, and the previous one as two weeks ago, also starting
 // from the first day until the final day of that week. E. g.
 //
 // Today: 29 Jul 2022
-// Current range: Jul 18 until Jul 24, 2022
-// Previous range: Jul 11 until Jul 17, 2022
+// When user requests report at 05:49 PM
+// Current range: Jul 18, 00:00 until Jul 24, 23:59:59, 2022
+// Previous range: Jul 11, 00:00 until Jul 17, 23:59:59, 2022
 //
 class AnalyticsHubLastWeekRangeData(
     referenceDate: Date,
