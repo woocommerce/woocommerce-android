@@ -40,12 +40,12 @@ fun WPComWebViewScreen(
     Scaffold(
         topBar = {
             Toolbar(
+                onCloseButtonClick = onClose,
                 title = viewState.title ?: stringResource(id = R.string.app_name),
                 closeButtonIcon = when (viewState.displayMode) {
                     REGULAR -> Icons.Filled.ArrowBack
                     MODAL -> Icons.Filled.Clear
-                },
-                onCloseButtonClick = onClose
+                }
             )
         }
     ) { paddingValues ->

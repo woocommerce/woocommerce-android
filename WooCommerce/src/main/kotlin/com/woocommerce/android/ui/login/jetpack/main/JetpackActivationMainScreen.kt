@@ -90,7 +90,7 @@ fun JetpackActivationMainScreen(
     onRetryClick: () -> Unit = {}
 ) {
     Scaffold(
-        topBar = { Toolbar(onCloseClick) }
+        topBar = { Toolbar(onCloseButtonClick = onCloseClick) }
     ) { paddingValues ->
         val transition = updateTransition(targetState = viewState, label = "State Transition")
 

@@ -17,6 +17,8 @@ import androidx.compose.foundation.text.ClickableText
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Clear
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
@@ -66,12 +68,18 @@ fun JetpackActivationStartScreen(
     Scaffold(
         topBar = {
             Toolbar(
-                onActionButtonClick = onHelpButtonClick,
                 onCloseButtonClick = if (!viewState.isConnectionDismissed) {
                     onBackButtonClick
                 } else {
                     null
-                }
+                },
+                onActionButtonClick = onHelpButtonClick,
+                title = if (!viewState.isConnectionDismissed) {
+                    stringResource(id = R.string.login_jetpack_installation_screen_title)
+                } else {
+                    ""
+                },
+                closeButtonIcon = Icons.Filled.Clear,
             )
         }
     ) { paddingValues ->
