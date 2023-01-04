@@ -8,7 +8,7 @@ import com.woocommerce.android.ui.analytics.ranges.AnalyticsHubTimeRangeData
 import java.util.Calendar
 import java.util.Date
 
-class AnalyticsHubLastQuarterRangeData(
+class LastQuarterRangeData(
     referenceDate: Date,
     referenceCalendar: Calendar
 ) : AnalyticsHubTimeRangeData(referenceCalendar) {

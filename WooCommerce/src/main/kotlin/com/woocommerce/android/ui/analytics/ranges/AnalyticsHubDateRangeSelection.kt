@@ -10,10 +10,10 @@ import com.woocommerce.android.ui.analytics.ranges.AnalyticsHubDateRangeSelectio
 import com.woocommerce.android.ui.analytics.ranges.AnalyticsHubDateRangeSelection.SelectionType.WEEK_TO_DATE
 import com.woocommerce.android.ui.analytics.ranges.AnalyticsHubDateRangeSelection.SelectionType.YEAR_TO_DATE
 import com.woocommerce.android.ui.analytics.ranges.AnalyticsHubDateRangeSelection.SelectionType.YESTERDAY
-import com.woocommerce.android.ui.analytics.ranges.data.AnalyticsHubLastQuarterRangeData
-import com.woocommerce.android.ui.analytics.ranges.data.AnalyticsHubLastYearRangeData
-import com.woocommerce.android.ui.analytics.ranges.data.AnalyticsHubQuarterToDateRangeData
-import com.woocommerce.android.ui.analytics.ranges.data.AnalyticsHubYearToDateRangeData
+import com.woocommerce.android.ui.analytics.ranges.data.LastQuarterRangeData
+import com.woocommerce.android.ui.analytics.ranges.data.LastYearRangeData
+import com.woocommerce.android.ui.analytics.ranges.data.QuarterToDateRangeData
+import com.woocommerce.android.ui.analytics.ranges.data.YearToDateRangeData
 import com.woocommerce.android.ui.analytics.ranges.data.LastMonthRangeData
 import com.woocommerce.android.ui.analytics.ranges.data.LastWeekRangeData
 import com.woocommerce.android.ui.analytics.ranges.data.MonthToDateRangeData
@@ -49,10 +49,10 @@ class AnalyticsHubDateRangeSelection(
             LAST_WEEK -> LastWeekRangeData(referenceDate, calendar)
             MONTH_TO_DATE -> MonthToDateRangeData(referenceDate, calendar)
             LAST_MONTH -> LastMonthRangeData(referenceDate, calendar)
-            QUARTER_TO_DATE -> AnalyticsHubQuarterToDateRangeData(referenceDate, calendar)
-            LAST_QUARTER -> AnalyticsHubLastQuarterRangeData(referenceDate, calendar)
-            YEAR_TO_DATE -> AnalyticsHubYearToDateRangeData(referenceDate, calendar)
-            LAST_YEAR -> AnalyticsHubLastYearRangeData(referenceDate, calendar)
+            QUARTER_TO_DATE -> QuarterToDateRangeData(referenceDate, calendar)
+            LAST_QUARTER -> LastQuarterRangeData(referenceDate, calendar)
+            YEAR_TO_DATE -> YearToDateRangeData(referenceDate, calendar)
+            LAST_YEAR -> LastYearRangeData(referenceDate, calendar)
         }
     }
 
