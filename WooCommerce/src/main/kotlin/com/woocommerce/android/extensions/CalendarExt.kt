@@ -5,58 +5,64 @@ import java.util.Calendar
 import java.util.Date
 
 fun Calendar.startOfCurrentDay(): Date =
-    apply {
-        clear(Calendar.MILLISECOND)
-        clear(Calendar.SECOND)
-        clear(Calendar.MINUTE)
-        set(Calendar.HOUR_OF_DAY, DateUtils.ZERO)
-    }.time
+    (clone() as Calendar)
+        .apply {
+            clear(Calendar.MILLISECOND)
+            clear(Calendar.SECOND)
+            clear(Calendar.MINUTE)
+            set(Calendar.HOUR_OF_DAY, DateUtils.ZERO)
+        }.time
 
 fun Calendar.endOfCurrentDay(): Date =
-    apply {
-        set(Calendar.SECOND, getMaximum(Calendar.SECOND))
-        set(Calendar.MINUTE, getMaximum(Calendar.MINUTE))
-        set(Calendar.HOUR_OF_DAY, getMaximum(Calendar.HOUR_OF_DAY))
-    }.time
+    (clone() as Calendar)
+        .apply {
+            set(Calendar.SECOND, getMaximum(Calendar.SECOND))
+            set(Calendar.MINUTE, getMaximum(Calendar.MINUTE))
+            set(Calendar.HOUR_OF_DAY, getMaximum(Calendar.HOUR_OF_DAY))
+        }.time
 
 fun Calendar.startOfCurrentWeek(): Date =
-    apply {
-        clear(Calendar.MILLISECOND)
-        clear(Calendar.SECOND)
-        clear(Calendar.MINUTE)
-        set(Calendar.HOUR_OF_DAY, DateUtils.ZERO)
-        set(Calendar.DAY_OF_WEEK, firstDayOfWeek)
-    }.time
+    (clone() as Calendar)
+        .apply {
+            clear(Calendar.MILLISECOND)
+            clear(Calendar.SECOND)
+            clear(Calendar.MINUTE)
+            set(Calendar.HOUR_OF_DAY, DateUtils.ZERO)
+            set(Calendar.DAY_OF_WEEK, firstDayOfWeek)
+        }.time
 
 fun Calendar.endOfCurrentWeek(): Date =
-    apply {
-        clear(Calendar.MILLISECOND)
-        clear(Calendar.SECOND)
-        clear(Calendar.MINUTE)
-        set(Calendar.HOUR_OF_DAY, DateUtils.ZERO)
-        set(Calendar.DAY_OF_WEEK, firstDayOfWeek + DateUtils.DAYS_TAIL_IN_WEEK)
-        set(Calendar.SECOND, getMaximum(Calendar.SECOND))
-        set(Calendar.MINUTE, getMaximum(Calendar.MINUTE))
-        set(Calendar.HOUR_OF_DAY, getMaximum(Calendar.HOUR_OF_DAY))
-    }.time
+    (clone() as Calendar)
+        .apply {
+            clear(Calendar.MILLISECOND)
+            clear(Calendar.SECOND)
+            clear(Calendar.MINUTE)
+            set(Calendar.HOUR_OF_DAY, DateUtils.ZERO)
+            set(Calendar.DAY_OF_WEEK, firstDayOfWeek + DateUtils.DAYS_TAIL_IN_WEEK)
+            set(Calendar.SECOND, getMaximum(Calendar.SECOND))
+            set(Calendar.MINUTE, getMaximum(Calendar.MINUTE))
+            set(Calendar.HOUR_OF_DAY, getMaximum(Calendar.HOUR_OF_DAY))
+        }.time
 
 fun Calendar.startOfCurrentMonth(): Date =
-    apply {
-        clear(Calendar.MILLISECOND)
-        clear(Calendar.SECOND)
-        clear(Calendar.MINUTE)
-        set(Calendar.HOUR_OF_DAY, DateUtils.ZERO)
-        set(Calendar.DAY_OF_MONTH, DateUtils.ONE)
-    }.time
+    (clone() as Calendar)
+        .apply {
+            clear(Calendar.MILLISECOND)
+            clear(Calendar.SECOND)
+            clear(Calendar.MINUTE)
+            set(Calendar.HOUR_OF_DAY, DateUtils.ZERO)
+            set(Calendar.DAY_OF_MONTH, DateUtils.ONE)
+        }.time
 
 fun Calendar.endOfCurrentMonth(): Date =
-    apply {
-        clear(Calendar.MILLISECOND)
-        clear(Calendar.SECOND)
-        clear(Calendar.MINUTE)
-        set(Calendar.HOUR_OF_DAY, DateUtils.ZERO)
-        set(Calendar.DAY_OF_MONTH, getActualMaximum(Calendar.DAY_OF_MONTH))
-        set(Calendar.SECOND, getMaximum(Calendar.SECOND))
-        set(Calendar.MINUTE, getMaximum(Calendar.MINUTE))
-        set(Calendar.HOUR_OF_DAY, getMaximum(Calendar.HOUR_OF_DAY))
-    }.time
+    (clone() as Calendar)
+        .apply {
+            clear(Calendar.MILLISECOND)
+            clear(Calendar.SECOND)
+            clear(Calendar.MINUTE)
+            set(Calendar.HOUR_OF_DAY, DateUtils.ZERO)
+            set(Calendar.DAY_OF_MONTH, getActualMaximum(Calendar.DAY_OF_MONTH))
+            set(Calendar.SECOND, getMaximum(Calendar.SECOND))
+            set(Calendar.MINUTE, getMaximum(Calendar.MINUTE))
+            set(Calendar.HOUR_OF_DAY, getMaximum(Calendar.HOUR_OF_DAY))
+        }.time
