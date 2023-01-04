@@ -17,7 +17,7 @@ import java.util.Date
 // Current range: Jun 1, 00:00 until Jun 30, 23:59:59, 2022
 // Previous range: May 1, 00:00 until May 31, 23:59:59, 2022
 //
-class AnalyticsHubLastMonthRangeData(
+class LastMonthRangeData(
     referenceDate: Date,
     calendar: Calendar
 ) : AnalyticsHubTimeRangeData {
