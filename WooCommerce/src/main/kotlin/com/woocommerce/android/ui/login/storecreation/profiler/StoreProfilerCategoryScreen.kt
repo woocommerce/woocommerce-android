@@ -16,19 +16,27 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Divider
+import androidx.compose.material.Icon
+import androidx.compose.material.IconButton
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
+import androidx.compose.material.TextButton
+import androidx.compose.material.icons.Icons.Filled
+import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.dimensionResource
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Devices
 import androidx.compose.ui.tooling.preview.Preview
 import com.woocommerce.android.R
+import com.woocommerce.android.R.drawable
+import com.woocommerce.android.R.string
 import com.woocommerce.android.ui.compose.component.Toolbar
 import com.woocommerce.android.ui.compose.component.WCColoredButton
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
@@ -39,9 +47,20 @@ fun StoreProfilerCategoryScreen(viewModel: StoreProfilerViewModel) {
     viewModel.storeProfilerState.observeAsState().value?.let { state ->
         Scaffold(topBar = {
             Toolbar(
+                title = { Text("") },
+                navigationIcon = Filled.ArrowBack,
                 onNavigationButtonClick = viewModel::onArrowBackPressed,
-                onActionButtonClick = viewModel::onSkipPressed,
-                actionButtonText = stringResource(id = R.string.skip)
+                actions = {
+                    TextButton(onClick = viewModel::onSkipPressed) {
+                        Text(text = stringResource(id = R.string.skip))
+                    }
+                    IconButton(onClick = viewModel::onHelpPressed) {
+                        Icon(
+                            painter = painterResource(id = drawable.ic_help_24dp),
+                            contentDescription = stringResource(id = string.help)
+                        )
+                    }
+                }
             )
         }) { padding ->
             CategoriesContent(
