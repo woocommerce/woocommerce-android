@@ -32,10 +32,11 @@ class LoginSiteCredentialsViewModel @Inject constructor(
         const val PASSWORD_KEY = "password"
     }
 
+    private val siteAddress:String = savedStateHandle[SITE_ADDRESS_KEY]!!
     private val isLoading = MutableStateFlow(false)
 
     val state = combine(
-        flowOf(savedStateHandle.get<String>(SITE_ADDRESS_KEY)!!.removeSchemeAndSuffix()),
+        flowOf(siteAddress.removeSchemeAndSuffix()),
         savedStateHandle.getStateFlow(USERNAME_KEY, ""),
         savedStateHandle.getStateFlow(PASSWORD_KEY, ""),
         isLoading
@@ -60,7 +61,7 @@ class LoginSiteCredentialsViewModel @Inject constructor(
         isLoading.value = true
         val state = requireNotNull(this@LoginSiteCredentialsViewModel.state.value)
         wpApiSiteRepository.login(
-            url = savedState[SITE_ADDRESS_KEY]!!,
+            url = siteAddress,
             username = state.username,
             password = state.password
         ).fold(
@@ -76,7 +77,7 @@ class LoginSiteCredentialsViewModel @Inject constructor(
     }
 
     fun onResetPasswordClick() {
-        TODO()
+        triggerEvent(ShowResetPasswordScreen(siteAddress))
     }
 
     fun onBackClick() {
@@ -98,4 +99,5 @@ class LoginSiteCredentialsViewModel @Inject constructor(
     }
 
     data class LoggedIn(val localSiteId: Int) : MultiLiveEvent.Event()
+    data class ShowResetPasswordScreen(val siteAddress: String) : MultiLiveEvent.Event()
 }

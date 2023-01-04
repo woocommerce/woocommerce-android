@@ -11,6 +11,7 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.ui.login.sitecredentials.LoginSiteCredentialsViewModel.LoggedIn
+import com.woocommerce.android.ui.login.sitecredentials.LoginSiteCredentialsViewModel.ShowResetPasswordScreen
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import dagger.hilt.android.AndroidEntryPoint
 import org.wordpress.android.login.LoginListener
@@ -55,6 +56,7 @@ class LoginSiteCredentialsFragment : Fragment() {
         viewModel.event.observe(viewLifecycleOwner) {
             when (it) {
                 is LoggedIn -> loginListener.loggedInViaUsernamePassword(arrayListOf(it.localSiteId))
+                is ShowResetPasswordScreen -> loginListener.forgotPassword(it.siteAddress)
                 is Exit -> requireActivity().onBackPressedDispatcher.onBackPressed()
             }
         }

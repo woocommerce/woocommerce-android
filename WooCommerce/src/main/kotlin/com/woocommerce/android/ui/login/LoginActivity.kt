@@ -81,6 +81,7 @@ import org.wordpress.android.fluxc.store.AccountStore.OnAuthOptionsFetched
 import org.wordpress.android.fluxc.store.SiteStore
 import org.wordpress.android.fluxc.store.SiteStore.ConnectSiteInfoPayload
 import org.wordpress.android.fluxc.store.SiteStore.OnConnectSiteInfoChecked
+import org.wordpress.android.fluxc.utils.extensions.slashJoin
 import org.wordpress.android.login.AuthOptions
 import org.wordpress.android.login.GoogleFragment.GoogleListener
 import org.wordpress.android.login.Login2FaFragment
@@ -498,9 +499,9 @@ class LoginActivity :
         changeFragment(loginEmailPasswordFragment, true, LoginEmailPasswordFragment.TAG)
     }
 
-    override fun forgotPassword(url: String?) {
+    override fun forgotPassword(url: String) {
         loginAnalyticsListener.trackLoginForgotPasswordClicked()
-        ChromeCustomTabUtils.launchUrl(this, url + FORGOT_PASSWORD_URL_SUFFIX)
+        ChromeCustomTabUtils.launchUrl(this, url.slashJoin(FORGOT_PASSWORD_URL_SUFFIX))
     }
 
     override fun needs2fa(email: String?, password: String?) {
