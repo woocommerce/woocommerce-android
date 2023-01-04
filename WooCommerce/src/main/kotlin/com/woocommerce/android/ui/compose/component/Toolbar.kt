@@ -7,7 +7,7 @@ import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.material.TextButton
 import androidx.compose.material.TopAppBar
-import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.Icons.Filled
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -20,11 +20,11 @@ import com.woocommerce.android.R.string
 
 @Composable
 fun Toolbar(
-    onCloseButtonClick: (() -> Unit)?,
     modifier: Modifier = Modifier,
+    onCloseButtonClick: (() -> Unit)? = null,
     onActionButtonClick: (() -> Unit)? = null,
     title: String = "",
-    closeButtonIcon: ImageVector = Icons.Filled.ArrowBack,
+    closeButtonIcon: ImageVector = Filled.ArrowBack,
     @DrawableRes actionButtonIcon: Int = drawable.ic_help_24dp,
     actionButtonText: String? = null
 ) {
