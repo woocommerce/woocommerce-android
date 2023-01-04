@@ -5,8 +5,10 @@ import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.awaitAny
 import com.woocommerce.android.util.awaitEvent
 import com.woocommerce.android.util.dispatchAndAwait
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.withContext
 import org.wordpress.android.fluxc.Dispatcher
 import org.wordpress.android.fluxc.generated.AuthenticationActionBuilder
 import org.wordpress.android.fluxc.model.SiteModel
@@ -73,7 +75,7 @@ class WPApiSiteRepository @Inject constructor(
                 }
             }
         }
-        val siteTask = async {
+        val siteTask = async(Dispatchers.IO) {
             siteStore.fetchSitesXmlRpc(
                 RefreshSitesXMLRPCPayload(
                     username = username,
@@ -100,7 +102,7 @@ class WPApiSiteRepository @Inject constructor(
             event.isError -> Result.failure(OnChangedException(event.error))
             else -> {
                 WooLog.d(WooLog.T.LOGIN, "XMLRPC site $siteUrl fetch succeeded")
-                val site = SiteUtils.getXMLRPCSiteByUrl(siteStore, siteUrl)!!
+                val site = withContext(Dispatchers.IO) { SiteUtils.getXMLRPCSiteByUrl(siteStore, siteUrl)!! }
                 return@coroutineScope Result.success(site)
             }
         }
