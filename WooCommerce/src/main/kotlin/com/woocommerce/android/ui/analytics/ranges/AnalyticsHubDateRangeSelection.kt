@@ -1,9 +1,17 @@
 package com.woocommerce.android.ui.analytics.ranges
 
+import com.woocommerce.android.ui.analytics.ranges.AnalyticsHubDateRangeSelection.AnalyticsHubRangeSelectionType.LAST_MONTH
+import com.woocommerce.android.ui.analytics.ranges.AnalyticsHubDateRangeSelection.AnalyticsHubRangeSelectionType.LAST_WEEK
+import com.woocommerce.android.ui.analytics.ranges.AnalyticsHubDateRangeSelection.AnalyticsHubRangeSelectionType.MONTH_TO_DATE
 import com.woocommerce.android.ui.analytics.ranges.AnalyticsHubDateRangeSelection.AnalyticsHubRangeSelectionType.TODAY
+import com.woocommerce.android.ui.analytics.ranges.AnalyticsHubDateRangeSelection.AnalyticsHubRangeSelectionType.WEEK_TO_DATE
 import com.woocommerce.android.ui.analytics.ranges.AnalyticsHubDateRangeSelection.AnalyticsHubRangeSelectionType.YESTERDAY
-import com.woocommerce.android.ui.analytics.ranges.data.AnalyticsHubTodayRangeData
-import com.woocommerce.android.ui.analytics.ranges.data.AnalyticsHubYesterdayRangeData
+import com.woocommerce.android.ui.analytics.ranges.data.LastMonthRangeData
+import com.woocommerce.android.ui.analytics.ranges.data.LastWeekRangeData
+import com.woocommerce.android.ui.analytics.ranges.data.MonthToDateRangeData
+import com.woocommerce.android.ui.analytics.ranges.data.TodayRangeData
+import com.woocommerce.android.ui.analytics.ranges.data.WeekToDateRangeData
+import com.woocommerce.android.ui.analytics.ranges.data.YesterdayRangeData
 import java.util.Calendar
 import java.util.Date
 
@@ -27,13 +35,21 @@ class AnalyticsHubDateRangeSelection(
         calendar: Calendar
     ): AnalyticsHubTimeRangeData {
         return when (selectedType) {
-            TODAY -> AnalyticsHubTodayRangeData(referenceDate, calendar)
-            YESTERDAY -> AnalyticsHubYesterdayRangeData(referenceDate, calendar)
+            TODAY -> TodayRangeData(referenceDate, calendar)
+            YESTERDAY -> YesterdayRangeData(referenceDate, calendar)
+            WEEK_TO_DATE -> WeekToDateRangeData(referenceDate, calendar)
+            LAST_WEEK -> LastWeekRangeData(referenceDate, calendar)
+            MONTH_TO_DATE -> MonthToDateRangeData(referenceDate, calendar)
+            LAST_MONTH -> LastMonthRangeData(referenceDate, calendar)
         }
     }
 
     enum class AnalyticsHubRangeSelectionType {
         TODAY,
-        YESTERDAY;
+        YESTERDAY,
+        WEEK_TO_DATE,
+        LAST_WEEK,
+        MONTH_TO_DATE,
+        LAST_MONTH;
     }
 }

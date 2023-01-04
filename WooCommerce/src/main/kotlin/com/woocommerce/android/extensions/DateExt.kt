@@ -2,7 +2,6 @@ package com.woocommerce.android.extensions
 
 import android.content.Context
 import android.text.format.DateFormat
-import com.woocommerce.android.util.DateUtils
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T
 import org.apache.commons.lang3.time.DateUtils.isSameDay
@@ -84,22 +83,21 @@ val Date.pastTimeDeltaFromNowInDays
         ?.let { TimeUnit.DAYS.convert(it, MILLISECONDS) }
         ?.toInt()
 
-fun Date.theDayBeforeIt() =
-    Calendar.getInstance().apply { time = this@theDayBeforeIt }
-        .apply { add(Calendar.DATE, -1) }
-        .time
-
-fun Calendar.startOfCurrentDay(): Date =
-    apply {
-        clear(Calendar.MILLISECOND)
-        clear(Calendar.SECOND)
-        clear(Calendar.MINUTE)
-        set(Calendar.HOUR_OF_DAY, DateUtils.ZERO)
+fun Date.oneDayAgo(): Date =
+    Calendar.getInstance().apply {
+        time = this@oneDayAgo
+        add(Calendar.DATE, -1)
     }.time
 
-fun Calendar.endOfCurrentDay(): Date =
-    apply {
-        set(Calendar.SECOND, getMaximum(Calendar.SECOND))
-        set(Calendar.MINUTE, getMaximum(Calendar.MINUTE))
-        set(Calendar.HOUR_OF_DAY, getMaximum(Calendar.HOUR_OF_DAY))
+@Suppress("MagicNumber")
+fun Date.oneWeekAgo(): Date =
+    Calendar.getInstance().apply {
+        time = this@oneWeekAgo
+        add(Calendar.DATE, -7)
+    }.time
+
+fun Date.oneMonthAgo(): Date =
+    Calendar.getInstance().apply {
+        time = this@oneMonthAgo
+        add(Calendar.MONTH, -1)
     }.time
