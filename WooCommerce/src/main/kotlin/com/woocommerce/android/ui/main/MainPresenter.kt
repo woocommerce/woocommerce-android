@@ -13,6 +13,7 @@ import com.woocommerce.android.push.NotificationChannelType.NEW_ORDER
 import com.woocommerce.android.tools.ProductImageMap
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.tools.SelectedSite.SelectedSiteChangedEvent
+import com.woocommerce.android.ui.login.AccountRepository
 import com.woocommerce.android.ui.payments.cardreader.ClearCardReaderDataAction
 import com.woocommerce.android.util.WooLog
 import kotlinx.coroutines.flow.distinctUntilChanged
@@ -26,7 +27,6 @@ import org.wordpress.android.fluxc.generated.AccountActionBuilder
 import org.wordpress.android.fluxc.generated.WCOrderActionBuilder
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.CoreOrderStatus.PROCESSING
-import org.wordpress.android.fluxc.store.AccountStore
 import org.wordpress.android.fluxc.store.AccountStore.OnAccountChanged
 import org.wordpress.android.fluxc.store.AccountStore.OnAuthenticationChanged
 import org.wordpress.android.fluxc.store.AccountStore.UpdateTokenPayload
@@ -39,13 +39,13 @@ import javax.inject.Inject
 
 class MainPresenter @Inject constructor(
     private val dispatcher: Dispatcher,
-    private val accountStore: AccountStore,
     private val wooCommerceStore: WooCommerceStore,
     private val selectedSite: SelectedSite,
     private val productImageMap: ProductImageMap,
     private val appPrefsWrapper: AppPrefsWrapper,
     private val wcOrderStore: WCOrderStore,
-    private val clearCardReaderDataAction: ClearCardReaderDataAction
+    private val clearCardReaderDataAction: ClearCardReaderDataAction,
+    private val accountRepository: AccountRepository
 ) : MainContract.Presenter {
     private var mainView: MainContract.View? = null
 
@@ -83,9 +83,7 @@ class MainPresenter @Inject constructor(
         ConnectionChangeReceiver.getEventBus().unregister(this)
     }
 
-    override fun userIsLoggedIn(): Boolean {
-        return accountStore.hasAccessToken()
-    }
+    override fun userIsLoggedIn(): Boolean = accountRepository.isUserLoggedIn()
 
     override fun storeMagicLinkToken(token: String) {
         isHandlingMagicLink = true

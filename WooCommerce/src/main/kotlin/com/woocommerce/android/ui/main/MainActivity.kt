@@ -6,7 +6,6 @@ import android.animation.ValueAnimator
 import android.app.Activity
 import android.app.ProgressDialog
 import android.content.Intent
-import android.content.res.Resources.Theme
 import android.net.Uri
 import android.os.Bundle
 import android.view.Menu
@@ -19,6 +18,7 @@ import androidx.appcompat.app.AppCompatDelegate
 import androidx.appcompat.widget.Toolbar
 import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.core.content.ContextCompat
+import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.core.view.isVisible
 import androidx.core.view.updateLayoutParams
 import androidx.fragment.app.Fragment
@@ -135,7 +135,6 @@ class MainActivity :
 
     private var isBottomNavShowing = true
     private var unfilledOrderCount: Int = 0
-    private var isMainThemeApplied = false
     private var restoreToolbarHeight = 0
     private var menu: Menu? = null
 
@@ -213,29 +212,14 @@ class MainActivity :
         }
     }
 
-    /**
-     * Manually set the theme here so the splash screen will be visible while this activity
-     * is loading. Also setting it here ensures all fragments used in this activity will also
-     * use this theme at runtime (in the case of switching the theme at runtime).
-     */
-    override fun getTheme(): Theme {
-        return super.getTheme().also {
-            // Since applying the theme overwrites all theme properties and then applies,
-            // we only want to do this once per session to avoid unnecessary GC as well as
-            // OOM crashes in older versions of Android.
-            if (!isMainThemeApplied) {
-                it.applyStyle(R.style.Theme_Woo_DayNight, true)
-                isMainThemeApplied = true
-            }
-        }
-    }
-
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         this.menu = menu
         return super.onCreateOptionsMenu(menu)
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        installSplashScreen()
+
         super.onCreate(savedInstanceState)
 
         // Verify authenticated session
