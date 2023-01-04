@@ -14,6 +14,8 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.text.ClickableText
+import androidx.compose.material.Icon
+import androidx.compose.material.IconButton
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
@@ -37,6 +39,8 @@ import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import com.woocommerce.android.AppUrls
 import com.woocommerce.android.R
+import com.woocommerce.android.R.drawable
+import com.woocommerce.android.R.string
 import com.woocommerce.android.ui.compose.URL_ANNOTATION_TAG
 import com.woocommerce.android.ui.compose.annotatedStringRes
 import com.woocommerce.android.ui.compose.component.Toolbar
@@ -67,20 +71,26 @@ fun JetpackActivationStartScreen(
 ) {
     Scaffold(
         topBar = {
-            Toolbar(
-                title = if (!viewState.isConnectionDismissed) {
-                    stringResource(id = R.string.login_jetpack_installation_screen_title)
-                } else {
-                    ""
-                },
-                onNavigationButtonClick = if (!viewState.isConnectionDismissed) {
-                    onBackButtonClick
-                } else {
-                    null
-                },
-                navigationIcon = Icons.Filled.Clear,
-                onActionButtonClick = onHelpButtonClick,
-            )
+            if (!viewState.isConnectionDismissed) {
+                Toolbar(
+                    title = stringResource(id = string.login_jetpack_installation_screen_title),
+                    onNavigationButtonClick =  onBackButtonClick,
+                    navigationIcon = Icons.Filled.Clear,
+                    onActionButtonClick = onHelpButtonClick,
+                )
+            } else {
+                Toolbar(
+                    title = { Text("") },
+                    actions = {
+                        IconButton(onClick = onHelpButtonClick) {
+                            Icon(
+                                painter = painterResource(id = drawable.ic_help_24dp),
+                                contentDescription = stringResource(id = string.help)
+                            )
+                        }
+                    }
+                )
+            }
         }
     ) { paddingValues ->
         Column(

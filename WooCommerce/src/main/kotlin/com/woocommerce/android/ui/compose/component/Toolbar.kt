@@ -1,6 +1,7 @@
 package com.woocommerce.android.ui.compose.component
 
 import androidx.annotation.DrawableRes
+import androidx.compose.foundation.layout.RowScope
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
 import androidx.compose.material.MaterialTheme
@@ -22,45 +23,77 @@ import com.woocommerce.android.R.string
 fun Toolbar(
     modifier: Modifier = Modifier,
     title: String = "",
-    onNavigationButtonClick: (() -> Unit)? = null,
+    onNavigationButtonClick: (() -> Unit),
     navigationIcon: ImageVector = Filled.ArrowBack,
-    onActionButtonClick: (() -> Unit)? = null,
+    onActionButtonClick: (() -> Unit),
     @DrawableRes actionButtonIcon: Int = drawable.ic_help_24dp,
+) {
+    Toolbar(
+        modifier = modifier,
+        title = { Text(title) },
+        onNavigationButtonClick = onNavigationButtonClick,
+        navigationIcon = navigationIcon,
+        actions = {
+            IconButton(onClick = onActionButtonClick) {
+                Icon(
+                    painter = painterResource(id = actionButtonIcon),
+                    contentDescription = stringResource(id = string.help)
+                )
+            }
+        }
+    )
+}
+
+@Composable
+fun Toolbar(
+    modifier: Modifier = Modifier,
+    title: String = "",
+    onNavigationButtonClick: (() -> Unit),
+    navigationIcon: ImageVector? = Filled.ArrowBack,
+    onActionButtonClick: (() -> Unit)? = null,
     actionButtonText: String? = null
+) {
+    Toolbar(
+        modifier = modifier,
+        title = { Text(title) },
+        onNavigationButtonClick = onNavigationButtonClick,
+        navigationIcon = navigationIcon,
+        actions = {
+            if (onActionButtonClick != null && actionButtonText != null) {
+                TextButton(onClick = onActionButtonClick) {
+                    Text(text = actionButtonText)
+                }
+            } else if (onActionButtonClick == null && actionButtonText != null || onActionButtonClick != null) {
+                error("Both actionButtonText and onActionButtonClick must be set")
+            }
+        }
+    )
+}
+
+@Composable
+fun Toolbar(
+    modifier: Modifier = Modifier,
+    title: @Composable () -> Unit = {},
+    onNavigationButtonClick: (() -> Unit)? = null,
+    navigationIcon: ImageVector? = null,
+    actions: @Composable RowScope.() -> Unit = {}
 ) {
     TopAppBar(
         backgroundColor = MaterialTheme.colors.surface,
-        title = {
-            if (title.isNotBlank()) {
-                Text(title)
-            }
-        },
+        title = title,
         navigationIcon = {
-            if (onNavigationButtonClick != null) {
+            if (onNavigationButtonClick != null && navigationIcon != null) {
                 IconButton(onClick = onNavigationButtonClick) {
                     Icon(
                         navigationIcon,
                         contentDescription = stringResource(id = string.back)
                     )
                 }
+            } else if (onNavigationButtonClick == null && navigationIcon != null || onNavigationButtonClick != null) {
+                error("Both onNavigationButtonClick and navigationIcon must be set")
             }
         },
-        actions = {
-            if (onActionButtonClick != null) {
-                if (actionButtonText != null) {
-                    TextButton(onClick = onActionButtonClick) {
-                        Text(text = actionButtonText)
-                    }
-                } else {
-                    IconButton(onClick = onActionButtonClick) {
-                        Icon(
-                            painter = painterResource(id = actionButtonIcon),
-                            contentDescription = stringResource(id = string.help)
-                        )
-                    }
-                }
-            }
-        },
+        actions = actions,
         elevation = 0.dp,
         modifier = modifier
     )
