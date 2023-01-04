@@ -9,6 +9,8 @@ import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -19,8 +21,8 @@ class LoginSiteCredentialsFragment : Fragment() {
             LoginSiteCredentialsFragment().apply {
                 arguments = bundleOf(
                     LoginSiteCredentialsViewModel.SITE_ADDRESS_KEY to siteAddress,
-                    LoginSiteCredentialsViewModel.USERNAME_KEY to username,
-                    LoginSiteCredentialsViewModel.PASSWORD_KEY to password
+                    LoginSiteCredentialsViewModel.USERNAME_KEY to username.orEmpty(),
+                    LoginSiteCredentialsViewModel.PASSWORD_KEY to password.orEmpty()
                 )
             }
     }
@@ -32,7 +34,22 @@ class LoginSiteCredentialsFragment : Fragment() {
             setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
 
             setContent {
-                LoginSiteCredentialsScreen(viewModel = viewModel)
+                WooThemeWithBackground {
+                    LoginSiteCredentialsScreen(viewModel = viewModel)
+                }
+            }
+        }
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        setupObservers()
+    }
+
+    private fun setupObservers() {
+        viewModel.event.observe(viewLifecycleOwner) {
+            when (it) {
+                is Exit -> requireActivity().onBackPressedDispatcher.onBackPressed()
             }
         }
     }
