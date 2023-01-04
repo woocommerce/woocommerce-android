@@ -10,6 +10,10 @@ import com.woocommerce.android.ui.analytics.ranges.AnalyticsHubDateRangeSelectio
 import com.woocommerce.android.ui.analytics.ranges.AnalyticsHubDateRangeSelection.SelectionType.WEEK_TO_DATE
 import com.woocommerce.android.ui.analytics.ranges.AnalyticsHubDateRangeSelection.SelectionType.YEAR_TO_DATE
 import com.woocommerce.android.ui.analytics.ranges.AnalyticsHubDateRangeSelection.SelectionType.YESTERDAY
+import com.woocommerce.android.ui.analytics.ranges.data.AnalyticsHubLastQuarterRangeData
+import com.woocommerce.android.ui.analytics.ranges.data.AnalyticsHubLastYearRangeData
+import com.woocommerce.android.ui.analytics.ranges.data.AnalyticsHubQuarterToDateRangeData
+import com.woocommerce.android.ui.analytics.ranges.data.AnalyticsHubYearToDateRangeData
 import com.woocommerce.android.ui.analytics.ranges.data.LastMonthRangeData
 import com.woocommerce.android.ui.analytics.ranges.data.LastWeekRangeData
 import com.woocommerce.android.ui.analytics.ranges.data.MonthToDateRangeData

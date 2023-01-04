@@ -23,7 +23,6 @@ import java.util.TimeZone
 
 internal class AnalyticsHubDateRangeSelectionTest {
     private lateinit var testTimeZone: TimeZone
-
     private lateinit var testCalendar: Calendar
 
     @Before
