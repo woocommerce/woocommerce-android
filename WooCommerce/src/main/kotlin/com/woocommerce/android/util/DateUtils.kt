@@ -329,6 +329,173 @@ class DateUtils @Inject constructor(
             set(Calendar.HOUR_OF_DAY, ZERO)
         }.timeInMillis
 
+    /**
+     * Returns a date object with the date for the first day of the current week
+     * of calendar argument or current calendar
+     */
+    fun getDateForFirstDayOfWeek(calendar: Calendar = Calendar.getInstance()): Date =
+        calendar.apply {
+            clear(Calendar.MILLISECOND)
+            clear(Calendar.SECOND)
+            clear(Calendar.MINUTE)
+            set(Calendar.HOUR_OF_DAY, ZERO)
+            set(Calendar.DAY_OF_WEEK, firstDayOfWeek)
+        }.time
+
+    /**
+     * Returns a date object with the date for the first day of the current month
+     * of calendar argument or current calendar
+     */
+    fun getDateForFirstDayOfMonth(calendar: Calendar = Calendar.getInstance()): Date =
+        calendar.apply {
+            clear(Calendar.MILLISECOND)
+            clear(Calendar.SECOND)
+            clear(Calendar.MINUTE)
+            set(Calendar.HOUR_OF_DAY, ZERO)
+            set(Calendar.DAY_OF_MONTH, ONE)
+        }.time
+
+    /**
+     * Returns a date object with the date for the first day of the current quarter
+     * of calendar argument or current calendar
+     */
+    fun getDateForFirstDayOfQuarter(calendar: Calendar = Calendar.getInstance()): Date =
+        calendar.apply {
+            clear(Calendar.MILLISECOND)
+            clear(Calendar.SECOND)
+            clear(Calendar.MINUTE)
+            set(Calendar.HOUR_OF_DAY, ZERO)
+            set(Calendar.DAY_OF_MONTH, ONE)
+            set(Calendar.MONTH, get(Calendar.MONTH) / THREE * THREE)
+        }.time
+
+    /**
+     * Returns a date object with the date for the first day of the current year
+     * of calendar argument or current calendar
+     */
+    fun getDateForFirstDayOfYear(calendar: Calendar = Calendar.getInstance()): Date =
+        calendar.apply {
+            clear(Calendar.MILLISECOND)
+            clear(Calendar.SECOND)
+            clear(Calendar.MINUTE)
+            set(Calendar.HOUR_OF_DAY, ZERO)
+            set(Calendar.DAY_OF_MONTH, ONE)
+            set(Calendar.MONTH, ZERO)
+        }.time
+
+    /**
+     * Returns a date object with the date for the first day of the previous N minusWeeks argument or 1 week
+     * of calendar argument or current calendar
+     */
+    fun getDateForFirstDayOfPreviousWeek(minusWeeks: Int = 1, calendar: Calendar = Calendar.getInstance()): Date =
+        calendar.apply {
+            clear(Calendar.MILLISECOND)
+            clear(Calendar.SECOND)
+            clear(Calendar.MINUTE)
+            set(Calendar.HOUR_OF_DAY, ZERO)
+            add(Calendar.WEEK_OF_YEAR, -minusWeeks)
+            set(Calendar.DAY_OF_WEEK, firstDayOfWeek)
+        }.time
+
+    /**
+     * Returns a date object with the date for the first day of the previous N minusMonths argument or 1 month
+     * of calendar argument or current calendar
+     */
+    fun getDateForFirstDayOfPreviousMonth(minusMonths: Int = 1, calendar: Calendar = Calendar.getInstance()): Date =
+        calendar.apply {
+            clear(Calendar.MILLISECOND)
+            clear(Calendar.SECOND)
+            clear(Calendar.MINUTE)
+            set(Calendar.HOUR_OF_DAY, ZERO)
+            add(Calendar.MONTH, -minusMonths)
+            set(Calendar.DAY_OF_MONTH, ONE)
+        }.time
+
+    /**
+     * Returns a date object with the date for the first day of the previous N minusQuarter argument or 1 quarter
+     * of calendar argument or current calendar
+     */
+    fun getDateForFirstDayOfPreviousQuarter(minusQuarter: Int = 1, calendar: Calendar = Calendar.getInstance()): Date =
+        calendar.apply {
+            clear(Calendar.MILLISECOND)
+            clear(Calendar.SECOND)
+            clear(Calendar.MINUTE)
+            set(Calendar.HOUR_OF_DAY, ZERO)
+            set(Calendar.DAY_OF_MONTH, 1)
+            set(Calendar.MONTH, get(Calendar.MONTH) / THREE * THREE)
+            add(Calendar.MONTH, -minusQuarter * THREE)
+        }.time
+
+    /**
+     * Returns a date object with the date for the first day of N minusQuarter argument years or the previous year
+     * of calendar argument or current calendar
+     */
+    fun getDateForFirstDayOfPreviousYear(minusYears: Int = 1, calendar: Calendar = Calendar.getInstance()): Date =
+        calendar.apply {
+            clear(Calendar.MILLISECOND)
+            clear(Calendar.SECOND)
+            clear(Calendar.MINUTE)
+            set(Calendar.HOUR_OF_DAY, ZERO)
+            add(Calendar.YEAR, -minusYears)
+            set(Calendar.DAY_OF_MONTH, ONE)
+            set(Calendar.MONTH, ZERO)
+        }.time
+
+    /**
+     * Returns a date object with the date for the last day of the previous N minusWeeks argument or 1 week
+     *  of calendar argument or current calendar
+     */
+    fun getDateForLastDayOfPreviousWeek(minusWeeks: Int = 1, calendar: Calendar = Calendar.getInstance()): Date =
+        calendar.apply {
+            clear(Calendar.MILLISECOND)
+            clear(Calendar.SECOND)
+            clear(Calendar.MINUTE)
+            set(Calendar.HOUR_OF_DAY, ZERO)
+            add(Calendar.WEEK_OF_YEAR, -minusWeeks)
+            set(Calendar.DAY_OF_WEEK, firstDayOfWeek + DAYS_TAIL_IN_WEEK)
+        }.time
+
+    /**
+     * Returns a date object with the date for the last day of the previous N minusMonths argument or 1 month
+     *  of calendar argument or current calendar
+     */
+    fun getDateForLastDayOfPreviousMonth(minusMonths: Int = 1, calendar: Calendar = Calendar.getInstance()): Date =
+        calendar.apply {
+            clear(Calendar.MILLISECOND)
+            clear(Calendar.SECOND)
+            clear(Calendar.MINUTE)
+            set(Calendar.HOUR_OF_DAY, ZERO)
+            add(Calendar.MONTH, -minusMonths)
+            set(Calendar.DAY_OF_MONTH, getActualMaximum(Calendar.DAY_OF_MONTH))
+        }.time
+
+    /**
+     * Returns a date object with the date for the last day of the previous quarter
+     * of calendar argument or current calendar
+     */
+    fun getDateForLastDayOfPreviousQuarter(minusQuarter: Int = 1, calendar: Calendar = Calendar.getInstance()): Date =
+        calendar.apply {
+            clear(Calendar.MILLISECOND)
+            clear(Calendar.SECOND)
+            clear(Calendar.MINUTE)
+            set(Calendar.HOUR_OF_DAY, ZERO)
+            add(Calendar.DAY_OF_YEAR, -DAYS_IN_QUARTER * minusQuarter)
+            set(Calendar.DAY_OF_MONTH, ONE)
+            set(Calendar.MONTH, get(Calendar.MONTH) / THREE * THREE + 2)
+            set(Calendar.DAY_OF_MONTH, getActualMaximum(Calendar.DAY_OF_MONTH))
+        }.time
+
+    fun getDateForLastDayOfPreviousYear(minusYears: Int = 1, calendar: Calendar = Calendar.getInstance()): Date =
+        calendar.apply {
+            clear(Calendar.MILLISECOND)
+            clear(Calendar.SECOND)
+            clear(Calendar.MINUTE)
+            set(Calendar.HOUR_OF_DAY, ZERO)
+            set(Calendar.MONTH, getActualMaximum(Calendar.MONTH))
+            set(Calendar.DAY_OF_MONTH, getActualMaximum(Calendar.DAY_OF_MONTH))
+            add(Calendar.YEAR, -minusYears)
+        }.time
+
     fun getCurrentDateTimeMinusDays(days: Int): Long =
         Calendar.getInstance().apply {
             clear(Calendar.MILLISECOND)
@@ -339,9 +506,27 @@ class DateUtils @Inject constructor(
         }.timeInMillis
 
     /**
+     * Returns current date
+     */
+    fun getCurrentDate() = Date()
+
+    /**
      * Returns current date in the format h:mm a
      */
-    fun getCurrentTime(): String = friendlyTimeFormat.format(Date())
+    fun getCurrentTime(): String = friendlyTimeFormat.format(getCurrentDate())
+
+    /**
+     * Returns a Calendar object with argument date applied argument operation
+     */
+    fun getDateTimeAppliedOperation(date: Date, operationOver: Int, number: Int): Date =
+        Calendar.getInstance().apply {
+            time = date
+            clear(Calendar.MILLISECOND)
+            clear(Calendar.SECOND)
+            clear(Calendar.MINUTE)
+            set(Calendar.HOUR_OF_DAY, ZERO)
+            add(operationOver, number)
+        }.time
 
     fun toIso8601Format(dateMillis: Long): String? =
         try {
