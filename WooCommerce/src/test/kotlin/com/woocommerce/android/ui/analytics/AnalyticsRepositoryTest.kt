@@ -1,8 +1,5 @@
 package com.woocommerce.android.ui.analytics
 
-import com.woocommerce.android.extensions.endOfCurrentDay
-import com.woocommerce.android.extensions.formatToYYYYmmDD
-import com.woocommerce.android.extensions.startOfCurrentDay
 import com.woocommerce.android.model.DeltaPercentage
 import com.woocommerce.android.model.ProductItem
 import com.woocommerce.android.model.RevenueStat
@@ -17,22 +14,15 @@ import com.woocommerce.android.ui.analytics.AnalyticsRepository.ProductsResult.P
 import com.woocommerce.android.ui.analytics.AnalyticsRepository.ProductsResult.ProductsError
 import com.woocommerce.android.ui.analytics.AnalyticsRepository.RevenueResult.RevenueData
 import com.woocommerce.android.ui.analytics.AnalyticsRepository.RevenueResult.RevenueError
-import com.woocommerce.android.ui.analytics.ranges.AnalyticsHubDateRangeSelection.SelectionType.CUSTOM
+import com.woocommerce.android.ui.analytics.daterangeselector.AnalyticTimePeriod
+import com.woocommerce.android.ui.analytics.daterangeselector.MultipleDateRange
+import com.woocommerce.android.ui.analytics.daterangeselector.SimpleDateRange
 import com.woocommerce.android.ui.mystore.data.StatsRepository
 import com.woocommerce.android.viewmodel.BaseUnitTest
-import java.text.SimpleDateFormat
-import java.util.Calendar
-import java.util.Date
-import java.util.Locale
-import java.util.TimeZone
-import kotlin.test.assertEquals
-import kotlin.test.assertNotNull
-import kotlin.test.assertTrue
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.asFlow
 import kotlinx.coroutines.test.runTest
 import org.assertj.core.api.Assertions.assertThat
-import org.junit.Before
 import org.junit.Test
 import org.mockito.kotlin.any
 import org.mockito.kotlin.eq
@@ -45,6 +35,11 @@ import org.wordpress.android.fluxc.model.WCProductModel
 import org.wordpress.android.fluxc.model.WCRevenueStatsModel
 import org.wordpress.android.fluxc.persistence.entity.TopPerformerProductEntity
 import org.wordpress.android.fluxc.store.WooCommerceStore
+import org.wordpress.android.fluxc.utils.DateUtils
+import java.util.Date
+import kotlin.test.assertEquals
+import kotlin.test.assertNotNull
+import kotlin.test.assertTrue
 
 @ExperimentalCoroutinesApi
 @Suppress("LargeClass")
@@ -53,9 +48,6 @@ class AnalyticsRepositoryTest : BaseUnitTest() {
     private val selectedSite: SelectedSite = mock()
     private val wooCommerceStore: WooCommerceStore = mock()
 
-    private lateinit var testTimeZone: TimeZone
-    private lateinit var testCalendar: Calendar
-
     private val sut: AnalyticsRepository = AnalyticsRepository(
         statsRepository,
         selectedSite,
@@ -63,38 +55,20 @@ class AnalyticsRepositoryTest : BaseUnitTest() {
         coroutinesTestRule.testDispatchers
     )
 
-    @Before
-    fun setUp() {
-        testTimeZone = TimeZone.getDefault()
-        testCalendar = Calendar.getInstance(Locale.UK)
-        testCalendar.timeZone = testTimeZone
-        testCalendar.firstDayOfWeek = Calendar.MONDAY
-    }
-
     @Test
     fun `given no currentPeriodRevenue, when fetchRevenueData, then result is RevenueError`() = runTest {
         // Given
-        val expectedSelectionData = CUSTOM.generateSelectionData(
-            referenceStartDate = "2022-09-25".dayStartFrom(),
-            referenceEndDate = "2022-04-10".dayEndFrom()
-        )
-
-        val selectedPeriodStart = expectedSelectionData.currentRange.start.formatToYYYYmmDD()
-        val selectedPeriodEnd = expectedSelectionData.currentRange.end.formatToYYYYmmDD()
-        val previousPeriodStart = expectedSelectionData.previousRange.start.formatToYYYYmmDD()
-        val previousPeriodEnd = expectedSelectionData.previousRange.end.formatToYYYYmmDD()
-
         val previousPeriodRevenue = givenARevenue(TEN_VALUE, TEN_VALUE, TEN_VALUE.toInt())
-
-        whenever(statsRepository.fetchRevenueStats(any(), any(), eq(previousPeriodStart), eq(previousPeriodEnd)))
+        whenever(statsRepository.fetchRevenueStats(any(), any(), eq(PREVIOUS_DATE), eq(PREVIOUS_DATE)))
             .thenReturn(listOf(Result.success(previousPeriodRevenue)).asFlow())
 
-        whenever(statsRepository.fetchRevenueStats(any(), any(), eq(selectedPeriodStart), eq(selectedPeriodEnd)))
+        whenever(statsRepository.fetchRevenueStats(any(), any(), eq(PREVIOUS_DATE), eq(CURRENT_DATE)))
             .thenReturn(listOf(Result.failure<WCRevenueStatsModel?>(StatsRepository.StatsException(null))).asFlow())
 
         // When
         val result = sut.fetchRevenueData(
-            expectedSelectionData,
+            SimpleDateRange(previousDate, currentDate),
+            ANY_RANGE,
             anyFetchStrategy
         )
 
@@ -105,26 +79,17 @@ class AnalyticsRepositoryTest : BaseUnitTest() {
     @Test
     fun `given no currentPeriodRevenue when fetchOrderData result is RevenueError`() = runTest {
         // Given
-        val expectedSelectionData = CUSTOM.generateSelectionData(
-            referenceStartDate = "2022-09-25".dayStartFrom(),
-            referenceEndDate = "2022-04-10".dayEndFrom()
-        )
-
-        val selectedPeriodStart = expectedSelectionData.currentRange.start.formatToYYYYmmDD()
-        val selectedPeriodEnd = expectedSelectionData.currentRange.end.formatToYYYYmmDD()
-        val previousPeriodStart = expectedSelectionData.previousRange.start.formatToYYYYmmDD()
-        val previousPeriodEnd = expectedSelectionData.previousRange.end.formatToYYYYmmDD()
-
         val previousPeriodOrdersStats = givenRevenueOrderStats(TEN_VALUE.toInt(), TEN_VALUE)
-        whenever(statsRepository.fetchRevenueStats(any(), any(), eq(previousPeriodStart), eq(previousPeriodEnd)))
+        whenever(statsRepository.fetchRevenueStats(any(), any(), eq(PREVIOUS_DATE), eq(PREVIOUS_DATE)))
             .thenReturn(listOf(Result.success(previousPeriodOrdersStats)).asFlow())
 
-        whenever(statsRepository.fetchRevenueStats(any(), any(), eq(selectedPeriodStart), eq(selectedPeriodEnd)))
+        whenever(statsRepository.fetchRevenueStats(any(), any(), eq(PREVIOUS_DATE), eq(CURRENT_DATE)))
             .thenReturn(listOf(Result.failure<WCRevenueStatsModel?>(StatsRepository.StatsException(null))).asFlow())
 
         // When
         val result = sut.fetchOrdersData(
-            expectedSelectionData,
+            SimpleDateRange(previousDate, currentDate),
+            ANY_RANGE,
             anyFetchStrategy
         )
 
@@ -135,26 +100,17 @@ class AnalyticsRepositoryTest : BaseUnitTest() {
     @Test
     fun `given no previousRevenuePeriod, when fetchRevenueData, then result is RevenueError`() = runTest {
         // Given
-        val expectedSelectionData = CUSTOM.generateSelectionData(
-            referenceStartDate = "2022-09-25".dayStartFrom(),
-            referenceEndDate = "2022-04-10".dayEndFrom()
-        )
-
-        val selectedPeriodStart = expectedSelectionData.currentRange.start.formatToYYYYmmDD()
-        val selectedPeriodEnd = expectedSelectionData.currentRange.end.formatToYYYYmmDD()
-        val previousPeriodStart = expectedSelectionData.previousRange.start.formatToYYYYmmDD()
-        val previousPeriodEnd = expectedSelectionData.previousRange.end.formatToYYYYmmDD()
-
         val currentPeriodRevenue = givenARevenue(TEN_VALUE, TEN_VALUE, TEN_VALUE.toInt())
-        whenever(statsRepository.fetchRevenueStats(any(), any(), eq(selectedPeriodStart), eq(selectedPeriodEnd)))
+        whenever(statsRepository.fetchRevenueStats(any(), any(), eq(PREVIOUS_DATE), eq(CURRENT_DATE)))
             .thenReturn(listOf(Result.success(currentPeriodRevenue)).asFlow())
 
-        whenever(statsRepository.fetchRevenueStats(any(), any(), eq(previousPeriodStart), eq(previousPeriodEnd)))
+        whenever(statsRepository.fetchRevenueStats(any(), any(), eq(PREVIOUS_DATE), eq(PREVIOUS_DATE)))
             .thenReturn(listOf(Result.failure<WCRevenueStatsModel?>(StatsRepository.StatsException(null))).asFlow())
 
         // When
         val result = sut.fetchRevenueData(
-            expectedSelectionData,
+            SimpleDateRange(previousDate, currentDate),
+            ANY_RANGE,
             anyFetchStrategy
         )
 
@@ -166,26 +122,17 @@ class AnalyticsRepositoryTest : BaseUnitTest() {
     fun `given no previousRevenuePeriod when fetchOrdersData result is OrdersError`() =
         runTest {
             // Given
-            val expectedSelectionData = CUSTOM.generateSelectionData(
-                referenceStartDate = "2022-09-25".dayStartFrom(),
-                referenceEndDate = "2022-04-10".dayEndFrom()
-            )
-
-            val selectedPeriodStart = expectedSelectionData.currentRange.start.formatToYYYYmmDD()
-            val selectedPeriodEnd = expectedSelectionData.currentRange.end.formatToYYYYmmDD()
-            val previousPeriodStart = expectedSelectionData.previousRange.start.formatToYYYYmmDD()
-            val previousPeriodEnd = expectedSelectionData.previousRange.end.formatToYYYYmmDD()
-
             val currentPeriodOrdersStats = givenRevenueOrderStats(TEN_VALUE.toInt(), TEN_VALUE)
-            whenever(statsRepository.fetchRevenueStats(any(), any(), eq(selectedPeriodStart), eq(selectedPeriodEnd)))
+            whenever(statsRepository.fetchRevenueStats(any(), any(), eq(PREVIOUS_DATE), eq(CURRENT_DATE)))
                 .thenReturn(listOf(Result.success(currentPeriodOrdersStats)).asFlow())
 
-            whenever(statsRepository.fetchRevenueStats(any(), any(), eq(previousPeriodStart), eq(previousPeriodEnd)))
+            whenever(statsRepository.fetchRevenueStats(any(), any(), eq(PREVIOUS_DATE), eq(PREVIOUS_DATE)))
                 .thenReturn(listOf(Result.failure<WCRevenueStatsModel?>(StatsRepository.StatsException(null))).asFlow())
 
             // When
             val result = sut.fetchOrdersData(
-                expectedSelectionData,
+                SimpleDateRange(previousDate, currentDate),
+                ANY_RANGE,
                 anyFetchStrategy
             )
 
@@ -197,16 +144,6 @@ class AnalyticsRepositoryTest : BaseUnitTest() {
     fun `given previous and current period revenue, when fetchRevenueData, then result is the expected`() =
         runTest {
             // Given
-            val expectedSelectionData = CUSTOM.generateSelectionData(
-                referenceStartDate = "2022-09-25".dayStartFrom(),
-                referenceEndDate = "2022-04-10".dayEndFrom()
-            )
-
-            val selectedPeriodStart = expectedSelectionData.currentRange.start.formatToYYYYmmDD()
-            val selectedPeriodEnd = expectedSelectionData.currentRange.end.formatToYYYYmmDD()
-            val previousPeriodStart = expectedSelectionData.previousRange.start.formatToYYYYmmDD()
-            val previousPeriodEnd = expectedSelectionData.previousRange.end.formatToYYYYmmDD()
-
             val previousRevenue = givenARevenue(
                 totalSales = 100.0,
                 netValue = 80.0,
@@ -217,15 +154,16 @@ class AnalyticsRepositoryTest : BaseUnitTest() {
                 netValue = 100.0,
                 itemsSold = 12
             )
-            whenever(statsRepository.fetchRevenueStats(any(), any(), eq(selectedPeriodStart), eq(selectedPeriodEnd)))
+            whenever(statsRepository.fetchRevenueStats(any(), any(), eq(PREVIOUS_DATE), eq(CURRENT_DATE)))
                 .thenReturn(listOf(Result.success(currentRevenue)).asFlow())
 
-            whenever(statsRepository.fetchRevenueStats(any(), any(), eq(previousPeriodStart), eq(previousPeriodEnd)))
+            whenever(statsRepository.fetchRevenueStats(any(), any(), eq(PREVIOUS_DATE), eq(PREVIOUS_DATE)))
                 .thenReturn(listOf(Result.success(previousRevenue)).asFlow())
 
             // When
             val result = sut.fetchRevenueData(
-                expectedSelectionData,
+                SimpleDateRange(previousDate, currentDate),
+                ANY_RANGE,
                 anyFetchStrategy
             )
 
@@ -249,16 +187,6 @@ class AnalyticsRepositoryTest : BaseUnitTest() {
     fun `given previous and current period revenue, when fetchRevenueData, then delta values are rounded`() =
         runTest {
             // Given
-            val expectedSelectionData = CUSTOM.generateSelectionData(
-                referenceStartDate = "2022-09-25".dayStartFrom(),
-                referenceEndDate = "2022-04-10".dayEndFrom()
-            )
-
-            val selectedPeriodStart = expectedSelectionData.currentRange.start.formatToYYYYmmDD()
-            val selectedPeriodEnd = expectedSelectionData.currentRange.end.formatToYYYYmmDD()
-            val previousPeriodStart = expectedSelectionData.previousRange.start.formatToYYYYmmDD()
-            val previousPeriodEnd = expectedSelectionData.previousRange.end.formatToYYYYmmDD()
-
             val previousRevenue = givenARevenue(
                 totalSales = 100.0,
                 netValue = 80.0,
@@ -269,15 +197,16 @@ class AnalyticsRepositoryTest : BaseUnitTest() {
                 netValue = 159.4,
                 itemsSold = 12
             )
-            whenever(statsRepository.fetchRevenueStats(any(), any(), eq(selectedPeriodStart), eq(selectedPeriodEnd)))
+            whenever(statsRepository.fetchRevenueStats(any(), any(), eq(PREVIOUS_DATE), eq(CURRENT_DATE)))
                 .thenReturn(listOf(Result.success(currentRevenue)).asFlow())
 
-            whenever(statsRepository.fetchRevenueStats(any(), any(), eq(previousPeriodStart), eq(previousPeriodEnd)))
+            whenever(statsRepository.fetchRevenueStats(any(), any(), eq(PREVIOUS_DATE), eq(PREVIOUS_DATE)))
                 .thenReturn(listOf(Result.success(previousRevenue)).asFlow())
 
             // When
             val result = sut.fetchRevenueData(
-                expectedSelectionData,
+                SimpleDateRange(previousDate, currentDate),
+                ANY_RANGE,
                 anyFetchStrategy
             )
 
@@ -301,27 +230,18 @@ class AnalyticsRepositoryTest : BaseUnitTest() {
     fun `given previous revenue and current zero revenue, when fetchRevenueData, then deltas are the expected`() =
         runTest {
             // Given
-            val expectedSelectionData = CUSTOM.generateSelectionData(
-                referenceStartDate = "2022-09-25".dayStartFrom(),
-                referenceEndDate = "2022-04-10".dayEndFrom()
-            )
-
-            val selectedPeriodStart = expectedSelectionData.currentRange.start.formatToYYYYmmDD()
-            val selectedPeriodEnd = expectedSelectionData.currentRange.end.formatToYYYYmmDD()
-            val previousPeriodStart = expectedSelectionData.previousRange.start.formatToYYYYmmDD()
-            val previousPeriodEnd = expectedSelectionData.previousRange.end.formatToYYYYmmDD()
-
             val revenue = givenARevenue(ZERO_VALUE, ZERO_VALUE, TEN_VALUE.toInt())
-            whenever(statsRepository.fetchRevenueStats(any(), any(), eq(selectedPeriodStart), eq(selectedPeriodEnd)))
+            whenever(statsRepository.fetchRevenueStats(any(), any(), eq(PREVIOUS_DATE), eq(CURRENT_DATE)))
                 .thenReturn(listOf(Result.success(revenue)).asFlow())
 
             val previousRevenue = givenARevenue(TEN_VALUE, TEN_VALUE, TEN_VALUE.toInt())
-            whenever(statsRepository.fetchRevenueStats(any(), any(), eq(previousPeriodStart), eq(previousPeriodEnd)))
+            whenever(statsRepository.fetchRevenueStats(any(), any(), eq(PREVIOUS_DATE), eq(PREVIOUS_DATE)))
                 .thenReturn(listOf(Result.success(previousRevenue)).asFlow())
 
             // When
             val result = sut.fetchRevenueData(
-                expectedSelectionData,
+                SimpleDateRange(previousDate, currentDate),
+                ANY_RANGE,
                 anyFetchStrategy
             )
 
@@ -337,29 +257,21 @@ class AnalyticsRepositoryTest : BaseUnitTest() {
     fun `given zero previous and current revenue, when fetchRevenueData, then deltas are the expected`() =
         runTest {
             // Given
-            val expectedSelectionData = CUSTOM.generateSelectionData(
-                referenceStartDate = "2022-09-25".dayStartFrom(),
-                referenceEndDate = "2022-04-10".dayEndFrom()
-            )
-
-            val selectedPeriodStart = expectedSelectionData.currentRange.start.formatToYYYYmmDD()
-            val selectedPeriodEnd = expectedSelectionData.currentRange.end.formatToYYYYmmDD()
-            val previousPeriodStart = expectedSelectionData.previousRange.start.formatToYYYYmmDD()
-            val previousPeriodEnd = expectedSelectionData.previousRange.end.formatToYYYYmmDD()
-
             val revenue = givenARevenue(TEN_VALUE, TEN_VALUE, TEN_VALUE.toInt())
-            whenever(statsRepository.fetchRevenueStats(any(), any(), eq(selectedPeriodStart), eq(selectedPeriodEnd)))
+            whenever(statsRepository.fetchRevenueStats(any(), any(), eq(PREVIOUS_DATE), eq(CURRENT_DATE)))
                 .thenReturn(listOf(Result.success(revenue)).asFlow())
 
             val previousRevenue = givenARevenue(ZERO_VALUE, ZERO_VALUE, TEN_VALUE.toInt())
-            whenever(statsRepository.fetchRevenueStats(any(), any(), eq(previousPeriodStart), eq(previousPeriodEnd)))
+            whenever(statsRepository.fetchRevenueStats(any(), any(), eq(PREVIOUS_DATE), eq(PREVIOUS_DATE)))
                 .thenReturn(listOf(Result.success(previousRevenue)).asFlow())
 
             // When
             val result = sut.fetchRevenueData(
-                expectedSelectionData,
+                SimpleDateRange(previousDate, currentDate),
+                ANY_RANGE,
                 anyFetchStrategy
             )
+
             // Then
             assertTrue(result is RevenueData)
             assertTrue(result.revenueStat.totalDelta is DeltaPercentage.NotExist)
@@ -370,26 +282,17 @@ class AnalyticsRepositoryTest : BaseUnitTest() {
     fun `given zero previous and current revenue, when fetchOrdersData, then deltas are the expected`() =
         runTest {
             // Given
-            val expectedSelectionData = CUSTOM.generateSelectionData(
-                referenceStartDate = "2022-09-25".dayStartFrom(),
-                referenceEndDate = "2022-04-10".dayEndFrom()
-            )
-
-            val selectedPeriodStart = expectedSelectionData.currentRange.start.formatToYYYYmmDD()
-            val selectedPeriodEnd = expectedSelectionData.currentRange.end.formatToYYYYmmDD()
-            val previousPeriodStart = expectedSelectionData.previousRange.start.formatToYYYYmmDD()
-            val previousPeriodEnd = expectedSelectionData.previousRange.end.formatToYYYYmmDD()
-
             val ordersStats = givenRevenueOrderStats(TEN_VALUE.toInt(), TEN_VALUE)
-            whenever(statsRepository.fetchRevenueStats(any(), any(), eq(selectedPeriodStart), eq(selectedPeriodEnd)))
+            whenever(statsRepository.fetchRevenueStats(any(), any(), eq(PREVIOUS_DATE), eq(CURRENT_DATE)))
                 .thenReturn(listOf(Result.success(ordersStats)).asFlow())
 
-            whenever(statsRepository.fetchRevenueStats(any(), any(), eq(previousPeriodStart), eq(previousPeriodEnd)))
+            whenever(statsRepository.fetchRevenueStats(any(), any(), eq(PREVIOUS_DATE), eq(PREVIOUS_DATE)))
                 .thenReturn(listOf(Result.success(ordersStats)).asFlow())
 
             // When
             val result = sut.fetchOrdersData(
-                expectedSelectionData,
+                SimpleDateRange(previousDate, currentDate),
+                ANY_RANGE,
                 anyFetchStrategy
             )
 
@@ -405,26 +308,17 @@ class AnalyticsRepositoryTest : BaseUnitTest() {
     fun `given previous and current period revenue when fetchOrdersData result is the expected`() =
         runTest {
             // Given
-            val expectedSelectionData = CUSTOM.generateSelectionData(
-                referenceStartDate = "2022-09-25".dayStartFrom(),
-                referenceEndDate = "2022-04-10".dayEndFrom()
-            )
-
-            val selectedPeriodStart = expectedSelectionData.currentRange.start.formatToYYYYmmDD()
-            val selectedPeriodEnd = expectedSelectionData.currentRange.end.formatToYYYYmmDD()
-            val previousPeriodStart = expectedSelectionData.previousRange.start.formatToYYYYmmDD()
-            val previousPeriodEnd = expectedSelectionData.previousRange.end.formatToYYYYmmDD()
-
             val ordersStats = givenRevenueOrderStats(TEN_VALUE.toInt(), TEN_VALUE)
-            whenever(statsRepository.fetchRevenueStats(any(), any(), eq(selectedPeriodStart), eq(selectedPeriodEnd)))
+            whenever(statsRepository.fetchRevenueStats(any(), any(), eq(PREVIOUS_DATE), eq(CURRENT_DATE)))
                 .thenReturn(listOf(Result.success(ordersStats)).asFlow())
 
-            whenever(statsRepository.fetchRevenueStats(any(), any(), eq(previousPeriodStart), eq(previousPeriodEnd)))
+            whenever(statsRepository.fetchRevenueStats(any(), any(), eq(PREVIOUS_DATE), eq(PREVIOUS_DATE)))
                 .thenReturn(listOf(Result.success(ordersStats)).asFlow())
 
             // When
             val result = sut.fetchOrdersData(
-                expectedSelectionData,
+                SimpleDateRange(previousDate, currentDate),
+                ANY_RANGE,
                 anyFetchStrategy
             )
 
@@ -438,27 +332,18 @@ class AnalyticsRepositoryTest : BaseUnitTest() {
     fun `given zero previous total revenue, when fetchRevenueData, then result is the expected`() =
         runTest {
             // Given
-            val expectedSelectionData = CUSTOM.generateSelectionData(
-                referenceStartDate = "2022-09-25".dayStartFrom(),
-                referenceEndDate = "2022-04-10".dayEndFrom()
-            )
-
-            val selectedPeriodStart = expectedSelectionData.currentRange.start.formatToYYYYmmDD()
-            val selectedPeriodEnd = expectedSelectionData.currentRange.end.formatToYYYYmmDD()
-            val previousPeriodStart = expectedSelectionData.previousRange.start.formatToYYYYmmDD()
-            val previousPeriodEnd = expectedSelectionData.previousRange.end.formatToYYYYmmDD()
-
             val previousPeriodRevenue = givenARevenue(ZERO_VALUE, ZERO_VALUE, TEN_VALUE.toInt())
-            whenever(statsRepository.fetchRevenueStats(any(), any(), eq(previousPeriodStart), eq(previousPeriodEnd)))
+            whenever(statsRepository.fetchRevenueStats(any(), any(), eq(PREVIOUS_DATE), eq(PREVIOUS_DATE)))
                 .thenReturn(listOf(Result.success<WCRevenueStatsModel?>(previousPeriodRevenue)).asFlow())
 
             val currentPeriodRevenue = givenARevenue(TEN_VALUE, TEN_VALUE, TEN_VALUE.toInt())
-            whenever(statsRepository.fetchRevenueStats(any(), any(), eq(selectedPeriodStart), eq(selectedPeriodEnd)))
+            whenever(statsRepository.fetchRevenueStats(any(), any(), eq(PREVIOUS_DATE), eq(CURRENT_DATE)))
                 .thenReturn(listOf(Result.success<WCRevenueStatsModel?>(currentPeriodRevenue)).asFlow())
 
             // When
             val result = sut.fetchRevenueData(
-                expectedSelectionData,
+                SimpleDateRange(previousDate, currentDate),
+                ANY_RANGE,
                 anyFetchStrategy
             )
 
@@ -473,27 +358,18 @@ class AnalyticsRepositoryTest : BaseUnitTest() {
     fun `given zero previous orders revenue when fetchOrdersData result is the expected`() =
         runTest {
             // Given
-            val expectedSelectionData = CUSTOM.generateSelectionData(
-                referenceStartDate = "2022-09-25".dayStartFrom(),
-                referenceEndDate = "2022-04-10".dayEndFrom()
-            )
-
-            val selectedPeriodStart = expectedSelectionData.currentRange.start.formatToYYYYmmDD()
-            val selectedPeriodEnd = expectedSelectionData.currentRange.end.formatToYYYYmmDD()
-            val previousPeriodStart = expectedSelectionData.previousRange.start.formatToYYYYmmDD()
-            val previousPeriodEnd = expectedSelectionData.previousRange.end.formatToYYYYmmDD()
-
             val previousPeriodOrdersStats = givenRevenueOrderStats(ZERO_VALUE.toInt(), ZERO_VALUE)
-            whenever(statsRepository.fetchRevenueStats(any(), any(), eq(previousPeriodStart), eq(previousPeriodEnd)))
+            whenever(statsRepository.fetchRevenueStats(any(), any(), eq(PREVIOUS_DATE), eq(PREVIOUS_DATE)))
                 .thenReturn(listOf(Result.success<WCRevenueStatsModel?>(previousPeriodOrdersStats)).asFlow())
 
             val currentPeriodOrdersStats = givenRevenueOrderStats(TEN_VALUE.toInt(), TEN_VALUE)
-            whenever(statsRepository.fetchRevenueStats(any(), any(), eq(selectedPeriodStart), eq(selectedPeriodEnd)))
+            whenever(statsRepository.fetchRevenueStats(any(), any(), eq(PREVIOUS_DATE), eq(CURRENT_DATE)))
                 .thenReturn(listOf(Result.success<WCRevenueStatsModel?>(currentPeriodOrdersStats)).asFlow())
 
             // When
             val result = sut.fetchOrdersData(
-                expectedSelectionData,
+                SimpleDateRange(previousDate, currentDate),
+                ANY_RANGE,
                 anyFetchStrategy
             )
 
@@ -509,27 +385,18 @@ class AnalyticsRepositoryTest : BaseUnitTest() {
     fun `given zero previous net revenue, when fetchRevenueData, then result is the expected`() =
         runTest {
             // Given
-            val expectedSelectionData = CUSTOM.generateSelectionData(
-                referenceStartDate = "2022-09-25".dayStartFrom(),
-                referenceEndDate = "2022-04-10".dayEndFrom()
-            )
-
-            val selectedPeriodStart = expectedSelectionData.currentRange.start.formatToYYYYmmDD()
-            val selectedPeriodEnd = expectedSelectionData.currentRange.end.formatToYYYYmmDD()
-            val previousPeriodStart = expectedSelectionData.previousRange.start.formatToYYYYmmDD()
-            val previousPeriodEnd = expectedSelectionData.previousRange.end.formatToYYYYmmDD()
-
             val previousPeriodRevenue = givenARevenue(TEN_VALUE, ZERO_VALUE, TEN_VALUE.toInt())
-            whenever(statsRepository.fetchRevenueStats(any(), any(), eq(previousPeriodStart), eq(previousPeriodEnd)))
+            whenever(statsRepository.fetchRevenueStats(any(), any(), eq(PREVIOUS_DATE), eq(PREVIOUS_DATE)))
                 .thenReturn(listOf(Result.success<WCRevenueStatsModel?>(previousPeriodRevenue)).asFlow())
 
             val currentPeriodRevenue = givenARevenue(TEN_VALUE, TEN_VALUE, TEN_VALUE.toInt())
-            whenever(statsRepository.fetchRevenueStats(any(), any(), eq(selectedPeriodStart), eq(selectedPeriodEnd)))
+            whenever(statsRepository.fetchRevenueStats(any(), any(), eq(PREVIOUS_DATE), eq(CURRENT_DATE)))
                 .thenReturn(listOf(Result.success<WCRevenueStatsModel?>(currentPeriodRevenue)).asFlow())
 
             // When
             val result = sut.fetchRevenueData(
-                expectedSelectionData,
+                SimpleDateRange(previousDate, currentDate),
+                ANY_RANGE,
                 anyFetchStrategy
             )
 
@@ -543,27 +410,18 @@ class AnalyticsRepositoryTest : BaseUnitTest() {
     fun `given zero previous avg order, when fetchOrderData, result is the expected`() =
         runTest {
             // Given
-            val expectedSelectionData = CUSTOM.generateSelectionData(
-                referenceStartDate = "2022-09-25".dayStartFrom(),
-                referenceEndDate = "2022-04-10".dayEndFrom()
-            )
-
-            val selectedPeriodStart = expectedSelectionData.currentRange.start.formatToYYYYmmDD()
-            val selectedPeriodEnd = expectedSelectionData.currentRange.end.formatToYYYYmmDD()
-            val previousPeriodStart = expectedSelectionData.previousRange.start.formatToYYYYmmDD()
-            val previousPeriodEnd = expectedSelectionData.previousRange.end.formatToYYYYmmDD()
-
             val previousPeriodOrdersStats = givenRevenueOrderStats(TEN_VALUE.toInt(), ZERO_VALUE)
-            whenever(statsRepository.fetchRevenueStats(any(), any(), eq(previousPeriodStart), eq(previousPeriodEnd)))
+            whenever(statsRepository.fetchRevenueStats(any(), any(), eq(PREVIOUS_DATE), eq(PREVIOUS_DATE)))
                 .thenReturn(listOf(Result.success<WCRevenueStatsModel?>(previousPeriodOrdersStats)).asFlow())
 
             val currentPeriodOrdersStats = givenRevenueOrderStats(TEN_VALUE.toInt(), TEN_VALUE)
-            whenever(statsRepository.fetchRevenueStats(any(), any(), eq(selectedPeriodStart), eq(selectedPeriodEnd)))
+            whenever(statsRepository.fetchRevenueStats(any(), any(), eq(PREVIOUS_DATE), eq(CURRENT_DATE)))
                 .thenReturn(listOf(Result.success<WCRevenueStatsModel?>(currentPeriodOrdersStats)).asFlow())
 
             // When
             val result = sut.fetchOrdersData(
-                expectedSelectionData,
+                SimpleDateRange(previousDate, currentDate),
+                ANY_RANGE,
                 anyFetchStrategy
             )
 
@@ -577,27 +435,18 @@ class AnalyticsRepositoryTest : BaseUnitTest() {
     fun `given null previous total revenue, when fetchRevenueData, then result is the expected`() =
         runTest {
             // Given
-            val expectedSelectionData = CUSTOM.generateSelectionData(
-                referenceStartDate = "2022-09-25".dayStartFrom(),
-                referenceEndDate = "2022-04-10".dayEndFrom()
-            )
-
-            val selectedPeriodStart = expectedSelectionData.currentRange.start.formatToYYYYmmDD()
-            val selectedPeriodEnd = expectedSelectionData.currentRange.end.formatToYYYYmmDD()
-            val previousPeriodStart = expectedSelectionData.previousRange.start.formatToYYYYmmDD()
-            val previousPeriodEnd = expectedSelectionData.previousRange.end.formatToYYYYmmDD()
-
             val previousPeriodRevenue = givenARevenue(null, TEN_VALUE, TEN_VALUE.toInt())
-            whenever(statsRepository.fetchRevenueStats(any(), any(), eq(previousPeriodStart), eq(previousPeriodEnd)))
+            whenever(statsRepository.fetchRevenueStats(any(), any(), eq(PREVIOUS_DATE), eq(PREVIOUS_DATE)))
                 .thenReturn(listOf(Result.success<WCRevenueStatsModel?>(previousPeriodRevenue)).asFlow())
 
             val currentPeriodRevenue = givenARevenue(TEN_VALUE, TEN_VALUE, TEN_VALUE.toInt())
-            whenever(statsRepository.fetchRevenueStats(any(), any(), eq(selectedPeriodStart), eq(selectedPeriodEnd)))
+            whenever(statsRepository.fetchRevenueStats(any(), any(), eq(PREVIOUS_DATE), eq(CURRENT_DATE)))
                 .thenReturn(listOf(Result.success<WCRevenueStatsModel?>(currentPeriodRevenue)).asFlow())
 
             // When
             val result = sut.fetchRevenueData(
-                expectedSelectionData,
+                SimpleDateRange(previousDate, currentDate),
+                ANY_RANGE,
                 anyFetchStrategy
             )
 
@@ -610,27 +459,18 @@ class AnalyticsRepositoryTest : BaseUnitTest() {
     fun `given null previous orders, when fetchOrdersData, then result is the expected`() =
         runTest {
             // Given
-            val expectedSelectionData = CUSTOM.generateSelectionData(
-                referenceStartDate = "2022-09-25".dayStartFrom(),
-                referenceEndDate = "2022-04-10".dayEndFrom()
-            )
-
-            val selectedPeriodStart = expectedSelectionData.currentRange.start.formatToYYYYmmDD()
-            val selectedPeriodEnd = expectedSelectionData.currentRange.end.formatToYYYYmmDD()
-            val previousPeriodStart = expectedSelectionData.previousRange.start.formatToYYYYmmDD()
-            val previousPeriodEnd = expectedSelectionData.previousRange.end.formatToYYYYmmDD()
-
             val previousPeriodOrdersStats = givenRevenueOrderStats(null, TEN_VALUE)
-            whenever(statsRepository.fetchRevenueStats(any(), any(), eq(previousPeriodStart), eq(previousPeriodEnd)))
+            whenever(statsRepository.fetchRevenueStats(any(), any(), eq(PREVIOUS_DATE), eq(PREVIOUS_DATE)))
                 .thenReturn(listOf(Result.success<WCRevenueStatsModel?>(previousPeriodOrdersStats)).asFlow())
 
             val currentPeriodOrdersStats = givenRevenueOrderStats(TEN_VALUE.toInt(), TEN_VALUE)
-            whenever(statsRepository.fetchRevenueStats(any(), any(), eq(selectedPeriodStart), eq(selectedPeriodEnd)))
+            whenever(statsRepository.fetchRevenueStats(any(), any(), eq(PREVIOUS_DATE), eq(CURRENT_DATE)))
                 .thenReturn(listOf(Result.success<WCRevenueStatsModel?>(currentPeriodOrdersStats)).asFlow())
 
             // When
             val result = sut.fetchOrdersData(
-                expectedSelectionData,
+                SimpleDateRange(previousDate, currentDate),
+                ANY_RANGE,
                 anyFetchStrategy
             )
 
@@ -644,27 +484,18 @@ class AnalyticsRepositoryTest : BaseUnitTest() {
     fun `given null previous net revenue, when fetchRevenueData, then result is the expected`() =
         runTest {
             // Given
-            val expectedSelectionData = CUSTOM.generateSelectionData(
-                referenceStartDate = "2022-09-25".dayStartFrom(),
-                referenceEndDate = "2022-04-10".dayEndFrom()
-            )
-
-            val selectedPeriodStart = expectedSelectionData.currentRange.start.formatToYYYYmmDD()
-            val selectedPeriodEnd = expectedSelectionData.currentRange.end.formatToYYYYmmDD()
-            val previousPeriodStart = expectedSelectionData.previousRange.start.formatToYYYYmmDD()
-            val previousPeriodEnd = expectedSelectionData.previousRange.end.formatToYYYYmmDD()
-
             val previousPeriodRevenue = givenARevenue(TEN_VALUE, null, TEN_VALUE.toInt())
-            whenever(statsRepository.fetchRevenueStats(any(), any(), eq(previousPeriodStart), eq(previousPeriodEnd)))
+            whenever(statsRepository.fetchRevenueStats(any(), any(), eq(PREVIOUS_DATE), eq(PREVIOUS_DATE)))
                 .thenReturn(listOf(Result.success<WCRevenueStatsModel?>(previousPeriodRevenue)).asFlow())
 
             val currentPeriodRevenue = givenARevenue(TEN_VALUE, TEN_VALUE, TEN_VALUE.toInt())
-            whenever(statsRepository.fetchRevenueStats(any(), any(), eq(selectedPeriodStart), eq(selectedPeriodEnd)))
+            whenever(statsRepository.fetchRevenueStats(any(), any(), eq(PREVIOUS_DATE), eq(CURRENT_DATE)))
                 .thenReturn(listOf(Result.success<WCRevenueStatsModel?>(currentPeriodRevenue)).asFlow())
 
             // When
             val result = sut.fetchRevenueData(
-                expectedSelectionData,
+                SimpleDateRange(previousDate, currentDate),
+                ANY_RANGE,
                 anyFetchStrategy
             )
 
@@ -678,27 +509,18 @@ class AnalyticsRepositoryTest : BaseUnitTest() {
     fun `given null previous avg order, when fetchOrdersData, then result is the expected`() =
         runTest {
             // Given
-            val expectedSelectionData = CUSTOM.generateSelectionData(
-                referenceStartDate = "2022-09-25".dayStartFrom(),
-                referenceEndDate = "2022-04-10".dayEndFrom()
-            )
-
-            val selectedPeriodStart = expectedSelectionData.currentRange.start.formatToYYYYmmDD()
-            val selectedPeriodEnd = expectedSelectionData.currentRange.end.formatToYYYYmmDD()
-            val previousPeriodStart = expectedSelectionData.previousRange.start.formatToYYYYmmDD()
-            val previousPeriodEnd = expectedSelectionData.previousRange.end.formatToYYYYmmDD()
-
             val previousPeriodOrdersStats = givenRevenueOrderStats(TEN_VALUE.toInt(), null)
-            whenever(statsRepository.fetchRevenueStats(any(), any(), eq(previousPeriodStart), eq(previousPeriodEnd)))
+            whenever(statsRepository.fetchRevenueStats(any(), any(), eq(PREVIOUS_DATE), eq(PREVIOUS_DATE)))
                 .thenReturn(listOf(Result.success<WCRevenueStatsModel?>(previousPeriodOrdersStats)).asFlow())
 
             val currentPeriodOrdersStats = givenRevenueOrderStats(TEN_VALUE.toInt(), TEN_VALUE)
-            whenever(statsRepository.fetchRevenueStats(any(), any(), eq(selectedPeriodStart), eq(selectedPeriodEnd)))
+            whenever(statsRepository.fetchRevenueStats(any(), any(), eq(PREVIOUS_DATE), eq(CURRENT_DATE)))
                 .thenReturn(listOf(Result.success<WCRevenueStatsModel?>(currentPeriodOrdersStats)).asFlow())
 
             // When
             val result = sut.fetchOrdersData(
-                expectedSelectionData,
+                SimpleDateRange(previousDate, currentDate),
+                ANY_RANGE,
                 anyFetchStrategy
             )
 
@@ -711,27 +533,21 @@ class AnalyticsRepositoryTest : BaseUnitTest() {
     fun `given previous and current revenue, when fetchRevenueData multiple date range, then result is the expected`() =
         runTest {
             // Given
-            val expectedSelectionData = CUSTOM.generateSelectionData(
-                referenceStartDate = "2022-09-25".dayStartFrom(),
-                referenceEndDate = "2022-04-10".dayEndFrom()
-            )
-
-            val selectedPeriodStart = expectedSelectionData.currentRange.start.formatToYYYYmmDD()
-            val selectedPeriodEnd = expectedSelectionData.currentRange.end.formatToYYYYmmDD()
-            val previousPeriodStart = expectedSelectionData.previousRange.start.formatToYYYYmmDD()
-            val previousPeriodEnd = expectedSelectionData.previousRange.end.formatToYYYYmmDD()
-
             val previousPeriodRevenue = givenARevenue(TEN_VALUE, TEN_VALUE, TEN_VALUE.toInt())
-            whenever(statsRepository.fetchRevenueStats(any(), any(), eq(previousPeriodStart), eq(previousPeriodEnd)))
+            whenever(statsRepository.fetchRevenueStats(any(), any(), eq(PREVIOUS_DATE), eq(PREVIOUS_DATE)))
                 .thenReturn(listOf(Result.success<WCRevenueStatsModel?>(previousPeriodRevenue)).asFlow())
 
             val currentPeriodRevenue = givenARevenue(TEN_VALUE, TEN_VALUE, TEN_VALUE.toInt())
-            whenever(statsRepository.fetchRevenueStats(any(), any(), eq(selectedPeriodStart), eq(selectedPeriodEnd)))
+            whenever(statsRepository.fetchRevenueStats(any(), any(), eq(CURRENT_DATE), eq(CURRENT_DATE)))
                 .thenReturn(listOf(Result.success<WCRevenueStatsModel?>(currentPeriodRevenue)).asFlow())
 
             // When
             val result = sut.fetchRevenueData(
-                expectedSelectionData,
+                MultipleDateRange(
+                    SimpleDateRange(previousDate, previousDate),
+                    SimpleDateRange(currentDate, currentDate)
+                ),
+                ANY_RANGE,
                 anyFetchStrategy
             )
 
@@ -745,27 +561,21 @@ class AnalyticsRepositoryTest : BaseUnitTest() {
     fun `given previous and current period revenue, when fetchOrdersData multiple date range, result is expected`() =
         runTest {
             // Given
-            val expectedSelectionData = CUSTOM.generateSelectionData(
-                referenceStartDate = "2022-09-25".dayStartFrom(),
-                referenceEndDate = "2022-04-10".dayEndFrom()
-            )
-
-            val selectedPeriodStart = expectedSelectionData.currentRange.start.formatToYYYYmmDD()
-            val selectedPeriodEnd = expectedSelectionData.currentRange.end.formatToYYYYmmDD()
-            val previousPeriodStart = expectedSelectionData.previousRange.start.formatToYYYYmmDD()
-            val previousPeriodEnd = expectedSelectionData.previousRange.end.formatToYYYYmmDD()
-
             val previousPeriodOrdersStats = givenRevenueOrderStats(TEN_VALUE.toInt(), TEN_VALUE)
-            whenever(statsRepository.fetchRevenueStats(any(), any(), eq(previousPeriodStart), eq(previousPeriodEnd)))
+            whenever(statsRepository.fetchRevenueStats(any(), any(), eq(PREVIOUS_DATE), eq(PREVIOUS_DATE)))
                 .thenReturn(listOf(Result.success<WCRevenueStatsModel?>(previousPeriodOrdersStats)).asFlow())
 
             val currentPeriodRevenue = givenRevenueOrderStats(TEN_VALUE.toInt(), TEN_VALUE)
-            whenever(statsRepository.fetchRevenueStats(any(), any(), eq(selectedPeriodStart), eq(selectedPeriodEnd)))
+            whenever(statsRepository.fetchRevenueStats(any(), any(), eq(CURRENT_DATE), eq(CURRENT_DATE)))
                 .thenReturn(listOf(Result.success<WCRevenueStatsModel?>(currentPeriodRevenue)).asFlow())
 
             // When
             val result = sut.fetchOrdersData(
-                expectedSelectionData,
+                MultipleDateRange(
+                    SimpleDateRange(previousDate, previousDate),
+                    SimpleDateRange(currentDate, currentDate)
+                ),
+                ANY_RANGE,
                 anyFetchStrategy
             )
 
@@ -779,21 +589,11 @@ class AnalyticsRepositoryTest : BaseUnitTest() {
     fun `given no currentPeriodRevenue, when fetchProductsData, then result is ProductsError`() =
         runTest {
             // Given
-            val expectedSelectionData = CUSTOM.generateSelectionData(
-                referenceStartDate = "2022-09-25".dayStartFrom(),
-                referenceEndDate = "2022-04-10".dayEndFrom()
-            )
-
-            val selectedPeriodStart = expectedSelectionData.currentRange.start.formatToYYYYmmDD()
-            val selectedPeriodEnd = expectedSelectionData.currentRange.end.formatToYYYYmmDD()
-            val previousPeriodStart = expectedSelectionData.previousRange.start.formatToYYYYmmDD()
-            val previousPeriodEnd = expectedSelectionData.previousRange.end.formatToYYYYmmDD()
-
             val previousPeriodRevenue = givenARevenue(TEN_VALUE, TEN_VALUE, TEN_VALUE.toInt())
-            whenever(statsRepository.fetchRevenueStats(any(), any(), eq(previousPeriodStart), eq(previousPeriodEnd)))
+            whenever(statsRepository.fetchRevenueStats(any(), any(), eq(PREVIOUS_DATE), eq(PREVIOUS_DATE)))
                 .thenReturn(listOf(Result.success(previousPeriodRevenue)).asFlow())
 
-            whenever(statsRepository.fetchRevenueStats(any(), any(), eq(selectedPeriodStart), eq(selectedPeriodEnd)))
+            whenever(statsRepository.fetchRevenueStats(any(), any(), eq(PREVIOUS_DATE), eq(CURRENT_DATE)))
                 .thenReturn(listOf(Result.failure<WCRevenueStatsModel?>(StatsRepository.StatsException(null))).asFlow())
 
             whenever(statsRepository.fetchTopPerformerProducts(any(), any(), any(), any()))
@@ -808,7 +608,8 @@ class AnalyticsRepositoryTest : BaseUnitTest() {
 
             // When
             val result = sut.fetchProductsData(
-                expectedSelectionData,
+                SimpleDateRange(previousDate, currentDate),
+                ANY_RANGE,
                 anyFetchStrategy
             )
 
@@ -820,21 +621,11 @@ class AnalyticsRepositoryTest : BaseUnitTest() {
     fun `given no previousPeriodRevenue, when fetchProductsData, then result is ProductsError`() =
         runTest {
             // Given
-            val expectedSelectionData = CUSTOM.generateSelectionData(
-                referenceStartDate = "2022-09-25".dayStartFrom(),
-                referenceEndDate = "2022-04-10".dayEndFrom()
-            )
-
-            val selectedPeriodStart = expectedSelectionData.currentRange.start.formatToYYYYmmDD()
-            val selectedPeriodEnd = expectedSelectionData.currentRange.end.formatToYYYYmmDD()
-            val previousPeriodStart = expectedSelectionData.previousRange.start.formatToYYYYmmDD()
-            val previousPeriodEnd = expectedSelectionData.previousRange.end.formatToYYYYmmDD()
-
-            whenever(statsRepository.fetchRevenueStats(any(), any(), eq(previousPeriodStart), eq(previousPeriodEnd)))
+            whenever(statsRepository.fetchRevenueStats(any(), any(), eq(PREVIOUS_DATE), eq(PREVIOUS_DATE)))
                 .thenReturn(listOf(Result.failure<WCRevenueStatsModel?>(StatsRepository.StatsException(null))).asFlow())
 
             val currentPeriodRevenue = givenARevenue(TEN_VALUE, TEN_VALUE, TEN_VALUE.toInt())
-            whenever(statsRepository.fetchRevenueStats(any(), any(), eq(selectedPeriodStart), eq(selectedPeriodEnd)))
+            whenever(statsRepository.fetchRevenueStats(any(), any(), eq(PREVIOUS_DATE), eq(CURRENT_DATE)))
                 .thenReturn(listOf(Result.success(currentPeriodRevenue)).asFlow())
 
             whenever(statsRepository.fetchTopPerformerProducts(any(), any(), any(), any()))
@@ -849,7 +640,8 @@ class AnalyticsRepositoryTest : BaseUnitTest() {
 
             // When
             val result = sut.fetchProductsData(
-                expectedSelectionData,
+                SimpleDateRange(previousDate, currentDate),
+                ANY_RANGE,
                 anyFetchStrategy
             )
 
@@ -861,21 +653,11 @@ class AnalyticsRepositoryTest : BaseUnitTest() {
     fun `given previousPeriodRevenue with null items sold, when fetchProductsData, then result is ProductsError`() =
         runTest {
             // Given
-            val expectedSelectionData = CUSTOM.generateSelectionData(
-                referenceStartDate = "2022-09-25".dayStartFrom(),
-                referenceEndDate = "2022-04-10".dayEndFrom()
-            )
-
-            val selectedPeriodStart = expectedSelectionData.currentRange.start.formatToYYYYmmDD()
-            val selectedPeriodEnd = expectedSelectionData.currentRange.end.formatToYYYYmmDD()
-            val previousPeriodStart = expectedSelectionData.previousRange.start.formatToYYYYmmDD()
-            val previousPeriodEnd = expectedSelectionData.previousRange.end.formatToYYYYmmDD()
-
             val previousPeriodRevenue = givenARevenue(TEN_VALUE, TEN_VALUE, TEN_VALUE.toInt())
-            whenever(statsRepository.fetchRevenueStats(any(), any(), eq(previousPeriodStart), eq(previousPeriodEnd)))
+            whenever(statsRepository.fetchRevenueStats(any(), any(), eq(PREVIOUS_DATE), eq(PREVIOUS_DATE)))
                 .thenReturn(listOf(Result.success(previousPeriodRevenue)).asFlow())
 
-            whenever(statsRepository.fetchRevenueStats(any(), any(), eq(selectedPeriodStart), eq(selectedPeriodEnd)))
+            whenever(statsRepository.fetchRevenueStats(any(), any(), eq(PREVIOUS_DATE), eq(CURRENT_DATE)))
                 .thenReturn(listOf(Result.failure<WCRevenueStatsModel?>(StatsRepository.StatsException(null))).asFlow())
 
             whenever(statsRepository.fetchTopPerformerProducts(any(), any(), any(), any()))
@@ -890,7 +672,8 @@ class AnalyticsRepositoryTest : BaseUnitTest() {
 
             // When
             val result = sut.fetchProductsData(
-                expectedSelectionData,
+                SimpleDateRange(previousDate, currentDate),
+                ANY_RANGE,
                 anyFetchStrategy
             )
 
@@ -902,22 +685,12 @@ class AnalyticsRepositoryTest : BaseUnitTest() {
     fun `given currentPeriodRevenue with null items sold, when fetchProductsData, then result is ProductsError`() =
         runTest {
             // Given
-            val expectedSelectionData = CUSTOM.generateSelectionData(
-                referenceStartDate = "2022-09-25".dayStartFrom(),
-                referenceEndDate = "2022-04-10".dayEndFrom()
-            )
-
-            val selectedPeriodStart = expectedSelectionData.currentRange.start.formatToYYYYmmDD()
-            val selectedPeriodEnd = expectedSelectionData.currentRange.end.formatToYYYYmmDD()
-            val previousPeriodStart = expectedSelectionData.previousRange.start.formatToYYYYmmDD()
-            val previousPeriodEnd = expectedSelectionData.previousRange.end.formatToYYYYmmDD()
-
             val previousPeriodRevenue = givenARevenue(TEN_VALUE, TEN_VALUE, TEN_VALUE.toInt())
-            whenever(statsRepository.fetchRevenueStats(any(), any(), eq(previousPeriodStart), eq(previousPeriodEnd)))
+            whenever(statsRepository.fetchRevenueStats(any(), any(), eq(PREVIOUS_DATE), eq(PREVIOUS_DATE)))
                 .thenReturn(listOf(Result.success(previousPeriodRevenue)).asFlow())
 
             val currentPeriodRevenue = givenARevenue(TEN_VALUE, TEN_VALUE, null)
-            whenever(statsRepository.fetchRevenueStats(any(), any(), eq(selectedPeriodStart), eq(selectedPeriodEnd)))
+            whenever(statsRepository.fetchRevenueStats(any(), any(), eq(PREVIOUS_DATE), eq(CURRENT_DATE)))
                 .thenReturn(listOf(Result.success(currentPeriodRevenue)).asFlow())
 
             whenever(statsRepository.fetchTopPerformerProducts(any(), any(), any(), any()))
@@ -932,7 +705,8 @@ class AnalyticsRepositoryTest : BaseUnitTest() {
 
             // When
             val result = sut.fetchProductsData(
-                expectedSelectionData,
+                SimpleDateRange(previousDate, currentDate),
+                ANY_RANGE,
                 anyFetchStrategy
             )
 
@@ -944,11 +718,6 @@ class AnalyticsRepositoryTest : BaseUnitTest() {
     fun `given no products leader board with null items sold, when fetchProductsData, then result is ProductsError`() =
         runTest {
             // Given
-            val expectedSelectionData = CUSTOM.generateSelectionData(
-                referenceStartDate = "2022-09-25".dayStartFrom(),
-                referenceEndDate = "2022-04-10".dayEndFrom()
-            )
-
             val revenue = givenARevenue(TEN_VALUE, TEN_VALUE, TEN_VALUE.toInt())
             whenever(statsRepository.fetchRevenueStats(any(), any(), any(), any()))
                 .thenReturn(listOf(Result.success(revenue)).asFlow())
@@ -961,7 +730,8 @@ class AnalyticsRepositoryTest : BaseUnitTest() {
 
             // When
             val result = sut.fetchProductsData(
-                expectedSelectionData,
+                SimpleDateRange(previousDate, currentDate),
+                ANY_RANGE,
                 anyFetchStrategy
             )
 
@@ -973,11 +743,6 @@ class AnalyticsRepositoryTest : BaseUnitTest() {
     fun `given products and revenue with null items sold, when fetchProductsData, then result is expected`() =
         runTest {
             // Given
-            val expectedSelectionData = CUSTOM.generateSelectionData(
-                referenceStartDate = "2022-09-25".dayStartFrom(),
-                referenceEndDate = "2022-04-10".dayEndFrom()
-            )
-
             val revenue = givenARevenue(TEN_VALUE, TEN_VALUE, TEN_VALUE.toInt())
             whenever(statsRepository.fetchRevenueStats(any(), any(), any(), any()))
                 .thenReturn(listOf(Result.success(revenue)).asFlow())
@@ -994,7 +759,8 @@ class AnalyticsRepositoryTest : BaseUnitTest() {
 
             // When
             val result = sut.fetchProductsData(
-                expectedSelectionData,
+                SimpleDateRange(previousDate, currentDate),
+                ANY_RANGE,
                 anyFetchStrategy
             )
 
@@ -1009,16 +775,6 @@ class AnalyticsRepositoryTest : BaseUnitTest() {
     fun `when get revenue and products data at same time, then stats repository is used once per period`() =
         runTest {
             // Given
-            val expectedSelectionData = CUSTOM.generateSelectionData(
-                referenceStartDate = "2022-09-25".dayStartFrom(),
-                referenceEndDate = "2022-04-10".dayEndFrom()
-            )
-
-            val selectedPeriodStart = expectedSelectionData.currentRange.start.formatToYYYYmmDD()
-            val selectedPeriodEnd = expectedSelectionData.currentRange.end.formatToYYYYmmDD()
-            val previousPeriodStart = expectedSelectionData.previousRange.start.formatToYYYYmmDD()
-            val previousPeriodEnd = expectedSelectionData.previousRange.end.formatToYYYYmmDD()
-
             val revenue = givenARevenue(TEN_VALUE, TEN_VALUE, TEN_VALUE.toInt())
             whenever(statsRepository.fetchRevenueStats(any(), any(), any(), any()))
                 .thenReturn(listOf(Result.success(revenue)).asFlow())
@@ -1035,38 +791,32 @@ class AnalyticsRepositoryTest : BaseUnitTest() {
 
             // When
             sut.fetchRevenueData(
-                expectedSelectionData,
+                MultipleDateRange(
+                    SimpleDateRange(previousDate, previousDate),
+                    SimpleDateRange(currentDate, currentDate)
+                ),
+                ANY_RANGE,
                 AnalyticsRepository.FetchStrategy.Saved
             )
 
             sut.fetchProductsData(
-                expectedSelectionData,
+                MultipleDateRange(
+                    SimpleDateRange(previousDate, previousDate),
+                    SimpleDateRange(currentDate, currentDate)
+                ),
+                ANY_RANGE,
                 AnalyticsRepository.FetchStrategy.Saved
             )
 
             // Then
-            verify(statsRepository, times(1)).fetchRevenueStats(
-                any(), any(), eq(previousPeriodStart), eq(previousPeriodEnd)
-            )
-            verify(statsRepository, times(1)).fetchRevenueStats(
-                any(), any(), eq(selectedPeriodStart), eq(selectedPeriodEnd)
-            )
+            verify(statsRepository, times(1)).fetchRevenueStats(any(), any(), eq(PREVIOUS_DATE), eq(PREVIOUS_DATE))
+            verify(statsRepository, times(1)).fetchRevenueStats(any(), any(), eq(CURRENT_DATE), eq(CURRENT_DATE))
         }
 
     @Test
     fun `when force get new revenue and products data at same time, then stats repository is used twice`() =
         runTest {
             // Given
-            val expectedSelectionData = CUSTOM.generateSelectionData(
-                referenceStartDate = "2022-09-25".dayStartFrom(),
-                referenceEndDate = "2022-04-10".dayEndFrom()
-            )
-
-            val selectedPeriodStart = expectedSelectionData.currentRange.start.formatToYYYYmmDD()
-            val selectedPeriodEnd = expectedSelectionData.currentRange.end.formatToYYYYmmDD()
-            val previousPeriodStart = expectedSelectionData.previousRange.start.formatToYYYYmmDD()
-            val previousPeriodEnd = expectedSelectionData.previousRange.end.formatToYYYYmmDD()
-
             val revenue = givenARevenue(TEN_VALUE, TEN_VALUE, TEN_VALUE.toInt())
             whenever(statsRepository.fetchRevenueStats(any(), any(), any(), any()))
                 .thenReturn(listOf(Result.success(revenue)).asFlow())
@@ -1083,28 +833,26 @@ class AnalyticsRepositoryTest : BaseUnitTest() {
 
             // When
             sut.fetchRevenueData(
-                expectedSelectionData,
+                MultipleDateRange(
+                    SimpleDateRange(previousDate, previousDate),
+                    SimpleDateRange(currentDate, currentDate)
+                ),
+                ANY_RANGE,
                 ForceNew
             )
 
             sut.fetchProductsData(
-                expectedSelectionData,
+                MultipleDateRange(
+                    SimpleDateRange(previousDate, previousDate),
+                    SimpleDateRange(currentDate, currentDate)
+                ),
+                ANY_RANGE,
                 ForceNew
             )
 
             // Then
-            verify(statsRepository, times(2)).fetchRevenueStats(
-                any(),
-                any(),
-                eq(previousPeriodStart),
-                eq(previousPeriodEnd)
-            )
-            verify(statsRepository, times(2)).fetchRevenueStats(
-                any(),
-                any(),
-                eq(selectedPeriodStart),
-                eq(selectedPeriodEnd)
-            )
+            verify(statsRepository, times(2)).fetchRevenueStats(any(), any(), eq(PREVIOUS_DATE), eq(PREVIOUS_DATE))
+            verify(statsRepository, times(2)).fetchRevenueStats(any(), any(), eq(CURRENT_DATE), eq(CURRENT_DATE))
         }
 
     @Test
@@ -1184,23 +932,10 @@ class AnalyticsRepositoryTest : BaseUnitTest() {
         return mutableListOf(productEntity)
     }
 
-    private fun String.dayEndFrom(): Date {
-        val formatter = SimpleDateFormat("yyyy-MM-dd")
-        formatter.timeZone = testTimeZone
-        val referenceDate = formatter.parse(this)!!
-        testCalendar.time = referenceDate
-        return testCalendar.endOfCurrentDay()
-    }
-
-    private fun String.dayStartFrom(): Date {
-        val formatter = SimpleDateFormat("yyyy-MM-dd")
-        formatter.timeZone = testTimeZone
-        val referenceDate = formatter.parse(this)!!
-        testCalendar.time = referenceDate
-        return testCalendar.startOfCurrentDay()
-    }
-
     companion object {
+        const val PREVIOUS_DATE = "2021-01-01"
+        const val CURRENT_DATE = "2021-01-02"
+
         const val TEN_VALUE = 10.0
         const val ZERO_VALUE = 0.0
 
@@ -1210,6 +945,9 @@ class AnalyticsRepositoryTest : BaseUnitTest() {
         const val ANY_URL = "https://a8c.com"
         val anyFetchStrategy = ForceNew
 
+        val ANY_RANGE = AnalyticTimePeriod.LAST_YEAR
+        val previousDate: Date = DateUtils.getDateFromString(PREVIOUS_DATE)
+        val currentDate: Date = DateUtils.getDateFromString(CURRENT_DATE)
         const val CURRENCY = "EUR"
         const val IMAGE_URL = "url"
         const val NAME = "name"
