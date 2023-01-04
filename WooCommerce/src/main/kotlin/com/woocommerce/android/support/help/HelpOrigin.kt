@@ -23,9 +23,7 @@ enum class HelpOrigin(private val stringValue: String) {
     LOGIN_HELP_NOTIFICATION("origin:login-local-notification"),
     SITE_PICKER_JETPACK_TIMEOUT("origin:site-picker-jetpack-error"),
     LOGIN_WITH_QR_CODE("origin:qr-code-scanner"),
-    STORE_CREATION_NAME_PICKER("origin:store-creation-name-picker"),
-    STORE_CREATION_DOMAIN_PICKER("origin:store-creation-domain-picker"),
-    STORE_CREATION_SUMMARY("origin:store-creation-summary");
+    STORE_CREATION("origin:store-creation");
 
     override fun toString(): String {
         return stringValue

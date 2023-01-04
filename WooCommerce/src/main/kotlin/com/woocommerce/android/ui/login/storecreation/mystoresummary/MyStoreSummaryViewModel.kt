@@ -5,7 +5,7 @@ import androidx.lifecycle.asLiveData
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
-import com.woocommerce.android.support.help.HelpOrigin.STORE_CREATION_SUMMARY
+import com.woocommerce.android.support.help.HelpOrigin.STORE_CREATION
 import com.woocommerce.android.ui.login.storecreation.NewStore
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.ScopedViewModel
@@ -43,7 +43,7 @@ class MyStoreSummaryViewModel @Inject constructor(
     }
 
     fun onHelpPressed() {
-        triggerEvent(MultiLiveEvent.Event.NavigateToHelpScreen(STORE_CREATION_SUMMARY))
+        triggerEvent(MultiLiveEvent.Event.NavigateToHelpScreen(STORE_CREATION))
     }
 
     fun onContinueClicked() {

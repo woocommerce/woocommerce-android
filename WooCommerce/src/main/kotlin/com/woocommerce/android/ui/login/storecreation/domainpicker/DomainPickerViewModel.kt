@@ -8,7 +8,7 @@ import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
-import com.woocommerce.android.support.help.HelpOrigin.STORE_CREATION_DOMAIN_PICKER
+import com.woocommerce.android.support.help.HelpOrigin.STORE_CREATION
 import com.woocommerce.android.ui.login.storecreation.NewStore
 import com.woocommerce.android.ui.login.storecreation.domainpicker.DomainPickerViewModel.LoadingState.Idle
 import com.woocommerce.android.ui.login.storecreation.domainpicker.DomainPickerViewModel.LoadingState.Loading
@@ -82,7 +82,7 @@ class DomainPickerViewModel @Inject constructor(
     }
 
     fun onHelpPressed() {
-        triggerEvent(MultiLiveEvent.Event.NavigateToHelpScreen(STORE_CREATION_DOMAIN_PICKER))
+        triggerEvent(MultiLiveEvent.Event.NavigateToHelpScreen(STORE_CREATION))
     }
 
     fun onContinueClicked() {
