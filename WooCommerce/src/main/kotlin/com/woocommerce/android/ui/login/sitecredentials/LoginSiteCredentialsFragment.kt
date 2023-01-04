@@ -10,8 +10,10 @@ import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
+import com.woocommerce.android.ui.login.sitecredentials.LoginSiteCredentialsViewModel.LoggedIn
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import dagger.hilt.android.AndroidEntryPoint
+import org.wordpress.android.login.LoginListener
 
 @AndroidEntryPoint
 class LoginSiteCredentialsFragment : Fragment() {
@@ -28,6 +30,9 @@ class LoginSiteCredentialsFragment : Fragment() {
     }
 
     private val viewModel: LoginSiteCredentialsViewModel by viewModels()
+
+    private val loginListener: LoginListener
+        get() = (requireActivity() as LoginListener)
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         return ComposeView(requireContext()).apply {
@@ -49,6 +54,7 @@ class LoginSiteCredentialsFragment : Fragment() {
     private fun setupObservers() {
         viewModel.event.observe(viewLifecycleOwner) {
             when (it) {
+                is LoggedIn -> loginListener.loggedInViaUsernamePassword(arrayListOf(it.localSiteId))
                 is Exit -> requireActivity().onBackPressedDispatcher.onBackPressed()
             }
         }

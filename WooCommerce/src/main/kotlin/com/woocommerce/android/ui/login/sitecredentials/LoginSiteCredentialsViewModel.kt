@@ -4,18 +4,27 @@ import android.os.Parcelable
 import androidx.annotation.StringRes
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
+import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.ui.login.WPApiSiteRepository
+import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.ScopedViewModel
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.launch
 import kotlinx.parcelize.IgnoredOnParcel
 import kotlinx.parcelize.Parcelize
+import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.util.UrlUtils
 import javax.inject.Inject
 
+@HiltViewModel
 class LoginSiteCredentialsViewModel @Inject constructor(
-    savedStateHandle: SavedStateHandle
+    savedStateHandle: SavedStateHandle,
+    private val wpApiSiteRepository: WPApiSiteRepository,
+    private val selectedSite: SelectedSite
 ) : ScopedViewModel(savedStateHandle) {
     companion object {
         const val SITE_ADDRESS_KEY = "site-address"
@@ -47,8 +56,23 @@ class LoginSiteCredentialsViewModel @Inject constructor(
         savedState[PASSWORD_KEY] = password
     }
 
-    fun onContinueClick() {
-        TODO()
+    fun onContinueClick() = launch {
+        isLoading.value = true
+        val state = requireNotNull(this@LoginSiteCredentialsViewModel.state.value)
+        wpApiSiteRepository.login(
+            url = savedState[SITE_ADDRESS_KEY]!!,
+            username = state.username,
+            password = state.password
+        ).fold(
+            onSuccess = {
+                selectedSite.set(it)
+                triggerEvent(LoggedIn(it.id))
+            },
+            onFailure = {
+                TODO()
+            }
+        )
+        isLoading.value = false
     }
 
     fun onResetPasswordClick() {
@@ -72,4 +96,6 @@ class LoginSiteCredentialsViewModel @Inject constructor(
         @IgnoredOnParcel
         val isValid = username.isNotBlank() && password.isNotBlank()
     }
+
+    data class LoggedIn(val localSiteId: Int) : MultiLiveEvent.Event()
 }
