@@ -62,8 +62,8 @@ fun JetpackActivationSiteCredentialsScreen(
     Scaffold(
         topBar = {
             Toolbar(
-                onCloseButtonClick = onCloseClick,
-                closeButtonIcon = Icons.Filled.Clear
+                onNavigationButtonClick = onCloseClick,
+                navigationIcon = Icons.Filled.Clear
             )
         }
     ) { paddingValues ->

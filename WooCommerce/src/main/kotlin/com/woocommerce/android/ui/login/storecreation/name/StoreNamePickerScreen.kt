@@ -36,7 +36,7 @@ fun StoreNamePickerScreen(viewModel: StoreNamePickerViewModel) {
     viewModel.storeName.observeAsState().value?.let { storeName ->
         Scaffold(topBar = {
             Toolbar(
-                onCloseButtonClick = viewModel::onCancelPressed,
+                onNavigationButtonClick = viewModel::onCancelPressed,
                 onActionButtonClick = viewModel::onHelpPressed,
             )
         }) { padding ->

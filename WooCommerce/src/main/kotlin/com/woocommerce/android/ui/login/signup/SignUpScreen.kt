@@ -57,8 +57,8 @@ fun SignUpScreen(viewModel: SignUpViewModel) {
     BackHandler(onBack = viewModel::onBackPressed)
     Scaffold(topBar = {
         Toolbar(
-            onCloseButtonClick = viewModel::onBackPressed,
-            title = stringResource(id = R.string.signup_get_started_button)
+            title = stringResource(id = R.string.signup_get_started_button),
+            onNavigationButtonClick = viewModel::onBackPressed
         )
     }) { padding ->
         when {

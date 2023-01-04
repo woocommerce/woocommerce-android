@@ -39,7 +39,7 @@ fun StoreProfilerCategoryScreen(viewModel: StoreProfilerViewModel) {
     viewModel.storeProfilerState.observeAsState().value?.let { state ->
         Scaffold(topBar = {
             Toolbar(
-                onCloseButtonClick = viewModel::onArrowBackPressed,
+                onNavigationButtonClick = viewModel::onArrowBackPressed,
                 onActionButtonClick = viewModel::onSkipPressed,
                 actionButtonText = stringResource(id = R.string.skip)
             )

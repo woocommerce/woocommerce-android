@@ -46,9 +46,9 @@ fun SitePickerSiteDiscoveryScreen(viewModel: SitePickerSiteDiscoveryViewModel) {
     viewModel.viewState.observeAsState().value?.let { viewState ->
         Scaffold(topBar = {
             Toolbar(
-                onCloseButtonClick = viewModel::onBackButtonClick,
-                onActionButtonClick = viewModel::onHelpButtonClick,
-                title = stringResource(id = R.string.login_site_picker_enter_site_address)
+                title = stringResource(id = R.string.login_site_picker_enter_site_address),
+                onNavigationButtonClick = viewModel::onBackButtonClick,
+                onActionButtonClick = viewModel::onHelpButtonClick
             )
         }) { paddingValues ->
             val transition = updateTransition(viewState, label = "ViewStateTransition")

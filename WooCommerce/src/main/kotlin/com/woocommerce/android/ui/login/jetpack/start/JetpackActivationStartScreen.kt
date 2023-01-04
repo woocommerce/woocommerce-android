@@ -68,18 +68,18 @@ fun JetpackActivationStartScreen(
     Scaffold(
         topBar = {
             Toolbar(
-                onCloseButtonClick = if (!viewState.isConnectionDismissed) {
-                    onBackButtonClick
-                } else {
-                    null
-                },
-                onActionButtonClick = onHelpButtonClick,
                 title = if (!viewState.isConnectionDismissed) {
                     stringResource(id = R.string.login_jetpack_installation_screen_title)
                 } else {
                     ""
                 },
-                closeButtonIcon = Icons.Filled.Clear,
+                onNavigationButtonClick = if (!viewState.isConnectionDismissed) {
+                    onBackButtonClick
+                } else {
+                    null
+                },
+                navigationIcon = Icons.Filled.Clear,
+                onActionButtonClick = onHelpButtonClick,
             )
         }
     ) { paddingValues ->

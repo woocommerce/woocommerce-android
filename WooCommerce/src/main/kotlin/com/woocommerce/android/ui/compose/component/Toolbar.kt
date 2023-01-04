@@ -21,10 +21,10 @@ import com.woocommerce.android.R.string
 @Composable
 fun Toolbar(
     modifier: Modifier = Modifier,
-    onCloseButtonClick: (() -> Unit)? = null,
-    onActionButtonClick: (() -> Unit)? = null,
     title: String = "",
-    closeButtonIcon: ImageVector = Filled.ArrowBack,
+    onNavigationButtonClick: (() -> Unit)? = null,
+    navigationIcon: ImageVector = Filled.ArrowBack,
+    onActionButtonClick: (() -> Unit)? = null,
     @DrawableRes actionButtonIcon: Int = drawable.ic_help_24dp,
     actionButtonText: String? = null
 ) {
@@ -36,10 +36,10 @@ fun Toolbar(
             }
         },
         navigationIcon = {
-            if (onCloseButtonClick != null) {
-                IconButton(onClick = onCloseButtonClick) {
+            if (onNavigationButtonClick != null) {
+                IconButton(onClick = onNavigationButtonClick) {
                     Icon(
-                        closeButtonIcon,
+                        navigationIcon,
                         contentDescription = stringResource(id = string.back)
                     )
                 }
