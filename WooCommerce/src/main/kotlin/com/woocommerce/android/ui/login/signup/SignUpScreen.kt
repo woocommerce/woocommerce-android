@@ -60,7 +60,7 @@ fun SignUpScreen(viewModel: SignUpViewModel) {
             onCloseButtonClick = viewModel::onBackPressed,
             title = stringResource(id = R.string.signup_get_started_button)
         )
-    }) {
+    }) { padding ->
         when {
             state.isLoading ->
                 ProgressDialog(
@@ -71,7 +71,8 @@ fun SignUpScreen(viewModel: SignUpViewModel) {
                 termsOfServiceClicked = viewModel::onTermsOfServiceClicked,
                 onPrimaryButtonClicked = viewModel::onGetStartedCLicked,
                 onLoginClicked = viewModel::onLoginClicked,
-                signUpState = state
+                signUpState = state,
+                modifier = Modifier.padding(padding)
             )
         }
     }

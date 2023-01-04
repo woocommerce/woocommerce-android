@@ -4,6 +4,8 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.appcompat.app.AppCompatActivity
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.fragment.app.viewModels
@@ -33,8 +35,10 @@ class PlansFragment : BaseFragment() {
         return ComposeView(requireContext()).apply {
             setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
             setContent {
-                WooThemeWithBackground {
-                    PlanScreen(viewModel = viewModel, authenticator, userAgent)
+                CompositionLocalProvider(LocalActivity provides requireActivity() as AppCompatActivity) {
+                    WooThemeWithBackground {
+                        PlanScreen(viewModel = viewModel, authenticator, userAgent)
+                    }
                 }
             }
         }

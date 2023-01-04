@@ -10,9 +10,6 @@ import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.databinding.FragmentLoginPrologueBinding
-import com.woocommerce.android.experiment.SimplifiedLoginExperiment
-import com.woocommerce.android.experiment.SimplifiedLoginExperiment.LoginVariant.SIMPLIFIED_LOGIN_WPCOM
-import com.woocommerce.android.extensions.hide
 import com.woocommerce.android.ui.login.UnifiedLoginTracker.Flow
 import com.woocommerce.android.ui.login.UnifiedLoginTracker.Step
 import dagger.hilt.android.AndroidEntryPoint
@@ -34,12 +31,9 @@ open class LoginPrologueFragment(@LayoutRes layout: Int) : Fragment(layout) {
     constructor() : this(R.layout.fragment_login_prologue)
 
     @Inject lateinit var unifiedLoginTracker: UnifiedLoginTracker
-    @Inject lateinit var simplifiedLoginExperiment: SimplifiedLoginExperiment
     private var prologueFinishedListener: PrologueFinishedListener? = null
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        val isSimplifiedLoginVariant = simplifiedLoginExperiment.getCurrentVariant() == SIMPLIFIED_LOGIN_WPCOM
-
         val binding = FragmentLoginPrologueBinding.bind(view)
 
         binding.buttonLoginStore.setOnClickListener {
@@ -56,8 +50,6 @@ open class LoginPrologueFragment(@LayoutRes layout: Int) : Fragment(layout) {
 
         if (savedInstanceState == null) {
             unifiedLoginTracker.track(Flow.PROLOGUE, Step.PROLOGUE)
-
-            simplifiedLoginExperiment.activate()
         }
 
         binding.buttonGetStarted.setOnClickListener {
@@ -65,15 +57,6 @@ open class LoginPrologueFragment(@LayoutRes layout: Int) : Fragment(layout) {
             AnalyticsTracker.track(stat = AnalyticsEvent.LOGIN_PROLOGUE_CREATE_SITE_TAPPED)
             prologueFinishedListener?.onGetStartedClicked()
         }
-
-        if (isSimplifiedLoginVariant) setupSimplifiedLoginVariant(binding)
-    }
-
-    private fun setupSimplifiedLoginVariant(binding: FragmentLoginPrologueBinding) {
-        binding.orDivider.root.hide()
-        binding.buttonLoginWpcom.text = getString(R.string.log_in)
-
-        binding.buttonLoginStore.hide()
     }
 
     override fun onAttach(context: Context) {

@@ -29,6 +29,8 @@ class DefaultCurrencyFormatterTest : BaseUnitTest() {
     private val localeProvider: LocaleProvider = mock()
     private val wcStore: WooCommerceStore = mock()
     private val selectedSite: SelectedSite = mock()
+    private val siteIndependentCurrencyFormatter: SiteIndependentCurrencyFormatter =
+        SiteIndependentCurrencyFormatter(localeProvider)
 
     @Test
     fun `when the selected site changes the default currency code updates`() =
@@ -94,7 +96,7 @@ class DefaultCurrencyFormatterTest : BaseUnitTest() {
         formatter = CurrencyFormatter(
             wcStore = wcStore,
             selectedSite = selectedSite,
-            localeProvider = localeProvider,
+            siteIndependentCurrencyFormatter = siteIndependentCurrencyFormatter,
             appCoroutineScope = TestScope(coroutinesTestRule.testDispatcher),
             dispatchers = coroutinesTestRule.testDispatchers
         )
@@ -128,7 +130,7 @@ class DefaultCurrencyFormatterTest : BaseUnitTest() {
         formatter = CurrencyFormatter(
             wcStore = wcStore,
             selectedSite = selectedSite,
-            localeProvider = localeProvider,
+            siteIndependentCurrencyFormatter = siteIndependentCurrencyFormatter,
             appCoroutineScope = TestScope(coroutinesTestRule.testDispatcher),
             dispatchers = coroutinesTestRule.testDispatchers
         )

@@ -43,13 +43,14 @@ fun MyStoreSummaryScreen(viewModel: MyStoreSummaryViewModel) {
                 onCloseButtonClick = viewModel::onBackPressed,
                 onActionButtonClick = viewModel::onHelpPressed,
             )
-        }) {
+        }) { padding ->
             MyStoreSummaryScreen(
                 myStoreSummaryState = viewState,
                 onContinueClicked = viewModel::onContinueClicked,
                 modifier = Modifier
                     .fillMaxSize()
                     .background(MaterialTheme.colors.surface)
+                    .padding(padding)
             )
         }
     }

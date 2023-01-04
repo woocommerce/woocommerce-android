@@ -53,7 +53,6 @@ import com.woocommerce.android.ui.products.ProductListViewModel.ProductListEvent
 import com.woocommerce.android.ui.products.ProductListViewModel.ProductListEvent.ShowUpdateDialog
 import com.woocommerce.android.ui.products.ProductSortAndFiltersCard.ProductSortAndFilterListener
 import com.woocommerce.android.util.CurrencyFormatter
-import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.util.StringUtils
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.widgets.SkeletonView
@@ -95,7 +94,6 @@ class ProductListFragment :
     private val skeletonView = SkeletonView()
 
     private var searchMenuItem: MenuItem? = null
-    private var multiSelectMenuItem: MenuItem? = null
     private var searchView: SearchView? = null
 
     private var trashProductUndoSnack: Snackbar? = null
@@ -198,7 +196,6 @@ class ProductListFragment :
         actionMode = null
         tracker = null
         searchMenuItem = null
-        multiSelectMenuItem = null
         binding.productsSearchTabView.hide()
         super.onDestroyView()
         _binding = null
@@ -245,9 +242,6 @@ class ProductListFragment :
         searchMenuItem = menu.findItem(R.id.menu_search)
         searchView = searchMenuItem?.actionView as SearchView?
         searchView?.queryHint = getString(R.string.product_search_hint)
-
-        multiSelectMenuItem = menu.findItem(R.id.menu_multiselect)
-        multiSelectMenuItem?.isVisible = FeatureFlag.PRODUCTS_BULK_EDITING.isEnabled() && !viewModel.isSearching()
     }
 
     override fun onPrepareMenu(menu: Menu) {
@@ -299,10 +293,6 @@ class ProductListFragment :
                 enableSearchListeners()
                 true
             }
-            R.id.menu_multiselect -> {
-                viewModel.onSelectProductsClicked()
-                true
-            }
             else -> false
         }
     }
@@ -336,7 +326,6 @@ class ProductListFragment :
         viewModel.onSearchOpened()
         onSearchViewActiveChanged(isActive = true)
         binding.productsSearchTabView.show(this)
-        multiSelectMenuItem?.isVisible = false
         return true
     }
 
@@ -345,7 +334,6 @@ class ProductListFragment :
         updateActivityTitle()
         onSearchViewActiveChanged(isActive = false)
         binding.productsSearchTabView.hide()
-        multiSelectMenuItem?.isVisible = FeatureFlag.PRODUCTS_BULK_EDITING.isEnabled()
         return true
     }
 

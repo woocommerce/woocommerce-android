@@ -3,6 +3,8 @@ package com.woocommerce.android.ui.payments.simplepayments
 import android.app.Dialog
 import android.os.Bundle
 import android.view.View
+import androidx.activity.ComponentDialog
+import androidx.activity.addCallback
 import androidx.core.view.isVisible
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.viewModels
@@ -34,11 +36,11 @@ class SimplePaymentsDialog : DialogFragment(R.layout.dialog_simple_payments) {
     }
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
-        return object : Dialog(requireContext(), theme) {
-            override fun onBackPressed() {
-                cancelDialog()
-            }
+        val dialog = ComponentDialog(requireContext(), theme)
+        dialog.onBackPressedDispatcher.addCallback(dialog) {
+            cancelDialog()
         }
+        return dialog
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {

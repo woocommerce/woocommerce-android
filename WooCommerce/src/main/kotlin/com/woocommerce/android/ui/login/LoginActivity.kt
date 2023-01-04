@@ -7,11 +7,12 @@ import android.net.Uri
 import android.os.Bundle
 import android.os.Parcelable
 import android.view.MenuItem
+import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
+import com.google.mlkit.vision.codescanner.GmsBarcodeScanning
 import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.AppUrls
@@ -24,7 +25,6 @@ import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_SOURCE
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_JETPACK_INSTALLATION_SOURCE_WEB
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_LOGIN_WITH_WORDPRESS_COM
 import com.woocommerce.android.analytics.ExperimentTracker
-import com.woocommerce.android.barcode.QrCodeScanningFragment
 import com.woocommerce.android.databinding.ActivityLoginBinding
 import com.woocommerce.android.extensions.parcelable
 import com.woocommerce.android.support.ZendeskExtraTags
@@ -54,8 +54,9 @@ import com.woocommerce.android.ui.login.localnotifications.LoginNotificationSche
 import com.woocommerce.android.ui.login.overrides.WooLoginEmailFragment
 import com.woocommerce.android.ui.login.overrides.WooLoginEmailPasswordFragment
 import com.woocommerce.android.ui.login.overrides.WooLoginSiteAddressFragment
+import com.woocommerce.android.ui.login.overrides.WooLoginUsernamePasswordFragment
 import com.woocommerce.android.ui.login.qrcode.QrCodeLoginListener
-import com.woocommerce.android.ui.login.qrcode.showCameraPermissionDeniedDialog
+import com.woocommerce.android.ui.login.qrcode.ValidateScannedValue
 import com.woocommerce.android.ui.login.signup.SignUpFragment
 import com.woocommerce.android.ui.login.signup.SignUpFragment.NextStep.SITE_PICKER
 import com.woocommerce.android.ui.login.signup.SignUpFragment.NextStep.STORE_CREATION
@@ -64,7 +65,6 @@ import com.woocommerce.android.util.ActivityUtils
 import com.woocommerce.android.util.ChromeCustomTabUtils
 import com.woocommerce.android.util.UrlUtils
 import com.woocommerce.android.util.WooLog
-import com.woocommerce.android.util.WooPermissionUtils
 import dagger.android.AndroidInjector
 import dagger.android.DispatchingAndroidInjector
 import dagger.android.HasAndroidInjector
@@ -91,7 +91,6 @@ import org.wordpress.android.login.LoginListener
 import org.wordpress.android.login.LoginMagicLinkRequestFragment
 import org.wordpress.android.login.LoginMode
 import org.wordpress.android.login.LoginSiteAddressFragment
-import org.wordpress.android.login.LoginUsernamePasswordFragment
 import org.wordpress.android.util.ToastUtils
 import javax.inject.Inject
 import kotlin.text.RegexOption.IGNORE_CASE
@@ -143,26 +142,16 @@ class LoginActivity :
         }
     }
 
-    @Inject
-    internal lateinit var androidInjector: DispatchingAndroidInjector<Any>
-    @Inject
-    internal lateinit var loginAnalyticsListener: LoginAnalyticsListener
-    @Inject
-    internal lateinit var unifiedLoginTracker: UnifiedLoginTracker
-    @Inject
-    internal lateinit var zendeskHelper: ZendeskHelper
-    @Inject
-    internal lateinit var urlUtils: UrlUtils
-    @Inject
-    internal lateinit var experimentTracker: ExperimentTracker
-    @Inject
-    internal lateinit var appPrefsWrapper: AppPrefsWrapper
-    @Inject
-    internal lateinit var dispatcher: Dispatcher
-    @Inject
-    internal lateinit var loginNotificationScheduler: LoginNotificationScheduler
-    @Inject
-    internal lateinit var uiMessageResolver: UIMessageResolver
+    @Inject internal lateinit var androidInjector: DispatchingAndroidInjector<Any>
+    @Inject internal lateinit var loginAnalyticsListener: LoginAnalyticsListener
+    @Inject internal lateinit var unifiedLoginTracker: UnifiedLoginTracker
+    @Inject internal lateinit var zendeskHelper: ZendeskHelper
+    @Inject internal lateinit var urlUtils: UrlUtils
+    @Inject internal lateinit var experimentTracker: ExperimentTracker
+    @Inject internal lateinit var appPrefsWrapper: AppPrefsWrapper
+    @Inject internal lateinit var dispatcher: Dispatcher
+    @Inject internal lateinit var loginNotificationScheduler: LoginNotificationScheduler
+    @Inject internal lateinit var uiMessageResolver: UIMessageResolver
 
     private var loginMode: LoginMode? = null
     private lateinit var binding: ActivityLoginBinding
@@ -391,10 +380,10 @@ class LoginActivity :
     }
 
     private fun jumpToUsernamePassword(username: String?, password: String?) {
-        val loginUsernamePasswordFragment = LoginUsernamePasswordFragment.newInstance(
+        val loginUsernamePasswordFragment = WooLoginUsernamePasswordFragment.newInstance(
             "wordpress.com", "wordpress.com", username, password, true
         )
-        changeFragment(loginUsernamePasswordFragment, true, LoginUsernamePasswordFragment.TAG)
+        changeFragment(loginUsernamePasswordFragment, true, WooLoginUsernamePasswordFragment.TAG)
     }
 
     private fun startLoginViaWPCom() {
@@ -557,7 +546,7 @@ class LoginActivity :
     override fun gotConnectedSiteInfo(siteAddress: String, redirectUrl: String?, hasJetpack: Boolean) {
         // If the redirect url is available, use that as the preferred url. Pass this url to the other fragments
         // with the protocol since it is needed for initiating forgot password flow etc in the login process.
-        val inputSiteAddress = redirectUrl ?: siteAddress
+        val inputSiteAddress = urlUtils.sanitiseUrl(redirectUrl ?: siteAddress)
 
         // Save site address to app prefs so it's available to MainActivity regardless of how the user
         // logs into the app. Strip the protocol from this url string prior to saving to AppPrefs since it's
@@ -595,10 +584,10 @@ class LoginActivity :
         // logs into the app.
         inputSiteAddress?.let { AppPrefs.setLoginSiteAddress(it) }
 
-        val loginUsernamePasswordFragment = LoginUsernamePasswordFragment.newInstance(
+        val loginUsernamePasswordFragment = WooLoginUsernamePasswordFragment.newInstance(
             inputSiteAddress, endpointAddress, null, null, false
         )
-        changeFragment(loginUsernamePasswordFragment, true, LoginUsernamePasswordFragment.TAG)
+        changeFragment(loginUsernamePasswordFragment, true, WooLoginUsernamePasswordFragment.TAG)
     }
 
     override fun handleSslCertificateError(
@@ -829,10 +818,10 @@ class LoginActivity :
         inputUsername: String?,
         inputPassword: String?
     ) {
-        val loginUsernamePasswordFragment = LoginUsernamePasswordFragment.newInstance(
+        val loginUsernamePasswordFragment = WooLoginUsernamePasswordFragment.newInstance(
             siteAddress, endpointAddress, inputUsername, inputPassword, false
         )
-        changeFragment(loginUsernamePasswordFragment, true, LoginUsernamePasswordFragment.TAG)
+        changeFragment(loginUsernamePasswordFragment, true, WooLoginUsernamePasswordFragment.TAG)
     }
 
     override fun startJetpackInstall(siteAddress: String?) {
@@ -932,6 +921,7 @@ class LoginActivity :
         val notificationType = when {
             !appPrefsWrapper.getLoginSiteAddress()
                 .isNullOrBlank() -> LOGIN_SITE_ADDRESS_PASSWORD_ERROR
+
             else -> LOGIN_WPCOM_PASSWORD_ERROR
         }
         loginNotificationScheduler.scheduleNotification(notificationType)
@@ -950,6 +940,7 @@ class LoginActivity :
             LOGIN_SITE_ADDRESS_ERROR -> startLoginViaWPCom()
             LOGIN_SITE_ADDRESS_PASSWORD_ERROR,
             LOGIN_WPCOM_PASSWORD_ERROR -> useMagicLinkInstead(appPrefsWrapper.getLoginEmail(), verifyEmail = false)
+
             LOGIN_WPCOM_EMAIL_ERROR,
             LOGIN_SITE_ADDRESS_EMAIL_ERROR,
             DEFAULT_HELP ->
@@ -990,35 +981,25 @@ class LoginActivity :
                 KEY_SOURCE to source
             )
         )
-        when {
-            WooPermissionUtils.hasCameraPermission(this) -> openQrCodeScannerFragment()
-            else -> WooPermissionUtils.requestCameraPermission(requestPermissionLauncher)
-        }
+        openQrCodeScannerFragment()
     }
 
     private fun openQrCodeScannerFragment() {
-        val fragment =
-            supportFragmentManager.findFragmentByTag(QrCodeScanningFragment.TAG) as? QrCodeScanningFragment
-                ?: QrCodeScanningFragment()
-        fragment.setClickListeners(
-            onCodeScanned = { rawValue ->
-                AnalyticsTracker.track(stat = AnalyticsEvent.LOGIN_WITH_QR_CODE_SCANNED)
-                val intent = Intent(Intent.ACTION_VIEW, Uri.parse(rawValue))
-                intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK or
-                    Intent.FLAG_ACTIVITY_CLEAR_TASK
-                startActivity(intent)
-            },
-            onHelpClicked = { viewHelpAndSupport(HelpOrigin.LOGIN_WITH_QR_CODE) }
-        )
-        changeFragment(fragment, shouldAddToBackStack = true, tag = QrCodeScanningFragment.TAG)
+        GmsBarcodeScanning.getClient(this).startScan()
+            .addOnSuccessListener { rawValue ->
+                if (ValidateScannedValue.validate(rawValue.rawValue)) {
+                    AnalyticsTracker.track(stat = AnalyticsEvent.LOGIN_WITH_QR_CODE_SCANNED)
+                    val intent = Intent(Intent.ACTION_VIEW, Uri.parse(rawValue.rawValue))
+                    intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK or
+                        Intent.FLAG_ACTIVITY_CLEAR_TASK
+                    startActivity(intent)
+                } else {
+                    Toast.makeText(
+                        this, resources.getText(R.string.not_a_valid_qr_code), Toast.LENGTH_LONG
+                    ).show()
+                }
+            }
     }
-
-    private val requestPermissionLauncher =
-        registerForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted: Boolean ->
-            if (isGranted) {
-                openQrCodeScannerFragment()
-            } else showCameraPermissionDeniedDialog(this)
-        }
 
     @Parcelize
     private data class ConnectSiteInfo(

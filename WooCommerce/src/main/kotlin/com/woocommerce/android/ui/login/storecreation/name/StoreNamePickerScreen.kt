@@ -39,7 +39,7 @@ fun StoreNamePickerScreen(viewModel: StoreNamePickerViewModel) {
                 onCloseButtonClick = viewModel::onCancelPressed,
                 onActionButtonClick = viewModel::onHelpPressed,
             )
-        }) {
+        }) { padding ->
             NamePickerForm(
                 storeName = storeName,
                 onStoreNameChanged = viewModel::onStoreNameChanged,
@@ -47,6 +47,7 @@ fun StoreNamePickerScreen(viewModel: StoreNamePickerViewModel) {
                 modifier = Modifier
                     .background(MaterialTheme.colors.surface)
                     .fillMaxSize()
+                    .padding(padding)
                     .padding(dimensionResource(id = R.dimen.major_125))
             )
         }

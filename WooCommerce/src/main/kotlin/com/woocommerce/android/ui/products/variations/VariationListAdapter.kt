@@ -11,6 +11,8 @@ import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.load.resource.bitmap.CenterCrop
+import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.woocommerce.android.R
 import com.woocommerce.android.databinding.VariationListItemBinding
 import com.woocommerce.android.di.GlideRequests
@@ -19,7 +21,9 @@ import com.woocommerce.android.extensions.isSet
 import com.woocommerce.android.model.Product
 import com.woocommerce.android.model.ProductVariation
 import com.woocommerce.android.ui.products.OnLoadMoreListener
-import com.woocommerce.android.ui.products.ProductStockStatus.*
+import com.woocommerce.android.ui.products.ProductStockStatus.InStock
+import com.woocommerce.android.ui.products.ProductStockStatus.OnBackorder
+import com.woocommerce.android.ui.products.ProductStockStatus.OutOfStock
 import com.woocommerce.android.ui.products.variations.VariationListAdapter.VariationViewHolder
 import org.wordpress.android.util.PhotonUtils
 
@@ -93,6 +97,7 @@ class VariationListAdapter(
 
     inner class VariationViewHolder(val viewBinding: VariationListItemBinding) :
         RecyclerView.ViewHolder(viewBinding.root) {
+        private val imageCornerRadius = itemView.context.resources.getDimensionPixelSize(R.dimen.corner_radius_image)
         fun bind(variation: ProductVariation) {
             viewBinding.variationOptionName.text = variation.getName(parentProduct)
 
@@ -116,6 +121,7 @@ class VariationListAdapter(
             variation.image?.let {
                 val imageUrl = PhotonUtils.getPhotonImageUrl(it.source, imageSize, imageSize)
                 glideRequest.load(imageUrl)
+                    .transform(CenterCrop(), RoundedCorners(imageCornerRadius))
                     .placeholder(R.drawable.ic_product)
                     .into(viewBinding.variationOptionImage)
             } ?: viewBinding.variationOptionImage.setImageResource(R.drawable.ic_product)
