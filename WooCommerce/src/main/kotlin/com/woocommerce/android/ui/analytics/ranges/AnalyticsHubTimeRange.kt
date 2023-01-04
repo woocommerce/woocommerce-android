@@ -13,7 +13,7 @@ import java.util.Locale
 data class AnalyticsHubTimeRange(
     val start: Date,
     val end: Date
-): Serializable {
+) : Serializable {
     fun generateDescription(simplified: Boolean, locale: Locale, calendar: Calendar): String {
         if (simplified) {
             return start.formatToMMMddYYYY(locale)

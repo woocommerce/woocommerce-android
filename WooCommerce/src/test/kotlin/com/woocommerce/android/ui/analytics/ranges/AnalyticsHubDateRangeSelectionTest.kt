@@ -295,7 +295,6 @@ internal class AnalyticsHubDateRangeSelectionTest {
         // Then
         assertThat(sut.currentRange).isEqualTo(expectedCurrentRange)
         assertThat(sut.previousRange).isEqualTo(expectedPreviousRange)
-
     }
 
     private fun midDayFrom(date: String): Date {

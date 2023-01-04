@@ -12,7 +12,6 @@ import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Test
 import org.mockito.kotlin.mock
-import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Locale
 import kotlin.test.assertEquals
@@ -21,11 +20,6 @@ import kotlin.test.assertNull
 
 class DateUtilsTest {
     lateinit var dateUtilsUnderTest: DateUtils
-
-    /**
-     * SimpleDateFormat of `"yyyy-MM-dd HH:mm:ss"`
-     */
-    private val sdf = SimpleDateFormat("yyyy-MM-dd HH:mm:ss")
 
     @Before
     fun setUp() {

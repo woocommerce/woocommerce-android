@@ -88,4 +88,3 @@ private fun Calendar.clearMinutesAndSeconds() {
     clear(Calendar.SECOND)
     clear(Calendar.MINUTE)
 }
-

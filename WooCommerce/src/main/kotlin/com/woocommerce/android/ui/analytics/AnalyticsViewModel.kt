@@ -44,7 +44,8 @@ import com.woocommerce.android.ui.analytics.listcard.AnalyticsListViewState.Load
 import com.woocommerce.android.ui.analytics.listcard.AnalyticsListViewState.NoDataState as ProductsNoDataState
 import com.woocommerce.android.ui.analytics.daterangeselector.AnalyticsDateRangeSelectorViewState
 import com.woocommerce.android.ui.analytics.ranges.AnalyticsHubDateRangeSelection.SelectionType
-import com.woocommerce.android.ui.analytics.ranges.AnalyticsHubDateRangeSelection.SelectionType.*
+import com.woocommerce.android.ui.analytics.ranges.AnalyticsHubDateRangeSelection.SelectionType.LAST_QUARTER
+import com.woocommerce.android.ui.analytics.ranges.AnalyticsHubDateRangeSelection.SelectionType.QUARTER_TO_DATE
 import com.woocommerce.android.viewmodel.getStateFlow
 
 @HiltViewModel
@@ -102,7 +103,7 @@ class AnalyticsViewModel @Inject constructor(
     }
 
     fun onCustomRangeSelected(startDate: Date, endDate: Date) {
-        rangeSelectionState.value = CUSTOM.generateSelectionData(startDate, endDate)
+        rangeSelectionState.value = SelectionType.CUSTOM.generateSelectionData(startDate, endDate)
     }
 
     fun onCustomDateRangeClicked() {

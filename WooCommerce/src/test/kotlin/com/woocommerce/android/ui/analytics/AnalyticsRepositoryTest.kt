@@ -17,16 +17,22 @@ import com.woocommerce.android.ui.analytics.AnalyticsRepository.ProductsResult.P
 import com.woocommerce.android.ui.analytics.AnalyticsRepository.ProductsResult.ProductsError
 import com.woocommerce.android.ui.analytics.AnalyticsRepository.RevenueResult.RevenueData
 import com.woocommerce.android.ui.analytics.AnalyticsRepository.RevenueResult.RevenueError
-import com.woocommerce.android.ui.analytics.ranges.AnalyticsHubDateRangeSelection
 import com.woocommerce.android.ui.analytics.ranges.AnalyticsHubDateRangeSelection.SelectionType.CUSTOM
 import com.woocommerce.android.ui.mystore.data.StatsRepository
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import java.text.SimpleDateFormat
 import java.util.Calendar
+import java.util.Date
+import java.util.Locale
+import java.util.TimeZone
+import kotlin.test.assertEquals
+import kotlin.test.assertNotNull
+import kotlin.test.assertTrue
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.asFlow
 import kotlinx.coroutines.test.runTest
 import org.assertj.core.api.Assertions.assertThat
+import org.junit.Before
 import org.junit.Test
 import org.mockito.kotlin.any
 import org.mockito.kotlin.eq
@@ -39,14 +45,6 @@ import org.wordpress.android.fluxc.model.WCProductModel
 import org.wordpress.android.fluxc.model.WCRevenueStatsModel
 import org.wordpress.android.fluxc.persistence.entity.TopPerformerProductEntity
 import org.wordpress.android.fluxc.store.WooCommerceStore
-import org.wordpress.android.fluxc.utils.DateUtils
-import java.util.Date
-import java.util.Locale
-import java.util.TimeZone
-import kotlin.test.assertEquals
-import kotlin.test.assertNotNull
-import kotlin.test.assertTrue
-import org.junit.Before
 
 @ExperimentalCoroutinesApi
 @Suppress("LargeClass")
@@ -77,8 +75,8 @@ class AnalyticsRepositoryTest : BaseUnitTest() {
     fun `given no currentPeriodRevenue, when fetchRevenueData, then result is RevenueError`() = runTest {
         // Given
         val expectedSelectionData = CUSTOM.generateSelectionData(
-            referenceStartDate = dayStartFrom("2022-09-25"),
-            referenceEndDate= dayEndFrom("2022-04-10")
+            referenceStartDate = "2022-09-25".dayStartFrom(),
+            referenceEndDate = "2022-04-10".dayEndFrom()
         )
 
         val selectedPeriodStart = expectedSelectionData.currentRange.start.formatToYYYYmmDD()
@@ -108,8 +106,8 @@ class AnalyticsRepositoryTest : BaseUnitTest() {
     fun `given no currentPeriodRevenue when fetchOrderData result is RevenueError`() = runTest {
         // Given
         val expectedSelectionData = CUSTOM.generateSelectionData(
-            referenceStartDate = dayStartFrom("2022-09-25"),
-            referenceEndDate= dayEndFrom("2022-04-10")
+            referenceStartDate = "2022-09-25".dayStartFrom(),
+            referenceEndDate = "2022-04-10".dayEndFrom()
         )
 
         val selectedPeriodStart = expectedSelectionData.currentRange.start.formatToYYYYmmDD()
@@ -138,8 +136,8 @@ class AnalyticsRepositoryTest : BaseUnitTest() {
     fun `given no previousRevenuePeriod, when fetchRevenueData, then result is RevenueError`() = runTest {
         // Given
         val expectedSelectionData = CUSTOM.generateSelectionData(
-            referenceStartDate = dayStartFrom("2022-09-25"),
-            referenceEndDate= dayEndFrom("2022-04-10")
+            referenceStartDate = "2022-09-25".dayStartFrom(),
+            referenceEndDate = "2022-04-10".dayEndFrom()
         )
 
         val selectedPeriodStart = expectedSelectionData.currentRange.start.formatToYYYYmmDD()
@@ -169,8 +167,8 @@ class AnalyticsRepositoryTest : BaseUnitTest() {
         runTest {
             // Given
             val expectedSelectionData = CUSTOM.generateSelectionData(
-                referenceStartDate = dayStartFrom("2022-09-25"),
-                referenceEndDate= dayEndFrom("2022-04-10")
+                referenceStartDate = "2022-09-25".dayStartFrom(),
+                referenceEndDate = "2022-04-10".dayEndFrom()
             )
 
             val selectedPeriodStart = expectedSelectionData.currentRange.start.formatToYYYYmmDD()
@@ -200,8 +198,8 @@ class AnalyticsRepositoryTest : BaseUnitTest() {
         runTest {
             // Given
             val expectedSelectionData = CUSTOM.generateSelectionData(
-                referenceStartDate = dayStartFrom("2022-09-25"),
-                referenceEndDate= dayEndFrom("2022-04-10")
+                referenceStartDate = "2022-09-25".dayStartFrom(),
+                referenceEndDate = "2022-04-10".dayEndFrom()
             )
 
             val selectedPeriodStart = expectedSelectionData.currentRange.start.formatToYYYYmmDD()
@@ -252,8 +250,8 @@ class AnalyticsRepositoryTest : BaseUnitTest() {
         runTest {
             // Given
             val expectedSelectionData = CUSTOM.generateSelectionData(
-                referenceStartDate = dayStartFrom("2022-09-25"),
-                referenceEndDate= dayEndFrom("2022-04-10")
+                referenceStartDate = "2022-09-25".dayStartFrom(),
+                referenceEndDate = "2022-04-10".dayEndFrom()
             )
 
             val selectedPeriodStart = expectedSelectionData.currentRange.start.formatToYYYYmmDD()
@@ -304,8 +302,8 @@ class AnalyticsRepositoryTest : BaseUnitTest() {
         runTest {
             // Given
             val expectedSelectionData = CUSTOM.generateSelectionData(
-                referenceStartDate = dayStartFrom("2022-09-25"),
-                referenceEndDate= dayEndFrom("2022-04-10")
+                referenceStartDate = "2022-09-25".dayStartFrom(),
+                referenceEndDate = "2022-04-10".dayEndFrom()
             )
 
             val selectedPeriodStart = expectedSelectionData.currentRange.start.formatToYYYYmmDD()
@@ -340,8 +338,8 @@ class AnalyticsRepositoryTest : BaseUnitTest() {
         runTest {
             // Given
             val expectedSelectionData = CUSTOM.generateSelectionData(
-                referenceStartDate = dayStartFrom("2022-09-25"),
-                referenceEndDate= dayEndFrom("2022-04-10")
+                referenceStartDate = "2022-09-25".dayStartFrom(),
+                referenceEndDate = "2022-04-10".dayEndFrom()
             )
 
             val selectedPeriodStart = expectedSelectionData.currentRange.start.formatToYYYYmmDD()
@@ -373,8 +371,8 @@ class AnalyticsRepositoryTest : BaseUnitTest() {
         runTest {
             // Given
             val expectedSelectionData = CUSTOM.generateSelectionData(
-                referenceStartDate = dayStartFrom("2022-09-25"),
-                referenceEndDate= dayEndFrom("2022-04-10")
+                referenceStartDate = "2022-09-25".dayStartFrom(),
+                referenceEndDate = "2022-04-10".dayEndFrom()
             )
 
             val selectedPeriodStart = expectedSelectionData.currentRange.start.formatToYYYYmmDD()
@@ -408,8 +406,8 @@ class AnalyticsRepositoryTest : BaseUnitTest() {
         runTest {
             // Given
             val expectedSelectionData = CUSTOM.generateSelectionData(
-                referenceStartDate = dayStartFrom("2022-09-25"),
-                referenceEndDate= dayEndFrom("2022-04-10")
+                referenceStartDate = "2022-09-25".dayStartFrom(),
+                referenceEndDate = "2022-04-10".dayEndFrom()
             )
 
             val selectedPeriodStart = expectedSelectionData.currentRange.start.formatToYYYYmmDD()
@@ -441,8 +439,8 @@ class AnalyticsRepositoryTest : BaseUnitTest() {
         runTest {
             // Given
             val expectedSelectionData = CUSTOM.generateSelectionData(
-                referenceStartDate = dayStartFrom("2022-09-25"),
-                referenceEndDate= dayEndFrom("2022-04-10")
+                referenceStartDate = "2022-09-25".dayStartFrom(),
+                referenceEndDate = "2022-04-10".dayEndFrom()
             )
 
             val selectedPeriodStart = expectedSelectionData.currentRange.start.formatToYYYYmmDD()
@@ -476,8 +474,8 @@ class AnalyticsRepositoryTest : BaseUnitTest() {
         runTest {
             // Given
             val expectedSelectionData = CUSTOM.generateSelectionData(
-                referenceStartDate = dayStartFrom("2022-09-25"),
-                referenceEndDate= dayEndFrom("2022-04-10")
+                referenceStartDate = "2022-09-25".dayStartFrom(),
+                referenceEndDate = "2022-04-10".dayEndFrom()
             )
 
             val selectedPeriodStart = expectedSelectionData.currentRange.start.formatToYYYYmmDD()
@@ -512,8 +510,8 @@ class AnalyticsRepositoryTest : BaseUnitTest() {
         runTest {
             // Given
             val expectedSelectionData = CUSTOM.generateSelectionData(
-                referenceStartDate = dayStartFrom("2022-09-25"),
-                referenceEndDate= dayEndFrom("2022-04-10")
+                referenceStartDate = "2022-09-25".dayStartFrom(),
+                referenceEndDate = "2022-04-10".dayEndFrom()
             )
 
             val selectedPeriodStart = expectedSelectionData.currentRange.start.formatToYYYYmmDD()
@@ -546,8 +544,8 @@ class AnalyticsRepositoryTest : BaseUnitTest() {
         runTest {
             // Given
             val expectedSelectionData = CUSTOM.generateSelectionData(
-                referenceStartDate = dayStartFrom("2022-09-25"),
-                referenceEndDate= dayEndFrom("2022-04-10")
+                referenceStartDate = "2022-09-25".dayStartFrom(),
+                referenceEndDate = "2022-04-10".dayEndFrom()
             )
 
             val selectedPeriodStart = expectedSelectionData.currentRange.start.formatToYYYYmmDD()
@@ -580,8 +578,8 @@ class AnalyticsRepositoryTest : BaseUnitTest() {
         runTest {
             // Given
             val expectedSelectionData = CUSTOM.generateSelectionData(
-                referenceStartDate = dayStartFrom("2022-09-25"),
-                referenceEndDate= dayEndFrom("2022-04-10")
+                referenceStartDate = "2022-09-25".dayStartFrom(),
+                referenceEndDate = "2022-04-10".dayEndFrom()
             )
 
             val selectedPeriodStart = expectedSelectionData.currentRange.start.formatToYYYYmmDD()
@@ -613,8 +611,8 @@ class AnalyticsRepositoryTest : BaseUnitTest() {
         runTest {
             // Given
             val expectedSelectionData = CUSTOM.generateSelectionData(
-                referenceStartDate = dayStartFrom("2022-09-25"),
-                referenceEndDate= dayEndFrom("2022-04-10")
+                referenceStartDate = "2022-09-25".dayStartFrom(),
+                referenceEndDate = "2022-04-10".dayEndFrom()
             )
 
             val selectedPeriodStart = expectedSelectionData.currentRange.start.formatToYYYYmmDD()
@@ -647,8 +645,8 @@ class AnalyticsRepositoryTest : BaseUnitTest() {
         runTest {
             // Given
             val expectedSelectionData = CUSTOM.generateSelectionData(
-                referenceStartDate = dayStartFrom("2022-09-25"),
-                referenceEndDate= dayEndFrom("2022-04-10")
+                referenceStartDate = "2022-09-25".dayStartFrom(),
+                referenceEndDate = "2022-04-10".dayEndFrom()
             )
 
             val selectedPeriodStart = expectedSelectionData.currentRange.start.formatToYYYYmmDD()
@@ -681,8 +679,8 @@ class AnalyticsRepositoryTest : BaseUnitTest() {
         runTest {
             // Given
             val expectedSelectionData = CUSTOM.generateSelectionData(
-                referenceStartDate = dayStartFrom("2022-09-25"),
-                referenceEndDate= dayEndFrom("2022-04-10")
+                referenceStartDate = "2022-09-25".dayStartFrom(),
+                referenceEndDate = "2022-04-10".dayEndFrom()
             )
 
             val selectedPeriodStart = expectedSelectionData.currentRange.start.formatToYYYYmmDD()
@@ -714,8 +712,8 @@ class AnalyticsRepositoryTest : BaseUnitTest() {
         runTest {
             // Given
             val expectedSelectionData = CUSTOM.generateSelectionData(
-                referenceStartDate = dayStartFrom("2022-09-25"),
-                referenceEndDate= dayEndFrom("2022-04-10")
+                referenceStartDate = "2022-09-25".dayStartFrom(),
+                referenceEndDate = "2022-04-10".dayEndFrom()
             )
 
             val selectedPeriodStart = expectedSelectionData.currentRange.start.formatToYYYYmmDD()
@@ -748,8 +746,8 @@ class AnalyticsRepositoryTest : BaseUnitTest() {
         runTest {
             // Given
             val expectedSelectionData = CUSTOM.generateSelectionData(
-                referenceStartDate = dayStartFrom("2022-09-25"),
-                referenceEndDate= dayEndFrom("2022-04-10")
+                referenceStartDate = "2022-09-25".dayStartFrom(),
+                referenceEndDate = "2022-04-10".dayEndFrom()
             )
 
             val selectedPeriodStart = expectedSelectionData.currentRange.start.formatToYYYYmmDD()
@@ -782,8 +780,8 @@ class AnalyticsRepositoryTest : BaseUnitTest() {
         runTest {
             // Given
             val expectedSelectionData = CUSTOM.generateSelectionData(
-                referenceStartDate = dayStartFrom("2022-09-25"),
-                referenceEndDate= dayEndFrom("2022-04-10")
+                referenceStartDate = "2022-09-25".dayStartFrom(),
+                referenceEndDate = "2022-04-10".dayEndFrom()
             )
 
             val selectedPeriodStart = expectedSelectionData.currentRange.start.formatToYYYYmmDD()
@@ -823,8 +821,8 @@ class AnalyticsRepositoryTest : BaseUnitTest() {
         runTest {
             // Given
             val expectedSelectionData = CUSTOM.generateSelectionData(
-                referenceStartDate = dayStartFrom("2022-09-25"),
-                referenceEndDate= dayEndFrom("2022-04-10")
+                referenceStartDate = "2022-09-25".dayStartFrom(),
+                referenceEndDate = "2022-04-10".dayEndFrom()
             )
 
             val selectedPeriodStart = expectedSelectionData.currentRange.start.formatToYYYYmmDD()
@@ -864,8 +862,8 @@ class AnalyticsRepositoryTest : BaseUnitTest() {
         runTest {
             // Given
             val expectedSelectionData = CUSTOM.generateSelectionData(
-                referenceStartDate = dayStartFrom("2022-09-25"),
-                referenceEndDate= dayEndFrom("2022-04-10")
+                referenceStartDate = "2022-09-25".dayStartFrom(),
+                referenceEndDate = "2022-04-10".dayEndFrom()
             )
 
             val selectedPeriodStart = expectedSelectionData.currentRange.start.formatToYYYYmmDD()
@@ -905,8 +903,8 @@ class AnalyticsRepositoryTest : BaseUnitTest() {
         runTest {
             // Given
             val expectedSelectionData = CUSTOM.generateSelectionData(
-                referenceStartDate = dayStartFrom("2022-09-25"),
-                referenceEndDate= dayEndFrom("2022-04-10")
+                referenceStartDate = "2022-09-25".dayStartFrom(),
+                referenceEndDate = "2022-04-10".dayEndFrom()
             )
 
             val selectedPeriodStart = expectedSelectionData.currentRange.start.formatToYYYYmmDD()
@@ -947,8 +945,8 @@ class AnalyticsRepositoryTest : BaseUnitTest() {
         runTest {
             // Given
             val expectedSelectionData = CUSTOM.generateSelectionData(
-                referenceStartDate = dayStartFrom("2022-09-25"),
-                referenceEndDate= dayEndFrom("2022-04-10")
+                referenceStartDate = "2022-09-25".dayStartFrom(),
+                referenceEndDate = "2022-04-10".dayEndFrom()
             )
 
             val revenue = givenARevenue(TEN_VALUE, TEN_VALUE, TEN_VALUE.toInt())
@@ -976,8 +974,8 @@ class AnalyticsRepositoryTest : BaseUnitTest() {
         runTest {
             // Given
             val expectedSelectionData = CUSTOM.generateSelectionData(
-                referenceStartDate = dayStartFrom("2022-09-25"),
-                referenceEndDate= dayEndFrom("2022-04-10")
+                referenceStartDate = "2022-09-25".dayStartFrom(),
+                referenceEndDate = "2022-04-10".dayEndFrom()
             )
 
             val revenue = givenARevenue(TEN_VALUE, TEN_VALUE, TEN_VALUE.toInt())
@@ -1012,8 +1010,8 @@ class AnalyticsRepositoryTest : BaseUnitTest() {
         runTest {
             // Given
             val expectedSelectionData = CUSTOM.generateSelectionData(
-                referenceStartDate = dayStartFrom("2022-09-25"),
-                referenceEndDate= dayEndFrom("2022-04-10")
+                referenceStartDate = "2022-09-25".dayStartFrom(),
+                referenceEndDate = "2022-04-10".dayEndFrom()
             )
 
             val selectedPeriodStart = expectedSelectionData.currentRange.start.formatToYYYYmmDD()
@@ -1047,8 +1045,12 @@ class AnalyticsRepositoryTest : BaseUnitTest() {
             )
 
             // Then
-            verify(statsRepository, times(1)).fetchRevenueStats(any(), any(), eq(previousPeriodStart), eq(previousPeriodEnd))
-            verify(statsRepository, times(1)).fetchRevenueStats(any(), any(), eq(selectedPeriodStart), eq(selectedPeriodEnd))
+            verify(statsRepository, times(1)).fetchRevenueStats(
+                any(), any(), eq(previousPeriodStart), eq(previousPeriodEnd)
+            )
+            verify(statsRepository, times(1)).fetchRevenueStats(
+                any(), any(), eq(selectedPeriodStart), eq(selectedPeriodEnd)
+            )
         }
 
     @Test
@@ -1056,8 +1058,8 @@ class AnalyticsRepositoryTest : BaseUnitTest() {
         runTest {
             // Given
             val expectedSelectionData = CUSTOM.generateSelectionData(
-                referenceStartDate = dayStartFrom("2022-09-25"),
-                referenceEndDate= dayEndFrom("2022-04-10")
+                referenceStartDate = "2022-09-25".dayStartFrom(),
+                referenceEndDate = "2022-04-10".dayEndFrom()
             )
 
             val selectedPeriodStart = expectedSelectionData.currentRange.start.formatToYYYYmmDD()
@@ -1091,8 +1093,18 @@ class AnalyticsRepositoryTest : BaseUnitTest() {
             )
 
             // Then
-            verify(statsRepository, times(2)).fetchRevenueStats(any(), any(), eq(previousPeriodStart), eq(previousPeriodEnd))
-            verify(statsRepository, times(2)).fetchRevenueStats(any(), any(), eq(selectedPeriodStart), eq(selectedPeriodEnd))
+            verify(statsRepository, times(2)).fetchRevenueStats(
+                any(),
+                any(),
+                eq(previousPeriodStart),
+                eq(previousPeriodEnd)
+            )
+            verify(statsRepository, times(2)).fetchRevenueStats(
+                any(),
+                any(),
+                eq(selectedPeriodStart),
+                eq(selectedPeriodEnd)
+            )
         }
 
     @Test
@@ -1172,19 +1184,18 @@ class AnalyticsRepositoryTest : BaseUnitTest() {
         return mutableListOf(productEntity)
     }
 
-
-    private fun dayEndFrom(date: String): Date {
+    private fun String.dayEndFrom(): Date {
         val formatter = SimpleDateFormat("yyyy-MM-dd")
         formatter.timeZone = testTimeZone
-        val referenceDate = formatter.parse(date)!!
+        val referenceDate = formatter.parse(this)!!
         testCalendar.time = referenceDate
         return testCalendar.endOfCurrentDay()
     }
 
-    private fun dayStartFrom(date: String): Date {
+    private fun String.dayStartFrom(): Date {
         val formatter = SimpleDateFormat("yyyy-MM-dd")
         formatter.timeZone = testTimeZone
-        val referenceDate = formatter.parse(date)!!
+        val referenceDate = formatter.parse(this)!!
         testCalendar.time = referenceDate
         return testCalendar.startOfCurrentDay()
     }

@@ -24,7 +24,6 @@ import com.woocommerce.android.ui.analytics.ranges.data.AnalyticsHubWeekToDateRa
 import com.woocommerce.android.ui.analytics.ranges.data.AnalyticsHubYearToDateRangeData
 import com.woocommerce.android.ui.analytics.ranges.data.AnalyticsHubYesterdayRangeData
 import java.io.Serializable
-import java.lang.IllegalStateException
 import java.util.Calendar
 import java.util.Date
 import java.util.Locale
@@ -35,7 +34,7 @@ import java.util.Locale
  * You should create it through the [AnalyticsHubDateRangeSelection.SelectionType.generateSelectionData]
  * function since it will return the correct data for the given selection type
  */
-class AnalyticsHubDateRangeSelection: Serializable {
+class AnalyticsHubDateRangeSelection : Serializable {
     val selectionType: SelectionType
     var currentRange: AnalyticsHubTimeRange
         private set

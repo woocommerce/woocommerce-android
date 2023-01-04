@@ -386,7 +386,9 @@ class AnalyticsRepository @Inject constructor(
      * This method will select all Visitors and Views data within a given date range interval
      * and fold all this data into a Pair containing the total visitors and total views of that period
      */
-    private fun List<VisitsAndViewsModel.PeriodData>.foldStatsWithin(dateRange: AnalyticsHubTimeRange): Pair<Long, Long> {
+    private fun List<VisitsAndViewsModel.PeriodData>.foldStatsWithin(
+        dateRange: AnalyticsHubTimeRange
+    ): Pair<Long, Long> {
         val startDate = dateRange.start.oneDayAgo()
 
         return this.asSequence()

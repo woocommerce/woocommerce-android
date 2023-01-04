@@ -36,7 +36,7 @@ internal class AnalyticsHubTimeRangeTest {
         // When
         val description = sut.generateDescription(simplified = true, testLocale, testCalendar)
 
-        //Then
+        // Then
         assertThat(description).isEqualTo("Jul 1, 2022")
     }
 
@@ -51,7 +51,7 @@ internal class AnalyticsHubTimeRangeTest {
         // When
         val description = sut.generateDescription(simplified = false, testLocale, testCalendar)
 
-        //Then
+        // Then
         assertThat(description).isEqualTo("Jul 1 - Aug 2, 2022")
     }
 
@@ -66,7 +66,7 @@ internal class AnalyticsHubTimeRangeTest {
         // When
         val description = sut.generateDescription(simplified = false, testLocale, testCalendar)
 
-        //Then
+        // Then
         assertThat(description).isEqualTo("Jul 1 - 5, 2022")
     }
 
@@ -81,7 +81,7 @@ internal class AnalyticsHubTimeRangeTest {
         // When
         val description = sut.generateDescription(simplified = false, testLocale, testCalendar)
 
-        //Then
+        // Then
         assertThat(description).isEqualTo("Apr 15, 2021 - Apr 15, 2022")
     }
 
