@@ -314,11 +314,11 @@ class AnalyticsRepositoryTest : BaseUnitTest() {
             val previousPeriodEnd = expectedSelectionData.previousRange.end.formatToYYYYmmDD()
 
             val revenue = givenARevenue(ZERO_VALUE, ZERO_VALUE, TEN_VALUE.toInt())
-            whenever(statsRepository.fetchRevenueStats(any(), any(), eq(PREVIOUS_DATE), eq(CURRENT_DATE)))
+            whenever(statsRepository.fetchRevenueStats(any(), any(), eq(selectedPeriodStart), eq(selectedPeriodEnd)))
                 .thenReturn(listOf(Result.success(revenue)).asFlow())
 
             val previousRevenue = givenARevenue(TEN_VALUE, TEN_VALUE, TEN_VALUE.toInt())
-            whenever(statsRepository.fetchRevenueStats(any(), any(), eq(PREVIOUS_DATE), eq(PREVIOUS_DATE)))
+            whenever(statsRepository.fetchRevenueStats(any(), any(), eq(previousPeriodStart), eq(previousPeriodEnd)))
                 .thenReturn(listOf(Result.success(previousRevenue)).asFlow())
 
             // When
@@ -350,11 +350,11 @@ class AnalyticsRepositoryTest : BaseUnitTest() {
             val previousPeriodEnd = expectedSelectionData.previousRange.end.formatToYYYYmmDD()
 
             val revenue = givenARevenue(TEN_VALUE, TEN_VALUE, TEN_VALUE.toInt())
-            whenever(statsRepository.fetchRevenueStats(any(), any(), eq(PREVIOUS_DATE), eq(CURRENT_DATE)))
+            whenever(statsRepository.fetchRevenueStats(any(), any(), eq(selectedPeriodStart), eq(selectedPeriodEnd)))
                 .thenReturn(listOf(Result.success(revenue)).asFlow())
 
             val previousRevenue = givenARevenue(ZERO_VALUE, ZERO_VALUE, TEN_VALUE.toInt())
-            whenever(statsRepository.fetchRevenueStats(any(), any(), eq(PREVIOUS_DATE), eq(PREVIOUS_DATE)))
+            whenever(statsRepository.fetchRevenueStats(any(), any(), eq(previousPeriodStart), eq(previousPeriodEnd)))
                 .thenReturn(listOf(Result.success(previousRevenue)).asFlow())
 
             // When
@@ -383,10 +383,10 @@ class AnalyticsRepositoryTest : BaseUnitTest() {
             val previousPeriodEnd = expectedSelectionData.previousRange.end.formatToYYYYmmDD()
 
             val ordersStats = givenRevenueOrderStats(TEN_VALUE.toInt(), TEN_VALUE)
-            whenever(statsRepository.fetchRevenueStats(any(), any(), eq(PREVIOUS_DATE), eq(CURRENT_DATE)))
+            whenever(statsRepository.fetchRevenueStats(any(), any(), eq(selectedPeriodStart), eq(selectedPeriodEnd)))
                 .thenReturn(listOf(Result.success(ordersStats)).asFlow())
 
-            whenever(statsRepository.fetchRevenueStats(any(), any(), eq(PREVIOUS_DATE), eq(PREVIOUS_DATE)))
+            whenever(statsRepository.fetchRevenueStats(any(), any(), eq(previousPeriodStart), eq(previousPeriodEnd)))
                 .thenReturn(listOf(Result.success(ordersStats)).asFlow())
 
             // When
@@ -418,10 +418,10 @@ class AnalyticsRepositoryTest : BaseUnitTest() {
             val previousPeriodEnd = expectedSelectionData.previousRange.end.formatToYYYYmmDD()
 
             val ordersStats = givenRevenueOrderStats(TEN_VALUE.toInt(), TEN_VALUE)
-            whenever(statsRepository.fetchRevenueStats(any(), any(), eq(PREVIOUS_DATE), eq(CURRENT_DATE)))
+            whenever(statsRepository.fetchRevenueStats(any(), any(), eq(selectedPeriodStart), eq(selectedPeriodEnd)))
                 .thenReturn(listOf(Result.success(ordersStats)).asFlow())
 
-            whenever(statsRepository.fetchRevenueStats(any(), any(), eq(PREVIOUS_DATE), eq(PREVIOUS_DATE)))
+            whenever(statsRepository.fetchRevenueStats(any(), any(), eq(previousPeriodStart), eq(previousPeriodEnd)))
                 .thenReturn(listOf(Result.success(ordersStats)).asFlow())
 
             // When
@@ -451,11 +451,11 @@ class AnalyticsRepositoryTest : BaseUnitTest() {
             val previousPeriodEnd = expectedSelectionData.previousRange.end.formatToYYYYmmDD()
 
             val previousPeriodRevenue = givenARevenue(ZERO_VALUE, ZERO_VALUE, TEN_VALUE.toInt())
-            whenever(statsRepository.fetchRevenueStats(any(), any(), eq(PREVIOUS_DATE), eq(PREVIOUS_DATE)))
+            whenever(statsRepository.fetchRevenueStats(any(), any(), eq(previousPeriodStart), eq(previousPeriodEnd)))
                 .thenReturn(listOf(Result.success<WCRevenueStatsModel?>(previousPeriodRevenue)).asFlow())
 
             val currentPeriodRevenue = givenARevenue(TEN_VALUE, TEN_VALUE, TEN_VALUE.toInt())
-            whenever(statsRepository.fetchRevenueStats(any(), any(), eq(PREVIOUS_DATE), eq(CURRENT_DATE)))
+            whenever(statsRepository.fetchRevenueStats(any(), any(), eq(selectedPeriodStart), eq(selectedPeriodEnd)))
                 .thenReturn(listOf(Result.success<WCRevenueStatsModel?>(currentPeriodRevenue)).asFlow())
 
             // When
@@ -486,11 +486,11 @@ class AnalyticsRepositoryTest : BaseUnitTest() {
             val previousPeriodEnd = expectedSelectionData.previousRange.end.formatToYYYYmmDD()
 
             val previousPeriodOrdersStats = givenRevenueOrderStats(ZERO_VALUE.toInt(), ZERO_VALUE)
-            whenever(statsRepository.fetchRevenueStats(any(), any(), eq(PREVIOUS_DATE), eq(PREVIOUS_DATE)))
+            whenever(statsRepository.fetchRevenueStats(any(), any(), eq(previousPeriodStart), eq(previousPeriodEnd)))
                 .thenReturn(listOf(Result.success<WCRevenueStatsModel?>(previousPeriodOrdersStats)).asFlow())
 
             val currentPeriodOrdersStats = givenRevenueOrderStats(TEN_VALUE.toInt(), TEN_VALUE)
-            whenever(statsRepository.fetchRevenueStats(any(), any(), eq(PREVIOUS_DATE), eq(CURRENT_DATE)))
+            whenever(statsRepository.fetchRevenueStats(any(), any(), eq(selectedPeriodStart), eq(selectedPeriodEnd)))
                 .thenReturn(listOf(Result.success<WCRevenueStatsModel?>(currentPeriodOrdersStats)).asFlow())
 
             // When
@@ -522,11 +522,11 @@ class AnalyticsRepositoryTest : BaseUnitTest() {
             val previousPeriodEnd = expectedSelectionData.previousRange.end.formatToYYYYmmDD()
 
             val previousPeriodRevenue = givenARevenue(TEN_VALUE, ZERO_VALUE, TEN_VALUE.toInt())
-            whenever(statsRepository.fetchRevenueStats(any(), any(), eq(PREVIOUS_DATE), eq(PREVIOUS_DATE)))
+            whenever(statsRepository.fetchRevenueStats(any(), any(), eq(previousPeriodStart), eq(previousPeriodEnd)))
                 .thenReturn(listOf(Result.success<WCRevenueStatsModel?>(previousPeriodRevenue)).asFlow())
 
             val currentPeriodRevenue = givenARevenue(TEN_VALUE, TEN_VALUE, TEN_VALUE.toInt())
-            whenever(statsRepository.fetchRevenueStats(any(), any(), eq(PREVIOUS_DATE), eq(CURRENT_DATE)))
+            whenever(statsRepository.fetchRevenueStats(any(), any(), eq(selectedPeriodStart), eq(selectedPeriodEnd)))
                 .thenReturn(listOf(Result.success<WCRevenueStatsModel?>(currentPeriodRevenue)).asFlow())
 
             // When
@@ -556,11 +556,11 @@ class AnalyticsRepositoryTest : BaseUnitTest() {
             val previousPeriodEnd = expectedSelectionData.previousRange.end.formatToYYYYmmDD()
 
             val previousPeriodOrdersStats = givenRevenueOrderStats(TEN_VALUE.toInt(), ZERO_VALUE)
-            whenever(statsRepository.fetchRevenueStats(any(), any(), eq(PREVIOUS_DATE), eq(PREVIOUS_DATE)))
+            whenever(statsRepository.fetchRevenueStats(any(), any(), eq(previousPeriodStart), eq(previousPeriodEnd)))
                 .thenReturn(listOf(Result.success<WCRevenueStatsModel?>(previousPeriodOrdersStats)).asFlow())
 
             val currentPeriodOrdersStats = givenRevenueOrderStats(TEN_VALUE.toInt(), TEN_VALUE)
-            whenever(statsRepository.fetchRevenueStats(any(), any(), eq(PREVIOUS_DATE), eq(CURRENT_DATE)))
+            whenever(statsRepository.fetchRevenueStats(any(), any(), eq(selectedPeriodStart), eq(selectedPeriodEnd)))
                 .thenReturn(listOf(Result.success<WCRevenueStatsModel?>(currentPeriodOrdersStats)).asFlow())
 
             // When
@@ -590,11 +590,11 @@ class AnalyticsRepositoryTest : BaseUnitTest() {
             val previousPeriodEnd = expectedSelectionData.previousRange.end.formatToYYYYmmDD()
 
             val previousPeriodRevenue = givenARevenue(null, TEN_VALUE, TEN_VALUE.toInt())
-            whenever(statsRepository.fetchRevenueStats(any(), any(), eq(PREVIOUS_DATE), eq(PREVIOUS_DATE)))
+            whenever(statsRepository.fetchRevenueStats(any(), any(), eq(previousPeriodStart), eq(previousPeriodEnd)))
                 .thenReturn(listOf(Result.success<WCRevenueStatsModel?>(previousPeriodRevenue)).asFlow())
 
             val currentPeriodRevenue = givenARevenue(TEN_VALUE, TEN_VALUE, TEN_VALUE.toInt())
-            whenever(statsRepository.fetchRevenueStats(any(), any(), eq(PREVIOUS_DATE), eq(CURRENT_DATE)))
+            whenever(statsRepository.fetchRevenueStats(any(), any(), eq(selectedPeriodStart), eq(selectedPeriodEnd)))
                 .thenReturn(listOf(Result.success<WCRevenueStatsModel?>(currentPeriodRevenue)).asFlow())
 
             // When
@@ -623,11 +623,11 @@ class AnalyticsRepositoryTest : BaseUnitTest() {
             val previousPeriodEnd = expectedSelectionData.previousRange.end.formatToYYYYmmDD()
 
             val previousPeriodOrdersStats = givenRevenueOrderStats(null, TEN_VALUE)
-            whenever(statsRepository.fetchRevenueStats(any(), any(), eq(PREVIOUS_DATE), eq(PREVIOUS_DATE)))
+            whenever(statsRepository.fetchRevenueStats(any(), any(), eq(previousPeriodStart), eq(previousPeriodEnd)))
                 .thenReturn(listOf(Result.success<WCRevenueStatsModel?>(previousPeriodOrdersStats)).asFlow())
 
             val currentPeriodOrdersStats = givenRevenueOrderStats(TEN_VALUE.toInt(), TEN_VALUE)
-            whenever(statsRepository.fetchRevenueStats(any(), any(), eq(PREVIOUS_DATE), eq(CURRENT_DATE)))
+            whenever(statsRepository.fetchRevenueStats(any(), any(), eq(selectedPeriodStart), eq(selectedPeriodEnd)))
                 .thenReturn(listOf(Result.success<WCRevenueStatsModel?>(currentPeriodOrdersStats)).asFlow())
 
             // When
@@ -657,11 +657,11 @@ class AnalyticsRepositoryTest : BaseUnitTest() {
             val previousPeriodEnd = expectedSelectionData.previousRange.end.formatToYYYYmmDD()
 
             val previousPeriodRevenue = givenARevenue(TEN_VALUE, null, TEN_VALUE.toInt())
-            whenever(statsRepository.fetchRevenueStats(any(), any(), eq(PREVIOUS_DATE), eq(PREVIOUS_DATE)))
+            whenever(statsRepository.fetchRevenueStats(any(), any(), eq(previousPeriodStart), eq(previousPeriodEnd)))
                 .thenReturn(listOf(Result.success<WCRevenueStatsModel?>(previousPeriodRevenue)).asFlow())
 
             val currentPeriodRevenue = givenARevenue(TEN_VALUE, TEN_VALUE, TEN_VALUE.toInt())
-            whenever(statsRepository.fetchRevenueStats(any(), any(), eq(PREVIOUS_DATE), eq(CURRENT_DATE)))
+            whenever(statsRepository.fetchRevenueStats(any(), any(), eq(selectedPeriodStart), eq(selectedPeriodEnd)))
                 .thenReturn(listOf(Result.success<WCRevenueStatsModel?>(currentPeriodRevenue)).asFlow())
 
             // When
@@ -691,11 +691,11 @@ class AnalyticsRepositoryTest : BaseUnitTest() {
             val previousPeriodEnd = expectedSelectionData.previousRange.end.formatToYYYYmmDD()
 
             val previousPeriodOrdersStats = givenRevenueOrderStats(TEN_VALUE.toInt(), null)
-            whenever(statsRepository.fetchRevenueStats(any(), any(), eq(PREVIOUS_DATE), eq(PREVIOUS_DATE)))
+            whenever(statsRepository.fetchRevenueStats(any(), any(), eq(previousPeriodStart), eq(previousPeriodEnd)))
                 .thenReturn(listOf(Result.success<WCRevenueStatsModel?>(previousPeriodOrdersStats)).asFlow())
 
             val currentPeriodOrdersStats = givenRevenueOrderStats(TEN_VALUE.toInt(), TEN_VALUE)
-            whenever(statsRepository.fetchRevenueStats(any(), any(), eq(PREVIOUS_DATE), eq(CURRENT_DATE)))
+            whenever(statsRepository.fetchRevenueStats(any(), any(), eq(selectedPeriodStart), eq(selectedPeriodEnd)))
                 .thenReturn(listOf(Result.success<WCRevenueStatsModel?>(currentPeriodOrdersStats)).asFlow())
 
             // When
@@ -724,11 +724,11 @@ class AnalyticsRepositoryTest : BaseUnitTest() {
             val previousPeriodEnd = expectedSelectionData.previousRange.end.formatToYYYYmmDD()
 
             val previousPeriodRevenue = givenARevenue(TEN_VALUE, TEN_VALUE, TEN_VALUE.toInt())
-            whenever(statsRepository.fetchRevenueStats(any(), any(), eq(PREVIOUS_DATE), eq(PREVIOUS_DATE)))
+            whenever(statsRepository.fetchRevenueStats(any(), any(), eq(previousPeriodStart), eq(previousPeriodEnd)))
                 .thenReturn(listOf(Result.success<WCRevenueStatsModel?>(previousPeriodRevenue)).asFlow())
 
             val currentPeriodRevenue = givenARevenue(TEN_VALUE, TEN_VALUE, TEN_VALUE.toInt())
-            whenever(statsRepository.fetchRevenueStats(any(), any(), eq(CURRENT_DATE), eq(CURRENT_DATE)))
+            whenever(statsRepository.fetchRevenueStats(any(), any(), eq(selectedPeriodStart), eq(selectedPeriodEnd)))
                 .thenReturn(listOf(Result.success<WCRevenueStatsModel?>(currentPeriodRevenue)).asFlow())
 
             // When
@@ -758,11 +758,11 @@ class AnalyticsRepositoryTest : BaseUnitTest() {
             val previousPeriodEnd = expectedSelectionData.previousRange.end.formatToYYYYmmDD()
 
             val previousPeriodOrdersStats = givenRevenueOrderStats(TEN_VALUE.toInt(), TEN_VALUE)
-            whenever(statsRepository.fetchRevenueStats(any(), any(), eq(PREVIOUS_DATE), eq(PREVIOUS_DATE)))
+            whenever(statsRepository.fetchRevenueStats(any(), any(), eq(previousPeriodStart), eq(previousPeriodEnd)))
                 .thenReturn(listOf(Result.success<WCRevenueStatsModel?>(previousPeriodOrdersStats)).asFlow())
 
             val currentPeriodRevenue = givenRevenueOrderStats(TEN_VALUE.toInt(), TEN_VALUE)
-            whenever(statsRepository.fetchRevenueStats(any(), any(), eq(CURRENT_DATE), eq(CURRENT_DATE)))
+            whenever(statsRepository.fetchRevenueStats(any(), any(), eq(selectedPeriodStart), eq(selectedPeriodEnd)))
                 .thenReturn(listOf(Result.success<WCRevenueStatsModel?>(currentPeriodRevenue)).asFlow())
 
             // When
@@ -792,10 +792,10 @@ class AnalyticsRepositoryTest : BaseUnitTest() {
             val previousPeriodEnd = expectedSelectionData.previousRange.end.formatToYYYYmmDD()
 
             val previousPeriodRevenue = givenARevenue(TEN_VALUE, TEN_VALUE, TEN_VALUE.toInt())
-            whenever(statsRepository.fetchRevenueStats(any(), any(), eq(PREVIOUS_DATE), eq(PREVIOUS_DATE)))
+            whenever(statsRepository.fetchRevenueStats(any(), any(), eq(previousPeriodStart), eq(previousPeriodEnd)))
                 .thenReturn(listOf(Result.success(previousPeriodRevenue)).asFlow())
 
-            whenever(statsRepository.fetchRevenueStats(any(), any(), eq(PREVIOUS_DATE), eq(CURRENT_DATE)))
+            whenever(statsRepository.fetchRevenueStats(any(), any(), eq(selectedPeriodStart), eq(selectedPeriodEnd)))
                 .thenReturn(listOf(Result.failure<WCRevenueStatsModel?>(StatsRepository.StatsException(null))).asFlow())
 
             whenever(statsRepository.fetchTopPerformerProducts(any(), any(), any(), any()))
@@ -832,11 +832,11 @@ class AnalyticsRepositoryTest : BaseUnitTest() {
             val previousPeriodStart = expectedSelectionData.previousRange.start.formatToYYYYmmDD()
             val previousPeriodEnd = expectedSelectionData.previousRange.end.formatToYYYYmmDD()
 
-            whenever(statsRepository.fetchRevenueStats(any(), any(), eq(PREVIOUS_DATE), eq(PREVIOUS_DATE)))
+            whenever(statsRepository.fetchRevenueStats(any(), any(), eq(previousPeriodStart), eq(previousPeriodEnd)))
                 .thenReturn(listOf(Result.failure<WCRevenueStatsModel?>(StatsRepository.StatsException(null))).asFlow())
 
             val currentPeriodRevenue = givenARevenue(TEN_VALUE, TEN_VALUE, TEN_VALUE.toInt())
-            whenever(statsRepository.fetchRevenueStats(any(), any(), eq(PREVIOUS_DATE), eq(CURRENT_DATE)))
+            whenever(statsRepository.fetchRevenueStats(any(), any(), eq(selectedPeriodStart), eq(selectedPeriodEnd)))
                 .thenReturn(listOf(Result.success(currentPeriodRevenue)).asFlow())
 
             whenever(statsRepository.fetchTopPerformerProducts(any(), any(), any(), any()))
@@ -874,10 +874,10 @@ class AnalyticsRepositoryTest : BaseUnitTest() {
             val previousPeriodEnd = expectedSelectionData.previousRange.end.formatToYYYYmmDD()
 
             val previousPeriodRevenue = givenARevenue(TEN_VALUE, TEN_VALUE, TEN_VALUE.toInt())
-            whenever(statsRepository.fetchRevenueStats(any(), any(), eq(PREVIOUS_DATE), eq(PREVIOUS_DATE)))
+            whenever(statsRepository.fetchRevenueStats(any(), any(), eq(previousPeriodStart), eq(previousPeriodEnd)))
                 .thenReturn(listOf(Result.success(previousPeriodRevenue)).asFlow())
 
-            whenever(statsRepository.fetchRevenueStats(any(), any(), eq(PREVIOUS_DATE), eq(CURRENT_DATE)))
+            whenever(statsRepository.fetchRevenueStats(any(), any(), eq(selectedPeriodStart), eq(selectedPeriodEnd)))
                 .thenReturn(listOf(Result.failure<WCRevenueStatsModel?>(StatsRepository.StatsException(null))).asFlow())
 
             whenever(statsRepository.fetchTopPerformerProducts(any(), any(), any(), any()))
@@ -915,11 +915,11 @@ class AnalyticsRepositoryTest : BaseUnitTest() {
             val previousPeriodEnd = expectedSelectionData.previousRange.end.formatToYYYYmmDD()
 
             val previousPeriodRevenue = givenARevenue(TEN_VALUE, TEN_VALUE, TEN_VALUE.toInt())
-            whenever(statsRepository.fetchRevenueStats(any(), any(), eq(PREVIOUS_DATE), eq(PREVIOUS_DATE)))
+            whenever(statsRepository.fetchRevenueStats(any(), any(), eq(previousPeriodStart), eq(previousPeriodEnd)))
                 .thenReturn(listOf(Result.success(previousPeriodRevenue)).asFlow())
 
             val currentPeriodRevenue = givenARevenue(TEN_VALUE, TEN_VALUE, null)
-            whenever(statsRepository.fetchRevenueStats(any(), any(), eq(PREVIOUS_DATE), eq(CURRENT_DATE)))
+            whenever(statsRepository.fetchRevenueStats(any(), any(), eq(selectedPeriodStart), eq(selectedPeriodEnd)))
                 .thenReturn(listOf(Result.success(currentPeriodRevenue)).asFlow())
 
             whenever(statsRepository.fetchTopPerformerProducts(any(), any(), any(), any()))
@@ -946,6 +946,11 @@ class AnalyticsRepositoryTest : BaseUnitTest() {
     fun `given no products leader board with null items sold, when fetchProductsData, then result is ProductsError`() =
         runTest {
             // Given
+            val expectedSelectionData = CUSTOM.generateSelectionData(
+                referenceStartDate = dayStartFrom("2022-09-25"),
+                referenceEndDate= dayEndFrom("2022-04-10")
+            )
+
             val revenue = givenARevenue(TEN_VALUE, TEN_VALUE, TEN_VALUE.toInt())
             whenever(statsRepository.fetchRevenueStats(any(), any(), any(), any()))
                 .thenReturn(listOf(Result.success(revenue)).asFlow())
@@ -958,7 +963,7 @@ class AnalyticsRepositoryTest : BaseUnitTest() {
 
             // When
             val result = sut.fetchProductsData(
-                CUSTOM.generateSelectionData(previousDate, currentDate),
+                expectedSelectionData,
                 anyFetchStrategy
             )
 
@@ -970,6 +975,11 @@ class AnalyticsRepositoryTest : BaseUnitTest() {
     fun `given products and revenue with null items sold, when fetchProductsData, then result is expected`() =
         runTest {
             // Given
+            val expectedSelectionData = CUSTOM.generateSelectionData(
+                referenceStartDate = dayStartFrom("2022-09-25"),
+                referenceEndDate= dayEndFrom("2022-04-10")
+            )
+
             val revenue = givenARevenue(TEN_VALUE, TEN_VALUE, TEN_VALUE.toInt())
             whenever(statsRepository.fetchRevenueStats(any(), any(), any(), any()))
                 .thenReturn(listOf(Result.success(revenue)).asFlow())
@@ -986,7 +996,7 @@ class AnalyticsRepositoryTest : BaseUnitTest() {
 
             // When
             val result = sut.fetchProductsData(
-                CUSTOM.generateSelectionData(previousDate, currentDate),
+                expectedSelectionData,
                 anyFetchStrategy
             )
 
@@ -1037,8 +1047,8 @@ class AnalyticsRepositoryTest : BaseUnitTest() {
             )
 
             // Then
-            verify(statsRepository, times(1)).fetchRevenueStats(any(), any(), eq(PREVIOUS_DATE), eq(PREVIOUS_DATE))
-            verify(statsRepository, times(1)).fetchRevenueStats(any(), any(), eq(CURRENT_DATE), eq(CURRENT_DATE))
+            verify(statsRepository, times(1)).fetchRevenueStats(any(), any(), eq(previousPeriodStart), eq(previousPeriodEnd))
+            verify(statsRepository, times(1)).fetchRevenueStats(any(), any(), eq(selectedPeriodStart), eq(selectedPeriodEnd))
         }
 
     @Test
@@ -1081,8 +1091,8 @@ class AnalyticsRepositoryTest : BaseUnitTest() {
             )
 
             // Then
-            verify(statsRepository, times(2)).fetchRevenueStats(any(), any(), eq(PREVIOUS_DATE), eq(PREVIOUS_DATE))
-            verify(statsRepository, times(2)).fetchRevenueStats(any(), any(), eq(CURRENT_DATE), eq(CURRENT_DATE))
+            verify(statsRepository, times(2)).fetchRevenueStats(any(), any(), eq(previousPeriodStart), eq(previousPeriodEnd))
+            verify(statsRepository, times(2)).fetchRevenueStats(any(), any(), eq(selectedPeriodStart), eq(selectedPeriodEnd))
         }
 
     @Test
@@ -1180,9 +1190,6 @@ class AnalyticsRepositoryTest : BaseUnitTest() {
     }
 
     companion object {
-        const val PREVIOUS_DATE = "2021-01-01"
-        const val CURRENT_DATE = "2021-01-02"
-
         const val TEN_VALUE = 10.0
         const val ZERO_VALUE = 0.0
 
@@ -1192,9 +1199,6 @@ class AnalyticsRepositoryTest : BaseUnitTest() {
         const val ANY_URL = "https://a8c.com"
         val anyFetchStrategy = ForceNew
 
-        val ANY_RANGE = AnalyticsHubDateRangeSelection.SelectionType.LAST_YEAR
-        val previousDate: Date = DateUtils.getDateFromString(PREVIOUS_DATE)
-        val currentDate: Date = DateUtils.getDateFromString(CURRENT_DATE)
         const val CURRENCY = "EUR"
         const val IMAGE_URL = "url"
         const val NAME = "name"
