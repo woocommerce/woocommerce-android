@@ -14,11 +14,13 @@ import com.woocommerce.android.extensions.handleDialogResult
 import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.extensions.scrollStartEvents
 import com.woocommerce.android.ui.analytics.RefreshIndicator.ShowIndicator
-import com.woocommerce.android.ui.analytics.daterangeselector.AnalyticTimePeriod
+import com.woocommerce.android.ui.analytics.ranges.AnalyticsHubDateRangeSelection
+import com.woocommerce.android.ui.analytics.ranges.AnalyticsHubDateRangeSelection.SelectionType.CUSTOM
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.util.ChromeCustomTabUtils
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import dagger.hilt.android.AndroidEntryPoint
+import java.util.Date
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 
@@ -46,7 +48,7 @@ class AnalyticsFragment :
         super.onViewCreated(view, savedInstanceState)
         bind(view)
         setupResultHandlers(viewModel)
-        lifecycleScope.launchWhenStarted { viewModel.state.collect { newState -> handleStateChange(newState) } }
+        lifecycleScope.launchWhenStarted { viewModel.viewState.collect { newState -> handleStateChange(newState) } }
         viewModel.event.observe(viewLifecycleOwner) { event -> handleEvent(event) }
         binding.analyticsRefreshLayout.setOnRefreshListener {
             binding.analyticsRefreshLayout.scrollUpChild = binding.scrollView
@@ -77,24 +79,22 @@ class AnalyticsFragment :
     private fun openDateRangeSelector() = findNavController().navigateSafely(buildDialogDateRangeSelectorArguments())
 
     private fun buildDialogDateRangeSelectorArguments() =
-        getDateRangeSelectorViewState().availableRangeDates.toTypedArray().let { ranges ->
-            AnalyticsFragmentDirections.actionAnalyticsFragmentToDateRangeSelector(
-                requestKey = KEY_DATE_RANGE_SELECTOR_RESULT,
-                keys = ranges,
-                values = ranges,
-                selectedItem = getDateRangeSelectorViewState().selectedPeriod
-            )
-        }
+        AnalyticsFragmentDirections.actionAnalyticsFragmentToDateRangeSelector(
+            requestKey = KEY_DATE_RANGE_SELECTOR_RESULT,
+            keys = viewModel.selectableRangeOptions,
+            values = viewModel.selectableRangeOptions,
+            selectedItem = getDateRangeSelectorViewState().selectedPeriod
+        )
 
     private fun setupResultHandlers(viewModel: AnalyticsViewModel) {
         handleDialogResult<String>(
             key = KEY_DATE_RANGE_SELECTOR_RESULT,
             entryId = R.id.analytics
         ) { dateSelection ->
-            when (val timePeriod = AnalyticTimePeriod.from(dateSelection)) {
-                AnalyticTimePeriod.CUSTOM -> viewModel.onCustomDateRangeClicked()
-                else -> viewModel.onSelectedTimePeriodChanged(timePeriod)
-            }
+            AnalyticsHubDateRangeSelection.SelectionType.from(dateSelection)
+                .takeIf { it != CUSTOM }
+                ?.let { viewModel.onNewRangeSelection(it) }
+                ?: viewModel.onCustomDateRangeClicked()
         }
     }
 
@@ -113,7 +113,7 @@ class AnalyticsFragment :
         binding.analyticsRefreshLayout.isRefreshing = viewState.refreshIndicator == ShowIndicator
     }
 
-    private fun getDateRangeSelectorViewState() = viewModel.state.value.analyticsDateRangeSelectorState
+    private fun getDateRangeSelectorViewState() = viewModel.viewState.value.analyticsDateRangeSelectorState
 
     private fun showDateRangePicker(fromMillis: Long, toMillis: Long) {
         val datePicker =
@@ -128,7 +128,7 @@ class AnalyticsFragment :
                 .build()
         datePicker.show(parentFragmentManager, DATE_PICKER_FRAGMENT_TAG)
         datePicker.addOnPositiveButtonClickListener {
-            viewModel.onCustomDateRangeChanged(it?.first ?: 0L, it.second ?: 0L)
+            viewModel.onCustomRangeSelected(Date(it?.first ?: 0L), Date(it.second ?: 0L))
         }
     }
 }
