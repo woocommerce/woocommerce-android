@@ -1,5 +1,8 @@
 package com.woocommerce.android.ui.analytics
 
+import com.woocommerce.android.extensions.endOfCurrentDay
+import com.woocommerce.android.extensions.formatToYYYYmmDD
+import com.woocommerce.android.extensions.startOfCurrentDay
 import com.woocommerce.android.model.DeltaPercentage
 import com.woocommerce.android.model.ProductItem
 import com.woocommerce.android.model.RevenueStat
@@ -18,6 +21,8 @@ import com.woocommerce.android.ui.analytics.ranges.AnalyticsHubDateRangeSelectio
 import com.woocommerce.android.ui.analytics.ranges.AnalyticsHubDateRangeSelection.SelectionType.CUSTOM
 import com.woocommerce.android.ui.mystore.data.StatsRepository
 import com.woocommerce.android.viewmodel.BaseUnitTest
+import java.text.SimpleDateFormat
+import java.util.Calendar
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.asFlow
 import kotlinx.coroutines.test.runTest
@@ -36,9 +41,12 @@ import org.wordpress.android.fluxc.persistence.entity.TopPerformerProductEntity
 import org.wordpress.android.fluxc.store.WooCommerceStore
 import org.wordpress.android.fluxc.utils.DateUtils
 import java.util.Date
+import java.util.Locale
+import java.util.TimeZone
 import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
 import kotlin.test.assertTrue
+import org.junit.Before
 
 @ExperimentalCoroutinesApi
 @Suppress("LargeClass")
@@ -47,6 +55,9 @@ class AnalyticsRepositoryTest : BaseUnitTest() {
     private val selectedSite: SelectedSite = mock()
     private val wooCommerceStore: WooCommerceStore = mock()
 
+    private lateinit var testTimeZone: TimeZone
+    private lateinit var testCalendar: Calendar
+
     private val sut: AnalyticsRepository = AnalyticsRepository(
         statsRepository,
         selectedSite,
@@ -54,19 +65,38 @@ class AnalyticsRepositoryTest : BaseUnitTest() {
         coroutinesTestRule.testDispatchers
     )
 
+    @Before
+    fun setUp() {
+        testTimeZone = TimeZone.getDefault()
+        testCalendar = Calendar.getInstance(Locale.UK)
+        testCalendar.timeZone = testTimeZone
+        testCalendar.firstDayOfWeek = Calendar.MONDAY
+    }
+
     @Test
     fun `given no currentPeriodRevenue, when fetchRevenueData, then result is RevenueError`() = runTest {
         // Given
+        val expectedSelectionData = CUSTOM.generateSelectionData(
+            referenceStartDate = dayStartFrom("2022-09-25"),
+            referenceEndDate= dayEndFrom("2022-04-10")
+        )
+
+        val selectedPeriodStart = expectedSelectionData.currentRange.start.formatToYYYYmmDD()
+        val selectedPeriodEnd = expectedSelectionData.currentRange.end.formatToYYYYmmDD()
+        val previousPeriodStart = expectedSelectionData.previousRange.start.formatToYYYYmmDD()
+        val previousPeriodEnd = expectedSelectionData.previousRange.end.formatToYYYYmmDD()
+
         val previousPeriodRevenue = givenARevenue(TEN_VALUE, TEN_VALUE, TEN_VALUE.toInt())
-        whenever(statsRepository.fetchRevenueStats(any(), any(), eq(PREVIOUS_DATE), eq(PREVIOUS_DATE)))
+
+        whenever(statsRepository.fetchRevenueStats(any(), any(), eq(previousPeriodStart), eq(previousPeriodEnd)))
             .thenReturn(listOf(Result.success(previousPeriodRevenue)).asFlow())
 
-        whenever(statsRepository.fetchRevenueStats(any(), any(), eq(PREVIOUS_DATE), eq(CURRENT_DATE)))
+        whenever(statsRepository.fetchRevenueStats(any(), any(), eq(selectedPeriodStart), eq(selectedPeriodEnd)))
             .thenReturn(listOf(Result.failure<WCRevenueStatsModel?>(StatsRepository.StatsException(null))).asFlow())
 
         // When
         val result = sut.fetchRevenueData(
-            CUSTOM.generateSelectionData(previousDate, currentDate),
+            expectedSelectionData,
             anyFetchStrategy
         )
 
@@ -880,6 +910,23 @@ class AnalyticsRepositoryTest : BaseUnitTest() {
             millisSinceLastUpdated = 0
         )
         return mutableListOf(productEntity)
+    }
+
+
+    private fun dayEndFrom(date: String): Date {
+        val formatter = SimpleDateFormat("yyyy-MM-dd")
+        formatter.timeZone = testTimeZone
+        val referenceDate = formatter.parse(date)!!
+        testCalendar.time = referenceDate
+        return testCalendar.endOfCurrentDay()
+    }
+
+    private fun dayStartFrom(date: String): Date {
+        val formatter = SimpleDateFormat("yyyy-MM-dd")
+        formatter.timeZone = testTimeZone
+        val referenceDate = formatter.parse(date)!!
+        testCalendar.time = referenceDate
+        return testCalendar.startOfCurrentDay()
     }
 
     companion object {
