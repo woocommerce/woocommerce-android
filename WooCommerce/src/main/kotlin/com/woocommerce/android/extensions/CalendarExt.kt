@@ -1,13 +1,12 @@
 package com.woocommerce.android.extensions
 
-import com.woocommerce.android.util.DateUtils
 import java.util.Calendar
 import java.util.Date
 
 fun Calendar.startOfCurrentDay(): Date =
     (clone() as Calendar).apply {
         clearMinutesAndSeconds()
-        set(Calendar.HOUR_OF_DAY, DateUtils.ZERO)
+        set(Calendar.HOUR_OF_DAY, 0)
     }.time
 
 fun Calendar.endOfCurrentDay(): Date =
@@ -16,15 +15,15 @@ fun Calendar.endOfCurrentDay(): Date =
 fun Calendar.startOfCurrentWeek(): Date =
     apply {
         clearMinutesAndSeconds()
-        set(Calendar.HOUR_OF_DAY, DateUtils.ZERO)
+        set(Calendar.HOUR_OF_DAY, 0)
         set(Calendar.DAY_OF_WEEK, firstDayOfWeek)
     }.time
 
 fun Calendar.endOfCurrentWeek(): Date =
     (clone() as Calendar).apply {
         clearMinutesAndSeconds()
-        set(Calendar.HOUR_OF_DAY, DateUtils.ZERO)
-        set(Calendar.DAY_OF_WEEK, firstDayOfWeek + DateUtils.DAYS_TAIL_IN_WEEK)
+        set(Calendar.HOUR_OF_DAY, 0)
+        set(Calendar.DAY_OF_WEEK, firstDayOfWeek + DAYS_TAIL_IN_WEEK)
         setToDayLastSecond()
     }.time
 
@@ -37,7 +36,7 @@ fun Calendar.startOfCurrentMonth(): Date =
 fun Calendar.endOfCurrentMonth(): Date =
     (clone() as Calendar).apply {
         clearMinutesAndSeconds()
-        set(Calendar.HOUR_OF_DAY, DateUtils.ZERO)
+        set(Calendar.HOUR_OF_DAY, 0)
         set(Calendar.DAY_OF_MONTH, getActualMaximum(Calendar.DAY_OF_MONTH))
         setToDayLastSecond()
     }.time
@@ -46,13 +45,13 @@ fun Calendar.startOfCurrentQuarter(): Date =
     (clone() as Calendar).apply {
         clearMinutesAndSeconds()
         setToDayFirstSecond()
-        set(Calendar.MONTH, get(Calendar.MONTH) / DateUtils.THREE * DateUtils.THREE)
+        set(Calendar.MONTH, get(Calendar.MONTH) / THREE * THREE)
     }.time
 
 fun Calendar.endOfCurrentQuarter(): Date =
     (clone() as Calendar).apply {
         clearMinutesAndSeconds()
-        set(Calendar.MONTH, get(Calendar.MONTH) / DateUtils.THREE * DateUtils.THREE + 2)
+        set(Calendar.MONTH, get(Calendar.MONTH) / THREE * THREE + 2)
         set(Calendar.DAY_OF_MONTH, getActualMaximum(Calendar.DAY_OF_MONTH))
         setToDayLastSecond()
     }.time
@@ -60,21 +59,21 @@ fun Calendar.endOfCurrentQuarter(): Date =
 fun Calendar.startOfCurrentYear(): Date =
     (clone() as Calendar).apply {
         clearMinutesAndSeconds()
-        set(Calendar.HOUR_OF_DAY, DateUtils.ZERO)
-        set(Calendar.DAY_OF_YEAR, DateUtils.ONE)
+        set(Calendar.HOUR_OF_DAY, 0)
+        set(Calendar.DAY_OF_YEAR, 1)
     }.time
 
 fun Calendar.endOfCurrentYear(): Date =
     (clone() as Calendar).apply {
         clearMinutesAndSeconds()
-        set(Calendar.HOUR_OF_DAY, DateUtils.ZERO)
+        set(Calendar.HOUR_OF_DAY, 0)
         set(Calendar.DAY_OF_YEAR, getActualMaximum(Calendar.DAY_OF_YEAR))
         setToDayLastSecond()
     }.time
 
 private fun Calendar.setToDayFirstSecond() {
-    set(Calendar.HOUR_OF_DAY, DateUtils.ZERO)
-    set(Calendar.DAY_OF_MONTH, DateUtils.ONE)
+    set(Calendar.HOUR_OF_DAY, 0)
+    set(Calendar.DAY_OF_MONTH, 1)
 }
 
 private fun Calendar.setToDayLastSecond() {
@@ -88,3 +87,6 @@ private fun Calendar.clearMinutesAndSeconds() {
     clear(Calendar.SECOND)
     clear(Calendar.MINUTE)
 }
+
+private const val DAYS_TAIL_IN_WEEK = 6
+private const val THREE = 3
