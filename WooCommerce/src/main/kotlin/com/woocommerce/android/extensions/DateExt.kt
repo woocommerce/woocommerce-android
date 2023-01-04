@@ -93,11 +93,10 @@ fun Date.oneDayAgo(): Date =
         add(Calendar.DATE, -1)
     }.time
 
-@Suppress("MagicNumber")
 fun Date.oneWeekAgo(): Date =
     Calendar.getInstance().apply {
         time = this@oneWeekAgo
-        add(Calendar.DATE, -7)
+        add(Calendar.DATE, -SEVEN_DAYS)
     }.time
 
 fun Date.oneMonthAgo(): Date =
@@ -109,7 +108,7 @@ fun Date.oneMonthAgo(): Date =
 fun Date.oneQuarterAgo(): Date =
     Calendar.getInstance().apply {
         time = this@oneQuarterAgo
-        add(Calendar.MONTH, -3)
+        add(Calendar.MONTH, -THREE_MONTHS)
     }.time
 
 fun Date.oneYearAgo(): Date =
@@ -133,3 +132,6 @@ fun Date.isInSameMonthAs(other: Date, calendar: Calendar): Boolean {
     val otherMonth = calendar.get(Calendar.MONTH)
     return thisMonth == otherMonth && isInSameYearAs(other, calendar)
 }
+
+private const val THREE_MONTHS = 3
+private const val SEVEN_DAYS = 7
