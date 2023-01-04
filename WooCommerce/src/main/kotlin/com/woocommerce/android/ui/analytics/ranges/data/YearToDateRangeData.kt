@@ -1,14 +1,13 @@
 package com.woocommerce.android.ui.analytics.ranges.data
 
-import com.woocommerce.android.extensions.endOfCurrentWeek
-import com.woocommerce.android.extensions.oneWeekAgo
-import com.woocommerce.android.extensions.startOfCurrentWeek
+import com.woocommerce.android.extensions.oneYearAgo
+import com.woocommerce.android.extensions.startOfCurrentYear
 import com.woocommerce.android.ui.analytics.ranges.AnalyticsHubTimeRange
 import com.woocommerce.android.ui.analytics.ranges.AnalyticsHubTimeRangeData
 import java.util.Calendar
 import java.util.Date
 
-class AnalyticsHubLastWeekRangeData(
+class YearToDateRangeData(
     referenceDate: Date,
     calendar: Calendar
 ) : AnalyticsHubTimeRangeData {
@@ -16,18 +15,17 @@ class AnalyticsHubLastWeekRangeData(
     override val previousRange: AnalyticsHubTimeRange
 
     init {
-        val oneWeekAgo = referenceDate.oneWeekAgo()
-        calendar.time = oneWeekAgo
+        calendar.time = referenceDate
         currentRange = AnalyticsHubTimeRange(
-            start = calendar.startOfCurrentWeek(),
-            end = calendar.endOfCurrentWeek()
+            start = calendar.startOfCurrentYear(),
+            end = referenceDate
         )
 
-        val twoWeeksAgo = oneWeekAgo.oneWeekAgo()
-        calendar.time = twoWeeksAgo
+        val oneYearAgo = referenceDate.oneYearAgo()
+        calendar.time = oneYearAgo
         previousRange = AnalyticsHubTimeRange(
-            start = calendar.startOfCurrentWeek(),
-            end = calendar.endOfCurrentWeek()
+            start = calendar.startOfCurrentYear(),
+            end = oneYearAgo
         )
     }
 }

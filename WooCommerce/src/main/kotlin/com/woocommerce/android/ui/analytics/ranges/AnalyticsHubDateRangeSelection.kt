@@ -12,17 +12,17 @@ import com.woocommerce.android.ui.analytics.ranges.AnalyticsHubDateRangeSelectio
 import com.woocommerce.android.ui.analytics.ranges.AnalyticsHubDateRangeSelection.SelectionType.WEEK_TO_DATE
 import com.woocommerce.android.ui.analytics.ranges.AnalyticsHubDateRangeSelection.SelectionType.YEAR_TO_DATE
 import com.woocommerce.android.ui.analytics.ranges.AnalyticsHubDateRangeSelection.SelectionType.YESTERDAY
-import com.woocommerce.android.ui.analytics.ranges.data.AnalyticsHubCustomRangeData
-import com.woocommerce.android.ui.analytics.ranges.data.AnalyticsHubLastMonthRangeData
-import com.woocommerce.android.ui.analytics.ranges.data.AnalyticsHubLastQuarterRangeData
-import com.woocommerce.android.ui.analytics.ranges.data.AnalyticsHubLastWeekRangeData
-import com.woocommerce.android.ui.analytics.ranges.data.AnalyticsHubLastYearRangeData
-import com.woocommerce.android.ui.analytics.ranges.data.AnalyticsHubMonthToDateRangeData
-import com.woocommerce.android.ui.analytics.ranges.data.AnalyticsHubQuarterToDateRangeData
-import com.woocommerce.android.ui.analytics.ranges.data.AnalyticsHubTodayRangeData
-import com.woocommerce.android.ui.analytics.ranges.data.AnalyticsHubWeekToDateRangeData
-import com.woocommerce.android.ui.analytics.ranges.data.AnalyticsHubYearToDateRangeData
-import com.woocommerce.android.ui.analytics.ranges.data.AnalyticsHubYesterdayRangeData
+import com.woocommerce.android.ui.analytics.ranges.data.CustomRangeData
+import com.woocommerce.android.ui.analytics.ranges.data.LastMonthRangeData
+import com.woocommerce.android.ui.analytics.ranges.data.LastQuarterRangeData
+import com.woocommerce.android.ui.analytics.ranges.data.LastWeekRangeData
+import com.woocommerce.android.ui.analytics.ranges.data.LastYearRangeData
+import com.woocommerce.android.ui.analytics.ranges.data.MonthToDateRangeData
+import com.woocommerce.android.ui.analytics.ranges.data.QuarterToDateRangeData
+import com.woocommerce.android.ui.analytics.ranges.data.TodayRangeData
+import com.woocommerce.android.ui.analytics.ranges.data.WeekToDateRangeData
+import com.woocommerce.android.ui.analytics.ranges.data.YearToDateRangeData
+import com.woocommerce.android.ui.analytics.ranges.data.YesterdayRangeData
 import java.io.Serializable
 import java.util.Calendar
 import java.util.Date
@@ -50,7 +50,7 @@ class AnalyticsHubDateRangeSelection : Serializable {
         locale: Locale,
     ) {
         this.selectionType = CUSTOM
-        val rangeData = AnalyticsHubCustomRangeData(rangeStart, rangeEnd, calendar)
+        val rangeData = CustomRangeData(rangeStart, rangeEnd, calendar)
         currentRange = rangeData.currentRange
         previousRange = rangeData.previousRange
         currentRangeDescription = currentRange.generateDescription(false, locale, calendar)
@@ -79,16 +79,16 @@ class AnalyticsHubDateRangeSelection : Serializable {
         calendar: Calendar
     ): AnalyticsHubTimeRangeData {
         return when (selectionType) {
-            TODAY -> AnalyticsHubTodayRangeData(referenceDate, calendar)
-            YESTERDAY -> AnalyticsHubYesterdayRangeData(referenceDate, calendar)
-            WEEK_TO_DATE -> AnalyticsHubWeekToDateRangeData(referenceDate, calendar)
-            LAST_WEEK -> AnalyticsHubLastWeekRangeData(referenceDate, calendar)
-            MONTH_TO_DATE -> AnalyticsHubMonthToDateRangeData(referenceDate, calendar)
-            LAST_MONTH -> AnalyticsHubLastMonthRangeData(referenceDate, calendar)
-            QUARTER_TO_DATE -> AnalyticsHubQuarterToDateRangeData(referenceDate, calendar)
-            LAST_QUARTER -> AnalyticsHubLastQuarterRangeData(referenceDate, calendar)
-            YEAR_TO_DATE -> AnalyticsHubYearToDateRangeData(referenceDate, calendar)
-            LAST_YEAR -> AnalyticsHubLastYearRangeData(referenceDate, calendar)
+            TODAY -> TodayRangeData(referenceDate, calendar)
+            YESTERDAY -> YesterdayRangeData(referenceDate, calendar)
+            WEEK_TO_DATE -> WeekToDateRangeData(referenceDate, calendar)
+            LAST_WEEK -> LastWeekRangeData(referenceDate, calendar)
+            MONTH_TO_DATE -> MonthToDateRangeData(referenceDate, calendar)
+            LAST_MONTH -> LastMonthRangeData(referenceDate, calendar)
+            QUARTER_TO_DATE -> QuarterToDateRangeData(referenceDate, calendar)
+            LAST_QUARTER -> LastQuarterRangeData(referenceDate, calendar)
+            YEAR_TO_DATE -> YearToDateRangeData(referenceDate, calendar)
+            LAST_YEAR -> LastYearRangeData(referenceDate, calendar)
             else -> throw IllegalStateException("Custom selection type should use the correct constructor")
         }
     }
