@@ -13,6 +13,7 @@ import com.woocommerce.android.experiment.JetpackInstallationExperiment
 import com.woocommerce.android.experiment.JetpackInstallationExperiment.JetpackInstallationVariant
 import com.woocommerce.android.ui.login.AccountRepository
 import com.woocommerce.android.ui.sitepicker.SitePickerRepository
+import com.woocommerce.android.util.UrlUtils
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
@@ -45,7 +46,8 @@ class SitePickerSiteDiscoveryViewModel @Inject constructor(
     private val accountRepository: AccountRepository,
     private val resourceProvider: ResourceProvider,
     private val analyticsTracker: AnalyticsTrackerWrapper,
-    private val jetpackInstallationExperiment: JetpackInstallationExperiment
+    private val jetpackInstallationExperiment: JetpackInstallationExperiment,
+    private val urlUtils: UrlUtils
 ) : ScopedViewModel(savedStateHandle) {
     companion object {
         private const val FETCHED_URL_KEY = "fetched_url"
@@ -172,7 +174,7 @@ class SitePickerSiteDiscoveryViewModel @Inject constructor(
 
         sitePickRepository.fetchSiteInfo(siteAddressFlow.value).fold(
             onSuccess = {
-                val siteAddress = (it.urlAfterRedirects ?: it.url)
+                val siteAddress = urlUtils.sanitiseUrl(it.urlAfterRedirects ?: it.url)
                 // Remove protocol prefix
                 val protocolRegex = Regex("^(http[s]?://)", IGNORE_CASE)
                 fetchedSiteUrl = siteAddress.replaceFirst(protocolRegex, "")

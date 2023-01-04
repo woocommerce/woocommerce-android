@@ -2,7 +2,7 @@ pluginManagement {
     gradle.ext.agpVersion = '7.2.1'
     gradle.ext.daggerVersion = '2.42'
     gradle.ext.detektVersion = '1.19.0'
-    gradle.ext.kotlinVersion = '1.6.10'
+    gradle.ext.kotlinVersion = '1.7.20'
     gradle.ext.navigationVersion = '2.5.3'
 
     repositories {
@@ -69,7 +69,6 @@ gradleEnterprise {
 rootProject.name = 'WCAndroid'
 
 include ':quicklogin'
-include ':libs:barcode'
 include ':libs:cardreader'
 include ':libs:iap'
 include ':WooCommerce'

@@ -2,6 +2,8 @@ package com.woocommerce.android.ui.common.texteditor
 
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.map
+import com.woocommerce.android.ui.common.texteditor.SimpleTextEditorStrategy.SEND_RESULT_ON_CONFIRMATION
+import com.woocommerce.android.ui.common.texteditor.SimpleTextEditorStrategy.SEND_RESULT_ON_NAVIGATE_BACK
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
 import com.woocommerce.android.viewmodel.ScopedViewModel
@@ -30,6 +32,25 @@ class SimpleTextEditorViewModel @Inject constructor(savedState: SavedStateHandle
     }
 
     fun onBackPressed() {
+        when (navArgs.strategy) {
+            SEND_RESULT_ON_NAVIGATE_BACK -> {
+                exitWithResult()
+            }
+            SEND_RESULT_ON_CONFIRMATION -> {
+                exit()
+            }
+        }
+    }
+
+    fun onDonePressed() {
+        exitWithResult()
+    }
+
+    private fun exit() {
+        triggerEvent(Exit)
+    }
+
+    private fun exitWithResult() {
         val event = viewState.value?.takeIf { it.hasChanges }?.let { viewState ->
             ExitWithResult(
                 SimpleTextEditorResult(

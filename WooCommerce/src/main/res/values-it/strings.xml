@@ -149,7 +149,6 @@ Language: it
     <string name="signup_email_exist_input">Esiste già un account con questa e-mail.</string>
     <string name="signup_already_registered">Per prima cosa, crea un account. Registrazione già effettuata? &lt;a href=\'login\'&gt;&lt;u&gt;Accesso&lt;/u&gt;&lt;/a&gt;</string>
     <string name="login_create_an_account">Crea un account</string>
-    <string name="simplified_login_enter_email_address">Inserisci il tuo indirizzo e-mail per iniziare</string>
     <string name="login_try_another_email">Prova con un altro indirizzo</string>
     <string name="date_timeframe_custom_date_range_title">Intervallo di date personalizzato</string>
     <string name="date_timeframe_custom">Personalizza</string>

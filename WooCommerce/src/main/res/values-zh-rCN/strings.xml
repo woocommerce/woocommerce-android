@@ -149,7 +149,6 @@ Language: zh_CN
     <string name="signup_email_exist_input">已存在使用此电子邮件的账户。</string>
     <string name="signup_already_registered">首先，我们来创建您的账户。 已注册？ &lt;a href=\'login\'&gt;&lt;u&gt;登录&lt;/u&gt;&lt;/a&gt;</string>
     <string name="login_create_an_account">创建账户</string>
-    <string name="simplified_login_enter_email_address">请输入您的电子邮箱地址以开始</string>
     <string name="login_try_another_email">尝试其他地址</string>
     <string name="date_timeframe_custom_date_range_title">自定义日期范围</string>
     <string name="date_timeframe_custom">自定义</string>

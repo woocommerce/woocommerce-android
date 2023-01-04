@@ -398,12 +398,6 @@ class ProductListViewModel @Inject constructor(
         }
     }
 
-    fun onSelectProductsClicked() {
-        productList.value?.first()?.let { product ->
-            triggerEvent(SelectProducts(listOf(product.remoteId)))
-        }
-    }
-
     fun onSelectionChanged(count: Int) {
         when {
             count == 0 -> exitSelectionMode()
