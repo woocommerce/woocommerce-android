@@ -5,13 +5,13 @@ import java.util.Calendar
 import java.util.Date
 
 fun Calendar.startOfCurrentDay(): Date =
-    apply {
+    (clone() as Calendar).apply {
         clearMinutesAndSeconds()
         set(Calendar.HOUR_OF_DAY, DateUtils.ZERO)
     }.time
 
 fun Calendar.endOfCurrentDay(): Date =
-    apply { setToDayLastSecond() }.time
+    (clone() as Calendar).apply { setToDayLastSecond() }.time
 
 fun Calendar.startOfCurrentWeek(): Date =
     apply {
@@ -21,7 +21,7 @@ fun Calendar.startOfCurrentWeek(): Date =
     }.time
 
 fun Calendar.endOfCurrentWeek(): Date =
-    apply {
+    (clone() as Calendar).apply {
         clearMinutesAndSeconds()
         set(Calendar.HOUR_OF_DAY, DateUtils.ZERO)
         set(Calendar.DAY_OF_WEEK, firstDayOfWeek + DateUtils.DAYS_TAIL_IN_WEEK)
@@ -29,13 +29,13 @@ fun Calendar.endOfCurrentWeek(): Date =
     }.time
 
 fun Calendar.startOfCurrentMonth(): Date =
-    apply {
+    (clone() as Calendar).apply {
         clearMinutesAndSeconds()
         setToDayFirstSecond()
     }.time
 
 fun Calendar.endOfCurrentMonth(): Date =
-    apply {
+    (clone() as Calendar).apply {
         clearMinutesAndSeconds()
         set(Calendar.HOUR_OF_DAY, DateUtils.ZERO)
         set(Calendar.DAY_OF_MONTH, getActualMaximum(Calendar.DAY_OF_MONTH))
@@ -43,14 +43,14 @@ fun Calendar.endOfCurrentMonth(): Date =
     }.time
 
 fun Calendar.startOfCurrentQuarter(): Date =
-    apply {
+    (clone() as Calendar).apply {
         clearMinutesAndSeconds()
         setToDayFirstSecond()
         set(Calendar.MONTH, get(Calendar.MONTH) / DateUtils.THREE * DateUtils.THREE)
     }.time
 
 fun Calendar.endOfCurrentQuarter(): Date =
-    apply {
+    (clone() as Calendar).apply {
         clearMinutesAndSeconds()
         set(Calendar.MONTH, get(Calendar.MONTH) / DateUtils.THREE * DateUtils.THREE + 2)
         set(Calendar.DAY_OF_MONTH, getActualMaximum(Calendar.DAY_OF_MONTH))
@@ -58,14 +58,14 @@ fun Calendar.endOfCurrentQuarter(): Date =
     }.time
 
 fun Calendar.startOfCurrentYear(): Date =
-    apply {
+    (clone() as Calendar).apply {
         clearMinutesAndSeconds()
         set(Calendar.HOUR_OF_DAY, DateUtils.ZERO)
         set(Calendar.DAY_OF_YEAR, DateUtils.ONE)
     }.time
 
 fun Calendar.endOfCurrentYear(): Date =
-    apply {
+    (clone() as Calendar).apply {
         clearMinutesAndSeconds()
         set(Calendar.HOUR_OF_DAY, DateUtils.ZERO)
         set(Calendar.DAY_OF_YEAR, getActualMaximum(Calendar.DAY_OF_YEAR))
