@@ -74,7 +74,7 @@ fun JetpackActivationStartScreen(
             if (!viewState.isConnectionDismissed) {
                 Toolbar(
                     title = stringResource(id = string.login_jetpack_installation_screen_title),
-                    onNavigationButtonClick =  onBackButtonClick,
+                    onNavigationButtonClick = onBackButtonClick,
                     navigationIcon = Icons.Filled.Clear,
                     onActionButtonClick = onHelpButtonClick,
                 )
