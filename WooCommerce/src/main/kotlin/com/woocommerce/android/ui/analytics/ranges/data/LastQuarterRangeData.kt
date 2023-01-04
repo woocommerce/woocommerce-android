@@ -25,14 +25,14 @@ class LastQuarterRangeData(
     override val previousRange: AnalyticsHubTimeRange
 
     init {
-        val oneQuarterAgo = referenceDate.oneQuarterAgo(calendar)
+        val oneQuarterAgo = referenceDate.oneQuarterAgo()
         calendar.time = oneQuarterAgo
         currentRange = AnalyticsHubTimeRange(
             start = calendar.startOfCurrentQuarter(),
             end = calendar.endOfCurrentQuarter()
         )
 
-        val twoQuartersAgo = oneQuarterAgo.oneQuarterAgo(calendar)
+        val twoQuartersAgo = oneQuarterAgo.oneQuarterAgo()
         calendar.time = twoQuartersAgo
         previousRange = AnalyticsHubTimeRange(
             start = calendar.startOfCurrentQuarter(),

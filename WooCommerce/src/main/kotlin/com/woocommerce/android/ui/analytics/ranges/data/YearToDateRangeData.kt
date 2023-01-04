@@ -30,7 +30,7 @@ class YearToDateRangeData(
             end = referenceDate
         )
 
-        val oneYearAgo = referenceDate.oneYearAgo(calendar)
+        val oneYearAgo = referenceDate.oneYearAgo()
         calendar.time = oneYearAgo
         previousRange = AnalyticsHubTimeRange(
             start = calendar.startOfCurrentYear(),

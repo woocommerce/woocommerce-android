@@ -30,7 +30,7 @@ class QuarterToDateRangeData(
             end = referenceDate
         )
 
-        val oneQuarterAgo = referenceDate.oneQuarterAgo(calendar)
+        val oneQuarterAgo = referenceDate.oneQuarterAgo()
         calendar.time = oneQuarterAgo
         previousRange = AnalyticsHubTimeRange(
             start = calendar.startOfCurrentQuarter(),
