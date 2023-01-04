@@ -2,14 +2,14 @@ package com.woocommerce.android.ui.analytics.ranges
 
 import com.woocommerce.android.extensions.endOfCurrentDay
 import com.woocommerce.android.extensions.startOfCurrentDay
+import org.assertj.core.api.Assertions.assertThat
+import org.junit.Before
+import org.junit.Test
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Date
 import java.util.Locale
 import java.util.TimeZone
-import org.assertj.core.api.Assertions.assertThat
-import org.junit.Before
-import org.junit.Test
 
 internal class AnalyticsHubTimeRangeTest {
     private lateinit var testTimeZone: TimeZone
