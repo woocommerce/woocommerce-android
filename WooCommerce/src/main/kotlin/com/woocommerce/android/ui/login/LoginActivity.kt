@@ -54,15 +54,16 @@ import com.woocommerce.android.ui.login.localnotifications.LoginNotificationSche
 import com.woocommerce.android.ui.login.overrides.WooLoginEmailFragment
 import com.woocommerce.android.ui.login.overrides.WooLoginEmailPasswordFragment
 import com.woocommerce.android.ui.login.overrides.WooLoginSiteAddressFragment
-import com.woocommerce.android.ui.login.overrides.WooLoginUsernamePasswordFragment
 import com.woocommerce.android.ui.login.qrcode.QrCodeLoginListener
 import com.woocommerce.android.ui.login.qrcode.ValidateScannedValue
 import com.woocommerce.android.ui.login.signup.SignUpFragment
 import com.woocommerce.android.ui.login.signup.SignUpFragment.NextStep.SITE_PICKER
 import com.woocommerce.android.ui.login.signup.SignUpFragment.NextStep.STORE_CREATION
+import com.woocommerce.android.ui.login.sitecredentials.LoginSiteCredentialsFragment
 import com.woocommerce.android.ui.main.MainActivity
 import com.woocommerce.android.util.ActivityUtils
 import com.woocommerce.android.util.ChromeCustomTabUtils
+import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.util.UrlUtils
 import com.woocommerce.android.util.WooLog
 import dagger.android.AndroidInjector
@@ -91,6 +92,7 @@ import org.wordpress.android.login.LoginListener
 import org.wordpress.android.login.LoginMagicLinkRequestFragment
 import org.wordpress.android.login.LoginMode
 import org.wordpress.android.login.LoginSiteAddressFragment
+import org.wordpress.android.login.LoginUsernamePasswordFragment
 import org.wordpress.android.util.ToastUtils
 import javax.inject.Inject
 import kotlin.text.RegexOption.IGNORE_CASE
@@ -380,10 +382,10 @@ class LoginActivity :
     }
 
     private fun jumpToUsernamePassword(username: String?, password: String?) {
-        val loginUsernamePasswordFragment = WooLoginUsernamePasswordFragment.newInstance(
+        val loginUsernamePasswordFragment = LoginUsernamePasswordFragment.newInstance(
             "wordpress.com", "wordpress.com", username, password, true
         )
-        changeFragment(loginUsernamePasswordFragment, true, WooLoginUsernamePasswordFragment.TAG)
+        changeFragment(loginUsernamePasswordFragment, true, LoginUsernamePasswordFragment.TAG)
     }
 
     private fun startLoginViaWPCom() {
@@ -584,10 +586,7 @@ class LoginActivity :
         // logs into the app.
         inputSiteAddress?.let { AppPrefs.setLoginSiteAddress(it) }
 
-        val loginUsernamePasswordFragment = WooLoginUsernamePasswordFragment.newInstance(
-            inputSiteAddress, endpointAddress, null, null, false
-        )
-        changeFragment(loginUsernamePasswordFragment, true, WooLoginUsernamePasswordFragment.TAG)
+        showUsernamePasswordScreen(inputSiteAddress, endpointAddress, null, null)
     }
 
     override fun handleSslCertificateError(
@@ -818,10 +817,24 @@ class LoginActivity :
         inputUsername: String?,
         inputPassword: String?
     ) {
-        val loginUsernamePasswordFragment = WooLoginUsernamePasswordFragment.newInstance(
-            siteAddress, endpointAddress, inputUsername, inputPassword, false
-        )
-        changeFragment(loginUsernamePasswordFragment, true, WooLoginUsernamePasswordFragment.TAG)
+        val (fragment, tag) = if (FeatureFlag.REST_API.isEnabled()) {
+            Pair(
+                LoginSiteCredentialsFragment.newInstance(
+                    requireNotNull(siteAddress),
+                    inputUsername,
+                    inputPassword
+                ),
+                LoginSiteCredentialsFragment.TAG
+            )
+        } else {
+            Pair(
+                LoginUsernamePasswordFragment.newInstance(
+                    siteAddress, endpointAddress, inputUsername, inputPassword, false
+                ),
+                LoginUsernamePasswordFragment.TAG
+            )
+        }
+        changeFragment(fragment, true, tag)
     }
 
     override fun startJetpackInstall(siteAddress: String?) {
