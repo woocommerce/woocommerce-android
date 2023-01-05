@@ -30,15 +30,15 @@ import java.util.Locale
 /**
  * This class represents the date range selection for the Analytics Hub
  *
- * You should create it through the [AnalyticsHubDateRangeSelection.SelectionType.generateSelectionData]
+ * You can create it through the [AnalyticsHubDateRangeSelection.SelectionType.generateSelectionData]
  * function since it will return the correct data for the given selection type
+ *
+ * When creating the object through the available constructor, the Selection will be set as [CUSTOM]
  */
 class AnalyticsHubDateRangeSelection {
     val selectionType: SelectionType
-    var currentRange: AnalyticsHubTimeRange
-        private set
-    var previousRange: AnalyticsHubTimeRange
-        private set
+    val currentRange: AnalyticsHubTimeRange
+    val previousRange: AnalyticsHubTimeRange
     val currentRangeDescription: String
     val previousRangeDescription: String
 
@@ -48,8 +48,8 @@ class AnalyticsHubDateRangeSelection {
         calendar: Calendar,
         locale: Locale,
     ) {
-        this.selectionType = CUSTOM
         val rangeData = CustomRangeData(rangeStart, rangeEnd, calendar)
+        selectionType = CUSTOM
         currentRange = rangeData.currentRange
         previousRange = rangeData.previousRange
         currentRangeDescription = currentRange.generateDescription(false, locale, calendar)
@@ -62,8 +62,8 @@ class AnalyticsHubDateRangeSelection {
         calendar: Calendar,
         locale: Locale
     ) {
-        this.selectionType = selectionType
         val rangeData = generateTimeRangeData(selectionType, referenceDate, calendar)
+        this.selectionType = selectionType
         currentRange = rangeData.currentRange
         previousRange = rangeData.previousRange
 
@@ -126,11 +126,6 @@ class AnalyticsHubDateRangeSelection {
                     locale = locale
                 )
             }
-        }
-
-        companion object {
-            fun from(datePeriod: String): SelectionType = values()
-                .find { it.description == datePeriod } ?: TODAY
         }
     }
 }
