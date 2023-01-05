@@ -2,12 +2,16 @@ package com.woocommerce.android.ui.analytics.ranges
 
 import com.woocommerce.android.extensions.endOfCurrentDay
 import com.woocommerce.android.extensions.startOfCurrentDay
-import com.woocommerce.android.ui.analytics.ranges.AnalyticsHubDateRangeSelection.AnalyticsHubRangeSelectionType.LAST_MONTH
-import com.woocommerce.android.ui.analytics.ranges.AnalyticsHubDateRangeSelection.AnalyticsHubRangeSelectionType.LAST_WEEK
-import com.woocommerce.android.ui.analytics.ranges.AnalyticsHubDateRangeSelection.AnalyticsHubRangeSelectionType.MONTH_TO_DATE
-import com.woocommerce.android.ui.analytics.ranges.AnalyticsHubDateRangeSelection.AnalyticsHubRangeSelectionType.TODAY
-import com.woocommerce.android.ui.analytics.ranges.AnalyticsHubDateRangeSelection.AnalyticsHubRangeSelectionType.WEEK_TO_DATE
-import com.woocommerce.android.ui.analytics.ranges.AnalyticsHubDateRangeSelection.AnalyticsHubRangeSelectionType.YESTERDAY
+import com.woocommerce.android.ui.analytics.ranges.AnalyticsHubDateRangeSelection.SelectionType.LAST_MONTH
+import com.woocommerce.android.ui.analytics.ranges.AnalyticsHubDateRangeSelection.SelectionType.LAST_QUARTER
+import com.woocommerce.android.ui.analytics.ranges.AnalyticsHubDateRangeSelection.SelectionType.LAST_WEEK
+import com.woocommerce.android.ui.analytics.ranges.AnalyticsHubDateRangeSelection.SelectionType.LAST_YEAR
+import com.woocommerce.android.ui.analytics.ranges.AnalyticsHubDateRangeSelection.SelectionType.MONTH_TO_DATE
+import com.woocommerce.android.ui.analytics.ranges.AnalyticsHubDateRangeSelection.SelectionType.QUARTER_TO_DATE
+import com.woocommerce.android.ui.analytics.ranges.AnalyticsHubDateRangeSelection.SelectionType.TODAY
+import com.woocommerce.android.ui.analytics.ranges.AnalyticsHubDateRangeSelection.SelectionType.WEEK_TO_DATE
+import com.woocommerce.android.ui.analytics.ranges.AnalyticsHubDateRangeSelection.SelectionType.YEAR_TO_DATE
+import com.woocommerce.android.ui.analytics.ranges.AnalyticsHubDateRangeSelection.SelectionType.YESTERDAY
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Test
@@ -19,7 +23,6 @@ import java.util.TimeZone
 
 internal class AnalyticsHubDateRangeSelectionTest {
     private lateinit var testTimeZone: TimeZone
-
     private lateinit var testCalendar: Calendar
 
     @Before
@@ -28,6 +31,106 @@ internal class AnalyticsHubDateRangeSelectionTest {
         testCalendar = Calendar.getInstance(Locale.UK)
         testCalendar.timeZone = testTimeZone
         testCalendar.firstDayOfWeek = Calendar.MONDAY
+    }
+
+    @Test
+    fun `when selection type is year to date, then generate expected date information`() {
+        // Given
+        val today = midDayFrom("2020-02-29")
+        val expectedCurrentRange = AnalyticsHubTimeRange(
+            start = dayStartFrom("2020-01-01"),
+            end = today
+        )
+        val expectedPreviousRange = AnalyticsHubTimeRange(
+            start = dayStartFrom("2019-01-01"),
+            end = midDayFrom("2019-02-28")
+        )
+
+        // When
+        val sut = AnalyticsHubDateRangeSelection(
+            selectionType = YEAR_TO_DATE,
+            currentDate = today,
+            calendar = testCalendar
+        )
+
+        // Then
+        assertThat(sut.currentRange).isEqualTo(expectedCurrentRange)
+        assertThat(sut.previousRange).isEqualTo(expectedPreviousRange)
+    }
+
+    @Test
+    fun `when selection type is last year, then generate expected date information`() {
+        // Given
+        val today = midDayFrom("2020-02-29")
+        val expectedCurrentRange = AnalyticsHubTimeRange(
+            start = dayStartFrom("2019-01-01"),
+            end = dayEndFrom("2019-12-31")
+        )
+        val expectedPreviousRange = AnalyticsHubTimeRange(
+            start = dayStartFrom("2018-01-01"),
+            end = dayEndFrom("2018-12-31")
+        )
+
+        // When
+        val sut = AnalyticsHubDateRangeSelection(
+            selectionType = LAST_YEAR,
+            currentDate = today,
+            calendar = testCalendar
+        )
+
+        // Then
+        assertThat(sut.currentRange).isEqualTo(expectedCurrentRange)
+        assertThat(sut.previousRange).isEqualTo(expectedPreviousRange)
+    }
+
+    @Test
+    fun `when selection type is quarter to date, then generate expected date information`() {
+        // Given
+        val today = midDayFrom("2022-02-15")
+        val expectedCurrentRange = AnalyticsHubTimeRange(
+            start = dayStartFrom("2022-01-01"),
+            end = today
+        )
+        val expectedPreviousRange = AnalyticsHubTimeRange(
+            start = dayStartFrom("2021-10-01"),
+            end = midDayFrom("2021-11-15")
+        )
+
+        // When
+        val sut = AnalyticsHubDateRangeSelection(
+            selectionType = QUARTER_TO_DATE,
+            currentDate = today,
+            calendar = testCalendar
+        )
+
+        // Then
+        assertThat(sut.currentRange).isEqualTo(expectedCurrentRange)
+        assertThat(sut.previousRange).isEqualTo(expectedPreviousRange)
+    }
+
+    @Test
+    fun `when selection type is last quarter, then generate expected date information`() {
+        // Given
+        val today = midDayFrom("2022-05-15")
+        val expectedCurrentRange = AnalyticsHubTimeRange(
+            start = dayStartFrom("2022-01-01"),
+            end = dayEndFrom("2022-03-31")
+        )
+        val expectedPreviousRange = AnalyticsHubTimeRange(
+            start = dayStartFrom("2021-10-01"),
+            end = dayEndFrom("2021-12-31")
+        )
+
+        // When
+        val sut = AnalyticsHubDateRangeSelection(
+            selectionType = LAST_QUARTER,
+            currentDate = today,
+            calendar = testCalendar
+        )
+
+        // Then
+        assertThat(sut.currentRange).isEqualTo(expectedCurrentRange)
+        assertThat(sut.previousRange).isEqualTo(expectedPreviousRange)
     }
 
     @Test

@@ -89,11 +89,10 @@ fun Date.oneDayAgo(): Date =
         add(Calendar.DATE, -1)
     }.time
 
-@Suppress("MagicNumber")
 fun Date.oneWeekAgo(): Date =
     Calendar.getInstance().apply {
         time = this@oneWeekAgo
-        add(Calendar.DATE, -7)
+        add(Calendar.DATE, -SEVEN_DAYS)
     }.time
 
 fun Date.oneMonthAgo(): Date =
@@ -101,3 +100,18 @@ fun Date.oneMonthAgo(): Date =
         time = this@oneMonthAgo
         add(Calendar.MONTH, -1)
     }.time
+
+fun Date.oneQuarterAgo(): Date =
+    Calendar.getInstance().apply {
+        time = this@oneQuarterAgo
+        add(Calendar.MONTH, -THREE_MONTHS)
+    }.time
+
+fun Date.oneYearAgo(): Date =
+    Calendar.getInstance().apply {
+        time = this@oneYearAgo
+        add(Calendar.YEAR, -1)
+    }.time
+
+private const val THREE_MONTHS = 3
+private const val SEVEN_DAYS = 7
