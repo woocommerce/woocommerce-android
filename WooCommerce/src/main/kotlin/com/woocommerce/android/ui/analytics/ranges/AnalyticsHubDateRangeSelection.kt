@@ -127,5 +127,11 @@ class AnalyticsHubDateRangeSelection {
                 )
             }
         }
+
+        companion object {
+            fun from(description: String): SelectionType {
+                return values().firstOrNull { it.description == description } ?: CUSTOM
+            }
+        }
     }
 }
