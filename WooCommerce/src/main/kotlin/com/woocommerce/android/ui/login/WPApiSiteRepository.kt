@@ -2,13 +2,13 @@ package com.woocommerce.android.ui.login
 
 import com.woocommerce.android.OnChangedException
 import com.woocommerce.android.util.WooLog
-import com.woocommerce.android.util.awaitAny
 import com.woocommerce.android.util.awaitEvent
 import com.woocommerce.android.util.dispatchAndAwait
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.withContext
+import kotlinx.coroutines.withTimeoutOrNull
 import org.wordpress.android.fluxc.Dispatcher
 import org.wordpress.android.fluxc.generated.AuthenticationActionBuilder
 import org.wordpress.android.fluxc.model.SiteModel
@@ -94,9 +94,26 @@ class WPApiSiteRepository @Inject constructor(
             }
         }
 
-        val tasks = listOf(authenticationTask, siteTask)
+        val fetchEvent = siteTask.await()
 
-        val event = tasks.awaitAny()
+        val event = if (!fetchEvent.isError) {
+            // In case of success, continue directly
+            fetchEvent
+        } else {
+            // If there is an error, prefer passing the authentication error instead of the fetch error
+            // This allows having a better error message in the UI
+            val authenticationError = if (fetchEvent.isError) {
+                @Suppress("MagicNumber")
+                withTimeoutOrNull(100) {
+                    authenticationTask.await()
+                }
+            } else null
+
+            authenticationError ?: fetchEvent
+        }
+
+        // Make sure to cancel the task if no event was sent
+        if (authenticationTask.isActive) authenticationTask.cancel()
 
         return@coroutineScope when {
             event.isError -> Result.failure(OnChangedException(event.error))

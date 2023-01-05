@@ -47,7 +47,7 @@ suspend inline fun <T> Iterable<Deferred<T>>.awaitAny(autoCancelRemainingTasks: 
     }
 
     if (autoCancelRemainingTasks) {
-        filter { !it.isCancelled && !it.isCancelled }.forEach { it.cancel() }
+        filter { !it.isCompleted && !it.isCancelled }.forEach { it.cancel() }
     }
     return firstResult
 }
