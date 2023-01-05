@@ -30,15 +30,13 @@ import java.util.Locale
 /**
  * This class represents the date range selection for the Analytics Hub
  *
- * You should create it through the [AnalyticsHubDateRangeSelection.SelectionType.generateSelectionData]
+ * You can create it through the [AnalyticsHubDateRangeSelection.SelectionType.generateSelectionData]
  * function since it will return the correct data for the given selection type
  */
 class AnalyticsHubDateRangeSelection {
     val selectionType: SelectionType
-    var currentRange: AnalyticsHubTimeRange
-        private set
-    var previousRange: AnalyticsHubTimeRange
-        private set
+    val currentRange: AnalyticsHubTimeRange
+    val previousRange: AnalyticsHubTimeRange
     val currentRangeDescription: String
     val previousRangeDescription: String
 
