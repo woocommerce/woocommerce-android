@@ -199,6 +199,7 @@ class AddressViewModel @Inject constructor(
 
         triggerEvent(
             Exit(
+                customerId = viewState.customerId,
                 viewState.addressSelectionStates.mapValues { statePair ->
                     if (addDifferentShippingChecked == false && statePair.key == AddressType.SHIPPING) {
                         Address.EMPTY
@@ -240,10 +241,12 @@ class AddressViewModel @Inject constructor(
     }
 
     fun onAddressesChanged(
+        customerId: Long,
         billingAddress: Address,
         shippingAddress: Address
     ) {
         viewState = viewState.copy(
+            customerId = customerId,
             addressSelectionStates = mapOf(
                 AddressType.BILLING to AddressSelectionState(
                     billingAddress,
@@ -259,6 +262,7 @@ class AddressViewModel @Inject constructor(
 
     @Parcelize
     data class ViewState(
+        val customerId: Long? = null,
         val addressSelectionStates: Map<AddressType, AddressSelectionState> = emptyMap(),
         val isLoading: Boolean = false,
     ) : Parcelable
@@ -288,6 +292,7 @@ class AddressViewModel @Inject constructor(
     ) : MultiLiveEvent.Event()
 
     data class Exit(
+        val customerId: Long?,
         val addresses: Map<AddressType, Address>
     ) : MultiLiveEvent.Event()
 

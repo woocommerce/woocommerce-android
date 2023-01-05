@@ -149,7 +149,6 @@ Language: ar
     <string name="signup_email_exist_input">يوجد حساب موجود لهذا البريد الإلكتروني بالفعل.</string>
     <string name="signup_already_registered">لنقم بإنشاء حسابك أولاً. هل تم التسجيل بالفعل. &lt;a href=\'login\'&gt;&lt;u&gt;تسجيل الدخول&lt;/u&gt;&lt;/a&gt;</string>
     <string name="login_create_an_account">إنشاء حساب</string>
-    <string name="simplified_login_enter_email_address">إدخال عنوان بريدك الإلكتروني للبدء</string>
     <string name="login_try_another_email">تجربة عنوان آخر</string>
     <string name="date_timeframe_custom_date_range_title">نطاق تاريخ مخصص</string>
     <string name="date_timeframe_custom">مخصص</string>
