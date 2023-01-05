@@ -149,7 +149,6 @@ Language: pt_BR
     <string name="signup_email_exist_input">Já existe uma conta com este e-mail.</string>
     <string name="signup_already_registered">Primeiro, vamos criar uma conta. Já tem cadastro? &lt;a href=\'login\'&gt;&lt;u&gt;Fazer login&lt;/u&gt;&lt;/a&gt;</string>
     <string name="login_create_an_account">Criar uma conta</string>
-    <string name="simplified_login_enter_email_address">Insira seu endereço de e-mail para começar</string>
     <string name="login_try_another_email">Tentar outro endereço</string>
     <string name="date_timeframe_custom_date_range_title">Período personalizado</string>
     <string name="date_timeframe_custom">Personalizado</string>

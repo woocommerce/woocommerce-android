@@ -752,7 +752,6 @@ enum class AnalyticsEvent(val siteless: Boolean = false) {
     // Experiments (A/B test variants)
     PROLOGUE_EXPERIMENT,
     JETPACK_TIMEOUT_EXPERIMENT,
-    SIMPLIFIED_LOGIN_EXPERIMENT,
     JETPACK_INSTALLATION_EXPERIMENT,
 
     // Widgets
@@ -778,7 +777,5 @@ enum class AnalyticsEvent(val siteless: Boolean = false) {
     SITE_CREATION_IAP_PURCHASE_ERROR(siteless = true),
 
     APPLICATION_PASSWORDS_NEW_PASSWORD_CREATED,
-    APPLICATION_PASSWORDS_TEST_INITIATED,
     APPLICATION_PASSWORDS_NOT_AVAILABLE,
-    APPLICATION_PASSWORDS_AVAILABLE,
 }
