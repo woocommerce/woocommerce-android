@@ -18,6 +18,10 @@ class AnalyticsDateRangeCardView @JvmOverloads constructor(
         binding.root.setOnClickListener(onClickListener)
     }
 
+    fun updateSelectionTitle(selectionTitle: String) {
+        binding.selectionTitle.text = selectionTitle
+    }
+
     fun updatePreviousRange(previousRange: String) {
         binding.previousRangeDescription.text = previousRange
     }

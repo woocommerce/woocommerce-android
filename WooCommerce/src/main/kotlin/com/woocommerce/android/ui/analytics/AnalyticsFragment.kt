@@ -104,6 +104,7 @@ class AnalyticsFragment :
     }
 
     private fun handleStateChange(viewState: AnalyticsViewState) {
+        binding.analyticsDateSelectorCard.updateSelectionTitle(viewState.analyticsDateRangeSelectorState.selectionTitle)
         binding.analyticsDateSelectorCard.updatePreviousRange(viewState.analyticsDateRangeSelectorState.previousRange)
         binding.analyticsDateSelectorCard.updateCurrentRange(viewState.analyticsDateRangeSelectorState.currentRange)
         binding.analyticsRevenueCard.updateInformation(viewState.revenueState)
