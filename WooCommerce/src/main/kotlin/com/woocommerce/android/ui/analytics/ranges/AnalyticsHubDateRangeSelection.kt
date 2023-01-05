@@ -48,8 +48,8 @@ class AnalyticsHubDateRangeSelection {
         calendar: Calendar,
         locale: Locale,
     ) {
-        this.selectionType = CUSTOM
         val rangeData = CustomRangeData(rangeStart, rangeEnd, calendar)
+        selectionType = CUSTOM
         currentRange = rangeData.currentRange
         previousRange = rangeData.previousRange
         currentRangeDescription = currentRange.generateDescription(false, locale, calendar)
@@ -62,8 +62,8 @@ class AnalyticsHubDateRangeSelection {
         calendar: Calendar,
         locale: Locale
     ) {
-        this.selectionType = selectionType
         val rangeData = generateTimeRangeData(selectionType, referenceDate, calendar)
+        this.selectionType = selectionType
         currentRange = rangeData.currentRange
         previousRange = rangeData.previousRange
 
