@@ -18,11 +18,11 @@ class AnalyticsDateRangeCardView @JvmOverloads constructor(
         binding.root.setOnClickListener(onClickListener)
     }
 
-    fun updateFromText(fromDatePeriod: String) {
-        binding.tvFromDate.text = fromDatePeriod
+    fun updatePreviousRange(previousRange: String) {
+        binding.previousRangeDescription.text = previousRange
     }
 
-    fun updateToText(toDatePeriod: String) {
-        binding.tvToDate.text = toDatePeriod
+    fun updateCurrentRange(currentRange: String) {
+        binding.currentRangeDescription.text = currentRange
     }
 }

@@ -1,15 +1,15 @@
 package com.woocommerce.android.ui.analytics.daterangeselector
 
 data class AnalyticsDateRangeSelectorViewState(
-    val toDatePeriod: String,
-    val fromDatePeriod: String,
-    val selectedPeriod: String
+    val currentRange: String,
+    val previousRange: String,
+    val selectionTitle: String
 ) {
     companion object {
         val EMPTY = AnalyticsDateRangeSelectorViewState(
-            toDatePeriod = "",
-            fromDatePeriod = "",
-            selectedPeriod = ""
+            currentRange = "",
+            previousRange = "",
+            selectionTitle = ""
         )
     }
 }
