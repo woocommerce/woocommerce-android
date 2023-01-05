@@ -1,7 +1,5 @@
 package com.woocommerce.android.ui.analytics.ranges
 
-import android.os.Parcel
-import android.os.Parcelable
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.analytics.ranges.AnalyticsHubDateRangeSelection.SelectionType.CUSTOM
 import com.woocommerce.android.ui.analytics.ranges.AnalyticsHubDateRangeSelection.SelectionType.LAST_MONTH
@@ -25,6 +23,7 @@ import com.woocommerce.android.ui.analytics.ranges.data.TodayRangeData
 import com.woocommerce.android.ui.analytics.ranges.data.WeekToDateRangeData
 import com.woocommerce.android.ui.analytics.ranges.data.YearToDateRangeData
 import com.woocommerce.android.ui.analytics.ranges.data.YesterdayRangeData
+import java.io.Serializable
 import java.util.Calendar
 import java.util.Date
 import java.util.Locale
@@ -37,7 +36,7 @@ import java.util.Locale
  *
  * When creating the object through the available constructor, the Selection will be set as [CUSTOM]
  */
-class AnalyticsHubDateRangeSelection : Parcelable {
+class AnalyticsHubDateRangeSelection : Serializable {
     val selectionType: SelectionType
     val currentRange: AnalyticsHubTimeRange
     val previousRange: AnalyticsHubTimeRange
@@ -94,6 +93,10 @@ class AnalyticsHubDateRangeSelection : Parcelable {
         }
     }
 
+    companion object {
+        const val serialVersionUID = 1L
+    }
+
     enum class SelectionType(val description: String, val localizedResourceId: Int) {
         TODAY("Today", R.string.date_timeframe_today),
         YESTERDAY("Yesterday", R.string.date_timeframe_yesterday),
@@ -134,37 +137,6 @@ class AnalyticsHubDateRangeSelection : Parcelable {
             fun from(description: String): SelectionType {
                 return values().firstOrNull { it.description == description } ?: CUSTOM
             }
-        }
-    }
-
-    /// Parcelable implementation
-    constructor(parcel: Parcel) {
-        selectionType = SelectionType.from(parcel.readString() ?: "CUSTOM")
-        currentRange = parcel.readParcelable(AnalyticsHubTimeRange::class.java.classLoader) ?: AnalyticsHubTimeRange.EMPTY
-        previousRange = parcel.readParcelable(AnalyticsHubTimeRange::class.java.classLoader) ?: AnalyticsHubTimeRange.EMPTY
-        currentRangeDescription = parcel.readString() ?: ""
-        previousRangeDescription = parcel.readString() ?: ""
-    }
-
-    override fun describeContents(): Int {
-        TODO("Not yet implemented")
-    }
-
-    override fun writeToParcel(parcel: Parcel, flags: Int) {
-        parcel.writeString(selectionType.description)
-        parcel.writeParcelable(currentRange, flags)
-        parcel.writeParcelable(previousRange, flags)
-        parcel.writeString(currentRangeDescription)
-        parcel.writeString(previousRangeDescription)
-    }
-
-    companion object CREATOR : Parcelable.Creator<AnalyticsHubDateRangeSelection> {
-        override fun createFromParcel(parcel: Parcel): AnalyticsHubDateRangeSelection {
-            return AnalyticsHubDateRangeSelection(parcel)
-        }
-
-        override fun newArray(size: Int): Array<AnalyticsHubDateRangeSelection?> {
-            return arrayOfNulls(size)
         }
     }
 }
