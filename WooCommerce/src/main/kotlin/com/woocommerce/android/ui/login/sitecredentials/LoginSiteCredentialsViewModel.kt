@@ -15,6 +15,7 @@ import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowUiStringSnackbar
+import com.woocommerce.android.viewmodel.ResourceProvider
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.getStateFlow
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -34,6 +35,7 @@ import org.wordpress.android.fluxc.store.AccountStore.AuthenticationErrorType.IN
 import org.wordpress.android.fluxc.store.AccountStore.AuthenticationErrorType.INVALID_TOKEN
 import org.wordpress.android.fluxc.store.AccountStore.AuthenticationErrorType.NEEDS_2FA
 import org.wordpress.android.fluxc.store.AccountStore.AuthenticationErrorType.NOT_AUTHENTICATED
+import org.wordpress.android.login.LoginAnalyticsListener
 import org.wordpress.android.util.UrlUtils
 import javax.inject.Inject
 
@@ -41,7 +43,9 @@ import javax.inject.Inject
 class LoginSiteCredentialsViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
     private val wpApiSiteRepository: WPApiSiteRepository,
-    private val selectedSite: SelectedSite
+    private val selectedSite: SelectedSite,
+    private val loginAnalyticsListener: LoginAnalyticsListener,
+    private val resourceProvider: ResourceProvider
 ) : ScopedViewModel(savedStateHandle) {
     companion object {
         const val SITE_ADDRESS_KEY = "site-address"
@@ -70,6 +74,10 @@ class LoginSiteCredentialsViewModel @Inject constructor(
         )
     }.asLiveData()
 
+    init {
+        loginAnalyticsListener.trackUsernamePasswordFormViewed()
+    }
+
     fun onUsernameChanged(username: String) {
         savedState[USERNAME_KEY] = username
         errorMessage.value = 0
@@ -81,6 +89,7 @@ class LoginSiteCredentialsViewModel @Inject constructor(
     }
 
     fun onContinueClick() = launch {
+        loginAnalyticsListener.trackSubmitClicked()
         isLoading.value = true
         val state = requireNotNull(this@LoginSiteCredentialsViewModel.state.value)
         wpApiSiteRepository.login(
@@ -89,12 +98,14 @@ class LoginSiteCredentialsViewModel @Inject constructor(
             password = state.password
         ).fold(
             onSuccess = {
+                loginAnalyticsListener.trackAnalyticsSignIn(false)
                 selectedSite.set(it)
                 triggerEvent(LoggedIn(it.id))
             },
             onFailure = { exception ->
+                var errorMessage: Int? = null
                 if (exception is OnChangedException && exception.error is AuthenticationError) {
-                    val errorMessage = exception.error.toErrorMessage()
+                    errorMessage = exception.error.toErrorMessage()
                     if (errorMessage == null) {
                         val message = exception.error.message?.takeIf { it.isNotEmpty() }
                             ?.let { UiStringText(it) } ?: UiStringRes(R.string.error_generic)
@@ -104,6 +115,17 @@ class LoginSiteCredentialsViewModel @Inject constructor(
                 } else {
                     triggerEvent(ShowSnackbar(R.string.error_generic))
                 }
+
+                // Track errors
+                val errorType = (exception as? OnChangedException)?.error ?: exception
+                loginAnalyticsListener.trackLoginFailed(
+                    errorContext = errorType.javaClass.simpleName,
+                    errorType = (errorType as? AuthenticationError)?.type?.toString(),
+                    errorDescription = exception.message
+                )
+                loginAnalyticsListener.trackFailure(
+                    message = errorMessage?.let { resourceProvider.getString(it) } ?: exception.message
+                )
             }
         )
         isLoading.value = false
