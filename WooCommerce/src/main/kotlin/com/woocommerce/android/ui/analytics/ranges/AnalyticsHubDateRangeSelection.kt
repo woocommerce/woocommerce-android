@@ -32,6 +32,8 @@ import java.util.Locale
  *
  * You can create it through the [AnalyticsHubDateRangeSelection.SelectionType.generateSelectionData]
  * function since it will return the correct data for the given selection type
+ *
+ * When creating the object through the available constructor, the Selection will be set as [CUSTOM]
  */
 class AnalyticsHubDateRangeSelection {
     val selectionType: SelectionType
