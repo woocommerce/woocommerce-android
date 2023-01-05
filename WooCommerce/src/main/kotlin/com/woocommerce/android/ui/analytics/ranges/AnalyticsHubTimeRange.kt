@@ -35,8 +35,4 @@ data class AnalyticsHubTimeRange(
 
         return "$formattedStartDate - $formattedEndDate"
     }
-
-    companion object {
-        val EMPTY = AnalyticsHubTimeRange(Date(), Date())
-    }
 }
