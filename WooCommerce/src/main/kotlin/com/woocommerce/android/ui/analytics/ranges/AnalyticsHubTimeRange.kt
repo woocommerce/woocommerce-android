@@ -6,10 +6,10 @@ import com.woocommerce.android.extensions.formatToMMMdd
 import com.woocommerce.android.extensions.formatToMMMddYYYY
 import com.woocommerce.android.extensions.isInSameMonthAs
 import com.woocommerce.android.extensions.isInSameYearAs
+import kotlinx.parcelize.Parcelize
 import java.util.Calendar
 import java.util.Date
 import java.util.Locale
-import kotlinx.parcelize.Parcelize
 
 @Parcelize
 data class AnalyticsHubTimeRange(
