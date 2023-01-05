@@ -15,6 +15,7 @@ import com.woocommerce.android.push.NotificationChannelType
 import com.woocommerce.android.push.WooNotificationBuilder
 import com.woocommerce.android.push.WooNotificationType
 import com.woocommerce.android.support.help.HelpActivity
+import com.woocommerce.android.support.help.HelpOrigin
 import com.woocommerce.android.ui.login.LoginActivity
 import com.woocommerce.android.ui.login.localnotifications.LoginHelpNotificationType.DEFAULT_HELP
 import com.woocommerce.android.ui.login.localnotifications.LoginHelpNotificationType.LOGIN_SITE_ADDRESS_EMAIL_ERROR
@@ -123,7 +124,7 @@ class LoginHelpNotificationWorker @AssistedInject constructor(
     private fun buildOpenSupportScreenIntent(notificationType: LoginHelpNotificationType): Intent =
         HelpActivity.createIntent(
             appContext,
-            HelpActivity.Origin.LOGIN_HELP_NOTIFICATION,
+            HelpOrigin.LOGIN_HELP_NOTIFICATION,
             arrayListOf(notificationType.toString())
         )
 

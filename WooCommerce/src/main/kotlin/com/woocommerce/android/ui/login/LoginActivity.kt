@@ -30,7 +30,7 @@ import com.woocommerce.android.extensions.parcelable
 import com.woocommerce.android.support.ZendeskExtraTags
 import com.woocommerce.android.support.ZendeskHelper
 import com.woocommerce.android.support.help.HelpActivity
-import com.woocommerce.android.support.help.HelpActivity.Origin
+import com.woocommerce.android.support.help.HelpOrigin
 import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.login.LoginPrologueCarouselFragment.PrologueCarouselListener
 import com.woocommerce.android.ui.login.LoginPrologueFragment.PrologueFinishedListener
@@ -598,7 +598,7 @@ class LoginActivity :
         // TODO: Support self-signed SSL sites and show dialog (only needed when XML-RPC support is added)
     }
 
-    private fun viewHelpAndSupport(origin: Origin) {
+    private fun viewHelpAndSupport(origin: HelpOrigin) {
         val extraSupportTags = arrayListOf(ZendeskExtraTags.connectingJetpack)
         val flow = unifiedLoginTracker.getFlow()
         val step = unifiedLoginTracker.previousStepBeforeHelpStep
@@ -607,12 +607,12 @@ class LoginActivity :
     }
 
     override fun helpSiteAddress(url: String?) {
-        viewHelpAndSupport(Origin.LOGIN_SITE_ADDRESS)
+        viewHelpAndSupport(HelpOrigin.LOGIN_SITE_ADDRESS)
     }
 
     override fun helpFindingSiteAddress(username: String?, siteStore: SiteStore?) {
         unifiedLoginTracker.trackClick(Click.HELP_FINDING_SITE_ADDRESS)
-        zendeskHelper.createNewTicket(this, Origin.LOGIN_SITE_ADDRESS, null)
+        zendeskHelper.createNewTicket(this, HelpOrigin.LOGIN_SITE_ADDRESS, null)
     }
 
     // TODO This can be modified to also receive the URL the user entered, so we can make that the primary store
@@ -621,11 +621,11 @@ class LoginActivity :
     }
 
     override fun helpEmailScreen(email: String?) {
-        viewHelpAndSupport(Origin.LOGIN_EMAIL)
+        viewHelpAndSupport(HelpOrigin.LOGIN_EMAIL)
     }
 
     override fun helpSocialEmailScreen(email: String?) {
-        viewHelpAndSupport(Origin.LOGIN_SOCIAL)
+        viewHelpAndSupport(HelpOrigin.LOGIN_SOCIAL)
     }
 
     @Suppress("DEPRECATION")
@@ -640,19 +640,19 @@ class LoginActivity :
     }
 
     override fun helpMagicLinkRequest(email: String?) {
-        viewHelpAndSupport(Origin.LOGIN_MAGIC_LINK)
+        viewHelpAndSupport(HelpOrigin.LOGIN_MAGIC_LINK)
     }
 
     override fun helpMagicLinkSent(email: String?) {
-        viewHelpAndSupport(Origin.LOGIN_MAGIC_LINK)
+        viewHelpAndSupport(HelpOrigin.LOGIN_MAGIC_LINK)
     }
 
     override fun helpEmailPasswordScreen(email: String?) {
-        viewHelpAndSupport(Origin.LOGIN_EMAIL_PASSWORD)
+        viewHelpAndSupport(HelpOrigin.LOGIN_EMAIL_PASSWORD)
     }
 
     override fun help2FaScreen(email: String?) {
-        viewHelpAndSupport(Origin.LOGIN_2FA)
+        viewHelpAndSupport(HelpOrigin.LOGIN_2FA)
     }
 
     override fun startPostLoginServices() {
@@ -660,7 +660,7 @@ class LoginActivity :
     }
 
     override fun helpUsernamePassword(url: String?, username: String?, isWpcom: Boolean) {
-        viewHelpAndSupport(Origin.LOGIN_USERNAME_PASSWORD)
+        viewHelpAndSupport(HelpOrigin.LOGIN_USERNAME_PASSWORD)
     }
 
     override fun helpNoJetpackScreen(
@@ -730,11 +730,11 @@ class LoginActivity :
     // Signup
 
     override fun helpSignupEmailScreen(email: String?) {
-        viewHelpAndSupport(Origin.SIGNUP_EMAIL)
+        viewHelpAndSupport(HelpOrigin.SIGNUP_EMAIL)
     }
 
     override fun helpSignupMagicLinkScreen(email: String?) {
-        viewHelpAndSupport(Origin.SIGNUP_MAGIC_LINK)
+        viewHelpAndSupport(HelpOrigin.SIGNUP_MAGIC_LINK)
     }
 
     override fun showSignupMagicLink(email: String?) {
@@ -794,7 +794,7 @@ class LoginActivity :
     }
 
     override fun onEmailNeedMoreHelpClicked() {
-        startActivity(HelpActivity.createIntent(this, Origin.LOGIN_CONNECTED_EMAIL_HELP, null))
+        startActivity(HelpActivity.createIntent(this, HelpOrigin.LOGIN_CONNECTED_EMAIL_HELP, null))
     }
 
     override fun showEmailLoginScreen(siteAddress: String?) {

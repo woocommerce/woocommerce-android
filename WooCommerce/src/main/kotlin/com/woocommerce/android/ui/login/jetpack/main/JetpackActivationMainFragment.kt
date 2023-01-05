@@ -17,8 +17,7 @@ import com.woocommerce.android.extensions.handleNotice
 import com.woocommerce.android.extensions.navigateBackWithNotice
 import com.woocommerce.android.extensions.navigateBackWithResult
 import com.woocommerce.android.extensions.navigateSafely
-import com.woocommerce.android.support.help.HelpActivity
-import com.woocommerce.android.support.help.HelpActivity.Origin
+import com.woocommerce.android.extensions.navigateToHelpScreen
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.common.wpcomwebview.WPComWebViewFragment
 import com.woocommerce.android.ui.common.wpcomwebview.WPComWebViewViewModel.DisplayMode
@@ -26,13 +25,13 @@ import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.ui.login.LoginActivity
 import com.woocommerce.android.ui.login.jetpack.main.JetpackActivationMainViewModel.GoToPasswordScreen
 import com.woocommerce.android.ui.login.jetpack.main.JetpackActivationMainViewModel.GoToStore
-import com.woocommerce.android.ui.login.jetpack.main.JetpackActivationMainViewModel.ShowHelpScreen
 import com.woocommerce.android.ui.login.jetpack.main.JetpackActivationMainViewModel.ShowJetpackConnectionWebView
 import com.woocommerce.android.ui.login.jetpack.main.JetpackActivationMainViewModel.ShowWooNotInstalledScreen
 import com.woocommerce.android.ui.main.AppBarStatus
 import com.woocommerce.android.ui.main.MainActivity
 import com.woocommerce.android.ui.sitepicker.sitediscovery.SitePickerSiteDiscoveryFragment
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.NavigateToHelpScreen
 import dagger.hilt.android.AndroidEntryPoint
 import org.wordpress.android.login.LoginMode
 
@@ -70,7 +69,7 @@ class JetpackActivationMainFragment : BaseFragment() {
                 is ShowJetpackConnectionWebView -> showConnectionWebView(event)
                 is GoToStore -> goToStore()
                 is ShowWooNotInstalledScreen -> showWooNotInstalledScreen(event.siteUrl)
-                is ShowHelpScreen -> openHelpActivity()
+                is NavigateToHelpScreen -> navigateToHelpScreen(event.origin)
                 is GoToPasswordScreen -> openPasswordScreen(event.email)
                 is Exit -> findNavController().navigateUp()
             }
@@ -84,10 +83,6 @@ class JetpackActivationMainFragment : BaseFragment() {
         handleNotice(WPComWebViewFragment.WEBVIEW_DISMISSED) {
             navigateBackWithNotice(CONNECTION_DISMISSED_RESULT)
         }
-    }
-
-    private fun openHelpActivity() {
-        startActivity(HelpActivity.createIntent(requireContext(), Origin.JETPACK_INSTALLATION, null))
     }
 
     private fun openPasswordScreen(email: String) {
