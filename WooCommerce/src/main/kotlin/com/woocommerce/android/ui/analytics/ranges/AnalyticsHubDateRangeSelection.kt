@@ -127,10 +127,5 @@ class AnalyticsHubDateRangeSelection {
                 )
             }
         }
-
-        companion object {
-            fun from(datePeriod: String): SelectionType = values()
-                .find { it.description == datePeriod } ?: TODAY
-        }
     }
 }
