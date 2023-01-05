@@ -1,6 +1,5 @@
 package com.woocommerce.android.ui.compose.component
 
-import androidx.annotation.DrawableRes
 import androidx.compose.foundation.layout.RowScope
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
@@ -15,6 +14,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.unit.dp
 import com.woocommerce.android.R.drawable
 import com.woocommerce.android.R.string
@@ -26,7 +26,7 @@ fun Toolbar(
     onNavigationButtonClick: (() -> Unit),
     navigationIcon: ImageVector = Filled.ArrowBack,
     onActionButtonClick: (() -> Unit),
-    @DrawableRes actionButtonIcon: Int = drawable.ic_help_24dp,
+    actionButtonIcon: ImageVector = ImageVector.vectorResource(id = drawable.ic_help_24dp),
 ) {
     Toolbar(
         modifier = modifier,
@@ -36,7 +36,7 @@ fun Toolbar(
         actions = {
             IconButton(onClick = onActionButtonClick) {
                 Icon(
-                    painter = painterResource(id = actionButtonIcon),
+                    imageVector = actionButtonIcon,
                     contentDescription = stringResource(id = string.help)
                 )
             }
