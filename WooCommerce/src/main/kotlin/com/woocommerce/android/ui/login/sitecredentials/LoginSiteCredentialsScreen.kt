@@ -11,23 +11,18 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.Icon
-import androidx.compose.material.IconButton
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
-import androidx.compose.material.TopAppBar
-import androidx.compose.material.icons.Icons.Filled
-import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
-import androidx.compose.ui.unit.dp
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.compose.component.ProgressDialog
+import com.woocommerce.android.ui.compose.component.Toolbar
 import com.woocommerce.android.ui.compose.component.WCColoredButton
 import com.woocommerce.android.ui.compose.component.WCOutlinedTextField
 import com.woocommerce.android.ui.compose.component.WCPasswordField
@@ -57,7 +52,12 @@ fun LoginSiteCredentialsScreen(
     onBackClick: () -> Unit
 ) {
     Scaffold(
-        topBar = { Toolbar(onBackClick = onBackClick) }
+        topBar = {
+            Toolbar(
+                title = stringResource(id = R.string.log_in),
+                onNavigationButtonClick = onBackClick
+            )
+        }
     ) { paddingValues ->
         Column(
             modifier = Modifier
@@ -119,25 +119,4 @@ fun LoginSiteCredentialsScreen(
     if (viewState.isLoading) {
         ProgressDialog(title = "", subtitle = stringResource(id = R.string.logging_in))
     }
-}
-
-@Composable
-private fun Toolbar(
-    onBackClick: () -> Unit,
-    modifier: Modifier = Modifier
-) {
-    TopAppBar(
-        backgroundColor = MaterialTheme.colors.surface,
-        title = { Text(stringResource(id = R.string.log_in)) },
-        navigationIcon = {
-            IconButton(onClick = onBackClick) {
-                Icon(
-                    Filled.ArrowBack,
-                    contentDescription = stringResource(id = R.string.back)
-                )
-            }
-        },
-        elevation = 0.dp,
-        modifier = modifier
-    )
 }
