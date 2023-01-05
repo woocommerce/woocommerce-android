@@ -25,7 +25,7 @@ class InboxRepository @Inject constructor(
     }
 
     fun observeInboxNotes(): Flow<List<InboxNote>> =
-        inboxStore.observeInboxNotes(selectedSite.get().siteId)
+        inboxStore.observeInboxNotes(selectedSite.get())
             .map { inboxNotesWithActions ->
                 inboxNotesWithActions.map { it.toInboxNote() }
             }
