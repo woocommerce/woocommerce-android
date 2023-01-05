@@ -560,7 +560,6 @@ class AnalyticsViewModelTest : BaseUnitTest() {
     private fun givenAResourceProvider(): ResourceProvider = mock {
         on { getString(any()) } doAnswer { invocationOnMock -> invocationOnMock.arguments[0].toString() }
         on { getString(any(), any()) } doAnswer { invMock -> invMock.arguments[0].toString() }
-        on { getStringArray(any()) } doAnswer { DATE_RANGE_SELECTORS.toTypedArray() }
     }
 
     private fun givenAViewModel(resourceProvider: ResourceProvider = givenAResourceProvider()): AnalyticsViewModel {
@@ -646,9 +645,6 @@ class AnalyticsViewModelTest : BaseUnitTest() {
 
     companion object {
         private const val ANY_VALUE = "Today"
-        private const val ANY_OTHER_VALUE = "Last year"
-
-        private val DATE_RANGE_SELECTORS = listOf(ANY_VALUE, ANY_OTHER_VALUE)
 
         const val TOTAL_VALUE = 10.0
         const val TOTAL_DELTA = 5.0
