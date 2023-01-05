@@ -1,5 +1,7 @@
 package com.woocommerce.android.ui.analytics.ranges
 
+import android.os.Parcel
+import android.os.Parcelable
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.analytics.ranges.AnalyticsHubDateRangeSelection.SelectionType.CUSTOM
 import com.woocommerce.android.ui.analytics.ranges.AnalyticsHubDateRangeSelection.SelectionType.LAST_MONTH
@@ -35,7 +37,7 @@ import java.util.Locale
  *
  * When creating the object through the available constructor, the Selection will be set as [CUSTOM]
  */
-class AnalyticsHubDateRangeSelection {
+class AnalyticsHubDateRangeSelection : Parcelable {
     val selectionType: SelectionType
     val currentRange: AnalyticsHubTimeRange
     val previousRange: AnalyticsHubTimeRange
@@ -132,6 +134,37 @@ class AnalyticsHubDateRangeSelection {
             fun from(description: String): SelectionType {
                 return values().firstOrNull { it.description == description } ?: CUSTOM
             }
+        }
+    }
+
+    /// Parcelable implementation
+    constructor(parcel: Parcel) {
+        selectionType = SelectionType.from(parcel.readString() ?: "CUSTOM")
+        currentRange = parcel.readParcelable(AnalyticsHubTimeRange::class.java.classLoader) ?: AnalyticsHubTimeRange.EMPTY
+        previousRange = parcel.readParcelable(AnalyticsHubTimeRange::class.java.classLoader) ?: AnalyticsHubTimeRange.EMPTY
+        currentRangeDescription = parcel.readString() ?: ""
+        previousRangeDescription = parcel.readString() ?: ""
+    }
+
+    override fun describeContents(): Int {
+        TODO("Not yet implemented")
+    }
+
+    override fun writeToParcel(parcel: Parcel, flags: Int) {
+        parcel.writeString(selectionType.description)
+        parcel.writeParcelable(currentRange, flags)
+        parcel.writeParcelable(previousRange, flags)
+        parcel.writeString(currentRangeDescription)
+        parcel.writeString(previousRangeDescription)
+    }
+
+    companion object CREATOR : Parcelable.Creator<AnalyticsHubDateRangeSelection> {
+        override fun createFromParcel(parcel: Parcel): AnalyticsHubDateRangeSelection {
+            return AnalyticsHubDateRangeSelection(parcel)
+        }
+
+        override fun newArray(size: Int): Array<AnalyticsHubDateRangeSelection?> {
+            return arrayOfNulls(size)
         }
     }
 }
