@@ -30,8 +30,10 @@ import com.woocommerce.android.ui.analytics.ranges.AnalyticsHubDateRangeSelectio
 import com.woocommerce.android.ui.analytics.ranges.AnalyticsHubDateRangeSelection.SelectionType.TODAY
 import com.woocommerce.android.ui.analytics.ranges.AnalyticsHubDateRangeSelection.SelectionType.WEEK_TO_DATE
 import com.woocommerce.android.util.CurrencyFormatter
+import com.woocommerce.android.util.locale.LocaleProvider
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import com.woocommerce.android.viewmodel.ResourceProvider
+import java.util.Calendar
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.toList
 import kotlinx.coroutines.launch
@@ -48,8 +50,11 @@ import org.mockito.kotlin.stub
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import java.util.Date
+import java.util.Locale
+import java.util.TimeZone
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
+import org.junit.Before
 
 @ExperimentalCoroutinesApi
 class AnalyticsViewModelTest : BaseUnitTest() {
@@ -66,12 +71,26 @@ class AnalyticsViewModelTest : BaseUnitTest() {
     }
 
     private val analyticsRepository: AnalyticsRepository = mock()
-
     private val savedState = AnalyticsFragmentArgs(targetGranularity = TODAY).initSavedStateHandle()
-
     private val transactionLauncher = mock<AnalyticsHubTransactionLauncher>()
 
+    private lateinit var localeProvider: LocaleProvider
+    private lateinit var testLocale: Locale
+    private lateinit var testCalendar: Calendar
+
     private lateinit var sut: AnalyticsViewModel
+
+    @Before
+    fun setUp() {
+        testLocale = Locale.UK
+        val testTimeZone = TimeZone.getDefault()
+        testCalendar = Calendar.getInstance(testLocale)
+        testCalendar.timeZone = testTimeZone
+        testCalendar.firstDayOfWeek = Calendar.MONDAY
+        localeProvider = mock {
+            on { provideLocale() } doReturn testLocale
+        }
+    }
 
     @Test
     fun `given an init viewState, when view model is created, then has the expected values`() =
@@ -82,7 +101,10 @@ class AnalyticsViewModelTest : BaseUnitTest() {
 
             sut = givenAViewModel(resourceProvider)
 
-            val expectedSelection = TODAY.generateSelectionData()
+            val expectedSelection = TODAY.generateSelectionData(
+                calendar = testCalendar,
+                locale = testLocale
+            )
 
             with(sut.viewState.value.analyticsDateRangeSelectorState) {
                 assertEquals(expectedSelection.selectionType.description, selectedPeriod)
@@ -121,7 +143,10 @@ class AnalyticsViewModelTest : BaseUnitTest() {
 
             sut = givenAViewModel(resourceProvider)
 
-            val expectedSelection = TODAY.generateSelectionData()
+            val expectedSelection = TODAY.generateSelectionData(
+                calendar = testCalendar,
+                locale = testLocale
+            )
 
             with(sut.viewState.value.analyticsDateRangeSelectorState) {
                 assertEquals(expectedSelection.selectionType.description, selectedPeriod)
@@ -146,7 +171,10 @@ class AnalyticsViewModelTest : BaseUnitTest() {
             sut = givenAViewModel(resourceProvider)
             sut.onNewRangeSelection(LAST_YEAR)
 
-            val expectedSelection = LAST_YEAR.generateSelectionData()
+            val expectedSelection = LAST_YEAR.generateSelectionData(
+                calendar = testCalendar,
+                locale = testLocale
+            )
 
             with(sut.viewState.value.analyticsDateRangeSelectorState) {
                 assertEquals(expectedSelection.selectionType.description, selectedPeriod)
@@ -549,6 +577,7 @@ class AnalyticsViewModelTest : BaseUnitTest() {
             analyticsRepository,
             transactionLauncher,
             mock(),
+            localeProvider,
             AnalyticsFragmentArgs(targetGranularity = CUSTOM).initSavedStateHandle()
         )
         sut.onCustomRangeSelected(Date(), Date())
@@ -569,6 +598,7 @@ class AnalyticsViewModelTest : BaseUnitTest() {
             analyticsRepository,
             transactionLauncher,
             mock(),
+            localeProvider,
             savedState
         )
     }
