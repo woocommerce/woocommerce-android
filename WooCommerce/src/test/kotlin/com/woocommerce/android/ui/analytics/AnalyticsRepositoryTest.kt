@@ -54,6 +54,7 @@ class AnalyticsRepositoryTest : BaseUnitTest() {
     private val wooCommerceStore: WooCommerceStore = mock()
 
     private lateinit var testTimeZone: TimeZone
+    private lateinit var testLocale: Locale
     private lateinit var testCalendar: Calendar
 
     private val sut: AnalyticsRepository = AnalyticsRepository(
@@ -65,8 +66,9 @@ class AnalyticsRepositoryTest : BaseUnitTest() {
 
     @Before
     fun setUp() {
+        testLocale = Locale.UK
         testTimeZone = TimeZone.getDefault()
-        testCalendar = Calendar.getInstance(Locale.UK)
+        testCalendar = Calendar.getInstance(testLocale)
         testCalendar.timeZone = testTimeZone
         testCalendar.firstDayOfWeek = Calendar.MONDAY
     }
@@ -74,7 +76,7 @@ class AnalyticsRepositoryTest : BaseUnitTest() {
     @Test
     fun `given no currentPeriodRevenue, when fetchRevenueData, then result is RevenueError`() = runTest {
         // Given
-        val expectedSelectionData = CUSTOM.generateSelectionData(
+        val expectedSelectionData = generateTestSelectionData(
             referenceStartDate = "2022-09-25".dayStartFrom(),
             referenceEndDate = "2022-04-10".dayEndFrom()
         )
@@ -105,7 +107,7 @@ class AnalyticsRepositoryTest : BaseUnitTest() {
     @Test
     fun `given no currentPeriodRevenue when fetchOrderData result is RevenueError`() = runTest {
         // Given
-        val expectedSelectionData = CUSTOM.generateSelectionData(
+        val expectedSelectionData = generateTestSelectionData(
             referenceStartDate = "2022-09-25".dayStartFrom(),
             referenceEndDate = "2022-04-10".dayEndFrom()
         )
@@ -135,7 +137,7 @@ class AnalyticsRepositoryTest : BaseUnitTest() {
     @Test
     fun `given no previousRevenuePeriod, when fetchRevenueData, then result is RevenueError`() = runTest {
         // Given
-        val expectedSelectionData = CUSTOM.generateSelectionData(
+        val expectedSelectionData = generateTestSelectionData(
             referenceStartDate = "2022-09-25".dayStartFrom(),
             referenceEndDate = "2022-04-10".dayEndFrom()
         )
@@ -166,7 +168,7 @@ class AnalyticsRepositoryTest : BaseUnitTest() {
     fun `given no previousRevenuePeriod when fetchOrdersData result is OrdersError`() =
         runTest {
             // Given
-            val expectedSelectionData = CUSTOM.generateSelectionData(
+            val expectedSelectionData = generateTestSelectionData(
                 referenceStartDate = "2022-09-25".dayStartFrom(),
                 referenceEndDate = "2022-04-10".dayEndFrom()
             )
@@ -197,7 +199,7 @@ class AnalyticsRepositoryTest : BaseUnitTest() {
     fun `given previous and current period revenue, when fetchRevenueData, then result is the expected`() =
         runTest {
             // Given
-            val expectedSelectionData = CUSTOM.generateSelectionData(
+            val expectedSelectionData = generateTestSelectionData(
                 referenceStartDate = "2022-09-25".dayStartFrom(),
                 referenceEndDate = "2022-04-10".dayEndFrom()
             )
@@ -249,7 +251,7 @@ class AnalyticsRepositoryTest : BaseUnitTest() {
     fun `given previous and current period revenue, when fetchRevenueData, then delta values are rounded`() =
         runTest {
             // Given
-            val expectedSelectionData = CUSTOM.generateSelectionData(
+            val expectedSelectionData = generateTestSelectionData(
                 referenceStartDate = "2022-09-25".dayStartFrom(),
                 referenceEndDate = "2022-04-10".dayEndFrom()
             )
@@ -301,7 +303,7 @@ class AnalyticsRepositoryTest : BaseUnitTest() {
     fun `given previous revenue and current zero revenue, when fetchRevenueData, then deltas are the expected`() =
         runTest {
             // Given
-            val expectedSelectionData = CUSTOM.generateSelectionData(
+            val expectedSelectionData = generateTestSelectionData(
                 referenceStartDate = "2022-09-25".dayStartFrom(),
                 referenceEndDate = "2022-04-10".dayEndFrom()
             )
@@ -337,7 +339,7 @@ class AnalyticsRepositoryTest : BaseUnitTest() {
     fun `given zero previous and current revenue, when fetchRevenueData, then deltas are the expected`() =
         runTest {
             // Given
-            val expectedSelectionData = CUSTOM.generateSelectionData(
+            val expectedSelectionData = generateTestSelectionData(
                 referenceStartDate = "2022-09-25".dayStartFrom(),
                 referenceEndDate = "2022-04-10".dayEndFrom()
             )
@@ -370,7 +372,7 @@ class AnalyticsRepositoryTest : BaseUnitTest() {
     fun `given zero previous and current revenue, when fetchOrdersData, then deltas are the expected`() =
         runTest {
             // Given
-            val expectedSelectionData = CUSTOM.generateSelectionData(
+            val expectedSelectionData = generateTestSelectionData(
                 referenceStartDate = "2022-09-25".dayStartFrom(),
                 referenceEndDate = "2022-04-10".dayEndFrom()
             )
@@ -405,7 +407,7 @@ class AnalyticsRepositoryTest : BaseUnitTest() {
     fun `given previous and current period revenue when fetchOrdersData result is the expected`() =
         runTest {
             // Given
-            val expectedSelectionData = CUSTOM.generateSelectionData(
+            val expectedSelectionData = generateTestSelectionData(
                 referenceStartDate = "2022-09-25".dayStartFrom(),
                 referenceEndDate = "2022-04-10".dayEndFrom()
             )
@@ -438,7 +440,7 @@ class AnalyticsRepositoryTest : BaseUnitTest() {
     fun `given zero previous total revenue, when fetchRevenueData, then result is the expected`() =
         runTest {
             // Given
-            val expectedSelectionData = CUSTOM.generateSelectionData(
+            val expectedSelectionData = generateTestSelectionData(
                 referenceStartDate = "2022-09-25".dayStartFrom(),
                 referenceEndDate = "2022-04-10".dayEndFrom()
             )
@@ -473,7 +475,7 @@ class AnalyticsRepositoryTest : BaseUnitTest() {
     fun `given zero previous orders revenue when fetchOrdersData result is the expected`() =
         runTest {
             // Given
-            val expectedSelectionData = CUSTOM.generateSelectionData(
+            val expectedSelectionData = generateTestSelectionData(
                 referenceStartDate = "2022-09-25".dayStartFrom(),
                 referenceEndDate = "2022-04-10".dayEndFrom()
             )
@@ -509,7 +511,7 @@ class AnalyticsRepositoryTest : BaseUnitTest() {
     fun `given zero previous net revenue, when fetchRevenueData, then result is the expected`() =
         runTest {
             // Given
-            val expectedSelectionData = CUSTOM.generateSelectionData(
+            val expectedSelectionData = generateTestSelectionData(
                 referenceStartDate = "2022-09-25".dayStartFrom(),
                 referenceEndDate = "2022-04-10".dayEndFrom()
             )
@@ -543,7 +545,7 @@ class AnalyticsRepositoryTest : BaseUnitTest() {
     fun `given zero previous avg order, when fetchOrderData, result is the expected`() =
         runTest {
             // Given
-            val expectedSelectionData = CUSTOM.generateSelectionData(
+            val expectedSelectionData = generateTestSelectionData(
                 referenceStartDate = "2022-09-25".dayStartFrom(),
                 referenceEndDate = "2022-04-10".dayEndFrom()
             )
@@ -577,7 +579,7 @@ class AnalyticsRepositoryTest : BaseUnitTest() {
     fun `given null previous total revenue, when fetchRevenueData, then result is the expected`() =
         runTest {
             // Given
-            val expectedSelectionData = CUSTOM.generateSelectionData(
+            val expectedSelectionData = generateTestSelectionData(
                 referenceStartDate = "2022-09-25".dayStartFrom(),
                 referenceEndDate = "2022-04-10".dayEndFrom()
             )
@@ -610,7 +612,7 @@ class AnalyticsRepositoryTest : BaseUnitTest() {
     fun `given null previous orders, when fetchOrdersData, then result is the expected`() =
         runTest {
             // Given
-            val expectedSelectionData = CUSTOM.generateSelectionData(
+            val expectedSelectionData = generateTestSelectionData(
                 referenceStartDate = "2022-09-25".dayStartFrom(),
                 referenceEndDate = "2022-04-10".dayEndFrom()
             )
@@ -644,7 +646,7 @@ class AnalyticsRepositoryTest : BaseUnitTest() {
     fun `given null previous net revenue, when fetchRevenueData, then result is the expected`() =
         runTest {
             // Given
-            val expectedSelectionData = CUSTOM.generateSelectionData(
+            val expectedSelectionData = generateTestSelectionData(
                 referenceStartDate = "2022-09-25".dayStartFrom(),
                 referenceEndDate = "2022-04-10".dayEndFrom()
             )
@@ -678,7 +680,7 @@ class AnalyticsRepositoryTest : BaseUnitTest() {
     fun `given null previous avg order, when fetchOrdersData, then result is the expected`() =
         runTest {
             // Given
-            val expectedSelectionData = CUSTOM.generateSelectionData(
+            val expectedSelectionData = generateTestSelectionData(
                 referenceStartDate = "2022-09-25".dayStartFrom(),
                 referenceEndDate = "2022-04-10".dayEndFrom()
             )
@@ -711,7 +713,7 @@ class AnalyticsRepositoryTest : BaseUnitTest() {
     fun `given previous and current revenue, when fetchRevenueData multiple date range, then result is the expected`() =
         runTest {
             // Given
-            val expectedSelectionData = CUSTOM.generateSelectionData(
+            val expectedSelectionData = generateTestSelectionData(
                 referenceStartDate = "2022-09-25".dayStartFrom(),
                 referenceEndDate = "2022-04-10".dayEndFrom()
             )
@@ -745,7 +747,7 @@ class AnalyticsRepositoryTest : BaseUnitTest() {
     fun `given previous and current period revenue, when fetchOrdersData multiple date range, result is expected`() =
         runTest {
             // Given
-            val expectedSelectionData = CUSTOM.generateSelectionData(
+            val expectedSelectionData = generateTestSelectionData(
                 referenceStartDate = "2022-09-25".dayStartFrom(),
                 referenceEndDate = "2022-04-10".dayEndFrom()
             )
@@ -779,7 +781,7 @@ class AnalyticsRepositoryTest : BaseUnitTest() {
     fun `given no currentPeriodRevenue, when fetchProductsData, then result is ProductsError`() =
         runTest {
             // Given
-            val expectedSelectionData = CUSTOM.generateSelectionData(
+            val expectedSelectionData = generateTestSelectionData(
                 referenceStartDate = "2022-09-25".dayStartFrom(),
                 referenceEndDate = "2022-04-10".dayEndFrom()
             )
@@ -820,7 +822,7 @@ class AnalyticsRepositoryTest : BaseUnitTest() {
     fun `given no previousPeriodRevenue, when fetchProductsData, then result is ProductsError`() =
         runTest {
             // Given
-            val expectedSelectionData = CUSTOM.generateSelectionData(
+            val expectedSelectionData = generateTestSelectionData(
                 referenceStartDate = "2022-09-25".dayStartFrom(),
                 referenceEndDate = "2022-04-10".dayEndFrom()
             )
@@ -861,7 +863,7 @@ class AnalyticsRepositoryTest : BaseUnitTest() {
     fun `given previousPeriodRevenue with null items sold, when fetchProductsData, then result is ProductsError`() =
         runTest {
             // Given
-            val expectedSelectionData = CUSTOM.generateSelectionData(
+            val expectedSelectionData = generateTestSelectionData(
                 referenceStartDate = "2022-09-25".dayStartFrom(),
                 referenceEndDate = "2022-04-10".dayEndFrom()
             )
@@ -902,7 +904,7 @@ class AnalyticsRepositoryTest : BaseUnitTest() {
     fun `given currentPeriodRevenue with null items sold, when fetchProductsData, then result is ProductsError`() =
         runTest {
             // Given
-            val expectedSelectionData = CUSTOM.generateSelectionData(
+            val expectedSelectionData = generateTestSelectionData(
                 referenceStartDate = "2022-09-25".dayStartFrom(),
                 referenceEndDate = "2022-04-10".dayEndFrom()
             )
@@ -944,7 +946,7 @@ class AnalyticsRepositoryTest : BaseUnitTest() {
     fun `given no products leader board with null items sold, when fetchProductsData, then result is ProductsError`() =
         runTest {
             // Given
-            val expectedSelectionData = CUSTOM.generateSelectionData(
+            val expectedSelectionData = generateTestSelectionData(
                 referenceStartDate = "2022-09-25".dayStartFrom(),
                 referenceEndDate = "2022-04-10".dayEndFrom()
             )
@@ -973,7 +975,7 @@ class AnalyticsRepositoryTest : BaseUnitTest() {
     fun `given products and revenue with null items sold, when fetchProductsData, then result is expected`() =
         runTest {
             // Given
-            val expectedSelectionData = CUSTOM.generateSelectionData(
+            val expectedSelectionData = generateTestSelectionData(
                 referenceStartDate = "2022-09-25".dayStartFrom(),
                 referenceEndDate = "2022-04-10".dayEndFrom()
             )
@@ -1009,7 +1011,7 @@ class AnalyticsRepositoryTest : BaseUnitTest() {
     fun `when get revenue and products data at same time, then stats repository is used once per period`() =
         runTest {
             // Given
-            val expectedSelectionData = CUSTOM.generateSelectionData(
+            val expectedSelectionData = generateTestSelectionData(
                 referenceStartDate = "2022-09-25".dayStartFrom(),
                 referenceEndDate = "2022-04-10".dayEndFrom()
             )
@@ -1057,7 +1059,7 @@ class AnalyticsRepositoryTest : BaseUnitTest() {
     fun `when force get new revenue and products data at same time, then stats repository is used twice`() =
         runTest {
             // Given
-            val expectedSelectionData = CUSTOM.generateSelectionData(
+            val expectedSelectionData = generateTestSelectionData(
                 referenceStartDate = "2022-09-25".dayStartFrom(),
                 referenceEndDate = "2022-04-10".dayEndFrom()
             )
@@ -1199,6 +1201,16 @@ class AnalyticsRepositoryTest : BaseUnitTest() {
         testCalendar.time = referenceDate
         return testCalendar.startOfCurrentDay()
     }
+
+    private fun generateTestSelectionData(
+        referenceStartDate: Date,
+        referenceEndDate: Date
+    ) = CUSTOM.generateSelectionData(
+        referenceStartDate = referenceStartDate,
+        referenceEndDate = referenceEndDate,
+        calendar = testCalendar,
+        locale = testLocale
+    )
 
     companion object {
         const val TEN_VALUE = 10.0
