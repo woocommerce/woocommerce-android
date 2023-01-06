@@ -1,9 +1,11 @@
 package com.woocommerce.android.ui.analytics.daterangeselector
 
 import android.content.Context
+import android.text.SpannableStringBuilder
 import android.util.AttributeSet
 import android.view.LayoutInflater
 import android.view.View
+import androidx.core.text.bold
 import com.google.android.material.card.MaterialCardView
 import com.woocommerce.android.databinding.AnalyticsDateRangeCardViewBinding
 
@@ -23,7 +25,11 @@ class AnalyticsDateRangeCardView @JvmOverloads constructor(
     }
 
     fun updatePreviousRange(previousRange: String) {
-        binding.previousRangeDescription.text = previousRange
+        val s = SpannableStringBuilder()
+            .append("Compared to ")
+            .bold { append(previousRange) }
+
+        binding.previousRangeDescription.text = s
     }
 
     fun updateCurrentRange(currentRange: String) {
