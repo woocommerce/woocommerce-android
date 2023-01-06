@@ -117,7 +117,8 @@ fun Date.oneYearAgo(): Date =
         add(Calendar.YEAR, -1)
     }.time
 
-fun Date.isInSameYearAs(other: Date, calendar: Calendar): Boolean {
+fun Date.isInSameYearAs(other: Date, baseCalendar: Calendar): Boolean {
+    val calendar = baseCalendar.clone() as Calendar
     calendar.time = this
     val thisYear = calendar.get(Calendar.YEAR)
     calendar.time = other
@@ -125,7 +126,8 @@ fun Date.isInSameYearAs(other: Date, calendar: Calendar): Boolean {
     return thisYear == otherYear
 }
 
-fun Date.isInSameMonthAs(other: Date, calendar: Calendar): Boolean {
+fun Date.isInSameMonthAs(other: Date, baseCalendar: Calendar): Boolean {
+    val calendar = baseCalendar.clone() as Calendar
     calendar.time = this
     val thisMonth = calendar.get(Calendar.MONTH)
     calendar.time = other

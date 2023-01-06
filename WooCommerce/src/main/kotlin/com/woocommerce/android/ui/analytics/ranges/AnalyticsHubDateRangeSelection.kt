@@ -43,7 +43,7 @@ class AnalyticsHubDateRangeSelection : Serializable {
     val currentRangeDescription: String
     val previousRangeDescription: String
 
-    constructor(
+    private constructor(
         rangeStart: Date,
         rangeEnd: Date,
         calendar: Calendar,
@@ -113,8 +113,8 @@ class AnalyticsHubDateRangeSelection : Serializable {
         fun generateSelectionData(
             referenceStartDate: Date = Date(),
             referenceEndDate: Date = Date(),
-            calendar: Calendar = Calendar.getInstance(),
-            locale: Locale = Locale.getDefault()
+            calendar: Calendar,
+            locale: Locale
         ): AnalyticsHubDateRangeSelection {
             return if (this == CUSTOM) {
                 AnalyticsHubDateRangeSelection(
