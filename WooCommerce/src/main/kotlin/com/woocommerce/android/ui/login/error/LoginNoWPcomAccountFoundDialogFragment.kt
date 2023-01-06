@@ -1,4 +1,4 @@
-package com.woocommerce.android.ui.login
+package com.woocommerce.android.ui.login.error
 
 import android.content.Context
 import android.os.Bundle
@@ -16,6 +16,7 @@ import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.databinding.FragmentLoginNoWpcomAccountFoundBinding
 import com.woocommerce.android.databinding.ViewLoginEpilogueButtonBarBinding
+import com.woocommerce.android.ui.login.UnifiedLoginTracker
 import com.woocommerce.android.ui.login.UnifiedLoginTracker.Click
 import com.woocommerce.android.ui.login.UnifiedLoginTracker.Step
 import com.zendesk.util.StringUtils
@@ -24,7 +25,7 @@ import org.wordpress.android.login.LoginListener
 import javax.inject.Inject
 
 @AndroidEntryPoint
-class LoginNoWPcomAccountFoundFragment : Fragment(R.layout.fragment_login_no_wpcom_account_found), MenuProvider {
+class LoginNoWPcomAccountFoundDialogFragment : Fragment(R.layout.fragment_login_no_wpcom_account_found), MenuProvider {
     interface Listener {
         fun onWhatIsWordPressLinkNoWpcomAccountScreenClicked()
         fun onCreateAccountClicked()
@@ -34,8 +35,8 @@ class LoginNoWPcomAccountFoundFragment : Fragment(R.layout.fragment_login_no_wpc
         const val TAG = "LoginNoWPcomAccountFoundFragment"
         const val ARG_EMAIL_ADDRESS = "email_address"
 
-        fun newInstance(emailAddress: String?): LoginNoWPcomAccountFoundFragment {
-            val fragment = LoginNoWPcomAccountFoundFragment()
+        fun newInstance(emailAddress: String?): LoginNoWPcomAccountFoundDialogFragment {
+            val fragment = LoginNoWPcomAccountFoundDialogFragment()
             val args = Bundle()
             args.putString(ARG_EMAIL_ADDRESS, emailAddress)
             fragment.arguments = args

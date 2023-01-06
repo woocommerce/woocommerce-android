@@ -45,6 +45,7 @@ import com.woocommerce.android.ui.login.accountmismatch.AccountMismatchErrorFrag
 import com.woocommerce.android.ui.login.accountmismatch.AccountMismatchErrorFragmentArgs
 import com.woocommerce.android.ui.login.accountmismatch.AccountMismatchErrorViewModel.AccountMismatchErrorType
 import com.woocommerce.android.ui.login.accountmismatch.AccountMismatchErrorViewModel.AccountMismatchPrimaryButton
+import com.woocommerce.android.ui.login.error.LoginNoWPcomAccountFoundDialogFragment
 import com.woocommerce.android.ui.login.localnotifications.LoginHelpNotificationType
 import com.woocommerce.android.ui.login.localnotifications.LoginHelpNotificationType.DEFAULT_HELP
 import com.woocommerce.android.ui.login.localnotifications.LoginHelpNotificationType.LOGIN_SITE_ADDRESS_EMAIL_ERROR
@@ -113,7 +114,7 @@ class LoginActivity :
     LoginEmailHelpDialogFragment.Listener,
     WooLoginEmailFragment.Listener,
     WooLoginEmailPasswordFragment.Listener,
-    LoginNoWPcomAccountFoundFragment.Listener,
+    LoginNoWPcomAccountFoundDialogFragment.Listener,
     SignUpFragment.Listener,
     QrCodeLoginListener {
     companion object {
@@ -859,11 +860,11 @@ class LoginActivity :
 
     override fun gotUnregisteredEmail(email: String?) {
         // Show the 'No WordPress.com account found' screen
-        val fragment = LoginNoWPcomAccountFoundFragment.newInstance(email)
+        val fragment = LoginNoWPcomAccountFoundDialogFragment.newInstance(email)
         changeFragment(
             fragment = fragment as Fragment,
             shouldAddToBackStack = true,
-            tag = LoginNoWPcomAccountFoundFragment.TAG
+            tag = LoginNoWPcomAccountFoundDialogFragment.TAG
         )
     }
 
