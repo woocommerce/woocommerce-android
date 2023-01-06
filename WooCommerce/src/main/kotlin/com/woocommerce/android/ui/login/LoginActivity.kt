@@ -10,6 +10,7 @@ import android.view.MenuItem
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.app.AppCompatActivity
+import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import com.google.mlkit.vision.codescanner.GmsBarcodeScanning
@@ -860,12 +861,7 @@ class LoginActivity :
 
     override fun gotUnregisteredEmail(email: String?) {
         // Show the 'No WordPress.com account found' screen
-        val fragment = LoginNoWPcomAccountFoundDialogFragment.newInstance(email)
-        changeFragment(
-            fragment = fragment as Fragment,
-            shouldAddToBackStack = true,
-            tag = LoginNoWPcomAccountFoundDialogFragment.TAG
-        )
+        LoginNoWPcomAccountFoundDialogFragment().show(LoginNoWPcomAccountFoundDialogFragment.TAG)
     }
 
     override fun gotUnregisteredSocialAccount(
@@ -926,11 +922,6 @@ class LoginActivity :
     override fun onWhatIsWordPressLinkClicked() {
         ChromeCustomTabUtils.launchUrl(this, LOGIN_WITH_EMAIL_WHAT_IS_WORDPRESS_COM_ACCOUNT)
         unifiedLoginTracker.trackClick(Click.WHAT_IS_WORDPRESS_COM)
-    }
-
-    override fun onWhatIsWordPressLinkNoWpcomAccountScreenClicked() {
-        ChromeCustomTabUtils.launchUrl(this, LOGIN_WITH_EMAIL_WHAT_IS_WORDPRESS_COM_ACCOUNT)
-        unifiedLoginTracker.trackClick(Click.WHAT_IS_WORDPRESS_COM_ON_INVALID_EMAIL_SCREEN)
     }
 
     override fun onCreateAccountClicked() {
@@ -1026,6 +1017,17 @@ class LoginActivity :
                     ).show()
                 }
             }
+    }
+
+    /**
+     * Show a DialogFragment using the current Fragment's childFragmentManager.
+     * This is useful to make sure the dialog's lifecycle is linked to the Fragment that invokes it and that it would
+     * be dismissed when we navigate to another Fragment.
+     */
+    private fun DialogFragment.show(tag: String) {
+        val currentFragment = supportFragmentManager.findFragmentById(R.id.fragment_container)!!
+
+        show(currentFragment.childFragmentManager, tag)
     }
 
     @Parcelize
