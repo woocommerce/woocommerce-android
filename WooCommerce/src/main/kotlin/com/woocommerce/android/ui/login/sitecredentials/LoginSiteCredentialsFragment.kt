@@ -11,7 +11,9 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
+import com.woocommerce.android.ui.login.error.LoginNonWooFragment
 import com.woocommerce.android.ui.login.sitecredentials.LoginSiteCredentialsViewModel.LoggedIn
+import com.woocommerce.android.ui.login.sitecredentials.LoginSiteCredentialsViewModel.ShowNonWooErrorScreen
 import com.woocommerce.android.ui.login.sitecredentials.LoginSiteCredentialsViewModel.ShowResetPasswordScreen
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
@@ -35,6 +37,7 @@ class LoginSiteCredentialsFragment : Fragment() {
     }
 
     private val viewModel: LoginSiteCredentialsViewModel by viewModels()
+
     @Inject
     lateinit var uiMessageResolver: UIMessageResolver
 
@@ -63,6 +66,8 @@ class LoginSiteCredentialsFragment : Fragment() {
             when (it) {
                 is LoggedIn -> loginListener.loggedInViaUsernamePassword(arrayListOf(it.localSiteId))
                 is ShowResetPasswordScreen -> loginListener.forgotPassword(it.siteAddress)
+                is ShowNonWooErrorScreen -> LoginNonWooFragment.newInstance(it.siteAddress)
+                    .show(childFragmentManager, LoginNonWooFragment.TAG)
                 is ShowSnackbar -> uiMessageResolver.showSnack(it.message)
                 is ShowUiStringSnackbar -> uiMessageResolver.showSnack(it.message)
                 is Exit -> requireActivity().onBackPressedDispatcher.onBackPressed()
