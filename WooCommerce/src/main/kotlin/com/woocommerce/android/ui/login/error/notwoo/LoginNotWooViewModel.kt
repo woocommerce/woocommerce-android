@@ -1,6 +1,10 @@
 package com.woocommerce.android.ui.login.error.notwoo
 
 import androidx.lifecycle.SavedStateHandle
+import com.woocommerce.android.analytics.AnalyticsEvent
+import com.woocommerce.android.analytics.AnalyticsTracker
+import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
+import com.woocommerce.android.ui.login.UnifiedLoginTracker
 import com.woocommerce.android.ui.login.WPApiSiteRepository
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
@@ -14,6 +18,8 @@ import javax.inject.Inject
 class LoginNotWooViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
     private val wpApiSiteRepository: WPApiSiteRepository,
+    analyticsTrackerWrapper: AnalyticsTrackerWrapper,
+    unifiedLoginTracker: UnifiedLoginTracker
 ) : ScopedViewModel(savedStateHandle) {
     companion object {
         private const val INSTALL_PATH = "plugin-install.php?tab=plugin-information&plugin=woocommerce"
@@ -26,6 +32,14 @@ class LoginNotWooViewModel @Inject constructor(
     private var hasOpenedInstallationPage: Boolean
         get() = savedState[INSTALLATION_FLAG_KEY] ?: false
         set(value) = savedState.set(INSTALLATION_FLAG_KEY, value)
+
+    init {
+        analyticsTrackerWrapper.track(
+            AnalyticsEvent.SITE_PICKER_AUTO_LOGIN_ERROR_NOT_WOO_STORE,
+            mapOf(AnalyticsTracker.KEY_URL to siteUrl)
+        )
+        unifiedLoginTracker.track(step = UnifiedLoginTracker.Step.NOT_WOO_STORE)
+    }
 
     fun openWooInstallationScreen() = launch {
         val site = wpApiSiteRepository.getSiteByUrl(siteUrl)
