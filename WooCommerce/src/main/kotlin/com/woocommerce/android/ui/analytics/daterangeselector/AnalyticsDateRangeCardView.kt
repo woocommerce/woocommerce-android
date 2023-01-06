@@ -7,6 +7,7 @@ import android.view.LayoutInflater
 import android.view.View
 import androidx.core.text.bold
 import com.google.android.material.card.MaterialCardView
+import com.woocommerce.android.R
 import com.woocommerce.android.databinding.AnalyticsDateRangeCardViewBinding
 
 class AnalyticsDateRangeCardView @JvmOverloads constructor(
@@ -25,11 +26,11 @@ class AnalyticsDateRangeCardView @JvmOverloads constructor(
     }
 
     fun updatePreviousRange(previousRange: String) {
-        val s = SpannableStringBuilder()
-            .append("Compared to ")
+        SpannableStringBuilder()
+            .append(resources.getString(R.string.date_compared_to))
+            .append(" ")
             .bold { append(previousRange) }
-
-        binding.previousRangeDescription.text = s
+            .let { binding.previousRangeDescription.text = it }
     }
 
     fun updateCurrentRange(currentRange: String) {
