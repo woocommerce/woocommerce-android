@@ -155,6 +155,12 @@ class LoginSiteCredentialsViewModel @Inject constructor(
         triggerEvent(Exit)
     }
 
+    fun onWooInstallationAttempted() = launch {
+        isLoading.value = true
+        checkWooStatus(wpApiSiteRepository.getSiteByUrl(siteAddress)!!)
+        isLoading.value = false
+    }
+
     private fun String.removeSchemeAndSuffix() = UrlUtils.removeScheme(UrlUtils.removeXmlrpcSuffix(this))
 
     private fun AuthenticationError.toErrorMessage() = when (type) {

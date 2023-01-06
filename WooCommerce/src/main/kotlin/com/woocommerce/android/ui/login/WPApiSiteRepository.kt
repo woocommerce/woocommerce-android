@@ -54,6 +54,10 @@ class WPApiSiteRepository @Inject constructor(
             }
     }
 
+    suspend fun getSiteByUrl(siteUrl: String): SiteModel? = withContext(Dispatchers.IO) {
+        SiteUtils.getXMLRPCSiteByUrl(siteStore, siteUrl)
+    }
+
     private suspend fun discoverXMLRPCAddress(siteUrl: String): Result<String> {
         WooLog.d(WooLog.T.LOGIN, "Running discovery to fetch XMLRPC endpoint for site $siteUrl")
 
@@ -134,7 +138,7 @@ class WPApiSiteRepository @Inject constructor(
             event.isError -> Result.failure(OnChangedException(event.error))
             else -> {
                 WooLog.d(WooLog.T.LOGIN, "XMLRPC site $siteUrl fetch succeeded")
-                val site = withContext(Dispatchers.IO) { SiteUtils.getXMLRPCSiteByUrl(siteStore, siteUrl)!! }
+                val site = getSiteByUrl(siteUrl)!!
                 return@coroutineScope Result.success(site)
             }
         }
