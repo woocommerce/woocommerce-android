@@ -2,10 +2,8 @@ package com.woocommerce.android.tools
 
 import android.content.Context
 import androidx.preference.PreferenceManager
-import com.woocommerce.android.BuildConfig
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.util.PreferenceUtils
-import com.woocommerce.android.util.WooLog
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import org.greenrobot.eventbus.EventBus
@@ -31,28 +29,7 @@ class SelectedSite(
     private val state: MutableStateFlow<SiteModel?> = MutableStateFlow(getSelectedSiteFromPersistance())
 
     val connectionType: SiteConnectionType?
-        get() = getIfExists()?.let { site ->
-            when {
-                site.origin != SiteModel.ORIGIN_WPCOM_REST -> SiteConnectionType.ApplicationPasswords
-                site.isJetpackConnected -> SiteConnectionType.Jetpack
-                site.isJetpackCPConnected -> SiteConnectionType.JetpackConnectionPackage
-                else -> {
-                    if (BuildConfig.DEBUG) {
-                        error("Can't determine site connection status")
-                    } else {
-                        WooLog.w(
-                            WooLog.T.UTILS,
-                            "Can't determine site connection status: \n" +
-                                "Origin: ${site.origin}, Jetpack Connected: ${site.isJetpackConnected}, " +
-                                "Jetpack CP Connected: ${site.isJetpackCPConnected}"
-                        )
-                        // A site that doesn't fall into the above conditions, it shouldn't happen,
-                        // but if it does in production, pretend it's a Jetpack connection
-                        SiteConnectionType.Jetpack
-                    }
-                }
-            }
-        }
+        get() = getIfExists()?.connectionType
 
     fun observe(): Flow<SiteModel?> = state
 

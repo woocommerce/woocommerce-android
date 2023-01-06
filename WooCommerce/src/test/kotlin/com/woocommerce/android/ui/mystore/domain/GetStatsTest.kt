@@ -157,10 +157,14 @@ class GetStatsTest : BaseUnitTest() {
             givenIsJetpackConnected(true)
 
             val result = getStats(refresh = false, granularity = ANY_GRANULARITY)
-                .filter { it is GetStats.LoadStatsResult.IsJetPackCPEnabled }
+                .filter { it is GetStats.LoadStatsResult.VisitorStatUnavailable }
                 .first()
 
-            assertThat(result).isEqualTo(GetStats.LoadStatsResult.IsJetPackCPEnabled)
+            assertThat(result).isEqualTo(
+                GetStats.LoadStatsResult.VisitorStatUnavailable(
+                    connectionType = SiteConnectionType.JetpackConnectionPackage
+                )
+            )
         }
 
     private suspend fun givenCheckIfStoreHasNoOrdersFlow(result: Result<Boolean>) {
