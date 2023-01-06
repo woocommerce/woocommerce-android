@@ -58,7 +58,6 @@ class AnalyticsViewModel @Inject constructor(
     private val analyticsRepository: AnalyticsRepository,
     private val transactionLauncher: AnalyticsHubTransactionLauncher,
     private val usageTracksEventEmitter: MyStoreStatsUsageTracksEventEmitter,
-    private val calendar: Calendar = Calendar.getInstance(),
     private val localeProvider: LocaleProvider,
     savedState: SavedStateHandle,
 ) : ScopedViewModel(savedState) {
@@ -377,7 +376,7 @@ class AnalyticsViewModel @Inject constructor(
     ) = generateSelectionData(
         referenceStartDate = startDate,
         referenceEndDate = endDate,
-        calendar = calendar,
+        calendar = Calendar.getInstance(),
         locale = localeProvider.provideLocale() ?: Locale.getDefault()
     )
 }
