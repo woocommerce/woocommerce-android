@@ -47,6 +47,7 @@ import com.woocommerce.android.ui.login.accountmismatch.AccountMismatchErrorFrag
 import com.woocommerce.android.ui.login.accountmismatch.AccountMismatchErrorViewModel.AccountMismatchErrorType
 import com.woocommerce.android.ui.login.accountmismatch.AccountMismatchErrorViewModel.AccountMismatchPrimaryButton
 import com.woocommerce.android.ui.login.error.LoginNoWPcomAccountFoundDialogFragment
+import com.woocommerce.android.ui.login.error.LoginNotWPDialogFragment
 import com.woocommerce.android.ui.login.localnotifications.LoginHelpNotificationType
 import com.woocommerce.android.ui.login.localnotifications.LoginHelpNotificationType.DEFAULT_HELP
 import com.woocommerce.android.ui.login.localnotifications.LoginHelpNotificationType.LOGIN_SITE_ADDRESS_EMAIL_ERROR
@@ -897,21 +898,11 @@ class LoginActivity :
      */
     override fun handleSiteAddressError(siteInfo: ConnectSiteInfoPayload) {
         if (!siteInfo.isWordPress) {
-            // The url entered is not a WordPress site.
-            val protocolRegex = Regex("^(http[s]?://)", IGNORE_CASE)
-            val siteAddressClean = siteInfo.url.replaceFirst(protocolRegex, "")
-            val errorMessage = getString(R.string.login_not_wordpress_site_v2)
-
             // hide the keyboard
             org.wordpress.android.util.ActivityUtils.hideKeyboard(this)
 
             // show the "not WordPress error" screen
-            val genericErrorFragment = LoginSiteCheckErrorFragment.newInstance(siteAddressClean, errorMessage)
-            changeFragment(
-                fragment = genericErrorFragment,
-                shouldAddToBackStack = true,
-                tag = LoginSiteCheckErrorFragment.TAG
-            )
+            LoginNotWPDialogFragment().show(LoginNotWPDialogFragment.TAG)
             loginNotificationScheduler.scheduleNotification(LOGIN_SITE_ADDRESS_ERROR)
         } else {
             // Just in case we use this method for a different scenario in the future
