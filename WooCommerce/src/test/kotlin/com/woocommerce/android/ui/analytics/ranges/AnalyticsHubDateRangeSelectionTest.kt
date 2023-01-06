@@ -2,6 +2,7 @@ package com.woocommerce.android.ui.analytics.ranges
 
 import com.woocommerce.android.extensions.endOfCurrentDay
 import com.woocommerce.android.extensions.startOfCurrentDay
+import com.woocommerce.android.ui.analytics.ranges.AnalyticsHubDateRangeSelection.SelectionType.CUSTOM
 import com.woocommerce.android.ui.analytics.ranges.AnalyticsHubDateRangeSelection.SelectionType.LAST_MONTH
 import com.woocommerce.android.ui.analytics.ranges.AnalyticsHubDateRangeSelection.SelectionType.LAST_QUARTER
 import com.woocommerce.android.ui.analytics.ranges.AnalyticsHubDateRangeSelection.SelectionType.LAST_WEEK
@@ -23,12 +24,14 @@ import java.util.TimeZone
 
 internal class AnalyticsHubDateRangeSelectionTest {
     private lateinit var testTimeZone: TimeZone
+    private lateinit var testLocale: Locale
     private lateinit var testCalendar: Calendar
 
     @Before
     fun setUp() {
-        testTimeZone = TimeZone.getTimeZone("UTC")
-        testCalendar = Calendar.getInstance(Locale.UK)
+        testLocale = Locale.UK
+        testTimeZone = TimeZone.getDefault()
+        testCalendar = Calendar.getInstance(testLocale)
         testCalendar.timeZone = testTimeZone
         testCalendar.firstDayOfWeek = Calendar.MONDAY
     }
@@ -47,10 +50,10 @@ internal class AnalyticsHubDateRangeSelectionTest {
         )
 
         // When
-        val sut = AnalyticsHubDateRangeSelection(
-            selectionType = YEAR_TO_DATE,
-            currentDate = today,
-            calendar = testCalendar
+        val sut = YEAR_TO_DATE.generateSelectionData(
+            referenceStartDate = today,
+            calendar = testCalendar,
+            locale = testLocale
         )
 
         // Then
@@ -72,10 +75,10 @@ internal class AnalyticsHubDateRangeSelectionTest {
         )
 
         // When
-        val sut = AnalyticsHubDateRangeSelection(
-            selectionType = LAST_YEAR,
-            currentDate = today,
-            calendar = testCalendar
+        val sut = LAST_YEAR.generateSelectionData(
+            referenceStartDate = today,
+            calendar = testCalendar,
+            locale = testLocale
         )
 
         // Then
@@ -97,10 +100,10 @@ internal class AnalyticsHubDateRangeSelectionTest {
         )
 
         // When
-        val sut = AnalyticsHubDateRangeSelection(
-            selectionType = QUARTER_TO_DATE,
-            currentDate = today,
-            calendar = testCalendar
+        val sut = QUARTER_TO_DATE.generateSelectionData(
+            referenceStartDate = today,
+            calendar = testCalendar,
+            locale = testLocale
         )
 
         // Then
@@ -122,10 +125,10 @@ internal class AnalyticsHubDateRangeSelectionTest {
         )
 
         // When
-        val sut = AnalyticsHubDateRangeSelection(
-            selectionType = LAST_QUARTER,
-            currentDate = today,
-            calendar = testCalendar
+        val sut = LAST_QUARTER.generateSelectionData(
+            referenceStartDate = today,
+            calendar = testCalendar,
+            locale = testLocale
         )
 
         // Then
@@ -147,10 +150,10 @@ internal class AnalyticsHubDateRangeSelectionTest {
         )
 
         // When
-        val sut = AnalyticsHubDateRangeSelection(
-            selectionType = MONTH_TO_DATE,
-            currentDate = today,
-            calendar = testCalendar
+        val sut = MONTH_TO_DATE.generateSelectionData(
+            referenceStartDate = today,
+            calendar = testCalendar,
+            locale = testLocale
         )
 
         // Then
@@ -172,10 +175,10 @@ internal class AnalyticsHubDateRangeSelectionTest {
         )
 
         // When
-        val sut = AnalyticsHubDateRangeSelection(
-            selectionType = LAST_MONTH,
-            currentDate = today,
-            calendar = testCalendar
+        val sut = LAST_MONTH.generateSelectionData(
+            referenceStartDate = today,
+            calendar = testCalendar,
+            locale = testLocale
         )
 
         // Then
@@ -197,10 +200,10 @@ internal class AnalyticsHubDateRangeSelectionTest {
         )
 
         // When
-        val sut = AnalyticsHubDateRangeSelection(
-            selectionType = WEEK_TO_DATE,
-            currentDate = today,
-            calendar = testCalendar
+        val sut = WEEK_TO_DATE.generateSelectionData(
+            referenceStartDate = today,
+            calendar = testCalendar,
+            locale = testLocale
         )
 
         // Then
@@ -222,10 +225,10 @@ internal class AnalyticsHubDateRangeSelectionTest {
         )
 
         // When
-        val sut = AnalyticsHubDateRangeSelection(
-            selectionType = LAST_WEEK,
-            currentDate = today,
-            calendar = testCalendar
+        val sut = LAST_WEEK.generateSelectionData(
+            referenceStartDate = today,
+            calendar = testCalendar,
+            locale = testLocale
         )
 
         // Then
@@ -247,10 +250,10 @@ internal class AnalyticsHubDateRangeSelectionTest {
         )
 
         // When
-        val sut = AnalyticsHubDateRangeSelection(
-            selectionType = TODAY,
-            currentDate = today,
-            calendar = testCalendar
+        val sut = TODAY.generateSelectionData(
+            referenceStartDate = today,
+            calendar = testCalendar,
+            locale = testLocale
         )
 
         // Then
@@ -272,10 +275,35 @@ internal class AnalyticsHubDateRangeSelectionTest {
         )
 
         // When
-        val sut = AnalyticsHubDateRangeSelection(
-            selectionType = YESTERDAY,
-            currentDate = today,
-            calendar = testCalendar
+        val sut = YESTERDAY.generateSelectionData(
+            referenceStartDate = today,
+            calendar = testCalendar,
+            locale = testLocale
+        )
+
+        // Then
+        assertThat(sut.currentRange).isEqualTo(expectedCurrentRange)
+        assertThat(sut.previousRange).isEqualTo(expectedPreviousRange)
+    }
+
+    @Test
+    fun `when selection type is custom, then generate expected date information`() {
+        // Given
+        val expectedCurrentRange = AnalyticsHubTimeRange(
+            start = dayStartFrom("2022-12-05"),
+            end = dayEndFrom("2022-12-07")
+        )
+        val expectedPreviousRange = AnalyticsHubTimeRange(
+            start = dayStartFrom("2022-12-02"),
+            end = dayEndFrom("2022-12-04")
+        )
+
+        // When
+        val sut = CUSTOM.generateSelectionData(
+            referenceStartDate = midDayFrom("2022-12-05"),
+            referenceEndDate = midDayFrom("2022-12-07"),
+            calendar = testCalendar,
+            locale = testLocale
         )
 
         // Then
