@@ -142,7 +142,7 @@ class LoginSiteCredentialsViewModel @Inject constructor(
                 }
             },
             onFailure = {
-                TODO()
+                triggerEvent(ShowSnackbar(R.string.error_generic))
             }
         )
     }
