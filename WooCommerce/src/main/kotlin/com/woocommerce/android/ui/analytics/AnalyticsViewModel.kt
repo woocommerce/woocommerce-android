@@ -108,11 +108,9 @@ class AnalyticsViewModel @Inject constructor(
     }
 
     fun onCustomRangeSelected(startDate: Date, endDate: Date) {
-        rangeSelectionState.value = SelectionType.CUSTOM.generateSelectionData(
-            referenceStartDate = startDate,
-            referenceEndDate = endDate,
-            calendar = calendar,
-            locale = localeProvider.provideLocale() ?: Locale.getDefault()
+        rangeSelectionState.value = SelectionType.CUSTOM.generateLocalizedSelectionData(
+            startDate = startDate,
+            endDate = endDate
         )
     }
 
@@ -373,9 +371,13 @@ class AnalyticsViewModel @Inject constructor(
         )
     }
 
-    private fun SelectionType.generateLocalizedSelectionData() =
-        generateSelectionData(
-            calendar = calendar,
-            locale = localeProvider.provideLocale() ?: Locale.getDefault()
-        )
+    private fun SelectionType.generateLocalizedSelectionData(
+        startDate: Date = Date(),
+        endDate: Date = Date()
+    ) = generateSelectionData(
+        referenceStartDate = startDate,
+        referenceEndDate = endDate,
+        calendar = calendar,
+        locale = localeProvider.provideLocale() ?: Locale.getDefault()
+    )
 }
