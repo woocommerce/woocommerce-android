@@ -79,7 +79,6 @@ class AnalyticsRepositoryTest : BaseUnitTest() {
         testCalendar.timeZone = testTimeZone
         testCalendar.firstDayOfWeek = Calendar.MONDAY
 
-
         testSelectionData = generateTestSelectionData(
             referenceStartDate = "2022-09-25".dayStartFrom(),
             referenceEndDate = "2022-04-10".dayEndFrom()
