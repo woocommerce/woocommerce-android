@@ -1,6 +1,10 @@
 <!--
 Contains editorialized release notes. Raw release notes should go into `RELEASE-NOTES.txt`.
 -->
+## 11.8
+You can now reply to product reviews directly from the app! This update also includes several enhancements to the product variations and the analytics feature. Please share feedback – we read every one of them.
+
+
 ## 11.7
 Exciting news! Now you can edit products in bulk. We also focused on polishing a few things with in person payments and order creation. Please check it out and share your feedback!
 
