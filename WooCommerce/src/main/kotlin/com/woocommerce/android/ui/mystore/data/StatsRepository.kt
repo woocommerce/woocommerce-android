@@ -101,6 +101,29 @@ class StatsRepository @Inject constructor(
             }
         }
 
+    suspend fun fetchVisitorStats(
+        startDate: String,
+        endDate: String,
+        granularity: StatsGranularity,
+        forced: Boolean
+    ): Result<Map<String, Int>> {
+        val result = FetchNewVisitorStatsPayload(
+            site = selectedSite.get(),
+            granularity = granularity,
+            forced = forced,
+            startDate = startDate,
+            endDate = endDate
+        ).let { wcStatsStore.fetchNewVisitorStats(it) }
+
+        if(result.isError) return Result.failure(Throwable(result.error?.message ?: "Timeout"))
+
+        val visitorStats = wcStatsStore.getNewVisitorStats(
+            selectedSite.get(), result.granularity, result.quantity, result.date, result.isCustomField
+        )
+
+        return Result.success(visitorStats)
+    }
+
     fun observeTopPerformers(
         granularity: StatsGranularity,
     ): Flow<List<TopPerformerProductEntity>> {
