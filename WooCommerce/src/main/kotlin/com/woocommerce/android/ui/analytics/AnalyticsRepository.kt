@@ -27,7 +27,6 @@ import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import org.wordpress.android.fluxc.model.WCRevenueStatsModel
 import org.wordpress.android.fluxc.model.stats.time.VisitsAndViewsModel
-import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooResult
 import org.wordpress.android.fluxc.persistence.entity.TopPerformerProductEntity
 import org.wordpress.android.fluxc.store.WCStatsStore.StatsGranularity
 import org.wordpress.android.fluxc.store.WCStatsStore.StatsGranularity.DAYS
@@ -36,7 +35,6 @@ import org.wordpress.android.fluxc.store.WCStatsStore.StatsGranularity.WEEKS
 import org.wordpress.android.fluxc.store.WCStatsStore.StatsGranularity.YEARS
 import org.wordpress.android.fluxc.store.WooCommerceStore
 import org.wordpress.android.fluxc.utils.DateUtils
-import java.util.Date
 import javax.inject.Inject
 import kotlin.math.round
 
@@ -186,63 +184,16 @@ class AnalyticsRepository @Inject constructor(
         rangeSelection: AnalyticsHubDateRangeSelection,
         fetchStrategy: FetchStrategy
     ): VisitorsResult {
-        val (previousVisitors, previousViews) = getVisitorsStats(
-            rangeSelection.previousRange.end,
-            getGranularity(rangeSelection.selectionType),
-            fetchStrategy,
-            MOST_RECENT_VISITORS_AND_VIEW_FETCH_LIMIT
-        ).model?.dates?.lastOrNull()
-            ?.let { Pair(it.visitors, it.views) }
-            ?: Pair(0, 0)
-
-        val currentPeriodStats = getVisitorsStats(
-            rangeSelection.previousRange.end,
-            getGranularity(rangeSelection.selectionType),
-            fetchStrategy,
-            MOST_RECENT_VISITORS_AND_VIEW_FETCH_LIMIT
-        ).model?.dates?.lastOrNull()
-
-        return currentPeriodStats?.let {
-            VisitorsResult.VisitorsData(
-                VisitorsStat(
-                    it.visitors.toInt(),
-                    it.views.toInt(),
-                    calculateDeltaPercentage(previousVisitors.toDouble(), it.visitors.toDouble()),
-                    calculateDeltaPercentage(previousViews.toDouble(), it.views.toDouble())
-                )
+        return getVisitorsStats(rangeSelection, fetchStrategy)
+            .fold(
+                onFailure = { VisitorsResult.VisitorsError },
+                onSuccess = { VisitorsResult.VisitorsData(VisitorsStat(
+                    0,
+                    0,
+                    DeltaPercentage.NotExist,
+                    DeltaPercentage.NotExist))
+                }
             )
-        } ?: VisitorsResult.VisitorsError
-    }
-
-    suspend fun fetchQuarterVisitorsData(
-        rangeSelection: AnalyticsHubDateRangeSelection,
-        fetchStrategy: FetchStrategy
-    ): VisitorsResult {
-        val (previousVisitors, previousViews) = getVisitorsStats(
-            rangeSelection.previousRange.end,
-            getGranularity(rangeSelection.selectionType),
-            fetchStrategy,
-            QUARTER_VISITORS_AND_VIEW_FETCH_LIMIT
-        ).model?.dates?.foldStatsWithin(rangeSelection.previousRange)
-            ?: Pair(0, 0)
-
-        val currentPeriodStats = getVisitorsStats(
-            rangeSelection.previousRange.end,
-            getGranularity(rangeSelection.selectionType),
-            fetchStrategy,
-            QUARTER_VISITORS_AND_VIEW_FETCH_LIMIT
-        ).model?.dates?.foldStatsWithin(rangeSelection.previousRange)
-
-        return currentPeriodStats?.let { (currentVisitors, currentViews) ->
-            VisitorsResult.VisitorsData(
-                VisitorsStat(
-                    currentVisitors.toInt(),
-                    currentViews.toInt(),
-                    calculateDeltaPercentage(previousVisitors.toDouble(), currentVisitors.toDouble()),
-                    calculateDeltaPercentage(previousViews.toDouble(), currentViews.toDouble())
-                )
-            )
-        } ?: VisitorsResult.VisitorsError
     }
 
     fun getRevenueAdminPanelUrl() = getAdminPanelUrl() + ANALYTICS_REVENUE_PATH
@@ -318,19 +269,14 @@ class AnalyticsRepository @Inject constructor(
     }
 
     private suspend fun getVisitorsStats(
-        endDate: Date,
-        granularity: StatsGranularity,
-        fetchStrategy: FetchStrategy,
-        fetchingAmountLimit: Int = VISITORS_AND_VIEW_DEFAULT_FETCH_LIMIT
-    ): WooResult<VisitsAndViewsModel> = coroutineScope {
-        val site = selectedSite.get()
-
-        statsRepository.fetchViewAndVisitorsStatsWithinRange(
-            endDate = endDate,
-            granularity = granularity.asJetpackGranularity(),
-            forced = fetchStrategy is FetchStrategy.ForceNew,
-            site = site,
-            fetchingAmountLimit
+        rangeSelection: AnalyticsHubDateRangeSelection,
+        fetchStrategy: FetchStrategy
+    ): Result<Map<String, Int>> = coroutineScope {
+        statsRepository.fetchVisitorStats(
+            rangeSelection.currentRange.start.formatToYYYYmmDD(),
+            rangeSelection.currentRange.end.formatToYYYYmmDD(),
+            getGranularity(rangeSelection.selectionType),
+            fetchStrategy is FetchStrategy.ForceNew,
         )
     }
 
