@@ -24,14 +24,11 @@ import com.woocommerce.android.ui.analytics.RefreshIndicator.NotShowIndicator
 import com.woocommerce.android.ui.analytics.RefreshIndicator.ShowIndicator
 import com.woocommerce.android.ui.analytics.daterangeselector.AnalyticsDateRangeSelectorViewState
 import com.woocommerce.android.ui.analytics.informationcard.AnalyticsInformationSectionViewState
-import com.woocommerce.android.ui.analytics.informationcard.AnalyticsInformationViewState
 import com.woocommerce.android.ui.analytics.informationcard.AnalyticsInformationViewState.DataViewState
 import com.woocommerce.android.ui.analytics.informationcard.AnalyticsInformationViewState.LoadingViewState
 import com.woocommerce.android.ui.analytics.informationcard.AnalyticsInformationViewState.NoDataState
 import com.woocommerce.android.ui.analytics.listcard.AnalyticsListCardItemViewState
 import com.woocommerce.android.ui.analytics.ranges.AnalyticsHubDateRangeSelection.SelectionType
-import com.woocommerce.android.ui.analytics.ranges.AnalyticsHubDateRangeSelection.SelectionType.LAST_QUARTER
-import com.woocommerce.android.ui.analytics.ranges.AnalyticsHubDateRangeSelection.SelectionType.QUARTER_TO_DATE
 import com.woocommerce.android.ui.mystore.MyStoreStatsUsageTracksEventEmitter
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.viewmodel.ResourceProvider
@@ -215,26 +212,15 @@ class AnalyticsViewModel @Inject constructor(
 
     private fun updateVisitors(isRefreshing: Boolean, showSkeleton: Boolean) =
         launch {
-            val timePeriod = ranges.selectionType
             val fetchStrategy = getFetchStrategy(isRefreshing)
-            val isQuarterSelection = (timePeriod == QUARTER_TO_DATE) || (timePeriod == LAST_QUARTER)
-
-            if (timePeriod == SelectionType.CUSTOM) {
-                mutableState.value = viewState.value.copy(visitorsState = AnalyticsInformationViewState.HiddenState)
-                transactionLauncher.onVisitorsFetched()
-                return@launch
-            }
 
             if (showSkeleton) mutableState.value = viewState.value.copy(visitorsState = LoadingViewState)
             mutableState.value = viewState.value.copy(
                 refreshIndicator = if (isRefreshing) ShowIndicator else NotShowIndicator
             )
 
-            if (isQuarterSelection) {
-                analyticsRepository.fetchQuarterVisitorsData(rangeSelectionState.value, fetchStrategy)
-            } else {
-                analyticsRepository.fetchRecentVisitorsData(rangeSelectionState.value, fetchStrategy)
-            }.handleVisitorsResult()
+            analyticsRepository.fetchRecentVisitorsData(rangeSelectionState.value, fetchStrategy)
+                .handleVisitorsResult()
         }
 
     private fun VisitorsResult.handleVisitorsResult() {
@@ -361,10 +347,5 @@ class AnalyticsViewModel @Inject constructor(
                 AnalyticsTracker.KEY_OPTION to ranges.selectionType.description
             )
         )
-    }
-
-    companion object {
-        const val TIME_PERIOD_SELECTED_KEY = "time_period_selected_key"
-        const val DATE_RANGE_SELECTED_KEY = "date_range_selected_key"
     }
 }
