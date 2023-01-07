@@ -1,13 +1,12 @@
 package com.woocommerce.android.ui.analytics
 
 import com.woocommerce.android.extensions.formatToYYYYmmDD
-import com.woocommerce.android.extensions.oneDayAgo
 import com.woocommerce.android.model.DeltaPercentage
 import com.woocommerce.android.model.OrdersStat
 import com.woocommerce.android.model.ProductItem
 import com.woocommerce.android.model.ProductsStat
 import com.woocommerce.android.model.RevenueStat
-import com.woocommerce.android.model.VisitorsStat
+import com.woocommerce.android.model.SessionStats
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.analytics.AnalyticsRepository.OrdersResult.OrdersError
 import com.woocommerce.android.ui.analytics.AnalyticsRepository.ProductsResult.ProductsError
@@ -15,7 +14,6 @@ import com.woocommerce.android.ui.analytics.AnalyticsRepository.RevenueResult.Re
 import com.woocommerce.android.ui.analytics.AnalyticsRepository.RevenueResult.RevenueError
 import com.woocommerce.android.ui.analytics.ranges.AnalyticsHubDateRangeSelection
 import com.woocommerce.android.ui.analytics.ranges.AnalyticsHubDateRangeSelection.SelectionType
-import com.woocommerce.android.ui.analytics.ranges.AnalyticsHubTimeRange
 import com.woocommerce.android.ui.mystore.data.StatsRepository
 import com.woocommerce.android.util.CoroutineDispatchers
 import kotlinx.coroutines.Deferred
@@ -26,7 +24,6 @@ import kotlinx.coroutines.flow.single
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import org.wordpress.android.fluxc.model.WCRevenueStatsModel
-import org.wordpress.android.fluxc.model.stats.time.VisitsAndViewsModel
 import org.wordpress.android.fluxc.persistence.entity.TopPerformerProductEntity
 import org.wordpress.android.fluxc.store.WCStatsStore.StatsGranularity
 import org.wordpress.android.fluxc.store.WCStatsStore.StatsGranularity.DAYS
@@ -180,26 +177,20 @@ class AnalyticsRepository @Inject constructor(
         )
     }
 
-    suspend fun fetchRecentVisitorsData(
+    suspend fun fetchSessionData(
         rangeSelection: AnalyticsHubDateRangeSelection,
         fetchStrategy: FetchStrategy
-    ): VisitorsResult {
-        return getVisitorsStats(rangeSelection, fetchStrategy)
+    ): SessionResult {
+        return getSessionStats(rangeSelection, fetchStrategy)
             .fold(
-                onFailure = { VisitorsResult.VisitorsError },
-                onSuccess = { VisitorsResult.VisitorsData(VisitorsStat(
-                    0,
-                    0,
-                    DeltaPercentage.NotExist,
-                    DeltaPercentage.NotExist))
-                }
+                onFailure = { SessionResult.SessionError },
+                onSuccess = { SessionResult.SessionData(SessionStats(0, 0)) }
             )
     }
 
     fun getRevenueAdminPanelUrl() = getAdminPanelUrl() + ANALYTICS_REVENUE_PATH
     fun getOrdersAdminPanelUrl() = getAdminPanelUrl() + ANALYTICS_ORDERS_PATH
     fun getProductsAdminPanelUrl() = getAdminPanelUrl() + ANALYTICS_PRODUCTS_PATH
-    fun getJetpackStatsPanelUrl() = getAdminPanelUrl() + ANALYTICS_JETPACK_STATS_PATH
 
     private suspend fun getCurrentPeriodStats(
         rangeSelection: AnalyticsHubDateRangeSelection,
@@ -268,7 +259,7 @@ class AnalyticsRepository @Inject constructor(
         }
     }
 
-    private suspend fun getVisitorsStats(
+    private suspend fun getSessionStats(
         rangeSelection: AnalyticsHubDateRangeSelection,
         fetchStrategy: FetchStrategy
     ): Result<Map<String, Int>> = coroutineScope {
@@ -289,13 +280,6 @@ class AnalyticsRepository @Inject constructor(
             SelectionType.LAST_YEAR, SelectionType.YEAR_TO_DATE -> YEARS
             SelectionType.CUSTOM -> DAYS
         }
-
-    private fun StatsGranularity.asJetpackGranularity() = when (this) {
-        DAYS -> org.wordpress.android.fluxc.network.utils.StatsGranularity.DAYS
-        WEEKS -> org.wordpress.android.fluxc.network.utils.StatsGranularity.WEEKS
-        MONTHS -> org.wordpress.android.fluxc.network.utils.StatsGranularity.MONTHS
-        YEARS -> org.wordpress.android.fluxc.network.utils.StatsGranularity.YEARS
-    }
 
     private fun calculateDeltaPercentage(previousVal: Double, currentVal: Double): DeltaPercentage = when {
         previousVal <= ZERO_VALUE -> DeltaPercentage.NotExist
@@ -328,36 +312,16 @@ class AnalyticsRepository @Inject constructor(
     private fun getCurrencyCode() = wooCommerceStore.getSiteSettings(selectedSite.get())?.currencyCode
     private fun getAdminPanelUrl() = selectedSite.getIfExists()?.adminUrl
 
-    /***
-     * This method will select all Visitors and Views data within a given date range interval
-     * and fold all this data into a Pair containing the total visitors and total views of that period
-     */
-    private fun List<VisitsAndViewsModel.PeriodData>.foldStatsWithin(
-        dateRange: AnalyticsHubTimeRange
-    ): Pair<Long, Long> {
-        val startDate = dateRange.start.oneDayAgo()
-
-        return this.asSequence()
-            .filter { startDate.before(DateUtils.getDateFromString(it.period)) }
-            .map { Pair(it.visitors, it.views) }
-            .fold(Pair(0L, 0L)) { acc, pair -> Pair(acc.first + pair.first, acc.second + pair.second) }
-    }
-
     companion object {
         const val ANALYTICS_REVENUE_PATH = "admin.php?page=wc-admin&path=%2Fanalytics%2Frevenue"
         const val ANALYTICS_ORDERS_PATH = "admin.php?page=wc-admin&path=%2Fanalytics%2Forders"
         const val ANALYTICS_PRODUCTS_PATH = "admin.php?page=wc-admin&path=%2Fanalytics%2Fproducts"
-        const val ANALYTICS_JETPACK_STATS_PATH = "admin.php?page=stats"
 
         const val ZERO_VALUE = 0.0
         const val MINUS_ONE = -1
         const val ONE_H_PERCENT = 100
 
         const val TOP_PRODUCTS_LIST_SIZE = 5
-
-        const val VISITORS_AND_VIEW_DEFAULT_FETCH_LIMIT = 15
-        const val MOST_RECENT_VISITORS_AND_VIEW_FETCH_LIMIT = 1
-        const val QUARTER_VISITORS_AND_VIEW_FETCH_LIMIT = 3
     }
 
     sealed class RevenueResult {
@@ -375,9 +339,9 @@ class AnalyticsRepository @Inject constructor(
         data class ProductsData(val productsStat: ProductsStat) : ProductsResult()
     }
 
-    sealed class VisitorsResult {
-        object VisitorsError : VisitorsResult()
-        data class VisitorsData(val visitorsStat: VisitorsStat) : VisitorsResult()
+    sealed class SessionResult {
+        object SessionError : SessionResult()
+        data class SessionData(val sessionStats: SessionStats) : SessionResult()
     }
 
     sealed class FetchStrategy {

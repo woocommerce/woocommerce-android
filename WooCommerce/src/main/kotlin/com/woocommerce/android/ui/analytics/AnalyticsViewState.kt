@@ -11,7 +11,7 @@ data class AnalyticsViewState(
     val revenueState: AnalyticsInformationViewState,
     val ordersState: AnalyticsInformationViewState,
     val productsState: AnalyticsListViewState,
-    val visitorsState: AnalyticsInformationViewState,
+    val sessionState: AnalyticsInformationViewState,
 )
 
 sealed class AnalyticsViewEvent : MultiLiveEvent.Event() {

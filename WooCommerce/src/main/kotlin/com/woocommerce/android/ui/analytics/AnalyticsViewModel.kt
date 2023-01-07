@@ -8,7 +8,7 @@ import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.model.DeltaPercentage
 import com.woocommerce.android.model.ProductItem
-import com.woocommerce.android.model.VisitorsStat
+import com.woocommerce.android.model.SessionStats
 import com.woocommerce.android.ui.analytics.AnalyticsRepository.FetchStrategy.ForceNew
 import com.woocommerce.android.ui.analytics.AnalyticsRepository.FetchStrategy.Saved
 import com.woocommerce.android.ui.analytics.AnalyticsRepository.OrdersResult.OrdersData
@@ -17,9 +17,9 @@ import com.woocommerce.android.ui.analytics.AnalyticsRepository.ProductsResult.P
 import com.woocommerce.android.ui.analytics.AnalyticsRepository.ProductsResult.ProductsError
 import com.woocommerce.android.ui.analytics.AnalyticsRepository.RevenueResult.RevenueData
 import com.woocommerce.android.ui.analytics.AnalyticsRepository.RevenueResult.RevenueError
-import com.woocommerce.android.ui.analytics.AnalyticsRepository.VisitorsResult
-import com.woocommerce.android.ui.analytics.AnalyticsRepository.VisitorsResult.VisitorsData
-import com.woocommerce.android.ui.analytics.AnalyticsRepository.VisitorsResult.VisitorsError
+import com.woocommerce.android.ui.analytics.AnalyticsRepository.SessionResult
+import com.woocommerce.android.ui.analytics.AnalyticsRepository.SessionResult.SessionData
+import com.woocommerce.android.ui.analytics.AnalyticsRepository.SessionResult.SessionError
 import com.woocommerce.android.ui.analytics.RefreshIndicator.NotShowIndicator
 import com.woocommerce.android.ui.analytics.RefreshIndicator.ShowIndicator
 import com.woocommerce.android.ui.analytics.daterangeselector.AnalyticsDateRangeSelectorViewState
@@ -127,7 +127,7 @@ class AnalyticsViewModel @Inject constructor(
         updateRevenue(isRefreshing, showSkeleton)
         updateOrders(isRefreshing, showSkeleton)
         updateProducts(isRefreshing, showSkeleton)
-        updateVisitors(isRefreshing, showSkeleton)
+        updateSessions(isRefreshing, showSkeleton)
     }
 
     private fun updateRevenue(isRefreshing: Boolean, showSkeleton: Boolean) =
@@ -210,31 +210,31 @@ class AnalyticsViewModel @Inject constructor(
                 }
         }
 
-    private fun updateVisitors(isRefreshing: Boolean, showSkeleton: Boolean) =
+    private fun updateSessions(isRefreshing: Boolean, showSkeleton: Boolean) =
         launch {
             val fetchStrategy = getFetchStrategy(isRefreshing)
 
-            if (showSkeleton) mutableState.value = viewState.value.copy(visitorsState = LoadingViewState)
+            if (showSkeleton) mutableState.value = viewState.value.copy(sessionState = LoadingViewState)
             mutableState.value = viewState.value.copy(
                 refreshIndicator = if (isRefreshing) ShowIndicator else NotShowIndicator
             )
 
-            analyticsRepository.fetchRecentVisitorsData(rangeSelectionState.value, fetchStrategy)
-                .handleVisitorsResult()
+            analyticsRepository.fetchSessionData(rangeSelectionState.value, fetchStrategy)
+                .handleSessionResult()
         }
 
-    private fun VisitorsResult.handleVisitorsResult() {
+    private fun SessionResult.handleSessionResult() {
         when (this) {
-            is VisitorsData -> {
+            is SessionData -> {
                 mutableState.value = viewState.value.copy(
                     refreshIndicator = NotShowIndicator,
-                    visitorsState = buildVisitorsDataViewState(visitorsStat)
+                    sessionState = buildSessionViewState(sessionStats)
                 )
-                transactionLauncher.onVisitorsFetched()
+                transactionLauncher.onSessionFetched()
             }
-            is VisitorsError -> mutableState.value = viewState.value.copy(
+            is SessionError -> mutableState.value = viewState.value.copy(
                 refreshIndicator = NotShowIndicator,
-                visitorsState = NoDataState("No visitors data")
+                sessionState = NoDataState("No session data")
             )
         }
     }
@@ -253,21 +253,21 @@ class AnalyticsViewModel @Inject constructor(
         ?.let { currencyFormatter.formatCurrency(value, it) }
         ?: value
 
-    private fun buildVisitorsDataViewState(
-        stats: VisitorsStat
+    private fun buildSessionViewState(
+        stats: SessionStats
     ) = DataViewState(
         title = resourceProvider.getString(R.string.analytics_session_card_title),
         leftSection = AnalyticsInformationSectionViewState(
             resourceProvider.getString(R.string.analytics_views_subtitle),
             stats.viewsCount.toString(),
             null,
-            listOf() /** Add charts calculation to Visitors and Views stats **/
+            listOf()
         ),
         rightSection = AnalyticsInformationSectionViewState(
             resourceProvider.getString(R.string.analytics_conversion_subtitle),
-            stats.visitorsCount.toString(),
+            stats.conversionRate.toString(),
             null,
-            listOf() /** Add charts calculation to Visitors and Views stats **/
+            listOf()
         )
     )
 
