@@ -44,6 +44,9 @@ import javax.inject.Inject
 import com.woocommerce.android.ui.analytics.listcard.AnalyticsListViewState as ProductsViewState
 import com.woocommerce.android.ui.analytics.listcard.AnalyticsListViewState.LoadingViewState as LoadingProductsViewState
 import com.woocommerce.android.ui.analytics.listcard.AnalyticsListViewState.NoDataState as ProductsNoDataState
+import com.woocommerce.android.model.OrdersStat
+import com.woocommerce.android.ui.analytics.AnalyticsRepository.OrdersResult
+import kotlinx.coroutines.flow.update
 
 @HiltViewModel
 class AnalyticsViewModel @Inject constructor(
@@ -64,8 +67,10 @@ class AnalyticsViewModel @Inject constructor(
         initialValue = navArgs.targetGranularity.generateSelectionData()
     )
 
-    private val ranges
-        get() = rangeSelectionState.value
+    private val ordersDataState = savedState.getStateFlow(
+        scope = viewModelScope,
+        initialValue = OrdersData(OrdersStat.EMPTY) as OrdersResult
+    )
 
     private val mutableState = MutableStateFlow(
         AnalyticsViewState(
@@ -85,12 +90,34 @@ class AnalyticsViewModel @Inject constructor(
             .toTypedArray()
     }
 
+    private val ranges
+        get() = rangeSelectionState.value
+
     init {
         viewModelScope.launch {
             rangeSelectionState.collect {
                 updateDateSelector()
                 trackSelectedDateRange()
                 refreshAllAnalyticsAtOnce(isRefreshing = false, showSkeleton = true)
+            }
+        }
+        observeOrdersResult()
+    }
+
+    private fun observeOrdersResult() {
+        viewModelScope.launch {
+            ordersDataState.collect { orders ->
+                when (orders) {
+                    is OrdersData -> mutableState.update { viewState ->
+                        transactionLauncher.onOrdersFetched()
+                        viewState.copy(ordersState = buildOrdersDataViewState(orders))
+                    }
+                    is OrdersError -> mutableState.update { viewState ->
+                        NoDataState(resourceProvider.getString(R.string.analytics_orders_no_data))
+                            .let { viewState.copy(ordersState = it) }
+                    }
+                }
+
             }
         }
     }
@@ -166,19 +193,7 @@ class AnalyticsViewModel @Inject constructor(
                 refreshIndicator = if (isRefreshing) ShowIndicator else NotShowIndicator
             )
             analyticsRepository.fetchOrdersData(rangeSelectionState.value, fetchStrategy)
-                .let {
-                    when (it) {
-                        is OrdersData -> {
-                            mutableState.value = viewState.value.copy(
-                                ordersState = buildOrdersDataViewState(it)
-                            )
-                            transactionLauncher.onOrdersFetched()
-                        }
-                        is OrdersError -> mutableState.value = viewState.value.copy(
-                            ordersState = NoDataState(resourceProvider.getString(R.string.analytics_orders_no_data))
-                        )
-                    }
-                }
+                .let { ordersDataState.value = it }
         }
 
     private fun updateProducts(isRefreshing: Boolean, showSkeleton: Boolean) =
