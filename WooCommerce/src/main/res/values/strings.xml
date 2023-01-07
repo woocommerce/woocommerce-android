@@ -421,8 +421,8 @@
     <string name="analytics_products_list_header_title">Products</string>
     <string name="analytics_products_list_header_subtitle">Items sold</string>
     <string name="analytics_products_list_item_description">Net sales: %1$s</string>
-    <string name="analytics_visitors_and_views_card_title">Visitors and Views</string>
-    <string name="analytics_visitors_subtitle">Visitors</string>
+    <string name="analytics_session_card_title">Sessions</string>
+    <string name="analytics_conversion_subtitle">Conversion Rate</string>
     <string name="analytics_views_subtitle">Views</string>
 
     <!--
