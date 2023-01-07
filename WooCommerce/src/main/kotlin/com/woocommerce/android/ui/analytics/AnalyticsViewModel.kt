@@ -256,17 +256,17 @@ class AnalyticsViewModel @Inject constructor(
     private fun buildVisitorsDataViewState(
         stats: VisitorsStat
     ) = DataViewState(
-        title = resourceProvider.getString(R.string.analytics_visitors_and_views_card_title),
+        title = resourceProvider.getString(R.string.analytics_session_card_title),
         leftSection = AnalyticsInformationSectionViewState(
-            title = resourceProvider.getString(R.string.analytics_visitors_subtitle),
-            stats.visitorsCount.toString(),
-            stats.avgVisitorsDelta.run { this as? DeltaPercentage.Value }?.value,
+            resourceProvider.getString(R.string.analytics_views_subtitle),
+            stats.viewsCount.toString(),
+            null,
             listOf() /** Add charts calculation to Visitors and Views stats **/
         ),
         rightSection = AnalyticsInformationSectionViewState(
-            resourceProvider.getString(R.string.analytics_views_subtitle),
-            stats.viewsCount.toString(),
-            stats.avgViewsDelta.run { this as? DeltaPercentage.Value }?.value,
+            resourceProvider.getString(R.string.analytics_conversion_subtitle),
+            stats.visitorsCount.toString(),
+            null,
             listOf() /** Add charts calculation to Visitors and Views stats **/
         )
     )
