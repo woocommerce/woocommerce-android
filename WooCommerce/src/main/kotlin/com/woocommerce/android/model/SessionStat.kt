@@ -1,12 +1,12 @@
 package com.woocommerce.android.model
 
-data class SessionStats(
-    val visitorsCount: Int,
+data class SessionStat(
+    val conversionRate: String,
     val viewsCount: Int
 ) {
     companion object {
-        val EMPTY = SessionStats(
-            visitorsCount = 0,
+        val EMPTY = SessionStat(
+            conversionRate = "",
             viewsCount = 0
         )
     }
