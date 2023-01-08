@@ -1,5 +1,8 @@
 package com.woocommerce.android.ui.analytics
 
+import com.woocommerce.android.ui.analytics.listcard.AnalyticsListViewState as ProductsViewState
+import com.woocommerce.android.ui.analytics.listcard.AnalyticsListViewState.LoadingViewState as LoadingProductsViewState
+import com.woocommerce.android.ui.analytics.listcard.AnalyticsListViewState.NoDataState as ProductsNoDataState
 import androidx.lifecycle.LifecycleObserver
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
@@ -7,19 +10,17 @@ import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.model.DeltaPercentage
+import com.woocommerce.android.model.OrdersStat
 import com.woocommerce.android.model.ProductItem
-import com.woocommerce.android.model.SessionStats
+import com.woocommerce.android.model.SessionStat
 import com.woocommerce.android.ui.analytics.AnalyticsRepository.FetchStrategy.ForceNew
 import com.woocommerce.android.ui.analytics.AnalyticsRepository.FetchStrategy.Saved
 import com.woocommerce.android.ui.analytics.AnalyticsRepository.OrdersResult.OrdersData
-import com.woocommerce.android.ui.analytics.AnalyticsRepository.OrdersResult.OrdersError
 import com.woocommerce.android.ui.analytics.AnalyticsRepository.ProductsResult.ProductsData
 import com.woocommerce.android.ui.analytics.AnalyticsRepository.ProductsResult.ProductsError
 import com.woocommerce.android.ui.analytics.AnalyticsRepository.RevenueResult.RevenueData
 import com.woocommerce.android.ui.analytics.AnalyticsRepository.RevenueResult.RevenueError
-import com.woocommerce.android.ui.analytics.AnalyticsRepository.SessionResult
-import com.woocommerce.android.ui.analytics.AnalyticsRepository.SessionResult.SessionData
-import com.woocommerce.android.ui.analytics.AnalyticsRepository.SessionResult.SessionError
+import com.woocommerce.android.ui.analytics.AnalyticsRepository.VisitorsResult.VisitorsData
 import com.woocommerce.android.ui.analytics.RefreshIndicator.NotShowIndicator
 import com.woocommerce.android.ui.analytics.RefreshIndicator.ShowIndicator
 import com.woocommerce.android.ui.analytics.daterangeselector.AnalyticsDateRangeSelectorViewState
@@ -36,17 +37,15 @@ import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.getStateFlow
 import com.woocommerce.android.viewmodel.navArgs
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.launch
+import java.text.DecimalFormat
 import java.util.Date
 import javax.inject.Inject
-import com.woocommerce.android.ui.analytics.listcard.AnalyticsListViewState as ProductsViewState
-import com.woocommerce.android.ui.analytics.listcard.AnalyticsListViewState.LoadingViewState as LoadingProductsViewState
-import com.woocommerce.android.ui.analytics.listcard.AnalyticsListViewState.NoDataState as ProductsNoDataState
-import com.woocommerce.android.model.OrdersStat
-import com.woocommerce.android.ui.analytics.AnalyticsRepository.OrdersResult
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
 
 @HiltViewModel
 class AnalyticsViewModel @Inject constructor(
@@ -69,7 +68,12 @@ class AnalyticsViewModel @Inject constructor(
 
     private val ordersDataState = savedState.getStateFlow(
         scope = viewModelScope,
-        initialValue = OrdersData(OrdersStat.EMPTY) as OrdersResult
+        initialValue = OrdersState.Loading as OrdersState
+    )
+
+    private val visitorsCountState = savedState.getStateFlow(
+        scope = viewModelScope,
+        initialValue = VisitorsState.Loading as VisitorsState
     )
 
     private val mutableState = MutableStateFlow(
@@ -102,19 +106,59 @@ class AnalyticsViewModel @Inject constructor(
             }
         }
         observeOrdersResult()
+
+        viewModelScope.launch {
+            visitorsCountState.collect { state ->
+                when(state) {
+                    is VisitorsState.Available -> { /** do nothing */ }
+                    is VisitorsState.Error -> mutableState.update { viewState ->
+                        viewState.copy(
+                            refreshIndicator = NotShowIndicator,
+                            sessionState = NoDataState("No session data")
+                        )
+                    }
+                    is VisitorsState.Loading -> mutableState.update { viewState ->
+                        LoadingViewState.let { viewState.copy(sessionState = it) }
+                    }
+                }
+            }
+        }
+
+        viewModelScope.launch {
+            visitorsCountState
+                .filter { it is VisitorsState.Available }
+                .combine(ordersDataState) { visitors, orders ->
+                    val ordersCount = (orders as? OrdersState.Available)?.orders?.ordersCount ?: 0
+                    val visitorsCount = (visitors as? VisitorsState.Available)?.visitorsCount ?: 0
+
+                    val conversionRate = ((ordersCount / visitorsCount.toFloat()) * 100)
+                        .let { DecimalFormat("##.#").format(it) + "%" }
+
+                    SessionStat(conversionRate, visitorsCount)
+                }.collect {
+                    mutableState.value = viewState.value.copy(
+                        refreshIndicator = NotShowIndicator,
+                        sessionState = buildSessionViewState(it)
+                    )
+                    transactionLauncher.onSessionFetched()
+                }
+        }
     }
 
     private fun observeOrdersResult() {
         viewModelScope.launch {
-            ordersDataState.collect { orders ->
-                when (orders) {
-                    is OrdersData -> mutableState.update { viewState ->
+            ordersDataState.collect { state ->
+                when (state) {
+                    is OrdersState.Available -> mutableState.update { viewState ->
                         transactionLauncher.onOrdersFetched()
-                        viewState.copy(ordersState = buildOrdersDataViewState(orders))
+                        viewState.copy(ordersState = buildOrdersDataViewState(state.orders))
                     }
-                    is OrdersError -> mutableState.update { viewState ->
+                    is OrdersState.Error -> mutableState.update { viewState ->
                         NoDataState(resourceProvider.getString(R.string.analytics_orders_no_data))
                             .let { viewState.copy(ordersState = it) }
+                    }
+                    is OrdersState.Loading -> mutableState.update { viewState ->
+                        LoadingViewState.let { viewState.copy(ordersState = it) }
                     }
                 }
 
@@ -188,12 +232,16 @@ class AnalyticsViewModel @Inject constructor(
         launch {
             val fetchStrategy = getFetchStrategy(isRefreshing)
 
-            if (showSkeleton) mutableState.value = viewState.value.copy(ordersState = LoadingViewState)
+            if (showSkeleton) ordersDataState.value = OrdersState.Loading
+
             mutableState.value = viewState.value.copy(
                 refreshIndicator = if (isRefreshing) ShowIndicator else NotShowIndicator
             )
+
             analyticsRepository.fetchOrdersData(rangeSelectionState.value, fetchStrategy)
-                .let { ordersDataState.value = it }
+                .run { this as? OrdersData }
+                ?.let { ordersDataState.value = OrdersState.Available(it.ordersStat) }
+                ?: ordersDataState.apply { value = OrdersState.Error }
         }
 
     private fun updateProducts(isRefreshing: Boolean, showSkeleton: Boolean) =
@@ -229,30 +277,16 @@ class AnalyticsViewModel @Inject constructor(
         launch {
             val fetchStrategy = getFetchStrategy(isRefreshing)
 
-            if (showSkeleton) mutableState.value = viewState.value.copy(sessionState = LoadingViewState)
+            if (showSkeleton) visitorsCountState.value = VisitorsState.Loading
             mutableState.value = viewState.value.copy(
                 refreshIndicator = if (isRefreshing) ShowIndicator else NotShowIndicator
             )
 
-            analyticsRepository.fetchSessionData(rangeSelectionState.value, fetchStrategy)
-                .handleSessionResult()
+            analyticsRepository.fetchVisitorsData(rangeSelectionState.value, fetchStrategy)
+                .run { this as? VisitorsData }
+                ?.let { visitorsCountState.value = VisitorsState.Available(it.visitorsCount) }
+                ?: VisitorsState.Error
         }
-
-    private fun SessionResult.handleSessionResult() {
-        when (this) {
-            is SessionData -> {
-                mutableState.value = viewState.value.copy(
-                    refreshIndicator = NotShowIndicator,
-                    sessionState = buildSessionViewState(sessionStats)
-                )
-                transactionLauncher.onSessionFetched()
-            }
-            is SessionError -> mutableState.value = viewState.value.copy(
-                refreshIndicator = NotShowIndicator,
-                sessionState = NoDataState("No session data")
-            )
-        }
-    }
 
     private fun updateDateSelector() {
         mutableState.value = viewState.value.copy(
@@ -269,7 +303,7 @@ class AnalyticsViewModel @Inject constructor(
         ?: value
 
     private fun buildSessionViewState(
-        stats: SessionStats
+        stats: SessionStat
     ) = DataViewState(
         title = resourceProvider.getString(R.string.analytics_session_card_title),
         leftSection = AnalyticsInformationSectionViewState(
@@ -303,28 +337,28 @@ class AnalyticsViewModel @Inject constructor(
             ),
         )
 
-    private fun buildOrdersDataViewState(data: OrdersData) =
+    private fun buildOrdersDataViewState(ordersStats: OrdersStat) =
         DataViewState(
             title = resourceProvider.getString(R.string.analytics_orders_card_title),
             leftSection = AnalyticsInformationSectionViewState(
                 resourceProvider.getString(R.string.analytics_total_orders_title),
-                data.ordersStat.ordersCount.toString(),
-                if (data.ordersStat.ordersCountDelta is DeltaPercentage.Value) {
-                    data.ordersStat.ordersCountDelta.value
+                ordersStats.ordersCount.toString(),
+                if (ordersStats.ordersCountDelta is DeltaPercentage.Value) {
+                    ordersStats.ordersCountDelta.value
                 } else {
                     null
                 },
-                data.ordersStat.ordersCountByInterval.map { it.toFloat() }
+                ordersStats.ordersCountByInterval.map { it.toFloat() }
             ),
             rightSection = AnalyticsInformationSectionViewState(
                 resourceProvider.getString(R.string.analytics_avg_orders_title),
-                formatValue(data.ordersStat.avgOrderValue.toString(), data.ordersStat.currencyCode),
-                if (data.ordersStat.avgOrderDelta is DeltaPercentage.Value) {
-                    data.ordersStat.avgOrderDelta.value
+                formatValue(ordersStats.avgOrderValue.toString(), ordersStats.currencyCode),
+                if (ordersStats.avgOrderDelta is DeltaPercentage.Value) {
+                    ordersStats.avgOrderDelta.value
                 } else {
                     null
                 },
-                data.ordersStat.avgOrderValueByInterval.map { it.toFloat() }
+                ordersStats.avgOrderValueByInterval.map { it.toFloat() }
             )
         )
 
@@ -362,5 +396,17 @@ class AnalyticsViewModel @Inject constructor(
                 AnalyticsTracker.KEY_OPTION to ranges.selectionType.description
             )
         )
+    }
+
+    sealed class OrdersState: java.io.Serializable {
+        data class Available(val orders: OrdersStat) : OrdersState()
+        object Error : OrdersState()
+        object Loading : OrdersState()
+    }
+
+    sealed class VisitorsState: java.io.Serializable {
+        data class Available(val visitorsCount: Int) : VisitorsState()
+        object Error : VisitorsState()
+        object Loading : VisitorsState()
     }
 }
