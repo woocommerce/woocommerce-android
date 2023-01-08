@@ -98,72 +98,73 @@ class AnalyticsViewModel @Inject constructor(
         get() = rangeSelectionState.value
 
     init {
-        viewModelScope.launch {
-            rangeSelectionState.collect {
-                updateDateSelector()
-                trackSelectedDateRange()
-                refreshAllAnalyticsAtOnce(isRefreshing = false, showSkeleton = true)
-            }
-        }
-        observeOrdersResult()
+        observeOrdersStatChanges()
+        observeSessionStatChanges()
+        observeVisitorsCountChanges()
+        observeRangeSelectionChanges()
+    }
 
-        viewModelScope.launch {
-            visitorsCountState.collect { state ->
-                when(state) {
-                    is VisitorsState.Available -> { /** do nothing */ }
-                    is VisitorsState.Error -> mutableState.update { viewState ->
-                        viewState.copy(
-                            refreshIndicator = NotShowIndicator,
-                            sessionState = NoDataState("No session data")
-                        )
-                    }
-                    is VisitorsState.Loading -> mutableState.update { viewState ->
-                        LoadingViewState.let { viewState.copy(sessionState = it) }
-                    }
-                }
-            }
-        }
-
-        viewModelScope.launch {
-            visitorsCountState
-                .filter { it is VisitorsState.Available }
-                .combine(ordersDataState) { visitors, orders ->
-                    val ordersCount = (orders as? OrdersState.Available)?.orders?.ordersCount ?: 0
-                    val visitorsCount = (visitors as? VisitorsState.Available)?.visitorsCount ?: 0
-
-                    val conversionRate = ((ordersCount / visitorsCount.toFloat()) * 100)
-                        .let { DecimalFormat("##.#").format(it) + "%" }
-
-                    SessionStat(conversionRate, visitorsCount)
-                }.collect {
-                    mutableState.value = viewState.value.copy(
-                        refreshIndicator = NotShowIndicator,
-                        sessionState = buildSessionViewState(it)
-                    )
-                    transactionLauncher.onSessionFetched()
-                }
+    private fun observeRangeSelectionChanges() = viewModelScope.launch {
+        rangeSelectionState.collect {
+            updateDateSelector()
+            trackSelectedDateRange()
+            refreshAllAnalyticsAtOnce(isRefreshing = false, showSkeleton = true)
         }
     }
 
-    private fun observeOrdersResult() {
-        viewModelScope.launch {
-            ordersDataState.collect { state ->
-                when (state) {
-                    is OrdersState.Available -> mutableState.update { viewState ->
-                        transactionLauncher.onOrdersFetched()
-                        viewState.copy(ordersState = buildOrdersDataViewState(state.orders))
-                    }
-                    is OrdersState.Error -> mutableState.update { viewState ->
-                        NoDataState(resourceProvider.getString(R.string.analytics_orders_no_data))
-                            .let { viewState.copy(ordersState = it) }
-                    }
-                    is OrdersState.Loading -> mutableState.update { viewState ->
-                        LoadingViewState.let { viewState.copy(ordersState = it) }
-                    }
+    private fun observeOrdersStatChanges() = viewModelScope.launch {
+        ordersDataState.collect { state ->
+            when (state) {
+                is OrdersState.Available -> mutableState.update { viewState ->
+                    transactionLauncher.onOrdersFetched()
+                    viewState.copy(ordersState = buildOrdersDataViewState(state.orders))
                 }
-
+                is OrdersState.Error -> mutableState.update { viewState ->
+                    NoDataState(resourceProvider.getString(R.string.analytics_orders_no_data))
+                        .let { viewState.copy(ordersState = it) }
+                }
+                is OrdersState.Loading -> mutableState.update { viewState ->
+                    LoadingViewState.let { viewState.copy(ordersState = it) }
+                }
             }
         }
+    }
+
+    private fun observeVisitorsCountChanges() = viewModelScope.launch {
+        visitorsCountState.collect { state ->
+            if (state is VisitorsState.Error) {
+                mutableState.update { viewState ->
+                    viewState.copy(
+                        refreshIndicator = NotShowIndicator,
+                        sessionState = NoDataState("No session data")
+                    )
+                }
+            } else if (state is VisitorsState.Loading) {
+                mutableState.update { viewState ->
+                    LoadingViewState.let { viewState.copy(sessionState = it) }
+                }
+            }
+        }
+    }
+
+    private fun observeSessionStatChanges() = viewModelScope.launch {
+        visitorsCountState
+            .filter { it is VisitorsState.Available }
+            .combine(ordersDataState) { visitors, orders ->
+                val ordersCount = (orders as? OrdersState.Available)?.orders?.ordersCount ?: 0
+                val visitorsCount = (visitors as? VisitorsState.Available)?.visitorsCount ?: 0
+
+                val conversionRate = ((ordersCount / visitorsCount.toFloat()) * 100)
+                    .let { DecimalFormat("##.#").format(it) + "%" }
+
+                SessionStat(conversionRate, visitorsCount)
+            }.collect {
+                mutableState.value = viewState.value.copy(
+                    refreshIndicator = NotShowIndicator,
+                    sessionState = buildSessionViewState(it)
+                )
+                transactionLauncher.onSessionFetched()
+            }
     }
 
     fun onNewRangeSelection(selectionType: SelectionType) {
