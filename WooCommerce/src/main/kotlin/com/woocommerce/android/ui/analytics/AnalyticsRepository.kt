@@ -6,7 +6,6 @@ import com.woocommerce.android.model.OrdersStat
 import com.woocommerce.android.model.ProductItem
 import com.woocommerce.android.model.ProductsStat
 import com.woocommerce.android.model.RevenueStat
-import com.woocommerce.android.model.SessionStats
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.analytics.AnalyticsRepository.OrdersResult.OrdersError
 import com.woocommerce.android.ui.analytics.AnalyticsRepository.ProductsResult.ProductsError
@@ -177,14 +176,14 @@ class AnalyticsRepository @Inject constructor(
         )
     }
 
-    suspend fun fetchSessionData(
+    suspend fun fetchVisitorsData(
         rangeSelection: AnalyticsHubDateRangeSelection,
         fetchStrategy: FetchStrategy
-    ): SessionResult {
-        return getSessionStats(rangeSelection, fetchStrategy)
+    ): VisitorsResult {
+        return getVisitorsCount(rangeSelection, fetchStrategy)
             .fold(
-                onFailure = { SessionResult.SessionError },
-                onSuccess = { SessionResult.SessionData(SessionStats(0, 0)) }
+                onFailure = { VisitorsResult.VisitorsError },
+                onSuccess = { VisitorsResult.VisitorsData(it.values.sum()) }
             )
     }
 
@@ -259,7 +258,7 @@ class AnalyticsRepository @Inject constructor(
         }
     }
 
-    private suspend fun getSessionStats(
+    private suspend fun getVisitorsCount(
         rangeSelection: AnalyticsHubDateRangeSelection,
         fetchStrategy: FetchStrategy
     ): Result<Map<String, Int>> = coroutineScope {
@@ -339,9 +338,9 @@ class AnalyticsRepository @Inject constructor(
         data class ProductsData(val productsStat: ProductsStat) : ProductsResult()
     }
 
-    sealed class SessionResult {
-        object SessionError : SessionResult()
-        data class SessionData(val sessionStats: SessionStats) : SessionResult()
+    sealed class VisitorsResult {
+        object VisitorsError : VisitorsResult()
+        data class VisitorsData(val visitorsCount: Int) : VisitorsResult()
     }
 
     sealed class FetchStrategy {
