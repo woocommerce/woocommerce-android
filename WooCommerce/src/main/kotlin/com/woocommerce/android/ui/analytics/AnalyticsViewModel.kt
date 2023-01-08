@@ -43,7 +43,6 @@ import javax.inject.Inject
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
@@ -71,9 +70,14 @@ class AnalyticsViewModel @Inject constructor(
         initialValue = OrdersState.Loading as OrdersState
     )
 
-    private val visitorsCountState = savedState.getStateFlow(
+    private val sessionDataState = savedState.getStateFlow(
         scope = viewModelScope,
         initialValue = VisitorsState.Loading as VisitorsState
+    )
+
+    private val visitorsCountState = savedState.getStateFlow(
+        scope = viewModelScope,
+        initialValue = 0
     )
 
     private val mutableState = MutableStateFlow(
@@ -98,8 +102,8 @@ class AnalyticsViewModel @Inject constructor(
         get() = rangeSelectionState.value
 
     init {
-        observeOrdersStatChanges()
         observeSessionStatChanges()
+        observeOrdersStatChanges()
         observeVisitorsCountChanges()
         observeRangeSelectionChanges()
     }
@@ -131,16 +135,22 @@ class AnalyticsViewModel @Inject constructor(
     }
 
     private fun observeVisitorsCountChanges() = viewModelScope.launch {
-        visitorsCountState.collect { state ->
-            if (state is VisitorsState.Error) {
-                mutableState.update { viewState ->
+        sessionDataState.collect { state ->
+            when (state) {
+                is VisitorsState.Available -> mutableState.update { viewState ->
+                    transactionLauncher.onSessionFetched()
+                    viewState.copy(
+                        refreshIndicator = NotShowIndicator,
+                        sessionState = buildSessionViewState(state.session)
+                    )
+                }
+                is VisitorsState.Error -> mutableState.update { viewState ->
                     viewState.copy(
                         refreshIndicator = NotShowIndicator,
                         sessionState = NoDataState("No session data")
                     )
                 }
-            } else if (state is VisitorsState.Loading) {
-                mutableState.update { viewState ->
+                is VisitorsState.Loading -> mutableState.update { viewState ->
                     LoadingViewState.let { viewState.copy(sessionState = it) }
                 }
             }
@@ -148,23 +158,20 @@ class AnalyticsViewModel @Inject constructor(
     }
 
     private fun observeSessionStatChanges() = viewModelScope.launch {
-        visitorsCountState
-            .filter { it is VisitorsState.Available }
-            .combine(ordersDataState) { visitors, orders ->
-                val ordersCount = (orders as? OrdersState.Available)?.orders?.ordersCount ?: 0
-                val visitorsCount = (visitors as? VisitorsState.Available)?.visitorsCount ?: 0
-
-                val conversionRate = ((ordersCount / visitorsCount.toFloat()) * 100)
-                    .let { DecimalFormat("##.#").format(it) + "%" }
-
-                SessionStat(conversionRate, visitorsCount)
-            }.collect {
-                mutableState.value = viewState.value.copy(
-                    refreshIndicator = NotShowIndicator,
-                    sessionState = buildSessionViewState(it)
-                )
-                transactionLauncher.onSessionFetched()
-            }
+        combine(visitorsCountState, ordersDataState) { visitorsCount, orders ->
+            orders.run { this as? OrdersState.Available }
+                ?.orders?.ordersCount
+                ?.let { (it / visitorsCount.toFloat()) * 100 }
+                ?.let { DecimalFormat("##.#").format(it) + "%" }
+                ?.let { SessionStat(it, visitorsCount) }
+                ?.let { VisitorsState.Available(it) }
+                ?: when (orders) {
+                    is OrdersState.Error -> VisitorsState.Error
+                    else -> VisitorsState.Loading
+                }
+        }.collect {
+            sessionDataState.value = it
+        }
     }
 
     fun onNewRangeSelection(selectionType: SelectionType) {
@@ -278,15 +285,14 @@ class AnalyticsViewModel @Inject constructor(
         launch {
             val fetchStrategy = getFetchStrategy(isRefreshing)
 
-            if (showSkeleton) visitorsCountState.value = VisitorsState.Loading
+            if (showSkeleton) sessionDataState.value = VisitorsState.Loading
             mutableState.value = viewState.value.copy(
                 refreshIndicator = if (isRefreshing) ShowIndicator else NotShowIndicator
             )
 
             analyticsRepository.fetchVisitorsData(rangeSelectionState.value, fetchStrategy)
                 .run { this as? VisitorsData }
-                ?.let { visitorsCountState.value = VisitorsState.Available(it.visitorsCount) }
-                ?: VisitorsState.Error
+                .let { visitorsCountState.value = it?.visitorsCount ?: 0 }
         }
 
     private fun updateDateSelector() {
@@ -406,7 +412,7 @@ class AnalyticsViewModel @Inject constructor(
     }
 
     sealed class VisitorsState: java.io.Serializable {
-        data class Available(val visitorsCount: Int) : VisitorsState()
+        data class Available(val session: SessionStat) : VisitorsState()
         object Error : VisitorsState()
         object Loading : VisitorsState()
     }
