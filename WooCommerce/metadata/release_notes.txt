@@ -1,3 +1,1 @@
-- [*] UI improvements to the products on the analytics screen [https://github.com/woocommerce/woocommerce-android/pull/8098]
-- [*] Add a feature of replying to customer reviews [https://github.com/woocommerce/woocommerce-android/pull/8045]
-
+You can now reply to product reviews directly from the app! This update also includes several enhancements to the product variations and the analytics feature. Please share feedback – we read every one of them.
