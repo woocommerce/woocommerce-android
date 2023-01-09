@@ -2,7 +2,6 @@ package com.woocommerce.android
 
 import android.app.Application
 import android.appwidget.AppWidgetManager
-import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
 import android.net.ConnectivityManager
@@ -10,8 +9,6 @@ import androidx.lifecycle.Lifecycle.State.STARTED
 import androidx.lifecycle.ProcessLifecycleOwner
 import com.automattic.android.experimentation.ExPlat
 import com.automattic.android.tracks.crashlogging.CrashLogging
-import com.google.android.gms.common.ConnectionResult
-import com.google.android.gms.common.GoogleApiAvailability
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.applicationpasswords.ApplicationPasswordsNotifier
@@ -246,22 +243,6 @@ class AppInitializer @Inject constructor() : ApplicationLifecycleListener {
                     selectedSite.reset()
                     openMainActivity()
                 }
-            }
-        }
-    }
-
-    private fun isGooglePlayServicesAvailable(context: Context): Boolean {
-        val googleApiAvailability = GoogleApiAvailability.getInstance()
-
-        return when (val connectionResult = googleApiAvailability.isGooglePlayServicesAvailable(context)) {
-            ConnectionResult.SUCCESS -> true
-            else -> {
-                WooLog.w(
-                    T.NOTIFS,
-                    "Google Play Services unavailable, connection result: " +
-                        googleApiAvailability.getErrorString(connectionResult)
-                )
-                return false
             }
         }
     }
