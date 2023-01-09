@@ -477,9 +477,7 @@ class CreationFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTes
         // then
         assertThat(orderDraft?.feesLines)
             .hasSize(3)
-            .first().satisfies(Consumer { firstFee ->
-                assertThat(firstFee.total).isEqualTo(newFeeTotal)
-            })
+            .first().satisfies(Consumer { firstFee -> assertThat(firstFee.total).isEqualTo(newFeeTotal) })
     }
 
     @Test
@@ -607,9 +605,7 @@ class CreationFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTes
         // then
         assertThat(orderDraft?.shippingLines)
             .hasSize(3)
-            .first().satisfies(Consumer { firstFee ->
-                assertThat(firstFee.total).isEqualTo(newValue)
-            })
+            .first().satisfies(Consumer { firstFee -> assertThat(firstFee.total).isEqualTo(newValue) })
     }
 
     @Test
