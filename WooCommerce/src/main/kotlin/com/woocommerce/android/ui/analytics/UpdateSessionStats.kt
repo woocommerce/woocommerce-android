@@ -1,27 +1,26 @@
 package com.woocommerce.android.ui.analytics
 
+import com.woocommerce.android.model.OrdersStat
 import com.woocommerce.android.model.SessionStat
 import com.woocommerce.android.ui.analytics.AnalyticsViewModel.OrdersState
 import com.woocommerce.android.ui.analytics.AnalyticsViewModel.VisitorsState
 import java.text.DecimalFormat
+import javax.inject.Inject
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.update
 
-class UpdateSessionStats {
-    private lateinit var ordersState: MutableStateFlow<OrdersState>
-    private lateinit var visitorsCountState: MutableStateFlow<Int>
+class UpdateSessionStats @Inject constructor(
+    private val analyticsRepository: AnalyticsRepository
+) {
+    private val ordersState = MutableStateFlow(OrdersState.Available(OrdersStat.EMPTY) as OrdersState)
+    private val visitorsCountState = MutableStateFlow(0)
 
-    operator fun invoke(
+    private val sessionChanges: Flow<VisitorsState>
 
-    ) : Flow<VisitorsState> {
-        ordersState = MutableStateFlow(OrdersState.Loading)
-        visitorsCountState = MutableStateFlow(0)
-        return observeSessionChanges()
-    }
-
-    private fun observeSessionChanges() =
-        combine(ordersState, visitorsCountState) { orders, visitorsCount ->
+    init {
+        sessionChanges = combine(ordersState, visitorsCountState) { orders, visitorsCount ->
             orders.run { this as? OrdersState.Available }
                 ?.orders?.ordersCount
                 ?.let { (it / visitorsCount.toFloat()) * 100 }
@@ -33,4 +32,11 @@ class UpdateSessionStats {
                     else -> VisitorsState.Loading
                 }
         }
+    }
+
+    operator fun invoke() : Flow<VisitorsState> {
+        ordersState.update { OrdersState.Loading }
+        return sessionChanges
+    }
+
 }
