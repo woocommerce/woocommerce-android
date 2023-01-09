@@ -35,9 +35,9 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Devices
 import androidx.compose.ui.tooling.preview.Preview
 import com.woocommerce.android.R
-import com.woocommerce.android.ui.compose.component.ProgressIndicator
 import com.woocommerce.android.R.drawable
 import com.woocommerce.android.R.string
+import com.woocommerce.android.ui.compose.component.ProgressIndicator
 import com.woocommerce.android.ui.compose.component.Toolbar
 import com.woocommerce.android.ui.compose.component.WCColoredButton
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
@@ -73,7 +73,8 @@ fun StoreProfilerScreen(viewModel: BaseStoreProfilerViewModel) {
                     onCategorySelected = viewModel::onOptionSelected,
                     modifier = Modifier
                         .background(MaterialTheme.colors.surface)
-                        .padding(padding))
+                        .padding(padding)
+                )
             }
         }
     }
