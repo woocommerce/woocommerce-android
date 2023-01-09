@@ -1,2 +1,0 @@
-11.6 :
-Cette version comporte plusieurs améliorations mineures et résolutions de bogues détectés par notre équipe. Mais rassurez-vous : il y aura de nouvelles fonctionnalités très intéressantes pour vous ! Restez connecté.
