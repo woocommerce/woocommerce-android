@@ -1,11 +1,20 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2022-12-06 09:54:04+0000
+Translation-Revision-Date: 2022-12-21 17:54:03+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: it
 -->
 <resources>
+    <string name="store_creation_store_categories_subtitle">Scegli una categoria che definisce\nal meglio il tuo business.</string>
+    <string name="store_creation_store_categories_title">Di cosa si occupa il tuo business?</string>
+    <string name="product_selection_menu_select_all">Seleziona tutto</string>
+    <string name="product_selection_menu_update_price">Aggiorna prezzo</string>
+    <string name="product_selection_menu_update_status">Aggiorna stato</string>
+    <string name="product_bulk_update_status_updated">Stato aggiornato!</string>
+    <string name="product_bulk_update_status">Aggiorna stato</string>
+    <string name="product_bulk_update_price_updated">Prezzo aggiornato!</string>
+    <string name="product_bulk_update_regular_price">Aggiorna al prezzo standard</string>
     <string name="store_creation_ecommerce_plan_period_two_years">2 anni</string>
     <string name="store_creation_ecommerce_store_loading_permanent_error">Si è verificato un problema durante l\'installazione del negozio…</string>
     <string name="variations_bulk_creation_no_candidates_message">Sono già generate tutte le varianti.</string>

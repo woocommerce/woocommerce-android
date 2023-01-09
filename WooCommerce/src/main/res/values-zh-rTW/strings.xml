@@ -1,11 +1,20 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2022-12-06 11:54:03+0000
+Translation-Revision-Date: 2022-12-22 09:54:04+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: zh_TW
 -->
 <resources>
+    <string name="store_creation_store_categories_subtitle">選擇最符合\n你業務定義的類別。</string>
+    <string name="store_creation_store_categories_title">你的業務內容是什麼？</string>
+    <string name="product_selection_menu_select_all">全部選取</string>
+    <string name="product_selection_menu_update_price">更新價格</string>
+    <string name="product_selection_menu_update_status">更新狀態</string>
+    <string name="product_bulk_update_status_updated">狀態已更新！</string>
+    <string name="product_bulk_update_status">更新狀態</string>
+    <string name="product_bulk_update_price_updated">價格已更新！</string>
+    <string name="product_bulk_update_regular_price">更新原價</string>
     <string name="store_creation_ecommerce_plan_period_two_years">2 年</string>
     <string name="store_creation_ecommerce_store_loading_permanent_error">商店安裝時發生錯誤…</string>
     <string name="variations_bulk_creation_no_candidates_message">已產生所有款式。</string>
