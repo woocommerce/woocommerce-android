@@ -1,6 +1,7 @@
 package com.woocommerce.android.ui.analytics
 
 import com.woocommerce.android.model.OrdersStat
+import com.woocommerce.android.model.ProductsStat
 import com.woocommerce.android.model.RevenueStat
 import com.woocommerce.android.model.SessionStat
 import com.woocommerce.android.ui.analytics.AnalyticsRepository.FetchStrategy
@@ -20,11 +21,11 @@ class UpdateSessionStats @Inject constructor(
     private val analyticsRepository: AnalyticsRepository
 ) {
     val revenueState = MutableStateFlow(RevenueState.Available(RevenueStat.EMPTY) as RevenueState)
+    val productsState = MutableStateFlow(ProductsState.Available(ProductsStat.EMPTY) as ProductsState)
     val ordersState = MutableStateFlow(OrdersState.Available(OrdersStat.EMPTY) as OrdersState)
     val sessionState = MutableStateFlow(VisitorsState.Available(SessionStat.EMPTY) as VisitorsState)
 
     private val visitorsCountState = MutableStateFlow(0)
-
     private val sessionChanges: Flow<VisitorsState> =
         combine(ordersState, visitorsCountState) { orders, visitorsCount ->
             orders.run { this as? OrdersState.Available }
@@ -61,6 +62,10 @@ class UpdateSessionStats @Inject constructor(
         fetchRevenueData(rangeSelection, fetchStrategy)
             .flowOn(dispatchers.io)
             .collect { revenueState.update { it } }
+
+        fetchProductsData(rangeSelection, fetchStrategy)
+            .flowOn(dispatchers.io)
+            .collect { productsState.update { it } }
     }
 
     private fun fetchOrdersData(
@@ -89,23 +94,40 @@ class UpdateSessionStats @Inject constructor(
         analyticsRepository.fetchRevenueData(rangeSelection, fetchStrategy)
             .run { this as? AnalyticsRepository.RevenueResult.RevenueData }
             ?.let { emit(RevenueState.Available(it.revenueStat)) }
+            ?: emit(RevenueState.Error)
     }
 
-    sealed class OrdersState: java.io.Serializable {
+    private fun fetchProductsData(
+        rangeSelection: AnalyticsHubDateRangeSelection,
+        fetchStrategy: FetchStrategy
+    ) = flow {
+        analyticsRepository.fetchProductsData(rangeSelection, fetchStrategy)
+            .run { this as? AnalyticsRepository.ProductsResult.ProductsData }
+            ?.let { emit(ProductsState.Available(it.productsStat)) }
+            ?: emit(ProductsState.Error)
+    }
+
+    sealed class OrdersState {
         data class Available(val orders: OrdersStat) : OrdersState()
         object Error : OrdersState()
         object Loading : OrdersState()
     }
 
-    sealed class VisitorsState: java.io.Serializable {
+    sealed class VisitorsState {
         data class Available(val session: SessionStat) : VisitorsState()
         object Error : VisitorsState()
         object Loading : VisitorsState()
     }
 
-    sealed class RevenueState: java.io.Serializable {
+    sealed class RevenueState {
         data class Available(val revenue: RevenueStat) : RevenueState()
         object Error : RevenueState()
         object Loading : RevenueState()
+    }
+
+    sealed class ProductsState {
+        data class Available(val product: ProductsStat) : ProductsState()
+        object Error : ProductsState()
+        object Loading : ProductsState()
     }
 }
