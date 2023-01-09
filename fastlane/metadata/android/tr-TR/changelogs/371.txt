@@ -1,0 +1,4 @@
+11.7:
+Heyecan verici haberlerimiz var! Artık ürünleri toplu olarak düzenleyebilirsiniz. Şahsen ödemeler ve sipariş oluşturma ile ilgili birkaç şeyi düzeltmeye de odaklandık. Lütfen kontrol edin ve geri bildiriminizi paylaşın!
+
+Geri bildirimleriniz devam etsin; üzerinde çalışacağımız bir sonraki özelliği bulmamıza yardımcı oluyor.

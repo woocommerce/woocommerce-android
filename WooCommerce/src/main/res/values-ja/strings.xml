@@ -1,11 +1,20 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2022-12-06 11:54:06+0000
+Translation-Revision-Date: 2022-12-23 08:54:03+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: ja_JP
 -->
 <resources>
+    <string name="store_creation_store_categories_subtitle">あなたのビジネスに相応しい\nカテゴリーを選択してください。</string>
+    <string name="store_creation_store_categories_title">あなたのビジネスについて</string>
+    <string name="product_selection_menu_select_all">すべて選択</string>
+    <string name="product_selection_menu_update_price">価格を更新</string>
+    <string name="product_selection_menu_update_status">ステータスを更新</string>
+    <string name="product_bulk_update_status_updated">ステータスを更新しました !</string>
+    <string name="product_bulk_update_status">ステータスを更新</string>
+    <string name="product_bulk_update_price_updated">価格を更新しました !</string>
+    <string name="product_bulk_update_regular_price">通常価格を更新</string>
     <string name="store_creation_ecommerce_plan_period_two_years">2年間</string>
     <string name="store_creation_ecommerce_store_loading_permanent_error">ストアのインストール中にエラーが発生しました…</string>
     <string name="variations_bulk_creation_no_candidates_message">すべてのバリエーションはすでに生成されています。</string>
