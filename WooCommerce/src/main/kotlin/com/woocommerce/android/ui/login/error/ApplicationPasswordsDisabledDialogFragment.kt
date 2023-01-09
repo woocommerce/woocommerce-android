@@ -9,6 +9,7 @@ import com.woocommerce.android.util.ChromeCustomTabUtils
 
 class ApplicationPasswordsDisabledDialogFragment : LoginBaseErrorDialogFragment() {
     companion object {
+        const val RETRY_RESULT = "retry"
         private const val SITE_URL_KEY = "site-url"
         private const val APPLICATION_PASSWORDS_GUIDE =
             "https://make.wordpress.org/core/2020/11/05/application-passwords-integration-guide/"
@@ -31,5 +32,14 @@ class ApplicationPasswordsDisabledDialogFragment : LoginBaseErrorDialogFragment(
                     ChromeCustomTabUtils.launchUrl(requireContext(), APPLICATION_PASSWORDS_GUIDE)
                 }
             )
+        )
+
+    override val primaryButton: LoginErrorButton
+        get() = LoginErrorButton(
+            title = R.string.retry,
+            onClick = {
+                setFragmentResult(RETRY_RESULT, bundleOf())
+                dismiss()
+            }
         )
 }

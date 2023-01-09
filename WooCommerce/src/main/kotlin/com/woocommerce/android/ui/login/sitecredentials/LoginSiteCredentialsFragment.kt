@@ -71,9 +71,9 @@ class LoginSiteCredentialsFragment : Fragment() {
                 is ShowResetPasswordScreen -> loginListener.forgotPassword(it.siteAddress)
                 is ShowNonWooErrorScreen -> LoginNotWooDialogFragment.newInstance(it.siteAddress)
                     .show(childFragmentManager, LoginNotWooDialogFragment.TAG)
-                is ShowApplicationPasswordsUnavailableScreen -> ApplicationPasswordsDisabledDialogFragment
-                    .newInstance(it.siteAddress)
-                    .show(childFragmentManager, LoginNotWooDialogFragment.TAG)
+                is ShowApplicationPasswordsUnavailableScreen ->
+                    ApplicationPasswordsDisabledDialogFragment.newInstance(it.siteAddress)
+                        .show(childFragmentManager, LoginNotWooDialogFragment.TAG)
                 is ShowSnackbar -> uiMessageResolver.showSnack(it.message)
                 is ShowUiStringSnackbar -> uiMessageResolver.showSnack(it.message)
                 is Exit -> requireActivity().onBackPressedDispatcher.onBackPressed()
@@ -87,6 +87,13 @@ class LoginSiteCredentialsFragment : Fragment() {
             viewLifecycleOwner
         ) { _, _ ->
             viewModel.onWooInstallationAttempted()
+        }
+
+        childFragmentManager.setFragmentResultListener(
+            ApplicationPasswordsDisabledDialogFragment.RETRY_RESULT,
+            viewLifecycleOwner
+        ) { _, _ ->
+            viewModel.retryApplicationPasswordsCheck()
         }
     }
 }

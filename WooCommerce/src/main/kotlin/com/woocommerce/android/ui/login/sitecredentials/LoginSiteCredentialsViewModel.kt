@@ -7,6 +7,7 @@ import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.OnChangedException
 import com.woocommerce.android.R
+import com.woocommerce.android.applicationpasswords.ApplicationPasswordsNotifier
 import com.woocommerce.android.model.UiString.UiStringRes
 import com.woocommerce.android.model.UiString.UiStringText
 import com.woocommerce.android.tools.SelectedSite
@@ -49,7 +50,7 @@ class LoginSiteCredentialsViewModel @Inject constructor(
     private val selectedSite: SelectedSite,
     private val loginAnalyticsListener: LoginAnalyticsListener,
     private val resourceProvider: ResourceProvider,
-    private val applicationPasswordsNotifier: ApplicationPasswordsNotifier
+    applicationPasswordsNotifier: ApplicationPasswordsNotifier
 ) : ScopedViewModel(savedStateHandle) {
     companion object {
         const val SITE_ADDRESS_KEY = "site-address"
@@ -110,6 +111,7 @@ class LoginSiteCredentialsViewModel @Inject constructor(
                 checkWooStatus(it)
             },
             onFailure = { exception ->
+                isLoading.value = false
                 var errorMessage: Int? = null
                 if (exception is OnChangedException && exception.error is AuthenticationError) {
                     errorMessage = exception.error.toErrorMessage()
@@ -135,10 +137,10 @@ class LoginSiteCredentialsViewModel @Inject constructor(
                 )
             }
         )
-        isLoading.value = false
     }
 
     private suspend fun checkWooStatus(site: SiteModel) {
+        isLoading.value = true
         wpApiSiteRepository.checkWooStatus(site = site).fold(
             onSuccess = { isWooInstalled ->
                 if (isWooInstalled) {
@@ -153,6 +155,7 @@ class LoginSiteCredentialsViewModel @Inject constructor(
                 triggerEvent(ShowSnackbar(R.string.error_generic))
             }
         )
+        isLoading.value = false
     }
 
     fun onResetPasswordClick() {
@@ -164,9 +167,11 @@ class LoginSiteCredentialsViewModel @Inject constructor(
     }
 
     fun onWooInstallationAttempted() = launch {
-        isLoading.value = true
         checkWooStatus(wpApiSiteRepository.getSiteByUrl(siteAddress)!!)
-        isLoading.value = false
+    }
+
+    fun retryApplicationPasswordsCheck() = launch {
+        checkWooStatus(wpApiSiteRepository.getSiteByUrl(siteAddress)!!)
     }
 
     private fun String.removeSchemeAndSuffix() = UrlUtils.removeScheme(UrlUtils.removeXmlrpcSuffix(this))
