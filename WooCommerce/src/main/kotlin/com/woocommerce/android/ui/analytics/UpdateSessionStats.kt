@@ -1,10 +1,9 @@
 package com.woocommerce.android.ui.analytics
 
 import com.woocommerce.android.model.OrdersStat
+import com.woocommerce.android.model.RevenueStat
 import com.woocommerce.android.model.SessionStat
 import com.woocommerce.android.ui.analytics.AnalyticsRepository.FetchStrategy
-import com.woocommerce.android.ui.analytics.AnalyticsViewModel.OrdersState
-import com.woocommerce.android.ui.analytics.AnalyticsViewModel.VisitorsState
 import com.woocommerce.android.ui.analytics.ranges.AnalyticsHubDateRangeSelection
 import com.woocommerce.android.util.CoroutineDispatchers
 import java.text.DecimalFormat
@@ -20,6 +19,7 @@ class UpdateSessionStats @Inject constructor(
     private val dispatchers: CoroutineDispatchers,
     private val analyticsRepository: AnalyticsRepository
 ) {
+    val revenueState = MutableStateFlow(RevenueState.Available(RevenueStat.EMPTY) as RevenueState)
     val ordersState = MutableStateFlow(OrdersState.Available(OrdersStat.EMPTY) as OrdersState)
     val sessionState = MutableStateFlow(VisitorsState.Available(SessionStat.EMPTY) as VisitorsState)
 
@@ -57,6 +57,10 @@ class UpdateSessionStats @Inject constructor(
         fetchVisitorsCount(rangeSelection, fetchStrategy)
             .flowOn(dispatchers.io)
             .collect { visitorsCountState.update { it } }
+
+        fetchRevenueData(rangeSelection, fetchStrategy)
+            .flowOn(dispatchers.io)
+            .collect { revenueState.update { it } }
     }
 
     private fun fetchOrdersData(
@@ -76,5 +80,32 @@ class UpdateSessionStats @Inject constructor(
         analyticsRepository.fetchVisitorsData(rangeSelection, fetchStrategy)
             .run { this as? AnalyticsRepository.VisitorsResult.VisitorsData }
             .let { emit(it?.visitorsCount ?: 0) }
+    }
+
+    private fun fetchRevenueData(
+        rangeSelection: AnalyticsHubDateRangeSelection,
+        fetchStrategy: FetchStrategy
+    ) = flow {
+        analyticsRepository.fetchRevenueData(rangeSelection, fetchStrategy)
+            .run { this as? AnalyticsRepository.RevenueResult.RevenueData }
+            ?.let { emit(RevenueState.Available(it.revenueStat)) }
+    }
+
+    sealed class OrdersState: java.io.Serializable {
+        data class Available(val orders: OrdersStat) : OrdersState()
+        object Error : OrdersState()
+        object Loading : OrdersState()
+    }
+
+    sealed class VisitorsState: java.io.Serializable {
+        data class Available(val session: SessionStat) : VisitorsState()
+        object Error : VisitorsState()
+        object Loading : VisitorsState()
+    }
+
+    sealed class RevenueState: java.io.Serializable {
+        data class Available(val revenue: RevenueStat) : RevenueState()
+        object Error : RevenueState()
+        object Loading : RevenueState()
     }
 }
