@@ -47,7 +47,7 @@ class StoreProfilerCommerceJourneyViewModel @Inject constructor(
         resourceProvider.getString(R.string.store_creation_store_profiler_journey_title)
 
     override fun onContinueClicked() {
-        newStore.update(commercJourney = profilerOptions.value.firstOrNull() { it.isSelected }?.name)
+        newStore.update(commerceJourney = profilerOptions.value.firstOrNull() { it.isSelected }?.name)
         when (alreadySellingOnlineSelected()) {
             true -> triggerEvent(NavigateToEcommercePlatformsStep)
             false -> triggerEvent(NavigateToDomainPickerStep)
