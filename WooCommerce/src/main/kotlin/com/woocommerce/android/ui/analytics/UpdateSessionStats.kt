@@ -20,13 +20,13 @@ class UpdateSessionStats @Inject constructor(
     private val dispatchers: CoroutineDispatchers,
     private val analyticsRepository: AnalyticsRepository
 ) {
-    private val ordersState = MutableStateFlow(OrdersState.Available(OrdersStat.EMPTY) as OrdersState)
+    val ordersState = MutableStateFlow(OrdersState.Available(OrdersStat.EMPTY) as OrdersState)
+    val sessionState = MutableStateFlow(VisitorsState.Available(SessionStat.EMPTY) as VisitorsState)
+
     private val visitorsCountState = MutableStateFlow(0)
 
-    private val sessionChanges: Flow<VisitorsState>
-
-    init {
-        sessionChanges = combine(ordersState, visitorsCountState) { orders, visitorsCount ->
+    private val sessionChanges: Flow<VisitorsState> =
+        combine(ordersState, visitorsCountState) { orders, visitorsCount ->
             orders.run { this as? OrdersState.Available }
                 ?.orders?.ordersCount
                 ?.let { (it / visitorsCount.toFloat()) * 100 }
@@ -38,13 +38,17 @@ class UpdateSessionStats @Inject constructor(
                     else -> VisitorsState.Loading
                 }
         }
-    }
 
     suspend operator fun invoke(
         rangeSelection: AnalyticsHubDateRangeSelection,
         fetchStrategy: FetchStrategy
-    ) : Flow<VisitorsState> {
+    ) {
         ordersState.update { OrdersState.Loading }
+        sessionState.update { VisitorsState.Loading }
+
+        sessionChanges
+            .flowOn(dispatchers.computation)
+            .collect { sessionState.update { it } }
 
         fetchOrdersData(rangeSelection, fetchStrategy)
             .flowOn(dispatchers.io)
@@ -53,8 +57,6 @@ class UpdateSessionStats @Inject constructor(
         fetchVisitorsCount(rangeSelection, fetchStrategy)
             .flowOn(dispatchers.io)
             .collect { visitorsCountState.update { it } }
-
-        return sessionChanges
     }
 
     private fun fetchOrdersData(
