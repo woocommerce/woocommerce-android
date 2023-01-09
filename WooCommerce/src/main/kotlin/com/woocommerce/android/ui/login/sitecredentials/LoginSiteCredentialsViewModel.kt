@@ -22,7 +22,9 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import kotlinx.parcelize.IgnoredOnParcel
 import kotlinx.parcelize.Parcelize
@@ -46,7 +48,8 @@ class LoginSiteCredentialsViewModel @Inject constructor(
     private val wpApiSiteRepository: WPApiSiteRepository,
     private val selectedSite: SelectedSite,
     private val loginAnalyticsListener: LoginAnalyticsListener,
-    private val resourceProvider: ResourceProvider
+    private val resourceProvider: ResourceProvider,
+    private val applicationPasswordsNotifier: ApplicationPasswordsNotifier
 ) : ScopedViewModel(savedStateHandle) {
     companion object {
         const val SITE_ADDRESS_KEY = "site-address"
@@ -77,6 +80,11 @@ class LoginSiteCredentialsViewModel @Inject constructor(
 
     init {
         loginAnalyticsListener.trackUsernamePasswordFormViewed()
+        applicationPasswordsNotifier.featureUnavailableEvents
+            .onEach {
+                triggerEvent(ShowApplicationPasswordsUnavailableScreen(siteAddress))
+            }
+            .launchIn(this)
     }
 
     fun onUsernameChanged(username: String) {
@@ -193,4 +201,5 @@ class LoginSiteCredentialsViewModel @Inject constructor(
     data class LoggedIn(val localSiteId: Int) : MultiLiveEvent.Event()
     data class ShowResetPasswordScreen(val siteAddress: String) : MultiLiveEvent.Event()
     data class ShowNonWooErrorScreen(val siteAddress: String) : MultiLiveEvent.Event()
+    data class ShowApplicationPasswordsUnavailableScreen(val siteAddress: String) : MultiLiveEvent.Event()
 }

@@ -11,8 +11,10 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
+import com.woocommerce.android.ui.login.error.ApplicationPasswordsDisabledDialogFragment
 import com.woocommerce.android.ui.login.error.notwoo.LoginNotWooDialogFragment
 import com.woocommerce.android.ui.login.sitecredentials.LoginSiteCredentialsViewModel.LoggedIn
+import com.woocommerce.android.ui.login.sitecredentials.LoginSiteCredentialsViewModel.ShowApplicationPasswordsUnavailableScreen
 import com.woocommerce.android.ui.login.sitecredentials.LoginSiteCredentialsViewModel.ShowNonWooErrorScreen
 import com.woocommerce.android.ui.login.sitecredentials.LoginSiteCredentialsViewModel.ShowResetPasswordScreen
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
@@ -68,6 +70,9 @@ class LoginSiteCredentialsFragment : Fragment() {
                 is LoggedIn -> loginListener.loggedInViaUsernamePassword(arrayListOf(it.localSiteId))
                 is ShowResetPasswordScreen -> loginListener.forgotPassword(it.siteAddress)
                 is ShowNonWooErrorScreen -> LoginNotWooDialogFragment.newInstance(it.siteAddress)
+                    .show(childFragmentManager, LoginNotWooDialogFragment.TAG)
+                is ShowApplicationPasswordsUnavailableScreen -> ApplicationPasswordsDisabledDialogFragment
+                    .newInstance(it.siteAddress)
                     .show(childFragmentManager, LoginNotWooDialogFragment.TAG)
                 is ShowSnackbar -> uiMessageResolver.showSnack(it.message)
                 is ShowUiStringSnackbar -> uiMessageResolver.showSnack(it.message)
