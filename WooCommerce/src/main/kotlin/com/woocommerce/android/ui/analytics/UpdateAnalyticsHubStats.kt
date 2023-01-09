@@ -47,6 +47,8 @@ class UpdateAnalyticsHubStats @Inject constructor(
     ) {
         ordersState.update { OrdersState.Loading(loadWithSkeleton) }
         sessionState.update { VisitorsState.Loading(loadWithSkeleton) }
+        revenueState.update { RevenueState.Loading(loadWithSkeleton) }
+        productsState.update { ProductsState.Loading(loadWithSkeleton) }
 
         sessionChanges
             .flowOn(dispatchers.computation)
