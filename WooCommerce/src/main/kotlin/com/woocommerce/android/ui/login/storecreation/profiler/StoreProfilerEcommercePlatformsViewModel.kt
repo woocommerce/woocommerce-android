@@ -22,7 +22,7 @@ class StoreProfilerEcommercePlatformsViewModel @Inject constructor(
     private val storeProfilerRepository: StoreProfilerRepository,
     private val resourceProvider: ResourceProvider,
 ) : BaseStoreProfilerViewModel(savedStateHandle, newStore) {
-    override val profilerStep: ProfilerOptionType = COMMERCE_JOURNEY
+    override val profilerStep: ProfilerOptionType = ECOMMERCE_PLATFORM
 
     init {
         analyticsTracker.track(
