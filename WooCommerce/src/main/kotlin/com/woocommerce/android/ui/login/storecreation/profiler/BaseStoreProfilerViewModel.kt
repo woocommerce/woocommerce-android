@@ -26,16 +26,16 @@ abstract class BaseStoreProfilerViewModel(
             } else {
                 StoreProfilerContent(
                     storeName = newStore.data.name ?: "",
-                    title = getProfilerStepTitle(profilerStep),
-                    description = getProfilerStepDescription(profilerStep),
+                    title = getProfilerStepTitle(),
+                    description = getProfilerStepDescription(),
                     options = options
                 )
             }
         }.asLiveData()
 
-    protected abstract fun getProfilerStepDescription(currentStep: ProfilerOptionType): String
+    protected abstract fun getProfilerStepDescription(): String
 
-    protected abstract fun getProfilerStepTitle(currentStep: ProfilerOptionType): String
+    protected abstract fun getProfilerStepTitle(): String
 
     abstract fun onContinueClicked()
 

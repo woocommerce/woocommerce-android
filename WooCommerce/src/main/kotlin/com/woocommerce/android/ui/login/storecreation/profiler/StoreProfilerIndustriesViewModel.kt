@@ -38,10 +38,10 @@ class StoreProfilerIndustriesViewModel @Inject constructor(
         }
     }
 
-    override fun getProfilerStepDescription(currentStep: ProfilerOptionType): String =
+    override fun getProfilerStepDescription(): String =
         resourceProvider.getString(R.string.store_creation_store_profiler_industries_description)
 
-    override fun getProfilerStepTitle(currentStep: ProfilerOptionType): String =
+    override fun getProfilerStepTitle(): String =
         resourceProvider.getString(R.string.store_creation_store_profiler_industries_title)
 
     override fun onContinueClicked() {

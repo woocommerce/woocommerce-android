@@ -6,7 +6,6 @@ import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.ui.login.storecreation.NewStore
-import com.woocommerce.android.ui.login.storecreation.profiler.BaseStoreProfilerViewModel.ProfilerOptionType.COMMERCE_JOURNEY
 import com.woocommerce.android.ui.login.storecreation.profiler.BaseStoreProfilerViewModel.ProfilerOptionType.ECOMMERCE_PLATFORM
 import com.woocommerce.android.viewmodel.ResourceProvider
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -49,10 +48,10 @@ class StoreProfilerEcommercePlatformsViewModel @Inject constructor(
             isSelected = newStore.data.industry == label
         )
 
-    override fun getProfilerStepDescription(currentStep: ProfilerOptionType): String =
+    override fun getProfilerStepDescription(): String =
         resourceProvider.getString(R.string.store_creation_store_profiler_platforms_description)
 
-    override fun getProfilerStepTitle(currentStep: ProfilerOptionType): String =
+    override fun getProfilerStepTitle(): String =
         resourceProvider.getString(R.string.store_creation_store_profiler_platforms_title)
 
     override fun onContinueClicked() {
