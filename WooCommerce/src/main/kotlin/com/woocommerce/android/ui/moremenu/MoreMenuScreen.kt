@@ -310,7 +310,7 @@ fun MoreMenuBadge(badgeState: BadgeState?) {
             }
             AnimatedVisibility(
                 visibleState = visible,
-                enter = badgeEnterAnimation()
+                enter = BadgeEnterAnimation()
             ) {
                 val backgroundColor = colorResource(id = badgeState.backgroundColor)
                 Text(
@@ -330,7 +330,7 @@ fun MoreMenuBadge(badgeState: BadgeState?) {
 
 @OptIn(ExperimentalAnimationApi::class)
 @Composable
-private fun badgeEnterAnimation(): EnterTransition {
+private fun BadgeEnterAnimation(): EnterTransition {
     val animationSpec = TweenSpec<Float>(durationMillis = 400, delay = 200)
     return scaleIn(animationSpec = animationSpec) + fadeIn(animationSpec = animationSpec)
 }
