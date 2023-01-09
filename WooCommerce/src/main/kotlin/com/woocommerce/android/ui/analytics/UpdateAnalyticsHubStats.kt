@@ -16,7 +16,7 @@ import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.update
 
-class UpdateSessionStats @Inject constructor(
+class UpdateAnalyticsHubStats @Inject constructor(
     private val dispatchers: CoroutineDispatchers,
     private val analyticsRepository: AnalyticsRepository
 ) {
@@ -36,16 +36,17 @@ class UpdateSessionStats @Inject constructor(
                 ?.let { VisitorsState.Available(it) }
                 ?: when (orders) {
                     is OrdersState.Error -> VisitorsState.Error
-                    else -> VisitorsState.Loading
+                    else -> VisitorsState.Loading(true)
                 }
         }
 
     suspend operator fun invoke(
         rangeSelection: AnalyticsHubDateRangeSelection,
-        fetchStrategy: FetchStrategy
+        fetchStrategy: FetchStrategy,
+        loadWithSkeleton: Boolean
     ) {
-        ordersState.update { OrdersState.Loading }
-        sessionState.update { VisitorsState.Loading }
+        ordersState.update { OrdersState.Loading(loadWithSkeleton) }
+        sessionState.update { VisitorsState.Loading(loadWithSkeleton) }
 
         sessionChanges
             .flowOn(dispatchers.computation)
@@ -109,25 +110,25 @@ class UpdateSessionStats @Inject constructor(
 
     sealed class OrdersState {
         data class Available(val orders: OrdersStat) : OrdersState()
+        data class Loading(val withSkeleton: Boolean) : OrdersState()
         object Error : OrdersState()
-        object Loading : OrdersState()
     }
 
     sealed class VisitorsState {
         data class Available(val session: SessionStat) : VisitorsState()
+        data class Loading(val withSkeleton: Boolean) : VisitorsState()
         object Error : VisitorsState()
-        object Loading : VisitorsState()
     }
 
     sealed class RevenueState {
         data class Available(val revenue: RevenueStat) : RevenueState()
+        data class Loading(val withSkeleton: Boolean) : RevenueState()
         object Error : RevenueState()
-        object Loading : RevenueState()
     }
 
     sealed class ProductsState {
         data class Available(val product: ProductsStat) : ProductsState()
+        data class Loading(val withSkeleton: Boolean) : ProductsState()
         object Error : ProductsState()
-        object Loading : ProductsState()
     }
 }
