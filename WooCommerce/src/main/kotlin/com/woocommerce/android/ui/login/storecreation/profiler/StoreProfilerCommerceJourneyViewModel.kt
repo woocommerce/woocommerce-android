@@ -6,7 +6,6 @@ import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.ui.login.storecreation.NewStore
-import com.woocommerce.android.ui.login.storecreation.profiler.BaseStoreProfilerViewModel.ProfilerOptionType.COMMERCE_JOURNEY
 import com.woocommerce.android.viewmodel.ResourceProvider
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.update
@@ -21,8 +20,6 @@ class StoreProfilerCommerceJourneyViewModel @Inject constructor(
     private val storeProfilerRepository: StoreProfilerRepository,
     private val resourceProvider: ResourceProvider,
 ) : BaseStoreProfilerViewModel(savedStateHandle, newStore) {
-    override val profilerStep: ProfilerOptionType = COMMERCE_JOURNEY
-
     private var alreadySellingOnlineOption: StoreProfilerOptionUi? = null
 
     init {
@@ -58,7 +55,6 @@ class StoreProfilerCommerceJourneyViewModel @Inject constructor(
     }
 
     private fun AboutMerchant.toStoreProfilerOptionUi() = StoreProfilerOptionUi(
-        type = profilerStep,
         name = value,
         isSelected = newStore.data.industry == value,
     )

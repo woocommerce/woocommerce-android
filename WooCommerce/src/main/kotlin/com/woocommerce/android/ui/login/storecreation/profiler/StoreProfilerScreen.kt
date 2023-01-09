@@ -39,7 +39,6 @@ import com.woocommerce.android.R
 import com.woocommerce.android.ui.compose.component.ProgressIndicator
 import com.woocommerce.android.ui.compose.component.WCColoredButton
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
-import com.woocommerce.android.ui.login.storecreation.profiler.BaseStoreProfilerViewModel.ProfilerOptionType.SITE_INDUSTRY
 import com.woocommerce.android.ui.login.storecreation.profiler.BaseStoreProfilerViewModel.StoreProfilerContent
 import com.woocommerce.android.ui.login.storecreation.profiler.BaseStoreProfilerViewModel.StoreProfilerOptionUi
 
@@ -220,32 +219,26 @@ fun CategoriesContentPreview() {
                 description = "Choose a category that defines your business the best.",
                 options = listOf(
                     StoreProfilerOptionUi(
-                        SITE_INDUSTRY,
                         name = "Art & Photography",
                         isSelected = false
                     ),
                     StoreProfilerOptionUi(
-                        SITE_INDUSTRY,
                         name = "Books & Magazines",
                         isSelected = false
                     ),
                     StoreProfilerOptionUi(
-                        SITE_INDUSTRY,
                         name = "Electronics and Software",
                         isSelected = false
                     ),
                     StoreProfilerOptionUi(
-                        SITE_INDUSTRY,
                         name = "Construction & Industrial",
                         isSelected = false
                     ),
                     StoreProfilerOptionUi(
-                        SITE_INDUSTRY,
                         name = "Design & Marketing",
                         isSelected = false
                     ),
                     StoreProfilerOptionUi(
-                        SITE_INDUSTRY,
                         name = "Fashion and Apparel",
                         isSelected = false
                     )

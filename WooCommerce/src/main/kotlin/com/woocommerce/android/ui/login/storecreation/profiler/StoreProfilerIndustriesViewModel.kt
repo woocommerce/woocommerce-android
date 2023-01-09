@@ -6,7 +6,6 @@ import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.ui.login.storecreation.NewStore
-import com.woocommerce.android.ui.login.storecreation.profiler.BaseStoreProfilerViewModel.ProfilerOptionType.SITE_INDUSTRY
 import com.woocommerce.android.viewmodel.ResourceProvider
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.update
@@ -21,8 +20,6 @@ class StoreProfilerIndustriesViewModel @Inject constructor(
     private val storeProfilerRepository: StoreProfilerRepository,
     private val resourceProvider: ResourceProvider,
 ) : BaseStoreProfilerViewModel(savedStateHandle, newStore) {
-    override val profilerStep: ProfilerOptionType = SITE_INDUSTRY
-
     init {
         analyticsTracker.track(
             AnalyticsEvent.SITE_CREATION_STEP,
@@ -50,6 +47,7 @@ class StoreProfilerIndustriesViewModel @Inject constructor(
     }
 
     private fun Industry.toStoreProfilerOptionUi() = StoreProfilerOptionUi(
-        type = profilerStep, name = label, isSelected = newStore.data.industry == label
+        name = label,
+        isSelected = newStore.data.industry == label
     )
 }

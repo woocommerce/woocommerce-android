@@ -16,8 +16,6 @@ abstract class BaseStoreProfilerViewModel(
     savedStateHandle: SavedStateHandle,
     private val newStore: NewStore,
 ) : ScopedViewModel(savedStateHandle) {
-    protected abstract val profilerStep: ProfilerOptionType
-
     protected val profilerOptions = MutableStateFlow(emptyList<StoreProfilerOptionUi>())
     val storeProfilerContent: LiveData<ViewState> = profilerOptions
         .map { options ->
@@ -71,7 +69,6 @@ abstract class BaseStoreProfilerViewModel(
 
     @Parcelize
     data class StoreProfilerOptionUi(
-        val type: ProfilerOptionType,
         val name: String,
         val isSelected: Boolean,
     ) : Parcelable
@@ -79,10 +76,4 @@ abstract class BaseStoreProfilerViewModel(
     object NavigateToDomainPickerStep : MultiLiveEvent.Event()
     object NavigateToCommerceJourneyStep : MultiLiveEvent.Event()
     object NavigateToEcommercePlatformsStep : MultiLiveEvent.Event()
-
-    enum class ProfilerOptionType {
-        SITE_INDUSTRY,
-        COMMERCE_JOURNEY,
-        ECOMMERCE_PLATFORM
-    }
 }
