@@ -821,16 +821,20 @@ class LoginActivity :
         val (fragment, tag) = if (FeatureFlag.REST_API.isEnabled()) {
             Pair(
                 LoginSiteCredentialsFragment.newInstance(
-                    requireNotNull(siteAddress),
-                    inputUsername,
-                    inputPassword
+                    siteAddress = requireNotNull(siteAddress),
+                    username = inputUsername,
+                    password = inputPassword
                 ),
                 LoginSiteCredentialsFragment.TAG
             )
         } else {
             Pair(
                 LoginUsernamePasswordFragment.newInstance(
-                    siteAddress, endpointAddress, inputUsername, inputPassword, false
+                    siteAddress,
+                    endpointAddress,
+                    inputUsername,
+                    inputPassword,
+                    false
                 ),
                 LoginUsernamePasswordFragment.TAG
             )
