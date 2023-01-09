@@ -35,6 +35,7 @@ import org.mockito.kotlin.mock
 import org.mockito.kotlin.verify
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.CoreOrderStatus
 import java.math.BigDecimal
+import java.util.function.Consumer
 
 @ExperimentalCoroutinesApi
 class CreationFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTest() {
@@ -476,9 +477,9 @@ class CreationFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTes
         // then
         assertThat(orderDraft?.feesLines)
             .hasSize(3)
-            .first().satisfies { firstFee ->
+            .first().satisfies(Consumer { firstFee ->
                 assertThat(firstFee.total).isEqualTo(newFeeTotal)
-            }
+            })
     }
 
     @Test
@@ -606,9 +607,9 @@ class CreationFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTes
         // then
         assertThat(orderDraft?.shippingLines)
             .hasSize(3)
-            .first().satisfies { firstFee ->
+            .first().satisfies(Consumer { firstFee ->
                 assertThat(firstFee.total).isEqualTo(newValue)
-            }
+            })
     }
 
     @Test
