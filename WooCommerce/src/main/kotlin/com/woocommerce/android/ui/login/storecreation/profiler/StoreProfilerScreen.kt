@@ -22,8 +22,7 @@ import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
 import androidx.compose.material.TextButton
-import androidx.compose.material.TopAppBar
-import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.Icons.Filled
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.livedata.observeAsState
@@ -31,12 +30,15 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.dimensionResource
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Devices
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.compose.component.ProgressIndicator
+import com.woocommerce.android.R.drawable
+import com.woocommerce.android.R.string
+import com.woocommerce.android.ui.compose.component.Toolbar
 import com.woocommerce.android.ui.compose.component.WCColoredButton
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.ui.login.storecreation.profiler.BaseStoreProfilerViewModel.StoreProfilerContent
@@ -47,48 +49,34 @@ fun StoreProfilerScreen(viewModel: BaseStoreProfilerViewModel) {
     viewModel.storeProfilerContent.observeAsState().value?.let { state ->
         Scaffold(topBar = {
             Toolbar(
-                onArrowBackPressed = viewModel::onArrowBackPressed,
-                onSkipPressed = viewModel::onSkipPressed
+                title = { Text("") },
+                navigationIcon = Filled.ArrowBack,
+                onNavigationButtonClick = viewModel::onArrowBackPressed,
+                actions = {
+                    TextButton(onClick = viewModel::onSkipPressed) {
+                        Text(text = stringResource(id = R.string.skip))
+                    }
+                    IconButton(onClick = viewModel::onHelpPressed) {
+                        Icon(
+                            painter = painterResource(id = drawable.ic_help_24dp),
+                            contentDescription = stringResource(id = string.help)
+                        )
+                    }
+                }
             )
-        }) {
+        }) { padding ->
             when (state) {
                 BaseStoreProfilerViewModel.LoadingState -> ProgressIndicator()
                 is StoreProfilerContent -> ProfilerContent(
                     profilerStepContent = state,
                     onContinueClicked = viewModel::onContinueClicked,
                     onCategorySelected = viewModel::onOptionSelected,
-                    modifier = Modifier.background(MaterialTheme.colors.surface)
-                )
+                    modifier = Modifier
+                        .background(MaterialTheme.colors.surface)
+                        .padding(padding))
             }
         }
     }
-}
-
-@Composable
-private fun Toolbar(
-    onArrowBackPressed: () -> Unit,
-    onSkipPressed: () -> Unit,
-    modifier: Modifier = Modifier
-) {
-    TopAppBar(
-        backgroundColor = MaterialTheme.colors.surface,
-        title = {},
-        navigationIcon = {
-            IconButton(onClick = onArrowBackPressed) {
-                Icon(
-                    Icons.Filled.ArrowBack,
-                    contentDescription = stringResource(id = R.string.back)
-                )
-            }
-        },
-        actions = {
-            TextButton(onClick = onSkipPressed) {
-                Text(text = stringResource(id = R.string.skip))
-            }
-        },
-        elevation = 0.dp,
-        modifier = modifier
-    )
 }
 
 @Composable

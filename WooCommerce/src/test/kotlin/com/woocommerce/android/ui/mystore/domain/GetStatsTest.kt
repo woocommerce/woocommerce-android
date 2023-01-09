@@ -2,6 +2,7 @@ package com.woocommerce.android.ui.mystore.domain
 
 import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.tools.SiteConnectionType
 import com.woocommerce.android.ui.mystore.data.StatsRepository
 import com.woocommerce.android.ui.mystore.data.StatsRepository.StatsException
 import com.woocommerce.android.viewmodel.BaseUnitTest
@@ -19,7 +20,6 @@ import org.mockito.kotlin.any
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
-import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.model.WCRevenueStatsModel
 import org.wordpress.android.fluxc.store.WCStatsStore
 import org.wordpress.android.fluxc.store.WCStatsStore.OrderStatsError
@@ -157,10 +157,14 @@ class GetStatsTest : BaseUnitTest() {
             givenIsJetpackConnected(true)
 
             val result = getStats(refresh = false, granularity = ANY_GRANULARITY)
-                .filter { it is GetStats.LoadStatsResult.IsJetPackCPEnabled }
+                .filter { it is GetStats.LoadStatsResult.VisitorStatUnavailable }
                 .first()
 
-            assertThat(result).isEqualTo(GetStats.LoadStatsResult.IsJetPackCPEnabled)
+            assertThat(result).isEqualTo(
+                GetStats.LoadStatsResult.VisitorStatUnavailable(
+                    connectionType = SiteConnectionType.JetpackConnectionPackage
+                )
+            )
         }
 
     private suspend fun givenCheckIfStoreHasNoOrdersFlow(result: Result<Boolean>) {
@@ -175,9 +179,10 @@ class GetStatsTest : BaseUnitTest() {
     }
 
     private fun givenIsJetpackConnected(isJetPackConnected: Boolean) {
-        val siteModel = SiteModel()
-        siteModel.setIsJetpackCPConnected(isJetPackConnected)
-        whenever(selectedSite.getIfExists()).thenReturn(siteModel)
+        whenever(selectedSite.connectionType).thenReturn(
+            if (isJetPackConnected) SiteConnectionType.JetpackConnectionPackage
+            else SiteConnectionType.Jetpack
+        )
     }
 
     private suspend fun givenFetchVisitorStats(result: Result<Map<String, Int>>) {

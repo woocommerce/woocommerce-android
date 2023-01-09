@@ -9,11 +9,13 @@ import com.woocommerce.android.ui.login.storecreation.iap.WooIapLogWrapper
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
-import dagger.hilt.components.SingletonComponent
+import dagger.hilt.android.components.ViewModelComponent
+import dagger.hilt.android.scopes.ViewModelScoped
 
-@InstallIn(SingletonComponent::class)
+@InstallIn(ViewModelComponent::class)
 @Module
 class InAppPurchasesModule {
+    @ViewModelScoped
     @Provides
     fun providePurchaseWPComPlanActions(
         context: Application,
@@ -21,11 +23,11 @@ class InAppPurchasesModule {
     ): PurchaseWPComPlanActions =
         IAPSitePurchasePlanFactory.createIAPSitePurchasePlan(
             context,
-            1L,
             WooIapLogWrapper(),
             mobilePayAPIProvider::buildMobilePayAPI
         )
 
+    @ViewModelScoped
     @Provides
     fun providePurchaseWpComPlanSupportChecker(application: Application): PurchaseWpComPlanSupportChecker =
         IAPSitePurchasePlanFactory.createIAPPurchaseWpComPlanSupportChecker(

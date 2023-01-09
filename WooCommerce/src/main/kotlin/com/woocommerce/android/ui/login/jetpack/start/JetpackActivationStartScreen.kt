@@ -19,9 +19,8 @@ import androidx.compose.material.IconButton
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
-import androidx.compose.material.TopAppBar
-import androidx.compose.material.icons.Icons.Filled
-import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Clear
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
@@ -40,8 +39,11 @@ import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import com.woocommerce.android.AppUrls
 import com.woocommerce.android.R
+import com.woocommerce.android.R.drawable
+import com.woocommerce.android.R.string
 import com.woocommerce.android.ui.compose.URL_ANNOTATION_TAG
 import com.woocommerce.android.ui.compose.annotatedStringRes
+import com.woocommerce.android.ui.compose.component.Toolbar
 import com.woocommerce.android.ui.compose.component.WCColoredButton
 import com.woocommerce.android.ui.compose.component.WCOutlinedButton
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
@@ -69,11 +71,26 @@ fun JetpackActivationStartScreen(
 ) {
     Scaffold(
         topBar = {
-            Toolbar(
-                isConnectionDismissed = viewState.isConnectionDismissed,
-                onHelpButtonClick = onHelpButtonClick,
-                onBackButtonClick = onBackButtonClick
-            )
+            if (!viewState.isConnectionDismissed) {
+                Toolbar(
+                    title = stringResource(id = string.login_jetpack_installation_screen_title),
+                    onNavigationButtonClick = onBackButtonClick,
+                    navigationIcon = Icons.Filled.Clear,
+                    onActionButtonClick = onHelpButtonClick,
+                )
+            } else {
+                Toolbar(
+                    title = { Text("") },
+                    actions = {
+                        IconButton(onClick = onHelpButtonClick) {
+                            Icon(
+                                painter = painterResource(id = drawable.ic_help_24dp),
+                                contentDescription = stringResource(id = string.help)
+                            )
+                        }
+                    }
+                )
+            }
         }
     ) { paddingValues ->
         Column(
@@ -231,43 +248,6 @@ private fun SiteUrlAndIcon(
             fontWeight = FontWeight.SemiBold
         )
     }
-}
-
-@Composable
-private fun Toolbar(
-    isConnectionDismissed: Boolean,
-    onHelpButtonClick: () -> Unit,
-    onBackButtonClick: () -> Unit,
-    modifier: Modifier = Modifier
-) {
-    TopAppBar(
-        backgroundColor = MaterialTheme.colors.surface,
-        title = {
-            if (!isConnectionDismissed) {
-                Text(stringResource(id = R.string.login_jetpack_installation_screen_title))
-            }
-        },
-        navigationIcon = {
-            if (!isConnectionDismissed) {
-                IconButton(onClick = onBackButtonClick) {
-                    Icon(
-                        Filled.ArrowBack,
-                        contentDescription = stringResource(id = R.string.back)
-                    )
-                }
-            }
-        },
-        actions = {
-            IconButton(onClick = onHelpButtonClick) {
-                Icon(
-                    painter = painterResource(id = R.drawable.ic_help_24dp),
-                    contentDescription = stringResource(id = R.string.help)
-                )
-            }
-        },
-        elevation = 0.dp,
-        modifier = modifier
-    )
 }
 
 @Composable

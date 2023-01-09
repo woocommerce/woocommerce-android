@@ -10,7 +10,9 @@ import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import com.woocommerce.android.extensions.navigateBackWithNotice
+import com.woocommerce.android.extensions.navigateToHelpScreen
 import com.woocommerce.android.support.help.HelpActivity
+import com.woocommerce.android.support.help.HelpOrigin
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
@@ -18,11 +20,11 @@ import com.woocommerce.android.ui.login.LoginActivity
 import com.woocommerce.android.ui.login.LoginEmailHelpDialogFragment
 import com.woocommerce.android.ui.login.LoginEmailHelpDialogFragment.Listener
 import com.woocommerce.android.ui.login.accountmismatch.AccountMismatchErrorViewModel.NavigateToEmailHelpDialogEvent
-import com.woocommerce.android.ui.login.accountmismatch.AccountMismatchErrorViewModel.NavigateToHelpScreen
 import com.woocommerce.android.ui.login.accountmismatch.AccountMismatchErrorViewModel.NavigateToLoginScreen
 import com.woocommerce.android.ui.login.accountmismatch.AccountMismatchErrorViewModel.OnJetpackConnectedEvent
 import com.woocommerce.android.ui.main.AppBarStatus
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.NavigateToHelpScreen
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowDialog
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowUiStringSnackbar
@@ -63,15 +65,7 @@ class AccountMismatchErrorFragment : BaseFragment(), Listener {
     private fun setupObservers() {
         viewModel.event.observe(viewLifecycleOwner) { event ->
             when (event) {
-                is NavigateToHelpScreen -> {
-                    startActivity(
-                        HelpActivity.createIntent(
-                            context = requireContext(),
-                            origin = HelpActivity.Origin.LOGIN_SITE_ADDRESS,
-                            extraSupportTags = null
-                        )
-                    )
-                }
+                is NavigateToHelpScreen -> navigateToHelpScreen(event.origin)
                 is NavigateToEmailHelpDialogEvent -> {
                     LoginEmailHelpDialogFragment.newInstance(this).also {
                         it.show(parentFragmentManager, LoginEmailHelpDialogFragment.TAG)
@@ -123,7 +117,7 @@ class AccountMismatchErrorFragment : BaseFragment(), Listener {
         startActivity(
             HelpActivity.createIntent(
                 context = requireContext(),
-                origin = HelpActivity.Origin.LOGIN_CONNECTED_EMAIL_HELP,
+                origin = HelpOrigin.LOGIN_CONNECTED_EMAIL_HELP,
                 extraSupportTags = null
             )
         )

@@ -19,4 +19,8 @@ sealed class IAPError {
         object Network : RemoteCommunication()
         data class Server(val reason: String) : RemoteCommunication()
     }
+
+    override fun toString(): String {
+        return this.javaClass.simpleName
+    }
 }

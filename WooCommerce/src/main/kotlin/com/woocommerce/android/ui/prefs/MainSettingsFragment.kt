@@ -32,7 +32,7 @@ import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.extensions.show
 import com.woocommerce.android.model.FeatureAnnouncement
 import com.woocommerce.android.support.help.HelpActivity
-import com.woocommerce.android.support.help.HelpActivity.Origin
+import com.woocommerce.android.support.help.HelpOrigin
 import com.woocommerce.android.util.AnalyticsUtils
 import com.woocommerce.android.util.AppThemeUtils
 import com.woocommerce.android.util.ChromeCustomTabUtils
@@ -126,7 +126,7 @@ class MainSettingsFragment : Fragment(R.layout.fragment_settings_main), MainSett
 
         binding.optionHelpAndSupport.setOnClickListener {
             AnalyticsTracker.track(AnalyticsEvent.MAIN_MENU_CONTACT_SUPPORT_TAPPED)
-            startActivity(HelpActivity.createIntent(requireActivity(), Origin.SETTINGS, null))
+            startActivity(HelpActivity.createIntent(requireActivity(), HelpOrigin.SETTINGS, null))
         }
 
         // on API 26+ we show the device notification settings, on older devices we have in-app settings
