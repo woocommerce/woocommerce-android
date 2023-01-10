@@ -1,5 +1,8 @@
 package com.woocommerce.android.ui.analytics
 
+import com.woocommerce.android.ui.analytics.listcard.AnalyticsListViewState as ProductsViewState
+import com.woocommerce.android.ui.analytics.listcard.AnalyticsListViewState.LoadingViewState as LoadingProductsViewState
+import com.woocommerce.android.ui.analytics.listcard.AnalyticsListViewState.NoDataState as ProductsNoDataState
 import androidx.lifecycle.LifecycleObserver
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
@@ -30,15 +33,12 @@ import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.getStateFlow
 import com.woocommerce.android.viewmodel.navArgs
 import dagger.hilt.android.lifecycle.HiltViewModel
+import java.util.Date
+import javax.inject.Inject
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import java.util.Date
-import javax.inject.Inject
-import com.woocommerce.android.ui.analytics.listcard.AnalyticsListViewState as ProductsViewState
-import com.woocommerce.android.ui.analytics.listcard.AnalyticsListViewState.LoadingViewState as LoadingProductsViewState
-import com.woocommerce.android.ui.analytics.listcard.AnalyticsListViewState.NoDataState as ProductsNoDataState
 
 @HiltViewModel
 class AnalyticsViewModel @Inject constructor(
@@ -97,9 +97,9 @@ class AnalyticsViewModel @Inject constructor(
     }
 
     fun onCustomDateRangeClicked() {
-        val fromMillis = ranges.currentRange.start.time
-        val toMillis = ranges.currentRange.end.time
-        triggerEvent(AnalyticsViewEvent.OpenDatePicker(fromMillis, toMillis))
+        val startTimestamp = ranges.currentRange.start.time
+        val endTimestamp = ranges.currentRange.end.time
+        triggerEvent(AnalyticsViewEvent.OpenDatePicker(startTimestamp, endTimestamp))
     }
 
     fun onRefreshRequested() {
@@ -123,9 +123,8 @@ class AnalyticsViewModel @Inject constructor(
 
     fun onTrackableUIInteraction() = usageTracksEventEmitter.interacted()
 
-    private fun formatValue(value: String, currencyCode: String?) = currencyCode
-        ?.let { currencyFormatter.formatCurrency(value, it) }
-        ?: value
+    private fun formatValue(value: String, currencyCode: String?) =
+        currencyCode?.let { currencyFormatter.formatCurrency(value, it) } ?: value
 
     private fun getFetchStrategy(isRefreshing: Boolean) = if (isRefreshing) ForceNew else Saved
 
@@ -199,9 +198,7 @@ class AnalyticsViewModel @Inject constructor(
             when (state) {
                 is RevenueState.Available -> mutableState.update { viewState ->
                     transactionLauncher.onRevenueFetched()
-                    viewState.copy(
-                        revenueState = buildRevenueDataViewState(state.revenue)
-                    )
+                    viewState.copy(revenueState = buildRevenueDataViewState(state.revenue))
                 }
                 is RevenueState.Error -> mutableState.update { viewState ->
                     val message = resourceProvider.getString(R.string.analytics_revenue_no_data)
