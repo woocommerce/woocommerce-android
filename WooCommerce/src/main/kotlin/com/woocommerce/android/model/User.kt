@@ -16,9 +16,9 @@ data class User(
     fun getUserNameForDisplay(): String {
         val name = "$firstName $lastName".trim()
         return when {
-            name.isEmpty() && username.isEmpty() -> email
-            name.isEmpty() && username.isNotEmpty() -> username
-            else -> name
+            name.isNotEmpty() -> name
+            username.isNotEmpty() -> username
+            else -> email
         }
     }
 }
