@@ -39,6 +39,7 @@ class OrderCreateEditRepository @Inject constructor(
 ) {
     suspend fun placeOrder(order: Order): Result<Order> {
         val request = UpdateOrderRequest(
+            customerId = order.customerId,
             status = order.status.toDataModel(),
             lineItems = order.items.map { item ->
                 LineItem(
@@ -98,6 +99,7 @@ class OrderCreateEditRepository @Inject constructor(
 
     suspend fun createOrUpdateDraft(order: Order): Result<Order> {
         val request = UpdateOrderRequest(
+            customerId = order.customerId,
             status = order.status.toDataModel(),
             lineItems = order.items.map { item ->
                 LineItem(

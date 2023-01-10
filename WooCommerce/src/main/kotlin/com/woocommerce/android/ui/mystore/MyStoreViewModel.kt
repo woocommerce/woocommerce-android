@@ -9,7 +9,6 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.AppPrefsWrapper
-import com.woocommerce.android.BuildConfig
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
@@ -19,14 +18,17 @@ import com.woocommerce.android.network.ConnectionChangeReceiver
 import com.woocommerce.android.network.ConnectionChangeReceiver.ConnectionChangeEvent
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.tools.SiteConnectionType
+import com.woocommerce.android.tools.connectionType
 import com.woocommerce.android.ui.analytics.ranges.AnalyticsHubDateRangeSelection.SelectionType
 import com.woocommerce.android.ui.jitm.JitmTracker
+import com.woocommerce.android.ui.jitm.QueryParamsEncoder
 import com.woocommerce.android.ui.mystore.domain.GetStats
 import com.woocommerce.android.ui.mystore.domain.GetStats.LoadStatsResult.HasOrders
-import com.woocommerce.android.ui.mystore.domain.GetStats.LoadStatsResult.IsJetPackCPEnabled
 import com.woocommerce.android.ui.mystore.domain.GetStats.LoadStatsResult.PluginNotActive
 import com.woocommerce.android.ui.mystore.domain.GetStats.LoadStatsResult.RevenueStatsError
 import com.woocommerce.android.ui.mystore.domain.GetStats.LoadStatsResult.RevenueStatsSuccess
+import com.woocommerce.android.ui.mystore.domain.GetStats.LoadStatsResult.VisitorStatUnavailable
 import com.woocommerce.android.ui.mystore.domain.GetStats.LoadStatsResult.VisitorsStatsError
 import com.woocommerce.android.ui.mystore.domain.GetStats.LoadStatsResult.VisitorsStatsSuccess
 import com.woocommerce.android.ui.mystore.domain.GetTopPerformers
@@ -63,7 +65,6 @@ import org.wordpress.android.fluxc.store.WooCommerceStore
 import org.wordpress.android.util.FormatUtils
 import org.wordpress.android.util.PhotonUtils
 import java.math.BigDecimal
-import java.net.URLEncoder
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
@@ -84,6 +85,7 @@ class MyStoreViewModel @Inject constructor(
     private val jitmStore: JitmStore,
     private val jitmTracker: JitmTracker,
     private val myStoreUtmProvider: MyStoreUtmProvider,
+    private val queryParamsEncoder: QueryParamsEncoder,
 ) : ScopedViewModel(savedState) {
     companion object {
         private const val DAYS_TO_REDISPLAY_JP_BENEFITS_BANNER = 5
@@ -148,19 +150,10 @@ class MyStoreViewModel @Inject constructor(
             val response = jitmStore.fetchJitmMessage(
                 selectedSite.get(),
                 JITM_MESSAGE_PATH,
-                getEncodedQueryParams(),
+                queryParamsEncoder.getEncodedQueryParams(),
             )
             populateResultToUI(response)
         }
-    }
-
-    private fun getEncodedQueryParams(): String {
-        val query = if (BuildConfig.DEBUG) {
-            "build_type=developer&platform=android&version=${BuildConfig.VERSION_NAME}"
-        } else {
-            "platform=android&version=${BuildConfig.VERSION_NAME}"
-        }
-        return URLEncoder.encode(query, Charsets.UTF_8.name())
     }
 
     private fun populateResultToUI(response: WooResult<Array<JITMApiResponse>>) {
@@ -324,7 +317,7 @@ class MyStoreViewModel @Inject constructor(
                     PluginNotActive -> _revenueStatsState.value = RevenueStatsViewState.PluginNotActiveError
                     is VisitorsStatsSuccess -> _visitorStatsState.value = VisitorStatsViewState.Content(it.stats)
                     is VisitorsStatsError -> _visitorStatsState.value = VisitorStatsViewState.Error
-                    IsJetPackCPEnabled -> onJetPackCpConnected()
+                    is VisitorStatUnavailable -> onVisitorStatsUnavailable(it.connectionType)
                     is HasOrders -> _hasOrders.value = if (it.hasOrder) OrderState.AtLeastOne else OrderState.Empty
                 }
                 myStoreTransactionLauncher.onStoreStatisticsFetched()
@@ -345,25 +338,26 @@ class MyStoreViewModel @Inject constructor(
         )
     }
 
-    private fun onJetPackCpConnected() {
+    private fun onVisitorStatsUnavailable(connectionType: SiteConnectionType) {
         val daysSinceDismissal = TimeUnit.MILLISECONDS.toDays(
             System.currentTimeMillis() - appPrefsWrapper.getJetpackBenefitsDismissalDate()
         )
-        val showBanner = daysSinceDismissal >= DAYS_TO_REDISPLAY_JP_BENEFITS_BANNER
-        val benefitsBanner =
-            BenefitsBannerUiModel(
-                show = showBanner,
-                onDismiss = {
-                    _visitorStatsState.value =
-                        VisitorStatsViewState.JetpackCpConnected(BenefitsBannerUiModel(show = false))
-                    appPrefsWrapper.recordJetpackBenefitsDismissal()
-                    analyticsTrackerWrapper.track(
-                        stat = AnalyticsEvent.FEATURE_JETPACK_BENEFITS_BANNER,
-                        properties = mapOf(AnalyticsTracker.KEY_JETPACK_BENEFITS_BANNER_ACTION to "dismissed")
-                    )
-                }
-            )
-        _visitorStatsState.value = VisitorStatsViewState.JetpackCpConnected(benefitsBanner)
+        // For now, the banner is shown only when the site is a Jetpack CP site
+        val showBanner = connectionType == SiteConnectionType.JetpackConnectionPackage &&
+            daysSinceDismissal >= DAYS_TO_REDISPLAY_JP_BENEFITS_BANNER
+        val benefitsBanner = JetpackBenefitsBannerUiModel(
+            show = showBanner,
+            onDismiss = {
+                _visitorStatsState.value =
+                    VisitorStatsViewState.Unavailable(JetpackBenefitsBannerUiModel(show = false))
+                appPrefsWrapper.recordJetpackBenefitsDismissal()
+                analyticsTrackerWrapper.track(
+                    stat = AnalyticsEvent.FEATURE_JETPACK_BENEFITS_BANNER,
+                    properties = mapOf(AnalyticsTracker.KEY_JETPACK_BENEFITS_BANNER_ACTION to "dismissed")
+                )
+            }
+        )
+        _visitorStatsState.value = VisitorStatsViewState.Unavailable(benefitsBanner)
         monitorJetpackInstallation()
     }
 
@@ -371,7 +365,7 @@ class MyStoreViewModel @Inject constructor(
         jetpackMonitoringJob?.cancel()
         jetpackMonitoringJob = viewModelScope.launch {
             selectedSite.observe()
-                .filter { it?.isJetpackConnected == true }
+                .filter { it?.connectionType == SiteConnectionType.Jetpack }
                 .take(1)
                 .collect {
                     loadStoreStats(_activeStatsGranularity.value)
@@ -504,8 +498,8 @@ class MyStoreViewModel @Inject constructor(
 
     sealed class VisitorStatsViewState {
         object Error : VisitorStatsViewState()
-        data class JetpackCpConnected(
-            val benefitsBanner: BenefitsBannerUiModel
+        data class Unavailable(
+            val benefitsBanner: JetpackBenefitsBannerUiModel
         ) : VisitorStatsViewState()
 
         data class Content(

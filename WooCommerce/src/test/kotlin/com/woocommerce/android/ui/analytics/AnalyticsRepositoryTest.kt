@@ -33,6 +33,8 @@ import org.mockito.kotlin.mock
 import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
+import org.wordpress.android.fluxc.model.LocalOrRemoteId.LocalId
+import org.wordpress.android.fluxc.model.LocalOrRemoteId.RemoteId
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.model.WCProductModel
 import org.wordpress.android.fluxc.model.WCRevenueStatsModel
@@ -917,11 +919,12 @@ class AnalyticsRepositoryTest : BaseUnitTest() {
         val product: WCProductModel = mock()
         whenever(product.name).thenReturn(NAME)
         whenever(product.getFirstImageUrl()).thenReturn(IMAGE_URL)
+        whenever(product.remoteId).thenReturn(RemoteId(0))
 
         val productEntity = TopPerformerProductEntity(
-            siteId = 0,
+            localSiteId = LocalId(0),
             datePeriod = "2021-01-01-2021-01-02",
-            productId = product.remoteProductId,
+            productId = product.remoteId,
             name = product.name,
             imageUrl = product.getFirstImageUrl(),
             quantity = TEN_VALUE.toInt(),

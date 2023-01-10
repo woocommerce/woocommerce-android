@@ -7,8 +7,10 @@ import androidx.lifecycle.asLiveData
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
+import com.woocommerce.android.support.help.HelpOrigin.STORE_CREATION
 import com.woocommerce.android.ui.login.storecreation.NewStore
 import com.woocommerce.android.viewmodel.MultiLiveEvent
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.NavigateToHelpScreen
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.getStateFlow
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -41,6 +43,10 @@ class StoreProfilerViewModel @Inject constructor(
 
     fun onSkipPressed() {
         triggerEvent(NavigateToNextStep)
+    }
+
+    fun onHelpPressed() {
+        triggerEvent(NavigateToHelpScreen(STORE_CREATION))
     }
 
     fun onArrowBackPressed() {

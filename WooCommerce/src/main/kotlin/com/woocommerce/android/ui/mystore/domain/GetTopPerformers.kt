@@ -39,7 +39,7 @@ class GetTopPerformers @Inject constructor(
 
     private fun TopPerformerProductEntity.toTopPerformerProduct() =
         TopPerformerProduct(
-            productId = productId,
+            productId = productId.value,
             name = name,
             quantity = quantity,
             currency = currency,

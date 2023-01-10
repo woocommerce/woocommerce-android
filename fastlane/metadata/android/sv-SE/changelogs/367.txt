@@ -1,2 +1,0 @@
-11.6:
-Den här versionen innehåller en handfull mindre förbättringar och buggkorrigeringar som vårt team har gjort. Men låt er inte luras – vi har några riktigt spännande funktioner på gång för er. Håll ögonen öppna!

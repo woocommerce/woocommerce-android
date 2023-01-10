@@ -6,14 +6,10 @@ import android.widget.Button
 import android.widget.TextView
 import androidx.annotation.LayoutRes
 import com.woocommerce.android.R
-import com.woocommerce.android.experiment.SimplifiedLoginExperiment
-import com.woocommerce.android.experiment.SimplifiedLoginExperiment.LoginVariant.CONTROL
-import com.woocommerce.android.experiment.SimplifiedLoginExperiment.LoginVariant.SIMPLIFIED_LOGIN_WPCOM
 import com.woocommerce.android.extensions.showKeyboardWithDelay
 import com.woocommerce.android.ui.login.qrcode.QrCodeLoginListener
 import org.wordpress.android.login.LoginEmailFragment
 import org.wordpress.android.login.widgets.WPLoginInputRow
-import javax.inject.Inject
 
 class WooLoginEmailFragment : LoginEmailFragment() {
     interface Listener {
@@ -23,14 +19,8 @@ class WooLoginEmailFragment : LoginEmailFragment() {
     private lateinit var wooLoginEmailListener: Listener
     private lateinit var qrCodeLoginListener: QrCodeLoginListener
 
-    @Inject
-    lateinit var simplifiedLoginExperiment: SimplifiedLoginExperiment
-
     @LayoutRes
-    override fun getContentLayout(): Int = when (simplifiedLoginExperiment.getCurrentVariant()) {
-        CONTROL -> R.layout.fragment_login_email_screen
-        SIMPLIFIED_LOGIN_WPCOM -> R.layout.fragment_simplified_login_email_screen
-    }
+    override fun getContentLayout(): Int = R.layout.fragment_login_email_screen
 
     override fun setupContent(rootView: ViewGroup) {
         super.setupContent(rootView)
