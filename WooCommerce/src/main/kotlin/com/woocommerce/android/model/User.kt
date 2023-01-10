@@ -14,7 +14,7 @@ data class User(
     val roles: List<String>
 ) : Parcelable {
     fun getUserNameForDisplay(): String {
-        val name = "$firstName $lastName"
+        val name = "$firstName $lastName".trim()
         return when {
             name.isEmpty() && username.isEmpty() -> email
             name.isEmpty() && username.isNotEmpty() -> username
