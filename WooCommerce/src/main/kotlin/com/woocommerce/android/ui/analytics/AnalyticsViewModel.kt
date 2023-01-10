@@ -42,6 +42,7 @@ import javax.inject.Inject
 import com.woocommerce.android.ui.analytics.listcard.AnalyticsListViewState as ProductsViewState
 import com.woocommerce.android.ui.analytics.listcard.AnalyticsListViewState.LoadingViewState as LoadingProductsViewState
 import com.woocommerce.android.ui.analytics.listcard.AnalyticsListViewState.NoDataState as ProductsNoDataState
+import com.woocommerce.android.ui.analytics.UpdateAnalyticsHubStats.AnalyticsHubUpdateState.Finished
 
 @HiltViewModel
 class AnalyticsViewModel @Inject constructor(
@@ -107,16 +108,18 @@ class AnalyticsViewModel @Inject constructor(
 
     fun onRefreshRequested() {
         viewModelScope.launch {
-            mutableState.value = viewState.value.copy(
-                refreshIndicator = ShowIndicator
-            )
-
             updateStats(
                 coroutineScope = viewModelScope,
                 rangeSelection = ranges,
                 fetchStrategy = getFetchStrategy(isRefreshing = true),
                 loadWithSkeleton = false
-            )
+            ).collect {
+                mutableState.update { viewState ->
+                    viewState.copy(
+                        refreshIndicator = if (it is Finished) NotShowIndicator else ShowIndicator
+                    )
+                }
+            }
         }
     }
 
@@ -171,13 +174,11 @@ class AnalyticsViewModel @Inject constructor(
                 is VisitorsState.Available -> mutableState.update { viewState ->
                     transactionLauncher.onSessionFetched()
                     viewState.copy(
-                        refreshIndicator = NotShowIndicator,
                         sessionState = buildSessionViewState(state.session)
                     )
                 }
                 is VisitorsState.Error -> mutableState.update { viewState ->
                     viewState.copy(
-                        refreshIndicator = NotShowIndicator,
                         sessionState = NoDataState("No session data")
                     )
                 }
@@ -217,13 +218,11 @@ class AnalyticsViewModel @Inject constructor(
                 is RevenueState.Available -> mutableState.update { viewState ->
                     transactionLauncher.onRevenueFetched()
                     viewState.copy(
-                        refreshIndicator = NotShowIndicator,
                         revenueState = buildRevenueDataViewState(state.revenue)
                     )
                 }
                 is RevenueState.Error -> mutableState.update { viewState ->
                     viewState.copy(
-                        refreshIndicator = NotShowIndicator,
                         revenueState = NoDataState(resourceProvider.getString(R.string.analytics_revenue_no_data))
                     )
                 }
