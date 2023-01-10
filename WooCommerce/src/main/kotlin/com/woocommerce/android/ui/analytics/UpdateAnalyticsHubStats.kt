@@ -4,15 +4,16 @@ import com.woocommerce.android.model.OrdersStat
 import com.woocommerce.android.model.ProductsStat
 import com.woocommerce.android.model.RevenueStat
 import com.woocommerce.android.model.SessionStat
+import com.woocommerce.android.ui.analytics.AnalyticsHubUpdateState.Finished
+import com.woocommerce.android.ui.analytics.AnalyticsHubUpdateState.Loading
 import com.woocommerce.android.ui.analytics.AnalyticsRepository.FetchStrategy
-import com.woocommerce.android.ui.analytics.UpdateAnalyticsHubStats.AnalyticsHubUpdateState.Finished
-import com.woocommerce.android.ui.analytics.UpdateAnalyticsHubStats.AnalyticsHubUpdateState.Loading
 import com.woocommerce.android.ui.analytics.ranges.AnalyticsHubDateRangeSelection
 import com.woocommerce.android.util.CoroutineDispatchers
 import javax.inject.Inject
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.update
@@ -22,26 +23,33 @@ class UpdateAnalyticsHubStats @Inject constructor(
     private val dispatchers: CoroutineDispatchers,
     private val analyticsRepository: AnalyticsRepository
 ) {
-    val revenueState = MutableStateFlow(RevenueState.Available(RevenueStat.EMPTY) as RevenueState)
-    val productsState = MutableStateFlow(ProductsState.Available(ProductsStat.EMPTY) as ProductsState)
-    val ordersState = MutableStateFlow(OrdersState.Available(OrdersStat.EMPTY) as OrdersState)
-    val sessionState = MutableStateFlow(VisitorsState.Available(SessionStat.EMPTY) as VisitorsState)
+    private val _revenueState = MutableStateFlow(RevenueState.Available(RevenueStat.EMPTY) as RevenueState)
+    val revenueState: StateFlow<RevenueState> = _revenueState
+
+    private val _productsState = MutableStateFlow(ProductsState.Available(ProductsStat.EMPTY) as ProductsState)
+    val productsState: StateFlow<ProductsState> = _productsState
+
+    private val _ordersState = MutableStateFlow(OrdersState.Available(OrdersStat.EMPTY) as OrdersState)
+    val ordersState: StateFlow<OrdersState> = _ordersState
+
+    private val _sessionState = MutableStateFlow(VisitorsState.Available(SessionStat.EMPTY) as VisitorsState)
+    val sessionState: StateFlow<VisitorsState> = _sessionState
 
     private val visitorsCountState = MutableStateFlow(0)
-    private val sessionChanges: Flow<VisitorsState> by lazy { combineSessionDataChanges() }
+    private val sessionChanges by lazy { combineSessionDataChanges() }
 
     suspend operator fun invoke(
         coroutineScope: CoroutineScope,
         rangeSelection: AnalyticsHubDateRangeSelection,
         fetchStrategy: FetchStrategy
     ): Flow<AnalyticsHubUpdateState> {
-        ordersState.update { OrdersState.Loading }
-        sessionState.update { VisitorsState.Loading }
-        revenueState.update { RevenueState.Loading }
-        productsState.update { ProductsState.Loading }
+        _ordersState.update { OrdersState.Loading }
+        _sessionState.update { VisitorsState.Loading }
+        _revenueState.update { RevenueState.Loading }
+        _productsState.update { ProductsState.Loading }
 
         coroutineScope.launch(dispatchers.computation) {
-            sessionChanges.collect { sessionState.value = it }
+            sessionChanges.collect { _sessionState.value = it }
         }
 
         fetchOrdersData(rangeSelection, fetchStrategy)
@@ -53,12 +61,12 @@ class UpdateAnalyticsHubStats @Inject constructor(
     }
 
     private fun combineStatesProgress() =
-        combine(revenueState, productsState, ordersState, sessionState) { revenue, products, orders, session ->
+        combine(_revenueState, _productsState, _ordersState, _sessionState) { revenue, products, orders, session ->
             revenue.isIdle && products.isIdle && orders.isIdle && session.isIdle
         }.map { if (it) Finished else Loading }
 
     private fun combineSessionDataChanges() =
-        combine(ordersState, visitorsCountState) { orders, visitorsCount ->
+        combine(_ordersState, visitorsCountState) { orders, visitorsCount ->
             orders.run { this as? OrdersState.Available }
                 ?.orders?.ordersCount
                 ?.let { VisitorsState.Available(SessionStat(it, visitorsCount)) }
@@ -74,8 +82,8 @@ class UpdateAnalyticsHubStats @Inject constructor(
     ) {
         analyticsRepository.fetchOrdersData(rangeSelection, fetchStrategy)
             .run { this as? AnalyticsRepository.OrdersResult.OrdersData }
-            ?.let { ordersState.value = OrdersState.Available(it.ordersStat) }
-            ?: ordersState.update { OrdersState.Error }
+            ?.let { _ordersState.value = OrdersState.Available(it.ordersStat) }
+            ?: _ordersState.update { OrdersState.Error }
     }
 
     private suspend fun fetchVisitorsCount(
@@ -93,8 +101,8 @@ class UpdateAnalyticsHubStats @Inject constructor(
     ) {
         analyticsRepository.fetchRevenueData(rangeSelection, fetchStrategy)
             .run { this as? AnalyticsRepository.RevenueResult.RevenueData }
-            ?.let { revenueState.value = RevenueState.Available(it.revenueStat) }
-            ?: revenueState.update { RevenueState.Error }
+            ?.let { _revenueState.value = RevenueState.Available(it.revenueStat) }
+            ?: _revenueState.update { RevenueState.Error }
     }
 
     private suspend fun fetchProductsData(
@@ -103,45 +111,7 @@ class UpdateAnalyticsHubStats @Inject constructor(
     ) {
         analyticsRepository.fetchProductsData(rangeSelection, fetchStrategy)
             .run { this as? AnalyticsRepository.ProductsResult.ProductsData }
-            ?.let { productsState.value = ProductsState.Available(it.productsStat) }
-            ?: productsState.update { ProductsState.Error }
-    }
-
-    sealed class AnalyticsHubUpdateState {
-        object Finished : AnalyticsHubUpdateState()
-        object Loading : AnalyticsHubUpdateState()
-    }
-
-    sealed class OrdersState {
-        data class Available(val orders: OrdersStat) : OrdersState()
-        object Loading : OrdersState()
-        object Error : OrdersState()
-
-        val isIdle get() = this is Available || this is Error
-
-    }
-
-    sealed class VisitorsState {
-        data class Available(val session: SessionStat) : VisitorsState()
-        object Loading : VisitorsState()
-        object Error : VisitorsState()
-
-        val isIdle get() = this is Available || this is Error
-    }
-
-    sealed class RevenueState {
-        data class Available(val revenue: RevenueStat) : RevenueState()
-        object Loading : RevenueState()
-        object Error : RevenueState()
-
-        val isIdle get() = this is Available || this is Error
-    }
-
-    sealed class ProductsState {
-        data class Available(val products: ProductsStat) : ProductsState()
-        object Loading : ProductsState()
-        object Error : ProductsState()
-
-        val isIdle get() = this is Available || this is Error
+            ?.let { _productsState.value = ProductsState.Available(it.productsStat) }
+            ?: _productsState.update { ProductsState.Error }
     }
 }
