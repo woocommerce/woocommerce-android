@@ -15,10 +15,6 @@ import com.woocommerce.android.ui.analytics.AnalyticsRepository.FetchStrategy.Fo
 import com.woocommerce.android.ui.analytics.AnalyticsRepository.FetchStrategy.Saved
 import com.woocommerce.android.ui.analytics.RefreshIndicator.NotShowIndicator
 import com.woocommerce.android.ui.analytics.RefreshIndicator.ShowIndicator
-import com.woocommerce.android.ui.analytics.UpdateAnalyticsHubStats.OrdersState
-import com.woocommerce.android.ui.analytics.UpdateAnalyticsHubStats.ProductsState
-import com.woocommerce.android.ui.analytics.UpdateAnalyticsHubStats.RevenueState
-import com.woocommerce.android.ui.analytics.UpdateAnalyticsHubStats.VisitorsState
 import com.woocommerce.android.ui.analytics.daterangeselector.AnalyticsDateRangeSelectorViewState
 import com.woocommerce.android.ui.analytics.informationcard.AnalyticsInformationSectionViewState
 import com.woocommerce.android.ui.analytics.informationcard.AnalyticsInformationViewState.DataViewState
@@ -42,7 +38,7 @@ import javax.inject.Inject
 import com.woocommerce.android.ui.analytics.listcard.AnalyticsListViewState as ProductsViewState
 import com.woocommerce.android.ui.analytics.listcard.AnalyticsListViewState.LoadingViewState as LoadingProductsViewState
 import com.woocommerce.android.ui.analytics.listcard.AnalyticsListViewState.NoDataState as ProductsNoDataState
-import com.woocommerce.android.ui.analytics.UpdateAnalyticsHubStats.AnalyticsHubUpdateState.Finished
+import com.woocommerce.android.ui.analytics.AnalyticsHubUpdateState.Finished
 
 @HiltViewModel
 class AnalyticsViewModel @Inject constructor(
@@ -111,8 +107,7 @@ class AnalyticsViewModel @Inject constructor(
             updateStats(
                 coroutineScope = viewModelScope,
                 rangeSelection = ranges,
-                fetchStrategy = getFetchStrategy(isRefreshing = true),
-                loadWithSkeleton = false
+                fetchStrategy = getFetchStrategy(isRefreshing = true)
             ).collect {
                 mutableState.update { viewState ->
                     viewState.copy(
@@ -144,8 +139,7 @@ class AnalyticsViewModel @Inject constructor(
             updateStats(
                 coroutineScope = viewModelScope,
                 rangeSelection = it,
-                fetchStrategy = getFetchStrategy(isRefreshing = false),
-                loadWithSkeleton = true
+                fetchStrategy = getFetchStrategy(isRefreshing = false)
             )
         }
     }
