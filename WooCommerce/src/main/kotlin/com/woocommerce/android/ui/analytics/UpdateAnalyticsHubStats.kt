@@ -7,13 +7,13 @@ import com.woocommerce.android.model.SessionStat
 import com.woocommerce.android.ui.analytics.AnalyticsRepository.FetchStrategy
 import com.woocommerce.android.ui.analytics.ranges.AnalyticsHubDateRangeSelection
 import com.woocommerce.android.util.CoroutineDispatchers
-import javax.inject.Inject
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
 class UpdateAnalyticsHubStats @Inject constructor(
     private val dispatchers: CoroutineDispatchers,

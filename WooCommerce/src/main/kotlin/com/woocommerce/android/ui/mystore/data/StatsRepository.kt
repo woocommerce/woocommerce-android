@@ -115,7 +115,7 @@ class StatsRepository @Inject constructor(
             endDate = endDate
         ).let { wcStatsStore.fetchNewVisitorStats(it) }
 
-        if(result.isError) return Result.failure(Throwable(result.error?.message ?: "Timeout"))
+        if (result.isError) return Result.failure(Throwable(result.error?.message ?: "Timeout"))
 
         val visitorStats = wcStatsStore.getNewVisitorStats(
             selectedSite.get(), result.granularity, result.quantity, result.date, result.isCustomField

@@ -8,8 +8,8 @@ data class SessionStat(
 ) {
     val conversionRate: String
         get() = when {
-            visitorsCount > 0 -> (ordersCount / visitorsCount.toFloat()) * 100
-            else -> 0F
+            visitorsCount > 0 -> (ordersCount / visitorsCount.toFloat()) * PERCENT_BASE
+            else -> 0f
         }.let { DecimalFormat("##.#").format(conversionRate) + "%" }
 
     companion object {
@@ -17,5 +17,6 @@ data class SessionStat(
             ordersCount = 0,
             visitorsCount = 0
         )
+        const val PERCENT_BASE = 100
     }
 }
