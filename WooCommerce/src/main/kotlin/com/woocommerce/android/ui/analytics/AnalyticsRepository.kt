@@ -263,11 +263,9 @@ class AnalyticsRepository @Inject constructor(
         fetchStrategy: FetchStrategy
     ): Result<Map<String, Int>> = coroutineScope {
         statsRepository.fetchVisitorStats(
-            rangeSelection.currentRange.start.formatToYYYYmmDD(),
-            rangeSelection.currentRange.end.formatToYYYYmmDD(),
             getGranularity(rangeSelection.selectionType),
             fetchStrategy is FetchStrategy.ForceNew,
-        )
+        ).single()
     }
 
     private fun getGranularity(selectionType: SelectionType) =
