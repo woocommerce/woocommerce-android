@@ -91,6 +91,49 @@ class AnalyticsViewModel @Inject constructor(
         observeRangeSelectionChanges()
     }
 
+    fun onNewRangeSelection(selectionType: SelectionType) {
+        rangeSelectionState.value = selectionType.generateSelectionData()
+    }
+
+    fun onCustomRangeSelected(startDate: Date, endDate: Date) {
+        rangeSelectionState.value = SelectionType.CUSTOM.generateSelectionData(startDate, endDate)
+    }
+
+    fun onCustomDateRangeClicked() {
+        val fromMillis = ranges.currentRange.start.time
+        val toMillis = ranges.currentRange.end.time
+        triggerEvent(AnalyticsViewEvent.OpenDatePicker(fromMillis, toMillis))
+    }
+
+    fun onRefreshRequested() {
+        viewModelScope.launch {
+            mutableState.value = viewState.value.copy(
+                refreshIndicator = ShowIndicator
+            )
+
+            updateStats(
+                coroutineScope = viewModelScope,
+                rangeSelection = ranges,
+                fetchStrategy = getFetchStrategy(isRefreshing = true),
+                loadWithSkeleton = false
+            )
+        }
+    }
+
+    fun onDateRangeSelectorClick() {
+        onTrackableUIInteraction()
+        AnalyticsTracker.track(AnalyticsEvent.ANALYTICS_HUB_DATE_RANGE_BUTTON_TAPPED)
+        triggerEvent(AnalyticsViewEvent.OpenDateRangeSelector)
+    }
+
+    fun onTrackableUIInteraction() = usageTracksEventEmitter.interacted()
+
+    private fun formatValue(value: String, currencyCode: String?) = currencyCode
+        ?.let { currencyFormatter.formatCurrency(value, it) }
+        ?: value
+
+    private fun getFetchStrategy(isRefreshing: Boolean) = if (isRefreshing) ForceNew else Saved
+
     private fun observeRangeSelectionChanges() = viewModelScope.launch {
         rangeSelectionState.collect {
             updateDateSelector()
@@ -191,43 +234,6 @@ class AnalyticsViewModel @Inject constructor(
         }
     }
 
-    fun onNewRangeSelection(selectionType: SelectionType) {
-        rangeSelectionState.value = selectionType.generateSelectionData()
-    }
-
-    fun onCustomRangeSelected(startDate: Date, endDate: Date) {
-        rangeSelectionState.value = SelectionType.CUSTOM.generateSelectionData(startDate, endDate)
-    }
-
-    fun onCustomDateRangeClicked() {
-        val fromMillis = ranges.currentRange.start.time
-        val toMillis = ranges.currentRange.end.time
-        triggerEvent(AnalyticsViewEvent.OpenDatePicker(fromMillis, toMillis))
-    }
-
-    fun onRefreshRequested() {
-        viewModelScope.launch {
-            mutableState.value = viewState.value.copy(
-                refreshIndicator = ShowIndicator
-            )
-
-            updateStats(
-                coroutineScope = viewModelScope,
-                rangeSelection = ranges,
-                fetchStrategy = getFetchStrategy(isRefreshing = true),
-                loadWithSkeleton = false
-            )
-        }
-    }
-
-    fun onDateRangeSelectorClick() {
-        onTrackableUIInteraction()
-        AnalyticsTracker.track(AnalyticsEvent.ANALYTICS_HUB_DATE_RANGE_BUTTON_TAPPED)
-        triggerEvent(AnalyticsViewEvent.OpenDateRangeSelector)
-    }
-
-    fun onTrackableUIInteraction() = usageTracksEventEmitter.interacted()
-
     private fun updateDateSelector() {
         mutableState.value = viewState.value.copy(
             analyticsDateRangeSelectorState = viewState.value.analyticsDateRangeSelectorState.copy(
@@ -237,10 +243,6 @@ class AnalyticsViewModel @Inject constructor(
             )
         )
     }
-
-    private fun formatValue(value: String, currencyCode: String?) = currencyCode
-        ?.let { currencyFormatter.formatCurrency(value, it) }
-        ?: value
 
     private fun buildSessionViewState(
         stats: SessionStat
@@ -329,8 +331,6 @@ class AnalyticsViewModel @Inject constructor(
                 }
         )
     }
-
-    private fun getFetchStrategy(isRefreshing: Boolean) = if (isRefreshing) ForceNew else Saved
 
     private fun trackSelectedDateRange() {
         onTrackableUIInteraction()
