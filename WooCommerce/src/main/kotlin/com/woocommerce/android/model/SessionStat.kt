@@ -10,7 +10,7 @@ data class SessionStat(
         get() = when {
             visitorsCount > 0 -> (ordersCount / visitorsCount.toFloat()) * PERCENT_BASE
             else -> 0f
-        }.let { DecimalFormat("##.#").format(conversionRate) + "%" }
+        }.let { DecimalFormat("##.#").format(it) + "%" }
 
     companion object {
         val EMPTY = SessionStat(
