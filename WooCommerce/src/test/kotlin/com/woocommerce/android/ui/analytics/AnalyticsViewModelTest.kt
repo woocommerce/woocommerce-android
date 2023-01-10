@@ -3,6 +3,7 @@ package com.woocommerce.android.ui.analytics
 import com.woocommerce.android.R
 import com.woocommerce.android.initSavedStateHandle
 import com.woocommerce.android.model.DeltaPercentage
+import com.woocommerce.android.model.DeltaPercentage.NotExist
 import com.woocommerce.android.model.OrdersStat
 import com.woocommerce.android.model.ProductItem
 import com.woocommerce.android.model.ProductsStat
@@ -16,6 +17,7 @@ import com.woocommerce.android.ui.analytics.listcard.AnalyticsListViewState
 import com.woocommerce.android.ui.analytics.ranges.AnalyticsHubDateRangeSelection.SelectionType.LAST_YEAR
 import com.woocommerce.android.ui.analytics.ranges.AnalyticsHubDateRangeSelection.SelectionType.TODAY
 import com.woocommerce.android.ui.analytics.ranges.AnalyticsHubDateRangeSelection.SelectionType.WEEK_TO_DATE
+import com.woocommerce.android.ui.analytics.sync.AnalyticsHubUpdateState
 import com.woocommerce.android.ui.analytics.sync.OrdersState
 import com.woocommerce.android.ui.analytics.sync.ProductsState
 import com.woocommerce.android.ui.analytics.sync.RevenueState
@@ -193,12 +195,7 @@ class AnalyticsViewModelTest : BaseUnitTest() {
         testBlocking {
             updateStats.stub {
                 onBlocking { revenueState } doReturn flow {
-                    RevenueState.Available(
-                        getRevenueStats(
-                            netDelta = DeltaPercentage.NotExist,
-                            totalDelta = DeltaPercentage.NotExist
-                        )
-                    )
+                    emit(RevenueState.Available(getRevenueStats(netDelta = NotExist, totalDelta = NotExist)))
                 }
             }
 
@@ -237,7 +234,7 @@ class AnalyticsViewModelTest : BaseUnitTest() {
         )
 
         updateStats.stub {
-            onBlocking { revenueState } doReturn flow { RevenueState.Available(weekRevenueStats) }
+            onBlocking { revenueState } doReturn flow { emit(RevenueState.Available(weekRevenueStats)) }
         }
 
         sut = givenAViewModel()
@@ -313,7 +310,7 @@ class AnalyticsViewModelTest : BaseUnitTest() {
         )
 
         updateStats.stub {
-            onBlocking { ordersState } doReturn flow { OrdersState.Available(weekOrdersData) }
+            onBlocking { ordersState } doReturn flow { emit(OrdersState.Available(weekOrdersData)) }
         }
 
         sut = givenAViewModel()
@@ -344,7 +341,7 @@ class AnalyticsViewModelTest : BaseUnitTest() {
         )
 
         updateStats.stub {
-            onBlocking { revenueState } doReturn flow { RevenueState.Available(weekRevenueStats) }
+            onBlocking { revenueState } doReturn flow { emit(RevenueState.Available(weekRevenueStats)) }
         }
 
         sut = givenAViewModel()
@@ -369,7 +366,7 @@ class AnalyticsViewModelTest : BaseUnitTest() {
         )
 
         updateStats.stub {
-            onBlocking { productsState } doReturn flow { ProductsState.Available(weekOrdersData) }
+            onBlocking { productsState } doReturn flow { emit(ProductsState.Available(weekOrdersData)) }
         }
 
         sut = givenAViewModel()
@@ -395,6 +392,12 @@ class AnalyticsViewModelTest : BaseUnitTest() {
     @Test
     fun `given a view, when refresh is requested, then show indicator is the expected`() = testBlocking {
         configureSuccessfulStatsResponse()
+        updateStats.stub {
+            onBlocking { invoke(any(), any()) } doReturn flow {
+                emit(AnalyticsHubUpdateState.Finished)
+                emit(AnalyticsHubUpdateState.Loading)
+            }
+        }
 
         sut = givenAViewModel()
         val states = mutableListOf<AnalyticsViewState>()
@@ -491,10 +494,9 @@ class AnalyticsViewModelTest : BaseUnitTest() {
 
     @Test
     fun `given a date range selected, then has expected visitors values`() = testBlocking {
-        val sessionData = SessionStat(123, 321)
-
+        configureSuccessfulStatsResponse()
         updateStats.stub {
-            onBlocking { sessionState } doReturn flow { SessionState.Available(sessionData) }
+            onBlocking { sessionState } doReturn flow { emit(SessionState.Available(defaultSessionStat)) }
         }
 
         sut = givenAViewModel()
@@ -566,13 +568,13 @@ class AnalyticsViewModelTest : BaseUnitTest() {
                 leftSection = AnalyticsInformationSectionViewState(
                     title = resourceProvider.getString(R.string.analytics_views_subtitle),
                     value = DEFAULT_VISITORS_COUNT.toString(),
-                    delta = DEFAULT_AVG_VISITORS_DELTA,
+                    delta = null,
                     chartInfo = emptyList()
                 ),
                 rightSection = AnalyticsInformationSectionViewState(
                     title = resourceProvider.getString(R.string.analytics_conversion_subtitle),
-                    value = DEFAULT_VIEWS_COUNT.toString(),
-                    delta = DEFAULT_AVG_VIEWS_DELTA,
+                    value = defaultSessionStat.conversionRate,
+                    delta = null,
                     chartInfo = emptyList()
                 )
             )
@@ -585,6 +587,7 @@ class AnalyticsViewModelTest : BaseUnitTest() {
             onBlocking { ordersState } doReturn flow { emit(OrdersState.Available(getOrdersStats())) }
             onBlocking { productsState } doReturn flow { emit(ProductsState.Available(getProductsStats())) }
             onBlocking { sessionState } doReturn flow { emit(SessionState.Available(testSessionStat)) }
+            onBlocking { invoke(any(), any()) } doReturn flow { emit(AnalyticsHubUpdateState.Finished) }
         }
     }
 
@@ -649,8 +652,7 @@ class AnalyticsViewModelTest : BaseUnitTest() {
             )
         ).sortedByDescending { it.quantity }
 
-        private const val DEFAULT_VISITORS_COUNT = 100
-        private const val DEFAULT_VIEWS_COUNT = 100
+        private const val DEFAULT_VISITORS_COUNT = 321
         private const val DEFAULT_AVG_VISITORS_DELTA = 10
         private const val DEFAULT_AVG_VIEWS_DELTA = 34
 
@@ -664,5 +666,7 @@ class AnalyticsViewModelTest : BaseUnitTest() {
         const val OTHER_AVG_ORDER_VALUE_DELTA = 1
         const val AVG_CURRENCY_VALUE = "11.20 E"
         const val OTHER_AVG_CURRENCY_VALUE = "44.21 E"
+
+        private val defaultSessionStat = SessionStat(ORDERS_COUNT, DEFAULT_VISITORS_COUNT)
     }
 }
