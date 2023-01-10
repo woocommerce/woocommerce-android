@@ -109,9 +109,7 @@ class AnalyticsViewModel @Inject constructor(
                 fetchStrategy = getFetchStrategy(isRefreshing = true)
             ).collect {
                 mutableState.update { viewState ->
-                    viewState.copy(
-                        refreshIndicator = if (it is Finished) NotShowIndicator else ShowIndicator
-                    )
+                    viewState.copy(refreshIndicator = if (it is Finished) NotShowIndicator else ShowIndicator)
                 }
             }
         }
@@ -150,8 +148,8 @@ class AnalyticsViewModel @Inject constructor(
                     viewState.copy(ordersState = buildOrdersDataViewState(state.orders))
                 }
                 is OrdersState.Error -> mutableState.update { viewState ->
-                    NoDataState(resourceProvider.getString(R.string.analytics_orders_no_data))
-                        .let { viewState.copy(ordersState = it) }
+                    val message = resourceProvider.getString(R.string.analytics_orders_no_data)
+                    viewState.copy(ordersState = NoDataState(message))
                 }
                 is OrdersState.Loading -> mutableState.update { viewState ->
                     LoadingViewState.let { viewState.copy(ordersState = it) }
@@ -165,14 +163,11 @@ class AnalyticsViewModel @Inject constructor(
             when (state) {
                 is SessionState.Available -> mutableState.update { viewState ->
                     transactionLauncher.onSessionFetched()
-                    viewState.copy(
-                        sessionState = buildSessionViewState(state.session)
-                    )
+                    viewState.copy(sessionState = buildSessionViewState(state.session))
                 }
                 is SessionState.Error -> mutableState.update { viewState ->
-                    viewState.copy(
-                        sessionState = NoDataState("No session data")
-                    )
+                    val message = "No session data"
+                    viewState.copy(sessionState = NoDataState(message))
                 }
                 is SessionState.Loading -> mutableState.update { viewState ->
                     LoadingViewState.let { viewState.copy(sessionState = it) }
@@ -186,16 +181,11 @@ class AnalyticsViewModel @Inject constructor(
             when (state) {
                 is ProductsState.Available -> mutableState.update { viewState ->
                     transactionLauncher.onProductsFetched()
-                    viewState.copy(
-                        productsState = buildProductsDataState(state.products)
-                    )
+                    viewState.copy(productsState = buildProductsDataState(state.products))
                 }
                 is ProductsState.Error -> mutableState.update { viewState ->
-                    viewState.copy(
-                        productsState = ProductsNoDataState(
-                            resourceProvider.getString(R.string.analytics_products_no_data)
-                        )
-                    )
+                    val message = resourceProvider.getString(R.string.analytics_products_no_data)
+                    viewState.copy(productsState = ProductsNoDataState(message))
                 }
                 is ProductsState.Loading -> mutableState.update { viewState ->
                     ProductsViewState.LoadingViewState.let { viewState.copy(productsState = it) }
@@ -214,9 +204,8 @@ class AnalyticsViewModel @Inject constructor(
                     )
                 }
                 is RevenueState.Error -> mutableState.update { viewState ->
-                    viewState.copy(
-                        revenueState = NoDataState(resourceProvider.getString(R.string.analytics_revenue_no_data))
-                    )
+                    val message = resourceProvider.getString(R.string.analytics_revenue_no_data)
+                    viewState.copy(revenueState = NoDataState(message))
                 }
                 is RevenueState.Loading -> mutableState.update { viewState ->
                     LoadingViewState.let { viewState.copy(revenueState = it) }
