@@ -1,4 +1,4 @@
-package com.woocommerce.android.ui.login.storecreation.profiler
+package com.woocommerce.android.ui.login.storecreation.countrypicker
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -12,15 +12,14 @@ import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.extensions.navigateToHelpScreen
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
-import com.woocommerce.android.ui.login.storecreation.profiler.BaseStoreProfilerViewModel.NavigateToCommerceJourneyStep
-import com.woocommerce.android.ui.login.storecreation.profiler.BaseStoreProfilerViewModel.NavigateToCountryPickerStep
+import com.woocommerce.android.ui.login.storecreation.countrypicker.CountryPickerViewModel.NavigateToDomainPickerStep
 import com.woocommerce.android.ui.main.AppBarStatus
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
-class StoreProfilerIndustriesFragment : BaseFragment() {
-    private val viewModel: StoreProfilerIndustriesViewModel by viewModels()
+class CountryPickerFragment : BaseFragment() {
+    private val viewModel: CountryPickerViewModel by viewModels()
 
     override val activityAppBarStatus: AppBarStatus
         get() = AppBarStatus.Hidden
@@ -30,7 +29,7 @@ class StoreProfilerIndustriesFragment : BaseFragment() {
             setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
             setContent {
                 WooThemeWithBackground {
-                    StoreProfilerScreen(viewModel)
+                    CountryPickerScreen(viewModel)
                 }
             }
         }
@@ -45,23 +44,15 @@ class StoreProfilerIndustriesFragment : BaseFragment() {
         viewModel.event.observe(viewLifecycleOwner) { event ->
             when (event) {
                 is MultiLiveEvent.Event.Exit -> findNavController().popBackStack()
-                is NavigateToCountryPickerStep -> navigateToDomainPickerStep()
-                is NavigateToCommerceJourneyStep -> navigateToCommerceJourneyStep()
                 is MultiLiveEvent.Event.NavigateToHelpScreen -> navigateToHelpScreen(event.origin)
+                is NavigateToDomainPickerStep -> navigateToDomainPickerStep()
             }
         }
     }
 
     private fun navigateToDomainPickerStep() {
         findNavController().navigateSafely(
-            StoreProfilerIndustriesFragmentDirections.actionStoreProfilerCategoryFragmentToDomainPickerFragment()
-        )
-    }
-
-    private fun navigateToCommerceJourneyStep() {
-        findNavController().navigateSafely(
-            StoreProfilerIndustriesFragmentDirections
-                .actionStoreProfilerCategoryFragmentToStoreProfilerCommerceJourneyFragment()
+            CountryPickerFragmentDirections.actionCountryPickerFragmentToDomainPickerFragment()
         )
     }
 }

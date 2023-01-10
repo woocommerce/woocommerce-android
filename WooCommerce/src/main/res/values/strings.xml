@@ -2818,5 +2818,8 @@
     <string name="store_creation_store_profiler_platforms_title">In which platform are you currently selling?</string>
     <string name="store_creation_store_profiler_platforms_description">You can choose multiple ones.</string>
 
+    <string name="store_creation_country_picker_title">Confirm your location</string>
+    <string name="store_creation_country_picker_description">We will use this information to set up payments, shipping and taxes.</string>
+
     <string name="not_a_valid_qr_code">Scanned Qr code is not a WooCommerce code</string>
 </resources>

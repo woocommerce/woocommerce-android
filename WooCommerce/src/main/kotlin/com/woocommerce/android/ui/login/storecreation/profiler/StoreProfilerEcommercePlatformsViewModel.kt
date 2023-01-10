@@ -52,6 +52,6 @@ class StoreProfilerEcommercePlatformsViewModel @Inject constructor(
 
     override fun onContinueClicked() {
         newStore.update(eCommercePlatform = profilerOptions.value.firstOrNull() { it.isSelected }?.name)
-        triggerEvent(NavigateToDomainPickerStep)
+        triggerEvent(NavigateToCountryPickerStep)
     }
 }

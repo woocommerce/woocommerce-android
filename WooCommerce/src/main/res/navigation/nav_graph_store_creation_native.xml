@@ -51,8 +51,8 @@
         android:name="com.woocommerce.android.ui.login.storecreation.profiler.StoreProfilerCommerceJourneyFragment"
         android:label="fragment_store_profiler_commerce_journeys">
         <action
-            android:id="@+id/action_storeProfilerCommerceJourneyFragment_to_domainPickerFragment"
-            app:destination="@id/domainPickerFragment" />
+            android:id="@+id/action_storeProfilerCommerceJourneyFragment_to_countryPickerFragment"
+            app:destination="@id/countryPickerFragment" />
         <action
             android:id="@+id/action_storeProfilerCommerceJourneyFragment_to_storeProfilerEcommercePlatformsFragment"
             app:destination="@id/storeProfilerEcommercePlatformsFragment" />
@@ -63,7 +63,16 @@
         android:name="com.woocommerce.android.ui.login.storecreation.profiler.StoreProfilerEcommercePlatformsFragment"
         android:label="fragment_store_profiler_ecommerce_platforms">
         <action
-            android:id="@+id/action_storeProfilerEcommercePlatformsFragment_to_domainPickerFragment"
+            android:id="@+id/action_storeProfilerEcommercePlatformsFragment_to_countryPickerFragment"
+            app:destination="@id/countryPickerFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/countryPickerFragment"
+        android:name="com.woocommerce.android.ui.login.storecreation.countrypicker.CountryPickerFragment"
+        android:label="fragment_country_picker">
+        <action
+            android:id="@+id/action_countryPickerFragment_to_domainPickerFragment"
             app:destination="@id/domainPickerFragment" />
     </fragment>
 

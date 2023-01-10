@@ -50,7 +50,7 @@ class StoreProfilerCommerceJourneyViewModel @Inject constructor(
         newStore.update(commerceJourney = profilerOptions.value.firstOrNull() { it.isSelected }?.name)
         when (alreadySellingOnlineSelected()) {
             true -> triggerEvent(NavigateToEcommercePlatformsStep)
-            false -> triggerEvent(NavigateToDomainPickerStep)
+            false -> triggerEvent(NavigateToCountryPickerStep)
         }
     }
 
