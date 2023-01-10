@@ -7,6 +7,9 @@ import com.woocommerce.android.model.DeltaPercentage
 import com.woocommerce.android.model.ProductItem
 import com.woocommerce.android.model.RevenueStat
 import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.ui.analytics.ranges.AnalyticsHubDateRangeSelection
+import com.woocommerce.android.ui.analytics.ranges.AnalyticsHubDateRangeSelection.SelectionType.CUSTOM
+import com.woocommerce.android.ui.analytics.sync.AnalyticsRepository
 import com.woocommerce.android.ui.analytics.sync.AnalyticsRepository.Companion.ANALYTICS_ORDERS_PATH
 import com.woocommerce.android.ui.analytics.sync.AnalyticsRepository.Companion.ANALYTICS_PRODUCTS_PATH
 import com.woocommerce.android.ui.analytics.sync.AnalyticsRepository.Companion.ANALYTICS_REVENUE_PATH
@@ -17,9 +20,6 @@ import com.woocommerce.android.ui.analytics.sync.AnalyticsRepository.ProductsRes
 import com.woocommerce.android.ui.analytics.sync.AnalyticsRepository.ProductsResult.ProductsError
 import com.woocommerce.android.ui.analytics.sync.AnalyticsRepository.RevenueResult.RevenueData
 import com.woocommerce.android.ui.analytics.sync.AnalyticsRepository.RevenueResult.RevenueError
-import com.woocommerce.android.ui.analytics.ranges.AnalyticsHubDateRangeSelection
-import com.woocommerce.android.ui.analytics.ranges.AnalyticsHubDateRangeSelection.SelectionType.CUSTOM
-import com.woocommerce.android.ui.analytics.sync.AnalyticsRepository
 import com.woocommerce.android.ui.mystore.data.StatsRepository
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi

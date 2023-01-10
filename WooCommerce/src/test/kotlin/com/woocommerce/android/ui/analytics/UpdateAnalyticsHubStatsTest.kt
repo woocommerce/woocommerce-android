@@ -268,5 +268,4 @@ internal class UpdateAnalyticsHubStatsTest : BaseUnitTest() {
             } doReturn VisitorsResult.VisitorsError
         }
     }
-
 }

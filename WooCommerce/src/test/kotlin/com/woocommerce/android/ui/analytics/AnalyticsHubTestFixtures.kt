@@ -17,7 +17,6 @@ import com.woocommerce.android.ui.analytics.sync.AnalyticsRepository.VisitorsRes
 import java.util.Calendar
 import java.util.Locale
 
-
 val testRangeSelection = TODAY.generateSelectionData(
     calendar = Calendar.getInstance(),
     locale = Locale.getDefault()
