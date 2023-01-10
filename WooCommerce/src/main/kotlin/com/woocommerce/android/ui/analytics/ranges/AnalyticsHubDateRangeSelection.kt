@@ -97,18 +97,18 @@ class AnalyticsHubDateRangeSelection : Serializable {
         const val serialVersionUID = 1L
     }
 
-    enum class SelectionType(val description: String, val localizedResourceId: Int) {
-        TODAY("Today", R.string.date_timeframe_today),
-        YESTERDAY("Yesterday", R.string.date_timeframe_yesterday),
-        LAST_WEEK("Last Week", R.string.date_timeframe_last_week),
-        LAST_MONTH("Last Month", R.string.date_timeframe_last_month),
-        LAST_QUARTER("Last Quarter", R.string.date_timeframe_last_quarter),
-        LAST_YEAR("Last Year", R.string.date_timeframe_last_year),
-        WEEK_TO_DATE("Week to Date", R.string.date_timeframe_week_to_date),
-        MONTH_TO_DATE("Month to Date", R.string.date_timeframe_month_to_date),
-        QUARTER_TO_DATE("Quarter to Date", R.string.date_timeframe_quarter_to_date),
-        YEAR_TO_DATE("Year to Date", R.string.date_timeframe_year_to_date),
-        CUSTOM("Custom", R.string.date_timeframe_custom);
+    enum class SelectionType(val localizedResourceId: Int) {
+        TODAY(R.string.date_timeframe_today),
+        YESTERDAY(R.string.date_timeframe_yesterday),
+        LAST_WEEK(R.string.date_timeframe_last_week),
+        LAST_MONTH(R.string.date_timeframe_last_month),
+        LAST_QUARTER(R.string.date_timeframe_last_quarter),
+        LAST_YEAR(R.string.date_timeframe_last_year),
+        WEEK_TO_DATE(R.string.date_timeframe_week_to_date),
+        MONTH_TO_DATE(R.string.date_timeframe_month_to_date),
+        QUARTER_TO_DATE(R.string.date_timeframe_quarter_to_date),
+        YEAR_TO_DATE(R.string.date_timeframe_year_to_date),
+        CUSTOM(R.string.date_timeframe_custom);
 
         fun generateSelectionData(
             referenceStartDate: Date = Date(),
@@ -133,10 +133,28 @@ class AnalyticsHubDateRangeSelection : Serializable {
             }
         }
 
+        val tracksIdentifier: String
+            get() = when (this) {
+                TODAY -> "Today"
+                YESTERDAY -> "Yesterday"
+                LAST_WEEK -> "Last Week"
+                LAST_MONTH -> "Last Month"
+                LAST_QUARTER -> "Last Quarter"
+                LAST_YEAR -> "Last Year"
+                WEEK_TO_DATE -> "Week to Date"
+                MONTH_TO_DATE -> "Month to Date"
+                QUARTER_TO_DATE -> "Quarter to Date"
+                YEAR_TO_DATE -> "Year to Date"
+                CUSTOM -> "Custom"
+            }
+
         companion object {
             fun from(description: String): SelectionType {
-                return values().firstOrNull { it.description == description } ?: CUSTOM
+                return values().firstOrNull { it.toString() == description } ?: CUSTOM
             }
+
+            val names: Array<String>
+                get() = values().map { it.name }.toTypedArray()
         }
     }
 }
