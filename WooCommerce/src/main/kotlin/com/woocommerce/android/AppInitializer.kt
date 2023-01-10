@@ -192,11 +192,15 @@ class AppInitializer @Inject constructor() : ApplicationLifecycleListener {
     }
 
     override fun onFirstActivityResumed() {
-        // Update the WP.com account details, settings, and site list every time the app is completely restarted,
-        // only if the logged in
-        if (networkStatus.isConnected() && accountStore.hasAccessToken()) {
-            dispatcher.dispatch(AccountActionBuilder.newFetchAccountAction())
-            dispatcher.dispatch(AccountActionBuilder.newFetchSettingsAction())
+        // App is completely restarted
+        if (networkStatus.isConnected()) {
+            if (accountStore.hasAccessToken()) {
+                // Update the WPCom account if the user is signed in using a WPCom account
+                dispatcher.dispatch(AccountActionBuilder.newFetchAccountAction())
+                dispatcher.dispatch(AccountActionBuilder.newFetchSettingsAction())
+            }
+
+            // Update the list of sites
             appCoroutineScope.launch {
                 wooCommerceStore.fetchWooCommerceSites()
 
@@ -212,7 +216,7 @@ class AppInitializer @Inject constructor() : ApplicationLifecycleListener {
                 }
             }
 
-            // Update the user info for the currently logged in user
+            // Update the user info
             if (selectedSite.exists()) {
                 userEligibilityFetcher.fetchUserEligibility()
             }
