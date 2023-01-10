@@ -18,10 +18,10 @@ sealed class OrdersState {
     val isIdle get() = this is Available || this is Error
 }
 
-sealed class VisitorsState {
-    data class Available(val session: SessionStat) : VisitorsState()
-    object Loading : VisitorsState()
-    object Error : VisitorsState()
+sealed class SessionState {
+    data class Available(val session: SessionStat) : SessionState()
+    object Loading : SessionState()
+    object Error : SessionState()
 
     val isIdle get() = this is Available || this is Error
 }

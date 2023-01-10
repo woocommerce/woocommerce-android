@@ -82,7 +82,7 @@ class AnalyticsViewModel @Inject constructor(
 
     init {
         observeOrdersStatChanges()
-        observeVisitorsCountChanges()
+        observeSessionChanges()
         observeProductsChanges()
         observeRevenueChanges()
         observeRangeSelectionChanges()
@@ -162,21 +162,21 @@ class AnalyticsViewModel @Inject constructor(
         }
     }
 
-    private fun observeVisitorsCountChanges() = viewModelScope.launch {
+    private fun observeSessionChanges() = viewModelScope.launch {
         updateStats.sessionState.collect { state ->
             when (state) {
-                is VisitorsState.Available -> mutableState.update { viewState ->
+                is SessionState.Available -> mutableState.update { viewState ->
                     transactionLauncher.onSessionFetched()
                     viewState.copy(
                         sessionState = buildSessionViewState(state.session)
                     )
                 }
-                is VisitorsState.Error -> mutableState.update { viewState ->
+                is SessionState.Error -> mutableState.update { viewState ->
                     viewState.copy(
                         sessionState = NoDataState("No session data")
                     )
                 }
-                is VisitorsState.Loading -> mutableState.update { viewState ->
+                is SessionState.Loading -> mutableState.update { viewState ->
                     LoadingViewState.let { viewState.copy(sessionState = it) }
                 }
             }

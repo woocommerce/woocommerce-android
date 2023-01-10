@@ -32,8 +32,8 @@ class UpdateAnalyticsHubStats @Inject constructor(
     private val _ordersState = MutableStateFlow(OrdersState.Available(OrdersStat.EMPTY) as OrdersState)
     val ordersState: StateFlow<OrdersState> = _ordersState
 
-    private val _sessionState = MutableStateFlow(VisitorsState.Available(SessionStat.EMPTY) as VisitorsState)
-    val sessionState: StateFlow<VisitorsState> = _sessionState
+    private val _sessionState = MutableStateFlow(SessionState.Available(SessionStat.EMPTY) as SessionState)
+    val sessionState: StateFlow<SessionState> = _sessionState
 
     private val visitorsCountState = MutableStateFlow(0)
     private val sessionChanges by lazy { combineSessionDataChanges() }
@@ -44,7 +44,7 @@ class UpdateAnalyticsHubStats @Inject constructor(
         fetchStrategy: FetchStrategy
     ): Flow<AnalyticsHubUpdateState> {
         _ordersState.update { OrdersState.Loading }
-        _sessionState.update { VisitorsState.Loading }
+        _sessionState.update { SessionState.Loading }
         _revenueState.update { RevenueState.Loading }
         _productsState.update { ProductsState.Loading }
 
@@ -69,10 +69,10 @@ class UpdateAnalyticsHubStats @Inject constructor(
         combine(_ordersState, visitorsCountState) { orders, visitorsCount ->
             orders.run { this as? OrdersState.Available }
                 ?.orders?.ordersCount
-                ?.let { VisitorsState.Available(SessionStat(it, visitorsCount)) }
+                ?.let { SessionState.Available(SessionStat(it, visitorsCount)) }
                 ?: when (orders) {
-                    is OrdersState.Error -> VisitorsState.Error
-                    else -> VisitorsState.Loading
+                    is OrdersState.Error -> SessionState.Error
+                    else -> SessionState.Loading
                 }
         }
 
